@@ -29,7 +29,7 @@ public interface SchedulerDAO {
 	/**
 	 * Creates a new task.
 	 * 
-	 * @param task to be created
+	 * @param taskDefinition task to be created
 	 * @throws DAOException
 	 */
 	public void createTask(TaskDefinition taskDefinition) throws DAOException;
@@ -52,10 +52,9 @@ public interface SchedulerDAO {
 	public void updateTask(TaskDefinition task) throws DAOException;
 	
 	/**
-	 * Find all tasks with a given identifier
+	 * Find all tasks in the database
 	 * 
-	 * @param identifier
-	 * @return set of tasks matching identifier
+	 * @return <code>List<TaskDefinition></code> of all tasks
 	 * @throws DAOException
 	 */
 	public List<TaskDefinition> getTasks() throws DAOException;
@@ -83,6 +82,7 @@ public interface SchedulerDAO {
 	 * @throws DAOException
 	 */
 	//public void createSchedule(Schedule schedule) throws DAOException;
+
 	/**
 	 * Get schedule by internal identifier
 	 * 

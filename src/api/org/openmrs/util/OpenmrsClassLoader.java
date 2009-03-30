@@ -98,7 +98,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	/**
 	 * Get the static/singular instance of the module class loader
 	 * 
-	 * @return
+	 * @return OpenmrsClassLoader
 	 */
 	public static OpenmrsClassLoader getInstance() {
 		if (OpenmrsClassLoaderHolder.INSTANCE == null)
@@ -187,7 +187,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	 * java classes that were loaded by the old instance variable to be gc'd and modules to load in
 	 * new java classes
 	 * 
-	 * @see flushInstance()
+	 * @see #flushInstance()
 	 */
 	public static void destroyInstance() {
 		OpenmrsClassLoaderHolder.INSTANCE = null;
@@ -338,7 +338,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	/**
 	 * This method should be called before destroying the instance
 	 * 
-	 * @see destroyInstance()
+	 * @see #destroyInstance()
 	 */
 	public static void saveState() {
 		
@@ -358,8 +358,8 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	/**
 	 * This method should be called after restoring the instance
 	 * 
-	 * @see destroyInstance()
-	 * @see saveState()
+	 * @see #destroyInstance()
+	 * @see #saveState()
 	 */
 	public static void restoreState() {
 		// TODO our services should implement a common 
@@ -378,7 +378,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	 * All objects depending on the old classloader should be restarted here Should be called after
 	 * destoryInstance() and after the service is restarted
 	 * 
-	 * @see destroyInstance()
+	 * @see #destroyInstance()
 	 */
 	public static void flushInstance() {
 		try {

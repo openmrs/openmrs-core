@@ -47,8 +47,6 @@ public class CohortDefinition extends AbstractReportObject implements Serializab
 	
 	/**
 	 * Get the cohort instance assigned to this cohort definition
-	 * 
-	 * @return
 	 */
 	public Cohort getCohort() {
 		return cohort;
@@ -65,8 +63,6 @@ public class CohortDefinition extends AbstractReportObject implements Serializab
 	
 	/**
 	 * Get the patient filter assigned to the cohort definition.
-	 * 
-	 * @return
 	 */
 	public PatientFilter getPatientFilter() {
 		return patientFilter;

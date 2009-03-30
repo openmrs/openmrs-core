@@ -34,8 +34,6 @@ public class TaskFactory {
 	
 	/**
 	 * Gets an instance of the schedulable factory
-	 * 
-	 * @return
 	 */
 	public static TaskFactory getInstance() {
 		return factory;
@@ -46,8 +44,8 @@ public class TaskFactory {
 	 * the given task wrapped with the {@link TaskThreadedInitializationWrapper} class so that the
 	 * {@link Task#initialize(TaskDefinition)} method runs in a new thread.
 	 * 
-	 * @param taskConfig
-	 * @return
+	 * @param taskDefinition
+	 * @return the created Task
 	 * @throws SchedulerException
 	 */
 	public Task createInstance(TaskDefinition taskDefinition) throws SchedulerException {

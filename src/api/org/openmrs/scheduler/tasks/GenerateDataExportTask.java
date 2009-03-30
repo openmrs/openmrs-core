@@ -40,7 +40,7 @@ public class GenerateDataExportTask extends AbstractTask {
 	private EvaluationContext context;
 	
 	/**
-	 * @see org.openmrs.scheduler.tasks.AbstractTask#initialize(org.openmrs.scheduler.TaskConfig)
+	 * @see org.openmrs.scheduler.tasks.AbstractTask#initialize(TaskDefinition)
 	 */
 	public void initialize(TaskDefinition definition) {
 		super.initialize(definition);

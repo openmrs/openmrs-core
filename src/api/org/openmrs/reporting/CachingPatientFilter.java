@@ -20,7 +20,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.report.EvaluationContext;
 
 /**
- *
+ * TODO
  */
 public abstract class CachingPatientFilter extends AbstractPatientFilter implements PatientFilter {
 	
@@ -30,7 +30,7 @@ public abstract class CachingPatientFilter extends AbstractPatientFilter impleme
 	 * Subclasses should implement PatientFilter.filter("all patients", evalContext) in this method
 	 * 
 	 * @param context
-	 * @return
+	 * @return TODO
 	 */
 	public abstract Cohort filterImpl(EvaluationContext context);
 	
@@ -41,6 +41,12 @@ public abstract class CachingPatientFilter extends AbstractPatientFilter impleme
 	 */
 	public abstract String getCacheKey();
 	
+	/**
+	 * TODO Auto generated method comment
+	 * 
+	 * @param context
+	 * @return
+	 */
 	private Cohort getAndMaybeCache(EvaluationContext context) {
 		if (context == null) {
 			return filterImpl(null);
@@ -55,6 +61,10 @@ public abstract class CachingPatientFilter extends AbstractPatientFilter impleme
 		}
 	}
 	
+	/**
+	 * @see org.openmrs.reporting.PatientFilter#filter(org.openmrs.Cohort,
+	 *      org.openmrs.report.EvaluationContext)
+	 */
 	public Cohort filter(Cohort input, EvaluationContext context) {
 		Cohort cached = getAndMaybeCache(context);
 		if (input == null) {
@@ -66,6 +76,10 @@ public abstract class CachingPatientFilter extends AbstractPatientFilter impleme
 		return Cohort.intersect(input, cached);
 	}
 	
+	/**
+	 * @see org.openmrs.reporting.PatientFilter#filterInverse(org.openmrs.Cohort,
+	 *      org.openmrs.report.EvaluationContext)
+	 */
 	public Cohort filterInverse(Cohort input, EvaluationContext context) {
 		Cohort cached = getAndMaybeCache(context);
 		if (input == null) {
@@ -77,6 +91,9 @@ public abstract class CachingPatientFilter extends AbstractPatientFilter impleme
 		return Cohort.subtract(input, cached);
 	}
 	
+	/**
+	 * @see org.openmrs.reporting.PatientFilter#isReadyToRun()
+	 */
 	public abstract boolean isReadyToRun();
 	
 }

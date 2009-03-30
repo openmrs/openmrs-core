@@ -50,7 +50,7 @@ public abstract class DelimitedTextReportRenderer implements ReportRenderer {
 	public abstract String escape(String text);
 	
 	/**
-	 * @see org.openmrs.report.ReportRenderer#getLinkUrl(org.openmrs.report.ReportSchema)
+	 * TODO: this appears to be unused.  Its not in the super interface or overridden in subclasses.
 	 */
 	public String getLinkUrl(ReportSchema schema) {
 		return null;

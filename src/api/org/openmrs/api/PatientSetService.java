@@ -49,6 +49,8 @@ public interface PatientSetService {
 	public void setPatientSetDAO(PatientSetDAO dao);
 	
 	/**
+	 * Export a set of patients to an XML
+	 * 
 	 * @param ps The set you want to export as XML
 	 * @return an XML representation of this patient-set, including patient characteristics, and
 	 *         observations
@@ -271,7 +273,7 @@ public interface PatientSetService {
 	public Map<Integer, List<Obs>> getObservations(Cohort patients, Concept concept, Date fromDate, Date toDate);
 	
 	/**
-	 * Map<patientId, List<Obs values>>
+	 * TODO write something here
 	 * 
 	 * @param patients
 	 * @param c
@@ -281,9 +283,10 @@ public interface PatientSetService {
 	public Map<Integer, List<List<Object>>> getObservationsValues(Cohort patients, Concept c);
 	
 	/**
-	 * Returns a mapping from patient id to obs for concept <code>c</code> The returned List<
-	 * attribute value > is [obs value, attr value, attr value, attr value...] The returned
-	 * List<List< attribute value >> represents the obs rows
+	 * Returns a mapping from patient id to obs for concept <code>c</code>
+	 * <p>
+	 * The returned List< attribute value > is [obs value, attr value, attr value, attr value...]
+	 * The returned List<List< attribute value >> represents the obs rows
 	 * 
 	 * @param patients
 	 * @param c
@@ -294,6 +297,8 @@ public interface PatientSetService {
 	public Map<Integer, List<List<Object>>> getObservationsValues(Cohort patients, Concept c, List<String> attributes);
 	
 	/**
+	 * TODO write something here
+	 * 
 	 * @param patients
 	 * @param encType
 	 * @return
@@ -302,30 +307,38 @@ public interface PatientSetService {
 	public Map<Integer, Encounter> getEncountersByType(Cohort patients, EncounterType encType);
 	
 	/**
-	 * @param patients
-	 * @param encTypes
-	 * @param attr
-	 * @return
+	 * TODO write something here
+	 * 
+	 * @param patients Cohort of patients to search
+	 * @param encTypes List<EncounterType> to include in the search
+	 * @param attr <code>String</code> of attributes to get
+	 * @return Map<Integer, Object> of encounter attributes
 	 */
 	public Map<Integer, Object> getEncounterAttrsByType(Cohort patients, List<EncounterType> encTypes, String attr);
 	
 	/**
-	 * @param patients
-	 * @param encType
-	 * @return
+	 * TODO write something here
+	 * 
+	 * @param patients Cohort of patients to search
+	 * @param encType List<EncounterType> to include in the search
+	 * @return Map<Integer, Encounter>
 	 */
 	@Transactional(readOnly = true)
 	public Map<Integer, Encounter> getEncountersByType(Cohort patients, List<EncounterType> encType);
 	
 	/**
-	 * @param patients
-	 * @return
+	 * TODO write something here
+	 * 
+	 * @param patients Cohort of patients to search
+	 * @return Map<Integer, Encounter> of all encounters for specified patients.
 	 */
 	@Transactional(readOnly = true)
 	public Map<Integer, Encounter> getEncounters(Cohort patients);
 	
 	/**
-	 * @param patients
+	 * TODO write something here
+	 * 
+	 * @param patients Cohort of patients to search
 	 * @param encType
 	 * @return
 	 */
@@ -333,16 +346,20 @@ public interface PatientSetService {
 	public Map<Integer, Encounter> getFirstEncountersByType(Cohort patients, EncounterType encType);
 	
 	/**
-	 * @param patients
-	 * @param types
+	 * TODO write something here
+	 * 
+	 * @param patients Cohort of patients to search
+	 * @param types List<EncounterType> to include in the search
 	 * @return
 	 */
 	@Transactional(readOnly = true)
 	public Map<Integer, Encounter> getFirstEncountersByType(Cohort patients, List<EncounterType> types);
 	
 	/**
-	 * @param patients
-	 * @param encTypes
+	 * TODO write something here
+	 * 
+	 * @param patients Cohort of patients to search
+	 * @param encTypes List<EncounterType> to include in the search
 	 * @param attr
 	 * @return
 	 */
@@ -350,7 +367,9 @@ public interface PatientSetService {
 	public Map<Integer, Object> getFirstEncounterAttrsByType(Cohort patients, List<EncounterType> encTypes, String attr);
 	
 	/**
-	 * @param patients
+	 * TODO write something here
+	 * 
+	 * @param patients Cohort of patients to search
 	 * @param className
 	 * @param property
 	 * @param returnAll
@@ -360,6 +379,8 @@ public interface PatientSetService {
 	public Map<Integer, Object> getPatientAttributes(Cohort patients, String className, String property, boolean returnAll);
 	
 	/**
+	 * TODO write something here
+	 * 
 	 * @param patients
 	 * @param classNameDotProperty
 	 * @param returnAll
@@ -369,6 +390,8 @@ public interface PatientSetService {
 	public Map<Integer, Object> getPatientAttributes(Cohort patients, String classNameDotProperty, boolean returnAll);
 	
 	/**
+	 * TODO write something here
+	 * 
 	 * @param patients
 	 * @param attributeName
 	 * @param joinClass
@@ -382,6 +405,8 @@ public interface PatientSetService {
 	                                                String joinProperty, String outputColumn, boolean returnAll);
 	
 	/**
+	 * TODO write something here
+	 * 
 	 * @param patients Cohort of patients to look up
 	 * @return Map<Integer,Map<String,Object>> with characteristics of specified patients
 	 */
@@ -400,6 +425,8 @@ public interface PatientSetService {
 	public Map<Integer, PatientIdentifier> getPatientIdentifiersByType(Cohort patients, PatientIdentifierType type);
 	
 	/**
+	 * TODO write something here
+	 * 
 	 * @param identifiers List of String patient identifiers
 	 * @return Cohort of patients matching specified identifiers
 	 */
@@ -407,6 +434,8 @@ public interface PatientSetService {
 	public Cohort convertPatientIdentifier(List<String> identifiers);
 	
 	/**
+	 * TODO write something here
+	 * 
 	 * @param patientIds
 	 * @return List of matching patients
 	 */
@@ -414,22 +443,30 @@ public interface PatientSetService {
 	public List<Patient> getPatients(Collection<Integer> patientIds);
 	
 	/**
+	 * TODO write something here
+	 * 
 	 * @param ps Cohort to void
 	 */
 	public void setMyPatientSet(Cohort ps);
 	
 	/**
+	 * TODO write something here
+	 * 
 	 * @return the Patient Set as a Cohort
 	 */
 	@Transactional(readOnly = true)
 	public Cohort getMyPatientSet();
 	
 	/**
+	 * TODO write something here
+	 * 
 	 * @param ptId
 	 */
 	public void addToMyPatientSet(Integer ptId);
 	
 	/**
+	 * TODO write something here
+	 * 
 	 * @param ptId
 	 */
 	public void removeFromMyPatientSet(Integer ptId);

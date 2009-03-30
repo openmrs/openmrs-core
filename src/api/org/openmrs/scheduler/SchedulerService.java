@@ -31,7 +31,7 @@ public interface SchedulerService extends OpenmrsService {
 	 * Checks the status of a scheduled task.
 	 * 
 	 * @param id
-	 * @return
+	 * @return the <code>String</code> status of the task with the given identifier
 	 */
 	@Authorized( { "Manage Scheduler" })
 	public String getStatus(Integer id);
@@ -50,6 +50,8 @@ public interface SchedulerService extends OpenmrsService {
 	
 	/**
 	 * Cancel a scheduled task.
+	 * 
+	 * @param task the <code>TaskDefinition</code> for the task to cancel
 	 */
 	@Authorized( { "Manage Scheduler" })
 	public void shutdownTask(TaskDefinition task) throws SchedulerException;
@@ -57,14 +59,17 @@ public interface SchedulerService extends OpenmrsService {
 	/**
 	 * Start a scheduled task as specified in a TaskDefinition.
 	 * 
-	 * @param task definition of the task to start
-	 * @return the started task, or null if there was a problem instantiating or scheduling the task
+	 * @param task TaskDefinition to start
+	 * @return the started <code>Task</code>, or null if there was a problem instantiating or
+	 *         scheduling the task
 	 */
 	@Authorized( { "Manage Scheduler" })
 	public Task scheduleTask(TaskDefinition task) throws SchedulerException;
 	
 	/**
 	 * Stop and start a scheduled task.
+	 * 
+	 * @param task the <code>TaskDefinition</code> to reschedule
 	 */
 	@Authorized( { "Manage Scheduler" })
 	public Task rescheduleTask(TaskDefinition task) throws SchedulerException;
@@ -132,7 +137,7 @@ public interface SchedulerService extends OpenmrsService {
 	/**
 	 * Return SchedulerConstants
 	 * 
-	 * @return
+	 * @return SortedMap<String, String>
 	 */
 	@Transactional(readOnly = true)
 	public SortedMap<String, String> getSystemVariables();
@@ -140,7 +145,7 @@ public interface SchedulerService extends OpenmrsService {
 	/**
 	 * Save the state of the scheduler service to Memento
 	 * 
-	 * @return
+	 * @return OpenmrsMemento that contains data about this serive.
 	 */
 	public OpenmrsMemento saveToMemento();
 	
@@ -148,7 +153,6 @@ public interface SchedulerService extends OpenmrsService {
 	 * Restore the scheduler service to state defined by Memento
 	 * 
 	 * @param memento
-	 * @return
 	 */
 	public void restoreFromMemento(OpenmrsMemento memento);
 }

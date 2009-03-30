@@ -90,8 +90,6 @@ public class ReportDefinition extends AbstractReportObject implements Serializab
 	
 	/**
 	 * Gets the default cohort definition.
-	 * 
-	 * @return
 	 */
 	public CohortDefinition getCohortDefinition() {
 		return cohortDefinition;
@@ -108,8 +106,6 @@ public class ReportDefinition extends AbstractReportObject implements Serializab
 	
 	/**
 	 * Gets the default dataset definition.
-	 * 
-	 * @return
 	 */
 	public DatasetDefinition getDatasetDefinition() {
 		return datasetDefinition;
@@ -133,8 +129,6 @@ public class ReportDefinition extends AbstractReportObject implements Serializab
 	
 	/**
 	 * Gets the default data export object.
-	 * 
-	 * @return
 	 */
 	public DataExportReportObject getDataExport() {
 		return dataExport;

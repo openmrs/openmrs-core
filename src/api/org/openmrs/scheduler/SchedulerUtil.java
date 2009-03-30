@@ -136,7 +136,7 @@ public class SchedulerUtil {
 	
 	/**
 	 * @param e
-	 * @return
+	 * @return <code>String</code> representation of the given exception
 	 */
 	public static String getExceptionAsString(Exception e) {
 		StringWriter stringWriter = new StringWriter();

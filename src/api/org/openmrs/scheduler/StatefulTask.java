@@ -33,8 +33,6 @@ public abstract class StatefulTask extends AbstractTask {
 	
 	/**
 	 * Returns the context.
-	 * 
-	 * @return
 	 */
 	public Context getContext() {
 		return this.context;

@@ -79,8 +79,6 @@ public class TimerSchedulerServiceImpl implements SchedulerService {
 	
 	/**
 	 * Gets the scheduler data access object.
-	 * 
-	 * @return
 	 */
 	public SchedulerDAO getSchedulerDAO() {
 		return this.schedulerDAO;
@@ -191,8 +189,7 @@ public class TimerSchedulerServiceImpl implements SchedulerService {
 	/**
 	 * Schedule the given task according to the given schedule.
 	 * 
-	 * @param task the task to be scheduled
-	 * @param schedule the time and interval for the scheduled task
+	 * @param taskDefinition the task to be scheduled
 	 */
 	public Task scheduleTask(TaskDefinition taskDefinition) throws SchedulerException {
 		Task clientTask = null;
@@ -270,8 +267,8 @@ public class TimerSchedulerServiceImpl implements SchedulerService {
 	/**
 	 * Stops a running task.
 	 * 
-	 * @param task the task to be stopped
-	 * @see org.openmrs.scheduler.SchedulerService#stopTask(org.openmrs.scheduler.TaskConfig)
+	 * @param taskDefinition the task to be stopped
+	 * @see org.openmrs.scheduler.SchedulerService#shutdownTask(TaskDefinition)
 	 */
 	public void shutdownTask(TaskDefinition taskDefinition) throws SchedulerException {
 		if (taskDefinition != null) {
@@ -378,9 +375,9 @@ public class TimerSchedulerServiceImpl implements SchedulerService {
 	}
 	
 	/**
-	 * Get the task with the given identifier.
+	 * Save a task in the database.
 	 * 
-	 * @param id the identifier of the task
+	 * @param task the <code>TaskDefinition</code> to save
 	 */
 	public void saveTask(TaskDefinition task) {
 		if (task.getId() != null) {
@@ -454,7 +451,7 @@ public class TimerSchedulerServiceImpl implements SchedulerService {
 	/**
 	 * Saves and stops all active tasks
 	 * 
-	 * @returns OpenmrsMemento
+	 * @return OpenmrsMemento
 	 */
 	public OpenmrsMemento saveToMemento() {
 		

@@ -127,9 +127,9 @@ public class OpenmrsUtil {
 	
 	/**
 	 * @param idWithoutCheckdigit
-	 * @return
+	 * @return 
 	 * @throws Exception
-	 * @deprecated Should be using PatientService.getPatientIdentifierValidator()
+	 * @deprecated Use {@link PatientService#getIdentifierValidator(String)}
 	 */
 	public static int getCheckDigit(String idWithoutCheckdigit) throws Exception {
 		PatientService ps = Context.getPatientService();
@@ -183,7 +183,7 @@ public class OpenmrsUtil {
 	 * @param id
 	 * @return true/false whether id has a valid check digit
 	 * @throws Exception on invalid characters and invalid id formation
-	 * @deprecated Should be using PatientService.getPatientIdentifierValidator().isValid();
+	 * @deprecated Should be using {@link PatientService#getIdentifierValidator(String)#isValid()}
 	 */
 	public static boolean isValidCheckDigit(String id) throws Exception {
 		PatientService ps = Context.getPatientService();
@@ -500,8 +500,8 @@ public class OpenmrsUtil {
 	 * Takes a String like "size=compact|order=date" and returns a Map<String,String> from the keys
 	 * to the values.
 	 * 
-	 * @param paramList
-	 * @return
+	 * @param paramList <code>String</code> with a list of parameters
+	 * @return Map<String, String> of the parameters passed
 	 */
 	public static Map<String, String> parseParameterList(String paramList) {
 		Map<String, String> ret = new HashMap<String, String>();
@@ -1147,7 +1147,7 @@ public class OpenmrsUtil {
 	 * 
 	 * @param string
 	 * @param clazz
-	 * @return
+	 * @return Object of type <code>clazz</code> with the data from <code>string</code>
 	 */
 	@SuppressWarnings("unchecked")
 	public static Object parse(String string, Class clazz) {

@@ -45,7 +45,7 @@ public abstract class AbstractTask implements Task {
 	/**
 	 * Constructor
 	 * 
-	 * @param definition the task definition
+	 * @param taskDefinition the task definition
 	 */
 	protected AbstractTask(TaskDefinition taskDefinition) {
 		initialize(taskDefinition);
@@ -64,7 +64,7 @@ public abstract class AbstractTask implements Task {
 	}
 	
 	/**
-	 * @see org.openmrs.scheduler.Task#initialize(org.openmrs.scheduler.TaskConfig)
+	 * @see org.openmrs.scheduler.Task#initialize(TaskDefinition)
 	 */
 	public void initialize(final TaskDefinition definition) {
 		this.taskDefinition = definition;

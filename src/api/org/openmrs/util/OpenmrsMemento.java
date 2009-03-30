@@ -18,9 +18,9 @@ package org.openmrs.util;
  * classloader is destroyed, the state of, for example, the scheduled items needs to be saved. Then,
  * after restoring the classloader and api, the state can be restored
  * 
- * @see OpenmrsClassLoader.destroyInstance()
- * @see OpenmrsClassLoader.saveState()
- * @see OpenmrsClassLoader.restoreState()
+ * @see OpenmrsClassLoader#destroyInstance()
+ * @see OpenmrsClassLoader#saveState()
+ * @see OpenmrsClassLoader#restoreState()
  */
 
 public abstract class OpenmrsMemento {

@@ -25,23 +25,25 @@ public interface PatientFilter extends ReportObject {
 	 * Determine all patients in _input_ who also match some criteria. If input is null, then this
 	 * should return all patients who match.
 	 * 
-	 * @param context
-	 * @param input
-	 * @return
+	 * @param input Cohort of the patients to search
+	 * @param context EvaluationContext specifying filtering criteria
+	 * @return Cohort of the patients matching the criteria
 	 */
 	public Cohort filter(Cohort input, EvaluationContext context);
 	
 	/**
 	 * Determine all patients in _input_ who do *not* match some criteria
 	 * 
-	 * @param context
-	 * @param input
-	 * @return
+	 * @param input Cohort of the patients to search
+	 * @param context EvaluationContext specifying filtering criteria
+	 * @return Cohort of patients in <code>input</code> who do <b>not</b> meet specified criteria
 	 */
 	public Cohort filterInverse(Cohort input, EvaluationContext context);
 	
 	/**
-	 * @return Whether or not this filter has had enough parameters set to be run properly
+	 * Check whether this filter has had enough parameters set to be run properly
+	 * 
+	 * @return true if the filter has enough parameters set, false otherwise
 	 */
 	public boolean isReadyToRun();
 }

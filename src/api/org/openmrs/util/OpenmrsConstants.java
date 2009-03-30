@@ -111,8 +111,8 @@ public final class OpenmrsConstants {
 	 * heuristics to determine where to put an app data dir.
 	 * 
 	 * @see #APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY
-	 * @see OpenmrsUtil.getApplicationDataDirectory()
-	 * @see OpenmrsUtil.startup(java.util.Properties);
+	 * @see OpenmrsUtil#getApplicationDataDirectory()
+	 * @see OpenmrsUtil#startup(java.util.Properties)
 	 */
 	public static String APPLICATION_DATA_DIRECTORY = null;
 	
@@ -133,7 +133,7 @@ public final class OpenmrsConstants {
 	/**
 	 * These words are ignored in concept and patient searches
 	 * 
-	 * @return
+	 * @return Collection<String> of words that are ignored
 	 */
 	public static final Collection<String> STOP_WORDS() {
 		List<String> stopWords = new Vector<String>();
@@ -152,10 +152,10 @@ public final class OpenmrsConstants {
 	}
 	
 	/**
-	 * A gender character to gender name map TODO issues with localization. How should this be
-	 * handled?
+	 * A gender character to gender name map<br/>
+	 * TODO issues with localization. How should this be handled?
 	 * 
-	 * @return
+	 * @return Map<String, String> of gender character to gender name 
 	 */
 	public static final Map<String, String> GENDER() {
 		Map<String, String> genders = new LinkedHashMap<String, String>();
@@ -637,7 +637,7 @@ public final class OpenmrsConstants {
 	/**
 	 * These roles are given to a user automatically and cannot be assigned
 	 * 
-	 * @return
+	 * @return <code>Collection<String></code> of the auto-assigned roles
 	 */
 	public static final Collection<String> AUTO_ROLES() {
 		List<String> roles = new Vector<String>();
@@ -701,10 +701,10 @@ public final class OpenmrsConstants {
 	public static final String GLOBAL_PROPERTY_DEFAULT_LOCALE_DEFAULT_VALUE = "en_GB";
 	
 	/**
-	 * These properties (and default values) are set if not found in the database when OpenMRS is
-	 * started if they do not exist yet
+	 * At OpenMRS startup these global properties/default values/descriptions are inserted into the database
+	 * if they do not exist yet.
 	 * 
-	 * @return
+	 * @return List<GlobalProperty> of the core global properties
 	 */
 	public static final List<GlobalProperty> CORE_GLOBAL_PROPERTIES() {
 		List<GlobalProperty> props = new Vector<GlobalProperty>();

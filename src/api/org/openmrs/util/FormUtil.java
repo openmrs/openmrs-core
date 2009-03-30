@@ -120,7 +120,7 @@ public class FormUtil {
 	 * @param s string to convert into a unique XML tag
 	 * @param tagList java.util.Vector containing all previously created tags. If the tagList is
 	 *            null, it will be initialized automatically
-	 * @returns unique XML tag name from given string (guaranteed not to duplicate any tag names
+	 * @return unique XML tag name from given string (guaranteed not to duplicate any tag names
 	 *          already within <code>tagList</code>)
 	 */
 	public static String getNewTag(String s, Vector<String> tagList) {

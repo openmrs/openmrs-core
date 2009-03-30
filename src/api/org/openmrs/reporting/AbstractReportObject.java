@@ -81,7 +81,7 @@ public class AbstractReportObject implements ReportObject {
 	}
 	
 	/**
-	 * @param name The description to set.
+	 * @param description The description to set.
 	 */
 	public void setDescription(String description) {
 		this.description = description;

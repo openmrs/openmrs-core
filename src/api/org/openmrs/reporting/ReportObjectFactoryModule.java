@@ -75,7 +75,7 @@ public class ReportObjectFactoryModule {
 	}
 	
 	/**
-	 * @param typeName The typeName to set.
+	 * @param type The <code>String</code> name of the type to set.
 	 */
 	public void setType(String type) {
 		this.type = type;

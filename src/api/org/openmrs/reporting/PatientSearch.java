@@ -49,14 +49,20 @@ import org.simpleframework.xml.Root;
  * <li>a reference to a saved cohort, expressed as the database integer pk.
  * <li>a regular search, which describes a PatientFilter subclass and a list of bean-style
  * properties to set.
- * <ul>
- * Composition filters: When isComposition() returns true, then this represents something like
- * "1 and (2 or 3)", which must be evaluated in the context of a search history. Saved filters: When
- * isSavedFilterReference() returns true, then this represents something like "saved filter #8" When
- * isSavedCohortReference() returns true, then this represents something like "saved cohort #3"
- * Regular filters: Otherwise this search describes a PatientFilter subclass and a list of
- * bean-style properties to set, so that it can be turned into a PatientFilter with the utility
- * method OpenmrsUtil.toPatientFilter(PatientSearch). But it can also be left as-is for better
+ * </ul>
+ * Composition filters:<br/>
+ * When isComposition() returns true, then this represents something like "1 and (2 or 3)", which
+ * must be evaluated in the context of a search history.
+ * <p>
+ * Saved filters:<br/>
+ * When isSavedFilterReference() returns true, then this represents something like "saved filter #8"
+ * <br/>
+ * When isSavedCohortReference() returns true, then this represents something like "saved cohort #3"
+ * <p>
+ * Regular filters:<br/>
+ * Otherwise this search describes a PatientFilter subclass and a list of bean-style properties to
+ * set, so that it can be turned into a PatientFilter with the utility method
+ * OpenmrsUtil.toPatientFilter(PatientSearch). But it can also be left as-is for better
  * version-compatibility if PatientFilter classes change, or to avoid issues with xml-encoding
  * hibernate proxies.
  */
@@ -265,7 +271,7 @@ public class PatientSearch implements CohortDefinition {
 	 * Convenience method so that a PatientSearch object can be created from a string of
 	 * compositions
 	 * 
-	 * @param composition
+	 * @param specification
 	 */
 	@Element(data = true, name = "specification", required = false)
 	public void setSpecificationString(String specification) {
@@ -449,7 +455,7 @@ public class PatientSearch implements CohortDefinition {
 	 * Looks up an argument value, accounting for parameterValues
 	 * 
 	 * @param name
-	 * @return
+	 * @return the <code>String</code> value for the specified argument
 	 */
 	public String getArgumentValue(String name) {
 		if (parameterValues.containsKey(name))
@@ -474,7 +480,7 @@ public class PatientSearch implements CohortDefinition {
 	 * Returns all SearchArgument values that match
 	 * {@link org.openmrs.report.EvaluationContext#PARAMETER_PATTERN}
 	 * 
-	 * @return
+	 * @return <code>List&lt;Parameter></code> of all parameters in the arguments
 	 */
 	public List<Parameter> getParameters() {
 		List<Parameter> parameters = new ArrayList<Parameter>();
