@@ -20,6 +20,8 @@ import java.io.File;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 import org.openmrs.Cohort;
 import org.openmrs.api.context.Context;
@@ -32,6 +34,8 @@ import org.openmrs.util.OpenmrsUtil;
  */
 public class DataExportTest extends BaseContextSensitiveTest {
 	
+	private Log log = LogFactory.getLog(getClass());
+	
 	/**
 	 * TODO finish and comment method
 	 * 
@@ -40,9 +44,7 @@ public class DataExportTest extends BaseContextSensitiveTest {
 	@Test
 	public void shouldCalcuateAge() throws Exception {
 		
-		initializeInMemoryDatabase();
 		executeDataSet("org/openmrs/reporting/export/include/DataExportTest-patients.xml");
-		authenticate();
 		
 		DataExportReportObject export = new DataExportReportObject();
 		export.setName("TEST_EXPORT");
@@ -93,10 +95,10 @@ public class DataExportTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void shouldFirstNObs() throws Exception {
-		initializeInMemoryDatabase();
+		log.debug("Testing execution time - start");
+		
 		executeDataSet("org/openmrs/reporting/export/include/DataExportTest-patients.xml");
 		executeDataSet("org/openmrs/reporting/export/include/DataExportTest-obs.xml");
-		authenticate();
 		
 		DataExportReportObject export = new DataExportReportObject();
 		export.setName("FIRST 2 WEIGHTS");
@@ -119,11 +121,15 @@ public class DataExportTest extends BaseContextSensitiveTest {
 		Cohort patients = new Cohort();
 		patients.addMember(2);
 		
+		log.debug("Testing execution time - middle");
+		
 		DataExportUtil.generateExport(export, patients, "\t", null);
 		File exportFile = DataExportUtil.getGeneratedFile(export);
 		
+		log.debug("Testing execution time - end");
+		
 		//System.out.println("Template String: " + export.generateTemplate());
-		String expectedOutput = "PATIENT_ID	WEIGHT	WEIGHT_location 	WEIGHT_(1)	WEIGHT_location_(1)\n2	1.0	Test Location	2.0	Test Location\n";
+		String expectedOutput = "PATIENT_ID	\"WEIGHT\"	\"WEIGHT_location\" 	\"WEIGHT_(1)\"	\"WEIGHT_location_(1)\"\n2	1.0	Test Location	2.0	Test Location\n";
 		String output = OpenmrsUtil.getFileAsString(exportFile);
 		exportFile.delete();
 		
@@ -147,10 +153,11 @@ public class DataExportTest extends BaseContextSensitiveTest {
 		export.getColumns().add(firstNObs);
 		
 		DataExportUtil.generateExport(export, patients, "\t", null);
+		
 		exportFile = DataExportUtil.getGeneratedFile(export);
 		
 		//System.out.println("Template String: " + export.generateTemplate());
-		expectedOutput = "PATIENT_ID	WEIGHT	WEIGHT_location\n2	1.0	Test Location\n";
+		expectedOutput = "PATIENT_ID	\"WEIGHT\"	\"WEIGHT_location\"\n2	1.0	Test Location\n";
 		output = OpenmrsUtil.getFileAsString(exportFile);
 		exportFile.delete();
 		
@@ -177,7 +184,8 @@ public class DataExportTest extends BaseContextSensitiveTest {
 		exportFile = DataExportUtil.getGeneratedFile(export);
 		
 		//System.out.println("Template String: \n" + export.generateTemplate());
-		expectedOutput = "PATIENT_ID	WEIGHT	WEIGHT_location\n2	10.0	Test Location	9.0	Test Location	8.0	Test Location	7.0	Test Location	6.0	Test Location	5.0	Test Location	4.0	Test Location	3.0	Test Location	2.0	Test Location	1.0	Test Location\n";
+		expectedOutput = "PATIENT_ID	\"WEIGHT\"	\"WEIGHT_location\"\n2	10.0	Test Location	9.0	Test Location	8.0	Test Location	7.0	Test Location	6.0	Test Location	5.0	Test Location	4.0	Test Location	3.0	Test Location	2.0	Test Location	1.0	Test Location\n";
+		
 		output = OpenmrsUtil.getFileAsString(exportFile);
 		exportFile.delete();
 		
@@ -194,10 +202,8 @@ public class DataExportTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void shouldFirstNObsWithZeroObsReturned() throws Exception {
-		initializeInMemoryDatabase();
 		executeDataSet("org/openmrs/reporting/export/include/DataExportTest-patients.xml");
 		executeDataSet("org/openmrs/reporting/export/include/DataExportTest-obs.xml");
-		authenticate();
 		
 		DataExportReportObject export = new DataExportReportObject();
 		export.setName("NO CONCEPT, THEN GET WEIGHTS");
@@ -232,7 +238,7 @@ public class DataExportTest extends BaseContextSensitiveTest {
 		File exportFile = DataExportUtil.getGeneratedFile(export);
 		
 		//System.out.println("Template String: \n" + export.generateTemplate());
-		String expectedOutput = "PATIENT_ID	Other	Other_obsDatetime 	Other_(1)	Other_obsDatetime_(1)	W-last	W-last_obsDatetime 	W-last_(1)	W-last_obsDatetime_(1)\n2					10.0	18/02/2006	9.0	17/02/2006\n";
+		String expectedOutput = "PATIENT_ID	\"Other\"	\"Other_obsDatetime\" 	\"Other_(1)\"	\"Other_obsDatetime_(1)\"	\"W-last\"	\"W-last_obsDatetime\" 	\"W-last_(1)\"	\"W-last_obsDatetime_(1)\"\n2					10.0	18/02/2006	9.0	17/02/2006\n";
 		String output = OpenmrsUtil.getFileAsString(exportFile);
 		exportFile.delete();
 		
@@ -248,10 +254,8 @@ public class DataExportTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void shouldFirstObs() throws Exception {
-		initializeInMemoryDatabase();
 		executeDataSet("org/openmrs/reporting/export/include/DataExportTest-patients.xml");
 		executeDataSet("org/openmrs/reporting/export/include/DataExportTest-obs.xml");
-		authenticate();
 		
 		DataExportReportObject export = new DataExportReportObject();
 		export.setName("FIRST WEIGHT");
@@ -277,7 +281,7 @@ public class DataExportTest extends BaseContextSensitiveTest {
 		DataExportUtil.generateExport(export, patients, "\t", null);
 		File exportFile = DataExportUtil.getGeneratedFile(export);
 		
-		String expectedOutput = "PATIENT_ID\tWEIGHT\n2\t1.0\n";
+		String expectedOutput = "PATIENT_ID\t\"WEIGHT\"\n2\t1.0\n";
 		String output = OpenmrsUtil.getFileAsString(exportFile);
 		exportFile.delete();
 		
@@ -303,7 +307,7 @@ public class DataExportTest extends BaseContextSensitiveTest {
 		DataExportUtil.generateExport(export, patients, "\t", null);
 		exportFile = DataExportUtil.getGeneratedFile(export);
 		
-		expectedOutput = "PATIENT_ID\tWEIGHT\tWEIGHT_location\n2\t1.0\tTest Location\n";
+		expectedOutput = "PATIENT_ID\t\"WEIGHT\"\t\"WEIGHT_location\"\n2\t1.0\tTest Location\n";
 		output = OpenmrsUtil.getFileAsString(exportFile);
 		exportFile.delete();
 		
@@ -318,10 +322,8 @@ public class DataExportTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void shouldLastNObs() throws Exception {
-		initializeInMemoryDatabase();
 		executeDataSet("org/openmrs/reporting/export/include/DataExportTest-patients.xml");
 		executeDataSet("org/openmrs/reporting/export/include/DataExportTest-obs.xml");
-		authenticate();
 		
 		DataExportReportObject export = new DataExportReportObject();
 		export.setName("Last 2 Weights");
@@ -347,7 +349,7 @@ public class DataExportTest extends BaseContextSensitiveTest {
 		DataExportUtil.generateExport(export, patients, "\t", null);
 		File exportFile = DataExportUtil.getGeneratedFile(export);
 		
-		String expectedOutput = "PATIENT_ID	WEIGHT	WEIGHT_location 	WEIGHT_(1)	WEIGHT_location_(1)\n2	10.0	Test Location	9.0	Test Location\n";
+		String expectedOutput = "PATIENT_ID	\"WEIGHT\"	\"WEIGHT_location\" 	\"WEIGHT_(1)\"	\"WEIGHT_location_(1)\"\n2	10.0	Test Location	9.0	Test Location\n";
 		String output = OpenmrsUtil.getFileAsString(exportFile);
 		exportFile.delete();
 		
@@ -376,7 +378,7 @@ public class DataExportTest extends BaseContextSensitiveTest {
 		exportFile = DataExportUtil.getGeneratedFile(export);
 		
 		//System.out.println("Template String: \n" + export.generateTemplate());
-		expectedOutput = "PATIENT_ID	WEIGHT	WEIGHT_location\n2	10.0	Test Location\n";
+		expectedOutput = "PATIENT_ID	\"WEIGHT\"	\"WEIGHT_location\"\n2	10.0	Test Location\n";
 		output = OpenmrsUtil.getFileAsString(exportFile);
 		exportFile.delete();
 		
@@ -391,9 +393,7 @@ public class DataExportTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void shouldDataExportKeyAddition() throws Exception {
-		initializeInMemoryDatabase();
 		executeDataSet("org/openmrs/reporting/export/include/DataExportTest-patients.xml");
-		authenticate();
 		
 		DataExportReportObject export = new DataExportReportObject();
 		export.setName("Data Export Keys");
@@ -433,9 +433,7 @@ public class DataExportTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void shouldDataExportKeyRemoval() throws Exception {
-		initializeInMemoryDatabase();
 		executeDataSet("org/openmrs/reporting/export/include/DataExportTest-patients.xml");
-		authenticate();
 		
 		DataExportReportObject export = new DataExportReportObject();
 		export.setName("Data Export Keys");
@@ -498,9 +496,7 @@ public class DataExportTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void shouldGetNames() throws Exception {
-		initializeInMemoryDatabase();
 		executeDataSet("org/openmrs/reporting/export/include/DataExportTest-patients.xml");
-		authenticate();
 		
 		DataExportReportObject export = new DataExportReportObject();
 		export.setName("Given names export");
@@ -552,7 +548,7 @@ public class DataExportTest extends BaseContextSensitiveTest {
 		DataExportUtil.generateExport(export, patients, "\t", null);
 		File exportFile = DataExportUtil.getGeneratedFile(export);
 		
-		String expectedOutput = "PATIENT_ID\tWEIGHT\n6\t\n";
+		String expectedOutput = "PATIENT_ID\t\"WEIGHT\"\n6\t\n";
 		String output = OpenmrsUtil.getFileAsString(exportFile);
 		exportFile.delete();
 		
@@ -600,5 +596,42 @@ public class DataExportTest extends BaseContextSensitiveTest {
 		
 		//System.out.println("exportFile: \n" + output);
 		assertEquals("The output is not right.", expectedOutput, output);
+	}
+	
+	/**
+	 * Makes sure that the getFirstObs method on the DataExportFunctions object never throws a null
+	 * pointer exception if the patient doesn't have any obs. Regression test for ticket #1028
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void shouldGetContructColumns() throws Exception {
+		
+		DataExportReportObject export = new DataExportReportObject();
+		export.setName("CONSTRUCT EXPORT");
+		
+		SimpleColumn patientId = new SimpleColumn("PATIENT_ID", "$!{fn.patientId}");
+		export.getColumns().add(patientId);
+		
+		ConceptColumn firstObs = new ConceptColumn("CONSTRUCT", DataExportReportObject.MODIFIER_FIRST, 1, "23", null);
+		export.getColumns().add(firstObs);
+		
+		ConceptColumn secondObs = new ConceptColumn("WEIGHT", DataExportReportObject.MODIFIER_FIRST, 1, "5089", null);
+		export.getColumns().add(secondObs);
+		
+		// set the cohort to a patient that doesn't have a weight obs
+		Cohort patients = new Cohort();
+		patients.addMember(7);
+		patients.addMember(8);
+		
+		DataExportUtil.generateExport(export, patients, "\t", null);
+		File exportFile = DataExportUtil.getGeneratedFile(export);
+		
+		String expectedOutput = "PATIENT_ID	\"FOOD ASSISTANCE\"	\"DATE OF FOOD ASSISTANCE\"	\"FAVORITE FOOD, NON-CODED\"	\"WEIGHT\"\n7	1.0	14/08/2008	PB and J	50.0\n8				\n";
+		String output = OpenmrsUtil.getFileAsString(exportFile);
+		exportFile.delete();
+		
+		assertEquals("The output is not right.", expectedOutput, output);
+		
 	}
 }
