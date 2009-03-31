@@ -512,6 +512,8 @@
 	</changeSet>
 	
 	<changeSet id="20090316-1008" author="vanand">
+		<validCheckSum>cf32d07af2933e9a3555395737b5142</validCheckSum><!-- old checksum before adding in person.birthdate_estimated cleanup -->
+		<validCheckSum>fcdde237e04473db1e6fd16f56bf80e9</validCheckSum><!-- new checksum after adding in person.birthdate_estimated cleanup -->
 		<comment>
 			Change column types of all boolean columns to smallint. The columns used to be either tinyint(4) or MySQL's BIT.
 			(This may take a while on large patient or obs tables)
@@ -673,6 +675,10 @@
 				<constraints nullable="false" />
 			</column>
 		</modifyColumn>
+		<update tableName="person">
+			<column name="birthdate_estimated" value="0" />
+			<where>birthdate_estimated is null</where>
+		</update>
 		<modifyColumn tableName="person">
 			<column name="birthdate_estimated" type="smallint" defaultValueNumeric="0">
 				<constraints nullable="false" />
