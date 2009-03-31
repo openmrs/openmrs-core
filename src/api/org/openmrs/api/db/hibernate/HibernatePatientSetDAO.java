@@ -576,6 +576,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		String stringValue = null;
 		Concept codedValue = null;
 		Date dateValue = null;
+		Boolean booleanValue = null;
 		String valueSql = null;
 		if (value != null) {
 			if (concept == null) {
@@ -584,25 +585,24 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 				else
 					codedValue = Context.getConceptService().getConceptByName(value.toString());
 				valueSql = "o.value_coded";
-			} else if (concept.getDatatype().getHl7Abbreviation().equals("NM")) {
+			} else if (concept.getDatatype().isNumeric()) {
 				if (value instanceof Number)
 					numericValue = (Number) value;
 				else
 					numericValue = new Double(value.toString());
 				valueSql = "o.value_numeric";
-			} else if (concept.getDatatype().getHl7Abbreviation().equals("ST")) {
+			} else if (concept.getDatatype().isText()) {
 				stringValue = value.toString();
 				valueSql = "o.value_text";
 				if (modifier == null)
 					modifier = Modifier.EQUAL;
-			} else if (concept.getDatatype().getHl7Abbreviation().equals("CWE")) {
+			} else if (concept.getDatatype().isCoded()) {
 				if (value instanceof Concept)
 					codedValue = (Concept) value;
 				else
 					codedValue = Context.getConceptService().getConceptByName(value.toString());
 				valueSql = "o.value_coded";
-			} else if (concept.getDatatype().getHl7Abbreviation().equals("DT")
-			        || concept.getDatatype().getHl7Abbreviation().equals("TS")) {
+			} else if (concept.getDatatype().isDate()) {
 				if (value instanceof Date) {
 					dateValue = (Date) value;
 				} else {
@@ -615,6 +615,12 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 					}
 				}
 				valueSql = "o.value_datetime";
+			} else if (concept.getDatatype().isBoolean()) {
+				if (value instanceof Boolean)
+					booleanValue = (Boolean) value;
+				else
+					booleanValue = Boolean.valueOf(value.toString());
+				valueSql = "o.value_numeric";
 			}
 		}
 		
@@ -685,9 +691,11 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 				query.setString("value", stringValue);
 			else if (dateValue != null)
 				query.setDate("value", dateValue);
+			else if (booleanValue != null)
+				query.setDouble("value", booleanValue ? 1.0 : 0.0);
 			else
 				throw new IllegalArgumentException(
-				        "useValue is true, but numeric, coded, string, and date values are all null");
+				        "useValue is true, but numeric, coded, string, boolean, and date values are all null");
 		}
 		if (fromDate != null)
 			query.setDate("fromDate", fromDate);
