@@ -333,6 +333,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @return the found Concept
 	 * @should get concept by name
 	 * @should get concept by partial name
+	 * @should return null given null parameter
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
@@ -358,6 +359,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @param conceptIdOrName
 	 * @return the found Concept
 	 * @throws APIException
+	 * @should return null given null parameter
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
