@@ -15,6 +15,8 @@ package org.openmrs.api;
 
 import static org.junit.Assert.assertNotNull;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -26,8 +28,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Cohort;
 import org.openmrs.DrugOrder;
+import org.openmrs.Location;
+import org.openmrs.Obs;
+import org.openmrs.Person;
 import org.openmrs.ProgramWorkflowState;
 import org.openmrs.api.PatientSetService.GroupMethod;
+import org.openmrs.api.PatientSetService.Modifier;
+import org.openmrs.api.PatientSetService.TimeModifier;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
@@ -199,5 +206,57 @@ public class PatientSetServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(1, cohort.size());
 		Assert.assertTrue(cohort.contains(2));
 	}
+
+    /**
+     * @see {@link PatientSetService#getPatientsHavingObs(Integer,TimeModifier,Modifier,Object,Date,Date)}
+     * test = should get patients by concept and false boolean value
+     */
+    @Test
+    @Verifies(value = "should get patients by concept and false boolean value", method = "getPatientsHavingObs(Integer,TimeModifier,Modifier,Object,Date,Date)")
+    public void getPatientsHavingObs_shouldGetPatientsByConceptAndFalseBooleanValue()
+            throws Exception {
+    	// there aren't any of these obs in the standard test dataset. Verify that:
+    	Cohort cohort = service.getPatientsHavingObs(18, TimeModifier.ANY, Modifier.EQUAL, Boolean.FALSE, null, null);
+    	Assert.assertEquals(0, cohort.size());
+    	// now create a couple of these so we can try searching.
+    	DateFormat ymd = new SimpleDateFormat("yyyy-MM-dd");
+    	{ // start with a true one
+	    	Obs obs = new Obs();
+	    	obs.setPerson(new Person(8));
+	    	obs.setConcept(Context.getConceptService().getConcept(18));
+	    	obs.setObsDatetime(ymd.parse("2007-01-01"));
+	    	obs.setValueNumeric(1.0);
+	    	obs.setLocation(new Location(1));
+	    	Context.getObsService().saveObs(obs, null);
+    	}
+    	{ // then do a false one
+	    	Obs obs = new Obs();
+	    	obs.setPerson(new Person(8));
+	    	obs.setConcept(Context.getConceptService().getConcept(18));
+	    	obs.setObsDatetime(ymd.parse("2008-01-01"));
+	    	obs.setValueNumeric(0.0);
+	    	obs.setLocation(new Location(1));
+	    	Context.getObsService().saveObs(obs, null);
+    	}
+    	// search again
+    	cohort = service.getPatientsHavingObs(18, TimeModifier.FIRST, Modifier.EQUAL, Boolean.FALSE, null, null);
+    	Assert.assertEquals(0, cohort.size());
+    	cohort = service.getPatientsHavingObs(18, TimeModifier.LAST, Modifier.EQUAL, Boolean.FALSE, null, null);
+    	Assert.assertEquals(1, cohort.size());
+    	Assert.assertTrue(cohort.contains(8));
+    }
+
+    /**
+     * @see {@link PatientSetService#getPatientsHavingObs(Integer,TimeModifier,Modifier,Object,Date,Date)}
+     * test = should get patients by concept and true boolean value
+     */
+    @Test
+    @Verifies(value = "should get patients by concept and true boolean value", method = "getPatientsHavingObs(Integer,TimeModifier,Modifier,Object,Date,Date)")
+    public void getPatientsHavingObs_shouldGetPatientsByConceptAndTrueBooleanValue()
+            throws Exception {
+    	Cohort cohort = service.getPatientsHavingObs(18, TimeModifier.ANY, Modifier.EQUAL, Boolean.TRUE, null, null);
+    	Assert.assertEquals(1, cohort.size());
+    	Assert.assertTrue(cohort.contains(7));
+    }
 	
 }

@@ -94,7 +94,7 @@
 		if (hl7Abbrev == 'ZZ')
 			//return 'Handling Datatype N/A not yet implemented. Any suggestions on how it should behave?';
 			return null;
-		if (hl7Abbrev != 'NM' && hl7Abbrev != 'ST' && hl7Abbrev != 'CWE' && hl7Abbrev != 'DT' && hl7Abbrev != 'TS') {
+		if (hl7Abbrev != 'NM' && hl7Abbrev != 'ST' && hl7Abbrev != 'CWE' && hl7Abbrev != 'DT' && hl7Abbrev != 'TS' && hl7Abbrev != 'BIT') {
 			return null;
 		}
 		var lookupAnswers = false;
@@ -113,7 +113,7 @@
 			str += '<br/><span style="margin-left: 40px">Which observations? <select name="timeModifier"><option value="ANY">Any</option><option value="NO">None</option><option value="FIRST">Earliest</option><option value="LAST" selected="true">Most Recent</option><option value="MIN">Lowest</option><option value="MAX">Highest</option><option value="AVG">Average</option></select></span> ';
 		else if (hl7Abbrev == 'DT' || hl7Abbrev == 'TS')
 			str += '<br/><span style="margin-left: 40px">Which observations? <select name="timeModifier"><option value="ANY" selected="true">Any</option><option value="NO">None</option><option value="MIN">Earliest Value</option><option value="MAX">Most Recent Value</option><option value="FIRST">Earliest Recorded</option><option value="LAST">Most Recent Recorded</option></select></span> ';
-		else if (hl7Abbrev == 'ST' || hl7Abbrev == 'CWE')
+		else if (hl7Abbrev == 'ST' || hl7Abbrev == 'CWE' || hl7Abbrev == 'BIT')
 			str += '<br/><span style="margin-left: 40px">Which observations? <select name="timeModifier"><option value="ANY">Any</option><option value="NO">None</option><option value="FIRST">Earliest</option><option value="LAST" selected="true">Most Recent</option></select></span> ';
 		if (hl7Abbrev == 'NM') {
 			str += ' <br/><br/><span style="margin-left: 40px">';
@@ -130,6 +130,10 @@
 			str += ' <small><spring:message code="CohortBuilder.optionalPrefix" /></small> <spring:message code="CohortBuilder.whatValueQuestion" /> ';
 			str += ' <input type="hidden" name="modifier" value="EQUAL" /> ';
 			str += '</span>';
+		} else if (hl7Abbrev == 'BIT') {
+			str += ' <br/><br/><span style="margin-left: 40px">';
+			str += ' <small><spring:message code="CohortBuilder.optionalPrefix" /></small> <spring:message code="CohortBuilder.whatValueQuestion" /> ';
+			str += ' <input type="hidden" name="modifier" value="EQUAL" /> ';
 		}
 		if (hl7Abbrev == 'NM' || hl7Abbrev == 'ST') {
 			str += '<input type="text" name="value" size="10"/>';
@@ -140,6 +144,8 @@
 		} else if (hl7Abbrev == 'CWE') {
 			str += '<select name="value" id="replace_with_answer_options"><option value=""><spring:message code="general.loading"/></option></select>';
 			lookupAnswers = true;
+		} else if (hl7Abbrev == 'BIT') {
+			str += '<select name="value"><option value=""></option><option value="true"><spring:message code="general.true"/><option value="false"><spring:message code="general.false"/></option></option></select>'; 
 		}
 		str += ' <br/><br/><span style="margin-left: 40px">';
 		str += ' <small><spring:message code="CohortBuilder.optionalPrefix" /> (obsDatetime)</small> <spring:message code="CohortBuilder.whenPrefix" /> <spring:message code="CohortBuilder.withinMonthsAndDays" arguments="withinLastMonths,withinLastDays" />';

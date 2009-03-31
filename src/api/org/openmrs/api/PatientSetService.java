@@ -120,7 +120,21 @@ public interface PatientSetService {
 	@Transactional(readOnly = true)
 	public Cohort getPatientsHavingNumericObs(Integer conceptId, TimeModifier timeModifier,
 	                                          PatientSetService.Modifier modifier, Number value, Date fromDate, Date toDate);
-	
+
+	/**
+	 * Searches for patients who have observations as described by the arguments to this method
+	 * 
+	 * @param conceptId
+	 * @param timeModifier
+	 * @param modifier
+	 * @param value
+	 * @param fromDate
+	 * @param toDate
+	 * @return all patients with observations matching the arguments to this method
+	 * 
+	 * @should get patients by concept and true boolean value
+	 * @should get patients by concept and false boolean value
+	 */
 	@Transactional(readOnly = true)
 	public Cohort getPatientsHavingObs(Integer conceptId, TimeModifier timeModifier, Modifier modifier, Object value,
 	                                   Date fromDate, Date toDate);
