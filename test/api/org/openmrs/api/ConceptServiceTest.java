@@ -325,4 +325,22 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(newConceptSource.getDateCreated(), expectedDate);
 	}
 	
+	/**
+	 * @see {@link ConceptService#getConcept(String)}
+	 */
+	@Test
+	@Verifies(value = "should return null given null parameter", method = "getConcept(String)")
+	public void getConcept_shouldReturnNullGivenNullParameter() throws Exception {
+		Assert.assertNull(Context.getConceptService().getConcept((String) null));
+	}
+	
+	/**
+	 * @see {@link ConceptService#getConceptByName(String)}
+	 */
+	@Test
+	@Verifies(value = "should return null given null parameter", method = "getConceptByName(String)")
+	public void getConceptByName_shouldReturnNullGivenNullParameter() throws Exception {
+		Assert.assertNull(Context.getConceptService().getConceptByName(null));
+	}
+	
 }
