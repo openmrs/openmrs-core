@@ -70,7 +70,7 @@ public class PortletController implements Controller {
      *          (Integer) patientId
      *          (Patient) patient
      *          (List<Obs>) patientObs
-     *          (Set<Encounter>) patientEncounters
+     *          (List<Encounter>) patientEncounters
      *          (List<DrugOrder>) patientDrugOrders
      *          (List<DrugOrder>) currentDrugOrders
      *          (List<DrugOrder>) completedDrugOrders
