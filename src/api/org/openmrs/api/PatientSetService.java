@@ -45,79 +45,92 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 public interface PatientSetService {
-	
+
 	public void setPatientSetDAO(PatientSetDAO dao);
-	
+
 	/**
 	 * @param ps The set you want to export as XML
 	 * @return an XML representation of this patient-set, including patient characteristics, and
 	 *         observations
 	 */
-	@Transactional(readOnly = true)
+	@Transactional(readOnly=true)
 	public String exportXml(Cohort ps);
-	
-	@Transactional(readOnly = true)
+
+	@Transactional(readOnly=true)
 	public String exportXml(Integer patientId);
-	
-	@Transactional(readOnly = true)
+
+	@Transactional(readOnly=true)
 	public Cohort getAllPatients() throws DAOException;
-	
-	@Transactional(readOnly = true)
+
+	@Transactional(readOnly=true)
 	public Cohort getPatientsByCharacteristics(String gender, Date minBirthdate, Date maxBirthdate) throws DAOException;
-	
-	@Transactional(readOnly = true)
+
+	@Transactional(readOnly=true)
 	public Cohort getPatientsByCharacteristics(String gender, Date minBirthdate, Date maxBirthdate, Integer minAge,
 	                                           Integer maxAge, Boolean aliveOnly, Boolean deadOnly) throws DAOException;
 	
-	@Transactional(readOnly = true)
+	@Transactional(readOnly=true)
 	public Cohort getPatientsByCharacteristics(String gender, Date minBirthdate, Date maxBirthdate, Integer minAge,
-	                                           Integer maxAge, Boolean aliveOnly, Boolean deadOnly, Date effectiveDate)
-	                                                                                                                   throws DAOException;
-	
-	@Transactional(readOnly = true)
+			Integer maxAge, Boolean aliveOnly, Boolean deadOnly, Date effectiveDate)
+			throws DAOException;
+
+	@Transactional(readOnly=true)
 	public Cohort getPatientsHavingNumericObs(Integer conceptId, TimeModifier timeModifier,
 	                                          PatientSetService.Modifier modifier, Number value, Date fromDate, Date toDate);
 	
-	@Transactional(readOnly = true)
+	/**
+	 * Searches for patients who have observations as described by the arguments to this method
+	 * 
+	 * @param conceptId
+	 * @param timeModifier
+	 * @param modifier
+	 * @param value
+	 * @param fromDate
+	 * @param toDate
+	 * @return all patients with observations matching the arguments to this method
+	 * @should get patients by concept and true boolean value
+	 * @should get patients by concept and false boolean value
+	 */
+	@Transactional(readOnly=true)
 	public Cohort getPatientsHavingObs(Integer conceptId, TimeModifier timeModifier, Modifier modifier, Object value,
-	                                   Date fromDate, Date toDate);
+			Date fromDate, Date toDate);
 	
-	@Transactional(readOnly = true)
+	@Transactional(readOnly=true)
 	public Cohort getPatientsHavingEncounters(EncounterType encounterType, Location location, Form form, Date fromDate,
 	                                          Date toDate, Integer minCount, Integer maxCount);
 	
-	@Transactional(readOnly = true)
+	@Transactional(readOnly=true)
 	public Cohort getPatientsHavingEncounters(List<EncounterType> encounterTypeList, Location location, Form form,
 	                                          Date fromDate, Date toDate, Integer minCount, Integer maxCount);
 	
-	@Transactional(readOnly = true)
+	@Transactional(readOnly=true)
 	public Cohort getPatientsByProgramAndState(Program program, List<ProgramWorkflowState> stateList, Date fromDate,
 	                                           Date toDate);
-	
-	@Transactional(readOnly = true)
+
+	@Transactional(readOnly=true)
 	public Cohort getPatientsInProgram(Program program, Date fromDate, Date toDate);
 	
-	@Transactional(readOnly = true)
+	@Transactional(readOnly=true)
 	public Cohort getPatientsHavingDateObs(Integer conceptId, Date startTime, Date endTime);
 	
-	@Transactional(readOnly = true)
+	@Transactional(readOnly=true)
 	public Cohort getPatientsHavingTextObs(Concept concept, String value, TimeModifier timeModifier);
-	
-	@Transactional(readOnly = true)
+
+	@Transactional(readOnly=true)
 	public Cohort getPatientsHavingTextObs(Integer conceptId, String value, TimeModifier timeModifier);
 	
-	@Transactional(readOnly = true)
+	@Transactional(readOnly=true)
 	public Cohort getPatientsHavingLocation(Location loc);
 	
-	@Transactional(readOnly = true)
+	@Transactional(readOnly=true)
 	public Cohort getPatientsHavingLocation(Location loc, PatientLocationMethod method);
-	
-	@Transactional(readOnly = true)
+
+	@Transactional(readOnly=true)
 	public Cohort getPatientsHavingLocation(Integer locationId);
 	
-	@Transactional(readOnly = true)
+	@Transactional(readOnly=true)
 	public Cohort getPatientsHavingLocation(Integer locationId, PatientLocationMethod method);
-	
+
 	/**
 	 * Returns a Cohort of patient who had drug orders for a set of drugs active on a certain date.
 	 * Can also be used to find patient with no drug orders on that date.
@@ -127,9 +140,9 @@ public interface PatientSetService {
 	 *            "any drug" or NULL to mean "no drugs")
 	 * @param onDate Which date to look at the patients' drug orders. (NULL defaults to now().)
 	 */
-	@Transactional(readOnly = true)
+	@Transactional(readOnly=true)
 	public Cohort getPatientsHavingDrugOrder(Collection<Integer> patientIds, Collection<Integer> takingIds, Date onDate);
-	
+
 	/**
 	 * Returns a Cohort of patient who had drug orders for a set of drugs active between a pair of
 	 * dates. Can also be used to find patient with no drug orders on that date.
@@ -143,7 +156,7 @@ public interface PatientSetService {
 	 * @param toDate End of date range to look at (NULL defaults to fromDate if that isn't null, or
 	 *            now() if it is.)
 	 */
-	@Transactional(readOnly = true)
+	@Transactional(readOnly=true)
 	public Cohort getPatientsHavingDrugOrder(Collection<Integer> patientIds, Collection<Integer> drugIds,
 	                                         GroupMethod groupMethod, Date fromDate, Date toDate);
 	
@@ -152,7 +165,7 @@ public interface PatientSetService {
 	 *         dates within a range, with end dates within a range, and a reason for
 	 *         discontinuation.
 	 */
-	@Transactional(readOnly = true)
+	@Transactional(readOnly=true)
 	public Cohort getPatientsHavingDrugOrder(List<Drug> drug, List<Concept> drugConcept, Date startDateFrom,
 	                                         Date startDateTo, Date stopDateFrom, Date stopDateTo, Boolean discontinued,
 	                                         List<Concept> discontinuedReason);
@@ -165,21 +178,21 @@ public interface PatientSetService {
 	 * @return Cohort of patients who have a person attribute (optionally) with attributeType of
 	 *         attribute and (optionally) value of value.
 	 */
-	@Transactional(readOnly = true)
+	@Transactional(readOnly=true)
 	public Cohort getPatientsHavingPersonAttribute(PersonAttributeType attribute, String value);
 	
-	@Transactional(readOnly = true)
+	@Transactional(readOnly=true)
 	public Map<Integer, String> getShortPatientDescriptions(Collection<Integer> patientIds);
-	
-	@Transactional(readOnly = true)
+
+	@Transactional(readOnly=true)
 	public Map<Integer, List<Obs>> getObservations(Cohort patients, Concept concept);
-	
+
 	/**
-	 * Date range is inclusive of both endpoints
+	 * Date range is inclusive of both endpoints 
 	 */
-	@Transactional(readOnly = true)
+	@Transactional(readOnly=true)
 	public Map<Integer, List<Obs>> getObservations(Cohort patients, Concept concept, Date fromDate, Date toDate);
-	
+
 	/**
 	 * Map<patientId, List<Obs values>>
 	 * 
@@ -187,7 +200,7 @@ public interface PatientSetService {
 	 * @param c
 	 * @return Map<patientId, List<Obs values>>
 	 */
-	@Transactional(readOnly = true)
+	@Transactional(readOnly=true)
 	public Map<Integer, List<List<Object>>> getObservationsValues(Cohort patients, Concept c);
 	
 	/**
@@ -200,7 +213,7 @@ public interface PatientSetService {
 	 * @param attributes list of attributes
 	 * @return <code>Map<patientId, List<List< attribute value >>></code>
 	 */
-	@Transactional(readOnly = true)
+	@Transactional(readOnly=true)
 	public Map<Integer, List<List<Object>>> getObservationsValues(Cohort patients, Concept c, List<String> attributes);
 	
 	/**
@@ -208,7 +221,7 @@ public interface PatientSetService {
 	 * @param encType
 	 * @return
 	 */
-	@Transactional(readOnly = true)
+	@Transactional(readOnly=true)
 	public Map<Integer, Encounter> getEncountersByType(Cohort patients, EncounterType encType);
 	
 	/**
@@ -224,14 +237,16 @@ public interface PatientSetService {
 	 * @param encType
 	 * @return
 	 */
-	@Transactional(readOnly = true)
+	@Transactional(readOnly=true)
 	public Map<Integer, Encounter> getEncountersByType(Cohort patients, List<EncounterType> encType);
+
 	
+
 	/**
 	 * @param patients
 	 * @return
 	 */
-	@Transactional(readOnly = true)
+	@Transactional(readOnly=true)
 	public Map<Integer, Encounter> getEncounters(Cohort patients);
 	
 	/**
@@ -239,7 +254,7 @@ public interface PatientSetService {
 	 * @param encType
 	 * @return
 	 */
-	@Transactional(readOnly = true)
+	@Transactional(readOnly=true)
 	public Map<Integer, Encounter> getFirstEncountersByType(Cohort patients, EncounterType encType);
 	
 	/**
@@ -247,17 +262,19 @@ public interface PatientSetService {
 	 * @param types
 	 * @return
 	 */
-	@Transactional(readOnly = true)
+	@Transactional(readOnly=true)
 	public Map<Integer, Encounter> getFirstEncountersByType(Cohort patients, List<EncounterType> types);
 	
+
 	/**
 	 * @param patients
 	 * @param encTypes
 	 * @param attr
 	 * @return
 	 */
-	@Transactional(readOnly = true)
+	@Transactional(readOnly=true)
 	public Map<Integer, Object> getFirstEncounterAttrsByType(Cohort patients, List<EncounterType> encTypes, String attr);
+	
 	
 	/**
 	 * @param patients
@@ -266,18 +283,18 @@ public interface PatientSetService {
 	 * @param returnAll
 	 * @return
 	 */
-	@Transactional(readOnly = true)
+	@Transactional(readOnly=true)
 	public Map<Integer, Object> getPatientAttributes(Cohort patients, String className, String property, boolean returnAll);
-	
+
 	/**
 	 * @param patients
 	 * @param classNameDotProperty
 	 * @param returnAll
 	 * @return
 	 */
-	@Transactional(readOnly = true)
+	@Transactional(readOnly=true)
 	public Map<Integer, Object> getPatientAttributes(Cohort patients, String classNameDotProperty, boolean returnAll);
-	
+
 	/**
 	 * @param patients
 	 * @param attributeName
@@ -295,9 +312,9 @@ public interface PatientSetService {
 	 * @param patients
 	 * @return
 	 */
-	@Transactional(readOnly = true)
+	@Transactional(readOnly=true)
 	public Map<Integer, Map<String, Object>> getCharacteristics(Cohort patients);
-	
+
 	/**
 	 * Gets a map of patient identifiers by identifier type, indexed by patient primary key.
 	 * 
@@ -305,93 +322,94 @@ public interface PatientSetService {
 	 * @param type
 	 * @return
 	 */
-	@Transactional(readOnly = true)
+	@Transactional(readOnly=true)
 	public Map<Integer, PatientIdentifier> getPatientIdentifiersByType(Cohort patients, PatientIdentifierType type);
-	
+
+
 	/**
 	 * @param identifiers
 	 * @return
 	 */
-	@Transactional(readOnly = true)
+	@Transactional(readOnly=true)
 	public Cohort convertPatientIdentifier(List<String> identifiers);
 	
 	/**
 	 * @param patientIds
 	 * @return
 	 */
-	@Transactional(readOnly = true)
+	@Transactional(readOnly=true)
 	public List<Patient> getPatients(Collection<Integer> patientIds);
-	
+
 	/**
 	 * @param ps
 	 */
 	public void setMyPatientSet(Cohort ps);
-	
+
 	/**
 	 * @return
 	 */
-	@Transactional(readOnly = true)
+	@Transactional(readOnly=true)
 	public Cohort getMyPatientSet();
-	
+
 	/**
 	 * @param ptId
 	 */
 	public void addToMyPatientSet(Integer ptId);
-	
+
 	/**
 	 * @param ptId
 	 */
 	public void removeFromMyPatientSet(Integer ptId);
-	
+
 	public void clearMyPatientSet();
-	
-	@Transactional(readOnly = true)
+
+	@Transactional(readOnly=true)
 	public Map<Integer, PatientState> getCurrentStates(Cohort ps, ProgramWorkflow wf);
-	
-	@Transactional(readOnly = true)
+
+	@Transactional(readOnly=true)
 	public Map<Integer, PatientProgram> getCurrentPatientPrograms(Cohort ps, Program program);
-	
-	@Transactional(readOnly = true)
+
+	@Transactional(readOnly=true)
 	public Map<Integer, PatientProgram> getPatientPrograms(Cohort ps, Program program);
 	
-	@Transactional(readOnly = true)
+	@Transactional(readOnly=true)
 	public Map<Integer, List<Relationship>> getRelationships(Cohort ps, RelationshipType relType);
-	
-	@Transactional(readOnly = true)
+
+	@Transactional(readOnly=true)
 	public Map<Integer, List<Person>> getRelatives(Cohort ps, RelationshipType relType, boolean forwards);
 	
 	/**
 	 * @return all active drug orders whose drug concept is in the given set (or all drugs if that's
 	 *         null)
 	 */
-	@Transactional(readOnly = true)
+	@Transactional(readOnly=true)
 	public Map<Integer, List<DrugOrder>> getCurrentDrugOrders(Cohort ps, Concept drugSet);
-	
+
 	/**
 	 * @return all active or finished drug orders whose drug concept is in the given set (or all
 	 *         drugs if that's null)
 	 */
-	@Transactional(readOnly = true)
+	@Transactional(readOnly=true)
 	public Map<Integer, List<DrugOrder>> getDrugOrders(Cohort ps, Concept drugSet);
-	
+
 	/**
 	 * Gets a list of encounters associated with the given form, filtered by the given patient set.
 	 * 
-	 * @param patients the patients to filter by (null will return all encounters for all patients)
-	 * @param forms the forms to filter by
+	 * @param	patients	the patients to filter by (null will return all encounters for all patients)
+	 * @param 	forms		the forms to filter by
 	 */
-	@Transactional(readOnly = true)
+	@Transactional(readOnly=true)
 	public List<Encounter> getEncountersByForm(Cohort patients, List<Form> form);
+	
+	
 	
 	public enum Modifier {
 		LESS_THAN("<"), LESS_EQUAL("<="), EQUAL("="), GREATER_EQUAL(">="), GREATER_THAN(">");
-		
+
 		public final String sqlRep;
-		
 		Modifier(String sqlRep) {
 			this.sqlRep = sqlRep;
 		}
-		
 		public String getSqlRepresentation() {
 			return sqlRep;
 		}
@@ -400,7 +418,7 @@ public interface PatientSetService {
 	public enum TimeModifier {
 		ANY, NO, FIRST, LAST, MIN, MAX, AVG;
 	}
-	
+
 	public enum BooleanOperator {
 		AND, OR, NOT;
 	}
