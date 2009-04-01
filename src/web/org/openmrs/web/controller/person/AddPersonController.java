@@ -156,7 +156,7 @@ public class AddPersonController extends SimpleFormController {
 				
 				personList = new Vector<PersonListItem>();
 				for (Person p : ps.getSimilarPeople(name, d, gender)) {
-					personList.add(new PersonListItem(p));
+					personList.add(PersonListItem.createBestMatch(p));
 				}
 			}
 			

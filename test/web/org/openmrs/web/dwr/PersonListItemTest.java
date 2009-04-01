@@ -33,7 +33,7 @@ public class PersonListItemTest extends BaseWebContextSensitiveTest {
 	@Test
 	@Verifies(value = "should put attribute toString value into attributes map", method = "PersonListItem(Person)")
 	public void PersonListItem_shouldPutAttributeToStringValueIntoAttributesMap() throws Exception {
-		PersonListItem listItem = new PersonListItem(Context.getPersonService().getPerson(2));
+		PersonListItem listItem = PersonListItem.createBestMatch(Context.getPersonService().getPerson(2));
 		
 		for (Map.Entry<String, String> entry : listItem.getAttributes().entrySet()) {
 			if (entry.getKey().equals("Civil Status")) {
@@ -44,5 +44,35 @@ public class PersonListItemTest extends BaseWebContextSensitiveTest {
 		
 		// make sure we found at least one attr
 		Assert.fail("No civil status person attribute was defined");
+	}
+	
+	/**
+	 * @see {@link PersonListItem#createBestMatch(Person)}
+	 */
+	@Test
+	@Verifies(value = "should return PatientListItem given patient parameter", method = "createBestMatch(Person)")
+	@SuppressWarnings("unused")
+	public void createBestMatch_shouldReturnPatientListItemGivenPatientParameter() throws Exception {
+		PatientListItem listItem = (PatientListItem)PersonListItem.createBestMatch(Context.getPersonService().getPerson(2));
+	}
+	
+	/**
+	 * @see {@link PersonListItem#createBestMatch(Person)}
+	 */
+	@Test
+	@Verifies(value = "should return PersonListItem given person parameter", method = "createBestMatch(Person)")
+	public void createBestMatch_shouldReturnPersonListItemGivenPersonParameter() throws Exception {
+		PersonListItem listItem = PersonListItem.createBestMatch(Context.getPersonService().getPerson(2));
+		Assert.assertTrue(listItem instanceof PersonListItem);
+	}
+	
+	/**
+	 * @see {@link PersonListItem#createBestMatch(Person)}
+	 */
+	@Test
+	@Verifies(value = "should return UserListItem given user parameter", method = "createBestMatch(Person)")
+	@SuppressWarnings("unused")
+	public void createBestMatch_shouldReturnUserListItemGivenUserParameter() throws Exception {
+		UserListItem listItem = (UserListItem)PersonListItem.createBestMatch(Context.getPersonService().getPerson(1));
 	}
 }

@@ -121,9 +121,31 @@ dojo.widget.defineWidget(
 			return p.attributes[attrName];
 		},
 		
+		getIdentifier: function(p) {
+			var td = document.createElement("td");
+			
+			if (p.patientId)
+				td.onmouseover = function() { window.status = "Patient Id: " + p.patientId; };
+			td.onmouseout = function() { window.status = "" };
+			
+			/* Because this is the first column, return 'p' */
+			if (typeof p == 'string') {
+				td.colSpan = this.getHeaderCellContent().length;
+				td.innerHTML = p;
+			}
+			else if (p.identifier) {
+				td.className = "patientIdentifier";
+				var obj = document.createTextNode(p.identifier + " ");
+				td.appendChild(obj);
+			}
+			
+			return td;
+		},
+
 		getCellFunctions: function() {
 			var arr = new Array();
 			arr.push(this.simpleClosure(this, "getNumber"));
+			arr.push(this.simpleClosure(this, "getIdentifier"));
 			arr.push(this.simpleClosure(this, "getGiven"));
 			arr.push(this.simpleClosure(this, "getMiddle"));
 			arr.push(this.simpleClosure(this, "getFamily"));
@@ -141,6 +163,7 @@ dojo.widget.defineWidget(
 		getHeaderCellContent: function() {
 			var arr = new Array();
 			arr.push('');
+			arr.push('<spring:message code="Patient.identifier" javaScriptEscape="true"/>');
 			arr.push('<spring:message code="PersonName.givenName" javaScriptEscape="true"/>');
 			arr.push('<spring:message code="PersonName.middleName" javaScriptEscape="true"/>');
 			arr.push('<spring:message code="PersonName.familyName" javaScriptEscape="true"/>');

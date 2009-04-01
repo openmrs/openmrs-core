@@ -85,7 +85,7 @@ public class DWRPersonService {
 		
 		personList = new Vector<Object>(persons.size());
 		for (Person p : persons) {
-			personList.add(new PersonListItem(p));
+			personList.add(PersonListItem.createBestMatch(p));
 		}
 		
 		return personList;
@@ -107,7 +107,10 @@ public class DWRPersonService {
 	 * @param searchPhrase partial name or partial identifier
 	 * @param includeVoided true/false whether to include the voided objects
 	 * @param roles if not null, restricts search to only users and only users with these roles
-	 * @return list of PersonListItem s that match the given searchPhrase
+	 * @return list of PersonListItem s that match the given searchPhrase. The PersonListItems
+	 *         contain as much information as possible about the matching persons, e.g. considering
+	 *         whether they are patients or users, which for example is useful for displaying
+	 *         patient identifiers in PersonSearch-widgets.
 	 * @should match on patient identifiers
 	 * @should allow null roles parameter
 	 */
@@ -132,7 +135,7 @@ public class DWRPersonService {
 				}
 			
 			for (Person p : us.getUsers(searchPhrase, roleList, includeVoided)) {
-				personList.add(new PersonListItem(p));
+				personList.add(PersonListItem.createBestMatch(p));
 			}
 			
 		} else {
@@ -140,14 +143,14 @@ public class DWRPersonService {
 			// if no roles were given, search for normal people
 			PersonService ps = Context.getPersonService();
 			for (Person p : ps.getPeople(searchPhrase, null)) {
-				personList.add(new PersonListItem(p));
+				personList.add(PersonListItem.createBestMatch(p));
 			}
 			
 			// also search on patient identifier if the query contains a number
 			if (searchPhrase.matches(".*\\d+.*")) {
 				PatientService patientService = Context.getPatientService();
 				for (Patient p : patientService.getPatients(null, searchPhrase, null, false)) {
-					personList.add(new PersonListItem(p));
+					personList.add(PersonListItem.createBestMatch(p));
 				}
 			}
 			
@@ -207,8 +210,8 @@ public class DWRPersonService {
 			return new String("Birthdate cannot be parsed.");
 		}
 		p.setGender(gender);
-		Person person = Context.getPersonService().createPerson(p);
-		return new PersonListItem(person);
+		Person person = Context.getPersonService().savePerson(p);
+		return PersonListItem.createBestMatch(person);
 	}
 	
 	/**
@@ -217,7 +220,7 @@ public class DWRPersonService {
 	 */
 	public PersonListItem getPerson(Integer personId) {
 		Person p = Context.getPersonService().getPerson(personId);
-		return new PersonListItem(p);
+		return PersonListItem.createBestMatch(p);
 	}
 	
 	/**

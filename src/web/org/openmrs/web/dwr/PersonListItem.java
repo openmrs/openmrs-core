@@ -20,9 +20,11 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonName;
+import org.openmrs.User;
 
 /**
  * A mini/simplified Person object. Used as the return object from DWR methods to allow javascript
@@ -59,6 +61,27 @@ public class PersonListItem {
 	private Boolean voided = false;
 	
 	private Map<String, String> attributes = new HashMap<String, String>();
+	
+	/**
+	 * Creates an instance of a subclass of PersonListItem which is best suited for the parameter.
+	 * If a {@link Patient} is passed in, a {@link PatientListItem} is returned.  If a {@link User}
+	 * is passed in, a {@link UserListItem} is returned.
+	 * 
+	 * @param person the {@link Person} object to covert to a {@link PersonListItem}
+	 * @return a {@link PersonListItem} or subclass thereof
+	 * @should return PatientListItem given patient parameter
+	 * @should return UserListItem given user parameter
+	 * @should return PersonListItem given person parameter
+	 */
+	public static PersonListItem createBestMatch(Person person) {
+		if (person instanceof Patient) {
+			return new PatientListItem((Patient) person);
+		} else if (person instanceof User) {
+			return new UserListItem((User) person);
+		} else {
+			return new PersonListItem(person);
+		}
+	}
 	
 	/**
 	 * Default empty constructor
