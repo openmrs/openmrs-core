@@ -30,6 +30,7 @@ import org.openmrs.EncounterType;
 import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.Patient;
+import org.openmrs.User;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.EncounterDAO;
@@ -95,12 +96,13 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	
 	/**
 	 * @see org.openmrs.api.db.EncounterDAO#getEncounters(org.openmrs.Patient, org.openmrs.Location,
-	 *      java.util.Date, java.util.Date, java.util.Collection, java.util.Collection, boolean)
+	 *      java.util.Date, java.util.Date, java.util.Collection, java.util.Collection,
+	 *      java.util.Collection, boolean)
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Encounter> getEncounters(Patient patient, Location location, Date fromDate, Date toDate,
 	                                     Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes,
-	                                     boolean includeVoided) {
+	                                     Collection<User> providers, boolean includeVoided) {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Encounter.class);
 		if (patient != null && patient.getPatientId() != null) {
 			crit.add(Expression.eq("patient", patient));
@@ -119,6 +121,9 @@ public class HibernateEncounterDAO implements EncounterDAO {
 		}
 		if (encounterTypes != null && encounterTypes.size() > 0) {
 			crit.add(Expression.in("encounterType", encounterTypes));
+		}
+		if (providers != null && providers.size() > 0) {
+			crit.add(Expression.in("provider", providers));
 		}
 		if (!includeVoided) {
 			crit.add(Expression.eq("voided", false));

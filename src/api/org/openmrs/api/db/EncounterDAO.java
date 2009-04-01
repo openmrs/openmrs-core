@@ -22,6 +22,7 @@ import org.openmrs.EncounterType;
 import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.Patient;
+import org.openmrs.User;
 
 /**
  * Encounter-related database functions
@@ -60,20 +61,13 @@ public interface EncounterDAO {
 	public List<Encounter> getEncountersByPatientId(Integer patientId) throws DAOException;
 	
 	/**
-	 * Get all encounters that match a variety of (nullable) criteria
-	 * 
-	 * @param patient
-	 * @param location
-	 * @param fromDate
-	 * @param toDate
-	 * @param enteredViaForms
-	 * @param encounterTypes
-	 * @param includeVoided
-	 * @return List<Encounter> object of all Encounters matching the criteria
+	 * @see org.openmrs.api.EncounterService#getEncounters(org.openmrs.Patient,
+	 *      org.openmrs.Location, java.util.Date, java.util.Date, java.util.Collection,
+	 *      java.util.Collection, java.util.Collection, boolean)
 	 */
 	public List<Encounter> getEncounters(Patient patient, Location location, Date fromDate, Date toDate,
 	                                     Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes,
-	                                     boolean includeVoided);
+	                                     Collection<User> providers, boolean includeVoided);
 	
 	/**
 	 * Save an Encounter Type

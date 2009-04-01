@@ -159,7 +159,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	public List<Encounter> getEncountersByPatient(Patient patient) throws APIException {
 		if (patient == null)
 			throw new IllegalArgumentException("The 'patient' parameter is requred and cannot be null");
-		return getEncounters(patient, null, null, null, null, null, false);
+		return getEncounters(patient, null, null, null, null, null, null, false);
 	}
 	
 	/**
@@ -189,11 +189,24 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 * @see org.openmrs.api.EncounterService#getEncounters(org.openmrs.Patient,
 	 *      org.openmrs.Location, java.util.Date, java.util.Date, java.util.Collection,
 	 *      java.util.Collection, boolean)
+	 * @deprecated replaced by
+	 *             {@link #getEncounters(Patient, Location, Date, Date, Collection, Collection, Collection, Collection, boolean)}
 	 */
 	public List<Encounter> getEncounters(Patient who, Location loc, Date fromDate, Date toDate,
 	                                     Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes,
 	                                     boolean includeVoided) {
-		return dao.getEncounters(who, loc, fromDate, toDate, enteredViaForms, encounterTypes, includeVoided);
+		return getEncounters(who, loc, fromDate, toDate, enteredViaForms, encounterTypes, null, includeVoided);
+	}
+	
+	/**
+	 * @see org.openmrs.api.EncounterService#getEncounters(org.openmrs.Patient,
+	 *      org.openmrs.Location, java.util.Date, java.util.Date, java.util.Collection,
+	 *      java.util.Collection, java.util.Collection, boolean)
+	 */
+	public List<Encounter> getEncounters(Patient who, Location loc, Date fromDate, Date toDate,
+	                                     Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes,
+	                                     Collection<User> providers, boolean includeVoided) {
+		return dao.getEncounters(who, loc, fromDate, toDate, enteredViaForms, encounterTypes, providers, includeVoided);
 	}
 	
 	/**
@@ -410,49 +423,49 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	/**
 	 * @see org.openmrs.api.EncounterService#getEncounters(org.openmrs.Patient, boolean)
 	 * @deprecated replaced by
-	 *             {@link #getEncounters(Patient, Location, Date, Date, Collection, Collection, boolean)}
+	 *             {@link #getEncounters(Patient, Location, Date, Date, Collection, Collection, Collection, boolean)}
 	 */
 	public List<Encounter> getEncounters(Patient who, boolean includeVoided) {
-		return getEncounters(who, null, null, null, null, null, includeVoided);
+		return getEncounters(who, null, null, null, null, null, null, includeVoided);
 	}
 	
 	/**
 	 * @see org.openmrs.api.EncounterService#getEncounters(org.openmrs.Patient,
 	 *      org.openmrs.Location)
 	 * @deprecated replaced by
-	 *             {@link #getEncounters(Patient, Location, Date, Date, Collection, Collection, boolean)}
+	 *             {@link #getEncounters(Patient, Location, Date, Date, Collection, Collection, Collection, boolean)}
 	 */
 	public List<Encounter> getEncounters(Patient who, Location where) {
-		return getEncounters(who, where, null, null, null, null, false);
+		return getEncounters(who, where, null, null, null, null, null, false);
 	}
 	
 	/**
 	 * @see org.openmrs.api.EncounterService#getEncounters(org.openmrs.Patient, java.util.Date,
 	 *      java.util.Date)
 	 * @deprecated replaced by
-	 *             {@link #getEncounters(Patient, Location, Date, Date, Collection, Collection, boolean)}
+	 *             {@link #getEncounters(Patient, Location, Date, Date, Collection, Collection, Collection, boolean)}
 	 */
 	public List<Encounter> getEncounters(Patient who, Date fromDate, Date toDate) {
-		return getEncounters(who, null, fromDate, toDate, null, null, false);
+		return getEncounters(who, null, fromDate, toDate, null, null, null, false);
 	}
 	
 	/**
 	 * @see org.openmrs.api.EncounterService#getEncounters(java.util.Date, java.util.Date)
 	 * @deprecated replaced by
-	 *             {@link #getEncounters(Patient, Location, Date, Date, Collection, Collection, boolean)}
+	 *             {@link #getEncounters(Patient, Location, Date, Date, Collection, Collection, Collection, boolean)}
 	 */
 	public Collection<Encounter> getEncounters(Date fromDate, Date toDate) {
-		return getEncounters(null, null, fromDate, toDate, null, null, false);
+		return getEncounters(null, null, fromDate, toDate, null, null, null, false);
 	}
 	
 	/**
 	 * @see org.openmrs.api.EncounterService#getEncounters(org.openmrs.Location, java.util.Date,
 	 *      java.util.Date)
 	 * @deprecated replaced by
-	 *             {@link #getEncounters(Patient, Location, Date, Date, Collection, Collection, boolean)}
+	 *             {@link #getEncounters(Patient, Location, Date, Date, Collection, Collection, Collection, boolean)}
 	 */
 	public List<Encounter> getEncounters(Location loc, Date fromDate, Date toDate) {
-		return getEncounters(null, loc, fromDate, toDate, null, null, false);
+		return getEncounters(null, loc, fromDate, toDate, null, null, null, false);
 	}
 	
 	/**
