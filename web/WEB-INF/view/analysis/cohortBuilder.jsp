@@ -382,7 +382,7 @@
 		} else
 			DWRProgramWorkflowService.getWorkflowsByProgram(program, function(wfs) {
 					DWRUtil.removeAllOptions('workflow');
-					DWRUtil.addOptions('workflow', [" "]);
+					DWRUtil.addOptions('workflow', [ { label:" ", val:"" } ], 'val', 'label');
 					DWRUtil.addOptions('workflow', wfs, 'id', 'name');
 					if (wfs.length > 0)
 						showDiv('workflow');
