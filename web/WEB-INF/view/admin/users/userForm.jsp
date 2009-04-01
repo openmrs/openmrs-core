@@ -76,6 +76,7 @@
 							autocomplete="off" />
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
+				<i><spring:message code="User.login.manner" /></i>
 			</td>
 		</tr>
 		<c:if test="${modifyPasswords == true}">
