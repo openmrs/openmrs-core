@@ -337,6 +337,20 @@ public interface UserService extends OpenmrsService {
 	public void changeHashedPassword(User user, String hashedPassword, String salt) throws APIException;
 	
 	/**
+	 * Changes the passed user's secret question and answer.
+	 * 
+	 * @param u User to change
+	 * @param question
+	 * @param answer
+	 * @throws APIException
+	 * 
+	 * @should change the passed user's secrete question and answer
+	 */
+	@Authorized( { OpenmrsConstants.PRIV_EDIT_USER_PASSWORDS })
+	@Logging(ignoredArgumentIndexes = { 1, 2 })
+	public void changeQuestionAnswer(User u, String question, String answer) throws APIException;
+	
+	/**
 	 * Changes the current user's secret question and answer.
 	 * 
 	 * @param pw user's password
