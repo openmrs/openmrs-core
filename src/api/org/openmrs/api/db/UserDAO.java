@@ -127,6 +127,11 @@ public interface UserDAO {
 	public void changeHashedPassword(User user, String hashedPassword, String salt) throws DAOException;
 	
 	/**
+	 * @see org.openmrs.api.UserService#changeQuestionAnswer(User, String, String)
+	 */
+	public void changeQuestionAnswer(User u, String question, String answer) throws DAOException;
+	
+	/**
 	 * @see org.openmrs.api.UserService#changeQuestionAnswer(java.lang.String, java.lang.String,
 	 *      java.lang.String)
 	 */
