@@ -166,7 +166,7 @@ public class Message implements Serializable {
 	
 	/**
 	 * @return true if this message has an attachment
-	 * @shouldr return true if this message has an attachment
+	 * @should return true if this message has an attachment
 	 */
 	public boolean hasAttachment() {
 		return attachment != null;

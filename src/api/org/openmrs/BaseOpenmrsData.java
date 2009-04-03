@@ -46,7 +46,7 @@ public abstract class BaseOpenmrsData implements OpenmrsData {
 	//***** Property Access *****
     
 	/**
-     * @see org.openmrs.Auditable#creator()
+     * @see org.openmrs.Auditable#getCreator()
      */
     public User getCreator() {
     	return creator;
@@ -123,7 +123,7 @@ public abstract class BaseOpenmrsData implements OpenmrsData {
     }
     
 	/**
-     * @see org.openmrs.Voidable#setDateVoided()
+     * @see org.openmrs.Voidable#setDateVoided(java.util.Date)
      */
     public void setDateVoided(Date dateVoided) {
     	this.dateVoided = dateVoided;
@@ -137,7 +137,7 @@ public abstract class BaseOpenmrsData implements OpenmrsData {
     }
 
 	/**
-     * @see org.openmrs.Voidable#setVoidedBy()
+     * @see org.openmrs.Voidable#setVoidedBy(org.openmrs.User)
      */
     public void setVoidedBy(User voidedBy) {
     	this.voidedBy = voidedBy;
@@ -151,7 +151,7 @@ public abstract class BaseOpenmrsData implements OpenmrsData {
     }
 
 	/**
-     * @see org.openmrs.Voidable#setVoidReason()
+     * @see org.openmrs.Voidable#setVoidReason(java.lang.String)
      */
     public void setVoidReason(String voidReason) {
     	this.voidReason = voidReason;

@@ -300,7 +300,7 @@ public interface CohortService extends OpenmrsService {
 	 * 
 	 * @param definition
 	 * @param evalContext
-	 * @return
+	 * @return Cohort determined by the given CohortDefinition and EvaluationContext
 	 * @throws APIException
 	 * @should return all patients with blank patient search cohort definition provider
 	 */

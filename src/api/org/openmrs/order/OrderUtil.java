@@ -157,9 +157,9 @@ public class OrderUtil {
 	}
 	
 	/**
-	 * Get the drug headers...whatever those are. Ask Djazayeri
+	 * Associates the concept id of a drug set to a name of the drug set in the current locale
 	 * 
-	 * @param drugSetIds
+	 * @param drugSetIds a comma separated list with the concept id of the drug sets
 	 * @return <code>Map<String, String></code> of the drug headers for the given drugSetIds
 	 */
 	public static Map<String, String> getDrugSetHeadersByDrugSetIdList(String drugSetIds) {
@@ -183,12 +183,12 @@ public class OrderUtil {
 	}
 	
 	/**
-	 * Email-bomb djazayeri about what this method does.
+	 * Gets a map of DrugOrders that belong to a DrugSet concept ID
 	 * 
-	 * @param orderList
-	 * @param drugSetIdList
-	 * @param delimiter
-	 * @return
+	 * @param orderList the Drug Order list
+	 * @param drugSetIdList a 'delimiter' separated list of drug sets
+	 * @param delimiter the delimiter of drug sets (defaults to a comma if set to null)
+	 * @return Map<String, List<DrugOrder>> of DrugOrders that belong to a DrugSet concept_id
 	 */
 	public static Map<String, List<DrugOrder>> getDrugSetsByDrugSetIdList(List<DrugOrder> orderList, String drugSetIdList,
 	                                                                      String delimiter) {
@@ -265,11 +265,12 @@ public class OrderUtil {
 	}
 	
 	/**
-	 * Does some fancy stuff. TODO djazayeri, please comment
+	 * Splits the drug orders into sublists based on which drug set the order's drug belongs to
 	 * 
-	 * @param drugOrders
-	 * @param drugSets
-	 * @return
+	 * @param drugOrders List of drugOrders
+	 * @param drugSets List of drugSets concept
+	 * @return Map<Concept, List<DrugOrder>> of a sublist of drug orders mapped by the drug set
+	 *         concept that they belong
 	 * @throws APIException
 	 */
 	public static Map<Concept, List<DrugOrder>> getDrugSetsByConcepts(List<DrugOrder> drugOrders, List<Concept> drugSets)

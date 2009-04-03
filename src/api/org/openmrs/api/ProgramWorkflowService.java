@@ -731,7 +731,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * 
 	 * @param cohort
 	 * @param programs
-	 * @return
+	 * @return List<PatientProgram> for all Patients in the given Cohort that are in the given programs
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_PATIENT_PROGRAMS })

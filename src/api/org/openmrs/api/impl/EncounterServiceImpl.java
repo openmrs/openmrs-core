@@ -190,7 +190,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 *      org.openmrs.Location, java.util.Date, java.util.Date, java.util.Collection,
 	 *      java.util.Collection, boolean)
 	 * @deprecated replaced by
-	 *             {@link #getEncounters(Patient, Location, Date, Date, Collection, Collection, Collection, Collection, boolean)}
+	 *             {@link #getEncounters(Patient, Location, Date, Date, Collection, Collection, Collection, boolean)}
 	 */
 	public List<Encounter> getEncounters(Patient who, Location loc, Date fromDate, Date toDate,
 	                                     Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes,

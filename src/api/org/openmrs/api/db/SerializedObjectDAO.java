@@ -28,8 +28,8 @@ public interface SerializedObjectDAO {
 	
 	/**
 	 * Retrieves a Serialized Object from the database
-	 * @param Class<T> The class of the object to retrieve
-	 * @param Integer id The primary key id of the object to retrieve
+	 * @param type The class of the object to retrieve
+	 * @param id The primary key id of the object to retrieve
 	 * @return the saved object
 	 * @throws DAOException
 	 * @should return the saved object
@@ -38,8 +38,7 @@ public interface SerializedObjectDAO {
 	
 	/**
 	 * Saves a Serialized Object to the database
-	 * @param Class<T> The class of the object to save
-	 * @param T object The object to save
+	 * @param object The object to save
 	 * @return the saved object
 	 * @throws DAOException
 	 * @should save the passed object if supported
@@ -49,7 +48,7 @@ public interface SerializedObjectDAO {
 	
 	/**
 	 * Retrieves all non-retired/voided Serialized Objects from the database that match the passed Class<T> type
-	 * @param Class<T> The class of the object to retrieve
+	 * @param type The class of the object to retrieve
 	 * @return <List> T A list of all the saved objects that match the passed type
 	 * @throws DAOException
 	 * @should return all non-retired objects of the passed type
@@ -59,8 +58,8 @@ public interface SerializedObjectDAO {
 	/**
 	 * Retrieves all Serialized Objects from the database that match the passed Class<T> type
 	 * Returns voided / retired Objects only if includeRetired parameter is true
-	 * @param Class<T> The class of the object to retrieve
-	 * @param boolean includeRetired If true, returns voided/retired objects as well
+	 * @param type The class of the object to retrieve
+	 * @param includeRetired includeRetired If true, returns voided/retired objects as well
 	 * @return <List> T A list of all the saved objects that match the passed type
 	 * @throws DAOException
 	 * @should return all saved objects of the passed type if includeRetired
@@ -70,8 +69,8 @@ public interface SerializedObjectDAO {
 	
 	/**
 	 * Retrieves all Serialized Objects from the database that match the passed Class<T> type and name
-	 * @param Class<T> The class of the object to retrieve
-	 * @parma String name the name of the item to retrieve
+	 * @param type The class of the object to retrieve
+	 * @param name the name of the item to retrieve
 	 * @return <List> T A list of all the saved objects that match the passed type and name
 	 * @throws DAOException
 	 * @should return all saved objects with the given type and name
@@ -80,7 +79,7 @@ public interface SerializedObjectDAO {
 	
 	/**
 	 * Deletes the item from the database with the given primary key id
-	 * @param Integer id The id of the item to delete from the database
+	 * @param id The id of the item to delete from the database
 	 * @throws DAOException
 	 * @should delete the object with the passed id
 	 */
@@ -103,13 +102,13 @@ public interface SerializedObjectDAO {
 	
 	/**
 	 * Registers a class as one that should be supported
-	 * @param class The class to register
+	 * @param clazz The class to register
 	 */
 	public void registerSupportedType(Class<? extends OpenmrsObject> clazz) throws DAOException;
 	
 	/**
 	 * Removes this class as one that should be supported
-	 * @param class The class to un-register
+	 * @param clazz The class to un-register
 	 */
 	public void unregisterSupportedType(Class<? extends OpenmrsObject> clazz) throws DAOException;
 }

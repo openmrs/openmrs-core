@@ -478,7 +478,7 @@ public class PatientSearch implements CohortDefinition {
 	
 	/**
 	 * Returns all SearchArgument values that match
-	 * {@link org.openmrs.report.EvaluationContext#PARAMETER_PATTERN}
+	 * {@link org.openmrs.report.EvaluationContext#parameterValues}
 	 * 
 	 * @return <code>List&lt;Parameter></code> of all parameters in the arguments
 	 */

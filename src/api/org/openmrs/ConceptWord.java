@@ -260,7 +260,7 @@ public class ConceptWord implements java.io.Serializable, Comparable<ConceptWord
 	}
 	
 	/**
-	 * @see java.lang.Comparable#compareTo(T)
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
 	public int compareTo(ConceptWord word) {
 		

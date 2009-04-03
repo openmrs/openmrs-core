@@ -313,9 +313,9 @@ public interface PatientSetService {
 	/**
 	 * TODO write something here
 	 * 
-	 * @param patients
-	 * @param encType
-	 * @return
+	 * @param patients Cohort of patients to search
+	 * @param encType the type of the encounter
+	 * @return Map<Integer, Encounter> of patientId to encounters matching a specific type
 	 */
 	@Transactional(readOnly = true)
 	public Map<Integer, Encounter> getEncountersByType(Cohort patients, EncounterType encType);
@@ -335,7 +335,7 @@ public interface PatientSetService {
 	 * 
 	 * @param patients Cohort of patients to search
 	 * @param encType List<EncounterType> to include in the search
-	 * @return Map<Integer, Encounter>
+	 * @return Map<Integer, Encounter> of patientId to encounters matching a specific type
 	 */
 	@Transactional(readOnly = true)
 	public Map<Integer, Encounter> getEncountersByType(Cohort patients, List<EncounterType> encType);
@@ -354,7 +354,7 @@ public interface PatientSetService {
 	 * 
 	 * @param patients Cohort of patients to search
 	 * @param encType
-	 * @return
+	 * @return Map<Integer, Encounter> of patientId to first encounters of specified patients, from a specific type
 	 */
 	@Transactional(readOnly = true)
 	public Map<Integer, Encounter> getFirstEncountersByType(Cohort patients, EncounterType encType);
@@ -364,7 +364,7 @@ public interface PatientSetService {
 	 * 
 	 * @param patients Cohort of patients to search
 	 * @param types List<EncounterType> to include in the search
-	 * @return
+	 * @return Map<Integer, Encounter> of patientId to first encounters of specified patients, from a specific list of types
 	 */
 	@Transactional(readOnly = true)
 	public Map<Integer, Encounter> getFirstEncountersByType(Cohort patients, List<EncounterType> types);
@@ -375,7 +375,7 @@ public interface PatientSetService {
 	 * @param patients Cohort of patients to search
 	 * @param encTypes List<EncounterType> to include in the search
 	 * @param attr
-	 * @return
+	 * @return Map<Integer, Object> of patientId to first encounters properties
 	 */
 	@Transactional(readOnly = true)
 	public Map<Integer, Object> getFirstEncounterAttrsByType(Cohort patients, List<EncounterType> encTypes, String attr);
@@ -387,7 +387,7 @@ public interface PatientSetService {
 	 * @param className
 	 * @param property
 	 * @param returnAll
-	 * @return
+	 * @return Map<Integer, Object> of patientId to patient properties
 	 */
 	@Transactional(readOnly = true)
 	public Map<Integer, Object> getPatientAttributes(Cohort patients, String className, String property, boolean returnAll);
@@ -398,7 +398,7 @@ public interface PatientSetService {
 	 * @param patients
 	 * @param classNameDotProperty
 	 * @param returnAll
-	 * @return
+	 * @return Map<Integer, Object> of patientId to patient properties
 	 */
 	@Transactional(readOnly = true)
 	public Map<Integer, Object> getPatientAttributes(Cohort patients, String classNameDotProperty, boolean returnAll);
@@ -412,7 +412,7 @@ public interface PatientSetService {
 	 * @param joinProperty
 	 * @param outputColumn
 	 * @param returnAll
-	 * @return
+	 * @return Map<Integer, Object> of patientId to person properties
 	 */
 	@Transactional(readOnly = true)
 	public Map<Integer, Object> getPersonAttributes(Cohort patients, String attributeName, String joinClass,

@@ -20,11 +20,11 @@ import java.util.Date;
  * When data can be removed (effectively deleted from the user's perspective), then they are voidable.
  * Voided data are no longer valid and references from other non-voided data are not valid.
  * For example, when duplicate patient records are merged, the record that is not kept is voided (invalidated).  
- * Unlike {@link Retirable}, voiding data invalidates any data referencing them. 
+ * Unlike {@link Retireable}, voiding data invalidates any data referencing them. 
  * e.g., when a patient is voided, all observations for that patient must be voided as well.
  * 
- * @see OpenmrsDataObject
- * @see Retirable
+ * @see OpenmrsData
+ * @see Retireable
 */
 public interface Voidable {
 
@@ -34,7 +34,7 @@ public interface Voidable {
 	public Boolean isVoided();
 	
 	/**
-	 * @param Boolean - whether of not this object is voided
+	 * @param voided - whether of not this object is voided
 	 */
 	public void setVoided(Boolean voided);
 	
@@ -44,7 +44,7 @@ public interface Voidable {
 	public User getVoidedBy();
 	
 	/**
-	 * @param User - the user who voided the object
+	 * @param voidedBy - the user who voided the object
 	 */
 	public void setVoidedBy(User voidedBy);
 	
@@ -54,7 +54,7 @@ public interface Voidable {
 	public Date getDateVoided();
 	
 	/**
-	 * @param Date - the date the object was voided
+	 * @param dateVoided - the date the object was voided
 	 */
 	public void setDateVoided(Date dateVoided);
 	
@@ -64,7 +64,7 @@ public interface Voidable {
 	public String getVoidReason();
 	
 	/**
-	 * @param String - the reason the object was voided
+	 * @param voidReason - the reason the object was voided
 	 */	
 	public void setVoidReason(String voidReason);
 }

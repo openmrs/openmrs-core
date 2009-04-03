@@ -37,7 +37,7 @@ public interface ReportObjectService extends OpenmrsService {
 	/**
 	 * Get all report objects stored in the system
 	 * 
-	 * @return
+	 * @return List<AbstractReportObject> of all report objects stored in the system
 	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)
@@ -47,7 +47,7 @@ public interface ReportObjectService extends OpenmrsService {
 	 * Get the report object by internal id
 	 * 
 	 * @param reportObjectId
-	 * @return
+	 * @return AbstractReportObject by internal id
 	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)
@@ -59,7 +59,7 @@ public interface ReportObjectService extends OpenmrsService {
 	 * "Search History", Patient Search, Data Export, etc
 	 * 
 	 * @param reportObjectType String representing the type of the object
-	 * @return
+	 * @return List<AbstractReportObject> of a specific type
 	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)
@@ -69,7 +69,7 @@ public interface ReportObjectService extends OpenmrsService {
 	 * Auto generated method comment
 	 * 
 	 * @param filterId
-	 * @return
+	 * @return PatientFilter by filter ID
 	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)
@@ -79,7 +79,7 @@ public interface ReportObjectService extends OpenmrsService {
 	 * Auto generated method comment
 	 * 
 	 * @param filterName
-	 * @return
+	 * @return PatientFilter by filter name
 	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)
@@ -88,7 +88,7 @@ public interface ReportObjectService extends OpenmrsService {
 	/**
 	 * Auto generated method comment
 	 * 
-	 * @return
+	 * @return List<PatientFilter> of all Patient Filters
 	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)
@@ -121,7 +121,7 @@ public interface ReportObjectService extends OpenmrsService {
 	 * Save the given report object to the database
 	 * 
 	 * @param reportObject
-	 * @return
+	 * @return AbstractReportObject that was saved
 	 * @throws APIException
 	 */
 	public AbstractReportObject saveReportObject(AbstractReportObject reportObject) throws APIException;
@@ -129,7 +129,7 @@ public interface ReportObjectService extends OpenmrsService {
 	/**
 	 * Get the current list of different reportObjectTypes stored in the system
 	 * 
-	 * @return
+	 * @return List<String> of different reportObjectTypes stored in the system
 	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)
@@ -138,7 +138,7 @@ public interface ReportObjectService extends OpenmrsService {
 	/**
 	 * Get the current list of different sub types stored in the system
 	 * 
-	 * @return
+	 * @return <List> String of different sub types stored in the system
 	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)
@@ -149,7 +149,7 @@ public interface ReportObjectService extends OpenmrsService {
 	 * 
 	 * @param type
 	 * @param subType
-	 * @return
+	 * @return true if the subType is from a particular type
 	 * @throws APIException
 	 */
 	public boolean isSubTypeOfType(String type, String subType) throws APIException;
@@ -160,7 +160,7 @@ public interface ReportObjectService extends OpenmrsService {
 	/**
 	 * Auto generated method comment
 	 * 
-	 * @return
+	 * @return List<String> of all ReportObjectClasses
 	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)
@@ -170,7 +170,7 @@ public interface ReportObjectService extends OpenmrsService {
 	 * Auto generated method comment
 	 * 
 	 * @param currentClassName
-	 * @return
+	 * @return String of Reported Object Validator by the currentClassName
 	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)
@@ -179,7 +179,7 @@ public interface ReportObjectService extends OpenmrsService {
 	/**
 	 * Auto generated method comment
 	 * 
-	 * @return
+	 * @return String with the default Report Object Validator
 	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)
@@ -194,7 +194,7 @@ public interface ReportObjectService extends OpenmrsService {
 	 * TODO: why is this method in this service?
 	 * 
 	 * @param history
-	 * @return
+	 * @return CohortSearchHistory of the saved Search History of a Cohort
 	 * @throws APIException
 	 */
 	public CohortSearchHistory saveSearchHistory(CohortSearchHistory history) throws APIException;
@@ -216,7 +216,7 @@ public interface ReportObjectService extends OpenmrsService {
 	 * Get a CohortSearchHistory by internal id or null if none found
 	 * 
 	 * @param id
-	 * @return
+	 * @return CohortSearchHistory by internal id. null if not found
 	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)
@@ -231,7 +231,7 @@ public interface ReportObjectService extends OpenmrsService {
 	/**
 	 * Get all search histories stored in the database
 	 * 
-	 * @return
+	 * @return List<CohortSearchHistory> of all search histories stored in the database
 	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)
@@ -241,7 +241,7 @@ public interface ReportObjectService extends OpenmrsService {
 	 * Get patient search object by internal id or null if none found
 	 * 
 	 * @param searchId
-	 * @return
+	 * @return PatientSearch by internal id. null if not found
 	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)
@@ -250,7 +250,7 @@ public interface ReportObjectService extends OpenmrsService {
 	/**
 	 * Get all patient searches in the database
 	 * 
-	 * @return
+	 * @return List<PatientSearch> of all patient searches on the database
 	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)
@@ -260,7 +260,7 @@ public interface ReportObjectService extends OpenmrsService {
 	 * Get a patient search matching the name exactly or null if none found
 	 * 
 	 * @param name
-	 * @return
+	 * @return PatientSearch by name. null if not found
 	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)

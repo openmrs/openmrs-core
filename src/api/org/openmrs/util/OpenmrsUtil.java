@@ -127,7 +127,7 @@ public class OpenmrsUtil {
 	
 	/**
 	 * @param idWithoutCheckdigit
-	 * @return 
+	 * @return int - the calculated check digit for the given string
 	 * @throws Exception
 	 * @deprecated Use {@link PatientService#getIdentifierValidator(String)}
 	 */
@@ -179,11 +179,11 @@ public class OpenmrsUtil {
 		
 	}
 	
-	/**
+	/** 
 	 * @param id
 	 * @return true/false whether id has a valid check digit
 	 * @throws Exception on invalid characters and invalid id formation
-	 * @deprecated Should be using {@link PatientService#getIdentifierValidator(String)#isValid()}
+	 * @deprecated Should be using {@link PatientService#getIdentifierValidator(String)}
 	 */
 	public static boolean isValidCheckDigit(String id) throws Exception {
 		PatientService ps = Context.getPatientService();
@@ -464,7 +464,7 @@ public class OpenmrsUtil {
 	 * 
 	 * @param logClass optional string giving the class level to change. Defaults to
 	 *            OpenmrsConstants.LOG_CLASS_DEFAULT . Should be something like org.openmrs.___
-	 * @param level one of OpenmrsConstants.LOG_LEVEL_*
+	 * @param logLevel one of OpenmrsConstants.LOG_LEVEL_*
 	 */
 	public static void applyLogLevel(String logClass, String logLevel) {
 		
