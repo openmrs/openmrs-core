@@ -184,7 +184,7 @@ public class ReportSchema extends BaseOpenmrsMetadata implements Parameterizable
 	/**
 	 * Returns List<DataSetDefinition> dataSetDefinitions
 	 * 
-	 * @return
+	 * @return List<DataSetDefinition> a list with the DataSet Definitions
 	 */
 	@ElementList(required = true, name = "dataSets")
 	public List<DataSetDefinition> getDataSetDefinitions() {

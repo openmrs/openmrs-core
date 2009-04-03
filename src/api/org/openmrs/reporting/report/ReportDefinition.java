@@ -73,7 +73,7 @@ public class ReportDefinition extends AbstractReportObject implements Serializab
 	/**
 	 * Gets the report elements.
 	 * 
-	 * @return
+	 * @return Set<ReportElementDefinition> all Report Elements in the system
 	 */
 	public Set<ReportElementDefinition> getReportElements() {
 		return reportElements;

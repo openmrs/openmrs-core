@@ -42,7 +42,7 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 	private List<Class<? extends OpenmrsObject>> supportedTypes;
 	
 	/**
-	 * @see org.openmrs.api.db.SerializationDAO#getObject(java.lang.Class, java.lang.Integer)
+	 * @see org.openmrs.api.db.SerializedObjectDAO#getObject(java.lang.Class, java.lang.Integer)
 	 */
 	public <T extends OpenmrsObject> T getObject(Class<T> baseClass, Integer id) throws DAOException {
 		SerializedObject serializedObject = getSerializedObject(id);
@@ -50,7 +50,7 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 	}
 	
 	/**
-     * @see org.openmrs.api.db.SerializationDAO#getAllObjects(Class, String)
+     * @see org.openmrs.api.db.SerializedObjectDAO#getAllObjectsByName(Class, String)
      */
 	@SuppressWarnings("unchecked")
     public <T extends OpenmrsMetadata> List<T> getAllObjectsByName(Class<T> type, String name) throws DAOException {
@@ -66,14 +66,14 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
     }
 	
 	/**
-     * @see org.openmrs.api.db.SerializationDAO#getAllObjects(Class)
+     * @see org.openmrs.api.db.SerializedObjectDAO#getAllObjects(Class)
      */
     public <T extends OpenmrsObject> List<T> getAllObjects(Class<T> type) throws DAOException {
 		return getAllObjects(type, false);
 	}
 	
 	/**
-     * @see org.openmrs.api.db.SerializationDAO#getAllObjects(Class, boolean)
+     * @see org.openmrs.api.db.SerializedObjectDAO#getAllObjects(Class, boolean)
      */
 	@SuppressWarnings("unchecked")
     public <T extends OpenmrsObject> List<T> getAllObjects(Class<T> type, boolean includeRetired) throws DAOException {
@@ -91,13 +91,13 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
     }
 
 	/**
-	 * @see org.openmrs.api.db.SerializationDAO#saveObject(Class, OpenmrsObject)
+	 * @see org.openmrs.api.db.SerializedObjectDAO#saveObject(OpenmrsObject)
 	 */
 	public <T extends OpenmrsObject> T saveObject(T object) throws DAOException {
 		
 		Class<? extends OpenmrsObject> baseType = getRegisteredTypeForObject(object);
 		if (baseType == null) {
-			throw new DAOException("SerializationDAO does not support saving objects of type <" + object.getClass() + ">");
+			throw new DAOException("SerializedObjectDAO does not support saving objects of type <" + object.getClass() + ">");
 		}
 		
 		SerializedObject serializedObject =  getSerializedObject(object.getId());
@@ -152,7 +152,7 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 	}
 	
 	/**
-     * @see org.openmrs.api.db.SerializationDAO#purgeObject(Integer)
+     * @see org.openmrs.api.db.SerializedObjectDAO#purgeObject(Integer)
      */
     public void purgeObject(Integer id) throws DAOException {
     	SerializedObject o = getSerializedObject(id);
@@ -160,7 +160,7 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
     }
     
 	/**
-	 * @see org.openmrs.api.db.SerializationDAO#registerSupportedType(java.lang.Class)
+	 * @see org.openmrs.api.db.SerializedObjectDAO#registerSupportedType(java.lang.Class)
 	 */
 	public void registerSupportedType(Class<? extends OpenmrsObject> clazz) throws DAOException {
 		if (!getSupportedTypes().contains(clazz)) {
@@ -169,14 +169,14 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 	}
 	
 	/**
-     * @see org.openmrs.api.db.SerializationDAO#unregisterSupportedType(java.lang.Class)
+     * @see org.openmrs.api.db.SerializedObjectDAO#unregisterSupportedType(java.lang.Class)
      */
     public void unregisterSupportedType(Class<? extends OpenmrsObject> clazz) throws DAOException {
     	getSupportedTypes().remove(clazz);
     }
     
 	/**
-	 * @see org.openmrs.api.db.SerializationDAO#getRegisteredType(org.openmrs.OpenmrsObject)
+	 * @see org.openmrs.api.db.SerializedObjectDAO#getRegisteredTypeForObject(org.openmrs.OpenmrsObject)
 	 */
 	public Class<? extends OpenmrsObject> getRegisteredTypeForObject(OpenmrsObject object) {
 		for (Class<? extends OpenmrsObject> clazz : getSupportedTypes()) {

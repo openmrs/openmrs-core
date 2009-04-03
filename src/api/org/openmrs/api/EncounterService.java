@@ -117,7 +117,7 @@ public interface EncounterService extends OpenmrsService {
 	
 	/**
 	 * @deprecated replaced by
-	 *             {@link #getEncounters(Patient, Location, Date, Date, Collection, Collection, Collection, Collection, boolean)}
+	 *             {@link #getEncounters(Patient, Location, Date, Date, Collection, Collection, Collection, boolean)}
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_ENCOUNTERS })

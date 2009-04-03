@@ -105,7 +105,7 @@ public interface ObsService extends OpenmrsService {
 	 * @throws APIException
 	 * @deprecated This method should no longer need to be called on the api. This was meant as
 	 *             temporary until we created a true ObsGroup pojo. Replaced by
-	 *             {@link #saveObs(Obs)}
+	 *             {@link #saveObs(Obs, String)}
 	 */
 	@Authorized(OpenmrsConstants.PRIV_ADD_OBS)
 	public void createObsGroup(Obs[] obs) throws APIException;
@@ -282,7 +282,7 @@ public interface ObsService extends OpenmrsService {
 	 * @param mimeType the MimeType to remove
 	 * @throws APIException
 	 * @see #purgeMimeType(MimeType)
-	 * @deprecated MimeTypes are no longer used. See {@link ConceptComplex} and its use of handlers
+	 * @deprecated MimeTypes are no longer used. See {@link org.openmrs.ConceptComplex} and its use of handlers
 	 */
 	@Authorized(OpenmrsConstants.PRIV_PURGE_MIME_TYPES)
 	public void purgeMimeType(MimeType mimeType) throws APIException;

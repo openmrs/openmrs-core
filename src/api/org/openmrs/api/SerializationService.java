@@ -34,7 +34,7 @@ public interface SerializationService extends OpenmrsService {
 	
 	/**
 	 * Returns the serializer that matches the passed class, or null if no such serializer exists.
-	 * @param class - the serialization class to retrieve
+	 * @param serializationClass - the serialization class to retrieve
 	 * @return {@link OpenmrsSerializer} that matches the passed class
 	 * @should return a serializer of the given class
 	 */
@@ -43,7 +43,7 @@ public interface SerializationService extends OpenmrsService {
 	/**
 	 * Serialize the passed object into an identifying string that can be retrieved later
 	 * using the passed {@link OpenmrsSerializer} class
-	 * @param Object - the object to serialize
+	 * @param o - the object to serialize
 	 * @param clazz - the {@link OpenmrsSerializer} class to use for serialization
 	 * @return String representing this object
 	 */

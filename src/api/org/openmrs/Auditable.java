@@ -22,8 +22,8 @@ import java.util.Date;
  * or when a person address was last updated in the system.
  * Any object that needs to keep track of this information should implement this interface.
  * 
- * @see OpenmrsDataObject
- * @see OpenmrsMetadataObject
+ * @see OpenmrsData
+ * @see OpenmrsMetadata
 */
 public interface Auditable {
 
@@ -33,7 +33,7 @@ public interface Auditable {
 	public User getCreator();
 	
 	/**
-	 * @param User - the user who created the object
+	 * @param creator - the user who created the object
 	 */
 	public void setCreator(User creator);
 	
@@ -43,7 +43,7 @@ public interface Auditable {
 	public Date getDateCreated();
 	
 	/**
-	 * @param Date - the date the object was created
+	 * @param dateCreated - the date the object was created
 	 */
 	public void setDateCreated(Date dateCreated);
 	
@@ -53,7 +53,7 @@ public interface Auditable {
 	public User getChangedBy();
 	
 	/**
-	 * @param User - the user who last changed the object
+	 * @param changedBy - the user who last changed the object
 	 */
 	public void setChangedBy(User changedBy);
 	
@@ -63,7 +63,7 @@ public interface Auditable {
 	public Date getDateChanged();
 	
 	/**
-	 * @param Date - the date the object was last changed
+	 * @param dateChanged - the date the object was last changed
 	 */
 	public void setDateChanged(Date dateChanged);
 

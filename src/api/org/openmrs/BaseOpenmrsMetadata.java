@@ -78,7 +78,7 @@ public abstract class BaseOpenmrsMetadata implements OpenmrsMetadata {
     }
 
 	/**
-     * @see org.openmrs.Auditable#creator()
+     * @see org.openmrs.Auditable#getCreator()
      */
     public User getCreator() {
     	return creator;
@@ -162,7 +162,7 @@ public abstract class BaseOpenmrsMetadata implements OpenmrsMetadata {
     }
     
 	/**
-     * @see org.openmrs.Retireable#setDateRetired()
+     * @see org.openmrs.Retireable#setDateRetired(java.util.Date)
      */
     public void setDateRetired(Date dateRetired) {
     	this.dateRetired = dateRetired;
@@ -176,7 +176,7 @@ public abstract class BaseOpenmrsMetadata implements OpenmrsMetadata {
     }
 
 	/**
-     * @see org.openmrs.Retireable#setRetiredBy()
+     * @see org.openmrs.Retireable#setRetiredBy(org.openmrs.User)
      */
     public void setRetiredBy(User retiredBy) {
     	this.retiredBy = retiredBy;
@@ -190,7 +190,7 @@ public abstract class BaseOpenmrsMetadata implements OpenmrsMetadata {
     }
 
 	/**
-     * @see org.openmrs.Retireable#setRetireReason()
+     * @see org.openmrs.Retireable#setRetireReason(java.lang.String)
      */
     public void setRetireReason(String retireReason) {
     	this.retireReason = retireReason;

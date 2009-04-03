@@ -22,7 +22,7 @@ public interface OpenmrsSerializer {
 	
 	/**
 	 * Turn the current object into an identifying string that can be retrieved later
-	 * @param Object - the object to serialize
+	 * @param o - the object to serialize
 	 * @return String representing this object
 	 */
 	public String serialize(Object o) throws APIException;

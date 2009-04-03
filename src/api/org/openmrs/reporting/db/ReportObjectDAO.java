@@ -26,7 +26,7 @@ public interface ReportObjectDAO {
 	/**
 	 * Auto generated method comment
 	 * 
-	 * @return
+	 * @return List<AbstractReportObject> of all reported objects on the system
 	 */
 	public List<AbstractReportObject> getAllReportObjects() throws DAOException;
 	
@@ -34,7 +34,7 @@ public interface ReportObjectDAO {
 	 * Auto generated method comment
 	 * 
 	 * @param reportObjId
-	 * @return
+	 * @return AbstractReportObject by a internal report object ID
 	 * @throws DAOException
 	 */
 	public AbstractReportObject getReportObject(Integer reportObjId) throws DAOException;
@@ -51,7 +51,7 @@ public interface ReportObjectDAO {
 	 * Auto generated method comment
 	 * 
 	 * @param reportObj
-	 * @return
+	 * @return AbstractReportObject that was saved 
 	 * @throws DAOException
 	 */
 	public AbstractReportObject saveReportObject(AbstractReportObject reportObj) throws DAOException;
@@ -60,7 +60,7 @@ public interface ReportObjectDAO {
 	 * Auto generated method comment
 	 * 
 	 * @param reportObjectType
-	 * @return
+	 * @return List<AbstractReportObject> of all the Reported Objects of a certain type
 	 * @throws DAOException
 	 */
 	public List<AbstractReportObject> getReportObjectsByType(String reportObjectType) throws DAOException;

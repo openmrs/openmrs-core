@@ -23,7 +23,7 @@ public class EmptyResult extends Result {
 	private static final long serialVersionUID = 6317773013593085780L;
 	
 	/**
-	 * @see org.openmrs.logic.result.Result#add(int, Result)
+	 * @see java.util.ArrayList#add(int, Object)
 	 */
 	@Override
 	public void add(int arg0, Result arg1) {
@@ -31,7 +31,7 @@ public class EmptyResult extends Result {
 	}
 	
 	/**
-	 * @see org.openmrs.logic.result.Result#add(Result)
+	 * @see java.util.ArrayList#add(Object)
 	 */
 	@Override
 	public boolean add(Result value) {
@@ -111,7 +111,7 @@ public class EmptyResult extends Result {
 	}
 	
 	/**
-	 * @see org.openmrs.logic.result.Result#set(int, Result)
+	 * @see java.util.ArrayList#set(int, Object)
 	 */
 	@Override
 	public Result set(int index, Result element) {

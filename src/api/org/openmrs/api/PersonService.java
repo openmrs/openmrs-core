@@ -614,7 +614,7 @@ public interface PersonService {
 	                                                                                                         throws APIException;
 	
 	/**
-	 * @deprecated use {@link #getPersonAttributeTypes(PERSON_TYPE, ATTR_VIEW_TYPE)}
+	 * @deprecated use {@link #getPersonAttributeTypes(String, String)}
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_PERSON_ATTRIBUTE_TYPES })

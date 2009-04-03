@@ -65,7 +65,7 @@ public class DataExportUtil {
 	 * Find the data export key previously added or null if not found
 	 * 
 	 * @param key
-	 * @return
+	 * @return Object the Data Export Key with the key identifier. Returns null if not found
 	 * @see #putDataExportKey(String, Object)
 	 * @see #generateExport(DataExportReportObject, Cohort, DataExportFunctions, EvaluationContext)
 	 */

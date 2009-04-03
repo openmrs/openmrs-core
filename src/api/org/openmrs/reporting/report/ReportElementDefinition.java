@@ -36,7 +36,7 @@ public class ReportElementDefinition extends AbstractReportObject implements Ser
 	/**
 	 * TODO Auto generated method comment
 	 * 
-	 * @return
+	 * @return CohortDefinition the CohortDefinition of this Report Element Definition
 	 */
 	public CohortDefinition getCohortDefinition() {
 		return cohortDefinition;
@@ -52,7 +52,7 @@ public class ReportElementDefinition extends AbstractReportObject implements Ser
 	/**
 	 * TODO Auto generated method comment
 	 * 
-	 * @return
+	 * @return DatasetDefinition the DatasetDefinition of this Report Element Definition
 	 */
 	public DatasetDefinition getDatasetDefinition() {
 		return datasetDefinition;

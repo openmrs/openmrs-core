@@ -74,7 +74,7 @@ public interface MessageService {
 	 * @param sender
 	 * @param subject
 	 * @param message
-	 * @return
+	 * @return Message the message that was created
 	 * @throws MessageException
 	 * @should create message
 	 */

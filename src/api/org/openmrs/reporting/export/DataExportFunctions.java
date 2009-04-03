@@ -434,7 +434,7 @@ public class DataExportFunctions {
 	 *
 	 * @param typeArray
 	 * @param attr
-	 * @return TODO
+	 * @return Object from the oldest encounter
 	 */
 	@SuppressWarnings("unchecked")
 	public Object getFirstEncounterAttr(Object typeArray, String attr) {
@@ -534,7 +534,7 @@ public class DataExportFunctions {
 	 * Gets a patient program given a program ID or program name.
 	 * 
 	 * @param programIdOrName the identifier or name of the program
-	 * @return
+	 * @return PatientProgram by the program ID or name
 	 */
 	public PatientProgram getProgram(String programIdOrName) {
 		
@@ -686,7 +686,7 @@ public class DataExportFunctions {
 	 * 
 	 * @param className
 	 * @param property
-	 * @return
+	 * @return Object the specified property of the patient
 	 */
 	public Object getPatientAttr(String className, String property) {
 		return getPatientAttr(className, property, false);
@@ -701,7 +701,7 @@ public class DataExportFunctions {
 	 * @param className
 	 * @param property
 	 * @param returnAll
-	 * @return
+	 * @return Object the specified property of the patient, or an array of all properties if returnAll is set to true
 	 */
 	public Object getPatientAttr(String className, String property, boolean returnAll) {
 		String key = className + "." + property;
@@ -783,7 +783,7 @@ public class DataExportFunctions {
 	 * @param n max number of obs to return
 	 * @param concept
 	 * @param attrs
-	 * @return
+	 * @return List<List<Object>> of the n most recent observations (with their values)
 	 * @throws Exception
 	 */
 	@SuppressWarnings("unused")
@@ -824,7 +824,7 @@ public class DataExportFunctions {
 	 * Gets the most recent Observation matching this concept
 	 * 
 	 * @param conceptName
-	 * @return
+	 * @return Object the most recent observation that matches the concept name specified
 	 */
 	public Object getLastObs(String conceptName) throws Exception {
 		return getLastObs(getConcept(conceptName));
@@ -835,7 +835,7 @@ public class DataExportFunctions {
 	 * 
 	 * @param conceptName
 	 * @param attrs string array
-	 * @return
+	 * @return List<Object> of the most recent observation values
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Object> getLastObsWithValues(String conceptName, Object attrs) throws Exception {
@@ -862,7 +862,7 @@ public class DataExportFunctions {
 	 * 
 	 * @param concept
 	 * @param attrs list of Strings like provider, encounterDatetime, etc
-	 * @return
+	 * @return List<Object> of the most recent observation values that matches the concept of the patient encounters
 	 * @throws Exception
 	 */
 	public List<Object> getLastObsWithValues(Concept concept, List<String> attrs) throws Exception {
@@ -872,10 +872,10 @@ public class DataExportFunctions {
 	}
 	
 	/**
-	 * Get the first occurence of matching <code>obs.concept</code> out of the patient's encounters
+	 * Get the first occurrence of matching <code>obs.concept</code> out of the patient's encounters
 	 * 
 	 * @param conceptName
-	 * @return Object
+	 * @return Object the first occurrence of the observation concept name of the patient's encounters
 	 */
 	public Object getFirstObs(String conceptName) throws Exception {
 		return getFirstObs(getConcept(conceptName));
@@ -1028,29 +1028,29 @@ public class DataExportFunctions {
 		
 	}
 	
-	/**
-	 * Get all obs for the current patient that match this
-	 * <code>obs.concept</code>=<code>concept</code> and
-	 * <code>obs.valueCoded</code>=<code>valueCoded</code>
-	 * 
-	 * @param conceptName
-	 * @param valueCoded
-	 * @return
-	 * @throws Exception
-	 */
+	// /**
+	// * Get all obs for the current patient that match this
+	// * <code>obs.concept</code>=<code>concept</code> and
+	// * <code>obs.valueCoded</code>=<code>valueCoded</code>
+	// * 
+	// * @param conceptName
+	// * @param valueCoded
+	// * @return 
+	// * @throws Exception
+	// */
 	//	public Collection<Obs> getMatchingObs(String conceptName, String valueCoded) throws Exception {
 	//		return getMatchingObs(getConcept(conceptName), getConcept(valueCoded));
 	//	}
-	/**
-	 * Get all obs for the current patient that match this
-	 * <code>obs.concept</code>=<code>concept</code> and
-	 * <code>obs.valueCoded</code>=<code>valueCoded</code>
-	 * 
-	 * @param concept
-	 * @param valueCoded
-	 * @return
-	 * @throws Exception
-	 */
+	// /**
+	// * Get all obs for the current patient that match this
+	// * <code>obs.concept</code>=<code>concept</code> and
+	// * <code>obs.valueCoded</code>=<code>valueCoded</code>
+	// * 
+	// * @param concept
+	// * @param valueCoded
+	// * @return
+	// * @throws Exception
+	// */
 	//	public Collection<Obs> getMatchingObs(Concept concept, Concept valueCoded) throws Exception {
 	//		Collection<Obs> returnList = new Vector<Obs>();
 	//		for (Obs o : getObs(concept)) {

@@ -159,7 +159,7 @@ public class MessageServiceImpl implements MessageService {
 	 * Send a message to a user that is identified by the given identifier.
 	 * 
 	 * @param message <code>Message</code> to be sent
-	 * @param recipient Integer identifier of user (recipient)
+	 * @param recipientId Integer identifier of user (recipient)
 	 */
 	public void sendMessage(Message message, Integer recipientId) throws MessageException {
 		log.debug("Sending message to user with user id " + recipientId);
