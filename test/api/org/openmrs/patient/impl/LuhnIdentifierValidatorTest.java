@@ -78,7 +78,7 @@ public class LuhnIdentifierValidatorTest {
 	 * Test the isValid method. TODO split this into multiple tests
 	 */
 	@Test
-	public void shouldIsValid() {
+	public void shouldValidate() {
 		//Make sure invalid identifiers throw an exception
 		
 		for (int j = 0; j < invalidIdentifiers.length; j++) {

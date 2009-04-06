@@ -20,7 +20,7 @@ import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.SkipBaseSetup;
 
 /**
- * Runs tests on the "@SkipBaseSetup" annotation
+ * Runs tests on the "@SkipBaseSetup" annotation that OpenMRS unit tests use.
  */
 public class OpenmrsTestAnnotationsTest extends BaseContextSensitiveTest {
 	
@@ -53,8 +53,7 @@ public class OpenmrsTestAnnotationsTest extends BaseContextSensitiveTest {
 	@SkipBaseSetup
 	public void shouldSkipAuthentication() throws Exception {
 		
-		// this depends on Context.logout() being in the previous
-		// test method
+		// this depends on Context.logout() being in the previous test method
 		
 		Assert.assertFalse(Context.isAuthenticated());
 	}

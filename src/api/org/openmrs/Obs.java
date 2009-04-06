@@ -782,7 +782,7 @@ public class Obs implements java.io.Serializable {
 	 * Get the value for the ComplexData. This method is used by the ComplexObsHandler. The
 	 * valueComplex has two parts separated by a bar '|' character: part A) the title; and part B)
 	 * the URI. The title is the readable description of the valueComplex that is returned by
-	 * Obs.getValueAsString(). The URI is the location where the ComplexData is stored.
+	 * {@link Obs#getValueAsString()}. The URI is the location where the ComplexData is stored.
 	 * 
 	 * @return readable title and URI for the location of the ComplexData binary object.
 	 */

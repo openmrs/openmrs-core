@@ -72,7 +72,11 @@ public class Form implements java.io.Serializable {
 	public Form() {
 	}
 	
-	/** constructor with id */
+	/**
+	 * Constructor with id
+	 * 
+	 * @should set formId with given parameter
+	 */
 	public Form(Integer formId) {
 		this.formId = formId;
 	}
@@ -82,6 +86,10 @@ public class Form implements java.io.Serializable {
 	 * 
 	 * @param obj
 	 * @return boolean true/false whether or not they are the same objects
+	 * @should have equal form objects by form id
+	 * @should not have equal form objects by formId
+	 * @should have equal form objects with no formId
+	 * @should not have equal form objects when one has null formId
 	 */
 	public boolean equals(Object obj) {
 		if (obj instanceof Form) {
@@ -96,6 +104,7 @@ public class Form implements java.io.Serializable {
 	
 	/**
 	 * @see java.lang.Object#hashCode()
+	 * @should get hashCode even with null attributes
 	 */
 	public int hashCode() {
 		if (this.getFormId() == null)

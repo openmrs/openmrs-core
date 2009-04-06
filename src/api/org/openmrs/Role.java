@@ -158,6 +158,10 @@ public class Role implements java.io.Serializable {
 	 * 
 	 * @param privilegeName String name of a privilege
 	 * @return true/false whether this role has the given privilege
+	 * @should return false if not found
+	 * @should return true if found
+	 * @should not fail given null parameter
+	 * @should return true for any privilegeName if super user
 	 */
 	public boolean hasPrivilege(String privilegeName) {
 		

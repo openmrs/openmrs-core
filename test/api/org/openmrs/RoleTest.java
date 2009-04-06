@@ -17,6 +17,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
+import org.openmrs.test.Verifies;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
@@ -72,24 +73,49 @@ public class RoleTest {
 	/**
 	 * Simple test to check the hasPrivilege method
 	 * 
-	 * @throws Exception
+	 * @see {@link Role#hasPrivilege(String)}
 	 */
 	@Test
-	public void shouldHasPrivilege() throws Exception {
+	@Verifies(value = "should not fail given null parameter", method = "hasPrivilege(String)")
+	public void hasPrivilege_shouldNotFailGivenNullParameter() throws Exception {
 		Role role = new Role();
 		
-		// test the null cases
-		role.hasPrivilege("some privilege");
+		// test the null case
 		role.hasPrivilege(null);
+	}
+	
+	/**
+	 * @see {@link Role#hasPrivilege(String)}
+	 */
+	@Test
+	@Verifies(value = "should return true if found", method = "hasPrivilege(String)")
+	public void hasPrivilege_shouldReturnTrueIfFound() throws Exception {
+		Role role = new Role();
 		
 		// very basic privilege adding and checking
 		Privilege p1 = new Privilege("priv1");
 		role.addPrivilege(p1);
 		assertTrue("This roles should have the privilege", role.hasPrivilege("priv1"));
+	}
+	
+	/**
+	 * @see {@link Role#hasPrivilege(String)}
+	 */
+	@Test
+	@Verifies(value = "should return false if not found", method = "hasPrivilege(String)")
+	public void hasPrivilege_shouldReturnFalseIfNotFound() throws Exception {
+		Role role = new Role();
 		assertFalse("This roles should not have the privilege", role.hasPrivilege("some other privilege name"));
-		
+	}
+	
+	/**
+	 * @see {@link Role#hasPrivilege(String)}
+	 */
+	@Test
+	@Verifies(value = "should return true for any privilegeName if super user", method = "hasPrivilege(String)")
+	public void hasPrivilege_shouldReturnTrueForAnyPrivilegeNameIfSuperUser() throws Exception {
 		// check super user "super" status
-		role = new Role(OpenmrsConstants.SUPERUSER_ROLE);
+		Role role = new Role(OpenmrsConstants.SUPERUSER_ROLE);
 		
 		assertTrue("Super users are super special and should have all privileges", role
 		        .hasPrivilege("Some weird privilege name that shouldn't be there"));
