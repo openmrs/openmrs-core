@@ -78,6 +78,9 @@
 			<c:if test="${not empty patient.causeOfDeath}">
 				&nbsp;&nbsp;&nbsp;&nbsp;
 				<spring:message code="Person.causeOfDeath"/>: <openmrs:format concept="${patient.causeOfDeath}"/>
+				<c:if test="${not empty causeOfDeathOther}"> 
+					  &nbsp;:&nbsp;<c:out value="${causeOfDeathOther}"></c:out>
+				</c:if>
 			</c:if>
 		</div>
 	</div>
