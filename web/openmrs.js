@@ -249,3 +249,39 @@ function gotoUser(select, userId) {
 		headElement.appendChild(script);
     }
  }
+
+ /**
+  * This parses a string into a js date object.  This only works on numbered dates, not
+  * dates that have strings in them: (ie. 05-06-2009 will work, but 55-JUN-2009 will not work).
+  * 
+  * @param birthdate the string to parse 
+  * @param datePattern the pattern that will be parse M-D-Y, Y-M-D, or D-M-Y
+  * @return a javascript date object for the given string in the given pattern 
+  */
+ function parseSimpleDate(birthdate, datePattern) {
+	var datePatternStart = datePattern.substr(0,1).toLowerCase(); 
+	var year, month, day; 
+	
+	if (datePatternStart == 'm') { /* M-D-Y */ 
+		year = birthdate.substr(6, 4); 
+		month = birthdate.substr(0, 2); 
+		day = birthdate.substr(3, 2); 
+	} 
+	else if (datePatternStart == 'y') { /* Y-M-D */ 
+		year = birthdate.substr(0, 4); 
+		month = birthdate.substr(3, 2); 
+		day = birthdate.substr(8, 2); 
+	} 
+	else { /* (datePatternStart == 'd') D-M-Y */ 
+		year = birthdate.substr(6, 4); 
+		month = birthdate.substr(3, 2); 
+		day = birthdate.substr(0, 2); 
+	} 
+	
+	var localeBirthDate = new Date(); 
+	localeBirthDate.setYear(year); 
+	localeBirthDate.setMonth(month - 1); 
+	localeBirthDate.setDate(day);
+	
+	return localeBirthDate;
+ }
