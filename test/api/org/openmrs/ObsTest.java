@@ -35,20 +35,6 @@ import org.openmrs.test.Verifies;
 public class ObsTest {
 	
 	/**
-	 * Tests the get/setValueAsString methods
-	 * 
-	 * @throws Exception
-	 */
-	@Test
-	public void shouldValueAsString() throws Exception {
-		
-		// TODO: finish this test method
-		
-		// TODO: test obs group recursive get value as string
-		
-	}
-	
-	/**
 	 * Tests the addToGroup method in ObsGroup
 	 * 
 	 * @throws Exception

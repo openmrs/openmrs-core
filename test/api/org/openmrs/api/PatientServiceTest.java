@@ -147,6 +147,11 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		assertTrue("The gender should be new", patient2.getGender().equals("F"));
 	}
 	
+	/**
+	 * Convenience method to have a Patient object with all required values filled in
+	 * 
+	 * @return a mock Patient object that can be saved
+	 */
 	private Patient createBasicPatient() {
 		Patient patient = new Patient();
 		

@@ -60,18 +60,16 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	/**
 	 * Test the check digit method
 	 * 
-	 * @throws Exception
+	 * @see {@link OpenmrsUtil#getCheckDigit(String)}
 	 */
 	@Test
-	public void shouldGetCheckDigit() throws Exception {
-		
-		//System.out.println("In testGetCheckDigit()");
+	@Verifies(value = "should get valid check digits", method = "getCheckDigit(String)")
+	public void getCheckDigit_shouldGetValidCheckDigits() throws Exception {
 		
 		String[] ids = { "9", "99", "999", "123MT", "asdf" };
 		int[] cds = { 1, 2, 3, 2, 8 };
 		
 		for (int i = 0; i < ids.length; i++) {
-			//System.out.println(ids[i]);
 			assertEquals(OpenmrsUtil.getCheckDigit(ids[i]), cds[i]);
 		}
 		
@@ -80,31 +78,41 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	/**
 	 * Test check digit validation methods
 	 * 
-	 * @throws Exception
+	 * @see {@link OpenmrsUtil#isValidCheckDigit(String)}
 	 */
 	@Test
-	public void shouldIsValidCheckDigit() throws Exception {
-		
-		//System.out.println("In testIsValidCheckDigit()");
+	@Verifies(value = "should validate correct check digits", method = "isValidCheckDigit(String)")
+	public void isValidCheckDigit_shouldValidateCorrectCheckDigits() throws Exception {
 		
 		String[] ids2 = { "9-1", "99-2", "999-3", "123MT-2", "asdf-8", "12abd-7" };
 		String[] ids2Char = { "9-b", "99-c", "999-d", "123MT-c", "asdf-i", "12abd-h" };
 		for (int i = 0; i < ids2.length; i++) {
-			//System.out.println(ids2[i]);
 			assertTrue(OpenmrsUtil.isValidCheckDigit(ids2[i]));
 			assertTrue(OpenmrsUtil.isValidCheckDigit(ids2Char[i]));
 		}
-		
+	}
+	
+	/**
+	 * @see {@link OpenmrsUtil#isValidCheckDigit(String)}
+	 */
+	@Test
+	@Verifies(value = "should not validate invalid check digits", method = "isValidCheckDigit(String)")
+	public void isValidCheckDigit_shouldNotValidateInvalidCheckDigits() throws Exception {
 		String[] ids3 = { "asdf-7", "9-2", "9-4" };
 		for (int i = 0; i < ids3.length; i++) {
-			//System.out.println(ids3[i]);
 			assertFalse(OpenmrsUtil.isValidCheckDigit(ids3[i]));
 		}
-		
+	}
+	
+	/**
+	 * @see {@link OpenmrsUtil#isValidCheckDigit(String)}
+	 */
+	@Test
+	@Verifies(value = "should throw error if given an invalid character in id", method = "isValidCheckDigit(String)")
+	public void isValidCheckDigit_shouldThrowErrorIfGivenAnInvalidCharacterInId() throws Exception {
 		String[] ids4 = { "#@!", "234-3-3", "-3", "2134" };
 		for (int i = 0; i < ids4.length; i++) {
 			try {
-				//System.out.println(ids4[i]);
 				OpenmrsUtil.isValidCheckDigit(ids4[i]);
 				fail("An exception was not thrown for invalid identifier: " + ids4[i]);
 			}
@@ -115,10 +123,12 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	/**
 	 * test the collection contains method
 	 * 
-	 * @throws Exception
+	 * @see {@link OpenmrsUtil#collectionContains(Collection<*>,Object)}
 	 */
 	@Test
-	public void shouldCollectionContainsWithList() throws Exception {
+	@Verifies(value = "should use equals method for comparison instead of compareTo given List collection", method = "collectionContains(Collection<*>,Object)")
+	public void collectionContains_shouldUseEqualsMethodForComparisonInsteadOfCompareToGivenListCollection()
+	                                                                                                        throws Exception {
 		
 		ArrayList<PatientIdentifier> identifiers = new ArrayList<PatientIdentifier>();
 		
@@ -129,8 +139,8 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 		pi.setCreator(new User(1));
 		
 		identifiers.add(pi);
-		assertTrue("There should be 1 identifier in the patient object now", identifiers.size() == 1);
 		
+		// sanity check
 		identifiers.add(pi);
 		assertFalse("Lists should accept more than one object", identifiers.size() == 1);
 		
@@ -144,10 +154,12 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	/**
 	 * test the collection contains method
 	 * 
-	 * @throws Exception
+	 * @see {@link OpenmrsUtil#collectionContains(Collection<*>,Object)}
 	 */
 	@Test
-	public void shouldCollectionContainsWithSortedSet() throws Exception {
+	@Verifies(value = "should use equals method for comparison instead of compareTo given SortedSet collection", method = "collectionContains(Collection<*>,Object)")
+	public void collectionContains_shouldUseEqualsMethodForComparisonInsteadOfCompareToGivenSortedSetCollection()
+	                                                                                                             throws Exception {
 		
 		SortedSet<PatientIdentifier> identifiers = new TreeSet<PatientIdentifier>();
 		
@@ -158,8 +170,8 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 		pi.setCreator(new User(1));
 		
 		identifiers.add(pi);
-		assertTrue("There should be 1 identifier in the patient object now", identifiers.size() == 1);
 		
+		// sanity check
 		identifiers.add(pi);
 		assertTrue("There should still be only 1 identifier in the patient object now", identifiers.size() == 1);
 		
@@ -174,10 +186,11 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 * When given a null parameter, the {@link OpenmrsUtil#url2file(java.net.URL)} method should
 	 * quietly fail by returning null
 	 * 
-	 * @throws Exception
+	 * @see {@link OpenmrsUtil#url2file(URL)}
 	 */
 	@Test
-	public void shouldReturnNullWithNullParameterToUrl2File() throws Exception {
+	@Verifies(value = "should return null given null parameter", method = "url2file(URL)")
+	public void url2file_shouldReturnNullGivenNullParameter() throws Exception {
 		assertNull(OpenmrsUtil.url2file(null));
 	}
 	
@@ -234,4 +247,5 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	public void validatePassword_shouldFailWithShortPassword() throws Exception {
 		OpenmrsUtil.validatePassword("admin", "1234567", "1-8");
 	}
+	
 }

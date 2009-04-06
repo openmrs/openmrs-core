@@ -108,6 +108,10 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
 	 * @param obj PersonName to compare to
 	 * @return boolean true/false whether or not they are the same objects
 	 * @see java.lang.Object#equals(java.lang.Object)
+	 * @should not fail if either has a null person property
+	 * @should return false if this has a missing person property
+	 * @should return false if obj has a missing person property
+	 * @should return true if properties are equal and have null person
 	 */
 	public boolean equals(Object obj) {
 		if (obj instanceof PersonName) {

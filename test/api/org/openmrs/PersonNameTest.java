@@ -19,6 +19,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.Date;
 
 import org.junit.Test;
+import org.openmrs.test.Verifies;
 
 /**
  * This class should test all methods on the PersonName object This class does not touch the
@@ -27,12 +28,11 @@ import org.junit.Test;
 public class PersonNameTest {
 	
 	/**
-	 * Test the .equals method
-	 * 
-	 * @throws Exception
+	 * @see {@link PersonName#equals(Object)}
 	 */
 	@Test
-	public void shouldPersonNameEqualityWithPersonSubObject() throws Exception {
+	@Verifies(value = "should not fail if either has a null person property", method = "equals(Object)")
+	public void equals_shouldNotFailIfEitherHasANullPersonProperty() throws Exception {
 		
 		PersonName pn1 = new PersonName();
 		pn1.setGivenName("firsttest");
@@ -49,6 +49,25 @@ public class PersonNameTest {
 		// this should not fail if the "person" object on PersonName is null
 		assertFalse("The names should not be equal", pn1.equals(pn2));
 		assertFalse("The names should not be equal", pn2.equals(pn1));
+	}
+	
+	/**
+	 * @see {@link PersonName#equals(Object)}
+	 */
+	@Test
+	@Verifies(value = "should return false if this has a missing person property", method = "equals(Object)")
+	public void equals_shouldReturnFalseIfThisHasAMissingPersonProperty() throws Exception {
+		PersonName pn1 = new PersonName();
+		pn1.setGivenName("firsttest");
+		pn1.setFamilyName("firsttest2");
+		pn1.setDateCreated(new Date());
+		pn1.setVoided(false);
+		
+		PersonName pn2 = new PersonName();
+		pn2.setGivenName("secondtest");
+		pn2.setFamilyName("secondtest2");
+		pn1.setDateCreated(new Date());
+		pn2.setVoided(false);
 		
 		// if only one has a non-null person object
 		Person person = new Person();
@@ -56,7 +75,43 @@ public class PersonNameTest {
 		
 		// test in both directions
 		assertFalse("The names should not be equal", pn1.equals(pn2));
+	}
+	
+	/**
+	 * @see {@link PersonName#equals(Object)}
+	 */
+	@Test
+	@Verifies(value = "should return false if obj has a missing person property", method = "equals(Object)")
+	public void equals_shouldReturnFalseIfObjHasAMissingPersonProperty() throws Exception {
+		PersonName pn1 = new PersonName();
+		pn1.setGivenName("firsttest");
+		pn1.setFamilyName("firsttest2");
+		pn1.setDateCreated(new Date());
+		pn1.setVoided(false);
+		
+		PersonName pn2 = new PersonName();
+		pn2.setGivenName("secondtest");
+		pn2.setFamilyName("secondtest2");
+		pn1.setDateCreated(new Date());
+		pn2.setVoided(false);
+		
+		// if only one has a non-null person object
+		Person person = new Person();
+		pn2.setPerson(person);
 		assertFalse("The names should not be equal", pn2.equals(pn1));
+	}
+	
+	/**
+	 * @see {@link PersonName#equals(Object)}
+	 */
+	@Test
+	@Verifies(value = "should return true if properties are equal and have null person", method = "equals(Object)")
+	public void equals_shouldReturnTrueIfPropertiesAreEqualAndHaveNullPerson() throws Exception {
+		PersonName pn1 = new PersonName();
+		pn1.setGivenName("firsttest");
+		pn1.setFamilyName("firsttest2");
+		pn1.setDateCreated(new Date());
+		pn1.setVoided(false);
 		
 		// test with objects supposedly equal now
 		PersonName pn3 = new PersonName();
@@ -67,11 +122,6 @@ public class PersonNameTest {
 		
 		assertTrue("The names should be equal", pn1.equals(pn3));
 		assertTrue("The names should be equal", pn3.equals(pn1));
-		
-		// now try with one of the objects having a non-null person
-		pn3.setPerson(new Person());
-		assertFalse("The names should not be equal", pn3.equals(pn1));
-		assertFalse("The names should not be equal", pn1.equals(pn3));
 		
 	}
 	

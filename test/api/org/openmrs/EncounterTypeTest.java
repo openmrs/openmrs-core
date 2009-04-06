@@ -15,6 +15,7 @@ package org.openmrs;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.openmrs.test.Verifies;
 
 /**
  * This class tests the all of the {@link EncounterType} non-trivial object methods.
@@ -26,10 +27,11 @@ public class EncounterTypeTest {
 	/**
 	 * Make sure the EncounterType(Integer) constructor sets the encounterTypeId
 	 * 
-	 * @throws Exception
+	 * @see {@link EncounterType#EncounterType(Integer)}
 	 */
 	@Test
-	public void shouldSetEncounterTypeIdFromConstructor() throws Exception {
+	@Verifies(value = "should set encounter type id with given parameter", method = "EncounterType(Integer)")
+	public void EncounterType_shouldSetEncounterTypeIdWithGivenParameter() throws Exception {
 		EncounterType encounterType = new EncounterType(123);
 		Assert.assertEquals(123, encounterType.getEncounterTypeId().intValue());
 	}
@@ -38,10 +40,11 @@ public class EncounterTypeTest {
 	 * Makes sure that two different encounterType objects that have the same encounterType id are
 	 * considered equal
 	 * 
-	 * @throws Exception
+	 * @see {@link EncounterType#equals(Object)}
 	 */
 	@Test
-	public void shouldHaveEqualEncounterTypeObjectsByEncounterTypeId() throws Exception {
+	@Verifies(value = "should have equal encounter type objects by encounter type id", method = "equals(Object)")
+	public void equals_shouldHaveEqualEncounterTypeObjectsByEncounterTypeId() throws Exception {
 		EncounterType encounterType1 = new EncounterType(1);
 		// another encounterType with the same encounterType id
 		EncounterType encounterType2 = new EncounterType(1);
@@ -53,10 +56,11 @@ public class EncounterTypeTest {
 	 * Makes sure that two different encounterType objects that have different encounterType ids are
 	 * considered unequal
 	 * 
-	 * @throws Exception
+	 * @see {@link EncounterType#equals(Object)}
 	 */
 	@Test
-	public void shouldNotHaveEqualEncounterTypeObjectsByEncounterTypeId() throws Exception {
+	@Verifies(value = "should not have equal encounter type objects by encounterTypeId", method = "equals(Object)")
+	public void equals_shouldNotHaveEqualEncounterTypeObjectsByEncounterTypeId() throws Exception {
 		EncounterType encounterType1 = new EncounterType(1);
 		// another encounterType with a different encounterType id
 		EncounterType encounterType2 = new EncounterType(2);
@@ -68,10 +72,11 @@ public class EncounterTypeTest {
 	 * Makes sure that two different encounterType objects that have the same encounterType id are
 	 * considered equal (checks for NPEs)
 	 * 
-	 * @throws Exception
+	 * @see {@link EncounterType#equals(Object)}
 	 */
 	@Test
-	public void shouldHaveEqualEncounterTypeObjectsWithNoEncounterTypeId() throws Exception {
+	@Verifies(value = "should have equal encounter type objects with no encounterTypeId", method = "equals(Object)")
+	public void equals_shouldHaveEqualEncounterTypeObjectsWithNoEncounterTypeId() throws Exception {
 		// an encounterType object with no encounterType id
 		EncounterType encounterType = new EncounterType();
 		
@@ -82,10 +87,11 @@ public class EncounterTypeTest {
 	 * Makes sure that two different encounterType objects are unequal when one of them doesn't have
 	 * an encounterType id defined (checks for NPEs)
 	 * 
-	 * @throws Exception
+	 * @see {@link EncounterType#equals(Object)}
 	 */
 	@Test
-	public void shouldNotHaveEqualEncounterTypeObjectsWhenOneHasNullEncounterTypeId() throws Exception {
+	@Verifies(value = "should not have equal encounter type objects when one has null encounterTypeId", method = "equals(Object)")
+	public void equals_shouldNotHaveEqualEncounterTypeObjectsWhenOneHasNullEncounterTypeId() throws Exception {
 		EncounterType encounterTypeWithId = new EncounterType(1);
 		// another encounterType that doesn't have an encounterType id
 		EncounterType encounterTypeWithoutId = new EncounterType();
@@ -104,10 +110,11 @@ public class EncounterTypeTest {
 	 * Make sure we can call {@link EncounterType#hashCode()} with all null attributes on
 	 * encounterType and still get a hashcode
 	 * 
-	 * @throws Exception
+	 * @see {@link EncounterType#hashCode()}
 	 */
 	@Test
-	public void shouldGetHashCodeWithNullAttributes() throws Exception {
+	@Verifies(value = "should get hashCode even with null attributes", method = "hashCode()")
+	public void hashCode_shouldGetHashCodeEvenWithNullAttributes() throws Exception {
 		new EncounterType().hashCode();
 	}
 	

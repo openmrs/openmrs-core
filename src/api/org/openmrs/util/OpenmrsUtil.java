@@ -130,6 +130,7 @@ public class OpenmrsUtil {
 	 * @return int - the calculated check digit for the given string
 	 * @throws Exception
 	 * @deprecated Use {@link PatientService#getIdentifierValidator(String)}
+	 * @should get valid check digits
 	 */
 	public static int getCheckDigit(String idWithoutCheckdigit) throws Exception {
 		PatientService ps = Context.getPatientService();
@@ -179,11 +180,14 @@ public class OpenmrsUtil {
 		
 	}
 	
-	/** 
+	/**
 	 * @param id
 	 * @return true/false whether id has a valid check digit
 	 * @throws Exception on invalid characters and invalid id formation
 	 * @deprecated Should be using {@link PatientService#getIdentifierValidator(String)}
+	 * @should validate correct check digits
+	 * @should not validate invalid check digits
+	 * @should throw error if given an invalid character in id
 	 */
 	public static boolean isValidCheckDigit(String id) throws Exception {
 		PatientService ps = Context.getPatientService();
@@ -857,6 +861,7 @@ public class OpenmrsUtil {
 	 * 
 	 * @param url an URL
 	 * @return file object for given URL or <code>null</code> if URL is not local
+	 * @should return null given null parameter
 	 */
 	public static File url2file(final URL url) {
 		if (url == null || !"file".equalsIgnoreCase(url.getProtocol())) {
@@ -1442,6 +1447,8 @@ public class OpenmrsUtil {
 	 * @param objects collection to loop over
 	 * @param obj Object to look for in the <code>objects</code>
 	 * @return true/false whether the given object is found
+	 * @should use equals method for comparison instead of compareTo given List collection
+	 * @should use equals method for comparison instead of compareTo given SortedSet collection
 	 */
 	public static boolean collectionContains(Collection<?> objects, Object obj) {
 		if (obj == null || objects == null)
@@ -1460,9 +1467,9 @@ public class OpenmrsUtil {
 	 * objects are taken into account
 	 * 
 	 * @return Serializer to do the (de)serialization
-	 * 
-	 * @deprecated - Use OpenmrsSerializer from Context.getSerializationService.getDefaultSerializer()
-	 * 				 Note, this uses a different Serialization mechanism, so you may need to use this for conversion
+	 * @deprecated - Use OpenmrsSerializer from
+	 *             Context.getSerializationService.getDefaultSerializer() Note, this uses a
+	 *             different Serialization mechanism, so you may need to use this for conversion
 	 */
 	@Deprecated
 	public static Serializer getSerializer() {
@@ -1475,9 +1482,9 @@ public class OpenmrsUtil {
 	 * 
 	 * @return Serializer to do the short (de)serialization
 	 * @see OpenmrsConstants#SHORT_SERIALIZATION
-	 * 
-	 * @deprecated - Use OpenmrsSerializer from Context.getSerializationService.getDefaultSerializer()
-	 * 				 Note, this uses a different Serialization mechanism, so you may need to use this for conversion
+	 * @deprecated - Use OpenmrsSerializer from
+	 *             Context.getSerializationService.getDefaultSerializer() Note, this uses a
+	 *             different Serialization mechanism, so you may need to use this for conversion
 	 */
 	@Deprecated
 	public static Serializer getShortSerializer() {
@@ -1491,7 +1498,6 @@ public class OpenmrsUtil {
 	 * 
 	 * @param sessionMap current serialization session
 	 * @return true/false whether or not to do the shortened serialization
-	 * 
 	 * @deprecated - use SerializationService and OpenmrsSerializer implementation for Serialization
 	 */
 	@Deprecated

@@ -72,7 +72,7 @@ public class ModuleInteroperabilityTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@Test
-	public void shouldModuleALoadingModuleB() throws Exception {
+	public void shouldAllowModuleAToLoadModuleBIfARequiresB() throws Exception {
 		
 		OpenmrsClassLoader loader = OpenmrsClassLoader.getInstance();
 		Class<?> atdServiceClass = loader.loadClass("org.openmrs.module.atdproducer.service.ATDService");

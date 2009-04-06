@@ -186,43 +186,37 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * Tests the FormService.getFormFields(Form, Concept) and getFormFields(Form,Concept,Collection)
-	 * methods
-	 * 
-	 * @throws Exception
+	 * @see {@link FormService#getFormField(Form,Concept,Collection<QFormField;>,null)}
 	 */
 	@Test
-	public void shouldGetFormFieldsByFormAndConcept() throws Exception {
+	@Verifies(value = "should ignore formFields passed to ignoreFormFields", method = "getFormField(Form,Concept,Collection<QFormField;>,null)")
+	public void getFormField_shouldIgnoreFormFieldsPassedToIgnoreFormFields() throws Exception {
 		
 		executeDataSet(INITIAL_FIELDS_XML);
 		executeDataSet("org/openmrs/api/include/FormServiceTest-formFields.xml");
 		
-		FormService formService = Context.getFormService();
-		
-		Form form = new Form(1);
-		Concept concept = new Concept(1);
-		List<FormField> ignoreFormFields = new Vector<FormField>();
-		
-		// test that a null ignoreFormFields doens't error out
-		FormField ff = formService.getFormField(form, concept, null, false);
-		assertNotNull(ff);
-		
-		ff = formService.getFormField(form, concept);
-		assertNotNull(ff);
-		
-		// test a non existent concept
-		assertNull(formService.getFormField(form, new Concept(293934)));
-		
-		// test a non existent form
-		assertNull(formService.getFormField(new Form(12343), new Concept(293934)));
+		FormField ff = Context.getFormService().getFormField(new Form(1), new Concept(1));
+		assertNotNull(ff); // sanity check
 		
 		// test that the first formfield is ignored when a second fetch
 		// is done on the same form and same concept
+		List<FormField> ignoreFormFields = new Vector<FormField>();
 		ignoreFormFields.add(ff);
-		FormField ff2 = formService.getFormField(form, concept, ignoreFormFields, false);
+		FormField ff2 = Context.getFormService().getFormField(new Form(1), new Concept(1), ignoreFormFields, false);
 		assertNotNull(ff2);
 		assertNotSame(ff, ff2);
 		
+	}
+	
+	/**
+	 * @see {@link FormService#getFormField(Form,Concept,Collection<QFormField;>,null)}
+	 */
+	@Test
+	@Verifies(value = "should not fail with null ignoreFormFields argument", method = "getFormField(Form,Concept,Collection<QFormField;>,null)")
+	public void getFormField_shouldNotFailWithNullIgnoreFormFieldsArgument() throws Exception {
+		// test that a null ignoreFormFields doesn't error out
+		FormField ff = Context.getFormService().getFormField(new Form(1), new Concept(1), null, false);
+		assertNotNull(ff);
 	}
 	
 	/**
@@ -299,6 +293,26 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(Context.getAuthenticatedUser(), dupForm.getCreator());
 		long oneMinuteDelta = 60 * 1000;
 		Assert.assertEquals(new Date().getTime(), dupForm.getDateCreated().getTime(), oneMinuteDelta);
+	}
+	
+	/**
+	 * @see {@link FormService#getFormField(Form,Concept,Collection<QFormField;>,null)}
+	 */
+	@Test
+	@Verifies(value = "should simply return null for nonexistent concepts", method = "getFormField(Form,Concept,Collection<QFormField;>,null)")
+	public void getFormField_shouldSimplyReturnNullForNonexistentConcepts() throws Exception {
+		// test a non existent concept
+		assertNull(Context.getFormService().getFormField(new Form(1), new Concept(293934)));
+	}
+	
+	/**
+	 * @see {@link FormService#getFormField(Form,Concept,Collection<QFormField;>,null)}
+	 */
+	@Test
+	@Verifies(value = "should simply return null for nonexistent forms", method = "getFormField(Form,Concept,Collection<QFormField;>,null)")
+	public void getFormField_shouldSimplyReturnNullForNonexistentForms() throws Exception {
+		// test a non existent form
+		assertNull(Context.getFormService().getFormField(new Form(12343), new Concept(293934)));
 	}
 	
 }

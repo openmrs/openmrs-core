@@ -512,6 +512,7 @@ public interface PatientSetService {
 	/**
 	 * @return all active or finished drug orders whose drug concept is in the given set (or all
 	 *         drugs if that's null)
+	 * @should return an empty list if cohort is empty  
 	 */
 	@Transactional(readOnly = true)
 	public Map<Integer, List<DrugOrder>> getDrugOrders(Cohort ps, Concept drugSet);

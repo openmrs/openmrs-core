@@ -539,6 +539,11 @@ public interface FormService extends OpenmrsService {
 	 *            of ignoreFormFields) than the first result is returned
 	 * @return Formfield for this concept on this form
 	 * @throws APIException
+	 * @should get form fields by form and concept
+	 * @should not fail with null ignoreFormFields argument
+	 * @should simply return null for nonexistent concepts
+	 * @should simply return null for nonexistent forms
+	 * @should ignore formFields passed to ignoreFormFields
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_FORMS)

@@ -48,7 +48,11 @@ public class EncounterType implements java.io.Serializable {
 	public EncounterType() {
 	}
 	
-	/** constructor with id */
+	/**
+	 * Constructor with id 
+	 * 
+	 * @should set encounter type id with given parameter
+	 */
 	public EncounterType(Integer encounterTypeId) {
 		this.encounterTypeId = encounterTypeId;
 	}
@@ -70,6 +74,10 @@ public class EncounterType implements java.io.Serializable {
 	 * 
 	 * @param obj
 	 * @return boolean true/false whether or not they are the same objects
+	 * @should have equal encounter type objects by encounter type id
+	 * @should not have equal encounter type objects by encounterTypeId
+	 * @should have equal encounter type objects with no encounterTypeId
+	 * @should not have equal encounter type objects when one has null encounterTypeId
 	 */
 	public boolean equals(Object obj) {
 		if (obj == null || !(obj instanceof EncounterType))
@@ -84,6 +92,7 @@ public class EncounterType implements java.io.Serializable {
 	
 	/**
 	 * @see java.lang.Object#hashCode()
+	 * @should get hashCode even with null attributes
 	 */
 	public int hashCode() {
 		if (this.getEncounterTypeId() == null)
