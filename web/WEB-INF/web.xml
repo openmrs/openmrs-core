@@ -239,7 +239,10 @@
     </filter>
     <filter-mapping>
 		<filter-name>HibernateFilter</filter-name> 
-		<url-pattern>/*</url-pattern> 
+		<url-pattern>/*</url-pattern>
+		<dispatcher>ERROR</dispatcher>
+		<dispatcher>FORWARD</dispatcher>
+		<dispatcher>REQUEST</dispatcher>
 	</filter-mapping>
 	<!--  End second filter -->
 	
@@ -249,7 +252,11 @@
 	</filter>
 	<filter-mapping>
 		<filter-name>OpenmrsFilter</filter-name> 
-		<url-pattern>/*</url-pattern> 
+		<url-pattern>/*</url-pattern>
+		<dispatcher>ERROR</dispatcher>
+		<dispatcher>FORWARD</dispatcher>
+		<dispatcher>REQUEST</dispatcher>
+		<dispatcher>INCLUDE</dispatcher>
 	</filter-mapping>
 	
 	<filter>
