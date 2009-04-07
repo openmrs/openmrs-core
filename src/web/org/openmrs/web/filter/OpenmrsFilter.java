@@ -16,14 +16,10 @@ package org.openmrs.web.filter;
 import java.io.IOException;
 import java.util.Date;
 
-import javax.servlet.Filter;
 import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
@@ -32,15 +28,17 @@ import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.UserContext;
 import org.openmrs.web.WebConstants;
-import org.springframework.context.ApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 /**
  * This is the custom OpenMRS filter. It is defined as the filter of choice in the web.xml file. All
  * page/object calls run through the doFilter method so we can wrap every session with the user's
- * userContext (which holds the user's authenticated info)
+ * userContext (which holds the user's authenticated info). This is needed because the OpenMRS API
+ * keeps authentication information on the current Thread. Web applications use a different thread
+ * per request, so before each request this filter will make sure that the UserContext (the
+ * authentication information) is on the Thread.
  */
-public class OpenmrsFilter implements Filter {
+public class OpenmrsFilter extends OncePerRequestFilter {
 	
 	protected final Log log = LogFactory.getLog(getClass());
 	
@@ -56,104 +54,67 @@ public class OpenmrsFilter implements Filter {
 	 * of this is to make sure the user's current userContext is on the session and on the current
 	 * thread
 	 * 
-	 * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest,
-	 *      javax.servlet.ServletResponse, javax.servlet.FilterChain)
+	 * @see org.springframework.web.filter.OncePerRequestFilter#doFilterInternal(javax.servlet.http.HttpServletRequest,
+	 *      javax.servlet.http.HttpServletResponse, javax.servlet.FilterChain)
 	 */
-	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
-	                                                                                         ServletException {
+	@Override
+	protected void doFilterInternal(HttpServletRequest httpRequest, HttpServletResponse httpResponse, FilterChain chain)
+	                                                                                                                    throws ServletException,
+	                                                                                                                    IOException {
 		
-		HttpServletRequest httpRequest = (HttpServletRequest) request;
 		HttpSession httpSession = httpRequest.getSession();
-		UserContext userContext = null;
 		
-		Object val = httpRequest.getAttribute(WebConstants.INIT_REQ_UNIQUE_ID);
-		
-		//the request will not have the value if this is the initial request
-		boolean initialRequest = (val == null);
+		// used by htmlInclude tag
+		httpRequest.setAttribute(WebConstants.INIT_REQ_UNIQUE_ID, String.valueOf(new Date().getTime()));
 		
 		if (log.isDebugEnabled()) {
-			log.debug("initial Request? " + initialRequest);
 			log.debug("requestURI " + httpRequest.getRequestURI());
 			log.debug("requestURL " + httpRequest.getRequestURL());
 			log.debug("request path info " + httpRequest.getPathInfo());
 		}
 		
-		//set/forward the request init attribute
-		if (initialRequest)
-			httpRequest.setAttribute(WebConstants.INIT_REQ_UNIQUE_ID, String.valueOf(new Date().getTime()));
+		// User context is created if it doesn't already exist and added to the session
+		// note: this usercontext storage logic is copied to webinf/view/uncaughtexception.jsp to 
+		// 		 prevent stack traces being shown to non-authenticated users
+		UserContext userContext = (UserContext) httpSession.getAttribute(WebConstants.OPENMRS_USER_CONTEXT_HTTPSESSION_ATTR);
 		
-		//context = (Context)httpSession.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
-		//context = (Context)httpRequest.getAttribute(WebConstants.OPENMRS_CONTEXT_HTTPSESSION_ATTR);
+		// default the session username attribute to anonymous
+		httpSession.setAttribute("username", "-anonymous user-");
 		
-		if (initialRequest) {
-			// default the session username attribute to anonymous
-			httpSession.setAttribute("username", "-anonymous user-");
+		// if there isn't a userContext on the session yet, create one
+		// and set it onto the session
+		if (userContext == null) {
+			userContext = new UserContext();
+			httpSession.setAttribute(WebConstants.OPENMRS_USER_CONTEXT_HTTPSESSION_ATTR, userContext);
 			
-			// User context is created if it doesn't already exist and added to the session
-			// note: this usercontext storage logic is copied to webinf/view/uncaughtexception.jsp to 
-			// 		 prevent stack traces being shown to non-authenticated users
-			userContext = (UserContext) httpSession.getAttribute(WebConstants.OPENMRS_USER_CONTEXT_HTTPSESSION_ATTR);
-			
-			// if there isn't a userContext on the session yet, create one
-			// and set it onto the session
-			if (userContext == null) {
-				userContext = new UserContext();
-				httpSession.setAttribute(WebConstants.OPENMRS_USER_CONTEXT_HTTPSESSION_ATTR, userContext);
-				
-				if (log.isDebugEnabled())
-					log.debug("Just set user context " + userContext + " as attribute on session");
-			} else {
-				// set username as attribute on session so parent servlet container 
-				// can identify sessions easier
-				User user;
-				if ((user = userContext.getAuthenticatedUser()) != null)
-					httpSession.setAttribute("username", user.getUsername());
-			}
-			
-			// set the locale on the session (for the servlet container as well)
-			httpSession.setAttribute("locale", userContext.getLocale());
-			
-			// Add the user context to the current thread 
-			Context.setUserContext(userContext);
+			if (log.isDebugEnabled())
+				log.debug("Just set user context " + userContext + " as attribute on session");
+		} else {
+			// set username as attribute on session so parent servlet container 
+			// can identify sessions easier
+			User user;
+			if ((user = userContext.getAuthenticatedUser()) != null)
+				httpSession.setAttribute("username", user.getUsername());
 		}
 		
-		log.debug("before doFilter");
+		// set the locale on the session (for the servlet container as well)
+		httpSession.setAttribute("locale", userContext.getLocale());
+		
+		// Add the user context to the current thread 
+		Context.setUserContext(userContext);
+		
+		log.debug("before chain.Filter");
 		
 		// continue the filter chain (going on to spring, authorization, etc)
 		try {
-			chain.doFilter(request, response);
+			chain.doFilter(httpRequest, httpResponse);
 		}
 		finally {
-			if (initialRequest) {
-				// Clear the context so there's no user information left on the thread
-				Context.clearUserContext();
-				log.debug("This was considered an initial request");
-			}
+			Context.clearUserContext();
 		}
 		
-		// TODO why are we setting the userContext here again?
-		//httpSession.setAttribute(WebConstants.OPENMRS_USER_CONTEXT_HTTPSESSION_ATTR, userContext);
+		log.debug("after chain.doFilter");
 		
-		log.debug("after doFilter");
-		
-	}
-	
-	/**
-	 * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
-	 */
-	public void init(FilterConfig filterConfig) throws ServletException {
-		log.debug("Initializating filter");
-	}
-	
-	/**
-	 * Get the application context.
-	 * 
-	 * @param httpRequest
-	 * @return
-	 */
-	public ApplicationContext getApplicationContext(HttpServletRequest httpRequest) {
-		ServletContext servletContext = httpRequest.getSession().getServletContext();
-		return WebApplicationContextUtils.getRequiredWebApplicationContext(servletContext);
 	}
 	
 }

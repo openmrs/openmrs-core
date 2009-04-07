@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!-- Application context definition for Spring for the OpenMRS web layer. -->
-<!-- See /metadata/api/spring/applicationContext-service.xml for layer agnositic spring setup -->
+<!-- See /metadata/api/spring/applicationContext-service.xml for layer agnostic spring setup -->
 
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -13,9 +13,9 @@
            http://www.springframework.org/schema/context/spring-context-2.5.xsd
            http://www.springframework.org/schema/util
            http://www.springframework.org/schema/util/spring-util-2.0.xsd">
-
+	
 	<!--  **************************  VIEW RESOLVER / CONTROLLERS  *************************  -->
-
+	
 	<bean id="jspViewResolver"
 		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
 		<property name="viewClass" value="org.springframework.web.servlet.view.JstlView" />
