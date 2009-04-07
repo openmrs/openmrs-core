@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
@@ -54,6 +55,18 @@ public class ModuleFileParser {
 	private File moduleFile = null;
 	
 	/**
+	 * List out all of the possible version numbers for config files that openmrs has DTDs for.
+	 * These are usually stored at http://resources.openmrs.org/doctype/config-x.x.dt
+	 */
+	private static List<String> validConfigVersions = new ArrayList<String>();
+	
+	static {
+		validConfigVersions.add("1.0");
+		validConfigVersions.add("1.1");
+		validConfigVersions.add("1.2");
+	}
+	
+	/**
 	 * Constructor
 	 * 
 	 * @param moduleFile the module (jar)file that will be parsed
@@ -66,12 +79,6 @@ public class ModuleFileParser {
 			throw new ModuleException("Module file does not have the correct .omod file extension", moduleFile.getName());
 		
 		this.moduleFile = moduleFile;
-	}
-	
-	private List<String> validConfigVersions() {
-		List<String> versions = new Vector<String>();
-		versions.add("1.0");
-		return versions;
 	}
 	
 	/**
@@ -157,7 +164,7 @@ public class ModuleFileParser {
 			
 			String configVersion = rootNode.getAttribute("configVersion");
 			
-			if (!validConfigVersions().contains(configVersion))
+			if (!validConfigVersions.contains(configVersion))
 				throw new ModuleException("Invalid config version: " + configVersion, moduleFile.getName());
 			
 			String name = getElement(rootNode, configVersion, "name");
