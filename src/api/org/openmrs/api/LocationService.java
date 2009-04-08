@@ -117,6 +117,8 @@ public interface LocationService extends OpenmrsService {
 	 * Returns all locations.
 	 * 
 	 * @param includeRetired whether or not to include retired locations
+	 * 
+	 * @should return locations when includeRetired is false
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_LOCATIONS })
