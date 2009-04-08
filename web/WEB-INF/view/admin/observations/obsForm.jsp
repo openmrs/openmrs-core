@@ -306,6 +306,7 @@
 			<script type="text/javascript">$('obsTable').style.visibility = 'hidden';</script>
 			<spring:bind path="person">
 				<openmrs_tag:personField formFieldName="person" searchLabelCode="Person.findBy" initialValue="${status.editor.value.personId}" linkUrl="" callback="" />
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
 	</tr>
