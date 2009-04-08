@@ -15,7 +15,6 @@ package org.openmrs;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -30,7 +29,6 @@ import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.simpleframework.xml.Attribute;
-import org.simpleframework.xml.Element;
 import org.simpleframework.xml.load.Replace;
 import org.simpleframework.xml.load.Validate;
 
@@ -61,22 +59,6 @@ public class User extends Person implements java.io.Serializable {
 	private Set<Role> roles;
 	
 	private Map<String, String> userProperties;
-	
-	private User creator;
-	
-	private Date dateCreated;
-	
-	private User changedBy;
-	
-	private Date dateChanged;
-	
-	private Boolean voided = false;
-	
-	private User voidedBy;
-	
-	private Date dateVoided;
-	
-	private String voidReason;
 	
 	private List<Locale> proficientLocales = null;
 	
@@ -109,7 +91,8 @@ public class User extends Person implements java.io.Serializable {
 	public boolean isSuperUser() {
 		Set<Role> tmproles = getAllRoles();
 		
-		Role role = new Role(OpenmrsConstants.SUPERUSER_ROLE); //default administrator with complete control
+		Role role = new Role(OpenmrsConstants.SUPERUSER_ROLE); // default administrator with
+		// complete control
 		
 		if (tmproles.contains(role))
 			return true;
@@ -449,138 +432,6 @@ public class User extends Person implements java.io.Serializable {
 			return userProperties.get(prop);
 		
 		return defaultValue;
-	}
-	
-	/**
-	 * @return Returns the creator.
-	 */
-	@Element(required = false)
-	public User getCreator() {
-		return creator;
-	}
-	
-	/**
-	 * @param creator The creator to set.
-	 */
-	@Element(required = false)
-	public void setCreator(User creator) {
-		this.creator = creator;
-	}
-	
-	/**
-	 * @return Returns the changedBy.
-	 */
-	@Element(required = false)
-	public User getChangedBy() {
-		return changedBy;
-	}
-	
-	/**
-	 * @param changedBy The changedBy to set.
-	 */
-	@Element(required = false)
-	public void setChangedBy(User changedBy) {
-		this.changedBy = changedBy;
-	}
-	
-	/**
-	 * @return Returns the dateChanged.
-	 */
-	@Element(required = false)
-	public Date getDateChanged() {
-		return dateChanged;
-	}
-	
-	/**
-	 * @param dateChanged The dateChanged to set.
-	 */
-	@Element(required = false)
-	public void setDateChanged(Date dateChanged) {
-		this.dateChanged = dateChanged;
-	}
-	
-	/**
-	 * @return Returns the dateCreated.
-	 */
-	@Element(required = false)
-	public Date getDateCreated() {
-		return dateCreated;
-	}
-	
-	/**
-	 * @param dateCreated The dateCreated to set.
-	 */
-	@Element(required = false)
-	public void setDateCreated(Date dateCreated) {
-		this.dateCreated = dateCreated;
-	}
-	
-	/**
-	 * @return Returns the dateVoided.
-	 */
-	@Element(required = false)
-	public Date getDateVoided() {
-		return dateVoided;
-	}
-	
-	/**
-	 * @param dateVoided The dateVoided to set.
-	 */
-	@Element(required = false)
-	public void setDateVoided(Date dateVoided) {
-		this.dateVoided = dateVoided;
-	}
-	
-	/**
-	 * @return Returns the void status.
-	 */
-	public Boolean isVoided() {
-		return voided;
-	}
-	
-	@Attribute(required = true)
-	public Boolean getVoided() {
-		return isVoided();
-	}
-	
-	/**
-	 * @param voided The void status to set.
-	 */
-	@Attribute(required = true)
-	public void setVoided(Boolean voided) {
-		this.voided = voided;
-	}
-	
-	/**
-	 * @return Returns the voidedBy.
-	 */
-	@Element(required = false)
-	public User getVoidedBy() {
-		return voidedBy;
-	}
-	
-	/**
-	 * @param voidedBy The voidedBy to set.
-	 */
-	@Element(required = false)
-	public void setVoidedBy(User voidedBy) {
-		this.voidedBy = voidedBy;
-	}
-	
-	/**
-	 * @return Returns the voidReason.
-	 */
-	@Element(data = true, required = false)
-	public String getVoidReason() {
-		return voidReason;
-	}
-	
-	/**
-	 * @param voidReason The voidReason to set.
-	 */
-	@Element(data = true, required = false)
-	public void setVoidReason(String voidReason) {
-		this.voidReason = voidReason;
 	}
 	
 	/**

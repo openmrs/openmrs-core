@@ -14,12 +14,12 @@
 package org.openmrs;
 
 /**
- * In OpenMRS, we distinguish between data and metadata within our data model.  
- * Data (as opposed to metadata) generally represent person- or patient-specific data.  
- * OpenMRS objects that represent person- or patient-specific data should implement this interface.
+ * In OpenMRS, we distinguish between data and metadata within our data model. Data (as opposed to
+ * metadata) generally represent person- or patient-specific data. OpenMRS objects that represent
+ * person- or patient-specific data should implement this interface.
  * 
  * @see OpenmrsMetadata
-*/
+ */
 public interface OpenmrsData extends OpenmrsObject, Auditable, Voidable {
-	
+
 }

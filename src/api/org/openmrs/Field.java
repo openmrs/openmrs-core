@@ -13,7 +13,6 @@
  */
 package org.openmrs;
 
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -22,17 +21,13 @@ import java.util.Set;
  * 
  * @version 1.0
  */
-public class Field implements java.io.Serializable {
+public class Field extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 4454L;
 	
 	// Fields
 	
 	private Integer fieldId;
-	
-	private String name;
-	
-	private String description;
 	
 	private FieldType fieldType;
 	
@@ -46,25 +41,9 @@ public class Field implements java.io.Serializable {
 	
 	private Boolean selectMultiple = false;
 	
-	private User creator;
-	
-	private Date dateCreated;
-	
-	private User changedBy;
-	
-	private Date dateChanged;
-	
 	private Set<FieldAnswer> fieldAnswers;
 	
 	private Set<Form> forms;
-	
-	private User retiredBy;
-	
-	private Boolean retired = Boolean.FALSE;
-	
-	private Date dateRetired;
-	
-	private String retireReason;
 	
 	// Constructors
 	
@@ -111,34 +90,6 @@ public class Field implements java.io.Serializable {
 	 */
 	public void setFieldId(Integer fieldId) {
 		this.fieldId = fieldId;
-	}
-	
-	/**
-	 * @return Returns the name.
-	 */
-	public String getName() {
-		return name;
-	}
-	
-	/**
-	 * @param name The name to set.
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
-	
-	/**
-	 * @return Returns the description.
-	 */
-	public String getDescription() {
-		return description;
-	}
-	
-	/**
-	 * @param description The description to set.
-	 */
-	public void setDescription(String description) {
-		this.description = description;
 	}
 	
 	/**
@@ -231,63 +182,6 @@ public class Field implements java.io.Serializable {
 	}
 	
 	/**
-	 * @return Returns the creator.
-	 */
-	public User getCreator() {
-		return creator;
-	}
-	
-	/**
-	 * @param creator The creator to set.
-	 */
-	public void setCreator(User creator) {
-		
-		this.creator = creator;
-	}
-	
-	/**
-	 * @return Returns the dateCreated.
-	 */
-	public Date getDateCreated() {
-		return dateCreated;
-	}
-	
-	/**
-	 * @param dateCreated The dateCreated to set.
-	 */
-	public void setDateCreated(Date dateCreated) {
-		this.dateCreated = dateCreated;
-	}
-	
-	/**
-	 * @return Returns the changedBy.
-	 */
-	public User getChangedBy() {
-		return changedBy;
-	}
-	
-	/**
-	 * @param changedBy The changedBy to set.
-	 */
-	public void setChangedBy(User changedBy) {
-		this.changedBy = changedBy;
-	}
-	
-	/**
-	 * @return Returns the dateChanged.
-	 */
-	public Date getDateChanged() {
-		return dateChanged;
-	}
-	
-	/**
-	 * @param dateChanged The dateChanged to set.
-	 */
-	public void setDateChanged(Date dateChanged) {
-		this.dateChanged = dateChanged;
-	}
-	
-	/**
 	 * @return Returns the fieldAnswers.
 	 */
 	public Set<FieldAnswer> getAnswers() {
@@ -332,58 +226,20 @@ public class Field implements java.io.Serializable {
 		this.forms = forms;
 	}
 	
-	public Boolean isRetired() {
-		return retired;
-	}
-	
-	public Boolean getRetired() {
-		return isRetired();
-	}
-	
-	public void setRetired(Boolean retired) {
-		this.retired = retired;
+	/**
+	 * @see org.openmrs.OpenmrsObject#getId()
+	 */
+	public Integer getId() {
+		
+		return getFieldId();
 	}
 	
 	/**
-	 * @return the retiredBy
+	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
-	public User getRetiredBy() {
-		return retiredBy;
-	}
-	
-	/**
-	 * @param retiredBy the retiredBy to set
-	 */
-	public void setRetiredBy(User retiredBy) {
-		this.retiredBy = retiredBy;
-	}
-	
-	/**
-	 * @return the dateRetired
-	 */
-	public Date getDateRetired() {
-		return dateRetired;
-	}
-	
-	/**
-	 * @param dateRetired the dateRetired to set
-	 */
-	public void setDateRetired(Date dateRetired) {
-		this.dateRetired = dateRetired;
-	}
-	
-	/**
-	 * @return the retireReason
-	 */
-	public String getRetireReason() {
-		return retireReason;
-	}
-	
-	/**
-	 * @param retireReason the retireReason to set
-	 */
-	public void setRetireReason(String retireReason) {
-		this.retireReason = retireReason;
+	public void setId(Integer id) {
+		setFieldId(id);
+		
 	}
 	
 }

@@ -197,7 +197,7 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 	}
 	
 	/**
-	 * TODO describe use cases 
+	 * TODO describe use cases
 	 * 
 	 * @param locale
 	 * @return the answers for this concept sorted according to ConceptAnswerComparator

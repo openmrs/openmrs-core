@@ -28,7 +28,7 @@ import org.openmrs.util.OpenmrsConstants;
  * 
  * @see Privilege
  */
-public class Role implements java.io.Serializable {
+public class Role extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 1234233L;
 	
@@ -37,8 +37,6 @@ public class Role implements java.io.Serializable {
 	// Fields
 	
 	private String role;
-	
-	private String description;
 	
 	private Set<Privilege> privileges;
 	
@@ -58,7 +56,7 @@ public class Role implements java.io.Serializable {
 	/** constructor with all database required properties */
 	public Role(String role, String description) {
 		this.role = role;
-		this.description = description;
+		setDescription(description);
 	}
 	
 	/**
@@ -80,20 +78,6 @@ public class Role implements java.io.Serializable {
 	}
 	
 	// Property accessors
-	
-	/**
-	 * @return Returns the description.
-	 */
-	public String getDescription() {
-		return description;
-	}
-	
-	/**
-	 * @param description The description to set.
-	 */
-	public void setDescription(String description) {
-		this.description = description;
-	}
 	
 	/**
 	 * @return Returns the privileges.
@@ -224,13 +208,13 @@ public class Role implements java.io.Serializable {
 		if (!this.inheritsRoles())
 			return children;
 		
-		Set<Role> allRoles = new HashSet<Role>(); //total roles (parents + children)
-		Set<Role> myRoles = new HashSet<Role>(); //new roles
+		Set<Role> allRoles = new HashSet<Role>(); // total roles (parents + children)
+		Set<Role> myRoles = new HashSet<Role>(); // new roles
 		allRoles.addAll(children);
 		
 		myRoles.addAll(this.getInheritedRoles());
 		myRoles.removeAll(children);
-		myRoles.remove(this); //prevent an obvious looping problem
+		myRoles.remove(this); // prevent an obvious looping problem
 		allRoles.addAll(myRoles);
 		
 		for (Role r : myRoles) {
@@ -242,6 +226,20 @@ public class Role implements java.io.Serializable {
 			log.debug("Total roles: " + allRoles);
 		
 		return allRoles;
+	}
+	
+	/**
+	 * @see org.openmrs.OpenmrsObject#getId()
+	 */
+	public Integer getId() {
+		throw new UnsupportedOperationException();
+	}
+	
+	/**
+	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
+	 */
+	public void setId(Integer id) {
+		throw new UnsupportedOperationException();
 	}
 	
 }

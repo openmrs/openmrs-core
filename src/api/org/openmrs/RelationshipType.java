@@ -13,8 +13,6 @@
  */
 package org.openmrs;
 
-import java.util.Date;
-
 /**
  * Defines a type of relationship between two people in the database. A relationship is two-way.
  * There is a name for the relationship in both directions. For example: a) physician Joe b) patient
@@ -26,7 +24,7 @@ import java.util.Date;
  * father-son, father-daughter, mother-daughter) In English, we run into a tricky RelationshipType
  * with aunts and uncles. We have chosen to define them as aunt/uncle-niece/nephew.
  */
-public class RelationshipType implements java.io.Serializable {
+public class RelationshipType extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 4223L;
 	
@@ -38,15 +36,9 @@ public class RelationshipType implements java.io.Serializable {
 	
 	private String bIsToA;
 	
-	private String description;
-	
 	private Integer weight = 0;
 	
 	private Boolean preferred = false;
-	
-	private User creator;
-	
-	private Date dateCreated;
 	
 	// Constructors
 	
@@ -97,20 +89,6 @@ public class RelationshipType implements java.io.Serializable {
 	 */
 	public void setRelationshipTypeId(Integer relationshipTypeId) {
 		this.relationshipTypeId = relationshipTypeId;
-	}
-	
-	/**
-	 * @return Returns the description.
-	 */
-	public String getDescription() {
-		return description;
-	}
-	
-	/**
-	 * @param description The description to set.
-	 */
-	public void setDescription(String description) {
-		this.description = description;
 	}
 	
 	/**
@@ -189,38 +167,25 @@ public class RelationshipType implements java.io.Serializable {
 	}
 	
 	/**
-	 * @return Returns the creator.
-	 */
-	public User getCreator() {
-		return creator;
-	}
-	
-	/**
-	 * @param creator The creator to set.
-	 */
-	public void setCreator(User creator) {
-		this.creator = creator;
-	}
-	
-	/**
-	 * @return Returns the dateCreated.
-	 */
-	public Date getDateCreated() {
-		return dateCreated;
-	}
-	
-	/**
-	 * @param dateCreated The dateCreated to set.
-	 */
-	public void setDateCreated(Date dateCreated) {
-		this.dateCreated = dateCreated;
-	}
-	
-	/**
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
 		return getaIsToB() + "/" + getbIsToA();
+	}
+	
+	/**
+	 * @see org.openmrs.OpenmrsObject#getId()
+	 */
+	public Integer getId() {
+		return getRelationshipTypeId();
+	}
+	
+	/**
+	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
+	 */
+	public void setId(Integer id) {
+		setRelationshipTypeId(id);
+		
 	}
 	
 }

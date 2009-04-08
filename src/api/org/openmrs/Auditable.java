@@ -16,17 +16,17 @@ package org.openmrs;
 import java.util.Date;
 
 /**
- * In OpenMRS, the convention is to track basic audit information for each object related to
- * who initially created the object and when, and who last changed the object and when.
- * This allows us to check, for example, when a patient record was created, 
- * or when a person address was last updated in the system.
- * Any object that needs to keep track of this information should implement this interface.
+ * In OpenMRS, the convention is to track basic audit information for each object related to who
+ * initially created the object and when, and who last changed the object and when. This allows us
+ * to check, for example, when a patient record was created, or when a person address was last
+ * updated in the system. Any object that needs to keep track of this information should implement
+ * this interface.
  * 
  * @see OpenmrsData
  * @see OpenmrsMetadata
-*/
+ */
 public interface Auditable {
-
+	
 	/**
 	 * @return User - the user who created the object
 	 */
@@ -66,5 +66,5 @@ public interface Auditable {
 	 * @param dateChanged - the date the object was last changed
 	 */
 	public void setDateChanged(Date dateChanged);
-
+	
 }

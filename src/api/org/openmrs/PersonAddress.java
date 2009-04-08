@@ -15,7 +15,6 @@ package org.openmrs;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -29,7 +28,7 @@ import org.simpleframework.xml.Root;
  * class, so a Person/Patient/User can have zero to n addresses
  */
 @Root(strict = false)
-public class PersonAddress implements java.io.Serializable, Cloneable, Comparable<PersonAddress> {
+public class PersonAddress extends BaseOpenmrsData implements java.io.Serializable, Cloneable, Comparable<PersonAddress> {
 	
 	private static Log log = LogFactory.getLog(PersonAddress.class);
 	
@@ -68,18 +67,6 @@ public class PersonAddress implements java.io.Serializable, Cloneable, Comparabl
 	private String latitude;
 	
 	private String longitude;
-	
-	private User creator;
-	
-	private Date dateCreated;
-	
-	private Boolean voided = false;
-	
-	private User voidedBy;
-	
-	private Date dateVoided;
-	
-	private String voidReason;
 	
 	// Constructors
 	
@@ -277,38 +264,6 @@ public class PersonAddress implements java.io.Serializable, Cloneable, Comparabl
 	}
 	
 	/**
-	 * @return Returns the creator.
-	 */
-	@Element(required = true)
-	public User getCreator() {
-		return creator;
-	}
-	
-	/**
-	 * @param creator The creator to set.
-	 */
-	@Element(required = true)
-	public void setCreator(User creator) {
-		this.creator = creator;
-	}
-	
-	/**
-	 * @return Returns the dateCreated.
-	 */
-	@Element(required = true)
-	public Date getDateCreated() {
-		return dateCreated;
-	}
-	
-	/**
-	 * @param dateCreated The dateCreated to set.
-	 */
-	@Element(required = true)
-	public void setDateCreated(Date dateCreated) {
-		this.dateCreated = dateCreated;
-	}
-	
-	/**
 	 * @return Returns the latitude.
 	 */
 	@Attribute(required = false)
@@ -402,74 +357,6 @@ public class PersonAddress implements java.io.Serializable, Cloneable, Comparabl
 	@Element(data = true, required = false)
 	public void setStateProvince(String stateProvince) {
 		this.stateProvince = stateProvince;
-	}
-	
-	/**
-	 * @return Returns the dateVoided.
-	 */
-	@Element(required = false)
-	public Date getDateVoided() {
-		return dateVoided;
-	}
-	
-	/**
-	 * @param dateVoided The dateVoided to set.
-	 */
-	@Element(required = false)
-	public void setDateVoided(Date dateVoided) {
-		this.dateVoided = dateVoided;
-	}
-	
-	/**
-	 * @return Returns the voided.
-	 */
-	public Boolean isVoided() {
-		return voided;
-	}
-	
-	@Attribute(required = true)
-	public Boolean getVoided() {
-		return isVoided();
-	}
-	
-	/**
-	 * @param voided The voided to set.
-	 */
-	@Attribute(required = true)
-	public void setVoided(Boolean voided) {
-		this.voided = voided;
-	}
-	
-	/**
-	 * @return Returns the voidedBy.
-	 */
-	@Element(required = false)
-	public User getVoidedBy() {
-		return voidedBy;
-	}
-	
-	/**
-	 * @param voidedBy The voidedBy to set.
-	 */
-	@Element(required = false)
-	public void setVoidedBy(User voidedBy) {
-		this.voidedBy = voidedBy;
-	}
-	
-	/**
-	 * @return Returns the voidReason.
-	 */
-	@Element(data = true, required = false)
-	public String getVoidReason() {
-		return voidReason;
-	}
-	
-	/**
-	 * @param voidReason The voidReason to set.
-	 */
-	@Element(data = true, required = false)
-	public void setVoidReason(String voidReason) {
-		this.voidReason = voidReason;
 	}
 	
 	/**
@@ -579,12 +466,28 @@ public class PersonAddress implements java.io.Serializable, Cloneable, Comparabl
 			if (retValue == 0)
 				retValue = OpenmrsUtil.compareWithNullAsGreatest(getPersonAddressId(), other.getPersonAddressId());
 			
-			// if we've gotten this far, just check all address values.  If they are
-			// equal, leave the objects at 0.  If not, arbitrarily pick retValue=1 
+			// if we've gotten this far, just check all address values. If they are
+			// equal, leave the objects at 0. If not, arbitrarily pick retValue=1
 			// and return that (they are not equal).
 			if (retValue == 0 && !equalsContent(other))
 				retValue = 1;
 		}
 		return retValue;
+	}
+	
+	/**
+	 * @see org.openmrs.OpenmrsObject#getId()
+	 */
+	public Integer getId() {
+		
+		return getPersonAddressId();
+	}
+	
+	/**
+	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
+	 */
+	public void setId(Integer id) {
+		setPersonAddressId(id);
+		
 	}
 }

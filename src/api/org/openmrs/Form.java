@@ -14,7 +14,6 @@
 package org.openmrs;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -24,7 +23,7 @@ import java.util.Set;
  * 
  * @version 1.0
  */
-public class Form implements java.io.Serializable {
+public class Form extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 845634L;
 	
@@ -32,37 +31,17 @@ public class Form implements java.io.Serializable {
 	
 	private Integer formId;
 	
-	private String name;
-	
 	private String version;
 	
 	private Integer build;
 	
 	private Boolean published = false;
 	
-	private String description;
-	
 	private EncounterType encounterType;
 	
 	private String template;
 	
 	private String xslt;
-	
-	private User creator;
-	
-	private Date dateCreated;
-	
-	private User changedBy;
-	
-	private Date dateChanged;
-	
-	private Boolean retired = false;
-	
-	private User retiredBy;
-	
-	private Date dateRetired;
-	
-	private String retiredReason;
 	
 	private Set<FormField> formFields;
 	
@@ -129,20 +108,6 @@ public class Form implements java.io.Serializable {
 	}
 	
 	/**
-	 * @return Returns the name.
-	 */
-	public String getName() {
-		return name;
-	}
-	
-	/**
-	 * @param name The name to set.
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
-	
-	/**
 	 * @return Returns the version.
 	 */
 	public String getVersion() {
@@ -185,20 +150,6 @@ public class Form implements java.io.Serializable {
 	}
 	
 	/**
-	 * @return Returns the description.
-	 */
-	public String getDescription() {
-		return description;
-	}
-	
-	/**
-	 * @param description The description to set.
-	 */
-	public void setDescription(String description) {
-		this.description = description;
-	}
-	
-	/**
 	 * @return the type of encounter associated with this form
 	 */
 	public EncounterType getEncounterType() {
@@ -235,122 +186,6 @@ public class Form implements java.io.Serializable {
 	
 	public void setXslt(String xslt) {
 		this.xslt = xslt;
-	}
-	
-	/**
-	 * @return Returns the creator.
-	 */
-	public User getCreator() {
-		return creator;
-	}
-	
-	/**
-	 * @param creator The creator to set.
-	 */
-	public void setCreator(User creator) {
-		this.creator = creator;
-	}
-	
-	/**
-	 * @return Returns the dateCreated.
-	 */
-	public Date getDateCreated() {
-		return dateCreated;
-	}
-	
-	/**
-	 * @param dateCreated The dateCreated to set.
-	 */
-	public void setDateCreated(Date dateCreated) {
-		this.dateCreated = dateCreated;
-	}
-	
-	/**
-	 * @return Returns the changedBy.
-	 */
-	public User getChangedBy() {
-		return changedBy;
-	}
-	
-	/**
-	 * @param changedBy The changedBy to set.
-	 */
-	public void setChangedBy(User changedBy) {
-		this.changedBy = changedBy;
-	}
-	
-	/**
-	 * @return Returns the dateChanged.
-	 */
-	public Date getDateChanged() {
-		return dateChanged;
-	}
-	
-	/**
-	 * @param dateChanged The dateChanged to set.
-	 */
-	public void setDateChanged(Date dateChanged) {
-		this.dateChanged = dateChanged;
-	}
-	
-	/**
-	 * @return Returns the retired status.
-	 */
-	public Boolean isRetired() {
-		return retired;
-	}
-	
-	public Boolean getRetired() {
-		return isRetired();
-	}
-	
-	/**
-	 * @param retired The retired status to set.
-	 */
-	public void setRetired(Boolean retired) {
-		this.retired = retired;
-	}
-	
-	/**
-	 * @return Returns the retiredBy.
-	 */
-	public User getRetiredBy() {
-		return retiredBy;
-	}
-	
-	/**
-	 * @param retiredBy The retiredBy to set.
-	 */
-	public void setRetiredBy(User retiredBy) {
-		this.retiredBy = retiredBy;
-	}
-	
-	/**
-	 * @return Returns the dateRetired.
-	 */
-	public Date getDateRetired() {
-		return dateRetired;
-	}
-	
-	/**
-	 * @param dateRetired The dateRetired to set.
-	 */
-	public void setDateRetired(Date dateRetired) {
-		this.dateRetired = dateRetired;
-	}
-	
-	/**
-	 * @return Returns the retiredReason.
-	 */
-	public String getRetiredReason() {
-		return retiredReason;
-	}
-	
-	/**
-	 * @param retiredReason The retiredReason to set.
-	 */
-	public void setRetiredReason(String retiredReason) {
-		this.retiredReason = retiredReason;
 	}
 	
 	/**
@@ -434,6 +269,37 @@ public class Form implements java.io.Serializable {
 		if (formId == null)
 			return "";
 		return formId.toString();
+	}
+	
+	/**
+	 * @see org.openmrs.OpenmrsObject#getId()
+	 */
+	public Integer getId() {
+		
+		return getFormId();
+	}
+	
+	/**
+	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
+	 */
+	public void setId(Integer id) {
+		setFormId(id);
+		
+	}
+	
+	/**
+	 * @deprecated use {@link #setRetireReason(String)}
+	 */
+	public void setRetiredReason(String reason) {
+		setRetireReason(reason);
+		
+	}
+	
+	/**
+	 * @deprecated use {@link #getRetireReason()}
+	 */
+	public String getRetiredReason() {
+		return getRetireReason();
 	}
 	
 }
