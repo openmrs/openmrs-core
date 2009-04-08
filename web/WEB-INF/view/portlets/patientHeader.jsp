@@ -1,8 +1,5 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
-<c:set var="HIV_PROGRAM_CONCEPT_ID" value="1482" />
-<c:set var="TB_PROGRAM_CONCEPT_ID" value="1483" />
-
 <openmrs:require privilege="View Patients" otherwise="/login.htm" redirect="/index.htm" />
 
 	<%-- Header showing preferred name, id, and treatment status --%>
@@ -84,36 +81,36 @@
 	<c:if test="${not empty model.patientReasonForExit}">
 		<div id="patientSubheaderExited" class="boxRed">
 	</c:if>
-		<c:forEach items="${model.patientCurrentPrograms}" var="p" varStatus="s">
-			<c:if test="${p.program.concept.conceptId == HIV_PROGRAM_CONCEPT_ID}">
-				<table><tr>
-					<th><spring:message code="Program.hiv"/></th>
-					<td>|</td>
-					<td><spring:message code="Program.enrolled"/>:</td>
-					<th><openmrs:formatDate date="${p.dateEnrolled}" type="medium" /></th>
-					<td>|</td>
-
-					<c:forEach items="${p.currentStates}" var="patientState" varStatus="s">
-						<c:if test="${s.index > 0}"><td>|</td></c:if>
-						<td>${patientState.state.programWorkflow.concept.name}:</td>
-						<th>${patientState.state.concept.name}</th>
-					</c:forEach>
-				</tr></table>
-			</c:if>
+	
+		<openmrs:globalProperty var="programIdsToShow" key="dashboard.header.programs_to_show" listSeparator=","/>
+		<%--
+			Clever(?) hack: because there's no JSTL function for array membership I'm going to add a comma before
+			and after the already-comma-separated list, so I can search for the substring ",ID,"
+		--%>
+		<openmrs:globalProperty var="workflowsToShow" key="dashboard.header.workflows_to_show"/>
+		<c:set var="workflowsToShow" value=",${workflowsToShow},"/>
+		
+		<c:forEach var="programNameOrId" items="${programIdsToShow}">
+			<c:forEach var="programEnrollment" items="${model.patientCurrentPrograms}">
+				<c:if test="${ programEnrollment.program.programId == programNameOrId || programEnrollment.program.name == programNameOrId }">
+					<table><tr>
+						<th>${ programEnrollment.program.name }</th>
+						<td>|</td>
+						<td><spring:message code="Program.enrolled"/>:</td>
+						<th><openmrs:formatDate date="${programEnrollment.dateEnrolled}" type="medium" /></th>
+						<c:forEach items="${programEnrollment.currentStates}" var="patientState">
+						    <c:set var="temp" value=",${patientState.state.programWorkflow.programWorkflowId},"/>
+							<c:if test="${ fn:contains(workflowsToShow, temp) }">
+								<td>|</td>
+								<td>${patientState.state.programWorkflow.concept.name}:</td>
+								<th>${patientState.state.concept.name}</th>
+							</c:if>
+						</c:forEach>
+					</tr></table>
+				</c:if>
+			</c:forEach>
 		</c:forEach>
-		<c:forEach items="${model.patientCurrentPrograms}" var="p" varStatus="s">
-			<c:if test="${p.program.concept.conceptId == TB_PROGRAM_CONCEPT_ID}">
-				<table><tr>
-					<th><spring:message code="Program.tb"/></th>
-					<td>|</td>
-					<td><spring:message code="Program.enrolled"/>:</td>
-					<th><openmrs:formatDate date="${p.dateEnrolled}" type="medium" /></th>
-					<td>|</td>
-					<td><spring:message code="Program.group"/>:</td>
-					<th><openmrs_tag:mostRecentObs observations="${model.patientObs}" concept="1378" locale="${model.locale}" /></th>
-				</tr></table>
-			</c:if>
-		</c:forEach>
+	
 		<table id="patientHeaderObs">
 			<openmrs:globalProperty key="concept.weight" var="weightConceptId"/>
 			<openmrs:globalProperty key="concept.height" var="heightConceptId"/>
