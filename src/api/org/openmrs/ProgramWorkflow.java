@@ -15,7 +15,6 @@ package org.openmrs;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -29,7 +28,7 @@ import org.openmrs.util.NaturalStrings;
 /**
  * ProgramWorkflow
  */
-public class ProgramWorkflow implements java.io.Serializable {
+public class ProgramWorkflow extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	
@@ -44,16 +43,6 @@ public class ProgramWorkflow implements java.io.Serializable {
 	private Program program;
 	
 	private Concept concept;
-	
-	private User creator;
-	
-	private Date dateCreated;
-	
-	private Boolean retired = false;
-	
-	private User changedBy;
-	
-	private Date dateChanged;
 	
 	private Set<ProgramWorkflowState> states = new HashSet<ProgramWorkflowState>();
 	
@@ -289,56 +278,12 @@ public class ProgramWorkflow implements java.io.Serializable {
 		this.states = states;
 	}
 	
-	public Boolean getRetired() {
-		return retired;
-	}
-	
-	public Boolean isRetired() {
-		return getRetired();
-	}
-	
-	public void setRetired(Boolean retired) {
-		this.retired = retired;
-	}
-	
-	public User getChangedBy() {
-		return changedBy;
-	}
-	
-	public void setChangedBy(User changedBy) {
-		this.changedBy = changedBy;
-	}
-	
-	public Date getDateChanged() {
-		return dateChanged;
-	}
-	
-	public void setDateChanged(Date dateChanged) {
-		this.dateChanged = dateChanged;
-	}
-	
 	public Concept getConcept() {
 		return concept;
 	}
 	
 	public void setConcept(Concept concept) {
 		this.concept = concept;
-	}
-	
-	public User getCreator() {
-		return creator;
-	}
-	
-	public void setCreator(User creator) {
-		this.creator = creator;
-	}
-	
-	public Date getDateCreated() {
-		return dateCreated;
-	}
-	
-	public void setDateCreated(Date dateCreated) {
-		this.dateCreated = dateCreated;
 	}
 	
 	public Program getProgram() {
@@ -355,5 +300,21 @@ public class ProgramWorkflow implements java.io.Serializable {
 	
 	public void setProgramWorkflowId(Integer programWorkflowId) {
 		this.programWorkflowId = programWorkflowId;
+	}
+	
+	/**
+	 * @see org.openmrs.OpenmrsObject#getId()
+	 */
+	public Integer getId() {
+		
+		return getProgramWorkflowId();
+	}
+	
+	/**
+	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
+	 */
+	public void setId(Integer id) {
+		setProgramWorkflowId(id);
+		
 	}
 }

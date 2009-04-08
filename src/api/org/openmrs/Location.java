@@ -14,7 +14,6 @@
 package org.openmrs;
 
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -26,7 +25,7 @@ import org.openmrs.api.context.Context;
  * A Location object usually represents a physical place care has taken place. A hospital, a room, a
  * clinic, a district, etc are all examples of Locations.
  */
-public class Location implements java.io.Serializable, Attributable<Location> {
+public class Location extends BaseOpenmrsMetadata implements java.io.Serializable, Attributable<Location> {
 	
 	public static final long serialVersionUID = 455634L;
 	
@@ -35,10 +34,6 @@ public class Location implements java.io.Serializable, Attributable<Location> {
 	// Fields
 	
 	private Integer locationId;
-	
-	private String name;
-	
-	private String description;
 	
 	private String address1;
 	
@@ -72,18 +67,6 @@ public class Location implements java.io.Serializable, Attributable<Location> {
 	
 	private Set<LocationTag> tags;
 	
-	private User creator;
-	
-	private Date dateCreated;
-	
-	private User retiredBy;
-	
-	private Boolean retired = Boolean.FALSE;
-	
-	private Date dateRetired;
-	
-	private String retireReason;
-	
 	// Constructors
 	
 	/** default constructor */
@@ -107,17 +90,17 @@ public class Location implements java.io.Serializable, Attributable<Location> {
 			if (this.getLocationId() != null && loc.getLocationId() != null)
 				return (this.getLocationId().equals(loc.getLocationId()));
 			/*
-			return (this.getName().equals(loc.getName()) &&
-					this.getDescription().equals(loc.getDescription()) &&
-					this.getAddress1().equals(loc.getAddress1()) &&
-					this.getAddress2().equals(loc.getAddress2()) &&
-					this.getCityVillage().equals(loc.getCityVillage()) &&
-					this.getStateProvince().equals(loc.getStateProvince()) &&
-					this.getPostalCode().equals(loc.getPostalCode()) &&
-					this.getCountry().equals(loc.getCountry()) &&
-					this.getLatitude().equals(loc.getLatitude()) &&
-					this.getLongitude().equals(loc.getLongitude()));
-			*/
+			 * return (this.getName().equals(loc.getName()) &&
+			 * this.getDescription().equals(loc.getDescription()) &&
+			 * this.getAddress1().equals(loc.getAddress1()) &&
+			 * this.getAddress2().equals(loc.getAddress2()) &&
+			 * this.getCityVillage().equals(loc.getCityVillage()) &&
+			 * this.getStateProvince().equals(loc.getStateProvince()) &&
+			 * this.getPostalCode().equals(loc.getPostalCode()) &&
+			 * this.getCountry().equals(loc.getCountry()) &&
+			 * this.getLatitude().equals(loc.getLatitude()) &&
+			 * this.getLongitude().equals(loc.getLongitude()));
+			 */
 		}
 		return obj == this;
 	}
@@ -187,48 +170,6 @@ public class Location implements java.io.Serializable, Attributable<Location> {
 	}
 	
 	/**
-	 * @return Returns the creator.
-	 */
-	public User getCreator() {
-		return creator;
-	}
-	
-	/**
-	 * @param creator The creator to set.
-	 */
-	public void setCreator(User creator) {
-		this.creator = creator;
-	}
-	
-	/**
-	 * @return Returns the dateCreated.
-	 */
-	public Date getDateCreated() {
-		return dateCreated;
-	}
-	
-	/**
-	 * @param dateCreated The dateCreated to set.
-	 */
-	public void setDateCreated(Date dateCreated) {
-		this.dateCreated = dateCreated;
-	}
-	
-	/**
-	 * @return Returns the description.
-	 */
-	public String getDescription() {
-		return description;
-	}
-	
-	/**
-	 * @param description The description to set.
-	 */
-	public void setDescription(String description) {
-		this.description = description;
-	}
-	
-	/**
 	 * @return Returns the latitude.
 	 */
 	public String getLatitude() {
@@ -271,20 +212,6 @@ public class Location implements java.io.Serializable, Attributable<Location> {
 	}
 	
 	/**
-	 * @return Returns the name.
-	 */
-	public String getName() {
-		return name;
-	}
-	
-	/**
-	 * @param name The name to set.
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
-	
-	/**
 	 * @return Returns the postalCode.
 	 */
 	public String getPostalCode() {
@@ -313,7 +240,7 @@ public class Location implements java.io.Serializable, Attributable<Location> {
 	}
 	
 	public String toString() {
-		return name;
+		return getName();
 	}
 	
 	/**
@@ -509,7 +436,8 @@ public class Location implements java.io.Serializable, Attributable<Location> {
 		if (child.equals(this))
 			throw new APIException("A location cannot be its own child!");
 		
-		// Traverse all the way up (down?) to the root, then check whether the child is already anywhere in the tree
+		// Traverse all the way up (down?) to the root, then check whether the child is already
+		// anywhere in the tree
 		Location root = this;
 		while (root.getParentLocation() != null)
 			root = root.getParentLocation();
@@ -621,69 +549,19 @@ public class Location implements java.io.Serializable, Attributable<Location> {
 	}
 	
 	/**
-	 * @return the retiredBy
+	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
-	public User getRetiredBy() {
-		return retiredBy;
+	public Integer getId() {
+		
+		return getLocationId();
 	}
 	
 	/**
-	 * @param retiredBy the retiredBy to set
+	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
-	public void setRetiredBy(User retiredBy) {
-		this.retiredBy = retiredBy;
-	}
-	
-	/**
-	 * @return the retired
-	 */
-	public Boolean getRetired() {
-		return retired;
-	}
-	
-	/**
-	 * @param retired Boolean for whether this Location is retired.
-	 */
-	public void setRetired(Boolean retired) {
-		this.retired = retired;
-	}
-	
-	/**
-	 * Convenience method, returns false when <code>retired</code> is null
-	 * 
-	 * @return retired
-	 * @since 1.5
-	 */
-	public Boolean isRetired() {
-		return getRetired();
-	}
-	
-	/**
-	 * @return the dateRetired
-	 */
-	public Date getDateRetired() {
-		return dateRetired;
-	}
-	
-	/**
-	 * @param dateRetired the dateRetired to set
-	 */
-	public void setDateRetired(Date dateRetired) {
-		this.dateRetired = dateRetired;
-	}
-	
-	/**
-	 * @return the retireReason
-	 */
-	public String getRetireReason() {
-		return retireReason;
-	}
-	
-	/**
-	 * @param retireReason the retireReason to set
-	 */
-	public void setRetireReason(String retireReason) {
-		this.retireReason = retireReason;
+	public void setId(Integer id) {
+		setLocationId(id);
+		
 	}
 	
 }

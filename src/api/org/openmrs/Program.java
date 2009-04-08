@@ -13,7 +13,6 @@
  */
 package org.openmrs;
 
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
@@ -27,7 +26,7 @@ import org.simpleframework.xml.Root;
  * Program
  */
 @Root
-public class Program implements java.io.Serializable {
+public class Program extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 3214567L;
 	
@@ -39,21 +38,7 @@ public class Program implements java.io.Serializable {
 	
 	private Integer programId;
 	
-	private String name;
-	
-	private String description;
-	
 	private Concept concept;
-	
-	private User creator;
-	
-	private Date dateCreated;
-	
-	private User changedBy;
-	
-	private Date dateChanged;
-	
-	private Boolean retired = false;
 	
 	private Set<ProgramWorkflow> workflows = new HashSet<ProgramWorkflow>();
 	
@@ -143,60 +128,12 @@ public class Program implements java.io.Serializable {
 	// Property Access
 	// ******************
 	
-	public String getName() {
-		return name;
-	}
-	
-	public void setName(String name) {
-		this.name = name;
-	}
-	
-	public String getDescription() {
-		return description;
-	}
-	
-	public void setDescription(String description) {
-		this.description = description;
-	}
-	
 	public Concept getConcept() {
 		return concept;
 	}
 	
 	public void setConcept(Concept concept) {
 		this.concept = concept;
-	}
-	
-	public User getCreator() {
-		return creator;
-	}
-	
-	public void setCreator(User creator) {
-		this.creator = creator;
-	}
-	
-	public Date getDateCreated() {
-		return dateCreated;
-	}
-	
-	public void setDateCreated(Date dateCreated) {
-		this.dateCreated = dateCreated;
-	}
-	
-	public User getChangedBy() {
-		return changedBy;
-	}
-	
-	public void setChangedBy(User changedBy) {
-		this.changedBy = changedBy;
-	}
-	
-	public Date getDateChanged() {
-		return dateChanged;
-	}
-	
-	public void setDateChanged(Date dateChanged) {
-		this.dateChanged = dateChanged;
 	}
 	
 	@Attribute(required = true)
@@ -207,18 +144,6 @@ public class Program implements java.io.Serializable {
 	@Attribute(required = true)
 	public void setProgramId(Integer programId) {
 		this.programId = programId;
-	}
-	
-	public Boolean getRetired() {
-		return retired;
-	}
-	
-	public Boolean isRetired() {
-		return getRetired();
-	}
-	
-	public void setRetired(Boolean retired) {
-		this.retired = retired;
 	}
 	
 	/**
@@ -250,5 +175,21 @@ public class Program implements java.io.Serializable {
 	
 	public void setWorkflows(Set<ProgramWorkflow> workflows) {
 		this.workflows = workflows;
+	}
+	
+	/**
+	 * @see org.openmrs.OpenmrsObject#getId()
+	 */
+	public Integer getId() {
+		
+		return getProgramId();
+	}
+	
+	/**
+	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
+	 */
+	public void setId(Integer id) {
+		setProgramId(id);
+		
 	}
 }

@@ -17,7 +17,7 @@ package org.openmrs;
  * This is the Base interface for all OpenMRS-defined classes
  */
 public interface OpenmrsObject {
-
+	
 	/**
 	 * @return id - The unique Identifier for the object
 	 */

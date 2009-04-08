@@ -20,7 +20,7 @@ package org.openmrs;
  *             ConceptComplex now.
  */
 @Deprecated
-public class MimeType implements java.io.Serializable {
+public class MimeType extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 8765L;
 	
@@ -29,8 +29,6 @@ public class MimeType implements java.io.Serializable {
 	private Integer mimeTypeId;
 	
 	private String mimeType;
-	
-	private String description;
 	
 	// Constructors
 	
@@ -80,20 +78,6 @@ public class MimeType implements java.io.Serializable {
 	}
 	
 	/**
-	 * @return Returns the description.
-	 */
-	public String getDescription() {
-		return description;
-	}
-	
-	/**
-	 * @param description The description to set.
-	 */
-	public void setDescription(String description) {
-		this.description = description;
-	}
-	
-	/**
 	 * @return Returns the mimeType.
 	 */
 	public String getMimeType() {
@@ -105,6 +89,22 @@ public class MimeType implements java.io.Serializable {
 	 */
 	public void setMimeType(String mimeType) {
 		this.mimeType = mimeType;
+	}
+	
+	/**
+	 * @see org.openmrs.OpenmrsObject#getId()
+	 */
+	public Integer getId() {
+		
+		return getMimeTypeId();
+	}
+	
+	/**
+	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
+	 */
+	public void setId(Integer id) {
+		setMimeTypeId(id);
+		
 	}
 	
 }

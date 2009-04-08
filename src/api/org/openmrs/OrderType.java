@@ -13,36 +13,18 @@
  */
 package org.openmrs;
 
-import java.util.Date;
-
 /**
  * OrderType
  * 
  * @see Order
  */
-public class OrderType implements java.io.Serializable {
+public class OrderType extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 23232L;
 	
 	// Fields
 	
 	private Integer orderTypeId;
-	
-	private String name;
-	
-	private String description;
-	
-	private User creator;
-	
-	private Date dateCreated;
-	
-	private User retiredBy;
-	
-	private Boolean retired = Boolean.FALSE;
-	
-	private Date dateRetired;
-	
-	private String retireReason;
 	
 	// Constructors
 	
@@ -63,8 +45,8 @@ public class OrderType implements java.io.Serializable {
 	 * @param description A short description about this order type
 	 */
 	public OrderType(String name, String description) {
-		this.name = name;
-		this.description = description;
+		setName(name);
+		setDescription(description);
 	}
 	
 	/**
@@ -91,62 +73,6 @@ public class OrderType implements java.io.Serializable {
 	// Property accessors
 	
 	/**
-	 * @return Returns the creator.
-	 */
-	public User getCreator() {
-		return creator;
-	}
-	
-	/**
-	 * @param creator The creator to set.
-	 */
-	public void setCreator(User creator) {
-		this.creator = creator;
-	}
-	
-	/**
-	 * @return Returns the dateCreated.
-	 */
-	public Date getDateCreated() {
-		return dateCreated;
-	}
-	
-	/**
-	 * @param dateCreated The dateCreated to set.
-	 */
-	public void setDateCreated(Date dateCreated) {
-		this.dateCreated = dateCreated;
-	}
-	
-	/**
-	 * @return Returns the description.
-	 */
-	public String getDescription() {
-		return description;
-	}
-	
-	/**
-	 * @param description The description to set.
-	 */
-	public void setDescription(String description) {
-		this.description = description;
-	}
-	
-	/**
-	 * @return Returns the name.
-	 */
-	public String getName() {
-		return name;
-	}
-	
-	/**
-	 * @param name The name to set.
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
-	
-	/**
 	 * @return Returns the orderTypeId.
 	 */
 	public Integer getOrderTypeId() {
@@ -161,59 +87,18 @@ public class OrderType implements java.io.Serializable {
 	}
 	
 	/**
-	 * @return the retiredBy
+	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
-	public User getRetiredBy() {
-		return retiredBy;
+	public Integer getId() {
+		return getOrderTypeId();
 	}
 	
 	/**
-	 * @param retiredBy the retiredBy to set
+	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
-	public void setRetiredBy(User retiredBy) {
-		this.retiredBy = retiredBy;
-	}
-	
-	/**
-	 * @return the retired
-	 */
-	public Boolean getRetired() {
-		return retired;
-	}
-	
-	/**
-	 * @param retired the retired to set
-	 */
-	public void setRetired(Boolean retired) {
-		this.retired = retired;
-	}
-	
-	/**
-	 * @return the dateRetired
-	 */
-	public Date getDateRetired() {
-		return dateRetired;
-	}
-	
-	/**
-	 * @param dateRetired the dateRetired to set
-	 */
-	public void setDateRetired(Date dateRetired) {
-		this.dateRetired = dateRetired;
-	}
-	
-	/**
-	 * @return the retireReason
-	 */
-	public String getRetireReason() {
-		return retireReason;
-	}
-	
-	/**
-	 * @param retireReason the retireReason to set
-	 */
-	public void setRetireReason(String retireReason) {
-		this.retireReason = retireReason;
+	public void setId(Integer id) {
+		setOrderTypeId(id);
+		
 	}
 	
 }

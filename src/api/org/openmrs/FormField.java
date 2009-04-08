@@ -13,7 +13,6 @@
  */
 package org.openmrs;
 
-import java.util.Date;
 
 /**
  * The FormField object relates/orders the <code>fields</code> on a <code>form</code> A form can
@@ -23,7 +22,7 @@ import java.util.Date;
  * @see org.openmrs.Form
  * @see org.openmrs.Field
  */
-public class FormField implements java.io.Serializable, Comparable<FormField> {
+public class FormField extends BaseOpenmrsMetadata implements java.io.Serializable, Comparable<FormField> {
 	
 	public static final long serialVersionUID = 3456L;
 	
@@ -51,14 +50,6 @@ public class FormField implements java.io.Serializable, Comparable<FormField> {
 	
 	protected Float sortWeight;
 	
-	protected User creator;
-	
-	protected Date dateCreated;
-	
-	protected User changedBy;
-	
-	protected Date dateChanged;
-	
 	// Constructors
 	
 	/** default constructor */
@@ -84,8 +75,7 @@ public class FormField implements java.io.Serializable, Comparable<FormField> {
 				return (this.getFormFieldId().equals(f.getFormFieldId()));
 			/*
 			 * return (this.getFormField().equals(f.getFormField()) &&
-			 * this.getForm().equals(f.getForm()) &&
-			 * this.getField().equals(f.getField()));
+			 * this.getForm().equals(f.getForm()) && this.getField().equals(f.getField()));
 			 */
 		}
 		return false;
@@ -324,62 +314,6 @@ public class FormField implements java.io.Serializable, Comparable<FormField> {
 	}
 	
 	/**
-	 * @return Returns the creator.
-	 */
-	public User getCreator() {
-		return creator;
-	}
-	
-	/**
-	 * @param creator The creator to set.
-	 */
-	public void setCreator(User creator) {
-		this.creator = creator;
-	}
-	
-	/**
-	 * @return Returns the dateCreated.
-	 */
-	public Date getDateCreated() {
-		return dateCreated;
-	}
-	
-	/**
-	 * @param dateCreated The dateCreated to set.
-	 */
-	public void setDateCreated(Date dateCreated) {
-		this.dateCreated = dateCreated;
-	}
-	
-	/**
-	 * @return Returns the changedBy.
-	 */
-	public User getChangedBy() {
-		return changedBy;
-	}
-	
-	/**
-	 * @param changedBy The changedBy to set.
-	 */
-	public void setChangedBy(User changedBy) {
-		this.changedBy = changedBy;
-	}
-	
-	/**
-	 * @return Returns the dateChanged.
-	 */
-	public Date getDateChanged() {
-		return dateChanged;
-	}
-	
-	/**
-	 * @param dateChanged The dateChanged to set.
-	 */
-	public void setDateChanged(Date dateChanged) {
-		this.dateChanged = dateChanged;
-	}
-	
-	/**
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
@@ -387,6 +321,21 @@ public class FormField implements java.io.Serializable, Comparable<FormField> {
 			return "null";
 		
 		return this.formFieldId.toString();
+	}
+	
+	/**
+	 * @see org.openmrs.OpenmrsObject#getId()
+	 */
+	public Integer getId() {
+		return getFormFieldId();
+	}
+	
+	/**
+	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
+	 */
+	public void setId(Integer id) {
+		setFormFieldId(id);
+		
 	}
 	
 }

@@ -32,7 +32,7 @@ import org.springframework.util.StringUtils;
  * A Person can have zero to n PersonName(s).
  */
 @Root(strict = false)
-public class PersonName implements java.io.Serializable, Cloneable, Comparable<PersonName> {
+public class PersonName extends BaseOpenmrsMetadata implements java.io.Serializable, Cloneable, Comparable<PersonName> {
 	
 	public static final long serialVersionUID = 4353L;
 	
@@ -62,10 +62,6 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
 	
 	private String degree;
 	
-	private Date dateCreated;
-	
-	private User creator;
-	
 	private Boolean voided = false;
 	
 	private User voidedBy;
@@ -73,10 +69,6 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
 	private Date dateVoided;
 	
 	private String voidReason;
-	
-	private User changedBy;
-	
-	private Date dateChanged;
 	
 	// Constructors
 	
@@ -231,38 +223,6 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
 	}
 	
 	// Property accessors
-	
-	/**
-	 * @return Returns the creator.
-	 */
-	@Element(required = true)
-	public User getCreator() {
-		return creator;
-	}
-	
-	/**
-	 * @param creator The creator to set.
-	 */
-	@Element(required = true)
-	public void setCreator(User creator) {
-		this.creator = creator;
-	}
-	
-	/**
-	 * @return Returns the dateCreated.
-	 */
-	@Element(required = true)
-	public Date getDateCreated() {
-		return dateCreated;
-	}
-	
-	/**
-	 * @param dateCreated The dateCreated to set.
-	 */
-	@Element(required = true)
-	public void setDateCreated(Date dateCreated) {
-		this.dateCreated = dateCreated;
-	}
 	
 	/**
 	 * @return Returns the dateVoided.
@@ -532,38 +492,6 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
 	}
 	
 	/**
-	 * @return Returns the changedBy.
-	 */
-	@Element(required = false)
-	public User getChangedBy() {
-		return changedBy;
-	}
-	
-	/**
-	 * @param changedBy The changedBy to set.
-	 */
-	@Element(required = false)
-	public void setChangedBy(User changedBy) {
-		this.changedBy = changedBy;
-	}
-	
-	/**
-	 * @return Returns the dateChanged.
-	 */
-	@Element(required = false)
-	public Date getDateChanged() {
-		return dateChanged;
-	}
-	
-	/**
-	 * @param dateChanged The dateChanged to set.
-	 */
-	@Element(required = false)
-	public void setDateChanged(Date dateChanged) {
-		this.dateChanged = dateChanged;
-	}
-	
-	/**
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
@@ -616,12 +544,27 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
 		if (ret == 0 && getDateCreated() != null)
 			ret = OpenmrsUtil.compareWithNullAsLatest(getDateCreated(), other.getDateCreated());
 		
-		// if we've gotten this far, just check all name values.  If they are
-		// equal, leave the objects at 0.  If not, arbitrarily pick retValue=1 
+		// if we've gotten this far, just check all name values. If they are
+		// equal, leave the objects at 0. If not, arbitrarily pick retValue=1
 		// and return that (they are not equal).
 		if (ret == 0 && !equalsContent(other))
 			ret = 1;
 		
 		return ret;
+	}
+	
+	/**
+	 * @see org.openmrs.OpenmrsObject#getId()
+	 */
+	public Integer getId() {
+		return getPersonNameId();
+	}
+	
+	/**
+	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
+	 */
+	public void setId(Integer id) {
+		setPersonNameId(id);
+		
 	}
 }

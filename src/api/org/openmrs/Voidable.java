@@ -16,18 +16,19 @@ package org.openmrs;
 import java.util.Date;
 
 /**
- * In OpenMRS, data are rarely fully deleted (purged) from the system; rather, they are either voided or retired.
- * When data can be removed (effectively deleted from the user's perspective), then they are voidable.
- * Voided data are no longer valid and references from other non-voided data are not valid.
- * For example, when duplicate patient records are merged, the record that is not kept is voided (invalidated).  
- * Unlike {@link Retireable}, voiding data invalidates any data referencing them. 
- * e.g., when a patient is voided, all observations for that patient must be voided as well.
+ * In OpenMRS, data are rarely fully deleted (purged) from the system; rather, they are either
+ * voided or retired. When data can be removed (effectively deleted from the user's perspective),
+ * then they are voidable. Voided data are no longer valid and references from other non-voided data
+ * are not valid. For example, when duplicate patient records are merged, the record that is not
+ * kept is voided (invalidated). Unlike {@link Retireable}, voiding data invalidates any data
+ * referencing them. e.g., when a patient is voided, all observations for that patient must be
+ * voided as well.
  * 
  * @see OpenmrsData
  * @see Retireable
-*/
+ */
 public interface Voidable {
-
+	
 	/**
 	 * @return Boolean - whether of not this object is voided
 	 */
@@ -65,6 +66,6 @@ public interface Voidable {
 	
 	/**
 	 * @param voidReason - the reason the object was voided
-	 */	
+	 */
 	public void setVoidReason(String voidReason);
 }

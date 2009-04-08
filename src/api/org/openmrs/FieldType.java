@@ -13,12 +13,11 @@
  */
 package org.openmrs;
 
-import java.util.Date;
 
 /**
  * FieldType
  */
-public class FieldType implements java.io.Serializable {
+public class FieldType extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 35467L;
 	
@@ -26,15 +25,7 @@ public class FieldType implements java.io.Serializable {
 	
 	private Integer fieldTypeId;
 	
-	private String name;
-	
-	private String description;
-	
 	private Boolean isSet = false;
-	
-	private Date dateCreated;
-	
-	private User creator;
 	
 	// Constructors
 	
@@ -70,48 +61,6 @@ public class FieldType implements java.io.Serializable {
 	// Property accessors
 	
 	/**
-	 * @return Returns the creator.
-	 */
-	public User getCreator() {
-		return creator;
-	}
-	
-	/**
-	 * @param creator The creator to set.
-	 */
-	public void setCreator(User creator) {
-		this.creator = creator;
-	}
-	
-	/**
-	 * @return Returns the dateCreated.
-	 */
-	public Date getDateCreated() {
-		return dateCreated;
-	}
-	
-	/**
-	 * @param dateCreated The dateCreated to set.
-	 */
-	public void setDateCreated(Date dateCreated) {
-		this.dateCreated = dateCreated;
-	}
-	
-	/**
-	 * @return Returns the description.
-	 */
-	public String getDescription() {
-		return description;
-	}
-	
-	/**
-	 * @param description The description to set.
-	 */
-	public void setDescription(String description) {
-		this.description = description;
-	}
-	
-	/**
 	 * @return Returns the fieldTypeId.
 	 */
 	public Integer getFieldTypeId() {
@@ -140,17 +89,19 @@ public class FieldType implements java.io.Serializable {
 	}
 	
 	/**
-	 * @return Returns the name.
+	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
-	public String getName() {
-		return name;
+	public Integer getId() {
+		
+		return getFieldTypeId();
 	}
 	
 	/**
-	 * @param name The name to set.
+	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
-	public void setName(String name) {
-		this.name = name;
+	public void setId(Integer id) {
+		setFieldTypeId(id);
+		
 	}
 	
 }

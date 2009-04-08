@@ -14,34 +14,33 @@
 package org.openmrs;
 
 /**
- * In OpenMRS, we distinguish between data and metadata within our data model.  
- * Metadata represent system and descriptive data such as data types &mdash; a relationship type or encounter type.
- * Metadata are generally referenced by clinical data but don't represent patient-specific data themselves.  
- * OpenMRS objects that represent metadata should implement this interface.
- * 
- * TODO: Support localized names and descriptions
+ * In OpenMRS, we distinguish between data and metadata within our data model. Metadata represent
+ * system and descriptive data such as data types &mdash; a relationship type or encounter type.
+ * Metadata are generally referenced by clinical data but don't represent patient-specific data
+ * themselves. OpenMRS objects that represent metadata should implement this interface. TODO:
+ * Support localized names and descriptions
  * 
  * @see OpenmrsData
-*/
+ */
 public interface OpenmrsMetadata extends OpenmrsObject, Auditable, Retireable {
 	
-    /**
-     * @return the name
-     */
-    public String getName();
-
-    /**
-     * @param name the name to set
-     */
-    public void setName(String name);
-
-    /**
-     * @return the description
-     */
-    public String getDescription();
+	/**
+	 * @return the name
+	 */
+	public String getName();
 	
-    /**
-     * @param description the description to set
-     */
-    public void setDescription(String description);
+	/**
+	 * @param name the name to set
+	 */
+	public void setName(String name);
+	
+	/**
+	 * @return the description
+	 */
+	public String getDescription();
+	
+	/**
+	 * @param description the description to set
+	 */
+	public void setDescription(String description);
 }

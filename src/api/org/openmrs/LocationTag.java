@@ -13,35 +13,19 @@
  */
 package org.openmrs;
 
-import java.util.Date;
-
 /**
  * An LocationTag defines how a certain kind of {@link Encounter}.
  * 
  * @see Encounter
  * @since 1.5
  */
-public class LocationTag implements java.io.Serializable {
+public class LocationTag extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 7654L;
 	
 	private Integer locationTagId;
 	
 	private String tag;
-	
-	private String description;
-	
-	private User creator;
-	
-	private Date dateCreated;
-	
-	private Boolean retired = false;
-	
-	private User retiredBy;
-	
-	private Date dateRetired;
-	
-	private String retireReason;
 	
 	// Constructors
 	
@@ -63,7 +47,7 @@ public class LocationTag implements java.io.Serializable {
 	 */
 	public LocationTag(String tag, String description) {
 		this.tag = tag;
-		this.description = description;
+		setDescription(description);
 	}
 	
 	/**
@@ -95,48 +79,6 @@ public class LocationTag implements java.io.Serializable {
 	// Property accessors
 	
 	/**
-	 * @return Returns the creator.
-	 */
-	public User getCreator() {
-		return creator;
-	}
-	
-	/**
-	 * @param creator The creator to set.
-	 */
-	public void setCreator(User creator) {
-		this.creator = creator;
-	}
-	
-	/**
-	 * @return Returns the dateCreated.
-	 */
-	public Date getDateCreated() {
-		return dateCreated;
-	}
-	
-	/**
-	 * @param dateCreated The dateCreated to set.
-	 */
-	public void setDateCreated(Date dateCreated) {
-		this.dateCreated = dateCreated;
-	}
-	
-	/**
-	 * @return Returns the description.
-	 */
-	public String getDescription() {
-		return description;
-	}
-	
-	/**
-	 * @param description The description to set.
-	 */
-	public void setDescription(String description) {
-		this.description = description;
-	}
-	
-	/**
 	 * @return Returns the locationTagId.
 	 */
 	public Integer getLocationTagId() {
@@ -164,72 +106,22 @@ public class LocationTag implements java.io.Serializable {
 		this.tag = tag;
 	}
 	
-	/**
-	 * @return the retiredBy
-	 */
-	public User getRetiredBy() {
-		return retiredBy;
-	}
-	
-	/**
-	 * @param retiredBy the retiredBy to set
-	 */
-	public void setRetiredBy(User retiredBy) {
-		this.retiredBy = retiredBy;
-	}
-	
-	/**
-	 * @return the retired status
-	 */
-	public Boolean getRetired() {
-		return retired;
-	}
-	
-	/**
-	 * Convenience method, returns false when <code>retired</code> is null
-	 * 
-	 * @return retired
-	 */
-	public Boolean isRetired() {
-		return getRetired();
-	}
-	
-	/**
-	 * @param retired the retired to set
-	 */
-	public void setRetired(Boolean retired) {
-		this.retired = retired;
-	}
-	
-	/**
-	 * @return the dateRetired
-	 */
-	public Date getDateRetired() {
-		return dateRetired;
-	}
-	
-	/**
-	 * @param dateRetired the dateRetired to set
-	 */
-	public void setDateRetired(Date dateRetired) {
-		this.dateRetired = dateRetired;
-	}
-	
-	/**
-	 * @return the retireReason
-	 */
-	public String getRetireReason() {
-		return retireReason;
-	}
-	
-	/**
-	 * @param retireReason the retireReason to set
-	 */
-	public void setRetireReason(String retireReason) {
-		this.retireReason = retireReason;
-	}
-	
 	public String toString() {
 		return tag;
+	}
+	
+	/**
+	 * @see org.openmrs.OpenmrsObject#getId()
+	 */
+	public Integer getId() {
+		return getLocationTagId();
+	}
+	
+	/**
+	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
+	 */
+	public void setId(Integer id) {
+		setLocationTagId(id);
+		
 	}
 }

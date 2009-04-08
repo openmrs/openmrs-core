@@ -13,21 +13,18 @@
  */
 package org.openmrs;
 
-import java.util.Date;
 import java.util.Locale;
 
 /**
  * Drug
  */
-public class Drug implements java.io.Serializable {
+public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 285L;
 	
 	// Fields
 	
 	private Integer drugId;
-	
-	private String name;
 	
 	private Boolean combination = false;
 	
@@ -43,19 +40,7 @@ public class Drug implements java.io.Serializable {
 	
 	private String units;
 	
-	private Date dateCreated;
-	
 	private Concept concept;
-	
-	private User creator;
-	
-	private Boolean retired = false;
-	
-	private User retiredBy;
-	
-	private Date dateRetired;
-	
-	private String retireReason;
 	
 	// Constructors
 	
@@ -116,27 +101,9 @@ public class Drug implements java.io.Serializable {
 	 */
 	public String getFullName(Locale locale) {
 		if (concept == null)
-			return name;
+			return getName();
 		else
-			return name + " (" + concept.getName(locale).getName() + ")";
-	}
-	
-	/**
-	 * Gets the name of this drug
-	 * 
-	 * @return String
-	 */
-	public String getName() {
-		return this.name;
-	}
-	
-	/**
-	 * Sets the name of this drug
-	 * 
-	 * @param name
-	 */
-	public void setName(String name) {
-		this.name = name;
+			return getName() + " (" + concept.getName(locale).getName() + ")";
 	}
 	
 	/**
@@ -198,24 +165,6 @@ public class Drug implements java.io.Serializable {
 	}
 	
 	/**
-	 * Gets the date created
-	 * 
-	 * @return Date
-	 */
-	public Date getDateCreated() {
-		return this.dateCreated;
-	}
-	
-	/**
-	 * Sets the date this was created
-	 * 
-	 * @param dateCreated
-	 */
-	public void setDateCreated(Date dateCreated) {
-		this.dateCreated = dateCreated;
-	}
-	
-	/**
 	 * Gets the concept this drug is tied to
 	 * 
 	 * @return Concept
@@ -231,32 +180,6 @@ public class Drug implements java.io.Serializable {
 	 */
 	public void setConcept(Concept concept) {
 		this.concept = concept;
-	}
-	
-	/**
-	 * Gets the creator of this drug record
-	 * 
-	 * @return User
-	 */
-	public User getCreator() {
-		return this.creator;
-	}
-	
-	/**
-	 * Sets the creator of this drug record
-	 * 
-	 * @param creator
-	 */
-	public void setCreator(User creator) {
-		this.creator = creator;
-	}
-	
-	public Date getDateRetired() {
-		return dateRetired;
-	}
-	
-	public void setDateRetired(Date dateRetired) {
-		this.dateRetired = dateRetired;
 	}
 	
 	public Concept getDosageForm() {
@@ -291,32 +214,20 @@ public class Drug implements java.io.Serializable {
 		this.route = route;
 	}
 	
-	public Boolean isRetired() {
-		return retired;
+	/**
+	 * @see org.openmrs.OpenmrsObject#getId()
+	 */
+	public Integer getId() {
+		
+		return getDrugId();
 	}
 	
-	public Boolean getRetired() {
-		return isRetired();
-	}
-	
-	public void setRetired(Boolean retired) {
-		this.retired = retired;
-	}
-	
-	public User getRetiredBy() {
-		return retiredBy;
-	}
-	
-	public void setRetiredBy(User retiredBy) {
-		this.retiredBy = retiredBy;
-	}
-	
-	public String getRetireReason() {
-		return retireReason;
-	}
-	
-	public void setRetireReason(String retireReason) {
-		this.retireReason = retireReason;
+	/**
+	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
+	 */
+	public void setId(Integer id) {
+		setDrugId(id);
+		
 	}
 	
 }

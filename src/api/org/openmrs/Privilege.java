@@ -18,7 +18,7 @@ package org.openmrs;
  * 
  * @version 1.0
  */
-public class Privilege implements java.io.Serializable {
+public class Privilege extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 312L;
 	
@@ -91,5 +91,21 @@ public class Privilege implements java.io.Serializable {
 	 */
 	public String toString() {
 		return this.privilege;
+	}
+	
+	/**
+	 * @see org.openmrs.OpenmrsObject#getId()
+	 */
+	public Integer getId() {
+		throw new UnsupportedOperationException();
+		
+	}
+	
+	/**
+	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
+	 */
+	public void setId(Integer id) {
+		throw new UnsupportedOperationException();
+		
 	}
 }

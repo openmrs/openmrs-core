@@ -16,17 +16,17 @@ package org.openmrs;
 import java.util.Date;
 
 /**
- * In OpenMRS, data are rarely fully deleted (purged) from the system; rather, they are either voided or retired.
- * When existing data remain valid but should no longer be used for new entries, they are <em>retired</em>.  
- * Typically this applies to metadata (see {@link OpenmrsMetadata}).  
- * For example, an encounter form type or a patient attribute type may no longer be valid but 
- * cannot be removed because there are (and may be in perpetuity) data previously collected using these metadata.  
- * Making these metadata Retirable allows them to be retired, 
- * meaning that existing references remain valid but future references are not allowed.
+ * In OpenMRS, data are rarely fully deleted (purged) from the system; rather, they are either
+ * voided or retired. When existing data remain valid but should no longer be used for new entries,
+ * they are <em>retired</em>. Typically this applies to metadata (see {@link OpenmrsMetadata}). For
+ * example, an encounter form type or a patient attribute type may no longer be valid but cannot be
+ * removed because there are (and may be in perpetuity) data previously collected using these
+ * metadata. Making these metadata Retirable allows them to be retired, meaning that existing
+ * references remain valid but future references are not allowed.
  * 
  * @see OpenmrsMetadata
  * @see Voidable
-*/
+ */
 public interface Retireable {
 	
 	/**
@@ -66,6 +66,6 @@ public interface Retireable {
 	
 	/**
 	 * @param retireReason - the reason the object was retired
-	 */	
+	 */
 	public void setRetireReason(String retireReason);
 }
