@@ -1262,4 +1262,11 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 			return getDefaultIdentifierValidator();
 		}
 	}
+
+	/**
+     * @see org.openmrs.api.PatientService#isIdentifierInUseByAnotherPatient(org.openmrs.PatientIdentifier)
+     */
+    public boolean isIdentifierInUseByAnotherPatient(PatientIdentifier patientIdentifier) {
+    	return dao.isIdentifierInUseByAnotherPatient(patientIdentifier);
+    }
 }
