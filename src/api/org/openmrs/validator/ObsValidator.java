@@ -45,6 +45,16 @@ public class ObsValidator implements Validator {
 	/**
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
+	 * @should fail validation if personId is null
+	 * @should fail validation if obsDatetime is null
+	 * @should fail validation if concept is null
+	 * @should fail validation if concept datatype is boolean and valueBoolean is null
+	 * @should fail validation if concept datatype is coded and valueCoded is null
+	 * @should fail validation if concept datatype is date and valueDatetime is null
+	 * @should fail validation if concept datatype is numeric and valueNumeric is null
+	 * @should fail validation if concept datatype is text and valueText is null
+	 * @should fail validation if obs ancestors contains obs
+	 * @should pass validation if all values present
 	 */
 	public void validate(Object obj, Errors errors) {
 		Obs obs = (Obs) obj;
@@ -64,8 +74,10 @@ public class ObsValidator implements Validator {
 	 *            not then we shouldn't reject fields by name.
 	 */
 	private void validateHelper(Obs obs, Errors errors, List<Obs> ancestors, boolean atRootNode) {
-		if (obs.getPersonId() == null && obs.getPersonId() == null)
+		if (obs.getPersonId() == null)
 			errors.rejectValue("person", "error.null");
+		if (obs.getObsDatetime() == null)
+			errors.rejectValue("obsDatetime", "error.null");
 		Concept c = obs.getConcept();
 		if (c == null) {
 			errors.rejectValue("concept", "error.null");
