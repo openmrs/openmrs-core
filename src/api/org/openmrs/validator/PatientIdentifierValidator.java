@@ -85,13 +85,9 @@ public class PatientIdentifierValidator implements Validator {
 		if (!pi.isVoided()) {
 			
 			// Check is already in use by another patient
-			List<Patient> patsWithId = Context.getPatientService().getPatients(null, pi.getIdentifier(),
-			    Arrays.asList(pi.getIdentifierType()), true);
-			for (Patient pat : patsWithId) {
-				if (!pat.equals(pi.getPatient())) {
-					throw new IdentifierNotUniqueException("Identifier " + pi.getIdentifier()
-					        + " already in use by patient #" + pat.getPatientId());
-				}
+			if (Context.getPatientService().isIdentifierInUseByAnotherPatient(pi)) {
+				throw new IdentifierNotUniqueException("Identifier " + pi.getIdentifier()
+			        + " already in use by another patient");
 			}
 			
 			// Check that this is a identifier is valid

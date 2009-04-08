@@ -100,5 +100,10 @@ public interface PatientDAO {
 	 * @see org.openmrs.api.PatientService#getDuplicatePatientsByAttributes(java.util.List)
 	 */
 	public List<Patient> getDuplicatePatientsByAttributes(List<String> attributes) throws DAOException;
+
+	/**
+	 * @see org.openmrs.api.PatientService#isIdentifierInUseByAnotherPatient(PatientIdentifier) 
+	 */
+    public boolean isIdentifierInUseByAnotherPatient(PatientIdentifier patientIdentifier);
 	
 }

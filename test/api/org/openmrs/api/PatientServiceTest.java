@@ -626,4 +626,26 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(patients.contains(new Patient(5)));
 	}
 	
+	/**
+	 * Regression test for ticket #1375: org.hibernate.NonUniqueObjectException caused by PatientIdentifierValidator
+	 * 
+	 * Manually construct a patient with a correctly-matching patientId and patient identifier with
+	 * validator. Calling PatientService.savePatient on that patient leads to a call to
+	 * PatientIdentifierValidator.validateIdentifier which used to load the Patient for that identifier
+	 * into the hibernate session, leading to a NonUniqueObjectException when the calling saveOrUpdate
+	 * on the manually constructed Patient.
+	 * 
+	 * @see {@link PatientService#savePatient(Patient)}
+	 */
+	@Test
+	@Verifies(value = "should not throw a NonUniqueObjectException when called with a hand constructed patient regression 1375", method = "savePatient(Patient)")
+	public void savePatient_shouldNotThrowANonUniqueObjectExceptionWhenCalledWithAHandConstructedPatientRegression1375() {
+		Patient patient = new Patient();
+		patient.setGender("M");
+		patient.setPatientId(2);
+		patient.addName(new PersonName("This", "Isa", "Test"));
+		patient.addIdentifier(new PatientIdentifier("101-6", new PatientIdentifierType(1), new Location(1)));
+		patientService.savePatient(patient);
+	}
+	
 }
