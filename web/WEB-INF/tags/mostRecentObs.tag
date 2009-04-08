@@ -14,7 +14,7 @@
 	</c:if>
 	<span class="obsValue"><openmrs:format obsValue="${o}"/></span>
 	<c:if test="${showUnits}">
-		<openmrs:concept conceptId="${o.concept.conceptId}" var="c" nameVar="n" numericVar="nv">
+		<openmrs:concept conceptId="${o.concept.conceptId}" var="c" numericVar="nv">
 			<c:if test="${nv != null}">
 				<span class="obsUnits"><spring:message code="Units.${nv.units}" /></span>
 			</c:if>
