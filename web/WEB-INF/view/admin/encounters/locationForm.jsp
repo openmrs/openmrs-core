@@ -82,12 +82,11 @@
 			<h4><spring:message code="Location.retireLocation"/></h4>
 
 			<b><spring:message code="general.reason"/></b>
-			<input type="text" value="" size="40" name="retireReason" />
-			<spring:hasBindErrors name="location">
-				<c:forEach items="${errors.allErrors}" var="error">
-					<c:if test="${error.code == 'retireReason'}"><span class="error"><spring:message code="${error.defaultMessage}" text="${error.defaultMessage}"/></span></c:if>
-				</c:forEach>
-			</spring:hasBindErrors>
+			<spring:bind path="location.retireReason">
+				<input type="text" value="${status.value}" size="40" name="retireReason" />
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+			</spring:bind>
+			<input type="hidden" name="retired" value="true" />
 			<br/>
 			<input type="submit" value='<spring:message code="Location.retireLocation"/>' name="retireLocation"/>
 		</fieldset>
