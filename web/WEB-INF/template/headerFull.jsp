@@ -79,12 +79,12 @@
 			<%@ include file="/WEB-INF/template/banner.jsp" %>
 		</div>
 
+		<%-- This is where the My Patients popup used to be. I'm leaving this placeholder here
+			as a reminder of where to put back an extension point when I've figured out what it should
+			look like. -DJ
 		<div id="popupTray">
-			&nbsp;
-			<c:if test="${empty OPENMRS_DO_NOT_SHOW_PATIENT_SET}">
-				<openmrs:portlet url="patientSet" id="patientSetPortlet" size="compact" parameters="selectedPatientId=|linkUrl=patientDashboard.form|allowRemove=true|allowClear=true|mutable=true|droppable=true|allowBatchEntry=true|allowActions=true"/>
-			</c:if>
 		</div>
+		--%>
 
 		<openmrs:hasPrivilege privilege="View Navigation Menu">
 			<div id="gutter">

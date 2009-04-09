@@ -125,10 +125,8 @@
 				<prop key="migration.form">migrationActionController</prop>
 				<prop key="nealreport.form">nealReportController</prop>
 				<prop key="options.form">optionsForm</prop>
-				<prop key="patientSummaries.form">multiplePatientSummariesList</prop>
 				<prop key="patientDashboard.form">patientDashboardForm</prop>
 				<prop key="personDashboard.form">personDashboardForm</prop>
-				<prop key="patientSet.form">patientSetFormController</prop>
 
 				<prop key="admin/forms/formSchemaDesign.form">formSchemaDesignForm</prop>
 				<prop key="admin/forms/formEdit.form">formEditForm</prop>
@@ -179,7 +177,6 @@
 				<prop key="**/patientRegimenCompleted.portlet">patientRegimenPortletController</prop>
 				<prop key="**/patientRegimenAdd.portlet">patientRegimenPortletController</prop>
 				<prop key="**/patientRegimenDiscontinued.portlet">patientRegimenPortletController</prop>
-				<prop key="**/patientSummary.portlet">patientSummaryPortletController</prop>
 				<!--<prop key="**/calendar.portlet">calendarPortletController</prop>-->
 
 				<prop key="**/*.portlet">portletController</prop>
@@ -196,7 +193,6 @@
 	<bean id="personRelationshipsPortletController" class="org.openmrs.web.controller.PersonRelationshipsPortletController" />
 	<bean id="patientSetPortletController" class="org.openmrs.web.controller.PatientSetPortletController" />
 	<bean id="patientRegimenPortletController" class="org.openmrs.web.controller.RegimenPortletController" />
-	<bean id="patientSummaryPortletController" class="org.openmrs.web.controller.PatientSummaryPortletController" />
 	<bean id="addressLayoutPortletController" class="org.openmrs.web.controller.layout.AddressLayoutPortletController" />
 	<bean id="nameLayoutPortletController" class="org.openmrs.web.controller.layout.NameLayoutPortletController" />
 	<!--<bean id="calendarPortletController" class="org.openmrs.web.controller.CalendarPortletController"/>-->
@@ -925,7 +921,6 @@
 		<property name="successView"><value>cohortBuilder.list</value></property>
 		<property name="links">
 			<list>
-				<value>patientSet.form:Analysis.formEntryButton:method=setPatientSet:url=patientDashboard.form:appendPatientId=true:showPatientSet=true</value>
 				<value>nealreport.form:nealreport.ConsultReport.name:reportType=Consult Report</value>
 				<value>nealreport.form:nealreport.IncentiveReport.name:reportType=Incentive Report</value>
 				<value>nealreport.form:nealreport.ShortReport.name:reportType=Short Report</value>
@@ -1134,12 +1129,6 @@
 		<property name="formView"><value>/optionsForm</value></property>
 		<property name="successView"><value>options.form</value></property>
 	</bean>
-	<bean id="multiplePatientSummariesList"
-		class="org.openmrs.web.controller.patientset.MultipleSummariesController">
-		<property name="commandName"><value>patientSet</value></property>
-		<property name="formView"><value>/patientSummary</value></property>
-		<property name="successView"><value>patientSummaryies.form</value></property>
-	</bean>
 	<bean id="patientDashboardForm"
 		class="org.openmrs.web.controller.patient.PatientDashboardController">
 		<property name="sessionForm"><value>true</value></property>
@@ -1234,16 +1223,6 @@
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
 		</bean>
 	-->
-
-	<bean id="patientSetFormController"
-		class="org.springframework.web.servlet.mvc.multiaction.MultiActionController">
-		<property name="methodNameResolver">
-			<ref bean="defaultMethodParamResolver" />
-		</property>
-		<property name="delegate">
-			<bean class="org.openmrs.web.controller.patientset.PatientSetController" />
-		</property>
-	</bean>
 
 	<!--  **************************  REPORT OBJECT FACTORY CONFIGURATION  *************************  -->
 
@@ -1765,179 +1744,6 @@
 		</property>
 	</bean>
 
-
-	<!-- SUMMARY SPEC -->
-	<bean id="patientSummarySpecification"
-		class="org.openmrs.summary.web.PatientSummarySpecification">
-		<property name="specification">
-			<list>
-				<props>
-					<prop key="type">activeList</prop>
-					<prop key="headingCode">summary.problemList</prop>
-					<prop key="addConcept">name:PREVIOUS DIAGNOSIS</prop>
-					<prop key="otherGroupedConcepts">
-						name:PREVIOUS DIAGNOSIS DATE|name:PREVIOUS DIAGNOSIS COMMENTS
-					</prop>
-					<prop key="showDate">false</prop>
-					<prop key="displayStyle">table</prop>
-				</props>
-				<!-- I assume this would show the list of active problems, but I'm not sure since PIH doesn't use those -->
-				<props>
-					<prop key="type">activeList</prop>
-					<!-- <prop key="headingCode">summary.activeProblems</prop> -->
-					<prop key="addConcept">name:PROBLEM ADDED|name:PROBLEM LIST</prop>
-					<prop key="removeConcept">name:PROBLEM REMOVED</prop>
-					<prop key="showDate">true</prop>
-					<prop key="displayStyle">ol</prop>
-				</props>
-				<props>
-					<prop key="type">newlines</prop>
-					<prop key="count">2</prop>
-				</props>
-				<props>
-					<prop key="type">activeList</prop>
-					<prop key="headingCode">summary.allergies</prop>
-					<prop key="addConcept">set:name:ALLERGY TO DRUG</prop>
-					<prop key="showDate">false</prop>
-					<prop key="displayStyle">ul</prop>
-				</props>
-				<props>
-					<prop key="type">NEWCOLUMN</prop>
-				</props>
-				<props>
-					<prop key="type">currentDrugOrders</prop>
-					<prop key="headingCode">summary.currentDrugOrders</prop>
-					<prop key="whichSets">ANTIRETROVIRAL DRUGS,TUBERCULOSIS TREATMENT DRUGS,*</prop>
-				</props>
-				<!-- Indiana, you might do something like this instead to display the current regimen
-					<props>
-					<prop key="type">obsTable</prop>
-					<prop key="headingCode">summary.currentDrugOrders</prop>
-					<prop key="concepts">name:CURRENT ANTIRETROVIRAL DRUGS USED FOR TREATMENT</prop>
-					<prop key="cssClass">borderedTable</prop>
-					<prop key="showEmptyConcepts">false</prop>
-					<prop key="showConceptHeader">true</prop>
-					<prop key="showDateHeader">true</prop>
-					<prop key="orientation">vertical</prop>
-					<prop key="sort">desc</prop>
-					<prop key="limit">1</prop>
-					</props>
-				-->
-				<props>
-					<prop key="type">newlines</prop>
-					<prop key="count">1</prop>
-				</props>
-				<props>
-					<prop key="type">pastDrugOrders</prop>
-					<prop key="headingCode">summary.pastDrugOrders</prop>
-					<prop key="whichSets">ANTIRETROVIRAL DRUGS,TUBERCULOSIS TREATMENT DRUGS,*</prop>
-				</props>
-				<props>
-					<prop key="type">NEWROW</prop>
-				</props>
-				<props>
-					<prop key="type">obsTable</prop>
-					<prop key="headingCode">summary.labResults</prop>
-					<prop key="concepts">
-						name:CD4 COUNT|set:name:LABORATORY EXAMINATIONS CONSTRUCT
-					</prop>
-					<prop key="cssClass">borderedTable</prop>
-					<prop key="showEmptyConcepts">false</prop>
-					<prop key="showConceptHeader">true</prop>
-					<prop key="showDateHeader">true</prop>
-					<prop key="orientation">vertical</prop>
-					<prop key="sort">desc</prop>
-					<prop key="limit">-1</prop>
-				</props>
-				<props>
-					<prop key="type">newlines</prop>
-					<prop key="count">1</prop>
-				</props>
-				<props>
-					<prop key="type">obsTable</prop>
-					<prop key="headingCode">summary.cxrFindings</prop>
-					<prop key="concepts">name:X-RAY, CHEST|name:CHEST XRAY COMMENTS</prop>
-					<!-- <prop key="cssClass">borderedTable</prop> -->
-					<prop key="showEmptyConcepts">false</prop>
-					<prop key="showConceptHeader">false</prop>
-					<prop key="showDateHeader">true</prop>
-					<prop key="orientation">vertical</prop>
-					<prop key="sort">desc</prop>
-					<prop key="limit">-1</prop>
-				</props>
-				<props>
-					<prop key="type">newlines</prop>
-					<prop key="count">1</prop>
-				</props>
-				<props>
-					<prop key="type">obsTable</prop>
-					<prop key="headingCode">summary.vitalSigns</prop>
-					<prop key="concepts">set:name:VITAL SIGNS CONSTRUCT|set:name:VITAL SIGNS</prop>
-					<prop key="cssClass">borderedTable</prop>
-					<prop key="showEmptyConcepts">false</prop>
-					<prop key="showConceptHeader">true</prop>
-					<prop key="showDateHeader">true</prop>
-					<prop key="orientation">vertical</prop>
-					<prop key="sort">desc</prop>
-					<prop key="limit">-1</prop>
-				</props>
-				<props>
-					<prop key="type">NEWCOLUMN</prop>
-				</props>
-				<props>
-					<prop key="type">graph</prop>
-					<prop key="globalKey">concept.cd4_count</prop>
-				</props>
-				<props>
-					<prop key="type">graph</prop>
-					<prop key="globalKey">concept.weight</prop>
-					<prop key="maxRange">100</prop>
-				</props>
-				<props>
-					<prop key="type">NEWTABLE</prop>
-				</props>
-				<props>
-					<prop key="type">newlines</prop>
-					<prop key="count">1</prop>
-				</props>
-				<props>
-					<prop key="type">heading</prop>
-					<prop key="code">summary.alerts</prop>
-				</props>
-				<props>
-					<prop key="type">label</prop>
-					<prop key="code">summary.alert.noCd4In6Months</prop>
-					<prop key="showIfTrue">
-						!obsCheck
-						test:NO
-						concept:CD4 COUNT
-						timespan:last 7 months
-					</prop>
-				</props>
-				<props>
-					<prop key="type">label</prop>
-					<prop key="code">summary.alert.noCxr</prop>
-					<!-- We could define a set 'CHEST XRAY FINDINGS' that contains all concept-questions for chest xray findings
-						<prop key="showIfTrue">
-						!obsCheck
-						test:NO
-						concept:set:CHEST XRAY FINDINGS
-						</prop>
-					-->
-					<prop key="showIfTrue">
-						!and
-						!obsCheck
-						test:NO
-						concept:X-RAY, CHEST
-						!obsCheck
-						test:NO
-						concept:CHEST XRAY COMMENTS
-					</prop>
-				</props>
-			</list>
-		</property>
-	</bean>
-
     <!--  COMPLEX OBS HANDLER SECTION -->
     <bean parent="obsServiceTarget" >
         <property name="handlers">
@@ -1963,21 +1769,6 @@
 			</map>
 		</property>
 	</bean>
-
-	<!-- CALENDAR SECTION -->
-
-	<!--
-		
-		<bean id="calendarSupport" class="org.openmrs.web.controller.calendar.CalendarSupport">
-		<property name="defaultConceptIdsToShow">
-		<list>
-		<value>CD4 COUNT</value>
-		<value>WEIGHT (KG)</value>
-		</list>
-		</property>
-		</bean>
-		
-	-->
 	
 	<!-- Find/replace strings after errant 'contrl-shift-f':
 		>\r\n			<value>(.*)</value>\r\n		</property>

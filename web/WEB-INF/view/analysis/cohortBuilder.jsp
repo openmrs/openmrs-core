@@ -2,8 +2,6 @@
 
 <openmrs:require privilege="View Patient Cohorts" otherwise="/login.htm" redirect="/cohortBuilder.list" />
 
-<c:set var="OPENMRS_DO_NOT_SHOW_PATIENT_SET" scope="request" value="true"/>
-
 <%@ include file="/WEB-INF/template/header.jsp" %>
 
 <script type="text/javascript" src='${pageContext.request.contextPath}/dwr/engine.js'></script>
