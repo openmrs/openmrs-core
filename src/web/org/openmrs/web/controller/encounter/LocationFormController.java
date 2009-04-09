@@ -21,10 +21,12 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Location;
+import org.openmrs.api.APIException;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
@@ -63,12 +65,41 @@ public class LocationFormController extends SimpleFormController {
 		HttpSession httpSession = request.getSession();
 		
 		String view = getFormView();
-		
 		if (Context.isAuthenticated()) {
-			Location location = (Location) obj;
-			Context.getLocationService().saveLocation(location);
+			try {
+				Location location = (Location) obj;
+				LocationService locationService = Context.getLocationService();
+				
+				//if the user was editing the location
+				if (request.getParameter("saveLocation") != null) {
+					locationService.saveLocation(location);
+					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Location.saved");
+				}
+				//the 'retire this location' button was clicked
+				else if (request.getParameter("retireLocation") != null) {
+					//make sure a reason was filled in for retiring the location
+					// this isn't done in the validator because we only want it checked if the user
+					// clicked the "retired location" button
+					if (!StringUtils.hasLength(location.getRetireReason())) {
+						errors.reject("retireReason", "general.retiredReason.empty");
+						return showForm(request, response, errors);
+					}
+					locationService.retireLocation(location, location.getRetireReason());
+					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Location.retired");
+				}
+				//the 'unretire this location' button was clicked
+				else if (request.getParameter("unretireLocation") != null) {
+					locationService.unretireLocation(location);
+					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Location.unretired");
+				}
+			}
+			catch (APIException e) {
+				log.error("Error while saving location: " + obj, e);
+				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, e.getMessage());
+				return showForm(request, response, errors);
+			}
+			
 			view = getSuccessView();
-			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Location.saved");
 		}
 		
 		return new ModelAndView(new RedirectView(view));
