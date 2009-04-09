@@ -26,7 +26,6 @@ import org.openmrs.api.LocationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
-import org.springframework.util.StringUtils;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
@@ -58,7 +57,7 @@ public class LocationFormController extends SimpleFormController {
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
-	 * @should retire location 
+	 * @should retire location
 	 * @should not retire location if reason is empty
 	 */
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
@@ -79,13 +78,6 @@ public class LocationFormController extends SimpleFormController {
 				}
 				//the 'retire this location' button was clicked
 				else if (request.getParameter("retireLocation") != null) {
-					//make sure a reason was filled in for retiring the location
-					// this isn't done in the validator because we only want it checked if the user
-					// clicked the "retired location" button
-					if (!StringUtils.hasLength(location.getRetireReason())) {
-						errors.reject("retireReason", "general.retiredReason.empty");
-						return showForm(request, response, errors);
-					}
 					locationService.retireLocation(location, location.getRetireReason());
 					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Location.retired");
 				}
