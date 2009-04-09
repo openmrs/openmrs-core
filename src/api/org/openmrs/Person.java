@@ -623,11 +623,20 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	 * @return Returns the "preferred" person name.
 	 */
 	public PersonName getPersonName() {
-		if (getNames() != null && names.size() > 0) {
-			return (PersonName) names.toArray()[0];
-		} else {
-			return new PersonName();
+		// normally the DAO layer returns these in the correct order, i.e. preferred and non-voided first, but it's possible that someone
+		// has fetched a Person, changed their names around, and then calls this method, so we have to be careful.
+		if (getNames() != null && getNames().size() > 0) {
+			for (PersonName name : getNames()) {
+				if (name.isPreferred() && !name.isVoided())
+					return name;
+			}
+			for (PersonName name : getNames()) {
+				if (!name.isVoided())
+					return name;
+			}
+			return null;
 		}
+		return null;
 	}
 	
 	/**
@@ -675,11 +684,20 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	 * @return Returns the "preferred" person address.
 	 */
 	public PersonAddress getPersonAddress() {
-		if (addresses != null && addresses.size() > 0) {
-			return (PersonAddress) addresses.toArray()[0];
-		} else {
+		// normally the DAO layer returns these in the correct order, i.e. preferred and non-voided first, but it's possible that someone
+		// has fetched a Person, changed their addresses around, and then calls this method, so we have to be careful.
+		if (getAddresses() != null && getAddresses().size() > 0) {
+			for (PersonAddress addr : getAddresses()) {
+				if (addr.isPreferred() && !addr.isVoided())
+					return addr;
+			}
+			for (PersonAddress addr : getAddresses()) {
+				if (!addr.isVoided())
+					return addr;
+			}
 			return null;
 		}
+		return null;
 	}
 	
 	/**
