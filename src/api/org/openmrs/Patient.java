@@ -210,6 +210,8 @@ public class Patient extends Person implements java.io.Serializable {
 	 * @return Returns the "preferred" patient identifier.
 	 */
 	public PatientIdentifier getPatientIdentifier() {
+		// normally the DAO layer returns these in the correct order, i.e. preferred and non-voided first, but it's possible that someone
+		// has fetched a Patient, changed their identifiers around, and then calls this method, so we have to be careful.
 		if (getIdentifiers() != null && getIdentifiers().size() > 0) {
 			for (PatientIdentifier id : getIdentifiers()) {
 				if (id.isPreferred() && !id.isVoided())
@@ -222,7 +224,6 @@ public class Patient extends Person implements java.io.Serializable {
 			return null;
 		}
 		return null;
-		
 	}
 	
 	/**
