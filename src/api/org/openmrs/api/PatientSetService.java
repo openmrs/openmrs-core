@@ -342,25 +342,32 @@ public interface PatientSetService {
 
 	/**
 	 * @param ps
+	 * @deprecated The "My Patient Set" feature will be removed in 1.5
 	 */
 	public void setMyPatientSet(Cohort ps);
 
 	/**
 	 * @return
+	 * @deprecated The "My Patient Set" feature will be removed in 1.5
 	 */
 	@Transactional(readOnly=true)
 	public Cohort getMyPatientSet();
 
 	/**
 	 * @param ptId
+	 * @deprecated The "My Patient Set" feature will be removed in 1.5
 	 */
 	public void addToMyPatientSet(Integer ptId);
 
 	/**
 	 * @param ptId
+	 * @deprecated The "My Patient Set" feature will be removed in 1.5
 	 */
 	public void removeFromMyPatientSet(Integer ptId);
 
+	/**
+	 * @deprecated The "My Patient Set" feature will be removed in 1.5
+	 */
 	public void clearMyPatientSet();
 
 	@Transactional(readOnly=true)
