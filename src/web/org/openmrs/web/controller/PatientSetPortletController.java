@@ -60,8 +60,7 @@ public class PatientSetPortletController extends PortletController {
 					log.debug("Don't know how to handle " + o.getClass());
 				}
 			} else {
-				// use PatientSetService.
-				model.put("patientSetSize", Context.getPatientSetService().getMyPatientSet().size());
+				throw new IllegalArgumentException("You must specify a fromAttribute when using the patientSet portlet");
 			}
 			model.put("patientSet", patientSet);
 			

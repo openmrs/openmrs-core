@@ -65,7 +65,6 @@ public class PortletController implements Controller {
      *          (other parameters)
      *     (if there's currently an authenticated user)
      *          (User) authenticatedUser
-     *          (Cohort) myPatientSet (the user's selected patient set, PatientSetService.getMyPatientSet())
      *     (if the request has a patientId attribute)
      *          (Integer) patientId
      *          (Patient) patient
@@ -158,7 +157,6 @@ public class PortletController implements Controller {
 			// if there's an authenticated user, put them, and their patient set, in the model
 			if (Context.getAuthenticatedUser() != null) {
 				model.put("authenticatedUser", Context.getAuthenticatedUser());
-				model.put("myPatientSet", Context.getPatientSetService().getMyPatientSet());
 			}
 			
 			Integer personId = null;
