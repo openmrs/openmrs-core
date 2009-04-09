@@ -248,6 +248,7 @@ public class Context {
 	 * Refresh the authenticated user object in the current UserContext. This should be used when
 	 * updating information in the database about the current user and it needs to be reflecting in
 	 * the (cached) {@link #getAuthenticatedUser()} User object.
+	 * 
 	 * @should get fresh values from the database
 	 */
 	public static void refreshAuthenticatedUser() {
@@ -708,7 +709,11 @@ public class Context {
 	 * <br/>
 	 * If an {@link InputRequiredException} is thrown, a call to {@link DatabaseUpdater#update(Map)}
 	 * will be required with a mapping from question prompt to user answer before startup can be
-	 * called again.
+	 * called again. <br/>
+	 * <br/>
+	 * <b>Note:</b> This method calls {@link Context#openSession()}, so you must call
+	 * {@link Context#closeSession()} somewhere on the same thread of this application so as to not
+	 * leak memory.
 	 * 
 	 * @param url database url like "jdbc:mysql://localhost:3306/openmrs?autoReconnect=true"
 	 * @param username Connection username
@@ -733,6 +738,8 @@ public class Context {
 		
 		@SuppressWarnings("unused")
 		AbstractApplicationContext ctx = new ClassPathXmlApplicationContext("applicationContext-service.xml");
+		
+		openSession(); // so that the startup method can use proxyPrivileges
 		
 		startup(properties);
 		
