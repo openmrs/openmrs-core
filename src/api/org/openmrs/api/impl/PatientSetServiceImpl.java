@@ -48,7 +48,6 @@ import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
-import org.openmrs.User;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.context.Context;
@@ -84,7 +83,6 @@ public class PatientSetServiceImpl implements PatientSetService {
 	 * @see org.openmrs.api.impl.BaseOpenmrsService#onShutdown()
 	 */
 	public void onShutdown() {
-		userPatientSets = null;
 	}
 	
 	/**
@@ -405,46 +403,7 @@ public class PatientSetServiceImpl implements PatientSetService {
 	public Map<Integer, List<Person>> getRelatives(Cohort ps, RelationshipType relType, boolean forwards) {
 		return getPatientSetDAO().getRelatives(ps, relType, forwards);
 	}
-	
-	// these should go elsewhere
-	
-	private static Map<User, Cohort> userPatientSets = null;
-	
-	public void setMyPatientSet(Cohort ps) {
-		if (userPatientSets == null) {
-			userPatientSets = new HashMap<User, Cohort>();
-		}
-		User u = Context.getAuthenticatedUser();
-		userPatientSets.put(u, ps);
-	}
-	
-	public Cohort getMyPatientSet() {
-		if (Context.isAuthenticated() == false)
-			return new Cohort();
 		
-		if (userPatientSets == null) {
-			userPatientSets = new HashMap<User, Cohort>();
-		}
-		Cohort mine = userPatientSets.get(Context.getAuthenticatedUser());
-		if (mine == null) {
-			mine = new Cohort();
-			userPatientSets.put(Context.getAuthenticatedUser(), mine);
-		}
-		return mine;
-	}
-	
-	public void addToMyPatientSet(Integer ptId) {
-		getMyPatientSet().addMember(ptId);
-	}
-	
-	public void removeFromMyPatientSet(Integer ptId) {
-		getMyPatientSet().removeMember(ptId);
-	}
-	
-	public void clearMyPatientSet() {
-		setMyPatientSet(null);
-	}
-	
 	public Map<Integer, PatientState> getCurrentStates(Cohort ps, ProgramWorkflow wf) {
 		return getPatientSetDAO().getCurrentStates(ps, wf);
 	}

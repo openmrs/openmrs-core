@@ -455,38 +455,7 @@ public interface PatientSetService {
 	 */
 	@Transactional(readOnly = true)
 	public List<Patient> getPatients(Collection<Integer> patientIds);
-	
-	/**
-	 * TODO write something here
-	 * 
-	 * @param ps Cohort to void
-	 */
-	public void setMyPatientSet(Cohort ps);
-	
-	/**
-	 * TODO write something here
-	 * 
-	 * @return the Patient Set as a Cohort
-	 */
-	@Transactional(readOnly = true)
-	public Cohort getMyPatientSet();
-	
-	/**
-	 * TODO write something here
-	 * 
-	 * @param ptId
-	 */
-	public void addToMyPatientSet(Integer ptId);
-	
-	/**
-	 * TODO write something here
-	 * 
-	 * @param ptId
-	 */
-	public void removeFromMyPatientSet(Integer ptId);
-	
-	public void clearMyPatientSet();
-	
+		
 	@Transactional(readOnly = true)
 	public Map<Integer, PatientState> getCurrentStates(Cohort ps, ProgramWorkflow wf);
 	
