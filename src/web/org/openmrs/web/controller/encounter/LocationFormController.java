@@ -58,6 +58,8 @@ public class LocationFormController extends SimpleFormController {
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
+	 * @should retire location 
+	 * @should not retire location if reason is empty
 	 */
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
 	                                BindException errors) throws Exception {
@@ -110,6 +112,7 @@ public class LocationFormController extends SimpleFormController {
 	 * form/command object to load into the request
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
+	 * @should return valid location given valid locationId
 	 */
 	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 		
