@@ -814,4 +814,27 @@
 		/>
 	</changeSet>
 	
+	<changeSet id="200904091023" author="bwolfe">
+		<comment>
+			Remove Manage Tribes and View Tribes privileges from the privilege table and role_privilege table.
+			The privileges will be recreated by the Tribe module if it is installed.
+		</comment>
+		
+		<delete tableName="role_privilege">
+			<where>privilege='Manage Tribes'</where>
+		</delete>
+		
+		<delete tableName="role_privilege">
+			<where>privilege='View Tribes'</where>
+		</delete>
+		
+		<delete tableName="privilege">
+			<where>privilege='Manage Tribes'</where>
+		</delete>
+		
+		<delete tableName="privilege">
+			<where>privilege='View Tribes'</where>
+		</delete>
+	</changeSet>
+	
 </databaseChangeLog>
