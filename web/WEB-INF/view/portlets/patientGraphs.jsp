@@ -57,7 +57,9 @@ table#labTestTable th {
 				userConcepts += "-" + request.getParameter("patientGraphConcept");
 		}
 		pageContext.setAttribute("userConcepts", userConcepts);
-		org.openmrs.api.context.Context.getUserService().setUserProperty(org.openmrs.api.context.Context.getAuthenticatedUser(), "patientGraphConcepts", userConcepts);
+		org.openmrs.api.context.Context.getAuthenticatedUser().setUserProperty("patientGraphConcepts", userConcepts); // set this for the currently cached logged in user
+		org.openmrs.User user = org.openmrs.api.context.Context.getUserService().getUser(org.openmrs.api.context.Context.getAuthenticatedUser().getUserId());
+		org.openmrs.api.context.Context.getUserService().setUserProperty(user, "patientGraphConcepts", userConcepts); // save it to the db for this user so it reappears when they log in again
 	}
 %>
 
