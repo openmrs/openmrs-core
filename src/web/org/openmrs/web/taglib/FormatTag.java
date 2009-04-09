@@ -80,6 +80,8 @@ public class FormatTag extends TagSupport {
 		conceptId = null;
 		concept = null;
 		obsValue = null;
+		userId = null;
+		user = null;
 	}
 	
 	public Integer getConceptId() {
