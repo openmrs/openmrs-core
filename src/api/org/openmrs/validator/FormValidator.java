@@ -44,6 +44,12 @@ public class FormValidator implements Validator {
 	 * 
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
+	 * @should fail validation if name is null
+	 * @should fail validation if version is null
+	 * @should fail validation if version does not match regex
+	 * @should fail validation if retiredReason is null
+	 * @should fail validation if retiredReason is empty
+	 * @should pass validation if all fields are correct
 	 */
 	public void validate(Object obj, Errors errors) {
 		Form form = (Form) obj;
@@ -58,8 +64,7 @@ public class FormValidator implements Validator {
 				errors.rejectValue("version", "Form.version.invalid");
 			
 			if (form.isRetired()) {
-				if (form.getRetiredBy() == null || form.getRetiredReason() == null)
-					errors.rejectValue("retiredBy", "error.retired.requireMetadata");
+				ValidationUtils.rejectIfEmptyOrWhitespace(errors, "retireReason", "general.retiredReason.empty");
 			}
 		}
 	}

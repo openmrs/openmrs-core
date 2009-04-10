@@ -69,7 +69,7 @@
 		<property name="dateRetired" type="java.util.Date"
 			column="date_retired" length="19" />
 
-		<property name="retiredReason" type="java.lang.String" 
+		<property name="retireReason" type="java.lang.String" 
 			column="retired_reason" length="50" />
 
 	</class>

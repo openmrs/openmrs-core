@@ -113,7 +113,7 @@
 	</tr>
 	<tr id="retiredReasonRow">
 		<td><spring:message code="general.retiredReason"/></td>
-		<spring:bind path="form.retiredReason">
+		<spring:bind path="form.retireReason">
 			<td>
 				<input type="text" name="${status.expression}" id="retiredReason" value="${status.value}" />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>

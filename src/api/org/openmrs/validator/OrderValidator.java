@@ -45,6 +45,16 @@ public class OrderValidator implements Validator {
 	 * 
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
+	 * @should fail validation if order is null
+	 * @should fail validation if order and encounter have different patients
+	 * @should fail validation if discontinued is null
+	 * @should fail validation if voided is null
+	 * @should fail validation if concept is null
+	 * @should fail validation if patient is null
+	 * @should fail validation if orderType is null
+	 * @should fail validation if startDate after discontinuedDate
+	 * @should fail validation if startDate after autoExpireDate
+	 * @should pass validation if all fields are correct
 	 */
 	public void validate(Object obj, Errors errors) {
 		Order order = (Order) obj;
