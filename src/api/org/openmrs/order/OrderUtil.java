@@ -48,6 +48,11 @@ public class OrderUtil {
 	 * @param discontinueReason
 	 * @param discontinueDate
 	 * @see OrderService#discontinueOrder(org.openmrs.Order, Concept, Date)
+	 * 
+	 * @should discontinue all orders for the given patient if none are yet discontinued
+	 * @should not affect orders that were already discontinued on the specified date
+	 * @should not affect orders that end before the specified date
+	 * @should not affect orders that start after the specified date
 	 */
 	public static void discontinueAllOrders(Patient patient, Concept discontinueReason, Date discontinueDate) {
 		if (log.isDebugEnabled())
@@ -70,12 +75,18 @@ public class OrderUtil {
 	}
 	
 	/**
-	 * Auto generated method comment
+	 * Void all DrugOrders for drugs whose concepts are in the given set, and that have the given status.
+	 * An end-user would think of this method as "delete all drug orders of the given type". 
 	 * 
 	 * @param patient
 	 * @param drugSetId
 	 * @param voidReason
 	 * @param status
+	 * 
+	 * @should void all drug orders of the given type when status is null
+	 * @should void drug orders of the given type for status of CURRENT
+	 * @should void drug orders of the given type for status of COMPLETE
+	 * @should not affect drug orders that are already voided
 	 */
 	public static void voidDrugSet(Patient patient, String drugSetId, String voidReason, ORDER_STATUS status) {
 		if (log.isDebugEnabled())
@@ -117,6 +128,11 @@ public class OrderUtil {
 	 * @param drugSetId
 	 * @param discontinueReason
 	 * @param discontinueDate
+	 * 
+	 * @should discontinue all orders of the given type for the given patient if none are yet discontinued
+	 * @should not affect orders that were already discontinued on the specified date
+	 * @should not affect orders that end before the specified date
+	 * @should not affect orders that start after the specified date
 	 */
 	public static void discontinueDrugSet(Patient patient, String drugSetId, Concept discontinueReason, Date discontinueDate) {
 		if (log.isDebugEnabled()) {
@@ -161,6 +177,8 @@ public class OrderUtil {
 	 * 
 	 * @param drugSetIds a comma separated list with the concept id of the drug sets
 	 * @return <code>Map<String, String></code> of the drug headers for the given drugSetIds
+	 * 
+	 * @should get map from concept id as string to concept name  
 	 */
 	public static Map<String, String> getDrugSetHeadersByDrugSetIdList(String drugSetIds) {
 		Map<String, String> ret = null;
@@ -189,6 +207,9 @@ public class OrderUtil {
 	 * @param drugSetIdList a 'delimiter' separated list of drug sets
 	 * @param delimiter the delimiter of drug sets (defaults to a comma if set to null)
 	 * @return Map<String, List<DrugOrder>> of DrugOrders that belong to a DrugSet concept_id
+	 * 
+	 * @should get a map from concept id as string to drug orders that belong to that drug set
+	 * @should treat an asterisk as all other drugs 
 	 */
 	public static Map<String, List<DrugOrder>> getDrugSetsByDrugSetIdList(List<DrugOrder> orderList, String drugSetIdList,
 	                                                                      String delimiter) {
@@ -272,6 +293,8 @@ public class OrderUtil {
 	 * @return Map<Concept, List<DrugOrder>> of a sublist of drug orders mapped by the drug set
 	 *         concept that they belong
 	 * @throws APIException
+	 * 
+	 * @should get a map from concept to drugs orders in that drug set
 	 */
 	public static Map<Concept, List<DrugOrder>> getDrugSetsByConcepts(List<DrugOrder> drugOrders, List<Concept> drugSets)
 	                                                                                                                     throws APIException {
