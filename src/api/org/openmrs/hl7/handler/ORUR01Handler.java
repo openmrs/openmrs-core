@@ -95,6 +95,13 @@ public class ORUR01Handler implements Application {
 	
 	/**
 	 * Processes an ORU R01 event message
+	 * 
+	 * @should create encounter and obs from hl7 message
+	 * @should create basic concept proposal
+	 * @should create concept proposal and with obs alongside
+	 * @should not create problem list observation with concept proposals
+	 * @should append to an existing encounter
+	 * @should create obs group for OBRs
 	 */
 	public Message processMessage(Message message) throws ApplicationException {
 		
@@ -129,7 +136,8 @@ public class ORUR01Handler implements Application {
 	 * @return the processed message
 	 * @throws HL7Exception
 	 */
-	private Message processORU_R01(ORU_R01 oru) throws HL7Exception {
+	@SuppressWarnings("deprecation")
+    private Message processORU_R01(ORU_R01 oru) throws HL7Exception {
 		
 		// TODO: ideally, we would branch or alter our behavior based on the
 		// sending application.
@@ -177,11 +185,18 @@ public class ORUR01Handler implements Application {
 			log.debug("Creating observations for message " + messageControlId + "...");
 		// we ignore all MEDICAL_RECORD_OBSERVATIONS that are OBRs.  We do not 
 		// create obs_groups for them
+		List<Concept> ignoredConcepts = new ArrayList<Concept>();
+		
 		String ignoreOBRConceptId = Context.getAdministrationService().getGlobalProperty(
 		    OpenmrsConstants.GLOBAL_PROPERTY_MEDICAL_RECORD_OBSERVATIONS, "1238");
-		Concept ignoreOBRConcept = null;
 		if (ignoreOBRConceptId.length() > 0)
-			ignoreOBRConcept = new Concept(Integer.valueOf(ignoreOBRConceptId));
+			ignoredConcepts.add(new Concept(Integer.valueOf(ignoreOBRConceptId)));
+		
+		// we also ignore all PROBLEM_LIST that are OBRs
+		ignoreOBRConceptId = Context.getAdministrationService().getGlobalProperty(
+		    OpenmrsConstants.GLOBAL_PROPERTY_PROBLEM_LIST, "1284");
+		if (ignoreOBRConceptId.length() > 0)
+			ignoredConcepts.add(new Concept(Integer.valueOf(ignoreOBRConceptId)));
 		
 		ORU_R01_PATIENT_RESULT patientResult = oru.getPATIENT_RESULT();
 		int numObr = patientResult.getORDER_OBSERVATIONReps();
@@ -197,7 +212,7 @@ public class ORUR01Handler implements Application {
 			// Obs grouper object that the underlying obs objects will use
 			Obs obsGrouper = null;
 			Concept obrConcept = getConcept(obr);
-			if (obrConcept != null && ignoreOBRConcept != null && !ignoreOBRConcept.equals(obrConcept)) {
+			if (obrConcept != null && !ignoredConcepts.contains(obrConcept)) {
 				// maybe check for a parent obs group from OBR-29 Parent ?
 				
 				// create an obs for this obs group too
@@ -766,10 +781,6 @@ public class ORUR01Handler implements Application {
 		User enterer = new User();
 		enterer.setUserId(entererId);
 		return enterer;
-	}
-	
-	private Date getDateEntered(ORC orc) throws HL7Exception {
-		return tsToDate(orc.getDateTimeOfTransaction());
 	}
 	
 	//TODO: Debug (and use) methods in HL7Util instead
