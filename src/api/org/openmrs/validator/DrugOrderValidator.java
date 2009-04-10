@@ -21,7 +21,7 @@ import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 /**
- * Validates the {@link DrugOrder} class
+ * Validates the {@link DrugOrder} class.
  */
 public class DrugOrderValidator extends OrderValidator implements Validator {
 	
@@ -43,6 +43,10 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 	 * 
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
+	 * @should fail validation if prn is null
+	 * @should fail validation if complex is null
+	 * @should fail validation if drug is null
+	 * @should pass validation if all fields are correct
 	 */
 	public void validate(Object obj, Errors errors) {
 		super.validate(obj, errors);

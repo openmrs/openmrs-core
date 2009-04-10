@@ -21,7 +21,7 @@ import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 /**
- * This class validates properties on the {@link PersonAttributeType} object.
+ * Validates the {@link PersonAttributeType} class.
  */
 public class PersonAttributeTypeValidator implements Validator {
 	
@@ -36,6 +36,9 @@ public class PersonAttributeTypeValidator implements Validator {
 	/**
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
+	 * @should fail validation if name is null
+	 * @should fail validation if name already in use
+	 * @should pass validation if all fields are correct
 	 */
 	public void validate(Object obj, Errors errors) {
 		PersonAttributeType patObj = (PersonAttributeType) obj;
