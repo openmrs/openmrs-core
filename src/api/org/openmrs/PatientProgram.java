@@ -28,7 +28,7 @@ import org.openmrs.util.OpenmrsUtil;
 /**
  * PatientProgram
  */
-public class PatientProgram implements java.io.Serializable {
+public class PatientProgram extends BaseOpenmrsData implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 0L;
 	
@@ -49,22 +49,6 @@ public class PatientProgram implements java.io.Serializable {
 	private Date dateCompleted;
 	
 	private Set<PatientState> states = new HashSet<PatientState>();
-	
-	private User creator;
-	
-	private Date dateCreated;
-	
-	private User changedBy;
-	
-	private Date dateChanged;
-	
-	private Boolean voided = false;
-	
-	private User voidedBy;
-	
-	private Date dateVoided;
-	
-	private String voidReason;
 	
 	// ******************
 	// Constructors
@@ -352,14 +336,6 @@ public class PatientProgram implements java.io.Serializable {
 		this.dateCompleted = dateCompleted;
 	}
 	
-	public Date getDateCreated() {
-		return dateCreated;
-	}
-	
-	public void setDateCreated(Date dateCreated) {
-		this.dateCreated = dateCreated;
-	}
-	
 	public Date getDateEnrolled() {
 		return dateEnrolled;
 	}
@@ -392,22 +368,6 @@ public class PatientProgram implements java.io.Serializable {
 		this.program = program;
 	}
 	
-	public User getChangedBy() {
-		return changedBy;
-	}
-	
-	public void setChangedBy(User changedBy) {
-		this.changedBy = changedBy;
-	}
-	
-	public Date getDateChanged() {
-		return dateChanged;
-	}
-	
-	public void setDateChanged(Date dateChanged) {
-		this.dateChanged = dateChanged;
-	}
-	
 	public Set<PatientState> getStates() {
 		return states;
 	}
@@ -416,36 +376,18 @@ public class PatientProgram implements java.io.Serializable {
 		this.states = states;
 	}
 	
-	public Date getDateVoided() {
-		return dateVoided;
+	/**
+	 * @see org.openmrs.OpenmrsObject#getId()
+	 */
+	public Integer getId() {
+		return getPatientProgramId();
 	}
 	
-	public void setDateVoided(Date dateVoided) {
-		this.dateVoided = dateVoided;
-	}
-	
-	public Boolean getVoided() {
-		return voided;
-	}
-	
-	public void setVoided(Boolean voided) {
-		this.voided = voided;
-	}
-	
-	public User getVoidedBy() {
-		return voidedBy;
-	}
-	
-	public void setVoidedBy(User voidedBy) {
-		this.voidedBy = voidedBy;
-	}
-	
-	public String getVoidReason() {
-		return voidReason;
-	}
-	
-	public void setVoidReason(String voidReason) {
-		this.voidReason = voidReason;
+	/**
+	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
+	 */
+	public void setId(Integer id) {
+		setPatientProgramId(id);
 	}
 	
 }
