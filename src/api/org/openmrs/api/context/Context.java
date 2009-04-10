@@ -86,6 +86,39 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  * heavier and contains each service class. This is more static and there is only one ServiceContext
  * per OpenMRS instance. <br/>
  * <br/>
+ * Both the {@link UserContext} and the {@link ServiceContext} should not be used directly. This
+ * Context class has methods to pass through to the currently defined UserContext for the thread and
+ * the currently defined ServiceContext. <br/>
+ * <br/>
+ * To use the OpenMRS api there are four things that have to be done:
+ * <ol>
+ * <li>Call {@link Context#startup(String, String, String, Properties)} to let the Context contact
+ * the database</li>
+ * <li>Call {@link Context#openSession()} to start a "unit of work".</li>
+ * <li>Call {@link Context#authenticate(String, String)} to authenticate the current user on the
+ * current thread</li>
+ * <li>Call {@link Context#closeSession()} to end your "unit of work" and commit all changes to the
+ * database.</li>
+ * </ol>
+ * <br/>
+ * Example usage:
+ * 
+ * <pre>
+ * 	public static void main(String[] args) {
+ * 		Context.startup("jdbc:mysql://localhost:3306/db-name?autoReconnect=true", "openmrs-db-user", "3jknfjkn33ijt", new Properties());
+ * 		try {
+ * 			Context.openSession();
+ * 			Context.authenticate("admin", "test");
+ * 			List<Patients> patients = Context.getPatientService().getPatientsByName("Fred");
+ * 			patients.get(0).setBirthdate(new Date());
+ * 			Context.getPatientService().savePatient(patients.get(0));
+ * 			...
+ * 		}
+ * 		finally {
+ * 			Context.closeSession();
+ * 		}
+ * 	}
+ * </pre>
  * 
  * @see org.openmrs.api.context.UserContext
  * @see org.openmrs.api.context.ServiceContext
@@ -745,6 +778,8 @@ public class Context {
 		
 		// start the scheduled tasks
 		SchedulerUtil.startup(properties);
+		
+		closeSession();
 	}
 	
 	/**
