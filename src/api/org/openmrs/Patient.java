@@ -49,6 +49,16 @@ public class Patient extends Person implements java.io.Serializable {
 	public Patient() {
 	}
 	
+	/**
+	 * This constructor creates a new Patient object from the given {@link Person} object. All
+	 * attributes are copied over to the new object. NOTE! All child collection objects are copied
+	 * as pointers, each individual element is not copied. <br/>
+	 * <br/>
+	 * TODO Should the patient specific attributes be copied? (like identifiers)
+	 * 
+	 * @param person the person object to copy onto a new Patient
+	 * @see Person#Person(Person)
+	 */
 	public Patient(Person person) {
 		super(person);
 		if (person != null)

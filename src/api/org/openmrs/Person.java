@@ -102,8 +102,10 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	/**
-	 * This constructor is used to build a person object from another person object (usually a
-	 * patient or a user subobject).
+	 * This constructor is used to build a new Person object copy from another person object
+	 * (usually a patient or a user subobject). All attributes are copied over to the new object.
+	 * NOTE! All child collection objects are copied as pointers, each individual element is not
+	 * copied. <br/>
 	 * 
 	 * @param person Person to create this person object from
 	 */
