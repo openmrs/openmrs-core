@@ -322,13 +322,15 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(0, service.getRegisteredTasks().size());
 
 		TaskDefinition def = new TaskDefinition();
+		final String TASK_NAME = "This is my test! 123459876"; 
+		def.setName(TASK_NAME);
 		def.setStartOnStartup(false);
 		def.setRepeatInterval(10L);
 		def.setTaskClass(SampleTask1.class.getName());
 		service.saveTask(def);
 		Assert.assertEquals(1, service.getRegisteredTasks().size());
 		
-		def = service.getTask(1);
+		def = service.getTaskByName(TASK_NAME);
 		Assert.assertEquals(Context.getAuthenticatedUser().getUserId(), def.getCreator().getUserId());
 	}
 }
