@@ -122,10 +122,13 @@ public class InitializationFilter implements Filter {
 			HttpServletResponse httpResponse = (HttpServletResponse) response;
 			
 			String servletPath = httpRequest.getServletPath();
-			// for all /images files, write the path
-			if (servletPath.startsWith("/images") || servletPath.startsWith("/scripts")) {
+			// for all /images and /initfilter/scripts files, write the path
+			// (the "/initfilter" part is needed so that the openmrs_static_context-servlet.xml file doesn't
+			//  get instantiated early, before the locale messages are all set up)
+			if (servletPath.startsWith("/images") || servletPath.startsWith("/initfilter/scripts")) {
+				servletPath = servletPath.replaceFirst("/initfilter", ""); // strip out the /initfilter part
 				// writes the actual image file path to the response
-				File file = new File(filterConfig.getServletContext().getRealPath(httpRequest.getServletPath()));
+				File file = new File(filterConfig.getServletContext().getRealPath(servletPath));
 				if (httpRequest.getPathInfo() != null)
 					file = new File(file, httpRequest.getPathInfo());
 				
@@ -137,7 +140,11 @@ public class InitializationFilter implements Filter {
 				catch (FileNotFoundException e) {
 					log.error("Unable to find file: " + file.getAbsolutePath());
 				}
-			} // for anything but /initialsetup
+			} else if (servletPath.startsWith("/scripts")) {
+				log.error("Calling /scripts during the initializationfilter pages will cause the openmrs_static_context-servlet.xml to initialize too early and cause errors after startup.  Use '/initfilter"
+				                + servletPath + "' instead.");
+			}
+			// for anything but /initialsetup
 			else if (!httpRequest.getServletPath().equals("/" + WebConstants.SETUP_PAGE_URL)) {
 				// send the user to the setup page 
 				httpResponse.sendRedirect("/" + WebConstants.WEBAPP_NAME + "/" + WebConstants.SETUP_PAGE_URL);
@@ -370,7 +377,8 @@ public class InitializationFilter implements Filter {
 				OpenmrsUtil.validatePassword("admin", wizardModel.adminUserPassword, "admin");
 			}
 			catch (PasswordException p) {
-				wizardModel.errors.add("The password is not long enough, does not contain both uppercase characters and a number, or matches the username.");
+				wizardModel.errors
+				        .add("The password is not long enough, does not contain both uppercase characters and a number, or matches the username.");
 				renderTemplate("adminusersetup.vm", referenceMap, writer);
 				return;
 			}
