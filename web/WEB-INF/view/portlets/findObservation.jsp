@@ -25,12 +25,12 @@
 						<p />
 						<div id="searchByPatientConcept">
 							<table>
-								<tr>
+								<tr class="searchObsByPatient">
 									<td><span><spring:message code="Obs.person" /></span>:</td>
 									<!-- <spring:message code="ObsSearch.patientLabel" var="patientLabel" /> -->
 									<td><openmrs_tag:personField formFieldName="personId" searchLabel="${personLabel}" initialValue="" linkUrl="" callback="" /></td>
 								</tr>
-								<tr>
+								<tr class="searchObsByConcept">
 									<td><span><spring:message code="Obs.concept" /></span> <span class="instructions">(<spring:message code="general.optional" />)</span>:</td>
 									<!-- <spring:message code="ObsSearch.conceptLabel" var="conceptLabel" /> -->
 									<td><openmrs_tag:conceptField formFieldName="conceptId" searchLabel="${conceptLabel}" initialValue="" /></td>
@@ -46,7 +46,7 @@
 						</div>
 						<div id="searchByEncounter" style="display:none;">
 							<table>
-								<tr>
+								<tr class="searchObsByEncounter">
 									<td><span><spring:message code="Obs.encounter" /></span>:</td>
 									<!-- <spring:message code="ObsSearch.encounterLabel" var="encounterLabel" /> -->
 									<td><openmrs_tag:encounterField formFieldName="encounterId" searchLabel="${encounterLabel}" initialValue="" linkUrl="" callback="" /></td>
@@ -70,11 +70,11 @@
 					<table width="100%">
 						<thead>
 							<tr>
-								<th><spring:message code="Obs.person" /></th>
-								<th><spring:message code="Obs.form" /> (<spring:message code="Obs.encounterDate" />)</th>
-								<th><spring:message code="Obs.concept"/></th>
-								<th><spring:message code="Obs.value"/></th>
-								<th><spring:message code="Obs.date"/></th>
+								<th class="obsPersonHeader"><spring:message code="Obs.person" /></th>
+								<th class="obsFormHeader"><spring:message code="Obs.form" /> (<spring:message code="Obs.encounterDate" />)</th>
+								<th class="obsConceptHeader"><spring:message code="Obs.concept"/></th>
+								<th class="obsValueHeader"><spring:message code="Obs.value"/></th>
+								<th class="obsDateHeader"><spring:message code="Obs.date"/></th>
 							</tr>
 						</thead>
 						<tbody id="obsTable">
