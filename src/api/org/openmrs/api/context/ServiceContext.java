@@ -13,6 +13,7 @@
  */
 package org.openmrs.api.context;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +49,8 @@ import org.openmrs.scheduler.SchedulerService;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.springframework.aop.Advisor;
 import org.springframework.aop.framework.ProxyFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 /**
  * Represents an OpenMRS <code>Service Context</code>, which returns the services represented
@@ -63,11 +66,13 @@ import org.springframework.aop.framework.ProxyFactory;
  * 
  * @see org.openmrs.api.context.Context
  */
-public class ServiceContext {
+public class ServiceContext implements ApplicationContextAware {
 	
 	private static final Log log = LogFactory.getLog(ServiceContext.class);
 	
 	private static ServiceContext instance;
+	
+	private ApplicationContext applicationContext;
 	
 	private Boolean refreshingContext = new Boolean(false);
 	
@@ -686,4 +691,34 @@ public class ServiceContext {
 		return refreshingContext.booleanValue();
 	}
 	
+	/**
+	 * Retrieves all Beans which have been registered in the Spring {@link ApplicationContext} that
+	 * match the given object type (including subclasses).
+	 * <p>
+	 * <b>NOTE: This method introspects top-level beans only.</b> It does <i>not</i> check nested
+	 * beans which might match the specified type as well.
+	 * 
+	 * @see ApplicationContext#getBeansOfType(Class)
+	 * @param type the type of Bean to retrieve from the Spring {@link ApplicationContext}
+	 * @return a List of all registered Beans that are valid instances of the passed type
+	 * @should return a list of all registered beans of the passed type
+	 * @should return beans registered in a module
+	 * @should return an empty list if no beans have been registered of the passed type
+	 */
+	@SuppressWarnings("unchecked")
+	public <T> List<T> getRegisteredComponents(Class<T> type) {
+		List<T> components = new ArrayList<T>();
+		Map registeredComponents = applicationContext.getBeansOfType(type);
+		if (registeredComponents != null) {
+			components.addAll(registeredComponents.values());
+		}
+		return components;
+	}
+	
+	/**
+	 * @param applicationContext the applicationContext to set
+	 */
+	public void setApplicationContext(ApplicationContext applicationContext) {
+		this.applicationContext = applicationContext;
+	}
 }

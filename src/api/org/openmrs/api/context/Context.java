@@ -16,6 +16,7 @@ package org.openmrs.api.context;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
@@ -1056,5 +1057,12 @@ public class Context {
 	 */
 	public static boolean isRefreshingContext() {
 		return getServiceContext().isRefreshingContext();
+	}
+	
+	/**
+	 * @see ServiceContext#getRegisteredComponents(Class)
+	 */
+	public static <T extends Object> List<T> getRegisteredComponents(Class<T> type) {
+		return getServiceContext().getRegisteredComponents(type);
 	}
 }

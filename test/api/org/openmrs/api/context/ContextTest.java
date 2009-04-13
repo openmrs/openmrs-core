@@ -13,11 +13,16 @@
  */
 package org.openmrs.api.context;
 
+import java.util.List;
+
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Test;
+import org.openmrs.Location;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
+import org.openmrs.serialization.OpenmrsSerializer;
+import org.openmrs.serialization.xstream.XStreamSerializer;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.LocaleUtility;
@@ -146,4 +151,25 @@ public class ContextTest extends BaseContextSensitiveTest {
 		Assert.assertEquals("new username", Context.getAuthenticatedUser().getGivenName());
 	}
 	
+	/**
+	 * @see {@link Context#getRegisteredComponents(Class)}
+	 */
+	@Test
+	@Verifies(value = "should return a list of all registered beans of the passed type", method = "getRegisteredComponents(Class)")
+	public void getRegisteredComponents_shouldReturnAListOfAllRegisteredBeansOfThePassedType() throws Exception {
+		List<OpenmrsSerializer> l = Context.getRegisteredComponents(OpenmrsSerializer.class);
+		Assert.assertEquals(1, l.size());
+		Assert.assertEquals(XStreamSerializer.class, l.iterator().next().getClass());
+	}
+	
+	/**
+	 * @see {@link Context#getRegisteredComponents(Class)}
+	 */
+	@Test
+	@Verifies(value = "should return an empty list if no beans have been registered of the passed type", method = "getRegisteredComponents(Class)")
+	public void getRegisteredComponents_shouldReturnAnEmptyListIfNoBeansHaveBeenRegisteredOfThePassedType() throws Exception {
+		List<Location> l = Context.getRegisteredComponents(Location.class);
+		Assert.assertNotNull(l);
+		Assert.assertEquals(0, l.size());
+	}
 }
