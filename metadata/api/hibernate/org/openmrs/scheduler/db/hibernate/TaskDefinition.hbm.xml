@@ -78,7 +78,7 @@
 
 
 		<!-- Metadata -->
-		<many-to-one name="createdBy" 
+		<many-to-one name="creator" 
 				class="org.openmrs.User" 
 				not-null="false">
 			<column name="created_by" />

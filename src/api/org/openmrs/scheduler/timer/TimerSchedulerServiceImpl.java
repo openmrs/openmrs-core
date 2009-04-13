@@ -417,8 +417,8 @@ public class TimerSchedulerServiceImpl implements SchedulerService {
 	 * @param task
 	 */
 	public void setCreatedMetadata(TaskDefinition task) {
-		if (task.getCreatedBy() == null) {
-			task.setCreatedBy(Context.getAuthenticatedUser());
+		if (task.getCreator() == null) {
+			task.setCreator(Context.getAuthenticatedUser());
 		}
 		if (task.getDateCreated() == null) {
 			task.setDateCreated(new Date());
