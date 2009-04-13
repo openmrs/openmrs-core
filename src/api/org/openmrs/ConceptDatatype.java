@@ -23,7 +23,7 @@ import org.simpleframework.xml.Root;
  * ConceptDatatype
  */
 @Root
-public class ConceptDatatype implements java.io.Serializable {
+public class ConceptDatatype extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 473L;
 	
@@ -49,23 +49,7 @@ public class ConceptDatatype implements java.io.Serializable {
 	
 	private Integer conceptDatatypeId;
 	
-	private String name;
-	
-	private String description;
-	
 	private String hl7Abbreviation;
-	
-	private Date dateCreated;
-	
-	private User creator;
-	
-	private User retiredBy;
-	
-	private Boolean retired = Boolean.FALSE;
-	
-	private Date dateRetired;
-	
-	private String retireReason;
 	
 	// Constructors
 	
@@ -108,32 +92,6 @@ public class ConceptDatatype implements java.io.Serializable {
 	}
 	
 	/**
-	 * 
-	 */
-	@Attribute
-	public String getName() {
-		return this.name;
-	}
-	
-	@Attribute
-	public void setName(String name) {
-		this.name = name;
-	}
-	
-	/**
-	 * 
-	 */
-	@Element(data = true)
-	public String getDescription() {
-		return this.description;
-	}
-	
-	@Element(data = true)
-	public void setDescription(String description) {
-		this.description = description;
-	}
-	
-	/**
 	 * @return Returns the hl7Abbreviation.
 	 */
 	@Attribute
@@ -147,32 +105,6 @@ public class ConceptDatatype implements java.io.Serializable {
 	@Attribute
 	public void setHl7Abbreviation(String hl7Abbreviation) {
 		this.hl7Abbreviation = hl7Abbreviation;
-	}
-	
-	/**
-	 * 
-	 */
-	@Element
-	public User getCreator() {
-		return this.creator;
-	}
-	
-	@Element
-	public void setCreator(User creator) {
-		this.creator = creator;
-	}
-	
-	/**
-	 * 
-	 */
-	@Element
-	public Date getDateCreated() {
-		return this.dateCreated;
-	}
-	
-	@Element
-	public void setDateCreated(Date dateCreated) {
-		this.dateCreated = dateCreated;
 	}
 	
 	/*
@@ -216,59 +148,19 @@ public class ConceptDatatype implements java.io.Serializable {
 	}
 	
 	/**
-	 * @return the retiredBy
+	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
-	public User getRetiredBy() {
-		return retiredBy;
+	public Integer getId() {
+		
+		return getConceptDatatypeId();
 	}
 	
 	/**
-	 * @param retiredBy the retiredBy to set
+	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
-	public void setRetiredBy(User retiredBy) {
-		this.retiredBy = retiredBy;
-	}
-	
-	/**
-	 * @return the retired
-	 */
-	public Boolean getRetired() {
-		return retired;
-	}
-	
-	/**
-	 * @param retired the retired to set
-	 */
-	public void setRetired(Boolean retired) {
-		this.retired = retired;
-	}
-	
-	/**
-	 * @return the dateRetired
-	 */
-	public Date getDateRetired() {
-		return dateRetired;
-	}
-	
-	/**
-	 * @param dateRetired the dateRetired to set
-	 */
-	public void setDateRetired(Date dateRetired) {
-		this.dateRetired = dateRetired;
-	}
-	
-	/**
-	 * @return the retireReason
-	 */
-	public String getRetireReason() {
-		return retireReason;
-	}
-	
-	/**
-	 * @param retireReason the retireReason to set
-	 */
-	public void setRetireReason(String retireReason) {
-		this.retireReason = retireReason;
+	public void setId(Integer id) {
+		setConceptDatatypeId(id);
+		
 	}
 	
 }
