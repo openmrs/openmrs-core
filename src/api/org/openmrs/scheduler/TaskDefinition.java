@@ -32,9 +32,9 @@ public class TaskDefinition extends BaseOpenmrsMetadata {
 	// Task metadata
 	private Integer id;
 	
-	private String taskClass; // This class must implement the schedulable
+	// This class must implement the schedulable interface or it will fail to start
+	private String taskClass; 
 	
-	// interface or it will fail to start
 	private Task taskInstance = null;
 	
 	// Scheduling metadata
