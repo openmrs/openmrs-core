@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.api.context.Context;
 import org.openmrs.scheduler.tasks.AbstractTask;
@@ -313,5 +314,21 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 		Thread.sleep(5000);
 		schedulerService.shutdownTask(t5);
 		assertEquals(Arrays.asList("INIT-START-5", "INIT-END-5", "START-5", "END-5"), outputForInitExecSync);
+	}
+	
+	@Test
+	public void saveTask_shouldSaveTaskToTheDatabase() throws Exception {
+		SchedulerService service = Context.getSchedulerService();
+		Assert.assertEquals(0, service.getRegisteredTasks().size());
+
+		TaskDefinition def = new TaskDefinition();
+		def.setStartOnStartup(false);
+		def.setRepeatInterval(10L);
+		def.setTaskClass(SampleTask1.class.getName());
+		service.saveTask(def);
+		Assert.assertEquals(1, service.getRegisteredTasks().size());
+		
+		def = service.getTask(1);
+		Assert.assertEquals(Context.getAuthenticatedUser().getUserId(), def.getCreator().getUserId());
 	}
 }
