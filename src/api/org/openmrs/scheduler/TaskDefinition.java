@@ -306,5 +306,21 @@ public class TaskDefinition extends BaseOpenmrsMetadata {
 	public void setTaskInstance(Task taskInstance) {
 		this.taskInstance = taskInstance;
 	}
+
+	/**
+     * @deprecated use {@link #getCreator()}
+     */
+    public Object getCreatedBy() {
+	    // TODO Auto-generated method stub
+	    return null;
+    }
+
+	/**
+     * @deprecated use {@link #setCreator(User)}
+     */
+    public void setCreatedBy(User authenticatedUser) {
+	    // TODO Auto-generated method stub
+	    
+    }
 	
 }
