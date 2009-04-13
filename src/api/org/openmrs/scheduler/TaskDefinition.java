@@ -19,21 +19,18 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.BaseOpenmrsMetadata;
 import org.openmrs.User;
 
 /**
  * Represents the metadata for a task that can be scheduled.
  */
-public class TaskDefinition {
+public class TaskDefinition extends BaseOpenmrsMetadata {
 	
 	private Log log = LogFactory.getLog(this.getClass());
 	
 	// Task metadata
 	private Integer id;
-	
-	private String name;
-	
-	private String description;
 	
 	private String taskClass; // This class must implement the schedulable
 	
@@ -57,15 +54,6 @@ public class TaskDefinition {
 	// Relationships
 	private Map<String, String> properties;
 	
-	// Metadata fields
-	private User createdBy;
-	
-	private Date dateCreated;
-	
-	private User changedBy;
-	
-	private Date dateChanged;
-	
 	/**
 	 * Default no-arg public constructor
 	 */
@@ -83,8 +71,8 @@ public class TaskDefinition {
 		this();
 		log.debug("Creating taskconfig: " + id);
 		this.id = id;
-		this.name = name;
-		this.description = description;
+		setName(name);
+		setDescription(description);
 		this.taskClass = taskClass;
 	}
 	
@@ -104,42 +92,6 @@ public class TaskDefinition {
 	 */
 	public void setId(Integer id) {
 		this.id = id;
-	}
-	
-	/**
-	 * Get the name of the task.
-	 * 
-	 * @return the name of the task
-	 */
-	public String getName() {
-		return this.name;
-	}
-	
-	/**
-	 * Set the name of the task.
-	 * 
-	 * @param name of the task
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
-	
-	/**
-	 * Get the description of the task.
-	 * 
-	 * @return the description of the task
-	 */
-	public String getDescription() {
-		return this.description;
-	}
-	
-	/**
-	 * Set the description of the task.
-	 * 
-	 * @param description <code>String</code> description of the task
-	 */
-	public void setDescription(String description) {
-		this.description = description;
 	}
 	
 	/**
@@ -298,62 +250,6 @@ public class TaskDefinition {
 	}
 	
 	// ==================================   Metadata ============================
-	
-	/**
-	 * @return Returns the creator.
-	 */
-	public User getCreatedBy() {
-		return this.createdBy;
-	}
-	
-	/**
-	 * @param createdBy The creator to set.
-	 */
-	public void setCreatedBy(User createdBy) {
-		this.createdBy = createdBy;
-	}
-	
-	/**
-	 * @return Returns the dateCreated.
-	 */
-	public Date getDateCreated() {
-		return dateCreated;
-	}
-	
-	/**
-	 * @param dateCreated The dateCreated to set.
-	 */
-	public void setDateCreated(Date dateCreated) {
-		this.dateCreated = dateCreated;
-	}
-	
-	/**
-	 * @return Returns the changedBy.
-	 */
-	public User getChangedBy() {
-		return changedBy;
-	}
-	
-	/**
-	 * @param changedBy The changedBy to set.
-	 */
-	public void setChangedBy(User changedBy) {
-		this.changedBy = changedBy;
-	}
-	
-	/**
-	 * @return Returns the dateChanged.
-	 */
-	public Date getDateChanged() {
-		return this.dateChanged;
-	}
-	
-	/**
-	 * @param dateChanged The dateChanged to set.
-	 */
-	public void setDateChanged(Date dateChanged) {
-		this.dateChanged = dateChanged;
-	}
 	
 	/**
 	 * @see java.lang.Object#equals(java.lang.Object)

@@ -23,29 +23,13 @@ import org.simpleframework.xml.Root;
  * ConceptClass
  */
 @Root(strict = false)
-public class ConceptClass implements java.io.Serializable {
+public class ConceptClass extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 33473L;
 	
 	// Fields
 	
 	private Integer conceptClassId;
-	
-	private String name;
-	
-	private String description;
-	
-	private User creator;
-	
-	private Date dateCreated;
-	
-	private User retiredBy;
-	
-	private Boolean retired = Boolean.FALSE;
-	
-	private Date dateRetired;
-	
-	private String retireReason;
 	
 	// Constructors
 	
@@ -88,108 +72,18 @@ public class ConceptClass implements java.io.Serializable {
 	}
 	
 	/**
-	 * 
+	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
-	@Element(data = true, required = true)
-	public String getName() {
-		return this.name;
-	}
-	
-	@Element(data = true, required = true)
-	public void setName(String name) {
-		this.name = name;
+	public Integer getId() {
+		return getConceptClassId();
 	}
 	
 	/**
-	 * 
+	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
-	@Element(data = true, required = true)
-	public String getDescription() {
-		return this.description;
-	}
-	
-	@Element(data = true, required = true)
-	public void setDescription(String description) {
-		this.description = description;
-	}
-	
-	/**
-	 * 
-	 */
-	@Element(required = true)
-	public User getCreator() {
-		return this.creator;
-	}
-	
-	@Element(required = true)
-	public void setCreator(User user) {
-		this.creator = user;
-	}
-	
-	@Element(required = true)
-	public Date getDateCreated() {
-		return this.dateCreated;
-	}
-	
-	@Element(required = true)
-	public void setDateCreated(Date dateCreated) {
-		this.dateCreated = dateCreated;
-	}
-	
-	/**
-	 * @return the retiredBy
-	 */
-	public User getRetiredBy() {
-		return retiredBy;
-	}
-	
-	/**
-	 * @param retiredBy the retiredBy to set
-	 */
-	public void setRetiredBy(User retiredBy) {
-		this.retiredBy = retiredBy;
-	}
-	
-	/**
-	 * @return the retired
-	 */
-	public Boolean getRetired() {
-		return retired;
-	}
-	
-	/**
-	 * @param retired the retired to set
-	 */
-	public void setRetired(Boolean retired) {
-		this.retired = retired;
-	}
-	
-	/**
-	 * @return the dateRetired
-	 */
-	public Date getDateRetired() {
-		return dateRetired;
-	}
-	
-	/**
-	 * @param dateRetired the dateRetired to set
-	 */
-	public void setDateRetired(Date dateRetired) {
-		this.dateRetired = dateRetired;
-	}
-	
-	/**
-	 * @return the retireReason
-	 */
-	public String getRetireReason() {
-		return retireReason;
-	}
-	
-	/**
-	 * @param retireReason the retireReason to set
-	 */
-	public void setRetireReason(String retireReason) {
-		this.retireReason = retireReason;
+	public void setId(Integer id) {
+		setConceptClassId(id);
+		
 	}
 	
 }
