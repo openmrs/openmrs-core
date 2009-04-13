@@ -18,6 +18,7 @@ import java.util.Date;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Order;
+import org.openmrs.annotation.Handler;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
@@ -25,6 +26,7 @@ import org.springframework.validation.Validator;
 /**
  * Validates the {@link Order} class.
  */
+@Handler(supports={Order.class})
 public class OrderValidator implements Validator {
 	
 	/** Log for this class and subclasses */

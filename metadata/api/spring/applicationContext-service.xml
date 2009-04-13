@@ -756,4 +756,9 @@
 			</list>
 		</property>
 	</bean>
+	
+	<context:component-scan base-package="org.openmrs">
+        <context:include-filter type="annotation" expression="org.openmrs.annotation.Handler"/>
+    </context:component-scan>
+    
 </beans>
