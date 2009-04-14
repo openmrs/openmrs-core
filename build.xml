@@ -319,6 +319,8 @@
 			<classes dir="${build.dir}">
 				<include name="**/web/**/*.class" />
 				<include name="**/web/**/*.vm" /> <!-- velocity macro files for initial setup -->
+				<exclude name="**/test/" />
+				<exclude name="**/*Test.class" />
 			</classes>
 			<classes file="${metadata.dir}/api/log4j/log4j.xml" />
 			<classes file="${metadata.dir}/api/log4j/velocity.properties" />
