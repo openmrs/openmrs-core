@@ -46,7 +46,7 @@
 							<tr>
 								<td nowrap>&nbsp;&nbsp;&nbsp;&nbsp;
 									<c:if test="${!empty drugOrder.drug}">
-										<span class="patientRegimenDrugName">${drugOrder.drug.name}</span><a class="patientRegimenDrugName" href="${pageContext.request.contextPath}/admin/orders/orderDrug.form?orderId=${drugOrder.orderId}">${drugOrder.drug.name}</a>
+										<a class="patientRegimenDrugName" href="${pageContext.request.contextPath}/admin/orders/orderDrug.form?orderId=${drugOrder.orderId}">${drugOrder.drug.name}</a>
 									</c:if>
 									<c:if test="${empty drugOrder.drug}">
 										<a class="patientRegimenDrugName" href="${pageContext.request.contextPath}/admin/orders/orderDrug.form?orderId=${drugOrder.orderId}">${drugOrder.concept.name.name}</a>
