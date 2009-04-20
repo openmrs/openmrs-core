@@ -837,4 +837,10 @@
 		</delete>
 	</changeSet>
 	
+	<changeSet author="Cory McCarthy" id="20090408-1298">
+		<modifyColumn tableName="encounter_type">
+			<column name="description" type="text" />
+		</modifyColumn>
+	</changeSet>
+	
 </databaseChangeLog>
