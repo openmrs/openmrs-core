@@ -5,6 +5,14 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
+<script type="text/javascript">
+   function forceMaxLength(object, maxLength) {
+      if( object.value.length >= maxLength) {
+         object.value = object.value.substring(0, maxLength); 
+      }
+   }
+</script>
+
 <h2><spring:message code="EncounterType.title"/></h2>
 
 <openmrs:extensionPoint pointId="org.openmrs.admin.encounters.encounterForm.belowTitle" type="html" parameters="encounterTypeId=${encounterType.encounterTypeId}" />
@@ -28,7 +36,7 @@
 		<td valign="top"><spring:message code="general.description"/></td>
 		<td valign="top">
 			<spring:bind path="encounterType.description">
-				<textarea name="description" rows="3" cols="40">${status.value}</textarea>
+				<textarea name="description" rows="3" cols="40" onkeypress="return forceMaxLength(this, 1024);" >${status.value}</textarea>
 				<c:if test="${status.errorMessage != ''}"><c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if></c:if>
 			</spring:bind>
 		</td>

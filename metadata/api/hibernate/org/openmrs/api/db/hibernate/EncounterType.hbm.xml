@@ -16,7 +16,7 @@
 		<property name="name" type="java.lang.String"
 			not-null="true" length="50" />
 		<property name="description" type="java.lang.String"
-			not-null="true" length="50" />
+			not-null="true" length="1024" />
 		<property name="dateCreated" type="java.util.Date"
 			column="date_created" not-null="true" length="19" />
 		<many-to-one name="creator" class="User"
