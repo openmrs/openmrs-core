@@ -13,41 +13,10 @@
  */
 package org.openmrs.web.controller.user;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.openmrs.User;
-import org.springframework.validation.Errors;
-import org.springframework.validation.Validator;
+/**
+ * @deprecated use {@link org.openmrs.validator.UserValidator} instead
+ */
+@Deprecated
+public class UserValidator extends org.openmrs.validator.UserValidator {
 
-public class UserValidator implements Validator {
-	
-	/** Log for this class and subclasses */
-	protected final Log log = LogFactory.getLog(getClass());
-	
-	/**
-	 * Determines if the command object being submitted is a valid type
-	 * 
-	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
-	 */
-	@SuppressWarnings("unchecked")
-	public boolean supports(Class c) {
-		return c.equals(User.class);
-	}
-	
-	/**
-	 * Checks the form object for any inconsistencies/errors
-	 * 
-	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
-	 *      org.springframework.validation.Errors)
-	 */
-	public void validate(Object obj, Errors errors) {
-		User user = (User) obj;
-		if (user == null) {
-			errors.rejectValue("user", "error.general");
-		} else {
-			if (user.isVoided() && user.getVoidReason().trim().equals(""))
-				errors.rejectValue("voidReason", "error.null");
-		}
-	}
-	
 }
