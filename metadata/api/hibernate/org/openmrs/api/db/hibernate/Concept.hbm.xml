@@ -35,17 +35,19 @@
 			<column name="datatype_id" />
 		</many-to-one>
 
-		<set name="names" lazy="true" cascade="all-delete-orphan,evict" inverse="true" order-by="name asc">
+		<set name="names" lazy="false" cascade="all-delete-orphan,evict" inverse="true" order-by="name asc">
 			<key column="concept_id" not-null="true" />
 			<one-to-many class="ConceptName" />
 		</set>
 
-		<set name="descriptions" lazy="true" inverse="true" cascade="all" 
+		<set name="descriptions" lazy="false" inverse="true" cascade="all" 
 			order-by="concept_description_id">
 			<key column="concept_id" />
 			<one-to-many class="ConceptDescription" />
 		</set>
 		
+		<!-- This will need to be changed to lazy="false" if we ever have a subobject that would need to store/load this 
+		     (Right now, ConceptNumerics, ConceptComplex, and ConceptDerived objects do not have coded "answers" -->
 		<set name="answers" lazy="true" cascade="all,evict" 
 				table="concept_answer" order-by="concept_answer_id asc" access="field">
 			<key column="concept_id" not-null="true" />
@@ -59,29 +61,8 @@
 			</composite-element>
 		</set>
 		
-		<!-- Ok, so it seems that Hibernate doesn't care about our multiple
-			primary keys in this composite-element.  We are able to control
-			that action via the .equals() and .hashCode() because we are using
-			a Set.
-		-->
-		<!-- ABK: explicit synonyms have been replaced. Concepts can now have
-			multiple ConceptNames, which can be tagged to indicate their role
-			within a locale (like preferred, default, etc). 
-		<set name="synonyms" lazy="true" cascade="all,evict" 
-			table="concept_synonym" order-by="synonym asc">
-			<key not-null="true">
-				<column name="concept_id" />
-			</key>
-			<composite-element class="ConceptSynonym">
-				<parent name="concept" />
-				<property name="synonym" type="java.lang.String" not-null="true" />
-				<property name="locale" type="java.util.Locale" not-null="true" />
-				<property name="dateCreated" type="java.util.Date" column="date_created" not-null="true"/>
-				<many-to-one name="creator" class="User" column="creator" not-null="true"/>
-			</composite-element>
-		</set>
-		-->
-		
+		<!-- This will need to be changed to lazy="false" if we ever have a subobject that would need to store/load this 
+		     (Right now, ConceptNumerics, ConceptComplex, and ConceptDerived objects do not have child concepts (aka, are not sets) -->
 		<set name="conceptSets" table="concept_set" lazy="true" 
 				cascade="all,evict" order-by="sort_weight asc">
 			<key not-null="true">

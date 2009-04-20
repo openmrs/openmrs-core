@@ -380,4 +380,21 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		Context.logout(); // so that the next test reauthenticates
 	}
 	
+	/**
+	 * This test verifies that {@link PersonName}s are fetched correctly from the hibernate cache.
+	 * (Or really, not fetched from the cache but instead are mapped with lazy=false. For some
+	 * reason Hibernate isn't able to find objects in the cache if a parent object was the one that
+	 * loaded them)
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void shouldFetchNamesForPersonsThatWereFirstFetchedAsUsers() throws Exception {
+		Person person = Context.getPersonService().getPerson(1);
+		User user = Context.getUserService().getUser(1);
+		
+		user.getNames().size();
+		person.getNames().size();
+	}
+	
 }

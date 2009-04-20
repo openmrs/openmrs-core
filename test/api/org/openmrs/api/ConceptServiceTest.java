@@ -31,6 +31,7 @@ import org.openmrs.Concept;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptComplex;
 import org.openmrs.ConceptDatatype;
+import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptNameTag;
 import org.openmrs.ConceptNumeric;
@@ -343,4 +344,37 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Assert.assertNull(Context.getConceptService().getConceptByName(null));
 	}
 	
+	/**
+	 * This test verifies that {@link ConceptName}s are fetched correctly from the hibernate cache.
+	 * (Or really, not fetched from the cache but instead are mapped with lazy=false. For some
+	 * reason Hibernate isn't able to find objects in the cache if a parent object was the one that
+	 * loaded them)
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void shouldFetchNamesForConceptsThatWereFirstFetchedAsNumerics() throws Exception {
+		Concept concept = Context.getConceptService().getConcept(5089);
+		ConceptNumeric conceptNumeric = Context.getConceptService().getConceptNumeric(5089);
+		
+		conceptNumeric.getNames().size();
+		concept.getNames().size();
+	}
+	
+	/**
+	 * This test verifies that {@link ConceptDescription}s are fetched correctly from the hibernate
+	 * cache. (Or really, not fetched from the cache but instead are mapped with lazy=false. For
+	 * some reason Hibernate isn't able to find objects in the cache if a parent object was the one
+	 * that loaded them)
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void shouldFetchDescriptionsForConceptsThatWereFirstFetchedAsNumerics() throws Exception {
+		Concept concept = Context.getConceptService().getConcept(5089);
+		ConceptNumeric conceptNumeric = Context.getConceptService().getConceptNumeric(5089);
+		
+		conceptNumeric.getDescriptions().size();
+		concept.getDescriptions().size();
+	}
 }
