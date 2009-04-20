@@ -40,6 +40,7 @@ import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.Person;
 import org.openmrs.PersonAddress;
+import org.openmrs.PersonAttribute;
 import org.openmrs.PersonName;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
@@ -627,13 +628,12 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * Regression test for ticket #1375: org.hibernate.NonUniqueObjectException caused by PatientIdentifierValidator
-	 * 
-	 * Manually construct a patient with a correctly-matching patientId and patient identifier with
-	 * validator. Calling PatientService.savePatient on that patient leads to a call to
-	 * PatientIdentifierValidator.validateIdentifier which used to load the Patient for that identifier
-	 * into the hibernate session, leading to a NonUniqueObjectException when the calling saveOrUpdate
-	 * on the manually constructed Patient.
+	 * Regression test for ticket #1375: org.hibernate.NonUniqueObjectException caused by
+	 * PatientIdentifierValidator Manually construct a patient with a correctly-matching patientId
+	 * and patient identifier with validator. Calling PatientService.savePatient on that patient
+	 * leads to a call to PatientIdentifierValidator.validateIdentifier which used to load the
+	 * Patient for that identifier into the hibernate session, leading to a NonUniqueObjectException
+	 * when the calling saveOrUpdate on the manually constructed Patient.
 	 * 
 	 * @see {@link PatientService#savePatient(Patient)}
 	 */
@@ -648,4 +648,54 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		patientService.savePatient(patient);
 	}
 	
+	/**
+	 * This test verifies that {@link PersonName}s are fetched correctly from the hibernate cache. (Or
+	 * really, not fetched from the cache but instead are mapped with lazy=false. For some reason
+	 * Hibernate isn't able to find objects in the cache if a parent object was the one that loaded
+	 * them)
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void shouldFetchNamesForPersonsThatWereFirstFetchedAsPatients() throws Exception {
+		Person person = Context.getPersonService().getPerson(2);
+		Patient patient = Context.getPatientService().getPatient(2);
+		
+		patient.getNames().size();
+		person.getNames().size();
+	}
+	
+	/**
+	 * This test verifies that {@link PersonAddress}es are fetched correctly from the hibernate cache. (Or
+	 * really, not fetched from the cache but instead are mapped with lazy=false. For some reason
+	 * Hibernate isn't able to find objects in the cache if a parent object was the one that loaded
+	 * them)
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void shouldFetchAddressesForPersonsThatWereFirstFetchedAsPatients() throws Exception {
+		Person person = Context.getPersonService().getPerson(2);
+		Patient patient = Context.getPatientService().getPatient(2);
+		
+		patient.getAddresses().size();
+		person.getAddresses().size();
+	}
+	
+	/**
+	 * This test verifies that {@link PersonAttribute}s are fetched correctly from the hibernate cache. (Or
+	 * really, not fetched from the cache but instead are mapped with lazy=false. For some reason
+	 * Hibernate isn't able to find objects in the cache if a parent object was the one that loaded
+	 * them)
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void shouldFetchPersonAttributesForPersonsThatWereFirstFetchedAsPatients() throws Exception {
+		Person person = Context.getPersonService().getPerson(2);
+		Patient patient = Context.getPatientService().getPatient(2);
+		
+		patient.getAttributes().size();
+		person.getAttributes().size();
+	}
 }

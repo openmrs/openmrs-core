@@ -530,7 +530,7 @@ public interface ConceptService extends OpenmrsService {
 	 * 
 	 * @throws APIException
 	 * @return List<ConceptClass> object with all ConceptClass objects
-	 * @deprecated use #getAllConceptClasses(boolean)
+	 * @deprecated use {@link #getAllConceptClasses(boolean)}
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPT_CLASSES)
@@ -767,8 +767,7 @@ public interface ConceptService extends OpenmrsService {
 	public List<ConceptProposal> getConceptProposals(String text) throws APIException;
 	
 	/**
-	 * @deprecated Use #getConceptProposals(String) and then retrieve the Concepts out of the
-	 *             ConceptProposals...
+	 * @deprecated Use {@link #getProposedConcepts(String)}
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPT_PROPOSALS)
