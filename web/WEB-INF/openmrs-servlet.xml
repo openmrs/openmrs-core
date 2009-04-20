@@ -198,7 +198,7 @@
 	<!--<bean id="calendarPortletController" class="org.openmrs.web.controller.CalendarPortletController"/>-->
 	<bean id="springController" class="org.openmrs.web.controller.SpringController" />
 	
-	<bean id="requireNameValidator" class="org.openmrs.web.controller.RequireNameValidator"/>
+	<bean id="requireNameValidator" class="org.openmrs.validator.RequireNameValidator"/>
 
 	<!-- =============================== -->
 	<!-- =====      Scheduler      ===== -->
@@ -213,7 +213,7 @@
 	</bean>
 	
 	
-	<bean id="taskValidator" class="org.openmrs.scheduler.web.controller.SchedulerFormValidator" />
+	<bean id="taskValidator" class="org.openmrs.validator.SchedulerFormValidator" />
 	<bean id="schedulerFormController" class="org.openmrs.scheduler.web.controller.SchedulerFormController">
 		<property name="commandName"><value>task</value></property>
 		<property name="formView"><value>/admin/scheduler/schedulerForm</value></property>
@@ -292,7 +292,7 @@
 	</bean>
 
 	<!--  Validator and Form Controller for the add/edit order types page -->
-	<bean id="orderTypeValidator" class="org.openmrs.web.controller.order.OrderTypeValidator" />
+	<bean id="orderTypeValidator" class="org.openmrs.validator.OrderTypeValidator" />
 	<bean id="orderTypeForm" class="org.openmrs.web.controller.order.OrderTypeFormController">
 		<property name="sessionForm"><value>true</value></property>
 		<property name="commandName"><value>orderType</value></property>
@@ -390,7 +390,7 @@
 		<property name="successView"><value>patientIdentifierType.list</value></property>
 	</bean>
 	<bean id="patientIdentifierTypeValidator"
-		class="org.openmrs.web.controller.patient.PatientIdentifierTypeValidator" />
+		class="org.openmrs.validator.PatientIdentifierTypeValidator" />
 	<bean id="patientIdentifierTypeForm"
 		class="org.openmrs.web.controller.patient.PatientIdentifierTypeFormController">
 		<property name="sessionForm"><value>true</value></property>
@@ -499,7 +499,7 @@
 		<property name="formView"><value>/admin/users/userList</value></property>
 		<property name="successView"><value>user.list</value></property>
 	</bean>
-	<bean id="userValidator" class="org.openmrs.web.controller.user.UserValidator" />
+	<bean id="userValidator" class="org.openmrs.validator.UserValidator" />
 	<bean id="userForm" class="org.openmrs.web.controller.user.UserFormController">
 		<property name="sessionForm"><value>true</value></property>
 		<property name="commandName"><value>user</value></property>
@@ -519,7 +519,7 @@
 	</bean>
 
 	<!--  Validator and Form Controller for the add/edit role page -->
-	<bean id="roleValidator" class="org.openmrs.web.controller.user.RoleValidator" />
+	<bean id="roleValidator" class="org.openmrs.validator.RoleValidator" />
 	<bean id="roleForm" class="org.openmrs.web.controller.user.RoleFormController">
 		<property name="sessionForm"><value>true</value></property>
 		<property name="commandName"><value>role</value></property>
@@ -539,7 +539,7 @@
 	</bean>
 
 	<!--  Validator and Form Controller for the add/edit privilege page -->
-	<bean id="privilegeValidator" class="org.openmrs.web.controller.user.PrivilegeValidator" />
+	<bean id="privilegeValidator" class="org.openmrs.validator.PrivilegeValidator" />
 	<bean id="privilegeForm" class="org.openmrs.web.controller.user.PrivilegeFormController">
 		<property name="sessionForm"><value>true</value></property>
 		<property name="commandName"><value>privilege</value></property>
@@ -588,7 +588,7 @@
 
 	<!--  Validator and Form Controller for the add/edit encounter types page -->
 	<bean id="encounterTypeValidator"
-		class="org.openmrs.web.controller.encounter.EncounterTypeValidator" />
+		class="org.openmrs.validator.EncounterTypeValidator" />
 	<bean id="encounterTypeForm"
 		class="org.openmrs.web.controller.encounter.EncounterTypeFormController">
 		<property name="commandName"><value>encounterType</value></property>
@@ -674,7 +674,7 @@
 
 	<!--  Validator and Form Controller for the add/edit concept types page -->
 	<bean id="conceptClassValidator"
-		class="org.openmrs.web.controller.concept.ConceptClassValidator" />
+		class="org.openmrs.validator.ConceptClassValidator" />
 	<bean id="conceptClassForm"
 		class="org.openmrs.web.controller.concept.ConceptClassFormController">
 		<property name="sessionForm"><value>true</value></property>
@@ -697,7 +697,7 @@
 
 	<!--  Validator and Form Controller for the add/edit concept types page -->
 	<bean id="conceptDatatypeValidator"
-		class="org.openmrs.web.controller.concept.ConceptDatatypeValidator" />
+		class="org.openmrs.validator.ConceptDatatypeValidator" />
 	<bean id="conceptDatatypeForm"
 		class="org.openmrs.web.controller.concept.ConceptDatatypeFormController">
 		<property name="sessionForm"><value>true</value></property>
@@ -836,7 +836,7 @@
 		<property name="successView"><value>reportObject.list</value></property>
 	</bean>
 	<bean id="reportObjectValidator"
-		class="org.openmrs.web.controller.report.ReportObjectValidator" />
+		class="org.openmrs.validator.ReportObjectValidator" />
 	<bean id="reportObjectForm"
 		class="org.openmrs.web.controller.report.ReportObjectFormController">
 		<property name="sessionForm"><value>false</value></property>
@@ -1029,7 +1029,7 @@
 	</bean>
 
 	<!--  Validator and Form Controller for the add/edit forms page -->
-	<bean id="fieldTypeValidator" class="org.openmrs.web.controller.form.FieldTypeValidator" />
+	<bean id="fieldTypeValidator" class="org.openmrs.validator.FieldTypeValidator" />
 	<bean id="fieldTypeForm" class="org.openmrs.web.controller.form.FieldTypeFormController">
 		<property name="sessionForm"><value>true</value></property>
 		<property name="commandName"><value>fieldType</value></property>
@@ -1052,7 +1052,7 @@
 		<property name="formView"><value>/admin/programs/programList</value></property>
 		<property name="successView"><value>program.list</value></property>
 	</bean>
-	<bean id="programValidator" class="org.openmrs.web.controller.program.ProgramValidator" />
+	<bean id="programValidator" class="org.openmrs.validator.ProgramValidator" />
 	<bean id="programForm" class="org.openmrs.web.controller.program.ProgramFormController">
 		<property name="commandName"><value>program</value></property>
 		<property name="validator">
@@ -1086,7 +1086,7 @@
 		<property name="successView"><value>conversion.list</value></property>
 	</bean>
 	<bean id="stateConversionValidator"
-		class="org.openmrs.web.controller.program.StateConversionValidator" />
+		class="org.openmrs.validator.StateConversionValidator" />
 	<bean id="stateConversionForm"
 		class="org.openmrs.web.controller.program.StateConversionFormController">
 		<property name="sessionForm"><value>true</value></property>

@@ -13,51 +13,10 @@
  */
 package org.openmrs.web.controller.program;
 
-import java.util.List;
+/**
+ * @deprecated use {@link org.openmrs.validator.ProgramValidator} instead
+ */
+@Deprecated
+public class ProgramValidator extends org.openmrs.validator.ProgramValidator {
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.openmrs.Program;
-import org.openmrs.api.context.Context;
-import org.springframework.validation.Errors;
-import org.springframework.validation.ValidationUtils;
-import org.springframework.validation.Validator;
-
-public class ProgramValidator implements Validator {
-	
-	protected final Log log = LogFactory.getLog(getClass());
-	
-	/**
-	 * Determines if the command object being submitted is a valid type
-	 * 
-	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
-	 */
-	@SuppressWarnings("unchecked")
-	public boolean supports(Class c) {
-		return c.equals(Program.class);
-	}
-	
-	/**
-	 * Checks the form object for any inconsistencies/errors
-	 * 
-	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
-	 *      org.springframework.validation.Errors)
-	 */
-	public void validate(Object obj, Errors errors) {
-		Program p = (Program) obj;
-		if (p == null) {
-			errors.rejectValue("program", "error.general");
-		} else {
-			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
-			List<Program> programs = Context.getProgramWorkflowService().getAllPrograms(false);
-			for (Program program : programs) {
-				if (program.getName().equals(p.getName()) && !program.getProgramId().equals(p.getProgramId())) {
-					errors.rejectValue("name", "general.error.nameAlreadyInUse");
-					break;
-				}
-			}
-			
-			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "concept", "error.concept");
-		}
-	}
 }
