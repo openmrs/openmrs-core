@@ -175,6 +175,7 @@ public class PatientIdentifierType extends BaseOpenmrsMetadata implements java.i
 	}
 	
 	/**
+	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
 	public Integer getId() {
@@ -182,6 +183,7 @@ public class PatientIdentifierType extends BaseOpenmrsMetadata implements java.i
 	}
 	
 	/**
+	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
 	public void setId(Integer id) {

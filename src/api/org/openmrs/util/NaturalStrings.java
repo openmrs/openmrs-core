@@ -28,6 +28,7 @@ import java.util.Comparator;
 
 /**
  * Utility class for natural String comparison operations
+ * @since 1.5
  */
 public final class NaturalStrings {
 	

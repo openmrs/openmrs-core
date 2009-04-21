@@ -710,6 +710,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	
 	/**
 	 * @return Returns true if this Obs is complex.
+	 * @since 1.5
 	 * @should return true if the concept is complex
 	 */
 	public boolean isComplex() {
@@ -731,6 +732,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * {@link Obs#getValueAsString()}. The URI is the location where the ComplexData is stored.
 	 * 
 	 * @return readable title and URI for the location of the ComplexData binary object.
+	 * @since 1.5
 	 */
 	public String getValueComplex() {
 		return this.valueComplex;
@@ -743,6 +745,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * Obs.getValueAsString(). The URI is the location where the ComplexData is stored.
 	 * 
 	 * @param valueComplex readable title and URI for the location of the ComplexData binary object.
+	 * @since 1.5
 	 */
 	public void setValueComplex(String valueComplex) {
 		this.valueComplex = valueComplex;
@@ -755,6 +758,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * {@link ComplexData#getData()} object to the correct place for the given concept.
 	 * 
 	 * @param complexData
+	 * @since 1.5
 	 */
 	public void setComplexData(ComplexData complexData) {
 		this.complexData = complexData;
@@ -771,6 +775,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * </pre>
 	 * 
 	 * @return the complex data for this obs (if its a complex obs)
+	 * @since 1.5
 	 */
 	public ComplexData getComplexData() {
 		return this.complexData;
@@ -978,6 +983,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	/**
+	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
 	public Integer getId() {
@@ -986,6 +992,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	/**
+	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
 	public void setId(Integer id) {

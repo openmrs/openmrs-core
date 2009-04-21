@@ -377,6 +377,7 @@ public class PatientProgram extends BaseOpenmrsData implements java.io.Serializa
 	}
 	
 	/**
+	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
 	public Integer getId() {
@@ -384,6 +385,7 @@ public class PatientProgram extends BaseOpenmrsData implements java.io.Serializa
 	}
 	
 	/**
+	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
 	public void setId(Integer id) {

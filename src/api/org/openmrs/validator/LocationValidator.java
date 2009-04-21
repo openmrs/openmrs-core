@@ -21,6 +21,10 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
+/**
+ * Validates the Location object.
+ * @since 1.5
+ **/
 public class LocationValidator implements Validator {
 	
 	/** Log for this class and subclasses */

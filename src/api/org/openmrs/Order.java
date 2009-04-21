@@ -418,6 +418,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 * orderForm:jsp: <spring:bind path="order.discontinued" /> results in a call to
 	 * isDiscontinued() which doesn't give access to the discontinued property so renamed it to
 	 * isDiscontinuedRightNow which results in a call to getDiscontinued.
+	 * @since 1.5
 	 */
 	public boolean isDiscontinuedRightNow() {
 		return isDiscontinued(new Date());
@@ -443,6 +444,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	/**
+	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
 	public void setId(Integer id) {

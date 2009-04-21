@@ -189,6 +189,7 @@ public interface ReportService {
 	 * Insert or update the given ReportSchemaXml object in the database.
 	 * 
 	 * @param reportSchemaXml xml to save
+	 * @since 1.5
 	 */
 	public void saveReportSchemaXml(ReportSchemaXml reportSchemaXml);
 	

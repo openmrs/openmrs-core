@@ -226,6 +226,7 @@ public interface HL7Service extends OpenmrsService {
 	 * Get the archive items given a state (deleted, error, pending, processing, processed).
 	 * 
 	 * @return list of archive item that actually were deleted
+	 * @since 1.5
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(HL7Constants.PRIV_VIEW_HL7_IN_ARCHIVE)

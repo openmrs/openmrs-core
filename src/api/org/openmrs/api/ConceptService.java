@@ -968,6 +968,7 @@ public interface ConceptService extends OpenmrsService {
 	 * 
 	 * @param conceptId of the ComplexConcept
 	 * @return a ConceptComplex object
+	 * @since 1.5
 	 * @should return a concept complex object
 	 */
 	@Transactional(readOnly = true)
@@ -1063,6 +1064,7 @@ public interface ConceptService extends OpenmrsService {
 	 * Get all the concept name tags defined in the database, included voided ones
 	 * 
 	 * @return a list of the concept name tags stored in the database
+	 * @since 1.5
 	 */
 	@Transactional(readOnly = true)
 	public List<ConceptNameTag> getAllConceptNameTags();
@@ -1072,6 +1074,7 @@ public interface ConceptService extends OpenmrsService {
 	 * 
 	 * @param id the concept name tag id to find
 	 * @return the matching {@link ConceptNameTag} or null if none found
+	 * @since 1.5
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_CONCEPTS })

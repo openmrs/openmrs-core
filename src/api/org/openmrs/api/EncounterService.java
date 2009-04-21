@@ -138,6 +138,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @param providers the provider of this encounter must be in this list
 	 * @param includeVoided true/false to include the voided encounters or not
 	 * @return a list of encounters ordered by increasing encounterDatetime
+	 * @since 1.5
 	 * @should get encounters by location
 	 * @should get encounters on or after date
 	 * @should get encounters on or up to a date

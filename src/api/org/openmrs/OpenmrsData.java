@@ -19,6 +19,7 @@ package org.openmrs;
  * person- or patient-specific data should implement this interface.
  * 
  * @see OpenmrsMetadata
+ * @since 1.5
  */
 public interface OpenmrsData extends OpenmrsObject, Auditable, Voidable {
 

@@ -17,6 +17,7 @@ import java.util.Map;
 
 /**
  * Used by the {@link DatabaseUpdater} to signal that a given update requires input from the user.
+ * @since 1.5
  */
 public class InputRequiredException extends Exception {
 	

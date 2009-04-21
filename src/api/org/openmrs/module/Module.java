@@ -244,6 +244,7 @@ public final class Module {
 	 * Convenience method to get the version of this given module that is required
 	 * 
 	 * @return the version of the given required module, or null if there are no version constraints
+	 * @since 1.5
 	 * @should return null if no required modules exist
 	 * @should return null if no required module by given name exists
 	 */
@@ -269,6 +270,7 @@ public final class Module {
 	/**
 	 * @param requiredModulesMap <code>Map<String,String></code> of the <code>requiredModule</code>s
 	 *            to set
+	 * @since 1.5
 	 */
 	public void setRequiredModulesMap(Map<String, String> requiredModulesMap) {
 		this.requiredModulesMap = requiredModulesMap;

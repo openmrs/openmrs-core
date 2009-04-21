@@ -21,6 +21,7 @@ package org.openmrs;
  * Support localized names and descriptions
  * 
  * @see OpenmrsData
+ * @since 1.5
  */
 public interface OpenmrsMetadata extends OpenmrsObject, Auditable, Retireable {
 	

@@ -119,6 +119,7 @@ public class HL7InArchive {
 	
 	/**
 	 * @return Returns message state.
+	 * @since 1.5
 	 */
 	public Integer getMessageState() {
 		return messageState;
@@ -126,6 +127,7 @@ public class HL7InArchive {
 	
 	/**
 	 * @param messageState The message source to set.
+	 * @since 1.5
 	 */
 	public void setMessageState(Integer messageState) {
 		this.messageState = messageState;

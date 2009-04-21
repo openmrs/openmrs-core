@@ -481,6 +481,7 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 	 * 
 	 * @param locale the locale to fetch for
 	 * @return ConceptName attributed to the Concept in the given locale
+	 * @since 1.5
 	 * @see Concept#getNames(Locale) to get all the names for a locale,
 	 * @see Concept#getPreferredName(Locale) for the preferred name (if any),
 	 * @see Concept#getBestName(Locale) to get the best match for a locale.
@@ -496,6 +497,7 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 	 * matching either of those, the first name defined for this concept is returned.
 	 * 
 	 * @return {@link ConceptName} in the current locale or any locale if none found
+	 * @since 1.5
 	 * @see Concept#getNames(Locale) to get all the names for a locale
 	 * @see Concept#getPreferredName(Locale) for the preferred name (if any)
 	 * @see Concept#getBestName(Locale) to get the best match for a locale
@@ -1334,6 +1336,7 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 	 * {@link org.openmrs.ConceptComplex#isComplex()}. Otherwise this method returns false.
 	 * 
 	 * @return false
+	 * @since 1.5
 	 */
 	public boolean isComplex() {
 		return false;

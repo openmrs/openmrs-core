@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Contains methods for retrieving registered Serializer instances,
  * and for persisting/retrieving/deleting objects using serialization
+ * @since 1.5
  */
 @Transactional
 public interface SerializedObjectDAO {

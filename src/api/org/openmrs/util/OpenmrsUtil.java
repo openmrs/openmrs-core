@@ -1669,6 +1669,7 @@ public class OpenmrsUtil {
 	 * @param password string that will be validated
 	 * @param systemId system id of the user with password to be validated
 	 * @throws PasswordException
+	 * @since 1.5
 	 * @should fail with short password
 	 * @should fail with digit only password
 	 * @should fail with char only password

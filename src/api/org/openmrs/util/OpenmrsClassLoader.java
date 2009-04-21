@@ -204,6 +204,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	 * The only difference between this and Tomcat's implementation is that this one only acts on
 	 * openmrs objects and also clears out static java.* packages. Tomcat acts on all objects and
 	 * does not clear our static java.* objects.
+	 * @since 1.5
 	 */
 	protected static void clearReferences() {
 		

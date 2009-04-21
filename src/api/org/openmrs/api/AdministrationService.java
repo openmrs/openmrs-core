@@ -453,6 +453,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * 
 	 * @param prefix The beginning of the property name to match.
 	 * @return a <code>List</code> of <code>GlobalProperty</code>s that match <code>prefix</code>
+	 * @since 1.5
 	 * @should return all relevant global properties in the database
 	 */
 	@Transactional(readOnly = true)

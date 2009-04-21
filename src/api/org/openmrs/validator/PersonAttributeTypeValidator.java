@@ -22,6 +22,7 @@ import org.springframework.validation.Validator;
 
 /**
  * Validates the {@link PersonAttributeType} class.
+ * @since 1.5
  */
 public class PersonAttributeTypeValidator implements Validator {
 	

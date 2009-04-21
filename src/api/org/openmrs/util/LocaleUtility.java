@@ -38,6 +38,7 @@ public class LocaleUtility {
 	 * Gets the default locale specified as a global property.
 	 * 
 	 * @return default locale object.
+	 * @since 1.5
 	 * @should not return null if global property does not exist
 	 * @should not fail with empty global property value
 	 * @should not fail with bogus global property value

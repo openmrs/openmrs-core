@@ -283,6 +283,7 @@ public class Context {
 	 * updating information in the database about the current user and it needs to be reflecting in
 	 * the (cached) {@link #getAuthenticatedUser()} User object.
 	 * 
+	 * @since 1.5
 	 * @should get fresh values from the database
 	 */
 	public static void refreshAuthenticatedUser() {
@@ -412,6 +413,7 @@ public class Context {
 	
 	/**
 	 * @return serialization service
+	 * @since 1.5
 	 */
 	public static SerializationService getSerializationService() {
 		return getServiceContext().getSerializationService();
@@ -688,6 +690,7 @@ public class Context {
 	 * been called, some methods won't work correctly because a {@link UserContext} isn't available.
 	 * 
 	 * @return true if {@link #openSession()} has been called already.
+	 * @since 1.5
 	 * @should return true if session is closed
 	 */
 	public static boolean isSessionOpen() {
@@ -1060,6 +1063,7 @@ public class Context {
 	}
 	
 	/**
+	 * @since 1.5
 	 * @see ServiceContext#getRegisteredComponents(Class)
 	 */
 	public static <T extends Object> List<T> getRegisteredComponents(Class<T> type) {
