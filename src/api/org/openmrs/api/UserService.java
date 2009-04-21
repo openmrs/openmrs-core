@@ -331,6 +331,7 @@ public interface UserService extends OpenmrsService {
 	 * @param hashedPassword - the <em>already hashed</em> password to store
 	 * @param salt - the salt which should be used with this hashed password
 	 * @throws APIException
+	 * @since 1.5
 	 * @should successfullySaveToTheDatabase
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_EDIT_USER_PASSWORDS })
@@ -343,6 +344,7 @@ public interface UserService extends OpenmrsService {
 	 * @param question
 	 * @param answer
 	 * @throws APIException
+	 * @since 1.5
 	 * 
 	 * @should change the passed user's secrete question and answer
 	 */

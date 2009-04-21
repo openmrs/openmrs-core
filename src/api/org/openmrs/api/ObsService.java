@@ -488,6 +488,7 @@ public interface ObsService extends OpenmrsService {
 	 * 
 	 * @param obsId
 	 * @return Obs with a ComplexData
+	 * @since 1.5
 	 * @should fill in complex data object for complex obs
 	 * @should return normal obs for non complex obs
 	 * @should not fail with null view
@@ -501,6 +502,7 @@ public interface ObsService extends OpenmrsService {
 	 * 
 	 * @param key that has been registered with a handler class
 	 * @return Object representing the handler for the given key
+	 * @since 1.5
 	 * @should get handler with matching key
 	 * @should have default image and text handlers registered by spring
 	 */
@@ -515,6 +517,7 @@ public interface ObsService extends OpenmrsService {
 	 * 
 	 * @param handlers Map of class to handler object
 	 * @throws APIException
+	 * @since 1.5
 	 * @should override handlers with same key
 	 * @should add new handlers with new keys
 	 */
@@ -524,6 +527,7 @@ public interface ObsService extends OpenmrsService {
 	 * Gets the handlers map registered
 	 * 
 	 * @return map of keys to handlers
+	 * @since 1.5
 	 * @throws APIException
 	 * @should never return null
 	 */
@@ -537,6 +541,7 @@ public interface ObsService extends OpenmrsService {
 	 * @param key the key name to use for this handler
 	 * @param handler the class to register with this key
 	 * @throws APIException
+	 * @since 1.5
 	 * @should register handler with the given key
 	 */
 	public void registerHandler(String key, ComplexObsHandler handler) throws APIException;
@@ -547,6 +552,7 @@ public interface ObsService extends OpenmrsService {
 	 * @param key the key name to use for this handler
 	 * @param handlerClass the class to register with this key
 	 * @throws APIException
+	 * @since 1.5
 	 * @should load handler and register key
 	 */
 	public void registerHandler(String key, String handlerClass) throws APIException;
@@ -555,6 +561,7 @@ public interface ObsService extends OpenmrsService {
 	 * Remove the handler associated with the key from list of available handlers
 	 * 
 	 * @param key the key of the handler to unregister
+	 * @since 1.5
 	 * @should remove handler with matching key
 	 * @should not fail with invalid key
 	 */

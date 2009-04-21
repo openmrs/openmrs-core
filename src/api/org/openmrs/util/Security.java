@@ -38,6 +38,7 @@ public class Security {
 	 * @param hashedPassword a stored password that has been hashed previously
 	 * @param passwordToHash a string to encode/hash and compare to hashedPassword
 	 * @return true/false whether the two are equal
+	 * @since 1.5
 	 * @should match strings hashed with incorrect sha1 algorithm
 	 * @should match strings hashed with sha1 algorithm
 	 * @should match strings hashed with sha512 algorithm and 128 characters salt

@@ -169,6 +169,7 @@ public class Relationship extends BaseOpenmrsData implements java.io.Serializabl
 	}
 	
 	/**
+	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
 	public Integer getId() {
@@ -177,6 +178,7 @@ public class Relationship extends BaseOpenmrsData implements java.io.Serializabl
 	}
 	
 	/**
+	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
 	public void setId(Integer id) {

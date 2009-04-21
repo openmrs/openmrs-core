@@ -44,6 +44,7 @@ public class HL7InQueue implements Serializable {
 	 * Convenience constructor to build queue from a previously deleted queue entry
 	 * 
 	 * @param hl7InArchive deleted entry from which queue entry will be constructed
+	 * @since 1.5
 	 */
 	public HL7InQueue(HL7InArchive hl7InArchive) {
 		setHL7Source(hl7InArchive.getHL7Source());
@@ -153,6 +154,7 @@ public class HL7InQueue implements Serializable {
 	
 	/**
 	 * @return Returns the errorMessage.
+	 * @since 1.5
 	 */
 	public String getErrorMessage() {
 		return errorMessage;
@@ -160,6 +162,7 @@ public class HL7InQueue implements Serializable {
 	
 	/**
 	 * @param errorMessage The errorMessage to set.
+	 * @since 1.5
 	 */
 	public void setErrorMessage(String errorMessage) {
 		this.errorMessage = errorMessage;

@@ -21,6 +21,7 @@ import java.util.Date;
  * Metadata are generally referenced by clinical data but don't represent patient-specific data
  * themselves. This provides a default abstract implementation of the OpenmrsMetadata interface
  * 
+ * @since 1.5
  * @see OpenmrsMetadata
  */
 public abstract class BaseOpenmrsMetadata implements OpenmrsMetadata {

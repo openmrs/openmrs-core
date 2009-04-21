@@ -229,6 +229,7 @@ public class Role extends BaseOpenmrsMetadata implements java.io.Serializable {
 	}
 	
 	/**
+	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
 	public Integer getId() {
@@ -236,6 +237,7 @@ public class Role extends BaseOpenmrsMetadata implements java.io.Serializable {
 	}
 	
 	/**
+	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
 	public void setId(Integer id) {

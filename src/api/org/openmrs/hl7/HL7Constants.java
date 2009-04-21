@@ -64,5 +64,8 @@ public class HL7Constants {
 	
 	public static final int HL7_STATUS_ERROR = 3;
 	
+	/**
+	 * @since 1.5
+	 */
 	public static final int HL7_STATUS_DELETED = 4;
 }

@@ -152,6 +152,7 @@ public class PersonAttributeType extends BaseOpenmrsMetadata implements java.io.
 	 * The privilege required in order to edit this attribute
 	 * 
 	 * @return Returns the required privilege
+	 * @since 1.5
 	 */
 	public Privilege getEditPrivilege() {
 		return editPrivilege;
@@ -162,12 +163,14 @@ public class PersonAttributeType extends BaseOpenmrsMetadata implements java.io.
 	 * no extra permissions are required to edit this type
 	 * 
 	 * @param editPrivilege
+	 * @since 1.5
 	 */
 	public void setEditPrivilege(Privilege editPrivilege) {
 		this.editPrivilege = editPrivilege;
 	}
 	
 	/**
+	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
 	public Integer getId() {
@@ -175,6 +178,7 @@ public class PersonAttributeType extends BaseOpenmrsMetadata implements java.io.
 	}
 	
 	/**
+	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
 	public void setId(Integer id) {

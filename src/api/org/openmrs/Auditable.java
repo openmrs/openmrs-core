@@ -22,6 +22,7 @@ import java.util.Date;
  * updated in the system. Any object that needs to keep track of this information should implement
  * this interface.
  * 
+ * @since 1.5
  * @see OpenmrsData
  * @see OpenmrsMetadata
  */

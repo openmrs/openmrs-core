@@ -20,6 +20,7 @@ import java.util.Date;
  * metadata) generally represent person- or patient-specific data. This provides a default abstract
  * implementation of the OpenmrsData interface
  * 
+ * @since 1.5
  * @see OpenmrsData
  */
 public abstract class BaseOpenmrsData implements OpenmrsData {

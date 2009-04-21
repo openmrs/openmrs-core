@@ -276,6 +276,7 @@ public class ModuleFileParser {
 	 * @param root element in the xml doc object
 	 * @param version of the config file
 	 * @return map from module package name to required version
+	 * @since 1.5
 	 */
 	private Map<String, String> getRequiredModules(Element root, String version) {
 		NodeList requiredModulesParents = root.getElementsByTagName("require_modules");

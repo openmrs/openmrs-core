@@ -48,6 +48,7 @@ import org.openmrs.api.context.Context;
  * See /metadata/model/liquibase-update-to-latest.xml for the changes. This class will also run
  * arbitrary liquibase xml files on the associated database as well. Details for the database are
  * taken from the openmrs runtime properties.
+ * @since 1.5
  */
 public class DatabaseUpdater {
 	

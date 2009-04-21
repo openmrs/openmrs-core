@@ -24,6 +24,7 @@ import org.openmrs.util.OpenmrsUtil;
  * without an exception message.
  * <p>
  * For details on what is checked, see {@link OpenmrsUtil#validatePassword(String, String, String)}.
+ * @since 1.5
  */
 public class PasswordException extends APIException {
 	
