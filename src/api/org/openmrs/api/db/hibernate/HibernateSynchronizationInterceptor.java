@@ -248,7 +248,7 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor
 					record.setGuid(UUID.randomUUID().toString());
 					if (record.getOriginalGuid() == null) {
 						if (log.isInfoEnabled())
-							log.info("OriginalGuid is null, so assigning a new GUID");
+							log.info("OriginalGuid is null, so assigning a new GUID: " + record.getGuid());
 						record.setOriginalGuid(record.getGuid());
 					} else {
 						if (log.isInfoEnabled())
