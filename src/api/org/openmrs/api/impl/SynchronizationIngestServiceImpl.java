@@ -439,7 +439,16 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
 				String entryGuid = ((Element)nodes.item(i)).getAttribute("guid");
 				String entryAction = ((Element)nodes.item(i)).getAttribute("action");
 				Object entry = SyncUtil.getOpenmrsObj(entryClassName, entryGuid);
-				if ("update".equals(entryAction)) {				
+				
+				if (entry == null) {
+					//the object not found: most likely cause here is data collision
+		    		log.error("Was not able to retrieve reference to the collection entry object.");
+		    		log.error("Entry info: " +
+		    				"\nentryClassName:" + entryClassName + 
+		    				"\nentryGuid:" + entryGuid +
+		    				"\nentryAction:" + entryAction);
+					throw new SyncIngestException(SyncConstants.ERROR_ITEM_NOT_COMMITTED, ownerClassName, incoming,null);					
+				} else if ("update".equals(entryAction)) {				
 					if (!OpenmrsUtil.collectionContains(entries, entry)) {
 						entries.add(entry);
 					}
@@ -572,9 +581,9 @@ public class SynchronizationIngestServiceImpl implements SynchronizationIngestSe
         if (alreadyExists && isDelete) {
         	SyncUtil.deleteOpenmrsObject(o);
         }else if (!alreadyExists && isDelete) { 
-        	log.warn("Object to be deletes was not found in the database. skipping delete operation:");
+        	log.warn("Object to be deleted was not found in the database. skipping delete operation:");
         	log.warn("-object type:" + o.getClass().toString());
-        	log.warn("-object guid:" + o.getGuid());
+        	log.warn("-object guid:" + guid);
         } else {
             //if we are doing insert/update:
             //1. set serialized props state
