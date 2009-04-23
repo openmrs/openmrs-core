@@ -65,35 +65,35 @@
 	</logger>
 	
 	<!-- Sync-related logging setup -->
-	<logger name="org.openmrs.synchronization">
+	<logger name="org.openmrs.synchronization" additivity="false">
 		<level value="INFO" />
 		<appender-ref ref="SYNCHRONIZATION_FILE" />
 	</logger>
-	<logger name="org.openmrs.web.controller.synchronization">
+	<logger name="org.openmrs.web.controller.synchronization" additivity="false">
 		<level value="INFO" />
 		<appender-ref ref="SYNCHRONIZATION_FILE" />
 	</logger>
-	<logger name="org.openmrs.api.SynchronizationIngestService">
+	<logger name="org.openmrs.api.SynchronizationIngestService" additivity="false">
 		<level value="INFO" />
 		<appender-ref ref="SYNCHRONIZATION_FILE" />
 	</logger>
-	<logger name="org.openmrs.api.SynchronizationService">
+	<logger name="org.openmrs.api.SynchronizationService" additivity="false">
 		<level value="INFO" />
 		<appender-ref ref="SYNCHRONIZATION_FILE" />
 	</logger>
-	<logger name="org.openmrs.api.db.hibernate.HibernateSynchronizationDAO">
+	<logger name="org.openmrs.api.db.hibernate.HibernateSynchronizationDAO" additivity="false">
 		<level value="INFO" />
 		<appender-ref ref="SYNCHRONIZATION_FILE" />
 	</logger>
-	<logger name="org.openmrs.api.db.hibernate.HibernateSynchronizationInterceptor">
+	<logger name="org.openmrs.api.db.hibernate.HibernateSynchronizationInterceptor" additivity="false">
 		<level value="INFO" />
 		<appender-ref ref="SYNCHRONIZATION_FILE" />
 	</logger>
-	<logger name="org.openmrs.api.impl.SynchronizationIngestServiceImpl">
+	<logger name="org.openmrs.api.impl.SynchronizationIngestServiceImpl" additivity="false">
 		<level value="INFO" />
 		<appender-ref ref="SYNCHRONIZATION_FILE"/>
 	</logger>
-	<logger name="org.openmrs.synchronization.SyncUtil">
+	<logger name="org.openmrs.synchronization.SyncUtil" additivity="false">
 		<level value="INFO" />
 		<appender-ref ref="SYNCHRONIZATION_FILE"/>
 	</logger>
