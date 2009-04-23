@@ -17,6 +17,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -25,6 +26,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Attributable;
+import org.openmrs.Concept;
+import org.openmrs.Obs;
 import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
@@ -192,13 +195,12 @@ public class PersonFormController extends SimpleFormController {
 		
 		if (Context.isAuthenticated()) {
 
-			//String propCause = Context.getAdministrationService().getGlobalProperty("concept.causeOfDeath");
-			//Concept conceptCause = Context.getConceptService().getConceptByIdOrName(propCause);
+			String propCause = Context.getAdministrationService().getGlobalProperty("concept.causeOfDeath");
+			Concept conceptCause = Context.getConceptService().getConcept(propCause);
 			
-			/*
 			if ( conceptCause != null ) {
 				// TODO add back in for persons
-				Set<Obs> obssDeath = Context.getObsService().getObservations(person, conceptCause);
+				List<Obs> obssDeath = Context.getObsService().getObservationsByPersonAndConcept(person, conceptCause);
 				if ( obssDeath.size() == 1 ) {
 					Obs obsDeath = obssDeath.iterator().next();
 					causeOfDeathOther = obsDeath.getValueText();
@@ -214,7 +216,7 @@ public class PersonFormController extends SimpleFormController {
 			} else {
 				log.warn("No concept death cause found");
 			}
-			*/
+			
 		}
 		
 		map.put("causeOfDeathOther", causeOfDeathOther);
