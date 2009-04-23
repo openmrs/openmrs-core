@@ -29,7 +29,8 @@ public class SyncPreCommitAction {
 	 * sync record will be committed 
 	 */
 	public enum PreCommitActionName {
-		REBUILDXSN
+		REBUILDXSN,
+		UPDATECONCEPTWORDS
 	}
 	
 	public SyncPreCommitAction(PreCommitActionName actionName,Object actionParam) {

@@ -549,6 +549,14 @@ public class SyncUtil {
     		if (preCommitRecordActions != null)
     			preCommitRecordActions.add(new SyncPreCommitAction(SyncPreCommitAction.PreCommitActionName.REBUILDXSN, o));
     	}
+    	//if conceptName change comes on its own, trigger clean up of related concept words also
+    	else if ("org.openmrs.ConceptName".equals(className)) {
+    		if (preCommitRecordActions != null && o != null) {
+    			Concept c = ((ConceptName)o).getConcept();
+    			preCommitRecordActions.add(new SyncPreCommitAction(SyncPreCommitAction.PreCommitActionName.UPDATECONCEPTWORDS, c));
+    		}
+    	}
+
     }
     
     /**
@@ -862,8 +870,12 @@ public class SyncUtil {
      */
 	public static synchronized void deleteOpenmrsObject(Synchronizable o) {
 		Context.getSynchronizationService().deleteSynchronizable(o);
+		
+		if (o instanceof org.openmrs.Concept || o instanceof org.openmrs.ConceptName) {
+			//delete concept words explicitly
+			//TODO
+		}
 	}
-        
 
     public static String getAdminEmail() {
         return Context.getSynchronizationService().getGlobalProperty(SyncConstants.PROPERTY_SYNC_ADMIN_EMAIL);        
@@ -1038,6 +1050,9 @@ public class SyncUtil {
 	 * <br/>REBUILDXSN 
 	 * <br/>- call to formentry module and attempt to rebuild XSN, 
 	 * <br/>- HashMap object will contain instance of Form object to be rebuilt
+	 * <br/>UPDATECONCEPTWORDS 
+	 * <br/>- call to concept service to update concept words for given concept 
+	 * <br/>- HashMap object will contain instance of Concept object which concept words are to be rebuilt
 	 * 
 	 * @param preCommitRecordActions actions to be applied
 	 * 
@@ -1059,8 +1074,18 @@ public class SyncUtil {
 				if (o != null && (o instanceof Form) ) {
 					SyncUtil.rebuildXSN((Form)action.getParam());
 				} else {
-					//error: action was scheduled as rebuild XSN but param passsed was not form
+					//error: action was scheduled as rebuild XSN but param passed was not form
 					throw new SyncException("REBUILDXSN action was scheduled for 'PreCommitRecordActions' exection but param passed was not From, parm passed was:" + action.getParam() );					
+				}
+			}
+			else if (action.getName().equals(SyncPreCommitAction.PreCommitActionName.UPDATECONCEPTWORDS)) {
+				
+				Object o = action.getParam();
+				if (o != null && (o instanceof Concept) ) {
+					Context.getConceptService().updateConceptWord((Concept)o);
+				} else {
+					//error: action was scheduled as rebuild XSN but param passsed was not form
+					throw new SyncException("UPDATECONCEPTWORDS action was scheduled for 'PreCommitRecordActions' exection but param passed was not Concept, parm passed was:" + action.getParam() );					
 				}
 			}
 			else {
