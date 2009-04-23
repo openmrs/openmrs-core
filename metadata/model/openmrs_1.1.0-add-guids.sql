@@ -24,7 +24,7 @@ CREATE PROCEDURE add_guids ()
 		SELECT tabs.table_name
 		FROM INFORMATION_SCHEMA.TABLES tabs
 		WHERE tabs.table_schema = schema()
-		 AND tabs.table_name NOT IN ('patient','drug_order','concept_numeric','concept_derived','complex_obs', 'role_role', 'role_privilege', 'scheduler_task_config', 'scheduler_task_config_property')
+		 AND tabs.table_name NOT IN ('patient','drug_order','concept_numeric','concept_derived','complex_obs', 'role_role', 'role_privilege', 'scheduler_task_config', 'scheduler_task_config_property', 'user_role')
 		 AND tabs.table_name NOT Like '%synchronization_%'
 		 AND NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS cols
 									WHERE cols.table_schema = schema() 
