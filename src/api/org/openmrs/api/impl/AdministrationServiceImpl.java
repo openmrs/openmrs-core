@@ -898,7 +898,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		if (globalLocaleList == null) {
 			globalLocaleList = new GlobalLocaleList();
 			addGlobalPropertyListener(globalLocaleList);
-			String currentPropertyValue = getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST);
+			String currentPropertyValue = getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, "");
 			GlobalProperty allowedLocalesProperty = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST,
 			        currentPropertyValue);
 			globalLocaleList.globalPropertyChanged(allowedLocalesProperty);
