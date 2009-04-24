@@ -626,6 +626,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * 
 	 * @return list of allowed locales
 	 * @should return at least one locale if no locales defined in database yet
+	 * @should not fail if not global property for locales allowed defined yet
 	 */
 	@Transactional(readOnly = true)
 	public List<Locale> getAllowedLocales();
