@@ -27,6 +27,7 @@ import org.openmrs.ImplementationId;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
+import org.openmrs.util.OpenmrsConstants;
 
 /**
  * TODO clean up and finish this test class. Should test all methods in the
@@ -205,6 +206,17 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 			Assert.assertTrue(property.getProperty().startsWith("fake.module."));
 			Assert.assertTrue(property.getPropertyValue().startsWith("correct-value"));
 		}
+	}
+	
+	/**
+	 * @see {@link AdministrationService#getAllowedLocales()}
+	 */
+	@Test
+	@Verifies(value = "should not fail if not global property for locales allowed defined yet", method = "getAllowedLocales()")
+	public void getAllowedLocales_shouldNotFailIfNotGlobalPropertyForLocalesAllowedDefinedYet() throws Exception {
+		Context.getAdministrationService().purgeGlobalProperty(
+		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST));
+		Context.getAdministrationService().getAllowedLocales();
 	}
 	
 }
