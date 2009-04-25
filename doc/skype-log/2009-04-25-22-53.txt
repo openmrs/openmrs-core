@@ -1,0 +1,70 @@
+[22:53:04] Pavel Konnikov говорит: hi, Dave
+[22:53:27] David Thomas говорит: hi pavel.
+[22:54:47] Pavel Konnikov говорит: i have done some commits to deal with merging
+[22:55:07] Pavel Konnikov говорит: please check it
+[22:55:35] Pavel Konnikov говорит: revisions 7394:7418
+[22:56:44] Pavel Konnikov говорит: and also i figure out files related for our project
+[22:56:56] Pavel Konnikov говорит: see: http://openmrs.org/wiki/Global_Property_Types
+[23:02:07] David Thomas говорит: the list of files looks good, although all you're going to really need to modify is the jsp and the controller.  This is a fairly self-contained project.  How good is your javascript?
+[23:04:22] Pavel Konnikov говорит: i have some experience with JS but i am not an active user of JS-frameworks. I was using jquery and dojo little.
+[23:05:23] David Thomas говорит: OK, sounds good.  I'm a jquery fan.  Its not in the core, but maybe we can push it in -- that would be a good topic for the openmrs thursday conference call.
+[23:05:59] Pavel Konnikov говорит: ok
+[23:05:59] David Thomas говорит: And, what i mean by self-contained is that we won't have to modify the global properties data model at all.  this is really a project where we
+[23:06:24] David Thomas говорит: 're trying to get the display right -- this is all about useability.
+[23:07:19] Pavel Konnikov говорит: need we add new attribute into table global_property?
+[23:07:39] Pavel Konnikov говорит: new attribute ptoperty_type
+[23:10:51] Pavel Konnikov говорит: i write some of my thoughts in http://dev.openmrs.org/browser/openmrs/branches/global-property-types/doc/TODO.txt?rev=7416
+[23:11:07] David Thomas говорит: hmm... OK.  That's a good idea.  I was thinking about leaving it up to the user to pick a widget, but we can go that route.  That's going to make for some messy upgrade scripts though, because users are going to have different sets of global properties already existing, and we're going to have to figure out how to assign values (or make it easy for the user to assign values).
+[23:11:47] David Thomas говорит: (sorry, when i say 'values', i mean 'datatypes' for existing global properties)
+[23:13:41] David Thomas говорит: or maybe for already existing global properties we can have the 'string' datatype widget as the default.
+[23:14:31] Pavel Konnikov говорит: i look at CORE_GLOBAL_PROPERTIES() method (src/api/org/openmrs/api/util/OpenmrsConstants.java)
+[23:14:47] David Thomas говорит: OK
+[23:15:00] David Thomas говорит: let me take a look.
+[23:15:17] Pavel Konnikov говорит: it assign all default properties
+[23:15:50] Pavel Konnikov говорит: we can add type to each default property
+[23:16:50] Pavel Konnikov говорит: but i think that we can move default properties to external xml-file
+[23:16:59] David Thomas говорит: OK, that sounds good, but at PIH we're usually running 5-10 modules at any given time, so the original problem remains...
+[23:18:56] David Thomas говорит: this is good to think about, but let's get the display and widget framework working first.  Upgrades should probably go last.
+[23:21:14] Pavel Konnikov говорит: I do not understand it well enough what do you mean "display" and "widget framework"? can you point me to url wehre i can read about this?
+[23:22:32] David Thomas говорит: ah, sorry.  display = the web page we're going to write for general display of global properties.  I'd like to think about having tabs for global property types, or something like that.
+[23:22:47] David Thomas говорит: and widget = the pickers, like the concept picker, the datetime picker, etc...
+[23:22:59] David Thomas говорит: is that a little clearer?
+[23:23:02] David Thomas говорит: in other words,
+[23:23:03] Pavel Konnikov говорит: ok
+[23:23:04] David Thomas говорит: display = the web page
+[23:23:13] David Thomas говорит: widgets = the 'pickers'
+[23:24:00] Pavel Konnikov говорит: what about my mockup for "settings page"?
+[23:24:19] Pavel Konnikov говорит: must i make display as at mockup?
+[23:25:20] Pavel Konnikov говорит: mockup http://dl.getdropbox.com/u/502300/gsoc/go5.png
+[23:26:33] David Thomas говорит: its really good.
+[23:26:50] David Thomas говорит: the 'widgets' would be what would pop up when you click the 'edit' icons.
+[23:27:31] David Thomas говорит: and, based on my own experience, the 'module settings' views are the most important feature (and also very simple)
+[23:28:16] David Thomas говорит: I'm going to think about it a little more for monday.
+[23:28:24] David Thomas говорит: also, we're going to need a way to add a new global property.
+[23:28:26] Pavel Konnikov говорит: ok
+[23:29:02] David Thomas говорит: and in the dialogue for adding a new global property we're going to need to allow the user to specify a datatype.
+[23:29:36] Pavel Konnikov говорит: yes
+[23:29:36] David Thomas говорит: And, while we're doing this, we might be able to give the user access to the same dialogue for existing global properties, so that the user can change the datatype of an existing global property.
+[23:30:05] David Thomas говорит: this would solve our upgrade problem for modules.
+[23:30:12] Pavel Konnikov говорит: i am understand you
+[23:30:22] David Thomas говорит: I think your layout is excellent.
+[23:31:06] David Thomas говорит: If we can do this in jquery, so that when you click a module name, for example, on the left, there isn't a page refresh, that would be great.
+[23:31:25] David Thomas говорит: That would make dealing with modules really fast...
+[23:31:46] David Thomas говорит: which is important for OpenMRS, because its too heavy already, and we're using it in places where the internet is very slow -- like central Africa.
+[23:32:12] Pavel Konnikov говорит: ok
+[23:32:19] Pavel Konnikov говорит: i will try to do this
+[23:32:29] David Thomas говорит: We can talk more about specifics starting monday.
+[23:32:38] Pavel Konnikov говорит: ok
+[23:32:44] Pavel Konnikov говорит: I would like to relax a bit on Sunday :)
+[23:32:57] David Thomas говорит: me too :)
+[23:33:09] David Thomas говорит: I was actually online today trying to find a tailor in lima to fix a pair of pants :)
+[23:34:57] Pavel Konnikov говорит: can we speak voice now?
+[23:35:46] David Thomas говорит: Sorry -- I don't have a headset at home.
+[23:35:58] Pavel Konnikov говорит: ok
+[23:37:12] Pavel Konnikov говорит: anyway, i have poor spoken english :)
+[23:37:58] David Thomas говорит: that's OK.  We should talk on monday, but as we work on this project, whatever means of communication you feel most comfortable with is fine with me.
+[23:39:07] Pavel Konnikov говорит: thanks
+[23:39:19] Pavel Konnikov говорит: there is late. i want to sleep
+[23:39:35] David Thomas говорит: OK, no problem.  Have a good rest of the weekend.
+[23:39:47] Pavel Konnikov говорит: bye
+[23:39:52] David Thomas говорит: bye.
