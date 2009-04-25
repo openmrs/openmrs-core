@@ -25,6 +25,9 @@ public class GlobalProperty {
 	
 	private String description = "";
 	
+	// TODO: Choice the type String or Integer
+	private String propertyType = "";
+	
 	/**
 	 * Default empty constructor
 	 */
