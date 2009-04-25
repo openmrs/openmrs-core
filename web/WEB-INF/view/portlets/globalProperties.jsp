@@ -10,6 +10,10 @@
 			<tr>
 				<th><spring:message code="general.name" /></th>
 				<th><spring:message code="general.value" /></th>
+
+				<!-- TODO: Add general.type into messages -->
+				<th><spring:message code="general.type" /></th>
+
 				<th></th>
 			</tr>
 		</c:if>
@@ -27,8 +31,16 @@
 					</c:choose>
 				</td>
 				<td>
+					<!-- TODO: Replace text input to appropriate widget -->
 					<input type="text" size="80" id="gp_${ind}" onKeyUp="showDiv('gp_${ind}_actions')"/>
 				</td>
+
+				<!-- TODO: Display real type name -->
+				<td>
+					<span>Type name</span>
+				</td>
+
+				<!-- TODO: Change presentation in order to mockup -->
 				<td style="width: 10em">
 					<span id="gp_${ind}_actions" style="display: none">
 						<input type="button" value="<spring:message code="general.save"/>"

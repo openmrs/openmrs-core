@@ -32,6 +32,10 @@
 			<tr>
 				<th><spring:message code="general.name" /></th>
 				<th><spring:message code="general.value" /></th>
+
+				<!-- TODO: Add general.type into messages -->
+				<th><spring:message code="general.type" /></th>
+
 				<th></th>
 			</tr>
 		</thead>
@@ -40,6 +44,7 @@
 				<tr class="<c:choose><c:when test="${status.index % 2 == 0}">evenRow</c:when><c:otherwise>oddRow</c:otherwise></c:choose>">
 					<td valign="top"><input type="text" name="property" value="${globalProp.property}" size="50" maxlength="250" onchange="edited()" /></td>
 					<td valign="top">
+						<!-- TODO: Replace text input to appropriate widget -->
 						<c:choose>
 							<c:when test="${fn:length(globalProp.propertyValue) > 20}">
 								<textarea name="value" onchange="edited()" rows="1" cols="60" wrap="off">${globalProp.propertyValue}</textarea>
@@ -49,6 +54,13 @@
 							</c:otherwise>
 						</c:choose>
 					</td>
+			
+					<!-- TODO: Display real type name -->
+					<td>
+						<span>Type name</span>
+					</td>
+
+					<!-- TODO: Change presentation in order to mockup -->
 					<td valign="top" rowspan="2"><input type="button" value='<spring:message code="general.remove" />' class="closeButton" onclick="edited(); remove(this)" /></td>
 				</tr>
 				<tr class="<c:choose><c:when test="${status.index % 2 == 0}">evenRow</c:when><c:otherwise>oddRow</c:otherwise></c:choose>">
