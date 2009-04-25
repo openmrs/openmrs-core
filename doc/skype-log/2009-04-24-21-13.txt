@@ -1,0 +1,76 @@
+[21:13:27] David Thomas говорит: hey Pavel.
+[21:13:41] Pavel Konnikov говорит: hi
+[21:14:54] Pavel Konnikov говорит: i am ready to talk, but i am afraid :)
+[21:15:13] David Thomas говорит: We can just chat in text, if that works better.
+[21:15:21] Pavel Konnikov говорит: ok
+[21:16:06] Pavel Konnikov говорит: so, who is host at our conference?
+[21:16:54] David Thomas говорит: Which conference?
+[21:17:06] Pavel Konnikov говорит: this talk :)
+[21:17:43] David Thomas говорит: I guess me.
+[21:17:55] Pavel Konnikov говорит: ok
+[21:19:09] David Thomas говорит: OK, so I looked at your mock-ups, and they're really good.  And, I don't think they'll be very hard to implement.  There were a couple of items that I think can be added, but once the basic architecture is in place, we can start thinking about what widgets should look like for each of the datatypes.
+[21:20:08] David Thomas говорит: and there were a couple more datatypes that i can think of that will be useful.
+[21:20:58] Pavel Konnikov говорит: you can list all types?
+[21:21:17] Pavel Konnikov говорит: or point me where i can find they
+[21:21:54] Pavel Konnikov говорит: *their
+[21:22:14] David Thomas говорит: well in theory you can include all of the openmrs domain objects, strings, dates, URLs, system file paths, numeric values.
+[21:22:45] David Thomas говорит: And, there's  lists of all of the above, and it would be good to be able to choose a delimiter too.
+[21:22:51] David Thomas говорит: But, we don't need to get into this today.
+[21:23:37] David Thomas говорит: What I wanted to say is that its important to keep up with the google requirements for the GSOC, but the truth is that many of the projects every year don't really end up being useful.
+[21:24:40] David Thomas говорит: So, I'm going to grade that stuff really easily.  Our real goal is to have the finished product look good, and work, and have it end up as part of OpenMRS trunk.
+[21:24:44] David Thomas говорит: And, I think this is realistic.
+[21:25:30] Pavel Konnikov говорит: i agree
+[21:26:19] Pavel Konnikov говорит: i was participate in gsoc in 2007 and produce working application in java
+[21:26:54] David Thomas говорит: OK, perfect.  I'm sure we'll be able to put together something good.
+[21:27:46] Pavel Konnikov говорит: i already done some steps from http://openmrs.org/wiki/Summer_Of_Code_2009
+[21:27:53] David Thomas говорит: So, i'm pretty disorganized right now because i just got back from vacation, so i'm going to review the google requirements this weekend, and i'm going to think about prioritizing the various parts of the project.
+[21:27:57] David Thomas говорит: OK, thanks.  I'll take a look.
+[21:28:45] David Thomas говорит: The idea going forward is going to be to start simple when dealing with the overall display and widget framework, and then move into creating the widgets one at a time.
+[21:29:07] David Thomas говорит: Do you have any questions for me right now?
+[21:29:25] Pavel Konnikov говорит: yes
+[21:29:29] David Thomas говорит: Also, from now on, feel free to skype me anytime.
+[21:29:38] Pavel Konnikov говорит: ok
+[21:30:07] Pavel Konnikov говорит: what is the main way to contact you? skype or email?
+[21:30:14] David Thomas говорит: Ah, and I saw that Ben created a branch for us to work with in the openmrs SVN.  Have you downloaded that into eclipse yet?
+[21:30:36] David Thomas говорит: either is fine, although if you need a quick answer, use skype.
+[21:30:41] Pavel Konnikov говорит: yes i already checout our branche
+[21:31:00] David Thomas говорит: ok, great.  and you have a copy of the application running?
+[21:31:25] David Thomas говорит: (i.e., you can hit your local openmrs in firefox and login?)
+[21:31:29] Pavel Konnikov говорит: i run openmrs at writing application
+[21:31:44] David Thomas говорит: OK, great.  So we're basically ready to get started.
+[21:31:55] Pavel Konnikov говорит: one more question
+[21:31:59] David Thomas говорит: OK
+[21:32:27] Pavel Konnikov говорит: can i use intellij IDEA instead Eclipse?
+[21:34:25] David Thomas говорит: How different are the project files for intellij IDEA?
+[21:35:05] David Thomas говорит: (in other words, how much does openmrs differ in your local file system between intellij IDEA and eclipse?)
+[21:35:21] Pavel Konnikov говорит: IDEA can create his own project from eclipse .project file
+[21:35:40] Pavel Konnikov говорит: and save structure
+[21:37:12] Pavel Konnikov говорит: also i disscus in irc a question about port ant based assembling/deployment tool to Maven
+[21:37:57] Pavel Konnikov говорит: can i spend any time to try to port ant to maven?
+[21:38:26] Pavel Konnikov говорит: or is it unnecessary?
+[21:39:45] David Thomas говорит: Well, it is unnecessary for the global property types, and I
+[21:40:02] David Thomas говорит: 'd like to get into the project itself as quickly as possible.
+[21:40:44] Pavel Konnikov говорит: ok, then i am focus at Global Property Types only
+[21:41:01] Pavel Konnikov говорит: are you in Boston now?
+[21:41:03] David Thomas говорит: And, as far as IDEA goes, you can use this if you want, as long as the structure in SVN is for eclipse.  This probably isn't very hard to do.
+[21:41:25] David Thomas говорит: no, i'm in peru, and i'm going to be here until mid-june.
+[21:42:30] Pavel Konnikov говорит: what time is prefer for you for contact?
+[21:44:43] David Thomas говорит: well, first thing in the morning is probably the best for me.  I usually get in to work about 8:45, which is right about dinner time for you.
+[21:44:54] David Thomas говорит: Do you mind checking in with me in the evenings?
+[21:46:17] David Thomas говорит: it doesn't have to be every day.  Also, you can contact me anytime via skype, if i'm on.
+[21:46:26] Pavel Konnikov говорит: my evening is good time for me (18:00 UTC - 20:00 UTC)
+[21:46:43] Pavel Konnikov говорит: ok
+[21:46:48] David Thomas говорит: OK, that's fine with me.  And, it doesn't have to be every day.
+[21:47:09] Pavel Konnikov говорит: ok
+[21:47:37] David Thomas говорит: So, can we just talk on monday about how to get started?  That will give me time to review the google requirements.  I want to figure out how to spend as little time as possible on those, and the most time as possible on writing code.
+[21:48:37] Pavel Konnikov говорит: ok
+[21:49:41] Pavel Konnikov говорит: next skype meeting on Monday in 18:00 UTC? ok?
+[21:50:09] Pavel Konnikov говорит: or send me email if any changes will occur
+[21:50:38] David Thomas говорит: OK, sounds good.  And, take a look at the openmrs domain objects if you haven't already.
+[21:51:01] Pavel Konnikov говорит: ok
+[21:51:11] Pavel Konnikov говорит: was glad to learn
+[21:51:23] Pavel Konnikov говорит: oh no
+[21:51:28] Pavel Konnikov говорит: my english :)
+[21:52:16] Pavel Konnikov говорит: i was glad to become acquainted with you
+[21:53:05] Pavel Konnikov говорит: goodbye
+[21:54:35] David Thomas говорит: OK, talk to you later.  I'm looking forward to getting started -- introductions are always awkward, but i think we can have a lot of fun with this project.
