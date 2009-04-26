@@ -49,14 +49,14 @@ import org.openmrs.api.InvalidIdentifierFormatException;
 import org.openmrs.api.PatientIdentifierException;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
-import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.util.OpenmrsUtil;
-import org.openmrs.web.WebConstants;
-import org.openmrs.web.controller.person.PersonFormController;
 import org.openmrs.propertyeditor.ConceptEditor;
 import org.openmrs.propertyeditor.LocationEditor;
 import org.openmrs.propertyeditor.PatientIdentifierTypeEditor;
 import org.openmrs.propertyeditor.TribeEditor;
+import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.web.WebConstants;
+import org.openmrs.web.controller.person.PersonFormController;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.context.support.MessageSourceAccessor;
@@ -418,7 +418,7 @@ public class PatientFormController extends PersonFormController {
 					Concept causeOfDeath = Context.getConceptService().getConcept(causeOfDeathConceptId);
 					
 					if (causeOfDeath != null) {
-						Set<Obs> obssDeath = Context.getObsService().getObservations(patient, causeOfDeath, false);
+						List<Obs> obssDeath = Context.getObsService().getObservationsByPersonAndConcept(patient, causeOfDeath);
 						if (obssDeath != null) {
 							if (obssDeath.size() > 1) {
 								log.error("Multiple causes of death (" + obssDeath.size() + ")?  Shouldn't be...");
@@ -452,7 +452,7 @@ public class PatientFormController extends PersonFormController {
 									log.debug("Current cause is null, attempting to set to NONE");
 									String noneConcept = Context.getAdministrationService()
 									        .getGlobalProperty("concept.none");
-									currCause = Context.getConceptService().getConceptByIdOrName(noneConcept);
+									currCause = Context.getConceptService().getConcept(noneConcept);
 								}
 								
 								if (currCause != null) {
@@ -468,7 +468,7 @@ public class PatientFormController extends PersonFormController {
 									// check if this is an "other" concept - if so, then we need to add value_text
 									String otherConcept = Context.getAdministrationService().getGlobalProperty(
 									    "concept.otherNonCoded");
-									Concept conceptOther = Context.getConceptService().getConceptByIdOrName(otherConcept);
+									Concept conceptOther = Context.getConceptService().getConcept(otherConcept);
 									if (conceptOther != null) {
 										if (conceptOther.equals(currCause)) {
 											// seems like this is an other concept - let's try to get the "other" field info
