@@ -25,70 +25,78 @@
 
 <h2><spring:message code="GlobalProperty.manage.title"/></h2>	
 
-<b class="boxHeader"><spring:message code="GlobalProperty.list.title"/></b>
-<form method="post" class="box" onsubmit="removeHiddenRows()">
-	<table cellpadding="1" cellspacing="0">
-		<thead>
+<div id="settings-container" style="overflow: hidden">
+<div id="settings-tree" style="float: left; width: 24%">
+	<div style="background-color: #8FABC7; padding: 0.3em 0.5ex">
+		<div><input type="text" value="modules filter" style="color: #aaa; font-size: 80%; width: 100%"/></div>
+		<div style="color: #fff; font-weight: bold; margin-top: 0.2em">Settings</div>
+	</div>
+	<ul>
+		<li class="all-settings">All Settings</li>
+		<li class="system-settings">System Settings</li>
+		<li class="modules-settings">
+			<div>Modules Settings</div>
+			<ul>
+				<li class="module">addresshierarhy</li>
+				<li class="module">childvcreport</li>
+				<li class="module">flowsheet</li>
+			</ul>
+		</li>
+	</ul>
+</div>
+
+<div id="settings-content" style="float: right; width: 75.5%">
+	<div style="background-color: #8FABC7; padding: 0.3em 0.5ex 0">
+		<div><input type="text" value="filter by name, type and description" style="color: #aaa; font-size: 80%; width: 100%"/></div>
+	</div>
+<form method="post" onsubmit="removeHiddenRows()">
+	<table cellpadding="1" cellspacing="0" style="width: 100%;">
+		<thead style="color: #fff; font-weight: bold; background-color: #8FABC7">
 			<tr>
-				<th><spring:message code="general.name" /></th>
-				<th><spring:message code="general.value" /></th>
+				<th style="padding: 0.2em 0.5ex"><spring:message code="general.name" /></th>
+				<th style="padding: 0.2em 0.5ex"><spring:message code="general.value" /></th>
 
 				<!-- TODO: Add general.type into messages -->
-				<th><spring:message code="general.type" /></th>
+				<th style="padding: 0.2em 0.5ex"><spring:message code="general.type" /></th>
 
+				<th>Description</th>
 				<th></th>
 			</tr>
 		</thead>
 		<tbody id="globalPropsList">
 			<c:forEach var="globalProp" items="${globalProps}" varStatus="status">
 				<tr class="<c:choose><c:when test="${status.index % 2 == 0}">evenRow</c:when><c:otherwise>oddRow</c:otherwise></c:choose>">
-					<td valign="top"><input type="text" name="property" value="${globalProp.property}" size="50" maxlength="250" onchange="edited()" /></td>
-					<td valign="top">
+					<td>${globalProp.property}</td>
+					<td>
 						<!-- TODO: Replace text input to appropriate widget -->
-						<c:choose>
-							<c:when test="${fn:length(globalProp.propertyValue) > 20}">
-								<textarea name="value" onchange="edited()" rows="1" cols="60" wrap="off">${globalProp.propertyValue}</textarea>
-							</c:when>
-							<c:otherwise>
-								<input type="text" name="value" value="${globalProp.propertyValue}" size="30" maxlength="4000" onchange="edited()" />
-							</c:otherwise>
-						</c:choose>
+						${globalProp.propertyValue}
 					</td>
 			
 					<!-- TODO: Display real type name -->
 					<td>
 						<span>Type name</span>
 					</td>
-
-					<!-- TODO: Change presentation in order to mockup -->
-					<td valign="top" rowspan="2"><input type="button" value='<spring:message code="general.remove" />' class="closeButton" onclick="edited(); remove(this)" /></td>
-				</tr>
-				<tr class="<c:choose><c:when test="${status.index % 2 == 0}">evenRow</c:when><c:otherwise>oddRow</c:otherwise></c:choose>">
-					<td colspan="2" valign="top" class="description">
-						<textarea name="description" class="descriptionBox" 
-							rows="2" cols="96" onchange="edited()"
-							onfocus="descriptionFocus(this)" onblur="descriptionBlur(this)">${globalProp.description}</textarea>
+					<td valign="top" class="description">
+						${globalProp.description}
 					</td>
+					<td valign="top"><input type="button" value='<spring:message code="general.remove" />' class="closeButton" onclick="edited(); remove(this)" /></td>
 				</tr>
 			</c:forEach>
 			<tr id="newProperty">
 				<td valign="top"><input type="text" name="property" size="50" maxlength="250" onchange="edited()" /></td>
 				<td valign="top"><input type="text" name="value" size="30" maxlength="250" onchange="edited()" /></td>
+				<td valign="top"><input type="text" name="type" size="30" maxlength="250" onchange="edited()" /></td>
+				<td valign="top" class="description">
+					<textarea name="description" class="descriptionBox" 
+						rows="2" cols="96" onchange="edited()"
+						onfocus="descriptionFocus(this)" onblur="descriptionBlur(this)"></textarea>
+				</td>
 				<td valign="top" rowspan="2"><input type="button" value='<spring:message code="general.remove" />' class="closeButton" onclick="remove(this)" /></td>
 			</tr>
-			<tr id="newPropertyDescription">
-					<td colspan="2" valign="top" class="description">
-						<textarea name="description" class="descriptionBox" 
-							rows="2" cols="96" onchange="edited()"
-							onfocus="descriptionFocus(this)" onblur="descriptionBlur(this)"></textarea>
-					</td>
-				</tr>
 		</tbody>
 	</table>
 	
 	<input type="button" onclick="addProperty()" class="smallButton" value='<spring:message code="GlobalProperty.add" />' />
-	
-	<br /><br />
 	
 	<script type="text/javascript">
 		<!-- // begin
@@ -179,5 +187,7 @@
 		<input type="submit" name="action" value='<spring:message code="general.cancel"/>' />
 	</span>
 </form>
+</div> <!-- end settings-content -->
+</div> <!-- end settings-container -->
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>
