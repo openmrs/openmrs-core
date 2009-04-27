@@ -1,0 +1,56 @@
+[21:58:33] Pavel Konnikov говорит: Hi, Dave
+[21:59:23] Pavel Konnikov говорит: I lost my skype password and i was create new account for this meeting
+[22:02:23] David Thomas говорит: hi.  i'm here, but we're only going to be able to text.  I just got out of a failed meeting because skype was breaking up.
+[22:02:32] David Thomas говорит: i'm in our field office today, and the internet comes and goes.
+[22:02:52] Pavel Konnikov говорит: ok
+[22:03:02] Pavel Konnikov говорит: what news?
+[22:03:21] David Thomas говорит: can you give me the web address to your mock-up again?
+[22:03:27] Pavel Konnikov говорит: yes
+[22:03:31] Pavel Konnikov говорит: one minute
+[22:03:47] Pavel Konnikov говорит: http://openmrs.org/wiki/Global_Property_Types
+[22:04:10] Pavel Konnikov говорит: scroll down
+[22:04:41] Pavel Konnikov говорит: right url http://openmrs.org/wiki/Image:GlobalPropertyTypesMockup.png
+[22:04:55] David Thomas говорит: got it, thanks.
+[22:06:15] David Thomas говорит: So, what I think we should do first is for you to start making the basic framework for the page -- the table of global properties on the right, and the left-hand pane with the different filters.
+[22:06:37] Pavel Konnikov говорит: ok
+[22:06:58] Pavel Konnikov говорит: i am working at globalPropsForm.jsp now
+[22:07:38] Pavel Konnikov говорит: i think i will commit first version today
+[22:07:54] David Thomas говорит: OK, excellent.  The first goal is going to be to just get the left pane working (meaning that the correct global properties show up in the right pane, when you click on a module name in the left pane, for example).
+[22:08:23] David Thomas говорит: And, the graphics aren't really necessary -- remember that we need to make OpenMRS as good as possible with slow internet.
+[22:08:39] David Thomas говорит: Therefore, if you can get the left and right panes working without having to refresh the page, that would be good.
+[22:08:52] Pavel Konnikov говорит: ok
+[22:09:10] David Thomas говорит: if you want to use jquery for this, please go ahead and do so.
+[22:09:17] David Thomas говорит: (but you don't have to)
+[22:09:38] Pavel Konnikov говорит: i will try to do this things in this week
+[22:10:17] David Thomas говорит: OK -- just remember to keep things simple.  I don't care about column sorts that much -- save these for later.  What I'd like is just to get the left and right panes working.
+[22:10:41] Pavel Konnikov говорит: ok
+[22:11:28] Pavel Konnikov говорит: i will commit my changes often and you can see the progress
+[22:11:43] Pavel Konnikov говорит: when we contact next time?
+[22:12:25] David Thomas говорит: How about try to get just the left and right pane done by friday, if that's good for you, and we can review on friday.  If you have any questions between now and then, though, just let me know.
+[22:12:46] Pavel Konnikov говорит: ok
+[22:13:09] Pavel Konnikov говорит: thanks
+[22:13:53] Pavel Konnikov говорит: bye!
+[22:14:11] David Thomas говорит: I'll be able to check out your progress probably on wednesday, because i'll be back at the central office and the internet is better.
+[22:14:38] David Thomas говорит:  But, seriously, if you have any problems just let me know.
+[22:15:28] David Thomas говорит: thanks, pavel.
+[22:16:04] Pavel Konnikov говорит: where your central office? in boston?
+[22:16:30] David Thomas говорит: in lima, peru.  we have a field office in lima that is out in the slums, where we do tuberculosis work.
+[22:16:41] David Thomas говорит: the central office is in a nice part of lima with good internet.
+[22:17:16] Pavel Konnikov говорит: where you now?
+[22:17:21] David Thomas говорит: in the field office in lima.
+[22:17:27] David Thomas говорит: (with the bad internet)
+[22:17:35] Pavel Konnikov говорит: :)
+[22:17:36] David Thomas говорит: i'm going to be in lima until june
+[22:18:03] David Thomas говорит: but i work some days in the central office and some in the field office -- it depends on who's having meetings, etc...
+[22:18:18] Pavel Konnikov говорит: can i see some photo at flickr?
+[22:18:29] David Thomas говорит: i should post some :)
+[22:18:34] Pavel Konnikov говорит: your photos from lima?
+[22:18:40] David Thomas говорит: I have some photos of peru from my vacation last week that i want to post.
+[22:18:59] David Thomas говорит: i'll include you when i get around to it.  I want to post them for my family too, because they've been asking.
+[22:19:44] Pavel Konnikov говорит: will be interesting to see
+[22:20:23] David Thomas говорит: Pavel, sorry -- I have a meeting to run to right now.  Just let me know if you run into anything, and i'll be sure to let you know when i get those photos posted.
+[22:21:06] Pavel Konnikov говорит: ok
+[22:21:20] Pavel Konnikov говорит: happy meeting!
+[22:21:22] Pavel Konnikov говорит: :)
+[22:21:25] Pavel Konnikov говорит: bye!
+[22:21:27] David Thomas говорит: thanks.  talk to you later.  bye!
