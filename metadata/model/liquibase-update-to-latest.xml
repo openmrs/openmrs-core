@@ -838,9 +838,29 @@
 	</changeSet>
 	
 	<changeSet author="Cory McCarthy" id="20090408-1298">
+		<comment>Changed the datatype for encounter_type to 'text' instead of just 50 chars</comment>
 		<modifyColumn tableName="encounter_type">
 			<column name="description" type="text" />
 		</modifyColumn>
 	</changeSet>
 	
+	<changeSet id="200904271042" author="bwolfe">
+		<comment>Remove the now unused synonym column</comment>
+		<dropColumn tableName="concept_word" columnName="synonym"/>
+	</changeSet>
+	
+	<changeSet id="200904271654" author="bwolfe">
+		<comment>
+			Change the concept_word key to be concept_name_id-word-locale
+		</comment>
+		
+		<createIndex tableName="concept_word" indexName="concept_word_concept_idx">
+			<column name="concept_id" />
+		</createIndex>
+		
+		<dropPrimaryKey tableName="concept_word"/>
+		
+		<addPrimaryKey tableName="concept_word" columnNames="concept_name_id,word,locale"/>
+	</changeSet>
+		
 </databaseChangeLog>

@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+  <concept_word concept_id="5497" word="ABS" locale="en" concept_name_id="2704"/>
+  <concept_word concept_id="5497" word="CD3" locale="en" concept_name_id="2704"/>
+  <concept_word concept_id="5497" word="CD4" locale="en" concept_name_id="2704"/>
+  <concept_word concept_id="5497" word="CNT" locale="en" concept_name_id="2704"/>
+  <concept_word concept_id="5497" word="COUNT" locale="en" concept_name_id="1847"/>
+  <concept_word concept_id="5497" word="CD4" locale="en" concept_name_id="1847"/>
+  <concept concept_id="5497" retired="false" datatype_id="1" class_id="1" is_set="false" creator="1" date_created="2004-08-12 00:00:00.0" version="0.1" changed_by="1" date_changed="2006-06-09 14:57:33.0"/>
+  <concept_name concept_id="5497" name="CD4 COUNT" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="1847" voided="false"/>
+  <concept_name concept_id="5497" name="CD4" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="2458" voided="false"/>
+  <concept_name concept_id="5497" name="CD3+CD4+ABS CNT" locale="en" creator="1" date_created="2006-06-06 14:03:53.0" concept_name_id="2704" voided="false"/>
+  <concept_name concept_id="5497" name="CD4" locale="en" creator="1" date_created="2004-12-02 00:00:00.0" concept_name_id="2707" voided="false"/>
+  <concept_name_tag_map concept_name_id="1847" concept_name_tag_id="4"/>
+  <concept_name_tag_map concept_name_id="2458" concept_name_tag_id="2"/>
+  <concept_name_tag_map concept_name_id="2704" concept_name_tag_id="3"/>
+  <concept_name_tag_map concept_name_id="2707" concept_name_tag_id="3"/>
+</dataset>
