@@ -53,6 +53,7 @@ dojo.widget.defineWidget(
 	showHeaderRow: false,
 	allowAutoList: true,
 	useOnKeyDown: false,
+	isInNumberMode: false, /* quick way to tell if the user has hit enter and yellow is showing telling them to choose a numeral */
 	
 	// check box options
 	showIncludeRetired: false,
@@ -252,15 +253,17 @@ dojo.widget.defineWidget(
 							return false;
 						}
 						
-						// If there isn't a number in the search (force usage of enter key)
-						this.hideHighlight();
+						// If there isn't a number in the search, reset the colors
+						if (!this.text.match(/\d/)) {
+							this.hideHighlight();
+						}
 						
 						if (this.text != null && this.text.length == 0 && this.key == dojo.event.browser.keys.KEY_BACKSPACE) {
 							// allows for "resetting" default list when user hits backspace on empty field
 							this.resetSearch();
 							this.searchCleared();
 						}
-						else if (!this.text.match(/\d/) || this.objectsFound == null || this.objectsFound.length < this.text) {
+						else if (this.text.length >= this.minSearchCharacters && this.isInNumberMode == false ) {
 							this.clearPagingBars();
 							dojo.debug('setting preFindObjects timeout for other key: ' + this.key);
 							var callback = function(ts, text) { return function() {ts.findObjects(text)}};
@@ -460,6 +463,7 @@ dojo.widget.defineWidget(
 			this.inputNode.className = "searchHighlight";
 			this.inputNode.focus();
 		}
+		this.isInNumberMode = true;
 	},
 
 
@@ -472,6 +476,7 @@ dojo.widget.defineWidget(
 		}
 
 		this.inputNode.className = "";
+		this.isInNumberMode = false;
 	},
 
 

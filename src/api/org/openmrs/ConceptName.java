@@ -449,6 +449,17 @@ public class ConceptName implements java.io.Serializable {
 	}
 	
 	/**
+	 * Checks whether the name is the preferred name explicitly preferred
+	 * 
+	 * @return true if the name is tagged as 'preferred'
+	 * @should return true if this tag has a preferred tag
+	 * @should return false if this tag doesnt have the preferred tag
+	 */
+	public Boolean isPreferred() {
+		return hasTag(ConceptNameTag.PREFERRED);
+	}
+	
+	/**
 	 * Convenience method for determining whether this is a short name.
 	 * 
 	 * @return true if the tags include "short", false otherwise

@@ -381,6 +381,7 @@ public interface ConceptService extends OpenmrsService {
 	 *            removed
 	 * @return A List<ConceptWord> object containing all matching ConceptWords
 	 * @throws APIException
+	 * @should return the best matched name
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
