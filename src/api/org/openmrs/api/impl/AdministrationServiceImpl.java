@@ -35,7 +35,6 @@ import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptProposal;
 import org.openmrs.ConceptSource;
-import org.openmrs.DataEntryStatistic;
 import org.openmrs.EncounterType;
 import org.openmrs.FieldType;
 import org.openmrs.GlobalProperty;
@@ -716,15 +715,6 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		}
 		
 		return gp;
-	}
-	
-	/**
-	 * @see org.openmrs.api.AdministrationService#getDataEntryStatistics(java.util.Date,
-	 *      java.util.Date, java.lang.String, java.lang.String, java.lang.String)
-	 */
-	public List<DataEntryStatistic> getDataEntryStatistics(Date fromDate, Date toDate, String encounterUserColumn,
-	                                                       String orderUserColumn, String groupBy) throws APIException {
-		return dao.getDataEntryStatistics(fromDate, toDate, encounterUserColumn, orderUserColumn, groupBy);
 	}
 	
 	/**

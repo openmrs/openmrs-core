@@ -158,7 +158,6 @@
 				<prop key="admin/maintenance/serverLog.form">serverLogController</prop>
 				<prop key="admin/maintenance/databaseChangesInfo.list">databaseChangesInfoController</prop>
 				<!--<prop key="**/calendar.list">calendarController</prop>-->
-				<prop key="admin/maintenance/dataEntryStats.list">dataEntryStatsController</prop>
 				<prop key="admin/maintenance/implementationid.form">implementationIdFormController</prop>
 				
 				<prop key="admin/modules/module.list">moduleListController</prop>
@@ -1160,13 +1159,6 @@
 		<property name="commandName"><value>databaseChanges</value></property>
 		<property name="formView"><value>/admin/maintenance/databaseChangesInfo</value></property>
 		<property name="successView"><value>databaseChangesInfo.list</value></property>
-	</bean>
-	<bean id="dataEntryStatsController"
-		class="org.openmrs.web.controller.maintenance.DataEntryStatisticsController">
-		<property name="sessionForm"><value>true</value></property>
-		<property name="commandName"><value>command</value></property>
-		<property name="formView"><value>/admin/maintenance/dataEntryStatistics</value></property>
-		<property name="successView"><value>dataEntryStats.list</value></property>
 	</bean>
 	<bean id="implementationIdFormController"
 		class="org.openmrs.web.controller.maintenance.ImplementationIdFormController">
