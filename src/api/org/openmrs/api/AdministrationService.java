@@ -24,7 +24,6 @@ import org.openmrs.Concept;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptProposal;
-import org.openmrs.DataEntryStatistic;
 import org.openmrs.EncounterType;
 import org.openmrs.FieldType;
 import org.openmrs.GlobalProperty;
@@ -568,23 +567,6 @@ public interface AdministrationService extends OpenmrsService {
 	 * @param listener
 	 */
 	public void removeGlobalPropertyListener(GlobalPropertyListener listener);
-	
-	/**
-	 * Creates a list of data entry stats from <code>fromDate</code> to <code>toDate</code>
-	 * EncounterUserColumn is a column in the encounter table like <code>creator</code>,
-	 * <code>provider</code>, etc (defaults to creator) EncounterUserColumn is a column in the
-	 * encounter table like <code>creator</code>, <code>orderer</code>, etc (defaults to orderer)
-	 * 
-	 * @param fromDate
-	 * @param toDate
-	 * @param encounterUserColumn
-	 * @param orderUserColumn
-	 * @param groupBy (optional)
-	 * @return the list of DataEntryStatistics
-	 */
-	// Authorization?
-	public List<DataEntryStatistic> getDataEntryStatistics(Date fromDate, Date toDate, String encounterUserColumn,
-	                                                       String orderUserColumn, String groupBy);
 	
 	/**
 	 * Runs the <code>sql</code> on the database. If <code>selectOnly</code> is flagged then any

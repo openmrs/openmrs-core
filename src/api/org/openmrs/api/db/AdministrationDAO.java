@@ -17,7 +17,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import org.openmrs.DataEntryStatistic;
 import org.openmrs.GlobalProperty;
 import org.openmrs.ImplementationId;
 import org.openmrs.reporting.AbstractReportObject;
@@ -119,13 +118,6 @@ public interface AdministrationDAO {
 	 * @see org.openmrs.api.AdministrationService#saveGlobalProperty(org.openmrs.GlobalProperty)
 	 */
 	public GlobalProperty saveGlobalProperty(GlobalProperty gp) throws DAOException;
-	
-	/**
-	 * @see org.openmrs.api.db.AdministrationDAO#getDataEntryStatistics(java.util.Date,
-	 *      java.util.Date, java.lang.String, java.lang.String, java.lang.String)
-	 */
-	public List<DataEntryStatistic> getDataEntryStatistics(Date fromDate, Date toDate, String encounterUserColumn,
-	                                                       String orderUserColumn, String groupBy) throws DAOException;
 	
 	/**
 	 * @see org.openmrs.api.db.AdministrationDAO#executeSQL(java.lang.String, boolean)

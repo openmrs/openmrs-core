@@ -44,13 +44,6 @@
 			</a>
 		</li>
 	</openmrs:hasPrivilege>
-	<openmrs:hasPrivilege privilege="View Data Entry Statistics">
-		<li <c:if test='<%= request.getRequestURI().contains("dataEntryStat") %>'>class="active"</c:if>>
-			<a href="${pageContext.request.contextPath}/admin/maintenance/dataEntryStats.list">
-				<spring:message code="DataEntryStatistics.title"/>
-			</a>
-		</li>
-	</openmrs:hasPrivilege>
 	<openmrs:hasPrivilege privilege="View Database Changes">
 		<li <c:if test='<%= request.getRequestURI().contains("databaseChangesInfo") %>'>class="active"</c:if>>
 			<a href="${pageContext.request.contextPath}/admin/maintenance/databaseChangesInfo.list">
