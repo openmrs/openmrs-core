@@ -282,22 +282,31 @@ public final class OpenmrsConstants {
 	
 	public static final String PRIV_PURGE_FORMS = "Purge Forms";
 	
+	@Deprecated
 	public static final String PRIV_VIEW_REPORTS = "View Reports";
 	
+	@Deprecated
 	public static final String PRIV_ADD_REPORTS = "Add Reports";
 	
+	@Deprecated
 	public static final String PRIV_EDIT_REPORTS = "Edit Reports";
 	
+	@Deprecated
 	public static final String PRIV_DELETE_REPORTS = "Delete Reports";
 	
+	@Deprecated
 	public static final String PRIV_RUN_REPORTS = "Run Reports";
 	
+	@Deprecated
 	public static final String PRIV_VIEW_REPORT_OBJECTS = "View Report Objects";
 	
+	@Deprecated
 	public static final String PRIV_ADD_REPORT_OBJECTS = "Add Report Objects";
 	
+	@Deprecated
 	public static final String PRIV_EDIT_REPORT_OBJECTS = "Edit Report Objects";
 	
+	@Deprecated
 	public static final String PRIV_DELETE_REPORT_OBJECTS = "Delete Report Objects";
 	
 	public static final String PRIV_MANAGE_IDENTIFIER_TYPES = "Manage Identifier Types";
@@ -672,6 +681,7 @@ public final class OpenmrsConstants {
 	
 	public static final String GLOBAL_PROPERTY_PROBLEM_LIST                = "concept.problemList";
 	
+	@Deprecated
 	public static final String GLOBAL_PROPERTY_REPORT_XML_MACROS = "report.xmlMacros";
 	
 	public static final String GLOBAL_PROPERTY_STANDARD_DRUG_REGIMENS = "dashboard.regimen.standardRegimens";
@@ -1086,10 +1096,13 @@ public final class OpenmrsConstants {
 	/**
 	 * Report object properties
 	 */
+	@Deprecated
 	public static final String REPORT_OBJECT_TYPE_PATIENTFILTER = "Patient Filter";
 	
+	@Deprecated
 	public static final String REPORT_OBJECT_TYPE_PATIENTSEARCH = "Patient Search";
 	
+	@Deprecated
 	public static final String REPORT_OBJECT_TYPE_PATIENTDATAPRODUCER = "Patient Data Producer";
 	
 	// Used for differences between windows/linux upload capabilities)

@@ -28,7 +28,9 @@ import org.openmrs.report.EvaluationContext;
 
 /**
  * Default implementation of the data set service.
+ * @deprecated see reportingcompatibility module
  */
+@Deprecated
 public class DataSetServiceImpl implements DataSetService {
 	
 	public Log log = LogFactory.getLog(this.getClass());

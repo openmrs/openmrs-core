@@ -16,8 +16,9 @@ package org.openmrs.report;
 import org.openmrs.api.APIException;
 
 /**
- *
+ * @deprecated see reportingcompatibility module
  */
+@Deprecated
 public class ReportRenderingException extends APIException {
 	
 	private static final long serialVersionUID = 1L;

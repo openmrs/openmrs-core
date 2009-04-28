@@ -56,6 +56,10 @@ import org.openmrs.reporting.PatientFilter;
 import org.openmrs.reporting.PatientSearchReportObject;
 import org.openmrs.util.OpenmrsUtil;
 
+/**
+ * @deprecated see reportingcompatibility module
+ */
+@Deprecated
 public class DataExportFunctions {
 	
 	public final Log log = LogFactory.getLog(this.getClass());

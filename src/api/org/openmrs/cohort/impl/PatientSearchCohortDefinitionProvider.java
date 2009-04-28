@@ -33,7 +33,9 @@ import org.openmrs.util.OpenmrsUtil;
 /**
  * This class provides access to {@link org.openmrs.reporting.PatientSearch} objects that are saved
  * in the report_object table, but exposes them as {@link CohortDefinition}
- */
+ * @deprecated see reportingcompatibility module
+*/
+@Deprecated
 public class PatientSearchCohortDefinitionProvider implements CohortDefinitionProvider {
 	
 	/**

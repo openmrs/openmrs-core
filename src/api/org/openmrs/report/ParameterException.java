@@ -17,7 +17,9 @@ import org.openmrs.api.APIException;
 
 /**
  *
+ * @deprecated see reportingcompatibility module
  */
+@Deprecated
 public class ParameterException extends APIException {
 	
 	private static final long serialVersionUID = 3393200101L;

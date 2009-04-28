@@ -365,8 +365,10 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 * Create a new Report
 	 * 
 	 * @param report Report to create
+	 * @deprecated see reportingcompatibility module
 	 * @throws APIException
 	 */
+	@Deprecated
 	public void createReport(Report report) throws APIException {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_ADD_REPORTS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_ADD_REPORTS);
@@ -378,8 +380,10 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 * Update Report
 	 * 
 	 * @param report Report to update
+	 * @deprecated see reportingcompatibility module
 	 * @throws APIException
 	 */
+	@Deprecated
 	public void updateReport(Report report) throws APIException {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_REPORTS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_REPORTS);
@@ -391,8 +395,10 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 * Delete Report
 	 * 
 	 * @param report Report to delete
+	 * @deprecated see reportingcompatibility module
 	 * @throws APIException
 	 */
+	@Deprecated
 	public void deleteReport(Report report) throws APIException {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_DELETE_REPORTS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_DELETE_REPORTS);
@@ -404,8 +410,10 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 * Create a new Report Object
 	 * 
 	 * @param reportObject Report Object to create
+	 * @deprecated see reportingcompatibility module
 	 * @throws APIException
 	 */
+	@Deprecated
 	public void createReportObject(AbstractReportObject reportObject) throws APIException {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_ADD_REPORT_OBJECTS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_ADD_REPORT_OBJECTS);
@@ -417,8 +425,10 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 * Update Report Object
 	 * 
 	 * @param reportObject Report Object to update
+	 * @deprecated see reportingcompatibility module
 	 * @throws APIException
 	 */
+	@Deprecated
 	public void updateReportObject(AbstractReportObject reportObject) throws APIException {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_REPORT_OBJECTS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_REPORT_OBJECTS);
@@ -430,8 +440,10 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 * Delete Report Object
 	 * 
 	 * @param reportObjectId Internal Integer identifier of Report Object to delete
+	 * @deprecated see reportingcompatibility module
 	 * @throws APIException
 	 */
+	@Deprecated
 	public void deleteReportObject(Integer reportObjectId) throws APIException {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_DELETE_REPORT_OBJECTS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_DELETE_REPORT_OBJECTS);

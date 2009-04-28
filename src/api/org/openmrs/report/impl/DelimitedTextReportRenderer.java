@@ -33,8 +33,9 @@ import org.openmrs.report.ReportRenderer;
 import org.openmrs.report.ReportSchema;
 
 /**
- *
+ * @deprecated see reportingcompatibility module
  */
+@Deprecated
 public abstract class DelimitedTextReportRenderer implements ReportRenderer {
 	
 	public abstract String getFilenameExtension();

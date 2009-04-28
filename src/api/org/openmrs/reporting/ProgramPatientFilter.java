@@ -29,6 +29,7 @@ import org.openmrs.report.EvaluationContext;
  * 
  * @deprecated Use @see org.openmrs.reporting.ProgramStatePatientFilter instead
  */
+@Deprecated
 public class ProgramPatientFilter extends AbstractPatientFilter implements PatientFilter {
 	
 	private Program program;

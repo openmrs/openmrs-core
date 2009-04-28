@@ -16,6 +16,10 @@ package org.openmrs.reporting;
 import java.util.HashMap;
 import java.util.Set;
 
+/**
+ * @deprecated see reportingcompatibility module
+ */
+@Deprecated
 public class TableRow extends HashMap<String, Object> {
 	
 	private static final long serialVersionUID = 1L;

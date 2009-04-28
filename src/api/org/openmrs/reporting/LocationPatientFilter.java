@@ -19,6 +19,10 @@ import org.openmrs.api.PatientSetService.PatientLocationMethod;
 import org.openmrs.api.context.Context;
 import org.openmrs.report.EvaluationContext;
 
+/**
+ * @deprecated see reportingcompatibility module
+ */
+@Deprecated
 public class LocationPatientFilter extends CachingPatientFilter {
 	
 	private Location location;

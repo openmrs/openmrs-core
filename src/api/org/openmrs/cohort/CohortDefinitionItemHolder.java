@@ -17,7 +17,9 @@ package org.openmrs.cohort;
  * This class maintains a key-name pair for a cohort definition, so that cohort definitions can be
  * "selected" within a client application. For example, the webapp needs to be able to display
  * cohorts as a drop down list.
+ * @deprecated see reportingcompatibility module
  */
+@Deprecated
 public class CohortDefinitionItemHolder {
 	
 	private String key;

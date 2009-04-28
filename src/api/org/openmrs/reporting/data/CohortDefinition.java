@@ -21,7 +21,9 @@ import org.openmrs.reporting.PatientFilter;
 
 /**
  * This class allows us to define a Cohort based on a patient filter or a cohort instance.
+ * @deprecated see reportingcompatibility module
  */
+@Deprecated
 public class CohortDefinition extends AbstractReportObject implements Serializable {
 	
 	/* Serial version ID */

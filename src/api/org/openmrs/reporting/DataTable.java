@@ -23,6 +23,10 @@ import java.util.Map;
 
 import org.openmrs.util.OpenmrsUtil;
 
+/**
+ * @deprecated see reportingcompatibility module
+ */
+@Deprecated
 public class DataTable {
 	
 	private List<String> columnOrder;

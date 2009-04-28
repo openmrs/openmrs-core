@@ -15,6 +15,10 @@ package org.openmrs.reporting;
 
 import java.beans.ExceptionListener;
 
+/**
+ * @deprecated see reportingcompatibility module
+ */
+@Deprecated
 public class ReportObjectWrapperExceptionListener implements ExceptionListener {
 	
 	public ReportObjectWrapperExceptionListener() {

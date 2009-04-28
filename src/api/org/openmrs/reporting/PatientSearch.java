@@ -65,8 +65,10 @@ import org.simpleframework.xml.Root;
  * OpenmrsUtil.toPatientFilter(PatientSearch). But it can also be left as-is for better
  * version-compatibility if PatientFilter classes change, or to avoid issues with xml-encoding
  * hibernate proxies.
+ * @deprecated see reportingcompatibility module
  */
 @Root(strict = false)
+@Deprecated
 public class PatientSearch implements CohortDefinition {
 	
 	private static final long serialVersionUID = -8913742497675209159L;

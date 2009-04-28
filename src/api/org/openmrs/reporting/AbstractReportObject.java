@@ -17,7 +17,10 @@ import java.util.Date;
 
 import org.openmrs.User;
 
-// TODO: this should be called BaseReportObject, because it doesn't need to be abstract. I expect Justin to refactor this class out of existence before I get to this though.
+/**
+ * @deprecated see reportingcompatibility module
+ */
+@Deprecated
 public class AbstractReportObject implements ReportObject {
 	
 	private Integer reportObjectId; // database primary key

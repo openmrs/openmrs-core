@@ -33,8 +33,10 @@ import org.simpleframework.xml.Root;
  * "HIV PROGRAM", 1, "2008-01-01", null, 5383 123, "TB PROGRAM", 2, "2006-04-11", "2006-10-11", 4253
  * 
  * @see RowPerProgramEnrollmentDataSet
+ * @deprecated see reportingcompatibility module
  */
 @Root
+@Deprecated
 public class RowPerProgramEnrollmentDataSetDefinition implements DataSetDefinition {
 	
 	private static final long serialVersionUID = -1408727201579935500L;

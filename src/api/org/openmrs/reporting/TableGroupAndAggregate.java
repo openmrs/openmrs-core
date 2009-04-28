@@ -15,6 +15,10 @@ package org.openmrs.reporting;
 
 import java.util.Map;
 
+/**
+ * @deprecated see reportingcompatibility module
+ */
+@Deprecated
 public class TableGroupAndAggregate {
 	
 	private TableRowClassifier classifier;

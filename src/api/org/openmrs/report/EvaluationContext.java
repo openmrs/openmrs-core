@@ -34,7 +34,9 @@ import org.openmrs.api.context.Context;
  * used to persist and retrieve objects. Note that this cache is cleared whenever any changes are
  * made to baseCohort or any parameter values. - Capabilities to add, remove, and retrieve parameter
  * values - Capabilities to evaluate parametric expressions, e.g. ${someDateParameterName+30d}
+ * @deprecated see reportingcompatibility module
  */
+@Deprecated
 public class EvaluationContext {
 	
 	protected Log log = LogFactory.getLog(getClass());

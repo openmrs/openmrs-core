@@ -26,7 +26,9 @@ import org.openmrs.api.context.Context;
  * A dataset with one-row-per-obs.
  * 
  * @see RowPerObsDataSetDefinition
+ * @deprecated see reportingcompatibility module
  */
+@Deprecated
 public class RowPerObsDataSet implements DataSet<Object> {
 	
 	private RowPerObsDataSetDefinition definition;

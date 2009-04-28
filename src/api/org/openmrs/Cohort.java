@@ -339,6 +339,7 @@ public class Cohort extends BaseOpenmrsData implements Serializable {
 	 * @return the cohortDefinition
 	 */
 	@Element(required = false)
+	@Deprecated
 	public CohortDefinition getCohortDefinition() {
 		return cohortDefinition;
 	}
@@ -347,6 +348,7 @@ public class Cohort extends BaseOpenmrsData implements Serializable {
 	 * @param cohortDefinition the cohortDefinition to set
 	 */
 	@Element(required = false)
+	@Deprecated
 	public void setCohortDefinition(CohortDefinition cohortDefinition) {
 		this.cohortDefinition = cohortDefinition;
 	}
@@ -355,6 +357,7 @@ public class Cohort extends BaseOpenmrsData implements Serializable {
 	 * @return the evaluationContext
 	 */
 	@Element(required = false)
+	@Deprecated
 	public EvaluationContext getEvaluationContext() {
 		return evaluationContext;
 	}
@@ -363,6 +366,7 @@ public class Cohort extends BaseOpenmrsData implements Serializable {
 	 * @param evaluationContext the evaluationContext to set
 	 */
 	@Element(required = false)
+	@Deprecated
 	public void setEvaluationContext(EvaluationContext evaluationContext) {
 		this.evaluationContext = evaluationContext;
 	}

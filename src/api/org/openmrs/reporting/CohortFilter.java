@@ -17,8 +17,9 @@ import org.openmrs.Cohort;
 import org.openmrs.report.EvaluationContext;
 
 /**
- * 
+ * @deprecated see reportingcompatibility module
  */
+@Deprecated
 public class CohortFilter extends AbstractPatientFilter implements PatientFilter {
 	
 	private Cohort cohort;

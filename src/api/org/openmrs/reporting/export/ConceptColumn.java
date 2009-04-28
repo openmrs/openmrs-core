@@ -20,6 +20,10 @@ import org.openmrs.Concept;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 
+/**
+ * @deprecated see reportingcompatibility module
+ */
+@Deprecated
 public class ConceptColumn implements ExportColumn, Serializable {
 	
 	public static final long serialVersionUID = 987654323L;

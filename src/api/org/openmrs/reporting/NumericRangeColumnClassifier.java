@@ -13,6 +13,10 @@
  */
 package org.openmrs.reporting;
 
+/**
+ * @deprecated see reportingcompatibility module
+ */
+@Deprecated
 public class NumericRangeColumnClassifier implements TableRowClassifier {
 	
 	private String columnName;

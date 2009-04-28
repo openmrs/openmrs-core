@@ -35,6 +35,10 @@ import org.openmrs.reporting.PatientSearch;
 import org.openmrs.reporting.ReportObject;
 import org.openmrs.util.OpenmrsUtil;
 
+/**
+ * @deprecated see reportingcompatibility module
+*/
+@Deprecated
 public class CohortSearchHistory extends AbstractReportObject {
 	
 	protected transient final Log log = LogFactory.getLog(getClass());

@@ -27,8 +27,10 @@ import org.simpleframework.xml.Root;
  * 
  * @see LogicCriteria
  * @see Parameterizable
+ * @deprecated see reportingcompatibility module
  */
 @Root(strict = false)
+@Deprecated
 public class Parameter {
 	
 	private static final long serialVersionUID = 12020438439292929L;

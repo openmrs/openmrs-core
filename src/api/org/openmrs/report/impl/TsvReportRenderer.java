@@ -16,8 +16,9 @@ package org.openmrs.report.impl;
 import org.openmrs.report.ReportSchema;
 
 /**
- *
+ * @deprecated see reportingcompatibility module
  */
+@Deprecated
 public class TsvReportRenderer extends DelimitedTextReportRenderer {
 	
 	public TsvReportRenderer() {

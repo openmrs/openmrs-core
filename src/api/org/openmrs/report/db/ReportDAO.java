@@ -21,7 +21,9 @@ import org.openmrs.report.ReportSchemaXml;
  * The database methods involved with saving objects in the report package to the database
  * 
  * @see org.openmrs.api.ReportService
+ * @deprecated see reportingcompatibility module
  */
+@Deprecated
 public interface ReportDAO {
 	
 	/**

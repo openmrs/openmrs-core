@@ -20,7 +20,9 @@ package org.openmrs.report;
  * a dropdown list. In this case a renderer would use the String argument of this class to determine
  * which mode was selected by the user. A higher sortWeight (i.e. closer to Integer.MAX_VALUE) will
  * typically appear at the top of a select list.
+ * @deprecated see reportingcompatibility module
  */
+@Deprecated
 public class RenderingMode implements Comparable<RenderingMode> {
 	
 	private ReportRenderer renderer;

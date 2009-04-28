@@ -32,7 +32,9 @@ import org.openmrs.report.EvaluationContext;
  * CohortDefinition or EvaluationContext in the cohort that it returns. Those are not meaningful in
  * the context of a static cohort, and alse because we want to preserve the original
  * CohortDefinition that produced the Cohort that is being wrapped by a StaticCohortDefinition.
+ * @deprecated see reportingcompatibility module
  */
+@Deprecated
 public class StaticCohortDefinitionProvider implements CohortDefinitionProvider {
 	
 	/**

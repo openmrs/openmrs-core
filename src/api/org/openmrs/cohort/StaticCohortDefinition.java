@@ -23,8 +23,10 @@ import org.simpleframework.xml.Root;
 
 /**
  * This class provides access to org.openmrs.Cohort objects that are saved in the cohort table.
+ * @deprecated see reportingcompatibility module
  */
 @Root(strict = false)
+@Deprecated
 public class StaticCohortDefinition implements CohortDefinition {
 	
 	private static final long serialVersionUID = 1L;

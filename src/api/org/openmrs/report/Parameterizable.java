@@ -22,7 +22,9 @@ import java.util.List;
  * in a cohort that is in a reportschema can give it that value) The object should assume that when
  * its being run (getPatientIds() for cohorts, getColumns for DataSetDefinition(), etc) it will
  * receive an EvaluationContext which will give values to all of its parameters
+ * @deprecated see reportingcompatibility module
  */
+@Deprecated
 public interface Parameterizable extends Serializable {
 	
 	/**

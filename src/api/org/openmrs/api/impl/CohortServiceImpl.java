@@ -216,8 +216,10 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	 * 
 	 * @param definitionClass
 	 * @return
+	 * @deprecated see reportingcompatibility module
 	 * @throws APIException
 	 */
+	@Deprecated
 	private CohortDefinitionProvider getCohortDefinitionProvider(Class<? extends CohortDefinition> definitionClass)
 	                                                                                                               throws APIException {
 		CohortDefinitionProvider ret = cohortDefinitionProviders.get(definitionClass);
@@ -230,7 +232,9 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	/**
 	 * @see org.openmrs.api.CohortService#evaluate(org.openmrs.cohort.CohortDefinition,
 	 *      org.openmrs.report.EvaluationContext)
+	 * @deprecated see reportingcompatibility module
 	 */
+	@Deprecated
 	public Cohort evaluate(CohortDefinition definition, EvaluationContext evalContext) throws APIException {
 		CohortDefinitionProvider provider = getCohortDefinitionProvider(definition.getClass());
 		return provider.evaluate(definition, evalContext);
@@ -238,7 +242,9 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	
 	/**
 	 * @see org.openmrs.api.CohortService#getAllPatientsCohortDefinition()
+	 * @deprecated see reportingcompatibility module
 	 */
+	@Deprecated
 	public CohortDefinition getAllPatientsCohortDefinition() {
 		PatientSearch ps = new PatientSearch();
 		ps.setFilterClass(PatientCharacteristicFilter.class);
@@ -247,7 +253,9 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	
 	/**
 	 * @see org.openmrs.api.CohortService#getCohortDefinition(java.lang.Class, java.lang.Integer)
+	 * @deprecated see reportingcompatibility module
 	 */
+	@Deprecated
 	public CohortDefinition getCohortDefinition(Class<CohortDefinition> clazz, Integer id) {
 		CohortDefinitionProvider provider = getCohortDefinitionProvider(clazz);
 		return provider.getCohortDefinition(id);
@@ -255,8 +263,10 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	
 	/**
 	 * @see org.openmrs.api.CohortService#getCohortDefinition(java.lang.String)
+	 * @deprecated see reportingcompatibility module
 	 */
 	@SuppressWarnings("unchecked")
+	@Deprecated
 	public CohortDefinition getCohortDefinition(String key) {
 		try {
 			
@@ -273,7 +283,9 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	
 	/**
 	 * @see org.openmrs.api.CohortService#getAllCohortDefinitions()
+	 * @deprecated see reportingcompatibility module
 	 */
+	@Deprecated
 	public List<CohortDefinitionItemHolder> getAllCohortDefinitions() {
 		
 		List<CohortDefinitionItemHolder> ret = new ArrayList<CohortDefinitionItemHolder>();
@@ -287,7 +299,9 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	
 	/**
 	 * @see org.openmrs.api.CohortService#purgeCohortDefinition(org.openmrs.cohort.CohortDefinition)
+	 * @deprecated see reportingcompatibility module
 	 */
+	@Deprecated
 	public void purgeCohortDefinition(CohortDefinition definition) {
 		CohortDefinitionProvider provider = getCohortDefinitionProvider(definition.getClass());
 		provider.purgeCohortDefinition(definition);
@@ -295,7 +309,9 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	
 	/**
 	 * @see org.openmrs.api.CohortService#setCohortDefinitionProviders(Map)
+	 * @deprecated see reportingcompatibility module
 	 */
+	@Deprecated
 	public void setCohortDefinitionProviders(
 	                                         Map<Class<? extends CohortDefinition>, CohortDefinitionProvider> providerClassMap) {
 		for (Map.Entry<Class<? extends CohortDefinition>, CohortDefinitionProvider> entry : providerClassMap.entrySet()) {
@@ -305,7 +321,9 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	
 	/**
 	 * @see org.openmrs.api.CohortService#getCohortDefinitionProviders()
+	 * @deprecated see reportingcompatibility module
 	 */
+	@Deprecated
 	public Map<Class<? extends CohortDefinition>, CohortDefinitionProvider> getCohortDefinitionProviders() {
 		if (cohortDefinitionProviders == null)
 			cohortDefinitionProviders = new LinkedHashMap<Class<? extends CohortDefinition>, CohortDefinitionProvider>();
@@ -315,7 +333,9 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	
 	/**
 	 * @see org.openmrs.api.CohortService#registerCohortDefinitionProvider(Class, CohortDefinitionProvider)
+	 * @deprecated see reportingcompatibility module
 	 */
+	@Deprecated
 	public void registerCohortDefinitionProvider(Class<? extends CohortDefinition> defClass,
 	                                             CohortDefinitionProvider cohortDefProvider) throws APIException {
 		getCohortDefinitionProviders().put(defClass, cohortDefProvider);
@@ -323,7 +343,9 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	
 	/**
 	 * @see org.openmrs.api.CohortService#removeCohortDefinitionProvider(java.lang.Class)
+	 * @deprecated see reportingcompatibility module
 	 */
+	@Deprecated
 	public void removeCohortDefinitionProvider(Class<? extends CohortDefinitionProvider> providerClass) {
 		
 		// TODO: should this be looking through the values or the keys?
@@ -335,7 +357,9 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	
 	/**
 	 * @see org.openmrs.api.CohortService#saveCohortDefinition(org.openmrs.cohort.CohortDefinition)
+	 * @deprecated see reportingcompatibility module
 	 */
+	@Deprecated
 	public CohortDefinition saveCohortDefinition(CohortDefinition definition) throws APIException {
 		CohortDefinitionProvider provider = getCohortDefinitionProvider(definition.getClass());
 		return provider.saveCohortDefinition(definition);
@@ -343,8 +367,10 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	
 	/**
 	 * @see org.openmrs.api.CohortService#getCohortDefinitions(java.lang.Class)
+	 * @deprecated see reportingcompatibility module
 	 */
 	@SuppressWarnings("unchecked")
+	@Deprecated
 	public List<CohortDefinitionItemHolder> getCohortDefinitions(Class providerClass) {
 		CohortDefinitionProvider provider = getCohortDefinitionProvider(providerClass);
 		return provider.getAllCohortDefinitions();

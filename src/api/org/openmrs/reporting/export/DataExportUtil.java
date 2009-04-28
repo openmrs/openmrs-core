@@ -34,7 +34,9 @@ import org.openmrs.util.OpenmrsUtil;
 
 /**
  * Utility methods for use by Data Exports
+ * @deprecated see reportingcompatibility module
  */
+@Deprecated
 public class DataExportUtil {
 	
 	private static Map<String, Object> dataExportKeys = new WeakHashMap<String, Object>();

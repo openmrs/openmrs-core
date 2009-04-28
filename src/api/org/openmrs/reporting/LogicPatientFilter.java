@@ -27,8 +27,9 @@ import org.openmrs.report.Parameter;
 import org.openmrs.report.Parameterizable;
 
 /**
- *
+ * @deprecated see reportingcompatibility module
  */
+@Deprecated
 public class LogicPatientFilter extends AbstractPatientFilter implements PatientFilter, Parameterizable {
 	
 	private static final long serialVersionUID = 1L;
