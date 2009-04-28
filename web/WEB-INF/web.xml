@@ -34,24 +34,6 @@
 	</servlet-mapping>
 	
 	<servlet>
-		<servlet-name>timelineGraphServlet</servlet-name>
-		<servlet-class>org.openmrs.web.servlet.TimelineGraphServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>timelineGraphServlet</servlet-name>
-		<url-pattern>/timelineGraphServlet</url-pattern>
-	</servlet-mapping>
-	
-	<servlet>
-		<servlet-name>pieChartServlet</servlet-name>
-		<servlet-class>org.openmrs.web.servlet.PieChartServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>pieChartServlet</servlet-name>
-		<url-pattern>/pieChartServlet</url-pattern>
-	</servlet-mapping>
-	
-	<servlet>
 		<servlet-name>displayChartServlet</servlet-name>
 		<servlet-class>org.openmrs.web.servlet.DisplayChartServlet</servlet-class>
 	</servlet>
@@ -123,15 +105,6 @@
 	<servlet-mapping>
 		<servlet-name>quickReportServlet</servlet-name>
 		<url-pattern>/quickReportServlet</url-pattern>
-	</servlet-mapping>
-	
-	<servlet>
-		<servlet-name>dataExportServlet</servlet-name>
-		<servlet-class>org.openmrs.web.servlet.DataExportServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>dataExportServlet</servlet-name>
-		<url-pattern>/dataExportServlet</url-pattern>
 	</servlet-mapping>
 
     <servlet>

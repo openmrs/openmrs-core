@@ -88,7 +88,6 @@
     	<fileset dir="${jfreechart.dir}" includes="*.jar" />
 		<fileset dir="${jstl.dir}" includes="*.jar" />
 		<fileset dir="${log4j.dir}" includes="*.jar" />
-		<fileset dir="${neal-reporting.dir}" includes="*.jar" />
     	<fileset dir="${slf4j.dir}" includes="*.jar" />
     	<fileset dir="${simple.dir}" includes="*.jar" />
 		<fileset dir="${spring.dir}" includes="*.jar" />

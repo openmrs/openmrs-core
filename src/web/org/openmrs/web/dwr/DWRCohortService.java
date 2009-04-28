@@ -13,7 +13,6 @@
  */
 package org.openmrs.web.dwr;
 
-import java.util.Map;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
@@ -21,10 +20,6 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Cohort;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
-import org.openmrs.cohort.CohortDefinition;
-import org.openmrs.cohort.CohortUtil;
-import org.openmrs.report.EvaluationContext;
-import org.openmrs.report.Parameter;
 
 /**
  * This class exposes some of the methods in {@link org.openmrs.api.CohortService} via the dwr
@@ -87,48 +82,6 @@ public class DWRCohortService {
 			ret.add(new ListItem(c.getCohortId(), c.getName(), c.getDescription()));
 		}
 		return ret;
-	}
-	
-	/**
-	 * Accepts an input cohortSpecification String, which represents a Cohort Definition to
-	 * evaluate. Returns a Vector of Parameters that are required to evaluate the given
-	 * CohortDefinition. Any parameter value that is an expression as determined by
-	 * {@link EvaluationContext#isExpression(String)} will be returned. For example: For a
-	 * cohortSpecification of [Male], an empty Vector is returned, as there are no parameters. For a
-	 * cohortSpecification of [PregnantOnDate|effectiveDate=${?}], a Vector containing
-	 * "effectiveDate" is returned
-	 * 
-	 * @param cohortSpecification - This input String represents the Cohort Definition to evaluate
-	 * @return Vector<Parameter> containing all Parameters that need to be provided to evaluate the
-	 *         input cohortSpecification
-	 */
-	public Vector<Parameter> getMissingParameters(String cohortSpecification) {
-		Vector<Parameter> ret = new Vector<Parameter>();
-		CohortDefinition def = CohortUtil.parse(cohortSpecification);
-		for (Parameter p : def.getParameters()) {
-			ret.add(p);
-		}
-		return ret;
-	}
-	
-	/**
-	 * Accepts an input cohortSpecification String, which represents a Cohort Definition to
-	 * evaluate, along with a Map<Parameter, Object> which provides values for each missing
-	 * parameter
-	 * 
-	 * @param cohortSpecification - This input String represents the Cohort Definition to evaluate
-	 * @return Cohort - The Cohort of patients that are returned
-	 */
-	public Cohort evaluateCohortDefinition(String cohortSpecification, Map<Parameter, Object> parameterValues) {
-		CohortDefinition def = CohortUtil.parse(cohortSpecification);
-		EvaluationContext evalContext = new EvaluationContext();
-		if (parameterValues != null) {
-			for (Parameter p : parameterValues.keySet()) {
-				Object v = parameterValues.get(p);
-				evalContext.addParameterValue(p, v);
-			}
-		}
-		return Context.getCohortService().evaluate(def, evalContext);
 	}
 	
 }

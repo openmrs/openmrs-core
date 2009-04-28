@@ -27,6 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.UserContext;
+import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.web.WebConstants;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -102,6 +103,7 @@ public class OpenmrsFilter extends OncePerRequestFilter {
 		
 		// Add the user context to the current thread 
 		Context.setUserContext(userContext);
+		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
 		
 		log.debug("before chain.Filter");
 		
