@@ -13,6 +13,10 @@
  */
 package org.openmrs.reporting;
 
+/**
+ * @deprecated see reportingcompatibility module
+ */
+@Deprecated
 public class SimpleColumnClassifier implements TableRowClassifier {
 	
 	private String columnName;

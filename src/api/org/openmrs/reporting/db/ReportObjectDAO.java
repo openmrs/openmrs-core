@@ -19,8 +19,9 @@ import org.openmrs.api.db.DAOException;
 import org.openmrs.reporting.AbstractReportObject;
 
 /**
- * TODO: Comment this class
+ * @deprecated see reportingcompatibility module
  */
+@Deprecated
 public interface ReportObjectDAO {
 	
 	/**

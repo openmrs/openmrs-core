@@ -21,6 +21,10 @@ import org.openmrs.api.context.Context;
 import org.openmrs.reporting.AbstractReportObject;
 import org.springframework.util.StringUtils;
 
+/**
+ * @deprecated see reportingcompatibility module
+ */
+@Deprecated
 public class AbstractReportObjectEditor extends PropertyEditorSupport {
 	
 	private Log log = LogFactory.getLog(this.getClass());

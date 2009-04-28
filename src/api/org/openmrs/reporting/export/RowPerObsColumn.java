@@ -29,7 +29,9 @@ import java.io.Serializable;
  * 4393,      35.0,      1/7/2000
  * 4400,      12.0,      1/1/2000
  * </pre>
+ * @deprecated see reportingcompatibility module
  */
+@Deprecated
 public class RowPerObsColumn implements ExportColumn, Serializable {
 	
 	public static final long serialVersionUID = 987654323L;

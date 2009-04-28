@@ -14,8 +14,9 @@
 package org.openmrs.report;
 
 /**
- *
+ * @deprecated see reportingcompatibility module
  */
+@Deprecated
 public interface DataSetTransform {
 	
 	/**

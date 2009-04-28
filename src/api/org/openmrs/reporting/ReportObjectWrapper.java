@@ -17,6 +17,10 @@ import java.util.Date;
 
 import org.openmrs.User;
 
+/**
+ * @deprecated see reportingcompatibility module
+ */
+@Deprecated
 public class ReportObjectWrapper {
 	
 	private Integer reportObjectId; // database primary key

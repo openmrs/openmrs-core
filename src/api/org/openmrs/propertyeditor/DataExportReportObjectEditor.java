@@ -21,6 +21,10 @@ import org.openmrs.api.context.Context;
 import org.openmrs.reporting.export.DataExportReportObject;
 import org.springframework.util.StringUtils;
 
+/**
+ * @deprecated see reportingcompatibility module
+ */
+@Deprecated
 public class DataExportReportObjectEditor extends PropertyEditorSupport {
 	
 	private Log log = LogFactory.getLog(this.getClass());

@@ -13,6 +13,10 @@
  */
 package org.openmrs.reporting;
 
+/**
+ * @deprecated see reportingcompatibility module
+ */
+@Deprecated
 public class CountAggregator implements TableRowAggregator {
 	
 	public CountAggregator() {

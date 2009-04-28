@@ -22,9 +22,10 @@ import org.openmrs.reporting.db.ReportObjectDAO;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * TODO comment this class
+ * @deprecated see reportingcompatibility module
  */
 @Transactional
+@Deprecated
 public interface ReportObjectService extends OpenmrsService {
 	
 	/**

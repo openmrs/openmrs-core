@@ -1143,6 +1143,10 @@ public class OpenmrsUtil {
 		return new SimpleDateFormat(pattern, Context.getLocale());
 	}
 	
+	/**
+ 	 * @deprecated see reportingcompatibility module
+ 	 */
+	@Deprecated
 	public static PatientFilter toPatientFilter(PatientSearch search, CohortSearchHistory history) {
 		return toPatientFilter(search, history, null);
 	}
@@ -1238,8 +1242,10 @@ public class OpenmrsUtil {
 	
 	/**
 	 * Uses reflection to translate a PatientSearch into a PatientFilter
-	 */
+	 * @deprecated see reportingcompatibility module
+ 	 */
 	@SuppressWarnings("unchecked")
+	@Deprecated
 	public static PatientFilter toPatientFilter(PatientSearch search, CohortSearchHistory history,
 	                                            EvaluationContext evalContext) {
 		if (search.isSavedSearchReference()) {

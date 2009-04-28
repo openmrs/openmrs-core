@@ -16,6 +16,10 @@ package org.openmrs.reporting;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
+/**
+ * @deprecated see reportingcompatibility module
+ */
+@Deprecated
 public class DrugOrderPatientFilterValidator implements Validator {
 	
 	@SuppressWarnings("unchecked")

@@ -31,7 +31,9 @@ import org.openmrs.util.OpenmrsUtil;
 /**
  * Facilitates printing a data export so that a patient is listed out on multiple lines to allow for
  * all obs values selected to be included.
+ * @deprecated see reportingcompatibility module
  */
+@Deprecated
 public class RowPerObsDataExportReportObject extends DataExportReportObject implements Serializable {
 	
 	public transient final static long serialVersionUID = 123123999L;

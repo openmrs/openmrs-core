@@ -34,48 +34,60 @@ public interface AdministrationDAO {
 	 * Create a new Report
 	 * 
 	 * @param r Report to create
+	 * @deprecated see reportingcompatibility module
 	 * @throws DAOException
 	 */
+	@Deprecated
 	public void createReport(Report r) throws DAOException;
 	
 	/**
 	 * Update Report
 	 * 
 	 * @param r Report to update
+	 * @deprecated see reportingcompatibility module
 	 * @throws DAOException
 	 */
+	@Deprecated
 	public void updateReport(Report r) throws DAOException;
 	
 	/**
 	 * Delete Report
 	 * 
 	 * @param r Report to delete
+	 * @deprecated see reportingcompatibility module
 	 * @throws DAOException
 	 */
+	@Deprecated
 	public void deleteReport(Report r) throws DAOException;
 	
 	/**
 	 * Create a new Report Object
 	 * 
 	 * @param ro AbstractReportObject to create
+	 * @deprecated see reportingcompatibility module
 	 * @throws DAOException
 	 */
+	@Deprecated
 	public void createReportObject(AbstractReportObject ro) throws DAOException;
 	
 	/**
 	 * Update Report Object
 	 * 
 	 * @param ro AbstractReportObject to update
+	 * @deprecated see reportingcompatibility module
 	 * @throws DAOException
 	 */
+	@Deprecated
 	public void updateReportObject(AbstractReportObject ro) throws DAOException;
 	
 	/**
 	 * Delete Report Object
 	 * 
+	 * @deprecated see reportingcompatibility module
 	 * @param reportObjectId Internal identifier for report object to delete
 	 * @throws DAOException
 	 */
+	@Deprecated
 	public void deleteReportObject(Integer reportObjectId) throws DAOException;
 	
 	/**

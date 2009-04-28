@@ -17,6 +17,10 @@ import java.util.Date;
 
 import org.openmrs.User;
 
+/**
+ * @deprecated see reportingcompatibility module
+ */
+@Deprecated
 public abstract class AbstractPatientDataProducer extends AbstractReportObject {
 	
 	public AbstractPatientDataProducer() {

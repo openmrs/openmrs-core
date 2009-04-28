@@ -260,15 +260,19 @@ public interface AdministrationService extends OpenmrsService {
 	 * 
 	 * @param report Report to create
 	 * @throws APIException
+	 * @deprecated see reportingcompatibility module
 	 */
+	@Deprecated
 	public void createReport(Report report) throws APIException;
 	
 	/**
 	 * Update Report
 	 * 
 	 * @param report Report to update
+	 * @deprecated see reportingcompatibility module
 	 * @throws APIException
 	 */
+	@Deprecated
 	public void updateReport(Report report) throws APIException;
 	
 	/**
@@ -276,31 +280,39 @@ public interface AdministrationService extends OpenmrsService {
 	 * 
 	 * @param report Report to delete
 	 * @throws APIException
+	 * @deprecated see reportingcompatibility module
 	 */
+	@Deprecated
 	public void deleteReport(Report report) throws APIException;
 	
 	/**
 	 * Create a new Report Object
 	 * 
 	 * @param reportObject Report Object to create
+	 * @deprecated see reportingcompatibility module
 	 * @throws APIException
 	 */
+	@Deprecated
 	public void createReportObject(AbstractReportObject reportObject) throws APIException;
 	
 	/**
 	 * Update Report Object
 	 * 
 	 * @param reportObject the Report Object to update
+	 * @deprecated see reportingcompatibility module
 	 * @throws APIException
 	 */
+	@Deprecated
 	public void updateReportObject(AbstractReportObject reportObject) throws APIException;
 	
 	/**
 	 * Delete Report Object
 	 * 
 	 * @param reportObjectId Internal identifier for the Report Object to delete
+	 * @deprecated see reportingcompatibility module
 	 * @throws APIException
 	 */
+	@Deprecated
 	public void deleteReportObject(Integer reportObjectId) throws APIException;
 	
 	/**

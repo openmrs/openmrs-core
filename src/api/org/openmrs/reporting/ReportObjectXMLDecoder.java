@@ -18,6 +18,10 @@ import java.beans.XMLDecoder;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 
+/**
+ * @deprecated see reportingcompatibility module
+ */
+@Deprecated
 public class ReportObjectXMLDecoder {
 	
 	//private Log log = LogFactory.getLog(this.getClass());

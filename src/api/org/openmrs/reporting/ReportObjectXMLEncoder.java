@@ -57,6 +57,10 @@ import org.openmrs.propertyeditor.ProgramWorkflowEditor;
 import org.openmrs.propertyeditor.ProgramWorkflowStateEditor;
 import org.openmrs.propertyeditor.UserEditor;
 
+/**
+ * @deprecated see reportingcompatibility module
+ */
+@Deprecated
 public class ReportObjectXMLEncoder {
 	
 	private Log log = LogFactory.getLog(this.getClass());

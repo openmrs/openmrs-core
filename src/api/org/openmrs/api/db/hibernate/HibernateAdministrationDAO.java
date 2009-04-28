@@ -19,7 +19,6 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -29,15 +28,11 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
-import org.openmrs.EncounterType;
-import org.openmrs.Form;
 import org.openmrs.GlobalProperty;
 import org.openmrs.ImplementationId;
-import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.AdministrationDAO;
 import org.openmrs.api.db.DAOException;
@@ -77,7 +72,9 @@ public class HibernateAdministrationDAO implements AdministrationDAO {
 	
 	/**
 	 * @see org.openmrs.api.AdministrationService#createReport(org.openmrs.reporting.Report)
+	 * @deprecated see reportingcompatibility module
 	 */
+	@Deprecated
 	public void createReport(Report r) throws DAOException {
 		r.setCreator(Context.getAuthenticatedUser());
 		r.setDateCreated(new Date());
@@ -86,7 +83,9 @@ public class HibernateAdministrationDAO implements AdministrationDAO {
 	
 	/**
 	 * @see org.openmrs.api.AdministrationService#updateReport(org.openmrs.reporting.Report)
+	 * @deprecated see reportingcompatibility module
 	 */
+	@Deprecated
 	public void updateReport(Report r) throws DAOException {
 		if (r.getReportId() == null)
 			createReport(r);
@@ -97,7 +96,9 @@ public class HibernateAdministrationDAO implements AdministrationDAO {
 	
 	/**
 	 * @see org.openmrs.api.AdministrationService#deleteReport(org.openmrs.reporting.Report)
+	 * @deprecated see reportingcompatibility module
 	 */
+	@Deprecated
 	public void deleteReport(Report r) throws DAOException {
 		sessionFactory.getCurrentSession().delete(r);
 	}
@@ -179,7 +180,11 @@ public class HibernateAdministrationDAO implements AdministrationDAO {
 		
 		return logs;
 	}
-	
+
+	/**
+	 * @deprecated see reportingcompatibility module
+	 */	
+	@Deprecated
 	public void createReportObject(AbstractReportObject ro) throws DAOException {
 		
 		ReportObjectWrapper wrappedReportObject = new ReportObjectWrapper(ro);
@@ -190,6 +195,10 @@ public class HibernateAdministrationDAO implements AdministrationDAO {
 		sessionFactory.getCurrentSession().save(wrappedReportObject);
 	}
 	
+	/**
+	 * @deprecated see reportingcompatibility module
+	 */
+	@Deprecated
 	public void updateReportObject(AbstractReportObject ro) throws DAOException {
 		if (ro.getReportObjectId() == null)
 			createReportObject(ro);
@@ -202,6 +211,10 @@ public class HibernateAdministrationDAO implements AdministrationDAO {
 		}
 	}
 	
+	/**
+	 * @deprecated see reportingcompatibility module
+	*/
+	@Deprecated
 	public void deleteReportObject(Integer reportObjectId) throws DAOException {
 		ReportObjectWrapper wrappedReportObject = new ReportObjectWrapper();
 		wrappedReportObject = (ReportObjectWrapper) sessionFactory.getCurrentSession().get(ReportObjectWrapper.class,

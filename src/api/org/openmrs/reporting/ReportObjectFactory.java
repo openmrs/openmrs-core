@@ -26,8 +26,9 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
 
 /**
- *
+ * @deprecated see reportingcompatibility module
  */
+@Deprecated
 public class ReportObjectFactory {
 	
 	private static ReportObjectFactory singleton;

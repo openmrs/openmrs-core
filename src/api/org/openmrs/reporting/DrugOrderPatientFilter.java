@@ -34,6 +34,7 @@ import org.openmrs.util.OpenmrsUtil;
 /**
  * @deprecated Use org.openmrs.reporting.DrugOrderFilter instead
  */
+@Deprecated
 public class DrugOrderPatientFilter extends AbstractPatientFilter implements PatientFilter, Comparable<DrugOrderPatientFilter> {
 	
 	protected transient final Log log = LogFactory.getLog(getClass());

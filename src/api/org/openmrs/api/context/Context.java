@@ -421,21 +421,27 @@ public class Context {
 	
 	/**
 	 * @return report service
+	 * @deprecated see reportingcompatibility module
 	 */
+	@Deprecated
 	public static ReportService getReportService() {
 		return getServiceContext().getReportService();
 	}
 	
 	/**
 	 * @return report object service
+	 * @deprecated see reportingcompatibility module
 	 */
+	@Deprecated
 	public static ReportObjectService getReportObjectService() {
 		return getServiceContext().getReportObjectService();
 	}
 	
 	/**
 	 * @return dataset service
+	 * @deprecated see reportingcompatibility module
 	 */
+	@Deprecated
 	public static DataSetService getDataSetService() {
 		return getServiceContext().getDataSetService();
 	}
