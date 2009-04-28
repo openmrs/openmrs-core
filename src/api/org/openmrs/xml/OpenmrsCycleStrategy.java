@@ -12,11 +12,11 @@ import org.simpleframework.xml.stream.NodeMap;
  * This is a specific serialization strategy developed so that the OpenMRS objects that happen to be
  * proxied by Hibernate will be serialized correctly.<br/>
  * Use:
+ * 
  * <pre>
  * 		Serializer serializer = new Persister(new OpenmrsCycleStrategy());
  * 		serializer.write(someObject, outputStream);
  * </pre>
- * 
  * 
  * @deprecated - Use OpenmrsSerializer from Context.getSerializationService.getDefaultSerializer()
  */

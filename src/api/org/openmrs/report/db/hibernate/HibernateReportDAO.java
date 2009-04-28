@@ -25,6 +25,7 @@ import org.openmrs.report.db.ReportDAO;
 
 /**
  * Hibernate specific database access methods for objects in the report package
+ * 
  * @deprecated see reportingcompatibility module
  */
 @Deprecated

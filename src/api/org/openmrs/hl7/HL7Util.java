@@ -43,10 +43,9 @@ public class HL7Util {
 	 * @param s HL7 timestamp to be parsed
 	 * @return Date object
 	 * @throws HL7Exception
-	 * 
 	 * @should fail on 78
 	 * @should handle 1978
-	 * @should fail on 19784 
+	 * @should fail on 19784
 	 * @should handle 197804
 	 * @should fail on 197841
 	 * @should handle 19780411
@@ -157,7 +156,6 @@ public class HL7Util {
 	 * @param s HL7 time to be converted
 	 * @return Date object set to time specified by HL7
 	 * @throws HL7Exception
-	 * 
 	 * @should fail on 197804110615
 	 * @should handle 0615
 	 * @should handle 061538
@@ -165,7 +163,7 @@ public class HL7Util {
 	 * @should handle 061538.12
 	 * @should handle 061538.123
 	 * @should handle 061538.1234
-	 * @should handle 061538-0300 
+	 * @should handle 061538-0300
 	 */
 	public static Date parseHL7Time(String s) throws HL7Exception {
 		

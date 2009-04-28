@@ -38,6 +38,7 @@ import org.springframework.validation.Validator;
  *  	dao.saveOrder(order);
  *  }
  * </pre>
+ * 
  * @since 1.5
  */
 public class ValidateUtil {

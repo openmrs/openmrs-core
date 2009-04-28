@@ -21,6 +21,7 @@ import org.openmrs.util.OpenmrsUtil;
  * system id.
  * <p>
  * For details on what is checked, see {@link OpenmrsUtil#validatePassword(String, String, String)}.
+ * 
  * @since 1.5
  */
 public class WeakPasswordException extends PasswordException {

@@ -21,6 +21,7 @@ import org.simpleframework.xml.Serializer;
 /**
  * This represents a very simplified saving technique for ReportSchemas. The "xml" attribute is
  * assumed to be a serialized ReportSchema object.
+ * 
  * @deprecated see reportingcompatibility module
  */
 @Deprecated

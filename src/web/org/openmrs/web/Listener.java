@@ -415,7 +415,7 @@ public final class Listener extends ContextLoaderListener {
 			System.err.println("Listener.contextDestroyed: Failed to cleanup drivers in webapp");
 			e.printStackTrace();
 		}
-
+		
 		OpenmrsClassLoader.onShutdown();
 		
 		LogManager.shutdown();

@@ -16,6 +16,7 @@ package org.openmrs.util;
 /**
  * Used by the {@link DatabaseUpdater} to show that an error occurred while updating to the latest
  * database setup.
+ * 
  * @since 1.5
  */
 public class DatabaseUpdateException extends Exception {

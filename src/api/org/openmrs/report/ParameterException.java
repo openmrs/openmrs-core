@@ -16,7 +16,6 @@ package org.openmrs.report;
 import org.openmrs.api.APIException;
 
 /**
- *
  * @deprecated see reportingcompatibility module
  */
 @Deprecated

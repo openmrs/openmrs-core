@@ -63,7 +63,7 @@ public class XStreamSerializer implements OpenmrsSerializer {
 		xstream.registerConverter(new HibernateCollectionConverter(xstream.getConverterLookup()));
 		xstream.registerConverter(new CustomSQLTimestampConverter());
 		xstream.registerConverter(new DateConverter());
-
+		
 		xstream.omitField(Concept.class, "log");
 		xstream.omitField(Concept.class, "creator");
 		xstream.omitField(Concept.class, "changedBy");
@@ -81,7 +81,7 @@ public class XStreamSerializer implements OpenmrsSerializer {
 		
 		xstream.addDefaultImplementation(HashSet.class, PersistentSet.class);
 	}
-
+	
 	/**
 	 * @see org.openmrs.serialization.OpenmrsSerializer#serialize(java.lang.Object)
 	 */
@@ -90,7 +90,8 @@ public class XStreamSerializer implements OpenmrsSerializer {
 	}
 	
 	/**
-	 * @see org.openmrs.serialization.OpenmrsSerializer#deserialize(java.lang.String, java.lang.Class)
+	 * @see org.openmrs.serialization.OpenmrsSerializer#deserialize(java.lang.String,
+	 *      java.lang.Class)
 	 */
 	@SuppressWarnings("unchecked")
 	public <T extends Object> T deserialize(String serializedObject, Class<? extends T> clazz) throws APIException {

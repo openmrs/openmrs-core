@@ -28,6 +28,7 @@ import org.openmrs.report.EvaluationContext;
 
 /**
  * Default implementation of the data set service.
+ * 
  * @deprecated see reportingcompatibility module
  */
 @Deprecated

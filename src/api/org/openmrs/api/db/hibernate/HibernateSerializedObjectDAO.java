@@ -39,6 +39,7 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 	protected final Log log = LogFactory.getLog(getClass());
 	
 	private SessionFactory sessionFactory;
+	
 	private List<Class<? extends OpenmrsObject>> supportedTypes;
 	
 	/**
@@ -50,46 +51,46 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 	}
 	
 	/**
-     * @see org.openmrs.api.db.SerializedObjectDAO#getAllObjectsByName(Class, String)
-     */
+	 * @see org.openmrs.api.db.SerializedObjectDAO#getAllObjectsByName(Class, String)
+	 */
 	@SuppressWarnings("unchecked")
-    public <T extends OpenmrsMetadata> List<T> getAllObjectsByName(Class<T> type, String name) throws DAOException {
-    	List<T> ret = new ArrayList<T>();
-    	Criteria c = sessionFactory.getCurrentSession().createCriteria(SerializedObject.class);
-    	c.add(Expression.or(Expression.eq("type", type), Expression.eq("subtype", type)));
-    	c.add(Expression.eq("name", name));
-    	List<SerializedObject> objects = (List<SerializedObject>) c.list();
-    	for (SerializedObject serializedObject : objects) {
-    		ret.add(convertSerializedObject(type, serializedObject));
-    	}
+	public <T extends OpenmrsMetadata> List<T> getAllObjectsByName(Class<T> type, String name) throws DAOException {
+		List<T> ret = new ArrayList<T>();
+		Criteria c = sessionFactory.getCurrentSession().createCriteria(SerializedObject.class);
+		c.add(Expression.or(Expression.eq("type", type), Expression.eq("subtype", type)));
+		c.add(Expression.eq("name", name));
+		List<SerializedObject> objects = (List<SerializedObject>) c.list();
+		for (SerializedObject serializedObject : objects) {
+			ret.add(convertSerializedObject(type, serializedObject));
+		}
 		return ret;
-    }
+	}
 	
 	/**
-     * @see org.openmrs.api.db.SerializedObjectDAO#getAllObjects(Class)
-     */
-    public <T extends OpenmrsObject> List<T> getAllObjects(Class<T> type) throws DAOException {
+	 * @see org.openmrs.api.db.SerializedObjectDAO#getAllObjects(Class)
+	 */
+	public <T extends OpenmrsObject> List<T> getAllObjects(Class<T> type) throws DAOException {
 		return getAllObjects(type, false);
 	}
 	
 	/**
-     * @see org.openmrs.api.db.SerializedObjectDAO#getAllObjects(Class, boolean)
-     */
+	 * @see org.openmrs.api.db.SerializedObjectDAO#getAllObjects(Class, boolean)
+	 */
 	@SuppressWarnings("unchecked")
-    public <T extends OpenmrsObject> List<T> getAllObjects(Class<T> type, boolean includeRetired) throws DAOException {
-    	List<T> ret = new ArrayList<T>();
-    	Criteria c = sessionFactory.getCurrentSession().createCriteria(SerializedObject.class);
-    	c.add(Expression.or(Expression.eq("type", type), Expression.eq("subtype", type)));
+	public <T extends OpenmrsObject> List<T> getAllObjects(Class<T> type, boolean includeRetired) throws DAOException {
+		List<T> ret = new ArrayList<T>();
+		Criteria c = sessionFactory.getCurrentSession().createCriteria(SerializedObject.class);
+		c.add(Expression.or(Expression.eq("type", type), Expression.eq("subtype", type)));
 		if (!includeRetired) {
 			c.add(Expression.like("retired", false));
 		}
-    	List<SerializedObject> objects = (List<SerializedObject>) c.list();
-    	for (SerializedObject serializedObject : objects) {
-    		ret.add(convertSerializedObject(type, serializedObject));
-    	}
+		List<SerializedObject> objects = (List<SerializedObject>) c.list();
+		for (SerializedObject serializedObject : objects) {
+			ret.add(convertSerializedObject(type, serializedObject));
+		}
 		return ret;
-    }
-
+	}
+	
 	/**
 	 * @see org.openmrs.api.db.SerializedObjectDAO#saveObject(OpenmrsObject)
 	 */
@@ -100,7 +101,7 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 			throw new DAOException("SerializedObjectDAO does not support saving objects of type <" + object.getClass() + ">");
 		}
 		
-		SerializedObject serializedObject =  getSerializedObject(object.getId());
+		SerializedObject serializedObject = getSerializedObject(object.getId());
 		if (serializedObject == null) {
 			serializedObject = new SerializedObject();
 		}
@@ -114,7 +115,7 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 		serializedObject.setSerializedData(data);
 		
 		if (object instanceof Auditable) {
-			Auditable auditableObj = (Auditable)object;
+			Auditable auditableObj = (Auditable) object;
 			serializedObject.setCreator(auditableObj.getCreator());
 			serializedObject.setDateCreated(auditableObj.getDateCreated());
 			if (serializedObject.getCreator() == null) {
@@ -146,19 +147,19 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 		}
 		
 		sessionFactory.getCurrentSession().saveOrUpdate(serializedObject);
-
+		
 		object.setId(serializedObject.getId());
 		return object;
 	}
 	
 	/**
-     * @see org.openmrs.api.db.SerializedObjectDAO#purgeObject(Integer)
-     */
-    public void purgeObject(Integer id) throws DAOException {
-    	SerializedObject o = getSerializedObject(id);
-    	sessionFactory.getCurrentSession().delete(o);
-    }
-    
+	 * @see org.openmrs.api.db.SerializedObjectDAO#purgeObject(Integer)
+	 */
+	public void purgeObject(Integer id) throws DAOException {
+		SerializedObject o = getSerializedObject(id);
+		sessionFactory.getCurrentSession().delete(o);
+	}
+	
 	/**
 	 * @see org.openmrs.api.db.SerializedObjectDAO#registerSupportedType(java.lang.Class)
 	 */
@@ -169,12 +170,12 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 	}
 	
 	/**
-     * @see org.openmrs.api.db.SerializedObjectDAO#unregisterSupportedType(java.lang.Class)
-     */
-    public void unregisterSupportedType(Class<? extends OpenmrsObject> clazz) throws DAOException {
-    	getSupportedTypes().remove(clazz);
-    }
-    
+	 * @see org.openmrs.api.db.SerializedObjectDAO#unregisterSupportedType(java.lang.Class)
+	 */
+	public void unregisterSupportedType(Class<? extends OpenmrsObject> clazz) throws DAOException {
+		getSupportedTypes().remove(clazz);
+	}
+	
 	/**
 	 * @see org.openmrs.api.db.SerializedObjectDAO#getRegisteredTypeForObject(org.openmrs.OpenmrsObject)
 	 */
@@ -189,6 +190,7 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 	
 	/**
 	 * Private method for retrieving the SerializedObject from the database by id
+	 * 
 	 * @param id the id to lookup
 	 * @return the SerializedObject with the given id
 	 */
@@ -201,12 +203,14 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 	
 	/**
 	 * Private method for converting a serialized object to a deserialized object of the given type
+	 * 
 	 * @param clazz the class to deserialize into
 	 * @param serializedObject the serialized object to convert
 	 * @return the deserialized Object
 	 */
 	@SuppressWarnings("unchecked")
-	private <T extends OpenmrsObject> T convertSerializedObject(Class<T> clazz, SerializedObject serializedObject) throws DAOException {
+	private <T extends OpenmrsObject> T convertSerializedObject(Class<T> clazz, SerializedObject serializedObject)
+	                                                                                                              throws DAOException {
 		if (serializedObject == null) {
 			return null;
 		}
@@ -220,9 +224,9 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 	}
 	
 	/**
-	 * Private method for retrieving the Serializer that should be used for the
-	 * passed SerializedObject, defaulting to the default system serializer
-	 * if none is explicitly set on the object
+	 * Private method for retrieving the Serializer that should be used for the passed
+	 * SerializedObject, defaulting to the default system serializer if none is explicitly set on
+	 * the object
 	 */
 	private OpenmrsSerializer getSerializer(SerializedObject o) {
 		OpenmrsSerializer s = Context.getSerializationService().getDefaultSerializer();
@@ -236,26 +240,27 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 	
 	/**
 	 * Set session factory
+	 * 
 	 * @param sessionFactory
 	 */
 	public void setSessionFactory(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
 	
-    /**
-     * @return the supportedTypes
-     */
-    public List<Class<? extends OpenmrsObject>> getSupportedTypes() {
-    	if (supportedTypes == null) {
-    		supportedTypes = new ArrayList<Class<? extends OpenmrsObject>>();
-    	}
-    	return supportedTypes;
-    }
-
 	/**
-     * @param supportedTypes the supportedTypes to set
-     */
-    public void setSupportedTypes(List<Class<? extends OpenmrsObject>> supportedTypes) {
-    	this.supportedTypes = supportedTypes;
-    }
+	 * @return the supportedTypes
+	 */
+	public List<Class<? extends OpenmrsObject>> getSupportedTypes() {
+		if (supportedTypes == null) {
+			supportedTypes = new ArrayList<Class<? extends OpenmrsObject>>();
+		}
+		return supportedTypes;
+	}
+	
+	/**
+	 * @param supportedTypes the supportedTypes to set
+	 */
+	public void setSupportedTypes(List<Class<? extends OpenmrsObject>> supportedTypes) {
+		this.supportedTypes = supportedTypes;
+	}
 }

@@ -291,35 +291,36 @@ public interface CohortService extends OpenmrsService {
 	
 	/**
 	 * @deprecated see reportingcompatibility module
-	*/
+	 */
 	@Transactional(readOnly = true)
 	@Deprecated
 	public List<CohortDefinitionItemHolder> getCohortDefinitions(Class<? extends CohortDefinitionProvider> providerClass)
 	                                                                                                                     throws APIException;
+	
 	/**
 	 * @deprecated see reportingcompatibility module
-	*/	
+	 */
 	@Transactional(readOnly = true)
 	@Deprecated
 	public CohortDefinition getCohortDefinition(Class<CohortDefinition> clazz, Integer id) throws APIException;
-
+	
 	/**
 	 * @deprecated see reportingcompatibility module
-	*/
+	 */
 	@Transactional(readOnly = true)
 	@Deprecated
 	public CohortDefinition getCohortDefinition(String cohortKey) throws APIException;
 	
 	/**
 	 * @deprecated see reportingcompatibility module
-	*/
+	 */
 	@Transactional(readOnly = true)
 	@Deprecated
 	public CohortDefinition saveCohortDefinition(CohortDefinition definition) throws APIException;
-
+	
 	/**
 	 * @deprecated see reportingcompatibility module
-	*/	
+	 */
 	@Transactional
 	@Deprecated
 	public void purgeCohortDefinition(CohortDefinition definition) throws APIException;
@@ -340,7 +341,7 @@ public interface CohortService extends OpenmrsService {
 	
 	/**
 	 * @deprecated see reportingcompatibility module
-	*/
+	 */
 	@Transactional(readOnly = true)
 	@Deprecated
 	public CohortDefinition getAllPatientsCohortDefinition() throws APIException;

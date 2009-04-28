@@ -23,7 +23,7 @@ import org.simpleframework.xml.Root;
  * @see org.openmrs.api.CohortService#evaluate(CohortDefinition,
  *      org.openmrs.report.EvaluationContext)
  * @deprecated see reportingcompatibility module
-*/
+ */
 @Root(strict = false)
 @Deprecated
 public interface CohortDefinition extends Parameterizable {

@@ -20,8 +20,7 @@ package org.openmrs.report;
 public interface DataSetTransform {
 	
 	/**
-	 * Auto generated method comment
-	 * TODO: add detailed return comment
+	 * Auto generated method comment TODO: add detailed return comment
 	 * 
 	 * @param input
 	 * @return Dataset the transformet Dataset

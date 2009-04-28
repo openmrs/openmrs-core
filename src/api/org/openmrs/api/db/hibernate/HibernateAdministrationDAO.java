@@ -180,10 +180,10 @@ public class HibernateAdministrationDAO implements AdministrationDAO {
 		
 		return logs;
 	}
-
+	
 	/**
 	 * @deprecated see reportingcompatibility module
-	 */	
+	 */
 	@Deprecated
 	public void createReportObject(AbstractReportObject ro) throws DAOException {
 		
@@ -213,7 +213,7 @@ public class HibernateAdministrationDAO implements AdministrationDAO {
 	
 	/**
 	 * @deprecated see reportingcompatibility module
-	*/
+	 */
 	@Deprecated
 	public void deleteReportObject(Integer reportObjectId) throws DAOException {
 		ReportObjectWrapper wrappedReportObject = new ReportObjectWrapper();

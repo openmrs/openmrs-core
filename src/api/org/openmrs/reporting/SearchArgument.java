@@ -18,6 +18,7 @@ import org.simpleframework.xml.Root;
 
 /**
  * This class represents an argument as might be submitted from a web user interface.
+ * 
  * @deprecated see reportingcompatibility module
  */
 @Root

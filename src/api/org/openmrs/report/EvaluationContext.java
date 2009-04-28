@@ -34,6 +34,7 @@ import org.openmrs.api.context.Context;
  * used to persist and retrieve objects. Note that this cache is cleared whenever any changes are
  * made to baseCohort or any parameter values. - Capabilities to add, remove, and retrieve parameter
  * values - Capabilities to evaluate parametric expressions, e.g. ${someDateParameterName+30d}
+ * 
  * @deprecated see reportingcompatibility module
  */
 @Deprecated
@@ -261,27 +262,29 @@ public class EvaluationContext {
 	
 	/**
 	 * This method will parse the passed expression and return a value based on the following
-	 * criteria:<br/> 
+	 * criteria:<br/>
 	 * <ul>
-	 * <li>Any string that matches a parameter within the EvaluationContext will be replaced
-	 * by the value of that parameter ** CURRENTLY REPLACEMENT PARAMETERS MUST EXIST IN THE GLOBAL
-	 * SCOPE</li> 
+	 * <li>Any string that matches a parameter within the EvaluationContext will be replaced by the
+	 * value of that parameter ** CURRENTLY REPLACEMENT PARAMETERS MUST EXIST IN THE GLOBAL SCOPE</li>
 	 * <li>If this date is followed by an expression, it will attempt to evaluate this by
-	 * incrementing/decrementing days/weeks/months/years as specified</li> 
-	 * <li>Examples: Given 2 parameters: 
-	 * <ul><li>report.startDate = java.util.Date with value of [2007-01-10] 
+	 * incrementing/decrementing days/weeks/months/years as specified</li>
+	 * <li>Examples: Given 2 parameters:
+	 * <ul>
+	 * <li>report.startDate = java.util.Date with value of [2007-01-10]
 	 * <li>report.gender = "male"
 	 * </ul>
 	 * The following should result:<br/>
 	 * <br/>
+	 * 
 	 * <pre>
 	 * evaluateExpression("${report.startDate}") -> "2007-01-10" as Date
 	 * evaluateExpression("${report.startDate+5d}") -> "2007-01-15" as Date
 	 * evaluateExpression("${report.startDate-1w}") -> "2007-01-03" as Date
 	 * evaluateExpression("${report.startDate+3m}") -> "2007-04-15" as Date
 	 * evaluateExpression("${report.startDate+1y}") -> "2008-01-10" as Date
+	 * 
 	 * <pre>
-	 * </ul> 
+	 * </ul>
 	 * 
 	 * @param expression
 	 * @return value for given expression, as an <code>Object</code>

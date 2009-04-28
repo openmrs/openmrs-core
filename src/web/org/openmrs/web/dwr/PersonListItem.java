@@ -64,7 +64,7 @@ public class PersonListItem {
 	
 	/**
 	 * Creates an instance of a subclass of PersonListItem which is best suited for the parameter.
-	 * If a {@link Patient} is passed in, a {@link PatientListItem} is returned.  If a {@link User}
+	 * If a {@link Patient} is passed in, a {@link PatientListItem} is returned. If a {@link User}
 	 * is passed in, a {@link UserListItem} is returned.
 	 * 
 	 * @param person the {@link Person} object to covert to a {@link PersonListItem}

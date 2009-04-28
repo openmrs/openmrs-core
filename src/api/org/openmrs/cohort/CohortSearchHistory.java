@@ -37,7 +37,7 @@ import org.openmrs.util.OpenmrsUtil;
 
 /**
  * @deprecated see reportingcompatibility module
-*/
+ */
 @Deprecated
 public class CohortSearchHistory extends AbstractReportObject {
 	

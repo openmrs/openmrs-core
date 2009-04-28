@@ -31,6 +31,7 @@ import org.openmrs.util.OpenmrsUtil;
 /**
  * Facilitates printing a data export so that a patient is listed out on multiple lines to allow for
  * all obs values selected to be included.
+ * 
  * @deprecated see reportingcompatibility module
  */
 @Deprecated

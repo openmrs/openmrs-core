@@ -258,8 +258,8 @@ public class PatientIdentifier extends BaseOpenmrsData implements java.io.Serial
 	}
 	
 	/**
-	 * @since 1.5
-	 * TODO: This method doesn't work yet. Change patient identifier to use primary key (slated to be done in uuid branch)
+	 * @since 1.5 TODO: This method doesn't work yet. Change patient identifier to use primary key
+	 *        (slated to be done in uuid branch)
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
 	public Integer getId() {
@@ -267,8 +267,8 @@ public class PatientIdentifier extends BaseOpenmrsData implements java.io.Serial
 	}
 	
 	/**
-	 * @since 1.5
-	 * TODO: This method doesn't work yet. Change patient identifier to use primary key (slated to be done in uuid branch)
+	 * @since 1.5 TODO: This method doesn't work yet. Change patient identifier to use primary key
+	 *        (slated to be done in uuid branch)
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
 	public void setId(Integer id) {

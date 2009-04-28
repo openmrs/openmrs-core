@@ -25,8 +25,8 @@ import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 
 /**
- * This class tests the {@link SerializedObjectDAO} linked to from the Context. Currently that file is the
- * {@link HibernateSerializedObjectDAO}.
+ * This class tests the {@link SerializedObjectDAO} linked to from the Context. Currently that file
+ * is the {@link HibernateSerializedObjectDAO}.
  */
 public class SerializedObjectDAOTest extends BaseContextSensitiveTest {
 	
@@ -54,7 +54,7 @@ public class SerializedObjectDAOTest extends BaseContextSensitiveTest {
 		assertEquals(data.getId().intValue(), 1);
 		assertEquals(data.getName(), "TestReport");
 	}
-
+	
 	@Test
 	@Verifies(value = "should save the passed object if supported", method = "saveObject(OpenmrsObject)")
 	public void saveObject_shouldSaveThePassedObjectIfSupported() throws Exception {
@@ -66,8 +66,8 @@ public class SerializedObjectDAOTest extends BaseContextSensitiveTest {
 		ReportSchema newData = dao.getObject(ReportSchema.class, data.getId());
 		assertEquals("NewReport", newData.getName());
 	}
-	 
-	@Test(expected=DAOException.class)
+	
+	@Test(expected = DAOException.class)
 	@Verifies(value = "should throw an exception if object not supported", method = "saveObject(OpenmrsObject)")
 	public void saveObject_shouldThrowAnExceptionIfObjectNotSupported() throws Exception {
 		dao.unregisterSupportedType(ReportSchema.class);
@@ -100,7 +100,7 @@ public class SerializedObjectDAOTest extends BaseContextSensitiveTest {
 		assertEquals(1, l.size());
 		assertEquals(l.get(0).getName(), "TestReport");
 	}
-
+	
 	@Test
 	@Verifies(value = "should delete the object with the passed id", method = "purgeObject(Integer)")
 	public void purgeObject_shouldDeleteTheObjectWithThePassedId() throws Exception {

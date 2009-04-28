@@ -17,17 +17,18 @@ import org.openmrs.serialization.OpenmrsSerializer;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Contains methods for retrieving registered Serializer instances,
- * and for persisting/retrieving/deleting objects using serialization
+ * Contains methods for retrieving registered Serializer instances, and for
+ * persisting/retrieving/deleting objects using serialization
+ * 
  * @since 1.5
  */
 @Transactional
 public interface SerializationService extends OpenmrsService {
 	
 	/**
-	 * Returns the default serializer configured for the system.
-	 * This enables a user to serialize objects without needing
-	 * to know the underlying serialization implementation class.
+	 * Returns the default serializer configured for the system. This enables a user to serialize
+	 * objects without needing to know the underlying serialization implementation class.
+	 * 
 	 * @return {@link OpenmrsSerializer} the default configured serializer
 	 * @should return a serializer
 	 */
@@ -35,6 +36,7 @@ public interface SerializationService extends OpenmrsService {
 	
 	/**
 	 * Returns the serializer that matches the passed class, or null if no such serializer exists.
+	 * 
 	 * @param serializationClass - the serialization class to retrieve
 	 * @return {@link OpenmrsSerializer} that matches the passed class
 	 * @should return a serializer of the given class
@@ -42,21 +44,25 @@ public interface SerializationService extends OpenmrsService {
 	public OpenmrsSerializer getSerializer(Class<? extends OpenmrsSerializer> serializationClass);
 	
 	/**
-	 * Serialize the passed object into an identifying string that can be retrieved later
-	 * using the passed {@link OpenmrsSerializer} class
+	 * Serialize the passed object into an identifying string that can be retrieved later using the
+	 * passed {@link OpenmrsSerializer} class
+	 * 
 	 * @param o - the object to serialize
 	 * @param clazz - the {@link OpenmrsSerializer} class to use for serialization
 	 * @return String representing this object
 	 */
-    public String serialize(Object o, Class<? extends OpenmrsSerializer> clazz) throws APIException;
-    
+	public String serialize(Object o, Class<? extends OpenmrsSerializer> clazz) throws APIException;
+	
 	/**
-	 * Deserialize the given string into a full object using the given {@link OpenmrsSerializer} class
+	 * Deserialize the given string into a full object using the given {@link OpenmrsSerializer}
+	 * class
+	 * 
 	 * @param serializedObject - String to deserialize into an Object
 	 * @param objectClass - The class to deserialize the Object into
-	 * @param serializerClass - The {@link OpenmrsSerializer} class to use to perform the deserialization
+	 * @param serializerClass - The {@link OpenmrsSerializer} class to use to perform the
+	 *            deserialization
 	 * @return hydrated object of the appropriate type
 	 */
-    public <T extends Object> T deserialize(String serializedObject, Class<? extends T> objectClass, 
-                                            Class<? extends OpenmrsSerializer> serializerClass) throws APIException;
+	public <T extends Object> T deserialize(String serializedObject, Class<? extends T> objectClass,
+	                                        Class<? extends OpenmrsSerializer> serializerClass) throws APIException;
 }

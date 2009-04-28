@@ -53,7 +53,7 @@ public class PersonListItemTest extends BaseWebContextSensitiveTest {
 	@Verifies(value = "should return PatientListItem given patient parameter", method = "createBestMatch(Person)")
 	@SuppressWarnings("unused")
 	public void createBestMatch_shouldReturnPatientListItemGivenPatientParameter() throws Exception {
-		PatientListItem listItem = (PatientListItem)PersonListItem.createBestMatch(Context.getPersonService().getPerson(2));
+		PatientListItem listItem = (PatientListItem) PersonListItem.createBestMatch(Context.getPersonService().getPerson(2));
 	}
 	
 	/**
@@ -73,6 +73,6 @@ public class PersonListItemTest extends BaseWebContextSensitiveTest {
 	@Verifies(value = "should return UserListItem given user parameter", method = "createBestMatch(Person)")
 	@SuppressWarnings("unused")
 	public void createBestMatch_shouldReturnUserListItemGivenUserParameter() throws Exception {
-		UserListItem listItem = (UserListItem)PersonListItem.createBestMatch(Context.getPersonService().getPerson(1));
+		UserListItem listItem = (UserListItem) PersonListItem.createBestMatch(Context.getPersonService().getPerson(1));
 	}
 }

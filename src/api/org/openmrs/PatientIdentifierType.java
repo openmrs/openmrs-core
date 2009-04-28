@@ -13,7 +13,6 @@
  */
 package org.openmrs;
 
-
 /**
  * PatientIdentifierType
  */
