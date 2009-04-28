@@ -37,8 +37,7 @@
 		<convert converter="bean" match="org.openmrs.Cohort" >
 			<param name="exclude" value="patients"/>
 		</convert>
-		<convert converter="bean" match="org.openmrs.report.Parameter"/>
-		<convert converter="bean" match="org.openmrs.cohort.CohortSearchHistory"/>
+
 	
 		<create creator="new" javascript="DWRPatientService">
 			<param name="class" value="org.openmrs.web.dwr.DWRPatientService" />
@@ -196,29 +195,6 @@
 			<include method="removePatientFromCohort"/>
 			<include method="getCohorts"/>
 			<include method="getCohortsContainingPatient"/>
-			<include method="getMissingParameters"/>
-			<include method="evaluateCohortDefinition"/>
-		</create>
-		
-		<create creator="new" javascript="DWRCohortBuilderService">
-			<param name="class" value="org.openmrs.web.dwr.DWRCohortBuilderService" />
-			<include method="getResultCountForFilterId"/>
-			<include method="getResultCountForSearch"/>
-			<include method="getResultForSearch"/>
-			<include method="getResultCombineWithAnd"/>
-			<include method="getResultCombineWithOr"/>
-			<include method="getLastResult"/>
-			<include method="getSavedFilters"/>
-			<include method="getSavedSearches"/>
-			<include method="getSavedCohorts"/>
-			<include method="getFilterResultAsCommaSeparatedIds"/>
-			<include method="getCohortAsCommaSeparatedIds"/>
-			<include method="getSearchHistories"/>
-			<include method="saveSearchHistory"/>
-			<include method="loadSearchHistory"/>
-			<include method="getUserSearchHistory"/>
-			<include method="saveCohort"/>
-			<include method="saveHistoryElement"/>
 		</create>
 		
 		<create creator="new" javascript="DWRAdministrationService">

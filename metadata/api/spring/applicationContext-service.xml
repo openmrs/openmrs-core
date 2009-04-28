@@ -756,6 +756,7 @@
 			</list>
 		</property>
 	</bean>
+	<bean id="requireNameValidator" class="org.openmrs.validator.RequireNameValidator"/>
 	
 	<context:component-scan base-package="org.openmrs">
         <context:include-filter type="annotation" expression="org.openmrs.annotation.Handler"/>
