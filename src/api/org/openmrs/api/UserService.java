@@ -345,7 +345,6 @@ public interface UserService extends OpenmrsService {
 	 * @param answer
 	 * @throws APIException
 	 * @since 1.5
-	 * 
 	 * @should change the passed user's secrete question and answer
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_EDIT_USER_PASSWORDS })

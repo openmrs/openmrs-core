@@ -11,7 +11,7 @@ import org.springframework.util.StringUtils;
 
 /**
  * @deprecated see reportingcompatibility module
-*/
+ */
 @Deprecated
 public class ReportSchemaXmlEditor extends PropertyEditorSupport {
 	

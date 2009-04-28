@@ -25,9 +25,10 @@ import org.springframework.validation.Validator;
 
 /**
  * Validates the {@link Order} class.
+ * 
  * @since 1.5
  */
-@Handler(supports={Order.class})
+@Handler(supports = { Order.class })
 public class OrderValidator implements Validator {
 	
 	/** Log for this class and subclasses */

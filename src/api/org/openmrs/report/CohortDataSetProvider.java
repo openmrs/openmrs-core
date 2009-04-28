@@ -46,7 +46,8 @@ public class CohortDataSetProvider implements DataSetProvider {
 	}
 	
 	/**
-	 * @see org.openmrs.report.DataSetProvider#evaluate(DataSetDefinition, Cohort, EvaluationContext)
+	 * @see org.openmrs.report.DataSetProvider#evaluate(DataSetDefinition, Cohort,
+	 *      EvaluationContext)
 	 */
 	@SuppressWarnings("unchecked")
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, Cohort inputCohort, EvaluationContext evalContext) {

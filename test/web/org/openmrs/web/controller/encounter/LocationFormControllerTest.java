@@ -53,7 +53,8 @@ public class LocationFormControllerTest extends BaseWebContextSensitiveTest {
 		ModelAndView modelAndView = controller.handleRequest(request, response);
 		
 		// make sure an error is returned because of the empty retire reason
-		BeanPropertyBindingResult bindingResult = (BeanPropertyBindingResult)modelAndView.getModel().get("org.springframework.validation.BindingResult.location");
+		BeanPropertyBindingResult bindingResult = (BeanPropertyBindingResult) modelAndView.getModel().get(
+		    "org.springframework.validation.BindingResult.location");
 		Assert.assertTrue(bindingResult.hasFieldErrors("retireReason"));
 	}
 	
@@ -75,15 +76,14 @@ public class LocationFormControllerTest extends BaseWebContextSensitiveTest {
 		Location retiredLocation = Context.getLocationService().getLocation(1);
 		Assert.assertTrue(retiredLocation.isRetired());
 	}
-
+	
 	/**
-     * @see {@link LocationFormController#formBackingObject(HttpServletRequest)}
-     * 
-     */
-    @Test
-    @Verifies(value = "should return valid location given valid locationId", method = "formBackingObject(HttpServletRequest)")
-    public void formBackingObject_shouldReturnValidLocationGivenValidLocationId() throws Exception {
-    	MockHttpServletRequest request = new MockHttpServletRequest("GET", "");
+	 * @see {@link LocationFormController#formBackingObject(HttpServletRequest)}
+	 */
+	@Test
+	@Verifies(value = "should return valid location given valid locationId", method = "formBackingObject(HttpServletRequest)")
+	public void formBackingObject_shouldReturnValidLocationGivenValidLocationId() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest("GET", "");
 		request.setParameter("locationId", "1");
 		
 		HttpServletResponse response = new MockHttpServletResponse();
@@ -95,5 +95,5 @@ public class LocationFormControllerTest extends BaseWebContextSensitiveTest {
 		// make sure there is an "locationId" filled in on the concept
 		Location command = (Location) modelAndView.getModel().get("location");
 		Assert.assertNotNull(command.getLocationId());
-    }
+	}
 }

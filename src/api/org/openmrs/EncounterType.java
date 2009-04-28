@@ -13,7 +13,6 @@
  */
 package org.openmrs;
 
-
 /**
  * An EncounterType defines how a certain kind of {@link Encounter}.
  * 

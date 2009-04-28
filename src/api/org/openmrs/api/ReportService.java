@@ -32,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Contains methods pertaining to creating/updating/deleting/retiring/registering/evaluating
  * ReportSchema, ReportSchemaXml, ReportRenderer, ReportXmlMacros, and other 'Report' objects.<br/>
+ * 
  * @deprecated see reportingcompatibility module
  */
 @Transactional

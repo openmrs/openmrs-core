@@ -155,7 +155,7 @@ public final class OpenmrsConstants {
 	 * A gender character to gender name map<br/>
 	 * TODO issues with localization. How should this be handled?
 	 * 
-	 * @return Map<String, String> of gender character to gender name 
+	 * @return Map<String, String> of gender character to gender name
 	 */
 	public static final Map<String, String> GENDER() {
 		Map<String, String> genders = new LinkedHashMap<String, String>();
@@ -679,7 +679,7 @@ public final class OpenmrsConstants {
 	
 	public static final String GLOBAL_PROPERTY_MEDICAL_RECORD_OBSERVATIONS = "concept.medicalRecordObservations";
 	
-	public static final String GLOBAL_PROPERTY_PROBLEM_LIST                = "concept.problemList";
+	public static final String GLOBAL_PROPERTY_PROBLEM_LIST = "concept.problemList";
 	
 	@Deprecated
 	public static final String GLOBAL_PROPERTY_REPORT_XML_MACROS = "report.xmlMacros";
@@ -707,8 +707,8 @@ public final class OpenmrsConstants {
 	public static final String GLOBAL_PROPERTY_DEFAULT_LOCALE_DEFAULT_VALUE = "en_GB";
 	
 	/**
-	 * At OpenMRS startup these global properties/default values/descriptions are inserted into the database
-	 * if they do not exist yet.
+	 * At OpenMRS startup these global properties/default values/descriptions are inserted into the
+	 * database if they do not exist yet.
 	 * 
 	 * @return List<GlobalProperty> of the core global properties
 	 */
@@ -739,10 +739,16 @@ public final class OpenmrsConstants {
 		        "true/false whether or not to show the 'View Encounter' link on the patient dashboard"));
 		props.add(new GlobalProperty("dashboard.encounters.showEditLink", "true",
 		        "true/false whether or not to show the 'Edit Encounter' link on the patient dashboard"));
-		props.add(new GlobalProperty("dashboard.header.programs_to_show", "",
-				"List of programs to show Enrollment details of in the patient header. (Should be an ordered comma-separated list of program_ids or names.)"));
-		props.add(new GlobalProperty("dashboard.header.workflows_to_show", "",
-				"List of programs to show Enrollment details of in the patient header. List of workflows to show current status of in the patient header. These will only be displayed if they belong to a program listed above. (Should be a comma-separated list of program_workflow_ids.)"));
+		props
+		        .add(new GlobalProperty(
+		                "dashboard.header.programs_to_show",
+		                "",
+		                "List of programs to show Enrollment details of in the patient header. (Should be an ordered comma-separated list of program_ids or names.)"));
+		props
+		        .add(new GlobalProperty(
+		                "dashboard.header.workflows_to_show",
+		                "",
+		                "List of programs to show Enrollment details of in the patient header. List of workflows to show current status of in the patient header. These will only be displayed if they belong to a program listed above. (Should be a comma-separated list of program_workflow_ids.)"));
 		props.add(new GlobalProperty("dashboard.relationships.show_types", "",
 		        "Types of relationships separated by commas.  Doctor/Patient,Parent/Child"));
 		props
@@ -903,10 +909,10 @@ public final class OpenmrsConstants {
 		                "The concept id of the MEDICAL_RECORD_OBSERVATIONS concept.  This concept_id is presumed to be the generic grouping (obr) concept in hl7 messages.  An obs_group row is not created for this concept."));
 		
 		props
-        .add(new GlobalProperty(
-                GLOBAL_PROPERTY_PROBLEM_LIST,
-                "1284",
-                "The concept id of the PROBLEM LIST concept.  This concept_id is presumed to be the generic grouping (obr) concept in hl7 messages.  An obs_group row is not created for this concept."));
+		        .add(new GlobalProperty(
+		                GLOBAL_PROPERTY_PROBLEM_LIST,
+		                "1284",
+		                "The concept id of the PROBLEM LIST concept.  This concept_id is presumed to be the generic grouping (obr) concept in hl7 messages.  An obs_group row is not created for this concept."));
 		
 		props
 		        .add(new GlobalProperty(

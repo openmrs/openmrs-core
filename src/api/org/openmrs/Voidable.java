@@ -23,8 +23,8 @@ import java.util.Date;
  * kept is voided (invalidated). Unlike {@link Retireable}, voiding data invalidates any data
  * referencing them. e.g., when a patient is voided, all observations for that patient must be
  * voided as well.
- * @since 1.5
  * 
+ * @since 1.5
  * @see OpenmrsData
  * @see Retireable
  */

@@ -12,7 +12,7 @@ import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 
 public class ConceptAnswerConverter implements Converter {
-
+	
 	public boolean canConvert(Class c) {
 		return ConceptAnswer.class.isAssignableFrom(c);
 	}
@@ -25,8 +25,9 @@ public class ConceptAnswerConverter implements Converter {
 		writer.endNode();
 		writer.startNode("answerConcept");
 		try {
-		writer.setValue(ca.getAnswerConcept().getConceptId().toString());
-		} catch (Exception ex) {
+			writer.setValue(ca.getAnswerConcept().getConceptId().toString());
+		}
+		catch (Exception ex) {
 			throw new RuntimeException(ex);
 		}
 		writer.endNode();
@@ -36,7 +37,7 @@ public class ConceptAnswerConverter implements Converter {
 			writer.endNode();
 		}
 	}
-
+	
 	public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
 		ConceptAnswer ret = new ConceptAnswer();
 		ConceptService cs = Context.getConceptService();
@@ -53,8 +54,9 @@ public class ConceptAnswerConverter implements Converter {
 			reader.moveUp();
 		}
 		if (ret.getAnswerConcept() == null && ret.getAnswerDrug() == null)
-		    throw new IllegalArgumentException("Couldn't find answer concept and/or drug for ConceptAnswer " + ret.getConceptAnswerId());
+			throw new IllegalArgumentException("Couldn't find answer concept and/or drug for ConceptAnswer "
+			        + ret.getConceptAnswerId());
 		return ret;
 	}
-
+	
 }

@@ -51,7 +51,7 @@ public abstract class DelimitedTextReportRenderer implements ReportRenderer {
 	public abstract String escape(String text);
 	
 	/**
-	 * TODO: this appears to be unused.  Its not in the super interface or overridden in subclasses.
+	 * TODO: this appears to be unused. Its not in the super interface or overridden in subclasses.
 	 */
 	public String getLinkUrl(ReportSchema schema) {
 		return null;

@@ -367,8 +367,9 @@ public class DataExportFunctions {
 	}
 	
 	/**
-	 * Get the attribute (encounterDatetime, provider, encounterType, etc) from the most recent encounter.
-	 *
+	 * Get the attribute (encounterDatetime, provider, encounterType, etc) from the most recent
+	 * encounter.
+	 * 
 	 * @param typeArray
 	 * @param attr
 	 * @return the encounter attribute
@@ -435,7 +436,7 @@ public class DataExportFunctions {
 	
 	/**
 	 * Get an attribute (encounterDatetime, provider, etc) from the oldest encounter.
-	 *
+	 * 
 	 * @param typeArray
 	 * @param attr
 	 * @return Object from the oldest encounter
@@ -705,7 +706,8 @@ public class DataExportFunctions {
 	 * @param className
 	 * @param property
 	 * @param returnAll
-	 * @return Object the specified property of the patient, or an array of all properties if returnAll is set to true
+	 * @return Object the specified property of the patient, or an array of all properties if
+	 *         returnAll is set to true
 	 */
 	public Object getPatientAttr(String className, String property, boolean returnAll) {
 		String key = className + "." + property;
@@ -866,7 +868,8 @@ public class DataExportFunctions {
 	 * 
 	 * @param concept
 	 * @param attrs list of Strings like provider, encounterDatetime, etc
-	 * @return List<Object> of the most recent observation values that matches the concept of the patient encounters
+	 * @return List<Object> of the most recent observation values that matches the concept of the
+	 *         patient encounters
 	 * @throws Exception
 	 */
 	public List<Object> getLastObsWithValues(Concept concept, List<String> attrs) throws Exception {
@@ -879,7 +882,8 @@ public class DataExportFunctions {
 	 * Get the first occurrence of matching <code>obs.concept</code> out of the patient's encounters
 	 * 
 	 * @param conceptName
-	 * @return Object the first occurrence of the observation concept name of the patient's encounters
+	 * @return Object the first occurrence of the observation concept name of the patient's
+	 *         encounters
 	 */
 	public Object getFirstObs(String conceptName) throws Exception {
 		return getFirstObs(getConcept(conceptName));
@@ -1091,7 +1095,7 @@ public class DataExportFunctions {
 	
 	/**
 	 * Get the person's birthdate as of today
-	 *
+	 * 
 	 * @param birthdate the person's date of birth
 	 * @return The calculated age
 	 */

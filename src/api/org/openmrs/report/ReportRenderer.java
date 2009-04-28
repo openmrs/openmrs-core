@@ -22,6 +22,7 @@ import java.util.Collection;
  * Takes a ReportSchema and renders it, often acting as a connector that delegates to a
  * sophisticated package like BIRT or Jasper Reports. Implementations of this class should only use
  * a no-arg constructor, since they will be instantiated by the ReportObjectService via reflection.
+ * 
  * @deprecated see reportingcompatibility module
  */
 @Deprecated

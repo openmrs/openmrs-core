@@ -332,7 +332,8 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	}
 	
 	/**
-	 * @see org.openmrs.api.CohortService#registerCohortDefinitionProvider(Class, CohortDefinitionProvider)
+	 * @see org.openmrs.api.CohortService#registerCohortDefinitionProvider(Class,
+	 *      CohortDefinitionProvider)
 	 * @deprecated see reportingcompatibility module
 	 */
 	@Deprecated

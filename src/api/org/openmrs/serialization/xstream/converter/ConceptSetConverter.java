@@ -11,7 +11,7 @@ import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 
 public class ConceptSetConverter implements Converter {
-
+	
 	public boolean canConvert(Class c) {
 		return ConceptSet.class.isAssignableFrom(c);
 	}
@@ -28,7 +28,7 @@ public class ConceptSetConverter implements Converter {
 		writer.setValue(cs.getSortWeight().toString());
 		writer.endNode();
 	}
-
+	
 	public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
 		ConceptSet ret = new ConceptSet();
 		ConceptService cs = Context.getConceptService();
@@ -45,5 +45,5 @@ public class ConceptSetConverter implements Converter {
 		}
 		return ret;
 	}
-
+	
 }

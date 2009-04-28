@@ -144,7 +144,8 @@ public class ReportObjectFactory {
 	 * Auto generated method comment
 	 * 
 	 * @param name
-	 * @return String with the name of a ReportObjectClass, by giving the ReportObjectFactoryModule name
+	 * @return String with the name of a ReportObjectClass, by giving the ReportObjectFactoryModule
+	 *         name
 	 */
 	public String getReportObjectClassByName(String name) {
 		if (modules != null && name != null) {

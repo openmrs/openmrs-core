@@ -65,7 +65,8 @@ public interface PatientService extends OpenmrsService {
 	 * @return patient who was created or updated
 	 * @throws APIException
 	 * @should create new patient from existing person plus user object
-	 * @should not throw a NonUniqueObjectException when called with a hand constructed patient regression 1375
+	 * @should not throw a NonUniqueObjectException when called with a hand constructed patient
+	 *         regression 1375
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_ADD_PATIENTS, OpenmrsConstants.PRIV_EDIT_PATIENTS })
 	public Patient savePatient(Patient patient) throws APIException;
@@ -548,7 +549,7 @@ public interface PatientService extends OpenmrsService {
 	 * @should return all registered identifier validators
 	 */
 	public Collection<IdentifierValidator> getAllIdentifierValidators();
-
+	
 	/**
 	 * Checks whether the given patient identifier is already assigned to a patient other than
 	 * patientIdentifier.patient
@@ -557,7 +558,7 @@ public interface PatientService extends OpenmrsService {
 	 * @return whether or not the identifier is in use by a patient other than
 	 *         patientIdentifier.patient
 	 */
-	@Authorized( OpenmrsConstants.PRIV_VIEW_PATIENTS )
+	@Authorized(OpenmrsConstants.PRIV_VIEW_PATIENTS)
 	@Transactional(readOnly = true)
 	public boolean isIdentifierInUseByAnotherPatient(PatientIdentifier patientIdentifier);
 	

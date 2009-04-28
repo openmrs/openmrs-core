@@ -127,7 +127,6 @@ public class LogicServiceImpl implements LogicService {
 	
 	/**
 	 * @see org.openmrs.logic.LogicService#eval(Patient, String, Map)
-	 * 
 	 */
 	public Result eval(Patient who, String token, Map<String, Object> parameters) throws LogicException {
 		return eval(who, new LogicCriteria(token, parameters));
@@ -135,7 +134,6 @@ public class LogicServiceImpl implements LogicService {
 	
 	/**
 	 * @see org.openmrs.logic.LogicService#eval(Patient, LogicCriteria)
-	 * 
 	 */
 	public Result eval(Patient who, LogicCriteria criteria) throws LogicException {
 		return eval(who, criteria, criteria.getLogicParameters());
@@ -143,7 +141,6 @@ public class LogicServiceImpl implements LogicService {
 	
 	/**
 	 * @see org.openmrs.logic.LogicService#eval(Patient, LogicCriteria, Map)
-	 * 
 	 */
 	public Result eval(Patient who, LogicCriteria criteria, Map<String, Object> parameters) throws LogicException {
 		LogicContext context = new LogicContext(who);
@@ -203,7 +200,6 @@ public class LogicServiceImpl implements LogicService {
 	
 	/**
 	 * @see org.openmrs.logic.LogicService#addRule(String, String[], Rule)
-	 * 
 	 */
 	public void addRule(String token, String[] tags, Rule rule) throws LogicException {
 		ruleFactory.addRule(token, tags, rule);

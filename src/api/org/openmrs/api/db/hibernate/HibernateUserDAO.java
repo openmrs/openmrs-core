@@ -83,7 +83,7 @@ public class HibernateUserDAO implements UserDAO {
 			String hashedPassword = Security.encodeString(password + salt);
 			
 			updateUserPassword(hashedPassword, salt, Context.getAuthenticatedUser().getUserId(), new Date(), user
-				.getUserId());
+			        .getUserId());
 		}
 		
 		return user;
@@ -95,7 +95,7 @@ public class HibernateUserDAO implements UserDAO {
 	@SuppressWarnings("unchecked")
 	public User getUserByUsername(String username) {
 		Query query = sessionFactory.getCurrentSession().createQuery(
-		"from User u where u.voided = 0 and (u.username = ? or u.systemId = ?)");
+		    "from User u where u.voided = 0 and (u.username = ? or u.systemId = ?)");
 		query.setString(0, username);
 		query.setString(1, username);
 		List<User> users = query.list();
@@ -128,9 +128,9 @@ public class HibernateUserDAO implements UserDAO {
 		catch (Exception e) {}
 		
 		Query query = sessionFactory
-		.getCurrentSession()
-		.createQuery(
-			"select count(*) from User u where (u.username = :uname1 or u.systemId = :uname2 or u.username = :sysid1 or u.systemId = :sysid2 or u.systemId = :uname3) and u.userId <> :uid");
+		        .getCurrentSession()
+		        .createQuery(
+		            "select count(*) from User u where (u.username = :uname1 or u.systemId = :uname2 or u.username = :sysid1 or u.systemId = :sysid2 or u.systemId = :uname3) and u.userId <> :uid");
 		query.setString("uname1", username);
 		query.setString("uname2", username);
 		query.setString("sysid1", systemId);
@@ -209,7 +209,7 @@ public class HibernateUserDAO implements UserDAO {
 		if (stubInsertNeeded) {
 			try {
 				ps = connection
-				.prepareStatement("INSERT INTO users (user_id, system_id, creator, date_created, voided) VALUES (?, ?, ?, ?, ?)");
+				        .prepareStatement("INSERT INTO users (user_id, system_id, creator, date_created, voided) VALUES (?, ?, ?, ?, ?)");
 				
 				ps.setInt(1, user.getUserId());
 				ps.setString(2, user.getSystemId());
@@ -251,7 +251,7 @@ public class HibernateUserDAO implements UserDAO {
 	@SuppressWarnings("unchecked")
 	public List<User> getUsersByRole(Role role) throws DAOException {
 		List<User> users = sessionFactory.getCurrentSession().createCriteria(User.class, "u").createCriteria("roles", "r")
-		.add(Expression.like("r.role", role.getRole())).addOrder(Order.asc("u.username")).list();
+		        .add(Expression.like("r.role", role.getRole())).addOrder(Order.asc("u.username")).list();
 		
 		return users;
 		
@@ -427,12 +427,12 @@ public class HibernateUserDAO implements UserDAO {
 		User u = Context.getAuthenticatedUser();
 		
 		String passwordOnRecord = (String) sessionFactory.getCurrentSession().createSQLQuery(
-		"select password from users where user_id = ?").addScalar("password", Hibernate.STRING).setInteger(0,
-			u.getUserId()).uniqueResult();
+		    "select password from users where user_id = ?").addScalar("password", Hibernate.STRING).setInteger(0,
+		    u.getUserId()).uniqueResult();
 		
 		String saltOnRecord = (String) sessionFactory.getCurrentSession().createSQLQuery(
-		"select salt from users where user_id = ?").addScalar("salt", Hibernate.STRING).setInteger(0, u.getUserId())
-		.uniqueResult();
+		    "select salt from users where user_id = ?").addScalar("salt", Hibernate.STRING).setInteger(0, u.getUserId())
+		        .uniqueResult();
 		
 		// check to make sure the old password that was passed in is the correct one
 		if (!Security.hashMatches(passwordOnRecord, pw + saltOnRecord)) {
@@ -458,12 +458,12 @@ public class HibernateUserDAO implements UserDAO {
 		User u = Context.getAuthenticatedUser();
 		
 		String passwordOnRecord = (String) sessionFactory.getCurrentSession().createSQLQuery(
-		"select password from users where user_id = ?").addScalar("password", Hibernate.STRING).setInteger(0,
-			u.getUserId()).uniqueResult();
+		    "select password from users where user_id = ?").addScalar("password", Hibernate.STRING).setInteger(0,
+		    u.getUserId()).uniqueResult();
 		
 		String saltOnRecord = (String) sessionFactory.getCurrentSession().createSQLQuery(
-		"select salt from users where user_id = ?").addScalar("salt", Hibernate.STRING).setInteger(0, u.getUserId())
-		.uniqueResult();
+		    "select salt from users where user_id = ?").addScalar("salt", Hibernate.STRING).setInteger(0, u.getUserId())
+		        .uniqueResult();
 		
 		try {
 			if (!Security.hashMatches(passwordOnRecord, pw + saltOnRecord)) {
@@ -476,46 +476,46 @@ public class HibernateUserDAO implements UserDAO {
 		}
 		
 		// Change the question and answer 
-		try {	
-			Context.addProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USER_PASSWORDS); 
-			changeQuestionAnswer(u, question, answer); 			
+		try {
+			Context.addProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USER_PASSWORDS);
+			changeQuestionAnswer(u, question, answer);
 		}
-		finally { 
+		finally {
 			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USER_PASSWORDS);
 		}
 	}
 	
-	/** 
-	 * @see org.openmrs.api.UserService#changeQuestionAnswer(User, String, String) 
-	 */ 
-	public void changeQuestionAnswer(User u, String question, String answer) throws DAOException { 
-		Connection connection = sessionFactory.getCurrentSession().connection(); 
+	/**
+	 * @see org.openmrs.api.UserService#changeQuestionAnswer(User, String, String)
+	 */
+	public void changeQuestionAnswer(User u, String question, String answer) throws DAOException {
+		Connection connection = sessionFactory.getCurrentSession().connection();
 		PreparedStatement ps = null;
-		try { 
+		try {
 			
-			String sql = "UPDATE `users` SET secret_question = ?, secret_answer = ?, date_changed = ?, changed_by = ? WHERE user_id = ?"; 
+			String sql = "UPDATE `users` SET secret_question = ?, secret_answer = ?, date_changed = ?, changed_by = ? WHERE user_id = ?";
 			
 			// if we're in a junit test, we're probably using hsql...and hsql 
 			// does not like the backtick.  Replace the backtick with the hsql 
 			// escape character: the double quote (or nothing). 
-			Dialect dialect = HibernateUtil.getDialect(sessionFactory); 
-			if (HSQLDialect.class.getName().equals(dialect.getClass().getName())) 
-				sql = sql.replace("`", ""); 
+			Dialect dialect = HibernateUtil.getDialect(sessionFactory);
+			if (HSQLDialect.class.getName().equals(dialect.getClass().getName()))
+				sql = sql.replace("`", "");
 			
-			ps = connection.prepareStatement(sql); 
+			ps = connection.prepareStatement(sql);
 			
-			ps.setString(1, question); 
-			ps.setString(2, answer); 
-			ps.setDate(3, new java.sql.Date(new Date().getTime())); 
-			ps.setInt(4, Context.getAuthenticatedUser().getUserId()); 
-			ps.setInt(5, u.getUserId()); 
+			ps.setString(1, question);
+			ps.setString(2, answer);
+			ps.setDate(3, new java.sql.Date(new Date().getTime()));
+			ps.setInt(4, Context.getAuthenticatedUser().getUserId());
+			ps.setInt(5, u.getUserId());
 			
-			ps.executeUpdate(); 
-		} 
-		catch (SQLException e) { 
-			throw new DAOException("SQL Exception while trying to update a user's secret question", e); 
-		} 
-		finally { 	
+			ps.executeUpdate();
+		}
+		catch (SQLException e) {
+			throw new DAOException("SQL Exception while trying to update a user's secret question", e);
+		}
+		finally {
 			if (ps != null) {
 				try {
 					ps.close();
@@ -523,11 +523,9 @@ public class HibernateUserDAO implements UserDAO {
 				catch (SQLException e) {
 					log.error("Error generated while closing statement", e);
 				}
-			}			
+			}
 		}
-	} 	
-	
-	
+	}
 	
 	/**
 	 * @see org.openmrs.api.UserService#isSecretAnswer(User, java.lang.String)
@@ -541,8 +539,8 @@ public class HibernateUserDAO implements UserDAO {
 		
 		try {
 			answerOnRecord = (String) sessionFactory.getCurrentSession().createSQLQuery(
-			"select secret_answer from users where user_id = ?").addScalar("secret_answer", Hibernate.STRING)
-			.setInteger(0, u.getUserId()).uniqueResult();
+			    "select secret_answer from users where user_id = ?").addScalar("secret_answer", Hibernate.STRING)
+			        .setInteger(0, u.getUserId()).uniqueResult();
 		}
 		catch (Exception e) {
 			return false;
@@ -568,10 +566,10 @@ public class HibernateUserDAO implements UserDAO {
 			for (String n : names) {
 				if (n != null && n.length() > 0) {
 					criteria.add(Expression.or(Expression.like("name.familyName2", name, MatchMode.START), Expression.or(
-						Expression.like("name.givenName", n, MatchMode.START), Expression.or(Expression.like(
-							"name.familyName", n, MatchMode.START), Expression.or(Expression.like("name.middleName", n,
-								MatchMode.START), Expression.or(Expression.like("systemId", n, MatchMode.START), Expression
-									.like("username", n, MatchMode.START)))))));
+					    Expression.like("name.givenName", n, MatchMode.START), Expression.or(Expression.like(
+					        "name.familyName", n, MatchMode.START), Expression.or(Expression.like("name.middleName", n,
+					        MatchMode.START), Expression.or(Expression.like("systemId", n, MatchMode.START), Expression
+					            .like("username", n, MatchMode.START)))))));
 				}
 			}
 		}
@@ -587,7 +585,7 @@ public class HibernateUserDAO implements UserDAO {
 							));
 		}
 		 */
-		
+
 		if (includeVoided == false)
 			criteria.add(Expression.eq("voided", false));
 		
@@ -636,7 +634,7 @@ public class HibernateUserDAO implements UserDAO {
 			id = ((Integer) query.uniqueResult()).intValue() + 1;
 		else {
 			log.warn("What is being returned here? Definitely nothing expected object value: '" + object + "' of class: "
-				+ object.getClass());
+			        + object.getClass());
 			id = 1;
 		}
 		
@@ -653,7 +651,7 @@ public class HibernateUserDAO implements UserDAO {
 		if (!includeVoided)
 			query += " and u.voided = false";
 		Query q = sessionFactory.getCurrentSession().createQuery(query).setString("givenName", givenName).setString(
-			"familyName", familyName);
+		    "familyName", familyName);
 		for (User u : (List<User>) q.list()) {
 			users.add(u);
 		}

@@ -34,6 +34,7 @@ import org.openmrs.util.OpenmrsUtil;
 
 /**
  * Utility methods for use by Data Exports
+ * 
  * @deprecated see reportingcompatibility module
  */
 @Deprecated

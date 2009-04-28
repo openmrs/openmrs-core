@@ -77,8 +77,7 @@ public class ModuleFactory {
 	 * error occurred and/or module was not successfully loaded
 	 * 
 	 * @param moduleFile
-	 * @param replaceIfExists unload a module that has the same moduleId if one is loaded
-	 *            already
+	 * @param replaceIfExists unload a module that has the same moduleId if one is loaded already
 	 * @return Module
 	 */
 	public static Module loadModule(File moduleFile, Boolean replaceIfExists) throws ModuleException {
@@ -94,8 +93,7 @@ public class ModuleFactory {
 	 * Add a module to the list of openmrs modules
 	 * 
 	 * @param module
-	 * @param replaceIfExists unload a module that has the same moduleId if one is loaded
-	 *            already
+	 * @param replaceIfExists unload a module that has the same moduleId if one is loaded already
 	 */
 	public static Module loadModule(Module module, Boolean replaceIfExists) throws ModuleException {
 		
@@ -877,7 +875,7 @@ public class ModuleFactory {
 	/**
 	 * Checks whether the given module is activated
 	 * 
-	 * @param mod Module to check 
+	 * @param mod Module to check
 	 * @return true if the module is started, false otherwise
 	 */
 	public static boolean isModuleStarted(Module mod) {

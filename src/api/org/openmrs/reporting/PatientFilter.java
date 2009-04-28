@@ -18,6 +18,7 @@ import org.openmrs.report.EvaluationContext;
 
 /**
  * PatientFilters may use an EvaluationContext for caching, but they ignore parameter values
+ * 
  * @deprecated see reportingcompatibility module
  */
 @Deprecated

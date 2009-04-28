@@ -12,11 +12,9 @@ import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 
 public class OpenmrsComplexConverter implements Converter {
-
+	
 	public boolean canConvert(Class c) {
-		return
-			ConceptDatatype.class.isAssignableFrom(c) ||
-			ConceptClass.class.isAssignableFrom(c);
+		return ConceptDatatype.class.isAssignableFrom(c) || ConceptClass.class.isAssignableFrom(c);
 		// || User.class.isAssignableFrom(c);
 	}
 	
@@ -32,11 +30,9 @@ public class OpenmrsComplexConverter implements Converter {
 			writer.setValue(u.getUsername());
 		}
 	}
-
+	
 	public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
 		return null;
 	}
-
-
-
+	
 }

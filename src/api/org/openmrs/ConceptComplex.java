@@ -19,6 +19,7 @@ import org.openmrs.obs.ComplexObsHandler;
 
 /**
  * Child class of Concept that has a {@link ComplexObsHandler} associated with the Concept.
+ * 
  * @since 1.5
  */
 public class ConceptComplex extends Concept implements Serializable {

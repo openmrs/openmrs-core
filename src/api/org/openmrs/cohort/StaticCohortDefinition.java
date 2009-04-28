@@ -23,6 +23,7 @@ import org.simpleframework.xml.Root;
 
 /**
  * This class provides access to org.openmrs.Cohort objects that are saved in the cohort table.
+ * 
  * @deprecated see reportingcompatibility module
  */
 @Root(strict = false)

@@ -25,6 +25,7 @@ import org.openmrs.api.context.Context;
 /**
  * Utility class that provides useful methods for working with classes that are annotated with the
  * {@link Handler} annotation
+ * 
  * @since 1.5
  */
 public class HandlerUtil {

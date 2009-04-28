@@ -82,7 +82,6 @@ public interface SchedulerDAO {
 	 * @throws DAOException
 	 */
 	//public void createSchedule(Schedule schedule) throws DAOException;
-
 	/**
 	 * Get schedule by internal identifier
 	 * 

@@ -52,7 +52,7 @@ public interface ReportObjectDAO {
 	 * Auto generated method comment
 	 * 
 	 * @param reportObj
-	 * @return AbstractReportObject that was saved 
+	 * @return AbstractReportObject that was saved
 	 * @throws DAOException
 	 */
 	public AbstractReportObject saveReportObject(AbstractReportObject reportObj) throws DAOException;

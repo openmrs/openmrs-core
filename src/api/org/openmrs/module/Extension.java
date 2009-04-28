@@ -43,7 +43,7 @@ public abstract class Extension {
 	/**
 	 * String separating the pointId and media type in an extension id
 	 * 
-	 * @see #toExtensionId(String, MEDIA_TYPE) 
+	 * @see #toExtensionId(String, MEDIA_TYPE)
 	 */
 	public static final String extensionIdSeparator = "|";
 	

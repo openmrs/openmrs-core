@@ -17,6 +17,7 @@ import java.util.Map;
 
 /**
  * DataSet which is key-value pairs, instead of a full two-dimensional table
+ * 
  * @deprecated see reportingcompatibility module
  */
 @SuppressWarnings("unchecked")

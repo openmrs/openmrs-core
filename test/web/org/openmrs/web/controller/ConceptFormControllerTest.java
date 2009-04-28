@@ -510,7 +510,7 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 		assertNotNull(mav);
 		assertTrue(mav.getModel().isEmpty());
 		
-		ConceptNumeric concept = (ConceptNumeric)cs.getConcept(5089);
+		ConceptNumeric concept = (ConceptNumeric) cs.getConcept(5089);
 		Assert.assertEquals(EXPECTED_LOW_NORMAL, concept.getLowNormal());
 		Assert.assertEquals(EXPECTED_HI_NORMAL, concept.getHiNormal());
 		Assert.assertEquals(EXPECTED_LOW_ABSOLUTE, concept.getLowAbsolute());
@@ -518,15 +518,14 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 		Assert.assertEquals(EXPECTED_LOW_CRITICAL, concept.getLowCritical());
 		Assert.assertEquals(EXPECTED_HI_CRITICAL, concept.getHiCritical());
 	}
-
+	
 	/**
-     * @see {@link ConceptFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)}
-     * 
-     */
-    @Test
-    @Verifies(value = "should display numeric values from table", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")
-    public void onSubmit_shouldDisplayNumericValuesFromTable() throws Exception {
-    	final Double EXPECTED_LOW_ABSOLUTE = 0.0;
+	 * @see {@link ConceptFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)}
+	 */
+	@Test
+	@Verifies(value = "should display numeric values from table", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")
+	public void onSubmit_shouldDisplayNumericValuesFromTable() throws Exception {
+		final Double EXPECTED_LOW_ABSOLUTE = 0.0;
 		final Double EXPECTED_LOW_CRITICAL = 99.0;
 		final Double EXPECTED_LOW_NORMAL = 445.0;
 		final Double EXPECTED_HI_NORMAL = 1497.0;
@@ -540,16 +539,16 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 		mockRequest.setMethod("GET");
 		mockRequest.setParameter("conceptId", "5497");
 		ModelAndView mav = conceptFormController.handleRequest(mockRequest, new MockHttpServletResponse());
-
+		
 		assertNotNull(mav);
-		ConceptFormBackingObject formBackingObject = (ConceptFormBackingObject)mav.getModel().get("command");
-
+		ConceptFormBackingObject formBackingObject = (ConceptFormBackingObject) mav.getModel().get("command");
+		
 		Assert.assertEquals(EXPECTED_LOW_NORMAL, formBackingObject.getLowNormal());
 		Assert.assertEquals(EXPECTED_HI_NORMAL, formBackingObject.getHiNormal());
 		Assert.assertEquals(EXPECTED_LOW_ABSOLUTE, formBackingObject.getLowAbsolute());
 		Assert.assertEquals(EXPECTED_HI_ABSOLUTE, formBackingObject.getHiAbsolute());
 		Assert.assertEquals(EXPECTED_LOW_CRITICAL, formBackingObject.getLowCritical());
 		Assert.assertEquals(EXPECTED_HI_CRITICAL, formBackingObject.getHiCritical());
-    }
+	}
 	
 }
