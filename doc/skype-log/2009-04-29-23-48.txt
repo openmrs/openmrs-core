@@ -1,0 +1,146 @@
+[29.04.2009 23:48:13] Pavel Konnikov говорит: hello, Dave
+[29.04.2009 23:48:34] David Thomas говорит: Hi Pavel.
+[29.04.2009 23:48:36] Pavel Konnikov говорит: can you help me with config
+[29.04.2009 23:48:44] David Thomas говорит: OK, what's the problem?
+[29.04.2009 23:49:29] Pavel Konnikov говорит: i was add SettingsController, Settings pojo and settings.jsp
+[29.04.2009 23:49:40] Pavel Konnikov говорит: but it don't work
+[29.04.2009 23:50:01] Pavel Konnikov говорит: look at my last commit
+[29.04.2009 23:50:15] David Thomas говорит: what is a 'setting'?  A global property?
+[29.04.2009 23:50:23] Pavel Konnikov говорит: no
+[29.04.2009 23:51:13] Pavel Konnikov говорит: http://dev.openmrs.org/browser/openmrs/branches/global-property-types/src/api/org/openmrs/Settings.java
+[29.04.2009 23:52:19] Pavel Konnikov говорит: it is command object for SettingsController
+[29.04.2009 23:53:13] Pavel Konnikov говорит: http://dev.openmrs.org/changeset/7481
+[29.04.2009 23:55:00] David Thomas говорит: what is the jsp file going to do?
+[29.04.2009 23:55:04] Pavel Konnikov говорит: can you explain somepart of openmrs-servlet.xml
+[29.04.2009 23:56:07] Pavel Konnikov говорит: this is the same page as globalPropsForm.jsp but with left menu for modules
+[29.04.2009 23:56:18] Pavel Konnikov говорит: as at mockup
+[29.04.2009 23:56:39] David Thomas говорит: Ah, OK.
+[29.04.2009 23:58:01] Pavel Konnikov говорит: i think that i will work with this new settings files instead global properties files
+[29.04.2009 23:59:00] Pavel Konnikov говорит: so my question: what mens 
+<prop key="admin/maintenance/globalProps.form">globalPropertyController</prop> 
+<prop key="admin/maintenance/settings.form">settingsController</prop>
+[29.04.2009 23:59:07] Pavel Konnikov говорит: and 
+ <bean id="globalPropertyController"
+  class="org.openmrs.web.controller.maintenance.GlobalPropertyController">
+  <property name="commandName"><value>globalProps</value></property>
+  <property name="formView"><value>/admin/maintenance/globalPropsForm</value></property>
+  <property name="successView"><value>globalProps.form</value></property>
+ </bean>
+ <bean id="settingsController"
+  class="org.openmrs.web.controller.maintenance.SettingsController">
+  <property name="commandName"><value>settings</value></property>
+  <property name="formView"><value>/admin/maintenance/settings</value></property>
+  <property name="successView"><value>settings.form</value></property>
+ </bean>
+[29.04.2009 23:59:37] Pavel Konnikov говорит: in particular "globalProps.form"
+[29.04.2009 23:59:46] Pavel Konnikov говорит: and "globalProps.form"
+[29.04.2009 23:59:51] Pavel Konnikov говорит: ups
+[0:00:00] Pavel Konnikov говорит: and "/admin/maintenance/globalPropsForm"
+[0:00:23] Pavel Konnikov говорит: how it relate to jsp and controller methods?
+[0:00:40] David Thomas говорит: right, so this is all Spring architecture.
+[0:00:55] Pavel Konnikov говорит: yes
+[0:01:18] David Thomas говорит: So, for example,
+[0:01:20] David Thomas говорит: <prop key="admin/maintenance/globalProps.form">globalPropertyController</prop>
+[0:01:35] Pavel Konnikov говорит: but in spring examles uses another configs :(
+[0:01:50] David Thomas говорит: is the url that you use to access the globalProps jsp.
+[0:01:55] David Thomas говорит: the flow is like this:
+[0:02:19] David Thomas говорит: admin/maintenance/globalProps.form is routed to the bean called 'globalPropertyController'
+[0:02:54] David Thomas говорит: the controller then has the bean properties that you can set, where you name the command object, for example.
+[0:02:57] Pavel Konnikov говорит: this url "admin/maintenance/globalProps.form" begin globalPropertyController lifecycle
+[0:03:04] David Thomas говорит: yes.
+[0:03:19] David Thomas говорит: OpenMRS uses .form and .list, usually.
+[0:04:01] David Thomas говорит: We'll want to use .form
+[0:04:10] Pavel Konnikov говорит: what means .form and .list? where i can see the definition in openmrs configs?
+[0:04:50] David Thomas говорит: yes, sort of.
+[0:05:08] David Thomas говорит: .form usually means that you're asking for a page that's going to be an html form.
+[0:05:22] David Thomas говорит: and .list is usually used when you're displaying a list of items, like patients.
+[0:05:39] David Thomas говорит: for us, because everything is going to be contained within one page, we should use .form.
+[0:05:50] Pavel Konnikov говорит: is it openmrs conventions?
+[0:05:54] David Thomas говорит: yes.
+[0:05:56] Pavel Konnikov говорит: ok
+[0:06:43] David Thomas говорит: .html will work too, i think.  You can fish around in the source code and find the spring configuration routines, if you're interested.  These will have all of the potential mappings.
+[0:07:17] David Thomas говорит: I'm in the field office today, and there's bad internet, so i'm still trying to sync your changes from SVN.
+[0:07:33] Pavel Konnikov говорит: :)
+[0:07:49] Pavel Konnikov говорит: cool!
+[0:08:09] Pavel Konnikov говорит: you can see it at http://dev.openmrs.org/changeset/7481
+[0:08:37] Pavel Konnikov говорит: or you internet too bad?
+[0:09:37] Pavel Konnikov говорит: ok. and what about formView and successView?
+[0:09:51] David Thomas говорит: your configurations look right -- can you access the page?
+[0:09:57] Pavel Konnikov говорит: no
+[0:10:12] Pavel Konnikov говорит: i was redirected to home
+[0:10:56] David Thomas говорит: did you log in first?
+[0:12:12] Pavel Konnikov говорит: i request http://localhost:8080/openmrs/admin/maintenance/settings.form
+but openmrs redirect me to login
+i am login and redirecting to
+http://localhost:8080/openmrs/index.htm
+[0:12:44] Pavel Konnikov говорит: but now i request http://localhost:8080/openmrs/admin/maintenance/settings.form and see right result!
+[0:12:45] David Thomas говорит: did you login correctly?  Can you search for a patient, for example?
+[0:12:50] Pavel Konnikov говорит: hm
+[0:12:51] David Thomas говорит: or see the dictionary?
+[0:13:07] Pavel Konnikov говорит: settings works
+[0:13:12] David Thomas говорит: so you can see the page.
+[0:13:14] David Thomas говорит: excellent.
+[0:13:26] Pavel Konnikov говорит: very strange
+[0:13:37] Pavel Konnikov говорит: yes
+[0:13:58] David Thomas говорит: Right -- if you aren't logged in, OpenMRS will redirect you to the home page.
+[0:14:46] Pavel Konnikov говорит: how i can configure something to no login every time?
+[0:15:58] David Thomas говорит: Once you're logged in, you stay logged in.  If you have to restart tomcat, then you're going to get logged out -- that's just the way it is, unfortunately.
+[0:16:43] Pavel Konnikov говорит: :(
+[0:16:58] David Thomas говорит: this is medical stuff we're working on, so security matters a lot.  That's why this is built into the application.
+[0:17:39] David Thomas говорит: formView and successView are urls that you can send the control to after form processing.  So, for example, in the onSubmit in your controller, if there is an error, you can send the control back to the formView, and have the user fix the error, and if the form submission is successful, you can send the user somewhere else.
+[0:18:12] David Thomas говорит: I tend not to use these however -- you can create your own RedirectView in the code and return it.  I like this better.
+[0:18:28] Pavel Konnikov говорит: http://dl.getdropbox.com/u/502300/gsoc/settings1.jpg this is what i see 22K
+[0:19:11] David Thomas говорит: that's great.  Now you just need to get the module selection working?
+[0:19:35] David Thomas говорит: (or do you have any modules installed?)
+[0:19:41] Pavel Konnikov говорит: no
+[0:19:50] David Thomas говорит: OK, you can get some here:
+[0:19:55] Pavel Konnikov говорит: how i can to install some of modules?
+[0:20:40] Pavel Konnikov говорит: how i can to install any modules? :)
+[0:20:47] David Thomas говорит: grab Form Entry from here:
+[0:20:48] David Thomas говорит: https://modules.openmrs.org/modules/list.jsp
+[0:21:40] David Thomas говорит: and then in openmrs under Administration, go to manage modules
+[0:21:52] David Thomas говорит: you should be able to figure it out from there.
+[0:21:58] Pavel Konnikov говорит: which of them you use?
+[0:22:23] David Thomas говорит: i use about 10, and they're different on our different systems.  Some modules are site-specific.
+[0:22:46] Pavel Konnikov говорит: ok
+[0:22:58] Pavel Konnikov говорит: i will to install first 5
+[0:23:09] David Thomas говорит: All you need is Form Entry
+[0:23:20] David Thomas говорит: that creates a couple of global properties.
+[0:23:26] David Thomas говорит: Not all modules use global properties.
+[0:23:42] Pavel Konnikov говорит: ok
+[0:24:09] Pavel Konnikov говорит: i have questions about config
+[0:24:18] Pavel Konnikov говорит: <property name="formView"><value>/admin/maintenance/settings</value></property> 
+<property name="successView"><value>settings.form</value></property>
+[0:24:36] Pavel Konnikov говорит: wath means this values?
+[0:24:43] David Thomas говорит: why the paths are in different formats?  I have no idea.
+[0:24:51] Pavel Konnikov говорит: ok
+[0:25:02] Pavel Konnikov говорит:  <bean id="globalPropertyController"
+  class="org.openmrs.web.controller.maintenance.GlobalPropertyController">
+  <property name="commandName"><value>globalProps</value></property>
+  <property name="formView"><value>/admin/maintenance/globalPropsForm</value></property>
+  <property name="successView"><value>globalProps.form</value></property>
+ </bean>
+[0:25:12] David Thomas говорит: (it has to do with where the path is being called from)
+[0:26:27] David Thomas говорит: you can just create your own RedirectViews:
+[0:26:34] Pavel Konnikov говорит: what we will see at /admin/maintenance/globalPropsForm ?
+[0:27:05] Pavel Konnikov говорит: and what is current path for globalProps.form
+[0:27:07] Pavel Konnikov говорит: ?
+[0:27:14] David Thomas говорит: I don't know.  You can try it.
+[0:28:08] David Thomas говорит: here's what i usually do to send control to a new page:
+[0:28:09] David Thomas говорит: RedirectView rv = new RedirectView(this.getSuccessView());
+rv.addStaticAttribute("patientId", patient.getIdentifier());
+return new ModelAndView(rv);
+[0:28:14] Pavel Konnikov говорит: ok. i will ask this question in irc. ok?
+[0:28:42] Pavel Konnikov говорит: ok
+[0:29:01] David Thomas говорит: Please do.  And let me know what you find out -- I know how to make it work, but i'm not sure WHY its the way that it is.  I'd love an explanation.
+[0:29:26] David Thomas говорит: (in the code I pasted above, this.getSuccessView() is just a String)
+[0:29:55] Pavel Konnikov говорит: i will go to sleep now. and tomorrow i will continue.
+[0:30:00] Pavel Konnikov говорит: thanks a lot
+[0:30:05] Pavel Konnikov говорит: o
+[0:30:11] Pavel Konnikov говорит: one more question
+[0:30:19] David Thomas говорит: OK
+[0:30:30] Pavel Konnikov говорит: i commit our chat log to svn. it is ok?
+[0:30:38] David Thomas говорит: sure.
+[0:30:58] Pavel Konnikov говорит: ok
+[0:31:11] Pavel Konnikov говорит: bye!
+[0:31:32] David Thomas говорит: OK, pavel.  Talk to you later.  Thanks for your hard work -- it already looks good.
