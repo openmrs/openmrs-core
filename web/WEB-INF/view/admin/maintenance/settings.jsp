@@ -36,7 +36,7 @@
 					<td>${globalProperty.property}</td>
 					<td>${globalProperty.propertyValue}</td>
 					<td>Type&nbsp;name</td>
-					<td>${globalProp.description}</td>
+					<td>${globalProperty.description}</td>
 					<td><a href="#">Edit</a></td>
 				</tr>
 			</c:forEach>
