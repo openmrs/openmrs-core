@@ -1,0 +1,45 @@
+[0:04:39] Pavel Konnikov говорит: hi Dave
+[0:05:09] Pavel Konnikov говорит: i was commit 7492
+[0:05:15] Pavel Konnikov говорит: look at this
+[0:05:36] Pavel Konnikov говорит: later i will fix css
+[0:05:58] Pavel Konnikov говорит: talk to later today
+[0:06:32] Pavel Konnikov говорит: one hour
+[0:41:30] Pavel Konnikov говорит: hi
+[0:42:06] Pavel Konnikov говорит: i am online again
+[0:51:28] Pavel Konnikov говорит: Dave, can you chat now?
+[0:53:03] David Thomas говорит: Hi Pavel, i just got back.  What's up?
+[0:53:15] Pavel Konnikov говорит: http://dev.openmrs.org/changeset/7492
+[0:53:18] Pavel Konnikov говорит: :)
+[0:53:55] David Thomas говорит: Cool.  Let me check out the latest.
+[0:53:57] Pavel Konnikov говорит: jquery ui is excelent tool!
+[0:54:11] David Thomas говорит: I'm glad you think so.  I'm a fan.
+[0:54:39] Pavel Konnikov говорит: i will add css tomorow
+[0:55:00] David Thomas говорит: OK, no problem.
+[0:55:03] Pavel Konnikov говорит: and our first goal will be achived
+[0:55:07] David Thomas говорит: OK, great.
+[0:55:35] David Thomas говорит: I'm looking at a completely different openmrs, so i need a couple of minutes to change over.
+[0:55:55] David Thomas говорит: It's late there, isn't it?
+[0:56:08] Pavel Konnikov говорит: 00:56
+[0:56:15] Pavel Konnikov говорит: 1 may
+[0:57:27] Pavel Konnikov говорит: oh no
+[0:57:31] David Thomas говорит: Right -- i'm getting the updates from SVN now, and then I'll take a look line by line.  Is it OK if I write you an email tonight if I find anything, and then tomorrow, we can talk about the next steps?
+[0:58:03] Pavel Konnikov говорит: ok
+[0:58:25] David Thomas говорит: thanks, i'm right in the middle of putting in a quick fix for some people that i just had a meeting with.
+[0:58:30] Pavel Konnikov говорит: what time is good for you?
+[0:58:48] David Thomas говорит: You're 9 hours ahead of me, right?
+[0:58:56] Pavel Konnikov говорит: yes
+[1:00:31] David Thomas говорит: OK, how about 11 am my time, 8 pm your time?  Or, is that bad (it is a friday night, after all?)
+[1:01:03] David Thomas говорит: we could also wait until monday.
+[1:01:14] Pavel Konnikov говорит: 4pm UTC?
+[1:01:49] David Thomas говорит: UTC is grenich mean time?
+[1:01:50] Pavel Konnikov говорит: i think friday 4pm UTC is better
+[1:02:27] David Thomas говорит: sorry, do you mean now?
+[1:02:57] Pavel Konnikov говорит: i want to relax at the weekend :)
+[1:04:19] David Thomas говорит: Right -- 4pm UTC is 11 am my time.  I can do that.  That's 8 pm your time, right?
+[1:04:20] Pavel Konnikov говорит: our next skype chat will at 8 pm my time at friday. it is good fr me
+[1:04:25] David Thomas говорит: OK, perfect.
+[1:04:48] David Thomas говорит: I'll talk to you tomorrow morning, then.
+[1:04:55] Pavel Konnikov говорит: ok
+[1:05:29] David Thomas говорит: I'll review your coding before tomorrow, and we'll plan the next step.
+[1:06:15] Pavel Konnikov говорит: ok. i am going to sleep. bye!
+[1:06:28] David Thomas говорит: bye! talk to you tomorrow.
