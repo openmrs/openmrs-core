@@ -13,7 +13,9 @@
  */
 package org.openmrs;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.openmrs.api.context.Context;
 import org.openmrs.module.Module;
@@ -26,14 +28,14 @@ public class Settings {
 
 	private List<GlobalProperty> globalProperties;
 	
-	private List<Module> modules;
+	private Collection<Module> modules;
 	
     /**
      * 
      */
     public Settings() {
     	globalProperties = Context.getAdministrationService().getAllGlobalProperties();
-    	modules = (List<Module>) ModuleFactory.getLoadedModules();
+    	modules = ModuleFactory.getLoadedModules();
     }
 
 	/**
@@ -46,7 +48,7 @@ public class Settings {
     /**
      * @return the modules
      */
-    public List<Module> getModules() {
+    public Collection<Module> getModules() {
     	return modules;
     }
 	
