@@ -1,0 +1,157 @@
+[20:04:49] Pavel Konnikov говорит: hi Dave
+[20:05:01] David Thomas говорит: hey pavel.
+[20:05:48] Pavel Konnikov говорит: i just commit my css
+[20:06:12] Pavel Konnikov говорит: you can see at my local server http://93.81.51.252:8080/openmrs/admin/maintenance/settings.form
+[20:06:40] David Thomas говорит: OK, let me grab it -- I have the code up and running, and I'm actually at a hotel right now with good internet.
+[20:07:08] David Thomas говорит: the first is that you should download the jquery files and add them to the openmrs.war file.
+[20:07:23] David Thomas говорит: Calling them over the web will make the page load REALLY slow, in places like Africa.
+[20:07:53] Pavel Konnikov говорит: yes of course
+[20:08:01] David Thomas говорит: The other thing is the the package that the Settings class is in -- it shouldn't be in with the openmrs domain objects.  I'm trying to figure out where it should go right now.
+[20:08:47] Pavel Konnikov говорит: i will rename it to SettingsDTO
+[20:09:03] David Thomas говорит: what is DTO for?
+[20:09:10] Pavel Konnikov говорит: and we can add package .org.openmrs.web.dto
+[20:09:20] Pavel Konnikov говорит: Data Transfer Object
+[20:09:45] Pavel Konnikov говорит: DTO is J2EE pattern
+[20:12:07] David Thomas говорит: There's a DTO project that's independent from ours however, to build the DTO architecture for all of the openmrs domain objects...
+[20:12:27] David Thomas говорит: I'm not sure what they're doing in terms of package structure.
+[20:12:30] David Thomas говорит: The CSS looks good.
+[20:13:05] David Thomas говорит: You should add the openmrs standard header and footer
+[20:13:23] Pavel Konnikov говорит: ok
+[20:13:32] David Thomas говорит: and add a link to your page from the openmrs administration page
+[20:13:42] Pavel Konnikov говорит: yes
+[20:13:55] Pavel Konnikov говорит: i will doit today
+[20:14:07] David Thomas говорит: OK.
+[20:15:09] David Thomas говорит: Another small thing:  In the left-hand pane, where it says 'System Wide Settings', can you add a text label for the modules that says 'Modules', like in your mock-up?
+[20:15:28] David Thomas говорит: So that all modules will get listed under the text label "Modules'?
+[20:15:38] David Thomas говорит: (should take less than 3 minutes)
+[20:15:44] Pavel Konnikov говорит: ok
+[20:17:14] Pavel Konnikov говорит: there is one problem with Property Value collumn
+[20:18:04] David Thomas говорит: what's that?
+[20:18:29] Pavel Konnikov говорит: some properties like dashboard.regimen.standardRegimens have very big length
+[20:19:34] David Thomas говорит: right -- you could check for length and if the length of the entry is too long, you could use a disabled fixed-width textarea
+[20:19:47] Pavel Konnikov говорит: i think we need to trim wide values
+[20:20:22] David Thomas говорит: or, with a textarea, the user can be allowed to scroll down to read the XML, without being able to edit it.
+[20:20:48] David Thomas говорит: do you like this idea?
+[20:20:49] Pavel Konnikov говорит: in editing mode we have no problem
+[20:20:58] Pavel Konnikov говорит: problem in view mode
+[20:21:02] David Thomas говорит: in editing mode, an XML widget should pop up.
+[20:21:26] David Thomas говорит: but for basic display (view mode), i like the idea of being able to scroll through the XML.
+[20:21:40] David Thomas говорит: sometimes you might want to look up the metadata for a standard regimen.
+[20:22:47] David Thomas говорит: (one other small thing that you could do is add the
+[20:23:03] David Thomas говорит: 'system settings' item that you have in the left pane in your mock-up.  this seems useful to me.)
+[20:24:52] David Thomas говорит: what we're talking about are minor UI changes.  The next part of the project is where things get interesting.
+[20:25:15] Pavel Konnikov говорит: so "All Settings" = "System Settings" + "Module Settings"
+[20:25:27] David Thomas говорит: yes.
+[20:25:39] Pavel Konnikov говорит: "System Settings" = Global Propperties
+[20:25:51] David Thomas говорит: yes.
+[20:25:58] David Thomas говорит:  Also, you should try to squeeze in the property description.  This is important to the user.
+[20:26:06] Pavel Konnikov говорит: modules settings = modeule1 settings + ...
+[20:26:47] David Thomas говорит: or, maybe 'module settings' doesn't even have to be a live link.  I don't see a situation in which it would be useful to see them all at once.
+[20:27:05] David Thomas говорит: the most common usage will be:  the formentry module isn't working... let me look at its settings.
+[20:27:30] David Thomas говорит: Or, the mdrtb module is displaying drug orders in a weird order... let me look at the settings for mdrtb.
+[20:28:03] David Thomas говорит: you can make the link live if you want, though.  Its probably pretty easy.  And yes, it would display the settings for all modules at once.
+[20:28:24] Pavel Konnikov говорит: ok
+[20:29:53] Pavel Konnikov говорит: i think that i will end all this things at weekend
+[20:30:16] Pavel Konnikov говорит: what is our next task?
+[20:30:44] David Thomas говорит: After these, we need to decide on the architecture for recording the datatype of the global property.
+[20:31:35] David Thomas говорит: And then once we have the architecture figured out, we can build the 'add global property' fields, and then finally, we can start building widgets for all of the different datatypes.
+[20:31:49] David Thomas говорит: The 'building widgets' is going to be the real heart of this project.
+[20:32:20] Pavel Konnikov говорит: one more question
+[20:32:27] David Thomas говорит: OK
+[20:33:17] Pavel Konnikov говорит: need we use other controller type instead SimpleFromController
+[20:33:53] Pavel Konnikov говорит: and use ajax to save edited propery
+[20:34:17] David Thomas говорит: no, we should use SimpleFormController -- the old global properties used PortletController, which doesn't even have a command object.
+[20:34:40] David Thomas говорит: I do think we should use some ajax, though.  DWR is build into OpenMRS, and its really easy to use, so that's what we should use for ajax.
+[20:35:01] Pavel Konnikov говорит: ok
+[20:35:21] Pavel Konnikov говорит: and about jquery tabs
+[20:35:31] David Thomas говорит: Although, if you wanted to change the settings.jsp file to be a portlet, we could use PortletController, and then use ALL ajax.
+[20:35:35] David Thomas говорит: Do you have a preference?
+[20:35:47] David Thomas говорит: (have you used DWR before?)
+[20:36:30] Pavel Konnikov говорит: i just try DWR example in my university course
+[20:37:19] David Thomas говорит: OK, its easy -- you won't have a problem.
+[20:37:58] Pavel Konnikov говорит: i am not using ajax in jquery ui tabs
+[20:38:25] David Thomas говорит: that's right -- when you click a jquery ui tab, there should be no call to the server.
+[20:38:29] David Thomas говорит: that's correct.
+[20:38:34] Pavel Konnikov говорит: ok
+[20:38:43] David Thomas говорит: You should essentially be showing and hiding divs.
+[20:39:05] David Thomas говорит: ajax/DWR will only be for editing and creating new properties.
+[20:39:16] Pavel Konnikov говорит: yes
+[20:40:32] Pavel Konnikov говорит: so
+[20:40:47] Pavel Konnikov говорит: i look at the global_property table
+[20:41:26] Pavel Konnikov говорит: all properties system and for modules storing in this table
+[20:41:48] David Thomas говорит: yes.
+[20:42:20] Pavel Konnikov говорит: i think we need simple add new attribute "property_type"
+[20:42:37] David Thomas говорит: I think you're right.
+[20:43:10] David Thomas говорит: The alternative would have been just to let the user pick a widget, and assume that the user knows what they're looking for.
+[20:43:18] David Thomas говорит: Because all properties are eventually stored as Strings.
+[20:44:11] Pavel Konnikov говорит: in this case where to store user choise?
+[20:44:59] David Thomas говорит: We wouldn't store the choice at all.  But I think you're right that we want to store this choice.
+[20:45:02] David Thomas говорит: I think we should actually add a global_property_type table, that lists all of the possible types.  We can then use this to build a drop-down in the UI so the user can change the global property type.
+[20:45:24] Pavel Konnikov говорит: yes
+[20:45:31] Pavel Konnikov говорит: it is right solution
+[20:45:37] David Thomas говорит: so, in total, we'd be adding a column to global_property and a new global_property_type table.
+[20:46:16] Pavel Konnikov говорит: yes
+[20:46:19] David Thomas говорит: And for each entry in the global_property_type table, we will make a UI widget that allows the user to essentally build the correct String to be stored as the global property value.
+[20:47:17] Pavel Konnikov говорит: ok
+[20:47:34] David Thomas говорит: or, because we can probably reuse widget components, the same widget may look a little different depending on what the datatype is.
+[20:47:56] David Thomas говорит: For example, choosing a patient ID won't look like building a list of concepts with | as the delimiter.
+[20:48:06] David Thomas говорит: but, we can think about this later.
+[20:48:20] Pavel Konnikov говорит: yes
+[20:48:21] Pavel Konnikov говорит: how i may to commit changes in db-schema?
+[20:48:31] David Thomas говорит: write a liquibase update.
+[20:49:05] David Thomas говорит: and maybe put this update into its own file.
+[20:49:29] Pavel Konnikov говорит: ok
+[20:49:38] David Thomas говорит: when we merge the branch into trunk, in 6 months or whenever we get around to that, we can then add the contents of this file to the main liquibase update file.
+[20:51:23] Pavel Konnikov говорит: so i will add iteration task list to the our wiki page
+[20:51:33] David Thomas говорит: OK, no problem.
+[20:52:02] Pavel Konnikov говорит: can you list tasks again?
+[20:52:06] David Thomas говорит: So, you've got plenty to do -- do the little UI updates and then start working on the schema update.  We'll need a new hibernate configuration for our new table.
+[20:52:10] David Thomas говорит: OK, here's the list:
+[20:52:16] Pavel Konnikov говорит: briefly
+[20:52:28] David Thomas говорит: 1. add the 'module' heading to the left pane.
+[20:52:47] David Thomas говорит: 2.  add the 'system settings' to the left pane
+[20:53:03] David Thomas говорит: 3.  add global property description to the right pane.
+[20:53:25] David Thomas говорит: 4.  scrollable textareas for long property values in 'view' mode
+[20:53:32] David Thomas говорит: 5.  add openmrs headers and footers.
+[20:53:45] David Thomas говорит: 6.  add menu item to Administration page pointing to your new page
+[20:54:02] David Thomas говорит: 7.  start on the schema design
+[20:54:31] David Thomas говорит: 8.  and, to check out how DWR works, start with dwr.xml in WEB-INF/view folder
+[20:54:51] David Thomas говорит: also, you definitely ARENT required to do work over the weekend.
+[20:55:14] David Thomas говорит: we can check in on monday if you want, but if you want to wait until tuesday or wed, that's fine too.
+[20:55:44] David Thomas говорит: and 9. (if you get this far)  change hibernate mapping for global properties to include the new column, and create a new hibernate configuration for the new table.
+[20:56:31] David Thomas говорит: (also, if you hate the textarea idea, feel free to come up with an alternate solution -- i don't feel very strongly about this)
+[20:56:53] Pavel Konnikov говорит: ok
+[20:57:02] Pavel Konnikov говорит: thanks
+[20:57:03] Pavel Konnikov говорит: but
+[20:57:28] Pavel Konnikov говорит: 2.  add the 'system settings' to the left pane
+3.  add global property description to the right pane.
+[20:57:54] Pavel Konnikov говорит: is already done
+[20:58:41] Pavel Konnikov говорит: or i don't exactly understand you?
+[20:58:55] David Thomas говорит: for #2 -- in your mock-up you have both All Settings, and System Settings.  I think that both of these should be there.
+[20:59:13] Pavel Konnikov говорит: ok
+[20:59:20] Pavel Konnikov говорит: and #3
+[21:00:29] David Thomas говорит: and for number 3 -- right, i see it in the jsp, but its not displaying on my screen for System Wide Settings, but it is displaying if i click on a module.  Weird.  Can you reproduce this?
+[21:00:58] David Thomas говорит: OH -- its that the page doesn't have horizontal scrollling for some reason.  It may just be my firefox.
+[21:01:36] David Thomas говорит: sorry, is horizontal scrolling working for you on the settings screen?
+[21:01:44] Pavel Konnikov говорит: yes
+[21:01:49] Pavel Konnikov говорит: i fix it
+[21:01:52] David Thomas говорит: OK
+[21:02:04] Pavel Konnikov говорит: i remode overflow: hidden
+[21:02:11] David Thomas говорит: OK, thanks.
+[21:02:34] David Thomas говорит: So, should we just talk on mon or tues?
+[21:02:47] Pavel Konnikov говорит: you can try it in firebug fo #settings-container
+[21:03:10] Pavel Konnikov говорит: monday 19 UTC
+[21:03:14] Pavel Konnikov говорит: is it ok?
+[21:04:01] David Thomas говорит: OK.  Sounds good.
+[21:04:57] David Thomas говорит: It looks like the internet just got bad.
+[21:05:04] David Thomas говорит: I'll talk to you on monday...
+[21:05:28] Pavel Konnikov говорит: Dave?
+[21:06:33] Pavel Konnikov говорит: connection problems
+[21:06:37] David Thomas говорит: yes.
+[21:06:45] David Thomas говорит: the internet comes and goes down here sometimes.
+[21:06:50] Pavel Konnikov говорит: ok
+[21:07:25] David Thomas говорит: OK, so lets chat on monday.
+[21:07:26] Pavel Konnikov говорит: talk to you at  monday 19:00 UTC
+[21:07:31] David Thomas говорит: OK, have a good weekend.
+[21:07:32] Pavel Konnikov говорит: bye!
+[21:07:37] David Thomas говорит: bye!
