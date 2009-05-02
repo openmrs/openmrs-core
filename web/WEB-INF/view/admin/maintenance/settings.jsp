@@ -20,7 +20,7 @@ $(document).ready(function(){
      display: none;
 }
 .ui-tabs-selected a, .ui-state-active a {
-	color: #8FABC7;
+	background-color: #ccc;
 }
 </style>
 
@@ -37,6 +37,10 @@ $(document).ready(function(){
 	clear: left;
 	margin: 0;
 	list-style: none;
+}
+
+.module-tabs-item {
+	margin-left: 2ex;
 }
 
 .settings-pane {
@@ -80,17 +84,20 @@ a {
 <div id="settings-container">
 <div class="caption">Settings</div>
 <ul id="tabs-pane">
-	<li><a href="#system-settings-pane">System Wide Settings</a></li>
+	<li><a href="#all-settings-pane">All Settings</a></li>
+	<li><a href="#system-settings-pane">System Settings</a></li>
+	<li>Modules Settings</li>
 <c:forEach var="module" items="${settings.modules}" varStatus="status">
-	<li class="module"><a href="#${module.moduleId}-settings-pane">${module.name}</a></li>
+	<li class="module-tabs-item"><a href="#${module.moduleId}-settings-pane">${module.name}</a></li>
 </c:forEach>
 </ul>
 
-<div id="system-settings-pane" class="settings-pane">
+<div id="all-settings-pane" class="settings-pane">
 <form method="post">
 	<table cellpadding="1" cellspacing="0">
 		<thead>
 			<tr>
+				<th>N</th>
 				<th>Property Name</th>
 				<th>Property Value</th>
 				<th>Property Type</th>
@@ -99,8 +106,9 @@ a {
 			</tr>
 		</thead>
 		<tbody>
-			<c:forEach var="globalProperty" items="${settings.globalProperties}" varStatus="status">
+			<c:forEach var="globalProperty" items="${settings.allSettings}" varStatus="status">
 			<tr class="<c:choose><c:when test="${status.index % 2 == 0}">even</c:when><c:otherwise>odd</c:otherwise></c:choose>">
+				<td>${status.index + 1}</td>
 				<td>${globalProperty.property}</td>
 				<td>${globalProperty.propertyValue}</td>
 				<td>Type&nbsp;name</td>
@@ -109,6 +117,44 @@ a {
 			</tr>
 			</c:forEach>
 			<tr>
+				<td></td>
+				<td><input type="text" name="property"/></td>
+				<td><input type="text" name="value"/></td>
+				<td><input type="text" name="type"/></td>
+				<td><textarea name="description"></textarea></td>
+				<td><a href="#">Add</a></td>
+			</tr>
+		</tbody>
+	</table>
+</form>
+</div> <!-- end all-settings -->
+
+<div id="system-settings-pane" class="settings-pane">
+<form method="post">
+	<table cellpadding="1" cellspacing="0">
+		<thead>
+			<tr>
+				<th>N</th>
+				<th>Property Name</th>
+				<th>Property Value</th>
+				<th>Property Type</th>
+				<th>Description</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			<c:forEach var="globalProperty" items="${settings.systemSettings}" varStatus="status">
+			<tr class="<c:choose><c:when test="${status.index % 2 == 0}">even</c:when><c:otherwise>odd</c:otherwise></c:choose>">
+				<td>${status.index + 1}</td>
+				<td>${globalProperty.property}</td>
+				<td>${globalProperty.propertyValue}</td>
+				<td>Type&nbsp;name</td>
+				<td style="font-size: 8pt;">${globalProperty.description}</td>
+				<td><a href="#"><img src="<c:url value="/images/edit.gif"/>"/></a></td>
+			</tr>
+			</c:forEach>
+			<tr>
+				<td></td>
 				<td><input type="text" name="property"/></td>
 				<td><input type="text" name="value"/></td>
 				<td><input type="text" name="type"/></td>
@@ -126,6 +172,7 @@ a {
 	<table cellpadding="1" cellspacing="0">
 		<thead>
 			<tr>
+				<th>N</th>
 				<th>Property Name</th>
 				<th>Property Value</th>
 				<th>Property Type</th>
@@ -136,6 +183,7 @@ a {
 		<tbody>
 			<c:forEach var="globalProperty" items="${module.globalProperties}" varStatus="status">
 			<tr class="<c:choose><c:when test="${status.index % 2 == 0}">even</c:when><c:otherwise>odd</c:otherwise></c:choose>">
+				<td>${status.index + 1}</td>
 				<td>${globalProperty.property}</td>
 				<td>${globalProperty.propertyValue}</td>
 				<td>Type&nbsp;name</td>
@@ -144,6 +192,7 @@ a {
 			</tr>
 			</c:forEach>
 			<tr>
+				<td></td>
 				<td><input type="text" name="property"/></td>
 				<td><input type="text" name="value"/></td>
 				<td><input type="text" name="type"/></td>
