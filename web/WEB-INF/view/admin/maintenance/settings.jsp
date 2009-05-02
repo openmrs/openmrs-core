@@ -20,7 +20,6 @@ $(document).ready(function(){
 
 <style>
 #settings-container {
-	overflow: hidden;
 	font-family: Verdana, sans-serif;
 	font-size: 10pt;
 }
