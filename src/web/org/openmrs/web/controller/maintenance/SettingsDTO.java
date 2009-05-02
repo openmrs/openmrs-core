@@ -11,11 +11,12 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs;
+package org.openmrs.web.controller.maintenance;
 
 import java.util.Collection;
 import java.util.List;
 
+import org.openmrs.GlobalProperty;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleFactory;
@@ -23,7 +24,7 @@ import org.openmrs.module.ModuleFactory;
 /**
  *
  */
-public class Settings {
+public class SettingsDTO {
 
 	private List<GlobalProperty> globalProperties;
 	
@@ -32,7 +33,7 @@ public class Settings {
     /**
      * 
      */
-    public Settings() {
+    public SettingsDTO() {
     	globalProperties = Context.getAdministrationService().getAllGlobalProperties();
     	modules = ModuleFactory.getLoadedModules();
     }
