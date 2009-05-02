@@ -13,7 +13,6 @@
  */
 package org.openmrs.web.dwr;
 
-
 public class EnteredField {
 	
 	private Integer fieldId;

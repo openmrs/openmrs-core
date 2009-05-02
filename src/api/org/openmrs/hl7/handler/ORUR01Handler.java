@@ -137,7 +137,7 @@ public class ORUR01Handler implements Application {
 	 * @throws HL7Exception
 	 */
 	@SuppressWarnings("deprecation")
-    private Message processORU_R01(ORU_R01 oru) throws HL7Exception {
+	private Message processORU_R01(ORU_R01 oru) throws HL7Exception {
 		
 		// TODO: ideally, we would branch or alter our behavior based on the
 		// sending application.

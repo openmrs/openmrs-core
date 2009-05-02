@@ -31,6 +31,10 @@ import org.openmrs.reporting.PatientFilter;
 import org.openmrs.reporting.PatientSearchReportObject;
 import org.openmrs.util.OpenmrsUtil;
 
+/**
+ * @deprecated see reportingcompatibility module
+ */
+@Deprecated
 public class DataExportReportObject extends AbstractReportObject implements Serializable {
 	
 	public transient final static long serialVersionUID = 1231231343212L;
@@ -48,7 +52,7 @@ public class DataExportReportObject extends AbstractReportObject implements Seri
 	
 	private Integer patientSearchId;
 	
-	private boolean isAllPatients = false;
+	private boolean allPatients = false;
 	
 	List<ExportColumn> columns = new Vector<ExportColumn>();
 	
@@ -289,11 +293,15 @@ public class DataExportReportObject extends AbstractReportObject implements Seri
 	}
 	
 	public boolean isAllPatients() {
-		return isAllPatients;
+		return allPatients;
 	}
 	
-	public void setAllPatients(boolean isAllPatients) {
-		this.isAllPatients = isAllPatients;
+	public boolean getAllPatients() {
+		return allPatients;
+	}
+	
+	public void setAllPatients(boolean allPatients) {
+		this.allPatients = allPatients;
 	}
 	
 }

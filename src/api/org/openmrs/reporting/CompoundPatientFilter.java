@@ -24,6 +24,10 @@ import org.openmrs.Cohort;
 import org.openmrs.api.PatientSetService.BooleanOperator;
 import org.openmrs.report.EvaluationContext;
 
+/**
+ * @deprecated see reportingcompatibility module
+ */
+@Deprecated
 public class CompoundPatientFilter extends AbstractPatientFilter implements PatientFilter {
 	
 	protected transient final Log log = LogFactory.getLog(getClass());

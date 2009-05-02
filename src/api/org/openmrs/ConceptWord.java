@@ -37,6 +37,7 @@ public class ConceptWord implements java.io.Serializable, Comparable<ConceptWord
 	
 	private String word;
 	
+	@Deprecated
 	private String synonym;
 	
 	private Locale locale;
@@ -49,6 +50,25 @@ public class ConceptWord implements java.io.Serializable, Comparable<ConceptWord
 	public ConceptWord() {
 	}
 	
+	/**
+	 * Convenience constructor
+	 * 
+	 * @param word the single word that will be matched to search terms
+	 * @param concept the concept that is being matched to
+	 * @param conceptName the specific name that will be matched
+	 * @param locale the locale that is being pulled from
+	 */
+	public ConceptWord(String word, Concept concept, ConceptName conceptName, Locale locale) {
+		this.concept = concept;
+		this.conceptName = conceptName;
+		this.word = word;
+		this.locale = locale;
+	}
+	
+	/**
+	 * @deprecated see {@link #ConceptWord(String, Concept, ConceptName, Locale)}
+	 */
+	@Deprecated
 	public ConceptWord(String word, Concept concept, ConceptName conceptName, Locale locale, String synonym) {
 		this.concept = concept;
 		this.conceptName = conceptName;
@@ -62,26 +82,31 @@ public class ConceptWord implements java.io.Serializable, Comparable<ConceptWord
 		this.conceptName = conceptName;
 		this.word = null;
 		this.locale = null;
-		this.synonym = null;
 	}
 	
+	/**
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
 	public boolean equals(Object obj) {
 		if (obj instanceof ConceptWord) {
 			ConceptWord c = (ConceptWord) obj;
 			boolean matches = true;
-			if (concept != null && c.getConcept() != null)
+			if (getConcept() != null && c.getConcept() != null)
 				matches = matches && concept.equals(c.getConcept());
-			if (word != null && c.getWord() != null)
+			if (getWord() != null && c.getWord() != null)
 				matches = matches && word.equalsIgnoreCase(c.getWord());
-			if (locale != null && c.getLocale() != null)
+			if (getLocale() != null && c.getLocale() != null)
 				matches = matches && locale.equals(c.getLocale());
-			if (synonym != null && c.getSynonym() != null)
-				matches = matches && synonym.equals(c.getSynonym());
+			if (getConceptName() != null && c.getConceptName() != null)
+				matches = matches && conceptName.equals(c.getConceptName());
 			return (matches);
 		}
 		return false;
 	}
 	
+	/**
+	 * @see java.lang.Object#hashCode()
+	 */
 	public int hashCode() {
 		int hash = 3;
 		if (concept != null)
@@ -90,8 +115,8 @@ public class ConceptWord implements java.io.Serializable, Comparable<ConceptWord
 			hash = 37 * hash + this.getWord().toLowerCase().hashCode(); // ABKTODO: MySQL searches are case insensitive 
 		if (locale != null)
 			hash = 37 * hash + this.getLocale().hashCode();
-		if (synonym != null)
-			hash = 37 * hash + this.getSynonym().hashCode();
+		if (conceptName != null)
+			hash = 37 * hash + this.getConceptName().hashCode();
 		
 		return hash;
 	}
@@ -112,14 +137,18 @@ public class ConceptWord implements java.io.Serializable, Comparable<ConceptWord
 	
 	/**
 	 * @return Returns the synonym.
+	 * @deprecated this value is not stored anymore
 	 */
+	@Deprecated
 	public String getSynonym() {
 		return synonym;
 	}
 	
 	/**
 	 * @param synonym The synonym to set.
+	 * @deprecated this value is not stored anymore
 	 */
+	@Deprecated
 	public void setSynonym(String synonym) {
 		this.synonym = synonym;
 	}
@@ -194,15 +223,19 @@ public class ConceptWord implements java.io.Serializable, Comparable<ConceptWord
 	/**
 	 * @param concept The concept from which to make the list of concept words.
 	 * @return Returns a list of unique concept words based on the specified concept.
+	 * @should return separate ConceptWord objects for the same word in different ConceptNames
+	 * @should not include voided names
 	 */
 	
 	public static Set<ConceptWord> makeConceptWords(Concept concept) {
 		Set<ConceptWord> words = new HashSet<ConceptWord>();
 		
 		for (ConceptName name : concept.getNames()) {
-			List<String> uniqueParts = getUniqueWords(name.getName());
-			for (String part : uniqueParts) {
-				words.add(new ConceptWord(part, concept, name, name.getLocale(), ""));
+			if (!name.isVoided()) {
+				List<String> uniqueParts = getUniqueWords(name.getName());
+				for (String part : uniqueParts) {
+					words.add(new ConceptWord(part, concept, name, name.getLocale()));
+				}
 			}
 		}
 		return words;
@@ -246,14 +279,15 @@ public class ConceptWord implements java.io.Serializable, Comparable<ConceptWord
 		return words;
 	}
 	
+	/**
+	 * @see java.lang.Object#toString()
+	 */
 	public String toString() {
 		String s = "";
 		if (concept != null)
 			s += concept.getConceptId() + "|";
 		if (word != null)
 			s += word + "|";
-		if (synonym != null)
-			s += synonym + "|";
 		if (locale != null)
 			s += locale;
 		return s;
@@ -263,9 +297,7 @@ public class ConceptWord implements java.io.Serializable, Comparable<ConceptWord
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
 	public int compareTo(ConceptWord word) {
-		
 		return Double.compare(word.getWeight(), weight);
-		
 	}
 	
 }

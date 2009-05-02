@@ -83,7 +83,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		
 		if (hasDuplicateUsername(user))
 			throw new DAOException("Username " + user.getUsername() + " or system id " + user.getSystemId()
-				+ " is already in use.");
+			        + " is already in use.");
 		
 		// TODO Check required fields for user!!
 		
@@ -420,7 +420,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		for (Role r : roles) {
 			if (r.getRole().equals(OpenmrsConstants.SUPERUSER_ROLE) && !authUser.hasRole(OpenmrsConstants.SUPERUSER_ROLE))
 				throw new APIException("You must have the role '" + OpenmrsConstants.SUPERUSER_ROLE
-					+ "' in order to assign it.");
+				        + "' in order to assign it.");
 			if (r.getPrivileges() != null) {
 				for (Privilege p : r.getPrivileges())
 					if (!authUser.hasPrivilege(p.getPrivilege()))

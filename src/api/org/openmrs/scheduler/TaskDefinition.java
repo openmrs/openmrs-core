@@ -33,7 +33,7 @@ public class TaskDefinition extends BaseOpenmrsMetadata {
 	private Integer id;
 	
 	// This class must implement the schedulable interface or it will fail to start
-	private String taskClass; 
+	private String taskClass;
 	
 	private Task taskInstance = null;
 	
@@ -306,21 +306,21 @@ public class TaskDefinition extends BaseOpenmrsMetadata {
 	public void setTaskInstance(Task taskInstance) {
 		this.taskInstance = taskInstance;
 	}
-
+	
 	/**
-     * @deprecated use {@link #getCreator()}
-     */
-    public Object getCreatedBy() {
-	    // TODO Auto-generated method stub
-	    return null;
-    }
-
+	 * @deprecated use {@link #getCreator()}
+	 */
+	public Object getCreatedBy() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
 	/**
-     * @deprecated use {@link #setCreator(User)}
-     */
-    public void setCreatedBy(User authenticatedUser) {
-	    // TODO Auto-generated method stub
-	    
-    }
+	 * @deprecated use {@link #setCreator(User)}
+	 */
+	public void setCreatedBy(User authenticatedUser) {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

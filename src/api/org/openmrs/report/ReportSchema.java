@@ -31,10 +31,13 @@ import org.simpleframework.xml.Root;
  * Evaluating a report really means evaluating all the DataSetDefinitions it contains, resulting in
  * a {@link org.openmrs.report.ReportData}
  * <p>
- * The "filter" represents an (optional) extra filter that
- * is applied to the input cohort before the DataSetDefinitions ever see it.
+ * The "filter" represents an (optional) extra filter that is applied to the input cohort before the
+ * DataSetDefinitions ever see it.
+ * 
+ * @deprecated see reportingcompatibility module
  */
 @Root(strict = false)
+@Deprecated
 public class ReportSchema extends BaseOpenmrsMetadata implements Parameterizable {
 	
 	private static final long serialVersionUID = 932347906334509564L;
@@ -57,19 +60,19 @@ public class ReportSchema extends BaseOpenmrsMetadata implements Parameterizable
 	}
 	
 	/**
-     * @see org.openmrs.OpenmrsObject#getId()
-     */
-    public Integer getId() {
-    	return getReportSchemaId();
-    }
-
+	 * @see org.openmrs.OpenmrsObject#getId()
+	 */
+	public Integer getId() {
+		return getReportSchemaId();
+	}
+	
 	/**
-     * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
-     */
-    public void setId(Integer id) {
-	    setReportSchemaId(id);
-    }
-
+	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
+	 */
+	public void setId(Integer id) {
+		setReportSchemaId(id);
+	}
+	
 	/**
 	 * Set the Report Schema Id
 	 * 

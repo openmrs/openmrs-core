@@ -21,8 +21,11 @@ import org.simpleframework.xml.Root;
 
 /**
  * Report Data obtained from evaluating a ReportSchema with a given EvaluationContext.
+ * 
+ * @deprecated see reportingcompatibility module
  */
 @Root
+@Deprecated
 public class ReportData {
 	
 	private ReportSchema reportSchema;

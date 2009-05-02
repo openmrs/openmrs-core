@@ -18,6 +18,10 @@ import org.openmrs.PersonAttributeType;
 import org.openmrs.api.context.Context;
 import org.openmrs.report.EvaluationContext;
 
+/**
+ * @deprecated see reportingcompatibility module
+ */
+@Deprecated
 public class PersonAttributeFilter extends CachingPatientFilter {
 	
 	private PersonAttributeType attribute;

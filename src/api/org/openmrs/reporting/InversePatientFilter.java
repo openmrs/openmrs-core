@@ -21,6 +21,10 @@ import org.openmrs.report.EvaluationContext;
 import org.openmrs.report.Parameter;
 import org.openmrs.report.Parameterizable;
 
+/**
+ * @deprecated see reportingcompatibility module
+ */
+@Deprecated
 public class InversePatientFilter extends AbstractPatientFilter implements PatientFilter, Parameterizable {
 	
 	private static final long serialVersionUID = -3206254139003809474L;

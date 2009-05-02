@@ -249,7 +249,6 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	/**
 	 * @see org.openmrs.api.PatientService#checkPatientIdentifier(org.openmrs.PatientIdentifier)
 	 * @deprecated use {@link PatientIdentifierValidator#validateIdentifier(PatientIdentifier)}
-
 	 */
 	public void checkPatientIdentifier(PatientIdentifier pi) throws PatientIdentifierException {
 		PatientIdentifierValidator.validateIdentifier(pi);
@@ -290,7 +289,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	}
 	
 	/**
-	 * @deprecated replaced by {@link #getPatients(String, String, List, boolean)} 
+	 * @deprecated replaced by {@link #getPatients(String, String, List, boolean)}
 	 * @see org.openmrs.api.PatientService#getPatientsByIdentifierPattern(java.lang.String, boolean)
 	 */
 	public List<Patient> getPatientsByIdentifierPattern(String identifier, boolean includeVoided) throws APIException {
@@ -303,7 +302,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	
 	/**
 	 * @see org.openmrs.api.PatientService#getPatientsByName(java.lang.String)
-	 * @deprecated replaced by {@link #getPatients(String, String, List, boolean)} 
+	 * @deprecated replaced by {@link #getPatients(String, String, List, boolean)}
 	 */
 	public List<Patient> getPatientsByName(String name) throws APIException {
 		return getPatients(name, null, null);
@@ -440,8 +439,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	}
 	
 	/**
-	 * @deprecated replaced by
-	 *             {@link #getPatientIdentifiers(String, List, List, List, Boolean)} 
+	 * @deprecated replaced by {@link #getPatientIdentifiers(String, List, List, List, Boolean)}
 	 * @see org.openmrs.api.PatientService#getPatientIdentifiers(String, PatientIdentifierType)
 	 */
 	public List<PatientIdentifier> getPatientIdentifiers(String identifier, PatientIdentifierType patientIdentifierType,
@@ -1262,11 +1260,11 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 			return getDefaultIdentifierValidator();
 		}
 	}
-
+	
 	/**
-     * @see org.openmrs.api.PatientService#isIdentifierInUseByAnotherPatient(org.openmrs.PatientIdentifier)
-     */
-    public boolean isIdentifierInUseByAnotherPatient(PatientIdentifier patientIdentifier) {
-    	return dao.isIdentifierInUseByAnotherPatient(patientIdentifier);
-    }
+	 * @see org.openmrs.api.PatientService#isIdentifierInUseByAnotherPatient(org.openmrs.PatientIdentifier)
+	 */
+	public boolean isIdentifierInUseByAnotherPatient(PatientIdentifier patientIdentifier) {
+		return dao.isIdentifierInUseByAnotherPatient(patientIdentifier);
+	}
 }

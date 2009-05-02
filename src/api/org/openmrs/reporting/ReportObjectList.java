@@ -17,6 +17,10 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * @deprecated see reportingcompatibility module
+ */
+@Deprecated
 public class ReportObjectList {
 	
 	Set<AbstractReportObject> reportObjects;

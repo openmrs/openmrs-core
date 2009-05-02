@@ -25,7 +25,9 @@ import org.springframework.validation.Validator;
  * Validates attributes on the {@link ReportObject} object.
  * 
  * @since 1.5
+ * @deprecated see reportingcompatibility module
  */
+@Deprecated
 public class ReportObjectValidator implements Validator {
 	
 	/** Log for this class and subclasses */

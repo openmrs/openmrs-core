@@ -870,16 +870,16 @@ public class EncounterTest {
 	 * @see {@link Encounter#removeOrder(Order)}
 	 */
 	@Test
-    @Verifies(value = "should remove order from encounter", method = "removeOrder(Order)")
-    public void removeOrder_shouldRemoveOrderFromEncounter() throws Exception {
-	    Encounter encounter = new Encounter();
+	@Verifies(value = "should remove order from encounter", method = "removeOrder(Order)")
+	public void removeOrder_shouldRemoveOrderFromEncounter() throws Exception {
+		Encounter encounter = new Encounter();
 		Order order = new Order(1);
 		encounter.addOrder(order);
 		assertEquals(1, encounter.getOrders().size());
 		
 		encounter.removeOrder(order);
 		assertEquals(0, encounter.getOrders().size());
-    }
+	}
 	
 	/**
 	 * @see {@link Encounter#removeOrder(Order)}

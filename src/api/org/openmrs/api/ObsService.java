@@ -282,7 +282,8 @@ public interface ObsService extends OpenmrsService {
 	 * @param mimeType the MimeType to remove
 	 * @throws APIException
 	 * @see #purgeMimeType(MimeType)
-	 * @deprecated MimeTypes are no longer used. See {@link org.openmrs.ConceptComplex} and its use of handlers
+	 * @deprecated MimeTypes are no longer used. See {@link org.openmrs.ConceptComplex} and its use
+	 *             of handlers
 	 */
 	@Authorized(OpenmrsConstants.PRIV_PURGE_MIME_TYPES)
 	public void purgeMimeType(MimeType mimeType) throws APIException;

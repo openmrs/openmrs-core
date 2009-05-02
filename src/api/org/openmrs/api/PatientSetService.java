@@ -120,7 +120,7 @@ public interface PatientSetService {
 	@Transactional(readOnly = true)
 	public Cohort getPatientsHavingNumericObs(Integer conceptId, TimeModifier timeModifier,
 	                                          PatientSetService.Modifier modifier, Number value, Date fromDate, Date toDate);
-
+	
 	/**
 	 * Searches for patients who have observations as described by the arguments to this method
 	 * 
@@ -131,7 +131,6 @@ public interface PatientSetService {
 	 * @param fromDate
 	 * @param toDate
 	 * @return all patients with observations matching the arguments to this method
-	 * 
 	 * @should get patients by concept and true boolean value
 	 * @should get patients by concept and false boolean value
 	 */
@@ -354,7 +353,8 @@ public interface PatientSetService {
 	 * 
 	 * @param patients Cohort of patients to search
 	 * @param encType
-	 * @return Map<Integer, Encounter> of patientId to first encounters of specified patients, from a specific type
+	 * @return Map<Integer, Encounter> of patientId to first encounters of specified patients, from
+	 *         a specific type
 	 */
 	@Transactional(readOnly = true)
 	public Map<Integer, Encounter> getFirstEncountersByType(Cohort patients, EncounterType encType);
@@ -364,7 +364,8 @@ public interface PatientSetService {
 	 * 
 	 * @param patients Cohort of patients to search
 	 * @param types List<EncounterType> to include in the search
-	 * @return Map<Integer, Encounter> of patientId to first encounters of specified patients, from a specific list of types
+	 * @return Map<Integer, Encounter> of patientId to first encounters of specified patients, from
+	 *         a specific list of types
 	 */
 	@Transactional(readOnly = true)
 	public Map<Integer, Encounter> getFirstEncountersByType(Cohort patients, List<EncounterType> types);
@@ -455,7 +456,7 @@ public interface PatientSetService {
 	 */
 	@Transactional(readOnly = true)
 	public List<Patient> getPatients(Collection<Integer> patientIds);
-		
+	
 	@Transactional(readOnly = true)
 	public Map<Integer, PatientState> getCurrentStates(Cohort ps, ProgramWorkflow wf);
 	
@@ -481,7 +482,7 @@ public interface PatientSetService {
 	/**
 	 * @return all active or finished drug orders whose drug concept is in the given set (or all
 	 *         drugs if that's null)
-	 * @should return an empty list if cohort is empty  
+	 * @should return an empty list if cohort is empty
 	 */
 	@Transactional(readOnly = true)
 	public Map<Integer, List<DrugOrder>> getDrugOrders(Cohort ps, Concept drugSet);

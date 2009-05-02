@@ -155,7 +155,7 @@ public final class OpenmrsConstants {
 	 * A gender character to gender name map<br/>
 	 * TODO issues with localization. How should this be handled?
 	 * 
-	 * @return Map<String, String> of gender character to gender name 
+	 * @return Map<String, String> of gender character to gender name
 	 */
 	public static final Map<String, String> GENDER() {
 		Map<String, String> genders = new LinkedHashMap<String, String>();
@@ -282,22 +282,31 @@ public final class OpenmrsConstants {
 	
 	public static final String PRIV_PURGE_FORMS = "Purge Forms";
 	
+	@Deprecated
 	public static final String PRIV_VIEW_REPORTS = "View Reports";
 	
+	@Deprecated
 	public static final String PRIV_ADD_REPORTS = "Add Reports";
 	
+	@Deprecated
 	public static final String PRIV_EDIT_REPORTS = "Edit Reports";
 	
+	@Deprecated
 	public static final String PRIV_DELETE_REPORTS = "Delete Reports";
 	
+	@Deprecated
 	public static final String PRIV_RUN_REPORTS = "Run Reports";
 	
+	@Deprecated
 	public static final String PRIV_VIEW_REPORT_OBJECTS = "View Report Objects";
 	
+	@Deprecated
 	public static final String PRIV_ADD_REPORT_OBJECTS = "Add Report Objects";
 	
+	@Deprecated
 	public static final String PRIV_EDIT_REPORT_OBJECTS = "Edit Report Objects";
 	
+	@Deprecated
 	public static final String PRIV_DELETE_REPORT_OBJECTS = "Delete Report Objects";
 	
 	public static final String PRIV_MANAGE_IDENTIFIER_TYPES = "Manage Identifier Types";
@@ -433,8 +442,6 @@ public final class OpenmrsConstants {
 	public static final String PRIV_DELETE_RELATIONSHIPS = "Delete Relationships";
 	
 	public static final String PRIV_PURGE_RELATIONSHIPS = "Purge Relationships";
-	
-	public static final String PRIV_VIEW_DATAENTRY_STATS = "View Data Entry Statistics";
 	
 	public static final String PRIV_VIEW_DATABASE_CHANGES = "View Database Changes";
 	
@@ -593,8 +600,6 @@ public final class OpenmrsConstants {
 			CORE_PRIVILEGES.put(PRIV_EDIT_RELATIONSHIPS, "Able to edit relationships");
 			CORE_PRIVILEGES.put(PRIV_DELETE_RELATIONSHIPS, "Able to delete relationships");
 			
-			CORE_PRIVILEGES.put(PRIV_VIEW_DATAENTRY_STATS, "Able to view data entry statistics from the admin screen");
-			
 			CORE_PRIVILEGES.put(PRIV_VIEW_DATABASE_CHANGES, "Able to view database changes from the admin screen");
 		}
 		
@@ -674,8 +679,9 @@ public final class OpenmrsConstants {
 	
 	public static final String GLOBAL_PROPERTY_MEDICAL_RECORD_OBSERVATIONS = "concept.medicalRecordObservations";
 	
-	public static final String GLOBAL_PROPERTY_PROBLEM_LIST                = "concept.problemList";
+	public static final String GLOBAL_PROPERTY_PROBLEM_LIST = "concept.problemList";
 	
+	@Deprecated
 	public static final String GLOBAL_PROPERTY_REPORT_XML_MACROS = "report.xmlMacros";
 	
 	public static final String GLOBAL_PROPERTY_STANDARD_DRUG_REGIMENS = "dashboard.regimen.standardRegimens";
@@ -701,8 +707,8 @@ public final class OpenmrsConstants {
 	public static final String GLOBAL_PROPERTY_DEFAULT_LOCALE_DEFAULT_VALUE = "en_GB";
 	
 	/**
-	 * At OpenMRS startup these global properties/default values/descriptions are inserted into the database
-	 * if they do not exist yet.
+	 * At OpenMRS startup these global properties/default values/descriptions are inserted into the
+	 * database if they do not exist yet.
 	 * 
 	 * @return List<GlobalProperty> of the core global properties
 	 */
@@ -733,10 +739,16 @@ public final class OpenmrsConstants {
 		        "true/false whether or not to show the 'View Encounter' link on the patient dashboard"));
 		props.add(new GlobalProperty("dashboard.encounters.showEditLink", "true",
 		        "true/false whether or not to show the 'Edit Encounter' link on the patient dashboard"));
-		props.add(new GlobalProperty("dashboard.header.programs_to_show", "",
-				"List of programs to show Enrollment details of in the patient header. (Should be an ordered comma-separated list of program_ids or names.)"));
-		props.add(new GlobalProperty("dashboard.header.workflows_to_show", "",
-				"List of programs to show Enrollment details of in the patient header. List of workflows to show current status of in the patient header. These will only be displayed if they belong to a program listed above. (Should be a comma-separated list of program_workflow_ids.)"));
+		props
+		        .add(new GlobalProperty(
+		                "dashboard.header.programs_to_show",
+		                "",
+		                "List of programs to show Enrollment details of in the patient header. (Should be an ordered comma-separated list of program_ids or names.)"));
+		props
+		        .add(new GlobalProperty(
+		                "dashboard.header.workflows_to_show",
+		                "",
+		                "List of programs to show Enrollment details of in the patient header. List of workflows to show current status of in the patient header. These will only be displayed if they belong to a program listed above. (Should be a comma-separated list of program_workflow_ids.)"));
 		props.add(new GlobalProperty("dashboard.relationships.show_types", "",
 		        "Types of relationships separated by commas.  Doctor/Patient,Parent/Child"));
 		props
@@ -897,10 +909,10 @@ public final class OpenmrsConstants {
 		                "The concept id of the MEDICAL_RECORD_OBSERVATIONS concept.  This concept_id is presumed to be the generic grouping (obr) concept in hl7 messages.  An obs_group row is not created for this concept."));
 		
 		props
-        .add(new GlobalProperty(
-                GLOBAL_PROPERTY_PROBLEM_LIST,
-                "1284",
-                "The concept id of the PROBLEM LIST concept.  This concept_id is presumed to be the generic grouping (obr) concept in hl7 messages.  An obs_group row is not created for this concept."));
+		        .add(new GlobalProperty(
+		                GLOBAL_PROPERTY_PROBLEM_LIST,
+		                "1284",
+		                "The concept id of the PROBLEM LIST concept.  This concept_id is presumed to be the generic grouping (obr) concept in hl7 messages.  An obs_group row is not created for this concept."));
 		
 		props
 		        .add(new GlobalProperty(
@@ -1090,10 +1102,13 @@ public final class OpenmrsConstants {
 	/**
 	 * Report object properties
 	 */
+	@Deprecated
 	public static final String REPORT_OBJECT_TYPE_PATIENTFILTER = "Patient Filter";
 	
+	@Deprecated
 	public static final String REPORT_OBJECT_TYPE_PATIENTSEARCH = "Patient Search";
 	
+	@Deprecated
 	public static final String REPORT_OBJECT_TYPE_PATIENTDATAPRODUCER = "Patient Data Producer";
 	
 	// Used for differences between windows/linux upload capabilities)

@@ -25,245 +25,260 @@ import org.openmrs.serialization.OpenmrsSerializer;
 public class SerializedObject {
 	
 	private Integer id;
+	
 	private String name;
+	
 	private String description;
+	
 	private Class<? extends OpenmrsObject> type;
+	
 	private Class<? extends OpenmrsObject> subtype;
+	
 	private Class<? extends OpenmrsSerializer> serializationClass;
+	
 	private String serializedData;
-	private User creator;	
+	
+	private User creator;
+	
 	private Date dateCreated;
-	private User changedBy;	
-	private Date dateChanged;	
-	private Boolean retired = false;	
+	
+	private User changedBy;
+	
+	private Date dateChanged;
+	
+	private Boolean retired = false;
+	
 	private User retiredBy;
+	
 	private Date dateRetired;
+	
 	private String retireReason;
 	
 	/**
 	 * Default Constructor
 	 */
-	public SerializedObject() { }
+	public SerializedObject() {
+	}
 	
 	//***** Instance methods
 	
-    /**
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-    	return "Serialized " + subtype + " named <" + name + ">";
-    }
+	/**
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "Serialized " + subtype + " named <" + name + ">";
+	}
 	
 	//***** Property accessors
 	
 	/**
-     * @return the id
-     */
-    public Integer getId() {
-    	return id;
-    }
-
+	 * @return the id
+	 */
+	public Integer getId() {
+		return id;
+	}
+	
 	/**
-     * @param id the id to set
-     */
-    public void setId(Integer id) {
-    	this.id = id;
-    }
-
+	 * @param id the id to set
+	 */
+	public void setId(Integer id) {
+		this.id = id;
+	}
+	
 	/**
-     * @return the name
-     */
-    public String getName() {
-    	return name;
-    }
+	 * @return the name
+	 */
+	public String getName() {
+		return name;
+	}
 	
-    /**
-     * @param name the name to set
-     */
-    public void setName(String name) {
-    	this.name = name;
-    }
-    
-    /**
-     * @return the description
-     */
-    public String getDescription() {
-    	return description;
-    }
-
-    /**
-     * @param description the description to set
-     */
-    public void setDescription(String description) {
-    	this.description = description;
-    }
-
 	/**
-     * @return the type
-     */
-    public Class<? extends OpenmrsObject> getType() {
-    	return type;
-    }
-
-    /**
-     * @param type the type to set
-     */
-    public void setType(Class<? extends OpenmrsObject> type) {
-    	this.type = type;
-    }
-
-    /**
-     * @return the subtype
-     */
-    public Class<? extends OpenmrsObject> getSubtype() {
-    	return subtype;
-    }
+	 * @param name the name to set
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
 	
-    /**
-     * @param subtype the subtype to set
-     */
-    public void setSubtype(Class<? extends OpenmrsObject> subtype) {
-    	this.subtype = subtype;
-    }
-    
-    /**
-     * @return the serializationClass
-     */
-    public Class<? extends OpenmrsSerializer> getSerializationClass() {
-    	return serializationClass;
-    }
-
-    /**
-     * @param serializationClass the serializationClass to set
-     */
-    public void setSerializationClass(Class<? extends OpenmrsSerializer> serializationClass) {
-    	this.serializationClass = serializationClass;
-    }
-
 	/**
-     * @return the serializedData
-     */
-    public String getSerializedData() {
-    	return serializedData;
-    }
-
-    /**
-     * @param serializedData the serializedData to set
-     */
-    public void setSerializedData(String serializedData) {
-    	this.serializedData = serializedData;
-    }
-
+	 * @return the description
+	 */
+	public String getDescription() {
+		return description;
+	}
+	
 	/**
-     * @return the creator
-     */
-    public User getCreator() {
-    	return creator;
-    }
+	 * @param description the description to set
+	 */
+	public void setDescription(String description) {
+		this.description = description;
+	}
 	
-    /**
-     * @param creator the creator to set
-     */
-    public void setCreator(User creator) {
-    	this.creator = creator;
-    }
+	/**
+	 * @return the type
+	 */
+	public Class<? extends OpenmrsObject> getType() {
+		return type;
+	}
 	
-    /**
-     * @return the dateCreated
-     */
-    public Date getDateCreated() {
-    	return dateCreated;
-    }
+	/**
+	 * @param type the type to set
+	 */
+	public void setType(Class<? extends OpenmrsObject> type) {
+		this.type = type;
+	}
 	
-    /**
-     * @param dateCreated the dateCreated to set
-     */
-    public void setDateCreated(Date dateCreated) {
-    	this.dateCreated = dateCreated;
-    }
+	/**
+	 * @return the subtype
+	 */
+	public Class<? extends OpenmrsObject> getSubtype() {
+		return subtype;
+	}
 	
-    /**
-     * @return the changedBy
-     */
-    public User getChangedBy() {
-    	return changedBy;
-    }
+	/**
+	 * @param subtype the subtype to set
+	 */
+	public void setSubtype(Class<? extends OpenmrsObject> subtype) {
+		this.subtype = subtype;
+	}
 	
-    /**
-     * @param changedBy the changedBy to set
-     */
-    public void setChangedBy(User changedBy) {
-    	this.changedBy = changedBy;
-    }
+	/**
+	 * @return the serializationClass
+	 */
+	public Class<? extends OpenmrsSerializer> getSerializationClass() {
+		return serializationClass;
+	}
 	
-    /**
-     * @return the dateChanged
-     */
-    public Date getDateChanged() {
-    	return dateChanged;
-    }
+	/**
+	 * @param serializationClass the serializationClass to set
+	 */
+	public void setSerializationClass(Class<? extends OpenmrsSerializer> serializationClass) {
+		this.serializationClass = serializationClass;
+	}
 	
-    /**
-     * @param dateChanged the dateChanged to set
-     */
-    public void setDateChanged(Date dateChanged) {
-    	this.dateChanged = dateChanged;
-    }
+	/**
+	 * @return the serializedData
+	 */
+	public String getSerializedData() {
+		return serializedData;
+	}
 	
-    /**
-     * @return the retired
-     */
-    public Boolean getRetired() {
-    	return retired;
-    }
-
-    /**
-     * @param retired the retired to set
-     */
-    public void setRetired(Boolean retired) {
-    	this.retired = retired;
-    }
+	/**
+	 * @param serializedData the serializedData to set
+	 */
+	public void setSerializedData(String serializedData) {
+		this.serializedData = serializedData;
+	}
 	
-    /**
-     * @return the retiredBy
-     */
-    public User getRetiredBy() {
-    	return retiredBy;
-    }
-
-    /**
-     * @param retiredBy the retiredBy to set
-     */
-    public void setRetiredBy(User retiredBy) {
-    	this.retiredBy = retiredBy;
-    }
-
-    /**
-     * @return the dateRetired
-     */
-    public Date getDateRetired() {
-    	return dateRetired;
-    }
+	/**
+	 * @return the creator
+	 */
+	public User getCreator() {
+		return creator;
+	}
 	
-    /**
-     * @param dateRetired the dateRetired to set
-     */
-    public void setDateRetired(Date dateRetired) {
-    	this.dateRetired = dateRetired;
-    }
+	/**
+	 * @param creator the creator to set
+	 */
+	public void setCreator(User creator) {
+		this.creator = creator;
+	}
 	
-    /**
-     * @return the retireReason
-     */
-    public String getRetireReason() {
-    	return retireReason;
-    }
+	/**
+	 * @return the dateCreated
+	 */
+	public Date getDateCreated() {
+		return dateCreated;
+	}
 	
-    /**
-     * @param retireReason the retireReason to set
-     */
-    public void setRetireReason(String retireReason) {
-    	this.retireReason = retireReason;
-    }
+	/**
+	 * @param dateCreated the dateCreated to set
+	 */
+	public void setDateCreated(Date dateCreated) {
+		this.dateCreated = dateCreated;
+	}
+	
+	/**
+	 * @return the changedBy
+	 */
+	public User getChangedBy() {
+		return changedBy;
+	}
+	
+	/**
+	 * @param changedBy the changedBy to set
+	 */
+	public void setChangedBy(User changedBy) {
+		this.changedBy = changedBy;
+	}
+	
+	/**
+	 * @return the dateChanged
+	 */
+	public Date getDateChanged() {
+		return dateChanged;
+	}
+	
+	/**
+	 * @param dateChanged the dateChanged to set
+	 */
+	public void setDateChanged(Date dateChanged) {
+		this.dateChanged = dateChanged;
+	}
+	
+	/**
+	 * @return the retired
+	 */
+	public Boolean getRetired() {
+		return retired;
+	}
+	
+	/**
+	 * @param retired the retired to set
+	 */
+	public void setRetired(Boolean retired) {
+		this.retired = retired;
+	}
+	
+	/**
+	 * @return the retiredBy
+	 */
+	public User getRetiredBy() {
+		return retiredBy;
+	}
+	
+	/**
+	 * @param retiredBy the retiredBy to set
+	 */
+	public void setRetiredBy(User retiredBy) {
+		this.retiredBy = retiredBy;
+	}
+	
+	/**
+	 * @return the dateRetired
+	 */
+	public Date getDateRetired() {
+		return dateRetired;
+	}
+	
+	/**
+	 * @param dateRetired the dateRetired to set
+	 */
+	public void setDateRetired(Date dateRetired) {
+		this.dateRetired = dateRetired;
+	}
+	
+	/**
+	 * @return the retireReason
+	 */
+	public String getRetireReason() {
+		return retireReason;
+	}
+	
+	/**
+	 * @param retireReason the retireReason to set
+	 */
+	public void setRetireReason(String retireReason) {
+		this.retireReason = retireReason;
+	}
 }

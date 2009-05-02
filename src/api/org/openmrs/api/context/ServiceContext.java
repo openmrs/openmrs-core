@@ -193,7 +193,9 @@ public class ServiceContext implements ApplicationContextAware {
 	
 	/**
 	 * @return report object service
+	 * @deprecated see reportingcompatibility module
 	 */
+	@Deprecated
 	public ReportObjectService getReportObjectService() {
 		return (ReportObjectService) getService(ReportObjectService.class);
 	}
@@ -207,7 +209,9 @@ public class ServiceContext implements ApplicationContextAware {
 	
 	/**
 	 * @return report service
+	 * @deprecated see reportingcompatibility module
 	 */
+	@Deprecated
 	public ReportService getReportService() {
 		return (ReportService) getService(ReportService.class);
 	}
@@ -373,14 +377,18 @@ public class ServiceContext implements ApplicationContextAware {
 	
 	/**
 	 * @param reportObjectService the reportObjectService to set
+	 * @deprecated see reportingcompatibility module
 	 */
+	@Deprecated
 	public void setReportObjectService(ReportObjectService reportObjectService) {
 		setService(ReportObjectService.class, reportObjectService);
 	}
 	
 	/**
 	 * @param reportService
+	 * @deprecated see reportingcompatibility module
 	 */
+	@Deprecated
 	public void setReportService(ReportService reportService) {
 		setService(ReportService.class, reportService);
 	}
@@ -394,14 +402,18 @@ public class ServiceContext implements ApplicationContextAware {
 	
 	/**
 	 * @param dataSetService
+	 * @deprecated see reportingcompatibility module
 	 */
+	@Deprecated
 	public void setDataSetService(DataSetService dataSetService) {
 		setService(DataSetService.class, dataSetService);
 	}
 	
 	/**
 	 * @return the DataSetService
+	 * @deprecated see reportingcompatibility module
 	 */
+	@Deprecated
 	public DataSetService getDataSetService() {
 		return (DataSetService) getService(DataSetService.class);
 	}

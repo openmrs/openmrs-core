@@ -194,17 +194,17 @@ public class PersonFormController extends SimpleFormController {
 		String causeOfDeathOther = "";
 		
 		if (Context.isAuthenticated()) {
-
+			
 			String propCause = Context.getAdministrationService().getGlobalProperty("concept.causeOfDeath");
 			Concept conceptCause = Context.getConceptService().getConcept(propCause);
 			
-			if ( conceptCause != null ) {
+			if (conceptCause != null) {
 				// TODO add back in for persons
 				List<Obs> obssDeath = Context.getObsService().getObservationsByPersonAndConcept(person, conceptCause);
-				if ( obssDeath.size() == 1 ) {
+				if (obssDeath.size() == 1) {
 					Obs obsDeath = obssDeath.iterator().next();
 					causeOfDeathOther = obsDeath.getValueText();
-					if ( causeOfDeathOther == null ) {
+					if (causeOfDeathOther == null) {
 						log.debug("cod is null, so setting to empty string");
 						causeOfDeathOther = "";
 					} else {

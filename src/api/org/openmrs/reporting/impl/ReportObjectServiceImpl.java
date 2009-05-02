@@ -29,8 +29,9 @@ import org.openmrs.reporting.db.ReportObjectDAO;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
- *
+ * @deprecated see reportingcompatibility module
  */
+@Deprecated
 public class ReportObjectServiceImpl extends BaseOpenmrsService implements ReportObjectService {
 	
 	private ReportObjectDAO reportObjectDAO;

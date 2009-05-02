@@ -15,6 +15,10 @@ package org.openmrs.reporting.export;
 
 import java.io.Serializable;
 
+/**
+ * @deprecated see reportingcompatibility module
+ */
+@Deprecated
 public class CalculatedColumn extends SimpleColumn implements ExportColumn, Serializable {
 	
 	public static final long serialVersionUID = 987654324L;

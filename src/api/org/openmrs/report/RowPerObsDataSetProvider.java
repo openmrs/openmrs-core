@@ -24,8 +24,9 @@ import org.openmrs.Obs;
 import org.openmrs.api.context.Context;
 
 /**
- *
+ * @deprecated see reportingcompatibility module
  */
+@Deprecated
 public class RowPerObsDataSetProvider implements DataSetProvider {
 	
 	protected Log log = LogFactory.getLog(this.getClass());

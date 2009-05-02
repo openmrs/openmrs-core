@@ -583,30 +583,30 @@ public class HibernatePatientDAO implements PatientDAO {
 		
 		return 1000;
 	}
-
+	
 	/**
-	 * This method uses a SQL query and does not load anything into the hibernate session. It exists because
-	 * of ticket #1375.
-     * @see org.openmrs.api.db.PatientDAO#isIdentifierInUseByAnotherPatient(org.openmrs.PatientIdentifier)
-     */
-    public boolean isIdentifierInUseByAnotherPatient(PatientIdentifier patientIdentifier) {
-    	boolean checkPatient = patientIdentifier.getPatient() != null && patientIdentifier.getPatient().getPatientId() != null;
-
-    	String sql = "select count(*) from patient_identifier" +
-	      " where voided = false" +
-	      "   and identifier = :identifier" +
-	      "   and identifier_type = :idType";
-    	
-    	if (checkPatient) {
-    		sql += " and patient_id != :ptId";
-    	}
-
-    	SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
-    	query.setString("identifier", patientIdentifier.getIdentifier());
-    	query.setInteger("idType", patientIdentifier.getIdentifierType().getPatientIdentifierTypeId());
-    	if (checkPatient) {
-	    	query.setInteger("ptId", patientIdentifier.getPatient().getPatientId());
-    	}
-    	return !query.uniqueResult().toString().equals("0");
-    }
+	 * This method uses a SQL query and does not load anything into the hibernate session. It exists
+	 * because of ticket #1375.
+	 * 
+	 * @see org.openmrs.api.db.PatientDAO#isIdentifierInUseByAnotherPatient(org.openmrs.PatientIdentifier)
+	 */
+	public boolean isIdentifierInUseByAnotherPatient(PatientIdentifier patientIdentifier) {
+		boolean checkPatient = patientIdentifier.getPatient() != null
+		        && patientIdentifier.getPatient().getPatientId() != null;
+		
+		String sql = "select count(*) from patient_identifier" + " where voided = false" + "   and identifier = :identifier"
+		        + "   and identifier_type = :idType";
+		
+		if (checkPatient) {
+			sql += " and patient_id != :ptId";
+		}
+		
+		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
+		query.setString("identifier", patientIdentifier.getIdentifier());
+		query.setInteger("idType", patientIdentifier.getIdentifierType().getPatientIdentifierTypeId());
+		if (checkPatient) {
+			query.setInteger("ptId", patientIdentifier.getPatient().getPatientId());
+		}
+		return !query.uniqueResult().toString().equals("0");
+	}
 }

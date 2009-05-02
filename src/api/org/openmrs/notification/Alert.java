@@ -202,7 +202,7 @@ public class Alert implements Serializable {
 	}
 	
 	/**
-	 * @see #isAlertRead() 
+	 * @see #isAlertRead()
 	 */
 	public Boolean getAlertRead() {
 		return isAlertRead();

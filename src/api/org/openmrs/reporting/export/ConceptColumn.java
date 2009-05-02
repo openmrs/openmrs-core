@@ -20,6 +20,10 @@ import org.openmrs.Concept;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 
+/**
+ * @deprecated see reportingcompatibility module
+ */
+@Deprecated
 public class ConceptColumn implements ExportColumn, Serializable {
 	
 	public static final long serialVersionUID = 987654323L;
@@ -164,12 +168,11 @@ public class ConceptColumn implements ExportColumn, Serializable {
 	}
 	
 	/**
-	 * Convenience method used by {@link #getTemplateColumnName()} to print
-	 * out for just the given concept.  This is used for all normal columns
-	 * and then for the each set member of a column
+	 * Convenience method used by {@link #getTemplateColumnName()} to print out for just the given
+	 * concept. This is used for all normal columns and then for the each set member of a column
 	 * 
 	 * @param columnName the conceptName to act on
-	 * @return string for this one concept 
+	 * @return string for this one concept
 	 */
 	private String getTemplateSingleConceptColumnName(String columnName) {
 		String s = "\"" + columnName + "\"";

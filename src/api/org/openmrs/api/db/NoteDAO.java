@@ -58,10 +58,8 @@ public interface NoteDAO {
 	public void updateNote(Note note) throws DAOException;
 	
 	/**
-	 * TODO: Couldn't find a voidNote method
-	 * 
-	 * Delete note from database. This <b>should not be called</b> except for testing and
-	 * administration purposes. Use the void method instead.
+	 * TODO: Couldn't find a voidNote method Delete note from database. This <b>should not be
+	 * called</b> except for testing and administration purposes. Use the void method instead.
 	 * 
 	 * @param note <code>Note</code> to be deleted
 	 * @throws DAOException

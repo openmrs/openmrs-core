@@ -23,8 +23,8 @@ import java.util.Date;
  * removed because there are (and may be in perpetuity) data previously collected using these
  * metadata. Making these metadata Retirable allows them to be retired, meaning that existing
  * references remain valid but future references are not allowed.
- * @since 1.5
  * 
+ * @since 1.5
  * @see OpenmrsMetadata
  * @see Voidable
  */

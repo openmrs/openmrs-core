@@ -24,8 +24,9 @@ import org.openmrs.api.context.Context;
 import org.openmrs.reporting.PatientSearch;
 
 /**
- *  
+ * @deprecated see reportingcompatibility module
  */
+@Deprecated
 public class CohortUtil {
 	
 	/**

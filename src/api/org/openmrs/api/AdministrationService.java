@@ -24,7 +24,6 @@ import org.openmrs.Concept;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptProposal;
-import org.openmrs.DataEntryStatistic;
 import org.openmrs.EncounterType;
 import org.openmrs.FieldType;
 import org.openmrs.GlobalProperty;
@@ -261,15 +260,19 @@ public interface AdministrationService extends OpenmrsService {
 	 * 
 	 * @param report Report to create
 	 * @throws APIException
+	 * @deprecated see reportingcompatibility module
 	 */
+	@Deprecated
 	public void createReport(Report report) throws APIException;
 	
 	/**
 	 * Update Report
 	 * 
 	 * @param report Report to update
+	 * @deprecated see reportingcompatibility module
 	 * @throws APIException
 	 */
+	@Deprecated
 	public void updateReport(Report report) throws APIException;
 	
 	/**
@@ -277,31 +280,39 @@ public interface AdministrationService extends OpenmrsService {
 	 * 
 	 * @param report Report to delete
 	 * @throws APIException
+	 * @deprecated see reportingcompatibility module
 	 */
+	@Deprecated
 	public void deleteReport(Report report) throws APIException;
 	
 	/**
 	 * Create a new Report Object
 	 * 
 	 * @param reportObject Report Object to create
+	 * @deprecated see reportingcompatibility module
 	 * @throws APIException
 	 */
+	@Deprecated
 	public void createReportObject(AbstractReportObject reportObject) throws APIException;
 	
 	/**
 	 * Update Report Object
 	 * 
 	 * @param reportObject the Report Object to update
+	 * @deprecated see reportingcompatibility module
 	 * @throws APIException
 	 */
+	@Deprecated
 	public void updateReportObject(AbstractReportObject reportObject) throws APIException;
 	
 	/**
 	 * Delete Report Object
 	 * 
 	 * @param reportObjectId Internal identifier for the Report Object to delete
+	 * @deprecated see reportingcompatibility module
 	 * @throws APIException
 	 */
+	@Deprecated
 	public void deleteReportObject(Integer reportObjectId) throws APIException;
 	
 	/**
@@ -568,23 +579,6 @@ public interface AdministrationService extends OpenmrsService {
 	 * @param listener
 	 */
 	public void removeGlobalPropertyListener(GlobalPropertyListener listener);
-	
-	/**
-	 * Creates a list of data entry stats from <code>fromDate</code> to <code>toDate</code>
-	 * EncounterUserColumn is a column in the encounter table like <code>creator</code>,
-	 * <code>provider</code>, etc (defaults to creator) EncounterUserColumn is a column in the
-	 * encounter table like <code>creator</code>, <code>orderer</code>, etc (defaults to orderer)
-	 * 
-	 * @param fromDate
-	 * @param toDate
-	 * @param encounterUserColumn
-	 * @param orderUserColumn
-	 * @param groupBy (optional)
-	 * @return the list of DataEntryStatistics
-	 */
-	// Authorization?
-	public List<DataEntryStatistic> getDataEntryStatistics(Date fromDate, Date toDate, String encounterUserColumn,
-	                                                       String orderUserColumn, String groupBy);
 	
 	/**
 	 * Runs the <code>sql</code> on the database. If <code>selectOnly</code> is flagged then any

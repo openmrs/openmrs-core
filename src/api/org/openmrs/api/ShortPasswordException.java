@@ -20,6 +20,7 @@ import org.openmrs.util.OpenmrsUtil;
  * Password exception when the length is less than the minimum allowed.
  * <p>
  * For details on what is checked, see {@link OpenmrsUtil#validatePassword(String, String, String)}.
+ * 
  * @since 1.5
  */
 public class ShortPasswordException extends PasswordException {

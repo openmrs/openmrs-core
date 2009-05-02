@@ -18,5 +18,5 @@ package org.openmrs.web.controller.user;
  */
 @Deprecated
 public class PrivilegeValidator extends org.openmrs.validator.PrivilegeValidator {
-	
+
 }

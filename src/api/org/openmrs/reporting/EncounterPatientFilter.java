@@ -27,6 +27,10 @@ import org.openmrs.api.context.Context;
 import org.openmrs.report.EvaluationContext;
 import org.openmrs.util.OpenmrsUtil;
 
+/**
+ * @deprecated see reportingcompatibility module
+ */
+@Deprecated
 public class EncounterPatientFilter extends CachingPatientFilter {
 	
 	private static final long serialVersionUID = 1L;

@@ -61,7 +61,7 @@ public class PortletControllerTest extends BaseWebContextSensitiveTest {
 	@Test
 	@Verifies(value = "should calculate bmi into patientBmiAsString", method = "handleRequest(HttpServletRequest,HttpServletResponse)")
 	public void handleRequest_shouldCalculateBmiIntoPatientBmiAsString() throws Exception {
-		executeDataSet("org/openmrs/web/controller/include/PortletControllerTest-bmi.xml");		
+		executeDataSet("org/openmrs/web/controller/include/PortletControllerTest-bmi.xml");
 		Map<String, Object> modelmap = getModelFromController(7);
 		Assert.assertEquals("61.7", modelmap.get("patientBmiAsString"));
 	}

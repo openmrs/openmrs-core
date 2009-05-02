@@ -101,6 +101,7 @@ public class UserContext {
 	 * Refresh the authenticated user object in this UserContext. This should be used when updating
 	 * information in the database about the current user and it needs to be reflecting in the
 	 * (cached) {@link #getAuthenticatedUser()} User object.
+	 * 
 	 * @since 1.5
 	 */
 	public void refreshAuthenticatedUser() {

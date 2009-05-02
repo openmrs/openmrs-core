@@ -28,7 +28,9 @@ import org.openmrs.cohort.CohortDefinition;
  * 
  * @see CohortDataSetDefinition
  * @see CohortDataSet
+ * @deprecated see reportingcompatibility module
  */
+@Deprecated
 public class CohortDataSetProvider implements DataSetProvider {
 	
 	protected Log log = LogFactory.getLog(this.getClass());
@@ -44,7 +46,8 @@ public class CohortDataSetProvider implements DataSetProvider {
 	}
 	
 	/**
-	 * @see org.openmrs.report.DataSetProvider#evaluate(DataSetDefinition, Cohort, EvaluationContext)
+	 * @see org.openmrs.report.DataSetProvider#evaluate(DataSetDefinition, Cohort,
+	 *      EvaluationContext)
 	 */
 	@SuppressWarnings("unchecked")
 	public DataSet evaluate(DataSetDefinition dataSetDefinition, Cohort inputCohort, EvaluationContext evalContext) {

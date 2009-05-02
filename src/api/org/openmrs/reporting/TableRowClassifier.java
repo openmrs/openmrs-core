@@ -13,6 +13,10 @@
  */
 package org.openmrs.reporting;
 
+/**
+ * @deprecated see reportingcompatibility module
+ */
+@Deprecated
 public interface TableRowClassifier {
 	
 	public String classify(TableRow row);

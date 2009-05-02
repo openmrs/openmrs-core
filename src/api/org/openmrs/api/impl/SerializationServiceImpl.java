@@ -26,8 +26,8 @@ import org.openmrs.serialization.OpenmrsSerializer;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Contains methods for retrieving registered Serializer instances,
- * and for persisting/retrieving/deleting objects using serialization
+ * Contains methods for retrieving registered Serializer instances, and for
+ * persisting/retrieving/deleting objects using serialization
  */
 @Transactional
 public class SerializationServiceImpl extends BaseOpenmrsService implements SerializationService {
@@ -36,81 +36,83 @@ public class SerializationServiceImpl extends BaseOpenmrsService implements Seri
 	
 	//***** Properties (set by spring)
 	private Map<Class<? extends OpenmrsSerializer>, OpenmrsSerializer> serializerMap;
+	
 	private OpenmrsSerializer defaultSerializer;
 	
 	//***** Service method implementations *****
 	
 	/**
-     * @see org.openmrs.api.SerializationService#getSerializer(java.lang.Class)
-     */
-    public OpenmrsSerializer getSerializer(Class<? extends OpenmrsSerializer> serializationClass) {
-    	if (serializerMap != null) {
-    		return serializerMap.get(serializationClass);
-    	}
-    	return null;
-    }
+	 * @see org.openmrs.api.SerializationService#getSerializer(java.lang.Class)
+	 */
+	public OpenmrsSerializer getSerializer(Class<? extends OpenmrsSerializer> serializationClass) {
+		if (serializerMap != null) {
+			return serializerMap.get(serializationClass);
+		}
+		return null;
+	}
 	
 	/**
-     * @see org.openmrs.api.SerializationService#getDefaultSerializer()
-     */
-    public OpenmrsSerializer getDefaultSerializer() {
-    	if (defaultSerializer != null) {
-    		return defaultSerializer;
-    	}
-    	if (serializerMap != null && !serializerMap.isEmpty()) {
-    		return serializerMap.values().iterator().next();
-    	}
-    	return null;
-    }
-    
-    /**
-     * @see org.openmrs.api.SerializationService#serialize(java.lang.Object, java.lang.Class)
-     */
-    public String serialize(Object o, Class<? extends OpenmrsSerializer> clazz) throws APIException {
-    	OpenmrsSerializer serializer = getSerializer(clazz);
-    	if (serializer == null) {
-    		throw new APIException("OpenmrsSerializer of class <" + clazz + "> not found.");
-    	}
-    	return serializer.serialize(o);
-    }
-    
-    /**
-     * @see org.openmrs.api.SerializationService#deserialize(java.lang.String, java.lang.Class, java.lang.Class)
-     */
-    public <T extends Object> T deserialize(String serializedObject, Class<? extends T> objectClass, 
-                                            Class<? extends OpenmrsSerializer> serializerClass) throws APIException {
-    	OpenmrsSerializer serializer = getSerializer(serializerClass);
-    	if (serializer == null) {
-    		throw new APIException("OpenmrsSerializer of class <" + serializerClass + "> not found.");
-    	}
-    	return serializer.deserialize(serializedObject, objectClass);
-    }
+	 * @see org.openmrs.api.SerializationService#getDefaultSerializer()
+	 */
+	public OpenmrsSerializer getDefaultSerializer() {
+		if (defaultSerializer != null) {
+			return defaultSerializer;
+		}
+		if (serializerMap != null && !serializerMap.isEmpty()) {
+			return serializerMap.values().iterator().next();
+		}
+		return null;
+	}
+	
+	/**
+	 * @see org.openmrs.api.SerializationService#serialize(java.lang.Object, java.lang.Class)
+	 */
+	public String serialize(Object o, Class<? extends OpenmrsSerializer> clazz) throws APIException {
+		OpenmrsSerializer serializer = getSerializer(clazz);
+		if (serializer == null) {
+			throw new APIException("OpenmrsSerializer of class <" + clazz + "> not found.");
+		}
+		return serializer.serialize(o);
+	}
+	
+	/**
+	 * @see org.openmrs.api.SerializationService#deserialize(java.lang.String, java.lang.Class,
+	 *      java.lang.Class)
+	 */
+	public <T extends Object> T deserialize(String serializedObject, Class<? extends T> objectClass,
+	                                        Class<? extends OpenmrsSerializer> serializerClass) throws APIException {
+		OpenmrsSerializer serializer = getSerializer(serializerClass);
+		if (serializer == null) {
+			throw new APIException("OpenmrsSerializer of class <" + serializerClass + "> not found.");
+		}
+		return serializer.deserialize(serializedObject, objectClass);
+	}
 	
 	//***** Property access *****
-
-    /**
-     * @return the serializers
-     */
-    public List<? extends OpenmrsSerializer> getSerializers() {
-    	return new ArrayList<OpenmrsSerializer>(serializerMap.values());
-    }
-
-    /**
-     * @param serializers the serializers to set
-     */
-    public void setSerializers(List<? extends OpenmrsSerializer> serializers) {
-    	serializerMap = new LinkedHashMap<Class<? extends OpenmrsSerializer>, OpenmrsSerializer>();
-    	if (serializers != null) {
-    		for (OpenmrsSerializer s : serializers) {
-    			serializerMap.put(s.getClass(), s);
-    		}
-    	}
-    }
-
-    /**
-     * @param defaultSerializer the defaultSerializer to set
-     */
-    public void setDefaultSerializer(OpenmrsSerializer defaultSerializer) {
-    	this.defaultSerializer = defaultSerializer;
-    }
+	
+	/**
+	 * @return the serializers
+	 */
+	public List<? extends OpenmrsSerializer> getSerializers() {
+		return new ArrayList<OpenmrsSerializer>(serializerMap.values());
+	}
+	
+	/**
+	 * @param serializers the serializers to set
+	 */
+	public void setSerializers(List<? extends OpenmrsSerializer> serializers) {
+		serializerMap = new LinkedHashMap<Class<? extends OpenmrsSerializer>, OpenmrsSerializer>();
+		if (serializers != null) {
+			for (OpenmrsSerializer s : serializers) {
+				serializerMap.put(s.getClass(), s);
+			}
+		}
+	}
+	
+	/**
+	 * @param defaultSerializer the defaultSerializer to set
+	 */
+	public void setDefaultSerializer(OpenmrsSerializer defaultSerializer) {
+		this.defaultSerializer = defaultSerializer;
+	}
 }

@@ -53,7 +53,8 @@ public class SerializationServiceTest extends BaseContextSensitiveTest {
 		report.setDescription("A test report");
 		report.setDataSetDefinitions(new ArrayList<DataSetDefinition>());
 		String xml = Context.getSerializationService().serialize(report, XStreamSerializer.class);
-		ReportSchema hydratedReport = Context.getSerializationService().deserialize(xml, ReportSchema.class, XStreamSerializer.class);
+		ReportSchema hydratedReport = Context.getSerializationService().deserialize(xml, ReportSchema.class,
+		    XStreamSerializer.class);
 		assertEquals("TestReport", hydratedReport.getName());
 		assertEquals("A test report", hydratedReport.getDescription());
 	}

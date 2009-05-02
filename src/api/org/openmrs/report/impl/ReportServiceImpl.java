@@ -53,7 +53,9 @@ import org.simpleframework.xml.Serializer;
  * 
  * @see org.openmrs.api.ReportService
  * @see org.openmrs.api.context.Context
+ * @deprecated see reportingcompatibility module
  */
+@Deprecated
 public class ReportServiceImpl implements ReportService {
 	
 	public Log log = LogFactory.getLog(this.getClass());

@@ -231,7 +231,7 @@
 				<exclude name="**/web/" />
 				<include name="**/test/*.class" /> <!-- include the helper files -->
 				<include name="**/*Test*.class" /> <!-- include all junit tests and inner classes -->
-				<include name="org/openmrs/include/*.xml" />
+				<include name="**/include/*.xml" />
 			</fileset>
 			<!-- Put this xml in a separate fileset so that its in the root of the jar file -->
 			<fileset file="${build.dir}/org/openmrs/test/TestingApplicationContext.xml" />
@@ -352,7 +352,6 @@
 			<lib dir="${log4j.dir}" includes="*.jar" />
 			<lib dir="${slf4j.dir}" includes="*.jar" />
 			<lib dir="${mail.dir}" includes="*.jar" />
-			<lib dir="${neal-reporting.dir}" includes="*.jar" />
 			<lib dir="${saxon.dir}" includes="*.jar" />
 			<lib dir="${simple.dir}" includes="*.jar" />
 			<lib dir="${spring.dir}" includes="*.jar" excludes="*test*.jar"/>
@@ -376,6 +375,7 @@
 		<mkdir dir="${dist.dir}" />
 		<jar destfile="${dist.dir}/web-${openmrs.api.name}">
 			<fileset dir="${build.dir}" includes="**/web/**/*" />
+			<fileset dir="${basedir}/web/WEB-INF" includes="openmrs-servlet.xml" />
 		</jar>
 	</target>
 

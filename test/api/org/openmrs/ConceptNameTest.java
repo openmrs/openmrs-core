@@ -82,4 +82,25 @@ public class ConceptNameTest {
 		Assert.assertTrue(firstName.equals(firstName));
 	}
 	
+	/**
+	 * @see {@link ConceptName#isPreferred()}
+	 */
+	@Test
+	@Verifies(value = "should return true if this tag has a preferred tag", method = "isPreferred()")
+	public void isPreferred_shouldReturnTrueIfThisTagHasAPreferredTag() throws Exception {
+		ConceptName name = new ConceptName("name", Locale.ENGLISH);
+		name.addTag(ConceptNameTag.PREFERRED);
+		Assert.assertTrue(name.isPreferred());
+	}
+	
+	/**
+	 * @see {@link ConceptName#isPreferred()}
+	 */
+	@Test
+	@Verifies(value = "should return false if this tag doesnt have the preferred tag", method = "isPreferred()")
+	public void isPreferred_shouldReturnFalseIfThisTagDoesntHaveThePreferredTag() throws Exception {
+		ConceptName name = new ConceptName("name", Locale.ENGLISH);
+		Assert.assertFalse(name.isPreferred());
+	}
+	
 }

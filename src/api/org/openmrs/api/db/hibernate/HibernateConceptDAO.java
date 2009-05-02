@@ -580,7 +580,6 @@ public class HibernateConceptDAO implements ConceptDAO {
 			if (excludeDatatypes.size() > 0)
 				searchCriteria.add(Expression.not(Expression.in("concept.datatype", excludeDatatypes)));
 			
-			searchCriteria.addOrder(Order.asc("synonym"));
 			conceptWords = searchCriteria.list();
 			
 			// trim down the list 

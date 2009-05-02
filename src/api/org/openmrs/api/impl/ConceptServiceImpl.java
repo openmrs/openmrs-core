@@ -1220,13 +1220,20 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	}
 	
 	/**
-	 * This will weight and sort the concepts we are assuming the hits are sorted with synonym
-	 * matches at the bottom
+	 * This will weight and sort the concepts according to how many of the words in the name match
+	 * the words in the search phrase.
 	 * 
 	 * @param phrase that was used to get this search
 	 * @param locales List<Locale> that were used to get this search
-	 * @param conceptWords
+	 * @param conceptWords the words that were found via a db search and now must be weighted before
+	 *            being shown to the user
 	 * @return List<ConceptWord> object containing sorted <code>ConceptWord</code>s
+	 * @should not fail with null phrase
+	 * @should weight preferred names in country higher than other preferred names
+	 * @should weight preferred names in language higher than just preferred names
+	 * @should weight preferred names higher than other names
+	 * @should weight names that contain all words in search phrase higher than names that dont
+	 * @should weight better matches higher than lower matches
 	 */
 	protected List<ConceptWord> weightWords(String phrase, List<Locale> locales, List<ConceptWord> conceptWords) {
 		
@@ -1238,70 +1245,51 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 			phrase = "";
 		List<String> searchedWords = ConceptWord.getUniqueWords(phrase);
 		
-		Integer id = null;
+		Integer conceptId = null;
 		Concept concept = null;
-		for (ConceptWord tmpWord : conceptWords) {
-			concept = tmpWord.getConcept();
-			id = concept.getConceptId();
+		ConceptName conceptName = null;
+		
+		for (ConceptWord currentWord : conceptWords) {
+			concept = currentWord.getConcept();
+			conceptId = concept.getConceptId();
+			conceptName = currentWord.getConceptName();
 			
-			if (uniqueConcepts.containsKey(id)) {
-				ConceptWord initialWord = uniqueConcepts.get(id);
+			// check each locale the user is searching in for name preference 
+			for (Locale locale : locales) {
+				// We weight matches on preferred names higher
+				if (conceptName.isPreferredInCountry(locale.getCountry()))
+					currentWord.increaseWeight(5.0);
+				else if (conceptName.isPreferredInLanguage(locale.getLanguage()))
+					currentWord.increaseWeight(3.0);
+				else if (conceptName.isPreferred())
+					currentWord.increaseWeight(1.0);
+			}
+			
+			// increase the weight by a factor of the % of words matched
+			Double percentMatched = getPercentMatched(searchedWords, conceptName.getName());
+			currentWord.increaseWeight(5.0 * percentMatched);
+			
+			List<String> nameWords = ConceptWord.getUniqueWords(conceptName.getName());
+			
+			// if the conceptName doesn't contain all of the search words, lower the weighting
+			if (!containsAll(nameWords, searchedWords)) {
+				currentWord.increaseWeight(-2.0);
+			}
+			
+			log.debug("Weight for: " + conceptName.getName() + " is: " + currentWord.getWeight());
+			
+			if (uniqueConcepts.containsKey(conceptId)) {
+				// if we've seen another name for this concept already, check the name weightings
+				ConceptWord previousWord = uniqueConcepts.get(conceptId);
 				
-				// this concept is already in the list
-				// because we're sort synonyms at the bottom, the initial
-				// concept must be a match on the conceptName
-				// check synonym in case we have multiple synonym hits
-				String toSplit = initialWord.getSynonym();
-				if (toSplit == null || toSplit.equals("")) {
-					ConceptName cn = null;
-					// find which locale provided the concept name
-					for (Locale locale : locales) {
-						cn = initialWord.getConcept().getName(locale);
-						if (cn != null) {
-							toSplit = cn.getName();
-							break;
-						}
-					}
+				if (currentWord.getWeight() > previousWord.getWeight()) {
+					uniqueConcepts.put(conceptId, currentWord);
 				}
-				List<String> nameWords = ConceptWord.getUniqueWords(toSplit);
-				
-				// if the conceptName doesn't contain all of the search words,
-				// replace the initial word with this synonym based word
-				if (!containsAll(nameWords, searchedWords)) {
-					tmpWord.setWeight(initialWord.getWeight());
-					uniqueConcepts.put(id, tmpWord);
-				} else
-					tmpWord = null;
-				
 			} else {
-				// normalize the weighting
-				tmpWord.setWeight(0.0);
 				// its not in the list, add it
-				uniqueConcepts.put(id, tmpWord);
+				uniqueConcepts.put(conceptId, currentWord);
 			}
 			
-			// don't increase weight with second/third/... synonym
-			if (tmpWord != null) {
-				// default matched string
-				String matchedString = tmpWord.getSynonym();
-				
-				// if there isn't a synonym, it is matching on the name,
-				if (matchedString.length() == 0) {
-					// We weight name matches higher
-					tmpWord.increaseWeight(2.0);
-					for (Locale locale : locales) {
-						ConceptName cn = tmpWord.getConcept().getName(locale);
-						if (cn != null) {
-							matchedString = cn.getName();
-							break;
-						}
-					}
-				}
-				
-				// increase the weight by a factor of the % of words matched
-				Double percentMatched = getPercentMatched(searchedWords, matchedString);
-				tmpWord.increaseWeight(5.0 * percentMatched);
-			}
 		}
 		
 		conceptWords = new Vector<ConceptWord>();

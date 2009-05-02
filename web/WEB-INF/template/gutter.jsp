@@ -20,12 +20,6 @@
 		</li>
 	</openmrs:hasPrivilege>
 	
-	<openmrs:hasPrivilege privilege="View Patient Cohorts">
-		<li id="cohortBuilderNavLink">
-			<a href="${pageContext.request.contextPath}/cohortBuilder.list"><spring:message code="Navigation.analysis"/></a>
-		</li>
-	</openmrs:hasPrivilege>
-	
 	<openmrs:extensionPoint pointId="org.openmrs.gutter.tools" type="html">
 		<openmrs:hasPrivilege privilege="${extension.requiredPrivilege}">
 			<li>

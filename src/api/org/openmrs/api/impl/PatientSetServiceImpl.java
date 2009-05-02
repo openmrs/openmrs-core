@@ -403,7 +403,7 @@ public class PatientSetServiceImpl implements PatientSetService {
 	public Map<Integer, List<Person>> getRelatives(Cohort ps, RelationshipType relType, boolean forwards) {
 		return getPatientSetDAO().getRelatives(ps, relType, forwards);
 	}
-		
+	
 	public Map<Integer, PatientState> getCurrentStates(Cohort ps, ProgramWorkflow wf) {
 		return getPatientSetDAO().getCurrentStates(ps, wf);
 	}

@@ -21,6 +21,10 @@ import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
 
+/**
+ * @deprecated see reportingcompatibility module
+ */
+@Deprecated
 public abstract class AbstractPatientFilter extends AbstractReportObject {
 	
 	public AbstractPatientFilter() {

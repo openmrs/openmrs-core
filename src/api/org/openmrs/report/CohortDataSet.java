@@ -28,7 +28,9 @@ import org.openmrs.Cohort;
  * 
  * @see CohortDataSetDefinition
  * @see CohortDataSetProvider
+ * @deprecated see reportingcompatibility module
  */
+@Deprecated
 public class CohortDataSet implements MapDataSet<Cohort> {
 	
 	private CohortDataSetDefinition definition;

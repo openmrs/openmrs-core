@@ -19,8 +19,9 @@ import org.openmrs.reporting.AbstractReportObject;
 import org.openmrs.reporting.export.DataExportReportObject;
 
 /**
- * TODO: Comment this class
+ * @deprecated see reportingcompatibility module
  */
+@Deprecated
 public class DatasetDefinition extends AbstractReportObject implements Serializable {
 	
 	/* Serial version ID */
