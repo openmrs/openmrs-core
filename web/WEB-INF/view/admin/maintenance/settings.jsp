@@ -1,5 +1,11 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
+<openmrs:require privilege="Manage Global Properties" otherwise="/login.htm" redirect="/admin/maintenance/settings.form" />
+
+<%@ include file="/WEB-INF/template/header.jsp" %>
+
+<%@ include file="localHeader.jsp" %>
+
 <script type="text/javascript" src="http://jqueryui.com/latest/jquery-1.3.2.js"></script>
 <script type="text/javascript" src="http://jqueryui.com/latest/ui/ui.core.js"></script>
 <script type="text/javascript" src="http://jqueryui.com/latest/ui/ui.tabs.js"></script>
@@ -30,6 +36,7 @@ $(document).ready(function(){
 	padding-left: 0;
 	clear: left;
 	margin: 0;
+	list-style: none;
 }
 
 .settings-pane {
@@ -150,3 +157,5 @@ a {
 </c:forEach>
 
 </div> <!-- end settings-container -->
+
+<%@ include file="/WEB-INF/template/footer.jsp" %>
