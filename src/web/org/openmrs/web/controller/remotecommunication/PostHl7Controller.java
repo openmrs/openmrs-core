@@ -61,7 +61,7 @@ public class PostHl7Controller implements Controller {
 				Context.getHL7Service().saveHL7InQueue(hl7InQueue);
 				success = true;
 			} else {
-				model.put("error", "RemoteCommunication.sourceAndMessageRequired");
+				model.put("error", "RemoteCommunication.sourceAndhl7MessageParametersRequired");
 			}
 		}
 		model.put("success", success);
