@@ -5,7 +5,7 @@
 	OK
 </c:if>
 <c:if test="${!model.success}">
-	<spring:message code="PostHl7.error"/>
+	<spring:message code="PostHl7.error" arguments="${model.error}""/>
 </c:if>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

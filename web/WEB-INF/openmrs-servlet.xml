@@ -136,8 +136,6 @@
 				<prop key="admin/programs/workflow.form">workflowFormController</prop>
 				<prop key="admin/programs/patientProgram.form">patientProgramFormController</prop>
 				
-				<prop key="remotecommunication/postHl7.form">postHl7FormController</prop>
-
 				<prop key="admin/maintenance/globalProps.form">globalPropertyController</prop>
 				<prop key="admin/maintenance/serverLog.form">serverLogController</prop>
 				<prop key="admin/maintenance/databaseChangesInfo.list">databaseChangesInfoController</prop>
