@@ -45,30 +45,25 @@ public class SettingsDTO {
      * 
      */
     public SettingsDTO() {
-    	allSettings = new ArrayList<GlobalProperty>();
+    	
+    	allSettings = Context.getAdministrationService().getAllGlobalProperties();
     	systemSettings = new ArrayList<GlobalProperty>();
+
     	for (GlobalProperty property : Context.getAdministrationService().getAllGlobalProperties()) {
-    		allSettings.add(property);
     		systemSettings.add(property);
     	}
     	
+    	log.debug("System Settings initial count: " + systemSettings.size());
+    	
     	modules = ModuleFactory.getLoadedModules();
     	
-    	log.debug("System Settings count before: " + systemSettings.size());
     	for (Module module : modules) {
-    		log.debug("Removing " + module.getName() + "properties. Count: " + module.getGlobalProperties().size());
+
     		systemSettings.removeAll(module.getGlobalProperties());
-    		if (!allSettings.containsAll(module.getGlobalProperties())) {
-    			allSettings.addAll(module.getGlobalProperties());
-    		}
+    		
+    		log.debug(module.getGlobalProperties().size()  + " properties from module "  + module.getName() + " was removed from System Settings");
         	log.debug("System Settings count: " + systemSettings.size());
     	}
-    	
-    	Collections.sort(allSettings, new Comparator<GlobalProperty>() {
-    		public int compare(GlobalProperty p1, GlobalProperty p2){
-    			return p1.getProperty().compareTo(p2.getProperty());
-    		}
-    	});
     }
     
     /**
