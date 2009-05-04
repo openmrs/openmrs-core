@@ -1,0 +1,48 @@
+[23:04:31] Pavel Konnikov говорит: hi Dave
+[23:04:59] David Thomas говорит: Hi Pavel.  How are things going?
+[23:05:23] Pavel Konnikov говорит: http://openmrs.org/wiki/Global_Property_Types#May_1_-_May_4
+[23:06:39] Pavel Konnikov говорит: I encountered a small problem
+[23:06:46] David Thomas говорит: OK, what's that?
+[23:07:19] Pavel Konnikov говорит: with module which has not started
+[23:07:35] David Thomas говорит: which module is it?
+[23:08:03] Pavel Konnikov говорит: https://dev.openmrs.org/modules/view.jsp?module=clinicalsummary
+[23:08:16] David Thomas говорит: some modules are OpenMRS version dependent.  Or metadata dependent.
+[23:08:49] Pavel Konnikov говорит: his getGlobalProperties method return one item
+[23:09:04] Pavel Konnikov говорит: but in db table it was not present
+[23:09:24] David Thomas говорит: so the global property never got created when you first loaded the module?
+[23:09:38] Pavel Konnikov говорит: i was remove this module and replace it with module that started correctly
+[23:09:55] David Thomas говорит: you could post this to the dev list.
+[23:10:06] Pavel Konnikov говорит: ok
+[23:10:26] Pavel Konnikov говорит: i will try to reproduce this bug and create ticket
+[23:10:40] David Thomas говорит: That module isn't a PIH done -- it looks like Ben was the last to check it in.  Modules can create new global properties the first time they are loaded into OpenMRS -- this is in the module's config.xml
+[23:11:36] Pavel Konnikov говорит: about long property values
+[23:11:43] David Thomas говорит: OK
+[23:12:10] Pavel Konnikov говорит: i was make some changes
+[23:12:28] Pavel Konnikov говорит: you can checkout last revision
+[23:12:34] Pavel Konnikov говорит: to see it
+[23:12:52] Pavel Konnikov говорит: also i add some css code
+[23:13:43] David Thomas говорит: OK, I'll grab that right now.  give me a minute.
+[23:13:49] Pavel Konnikov говорит: ok
+[23:14:24] Pavel Konnikov говорит: but on tasks 8,9,10 (http://openmrs.org/wiki/Global_Property_Types#May_1_-_May_4) i don't work yet
+[23:15:31] Pavel Konnikov говорит: i plan to work on it today and tomorow
+[23:16:36] David Thomas говорит: OK, that's fine.  I'm in our field office, so the download is slow.  Do you want to finish these off and get them posted, and then i'll review the code for tomorrow?
+[23:17:03] Pavel Konnikov говорит: ok
+[23:17:06] David Thomas говорит: You could skype me around 8 pm, your time?
+[23:17:24] David Thomas говорит: That would work for me.  I have to give a training starting at 11 pm, your time.
+[23:17:34] David Thomas говорит: So this time tomorrow is bad, but 8 pm your time would work.
+[23:17:45] Pavel Konnikov говорит: ok
+[23:17:54] David Thomas говорит: OK, can you send me a skype when you
+[23:18:05] David Thomas говорит: 've got these features checked in?
+[23:18:45] Pavel Konnikov говорит: i think that i will done the most of things
+[23:19:14] David Thomas говорит: OK, no problem.  You're doing a great job.  I'm not worried at all
+[23:19:16] Pavel Konnikov говорит: and immediately skype you and
+[23:19:50] Pavel Konnikov говорит: thanks
+[23:20:17] Pavel Konnikov говорит: talk to you tomorrow
+[23:20:39] David Thomas говорит: OK, perfect.  I'll make sure i'm free at that time, and that gives me a little time to review the code.
+[23:20:53] Pavel Konnikov говорит: bye!
+[23:21:03] David Thomas говорит: bye!  have a good rest of the evening.
+[23:21:21] Pavel Konnikov говорит: :)
+[23:21:41] Pavel Konnikov говорит: can't chat gotta work
+[23:21:48] Pavel Konnikov говорит: :)
+[23:21:53] David Thomas говорит: such is life.
+[23:21:58] David Thomas говорит: :)

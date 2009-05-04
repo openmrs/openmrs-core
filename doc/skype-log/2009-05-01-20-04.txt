@@ -136,7 +136,7 @@
 [21:01:44] Pavel Konnikov говорит: yes
 [21:01:49] Pavel Konnikov говорит: i fix it
 [21:01:52] David Thomas говорит: OK
-[21:02:04] Pavel Konnikov говорит: i remode overflow: hidden
+[21:02:04] Pavel Konnikov говорит: i remove overflow: hidden
 [21:02:11] David Thomas говорит: OK, thanks.
 [21:02:34] David Thomas говорит: So, should we just talk on mon or tues?
 [21:02:47] Pavel Konnikov говорит: you can try it in firebug fo #settings-container
