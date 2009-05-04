@@ -33,7 +33,13 @@
 		<property name="paramName"><value>method</value></property>
 		<property name="defaultMethodName"><value>handleRequest</value></property>
 	</bean>
-
+	
+	<!-- So that controllers can use annotations like @Controller and @RequestMapping -->
+	<bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping"/>
+	
+	<!-- The default place to look for controllers that have annotations -->
+	<context:component-scan base-package="org.openmrs.web.controller" />
+	
 	<bean id="urlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
 		<property name="interceptors">
 			<list>
@@ -138,7 +144,6 @@
 				
 				<prop key="admin/maintenance/globalProps.form">globalPropertyController</prop>
 				<prop key="admin/maintenance/serverLog.form">serverLogController</prop>
-				<prop key="admin/maintenance/databaseChangesInfo.list">databaseChangesInfoController</prop>
 				<!--<prop key="**/calendar.list">calendarController</prop>-->
 				<prop key="admin/maintenance/implementationid.form">implementationIdFormController</prop>
 				
@@ -942,12 +947,6 @@
 		<property name="commandName"><value>logLines</value></property>
 		<property name="formView"><value>/admin/maintenance/serverLog</value></property>
 		<property name="successView"><value>serverLog.form</value></property>
-	</bean>
-	<bean id="databaseChangesInfoController"
-		class="org.openmrs.web.controller.maintenance.DatabaseChangesInfoController">
-		<property name="commandName"><value>databaseChanges</value></property>
-		<property name="formView"><value>/admin/maintenance/databaseChangesInfo</value></property>
-		<property name="successView"><value>databaseChangesInfo.list</value></property>
 	</bean>
 	<bean id="implementationIdFormController"
 		class="org.openmrs.web.controller.maintenance.ImplementationIdFormController">
