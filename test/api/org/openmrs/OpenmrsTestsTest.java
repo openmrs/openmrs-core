@@ -20,9 +20,12 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import junit.framework.TestCase;
 
+import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.util.OpenmrsUtil;
 
@@ -51,7 +54,7 @@ public class OpenmrsTestsTest {
 	}
 	
 	/**
-	 * Makes sure all test methods in org.openmrs.test start with the word "should"
+	 * Makes sure all test methods in org.openmrs start with the word "should"
 	 * 
 	 * @throws Exception
 	 */
@@ -77,8 +80,8 @@ public class OpenmrsTestsTest {
 	}
 	
 	/**
-	 * Makes sure all "should___" methods in org.openmrs.test have an "@Test" annotation on it. This
-	 * is to help prevent devs from forgetting to put the annotation and then seeing all tests pass
+	 * Makes sure all "should___" methods in org.openmrs have an "@Test" annotation on it. This is
+	 * to help prevent devs from forgetting to put the annotation and then seeing all tests pass
 	 * because the new test wasn't actually ran
 	 * 
 	 * @throws Exception
@@ -101,29 +104,71 @@ public class OpenmrsTestsTest {
 	}
 	
 	/**
+	 * Checks that a user hasn't accidentally created a test class that doesn't end with "Test". (If
+	 * it doesn't, it isn't picked up by the test aggregator Ant target: junit-report) <br/>
+	 * <br/>
+	 * This class looks at all classes in the org.openmrs package. If a class contains an "@Test"
+	 * annotated method but its class name does not end with Test, it fails.
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void shouldHaveClassNameEndWithTestIfContainsMethodTestAnnotations() throws Exception {
+		// loop over all methods that _don't_ end in Test.class
+		for (Class<?> currentClass : getClasses("^.*(?<!Test)\\.class$")) {
+			
+			// skip over classes that are @Ignore'd
+			if (currentClass.getAnnotation(Ignore.class) == null) {
+				boolean foundATestMethod = false;
+				
+				for (Method method : currentClass.getMethods()) {
+					if (method.getAnnotation(Test.class) != null) {
+						foundATestMethod = true;
+					}
+				}
+				
+				Assert.assertFalse(
+				    currentClass.getName() + " does not end with 'Test' but contains @Test annotated methods",
+				    foundATestMethod);
+			}
+		}
+	}
+	
+	/**
+	 * Get all classes ending in "Test.class".
+	 * 
+	 * @return list of classes whose name ends with Test.class
+	 */
+	private List<Class> getTestClasses() {
+		return getClasses(".*Test\\.class$");
+	}
+	
+	/**
 	 * Get all classes in the org.openmrs.test package
 	 * 
 	 * @return list of TestCase classes in org.openmrs.test
 	 */
-	private List<Class> getTestClasses() {
+	private List<Class> getClasses(String classNameRegex) {
 		if (testClasses != null)
 			return testClasses;
 		
-		URL url = classLoader.getResource("org/openmrs/test");
+		Pattern pattern = Pattern.compile(classNameRegex);
+		
+		URL url = classLoader.getResource("org/openmrs");
 		File directory = OpenmrsUtil.url2file(url);
 		// make sure we get a directory back
 		assertTrue("org.openmrs.test should be a directory", directory.isDirectory());
 		
-		testClasses = getTestClassesInDirectory(directory);
+		testClasses = getClassesInDirectory(directory, pattern);
 		
 		// check to see if the web layer is also included.  Skip it if its not there
-		url = classLoader.getResource("org/openmrs/web/test");
+		url = classLoader.getResource("org/openmrs/web");
 		if (url != null) {
 			directory = OpenmrsUtil.url2file(url);
 			// make sure we get a directory back
 			assertTrue("org.openmrs.web.test should be a directory", directory.isDirectory());
 			
-			testClasses.addAll(getTestClassesInDirectory(directory));
+			testClasses.addAll(getClassesInDirectory(directory, pattern));
 		}
 		
 		return testClasses;
@@ -134,7 +179,7 @@ public class OpenmrsTestsTest {
 	 * 
 	 * @param directory to loop through the files of
 	 */
-	private List<Class> getTestClassesInDirectory(File directory) {
+	private List<Class> getClassesInDirectory(File directory, Pattern pattern) {
 		
 		List<Class> currentDirTestClasses = new ArrayList<Class>();
 		
@@ -142,17 +187,18 @@ public class OpenmrsTestsTest {
 			
 			// if looking at a folder, recurse into it
 			if (currentFile.isDirectory()) {
-				currentDirTestClasses.addAll(getTestClassesInDirectory(currentFile));
+				currentDirTestClasses.addAll(getClassesInDirectory(currentFile, pattern));
 			}
 			
-			if (currentFile.getName().endsWith("class")) {
-				// strip off the ending
+			// if the user only wants classes ending in Test or they want all of them
+			if (pattern.matcher(currentFile.getName()).matches()) {
+				// strip off the extension
 				String className = currentFile.getAbsolutePath().replace(".class", "");
 				
 				// switch to dot separation
 				className = className.replace(File.separator, ".");
 				
-				// strip out the beginning up to org.openmrs.
+				// strip out the beginning (/home/ben/workspace...) up to org.openmrs.
 				className = className.substring(className.indexOf("org.openmrs."));
 				
 				try {
