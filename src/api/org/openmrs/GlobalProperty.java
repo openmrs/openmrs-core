@@ -25,8 +25,9 @@ public class GlobalProperty {
 	
 	private String description = "";
 	
-	// TODO: Choice the type String or Integer
-	private String propertyType = "";
+	private String defaultValue = "";
+	
+	private GlobalPropertyType propertyType = new GlobalPropertyType();
 	
 	/**
 	 * Default empty constructor
@@ -131,4 +132,32 @@ public class GlobalProperty {
 		
 		return hash;
 	}
+
+	/**
+     * @param propertyType the propertyType to set
+     */
+    public void setPropertyType(GlobalPropertyType propertyType) {
+	    this.propertyType = propertyType;
+    }
+
+	/**
+     * @return the propertyType
+     */
+    public GlobalPropertyType getPropertyType() {
+	    return propertyType;
+    }
+
+	/**
+     * @param defaultValue the defaultValue to set
+     */
+    public void setDefaultValue(String defaultValue) {
+	    this.defaultValue = defaultValue;
+    }
+
+	/**
+     * @return the defaultValue
+     */
+    public String getDefaultValue() {
+	    return defaultValue;
+    }
 }
