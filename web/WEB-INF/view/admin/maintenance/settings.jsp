@@ -171,7 +171,7 @@ img {
 			<tr class="<c:choose><c:when test="${status.index % 2 == 0}">even</c:when><c:otherwise>odd</c:otherwise></c:choose>">
 				<td style="font-size: 0.8em">${globalProperty.property}</td>
 				<td><textarea readonly="readonly" class="property-value <c:choose><c:when test="${status.index % 2 == 0}">even</c:when><c:otherwise>odd</c:otherwise></c:choose>">${globalProperty.propertyValue}</textarea></td>
-				<td style="font-size: 0.8em">Type&nbsp;name</td>
+				<td style="font-size: 0.8em">${globalProperty.propertyType.name}</td>
 				<td class="property-description">${globalProperty.description}</td>
 				<td><a href="#"><img src="<c:url value="/images/edit.gif"/>"/></a></td>
 			</tr>
@@ -206,7 +206,7 @@ img {
 			<tr class="<c:choose><c:when test="${status.index % 2 == 0}">even</c:when><c:otherwise>odd</c:otherwise></c:choose>">
 				<td style="font-size: 0.8em">${globalProperty.property}</td>
 				<td><textarea readonly="readonly" class="property-value <c:choose><c:when test="${status.index % 2 == 0}">even</c:when><c:otherwise>odd</c:otherwise></c:choose>">${globalProperty.propertyValue}</textarea></td>
-				<td style="font-size: 0.8em">Type&nbsp;name</td>
+				<td style="font-size: 0.8em">${globalProperty.propertyType.name}</td>
 				<td class="property-description">${globalProperty.description}</td>
 				<td><a href="#"><img src="<c:url value="/images/edit.gif"/>"/></a></td>
 			</tr>
