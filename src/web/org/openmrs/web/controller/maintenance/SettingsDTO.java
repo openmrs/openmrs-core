@@ -27,6 +27,8 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleFactory;
 
+import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
+
 /**
  *
  */
@@ -35,7 +37,7 @@ public class SettingsDTO {
 	/** Logger for this class */
 	protected final Log log = LogFactory.getLog(getClass());
 
-	private Collection<Module> modules;
+	private List<Module> modules;
 
 	private List<GlobalProperty> systemSettings;
 	
@@ -55,8 +57,14 @@ public class SettingsDTO {
     	
     	log.debug("System Settings initial count: " + systemSettings.size());
     	
-    	modules = ModuleFactory.getLoadedModules();
+    	modules = new ArrayList<Module>(ModuleFactory.getStartedModules());
     	
+    	Collections.sort(modules, new Comparator<Module>() {
+            public int compare(Module m1, Module m2) {
+	            return m1.getName().compareTo(m2.getName());
+            }
+    	});
+
     	for (Module module : modules) {
 
     		systemSettings.removeAll(module.getGlobalProperties());
@@ -83,7 +91,7 @@ public class SettingsDTO {
     /**
      * @return the modules
      */
-    public Collection<Module> getModules() {
+    public List<Module> getModules() {
     	return modules;
     }
 	
