@@ -15,7 +15,7 @@
 		
 		<property name="name" type="java.lang.String" column="name"/>
 
-		<property name="description" type="java.lang.String" column="descrtiption"/>
+		<property name="description" type="java.lang.String" column="description"/>
 
 	</class>
 	
