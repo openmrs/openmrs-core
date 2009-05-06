@@ -76,6 +76,5 @@ public class GlobalPropertyType {
     public String getDescription() {
 	    return description;
     }
-	
-	
+
 }
