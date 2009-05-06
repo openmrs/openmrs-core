@@ -19,8 +19,8 @@ package org.openmrs;
  */
 public class GlobalPropertyType {
 	
-	private Integer globalPropertyTypeId = 0;
-	private String name = "";
+	private Integer globalPropertyTypeId = 1;
+	private String name = "String";
 	private String description = "";
 	
 	public GlobalPropertyType() {
