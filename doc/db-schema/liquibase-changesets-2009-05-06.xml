@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9 http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+	<changeSet author="konnikov" id="1241589108464-1">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="global_property_type"/>
+			</not>
+		</preConditions>
+        <createTable tableName="global_property_type">
+            <column autoIncrement="true" name="global_property_type_id" type="INT UNSIGNED">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column defaultValue="" name="name" type="VARCHAR(45)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="MEDIUMTEXT"/>
+        </createTable>
+    </changeSet>
+	<changeSet author="konnikov" id="1241589108464-2">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<sqlCheck expectedResult="1">SELECT COUNT(1) FROM global_property_type</sqlCheck>
+			</not>
+		</preConditions>
+		<insert tableName="global_property_type">
+		    <column name="name" value="String"/>
+    		<column name="description" value="Default type"/>
+		</insert>
+    </changeSet>
+    <changeSet author="konnikov" id="1241589108464-3">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="global_property" columnName="default_value"/>
+			</not>
+		</preConditions>
+        <addColumn tableName="global_property">
+            <column defaultValue="" name="default_value" type="MEDIUMTEXT">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="konnikov" id="1241589108464-4">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="global_property" columnName="global_property_type_id"/>
+			</not>
+		</preConditions>
+        <addColumn tableName="global_property">
+            <column defaultValue="1" name="global_property_type_id" type="INT UNSIGNED">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="konnikov" id="1241589108464-5">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<foreignKeyConstraintExists foreignKeyName="type_of_global_property"/>
+			</not>
+		</preConditions>
+        <addForeignKeyConstraint baseColumnNames="global_property_type_id" baseTableName="global_property" constraintName="type_of_global_property" deferrable="false" initiallyDeferred="false" referencedColumnNames="global_property_type_id" referencedTableName="global_property_type"/>
+    </changeSet>
+</databaseChangeLog>

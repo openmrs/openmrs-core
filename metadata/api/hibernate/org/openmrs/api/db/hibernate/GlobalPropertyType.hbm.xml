@@ -14,6 +14,9 @@
 		<discriminator column="globalPropertyTypeId" insert="false" />
 		
 		<property name="name" type="java.lang.String" column="name"/>
+
+		<property name="description" type="java.lang.String" column="descrtiption"/>
+
 	</class>
 	
 </hibernate-mapping>

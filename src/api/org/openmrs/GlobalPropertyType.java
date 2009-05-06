@@ -21,6 +21,7 @@ public class GlobalPropertyType {
 	
 	private Integer globalPropertyTypeId = 0;
 	private String name = "";
+	private String description = "";
 	
 	public GlobalPropertyType() {
 	}
@@ -60,6 +61,20 @@ public class GlobalPropertyType {
      */
     public void setName(String name) {
     	this.name = name;
+    }
+
+	/**
+     * @param description the description to set
+     */
+    public void setDescription(String description) {
+	    this.description = description;
+    }
+
+	/**
+     * @return the description
+     */
+    public String getDescription() {
+	    return description;
     }
 	
 	
