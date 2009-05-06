@@ -1,0 +1,88 @@
+[20:10:32] Pavel Konnikov говорит: hi Dave
+[20:10:38] David Thomas говорит: hey pavel.
+[20:11:31] Pavel Konnikov говорит: i am struggle with hibernate configs
+[20:12:02] David Thomas говорит: OK.  I can take a look in a minute.
+[20:12:21] David Thomas говорит: I'm trying to repair my database.  Did you merge the latest from trunk?  Or, was the Burke?
+[20:13:02] Pavel Konnikov говорит: no i didn't merge
+[20:13:11] David Thomas говорит: OK, then it was burke.
+[20:13:39] David Thomas говорит: liquibase is failing at startup, and it has to do with indexes on the concept_word table.  very annoying.
+[20:15:07] Pavel Konnikov говорит: i will resolve all exceprions and skype you when my code will be runnable
+[20:15:25] David Thomas говорит: OK, thanks.
+[20:15:33] David Thomas говорит: i'll let you know when i get my database repaired.
+[20:15:40] Pavel Konnikov говорит: ok
+[20:31:11] Pavel Konnikov говорит: Dave i need your help
+[20:31:26] Pavel Konnikov говорит: i can't resolve an error
+[20:31:36] David Thomas говорит: still not working... ok, check in what you have.
+[20:31:37] Pavel Konnikov говорит: [java] ERROR - Context.checkCoreDataset(973) |2009-05-05 20:20:13,510| Error while setting core global properties
+[java] org.hibernate.PropertyValueException: not-null property references a null or transient value: org.openmrs.GlobalProperty.propertyType
+[20:32:09] Pavel Konnikov говорит: i was commit my configs and classes http://dev.openmrs.org/changeset/7567
+[20:32:44] David Thomas говорит: are you trying to save a new global property?
+[20:32:55] Pavel Konnikov говорит: no
+[20:32:59] David Thomas говорит: when you get this error?
+[20:33:03] David Thomas говорит: is this at startup?
+[20:33:07] Pavel Konnikov говорит: yes
+[20:34:07] David Thomas говорит: OK.  In the liquibase update script, you should set the value of the property_type column to java.land.String.
+[20:34:24] David Thomas говорит: for all properties.
+[20:34:35] Pavel Konnikov говорит: hm
+[20:34:39] Pavel Konnikov говорит: ok
+[20:35:03] David Thomas говорит: I'll do checkout and update.
+[20:37:28] Pavel Konnikov говорит: i have wery slow connection today :(
+[20:37:40] David Thomas говорит: so do i.
+[20:37:55] David Thomas говорит: where is your data model update?  Is it in liquibase-update-to-latest?
+[20:38:12] Pavel Konnikov говорит: no
+[20:38:28] Pavel Konnikov говорит: i don't touch liquibase-update-to-latest
+[20:38:51] Pavel Konnikov говорит: it is in my local instance of mysql
+[20:39:15] Pavel Konnikov говорит: and DDL in the /doc/db-schema folder in svn
+[20:42:04] Pavel Konnikov говорит: i need to read more about liquibase
+[20:42:26] David Thomas говорит: if you look at the liquibase files, they're pretty easy to understand.  there's good online documentation.
+[20:42:42] Pavel Konnikov говорит: ok
+[20:42:59] Pavel Konnikov говорит: i will add changes to liquibase
+[20:43:06] Pavel Konnikov говорит: later
+[20:43:26] Pavel Konnikov говорит: but ca you review my mappings files?
+[20:47:22] Pavel Konnikov говорит: have you any comments on them?
+[20:49:26] Pavel Konnikov говорит: ping?
+[20:50:02] Pavel Konnikov говорит: o! you are here :)
+[20:50:52] David Thomas говорит: i'm trying to get your tables into my db first -- you won't be able to use a 'create' statement for the global_property table.
+[20:51:15] David Thomas говорит: does your global_property table have any rows in it still?
+[20:52:32] Pavel Konnikov говорит: ups
+[20:52:42] Pavel Konnikov говорит: it is empty!
+[20:53:05] David Thomas говорит: that'll kill openmrs.
+[20:53:15] David Thomas говорит: here's a dump to recreate it:
+[20:53:20] David Thomas sent file "pp.sql" to members of this chat
+
+[20:59:22] David Thomas говорит: Are you sure we need the 'default_value' column in global_property?  Can't we just set the default property_type_id to the property type ID of java.lang.String?
+[20:59:49] David Thomas говорит: In the property_type_id column?
+[21:00:02] Pavel Konnikov говорит: yes
+[21:00:24] Pavel Konnikov говорит: default property_type_id = 0
+[21:00:53] Pavel Konnikov говорит: in the table global_property_type have a string
+[21:01:00] Pavel Konnikov говорит: 0, String
+[21:01:32] Pavel Konnikov говорит: but defaultValue field is for bold string in mockup
+[21:01:59] Pavel Konnikov говорит: bold strings was changed
+[21:02:00] David Thomas говорит: The value of '0' won't work with auto_increment in the global_property_type table.
+[21:02:11] David Thomas говорит: The default value should be '1'.
+[21:02:14] Pavel Konnikov говорит: ok
+[21:04:01] David Thomas говорит: Sorry to make you back up, but can you fix the .sql upgrade scripts?
+[21:04:17] David Thomas говорит: what we want is one script that updates the existing global_property table.
+[21:04:23] David Thomas говорит: The original structure was:
+[21:04:24] David Thomas говорит: CREATE TABLE `global_property` (
+  `property` varchar(255) NOT NULL default '',
+  `property_value` mediumtext,
+  `description` text,
+  PRIMARY KEY  (`property`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+[21:04:44] David Thomas говорит: So, you should write alter table statements.
+[21:04:49] David Thomas говорит: (or just one statement)
+[21:05:31] David Thomas говорит: and, in doc/db-schema, just make 1 file, with everything that we're doing to the data model.
+[21:06:30] David Thomas говорит: and the global_property_type table should have a description column.
+[21:06:55] Pavel Konnikov говорит: ok
+[21:07:15] David Thomas говорит: thanks.  its hard for me to figure out what the hibernate should look like with the table structures being unclear.
+[21:08:26] Pavel Konnikov говорит: ok i will make all changes
+[21:09:12] Pavel Konnikov говорит: but now i need to drive to home my parents
+[21:09:30] David Thomas говорит: thanks, pavel.  talk tomorrow?
+[21:09:34] Pavel Konnikov говорит: when i will return i continue working
+[21:09:55] David Thomas говорит: OK, i'm not going to be available starting in about 1/2 an hour, so let's talk tomorrow.
+[21:10:03] Pavel Konnikov говорит: yes - when i done all tasks i contact you
+[21:10:07] David Thomas говорит: OK, thanks.
+[21:10:12] David Thomas говорит: talk to you later.
+[21:10:19] Pavel Konnikov говорит: bye!
+[21:10:25] David Thomas говорит: bye!
