@@ -14,7 +14,6 @@
 package org.openmrs.api;
 
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -413,6 +412,17 @@ public interface AdministrationService extends OpenmrsService {
 	public Collection<?> getMRNGeneratorLog();
 	
 	/**
+	 * Get a global property by its uuid. There should be only one of these in the database (well,
+	 * in the world actually). If multiple are found, an error is thrown.
+	 * 
+	 * @return the global property matching the given uuid
+	 * @should find object given valid uuid
+	 * @should return null if no object found with given uuid
+	 */
+	@Transactional(readOnly = true)
+	public GlobalProperty getGlobalPropertyByUuid(String uuid) throws APIException;
+	
+	/**
 	 * Get a listing or important variables used in openmrs
 	 * 
 	 * @return a map from variable name to variable value
@@ -496,6 +506,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * @should save all global properties to the database
 	 * @should not fail with empty list
 	 * @should delete property from database if not in list
+	 * @should assign uuid to all new properties
 	 */
 	@Authorized(OpenmrsConstants.PRIV_MANAGE_GLOBAL_PROPERTIES)
 	public List<GlobalProperty> saveGlobalProperties(List<GlobalProperty> props) throws APIException;

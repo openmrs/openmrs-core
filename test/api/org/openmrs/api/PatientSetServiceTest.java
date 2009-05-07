@@ -27,6 +27,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Cohort;
+import org.openmrs.Concept;
 import org.openmrs.DrugOrder;
 import org.openmrs.Location;
 import org.openmrs.Obs;
@@ -140,7 +141,6 @@ public class PatientSetServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link PatientSetService#getPatientsByProgramAndState(org.openmrs.Program, List, Date, Date)
-
 	 */
 	@Test
 	@Verifies(value = "should get patients in state", method = "getPatientsByProgramAndState(Program,List<QProgramWorkflowState;>,Date,Date)")

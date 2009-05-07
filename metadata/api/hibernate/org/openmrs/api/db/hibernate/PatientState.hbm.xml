@@ -10,9 +10,12 @@
 		<id name="patientStateId" type="java.lang.Integer" column="patient_state_id">
 			<generator class="native" />
 		</id>
-		
-		<discriminator column="patient_state_id" insert="false" />
-		
+
+		<discriminator column="patient_state_id" insert="false" />		
+
+		<property name="uuid" type="java.lang.String"
+			column="uuid" length="36" unique="true" />
+
 		<property name="startDate" type="java.util.Date" column="start_date" length="19" />
 
 		<property name="endDate" type="java.util.Date" column="end_date" length="19" />

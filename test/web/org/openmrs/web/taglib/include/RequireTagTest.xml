@@ -1,25 +1,25 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <dataset>
-  <person person_id="2" gender="M" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
-  <person_name person_name_id="2" preferred="true" person_id="2" given_name="John" middle_name=" " family_name="Doe" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
+  <person person_id="2" gender="M" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="2d70a8dc-d233-460b-8717-35169091f03f"/>
+  <person_name person_name_id="2" preferred="true" person_id="2" given_name="John" middle_name=" " family_name="Doe" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="55ccd5eb-aaab-458f-9507-7beffda23855"/>
   
-  <privilege privilege="Manage WhirleyGigs" description="Able to manage whirleygigs"/>
-  <privilege privilege="Manage WhoopDeDoos" description="Able to manage whoopdedoos"/>
-  <privilege privilege="Manage Thingamajigs" description="Able to manage thingamajigs"/>
+  <privilege privilege="Manage WhirleyGigs" description="Able to manage whirleygigs" uuid="b0da53a7-e5f5-4584-a9b9-bf911470fe57"/>
+  <privilege privilege="Manage WhoopDeDoos" description="Able to manage whoopdedoos" uuid="83756836-aa91-44d0-97de-2cfcf3a64808"/>
+  <privilege privilege="Manage Thingamajigs" description="Able to manage thingamajigs" uuid="68ba469c-22cc-46fd-a992-e4ec7db92b7f"/>
   
-  <role role="WhirleyGig Manager" description="Works with WhirleyGigs only"/>
-  <role role="Manager" description="Works with all objects"/>
+  <role role="WhirleyGig Manager" description="Works with WhirleyGigs only" uuid="dddf8f8e-c6e3-49d3-8f70-2107a60f7df2"/>
+  <role role="Manager" description="Works with all objects" uuid="fa2fd77d-a586-4e89-9bd0-193a34b6d01e"/>
   
   <role_privilege role="WhirleyGig Manager" privilege="Manage WhirleyGigs" />
   <role_privilege role="Manager" privilege="Manage WhirleyGigs" />
   <role_privilege role="Manager" privilege="Manage WhoopDeDoos" />
   <role_privilege role="Manager" privilege="Manage Thingamajigs" />
   
-  <person person_id="505" gender="F" dead="false" creator="1" date_created="2008-08-15 15:46:47.0" voided="false"/>
+  <person person_id="505" gender="F" dead="false" creator="1" date_created="2008-08-15 15:46:47.0" voided="false" uuid="e69facd2-56d0-44c6-b8fd-52e287474c2e"/>
   <users user_id="505" system_id="6-7" username="whirleygiguser" password="4a1750c8607d0fa237de36c6305715c223415189" salt="c788c6ad82a157b712392ca695dfcf2eed193d7f" secret_question="" creator="1" date_created="2008-08-15 15:57:09.0" changed_by="1" date_changed="2008-08-18 11:51:56.0" voided="false" void_reason=""/>
   <user_role user_id="505" role="WhirleyGig Manager" />
 
-  <person person_id="506" gender="M" dead="false" creator="1" date_created="2008-08-15 15:57:09.0" voided="false"/>
+  <person person_id="506" gender="M" dead="false" creator="1" date_created="2008-08-15 15:57:09.0" voided="false" uuid="9a2e8cb8-81a7-46ba-a33a-7ff176de9a9e"/>
   <users user_id="506" system_id="7-5" username="overallmanager" password="4a1750c8607d0fa237de36c6305715c223415189" salt="c788c6ad82a157b712392ca695dfcf2eed193d7f" secret_question="" creator="1" date_created="2008-08-15 15:57:09.0" changed_by="1" date_changed="2008-08-18 11:51:56.0" voided="false" void_reason=""/>
   <user_role user_id="506" role="Manager" />
   

@@ -400,6 +400,43 @@ public class HibernateFormDAO implements FormDAO {
 	}
 	
 	/**
+	 * @see org.openmrs.api.db.FormDAO#getFieldByUuid(java.lang.String)
+	 */
+	public Field getFieldByUuid(String uuid) {
+		return (Field) sessionFactory.getCurrentSession().createQuery("from Field f where f.uuid = :uuid").setString("uuid",
+		    uuid).uniqueResult();
+	}
+	
+	public FieldAnswer getFieldAnswerByUuid(String uuid) {
+		return (FieldAnswer) sessionFactory.getCurrentSession().createQuery("from FieldAnswer f where f.uuid = :uuid")
+		        .setString("uuid", uuid).uniqueResult();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.FormDAO#getFieldTypeByUuid(java.lang.String)
+	 */
+	public FieldType getFieldTypeByUuid(String uuid) {
+		return (FieldType) sessionFactory.getCurrentSession().createQuery("from FieldType ft where ft.uuid = :uuid")
+		        .setString("uuid", uuid).uniqueResult();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.FormDAO#getFormByUuid(java.lang.String)
+	 */
+	public Form getFormByUuid(String uuid) {
+		return (Form) sessionFactory.getCurrentSession().createQuery("from Form f where f.uuid = :uuid").setString("uuid",
+		    uuid).uniqueResult();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.FormDAO#getFormFieldByUuid(java.lang.String)
+	 */
+	public FormField getFormFieldByUuid(String uuid) {
+		return (FormField) sessionFactory.getCurrentSession().createQuery("from FormField ff where ff.uuid = :uuid")
+		        .setString("uuid", uuid).uniqueResult();
+	}
+	
+	/**
 	 * @see org.openmrs.api.db.FormDAO#getFormsByName(java.lang.String)
 	 */
 	@SuppressWarnings("unchecked")

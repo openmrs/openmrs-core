@@ -33,6 +33,7 @@ import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.GlobalProperty;
 import org.openmrs.ImplementationId;
+import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.AdministrationDAO;
 import org.openmrs.api.db.DAOException;
@@ -188,10 +189,11 @@ public class HibernateAdministrationDAO implements AdministrationDAO {
 	public void createReportObject(AbstractReportObject ro) throws DAOException {
 		
 		ReportObjectWrapper wrappedReportObject = new ReportObjectWrapper(ro);
-		wrappedReportObject.setCreator(Context.getAuthenticatedUser());
-		wrappedReportObject.setDateCreated(new Date());
+		User user = Context.getAuthenticatedUser();
+		Date now = new Date();
+		wrappedReportObject.setCreator(user);
+		wrappedReportObject.setDateCreated(now);
 		wrappedReportObject.setVoided(false);
-		
 		sessionFactory.getCurrentSession().save(wrappedReportObject);
 	}
 	
@@ -205,8 +207,11 @@ public class HibernateAdministrationDAO implements AdministrationDAO {
 		else {
 			sessionFactory.getCurrentSession().clear();
 			ReportObjectWrapper wrappedReportObject = new ReportObjectWrapper(ro);
-			wrappedReportObject.setChangedBy(Context.getAuthenticatedUser());
-			wrappedReportObject.setDateChanged(new Date());
+			User user = Context.getAuthenticatedUser();
+			Date now = new Date();
+			wrappedReportObject.setChangedBy(user);
+			wrappedReportObject.setDateChanged(now);
+			
 			sessionFactory.getCurrentSession().saveOrUpdate(wrappedReportObject);
 		}
 	}
@@ -243,6 +248,13 @@ public class HibernateAdministrationDAO implements AdministrationDAO {
 		GlobalProperty gp = (GlobalProperty) sessionFactory.getCurrentSession().get(GlobalProperty.class, propertyName);
 		
 		// if no gp exists, hibernate returns a null value
+		
+		return gp;
+	}
+	
+	public GlobalProperty getGlobalPropertyByUuid(String uuid) throws DAOException {
+		GlobalProperty gp = (GlobalProperty) sessionFactory.getCurrentSession().createQuery(
+		    "from GlobalProperty t where t.uuid = :uuid").setString("uuid", uuid).uniqueResult();
 		
 		return gp;
 	}

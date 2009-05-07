@@ -1,10 +1,10 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <dataset>
-  <global_property property="a_valid_gp_key" property_value="correct-value"/>
-  <global_property property="another-global-property" property_value="anothervalue"/>
-  <global_property property="fake.module.abcd" property_value="correct-value1"/>
-  <global_property property="fake.module.bcde" property_value="correct-value2"/>
-  <global_property property="fake.module.cdef" property_value="correct-value3"/>
-  <global_property property="fake.module1.abcd" property_value="YOU LOSE"/>
-  <global_property property="fake.moduleabcd" property_value="EPIC FAIL"/> 
+  <global_property property="a_valid_gp_key" property_value="correct-value" uuid="25194e2b-080c-4835-9704-d8c550d5e962"/>
+  <global_property property="another-global-property" property_value="anothervalue" uuid="d17a5b9d-001e-4733-a0c0-151ab0c8776f"/>
+  <global_property property="fake.module.abcd" property_value="correct-value1" uuid="5da8a108-bb34-4c18-8b24-db4d62b8cf71"/>
+  <global_property property="fake.module.bcde" property_value="correct-value2" uuid="25a50a3b-4ac0-47fd-b43b-12e78da9a791"/>
+  <global_property property="fake.module.cdef" property_value="correct-value3" uuid="b8173553-bc4b-40e6-b177-456b55b2e769"/>
+  <global_property property="fake.module1.abcd" property_value="YOU LOSE" uuid="81e43fc2-7ca9-4592-8c69-a6486ebbe678"/>
+  <global_property property="fake.moduleabcd" property_value="EPIC FAIL" uuid="b7225607-d0c4-4e44-8be5-31e1ac7e1dda"/> 
 </dataset>

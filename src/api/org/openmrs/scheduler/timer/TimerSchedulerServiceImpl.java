@@ -29,7 +29,7 @@ import java.util.WeakHashMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIException;
-import org.openmrs.api.context.Context;
+import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.scheduler.SchedulerConstants;
 import org.openmrs.scheduler.SchedulerException;
 import org.openmrs.scheduler.SchedulerService;
@@ -45,7 +45,7 @@ import org.springframework.orm.ObjectRetrievalFailureException;
 /**
  * Simple scheduler service that uses JDK timer to trigger and execute scheduled tasks.
  */
-public class TimerSchedulerServiceImpl implements SchedulerService {
+public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements SchedulerService {
 	
 	/**
 	 * Logger
@@ -381,10 +381,8 @@ public class TimerSchedulerServiceImpl implements SchedulerService {
 	 */
 	public void saveTask(TaskDefinition task) {
 		if (task.getId() != null) {
-			setChangedMetadata(task);
 			getSchedulerDAO().updateTask(task);
 		} else {
-			setCreatedMetadata(task);
 			getSchedulerDAO().createTask(task);
 		}
 	}
@@ -409,31 +407,6 @@ public class TimerSchedulerServiceImpl implements SchedulerService {
 		
 		// delete the task
 		getSchedulerDAO().deleteTask(id);
-	}
-	
-	/**
-	 * Convenience method for setting all metadata fields.
-	 * 
-	 * @param task
-	 */
-	public void setCreatedMetadata(TaskDefinition task) {
-		if (task.getCreator() == null) {
-			task.setCreator(Context.getAuthenticatedUser());
-		}
-		if (task.getDateCreated() == null) {
-			task.setDateCreated(new Date());
-		}
-		setChangedMetadata(task);
-	}
-	
-	/**
-	 * Convenience method for setting the changed by and changed date fields
-	 * 
-	 * @param task
-	 */
-	public void setChangedMetadata(TaskDefinition task) {
-		task.setChangedBy(Context.getAuthenticatedUser());
-		task.setDateChanged(new Date());
 	}
 	
 	/**

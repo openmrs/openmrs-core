@@ -77,6 +77,9 @@ public interface EncounterService extends OpenmrsService {
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_ENCOUNTERS })
 	public Encounter getEncounter(Integer encounterId) throws APIException;
 	
+	@Transactional(readOnly = true)
+	public Encounter getEncounterByUuid(String uuid) throws APIException;
+	
 	/**
 	 * Get all encounters (not voided) for a patient.
 	 * 
@@ -223,6 +226,9 @@ public interface EncounterService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_ENCOUNTER_TYPES })
 	public EncounterType getEncounterType(Integer encounterTypeId) throws APIException;
+	
+	@Transactional(readOnly = true)
+	public EncounterType getEncounterTypeByUuid(String uuid) throws APIException;
 	
 	/**
 	 * Get encounterType by exact name

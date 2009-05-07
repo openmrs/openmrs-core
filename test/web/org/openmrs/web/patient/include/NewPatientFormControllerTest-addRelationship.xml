@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <dataset>
-  <global_property property="newPatientForm.relationships" property_value="1a" />
-  <global_property property="patient.viewingAttributeTypes" property_value="" />
-  <relationship_type relationship_type_id="1" a_is_to_b="Doctor" b_is_to_a="Patient" preferred="0" weight="0" description="Relationship from a primary care provider to the patient" creator="1" date_created="2007-05-04 09:59:22.0"/>
+  <global_property property="newPatientForm.relationships" property_value="1a"  uuid="ef79f590-6aba-4747-a4e6-92c17c6c5b40"/>
+  <global_property property="patient.viewingAttributeTypes" property_value=""  uuid="a05ce246-363d-41ba-acdd-fa1bab53e918"/>
+  <relationship_type relationship_type_id="1" a_is_to_b="Doctor" b_is_to_a="Patient" preferred="0" weight="0" description="Relationship from a primary care provider to the patient" creator="1" date_created="2007-05-04 09:59:22.0" uuid="09561b44-4bfd-4fa3-aef7-fcfb53a90f58"/>
     
 </dataset>

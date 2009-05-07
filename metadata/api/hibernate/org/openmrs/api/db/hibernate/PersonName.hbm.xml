@@ -13,7 +13,10 @@
 		</id>
 
 		<discriminator column="person_name_id" insert="false" />
-		
+
+		<property name="uuid" type="java.lang.String"
+			column="uuid" length="36" unique="true" />
+
 		<property name="preferred" type="boolean" column="preferred"
 			not-null="true" />
 

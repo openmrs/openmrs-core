@@ -560,6 +560,8 @@
             <fileset dir="${database.dir}">
                 <include name="*.jar"/>
             </fileset>
+			<path refid="api.compile.classpath"/>
+			<pathelement location="${build.dir}" />
         </path>
 
         <property name="db.changelog.file" value="root.changelog.xml"/>
@@ -626,7 +628,6 @@
 				promptOnNonLocalDatabase="${prompt.user.if.not.local.database}"
 				dropFirst="false"
 				classpathref="classpath"
-				
 				databaseChangeLogTableName="liquibasechangelog"
 				databaseChangeLogLockTableName="liquibasechangeloglock"
 				

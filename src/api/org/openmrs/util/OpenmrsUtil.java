@@ -1449,7 +1449,7 @@ public class OpenmrsUtil {
 	 * method <i>only</i> uses the .equals() method for comparison. This should be used in the
 	 * patient/person objects on their collections. Their collections are SortedSets which use the
 	 * compareTo method for equality as well. The compareTo method is currently optimized for
-	 * sorting, not for equality A null <code>obj</code> will return false
+	 * sorting, not for equality. A null <code>obj</code> will return false
 	 * 
 	 * @param objects collection to loop over
 	 * @param obj Object to look for in the <code>objects</code>
@@ -1462,7 +1462,7 @@ public class OpenmrsUtil {
 			return false;
 		
 		for (Object o : objects) {
-			if (o.equals(obj))
+			if (o != null && o.equals(obj))
 				return true;
 		}
 		

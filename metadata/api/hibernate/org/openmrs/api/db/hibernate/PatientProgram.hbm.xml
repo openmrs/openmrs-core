@@ -12,7 +12,10 @@
     </id>
 
 	<discriminator column="patient_program_id" insert="false" />
-		
+
+		<property name="uuid" type="java.lang.String"
+			column="uuid" length="36" unique="true" />
+
 	<property name="dateEnrolled" type="java.util.Date" column="date_enrolled" not-null="false" length="19" />
     <property name="dateCompleted" type="java.util.Date" column="date_completed" not-null="false" length="19" />
     <property name="dateCreated" type="java.util.Date" column="date_created" not-null="true" length="19" />

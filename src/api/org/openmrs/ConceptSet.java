@@ -23,11 +23,12 @@ import org.simpleframework.xml.Root;
  * This represents a single concept within a concept set.
  */
 @Root
-public class ConceptSet implements java.io.Serializable {
+public class ConceptSet extends BaseOpenmrsObject implements Auditable, java.io.Serializable {
 	
 	public static final long serialVersionUID = 3787L;
 	
 	// Fields
+	private Integer conceptSetId;
 	
 	private Concept concept; // concept in the set
 	
@@ -68,6 +69,24 @@ public class ConceptSet implements java.io.Serializable {
 	}
 	
 	// Property accessors
+	
+	/**
+	 * Gets the concept set identifier.
+	 * 
+	 * @return the concept set identifier
+	 */
+	public Integer getConceptSetId() {
+		return conceptSetId;
+	}
+	
+	/**
+	 * Sets the concept set identifier.
+	 * 
+	 * @param conceptSetId The concept set identifier.
+	 */
+	public void setConceptSetId(Integer conceptSetId) {
+		this.conceptSetId = conceptSetId;
+	}
 	
 	/**
 	 * 
@@ -141,6 +160,56 @@ public class ConceptSet implements java.io.Serializable {
 	@Element
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
+	}
+	
+	/**
+	 * @since 1.5
+	 * @see org.openmrs.OpenmrsObject#getId()
+	 */
+	public Integer getId() {
+		return getConceptSetId();
+	}
+	
+	/**
+	 * @since 1.5
+	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
+	 */
+	public void setId(Integer id) {
+		this.setConceptSetId(id);
+	}
+	
+	/**
+	 * Not currently used. Always returns null.
+	 * 
+	 * @see org.openmrs.Auditable#getChangedBy()
+	 */
+	public User getChangedBy() {
+		return null;
+	}
+	
+	/**
+	 * Not currently used. Always returns null.
+	 * 
+	 * @see org.openmrs.Auditable#getDateChanged()
+	 */
+	public Date getDateChanged() {
+		return null;
+	}
+	
+	/**
+	 * Not currently used.
+	 * 
+	 * @see org.openmrs.Auditable#setChangedBy(org.openmrs.User)
+	 */
+	public void setChangedBy(User changedBy) {
+	}
+	
+	/**
+	 * Not currently used.
+	 * 
+	 * @see org.openmrs.Auditable#setDateChanged(java.util.Date)
+	 */
+	public void setDateChanged(Date dateChanged) {
 	}
 	
 }

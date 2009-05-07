@@ -24,7 +24,7 @@ import org.simpleframework.xml.Root;
  * ConceptDescription is the localized description of a concept.
  */
 @Root
-public class ConceptDescription implements java.io.Serializable {
+public class ConceptDescription extends BaseOpenmrsObject implements Auditable, java.io.Serializable {
 	
 	private static final long serialVersionUID = -7223075113369136584L;
 	
@@ -227,6 +227,22 @@ public class ConceptDescription implements java.io.Serializable {
 	 */
 	public String toString() {
 		return this.description;
+	}
+	
+	/**
+	 * @since 1.5
+	 * @see org.openmrs.OpenmrsObject#getId()
+	 */
+	public Integer getId() {
+		return getConceptDescriptionId();
+	}
+	
+	/**
+	 * @since 1.5
+	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
+	 */
+	public void setId(Integer id) {
+		setConceptDescriptionId(id);
 	}
 	
 }

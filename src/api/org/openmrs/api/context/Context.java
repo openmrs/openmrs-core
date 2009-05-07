@@ -228,7 +228,6 @@ public class Context {
 			throw new APIException(
 			        "A user context must first be passed to setUserContext()...use Context.openSession() (and closeSession() to prevent memory leaks!) before using the API");
 		}
-		
 		return (UserContext) userContextHolder.get()[0];
 	}
 	
@@ -670,7 +669,6 @@ public class Context {
 		log.trace("opening session");
 		setUserContext(new UserContext()); // must be cleared out in closeSession()
 		getContextDAO().openSession();
-		
 	}
 	
 	/**
@@ -797,6 +795,7 @@ public class Context {
 	 * closing
 	 */
 	public static void shutdown() {
+		
 		log.debug("Shutting down the scheduler");
 		try {
 			// Needs to be shutdown before Hibernate
@@ -829,7 +828,6 @@ public class Context {
 		catch (Exception e) {
 			log.warn("Error while shutting down context dao", e);
 		}
-		
 	}
 	
 	/**
@@ -995,6 +993,12 @@ public class Context {
 	 */
 	@SuppressWarnings("deprecation")
 	private static void checkForDatabaseUpdates(Properties props) throws DatabaseUpdateException, InputRequiredException {
+		
+		// TODO make sure the user has "permission" to run these updates by checking the runtime property for auto updating
+		
+		// this must be the first thing run in case it changes results database mappings
+		DatabaseUpdater.update();
+		
 		try {
 			Context.addProxyPrivilege("");
 			OpenmrsConstants.DATABASE_VERSION = getAdministrationService().getGlobalProperty("database_version");
@@ -1003,9 +1007,6 @@ public class Context {
 			Context.removeProxyPrivilege("");
 		}
 		
-		// TODO make sure the user has "permission" to run these updates by checking the runtime property for auto updating
-		
-		DatabaseUpdater.update();
 	}
 	
 	/**

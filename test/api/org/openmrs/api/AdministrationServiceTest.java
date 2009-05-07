@@ -17,6 +17,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Assert;
@@ -217,6 +218,82 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		Context.getAdministrationService().purgeGlobalProperty(
 		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST));
 		Context.getAdministrationService().getAllowedLocales();
+	}
+	
+	/**
+	 * @see {@link AdministrationService#getGlobalPropertyByUuid(String)}
+	 */
+	@Test
+	@Verifies(value = "should find object given valid uuid", method = "getGlobalPropertyByUuid(String)")
+	public void getGlobalPropertyByUuid_shouldFindObjectGivenValidUuid() throws Exception {
+		String uuid = "4f55827e-26fe-102b-80cb-0017a47871b3";
+		GlobalProperty prop = Context.getAdministrationService().getGlobalPropertyByUuid(uuid);
+		Assert.assertEquals("locale.allowed.list", prop.getProperty());
+	}
+	
+	/**
+	 * @see {@link AdministrationService#getGlobalPropertyByUuid(String)}
+	 */
+	@Test
+	@Verifies(value = "should return null if no object found with given uuid", method = "getGlobalPropertyByUuid(String)")
+	public void getGlobalPropertyByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
+		Assert.assertNull(Context.getAdministrationService().getGlobalPropertyByUuid("some invalid uuid"));
+	}
+	
+	/**
+	 * @see AdministrationService#saveGlobalProperties(List)
+	 */
+	@Test
+	@Verifies(value = "should delete property from database if not in list", method = "saveGlobalProperties(List<QGlobalProperty;>)")
+	public void saveGlobalProperties_shouldDeletePropertyFromDatabaseIfNotInList() throws Exception {
+		List<GlobalProperty> globalProperties = Context.getAdministrationService().getAllGlobalProperties();
+		GlobalProperty firstGlobalProperty = globalProperties.remove(0);
+		Context.getAdministrationService().saveGlobalProperties(globalProperties);
+		Assert.assertNull(Context.getAdministrationService().getGlobalProperty(firstGlobalProperty.getProperty()));
+	}
+	
+	/**
+	 * @see AdministrationService#saveGlobalProperties(List)
+	 */
+	@Test
+	@Verifies(value = "should not fail with empty list", method = "saveGlobalProperties(List<QGlobalProperty;>)")
+	public void saveGlobalProperties_shouldNotFailWithEmptyList() throws Exception {
+		Context.getAdministrationService().saveGlobalProperties(new ArrayList<GlobalProperty>());
+	}
+	
+	/**
+	 * @see AdministrationService#saveGlobalProperties(List)
+	 */
+	@Test
+	@Verifies(value = "should save all global properties to the database", method = "saveGlobalProperties(List<QGlobalProperty;>)")
+	public void saveGlobalProperties_shouldSaveAllGlobalPropertiesToTheDatabase() throws Exception {
+		// get the current global properties
+		List<GlobalProperty> globalProperties = Context.getAdministrationService().getAllGlobalProperties();
+		
+		// and now add some new ones to it
+		globalProperties.add(new GlobalProperty("new prop1", "new prop value1", "desc"));
+		globalProperties.add(new GlobalProperty("new prop2", "new prop value2", "desc"));
+		
+		Context.getAdministrationService().saveGlobalProperties(globalProperties);
+		
+		Assert.assertEquals("new prop value1", Context.getAdministrationService().getGlobalProperty("new prop1"));
+		Assert.assertEquals("new prop value2", Context.getAdministrationService().getGlobalProperty("new prop2"));
+	}
+	
+	/**
+	 * @see AdministrationService#saveGlobalProperties(List)
+	 */
+	@Test
+	@Verifies(value = "should assign uuid to all new properties", method = "saveGlobalProperties(List<QGlobalProperty;>)")
+	public void saveGlobalProperties_shouldAssignUuidToAllNewProperties() throws Exception {
+		// get the current global properties
+		List<GlobalProperty> globalProperties = Context.getAdministrationService().getAllGlobalProperties();
+		
+		// and now add a new one to it and save it
+		globalProperties.add(new GlobalProperty("new prop", "new prop value", "desc"));
+		Context.getAdministrationService().saveGlobalProperties(globalProperties);
+		
+		Assert.assertNotNull(Context.getAdministrationService().getGlobalPropertyObject("new prop").getUuid());
 	}
 	
 }

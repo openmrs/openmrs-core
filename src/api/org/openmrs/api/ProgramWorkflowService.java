@@ -177,6 +177,12 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	// PATIENT PROGRAM 
 	// **************************
 	
+	@Transactional(readOnly = true)
+	public Program getProgramByUuid(String uuid);
+	
+	@Transactional(readOnly = true)
+	public PatientState getPatientStateByUuid(String uuid);
+	
 	/**
 	 * Save patientProgram to database (create if new or update if changed)
 	 * 
@@ -271,6 +277,9 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	// **************************
 	// CONCEPT STATE CONVERSION
 	// **************************
+	
+	@Transactional(readOnly = true)
+	public ProgramWorkflow getWorkflowByUuid(String uuid);
 	
 	/**
 	 * Save ConceptStateConversion to database (create if new or update if changed)
@@ -443,9 +452,8 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	@Authorized( { OpenmrsConstants.PRIV_MANAGE_PROGRAMS })
 	public void voidWorkflow(ProgramWorkflow programWorkflow, String reason) throws APIException;
 	
-	// **************************
-	// DEPRECATED PROGRAM WORKFLOW STATE
-	// **************************
+	@Transactional(readOnly = true)
+	public ProgramWorkflowState getStateByUuid(String uuid);
 	
 	/**
 	 * Returns all ProgramWorkflowStates
@@ -726,6 +734,9 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	public void changeToState(PatientProgram patientProgram, ProgramWorkflow workflow, ProgramWorkflowState state,
 	                          Date onDate) throws APIException;
 	
+	@Transactional(readOnly = true)
+	public PatientProgram getPatientProgramByUuid(String uuid);
+	
 	/**
 	 * TODO: refactor?
 	 * 
@@ -809,4 +820,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	public void deleteConceptStateConversion(ConceptStateConversion csc) throws APIException;
+	
+	@Transactional(readOnly = true)
+	public ConceptStateConversion getConceptStateConversionByUuid(String uuid);
 }

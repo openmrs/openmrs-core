@@ -83,6 +83,12 @@ public interface PatientService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	public Patient getPatient(Integer patientId) throws APIException;
 	
+	@Transactional(readOnly = true)
+	public Patient getPatientByUuid(String uuid) throws APIException;
+	
+	@Transactional(readOnly = true)
+	public PatientIdentifier getPatientIdentifierByUuid(String uuid) throws APIException;
+	
 	/**
 	 * @see #savePatient(Patient)
 	 * @deprecated replaced by #savePatient(Patient)
@@ -325,6 +331,9 @@ public interface PatientService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_IDENTIFIER_TYPES })
 	public PatientIdentifierType getPatientIdentifierType(Integer patientIdentifierTypeId) throws APIException;
+	
+	@Transactional(readOnly = true)
+	public PatientIdentifierType getPatientIdentifierTypeByUuid(String uuid) throws APIException;
 	
 	/**
 	 * @deprecated use {@link #getPatientIdentifierTypeByName(String)}

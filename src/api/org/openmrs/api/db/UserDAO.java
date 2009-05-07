@@ -143,6 +143,53 @@ public interface UserDAO {
 	public boolean isSecretAnswer(User u, String answer) throws DAOException;
 	
 	/**
+	 * Auto generated method comment
+	 * 
+	 * @param uuid
+	 * @return
+	 */
+	public Privilege getPrivilegeByUuid(String uuid);
+	
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @param uuid
+	 * @return
+	 */
+	public Role getRoleByUuid(String uuid);
+	
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @param uuid
+	 * @return
+	 */
+	public User getUserByUuid(String uuid);
+	
+	/**
+	 * @param user
+	 * @return The login credentials for a specified user.
+	 */
+	public LoginCredential getLoginCredential(User user);
+	
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @param uuid
+	 * @return
+	 */
+	public LoginCredential getLoginCredentialByUuid(String uuid);
+	
+	/**
+	 * Updates a user's login credentials. Note that there is no
+	 * createLoginCredential(LoginCredential) method. Login credentials are dependent on a User
+	 * already existing.
+	 * 
+	 * @param credential
+	 */
+	public void updateLoginCredential(LoginCredential credential);
+	
+	/**
 	 * @see org.openmrs.api.UserService#generateSystemId()
 	 */
 	public Integer generateSystemId() throws DAOException;

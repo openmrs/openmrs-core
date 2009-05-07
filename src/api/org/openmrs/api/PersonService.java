@@ -19,6 +19,7 @@ import java.util.Set;
 
 import org.openmrs.Patient;
 import org.openmrs.Person;
+import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.PersonName;
@@ -251,6 +252,9 @@ public interface PersonService {
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_PERSON_ATTRIBUTE_TYPES })
 	public PersonAttributeType getPersonAttributeType(Integer typeId) throws APIException;
 	
+	@Transactional(readOnly = true)
+	public PersonAttributeType getPersonAttributeTypeByUuid(String uuid);
+	
 	/**
 	 * Get a PersonAttribute from the database with the given PersonAttributeid
 	 * 
@@ -289,6 +293,9 @@ public interface PersonService {
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_RELATIONSHIPS })
 	public Relationship getRelationship(Integer relationshipId) throws APIException;
+	
+	@Transactional(readOnly = true)
+	public Relationship getRelationshipByUuid(String uuid) throws APIException;
 	
 	/**
 	 * Get list of relationships that are not voided
@@ -392,6 +399,9 @@ public interface PersonService {
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_RELATIONSHIP_TYPES })
 	public RelationshipType getRelationshipType(Integer relationshipTypeId) throws APIException;
+	
+	@Transactional(readOnly = true)
+	public RelationshipType getRelationshipTypeByUuid(String uuid) throws APIException;
 	
 	/**
 	 * @deprecated use {@link #getRelationshipTypeByName(String)}
@@ -531,6 +541,18 @@ public interface PersonService {
 	@Authorized( { OpenmrsConstants.PRIV_PURGE_PERSONS })
 	public void purgePerson(Person person) throws APIException;
 	
+	@Transactional(readOnly = true)
+	public Person getPersonByUuid(String uuid) throws APIException;
+	
+	@Transactional(readOnly = true)
+	public PersonAddress getPersonAddressByUuid(String uuid) throws APIException;
+	
+	@Transactional(readOnly = true)
+	public PersonAttribute getPersonAttributeByUuid(String uuid) throws APIException;
+	
+	@Transactional(readOnly = true)
+	public PersonName getPersonNameByUuid(String uuid) throws APIException;
+	
 	/**
 	 * Gets a person by internal id
 	 * 
@@ -619,14 +641,6 @@ public interface PersonService {
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_PERSON_ATTRIBUTE_TYPES })
 	public List<PersonAttributeType> getPersonAttributeTypes(String personType, String viewType) throws APIException;
-	
-	/**
-	 * Iterates over Names/Addresses/Attributes to set dateCreated and creator properties if needed
-	 * 
-	 * @deprecated replaced by {@link #savePerson(Person)}
-	 * @param person
-	 */
-	public void setCollectionProperties(Person person);
 	
 	/**
 	 * Splits the <code>name</code> string into Given, Middle, and Family parts of a PersonName

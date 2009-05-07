@@ -277,8 +277,8 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link LocationService#retireLocation(Location,String)}
 	 */
 	@Test
-	@Verifies(value = "should retire location succssfully", method = "retireLocation(Location,String)")
-	public void retireLocation_shouldRetireLocationSuccssfully() throws Exception {
+	@Verifies(value = "should retire location successfully", method = "retireLocation(Location,String)")
+	public void retireLocation_shouldRetireLocationSuccessfully() throws Exception {
 		LocationService ls = Context.getLocationService();
 		
 		// Get all locations.

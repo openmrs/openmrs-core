@@ -20,7 +20,7 @@ import java.util.Date;
  * 
  * @version 1.0
  */
-public class FieldAnswer implements java.io.Serializable {
+public class FieldAnswer extends BaseOpenmrsObject implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 5656L;
 	
@@ -133,6 +133,22 @@ public class FieldAnswer implements java.io.Serializable {
 	public void setField(Field field) {
 		this.dirty = true;
 		this.field = field;
+	}
+	
+	/**
+	 * @since 1.5
+	 * @see org.openmrs.OpenmrsObject#getId()
+	 */
+	public Integer getId() {
+		throw new UnsupportedOperationException();
+	}
+	
+	/**
+	 * @since 1.5
+	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
+	 */
+	public void setId(Integer id) {
+		throw new UnsupportedOperationException();
 	}
 	
 }

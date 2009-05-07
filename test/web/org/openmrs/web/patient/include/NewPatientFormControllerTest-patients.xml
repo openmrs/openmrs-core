@@ -1,27 +1,27 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <dataset>
-  <concept_name_tag concept_name_tag_id="1" tag="default" description="name to use when nothing else is available" creator="1" date_created="2007-05-01 00:00:00.0" voided="false"/>
-  <concept_name_tag concept_name_tag_id="2" tag="short" description="preferred short name for a concept" creator="1" date_created="2007-05-01 00:00:00.0" voided="false"/>
-  <concept_name_tag concept_name_tag_id="3" tag="synonym" description="a different word with similar meaning" creator="1" date_created="2007-05-01 00:00:00.0" voided="false"/>
-  <concept_name_tag concept_name_tag_id="4" tag="preferred" description="preferred name in English" creator="1" date_created="2007-05-01 00:00:00.0" voided="false"/>
-  <concept_name_tag concept_name_tag_id="5" tag="preferred_KE" description="preferred name in Kenya" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
-  <concept_name_tag concept_name_tag_id="6" tag="preferred_LS" description="preferred name in Lesotho" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
-  <concept_name_tag concept_name_tag_id="7" tag="preferred_MW" description="preferred name in Malawi" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
-  <concept_name_tag concept_name_tag_id="8" tag="preferred_RW" description="preferred name in Rwanda" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
-  <concept_name_tag concept_name_tag_id="9" tag="preferred_SA" description="preferred name in South Africa" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
-  <concept_name_tag concept_name_tag_id="10" tag="preferred_TZ" description="preferred name in Tanzania" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
-  <concept_name_tag concept_name_tag_id="11" tag="preferred_UG" description="preferred name in Uganda" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
-  <concept_name_tag concept_name_tag_id="12" tag="preferred_UK" description="preferred name in the United Kingdom" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
-  <concept_name_tag concept_name_tag_id="13" tag="preferred_US" description="preferred name in the United States" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
-  <concept_name_tag concept_name_tag_id="14" tag="preferred_ZM" description="preferred name in Zambia" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
-  <concept_name_tag concept_name_tag_id="15" tag="preferred_ZW" description="preferred name in Zimbabwe" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
+  <concept_name_tag concept_name_tag_id="1" tag="default" description="name to use when nothing else is available" creator="1" date_created="2007-05-01 00:00:00.0" voided="false" uuid="bd965929-1f77-4865-acdb-690db88c62e1"/>
+  <concept_name_tag concept_name_tag_id="2" tag="short" description="preferred short name for a concept" creator="1" date_created="2007-05-01 00:00:00.0" voided="false" uuid="074b058e-6b1d-429f-9ed8-4a0e24c569f2"/>
+  <concept_name_tag concept_name_tag_id="3" tag="synonym" description="a different word with similar meaning" creator="1" date_created="2007-05-01 00:00:00.0" voided="false" uuid="903e217d-b3ac-4a12-8a68-2fd9b58bf96a"/>
+  <concept_name_tag concept_name_tag_id="4" tag="preferred" description="preferred name in English" creator="1" date_created="2007-05-01 00:00:00.0" voided="false" uuid="07c10086-f822-4737-8b39-86812b007776"/>
+  <concept_name_tag concept_name_tag_id="5" tag="preferred_KE" description="preferred name in Kenya" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="03808c6c-720b-4e10-926f-20976f75cccd"/>
+  <concept_name_tag concept_name_tag_id="6" tag="preferred_LS" description="preferred name in Lesotho" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="be596334-3897-400a-a8a7-ca6721441bbd"/>
+  <concept_name_tag concept_name_tag_id="7" tag="preferred_MW" description="preferred name in Malawi" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="a7c04fc3-ca7c-42dc-af2c-95024026ad41"/>
+  <concept_name_tag concept_name_tag_id="8" tag="preferred_RW" description="preferred name in Rwanda" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="815a0df2-3f59-46fa-a029-0e6d930e78b4"/>
+  <concept_name_tag concept_name_tag_id="9" tag="preferred_SA" description="preferred name in South Africa" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="3b1fbade-b632-4d50-b343-3487d7d691b7"/>
+  <concept_name_tag concept_name_tag_id="10" tag="preferred_TZ" description="preferred name in Tanzania" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="92b5e959-5cea-4ce9-a12f-cb3f06c90bdd"/>
+  <concept_name_tag concept_name_tag_id="11" tag="preferred_UG" description="preferred name in Uganda" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="540f557a-55a7-4156-b9b5-8c26f1a8fd02"/>
+  <concept_name_tag concept_name_tag_id="12" tag="preferred_UK" description="preferred name in the United Kingdom" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="8631de44-09a9-446c-9785-af8cb2b4df1c"/>
+  <concept_name_tag concept_name_tag_id="13" tag="preferred_US" description="preferred name in the United States" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="03686474-5904-4bfa-a733-62dd0c424ce6"/>
+  <concept_name_tag concept_name_tag_id="14" tag="preferred_ZM" description="preferred name in Zambia" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="3381f889-b02b-4ff2-a849-ed4b17a1606f"/>
+  <concept_name_tag concept_name_tag_id="15" tag="preferred_ZW" description="preferred name in Zimbabwe" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="3a7b24ab-1d7c-428a-a84c-99929654611c"/>
   <patient patient_id="2" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
   <patient patient_id="3" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
-  <patient_identifier patient_id="2" identifier="1234" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
-  <patient_identifier patient_id="3" identifier="12345" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
-  <person person_id="2" gender="M" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
-  <person person_id="3" gender="F" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
-  <person_address person_address_id="2" person_id="2" preferred="true" address1="1234 Somewhere Street" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
-  <person_name person_name_id="2" preferred="true" person_id="2" given_name="John" family_name="Doe" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
-  <person_name person_name_id="3" preferred="true" person_id="3" given_name="John3" middle_name=" " family_name="Doe" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
+  <patient_identifier patient_identifier_id="83" patient_id="2" identifier="1234" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="8d1e3646-0e76-43dc-8108-2ca6c443fddd"/>
+  <patient_identifier patient_identifier_id="84" patient_id="3" identifier="12345" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="c1a51e67-3082-4471-97c8-7837b7d50365"/>
+  <person person_id="2" gender="M" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="b3568693-5183-49fe-befa-946571d37bc0"/>
+  <person person_id="3" gender="F" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="114b96c8-7e58-415b-8226-71aaa3698b2c"/>
+  <person_address person_address_id="2" person_id="2" preferred="true" address1="1234 Somewhere Street" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="dfafdcba-2081-48a8-8c23-7fb37a013f8e"/>
+  <person_name person_name_id="2" preferred="true" person_id="2" given_name="John" family_name="Doe" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="82f3f82c-300d-4778-8b4e-5b62622a4b9b"/>
+  <person_name person_name_id="3" preferred="true" person_id="3" given_name="John3" middle_name=" " family_name="Doe" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="02cb8236-69a9-4560-9c82-0d7c4172822d"/>
 </dataset>

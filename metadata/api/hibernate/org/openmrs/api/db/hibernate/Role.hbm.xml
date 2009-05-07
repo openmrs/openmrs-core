@@ -14,7 +14,10 @@
 		</id>
 
 		<discriminator column="role" insert="false" />
-		
+
+		<property name="uuid" type="java.lang.String"
+			column="uuid" length="36" unique="true" />
+
 		<property name="description" type="java.lang.String"
 			column="description" not-null="true" length="255" />
 

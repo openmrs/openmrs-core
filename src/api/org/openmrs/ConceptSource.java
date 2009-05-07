@@ -24,7 +24,7 @@ import org.simpleframework.xml.Root;
  * ICD9, ICD10, SNOMED, or any other OpenMRS implementation
  */
 @Root
-public class ConceptSource implements java.io.Serializable {
+public class ConceptSource extends BaseOpenmrsObject implements Auditable, Voidable, java.io.Serializable {
 	
 	public static final long serialVersionUID = 375L;
 	
@@ -255,4 +255,53 @@ public class ConceptSource implements java.io.Serializable {
 		this.voidReason = voidReason;
 	}
 	
+	/**
+	 * @since 1.5
+	 * @see org.openmrs.OpenmrsObject#getId()
+	 */
+	public Integer getId() {
+		return getConceptSourceId();
+	}
+	
+	/**
+	 * @since 1.5
+	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
+	 */
+	public void setId(Integer id) {
+		setConceptSourceId(id);
+	}
+	
+	/**
+	 * Not currently used. Always returns null.
+	 * 
+	 * @see org.openmrs.Auditable#getChangedBy()
+	 */
+	public User getChangedBy() {
+		return null;
+	}
+	
+	/**
+	 * Not currently used. Always returns null.
+	 * 
+	 * @see org.openmrs.Auditable#getDateChanged()
+	 */
+	public Date getDateChanged() {
+		return null;
+	}
+	
+	/**
+	 * Not currently used.
+	 * 
+	 * @see org.openmrs.Auditable#setChangedBy(org.openmrs.User)
+	 */
+	public void setChangedBy(User changedBy) {
+	}
+	
+	/**
+	 * Not currently used.
+	 * 
+	 * @see org.openmrs.Auditable#setDateChanged(java.util.Date)
+	 */
+	public void setDateChanged(Date dateChanged) {
+	}
 }

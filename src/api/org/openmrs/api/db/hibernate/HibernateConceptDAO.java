@@ -17,10 +17,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
@@ -45,6 +47,7 @@ import org.openmrs.ConceptClass;
 import org.openmrs.ConceptComplex;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptDerived;
+import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptNameTag;
 import org.openmrs.ConceptNumeric;
@@ -54,6 +57,7 @@ import org.openmrs.ConceptSetDerived;
 import org.openmrs.ConceptSource;
 import org.openmrs.ConceptWord;
 import org.openmrs.Drug;
+import org.openmrs.DrugIngredient;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ConceptDAO;
@@ -1086,7 +1090,6 @@ public class HibernateConceptDAO implements ConceptDAO {
 			}
 			
 			currentConcept = nextConcept;
-			
 			nextConcept = getNextConcept(currentConcept);
 			
 			return currentConcept;
@@ -1101,4 +1104,119 @@ public class HibernateConceptDAO implements ConceptDAO {
 		
 	}
 	
+	/**
+	 * @see org.openmrs.api.db.ConceptDAO#getConceptByUuid(java.lang.String)
+	 */
+	public Concept getConceptByUuid(String uuid) {
+		return (Concept) sessionFactory.getCurrentSession().createQuery("from Concept c where c.uuid = :uuid").setString(
+		    "uuid", uuid).uniqueResult();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.ConceptDAO#getConceptClassByUuid(java.lang.String)
+	 */
+	public ConceptClass getConceptClassByUuid(String uuid) {
+		return (ConceptClass) sessionFactory.getCurrentSession().createQuery("from ConceptClass cc where cc.uuid = :uuid")
+		        .setString("uuid", uuid).uniqueResult();
+	}
+	
+	public ConceptAnswer getConceptAnswerByUuid(String uuid) {
+		return (ConceptAnswer) sessionFactory.getCurrentSession().createQuery("from ConceptAnswer cc where cc.uuid = :uuid")
+		        .setString("uuid", uuid).uniqueResult();
+	}
+	
+	public ConceptDerived getConceptDerivedByUuid(String uuid) {
+		return (ConceptDerived) sessionFactory.getCurrentSession().createQuery(
+		    "from ConceptDerived cc where cc.uuid = :uuid").setString("uuid", uuid).uniqueResult();
+	}
+	
+	public ConceptName getConceptNameByUuid(String uuid) {
+		return (ConceptName) sessionFactory.getCurrentSession().createQuery("from ConceptName cc where cc.uuid = :uuid")
+		        .setString("uuid", uuid).uniqueResult();
+	}
+	
+	public ConceptSet getConceptSetByUuid(String uuid) {
+		return (ConceptSet) sessionFactory.getCurrentSession().createQuery("from ConceptSet cc where cc.uuid = :uuid")
+		        .setString("uuid", uuid).uniqueResult();
+	}
+	
+	public ConceptSetDerived getConceptSetDerivedByUuid(String uuid) {
+		return (ConceptSetDerived) sessionFactory.getCurrentSession().createQuery(
+		    "from ConceptSetDerived cc where cc.uuid = :uuid").setString("uuid", uuid).uniqueResult();
+	}
+	
+	public ConceptSource getConceptSourceByUuid(String uuid) {
+		return (ConceptSource) sessionFactory.getCurrentSession().createQuery("from ConceptSource cc where cc.uuid = :uuid")
+		        .setString("uuid", uuid).uniqueResult();
+	}
+	
+	public ConceptWord getConceptWordByUuid(String uuid) {
+		return (ConceptWord) sessionFactory.getCurrentSession().createQuery("from ConceptWord cc where cc.uuid = :uuid")
+		        .setString("uuid", uuid).uniqueResult();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.ConceptDAO#getConceptDatatypeByUuid(java.lang.String)
+	 */
+	public ConceptDatatype getConceptDatatypeByUuid(String uuid) {
+		return (ConceptDatatype) sessionFactory.getCurrentSession().createQuery(
+		    "from ConceptDatatype cd where cd.uuid = :uuid").setString("uuid", uuid).uniqueResult();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.ConceptDAO#getConceptNumericByUuid(java.lang.String)
+	 */
+	public ConceptNumeric getConceptNumericByUuid(String uuid) {
+		return (ConceptNumeric) sessionFactory.getCurrentSession().createQuery(
+		    "from ConceptNumeric cn where cn.uuid = :uuid").setString("uuid", uuid).uniqueResult();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.ConceptDAO#getConceptProposalByUuid(java.lang.String)
+	 */
+	public ConceptProposal getConceptProposalByUuid(String uuid) {
+		return (ConceptProposal) sessionFactory.getCurrentSession().createQuery(
+		    "from ConceptProposal cp where cp.uuid = :uuid").setString("uuid", uuid).uniqueResult();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.ConceptDAO#getDrugByUuid(java.lang.String)
+	 */
+	public Drug getDrugByUuid(String uuid) {
+		return (Drug) sessionFactory.getCurrentSession().createQuery("from Drug d where d.uuid = :uuid").setString("uuid",
+		    uuid).uniqueResult();
+	}
+	
+	public DrugIngredient getDrugIngredientByUuid(String uuid) {
+		return (DrugIngredient) sessionFactory.getCurrentSession().createQuery("from DrugIngredient d where d.uuid = :uuid")
+		        .setString("uuid", uuid).uniqueResult();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.ConceptDAO#getConceptUuids()
+	 */
+	public Map<Integer, String> getConceptUuids() {
+		Map<Integer, String> ret = new HashMap<Integer, String>();
+		Query q = sessionFactory.getCurrentSession().createQuery("select conceptId, uuid from Concept");
+		List<Object[]> list = q.list();
+		for (Object[] o : list)
+			ret.put((Integer) o[0], (String) o[1]);
+		return ret;
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.ConceptDAO#getConceptDescriptionByUuid(java.lang.String)
+	 */
+	public ConceptDescription getConceptDescriptionByUuid(String uuid) {
+		return (ConceptDescription) sessionFactory.getCurrentSession().createQuery(
+		    "from ConceptDescription cd where cd.uuid = :uuid").setString("uuid", uuid).uniqueResult();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.ConceptDAO#getConceptNameTagByUuid(java.lang.String)
+	 */
+	public ConceptNameTag getConceptNameTagByUuid(String uuid) {
+		return (ConceptNameTag) sessionFactory.getCurrentSession().createQuery(
+		    "from ConceptNameTag cnt where cnt.uuid = :uuid").setString("uuid", uuid).uniqueResult();
+	}
 }

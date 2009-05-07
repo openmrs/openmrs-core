@@ -540,4 +540,51 @@ public class HibernatePersonDAO implements PersonDAO {
 		// finally, just tell hibernate to delete our object
 		sessionFactory.getCurrentSession().delete(person);
 	}
+	
+	/**
+	 * @see org.openmrs.api.db.PersonDAO#getPersonAttributeTypeByUuid(java.lang.String)
+	 */
+	public PersonAttributeType getPersonAttributeTypeByUuid(String uuid) {
+		return (PersonAttributeType) sessionFactory.getCurrentSession().createQuery(
+		    "from PersonAttributeType pat where pat.uuid = :uuid").setString("uuid", uuid).uniqueResult();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.PersonDAO#getPersonByUuid(java.lang.String)
+	 */
+	public Person getPersonByUuid(String uuid) {
+		return (Person) sessionFactory.getCurrentSession().createQuery("from Person p where p.uuid = :uuid").setString(
+		    "uuid", uuid).uniqueResult();
+	}
+	
+	public PersonAddress getPersonAddressByUuid(String uuid) {
+		return (PersonAddress) sessionFactory.getCurrentSession().createQuery("from PersonAddress p where p.uuid = :uuid")
+		        .setString("uuid", uuid).uniqueResult();
+	}
+	
+	public PersonAttribute getPersonAttributeByUuid(String uuid) {
+		return (PersonAttribute) sessionFactory.getCurrentSession().createQuery(
+		    "from PersonAttribute p where p.uuid = :uuid").setString("uuid", uuid).uniqueResult();
+	}
+	
+	public PersonName getPersonNameByUuid(String uuid) {
+		return (PersonName) sessionFactory.getCurrentSession().createQuery("from PersonName p where p.uuid = :uuid")
+		        .setString("uuid", uuid).uniqueResult();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.PersonDAO#getRelationshipByUuid(java.lang.String)
+	 */
+	public Relationship getRelationshipByUuid(String uuid) {
+		return (Relationship) sessionFactory.getCurrentSession().createQuery("from Relationship r where r.uuid = :uuid")
+		        .setString("uuid", uuid).uniqueResult();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.PersonDAO#getRelationshipTypeByUuid(java.lang.String)
+	 */
+	public RelationshipType getRelationshipTypeByUuid(String uuid) {
+		return (RelationshipType) sessionFactory.getCurrentSession().createQuery(
+		    "from RelationshipType rt where rt.uuid = :uuid").setString("uuid", uuid).uniqueResult();
+	}
 }

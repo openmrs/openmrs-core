@@ -1,12 +1,12 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <dataset>
-  <person person_id="503" gender="F" dead="false" creator="1" date_created="2008-08-15 15:46:47.0" voided="false"/>
-  <person person_id="504" gender="M" dead="false" creator="1" date_created="2008-08-15 15:57:09.0" voided="false"/>
+  <person person_id="503" gender="F" dead="false" creator="1" date_created="2008-08-15 15:46:47.0" voided="false" uuid="2b597be0-83c7-4f1d-b3d2-1d61ab128762"/>
+  <person person_id="504" gender="M" dead="false" creator="1" date_created="2008-08-15 15:57:09.0" voided="false" uuid="0fb59389-d347-42c7-86be-3b57dbd468c4"/>
   <users user_id="503" system_id="4-2" username="emptypassword" password="" salt="42af4c437a47cd778a54f6564d71b3cd6e8e5ca" secret_question="" creator="1" date_created="2008-08-15 15:57:09.0" changed_by="1" date_changed="2008-08-18 11:51:56.0" voided="false" void_reason=""/>
   <users user_id="504" system_id="5-9" username="nullpassword" salt="42af4c437a47cd778a54f6564d71b3cd6e8e5ca" secret_question="" creator="1" date_created="2008-08-15 15:57:09.0" changed_by="1" date_changed="2008-08-18 11:51:56.0" voided="false" void_reason=""/>
   
-  <person person_id="505" gender="F" dead="false" creator="1" date_created="2008-08-15 15:46:47.0" voided="false"/>
-  <person person_id="506" gender="M" dead="false" creator="1" date_created="2008-08-15 15:57:09.0" voided="false"/>
+  <person person_id="505" gender="F" dead="false" creator="1" date_created="2008-08-15 15:46:47.0" voided="false" uuid="7e93b11f-fc1f-4c3a-ab5f-cc6e3ded6c73"/>
+  <person person_id="506" gender="M" dead="false" creator="1" date_created="2008-08-15 15:57:09.0" voided="false" uuid="9b66188b-b68c-4d51-884a-74ff8f420594"/>
   <users user_id="505" system_id="6-7" username="incorrect" password="4a1750c8607dfa237de36c6305715c223415189" salt="c788c6ad82a157b712392ca695dfcf2eed193d7f" secret_question="" creator="1" date_created="2008-08-15 15:57:09.0" changed_by="1" date_changed="2008-08-18 11:51:56.0" voided="false" void_reason=""/>
   <users user_id="506" system_id="7-5" username="correct" password="4a1750c8607d0fa237de36c6305715c223415189" salt="c788c6ad82a157b712392ca695dfcf2eed193d7f" secret_question="" creator="1" date_created="2008-08-15 15:57:09.0" changed_by="1" date_changed="2008-08-18 11:51:56.0" voided="false" void_reason=""/>
 </dataset>

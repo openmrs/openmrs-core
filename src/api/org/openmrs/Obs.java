@@ -25,7 +25,11 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.aop.RequiredDataAdvice;
 import org.openmrs.api.APIException;
+import org.openmrs.api.handler.AuditableSaveHandler;
+import org.openmrs.api.handler.OpenmrsObjectSaveHandler;
+import org.openmrs.api.handler.SaveHandler;
 import org.openmrs.obs.ComplexData;
 import org.openmrs.obs.ComplexObsHandler;
 import org.openmrs.util.Format;
@@ -95,7 +99,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	
 	protected String comment;
 	
-	protected Integer personId;
+	protected transient Integer personId;
 	
 	protected Person person;
 	
@@ -217,26 +221,17 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	/**
-	 * Sets the required Obs properties: creator and dateCreated
+	 * This method isn't needed anymore. There are handlers that are mapped around the saveObs(obs)
+	 * method that get called automatically. See {@link SaveHandler}, et al.
 	 * 
-	 * @param creator
-	 * @param dateCreated
+	 * @see SaveHandler
+	 * @see OpenmrsObjectSaveHandler
+	 * @see AuditableSaveHandler
+	 * @deprecated no longer needed. Replaced by handlers.
 	 */
+	@Deprecated
 	public void setRequiredProperties(User creator, Date dateCreated) {
-		if (this.getCreator() == null)
-			setCreator(creator);
-		
-		if (this.getDateCreated() == null)
-			setDateCreated(dateCreated);
-		
-		if (getGroupMembers() != null) {
-			for (Obs member : getGroupMembers()) {
-				// if statement does a quick sanity check to
-				// avoid the simplest of infinite loops
-				if (member.getCreator() == null || member.getDateCreated() == null)
-					member.setRequiredProperties(creator, dateCreated);
-			}
-		}
+		RequiredDataAdvice.recursivelyHandle(SaveHandler.class, this, creator, dateCreated, null);
 	}
 	
 	// Property accessors
@@ -838,7 +833,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * @should return first part of valueComplex for non null valueComplexes
 	 */
 	public String getValueAsString(Locale locale) {
-		// branch on hl7 abbreviations
+		//branch on hl7 abbreviations
 		if (getConcept() != null) {
 			String abbrev = getConcept().getDatatype().getHl7Abbreviation();
 			if (abbrev.equals("BIT"))

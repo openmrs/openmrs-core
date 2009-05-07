@@ -1,83 +1,80 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <dataset>
-  <concept concept_id="1" retired="false" datatype_id="0" class_id="0" is_set="false" creator="1" date_created="2005-01-01 00:00:00.0"/>
-  <concept_datatype concept_datatype_id="1" name="Numeric" hl7_abbreviation="NM" description="Numeric value, including integer or float" creator="1" date_created="2005-01-01 00:00:00.0" retired="false"/>
-  <concept_description concept_description_id="1" concept_id="1" description="this is a description" locale="en" creator="1" date_created="2005-01-01 00:00:00.0"/>
-  <concept_name concept_id="1" name="Some non numeric concept name" locale="en" creator="1" date_created="2005-01-01 00:00:00.0" concept_name_id="1" voided="false"/>
-  <concept_name_tag concept_name_tag_id="1" tag="default" description="name to use when nothing else is available" creator="1" date_created="2007-05-01 00:00:00.0" voided="false"/>
-  <concept_name_tag concept_name_tag_id="2" tag="short" description="preferred short name for a concept" creator="1" date_created="2007-05-01 00:00:00.0" voided="false"/>
-  <concept_name_tag concept_name_tag_id="3" tag="synonym" description="a different word with similar meaning" creator="1" date_created="2007-05-01 00:00:00.0" voided="false"/>
-  <concept_name_tag concept_name_tag_id="4" tag="preferred" description="preferred name in a language" creator="1" date_created="2007-05-01 00:00:00.0" voided="false"/>
-  <concept_name_tag concept_name_tag_id="5" tag="preferred_KE" description="preferred name in Kenya" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
-  <concept_name_tag concept_name_tag_id="6" tag="preferred_LS" description="preferred name in Lesotho" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
-  <concept_name_tag concept_name_tag_id="7" tag="preferred_MW" description="preferred name in Malawi" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
-  <concept_name_tag concept_name_tag_id="8" tag="preferred_RW" description="preferred name in Rwanda" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
-  <concept_name_tag concept_name_tag_id="9" tag="preferred_SA" description="preferred name in South Africa" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
-  <concept_name_tag concept_name_tag_id="10" tag="preferred_TZ" description="preferred name in Tanzania" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
-  <concept_name_tag concept_name_tag_id="11" tag="preferred_UG" description="preferred name in Uganda" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
-  <concept_name_tag concept_name_tag_id="12" tag="preferred_UK" description="preferred name in the United Kingdom" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
-  <concept_name_tag concept_name_tag_id="13" tag="preferred_US" description="preferred name in the United States" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
-  <concept_name_tag concept_name_tag_id="14" tag="preferred_ZM" description="preferred name in Zambia" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
-  <concept_name_tag concept_name_tag_id="15" tag="preferred_ZW" description="preferred name in Zimbabwe" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
+  <concept concept_id="1" retired="false" datatype_id="0" class_id="0" is_set="false" creator="1" date_created="2005-01-01 00:00:00.0" uuid="985ff1a2-c2ef-49fd-836f-8a1d936d9ef9"/>
+  <concept_datatype concept_datatype_id="1" name="Numeric" hl7_abbreviation="NM" description="Numeric value, including integer or float" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="07ab5f37-4f18-4932-a0b5-16de3811789a"/>
+  <concept_description concept_description_id="1" concept_id="1" description="this is a description" locale="en" creator="1" date_created="2005-01-01 00:00:00.0" uuid="ff6721f2-3e44-488c-a22d-e79ea06e6bc3"/>
+  <concept_name concept_id="1" name="Some non numeric concept name" locale="en" creator="1" date_created="2005-01-01 00:00:00.0" concept_name_id="1" voided="false" uuid="637de959-e1c4-41d4-b2d6-bc4335835ea9"/>
+  <concept_name_tag concept_name_tag_id="1" tag="default" description="name to use when nothing else is available" creator="1" date_created="2007-05-01 00:00:00.0" voided="false" uuid="287d7ac8-201d-4f9a-a108-a142b21d5059"/>
+  <concept_name_tag concept_name_tag_id="2" tag="short" description="preferred short name for a concept" creator="1" date_created="2007-05-01 00:00:00.0" voided="false" uuid="dff305c0-2004-40fc-85bc-0d4f19d2b4cf"/>
+  <concept_name_tag concept_name_tag_id="3" tag="synonym" description="a different word with similar meaning" creator="1" date_created="2007-05-01 00:00:00.0" voided="false" uuid="313abee8-039f-4b61-98b1-a90f837fdcfe"/>
+  <concept_name_tag concept_name_tag_id="4" tag="preferred" description="preferred name in a language" creator="1" date_created="2007-05-01 00:00:00.0" voided="false" uuid="d902163d-ec20-48a3-bd1f-f134dbd48066"/>
+  <concept_name_tag concept_name_tag_id="5" tag="preferred_KE" description="preferred name in Kenya" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="2ea106b9-e472-46b8-9690-1fd00a3fa7a7"/>
+  <concept_name_tag concept_name_tag_id="6" tag="preferred_LS" description="preferred name in Lesotho" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="762dfd90-6b22-48d4-be83-d4d355c0a3db"/>
+  <concept_name_tag concept_name_tag_id="7" tag="preferred_MW" description="preferred name in Malawi" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="329f7009-f987-41a2-9d7a-69773fd07874"/>
+  <concept_name_tag concept_name_tag_id="8" tag="preferred_RW" description="preferred name in Rwanda" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="5e958568-2dc0-4f4b-8902-844e468dd0f1"/>
+  <concept_name_tag concept_name_tag_id="9" tag="preferred_SA" description="preferred name in South Africa" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="0317f295-905b-4e5d-b2dd-3b3dbded9bec"/>
+  <concept_name_tag concept_name_tag_id="10" tag="preferred_TZ" description="preferred name in Tanzania" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="aaec0569-8f12-4654-af74-e89577d2ea52"/>
+  <concept_name_tag concept_name_tag_id="11" tag="preferred_UG" description="preferred name in Uganda" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="29f4cdfd-9a33-4252-a130-d6f4953762e0"/>
+  <concept_name_tag concept_name_tag_id="12" tag="preferred_UK" description="preferred name in the United Kingdom" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="90b06cab-6c00-4c0c-8cab-92a70d4f88d4"/>
+  <concept_name_tag concept_name_tag_id="13" tag="preferred_US" description="preferred name in the United States" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="c54509c0-8636-4fe9-9a63-9217f8448a10"/>
+  <concept_name_tag concept_name_tag_id="14" tag="preferred_ZM" description="preferred name in Zambia" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="f88f8d1f-6791-4ece-bb6b-33eb9d8f481d"/>
+  <concept_name_tag concept_name_tag_id="15" tag="preferred_ZW" description="preferred name in Zimbabwe" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="9481c7b3-e637-4631-a8d2-05b065d8b167"/>
   <concept_name_tag_map concept_name_id="1" concept_name_tag_id="4"/>
-  <encounter_type encounter_type_id="1" name="Test Enc Type" description="Some desc" creator="1" date_created="2005-01-01 00:00:00.0" retired="false"/>
-  <encounter_type encounter_type_id="2" name="Test Enc Type 2" description="Some desc 2" creator="1" date_created="2005-01-01 00:00:00.0" retired="false"/>
-  <location location_id="1" name="Test Location" creator="1" date_created="2005-01-01 00:00:00.0" retired="false"/>
-  <location location_id="2" name="Test Location 2" creator="1" date_created="2005-01-01 00:00:00.0" retired="false"/>
-
+  <location location_id="1" name="Test Location" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="c36006e5-9fbb-4f20-866b-0ece245615a1"/>
+  <location location_id="2" name="Test Location 2" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="be69741b-29e9-49a1-adc9-2a726e6610e4"/>
   
-  <order_type order_type_id="1" name="Test Order Type A" description="Some desc 2" creator="1" date_created="2005-01-01 00:00:00.0" retired="false"/>
+  <order_type order_type_id="1" name="Test Order Type A" description="Some desc 2" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="2832fd10-e4d4-44b1-9ba2-a670b1734f5d"/>
   
   <!-- This retired encounter type must come before the others so that the extra columns are picked up -->
-  <encounter_type encounter_type_id="4" name="Some Retired Type" description="This type is retired." creator="1" date_created="2005-01-01 00:00:00.0" retired="true" retired_by="1" date_retired="2005-01-01 00:00:00.0" retire_reason="Because"/>
-  <encounter_type encounter_type_id="1" name="Test Enc Type B" description="Some desc" creator="1" date_created="2005-01-01 00:00:00.0" retired="false"/>
-  <encounter_type encounter_type_id="2" name="Test Enc Type A" description="Some desc 2" creator="1" date_created="2005-01-01 00:00:00.0" retired="false"/>
-  <encounter_type encounter_type_id="3" name="Test Enc Type A" description="This type is retired" creator="1" date_created="2005-01-01 00:00:00.0" retired="true" retired_by="1" date_retired="2005-01-01 00:00:00.0" retire_reason="This name intentionally matches enc type #2"/>
+  <encounter_type encounter_type_id="4" name="Some Retired Type" description="This type is retired." creator="1" date_created="2005-01-01 00:00:00.0" retired="true" retired_by="1" date_retired="2005-01-01 00:00:00.0" retire_reason="Because" uuid="c0c579b0-8e59-401d-8a4a-976a0b183519"/>
+  <encounter_type encounter_type_id="1" name="Test Enc Type B" description="Some desc" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="759799ab-c9a5-435e-b671-77773ada74e4"/>
+  <encounter_type encounter_type_id="2" name="Test Enc Type A" description="Some desc 2" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="4ee21921-01cc-4720-a6bf-a61a17c4d05b"/>
+  <encounter_type encounter_type_id="3" name="Test Enc Type A" description="This type is retired" creator="1" date_created="2005-01-01 00:00:00.0" retired="true" retired_by="1" date_retired="2005-01-01 00:00:00.0" retire_reason="This name intentionally matches enc type #2" uuid="070ac0c2-9b3b-485c-8e74-4bd81130c4f8"/>
   
-  <patient_identifier_type patient_identifier_type_id="1" name="Test Identifier Type" description="Test description" check_digit="false" creator="1" date_created="2005-01-01 00:00:00.0" required="false" retired="false" />
+  <patient_identifier_type patient_identifier_type_id="1" name="Test Identifier Type" description="Test description" check_digit="false" creator="1" date_created="2005-01-01 00:00:00.0" required="false" retired="false"  uuid="1d64befb-3b2e-48e5-85f5-353d43e23e45"/>
   
-  <person person_id="2" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" gender="M" />
-  <person_name person_id="2" person_name_id="2" preferred="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" given_name="John" middle_name=" " family_name="Doe" />
+  <person person_id="2" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" gender="M"  uuid="a194be38-271a-44cb-ba3f-f2dbf4831fe9"/>
+  <person_name person_id="2" person_name_id="2" preferred="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" given_name="John" middle_name=" " family_name="Doe"  uuid="765b882e-db79-498b-aff7-b5b53f12caf1"/>
   <patient patient_id="2" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
 
-  <patient_identifier patient_id="2" creator="1" date_created="2005-01-01 00:00:00.0" identifier="1234" identifier_type="1" preferred="1" voided="false" location_id="1" />
+  <patient_identifier patient_identifier_id="1" patient_id="2" creator="1" date_created="2005-01-01 00:00:00.0" identifier="1234" identifier_type="1" preferred="1" voided="false" location_id="1"  uuid="b2c299e7-2679-44b8-a7a3-c69159a20ac0"/>
   
-  <person person_id="3" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" gender="F" />
-  <person_name person_id="3" person_name_id="3" preferred="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" given_name="John3" middle_name=" " family_name="Doe" />
+  <person person_id="3" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" gender="F"  uuid="2fffba52-dfef-4c09-97e1-c987f5e64692"/>
+  <person_name person_id="3" person_name_id="3" preferred="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" given_name="John3" middle_name=" " family_name="Doe"  uuid="d9999a3e-0ed8-4c45-b1db-7969a37c88be"/>
   <patient patient_id="3" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
-  <patient_identifier patient_id="2" identifier="1234" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
-  <patient_identifier patient_id="3" identifier="12345" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
-  <patient_identifier_type patient_identifier_type_id="1" name="Test Identifier Type" description="Test description" check_digit="false" creator="1" date_created="2005-01-01 00:00:00.0" required="false" retired="false"/>
-  <person person_id="2" gender="M" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
-  <person person_id="3" gender="F" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
-  <person_name person_name_id="2" preferred="true" person_id="3" given_name="John3" middle_name=" " family_name="Doe" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
-  <patient_identifier patient_id="3" creator="1" date_created="2005-01-01 00:00:00.0" identifier="12345" identifier_type="1" preferred="1" voided="false" location_id="1" />
+  <patient_identifier patient_identifier_id="3" patient_id="2" identifier="1234" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="3878b920-a9d6-445b-b7a6-e7744da68abc"/>
+  <patient_identifier patient_identifier_id="4" patient_id="3" identifier="12345" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="cf62c4b2-39d2-4c8e-befa-630f9387a748"/>
+  <patient_identifier_type patient_identifier_type_id="1" name="Test Identifier Type" description="Test description" check_digit="false" creator="1" date_created="2005-01-01 00:00:00.0" required="false" retired="false" uuid="d6b27c63-3984-4fba-b683-1b0126a8e370"/>
+  <person person_id="2" gender="M" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="19887889-7110-46a7-a9f0-ebf1eb4bbd48"/>
+  <person person_id="3" gender="F" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="4b3f42da-2029-4e47-9396-a1b6a969e802"/>
+  <person_name person_name_id="2" preferred="true" person_id="3" given_name="John3" middle_name=" " family_name="Doe" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="38f9c631-7168-4944-8e2b-e96b1b0ee882"/>
+  <patient_identifier patient_identifier_id="2" patient_id="3" creator="1" date_created="2005-01-01 00:00:00.0" identifier="12345" identifier_type="1" preferred="1" voided="false" location_id="1"  uuid="037d7208-da34-48e3-9761-24b614b99b56"/>
   
-  <person person_id="4" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" gender="M" />
-  <person_name person_id="4" person_name_id="4" preferred="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" given_name="Some" middle_name="Other" family_name="User" />
-  <users user_id="4" username="2nduser" system_id="2ndusersystemid" voided="false" creator="1" date_created="2005-01-01 00:00:00.0" />
+  <person person_id="4" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" gender="M"  uuid="c2482297-d022-42ae-a4b8-6f14b73f12fa"/>
+  <person_name person_id="4" person_name_id="4" preferred="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" given_name="Some" middle_name="Other" family_name="User"  uuid="6ca5379d-b9d7-4b42-b65f-cdcbc94a54dd"/>
+  <users user_id="4" username="2nduser" system_id="2ndusersystemid" voided="false" creator="1" date_created="2005-01-01 00:00:00.0"/>
   
-  <concept_datatype concept_datatype_id="1" name="Numeric" hl7_abbreviation="NM" description="Numeric value, including integer or float" creator="1" date_created="2005-01-01 00:00:00.0" retired="false"/>
-  <concept concept_id="1" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" is_set="false"/>
-  <concept_name concept_name_id="1" concept_id="1" name="Some non numeric concept name" locale="en" creator="1" date_created="2005-01-01 00:00:00.0" />
+  <concept_datatype concept_datatype_id="1" name="Numeric" hl7_abbreviation="NM" description="Numeric value, including integer or float" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="5dfd8346-661e-46d4-8470-3146d6d229e9"/>
+  <concept concept_id="1" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" is_set="false" uuid="f0bae10a-c964-482b-bfc1-a97671349951"/>
+  <concept_name concept_name_id="1" concept_id="1" name="Some non numeric concept name" locale="en" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="2c996dd4-441d-4868-bce0-81d35d096843"/>
   
-  <form form_id="1" name="Basic Form" version="0.1" build="0" published="0" description="Test form" xslt="" template="" creator="1" date_created="2005-08-07 00:00:00.0" changed_by="1" date_changed="2007-10-24 14:51:53.0" retired="false" />
+  <form form_id="1" name="Basic Form" version="0.1" build="0" published="0" description="Test form" xslt="" template="" creator="1" date_created="2005-08-07 00:00:00.0" changed_by="1" date_changed="2007-10-24 14:51:53.0" retired="false"  uuid="2a45c87e-e43d-42ff-83c7-e70a229fa99d"/>
   
   <!-- A voided encounter with the same patient id as encounter#1. must come before encounter#1 so that the extra columns are picked up by dbunit -->
-  <encounter encounter_id="2" encounter_type="1" form_id="1" encounter_datetime="2008-01-01 00:00:00.0" patient_id="3" provider_id="1" location_id="1" creator="1" date_created="2008-02-01 00:00:00.0" voided="1" voided_by="1" date_voided="2008-02-01 00:00:00.0" void_reason="Because"/>
-  <obs obs_id="4" person_id="3" encounter_id="2" concept_id="1" obs_datetime="2005-01-01 00:00:00.0" location_id="1" value_numeric="1.0" creator="1" date_created="2006-02-10 15:57:35.0" voided="1" voided_by="1" date_voided="2008-02-01 00:00:00.0" void_reason="Because"/>
-  <orders order_id="2" order_type_id="1" patient_id="3" encounter_id="2" concept_id="1" orderer="1" creator="1" date_created="2006-03-11 15:57:35.0" voided="1" discontinued="false" voided_by="1" date_voided="2008-02-01 00:00:00.0" void_reason="Because"/>
+  <encounter encounter_id="2" encounter_type="1" form_id="1" encounter_datetime="2008-01-01 00:00:00.0" patient_id="3" provider_id="1" location_id="1" creator="1" date_created="2008-02-01 00:00:00.0" voided="1" voided_by="1" date_voided="2008-02-01 00:00:00.0" void_reason="Because" uuid="33d70956-b359-452a-b3da-b69c8ab459ce"/>
+  <obs obs_id="4" person_id="3" encounter_id="2" concept_id="1" obs_datetime="2005-01-01 00:00:00.0" location_id="1" value_numeric="1.0" creator="1" date_created="2006-02-10 15:57:35.0" voided="1" voided_by="1" date_voided="2008-02-01 00:00:00.0" void_reason="Because" uuid="8f92ca37-9aee-4834-a1e4-26cd517421da"/>
+  <orders order_id="2" order_type_id="1" patient_id="3" encounter_id="2" concept_id="1" orderer="1" creator="1" date_created="2006-03-11 15:57:35.0" voided="1" discontinued="false" voided_by="1" date_voided="2008-02-01 00:00:00.0" void_reason="Because" uuid="81bc39d2-9a62-46b1-9df6-c35d3cb29e08"/>
     
   <!-- A real non-voided encounter -->   
-  <encounter encounter_id="1" encounter_type="1" form_id="1" encounter_datetime="2005-01-01 00:00:00.0" patient_id="3" provider_id="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="0"/>
-  <obs obs_id="1" person_id="3" encounter_id="1" concept_id="1" obs_datetime="2005-01-01 00:00:00.0" location_id="1" value_numeric="1.0" creator="1" date_created="2006-02-10 15:57:35.0" voided="false"/>
-  <obs obs_id="2" person_id="3" encounter_id="1" concept_id="1" obs_datetime="2005-01-01 00:00:00.0" location_id="1" value_numeric="2.0" creator="1" date_created="2006-02-11 15:57:35.0" voided="false"/>
+  <encounter encounter_id="1" encounter_type="1" form_id="1" encounter_datetime="2005-01-01 00:00:00.0" patient_id="3" provider_id="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="0" uuid="430bbb70-6a9c-4e1e-badb-9d1034b1b5e9"/>
+  <obs obs_id="1" person_id="3" encounter_id="1" concept_id="1" obs_datetime="2005-01-01 00:00:00.0" location_id="1" value_numeric="1.0" creator="1" date_created="2006-02-10 15:57:35.0" voided="false" uuid="f0b5fbfb-6c8b-43fd-918d-41d578d571ec"/>
+  <obs obs_id="2" person_id="3" encounter_id="1" concept_id="1" obs_datetime="2005-01-01 00:00:00.0" location_id="1" value_numeric="2.0" creator="1" date_created="2006-02-11 15:57:35.0" voided="false" uuid="96d6835c-c038-4ca1-bead-4bfa36bd7fa0"/>
   <!--  this obs datetime is intentionally different than the encounter datetime above  -->
-  <obs obs_id="3" person_id="3" encounter_id="1" concept_id="1" obs_datetime="2006-01-01 00:00:00.0" location_id="1" value_numeric="3.0" creator="1" date_created="2006-03-11 15:57:35.0" voided="false"/>
+  <obs obs_id="3" person_id="3" encounter_id="1" concept_id="1" obs_datetime="2006-01-01 00:00:00.0" location_id="1" value_numeric="3.0" creator="1" date_created="2006-03-11 15:57:35.0" voided="false" uuid="544c0a4c-fdbf-4eb8-be4b-8fde603a76f7"/>
   
-  <orders order_id="1" order_type_id="1" patient_id="3" encounter_id="1" concept_id="1" orderer="1" creator="1" date_created="2006-03-11 15:57:35.0" voided="false" discontinued="false"/>
+  <orders order_id="1" order_type_id="1" patient_id="3" encounter_id="1" concept_id="1" orderer="1" creator="1" date_created="2006-03-11 15:57:35.0" voided="false" discontinued="false" uuid="0d86e8b4-2f33-495e-aa22-6954785e4e9e"/>
   
   <!-- an encounter with a mismatched order.patient_id -->
-  <encounter encounter_id="15" encounter_type="1" form_id="1" encounter_datetime="2001-01-01 00:00:00.0" patient_id="3" provider_id="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="0"/>
-  <orders order_id="10" order_type_id="1" patient_id="2" encounter_id="15" concept_id="1" orderer="1" creator="1" date_created="2006-03-11 15:57:35.0" voided="false" discontinued="false"/>
+  <encounter encounter_id="15" encounter_type="1" form_id="1" encounter_datetime="2001-01-01 00:00:00.0" patient_id="3" provider_id="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="0" uuid="7fffd6b9-0970-4967-88c7-0b7b50f12bc6"/>
+  <orders order_id="10" order_type_id="1" patient_id="2" encounter_id="15" concept_id="1" orderer="1" creator="1" date_created="2006-03-11 15:57:35.0" voided="false" discontinued="false" uuid="bf003896-2caf-42ef-8cfa-5ad29a11661f"/>
 </dataset>

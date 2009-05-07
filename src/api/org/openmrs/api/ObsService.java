@@ -36,10 +36,10 @@ import org.springframework.transaction.annotation.Transactional;
  * The ObsService deals with saving and getting Obs to/from the database Usage:
  * 
  * <pre>
- * ObsService obsService = Context.getObsService();
+ *  ObsService obsService = Context.getObsService();
  * 
- * // get the obs for patient with internal identifier of 1235
- * List&lt;Obs&gt; someObsList = obsService.getObservationsByPerson(new Patient(1235));
+ *  // get the obs for patient with internal identifier of 1235
+ *  List&lt;Obs&gt; someObsList = obsService.getObservationsByPerson(new Patient(1235));
  * </pre>
  * 
  * There are also a number of convenience methods for extracting obs pertaining to certain Concepts,
@@ -121,6 +121,9 @@ public interface ObsService extends OpenmrsService {
 	@Authorized(OpenmrsConstants.PRIV_VIEW_OBS)
 	public Obs getObs(Integer obsId) throws APIException;
 	
+	@Transactional(readOnly = true)
+	public Obs getObsByUuid(String uuid) throws APIException;
+	
 	/**
 	 * Save changes to observation
 	 * 
@@ -148,6 +151,7 @@ public interface ObsService extends OpenmrsService {
 	 * @throws APIException
 	 * @should create new file from complex data for new obs
 	 * @should not overwrite file when updating a complex obs
+	 * @should void the given obs in the database
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_ADD_OBS, OpenmrsConstants.PRIV_EDIT_OBS })
 	public Obs saveObs(Obs obs, String changeMessage) throws APIException;
@@ -383,6 +387,8 @@ public interface ObsService extends OpenmrsService {
 	 * @see #getObservations(List, List, List, List, List, List, List, Integer, Integer, Date, Date,
 	 *      boolean)
 	 */
+	@Transactional(readOnly = true)
+	@Authorized(OpenmrsConstants.PRIV_VIEW_OBS)
 	public List<Obs> getObservationsByPersonAndConcept(Person who, Concept question) throws APIException;
 	
 	/**

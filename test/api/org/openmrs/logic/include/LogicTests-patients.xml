@@ -1,13 +1,13 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <dataset>
-  <location location_id="1" name="Test Location" creator="1" date_created="2005-01-01 00:00:00.0" retired="false"/>
+  <location location_id="1" name="Test Location" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="71c20c5f-fa55-41c0-81ae-dcebe9915d39"/>
   <patient patient_id="2" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
   <patient patient_id="3" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
-  <patient_identifier patient_id="2" identifier="1234" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
-  <patient_identifier patient_id="3" identifier="12345" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
-  <patient_identifier_type patient_identifier_type_id="1" name="Test Identifier Type" description="Test description" check_digit="false" creator="1" date_created="2005-01-01 00:00:00.0" required="false" retired="false"/>
-  <person person_id="2" gender="M" birthdate="2000-01-01" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
-  <person person_id="3" gender="M" birthdate="2000-01-01" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
-  <person_name person_name_id="2" preferred="true" person_id="2" given_name="John" middle_name=" " family_name="Doe" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
-  <person_name person_name_id="3" preferred="true" person_id="3" given_name="Other John" middle_name=" " family_name="Doe" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
+  <patient_identifier patient_identifier_id="1" patient_id="2" identifier="1234" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="c0518ec0-59b7-483f-a24b-534a554f79bf"/>
+  <patient_identifier patient_identifier_id="2" patient_id="3" identifier="12345" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="9bff2720-6f1b-4818-b1ba-017acfde14c8"/>
+  <patient_identifier_type patient_identifier_type_id="1" name="Test Identifier Type" description="Test description" check_digit="false" creator="1" date_created="2005-01-01 00:00:00.0" required="false" retired="false" uuid="d832942c-9701-46fe-8418-4ae90dab84fc"/>
+  <person person_id="2" gender="M" birthdate="2000-01-01" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="f1b719b8-76d0-4515-9a9c-3ce5a50c0b82"/>
+  <person person_id="3" gender="M" birthdate="2000-01-01" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="1a7ed80e-4cc5-476e-8814-d888a284163e"/>
+  <person_name person_name_id="2" preferred="true" person_id="2" given_name="John" middle_name=" " family_name="Doe" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="84dc46b5-5154-4b2d-baf8-358f43a2f7e6"/>
+  <person_name person_name_id="3" preferred="true" person_id="3" given_name="Other John" middle_name=" " family_name="Doe" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="05b795b3-f1cb-463e-9148-d8106dfddbad"/>
 </dataset>

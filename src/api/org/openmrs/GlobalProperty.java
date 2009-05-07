@@ -17,7 +17,7 @@ package org.openmrs;
  * Global properties are simple key-value pairs persisted in the database GPs can be thought of as
  * something similar to environment variables used in operating systems.
  */
-public class GlobalProperty {
+public class GlobalProperty extends BaseOpenmrsObject {
 	
 	private String property = "";
 	
@@ -127,5 +127,21 @@ public class GlobalProperty {
 		int hash = 5 * this.property.hashCode();
 		
 		return hash;
+	}
+	
+	/**
+	 * @since 1.5
+	 * @see org.openmrs.OpenmrsObject#getId()
+	 */
+	public Integer getId() {
+		throw new UnsupportedOperationException();
+	}
+	
+	/**
+	 * @since 1.5
+	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
+	 */
+	public void setId(Integer id) {
+		throw new UnsupportedOperationException();
 	}
 }

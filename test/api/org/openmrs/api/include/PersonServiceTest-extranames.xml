@@ -8,17 +8,17 @@
   <users user_id="3" creator="1" system_id="" date_created="2005-01-01 00:00:00.0" voided="true"/>
   <users user_id="4" creator="1" system_id="" date_created="2005-01-01 00:00:00.0" voided="false"/>
   <users user_id="5" creator="1" system_id="" date_created="2005-01-01 00:00:00.0" voided="false"/>
-  <patient_identifier patient_id="2" identifier="1234" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
-  <patient_identifier patient_id="2" identifier="12345" identifier_type="1" preferred="0" location_id="1" creator="1" date_created="2004-01-01 00:00:00.0" voided="false"/>
-  <patient_identifier patient_id="3" identifier="4567" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
-  <patient_identifier patient_id="4" identifier="5634" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="true"/>
-  <patient_identifier patient_id="5" identifier="563422" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
-  <person person_id="2" gender="M" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
-  <person person_id="3" gender="M" dead="true" creator="1" date_created="2005-01-01 00:00:00.0" voided="true"/>
-  <person person_id="4" gender="M" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
-  <person person_id="5" gender="F" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
-  <person_name person_name_id="2" preferred="true" person_id="2" prefix="Dr." given_name="John" middle_name="Andrew" family_name="Smith" family_name2="Johnson" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
-  <person_name person_name_id="3" preferred="true" person_id="3" prefix="" given_name="I" middle_name="am" family_name="voided" family_name2="Johnson" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
-  <person_name person_name_id="4" preferred="true" person_id="4" prefix="Mr." given_name="John" middle_name="Andrew" family_name="Johnson" family_name2="" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
-  <person_name person_name_id="5" preferred="true" person_id="5" prefix="Mrs." given_name="Jean" middle_name="Joan" family_name="Claude" family_name2="Johnson" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
+  <patient_identifier patient_identifier_id="51" patient_id="2" identifier="1234" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="64020a1a-4dc8-417b-b12a-0e91518f68f2"/>
+  <patient_identifier patient_identifier_id="41" patient_id="2" identifier="12345" identifier_type="1" preferred="0" location_id="1" creator="1" date_created="2004-01-01 00:00:00.0" voided="false" uuid="42236d1a-0b5e-43bd-a562-973104f1484e"/>
+  <patient_identifier patient_identifier_id="31" patient_id="3" identifier="4567" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="2d7c3067-346a-4cc8-9f67-66bb5b149153"/>
+  <patient_identifier patient_identifier_id="21" patient_id="4" identifier="5634" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="true" uuid="df6633a5-3896-498f-97bd-3160ffa05d0e"/>
+  <patient_identifier patient_identifier_id="11" patient_id="5" identifier="563422" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="f6e43b2a-e331-496b-87f7-27b64d84a015"/>
+  <person person_id="2" gender="M" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="1716432a-4bf9-436c-baad-f03236e960e1"/>
+  <person person_id="3" gender="M" dead="true" creator="1" date_created="2005-01-01 00:00:00.0" voided="true" uuid="d707fad8-dbe4-40bb-bd25-321477ca18b0"/>
+  <person person_id="4" gender="M" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="81ba5d12-3b3d-4eb2-ae6c-52970b37939a"/>
+  <person person_id="5" gender="F" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="cea3d39a-99a5-4224-9936-8c8c134035d4"/>
+  <person_name person_name_id="2" preferred="true" person_id="2" prefix="Dr." given_name="John" middle_name="Andrew" family_name="Smith" family_name2="Johnson" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="54fdf8e8-1a80-45cf-a3fd-4fabd1b8ffab"/>
+  <person_name person_name_id="3" preferred="true" person_id="3" prefix="" given_name="I" middle_name="am" family_name="voided" family_name2="Johnson" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="1be83481-5ace-4a97-8510-d2e1257b6f6a"/>
+  <person_name person_name_id="4" preferred="true" person_id="4" prefix="Mr." given_name="John" middle_name="Andrew" family_name="Johnson" family_name2="" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="23da3d4a-9a12-44b7-bcc0-7ed72664adda"/>
+  <person_name person_name_id="5" preferred="true" person_id="5" prefix="Mrs." given_name="Jean" middle_name="Joan" family_name="Claude" family_name2="Johnson" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="5e6571cc-c7f2-41de-b289-f55f8fe79c6f"/>
 </dataset>

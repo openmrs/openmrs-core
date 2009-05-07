@@ -2,7 +2,6 @@ package org.openmrs.serialization.xstream.converter;
 
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
-import org.openmrs.ConceptName;
 import org.openmrs.User;
 
 import com.thoughtworks.xstream.converters.Converter;

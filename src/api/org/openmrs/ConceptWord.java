@@ -30,6 +30,10 @@ public class ConceptWord implements java.io.Serializable, Comparable<ConceptWord
 	public static final long serialVersionUID = 888677L;
 	
 	// Fields
+	/**
+	 * @since 1.5
+	 */
+	private Integer conceptWordId;
 	
 	private Concept concept;
 	
@@ -43,6 +47,22 @@ public class ConceptWord implements java.io.Serializable, Comparable<ConceptWord
 	private Locale locale;
 	
 	private Double weight = 0.0;
+	
+	/**
+	 * Get the unique internal database identifier for this concept word
+	 * @since 1.5
+	 */
+	public Integer getConceptWordId() {
+		return conceptWordId;
+	}
+	
+	/**
+	 * Set the unique identifier for this concept word
+	 * @since 1.5
+	 */
+	public void setConceptWordId(Integer conceptWordId) {
+		this.conceptWordId = conceptWordId;
+	}
 	
 	// Constructors
 	

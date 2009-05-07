@@ -511,4 +511,21 @@ public class User extends Person implements java.io.Serializable {
 		// return a copy so that the list isn't changed by other processes
 		return new ArrayList<Locale>(proficientLocales);
 	}
+	
+	/**
+	 * @since 1.5
+	 * @see org.openmrs.OpenmrsObject#getId()
+	 */
+	public Integer getId() {
+		return getUserId();
+	}
+	
+	/**
+	 * @since 1.5
+	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
+	 */
+	public void setId(Integer id) {
+		setUserId(id);
+	}
+	
 }

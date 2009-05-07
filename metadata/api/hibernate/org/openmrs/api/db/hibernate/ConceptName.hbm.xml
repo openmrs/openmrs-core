@@ -35,7 +35,8 @@
 			<key column="concept_name_id"/>
 			<many-to-many class="ConceptNameTag" column="concept_name_tag_id"/>
 		</set>
-		
+
+		<property name="uuid" type="java.lang.String" column="uuid" length="36" unique="true" />		
 	</class>
 	
 </hibernate-mapping>

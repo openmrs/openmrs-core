@@ -39,6 +39,9 @@
 		<many-to-one name="route" class="org.openmrs.Concept"
 			not-null="false" />
 
+		<property name="uuid" type="java.lang.String"
+			column="uuid" length="36" unique="true" />
+
 		<!-- bi-directional one-to-many association to DrugOrder -->
 		<!--
 			<set

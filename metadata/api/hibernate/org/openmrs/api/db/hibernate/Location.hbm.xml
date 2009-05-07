@@ -13,6 +13,9 @@
 
 		<discriminator column="location_id" insert="false" />
 		
+		<property name="uuid" type="java.lang.String"
+			column="uuid" length="36" unique="true" />
+
 		<property name="name" type="java.lang.String" column="name"
 			not-null="true" length="255" />
 		<property name="description" type="java.lang.String"

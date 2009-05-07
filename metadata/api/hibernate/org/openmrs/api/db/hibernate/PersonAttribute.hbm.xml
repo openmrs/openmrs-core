@@ -14,7 +14,10 @@
 		</id>
 		
 		<discriminator column="person_attribute_id" insert="false" />
-		
+
+		<property name="uuid" type="java.lang.String"
+			column="uuid" length="36" unique="true" />
+
 		<many-to-one name="person" class="Person">
 			<column name="person_id" />
 		</many-to-one>

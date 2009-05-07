@@ -130,4 +130,21 @@ public interface EncounterDAO {
 	 * @should get saved encounter datetime from database
 	 */
 	public Date getSavedEncounterDatetime(Encounter encounter);
+	
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @param uuid
+	 * @return
+	 */
+	public Encounter getEncounterByUuid(String uuid);
+	
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @param uuid
+	 * @return
+	 */
+	public EncounterType getEncounterTypeByUuid(String uuid);
+	
 }

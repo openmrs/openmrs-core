@@ -605,9 +605,6 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		patientService.savePatient(patient);
 		
 		Assert.assertEquals(501, patient.getPatientId().intValue());
-		TestUtil.printOutTableContents(getConnection(), "patient");
-		TestUtil.printOutTableContents(getConnection(), "patient_identifier");
-		TestUtil.printOutTableContents(getConnection(), "person");
 		Assert.assertNotNull(patientService.getPatient(501)); // make sure a new row with a patient id WAS created
 		Assert.assertNull(patientService.getPatient(503)); // make sure a new row with a new person id WASN'T created
 	}
