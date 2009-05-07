@@ -137,3 +137,15 @@ public class GlobalPropertyType {
 [21:07:24] David Thomas говорит: OK, thanks pavel.  We'll talk then.  If anything comes up, and i'm on logged into skype, feel free to ask questions.
 [21:07:25] David Thomas говорит: bye!
 [21:07:45] Pavel Konnikov говорит: bye!
+[21:12:29] David Thomas говорит: hey, are you still on?
+[21:12:36] Pavel Konnikov говорит: yes
+[21:13:34] David Thomas говорит: one more thing -- in the liquibase, you can populate the default_value and default_datatype_id columns for existing global properties.  the default_value should be set to the current property value, and the default_datatype_id should be set to 1.
+[21:13:40] David Thomas говорит: (where 1=String)
+[21:14:32] Pavel Konnikov говорит: ok
+[21:14:32] David Thomas говорит: OK.  Sorry, just wanted to put that in there.
+[21:14:33] David Thomas говорит: That's all.
+[21:15:35] David Thomas говорит: And for creator and date_created, you can populate these too.  And voided = 0 in both tables.  For creator and date_created, you can pick any valid user, and for date created, you can just use today.
+[21:15:44] David Thomas говорит: (basically, auto-populate as much as you can)
+[21:16:37] Pavel Konnikov говорит: ok
+[21:16:50] David Thomas говорит: ok, thanks pavel. bye! (again)
+[21:16:59] Pavel Konnikov говорит: bye! :)
