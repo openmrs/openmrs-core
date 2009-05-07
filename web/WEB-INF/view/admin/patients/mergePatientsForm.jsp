@@ -203,7 +203,7 @@
 							${encounter.encounterType.name}
 							${encounter.location.name}
 							<openmrs:formatDate date="${encounter.encounterDatetime}" type="short" />
-							<a href="${pageContext.request.contextPath}/encounters/encounter.form?encounterId=${encounter.encounterId}">
+							<a href="${pageContext.request.contextPath}/admin/encounters/encounter.form?encounterId=${encounter.encounterId}">
 								<spring:message code="general.view"/>
 							</a>
 					</c:forEach>
@@ -218,7 +218,7 @@
 								${encounter.encounterType.name}
 								${encounter.location.name}
 								<openmrs:formatDate date="${encounter.encounterDatetime}" type="short" />
-								<a href="${pageContext.request.contextPath}/encounters/encounter.form?encounterId=${encounter.encounterId}">
+								<a href="${pageContext.request.contextPath}/admin/encounters/encounter.form?encounterId=${encounter.encounterId}">
 									<spring:message code="general.view"/>
 								</a>
 						</c:forEach>
