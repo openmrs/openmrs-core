@@ -46,7 +46,8 @@ import java.lang.annotation.Target;
  * The use of this method would therefore be as follows:<br/>
  * 
  * <pre>
- * @Handler(supports={Order.class ) public class OrderValidator implements Validator { ... } 
+ * @Handler( supports = { Order.class } )
+ * public class OrderValidator implements Validator { ... } 
  * </pre>
  */
 @Target( { ElementType.TYPE })
@@ -55,6 +56,11 @@ import java.lang.annotation.Target;
 @Documented
 public @interface Handler {
 	
+	/**
+	 * A list of Classes that this Handler can handle.
+	 * 
+	 * @return list of classes
+	 */
 	public Class<?>[] supports() default {};
 	
 	/**

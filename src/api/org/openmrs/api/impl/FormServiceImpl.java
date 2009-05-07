@@ -32,10 +32,12 @@ import org.openmrs.FieldAnswer;
 import org.openmrs.FieldType;
 import org.openmrs.Form;
 import org.openmrs.FormField;
+import org.openmrs.aop.RequiredDataAdvice;
 import org.openmrs.api.APIException;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.FormDAO;
+import org.openmrs.api.handler.SaveHandler;
 import org.openmrs.validator.FormValidator;
 import org.springframework.validation.BindException;
 
@@ -131,6 +133,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 * @param form
 	 * @return New duplicated form
 	 * @throws APIException
+	 * @see org.openmrs.api.FormService#duplicateForm(org.openmrs.Form)
 	 */
 	public Form duplicateForm(Form form) throws APIException {
 		// Map of /Old FormFieldId/ to /New FormField Object/
@@ -139,22 +142,23 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 		
 		for (FormField formField : form.getFormFields()) {
 			//formFieldMap.put(formField.getFormFieldId(), formField);
+			formField.setUuid(null);
 			formField.setFormFieldId(null);
 			//formField.setParent(formFieldMap.get(formField.getParent().getFormFieldId()));
 		}
 		// this is required because Hibernate would recognize the original collection
 		form.setFormFields(new HashSet<FormField>(form.getFormFields()));
 		
+		form.setUuid(null);
 		form.setFormId(null);
-		
+		form.setCreator(null);
+		form.setDateCreated(null);
 		form.setChangedBy(null);
 		form.setDateChanged(null);
 		
-		form.setCreator(Context.getAuthenticatedUser());
-		form.setDateCreated(new Date());
-		
 		Context.clearSession();
 		
+		RequiredDataAdvice.recursivelyHandle(SaveHandler.class, form, null);
 		Form newForm = dao.duplicateForm(form);
 		
 		return newForm;
@@ -165,9 +169,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 */
 	public void retireForm(Form form, String reason) throws APIException {
 		form.setRetired(true);
-		form.setRetiredBy(Context.getAuthenticatedUser());
-		form.setDateRetired(new Date());
-		form.setRetiredReason(reason);
+		form.setRetireReason(reason);
 		saveForm(form);
 	}
 	
@@ -176,9 +178,6 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 */
 	public void unretireForm(Form form) throws APIException {
 		form.setRetired(false);
-		form.setRetiredBy(null);
-		form.setDateRetired(null);
-		form.setRetiredReason("");
 		saveForm(form);
 	}
 	
@@ -349,35 +348,43 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	}
 	
 	/**
-	 * Set the change time and (conditionally) creation time attributes for all of this form's
-	 * formfields and for fields of those formfields
-	 * 
-	 * @param form Form to update FormFields for
-	 */
-	private void updateFormFieldProperties(FormField formField, Date ts) {
-		if (formField.getCreator() == null)
-			formField.setCreator(Context.getAuthenticatedUser());
-		if (formField.getDateCreated() == null)
-			formField.setDateCreated(ts);
-		
-		if (formField.getFormFieldId() != null) {
-			formField.setChangedBy(Context.getAuthenticatedUser());
-			formField.setDateChanged(ts);
-		}
-		
-		Field field = formField.getField();
-		if (field.getCreator() == null)
-			field.setCreator(Context.getAuthenticatedUser());
-		if (field.getDateCreated() == null)
-			field.setDateCreated(new Date());
-	}
-	
-	/**
 	 * @see org.openmrs.api.FormService#deleteFormField(org.openmrs.FormField)
 	 * @deprecated
 	 */
 	public void deleteFormField(FormField formField) throws APIException {
 		purgeFormField(formField);
+	}
+	
+	/**
+	 * @see org.openmrs.api.FormService#getFieldByUuid(java.lang.String)
+	 */
+	public Field getFieldByUuid(String uuid) throws APIException {
+		return dao.getFieldByUuid(uuid);
+	}
+	
+	public FieldAnswer getFieldAnswerByUuid(String uuid) throws APIException {
+		return dao.getFieldAnswerByUuid(uuid);
+	}
+	
+	/**
+	 * @see org.openmrs.api.FormService#getFieldTypeByUuid(java.lang.String)
+	 */
+	public FieldType getFieldTypeByUuid(String uuid) throws APIException {
+		return dao.getFieldTypeByUuid(uuid);
+	}
+	
+	/**
+	 * @see org.openmrs.api.FormService#getFormByUuid(java.lang.String)
+	 */
+	public Form getFormByUuid(String uuid) throws APIException {
+		return dao.getFormByUuid(uuid);
+	}
+	
+	/**
+	 * @see org.openmrs.api.FormService#getFormFieldByUuid(java.lang.String)
+	 */
+	public FormField getFormFieldByUuid(String uuid) throws APIException {
+		return dao.getFormFieldByUuid(uuid);
 	}
 	
 	/**
@@ -597,18 +604,6 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 * @see org.openmrs.api.FormService#saveField(org.openmrs.Field)
 	 */
 	public Field saveField(Field field) throws APIException {
-		Date now = new Date();
-		
-		if (field.getCreator() == null)
-			field.setCreator(Context.getAuthenticatedUser());
-		if (field.getDateCreated() == null)
-			field.setDateCreated(now);
-		
-		if (field.getFieldId() != null) {
-			field.setChangedBy(Context.getAuthenticatedUser());
-			field.setDateChanged(now);
-		}
-		
 		return dao.saveField(field);
 	}
 	
@@ -616,27 +611,10 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 * @see org.openmrs.api.FormService#saveForm(org.openmrs.Form)
 	 */
 	public Form saveForm(Form form) throws APIException {
-		if (!form.isRetired()) {
-			form.setRetiredBy(null);
-			form.setRetiredReason(null);
-		}
-		
 		BindException errors = new BindException(form, "form");
 		formValidator.validate(form, errors);
 		if (errors.hasErrors()) {
 			throw new APIException(errors);
-		}
-		
-		Date now = new Date();
-		
-		if (form.getCreator() == null)
-			form.setCreator(Context.getAuthenticatedUser());
-		if (form.getDateCreated() == null)
-			form.setDateCreated(now);
-		
-		if (form.getFormId() != null) {
-			form.setChangedBy(Context.getAuthenticatedUser());
-			form.setDateChanged(now);
 		}
 		
 		if (form.getFormFields() != null) {
@@ -645,7 +623,6 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 					ff.setForm(form);
 				else if (!ff.getForm().equals(form))
 					throw new APIException("Form contains FormField " + ff + " that already belongs to a different form");
-				updateFormFieldProperties(ff, now);
 			}
 		}
 		
@@ -656,23 +633,12 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 * @see org.openmrs.api.FormService#saveFormField(org.openmrs.FormField)
 	 */
 	public FormField saveFormField(FormField formField) throws APIException {
-		Date now = new Date();
-		
-		if (formField.getCreator() == null)
-			formField.setCreator(Context.getAuthenticatedUser());
-		if (formField.getDateCreated() == null)
-			formField.setDateCreated(now);
-		
-		if (formField.getFormFieldId() != null) {
-			formField.setChangedBy(Context.getAuthenticatedUser());
-			formField.setDateChanged(now);
-		}
-		
 		Field field = formField.getField();
 		if (field.getCreator() == null)
 			field.setCreator(Context.getAuthenticatedUser());
 		if (field.getDateCreated() == null)
 			field.setDateCreated(new Date());
+		
 		// don't change the changed by and date changed on field for 
 		// form field updates
 		
@@ -726,13 +692,6 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 * @see org.openmrs.api.FormService#saveFieldType(org.openmrs.FieldType)
 	 */
 	public FieldType saveFieldType(FieldType fieldType) throws APIException {
-		
-		if (fieldType.getCreator() == null)
-			fieldType.setCreator(Context.getAuthenticatedUser());
-		
-		if (fieldType.getDateCreated() == null)
-			fieldType.setDateCreated(new Date());
-		
 		return dao.saveFieldType(fieldType);
 	}
 	

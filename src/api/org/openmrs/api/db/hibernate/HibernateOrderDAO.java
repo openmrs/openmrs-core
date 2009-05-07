@@ -177,4 +177,20 @@ public class HibernateOrderDAO implements OrderDAO {
 		return crit.list();
 	}
 	
+	/**
+	 * @see org.openmrs.api.db.OrderDAO#getOrderByUuid(java.lang.String)
+	 */
+	public Order getOrderByUuid(String uuid) {
+		return (Order) sessionFactory.getCurrentSession().createQuery("from Order o where o.uuid = :uuid").setString("uuid",
+		    uuid).uniqueResult();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.OrderDAO#getOrderTypeByUuid(java.lang.String)
+	 */
+	public OrderType getOrderTypeByUuid(String uuid) {
+		return (OrderType) sessionFactory.getCurrentSession().createQuery("from OrderType ot where ot.uuid = :uuid")
+		        .setString("uuid", uuid).uniqueResult();
+	}
+	
 }

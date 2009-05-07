@@ -13,6 +13,9 @@
 			<key-many-to-one name="conceptSet" column="concept_set"
 				class="Concept" />
 		</composite-id>
+		
+		<property name="uuid" type="java.lang.String"
+			column="uuid" length="36" unique="true" />
 
 		<property name="sortWeight" type="java.lang.Double"
 			column="sort_weight" length="22" />

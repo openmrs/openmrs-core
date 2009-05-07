@@ -850,6 +850,13 @@
 	</changeSet>
 	
 	<changeSet id="200904271654" author="bwolfe">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<!-- uuid branch devs and users of sync branch already have an updated concept_word integer primary key -->
+				<columnExists tableName="concept_word" columnName="concept_word_id"/>
+			</not>
+		</preConditions>
+		
 		<comment>
 			Change the concept_word key to be concept_name_id-word-locale
 		</comment>
@@ -862,5 +869,723 @@
 		
 		<addPrimaryKey tableName="concept_word" columnNames="concept_name_id,word,locale"/>
 	</changeSet>
+	
+	<changeSet id="20090402-1515" author="bwolfe">
+		<comment>
+			Adding "uuid" column to all tables.  (This may take a while on large databases)
+		</comment>
 		
+		<!-- "UUID" is translated by liquibase into the appropriate column type -->
+		
+		<addColumn tableName="cohort">
+			<column name="uuid" type="UUID" />
+		</addColumn>
+		<addColumn tableName="concept">
+			<column name="uuid" type="UUID" />
+		</addColumn>
+		<addColumn tableName="concept_answer">
+			<column name="uuid" type="UUID" />
+		</addColumn>
+		<addColumn tableName="concept_class">
+			<column name="uuid" type="UUID" />
+		</addColumn>
+		<addColumn tableName="concept_datatype">
+			<column name="uuid" type="UUID" />
+		</addColumn>
+		<addColumn tableName="concept_description">
+			<column name="uuid" type="UUID" />
+		</addColumn>
+		<addColumn tableName="concept_map">
+			<column name="uuid" type="UUID" />
+		</addColumn>
+		<addColumn tableName="concept_name">
+			<column name="uuid" type="UUID" />
+		</addColumn>
+		<addColumn tableName="concept_name_tag">
+			<column name="uuid" type="UUID" />
+		</addColumn>
+		<addColumn tableName="concept_proposal">
+			<column name="uuid" type="UUID" />
+		</addColumn>
+		<addColumn tableName="concept_set">
+			<column name="uuid" type="UUID" />
+		</addColumn>
+		<addColumn tableName="concept_source">
+			<column name="uuid" type="UUID" />
+		</addColumn>
+		<addColumn tableName="concept_state_conversion">
+			<column name="uuid" type="UUID" />
+		</addColumn>
+		<addColumn tableName="drug">
+			<column name="uuid" type="UUID" />
+		</addColumn>
+		<addColumn tableName="encounter">
+			<column name="uuid" type="UUID" />
+		</addColumn>
+		<addColumn tableName="encounter_type">
+			<column name="uuid" type="UUID" />
+		</addColumn>
+		<addColumn tableName="field">
+			<column name="uuid" type="UUID" />
+		</addColumn>
+		<addColumn tableName="field_answer">
+			<column name="uuid" type="UUID" />
+		</addColumn>
+		<addColumn tableName="field_type">
+			<column name="uuid" type="UUID" />
+		</addColumn>
+		<addColumn tableName="form">
+			<column name="uuid" type="UUID" />
+		</addColumn>
+		<addColumn tableName="form_field">
+			<column name="uuid" type="UUID" />
+		</addColumn>
+		<addColumn tableName="global_property">
+			<column name="uuid" type="UUID" />
+		</addColumn>
+		<addColumn tableName="hl7_in_archive">
+			<column name="uuid" type="UUID" />
+		</addColumn>
+		<addColumn tableName="hl7_in_error">
+			<column name="uuid" type="UUID" />
+		</addColumn>
+		<addColumn tableName="hl7_in_queue">
+			<column name="uuid" type="UUID" />
+		</addColumn>
+		<addColumn tableName="hl7_source">
+			<column name="uuid" type="UUID" />
+		</addColumn>
+		<addColumn tableName="location">
+			<column name="uuid" type="UUID" />
+		</addColumn>
+		<addColumn tableName="location_tag">
+			<column name="uuid" type="UUID" />
+		</addColumn>
+		<addColumn tableName="note">
+			<column name="uuid" type="UUID" />
+		</addColumn>
+		<addColumn tableName="notification_alert">
+			<column name="uuid" type="UUID" />
+		</addColumn>
+		<addColumn tableName="notification_template">
+			<column name="uuid" type="UUID" />
+		</addColumn>
+		<addColumn tableName="obs">
+			<column name="uuid" type="UUID" />
+		</addColumn>
+		<addColumn tableName="order_type">
+			<column name="uuid" type="UUID" />
+		</addColumn>
+		<addColumn tableName="orders">
+			<column name="uuid" type="UUID" />
+		</addColumn>
+		<addColumn tableName="patient_identifier">
+			<column name="uuid" type="UUID" />
+		</addColumn>
+		<addColumn tableName="patient_identifier_type">
+			<column name="uuid" type="UUID" />
+		</addColumn>
+		<addColumn tableName="patient_program">
+			<column name="uuid" type="UUID" />
+		</addColumn>
+		<addColumn tableName="patient_state">
+			<column name="uuid" type="UUID" />
+		</addColumn>
+		<addColumn tableName="person">
+			<column name="uuid" type="UUID" />
+		</addColumn>
+		<addColumn tableName="person_address">
+			<column name="uuid" type="UUID" />
+		</addColumn>
+		<addColumn tableName="person_attribute">
+			<column name="uuid" type="UUID" />
+		</addColumn>
+		<addColumn tableName="person_attribute_type">
+			<column name="uuid" type="UUID" />
+		</addColumn>
+		<addColumn tableName="person_name">
+			<column name="uuid" type="UUID" />
+		</addColumn>
+		<addColumn tableName="privilege">
+			<column name="uuid" type="UUID" />
+		</addColumn>
+		<addColumn tableName="program">
+			<column name="uuid" type="UUID" />
+		</addColumn>
+		<addColumn tableName="program_workflow">
+			<column name="uuid" type="UUID" />
+		</addColumn>
+		<addColumn tableName="program_workflow_state">
+			<column name="uuid" type="UUID" />
+		</addColumn>
+		<addColumn tableName="relationship">
+			<column name="uuid" type="UUID" />
+		</addColumn>
+		<addColumn tableName="relationship_type">
+			<column name="uuid" type="UUID" />
+		</addColumn>
+		<addColumn tableName="report_object">
+			<column name="uuid" type="UUID" />
+		</addColumn>
+		<addColumn tableName="report_schema_xml">
+			<column name="uuid" type="UUID" />
+		</addColumn>
+		<addColumn tableName="role">
+			<column name="uuid" type="UUID" />
+		</addColumn>
+		<addColumn tableName="serialized_object">
+			<column name="uuid" type="UUID" />
+		</addColumn>
+	</changeSet>
+
+	<changeSet id="20090402-1516" author="bwolfe">
+		<preConditions onFail="MARK_RAN">
+			<or>
+				<dbms type="mysql" />
+				<dbms type="oracle" />
+				<dbms type="mssql" />
+			</or>
+		</preConditions>
+		<comment>
+			Generating UUIDs for all rows in all tables via built in uuid function. (This may take a while on large databases)
+		</comment>
+		
+		<update tableName="cohort" >
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+		</update>
+		<update tableName="concept">
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+		</update>
+		<update tableName="concept_answer">
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+		</update>
+		<update tableName="concept_class">
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+		</update>
+		<update tableName="concept_datatype">
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+		</update>
+		<update tableName="concept_description">
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+		</update>
+		<update tableName="concept_map">
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+		</update>
+		<update tableName="concept_name">
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+		</update>
+		<update tableName="concept_name_tag">
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+		</update>
+		<update tableName="concept_proposal">
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+		</update>
+		<update tableName="concept_set">
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+		</update>
+		<update tableName="concept_source">
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+		</update>
+		<update tableName="concept_state_conversion">
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+		</update>
+		<update tableName="drug">
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+		</update>
+		<update tableName="encounter">
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+		</update>
+		<update tableName="encounter_type">
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+		</update>
+		<update tableName="field">
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+		</update>
+		<update tableName="field_answer">
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+		</update>
+		<update tableName="field_type">
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+		</update>
+		<update tableName="form">
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+		</update>
+		<update tableName="form_field">
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+		</update>
+		<update tableName="global_property">
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+		</update>
+		<update tableName="hl7_in_archive">
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+		</update>
+		<update tableName="hl7_in_error">
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+		</update>
+		<update tableName="hl7_in_queue">
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+		</update>
+		<update tableName="hl7_source">
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+		</update>
+		<update tableName="location">
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+		</update>
+		<update tableName="location_tag">
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+		</update>
+		<update tableName="note">
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+		</update>
+		<update tableName="notification_alert">
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+		</update>
+		<update tableName="notification_template">
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+		</update>
+		<update tableName="obs">
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+		</update>
+		<update tableName="order_type">
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+		</update>
+		<update tableName="orders">
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+		</update>
+		<update tableName="patient_identifier">
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+		</update>
+		<update tableName="patient_identifier_type">
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+		</update>
+		<update tableName="patient_program">
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+		</update>
+		<update tableName="patient_state">
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+		</update>
+		<update tableName="person">
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+		</update>
+		<update tableName="person_address">
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+		</update>
+		<update tableName="person_attribute">
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+		</update>
+		<update tableName="person_attribute_type">
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+		</update>
+		<update tableName="person_name">
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+		</update>
+		<update tableName="privilege">
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+		</update>
+		<update tableName="program">
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+		</update>
+		<update tableName="program_workflow">
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+		</update>
+		<update tableName="program_workflow_state">
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+		</update>
+		<update tableName="relationship">
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+		</update>
+		<update tableName="relationship_type">
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+		</update>
+		<update tableName="report_object">
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+		</update>
+		<update tableName="report_schema_xml">
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+		</update>
+		<update tableName="role">
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+		</update>
+		<update tableName="serialized_object">
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+		</update>
+		<modifySql dbms="mysql">
+			<replace replace="name-of-uuid-function" with="UUID()"/>
+		</modifySql>
+		<modifySql dbms="oracle">
+			<replace replace="name-of-uuid-function" with="SYS_GUID()"/>
+		</modifySql>
+		<modifySql dbms="mssql">
+			<replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/>
+		</modifySql>		
+	</changeSet>
+	
+	<changeSet id="20090402-1517" author="bwolfe">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<or>
+					<dbms type="mysql" />
+					<dbms type="oracle" />
+					<dbms type="mssql" />
+				</or>
+			</not>
+		</preConditions>
+		<comment>
+			Adding UUIDs to all rows in all columns via a java class.
+		</comment>
+		<customChange class="org.openmrs.util.databasechange.GenerateUuid">
+			<param name="tableNames">
+				cohort concept concept_answer concept_class concept_datatype concept_description 
+				concept_map concept_name concept_name_tag concept_proposal
+				concept_set concept_source concept_state_conversion concept_synonym drug
+				encounter encounter_type field field_answer field_type form form_field global_property hl7_in_archive 
+				hl7_in_error hl7_in_queue hl7_source location location_tag note notification_alert 
+				notification_template obs order_type orders patient_identifier 
+				patient_identifier_type patient_program patient_state person person_address person_attribute 
+				person_attribute_type person_name privilege program program_workflow program_workflow_state relationship 
+				relationship_type report_object report_schema_xml role serialized_object
+			</param>
+			<param name="columnName" value="uuid"/>
+		</customChange>
+	</changeSet>
+	
+	<changeSet id="20090402-1518" author="bwolfe">
+		<comment>
+			Now that UUID generation is done, set the uuid columns to not "NOT NULL" 
+		</comment>
+		
+		<addNotNullConstraint tableName="cohort" columnName="uuid" columnDataType="UUID"/>
+		<addNotNullConstraint tableName="concept" columnName="uuid" columnDataType="UUID" />
+		<addNotNullConstraint tableName="concept_answer" columnName="uuid" columnDataType="UUID" />
+		<addNotNullConstraint tableName="concept_class" columnName="uuid" columnDataType="UUID" />
+		<addNotNullConstraint tableName="concept_datatype" columnName="uuid" columnDataType="UUID" />
+		<addNotNullConstraint tableName="concept_description" columnName="uuid" columnDataType="UUID" />
+		<addNotNullConstraint tableName="concept_map" columnName="uuid" columnDataType="UUID" />
+		<addNotNullConstraint tableName="concept_name" columnName="uuid" columnDataType="UUID" />
+		<addNotNullConstraint tableName="concept_name_tag" columnName="uuid" columnDataType="UUID" />
+		<addNotNullConstraint tableName="concept_proposal" columnName="uuid" columnDataType="UUID" />
+		<addNotNullConstraint tableName="concept_set" columnName="uuid" columnDataType="UUID" />
+		<addNotNullConstraint tableName="concept_source" columnName="uuid" columnDataType="UUID" />
+		<addNotNullConstraint tableName="concept_state_conversion" columnName="uuid" columnDataType="UUID" />
+		<addNotNullConstraint tableName="drug" columnName="uuid" columnDataType="UUID" />
+		<addNotNullConstraint tableName="encounter" columnName="uuid" columnDataType="UUID" />
+		<addNotNullConstraint tableName="encounter_type" columnName="uuid" columnDataType="UUID" />
+		<addNotNullConstraint tableName="field" columnName="uuid" columnDataType="UUID" />
+		<addNotNullConstraint tableName="field_answer" columnName="uuid" columnDataType="UUID" />
+		<addNotNullConstraint tableName="field_type" columnName="uuid" columnDataType="UUID" />
+		<addNotNullConstraint tableName="form" columnName="uuid" columnDataType="UUID" />
+		<addNotNullConstraint tableName="form_field" columnName="uuid" columnDataType="UUID" />
+		<addNotNullConstraint tableName="global_property" columnName="uuid" columnDataType="UUID" />
+		<addNotNullConstraint tableName="hl7_in_archive" columnName="uuid" columnDataType="UUID" />
+		<addNotNullConstraint tableName="hl7_in_error" columnName="uuid" columnDataType="UUID" />
+		<addNotNullConstraint tableName="hl7_in_queue" columnName="uuid" columnDataType="UUID" />
+		<addNotNullConstraint tableName="hl7_source" columnName="uuid" columnDataType="UUID" />
+		<addNotNullConstraint tableName="location" columnName="uuid" columnDataType="UUID" />
+		<addNotNullConstraint tableName="location_tag" columnName="uuid" columnDataType="UUID" />
+		<addNotNullConstraint tableName="note" columnName="uuid" columnDataType="UUID" />
+		<addNotNullConstraint tableName="notification_alert" columnName="uuid" columnDataType="UUID" />
+		<addNotNullConstraint tableName="notification_template" columnName="uuid" columnDataType="UUID" />
+		<addNotNullConstraint tableName="obs" columnName="uuid" columnDataType="UUID" />
+		<addNotNullConstraint tableName="order_type" columnName="uuid" columnDataType="UUID" />
+		<addNotNullConstraint tableName="orders" columnName="uuid" columnDataType="UUID" />
+		<addNotNullConstraint tableName="patient_identifier" columnName="uuid" columnDataType="UUID" />
+		<addNotNullConstraint tableName="patient_identifier_type" columnName="uuid" columnDataType="UUID" />
+		<addNotNullConstraint tableName="patient_program" columnName="uuid" columnDataType="UUID" />
+		<addNotNullConstraint tableName="patient_state" columnName="uuid" columnDataType="UUID" />
+		<addNotNullConstraint tableName="person" columnName="uuid" columnDataType="UUID" />
+		<addNotNullConstraint tableName="person_address" columnName="uuid" columnDataType="UUID" />
+		<addNotNullConstraint tableName="person_attribute" columnName="uuid" columnDataType="UUID" />
+		<addNotNullConstraint tableName="person_attribute_type" columnName="uuid" columnDataType="UUID" />
+		<addNotNullConstraint tableName="person_name" columnName="uuid" columnDataType="UUID" />
+		<addNotNullConstraint tableName="privilege" columnName="uuid" columnDataType="UUID" />
+		<addNotNullConstraint tableName="program" columnName="uuid" columnDataType="UUID" />
+		<addNotNullConstraint tableName="program_workflow" columnName="uuid" columnDataType="UUID" />
+		<addNotNullConstraint tableName="program_workflow_state" columnName="uuid" columnDataType="UUID" />
+		<addNotNullConstraint tableName="relationship_type" columnName="uuid" columnDataType="UUID" />
+		<addNotNullConstraint tableName="report_object" columnName="uuid" columnDataType="UUID" />
+		<addNotNullConstraint tableName="report_schema_xml" columnName="uuid" columnDataType="UUID" />
+		<addNotNullConstraint tableName="role" columnName="uuid" columnDataType="UUID" />
+		<addNotNullConstraint tableName="serialized_object" columnName="uuid" columnDataType="UUID" />
+	</changeSet>
+	
+	<changeSet id="20090402-1519" author="bwolfe">
+		<comment>
+			Creating unique index on all uuid columns on all tables. This will take a long time on large databases.
+		</comment>
+		
+		<createIndex tableName="cohort" unique="true" indexName="cohort_uuid_index" >
+			<column name="uuid" />
+		</createIndex>
+		<createIndex tableName="concept" unique="true" indexName="concept_uuid_index">
+			<column name="uuid" />
+		</createIndex>
+		<createIndex tableName="concept_answer" unique="true" indexName="concept_answer_uuid_index">
+			<column name="uuid" />
+		</createIndex>
+		<createIndex tableName="concept_class" unique="true" indexName="concept_class_uuid_index">
+			<column name="uuid" />
+		</createIndex>
+		<createIndex tableName="concept_datatype" unique="true" indexName="concept_datatype_uuid_index">
+			<column name="uuid" />
+		</createIndex>
+		<createIndex tableName="concept_description" unique="true" indexName="concept_description_uuid_index">
+			<column name="uuid" />
+		</createIndex>
+		<createIndex tableName="concept_map" unique="true" indexName="concept_map_uuid_index">
+			<column name="uuid" />
+		</createIndex>
+		<createIndex tableName="concept_name" unique="true" indexName="concept_name_uuid_index">
+			<column name="uuid" />
+		</createIndex>
+		<createIndex tableName="concept_name_tag" unique="true" indexName="concept_name_tag_uuid_index">
+			<column name="uuid" />
+		</createIndex>
+		<createIndex tableName="concept_proposal" unique="true" indexName="concept_proposal_uuid_index">
+			<column name="uuid" />
+		</createIndex>
+		<createIndex tableName="concept_set" unique="true" indexName="concept_set_uuid_index">
+			<column name="uuid" />
+		</createIndex>
+		<createIndex tableName="concept_source" unique="true" indexName="concept_source_uuid_index">
+			<column name="uuid" />
+		</createIndex>
+		<createIndex tableName="concept_state_conversion" unique="true" indexName="concept_state_conversion_uuid_index">
+			<column name="uuid" />
+		</createIndex>
+		<createIndex tableName="drug" unique="true" indexName="drug_uuid_index">
+			<column name="uuid" />
+		</createIndex>
+		<createIndex tableName="encounter" unique="true" indexName="encounter_uuid_index">
+			<column name="uuid" />
+		</createIndex>
+		<createIndex tableName="encounter_type" unique="true" indexName="encounter_type_uuid_index">
+			<column name="uuid" />
+		</createIndex>
+		<createIndex tableName="field" unique="true" indexName="field_uuid_index">
+			<column name="uuid" />
+		</createIndex>
+		<createIndex tableName="field_answer" unique="true" indexName="field_answer_uuid_index">
+			<column name="uuid" />
+		</createIndex>
+		<createIndex tableName="field_type" unique="true" indexName="field_type_uuid_index">
+			<column name="uuid" />
+		</createIndex>
+		<createIndex tableName="form" unique="true" indexName="form_uuid_index">
+			<column name="uuid" />
+		</createIndex>
+		<createIndex tableName="form_field" unique="true" indexName="form_field_uuid_index">
+			<column name="uuid" />
+		</createIndex>
+		<createIndex tableName="global_property" unique="true" indexName="global_property_uuid_index">
+			<column name="uuid" />
+		</createIndex>
+		<createIndex tableName="hl7_in_archive" unique="true" indexName="hl7_in_archive_uuid_index">
+			<column name="uuid" />
+		</createIndex>
+		<createIndex tableName="hl7_in_error" unique="true" indexName="hl7_in_error_uuid_index">
+			<column name="uuid" />
+		</createIndex>
+		<createIndex tableName="hl7_in_queue" unique="true" indexName="hl7_in_queue_uuid_index">
+			<column name="uuid" />
+		</createIndex>
+		<createIndex tableName="hl7_source" unique="true" indexName="hl7_source_uuid_index">
+			<column name="uuid" />
+		</createIndex>
+		<createIndex tableName="location" unique="true" indexName="location_uuid_index">
+			<column name="uuid" />
+		</createIndex>
+		<createIndex tableName="location_tag" unique="true" indexName="location_tag_uuid_index">
+			<column name="uuid" />
+		</createIndex>
+		<createIndex tableName="note" unique="true" indexName="note_uuid_index">
+			<column name="uuid" />
+		</createIndex>
+		<createIndex tableName="notification_alert" unique="true" indexName="notification_alert_uuid_index">
+			<column name="uuid" />
+		</createIndex>
+		<createIndex tableName="notification_template" unique="true" indexName="notification_template_uuid_index">
+			<column name="uuid" />
+		</createIndex>
+		<createIndex tableName="obs" unique="true" indexName="obs_uuid_index">
+			<column name="uuid" />
+		</createIndex>
+		<createIndex tableName="order_type" unique="true" indexName="order_type_uuid_index">
+			<column name="uuid" />
+		</createIndex>
+		<createIndex tableName="orders" unique="true" indexName="orders_uuid_index">
+			<column name="uuid" />
+		</createIndex>
+		<createIndex tableName="patient_identifier" unique="true" indexName="patient_identifier_uuid_index">
+			<column name="uuid" />
+		</createIndex>
+		<createIndex tableName="patient_identifier_type" unique="true" indexName="patient_identifier_type_uuid_index">
+			<column name="uuid" />
+		</createIndex>
+		<createIndex tableName="patient_program" unique="true" indexName="patient_program_uuid_index">
+			<column name="uuid" />
+		</createIndex>
+		<createIndex tableName="patient_state" unique="true" indexName="patient_state_uuid_index">
+			<column name="uuid" />
+		</createIndex>
+		<createIndex tableName="person" unique="true" indexName="person_uuid_index">
+			<column name="uuid" />
+		</createIndex>
+		<createIndex tableName="person_address" unique="true" indexName="person_address_uuid_index">
+			<column name="uuid" />
+		</createIndex>
+		<createIndex tableName="person_attribute" unique="true" indexName="person_attribute_uuid_index">
+			<column name="uuid" />
+		</createIndex>
+		<createIndex tableName="person_attribute_type" unique="true" indexName="person_attribute_type_uuid_index">
+			<column name="uuid" />
+		</createIndex>
+		<createIndex tableName="person_name" unique="true" indexName="person_name_uuid_index">
+			<column name="uuid" />
+		</createIndex>
+		<createIndex tableName="privilege" unique="true" indexName="privilege_uuid_index">
+			<column name="uuid" />
+		</createIndex>
+		<createIndex tableName="program" unique="true" indexName="program_uuid_index">
+			<column name="uuid" />
+		</createIndex>
+		<createIndex tableName="program_workflow" unique="true" indexName="program_workflow_uuid_index">
+			<column name="uuid" />
+		</createIndex>
+		<createIndex tableName="program_workflow_state" unique="true" indexName="program_workflow_state_uuid_index">
+			<column name="uuid" />
+		</createIndex>
+		<createIndex tableName="relationship" unique="true" indexName="relationship_uuid_index">
+			<column name="uuid" />
+		</createIndex>
+		<createIndex tableName="relationship_type" unique="true" indexName="relationship_type_uuid_index">
+			<column name="uuid" />
+		</createIndex>
+		<createIndex tableName="report_object" unique="true" indexName="report_object_uuid_index">
+			<column name="uuid" />
+		</createIndex>
+		<createIndex tableName="report_schema_xml" unique="true" indexName="report_schema_xml_uuid_index">
+			<column name="uuid" />
+		</createIndex>
+		<createIndex tableName="role" unique="true" indexName="role_uuid_index">
+			<column name="uuid" />
+		</createIndex>
+		<createIndex tableName="serialized_object" unique="true" indexName="serialized_object_uuid_index">
+			<column name="uuid" />
+		</createIndex>
+	</changeSet>
+	
+	<changeSet id="20090414-0804" author="bwolfe">
+		<preConditions onFail="MARK_RAN">
+			<foreignKeyConstraintExists foreignKeyName="is_a" />
+		</preConditions>
+		<comment>Dropping foreign key on concept_set.concept_id table</comment>
+		<dropForeignKeyConstraint baseTableName="concept_set" constraintName="is_a" />
+	</changeSet>
+	
+	<changeSet id="20090414-0805" author="bwolfe">
+		<comment>Dropping primary key on concept set table</comment>
+		<dropPrimaryKey tableName="concept_set" />
+	</changeSet>
+	
+	<changeSet id="20090414-0806" author="bwolfe">
+		<comment>Adding new integer primary key to concept set table</comment>
+		<addColumn tableName="concept_set">
+			<column name="concept_set_id" type="int(11)" autoIncrement="true">
+				<constraints nullable="false" primaryKey="true" primaryKeyName="concept_set_pk" 
+							 unique="true" uniqueConstraintName="concept_set_id_unique" />
+			</column>
+		</addColumn>
+		<modifySql dbms="mysql">
+			<append value=" FIRST" />
+		</modifySql>
+	</changeSet>
+	
+	<changeSet id="20090414-0807" author="bwolfe">
+		<comment>Adding index and foreign key to concept_set.concept_id column</comment>
+		<createIndex tableName="concept_set" indexName="idx_concept_set_concept">
+			<column name="concept_id"/>
+		</createIndex>
+		<addForeignKeyConstraint baseTableName="concept_set" baseColumnNames="concept_id" constraintName="is_a" referencedTableName="concept" referencedColumnNames="concept_id" />
+	</changeSet>
+	
+	<changeSet id="20090414-0808a" author="bwolfe">
+		<preConditions onFail="MARK_RAN">
+			<foreignKeyConstraintExists foreignKeyName="identifies_patient" />
+		</preConditions>
+		<comment>Dropping foreign key on patient_identifier.patient_id column</comment>
+		<dropForeignKeyConstraint baseTableName="patient_identifier" constraintName="identifies_patient" />
+	</changeSet>
+	
+	<changeSet id="20090414-0808b" author="bwolfe">
+		<comment>Dropping non-integer primary key on patient identifier table before adding a new integer primary key</comment> 
+		<dropPrimaryKey tableName="patient_identifier" />
+	</changeSet>
+	
+	<changeSet id="20090414-0809" author="bwolfe">
+		<comment>Adding new integer primary key to patient identifier table</comment>
+		<addColumn tableName="patient_identifier">
+			<column name="patient_identifier_id" type="int(11)" autoIncrement="true">
+				<constraints nullable="false" primaryKey="true" primaryKeyName="patient_identifier_pk" 
+							 unique="true" uniqueConstraintName="patient_identifier_id_unique" />
+			</column>
+		</addColumn>
+		<modifySql dbms="mysql">
+			<append value=" FIRST" />
+		</modifySql>
+	</changeSet>
+
+	<changeSet id="20090414-0810" author="bwolfe">
+		<comment>Adding index and foreign key on patient_identifier.patient_id column</comment>
+		<createIndex tableName="patient_identifier" indexName="idx_patient_identifier_patient">
+			<column name="patient_id"/>
+		</createIndex>
+		<addForeignKeyConstraint baseTableName="patient_identifier" baseColumnNames="patient_id" constraintName="identifies_patient" referencedTableName="patient" referencedColumnNames="patient_id" />
+	</changeSet>
+	
+	<changeSet id="20090414-0811a" author="bwolfe">
+		<preConditions onFail="MARK_RAN">
+			<foreignKeyConstraintExists foreignKeyName="word_for" />
+		</preConditions>
+		<comment>Dropping foreign key on concept_word.concept_id column</comment>
+		<dropForeignKeyConstraint baseTableName="concept_word" constraintName="word_for" />
+	</changeSet>
+	
+	<changeSet id="20090428-0811aa" author="bwolfe">
+		<comment>Removing concept_word.concept_name_id foreign key so that primary key can be changed to concept_word_id</comment>
+		<dropForeignKeyConstraint baseTableName="concept_word" constraintName="word_for_name" />
+	</changeSet>
+	
+	<changeSet id="20090414-0811b" author="bwolfe">
+		<comment>Dropping non-integer primary key on concept word table before adding new integer one</comment>
+		<dropPrimaryKey tableName="concept_word" />
+	</changeSet>
+	
+	<changeSet id="20090414-0812" author="bwolfe">
+		<comment>Adding integer primary key to concept word table</comment>
+		<addColumn tableName="concept_word">
+			<column name="concept_word_id" type="int(11)" autoIncrement="true">
+				<constraints nullable="false" primaryKey="true" primaryKeyName="concept_word_pk" 
+							 unique="true" uniqueConstraintName="concept_word_id_unique" />
+			</column>
+		</addColumn>
+		<modifySql dbms="mysql">
+			<append value=" FIRST" />
+		</modifySql>
+	</changeSet>
+	
+	<changeSet id="20090414-0812b" author="bwolfe">
+		<comment>Re-adding foreign key for concept_word.concept_name_id</comment>
+		<addForeignKeyConstraint baseTableName="concept_word" baseColumnNames="concept_name_id" constraintName="word_for_name" referencedTableName="concept_name" referencedColumnNames="concept_name_id"/>
+	</changeSet>
+	
+	<changeSet id="20090428-0854" author="bwolfe">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<foreignKeyConstraintExists foreignKeyName="word_for"/>
+			</not>
+		</preConditions>
+		<comment>Adding foreign key for concept_word.concept_id column</comment>
+		<addForeignKeyConstraint baseTableName="concept_word" baseColumnNames="concept_id" constraintName="word_for" referencedTableName="concept" referencedColumnNames="concept_id" />
+	</changeSet>
+	
 </databaseChangeLog>

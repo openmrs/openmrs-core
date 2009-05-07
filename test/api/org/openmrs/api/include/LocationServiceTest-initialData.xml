@@ -1,10 +1,10 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <dataset>
-  <global_property property="database_version" property_value="1.5.0.02" />
-  <location location_id="1" name="Test Parent Location" parent_location="[NULL]" description="test description" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" />
-  <location location_id="2" name="Test Level A Child Location 1" parent_location="1" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" />
-  <location location_id="3" name="Test Level A Child Location 2" parent_location="1" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" />
-  <location location_id="4" name="Test Level B Child Location 1" parent_location="3" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" />
+  <global_property property="database_version" property_value="1.5.0.02"  uuid="6b53af05-af52-4f88-ac46-941f7c8ac550"/>
+  <location location_id="1" name="Test Parent Location" parent_location="[NULL]" description="test description" creator="1" date_created="2005-01-01 00:00:00.0" retired="false"  uuid="f08ba64b-ea57-4a41-b33c-9dfc59b0c60a"/>
+  <location location_id="2" name="Test Level A Child Location 1" parent_location="1" creator="1" date_created="2005-01-01 00:00:00.0" retired="false"  uuid="c9ae3a36-7466-4a56-8f06-3bfbc64103f4"/>
+  <location location_id="3" name="Test Level A Child Location 2" parent_location="1" creator="1" date_created="2005-01-01 00:00:00.0" retired="false"  uuid="6f42abbc-caac-40ae-a94e-9277ea15c125"/>
+  <location location_id="4" name="Test Level B Child Location 1" parent_location="3" creator="1" date_created="2005-01-01 00:00:00.0" retired="false"  uuid="400d343b-75ed-4243-af42-7b9b1b72f0a9"/>
   <location_tag location_tag_id="1" tag="General Hospital" description="test desc" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" />
   <location_tag location_tag_id="2" tag="Gastroenteritis infection scandal of 1993" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" />
   <location_tag location_tag_id="3" tag="Department" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" />

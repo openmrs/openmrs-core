@@ -106,4 +106,22 @@ public interface PatientDAO {
 	 */
 	public boolean isIdentifierInUseByAnotherPatient(PatientIdentifier patientIdentifier);
 	
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @param uuid
+	 * @return
+	 */
+	public Patient getPatientByUuid(String uuid);
+	
+	public PatientIdentifier getPatientIdentifierByUuid(String uuid);
+	
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @param uuid
+	 * @return
+	 */
+	public PatientIdentifierType getPatientIdentifierTypeByUuid(String uuid);
+	
 }

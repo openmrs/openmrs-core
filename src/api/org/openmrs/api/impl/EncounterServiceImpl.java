@@ -62,9 +62,6 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 * @see org.openmrs.api.EncounterService#saveEncounter(org.openmrs.Encounter)
 	 */
 	public Encounter saveEncounter(Encounter encounter) throws APIException {
-		Date now = new Date();
-		User me = Context.getAuthenticatedUser();
-		
 		boolean isNewEncounter = false;
 		Date newDate = encounter.getEncounterDatetime();
 		Date originalDate = null;
@@ -75,26 +72,6 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 			Context.requirePrivilege(OpenmrsConstants.PRIV_ADD_ENCOUNTERS);
 		} else {
 			Context.requirePrivilege(OpenmrsConstants.PRIV_EDIT_ENCOUNTERS);
-		}
-		
-		// set up child object lists 
-		if (encounter.getDateCreated() == null)
-			encounter.setDateCreated(now);
-		if (encounter.getCreator() == null)
-			encounter.setCreator(me);
-		for (Obs o : encounter.getAllObs(true)) {
-			if (o.getDateCreated() == null)
-				o.setDateCreated(now);
-			if (o.getCreator() == null)
-				o.setCreator(me);
-		}
-		if (encounter.getOrders() != null) {
-			for (Order o : encounter.getOrders()) {
-				if (o.getDateCreated() == null)
-					o.setDateCreated(now);
-				if (o.getCreator() == null)
-					o.setCreator(me);
-			}
 		}
 		
 		// This must be done after setting dateCreated etc on the obs because
@@ -117,6 +94,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 			for (Obs obs : encounter.getAllObs(true)) {
 				// if the date was changed
 				if (OpenmrsUtil.compare(originalDate, newDate) != 0) {
+					
 					// if the obs datetime is the same as the 
 					// original encounter datetime, fix it
 					if (OpenmrsUtil.compare(obs.getObsDatetime(), originalDate) == 0) {
@@ -295,11 +273,6 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 * @see org.openmrs.api.EncounterService#saveEncounterType(org.openmrs.EncounterType)
 	 */
 	public EncounterType saveEncounterType(EncounterType encounterType) {
-		if (encounterType.getCreator() == null)
-			encounterType.setCreator(Context.getAuthenticatedUser());
-		if (encounterType.getDateCreated() == null)
-			encounterType.setDateCreated(new Date());
-		
 		dao.saveEncounterType(encounterType);
 		return encounterType;
 	}
@@ -347,8 +320,6 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 			throw new IllegalArgumentException("The 'reason' argument is required");
 		
 		encounterType.setRetired(true);
-		encounterType.setRetiredBy(Context.getAuthenticatedUser());
-		encounterType.setDateRetired(new Date());
 		encounterType.setRetireReason(reason);
 		return saveEncounterType(encounterType);
 	}
@@ -358,9 +329,6 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 */
 	public EncounterType unretireEncounterType(EncounterType encounterType) throws APIException {
 		encounterType.setRetired(false);
-		encounterType.setRetiredBy(null);
-		encounterType.setDateRetired(null);
-		encounterType.setRetireReason(null);
 		return saveEncounterType(encounterType);
 	}
 	
@@ -508,4 +476,17 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		return Context.getLocationService().getLocations(name);
 	}
 	
+	/**
+	 * @see org.openmrs.api.EncounterService#getEncounterByUuid(java.lang.String)
+	 */
+	public Encounter getEncounterByUuid(String uuid) throws APIException {
+		return dao.getEncounterByUuid(uuid);
+	}
+	
+	/**
+	 * @see org.openmrs.api.EncounterService#getEncounterTypeByUuid(java.lang.String)
+	 */
+	public EncounterType getEncounterTypeByUuid(String uuid) throws APIException {
+		return dao.getEncounterTypeByUuid(uuid);
+	}
 }

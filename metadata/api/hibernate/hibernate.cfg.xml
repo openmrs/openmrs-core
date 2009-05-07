@@ -10,6 +10,7 @@
 		
 		<!-- API -->
 		<mapping resource="org/openmrs/api/db/hibernate/Concept.hbm.xml" />
+		<mapping resource="org/openmrs/api/db/hibernate/ConceptAnswer.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptDescription.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptName.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/ConceptNameTag.hbm.xml" />
@@ -37,6 +38,7 @@
 		<mapping resource="org/openmrs/api/db/hibernate/PersonAddress.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/PersonName.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/User.hbm.xml" />
+		<mapping resource="org/openmrs/api/db/hibernate/LoginCredential.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Privilege.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Role.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Patient.hbm.xml" />

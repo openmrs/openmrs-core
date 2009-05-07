@@ -15,13 +15,15 @@ package org.openmrs.reporting;
 
 import java.util.Date;
 
+import org.openmrs.BaseOpenmrsObject;
 import org.openmrs.User;
 
 /**
  * @deprecated see reportingcompatibility module
  */
 @Deprecated
-public class ReportObjectWrapper {
+// TODO this should extend BaseOpenmrsMetadata and use retired instead of voided
+public class ReportObjectWrapper extends BaseOpenmrsObject {
 	
 	private Integer reportObjectId; // database primary key
 	
@@ -303,4 +305,21 @@ public class ReportObjectWrapper {
 			return null;
 		}
 	}
+	
+	/**
+	 * @since 1.5
+	 * @see org.openmrs.OpenmrsObject#getId()
+	 */
+	public Integer getId() {
+		return getReportObjectId();
+	}
+	
+	/**
+	 * @since 1.5
+	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
+	 */
+	public void setId(Integer id) {
+		setReportObjectId(id);
+	}
+	
 }

@@ -1,11 +1,11 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <dataset>
   <!-- assumes that users.user_id=1 already exists from base dataset -->
-  <person_name person_name_id="1" preferred="true" person_id="1" prefix="" given_name="Super" middle_name=" " family_name="User" family_name2="" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
+  <person_name person_name_id="1" preferred="true" person_id="1" prefix="" given_name="Super" middle_name=" " family_name="User" family_name2="" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="8c54ab46-73e2-4745-924b-be3cb546e414"/>
   <patient patient_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
   
   <users user_id="2" creator="1" system_id="" date_created="2005-01-01 00:00:00.0" voided="false"/>
-  <person person_id="2" gender="M" dead="false" creator="2" date_created="2005-01-01 00:00:00.0" voided="false"/>
-  <person_name person_name_id="2" preferred="true" person_id="1" prefix="" given_name="Other" middle_name=" " family_name="User" family_name2="" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
+  <person person_id="2" gender="M" dead="false" creator="2" date_created="2005-01-01 00:00:00.0" voided="false" uuid="29e03f9f-d563-45c0-a3fa-891f3d2538e1"/>
+  <person_name person_name_id="2" preferred="true" person_id="1" prefix="" given_name="Other" middle_name=" " family_name="User" family_name2="" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="6cfb80c8-409c-4b0c-872c-644bdd369648"/>
   <patient patient_id="2" creator="2" date_created="2005-01-01 00:00:00.0" voided="false"/>
 </dataset>

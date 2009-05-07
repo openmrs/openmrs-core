@@ -20,6 +20,7 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.openmrs.api.db.hibernate.HibernateSerializedObjectDAO;
 import org.openmrs.report.ReportSchema;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;

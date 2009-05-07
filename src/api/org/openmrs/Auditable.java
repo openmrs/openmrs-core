@@ -26,7 +26,7 @@ import java.util.Date;
  * @see OpenmrsData
  * @see OpenmrsMetadata
  */
-public interface Auditable {
+public interface Auditable extends OpenmrsObject {
 	
 	/**
 	 * @return User - the user who created the object

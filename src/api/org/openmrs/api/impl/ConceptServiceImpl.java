@@ -33,8 +33,6 @@ import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptComplex;
 import org.openmrs.ConceptDatatype;
-import org.openmrs.ConceptDescription;
-import org.openmrs.ConceptMap;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptNameTag;
 import org.openmrs.ConceptNumeric;
@@ -44,7 +42,6 @@ import org.openmrs.ConceptSource;
 import org.openmrs.ConceptWord;
 import org.openmrs.Drug;
 import org.openmrs.Obs;
-import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.ConceptsLockedException;
@@ -150,9 +147,6 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		// make sure the administrator hasn't turned off concept editing
 		checkIfLocked();
 		
-		// set that creator/dateCreated properties on the concept and child objects
-		this.modifyCollections(concept);
-		
 		Concept conceptToReturn = dao.saveConcept(concept);
 		
 		// add/remove entries in the concept_word table (used for searching)
@@ -166,11 +160,6 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 */
 	public Drug saveDrug(Drug drug) throws APIException {
 		checkIfLocked();
-		
-		if (drug.getCreator() == null)
-			drug.setCreator(Context.getAuthenticatedUser());
-		if (drug.getDateCreated() == null)
-			drug.setDateCreated(new Date());
 		
 		return dao.saveDrug(drug);
 	}
@@ -194,8 +183,6 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 			
 			concept.setRetired(true);
 			concept.setRetireReason(reason);
-			concept.setRetiredBy(Context.getAuthenticatedUser());
-			concept.setDateRetired(new Date());
 			return dao.saveConcept(concept);
 		}
 		
@@ -210,9 +197,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		
 		if (drug.isRetired() == false) {
 			drug.setRetired(true);
-			drug.setRetiredBy(Context.getAuthenticatedUser());
 			drug.setRetireReason(reason);
-			drug.setDateRetired(new Date());
 			return dao.saveDrug(drug);
 		}
 		
@@ -225,9 +210,6 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	public Drug unretireDrug(Drug drug) throws APIException {
 		if (drug.isRetired() == true) {
 			drug.setRetired(false);
-			drug.setRetiredBy(null);
-			drug.setRetireReason(null);
-			drug.setDateRetired(null);
 			return dao.saveDrug(drug);
 		}
 		
@@ -637,10 +619,6 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 * @see org.openmrs.api.ConceptService#saveConceptClass(org.openmrs.ConceptClass)
 	 */
 	public ConceptClass saveConceptClass(ConceptClass cc) throws APIException {
-		if (cc.getDateCreated() == null)
-			cc.setDateCreated(new Date());
-		if (cc.getCreator() == null)
-			cc.setCreator(Context.getAuthenticatedUser());
 		return dao.saveConceptClass(cc);
 	}
 	
@@ -662,16 +640,12 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 * @see org.openmrs.api.ConceptService#saveConceptDatatype(org.openmrs.ConceptDatatype)
 	 */
 	public ConceptDatatype saveConceptDatatype(ConceptDatatype cd) throws APIException {
-		if (cd.getCreator() == null)
-			cd.setCreator(Context.getAuthenticatedUser());
-		if (cd.getDateCreated() == null)
-			cd.setDateCreated(new Date());
 		return dao.saveConceptDatatype(cd);
 	}
 	
 	/**
 	 * @see org.openmrs.api.ConceptService#getAllConceptDatatypes()
-	 * @deprecated use {@link #getAllConceptDatatypes() }
+	 * @deprecated use {@link #getAllConceptDatatypes()}
 	 */
 	public List<ConceptDatatype> getConceptDatatypes() {
 		return getAllConceptDatatypes();
@@ -833,20 +807,6 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 * @see org.openmrs.api.ConceptService#saveConceptProposal(org.openmrs.ConceptProposal)
 	 */
 	public ConceptProposal saveConceptProposal(ConceptProposal conceptProposal) throws APIException {
-		// set the state of the proposal
-		if (conceptProposal.getState() == null)
-			conceptProposal.setState(OpenmrsConstants.CONCEPT_PROPOSAL_UNMAPPED);
-		
-		// set the creator and date created
-		if (conceptProposal.getCreator() == null && conceptProposal.getEncounter() != null)
-			conceptProposal.setCreator(conceptProposal.getEncounter().getCreator());
-		else
-			conceptProposal.setCreator(Context.getAuthenticatedUser());
-		
-		if (conceptProposal.getDateCreated() == null && conceptProposal.getEncounter() != null)
-			conceptProposal.setDateCreated(conceptProposal.getEncounter().getDateCreated());
-		else
-			conceptProposal.setDateCreated(new Date());
 		return dao.saveConceptProposal(conceptProposal);
 	}
 	
@@ -1118,108 +1078,6 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	}
 	
 	/**
-	 * Sets required fields for a concept before saving it.
-	 * 
-	 * @param concept
-	 */
-	protected void modifyCollections(Concept concept) {
-		User authUser = Context.getAuthenticatedUser();
-		Date timestamp = new Date();
-		
-		if (concept.getCreator() == null)
-			concept.setCreator(authUser);
-		if (concept.getDateCreated() == null)
-			concept.setDateCreated(timestamp);
-		
-		// if updating a concept (instead of creating a new one)
-		if (concept.getConceptId() != null) {
-			concept.setChangedBy(authUser);
-			concept.setDateChanged(timestamp);
-		}
-		
-		if (concept.getNames() != null) {
-			for (ConceptName cn : concept.getNames()) {
-				if (cn.getCreator() == null)
-					cn.setCreator(authUser);
-				if (cn.getDateCreated() == null)
-					cn.setDateCreated(timestamp);
-				
-				cn.setConcept(concept);
-				
-				if (cn.getTags() != null) {
-					for (ConceptNameTag tag : cn.getTags()) {
-						if (tag.getConceptNameTagId() == null) {
-							ConceptNameTag possibleReplacementTag = getConceptNameTagByName(tag.getTag());
-							if (possibleReplacementTag != null) {
-								cn.removeTag(tag);
-								cn.addTag(possibleReplacementTag);
-							}
-						}
-						if (tag.getCreator() == null)
-							tag.setCreator(authUser);
-						if (tag.getDateCreated() == null)
-							tag.setDateCreated(timestamp);
-					}
-				}
-				
-				// alter the other voided info
-				if (cn.isVoided()) {
-					if (cn.getVoidedBy() == null)
-						cn.setVoidedBy(authUser);
-					if (cn.getDateVoided() == null)
-						cn.setDateVoided(timestamp);
-				} else {
-					cn.setVoidReason(null);
-					cn.setDateVoided(null);
-					cn.setVoidedBy(null);
-				}
-			}
-		}
-		
-		if (concept.getConceptSets() != null) {
-			for (ConceptSet set : concept.getConceptSets()) {
-				if (set.getCreator() == null)
-					set.setCreator(authUser);
-				if (set.getDateCreated() == null)
-					set.setDateCreated(timestamp);
-				
-				set.setConceptSet(concept);
-			}
-		}
-		if (concept.getAnswers(true) != null) {
-			for (ConceptAnswer ca : concept.getAnswers(true)) {
-				if (ca.getCreator() == null)
-					ca.setCreator(authUser);
-				if (ca.getDateCreated() == null)
-					ca.setDateCreated(timestamp);
-				
-				ca.setConcept(concept);
-			}
-		}
-		if (concept.getDescriptions() != null) {
-			for (ConceptDescription cd : concept.getDescriptions()) {
-				if (cd.getCreator() == null)
-					cd.setCreator(authUser);
-				if (cd.getDateCreated() == null)
-					cd.setDateCreated(timestamp);
-				
-				cd.setConcept(concept);
-			}
-		}
-		if (concept.getConceptMappings() != null) {
-			for (ConceptMap map : concept.getConceptMappings()) {
-				if (map.getCreator() == null)
-					map.setCreator(authUser);
-				if (map.getDateCreated() == null)
-					map.setDateCreated(timestamp);
-				
-				map.setConcept(concept);
-			}
-		}
-		
-	}
-	
-	/**
 	 * This will weight and sort the concepts according to how many of the words in the name match
 	 * the words in the search phrase.
 	 * 
@@ -1361,12 +1219,6 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 * @see org.openmrs.api.ConceptService#saveConceptSource(org.openmrs.ConceptSource)
 	 */
 	public ConceptSource saveConceptSource(ConceptSource conceptSource) throws APIException {
-		
-		if (conceptSource.getCreator() == null)
-			conceptSource.setCreator(Context.getAuthenticatedUser());
-		if (conceptSource.getDateCreated() == null)
-			conceptSource.setDateCreated(new Date());
-		
 		return dao.saveConceptSource(conceptSource);
 	}
 	
@@ -1376,12 +1228,6 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	public ConceptNameTag saveConceptNameTag(ConceptNameTag nameTag) {
 		checkIfLocked();
 		
-		if (nameTag.getDateCreated() == null) {
-			nameTag.setDateCreated(new Date());
-		}
-		if (nameTag.getCreator() == null) {
-			nameTag.setCreator(Context.getAuthenticatedUser());
-		}
 		return dao.saveConceptNameTag(nameTag);
 	}
 	
@@ -1402,6 +1248,78 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		conceptWordUpdateTaskDef
 		        .setDescription("Iterates through the concept dictionary, re-creating concept words (which are used for searcing). This task is started when using the \"Update Concept Word Storage\" page and no range is given.  This task stops itself when one iteration has completed.");
 		return conceptWordUpdateTaskDef;
+	}
+	
+	/**
+	 * @see org.openmrs.api.ConceptService#getConceptByUuid(java.lang.String)
+	 */
+	public Concept getConceptByUuid(String uuid) {
+		return dao.getConceptByUuid(uuid);
+	}
+	
+	/**
+	 * @see org.openmrs.api.ConceptService#getConceptClassByUuid(java.lang.String)
+	 */
+	public ConceptClass getConceptClassByUuid(String uuid) {
+		return dao.getConceptClassByUuid(uuid);
+	}
+	
+	public ConceptAnswer getConceptAnswerByUuid(String uuid) {
+		return dao.getConceptAnswerByUuid(uuid);
+	}
+	
+	public ConceptName getConceptNameByUuid(String uuid) {
+		return dao.getConceptNameByUuid(uuid);
+	}
+	
+	public ConceptSet getConceptSetByUuid(String uuid) {
+		return dao.getConceptSetByUuid(uuid);
+	}
+	
+	public ConceptSource getConceptSourceByUuid(String uuid) {
+		return dao.getConceptSourceByUuid(uuid);
+	}
+	
+	/**
+	 * @see org.openmrs.api.ConceptService#getConceptDatatypeByUuid(java.lang.String)
+	 */
+	public ConceptDatatype getConceptDatatypeByUuid(String uuid) {
+		return dao.getConceptDatatypeByUuid(uuid);
+	}
+	
+	/**
+	 * @see org.openmrs.api.ConceptService#getConceptNumericByUuid(java.lang.String)
+	 */
+	public ConceptNumeric getConceptNumericByUuid(String uuid) {
+		return dao.getConceptNumericByUuid(uuid);
+	}
+	
+	/**
+	 * @see org.openmrs.api.ConceptService#getConceptProposalByUuid(java.lang.String)
+	 */
+	public ConceptProposal getConceptProposalByUuid(String uuid) {
+		return dao.getConceptProposalByUuid(uuid);
+	}
+	
+	/**
+	 * @see org.openmrs.api.ConceptService#getDrugByUuid(java.lang.String)
+	 */
+	public Drug getDrugByUuid(String uuid) {
+		return dao.getDrugByUuid(uuid);
+	}
+	
+	/**
+	 * @see org.openmrs.api.ConceptService#getConceptDescriptionByUuid(java.lang.String)
+	 */
+	public Object getConceptDescriptionByUuid(String uuid) {
+		return dao.getConceptDescriptionByUuid(uuid);
+	}
+	
+	/**
+	 * @see org.openmrs.api.ConceptService#getConceptNameTagByUuid(java.lang.String)
+	 */
+	public ConceptNameTag getConceptNameTagByUuid(String uuid) {
+		return dao.getConceptNameTagByUuid(uuid);
 	}
 	
 	/**

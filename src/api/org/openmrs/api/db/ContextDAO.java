@@ -47,6 +47,7 @@ public interface ContextDAO {
 	 * @should lockout user after five failed attempts
 	 * @should authenticateWithCorrectHashedPassword
 	 * @should authenticateWithIncorrectHashedPassword
+	 * @should set uuid on user property when authentication fails with valid user
 	 */
 	@Transactional(noRollbackFor = ContextAuthenticationException.class)
 	public User authenticate(String username, String password) throws ContextAuthenticationException;

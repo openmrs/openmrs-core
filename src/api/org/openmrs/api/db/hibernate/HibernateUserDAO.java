@@ -24,7 +24,6 @@ import java.util.Vector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
-import org.hibernate.Hibernate;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
@@ -35,12 +34,11 @@ import org.hibernate.dialect.HSQLDialect;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
-import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
+import org.openmrs.api.db.LoginCredential;
 import org.openmrs.api.db.UserDAO;
 import org.openmrs.patient.impl.LuhnIdentifierValidator;
-import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.Security;
 
 /**
@@ -329,9 +327,9 @@ public class HibernateUserDAO implements UserDAO {
 		log.debug("updating password");
 		//update the user with the new password
 		String salt = Security.getRandomToken();
-		String newPassword = Security.encodeString(pw + salt);
+		String newHashedPassword = Security.encodeString(pw + salt);
 		
-		updateUserPassword(newPassword, salt, authUser.getUserId(), new Date(), u.getUserId());
+		updateUserPassword(newHashedPassword, salt, authUser.getUserId(), new Date(), u.getUserId());
 		
 	}
 	
@@ -344,80 +342,27 @@ public class HibernateUserDAO implements UserDAO {
 	}
 	
 	/**
-	 * We have to change the password manually because we don't store the password and salt on the
-	 * user
-	 * 
-	 * @param newPassword
+	 * @param newHashedPassword
 	 * @param salt
 	 * @param userId
 	 * @param date
 	 * @param userId2
 	 */
-	private void updateUserPassword(String newPassword, String salt, Integer changedBy, Date dateChanged,
+	private void updateUserPassword(String newHashedPassword, String salt, Integer changedBy, Date dateChanged,
 	                                Integer userIdToChange) {
-		PreparedStatement ps = null;
-		try {
-			ps = getUpdateUserPasswordStatement();
-			
-			if (ps != null) {
-				ps.setString(1, newPassword);
-				ps.setString(2, salt);
-				ps.setInt(3, changedBy);
-				ps.setDate(4, new java.sql.Date(dateChanged.getTime()));
-				ps.setInt(5, userIdToChange);
-				
-				ps.executeUpdate();
-			}
-		}
-		catch (SQLException e) {
-			log.warn("SQL Exception while running user-password-update ", e);
-		}
-		finally {
-			if (ps != null) {
-				try {
-					ps.close();
-				}
-				catch (SQLException e) {
-					log.error("Error generated while closing statement", e);
-				}
-			}
-		}
+		User changeForUser = getUser(userIdToChange);
+		if (changeForUser == null)
+			throw new DAOException("Couldn't find user to set password for userId=" + userIdToChange);
+		User changedByUser = getUser(changedBy);
+		LoginCredential credentials = new LoginCredential();
+		credentials.setUserId(userIdToChange);
+		credentials.setHashedPassword(newHashedPassword);
+		credentials.setSalt(salt);
+		credentials.setChangedBy(changedByUser);
+		credentials.setDateChanged(dateChanged);
+		credentials.setUuid(changeForUser.getUuid());
 		
-		sessionFactory.getCurrentSession().flush();
-	}
-	
-	/**
-	 * Return or create the prepared statement for use when updating a user's password. <br/>
-	 * <br/>
-	 * Will return null on error
-	 * 
-	 * @return PreparedStatement that can be executed
-	 */
-	@SuppressWarnings("deprecation")
-	private PreparedStatement getUpdateUserPasswordStatement() {
-		// get the straight up jdbc database connection
-		// TODO address this depreciation warning
-		Connection connection = sessionFactory.getCurrentSession().connection();
-		
-		String sql = "UPDATE users SET `password` = ?, `salt` = ?, `changed_by` = ?, `date_changed` = ? WHERE `user_id` = ?";
-		
-		// if we're in a junit test, we're probably using hsql...and hsql
-		// does not like the backtick.  Replace the backtick with the hsql
-		// escape character: the double quote (or nothing).
-		Dialect dialect = HibernateUtil.getDialect(sessionFactory);
-		if (HSQLDialect.class.getName().equals(dialect.getClass().getName()))
-			sql = sql.replace("`", "");
-		
-		PreparedStatement updateUserPreparedStatement = null;
-		try {
-			// create the prepared statement
-			updateUserPreparedStatement = connection.prepareStatement(sql);
-		}
-		catch (SQLException e) {
-			log.warn("SQL Exception while trying to create the user-password-update statement", e);
-		}
-		
-		return updateUserPreparedStatement;
+		sessionFactory.getCurrentSession().merge(credentials);
 	}
 	
 	/**
@@ -425,29 +370,18 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	public void changePassword(String pw, String pw2) throws DAOException {
 		User u = Context.getAuthenticatedUser();
-		
-		String passwordOnRecord = (String) sessionFactory.getCurrentSession().createSQLQuery(
-		    "select password from users where user_id = ?").addScalar("password", Hibernate.STRING).setInteger(0,
-		    u.getUserId()).uniqueResult();
-		
-		String saltOnRecord = (String) sessionFactory.getCurrentSession().createSQLQuery(
-		    "select salt from users where user_id = ?").addScalar("salt", Hibernate.STRING).setInteger(0, u.getUserId())
-		        .uniqueResult();
-		
-		// check to make sure the old password that was passed in is the correct one
-		if (!Security.hashMatches(passwordOnRecord, pw + saltOnRecord)) {
+		LoginCredential credentials = getLoginCredential(u);
+		if (!credentials.checkPassword(pw)) {
 			log.error("Passwords don't match");
 			throw new DAOException("Passwords don't match");
 		}
 		
-		log.debug("updating password");
+		log.info("updating password for " + u.getUsername());
 		
-		//update the user with the new password
+		// update the user with the new password
 		String salt = Security.getRandomToken();
-		String newPassword = Security.encodeString(pw2 + salt);
-		
-		// do the actual password changing
-		updateUserPassword(newPassword, salt, u.getUserId(), new Date(), u.getUserId());
+		String newHashedPassword = Security.encodeString(pw2 + salt);
+		updateUserPassword(newHashedPassword, salt, u.getUserId(), new Date(), u.getUserId());
 	}
 	
 	/**
@@ -457,32 +391,16 @@ public class HibernateUserDAO implements UserDAO {
 	public void changeQuestionAnswer(String pw, String question, String answer) throws DAOException {
 		User u = Context.getAuthenticatedUser();
 		
-		String passwordOnRecord = (String) sessionFactory.getCurrentSession().createSQLQuery(
-		    "select password from users where user_id = ?").addScalar("password", Hibernate.STRING).setInteger(0,
-		    u.getUserId()).uniqueResult();
-		
-		String saltOnRecord = (String) sessionFactory.getCurrentSession().createSQLQuery(
-		    "select salt from users where user_id = ?").addScalar("salt", Hibernate.STRING).setInteger(0, u.getUserId())
-		        .uniqueResult();
-		
-		try {
-			if (!Security.hashMatches(passwordOnRecord, pw + saltOnRecord)) {
-				throw new DAOException("Passwords don't match");
-			}
-		}
-		catch (APIException e) {
-			log.error("Unable to check the password", e);
-			throw new DAOException("Unable to check the password", e);
+		LoginCredential credentials = getLoginCredential(u);
+		if (!credentials.checkPassword(pw)) {
+			log.error("Passwords don't match");
+			throw new DAOException("Passwords don't match");
 		}
 		
-		// Change the question and answer 
-		try {
-			Context.addProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USER_PASSWORDS);
-			changeQuestionAnswer(u, question, answer);
-		}
-		finally {
-			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USER_PASSWORDS);
-		}
+		log.info("Updating secret question and answer for " + u.getUsername());
+		credentials.setSecretQuestion(question);
+		credentials.setSecretAnswer(answer);
+		updateLoginCredential(credentials);
 	}
 	
 	/**
@@ -535,17 +453,7 @@ public class HibernateUserDAO implements UserDAO {
 		if (answer == null || answer.equals(""))
 			return false;
 		
-		String answerOnRecord = "";
-		
-		try {
-			answerOnRecord = (String) sessionFactory.getCurrentSession().createSQLQuery(
-			    "select secret_answer from users where user_id = ?").addScalar("secret_answer", Hibernate.STRING)
-			        .setInteger(0, u.getUserId()).uniqueResult();
-		}
-		catch (Exception e) {
-			return false;
-		}
-		
+		String answerOnRecord = getLoginCredential(u).getSecretAnswer();
 		return (answer.equals(answerOnRecord));
 	}
 	
@@ -657,4 +565,61 @@ public class HibernateUserDAO implements UserDAO {
 		}
 		return users;
 	}
+	
+	/**
+	 * @see org.openmrs.api.db.UserDAO#getPrivilegeByUuid(java.lang.String)
+	 */
+	public Privilege getPrivilegeByUuid(String uuid) {
+		return (Privilege) sessionFactory.getCurrentSession().createQuery("from Privilege p where p.uuid = :uuid")
+		        .setString("uuid", uuid).uniqueResult();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.UserDAO#getRoleByUuid(java.lang.String)
+	 */
+	public Role getRoleByUuid(String uuid) {
+		return (Role) sessionFactory.getCurrentSession().createQuery("from Role r where r.uuid = :uuid").setString("uuid",
+		    uuid).uniqueResult();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.UserDAO#getUserByUuid(java.lang.String)
+	 */
+	public User getUserByUuid(String uuid) {
+		User ret = null;
+		
+		if (uuid != null) {
+			uuid = uuid.trim();
+			ret = (User) sessionFactory.getCurrentSession().createQuery("from User u where u.uuid = :uuid").setString(
+			    "uuid", uuid).uniqueResult();
+		}
+		
+		return ret;
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.UserDAO#getLoginCredential(org.openmrs.User)
+	 */
+	public LoginCredential getLoginCredential(User user) {
+		return (LoginCredential) sessionFactory.getCurrentSession().get(LoginCredential.class, user.getUserId());
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.UserDAO#getLoginCredential(org.openmrs.User)
+	 */
+	public LoginCredential getLoginCredentialByUuid(String uuid) {
+		if (uuid == null)
+			return null;
+		else
+			return (LoginCredential) sessionFactory.getCurrentSession().createQuery(
+			    "from LoginCredential where uuid = :uuid").setString("uuid", uuid.trim()).uniqueResult();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.UserDAO#updateLoginCredential(org.openmrs.LoginCredential)
+	 */
+	public void updateLoginCredential(LoginCredential credential) {
+		sessionFactory.getCurrentSession().update(credential);
+	}
+	
 }

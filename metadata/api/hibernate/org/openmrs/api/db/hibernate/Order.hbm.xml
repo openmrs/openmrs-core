@@ -26,8 +26,11 @@
     </id>
 
     <discriminator column="order_id" insert="false" />
-		
-	<property
+
+		<property name="uuid" type="java.lang.String"
+			column="uuid" length="36" unique="true" />
+
+    <property
         name="instructions"
         type="java.lang.String"
         column="instructions"

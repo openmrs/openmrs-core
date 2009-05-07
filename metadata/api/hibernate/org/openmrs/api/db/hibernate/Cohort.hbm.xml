@@ -16,7 +16,10 @@
 			not-null="true" length="255" />
 		<property name="description" type="java.lang.String" 
 			not-null="true" length="1000" />
-
+		
+		<property name="uuid" type="java.lang.String"
+			column="uuid" length="36" unique="true" />
+		
 		<set name="memberIds" cascade="none" lazy="true" table="cohort_member">
 			<key column="cohort_id" not-null="true"/>
 		    <element column="patient_id" type="integer" not-null="true"/>

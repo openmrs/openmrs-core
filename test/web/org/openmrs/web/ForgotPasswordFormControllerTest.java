@@ -21,8 +21,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
-import org.openmrs.web.test.BaseWebContextSensitiveTest;
 import org.openmrs.web.controller.ForgotPasswordFormController;
+import org.openmrs.web.test.BaseWebContextSensitiveTest;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 

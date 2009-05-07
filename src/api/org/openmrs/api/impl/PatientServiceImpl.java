@@ -114,19 +114,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		else
 			Context.requirePrivilege(OpenmrsConstants.PRIV_EDIT_PATIENTS);
 		
-		setCollectionProperties(patient);
-		
 		checkPatientIdentifiers(patient);
-		
-		Date now = new Date();
-		if (patient.getDateCreated() == null)
-			patient.setDateCreated(now);
-		if (patient.getCreator() == null)
-			patient.setCreator(Context.getAuthenticatedUser());
-		if (patient.getPatientId() != null) {
-			patient.setChangedBy(Context.getAuthenticatedUser());
-			patient.setDateChanged(now);
-		}
 		
 		return dao.savePatient(patient);
 	}
@@ -483,15 +471,6 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 * @see org.openmrs.api.PatientService#savePatientIdentifierType(org.openmrs.PatientIdentifierType)
 	 */
 	public PatientIdentifierType savePatientIdentifierType(PatientIdentifierType patientIdentifierType) throws APIException {
-		Date now = new Date();
-		if (patientIdentifierType.getDateCreated() == null)
-			patientIdentifierType.setDateCreated(now);
-		if (patientIdentifierType.getCreator() == null)
-			patientIdentifierType.setCreator(Context.getAuthenticatedUser());
-		// if (patientIdentifierType.getPatientIdentifierTypeId() != null) {
-		// patientIdentifierType.setChangedBy(Context.getAuthenticatedUser());
-		// patientIdentifierType.setDateChanged(now);
-		// }
 		return dao.savePatientIdentifierType(patientIdentifierType);
 	}
 	
@@ -894,56 +873,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		// This must be called _after_ voiding the nonPreferred patient so that
 		//  a "Duplicate Identifier" error doesn't pop up.
 		savePatient(preferred);
-	}
-	
-	/**
-	 * Iterates over Names/Addresses/Identifiers to set dateCreated and creator properties if needed
-	 * 
-	 * @param patient
-	 */
-	private void setCollectionProperties(Patient patient) {
-		// set the properties on the collections for the generic person object
-		Context.getPersonService().setCollectionProperties(patient);
 		
-		User currentUser = Context.getAuthenticatedUser();
-		Date currentTime = new Date();
-		
-		// patient creator
-		if (patient.getCreator() == null)
-			patient.setCreator(currentUser);
-		if (patient.getDateCreated() == null)
-			patient.setDateCreated(currentTime);
-		
-		// patient changer
-		if (patient.getPatientId() != null) {
-			patient.setChangedBy(currentUser);
-			patient.setDateChanged(currentTime);
-		}
-		
-		// identifier collection
-		if (patient.getIdentifiers() != null) {
-			for (PatientIdentifier pIdentifier : patient.getIdentifiers()) {
-				// set the creator and date created if not set yet
-				if (pIdentifier.getDateCreated() == null)
-					pIdentifier.setDateCreated(currentTime);
-				if (pIdentifier.getCreator() == null)
-					pIdentifier.setCreator(currentUser);
-				
-				// make sure the identifier is associated with the current
-				// patient
-				if (pIdentifier.getPatient() == null)
-					pIdentifier.setPatient(patient);
-				
-				// if the user has marked this identifier as voided, make sure
-				// the other void attrs are filled in
-				if (pIdentifier.isVoided()) {
-					if (pIdentifier.getVoidedBy() == null)
-						pIdentifier.setVoidedBy(currentUser);
-					if (pIdentifier.getDateVoided() == null)
-						pIdentifier.setDateVoided(currentTime);
-				}
-			}
-		}
 	}
 	
 	/**
@@ -1197,6 +1127,24 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		} else {
 			log.debug("Cause of death is null - should not have gotten here without throwing an error on the form.");
 		}
+	}
+	
+	/**
+	 * @see org.openmrs.api.PatientService#getPatientByUuid(java.lang.String)
+	 */
+	public Patient getPatientByUuid(String uuid) throws APIException {
+		return dao.getPatientByUuid(uuid);
+	}
+	
+	public PatientIdentifier getPatientIdentifierByUuid(String uuid) throws APIException {
+		return dao.getPatientIdentifierByUuid(uuid);
+	}
+	
+	/**
+	 * @see org.openmrs.api.PatientService#getPatientIdentifierTypeByUuid(java.lang.String)
+	 */
+	public PatientIdentifierType getPatientIdentifierTypeByUuid(String uuid) throws APIException {
+		return dao.getPatientIdentifierTypeByUuid(uuid);
 	}
 	
 	/**

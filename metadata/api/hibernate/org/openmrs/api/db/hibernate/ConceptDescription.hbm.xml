@@ -24,6 +24,7 @@
 		<property name="dateChanged" type="java.util.Date" column="date_changed" not-null="false"/>
 		<many-to-one name="changedBy" class="User" column="changed_by" not-null="false"/>
 
+		<property name="uuid" type="java.lang.String" column="uuid" length="36" unique="true" />
 	</class>
 	
 </hibernate-mapping>

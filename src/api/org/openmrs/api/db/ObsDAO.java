@@ -83,4 +83,12 @@ public interface ObsDAO {
 	                                 List<String> sort, Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate,
 	                                 boolean includeVoidedObs) throws DAOException;
 	
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @param uuid
+	 * @return
+	 */
+	public Obs getObsByUuid(String uuid);
+	
 }

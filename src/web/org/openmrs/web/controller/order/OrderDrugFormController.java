@@ -26,6 +26,7 @@ import org.openmrs.Patient;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.propertyeditor.DrugEditor;
+import org.openmrs.util.OpenmrsConstants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -64,8 +65,11 @@ public class OrderDrugFormController extends OrderFormController {
 	                                BindException errors) throws Exception {
 		String view;
 		DrugOrder order = (DrugOrder) obj;
+		
 		// TODO: for now, orderType will have to be hard-coded?
-		order.setOrderType(new OrderType(new Integer(2)));
+		if (order.getOrderType() == null) {
+			order.setOrderType(Context.getOrderService().getOrderType(OpenmrsConstants.ORDERTYPE_DRUG));
+		}
 		
 		boolean ok = executeCommand(order, request);
 		if (ok) {

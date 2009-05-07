@@ -29,7 +29,7 @@ import org.simpleframework.xml.Root;
  * locale.
  */
 @Root
-public class ConceptName implements java.io.Serializable {
+public class ConceptName extends BaseOpenmrsObject implements Auditable, java.io.Serializable {
 	
 	public static final long serialVersionUID = 33226787L;
 	
@@ -495,4 +495,53 @@ public class ConceptName implements java.io.Serializable {
 		return this.name;
 	}
 	
+	/**
+	 * @since 1.5
+	 * @see org.openmrs.OpenmrsObject#getId()
+	 */
+	public Integer getId() {
+		return getConceptNameId();
+	}
+	
+	/**
+	 * @since 1.5
+	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
+	 */
+	public void setId(Integer id) {
+		setConceptNameId(id);
+	}
+	
+	/**
+	 * Not currently used. Always returns null.
+	 * 
+	 * @see org.openmrs.Auditable#getChangedBy()
+	 */
+	public User getChangedBy() {
+		return null;
+	}
+	
+	/**
+	 * Not currently used. Always returns null.
+	 * 
+	 * @see org.openmrs.Auditable#getDateChanged()
+	 */
+	public Date getDateChanged() {
+		return null;
+	}
+	
+	/**
+	 * Not currently used.
+	 * 
+	 * @see org.openmrs.Auditable#setChangedBy(org.openmrs.User)
+	 */
+	public void setChangedBy(User changedBy) {
+	}
+	
+	/**
+	 * Not currently used.
+	 * 
+	 * @see org.openmrs.Auditable#setDateChanged(java.util.Date)
+	 */
+	public void setDateChanged(Date dateChanged) {
+	}
 }

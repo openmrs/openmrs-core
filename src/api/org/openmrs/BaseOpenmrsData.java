@@ -23,7 +23,7 @@ import java.util.Date;
  * @since 1.5
  * @see OpenmrsData
  */
-public abstract class BaseOpenmrsData implements OpenmrsData {
+public abstract class BaseOpenmrsData extends BaseOpenmrsObject implements OpenmrsData {
 	
 	//***** Properties *****
 	
@@ -175,4 +175,5 @@ public abstract class BaseOpenmrsData implements OpenmrsData {
 	public void setVoidReason(String voidReason) {
 		this.voidReason = voidReason;
 	}
+	
 }

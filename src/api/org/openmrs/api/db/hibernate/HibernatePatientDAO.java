@@ -567,6 +567,31 @@ public class HibernatePatientDAO implements PatientDAO {
 	}
 	
 	/**
+	 * @see org.openmrs.api.db.PatientDAO#getPatientByUuid(java.lang.String)
+	 */
+	public Patient getPatientByUuid(String uuid) {
+		Patient p = null;
+		
+		p = (Patient) sessionFactory.getCurrentSession().createQuery("from Patient p where p.uuid = :uuid").setString(
+		    "uuid", uuid).uniqueResult();
+		
+		return p;
+	}
+	
+	public PatientIdentifier getPatientIdentifierByUuid(String uuid) {
+		return (PatientIdentifier) sessionFactory.getCurrentSession().createQuery(
+		    "from PatientIdentifier p where p.uuid = :uuid").setString("uuid", uuid).uniqueResult();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.PatientDAO#getPatientIdentifierTypeByUuid(java.lang.String)
+	 */
+	public PatientIdentifierType getPatientIdentifierTypeByUuid(String uuid) {
+		return (PatientIdentifierType) sessionFactory.getCurrentSession().createQuery(
+		    "from PatientIdentifierType pit where pit.uuid = :uuid").setString("uuid", uuid).uniqueResult();
+	}
+	
+	/**
 	 * Fetch the max results value from the global properties table
 	 * 
 	 * @return Integer value for the patient search max results global property

@@ -315,4 +315,19 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		assertNull(Context.getFormService().getFormField(new Form(12343), new Concept(293934)));
 	}
 	
+	/**
+	 * @see {@link FormService#duplicateForm(Form)}
+	 */
+	@Test
+	@Verifies(value = "should give a new uuid to the duplicated form", method = "duplicateForm(Form)")
+	public void duplicateForm_shouldGiveANewUuidToTheDuplicatedForm() throws Exception {
+		FormService formService = Context.getFormService();
+		Form form = formService.getForm(1);
+		String originalUUID = form.getUuid();
+		
+		Form dupForm = formService.duplicateForm(form);
+		Assert.assertNotNull(dupForm.getUuid());
+		Assert.assertNotSame(originalUUID, dupForm.getUuid());
+	}
+	
 }

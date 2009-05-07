@@ -15,6 +15,9 @@
 		</id>
 
 		<discriminator column="concept_id" insert="false" />
+		
+		<property name="uuid" type="java.lang.String"
+			column="uuid" length="36" unique="true" />
 
 		<property name="retired" type="java.lang.Boolean"
 			column="retired" length="1" not-null="true"/>
@@ -48,33 +51,20 @@
 		
 		<!-- This will need to be changed to lazy="false" if we ever have a subobject that would need to store/load this 
 		     (Right now, ConceptNumerics, ConceptComplex, and ConceptDerived objects do not have coded "answers" -->
-		<set name="answers" lazy="true" cascade="all,evict" 
-				table="concept_answer" order-by="concept_answer_id asc" access="field">
+		<set name="answers" lazy="true" cascade="all,evict"
+				table="concept_answer" order-by="concept_answer_id asc" access="field" inverse="true">
 			<key column="concept_id" not-null="true" />
-			<composite-element class="ConceptAnswer">
-				<parent name="concept"/>
-				<property generated="insert" insert="false" name="conceptAnswerId" type="java.lang.Integer" column="concept_answer_id" />
-				<many-to-one name="answerConcept" class="org.openmrs.Concept" column="answer_concept" not-null="true"/>
-				<many-to-one name="answerDrug" class="org.openmrs.Drug" column="answer_drug" />
-				<property name="dateCreated" type="java.util.Date" column="date_created" not-null="true" />
-				<many-to-one name="creator" class="User" column="creator" not-null="true"/>
-			</composite-element>
+			<one-to-many class="ConceptAnswer"/>
 		</set>
 		
 		<!-- This will need to be changed to lazy="false" if we ever have a subobject that would need to store/load this 
 		     (Right now, ConceptNumerics, ConceptComplex, and ConceptDerived objects do not have child concepts (aka, are not sets) -->
-		<set name="conceptSets" table="concept_set" lazy="true" 
-				cascade="all,evict" order-by="sort_weight asc">
+		<set name="conceptSets" table="concept_set" lazy="true"
+				cascade="all,evict" order-by="sort_weight asc" inverse="true">
 			<key not-null="true">
 				<column name="concept_set" />
 			</key>
-			<composite-element class="ConceptSet">
-				<parent name="conceptSet"/>
-				<many-to-one name="concept" class="Concept" column="concept_id" not-null="true"/>
-				<property name="sortWeight" type="java.lang.Double" column="sort_weight" length="22" not-null="true" />
-				<property name="dateCreated" type="java.util.Date" column="date_created" length="19" not-null="true" />
-				<many-to-one name="creator" class="User" column="creator" not-null="true"/>
-			</composite-element>
+			<one-to-many class="ConceptSet"/>
 		</set>
 		
 		<set name="conceptMappings" inverse="true" cascade="all,delete-orphan,evict">

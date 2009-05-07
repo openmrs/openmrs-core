@@ -24,7 +24,7 @@ import java.util.Date;
  * @since 1.5
  * @see OpenmrsMetadata
  */
-public abstract class BaseOpenmrsMetadata implements OpenmrsMetadata {
+public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements OpenmrsMetadata {
 	
 	//***** Properties *****
 	
@@ -208,4 +208,5 @@ public abstract class BaseOpenmrsMetadata implements OpenmrsMetadata {
 	public void setRetireReason(String retireReason) {
 		this.retireReason = retireReason;
 	}
+	
 }

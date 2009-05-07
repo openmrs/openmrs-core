@@ -13,6 +13,9 @@
 		
 		<discriminator column="field_id" insert="false" />
 		
+		<property name="uuid" type="java.lang.String"
+			column="uuid" length="36" unique="true" />
+
 		<property name="name" type="java.lang.String"
 			length="255" not-null="true"/>
 		

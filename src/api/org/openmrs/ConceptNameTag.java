@@ -24,7 +24,7 @@ import org.simpleframework.xml.Root;
  * ConceptNameTag is a textual tag which can be applied to a ConceptName.
  */
 @Root
-public class ConceptNameTag implements java.io.Serializable {
+public class ConceptNameTag extends BaseOpenmrsObject implements Auditable, Voidable, java.io.Serializable {
 	
 	public static final long serialVersionUID = 33226787L;
 	
@@ -377,4 +377,55 @@ public class ConceptNameTag implements java.io.Serializable {
 		return new ConceptNameTag(SHORT + "_" + language, "");
 	}
 	
+	/**
+	 * @since 1.5
+	 * @see org.openmrs.OpenmrsObject#getId()
+	 */
+	public Integer getId() {
+		return getConceptNameTagId();
+	}
+	
+	/**
+	 * @since 1.5
+	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
+	 */
+	public void setId(Integer id) {
+		setConceptNameTagId(id);
+	}
+	
+	/**
+	 * Not currently used. Always returns null.
+	 * 
+	 * @see org.openmrs.Auditable#getChangedBy()
+	 */
+	public User getChangedBy() {
+		return null;
+	}
+	
+	/**
+	 * Not currently used. Always returns null.
+	 * 
+	 * @see org.openmrs.Auditable#getDateChanged()
+	 */
+	public Date getDateChanged() {
+		return null;
+	}
+	
+	/**
+	 * Not currently used.
+	 * 
+	 * @see org.openmrs.Auditable#setChangedBy(org.openmrs.User)
+	 */
+	public void setChangedBy(User changedBy) {
+		
+	}
+	
+	/**
+	 * Not currently used.
+	 * 
+	 * @see org.openmrs.Auditable#setDateChanged(java.util.Date)
+	 */
+	public void setDateChanged(Date dateChanged) {
+		
+	}
 }
