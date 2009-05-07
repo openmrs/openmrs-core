@@ -19,6 +19,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -33,9 +35,13 @@ import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptNameTag;
 import org.openmrs.ConceptNumeric;
+import org.openmrs.ConceptSource;
+import org.openmrs.ConceptWord;
+import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.SkipBaseSetup;
+import org.openmrs.test.TestUtil;
 import org.openmrs.test.Verifies;
 
 /**
@@ -248,6 +254,21 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		
 		concept = Context.getConceptService().saveConcept(concept);
 		assertTrue(concept.getConceptId().equals(unusedConceptId));
+	}
+	
+	/**
+	 * @see ConceptService#getConceptWords(String, List, boolean, List, List, List, List, Concept,
+	 *      Integer, Integer)
+	 */
+	@Test
+	@Verifies(value = "should return the best matched name", method = "getConceptWords(String,List<QLocale;>,null,List<QConceptClass;>,List<QConceptClass;>,List<QConceptDatatype;>,List<QConceptDatatype;>,Concept,Integer,Integer)")
+	public void getConceptWords_shouldReturnTheBestMatchedName() throws Exception {
+		executeDataSet("org/openmrs/api/include/ConceptServiceTest-words.xml");
+		List<ConceptWord> words = Context.getConceptService().getConceptWords("cd4",
+		    Collections.singletonList(Locale.ENGLISH), false, null, null, null, null, null, null, null);
+		Assert.assertEquals(1847, words.get(0).getConceptName().getConceptNameId().intValue());
+		
+		TestUtil.printOutTableContents(getConnection(), "concept_word");
 	}
 	
 }
