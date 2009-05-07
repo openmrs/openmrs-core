@@ -215,10 +215,10 @@
   <patient_program patient_program_id="4" patient_id="7" program_id="2" date_enrolled="2008-08-01 00:00:00.0" creator="1" date_created="2008-08-18 11:53:00.0" voided="false" uuid="deff305f-48f5-4b84-a083-b18c80954fed"/>
   <patient_program patient_program_id="5" patient_id="8" program_id="1" date_enrolled="2008-08-01 00:00:00.0" creator="1" date_created="2008-08-18 11:55:55.0" changed_by="1" date_changed="2008-08-18 11:58:20.0" voided="true" voided_by="1" date_voided="2008-08-18 11:58:20.0" void_reason="" uuid="53292645-7f93-48c4-b672-76459dcdaedc"/>
   <patient_state patient_state_id="1" patient_program_id="1" state="2" start_date="2008-08-08" creator="1" date_created="2008-08-18 12:29:29.0" voided="false" uuid="ea89deaa-23cc-4840-92fe-63d199c37e4c"/>
-  <person person_id="1" gender="" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="ba1b19c2-3ed6-4f63-b8c0-f762dc8d7562"/>
-  <person person_id="2" gender="M" dead="false" creator="1" date_created="2005-09-22 00:00:00.0" voided="false" uuid="da7f524f-27ce-4bb2-86d6-6d1d05312bd5"/>
-  <person person_id="6" gender="M" dead="false" creator="1" date_created="2006-01-18 00:00:00.0" voided="false" uuid="a7e04421-525f-442f-8138-05b619d16def"/>
-  <person person_id="7" gender="F" dead="false" creator="1" date_created="2006-01-18 00:00:00.0" voided="false" uuid="5946f880-b197-400b-9caa-a3c661d23041"/>
+  <person person_id="1" gender="" birthdate="1948-01-01 00:00:00.0" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="ba1b19c2-3ed6-4f63-b8c0-f762dc8d7562"/>
+  <person person_id="2" gender="M" birthdate="1975-04-08 00:00:00.0" dead="false" creator="1" date_created="2005-09-22 00:00:00.0" voided="false" uuid="da7f524f-27ce-4bb2-86d6-6d1d05312bd5"/>
+  <person person_id="6" gender="M" birthdate="2007-05-27 00:00:00.0" dead="false" creator="1" date_created="2006-01-18 00:00:00.0" voided="false" uuid="a7e04421-525f-442f-8138-05b619d16def"/>
+  <person person_id="7" gender="F" birthdate="1976-08-25 00:00:00.0" dead="false" creator="1" date_created="2006-01-18 00:00:00.0" voided="false" uuid="5946f880-b197-400b-9caa-a3c661d23041"/>
   <person person_id="8" gender="F" dead="false" creator="1" date_created="2006-01-18 00:00:00.0" voided="false" uuid="8adf539e-4b5a-47aa-80c0-ba1025c957fa"/>
   <person person_id="9" gender="M" dead="false" creator="1" date_created="2006-01-18 00:00:00.0" voided="false" uuid="c04ee3c8-b68f-43cc-bff3-5a831ee7225f"/>
   <person person_id="501" gender="F" dead="false" creator="1" date_created="2008-08-15 15:46:47.0" voided="false" uuid="df8ae447-6745-45be-b859-403241d9913c"/>

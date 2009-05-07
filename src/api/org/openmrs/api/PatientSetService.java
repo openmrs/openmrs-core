@@ -111,6 +111,7 @@ public interface PatientSetService {
 	 * @should get patients born between dates
 	 * @should get patients who are alive
 	 * @should get patients who are dead
+	 * @should not get patients born after effectiveDate
 	 */
 	@Transactional(readOnly = true)
 	public Cohort getPatientsByCharacteristics(String gender, Date minBirthdate, Date maxBirthdate, Integer minAge,

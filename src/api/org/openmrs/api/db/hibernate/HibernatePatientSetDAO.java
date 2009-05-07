@@ -929,6 +929,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			clauses.add("patient.birthdate > :minBirthFromAge");
 		}
 		
+		clauses.add("(patient.birthdate is null or patient.birthdate <= :effectiveDate)");
+		
 		boolean first = true;
 		for (String clause : clauses) {
 			if (first) {
@@ -955,6 +957,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		if (maxAge != null) {
 			query.setDate("minBirthFromAge", minBirthFromAge);
 		}
+		query.setDate("effectiveDate", effectiveDate);
 		
 		return new Cohort(query.list());
 	}
