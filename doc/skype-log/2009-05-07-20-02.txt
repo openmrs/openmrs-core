@@ -1,0 +1,139 @@
+[20:02:17] Pavel Konnikov говорит: hi dave
+[20:02:24] Pavel Konnikov говорит: *Dave
+[20:02:26] David Thomas говорит: hi pavel
+[20:02:35] David Thomas говорит: how are things going?
+[20:02:57] Pavel Konnikov говорит: i am finish the most of tasks
+[20:03:10] David Thomas говорит: OK, i'll do an SVN checkout right now.
+[20:03:13] Pavel Konnikov говорит: but i have one small bug
+[20:03:19] David Thomas говорит: what is that?
+[20:03:33] Pavel Konnikov говорит: yes checkout please the last revision
+[20:03:46] Pavel Konnikov говорит: and we will discuss my bug
+[20:03:52] David Thomas говорит: OK
+[20:03:56] David Thomas говорит: give me a second.
+[20:04:00] Pavel Konnikov говорит: ok
+[20:11:18] David Thomas говорит: OK -- first of all, in the global_property.sql, can you add the create statement for the global_property_type table?
+[20:11:37] David Thomas говорит: And, we don't need the default_value column in global_property
+[20:11:57] David Thomas говорит: what was the default_value column for?
+[20:12:11] Pavel Konnikov говорит: so
+[20:12:40] Pavel Konnikov говорит: what is global_property.sql?
+[20:12:41] David Thomas говорит: oh, wait.  so you wrote the liquibase update, right?
+[20:12:46] Pavel Konnikov говорит: i was remove it
+[20:13:08] Pavel Konnikov говорит: and replase liquibase-changesets-2009-05-06
+[20:13:20] Pavel Konnikov говорит: replase it to liquibase-changesets-2009-05-06
+[20:13:23] David Thomas говорит: right.  I see it.  Let me take a look.
+[20:13:30] Pavel Konnikov говорит: ok
+[20:14:56] Pavel Konnikov говорит: i paln to use 'default_value' for checking which property was changed
+[20:15:08] Pavel Konnikov говорит: and bold it as on mockup
+[20:15:51] David Thomas говорит: So, default value would always store the first value that the global property ever had?
+[20:16:03] Pavel Konnikov говорит: yes
+[20:16:07] Pavel Konnikov говорит: 1,String
+[20:17:04] Pavel Konnikov говорит: or may be make the 'name' collumn as primiry key?
+[20:19:57] David Thomas говорит: in the global_property_type table, i think the global_property_type_id column can stay the primary key.
+[20:20:13] Pavel Konnikov говорит: ok
+[20:20:18] David Thomas говорит: what i'm wondering now is if we should add a global_property_id to the global_property table.
+[20:20:25] David Thomas говорит: This certainly makes the hibernate easier.
+[20:21:25] David Thomas говорит: now that we have a global property object, this makes more sense to me.
+[20:21:35] David Thomas говорит: (the object is the Settings object)
+[20:21:44] David Thomas говорит: before, i think the controller was just sending a Strings map.
+[20:21:52] David Thomas говорит: to the jsp.
+[20:23:19] David Thomas говорит: Also, i'm wondering since we have a default_value column, should we have one for the original value too, not just the original datatype?
+[20:23:39] Pavel Konnikov говорит: o
+[20:23:39] David Thomas говорит: that way we can have a true 'revert to original' button.
+[20:24:38] Pavel Konnikov говорит: i think default_value need only for original value
+[20:24:46] Pavel Konnikov говорит: i was thinking :)
+[20:24:59] David Thomas говорит: we have 2 original values though -- the 'value' of the global property, and the 'datatype'
+[20:25:11] Pavel Konnikov говорит: yes
+[20:25:31] David Thomas говорит: these are different, so I kind of like the idea of recording both.
+[20:25:41] Pavel Konnikov говорит: ok we can add 'default_type'
+[20:26:00] David Thomas говорит: so there will be default_value, default_datatype columns
+[20:26:19] Pavel Konnikov говорит: 'default_property_type_id'
+[20:26:26] David Thomas говорит: yes.  perfect.
+[20:26:38] Pavel Konnikov говорит: so. about my problem
+[20:26:42] David Thomas говорит: OK
+[20:26:55] Pavel Konnikov говорит: have you any modules started?
+[20:27:28] David Thomas говорит: yes, although I have to switch openmrs versions to see them.  give me a minute to do that.
+[20:27:39] Pavel Konnikov говорит: ok
+[20:28:12] Pavel Konnikov говорит: add for example boolean type to the global_property_type table
+[20:28:31] David Thomas говорит: OK
+[20:28:58] David Thomas говорит: (actually, your liquibase update should add 10 or 12 datatypes to the global_property_type table)
+[20:29:48] Pavel Konnikov говорит: ok
+[20:30:02] David Thomas говорит: but we can add them as we build the widgets for each type.
+[20:30:19] Pavel Konnikov говорит: and in the global_property table change type of any boolean item for any module property to the new boolean global_property_type_id
+[20:30:46] Pavel Konnikov говорит: and look at the 'all settings' and at the 'your module'
+[20:31:14] Pavel Konnikov говорит: at the 'all settings' i see a 'Boolean'
+[20:31:29] David Thomas говорит: For any global property already existing, you don't have to change the datatype.  These should default to the String datatype.  It's up to the users to change datatypes going forward if the user chooses to do so.
+[20:31:38] Pavel Konnikov говорит: but at the 'my module' i see 'String'
+[20:31:54] David Thomas говорит: OK, give me a second to get caught up.
+[20:32:04] Pavel Konnikov говорит: ok
+[20:33:47] Pavel Konnikov говорит: i think that it is because:
+public class GlobalPropertyType {
+ 
+ private Integer globalPropertyTypeId = 1;
+...
+[20:34:01] David Thomas говорит: (I have multiple openmrs versions running, so i have to switch between them -- the switch is running right now).
+[20:34:10] David Thomas говорит: OK, that might do it.
+[20:34:10] Pavel Konnikov говорит: but why it work for all and don't work formodule?
+[20:34:53] Pavel Konnikov говорит: *work for 'all settings' and don't work for 'my module'
+[20:35:23] David Thomas говорит: I don't know.  OK, so openmrs couldn't compile...  This is going to take me a minute to figure out what's going on.
+[20:35:34] Pavel Konnikov говорит: ok
+[20:36:08] Pavel Konnikov говорит: I broke my head already :)
+[20:36:13] David Thomas говорит: I know what that's like...
+[20:36:37] David Thomas говорит: So, its failing because in SettingsDTO, you're importing com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array
+[20:36:40] David Thomas говорит: what is this for?
+[20:37:24] David Thomas говорит: ah, I organized imports, and it went away... let me try again.
+[20:37:30] Pavel Konnikov говорит: i don't know :)
+[20:37:40] Pavel Konnikov говорит: me too :)
+[20:38:03] Pavel Konnikov говорит: offtopic: cool game http://makemyheadgrow.com
+[20:39:36] David Thomas говорит: nice.
+[20:39:53] David Thomas говорит: OK, it compiled, and tomcat is starting.
+[20:40:05] Pavel Konnikov говорит: ant update
+[20:40:26] David Thomas говорит: yep.
+[20:42:45] David Thomas говорит: I'm writing an ant script to run your liquibase update.  give me a second.
+[20:43:03] Pavel Konnikov говорит: ok
+[20:43:44] Pavel Konnikov говорит: i was dig DWR - it is very simlpe
+[20:43:53] David Thomas говорит: yes.
+[20:44:12] Pavel Konnikov говорит: and we don't need any custom classes
+[20:44:14] David Thomas говорит: especially in the openmrs architecture.  it works nicely with jquery too.
+[20:44:18] David Thomas говорит: nope.
+[20:44:30] David Thomas говорит: i'm going to move your liquibase file into the /metadata/model folder.
+[20:44:37] David Thomas говорит: (makes the ant script easier)
+[20:44:55] Pavel Konnikov говорит: we can use DWRAdministrationService only
+[20:45:44] Pavel Konnikov говорит: i am add my liquibase to the end of liquibase-update-to-latest.xml
+[20:45:51] Pavel Konnikov говорит: i was add
+[20:48:40] Pavel Konnikov говорит: i think that i need to move my changeset to separete file as make you
+[20:51:45] Pavel Konnikov говорит: ping?
+[20:52:03] Pavel Konnikov говорит: pong! :)
+[20:52:08] David Thomas говорит: hi.  still working.  the ant task worked fine, although i had to change database name and password too.
+[20:52:26] David Thomas говорит: now i have to re-add some modules.
+[20:53:22] Pavel Konnikov говорит: if we fix this bug, what is our next step?
+[20:54:25] David Thomas говорит: there's another bigger question with the global properties table -- if you look at the other openmrs domain objects, they have created_by, date_created, voided, date_voided columns.
+[20:54:53] Pavel Konnikov говорит: i am looking...
+[20:56:53] Pavel Konnikov говорит: yes
+[20:57:08] Pavel Konnikov говорит: we need them too?
+[20:57:40] David Thomas говорит: I think so.  And I also think that if we do, global_property should have a global_property_id column, and this column should be the primary key.
+[20:58:33] Pavel Konnikov говорит: it is make sense
+[20:59:48] David Thomas говорит: its a pain, but i think its the right thing to do.
+[21:00:04] David Thomas говорит: my openmrs is broken now -- i can't get to the login screen.  I'll have to figure that out...
+[21:00:28] Pavel Konnikov говорит: ok
+[21:01:14] David Thomas говорит: But so here's what you should work on next:  make sure the global_property has default_value and default_datatype_id
+[21:01:37] David Thomas говорит: and add date_created, created_by, voided, date_voided to both tables.
+[21:01:46] Pavel Konnikov говорит: ok
+[21:01:48] David Thomas говорит: and, add global_property_id to global_property.
+[21:02:05] Pavel Konnikov говорит: aha
+[21:03:13] David Thomas говорит: and make global_property_id the primary key -- you may have to experiment with liquibase to get this to work correctly.
+[21:03:20] David Thomas говорит: does this sound OK?
+[21:03:34] David Thomas говорит: and, if you want to add an ant task for your liquibase file, that would be good too.
+[21:03:38] Pavel Konnikov говорит: i think yes
+[21:05:12] Pavel Konnikov говорит: i can't to work tommorow. but i will to try make all tasks to the May 10
+[21:05:13] Pavel Konnikov говорит: ok
+[21:05:14] Pavel Konnikov говорит: ?
+[21:05:26] David Thomas говорит: That's totally fine.
+[21:05:41] David Thomas говорит: This is the hardest part -- geting the data model to work correctly.
+[21:06:11] David Thomas говорит: the widgets will be easier.
+[21:06:12] Pavel Konnikov говорит: then May 11 :)
+[21:06:27] David Thomas говорит: OK -- 9 pm your time?
+[21:06:47] Pavel Konnikov говорит: May 11 9pm my time.
+[21:06:51] Pavel Konnikov говорит: ok!
+[21:07:24] David Thomas говорит: OK, thanks pavel.  We'll talk then.  If anything comes up, and i'm on logged into skype, feel free to ask questions.
+[21:07:25] David Thomas говорит: bye!
+[21:07:45] Pavel Konnikov говорит: bye!
