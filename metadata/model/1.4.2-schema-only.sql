@@ -311,9 +311,10 @@ CREATE TABLE `concept_name_tag` (
   PRIMARY KEY  (`concept_name_tag_id`),
   UNIQUE KEY `concept_name_tag_id` (`concept_name_tag_id`),
   UNIQUE KEY `concept_name_tag_id_2` (`concept_name_tag_id`),
+  UNIQUE KEY `concept_name_tag_unique_tags` (`tag`),
   KEY `user_who_created_name_tag` (`creator`),
   KEY `user_who_voided_name_tag` (`voided_by`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 SET character_set_client = @saved_cs_client;
 
 --
@@ -510,11 +511,12 @@ CREATE TABLE `concept_word` (
   `synonym` varchar(255) NOT NULL default '',
   `locale` varchar(20) NOT NULL default '',
   `concept_name_id` int(11) NOT NULL,
-  PRIMARY KEY  (`concept_id`,`word`,`synonym`,`locale`),
+  PRIMARY KEY  (`concept_name_id`,`word`,`locale`),
   KEY `word_in_concept_name` (`word`),
   KEY `word_for_name` (`concept_name_id`),
-  CONSTRAINT `word_for_name` FOREIGN KEY (`concept_name_id`) REFERENCES `concept_name` (`concept_name_id`),
-  CONSTRAINT `word_for` FOREIGN KEY (`concept_id`) REFERENCES `concept` (`concept_id`)
+  KEY `concept_word_concept_idx` (`concept_id`),
+  CONSTRAINT `word_for` FOREIGN KEY (`concept_id`) REFERENCES `concept` (`concept_id`),
+  CONSTRAINT `word_for_name` FOREIGN KEY (`concept_name_id`) REFERENCES `concept_name` (`concept_name_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 SET character_set_client = @saved_cs_client;
 
@@ -887,7 +889,7 @@ CREATE TABLE `global_property` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 SET character_set_client = @saved_cs_client;
 
-INSERT INTO global_property VALUES ('database_version','1.4.0.20',NULL);
+INSERT INTO global_property VALUES ('database_version','1.4.2.01',NULL);
 
 --
 -- Table structure for table `hl7_in_archive`
@@ -1995,4 +1997,4 @@ SET character_set_client = @saved_cs_client;
 /*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2008-12-02 17:31:49
+-- Dump completed on 2009-05-07 19:52:07

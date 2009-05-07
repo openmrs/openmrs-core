@@ -29,7 +29,7 @@ echo ""
 
 # Do the createdb script first so that the '$dbname' database is dropped and recreated
 echo Creating createdb sql file
-mysql -u$dbuser -p$dbpass -e"drop database if exists $dbname; create database openmrs default character set utf8" -Dopenmrs
+mysql -u$dbuser -p$dbpass -e"drop database if exists $dbname;" -Dopenmrs
 mysql -u$dbuser -p$dbpass -e"source $currentversion-createdb-from-scratch-with-demo-data.sql"
 mysql -u$dbuser -p$dbpass -e"source update-to-latest-db.mysqldiff.sql" -D$dbname
 echo Running it again
