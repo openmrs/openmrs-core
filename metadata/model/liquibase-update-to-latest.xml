@@ -849,7 +849,25 @@
 		<dropColumn tableName="concept_word" columnName="synonym"/>
 	</changeSet>
 	
+	<changeSet id="200905071626" author="bwolfe" failOnError="false">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<indexExists indexName="concept_word_concept_idx"/>
+			</not>
+		</preConditions>
+	
+		<comment>
+			Add an index to the concept_word.concept_id column (This update may fail if it already exists)
+		</comment>
+		
+		<createIndex tableName="concept_word" indexName="concept_word_concept_idx">
+			<column name="concept_id" />
+		</createIndex>
+	</changeSet>
+		
 	<changeSet id="200904271654" author="bwolfe">
+		<validCheckSum>31e2cec595288b267cc3e3cfb083</validCheckSum>
+		<validCheckSum>44c812f4360353c5ffc5d5c1473bcf</validCheckSum>
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<!-- uuid branch devs and users of sync branch already have an updated concept_word integer primary key -->
@@ -860,10 +878,6 @@
 		<comment>
 			Change the concept_word key to be concept_name_id-word-locale
 		</comment>
-		
-		<createIndex tableName="concept_word" indexName="concept_word_concept_idx">
-			<column name="concept_id" />
-		</createIndex>
 		
 		<dropPrimaryKey tableName="concept_word"/>
 		
