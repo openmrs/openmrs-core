@@ -729,18 +729,17 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
     /**
      * Regression test for http://dev.openmrs.org/ticket/790
      * 
-     * Figure out how to create a voided patient as test data, and unignore this test
-     * 
      * @see {@link PatientService#isIdentifierInUseByAnotherPatient(PatientIdentifier)}
      */
     @Test
-    @Ignore
     @Verifies(value = "should ignore voided patients", method = "isIdentifierInUseByAnotherPatient(PatientIdentifier)")
     public void isIdentifierInUseByAnotherPatient_shouldIgnoreVoidedPatients()
             throws Exception {
-    	{ // patient 999 should be voided and have a non-voided identifier of XYZ, but I can't create them through dbunit XML now.
+    	{ // patient 999 should be voided and have a non-voided identifier of XYZ
     		Patient p = patientService.getPatient(999);
+    		Assert.assertNotNull(p);
     		Assert.assertTrue(p.isVoided());
+    		System.out.println(p.getVoidReason());
     		boolean found = false;
     		for (PatientIdentifier id : p.getIdentifiers()) {
     			if (id.getIdentifier().equals("XYZ") && id.getIdentifierType().getId() == 2) {
