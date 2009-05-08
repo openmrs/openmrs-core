@@ -619,11 +619,11 @@ public class HibernatePatientDAO implements PatientDAO {
 		boolean checkPatient = patientIdentifier.getPatient() != null
 		        && patientIdentifier.getPatient().getPatientId() != null;
 		
-		String sql = "select count(*) from patient_identifier" + " where voided = false" + "   and identifier = :identifier"
-		        + "   and identifier_type = :idType";
+		String sql = "select count(*) from patient_identifier pi inner join patient p on pi.patient_id = p.patient_id " +
+			"where p.voided = false and pi.voided = false and pi.identifier = :identifier and pi.identifier_type = :idType";
 		
 		if (checkPatient) {
-			sql += " and patient_id != :ptId";
+			sql += " and p.patient_id != :ptId";
 		}
 		
 		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
