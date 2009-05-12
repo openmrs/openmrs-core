@@ -180,7 +180,7 @@ public class ConceptStatsFormController extends SimpleFormController {
 						Double size = new Double(numericAnswers.size());
 						Double mean = total / size;
 						
-						map.put("obsNumerics", numericAnswers);
+						map.put("size", numericAnswers.size());
 						map.put("min", min);
 						map.put("max", max);
 						map.put("mean", mean);
@@ -196,62 +196,65 @@ public class ConceptStatsFormController extends SimpleFormController {
 						    false, true, false);
 						map.put("histogram", histogram);
 						
-						// calculate 98th percentile of the data:
-						Double x = 0.98;
-						Integer xpercentile = (int) (x * size);
-						Object[] upperQuartile = numericAnswers.get(xpercentile);
-						Object[] lowerQuartile = numericAnswers.get((int) (size - xpercentile));
-						Double innerQuartile = (Double) upperQuartile[2] - (Double) lowerQuartile[2];
-						Double innerQuartileLimit = innerQuartile * 1.5; // outliers will be greater than this from the upper/lower quartile
-						Double upperQuartileLimit = (Double) upperQuartile[2] + innerQuartileLimit;
-						Double lowerQuartileLimit = (Double) lowerQuartile[2] - innerQuartileLimit;
-						
-						List<Object[]> outliers = new Vector<Object[]>();
-						
-						// move outliers to the outliers list
-						// removing lower quartile outliers
-						for (i = 0; i < size - xpercentile; i++) {
-							Object[] possibleOutlier = numericAnswers.get(i);
-							if ((Double) (possibleOutlier[2]) >= lowerQuartileLimit)
-								break; // quit if this value is greater than the lower limit
-							outliers.add(possibleOutlier);
+						if (size > 25) {
+							// calculate 98th percentile of the data:
+							Double x = 0.98;
+							Integer xpercentile = (int) (x * size);
+							Object[] upperQuartile = numericAnswers.get(xpercentile);
+							Object[] lowerQuartile = numericAnswers.get((int) (size - xpercentile));
+							Double innerQuartile = (Double) upperQuartile[2] - (Double) lowerQuartile[2];
+							Double innerQuartileLimit = innerQuartile * 1.5; // outliers will be greater than this from the upper/lower quartile
+							Double upperQuartileLimit = (Double) upperQuartile[2] + innerQuartileLimit;
+							Double lowerQuartileLimit = (Double) lowerQuartile[2] - innerQuartileLimit;
+							
+							List<Object[]> outliers = new Vector<Object[]>();
+							
+							// move outliers to the outliers list
+							// removing lower quartile outliers
+							for (i = 0; i < size - xpercentile; i++) {
+								Object[] possibleOutlier = numericAnswers.get(i);
+								if ((Double) (possibleOutlier[2]) >= lowerQuartileLimit)
+									break; // quit if this value is greater than the lower limit
+								outliers.add(possibleOutlier);
+							}
+							
+							// removing upper quartile outliers
+							for (i = size.intValue() - 1; i >= xpercentile; i--) {
+								Object[] possibleOutlier = numericAnswers.get(i);
+								if ((Double) (possibleOutlier[2]) <= upperQuartileLimit)
+									break; // quit if this value is less than the upper limit
+								outliers.add(possibleOutlier);
+							}
+							numericAnswers.removeAll(outliers);
+							
+							double[] obsNumericsOutliers = new double[(numericAnswers.size())];
+							i = 0;
+							counts.clear();
+							for (Object[] values : numericAnswers) {
+								Double value = (Double) values[2];
+								obsNumericsOutliers[i++] = value;
+								Integer count = counts.get(value);
+								counts.put(value, count == null ? 1 : count + 1);
+							}
+							
+							// create outlier histogram chart
+							HistogramDataset outlierHistDataset = new HistogramDataset();
+							outlierHistDataset.addSeries(concept.getName().getName(), obsNumericsOutliers, counts.size());
+							
+							JFreeChart histogramOutliers = ChartFactory.createHistogram(concept.getName().getName(), msa
+							        .getMessage("Concept.stats.histogramDomainAxisTitle"), msa
+							        .getMessage("Concept.stats.histogramRangeAxisTitle"), outlierHistDataset,
+							    PlotOrientation.VERTICAL, false, true, false);
+							map.put("histogramOutliers", histogramOutliers);
+							map.put("outliers", outliers);
+							
 						}
-						
-						// removing upper quartile outliers
-						for (i = size.intValue() - 1; i >= xpercentile; i--) {
-							Object[] possibleOutlier = numericAnswers.get(i);
-							if ((Double) (possibleOutlier[2]) <= upperQuartileLimit)
-								break; // quit if this value is less than the upper limit
-							outliers.add(possibleOutlier);
-						}
-						numericAnswers.removeAll(outliers);
-						
-						double[] obsNumericsOutliers = new double[(numericAnswers.size())];
-						i = 0;
-						counts.clear();
-						for (Object[] values : numericAnswers) {
-							Double value = (Double) values[2];
-							obsNumericsOutliers[i++] = value;
-							Integer count = counts.get(value);
-							counts.put(value, count == null ? 1 : count + 1);
-						}
-						
-						// create outlier histogram chart
-						HistogramDataset outlierHistDataset = new HistogramDataset();
-						outlierHistDataset.addSeries(concept.getName().getName(), obsNumericsOutliers, counts.size());
-						
-						JFreeChart histogramOutliers = ChartFactory.createHistogram(concept.getName().getName(), msa
-						        .getMessage("Concept.stats.histogramDomainAxisTitle"), msa
-						        .getMessage("Concept.stats.histogramRangeAxisTitle"), outlierHistDataset,
-						    PlotOrientation.VERTICAL, false, true, false);
-						map.put("histogramOutliers", histogramOutliers);
-						map.put("outliers", outliers);
 						
 						// create line graph chart
 						timeDataset.addSeries(timeSeries);
 						JFreeChart lineChart = ChartFactory.createTimeSeriesChart(concept.getName().getName(), msa
 						        .getMessage("Concept.stats.lineChartDomainAxisLabel"), msa
-						        .getMessage("Concept.stats.histogramRangeAxisLabel"), timeDataset, false, true, false);
+						        .getMessage("Concept.stats.lineChartRangeAxisLabel"), timeDataset, false, true, false);
 						map.put("timeSeries", lineChart);
 						
 					}
