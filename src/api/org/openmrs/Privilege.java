@@ -26,8 +26,6 @@ public class Privilege extends BaseOpenmrsMetadata implements java.io.Serializab
 	
 	private String privilege;
 	
-	private String description;
-	
 	// Constructors
 	
 	/** default constructor */
@@ -41,7 +39,7 @@ public class Privilege extends BaseOpenmrsMetadata implements java.io.Serializab
 	
 	public Privilege(String privilege, String description) {
 		this.privilege = privilege;
-		this.description = description;
+		setDescription(description);
 	}
 	
 	public boolean equals(Object obj) {
@@ -57,20 +55,6 @@ public class Privilege extends BaseOpenmrsMetadata implements java.io.Serializab
 	}
 	
 	// Property accessors
-	
-	/**
-	 * @return Returns the description.
-	 */
-	public String getDescription() {
-		return description;
-	}
-	
-	/**
-	 * @param description The description to set.
-	 */
-	public void setDescription(String description) {
-		this.description = description;
-	}
 	
 	/**
 	 * @return Returns the privilege.
