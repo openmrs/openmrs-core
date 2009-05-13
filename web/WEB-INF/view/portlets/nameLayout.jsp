@@ -189,39 +189,41 @@
 									</tr>
 								</c:if>
 							</spring:bind>
-							<tr>
-								<td><spring:message code="general.voided"/></td>
-								<td>
-									<spring:bind path="voided">
-										<input type="hidden" name="_${status.expression}"/>
-										<input type="checkbox" name="${status.expression}" 
-											   <c:if test="${status.value == true}">checked="checked"</c:if> 
-											   onClick="toggleLayer('<spring:bind path="personNameId">voidReasonRow-${status.value}</spring:bind>'); if (voidedBoxClicked) voidedBoxClicked(this); "
-										/>
-									</spring:bind>
-								</td>
-							</tr>
-							<tr id="<spring:bind path="personNameId">voidReasonRow-${status.value}</spring:bind>"
-								style="<spring:bind path="voided"><c:if test="${status.value == false}">display: none;</c:if></spring:bind>">
-								<td><spring:message code="general.voidReason"/></td>
-								<spring:bind path="voidReason">
-									<td colspan="4">
-										<input type="text" name="${status.expression}" value="${status.value}" size="43" />
-										<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+                            <c:if test="${model.layoutHideVoidOption != 'true'}">
+								<tr>
+									<td><spring:message code="general.voided"/></td>
+									<td>
+										<spring:bind path="voided">
+											<input type="hidden" name="_${status.expression}"/>
+											<input type="checkbox" name="${status.expression}" 
+												   <c:if test="${status.value == true}">checked="checked"</c:if> 
+												   onClick="toggleLayer('<spring:bind path="personNameId">voidReasonRow-${status.value}</spring:bind>'); if (voidedBoxClicked) voidedBoxClicked(this); "
+											/>
+										</spring:bind>
 									</td>
-								</spring:bind>
-							</tr>
-							<spring:bind path="voidedBy">
-								<c:if test="${!(status.value == null)}">
-									<tr>
-										<td><spring:message code="general.voidedBy" /></td>
+								</tr>
+								<tr id="<spring:bind path="personNameId">voidReasonRow-${status.value}</spring:bind>"
+									style="<spring:bind path="voided"><c:if test="${status.value == false}">display: none;</c:if></spring:bind>">
+									<td><spring:message code="general.voidReason"/></td>
+									<spring:bind path="voidReason">
 										<td colspan="4">
-											${status.value.personName} -
-											<openmrs:formatDate path="dateVoided" type="long" />
+											<input type="text" name="${status.expression}" value="${status.value}" size="43" />
+											<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 										</td>
-									</tr>
-								</c:if>
-							</spring:bind>
+									</spring:bind>
+								</tr>
+								<spring:bind path="voidedBy">
+									<c:if test="${!(status.value == null)}">
+										<tr>
+											<td><spring:message code="general.voidedBy" /></td>
+											<td colspan="4">
+												${status.value.personName} -
+												<openmrs:formatDate path="dateVoided" type="long" />
+											</td>
+										</tr>
+									</c:if>
+								</spring:bind>
+                            </c:if>
 					</c:if>
 					<c:if test="${model.layoutShowTable != 'false'}">
 							</table>
