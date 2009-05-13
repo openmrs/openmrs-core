@@ -101,7 +101,7 @@
 			</tr>
 		</c:if>
 		
-		<tr><td colspan=2">&nbsp;</td></tr>
+		<tr><td colspan="2">&nbsp;</td></tr>
 		
 		<tr>
 			<td valign="top"><spring:message code="User.roles"/></td>
@@ -110,7 +110,7 @@
 			</td>
 		</tr>
 		
-		<tr><td colspan=2">&nbsp;</td></tr>
+		<tr><td colspan="2">&nbsp;</td></tr>
 		
 		<tr>
 			<td colspan="2"><a href="#Show Advanced" onclick="return toggleLayer('advancedOptions', this, '<spring:message code="User.showAdvancedOptions"/>', '<spring:message code="User.hideAdvancedOptions"/>')"><spring:message code="User.showAdvancedOptions"/></a></td>
