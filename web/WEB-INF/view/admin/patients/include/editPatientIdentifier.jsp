@@ -63,18 +63,22 @@
 			</tr>
 		</c:if>
 	</spring:bind>
-	<tr>
-		<td><spring:message code="general.voided"/></td>
-		<td>
-			<spring:bind path="voided">
-				<input type="hidden" name="_${status.expression}"/>
-				<input type="checkbox" name="${status.expression}"
-					   <c:if test="${status.value == true}">checked="checked"</c:if> 
-					   onClick="toggleLayer('voidReasonRow-${identifier}'); if (voidedBoxClicked) voidedBoxClicked(this); "
-				/>
-			</spring:bind>
-		</td>
-	</tr>
+	<spring:bind path="patientIdentifierId">
+		<c:if test="${status.editor.value != null}">
+			<tr>
+				<td><spring:message code="general.voided"/></td>
+				<td>
+					<spring:bind path="voided">
+						<input type="hidden" name="_${status.expression}"/>
+						<input type="checkbox" name="${status.expression}"
+							   <c:if test="${status.value == true}">checked="checked"</c:if> 
+							   onClick="toggleLayer('voidReasonRow-${identifier}'); if (voidedBoxClicked) voidedBoxClicked(this); "
+						/>
+					</spring:bind>
+				</td>
+			</tr>
+		</c:if>
+	</spring:bind>
 	<tr id="voidReasonRow-${identifier}" <spring:bind path="voided"><c:if test="${status.value == false}">style="display: none"</c:if></spring:bind> >
 		<td><spring:message code="general.voidReason"/></td>
 		<spring:bind path="voidReason">
