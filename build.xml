@@ -285,7 +285,8 @@
     </target>
 	
 	<target name="deploy-web" description="Copies all jsp/css/properties files to webapps dir without restarting the war">
-		<copy todir="${tomcat.home}/webapps/${webapp.name}">
+		<!-- If you receive errors about "Failed to Copy", make sure your user has write access to ${tomcat.home}/webapps/${webapp.name} -->
+		<copy todir="${tomcat.home}/webapps/${webapp.name}" failonerror="false">
 			<fileset dir="web">
 				<include name="**/*.jsp"/>
 				<include name="**/*.tag"/>
