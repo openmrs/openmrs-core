@@ -516,10 +516,12 @@
 			<pathelement location="${dist.dir}/${openmrs.api.name}"/>
 		</path>
 		
-        <junit>
-			<classpath refid="junit-path"/>
-			<formatter type="plain"/>
+		<!-- fork the vm so that translation happens faster -->
+        <junit fork="yes" forkmode="once" clonevm="false">
+        	<classpath refid="junit-path"/>
         	<formatter type="xml"/>
+        	<!-- overwrite this system property so that there are less properties printed -->
+        	<sysproperty key="repositoryFileInput" value="" />
             <batchtest todir="${junit-tests.dir}" haltonfailure="no">
 				<fileset dir="${build.dir}">
 					<include name="**/*Test.class" />
