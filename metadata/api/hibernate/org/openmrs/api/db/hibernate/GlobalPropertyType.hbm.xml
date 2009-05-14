@@ -17,6 +17,14 @@
 
 		<property name="description" type="java.lang.String" column="description"/>
 
+		<many-to-one name="createdBy" column="user_id" class="User"/>
+
+		<property name="dateCreated" type="java.util.Date" column="date_created" not-null="true" length="19" />
+
+		<property name="voided" type="boolean" column="voided" length="1" not-null="true" />
+
+		<property name="dateVoided" type="java.util.Date" column="date_voided" length="19" />
+
 	</class>
 	
 </hibernate-mapping>
