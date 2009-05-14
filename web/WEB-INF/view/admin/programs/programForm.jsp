@@ -82,7 +82,7 @@
 	}
 </script>
 
-<h2><spring:message code="Program.manage.title"/></h2>
+<h2><spring:message code="Program.addEdit.title"/></h2>
 
 <spring:hasBindErrors name="program">
 	<spring:message code="fix.error"/>
