@@ -844,6 +844,18 @@
 		</modifyColumn>
 	</changeSet>
 	
+	<changeSet id="200905150814" author="bwolfe">
+		<comment>Deleting invalid concept words</comment>
+		<delete tableName="concept_word">
+			<where>concept_name_id = 0</where>
+		</delete>
+	</changeSet>
+	
+	<changeSet id="200905150821" author="bwolfe">
+		<comment>Deleting duplicate concept word keys</comment>
+		<sql>delete from concept_word group by concept_id, word, locale having count(*) > 1 and min(concept_name_id)</sql>
+	</changeSet>
+	
 	<changeSet id="200904271042" author="bwolfe">
 		<comment>Remove the now unused synonym column</comment>
 		<dropColumn tableName="concept_word" columnName="synonym"/>
@@ -1564,7 +1576,7 @@
 		<dropForeignKeyConstraint baseTableName="concept_word" constraintName="word_for" />
 	</changeSet>
 	
-	<changeSet id="20090428-0811aa" author="bwolfe">
+	<changeSet id="20090428-0811aa" author="bwolfe" failOnError="false">
 		<comment>Removing concept_word.concept_name_id foreign key so that primary key can be changed to concept_word_id</comment>
 		<dropForeignKeyConstraint baseTableName="concept_word" constraintName="word_for_name" />
 	</changeSet>
