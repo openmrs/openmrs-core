@@ -103,11 +103,18 @@ public class SerializedObjectDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	@Verifies(value = "should return all saved objects with the given type and name", method = "getAllObjectsByName(Class, String)")
-	public void getAllObjects_shouldReturnAllSavedObjectsWithTheGivenTypeAndName() throws Exception {
-		List<ReportSchema> l = dao.getAllObjectsByName(ReportSchema.class, "TestReport");
+	@Verifies(value = "should return all saved objects with the given type and exact name", method = "getAllObjectsByName(Class, String, boolean)")
+	public void getAllObjects_shouldReturnAllSavedObjectsWithTheGivenTypeAndExactName() throws Exception {
+		List<ReportSchema> l = dao.getAllObjectsByName(ReportSchema.class, "TestReport", true);
 		assertEquals(1, l.size());
 		assertEquals(l.get(0).getName(), "TestReport");
+	}
+	
+	@Test
+	@Verifies(value = "should return all saved objects with the given type and partial name", method = "getAllObjectsByName(Class, String, boolean)")
+	public void getAllObjects_shouldReturnAllSavedObjectsWithTheGivenTypeAndPartialName() throws Exception {
+		List<ReportSchema> l = dao.getAllObjectsByName(ReportSchema.class, "TestReport", false);
+		assertEquals(3, l.size());
 	}
 	
 	@Test
