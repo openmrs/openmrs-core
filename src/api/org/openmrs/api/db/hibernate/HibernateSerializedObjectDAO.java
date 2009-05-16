@@ -22,6 +22,7 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
+import org.hibernate.criterion.MatchMode;
 import org.openmrs.Auditable;
 import org.openmrs.OpenmrsData;
 import org.openmrs.OpenmrsMetadata;
@@ -67,11 +68,19 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 	 * @see org.openmrs.api.db.SerializedObjectDAO#getAllObjectsByName(Class, String)
 	 */
 	@SuppressWarnings("unchecked")
-	public <T extends OpenmrsMetadata> List<T> getAllObjectsByName(Class<T> type, String name) throws DAOException {
+	public <T extends OpenmrsMetadata> List<T> getAllObjectsByName(Class<T> type, 
+																   String name, 
+																   boolean exactMatchOnly) 
+																   throws DAOException {
 		List<T> ret = new ArrayList<T>();
 		Criteria c = sessionFactory.getCurrentSession().createCriteria(SerializedObject.class);
 		c.add(Expression.or(Expression.eq("type", type), Expression.eq("subtype", type)));
-		c.add(Expression.eq("name", name));
+		if (exactMatchOnly) {
+			c.add(Expression.eq("name", name));
+		}
+		else {
+			c.add(Expression.ilike("name", name, MatchMode.ANYWHERE));
+		}
 		List<SerializedObject> objects = (List<SerializedObject>) c.list();
 		for (SerializedObject serializedObject : objects) {
 			ret.add(convertSerializedObject(type, serializedObject));
