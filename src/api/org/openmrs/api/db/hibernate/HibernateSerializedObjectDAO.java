@@ -51,6 +51,19 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 	}
 	
 	/**
+	 * @see org.openmrs.api.db.SerializedObjectDAO#getObjectByUuid(java.lang.Class, java.lang.String)
+	 */
+	public <T extends OpenmrsObject> T getObjectByUuid(Class<T> baseClass, String uuid) throws DAOException {
+		if (uuid != null) {
+			Criteria c = sessionFactory.getCurrentSession().createCriteria(SerializedObject.class);
+			c.add(Expression.eq("uuid", uuid));
+			SerializedObject o = (SerializedObject) c.uniqueResult();
+			return convertSerializedObject(baseClass, o);
+		}
+		return null;
+	}
+	
+	/**
 	 * @see org.openmrs.api.db.SerializedObjectDAO#getAllObjectsByName(Class, String)
 	 */
 	@SuppressWarnings("unchecked")
