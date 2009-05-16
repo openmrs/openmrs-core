@@ -57,6 +57,14 @@ public class SerializedObjectDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
+	@Verifies(value = "should return the saved object", method = "getObjectByUuid(Class, String)")
+	public void getObjectByUuid_shouldReturnTheSavedObject() throws Exception {
+		ReportSchema data = dao.getObjectByUuid(ReportSchema.class, "83b452ca-a4c8-4bf2-9e0b-8bbddf2f9901");
+		assertEquals(data.getId().intValue(), 2);
+		assertEquals(data.getName(), "TestReport2");
+	}
+	
+	@Test
 	@Verifies(value = "should save the passed object if supported", method = "saveObject(OpenmrsObject)")
 	public void saveObject_shouldSaveThePassedObjectIfSupported() throws Exception {
 		ReportSchema data = new ReportSchema();

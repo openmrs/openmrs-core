@@ -40,6 +40,17 @@ public interface SerializedObjectDAO {
 	public <T extends OpenmrsObject> T getObject(Class<T> type, Integer id) throws DAOException;
 	
 	/**
+	 * Retrieves a Serialized Object from the database
+	 * 
+	 * @param type The class of the object to retrieve
+	 * @param uuid The UUID of the object to retrieve
+	 * @return the saved object
+	 * @throws DAOException
+	 * @should return the saved object
+	 */
+	public <T extends OpenmrsObject> T getObjectByUuid(Class<T> type, String uuid) throws DAOException;
+	
+	/**
 	 * Saves a Serialized Object to the database
 	 * 
 	 * @param object The object to save
