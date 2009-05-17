@@ -853,7 +853,21 @@
 	
 	<changeSet id="200905150821" author="bwolfe">
 		<comment>Deleting duplicate concept word keys</comment>
-		<sql>delete from concept_word group by concept_id, word, locale having count(*) > 1 and min(concept_name_id)</sql>
+		<sql>delete from concept_word
+             where
+               concept_word_id not in (
+                              select 
+                                concept_word_id
+                              from (select
+                                      min(concept_word_id) as concept_word_id
+                                    from
+                                      concept_word 
+                                    group by
+                                      concept_id, word, locale
+                                   ) as tmp_concept_word_dupes
+                              )
+              <!-- complicated sql needed to get around deleting from a table and doing a select from it -->
+		</sql>
 	</changeSet>
 	
 	<changeSet id="200904271042" author="bwolfe">
