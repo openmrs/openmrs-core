@@ -212,9 +212,11 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 			return;
 		}
 		catch (ContextAuthenticationException wrongCredentialsError) {
-			// if we get here the user is using some database other than the standard 
-			// in-memory database, prompt the user for input
-			log.error("For some reason we couldn't auth as admin:test ?!", wrongCredentialsError);
+			if (useInMemoryDatabase()) {
+				// if we get here the user is using some database other than the standard 
+				// in-memory database, prompt the user for input
+				log.error("For some reason we couldn't auth as admin:test ?!", wrongCredentialsError);
+			}
 		}
 		
 		Integer attempts = 0;
