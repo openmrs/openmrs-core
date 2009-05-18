@@ -305,4 +305,37 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(people.contains(new Patient(4)));
 	}
 	
+	/**
+	 * @see {@link PersonService#getSimilarPeople(String,Integer,String,String)}
+	 */
+	@Test
+	@Verifies(value = "should limit personType equals Patient searches to only Patients", method = "getSimilarPeople(String,Integer,String,String)")
+	public void getSimilarPeople_shouldLimitPersonTypeEqualsPatientSearchesToOnlyPatients() throws Exception {
+		executeDataSet("org/openmrs/api/include/PersonServiceTest-usersAndPatientsWithSimilarNames.xml");
+		Set<Person> people = Context.getPersonService().getSimilarPeople("Given Middle Family", null, "M", "patient");
+		Assert.assertEquals(2, people.size());
+	}
+	
+	/**
+	 * @see {@link PersonService#getSimilarPeople(String,Integer,String,String)}
+	 */
+	@Test
+	@Verifies(value = "should limit personType equals User searches to only Users", method = "getSimilarPeople(String,Integer,String,String)")
+	public void getSimilarPeople_shouldLimitPersonTypeEqualsUserSearchesToOnlyUsers() throws Exception {
+		executeDataSet("org/openmrs/api/include/PersonServiceTest-usersAndPatientsWithSimilarNames.xml");
+		Set<Person> people = Context.getPersonService().getSimilarPeople("Given Middle Family", null, "M", "user");
+		Assert.assertEquals(2, people.size());
+	}
+	
+	/**
+	 * @see {@link PersonService#getSimilarPeople(String,Integer,String,String)}
+	 */
+	@Test
+	@Verifies(value = "should limit return all Persons with personType equals Person", method = "getSimilarPeople(String,Integer,String,String)")
+	public void getSimilarPeople_shouldLimitReturnAllPersonsWithPersonTypeEqualsPerson() throws Exception {
+		executeDataSet("org/openmrs/api/include/PersonServiceTest-usersAndPatientsWithSimilarNames.xml");
+		Set<Person> people = Context.getPersonService().getSimilarPeople("Given Middle Family", null, "M", "person");
+		Assert.assertEquals(3, people.size());
+	}
+	
 }

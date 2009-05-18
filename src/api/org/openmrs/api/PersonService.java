@@ -98,6 +98,28 @@ public interface PersonService {
 	public Set<Person> getSimilarPeople(String nameSearch, Integer birthyear, String gender) throws APIException;
 	
 	/**
+	 * This method is needed to limit the ability for Users/Patients to be created that are already
+	 * of the other type. This method will not be needed after a Person/Patient/User refactor that
+	 * is due in 1.6.
+	 * 
+	 * @param nameSearch string to search the person's name for
+	 * @param birthyear the year of birth to restrict
+	 * @param gender The gender field to search on (Typically just "M" or "F")
+	 * @param personType one of person, user, or patient. If Person, any Person object is returned,
+	 *            if Patient, only Persons that are Patients are returned, if User, only Persons
+	 *            that are Users are returned
+	 * @return Set<Person> object with all people matching criteria
+	 * @throws APIException
+	 * @see {@link #getSimilarPeople(String, Integer, String)}
+	 * @since 1.5
+	 * @should limit personType equals Patient searches to only Patients
+	 * @should limit personType equals User searches to only Users
+	 * @should limit return all Persons with personType equals Person
+	 */
+	public Set<Person> getSimilarPeople(String nameSearch, Integer birthyear, String gender, String personType)
+	                                                                                                           throws APIException;
+	
+	/**
 	 * Find a person matching the <tt>searchPhrase</tt> search string
 	 * 
 	 * @param searchPhrase person name to match on

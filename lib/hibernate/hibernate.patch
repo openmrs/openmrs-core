@@ -1,27 +1,7 @@
-Index: C:/Users/Winardi/Desktop/Work/PatientMatching/v325/src/org/hibernate/engine/EntityKey.java
+Index: src/org/hibernate/mapping/SimpleValue.java
 ===================================================================
---- C:/Users/Winardi/Desktop/Work/PatientMatching/v325/src/org/hibernate/engine/EntityKey.java	(revision 15789)
-+++ C:/Users/Winardi/Desktop/Work/PatientMatching/v325/src/org/hibernate/engine/EntityKey.java	(working copy)
-@@ -94,13 +94,13 @@
- 
- 	public boolean equals(Object other) {
- 		EntityKey otherKey = (EntityKey) other;
--		return otherKey.rootEntityName.equals(this.rootEntityName) && 
-+		return otherKey.entityName.equals(this.entityName) && 
- 			identifierType.isEqual(otherKey.identifier, this.identifier, entityMode, factory);
- 	}
- 	
- 	private int generateHashCode() {
- 		int result = 17;
--		result = 37 * result + rootEntityName.hashCode();
-+		result = 37 * result + entityName.hashCode();
- 		result = 37 * result + identifierType.getHashCode( identifier, entityMode, factory );
- 		return result;
- 	}
-Index: C:/Users/Winardi/Desktop/Work/PatientMatching/v325/src/org/hibernate/mapping/SimpleValue.java
-===================================================================
---- C:/Users/Winardi/Desktop/Work/PatientMatching/v325/src/org/hibernate/mapping/SimpleValue.java	(revision 15789)
-+++ C:/Users/Winardi/Desktop/Work/PatientMatching/v325/src/org/hibernate/mapping/SimpleValue.java	(working copy)
+--- src/org/hibernate/mapping/SimpleValue.java	(revision 16560)
++++ src/org/hibernate/mapping/SimpleValue.java	(working copy)
 @@ -188,8 +188,8 @@
  	}
  	

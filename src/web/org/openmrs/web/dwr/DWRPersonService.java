@@ -18,6 +18,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
@@ -32,26 +33,41 @@ import org.openmrs.api.PersonService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsUtil;
+import org.springframework.util.StringUtils;
 
+/**
+ * DWR methods for ajaxy effects on {@link Person} objects.
+ */
 public class DWRPersonService {
 	
 	protected final Log log = LogFactory.getLog(getClass());
 	
 	/**
+	 * Searches for Person records that have a name similar ot the given name, a birthdate that is
+	 * null or within a few years of the given birthdate, and a gender that matches. <br/>
+	 * <br/>
+	 * To prevent creating "Users that are Patients": <br/>
+	 * <br/>
+	 * If personType is user, only Person objects and User objects are returned (No patients). <br/>
+	 * <br/>
+	 * If personType is patient, only Person objects and Patient objects are returned (No users). <br/>
+	 * <br/>
+	 * If personType is person, both User objects and Patient objects are returned.
+	 * 
 	 * @param name
 	 * @param birthyear
 	 * @param age
 	 * @param gender
+	 * @param personType either user, patient, person, or empty.
 	 * @return
 	 */
-	public List<?> getSimilarPeople(String name, String birthdate, String age, String gender) {
+	public List<?> getSimilarPeople(String name, String birthdate, String age, String gender, String personType) {
 		Vector<Object> personList = new Vector<Object>();
 		
 		Integer userId = Context.getAuthenticatedUser().getUserId();
 		log.info(userId + "|" + name + "|" + birthdate + "|" + age + "|" + gender);
 		
 		PersonService ps = Context.getPersonService();
-		List<Person> persons = new Vector<Person>();
 		
 		Integer d = null;
 		birthdate = birthdate.trim();
@@ -81,7 +97,12 @@ public class DWRPersonService {
 		if (gender.length() < 1)
 			gender = null;
 		
-		persons.addAll(ps.getSimilarPeople(name, d, gender));
+		if (!StringUtils.hasLength(personType)) {
+			personType = "person";
+		}
+		
+		Set<Person> persons = ps.getSimilarPeople(name, d, gender, personType);
+		
 		
 		personList = new Vector<Object>(persons.size());
 		for (Person p : persons) {
