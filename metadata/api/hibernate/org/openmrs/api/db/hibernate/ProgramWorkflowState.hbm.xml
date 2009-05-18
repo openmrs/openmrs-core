@@ -13,6 +13,9 @@
 		
 		<discriminator column="program_workflow_state_id" insert="false" />
 		
+		<property name="uuid" type="java.lang.String"
+			column="uuid" length="36" unique="true" />
+
 		<property name="initial" type="java.lang.Boolean" column="initial" length="1" not-null="true" />
 		
 		<property name="terminal" type="java.lang.Boolean" column="terminal" length="1" not-null="true" />

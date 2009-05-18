@@ -17,11 +17,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.Location;
 import org.openmrs.LocationTag;
-import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.context.Context;
@@ -40,8 +37,6 @@ import org.springframework.util.StringUtils;
  */
 public class LocationServiceImpl extends BaseOpenmrsService implements LocationService {
 	
-	private Log log = LogFactory.getLog(this.getClass());
-	
 	private LocationDAO dao;
 	
 	/**
@@ -49,26 +44,6 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	 */
 	public void setLocationDAO(LocationDAO dao) {
 		this.dao = dao;
-	}
-	
-	/**
-	 * In order to cascade save child locations, all creator and dateCreated members must be not
-	 * null. However, locations can have an indefinite hierarchy depth, so this method is used to
-	 * assign these values recursively.
-	 * 
-	 * @param location
-	 */
-	protected void populateMetadata(Location location, User who, Date now) {
-		if (location.getDateCreated() == null) {
-			location.setDateCreated(now);
-		}
-		if (location.getCreator() == null) {
-			location.setCreator(who);
-		}
-		if (location.getChildLocations() != null) {
-			for (Location child : location.getChildLocations())
-				populateMetadata(child, who, now);
-		}
 	}
 	
 	/**
@@ -98,8 +73,6 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 				}
 			}
 		}
-		
-		populateMetadata(location, Context.getAuthenticatedUser(), new Date());
 		
 		return dao.saveLocation(location);
 	}
@@ -146,15 +119,10 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	}
 	
 	/**
-	 * TODO: Not yet implemented for guid.
-	 * 
-	 * @see org.openmrs.api.LocationService#getLocationByGuid(java.lang.String)
+	 * @see org.openmrs.api.LocationService#getLocationByUuid(java.lang.String)
 	 */
-	public Location getLocationByGuid(String guid) throws APIException {
-		if (log.isErrorEnabled())
-			log.error("Getting a location with guid is not yet implemented. " + guid);
-		//return dao.getLocationByGuid(guid);
-		return null;
+	public Location getLocationByUuid(String uuid) throws APIException {
+		return dao.getLocationByUuid(uuid);
 	}
 	
 	/**
@@ -224,17 +192,9 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	 * @see org.openmrs.api.LocationService#retireLocation(Location, String)
 	 */
 	public Location retireLocation(Location location, String reason) throws APIException {
-		if (location.isRetired()) {
-			return location;
-		} else {
-			if (reason == null)
-				throw new APIException("Reason is required");
-			location.setRetired(true);
-			location.setRetireReason(reason);
-			location.setRetiredBy(Context.getAuthenticatedUser());
-			location.setDateRetired(new Date());
-			return saveLocation(location);
-		}
+		location.setRetired(true);
+		location.setRetireReason(reason);
+		return saveLocation(location);
 	}
 	
 	/**
@@ -242,9 +202,6 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	 */
 	public Location unretireLocation(Location location) throws APIException {
 		location.setRetired(false);
-		location.setRetireReason(null);
-		location.setRetiredBy(null);
-		location.setDateRetired(null);
 		return saveLocation(location);
 	}
 	
@@ -261,12 +218,6 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	public LocationTag saveLocationTag(LocationTag tag) throws APIException {
 		if (tag.getTag() == null) {
 			throw new APIException("Tag name is required");
-		}
-		if (tag.getDateCreated() == null) {
-			tag.setDateCreated(new Date());
-		}
-		if (tag.getCreator() == null) {
-			tag.setCreator(Context.getAuthenticatedUser());
 		}
 		return dao.saveLocationTag(tag);
 	}

@@ -71,7 +71,8 @@ public class ConceptSourceListController extends SimpleFormController {
 			String notDeleted = msa.getMessage("general.cannot.delete");
 			for (String conceptSourceId : conceptSourceIdList) {
 				try {
-					cs.purgeConceptSource(new ConceptSource(Integer.valueOf(conceptSourceId)));
+					ConceptSource source = cs.getConceptSource(Integer.valueOf(conceptSourceId));
+					cs.purgeConceptSource(source);
 					if (!success.equals(""))
 						success += "<br>";
 					success += conceptSourceId + " " + deleted;

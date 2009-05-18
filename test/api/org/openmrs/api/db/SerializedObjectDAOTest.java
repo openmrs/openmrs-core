@@ -20,6 +20,7 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.openmrs.api.db.hibernate.HibernateSerializedObjectDAO;
 import org.openmrs.report.ReportSchema;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
@@ -53,6 +54,14 @@ public class SerializedObjectDAOTest extends BaseContextSensitiveTest {
 		ReportSchema data = dao.getObject(ReportSchema.class, 1);
 		assertEquals(data.getId().intValue(), 1);
 		assertEquals(data.getName(), "TestReport");
+	}
+	
+	@Test
+	@Verifies(value = "should return the saved object", method = "getObjectByUuid(Class, String)")
+	public void getObjectByUuid_shouldReturnTheSavedObject() throws Exception {
+		ReportSchema data = dao.getObjectByUuid(ReportSchema.class, "83b452ca-a4c8-4bf2-9e0b-8bbddf2f9901");
+		assertEquals(data.getId().intValue(), 2);
+		assertEquals(data.getName(), "TestReport2");
 	}
 	
 	@Test
@@ -94,11 +103,18 @@ public class SerializedObjectDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	@Verifies(value = "should return all saved objects with the given type and name", method = "getAllObjectsByName(Class, String)")
-	public void getAllObjects_shouldReturnAllSavedObjectsWithTheGivenTypeAndName() throws Exception {
-		List<ReportSchema> l = dao.getAllObjectsByName(ReportSchema.class, "TestReport");
+	@Verifies(value = "should return all saved objects with the given type and exact name", method = "getAllObjectsByName(Class, String, boolean)")
+	public void getAllObjects_shouldReturnAllSavedObjectsWithTheGivenTypeAndExactName() throws Exception {
+		List<ReportSchema> l = dao.getAllObjectsByName(ReportSchema.class, "TestReport", true);
 		assertEquals(1, l.size());
 		assertEquals(l.get(0).getName(), "TestReport");
+	}
+	
+	@Test
+	@Verifies(value = "should return all saved objects with the given type and partial name", method = "getAllObjectsByName(Class, String, boolean)")
+	public void getAllObjects_shouldReturnAllSavedObjectsWithTheGivenTypeAndPartialName() throws Exception {
+		List<ReportSchema> l = dao.getAllObjectsByName(ReportSchema.class, "TestReport", false);
+		assertEquals(3, l.size());
 	}
 	
 	@Test

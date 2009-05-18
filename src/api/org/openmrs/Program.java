@@ -40,7 +40,7 @@ public class Program extends BaseOpenmrsMetadata implements java.io.Serializable
 	
 	private Concept concept;
 	
-	private Set<ProgramWorkflow> workflows = new HashSet<ProgramWorkflow>();
+	private Set<ProgramWorkflow> allWorkflows = new HashSet<ProgramWorkflow>();
 	
 	// ******************
 	// Constructors
@@ -153,28 +153,27 @@ public class Program extends BaseOpenmrsMetadata implements java.io.Serializable
 	 */
 	public Set<ProgramWorkflow> getWorkflows() {
 		Set<ProgramWorkflow> ret = new HashSet<ProgramWorkflow>();
-		
-		if (this.workflows != null) {
-			for (ProgramWorkflow workflow : this.workflows) {
-				if (workflow.isRetired() == false)
-					ret.add(workflow);
-			}
+		for (ProgramWorkflow workflow : getAllWorkflows()) {
+			if (workflow.isRetired() == false)
+				ret.add(workflow);
 		}
-		
 		return ret;
 	}
 	
 	/**
 	 * Get all workflows...including the retired ones
 	 * 
-	 * @return Returns a Set<ProgramWorkflow> of all work flows
+	 * @return Returns a Set<ProgramWorkflow> of all workflows
 	 */
 	public Set<ProgramWorkflow> getAllWorkflows() {
-		return workflows;
+		if (allWorkflows == null) {
+			allWorkflows = new HashSet<ProgramWorkflow>();
+		}
+		return allWorkflows;
 	}
 	
-	public void setWorkflows(Set<ProgramWorkflow> workflows) {
-		this.workflows = workflows;
+	public void setAllWorkflows(Set<ProgramWorkflow> allWorkflows) {
+		this.allWorkflows = allWorkflows;
 	}
 	
 	/**

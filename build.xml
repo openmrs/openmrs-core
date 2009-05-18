@@ -145,6 +145,7 @@
 			<fileset dir="${metadata.dir}/api/hibernate" includes="**/*" />
 			<fileset dir="${metadata.dir}/api/spring" includes="applicationContext-service.xml" />
 			<fileset dir="${metadata.dir}/model" includes="liquibase-update-to-latest.xml" />
+			<fileset dir="${metadata.dir}/model" includes="liquibase-global-property-types.xml" />
 		</copy>
 		<javac destdir="${build.dir}" debug="${javac.debug}" debuglevel="${javac.debuglevel}" deprecation="${compile.deprecation}" optimize="${compile.optimize}" classpathref="api.compile.classpath">
 			<compilerarg line="${compile.arguments}" />
@@ -285,7 +286,8 @@
     </target>
 	
 	<target name="deploy-web" description="Copies all jsp/css/properties files to webapps dir without restarting the war">
-		<copy todir="${tomcat.home}/webapps/${webapp.name}">
+		<!-- If you receive errors about "Failed to Copy", make sure your user has write access to ${tomcat.home}/webapps/${webapp.name} -->
+		<copy todir="${tomcat.home}/webapps/${webapp.name}" failonerror="false">
 			<fileset dir="web">
 				<include name="**/*.jsp"/>
 				<include name="**/*.tag"/>
@@ -415,7 +417,7 @@
 	<target name="tomcat-start" description="Start Tomcat">
 		<echo message="Starting Tomcat denoted by the tomcat.home property" />
 		<java jar="${tomcat.home}/bin/bootstrap.jar" fork="true">
-			<jvmarg line='-Dcatalina.home="${tomcat.home}" -Xmx512M -Xms128M -XX:PermSize=64M -XX:MaxPermSize=128m -XX:NewSize=64m -Xdebug -Xnoagent -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5000'/>
+			<jvmarg line='-Dcatalina.home="${tomcat.home}" -Xmx512M -Xms512M -XX:PermSize=256M -XX:MaxPermSize=256m -XX:NewSize=128m -Xdebug -Xnoagent -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5000'/>
 		</java>
      </target>
 
@@ -515,10 +517,12 @@
 			<pathelement location="${dist.dir}/${openmrs.api.name}"/>
 		</path>
 		
-        <junit>
-			<classpath refid="junit-path"/>
-			<formatter type="plain"/>
+		<!-- fork the vm so that translation happens faster -->
+        <junit fork="yes" forkmode="once" clonevm="false">
+        	<classpath refid="junit-path"/>
         	<formatter type="xml"/>
+        	<!-- overwrite this system property so that there are less properties printed -->
+        	<sysproperty key="repositoryFileInput" value="" />
             <batchtest todir="${junit-tests.dir}" haltonfailure="no">
 				<fileset dir="${build.dir}">
 					<include name="**/*Test.class" />
@@ -560,6 +564,8 @@
             <fileset dir="${database.dir}">
                 <include name="*.jar"/>
             </fileset>
+			<path refid="api.compile.classpath"/>
+			<pathelement location="${build.dir}" />
         </path>
 
         <property name="db.changelog.file" value="root.changelog.xml"/>
@@ -626,7 +632,6 @@
 				promptOnNonLocalDatabase="${prompt.user.if.not.local.database}"
 				dropFirst="false"
 				classpathref="classpath"
-				
 				databaseChangeLogTableName="liquibasechangelog"
 				databaseChangeLogLockTableName="liquibasechangeloglock"
 				
@@ -635,5 +640,23 @@
 		</updateDatabase>
 		<echo>Created dist/update-to-latest.sql</echo>
 	</target>
+	
+	<!--<target name="update-database" depends="liquibase-generate-sql">
+	    <taskdef resource="liquibasetasks.properties">
+	        <classpath refid="classpath"/>
+	    </taskdef>
+	    <updateDatabase
+	            changeLogFile="${metadata.dir}/model/liquibase-global-property-types.xml"
+	            driver="${database.driver}"
+	            url="${database.url}"
+	            username="${database.username}"
+	            password="${database.password}"
+	            promptOnNonLocalDatabase="${prompt.user.if.not.local.database}"
+	            dropFirst="false"
+	            classpathref="classpath"
+				outputFile="dist/global-propertiy-types.sql"
+	    />
+	 
+	</target>-->
 	
 </project>

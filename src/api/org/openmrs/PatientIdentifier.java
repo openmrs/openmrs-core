@@ -36,6 +36,11 @@ public class PatientIdentifier extends BaseOpenmrsData implements java.io.Serial
 	
 	// Fields
 	
+	/**
+	 * @since 1.5
+	 */
+	private Integer patientIdentifierId;
+	
 	private Patient patient;
 	
 	private String identifier;
@@ -258,21 +263,34 @@ public class PatientIdentifier extends BaseOpenmrsData implements java.io.Serial
 	}
 	
 	/**
-	 * @since 1.5 TODO: This method doesn't work yet. Change patient identifier to use primary key
-	 *        (slated to be done in uuid branch)
+	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
 	public Integer getId() {
-		throw new UnsupportedOperationException();
+		return getPatientIdentifierId();
 	}
 	
 	/**
-	 * @since 1.5 TODO: This method doesn't work yet. Change patient identifier to use primary key
-	 *        (slated to be done in uuid branch)
+	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
 	public void setId(Integer id) {
-		throw new UnsupportedOperationException();
-		
+		setPatientIdentifierId(id);
+	}
+	
+	/**
+	 * @since 1.5
+	 * @return the patientIdentifierId
+	 */
+	public Integer getPatientIdentifierId() {
+		return patientIdentifierId;
+	}
+	
+	/**
+	 * @since 1.5
+	 * @param patientIdentifierId the patientIdentifierId to set
+	 */
+	public void setPatientIdentifierId(Integer patientIdentifierId) {
+		this.patientIdentifierId = patientIdentifierId;
 	}
 }

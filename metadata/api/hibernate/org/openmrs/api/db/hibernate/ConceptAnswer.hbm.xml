@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="org.openmrs">
+
+	<class name="ConceptAnswer" table="concept_answer" batch-size="25">
+
+		<id name="conceptAnswerId" type="java.lang.Integer" column="concept_answer_id">
+			<generator class="native" />
+		</id>
+		
+		<many-to-one
+			name="concept" 
+			column="concept_id" 
+			class="Concept" 
+			not-null="true"/>
+		
+		<many-to-one 
+			name="answerConcept" class="org.openmrs.Concept" column="answer_concept" not-null="true"/>
+		
+		<many-to-one 
+			name="answerDrug" class="org.openmrs.Drug" column="answer_drug" />
+		
+		<property name="dateCreated" type="java.util.Date" column="date_created" not-null="true" />
+		<many-to-one name="creator" class="User" column="creator" not-null="true"/>		
+		
+		<property name="uuid" type="java.lang.String" column="uuid" length="36" unique="true" />		
+
+	</class>
+	
+</hibernate-mapping>

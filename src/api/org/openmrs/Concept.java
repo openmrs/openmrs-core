@@ -59,7 +59,7 @@ import org.simpleframework.xml.Root;
  * @see ConceptService
  */
 @Root
-public class Concept implements java.io.Serializable, Attributable<Concept> {
+public class Concept extends BaseOpenmrsObject implements Auditable, Retireable, java.io.Serializable, Attributable<Concept> {
 	
 	public static final long serialVersionUID = 57332L;
 	
@@ -1452,4 +1452,19 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 			return getName().getName();
 	}
 	
+	/**
+	 * @since 1.5
+	 * @see org.openmrs.OpenmrsObject#getId()
+	 */
+	public Integer getId() {
+		return getConceptId();
+	}
+	
+	/**
+	 * @since 1.5
+	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
+	 */
+	public void setId(Integer id) {
+		setConceptId(id);
+	}
 }

@@ -16,7 +16,6 @@ package org.openmrs.web.test;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Web tests for controllers, etc should use this class instead of the general
@@ -26,26 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @ContextConfiguration(locations = { "classpath:openmrs-servlet.xml" }, inheritLocations = true)
 @TestExecutionListeners(value = {}, inheritListeners = true)
-@Transactional
 public abstract class BaseWebContextSensitiveTest extends BaseContextSensitiveTest {
-	
-	/**
-	 * This property is duplicated so that when the web tests are run, they are run
-	 */
-	protected static boolean columnsAdded = false;
-	
-	/**
-	 * @return the columnsAdded
-	 */
-	public boolean areColumnsAdded() {
-		return BaseWebContextSensitiveTest.columnsAdded;
-	}
-	
-	/**
-	 * @param columnsAdded the columnsAdded to set
-	 */
-	public void setColumnsAdded(boolean columnsAdded) {
-		BaseWebContextSensitiveTest.columnsAdded = columnsAdded;
-	}
 	
 }

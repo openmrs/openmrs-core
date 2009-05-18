@@ -19,6 +19,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.openmrs.Auditable;
+import org.openmrs.BaseOpenmrsObject;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 
@@ -27,7 +29,7 @@ import org.openmrs.api.context.Context;
  * to attribute the alert to. Alerts are not intended to be sent from user to user and a user cannot
  * send a "reply alert"
  */
-public class Alert implements Serializable {
+public class Alert extends BaseOpenmrsObject implements Auditable, Serializable {
 	
 	private static final long serialVersionUID = -507111111109152L;
 	
@@ -339,5 +341,21 @@ public class Alert implements Serializable {
 	public String toString() {
 		return "Alert: #" + alertId;
 	}
+
+	/**
+	 * @since 1.5
+     * @see org.openmrs.OpenmrsObject#getId()
+     */
+    public Integer getId() {
+	    return getAlertId();
+    }
+
+	/**
+	 * @since 1.5
+     * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
+     */
+    public void setId(Integer id) {
+	    setAlertId(id);
+    }
 	
 }

@@ -169,4 +169,13 @@ public class HibernateLocationDAO implements LocationDAO {
 	public void deleteLocationTag(LocationTag tag) {
 		sessionFactory.getCurrentSession().delete(tag);
 	}
+	
+	/**
+	 * @see org.openmrs.api.db.LocationDAO#getLocationByUuid(java.lang.String)
+	 */
+	public Location getLocationByUuid(String uuid) {
+		return (Location) sessionFactory.getCurrentSession().createQuery("from Location l where l.uuid = :uuid").setString(
+		    "uuid", uuid).uniqueResult();
+	}
+	
 }

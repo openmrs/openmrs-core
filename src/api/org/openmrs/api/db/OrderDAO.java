@@ -83,4 +83,20 @@ public interface OrderDAO {
 	                                               List<Concept> concepts, ORDER_STATUS status, List<User> orderers,
 	                                               List<Encounter> encounters, List<OrderType> orderTypes);
 	
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @param uuid
+	 * @return
+	 */
+	public Order getOrderByUuid(String uuid);
+	
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @param uuid
+	 * @return
+	 */
+	public OrderType getOrderTypeByUuid(String uuid);
+	
 }

@@ -22,8 +22,10 @@ import org.openmrs.Concept;
 import org.openmrs.ConceptStateConversion;
 import org.openmrs.Patient;
 import org.openmrs.PatientProgram;
+import org.openmrs.PatientState;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
+import org.openmrs.ProgramWorkflowState;
 
 /**
  * Program- and PatientProgram- and ConceptStateConversion-related database functions
@@ -195,4 +197,46 @@ public interface ProgramWorkflowDAO {
 	 * @throws DAOException
 	 */
 	public ConceptStateConversion getConceptStateConversion(ProgramWorkflow workflow, Concept trigger);
+	
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @param uuid
+	 * @return
+	 */
+	public ConceptStateConversion getConceptStateConversionByUuid(String uuid);
+	
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @param uuid
+	 * @return
+	 */
+	public PatientProgram getPatientProgramByUuid(String uuid);
+	
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @param uuid
+	 * @return
+	 */
+	public Program getProgramByUuid(String uuid);
+	
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @param uuid
+	 * @return
+	 */
+	public ProgramWorkflowState getStateByUuid(String uuid);
+	
+	public PatientState getPatientStateByUuid(String uuid);
+	
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @param uuid
+	 * @return
+	 */
+	public ProgramWorkflow getWorkflowByUuid(String uuid);
 }

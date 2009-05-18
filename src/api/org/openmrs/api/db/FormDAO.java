@@ -247,6 +247,40 @@ public interface FormDAO {
 	public void deleteFieldType(FieldType fieldType) throws DAOException;
 	
 	/**
+	 * Auto generated method comment
+	 * 
+	 * @param uuid
+	 * @return
+	 */
+	public Field getFieldByUuid(String uuid);
+	
+	public FieldAnswer getFieldAnswerByUuid(String uuid);
+	
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @param uuid
+	 * @return
+	 */
+	public FieldType getFieldTypeByUuid(String uuid);
+	
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @param uuid
+	 * @return
+	 */
+	public Form getFormByUuid(String uuid);
+	
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @param uuid
+	 * @return
+	 */
+	public FormField getFormFieldByUuid(String uuid);
+	
+	/**
 	 * Save the given field type to the database
 	 * 
 	 * @param fieldType FieldType to save to the database

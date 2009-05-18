@@ -20,8 +20,11 @@
     </id>
 
     <discriminator column="relationship_id" insert="false" />
-		
-	<property
+
+		<property name="uuid" type="java.lang.String"
+			column="uuid" length="36" unique="true" />
+
+    <property
         name="voided"
         type="java.lang.Boolean"
         column="voided"

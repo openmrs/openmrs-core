@@ -30,11 +30,11 @@
     <changeSet author="konnikov" id="1241589108464-3">
 		<preConditions onFail="MARK_RAN">
 			<not>
-				<columnExists tableName="global_property" columnName="default_value"/>
+				<columnExists tableName="global_property" columnName="default_property_value"/>
 			</not>
 		</preConditions>
         <addColumn tableName="global_property">
-            <column defaultValue="" name="default_value" type="MEDIUMTEXT">
+            <column defaultValue="" name="default_property_value" type="MEDIUMTEXT">
                 <constraints nullable="false"/>
             </column>
         </addColumn>
@@ -58,5 +58,17 @@
 			</not>
 		</preConditions>
         <addForeignKeyConstraint baseColumnNames="global_property_type_id" baseTableName="global_property" constraintName="type_of_global_property" deferrable="false" initiallyDeferred="false" referencedColumnNames="global_property_type_id" referencedTableName="global_property_type"/>
+    </changeSet>
+    <changeSet author="konnikov" id="1241589108464-6">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="global_property" columnName="default_global_property_datatype_id"/>
+			</not>
+		</preConditions>
+        <addColumn tableName="global_property">
+            <column defaultValue="1" name="default_global_property_datatype_id" type="INT UNSIGNED">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
     </changeSet>
 </databaseChangeLog>

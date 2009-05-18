@@ -365,16 +365,6 @@
 		<name-from-attribute>var</name-from-attribute>
 		<variable-class>org.openmrs.Concept</variable-class>
 	</variable>
-	<!--
-	<variable>
-		<name-from-attribute>nameVar</name-from-attribute>
-		<variable-class>org.openmrs.ConceptName</variable-class>
-	</variable>
-	<variable>
-		<name-from-attribute>numericVar</name-from-attribute>
-		<variable-class>org.openmrs.ConceptNumeric</variable-class>
-	</variable>
-	-->
 	<attribute>
 		<name>conceptId</name>
 		<required>false</required>

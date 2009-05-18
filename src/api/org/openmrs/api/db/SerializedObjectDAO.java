@@ -40,6 +40,17 @@ public interface SerializedObjectDAO {
 	public <T extends OpenmrsObject> T getObject(Class<T> type, Integer id) throws DAOException;
 	
 	/**
+	 * Retrieves a Serialized Object from the database
+	 * 
+	 * @param type The class of the object to retrieve
+	 * @param uuid The UUID of the object to retrieve
+	 * @return the saved object
+	 * @throws DAOException
+	 * @should return the saved object
+	 */
+	public <T extends OpenmrsObject> T getObjectByUuid(Class<T> type, String uuid) throws DAOException;
+	
+	/**
 	 * Saves a Serialized Object to the database
 	 * 
 	 * @param object The object to save
@@ -80,11 +91,16 @@ public interface SerializedObjectDAO {
 	 * 
 	 * @param type The class of the object to retrieve
 	 * @param name the name of the item to retrieve
+	 * @param exactMatchOnly if true will only return exact matches
 	 * @return <List> T A list of all the saved objects that match the passed type and name
 	 * @throws DAOException
-	 * @should return all saved objects with the given type and name
+	 * @should return all saved objects with the given type and exact name
+	 * @should return all saved objects with the given type and partial name
 	 */
-	public <T extends OpenmrsMetadata> List<T> getAllObjectsByName(Class<T> type, String name) throws DAOException;
+	public <T extends OpenmrsMetadata> List<T> getAllObjectsByName(Class<T> type, 
+																   String name, 
+																   boolean exactMatchOnly) 
+																   throws DAOException;
 	
 	/**
 	 * Deletes the item from the database with the given primary key id

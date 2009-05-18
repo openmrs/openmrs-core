@@ -28,12 +28,13 @@ import org.openmrs.Location;
 import org.openmrs.MimeType;
 import org.openmrs.Obs;
 import org.openmrs.Person;
-import org.openmrs.User;
+import org.openmrs.aop.RequiredDataAdvice;
 import org.openmrs.api.APIException;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ObsDAO;
+import org.openmrs.api.handler.SaveHandler;
 import org.openmrs.obs.ComplexObsHandler;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsConstants;
@@ -76,6 +77,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 * 
 	 * @see org.openmrs.api.impl.BaseOpenmrsService#onShutdown()
 	 */
+	@Override
 	public void onShutdown() {
 		handlers = null;
 	}
@@ -97,19 +99,14 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 			}
 		}
 		
-		// now save the rest of the obs object
-		
 		if (obs.getObsId() == null) {
 			Context.requirePrivilege(OpenmrsConstants.PRIV_ADD_OBS);
-			obs.setRequiredProperties(Context.getAuthenticatedUser(), new Date());
 			return dao.saveObs(obs);
 		} else {
 			Context.requirePrivilege(OpenmrsConstants.PRIV_EDIT_OBS);
 			
 			if (changeMessage == null)
 				throw new APIException("ChangeMessage is required when updating an obs in the database");
-			
-			obs.setRequiredProperties(Context.getAuthenticatedUser(), new Date());
 			
 			// get a copy of the passed in obs and save it to the
 			// database. This allows us to create a new row and new obs_id
@@ -124,7 +121,8 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 			// unset the creation stats
 			newObs.setCreator(null);
 			newObs.setDateCreated(null);
-			newObs.setRequiredProperties(Context.getAuthenticatedUser(), new Date());
+			
+			RequiredDataAdvice.recursivelyHandle(SaveHandler.class, newObs, changeMessage);
 			
 			// save the new row to the database with the changes that
 			// have been made to it
@@ -141,11 +139,10 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 				// the fact that the obs is now voided
 				Context.evictFromSession(obs);
 				obs = getObs(obs.getObsId());
-				// TODO: add a column to obs to link back to the new obs
-				voidObs(obs, reason);
 				
-				// TODO should we evict the obs again here to avoid hb nonuniqueobject errors?
-				// Context.evictFromSession(obs);
+				// calling this via the service so that AOP hooks are called 
+				Context.getObsService().voidObs(obs, reason);
+				
 			}
 			finally {
 				Context.removeProxyPrivilege(OpenmrsConstants.PRIV_DELETE_OBS);
@@ -166,6 +163,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 * @see org.openmrs.api.ObsService#updateObs(org.openmrs.Obs)
 	 * @deprecated
 	 */
+	@Deprecated
 	public void updateObs(Obs obs) throws APIException {
 		saveObs(obs, obs.getVoidReason());
 	}
@@ -179,47 +177,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 * @throws APIException
 	 */
 	public Obs voidObs(Obs obs, String reason) throws APIException {
-		if (obs.isVoided()) {
-			return obs;
-		}
-		
-		User user = Context.getAuthenticatedUser();
-		Date date = new Date();
-		
-		Set<Obs> obsToVoid = new HashSet<Obs>();
-		obsToVoid.add(obs);
-		
-		fetchObsMembers(obs, obsToVoid);
-		
-		for (Obs o : obsToVoid) {
-			// don't overwrite the void attrs of something that is already voided
-			if (o.isVoided() == false) {
-				o.setVoided(true);
-				o.setVoidReason(reason);
-				o.setVoidedBy(user);
-				o.setDateVoided(date);
-			}
-		}
-		
 		return dao.saveObs(obs);
-	}
-	
-	/**
-	 * Convenience method that recursively finds all child/grandchild/greatgrandchild group members
-	 * of the given parentObs
-	 * 
-	 * @param parentObs
-	 * @param childMembers
-	 */
-	private void fetchObsMembers(Obs parentObs, Set<Obs> childMembers) {
-		if (parentObs.isObsGrouping()) {
-			for (Obs obsInner : parentObs.getGroupMembers()) {
-				// add the current child iteration to the list of members
-				// and if it was not already in the list, adds its children
-				if (childMembers.add(obsInner) == true)
-					fetchObsMembers(obsInner, childMembers);
-			}
-		}
 	}
 	
 	/**
@@ -234,25 +192,6 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 * @throws APIException
 	 */
 	public Obs unvoidObs(Obs obs) throws APIException {
-		if (obs.isVoided() == false) {
-			return obs;
-		}
-		
-		Set<Obs> obsToUnvoid = new HashSet<Obs>();
-		obsToUnvoid.add(obs);
-		
-		fetchObsMembers(obs, obsToUnvoid);
-		
-		Date originalDateVoided = obs.getDateVoided();
-		for (Obs o : obsToUnvoid) {
-			// unvoid all obs that have the same voided time as the
-			if (originalDateVoided.equals(o.getDateVoided())) {
-				o.setVoided(false);
-				o.setVoidReason(null);
-				o.setVoidedBy(null);
-				o.setDateVoided(null);
-			}
-		}
 		return dao.saveObs(obs);
 	}
 	
@@ -285,6 +224,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 * @see org.openmrs.api.ObsService#getMimeTypes()
 	 * @deprecated use {@link #getAllMimeTypes()}
 	 */
+	@Deprecated
 	public List<MimeType> getMimeTypes() throws APIException {
 		return getAllMimeTypes();
 	}
@@ -293,6 +233,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 * @see org.openmrs.api.ObsService#getAllMimeTypes()
 	 * @deprecated
 	 */
+	@Deprecated
 	public List<MimeType> getAllMimeTypes() throws APIException {
 		return dao.getAllMimeTypes(true);
 	}
@@ -301,6 +242,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 * @see org.openmrs.api.ObsService#getAllMimeTypes(boolean)
 	 * @deprecated
 	 */
+	@Deprecated
 	public List<MimeType> getAllMimeTypes(boolean includeRetired) {
 		return dao.getAllMimeTypes(includeRetired);
 	}
@@ -309,6 +251,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 * @see org.openmrs.api.ObsService#saveMimeType(org.openmrs.MimeType)
 	 * @deprecated
 	 */
+	@Deprecated
 	public MimeType saveMimeType(MimeType mimeType) throws APIException {
 		return dao.saveMimeType(mimeType);
 	}
@@ -317,6 +260,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 * @see org.openmrs.api.ObsService#voidMimeType(org.openmrs.MimeType, java.lang.String)
 	 * @deprecated
 	 */
+	@Deprecated
 	public MimeType voidMimeType(MimeType mimeType, String reason) throws APIException {
 		// TODO implement voidMimeType
 		throw new APIException("Not yet implemented");
@@ -326,6 +270,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 * @see org.openmrs.api.ObsService#getMimeType(java.lang.Integer)
 	 * @deprecated
 	 */
+	@Deprecated
 	public MimeType getMimeType(Integer mimeTypeId) throws APIException {
 		return dao.getMimeType(mimeTypeId);
 	}
@@ -334,6 +279,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 * @see org.openmrs.api.ObsService#purgeMimeType(org.openmrs.MimeType)
 	 * @deprecated
 	 */
+	@Deprecated
 	public void purgeMimeType(MimeType mimeType) {
 		dao.deleteMimeType(mimeType);
 	}
@@ -419,6 +365,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 * @see org.openmrs.api.ObsService#createObs(org.openmrs.Obs)
 	 * @deprecated
 	 */
+	@Deprecated
 	public void createObs(Obs obs) throws APIException {
 		saveObs(obs, null);
 	}
@@ -439,6 +386,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 *             temporary until we created a true ObsGroup pojo.
 	 * @see org.openmrs.api.ObsService#createObsGroup(org.openmrs.Obs[])
 	 */
+	@Deprecated
 	public void createObsGroup(Obs[] obs) throws APIException {
 		if (obs == null || obs.length < 1)
 			return; // silently tolerate calls with missing/empty parameter
@@ -472,6 +420,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 * @see org.openmrs.api.ObsService#deleteObs(org.openmrs.Obs)
 	 * @deprecated use #purgeObs(Obs)
 	 */
+	@Deprecated
 	public void deleteObs(Obs obs) throws APIException {
 		purgeObs(obs);
 	}
@@ -489,6 +438,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 * @see org.openmrs.api.ObsService#getObservations(org.openmrs.Person, boolean includeVoided)
 	 * @deprecated use {@link #getObservationsByPerson(Person)}
 	 */
+	@Deprecated
 	public Set<Obs> getObservations(Person who, boolean includeVoided) {
 		if (includeVoided == true)
 			throw new APIException("Voided observations are no longer allowed to be queried");
@@ -504,6 +454,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 *      java.lang.String, java.lang.Integer, boolean includeVoided)
 	 * @deprecated
 	 */
+	@Deprecated
 	public List<Obs> getObservations(Concept c, Location loc, String sort, Integer personType, boolean includeVoided) {
 		List<Concept> questions = new Vector<Concept>();
 		questions.add(c);
@@ -576,6 +527,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 *      boolean)
 	 * @deprecated
 	 */
+	@Deprecated
 	public Set<Obs> getObservations(Person who, Concept question, boolean includeVoided) {
 		List<Obs> obs = getObservationsByPersonAndConcept(who, question);
 		Set<Obs> obsSet = new HashSet<Obs>();
@@ -598,6 +550,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 *      org.openmrs.Concept, boolean includeVoided)
 	 * @deprecated
 	 */
+	@Deprecated
 	public List<Obs> getLastNObservations(Integer n, Person who, Concept question, boolean includeVoided) {
 		List<Person> whom = new Vector<Person>();
 		whom.add(who);
@@ -612,6 +565,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 *      java.lang.Integer, boolean includeVoided)
 	 * @deprecated
 	 */
+	@Deprecated
 	public List<Obs> getObservations(Concept question, String sort, Integer personType, boolean includeVoided) {
 		List<Concept> questions = new Vector<Concept>();
 		questions.add(question);
@@ -628,6 +582,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 *      java.lang.Integer, boolean includeVoided)
 	 * @deprecated
 	 */
+	@Deprecated
 	public List<Obs> getObservationsAnsweredByConcept(Concept answer, Integer personType, boolean includeVoided) {
 		List<Concept> answers = new Vector<Concept>();
 		answers.add(answer);
@@ -641,6 +596,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 *      java.lang.Boolean, java.lang.Integer, boolean includeVoided)
 	 * @deprecated
 	 */
+	@Deprecated
 	public List<Object[]> getNumericAnswersForConcept(Concept question, Boolean sortByValue, Integer personType,
 	                                                  boolean includeVoided) {
 		List<String> sortList = new Vector<String>();
@@ -667,6 +623,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 * @see org.openmrs.api.ObsService#getObservations(org.openmrs.Encounter)
 	 * @deprecated use org.openmrs.Encounter#getObs()
 	 */
+	@Deprecated
 	public Set<Obs> getObservations(Encounter whichEncounter) {
 		return whichEncounter.getObs();
 	}
@@ -675,6 +632,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 * @see org.openmrs.api.ObsService#getVoidedObservations()
 	 * @deprecated
 	 */
+	@Deprecated
 	public List<Obs> getVoidedObservations() {
 		return getObservations(null, null, null, null, null, null, null, null, null, null, null, true);
 	}
@@ -684,6 +642,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 *      java.lang.Integer)
 	 * @deprecated
 	 */
+	@Deprecated
 	public List<Obs> findObservations(String search, boolean includeVoided, Integer personType) {
 		// ignoring voided and personTypes now
 		return getObservations(search);
@@ -693,14 +652,23 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 * @see org.openmrs.api.ObsService#findObsByGroupId(java.lang.Integer)
 	 * @deprecated -- should use obs.getGroupMembers
 	 */
+	@Deprecated
 	public List<Obs> findObsByGroupId(Integer obsGroupId) {
 		return getObservations(null, null, null, null, null, null, null, null, obsGroupId, null, null, false);
 	}
 	
 	/**
-	 * @see org.openmrs.api.ObsService#getObservations(List, Date, Date)
+	 * @see org.openmrs.api.ObsService#getObsByUuid(java.lang.String)
+	 */
+	public Obs getObsByUuid(String uuid) throws APIException {
+		return dao.getObsByUuid(uuid);
+	}
+	
+	/**
+	 * @see org.openmrs.api.ObsService#getObservations(List, Date, Date, boolean)
 	 * @deprecated
 	 */
+	@Deprecated
 	public List<Obs> getObservations(List<Concept> concepts, Date fromDate, Date toDate, boolean includeVoided) {
 		return getObservations(null, null, concepts, null, null, null, null, null, null, fromDate, toDate, includeVoided);
 	}
@@ -709,6 +677,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 * @see org.openmrs.api.ObsService#getObservations(List, Date, Date)
 	 * @deprecated
 	 */
+	@Deprecated
 	public List<Obs> getObservations(List<Concept> concepts, Date fromDate, Date toDate) {
 		return getObservations(null, null, concepts, null, null, null, null, null, null, fromDate, toDate, false);
 	}
@@ -717,6 +686,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 * @see org.openmrs.api.ObsService#getObservations(Cohort, List, Date, Date)
 	 * @deprecated
 	 */
+	@Deprecated
 	public List<Obs> getObservations(Cohort patients, List<Concept> concepts, Date fromDate, Date toDate) {
 		List<Person> persons = new Vector<Person>();
 		

@@ -15,6 +15,7 @@ package org.openmrs.report;
 
 import java.io.StringWriter;
 
+import org.openmrs.BaseOpenmrsObject;
 import org.openmrs.util.OpenmrsUtil;
 import org.simpleframework.xml.Serializer;
 
@@ -25,7 +26,7 @@ import org.simpleframework.xml.Serializer;
  * @deprecated see reportingcompatibility module
  */
 @Deprecated
-public class ReportSchemaXml {
+public class ReportSchemaXml extends BaseOpenmrsObject {
 	
 	private static final long serialVersionUID = 9330457450L;
 	
@@ -160,6 +161,22 @@ public class ReportSchemaXml {
 			
 			setXml(newXml);
 		}
+	}
+	
+	/**
+	 * @since 1.5
+	 * @see org.openmrs.OpenmrsObject#getId()
+	 */
+	public Integer getId() {
+		return getReportSchemaId();
+	}
+	
+	/**
+	 * @since 1.5
+	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
+	 */
+	public void setId(Integer id) {
+		setReportSchemaId(id);
 	}
 	
 }

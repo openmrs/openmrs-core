@@ -13,6 +13,9 @@
 
 		<discriminator column="form_field_id" insert="false" />
 		
+		<property name="uuid" type="java.lang.String"
+			column="uuid" length="36" unique="true" />
+
 		<many-to-one name="parent" class="FormField" cascade="save-update,merge,evict">
 			<column name="parent_form_field" />
 		</many-to-one>

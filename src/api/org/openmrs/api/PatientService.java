@@ -83,6 +83,12 @@ public interface PatientService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	public Patient getPatient(Integer patientId) throws APIException;
 	
+	@Transactional(readOnly = true)
+	public Patient getPatientByUuid(String uuid) throws APIException;
+	
+	@Transactional(readOnly = true)
+	public PatientIdentifier getPatientIdentifierByUuid(String uuid) throws APIException;
+	
 	/**
 	 * @see #savePatient(Patient)
 	 * @deprecated replaced by #savePatient(Patient)
@@ -326,6 +332,9 @@ public interface PatientService extends OpenmrsService {
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_IDENTIFIER_TYPES })
 	public PatientIdentifierType getPatientIdentifierType(Integer patientIdentifierTypeId) throws APIException;
 	
+	@Transactional(readOnly = true)
+	public PatientIdentifierType getPatientIdentifierTypeByUuid(String uuid) throws APIException;
+	
 	/**
 	 * @deprecated use {@link #getPatientIdentifierTypeByName(String)}
 	 */
@@ -557,6 +566,12 @@ public interface PatientService extends OpenmrsService {
 	 * @param patientIdentifier the patient identifier to look for in other patients
 	 * @return whether or not the identifier is in use by a patient other than
 	 *         patientIdentifier.patient
+	 * @should return true when patientIdentifier contains a patient and another patient has this id
+	 * @should return false when patientIdentifier contains a patient and no other patient has this id
+	 * @should return true when patientIdentifier does not contain a patient and a patient has this id
+	 * @should return false when patientIdentifier does not contain a patient and no patient has this id
+	 * @should ignore voided patientIdentifiers
+	 * @should ignore voided patients
 	 */
 	@Authorized(OpenmrsConstants.PRIV_VIEW_PATIENTS)
 	@Transactional(readOnly = true)

@@ -187,6 +187,9 @@ public interface OrderService extends OpenmrsService {
 	@Authorized(OpenmrsConstants.PRIV_VIEW_ORDERS)
 	public Order getOrder(Integer orderId) throws APIException;
 	
+	@Transactional(readOnly = true)
+	public Order getOrderByUuid(String uuid) throws APIException;
+	
 	/**
 	 * Gets the order with the associated order id
 	 * 
@@ -432,6 +435,9 @@ public interface OrderService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_ORDER_TYPES)
 	public OrderType getOrderType(Integer orderTypeId) throws APIException;
+	
+	@Transactional(readOnly = true)
+	public OrderType getOrderTypeByUuid(String uuid) throws APIException;
 	
 	/**
 	 * Get all orders for the given <code>patient</code>

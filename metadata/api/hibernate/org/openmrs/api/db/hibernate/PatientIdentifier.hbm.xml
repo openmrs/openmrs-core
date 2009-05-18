@@ -10,15 +10,17 @@
     table="patient_identifier"
 	>
 	
-	<composite-id>
-		<key-many-to-one name="patient" column="patient_id"	class="org.openmrs.Patient"  />
-		<key-property name="identifier" type="java.lang.String" length="50" />
-		<key-many-to-one name="identifierType" class="org.openmrs.PatientIdentifierType" column="identifier_type" />
-	</composite-id>
+	<id name="patientIdentifierId" type="int" column="patient_identifier_id"
+		unsaved-value="0">
+		<generator class="native" />
+	</id>
     
-    <many-to-one name="patient" column="patient_id"	class="org.openmrs.Patient" insert="false" update="false" />
-	<property name="identifier" type="java.lang.String" length="50" insert="false" update="false" />
-	<many-to-one name="identifierType" class="org.openmrs.PatientIdentifierType" column="identifier_type" insert="false" update="false" />
+		<property name="uuid" type="java.lang.String"
+			column="uuid" length="36" unique="true" />
+
+    <many-to-one name="patient" column="patient_id"	class="org.openmrs.Patient"/>
+	<property name="identifier" type="java.lang.String" length="50"/>
+	<many-to-one name="identifierType" class="org.openmrs.PatientIdentifierType" column="identifier_type"/>
     
     <many-to-one name="location" class="org.openmrs.Location" column="location_id" />
 	<property name="dateCreated" type="java.util.Date" column="date_created" not-null="true" />

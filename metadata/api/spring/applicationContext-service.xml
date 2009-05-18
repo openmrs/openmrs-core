@@ -367,10 +367,7 @@
 		<property name="transactionManager"><ref local="transactionManager"/></property>
 		<property name="target"><ref local="patientServiceTarget"/></property>
 		<property name="preInterceptors">
-			<list>
-				<ref local="authorizationInterceptor"/>
-				<ref local="loggingInterceptor"/>
-			</list>
+			<ref local="serviceInterceptors" />
 		</property>
 		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
 	</bean>
@@ -378,10 +375,7 @@
 		<property name="transactionManager"><ref local="transactionManager"/></property>
 		<property name="target"><ref local="personServiceTarget"/></property>
 		<property name="preInterceptors">
-			<list>
-				<ref local="authorizationInterceptor"/>
-				<ref local="loggingInterceptor"/>
-			</list>
+			<ref local="serviceInterceptors" />
 		</property>
 		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
 	</bean>
@@ -389,10 +383,7 @@
 		<property name="transactionManager"><ref local="transactionManager"/></property>
 		<property name="target"><ref local="conceptServiceTarget"/></property>
 		<property name="preInterceptors">
-			<list>
-				<ref local="authorizationInterceptor"/>
-				<ref local="loggingInterceptor"/>
-			</list>
+			<ref local="serviceInterceptors" />
 		</property>
 		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
 	</bean>
@@ -400,10 +391,7 @@
 		<property name="transactionManager"><ref local="transactionManager"/></property>
 		<property name="target"><ref local="userServiceTarget"/></property>
 		<property name="preInterceptors">
-			<list>
-				<ref local="authorizationInterceptor"/>
-				<ref local="loggingInterceptor"/>
-			</list>
+			<ref local="serviceInterceptors" />
 		</property>
 		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
 	</bean>
@@ -411,10 +399,7 @@
 		<property name="transactionManager"><ref local="transactionManager"/></property>
 		<property name="target"><ref local="obsServiceTarget"/></property>
 		<property name="preInterceptors">
-			<list>
-				<ref local="authorizationInterceptor"/>
-				<ref local="loggingInterceptor"/>
-			</list>
+			<ref local="serviceInterceptors" />
 		</property>
 		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
 	</bean>
@@ -422,10 +407,7 @@
 		<property name="transactionManager"><ref local="transactionManager"/></property>
 		<property name="target"><ref local="encounterServiceTarget"/></property>
 		<property name="preInterceptors">
-			<list>
-				<ref local="authorizationInterceptor"/>
-				<ref local="loggingInterceptor"/>
-			</list>
+			<ref local="serviceInterceptors" />
 		</property>
 		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
 	</bean>
@@ -433,10 +415,7 @@
 		<property name="transactionManager"><ref local="transactionManager"/></property>
 		<property name="target"><ref local="locationServiceTarget"/></property>
 		<property name="preInterceptors">
-			<list>
-				<ref local="authorizationInterceptor"/>
-				<ref local="loggingInterceptor"/>
-			</list>
+			<ref local="serviceInterceptors" />
 		</property>
 		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
 	</bean>
@@ -444,10 +423,7 @@
 		<property name="transactionManager"><ref local="transactionManager"/></property>
 		<property name="target"><ref local="orderServiceTarget"/></property>
 		<property name="preInterceptors">
-			<list>
-				<ref local="authorizationInterceptor"/>
-				<ref local="loggingInterceptor"/>
-			</list>
+			<ref local="serviceInterceptors" />
 		</property>
 		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
 	</bean>
@@ -455,10 +431,7 @@
 		<property name="transactionManager"><ref local="transactionManager"/></property>
 		<property name="target"><ref local="formServiceTarget"/></property>
 		<property name="preInterceptors">
-			<list>
-				<ref local="authorizationInterceptor"/>
-				<ref local="loggingInterceptor"/>
-			</list>
+			<ref local="serviceInterceptors" />
 		</property>
 		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
 	</bean>
@@ -466,10 +439,7 @@
 		<property name="transactionManager"><ref local="transactionManager"/></property>
 		<property name="target"><ref local="adminServiceTarget"/></property>
 		<property name="preInterceptors">
-			<list>
-				<ref local="authorizationInterceptor"/>
-				<ref local="loggingInterceptor"/>
-			</list>
+			<ref local="serviceInterceptors" />
 		</property>
 		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
 	</bean>
@@ -477,10 +447,7 @@
 		<property name="transactionManager"><ref local="transactionManager"/></property>
 		<property name="target"><ref local="programWorkflowServiceTarget"/></property>
 		<property name="preInterceptors">
-			<list>
-				<ref local="authorizationInterceptor"/>
-				<ref local="loggingInterceptor"/>
-			</list>
+			<ref local="serviceInterceptors" />
 		</property>
 		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
 	</bean>
@@ -488,10 +455,7 @@
 		<property name="transactionManager"><ref local="transactionManager"/></property>
 		<property name="target"><ref local="messageServiceTarget"/></property>
 		<property name="preInterceptors">
-			<list>
-				<ref local="authorizationInterceptor"/>
-				<ref local="loggingInterceptor"/>
-			</list>
+			<ref local="serviceInterceptors" />
 		</property>
 		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
 	</bean>
@@ -499,10 +463,7 @@
 		<property name="transactionManager"><ref local="transactionManager"/></property>
 		<property name="target"><ref local="patientSetServiceTarget"/></property>
 		<property name="preInterceptors">
-			<list>
-				<ref local="authorizationInterceptor"/>
-				<ref local="loggingInterceptor"/>
-			</list>
+			<ref local="serviceInterceptors" />
 		</property>
 		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
 	</bean>
@@ -510,10 +471,7 @@
 		<property name="transactionManager"><ref local="transactionManager"/></property>
 		<property name="target"><ref local="cohortServiceTarget"/></property>
 		<property name="preInterceptors">
-			<list>
-				<ref local="authorizationInterceptor"/>
-				<ref local="loggingInterceptor"/>
-			</list>
+			<ref local="serviceInterceptors" />
 		</property>
 		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
 	</bean>
@@ -523,10 +481,7 @@
 		<property name="transactionManager"><ref local="transactionManager"/></property>
 		<property name="target"><ref local="schedulerServiceTarget"/></property>
 		<property name="preInterceptors">
-			<list>
-				<ref local="authorizationInterceptor"/>
-				<ref local="loggingInterceptor"/>
-			</list>
+			<ref local="serviceInterceptors" />
 		</property>
 		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
 	</bean>
@@ -534,10 +489,7 @@
 		<property name="transactionManager"><ref local="transactionManager"/></property>
 		<property name="target"><ref local="alertServiceTarget"/></property>
 		<property name="preInterceptors">
-			<list>
-				<ref local="authorizationInterceptor"/>
-				<ref local="loggingInterceptor"/>
-			</list>
+			<ref local="serviceInterceptors" />
 		</property>
 		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
 	</bean>
@@ -545,10 +497,7 @@
 		<property name="transactionManager"><ref local="transactionManager"/></property>
 		<property name="target"><ref local="reportServiceTarget"/></property>
 		<property name="preInterceptors">
-			<list>
-				<ref local="authorizationInterceptor"/>
-				<ref local="loggingInterceptor"/>
-			</list>
+			<ref local="serviceInterceptors" />
 		</property>
 		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
 	</bean>
@@ -556,10 +505,7 @@
 		<property name="transactionManager"><ref local="transactionManager"/></property>
 		<property name="target"><ref local="reportObjectServiceTarget"/></property>
 		<property name="preInterceptors">
-			<list>
-				<ref local="authorizationInterceptor"/>
-				<ref local="loggingInterceptor"/>
-			</list>
+			<ref local="serviceInterceptors" />
 		</property>
 		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
 	</bean>
@@ -567,10 +513,7 @@
 		<property name="transactionManager"><ref local="transactionManager"/></property>
 		<property name="target"><ref local="serializationServiceTarget"/></property>
 		<property name="preInterceptors">
-			<list>
-				<ref local="authorizationInterceptor"/>
-				<ref local="loggingInterceptor"/>
-			</list>
+			<ref local="serviceInterceptors" />
 		</property>
 		<property name="transactionAttributeSource">
 			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
@@ -580,10 +523,7 @@
 		<property name="transactionManager"><ref local="transactionManager"/></property>
 		<property name="target"><ref local="dataSetServiceTarget"/></property>
 		<property name="preInterceptors">
-			<list>
-				<ref local="authorizationInterceptor"/>
-				<ref local="loggingInterceptor"/>
-			</list>
+			<ref local="serviceInterceptors" />
 		</property>
 		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
 	</bean>
@@ -591,10 +531,7 @@
 		<property name="transactionManager"><ref local="transactionManager"/></property>
 		<property name="target"><ref local="hL7ServiceTarget"/></property>
 		<property name="preInterceptors">
-			<list>
-				<ref local="authorizationInterceptor"/>
-				<ref local="loggingInterceptor"/>
-			</list>
+			<ref local="serviceInterceptors" />
 		</property>
 		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
 	</bean>
@@ -602,10 +539,7 @@
 		<property name="transactionManager"><ref local="transactionManager"/></property>
 		<property name="target"><ref local="ardenServiceTarget"/></property>
 		<property name="preInterceptors">
-			<list>
-				<ref local="authorizationInterceptor"/>
-				<ref local="loggingInterceptor"/>
-			</list>
+			<ref local="serviceInterceptors" />
 		</property>
 		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
 	</bean>
@@ -613,10 +547,7 @@
 		<property name="transactionManager"><ref local="transactionManager"/></property>
 		<property name="target"><ref local="logicServiceTarget"/></property>
 		<property name="preInterceptors">
-			<list>
-				<ref local="authorizationInterceptor"/>
-				<ref local="loggingInterceptor"/>
-			</list>
+			<ref local="serviceInterceptors" />
 		</property>
 		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
 	</bean>
@@ -625,10 +556,7 @@
 		<property name="transactionManager"><ref local="transactionManager"/></property>
 		<property name="target"><ref local="messageSourceServiceTarget"/></property>
 		<property name="preInterceptors">
-			<list>
-				<ref local="authorizationInterceptor"/>
-				<ref local="loggingInterceptor"/>
-			</list>
+			<ref local="serviceInterceptors" />
 		</property>
 		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
 	</bean>
@@ -648,20 +576,21 @@
 	</bean>
 	-->
 
-	<!--  **************************  AUTHORIZATION INTERCEPTOR  *************************  -->
-	<!--
-		This as an interceptor (AOP advisor) that is set within every service proxy and executed
-		before the transactional proxy.  
-	-->
+	<!--  **************************  SERVICE INTERCEPTORS  *************************  -->
+	<!-- AOP before advice that authorizes users according to annotations -->
 	<bean id="authorizationInterceptor" class="org.openmrs.aop.AuthorizationAdvice"/>
-
-	<!--  **************************  LOGGING INTERCEPTOR  *************************  -->
-	<!--
-		This as an AOP "around" advisor that prints logging messages 
-	-->
+	<!-- AOP "around" advisor that prints logging messages for service methods -->
 	<bean id="loggingInterceptor" class="org.openmrs.aop.LoggingAdvice"/>
+	<!-- AOP before advice that calls the SetRequiredDataHandler methods -->
+	<bean id="requiredDataInterceptor" class="org.openmrs.aop.RequiredDataAdvice"/>
 
-
+	<util:list id="serviceInterceptors">
+		<ref local="authorizationInterceptor"/>
+		<ref local="requiredDataInterceptor"/>
+		<ref local="loggingInterceptor"/>
+	</util:list>
+	
+	
 	<!--  **************************  SESSION FACTORY  *************************  -->
 	
 	<util:list id="moduleTestingMappingJarLocations">

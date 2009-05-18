@@ -17,8 +17,10 @@ import java.util.List;
 import java.util.Set;
 
 import org.openmrs.Person;
+import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonAttributeType;
+import org.openmrs.PersonName;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 
@@ -149,4 +151,42 @@ public interface PersonDAO {
 	 * @see org.openmrs.api.PersonService#deleteRelationshipType(org.openmrs.RelationshipType)
 	 */
 	public void deleteRelationshipType(RelationshipType relationshipType) throws DAOException;
+	
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @param uuid
+	 * @return
+	 */
+	public Person getPersonByUuid(String uuid);
+	
+	public PersonAddress getPersonAddressByUuid(String uuid);
+	
+	public PersonAttribute getPersonAttributeByUuid(String uuid);
+	
+	public PersonName getPersonNameByUuid(String uuid);
+	
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @param uuid
+	 * @return
+	 */
+	public Relationship getRelationshipByUuid(String uuid);
+	
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @param uuid
+	 * @return
+	 */
+	public RelationshipType getRelationshipTypeByUuid(String uuid);
+	
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @param uuid
+	 * @return
+	 */
+	public PersonAttributeType getPersonAttributeTypeByUuid(String uuid);
 }

@@ -327,6 +327,10 @@ public class PatientSearch implements CohortDefinition {
 				return true;
 			else if (o instanceof PatientSearch)
 				return ((PatientSearch) o).requiresHistory();
+			else if (o instanceof List) {
+				if (requiresHistoryHelper((List<Object>) o))
+					return true;
+			}
 		}
 		return false;
 	}

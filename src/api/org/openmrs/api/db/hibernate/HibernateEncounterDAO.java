@@ -203,4 +203,20 @@ public class HibernateEncounterDAO implements EncounterDAO {
 		return (Date) sql.uniqueResult();
 	}
 	
+	/**
+	 * @see org.openmrs.api.db.EncounterDAO#getEncounterByUuid(java.lang.String)
+	 */
+	public Encounter getEncounterByUuid(String uuid) {
+		return (Encounter) sessionFactory.getCurrentSession().createQuery("from Encounter e where e.uuid = :uuid")
+		        .setString("uuid", uuid).uniqueResult();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.EncounterDAO#getEncounterTypeByUuid(java.lang.String)
+	 */
+	public EncounterType getEncounterTypeByUuid(String uuid) {
+		return (EncounterType) sessionFactory.getCurrentSession().createQuery("from EncounterType et where et.uuid = :uuid")
+		        .setString("uuid", uuid).uniqueResult();
+	}
+	
 }

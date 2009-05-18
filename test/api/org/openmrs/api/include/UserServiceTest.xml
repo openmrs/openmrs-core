@@ -1,18 +1,18 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <dataset>
-  <location location_id="1" name="Test Location" creator="1" date_created="2005-01-01 00:00:00.0" retired="false"/>
+  <location location_id="1" name="Test Location" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="fccbe8f3-597e-4c10-981a-35c541c20541"/>
   <patient patient_id="2" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
-  <patient_identifier patient_id="2" identifier="1234" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
-  <patient_identifier_type patient_identifier_type_id="1" name="Test Identifier Type" description="Test description" check_digit="false" creator="1" date_created="2005-01-01 00:00:00.0" required="false" retired="false"/>
-  <person person_id="2" gender="M" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
-  <person_address person_address_id="2" person_id="2" preferred="true" address1="123 First St" address2="Indianapolis" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
-  <person_name person_name_id="2" preferred="true" person_id="2" given_name="John" middle_name=" " family_name="Doe" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
-  <privilege privilege="Some Privilege" description="This is a test privilege"/>
-  <role role="Some Role" description="This is a test role"/>
+  <patient_identifier patient_identifier_id="1" patient_id="2" identifier="1234" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="7eabecbb-9698-46e0-9abf-362a86d2dccd"/>
+  <patient_identifier_type patient_identifier_type_id="1" name="Test Identifier Type" description="Test description" check_digit="false" creator="1" date_created="2005-01-01 00:00:00.0" required="false" retired="false" uuid="9872ce12-59c1-47bd-b7ec-f5786e12830a"/>
+  <person person_id="2" gender="M" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="f2b7dd73-2d01-4e2b-8ebd-12d832eac8e4"/>
+  <person_address person_address_id="2" person_id="2" preferred="true" address1="123 First St" address2="Indianapolis" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="1c3fb4c1-0671-4f42-97ea-118837496daf"/>
+  <person_name person_name_id="2" preferred="true" person_id="2" given_name="John" middle_name=" " family_name="Doe" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="8d6142e2-f256-4fc7-a085-073646c6666d"/>
+  <privilege privilege="Some Privilege" description="This is a test privilege" uuid="d979d066-15e6-467c-9d4b-cb575ef97f0f"/>
+  <role role="Some Role" description="This is a test role" uuid="94d62f4b-dd14-4597-be10-402def31094c"/>
   
-  <person person_id="505" gender="F" dead="false" creator="1" date_created="2008-08-15 15:46:47.0" voided="false"/>
-  <person person_id="506" gender="M" dead="false" creator="1" date_created="2008-08-15 15:57:09.0" voided="false"/>
-  <person person_id="507" gender="M" dead="false" creator="1" date_created="2008-08-15 15:57:09.0" voided="false"/>
+  <person person_id="505" gender="F" dead="false" creator="1" date_created="2008-08-15 15:46:47.0" voided="false" uuid="c4d125f7-5315-446c-9a45-c2f5e0fe96a8"/>
+  <person person_id="506" gender="M" dead="false" creator="1" date_created="2008-08-15 15:57:09.0" voided="false" uuid="4e7f6953-0f86-4702-a06b-17112e8f144b"/>
+  <person person_id="507" gender="M" dead="false" creator="1" date_created="2008-08-15 15:57:09.0" voided="false" uuid="dc99369f-f88e-4d54-be56-100e1ff45cf0"/>
   <users user_id="505" system_id="6-7" username="incorrectlyhashedSha1" password="4a1750c8607dfa237de36c6305715c223415189" salt="c788c6ad82a157b712392ca695dfcf2eed193d7f" secret_question="" creator="1" date_created="2008-08-15 15:57:09.0" changed_by="1" date_changed="2008-08-18 11:51:56.0" voided="false" void_reason=""/>
   <users user_id="506" system_id="7-5" username="correctlyhashedSha1" password="4a1750c8607d0fa237de36c6305715c223415189" salt="c788c6ad82a157b712392ca695dfcf2eed193d7f" secret_question="" creator="1" date_created="2008-08-15 15:57:09.0" changed_by="1" date_changed="2008-08-18 11:51:56.0" voided="false" void_reason=""/>
   <users user_id="507" system_id="8-3" username="userWithSha512Hash" password="74e3ed4f9e5b955de443feabc9f12ecd291ac6a7eaa2f09a72a5c811ec618b044d7131f687c0a0465fc0c660d09fd245e410e12ffe77d78b2a0c504b40afa202" salt="1c30292f0b438b49b181950f3e831c6a9f38ef1c7d559fca566e8cd6b4efb417150585d4c3345f0fb0b520fc0884ad82ea7c1a28f48c2c562106a3d110716cfc" secret_question="" creator="1" date_created="2008-08-15 15:57:09.0" changed_by="1" date_changed="2008-08-18 11:51:56.0" voided="false" void_reason=""/>

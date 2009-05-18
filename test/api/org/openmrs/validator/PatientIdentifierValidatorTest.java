@@ -17,10 +17,8 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 import org.openmrs.Location;
-import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
-import org.openmrs.PersonName;
 import org.openmrs.api.BlankIdentifierException;
 import org.openmrs.api.IdentifierNotUniqueException;
 import org.openmrs.api.InvalidCheckDigitException;
@@ -167,18 +165,6 @@ public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 	public void validateIdentifier_shouldFailValidationIfIdentifierIsBlank() throws Exception {
 		PatientIdentifier identifier = new PatientIdentifier("", new PatientIdentifierType(1), new Location(1));
 		PatientIdentifierValidator.validateIdentifier(identifier);
-	}
-	
-	@Test
-	public void test1375() throws Exception {
-		Patient patient = new Patient();
-		patient.setGender("M");
-		patient.setPatientId(2);
-		//patient.setCreator(new User(1));
-		//patient.setDateCreated date_created="2005-09-22 00:00:00.0" changed_by="1" date_changed="2008-08-18 12:29:59.0"
-		patient.addName(new PersonName("This", "Isa", "Test"));
-		patient.addIdentifier(new PatientIdentifier("101-6", new PatientIdentifierType(1), new Location(1)));
-		Context.getPatientService().savePatient(patient);
 	}
 	
 }

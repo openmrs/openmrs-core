@@ -37,6 +37,10 @@
 		<level value="WARN" />
 	</logger>
 	
+	<logger name="org.openmrs.web.controller.maintenance">
+		<level value="DEBUG"/>
+	</logger>
+	
 	<!-- 
 		This controls the LoggingAdvice class that wraps around the OpenMRS services 
 		WARN == don't log anything special for the services

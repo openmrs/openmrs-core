@@ -76,7 +76,7 @@ public class ConceptWordFormController extends SimpleFormController {
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "ConceptWord.rangeError");
 					return showForm(request, response, errors);
 				}
-				successMessageKey = "ConceptWord.update";
+				successMessageKey = "ConceptWord.updated";
 			} else {
 				Context.getConceptService().updateConceptWords();
 				successMessageKey = "ConceptWord.updateInProgress";

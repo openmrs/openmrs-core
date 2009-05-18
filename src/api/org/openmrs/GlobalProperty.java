@@ -280,6 +280,21 @@ public class GlobalProperty {
     public GlobalPropertyType getDefaultPropertyType() {
 	    return defaultPropertyType;
     }
-    
+    	
+	/**
+	 * @since 1.5
+	 * @see org.openmrs.OpenmrsObject#getId()
+	 */
+	public Integer getId() {
+		throw new UnsupportedOperationException();
+	}
+	
+	/**
+	 * @since 1.5
+	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
+	 */
+	public void setId(Integer id) {
+		throw new UnsupportedOperationException();
+	}
     
 }

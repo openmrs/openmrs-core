@@ -14,7 +14,6 @@
 package org.openmrs.api.impl;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -77,17 +76,6 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 		if (cohort.getName() == null) {
 			throw new APIException("Cohort name is required");
 		}
-		Date now = new Date();
-		if (cohort.getDateCreated() == null) {
-			cohort.setDateCreated(now);
-		}
-		if (cohort.getCreator() == null) {
-			cohort.setCreator(Context.getAuthenticatedUser());
-		}
-		if (cohort.getCohortId() != null) {
-			cohort.setChangedBy(Context.getAuthenticatedUser());
-			cohort.setDateChanged(now);
-		}
 		if (log.isInfoEnabled())
 			log.info("Saving cohort " + cohort);
 		
@@ -131,6 +119,13 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 			cohort.setVoidReason(reason);
 			return saveCohort(cohort);
 		}
+	}
+	
+	/**
+	 * @see org.openmrs.api.CohortService#getCohortByUuid(java.lang.String)
+	 */
+	public Cohort getCohortByUuid(String uuid) {
+		return dao.getCohortByUuid(uuid);
 	}
 	
 	/**

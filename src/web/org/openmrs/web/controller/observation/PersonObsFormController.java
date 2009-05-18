@@ -44,13 +44,15 @@ public class PersonObsFormController extends SimpleFormController {
 			return new CommandObject();
 		
 		Person person = Context.getPersonService().getPerson(Integer.valueOf(request.getParameter("personId")));
+		List<Concept> concepts = null;
 		Concept concept = null;
-		if (request.getParameter("conceptId") != null)
+		if (request.getParameter("conceptId") != null) {
 			concept = Context.getConceptService().getConcept(Integer.valueOf(request.getParameter("conceptId")));
+			concepts = Collections.singletonList(concept);
+		}
 		
 		ObsService os = Context.getObsService();
-		List<Obs> ret = concept == null ? os.getObservationsByPerson(person) : os.getObservationsByPersonAndConcept(person,
-		    concept);
+		List<Obs> ret = os.getObservations(Collections.singletonList(person), null, concepts, null, null, null, null, null, null, null, null, true);
 		Collections.sort(ret, new Comparator<Obs>() {
 			
 			public int compare(Obs left, Obs right) {

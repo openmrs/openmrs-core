@@ -1,20 +1,20 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <dataset>
-  <concept_name_tag concept_name_tag_id="1" tag="default" description="name to use when nothing else is available" creator="1" date_created="2007-05-01 00:00:00.0" voided="false"/>
-  <concept_name_tag concept_name_tag_id="2" tag="short" description="preferred short name for a concept" creator="1" date_created="2007-05-01 00:00:00.0" voided="false"/>
-  <concept_name_tag concept_name_tag_id="3" tag="synonym" description="a different word with similar meaning" creator="1" date_created="2007-05-01 00:00:00.0" voided="false"/>
-  <concept_name_tag concept_name_tag_id="4" tag="preferred" description="preferred name in a language" creator="1" date_created="2007-05-01 00:00:00.0" voided="false"/>
-  <concept_name_tag concept_name_tag_id="5" tag="preferred_KE" description="preferred name in Kenya" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
-  <concept_name_tag concept_name_tag_id="6" tag="preferred_LS" description="preferred name in Lesotho" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
-  <concept_name_tag concept_name_tag_id="7" tag="preferred_MW" description="preferred name in Malawi" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
-  <concept_name_tag concept_name_tag_id="8" tag="preferred_RW" description="preferred name in Rwanda" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
-  <concept_name_tag concept_name_tag_id="9" tag="preferred_SA" description="preferred name in South Africa" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
-  <concept_name_tag concept_name_tag_id="10" tag="preferred_TZ" description="preferred name in Tanzania" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
-  <concept_name_tag concept_name_tag_id="11" tag="preferred_UG" description="preferred name in Uganda" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
-  <concept_name_tag concept_name_tag_id="12" tag="preferred_UK" description="preferred name in the United Kingdom" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
-  <concept_name_tag concept_name_tag_id="13" tag="preferred_US" description="preferred name in the United States" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
-  <concept_name_tag concept_name_tag_id="14" tag="preferred_ZM" description="preferred name in Zambia" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
-  <concept_name_tag concept_name_tag_id="15" tag="preferred_ZW" description="preferred name in Zimbabwe" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
-  <role role="Some Role" description="This is a test privilege"/>
+  <concept_name_tag concept_name_tag_id="1" tag="default" description="name to use when nothing else is available" creator="1" date_created="2007-05-01 00:00:00.0" voided="false" uuid="bddc7e05-985c-4cfe-901e-3c0731bf585e"/>
+  <concept_name_tag concept_name_tag_id="2" tag="short" description="preferred short name for a concept" creator="1" date_created="2007-05-01 00:00:00.0" voided="false" uuid="0812d6ad-d146-4f3f-82c5-a523980949b5"/>
+  <concept_name_tag concept_name_tag_id="3" tag="synonym" description="a different word with similar meaning" creator="1" date_created="2007-05-01 00:00:00.0" voided="false" uuid="018b2fb5-4da4-423c-89af-6f6e10d817c3"/>
+  <concept_name_tag concept_name_tag_id="4" tag="preferred" description="preferred name in a language" creator="1" date_created="2007-05-01 00:00:00.0" voided="false" uuid="2f15c5c3-4dc1-42ff-b375-85a0349819e1"/>
+  <concept_name_tag concept_name_tag_id="5" tag="preferred_KE" description="preferred name in Kenya" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="b4d6d3dc-9c91-4039-b4d2-98de2b98c3fc"/>
+  <concept_name_tag concept_name_tag_id="6" tag="preferred_LS" description="preferred name in Lesotho" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="8da2729a-87dc-4303-8523-a69e35bc9a6c"/>
+  <concept_name_tag concept_name_tag_id="7" tag="preferred_MW" description="preferred name in Malawi" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="952fad13-583a-430a-a1bd-013d4f1df630"/>
+  <concept_name_tag concept_name_tag_id="8" tag="preferred_RW" description="preferred name in Rwanda" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="ac946d8e-b8c6-4b0f-8f88-fad2bbc9789a"/>
+  <concept_name_tag concept_name_tag_id="9" tag="preferred_SA" description="preferred name in South Africa" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="30de51bd-a5e1-4cf7-a970-533fae81a387"/>
+  <concept_name_tag concept_name_tag_id="10" tag="preferred_TZ" description="preferred name in Tanzania" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="374ddd66-1d70-4aef-b383-7c6b2735e884"/>
+  <concept_name_tag concept_name_tag_id="11" tag="preferred_UG" description="preferred name in Uganda" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="d2d3b6eb-e29e-4896-8ac8-ca31da349a03"/>
+  <concept_name_tag concept_name_tag_id="12" tag="preferred_UK" description="preferred name in the United Kingdom" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="6c0250a7-fa58-4975-b414-97143d750905"/>
+  <concept_name_tag concept_name_tag_id="13" tag="preferred_US" description="preferred name in the United States" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="57091a65-1277-4b01-809c-bde195a819c7"/>
+  <concept_name_tag concept_name_tag_id="14" tag="preferred_ZM" description="preferred name in Zambia" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="2121697d-65d3-461b-bc80-5c6f2c42310d"/>
+  <concept_name_tag concept_name_tag_id="15" tag="preferred_ZW" description="preferred name in Zimbabwe" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="18d6d504-8d02-4951-a469-f0a32c5d6400"/>
+  <role role="Some Role" description="This is a test privilege" uuid="2486a3c4-d0e6-4d16-8633-d91c04593177"/>
   <user_role user_id="1" role="Some Role"/>
 </dataset>

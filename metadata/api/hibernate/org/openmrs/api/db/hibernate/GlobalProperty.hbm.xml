@@ -7,7 +7,7 @@
 
 	<class name="GlobalProperty" table="global_property">
 		
-		<id name="global_property_id" type="java.lang.Integer" column="global_property_id" length="65535">
+		<id name="globalPropertyId" type="java.lang.Integer" column="global_property_id" length="65535">
 			<generator class="native" />
 		</id>
 
@@ -19,7 +19,7 @@
 
 		<property name="description" type="java.lang.String" not-null="false" />
 		
-		<property name="defaultValue" type="java.lang.String" column="default_value" not-null="true"/>
+		<property name="defaultValue" type="java.lang.String" column="default_property_value" not-null="true"/>
 
 		<many-to-one name="propertyType" column="global_property_type_id" class="GlobalPropertyType" not-null="true"/>
 

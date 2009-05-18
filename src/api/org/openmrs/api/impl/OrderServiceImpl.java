@@ -32,10 +32,12 @@ import org.openmrs.Order;
 import org.openmrs.OrderType;
 import org.openmrs.Patient;
 import org.openmrs.User;
+import org.openmrs.aop.RequiredDataAdvice;
 import org.openmrs.api.APIException;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.OrderDAO;
+import org.openmrs.api.handler.SaveHandler;
 import org.openmrs.order.DrugOrderSupport;
 import org.openmrs.order.OrderUtil;
 import org.openmrs.order.RegimenSuggestion;
@@ -70,13 +72,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @see org.openmrs.api.OrderService#saveOrder(org.openmrs.Order)
 	 */
 	public Order saveOrder(Order order) throws APIException {
-		if (order.getCreator() == null)
-			order.setCreator(Context.getAuthenticatedUser());
-		if (order.getDateCreated() == null)
-			order.setDateCreated(new Date());
-		if (order.getPatient() == null && order.getEncounter() != null)
-			order.setPatient(order.getEncounter().getPatient());
-		
 		ValidateUtil.validate(order);
 		
 		return dao.saveOrder(order);
@@ -153,10 +148,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	public Order unvoidOrder(Order order) throws APIException {
 		order.setVoided(false);
-		order.setVoidedBy(null);
-		order.setDateVoided(null);
-		order.setVoidReason(null);
-		
 		return saveOrder(order);
 	}
 	
@@ -189,14 +180,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @see org.openmrs.api.OrderService#saveOrderType(org.openmrs.OrderType)
 	 */
 	public OrderType saveOrderType(OrderType orderType) throws APIException {
-		if (orderType.getCreator() == null)
-			orderType.setCreator(Context.getAuthenticatedUser());
-		
-		if (orderType.getDateCreated() == null)
-			orderType.setDateCreated(new Date());
-		
-		// date changed?
-		
 		return dao.saveOrderType(orderType);
 	}
 	
@@ -234,9 +217,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		
 		orderType.setRetired(true);
 		orderType.setRetireReason(reason);
-		orderType.setDateRetired(new Date());
-		orderType.setRetiredBy(Context.getAuthenticatedUser());
-		
 		return saveOrderType(orderType);
 	}
 	
@@ -245,10 +225,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	public OrderType unretireOrderType(OrderType orderType) throws APIException {
 		orderType.setRetired(false);
-		orderType.setRetireReason(null);
-		orderType.setDateRetired(null);
-		orderType.setRetiredBy(null);
-		
 		return saveOrderType(orderType);
 	}
 	
@@ -293,13 +269,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		e.setEncounterDatetime(new Date());
 		// TODO: Remove hardcoded encounter type
 		e.setEncounterType(encounterType);
+		RequiredDataAdvice.recursivelyHandle(SaveHandler.class, e, null);
 		for (Order order : orders) {
-			if (order.getCreator() == null) {
-				order.setCreator(Context.getAuthenticatedUser());
-			}
-			if (order.getDateCreated() == null) {
-				order.setDateCreated(new Date());
-			}
 			e.addOrder(order);
 			order.setEncounter(e);
 		}
@@ -616,6 +587,20 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			default:
 				return ORDER_STATUS.NOTVOIDED;
 		}
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getOrderByUuid(java.lang.String)
+	 */
+	public Order getOrderByUuid(String uuid) throws APIException {
+		return dao.getOrderByUuid(uuid);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getOrderTypeByUuid(java.lang.String)
+	 */
+	public OrderType getOrderTypeByUuid(String uuid) throws APIException {
+		return dao.getOrderTypeByUuid(uuid);
 	}
 	
 	/**

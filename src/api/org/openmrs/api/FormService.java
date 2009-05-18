@@ -74,6 +74,9 @@ public interface FormService extends OpenmrsService {
 	@Authorized(OpenmrsConstants.PRIV_VIEW_FORMS)
 	public Form getForm(String name) throws APIException;
 	
+	@Transactional(readOnly = true)
+	public Form getFormByUuid(String uuid) throws APIException;
+	
 	/**
 	 * Get form by exact name & version match. If version is null, then this method behaves like
 	 * {@link #getForm(String)}
@@ -207,6 +210,7 @@ public interface FormService extends OpenmrsService {
 	 * @return New duplicated form
 	 * @throws APIException
 	 * @should clear changed details and update creation details
+	 * @should give a new uuid to the duplicated form
 	 */
 	@Authorized(OpenmrsConstants.PRIV_MANAGE_FORMS)
 	public Form duplicateForm(Form form) throws APIException;
@@ -305,6 +309,9 @@ public interface FormService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_FIELD_TYPES)
 	public FieldType getFieldType(Integer fieldTypeId) throws APIException;
+	
+	@Transactional(readOnly = true)
+	public FieldType getFieldTypeByUuid(String uuid) throws APIException;
 	
 	/**
 	 * @deprecated use {@link #getAllForms()}
@@ -449,6 +456,12 @@ public interface FormService extends OpenmrsService {
 	@Authorized(OpenmrsConstants.PRIV_VIEW_FORMS)
 	public Field getField(Integer fieldId) throws APIException;
 	
+	@Transactional(readOnly = true)
+	public Field getFieldByUuid(String uuid) throws APIException;
+	
+	@Transactional(readOnly = true)
+	public FieldAnswer getFieldAnswerByUuid(String uuid) throws APIException;
+	
 	/**
 	 * Creates or updates the given Field
 	 * 
@@ -507,6 +520,9 @@ public interface FormService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_FORMS)
 	public FormField getFormField(Integer formFieldId) throws APIException;
+	
+	@Transactional(readOnly = true)
+	public FormField getFormFieldByUuid(String uuid) throws APIException;
 	
 	/**
 	 * Finds the FormField defined for this form/concept combination Calls

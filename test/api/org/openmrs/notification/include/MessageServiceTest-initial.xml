@@ -1,27 +1,27 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <dataset>
-  <concept_name_tag concept_name_tag_id="1" tag="default" description="name to use when nothing else is available" creator="1" date_created="2007-05-01 00:00:00.0" voided="false"/>
-  <concept_name_tag concept_name_tag_id="2" tag="short" description="preferred short name for a concept" creator="1" date_created="2007-05-01 00:00:00.0" voided="false"/>
-  <concept_name_tag concept_name_tag_id="3" tag="synonym" description="a different word with similar meaning" creator="1" date_created="2007-05-01 00:00:00.0" voided="false"/>
-  <concept_name_tag concept_name_tag_id="4" tag="preferred" description="preferred name in a language" creator="1" date_created="2007-05-01 00:00:00.0" voided="false"/>
-  <concept_name_tag concept_name_tag_id="5" tag="preferred_KE" description="preferred name in Kenya" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
-  <concept_name_tag concept_name_tag_id="6" tag="preferred_LS" description="preferred name in Lesotho" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
-  <concept_name_tag concept_name_tag_id="7" tag="preferred_MW" description="preferred name in Malawi" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
-  <concept_name_tag concept_name_tag_id="8" tag="preferred_RW" description="preferred name in Rwanda" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
-  <concept_name_tag concept_name_tag_id="9" tag="preferred_SA" description="preferred name in South Africa" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
-  <concept_name_tag concept_name_tag_id="10" tag="preferred_TZ" description="preferred name in Tanzania" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
-  <concept_name_tag concept_name_tag_id="11" tag="preferred_UG" description="preferred name in Uganda" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
-  <concept_name_tag concept_name_tag_id="12" tag="preferred_UK" description="preferred name in the United Kingdom" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
-  <concept_name_tag concept_name_tag_id="13" tag="preferred_US" description="preferred name in the United States" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
-  <concept_name_tag concept_name_tag_id="14" tag="preferred_ZM" description="preferred name in Zambia" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
-  <concept_name_tag concept_name_tag_id="15" tag="preferred_ZW" description="preferred name in Zimbabwe" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
-  <global_property property="mail.debug" property_value="false" description="true/false whether to print debugging information during mailing"/>
-  <global_property property="mail.default_content_type" property_value="text/plain" description="Content type to append to the mail messages"/>
-  <global_property property="mail.from" property_value="info@openmrs.org" description="Email address to use as the default from address"/>
-  <global_property property="mail.password" property_value="test" description="Password for the SMTP user (if smtp_auth is enabled)"/>
-  <global_property property="mail.smtp_auth" property_value="false" description="true/false whether the smtp host requires authentication"/>
-  <global_property property="mail.smtp_host" property_value="localhost" description="SMTP host name"/>
-  <global_property property="mail.smtp_port" property_value="25" description="SMTP port"/>
-  <global_property property="mail.transport_protocol" property_value="smtp" description="Transport protocol for the messaging engine. Valid values: smtp"/>
-  <global_property property="mail.user" property_value="test" description="Username of the SMTP user (if smtp_auth is enabled)"/>
+  <concept_name_tag concept_name_tag_id="1" tag="default" description="name to use when nothing else is available" creator="1" date_created="2007-05-01 00:00:00.0" voided="false" uuid="1d4b38ba-5af0-4cc9-9d02-54c35e5e310b"/>
+  <concept_name_tag concept_name_tag_id="2" tag="short" description="preferred short name for a concept" creator="1" date_created="2007-05-01 00:00:00.0" voided="false" uuid="7f8cfd53-6501-4879-a2bd-3e9433f3ad1c"/>
+  <concept_name_tag concept_name_tag_id="3" tag="synonym" description="a different word with similar meaning" creator="1" date_created="2007-05-01 00:00:00.0" voided="false" uuid="50669bdb-3354-40e9-a909-a4551010bce5"/>
+  <concept_name_tag concept_name_tag_id="4" tag="preferred" description="preferred name in a language" creator="1" date_created="2007-05-01 00:00:00.0" voided="false" uuid="f76c4853-8b84-46c4-9ff6-9c1775d44ce7"/>
+  <concept_name_tag concept_name_tag_id="5" tag="preferred_KE" description="preferred name in Kenya" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="f4aad344-5440-44df-9694-86defe5dc8c5"/>
+  <concept_name_tag concept_name_tag_id="6" tag="preferred_LS" description="preferred name in Lesotho" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="0aafad82-5412-434f-8e02-c0583eef0ac1"/>
+  <concept_name_tag concept_name_tag_id="7" tag="preferred_MW" description="preferred name in Malawi" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="bd422102-1b0e-48bd-9390-4a8eac54b911"/>
+  <concept_name_tag concept_name_tag_id="8" tag="preferred_RW" description="preferred name in Rwanda" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="4bbfb1a0-4c98-468f-96f9-2d29c1afe7c6"/>
+  <concept_name_tag concept_name_tag_id="9" tag="preferred_SA" description="preferred name in South Africa" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="ee19abf3-61a6-4687-a651-108a95ebdf97"/>
+  <concept_name_tag concept_name_tag_id="10" tag="preferred_TZ" description="preferred name in Tanzania" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="f44ba863-5a3f-4024-bfcc-7d860de25ff8"/>
+  <concept_name_tag concept_name_tag_id="11" tag="preferred_UG" description="preferred name in Uganda" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="90de9ab9-adfb-4406-bb1b-a77283e6aa85"/>
+  <concept_name_tag concept_name_tag_id="12" tag="preferred_UK" description="preferred name in the United Kingdom" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="c0c82e2c-4e54-4bbc-ab8e-4ac5fb025408"/>
+  <concept_name_tag concept_name_tag_id="13" tag="preferred_US" description="preferred name in the United States" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="2e3a2535-9c74-4202-9b1b-76f044b8375c"/>
+  <concept_name_tag concept_name_tag_id="14" tag="preferred_ZM" description="preferred name in Zambia" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="407340c7-90bb-4a25-bdb9-858a3f48fa3a"/>
+  <concept_name_tag concept_name_tag_id="15" tag="preferred_ZW" description="preferred name in Zimbabwe" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="f3161329-ab40-4714-ade1-5de257cf38b2"/>
+  <global_property property="mail.debug" property_value="false" description="true/false whether to print debugging information during mailing" uuid="c3bcf4ab-2429-42ae-8f5f-68b255af65eb"/>
+  <global_property property="mail.default_content_type" property_value="text/plain" description="Content type to append to the mail messages" uuid="97237108-c166-431e-ae9b-81a6d189038f"/>
+  <global_property property="mail.from" property_value="info@openmrs.org" description="Email address to use as the default from address" uuid="b6da3139-9c0b-442f-9fe9-9c0688243469"/>
+  <global_property property="mail.password" property_value="test" description="Password for the SMTP user (if smtp_auth is enabled)" uuid="68cd6e2d-8d0a-4106-9088-cadd90ac738b"/>
+  <global_property property="mail.smtp_auth" property_value="false" description="true/false whether the smtp host requires authentication" uuid="af3d444e-7712-42e6-918a-e0cfb66e3f91"/>
+  <global_property property="mail.smtp_host" property_value="localhost" description="SMTP host name" uuid="0fbd1a11-b282-4dd3-80d2-673ee868ce8a"/>
+  <global_property property="mail.smtp_port" property_value="25" description="SMTP port" uuid="cd17167a-19b1-4723-bc2c-76a66899084c"/>
+  <global_property property="mail.transport_protocol" property_value="smtp" description="Transport protocol for the messaging engine. Valid values: smtp" uuid="dbf676aa-aa53-45c4-a0b6-8d4b6137b38f"/>
+  <global_property property="mail.user" property_value="test" description="Username of the SMTP user (if smtp_auth is enabled)" uuid="d6a5cdfd-853b-4dac-b8f1-1d82808616de"/>
 </dataset>

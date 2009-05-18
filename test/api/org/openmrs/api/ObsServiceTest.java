@@ -42,6 +42,7 @@ import org.openmrs.Obs;
 import org.openmrs.Order;
 import org.openmrs.Patient;
 import org.openmrs.Person;
+import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.ObsServiceImpl;
 import org.openmrs.obs.ComplexData;
@@ -53,9 +54,6 @@ import org.openmrs.test.Verifies;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
-import org.openmrs.validator.ObsValidator;
-import org.springframework.validation.BindException;
-import org.springframework.validation.Errors;
 
 /**
  * TODO clean up and add tests for all methods in ObsService
@@ -88,7 +86,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		Order order1 = null;
 		Concept concept1 = conceptService.getConcept(1);
 		Patient patient1 = new Patient(2);
-		Encounter encounter1 = (Encounter) es.getEncounter(1);
+		Encounter encounter1 = es.getEncounter(1);
 		Date datetime1 = new Date();
 		Location location1 = locationService.getLocation(1);
 		Integer valueGroupId1 = new Integer(5);
@@ -131,7 +129,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		Order order2 = null;
 		Concept concept2 = conceptService.getConcept(2);
 		Patient patient2 = new Patient(1);
-		Encounter encounter2 = (Encounter) es.getEncounter(2);
+		Encounter encounter2 = es.getEncounter(2);
 		Date datetime2 = new Date();
 		Location location2 = locationService.getLocation(1);
 		Integer valueGroupId2 = new Integer(3);
@@ -222,6 +220,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		
 		// a voided obs shouldn't be passed through to the database
 		obs.setVoided(Boolean.TRUE);
+		obs.setVoidedBy(new User(1));
 		String reason = "Testing voiding a voided obs";
 		Obs notVoidedObs = obsService.voidObs(obs, reason);
 		// we should get back the same obs as we passed in for a create
@@ -708,6 +707,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		child2.setPerson(new Patient(2));
 		
 		oParent.addGroupMember(child2);
+		//oParent.setRequiredData(new OpenmrsObject.DefaultRequiredDataHelper(Context.getAuthenticatedUser(), new Date()));
 		
 		List<Obs> obs4 = os.findObsByGroupId(oParent.getObsId());
 		
@@ -1132,6 +1132,21 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		ComplexObsHandler dummyHandlerToOverrideAgain = os.getHandler("DummyHandlerToOverride");
 		Assert.assertTrue(dummyHandlerToOverrideAgain instanceof TextHandler);
 		
+	}
+	
+	/**
+	 * @see {@link ObsService#saveObs(Obs,String)}
+	 */
+	@Test
+	@Verifies(value = "should void the given obs in the database", method = "saveObs(Obs,String)")
+	public void saveObs_shouldVoidTheGivenObsInTheDatabase() throws Exception {
+		Obs obs = Context.getObsService().getObs(7);
+		obs.setValueNumeric(1.0);
+		Context.getObsService().saveObs(obs, "just testing");
+		
+		// fetch the obs from the database again
+		obs = Context.getObsService().getObs(7);
+		Assert.assertTrue(obs.isVoided());
 	}
 	
 }

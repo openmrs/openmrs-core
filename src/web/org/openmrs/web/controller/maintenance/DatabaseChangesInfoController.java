@@ -13,46 +13,34 @@
  */
 package org.openmrs.web.controller.maintenance;
 
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.openmrs.util.DatabaseUpdater;
-import org.openmrs.util.DatabaseUpdater.OpenMRSChangeSet;
-import org.springframework.validation.BindException;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.SimpleFormController;
-import org.springframework.web.servlet.view.RedirectView;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
  * This backs the maintenance/databaseChangesInfo.jsp page that lists off all changes that have been
  * run by liquibase
+ * 
+ * @see DatabaseUpdater
  */
-public class DatabaseChangesInfoController extends SimpleFormController {
+@Controller
+public class DatabaseChangesInfoController {
 	
 	/**
-	 * The onSubmit function receives the form/command object that was modified by the input form
-	 * and saves it to the db
+	 * Called for GET requests only on the databaseChangesInfo page. POST page requests are invalid
+	 * and ignored.
 	 * 
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
-	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
-	 *      org.springframework.validation.BindException)
+	 * @param model the key value pair that will be accessible from the jsp page
+	 * @throws Exception if there is trouble getting the database changes from liquibase
 	 */
-	@Override
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
-	                                BindException errors) throws Exception {
-		return new ModelAndView(new RedirectView(getSuccessView()));
+	@RequestMapping(method = RequestMethod.GET, value = "/admin/maintenance/databaseChangesInfo")
+	public String showPage(ModelMap model) throws Exception {
+		model.addAttribute("databaseChanges", DatabaseUpdater.getDatabaseChanges());
+		
+		// where Spring can find the jsp.  /WEB-INF/view is prepended, and ".jsp" is appended
+		return "/admin/maintenance/databaseChangesInfo";
 	}
 	
-	/**
-	 * This is called prior to displaying a form for the first time. It tells Spring the
-	 * form/command object to load into the request
-	 * 
-	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
-	 */
-	@Override
-	protected List<OpenMRSChangeSet> formBackingObject(HttpServletRequest request) throws Exception {
-		return DatabaseUpdater.getDatabaseChanges();
-	}
 }
