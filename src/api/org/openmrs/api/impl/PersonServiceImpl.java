@@ -71,7 +71,19 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 *      java.lang.String)
 	 */
 	public Set<Person> getSimilarPeople(String name, Integer birthyear, String gender) throws APIException {
-		return dao.getSimilarPeople(name, birthyear, gender);
+		return getSimilarPeople(name, birthyear, gender, "person");
+	}
+	
+	/**
+	 * @see org.openmrs.api.PersonService#getSimilarPeople(java.lang.String, java.lang.Integer, java.lang.String, java.lang.String)
+	 */
+	public Set<Person> getSimilarPeople(String nameSearch, Integer birthyear, String gender, String personType)
+	                                                                                                           throws APIException {
+		if (!personType.equals("person") && !personType.equals("user") && !personType.equals("patient")) {
+			throw new IllegalArgumentException("PersonType argument must be 'person', 'user', or 'patient' but was: " + personType);
+		}
+		
+		return dao.getSimilarPeople(nameSearch, birthyear, gender, personType);
 	}
 	
 	/**

@@ -30,6 +30,7 @@ import org.openmrs.Person;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
 import org.openmrs.web.dwr.PersonListItem;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
@@ -154,8 +155,12 @@ public class AddPersonController extends SimpleFormController {
 				if (gender.length() < 1)
 					gender = null;
 				
+				if (!StringUtils.hasLength(personType)) {
+					personType = "person";
+				}
+				
 				personList = new Vector<PersonListItem>();
-				for (Person p : ps.getSimilarPeople(name, d, gender)) {
+				for (Person p : ps.getSimilarPeople(name, d, gender, personType)) {
 					personList.add(PersonListItem.createBestMatch(p));
 				}
 			}
