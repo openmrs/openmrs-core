@@ -10,7 +10,7 @@
 	      <param name="class" value="java.util.Date"/>
 		</create>
 		
-		<convert match="org.openmrs.web.dwr.DWRException" converter="exception">
+		<convert match="java.lang.Exception" converter="exception">
 			<param name="exclude" value="stackTrace"/>
 		</convert>
 		

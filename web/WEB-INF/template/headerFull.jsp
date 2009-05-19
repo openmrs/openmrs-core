@@ -95,13 +95,13 @@
 		<div id="content">
 
 			<script type="text/javascript">
-				//// prevents users getting popup alerts when viewing pages
+				// prevents users getting popup alerts when viewing pages
 				var handler = function(msg, ex) {
-					if (ex.localizedMessage) {
-						alert("An error occurred: " + ex.message);
-					}
-					else if (typeof msg == "string")
-						window.status = "DWR warning/error: " + msg + ". " + ex;
+					var div = document.getElementById("openmrs_dwr_error");
+					div.style.display = ""; // show the error div
+					var msgDiv = document.getElementById("openmrs_dwr_error_msg");
+					msgDiv.innerHTML = '<spring:message code="error.dwr"/>' + " <b>" + msg + "</b>";
+					
 				};
 				dwr.engine.setErrorHandler(handler);
 				dwr.engine.setWarningHandler(handler);
@@ -132,3 +132,10 @@
 			<c:if test="${err != null}">
 				<div id="openmrs_error"><spring:message code="${err}" text="${err}" arguments="${errArgs}"/></div>
 			</c:if>
+			<div id="openmrs_dwr_error" style="display:none" class="error">
+				<div id="openmrs_dwr_error_msg"></div>
+				<div id="openmrs_dwr_error_close" class="smallMessage">
+					<i><spring:message code="error.dwr.stacktrace"/></i> &nbsp; 
+					<a href="#" onclick="this.parentNode.parentNode.style.display='none'"><spring:message code="error.dwr.hide"/></a>
+				</div>
+			</div>
