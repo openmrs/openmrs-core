@@ -13,11 +13,12 @@
  */
 package org.openmrs.web.servlet;
 
-import java.io.File;
-import java.io.FileInputStream;
+import java.awt.image.RenderedImage;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import javax.imageio.ImageIO;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -27,8 +28,8 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Obs;
-import org.openmrs.api.ObsService;
 import org.openmrs.api.context.Context;
+import org.openmrs.obs.ComplexData;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
@@ -63,50 +64,35 @@ public class ComplexObsServlet extends HttpServlet {
 			return;
 		}
 		
-		ObsService service = Context.getObsService();
-		Obs complexObs = service.getObs(Integer.valueOf(obsId));
-		
-		/*
-		 * TODO: Should extracting the filename, etc. be done by the handler?
-		 */
-		// Extract the url from the Obs.valueComplex and create a file.
-		String[] valComplex = complexObs.getValueComplex().split("\\|");
-		String url = (valComplex.length < 2) ? valComplex[0] : valComplex[valComplex.length - 1];
-		File file = new File(url);
-		
-		if (!file.exists()) {
-			// Try searching in the Application Data Directory.
-			String fileName = file.getName();
-			File dir = OpenmrsUtil.getDirectoryInApplicationDataDirectory(Context.getAdministrationService()
-			        .getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR));
-			file = new File(dir, fileName);
-		}
-		if (!file.exists()) {
-			throw new ServletException("The file: " + file + " does not exist.");
-		}
-		
-		String filename = response.encodeURL(url);
+		Obs complexObs = Context.getObsService().getComplexObs(Integer.valueOf(obsId), view);
+		ComplexData cd = complexObs.getComplexData();
+		Object data = cd.getData();
 		
 		if ("download".equals(viewType)) {
-			response.setHeader("Content-Disposition", "attachment; filename=" + filename);
+			response.setHeader("Content-Disposition", "attachment; filename=" + cd.getTitle());
 			response.setHeader("Pragma", "no-cache");
 		}
 		
-		log.debug("Copying file stream to outputstream: " + file.getAbsolutePath());
-		
-		InputStream inStream = null;
-		try {
-			inStream = new FileInputStream(file);
-			OpenmrsUtil.copyFile(inStream, response.getOutputStream());
+		if (data instanceof byte[]) {
+			ByteArrayInputStream stream = new ByteArrayInputStream((byte[]) data);
+			OpenmrsUtil.copyFile(stream, response.getOutputStream());
+		} else if (RenderedImage.class.isAssignableFrom(data.getClass())) {
+			RenderedImage img = (RenderedImage) data;
+			String[] parts = cd.getTitle().split(".");
+			String extension = "jpg"; // default extension
+			if (parts.length > 0) {
+				extension = parts[parts.length - 1];
+			}
+			
+			ImageIO.write(img, extension, response.getOutputStream());
+		} else if (InputStream.class.isAssignableFrom(data.getClass())) {
+			InputStream stream = (InputStream) data;
+			OpenmrsUtil.copyFile(stream, response.getOutputStream());
+			stream.close();
+		} else {
+			throw new ServletException("Couldn't serialize complex obs data for obsId=" + obsId + " of type "
+			        + data.getClass());
 		}
-		finally {
-			if (inStream != null)
-				try {
-					inStream.close();
-				}
-				catch (Exception e) {}
-		}
-		
 	}
 	
 }
