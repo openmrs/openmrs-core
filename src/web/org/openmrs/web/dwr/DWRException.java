@@ -14,9 +14,12 @@
 package org.openmrs.web.dwr;
 
 /**
- * If a dwr class throws this error, the user will see a popup with the text of the error message.
- * All other exceptions thrown will only produce a small notice in the status bar of the browser.
+ * This class is no longer needed. If a dwr methodo throws <b>any</b> error, the user will see a div
+ * on the screen filled with the error message.
+ * 
+ * @deprecated use the appropriate exception instead of this one
  */
+@Deprecated
 public class DWRException extends Exception {
 	
 	private static final long serialVersionUID = 6820574097052501261L;
