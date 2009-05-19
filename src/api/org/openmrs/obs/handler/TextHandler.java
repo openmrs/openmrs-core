@@ -29,6 +29,7 @@ import org.openmrs.util.OpenmrsUtil;
 /**
  * Handler for storing files for complex obs to the file system. Files are stored in the location
  * specified by the global property: "obs.complex_obs_dir"
+ * @since 1.5
  */
 public class TextHandler extends AbstractHandler implements ComplexObsHandler {
 	

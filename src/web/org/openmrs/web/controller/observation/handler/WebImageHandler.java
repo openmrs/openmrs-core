@@ -20,6 +20,8 @@ import org.openmrs.web.WebConstants;
 
 /**
  * Extends functionality of {@link ImageHandler} for web specific views.
+ * 
+ * @since 1.5
  */
 public class WebImageHandler extends ImageHandler {
 	

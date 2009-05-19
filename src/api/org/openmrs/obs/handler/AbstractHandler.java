@@ -30,6 +30,8 @@ import org.openmrs.util.OpenmrsUtil;
 /**
  * Abstract handler for some convenience methods Files are stored in the location specified by the
  * global property: "obs.complex_obs_dir"
+ * 
+ * @since 1.5
  */
 public class AbstractHandler {
 	
