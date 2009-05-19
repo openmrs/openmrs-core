@@ -851,30 +851,6 @@
 		</delete>
 	</changeSet>
 	
-	<changeSet id="200905150821" author="bwolfe">
-		<comment>Deleting duplicate concept word keys</comment>
-		<sql>delete from concept_word
-             where
-               concept_word_id not in (
-                              select 
-                                concept_word_id
-                              from (select
-                                      min(concept_word_id) as concept_word_id
-                                    from
-                                      concept_word 
-                                    group by
-                                      concept_id, word, locale
-                                   ) as tmp_concept_word_dupes
-                              )
-              <!-- complicated sql needed to get around deleting from a table and doing a select from it -->
-		</sql>
-	</changeSet>
-	
-	<changeSet id="200904271042" author="bwolfe">
-		<comment>Remove the now unused synonym column</comment>
-		<dropColumn tableName="concept_word" columnName="synonym"/>
-	</changeSet>
-	
 	<changeSet id="200905071626" author="bwolfe" failOnError="false">
 		<preConditions onFail="MARK_RAN">
 			<not>
@@ -1626,6 +1602,30 @@
 		</preConditions>
 		<comment>Adding foreign key for concept_word.concept_id column</comment>
 		<addForeignKeyConstraint baseTableName="concept_word" baseColumnNames="concept_id" constraintName="word_for" referencedTableName="concept" referencedColumnNames="concept_id" />
+	</changeSet>
+	
+	<changeSet id="200905150821" author="bwolfe">
+		<comment>Deleting duplicate concept word keys</comment>
+		<sql>delete from concept_word
+             where
+               concept_word_id not in (
+                              select 
+                                concept_word_id
+                              from (select
+                                      min(concept_word_id) as concept_word_id
+                                    from
+                                      concept_word 
+                                    group by
+                                      concept_id, word, locale
+                                   ) as tmp_concept_word_dupes
+                              )
+              <!-- complicated sql needed to get around deleting from a table and doing a select from it -->
+		</sql>
+	</changeSet>
+	
+	<changeSet id="200904271042" author="bwolfe">
+		<comment>Remove the now unused synonym column</comment>
+		<dropColumn tableName="concept_word" columnName="synonym"/>
 	</changeSet>
 	
 </databaseChangeLog>
