@@ -601,7 +601,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * @throws APIException
 	 * @should execute sql containing group by
 	 */
-	// TODO Authorization?!?
+	@Authorized(OpenmrsConstants.PRIV_SQL_LEVEL_ACCESS)
 	public List<List<Object>> executeSQL(String sql, boolean selectOnly) throws APIException;
 	
 	/**
@@ -612,6 +612,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * @should return null if no implementation id is defined yet
 	 */
 	@Transactional(readOnly = true)
+	@Authorized(OpenmrsConstants.PRIV_MANAGE_IMPLEMENTATION_ID)
 	public ImplementationId getImplementationId() throws APIException;
 	
 	/**
@@ -622,6 +623,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * @should create implementation id in database
 	 * @should overwrite implementation id in database if exists
 	 */
+	@Authorized(OpenmrsConstants.PRIV_MANAGE_IMPLEMENTATION_ID)
 	public void setImplementationId(ImplementationId implementationId) throws APIException;
 	
 	/**

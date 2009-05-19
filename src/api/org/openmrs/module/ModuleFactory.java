@@ -572,11 +572,17 @@ public class ModuleFactory {
 		
 		// version is greater than the currently installed version. execute this update.
 		if (executeSQL) {
-			log.debug("Executing sql: " + sql);
-			String[] sqlStatements = sql.split(";");
-			for (String sqlStatement : sqlStatements) {
-				if (sqlStatement.trim().length() > 0)
-					as.executeSQL(sqlStatement, false);
+			try {
+				Context.addProxyPrivilege(OpenmrsConstants.PRIV_SQL_LEVEL_ACCESS);
+				log.debug("Executing sql: " + sql);
+				String[] sqlStatements = sql.split(";");
+				for (String sqlStatement : sqlStatements) {
+					if (sqlStatement.trim().length() > 0)
+						as.executeSQL(sqlStatement, false);
+				}
+			}
+			finally {
+				Context.removeProxyPrivilege(OpenmrsConstants.PRIV_SQL_LEVEL_ACCESS);
 			}
 			
 			// save the global property
