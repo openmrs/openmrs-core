@@ -465,7 +465,7 @@ public class HibernateUserDAO implements UserDAO {
 		log.debug("name: " + name);
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(User.class);
-		
+		criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 		if (name != null) {
 			criteria.createAlias("names", "name");
 			
