@@ -30,6 +30,8 @@ import org.openmrs.api.APIException;
  *   ComplexData complexData = complexObs.getComplexData();
  *   Object largeStoredObject = complexData.getData();
  * </pre>
+ * 
+ * @since 1.5
  */
 public interface ComplexObsHandler {
 	
