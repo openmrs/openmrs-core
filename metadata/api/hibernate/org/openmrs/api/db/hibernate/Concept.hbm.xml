@@ -38,19 +38,17 @@
 			<column name="datatype_id" />
 		</many-to-one>
 
-		<set name="names" lazy="false" cascade="all-delete-orphan,evict" inverse="true" order-by="name asc">
+		<set name="names" lazy="true" cascade="all-delete-orphan,evict" inverse="true" order-by="name asc">
 			<key column="concept_id" not-null="true" />
 			<one-to-many class="ConceptName" />
 		</set>
 
-		<set name="descriptions" lazy="false" inverse="true" cascade="all" 
+		<set name="descriptions" lazy="true" inverse="true" cascade="all" 
 			order-by="concept_description_id">
 			<key column="concept_id" />
 			<one-to-many class="ConceptDescription" />
 		</set>
 		
-		<!-- This will need to be changed to lazy="false" if we ever have a subobject that would need to store/load this 
-		     (Right now, ConceptNumerics, ConceptComplex, and ConceptDerived objects do not have coded "answers" -->
 		<set name="answers" lazy="true" cascade="all,evict"
 				table="concept_answer" order-by="concept_answer_id asc" access="field" inverse="true">
 			<key column="concept_id" not-null="true" />
