@@ -2,7 +2,7 @@
 	<li class="first">
 		<a href="${pageContext.request.contextPath}/admin"><spring:message code="admin.title.short"/></a>
 	</li>
-	<openmrs:hasPrivilege privilege="Manage Concept Sources">
+	<openmrs:hasPrivilege privilege="Manage Implementation Id">
 		<li <c:if test='<%= request.getRequestURI().contains("implementationid") %>'>class="active"</c:if>>
 			<a href="${pageContext.request.contextPath}/admin/maintenance/implementationid.form">
 				<spring:message code="ImplementationId.set"/>
