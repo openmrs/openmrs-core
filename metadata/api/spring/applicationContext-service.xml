@@ -133,7 +133,7 @@
 	<bean id="cohortDAO" class="org.openmrs.api.db.hibernate.HibernateCohortDAO">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
 	</bean>
-	<bean id="serializedObjectDAO" class="org.openmrs.api.db.hibernate.HibernateSerializedObjectDAO">
+	<bean id="serializedObjectDAO" class="org.openmrs.api.db.hibernate.HibernateSerializedObjectDAO" factory-method="getInstance">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
 		<property name="supportedTypes">
 			<list></list>

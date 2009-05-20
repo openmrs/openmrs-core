@@ -38,10 +38,28 @@ import org.openmrs.serialization.OpenmrsSerializer;
 public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 	
 	protected final Log log = LogFactory.getLog(getClass());
+	private static HibernateSerializedObjectDAO instance;
+	
+	//********* PROPERTIES **********
 	
 	private SessionFactory sessionFactory;
-	
 	private List<Class<? extends OpenmrsObject>> supportedTypes;
+	
+	/**
+	 * Private Constructor to support a singleton instance
+	 */
+	private HibernateSerializedObjectDAO() { }
+	
+	/**
+	 * Singleton Factory method
+	 * @return a singleton instance of this class
+	 */
+	public static HibernateSerializedObjectDAO getInstance() {
+		if (instance == null) {
+			instance = new HibernateSerializedObjectDAO();
+		}
+		return instance;
+	}
 	
 	/**
 	 * @see org.openmrs.api.db.SerializedObjectDAO#getObject(java.lang.Class, java.lang.Integer)
