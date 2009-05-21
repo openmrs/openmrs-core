@@ -149,6 +149,7 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 		OpenmrsSerializer serializer = getSerializer(serializedObject);
 		String data = serializer.serialize(object);
 		
+		serializedObject.setUuid(object.getUuid());
 		serializedObject.setType(baseType);
 		serializedObject.setSubtype(object.getClass());
 		serializedObject.setSerializationClass(serializer.getClass());
@@ -260,6 +261,7 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 			throw new DAOException("Unable to deserialize object: " + serializedObject);
 		}
 		obj.setId(serializedObject.getId());
+		obj.setUuid(serializedObject.getUuid());
 		return obj;
 	}
 	
