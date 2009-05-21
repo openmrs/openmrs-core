@@ -132,7 +132,7 @@ public class UpdateFilter extends StartupFilter {
 				}
 				catch (InterruptedException e) {
 					log.error("Unable to sleep", e);
-					throw new IOException(e);
+					throw new IOException("InterruptedException trying to sleep thread: " + e.getMessage());
 				}
 				errors.add("Unable to authenticate as a " + OpenmrsConstants.SUPERUSER_ROLE
 				        + ". Invalid username or password");
