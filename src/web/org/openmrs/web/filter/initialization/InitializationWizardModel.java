@@ -24,151 +24,146 @@ import java.util.List;
 public class InitializationWizardModel {
 	
 	// automatically given to the .vm files and used there
-	protected static final String headerTemplate = "org/openmrs/web/filter/initialization/header.vm";
+	public static final String headerTemplate = "org/openmrs/web/filter/initialization/header.vm";
 	
 	// automatically given to the .vm files and used there
-	protected static final String footerTemplate = "org/openmrs/web/filter/initialization/footer.vm";
+	public static final String footerTemplate = "org/openmrs/web/filter/initialization/footer.vm";
 	
 	/**
 	 * Records completed tasks and are displayed at the top of the page upon error
 	 */
-	protected List<String> workLog = new ArrayList<String>();
-	
-	/**
-	 * Records errors that will be displayed to the user
-	 */
-	protected List<String> errors = new ArrayList<String>();
+	public List<String> workLog = new ArrayList<String>();
 	
 	/**
 	 * Whether the runtime properties file could possible be created. (only read by the velocity
 	 * scripts)
 	 */
 	
-	protected boolean canCreate = true;
+	public boolean canCreate = true;
 	
 	/**
 	 * Error message from not being able to create the runtime properties file (only read by the
 	 * velocity scripts)
 	 */
 	
-	protected String cannotCreateErrorMessage = "";
+	public String cannotCreateErrorMessage = "";
 	
 	/**
 	 * Whether the runtime file can be edited (only read by the velocity scripts)
 	 */
 	
-	protected boolean canWrite = true;
+	public boolean canWrite = true;
 	
 	/**
 	 * The location of the runtime properties file (only read by the velocity scripts)
 	 */
 	
-	protected String runtimePropertiesPath = "";
+	public String runtimePropertiesPath = "";
 	
 	/**
 	 * True/false marker for the question "Do you currently have an OpenMRS database installed"
 	 */
-	protected Boolean hasCurrentOpenmrsDatabase = true;
+	public Boolean hasCurrentOpenmrsDatabase = true;
 	
 	/**
 	 * True/false marker for the
 	 * question"Do you currently have a database user other than root that has read/write access"
 	 */
-	protected Boolean hasCurrentDatabaseUser = true;
+	public Boolean hasCurrentDatabaseUser = true;
 	
 	/**
 	 * Filled out by the user on the databasesetup.vm page
 	 */
-	protected String databaseName = "openmrs";
+	public String databaseName = "openmrs";
 	
 	/**
 	 * Filled out by user on the databasesetup.vm page Looks like:
 	 */
-	protected String databaseConnection = "jdbc:mysql://localhost:3306/@DBNAME@?autoReconnect=true&sessionVariables=storage_engine=InnoDB&useUnicode=true&characterEncoding=UTF-8";
+	public String databaseConnection = "jdbc:mysql://localhost:3306/@DBNAME@?autoReconnect=true&sessionVariables=storage_engine=InnoDB&useUnicode=true&characterEncoding=UTF-8";
 	
 	/**
 	 * Filled in on databasesetup.vm
 	 */
-	protected String createDatabaseUsername = "root";
+	public String createDatabaseUsername = "root";
 	
 	/**
 	 * Filled in on databasesetup.vm
 	 */
-	protected String createDatabasePassword = "";
+	public String createDatabasePassword = "";
 	
 	/**
 	 * DB user that can create an openmrs db user Filled in on databasetablesanduser.vm
 	 */
-	protected String createUserUsername = "root";
+	public String createUserUsername = "root";
 	
 	/**
 	 * DB user that can create an openmrs db user Filled in on databasetablesanduser.vm
 	 */
-	protected String createUserPassword = "";
+	public String createUserPassword = "";
 	
 	/**
 	 * The username of a user that exists that can read/write to openmrs. Entered on
 	 * databasetablesanduser page
 	 */
-	protected String currentDatabaseUsername = "";
+	public String currentDatabaseUsername = "";
 	
 	/**
 	 * The password of a user that exists that can read/write to openmrs. Entered on
 	 * databasetablesanduser page
 	 */
-	protected String currentDatabasePassword = "";
+	public String currentDatabasePassword = "";
 	
 	/**
 	 * Asked for on the databasetablesanduser.vm page to know if their existing database has the
 	 * tables or not
 	 */
-	protected Boolean createTables = Boolean.FALSE;
+	public Boolean createTables = Boolean.FALSE;
 	
 	/**
 	 * if the user asked us to create the user for openmrs
 	 */
-	protected Boolean createDatabaseUser = Boolean.FALSE;
+	public Boolean createDatabaseUser = Boolean.FALSE;
 	
 	/**
 	 * Does the user want to add the demo data to the database?
 	 */
-	protected Boolean addDemoData = Boolean.FALSE;
+	public Boolean addDemoData = Boolean.FALSE;
 	
 	/**
 	 * Asked for on the otherproperties.vm page to know if the allow_web_admin runtime property is
 	 * true/false
 	 */
-	protected Boolean moduleWebAdmin = Boolean.TRUE;
+	public Boolean moduleWebAdmin = Boolean.TRUE;
 	
 	/**
 	 * Asked for on otherproperties.vm page to know if the runtime property for auto updating their
 	 * db is true/false
 	 */
-	protected Boolean autoUpdateDatabase = Boolean.TRUE;
+	public Boolean autoUpdateDatabase = Boolean.FALSE;
 	
 	/**
 	 * Password for the admin user if the database was created now
 	 */
-	protected String adminUserPassword = "";
+	public String adminUserPassword = "";
 	
 	/**
 	 * Implementation name.
 	 */
-	protected String implementationIdName = "";
+	public String implementationIdName = "";
 	
 	/**
 	 * Implementation ID.
 	 */
-	protected String implementationId = "";
+	public String implementationId = "";
 	
 	/**
 	 * Pass phrase used to validate who uses your implementation ID.
 	 */
-	protected String implementationIdPassPhrase = "";
+	public String implementationIdPassPhrase = "";
 	
 	/**
 	 * Text describing the implmentation.
 	 */
-	protected String implementationIdDescription = "";
+	public String implementationIdDescription = "";
 	
 }

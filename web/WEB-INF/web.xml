@@ -187,6 +187,16 @@
 		<url-pattern>/*</url-pattern> 
 	</filter-mapping>
 	<!--  End first filter -->
+	<!--  Should be the second filter so that if any database updates are needed, they can be run by an admin-->
+	<filter>
+        <filter-name>UpdateFilter</filter-name>
+        <filter-class>org.openmrs.web.filter.update.UpdateFilter</filter-class>
+    </filter>
+    <filter-mapping>
+		<filter-name>UpdateFilter</filter-name> 
+		<url-pattern>/*</url-pattern> 
+	</filter-mapping>
+	<!--  End second filter -->
 	<filter>
 		<filter-name>charsetFilter</filter-name>
 		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>

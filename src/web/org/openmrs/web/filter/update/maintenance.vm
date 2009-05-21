@@ -1,0 +1,25 @@
+#parse($headerTemplate)
+
+<form method="post" autocomplete="off">
+	<input type="hidden" name="page" value="maintenance.vm" /> 
+			
+	<div class="content">
+		<table align="center" cellspacing="5" cellpadding="9">
+			<tr>
+				<td colspan="2" class="question">Log in as a $superuserrole to continue.</td>
+			</tr>
+            <tr>
+                <td>OpenMRS Username</td>
+                <td><input type="text" name="username"/></td>
+            </tr>
+            <tr>
+                <td>Password</td>
+                <td><input type="password" name="password"/></td>
+            </tr>
+            <tr>
+                <td colspan="2"><input class="button" type="submit" value="Continue"/></td>
+            </tr>
+		</table>
+	</div>
+</form>
+#parse($footerTemplate)

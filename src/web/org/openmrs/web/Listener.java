@@ -31,6 +31,7 @@ import java.util.Properties;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -43,9 +44,12 @@ import org.openmrs.module.ModuleFactory;
 import org.openmrs.module.web.WebModuleUtil;
 import org.openmrs.scheduler.SchedulerUtil;
 import org.openmrs.util.DatabaseUpdateException;
+import org.openmrs.util.DatabaseUpdater;
+import org.openmrs.util.InputRequiredException;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.filter.initialization.InitializationFilter;
+import org.openmrs.web.filter.update.UpdateFilter;
 import org.springframework.web.context.ContextLoaderListener;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -96,57 +100,91 @@ public final class Listener extends ContextLoaderListener {
 			
 			// Try to get the runtime properties 
 			Properties props = getRuntimeProperties();
-			
-			Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
-			
 			if (props != null) {
 				// the user has defined a runtime properties file
 				runtimePropertiesFound = true;
-				
-				// set it to the context so that they can be 
+				// set props to the context so that they can be 
 				// used during sessionFactory creation 
 				Context.setRuntimeProperties(props);
-				
-				// must be done after the runtime properties are
-				// found but before the database update is done
-				copyCustomizationIntoWebapp(servletContext, props);
-				
-				// Do the parent spring setup (but don't start spring and its servlets until accessed) 
-				super.contextInitialized(event);
-				
-				try {
-					Context.openSession();
-					
-					// Do the normal OpenMRS API startup now
-					Context.startup(props);
-					
-					// TODO catch an input required exception here and deal with it with the user
-					
-					// Load the core modules from the webapp coreModules folder
-					loadCoreModules(servletContext);
-					
-					// do the web specific starting of the modules
-					performWebStartOfModules(servletContext);
-					
-					// start the scheduled tasks
-					SchedulerUtil.startup(props);
-				}
-				finally {
-					// remove the user context that we set earlier
-					Context.closeSession();
-				}
 			}
-		}
-		catch (DatabaseUpdateException updateException) {
-			log.error("Unable to update the database to the latest version", updateException);
-			throw new RuntimeException(
-			        "Unable to update the database to the latest version.  See the logs for more information",
-			        updateException);
+			
+			Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
+			
+			// must be done after the runtime properties are
+			// found but before the database update is done
+			copyCustomizationIntoWebapp(servletContext, props);
+			
+			if (!setupNeeded()) {
+				super.contextInitialized(event);
+				startOpenmrs(event.getServletContext());
+			}
+			
 		}
 		catch (Throwable t) {
-			log.warn("Got exception while starting up: ", t);
+			log.fatal("Got exception while starting up: ", t);
 		}
 		
+	}
+	
+	/**
+	 * This method knows about all the filters that openmrs uses for setup. Currently those are the
+	 * {@link InitializationFilter} and the {@link UpdateFilter}. If either of these have to do
+	 * something, openmrs won't start in this Listener.
+	 * 
+	 * @return true if one of the filters needs to take some action
+	 */
+	private boolean setupNeeded() throws ServletException {
+		if (!runtimePropertiesFound)
+			return true;
+		
+		try {
+			return DatabaseUpdater.updatesRequired();
+		}
+		catch (Throwable t) {
+			throw new ServletException(t);
+		}
+	}
+	
+	/**
+	 * Do the work of starting openmrs.
+	 * 
+	 * @param servletContext
+	 * @throws ServletException
+	 */
+	public static void startOpenmrs(ServletContext servletContext) throws ServletException {
+		// start openmrs
+		try {
+			Context.openSession();
+			Context.startup(getRuntimeProperties());
+		}
+		catch (DatabaseUpdateException updateEx) {
+			throw new ServletException("Should not be here because updates were run previously", updateEx);
+		}
+		catch (InputRequiredException inputRequiredEx) {
+			throw new ServletException("Should not be here because updates were run previously", inputRequiredEx);
+		}
+		
+		// TODO catch openmrs errors here and drop the user back out to the setup screen
+		
+		try {
+			
+			// load modules
+			Listener.loadCoreModules(servletContext);
+			
+			// web load modules
+			Listener.performWebStartOfModules(servletContext);
+			
+			// start the scheduled tasks
+			SchedulerUtil.startup(getRuntimeProperties());
+		}
+		catch (Throwable t) {
+			Context.shutdown();
+			WebModuleUtil.shutdownModules(servletContext);
+			throw new ServletException(t);
+		}
+		finally {
+			Context.closeSession();
+		}
 	}
 	
 	/**

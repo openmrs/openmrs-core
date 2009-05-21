@@ -14,14 +14,9 @@
 package org.openmrs.web.filter.initialization;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Writer;
-import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -32,10 +27,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
 
-import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -44,9 +37,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.VelocityEngine;
-import org.apache.velocity.runtime.RuntimeConstants;
 import org.openmrs.ImplementationId;
 import org.openmrs.api.PasswordException;
 import org.openmrs.api.context.Context;
@@ -60,6 +50,7 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.Listener;
 import org.openmrs.web.WebConstants;
+import org.openmrs.web.filter.StartupFilter;
 import org.springframework.web.context.ContextLoader;
 
 /**
@@ -67,7 +58,7 @@ import org.springframework.web.context.ContextLoader;
  * first time. It will redirect all requests to the {@link WebConstants#SETUP_PAGE_URL} if the
  * {@link Listener} wasn't able to find any runtime properties
  */
-public class InitializationFilter implements Filter {
+public class InitializationFilter extends StartupFilter {
 	
 	protected final Log log = LogFactory.getLog(getClass());
 	
@@ -77,18 +68,10 @@ public class InitializationFilter implements Filter {
 	
 	private static final String LIQUIBASE_DEMO_DATA = "liquibase-demo-data.xml";
 	
-	private static VelocityEngine velocityEngine = null;
-	
 	/**
 	 * The velocity macro page to redirect to if an error occurs or on initial startup
 	 */
 	private final String DEFAULT_PAGE = "databasesetup.vm";
-	
-	/**
-	 * Set by the {@link #init(FilterConfig)} method so that we have access to the current
-	 * {@link ServletContext}
-	 */
-	private FilterConfig filterConfig = null;
 	
 	/**
 	 * The model object that holds all the properties that the rendered templates use. All
@@ -103,108 +86,13 @@ public class InitializationFilter implements Filter {
 	private boolean initializationComplete = false;
 	
 	/**
-	 * The web.xml file sets this {@link InitializationFilter} to be the first filter for all
-	 * requests.
-	 * 
-	 * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest,
-	 *      javax.servlet.ServletResponse, javax.servlet.FilterChain)
-	 */
-	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
-	                                                                                         ServletException {
-		
-		if (Listener.runtimePropertiesFound() || isInitializationComplete()) {
-			chain.doFilter(request, response);
-		} else {
-			// we only get here if the Listener didn't find a runtime
-			// properties files
-			
-			HttpServletRequest httpRequest = (HttpServletRequest) request;
-			HttpServletResponse httpResponse = (HttpServletResponse) response;
-			
-			String servletPath = httpRequest.getServletPath();
-			// for all /images and /initfilter/scripts files, write the path
-			// (the "/initfilter" part is needed so that the openmrs_static_context-servlet.xml file doesn't
-			//  get instantiated early, before the locale messages are all set up)
-			if (servletPath.startsWith("/images") || servletPath.startsWith("/initfilter/scripts")) {
-				servletPath = servletPath.replaceFirst("/initfilter", ""); // strip out the /initfilter part
-				// writes the actual image file path to the response
-				File file = new File(filterConfig.getServletContext().getRealPath(servletPath));
-				if (httpRequest.getPathInfo() != null)
-					file = new File(file, httpRequest.getPathInfo());
-				
-				try {
-					InputStream imageFileInputStream = new FileInputStream(file);
-					OpenmrsUtil.copyFile(imageFileInputStream, httpResponse.getOutputStream());
-					imageFileInputStream.close();
-				}
-				catch (FileNotFoundException e) {
-					log.error("Unable to find file: " + file.getAbsolutePath());
-				}
-			} else if (servletPath.startsWith("/scripts")) {
-				log
-				        .error("Calling /scripts during the initializationfilter pages will cause the openmrs_static_context-servlet.xml to initialize too early and cause errors after startup.  Use '/initfilter"
-				                + servletPath + "' instead.");
-			}
-			// for anything but /initialsetup
-			else if (!httpRequest.getServletPath().equals("/" + WebConstants.SETUP_PAGE_URL)) {
-				// send the user to the setup page 
-				httpResponse.sendRedirect("/" + WebConstants.WEBAPP_NAME + "/" + WebConstants.SETUP_PAGE_URL);
-			} else {
-				// does the wizard
-				// clear the error message that was potentially there from
-				// the last page
-				wizardModel.workLog.clear();
-				wizardModel.errors.clear();
-				
-				if (httpRequest.getMethod().equals("GET")) {
-					doGet(httpRequest, httpResponse);
-				} else if (httpRequest.getMethod().equals("POST")) {
-					doPost(httpRequest, httpResponse);
-				}
-			}
-			// Don't continue down the filter chain otherwise Spring complains
-			// that it hasn't been set up yet.
-			// The jsp and servlet filter are also on this chain, so writing to
-			// the response directly here is the only option 
-		}
-	}
-	
-	/**
-	 * Convenience method to set up the velocity context properly
-	 */
-	private void initializeVelocity() {
-		if (velocityEngine == null) {
-			velocityEngine = new VelocityEngine();
-			
-			Properties props = new Properties();
-			props.setProperty(RuntimeConstants.RUNTIME_LOG, "initial_wizard_vel.log");
-			//			props.setProperty( RuntimeConstants.RUNTIME_LOG_LOGSYSTEM_CLASS,
-			//				"org.apache.velocity.runtime.log.CommonsLogLogChute" );
-			//			props.setProperty(CommonsLogLogChute.LOGCHUTE_COMMONS_LOG_NAME, 
-			//					"initial_wizard_velocity");
-			
-			// so the vm pages can import the header/footer
-			props.setProperty(RuntimeConstants.RESOURCE_LOADER, "class");
-			props.setProperty("class.resource.loader.description", "Velocity Classpath Resource Loader");
-			props.setProperty("class.resource.loader.class",
-			    "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
-			
-			try {
-				velocityEngine.init(props);
-			}
-			catch (Exception e) {
-				log.error("velocity init failed, because: " + e);
-			}
-		}
-	}
-	
-	/**
 	 * Called by {@link #doFilter(ServletRequest, ServletResponse, FilterChain)} on GET requests
 	 * 
 	 * @param httpRequest
 	 * @param httpResponse
 	 */
-	private void doGet(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException {
+	protected void doGet(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException,
+	                                                                                      ServletException {
 		
 		Writer writer = httpResponse.getWriter();
 		
@@ -245,26 +133,27 @@ public class InitializationFilter implements Filter {
 	 * @param httpRequest
 	 * @param httpResponse
 	 */
-	private void doPost(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException {
+	protected void doPost(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException,
+	                                                                                       ServletException {
 		
 		String page = httpRequest.getParameter("page");
 		Map<String, Object> referenceMap = new HashMap<String, Object>();
 		Writer writer = httpResponse.getWriter();
 		
-		// clear existing errors
-		wizardModel.errors.clear();
-		
+		// TODO make these page names variables.
 		// step one
 		if ("databasesetup.vm".equals(page)) {
 			
 			wizardModel.databaseConnection = httpRequest.getParameter("database_connection");
-			checkForEmptyValue(wizardModel.databaseConnection, wizardModel.errors, "Database connection string");
+			checkForEmptyValue(wizardModel.databaseConnection, errors, "Database connection string");
+			
+			//TODO make each bit of page logic a (unit testable) method
 			
 			// asked the user for their desired database name
 			
 			if ("yes".equals(httpRequest.getParameter("current_openmrs_database"))) {
 				wizardModel.databaseName = httpRequest.getParameter("openmrs_current_database_name");
-				checkForEmptyValue(wizardModel.databaseName, wizardModel.errors, "Current database name");
+				checkForEmptyValue(wizardModel.databaseName, errors, "Current database name");
 				wizardModel.hasCurrentOpenmrsDatabase = true;
 				// TODO check to see if this is an active database
 				
@@ -275,18 +164,18 @@ public class InitializationFilter implements Filter {
 				wizardModel.createTables = true;
 				
 				wizardModel.databaseName = httpRequest.getParameter("openmrs_new_database_name");
-				checkForEmptyValue(wizardModel.databaseName, wizardModel.errors, "New database name");
+				checkForEmptyValue(wizardModel.databaseName, errors, "New database name");
 				// TODO create database now to check if its possible?
 				
 				wizardModel.createDatabaseUsername = httpRequest.getParameter("create_database_username");
-				checkForEmptyValue(wizardModel.createDatabaseUsername, wizardModel.errors,
+				checkForEmptyValue(wizardModel.createDatabaseUsername, errors,
 				    "A user that has 'CREATE DATABASE' privileges");
 				wizardModel.createDatabasePassword = httpRequest.getParameter("create_database_password");
-				checkForEmptyValue(wizardModel.createDatabasePassword, wizardModel.errors,
+				checkForEmptyValue(wizardModel.createDatabasePassword, errors,
 				    "Password for user with 'CREATE DATABASE' privileges");
 			}
 			
-			if (wizardModel.errors.isEmpty()) {
+			if (errors.isEmpty()) {
 				page = "databasetablesanduser.vm";
 			}
 			
@@ -308,9 +197,9 @@ public class InitializationFilter implements Filter {
 			
 			if ("yes".equals(httpRequest.getParameter("current_database_user"))) {
 				wizardModel.currentDatabaseUsername = httpRequest.getParameter("current_database_username");
-				checkForEmptyValue(wizardModel.currentDatabaseUsername, wizardModel.errors, "Curent user account");
+				checkForEmptyValue(wizardModel.currentDatabaseUsername, errors, "Curent user account");
 				wizardModel.currentDatabasePassword = httpRequest.getParameter("current_database_password");
-				checkForEmptyValue(wizardModel.currentDatabasePassword, wizardModel.errors, "Current user account password");
+				checkForEmptyValue(wizardModel.currentDatabasePassword, errors, "Current user account password");
 				wizardModel.hasCurrentDatabaseUser = true;
 				wizardModel.createDatabaseUser = false;
 			} else {
@@ -318,14 +207,13 @@ public class InitializationFilter implements Filter {
 				wizardModel.createDatabaseUser = true;
 				// asked for the root mysql username/password 
 				wizardModel.createUserUsername = httpRequest.getParameter("create_user_username");
-				checkForEmptyValue(wizardModel.createUserUsername, wizardModel.errors,
-				    "A user that has 'CREATE USER' privileges");
+				checkForEmptyValue(wizardModel.createUserUsername, errors, "A user that has 'CREATE USER' privileges");
 				wizardModel.createUserPassword = httpRequest.getParameter("create_user_password");
-				checkForEmptyValue(wizardModel.createUserPassword, wizardModel.errors,
+				checkForEmptyValue(wizardModel.createUserPassword, errors,
 				    "Password for user that has 'CREATE USER' privileges");
 			}
 			
-			if (wizardModel.errors.isEmpty()) { // go to next page
+			if (errors.isEmpty()) { // go to next page
 				page = "otherruntimeproperties.vm";
 			}
 			
@@ -362,14 +250,14 @@ public class InitializationFilter implements Filter {
 			
 			// throw back to admin user if passwords don't match
 			if (!wizardModel.adminUserPassword.equals(adminUserConfirm)) {
-				wizardModel.errors.add("Admin passwords don't match");
+				errors.add("Admin passwords don't match");
 				renderTemplate("adminusersetup.vm", referenceMap, writer);
 				return;
 			}
 			
 			// throw back if the user didn't put in a password
 			if (wizardModel.adminUserPassword.equals("")) {
-				wizardModel.errors.add("An admin password is required");
+				errors.add("An admin password is required");
 				renderTemplate("adminusersetup.vm", referenceMap, writer);
 				return;
 			}
@@ -378,13 +266,13 @@ public class InitializationFilter implements Filter {
 				OpenmrsUtil.validatePassword("admin", wizardModel.adminUserPassword, "admin");
 			}
 			catch (PasswordException p) {
-				wizardModel.errors
+				errors
 				        .add("The password is not long enough, does not contain both uppercase characters and a number, or matches the username.");
 				renderTemplate("adminusersetup.vm", referenceMap, writer);
 				return;
 			}
 			
-			if (wizardModel.errors.isEmpty()) { // go to next page
+			if (errors.isEmpty()) { // go to next page
 				page = "implementationidsetup.vm";
 			}
 			
@@ -408,12 +296,12 @@ public class InitializationFilter implements Filter {
 			
 			// throw back if the user-specified ID is invalid (contains ^ or |).
 			if (wizardModel.implementationId.indexOf('^') != -1 || wizardModel.implementationId.indexOf('|') != -1) {
-				wizardModel.errors.add("Implementation ID cannot contain '^' or '|'");
+				errors.add("Implementation ID cannot contain '^' or '|'");
 				renderTemplate("implementationidsetup.vm", referenceMap, writer);
 				return;
 			}
 			
-			if (wizardModel.errors.isEmpty()) { // go to next page
+			if (errors.isEmpty()) { // go to next page
 				page = "wizardcomplete.vm";
 			}
 			
@@ -519,7 +407,7 @@ public class InitializationFilter implements Filter {
 					wizardModel.workLog.add("Created database tables and added core data");
 				}
 				catch (Exception e) {
-					wizardModel.errors.add(e.getMessage() + " See the error log for more details"); // TODO internationalize this
+					errors.add(e.getMessage() + " See the error log for more details"); // TODO internationalize this
 					log.warn("Error while trying to create tables and demo data", e);
 				}
 			}
@@ -531,7 +419,7 @@ public class InitializationFilter implements Filter {
 					wizardModel.workLog.add("Added demo data");
 				}
 				catch (Exception e) {
-					wizardModel.errors.add(e.getMessage() + " See the error log for more details"); // TODO internationalize this
+					errors.add(e.getMessage() + " See the error log for more details"); // TODO internationalize this
 					log.warn("Error while trying to add demo data", e);
 				}
 			}
@@ -540,7 +428,7 @@ public class InitializationFilter implements Filter {
 				DatabaseUpdater.update();
 			}
 			catch (Exception e) {
-				wizardModel.errors.add(e.getMessage() + " Error while trying to update to the latest database version"); // TODO internationalize this
+				errors.add(e.getMessage() + " Error while trying to update to the latest database version"); // TODO internationalize this
 				log.warn("Error while trying to update to the latest database version", e);
 				renderTemplate(DEFAULT_PAGE, null, writer);
 				return;
@@ -559,8 +447,8 @@ public class InitializationFilter implements Filter {
 			}
 			catch (DatabaseUpdateException updateEx) {
 				log.warn("Error while running the database update file", updateEx);
-				wizardModel.errors.add(updateEx.getMessage()
-				        + " There was an error while running the database update file: " + updateEx.getMessage()); // TODO internationalize this
+				errors.add(updateEx.getMessage() + " There was an error while running the database update file: "
+				        + updateEx.getMessage()); // TODO internationalize this
 				renderTemplate(DEFAULT_PAGE, null, writer);
 				return;
 			}
@@ -569,9 +457,9 @@ public class InitializationFilter implements Filter {
 				// 		When done and the user and put in their say, call DatabaseUpdater.update(Map); 
 				//		with the user's question/answer pairs
 				log
-				        .warn("Unable to continue because user input is required for the db updates, but I am not doing anything about that right now");
-				wizardModel.errors
-				        .add("Unable to continue because user input is required for the db updates, but I am not doing anything about that right now");
+				        .warn("Unable to continue because user input is required for the db updates and we cannot do anything about that right now");
+				errors
+				        .add("Unable to continue because user input is required for the db updates and we cannot do anything about that right now");
 				renderTemplate(DEFAULT_PAGE, null, writer);
 				return;
 			}
@@ -593,7 +481,7 @@ public class InitializationFilter implements Filter {
 					Context.getAdministrationService().setImplementationId(implId);
 				}
 				catch (Throwable t) {
-					wizardModel.errors.add(t.getMessage() + " Implementation ID could not be set.");
+					errors.add(t.getMessage() + " Implementation ID could not be set.");
 					log.warn("Implementation ID could not be set.", t);
 					renderTemplate(DEFAULT_PAGE, null, writer);
 					Context.shutdown();
@@ -629,7 +517,7 @@ public class InitializationFilter implements Filter {
 				Context.shutdown();
 				WebModuleUtil.shutdownModules(filterConfig.getServletContext());
 				contextLoader.closeWebApplicationContext(filterConfig.getServletContext());
-				wizardModel.errors.add(t.getMessage() + " Unable to complete the startup.");
+				errors.add(t.getMessage() + " Unable to complete the startup.");
 				log.warn("Unable to complete the startup.", t);
 				renderTemplate(DEFAULT_PAGE, null, writer);
 				return;
@@ -678,7 +566,7 @@ public class InitializationFilter implements Filter {
 			
 		}
 		catch (Exception e) {
-			wizardModel.errors.add("User account " + connectionUsername + " does not work. " + e.getMessage()
+			errors.add("User account " + connectionUsername + " does not work. " + e.getMessage()
 			        + " See the error log for more details"); // TODO internationalize this
 			log.warn("Error while checking the connection user account", e);
 			return false;
@@ -701,62 +589,31 @@ public class InitializationFilter implements Filter {
 	}
 	
 	/**
-	 * All private attributes on this class are returned to the template via the velocity context
-	 * and reflection
-	 * 
-	 * @param templateName
-	 * @param referenceMap
-	 * @param writer
+	 * @see org.openmrs.web.filter.StartupFilter#getTemplatePrefix()
 	 */
-	private void renderTemplate(String templateName, Map<String, Object> referenceMap, Writer writer) throws IOException {
-		VelocityContext velocityContext = new VelocityContext();
-		
-		if (referenceMap != null) {
-			for (Map.Entry<String, Object> entry : referenceMap.entrySet()) {
-				velocityContext.put(entry.getKey(), entry.getValue());
-			}
-		}
-		
-		// put each of the private varibles into the template for convenience
-		for (Field field : InitializationWizardModel.class.getDeclaredFields()) {
-			try {
-				velocityContext.put(field.getName(), field.get(wizardModel));
-			}
-			catch (IllegalArgumentException e) {
-				log.error("Error generated while getting field value: " + field.getName(), e);
-			}
-			catch (IllegalAccessException e) {
-				log.error("Error generated while getting field value: " + field.getName(), e);
-			}
-		}
-		
-		String fullTemplatePath = "org/openmrs/web/filter/initialization/" + templateName;
-		InputStream templateInputStream = getClass().getClassLoader().getResourceAsStream(fullTemplatePath);
-		if (templateInputStream == null) {
-			throw new IOException("Unable to find " + fullTemplatePath);
-		}
-		
-		try {
-			velocityEngine.evaluate(velocityContext, writer, this.getClass().getName(), new InputStreamReader(
-			        templateInputStream));
-		}
-		catch (Exception e) {
-			throw new RuntimeException("Unable to process template: " + fullTemplatePath, e);
-		}
+	protected String getTemplatePrefix() {
+		return "org/openmrs/web/filter/initialization/";
 	}
 	
 	/**
-	 * @see javax.servlet.Filter#destroy()
+	 * @see org.openmrs.web.filter.StartupFilter#getModel()
 	 */
-	public void destroy() {
+	protected Object getModel() {
+		return wizardModel;
+	}
+	
+	/**
+	 * @see org.openmrs.web.filter.StartupFilter#skipFilter()
+	 */
+	public boolean skipFilter() {
+		return Listener.runtimePropertiesFound() || isInitializationComplete();
 	}
 	
 	/**
 	 * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
 	 */
 	public void init(FilterConfig filterConfig) throws ServletException {
-		this.filterConfig = filterConfig;
-		initializeVelocity();
+		super.init(filterConfig);
 		wizardModel = new InitializationWizardModel();
 	}
 	
@@ -805,7 +662,7 @@ public class InitializationFilter implements Filter {
 			if (!silent) {
 				// log and add error
 				log.warn("error executing sql: " + sql, sqlex);
-				wizardModel.errors.add("Error executing sql: " + sql + " - " + sqlex.getMessage());
+				errors.add("Error executing sql: " + sql + " - " + sqlex.getMessage());
 			}
 		}
 		catch (InstantiationException e) {
@@ -835,7 +692,7 @@ public class InitializationFilter implements Filter {
 	 * Convenience variable to know if this wizard has completed successfully and that this wizard
 	 * does not need to be executed again
 	 * 
-	 * @return
+	 * @return true if this has been run already
 	 */
 	private boolean isInitializationComplete() {
 		return initializationComplete;

@@ -94,27 +94,26 @@ public class DatabaseUpdater {
 	 * @return true/false whether database updates are required
 	 * @should always have a valid update to latest file
 	 */
-	public static boolean updatesRequired() {
+	public static boolean updatesRequired() throws Exception {
 		log.debug("checking for updates");
 		
-		Liquibase liquibase = null;
-		try {
-			liquibase = getLiquibase(null);
-			List<ChangeSet> changesets = liquibase.listUnrunChangeSets(CONTEXT);
-			return changesets.size() > 0;
-			
-		}
-		catch (Exception e) {
-			throw new RuntimeException("error checking for updates in the database", e);
-		}
-		finally {
-			try {
-				liquibase.getDatabase().getConnection().close();
-			}
-			catch (Throwable t) {
-				//pass
-			}
-		}
+		List<OpenMRSChangeSet> changesets = getUnrunDatabaseChanges();
+		return changesets.size() > 0;
+	}
+	
+	/**
+	 * Indicates whether automatic database updates are allowed by this server. Automatic updates
+	 * are disabled by default. In order to enable automatic updates, the admin needs to add
+	 * 'auto_update_database=true' to the runtime properties file.
+	 * 
+	 * @return true/false whether the 'auto_update_database' has been enabled.
+	 */
+	public static Boolean allowAutoUpdate() {
+		String allowAutoUpdate = Context.getRuntimeProperties().getProperty(
+		    OpenmrsConstants.AUTO_UPDATE_DATABASE_RUNTIME_PROPERTY, "false");
+		
+		return "true".equals(allowAutoUpdate);
+		
 	}
 	
 	/**
@@ -212,27 +211,13 @@ public class DatabaseUpdater {
 	private static Liquibase getLiquibase(String changeLogFile) throws Exception {
 		Connection connection = null;
 		try {
-			Properties props = Context.getRuntimeProperties();
-			mergeDefaultRuntimeProperties(props);
-			
-			String driver = props.getProperty("hibernate.connection.driver_class");
-			String username = props.getProperty("hibernate.connection.username");
-			String password = props.getProperty("hibernate.connection.password");
-			String url = props.getProperty("hibernate.connection.url");
-			
-			// hack for mysql to make sure innodb tables are created
-			if (url.contains("mysql") && !url.contains("InnoDB")) {
-				url = url + "&sessionVariables=storage_engine=InnoDB";
-			}
-			
-			Class.forName(driver);
-			connection = DriverManager.getConnection(url, username, password);
+			connection = getConnection();
 			
 			Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(connection);
 			database.setDatabaseChangeLogTableName("liquibasechangelog");
 			database.setDatabaseChangeLogLockTableName("liquibasechangeloglock");
 			
-			if (driver.startsWith("org.hsqldb")) {
+			if (connection.getMetaData().getDatabaseProductName().contains("hsqldb")) {
 				// a hack because hsqldb seems to be checking table names in the metadata section case sensitively
 				database.setDatabaseChangeLogTableName(database.getDatabaseChangeLogTableName().toUpperCase());
 				database.setDatabaseChangeLogLockTableName(database.getDatabaseChangeLogLockTableName().toUpperCase());
@@ -256,6 +241,29 @@ public class DatabaseUpdater {
 	}
 	
 	/**
+	 * Gets a database connection for liquibase to do the updates
+	 * 
+	 * @return a java.sql.connection based on the current runtime properties
+	 */
+	public static Connection getConnection() throws Exception {
+		Properties props = Context.getRuntimeProperties();
+		mergeDefaultRuntimeProperties(props);
+		
+		String driver = props.getProperty("hibernate.connection.driver_class");
+		String username = props.getProperty("hibernate.connection.username");
+		String password = props.getProperty("hibernate.connection.password");
+		String url = props.getProperty("hibernate.connection.url");
+		
+		// hack for mysql to make sure innodb tables are created
+		if (url.contains("mysql") && !url.contains("InnoDB")) {
+			url = url + "&sessionVariables=storage_engine=InnoDB";
+		}
+		
+		Class.forName(driver);
+		return DriverManager.getConnection(url, username, password);
+	}
+	
+	/**
 	 * Represents each change in the liquibase-update-to-latest
 	 */
 	public static class OpenMRSChangeSet {
@@ -269,6 +277,20 @@ public class DatabaseUpdater {
 		private ChangeSet.RunStatus runStatus;
 		
 		private Date ranDate;
+		
+		/**
+		 * Create an OpenmrsChangeSet from the given changeset
+		 * 
+		 * @param changeSet
+		 * @param database
+		 */
+		public OpenMRSChangeSet(ChangeSet changeSet, Database database) throws Exception {
+			setAuthor(changeSet.getAuthor());
+			setComments(changeSet.getComments());
+			setDescription(changeSet.getDescription());
+			setRunStatus(database.getRunStatus(changeSet));
+			setRanDate(database.getRanDate(changeSet));
+		}
 		
 		/**
 		 * @return the author
@@ -345,7 +367,7 @@ public class DatabaseUpdater {
 	 * Looks at the current liquibase-update-to-latest.xml file and then checks the database to see
 	 * if they have been run.
 	 * 
-	 * @return list of changesets
+	 * @return list of changesets that both have and haven't been run
 	 */
 	@Authorized(OpenmrsConstants.PRIV_VIEW_DATABASE_CHANGES)
 	public static List<OpenMRSChangeSet> getDatabaseChanges() throws Exception {
@@ -360,12 +382,7 @@ public class DatabaseUpdater {
 			
 			List<OpenMRSChangeSet> results = new ArrayList<OpenMRSChangeSet>();
 			for (ChangeSet changeSet : changeSets) {
-				OpenMRSChangeSet omrschangeset = new OpenMRSChangeSet();
-				omrschangeset.setAuthor(changeSet.getAuthor());
-				omrschangeset.setComments(changeSet.getComments());
-				omrschangeset.setDescription(changeSet.getDescription());
-				omrschangeset.setRunStatus(database.getRunStatus(changeSet));
-				omrschangeset.setRanDate(database.getRanDate(changeSet));
+				OpenMRSChangeSet omrschangeset = new OpenMRSChangeSet(changeSet, database);
 				results.add(omrschangeset);
 			}
 			
@@ -376,6 +393,44 @@ public class DatabaseUpdater {
 				if (database != null) {
 					database.getConnection().close();
 				}
+			}
+			catch (Throwable t) {
+				//pass
+			}
+		}
+	}
+	
+	/**
+	 * Looks at the current liquibase-update-to-latest.xml file returns all changesets in that file
+	 * that have not been run on the database yet.
+	 * 
+	 * @return list of changesets that haven't been run
+	 */
+	@Authorized(OpenmrsConstants.PRIV_VIEW_DATABASE_CHANGES)
+	public static List<OpenMRSChangeSet> getUnrunDatabaseChanges() throws Exception {
+		log.debug("Getting unrun changesets");
+		
+		Database database = null;
+		try {
+			Liquibase liquibase = getLiquibase(null);
+			database = liquibase.getDatabase();
+			List<ChangeSet> changeSets = liquibase.listUnrunChangeSets(CONTEXT);
+			
+			List<OpenMRSChangeSet> results = new ArrayList<OpenMRSChangeSet>();
+			for (ChangeSet changeSet : changeSets) {
+				OpenMRSChangeSet omrschangeset = new OpenMRSChangeSet(changeSet, database);
+				results.add(omrschangeset);
+			}
+			
+			return results;
+			
+		}
+		catch (Exception e) {
+			throw new RuntimeException("error getting unrun updates on the database", e);
+		}
+		finally {
+			try {
+				database.getConnection().close();
 			}
 			catch (Throwable t) {
 				//pass
