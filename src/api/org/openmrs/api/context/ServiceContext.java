@@ -718,12 +718,30 @@ public class ServiceContext implements ApplicationContextAware {
 	 * @should return beans registered in a module
 	 * @should return an empty list if no beans have been registered of the passed type
 	 */
-	@SuppressWarnings("unchecked")
+	
 	public <T> List<T> getRegisteredComponents(Class<T> type) {
-		List<T> components = new ArrayList<T>();
-		Map registeredComponents = applicationContext.getBeansOfType(type);
+		Map<String, T> m = getRegisteredComponents(applicationContext, type);
+		log.debug("getRegisteredComponents(" + type + ") = " + m);
+		return new ArrayList<T>(m.values());
+	}
+	
+	/**
+	 * Private method which returns all components registered in a Spring applicationContext of a given type
+	 * This method recurses through each parent ApplicationContext
+	 * @param context - The applicationContext to check
+	 * @param type - The type of component to retrieve
+	 * @return all components registered in a Spring applicationContext of a given type
+	 */
+	@SuppressWarnings("unchecked")
+	private <T> Map<String, T> getRegisteredComponents(ApplicationContext context, Class<T> type) {
+		Map<String, T> components = new HashMap<String, T>();
+		Map registeredComponents = context.getBeansOfType(type);
+		log.debug("getRegisteredComponents(" + context + ", " + type + ") = " + registeredComponents);
 		if (registeredComponents != null) {
-			components.addAll(registeredComponents.values());
+			components.putAll(registeredComponents);
+		}
+		if (context.getParent() != null) {
+			components.putAll(getRegisteredComponents(context.getParent(), type));
 		}
 		return components;
 	}

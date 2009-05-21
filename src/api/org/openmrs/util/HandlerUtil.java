@@ -18,6 +18,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
@@ -29,6 +31,8 @@ import org.openmrs.api.context.Context;
  * @since 1.5
  */
 public class HandlerUtil {
+	
+	private static Log log = LogFactory.getLog(HandlerUtil.class);
 	
 	/**
 	 * Retrieves a List of all registered components from the Context that are of the passed
@@ -52,12 +56,14 @@ public class HandlerUtil {
 		List<H> handlers = new ArrayList<H>();
 		
 		// First get all registered components of the passed class
+		log.debug("Getting handlers of type " + handlerType + (type == null ? "" : " for class " + type.getName()));
 		for (H handler : Context.getRegisteredComponents(handlerType)) {
 			Handler handlerAnnotation = handler.getClass().getAnnotation(Handler.class);
 			// Only consider those that have been annotated as Handlers
 			if (handlerAnnotation != null) {
 				// If no type is passed in return all handlers
 				if (type == null) {
+					log.debug("Found handler " + handler.getClass());
 					handlers.add(handler);
 				}
 				// Otherwise, return all handlers that support the passed type
@@ -65,6 +71,7 @@ public class HandlerUtil {
 					for (int i = 0; i < handlerAnnotation.supports().length; i++) {
 						Class<?> clazz = handlerAnnotation.supports()[i];
 						if (clazz.isAssignableFrom(type)) {
+							log.debug("Found handler: " + handler.getClass());
 							handlers.add(handler);
 						}
 					}
