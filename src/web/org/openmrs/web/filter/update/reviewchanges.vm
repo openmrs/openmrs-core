@@ -1,0 +1,37 @@
+#parse($headerTemplate)
+
+<form method="post" autocomplete="off">
+	<input type="hidden" name="page" value="reviewchanges.vm" /> 
+			
+	<div class="content">
+		<table align="center" cellspacing="5" cellpadding="9">
+			<tr>
+				<td colspan="3" class="question">The following database updates are required:</td>
+			</tr>
+			<tr>
+				<td>
+					<table>
+						<tr>
+							<th>Description of Update</th>
+							<th>Actions</th>
+							<th>Author</th>
+						</tr>
+						#foreach ($change in $changes)
+							<tr>
+								<td>${change.comments}</td>
+								<td>${change.description}</td>
+								<td>${change.author}</td>
+							</tr>
+						#end
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="3"><input type="submit" value="Run Updates" class="button"/></td>
+			</tr>
+		</table>
+	</div>
+	
+	
+</form>
+#parse($footerTemplate)
