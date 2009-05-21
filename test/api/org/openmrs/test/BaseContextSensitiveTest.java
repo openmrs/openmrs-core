@@ -579,6 +579,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 			
 			authenticate();
 		}
+		Context.clearSession();
 	}
 	
 	/**
