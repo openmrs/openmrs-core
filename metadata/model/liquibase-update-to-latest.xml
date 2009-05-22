@@ -866,25 +866,6 @@
 			<column name="concept_id" />
 		</createIndex>
 	</changeSet>
-		
-	<changeSet id="200904271654" author="bwolfe">
-		<validCheckSum>31e2cec595288b267cc3e3cfb083</validCheckSum>
-		<validCheckSum>44c812f4360353c5ffc5d5c1473bcf</validCheckSum>
-		<preConditions onFail="MARK_RAN">
-			<not>
-				<!-- uuid branch devs and users of sync branch already have an updated concept_word integer primary key -->
-				<columnExists tableName="concept_word" columnName="concept_word_id"/>
-			</not>
-		</preConditions>
-		
-		<comment>
-			Change the concept_word key to be concept_name_id-word-locale
-		</comment>
-		
-		<dropPrimaryKey tableName="concept_word"/>
-		
-		<addPrimaryKey tableName="concept_word" columnNames="concept_name_id,word,locale"/>
-	</changeSet>
 	
 	<changeSet id="20090402-1515" author="bwolfe">
 		<comment>
@@ -1567,16 +1548,25 @@
 	</changeSet>
 	
 	<changeSet id="20090428-0811aa" author="bwolfe" failOnError="false">
+		<preConditions onFail="MARK_RAN">
+			<not><columnExists tableName="concept_word" columnName="concept_word_id" /></not>
+		</preConditions>
 		<comment>Removing concept_word.concept_name_id foreign key so that primary key can be changed to concept_word_id</comment>
 		<dropForeignKeyConstraint baseTableName="concept_word" constraintName="word_for_name" />
 	</changeSet>
 	
-	<changeSet id="20090414-0811b" author="bwolfe">
+	<changeSet id="20090414-0811b" author="bwolfe" failOnError="false">
+		<preConditions onFail="MARK_RAN">
+			<not><columnExists tableName="concept_word" columnName="concept_word_id" /></not>
+		</preConditions>
 		<comment>Dropping non-integer primary key on concept word table before adding new integer one</comment>
 		<dropPrimaryKey tableName="concept_word" />
 	</changeSet>
 	
 	<changeSet id="20090414-0812" author="bwolfe">
+		<preConditions onFail="MARK_RAN">
+			<not><columnExists tableName="concept_word" columnName="concept_word_id" /></not>
+		</preConditions>
 		<comment>Adding integer primary key to concept word table</comment>
 		<addColumn tableName="concept_word">
 			<column name="concept_word_id" type="int(11)" autoIncrement="true">
@@ -1589,7 +1579,7 @@
 		</modifySql>
 	</changeSet>
 	
-	<changeSet id="20090414-0812b" author="bwolfe">
+	<changeSet id="20090414-0812b" author="bwolfe" failOnError="false">
 		<comment>Re-adding foreign key for concept_word.concept_name_id</comment>
 		<addForeignKeyConstraint baseTableName="concept_word" baseColumnNames="concept_name_id" constraintName="word_for_name" referencedTableName="concept_name" referencedColumnNames="concept_name_id"/>
 	</changeSet>
