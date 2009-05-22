@@ -14,6 +14,7 @@
 package org.openmrs.api;
 
 import org.openmrs.serialization.OpenmrsSerializer;
+import org.openmrs.serialization.SerializationException;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -51,7 +52,7 @@ public interface SerializationService extends OpenmrsService {
 	 * @param clazz - the {@link OpenmrsSerializer} class to use for serialization
 	 * @return String representing this object
 	 */
-	public String serialize(Object o, Class<? extends OpenmrsSerializer> clazz) throws APIException;
+	public String serialize(Object o, Class<? extends OpenmrsSerializer> clazz) throws SerializationException;
 	
 	/**
 	 * Deserialize the given string into a full object using the given {@link OpenmrsSerializer}
@@ -64,5 +65,5 @@ public interface SerializationService extends OpenmrsService {
 	 * @return hydrated object of the appropriate type
 	 */
 	public <T extends Object> T deserialize(String serializedObject, Class<? extends T> objectClass,
-	                                        Class<? extends OpenmrsSerializer> serializerClass) throws APIException;
+	                                        Class<? extends OpenmrsSerializer> serializerClass) throws SerializationException;
 }
