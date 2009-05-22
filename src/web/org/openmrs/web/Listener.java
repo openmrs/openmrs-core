@@ -169,7 +169,7 @@ public final class Listener extends ContextLoaderListener {
 		try {
 			
 			// load modules
-			Listener.loadCoreModules(servletContext);
+			Listener.loadAndStartCoreModules(servletContext);
 			
 			// web load modules
 			Listener.performWebStartOfModules(servletContext);
@@ -378,7 +378,7 @@ public final class Listener extends ContextLoaderListener {
 	 * 
 	 * @param servletContext
 	 */
-	public static void loadCoreModules(ServletContext servletContext) {
+	public static void loadAndStartCoreModules(ServletContext servletContext) {
 		Log log = LogFactory.getLog(Listener.class);
 		
 		String path = servletContext.getRealPath("");
@@ -394,11 +394,15 @@ public final class Listener extends ContextLoaderListener {
 			return;
 		}
 		
+		// to know if we need to start any modules
+		boolean aModuleLoaded = false;
+		
 		// loop over the modules and load the modules that we can
 		for (File f : folder.listFiles()) {
 			if (!f.getName().startsWith(".")) { // ignore .svn folder and the like
 				try {
 					Module mod = ModuleFactory.loadModule(f, false);
+					aModuleLoaded = true;
 					log.debug("Loaded module: " + mod + " successfully");
 				}
 				catch (Throwable t) {
@@ -406,6 +410,9 @@ public final class Listener extends ContextLoaderListener {
 				}
 			}
 		}
+		
+		if (aModuleLoaded)
+			ModuleFactory.startModules();
 	}
 	
 	/**

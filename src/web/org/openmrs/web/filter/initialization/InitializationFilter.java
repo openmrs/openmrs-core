@@ -505,7 +505,7 @@ public class InitializationFilter extends StartupFilter {
 				}
 				
 				// load modules
-				Listener.loadCoreModules(filterConfig.getServletContext());
+				Listener.loadAndStartCoreModules(filterConfig.getServletContext());
 				
 				// web load modules
 				Listener.performWebStartOfModules(filterConfig.getServletContext());
