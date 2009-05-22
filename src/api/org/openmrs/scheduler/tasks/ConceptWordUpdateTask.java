@@ -96,11 +96,15 @@ public class ConceptWordUpdateTask extends AbstractTask {
 						authenticate();
 					ConceptService cs = Context.getConceptService();
 					Iterator<Concept> conceptIterator = cs.conceptIterator();
+					int count = 0;
 					while (conceptIterator.hasNext() && shouldExecute) {
 						Concept currentConcept = conceptIterator.next();
 						if (log.isDebugEnabled())
 							log.debug("updateConceptWords() : current concept: " + currentConcept);
 						cs.updateConceptWord(currentConcept);
+						if (++count % 500 == 0) {
+							Context.clearSession(); // clean up the memory
+						}
 					}
 				}
 				catch (APIException e) {
