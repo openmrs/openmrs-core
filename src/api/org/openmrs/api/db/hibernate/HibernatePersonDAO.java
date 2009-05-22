@@ -355,7 +355,7 @@ public class HibernatePersonDAO implements PersonDAO {
 			criteria.add(Expression.eq("foreignKey", foreignKey));
 		
 		if (searchable != null)
-			criteria.add(Expression.eq("searchable", format));
+			criteria.add(Expression.eq("searchable", searchable));
 		
 		return criteria.list();
 	}
