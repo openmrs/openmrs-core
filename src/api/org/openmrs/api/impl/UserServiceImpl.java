@@ -428,7 +428,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 */
 	public User setUserProperty(User user, String key, String value) {
 		if (user != null) {
-			if (!user.hasPrivilege(OpenmrsConstants.PRIV_EDIT_USERS) && !user.equals(Context.getAuthenticatedUser()))
+			if (!Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_USERS) && !user.equals(Context.getAuthenticatedUser()))
 				throw new APIException("You are not authorized to change " + user.getUserId() + "'s properties");
 			
 			user.setUserProperty(key, value);
