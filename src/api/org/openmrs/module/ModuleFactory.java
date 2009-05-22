@@ -154,7 +154,9 @@ public class ModuleFactory {
 	
 	/**
 	 * Try to start all of the loaded modules that have the global property <i>moduleId</i>.started
-	 * is set to "true". Otherwise, leave it as only "loaded"
+	 * is set to "true" or the property does not exist. Otherwise, leave it as only "loaded"<br/>
+	 * <br/>
+	 * Modules that are already started will be skipped.
 	 */
 	public static void startModules() {
 		// loop over and try starting each of the loaded modules
@@ -166,6 +168,9 @@ public class ModuleFactory {
 				AdministrationService as = Context.getAdministrationService();
 				// try and start the modules that should be started
 				for (Module mod : getLoadedModules()) {
+					if (mod.isStarted())
+						continue; // skip over modules that are already started
+						
 					String key = mod.getModuleId() + ".started";
 					String prop = as.getGlobalProperty(key, null);
 					
