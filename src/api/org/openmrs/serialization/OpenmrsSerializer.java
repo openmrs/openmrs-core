@@ -13,10 +13,8 @@
  */
 package org.openmrs.serialization;
 
-import org.openmrs.api.APIException;
-
 /**
- * Implmentations of this interface provide serialization implementations for OpenMRS.
+ * Implementations of this interface provide serialization implementations for OpenMRS.
  */
 public interface OpenmrsSerializer {
 	
@@ -26,7 +24,7 @@ public interface OpenmrsSerializer {
 	 * @param o - the object to serialize
 	 * @return String representing this object
 	 */
-	public String serialize(Object o) throws APIException;
+	public String serialize(Object o) throws SerializationException;
 	
 	/**
 	 * Deserialize the given string into a full object
@@ -35,5 +33,5 @@ public interface OpenmrsSerializer {
 	 * @param clazz - The class to deserialize the Object into
 	 * @return hydrated object of the appropriate type
 	 */
-	public <T extends Object> T deserialize(String serializedObject, Class<? extends T> clazz) throws APIException;
+	public <T extends Object> T deserialize(String serializedObject, Class<? extends T> clazz) throws SerializationException;
 }

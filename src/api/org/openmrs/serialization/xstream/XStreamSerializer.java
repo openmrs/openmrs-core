@@ -18,8 +18,8 @@ import java.util.HashSet;
 import org.hibernate.collection.PersistentSet;
 import org.openmrs.Concept;
 import org.openmrs.ConceptDescription;
-import org.openmrs.api.APIException;
 import org.openmrs.serialization.OpenmrsSerializer;
+import org.openmrs.serialization.SerializationException;
 import org.openmrs.serialization.xstream.converter.ConceptAnswerConverter;
 import org.openmrs.serialization.xstream.converter.ConceptClassConverter;
 import org.openmrs.serialization.xstream.converter.ConceptDatatypeConverter;
@@ -38,7 +38,7 @@ import com.thoughtworks.xstream.converters.basic.DateConverter;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
 /**
- * Implmentations of this interface provide serialization using XStream
+ * Implementations of this interface provide serialization using XStream
  */
 public class XStreamSerializer implements OpenmrsSerializer {
 	
@@ -83,18 +83,17 @@ public class XStreamSerializer implements OpenmrsSerializer {
 	}
 	
 	/**
-	 * @see org.openmrs.serialization.OpenmrsSerializer#serialize(java.lang.Object)
+	 * @see OpenmrsSerializer#serialize(java.lang.Object)
 	 */
-	public String serialize(Object o) throws APIException {
+	public String serialize(Object o) throws SerializationException {
 		return xstream.toXML(o);
 	}
 	
 	/**
-	 * @see org.openmrs.serialization.OpenmrsSerializer#deserialize(java.lang.String,
-	 *      java.lang.Class)
+	 * @see OpenmrsSerializer#deserialize(String, Class)
 	 */
 	@SuppressWarnings("unchecked")
-	public <T extends Object> T deserialize(String serializedObject, Class<? extends T> clazz) throws APIException {
+	public <T extends Object> T deserialize(String serializedObject, Class<? extends T> clazz) throws SerializationException {
 		return (T) xstream.fromXML(serializedObject);
 	}
 }

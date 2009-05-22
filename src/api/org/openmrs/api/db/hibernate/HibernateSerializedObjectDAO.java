@@ -31,6 +31,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.SerializedObjectDAO;
 import org.openmrs.serialization.OpenmrsSerializer;
+import org.openmrs.serialization.SerializationException;
 
 /**
  * Hibernate specific database access methods for serialized objects
@@ -147,7 +148,13 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 		}
 		
 		OpenmrsSerializer serializer = getSerializer(serializedObject);
-		String data = serializer.serialize(object);
+		String data = null;
+		try {
+			data = serializer.serialize(object);
+		}
+		catch (SerializationException e) {
+			throw new DAOException("Unable to save object <" + object + "> because serialization failed.", e);
+		}
 		
 		serializedObject.setUuid(object.getUuid());
 		serializedObject.setType(baseType);
@@ -256,7 +263,13 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 			return null;
 		}
 		OpenmrsSerializer serializer = getSerializer(serializedObject);
-		T obj = (T) serializer.deserialize(serializedObject.getSerializedData(), serializedObject.getSubtype());
+		T obj = null;
+		try {
+			obj = (T) serializer.deserialize(serializedObject.getSerializedData(), serializedObject.getSubtype());
+		}
+		catch (SerializationException e) {
+			// Do nothing here. Handled by null check below
+		}
 		if (obj == null) {
 			throw new DAOException("Unable to deserialize object: " + serializedObject);
 		}

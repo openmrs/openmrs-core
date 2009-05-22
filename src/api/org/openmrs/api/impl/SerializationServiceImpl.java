@@ -23,10 +23,11 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIException;
 import org.openmrs.api.SerializationService;
 import org.openmrs.serialization.OpenmrsSerializer;
+import org.openmrs.serialization.SerializationException;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Contains methods for retrieving registered Serializer instances, and for
+ * Contains methods for retrieving registered OpenmrsSerializer instances, and for
  * persisting/retrieving/deleting objects using serialization
  */
 @Transactional
@@ -67,12 +68,21 @@ public class SerializationServiceImpl extends BaseOpenmrsService implements Seri
 	/**
 	 * @see org.openmrs.api.SerializationService#serialize(java.lang.Object, java.lang.Class)
 	 */
-	public String serialize(Object o, Class<? extends OpenmrsSerializer> clazz) throws APIException {
+	public String serialize(Object o, Class<? extends OpenmrsSerializer> clazz) throws SerializationException {
+		
+		// Get appropriate OpenmrsSerializer implementation
 		OpenmrsSerializer serializer = getSerializer(clazz);
 		if (serializer == null) {
-			throw new APIException("OpenmrsSerializer of class <" + clazz + "> not found.");
+			throw new SerializationException("OpenmrsSerializer of class <" + clazz + "> not found.");
 		}
-		return serializer.serialize(o);
+		
+		// Attempt to Serialize the object
+		try {
+			return serializer.serialize(o);
+		}
+		catch (Throwable t) {
+			throw new SerializationException("An error occurred during serialization of object <" + o + ">", t);
+		}
 	}
 	
 	/**
@@ -80,12 +90,22 @@ public class SerializationServiceImpl extends BaseOpenmrsService implements Seri
 	 *      java.lang.Class)
 	 */
 	public <T extends Object> T deserialize(String serializedObject, Class<? extends T> objectClass,
-	                                        Class<? extends OpenmrsSerializer> serializerClass) throws APIException {
+	                                        Class<? extends OpenmrsSerializer> serializerClass) throws SerializationException {
+		
+		// Get appropriate OpenmrsSerializer implementation
 		OpenmrsSerializer serializer = getSerializer(serializerClass);
 		if (serializer == null) {
 			throw new APIException("OpenmrsSerializer of class <" + serializerClass + "> not found.");
 		}
-		return serializer.deserialize(serializedObject, objectClass);
+		
+		// Attempt to Deserialize the object
+		try {
+			return (T) serializer.deserialize(serializedObject, objectClass);
+		}
+		catch (Throwable t) {
+			String msg = "An error occurred during deserialization of data <" + serializedObject + ">";
+			throw new SerializationException(msg, t);
+		}
 	}
 	
 	//***** Property access *****
