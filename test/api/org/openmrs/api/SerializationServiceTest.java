@@ -16,12 +16,9 @@ package org.openmrs.api;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.util.ArrayList;
-
 import org.junit.Test;
+import org.openmrs.EncounterType;
 import org.openmrs.api.context.Context;
-import org.openmrs.report.DataSetDefinition;
-import org.openmrs.report.ReportSchema;
 import org.openmrs.serialization.OpenmrsSerializer;
 import org.openmrs.serialization.xstream.XStreamSerializer;
 import org.openmrs.test.BaseContextSensitiveTest;
@@ -47,15 +44,24 @@ public class SerializationServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void getSerializer_shouldSerializeAndDeserializeCorrectly() throws Exception {
-		ReportSchema report = new ReportSchema();
-		report.setName("TestReport");
-		report.setDescription("A test report");
-		report.setDataSetDefinitions(new ArrayList<DataSetDefinition>());
-		String xml = Context.getSerializationService().serialize(report, XStreamSerializer.class);
-		ReportSchema hydratedReport = Context.getSerializationService().deserialize(xml, ReportSchema.class,
-		    XStreamSerializer.class);
-		assertEquals("TestReport", hydratedReport.getName());
-		assertEquals("A test report", hydratedReport.getDescription());
+	public void deserialize_shouldSerializeAndDeserializeCorrectly() throws Exception {
+		SerializationService svc = Context.getSerializationService();
+		EncounterType e = new EncounterType();
+		e.setName("TestType");
+		e.setDescription("A test type");
+		String xml = svc.serialize(e, XStreamSerializer.class);
+		EncounterType hydratedLocation = svc.deserialize(xml, EncounterType.class, XStreamSerializer.class);
+		assertEquals("TestType", hydratedLocation.getName());
+		assertEquals("A test type", hydratedLocation.getDescription());
+	}
+	
+	@Test
+	public void deserialize_shouldSerializeAndDeserializeHibernateObjectsCorrectly() throws Exception {
+		EncounterType e = Context.getEncounterService().getAllEncounterTypes().iterator().next();
+		e.setDescription("Changed Emergency Visit");
+		e = Context.getEncounterService().saveEncounterType(e);
+		String s = Context.getSerializationService().serialize(e, XStreamSerializer.class);
+		EncounterType e1 = Context.getSerializationService().deserialize(s, EncounterType.class, XStreamSerializer.class);
+		assertEquals("Changed Emergency Visit", e1.getDescription());
 	}
 }

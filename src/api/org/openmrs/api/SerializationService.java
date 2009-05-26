@@ -51,6 +51,9 @@ public interface SerializationService extends OpenmrsService {
 	 * @param o - the object to serialize
 	 * @param clazz - the {@link OpenmrsSerializer} class to use for serialization
 	 * @return String representing this object
+	 * 
+	 * @should Serialize And Deserialize Correctly
+	 * @should Serialize And Deserialize Hibernate Objects Correctly
 	 */
 	public String serialize(Object o, Class<? extends OpenmrsSerializer> clazz) throws SerializationException;
 	
