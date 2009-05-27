@@ -128,10 +128,12 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, java.io
 	 */
 	public String getShortestName() {
 		if (concept != null) {
-			return concept.getBestShortName(this.locale).getName();
-		} else {
-			return getName();
+			ConceptName bestShortName = concept.getBestShortName(this.locale);
+			if (bestShortName != null)
+				return bestShortName.getName();
 		}
+		
+		return getName();
 	}
 	
 	/**
@@ -195,10 +197,12 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, java.io
 	 */
 	public String getShortName() {
 		if (concept != null) {
-			return concept.getBestShortName(Context.getLocale()).getName();
-		} else {
-			return null;
+			ConceptName bestShortName = concept.getBestShortName(Context.getLocale());
+			if (bestShortName != null)
+				return bestShortName.getName();
 		}
+		
+		return null;
 	}
 	
 	/**
@@ -207,10 +211,12 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, java.io
 	 */
 	public String getDescription() {
 		if (concept != null) {
-			return concept.getDescription().getDescription();
-		} else {
-			return null;
+			ConceptDescription description = concept.getDescription();
+			if (description != null)
+				return description.getDescription();
 		}
+		
+		return null;
 	}
 	
 	/**
