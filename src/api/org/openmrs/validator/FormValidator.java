@@ -57,7 +57,7 @@ public class FormValidator implements Validator {
 				errors.rejectValue("version", "Form.version.invalid");
 			
 			if (form.isRetired()) {
-				if (form.getRetiredBy() == null || form.getRetiredReason() == null)
+				if (form.getRetiredReason() == null)
 					errors.rejectValue("retiredBy", "error.retired.requireMetadata");
 			}
 		}

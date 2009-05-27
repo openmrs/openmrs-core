@@ -606,6 +606,12 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 			form.setRetiredBy(null);
 			form.setRetiredReason(null);
 		}
+		else {
+			if (form.getRetiredBy() == null)
+				form.setRetiredBy(Context.getAuthenticatedUser());
+			if (form.getDateRetired() == null)
+				form.setDateRetired(new Date());
+		}
 		
 		BindException errors = new BindException(form, "form");
 		formValidator.validate(form, errors);
