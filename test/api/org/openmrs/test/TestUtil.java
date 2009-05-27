@@ -122,10 +122,22 @@ public class TestUtil {
 	}
 	
 	/**
-	 * Convert the given multi-line output to lines of StringBuilder.append lines From an input of
-	 * this this: asdf asdfasdf asdf"asdf" To this: StringBuilder correctOutput = new
-	 * StringBuilder(); correctOutput.append("asdf\n"); correctOutput.append(" asdfasdf\n");
-	 * correctOutput.append("asdf\"asdf\"\n");
+	 * Convert the given multi-line output to lines of StringBuilder.append lines <br/>
+	 * <br/>
+	 * From an input of this this:
+	 * 
+	 * <pre>
+     * asdf
+     *  asdfasdf
+     * asdf"asdf"
+     * </pre>
+	 * 
+	 * To this:<br/>
+	 * <br/>
+	 * StringBuilder correctOutput = new StringBuilder();<br/>
+	 * correctOutput.append("asdf\n");<br/>
+	 * correctOutput.append(" asdfasdf\n");<br/>
+	 * correctOutput.append("asdf\"asdf\"\n");<br/>
 	 * 
 	 * @param output multi line string to convert
 	 */
@@ -137,15 +149,16 @@ public class TestUtil {
 		for (String line : lines) {
 			System.out.print("correctOutput.append(\"");
 			System.out.print(line);
-			System.out.println("\");\\n");
+			System.out.println("\\n\");");
 		}
 		
 	}
 	
 	/**
-	 * Print the contents of the given tableName to system.out Call this from any
-	 * {@link BaseContextSensitiveTest} child by: TestUtil.printOutTableContents(getConnection(),
-	 * "encounter");
+	 * Print the contents of the given tableName to system.out<br/>
+	 * <br/>
+	 * Call this from any {@link BaseContextSensitiveTest} child by:
+	 * TestUtil.printOutTableContents(getConnection(), "encounter");
 	 * 
 	 * @param sqlConnection the connection to use
 	 * @param tableNames the name(s) of the table(s) to print out
