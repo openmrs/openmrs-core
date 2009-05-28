@@ -275,7 +275,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			if (p.getRace() != null) {
 				patientNode.setAttribute("race", p.getRace());
 			}
-			*/
+			 */
 			if (p.getBirthdate() != null) {
 				patientNode.setAttribute("birthdate", df.format(p.getBirthdate()));
 			}
@@ -289,7 +289,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			if (p.getCitizenship() != null) {
 				patientNode.setAttribute("citizenship", p.getCitizenship());
 			}
-			*/
+			 */
 			/*
 			if (p.getMothersName() != null) {
 				patientNode.setAttribute("mothers_name", p.getMothersName());
@@ -297,7 +297,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			if (p.getCivilStatus() != null) {
 				patientNode.setAttribute("civil_status", p.getCivilStatus().getName(locale, false).getName());
 			}
-			*/
+			 */
 			if (p.getDeathDate() != null) {
 				patientNode.setAttribute("death_date", df.format(p.getDeathDate()));
 			}
@@ -312,7 +312,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 				patientNode.setAttribute("health_center", p.getHealthCenter().getName());
 				patientNode.setAttribute("health_center_id", p.getHealthCenter().getLocationId().toString());
 			}
-			*/
+			 */
 
 			for (Encounter e : encounters) {
 				Element encounterNode = doc.createElement("encounter");
@@ -1054,7 +1054,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			}
 			forPatient.add(obs);
 		}
-		*/
+		 */
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Obs.class);
 		criteria.setCacheMode(CacheMode.IGNORE);
 		
@@ -2082,6 +2082,87 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		}
 		
 		return patientIdentifiers;
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.PatientSetDAO#getPatientsByRelationship(org.openmrs.RelationshipType,
+	 *      boolean, boolean, org.openmrs.Person)
+	 */
+	public Cohort getPatientsByRelationship(RelationshipType relType, boolean includeAtoB, boolean includeBtoA, Person target) {
+		
+		// since members of a relationship aren't necessarily Patients, but we're supposed to be returning
+		// just patients, get all patients first to compare against:
+		Cohort allPatients = getAllPatients();
+		
+		if (relType != null) {
+			if (includeAtoB && includeBtoA) {
+				String hql = "select personA.id, personB.id from Relationship where relationshipType = :relType";
+				if (target != null)
+					hql += " and (personA.id = :targetId or personB.id = :targetId)";
+				Query q = sessionFactory.getCurrentSession().createQuery(hql);
+				q.setParameter("relType", relType);
+				if (target != null)
+					q.setInteger("targetId", target.getPersonId());
+				Cohort ret = new Cohort();
+				for (Object[] o : (List<Object[]>) q.list()) {
+					ret.addMember((Integer) o[0]);
+					ret.addMember((Integer) o[1]);
+				}
+				ret.removeMember(target.getPersonId());
+				return Cohort.intersect(allPatients, ret);
+			} else if (includeAtoB) {
+				String hql = "select personA.id from Relationship where relationshipType = :relType";
+				if (target != null)
+					hql += " and personB.id = :targetId";
+				Query q = sessionFactory.getCurrentSession().createQuery(hql);
+				q.setParameter("relType", relType);
+				if (target != null)
+					q.setInteger("targetId", target.getPersonId());
+				Cohort ret = new Cohort();
+				for (Integer id : (List<Integer>) q.list())
+					ret.addMember(id);
+				return Cohort.intersect(allPatients, ret);
+			} else if (includeBtoA) {
+				String hql = "select personB.id from Relationship where relationshipType = :relType";
+				if (target != null)
+					hql += " and personA.id = :targetId";
+				Query q = sessionFactory.getCurrentSession().createQuery(hql);
+				q.setParameter("relType", relType);
+				if (target != null)
+					q.setInteger("targetId", target.getPersonId());
+				Cohort ret = new Cohort();
+				for (Integer id : (List<Integer>) q.list())
+					ret.addMember(id);
+				return Cohort.intersect(allPatients, ret);
+			} else {
+				return new Cohort();
+			}
+		} else {
+			if (target != null) {
+				Cohort ret = new Cohort();
+				Integer ptId = target.getPersonId();
+				Query query = sessionFactory.getCurrentSession().createSQLQuery(
+				    "select person_a, person_b from relationship where person_a = :ptId or person_b = :ptId");
+				query.setInteger("ptId", ptId);
+				for (Object[] o : (List<Object[]>) query.list()) {
+					ret.addMember((Integer) o[0]);
+					ret.addMember((Integer) o[1]);
+				}
+				// don't include the target patient
+				ret.removeMember(ptId);
+				return Cohort.intersect(allPatients, ret);
+			} else {
+				// get everyone at either end of any relationship, and determine if they're a patient
+				Cohort ret = new Cohort();
+				Query query = sessionFactory.getCurrentSession().createSQLQuery(
+				    "select person_a, person_b from relationship");
+				for (Object[] o : (List<Object[]>) query.list()) {
+					ret.addMember((Integer) o[0]);
+					ret.addMember((Integer) o[1]);
+				}
+				return Cohort.intersect(allPatients, ret);
+			}
+		}
 	}
 	
 }
