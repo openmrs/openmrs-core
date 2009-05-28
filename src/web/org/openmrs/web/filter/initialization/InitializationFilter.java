@@ -471,6 +471,7 @@ public class InitializationFilter extends StartupFilter {
 					Context.addProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_GLOBAL_PROPERTIES);
 					Context.addProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_CONCEPT_SOURCES);
 					Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_CONCEPT_SOURCES);
+					Context.addProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_IMPLEMENTATION_ID);
 					
 					ImplementationId implId = new ImplementationId();
 					implId.setName(wizardModel.implementationIdName);
@@ -493,6 +494,7 @@ public class InitializationFilter extends StartupFilter {
 					Context.removeProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_GLOBAL_PROPERTIES);
 					Context.removeProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_CONCEPT_SOURCES);
 					Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_CONCEPT_SOURCES);
+					Context.removeProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_IMPLEMENTATION_ID);
 				}
 			}
 			
