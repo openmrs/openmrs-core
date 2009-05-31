@@ -13,6 +13,7 @@
  */
 package org.openmrs.util;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
@@ -178,8 +179,8 @@ public class DatabaseUpdater {
 			Properties props = new Properties();
 			// TODO: This is a dumb requirement to have hibernate in here.  Clean this up
 			propertyStream = DatabaseUpdater.class.getClassLoader().getResourceAsStream("hibernate.default.properties");
-			props.load(propertyStream);
-			
+			OpenmrsUtil.loadProperties(props, propertyStream);
+			propertyStream.close();
 			// add in all default properties that don't exist in the runtime 
 			// properties yet
 			for (Map.Entry<Object, Object> entry : props.entrySet()) {
@@ -189,14 +190,6 @@ public class DatabaseUpdater {
 		}
 		catch (IOException e) {
 			log.fatal("Unable to load default hibernate properties", e);
-		}
-		finally {
-			try {
-				propertyStream.close();
-			}
-			catch (Throwable t) {
-				// pass 
-			}
 		}
 	}
 	
