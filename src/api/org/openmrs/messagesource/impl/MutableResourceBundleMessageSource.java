@@ -34,6 +34,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.messagesource.MutableMessageSource;
 import org.openmrs.messagesource.PresentationMessage;
 import org.openmrs.util.LocaleUtility;
+import org.openmrs.util.OpenmrsUtil;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -145,35 +146,18 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 		String filePrefix = (namespace.length() > 0) ? (namespace + "_") : "";
 		String propertiesPath = "/WEB-INF/" + filePrefix + "messages" + locale + ".properties";
 		
-		OutputStream outStream = null;
+		Resource propertiesResource = applicationContext.getResource(propertiesPath);
 		try {
-			
-			Resource propertiesResource = applicationContext.getResource(propertiesPath);
-			File propertiesFile = propertiesResource.getFile();
-			
-			if (!propertiesFile.exists())
-				propertiesFile.createNewFile();
-			
-			outStream = new FileOutputStream(propertiesFile, true);
-			
-			// append the properties to the appropriate messages file
-			props.store(outStream, namespace + ": " + name + " v" + version);
-			
-		}
-		catch (IOException e) {
-			log.error("Unable to load in locale: '" + locale + "' properties for " + namespace + ": " + name, e);
-		}
-		finally {
-			if (outStream != null) {
-				try {
-					outStream.close();
-				}
-				catch (IOException e) {
-					log.warn("Couldn't close outStream", e);
-				}
-			}
-		}
+		File propertiesFile = propertiesResource.getFile();
 		
+		if (!propertiesFile.exists())
+			propertiesFile.createNewFile();
+			// append the properties to the appropriate messages file
+			OpenmrsUtil.storeProperties(props, propertiesFile, namespace + ": " + name + " v" + version);
+		
+		} catch (Exception ex){
+			log.error("Error creating new properties file");
+		}
 	}
 	
 	/**
@@ -196,7 +180,7 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 			Locale currentLocale = parseLocaleFrom(propertiesFile.getName());
 			Properties props = new Properties();
 			try {
-				props.load(new FileInputStream(propertiesFile));
+				OpenmrsUtil.loadProperties(props, new FileInputStream(propertiesFile));
 				for (Map.Entry<Object, Object> property : props.entrySet()) {
 					presentations.add(new PresentationMessage(property.getKey().toString(), currentLocale, property
 					        .getValue().toString(), ""));
@@ -210,7 +194,6 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 				// TODO Auto-generated catch block
 				log.error("Error generated", e);
 			}
-			
 		}
 		return presentations;
 	}
@@ -245,18 +228,11 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 		if (propertyFile != null) {
 			Properties props = new Properties();
 			try {
-				FileInputStream fis = new FileInputStream(propertyFile);
-				props.load(fis);
-				fis.close();
+				OpenmrsUtil.loadProperties(props, new FileInputStream(propertyFile));
 				props.setProperty(message.getCode(), message.getMessage());
-				FileOutputStream fos = new FileOutputStream(propertyFile);
-				props.store(fos, "OpenMRS Application Messages");
-				fos.close();
+				OpenmrsUtil.storeProperties(props, propertyFile, "OpenMRS Application Messages");
 			}
 			catch (FileNotFoundException e) {
-				log.error("Error generated", e);
-			}
-			catch (IOException e) {
 				log.error("Error generated", e);
 			}
 		}
@@ -270,18 +246,11 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 		if (propertyFile != null) {
 			Properties props = new Properties();
 			try {
-				FileInputStream fis = new FileInputStream(propertyFile);
-				props.load(fis);
-				fis.close();
+				OpenmrsUtil.loadProperties(props, new FileInputStream(propertyFile));
 				props.remove(message.getCode());
-				FileOutputStream fos = new FileOutputStream(propertyFile);
-				props.store(fos, PROPERTIES_FILE_COMMENT);
-				fos.close();
+				OpenmrsUtil.storeProperties(props, propertyFile, PROPERTIES_FILE_COMMENT);
 			}
 			catch (FileNotFoundException e) {
-				log.error("Error generated", e);
-			}
-			catch (IOException e) {
 				log.error("Error generated", e);
 			}
 		}
@@ -301,12 +270,9 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 		for (File propertiesFile : findPropertiesFiles()) {
 			props.clear();
 			try {
-				props.load(new FileInputStream(propertiesFile));
+				OpenmrsUtil.loadProperties(props, new FileInputStream(propertiesFile));
 			}
 			catch (FileNotFoundException e) {
-				log.error("Error generated", e);
-			}
-			catch (IOException e) {
 				log.error("Error generated", e);
 			}
 			if (props.containsKey(code)) {
@@ -376,14 +342,10 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 			propList.add(propertiesFile);
 			
 			try {
-				props.load(new FileInputStream(propertiesFile));
+				OpenmrsUtil.loadProperties(props, new FileInputStream(propertiesFile));
 				fileToPropertiesMap.put(propertiesFile, props);
 			}
 			catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				log.error("Error generated", e);
-			}
-			catch (IOException e) {
 				// TODO Auto-generated catch block
 				log.error("Error generated", e);
 			}
