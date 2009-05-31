@@ -18,6 +18,7 @@ import java.beans.PropertyDescriptor;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -30,6 +31,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -1659,6 +1662,79 @@ public class OpenmrsUtil {
 		}
 		
 		return response;
+	}
+	
+	/**
+	 * 
+	 *  Convenience method to replace Properties.store(), which isn't UTF-8 compliant
+	 * 
+	 * @param properties
+	 * @param file
+	 * @param comment
+	 */
+	public static void storeProperties(Properties properties, File file, String comment){
+		try{
+			OutputStream outStream = new FileOutputStream(file, true);
+			storeProperties(properties, outStream, comment);
+		} catch (IOException ex){
+			log.error("Unable to create file " + file.getAbsolutePath() + " in storeProperties routine.");
+		}
+	}
+	
+	/**
+	 * 
+	 * Convenience method to replace Properties.store(), which isn't UTF-8 compliant
+	 * 
+	 * @param properties
+	 * @param file
+	 * @param comment (which appears in comments in properties file)
+	 */
+	public static void storeProperties(Properties properties, OutputStream outStream, String comment){	
+		try {
+			OutputStreamWriter osw = new OutputStreamWriter(new BufferedOutputStream(outStream), "UTF-8");
+			Writer out = new BufferedWriter(osw);
+			if (comment != null)
+				out.write("\n#" + comment + "\n");
+			out.write("#" + new Date()+ "\n");
+			for (Map.Entry<Object, Object> e : properties.entrySet()) {
+				out.write(e.getKey() + "=" + e.getValue() + "\n");
+			}
+			out.write("\n");
+			out.flush();
+			out.close();		
+		} catch (FileNotFoundException fnfe){
+			log.error("target file not found" + fnfe);
+		} catch (UnsupportedEncodingException ex){ //pass
+			log.error("unsupported encoding error hit" + ex);
+		} catch (IOException ioex){
+			log.error("IO exception encountered trying to append to properties file" + ioex);
+		}
+
+	}
+	
+	public static Properties loadProperties(Properties props, InputStream input){
+		try {
+			BufferedReader reader = new BufferedReader(new InputStreamReader(input, "UTF-8"));
+			while (reader.ready()) {     
+			    String line = reader.readLine();
+			    if (line.length() > 0 && line.charAt(0) != '#'){
+			    	int pos = line.indexOf("=");
+			    	if (pos > 0){
+			    		String keyString = line.substring(0, pos);
+			    		String valueString = line.substring(pos + 1);
+			    		if (keyString != null && keyString.length() > 0){
+			    			props.put(keyString, valueString.replace("\n", ""));
+			    		}
+			    	}
+			    }
+			}
+			reader.close();
+		} catch (UnsupportedEncodingException uee) {
+			log.error("Unsupported encoding used in properties file " + uee);
+		} catch(IOException ioe){
+			log.error("Unable to read properties from properties file " + ioe);
+		} 
+		return props;
 	}
 	
 	/**

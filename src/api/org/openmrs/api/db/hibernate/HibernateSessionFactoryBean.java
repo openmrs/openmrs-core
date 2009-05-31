@@ -27,6 +27,7 @@ import org.hibernate.util.ConfigHelper;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleFactory;
+import org.openmrs.util.OpenmrsUtil;
 import org.springframework.core.io.Resource;
 import org.springframework.orm.hibernate3.LocalSessionFactoryBean;
 
@@ -58,7 +59,7 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
 		try {
 			InputStream propertyStream = ConfigHelper.getResourceAsStream("/hibernate.default.properties");
 			Properties props = new Properties();
-			props.load(propertyStream);
+			OpenmrsUtil.loadProperties(props, propertyStream);
 			propertyStream.close();
 			
 			// Only load in the default properties if they don't exist
