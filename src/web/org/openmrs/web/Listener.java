@@ -463,8 +463,7 @@ public final class Listener extends ContextLoaderListener {
 			
 			if (propertyStream == null)
 				throw new IOException("Could not open '" + filename + "' in user or local directory.");
-			
-			props.load(propertyStream);
+			OpenmrsUtil.loadProperties(props, propertyStream);
 			propertyStream.close();
 			log.warn("Using runtime properties file: " + filepath);
 			

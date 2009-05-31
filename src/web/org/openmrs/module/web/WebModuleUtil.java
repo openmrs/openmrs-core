@@ -112,18 +112,18 @@ public class WebModuleUtil {
 				
 				String currentPath = path.replace("@LANG@", lang);
 				
-				OutputStream outStream = null;
-				try {
+				
 					String absolutePath = realPath + currentPath;
 					File file = new File(absolutePath);
-					
-					if (!file.exists())
-						file.createNewFile();
-					
-					outStream = new FileOutputStream(file, true);
+					try {
+						if (!file.exists())
+							file.createNewFile();
+					} catch (IOException ioe){
+						log.error("Unable to create new file " + file.getAbsolutePath() + " " + ioe);
+					}
 					
 					Properties props = entry.getValue();
-					
+
 					// set all properties to start with 'moduleName.' if not already
 					List<Object> keys = new Vector<Object>();
 					keys.addAll(props.keySet());
@@ -136,18 +136,7 @@ public class WebModuleUtil {
 					}
 					
 					// append the properties to the appropriate messages file
-					props.store(outStream, "Module: " + mod.getName() + " v" + mod.getVersion());
-				}
-				catch (IOException e) {
-					log.error("Unable to load in lang: '" + entry.getKey() + "' properties for mod: " + mod.getName(), e);
-				}
-				finally {
-					try {
-						outStream.close();
-					}
-					catch (Exception e) { /* pass */}
-				}
-				
+					OpenmrsUtil.storeProperties(props, file, "Module: " + mod.getName() + " v" + mod.getVersion());
 			}
 			log.debug("Done copying messages");
 			
@@ -437,27 +426,9 @@ public class WebModuleUtil {
 		if (folder.exists()) {
 			Properties emptyProperties = new Properties();
 			for (File f : folder.listFiles()) {
-				if (f.getName().startsWith("module_messages")) {
-					OutputStream outStream = null;
-					try {
-						outStream = new FileOutputStream(f, false);
-						emptyProperties.store(outStream, "");
-					}
-					catch (IOException io) {
-						log.warn("Unable to clear module messages: " + f.getAbsolutePath(), io);
-					}
-					finally {
-						if (outStream != null) {
-							try {
-								outStream.close();
-							}
-							catch (IOException e) {
-								log.warn("Couldn't close outStream for file: " + f.getName(), e);
-							}
-						}
-					}
-					
-				}
+				if (f.getName().startsWith("module_messages")){
+						OpenmrsUtil.storeProperties(emptyProperties, f, "");
+				}	
 			}
 		}
 		
@@ -664,5 +635,5 @@ public class WebModuleUtil {
 			return servlets.get(servletName);
 		
 		return null;
-	}
+	}	
 }
