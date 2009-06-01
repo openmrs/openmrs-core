@@ -518,7 +518,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	 * @throws Exception
 	 */
 	@Test
-	public void shouldAllowGettingPatientsThatWereCreatedByUsersWhoArePatients() throws Exception {
+	public void testAllowUsersWhoArePatients() throws Exception {
 		executeDataSet(USERS_WHO_ARE_PATIENTS_XML);
 		
 		// we must fetch this person first, because this person is
@@ -605,6 +605,9 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		patientService.savePatient(patient);
 		
 		Assert.assertEquals(501, patient.getPatientId().intValue());
+		TestUtil.printOutTableContents(getConnection(), "patient");
+		TestUtil.printOutTableContents(getConnection(), "patient_identifier");
+		TestUtil.printOutTableContents(getConnection(), "person");
 		Assert.assertNotNull(patientService.getPatient(501)); // make sure a new row with a patient id WAS created
 		Assert.assertNull(patientService.getPatient(503)); // make sure a new row with a new person id WASN'T created
 	}
@@ -695,116 +698,4 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		patient.getAttributes().size();
 		person.getAttributes().size();
 	}
-	
-	/**
-	 * Regression test for http://dev.openmrs.org/ticket/1375
-	 * 
-	 * @see {@link PatientService#savePatient(Patient)}
-	 */
-	@Test
-	@Verifies(value = "should not throw a NonUniqueObjectException when called with a hand constructed patient", method = "savePatient(Patient)")
-	public void savePatient_shouldNotThrowANonUniqueObjectExceptionWhenCalledWithAHandConstructedPatient() throws Exception {
-		Patient patient = new Patient();
-		patient.setGender("M");
-		patient.setPatientId(2);
-		//patient.setCreator(new User(1));
-		//patient.setDateCreated date_created="2005-09-22 00:00:00.0" changed_by="1" date_changed="2008-08-18 12:29:59.0"
-		patient.addName(new PersonName("This", "Isa", "Test"));
-		patient.addIdentifier(new PatientIdentifier("101-6", new PatientIdentifierType(1), new Location(1)));
-		Context.getPatientService().savePatient(patient);
-	}
-
-    /**
-     * @see {@link PatientService#isIdentifierInUseByAnotherPatient(PatientIdentifier)}
-     */
-    @Test
-    @Verifies(value = "should ignore voided patientIdentifiers", method = "isIdentifierInUseByAnotherPatient(PatientIdentifier)")
-    public void isIdentifierInUseByAnotherPatient_shouldIgnoreVoidedPatientIdentifiers()
-            throws Exception {
-    	PatientIdentifierType pit = patientService.getPatientIdentifierType(2);
-    	PatientIdentifier patientIdentifier = new PatientIdentifier("ABC123", pit, null);
-        Assert.assertFalse(patientService.isIdentifierInUseByAnotherPatient(patientIdentifier));
-    }
-
-    /**
-     * Regression test for http://dev.openmrs.org/ticket/790
-     * 
-     * @see {@link PatientService#isIdentifierInUseByAnotherPatient(PatientIdentifier)}
-     */
-    @Test
-    @Verifies(value = "should ignore voided patients", method = "isIdentifierInUseByAnotherPatient(PatientIdentifier)")
-    public void isIdentifierInUseByAnotherPatient_shouldIgnoreVoidedPatients()
-            throws Exception {
-    	{ // patient 999 should be voided and have a non-voided identifier of XYZ
-    		Patient p = patientService.getPatient(999);
-    		Assert.assertNotNull(p);
-    		Assert.assertTrue(p.isVoided());
-    		System.out.println(p.getVoidReason());
-    		boolean found = false;
-    		for (PatientIdentifier id : p.getIdentifiers()) {
-    			if (id.getIdentifier().equals("XYZ") && id.getIdentifierType().getId() == 2) {
-    				found = true;
-    				break;
-    			}
-    		}
-    		Assert.assertTrue(found);
-    	}
-    	PatientIdentifierType pit = patientService.getPatientIdentifierType(2);
-    	PatientIdentifier patientIdentifier = new PatientIdentifier("XYZ", pit, null);
-        Assert.assertFalse(patientService.isIdentifierInUseByAnotherPatient(patientIdentifier));
-    }
-
-    /**
-     * @see {@link PatientService#isIdentifierInUseByAnotherPatient(PatientIdentifier)}
-     * 
-     */
-    @Test
-    @Verifies(value = "should return false when patientIdentifier contains a patient and no other patient has this id", method = "isIdentifierInUseByAnotherPatient(PatientIdentifier)")
-    public void isIdentifierInUseByAnotherPatient_shouldReturnFalseWhenPatientIdentifierContainsAPatientAndNoOtherPatientHasThisId()
-            throws Exception {
-    	PatientIdentifierType pit = patientService.getPatientIdentifierType(1);
-    	PatientIdentifier patientIdentifier = new PatientIdentifier("Nobody could possibly have this identifier", pit, null);
-    	patientIdentifier.setPatient(patientService.getPatient(2));
-        Assert.assertFalse(patientService.isIdentifierInUseByAnotherPatient(patientIdentifier));
-    }
-
-    /**
-     * @see {@link PatientService#isIdentifierInUseByAnotherPatient(PatientIdentifier)}
-     * 
-     */
-    @Test
-    @Verifies(value = "should return false when patientIdentifier does not contain a patient and no patient has this id", method = "isIdentifierInUseByAnotherPatient(PatientIdentifier)")
-    public void isIdentifierInUseByAnotherPatient_shouldReturnFalseWhenPatientIdentifierDoesNotContainAPatientAndNoPatientHasThisId()
-            throws Exception {
-    	PatientIdentifierType pit = patientService.getPatientIdentifierType(1);
-    	PatientIdentifier patientIdentifier = new PatientIdentifier("Nobody could possibly have this identifier", pit, null);
-        Assert.assertFalse(patientService.isIdentifierInUseByAnotherPatient(patientIdentifier));
-    }
-
-    /**
-     * @see {@link PatientService#isIdentifierInUseByAnotherPatient(PatientIdentifier)}
-     * 
-     */
-    @Test
-    @Verifies(value = "should return true when patientIdentifier contains a patient and another patient has this id", method = "isIdentifierInUseByAnotherPatient(PatientIdentifier)")
-    public void isIdentifierInUseByAnotherPatient_shouldReturnTrueWhenPatientIdentifierContainsAPatientAndAnotherPatientHasThisId()
-            throws Exception {
-    	PatientIdentifierType pit = patientService.getPatientIdentifierType(1);
-    	PatientIdentifier patientIdentifier = new PatientIdentifier("7TU-8", pit, null);
-    	patientIdentifier.setPatient(patientService.getPatient(2));
-        Assert.assertTrue(patientService.isIdentifierInUseByAnotherPatient(patientIdentifier));
-    }
-
-    /**
-     * @see {@link PatientService#isIdentifierInUseByAnotherPatient(PatientIdentifier)}
-     * 
-     */
-    @Test
-    @Verifies(value = "should return true when patientIdentifier does not contain a patient and a patient has this id", method = "isIdentifierInUseByAnotherPatient(PatientIdentifier)")
-    public void isIdentifierInUseByAnotherPatient_shouldReturnTrueWhenPatientIdentifierDoesNotContainAPatientAndAPatientHasThisId()
-            throws Exception {
-    	PatientIdentifierType pit = patientService.getPatientIdentifierType(1);
-    	PatientIdentifier patientIdentifier = new PatientIdentifier("7TU-8", pit, null);
-        Assert.assertTrue(patientService.isIdentifierInUseByAnotherPatient(patientIdentifier));
-    }
 }

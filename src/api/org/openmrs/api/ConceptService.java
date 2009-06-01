@@ -48,10 +48,10 @@ import org.springframework.transaction.annotation.Transactional;
  * To get a single concept:
  * 
  * <pre>
- *   // if there is a concept row in the database with concept_id = 3845
- *   Concept concept = Context.getConceptService().getConcept(3845);
+ * // if there is a concept row in the database with concept_id = 3845
+ * Concept concept = Context.getConceptService().getConcept(3845);
  * 
- *   String name = concept.getPreferredName(Context.getLocale()).getName();
+ * String name = concept.getPreferredName(Context.getLocale()).getName();
  * </pre>
  * To save a concept to the database
  * 
@@ -94,9 +94,6 @@ public interface ConceptService extends OpenmrsService {
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_MANAGE_CONCEPTS })
 	public void updateConcept(Concept concept) throws APIException;
-	
-	@Transactional(readOnly = true)
-	public Concept getConceptByUuid(String uuid);
 	
 	/**
 	 * @deprecated use #saveConcept(Concept)
@@ -425,9 +422,6 @@ public interface ConceptService extends OpenmrsService {
 	                                      List<ConceptDatatype> requireDatatypes, List<ConceptDatatype> excludeDatatypes)
 	                                                                                                                     throws APIException;
 	
-	@Transactional(readOnly = true)
-	public Drug getDrugByUuid(String uuid);
-	
 	/**
 	 * @deprecated Use
 	 *             {@link #getConceptWords(String, List, boolean, List, List, List, List, Concept, Integer, Integer)}
@@ -575,21 +569,6 @@ public interface ConceptService extends OpenmrsService {
 	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPT_CLASSES)
 	public List<ConceptClass> getAllConceptClasses(boolean includeRetired) throws APIException;
 	
-	@Transactional(readOnly = true)
-	public ConceptClass getConceptClassByUuid(String uuid);
-	
-	@Transactional(readOnly = true)
-	public ConceptAnswer getConceptAnswerByUuid(String uuid);
-	
-	@Transactional(readOnly = true)
-	public ConceptName getConceptNameByUuid(String uuid);
-	
-	@Transactional(readOnly = true)
-	public ConceptSet getConceptSetByUuid(String uuid);
-	
-	@Transactional(readOnly = true)
-	public ConceptSource getConceptSourceByUuid(String uuid);
-	
 	/**
 	 * Creates or updates a concept class
 	 * 
@@ -668,9 +647,6 @@ public interface ConceptService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPT_DATATYPES)
 	public ConceptDatatype getConceptDatatype(Integer i) throws APIException;
-	
-	@Transactional(readOnly = true)
-	public ConceptDatatype getConceptDatatypeByUuid(String uuid);
 	
 	/**
 	 * Return a Concept datatype matching the given name
@@ -768,9 +744,6 @@ public interface ConceptService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPT_PROPOSALS)
 	public List<ConceptProposal> getAllConceptProposals(boolean includeCompleted) throws APIException;
-	
-	@Transactional(readOnly = true)
-	public ConceptNumeric getConceptNumericByUuid(String uuid);
 	
 	/**
 	 * Get a ConceptProposal by conceptProposalId
@@ -952,9 +925,6 @@ public interface ConceptService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	public void checkIfLocked() throws ConceptsLockedException;
 	
-	@Transactional(readOnly = true)
-	public ConceptProposal getConceptProposalByUuid(String uuid);
-	
 	/**
 	 * Convenience method for finding concepts associated with drugs in formulary.
 	 * 
@@ -982,9 +952,6 @@ public interface ConceptService extends OpenmrsService {
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_MANAGE_CONCEPTS })
 	public void updateConceptWords() throws APIException;
-	
-	@Transactional(readOnly = true)
-	public ConceptNameTag getConceptNameTagByUuid(String uuid);
 	
 	/**
 	 * Iterates over all concepts with conceptIds between <code>conceptIdStart</code> and
@@ -1113,8 +1080,5 @@ public interface ConceptService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_CONCEPTS })
 	public ConceptNameTag getConceptNameTag(Integer id);
-	
-	@Transactional(readOnly = true)
-	public Object getConceptDescriptionByUuid(String uuid);
 	
 }

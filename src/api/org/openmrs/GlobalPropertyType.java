@@ -13,29 +13,15 @@
  */
 package org.openmrs;
 
-import java.util.Date;
-
-import org.openmrs.api.context.Context;
-
 
 /**
  *
  */
 public class GlobalPropertyType {
 	
-	private Integer globalPropertyTypeId;
-
+	private Integer globalPropertyTypeId = 1;
 	private String name = "String";
-	
 	private String description = "";
-	
-	private User createdBy = null;
-	
-	private Date dateCreated = new Date();
-	
-	private boolean voided = false;
-	
-	private Date dateVoided = null;
 	
 	public GlobalPropertyType() {
 	}
@@ -90,71 +76,5 @@ public class GlobalPropertyType {
     public String getDescription() {
 	    return description;
     }
-
-	
-    /**
-     * @return the createdBy
-     */
-    public User getCreatedBy() {
-    	return createdBy;
-    }
-
-	
-    /**
-     * @param createdBy the createdBy to set
-     */
-    public void setCreatedBy(User createdBy) {
-    	this.createdBy = createdBy;
-    }
-
-	
-    /**
-     * @return the dateCreated
-     */
-    public Date getDateCreated() {
-    	return dateCreated;
-    }
-
-	
-    /**
-     * @param dateCreated the dateCreated to set
-     */
-    public void setDateCreated(Date dateCreated) {
-    	this.dateCreated = dateCreated;
-    }
-
-	
-    /**
-     * @return the voided
-     */
-    public boolean isVoided() {
-    	return voided;
-    }
-
-	
-    /**
-     * @param voided the voided to set
-     */
-    public void setVoided(boolean voided) {
-    	this.voided = voided;
-    }
-
-	
-    /**
-     * @return the dateVoided
-     */
-    public Date getDateVoided() {
-    	return dateVoided;
-    }
-
-	
-    /**
-     * @param dateVoided the dateVoided to set
-     */
-    public void setDateVoided(Date dateVoided) {
-    	this.dateVoided = dateVoided;
-    }
-    
-    
 
 }

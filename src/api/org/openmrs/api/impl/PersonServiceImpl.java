@@ -53,7 +53,7 @@ import org.springframework.util.Assert;
  * @see PersonService
  * @see org.openmrs.api.context.Context
  */
-public class PersonServiceImpl extends BaseOpenmrsService implements PersonService {
+public class PersonServiceImpl implements PersonService {
 	
 	private Log log = LogFactory.getLog(this.getClass());
 	
@@ -170,6 +170,20 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 * @see org.openmrs.api.PersonService#savePersonAttributeType(org.openmrs.PersonAttributeType)
 	 */
 	public PersonAttributeType savePersonAttributeType(PersonAttributeType type) throws APIException {
+		User user = Context.getAuthenticatedUser();
+		Date date = new Date();
+		
+		if (type.getCreator() == null)
+			type.setCreator(user);
+		
+		if (type.getDateCreated() == null)
+			type.setDateCreated(date);
+		
+		if (type.getPersonAttributeTypeId() != null) {
+			type.setChangedBy(user);
+			type.setDateChanged(date);
+		}
+		
 		return dao.savePersonAttributeType(type);
 	}
 	
@@ -486,6 +500,12 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		if (relationship.getPersonA().equals(relationship.getPersonB()))
 			throw new APIException("Person A and Person B can't be the same");
 		
+		User user = Context.getAuthenticatedUser();
+		Date date = new Date();
+		
+		relationship.setCreator(user);
+		relationship.setDateCreated(date);
+		
 		return dao.saveRelationship(relationship);
 	}
 	
@@ -596,6 +616,13 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 * @see org.openmrs.api.PersonService#saveRelationshipType(org.openmrs.RelationshipType)
 	 */
 	public RelationshipType saveRelationshipType(RelationshipType relationshipType) throws APIException {
+		
+		User user = Context.getAuthenticatedUser();
+		Date date = new Date();
+		
+		relationshipType.setCreator(user);
+		relationshipType.setDateCreated(date);
+		
 		return dao.saveRelationshipType(relationshipType);
 	}
 	
@@ -712,6 +739,50 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	}
 	
 	/**
+	 * @see org.openmrs.api.PersonService#setCollectionProperties(org.openmrs.Person)
+	 */
+	public void setCollectionProperties(Person person) {
+		// set it person creator/changer
+		if (person.getPersonCreator() == null) {
+			person.setPersonCreator(Context.getAuthenticatedUser());
+			person.setPersonDateCreated(new Date());
+		} else {
+			person.setPersonChangedBy(Context.getAuthenticatedUser());
+			person.setPersonDateChanged(new Date());
+		}
+		
+		// address collection
+		if (person.getAddresses() != null && person.getAddresses().size() > 0)
+			for (PersonAddress pAddress : person.getAddresses()) {
+				if (pAddress.getDateCreated() == null) {
+					pAddress.setDateCreated(new Date());
+					pAddress.setCreator(Context.getAuthenticatedUser());
+					pAddress.setPerson(person);
+				}
+			}
+		
+		// name collection
+		if (person.getNames() != null && person.getNames().size() > 0)
+			for (PersonName pName : person.getNames()) {
+				if (pName.getDateCreated() == null) {
+					pName.setDateCreated(new Date());
+					pName.setCreator(Context.getAuthenticatedUser());
+					pName.setPerson(person);
+				}
+			}
+		
+		// attribute collection
+		if (person.getAttributes() != null && person.getAttributes().size() > 0)
+			for (PersonAttribute pAttr : person.getAttributes()) {
+				if (pAttr.getDateCreated() == null) {
+					pAttr.setDateCreated(new Date());
+					pAttr.setCreator(Context.getAuthenticatedUser());
+					pAttr.setPerson(person);
+				}
+			}
+	}
+	
+	/**
 	 * @see org.openmrs.api.PersonService#parsePersonName(java.lang.String)
 	 */
 	public PersonName parsePersonName(String name) throws APIException {
@@ -785,46 +856,6 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 */
 	public Map<Person, List<Person>> getRelationships(RelationshipType relType) throws APIException {
 		return getRelationshipMap(relType);
-	}
-	
-	/**
-	 * @see org.openmrs.api.PersonService#getPersonAttributeTypeByUuid(java.lang.String)
-	 */
-	public PersonAttributeType getPersonAttributeTypeByUuid(String uuid) {
-		return dao.getPersonAttributeTypeByUuid(uuid);
-	}
-	
-	/**
-	 * @see org.openmrs.api.PersonService#getPersonByUuid(java.lang.String)
-	 */
-	public Person getPersonByUuid(String uuid) throws APIException {
-		return dao.getPersonByUuid(uuid);
-	}
-	
-	public PersonAddress getPersonAddressByUuid(String uuid) throws APIException {
-		return dao.getPersonAddressByUuid(uuid);
-	}
-	
-	public PersonAttribute getPersonAttributeByUuid(String uuid) throws APIException {
-		return dao.getPersonAttributeByUuid(uuid);
-	}
-	
-	public PersonName getPersonNameByUuid(String uuid) throws APIException {
-		return dao.getPersonNameByUuid(uuid);
-	}
-	
-	/**
-	 * @see org.openmrs.api.PersonService#getRelationshipByUuid(java.lang.String)
-	 */
-	public Relationship getRelationshipByUuid(String uuid) throws APIException {
-		return dao.getRelationshipByUuid(uuid);
-	}
-	
-	/**
-	 * @see org.openmrs.api.PersonService#getRelationshipTypeByUuid(java.lang.String)
-	 */
-	public RelationshipType getRelationshipTypeByUuid(String uuid) throws APIException {
-		return dao.getRelationshipTypeByUuid(uuid);
 	}
 	
 }

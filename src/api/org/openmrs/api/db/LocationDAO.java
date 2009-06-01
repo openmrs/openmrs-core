@@ -126,11 +126,4 @@ public interface LocationDAO {
 	 * @param tag The <code>LocationTag</code> to delete
 	 */
 	public void deleteLocationTag(LocationTag tag);
-	
-	/**
-	 * @param uuid the uuid to look for
-	 * @return location matching uuid
-	 */
-	public Location getLocationByUuid(String uuid);
-	
 }

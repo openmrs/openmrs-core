@@ -249,7 +249,6 @@ public class UserFormController extends PersonFormController {
 	 * form/command object to load into the request
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
-	 * @should get empty form with valid user
 	 */
 	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 		

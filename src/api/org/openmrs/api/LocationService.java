@@ -94,14 +94,14 @@ public interface LocationService extends OpenmrsService {
 	public Location getDefaultLocation() throws APIException;
 	
 	/**
-	 * Returns a location by uuid
+	 * Returns a location by guid TODO: Not yet implemented.
 	 * 
-	 * @param uuid is the uuid of the desired location
-	 * @return location with the given uuid
+	 * @param guid is the guid of the desired location
+	 * @return location with the given guid
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_LOCATIONS })
-	public Location getLocationByUuid(String uuid) throws APIException;
+	public Location getLocationByGuid(String guid) throws APIException;
 	
 	/**
 	 * Returns all locations, includes retired locations. This method delegates to the
@@ -172,7 +172,7 @@ public interface LocationService extends OpenmrsService {
 	 * 
 	 * @param location location to be retired
 	 * @param reason is the reason why the location is being retired
-	 * @should retire location successfully
+	 * @should retire location succssfully
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_MANAGE_LOCATIONS })
 	public Location retireLocation(Location location, String reason) throws APIException;

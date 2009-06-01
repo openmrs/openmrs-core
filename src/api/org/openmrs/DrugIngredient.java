@@ -16,7 +16,7 @@ package org.openmrs;
 /**
  * DrugIngredient
  */
-public class DrugIngredient extends BaseOpenmrsObject implements java.io.Serializable, OpenmrsObject {
+public class DrugIngredient implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 94023L;
 	
@@ -74,22 +74,6 @@ public class DrugIngredient extends BaseOpenmrsObject implements java.io.Seriali
 	 */
 	public void setIngredient(Concept ingredient) {
 		this.ingredient = ingredient;
-	}
-	
-	/**
-	 * @since 1.5
-	 * @see org.openmrs.OpenmrsObject#getId()
-	 */
-	public Integer getId() {
-		throw new UnsupportedOperationException();
-	}
-	
-	/**
-	 * @since 1.5
-	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
-	 */
-	public void setId(Integer id) {
-		throw new UnsupportedOperationException();
 	}
 	
 }

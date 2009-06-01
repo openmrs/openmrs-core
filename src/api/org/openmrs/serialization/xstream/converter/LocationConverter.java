@@ -1,6 +1,7 @@
 package org.openmrs.serialization.xstream.converter;
 
 import org.openmrs.Location;
+import org.openmrs.User;
 import org.openmrs.api.context.Context;
 
 import com.thoughtworks.xstream.converters.SingleValueConverter;

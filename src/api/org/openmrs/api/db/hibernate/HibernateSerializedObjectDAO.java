@@ -22,7 +22,6 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
-import org.hibernate.criterion.MatchMode;
 import org.openmrs.Auditable;
 import org.openmrs.OpenmrsData;
 import org.openmrs.OpenmrsMetadata;
@@ -52,35 +51,14 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.SerializedObjectDAO#getObjectByUuid(java.lang.Class, java.lang.String)
-	 */
-	public <T extends OpenmrsObject> T getObjectByUuid(Class<T> baseClass, String uuid) throws DAOException {
-		if (uuid != null) {
-			Criteria c = sessionFactory.getCurrentSession().createCriteria(SerializedObject.class);
-			c.add(Expression.eq("uuid", uuid));
-			SerializedObject o = (SerializedObject) c.uniqueResult();
-			return convertSerializedObject(baseClass, o);
-		}
-		return null;
-	}
-	
-	/**
 	 * @see org.openmrs.api.db.SerializedObjectDAO#getAllObjectsByName(Class, String)
 	 */
 	@SuppressWarnings("unchecked")
-	public <T extends OpenmrsMetadata> List<T> getAllObjectsByName(Class<T> type, 
-																   String name, 
-																   boolean exactMatchOnly) 
-																   throws DAOException {
+	public <T extends OpenmrsMetadata> List<T> getAllObjectsByName(Class<T> type, String name) throws DAOException {
 		List<T> ret = new ArrayList<T>();
 		Criteria c = sessionFactory.getCurrentSession().createCriteria(SerializedObject.class);
 		c.add(Expression.or(Expression.eq("type", type), Expression.eq("subtype", type)));
-		if (exactMatchOnly) {
-			c.add(Expression.eq("name", name));
-		}
-		else {
-			c.add(Expression.ilike("name", name, MatchMode.ANYWHERE));
-		}
+		c.add(Expression.eq("name", name));
 		List<SerializedObject> objects = (List<SerializedObject>) c.list();
 		for (SerializedObject serializedObject : objects) {
 			ret.add(convertSerializedObject(type, serializedObject));

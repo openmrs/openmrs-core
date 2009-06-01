@@ -320,6 +320,14 @@ public class PatientProgram extends BaseOpenmrsData implements java.io.Serializa
 	// Property Access
 	// ******************
 	
+	public User getCreator() {
+		return creator;
+	}
+	
+	public void setCreator(User creator) {
+		this.creator = creator;
+	}
+	
 	public Date getDateCompleted() {
 		return dateCompleted;
 	}

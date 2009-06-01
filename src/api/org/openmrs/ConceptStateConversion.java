@@ -19,7 +19,7 @@ import org.apache.commons.logging.LogFactory;
 /**
  * ConceptStateConversion
  */
-public class ConceptStateConversion extends BaseOpenmrsObject implements java.io.Serializable {
+public class ConceptStateConversion implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 3214511L;
 	
@@ -130,21 +130,5 @@ public class ConceptStateConversion extends BaseOpenmrsObject implements java.io
 	 */
 	public void setProgramWorkflowState(ProgramWorkflowState programWorkflowState) {
 		this.programWorkflowState = programWorkflowState;
-	}
-	
-	/**
-	 * @since 1.5
-	 * @see org.openmrs.OpenmrsObject#getId()
-	 */
-	public Integer getId() {
-		return getConceptStateConversionId();
-	}
-	
-	/**
-	 * @since 1.5
-	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
-	 */
-	public void setId(Integer id) {
-		setConceptStateConversionId(id);
 	}
 }

@@ -23,8 +23,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -111,6 +109,12 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	 * TimerTask method, we make it a private field
 	 */
 	private static Frame frame;
+	
+	/**
+	 * Private variable defining whether or not the columns have been initialized in the hsql
+	 * database yet (adding password and salt columns)
+	 */
+	protected static boolean columnsAdded = false;
 	
 	/**
 	 * Static variable to keep track of the number of times this class has been loaded (aka, number
@@ -214,7 +218,6 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		catch (ContextAuthenticationException wrongCredentialsError) {
 			// if we get here the user is using some database other than the standard 
 			// in-memory database, prompt the user for input
-			log.error("For some reason we couldn't auth as admin:test ?!", wrongCredentialsError);
 		}
 		
 		Integer attempts = 0;
@@ -380,6 +383,25 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	}
 	
 	/**
+	 * True/false whether the extra columns not in the hbm mapping files have been added to the
+	 * current database or not.
+	 * 
+	 * @return the columnsAdded value
+	 */
+	public boolean areColumnsAdded() {
+		return BaseContextSensitiveTest.columnsAdded;
+	}
+	
+	/**
+	 * Set the columns added value as either done or not done.
+	 * 
+	 * @param columnsAdded the columnsAdded to save
+	 */
+	public void setColumnsAdded(boolean columnsAdded) {
+		BaseContextSensitiveTest.columnsAdded = columnsAdded;
+	}
+	
+	/**
 	 * This initializes the empty in-memory hsql database with some rows in order to actually run
 	 * some tests
 	 */
@@ -388,6 +410,29 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		if (useInMemoryDatabase() == false)
 			throw new Exception(
 			        "You shouldn't be initializing a NON in-memory database. Consider unoverriding useInMemoryDatabase");
+		
+		// we only want to add columns once. Hsql won't roll back "alter table" 
+		// commands
+		if (areColumnsAdded() == false) {
+			Connection connection = getConnection();
+			
+			// add the password and salt columns to the users table
+			// because they are not in the hibernate mapping files
+			String sql = "alter table users add column password varchar(255)";
+			PreparedStatement ps = connection.prepareStatement(sql);
+			ps.execute();
+			ps.close();
+			sql = "alter table users add column salt varchar(255)";
+			ps = connection.prepareStatement(sql);
+			ps.execute();
+			ps.close();
+			sql = "alter table users add column secret_answer varchar(255)";
+			ps = connection.prepareStatement(sql);
+			ps.execute();
+			ps.close();
+			
+			setColumnsAdded(true);
+		}
 		
 		executeDataSet(INITIAL_XML_DATASET_PACKAGE_PATH);
 	}
@@ -429,19 +474,13 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 					throw new FileNotFoundException("Unable to find '" + datasetFilename + "' in the classpath");
 			}
 			
-			Reader reader = null;
 			try {
-				reader = new InputStreamReader(fileInInputStreamFormat);
-				ReplacementDataSet replacementDataSet = new ReplacementDataSet(
-				        new FlatXmlDataSet(reader, false, true, false));
+				ReplacementDataSet replacementDataSet = new ReplacementDataSet(new FlatXmlDataSet(fileInInputStreamFormat));
 				replacementDataSet.addReplacementObject("[NULL]", null);
 				xmlDataSetToRun = replacementDataSet;
 			}
 			finally {
 				fileInInputStreamFormat.close();
-				
-				if (reader != null)
-					reader.close();
 			}
 		}
 		

@@ -178,7 +178,6 @@ public class NewPatientFormController extends SimpleFormController {
 							if (newIdentifiers.contains(pi))
 								newIdentifiers.remove(pi);
 							
-//							pi.setUuid(null);
 							newIdentifiers.add(pi);
 							
 							if (log.isDebugEnabled()) {
@@ -293,7 +292,6 @@ public class NewPatientFormController extends SimpleFormController {
 				// add the new name
 				newName.setPersonNameId(null);
 				newName.setPreferred(true);
-				newName.setUuid(null);
 				patient.addName(newName);
 			}
 			
@@ -318,7 +316,6 @@ public class NewPatientFormController extends SimpleFormController {
 					PersonAddress newAddress = (PersonAddress) shortPatient.getAddress().clone();
 					newAddress.setPersonAddressId(null);
 					newAddress.setPreferred(true);
-					newAddress.setUuid(null);
 					patient.addAddress(newAddress);
 				}
 			}
@@ -393,7 +390,6 @@ public class NewPatientFormController extends SimpleFormController {
 				if (!newIdentifiersList.contains(identifier)) {
 					// mark the "removed" identifiers as voided
 					identifier.setVoided(true);
-					identifier.setVoidReason("Removed from new patient screen");
 				}
 			}
 			

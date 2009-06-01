@@ -84,8 +84,7 @@ public class DatabaseUpdater {
 		log.debug("update database");
 		
 		executeChangelog(CHANGE_LOG_FILE, userInput);
-		executeChangelog("liquibase-global-property-types.xml", userInput);
-				
+		
 		log.debug("update database finished");
 	}
 	

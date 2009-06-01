@@ -41,8 +41,7 @@ public class Field extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	private Boolean selectMultiple = false;
 	
-	private Set<FieldAnswer> answers;
-	
+	private Set<FieldAnswer> fieldAnswers;
 	
 	private Set<Form> forms;
 	
@@ -186,14 +185,14 @@ public class Field extends BaseOpenmrsMetadata implements java.io.Serializable {
 	 * @return Returns the fieldAnswers.
 	 */
 	public Set<FieldAnswer> getAnswers() {
-		return answers;
+		return fieldAnswers;
 	}
 	
 	/**
 	 * @param fieldAnswers The fieldAnswers to set.
 	 */
 	public void setAnswers(Set<FieldAnswer> fieldAnswers) {
-		this.answers = fieldAnswers;
+		this.fieldAnswers = fieldAnswers;
 	}
 	
 	/**
@@ -202,10 +201,10 @@ public class Field extends BaseOpenmrsMetadata implements java.io.Serializable {
 	 * @param fieldAnswer FieldAnswer to be added
 	 */
 	public void addAnswer(FieldAnswer fieldAnswer) {
-		if (answers == null)
-			answers = new HashSet<FieldAnswer>();
-		if (!answers.contains(fieldAnswer) && fieldAnswer != null)
-			answers.add(fieldAnswer);
+		if (fieldAnswers == null)
+			fieldAnswers = new HashSet<FieldAnswer>();
+		if (!fieldAnswers.contains(fieldAnswer) && fieldAnswer != null)
+			fieldAnswers.add(fieldAnswer);
 	}
 	
 	/**
@@ -214,8 +213,8 @@ public class Field extends BaseOpenmrsMetadata implements java.io.Serializable {
 	 * @param fieldAnswer FieldAnswer to be removed
 	 */
 	public void removeAnswer(FieldAnswer fieldAnswer) {
-		if (answers != null) {
-			answers.remove(fieldAnswer);
+		if (fieldAnswers != null) {
+			fieldAnswers.remove(fieldAnswer);
 		}
 	}
 	

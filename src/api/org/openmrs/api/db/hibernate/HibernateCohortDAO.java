@@ -67,14 +67,6 @@ public class HibernateCohortDAO implements CohortDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.CohortDAO#getCohortByUuid(java.lang.String)
-	 */
-	public Cohort getCohortByUuid(String uuid) {
-		return (Cohort) sessionFactory.getCurrentSession().createQuery("from Cohort c where c.uuid = :uuid").setString(
-		    "uuid", uuid).uniqueResult();
-	}
-	
-	/**
 	 * @see org.openmrs.api.db.CohortDAO#deleteCohort(org.openmrs.Cohort)
 	 */
 	public Cohort deleteCohort(Cohort cohort) throws DAOException {

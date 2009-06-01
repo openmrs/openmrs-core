@@ -71,9 +71,6 @@ public interface UserService extends OpenmrsService {
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_USERS })
 	public User getUser(Integer userId) throws APIException;
 	
-	@Transactional(readOnly = true)
-	public User getUserByUuid(String uuid) throws APIException;
-	
 	/**
 	 * Get user by username (user's login identifier)
 	 * 
@@ -273,9 +270,6 @@ public interface UserService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	public Role getRole(String r) throws APIException;
 	
-	@Transactional(readOnly = true)
-	public Role getRoleByUuid(String uuid) throws APIException;
-	
 	/**
 	 * Returns Privilege in the system with given String privilege
 	 * 
@@ -284,9 +278,6 @@ public interface UserService extends OpenmrsService {
 	 */
 	@Transactional(readOnly = true)
 	public Privilege getPrivilege(String p) throws APIException;
-	
-	@Transactional(readOnly = true)
-	public Privilege getPrivilegeByUuid(String uuid) throws APIException;
 	
 	/**
 	 * @deprecated use {@link #getAllUsers()}
@@ -460,6 +451,6 @@ public interface UserService extends OpenmrsService {
 	 * 
 	 * @return new system id
 	 */
-	String generateSystemId();
+	public String generateSystemId() throws APIException;
 	
 }

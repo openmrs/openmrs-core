@@ -344,21 +344,4 @@ public class Patient extends Person implements java.io.Serializable {
 		return "Patient#" + patientId;
 	}
 	
-	/**
-	 * @since 1.5
-	 * @see org.openmrs.OpenmrsObject#getId()
-	 */
-	public Integer getId() {
-		return getPatientId();
-	}
-	
-	/**
-	 * @since 1.5
-	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
-	 */
-	public void setId(Integer id) {
-		setPatientId(id);
-		
-	}
-	
 }

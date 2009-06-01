@@ -17,11 +17,8 @@
     </id>
 
     <discriminator column="patient_identifier_type_id" insert="false" />
-
-		<property name="uuid" type="java.lang.String"
-			column="uuid" length="36" unique="true" />
-
-    <property
+		
+	<property
         name="name"
         type="java.lang.String"
         not-null="true"

@@ -567,31 +567,6 @@ public class HibernatePatientDAO implements PatientDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.PatientDAO#getPatientByUuid(java.lang.String)
-	 */
-	public Patient getPatientByUuid(String uuid) {
-		Patient p = null;
-		
-		p = (Patient) sessionFactory.getCurrentSession().createQuery("from Patient p where p.uuid = :uuid").setString(
-		    "uuid", uuid).uniqueResult();
-		
-		return p;
-	}
-	
-	public PatientIdentifier getPatientIdentifierByUuid(String uuid) {
-		return (PatientIdentifier) sessionFactory.getCurrentSession().createQuery(
-		    "from PatientIdentifier p where p.uuid = :uuid").setString("uuid", uuid).uniqueResult();
-	}
-	
-	/**
-	 * @see org.openmrs.api.db.PatientDAO#getPatientIdentifierTypeByUuid(java.lang.String)
-	 */
-	public PatientIdentifierType getPatientIdentifierTypeByUuid(String uuid) {
-		return (PatientIdentifierType) sessionFactory.getCurrentSession().createQuery(
-		    "from PatientIdentifierType pit where pit.uuid = :uuid").setString("uuid", uuid).uniqueResult();
-	}
-	
-	/**
 	 * Fetch the max results value from the global properties table
 	 * 
 	 * @return Integer value for the patient search max results global property
@@ -619,11 +594,11 @@ public class HibernatePatientDAO implements PatientDAO {
 		boolean checkPatient = patientIdentifier.getPatient() != null
 		        && patientIdentifier.getPatient().getPatientId() != null;
 		
-		String sql = "select count(*) from patient_identifier pi inner join patient p on pi.patient_id = p.patient_id " +
-			"where p.voided = false and pi.voided = false and pi.identifier = :identifier and pi.identifier_type = :idType";
+		String sql = "select count(*) from patient_identifier" + " where voided = false" + "   and identifier = :identifier"
+		        + "   and identifier_type = :idType";
 		
 		if (checkPatient) {
-			sql += " and p.patient_id != :ptId";
+			sql += " and patient_id != :ptId";
 		}
 		
 		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);

@@ -14,6 +14,7 @@
 package org.openmrs.api.db;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import org.openmrs.GlobalProperty;
@@ -114,8 +115,6 @@ public interface AdministrationDAO {
 	 * @see org.openmrs.api.AdministrationService#getAllGlobalProperties()
 	 */
 	public List<GlobalProperty> getAllGlobalProperties() throws DAOException;
-	
-	public GlobalProperty getGlobalPropertyByUuid(String uuid) throws DAOException;
 	
 	/**
 	 * @see org.openmrs.api.AdministrationService#getGlobalPropertiesByPrefix(java.lang.String)

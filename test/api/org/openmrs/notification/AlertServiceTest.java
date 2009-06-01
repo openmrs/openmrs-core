@@ -17,7 +17,6 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Role;
@@ -86,17 +85,6 @@ public class AlertServiceTest extends BaseContextSensitiveTest {
 		
 		assertEquals(alertSaved, alert);
 		
-	}
-	
-	/**
-	 * @see {@link AlertService#saveAlert(Alert)}
-	 */
-	@Test
-	@Verifies(value = "should assign uuid to alert", method = "saveAlert(Alert)")
-	public void saveAlert_shouldAssignUuidToAlert() throws Exception {
-		Alert alert = new Alert("asdf", new User(1));
-		Context.getAlertService().saveAlert(alert);
-		Assert.assertNotNull(alert.getUuid());
 	}
 	
 }

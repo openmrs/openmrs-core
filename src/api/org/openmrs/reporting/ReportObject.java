@@ -13,13 +13,11 @@
  */
 package org.openmrs.reporting;
 
-import org.openmrs.OpenmrsObject;
-
 /**
  * @deprecated see reportingcompatibility module
  */
 @Deprecated
-public interface ReportObject extends OpenmrsObject {
+public interface ReportObject {
 	
 	public Integer getReportObjectId();
 	

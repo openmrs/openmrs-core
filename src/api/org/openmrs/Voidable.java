@@ -28,7 +28,7 @@ import java.util.Date;
  * @see OpenmrsData
  * @see Retireable
  */
-public interface Voidable extends OpenmrsObject {
+public interface Voidable {
 	
 	/**
 	 * @return Boolean - whether of not this object is voided

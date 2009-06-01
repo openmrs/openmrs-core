@@ -20,7 +20,7 @@ import org.junit.Test;
 /**
  * Tests the small class ReportSchemaXml without database accesses
  */
-public class ReportSchemaXmlNonContextTest {
+public class ReportSchemaXmlTestNonContext {
 	
 	/**
 	 * Test the updateFromAttributes method

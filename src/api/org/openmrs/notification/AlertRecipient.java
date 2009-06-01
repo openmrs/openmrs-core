@@ -16,7 +16,6 @@ package org.openmrs.notification;
 import java.io.Serializable;
 import java.util.Date;
 
-import org.openmrs.BaseOpenmrsObject;
 import org.openmrs.User;
 
 /**
@@ -25,7 +24,7 @@ import org.openmrs.User;
  * 
  * @see org.openmrs.notification.Alert
  */
-public class AlertRecipient extends BaseOpenmrsObject implements Serializable {
+public class AlertRecipient implements Serializable {
 	
 	private static final long serialVersionUID = -507111109155L;
 	
@@ -172,22 +171,6 @@ public class AlertRecipient extends BaseOpenmrsObject implements Serializable {
 	 */
 	private void setRecipientId(Integer recipientId) {
 		this.recipientId = recipientId;
-	}
-	
-	/**
-	 * @since 1.5
-	 * @see org.openmrs.OpenmrsObject#getId()
-	 */
-	public Integer getId() {
-		throw new UnsupportedOperationException();
-	}
-	
-	/**
-	 * @since 1.5
-	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
-	 */
-	public void setId(Integer id) {
-		throw new UnsupportedOperationException();
 	}
 	
 }

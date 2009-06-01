@@ -14,17 +14,65 @@
 package org.openmrs.hl7;
 
 import java.io.Serializable;
+import java.util.Date;
 
-import org.openmrs.BaseOpenmrsMetadata;
+import org.openmrs.User;
 
-/**
- * Names a unique location that hl7 messages could be coming from.
- */
-public class HL7Source extends BaseOpenmrsMetadata implements Serializable {
+public class HL7Source implements Serializable {
 	
 	private static final long serialVersionUID = 3062136520728193223L;
 	
 	private Integer hl7SourceId;
+	
+	private String name;
+	
+	private String description;
+	
+	private User creator;
+	
+	private Date dateCreated;
+	
+	/**
+	 * @return Returns the creator.
+	 */
+	public User getCreator() {
+		return creator;
+	}
+	
+	/**
+	 * @param creator The creator to set.
+	 */
+	public void setCreator(User creator) {
+		this.creator = creator;
+	}
+	
+	/**
+	 * @return Returns the dateCreated.
+	 */
+	public Date getDateCreated() {
+		return dateCreated;
+	}
+	
+	/**
+	 * @param dateCreated The dateCreated to set.
+	 */
+	public void setDateCreated(Date dateCreated) {
+		this.dateCreated = dateCreated;
+	}
+	
+	/**
+	 * @return Returns the description.
+	 */
+	public String getDescription() {
+		return description;
+	}
+	
+	/**
+	 * @param description The description to set.
+	 */
+	public void setDescription(String description) {
+		this.description = description;
+	}
 	
 	/**
 	 * @return Returns the hl7SourceId.
@@ -41,19 +89,17 @@ public class HL7Source extends BaseOpenmrsMetadata implements Serializable {
 	}
 	
 	/**
-	 * @since 1.5
-	 * @see org.openmrs.OpenmrsObject#getId()
+	 * @return Returns the name.
 	 */
-	public Integer getId() {
-		return getHL7SourceId();
+	public String getName() {
+		return name;
 	}
 	
 	/**
-	 * @since 1.5
-	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
+	 * @param name The name to set.
 	 */
-	public void setId(Integer id) {
-		setHL7SourceId(id);
+	public void setName(String name) {
+		this.name = name;
 	}
 	
 }

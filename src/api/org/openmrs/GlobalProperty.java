@@ -13,18 +13,12 @@
  */
 package org.openmrs;
 
-import java.util.Date;
-
-import org.openmrs.api.context.Context;
-
 /**
  * Global properties are simple key-value pairs persisted in the database GPs can be thought of as
  * something similar to environment variables used in operating systems.
  */
 public class GlobalProperty {
 	
-	private Integer globalPropertyId;
-
 	private String property = "";
 	
 	private String propertyValue = "";
@@ -34,16 +28,6 @@ public class GlobalProperty {
 	private String defaultValue = "";
 	
 	private GlobalPropertyType propertyType = new GlobalPropertyType();
-	
-	private GlobalPropertyType defaultPropertyType = new GlobalPropertyType();
-
-	private User createdBy = null;
-	
-	private Date dateCreated = new Date();
-	
-	private boolean voided = false;
-	
-	private Date dateVoided = null;
 	
 	/**
 	 * Default empty constructor
@@ -83,18 +67,6 @@ public class GlobalProperty {
 		this.description = description;
 	}
 	
-	/**
-     * @param defaultValue
-     * @param description
-     * @param property
-     * @param propertyType
-     * @param propertyValue
-     */
-    public GlobalProperty(String description, String property, GlobalPropertyType propertyType, String propertyValue) {
-	    this(property, propertyValue, description);
-	    this.propertyType = propertyType;
-    }
-
 	/**
 	 * @return Returns the property.
 	 */
@@ -188,113 +160,4 @@ public class GlobalProperty {
     public String getDefaultValue() {
 	    return defaultValue;
     }
-
-	
-    /**
-     * @return the createdBy
-     */
-    public User getCreatedBy() {
-    	return createdBy;
-    }
-
-	
-    /**
-     * @param createdBy the createdBy to set
-     */
-    public void setCreatedBy(User createdBy) {
-    	this.createdBy = createdBy;
-    }
-
-	
-    /**
-     * @return the dateCreated
-     */
-    public Date getDateCreated() {
-    	return dateCreated;
-    }
-
-	
-    /**
-     * @param dateCreated the dateCreated to set
-     */
-    public void setDateCreated(Date dateCreated) {
-    	this.dateCreated = dateCreated;
-    }
-
-	
-    /**
-     * @return the voided
-     */
-    public boolean isVoided() {
-    	return voided;
-    }
-
-	
-    /**
-     * @param voided the voided to set
-     */
-    public void setVoided(boolean voided) {
-    	this.voided = voided;
-    }
-
-	
-    /**
-     * @return the dateVoided
-     */
-    public Date getDateVoided() {
-    	return dateVoided;
-    }
-
-	
-    /**
-     * @param dateVoided the dateVoided to set
-     */
-    public void setDateVoided(Date dateVoided) {
-    	this.dateVoided = dateVoided;
-    }
-
-	/**
-     * @param globalPropertyId the globalPropertyId to set
-     */
-    public void setGlobalPropertyId(Integer globalPropertyId) {
-	    this.globalPropertyId = globalPropertyId;
-    }
-
-	/**
-     * @return the globalPropertyId
-     */
-    public Integer getGlobalPropertyId() {
-	    return globalPropertyId;
-    }
-
-	/**
-     * @param defaultPropertyType the defaultPropertyType to set
-     */
-    public void setDefaultPropertyType(GlobalPropertyType defaultPropertyType) {
-	    this.defaultPropertyType = defaultPropertyType;
-    }
-
-	/**
-     * @return the defaultPropertyType
-     */
-    public GlobalPropertyType getDefaultPropertyType() {
-	    return defaultPropertyType;
-    }
-    	
-	/**
-	 * @since 1.5
-	 * @see org.openmrs.OpenmrsObject#getId()
-	 */
-	public Integer getId() {
-		throw new UnsupportedOperationException();
-	}
-	
-	/**
-	 * @since 1.5
-	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
-	 */
-	public void setId(Integer id) {
-		throw new UnsupportedOperationException();
-	}
-    
 }

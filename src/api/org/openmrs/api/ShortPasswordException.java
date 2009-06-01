@@ -13,6 +13,7 @@
  */
 package org.openmrs.api;
 
+import org.openmrs.api.PasswordException;
 import org.openmrs.util.OpenmrsUtil;
 
 /**

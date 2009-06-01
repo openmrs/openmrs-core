@@ -21,7 +21,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
-import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.reporting.AbstractReportObject;
@@ -102,10 +101,8 @@ public class HibernateReportObjectDAO implements ReportObjectDAO {
 		ReportObjectWrapper wrappedReportObject = new ReportObjectWrapper(reportObj);
 		// TODO - The creator/created date needs to be set here otherwise we get an exception
 		// This doesn't matter really since we're just deleting the report object anyway
-		User user = Context.getAuthenticatedUser();
-		Date now = new Date();
-		wrappedReportObject.setCreator(user);
-		wrappedReportObject.setDateCreated(now);
+		wrappedReportObject.setCreator(Context.getAuthenticatedUser());
+		wrappedReportObject.setDateCreated(new Date());
 		sessionFactory.getCurrentSession().delete(wrappedReportObject);
 	}
 	
@@ -116,19 +113,17 @@ public class HibernateReportObjectDAO implements ReportObjectDAO {
 		
 		ReportObjectWrapper wrappedReportObject;
 		
-		User user = Context.getAuthenticatedUser();
-		Date now = new Date();
 		if (reportObj.getReportObjectId() == null) {
 			wrappedReportObject = new ReportObjectWrapper(reportObj);
-			wrappedReportObject.setCreator(user);
-			wrappedReportObject.setDateCreated(now);
+			wrappedReportObject.setCreator(Context.getAuthenticatedUser());
+			wrappedReportObject.setDateCreated(new Date());
 			
 		} else {
 			wrappedReportObject = (ReportObjectWrapper) sessionFactory.getCurrentSession().get(ReportObjectWrapper.class,
 			    reportObj.getReportObjectId());
 			wrappedReportObject.setReportObject(reportObj);
-			wrappedReportObject.setChangedBy(user);
-			wrappedReportObject.setDateChanged(now);
+			wrappedReportObject.setChangedBy(Context.getAuthenticatedUser());
+			wrappedReportObject.setDateChanged(new Date());
 		}
 		
 		//wrappedReportObject = (ReportObjectWrapper)sessionFactory.getCurrentSession().merge(wrappedReportObject);

@@ -346,7 +346,4 @@ public interface CohortService extends OpenmrsService {
 	@Deprecated
 	public CohortDefinition getAllPatientsCohortDefinition() throws APIException;
 	
-	@Transactional(readOnly = true)
-	public Cohort getCohortByUuid(String uuid);
-	
 }
