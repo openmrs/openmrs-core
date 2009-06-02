@@ -143,10 +143,7 @@ public interface AdministrationDAO {
 	public ImplementationId getImplementationId();
 
 	/**
-     * Auto generated method comment
-	 * @param propertyTypeId 
-     * 
-     * @return
+     * @see org.openmrs.api.AdministrationService#getGlobalPropertyType()
      */
-    public GlobalPropertyType getGlobalPropertyType(Integer propertyTypeId);
+    public GlobalPropertyType getGlobalPropertyType(Integer propertyTypeId) throws DAOException;
 }

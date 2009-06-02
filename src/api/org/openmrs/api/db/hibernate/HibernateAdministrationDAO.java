@@ -388,8 +388,7 @@ public class HibernateAdministrationDAO implements AdministrationDAO {
 	/**
      * @see org.openmrs.api.db.AdministrationDAO#getGlobalPropertyType()
      */
-    @Override
-    public GlobalPropertyType getGlobalPropertyType(Integer propertyTypeId) {
+    public GlobalPropertyType getGlobalPropertyType(Integer propertyTypeId) throws DAOException {
 	    return (GlobalPropertyType) sessionFactory.getCurrentSession().get(GlobalPropertyType.class, propertyTypeId);
     }
 	

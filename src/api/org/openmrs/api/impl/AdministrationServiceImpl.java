@@ -963,7 +963,6 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	/**
      * @see org.openmrs.api.AdministrationService#getGlobalPropertyType(java.lang.Integer)
      */
-    @Override
     public GlobalPropertyType getGlobalPropertyType(Integer propertyTypeId) throws APIException {
     	return dao.getGlobalPropertyType(propertyTypeId);
     }
