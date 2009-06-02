@@ -27,6 +27,7 @@ import org.openmrs.ConceptProposal;
 import org.openmrs.EncounterType;
 import org.openmrs.FieldType;
 import org.openmrs.GlobalProperty;
+import org.openmrs.GlobalPropertyType;
 import org.openmrs.ImplementationId;
 import org.openmrs.Location;
 import org.openmrs.MimeType;
@@ -564,6 +565,17 @@ public interface AdministrationService extends OpenmrsService {
 	 */
 	public void addGlobalProperty(GlobalProperty gp);
 	
+	/**
+	 * 
+	 * Auto generated method comment
+	 * 
+	 * @param propertyTypeId
+	 * @return
+	 * @throws APIException
+	 */
+	@Transactional(readOnly = true)
+	public GlobalPropertyType getGlobalPropertyType(Integer propertyTypeId) throws APIException;
+
 	/**
 	 * Allows code to be notified when a global property is created/edited/deleted.
 	 * 

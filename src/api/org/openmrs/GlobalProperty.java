@@ -13,21 +13,37 @@
  */
 package org.openmrs;
 
+import java.util.Date;
+
+import org.openmrs.api.context.Context;
+
 /**
  * Global properties are simple key-value pairs persisted in the database GPs can be thought of as
  * something similar to environment variables used in operating systems.
  */
 public class GlobalProperty {
 	
-	private String property = "";
+	private Integer globalPropertyId;
 	
-	private String propertyValue = "";
+	private String property;
 	
-	private String description = "";
+	private String propertyValue;
 	
-	private String defaultValue = "";
+	private String description;
 	
-	private GlobalPropertyType propertyType = new GlobalPropertyType();
+	private String defaultPropertyValue;
+	
+	private GlobalPropertyType propertyType;
+	
+	private GlobalPropertyType defaultPropertyType;
+	
+	private User createdBy;
+	
+	private Date dateCreated;
+	
+	private boolean voided;
+	
+	private Date dateVoided;
 	
 	/**
 	 * Default empty constructor
@@ -65,8 +81,28 @@ public class GlobalProperty {
 	public GlobalProperty(String property, String value, String description) {
 		this(property, value);
 		this.description = description;
+		this.defaultPropertyValue = value;
+		
+		GlobalPropertyType propertyType = Context.getAdministrationService().getGlobalPropertyType(1);
+		this.propertyType = propertyType;
+		this.defaultPropertyType = propertyType;
 	}
 	
+    /**
+     * @return the globalPropertyId
+     */
+    public Integer getGlobalPropertyId() {
+    	return globalPropertyId;
+    }
+
+	
+    /**
+     * @param globalPropertyId the globalPropertyId to set
+     */
+    public void setGlobalPropertyId(Integer globalPropertyId) {
+    	this.globalPropertyId = globalPropertyId;
+    }
+
 	/**
 	 * @return Returns the property.
 	 */
@@ -110,6 +146,34 @@ public class GlobalProperty {
 	}
 	
 	/**
+     * @param defaultValue the defaultValue to set
+     */
+    public void setDefaultPropertyValue(String defaultValue) {
+	    this.defaultPropertyValue = defaultValue;
+    }
+
+	/**
+     * @return the defaultValue
+     */
+    public String getDefaultPropertyValue() {
+	    return defaultPropertyValue;
+    }
+	
+	/**
+     * @param propertyType the propertyType to set
+     */
+    public void setPropertyType(GlobalPropertyType propertyType) {
+	    this.propertyType = propertyType;
+    }
+
+	/**
+     * @return the propertyType
+     */
+    public GlobalPropertyType getPropertyType() {
+	    return propertyType;
+    }
+
+	/**
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	public boolean equals(Object o) {
@@ -132,32 +196,74 @@ public class GlobalProperty {
 		
 		return hash;
 	}
-
-	/**
-     * @param propertyType the propertyType to set
+	
+    /**
+     * @return the defaultPropertyType
      */
-    public void setPropertyType(GlobalPropertyType propertyType) {
-	    this.propertyType = propertyType;
+    public GlobalPropertyType getDefaultPropertyType() {
+    	return defaultPropertyType;
     }
 
-	/**
-     * @return the propertyType
+    /**
+     * @param defaultPropertyType the defaultPropertyType to set
      */
-    public GlobalPropertyType getPropertyType() {
-	    return propertyType;
+    public void setDefaultPropertyType(GlobalPropertyType defaultPropertyType) {
+    	this.defaultPropertyType = defaultPropertyType;
+    }
+	
+    /**
+     * @return the createdBy
+     */
+    public User getCreatedBy() {
+    	return createdBy;
+    }
+	
+    /**
+     * @param createdBy the createdBy to set
+     */
+    public void setCreatedBy(User createdBy) {
+    	this.createdBy = createdBy;
+    }
+	
+    /**
+     * @return the dateCreated
+     */
+    public Date getDateCreated() {
+    	return dateCreated;
     }
 
-	/**
-     * @param defaultValue the defaultValue to set
+    /**
+     * @param dateCreated the dateCreated to set
      */
-    public void setDefaultValue(String defaultValue) {
-	    this.defaultValue = defaultValue;
+    public void setDateCreated(Date dateCreated) {
+    	this.dateCreated = dateCreated;
     }
 
-	/**
-     * @return the defaultValue
+    /**
+     * @return the voided
      */
-    public String getDefaultValue() {
-	    return defaultValue;
+    public boolean isVoided() {
+    	return voided;
+    }
+
+    /**
+     * @param voided the voided to set
+     */
+    public void setVoided(boolean voided) {
+    	this.voided = voided;
+    }
+
+    /**
+     * @return the dateVoided
+     */
+    public Date getDateVoided() {
+    	return dateVoided;
+    }
+
+    /**
+     * @param dateVoided the dateVoided to set
+     */
+    public void setDateVoided(Date dateVoided) {
+    	this.dateVoided = dateVoided;
     }
 }

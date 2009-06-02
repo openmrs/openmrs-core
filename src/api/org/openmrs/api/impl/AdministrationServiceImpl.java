@@ -18,7 +18,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -38,6 +37,7 @@ import org.openmrs.ConceptSource;
 import org.openmrs.EncounterType;
 import org.openmrs.FieldType;
 import org.openmrs.GlobalProperty;
+import org.openmrs.GlobalPropertyType;
 import org.openmrs.ImplementationId;
 import org.openmrs.Location;
 import org.openmrs.MimeType;
@@ -959,5 +959,13 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	public boolean supportsPropertyName(String propertyName) {
 		return propertyName.equals(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST);
 	}
+
+	/**
+     * @see org.openmrs.api.AdministrationService#getGlobalPropertyType(java.lang.Integer)
+     */
+    @Override
+    public GlobalPropertyType getGlobalPropertyType(Integer propertyTypeId) throws APIException {
+    	return dao.getGlobalPropertyType(propertyTypeId);
+    }
 	
 }

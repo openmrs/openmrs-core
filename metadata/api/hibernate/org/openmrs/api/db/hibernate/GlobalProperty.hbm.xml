@@ -6,21 +6,33 @@
 <hibernate-mapping package="org.openmrs">
 
 	<class name="GlobalProperty" table="global_property">
-
-		<id name="property" type="java.lang.String" column="property" length="255">
-			<generator class="assigned" />
-		</id>
-
-		<discriminator column="property" insert="false" />
 		
+		<id name="globalPropertyId" type="java.lang.Integer" column="global_property_id" length="65535">
+			<generator class="native" />
+		</id>
+		<discriminator column="globalPropertyId" insert="false" />
+
+		<property  name="property" type="java.lang.String" column="property" length="255" not-null="true"/>
+
 		<property name="propertyValue" type="java.lang.String" column="property_value" not-null="false"/>
 
 		<property name="description" type="java.lang.String" not-null="false" />
 		
-		<property name="defaultValue" type="java.lang.String" column="default_value" not-null="true"/>
+		<!-- TODO: default_property_value must be NOT NULL -->
+		<property name="defaultPropertyValue" type="java.lang.String" column="default_property_value" not-null="false"/>
 
-		<many-to-one name="propertyType" column="global_property_type_id" class="GlobalPropertyType" not-null="true"/>
+		<many-to-one name="propertyType" column="global_property_type_id" class="GlobalPropertyType" not-null="true" lazy="false"/>
 
+		<!-- <many-to-one name="defaultPropertyType" column="default_global_property_type_id" class="GlobalPropertyType" lazy="false" not-null="true"/>
+		
+		<many-to-one name="createdBy" column="user_id" lazy="false" class="User"/>
+
+		<property name="dateCreated" type="java.util.Date" column="date_created" not-null="true" length="19" />
+
+		<property name="voided" type="boolean" column="voided" length="1" not-null="true" />
+
+		<property name="dateVoided" type="java.util.Date" column="date_voided" length="19" />
+		-->
 	</class>
 	
 </hibernate-mapping>

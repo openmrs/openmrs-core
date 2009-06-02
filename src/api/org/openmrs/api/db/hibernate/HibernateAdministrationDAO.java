@@ -13,6 +13,7 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -28,10 +29,13 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.Criteria;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.GlobalProperty;
+import org.openmrs.GlobalPropertyType;
 import org.openmrs.ImplementationId;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.AdministrationDAO;
@@ -227,24 +231,34 @@ public class HibernateAdministrationDAO implements AdministrationDAO {
 	 * @see org.openmrs.api.db.AdministrationDAO#getGlobalProperty(java.lang.String)
 	 */
 	public String getGlobalProperty(String propertyName) throws DAOException {
-		GlobalProperty gp = (GlobalProperty) sessionFactory.getCurrentSession().get(GlobalProperty.class, propertyName);
+		GlobalProperty property = this.getGlobalPropertyObject(propertyName);
 		
 		// if no gp exists, return a null value
-		if (gp == null)
+		if (property == null)
 			return null;
 		
-		return gp.getPropertyValue();
+		return property.getPropertyValue();
 	}
 	
 	/**
 	 * @see org.openmrs.api.db.AdministrationDAO#getGlobalPropertyObject(java.lang.String)
 	 */
-	public GlobalProperty getGlobalPropertyObject(String propertyName) {
-		GlobalProperty gp = (GlobalProperty) sessionFactory.getCurrentSession().get(GlobalProperty.class, propertyName);
+	@SuppressWarnings("unchecked")
+    public GlobalProperty getGlobalPropertyObject(String propertyName) {
+		Session session = sessionFactory.getCurrentSession();
+		
+		Criteria criteria = session.createCriteria(GlobalProperty.class);
+		criteria.add(Restrictions.like("property", propertyName));
+		List<GlobalProperty> properties = criteria.list();
+
+		GlobalProperty property = null;
+		if (properties.size() > 0) {
+			property = properties.get(0);
+		}
 		
 		// if no gp exists, hibernate returns a null value
 		
-		return gp;
+		return property;
 	}
 	
 	/**
@@ -370,5 +384,13 @@ public class HibernateAdministrationDAO implements AdministrationDAO {
 		return null;
 		
 	}
+
+	/**
+     * @see org.openmrs.api.db.AdministrationDAO#getGlobalPropertyType()
+     */
+    @Override
+    public GlobalPropertyType getGlobalPropertyType(Integer propertyTypeId) {
+	    return (GlobalPropertyType) sessionFactory.getCurrentSession().get(GlobalPropertyType.class, propertyTypeId);
+    }
 	
 }

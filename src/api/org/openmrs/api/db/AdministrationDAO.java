@@ -18,6 +18,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.openmrs.GlobalProperty;
+import org.openmrs.GlobalPropertyType;
 import org.openmrs.ImplementationId;
 import org.openmrs.reporting.AbstractReportObject;
 import org.openmrs.reporting.Report;
@@ -140,4 +141,12 @@ public interface AdministrationDAO {
 	 * @see org.openmrs.api.AdministrationService#getImplementationId()
 	 */
 	public ImplementationId getImplementationId();
+
+	/**
+     * Auto generated method comment
+	 * @param propertyTypeId 
+     * 
+     * @return
+     */
+    public GlobalPropertyType getGlobalPropertyType(Integer propertyTypeId);
 }
