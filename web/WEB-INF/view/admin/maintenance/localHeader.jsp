@@ -33,7 +33,7 @@
 	<openmrs:hasPrivilege privilege="Manage Global Properties">
 		<li <c:if test='<%= request.getRequestURI().contains("settings") %>'>class="active"</c:if>>
 			<a href="${pageContext.request.contextPath}/admin/maintenance/settings.form">
-				<spring:message code="Settings.manage"/>
+				<spring:message code="GlobalProperty.manage"/>
 			</a>
 		</li>
 	</openmrs:hasPrivilege>
