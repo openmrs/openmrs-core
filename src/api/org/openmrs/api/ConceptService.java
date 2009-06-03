@@ -23,6 +23,7 @@ import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptComplex;
 import org.openmrs.ConceptDatatype;
+import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptNameTag;
 import org.openmrs.ConceptNumeric;
@@ -1115,6 +1116,6 @@ public interface ConceptService extends OpenmrsService {
 	public ConceptNameTag getConceptNameTag(Integer id);
 	
 	@Transactional(readOnly = true)
-	public Object getConceptDescriptionByUuid(String uuid);
+	public ConceptDescription getConceptDescriptionByUuid(String uuid);
 	
 }
