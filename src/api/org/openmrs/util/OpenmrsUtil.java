@@ -1665,76 +1665,103 @@ public class OpenmrsUtil {
 	}
 	
 	/**
-	 * 
-	 *  Convenience method to replace Properties.store(), which isn't UTF-8 compliant
+	 * Convenience method to replace Properties.store(), which isn't UTF-8 compliant
 	 * 
 	 * @param properties
 	 * @param file
 	 * @param comment
 	 */
-	public static void storeProperties(Properties properties, File file, String comment){
-		try{
+	public static void storeProperties(Properties properties, File file, String comment) {
+		try {
 			OutputStream outStream = new FileOutputStream(file, true);
 			storeProperties(properties, outStream, comment);
-		} catch (IOException ex){
+		}
+		catch (IOException ex) {
 			log.error("Unable to create file " + file.getAbsolutePath() + " in storeProperties routine.");
 		}
 	}
 	
 	/**
-	 * 
 	 * Convenience method to replace Properties.store(), which isn't UTF-8 compliant
 	 * 
 	 * @param properties
 	 * @param file
 	 * @param comment (which appears in comments in properties file)
 	 */
-	public static void storeProperties(Properties properties, OutputStream outStream, String comment){	
+	public static void storeProperties(Properties properties, OutputStream outStream, String comment) {
 		try {
 			OutputStreamWriter osw = new OutputStreamWriter(new BufferedOutputStream(outStream), "UTF-8");
 			Writer out = new BufferedWriter(osw);
 			if (comment != null)
 				out.write("\n#" + comment + "\n");
-			out.write("#" + new Date()+ "\n");
+			out.write("#" + new Date() + "\n");
 			for (Map.Entry<Object, Object> e : properties.entrySet()) {
 				out.write(e.getKey() + "=" + e.getValue() + "\n");
 			}
 			out.write("\n");
 			out.flush();
-			out.close();		
-		} catch (FileNotFoundException fnfe){
+			out.close();
+		}
+		catch (FileNotFoundException fnfe) {
 			log.error("target file not found" + fnfe);
-		} catch (UnsupportedEncodingException ex){ //pass
+		}
+		catch (UnsupportedEncodingException ex) { //pass
 			log.error("unsupported encoding error hit" + ex);
-		} catch (IOException ioex){
+		}
+		catch (IOException ioex) {
 			log.error("IO exception encountered trying to append to properties file" + ioex);
 		}
-
+		
 	}
 	
-	public static Properties loadProperties(Properties props, InputStream input){
+	/**
+	 * This method is a replacement for Properties.load(InputStream) so that we can load in utf-8
+	 * characters. Currently the load method expects the inputStream to point to a latin1 encoded
+	 * file.
+	 * 
+	 * @param props the properties object to write into
+	 * @param input the input stream to read from
+	 */
+	public static void loadProperties(Properties props, InputStream input) {
 		try {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(input, "UTF-8"));
-			while (reader.ready()) {     
-			    String line = reader.readLine();
-			    if (line.length() > 0 && line.charAt(0) != '#'){
-			    	int pos = line.indexOf("=");
-			    	if (pos > 0){
-			    		String keyString = line.substring(0, pos);
-			    		String valueString = line.substring(pos + 1);
-			    		if (keyString != null && keyString.length() > 0){
-			    			props.put(keyString, valueString.replace("\n", ""));
-			    		}
-			    	}
-			    }
+			while (reader.ready()) {
+				String line = reader.readLine();
+				if (line.length() > 0 && line.charAt(0) != '#') {
+					int pos = line.indexOf("=");
+					if (pos > 0) {
+						String keyString = line.substring(0, pos);
+						String valueString = line.substring(pos + 1);
+						if (keyString != null && keyString.length() > 0) {
+							props.put(keyString, fixPropertiesValueString(valueString));
+						}
+					}
+				}
 			}
 			reader.close();
-		} catch (UnsupportedEncodingException uee) {
+		}
+		catch (UnsupportedEncodingException uee) {
 			log.error("Unsupported encoding used in properties file " + uee);
-		} catch(IOException ioe){
+		}
+		catch (IOException ioe) {
 			log.error("Unable to read properties from properties file " + ioe);
-		} 
-		return props;
+		}
+	}
+	
+	/**
+	 * By default java will escape colons and equal signs when writing properites files. <br/>
+	 * <br/>
+	 * This method turns escaped colons into colons and escaped equal signs into just equal signs.
+	 * 
+	 * @param value the value portion of a properties file to fix
+	 * @return the value with escaped characters fixed
+	 */
+	private static String fixPropertiesValueString(String value) {
+		String returnString = value.replace("\n", "");
+		returnString = returnString.replace("\\:", ":");
+		returnString = returnString.replace("\\=", "=");
+		
+		return returnString;
 	}
 	
 	/**
