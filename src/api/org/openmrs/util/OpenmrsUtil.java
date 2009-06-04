@@ -1624,12 +1624,30 @@ public class OpenmrsUtil {
 	 * @param file
 	 * @param comment
 	 */
-	public static void storeProperties(Properties properties, File file, String comment){
-		try{
-			OutputStream outStream = new FileOutputStream(file, true);
+	/**
+	 * Convenience method to replace Properties.store(), which isn't UTF-8 compliant
+	 * 
+	 * @param properties
+	 * @param file
+	 * @param comment
+	 */
+	public static void storeProperties(Properties properties, File file, String comment) {
+		OutputStream outStream = null;
+		try {
+			outStream = new FileOutputStream(file, true);
 			storeProperties(properties, outStream, comment);
-		} catch (IOException ex){
+		}
+		catch (IOException ex) {
 			log.error("Unable to create file " + file.getAbsolutePath() + " in storeProperties routine.");
+		}
+		finally {
+			try {
+				if (outStream != null)
+					outStream.close();
+			}
+			catch (IOException ioe){
+				//pass
+			}
 		}
 	}
 	
@@ -1647,7 +1665,7 @@ public class OpenmrsUtil {
 			Writer out = new BufferedWriter(osw);
 			if (comment != null)
 				out.write("\n#" + comment + "\n");
-			out.write("#" + new Date()+ "\n");
+			out.write("#" + new Date() + "\n");
 			for (Map.Entry<Object, Object> e : properties.entrySet()) {
 				out.write(e.getKey() + "=" + e.getValue() + "\n");
 			}
@@ -1664,6 +1682,14 @@ public class OpenmrsUtil {
 		}
 	}
 	
+	/**
+	 * This method is a replacement for Properties.load(InputStream) so that we can load in utf-8
+	 * characters. Currently the load method expects the inputStream to point to a latin1 encoded
+	 * file.
+	 * 
+	 * @param props the properties object to write into
+	 * @param input the input stream to read from
+	 */
 	public static Properties loadProperties(Properties props, InputStream input){
 		try {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(input, "UTF-8"));
@@ -1675,7 +1701,7 @@ public class OpenmrsUtil {
 			    		String keyString = line.substring(0, pos);
 			    		String valueString = line.substring(pos + 1);
 			    		if (keyString != null && keyString.length() > 0){
-			    			props.put(keyString, valueString.replace("\n", ""));
+			    			props.put(keyString, fixPropertiesValueString(valueString));
 			    		}
 			    	}
 			    }
@@ -1688,6 +1714,23 @@ public class OpenmrsUtil {
 		} 
 		return props;
 	}
+	
+	/**
+	 * By default java will escape colons and equal signs when writing properites files. <br/>
+	 * <br/>
+	 * This method turns escaped colons into colons and escaped equal signs into just equal signs.
+	 * 
+	 * @param value the value portion of a properties file to fix
+	 * @return the value with escaped characters fixed
+	 */
+	private static String fixPropertiesValueString(String value) {
+		String returnString = value.replace("\n", "");
+		returnString = returnString.replace("\\:", ":");
+		returnString = returnString.replace("\\=", "=");
+		
+		return returnString;
+	}
+	
 }
 
 
