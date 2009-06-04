@@ -153,7 +153,7 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 		if (!propertiesFile.exists())
 			propertiesFile.createNewFile();
 			// append the properties to the appropriate messages file
-			OpenmrsUtil.storeProperties(props, propertiesFile, namespace + ": " + name + " v" + version);
+		OpenmrsUtil.storeProperties(props, propertiesFile, namespace + ": " + name + " v" + version);
 		
 		} catch (Exception ex){
 			log.error("Error creating new properties file");
@@ -187,10 +187,6 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 				}
 			}
 			catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				log.error("Error generated", e);
-			}
-			catch (IOException e) {
 				// TODO Auto-generated catch block
 				log.error("Error generated", e);
 			}
@@ -228,11 +224,16 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 		if (propertyFile != null) {
 			Properties props = new Properties();
 			try {
-				OpenmrsUtil.loadProperties(props, new FileInputStream(propertyFile));
+				FileInputStream fis = new FileInputStream(propertyFile);
+				OpenmrsUtil.loadProperties(props, fis);
+				fis.close();
 				props.setProperty(message.getCode(), message.getMessage());
 				OpenmrsUtil.storeProperties(props, propertyFile, "OpenMRS Application Messages");
 			}
 			catch (FileNotFoundException e) {
+				log.error("Error generated", e);
+			}
+			catch (IOException e) {
 				log.error("Error generated", e);
 			}
 		}
@@ -246,11 +247,16 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 		if (propertyFile != null) {
 			Properties props = new Properties();
 			try {
+				FileInputStream fis = new FileInputStream(propertyFile);
 				OpenmrsUtil.loadProperties(props, new FileInputStream(propertyFile));
+				fis.close();
 				props.remove(message.getCode());
 				OpenmrsUtil.storeProperties(props, propertyFile, PROPERTIES_FILE_COMMENT);
 			}
 			catch (FileNotFoundException e) {
+				log.error("Error generated", e);
+			}
+			catch (IOException e) {
 				log.error("Error generated", e);
 			}
 		}
