@@ -327,21 +327,27 @@ public class HibernateContextDAO implements ContextDAO {
 		
 		// load in the default hibernate properties from hibernate.default.properties
 		InputStream propertyStream = null;
-
+		try {
 			Properties props = new Properties();
 			propertyStream = ConfigHelper.getResourceAsStream("/hibernate.default.properties");
-			try {
 			OpenmrsUtil.loadProperties(props, propertyStream);
-			propertyStream.close();
-			} catch (IOException ex){
-				log.error("Unable to load default hibernate properties");
-			}
+			
 			// add in all default properties that don't exist in the runtime 
 			// properties yet
 			for (Map.Entry<Object, Object> entry : props.entrySet()) {
 				if (!runtimeProperties.containsKey(entry.getKey()))
 					runtimeProperties.put(entry.getKey(), entry.getValue());
 			}
+		} 
+		finally {
+			try {
+				propertyStream.close();
+			}
+			catch (Throwable t) {
+				// pass 
+			}
+		}
+			
 
 		
 	}
