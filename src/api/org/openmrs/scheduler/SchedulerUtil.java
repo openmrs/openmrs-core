@@ -92,7 +92,7 @@ public class SchedulerUtil {
 	 * 
 	 * @param error
 	 */
-	public static void sendSchedulerError(Exception error) {
+	public static void sendSchedulerError(Throwable throwable) {
 		try {
 			
 			Boolean emailIsEnabled = Boolean.valueOf(Context.getAdministrationService().getGlobalProperty(
@@ -108,10 +108,10 @@ public class SchedulerUtil {
 					
 					// TODO need to use the default sender for the application 
 					String sender = SchedulerConstants.SCHEDULER_DEFAULT_FROM;
-					String subject = SchedulerConstants.SCHEDULER_DEFAULT_SUBJECT + " : " + error.getClass().getName();
+					String subject = SchedulerConstants.SCHEDULER_DEFAULT_SUBJECT + " : " + throwable.getClass().getName();
 					String message = new String();
 					message += "\n\nStacktrace\n============================================\n";
-					message += SchedulerUtil.getExceptionAsString(error);
+					message += SchedulerUtil.getExceptionAsString(throwable);
 					message += "\n\nSystem Variables\n============================================\n";
 					for (Map.Entry<String, String> entry : Context.getAdministrationService().getSystemVariables()
 					        .entrySet()) {
@@ -138,10 +138,10 @@ public class SchedulerUtil {
 	 * @param e
 	 * @return <code>String</code> representation of the given exception
 	 */
-	public static String getExceptionAsString(Exception e) {
+	public static String getExceptionAsString(Throwable t) {
 		StringWriter stringWriter = new StringWriter();
 		PrintWriter printWriter = new PrintWriter(stringWriter, true);
-		e.printStackTrace(printWriter);
+		t.printStackTrace(printWriter);
 		printWriter.flush();
 		stringWriter.flush();
 		return stringWriter.toString();
