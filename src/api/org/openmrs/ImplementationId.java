@@ -38,6 +38,34 @@ public class ImplementationId implements java.io.Serializable {
 	private String passphrase;
 	
 	/**
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	public boolean equals(Object o) {
+		if (o instanceof ImplementationId) {
+			ImplementationId other = (ImplementationId)o;
+			
+			if (getImplementationId() != null && other.getImplementationId() != null)
+				return getImplementationId().equals(other.getImplementationId());
+			
+			return this == other;
+		}
+		return false;
+	}
+	
+	/**
+	 * @see java.lang.Object#hashCode()
+	 */
+	public int hashCode() {
+		if (getImplementationId() != null)
+			return getImplementationId().hashCode() * 342 + 3;
+		
+		return super.hashCode();
+	}
+	
+	/**
+	 * Text describing this implementation. (e.g. Source for the AMPATH program in Kenya. Created by
+	 * Paul Biondich)
+	 * 
 	 * @return Returns the description.
 	 */
 	@Element(data = true)
@@ -46,6 +74,9 @@ public class ImplementationId implements java.io.Serializable {
 	}
 	
 	/**
+	 * Text describing this implementation. (e.g. Source for the AMPATH program in Kenya. Created by
+	 * Paul Biondich)
+	 * 
 	 * @param description The description to set.
 	 */
 	@Element(data = true)
@@ -54,9 +85,14 @@ public class ImplementationId implements java.io.Serializable {
 	}
 	
 	/**
+	 * This is the unique id for this implementation. <br/>
+	 * <br/>
 	 * The implementation id corresponds to the hl7Code of the ConceptSource that this corresponds
-	 * to
+	 * to.<br/>
+	 * <br/>
+	 * Must be limited to 20 characters and numbers. The characters "^" and "|" are not allowed.
 	 * 
+	 * @param implementationId the implementationId to set
 	 * @return the implementationId
 	 */
 	@Attribute
@@ -65,8 +101,12 @@ public class ImplementationId implements java.io.Serializable {
 	}
 	
 	/**
+	 * This is the unique id for this implementation. <br/>
+	 * <br/>
 	 * The implementation id corresponds to the hl7Code of the ConceptSource that this corresponds
-	 * to
+	 * to. <br/>
+	 * <br/>
+	 * Must be limited to 20 characters and numbers. The characters "^" and "|" are not allowed.
 	 * 
 	 * @param implementationId the implementationId to set
 	 */
@@ -76,6 +116,11 @@ public class ImplementationId implements java.io.Serializable {
 	}
 	
 	/**
+	 * This text is a long text string that is used to validate who uses an implementation id.
+	 * Multiple installations of openmrs can use the same implmentation id, but they must all know
+	 * the passphrase. (Note that if an implementation id is shared, it is assumed that those
+	 * installations are the same implementation).
+	 * 
 	 * @return the passphrase
 	 */
 	@Element(data = true, required = false)
@@ -84,6 +129,11 @@ public class ImplementationId implements java.io.Serializable {
 	}
 	
 	/**
+	 * This text is a long text string that is used to validate who uses an implementation id.
+	 * Multiple installations of openmrs can use the same implmentation id, but they must all know
+	 * the passphrase. (Note that if an implementation id is shared, it is assumed that those
+	 * installations are the same implementation).
+	 * 
 	 * @param passphrase the passphrase to set
 	 */
 	@Element(data = true, required = false)
@@ -92,6 +142,8 @@ public class ImplementationId implements java.io.Serializable {
 	}
 	
 	/**
+	 * A descriptive name for this implementation (e.g. AMRS installation in Eldoret, Kenya)
+	 * 
 	 * @return Returns the name.
 	 */
 	@Element(data = true)
@@ -100,6 +152,8 @@ public class ImplementationId implements java.io.Serializable {
 	}
 	
 	/**
+	 * A descriptive name for this implementation (e.g. AMRS installation in Eldoret, Kenya)
+	 * 
 	 * @param name The concept source name to set.
 	 */
 	@Element(data = true)
@@ -107,4 +161,7 @@ public class ImplementationId implements java.io.Serializable {
 		this.name = name;
 	}
 	
+	public String toString() {
+		return "Impl Id: " + getImplementationId() + " name: " + getName() + " desc: " + getDescription();
+	}
 }
