@@ -44,12 +44,12 @@ public class TimerSchedulerTask extends TimerTask {
 			task.execute();
 			
 		}
-		catch (Exception e) {
+		catch (Throwable t) {
 			// Fix #862: IllegalStateException: Timer already cancelled.
 			// Suppress error in order to keep the scheduler's Timer from completely failing.  
 			log.error(
-			    "FATAL ERROR: Task [" + task.getClass() + "] failed due to exception [" + e.getClass().getName() + "]", e);
-			SchedulerUtil.sendSchedulerError(e);
+			    "FATAL ERROR: Task [" + task.getClass() + "] failed due to exception [" + t.getClass().getName() + "]", t);
+			SchedulerUtil.sendSchedulerError(t);
 		}
 	}
 	
