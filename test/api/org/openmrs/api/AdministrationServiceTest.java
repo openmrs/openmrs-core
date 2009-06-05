@@ -69,26 +69,28 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * This test runs over the set and get methods in AdminService to make sure that the impl id can
-	 * be saved and verified correctly
-	 * 
-	 * @throws Exception
+	 * @see AdministrationService#setImplementationId(ImplementationId)
 	 */
-	public void testSetVerifyGetImplementationId() throws Exception {
-		
-		// make sure we have no impl id already
-		ImplementationId currentImplId = adminService.getImplementationId();
-		assertNull("There shouldn't be an impl id defined alread", currentImplId);
-		
+	@Test
+	@Verifies(value = "should not fail if given implementationId is null", method = "setImplementationId(ImplementationId)")
+	public void setImplementationId_shouldNotFailIfGivenImplementationIdIsNull() throws Exception {
 		// save a null impl id. no exception thrown
 		adminService.setImplementationId(null);
 		ImplementationId afterNull = adminService.getImplementationId();
 		assertNull("There shouldn't be an impl id defined after setting a null impl id", afterNull);
-		
+	}
+	
+	/**
+	 * This uses a try/catch so that we can make sure no blank id is saved to the database.
+	 * 
+	 * @see AdministrationService#setImplementationId(ImplementationId)
+	 */
+	@Test()
+	@Verifies(value = "should throw APIException if given empty implementationId object", method = "setImplementationId(ImplementationId)")
+	public void setImplementationId_shouldThrowAPIExceptionIfGivenEmptyImplementationIdObject() throws Exception {
 		// save a blank impl id. exception thrown
-		ImplementationId blankId = new ImplementationId();
 		try {
-			adminService.setImplementationId(blankId);
+			adminService.setImplementationId(new ImplementationId());
 			fail("An exception should be thrown on a blank impl id save");
 		}
 		catch (APIException e) {
@@ -96,10 +98,20 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		}
 		ImplementationId afterBlank = adminService.getImplementationId();
 		assertNull("There shouldn't be an impl id defined after setting a blank impl id", afterBlank);
-		
+	}
+	
+	/**
+	 * This uses a try/catch so that we can make sure no blank id is saved to the database.
+	 * 
+	 * @see {@link AdministrationService#setImplementationId(ImplementationId)}
+	 */
+	@Test
+	@Verifies(value = "should throw APIException if given a caret in the implementationId code", method = "setImplementationId(ImplementationId)")
+	public void setImplementationId_shouldThrowAPIExceptionIfGivenACaretInTheImplementationIdCode() throws Exception {
 		// save an impl id with an invalid hl7 code
 		ImplementationId invalidId = new ImplementationId();
 		invalidId.setImplementationId("caret^caret");
+		invalidId.setName("an invalid impl id for a unit test");
 		invalidId.setPassphrase("some valid passphrase");
 		invalidId.setDescription("Some valid description");
 		try {
@@ -111,12 +123,20 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		}
 		ImplementationId afterInvalid = adminService.getImplementationId();
 		assertNull("There shouldn't be an impl id defined after setting an invalid impl id", afterInvalid);
-		
+	}
+	
+	/**
+	 * @see {@link AdministrationService#setImplementationId(ImplementationId)}
+	 */
+	@Test
+	@Verifies(value = "should throw APIException if given a pipe in the implementationId code", method = "setImplementationId(ImplementationId)")
+	public void setImplementationId_shouldThrowAPIExceptionIfGivenAPipeInTheImplementationIdCode() throws Exception {
 		// save an impl id with an invalid hl7 code
 		ImplementationId invalidId2 = new ImplementationId();
-		invalidId.setImplementationId("pipe|pipe");
-		invalidId.setPassphrase("some valid passphrase");
-		invalidId.setDescription("Some valid description");
+		invalidId2.setImplementationId("pipe|pipe");
+		invalidId2.setName("an invalid impl id for a unit test");
+		invalidId2.setPassphrase("some valid passphrase");
+		invalidId2.setDescription("Some valid description");
 		try {
 			adminService.setImplementationId(invalidId2);
 			fail("An exception should be thrown on an invalid impl id save");
@@ -126,25 +146,62 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		}
 		ImplementationId afterInvalid2 = adminService.getImplementationId();
 		assertNull("There shouldn't be an impl id defined after setting an invalid impl id", afterInvalid2);
-		
+	}
+	
+	/**
+	 * @see AdministrationService#setImplementationId(ImplementationId)
+	 */
+	@Test
+	@Verifies(value = "should create implementation id in database", method = "setImplementationId(ImplementationId)")
+	public void setImplementationId_shouldCreateImplementationIdInDatabase() throws Exception {
 		// save a valid impl id
 		ImplementationId validId = new ImplementationId();
 		validId.setImplementationId("JUNIT-TEST");
+		validId.setName("JUNIT-TEST implementation id");
 		validId.setPassphrase("This is the junit test passphrase");
 		validId.setDescription("This is the junit impl id used for testing of the openmrs API only.");
 		adminService.setImplementationId(validId);
-		ImplementationId afterValid = adminService.getImplementationId();
-		assertEquals(validId, afterValid);
+		
+		assertEquals(validId, adminService.getImplementationId());
+	}
+	
+	/**
+	 * @see AdministrationService#setImplementationId(ImplementationId)
+	 */
+	@Test
+	@Verifies(value = "should overwrite implementation id in database if exists", method = "setImplementationId(ImplementationId)")
+	public void setImplementationId_shouldOverwriteImplementationIdInDatabaseIfExists() throws Exception {
+		executeDataSet("org/openmrs/api/include/AdministrationServiceTest-general.xml");
+		
+		// sanity check to make sure we have an implementation id
+		Assert.assertNotNull(adminService.getImplementationId());
+		Context.clearSession(); // so a NonUniqueObjectException doesn't occur on the global property later
 		
 		// save a second valid id
 		ImplementationId validId2 = new ImplementationId();
 		validId2.setImplementationId("JUNIT-TEST 2");
+		validId2.setName("JUNIT-TEST (#2) implementation id");
 		validId2.setPassphrase("This is the junit test passphrase 2");
 		validId2.setDescription("This is the junit impl id (2) used for testing of the openmrs API only.");
 		adminService.setImplementationId(validId2);
-		ImplementationId afterValid2 = adminService.getImplementationId();
-		assertEquals(validId2, afterValid2);
+		assertEquals(validId2, adminService.getImplementationId());
+	}
+	
+	/**
+	 * @see AdministrationService#setImplementationId(ImplementationId)
+	 */
+	@Test
+	@Verifies(value = "should set uuid on implementation id global property", method = "setImplementationId(ImplementationId)")
+	public void setImplementationId_shouldSetUuidOnImplementationIdGlobalProperty() throws Exception {
+		ImplementationId validId = new ImplementationId();
+		validId.setImplementationId("JUNIT-TEST");
+		validId.setName("JUNIT-TEST implementation id");
+		validId.setPassphrase("This is the junit test passphrase");
+		validId.setDescription("This is the junit impl id used for testing of the openmrs API only.");
+		adminService.setImplementationId(validId);
 		
+		GlobalProperty gp = adminService.getGlobalPropertyObject(OpenmrsConstants.GLOBAL_PROPERTY_IMPLEMENTATION_ID);
+		Assert.assertNotNull(gp.getUuid());
 	}
 	
 	/**
