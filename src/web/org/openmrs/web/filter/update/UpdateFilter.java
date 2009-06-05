@@ -296,20 +296,13 @@ public class UpdateFilter extends StartupFilter {
 		
 		if (properties != null) {
 			Context.setRuntimeProperties(properties);
-			if (DatabaseUpdater.allowAutoUpdate()) {
-				// the updates will be applied at Context.startup()
-				// TODO check for "input required" updates here and redirect user to REVIEW_CHANGES page
-				log.debug("Setting updates required to false because the user has 'allow auto updates' set");
-				updatesRequired = false;
-			} else {
-				try {
-					log.debug("Setting updates required to " + (model.changes.size() > 0)
-					        + " because of the size of unrun changes");
-					updatesRequired = model.changes.size() > 0;
-				}
-				catch (Exception e) {
-					throw new ServletException("Unable to determine if updates are required", e);
-				}
+			try {
+				log.debug("Setting updates required to " + (model.changes.size() > 0)
+				        + " because of the size of unrun changes");
+				updatesRequired = model.changes.size() > 0;
+			}
+			catch (Exception e) {
+				throw new ServletException("Unable to determine if updates are required", e);
 			}
 		} else {
 			// the wizard runs the updates, so they will not need any updates.
