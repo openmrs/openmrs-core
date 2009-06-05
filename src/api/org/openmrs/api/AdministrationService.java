@@ -619,9 +619,14 @@ public interface AdministrationService extends OpenmrsService {
 	 * Set the given <code>implementationId</code> as this implementation's unique id
 	 * 
 	 * @param implementationId the ImplementationId to save
-	 * @throws APIException
+	 * @throws APIException if implementationId is empty or is invalid according to central id server
 	 * @should create implementation id in database
 	 * @should overwrite implementation id in database if exists
+	 * @should not fail if given implementationId is null
+	 * @should throw APIException if given empty implementationId object
+	 * @should throw APIException if given a caret in the implementationId code
+	 * @should throw APIException if given a pipe in the implementationId code
+	 * @should set uuid on implementation id global property
 	 */
 	@Authorized(OpenmrsConstants.PRIV_MANAGE_IMPLEMENTATION_ID)
 	public void setImplementationId(ImplementationId implementationId) throws APIException;

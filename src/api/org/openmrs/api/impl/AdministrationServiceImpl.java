@@ -828,7 +828,22 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 * @see org.openmrs.api.AdministrationService#getImplementationId()
 	 */
 	public ImplementationId getImplementationId() throws APIException {
-		return dao.getImplementationId();
+		String property = getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_IMPLEMENTATION_ID);
+		
+		// fail early if no gp has been defined yet
+		if (property == null)
+			return null;
+		
+		try {
+			ImplementationId implId = OpenmrsUtil.getSerializer().read(ImplementationId.class, property);
+			
+			return implId;
+		}
+		catch (Throwable t) {
+			log.debug("Error while getting implementation id", t);
+		}
+		
+		return null;
 	}
 	
 	/**
@@ -875,8 +890,8 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 			// serialize and save the ImplementationId to the global properties table
 			StringWriter stringWriter = new StringWriter();
 			OpenmrsUtil.getSerializer().write(implementationId, stringWriter);
-			saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_IMPLEMENTATION_ID, stringWriter
-			        .toString()));
+			Context.getAdministrationService().saveGlobalProperty(
+			    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_IMPLEMENTATION_ID, stringWriter.toString()));
 		}
 		catch (APIException e) {
 			throw e;
