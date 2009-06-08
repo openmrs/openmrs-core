@@ -51,6 +51,7 @@ import org.openmrs.test.SkipBaseSetup;
 import org.openmrs.test.TestUtil;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
 
 /**
  * This class tests methods in the PatientService class TODO Add methods to test all methods in
@@ -715,98 +716,150 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		patient.addIdentifier(new PatientIdentifier("101-6", new PatientIdentifierType(1), new Location(1)));
 		Context.getPatientService().savePatient(patient);
 	}
-
-    /**
-     * @see {@link PatientService#isIdentifierInUseByAnotherPatient(PatientIdentifier)}
-     */
-    @Test
-    @Verifies(value = "should ignore voided patientIdentifiers", method = "isIdentifierInUseByAnotherPatient(PatientIdentifier)")
-    public void isIdentifierInUseByAnotherPatient_shouldIgnoreVoidedPatientIdentifiers()
-            throws Exception {
-    	PatientIdentifierType pit = patientService.getPatientIdentifierType(2);
-    	PatientIdentifier patientIdentifier = new PatientIdentifier("ABC123", pit, null);
-        Assert.assertFalse(patientService.isIdentifierInUseByAnotherPatient(patientIdentifier));
-    }
-
-    /**
-     * Regression test for http://dev.openmrs.org/ticket/790
-     * 
-     * @see {@link PatientService#isIdentifierInUseByAnotherPatient(PatientIdentifier)}
-     */
-    @Test
-    @Verifies(value = "should ignore voided patients", method = "isIdentifierInUseByAnotherPatient(PatientIdentifier)")
-    public void isIdentifierInUseByAnotherPatient_shouldIgnoreVoidedPatients()
-            throws Exception {
-    	{ // patient 999 should be voided and have a non-voided identifier of XYZ
-    		Patient p = patientService.getPatient(999);
-    		Assert.assertNotNull(p);
-    		Assert.assertTrue(p.isVoided());
-    		System.out.println(p.getVoidReason());
-    		boolean found = false;
-    		for (PatientIdentifier id : p.getIdentifiers()) {
-    			if (id.getIdentifier().equals("XYZ") && id.getIdentifierType().getId() == 2) {
-    				found = true;
-    				break;
-    			}
-    		}
-    		Assert.assertTrue(found);
-    	}
-    	PatientIdentifierType pit = patientService.getPatientIdentifierType(2);
-    	PatientIdentifier patientIdentifier = new PatientIdentifier("XYZ", pit, null);
-        Assert.assertFalse(patientService.isIdentifierInUseByAnotherPatient(patientIdentifier));
-    }
-
-    /**
-     * @see {@link PatientService#isIdentifierInUseByAnotherPatient(PatientIdentifier)}
-     * 
-     */
-    @Test
-    @Verifies(value = "should return false when patientIdentifier contains a patient and no other patient has this id", method = "isIdentifierInUseByAnotherPatient(PatientIdentifier)")
-    public void isIdentifierInUseByAnotherPatient_shouldReturnFalseWhenPatientIdentifierContainsAPatientAndNoOtherPatientHasThisId()
-            throws Exception {
-    	PatientIdentifierType pit = patientService.getPatientIdentifierType(1);
-    	PatientIdentifier patientIdentifier = new PatientIdentifier("Nobody could possibly have this identifier", pit, null);
-    	patientIdentifier.setPatient(patientService.getPatient(2));
-        Assert.assertFalse(patientService.isIdentifierInUseByAnotherPatient(patientIdentifier));
-    }
-
-    /**
-     * @see {@link PatientService#isIdentifierInUseByAnotherPatient(PatientIdentifier)}
-     * 
-     */
-    @Test
-    @Verifies(value = "should return false when patientIdentifier does not contain a patient and no patient has this id", method = "isIdentifierInUseByAnotherPatient(PatientIdentifier)")
-    public void isIdentifierInUseByAnotherPatient_shouldReturnFalseWhenPatientIdentifierDoesNotContainAPatientAndNoPatientHasThisId()
-            throws Exception {
-    	PatientIdentifierType pit = patientService.getPatientIdentifierType(1);
-    	PatientIdentifier patientIdentifier = new PatientIdentifier("Nobody could possibly have this identifier", pit, null);
-        Assert.assertFalse(patientService.isIdentifierInUseByAnotherPatient(patientIdentifier));
-    }
-
-    /**
-     * @see {@link PatientService#isIdentifierInUseByAnotherPatient(PatientIdentifier)}
-     * 
-     */
-    @Test
-    @Verifies(value = "should return true when patientIdentifier contains a patient and another patient has this id", method = "isIdentifierInUseByAnotherPatient(PatientIdentifier)")
-    public void isIdentifierInUseByAnotherPatient_shouldReturnTrueWhenPatientIdentifierContainsAPatientAndAnotherPatientHasThisId()
-            throws Exception {
-    	PatientIdentifierType pit = patientService.getPatientIdentifierType(1);
-    	PatientIdentifier patientIdentifier = new PatientIdentifier("7TU-8", pit, null);
-    	patientIdentifier.setPatient(patientService.getPatient(2));
-        Assert.assertTrue(patientService.isIdentifierInUseByAnotherPatient(patientIdentifier));
-    }
-
-    /**
-     * @see {@link PatientService#isIdentifierInUseByAnotherPatient(PatientIdentifier)}
-     * 
-     */
-    @Test
-    @Verifies(value = "should return true when patientIdentifier does not contain a patient and a patient has this id", method = "isIdentifierInUseByAnotherPatient(PatientIdentifier)")
-    public void isIdentifierInUseByAnotherPatient_shouldReturnTrueWhenPatientIdentifierDoesNotContainAPatientAndAPatientHasThisId()
-            throws Exception {
-    	PatientIdentifierType pit = patientService.getPatientIdentifierType(1);
-    	PatientIdentifier patientIdentifier = new PatientIdentifier("7TU-8", pit, null);
-        Assert.assertTrue(patientService.isIdentifierInUseByAnotherPatient(patientIdentifier));
-    }
+	
+	/**
+	 * @see {@link PatientService#isIdentifierInUseByAnotherPatient(PatientIdentifier)}
+	 */
+	@Test
+	@Verifies(value = "should ignore voided patientIdentifiers", method = "isIdentifierInUseByAnotherPatient(PatientIdentifier)")
+	public void isIdentifierInUseByAnotherPatient_shouldIgnoreVoidedPatientIdentifiers() throws Exception {
+		PatientIdentifierType pit = patientService.getPatientIdentifierType(2);
+		PatientIdentifier patientIdentifier = new PatientIdentifier("ABC123", pit, null);
+		Assert.assertFalse(patientService.isIdentifierInUseByAnotherPatient(patientIdentifier));
+	}
+	
+	/**
+	 * Regression test for http://dev.openmrs.org/ticket/790
+	 * 
+	 * @see {@link PatientService#isIdentifierInUseByAnotherPatient(PatientIdentifier)}
+	 */
+	@Test
+	@Verifies(value = "should ignore voided patients", method = "isIdentifierInUseByAnotherPatient(PatientIdentifier)")
+	public void isIdentifierInUseByAnotherPatient_shouldIgnoreVoidedPatients() throws Exception {
+		{ // patient 999 should be voided and have a non-voided identifier of XYZ
+			Patient p = patientService.getPatient(999);
+			Assert.assertNotNull(p);
+			Assert.assertTrue(p.isVoided());
+			System.out.println(p.getVoidReason());
+			boolean found = false;
+			for (PatientIdentifier id : p.getIdentifiers()) {
+				if (id.getIdentifier().equals("XYZ") && id.getIdentifierType().getId() == 2) {
+					found = true;
+					break;
+				}
+			}
+			Assert.assertTrue(found);
+		}
+		PatientIdentifierType pit = patientService.getPatientIdentifierType(2);
+		PatientIdentifier patientIdentifier = new PatientIdentifier("XYZ", pit, null);
+		Assert.assertFalse(patientService.isIdentifierInUseByAnotherPatient(patientIdentifier));
+	}
+	
+	/**
+	 * @see {@link PatientService#isIdentifierInUseByAnotherPatient(PatientIdentifier)}
+	 */
+	@Test
+	@Verifies(value = "should return false when patientIdentifier contains a patient and no other patient has this id", method = "isIdentifierInUseByAnotherPatient(PatientIdentifier)")
+	public void isIdentifierInUseByAnotherPatient_shouldReturnFalseWhenPatientIdentifierContainsAPatientAndNoOtherPatientHasThisId()
+	                                                                                                                                throws Exception {
+		PatientIdentifierType pit = patientService.getPatientIdentifierType(1);
+		PatientIdentifier patientIdentifier = new PatientIdentifier("Nobody could possibly have this identifier", pit, null);
+		patientIdentifier.setPatient(patientService.getPatient(2));
+		Assert.assertFalse(patientService.isIdentifierInUseByAnotherPatient(patientIdentifier));
+	}
+	
+	/**
+	 * @see {@link PatientService#isIdentifierInUseByAnotherPatient(PatientIdentifier)}
+	 */
+	@Test
+	@Verifies(value = "should return false when patientIdentifier does not contain a patient and no patient has this id", method = "isIdentifierInUseByAnotherPatient(PatientIdentifier)")
+	public void isIdentifierInUseByAnotherPatient_shouldReturnFalseWhenPatientIdentifierDoesNotContainAPatientAndNoPatientHasThisId()
+	                                                                                                                                 throws Exception {
+		PatientIdentifierType pit = patientService.getPatientIdentifierType(1);
+		PatientIdentifier patientIdentifier = new PatientIdentifier("Nobody could possibly have this identifier", pit, null);
+		Assert.assertFalse(patientService.isIdentifierInUseByAnotherPatient(patientIdentifier));
+	}
+	
+	/**
+	 * @see {@link PatientService#isIdentifierInUseByAnotherPatient(PatientIdentifier)}
+	 */
+	@Test
+	@Verifies(value = "should return true when patientIdentifier contains a patient and another patient has this id", method = "isIdentifierInUseByAnotherPatient(PatientIdentifier)")
+	public void isIdentifierInUseByAnotherPatient_shouldReturnTrueWhenPatientIdentifierContainsAPatientAndAnotherPatientHasThisId()
+	                                                                                                                               throws Exception {
+		PatientIdentifierType pit = patientService.getPatientIdentifierType(1);
+		PatientIdentifier patientIdentifier = new PatientIdentifier("7TU-8", pit, null);
+		patientIdentifier.setPatient(patientService.getPatient(2));
+		Assert.assertTrue(patientService.isIdentifierInUseByAnotherPatient(patientIdentifier));
+	}
+	
+	/**
+	 * @see {@link PatientService#isIdentifierInUseByAnotherPatient(PatientIdentifier)}
+	 */
+	@Test
+	@Verifies(value = "should return true when patientIdentifier does not contain a patient and a patient has this id", method = "isIdentifierInUseByAnotherPatient(PatientIdentifier)")
+	public void isIdentifierInUseByAnotherPatient_shouldReturnTrueWhenPatientIdentifierDoesNotContainAPatientAndAPatientHasThisId()
+	                                                                                                                               throws Exception {
+		PatientIdentifierType pit = patientService.getPatientIdentifierType(1);
+		PatientIdentifier patientIdentifier = new PatientIdentifier("7TU-8", pit, null);
+		Assert.assertTrue(patientService.isIdentifierInUseByAnotherPatient(patientIdentifier));
+	}
+	
+	/**
+	 * @see PatientService#mergePatients(Patient,Patient)
+	 */
+	@Test
+	@Verifies(value = "should copy nonvoided addresses to preferred patient", method = "mergePatients(Patient,Patient)")
+	public void mergePatients_shouldCopyNonvoidedAddressesToPreferredPatient() throws Exception {
+		Patient preferred = patientService.getPatient(7);
+		Patient notPreferred = patientService.getPatient(8);
+		
+		patientService.mergePatients(preferred, notPreferred);
+		
+		// make sure one of their addresses has the city of "Jabali"
+		boolean found = false;
+		for (PersonAddress pa : preferred.getAddresses()) {
+			if (pa.getCityVillage().equals("Jabali"))
+				found = true;
+		}
+		
+		Assert.assertTrue("odd, user 7 didn't get user 8's address", found);
+	}
+	
+	/**
+	 * @see PatientService#mergePatients(Patient,Patient)
+	 */
+	@Test
+	@Verifies(value = "should copy nonvoided identifiers to preferred patient", method = "mergePatients(Patient,Patient)")
+	public void mergePatients_shouldCopyNonvoidedIdentifiersToPreferredPatient() throws Exception {
+		Patient preferred = patientService.getPatient(7);
+		Patient notPreferred = patientService.getPatient(8);
+		
+		patientService.mergePatients(preferred, notPreferred);
+		
+		PatientIdentifier piToTest = new PatientIdentifier("ABC123", new PatientIdentifierType(2), null);
+		
+		Assert.assertTrue(OpenmrsUtil.collectionContains(preferred.getIdentifiers(), piToTest));
+	}
+	
+	/**
+	 * @see PatientService#mergePatients(Patient,Patient)
+	 */
+	@Test
+	@Verifies(value = "should copy nonvoided names to preferred patient", method = "mergePatients(Patient,Patient)")
+	public void mergePatients_shouldCopyNonvoidedNamesToPreferredPatient() throws Exception {
+		Patient preferred = patientService.getPatient(7);
+		Patient notPreferred = patientService.getPatient(8);
+		
+		patientService.mergePatients(preferred, notPreferred);
+		
+		// make sure one of their addresses has the first name of "Anet"
+		boolean found = false;
+		for (PersonName pn : preferred.getNames()) {
+			if (pn.getGivenName().equals("Anet"))
+				found = true;
+		}
+		
+		Assert.assertTrue("odd, user 7 didn't get user 8's names", found);
+	}
 }
