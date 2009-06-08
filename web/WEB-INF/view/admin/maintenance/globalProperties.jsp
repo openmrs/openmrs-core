@@ -110,11 +110,11 @@ img {
 </style>
 
 <div id="propeties-container">
-<div class="caption">Global Properties</div>
+<div class="caption"><spring:message code="GlobalProperty.manage.title"/></div>
 <ul id="tabs-pane">
-	<li class="all-propeties-item"><a href="#all-propeties-pane">All Global Properties</a></li>
-	<li class="system-propeties-item"><a href="#system-propeties-pane">System Properties</a></li>
-	<li class="modules-propeties-item">Modules Properties</li>
+	<li class="all-propeties-item"><a href="#all-propeties-pane"><spring:message code="GlobalProperty.all"/></a></li>
+	<li class="system-propeties-item"><a href="#system-propeties-pane"><spring:message code="GlobalProperty.system"/></a></li>
+	<li class="modules-propeties-item"><spring:message code="GlobalProperty.modules"/></li>
 <c:forEach var="module" items="${globalProperties.modules}" varStatus="status">
 	<li class="module-tabs-item"><a href="#${module.moduleId}-propeties-pane">${module.name}</a></li>
 </c:forEach>
@@ -125,10 +125,10 @@ img {
 	<table cellpadding="1" cellspacing="0">
 		<thead>
 			<tr>
-				<th>Property Name</th>
-				<th>Property Value</th>
-				<th>Property Type</th>
-				<th>Description</th>
+				<th><spring:message code="GlobalProperty.name"/></th>
+				<th><spring:message code="GlobalProperty.value"/></th>
+				<th><spring:message code="GlobalProperty.type"/></th>
+				<th><spring:message code="GlobalProperty.description"/></th>
 				<th></th>
 			</tr>
 		</thead>
@@ -159,10 +159,10 @@ img {
 	<table cellpadding="1" cellspacing="0">
 		<thead>
 			<tr>
-				<th>Property Name</th>
-				<th>Property Value</th>
-				<th>Property Type</th>
-				<th>Description</th>
+				<th><spring:message code="GlobalProperty.name"/></th>
+				<th><spring:message code="GlobalProperty.value"/></th>
+				<th><spring:message code="GlobalProperty.type"/></th>
+				<th><spring:message code="GlobalProperty.description"/></th>
 				<th></th>
 			</tr>
 		</thead>
@@ -194,10 +194,10 @@ img {
 	<table cellpadding="1" cellspacing="0">
 		<thead>
 			<tr>
-				<th>Property Name</th>
-				<th>Property Value</th>
-				<th>Property Type</th>
-				<th>Description</th>
+				<th><spring:message code="GlobalProperty.name"/></th>
+				<th><spring:message code="GlobalProperty.value"/></th>
+				<th><spring:message code="GlobalProperty.type"/></th>
+				<th><spring:message code="GlobalProperty.description"/></th>
 				<th></th>
 			</tr>
 		</thead>
