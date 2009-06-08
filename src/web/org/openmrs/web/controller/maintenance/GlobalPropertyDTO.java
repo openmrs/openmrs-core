@@ -28,30 +28,30 @@ import org.openmrs.module.ModuleFactory;
 /**
  *
  */
-public class SettingsDTO {
+public class GlobalPropertyDTO {
 
 	/** Logger for this class */
 	protected final Log log = LogFactory.getLog(getClass());
 
 	private List<Module> modules;
 
-	private List<GlobalProperty> systemSettings;
+	private List<GlobalProperty> systemProperties;
 	
-	private List<GlobalProperty> allSettings;
+	private List<GlobalProperty> allProperties;
 	
     /**
      * 
      */
-    public SettingsDTO() {
+    public GlobalPropertyDTO() {
     	
-    	allSettings = Context.getAdministrationService().getAllGlobalProperties();
-    	systemSettings = new ArrayList<GlobalProperty>();
+    	allProperties = Context.getAdministrationService().getAllGlobalProperties();
+    	systemProperties = new ArrayList<GlobalProperty>();
 
     	for (GlobalProperty property : Context.getAdministrationService().getAllGlobalProperties()) {
-    		systemSettings.add(property);
+    		systemProperties.add(property);
     	}
     	
-    	log.debug("System Settings initial count: " + systemSettings.size());
+    	log.debug("System Properties initial count: " + systemProperties.size());
     	
     	modules = new ArrayList<Module>(ModuleFactory.getStartedModules());
     	
@@ -63,25 +63,25 @@ public class SettingsDTO {
 
     	for (Module module : modules) {
 
-    		systemSettings.removeAll(module.getGlobalProperties());
+    		systemProperties.removeAll(module.getGlobalProperties());
     		
-    		log.debug(module.getGlobalProperties().size()  + " properties from module "  + module.getName() + " was removed from System Settings");
-        	log.debug("System Settings count: " + systemSettings.size());
+    		log.debug(module.getGlobalProperties().size()  + " properties from module "  + module.getName() + " was removed from System Properties");
+        	log.debug("System Properties count: " + systemProperties.size());
     	}
     }
     
     /**
-     * @return the allSettings
+     * @return the allProperties
      */
-    public List<GlobalProperty> getAllSettings() {
-    	return allSettings;
+    public List<GlobalProperty> getAllProperties() {
+    	return allProperties;
     }
 
 	/**
      * @return the globalProperties
      */
-    public List<GlobalProperty> getSystemSettings() {
-    	return systemSettings;
+    public List<GlobalProperty> getSystemProperties() {
+    	return systemProperties;
     }
 	
     /**

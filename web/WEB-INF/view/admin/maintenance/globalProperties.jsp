@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
-<openmrs:require privilege="Manage Global Properties" otherwise="/login.htm" redirect="/admin/maintenance/settings.form" />
+<openmrs:require privilege="Manage Global Properties" otherwise="/login.htm" redirect="/admin/maintenance/globalProperties.form" />
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 
@@ -11,7 +11,7 @@
 <script type="text/javascript" src="<c:url value="/scripts/jquery/jquery-ui-1.7.1/jquery-ui-1.7.1.tabs.min.js"/>"></script>
 <script type="text/javascript">
 $(document).ready(function(){
-  $("#settings-container").tabs();
+  $("#propeties-container").tabs();
 });
 </script>
 
@@ -26,7 +26,7 @@ $(document).ready(function(){
 </style>
 
 <style>
-#settings-container {
+#propeties-container {
 	font-family: Verdana, sans-serif;
 }
 
@@ -55,21 +55,21 @@ $(document).ready(function(){
 	padding: 0.1em 0;
 }
 
-.settings-pane {
+.propeties-pane {
 	margin-left: 250px;
 }
 
-.settings-pane table {
+.propeties-pane table {
 }
 
-.settings-pane table td {
+.propeties-pane table td {
 	padding: 5px; 
 }
 
-.module-settings-pane {
+.module-propeties-pane {
 }
 
-.settings-pane table thead, #settings-container div.caption {
+.propeties-pane table thead, #propeties-container div.caption {
 	background-color: #8FABC7;
 	color: #fff;
 }
@@ -95,32 +95,32 @@ $(document).ready(function(){
 img {
 	border: none;
 }
-.all-settings-item {
+.all-propeties-item {
 	list-style-image: url("<c:url value="/images/wrench_screwdriver.png"/>");
 	list-style-position: inside;
 }
-.system-settings-item {
+.system-propeties-item {
 	list-style-image: url("<c:url value="/images/hammer.png"/>");
 	list-style-position: inside;
 }
-.modules-settings-item {
+.modules-propeties-item {
 	list-style-image: url("<c:url value="/images/plug.png"/>");
 	list-style-position: inside;
 }
 </style>
 
-<div id="settings-container">
-<div class="caption">Settings</div>
+<div id="propeties-container">
+<div class="caption">Global Properties</div>
 <ul id="tabs-pane">
-	<li class="all-settings-item"><a href="#all-settings-pane">All Settings</a></li>
-	<li class="system-settings-item"><a href="#system-settings-pane">System Settings</a></li>
-	<li class="modules-settings-item">Modules Settings</li>
-<c:forEach var="module" items="${settings.modules}" varStatus="status">
-	<li class="module-tabs-item"><a href="#${module.moduleId}-settings-pane">${module.name}</a></li>
+	<li class="all-propeties-item"><a href="#all-propeties-pane">All Global Properties</a></li>
+	<li class="system-propeties-item"><a href="#system-propeties-pane">System Properties</a></li>
+	<li class="modules-propeties-item">Modules Properties</li>
+<c:forEach var="module" items="${globalProperties.modules}" varStatus="status">
+	<li class="module-tabs-item"><a href="#${module.moduleId}-propeties-pane">${module.name}</a></li>
 </c:forEach>
 </ul>
 
-<div id="all-settings-pane" class="settings-pane">
+<div id="all-propeties-pane" class="propeties-pane">
 <form method="post">
 	<table cellpadding="1" cellspacing="0">
 		<thead>
@@ -133,7 +133,7 @@ img {
 			</tr>
 		</thead>
 		<tbody>
-			<c:forEach var="globalProperty" items="${settings.allSettings}" varStatus="status">
+			<c:forEach var="globalProperty" items="${globalProperties.allProperties}" varStatus="status">
 			<tr class="<c:choose><c:when test="${status.index % 2 == 0}">even</c:when><c:otherwise>odd</c:otherwise></c:choose>">
 				<td style="font-size: 0.8em">${globalProperty.property}</td>
 				<td><textarea readonly="readonly" class="property-value <c:choose><c:when test="${status.index % 2 == 0}">even</c:when><c:otherwise>odd</c:otherwise></c:choose>">${globalProperty.propertyValue}</textarea></td>
@@ -152,9 +152,9 @@ img {
 		</tbody>
 	</table>
 </form>
-</div> <!-- end all-settings -->
+</div> <!-- end all-propeties -->
 
-<div id="system-settings-pane" class="settings-pane">
+<div id="system-propeties-pane" class="propeties-pane">
 <form method="post">
 	<table cellpadding="1" cellspacing="0">
 		<thead>
@@ -167,7 +167,7 @@ img {
 			</tr>
 		</thead>
 		<tbody>
-			<c:forEach var="globalProperty" items="${settings.systemSettings}" varStatus="status">
+			<c:forEach var="globalProperty" items="${globalProperties.systemProperties}" varStatus="status">
 			<tr class="<c:choose><c:when test="${status.index % 2 == 0}">even</c:when><c:otherwise>odd</c:otherwise></c:choose>">
 				<td style="font-size: 0.8em">${globalProperty.property}</td>
 				<td><textarea readonly="readonly" class="property-value <c:choose><c:when test="${status.index % 2 == 0}">even</c:when><c:otherwise>odd</c:otherwise></c:choose>">${globalProperty.propertyValue}</textarea></td>
@@ -186,10 +186,10 @@ img {
 		</tbody>
 	</table>
 </form>
-</div> <!-- end system-settings -->
+</div> <!-- end system-propeties -->
 
-<c:forEach var="module" items="${settings.modules}">
-<div id="${module.moduleId}-settings-pane" class="module-settings-pane settings-pane">
+<c:forEach var="module" items="${globalProperties.modules}">
+<div id="${module.moduleId}-propeties-pane" class="module-propeties-pane propeties-pane">
 <form method="post">
 	<table cellpadding="1" cellspacing="0">
 		<thead>
@@ -221,9 +221,9 @@ img {
 		</tbody>
 	</table>
 </form>
-</div> <!-- end ${module.moduleId}-settings -->
+</div> <!-- end ${module.moduleId}-propeties -->
 </c:forEach>
 
-</div> <!-- end settings-container -->
+</div> <!-- end propeties-container -->
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

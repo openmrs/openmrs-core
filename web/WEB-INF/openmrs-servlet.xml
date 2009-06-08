@@ -138,8 +138,7 @@
 				
 				<prop key="remotecommunication/postHl7.form">postHl7FormController</prop>
 
-				<prop key="admin/maintenance/globalProps.form">globalPropertyController</prop>
-				<prop key="admin/maintenance/settings.form">settingsController</prop>
+				<prop key="admin/maintenance/globalProperties.form">globalPropertiesController</prop>
 				<prop key="admin/maintenance/serverLog.form">serverLogController</prop>
 				<prop key="admin/maintenance/databaseChangesInfo.list">databaseChangesInfoController</prop>
 				<!--<prop key="**/calendar.list">calendarController</prop>-->
@@ -934,17 +933,11 @@
 		<property name="formView"><value>/personDashboardForm</value></property>
 		<property name="successView"><value>personDashboard.form</value></property>
 	</bean>
-	<bean id="globalPropertyController"
-		class="org.openmrs.web.controller.maintenance.GlobalPropertyController">
-		<property name="commandName"><value>globalProps</value></property>
-		<property name="formView"><value>/admin/maintenance/globalPropsForm</value></property>
-		<property name="successView"><value>globalProps.form</value></property>
-	</bean>
-	<bean id="settingsController"
-		class="org.openmrs.web.controller.maintenance.SettingsController">
-		<property name="commandName"><value>settings</value></property>
-		<property name="formView"><value>/admin/maintenance/settings</value></property>
-		<property name="successView"><value>settings.form</value></property>
+	<bean id="globalPropertiesController"
+		class="org.openmrs.web.controller.maintenance.GlobalPropertiesController">
+		<property name="commandName"><value>globalProperties</value></property>
+		<property name="formView"><value>/admin/maintenance/globalProperties</value></property>
+		<property name="successView"><value>globalProperties.form</value></property>
 	</bean>
 	<bean id="serverLogController"
 		class="org.openmrs.web.controller.maintenance.ServerLogController">

@@ -22,7 +22,7 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
 /**
  *
  */
-public class SettingsController extends SimpleFormController {
+public class GlobalPropertiesController extends SimpleFormController {
 	
 	/** Logger for this class */
 	protected final Log log = LogFactory.getLog(getClass());
@@ -32,6 +32,6 @@ public class SettingsController extends SimpleFormController {
      */
     @Override
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
-	    return new SettingsDTO();
+	    return new GlobalPropertyDTO();
     }
 }
