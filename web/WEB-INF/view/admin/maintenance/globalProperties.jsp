@@ -31,11 +31,9 @@ $(document).ready(function(){
 }
 
 #tabs-pane {
-	float: left; 
-	width: 245px;
+	float: left;
 	padding-left: 0;
-	clear: left;
-	margin: 0;
+	margin: 0 10px 0 0;
 	list-style: none;
 }
 
@@ -55,18 +53,8 @@ $(document).ready(function(){
 	padding: 0.1em 0;
 }
 
-.propeties-pane {
-	margin-left: 250px;
-}
-
-.propeties-pane table {
-}
-
 .propeties-pane table td {
 	padding: 5px; 
-}
-
-.module-propeties-pane {
 }
 
 .propeties-pane table thead, #propeties-container div.caption {
@@ -74,8 +62,6 @@ $(document).ready(function(){
 	color: #fff;
 }
 .caption {
-	width: 245px;
-	float: left;
 	font-weight: bold;
 	padding: 1px 5px;
 }
@@ -85,12 +71,13 @@ $(document).ready(function(){
 .property-value {
 	border: none;
 	height: 1.25em;
-	overflow: hidden;
 	font-family: Courier New, monospace;
+	width: 100%;
 }
 .property-description {
 	color: #888;
 	font-size: 0.7em;
+	width: 30%;
 }
 img {
 	border: none;
@@ -110,7 +97,7 @@ img {
 </style>
 
 <div id="propeties-container">
-<div class="caption"><spring:message code="GlobalProperty.manage.title"/></div>
+
 <ul id="tabs-pane">
 	<li class="all-propeties-item"><a href="#all-propeties-pane"><spring:message code="GlobalProperty.all"/></a></li>
 	<li class="system-propeties-item"><a href="#system-propeties-pane"><spring:message code="GlobalProperty.system"/></a></li>
@@ -142,13 +129,6 @@ img {
 				<td><a href="#"><img src="<c:url value="/images/edit.gif"/>"/></a></td>
 			</tr>
 			</c:forEach>
-			<tr>
-				<td><input type="text" name="property" onchange=""/></td>
-				<td><input type="text" name="value"/></td>
-				<td><input type="text" name="type"/></td>
-				<td><textarea name="description"></textarea></td>
-				<td><a href="#"><img src="<c:url value="/images/add.gif"/>"/></a></td>
-			</tr>
 		</tbody>
 	</table>
 </form>
@@ -176,13 +156,6 @@ img {
 				<td><a href="#"><img src="<c:url value="/images/edit.gif"/>"/></a></td>
 			</tr>
 			</c:forEach>
-			<tr>
-				<td><input type="text" name="property"/></td>
-				<td><input type="text" name="value"/></td>
-				<td><input type="text" name="type"/></td>
-				<td><textarea name="description"></textarea></td>
-				<td><a href="#"><img src="<c:url value="/images/add.gif"/>"/></a></td>
-			</tr>
 		</tbody>
 	</table>
 </form>
@@ -211,13 +184,6 @@ img {
 				<td><a href="#"><img src="<c:url value="/images/edit.gif"/>"/></a></td>
 			</tr>
 			</c:forEach>
-			<tr>
-				<td><input type="text" name="property"/></td>
-				<td><input type="text" name="value"/></td>
-				<td><input type="text" name="type"/></td>
-				<td><textarea name="description"></textarea></td>
-				<td><a href="#"><img src="<c:url value="/images/add.gif"/>"/></a></td>
-			</tr>
 		</tbody>
 	</table>
 </form>
