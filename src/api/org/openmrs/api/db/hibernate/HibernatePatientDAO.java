@@ -28,7 +28,6 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.Hibernate;
 import org.hibernate.Query;
-import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.LogicalExpression;
@@ -619,14 +618,15 @@ public class HibernatePatientDAO implements PatientDAO {
 		boolean checkPatient = patientIdentifier.getPatient() != null
 		        && patientIdentifier.getPatient().getPatientId() != null;
 		
-		String sql = "select count(*) from patient_identifier pi inner join patient p on pi.patient_id = p.patient_id " +
-			"where p.voided = false and pi.voided = false and pi.identifier = :identifier and pi.identifier_type = :idType";
+		// switched this to an hql query so the hibernate cache can be considered as well as the database
+		String hql = "select count(*) from PatientIdentifier pi, Patient p where pi.patient.patientId = p.patient.patientId " + 
+			"and p.voided = false and pi.voided = false and pi.identifier = :identifier and pi.identifierType = :idType";
 		
 		if (checkPatient) {
-			sql += " and p.patient_id != :ptId";
+			hql += " and p.patientId != :ptId";
 		}
 		
-		SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
+		Query query = sessionFactory.getCurrentSession().createQuery(hql);
 		query.setString("identifier", patientIdentifier.getIdentifier());
 		query.setInteger("idType", patientIdentifier.getIdentifierType().getPatientIdentifierTypeId());
 		if (checkPatient) {

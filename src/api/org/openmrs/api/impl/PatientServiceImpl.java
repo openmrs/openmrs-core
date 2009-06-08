@@ -664,6 +664,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 * @param preferred
 	 * @param notPreferred
 	 * @throws APIException
+	 * @see org.openmrs.api.PatientService#mergePatients(org.openmrs.Patient, org.openmrs.Patient)
 	 */
 	public void mergePatients(Patient preferred, Patient notPreferred) throws APIException {
 		log.debug("Merging patients: (preferred)" + preferred.getPatientId() + ", (notPreferred) "
@@ -734,6 +735,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 				tmpName.setVoidReason(null);
 				// we don't want to change the preferred name of the preferred patient
 				tmpName.setPreferred(false);
+				//tmpName.setUuid(null); not needed because newInstance method doesn't copy it
 				preferred.addName(tmpName);
 				log.debug("Merging name " + newName.getGivenName() + " to " + preferred.getPatientId());
 			}
@@ -748,8 +750,8 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 				String cityVillage = currentAddress.getCityVillage();
 				
 				if ((address1 != null && address1.equals(newAddress.getAddress1()))
-				        || (address2 != null && address2.equals(newAddress.getAddress2()))
-				        || (cityVillage != null && cityVillage.equals(newAddress.getCityVillage()))) {
+				        && (address2 != null && address2.equals(newAddress.getAddress2()))
+				        && (cityVillage != null && cityVillage.equals(newAddress.getCityVillage()))) {
 					containsAddress = true;
 				}
 			}
@@ -759,6 +761,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 				tmpAddress.setVoided(false);
 				tmpAddress.setVoidedBy(null);
 				tmpAddress.setVoidReason(null);
+				tmpAddress.setUuid(null);
 				preferred.addAddress(tmpAddress);
 				log.debug("Merging address " + newAddress.getPersonAddressId() + " to " + preferred.getPatientId());
 			}
