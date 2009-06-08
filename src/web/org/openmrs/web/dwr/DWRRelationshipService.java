@@ -37,7 +37,7 @@ public class DWRRelationshipService {
 		rel.setPersonA(personA);
 		rel.setPersonB(personB);
 		rel.setRelationshipType(relType);
-		ps.createRelationship(rel);
+		ps.saveRelationship(rel);
 	}
 	
 	public void voidRelationship(Integer relationshipId, String voidReason) {
@@ -50,7 +50,7 @@ public class DWRRelationshipService {
 		
 		Vector<RelationshipListItem> ret = new Vector<RelationshipListItem>();
 		List<Relationship> rels = Context.getPersonService()
-		        .getRelationships(Context.getPersonService().getPerson(personId));
+		        .getRelationshipsByPerson(Context.getPersonService().getPerson(personId));
 		for (Relationship rel : rels) {
 			if (!rel.isVoided()
 			        && (relationshipTypeId == null || rel.getRelationshipType().getRelationshipTypeId().equals(
