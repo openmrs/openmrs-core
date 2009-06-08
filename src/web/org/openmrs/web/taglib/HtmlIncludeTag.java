@@ -23,6 +23,7 @@ import javax.servlet.jsp.tagext.TagSupport;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
 
 public class HtmlIncludeTag extends TagSupport {
@@ -87,10 +88,11 @@ public class HtmlIncludeTag extends TagSupport {
 					log.debug("Could not cast request to HttpServletRequest in HtmlIncludeTag");
 				}
 				
+				// the openmrs version is inserted into the file src so that js and css files are cached across version releases
 				if (isJs) {
-					output = "<script src=\"" + prefix + file + "\" type=\"text/javascript\" ></script>";
+					output = "<script src=\"" + prefix + file + "?v=" + OpenmrsConstants.OPENMRS_VERSION_SHORT + "\" type=\"text/javascript\" ></script>";
 				} else if (isCss) {
-					output = "<link href=\"" + prefix + file + "\" type=\"text/css\" rel=\"stylesheet\" />";
+					output = "<link href=\"" + prefix + file + "?v=" + OpenmrsConstants.OPENMRS_VERSION_SHORT + "\" type=\"text/css\" rel=\"stylesheet\" />";
 				}
 				
 				log.debug("isAlreadyUsed() is FALSE - printing " + this.file + " to output.");
