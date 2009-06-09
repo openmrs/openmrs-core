@@ -111,14 +111,14 @@ dojo.widget.defineWidget(
 				a.ondblclick = closure(this, "editConcept", conceptHit.conceptId);
 	    		a.title = conceptHit.description;
 	    		a.className = "searchHit";
-	    		if (conceptHit.synonym != "" && conceptHit.synonym != null) {
+	    		if (conceptHit.preferredName != null) {
 	    			var span = document.createElement("span");
 	    			span.className = "mainHit";
-	    			span.innerHTML = conceptHit.synonym;
+	    			span.innerHTML = conceptHit.name;
 	    			
 	    			var span2 = document.createElement("span");
 	    			span2.className = "additionalHit";
-	    			span2.innerHTML = "&rArr; " + conceptHit.name;
+	    			span2.innerHTML = "&rArr; " + conceptHit.preferredName;
 	    			if (this.showConceptIds)
 						span2.innerHTML += " (" + conceptHit.conceptId + ")";	
 					a.appendChild(span);

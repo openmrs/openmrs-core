@@ -39,7 +39,18 @@ public class ConceptListItem {
 	
 	private String description;
 	
-	private String synonym;
+	/**
+	 * Will be non-null if the name hit is not the preferred name
+	 */
+	private String preferredName;
+	
+	/**
+	 * Synonyms don't exist. All synonyms are names with different tags. If the name hit is not the
+	 * preferred name, preferredName will be non-null
+	 * 
+	 * @deprecated not used anymore
+	 */
+	private String synonym = "";
 	
 	private Boolean retired;
 	
@@ -68,6 +79,11 @@ public class ConceptListItem {
 	public ConceptListItem() {
 	}
 	
+	/**
+	 * Most common constructor
+	 * 
+	 * @param word
+	 */
 	public ConceptListItem(ConceptWord word) {
 		if (word != null) {
 			
@@ -75,14 +91,25 @@ public class ConceptListItem {
 			ConceptName conceptName = word.getConceptName();
 			Locale locale = word.getLocale();
 			initialize(concept, conceptName, locale);
-			synonym = word.getSynonym();
 		}
 	}
 	
+	/**
+	 * @param concept
+	 * @param conceptName
+	 * @param locale
+	 */
 	public ConceptListItem(Concept concept, ConceptName conceptName, Locale locale) {
 		initialize(concept, conceptName, locale);
 	}
 	
+	/**
+	 * Populate all of the attributes of this class
+	 * 
+	 * @param concept
+	 * @param conceptName
+	 * @param locale
+	 */
 	private void initialize(Concept concept, ConceptName conceptName, Locale locale) {
 		if (concept != null) {
 			conceptId = concept.getConceptId();
@@ -91,16 +118,20 @@ public class ConceptListItem {
 			name = shortName = description = "";
 			if (conceptName != null) {
 				name = WebUtil.escapeHTML(conceptName.getName());
+				
+				// if the name hit is not the preferred one, put the preferred one here
+				if (!conceptName.isPreferred()) {
+					ConceptName preferredNameObj = concept.getPreferredName(locale);
+					preferredName = preferredNameObj.getName();
+				}
 			}
 			if (conceptShortName != null) {
 				shortName = WebUtil.escapeHTML(conceptShortName.getName());
 			}
-			// ABK: descriptions used to allow non-exact locale match
-			ConceptDescription conceptDescription = concept.getDescription(locale, true);
+			ConceptDescription conceptDescription = concept.getDescription(locale, false);
 			if (conceptDescription != null) {
 				description = WebUtil.escapeHTML(conceptDescription.getDescription());
 			}
-			synonym = "";
 			retired = concept.isRetired();
 			hl7Abbreviation = concept.getDatatype().getHl7Abbreviation();
 			className = concept.getConceptClass().getName();
@@ -120,7 +151,9 @@ public class ConceptListItem {
 		}
 	}
 	
-	@Override
+	/**
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
 	public boolean equals(Object obj) {
 		if (obj instanceof ConceptListItem) {
 			ConceptListItem c2 = (ConceptListItem) obj;
@@ -130,7 +163,9 @@ public class ConceptListItem {
 		return false;
 	}
 	
-	@Override
+	/**
+	 * @see java.lang.Object#hashCode()
+	 */
 	public int hashCode() {
 		if (conceptId != null)
 			return 31 * conceptId.hashCode();
@@ -174,10 +209,20 @@ public class ConceptListItem {
 		this.shortName = shortName;
 	}
 	
+	public String getPreferredName() {
+		return preferredName;
+	}
+	
+	public void setPreferredName(String preferredName) {
+		this.preferredName = preferredName;
+	}
+	
+	@Deprecated
 	public String getSynonym() {
 		return synonym;
 	}
 	
+	@Deprecated
 	public void setSynonym(String synonym) {
 		this.synonym = synonym;
 	}
