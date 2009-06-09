@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -82,6 +83,31 @@ public class GlobalPropertyDTO {
      */
     public List<GlobalProperty> getSystemProperties() {
     	return systemProperties;
+    }
+    
+    /**
+     * Return namespaces of given global properties
+     * 
+     * @param properties - the List of global properties. Each property in OpenMRS has the folowing format <namespace>.<name>
+     * @return List of namespace. 
+     */
+    public List<Namespace> getPropertiesNamespaces(List<GlobalProperty> properties) {
+    	List<Namespace> result = new ArrayList<Namespace>();
+    	List<String> namespaceNames = new ArrayList<String>();
+    	for (GlobalProperty property : properties) {
+    		String[] splitedProperty = property.getProperty().split("\\.");
+    		if (splitedProperty.length == 2) {
+        		if (!namespaceNames.contains(splitedProperty[0])) {
+        			namespaceNames.add(splitedProperty[0]);
+        			result.add(new Namespace(splitedProperty[0]));
+        		}
+    		}
+    	}
+    	return result;
+    }
+    
+    public List<Namespace> getSystemNamespaces() {
+	    return getPropertiesNamespaces(systemProperties);
     }
 	
     /**
