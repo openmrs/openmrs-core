@@ -46,6 +46,7 @@
     <path id="api.compile.classpath">
 		<!--<fileset dir="${activemq.dir}" includes="*.jar" />-->
 		<fileset dir="${antlr.dir}" includes="*.jar" />
+    	<fileset dir="${cglib.dir}" includes="*.jar" />
 		<fileset dir="${commons-io.dir}" includes="*.jar" />
     	<fileset dir="${commons-lang.dir}" includes="*.jar"/>
     	<fileset dir="${commons-collections.dir}" includes="*.jar" />
