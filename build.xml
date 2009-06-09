@@ -568,7 +568,7 @@
         </path>
 
         <property name="db.changelog.file" value="root.changelog.xml"/>
-        <property name="database.url" value="jdbc:mysql://localhost/openmrs-trunk"/>
+        <property name="database.url" value="jdbc:mysql://localhost:3306/openmrs-trunk"/>
         <property name="database.username" value="root"/>
         <property name="database.password" value="password"/>
         <property name="database.driver" value="com.mysql.jdbc.Driver"/>
@@ -621,7 +621,7 @@
     </target>
 	-->
 	
-	<target name="liquibase-generate-sql" depends="liquibase-init" description="Create the /dist/update-to-latest.sql file">
+	<target name="liquibase-generate-offline-sql-diff-mysql" depends="liquibase-init" description="Create the /dist/update-to-latest-mysql-diff.sql file for running on systems that don't use the openmrs webapp">
 		<updateDatabase 
 				changeLogFile="${metadata.dir}/model/liquibase-update-to-latest.xml"
 				driver="${database.driver}"
@@ -634,7 +634,7 @@
 				databaseChangeLogTableName="liquibasechangelog"
 				databaseChangeLogLockTableName="liquibasechangeloglock"
 				
-				outputFile="dist/update-to-latest.sql"
+				outputFile="dist/update-to-latest-mysql-diff.sql"
 				>
 		</updateDatabase>
 		<echo>Created dist/update-to-latest.sql</echo>
