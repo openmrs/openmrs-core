@@ -40,7 +40,7 @@ import org.simpleframework.xml.Root;
 @Root(strict = false)
 public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializable, Comparable<PersonAttribute> {
 	
-	private Log log = LogFactory.getLog(getClass());
+	private transient Log log = LogFactory.getLog(getClass());
 	
 	public static final long serialVersionUID = 11231211232111L;
 	

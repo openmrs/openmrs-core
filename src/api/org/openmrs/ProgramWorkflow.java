@@ -32,7 +32,7 @@ public class ProgramWorkflow extends BaseOpenmrsMetadata implements java.io.Seri
 	
 	private static final long serialVersionUID = 1L;
 	
-	protected final Log log = LogFactory.getLog(getClass());
+	private transient final Log log = LogFactory.getLog(getClass());
 	
 	// ******************
 	// Properties

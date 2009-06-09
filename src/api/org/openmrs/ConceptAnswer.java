@@ -29,7 +29,7 @@ public class ConceptAnswer extends BaseOpenmrsObject implements Auditable, java.
 	
 	public static final long serialVersionUID = 3744L;
 	
-	public Log log = LogFactory.getLog(this.getClass());
+	private transient Log log = LogFactory.getLog(this.getClass());
 	
 	// Fields
 	private Integer conceptAnswerId;

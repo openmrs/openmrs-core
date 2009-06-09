@@ -32,7 +32,7 @@ public class PatientProgram extends BaseOpenmrsData implements java.io.Serializa
 	
 	public static final long serialVersionUID = 0L;
 	
-	protected final Log log = LogFactory.getLog(getClass());
+	private transient final Log log = LogFactory.getLog(getClass());
 	
 	// ******************
 	// Properties

@@ -44,7 +44,7 @@ public class User extends Person implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 4489L;
 	
-	public Log log = LogFactory.getLog(getClass());
+	private transient Log log = LogFactory.getLog(getClass());
 	
 	// Fields
 	

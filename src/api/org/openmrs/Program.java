@@ -30,7 +30,7 @@ public class Program extends BaseOpenmrsMetadata implements java.io.Serializable
 	
 	public static final long serialVersionUID = 3214567L;
 	
-	protected final Log log = LogFactory.getLog(getClass());
+	private transient final Log log = LogFactory.getLog(getClass());
 	
 	// ******************
 	// Properties
