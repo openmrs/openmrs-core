@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataset>
+    <person_attribute_type person_attribute_type_id="1" name="Race" description="Group of persons related by common descent or heredity" format="java.lang.String" searchable="false" foreign_key="1053" edit_privilege="Delete Cohorts" creator="1" date_created="2007-05-04 09:59:23.0" retired="true" retired_by="1" date_retired="2008-08-15 00:00:00.0" retire_reason="test" uuid="b3b6d540-a32e-44c7-91b3-292d97667518"/>
+	<privilege privilege="Delete Cohorts" description="Able to add a cohort to the system"/>
+</dataset>

@@ -33,7 +33,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	
-	protected final Log log = LogFactory.getLog(getClass());
+	private transient final Log log = LogFactory.getLog(getClass());
 	
 	public static final long serialVersionUID = 4334343L;
 	

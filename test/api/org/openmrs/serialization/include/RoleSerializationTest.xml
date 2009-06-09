@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+  <role role="Data Assistant" description="Clerks who perform data entry." uuid="00eb389f-92b2-102c-adee-6014420f8468"/>
+  <role role="Data Manager" description="User who maintains clinical data stored within the OpenMRS repository." uuid="00eb3992-92b2-102c-adee-6014420f8468"/>
+  
+  <role_role parent_role="Data Assistant" child_role="Data Manager"/>
+  
+  <role_privilege role="Data Assistant" privilege="Add Patients"/>
+  <role_privilege role="Data Assistant" privilege="Add People"/>
+  <role_privilege role="Data Assistant" privilege="Add Relationships"/>
+  
+  <role_privilege role="Data Manager" privilege="Add Observations"/>
+  <role_privilege role="Data Manager" privilege="Add Patients"/>
+  <role_privilege role="Data Manager" privilege="Delete Observations"/>
+  <role_privilege role="Data Manager" privilege="Delete Report Objects"/>
+  
+  <privilege privilege="Add Observations" description="Able to add patient observations" uuid="00e8bcbf-92b2-102c-adee-6014420f8468"/>
+  <privilege privilege="Add Patients" description="Able to add patients" uuid="00e8c00e-92b2-102c-adee-6014420f8468"/>
+  <privilege privilege="Add People" description="Able to add person objects" uuid="00e8c0df-92b2-102c-adee-6014420f8468"/>
+  <privilege privilege="Add Relationships" description="Able to add relationships" uuid="00e8d4fc-92b2-102c-adee-6014420f8468"/>
+  <privilege privilege="Delete Observations" description="Able to delete patient observations" uuid="00e8def6-92b2-102c-adee-6014420f8468"/>
+  <privilege privilege="Delete Report Objects" description="Able to delete report objects" uuid="00e8e5ae-92b2-102c-adee-6014420f8468"/>
+</dataset>

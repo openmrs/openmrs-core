@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+  <concept_answer  concept_answer_id="762" concept_id="1088" answer_concept="796" answer_drug="10" creator="1" date_created="2006-02-14 14:22:55.0" uuid="0038bcf6-92b2-102c-adee-6014420f8468"/>
+  <drug  drug_id="10" concept_id="796" name="DDI 200" combination="0" units="mg" creator="1" date_created="2005-02-24 00:00:00.0" retired="0" uuid="00a66162-92b2-102c-adee-6014420f8468"/>
+  <concept concept_id="796" retired="0"  datatype_id="4" class_id="3" is_set="0" creator="1" date_created="2004-04-08 00:00:00.0" changed_by="1" date_changed="2005-02-22 12:50:02.0" uuid="00174a3f-92b2-102c-adee-6014420f8468"/>
+  <concept concept_id="1088" retired="0"  datatype_id="2" class_id="7" is_set="0" creator="1" date_created="2005-01-12 00:00:00.0" changed_by="1" date_changed="2006-02-14 14:14:22.0" uuid="001ba2b2-92b2-102c-adee-6014420f8468"/>
+  <concept_datatype concept_datatype_id="2" name="Coded" hl7_abbreviation="CWE" description="Value determined by term dictionary lookup (i.e., term identifier)" creator="1" date_created="2004-02-02 00:00:00.0" retired="0" uuid="003d8f84-92b2-102c-adee-6014420f8468"/>
+  <concept_datatype concept_datatype_id="4" name="N/A" hl7_abbreviation="ZZ" description="Not associated with a datatype (e.g., term answers, sets)" creator="1" date_created="2004-02-02 00:00:00.0" retired="0" uuid="003d9648-92b2-102c-adee-6014420f8468"/>
+  <concept_class concept_class_id="3" name="Drug" description="Drug" creator="1" date_created="2004-02-02 00:00:00.0" retired="0" uuid="003d006a-92b2-102c-adee-6014420f8468"/>
+  <concept_class concept_class_id="7" name="Question" description="Question (eg, patient history, SF36 items)" creator="1" date_created="2004-03-02 00:00:00.0" retired="0" uuid="003d0a99-92b2-102c-adee-6014420f8468"/>
+</dataset>

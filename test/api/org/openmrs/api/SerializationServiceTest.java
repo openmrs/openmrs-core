@@ -30,7 +30,7 @@ import org.openmrs.test.Verifies;
 public class SerializationServiceTest extends BaseContextSensitiveTest {
 	
 	@Test
-	@Verifies(value = "should return a serializer", method = "getDefaultCohort()")
+	@Verifies(value = "should return a serializer", method = "getDefaultSerializer()")
 	public void getDefaultSerializer_shouldReturnASerializer() throws Exception {
 		assertNotNull(Context.getSerializationService().getDefaultSerializer());
 	}

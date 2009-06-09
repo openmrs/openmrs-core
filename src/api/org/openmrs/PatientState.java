@@ -26,7 +26,7 @@ public class PatientState extends BaseOpenmrsData implements java.io.Serializabl
 	
 	public static final long serialVersionUID = 0L;
 	
-	protected final Log log = LogFactory.getLog(getClass());
+	private transient final Log log = LogFactory.getLog(getClass());
 	
 	// ******************
 	// Properties
