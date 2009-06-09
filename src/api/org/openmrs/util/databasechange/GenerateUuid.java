@@ -17,6 +17,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Map;
 import java.util.UUID;
 
 import liquibase.FileOpener;
@@ -28,7 +29,9 @@ import liquibase.exception.InvalidChangeDefinitionException;
 import liquibase.exception.SetupException;
 import liquibase.exception.UnsupportedChangeException;
 
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
+import org.openmrs.util.OpenmrsUtil;
 
 /**
  * Uses Java's {@link UUID} class to generate UUIDs for all rows in all tables in the tableNames
@@ -53,6 +56,18 @@ public class GenerateUuid implements CustomTaskChange {
 	 * this class
 	 */
 	private String columnName = "uuid";
+	
+	/**
+	 * Key-value pairs of table name ids that don't follow the convention. The key is what the
+	 * convention would be and the value is what it actually is: <br/>
+	 * e.g. "field_answer_id=field_id|role_id=role|privilege_id=privilege"
+	 */
+	private String idExceptions = "";
+	
+	/**
+	 * Set by the {@link #setUp()} method from the value of the {@link #idExceptions} parameter
+	 */
+	private Map<String, String> idExceptionsMap = null;
 	
 	/**
 	 * Set by the {@link #setUp()} method from the value of the {@link #tableNames} parameter
@@ -89,9 +104,14 @@ public class GenerateUuid implements CustomTaskChange {
 				PreparedStatement updateStatement = null;
 				try {
 					String idSql = genericIdSql.replaceAll("tablename", tableName);
-					idStatement = connection.createStatement();
-					
 					String updateSql = genericUpdateSql.replaceAll("tablename", tableName);
+					
+					// hacky way to deal with tables that don't follow the tableNam_id convention
+					for (Map.Entry<String, String> idException : idExceptionsMap.entrySet()) {
+						idSql = idSql.replaceFirst(idException.getKey(), idException.getValue());
+						updateSql = updateSql.replaceFirst(idException.getKey(), idException.getValue());
+					}
+					idStatement = connection.createStatement();
 					updateStatement = connection.prepareStatement(updateSql);
 					
 					// Map<Integer, UUID> uuids = new HashMap<Integer, UUID>();
@@ -139,6 +159,7 @@ public class GenerateUuid implements CustomTaskChange {
 	public void setUp() throws SetupException {
 		
 		tableNamesArray = StringUtils.split(tableNames);
+		idExceptionsMap = OpenmrsUtil.parseParameterList(idExceptions);
 		
 		genericIdSql = "select tablename_id from tablename where columnName is null";
 		genericIdSql = genericIdSql.replace("columnName", columnName);
@@ -171,6 +192,15 @@ public class GenerateUuid implements CustomTaskChange {
 	 */
 	public void setColumnName(String columnName) {
 		this.columnName = columnName;
+	}
+	
+	/**
+	 * Way to specify the table id columns that don't follow the table_name.table_name_id pattern
+	 * 
+	 * @param idExceptions
+	 */
+	public void setIdExceptions(String idExceptions) {
+		this.idExceptions = idExceptions;
 	}
 	
 }

@@ -1218,6 +1218,8 @@
 	</changeSet>
 	
 	<changeSet id="20090402-1517" author="bwolfe">
+		<validCheckSum>1b6141be59a8a243b9e56d0aad952af</validCheckSum> <!-- checksum from before idExceptions added -->
+		<validCheckSum>89cc7a14b0582f157ea2dbb9de092fd</validCheckSum> <!-- current checksum with idExceptions param added -->
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<or>
@@ -1234,7 +1236,7 @@
 			<param name="tableNames">
 				cohort concept concept_answer concept_class concept_datatype concept_description 
 				concept_map concept_name concept_name_tag concept_proposal
-				concept_set concept_source concept_state_conversion concept_synonym drug
+				concept_set concept_source concept_state_conversion drug
 				encounter encounter_type field field_answer field_type form form_field global_property hl7_in_archive 
 				hl7_in_error hl7_in_queue hl7_source location location_tag note notification_alert 
 				notification_template obs order_type orders patient_identifier 
@@ -1243,6 +1245,10 @@
 				relationship_type report_object report_schema_xml role serialized_object
 			</param>
 			<param name="columnName" value="uuid"/>
+			<param name="idExceptions">
+				field_answer_id=field_id|role_id=role|privilege_id=privilege|global_property_id=property|notification_alert_id=alert_id
+				|notification_template_id=template_id|orders_id=order_id|report_schema_xml_id=report_schema_id
+			</param>
 		</customChange>
 	</changeSet>
 	
