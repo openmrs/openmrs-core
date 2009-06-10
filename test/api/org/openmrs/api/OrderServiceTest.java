@@ -13,8 +13,10 @@
  */
 package org.openmrs.api;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.Order;
+import org.openmrs.OrderType;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
@@ -34,5 +36,53 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Order order = new Order();
 		order.setPatient(null);
 		orderService.saveOrder(order);
+	}
+
+	/**
+	 * @see {@link OrderService#getOrderByUuid(String)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should find object given valid uuid", method = "getOrderByUuid(String)")
+	public void getOrderByUuid_shouldFindObjectGivenValidUuid()
+			throws Exception {
+		String uuid = "921de0a3-05c4-444a-be03-e01b4c4b9142";
+		Order order = Context.getOrderService().getOrderByUuid(uuid);
+		Assert.assertEquals(1, (int)order.getOrderId());
+	}
+
+	/**
+	 * @see {@link OrderService#getOrderByUuid(String)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should return null if no object found with given uuid", method = "getOrderByUuid(String)")
+	public void getOrderByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid()
+			throws Exception {
+		Assert.assertNull(Context.getOrderService().getOrderByUuid("some invalid uuid"));
+	}
+
+	/**
+	 * @see {@link OrderService#getOrderTypeByUuid(String)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should find object given valid uuid", method = "getOrderTypeByUuid(String)")
+	public void getOrderTypeByUuid_shouldFindObjectGivenValidUuid()
+			throws Exception {
+		String uuid = "84ce45a8-5e7c-48f7-a581-ca1d17d63a62";
+		OrderType orderType = Context.getOrderService().getOrderTypeByUuid(uuid);
+		Assert.assertEquals(1, (int)orderType.getOrderTypeId());
+	}
+
+	/**
+	 * @see {@link OrderService#getOrderTypeByUuid(String)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should return null if no object found with given uuid", method = "getOrderTypeByUuid(String)")
+	public void getOrderTypeByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid()
+			throws Exception {
+		Assert.assertNull(Context.getOrderService().getOrderTypeByUuid("some invalid uuid"));
 	}
 }

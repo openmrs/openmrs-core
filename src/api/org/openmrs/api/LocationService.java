@@ -98,6 +98,8 @@ public interface LocationService extends OpenmrsService {
 	 * 
 	 * @param uuid is the uuid of the desired location
 	 * @return location with the given uuid
+	 * @should find object given valid uuid
+	 * @should return null if no object found with given uuid
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_LOCATIONS })

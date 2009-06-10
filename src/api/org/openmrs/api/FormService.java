@@ -74,6 +74,14 @@ public interface FormService extends OpenmrsService {
 	@Authorized(OpenmrsConstants.PRIV_VIEW_FORMS)
 	public Form getForm(String name) throws APIException;
 	
+	/**
+	 * Get Form by its UUID
+	 * 
+	 * @param uuid
+	 * @return
+	 * @should find object given valid uuid
+	 * @should return null if no object found with given uuid 
+	 */
 	@Transactional(readOnly = true)
 	public Form getFormByUuid(String uuid) throws APIException;
 	
@@ -310,6 +318,14 @@ public interface FormService extends OpenmrsService {
 	@Authorized(OpenmrsConstants.PRIV_VIEW_FIELD_TYPES)
 	public FieldType getFieldType(Integer fieldTypeId) throws APIException;
 	
+	/**
+	 * Get FieldType by its UUID
+	 * 
+	 * @param uuid
+	 * @return
+	 * @should find object given valid uuid
+	 * @should return null if no object found with given uuid 
+	 */
 	@Transactional(readOnly = true)
 	public FieldType getFieldTypeByUuid(String uuid) throws APIException;
 	
@@ -456,9 +472,25 @@ public interface FormService extends OpenmrsService {
 	@Authorized(OpenmrsConstants.PRIV_VIEW_FORMS)
 	public Field getField(Integer fieldId) throws APIException;
 	
+	/**
+	 * Get Field by its UUID
+	 * 
+	 * @param uuid
+	 * @return
+	 * @should find object given valid uuid
+	 * @should return null if no object found with given uuid 
+	 */
 	@Transactional(readOnly = true)
 	public Field getFieldByUuid(String uuid) throws APIException;
 	
+	/**
+	 * Get FieldAnswer by its UUID
+	 * 
+	 * @param uuid
+	 * @return
+	 * @should find object given valid uuid
+	 * @should return null if no object found with given uuid 
+	 */
 	@Transactional(readOnly = true)
 	public FieldAnswer getFieldAnswerByUuid(String uuid) throws APIException;
 	
@@ -521,6 +553,14 @@ public interface FormService extends OpenmrsService {
 	@Authorized(OpenmrsConstants.PRIV_VIEW_FORMS)
 	public FormField getFormField(Integer formFieldId) throws APIException;
 	
+	/**
+	 * Get FormField by its UUID
+	 * 
+	 * @param uuid
+	 * @return
+	 * @should find object given valid uuid
+	 * @should return null if no object found with given uuid 
+	 */
 	@Transactional(readOnly = true)
 	public FormField getFormFieldByUuid(String uuid) throws APIException;
 	

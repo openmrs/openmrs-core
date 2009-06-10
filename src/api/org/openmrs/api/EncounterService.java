@@ -77,6 +77,14 @@ public interface EncounterService extends OpenmrsService {
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_ENCOUNTERS })
 	public Encounter getEncounter(Integer encounterId) throws APIException;
 	
+	/**
+	 * Get Encounter by its UUID
+	 * 
+	 * @param uuid
+	 * @return
+	 * @should find object given valid uuid
+	 * @should return null if no object found with given uuid 
+	 */
 	@Transactional(readOnly = true)
 	public Encounter getEncounterByUuid(String uuid) throws APIException;
 	
@@ -227,6 +235,14 @@ public interface EncounterService extends OpenmrsService {
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_ENCOUNTER_TYPES })
 	public EncounterType getEncounterType(Integer encounterTypeId) throws APIException;
 	
+	/**
+	 * Get EncounterType by its UUID
+	 * 
+	 * @param uuid
+	 * @return
+	 * @should find object given valid uuid
+	 * @should return null if no object found with given uuid 
+	 */
 	@Transactional(readOnly = true)
 	public EncounterType getEncounterTypeByUuid(String uuid) throws APIException;
 	

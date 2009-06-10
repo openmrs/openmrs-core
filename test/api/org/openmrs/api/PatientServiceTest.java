@@ -862,4 +862,65 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		
 		Assert.assertTrue("odd, user 7 didn't get user 8's names", found);
 	}
+	
+	/**
+	 * @see {@link PatientService#getPatientByUuid(String)}
+	 */
+	@Test
+	@Verifies(value = "should find object given valid uuid", method = "getPatientByUuid(String)")
+	public void getPatientByUuid_shouldFindObjectGivenValidUuid() throws Exception {
+		String uuid = "da7f524f-27ce-4bb2-86d6-6d1d05312bd5";
+		Patient patient = Context.getPatientService().getPatientByUuid(uuid);
+		Assert.assertEquals(2, (int) patient.getPatientId());
+	}
+	
+	/**
+	 * @see {@link PatientService#getPatientByUuid(String)}
+	 */
+	@Test
+	@Verifies(value = "should return null if no object found with given uuid", method = "getPatientByUuid(String)")
+	public void getPatientByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
+		Assert.assertNull(Context.getPatientService().getPatientByUuid("some invalid uuid"));
+	}
+	
+	/**
+	 * @see {@link PatientService#getPatientIdentifierByUuid(String)}
+	 */
+	@Test
+	@Verifies(value = "should find object given valid uuid", method = "getPatientIdentifierByUuid(String)")
+	public void getPatientIdentifierByUuid_shouldFindObjectGivenValidUuid() throws Exception {
+		String uuid = "ff41928c-3bca-48d9-a4dc-9198f6b2873b";
+		PatientIdentifier patientIdentifier = Context.getPatientService().getPatientIdentifierByUuid(uuid);
+		Assert.assertEquals(1, (int) patientIdentifier.getPatientIdentifierId());
+	}
+	
+	/**
+	 * @see {@link PatientService#getPatientIdentifierByUuid(String)}
+	 */
+	@Test
+	@Verifies(value = "should return null if no object found with given uuid", method = "getPatientIdentifierByUuid(String)")
+	public void getPatientIdentifierByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
+		Assert.assertNull(Context.getPatientService().getPatientIdentifierByUuid("some invalid uuid"));
+	}
+	
+	/**
+	 * @see {@link PatientService#getPatientIdentifierTypeByUuid(String)}
+	 */
+	@Test
+	@Verifies(value = "should find object given valid uuid", method = "getPatientIdentifierTypeByUuid(String)")
+	public void getPatientIdentifierTypeByUuid_shouldFindObjectGivenValidUuid() throws Exception {
+		String uuid = "1a339fe9-38bc-4ab3-b180-320988c0b968";
+		PatientIdentifierType patientIdentifierType = Context.getPatientService().getPatientIdentifierTypeByUuid(uuid);
+		Assert.assertEquals(1, (int) patientIdentifierType.getPatientIdentifierTypeId());
+	}
+	
+	/**
+	 * @see {@link PatientService#getPatientIdentifierTypeByUuid(String)}
+	 */
+	@Test
+	@Verifies(value = "should return null if no object found with given uuid", method = "getPatientIdentifierTypeByUuid(String)")
+	public void getPatientIdentifierTypeByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
+		Assert.assertNull(Context.getPatientService().getPatientIdentifierTypeByUuid("some invalid uuid"));
+	}
+	
 }

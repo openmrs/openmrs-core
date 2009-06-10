@@ -1148,5 +1148,27 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		obs = Context.getObsService().getObs(7);
 		Assert.assertTrue(obs.isVoided());
 	}
-	
+
+	/**
+	 * @see {@link ObsService#getObsByUuid(String)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should find object given valid uuid", method = "getObsByUuid(String)")
+	public void getObsByUuid_shouldFindObjectGivenValidUuid() throws Exception {
+		String uuid = "39fb7f47-e80a-4056-9285-bd798be13c63";
+		Obs obs = Context.getObsService().getObsByUuid(uuid);
+		Assert.assertEquals(7,(int) obs.getObsId());
+	}
+
+	/**
+	 * @see {@link ObsService#getObsByUuid(String)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should return null if no object found with given uuid", method = "getObsByUuid(String)")
+	public void getObsByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid()
+			throws Exception {
+		Assert.assertNull(Context.getObsService().getObsByUuid("some invalid uuid"));
+	}	
 }

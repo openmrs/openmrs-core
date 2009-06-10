@@ -83,9 +83,25 @@ public interface PatientService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	public Patient getPatient(Integer patientId) throws APIException;
 	
+	/**
+	 * Get Patient by its UUID
+	 * 
+	 * @param uuid
+	 * @return
+	 * @should find object given valid uuid
+	 * @should return null if no object found with given uuid 
+	 */
 	@Transactional(readOnly = true)
 	public Patient getPatientByUuid(String uuid) throws APIException;
 	
+	/**
+	 * Get PatientIdentifier by its UUID
+	 * 
+	 * @param uuid
+	 * @return
+	 * @should find object given valid uuid
+	 * @should return null if no object found with given uuid 
+	 */
 	@Transactional(readOnly = true)
 	public PatientIdentifier getPatientIdentifierByUuid(String uuid) throws APIException;
 	
@@ -332,6 +348,14 @@ public interface PatientService extends OpenmrsService {
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_IDENTIFIER_TYPES })
 	public PatientIdentifierType getPatientIdentifierType(Integer patientIdentifierTypeId) throws APIException;
 	
+	/**
+	 * Get PatientIdentifierType by its UUID
+	 * 
+	 * @param uuid
+	 * @return
+	 * @should find object given valid uuid
+	 * @should return null if no object found with given uuid 
+	 */
 	@Transactional(readOnly = true)
 	public PatientIdentifierType getPatientIdentifierTypeByUuid(String uuid) throws APIException;
 	

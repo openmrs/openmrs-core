@@ -187,6 +187,14 @@ public interface OrderService extends OpenmrsService {
 	@Authorized(OpenmrsConstants.PRIV_VIEW_ORDERS)
 	public Order getOrder(Integer orderId) throws APIException;
 	
+	/**
+	 * Get Order by its UUID
+	 * 
+	 * @param uuid
+	 * @return
+	 * @should find object given valid uuid
+	 * @should return null if no object found with given uuid 
+	 */
 	@Transactional(readOnly = true)
 	public Order getOrderByUuid(String uuid) throws APIException;
 	
@@ -436,6 +444,14 @@ public interface OrderService extends OpenmrsService {
 	@Authorized(OpenmrsConstants.PRIV_VIEW_ORDER_TYPES)
 	public OrderType getOrderType(Integer orderTypeId) throws APIException;
 	
+	/**
+	 * Get OrderType by its UUID
+	 * 
+	 * @param uuid
+	 * @return
+	 * @should find object given valid uuid
+	 * @should return null if no object found with given uuid 
+	 */
 	@Transactional(readOnly = true)
 	public OrderType getOrderTypeByUuid(String uuid) throws APIException;
 	

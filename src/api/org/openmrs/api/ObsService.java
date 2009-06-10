@@ -121,6 +121,14 @@ public interface ObsService extends OpenmrsService {
 	@Authorized(OpenmrsConstants.PRIV_VIEW_OBS)
 	public Obs getObs(Integer obsId) throws APIException;
 	
+	/**
+	 * Get Obs by its UUID
+	 * 
+	 * @param uuid
+	 * @return
+	 * @should find object given valid uuid
+	 * @should return null if no object found with given uuid 
+	 */
 	@Transactional(readOnly = true)
 	public Obs getObsByUuid(String uuid) throws APIException;
 	

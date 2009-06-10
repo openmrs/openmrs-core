@@ -30,6 +30,7 @@ import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.Person;
 import org.openmrs.PersonAddress;
+import org.openmrs.PersonAttribute;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.PersonName;
 import org.openmrs.Relationship;
@@ -337,5 +338,172 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		Set<Person> people = Context.getPersonService().getSimilarPeople("Given Middle Family", null, "M", "person");
 		Assert.assertEquals(3, people.size());
 	}
-	
+
+	/**
+	 * @see {@link PersonService#getPersonAddressByUuid(String)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should find object given valid uuid", method = "getPersonAddressByUuid(String)")
+	public void getPersonAddressByUuid_shouldFindObjectGivenValidUuid()
+			throws Exception {
+		String uuid = "3350d0b5-821c-4e5e-ad1d-a9bce331e118";
+		PersonAddress personAddress = Context.getPersonService().getPersonAddressByUuid(uuid);
+		Assert.assertEquals(2, (int)personAddress.getPersonAddressId());
+	}
+
+	/**
+	 * @see {@link PersonService#getPersonAddressByUuid(String)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should return null if no object found with given uuid", method = "getPersonAddressByUuid(String)")
+	public void getPersonAddressByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid()
+			throws Exception {
+		Assert.assertNull(Context.getPersonService().getPersonAddressByUuid("some invalid uuid"));
+	}
+
+	/**
+	 * @see {@link PersonService#getPersonAttributeByUuid(String)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should find object given valid uuid", method = "getPersonAttributeByUuid(String)")
+	public void getPersonAttributeByUuid_shouldFindObjectGivenValidUuid()
+			throws Exception {
+		String uuid = "0768f3da-b692-44b7-a33f-abf2c450474e";
+		PersonAttribute person = Context.getPersonService().getPersonAttributeByUuid(uuid);
+		Assert.assertEquals(1, (int)person.getPersonAttributeId());
+	}
+
+	/**
+	 * @see {@link PersonService#getPersonAttributeByUuid(String)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should return null if no object found with given uuid", method = "getPersonAttributeByUuid(String)")
+	public void getPersonAttributeByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid()
+			throws Exception {
+		Assert.assertNull(Context.getPersonService().getPersonAttributeByUuid("some invalid uuid"));
+	}
+
+	/**
+	 * @see {@link PersonService#getPersonAttributeTypeByUuid(String)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should find object given valid uuid", method = "getPersonAttributeTypeByUuid(String)")
+	public void getPersonAttributeTypeByUuid_shouldFindObjectGivenValidUuid()
+			throws Exception {
+		String uuid = "b3b6d540-a32e-44c7-91b3-292d97667518";
+		PersonAttributeType personAttributeType = Context.getPersonService().getPersonAttributeTypeByUuid(uuid);
+		Assert.assertEquals(1, (int)personAttributeType.getPersonAttributeTypeId());
+	}
+
+	/**
+	 * @see {@link PersonService#getPersonAttributeTypeByUuid(String)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should return null if no object found with given uuid", method = "getPersonAttributeTypeByUuid(String)")
+	public void getPersonAttributeTypeByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid()
+			throws Exception {
+		Assert.assertNull(Context.getPersonService().getPersonAttributeTypeByUuid("some invalid uuid"));
+	}
+
+	/**
+	 * @see {@link PersonService#getPersonByUuid(String)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should find object given valid uuid", method = "getPersonByUuid(String)")
+	public void getPersonByUuid_shouldFindObjectGivenValidUuid()
+			throws Exception {
+		String uuid = "ba1b19c2-3ed6-4f63-b8c0-f762dc8d7562";
+		Person person = Context.getPersonService().getPersonByUuid(uuid);
+		Assert.assertEquals(1, (int)person.getPersonId());
+	}
+
+	/**
+	 * @see {@link PersonService#getPersonByUuid(String)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should return null if no object found with given uuid", method = "getPersonByUuid(String)")
+	public void getPersonByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid()
+			throws Exception {
+		Assert.assertNull(Context.getPersonService().getPersonByUuid("some invalid uuid"));
+	}
+
+	/**
+	 * @see {@link PersonService#getPersonNameByUuid(String)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should find object given valid uuid", method = "getPersonNameByUuid(String)")
+	public void getPersonNameByUuid_shouldFindObjectGivenValidUuid()
+			throws Exception {
+		String uuid = "399e3a7b-6482-487d-94ce-c07bb3ca3cc7";
+		PersonName personName = Context.getPersonService().getPersonNameByUuid(uuid);
+		Assert.assertEquals(2, (int)personName.getPersonNameId());
+	}
+
+	/**
+	 * @see {@link PersonService#getPersonNameByUuid(String)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should return null if no object found with given uuid", method = "getPersonNameByUuid(String)")
+	public void getPersonNameByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid()
+			throws Exception {
+		Assert.assertNull(Context.getPersonService().getPersonNameByUuid("some invalid uuid"));
+	}
+
+	/**
+	 * @see {@link PersonService#getRelationshipByUuid(String)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should find object given valid uuid", method = "getRelationshipByUuid(String)")
+	public void getRelationshipByUuid_shouldFindObjectGivenValidUuid()
+			throws Exception {
+		String uuid = "c18717dd-5d78-4a0e-84fc-ee62c5f0676a";
+		Relationship relationship = Context.getPersonService().getRelationshipByUuid(uuid);
+		Assert.assertEquals(1,(int) relationship.getRelationshipId());
+	}
+
+	/**
+	 * @see {@link PersonService#getRelationshipByUuid(String)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should return null if no object found with given uuid", method = "getRelationshipByUuid(String)")
+	public void getRelationshipByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid()
+			throws Exception {
+		Assert.assertNull(Context.getPersonService().getRelationshipByUuid("some invalid uuid"));
+	}
+
+	/**
+	 * @see {@link PersonService#getRelationshipTypeByUuid(String)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should find object given valid uuid", method = "getRelationshipTypeByUuid(String)")
+	public void getRelationshipTypeByUuid_shouldFindObjectGivenValidUuid()
+			throws Exception {
+		String uuid = "6d9002ea-a96b-4889-af78-82d48c57a110";
+		RelationshipType relationshipType = Context.getPersonService().getRelationshipTypeByUuid(uuid);
+		Assert.assertEquals(1, (int)relationshipType.getRelationshipTypeId());
+	}
+
+	/**
+	 * @see {@link PersonService#getRelationshipTypeByUuid(String)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should return null if no object found with given uuid", method = "getRelationshipTypeByUuid(String)")
+	public void getRelationshipTypeByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid()
+			throws Exception {
+		Assert.assertNull(Context.getPersonService().getRelationshipTypeByUuid("some invalid uuid"));
+	}
 }
