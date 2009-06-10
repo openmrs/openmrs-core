@@ -317,7 +317,7 @@ public class ReportServiceImpl implements ReportService {
 			    OpenmrsConstants.GLOBAL_PROPERTY_REPORT_XML_MACROS);
 			Properties macros = new Properties();
 			if (macrosAsString != null) {
-				macros.load(new ByteArrayInputStream(macrosAsString.getBytes("UTF-8")));
+				OpenmrsUtil.loadProperties(macros, new ByteArrayInputStream(macrosAsString.getBytes("UTF-8")));
 			}
 			return macros;
 		}
@@ -332,7 +332,7 @@ public class ReportServiceImpl implements ReportService {
 	public void saveReportXmlMacros(Properties macros) {
 		try {
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
-			macros.store(out, null);
+			OpenmrsUtil.storeProperties(macros, out, null);
 			GlobalProperty prop = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_REPORT_XML_MACROS, out.toString());
 			Context.getAdministrationService().saveGlobalProperty(prop);
 		}

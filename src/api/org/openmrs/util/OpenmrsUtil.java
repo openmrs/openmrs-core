@@ -18,6 +18,7 @@ import java.beans.PropertyDescriptor;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -30,6 +31,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -1659,6 +1662,116 @@ public class OpenmrsUtil {
 		}
 		
 		return response;
+	}
+	
+	/**
+	 * Convenience method to replace Properties.store(), which isn't UTF-8 compliant
+	 * 
+	 * @param properties
+	 * @param file
+	 * @param comment
+	 */
+	public static void storeProperties(Properties properties, File file, String comment) {
+		OutputStream outStream = null;
+		try {
+			outStream = new FileOutputStream(file, true);
+			storeProperties(properties, outStream, comment);
+		}
+		catch (IOException ex) {
+			log.error("Unable to create file " + file.getAbsolutePath() + " in storeProperties routine.");
+		}
+		finally {
+			try {
+				if (outStream != null)
+					outStream.close();
+			}
+			catch (IOException ioe){
+				//pass
+			}
+		}
+	}
+	
+	/**
+	 * Convenience method to replace Properties.store(), which isn't UTF-8 compliant
+	 * 
+	 * @param properties
+	 * @param file
+	 * @param comment (which appears in comments in properties file)
+	 */
+	public static void storeProperties(Properties properties, OutputStream outStream, String comment) {
+		try {
+			OutputStreamWriter osw = new OutputStreamWriter(new BufferedOutputStream(outStream), "UTF-8");
+			Writer out = new BufferedWriter(osw);
+			if (comment != null)
+				out.write("\n#" + comment + "\n");
+			out.write("#" + new Date() + "\n");
+			for (Map.Entry<Object, Object> e : properties.entrySet()) {
+				out.write(e.getKey() + "=" + e.getValue() + "\n");
+			}
+			out.write("\n");
+			out.flush();
+			out.close();
+		}
+		catch (FileNotFoundException fnfe) {
+			log.error("target file not found" + fnfe);
+		}
+		catch (UnsupportedEncodingException ex) { //pass
+			log.error("unsupported encoding error hit" + ex);
+		}
+		catch (IOException ioex) {
+			log.error("IO exception encountered trying to append to properties file" + ioex);
+		}
+		
+	}
+	
+	/**
+	 * This method is a replacement for Properties.load(InputStream) so that we can load in utf-8
+	 * characters. Currently the load method expects the inputStream to point to a latin1 encoded
+	 * file.
+	 * 
+	 * @param props the properties object to write into
+	 * @param input the input stream to read from
+	 */
+	public static void loadProperties(Properties props, InputStream input) {
+		try {
+			BufferedReader reader = new BufferedReader(new InputStreamReader(input, "UTF-8"));
+			while (reader.ready()) {
+				String line = reader.readLine();
+				if (line.length() > 0 && line.charAt(0) != '#') {
+					int pos = line.indexOf("=");
+					if (pos > 0) {
+						String keyString = line.substring(0, pos);
+						String valueString = line.substring(pos + 1);
+						if (keyString != null && keyString.length() > 0) {
+							props.put(keyString, fixPropertiesValueString(valueString));
+						}
+					}
+				}
+			}
+			reader.close();
+		}
+		catch (UnsupportedEncodingException uee) {
+			log.error("Unsupported encoding used in properties file " + uee);
+		}
+		catch (IOException ioe) {
+			log.error("Unable to read properties from properties file " + ioe);
+		}
+	}
+	
+	/**
+	 * By default java will escape colons and equal signs when writing properites files. <br/>
+	 * <br/>
+	 * This method turns escaped colons into colons and escaped equal signs into just equal signs.
+	 * 
+	 * @param value the value portion of a properties file to fix
+	 * @return the value with escaped characters fixed
+	 */
+	private static String fixPropertiesValueString(String value) {
+		String returnString = value.replace("\n", "");
+		returnString = returnString.replace("\\:", ":");
+		returnString = returnString.replace("\\=", "=");
+		
+		return returnString;
 	}
 	
 	/**

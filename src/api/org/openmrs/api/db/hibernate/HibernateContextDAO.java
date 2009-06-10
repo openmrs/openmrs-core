@@ -34,6 +34,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.api.db.ContextDAO;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.Security;
 import org.springframework.orm.hibernate3.SessionFactoryUtils;
 import org.springframework.orm.hibernate3.SessionHolder;
@@ -329,7 +330,7 @@ public class HibernateContextDAO implements ContextDAO {
 		try {
 			Properties props = new Properties();
 			propertyStream = ConfigHelper.getResourceAsStream("/hibernate.default.properties");
-			props.load(propertyStream);
+			OpenmrsUtil.loadProperties(props, propertyStream);
 			
 			// add in all default properties that don't exist in the runtime 
 			// properties yet
@@ -337,10 +338,7 @@ public class HibernateContextDAO implements ContextDAO {
 				if (!runtimeProperties.containsKey(entry.getKey()))
 					runtimeProperties.put(entry.getKey(), entry.getValue());
 			}
-		}
-		catch (IOException e) {
-			log.fatal("Unable to load default hibernate properties", e);
-		}
+		} 
 		finally {
 			try {
 				propertyStream.close();
@@ -349,6 +347,8 @@ public class HibernateContextDAO implements ContextDAO {
 				// pass 
 			}
 		}
+			
+
 		
 	}
 	
