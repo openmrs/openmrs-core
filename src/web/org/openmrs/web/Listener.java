@@ -145,7 +145,7 @@ public final class Listener extends ContextLoaderListener {
 		/**
 		 * Load the core modules from the webapp coreModules folder
 		 */
-		loadCoreModules(servletContext);
+		loadAndStartCoreModules(servletContext);
 		
 		/**
 		 * Copy the module messages over into the webapp and perform web portion of startup
@@ -316,7 +316,7 @@ public final class Listener extends ContextLoaderListener {
 	 * Load the core modules This method assumes that the WebModuleUtil.startup() will be called
 	 * later for modules loaded here
 	 */
-	private void loadCoreModules(ServletContext servletContext) {
+	private void loadAndStartCoreModules(ServletContext servletContext) {
 		String path = servletContext.getRealPath("");
 		path += File.separator + "WEB-INF" + File.separator + "coreModules";
 		File folder = new File(path);
@@ -330,11 +330,15 @@ public final class Listener extends ContextLoaderListener {
 			return;
 		}
 		
+		// to know if we need to start any modules
+		boolean aModuleLoaded = false;
+		
 		// loop over the modules and load the modules that we can
 		for (File f : folder.listFiles()) {
 			if (!f.getName().startsWith(".")) { // ignore .svn folder and the like
 				try {
 					Module mod = ModuleFactory.loadModule(f, false);
+					aModuleLoaded = true;
 					log.debug("Loaded module: " + mod + " successfully");
 				}
 				catch (Throwable t) {
@@ -342,6 +346,9 @@ public final class Listener extends ContextLoaderListener {
 				}
 			}
 		}
+		
+		if (aModuleLoaded)
+			ModuleFactory.startModules();
 	}
 	
 	/**
