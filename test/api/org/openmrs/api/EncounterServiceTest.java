@@ -30,6 +30,7 @@ import java.util.Vector;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
@@ -1229,6 +1230,54 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		
 		Context.getEncounterService().saveEncounter(enc);
 		Assert.assertEquals(enc.getPatient(), existing.getPatient());
+	}
+
+	/**
+	 * @see {@link EncounterService#getEncounterByUuid(String)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should find object given valid uuid", method = "getEncounterByUuid(String)")
+	public void getEncounterByUuid_shouldFindObjectGivenValidUuid()
+			throws Exception {
+		String uuid = "6519d653-393b-4118-9c83-a3715b82d4ac";
+		Encounter encounter = Context.getEncounterService().getEncounterByUuid(uuid);
+		Assert.assertEquals(3, (int)encounter.getEncounterId());
+	}
+
+	/**
+	 * @see {@link EncounterService#getEncounterByUuid(String)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should return null if no object found with given uuid", method = "getEncounterByUuid(String)")
+	public void getEncounterByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid()
+			throws Exception {
+		Assert.assertNull(Context.getEncounterService().getEncounterByUuid("some invalid uuid"));
+	}
+
+	/**
+	 * @see {@link EncounterService#getEncounterTypeByUuid(String)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should find object given valid uuid", method = "getEncounterTypeByUuid(String)")
+	public void getEncounterTypeByUuid_shouldFindObjectGivenValidUuid()
+			throws Exception {
+		String uuid = "02c533ab-b74b-4ee4-b6e5-ffb6d09a0ac8";
+		EncounterType encounterType = Context.getEncounterService().getEncounterTypeByUuid(uuid);
+		Assert.assertEquals(6, (int)encounterType.getEncounterTypeId());
+	}
+
+	/**
+	 * @see {@link EncounterService#getEncounterTypeByUuid(String)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should return null if no object found with given uuid", method = "getEncounterTypeByUuid(String)")
+	public void getEncounterTypeByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid()
+			throws Exception {
+		Assert.assertNull(Context.getEncounterService().getEncounterTypeByUuid("some invalid uuid"));
 	}
 	
 }

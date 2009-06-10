@@ -27,6 +27,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.Concept;
 import org.openmrs.Field;
+import org.openmrs.FieldAnswer;
 import org.openmrs.FieldType;
 import org.openmrs.Form;
 import org.openmrs.FormField;
@@ -328,6 +329,112 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		Form dupForm = formService.duplicateForm(form);
 		Assert.assertNotNull(dupForm.getUuid());
 		Assert.assertNotSame(originalUUID, dupForm.getUuid());
+	}
+
+	/**
+	 * @see {@link FormService#getFieldAnswerByUuid(String)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should return null if no object found with given uuid", method = "getFieldAnswerByUuid(String)")
+	public void getFieldAnswerByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid()
+			throws Exception {
+		Assert.assertNull(Context.getFormService().getFieldAnswerByUuid("some invalid uuid"));
+	}
+
+	/**
+	 * @see {@link FormService#getFieldByUuid(String)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should find object given valid uuid", method = "getFieldByUuid(String)")
+	public void getFieldByUuid_shouldFindObjectGivenValidUuid()
+			throws Exception {
+		String uuid = "db016b7d-39a5-4911-89da-0eefbfef7cb2";
+		Field field = Context.getFormService().getFieldByUuid(uuid);
+		Assert.assertEquals(1, (int)field.getFieldId());
+	}
+
+	/**
+	 * @see {@link FormService#getFieldByUuid(String)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should return null if no object found with given uuid", method = "getFieldByUuid(String)")
+	public void getFieldByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid()
+			throws Exception {
+		Assert.assertNull(Context.getFormService().getFieldByUuid("some invalid uuid"));
+	}
+
+	/**
+	 * @see {@link FormService#getFieldTypeByUuid(String)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should find object given valid uuid", method = "getFieldTypeByUuid(String)")
+	public void getFieldTypeByUuid_shouldFindObjectGivenValidUuid()
+			throws Exception {
+		String uuid = "e7016b7d-39a5-4911-89da-0eefbfef7cb5";
+		FieldType fieldType = Context.getFormService().getFieldTypeByUuid(uuid);
+		Assert.assertEquals(2, (int)fieldType.getFieldTypeId());
+	}
+
+	/**
+	 * @see {@link FormService#getFieldTypeByUuid(String)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should return null if no object found with given uuid", method = "getFieldTypeByUuid(String)")
+	public void getFieldTypeByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid()
+			throws Exception {
+		Assert.assertNull(Context.getFormService().getFieldTypeByUuid("some invalid uuid"));
+	}
+
+	/**
+	 * @see {@link FormService#getFormByUuid(String)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should find object given valid uuid", method = "getFormByUuid(String)")
+	public void getFormByUuid_shouldFindObjectGivenValidUuid() throws Exception {
+		String uuid = "d9218f76-6c39-45f4-8efa-4c5c6c199f50";
+		Form form = Context.getFormService().getFormByUuid(uuid);
+		Assert.assertEquals(1, (int) form.getFormId());	
+	}
+
+	/**
+	 * @see {@link FormService#getFormByUuid(String)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should return null if no object found with given uuid", method = "getFormByUuid(String)")
+	public void getFormByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid()
+			throws Exception {
+		Assert.assertNull(Context.getFormService().getFormByUuid("some invalid uuid"));
+	}
+
+	/**
+	 * @see {@link FormService#getFormFieldByUuid(String)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should find object given valid uuid", method = "getFormFieldByUuid(String)")
+	public void getFormFieldByUuid_shouldFindObjectGivenValidUuid()
+			throws Exception {
+		String uuid = "1c822b7b-7840-463d-ba70-e0c8338a4c2d";
+		FormField formField = Context.getFormService().getFormFieldByUuid(uuid);
+		Assert.assertEquals(2, (int)formField.getFormFieldId());
+	}
+
+	/**
+	 * @see {@link FormService#getFormFieldByUuid(String)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should return null if no object found with given uuid", method = "getFormFieldByUuid(String)")
+	public void getFormFieldByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid()
+			throws Exception {
+		Assert.assertNull(Context.getFormService().getFormFieldByUuid("some invalid uuid"));
 	}
 	
 }

@@ -21,9 +21,12 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.openmrs.ConceptStateConversion;
 import org.openmrs.PatientProgram;
+import org.openmrs.PatientState;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
@@ -171,6 +174,150 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 			names.add(s.getConcept().getName().getName());
 		}
 		TestUtil.assertCollectionContentsEquals(Arrays.asList(new String[] { "SINGLE", "MARRIED" }), names);
+	}
+
+	/**
+	 * @see {@link ProgramWorkflowService#getConceptStateConversionByUuid(String)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should find object given valid uuid", method = "getConceptStateConversionByUuid(String)")
+	public void getConceptStateConversionByUuid_shouldFindObjectGivenValidUuid()
+			throws Exception {
+		String uuid = "6c72b064-506d-11de-80cb-001e378eb67e";
+		ConceptStateConversion conceptStateConversion = Context.getProgramWorkflowService().getConceptStateConversionByUuid(uuid);
+		Assert.assertEquals(1, (int)conceptStateConversion.getConceptStateConversionId());
+	}
+
+	/**
+	 * @see {@link ProgramWorkflowService#getConceptStateConversionByUuid(String)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should return null if no object found with given uuid", method = "getConceptStateConversionByUuid(String)")
+	public void getConceptStateConversionByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid()
+			throws Exception {
+		Assert.assertNull(Context.getProgramWorkflowService().getConceptStateConversionByUuid("some invalid uuid"));
+	}
+
+	/**
+	 * @see {@link ProgramWorkflowService#getPatientProgramByUuid(String)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should find object given valid uuid", method = "getPatientProgramByUuid(String)")
+	public void getPatientProgramByUuid_shouldFindObjectGivenValidUuid()
+			throws Exception {
+		String uuid = "2edf272c-bf05-4208-9f93-2fa213ed0415";
+		PatientProgram patientProgram = Context.getProgramWorkflowService().getPatientProgramByUuid(uuid);
+		Assert.assertEquals(2, (int)patientProgram.getPatientProgramId());
+	}
+
+	/**
+	 * @see {@link ProgramWorkflowService#getPatientProgramByUuid(String)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should return null if no object found with given uuid", method = "getPatientProgramByUuid(String)")
+	public void getPatientProgramByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid()
+			throws Exception {
+		Assert.assertNull(Context.getProgramWorkflowService().getPatientProgramByUuid("some invalid uuid"));
+	}
+
+	/**
+	 * @see {@link ProgramWorkflowService#getPatientStateByUuid(String)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should find object given valid uuid", method = "getPatientStateByUuid(String)")
+	public void getPatientStateByUuid_shouldFindObjectGivenValidUuid()
+			throws Exception {
+		String uuid = "ea89deaa-23cc-4840-92fe-63d199c37e4c";
+		PatientState patientState = Context.getProgramWorkflowService().getPatientStateByUuid(uuid);
+		Assert.assertEquals(1, (int) patientState.getPatientStateId());
+	}
+
+	/**
+	 * @see {@link ProgramWorkflowService#getPatientStateByUuid(String)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should return null if no object found with given uuid", method = "getPatientStateByUuid(String)")
+	public void getPatientStateByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid()
+			throws Exception {
+		Assert.assertNull(Context.getProgramWorkflowService().getPatientStateByUuid("some invalid uuid"));
+	}
+
+	/**
+	 * @see {@link ProgramWorkflowService#getProgramByUuid(String)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should find object given valid uuid", method = "getProgramByUuid(String)")
+	public void getProgramByUuid_shouldFindObjectGivenValidUuid()
+			throws Exception {
+		String uuid = "eae98b4c-e195-403b-b34a-82d94103b2c0";
+		Program program = Context.getProgramWorkflowService().getProgramByUuid(uuid);
+		Assert.assertEquals(1, (int)program.getProgramId());
+	}
+
+	/**
+	 * @see {@link ProgramWorkflowService#getProgramByUuid(String)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should return null if no object found with given uuid", method = "getProgramByUuid(String)")
+	public void getProgramByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid()
+			throws Exception {
+		Assert.assertNull(Context.getProgramWorkflowService().getProgramByUuid("some invalid uuid"));
+	}
+
+	/**
+	 * @see {@link ProgramWorkflowService#getStateByUuid(String)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should find object given valid uuid", method = "getStateByUuid(String)")
+	public void getStateByUuid_shouldFindObjectGivenValidUuid()
+			throws Exception {
+		String uuid = "92584cdc-6a20-4c84-a659-e035e45d36b0";
+		ProgramWorkflowState state = Context.getProgramWorkflowService().getStateByUuid(uuid);
+		Assert.assertEquals(1, (int)state.getProgramWorkflowStateId());
+	}
+
+	/**
+	 * @see {@link ProgramWorkflowService#getStateByUuid(String)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should return null if no object found with given uuid", method = "getStateByUuid(String)")
+	public void getStateByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid()
+			throws Exception {
+		Assert.assertNull(Context.getProgramWorkflowService().getStateByUuid("some invalid uuid"));
+	}
+
+	/**
+	 * @see {@link ProgramWorkflowService#getWorkflowByUuid(String)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should find object given valid uuid", method = "getWorkflowByUuid(String)")
+	public void getWorkflowByUuid_shouldFindObjectGivenValidUuid()
+			throws Exception {
+		String uuid = "84f0effa-dd73-46cb-b931-7cd6be6c5f81";
+		ProgramWorkflow programWorkflow = Context.getProgramWorkflowService().getWorkflowByUuid(uuid);
+		Assert.assertEquals(1, (int)programWorkflow.getProgramWorkflowId());
+	}
+
+	/**
+	 * @see {@link ProgramWorkflowService#getWorkflowByUuid(String)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should return null if no object found with given uuid", method = "getWorkflowByUuid(String)")
+	public void getWorkflowByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid()
+			throws Exception {
+		Assert.assertNull(Context.getProgramWorkflowService().getWorkflowByUuid("some invalid uuid"));
 	}
 	
 	//	/**

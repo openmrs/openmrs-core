@@ -71,6 +71,14 @@ public interface UserService extends OpenmrsService {
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_USERS })
 	public User getUser(Integer userId) throws APIException;
 	
+	/**
+	 * Get User by its UUID
+	 * 
+	 * @param uuid
+	 * @return
+	 * @should find object given valid uuid
+	 * @should return null if no object found with given uuid 
+	 */
 	@Transactional(readOnly = true)
 	public User getUserByUuid(String uuid) throws APIException;
 	
@@ -273,6 +281,14 @@ public interface UserService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	public Role getRole(String r) throws APIException;
 	
+	/**
+	 * Get Role by its UUID
+	 * 
+	 * @param uuid
+	 * @return
+	 * @should find object given valid uuid
+	 * @should return null if no object found with given uuid 
+	 */
 	@Transactional(readOnly = true)
 	public Role getRoleByUuid(String uuid) throws APIException;
 	
@@ -285,6 +301,14 @@ public interface UserService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	public Privilege getPrivilege(String p) throws APIException;
 	
+	/**
+	 * Get Privilege by its UUID
+	 * 
+	 * @param uuid
+	 * @return
+	 * @should find object given valid uuid
+	 * @should return null if no object found with given uuid 
+	 */
 	@Transactional(readOnly = true)
 	public Privilege getPrivilegeByUuid(String uuid) throws APIException;
 	

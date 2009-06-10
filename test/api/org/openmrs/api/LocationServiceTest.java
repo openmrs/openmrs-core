@@ -26,6 +26,7 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.LocationTag;
 import org.openmrs.api.context.Context;
@@ -610,6 +611,30 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		location.setDescription("Some description");
 		location.addTag(tagWithoutName);
 		Context.getLocationService().saveLocation(location);
+	}
+
+	/**
+	 * @see {@link LocationService#getLocationByUuid(String)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should find object given valid uuid", method = "getLocationByUuid(String)")
+	public void getLocationByUuid_shouldFindObjectGivenValidUuid()
+			throws Exception {
+		String uuid = "f08ba64b-ea57-4a41-b33c-9dfc59b0c60a";
+		Location location = Context.getLocationService().getLocationByUuid(uuid);
+		Assert.assertEquals(1, (int)location.getLocationId());
+	}
+
+	/**
+	 * @see {@link LocationService#getLocationByUuid(String)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should return null if no object found with given uuid", method = "getLocationByUuid(String)")
+	public void getLocationByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid()
+			throws Exception {
+		Assert.assertNull(Context.getLocationService().getLocationByUuid("some invalid uuid"));
 	}
 	
 }

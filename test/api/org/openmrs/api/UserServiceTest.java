@@ -396,5 +396,76 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		user.getNames().size();
 		person.getNames().size();
 	}
+
+	/**
+	 * @see {@link UserService#getPrivilegeByUuid(String)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should find object given valid uuid", method = "getPrivilegeByUuid(String)")
+	public void getPrivilegeByUuid_shouldFindObjectGivenValidUuid()
+			throws Exception {
+		executeDataSet(XML_FILENAME);
+		String uuid = "d979d066-15e6-467c-9d4b-cb575ef97f0f";
+		Privilege privilege = Context.getUserService().getPrivilegeByUuid(uuid);
+		Assert.assertEquals("Some Privilege", privilege.getPrivilege());
+	}
+
+	/**
+	 * @see {@link UserService#getPrivilegeByUuid(String)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should return null if no object found with given uuid", method = "getPrivilegeByUuid(String)")
+	public void getPrivilegeByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid()
+			throws Exception {
+		Assert.assertNull(Context.getUserService().getPrivilegeByUuid("some invalid uuid"));
+	}
+
+	/**
+	 * @see {@link UserService#getRoleByUuid(String)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should find object given valid uuid", method = "getRoleByUuid(String)")
+	public void getRoleByUuid_shouldFindObjectGivenValidUuid() throws Exception {
+		String uuid = "3480cb6d-c291-46c8-8d3a-96dc33d199fb";
+		Role role = Context.getUserService().getRoleByUuid(uuid);
+		Assert.assertEquals("Provider", role.getRole());
+	}
+
+	/**
+	 * @see {@link UserService#getRoleByUuid(String)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should return null if no object found with given uuid", method = "getRoleByUuid(String)")
+	public void getRoleByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid()
+			throws Exception {
+		Assert.assertNull(Context.getUserService().getRoleByUuid("some invalid uuid"));
+	}
+
+	/**
+	 * @see {@link UserService#getUserByUuid(String)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should find object given valid uuid", method = "getUserByUuid(String)")
+	public void getUserByUuid_shouldFindObjectGivenValidUuid() throws Exception {
+		String uuid = "df8ae447-6745-45be-b859-403241d9913c";
+		User user = Context.getUserService().getUserByUuid(uuid);
+		Assert.assertEquals(501, (int)user.getUserId());
+	}
+
+	/**
+	 * @see {@link UserService#getUserByUuid(String)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should return null if no object found with given uuid", method = "getUserByUuid(String)")
+	public void getUserByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid()
+			throws Exception {
+		Assert.assertNull(Context.getUserService().getUserByUuid("some invalid uuid"));
+	}
 	
 }

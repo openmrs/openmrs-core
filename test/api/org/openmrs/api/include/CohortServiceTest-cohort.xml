@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <dataset>
-  <cohort cohort_id="1" name="Example Cohort" description="First cohort that is now voided" creator="1" date_created="2005-01-01 00:00:00.0" voided="true" voided_by="1" date_voided="2005-01-01 00:00:00.0" void_reason="This is voided"/>
+  <cohort cohort_id="1" name="Example Cohort" description="First cohort that is now voided" creator="1" date_created="2005-01-01 00:00:00.0" voided="true" voided_by="1" date_voided="2005-01-01 00:00:00.0" void_reason="This is voided" uuid="h9a9m0i6-15e6-467c-9d4b-mbi7teu9lf0f"/>
   <cohort cohort_id="2" name="Example Cohort" description="Second cohort that has not been voided" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
   <cohort_member cohort_id="1" patient_id="2"/>
   <cohort_member cohort_id="1" patient_id="3"/>

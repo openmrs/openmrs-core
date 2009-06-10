@@ -274,6 +274,14 @@ public interface PersonService {
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_PERSON_ATTRIBUTE_TYPES })
 	public PersonAttributeType getPersonAttributeType(Integer typeId) throws APIException;
 	
+	/**
+	 * Get PersonAttributeType by its UUID
+	 * 
+	 * @param uuid
+	 * @return
+	 * @should find object given valid uuid
+	 * @should return null if no object found with given uuid 
+	 */
 	@Transactional(readOnly = true)
 	public PersonAttributeType getPersonAttributeTypeByUuid(String uuid);
 	
@@ -316,6 +324,14 @@ public interface PersonService {
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_RELATIONSHIPS })
 	public Relationship getRelationship(Integer relationshipId) throws APIException;
 	
+	/**
+	 * Get Relationship by its UUID
+	 * 
+	 * @param uuid
+	 * @return
+	 * @should find object given valid uuid
+	 * @should return null if no object found with given uuid 
+	 */
 	@Transactional(readOnly = true)
 	public Relationship getRelationshipByUuid(String uuid) throws APIException;
 	
@@ -422,6 +438,14 @@ public interface PersonService {
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_RELATIONSHIP_TYPES })
 	public RelationshipType getRelationshipType(Integer relationshipTypeId) throws APIException;
 	
+	/**
+	 * Get RelationshipType by its UUID
+	 * 
+	 * @param uuid
+	 * @return
+	 * @should find object given valid uuid
+	 * @should return null if no object found with given uuid 
+	 */
 	@Transactional(readOnly = true)
 	public RelationshipType getRelationshipTypeByUuid(String uuid) throws APIException;
 	
@@ -563,15 +587,47 @@ public interface PersonService {
 	@Authorized( { OpenmrsConstants.PRIV_PURGE_PERSONS })
 	public void purgePerson(Person person) throws APIException;
 	
+	/**
+	 * Get Person by its UUID
+	 * 
+	 * @param uuid
+	 * @return
+	 * @should find object given valid uuid
+	 * @should return null if no object found with given uuid 
+	 */
 	@Transactional(readOnly = true)
 	public Person getPersonByUuid(String uuid) throws APIException;
 	
+	/**
+	 * Get PersonAddress by its UUID
+	 * 
+	 * @param uuid
+	 * @return
+	 * @should find object given valid uuid
+	 * @should return null if no object found with given uuid 
+	 */
 	@Transactional(readOnly = true)
 	public PersonAddress getPersonAddressByUuid(String uuid) throws APIException;
 	
+	/**
+	 * Get PersonAttribute by its UUID
+	 * 
+	 * @param uuid
+	 * @return
+	 * @should find object given valid uuid
+	 * @should return null if no object found with given uuid 
+	 */
 	@Transactional(readOnly = true)
 	public PersonAttribute getPersonAttributeByUuid(String uuid) throws APIException;
 	
+	/**
+	 * Get PersonName by its UUID
+	 * 
+	 * @param uuid
+	 * @return
+	 * @should find object given valid uuid
+	 * @should return null if no object found with given uuid 
+	 */
 	@Transactional(readOnly = true)
 	public PersonName getPersonNameByUuid(String uuid) throws APIException;
 	

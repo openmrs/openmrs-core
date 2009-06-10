@@ -20,6 +20,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Cohort;
@@ -38,6 +39,8 @@ import org.openmrs.test.Verifies;
 public class CohortServiceTest extends BaseContextSensitiveTest {
 	
 	protected static final String CREATE_PATIENT_XML = "org/openmrs/api/include/PatientServiceTest-createPatient.xml";
+	
+	protected static final String COHORT_XML = "org/openmrs/api/include/CohortServiceTest-cohort.xml";
 	
 	protected static CohortService service = null;
 	
@@ -89,6 +92,31 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		assertNotNull(exampleCohort);
 		assertEquals(2, exampleCohort.size());
 		assertFalse(exampleCohort.isVoided());
+	}
+
+	/**
+	 * @see {@link CohortService#getCohortByUuid(String)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should find object given valid uuid", method = "getCohortByUuid(String)")
+	public void getCohortByUuid_shouldFindObjectGivenValidUuid()
+			throws Exception {
+		executeDataSet(COHORT_XML);
+		String uuid = "h9a9m0i6-15e6-467c-9d4b-mbi7teu9lf0f";
+		Cohort cohort = Context.getCohortService().getCohortByUuid(uuid);		
+		Assert.assertEquals(1, (int)cohort.getCohortId());
+	}
+
+	/**
+	 * @see {@link CohortService#getCohortByUuid(String)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should return null if no object found with given uuid", method = "getCohortByUuid(String)")
+	public void getCohortByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid()
+			throws Exception {
+		Assert.assertNull(Context.getCohortService().getCohortByUuid("some invalid uuid"));
 	}
 	
 }

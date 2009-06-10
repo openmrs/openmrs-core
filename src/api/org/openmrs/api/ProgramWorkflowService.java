@@ -177,9 +177,25 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	// PATIENT PROGRAM 
 	// **************************
 	
+	/**
+	 * Get Program by its UUID
+	 * 
+	 * @param uuid
+	 * @return
+	 * @should find object given valid uuid
+	 * @should return null if no object found with given uuid 
+	 */
 	@Transactional(readOnly = true)
 	public Program getProgramByUuid(String uuid);
 	
+	/**
+	 * Get PatientState by its UUID
+	 * 
+	 * @param uuid
+	 * @return
+	 * @should find object given valid uuid
+	 * @should return null if no object found with given uuid 
+	 */
 	@Transactional(readOnly = true)
 	public PatientState getPatientStateByUuid(String uuid);
 	
@@ -278,6 +294,14 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	// CONCEPT STATE CONVERSION
 	// **************************
 	
+	/**
+	 * Get ProgramWorkflow by its UUID
+	 * 
+	 * @param uuid
+	 * @return
+	 * @should find object given valid uuid
+	 * @should return null if no object found with given uuid 
+	 */
 	@Transactional(readOnly = true)
 	public ProgramWorkflow getWorkflowByUuid(String uuid);
 	
@@ -452,6 +476,14 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	@Authorized( { OpenmrsConstants.PRIV_MANAGE_PROGRAMS })
 	public void voidWorkflow(ProgramWorkflow programWorkflow, String reason) throws APIException;
 	
+	/**
+	 * Get ProgramWorkflowState by its UUID
+	 * 
+	 * @param uuid
+	 * @return
+	 * @should find object given valid uuid
+	 * @should return null if no object found with given uuid 
+	 */
 	@Transactional(readOnly = true)
 	public ProgramWorkflowState getStateByUuid(String uuid);
 	
@@ -734,6 +766,14 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	public void changeToState(PatientProgram patientProgram, ProgramWorkflow workflow, ProgramWorkflowState state,
 	                          Date onDate) throws APIException;
 	
+	/**
+	 * Get PatientProgram by its UUID
+	 * 
+	 * @param uuid
+	 * @return
+	 * @should find object given valid uuid
+	 * @should return null if no object found with given uuid 
+	 */
 	@Transactional(readOnly = true)
 	public PatientProgram getPatientProgramByUuid(String uuid);
 	
@@ -821,6 +861,14 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 */
 	public void deleteConceptStateConversion(ConceptStateConversion csc) throws APIException;
 	
+	/**
+	 * Get ConceptStateConversion by its UUID
+	 * 
+	 * @param uuid
+	 * @return
+	 * @should find object given valid uuid
+	 * @should return null if no object found with given uuid 
+	 */
 	@Transactional(readOnly = true)
 	public ConceptStateConversion getConceptStateConversionByUuid(String uuid);
 }
