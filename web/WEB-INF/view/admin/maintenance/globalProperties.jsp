@@ -7,14 +7,67 @@
 <%@ include file="localHeader.jsp" %>
 
 <script type="text/javascript" src="<c:url value="/scripts/jquery/jquery-1.3.2.min.js"/>"></script>
-<script type="text/javascript" src="<c:url value="/scripts/jquery/jquery-ui-1.7.1/jquery-ui-1.7.1.core.min.js"/>"></script>
-<script type="text/javascript" src="<c:url value="/scripts/jquery/jquery-ui-1.7.1/jquery-ui-1.7.1.tabs.min.js"/>"></script>
+<script type="text/javascript" src="<c:url value="/scripts/jquery/jquery-ui-1.7.2/jquery-ui-1.7.2.core.min.js"/>"></script>
+<script type="text/javascript" src="<c:url value="/scripts/jquery/jquery-ui-1.7.2/jquery-ui-1.7.2.tabs.min.js"/>"></script>
+<script type="text/javascript" src="<c:url value="/scripts/jquery/jquery-ui-1.7.2/jquery-ui-1.7.2.dialog.min.js"/>"></script>
+
+<style type="text/css">
+#dialog {
+	padding: 1em 2ex;
+}
+.record {
+	margin: 1em 2ex;
+}
+.record label {
+	float: left;
+	width: 25ex;
+}
+.ui-dialog {
+	background: #fff;
+	border: 1px solid #ccc;
+}
+.ui-dialog-titlebar {
+	float: left;
+}
+.ui-dialog-titlebar-close {
+	background: url("<c:url value="/images/plug_arrow.png"/>");
+	float: right;
+	width: 16px;
+	height: 16px;
+}
+.ui-icon {
+	display: none;
+}
+</style>
+
 <script type="text/javascript">
-$(document).ready(function(){
+$(function() {
 	$("#properties-container").tabs();
+
 	$("#system-properties-link").click(function () {
 		$(".namespace-item").toggle();
 	});
+
+	$("#dialog").dialog({
+		bgiframe: true,
+		autoOpen: false,
+		modal: true,
+		buttons: {
+			'Create property': function() {
+				$(this).dialog('close');
+			},
+			'Cancel': function() {
+				$(this).dialog('close');
+			}
+		},
+		close: function() {
+		}
+	});
+	
+	$('#add-global-property').click(function() {
+		$('#dialog').dialog('open');
+	});
+	
 });
 </script>
 
@@ -104,7 +157,30 @@ img {
 }
 </style>
 
+<div id="dialog" title="Add new global property">
+	<form>
+		<div class="record">
+			<label for="name">Namespace</label>
+			<input type="text" name="namespace" id="namespace" />
+		</div>
+		<div class="record">
+			<label for="email">Property name</label>
+			<input type="text" name="propertyName" id="propertyName" />
+		</div>
+		<div class="record">
+			<label for="password">Property value</label>
+			<input type="password" name="propertyValue" id="propertyValue" />
+		</div>
+		<div class="record">
+			<label for="password">Property type</label>
+			<input type="password" name="propertyType" id="propertyType" />
+		</div>
+	</form>
+</div>
+
 <div id="properties-container">
+
+<button id="add-global-property">Add property</button>
 
 <ul id="tabs-pane">
 	<li class="all-properties-item"><a href="#all-properties-pane"><spring:message code="GlobalProperty.all"/></a></li>
