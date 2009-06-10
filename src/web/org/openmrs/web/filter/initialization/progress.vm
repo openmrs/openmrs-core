@@ -1,0 +1,26 @@
+#parse($headerTemplate)
+	<script type="text/javascript" language="JavaScript">
+ 		function next()
+ 		{
+ 			document.forms[0].submit();
+ 		}
+		window.setTimeout("next()",1000);
+	</script>
+	
+	<form method="post" autocomplete="off">
+		<input type="hidden" name="page" value="progress.vm" /> 
+		<input type="hidden" name="actionCounter" value="${actionCounter}" /> 
+        <div class="content">
+        	${lastActionMessage}
+        	<br /><br />
+        	Number of actions completed so far: ${actionCounter}
+        	<br /><br />
+			Server log file output:
+			<div>
+				#foreach ($logLine in $logLines)
+					${logLine}<br />
+				#end
+			</div>
+        </div>
+	</form>
+#parse($footerTemplate)

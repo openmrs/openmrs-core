@@ -110,11 +110,11 @@ public final class Listener extends ContextLoaderListener {
 			
 			Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
 			
-			// must be done after the runtime properties are
-			// found but before the database update is done
-			copyCustomizationIntoWebapp(servletContext, props);
-			
 			if (!setupNeeded()) {
+				// must be done after the runtime properties are
+				// found but before the database update is done
+				copyCustomizationIntoWebapp(servletContext, props);
+				
 				super.contextInitialized(event);
 				startOpenmrs(event.getServletContext());
 			}

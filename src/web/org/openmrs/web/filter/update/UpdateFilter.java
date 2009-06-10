@@ -149,7 +149,7 @@ public class UpdateFilter extends StartupFilter {
 			}
 			
 			try {
-				DatabaseUpdater.update();
+				DatabaseUpdater.executeChangelog();
 			}
 			catch (InputRequiredException inputRequired) {
 				// the user would be stepped through the questions returned here.
