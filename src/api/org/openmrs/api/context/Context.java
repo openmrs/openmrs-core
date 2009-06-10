@@ -997,7 +997,7 @@ public class Context {
 		// TODO make sure the user has "permission" to run these updates by checking the runtime property for auto updating
 		
 		// this must be the first thing run in case it changes results database mappings
-		DatabaseUpdater.update();
+		DatabaseUpdater.executeChangelog();
 		
 		try {
 			Context.addProxyPrivilege("");

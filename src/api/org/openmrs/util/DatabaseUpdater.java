@@ -13,8 +13,6 @@
  */
 package org.openmrs.util;
 
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -36,7 +34,15 @@ import liquibase.FileSystemFileOpener;
 import liquibase.Liquibase;
 import liquibase.database.Database;
 import liquibase.database.DatabaseFactory;
+import liquibase.exception.LiquibaseException;
+import liquibase.exception.LockException;
+import liquibase.lock.LockHandler;
+import liquibase.parser.ChangeLogIterator;
 import liquibase.parser.ChangeLogParser;
+import liquibase.parser.filter.ContextChangeSetFilter;
+import liquibase.parser.filter.DbmsChangeSetFilter;
+import liquibase.parser.filter.ShouldRunChangeSetFilter;
+import liquibase.parser.visitor.UpdateVisitor;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -69,24 +75,144 @@ public class DatabaseUpdater {
 	 * @see #update(Map)
 	 * @see #executeChangelog(String, Map)
 	 */
-	public static void update() throws DatabaseUpdateException, InputRequiredException {
-		update(null);
+	public static void executeChangelog() throws DatabaseUpdateException, InputRequiredException {
+		executeChangelog(null, null);
 	}
 	
 	/**
 	 * Run changesets on database using Liquibase to get the database up to the most recent version
 	 * 
+	 * @param changelog the liquibase changelog file to use (or null to use the default file)
 	 * @param userInput nullable map from question to user answer. Used if a call to update(null)
 	 *            threw an {@link InputRequiredException}
+	 * @throws DatabaseUpdateException
+	 * @throws InputRequiredException
+	 */
+	public static void executeChangelog(String changelog, Map<String, Object> userInput) throws DatabaseUpdateException,
+	                                                                                    InputRequiredException {
+		
+		// a call back that, well, does nothing
+		ChangeSetExecutorCallback doNothingCallback = new ChangeSetExecutorCallback() {
+			
+			public void executing(ChangeSet changeSet, int numChangeSetsToRun) {
+			}
+			
+		};
+		
+		executeChangelog(changelog, userInput, doNothingCallback);
+	}
+	
+	/**
+	 * Interface used for callbacks when updating the database. Implement this interface and pass it
+	 * to {@link DatabaseUpdater#executeChangelog(String, Map, ChangeSetExecutorCallback)}
+	 */
+	public interface ChangeSetExecutorCallback {
+		
+		/**
+		 * This method is called after each changeset is executed.
+		 * 
+		 * @param changeSet the liquibase changeset that was just run
+		 * @param numChangeSetsToRun the total number of changesets in the current file
+		 */
+		public void executing(ChangeSet changeSet, int numChangeSetsToRun);
+	}
+	
+	/**
+	 * Executes the given changelog file. This file is assumed to be on the classpath. If no file is
+	 * given, the default {@link #CHANGE_LOG_FILE} is ran.
+	 * 
+	 * @param changelog The string filename of a liquibase changelog xml file to run
+	 * @param userInput nullable map from question to user answer. Used if a call to
+	 *            executeChangelog(<String>, null) threw an {@link InputRequiredException}
 	 * @throws InputRequiredException if the changelog file requirest some sort of user input. The
 	 *             error object will list of the user prompts and type of data for each prompt
 	 */
-	public static void update(Map<String, Object> userInput) throws DatabaseUpdateException, InputRequiredException {
-		log.debug("update database");
+	public static void executeChangelog(String changelog, Map<String, Object> userInput, ChangeSetExecutorCallback callback)
+	                                                                                                                        throws DatabaseUpdateException,
+	                                                                                                                        InputRequiredException {
+		log.debug("installing the tables into the database");
 		
-		executeChangelog(CHANGE_LOG_FILE, userInput);
+		if (changelog == null)
+			changelog = CHANGE_LOG_FILE;
 		
-		log.debug("update database finished");
+		try {
+			executeChangelog(changelog, CONTEXT, userInput, callback);
+		}
+		catch (Exception e) {
+			throw new DatabaseUpdateException("There was an error while updating the database to the latest. file: "
+			        + changelog, e);
+		}
+	}
+	
+	/**
+	 * This code was borrowed from the liquibase jar so that we can call the given callback
+	 * function.
+	 * 
+	 * @param changeLogFile the file to execute
+	 * @param contexts the liquibase changeset context
+	 * @param userInput answers given by the user
+	 * @param callback the function to call after every changeset
+	 * @throws Exception
+	 */
+	public static void executeChangelog(String changeLogFile, String contexts, Map<String, Object> userInput,
+	                                    ChangeSetExecutorCallback callback) throws Exception {
+		final class OpenmrsUpdateVisitor extends UpdateVisitor {
+			
+			private ChangeSetExecutorCallback callback;
+			
+			private int numChangeSetsToRun;
+			
+			public OpenmrsUpdateVisitor(Database database, ChangeSetExecutorCallback callback, int numChangeSetsToRun) {
+				super(database);
+				this.callback = callback;
+				this.numChangeSetsToRun = numChangeSetsToRun;
+			}
+			
+			@Override
+			public void visit(ChangeSet changeSet, Database database) throws LiquibaseException {
+				callback.executing(changeSet, numChangeSetsToRun);
+				super.visit(changeSet, database);
+			}
+		}
+		
+		Liquibase liquibase = getLiquibase(changeLogFile);
+		int numChangeSetsToRun = liquibase.listUnrunChangeSets(contexts).size();
+		Database database = liquibase.getDatabase();
+		
+		LockHandler lockHandler = LockHandler.getInstance(database);
+		lockHandler.waitForLock();
+		
+		try {
+			database.checkDatabaseChangeLogTable();
+			
+			FileOpener clFO = new ClassLoaderFileOpener();
+			FileOpener fsFO = new FileSystemFileOpener();
+			
+			DatabaseChangeLog changeLog = new ChangeLogParser(new HashMap<String, Object>()).parse(changeLogFile,
+			    new CompositeFileOpener(clFO, fsFO));
+			changeLog.validate(database);
+			ChangeLogIterator logIterator = new ChangeLogIterator(changeLog, new ShouldRunChangeSetFilter(database),
+			        new ContextChangeSetFilter(contexts), new DbmsChangeSetFilter(database));
+			
+			logIterator.run(new OpenmrsUpdateVisitor(database, callback, numChangeSetsToRun), database);
+		}
+		catch (LiquibaseException e) {
+			throw e;
+		}
+		finally {
+			try {
+				lockHandler.releaseLock();
+			}
+			catch (LockException e) {
+				log.error("Could not release lock", e);
+			}
+			try {
+				database.getConnection().close();
+			}
+			catch (Throwable t) {
+				//pass
+			}
+		}
 	}
 	
 	/**
@@ -115,42 +241,6 @@ public class DatabaseUpdater {
 		
 		return "true".equals(allowAutoUpdate);
 		
-	}
-	
-	/**
-	 * Executes the given changelog file. This file is assumed to be on the classpath. If no file is
-	 * given, the default {@link #CHANGE_LOG_FILE} is ran.
-	 * 
-	 * @param changelog The string filename of a liquibase changelog xml file to run
-	 * @param userInput nullable map from question to user answer. Used if a call to
-	 *            executeChangelog(<String>, null) threw an {@link InputRequiredException}
-	 * @throws InputRequiredException if the changelog file requirest some sort of user input. The
-	 *             error object will list of the user prompts and type of data for each prompt
-	 */
-	public static void executeChangelog(String changelog, Map<String, Object> userInput) throws DatabaseUpdateException,
-	                                                                                    InputRequiredException {
-		log.debug("installing the tables into the database");
-		
-		if (changelog == null)
-			changelog = CHANGE_LOG_FILE;
-		
-		Liquibase liquibase = null;
-		try {
-			liquibase = getLiquibase(changelog);
-			liquibase.update(CONTEXT);
-		}
-		catch (Exception e) {
-			throw new DatabaseUpdateException("There was an error while updating the database to the latest. file: "
-			        + changelog, e);
-		}
-		finally {
-			try {
-				liquibase.getDatabase().getConnection().close();
-			}
-			catch (Throwable t) {
-				//pass
-			}
-		}
 	}
 	
 	/**

@@ -44,7 +44,7 @@
 		DEBUG == log all setters & log all getters & log execution time
 	-->
 	<logger name="org.openmrs.api">
-		<level value="WARN" />
+		<level value="INFO" />
 	</logger>
 
 	<logger name="org.apache.fop">
