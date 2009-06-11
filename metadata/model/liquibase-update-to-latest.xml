@@ -867,356 +867,963 @@
 		</createIndex>
 	</changeSet>
 	
-	<changeSet id="20090402-1515" author="bwolfe">
-		<comment>
-			Adding "uuid" column to all tables.  (This may take a while on large databases)
-		</comment>
-		
-		<!-- "UUID" is translated by liquibase into the appropriate column type -->
-		
+	<changeSet id="20090402-1515-cohort" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><columnExists tableName="cohort" columnName="uuid"/></not></preConditions>
+		<comment>Adding "uuid" column to cohort table</comment>
 		<addColumn tableName="cohort">
 			<column name="uuid" type="UUID" />
 		</addColumn>
+	</changeSet>
+	<changeSet id="20090402-1515-concept" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><columnExists tableName="concept" columnName="uuid"/></not></preConditions>
+		<comment>Adding "uuid" column to concept table</comment>
 		<addColumn tableName="concept">
 			<column name="uuid" type="UUID" />
 		</addColumn>
+	</changeSet>
+	<changeSet id="20090402-1515-concept_answer" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><columnExists tableName="concept_answer" columnName="uuid"/></not></preConditions>
+		<comment>Adding "uuid" column to concept_answer table</comment>
 		<addColumn tableName="concept_answer">
 			<column name="uuid" type="UUID" />
 		</addColumn>
+	</changeSet>
+	<changeSet id="20090402-1515-concept_class" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><columnExists tableName="concept_class" columnName="uuid"/></not></preConditions>
+		<comment>Adding "uuid" column to concept_class table</comment>
 		<addColumn tableName="concept_class">
 			<column name="uuid" type="UUID" />
 		</addColumn>
+	</changeSet>
+	<changeSet id="20090402-1515-concept_datatype" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><columnExists tableName="concept_datatype" columnName="uuid"/></not></preConditions>
+		<comment>Adding "uuid" column to concept_datatype table</comment>
 		<addColumn tableName="concept_datatype">
 			<column name="uuid" type="UUID" />
 		</addColumn>
+	</changeSet>
+	<changeSet id="20090402-1515-concept_description" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><columnExists tableName="concept_description" columnName="uuid"/></not></preConditions>
+		<comment>Adding "uuid" column to concept_description table</comment>
 		<addColumn tableName="concept_description">
 			<column name="uuid" type="UUID" />
 		</addColumn>
+	</changeSet>
+	<changeSet id="20090402-1515-concept_map" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><columnExists tableName="concept_map" columnName="uuid"/></not></preConditions>
+		<comment>Adding "uuid" column to concept_map table</comment>
 		<addColumn tableName="concept_map">
 			<column name="uuid" type="UUID" />
 		</addColumn>
+	</changeSet>
+	<changeSet id="20090402-1515-concept_name" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><columnExists tableName="concept_name" columnName="uuid"/></not></preConditions>
+		<comment>Adding "uuid" column to concept_name table</comment>
 		<addColumn tableName="concept_name">
 			<column name="uuid" type="UUID" />
 		</addColumn>
+	</changeSet>
+	<changeSet id="20090402-1515-concept_name_tag" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><columnExists tableName="concept_name_tag" columnName="uuid"/></not></preConditions>
+		<comment>Adding "uuid" column to concept_name_tag table</comment>
 		<addColumn tableName="concept_name_tag">
 			<column name="uuid" type="UUID" />
 		</addColumn>
+	</changeSet>
+	<changeSet id="20090402-1515-concept_proposal" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><columnExists tableName="concept_proposal" columnName="uuid"/></not></preConditions>
+		<comment>Adding "uuid" column to concept_proposal table</comment>
 		<addColumn tableName="concept_proposal">
 			<column name="uuid" type="UUID" />
 		</addColumn>
+	</changeSet>
+	<changeSet id="20090402-1515-concept_set" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><columnExists tableName="concept_set" columnName="uuid"/></not></preConditions>
+		<comment>Adding "uuid" column to concept_set table</comment>
 		<addColumn tableName="concept_set">
 			<column name="uuid" type="UUID" />
 		</addColumn>
+	</changeSet>
+	<changeSet id="20090402-1515-concept_source" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><columnExists tableName="concept_source" columnName="uuid"/></not></preConditions>
+		<comment>Adding "uuid" column to concept_source table</comment>
 		<addColumn tableName="concept_source">
 			<column name="uuid" type="UUID" />
 		</addColumn>
+	</changeSet>
+	<changeSet id="20090402-1515-concept_state_conversion" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><columnExists tableName="concept_state_conversion" columnName="uuid"/></not></preConditions>
+		<comment>Adding "uuid" column to concept_state_conversion table</comment>
 		<addColumn tableName="concept_state_conversion">
 			<column name="uuid" type="UUID" />
 		</addColumn>
+	</changeSet>
+	<changeSet id="20090402-1515-drug" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><columnExists tableName="drug" columnName="uuid"/></not></preConditions>
+		<comment>Adding "uuid" column to drug table</comment>
 		<addColumn tableName="drug">
 			<column name="uuid" type="UUID" />
 		</addColumn>
+	</changeSet>
+	<changeSet id="20090402-1515-encounter" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><columnExists tableName="encounter" columnName="uuid"/></not></preConditions>
+		<comment>Adding "uuid" column to encounter table</comment>
 		<addColumn tableName="encounter">
 			<column name="uuid" type="UUID" />
 		</addColumn>
+	</changeSet>
+	<changeSet id="20090402-1515-encounter_type" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><columnExists tableName="encounter_type" columnName="uuid"/></not></preConditions>
+		<comment>Adding "uuid" column to encounter_type table</comment>
 		<addColumn tableName="encounter_type">
 			<column name="uuid" type="UUID" />
 		</addColumn>
+	</changeSet>
+	<changeSet id="20090402-1515-field" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><columnExists tableName="field" columnName="uuid"/></not></preConditions>
+		<comment>Adding "uuid" column to field table</comment>
 		<addColumn tableName="field">
 			<column name="uuid" type="UUID" />
 		</addColumn>
+	</changeSet>
+	<changeSet id="20090402-1515-field_answer" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><columnExists tableName="field_answer" columnName="uuid"/></not></preConditions>
+		<comment>Adding "uuid" column to field_answer table</comment>
 		<addColumn tableName="field_answer">
 			<column name="uuid" type="UUID" />
 		</addColumn>
+	</changeSet>
+	<changeSet id="20090402-1515-field_type" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><columnExists tableName="field_type" columnName="uuid"/></not></preConditions>
+		<comment>Adding "uuid" column to field_type table</comment>
 		<addColumn tableName="field_type">
 			<column name="uuid" type="UUID" />
 		</addColumn>
+	</changeSet>
+	<changeSet id="20090402-1515-form" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><columnExists tableName="form" columnName="uuid"/></not></preConditions>
+		<comment>Adding "uuid" column to form table</comment>
 		<addColumn tableName="form">
 			<column name="uuid" type="UUID" />
 		</addColumn>
+	</changeSet>
+	<changeSet id="20090402-1515-form_field" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><columnExists tableName="form_field" columnName="uuid"/></not></preConditions>
+		<comment>Adding "uuid" column to form_field table</comment>
 		<addColumn tableName="form_field">
 			<column name="uuid" type="UUID" />
 		</addColumn>
+	</changeSet>
+	<changeSet id="20090402-1515-global_property" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><columnExists tableName="global_property" columnName="uuid"/></not></preConditions>
+		<comment>Adding "uuid" column to global_property table</comment>
 		<addColumn tableName="global_property">
 			<column name="uuid" type="UUID" />
 		</addColumn>
+	</changeSet>
+	<changeSet id="20090402-1515-hl7_in_archive" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><columnExists tableName="hl7_in_archive" columnName="uuid"/></not></preConditions>
+		<comment>Adding "uuid" column to hl7_in_archive table</comment>
 		<addColumn tableName="hl7_in_archive">
 			<column name="uuid" type="UUID" />
 		</addColumn>
+	</changeSet>
+	<changeSet id="20090402-1515-hl7_in_error" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><columnExists tableName="hl7_in_error" columnName="uuid"/></not></preConditions>
+		<comment>Adding "uuid" column to hl7_in_error table</comment>
 		<addColumn tableName="hl7_in_error">
 			<column name="uuid" type="UUID" />
 		</addColumn>
+	</changeSet>
+	<changeSet id="20090402-1515-hl7_in_queue" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><columnExists tableName="hl7_in_queue" columnName="uuid"/></not></preConditions>
+		<comment>Adding "uuid" column to hl7_in_queue table</comment>
 		<addColumn tableName="hl7_in_queue">
 			<column name="uuid" type="UUID" />
 		</addColumn>
+	</changeSet>
+	<changeSet id="20090402-1515-hl7_source" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><columnExists tableName="hl7_source" columnName="uuid"/></not></preConditions>
+		<comment>Adding "uuid" column to hl7_source table</comment>
 		<addColumn tableName="hl7_source">
 			<column name="uuid" type="UUID" />
 		</addColumn>
+	</changeSet>
+	<changeSet id="20090402-1515-location" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><columnExists tableName="location" columnName="uuid"/></not></preConditions>
+		<comment>Adding "uuid" column to location table</comment>
 		<addColumn tableName="location">
 			<column name="uuid" type="UUID" />
 		</addColumn>
+	</changeSet>
+	<changeSet id="20090402-1515-location_tag" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><columnExists tableName="location_tag" columnName="uuid"/></not></preConditions>
+		<comment>Adding "uuid" column to location_tag table</comment>
 		<addColumn tableName="location_tag">
 			<column name="uuid" type="UUID" />
 		</addColumn>
+	</changeSet>
+	<changeSet id="20090402-1515-note" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><columnExists tableName="note" columnName="uuid"/></not></preConditions>
+		<comment>Adding "uuid" column to note table</comment>
 		<addColumn tableName="note">
 			<column name="uuid" type="UUID" />
 		</addColumn>
+	</changeSet>
+	<changeSet id="20090402-1515-notification_alert" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><columnExists tableName="notification_alert" columnName="uuid"/></not></preConditions>
+		<comment>Adding "uuid" column to notification_alert table</comment>
 		<addColumn tableName="notification_alert">
 			<column name="uuid" type="UUID" />
 		</addColumn>
+	</changeSet>
+	<changeSet id="20090402-1515-notification_template" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><columnExists tableName="notification_template" columnName="uuid"/></not></preConditions>
+		<comment>Adding "uuid" column to notification_template table</comment>
 		<addColumn tableName="notification_template">
 			<column name="uuid" type="UUID" />
 		</addColumn>
+	</changeSet>
+	<changeSet id="20090402-1515-obs" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><columnExists tableName="obs" columnName="uuid"/></not></preConditions>
+		<comment>Adding "uuid" column to obs table</comment>
 		<addColumn tableName="obs">
 			<column name="uuid" type="UUID" />
 		</addColumn>
+	</changeSet>
+	<changeSet id="20090402-1515-order_type" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><columnExists tableName="order_type" columnName="uuid"/></not></preConditions>
+		<comment>Adding "uuid" column to order_type table</comment>
 		<addColumn tableName="order_type">
 			<column name="uuid" type="UUID" />
 		</addColumn>
+	</changeSet>
+	<changeSet id="20090402-1515-orders" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><columnExists tableName="orders" columnName="uuid"/></not></preConditions>
+		<comment>Adding "uuid" column to orders table</comment>
 		<addColumn tableName="orders">
 			<column name="uuid" type="UUID" />
 		</addColumn>
+	</changeSet>
+	<changeSet id="20090402-1515-patient_identifier" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><columnExists tableName="patient_identifier" columnName="uuid"/></not></preConditions>
+		<comment>Adding "uuid" column to patient_identifier table</comment>
 		<addColumn tableName="patient_identifier">
 			<column name="uuid" type="UUID" />
 		</addColumn>
+	</changeSet>
+	<changeSet id="20090402-1515-patient_identifier_type" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><columnExists tableName="patient_identifier_type" columnName="uuid"/></not></preConditions>
+		<comment>Adding "uuid" column to patient_identifier_type table</comment>
 		<addColumn tableName="patient_identifier_type">
 			<column name="uuid" type="UUID" />
 		</addColumn>
+	</changeSet>
+	<changeSet id="20090402-1515-patient_program" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><columnExists tableName="patient_program" columnName="uuid"/></not></preConditions>
+		<comment>Adding "uuid" column to patient_program table</comment>
 		<addColumn tableName="patient_program">
 			<column name="uuid" type="UUID" />
 		</addColumn>
+	</changeSet>
+	<changeSet id="20090402-1515-patient_state" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><columnExists tableName="patient_state" columnName="uuid"/></not></preConditions>
+		<comment>Adding "uuid" column to patient_state table</comment>
 		<addColumn tableName="patient_state">
 			<column name="uuid" type="UUID" />
 		</addColumn>
+	</changeSet>
+	<changeSet id="20090402-1515-person" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><columnExists tableName="person" columnName="uuid"/></not></preConditions>
+		<comment>Adding "uuid" column to person table</comment>
 		<addColumn tableName="person">
 			<column name="uuid" type="UUID" />
 		</addColumn>
+	</changeSet>
+	<changeSet id="20090402-1515-person_address" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><columnExists tableName="person_address" columnName="uuid"/></not></preConditions>
+		<comment>Adding "uuid" column to person_address table</comment>
 		<addColumn tableName="person_address">
 			<column name="uuid" type="UUID" />
 		</addColumn>
+	</changeSet>
+	<changeSet id="20090402-1515-person_attribute" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><columnExists tableName="person_attribute" columnName="uuid"/></not></preConditions>
+		<comment>Adding "uuid" column to person_attribute table</comment>
 		<addColumn tableName="person_attribute">
 			<column name="uuid" type="UUID" />
 		</addColumn>
+	</changeSet>
+	<changeSet id="20090402-1515-person_attribute_type" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><columnExists tableName="person_attribute_type" columnName="uuid"/></not></preConditions>
+		<comment>Adding "uuid" column to person_attribute_type table</comment>
 		<addColumn tableName="person_attribute_type">
 			<column name="uuid" type="UUID" />
 		</addColumn>
+	</changeSet>
+	<changeSet id="20090402-1515-person_name" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><columnExists tableName="person_name" columnName="uuid"/></not></preConditions>
+		<comment>Adding "uuid" column to person_name table</comment>
 		<addColumn tableName="person_name">
 			<column name="uuid" type="UUID" />
 		</addColumn>
+	</changeSet>
+	<changeSet id="20090402-1515-privilege" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><columnExists tableName="privilege" columnName="uuid"/></not></preConditions>
+		<comment>Adding "uuid" column to privilege table</comment>
 		<addColumn tableName="privilege">
 			<column name="uuid" type="UUID" />
 		</addColumn>
+	</changeSet>
+	<changeSet id="20090402-1515-program" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><columnExists tableName="program" columnName="uuid"/></not></preConditions>
+		<comment>Adding "uuid" column to program table</comment>
 		<addColumn tableName="program">
 			<column name="uuid" type="UUID" />
 		</addColumn>
+	</changeSet>
+	<changeSet id="20090402-1515-program_workflow" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><columnExists tableName="program_workflow" columnName="uuid"/></not></preConditions>
+		<comment>Adding "uuid" column to program_workflow table</comment>
 		<addColumn tableName="program_workflow">
 			<column name="uuid" type="UUID" />
 		</addColumn>
+	</changeSet>
+	<changeSet id="20090402-1515-program_workflow_state" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><columnExists tableName="program_workflow_state" columnName="uuid"/></not></preConditions>
+		<comment>Adding "uuid" column to program_workflow_state table</comment>
 		<addColumn tableName="program_workflow_state">
 			<column name="uuid" type="UUID" />
 		</addColumn>
+	</changeSet>
+	<changeSet id="20090402-1515-relationship" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><columnExists tableName="relationship" columnName="uuid"/></not></preConditions>
+		<comment>Adding "uuid" column to relationship table</comment>
 		<addColumn tableName="relationship">
 			<column name="uuid" type="UUID" />
 		</addColumn>
+	</changeSet>
+	<changeSet id="20090402-1515-relationship_type" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><columnExists tableName="relationship_type" columnName="uuid"/></not></preConditions>
+		<comment>Adding "uuid" column to relationship_type table</comment>
 		<addColumn tableName="relationship_type">
 			<column name="uuid" type="UUID" />
 		</addColumn>
+	</changeSet>
+	<changeSet id="20090402-1515-report_object" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><columnExists tableName="report_object" columnName="uuid"/></not></preConditions>
+		<comment>Adding "uuid" column to report_object table</comment>
 		<addColumn tableName="report_object">
 			<column name="uuid" type="UUID" />
 		</addColumn>
+	</changeSet>
+	<changeSet id="20090402-1515-report_schema_xml" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><columnExists tableName="report_schema_xml" columnName="uuid"/></not></preConditions>
+		<comment>Adding "uuid" column to report_schema_xml table</comment>
 		<addColumn tableName="report_schema_xml">
 			<column name="uuid" type="UUID" />
 		</addColumn>
+	</changeSet>
+	<changeSet id="20090402-1515-role" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><columnExists tableName="role" columnName="uuid"/></not></preConditions>
+		<comment>Adding "uuid" column to role table</comment>
 		<addColumn tableName="role">
 			<column name="uuid" type="UUID" />
 		</addColumn>
+	</changeSet>
+	<changeSet id="20090402-1515-serialized_object" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><columnExists tableName="serialized_object" columnName="uuid"/></not></preConditions>
+		<comment>Adding "uuid" column to serialized_object table</comment>
 		<addColumn tableName="serialized_object">
 			<column name="uuid" type="UUID" />
 		</addColumn>
 	</changeSet>
 
-	<changeSet id="20090402-1516" author="bwolfe">
-		<preConditions onFail="MARK_RAN">
-			<or>
-				<dbms type="mysql" />
-				<dbms type="oracle" />
-				<dbms type="mssql" />
-			</or>
-		</preConditions>
-		<comment>
-			Generating UUIDs for all rows in all tables via built in uuid function. (This may take a while on large databases)
-		</comment>
-		
+
+	<changeSet id="20090402-1516-cohort" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<comment>Generating UUIDs for all rows in cohort table via built in uuid function.</comment>
 		<update tableName="cohort" >
 			<column name="uuid" valueNumeric="name-of-uuid-function" />
+			<where>uuid is null</where>
 		</update>
-		<update tableName="concept">
-			<column name="uuid" valueNumeric="name-of-uuid-function" />
-		</update>
-		<update tableName="concept_answer">
-			<column name="uuid" valueNumeric="name-of-uuid-function" />
-		</update>
-		<update tableName="concept_class">
-			<column name="uuid" valueNumeric="name-of-uuid-function" />
-		</update>
-		<update tableName="concept_datatype">
-			<column name="uuid" valueNumeric="name-of-uuid-function" />
-		</update>
-		<update tableName="concept_description">
-			<column name="uuid" valueNumeric="name-of-uuid-function" />
-		</update>
-		<update tableName="concept_map">
-			<column name="uuid" valueNumeric="name-of-uuid-function" />
-		</update>
-		<update tableName="concept_name">
-			<column name="uuid" valueNumeric="name-of-uuid-function" />
-		</update>
-		<update tableName="concept_name_tag">
-			<column name="uuid" valueNumeric="name-of-uuid-function" />
-		</update>
-		<update tableName="concept_proposal">
-			<column name="uuid" valueNumeric="name-of-uuid-function" />
-		</update>
-		<update tableName="concept_set">
-			<column name="uuid" valueNumeric="name-of-uuid-function" />
-		</update>
-		<update tableName="concept_source">
-			<column name="uuid" valueNumeric="name-of-uuid-function" />
-		</update>
-		<update tableName="concept_state_conversion">
-			<column name="uuid" valueNumeric="name-of-uuid-function" />
-		</update>
-		<update tableName="drug">
-			<column name="uuid" valueNumeric="name-of-uuid-function" />
-		</update>
-		<update tableName="encounter">
-			<column name="uuid" valueNumeric="name-of-uuid-function" />
-		</update>
-		<update tableName="encounter_type">
-			<column name="uuid" valueNumeric="name-of-uuid-function" />
-		</update>
-		<update tableName="field">
-			<column name="uuid" valueNumeric="name-of-uuid-function" />
-		</update>
-		<update tableName="field_answer">
-			<column name="uuid" valueNumeric="name-of-uuid-function" />
-		</update>
-		<update tableName="field_type">
-			<column name="uuid" valueNumeric="name-of-uuid-function" />
-		</update>
-		<update tableName="form">
-			<column name="uuid" valueNumeric="name-of-uuid-function" />
-		</update>
-		<update tableName="form_field">
-			<column name="uuid" valueNumeric="name-of-uuid-function" />
-		</update>
-		<update tableName="global_property">
-			<column name="uuid" valueNumeric="name-of-uuid-function" />
-		</update>
-		<update tableName="hl7_in_archive">
-			<column name="uuid" valueNumeric="name-of-uuid-function" />
-		</update>
-		<update tableName="hl7_in_error">
-			<column name="uuid" valueNumeric="name-of-uuid-function" />
-		</update>
-		<update tableName="hl7_in_queue">
-			<column name="uuid" valueNumeric="name-of-uuid-function" />
-		</update>
-		<update tableName="hl7_source">
-			<column name="uuid" valueNumeric="name-of-uuid-function" />
-		</update>
-		<update tableName="location">
-			<column name="uuid" valueNumeric="name-of-uuid-function" />
-		</update>
-		<update tableName="location_tag">
-			<column name="uuid" valueNumeric="name-of-uuid-function" />
-		</update>
-		<update tableName="note">
-			<column name="uuid" valueNumeric="name-of-uuid-function" />
-		</update>
-		<update tableName="notification_alert">
-			<column name="uuid" valueNumeric="name-of-uuid-function" />
-		</update>
-		<update tableName="notification_template">
-			<column name="uuid" valueNumeric="name-of-uuid-function" />
-		</update>
-		<update tableName="obs">
-			<column name="uuid" valueNumeric="name-of-uuid-function" />
-		</update>
-		<update tableName="order_type">
-			<column name="uuid" valueNumeric="name-of-uuid-function" />
-		</update>
-		<update tableName="orders">
-			<column name="uuid" valueNumeric="name-of-uuid-function" />
-		</update>
-		<update tableName="patient_identifier">
-			<column name="uuid" valueNumeric="name-of-uuid-function" />
-		</update>
-		<update tableName="patient_identifier_type">
-			<column name="uuid" valueNumeric="name-of-uuid-function" />
-		</update>
-		<update tableName="patient_program">
-			<column name="uuid" valueNumeric="name-of-uuid-function" />
-		</update>
-		<update tableName="patient_state">
-			<column name="uuid" valueNumeric="name-of-uuid-function" />
-		</update>
-		<update tableName="person">
-			<column name="uuid" valueNumeric="name-of-uuid-function" />
-		</update>
-		<update tableName="person_address">
-			<column name="uuid" valueNumeric="name-of-uuid-function" />
-		</update>
-		<update tableName="person_attribute">
-			<column name="uuid" valueNumeric="name-of-uuid-function" />
-		</update>
-		<update tableName="person_attribute_type">
-			<column name="uuid" valueNumeric="name-of-uuid-function" />
-		</update>
-		<update tableName="person_name">
-			<column name="uuid" valueNumeric="name-of-uuid-function" />
-		</update>
-		<update tableName="privilege">
-			<column name="uuid" valueNumeric="name-of-uuid-function" />
-		</update>
-		<update tableName="program">
-			<column name="uuid" valueNumeric="name-of-uuid-function" />
-		</update>
-		<update tableName="program_workflow">
-			<column name="uuid" valueNumeric="name-of-uuid-function" />
-		</update>
-		<update tableName="program_workflow_state">
-			<column name="uuid" valueNumeric="name-of-uuid-function" />
-		</update>
-		<update tableName="relationship">
-			<column name="uuid" valueNumeric="name-of-uuid-function" />
-		</update>
-		<update tableName="relationship_type">
-			<column name="uuid" valueNumeric="name-of-uuid-function" />
-		</update>
-		<update tableName="report_object">
-			<column name="uuid" valueNumeric="name-of-uuid-function" />
-		</update>
-		<update tableName="report_schema_xml">
-			<column name="uuid" valueNumeric="name-of-uuid-function" />
-		</update>
-		<update tableName="role">
-			<column name="uuid" valueNumeric="name-of-uuid-function" />
-		</update>
-		<update tableName="serialized_object">
-			<column name="uuid" valueNumeric="name-of-uuid-function" />
-		</update>
-		<modifySql dbms="mysql">
-			<replace replace="name-of-uuid-function" with="UUID()"/>
-		</modifySql>
-		<modifySql dbms="oracle">
-			<replace replace="name-of-uuid-function" with="SYS_GUID()"/>
-		</modifySql>
-		<modifySql dbms="mssql">
-			<replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/>
-		</modifySql>		
+		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
+		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
+		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
 	</changeSet>
-	
+	<changeSet id="20090402-1516-concept" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<comment>Generating UUIDs for all rows in concept table via built in uuid function.</comment>
+		<update tableName="concept" >
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+			<where>uuid is null</where>
+		</update>
+		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
+		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
+		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
+	</changeSet>
+	<changeSet id="20090402-1516-concept_answer" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<comment>Generating UUIDs for all rows in concept_answer table via built in uuid function.</comment>
+		<update tableName="concept_answer" >
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+			<where>uuid is null</where>
+		</update>
+		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
+		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
+		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
+	</changeSet>
+	<changeSet id="20090402-1516-concept_class" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<comment>Generating UUIDs for all rows in concept_class table via built in uuid function.</comment>
+		<update tableName="concept_class" >
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+			<where>uuid is null</where>
+		</update>
+		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
+		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
+		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
+	</changeSet>
+	<changeSet id="20090402-1516-concept_datatype" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<comment>Generating UUIDs for all rows in concept_datatype table via built in uuid function.</comment>
+		<update tableName="concept_datatype" >
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+			<where>uuid is null</where>
+		</update>
+		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
+		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
+		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
+	</changeSet>
+	<changeSet id="20090402-1516-concept_description" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<comment>Generating UUIDs for all rows in concept_description table via built in uuid function.</comment>
+		<update tableName="concept_description" >
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+			<where>uuid is null</where>
+		</update>
+		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
+		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
+		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
+	</changeSet>
+	<changeSet id="20090402-1516-concept_map" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<comment>Generating UUIDs for all rows in concept_map table via built in uuid function.</comment>
+		<update tableName="concept_map" >
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+			<where>uuid is null</where>
+		</update>
+		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
+		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
+		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
+	</changeSet>
+	<changeSet id="20090402-1516-concept_name" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<comment>Generating UUIDs for all rows in concept_name table via built in uuid function.</comment>
+		<update tableName="concept_name" >
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+			<where>uuid is null</where>
+		</update>
+		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
+		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
+		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
+	</changeSet>
+	<changeSet id="20090402-1516-concept_name_tag" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<comment>Generating UUIDs for all rows in concept_name_tag table via built in uuid function.</comment>
+		<update tableName="concept_name_tag" >
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+			<where>uuid is null</where>
+		</update>
+		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
+		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
+		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
+	</changeSet>
+	<changeSet id="20090402-1516-concept_proposal" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<comment>Generating UUIDs for all rows in concept_proposal table via built in uuid function.</comment>
+		<update tableName="concept_proposal" >
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+			<where>uuid is null</where>
+		</update>
+		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
+		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
+		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
+	</changeSet>
+	<changeSet id="20090402-1516-concept_set" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<comment>Generating UUIDs for all rows in concept_set table via built in uuid function.</comment>
+		<update tableName="concept_set" >
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+			<where>uuid is null</where>
+		</update>
+		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
+		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
+		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
+	</changeSet>
+	<changeSet id="20090402-1516-concept_source" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<comment>Generating UUIDs for all rows in concept_source table via built in uuid function.</comment>
+		<update tableName="concept_source" >
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+			<where>uuid is null</where>
+		</update>
+		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
+		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
+		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
+	</changeSet>
+	<changeSet id="20090402-1516-concept_state_conversion" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<comment>Generating UUIDs for all rows in concept_state_conversion table via built in uuid function.</comment>
+		<update tableName="concept_state_conversion" >
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+			<where>uuid is null</where>
+		</update>
+		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
+		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
+		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
+	</changeSet>
+	<changeSet id="20090402-1516-drug" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<comment>Generating UUIDs for all rows in drug table via built in uuid function.</comment>
+		<update tableName="drug" >
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+			<where>uuid is null</where>
+		</update>
+		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
+		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
+		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
+	</changeSet>
+	<changeSet id="20090402-1516-encounter" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<comment>Generating UUIDs for all rows in encounter table via built in uuid function.</comment>
+		<update tableName="encounter" >
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+			<where>uuid is null</where>
+		</update>
+		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
+		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
+		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
+	</changeSet>
+	<changeSet id="20090402-1516-encounter_type" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<comment>Generating UUIDs for all rows in encounter_type table via built in uuid function.</comment>
+		<update tableName="encounter_type" >
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+			<where>uuid is null</where>
+		</update>
+		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
+		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
+		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
+	</changeSet>
+	<changeSet id="20090402-1516-field" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<comment>Generating UUIDs for all rows in field table via built in uuid function.</comment>
+		<update tableName="field" >
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+			<where>uuid is null</where>
+		</update>
+		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
+		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
+		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
+	</changeSet>
+	<changeSet id="20090402-1516-field_answer" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<comment>Generating UUIDs for all rows in field_answer table via built in uuid function.</comment>
+		<update tableName="field_answer" >
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+			<where>uuid is null</where>
+		</update>
+		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
+		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
+		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
+	</changeSet>
+	<changeSet id="20090402-1516-field_type" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<comment>Generating UUIDs for all rows in field_type table via built in uuid function.</comment>
+		<update tableName="field_type" >
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+			<where>uuid is null</where>
+		</update>
+		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
+		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
+		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
+	</changeSet>
+	<changeSet id="20090402-1516-form" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<comment>Generating UUIDs for all rows in form table via built in uuid function.</comment>
+		<update tableName="form" >
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+			<where>uuid is null</where>
+		</update>
+		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
+		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
+		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
+	</changeSet>
+	<changeSet id="20090402-1516-form_field" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<comment>Generating UUIDs for all rows in form_field table via built in uuid function.</comment>
+		<update tableName="form_field" >
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+			<where>uuid is null</where>
+		</update>
+		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
+		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
+		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
+	</changeSet>
+	<changeSet id="20090402-1516-global_property" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<comment>Generating UUIDs for all rows in global_property table via built in uuid function.</comment>
+		<update tableName="global_property" >
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+			<where>uuid is null</where>
+		</update>
+		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
+		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
+		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
+	</changeSet>
+	<changeSet id="20090402-1516-hl7_in_archive" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<comment>Generating UUIDs for all rows in hl7_in_archive table via built in uuid function.</comment>
+		<update tableName="hl7_in_archive" >
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+			<where>uuid is null</where>
+		</update>
+		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
+		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
+		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
+	</changeSet>
+	<changeSet id="20090402-1516-hl7_in_error" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<comment>Generating UUIDs for all rows in hl7_in_error table via built in uuid function.</comment>
+		<update tableName="hl7_in_error" >
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+			<where>uuid is null</where>
+		</update>
+		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
+		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
+		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
+	</changeSet>
+	<changeSet id="20090402-1516-hl7_in_queue" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<comment>Generating UUIDs for all rows in hl7_in_queue table via built in uuid function.</comment>
+		<update tableName="hl7_in_queue" >
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+			<where>uuid is null</where>
+		</update>
+		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
+		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
+		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
+	</changeSet>
+	<changeSet id="20090402-1516-hl7_source" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<comment>Generating UUIDs for all rows in hl7_source table via built in uuid function.</comment>
+		<update tableName="hl7_source" >
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+			<where>uuid is null</where>
+		</update>
+		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
+		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
+		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
+	</changeSet>
+	<changeSet id="20090402-1516-location" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<comment>Generating UUIDs for all rows in location table via built in uuid function.</comment>
+		<update tableName="location" >
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+			<where>uuid is null</where>
+		</update>
+		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
+		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
+		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
+	</changeSet>
+	<changeSet id="20090402-1516-location_tag" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<comment>Generating UUIDs for all rows in location_tag table via built in uuid function.</comment>
+		<update tableName="location_tag" >
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+			<where>uuid is null</where>
+		</update>
+		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
+		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
+		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
+	</changeSet>
+	<changeSet id="20090402-1516-note" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<comment>Generating UUIDs for all rows in note table via built in uuid function.</comment>
+		<update tableName="note" >
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+			<where>uuid is null</where>
+		</update>
+		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
+		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
+		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
+	</changeSet>
+	<changeSet id="20090402-1516-notification_alert" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<comment>Generating UUIDs for all rows in notification_alert table via built in uuid function.</comment>
+		<update tableName="notification_alert" >
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+			<where>uuid is null</where>
+		</update>
+		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
+		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
+		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
+	</changeSet>
+	<changeSet id="20090402-1516-notification_template" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<comment>Generating UUIDs for all rows in notification_template table via built in uuid function.</comment>
+		<update tableName="notification_template" >
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+			<where>uuid is null</where>
+		</update>
+		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
+		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
+		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
+	</changeSet>
+	<changeSet id="20090402-1516-obs" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<comment>Generating UUIDs for all rows in obs table via built in uuid function.</comment>
+		<update tableName="obs" >
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+			<where>uuid is null</where>
+		</update>
+		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
+		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
+		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
+	</changeSet>
+	<changeSet id="20090402-1516-order_type" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<comment>Generating UUIDs for all rows in order_type table via built in uuid function.</comment>
+		<update tableName="order_type" >
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+			<where>uuid is null</where>
+		</update>
+		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
+		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
+		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
+	</changeSet>
+	<changeSet id="20090402-1516-orders" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<comment>Generating UUIDs for all rows in orders table via built in uuid function.</comment>
+		<update tableName="orders" >
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+			<where>uuid is null</where>
+		</update>
+		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
+		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
+		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
+	</changeSet>
+	<changeSet id="20090402-1516-patient_identifier" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<comment>Generating UUIDs for all rows in patient_identifier table via built in uuid function.</comment>
+		<update tableName="patient_identifier" >
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+			<where>uuid is null</where>
+		</update>
+		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
+		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
+		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
+	</changeSet>
+	<changeSet id="20090402-1516-patient_identifier_type" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<comment>Generating UUIDs for all rows in patient_identifier_type table via built in uuid function.</comment>
+		<update tableName="patient_identifier_type" >
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+			<where>uuid is null</where>
+		</update>
+		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
+		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
+		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
+	</changeSet>
+	<changeSet id="20090402-1516-patient_program" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<comment>Generating UUIDs for all rows in patient_program table via built in uuid function.</comment>
+		<update tableName="patient_program" >
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+			<where>uuid is null</where>
+		</update>
+		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
+		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
+		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
+	</changeSet>
+	<changeSet id="20090402-1516-patient_state" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<comment>Generating UUIDs for all rows in patient_state table via built in uuid function.</comment>
+		<update tableName="patient_state" >
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+			<where>uuid is null</where>
+		</update>
+		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
+		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
+		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
+	</changeSet>
+	<changeSet id="20090402-1516-person" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<comment>Generating UUIDs for all rows in person table via built in uuid function.</comment>
+		<update tableName="person" >
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+			<where>uuid is null</where>
+		</update>
+		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
+		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
+		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
+	</changeSet>
+	<changeSet id="20090402-1516-person_address" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<comment>Generating UUIDs for all rows in person_address table via built in uuid function.</comment>
+		<update tableName="person_address" >
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+			<where>uuid is null</where>
+		</update>
+		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
+		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
+		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
+	</changeSet>
+	<changeSet id="20090402-1516-person_attribute" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<comment>Generating UUIDs for all rows in person_attribute table via built in uuid function.</comment>
+		<update tableName="person_attribute" >
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+			<where>uuid is null</where>
+		</update>
+		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
+		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
+		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
+	</changeSet>
+	<changeSet id="20090402-1516-person_attribute_type" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<comment>Generating UUIDs for all rows in person_attribute_type table via built in uuid function.</comment>
+		<update tableName="person_attribute_type" >
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+			<where>uuid is null</where>
+		</update>
+		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
+		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
+		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
+	</changeSet>
+	<changeSet id="20090402-1516-person_name" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<comment>Generating UUIDs for all rows in person_name table via built in uuid function.</comment>
+		<update tableName="person_name" >
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+			<where>uuid is null</where>
+		</update>
+		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
+		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
+		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
+	</changeSet>
+	<changeSet id="20090402-1516-privilege" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<comment>Generating UUIDs for all rows in privilege table via built in uuid function.</comment>
+		<update tableName="privilege" >
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+			<where>uuid is null</where>
+		</update>
+		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
+		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
+		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
+	</changeSet>
+	<changeSet id="20090402-1516-program" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<comment>Generating UUIDs for all rows in program table via built in uuid function.</comment>
+		<update tableName="program" >
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+			<where>uuid is null</where>
+		</update>
+		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
+		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
+		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
+	</changeSet>
+	<changeSet id="20090402-1516-program_workflow" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<comment>Generating UUIDs for all rows in program_workflow table via built in uuid function.</comment>
+		<update tableName="program_workflow" >
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+			<where>uuid is null</where>
+		</update>
+		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
+		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
+		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
+	</changeSet>
+	<changeSet id="20090402-1516-program_workflow_state" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<comment>Generating UUIDs for all rows in program_workflow_state table via built in uuid function.</comment>
+		<update tableName="program_workflow_state" >
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+			<where>uuid is null</where>
+		</update>
+		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
+		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
+		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
+	</changeSet>
+	<changeSet id="20090402-1516-relationship" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<comment>Generating UUIDs for all rows in relationship table via built in uuid function.</comment>
+		<update tableName="relationship" >
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+			<where>uuid is null</where>
+		</update>
+		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
+		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
+		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
+	</changeSet>
+	<changeSet id="20090402-1516-relationship_type" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<comment>Generating UUIDs for all rows in relationship_type table via built in uuid function.</comment>
+		<update tableName="relationship_type" >
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+			<where>uuid is null</where>
+		</update>
+		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
+		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
+		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
+	</changeSet>
+	<changeSet id="20090402-1516-report_object" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<comment>Generating UUIDs for all rows in report_object table via built in uuid function.</comment>
+		<update tableName="report_object" >
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+			<where>uuid is null</where>
+		</update>
+		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
+		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
+		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
+	</changeSet>
+	<changeSet id="20090402-1516-report_schema_xml" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<comment>Generating UUIDs for all rows in report_schema_xml table via built in uuid function.</comment>
+		<update tableName="report_schema_xml" >
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+			<where>uuid is null</where>
+		</update>
+		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
+		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
+		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
+	</changeSet>
+	<changeSet id="20090402-1516-role" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<comment>Generating UUIDs for all rows in role table via built in uuid function.</comment>
+		<update tableName="role" >
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+			<where>uuid is null</where>
+		</update>
+		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
+		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
+		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
+	</changeSet>
+	<changeSet id="20090402-1516-serialized_object" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<comment>Generating UUIDs for all rows in serialized_object table via built in uuid function.</comment>
+		<update tableName="serialized_object" >
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+			<where>uuid is null</where>
+		</update>
+		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
+		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
+		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
+	</changeSet>
+
 	<changeSet id="20090402-1517" author="bwolfe">
 		<validCheckSum>1b6141be59a8a243b9e56d0aad952af</validCheckSum> <!-- checksum from before idExceptions added -->
 		<validCheckSum>89cc7a14b0582f157ea2dbb9de092fd</validCheckSum> <!-- current checksum with idExceptions param added -->
@@ -1230,7 +1837,7 @@
 			</not>
 		</preConditions>
 		<comment>
-			Adding UUIDs to all rows in all columns via a java class.
+			Adding UUIDs to all rows in all columns via a java class. (This will take a long time on large databases)
 		</comment>
 		<customChange class="org.openmrs.util.databasechange.GenerateUuid">
 			<param name="tableNames">
@@ -1310,169 +1917,376 @@
 		<addNotNullConstraint tableName="role" columnName="uuid" columnDataType="UUID" />
 		<addNotNullConstraint tableName="serialized_object" columnName="uuid" columnDataType="UUID" />
 	</changeSet>
+
 	
-	<changeSet id="20090402-1519" author="bwolfe">
-		<comment>
-			Creating unique index on all uuid columns on all tables. This will take a long time on large databases.
-		</comment>
-		
+	<changeSet id="20090402-1519-cohort" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><indexExists indexName="cohort_uuid_index"/></not></preConditions>
+		<comment>Creating unique index on cohort.uuid column</comment>
 		<createIndex tableName="cohort" unique="true" indexName="cohort_uuid_index" >
 			<column name="uuid" />
 		</createIndex>
-		<createIndex tableName="concept" unique="true" indexName="concept_uuid_index">
+	</changeSet>
+	<changeSet id="20090402-1519-concept" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><indexExists indexName="concept_uuid_index"/></not></preConditions>
+		<comment>Creating unique index on concept.uuid column</comment>
+		<createIndex tableName="concept" unique="true" indexName="concept_uuid_index" >
 			<column name="uuid" />
 		</createIndex>
-		<createIndex tableName="concept_answer" unique="true" indexName="concept_answer_uuid_index">
+	</changeSet>
+	<changeSet id="20090402-1519-concept_answer" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><indexExists indexName="concept_answer_uuid_index"/></not></preConditions>
+		<comment>Creating unique index on concept_answer.uuid column</comment>
+		<createIndex tableName="concept_answer" unique="true" indexName="concept_answer_uuid_index" >
 			<column name="uuid" />
 		</createIndex>
-		<createIndex tableName="concept_class" unique="true" indexName="concept_class_uuid_index">
+	</changeSet>
+	<changeSet id="20090402-1519-concept_class" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><indexExists indexName="concept_class_uuid_index"/></not></preConditions>
+		<comment>Creating unique index on concept_class.uuid column</comment>
+		<createIndex tableName="concept_class" unique="true" indexName="concept_class_uuid_index" >
 			<column name="uuid" />
 		</createIndex>
-		<createIndex tableName="concept_datatype" unique="true" indexName="concept_datatype_uuid_index">
+	</changeSet>
+	<changeSet id="20090402-1519-concept_datatype" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><indexExists indexName="concept_datatype_uuid_index"/></not></preConditions>
+		<comment>Creating unique index on concept_datatype.uuid column</comment>
+		<createIndex tableName="concept_datatype" unique="true" indexName="concept_datatype_uuid_index" >
 			<column name="uuid" />
 		</createIndex>
-		<createIndex tableName="concept_description" unique="true" indexName="concept_description_uuid_index">
+	</changeSet>
+	<changeSet id="20090402-1519-concept_description" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><indexExists indexName="concept_description_uuid_index"/></not></preConditions>
+		<comment>Creating unique index on concept_description.uuid column</comment>
+		<createIndex tableName="concept_description" unique="true" indexName="concept_description_uuid_index" >
 			<column name="uuid" />
 		</createIndex>
-		<createIndex tableName="concept_map" unique="true" indexName="concept_map_uuid_index">
+	</changeSet>
+	<changeSet id="20090402-1519-concept_map" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><indexExists indexName="concept_map_uuid_index"/></not></preConditions>
+		<comment>Creating unique index on concept_map.uuid column</comment>
+		<createIndex tableName="concept_map" unique="true" indexName="concept_map_uuid_index" >
 			<column name="uuid" />
 		</createIndex>
-		<createIndex tableName="concept_name" unique="true" indexName="concept_name_uuid_index">
+	</changeSet>
+	<changeSet id="20090402-1519-concept_name" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><indexExists indexName="concept_name_uuid_index"/></not></preConditions>
+		<comment>Creating unique index on concept_name.uuid column</comment>
+		<createIndex tableName="concept_name" unique="true" indexName="concept_name_uuid_index" >
 			<column name="uuid" />
 		</createIndex>
-		<createIndex tableName="concept_name_tag" unique="true" indexName="concept_name_tag_uuid_index">
+	</changeSet>
+	<changeSet id="20090402-1519-concept_name_tag" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><indexExists indexName="concept_name_tag_uuid_index"/></not></preConditions>
+		<comment>Creating unique index on concept_name_tag.uuid column</comment>
+		<createIndex tableName="concept_name_tag" unique="true" indexName="concept_name_tag_uuid_index" >
 			<column name="uuid" />
 		</createIndex>
-		<createIndex tableName="concept_proposal" unique="true" indexName="concept_proposal_uuid_index">
+	</changeSet>
+	<changeSet id="20090402-1519-concept_proposal" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><indexExists indexName="concept_proposal_uuid_index"/></not></preConditions>
+		<comment>Creating unique index on concept_proposal.uuid column</comment>
+		<createIndex tableName="concept_proposal" unique="true" indexName="concept_proposal_uuid_index" >
 			<column name="uuid" />
 		</createIndex>
-		<createIndex tableName="concept_set" unique="true" indexName="concept_set_uuid_index">
+	</changeSet>
+	<changeSet id="20090402-1519-concept_set" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><indexExists indexName="concept_set_uuid_index"/></not></preConditions>
+		<comment>Creating unique index on concept_set.uuid column</comment>
+		<createIndex tableName="concept_set" unique="true" indexName="concept_set_uuid_index" >
 			<column name="uuid" />
 		</createIndex>
-		<createIndex tableName="concept_source" unique="true" indexName="concept_source_uuid_index">
+	</changeSet>
+	<changeSet id="20090402-1519-concept_source" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><indexExists indexName="concept_source_uuid_index"/></not></preConditions>
+		<comment>Creating unique index on concept_source.uuid column</comment>
+		<createIndex tableName="concept_source" unique="true" indexName="concept_source_uuid_index" >
 			<column name="uuid" />
 		</createIndex>
-		<createIndex tableName="concept_state_conversion" unique="true" indexName="concept_state_conversion_uuid_index">
+	</changeSet>
+	<changeSet id="20090402-1519-concept_state_conversion" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><indexExists indexName="concept_state_conversion_uuid_index"/></not></preConditions>
+		<comment>Creating unique index on concept_state_conversion.uuid column</comment>
+		<createIndex tableName="concept_state_conversion" unique="true" indexName="concept_state_conversion_uuid_index" >
 			<column name="uuid" />
 		</createIndex>
-		<createIndex tableName="drug" unique="true" indexName="drug_uuid_index">
+	</changeSet>
+	<changeSet id="20090402-1519-drug" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><indexExists indexName="drug_uuid_index"/></not></preConditions>
+		<comment>Creating unique index on drug.uuid column</comment>
+		<createIndex tableName="drug" unique="true" indexName="drug_uuid_index" >
 			<column name="uuid" />
 		</createIndex>
-		<createIndex tableName="encounter" unique="true" indexName="encounter_uuid_index">
+	</changeSet>
+	<changeSet id="20090402-1519-encounter" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><indexExists indexName="encounter_uuid_index"/></not></preConditions>
+		<comment>Creating unique index on encounter.uuid column</comment>
+		<createIndex tableName="encounter" unique="true" indexName="encounter_uuid_index" >
 			<column name="uuid" />
 		</createIndex>
-		<createIndex tableName="encounter_type" unique="true" indexName="encounter_type_uuid_index">
+	</changeSet>
+	<changeSet id="20090402-1519-encounter_type" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><indexExists indexName="encounter_type_uuid_index"/></not></preConditions>
+		<comment>Creating unique index on encounter_type.uuid column</comment>
+		<createIndex tableName="encounter_type" unique="true" indexName="encounter_type_uuid_index" >
 			<column name="uuid" />
 		</createIndex>
-		<createIndex tableName="field" unique="true" indexName="field_uuid_index">
+	</changeSet>
+	<changeSet id="20090402-1519-field" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><indexExists indexName="field_uuid_index"/></not></preConditions>
+		<comment>Creating unique index on field.uuid column</comment>
+		<createIndex tableName="field" unique="true" indexName="field_uuid_index" >
 			<column name="uuid" />
 		</createIndex>
-		<createIndex tableName="field_answer" unique="true" indexName="field_answer_uuid_index">
+	</changeSet>
+	<changeSet id="20090402-1519-field_answer" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><indexExists indexName="field_answer_uuid_index"/></not></preConditions>
+		<comment>Creating unique index on field_answer.uuid column</comment>
+		<createIndex tableName="field_answer" unique="true" indexName="field_answer_uuid_index" >
 			<column name="uuid" />
 		</createIndex>
-		<createIndex tableName="field_type" unique="true" indexName="field_type_uuid_index">
+	</changeSet>
+	<changeSet id="20090402-1519-field_type" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><indexExists indexName="field_type_uuid_index"/></not></preConditions>
+		<comment>Creating unique index on field_type.uuid column</comment>
+		<createIndex tableName="field_type" unique="true" indexName="field_type_uuid_index" >
 			<column name="uuid" />
 		</createIndex>
-		<createIndex tableName="form" unique="true" indexName="form_uuid_index">
+	</changeSet>
+	<changeSet id="20090402-1519-form" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><indexExists indexName="form_uuid_index"/></not></preConditions>
+		<comment>Creating unique index on form.uuid column</comment>
+		<createIndex tableName="form" unique="true" indexName="form_uuid_index" >
 			<column name="uuid" />
 		</createIndex>
-		<createIndex tableName="form_field" unique="true" indexName="form_field_uuid_index">
+	</changeSet>
+	<changeSet id="20090402-1519-form_field" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><indexExists indexName="form_field_uuid_index"/></not></preConditions>
+		<comment>Creating unique index on form_field.uuid column</comment>
+		<createIndex tableName="form_field" unique="true" indexName="form_field_uuid_index" >
 			<column name="uuid" />
 		</createIndex>
-		<createIndex tableName="global_property" unique="true" indexName="global_property_uuid_index">
+	</changeSet>
+	<changeSet id="20090402-1519-global_property" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><indexExists indexName="global_property_uuid_index"/></not></preConditions>
+		<comment>Creating unique index on global_property.uuid column</comment>
+		<createIndex tableName="global_property" unique="true" indexName="global_property_uuid_index" >
 			<column name="uuid" />
 		</createIndex>
-		<createIndex tableName="hl7_in_archive" unique="true" indexName="hl7_in_archive_uuid_index">
+	</changeSet>
+	<changeSet id="20090402-1519-hl7_in_archive" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><indexExists indexName="hl7_in_archive_uuid_index"/></not></preConditions>
+		<comment>Creating unique index on hl7_in_archive.uuid column</comment>
+		<createIndex tableName="hl7_in_archive" unique="true" indexName="hl7_in_archive_uuid_index" >
 			<column name="uuid" />
 		</createIndex>
-		<createIndex tableName="hl7_in_error" unique="true" indexName="hl7_in_error_uuid_index">
+	</changeSet>
+	<changeSet id="20090402-1519-hl7_in_error" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><indexExists indexName="hl7_in_error_uuid_index"/></not></preConditions>
+		<comment>Creating unique index on hl7_in_error.uuid column</comment>
+		<createIndex tableName="hl7_in_error" unique="true" indexName="hl7_in_error_uuid_index" >
 			<column name="uuid" />
 		</createIndex>
-		<createIndex tableName="hl7_in_queue" unique="true" indexName="hl7_in_queue_uuid_index">
+	</changeSet>
+	<changeSet id="20090402-1519-hl7_in_queue" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><indexExists indexName="hl7_in_queue_uuid_index"/></not></preConditions>
+		<comment>Creating unique index on hl7_in_queue.uuid column</comment>
+		<createIndex tableName="hl7_in_queue" unique="true" indexName="hl7_in_queue_uuid_index" >
 			<column name="uuid" />
 		</createIndex>
-		<createIndex tableName="hl7_source" unique="true" indexName="hl7_source_uuid_index">
+	</changeSet>
+	<changeSet id="20090402-1519-hl7_source" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><indexExists indexName="hl7_source_uuid_index"/></not></preConditions>
+		<comment>Creating unique index on hl7_source.uuid column</comment>
+		<createIndex tableName="hl7_source" unique="true" indexName="hl7_source_uuid_index" >
 			<column name="uuid" />
 		</createIndex>
-		<createIndex tableName="location" unique="true" indexName="location_uuid_index">
+	</changeSet>
+	<changeSet id="20090402-1519-location" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><indexExists indexName="location_uuid_index"/></not></preConditions>
+		<comment>Creating unique index on location.uuid column</comment>
+		<createIndex tableName="location" unique="true" indexName="location_uuid_index" >
 			<column name="uuid" />
 		</createIndex>
-		<createIndex tableName="location_tag" unique="true" indexName="location_tag_uuid_index">
+	</changeSet>
+	<changeSet id="20090402-1519-location_tag" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><indexExists indexName="location_tag_uuid_index"/></not></preConditions>
+		<comment>Creating unique index on location_tag.uuid column</comment>
+		<createIndex tableName="location_tag" unique="true" indexName="location_tag_uuid_index" >
 			<column name="uuid" />
 		</createIndex>
-		<createIndex tableName="note" unique="true" indexName="note_uuid_index">
+	</changeSet>
+	<changeSet id="20090402-1519-note" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><indexExists indexName="note_uuid_index"/></not></preConditions>
+		<comment>Creating unique index on note.uuid column</comment>
+		<createIndex tableName="note" unique="true" indexName="note_uuid_index" >
 			<column name="uuid" />
 		</createIndex>
-		<createIndex tableName="notification_alert" unique="true" indexName="notification_alert_uuid_index">
+	</changeSet>
+	<changeSet id="20090402-1519-notification_alert" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><indexExists indexName="notification_alert_uuid_index"/></not></preConditions>
+		<comment>Creating unique index on notification_alert.uuid column</comment>
+		<createIndex tableName="notification_alert" unique="true" indexName="notification_alert_uuid_index" >
 			<column name="uuid" />
 		</createIndex>
-		<createIndex tableName="notification_template" unique="true" indexName="notification_template_uuid_index">
+	</changeSet>
+	<changeSet id="20090402-1519-notification_template" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><indexExists indexName="notification_template_uuid_index"/></not></preConditions>
+		<comment>Creating unique index on notification_template.uuid column</comment>
+		<createIndex tableName="notification_template" unique="true" indexName="notification_template_uuid_index" >
 			<column name="uuid" />
 		</createIndex>
-		<createIndex tableName="obs" unique="true" indexName="obs_uuid_index">
+	</changeSet>
+	<changeSet id="20090402-1519-obs" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><indexExists indexName="obs_uuid_index"/></not></preConditions>
+		<comment>Creating unique index on obs.uuid column</comment>
+		<createIndex tableName="obs" unique="true" indexName="obs_uuid_index" >
 			<column name="uuid" />
 		</createIndex>
-		<createIndex tableName="order_type" unique="true" indexName="order_type_uuid_index">
+	</changeSet>
+	<changeSet id="20090402-1519-order_type" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><indexExists indexName="order_type_uuid_index"/></not></preConditions>
+		<comment>Creating unique index on order_type.uuid column</comment>
+		<createIndex tableName="order_type" unique="true" indexName="order_type_uuid_index" >
 			<column name="uuid" />
 		</createIndex>
-		<createIndex tableName="orders" unique="true" indexName="orders_uuid_index">
+	</changeSet>
+	<changeSet id="20090402-1519-orders" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><indexExists indexName="orders_uuid_index"/></not></preConditions>
+		<comment>Creating unique index on orders.uuid column</comment>
+		<createIndex tableName="orders" unique="true" indexName="orders_uuid_index" >
 			<column name="uuid" />
 		</createIndex>
-		<createIndex tableName="patient_identifier" unique="true" indexName="patient_identifier_uuid_index">
+	</changeSet>
+	<changeSet id="20090402-1519-patient_identifier" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><indexExists indexName="patient_identifier_uuid_index"/></not></preConditions>
+		<comment>Creating unique index on patient_identifier.uuid column</comment>
+		<createIndex tableName="patient_identifier" unique="true" indexName="patient_identifier_uuid_index" >
 			<column name="uuid" />
 		</createIndex>
-		<createIndex tableName="patient_identifier_type" unique="true" indexName="patient_identifier_type_uuid_index">
+	</changeSet>
+	<changeSet id="20090402-1519-patient_identifier_type" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><indexExists indexName="patient_identifier_type_uuid_index"/></not></preConditions>
+		<comment>Creating unique index on patient_identifier_type.uuid column</comment>
+		<createIndex tableName="patient_identifier_type" unique="true" indexName="patient_identifier_type_uuid_index" >
 			<column name="uuid" />
 		</createIndex>
-		<createIndex tableName="patient_program" unique="true" indexName="patient_program_uuid_index">
+	</changeSet>
+	<changeSet id="20090402-1519-patient_program" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><indexExists indexName="patient_program_uuid_index"/></not></preConditions>
+		<comment>Creating unique index on patient_program.uuid column</comment>
+		<createIndex tableName="patient_program" unique="true" indexName="patient_program_uuid_index" >
 			<column name="uuid" />
 		</createIndex>
-		<createIndex tableName="patient_state" unique="true" indexName="patient_state_uuid_index">
+	</changeSet>
+	<changeSet id="20090402-1519-patient_state" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><indexExists indexName="patient_state_uuid_index"/></not></preConditions>
+		<comment>Creating unique index on patient_state.uuid column</comment>
+		<createIndex tableName="patient_state" unique="true" indexName="patient_state_uuid_index" >
 			<column name="uuid" />
 		</createIndex>
-		<createIndex tableName="person" unique="true" indexName="person_uuid_index">
+	</changeSet>
+	<changeSet id="20090402-1519-person" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><indexExists indexName="person_uuid_index"/></not></preConditions>
+		<comment>Creating unique index on person.uuid column</comment>
+		<createIndex tableName="person" unique="true" indexName="person_uuid_index" >
 			<column name="uuid" />
 		</createIndex>
-		<createIndex tableName="person_address" unique="true" indexName="person_address_uuid_index">
+	</changeSet>
+	<changeSet id="20090402-1519-person_address" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><indexExists indexName="person_address_uuid_index"/></not></preConditions>
+		<comment>Creating unique index on person_address.uuid column</comment>
+		<createIndex tableName="person_address" unique="true" indexName="person_address_uuid_index" >
 			<column name="uuid" />
 		</createIndex>
-		<createIndex tableName="person_attribute" unique="true" indexName="person_attribute_uuid_index">
+	</changeSet>
+	<changeSet id="20090402-1519-person_attribute" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><indexExists indexName="person_attribute_uuid_index"/></not></preConditions>
+		<comment>Creating unique index on person_attribute.uuid column</comment>
+		<createIndex tableName="person_attribute" unique="true" indexName="person_attribute_uuid_index" >
 			<column name="uuid" />
 		</createIndex>
-		<createIndex tableName="person_attribute_type" unique="true" indexName="person_attribute_type_uuid_index">
+	</changeSet>
+	<changeSet id="20090402-1519-person_attribute_type" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><indexExists indexName="person_attribute_type_uuid_index"/></not></preConditions>
+		<comment>Creating unique index on person_attribute_type.uuid column</comment>
+		<createIndex tableName="person_attribute_type" unique="true" indexName="person_attribute_type_uuid_index" >
 			<column name="uuid" />
 		</createIndex>
-		<createIndex tableName="person_name" unique="true" indexName="person_name_uuid_index">
+	</changeSet>
+	<changeSet id="20090402-1519-person_name" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><indexExists indexName="person_name_uuid_index"/></not></preConditions>
+		<comment>Creating unique index on person_name.uuid column</comment>
+		<createIndex tableName="person_name" unique="true" indexName="person_name_uuid_index" >
 			<column name="uuid" />
 		</createIndex>
-		<createIndex tableName="privilege" unique="true" indexName="privilege_uuid_index">
+	</changeSet>
+	<changeSet id="20090402-1519-privilege" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><indexExists indexName="privilege_uuid_index"/></not></preConditions>
+		<comment>Creating unique index on privilege.uuid column</comment>
+		<createIndex tableName="privilege" unique="true" indexName="privilege_uuid_index" >
 			<column name="uuid" />
 		</createIndex>
-		<createIndex tableName="program" unique="true" indexName="program_uuid_index">
+	</changeSet>
+	<changeSet id="20090402-1519-program" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><indexExists indexName="program_uuid_index"/></not></preConditions>
+		<comment>Creating unique index on program.uuid column</comment>
+		<createIndex tableName="program" unique="true" indexName="program_uuid_index" >
 			<column name="uuid" />
 		</createIndex>
-		<createIndex tableName="program_workflow" unique="true" indexName="program_workflow_uuid_index">
+	</changeSet>
+	<changeSet id="20090402-1519-program_workflow" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><indexExists indexName="program_workflow_uuid_index"/></not></preConditions>
+		<comment>Creating unique index on program_workflow.uuid column</comment>
+		<createIndex tableName="program_workflow" unique="true" indexName="program_workflow_uuid_index" >
 			<column name="uuid" />
 		</createIndex>
-		<createIndex tableName="program_workflow_state" unique="true" indexName="program_workflow_state_uuid_index">
+	</changeSet>
+	<changeSet id="20090402-1519-program_workflow_state" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><indexExists indexName="program_workflow_state_uuid_index"/></not></preConditions>
+		<comment>Creating unique index on program_workflow_state.uuid column</comment>
+		<createIndex tableName="program_workflow_state" unique="true" indexName="program_workflow_state_uuid_index" >
 			<column name="uuid" />
 		</createIndex>
-		<createIndex tableName="relationship" unique="true" indexName="relationship_uuid_index">
+	</changeSet>
+	<changeSet id="20090402-1519-relationship" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><indexExists indexName="relationship_uuid_index"/></not></preConditions>
+		<comment>Creating unique index on relationship.uuid column</comment>
+		<createIndex tableName="relationship" unique="true" indexName="relationship_uuid_index" >
 			<column name="uuid" />
 		</createIndex>
-		<createIndex tableName="relationship_type" unique="true" indexName="relationship_type_uuid_index">
+	</changeSet>
+	<changeSet id="20090402-1519-relationship_type" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><indexExists indexName="relationship_type_uuid_index"/></not></preConditions>
+		<comment>Creating unique index on relationship_type.uuid column</comment>
+		<createIndex tableName="relationship_type" unique="true" indexName="relationship_type_uuid_index" >
 			<column name="uuid" />
 		</createIndex>
-		<createIndex tableName="report_object" unique="true" indexName="report_object_uuid_index">
+	</changeSet>
+	<changeSet id="20090402-1519-report_object" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><indexExists indexName="report_object_uuid_index"/></not></preConditions>
+		<comment>Creating unique index on report_object.uuid column</comment>
+		<createIndex tableName="report_object" unique="true" indexName="report_object_uuid_index" >
 			<column name="uuid" />
 		</createIndex>
-		<createIndex tableName="report_schema_xml" unique="true" indexName="report_schema_xml_uuid_index">
+	</changeSet>
+	<changeSet id="20090402-1519-report_schema_xml" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><indexExists indexName="report_schema_xml_uuid_index"/></not></preConditions>
+		<comment>Creating unique index on report_schema_xml.uuid column</comment>
+		<createIndex tableName="report_schema_xml" unique="true" indexName="report_schema_xml_uuid_index" >
 			<column name="uuid" />
 		</createIndex>
-		<createIndex tableName="role" unique="true" indexName="role_uuid_index">
+	</changeSet>
+	<changeSet id="20090402-1519-role" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><indexExists indexName="role_uuid_index"/></not></preConditions>
+		<comment>Creating unique index on role.uuid column</comment>
+		<createIndex tableName="role" unique="true" indexName="role_uuid_index" >
 			<column name="uuid" />
 		</createIndex>
-		<createIndex tableName="serialized_object" unique="true" indexName="serialized_object_uuid_index">
+	</changeSet>
+	<changeSet id="20090402-1519-serialized_object" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><indexExists indexName="serialized_object_uuid_index"/></not></preConditions>
+		<comment>Creating unique index on serialized_object.uuid column</comment>
+		<createIndex tableName="serialized_object" unique="true" indexName="serialized_object_uuid_index" >
 			<column name="uuid" />
 		</createIndex>
 	</changeSet>
