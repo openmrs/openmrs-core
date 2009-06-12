@@ -449,8 +449,15 @@ public class ModuleFactory {
 					// save the state of this module for future restarts
 					Context.addProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_GLOBAL_PROPERTIES);
 					AdministrationService as = Context.getAdministrationService();
-					GlobalProperty gp = new GlobalProperty(module.getModuleId() + ".started", "true",
+					String propertyKey = module.getModuleId() + ".started";
+					GlobalProperty gp = as.getGlobalPropertyObject(propertyKey);
+					if (gp != null) {
+						gp.setPropertyValue("true");
+					}
+					else {
+						gp = new GlobalProperty(propertyKey, "true",
 					        getGlobalPropertyStartedDescription(module.getModuleId()));
+					}
 					as.saveGlobalProperty(gp);
 				}
 				catch (Exception e) {
