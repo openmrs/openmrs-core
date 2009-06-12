@@ -390,7 +390,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 			}
 			catch (Exception e) {
 				log
-				        .error("Error resolving user with family name '" + familyName + "' and given name '" + givenName
+				        .error("Error resolving user with id '" + idNumber + "' family name '" + familyName + "' and given name '" + givenName
 				                + "'", e);
 				return null;
 			}
