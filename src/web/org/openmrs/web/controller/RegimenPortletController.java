@@ -53,25 +53,28 @@ public class RegimenPortletController extends PortletController {
 						drugConceptsBySetId.put(setId, members);
 					}
 				}
-				for (DrugOrder order : ((List<DrugOrder>) model.get("patientDrugOrders"))) {
-					String setIdToUse = null;
-					if (order.getDrug() != null) {
-						Concept orderConcept = order.getDrug().getConcept();
-						for (Map.Entry<String, Collection<Concept>> e : drugConceptsBySetId.entrySet()) {
-							if (e.getValue().contains(orderConcept)) {
-								setIdToUse = e.getKey();
-								break;
+				List<DrugOrder> patientDrugOrders = (List<DrugOrder>) model.get("patientDrugOrders");
+				if (patientDrugOrders != null) {
+					for (DrugOrder order : patientDrugOrders) {
+						String setIdToUse = null;
+						if (order.getDrug() != null) {
+							Concept orderConcept = order.getDrug().getConcept();
+							for (Map.Entry<String, Collection<Concept>> e : drugConceptsBySetId.entrySet()) {
+								if (e.getValue().contains(orderConcept)) {
+									setIdToUse = e.getKey();
+									break;
+								}
 							}
 						}
-					}
-					if (setIdToUse == null && includeOther)
-						setIdToUse = "*";
-					if (setIdToUse != null) {
-						helper(patientDrugOrderSets, setIdToUse, order);
-						if (order.isCurrent() || order.isFuture())
-							helper(currentDrugOrderSets, setIdToUse, order);
-						else
-							helper(completedDrugOrderSets, setIdToUse, order);
+						if (setIdToUse == null && includeOther)
+							setIdToUse = "*";
+						if (setIdToUse != null) {
+							helper(patientDrugOrderSets, setIdToUse, order);
+							if (order.isCurrent() || order.isFuture())
+								helper(currentDrugOrderSets, setIdToUse, order);
+							else
+								helper(completedDrugOrderSets, setIdToUse, order);
+						}
 					}
 				}
 				
