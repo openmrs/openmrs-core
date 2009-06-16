@@ -19,6 +19,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -123,6 +124,7 @@ public class UpdateFilter extends StartupFilter {
 				// set a variable so we know that the user started here
 				authenticatedSuccessfully = true;
 				renderTemplate(REVIEW_CHANGES, referenceMap, writer);
+				
 				return;
 			} else {
 				// if not authenticated, show main page again
@@ -155,13 +157,15 @@ public class UpdateFilter extends StartupFilter {
 				// the user would be stepped through the questions returned here.
 				log.error("Not implemented", inputRequired);
 				errors.add("Input during database updates is not yet implemented. " + inputRequired.getMessage());
+				model.updateChanges();
 				renderTemplate(REVIEW_CHANGES, referenceMap, writer);
 				return;
 			}
 			catch (DatabaseUpdateException e) {
 				log.error("Unable to update the database", e);
-				errors.add("Unable to update the database.  See server error logs for the full stacktrace. "
-				        + e.getMessage());
+				errors.add("Unable to update the database.  See server error logs for the full stacktrace.");
+				errors.addAll(Arrays.asList(e.getMessage().split("\n")));
+				model.updateChanges();
 				renderTemplate(REVIEW_CHANGES, referenceMap, writer);
 				return;
 			}

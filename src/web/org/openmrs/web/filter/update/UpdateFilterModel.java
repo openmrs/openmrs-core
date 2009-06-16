@@ -43,14 +43,22 @@ public class UpdateFilterModel {
 	 * Default constructor that sets up some of the properties
 	 */
 	public UpdateFilterModel() {
+		updateChanges();
+	}
+	
+	/**
+	 * Convenience method that reads from liquibase again to get the most recent list of changesets
+	 * that still need to be run.
+	 */
+	public void updateChanges() {
 		Log log = LogFactory.getLog(getClass());
 		
 		try {
-	        changes = DatabaseUpdater.getUnrunDatabaseChanges();
-        }
-        catch (Exception e) {
-	        log.error("Unable to get the database changes", e);
-        }
+			changes = DatabaseUpdater.getUnrunDatabaseChanges();
+		}
+		catch (Exception e) {
+			log.error("Unable to get the database changes", e);
+		}
 	}
 	
 }

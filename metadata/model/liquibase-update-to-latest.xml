@@ -13,26 +13,19 @@
 	-->
 	
 	
-	<!--
-		Check that the sqldiff has been run up to at least the 1.4.0.20 version.
-		If it hasn't, this script won't run.  
-	  -->
-	<preConditions>
-		<or>
-			<sqlCheck expectedResult="database_version greater than 1.4.0.20">
+	<changeSet id="0" author="bwolfe">
+		<preConditions onFail="MARK_RAN">
+			<sqlCheck expectedResult="The update-to-latest.sql file needs to be run on this db.">
 				<![CDATA[
 				SELECT case when REPLACE(property_value, '.', '0') >= REPLACE('1.4.0.20', '.', '0') then 'database_version greater than 1.4.0.20' else 'The update-to-latest.sql file needs to be run on this db.' end FROM global_property WHERE property = 'database_version';
 				]]>
 			</sqlCheck>
-			<sqlCheck expectedResult="no database_version property after v1.4.0.20">
-				<![CDATA[
-				SELECT case when count(*) = 1 then 'a non-empty database_version global property' else 'no database_version property after v1.4.0.20' end FROM global_property WHERE property = 'database_version';
-				]]>
-			</sqlCheck>
-		</or>
-	</preConditions>
-	
-	
+		</preConditions>
+		<comment>Run the old sqldiff file to get database up to the 1.4.0.20 version if needed. (Requires 'mysql' to be on the PATH)</comment>
+		<customChange class="org.openmrs.util.databasechange.SourceMySqldiffFile">
+			<param name="sqlFile">update-to-1.4.2.01-db.mysqldiff.sql</param>
+		</customChange>
+	</changeSet>
 	
 	<changeSet id="1" author="upul">
 		<preConditions onFail="MARK_RAN">

@@ -140,7 +140,7 @@ public class DatabaseUpdater {
 		}
 		catch (Exception e) {
 			throw new DatabaseUpdateException("There was an error while updating the database to the latest. file: "
-			        + changelog, e);
+			        + changelog + ". Error: " + e.getMessage(), e);
 		}
 	}
 	
