@@ -671,6 +671,10 @@ public final class OpenmrsConstants {
 	
 	public static final String GLOBAL_PROPERTY_NEWPATIENTFORM_RELATIONSHIPS = "newPatientForm.relationships";
 	
+	public static final String GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE = "patientSearch.matchMode";
+	
+	public static final String GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_ANYWHERE = "ANYWHERE";
+	
 	/**
 	 * These properties (and default values) are set if not found in the database when OpenMRS is
 	 * started if they do not exist yet
