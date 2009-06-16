@@ -38,7 +38,9 @@ import org.apache.commons.lang.StringUtils;
  * has a UUID-like function. <br/>
  * <br/>
  * Expects parameter: "tableNames" : whitespace delimited list of table names to add <br/>
- * Expects parameter: "columnName" : name of the column to change. Default: "uuid"
+ * Expects parameter: "columnName" : name of the column to change. Default: "uuid" <br/>
+ * Expects parameter: "idExceptions" : Key-value pairs of table name ids that don't follow the
+ * convention. "field_answer_id=field_id|role_id=role|privilege_id=privilege"
  */
 public class GenerateUuid implements CustomTaskChange {
 	

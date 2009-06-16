@@ -145,6 +145,7 @@
 			<fileset dir="${metadata.dir}/api/hibernate" includes="**/*" />
 			<fileset dir="${metadata.dir}/api/spring" includes="applicationContext-service.xml" />
 			<fileset dir="${metadata.dir}/model" includes="liquibase-update-to-latest.xml" />
+			<fileset dir="${metadata.dir}/model/archive" includes="update-to-1.4.2.01-db.mysqldiff.sql" />
 		</copy>
 		<javac destdir="${build.dir}" debug="${javac.debug}" debuglevel="${javac.debuglevel}" deprecation="${compile.deprecation}" optimize="${compile.optimize}" classpathref="api.compile.classpath">
 			<compilerarg line="${compile.arguments}" />
