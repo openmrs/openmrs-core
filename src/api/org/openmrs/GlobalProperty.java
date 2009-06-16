@@ -33,9 +33,9 @@ public class GlobalProperty {
 	
 	private String defaultPropertyValue;
 	
-	private GlobalPropertyType propertyType;
+	private String propertyType;
 	
-	private GlobalPropertyType defaultPropertyType;
+	private String defaultPropertyType;
 	
 	private User createdBy;
 	
@@ -83,9 +83,7 @@ public class GlobalProperty {
 		this.description = description;
 		this.defaultPropertyValue = value;
 		
-		GlobalPropertyType propertyType = Context.getAdministrationService().getGlobalPropertyType(1);
-		this.propertyType = propertyType;
-		this.defaultPropertyType = propertyType;
+		this.propertyType = String.class.toString();
 	}
 	
     /**
@@ -162,14 +160,14 @@ public class GlobalProperty {
 	/**
      * @param propertyType the propertyType to set
      */
-    public void setPropertyType(GlobalPropertyType propertyType) {
+    public void setPropertyType(String propertyType) {
 	    this.propertyType = propertyType;
     }
 
 	/**
      * @return the propertyType
      */
-    public GlobalPropertyType getPropertyType() {
+    public String getPropertyType() {
 	    return propertyType;
     }
 
@@ -200,14 +198,14 @@ public class GlobalProperty {
     /**
      * @return the defaultPropertyType
      */
-    public GlobalPropertyType getDefaultPropertyType() {
+    public String getDefaultPropertyType() {
     	return defaultPropertyType;
     }
 
     /**
      * @param defaultPropertyType the defaultPropertyType to set
      */
-    public void setDefaultPropertyType(GlobalPropertyType defaultPropertyType) {
+    public void setDefaultPropertyType(String defaultPropertyType) {
     	this.defaultPropertyType = defaultPropertyType;
     }
 	

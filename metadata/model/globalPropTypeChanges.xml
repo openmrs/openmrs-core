@@ -4,52 +4,6 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
-<changeSet author="konnikov" id="1241589108464-1">
-		<preConditions onFail="MARK_RAN">
-			<not>
-				<tableExists tableName="global_property_type"/>
-			</not>
-		</preConditions>
-   		<comment>
-			Create the "global_property_type" table
-		</comment>
-        <createTable tableName="global_property_type">
-            <column autoIncrement="true" name="global_property_type_id" type="INTEGER UNSIGNED">
-                <constraints nullable="false" primaryKey="true"/>
-            </column>
-            <column defaultValue="" name="name" type="VARCHAR(45)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="description" type="MEDIUMTEXT"/>
-            <column defaultValue="1" name="created_by" type="INT(11)"/>
-			<column name="date_created" type="DATETIME"/>
-			<column name="voided" type="smallint" defaultValueNumeric="0">
-				<constraints nullable="false" />
-			</column>
-			<column name="date_voided" type="DATETIME"/>
-        </createTable>
-        <addForeignKeyConstraint baseColumnNames="created_by"
-			baseTableName="global_property_type"
-			constraintName="global_property_type_creator"
-			referencedColumnNames="user_id"
-			referencedTableName="users"/>
-    </changeSet>
-    
-	<changeSet author="konnikov" id="1241589108464-2">
-		<preConditions onFail="MARK_RAN">
-			<not>
-				<!-- TODO: What will happen if count return more than 1 record? -->
-				<sqlCheck expectedResult="1">SELECT COUNT(1) FROM global_property_type</sqlCheck>
-			</not>
-		</preConditions>
-   		<comment>
-			Insert the deafult property type "String" into the "global_property_type" table
-		</comment>
-		<insert tableName="global_property_type">
-		    <column name="name" value="String"/>
-    		<column name="description" value="Default type"/>
-		</insert>
-    </changeSet>
     
     <changeSet author="konnikov" id="1241589108464-3">
 		<preConditions onFail="MARK_RAN">
