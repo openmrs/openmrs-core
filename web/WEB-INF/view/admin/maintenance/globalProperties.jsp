@@ -29,14 +29,32 @@
 $(function() {
 	$("#properties-container").tabs();
 
-	$("#system-properties-link").click(function () {
-		$(".namespace-item").toggle();
-	});
+	$("#system-properties-link").click(
+		function () {
+			$(".module-tabs-item").slideUp();
+			$(".namespace-item").slideDown();
+		}
+	);
 
+	$("#all-properties-link").click(
+		function () {
+			$(".namespace-item").slideUp();
+			$(".module-tabs-item").slideUp();
+		}
+	);
+
+	$("#modules-properties-link").click(
+		function () {
+			$(".namespace-item").slideUp();
+			$(".module-tabs-item").slideDown();
+		}
+	);
+	
 	$("#dialog").dialog({
 		bgiframe: true,
 		autoOpen: false,
 		modal: true,
+		width: 404,
 		buttons: {
 			'Create property': function() {
 				$(this).dialog('close');
@@ -67,6 +85,7 @@ $(function() {
 </style>
 
 <style>
+
 #properties-container {
 	font-family: Verdana, sans-serif;
 }
@@ -75,11 +94,12 @@ $(function() {
 	float: left;
 	padding-left: 0;
 	margin: 0 10px 0 0;
+    border-bottom: 1px solid #AAAAAA;
 }
 
 #tabs-pane a {
-	display: block;
-	padding: 0.1em 1ex;
+    display: block;
+    padding: 0 1ex;
 }
 
 #tabs-pane li {
@@ -87,9 +107,13 @@ $(function() {
 }
 
 .module-tabs-item {
-	margin-left: 16px;
 	list-style-position: inside;
 	padding: 0.1em 0;
+	font-size: 8pt;
+}
+
+.module-tabs-item a {
+	margin-left: 12px;
 }
 
 .namespace-item {
@@ -116,6 +140,7 @@ $(function() {
 	background-color: #F5F5F5;
 }
 .property-value {
+	font-size: 8pt;
 	border: none;
 	height: 1.25em;
 	font-family: Courier New, monospace;
@@ -130,10 +155,13 @@ img {
 	border: none;
 }
 .all-properties-item {
+	font-size: 10pt;
 }
 .system-properties-item {
+	font-size: 10pt;
 }
 .modules-properties-item {
+	font-size: 10pt;
 }
 </style>
 
@@ -163,14 +191,14 @@ img {
 <button id="add-global-property">Add property</button>
 
 <ul id="tabs-pane">
-	<li class="all-properties-item"><a href="#all-properties-pane"><spring:message code="GlobalProperty.all"/></a></li>
+	<li class="all-properties-item"><a href="#all-properties-pane" id="all-properties-link"><spring:message code="GlobalProperty.all"/></a></li>
 	<li class="system-properties-item"><a href="#system-properties-pane" id="system-properties-link"><spring:message code="GlobalProperty.system"/></a></li>
 <c:forEach var="namespace" items="${globalProperties.systemNamespaces}" varStatus="status">
 	<li class="namespace-item"><a href="#${namespace.name}-properties-pane">${namespace.name}</a></li>
 </c:forEach>
-	<li class="modules-properties-item"><spring:message code="GlobalProperty.modules"/></li>
+	<li class="modules-properties-item"><a href="#system-properties-pane" id="modules-properties-link"><spring:message code="GlobalProperty.modules"/></a></li>
 <c:forEach var="module" items="${globalProperties.modules}" varStatus="status">
-	<li class="module-tabs-item"><a href="#${module.moduleId}-properties-pane">${module.name}</a></li>
+	<li class="module-tabs-item"><a href="#${module.moduleId}-module-properties-pane">${module.name}</a></li>
 </c:forEach>
 </ul>
 
@@ -258,7 +286,7 @@ img {
 </c:forEach>
 
 <c:forEach var="module" items="${globalProperties.modules}">
-<div id="${module.moduleId}-properties-pane" class="module-properties-pane properties-pane">
+<div id="${module.moduleId}-module-properties-pane" class="module-properties-pane properties-pane">
 <form method="post">
 	<table cellpadding="1" cellspacing="0">
 		<thead>

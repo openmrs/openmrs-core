@@ -166,6 +166,7 @@ a:hover {
 	z-index: 0;
 	height: 1.7em;
 	background-color: #eeeeee;
+	clear: both;
 }
 
 #footer span {
