@@ -305,10 +305,16 @@ public class HibernatePatientDAO implements PatientDAO {
 	 */
 	private LogicalExpression getNameSearch(String name) {
 		
-		SimpleExpression givenName = Expression.like("name.givenName", name, MatchMode.START);
-		SimpleExpression middleName = Expression.like("name.middleName", name, MatchMode.START);
-		SimpleExpression familyName = Expression.like("name.familyName", name, MatchMode.START);
-		SimpleExpression familyName2 = Expression.like("name.familyName2", name, MatchMode.START);
+		MatchMode mode = MatchMode.START;
+		String matchModeConstant = OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE;
+		String modeGp = Context.getAdministrationService().getGlobalProperty(matchModeConstant);
+		if (OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_ANYWHERE.equalsIgnoreCase(modeGp)) {
+			mode = MatchMode.ANYWHERE;
+		}
+		SimpleExpression givenName = Expression.like("name.givenName", name, mode);
+		SimpleExpression middleName = Expression.like("name.middleName", name, mode);
+		SimpleExpression familyName = Expression.like("name.familyName", name, mode);
+		SimpleExpression familyName2 = Expression.like("name.familyName2", name, mode);
 		
 		return Expression.and(Expression.eq("name.voided", false), Expression.or(familyName2, Expression.or(familyName,
 		    Expression.or(middleName, givenName))));
