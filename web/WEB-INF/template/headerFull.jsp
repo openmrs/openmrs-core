@@ -19,6 +19,7 @@
 		<openmrs:htmlInclude file="/openmrs.js" />
 		<openmrs:htmlInclude file="/openmrs.css" />
 		<openmrs:htmlInclude file="/style.css" />
+		<openmrs:htmlInclude file="/jquery-ui-1.7.2.css" />
 		<openmrs:htmlInclude file="/dwr/engine.js" />
 		<openmrs:htmlInclude file="/dwr/interface/DWRAlertService.js" />
 

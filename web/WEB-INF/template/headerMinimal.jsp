@@ -18,6 +18,7 @@
 	<head>
 		<openmrs:htmlInclude file="/openmrs.css" />
 		<openmrs:htmlInclude file="/style.css" />
+		<openmrs:htmlInclude file="/jquery-ui-1.7.2.css" />
 		<openmrs:htmlInclude file="/openmrs.js" />
 
 		<script type="text/javascript">

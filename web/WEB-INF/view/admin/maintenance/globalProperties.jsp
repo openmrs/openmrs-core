@@ -14,6 +14,7 @@
 <style type="text/css">
 #dialog {
 	padding: 1em 2ex;
+	width: 404px;
 }
 .record {
 	margin: 1em 2ex;
@@ -21,22 +22,6 @@
 .record label {
 	float: left;
 	width: 25ex;
-}
-.ui-dialog {
-	background: #fff;
-	border: 1px solid #ccc;
-}
-.ui-dialog-titlebar {
-	float: left;
-}
-.ui-dialog-titlebar-close {
-	background: url("<c:url value="/images/plug_arrow.png"/>");
-	float: right;
-	width: 16px;
-	height: 16px;
-}
-.ui-icon {
-	display: none;
 }
 </style>
 
@@ -90,12 +75,11 @@ $(function() {
 	float: left;
 	padding-left: 0;
 	margin: 0 10px 0 0;
-	list-style: none;
 }
 
 #tabs-pane a {
 	display: block;
-	margin-left: 20px;
+	padding: 0.1em 1ex;
 }
 
 #tabs-pane li {
@@ -104,14 +88,16 @@ $(function() {
 
 .module-tabs-item {
 	margin-left: 16px;
-	list-style-image: url("<c:url value="/images/plug_arrow.png"/>");
 	list-style-position: inside;
 	padding: 0.1em 0;
 }
 
 .namespace-item {
-	margin-left: 12px;
 	font-size: 8pt;
+}
+
+.namespace-item a {
+	margin-left: 12px;
 }
 
 .properties-pane table td {
@@ -144,16 +130,10 @@ img {
 	border: none;
 }
 .all-properties-item {
-	list-style-image: url("<c:url value="/images/wrench_screwdriver.png"/>");
-	list-style-position: inside;
 }
 .system-properties-item {
-	list-style-image: url("<c:url value="/images/hammer.png"/>");
-	list-style-position: inside;
 }
 .modules-properties-item {
-	list-style-image: url("<c:url value="/images/plug.png"/>");
-	list-style-position: inside;
 }
 </style>
 
