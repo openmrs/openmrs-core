@@ -14,7 +14,9 @@
 package org.openmrs.module;
 
 /**
- * Represents often fatal errors that occur within the module package \r\n * @version 1.0
+ * Represents often fatal errors that occur within the module package
+ * 
+ * @version 1.0
  */
 public class ModuleException extends RuntimeException {
 	

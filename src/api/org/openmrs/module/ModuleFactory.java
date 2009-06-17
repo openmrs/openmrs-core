@@ -172,11 +172,12 @@ public class ModuleFactory {
 						continue; // skip over modules that are already started
 						
 					String key = mod.getModuleId() + ".started";
-					String prop = as.getGlobalProperty(key, null);
+					String startedProp = as.getGlobalProperty(key, null);
+					String mandatoryProp = as.getGlobalProperty(mod.getModuleId() + ".mandatory", null);
 					
 					// if a 'moduleid.started' property doesn't exist, start the module anyway
 					// as this is probably the first time they are loading it
-					if (prop == null || prop.equals("true")) {
+					if (startedProp == null || startedProp.equals("true") || "true".equalsIgnoreCase(mandatoryProp)) {
 						if (requiredModulesStarted(mod))
 							try {
 								if (log.isDebugEnabled())
@@ -312,10 +313,10 @@ public class ModuleFactory {
 	}
 	
 	/**
-	 * Returns the modules that have been successfully started in the form of a map<ModuleId,
-	 * Module>
+	 * Returns the modules that have been successfully started in the form of a map&lt;ModuleId,
+	 * Module&gt;
 	 * 
-	 * @return map<ModuleId, Module>
+	 * @return Map&lt;ModuleId, Module&gt;
 	 */
 	public static Map<String, Module> getStartedModulesMap() {
 		if (startedModules == null)
@@ -374,6 +375,7 @@ public class ModuleFactory {
 		
 		if (module != null) {
 			
+			String moduleId = module.getModuleId();
 			try {
 				
 				// check to be sure this module can run with our current version
@@ -443,31 +445,21 @@ public class ModuleFactory {
 				}
 				
 				// effectively mark this module as started successfully
-				getStartedModulesMap().put(module.getModuleId(), module);
+				getStartedModulesMap().put(moduleId, module);
 				
 				try {
 					// save the state of this module for future restarts
-					Context.addProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_GLOBAL_PROPERTIES);
-					AdministrationService as = Context.getAdministrationService();
-					String propertyKey = module.getModuleId() + ".started";
-					GlobalProperty gp = as.getGlobalPropertyObject(propertyKey);
-					if (gp != null) {
-						gp.setPropertyValue("true");
-					}
-					else {
-						gp = new GlobalProperty(propertyKey, "true",
-					        getGlobalPropertyStartedDescription(module.getModuleId()));
-					}
-					as.saveGlobalProperty(gp);
+					saveGlobalProperty(moduleId + ".started", "true", getGlobalPropertyStartedDescription(moduleId));
+					
+					// save the mandatory status
+					saveGlobalProperty(moduleId + ".mandatory", String.valueOf(module.isMandatory()),
+					    getGlobalPropertyMandatoryModuleDescription(moduleId));
 				}
 				catch (Exception e) {
 					// pass over errors because this doesn't really concern startup
 					// passing over this also allows for multiple of the same-named modules
 					// to be loaded in junit tests that are run within one session
 					log.debug("Got an error when trying to set the global property on module startup", e);
-				}
-				finally {
-					Context.removeProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_GLOBAL_PROPERTIES);
 				}
 				
 				// (this must be done after putting the module in the started
@@ -504,17 +496,22 @@ public class ModuleFactory {
 				
 			}
 			catch (Exception e) {
-				log.warn("Error while trying to start module: " + module.getModuleId(), e);
+				log.warn("Error while trying to start module: " + moduleId, e);
 				module.setStartupErrorMessage("Error while trying to start module", e);
 				
 				// undo all of the actions in startup
 				try {
-					stopModule(module);
+					boolean skipOverStartedProperty = false;
+					
+					if (e instanceof MandatoryModuleException)
+						skipOverStartedProperty = true;
+					
+					stopModule(module, skipOverStartedProperty, true);
 				}
 				catch (Exception e2) {
 					// this will probably occur about the same place as the
 					// error in startup
-					log.debug("Error while stopping module: " + module.getModuleId(), e2);
+					log.debug("Error while stopping module: " + moduleId, e2);
 				}
 			}
 			
@@ -627,30 +624,53 @@ public class ModuleFactory {
 	}
 	
 	/**
-	 * Runs through the advice and extension points and removes from api Also calls
-	 * mod.Activator.shutdown()
+	 * Runs through the advice and extension points and removes from api. <br/>
+	 * Also calls mod.Activator.shutdown()
 	 * 
 	 * @param mod module to stop
+	 * @see ModuleFactory#stopModule(Module, boolean, boolean)
 	 */
 	public static void stopModule(Module mod) {
-		stopModule(mod, false);
+		stopModule(mod, false, false);
 	}
 	
 	/**
-	 * Runs through the advice and extension points and removes from api <code>isShuttingDown</code>
-	 * should only be true when openmrs is stopping modules because it is shutting down. When
-	 * normally stopping a module, use stopModule(Module) (or leave value as false). This property
-	 * controls whether the globalproperty is set for startup/shutdown. Also calls
-	 * mod.Activator.shutdown()
+	 * Runs through the advice and extension points and removes from api.<br/>
+	 * Also calls mod.Activator.shutdown()
+	 * 
+	 * @param mod the module to stop
+	 * @param isShuttingDown true if this is called during the process of shutting down openmrs
+	 * @see #stopModule(Module, boolean, boolean)
+	 */
+	public static void stopModule(Module mod, boolean isShuttingDown) {
+		stopModule(mod, isShuttingDown, false);
+	}
+	
+	/**
+	 * Runs through the advice and extension points and removes from api.<br/>
+	 * <code>skipOverStartedProperty</code> should only be true when openmrs is stopping modules
+	 * because it is shutting down. When normally stopping a module, use {@link #stopModule(Module)}
+	 * (or leave value as false). This property controls whether the globalproperty is set for
+	 * startup/shutdown. <br/>
+	 * Also calls module's {@link Activator#shutdown()}
 	 * 
 	 * @param mod module to stop
-	 * @param isShuttingDown
+	 * @param skipOverStartedProperty true if we don't want to set &lt;moduleid&gt;.started to false
+	 * @param isFailedStartup true if this is being called as a cleanup because of a failed module
+	 *            startup
 	 */
 	@SuppressWarnings("unchecked")
-	public static void stopModule(Module mod, boolean isShuttingDown) {
+	public static void stopModule(Module mod, boolean skipOverStartedProperty, boolean isFailedStartup)
+	                                                                                                   throws MandatoryModuleException {
 		
 		if (mod != null) {
 			String moduleId = mod.getModuleId();
+			
+			// don't allow mandatory modules to be stopped
+			if (!isFailedStartup && ModuleUtil.getMandatoryModules().contains(moduleId)) {
+				throw new MandatoryModuleException(moduleId);
+			}
+			
 			String modulePackage = mod.getPackageName();
 			
 			// stop all dependent modules
@@ -659,25 +679,13 @@ public class ModuleFactory {
 			startedModulesCopy.addAll(getStartedModules());
 			for (Module dependentModule : startedModulesCopy) {
 				if (!dependentModule.equals(mod) && dependentModule.getRequiredModules().contains(modulePackage))
-					stopModule(dependentModule, isShuttingDown);
+					stopModule(dependentModule, skipOverStartedProperty);
 			}
 			
 			getStartedModulesMap().remove(moduleId);
 			
-			if (isShuttingDown == false && !Context.isRefreshingContext()) {
-				try {
-					Context.addProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_GLOBAL_PROPERTIES);
-					AdministrationService as = Context.getAdministrationService();
-					GlobalProperty gp = new GlobalProperty(moduleId + ".started", "false",
-					        getGlobalPropertyStartedDescription(moduleId));
-					as.saveGlobalProperty(gp);
-				}
-				catch (Throwable t) {
-					log.warn("Unable to save the global property while shutting down", t);
-				}
-				finally {
-					Context.removeProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_GLOBAL_PROPERTIES);
-				}
+			if (skipOverStartedProperty == false && !Context.isRefreshingContext()) {
+				saveGlobalProperty(moduleId + ".started", "false", getGlobalPropertyStartedDescription(moduleId));
 			}
 			
 			if (getModuleClassLoaderMap().containsKey(mod)) {
@@ -1041,7 +1049,7 @@ public class ModuleFactory {
 	 * Returns the description for the [moduleId].started global property
 	 * 
 	 * @param moduleId
-	 * @return
+	 * @return description to use for the .started property
 	 */
 	private static String getGlobalPropertyStartedDescription(String moduleId) {
 		String ret = "DO NOT MODIFY. true/false whether or not the " + moduleId;
@@ -1051,4 +1059,46 @@ public class ModuleFactory {
 		return ret;
 	}
 	
+	/**
+	 * Returns the description for the [moduleId].mandatory global property
+	 * 
+	 * @param moduleId
+	 * @return description to use for .mandatory property
+	 */
+	private static String getGlobalPropertyMandatoryModuleDescription(String moduleId) {
+		String ret = "true/false whether or not the " + moduleId;
+		ret += " module MUST start when openmrs starts.  This is used to make sure that mission critical";
+		ret += " modules are always running if openmrs is running.";
+		
+		return ret;
+	}
+	
+	/**
+	 * Convenience method to save a global property with the given value. Proxy privileges are added
+	 * so that this can occur at startup.
+	 * 
+	 * @param key the property for this global property
+	 * @param value the value for this global property
+	 * @param desc the description
+	 * @see AdministrationService#saveGlobalProperty(GlobalProperty)
+	 */
+	private static void saveGlobalProperty(String key, String value, String desc) {
+		try {
+			Context.addProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_GLOBAL_PROPERTIES);
+			AdministrationService as = Context.getAdministrationService();
+			GlobalProperty gp = as.getGlobalPropertyObject(key);
+			if (gp == null)
+				gp = new GlobalProperty(key, value, desc);
+			else
+				gp.setPropertyValue(value);
+			
+			as.saveGlobalProperty(gp);
+		}
+		catch (Throwable t) {
+			log.warn("Unable to save the global property", t);
+		}
+		finally {
+			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_GLOBAL_PROPERTIES);
+		}
+	}
 }

@@ -1,0 +1,5 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+  <global_property property="firstmodule.mandatory" property_value="true" uuid="4f55827e-26fe-102b-80cb-0017a47871b1"/>
+  <global_property property="secondmodule.mandatory" property_value="false" uuid="4f55827e-26fe-102b-80cb-0017a47871a2"/>
+</dataset>

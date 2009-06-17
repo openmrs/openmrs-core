@@ -65,6 +65,7 @@ public class ModuleFileParser {
 		validConfigVersions.add("1.0");
 		validConfigVersions.add("1.1");
 		validConfigVersions.add("1.2");
+		validConfigVersions.add("1.3");
 	}
 	
 	/**
@@ -234,6 +235,8 @@ public class ModuleFileParser {
 			module.setConfig(configDoc);
 			
 			module.setLog4j(log4jDoc);
+			
+			module.setMandatory(getMandatory(rootNode, configVersion, jarfile));
 			
 			module.setFile(moduleFile);
 		}
@@ -571,5 +574,23 @@ public class ModuleFileParser {
 				mappings.add(s2);
 		}
 		return mappings;
+	}
+	
+	/**
+	 * Looks for the "<mandatory>" element in the config file and returns true if the value is
+	 * exactly "true".
+	 * 
+	 * @param rootNode
+	 * @param configVersion
+	 * @param jarfile
+	 * @return true if the mandatory element is set to true
+	 */
+	private boolean getMandatory(Element rootNode, String configVersion, JarFile jarfile) {
+		if (Double.parseDouble(configVersion) >= 1.3) {
+			String mandatory = getElement(rootNode, configVersion, "mandatory");
+			return "true".equalsIgnoreCase(mandatory);
+		}
+		
+		return false; // this module has an older config file
 	}
 }
