@@ -18,12 +18,13 @@ import java.net.URL;
 import junit.framework.Assert;
 
 import org.junit.Test;
+import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 
 /**
  * Tests methods on the {@link ModuleUtil} class
  */
-public class ModuleUtilTest {
+public class ModuleUtilTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * This test requires a connection to the internet to pass
@@ -70,6 +71,27 @@ public class ModuleUtilTest {
 	public void getURL_shouldReturnAnUpdateRdfPageForModuleUrls() throws Exception {
 		String updateRdf = ModuleUtil.getURL(new URL("http://modules.openmrs.org/modules/download/formentry/update.rdf"));
 		Assert.assertTrue(updateRdf.contains("<updates"));
+	}
+	
+	/**
+	 * @see {@link ModuleUtil#checkMandatoryModulesStarted()}
+	 */
+	@Test(expected = MandatoryModuleException.class)
+	@Verifies(value = "should throw ModuleException if a mandatory module is not started", method = "checkMandatoryModulesStarted()")
+	public void checkMandatoryModulesStarted_shouldThrowModuleExceptionIfAMandatoryModuleIsNotStarted() throws Exception {
+		executeDataSet("org/openmrs/module/include/mandatoryModulesGlobalProperties.xml");
+		ModuleUtil.checkMandatoryModulesStarted();
+	}
+	
+	/**
+	 * @see {@link ModuleUtil#getMandatoryModules()}
+	 */
+	@Test
+	@Verifies(value = "should return mandatory module ids", method = "getMandatoryModules()")
+	public void getMandatoryModules_shouldReturnMandatoryModuleIds() throws Exception {
+		executeDataSet("org/openmrs/module/include/mandatoryModulesGlobalProperties.xml");
+		Assert.assertEquals(1, ModuleUtil.getMandatoryModules().size());
+		Assert.assertEquals("firstmodule", ModuleUtil.getMandatoryModules().get(0));
 	}
 	
 }

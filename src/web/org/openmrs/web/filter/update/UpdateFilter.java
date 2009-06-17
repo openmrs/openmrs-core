@@ -301,9 +301,13 @@ public class UpdateFilter extends StartupFilter {
 		if (properties != null) {
 			Context.setRuntimeProperties(properties);
 			try {
-				log.debug("Setting updates required to " + (model.changes.size() > 0)
-				        + " because of the size of unrun changes");
-				updatesRequired = model.changes.size() > 0;
+				if (model.changes == null)
+					updatesRequired = false;
+				else {
+					log.debug("Setting updates required to " + (model.changes.size() > 0)
+					        + " because of the size of unrun changes");
+					updatesRequired = model.changes.size() > 0;
+				}
 			}
 			catch (Exception e) {
 				throw new ServletException("Unable to determine if updates are required", e);

@@ -39,6 +39,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.LogManager;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.MandatoryModuleException;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.module.web.WebModuleUtil;
@@ -67,6 +68,8 @@ public final class Listener extends ContextLoaderListener {
 	
 	private static boolean runtimePropertiesFound = false;
 	
+	private static Throwable errorAtStartup = null;
+	
 	/**
 	 * Boolean flag set on webapp startup marking whether there is a runtime properties file or not.
 	 * If there is not, then the {@link InitializationFilter} takes over any openmrs url and
@@ -76,6 +79,26 @@ public final class Listener extends ContextLoaderListener {
 	 */
 	public static boolean runtimePropertiesFound() {
 		return runtimePropertiesFound;
+	}
+	
+	/**
+	 * Boolean flag set by the {@link #contextInitialized(ServletContextEvent)} method
+	 * if an error occurred when trying to start up.  The StartupErrorFilter displays
+	 * the error to the admin
+	 * 
+	 * @return true/false if an error occurred when starting up
+	 */
+	public static boolean errorOccurredAtStartup() {
+		return errorAtStartup != null;
+	}
+	
+	/**
+	 * Get the error thrown at startup
+	 * 
+	 * @return get the error thrown at startup
+	 */
+	public static Throwable getErrorAtStartup() {
+		return errorAtStartup;
 	}
 	
 	/**
@@ -121,6 +144,7 @@ public final class Listener extends ContextLoaderListener {
 			
 		}
 		catch (Throwable t) {
+			errorAtStartup = t;
 			log.fatal("Got exception while starting up: ", t);
 		}
 		
@@ -163,6 +187,10 @@ public final class Listener extends ContextLoaderListener {
 		catch (InputRequiredException inputRequiredEx) {
 			throw new ServletException("Should not be here because updates were run previously", inputRequiredEx);
 		}
+		catch (MandatoryModuleException mandatoryModEx) {
+			throw new ServletException(mandatoryModEx);
+		}
+		
 		
 		// TODO catch openmrs errors here and drop the user back out to the setup screen
 		
@@ -432,9 +460,12 @@ public final class Listener extends ContextLoaderListener {
 			
 		}
 		catch (Throwable t) {
-			// not using log.error here so it can be garbage collected 
-			System.out.println("Listener.contextDestroyed: Error while shutting down openmrs");
-			t.printStackTrace();
+			// don't print the unhelpful "contextDAO is null" message
+			if (!t.getMessage().equals("contextDAO is null")) {
+				// not using log.error here so it can be garbage collected 
+				System.out.println("Listener.contextDestroyed: Error while shutting down openmrs: ");
+				t.printStackTrace();
+			}
 		}
 		finally {
 			// remove the user context that we set earlier

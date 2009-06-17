@@ -275,6 +275,15 @@ public class HibernateAdministrationDAO implements AdministrationDAO {
 	}
 	
 	/**
+	 * @see org.openmrs.api.db.AdministrationDAO#getGlobalPropertiesBySuffix(java.lang.String)
+	 */
+	@SuppressWarnings("unchecked")
+	public List<GlobalProperty> getGlobalPropertiesBySuffix(String suffix) {
+		return sessionFactory.getCurrentSession().createCriteria(GlobalProperty.class).add(
+		    Restrictions.like("property", suffix, MatchMode.END)).list();
+	}
+	
+	/**
 	 * @see org.openmrs.api.db.AdministrationDAO#deleteGlobalProperty(GlobalProperty)
 	 */
 	public void deleteGlobalProperty(GlobalProperty property) throws DAOException {

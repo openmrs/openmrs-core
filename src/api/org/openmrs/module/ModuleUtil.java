@@ -23,17 +23,20 @@ import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 import java.util.Vector;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.GlobalProperty;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ServiceContext;
@@ -53,7 +56,7 @@ public class ModuleUtil {
 	 * 
 	 * @param props Properties (OpenMRS runtime properties)
 	 */
-	public static void startup(Properties props) {
+	public static void startup(Properties props) throws MandatoryModuleException {
 		
 		String moduleListString = props.getProperty(ModuleConstants.RUNTIMEPROPERTY_MODULE_LIST_TO_LOAD);
 		
@@ -114,6 +117,7 @@ public class ModuleUtil {
 		// start all of the modules we just loaded
 		ModuleFactory.startModules();
 		
+		// some debugging info
 		if (log.isDebugEnabled()) {
 			Collection<Module> modules = ModuleFactory.getStartedModules();
 			if (modules == null || modules.size() == 0)
@@ -121,6 +125,9 @@ public class ModuleUtil {
 			else
 				log.debug("Found and loaded " + modules.size() + " module(s)");
 		}
+		
+		// make sure all mandatory modules are loaded and started
+		checkMandatoryModulesStarted();
 	}
 	
 	/**
@@ -136,7 +143,7 @@ public class ModuleUtil {
 				log.debug("stopping module: " + mod.getModuleId());
 			
 			if (mod.isStarted())
-				ModuleFactory.stopModule(mod, true);
+				ModuleFactory.stopModule(mod, true, true);
 		}
 		
 		log.debug("done shutting down modules");
@@ -581,4 +588,47 @@ public class ModuleUtil {
 		
 		return ctx;
 	}
+	
+	/**
+	 * Looks at the <moduleid>.mandatory properties and at the currently started modules to make
+	 * sure that all mandatory modules have been started successfully.
+	 * 
+	 * @throws ModuleException if a mandatory module isn't started
+	 * @should throw ModuleException if a mandatory module is not started
+	 */
+	protected static void checkMandatoryModulesStarted() throws ModuleException {
+		
+		List<String> mandatoryModuleIds = getMandatoryModules();
+		Set<String> startedModuleIds = ModuleFactory.getStartedModulesMap().keySet();
+		
+		mandatoryModuleIds.removeAll(startedModuleIds);
+		
+		// any module ids left in the list are not started
+		if (mandatoryModuleIds.size() > 0) {
+			throw new MandatoryModuleException(mandatoryModuleIds);
+		}
+	}
+	
+	/**
+	 * Returns all modules that are marked as mandatory. Currently this means there is a
+	 * <moduleid>.mandatory=true global property.
+	 * 
+	 * @return list of modules ids for mandatory modules
+	 * @should return mandatory module ids
+	 */
+	public static List<String> getMandatoryModules() {
+		
+		List<String> mandatoryModuleIds = new ArrayList<String>();
+		
+		List<GlobalProperty> props = Context.getAdministrationService().getGlobalPropertiesBySuffix(".mandatory");
+		
+		for (GlobalProperty prop : props) {
+			if ("true".equalsIgnoreCase(prop.getPropertyValue())) {
+				mandatoryModuleIds.add(prop.getProperty().replace(".mandatory", ""));
+			}
+		}
+		
+		return mandatoryModuleIds;
+	}
+	
 }

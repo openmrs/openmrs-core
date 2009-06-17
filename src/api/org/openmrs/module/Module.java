@@ -85,6 +85,8 @@ public final class Module {
 	
 	private Document log4j = null;
 	
+	private boolean mandatory = Boolean.FALSE;
+	
 	// keep a reference to the file that we got this module from so we can delete
 	// it if necessary
 	private File file = null;
@@ -548,6 +550,14 @@ public final class Module {
 	public void setMappingFiles(List<String> mappingFiles) {
 		this.mappingFiles = mappingFiles;
 	}
+	
+	public boolean isMandatory() {
+    	return mandatory;
+    }
+
+    public void setMandatory(boolean mandatory) {
+    	this.mandatory = mandatory;
+    }
 	
 	public boolean isStarted() {
 		return ModuleFactory.isModuleStarted(this);

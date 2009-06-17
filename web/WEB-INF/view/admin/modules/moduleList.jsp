@@ -55,19 +55,26 @@
 					<form method="post">
 					<input type="hidden" name="moduleId" value="${module.moduleId}" />
 					<tr class="<c:choose><c:when test="${varStatus.index % 2 == 0}">oddRow</c:when><c:otherwise>evenRow</c:otherwise></c:choose>" id="${module.moduleId}">
-						<c:if test="${allowAdmin=='true'}">
-							<td valign="top">
-								<c:choose>
-									<c:when test="${not module.started}">
-										<input type="image" src="${pageContext.request.contextPath}/images/play.gif" name="start" onclick="document.getElementById('hiddenAction').value = this.value" title="<spring:message code="Module.start.help"/>" alt="<spring:message code="Module.start"/>" />
-									</c:when>
-									<c:otherwise>
-										<input type="image" src="${pageContext.request.contextPath}/images/stop.gif" name="stop" onclick="document.getElementById('hiddenAction').value = this.value" title="<spring:message code="Module.stop.help"/>" alt="<spring:message code="Module.stop"/>" />
-									</c:otherwise>
-								</c:choose>
-							</td>
-							<td valign="top"><input type="image" src="${pageContext.request.contextPath}/images/trash.gif" name="unload" onclick="return confirm('<spring:message code="Module.unloadWarning"/>');" title="<spring:message code="Module.unload.help"/>" title="<spring:message code="Module.unload"/>" alt="<spring:message code="Module.unload"/>" /></td>
-						</c:if>
+						<c:choose>
+							<c:when test="${allowAdmin=='true' && module.mandatory == false}">
+								<td valign="top">
+									<c:choose>
+										<c:when test="${not module.started}">
+											<input type="image" src="${pageContext.request.contextPath}/images/play.gif" name="start" onclick="document.getElementById('hiddenAction').value = this.value" title="<spring:message code="Module.start.help"/>" alt="<spring:message code="Module.start"/>" />
+										</c:when>
+										<c:otherwise>
+											<input type="image" src="${pageContext.request.contextPath}/images/stop.gif" name="stop" onclick="document.getElementById('hiddenAction').value = this.value" title="<spring:message code="Module.stop.help"/>" alt="<spring:message code="Module.stop"/>" />
+										</c:otherwise>
+									</c:choose>
+								</td>
+								<td valign="top"><input type="image" src="${pageContext.request.contextPath}/images/trash.gif" name="unload" onclick="return confirm('<spring:message code="Module.unloadWarning"/>');" title="<spring:message code="Module.unload.help"/>" title="<spring:message code="Module.unload"/>" alt="<spring:message code="Module.unload"/>" /></td>
+							</c:when>
+							<c:otherwise>
+								<td valign="top" align="center" colspan="2">
+									<img src="${pageContext.request.contextPath}/images/lock.gif" title="<spring:message code="Module.locked.help"/>" alt="<spring:message code="Module.locked"/>" />
+								</td>
+							</c:otherwise>
+						</c:choose>
 						<td valign="top">${module.name} <c:if test="${not module.started}"><b id="moduleNotStarted" style="white-space: nowrap">[<spring:message code="Module.notStarted"/>]</b></c:if></td>
 						<td valign="top">${module.version}</td>
 						<td valign="top">${module.author}</td>
