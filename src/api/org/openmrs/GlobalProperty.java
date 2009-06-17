@@ -15,8 +15,6 @@ package org.openmrs;
 
 import java.util.Date;
 
-import org.openmrs.api.context.Context;
-
 /**
  * Global properties are simple key-value pairs persisted in the database GPs can be thought of as
  * something similar to environment variables used in operating systems.
@@ -37,7 +35,7 @@ public class GlobalProperty {
 	
 	private String defaultPropertyType;
 	
-	private User createdBy;
+	private User creator;
 	
 	private Date dateCreated;
 	
@@ -210,17 +208,17 @@ public class GlobalProperty {
     }
 	
     /**
-     * @return the createdBy
+     * @return the creator
      */
-    public User getCreatedBy() {
-    	return createdBy;
+    public User getCreator() {
+    	return creator;
     }
 	
     /**
      * @param createdBy the createdBy to set
      */
-    public void setCreatedBy(User createdBy) {
-    	this.createdBy = createdBy;
+    public void setCreator(User creator) {
+    	this.creator = creator;
     }
 	
     /**
