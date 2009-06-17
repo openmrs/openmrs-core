@@ -22,6 +22,7 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.HibernateException;
+import org.hibernate.Interceptor;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.util.ConfigHelper;
 import org.openmrs.api.context.Context;
@@ -36,6 +37,26 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
 	private static Log log = LogFactory.getLog(HibernateSessionFactoryBean.class);
 	
 	protected Set<String> tmpMappingResources = new HashSet<String>();
+	
+	protected static Interceptor globalSessionInterceptor = null;
+	
+	/**
+	 * Sets the session interceptor for the hibernate sessions. <br/>
+	 * This should be set within the spring application context of a module
+	 * 
+	 * @param globalSessionInterceptor
+	 */
+	public void setGlobalSessionInterceptor(Interceptor globalSessionInterceptor) {
+		log.debug("Spring setter for global Hibernate Session Interceptor for SessionFactory called with interceptor: "
+		        + globalSessionInterceptor);
+		
+		if (HibernateSessionFactoryBean.globalSessionInterceptor != null) {
+			log.warn("Overwriting current interceptor: " + HibernateSessionFactoryBean.globalSessionInterceptor
+			        + " with another interceptor: " + globalSessionInterceptor);
+		}
+		
+		HibernateSessionFactoryBean.globalSessionInterceptor = globalSessionInterceptor;
+	}
 	
 	//public SessionFactory newSessionFactory(Configuration config) throws HibernateException {
 	public Configuration newConfiguration() throws HibernateException {
@@ -69,8 +90,17 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
 			log.fatal("Unable to load default hibernate properties", e);
 		}
 		
-		return config;
+		// If there's an interceptor, set it for all sessions:
+		if (globalSessionInterceptor != null) {
+			log.debug("Setting global Hibernate Session Interceptor for SessionFactory, Interceptor: "
+			        + globalSessionInterceptor);
+			config.setInterceptor(globalSessionInterceptor);
+		} else {
+			log.debug("No global Hibernate Session Interceptor for SessionFactory set in builder");
+			log.debug("Is there a global pre-set interceptor already for SessionFactory?: " + config.getInterceptor());
+		}
 		
+		return config;
 	}
 	
 	/**
