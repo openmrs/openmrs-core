@@ -21,6 +21,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
@@ -683,90 +684,6 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 			es.saveEncounter(e);
 		}
 		
-		// move all identifiers
-		for (PatientIdentifier pi : notPreferred.getIdentifiers()) {
-			PatientIdentifier tmpIdentifier = new PatientIdentifier();
-			tmpIdentifier.setIdentifier(pi.getIdentifier());
-			tmpIdentifier.setIdentifierType(null); // don't compare identifier
-			// types.
-			tmpIdentifier.setLocation(pi.getLocation());
-			tmpIdentifier.setPatient(preferred);
-			boolean found = false;
-			for (PatientIdentifier preferredIdentifier : preferred.getIdentifiers()) {
-				if (preferredIdentifier.getIdentifier() != null
-				        && preferredIdentifier.getIdentifier().equals(tmpIdentifier.getIdentifier())
-				        && preferredIdentifier.getIdentifierType() != null
-				        && preferredIdentifier.getIdentifierType().equals(tmpIdentifier.getIdentifierType()))
-					found = true;
-			}
-			if (!found) {
-				tmpIdentifier.setIdentifierType(pi.getIdentifierType());
-				tmpIdentifier.setCreator(Context.getAuthenticatedUser());
-				tmpIdentifier.setDateCreated(new Date());
-				tmpIdentifier.setVoided(false);
-				tmpIdentifier.setVoidedBy(null);
-				tmpIdentifier.setVoidReason(null);
-				// we don't want to change the preferred identifier of the preferred patient
-				tmpIdentifier.setPreferred(false);
-				preferred.addIdentifier(tmpIdentifier);
-				log.debug("Merging identifier " + tmpIdentifier.getIdentifier() + " to " + preferred.getPatientId());
-			}
-		}
-		
-		// move all names
-		for (PersonName newName : notPreferred.getNames()) {
-			boolean containsName = false;
-			for (PersonName currentName : preferred.getNames()) {
-				String given = newName.getGivenName();
-				String middle = newName.getMiddleName();
-				String family = newName.getFamilyName();
-				
-				if ((given != null && given.equals(currentName.getGivenName()))
-				        && (middle != null && middle.equals(currentName.getMiddleName()))
-				        && (family != null && family.equals(currentName.getFamilyName()))) {
-					containsName = true;
-				}
-			}
-			if (!containsName) {
-				PersonName tmpName = PersonName.newInstance(newName);
-				tmpName.setPersonNameId(null);
-				tmpName.setVoided(false);
-				tmpName.setVoidedBy(null);
-				tmpName.setVoidReason(null);
-				// we don't want to change the preferred name of the preferred patient
-				tmpName.setPreferred(false);
-				//tmpName.setUuid(null); not needed because newInstance method doesn't copy it
-				preferred.addName(tmpName);
-				log.debug("Merging name " + newName.getGivenName() + " to " + preferred.getPatientId());
-			}
-		}
-		
-		// move all addresses
-		for (PersonAddress newAddress : notPreferred.getAddresses()) {
-			boolean containsAddress = false;
-			for (PersonAddress currentAddress : preferred.getAddresses()) {
-				String address1 = currentAddress.getAddress1();
-				String address2 = currentAddress.getAddress2();
-				String cityVillage = currentAddress.getCityVillage();
-				
-				if ((address1 != null && address1.equals(newAddress.getAddress1()))
-				        && (address2 != null && address2.equals(newAddress.getAddress2()))
-				        && (cityVillage != null && cityVillage.equals(newAddress.getCityVillage()))) {
-					containsAddress = true;
-				}
-			}
-			if (!containsAddress) {
-				PersonAddress tmpAddress = (PersonAddress) newAddress.clone();
-				tmpAddress.setPersonAddressId(null);
-				tmpAddress.setVoided(false);
-				tmpAddress.setVoidedBy(null);
-				tmpAddress.setVoidReason(null);
-				tmpAddress.setUuid(null);
-				preferred.addAddress(tmpAddress);
-				log.debug("Merging address " + newAddress.getPersonAddressId() + " to " + preferred.getPatientId());
-			}
-		}
-		
 		// copy all program enrollments
 		ProgramWorkflowService programService = Context.getProgramWorkflowService();
 		for (PatientProgram pp : programService.getPatientPrograms(notPreferred, null, null, null, null, null, false)) {
@@ -782,13 +699,17 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		PersonService personService = Context.getPersonService();
 		for (Relationship rel : personService.getRelationshipsByPerson(notPreferred)) {
 			if (!rel.isVoided()) {
-				Relationship tmpRel = rel.copy();
-				if (tmpRel.getPersonA().equals(notPreferred))
-					tmpRel.setPersonA(preferred);
-				if (tmpRel.getPersonB().equals(notPreferred))
-					tmpRel.setPersonB(preferred);
-				log.debug("Copying relationship " + rel.getRelationshipId() + " to " + preferred.getPatientId());
-				personService.saveRelationship(tmpRel);
+				// skip over this relationship if its just between the preferred and notpreferred patients
+				if (!((rel.getPersonA().equals(notPreferred) && rel.getPersonB().equals(preferred)) ||
+						rel.getPersonB().equals(notPreferred) && rel.getPersonA().equals(preferred))) {
+					Relationship tmpRel = rel.copy();
+					if (tmpRel.getPersonA().equals(notPreferred))
+						tmpRel.setPersonA(preferred);
+					if (tmpRel.getPersonB().equals(notPreferred))
+						tmpRel.setPersonB(preferred);
+					log.debug("Copying relationship " + rel.getRelationshipId() + " to " + preferred.getPatientId());
+					personService.saveRelationship(tmpRel);
+						}
 			}
 		}
 		
@@ -812,11 +733,100 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 			}
 		}
 		
+		// move all identifiers
+		// (must be done after all calls to services above so hbm doesn't try to save things prematurely (hacky)
+		for (PatientIdentifier pi : notPreferred.getActiveIdentifiers()) {
+			PatientIdentifier tmpIdentifier = new PatientIdentifier();
+			tmpIdentifier.setIdentifier(pi.getIdentifier());
+			tmpIdentifier.setIdentifierType(null); // don't compare identifier
+			// types.
+			tmpIdentifier.setLocation(pi.getLocation());
+			tmpIdentifier.setPatient(preferred);
+			boolean found = false;
+			for (PatientIdentifier preferredIdentifier : preferred.getIdentifiers()) {
+				if (preferredIdentifier.getIdentifier() != null
+				        && preferredIdentifier.getIdentifier().equals(tmpIdentifier.getIdentifier())
+				        && preferredIdentifier.getIdentifierType() != null
+				        && preferredIdentifier.getIdentifierType().equals(tmpIdentifier.getIdentifierType()))
+					found = true;
+			}
+			if (!found) {
+				tmpIdentifier.setIdentifierType(pi.getIdentifierType());
+				tmpIdentifier.setCreator(Context.getAuthenticatedUser());
+				tmpIdentifier.setDateCreated(new Date());
+				tmpIdentifier.setVoided(false);
+				tmpIdentifier.setVoidedBy(null);
+				tmpIdentifier.setVoidReason(null);
+				tmpIdentifier.setUuid(UUID.randomUUID().toString());
+				// we don't want to change the preferred identifier of the preferred patient
+				tmpIdentifier.setPreferred(false);
+				preferred.addIdentifier(tmpIdentifier);
+				log.debug("Merging identifier " + tmpIdentifier.getIdentifier() + " to " + preferred.getPatientId());
+			}
+		}
+		
+		// move all names
+		// (must be done after all calls to services above so hbm doesn't try to save things prematurely (hacky)
+		for (PersonName newName : notPreferred.getNames()) {
+			boolean containsName = false;
+			for (PersonName currentName : preferred.getNames()) {
+				String given = newName.getGivenName();
+				String middle = newName.getMiddleName();
+				String family = newName.getFamilyName();
+				
+				if ((given != null && given.equals(currentName.getGivenName()))
+				        && (middle != null && middle.equals(currentName.getMiddleName()))
+				        && (family != null && family.equals(currentName.getFamilyName()))) {
+					containsName = true;
+				}
+			}
+			if (!containsName) {
+				PersonName tmpName = PersonName.newInstance(newName);
+				tmpName.setPersonNameId(null);
+				tmpName.setVoided(false);
+				tmpName.setVoidedBy(null);
+				tmpName.setVoidReason(null);
+				// we don't want to change the preferred name of the preferred patient
+				tmpName.setPreferred(false);
+				tmpName.setUuid(UUID.randomUUID().toString());
+				preferred.addName(tmpName);
+				log.debug("Merging name " + newName.getGivenName() + " to " + preferred.getPatientId());
+			}
+		}
+		
+		// move all addresses
+		// (must be done after all calls to services above so hbm doesn't try to save things prematurely (hacky)
+		for (PersonAddress newAddress : notPreferred.getAddresses()) {
+			boolean containsAddress = false;
+			for (PersonAddress currentAddress : preferred.getAddresses()) {
+				String address1 = currentAddress.getAddress1();
+				String address2 = currentAddress.getAddress2();
+				String cityVillage = currentAddress.getCityVillage();
+				
+				if ((address1 != null && address1.equals(newAddress.getAddress1()))
+				        && (address2 != null && address2.equals(newAddress.getAddress2()))
+				        && (cityVillage != null && cityVillage.equals(newAddress.getCityVillage()))) {
+					containsAddress = true;
+				}
+			}
+			if (!containsAddress) {
+				PersonAddress tmpAddress = (PersonAddress) newAddress.clone();
+				tmpAddress.setPersonAddressId(null);
+				tmpAddress.setVoided(false);
+				tmpAddress.setVoidedBy(null);
+				tmpAddress.setVoidReason(null);
+				tmpAddress.setUuid(UUID.randomUUID().toString());
+				preferred.addAddress(tmpAddress);
+				log.debug("Merging address " + newAddress.getPersonAddressId() + " to " + preferred.getPatientId());
+			}
+		}
+		
 		// copy person attributes
 		for (PersonAttribute attr : notPreferred.getAttributes()) {
 			if (!attr.isVoided()) {
 				PersonAttribute tmpAttr = attr.copy();
 				tmpAttr.setPerson(null);
+				tmpAttr.setUuid(UUID.randomUUID().toString());
 				preferred.addAttribute(tmpAttr);
 			}
 		}
@@ -837,38 +847,12 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 			preferred.setBirthdateEstimated(notPreferred.getBirthdateEstimated());
 		}
 		
-		/*
-		 * if (preferred.getBirthplace() == null ||
-		 * preferred.getBirthplace().equals(""))
-		 * preferred.setBirthplace(notPreferred.getBirthplace());
-		 * 
-		 * if (preferred.getCitizenship() == null ||
-		 * preferred.getCitizenship().equals(""))
-		 * preferred.setCitizenship(notPreferred.getCitizenship());
-		 * 
-		 * if (preferred.getMothersName() == null ||
-		 * preferred.getMothersName().equals(""))
-		 * preferred.setMothersName(notPreferred.getMothersName());
-		 * 
-		 * if (preferred.getCivilStatus() == null)
-		 * preferred.setCivilStatus(notPreferred.getCivilStatus());
-		*/
-
 		if (preferred.getDeathDate() == null || preferred.getDeathDate().equals(""))
 			preferred.setDeathDate(notPreferred.getDeathDate());
 		
 		if (preferred.getCauseOfDeath() == null || preferred.getCauseOfDeath().equals(""))
 			preferred.setCauseOfDeath(notPreferred.getCauseOfDeath());
 		
-		/*
-		 * if (preferred.getHealthDistrict() == null ||
-		 * preferred.getHealthDistrict().equals(""))
-		 * preferred.setHealthDistrict(notPreferred.getHealthDistrict());
-		 * 
-		 * if (preferred.getHealthCenter() == null)
-		 * preferred.setHealthCenter(notPreferred.getHealthCenter());
-		*/
-
 		// void the non preferred patient
 		voidPatient(notPreferred, "Merged with patient #" + preferred.getPatientId());
 		
@@ -876,7 +860,6 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		// This must be called _after_ voiding the nonPreferred patient so that
 		//  a "Duplicate Identifier" error doesn't pop up.
 		savePatient(preferred);
-		
 	}
 	
 	/**
