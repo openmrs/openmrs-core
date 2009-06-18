@@ -1,23 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <dataset>
-  <concept_name_tag concept_name_tag_id="1" tag="default" description="name to use when nothing else is available" creator="1" date_created="2007-05-01 00:00:00.0" voided="false" uuid="cb4b0c9c-5fd9-451e-8759-b53bc7f8bebd"/>
-  <concept_name_tag concept_name_tag_id="2" tag="short" description="preferred short name for a concept" creator="1" date_created="2007-05-01 00:00:00.0" voided="false" uuid="41a69986-4b9a-4e0a-b2f5-fdb1f538d51b"/>
-  <concept_name_tag concept_name_tag_id="3" tag="synonym" description="a different word with similar meaning" creator="1" date_created="2007-05-01 00:00:00.0" voided="false" uuid="20de0395-0ab5-4752-b09a-a4def608231d"/>
-  <concept_name_tag concept_name_tag_id="4" tag="preferred" description="preferred name in a language" creator="1" date_created="2007-05-01 00:00:00.0" voided="false" uuid="f47ca1e4-092d-4828-844c-a48487ef3261"/>
-  <concept_name_tag concept_name_tag_id="5" tag="preferred_KE" description="preferred name in Kenya" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="89366407-1812-45f9-9988-1dfbe683921c"/>
-  <concept_name_tag concept_name_tag_id="6" tag="preferred_LS" description="preferred name in Lesotho" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="88b2b2c7-e3a4-43b6-a9c3-9c1b9b00c87b"/>
-  <concept_name_tag concept_name_tag_id="7" tag="preferred_MW" description="preferred name in Malawi" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="7e36fe1e-6242-4586-a6ae-3d515ceae9fb"/>
-  <concept_name_tag concept_name_tag_id="8" tag="preferred_RW" description="preferred name in Rwanda" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="e60d112f-0906-4daf-8585-200393d27a81"/>
-  <concept_name_tag concept_name_tag_id="9" tag="preferred_SA" description="preferred name in South Africa" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="55af4fae-712b-4ab3-84b4-2b5dd3628eef"/>
-  <concept_name_tag concept_name_tag_id="10" tag="preferred_TZ" description="preferred name in Tanzania" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="199f5ad5-7e2e-4927-bb8c-851c81a5bb18"/>
-  <concept_name_tag concept_name_tag_id="11" tag="preferred_UG" description="preferred name in Uganda" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="e7255190-0e9c-4b24-8060-efe94be6fc9d"/>
-  <concept_name_tag concept_name_tag_id="12" tag="preferred_UK" description="preferred name in the United Kingdom" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="3eb7acd1-2a2e-46bf-8cb4-7a07d6b0de5a"/>
-  <concept_name_tag concept_name_tag_id="13" tag="preferred_US" description="preferred name in the United States" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="a56fff24-c3db-43e8-b0d7-acbd2a6f01ba"/>
-  <concept_name_tag concept_name_tag_id="14" tag="preferred_ZM" description="preferred name in Zambia" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="f903beeb-1a38-496d-bcea-887ae4202c88"/>
-  <concept_name_tag concept_name_tag_id="15" tag="preferred_ZW" description="preferred name in Zimbabwe" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="e7b883a8-ca3d-4755-9a2f-0f71d6958521"/>
   <relationship relationship_id="1" person_a="2" relationship="2" person_b="1" creator="1" date_created="2008-01-01 00:00:00.0" voided="false" uuid="b70cb368-cf80-4a22-9d75-5d0d1f9b75dc"/>
   <relationship_type relationship_type_id="2" a_is_to_b="Parent" b_is_to_a="Child" preferred="0" weight="0" description="" creator="1" date_created="2007-01-01 00:00:00.0" uuid="7aa68365-e758-4dce-b918-2f8a1f26bb1c"/>
   <relationship_type relationship_type_id="3" a_is_to_b="Doctor" b_is_to_a="Patient" preferred="0" weight="0" description="Relationship from a primary care provider to the patient" creator="1" date_created="2007-01-01 00:00:00.0" uuid="21275268-89df-42f9-b0e3-b1996a25eed5"/>
   <relationship_type relationship_type_id="4" a_is_to_b="Sibling" b_is_to_a="Sibling" preferred="0" weight="0" description="Relationship between brother/sister, brother/brother, and sister/sister" creator="1" date_created="2007-01-01 00:00:00.0" uuid="3fb0da52-68ad-4b87-aa42-418b19e81d43"/>
   <relationship_type relationship_type_id="5" a_is_to_b="Aunt/Uncle" b_is_to_a="Niece/Nephew" preferred="0" weight="0" description="" creator="1" date_created="2007-01-01 00:00:00.0" uuid="9400232c-7979-4091-8b84-2726a33e9c24"/>
+  <relationship relationship_id="3" person_a="999" relationship="5" person_b="2" creator="1" date_created="2008-01-01 00:00:00.0" voided="false" uuid="ee232368-cf80-4a22-9d75-5d0d9dce"/>
 </dataset>
