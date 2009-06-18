@@ -596,28 +596,31 @@ public class HibernatePatientDAO implements PatientDAO {
 		
 		return 1000;
 	}
-
+	
 	/**
-	 * This method uses a SQL query and does not load anything into the hibernate session. It exists because
-	 * of ticket #1375.
-     * @see org.openmrs.api.db.PatientDAO#isIdentifierInUseByAnotherPatient(org.openmrs.PatientIdentifier)
-     */
-    public boolean isIdentifierInUseByAnotherPatient(PatientIdentifier patientIdentifier) {
-    	boolean checkPatient = patientIdentifier.getPatient() != null && patientIdentifier.getPatient().getPatientId() != null;
-
-    	String sql = "select count(*) from patient_identifier pi inner join patient p on pi.patient_id = p.patient_id " +
-    		"where p.voided = false and pi.voided = false and pi.identifier = :identifier and pi.identifier_type = :idType";
-    	
-    	if (checkPatient) {
-    		sql += " and p.patient_id != :ptId";
-    	}
-
-    	SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(sql);
-    	query.setString("identifier", patientIdentifier.getIdentifier());
-    	query.setInteger("idType", patientIdentifier.getIdentifierType().getPatientIdentifierTypeId());
-    	if (checkPatient) {
-	    	query.setInteger("ptId", patientIdentifier.getPatient().getPatientId());
-    	}
-    	return !query.uniqueResult().toString().equals("0");
-    }
+	 * This method uses a SQL query and does not load anything into the hibernate session. It exists
+	 * because of ticket #1375.
+	 * 
+	 * @see org.openmrs.api.db.PatientDAO#isIdentifierInUseByAnotherPatient(org.openmrs.PatientIdentifier)
+	 */
+	public boolean isIdentifierInUseByAnotherPatient(PatientIdentifier patientIdentifier) {
+		boolean checkPatient = patientIdentifier.getPatient() != null
+		        && patientIdentifier.getPatient().getPatientId() != null;
+		
+		// switched this to an hql query so the hibernate cache can be considered as well as the database
+		String hql = "select count(*) from PatientIdentifier pi, Patient p where pi.patient.patientId = p.patient.patientId "
+		        + "and p.voided = false and pi.voided = false and pi.identifier = :identifier and pi.identifierType = :idType";
+		
+		if (checkPatient) {
+			hql += " and p.patientId != :ptId";
+		}
+		
+		Query query = sessionFactory.getCurrentSession().createQuery(hql);
+		query.setString("identifier", patientIdentifier.getIdentifier());
+		query.setInteger("idType", patientIdentifier.getIdentifierType().getPatientIdentifierTypeId());
+		if (checkPatient) {
+			query.setInteger("ptId", patientIdentifier.getPatient().getPatientId());
+		}
+		return !query.uniqueResult().toString().equals("0");
+	}
 }
