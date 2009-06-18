@@ -237,7 +237,7 @@ public class DWRFormService {
 		field.setSelectMultiple(multiple);
 		
 		ff.setField(field);
-		fs.updateFormField(ff);
+		fs.saveFormField(ff);
 		
 		fieldId = ff.getField().getFieldId();
 		formFieldId = ff.getFormFieldId();
@@ -249,7 +249,7 @@ public class DWRFormService {
 	
 	public void deleteFormField(Integer id) {
 		if (Context.isAuthenticated()) {
-			Context.getFormService().deleteFormField(Context.getFormService().getFormField(id));
+			Context.getFormService().purgeFormField(Context.getFormService().getFormField(id));
 			//Context.closeSession();
 		}
 	}
