@@ -612,6 +612,7 @@ public interface FormService extends OpenmrsService {
 	 * @param formField the FormField to save
 	 * @return the formField that was just saved
 	 * @throws APIException
+	 * @should propagate save to the Field property on the given FormField
 	 */
 	@Authorized(OpenmrsConstants.PRIV_MANAGE_FORMS)
 	public FormField saveFormField(FormField formField) throws APIException;
