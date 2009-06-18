@@ -837,9 +837,14 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		
 		patientService.mergePatients(preferred, notPreferred);
 		
-		PatientIdentifier piToTest = new PatientIdentifier("ABC123", new PatientIdentifierType(2), null);
+		PatientIdentifier nonvoidedPI = new PatientIdentifier("7TU-8", new PatientIdentifierType(1), new Location(1));
+		nonvoidedPI.setPatient(preferred);
+		PatientIdentifier voidedPI = new PatientIdentifier("ABC123", new PatientIdentifierType(2), new Location(1));
+		voidedPI.setPatient(preferred);
 		
-		Assert.assertTrue(OpenmrsUtil.collectionContains(preferred.getIdentifiers(), piToTest));
+		Assert.assertTrue(OpenmrsUtil.collectionContains(preferred.getIdentifiers(), nonvoidedPI));
+		Assert.assertFalse("The voided identifier: " + voidedPI + " should not have been moved over because it was voided",
+		    OpenmrsUtil.collectionContains(preferred.getIdentifiers(), voidedPI));
 	}
 	
 	/**
@@ -921,6 +926,21 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should return null if no object found with given uuid", method = "getPatientIdentifierTypeByUuid(String)")
 	public void getPatientIdentifierTypeByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
 		Assert.assertNull(Context.getPatientService().getPatientIdentifierTypeByUuid("some invalid uuid"));
+	}
+	
+	/**
+	 * @see {@link PatientService#mergePatients(Patient,Patient)}
+	 */
+	@Test
+	@Verifies(value = "should not copy over relationships that are only between the preferred and notpreferred patient", method = "mergePatients(Patient,Patient)")
+	public void mergePatients_shouldNotCopyOverRelationshipsThatAreOnlyBetweenThePreferredAndNotpreferredPatient()
+	                                                                                                              throws Exception {
+		executeDataSet("org/openmrs/api/include/PersonServiceTest-createRelationship.xml");
+		
+		Patient preferred = patientService.getPatient(999);
+		Patient notPreferred = patientService.getPatient(2);
+		
+		patientService.mergePatients(preferred, notPreferred);
 	}
 	
 }

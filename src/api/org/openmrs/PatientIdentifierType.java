@@ -58,10 +58,10 @@ public class PatientIdentifierType extends BaseOpenmrsMetadata implements java.i
 	public boolean equals(Object obj) {
 		if (obj instanceof PatientIdentifierType) {
 			PatientIdentifierType p = (PatientIdentifierType) obj;
-			if (p != null)
+			if (getPatientIdentifierTypeId() != null && p != null)
 				return (patientIdentifierTypeId.equals(p.getPatientIdentifierTypeId()));
 		}
-		return false;
+		return this == obj;
 	}
 	
 	// Property accessors

@@ -513,6 +513,7 @@ public interface PatientService extends OpenmrsService {
 	 * @should copy nonvoided names to preferred patient
 	 * @should copy nonvoided identifiers to preferred patient
 	 * @should copy nonvoided addresses to preferred patient
+	 * @should not copy over relationships that are only between the preferred and notpreferred patient
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_EDIT_PATIENTS })
 	public void mergePatients(Patient preferred, Patient notPreferred) throws APIException;
