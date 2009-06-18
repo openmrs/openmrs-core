@@ -21,6 +21,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
@@ -641,6 +642,10 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 		
 		// don't change the changed by and date changed on field for 
 		// form field updates
+		
+		// set the uuid here because the RequiredDataAdvice only looks at child lists
+		if (field.getUuid() == null)
+			field.setUuid(UUID.randomUUID().toString());
 		
 		return dao.saveFormField(formField);
 	}
