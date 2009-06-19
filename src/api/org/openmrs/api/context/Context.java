@@ -965,7 +965,7 @@ public class Context {
 					GlobalProperty propToUpdate = propsMissingDescription.get(corePropName);
 					if (propToUpdate != null) {
 						propToUpdate.setDescription(coreProp.getDescription());
-						Context.getAdministrationService().saveGlobalProperty(coreProp);
+						Context.getAdministrationService().saveGlobalProperty(propToUpdate);
 					}
 				}
 			}
