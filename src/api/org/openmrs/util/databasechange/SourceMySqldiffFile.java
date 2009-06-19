@@ -99,7 +99,7 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 		StringBuffer output = new StringBuffer();
 		Integer exitValue = -1; // default to a non-zero exit value in case of exceptions
 		try {
-			execCmd(tmpOutputFile.getParentFile(), commands.toArray(new String[] {}), output);
+			exitValue = execCmd(tmpOutputFile.getParentFile(), commands.toArray(new String[] {}), output);
 		}
 		catch (IOException io) {
 			if (io.getMessage().endsWith("not found")) {
