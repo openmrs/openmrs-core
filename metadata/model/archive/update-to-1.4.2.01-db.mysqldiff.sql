@@ -1790,64 +1790,22 @@ BEGIN
 		set
 		  concept_name_id = 
 		    (select 
-		      min(cn.concept_name_id)
+		      cn.concept_name_id
 		     from
 		      concept_name cn,
 		      concept_name_tag_map map
 		     where
 		      cn.concept_id = concept_word.concept_id
 		      and
-		      locate(word, cn.name) > 0
+		      cn.name = synonym
 		      and
 		      map.concept_name_id = cn.concept_name_id
 		      and
 		      map.concept_name_tag_id = 3)
 		where synonym <> '';
 		
-		# find duplicate words and delete the synonym part
-		drop table if exists tmp_concept_word_helper;
-		create table tmp_concept_word_helper like concept_word;
-		ALTER TABLE tmp_concept_word_helper DROP PRIMARY KEY;
-		insert into 
-		 tmp_concept_word_helper
-		(select
-		  cw2.*
-		from
-		  concept_word cw1,
-		  concept_word cw2
-		where
-		  cw1.concept_id = cw2.concept_id
-		  and
-		  cw1.word = cw2.word
-		  and
-		  cw1.synonym = ''
-		  and
-		  cw2.synonym <> ''
-		);
-		
-		# delete those synonym words that are duplicate.
-		delete from
-		concept_word
-		where
-		  exists (
-		  select
-		    *
-		  from
-		   tmp_concept_word_helper tmp
-		  where
-		   concept_word.concept_id = tmp.concept_id
-		   and
-		   concept_word.word = tmp.word
-		   and
-		   concept_word.synonym = tmp.synonym
-		   and
-		   concept_word.concept_name_id = tmp.concept_name_id);
-		
 		# clean up any synonyms that were in the word table but werent really ever synonyms
 		delete from concept_word where concept_name_id = 0 or concept_name_id is null;
-		
-		# clean up
-		drop table tmp_concept_word_helper;
 		
 		ALTER TABLE concept_word CHANGE concept_name_id concept_name_id INTEGER NOT NULL; 
 		
@@ -1932,9 +1890,11 @@ BEGIN
 		
 		select 'Dropping concept_name_id from obs table (this may fail, which is ok. If it does fail, run this file again.)' AS '*** Step: ***', new_db_version from dual;
 		
-		ALTER TABLE `obs` DROP FOREIGN KEY `concept_name_id`;
-		
-		ALTER TABLE `obs` DROP COLUMN `concept_name_id`;
+		IF (select count(*) from information_schema.columns where table_schema = schema() and table_name = 'obs' and column_name = 'concept_name_id') THEN
+			ALTER TABLE `obs` DROP FOREIGN KEY `concept_name_id`;
+			
+			ALTER TABLE `obs` DROP COLUMN `concept_name_id`;
+		END IF;
 		
 		select '***' AS '...done' from dual;
 		

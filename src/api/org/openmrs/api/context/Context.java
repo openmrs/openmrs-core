@@ -959,9 +959,12 @@ public class Context {
 			
 			for (GlobalProperty coreProp : OpenmrsConstants.CORE_GLOBAL_PROPERTIES()) {
 				String corePropName = coreProp.getProperty().toUpperCase();
+				// if the prop doesn't exist, save it
 				if (!currentPropNames.contains(corePropName)) {
 					Context.getAdministrationService().saveGlobalProperty(coreProp);
+					currentPropNames.add(corePropName); // add to list in case of duplicates
 				} else {
+					// if the prop is missing its description, update it
 					GlobalProperty propToUpdate = propsMissingDescription.get(corePropName);
 					if (propToUpdate != null) {
 						propToUpdate.setDescription(coreProp.getDescription());
