@@ -48,6 +48,7 @@ public interface ContextDAO {
 	 * @should authenticateWithCorrectHashedPassword
 	 * @should authenticateWithIncorrectHashedPassword
 	 * @should set uuid on user property when authentication fails with valid user
+	 * @should pass regression test for 1580 
 	 */
 	@Transactional(noRollbackFor = ContextAuthenticationException.class)
 	public User authenticate(String username, String password) throws ContextAuthenticationException;
