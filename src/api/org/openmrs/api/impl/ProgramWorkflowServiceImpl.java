@@ -593,7 +593,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 		p.setDateEnrolled(enrollmentDate);
 		p.setDateCompleted(completionDate);
 		p.setCreator(creator);
-		savePatientProgram(p);
+		Context.getProgramWorkflowService().savePatientProgram(p);
 	}
 	
 	/**
