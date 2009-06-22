@@ -344,7 +344,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 * @deprecated replaced by {@link #saveEncounter(Encounter)}
 	 */
 	public void createEncounter(Encounter encounter) throws APIException {
-		saveEncounter(encounter);
+		Context.getEncounterService().saveEncounter(encounter);
 	}
 	
 	/**
@@ -352,7 +352,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 * @deprecated replaced by {@link #saveEncounter(Encounter)}
 	 */
 	public void updateEncounter(Encounter encounter) throws APIException {
-		saveEncounter(encounter);
+		Context.getEncounterService().saveEncounter(encounter);
 	}
 	
 	/**
@@ -360,7 +360,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 * @deprecated Replaced by {@link #purgeEncounter(Encounter)}
 	 */
 	public void deleteEncounter(Encounter encounter) throws APIException {
-		purgeEncounter(encounter);
+		Context.getEncounterService().purgeEncounter(encounter);
 	}
 	
 	/**

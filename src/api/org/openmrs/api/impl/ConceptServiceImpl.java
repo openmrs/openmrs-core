@@ -88,56 +88,56 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 * @deprecated use {@link #saveConcept(Concept)}
 	 */
 	public void createConcept(Concept concept) {
-		saveConcept(concept);
+		Context.getConceptService().saveConcept(concept);
 	}
 	
 	/**
 	 * @deprecated use {@link #saveConcept(Concept)}
 	 */
 	public void createConcept(ConceptNumeric concept) {
-		saveConcept(concept);
+		Context.getConceptService().saveConcept(concept);
 	}
 	
 	/**
 	 * @deprecated use {@link #saveConcept(Concept)}
 	 */
 	public void updateConcept(Concept concept) {
-		saveConcept(concept);
+		Context.getConceptService().saveConcept(concept);
 	}
 	
 	/**
 	 * @deprecated use {@link #saveConcept(Concept)}
 	 */
 	public void updateConcept(ConceptNumeric concept) {
-		saveConcept(concept);
+		Context.getConceptService().saveConcept(concept);
 	}
 	
 	/**
 	 * @deprecated use #saveDrug(Drug)
 	 */
 	public void createDrug(Drug drug) {
-		saveDrug(drug);
+		Context.getConceptService().saveDrug(drug);
 	}
 	
 	/**
 	 * @deprecated Use #saveDrug(Drug)
 	 */
 	public void updateDrug(Drug drug) {
-		saveDrug(drug);
+		Context.getConceptService().saveDrug(drug);
 	}
 	
 	/**
 	 * @deprecated use #purgeConcept(Concept concept)
 	 */
 	public void deleteConcept(Concept concept) {
-		purgeConcept(concept);
+		Context.getConceptService().purgeConcept(concept);
 	}
 	
 	/**
 	 * @deprecated use {@link #retireConcept(Concept, String)}etireConcept
 	 */
 	public void voidConcept(Concept concept, String reason) {
-		retireConcept(concept, reason);
+		Context.getConceptService().retireConcept(concept, reason);
 	}
 	
 	/**

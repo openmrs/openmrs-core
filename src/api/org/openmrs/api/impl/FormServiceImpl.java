@@ -80,7 +80,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 * @deprecated
 	 */
 	public Form createForm(Form form) throws APIException {
-		return saveForm(form);
+		return Context.getFormService().saveForm(form);
 	}
 	
 	/**
@@ -125,7 +125,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 * @deprecated
 	 */
 	public void updateForm(Form form) throws APIException {
-		saveForm(form);
+		Context.getFormService().saveForm(form);
 	}
 	
 	/**
@@ -187,7 +187,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 * @deprecated
 	 */
 	public void deleteForm(Form form) throws APIException {
-		purgeForm(form, false);
+		Context.getFormService().purgeForm(form, false);
 	}
 	
 	/**
@@ -284,7 +284,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 * @deprecated
 	 */
 	public void createField(Field field) throws APIException {
-		saveField(field);
+		Context.getFormService().saveField(field);
 	}
 	
 	/**
@@ -292,7 +292,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 * @deprecated
 	 */
 	public void updateField(Field field) throws APIException {
-		saveField(field);
+		Context.getFormService().saveField(field);
 	}
 	
 	/**
@@ -300,7 +300,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 * @deprecated
 	 */
 	public void deleteField(Field field) throws APIException {
-		purgeField(field);
+		Context.getFormService().purgeField(field);
 	}
 	
 	/**
@@ -337,7 +337,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 * @deprecated
 	 */
 	public void createFormField(FormField formField) throws APIException {
-		saveFormField(formField);
+		Context.getFormService().saveFormField(formField);
 	}
 	
 	/**
@@ -345,7 +345,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 * @deprecated
 	 */
 	public void updateFormField(FormField formField) throws APIException {
-		saveFormField(formField);
+		Context.getFormService().saveFormField(formField);
 	}
 	
 	/**
@@ -353,7 +353,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 * @deprecated
 	 */
 	public void deleteFormField(FormField formField) throws APIException {
-		purgeFormField(formField);
+		Context.getFormService().purgeFormField(formField);
 	}
 	
 	/**
