@@ -1,23 +1,86 @@
 #parse($headerTemplate)
 
+<script>
+	function showProgress() {
+		
+		var lastIndex = 0;
+		
+		jQuery.post("${setupPageUrl}", {page: "updateProgress.vm.ajaxRequest"} , function(data) {
+
+			if(!data.updatesRequired)
+			{
+				location="index.htm";
+				return;
+			}
+			
+			if(data.hasErrors)
+			{
+				location="${setupPageUrl}";
+				return;
+			}
+							
+			jQuery("#lastActionMessage").html(data.message);
+			
+			for (var x = lastIndex; x < data.changesetIds.length; x++) {
+				var changesetId = data.changesetIds[x];
+				jQuery("#" + changesetId).show();
+			}
+			
+			/* save the last point in the list for next time */
+			lastIndex = data.changesetIds.length - 1;
+			
+			jQuery("#logLinesDiv").show();
+			var logLines = "";
+			for(var i = 0; i < data.logLines.length; i++)
+			{
+				logLines += data.logLines[i] + "<br />";
+			}
+			
+			jQuery("#logLines").html(logLines);
+
+		}, "json");
+		
+		setTimeout("showProgress()", 1000);
+	}
+	
+	#if( $updateJobStarted == true )
+		jQuery(function() { showProgress(); });
+	#end
+</script>
+
+<style>
+	.changesetImage, #logLinesDiv {
+		display: none;
+	}
+</style>
+	
 <form method="post" autocomplete="off">
 	<input type="hidden" name="page" value="reviewchanges.vm" /> 
 			
 	<div class="content">
 		<table align="center" cellspacing="5" cellpadding="9">
 			<tr>
-				<td colspan="3" class="question">The following database updates are required:</td>
+				<td colspan="3" class="question">
+					#if( $updateJobStarted != true )
+						The following database updates are required:
+					#end
+					#if( $updateJobStarted == true )
+						The following database updates are being executed:
+					#end
+				</td>
 			</tr>
 			<tr>
 				<td>
 					<table>
 						<tr>
+							<th></th>
 							<th>Description of Update</th>
 							<th>Actions</th>
 							<th>Author</th>
 						</tr>
 						#foreach ($change in $changes)
 							<tr>
+								<td><img id="${change.id}" class="changesetImage" src="images/checkmark.png"/></td>
 								<td>${change.comments}</td>
 								<td>${change.description}</td>
 								<td>${change.author}</td>
@@ -26,10 +89,21 @@
 					</table>
 				</td>
 			</tr>
-			<tr>
-				<td colspan="3"><input type="submit" value="Run Updates" class="button"/></td>
-			</tr>
+			#if( $updateJobStarted != true )
+				<tr>
+					<td colspan="3"><input type="submit" value="Run Updates" class="button"/></td>
+				</tr>
+			#end
 		</table>
+		
+     	<div id="lastActionMessage"></div>
+       	
+       	<br />
+       	
+       	<div id="logLinesDiv">
+			Server log file output:
+			<div id="logLines"></div>
+		</div>
 	</div>
 	
 	
