@@ -16,6 +16,8 @@ package org.openmrs.web.filter.initialization;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openmrs.web.WebConstants;
+
 /**
  * The {@link InitializationFilter} uses this model object to hold all properties that are edited by
  * the user in the wizard. All attributes on this model object are added to all templates rendered
@@ -166,19 +168,5 @@ public class InitializationWizardModel {
 	 */
 	public String implementationIdDescription = "";
 	
-	/**
-	 * A counter that is incremented every time something happens. This is used
-	 * at the end of the wizard and displayed on the progress.vm page
-	 */
-	public Integer actionCounter = 0;
-	
-	/**
-	 * The last action that was taken that contributed to the actionCounter
-	 */
-	public String lastActionMessage = "";
-	
-	/**
-	 * Text from the log file
-	 */
-	public List<String> logLines = new ArrayList<String>();
+	public String setupPageUrl = WebConstants.SETUP_PAGE_URL;
 }

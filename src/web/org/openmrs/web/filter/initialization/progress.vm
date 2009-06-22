@@ -1,26 +1,43 @@
 #parse($headerTemplate)
-	<script type="text/javascript" language="JavaScript">
- 		function next()
- 		{
- 			document.forms[0].submit();
- 		}
-		window.setTimeout("next()",1000);
+	<script>
+		function showProgress() {
+			jQuery.post("${setupPageUrl}", {page: "progress.vm.ajaxRequest"} , function(data) {
+				
+				if(data.initializationComplete) {
+					location="index.htm";
+					return;
+				}
+				
+				if(data.hasErrors) {
+					location= "${setupPageUrl}";
+					return;
+				}
+								
+				jQuery("#lastActionMessage").html(data.message);
+				jQuery("#actionCounter").html(data.actionCounter);
+				
+				var logLines = "";
+				for(var i = 0; i < data.logLines.length; i++) {
+					logLines += data.logLines[i] + "<br />";
+				}
+				
+				jQuery("#logLines").html(logLines);
+				
+			}, "json");
+			
+			setTimeout("showProgress()", 1000);
+		}
+		
+		jQuery(function() { showProgress(); });
 	</script>
-	
-	<form method="post" autocomplete="off">
-		<input type="hidden" name="page" value="progress.vm" /> 
-		<input type="hidden" name="actionCounter" value="${actionCounter}" /> 
-        <div class="content">
-        	${lastActionMessage}
-        	<br /><br />
-        	Number of actions completed so far: ${actionCounter}
-        	<br /><br />
-			Server log file output:
-			<div>
-				#foreach ($logLine in $logLines)
-					${logLine}<br />
-				#end
-			</div>
-        </div>
-	</form>
+
+    <div class="content">
+     	<div id="lastActionMessage">0%</div>
+       	<br />
+       	Number of actions completed so far: <span id="actionCounter">0</span>
+       	<br /><br />
+		Server log file output:
+	    <div id="logLines"></div>
+	    
+    </div>
 #parse($footerTemplate)
