@@ -355,6 +355,8 @@ public class DatabaseUpdater {
 	 */
 	public static class OpenMRSChangeSet {
 		
+		private String id;
+		
 		private String author;
 		
 		private String comments;
@@ -372,6 +374,7 @@ public class DatabaseUpdater {
 		 * @param database
 		 */
 		public OpenMRSChangeSet(ChangeSet changeSet, Database database) throws Exception {
+			setId(changeSet.getId());
 			setAuthor(changeSet.getAuthor());
 			setComments(changeSet.getComments());
 			setDescription(changeSet.getDescription());
@@ -448,6 +451,21 @@ public class DatabaseUpdater {
 		public void setRanDate(Date ranDate) {
 			this.ranDate = ranDate;
 		}
+		
+		/**
+		 * @return the id
+		 */
+		public String getId() {
+			return id;
+		}
+		
+		/**
+		 * @param id the id to set
+		 */
+		public void setId(String id) {
+			this.id = id;
+		}
+		
 	}
 	
 	/**
