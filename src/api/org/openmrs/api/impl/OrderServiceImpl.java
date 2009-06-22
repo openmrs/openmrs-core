@@ -83,7 +83,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Deprecated
 	public void createOrder(Order order) throws APIException {
-		saveOrder(order);
+		Context.getOrderService().saveOrder(order);
 	}
 	
 	/**
@@ -92,7 +92,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Deprecated
 	public void updateOrder(Order order) throws APIException {
-		saveOrder(order);
+		Context.getOrderService().saveOrder(order);
 	}
 	
 	/**
@@ -101,7 +101,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Deprecated
 	public void deleteOrder(Order order) throws APIException {
-		purgeOrder(order);
+		Context.getOrderService().purgeOrder(order);
 	}
 	
 	/**
@@ -189,7 +189,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Deprecated
 	public void createOrderType(OrderType orderType) throws APIException {
-		saveOrderType(orderType);
+		Context.getOrderService().saveOrderType(orderType);
 	}
 	
 	/**
@@ -198,7 +198,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Deprecated
 	public void updateOrderType(OrderType orderType) throws APIException {
-		saveOrderType(orderType);
+		Context.getOrderService().saveOrderType(orderType);
 	}
 	
 	/**
@@ -207,7 +207,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Deprecated
 	public void deleteOrderType(OrderType orderType) throws APIException {
-		purgeOrderType(orderType);
+		Context.getOrderService().purgeOrderType(orderType);
 	}
 	
 	/**

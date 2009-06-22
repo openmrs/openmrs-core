@@ -288,7 +288,7 @@ public class MessageServiceImpl implements MessageService {
 	 * @deprecated
 	 */
 	public Message create(String subject, String message) throws MessageException {
-		return createMessage(subject, message);
+		return Context.getMessageService().createMessage(subject, message);
 	}
 	
 	/**
@@ -297,7 +297,7 @@ public class MessageServiceImpl implements MessageService {
 	 * @deprecated
 	 */
 	public Message create(String sender, String subject, String message) throws MessageException {
-		return createMessage(sender, subject, message);
+		return Context.getMessageService().createMessage(sender, subject, message);
 	}
 	
 	/**
@@ -306,7 +306,7 @@ public class MessageServiceImpl implements MessageService {
 	 * @deprecated
 	 */
 	public Message create(String recipients, String sender, String subject, String message) throws MessageException {
-		return createMessage(recipients, sender, subject, message);
+		return Context.getMessageService().createMessage(recipients, sender, subject, message);
 	}
 	
 	/**

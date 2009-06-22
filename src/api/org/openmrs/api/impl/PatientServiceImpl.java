@@ -103,7 +103,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 * @see org.openmrs.api.PatientService#createPatient(org.openmrs.Patient)
 	 */
 	public Patient createPatient(Patient patient) throws APIException {
-		return savePatient(patient);
+		return Context.getPatientService().savePatient(patient);
 	}
 	
 	/**
@@ -133,7 +133,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 * @see org.openmrs.api.PatientService#updatePatient(org.openmrs.Patient)
 	 */
 	public Patient updatePatient(Patient patient) throws APIException {
-		return savePatient(patient);
+		return Context.getPatientService().savePatient(patient);
 	}
 	
 	/**
@@ -373,7 +373,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 * @deprecated replaced by {@link #purgePatient(Patient)}
 	 */
 	public void deletePatient(Patient patient) throws APIException {
-		purgePatient(patient);
+		Context.getPatientService().purgePatient(patient);
 	}
 	
 	/**
@@ -459,7 +459,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 			}
 		}
 		
-		savePatient(p);
+		Context.getPatientService().savePatient(p);
 	}
 	
 	// end patient identifier section

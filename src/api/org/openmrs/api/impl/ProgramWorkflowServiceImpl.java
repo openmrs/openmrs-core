@@ -422,7 +422,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 * @deprecated
 	 */
 	public void createOrUpdateProgram(Program program) {
-		saveProgram(program);
+		Context.getProgramWorkflowService().saveProgram(program);
 	}
 	
 	/**
@@ -453,7 +453,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 		if (w.getProgram() == null) {
 			throw new APIException("ProgramWorkflow requires a Program");
 		}
-		saveProgram(w.getProgram());
+		Context.getProgramWorkflowService().saveProgram(w.getProgram());
 	}
 	
 	/**
@@ -487,7 +487,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 */
 	public void voidWorkflow(ProgramWorkflow w, String reason) {
 		w.setRetired(true);
-		saveProgram(w.getProgram());
+		Context.getProgramWorkflowService().saveProgram(w.getProgram());
 	}
 	
 	// **************************
@@ -569,7 +569,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 * @deprecated
 	 */
 	public void createPatientProgram(PatientProgram patientProgram) {
-		savePatientProgram(patientProgram);
+		Context.getProgramWorkflowService().savePatientProgram(patientProgram);
 	}
 	
 	/**
@@ -577,7 +577,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 * @deprecated
 	 */
 	public void updatePatientProgram(PatientProgram patientProgram) {
-		savePatientProgram(patientProgram);
+		Context.getProgramWorkflowService().savePatientProgram(patientProgram);
 	}
 	
 	/**
@@ -703,7 +703,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	public void changeToState(PatientProgram patientProgram, ProgramWorkflow workflow, ProgramWorkflowState state,
 	                          Date onDate) {
 		patientProgram.transitionToState(state, onDate);
-		savePatientProgram(patientProgram);
+		Context.getProgramWorkflowService().savePatientProgram(patientProgram);
 	}
 	
 	/**
@@ -733,7 +733,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 * @deprecated
 	 */
 	public void createConceptStateConversion(ConceptStateConversion csc) {
-		saveConceptStateConversion(csc);
+		Context.getProgramWorkflowService().saveConceptStateConversion(csc);
 	}
 	
 	/**
@@ -741,7 +741,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 * @deprecated
 	 */
 	public void updateConceptStateConversion(ConceptStateConversion csc) {
-		saveConceptStateConversion(csc);
+		Context.getProgramWorkflowService().saveConceptStateConversion(csc);
 	}
 	
 	/**
@@ -757,7 +757,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 * @deprecated
 	 */
 	public void deleteConceptStateConversion(ConceptStateConversion csc) {
-		purgeConceptStateConversion(csc);
+		Context.getProgramWorkflowService().purgeConceptStateConversion(csc);
 	}
 	
 	/**

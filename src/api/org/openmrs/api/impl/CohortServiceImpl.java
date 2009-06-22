@@ -87,7 +87,7 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	 * @deprecated
 	 */
 	public Cohort createCohort(Cohort cohort) {
-		return saveCohort(cohort);
+		return Context.getCohortService().saveCohort(cohort);
 	}
 	
 	/**
@@ -157,7 +157,7 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	 * @deprecated
 	 */
 	public Cohort updateCohort(Cohort cohort) {
-		return saveCohort(cohort);
+		return Context.getCohortService().saveCohort(cohort);
 	}
 	
 	/**
