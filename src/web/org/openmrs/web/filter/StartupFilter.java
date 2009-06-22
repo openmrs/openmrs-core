@@ -41,6 +41,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
+import org.directwebremoting.util.JavascriptUtil;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.filter.initialization.InitializationFilter;
@@ -77,7 +78,7 @@ public abstract class StartupFilter implements Filter {
 	 */
 	public final void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
 	                                                                                               ServletException {
-		if (skipFilter()) {
+		if (skipFilter((HttpServletRequest) request)) {
 			chain.doFilter(request, response);
 		} else {
 			
@@ -114,11 +115,11 @@ public abstract class StartupFilter implements Filter {
 				httpResponse.sendRedirect("/" + WebConstants.WEBAPP_NAME + "/" + WebConstants.SETUP_PAGE_URL);
 			} else {
 				
-				errors.clear();
-				
 				if (httpRequest.getMethod().equals("GET")) {
 					doGet(httpRequest, httpResponse);
 				} else if (httpRequest.getMethod().equals("POST")) {
+					// only clear errors before POSTS so that redirects can show errors too.
+					errors.clear();
 					doPost(httpRequest, httpResponse);
 				}
 			}
@@ -265,6 +266,90 @@ public abstract class StartupFilter implements Filter {
 	 * 
 	 * @return true if this filter can be skipped
 	 */
-	public abstract boolean skipFilter();
+	public abstract boolean skipFilter(HttpServletRequest request);
 	
+	/**
+	 * Convert a map of strings to objects to json
+	 * 
+	 * @param map object to convert
+	 * @param sb StringBuffer to append to
+	 */
+	private void toJSONString(Map<String, Object> map, StringBuffer sb) {
+		boolean first = true;
+		
+		sb.append('{');
+		for (Map.Entry<String, Object> entry : map.entrySet()) {
+			if (first)
+				first = false;
+			else
+				sb.append(',');
+			
+			sb.append('"');
+			if (entry.getKey() == null)
+				sb.append("null");
+			else
+				sb.append(JavascriptUtil.escapeJavaScript(entry.getKey()));
+			sb.append('"').append(':');
+			
+			sb.append(toJSONString(entry.getValue()));
+			
+		}
+		sb.append('}');
+	}
+	
+	/**
+	 * Convert a list of objects to json
+	 * 
+	 * @param list object to convert
+	 * @param sb StringBuffer to append to
+	 */
+	private void toJSONString(List<Object> list, StringBuffer sb) {
+		boolean first = true;
+		
+		sb.append('[');
+		for (Object listItem : list) {
+			if (first)
+				first = false;
+			else
+				sb.append(',');
+			
+			sb.append(toJSONString(listItem));
+		}
+		sb.append(']');
+	}
+	
+	/**
+	 * Convert all other objects to json
+	 * 
+	 * @param object object to convert
+	 * @param sb StringBuffer to append to
+	 */
+	private void toJSONString(Object object, StringBuffer sb) {
+		if (object == null)
+			sb.append("null");
+		else
+			sb.append('"').append(JavascriptUtil.escapeJavaScript(object.toString())).append('"');
+	}
+	
+	/**
+	 * Convenience method to convert the given object to a JSON string.
+	 * Supports Maps, Lists, Strings, Boolean, Double
+	 * 
+	 * @param object object to convert to json
+	 * @return JSON string to be eval'd in javascript
+	 */
+	protected String toJSONString(Object object) {
+		StringBuffer sb = new StringBuffer();
+		
+		if (object instanceof Map)
+			toJSONString((Map<String, Object>)object, sb);
+		else if (object instanceof List)
+			toJSONString((List)object, sb);
+		else if (object instanceof Boolean)
+			sb.append(object.toString());
+		else
+			toJSONString(object, sb);
+		
+		return sb.toString();
+	}
 }

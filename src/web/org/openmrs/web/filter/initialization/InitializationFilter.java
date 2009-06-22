@@ -77,9 +77,51 @@ public class InitializationFilter extends StartupFilter {
 	private static final String LIQUIBASE_DEMO_DATA = "liquibase-demo-data.xml";
 	
 	/**
+	 * The first page of the wizard that asks for a current or past database
+	 */
+	private final String DATABASE_SETUP = "databasesetup.vm";
+	
+	/**
 	 * The velocity macro page to redirect to if an error occurs or on initial startup
 	 */
-	private final String DEFAULT_PAGE = "databasesetup.vm";
+	private final String DEFAULT_PAGE = DATABASE_SETUP;
+	
+	/**
+	 * This page asks whether database tables/demo data should be inserted and what the
+	 * username/password that will be put into the runtime properties is
+	 */
+	private final String DATABASE_TABLES_AND_USER = "databasetablesanduser.vm";
+	
+	/**
+	 * This page lets the user define the admin user
+	 */
+	private static final String ADMIN_USER_SETUP = "adminusersetup.vm";
+	
+	/**
+	 * This page lets the user pick an implementation id
+	 */
+	private static final String IMPLEMENTATION_ID_SETUP = "implementationidsetup.vm";
+	
+	/**
+	 * This page asks for settings that will be put into the runtime properties files
+	 */
+	private final String OTHER_RUNTIME_PROPS = "otherruntimeproperties.vm";
+	
+	/**
+	 * A page that tells the user that everything is collected and will now be processed
+	 */
+	private static final String WIZARD_COMPLETE = "wizardcomplete.vm";
+	
+	/**
+	 * A page that lists off what is happening while it is going on. This page has ajax that callst
+	 * he {@value #PROGRESS_VM_AJAXREQUEST} page
+	 */
+	private static final String PROGRESS_VM = "progress.vm";
+	
+	/**
+	 * This url is called by javascript to get the status of the install
+	 */
+	private static final String PROGRESS_VM_AJAXREQUEST = "progress.vm.ajaxRequest";
 	
 	/**
 	 * The model object that holds all the properties that the rendered templates use. All
@@ -94,6 +136,10 @@ public class InitializationFilter extends StartupFilter {
 	 * Variable set at the end of the wizard when spring is being restarted
 	 */
 	private boolean initializationComplete = false;
+	
+	synchronized protected void setInitializationComplete(boolean initializationComplete) {
+		this.initializationComplete = initializationComplete;
+	}
 	
 	/**
 	 * Called by {@link #doFilter(ServletRequest, ServletResponse, FilterChain)} on GET requests
@@ -152,7 +198,7 @@ public class InitializationFilter extends StartupFilter {
 		
 		// TODO make these page names variables.
 		// step one
-		if ("databasesetup.vm".equals(page)) {
+		if (DATABASE_SETUP.equals(page)) {
 			
 			wizardModel.databaseConnection = httpRequest.getParameter("database_connection");
 			checkForEmptyValue(wizardModel.databaseConnection, errors, "Database connection string");
@@ -186,16 +232,16 @@ public class InitializationFilter extends StartupFilter {
 			}
 			
 			if (errors.isEmpty()) {
-				page = "databasetablesanduser.vm";
+				page = DATABASE_TABLES_AND_USER;
 			}
 			
 			renderTemplate(page, referenceMap, writer);
 			
 		} // step two
-		else if ("databasetablesanduser.vm".equals(page)) {
+		else if (DATABASE_TABLES_AND_USER.equals(page)) {
 			
 			if ("Back".equals(httpRequest.getParameter("back"))) {
-				renderTemplate("databasesetup.vm", referenceMap, writer);
+				renderTemplate(DATABASE_SETUP, referenceMap, writer);
 				return;
 			}
 			
@@ -224,15 +270,15 @@ public class InitializationFilter extends StartupFilter {
 			}
 			
 			if (errors.isEmpty()) { // go to next page
-				page = "otherruntimeproperties.vm";
+				page = OTHER_RUNTIME_PROPS;
 			}
 			
 			renderTemplate(page, referenceMap, writer);
 		} // step three
-		else if ("otherruntimeproperties.vm".equals(page)) {
+		else if (OTHER_RUNTIME_PROPS.equals(page)) {
 			
 			if ("Back".equals(httpRequest.getParameter("back"))) {
-				renderTemplate("databasetablesanduser.vm", referenceMap, writer);
+				renderTemplate(DATABASE_TABLES_AND_USER, referenceMap, writer);
 				return;
 			}
 			
@@ -240,18 +286,18 @@ public class InitializationFilter extends StartupFilter {
 			wizardModel.autoUpdateDatabase = "yes".equals(httpRequest.getParameter("auto_update_database"));
 			
 			if (wizardModel.createTables) { // go to next page if they are creating tables
-				page = "adminusersetup.vm";
+				page = ADMIN_USER_SETUP;
 			} else { // skip a page
-				page = "implementationidsetup.vm";
+				page = IMPLEMENTATION_ID_SETUP;
 			}
 			
 			renderTemplate(page, referenceMap, writer);
 			
 		} // optional step four
-		else if ("adminusersetup.vm".equals(page)) {
+		else if (ADMIN_USER_SETUP.equals(page)) {
 			
 			if ("Back".equals(httpRequest.getParameter("back"))) {
-				renderTemplate("otherruntimeproperties.vm", referenceMap, writer);
+				renderTemplate(OTHER_RUNTIME_PROPS, referenceMap, writer);
 				return;
 			}
 			
@@ -261,14 +307,14 @@ public class InitializationFilter extends StartupFilter {
 			// throw back to admin user if passwords don't match
 			if (!wizardModel.adminUserPassword.equals(adminUserConfirm)) {
 				errors.add("Admin passwords don't match");
-				renderTemplate("adminusersetup.vm", referenceMap, writer);
+				renderTemplate(ADMIN_USER_SETUP, referenceMap, writer);
 				return;
 			}
 			
 			// throw back if the user didn't put in a password
 			if (wizardModel.adminUserPassword.equals("")) {
 				errors.add("An admin password is required");
-				renderTemplate("adminusersetup.vm", referenceMap, writer);
+				renderTemplate(ADMIN_USER_SETUP, referenceMap, writer);
 				return;
 			}
 			
@@ -278,24 +324,24 @@ public class InitializationFilter extends StartupFilter {
 			catch (PasswordException p) {
 				errors
 				        .add("The password is not long enough, does not contain both uppercase characters and a number, or matches the username.");
-				renderTemplate("adminusersetup.vm", referenceMap, writer);
+				renderTemplate(ADMIN_USER_SETUP, referenceMap, writer);
 				return;
 			}
 			
 			if (errors.isEmpty()) { // go to next page
-				page = "implementationidsetup.vm";
+				page = IMPLEMENTATION_ID_SETUP;
 			}
 			
 			renderTemplate(page, referenceMap, writer);
 			
 		} // optional step five 
-		else if ("implementationidsetup.vm".equals(page)) {
+		else if (IMPLEMENTATION_ID_SETUP.equals(page)) {
 			
 			if ("Back".equals(httpRequest.getParameter("back"))) {
 				if (wizardModel.createTables)
-					renderTemplate("adminusersetup.vm", referenceMap, writer);
+					renderTemplate(ADMIN_USER_SETUP, referenceMap, writer);
 				else
-					renderTemplate("otherruntimeproperties.vm", referenceMap, writer);
+					renderTemplate(OTHER_RUNTIME_PROPS, referenceMap, writer);
 				return;
 			}
 			
@@ -307,19 +353,19 @@ public class InitializationFilter extends StartupFilter {
 			// throw back if the user-specified ID is invalid (contains ^ or |).
 			if (wizardModel.implementationId.indexOf('^') != -1 || wizardModel.implementationId.indexOf('|') != -1) {
 				errors.add("Implementation ID cannot contain '^' or '|'");
-				renderTemplate("implementationidsetup.vm", referenceMap, writer);
+				renderTemplate(IMPLEMENTATION_ID_SETUP, referenceMap, writer);
 				return;
 			}
 			
 			if (errors.isEmpty()) { // go to next page
-				page = "wizardcomplete.vm";
+				page = WIZARD_COMPLETE;
 			}
 			
 			renderTemplate(page, referenceMap, writer);
-		} else if ("wizardcomplete.vm".equals(page)) {
+		} else if (WIZARD_COMPLETE.equals(page)) {
 			
 			if ("Back".equals(httpRequest.getParameter("back"))) {
-				renderTemplate("implementationidsetup.vm", referenceMap, writer);
+				renderTemplate(IMPLEMENTATION_ID_SETUP, referenceMap, writer);
 				return;
 			}
 			
@@ -327,31 +373,31 @@ public class InitializationFilter extends StartupFilter {
 			
 			initJob = new InitializationCompletion();
 			initJob.start();
-			renderTemplate("progress.vm", referenceMap, writer);
-			
-		} else if ("progress.vm".equals(page)) {
+			renderTemplate(PROGRESS_VM, referenceMap, writer);
+		} else if (PROGRESS_VM_AJAXREQUEST.equals(page)) {
+			httpResponse.setContentType("text/json");
+			httpResponse.setHeader("Cache-Control", "no-cache");
+			Map<String, Object> result = new HashMap<String, Object>();
 			if (initJob != null) {
+				result.put("hasErrors", initJob.hasErrors());
 				if (initJob.hasErrors()) {
-					initJob.waitForCompletion();
-					page = initJob.getErrorPage();
+					result.put("errorPage", initJob.getErrorPage());
 					errors.addAll(initJob.getErrors());
-					renderTemplate(page, referenceMap, writer);
-				} else if (initJob.isCompleted()) {
-					initializationComplete = true;
-					httpResponse.sendRedirect("/" + WebConstants.WEBAPP_NAME);
+				}
+				
+				result.put("initializationComplete", isInitializationComplete());
+				result.put("message", initJob.getMessage());
+				result.put("actionCounter", initJob.getStepsComplete());
+				Appender appender = Logger.getRootLogger().getAppender("MEMORY_APPENDER");
+				if (appender instanceof MemoryAppender) {
+					MemoryAppender memoryAppender = (MemoryAppender) appender;
+					result.put("logLines", memoryAppender.getLogLines());
 				} else {
-					wizardModel.actionCounter = initJob.getStepsComplete();
-					wizardModel.lastActionMessage = initJob.getMessage();
-					Appender appender = Logger.getRootLogger().getAppender("MEMORY_APPENDER");
-					if (appender instanceof MemoryAppender) {
-						MemoryAppender memoryAppender = (MemoryAppender) appender;
-						wizardModel.logLines = memoryAppender.getLogLines();
-					}
-					
-					page = "progress.vm";
-					renderTemplate(page, referenceMap, writer);
+					result.put("logLines", new ArrayList<String>());
 				}
 			}
+			
+			writer.write(toJSONString(result));
 		}
 	}
 	
@@ -412,8 +458,12 @@ public class InitializationFilter extends StartupFilter {
 	/**
 	 * @see org.openmrs.web.filter.StartupFilter#skipFilter()
 	 */
-	public boolean skipFilter() {
-		return Listener.runtimePropertiesFound() || isInitializationComplete();
+	public boolean skipFilter(HttpServletRequest httpRequest) {
+		// If progress.vm makes an ajax request even immediately after initialization has completed
+		// let the request pass in order to let progress.vm load the start page of OpenMRS
+		// (otherwise progress.vm is displayed "forever")
+		return !PROGRESS_VM_AJAXREQUEST.equals(httpRequest.getParameter("page"))
+		        && (Listener.runtimePropertiesFound() || isInitializationComplete());
 	}
 	
 	/**
@@ -501,7 +551,7 @@ public class InitializationFilter extends StartupFilter {
 	 * 
 	 * @return true if this has been run already
 	 */
-	private boolean isInitializationComplete() {
+	synchronized private boolean isInitializationComplete() {
 		return initializationComplete;
 	}
 	
@@ -539,23 +589,21 @@ public class InitializationFilter extends StartupFilter {
 		
 		private boolean erroneous = false;
 		
-		private boolean completed = false;
-		
-		public void reportError(String error, String errorPage) {
+		synchronized public void reportError(String error, String errorPage) {
 			errors.add(error);
 			this.errorPage = errorPage;
 			erroneous = true;
 		}
 		
-		public boolean hasErrors() {
+		synchronized public boolean hasErrors() {
 			return erroneous;
 		}
 		
-		public String getErrorPage() {
+		synchronized public String getErrorPage() {
 			return errorPage;
 		}
 		
-		public List<String> getErrors() {
+		synchronized public List<String> getErrors() {
 			return errors;
 		}
 		
@@ -564,7 +612,7 @@ public class InitializationFilter extends StartupFilter {
 		 */
 		public void start() {
 			setStepsComplete(0);
-			setCompleted(false);
+			setInitializationComplete(false);
 			thread.start();
 		}
 		
@@ -578,27 +626,19 @@ public class InitializationFilter extends StartupFilter {
 			}
 		}
 		
-		protected void setCompleted(boolean completed) {
-			this.completed = completed;
-		}
-		
-		public boolean isCompleted() {
-			return completed;
-		}
-		
-		protected void setStepsComplete(int steps) {
+		synchronized protected void setStepsComplete(int steps) {
 			this.steps = steps;
 		}
 		
-		protected int getStepsComplete() {
+		synchronized protected int getStepsComplete() {
 			return steps;
 		}
 		
-		public String getMessage() {
+		synchronized public String getMessage() {
 			return message;
 		}
 		
-		public void setMessage(String message) {
+		synchronized public void setMessage(String message) {
 			this.message = message;
 			setStepsComplete(getStepsComplete() + 1);
 		}
@@ -627,7 +667,7 @@ public class InitializationFilter extends StartupFilter {
 							    wizardModel.createDatabasePassword, sql, wizardModel.databaseName);
 							// throw the user back to the main screen if this error occurs
 							if (result < 0) {
-								reportError(null, DEFAULT_PAGE);
+								reportError("Unable to create the database", DEFAULT_PAGE);
 								return;
 							} else {
 								wizardModel.workLog.add("Created database " + wizardModel.databaseName);
@@ -659,7 +699,7 @@ public class InitializationFilter extends StartupFilter {
 								wizardModel.workLog.add("Created user " + connectionUsername);
 							} else {
 								// if error occurs stop
-								reportError(null, DEFAULT_PAGE);
+								reportError("Unable to create a database user", DEFAULT_PAGE);
 								return;
 							}
 							
@@ -669,7 +709,7 @@ public class InitializationFilter extends StartupFilter {
 							    wizardModel.createUserPassword, sql, wizardModel.databaseName, connectionUsername);
 							// throw the user back to the main screen if this error occurs
 							if (result < 0) {
-								reportError(null, DEFAULT_PAGE);
+								reportError("Unable to grant privileges on openmrs database to user", DEFAULT_PAGE);
 								return;
 							} else {
 								wizardModel.workLog.add("Granted user " + connectionUsername
@@ -688,7 +728,7 @@ public class InitializationFilter extends StartupFilter {
 						if (!verifyConnection(connectionUsername, connectionPassword, finalDatabaseConnectionString)) {
 							setMessage("Verify that the database connection works");
 							// redirect to setup page if we got an error
-							reportError(null, DEFAULT_PAGE);
+							reportError("Unable to connect to database", DEFAULT_PAGE);
 							return;
 						}
 						
@@ -759,6 +799,7 @@ public class InitializationFilter extends StartupFilter {
 								log.warn("Error while trying to add demo data", e);
 							}
 						}
+						
 						// update the database to the latest version
 						try {
 							setMessage("Updating the database to the latest version");
@@ -893,7 +934,9 @@ public class InitializationFilter extends StartupFilter {
 						reportError(e.getMessage() + " Unable to complete the startup.", DEFAULT_PAGE);
 					}
 					finally {
-						setCompleted(true);
+						if (!hasErrors()) {
+							setInitializationComplete(true);
+						}
 					}
 				}
 			};
@@ -901,5 +944,4 @@ public class InitializationFilter extends StartupFilter {
 			thread = new Thread(r);
 		}
 	}
-	
 }
