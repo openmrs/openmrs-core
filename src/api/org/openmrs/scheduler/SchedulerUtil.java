@@ -94,6 +94,7 @@ public class SchedulerUtil {
 	 */
 	public static void sendSchedulerError(Throwable throwable) {
 		try {
+			Context.openSession();
 			
 			Boolean emailIsEnabled = Boolean.valueOf(Context.getAdministrationService().getGlobalProperty(
 			    SchedulerConstants.SCHEDULER_ADMIN_EMAIL_ENABLED_PROPERTY));
@@ -131,6 +132,9 @@ public class SchedulerUtil {
 		catch (Exception e) {
 			// Log, but otherwise suppress errors
 			log.warn("Could not send scheduler error email: ", e);
+		}
+		finally {
+			Context.closeSession();
 		}
 	}
 	

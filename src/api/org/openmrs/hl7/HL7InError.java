@@ -15,7 +15,15 @@ package org.openmrs.hl7;
 
 import java.util.Date;
 
-public class HL7InError {
+import org.openmrs.BaseOpenmrsObject;
+
+/**
+ * Represents a error in processing an hl7 message.
+ * 
+ * @see HL7InQueue
+ * @see HL7Service
+ */
+public class HL7InError extends BaseOpenmrsObject {
 	
 	private int hl7InErrorId;
 	
@@ -143,6 +151,22 @@ public class HL7InError {
 	 */
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
+	}
+	
+	/**
+	 * @see org.openmrs.OpenmrsObject#getId()
+	 * @since 1.5
+	 */
+	public Integer getId() {
+		return getHL7InErrorId();
+	}
+	
+	/**
+	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
+	 * @since 1.5
+	 */
+	public void setId(Integer id) {
+		setHL7InErrorId(id);
 	}
 	
 }
