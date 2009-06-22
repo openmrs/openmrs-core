@@ -16,7 +16,14 @@ package org.openmrs.hl7;
 import java.io.Serializable;
 import java.util.Date;
 
-public class HL7InQueue implements Serializable {
+import org.openmrs.BaseOpenmrsObject;
+
+/**
+ * Represents an hl7 message that has yet to be processed.
+ * 
+ * @see HL7Service
+ */
+public class HL7InQueue extends BaseOpenmrsObject implements Serializable {
 	
 	private static final long serialVersionUID = 8882704913734764446L;
 	
@@ -181,4 +188,21 @@ public class HL7InQueue implements Serializable {
 	public void setMessageState(Integer messageState) {
 		this.messageState = messageState;
 	}
+	
+	/**
+	 * @see org.openmrs.OpenmrsObject#getId()
+	 * @since 1.5
+	 */
+	public Integer getId() {
+		return getHL7InQueueId();
+	}
+	
+	/**
+	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
+	 * @since 1.5
+	 */
+	public void setId(Integer id) {
+		setHL7InQueueId(id);
+	}
+	
 }
