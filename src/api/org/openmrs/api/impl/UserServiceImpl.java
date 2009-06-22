@@ -57,7 +57,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 * @deprecated
 	 */
 	public User createUser(User user, String password) throws APIException {
-		return saveUser(user, password);
+		return Context.getUserService().saveUser(user, password);
 	}
 	
 	/**
@@ -122,7 +122,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 * @see org.openmrs.api.UserService#updateUser(org.openmrs.User)
 	 */
 	public void updateUser(User user) throws APIException {
-		saveUser(user, null);
+		Context.getUserService().saveUser(user, null);
 	}
 	
 	/**
@@ -130,7 +130,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 * @deprecated
 	 */
 	public void grantUserRole(User user, Role role) throws APIException {
-		saveUser(user.addRole(role), null);
+		Context.getUserService().saveUser(user.addRole(role), null);
 	}
 	
 	/**
@@ -138,7 +138,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 * @deprecated
 	 */
 	public void revokeUserRole(User user, Role role) throws APIException {
-		saveUser(user.removeRole(role), null);
+		Context.getUserService().saveUser(user.removeRole(role), null);
 	}
 	
 	/**
@@ -170,7 +170,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 * @deprecated
 	 */
 	public void deleteUser(User user) throws APIException {
-		purgeUser(user);
+		Context.getUserService().purgeUser(user);
 	}
 	
 	/**

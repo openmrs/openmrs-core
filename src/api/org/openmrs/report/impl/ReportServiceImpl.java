@@ -283,7 +283,7 @@ public class ReportServiceImpl implements ReportService {
 	 * @deprecated use saveReportSchemaXml(reportSchemaXml)
 	 */
 	public void createReportSchemaXml(ReportSchemaXml reportSchemaXml) {
-		saveReportSchemaXml(reportSchemaXml);
+		Context.getReportService().saveReportSchemaXml(reportSchemaXml);
 	}
 	
 	/**
@@ -291,7 +291,7 @@ public class ReportServiceImpl implements ReportService {
 	 * @deprecated use saveReportSchemaXml(reportSchemaXml)
 	 */
 	public void updateReportSchemaXml(ReportSchemaXml reportSchemaXml) {
-		saveReportSchemaXml(reportSchemaXml);
+		Context.getReportService().saveReportSchemaXml(reportSchemaXml);
 	}
 	
 	/**

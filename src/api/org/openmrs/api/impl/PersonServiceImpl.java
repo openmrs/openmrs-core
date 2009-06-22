@@ -189,14 +189,14 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 * @deprecated use {@link #savePersonAttributeType(PersonAttributeType)}
 	 */
 	public void createPersonAttributeType(PersonAttributeType type) throws APIException {
-		savePersonAttributeType(type);
+		Context.getPersonService().savePersonAttributeType(type);
 	}
 	
 	/**
 	 * @deprecated use {@link #savePersonAttributeType(PersonAttributeType)}
 	 */
 	public void updatePersonAttributeType(PersonAttributeType type) throws APIException {
-		savePersonAttributeType(type);
+		Context.getPersonService().savePersonAttributeType(type);
 	}
 	
 	/**
@@ -212,7 +212,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 * @deprecated use {@link #purgePersonAttributeType(PersonAttributeType)}
 	 */
 	public void deletePersonAttributeType(Integer attrTypeId) {
-		deletePersonAttributeType(getPersonAttributeType(attrTypeId));
+		Context.getPersonService().deletePersonAttributeType(getPersonAttributeType(attrTypeId));
 	}
 	
 	/**
@@ -340,21 +340,21 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 * @deprecated use {@link #savePerson(Person)}
 	 */
 	public Person createPerson(Person person) throws APIException {
-		return savePerson(person);
+		return Context.getPersonService().savePerson(person);
 	}
 	
 	/**
 	 * @deprecated use {@link #savePerson(Person)}
 	 */
 	public void updatePerson(Person person) throws APIException {
-		savePerson(person);
+		Context.getPersonService().savePerson(person);
 	}
 	
 	/**
 	 * @deprecated use {@link #purgePerson(Person)}
 	 */
 	public void deletePerson(Person person) throws APIException {
-		purgePerson(person);
+		Context.getPersonService().purgePerson(person);
 	}
 	
 	/**
@@ -505,21 +505,21 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 * @deprecated use {@link #saveRelationship(Relationship)}
 	 */
 	public void createRelationship(Relationship relationship) throws APIException {
-		saveRelationship(relationship);
+		Context.getPersonService().saveRelationship(relationship);
 	}
 	
 	/**
 	 * @deprecated use {@link #saveRelationship(Relationship)}
 	 */
 	public void updateRelationship(Relationship relationship) throws APIException {
-		saveRelationship(relationship);
+		Context.getPersonService().saveRelationship(relationship);
 	}
 	
 	/**
 	 * @deprecated use {@link #purgeRelationship(Relationship)}
 	 */
 	public void deleteRelationship(Relationship relationship) throws APIException {
-		purgeRelationship(relationship);
+		Context.getPersonService().purgeRelationship(relationship);
 	}
 	
 	/**
@@ -556,21 +556,21 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 * @deprecated use {@link #saveRelationshipType(RelationshipType)}
 	 */
 	public void createRelationshipType(RelationshipType relationshipType) throws APIException {
-		saveRelationshipType(relationshipType);
+		Context.getPersonService().saveRelationshipType(relationshipType);
 	}
 	
 	/**
 	 * @deprecated use {@link #saveRelationshipType(RelationshipType)}
 	 */
 	public void updateRelationshipType(RelationshipType relationshipType) throws APIException {
-		saveRelationshipType(relationshipType);
+		Context.getPersonService().saveRelationshipType(relationshipType);
 	}
 	
 	/**
 	 * @deprecated use {@link #purgeRelationshipType(RelationshipType)}
 	 */
 	public void deleteRelationshipType(RelationshipType relationshipType) throws APIException {
-		dao.deleteRelationshipType(relationshipType);
+		Context.getPersonService().purgeRelationshipType(relationshipType);
 	}
 	
 	/**

@@ -165,7 +165,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 */
 	@Deprecated
 	public void updateObs(Obs obs) throws APIException {
-		saveObs(obs, obs.getVoidReason());
+		Context.getObsService().saveObs(obs, obs.getVoidReason());
 	}
 	
 	/**
@@ -367,7 +367,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 */
 	@Deprecated
 	public void createObs(Obs obs) throws APIException {
-		saveObs(obs, null);
+		Context.getObsService().saveObs(obs, null);
 	}
 	
 	/**
@@ -422,7 +422,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 */
 	@Deprecated
 	public void deleteObs(Obs obs) throws APIException {
-		purgeObs(obs);
+		Context.getObsService().purgeObs(obs);
 	}
 	
 	/**

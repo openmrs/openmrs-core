@@ -97,7 +97,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	 * @deprecated
 	 */
 	public void createHL7Source(HL7Source hl7Source) {
-		saveHL7Source(hl7Source);
+		Context.getHL7Service().saveHL7Source(hl7Source);
 	}
 	
 	/**
@@ -142,7 +142,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	 * @deprecated
 	 */
 	public void updateHL7Source(HL7Source hl7Source) {
-		saveHL7Source(hl7Source);
+		Context.getHL7Service().saveHL7Source(hl7Source);
 	}
 	
 	/**
@@ -150,7 +150,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	 * @deprecated
 	 */
 	public void deleteHL7Source(HL7Source hl7Source) {
-		purgeHL7Source(hl7Source);
+		Context.getHL7Service().purgeHL7Source(hl7Source);
 	}
 	
 	/**
@@ -182,7 +182,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	 * @deprecated
 	 */
 	public void createHL7InQueue(HL7InQueue hl7InQueue) {
-		saveHL7InQueue(hl7InQueue);
+		Context.getHL7Service().saveHL7InQueue(hl7InQueue);
 	}
 	
 	/**
@@ -212,7 +212,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	 * @deprecated
 	 */
 	public void deleteHL7InQueue(HL7InQueue hl7InQueue) {
-		purgeHL7InQueue(hl7InQueue);
+		Context.getHL7Service().purgeHL7InQueue(hl7InQueue);
 	}
 	
 	/**
@@ -251,7 +251,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	 * @deprecated
 	 */
 	public void createHL7InArchive(HL7InArchive hl7InArchive) {
-		saveHL7InArchive(hl7InArchive);
+		Context.getHL7Service().saveHL7InArchive(hl7InArchive);
 	}
 	
 	/**
@@ -274,7 +274,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	 * @deprecated
 	 */
 	public void updateHL7InArchive(HL7InArchive hl7InArchive) {
-		saveHL7InArchive(hl7InArchive);
+		Context.getHL7Service().saveHL7InArchive(hl7InArchive);
 	}
 	
 	/**
@@ -282,7 +282,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	 * @deprecated
 	 */
 	public void deleteHL7InArchive(HL7InArchive hl7InArchive) {
-		purgeHL7InArchive(hl7InArchive);
+		Context.getHL7Service().purgeHL7InArchive(hl7InArchive);
 	}
 	
 	/**
@@ -313,7 +313,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	 * @deprecated
 	 */
 	public void createHL7InError(HL7InError hl7InError) {
-		saveHL7InError(hl7InError);
+		Context.getHL7Service().saveHL7InError(hl7InError);
 	}
 	
 	/**
@@ -336,7 +336,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	 * @see org.openmrs.hl7.HL7Service#updateHL7InError(org.openmrs.hl7.HL7InError)
 	 */
 	public void updateHL7InError(HL7InError hl7InError) {
-		saveHL7InError(hl7InError);
+		Context.getHL7Service().saveHL7InError(hl7InError);
 	}
 	
 	/**
@@ -344,7 +344,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	 * @deprecated
 	 */
 	public void deleteHL7InError(HL7InError hl7InError) {
-		purgeHL7InError(hl7InError);
+		Context.getHL7Service().purgeHL7InError(hl7InError);
 	}
 	
 	/**
