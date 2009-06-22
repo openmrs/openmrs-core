@@ -15,7 +15,15 @@ package org.openmrs.hl7;
 
 import java.util.Date;
 
-public class HL7InArchive {
+import org.openmrs.BaseOpenmrsObject;
+
+/**
+ * Represents a successfully processed hl7 message.
+ * 
+ * @see HL7InQueue
+ * @see HL7Service
+ */
+public class HL7InArchive extends BaseOpenmrsObject {
 	
 	private int hl7InArchiveId;
 	
@@ -131,6 +139,22 @@ public class HL7InArchive {
 	 */
 	public void setMessageState(Integer messageState) {
 		this.messageState = messageState;
+	}
+	
+	/**
+	 * @see org.openmrs.OpenmrsObject#getId()
+	 * @since 1.5
+	 */
+	public Integer getId() {
+		return getHL7InArchiveId();
+	}
+	
+	/**
+	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
+	 * @since 1.5
+	 */
+	public void setId(Integer id) {
+		setHL7InArchiveId(id);
 	}
 	
 }
