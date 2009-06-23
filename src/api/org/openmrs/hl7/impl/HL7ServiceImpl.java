@@ -28,6 +28,7 @@ import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.BaseOpenmrsService;
+import org.openmrs.hl7.HL7Constants;
 import org.openmrs.hl7.HL7InArchive;
 import org.openmrs.hl7.HL7InError;
 import org.openmrs.hl7.HL7InQueue;
@@ -173,6 +174,9 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	public HL7InQueue saveHL7InQueue(HL7InQueue hl7InQueue) throws APIException {
 		if (hl7InQueue.getDateCreated() == null)
 			hl7InQueue.setDateCreated(new Date());
+		
+		if (hl7InQueue.getMessageState() == null)
+			hl7InQueue.setMessageState(HL7Constants.HL7_STATUS_PENDING);
 		
 		return dao.saveHL7InQueue(hl7InQueue);
 	}
