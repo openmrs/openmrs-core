@@ -624,7 +624,7 @@
 	
 	<target name="liquibase-generate-offline-sql-diff-mysql" depends="liquibase-init" description="Create the /dist/update-to-latest-mysql-diff.sql file for running on systems that don't use the openmrs webapp">
 		<updateDatabase 
-				changeLogFile="${metadata.dir}/model/liquibase-update-to-latest.xml"
+				changelogfile="${metadata.dir}/model/liquibase-update-to-latest.xml"
 				driver="${database.driver}"
 				url="${database.url}"
 				username="${database.username}"
@@ -639,6 +639,50 @@
 				>
 		</updateDatabase>
 		<echo>Created dist/update-to-latest.sql</echo>
+	</target>
+	
+	<target name="liquibase-generate-offline-sql-create-mysql" depends="init,liquibase-init" description="Create the /dist/1-x-x-schema-and-core.sql file for running on systems that don't use the openmrs webapp">
+		<mkdir dir="${build.dir}/liquibase"/>
+		<unzip src="${metadata.dir}/model/liquibase-data.zip" dest="${build.dir}/liquibase"></unzip>
+		
+		<updateDatabase 
+				changelogfile="${build.dir}/liquibase/liquibase-schema-only.xml"
+				driver="${database.driver}"
+				url="${database.url}"
+				username="${database.username}"
+				password="${database.password}"
+				promptOnNonLocalDatabase="${prompt.user.if.not.local.database}"
+				dropFirst="true"
+				classpathref="classpath"
+				databaseChangeLogTableName="liquibasechangelog"
+				databaseChangeLogLockTableName="liquibasechangeloglock"
+				
+				outputFile="dist/${openmrs.version.short}-schema-only.sql"
+				>
+		</updateDatabase>
+		
+		<updateDatabase 
+				changelogfile="${build.dir}/liquibase/liquibase-core-data.xml"
+				driver="${database.driver}"
+				url="${database.url}"
+				username="${database.username}"
+				password="${database.password}"
+				promptOnNonLocalDatabase="${prompt.user.if.not.local.database}"
+				dropFirst="false"
+				classpathref="classpath"
+				databaseChangeLogTableName="liquibasechangelog"
+				databaseChangeLogLockTableName="liquibasechangeloglock"
+				
+				outputFile="dist/${openmrs.version.short}-core-data.sql"
+				>
+		</updateDatabase>
+		
+		<concat destfile="dist/${openmrs.version.short}-schema-and-core.sql">
+			<fileset dir="dist" includes="${openmrs.version.short}-schema-only.sql" />
+			<fileset dir="dist" includes="${openmrs.version.short}-core-data.sql" />
+		</concat>
+
+		<echo>Created dist/${openmrs.version.short}-schema-and-core.sql</echo>
 	</target>
 	
 </project>
