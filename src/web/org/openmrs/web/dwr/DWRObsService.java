@@ -25,7 +25,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
-import org.openmrs.ConceptName;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.Obs;
@@ -99,7 +98,7 @@ public class DWRObsService {
 	 * @param valueText
 	 * @param obsDateStr
 	 */
-	public void createObs(Integer personId, Integer encounterId, Integer conceptId, String valueText, String obsDateStr) {
+	public void createObs(Integer personId, Integer encounterId, Integer conceptId, String valueText, String obsDateStr) throws Exception {
 		createNewObs(personId, encounterId, null, conceptId, valueText, obsDateStr);
 	}
 	
@@ -114,7 +113,7 @@ public class DWRObsService {
 	 * @param obsDateStr
 	 */
 	public void createNewObs(Integer personId, Integer encounterId, Integer locationId, Integer conceptId, String valueText,
-	                         String obsDateStr) {
+	                         String obsDateStr) throws Exception {
 		
 		log.info("Create new observation ");
 		
@@ -127,7 +126,7 @@ public class DWRObsService {
 			}
 			catch (ParseException e) {
 				log.error("Error parsing date ... " + obsDate);
-				obsDate = new Date();
+				throw new DWRException("Observation date has format error: " + obsDate);
 			}
 		}
 		
@@ -156,10 +155,26 @@ public class DWRObsService {
 		obs.setCreator(Context.getAuthenticatedUser());
 		obs.setDateCreated(new Date());
 		
-		// TODO Currently only handles numeric and text values ... need to expand to support all others
+		// Currently only handles text, numeric, and date values  
+		// TODO  Expand support all other values
 		String hl7DataType = concept.getDatatype().getHl7Abbreviation();
 		if ("NM".equals(hl7DataType)) {
 			obs.setValueNumeric(Double.valueOf(valueText));
+		} else if ("DT".equals(hl7DataType)) {
+			// Convert to Date format
+			Date obsDateValue = null;
+			if (valueText != null) {
+				// TODO Standardize date input 
+				SimpleDateFormat sdft = Context.getDateFormat();
+				try {
+					obsDateValue = sdft.parse(valueText);
+				}
+				catch (ParseException e) {
+					log.warn("Date value has format error: " + obsDateValue, e);
+					throw new DWRException("Date value: '" + obsDateValue + "' has format error: " + e.getMessage());
+				}
+			}
+			obs.setValueDatetime(obsDateValue) ;
 		} else {
 			obs.setValueText(valueText);
 		}
