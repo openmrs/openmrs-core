@@ -135,6 +135,7 @@ public interface HL7Service extends OpenmrsService {
 	 * 
 	 * @param hl7InQueue the queue item to save
 	 * @return the saved queue item
+	 * @should add generated uuid if uuid is null
 	 */
 	@Authorized(value = { HL7Constants.PRIV_UPDATE_HL7_IN_QUEUE, HL7Constants.PRIV_ADD_HL7_IN_QUEUE }, requireAll = false)
 	public HL7InQueue saveHL7InQueue(HL7InQueue hl7InQueue) throws APIException;

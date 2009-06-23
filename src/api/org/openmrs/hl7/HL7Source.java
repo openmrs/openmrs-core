@@ -27,6 +27,21 @@ public class HL7Source extends BaseOpenmrsMetadata implements Serializable {
 	private Integer hl7SourceId;
 	
 	/**
+	 * Empty constructor
+	 */
+	public HL7Source() {
+	}
+	
+	/**
+	 * Generic constructor
+	 * 
+	 * @param hl7SourceId primary key id
+	 */
+	public HL7Source(Integer hl7SourceId) {
+		this.hl7SourceId = hl7SourceId;
+	}
+	
+	/**
 	 * @return Returns the hl7SourceId.
 	 */
 	public Integer getHL7SourceId() {
