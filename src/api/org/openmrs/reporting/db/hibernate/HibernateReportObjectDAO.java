@@ -15,6 +15,7 @@ package org.openmrs.reporting.db.hibernate;
 
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
@@ -122,6 +123,7 @@ public class HibernateReportObjectDAO implements ReportObjectDAO {
 			wrappedReportObject = new ReportObjectWrapper(reportObj);
 			wrappedReportObject.setCreator(user);
 			wrappedReportObject.setDateCreated(now);
+			wrappedReportObject.setUuid(UUID.randomUUID().toString());
 			
 		} else {
 			wrappedReportObject = (ReportObjectWrapper) sessionFactory.getCurrentSession().get(ReportObjectWrapper.class,
@@ -129,6 +131,7 @@ public class HibernateReportObjectDAO implements ReportObjectDAO {
 			wrappedReportObject.setReportObject(reportObj);
 			wrappedReportObject.setChangedBy(user);
 			wrappedReportObject.setDateChanged(now);
+			wrappedReportObject.setUuid(reportObj.getUuid());
 		}
 		
 		//wrappedReportObject = (ReportObjectWrapper)sessionFactory.getCurrentSession().merge(wrappedReportObject);
