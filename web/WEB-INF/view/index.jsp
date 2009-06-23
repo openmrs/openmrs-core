@@ -8,10 +8,7 @@
 	<c:if test="${authenticatedUser != null}">
 		<openmrs:extensionPoint pointId="org.openmrs.navigation.homepage" type="html" varStatus="status">
 			<c:set var="anyExtension" value="true" />
-			<%-- HACK: because url parameter can NOT use an expression eval'ed at runtime, not sure why... --%>
-			<c:if test="${extension.moduleId == 'rolebasednavigation'}">
-				<openmrs:portlet url="roleBasedHomePage" parameters="${extension.portletParameters}" moduleId="${extension.moduleId}" />
-			</c:if>
+			<openmrs:portlet url="${extension.portletUrl}" parameters="${extension.portletParameters}" moduleId="${extension.moduleId}" />
 		</openmrs:extensionPoint>
 	</c:if>
 </openmrs:authentication>
