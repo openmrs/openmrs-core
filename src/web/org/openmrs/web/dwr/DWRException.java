@@ -14,7 +14,7 @@
 package org.openmrs.web.dwr;
 
 /**
- * This class is no longer needed. If a dwr methodo throws <b>any</b> error, the user will see a div
+ * This class is no longer needed. If a dwr method throws <b>any</b> error, the user will see a div
  * on the screen filled with the error message.
  * 
  * @deprecated use the appropriate exception instead of this one
