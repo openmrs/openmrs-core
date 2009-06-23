@@ -3,6 +3,8 @@
 	allowNew=true/false (defaults false)
 --%>
 
+<openmrs:htmlInclude file="/scripts/calendar/calendar.js" />
+
 <c:set var="allowNew" value="${model.allowNew == 'true'}"/>
 
 <%-- <openmrs:globalProperty var="conceptsToDisplay" key="${model.globalPropertyKey}" /> --%>
@@ -29,7 +31,16 @@
 					</a>
 				</td>
 				<td class="dashedAndHighlighted" id="newCustomObs_${conceptId}" style="display:none">
-					<input type="text" id="value_${conceptId}"/>
+				
+				<c:choose>
+					<c:when test="${thisConcept.datatype.hl7Abbreviation == 'DT'}">		
+				 		<input type="text" size="10" value="" onClick="showCalendar(this)" id="value_${conceptId}" />
+					</c:when>
+					<c:otherwise>
+						<input type="text" id="value_${conceptId}"/>	
+					</c:otherwise>
+				</c:choose>	
+				
 					<spring:message code="general.onDate"/>
 					<openmrs:fieldGen type="java.util.Date" formFieldName="date_${conceptId}" val="" parameters="noBind=true" />
 					<input type="button" value="<spring:message code="general.save"/>" onClick="handleAddCustomObs(${conceptId})"/>
