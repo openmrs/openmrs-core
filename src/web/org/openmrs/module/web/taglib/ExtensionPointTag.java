@@ -97,9 +97,6 @@ public class ExtensionPointTag extends TagSupport implements BodyTag {
 	/** actual map containing the status variables */
 	private Map<String, Object> status = new HashMap<String, Object>();
 	
-	// tag helpers
-	private Boolean firstIteration = true;
-	
 	// methods
 	public int doStartTag() {
 		log.debug("Starting tag for extension point: " + pointId);
@@ -148,7 +145,6 @@ public class ExtensionPointTag extends TagSupport implements BodyTag {
 			extensions = null;
 			return SKIP_BODY;
 		} else {
-			firstIteration = true;
 			return EVAL_BODY_BUFFERED;
 		}
 		
@@ -160,7 +156,9 @@ public class ExtensionPointTag extends TagSupport implements BodyTag {
 	public void doInitBody() throws JspException {
 		getBodyContent().clearBody();
 		pageContext.removeAttribute("extension");
-		return;
+		if (extensions.hasNext()) {
+			iterate();
+		}
 	}
 	
 	/**
@@ -168,37 +166,24 @@ public class ExtensionPointTag extends TagSupport implements BodyTag {
 	 */
 	public int doAfterBody() throws JspException {
 		if (extensions.hasNext()) {
-			if (firstIteration) {
-				// for some reason the body is getting evaluated after the
-				// doInitBody() call
-				// and before this. Instead of hacking in duplicated logic, I
-				// use this hack
-				bodyContent.clearBody();
-				firstIteration = false;
-			}
-			Extension ext = extensions.next();
-			String overrideContent = ext.getOverrideContent(getBodyContentString());
-			if (overrideContent == null) {
-				iterate(ext);
-			} else {
-				try {
-					bodyContent.getEnclosingWriter().write(overrideContent);
-				}
-				catch (IOException io) {
-					log.warn("Cannot write override content of extension: " + ext.toString(), io);
-				}
-				if (!extensions.hasNext())
-					return SKIP_BODY;
-			}
-			return EVAL_BODY_BUFFERED;
+			// put the next extension in the request and reevaluate the body content
+			iterate();
+			return EVAL_BODY_AGAIN;
+		} else {
+			// no more extensions, do the end tag now
+			return SKIP_BODY;
 		}
-		
-		return SKIP_BODY;
 	}
 	
-	private void iterate(Extension ext) {
-		if (ext != null) {
-			ext.initialize(parameterMap);
+	/**
+	 * Put the next extension into the request from the <code>extensions</code> iterator. If the
+	 * current ext returns a non-null getBodyContentString(), print that to the request instead.
+	 */
+	private void iterate() {
+		Extension ext = extensions.next();
+		ext.initialize(parameterMap);
+		String overrideContent = ext.getOverrideContent(getBodyContentString());
+		if (overrideContent == null) {
 			log.debug("Adding ext: " + ext.getExtensionId() + " to pageContext class: " + ext.getClass());
 			pageContext.setAttribute("extension", ext);
 			
@@ -208,7 +193,12 @@ public class ExtensionPointTag extends TagSupport implements BodyTag {
 			status.put(STATUS_INDEX, index++);
 			pageContext.setAttribute(varStatus, status);
 		} else {
-			pageContext.removeAttribute("extension");
+			try {
+				bodyContent.getEnclosingWriter().write(overrideContent);
+			}
+			catch (IOException io) {
+				log.warn("Cannot write override content of extension: " + ext.toString(), io);
+			}
 		}
 	}
 	
