@@ -14,6 +14,7 @@
 package org.openmrs.web.controller;
 
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -41,6 +42,7 @@ import org.openmrs.Obs;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsConstants;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
@@ -136,14 +138,14 @@ public class ConceptStatsFormController extends SimpleFormController {
 				if (ConceptDatatype.NUMERIC.equals(concept.getDatatype().getHl7Abbreviation())) {
 					map.put("displayType", "numeric");
 					
-					// Object[obsId, obsDatetime, valueNumeric] 
-					List<Object[]> numericAnswers = obsService.getNumericAnswersForConcept(concept, true, ObsService.PERSON,
-					    false);
+					List<Obs> numericAnswers = obsService.getObservations(null, null, Collections.singletonList(concept), null,
+					    Collections.singletonList(OpenmrsConstants.PERSON_TYPE.PERSON), null, Collections
+					            .singletonList("valueNumeric"), null, null, null, null, false);
 					
 					if (numericAnswers.size() > 0) {
-						Double min = (Double) numericAnswers.get(0)[2];
-						Double max = (Double) numericAnswers.get(numericAnswers.size() - 1)[2];
-						Double median = (Double) numericAnswers.get(numericAnswers.size() / 2)[2];
+						Double min = numericAnswers.get(0).getValueNumeric();
+						Double max = (Double) numericAnswers.get(numericAnswers.size() - 1).getValueNumeric();
+						Double median = (Double) numericAnswers.get(numericAnswers.size() / 2).getValueNumeric();
 						
 						Map<Double, Integer> counts = new HashMap<Double, Integer>(); // counts for the histogram
 						Double total = 0.0; // sum of values. used for mean
@@ -157,9 +159,9 @@ public class ConceptStatsFormController extends SimpleFormController {
 						double[] obsNumerics = new double[(numericAnswers.size())];
 						
 						Integer i = 0;
-						for (Object[] values : numericAnswers) {
-							Date date = (Date) values[1];
-							Double value = (Double) values[2];
+						for (Obs obs : numericAnswers) {
+							Date date = (Date) obs.getObsDatetime();
+							Double value = (Double) obs.getValueNumeric();
 							
 							// for mean calculation
 							total += value;
@@ -200,28 +202,28 @@ public class ConceptStatsFormController extends SimpleFormController {
 							// calculate 98th percentile of the data:
 							Double x = 0.98;
 							Integer xpercentile = (int) (x * size);
-							Object[] upperQuartile = numericAnswers.get(xpercentile);
-							Object[] lowerQuartile = numericAnswers.get((int) (size - xpercentile));
-							Double innerQuartile = (Double) upperQuartile[2] - (Double) lowerQuartile[2];
+							Double upperQuartile = numericAnswers.get(xpercentile).getValueNumeric();
+							Double lowerQuartile = numericAnswers.get((int) (size - xpercentile)).getValueNumeric();
+							Double innerQuartile = upperQuartile - lowerQuartile;
 							Double innerQuartileLimit = innerQuartile * 1.5; // outliers will be greater than this from the upper/lower quartile
-							Double upperQuartileLimit = (Double) upperQuartile[2] + innerQuartileLimit;
-							Double lowerQuartileLimit = (Double) lowerQuartile[2] - innerQuartileLimit;
+							Double upperQuartileLimit = upperQuartile + innerQuartileLimit;
+							Double lowerQuartileLimit = lowerQuartile - innerQuartileLimit;
 							
-							List<Object[]> outliers = new Vector<Object[]>();
+							List<Obs> outliers = new Vector<Obs>();
 							
 							// move outliers to the outliers list
 							// removing lower quartile outliers
 							for (i = 0; i < size - xpercentile; i++) {
-								Object[] possibleOutlier = numericAnswers.get(i);
-								if ((Double) (possibleOutlier[2]) >= lowerQuartileLimit)
+								Obs possibleOutlier = numericAnswers.get(i);
+								if ( possibleOutlier.getValueNumeric() >= lowerQuartileLimit)
 									break; // quit if this value is greater than the lower limit
 								outliers.add(possibleOutlier);
 							}
 							
 							// removing upper quartile outliers
 							for (i = size.intValue() - 1; i >= xpercentile; i--) {
-								Object[] possibleOutlier = numericAnswers.get(i);
-								if ((Double) (possibleOutlier[2]) <= upperQuartileLimit)
+								Obs possibleOutlier = numericAnswers.get(i);
+								if (possibleOutlier.getValueNumeric() <= upperQuartileLimit)
 									break; // quit if this value is less than the upper limit
 								outliers.add(possibleOutlier);
 							}
@@ -230,8 +232,8 @@ public class ConceptStatsFormController extends SimpleFormController {
 							double[] obsNumericsOutliers = new double[(numericAnswers.size())];
 							i = 0;
 							counts.clear();
-							for (Object[] values : numericAnswers) {
-								Double value = (Double) values[2];
+							for (Obs values : numericAnswers) {
+								Double value = values.getValueNumeric();
 								obsNumericsOutliers[i++] = value;
 								Integer count = counts.get(value);
 								counts.put(value, count == null ? 1 : count + 1);
@@ -262,7 +264,9 @@ public class ConceptStatsFormController extends SimpleFormController {
 					// create bar chart for boolean answers
 					map.put("displayType", "boolean");
 					
-					List<Obs> obs = obsService.getObservations(concept, null, ObsService.PERSON, false);
+					List<Obs> obs = obsService.getObservations(null, null, Collections.singletonList(concept), null,
+					    Collections.singletonList(OpenmrsConstants.PERSON_TYPE.PERSON), null, null, null, null, null, null,
+					    false);
 					
 					DefaultPieDataset pieDataset = new DefaultPieDataset();
 					
@@ -289,7 +293,9 @@ public class ConceptStatsFormController extends SimpleFormController {
 					// create pie graph for coded answers
 					map.put("displayType", "coded");
 					
-					List<Obs> obs = obsService.getObservations(concept, null, ObsService.PERSON, false);
+					List<Obs> obs = obsService.getObservations(null, null, Collections.singletonList(concept), null,
+					    Collections.singletonList(OpenmrsConstants.PERSON_TYPE.PERSON), null, null, null, null, null, null,
+					    false);
 					
 					DefaultPieDataset pieDataset = new DefaultPieDataset();
 					

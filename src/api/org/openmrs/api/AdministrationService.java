@@ -44,7 +44,6 @@ import org.springframework.transaction.annotation.Transactional;
  * Contains methods pertaining to doing some administrative tasks in OpenMRS
  * <p>
  * Use:<br/>
- * 
  * <pre>
  * List&lt;GlobalProperty&gt; globalProperties = Context.getAdministrationService().getGlobalProperties();
  * </pre>
@@ -393,7 +392,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * 
 	 * @param cp
 	 * @deprecated moved to
-	 *             {@link org.openmrs.api#ConceptServicerejectConceptProposal(ConceptProposal)}
+	 *             {@link org.openmrs.api.ConceptService#rejectConceptProposal(ConceptProposal)}
 	 */
 	public void rejectConceptProposal(ConceptProposal cp);
 	
@@ -447,9 +446,12 @@ public interface AdministrationService extends OpenmrsService {
 	public String getGlobalProperty(String propertyName) throws APIException;
 	
 	/**
-	 * Gets the global property that has the given <code>propertyName</code> If propertyName is not
-	 * found in the list of Global Properties currently in the database, a <code>defaultValue</code>
-	 * is returned This method should not have any authorization check
+	 * Gets the global property that has the given <code>propertyName</code>
+	 * <p>
+	 * If propertyName is not found in the list of Global Properties currently in the database, a
+	 * <code>defaultValue</code> is returned
+	 * <p>
+	 * This method should not have any authorization check
 	 * 
 	 * @param propertyName property key to look for
 	 * @param defaultValue value to return if propertyName is not found

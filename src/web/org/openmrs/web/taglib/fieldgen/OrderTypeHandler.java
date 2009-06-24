@@ -44,7 +44,7 @@ public class OrderTypeHandler extends AbstractFieldGenHandler implements FieldGe
 			//HttpServletRequest request = (HttpServletRequest)this.fieldGenTag.getPageContext().getRequest();
 			
 			OrderService os = Context.getOrderService();
-			List<OrderType> orderTypes = os.getOrderTypes();
+			List<OrderType> orderTypes = os.getAllOrderTypes();
 			if (orderTypes == null)
 				orderTypes = new ArrayList<OrderType>();
 			

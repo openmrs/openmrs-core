@@ -105,7 +105,7 @@ public class PepfarReportFromXmlTest extends BaseContextSensitiveTest {
 		//System.out.println("xml\n" + xml);
 		
 		// Try to get HIV PROGRAM, or else, just the first program
-		Program hivProgram = Context.getProgramWorkflowService().getProgram("HIV PROGRAM");
+		Program hivProgram = Context.getProgramWorkflowService().getProgramByName("HIV PROGRAM");
 		if (hivProgram == null)
 			hivProgram = Context.getProgramWorkflowService().getProgram(1);
 		assertNotNull("Need at least one program defined to run this test", hivProgram);
@@ -114,28 +114,28 @@ public class PepfarReportFromXmlTest extends BaseContextSensitiveTest {
 		if (Context.getReportObjectService().getPatientSearch("Male") == null) {
 			PatientSearch ps = PatientSearch.createFilterSearch(PatientCharacteristicFilter.class);
 			ps.addArgument("gender", "m", String.class);
-			Context.getReportObjectService().createReportObject(new PatientSearchReportObject("Male", ps));
+			Context.getReportObjectService().saveReportObject(new PatientSearchReportObject("Male", ps));
 		}
 		if (Context.getReportObjectService().getPatientSearch("Female") == null) {
 			PatientSearch ps = PatientSearch.createFilterSearch(PatientCharacteristicFilter.class);
 			ps.addArgument("gender", "f", String.class);
-			Context.getReportObjectService().createReportObject(new PatientSearchReportObject("Female", ps));
+			Context.getReportObjectService().saveReportObject(new PatientSearchReportObject("Female", ps));
 		}
 		if (Context.getReportObjectService().getPatientSearch("Adult") == null) {
 			PatientSearch ps = PatientSearch.createFilterSearch(PatientCharacteristicFilter.class);
 			ps.addArgument("minAge", "15", Integer.class);
-			Context.getReportObjectService().createReportObject(new PatientSearchReportObject("Adult", ps));
+			Context.getReportObjectService().saveReportObject(new PatientSearchReportObject("Adult", ps));
 		}
 		if (Context.getReportObjectService().getPatientSearch("Child") == null) {
 			PatientSearch ps = PatientSearch.createFilterSearch(PatientCharacteristicFilter.class);
 			ps.addArgument("maxAge", "15", Integer.class);
-			Context.getReportObjectService().createReportObject(new PatientSearchReportObject("Child", ps));
+			Context.getReportObjectService().saveReportObject(new PatientSearchReportObject("Child", ps));
 		}
 		if (Context.getReportObjectService().getPatientSearch("EnrolledOnDate") == null) {
 			PatientSearch ps = PatientSearch.createFilterSearch(ProgramStatePatientFilter.class);
 			ps.addArgument("program", hivProgram.getProgramId().toString(), Integer.class);
 			ps.addArgument("untilDate", "${date}", Date.class);
-			Context.getReportObjectService().createReportObject(new PatientSearchReportObject("EnrolledOnDate", ps));
+			Context.getReportObjectService().saveReportObject(new PatientSearchReportObject("EnrolledOnDate", ps));
 		}
 		
 		Serializer serializer = new Persister(new OpenmrsCycleStrategy());
@@ -165,22 +165,22 @@ public class PepfarReportFromXmlTest extends BaseContextSensitiveTest {
 		if (Context.getReportObjectService().getPatientSearch("Male") == null) {
 			PatientSearch ps = PatientSearch.createFilterSearch(PatientCharacteristicFilter.class);
 			ps.addArgument("gender", "m", String.class);
-			Context.getReportObjectService().createReportObject(new PatientSearchReportObject("Male", ps));
+			Context.getReportObjectService().saveReportObject(new PatientSearchReportObject("Male", ps));
 		}
 		if (Context.getReportObjectService().getPatientSearch("Female") == null) {
 			PatientSearch ps = PatientSearch.createFilterSearch(PatientCharacteristicFilter.class);
 			ps.addArgument("gender", "f", String.class);
-			Context.getReportObjectService().createReportObject(new PatientSearchReportObject("Female", ps));
+			Context.getReportObjectService().saveReportObject(new PatientSearchReportObject("Female", ps));
 		}
 		if (Context.getReportObjectService().getPatientSearch("Adult") == null) {
 			PatientSearch ps = PatientSearch.createFilterSearch(PatientCharacteristicFilter.class);
 			ps.addArgument("minAge", "15", Integer.class);
-			Context.getReportObjectService().createReportObject(new PatientSearchReportObject("Adult", ps));
+			Context.getReportObjectService().saveReportObject(new PatientSearchReportObject("Adult", ps));
 		}
 		if (Context.getReportObjectService().getPatientSearch("Child") == null) {
 			PatientSearch ps = PatientSearch.createFilterSearch(PatientCharacteristicFilter.class);
 			ps.addArgument("maxAge", "15", Integer.class);
-			Context.getReportObjectService().createReportObject(new PatientSearchReportObject("Child", ps));
+			Context.getReportObjectService().saveReportObject(new PatientSearchReportObject("Child", ps));
 		}
 		
 		EvaluationContext evalContext = new EvaluationContext();

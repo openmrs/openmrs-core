@@ -55,8 +55,7 @@ public class ProgramDataSource implements LogicDataSource {
 	}
 	
 	/**
-	 * @see org.openmrs.logic.datasource.LogicDataSource#read(org.openmrs.logic.LogicContext,
-	 *      org.openmrs.Cohort, org.openmrs.logic.LogicCriteria)
+	 * @see {@link org.openmrs.logic.datasource.LogicDataSource#read(LogicContext, Cohort, LogicCriteria)}
 	 */
 	public Map<Integer, Result> read(LogicContext context, Cohort patients, LogicCriteria criteria) {
 		
@@ -130,7 +129,7 @@ public class ProgramDataSource implements LogicDataSource {
 		ProgramWorkflowService service = Context.getProgramWorkflowService();
 		for (Integer patientId : patients.getMemberIds()) {
 			//log.info("Patient: " + patient);
-			patientPrograms.addAll(service.getPatientPrograms(new Patient(patientId)));
+			patientPrograms.addAll(service.getPatientPrograms(new Patient(patientId), null, null, null, null, null, false));
 		}
 		//log.info("Patient programs: " + patientPrograms.size());
 		return patientPrograms;

@@ -2,6 +2,7 @@
 
 package org.openmrs.arden;
 
+import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 import antlr.NoViableAltException;
@@ -4008,7 +4009,7 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 				year = tyear.getText();
 				s += year;
 				s += "-";
-				calendar.set(calendar.YEAR, Integer.valueOf(year));
+				calendar.set(Calendar.YEAR, Integer.valueOf(year));
 				
 				tmonth = (AST) _t;
 				match(_t, INTLIT);
@@ -4016,7 +4017,7 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 				month = tmonth.getText();
 				s += month;
 				s += "-";
-				calendar.set(calendar.MONTH, Integer.valueOf(month) - 1); // Month is 0 -11 in the Calendar class 
+				calendar.set(Calendar.MONTH, Integer.valueOf(month) - 1); // Month is 0 -11 in the Calendar class 
 				
 			}
 			_t = __t602;
@@ -4026,7 +4027,7 @@ public class ArdenBaseTreeParser extends antlr.TreeParser implements ArdenBaseTr
 			_t = _t.getNextSibling();
 			day = tday.getText();
 			s += day;
-			calendar.set(calendar.DAY_OF_MONTH, Integer.valueOf(day));
+			calendar.set(Calendar.DAY_OF_MONTH, Integer.valueOf(day));
 			
 			_t = __t601;
 			_t = _t.getNextSibling();

@@ -34,7 +34,7 @@ public class SchedulerUtil {
 	 * 
 	 * @param p properties used to start the service
 	 */
-	public static void startup(Properties p) {
+    public static void startup(Properties p) {
 		// Override the Scheduler constants if specified by the user
 		
 		String val = p.getProperty("scheduler.username", null);

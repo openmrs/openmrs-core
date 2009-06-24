@@ -20,15 +20,17 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
+import org.openmrs.api.APIException;
 import org.openmrs.api.EncounterService;
+import org.openmrs.api.LocationService;
 import org.openmrs.api.context.Context;
 
 public class DWREncounterService {
 	
 	protected final Log log = LogFactory.getLog(getClass());
 	
-	public Vector findEncounters(String phrase, boolean includeVoided) {
-		
+	public Vector findEncounters(String phrase, boolean includeVoided) throws APIException {
+		if (includeVoided==true) throw new APIException("Don't include voided encounters.");
 		// List to return
 		// Object type gives ability to return error strings
 		Vector<Object> objectList = new Vector<Object>();
@@ -54,7 +56,7 @@ public class DWREncounterService {
 			if (phrase == null || phrase.equals("")) {
 				//TODO get all concepts for testing purposes?
 			} else {
-				encs.addAll(es.getEncountersByPatientIdentifier(phrase, includeVoided));
+				encs.addAll(es.getEncountersByPatientIdentifier(phrase));
 			}
 			
 			if (encs.size() == 0) {
@@ -86,8 +88,8 @@ public class DWREncounterService {
 		Vector locationList = new Vector();
 		
 		try {
-			EncounterService es = Context.getEncounterService();
-			List<Location> locations = es.findLocations(searchValue);
+			LocationService ls = Context.getLocationService();
+			List<Location> locations = ls.getLocations(searchValue);
 			
 			locationList = new Vector(locations.size());
 			
@@ -113,8 +115,8 @@ public class DWREncounterService {
 		Vector locationList = new Vector();
 		
 		try {
-			EncounterService es = Context.getEncounterService();
-			List<Location> locations = es.getLocations();
+			LocationService ls = Context.getLocationService();
+			List<Location> locations = ls.getAllLocations();
 			
 			locationList = new Vector(locations.size());
 			
@@ -132,8 +134,8 @@ public class DWREncounterService {
 	}
 	
 	public LocationListItem getLocation(Integer locationId) {
-		EncounterService es = Context.getEncounterService();
-		Location l = es.getLocation(locationId);
+		LocationService ls = Context.getLocationService();
+		Location l = ls.getLocation(locationId);
 		return l == null ? null : new LocationListItem(l);
 	}
 }

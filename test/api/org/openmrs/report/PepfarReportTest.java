@@ -97,9 +97,9 @@ public class PepfarReportTest extends BaseContextSensitiveTest {
 		PatientSearch child = PatientSearch.createFilterSearch(PatientCharacteristicFilter.class);
 		child.addArgument("maxAge", "15", Integer.class);
 		
-		Program hivProgram = Context.getProgramWorkflowService().getProgram("HIV PROGRAM");
+		Program hivProgram = Context.getProgramWorkflowService().getProgramByName("HIV PROGRAM");
 		if (hivProgram == null) {
-			List<Program> programs = Context.getProgramWorkflowService().getPrograms();
+			List<Program> programs = Context.getProgramWorkflowService().getAllPrograms();
 			for (Program p : programs) {
 				hivProgram = p;
 			}

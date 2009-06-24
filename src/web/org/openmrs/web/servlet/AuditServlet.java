@@ -14,6 +14,7 @@
 package org.openmrs.web.servlet;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
 
@@ -55,10 +56,10 @@ public class AuditServlet extends HttpServlet {
 			PatientIdentifierType newType = ps.getPatientIdentifierType(new Integer("4"));
 			List<PatientIdentifier> identifiers = new Vector<PatientIdentifier>();
 			
-			for (PatientIdentifierType pit : ps.getPatientIdentifierTypes()) {
+			for (PatientIdentifierType pit : ps.getAllPatientIdentifierTypes()) {
 				//If the new identifier type is defined as having a check digit as well
 				if (pit.hasValidator() && !pit.equals(newType)) {
-					identifiers.addAll(ps.getPatientIdentifiers(pit));
+					identifiers.addAll(ps.getPatientIdentifiers(null,Collections.singletonList(pit),null,null,null));
 				}
 			}
 			
@@ -79,7 +80,7 @@ public class AuditServlet extends HttpServlet {
 				
 				if (updateNeeded) {
 					identifier.setIdentifierType(newType);
-					ps.updatePatientIdentifier(identifier);
+					ps.savePatient(identifier.getPatient());
 					count++;
 				}
 			}

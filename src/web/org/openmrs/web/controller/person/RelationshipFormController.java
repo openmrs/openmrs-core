@@ -104,7 +104,7 @@ public class RelationshipFormController extends SimpleFormController {
 						Person relative = null; //patient.getPerson();
 						log.debug("relative: " + relative);
 						if (relative == null)
-							relative = ps.getPerson(patient);
+							relative = ps.getPerson(patient.getPatientId());
 						log.debug("relative: " + relative);
 						if (relative == null)
 							relative = new Person();

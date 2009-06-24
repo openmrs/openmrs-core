@@ -21,12 +21,8 @@ public class SchedulerConstants {
 	// 0 second delay added before the initial start of a task
 	public static long SCHEDULER_DEFAULT_DELAY = 0;
 	
-	// These constants are left in to keep compatibility.  They can be deleted
-	//  once people have moved away from runtime properties
-	/** @deprecated */
 	public static String SCHEDULER_DEFAULT_USERNAME = "admin";
 	
-	/** @deprecated */
 	public static String SCHEDULER_DEFAULT_PASSWORD = "test";
 	
 	/** The default 'from' address for emails send by the schedule */

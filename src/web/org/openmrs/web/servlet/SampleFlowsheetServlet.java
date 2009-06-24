@@ -15,6 +15,7 @@ package org.openmrs.web.servlet;
 
 import java.io.IOException;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
@@ -69,7 +70,7 @@ public class SampleFlowsheetServlet extends HttpServlet {
 		
 		Integer patientId = Integer.parseInt(pid);
 		Patient patient = Context.getPatientService().getPatient(patientId);
-		Set<Obs> obsList = Context.getObsService().getObservations(patient, true);
+		List<Obs> obsList = Context.getObsService().getObservationsByPerson(patient);
 		
 		if (obsList == null || obsList.size() < 1) {
 			out.print("No observations found");

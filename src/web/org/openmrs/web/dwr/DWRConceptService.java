@@ -27,11 +27,13 @@ import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptNumeric;
+import org.openmrs.ConceptProposal;
 import org.openmrs.ConceptSet;
 import org.openmrs.ConceptWord;
 import org.openmrs.Drug;
 import org.openmrs.Field;
 import org.openmrs.User;
+import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
@@ -176,7 +178,7 @@ public class DWRConceptService {
 					if (includeDrugConcepts) {
 						Integer classId = word.getConcept().getConceptClass().getConceptClassId();
 						if (classId.equals(OpenmrsConstants.CONCEPT_CLASS_DRUG))
-							for (Drug d : cs.getDrugs(word.getConcept()))
+							for (Drug d : cs.getDrugsByConcept(word.getConcept()))
 								objectList.add(new ConceptDrugListItem(d, defaultLocale)); // ABKTODO: using the default locale here may be improper
 					}
 				}
@@ -206,7 +208,7 @@ public class DWRConceptService {
 		Locale locale = Context.getLocale();
 		ConceptService cs = Context.getConceptService();
 		
-		List<Concept> concepts = cs.findProposedConcepts(text);
+		List<Concept> concepts = cs.getProposedConcepts(text);
 		List<ConceptListItem> cli = new Vector<ConceptListItem>();
 		for (Concept c : concepts) {
 			ConceptName cn = c.getName(locale);
@@ -217,12 +219,14 @@ public class DWRConceptService {
 	
 	public List<Object> findConceptAnswers(String text, Integer conceptId, boolean includeVoided, boolean includeDrugConcepts) {
 		
+		if (includeVoided == true) throw new APIException("You should not include voideds in the search.");
+		
 		Locale locale = Context.getLocale();
 		ConceptService cs = Context.getConceptService();
 		
 		Concept concept = cs.getConcept(conceptId);
 		
-		List<ConceptWord> words = cs.findConceptAnswers(text, locale, concept, includeVoided);
+		List<ConceptWord> words = cs.getConceptAnswers(text, locale, concept);
 		
 		List<Drug> drugAnswers = new Vector<Drug>();
 		for (ConceptAnswer conceptAnswer : concept.getAnswers()) {
@@ -237,7 +241,7 @@ public class DWRConceptService {
 			if (includeDrugConcepts) {
 				Integer classId = word.getConcept().getConceptClass().getConceptClassId();
 				if (classId.equals(OpenmrsConstants.CONCEPT_CLASS_DRUG))
-					for (Drug d : cs.getDrugs(word.getConcept())) {
+					for (Drug d : cs.getDrugsByConcept(word.getConcept())) {
 						if (drugAnswers.contains(d))
 							items.add(new ConceptDrugListItem(d, locale));
 					}
@@ -261,7 +265,7 @@ public class DWRConceptService {
 				Field field = null;
 				ConceptName cn = set.getConcept().getName(locale);
 				ConceptDescription description = set.getConcept().getDescription(locale);
-				for (Field f : fs.findFields(set.getConcept())) {
+				for (Field f : fs.getFieldsByConcept(set.getConcept())) {
 					if (f.getName().equals(cn.getName()) && f.getDescription().equals(description.getDescription())
 					        && f.isSelectMultiple().equals(false))
 						field = f;
@@ -282,7 +286,7 @@ public class DWRConceptService {
 		
 		Concept concept = cs.getConcept(conceptId);
 		
-		List<Concept> concepts = cs.getQuestionsForAnswer(concept);
+		List<Concept> concepts = cs.getConceptsByAnswer(concept);
 		
 		List<ConceptListItem> items = new Vector<ConceptListItem>();
 		for (Concept c : concepts) {
@@ -333,14 +337,15 @@ public class DWRConceptService {
 		return items;
 	}
 	
-	public List<Object> findDrugs(String phrase, boolean includeRetired) {
+	public List<Object> findDrugs(String phrase, boolean includeRetired) throws APIException{
+		if (includeRetired == true) throw new APIException("You should not include voideds in the search.");
 		Locale locale = Context.getLocale();
 		ConceptService cs = Context.getConceptService();
 		
 		List<Object> items = new Vector<Object>();
 		
 		// find drugs for this concept
-		List<Drug> drugs = cs.findDrugs(phrase, includeRetired);
+		List<Drug> drugs = cs.getDrugs(phrase);
 		
 		// miniaturize our drug objects
 		for (Drug drug : drugs) {

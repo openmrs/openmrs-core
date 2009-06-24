@@ -224,7 +224,7 @@ public class ConceptProposalFormController extends SimpleFormController {
 			String phrase = cp.getOriginalText();
 			if (phrase.length() > 3)
 				phrase = phrase.substring(0, 3);
-			List<ConceptWord> possibleConcepts = cs.findConcepts(phrase, locale, false);
+			List<ConceptWord> possibleConcepts = cs.getConceptWords(phrase, locale);
 			if (possibleConcepts != null)
 				for (ConceptWord word : possibleConcepts)
 					possibleConceptsListItems.add(new ConceptListItem(word));
