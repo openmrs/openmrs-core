@@ -22,6 +22,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -306,7 +307,7 @@ public class MigrationController implements Controller {
 		}
 		for (Map.Entry<Integer, List<Order>> e : patientRegimens.entrySet()) {
 			List<PatientIdentifier> pil = Context.getPatientService().getPatientIdentifiers(e.getKey().toString(),
-			    pihIdentifierType);
+			    Collections.singletonList(pihIdentifierType),null,null,null);
 			if (pil.size() != 1) {
 				throw new RuntimeException("Found " + pil.size() + " PatientIdentifiers for " + pihIdentifierType + " of "
 				        + e.getKey());

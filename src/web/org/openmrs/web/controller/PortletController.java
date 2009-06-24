@@ -294,9 +294,8 @@ public class PortletController implements Controller {
 						
 						if (Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PROGRAMS)
 						        && Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENT_PROGRAMS)) {
-							model.put("patientPrograms", Context.getProgramWorkflowService().getPatientPrograms(p));
-							model.put("patientCurrentPrograms", Context.getProgramWorkflowService().getCurrentPrograms(p,
-							    null));
+							model.put("patientPrograms", Context.getProgramWorkflowService().getPatientPrograms(p,null,null,null,null,null,false));
+							model.put("patientCurrentPrograms", Context.getProgramWorkflowService().getPatientPrograms(p, null, null, new Date(), new Date(), null, false));
 						}
 						
 						model.put("patientId", patientId);

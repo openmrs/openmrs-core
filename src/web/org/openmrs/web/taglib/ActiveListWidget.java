@@ -110,8 +110,8 @@ public class ActiveListWidget extends TagSupport {
 		if (doObsGroups) {
 			ObsService os = Context.getObsService();
 			for (Obs o : activeList.values())
-				if (o.getObsGroupId() != null)
-					obsGroups.put(o, os.findObsByGroupId(o.getObsGroupId()));
+				if (o.isObsGrouping())
+					obsGroups.put(o, o.getGroupMembers());
 		}
 		
 		StringBuilder sb = new StringBuilder();

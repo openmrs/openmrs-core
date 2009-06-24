@@ -471,13 +471,14 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	
 	/**
 	 * @see org.openmrs.api.FormService#getForm(java.lang.String)
+	 * @should return the form with the highest version, if more than one form with the given name exists
 	 */
 	public Form getForm(String name) throws APIException {
 		List<Form> forms = dao.getFormsByName(name);
 		if (forms == null || forms.size() == 0)
 			return null;
 		else
-			return forms.get(0); // TODO junit test that this returns the latest (highest version)
+			return forms.get(0);
 	}
 	
 	/**

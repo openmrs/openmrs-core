@@ -81,7 +81,7 @@ public class PatientSearchParameterTest extends BaseContextSensitiveTest {
 		ro.setName("testReportObject1");
 		ro.setDescription("OldCohortFrameworkTest testPatientSearchParameter");
 		ro.setPatientSearch(ps);
-		Integer newId = Context.getReportObjectService().createReportObject(ro);
+		Integer newId = Context.getReportObjectService().saveReportObject(ro).getReportObjectId();
 		
 		// Create an EvaluationContext with the test variables as parameters
 		EvaluationContext context = new EvaluationContext();

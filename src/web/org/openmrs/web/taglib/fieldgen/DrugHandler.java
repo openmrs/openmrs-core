@@ -44,7 +44,7 @@ public class DrugHandler extends AbstractFieldGenHandler implements FieldGenHand
 			//HttpServletRequest request = (HttpServletRequest)this.fieldGenTag.getPageContext().getRequest();
 			
 			ConceptService cs = Context.getConceptService();
-			List<Drug> drugs = cs.getDrugs();
+			List<Drug> drugs = cs.getAllDrugs();
 			if (drugs == null)
 				drugs = new ArrayList<Drug>();
 			

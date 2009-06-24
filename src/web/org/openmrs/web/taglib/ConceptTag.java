@@ -99,12 +99,12 @@ public class ConceptTag extends BodyTagSupport {
 		
 		// If the Concept is a Set, get members of that Set
 		if (c.isSet() && setMemberVar != null) {
-			pageContext.setAttribute(setMemberVar, Context.getConceptService().getConceptsInSet(c));
+			pageContext.setAttribute(setMemberVar, Context.getConceptService().getConceptsByConceptSet(c));
 		}
 		
 		// If the Concept is a Set, get members of that Set
 		if (c.isSet() && setMemberVar != null) {
-			pageContext.setAttribute(setMemberVar, Context.getConceptService().getConceptsInSet(c));
+			pageContext.setAttribute(setMemberVar, Context.getConceptService().getConceptsByConceptSet(c));
 		}
 		
 		return EVAL_BODY_BUFFERED;

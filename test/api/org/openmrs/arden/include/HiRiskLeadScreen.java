@@ -17,6 +17,7 @@ package org.openmrs.arden.include;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
@@ -44,10 +45,10 @@ public class HiRiskLeadScreen {
 	}
 	
 	public Obs getObsForConceptForPatient(Concept concept, Locale locale, Patient patient) {
-		Set<Obs> MyObs;
+		List<Obs> MyObs;
 		Obs obs = new Obs();
 		{
-			MyObs = Context.getObsService().getObservations(patient, concept, true);
+			MyObs = Context.getObsService().getObservationsByPersonAndConcept(patient, concept);
 			Iterator iter = MyObs.iterator();
 			if (iter.hasNext()) {
 				while (iter.hasNext()) {

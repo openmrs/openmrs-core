@@ -56,7 +56,7 @@ public class DWRFormService {
 	public List<FormListItem> findForms(String text, boolean includeUnpublished) {
 		List<FormListItem> forms = new Vector<FormListItem>();
 		
-		for (Form form : Context.getFormService().findForms(text, includeUnpublished, false)) {
+		for (Form form : Context.getFormService().getForms(text, includeUnpublished, null, null, null, null, null)) {
 			forms.add(new FormListItem(form));
 		}
 		
@@ -108,7 +108,7 @@ public class DWRFormService {
 	public List<FieldListItem> findFields(String txt) {
 		List<FieldListItem> fields = new Vector<FieldListItem>();
 		
-		for (Field field : Context.getFormService().findFields(txt))
+		for (Field field : Context.getFormService().getFields(txt))
 			fields.add(new FieldListItem(field, Context.getLocale()));
 		
 		return fields;
@@ -130,7 +130,7 @@ public class DWRFormService {
 		Map<Integer, Boolean> fieldForConceptAdded = new HashMap<Integer, Boolean>();
 		
 		if (concept != null) {
-			for (Field field : Context.getFormService().findFields(concept)) {
+			for (Field field : Context.getFormService().getFieldsByConcept(concept)) {
 				FieldListItem fli = new FieldListItem(field, locale);
 				if (!objects.contains(fli))
 					objects.add(fli);
@@ -144,7 +144,7 @@ public class DWRFormService {
 			
 		}
 		
-		for (Field field : Context.getFormService().findFields(txt)) {
+		for (Field field : Context.getFormService().getFields(txt)) {
 			FieldListItem fi = new FieldListItem(field, locale);
 			if (!objects.contains(fi)) {
 				objects.add(fi);
@@ -155,10 +155,10 @@ public class DWRFormService {
 			
 		}
 		
-		List<ConceptWord> conceptWords = Context.getConceptService().findConcepts(txt, locale, false);
+		List<ConceptWord> conceptWords = Context.getConceptService().getConceptWords(txt, locale);
 		for (ConceptWord word : conceptWords) {
 			concept = word.getConcept();
-			for (Field field : Context.getFormService().findFields(concept)) {
+			for (Field field : Context.getFormService().getFieldsByConcept(concept)) {
 				FieldListItem fli = new FieldListItem(field, locale);
 				if (!objects.contains(fli))
 					objects.add(fli);

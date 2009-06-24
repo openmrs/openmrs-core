@@ -46,7 +46,7 @@ public class DWRProgramWorkflowService {
 		Vector<PatientStateItem> ret = new Vector<PatientStateItem>();
 		ProgramWorkflowService s = Context.getProgramWorkflowService();
 		PatientProgram p = s.getPatientProgram(patientProgramId);
-		ProgramWorkflow wf = s.getWorkflow(programWorkflowId);
+		ProgramWorkflow wf = p.getProgram().getWorkflow(programWorkflowId);
 		for (PatientState st : p.statesInWorkflow(wf, false))
 			ret.add(new PatientStateItem(st));
 		return ret;
@@ -146,7 +146,7 @@ public class DWRProgramWorkflowService {
 		if (anyChange) {
 			pp.setDateEnrolled(dateEnrolled);
 			pp.setDateCompleted(dateCompleted);
-			Context.getProgramWorkflowService().updatePatientProgram(pp);
+			Context.getProgramWorkflowService().savePatientProgram(pp);
 		}
 	}
 	
@@ -157,9 +157,9 @@ public class DWRProgramWorkflowService {
 	
 	public Vector<ListItem> getPossibleNextStates(Integer patientProgramId, Integer programWorkflowId) {
 		Vector<ListItem> ret = new Vector<ListItem>();
-		List<ProgramWorkflowState> states = Context.getProgramWorkflowService().getPossibleNextStates(
-		    Context.getProgramWorkflowService().getPatientProgram(patientProgramId),
-		    Context.getProgramWorkflowService().getWorkflow(programWorkflowId));
+		PatientProgram pp = Context.getProgramWorkflowService().getPatientProgram(patientProgramId);
+		ProgramWorkflow pw = pp.getProgram().getWorkflow(programWorkflowId);
+		List<ProgramWorkflowState> states = pw.getPossibleNextStates(pp);
 		for (ProgramWorkflowState state : states) {
 			ListItem li = new ListItem();
 			li.setId(state.getProgramWorkflowStateId());
@@ -173,18 +173,16 @@ public class DWRProgramWorkflowService {
 	                          String onDateDMY) throws ParseException {
 		ProgramWorkflowService s = Context.getProgramWorkflowService();
 		PatientProgram pp = s.getPatientProgram(patientProgramId);
-		ProgramWorkflow wf = s.getWorkflow(programWorkflowId);
-		ProgramWorkflowState st = s.getState(programWorkflowStateId);
+		ProgramWorkflowState st = pp.getProgram().getWorkflow(programWorkflowId).getState(programWorkflowStateId);
 		Date onDate = null;
 		if (onDateDMY != null && onDateDMY.length() > 0)
 			onDate = ymdDf.parse(onDateDMY);
-		s.changeToState(pp, wf, st, onDate);
+		pp.transitionToState(st, onDate);
 	}
 	
 	public void voidLastState(Integer patientProgramId, Integer programWorkflowId, String voidReason) {
 		ProgramWorkflowService s = Context.getProgramWorkflowService();
 		PatientProgram pp = s.getPatientProgram(patientProgramId);
-		ProgramWorkflow wf = s.getWorkflow(programWorkflowId);
-		s.voidLastState(pp, wf, voidReason);
+		pp.voidLastState(pp.getProgram().getWorkflow(programWorkflowId), null, new Date(), voidReason);
 	}
 }

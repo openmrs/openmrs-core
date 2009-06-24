@@ -157,7 +157,7 @@ public class SummaryTest extends TagSupport {
 				log.warn("Can't find concept " + conceptName);
 			} else {
 				if (isSet)
-					conceptsOfInterest.addAll(cs.getConceptsInSet(c));
+					conceptsOfInterest.addAll(cs.getConceptsByConceptSet(c));
 				else
 					conceptsOfInterest.add(c);
 			}

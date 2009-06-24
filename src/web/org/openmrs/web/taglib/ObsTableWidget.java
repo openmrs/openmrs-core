@@ -247,7 +247,7 @@ public class ObsTableWidget extends TagSupport {
 			}
 			if (c != null) {
 				if (isSet) {
-					List<Concept> inSet = cs.getConceptsInSet(c);
+					List<Concept> inSet = cs.getConceptsByConceptSet(c);
 					for (Concept con : inSet) {
 						if (!conceptIds.contains(con.getConceptId())) {
 							conceptList.add(con);

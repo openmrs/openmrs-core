@@ -13,12 +13,14 @@
  */
 package org.openmrs.arden;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
 import org.openmrs.Concept;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
+import org.openmrs.Person;
 import org.openmrs.api.context.Context;
 
 public class DefaultArdenDataSource implements ArdenDataSource {
@@ -30,11 +32,11 @@ public class DefaultArdenDataSource implements ArdenDataSource {
 	 */
 
 	private Set<Obs> getPatientObsForConcept(Patient patient, Concept concept) {
-		return Context.getObsService().getObservations(patient, concept, false);
+		return (Set<Obs>) Context.getObsService().getObservationsByPersonAndConcept(patient, concept);
 	}
 	
 	private List<Obs> getLastPatientObsForConcept(Patient patient, Concept concept, int howMany) {
-		return Context.getObsService().getLastNObservations(howMany, patient, concept, false);
+		return Context.getObsService().getObservations(Collections.singletonList((Person)patient), null, Collections.singletonList(concept), null, null, null, null, new Integer(howMany), null, null, null, false);
 		
 	}
 	

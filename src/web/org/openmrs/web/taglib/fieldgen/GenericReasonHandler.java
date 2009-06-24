@@ -55,7 +55,7 @@ public class GenericReasonHandler extends AbstractFieldGenHandler implements Fie
 			if (reasonProperty == null)
 				reasonProperty = "";
 			String reasonConceptId = Context.getAdministrationService().getGlobalProperty(reasonProperty);
-			Concept reasonConcept = Context.getConceptService().getConceptByIdOrName(reasonConceptId);
+			Concept reasonConcept = Context.getConceptService().getConcept(reasonConceptId);
 			if (reasonConcept == null)
 				log.debug("Could not get even the default reason concept from global properties");
 			
@@ -63,7 +63,7 @@ public class GenericReasonHandler extends AbstractFieldGenHandler implements Fie
 			if (this.fieldGenTag.getParameterMap() != null) {
 				String reasonSetOverride = (String) this.fieldGenTag.getParameterMap().get("reasonSet");
 				if (reasonSetOverride != null)
-					reasonConcept = Context.getConceptService().getConceptByIdOrName(reasonSetOverride);
+					reasonConcept = Context.getConceptService().getConcept(reasonSetOverride);
 			}
 			
 			List<Concept> possibleReasons = null;

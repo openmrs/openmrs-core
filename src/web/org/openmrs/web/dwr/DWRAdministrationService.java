@@ -13,6 +13,7 @@
  */
 package org.openmrs.web.dwr;
 
+import org.openmrs.GlobalProperty;
 import org.openmrs.api.context.Context;
 
 /**
@@ -37,7 +38,7 @@ public class DWRAdministrationService {
 	 * @param newValue
 	 */
 	public void setGlobalProperty(String name, String newValue) {
-		Context.getAdministrationService().setGlobalProperty(name, newValue);
+		Context.getAdministrationService().saveGlobalProperty(new GlobalProperty(name, newValue));
 	}
 	
 }

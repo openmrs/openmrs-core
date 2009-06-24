@@ -161,6 +161,20 @@ public class Program extends BaseOpenmrsMetadata implements java.io.Serializable
 	}
 	
 	/**
+	 * Get the workflow with the specified ID
+	 * @return the workflow matching the given id or null if none found
+	 * @since 1.6
+	 */
+	public ProgramWorkflow getWorkflow(Integer programWorkflowId) {
+		if (getWorkflows() != null) {
+			for (ProgramWorkflow wf : getWorkflows())
+				if (wf.getId().equals(programWorkflowId))
+					return wf;
+		}
+		return null;
+	}
+	
+	/**
 	 * Get all workflows...including the retired ones
 	 * 
 	 * @return Returns a Set<ProgramWorkflow> of all workflows

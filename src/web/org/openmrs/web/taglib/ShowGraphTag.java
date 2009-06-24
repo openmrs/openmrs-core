@@ -15,6 +15,7 @@ package org.openmrs.web.taglib;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.Set;
 
 import javax.servlet.jsp.JspException;
@@ -67,7 +68,7 @@ public class ShowGraphTag extends BodyTagSupport {
 		Concept concept = Context.getConceptService().getConceptByName(conceptName);
 		
 		if (concept != null && concept.isNumeric()) {
-			Set<Obs> observations = Context.getObsService().getObservations(patient, concept, false);
+			List<Obs> observations = Context.getObsService().getObservationsByPersonAndConcept(patient, concept);
 			DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 			for (Obs obs : observations) {
 				dataset.addValue(obs.getValueNumeric(), conceptName, obs.getObsDatetime());

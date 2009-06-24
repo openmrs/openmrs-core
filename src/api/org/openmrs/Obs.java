@@ -368,8 +368,10 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	
 	/**
 	 * Convenience method that checks for nullity and length of the (@link #getGroupMembers())
-	 * method NOTE: This method could also be called "isObsGroup" for a little less confusion on
-	 * names. However, jstl in a web layer (or any psuedo-getter) access isn't good with both an
+	 * method
+	 * <p>
+	 * NOTE: This method could also be called "isObsGroup" for a little less confusion on names.
+	 * However, jstl in a web layer (or any psuedo-getter) access isn't good with both an
 	 * "isObsGroup" method and a "getObsGroup" method. Which one should be returned with a
 	 * simplified jstl call like ${obs.obsGroup} ? With this setup, ${obs.obsGrouping} returns a
 	 * boolean of whether this obs is a parent and has members. ${obs.obsGroup} returns the parent
@@ -392,10 +394,12 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	/**
-	 * This should only be true if this obs is a grouping obs. {@link #getConcept()}.
-	 * {@link org.openmrs.Concept#isSet()} should be true for this to be non-null.
+	 * Get the members of the obs group, if this obs is a group.
+	 * <p>
+	 * If it's not a group (i.e. {@link #getConcept()}.{@link org.openmrs.Concept#isSet()} is not
+	 * true, then this returns null.
 	 * 
-	 * @return the Obs that are members of this group.
+	 * @return a Set<Obs> of the members of this group.
 	 * @see #addGroupMember(Obs)
 	 * @see #hasGroupMembers()
 	 */
@@ -404,8 +408,10 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	/**
-	 * This should only be true if this obs is a grouping obs. {@link #getConcept()}.
-	 * {@link org.openmrs.Concept#isSet()} should be true for this to be non-null.
+	 * Set the members of the obs group, if this obs is a group.
+	 * <p>
+	 * If it's not a group (i.e. {@link #getConcept()}.{@link org.openmrs.Concept#isSet()} is not
+	 * true, then this returns null.
 	 * 
 	 * @param groupMembers the groupedObs to set
 	 * @see #addGroupMember(Obs)
@@ -766,7 +772,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * This will be null unless you call:
 	 * 
 	 * <pre>
-	 * 	Obs obsWithComplexData = Context.getObsService().getComplexObs(obsId, OpenmrsConstants.RAW_VIEW);
+	 *    Obs obsWithComplexData = Context.getObsService().getComplexObs(obsId, OpenmrsConstants.RAW_VIEW);
 	 * </pre>
 	 * 
 	 * @return the complex data for this obs (if its a complex obs)

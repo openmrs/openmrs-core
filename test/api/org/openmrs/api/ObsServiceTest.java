@@ -679,7 +679,8 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Throwable
 	 */
-	@Test
+	@SuppressWarnings("deprecation")
+    @Test
 	public void shouldFindObsByGroupId() throws Throwable {
 		executeDataSet(INITIAL_OBS_XML);
 		
