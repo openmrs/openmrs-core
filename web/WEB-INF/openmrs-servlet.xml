@@ -28,6 +28,9 @@
 		<!-- one of the properties available; the maximum file size in bytes -->
 		<property name="maxUploadSize"><value>75000000</value></property>
 	</bean>
+	
+	<!-- So that module controllers can use annotations like @Controller and @RequestMapping -->
+	<bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping"/>
 
 	<bean id="urlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
 		<property name="interceptors">
