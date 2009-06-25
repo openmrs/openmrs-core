@@ -8,8 +8,8 @@
 	<property name="webapp.description" value="An Open-Source EMR System" />
 
 	<!-- Properties for running unit tests and webapp [un]deploy with tomcat -->
-	<property name="tomcat.home" value="/opt/tomcat6/"/>
-	<property name="catalina.home" value="/opt/tomcat6/"/>
+	<property name="tomcat.home" value="${env.CATALINA_HOME}"/>
+	<property name="catalina.home" value="${env.CATALINA_HOME}"/>
     <property name="tomcat.server" value="localhost" />
 	<property name="tomcat.port" value="8080" />
     <property name="tomcat.manager.url" value="http://${tomcat.server}:${tomcat.port}/manager" />
