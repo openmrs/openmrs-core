@@ -30,6 +30,7 @@ import liquibase.exception.SetupException;
 import liquibase.exception.UnsupportedChangeException;
 
 import org.apache.commons.lang.StringUtils;
+import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
@@ -92,6 +93,10 @@ public class GenerateUuid implements CustomTaskChange {
 	 * @see liquibase.change.custom.CustomTaskChange#execute(liquibase.database.Database)
 	 */
 	public void execute(Database database) throws CustomChangeException, UnsupportedChangeException {
+		
+		// if we're in a "generate sql file" mode, quit early
+		if (Context.getRuntimeProperties().size() == 0)
+			return;
 		
 		if (tableNamesArray == null || tableNamesArray.length == 0)
 			throw new CustomChangeException("At least one table name in the 'tableNames' parameter is required", null);

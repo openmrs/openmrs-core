@@ -65,6 +65,12 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 	 */
 	public void execute(Database database) throws CustomChangeException, UnsupportedChangeException {
 		
+		Properties runtimeProperties = Context.getRuntimeProperties();
+
+		// if we're in a "generate sql file" mode, quit early
+		if (runtimeProperties.size() == 0)
+			return;
+		
 		DatabaseConnection connection = database.getConnection();
 		
 		// copy the file from the classpath to a real file
@@ -83,8 +89,6 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 		// build the mysql command line string
 		List<String> commands = new ArrayList<String>();
 		try {
-			Properties runtimeProperties = Context.getRuntimeProperties();
-			
 			commands.add("mysql");
 			commands.add("-u" + runtimeProperties.getProperty("connection.username"));
 			commands.add("-p" + runtimeProperties.getProperty("connection.password"));
