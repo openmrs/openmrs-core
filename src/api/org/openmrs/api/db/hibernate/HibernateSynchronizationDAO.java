@@ -770,7 +770,8 @@ public class HibernateSynchronizationDAO implements SynchronizationDAO {
 
 		String hqlChild = "select rs.nickname, ssr.state, count(*) " +
 		"from RemoteServer rs join rs.serverRecords as ssr where rs.serverId = :server_id group by rs.serverId,rs.nickname, ssr.state";
-		String hqlParent = "select count(*) from SyncRecord where originalGuid = guid and state <> '" + SyncRecordState.COMMITTED.toString() + "'";
+		String hqlParent = "select count(*) from SyncRecord where originalGuid = guid and state <> '" + SyncRecordState.COMMITTED.toString() + 
+		"' and state <> '" + SyncRecordState.NOT_SUPPOSED_TO_SYNC.toString() + "'";
 		
 		//for each server configured, get its stats
 		for(RemoteServer r : servers) {
