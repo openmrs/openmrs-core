@@ -196,7 +196,7 @@ img {
 <c:forEach var="namespace" items="${globalProperties.systemNamespaces}" varStatus="status">
 	<li class="namespace-item"><a href="#${namespace.name}-properties-pane">${namespace.name}</a></li>
 </c:forEach>
-	<li class="modules-properties-item"><a href="#system-properties-pane" id="modules-properties-link"><spring:message code="GlobalProperty.modules"/></a></li>
+	<li class="modules-properties-item"><a href="#modules-properties-pane" id="modules-properties-link"><spring:message code="GlobalProperty.modules"/></a></li>
 <c:forEach var="module" items="${globalProperties.modules}" varStatus="status">
 	<li class="module-tabs-item"><a href="#${module.moduleId}-module-properties-pane">${module.name}</a></li>
 </c:forEach>
@@ -284,6 +284,33 @@ img {
 </form>
 </div> <!-- end ${namespace.name}-properties -->
 </c:forEach>
+
+<div id="modules-properties-pane" class="module-properties-pane properties-pane">
+<form method="post">
+	<table cellpadding="1" cellspacing="0">
+		<thead>
+			<tr>
+				<th><spring:message code="GlobalProperty.name"/></th>
+				<th><spring:message code="GlobalProperty.value"/></th>
+				<th><spring:message code="GlobalProperty.type"/></th>
+				<th><spring:message code="GlobalProperty.description"/></th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			<c:forEach var="globalProperty" items="${globalProperties.modulesProperties}" varStatus="status">
+			<tr class="<c:choose><c:when test="${status.index % 2 == 0}">even</c:when><c:otherwise>odd</c:otherwise></c:choose>">
+				<td style="font-size: 0.8em">${globalProperty.property}</td>
+				<td><textarea readonly="readonly" class="property-value <c:choose><c:when test="${status.index % 2 == 0}">even</c:when><c:otherwise>odd</c:otherwise></c:choose>">${globalProperty.propertyValue}</textarea></td>
+				<td style="font-size: 0.8em">${globalProperty.propertyType}</td>
+				<td class="property-description">${globalProperty.description}</td>
+				<td><a href="#"><img src="<c:url value="/images/edit.gif"/>"/></a></td>
+			</tr>
+			</c:forEach>
+		</tbody>
+	</table>
+</form>
+</div> <!-- end modules-properties -->
 
 <c:forEach var="module" items="${globalProperties.modules}">
 <div id="${module.moduleId}-module-properties-pane" class="module-properties-pane properties-pane">

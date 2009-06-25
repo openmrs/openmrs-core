@@ -39,6 +39,8 @@ public class GlobalPropertyDTO {
 	private List<GlobalProperty> systemProperties;
 	
 	private List<GlobalProperty> allProperties;
+
+	private List<GlobalProperty> modulesProperties;
 	
     /**
      * 
@@ -47,6 +49,7 @@ public class GlobalPropertyDTO {
     	
     	allProperties = Context.getAdministrationService().getAllGlobalProperties();
     	systemProperties = new ArrayList<GlobalProperty>();
+    	modulesProperties = new ArrayList<GlobalProperty>();
 
     	for (GlobalProperty property : Context.getAdministrationService().getAllGlobalProperties()) {
     		systemProperties.add(property);
@@ -65,6 +68,7 @@ public class GlobalPropertyDTO {
     	for (Module module : modules) {
 
     		systemProperties.removeAll(module.getGlobalProperties());
+    		modulesProperties.addAll(module.getGlobalProperties());
     		
     		log.debug(module.getGlobalProperties().size()  + " properties from module "  + module.getName() + " was removed from System Properties");
         	log.debug("System Properties count: " + systemProperties.size());
@@ -111,10 +115,17 @@ public class GlobalPropertyDTO {
     }
 	
     /**
+     * @return the modulesProperties
+     */
+    public List<GlobalProperty> getModulesProperties() {
+    	return modulesProperties;
+    }
+
+	/**
      * @return the modules
      */
     public List<Module> getModules() {
     	return modules;
     }
-	
+    
 }
