@@ -249,4 +249,22 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 		OpenmrsUtil.validatePassword("admin", "1234567", "1-8");
 	}
 	
+	/**
+	 * @see {@link OpenmrsUtil#validatePassword(String,String,String)}
+	 */
+	@Test
+	@Verifies(value = "should allow password to contain non alphanumeric characters", method = "validatePassword(String,String,String)")
+	public void validatePassword_shouldAllowPasswordToContainNonAlphanumericCharacters() throws Exception {
+		OpenmrsUtil.validatePassword("admin", "Test1234?", "1-8");
+	}
+	
+	/**
+	 * @see {@link OpenmrsUtil#validatePassword(String,String,String)}
+	 */
+	@Test
+	@Verifies(value = "should allow password to contain white spaces", method = "validatePassword(String,String,String)")
+	public void validatePassword_shouldAllowPasswordToContainWhiteSpaces() throws Exception {
+		OpenmrsUtil.validatePassword("admin", "Test *&^ 1234? ", "1-8");
+	}
+	
 }
