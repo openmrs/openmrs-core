@@ -1802,11 +1802,13 @@ public class OpenmrsUtil {
 	 * @should fail without upper case char password
 	 * @should fail with password equals to user name
 	 * @should fail with password equals to system id
+	 * @should allow password to contain non alphanumeric characters
+	 * @should allow password to contain white spaces
 	 */
 	public static void validatePassword(String username, String password, String systemId) throws PasswordException {
 		if (password.length() < 8)
 			throw new ShortPasswordException();
-		Pattern pattern = Pattern.compile("^(?=.*?[0-9])(?=.*?[A-Z])[\\w]*$");
+		Pattern pattern = Pattern.compile("^(?=.*?[0-9])(?=.*?[A-Z])[\\w|\\W]*$");
 		Matcher matcher = pattern.matcher(password);
 		if (!matcher.matches())
 			throw new InvalidCharactersPasswordException();
