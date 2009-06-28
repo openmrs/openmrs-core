@@ -937,9 +937,9 @@ public class OpenmrsUtil {
 	 *         the application (runtime properties, modules, etc)
 	 */
 	public static String getApplicationDataDirectory() {
-		
+
 		String filepath = null;
-		
+
 		if (OpenmrsConstants.APPLICATION_DATA_DIRECTORY != null) {
 			filepath = OpenmrsConstants.APPLICATION_DATA_DIRECTORY;
 		} else {
@@ -948,14 +948,14 @@ public class OpenmrsUtil {
 			else
 				filepath = System.getProperty("user.home") + File.separator + "Application Data" + File.separator
 				        + "OpenMRS";
-			
+
 			filepath = filepath + File.separator;
 		}
-		
+
 		File folder = new File(filepath);
 		if (!folder.exists())
 			folder.mkdirs();
-		
+
 		return filepath;
 	}
 	
