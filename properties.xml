@@ -13,8 +13,8 @@
     <property name="tomcat.server" value="localhost" />
 	<property name="tomcat.port" value="8080" />
     <property name="tomcat.manager.url" value="http://${tomcat.server}:${tomcat.port}/manager" />
-    <property name="tomcat.username" value="test" />
-    <property name="tomcat.password" value="test" />
+    <property name="tomcat.username" value="admin" />
+    <property name="tomcat.password" value="546dy1" />    
     
     <!-- Documentation settings -->
     <property name="doc.title" value="${ant.project.name} API" />
