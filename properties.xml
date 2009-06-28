@@ -2,7 +2,7 @@
 <project name="properties">
 
    	<!--  Webapp properties -->
-	<property name="webapp.name" value="openmrs-15x" />
+	<property name="webapp.name" value="openmrs" />
 	<property name="webapp.version" value="${openmrs.version}" />
 	<property name="webapp.display.name" value="OpenMRS" />
 	<property name="webapp.description" value="An Open-Source EMR System" />
@@ -13,8 +13,8 @@
     <property name="tomcat.server" value="localhost" />
 	<property name="tomcat.port" value="8080" />
     <property name="tomcat.manager.url" value="http://${tomcat.server}:${tomcat.port}/manager" />
-    <property name="tomcat.username" value="admin" />
-    <property name="tomcat.password" value="546dy1" />
+    <property name="tomcat.username" value="test" />
+    <property name="tomcat.password" value="test" />
     
     <!-- Documentation settings -->
     <property name="doc.title" value="${ant.project.name} API" />
