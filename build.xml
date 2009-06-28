@@ -569,7 +569,7 @@
         </path>
 
         <property name="db.changelog.file" value="root.changelog.xml"/>
-        <property name="database.url" value="jdbc:mysql://localhost/openmrs"/>
+        <property name="database.url" value="jdbc:mysql://localhost:3306/openmrs-trunk"/>
         <property name="database.username" value="root"/>
         <property name="database.password" value="password"/>
         <property name="database.driver" value="com.mysql.jdbc.Driver"/>
