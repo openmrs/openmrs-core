@@ -20,14 +20,14 @@ function makeCalendar(obj) {
 	}
 
 	// make the iframe to contain the calendar
-	var id = "gToday:normal.htm";
+	var id = "gToday:normal.jsp";
 	if (document.getElementById(id) == null) {
 		var iframe = document.createElement("iframe");
 		iframe.width=174;
 		iframe.height=189;
 		iframe.name=id;	// also defined in ipopeng.jsp as an IE hack.
 		iframe.id = id;
-		iframe.src= openmrsContextPath + '/scripts/calendar/ipopeng.htm';
+		iframe.src= openmrsContextPath + '/scripts/calendar/ipopeng.html';
 		iframe.scrolling='no';
 		iframe.frameBorder='0';
 		iframe.style.visibility = 'visible';
