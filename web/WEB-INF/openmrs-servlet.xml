@@ -71,7 +71,6 @@
 				<prop key="admin/person/relationshipType.list">relationshipTypeList</prop>
 				<prop key="admin/person/relationshipType.form">relationshipTypeForm</prop>
 				<prop key="admin/person/relationshipTypeViews.form">relationshipTypeViewForm</prop>
-				<prop key="admin/person/personAttributeType.list">personAttributeTypeList</prop>
 				<prop key="admin/person/personAttributeType.form">personAttributeTypeForm</prop>
 				<prop key="admin/person/addPerson.htm">addPerson</prop>
 
@@ -438,15 +437,6 @@
 		<property name="successView"><value>relationshipType.list</value></property>
 	</bean>
 	<!-- ** /Relationship Type   ** -->
-
-	<!-- **  PersonAttribute Type   ** -->
-	<bean id="personAttributeTypeList"
-		class="org.openmrs.web.controller.person.PersonAttributeTypeListController">
-		<property name="sessionForm"><value>true</value></property>
-		<property name="commandName"><value>personAttributeTypeList</value></property>
-		<property name="formView"><value>/admin/person/personAttributeTypeList</value></property>
-		<property name="successView"><value>personAttributeType.list</value></property>
-	</bean>
 
 	<bean id="personAttributeTypeValidator" class="org.openmrs.validator.PersonAttributeTypeValidator" />
 	<bean id="personAttributeTypeForm"

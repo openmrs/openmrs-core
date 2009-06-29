@@ -25,6 +25,7 @@
 		<c:forEach var="personAttributeType" items="${personAttributeTypeList}">
 			<tr>
 				<td valign="top"><input type="checkbox" name="personAttributeTypeId" value="${personAttributeType.personAttributeTypeId}"></td>
+			<!--<td valign="top">${personAttributeType.sortWeight}</td> -->
 				<td valign="top"><a href="personAttributeType.form?personAttributeTypeId=${personAttributeType.personAttributeTypeId}">
 					   ${personAttributeType.name}
 					</a>
@@ -36,8 +37,16 @@
 			</tr>
 		</c:forEach>
 	</table>
-	<input type="hidden" name="action" value="delete"/>
-	<input type="submit" value='<spring:message code="PersonAttributeType.delete"/>'>
+	<input type="hidden" name="action" id="saveAction" value=""/>
+	<input type="submit" value='<spring:message code="PersonAttributeType.moveup"/>' onclick="document.getElementById('saveAction').value='moveup'">
+	<input type="submit" value='<spring:message code="PersonAttributeType.movedown"/>' onclick="document.getElementById('saveAction').value='movedown'">
+	<input type="submit" value='<spring:message code="PersonAttributeType.delete"/>' onclick="document.getElementById('saveAction').value='delete'">
+</form>
+
+<form method="post" style="display: none;">
+	<input id="move_id" type="hidden" name="personAttributeTypeId" value="0"/>
+	<input id="move_action" type="hidden" name="action" value=""/>
+	<input id="move_submit" type="submit" value=""/>
 </form>
 
 <br/>
@@ -47,27 +56,27 @@
 	<table>
 		<tr>
 			<th><spring:message code="PersonAttributeType.patient.listing" /></th>
-			<td><input type="text" size="50" name="patient.listingAttributeTypes" value="${patientListingAttributeTypes}"/></td>
+			<td><input type="text" size="50" name="patientListingAttributeTypes" value="${patientListingAttributeTypes}"/></td>
 			<td><spring:message code="PersonAttributeType.patient.listing.help" /></td>
 		</tr>
 		<tr>
 			<th><spring:message code="PersonAttributeType.patient.viewing" /></th>
-			<td><input type="text" size="50" name="patient.viewingAttributeTypes" value="${patientViewingAttributeTypes}"/></td>
+			<td><input type="text" size="50" name="patientViewingAttributeTypes" value="${patientViewingAttributeTypes}"/></td>
 			<td><spring:message code="PersonAttributeType.patient.viewing.help" /></td>
 		</tr>
 		<tr>
 			<th><spring:message code="PersonAttributeType.patient.header" /></th>
-			<td><input type="text" size="50" name="patient.headerAttributeTypes" value="${patientHeaderAttributeTypes}"/></td>
+			<td><input type="text" size="50" name="patientHeaderAttributeTypes" value="${patientHeaderAttributeTypes}"/></td>
 			<td><spring:message code="PersonAttributeType.patient.header.help" /></td>
 		</tr>		
 		<tr>
 			<th><spring:message code="PersonAttributeType.user.listing" /></th>
-			<td><input type="text" size="50" name="user.listingAttributeTypes" value="${userListingAttributeTypes}"/></td>
+			<td><input type="text" size="50" name="userListingAttributeTypes" value="${userListingAttributeTypes}"/></td>
 			<td><spring:message code="PersonAttributeType.user.listing.help" /></td>
 		</tr>
 		<tr>
 			<th><spring:message code="PersonAttributeType.user.viewing" /></th>
-			<td><input type="text" size="50" name="user.viewingAttributeTypes" value="${userViewingAttributeTypes}"/></td>
+			<td><input type="text" size="50" name="userViewingAttributeTypes" value="${userViewingAttributeTypes}"/></td>
 			<td><spring:message code="PersonAttributeType.user.viewing.help" /></td>
 		</tr>
 	</table>

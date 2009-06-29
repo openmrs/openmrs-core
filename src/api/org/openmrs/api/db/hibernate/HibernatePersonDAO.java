@@ -330,7 +330,7 @@ public class HibernatePersonDAO implements PersonDAO {
 			criteria.add(Expression.eq("retired", false));
 		}
 		
-		criteria.addOrder(Order.asc("name"));
+		criteria.addOrder(Order.asc("sortWeight"));
 		
 		return criteria.list();
 	}

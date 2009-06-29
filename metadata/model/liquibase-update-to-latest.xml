@@ -2431,4 +2431,24 @@
 		<dropColumn tableName="concept_word" columnName="synonym"/>
 	</changeSet>
 	
+	<changeSet id="200902142212" author="ewolodzko">
+		<comment>
+			Add a sortWeight field to PersonAttributeType
+		</comment>
+		<addColumn tableName="person_attribute_type">
+			<column name="sort_weight" type="int" />
+		</addColumn>
+	</changeSet>
+	
+	<changeSet id="200902142213" author="ewolodzko">
+		<comment>
+			Add default sortWeights to all current PersonAttributeTypes
+		</comment>
+		<update tableName="person_attribute_type" >
+			<!-- The weird (select * from person_attribute_type) is needed here instead of just (person_attribute_type) to avoid sql ERROR 1093 -->
+			<column name="sort_weight" valueNumeric="((select count(*) from (select * from person_attribute_type) pat where pat.name &lt; person_attribute_type.name))" />
+			<where>sort_weight is null</where>
+		</update>
+	</changeSet>
+	
 </databaseChangeLog>

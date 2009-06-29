@@ -29,6 +29,8 @@
 		
 		<property name="foreignKey" type="java.lang.Integer" column="foreign_key" />
 			
+		<property name="sortWeight" type="java.lang.Integer" column="sort_weight" not-null="true"/>
+		
 		<property name="searchable" type="boolean" not-null="true" />
 
 		<many-to-one name="creator" class="org.openmrs.User"
