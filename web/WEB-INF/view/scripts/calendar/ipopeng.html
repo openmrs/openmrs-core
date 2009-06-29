@@ -11,7 +11,7 @@ var ua=navigator.userAgent.toLowerCase();
 var KO=ua.match(/konqueror\/(\d+)/),KO3=KO&&KO[1]==3,SA=ua.match(/safari\/(\d+)/),SA1=SA&&SA[1]<86; KO=!!KO; SA=!!SA;
 var MAC=/mac/.test(ua),OP=!!self.opera,WEBTV=/webtv/.test(ua),IE=/msie/.test(ua)&&!OP&&!WEBTV&&!SA&&!KO,GK=/gecko/.test(ua),OP8=/opera 8/.test(ua)&&OP;
 var NN4=IE4=NS6=false,IE5=IE&&![].push&&!IE4;
-self.name = "gToday:normal.htm";
+self.name = "gToday:normal.jsp";
 var gfSelf=fGetById(parent.document,self.name);
 var gTheme=self.name.split(":");
 var gCurMonth=eval(gTheme[0]); gCurMonth=fCalibrate(gCurMonth[0],gCurMonth[1]);
