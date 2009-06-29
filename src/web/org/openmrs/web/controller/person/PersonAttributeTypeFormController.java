@@ -79,8 +79,16 @@ public class PersonAttributeTypeFormController extends SimpleFormController {
 		String view = getFormView();
 		
 		if (Context.isAuthenticated()) {
-			PersonAttributeType identifierType = (PersonAttributeType) obj;
-			Context.getPersonService().savePersonAttributeType(identifierType);
+			PersonAttributeType attrType = (PersonAttributeType) obj;
+			if (attrType.getSortWeight() == null) {
+				List<PersonAttributeType> allTypes = Context.getPersonService().getAllPersonAttributeTypes();
+				if (allTypes.size() > 0)
+					attrType.setSortWeight(allTypes.get(allTypes.size()-1).getSortWeight() + 1);
+				else
+					attrType.setSortWeight(1);
+			}
+				
+			Context.getPersonService().savePersonAttributeType(attrType);
 			view = getSuccessView();
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "PersonAttributeType.saved");
 		}
