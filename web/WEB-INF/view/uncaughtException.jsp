@@ -4,6 +4,7 @@
 <%@ page import="org.openmrs.api.context.UserContext" %>
 <%@ page import="org.openmrs.util.OpenmrsConstants" %>
 <%@ page import="org.openmrs.api.APIAuthenticationException" %>
+<%@ page import="org.springframework.transaction.UnexpectedRollbackException" %>
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
 <%@ include file="/WEB-INF/template/headerMinimal.jsp" %>
@@ -40,7 +41,11 @@ try {
 	if (exception != null) {
 		out.println("<b>" + exception.getClass().getName() + "</b>");
 		if (exception.getMessage() != null)
-			out.println("<pre id='exceptionMessage'>" + WebUtil.escapeHTML(exception.getMessage()) + "</pre>"); 
+			out.println("<pre id='exceptionMessage'>" + WebUtil.escapeHTML(exception.getMessage()) + "</pre>");
+		
+		if (UnexpectedRollbackException.class.equals(exception.getClass())) {
+			out.println("<br/><b>Possible cause</b>: A programmer has made an error and forgotten to include a @Transaction(readOnly=true) annotation on a method.<br/>");
+		}
 	}
 	%>
 	
