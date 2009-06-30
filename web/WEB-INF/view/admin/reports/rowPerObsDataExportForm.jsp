@@ -516,7 +516,7 @@
 	}
 </style>
 
-<h2><spring:message code="DataExport.title"/></h2>
+<h2><spring:message code="RowPerObsDataExport.title"/></h2>
 
 <spring:hasBindErrors name="dataExport">
 	<spring:message code="fix.error"/>
