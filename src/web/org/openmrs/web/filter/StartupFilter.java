@@ -90,7 +90,7 @@ public abstract class StartupFilter implements Filter {
 			// (the "/initfilter" part is needed so that the openmrs_static_context-servlet.xml file doesn't
 			//  get instantiated early, before the locale messages are all set up)
 			if (servletPath.startsWith("/images") || servletPath.startsWith("/initfilter/scripts")) {
-				servletPath = servletPath.replaceFirst("/initfilter", ""); // strip out the /initfilter part
+				servletPath = servletPath.replaceFirst("/initfilter", "/WEB-INF/view"); // strip out the /initfilter part
 				// writes the actual image file path to the response
 				File file = new File(filterConfig.getServletContext().getRealPath(servletPath));
 				if (httpRequest.getPathInfo() != null)
