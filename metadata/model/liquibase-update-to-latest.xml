@@ -2413,4 +2413,13 @@
 		</update>
 	</changeSet>
 	
+	<changeSet id="200906301606" author="bwolfe">
+		<comment>
+			Change person_attribute_type.sort_weight from an integer to a float
+		</comment>
+		<modifyColumn tableName="person_attribute_type" >
+			<column name="sort_weight" type="double" />
+		</modifyColumn>
+	</changeSet>
+	
 </databaseChangeLog>

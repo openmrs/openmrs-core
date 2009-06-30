@@ -29,7 +29,7 @@
 		
 		<property name="foreignKey" type="java.lang.Integer" column="foreign_key" />
 			
-		<property name="sortWeight" type="java.lang.Integer" column="sort_weight" not-null="true"/>
+		<property name="sortWeight" type="java.lang.Double" column="sort_weight" not-null="true"/>
 		
 		<property name="searchable" type="boolean" not-null="true" />
 

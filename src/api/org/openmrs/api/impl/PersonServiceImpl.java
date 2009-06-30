@@ -182,6 +182,14 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 * @see org.openmrs.api.PersonService#savePersonAttributeType(org.openmrs.PersonAttributeType)
 	 */
 	public PersonAttributeType savePersonAttributeType(PersonAttributeType type) throws APIException {
+		if (type.getSortWeight() == null) {
+			List<PersonAttributeType> allTypes = Context.getPersonService().getAllPersonAttributeTypes();
+			if (allTypes.size() > 0)
+				type.setSortWeight(allTypes.get(allTypes.size()-1).getSortWeight() + 1);
+			else
+				type.setSortWeight(1.0);
+		}
+		
 		return dao.savePersonAttributeType(type);
 	}
 	

@@ -193,7 +193,7 @@ public class PersonAttributeTypeListController {
 					PersonAttributeType above = attributes.get(i - 1);
 					
 					// swap current and the attribute above it
-					int temp = current.getSortWeight();
+					double temp = current.getSortWeight();
 					current.setSortWeight(above.getSortWeight());
 					above.setSortWeight(temp);
 					Collections.swap(attributes, i, i - 1); // move the actual elements in the list as well
@@ -242,7 +242,7 @@ public class PersonAttributeTypeListController {
 					PersonAttributeType below = attributes.get(i + 1);
 					
 					// swap current and the attribute below it
-					int temp = current.getSortWeight();
+					double temp = current.getSortWeight();
 					current.setSortWeight(below.getSortWeight());
 					below.setSortWeight(temp);
 					Collections.swap(attributes, i, i + 1); // move the actual elements in the list as well
