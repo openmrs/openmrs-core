@@ -96,15 +96,16 @@ public class ConceptWordUpdateTask extends AbstractTask {
 						authenticate();
 					ConceptService cs = Context.getConceptService();
 					Iterator<Concept> conceptIterator = cs.conceptIterator();
-					int count = 0;
 					while (conceptIterator.hasNext() && shouldExecute) {
 						Concept currentConcept = conceptIterator.next();
 						if (log.isDebugEnabled())
 							log.debug("updateConceptWords() : current concept: " + currentConcept);
 						cs.updateConceptWord(currentConcept);
-						if (++count % 500 == 0) {
-							Context.clearSession(); // clean up the memory
-						}
+						
+						// do this to keep memory consumption low at the expense of speed
+						// we can't clear the whole session because the conceptIterator has
+						// already loaded and holds on to the next concept
+						Context.evictFromSession(currentConcept); 
 					}
 				}
 				catch (APIException e) {
@@ -112,13 +113,14 @@ public class ConceptWordUpdateTask extends AbstractTask {
 					throw e;
 				}
 				finally {
-					isExecuting = false;
+					isExecuting = shouldExecute = false;
 					SchedulerService ss = Context.getSchedulerService();
 					TaskDefinition conceptWordUpdateTaskDef = ss
 					        .getTaskByName(ConceptServiceImpl.CONCEPT_WORD_UPDATE_TASK_NAME);
 					conceptWordUpdateTaskDef.setStarted(false);
 					ss.saveTask(conceptWordUpdateTaskDef);
 					Context.closeSession();
+					log.debug("Task set to stopped.");
 				}
 			}
 		}
