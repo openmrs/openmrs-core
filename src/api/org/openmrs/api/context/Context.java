@@ -983,13 +983,11 @@ public class Context {
 	}
 	
 	/**
-	 * Runs any needed updates on the current database. Also sets
-	 * {@link OpenmrsConstants#DATABASE_VERSION} accordingly for backwards compatibility. However,
-	 * this is no longer needed because we are using individual liquibase updates now that can be
-	 * run out of order.<br/>
+	 * Runs any needed updates on the current database if the user has the allow_auto_update runtime
+	 * property set to true. If not set to true, then {@link #updateDatabase(Map)} must be called.<br/>
 	 * <br/>
-	 * If an {@link InputRequiredException} is thrown, a call to {@link DatabaseUpdater#update(Map)}
-	 * will be required with a mapping from question prompt to user answer
+	 * If an {@link InputRequiredException} is thrown, a call to {@link #updateDatabase(Map)} is
+	 * required with a mapping from question prompt to user answer.
 	 * 
 	 * @param props the runtime properties
 	 * @throws InputRequiredException if the {@link DatabaseUpdater} has determined that updates
@@ -997,22 +995,39 @@ public class Context {
 	 * @see InputRequiredException#getRequiredInput() InputRequiredException#getRequiredInput() for
 	 *      the required question/datatypes
 	 */
-	@SuppressWarnings("deprecation")
 	private static void checkForDatabaseUpdates(Properties props) throws DatabaseUpdateException, InputRequiredException {
 		
-		// TODO make sure the user has "permission" to run these updates by checking the runtime property for auto updating
-		
-		// this must be the first thing run in case it changes results database mappings
-		DatabaseUpdater.executeChangelog();
-		
+		boolean updatesRequired = true;
 		try {
-			Context.addProxyPrivilege("");
-			OpenmrsConstants.DATABASE_VERSION = getAdministrationService().getGlobalProperty("database_version");
+			updatesRequired = DatabaseUpdater.updatesRequired();
 		}
-		finally {
-			Context.removeProxyPrivilege("");
+		catch (Exception e) {
+			throw new DatabaseUpdateException("Unable to check if database updates are required", e);
 		}
 		
+		// this must be the first thing run in case it changes database mappings
+		if (updatesRequired) {
+			if (DatabaseUpdater.allowAutoUpdate())
+				DatabaseUpdater.executeChangelog();
+			else
+				throw new DatabaseUpdateException(
+				        "Database updates are required.  Call Context.updateDatabase() before .startup() to continue.");
+		}
+	}
+	
+	/**
+	 * Updates the openmrs database to the latest. This is only needed if using the API alone. <br/>
+	 * <br/>
+	 * The typical use-case would be: Try to {@link #startup(String, String, String, Properties)},
+	 * if that fails, call this method to get the database up to speed.
+	 * 
+	 * @param userInput (can be null) responses from the user about needed input
+	 * @throws DatabaseUpdateException if an error occurred while updating
+	 * @throws InputRequiredException if user input is required
+	 * @since 1.5
+	 */
+	public static void updateDatabase(Map<String, Object> userInput) throws DatabaseUpdateException, InputRequiredException {
+		DatabaseUpdater.executeChangelog(null, userInput);
 	}
 	
 	/**
