@@ -29,16 +29,10 @@
 	
 	<changeSet id="1" author="upul">
 		<preConditions onFail="MARK_RAN">
-			<sqlCheck expectedResult="1">
-				<![CDATA[
-				SELECT REPLACE(property_value, '.', '0') < REPLACE('1.5.0.01', '.', '0') FROM global_property WHERE property = 'database_version';
-				]]>
-			</sqlCheck>
+			<not><columnExists tableName="person_attribute_type" columnName="edit_privilege"/></not>
 		</preConditions>
 		<comment>
-			Add the column to person_attribute type to connect
-			each type to a privilege
-			(preCondition database_version check in place because this change was in the old format in trunk for a while)
+			Add the column to person_attribute type to connect each type to a privilege
 		</comment>
 		<addColumn tableName="person_attribute_type">
 			<column name="edit_privilege" type="varchar(255)" />
@@ -47,16 +41,11 @@
 	
 	<changeSet id="2" author="upul">
 		<preConditions onFail="MARK_RAN">
-			<sqlCheck expectedResult="1">
-				<![CDATA[
-				SELECT REPLACE(property_value, '.', '0') < REPLACE('1.5.0.01', '.', '0') FROM global_property WHERE property = 'database_version';
-				]]>
-			</sqlCheck>
+			<not><foreignKeyConstraintExists foreignKeyName="privilege_which_can_edit"/></not>
 		</preConditions>
 		<comment>
 			Create the foreign key from the privilege required for to edit
 			a person attribute type and the privilege.privilege column
-			(preCondition database_version check in place because this change was in the old format in trunk for a while)
 		</comment>
 		<addForeignKeyConstraint constraintName="privilege_which_can_edit"
 			baseTableName="person_attribute_type" baseColumnNames="edit_privilege"
@@ -76,15 +65,10 @@
     
 	<changeSet id="200805281223" author="bmckown">
 		<preConditions onFail="MARK_RAN">
-			<sqlCheck expectedResult="1">
-				<![CDATA[
-				SELECT REPLACE(property_value, '.', '0') < REPLACE('1.5.0.03', '.', '0') FROM global_property WHERE property = 'database_version';
-				]]>
-			</sqlCheck>
+			<not><tableExists tableName="concept_complex"/></not>
 		</preConditions>
 		<comment>
 			Create the concept_complex table
-			(preCondition database_version check in place because this change was in the old format in trunk for a while)
 		</comment>
 		<createTable tableName="concept_complex">
 			<column name="concept_id" type="int">
@@ -101,16 +85,10 @@
     
 	<changeSet id="200805281224" author="bmckown">
 		<preConditions onFail="MARK_RAN">
-			<sqlCheck expectedResult="1">
-				<![CDATA[
-				SELECT REPLACE(property_value, '.', '0') < REPLACE('1.5.0.03', '.', '0') FROM global_property WHERE property = 'database_version';
-				]]>
-			</sqlCheck>
+			<not><columnExists tableName="obs" columnName="value_complex"/></not>
 		</preConditions>
 		<comment>
 			Adding the value_complex column to obs.  This may take a long time if you have a large number of observations.
-			
-			(preCondition database_version check in place because this change was in the old format in trunk for a while)
 		</comment>
 		<addColumn tableName="obs">
 			<column name="value_complex" type="varchar(255)" />
@@ -139,16 +117,10 @@
 	
 	<changeSet id="200805281226" author="bmckown">
 		<preConditions onFail="MARK_RAN">
-			<sqlCheck expectedResult="1">
-				<![CDATA[
-				SELECT REPLACE(property_value, '.', '0') < REPLACE('1.5.0.03', '.', '0') FROM global_property WHERE property = 'database_version';
-				]]>
-			</sqlCheck>
+			<tableExists tableName="complex_obs"/>
 		</preConditions>
 		<comment>
 			Dropping the mimetype and complex_obs tables as they aren't needed in the new complex obs setup
-			
-			(preCondition database_version check in place because this change was in the old format in trunk for a while)
 		</comment>
 		
 		<dropTable tableName="complex_obs"/>
@@ -158,11 +130,7 @@
 	
 	<changeSet id="200809191226" author="smbugua">
 		<preConditions onFail="MARK_RAN">
-			<sqlCheck expectedResult="1">
-				<![CDATA[
-				SELECT REPLACE(property_value, '.', '0') < REPLACE('1.5.0.04', '.', '0') FROM global_property WHERE property = 'database_version';
-				]]>
-			</sqlCheck>
+			<not><columnExists tableName="hl7_in_archive" columnName="message_state"/></not>
 		</preConditions>
 		<comment>
 			Adding the hl7 archive message_state column so that archives can be tracked
@@ -176,16 +144,10 @@
 
 	<changeSet id="200809191927" author="smbugua">
 		<preConditions onFail="MARK_RAN">
-			<sqlCheck expectedResult="1">
-				<![CDATA[
-				SELECT REPLACE(property_value, '.', '0') < REPLACE('1.5.0.04', '.', '0') FROM global_property WHERE property = 'database_version';
-				]]>
-			</sqlCheck>
+			<not><columnExists tableName="hl7_in_queue" columnName="message_state"/></not>
 		</preConditions>
 		<comment>
 			Adding the hl7 archive message_state column so that archives can be tracked
-			
-			(preCondition database_version check in place because this change was in the old format in trunk for a while)
 		</comment>
 		<renameColumn tableName="hl7_in_queue" oldColumnName="state" newColumnName="message_state" columnDataType="int(1)"/>
 		
