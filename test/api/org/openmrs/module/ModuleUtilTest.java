@@ -45,8 +45,9 @@ public class ModuleUtilTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should return an update rdf page for old https dev urls", method = "getURL(URL)")
 	public void getURL_shouldReturnAnUpdateRdfPageForOldHttpsDevUrls() throws Exception {
-		String updateRdf = ModuleUtil.getURL(new URL("https://dev.openmrs.org/modules/download/formentry/update.rdf"));
-		Assert.assertTrue(updateRdf.contains("<updates"));
+		String url = "https://dev.openmrs.org/modules/download/formentry/update.rdf";
+		String updateRdf = ModuleUtil.getURL(new URL(url));
+		Assert.assertTrue("Unable to fetch module update url: " + url, updateRdf.contains("<updates"));
 	}
 	
 	/**
@@ -57,8 +58,9 @@ public class ModuleUtilTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should return an update rdf page for old https module urls", method = "getURL(URL)")
 	public void getURL_shouldReturnAnUpdateRdfPageForOldHttpsModuleUrls() throws Exception {
-		String updateRdf = ModuleUtil.getURL(new URL("https://modules.openmrs.org/modules/download/formentry/update.rdf"));
-		Assert.assertTrue(updateRdf.contains("<updates"));
+		String url = "https://modules.openmrs.org/modules/download/formentry/update.rdf";
+		String updateRdf = ModuleUtil.getURL(new URL(url));
+		Assert.assertTrue("Unable to fetch module update url: " + url, updateRdf.contains("<updates"));
 	}
 	
 	/**
@@ -69,8 +71,9 @@ public class ModuleUtilTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should return an update rdf page for module urls", method = "getURL(URL)")
 	public void getURL_shouldReturnAnUpdateRdfPageForModuleUrls() throws Exception {
-		String updateRdf = ModuleUtil.getURL(new URL("http://modules.openmrs.org/modules/download/formentry/update.rdf"));
-		Assert.assertTrue(updateRdf.contains("<updates"));
+		String url = "http://modules.openmrs.org/modules/download/formentry/update.rdf";
+		String updateRdf = ModuleUtil.getURL(new URL(url));
+		Assert.assertTrue("Unable to fetch module update url: " + url, updateRdf.contains("<updates"));
 	}
 	
 	/**
