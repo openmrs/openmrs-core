@@ -20,6 +20,7 @@
 	<div class="retiredMessage"><div><spring:message code="Form.retiredMessage"/></div></div>
 </c:if>
 
+<c:if test="${empty param.duplicate}">
 <br/>
 <a href="#designSchema"><spring:message code="Form.designSchema" /></a>
 <c:if test="${form.formId != 1}">
@@ -29,7 +30,7 @@
 		</c:forEach>
 	</openmrs:extensionPoint>
 </c:if>
-
+</c:if>
 
 <br/>
 <br/>
@@ -177,7 +178,7 @@
 	document.getElementById('retiredReasonRow').style.display = document.getElementById('retired').checked ==true ? '' : 'none';
 </script>
 
-
+<c:if test="${empty param.duplicate}">
 <!-- SCHEMA SECTION -->
 
 <a name="designSchema"></a>
@@ -322,5 +323,6 @@
 </div>
 <!-- Spacer for schema editing -->
 <div style="min-height: 300px"></div>
+</c:if>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>
