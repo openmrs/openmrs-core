@@ -120,7 +120,7 @@ public class PepfarReportSerializationTest extends BaseContextSensitiveTest {
 		    xmlOutput);
 		
 		// TODO how to just test to see if 1001, 1002, and 1003 all exist as values in memberIds/integer?
-		XMLAssert.assertXpathEvaluatesTo("1002", "//reportSchema/filter/cohort/memberIds/integer", xmlOutput);
+		XMLAssert.assertXpathEvaluatesTo("1001", "//reportSchema/filter/cohort/memberIds/integer", xmlOutput);
 		
 		// check some simple deserialized value
 		ReportSchema deserializedSchema = serializer.read(ReportSchema.class, correctOutput);
