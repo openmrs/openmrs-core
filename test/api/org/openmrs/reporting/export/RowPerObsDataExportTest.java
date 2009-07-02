@@ -94,7 +94,7 @@ public class RowPerObsDataExportTest extends BaseContextSensitiveTest {
 		File exportFile = DataExportUtil.getGeneratedFile(export);
 		
 		//System.out.println("Template String: \n" + export.generateTemplate());
-		String expectedOutput = "PATIENT_ID	Name	Weight (KG)	Weight (KG)_location\n2	John	10.0	Test Location\n2	John	9.0	Test Location\n2	John	8.0	Test Location\n2	John	7.0	Test Location\n2	John	6.0	Test Location\n2	John	5.0	Test Location\n2	John	4.0	Test Location\n2	John	3.0	Test Location\n2	John	2.0	Test Location\n2	John	1.0	Test Location\n6	Johnny	\n7	Collet	61.0	Xanadu\n8	Anet	\n";
+		String expectedOutput = "PATIENT_ID	Name	Weight (KG)	Weight (KG)_location\n2	John	10.0	Test Location\n2	John	9.0	Test Location\n2	John	8.0	Test Location\n2	John	7.0	Test Location\n2	John	6.0	Test Location\n2	John	5.0	Test Location\n2	John	4.0	Test Location\n2	John	3.0	Test Location\n2	John	2.0	Test Location\n2	John	1.0	Test Location\n8	Anet	\n6	Johnny	\n7	Collet	61.0	Xanadu\n";
 		String output = OpenmrsUtil.getFileAsString(exportFile);
 		exportFile.delete();
 		

@@ -42,7 +42,6 @@ import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.patient.IdentifierValidator;
 import org.openmrs.patient.UnallowedIdentifierException;
-import org.openmrs.util.OpenmrsUtil;
 
 /**
  * DWR patient methods. The methods in here are used in the webapp to get data from the database via
@@ -355,7 +354,7 @@ public class DWRPatientService {
 		// Parse the exit date 
 		Date exitDate = null;
 		if (exitDateStr != null) {
-			SimpleDateFormat sdf = OpenmrsUtil.getDateFormat();
+			SimpleDateFormat sdf = Context.getDateFormat();
 			try {
 				exitDate = sdf.parse(exitDateStr);
 			}

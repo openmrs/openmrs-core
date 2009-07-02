@@ -21,9 +21,11 @@ import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.GlobalProperty;
@@ -164,6 +166,17 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 		
 		assertTrue("Just because the date is null, doesn't make it not in the list anymore", OpenmrsUtil.collectionContains(
 		    identifiers, pi));
+	}
+	
+	/**
+	 * @see {@link OpenmrsUtil#getDateFormat(Locale)}
+	 */
+	@Test
+	public void getDateFormat_shouldReturnAPatternWithFourYCharactersInIt() throws Exception {
+		Assert.assertEquals("MM/dd/yyyy", OpenmrsUtil.getDateFormat(Locale.US).toLocalizedPattern());
+		Assert.assertEquals("dd/MM/yyyy", OpenmrsUtil.getDateFormat(Locale.UK).toLocalizedPattern());
+		Assert.assertEquals("tt.MM.uuuu", OpenmrsUtil.getDateFormat(Locale.GERMAN).toLocalizedPattern());
+		Assert.assertEquals("dd-MM-yyyy", OpenmrsUtil.getDateFormat(new Locale("pt", "pt")).toLocalizedPattern());
 	}
 	
 	/**

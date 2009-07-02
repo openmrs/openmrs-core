@@ -24,7 +24,6 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
-import org.openmrs.ConceptName;
 import org.openmrs.Drug;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
@@ -42,7 +41,6 @@ import org.openmrs.propertyeditor.LocationEditor;
 import org.openmrs.propertyeditor.OrderEditor;
 import org.openmrs.propertyeditor.PersonEditor;
 import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomBooleanEditor;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
@@ -75,7 +73,7 @@ public class ObsFormController extends SimpleFormController {
 		super.initBinder(request, binder);
 		
 		binder.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, true));
-		binder.registerCustomEditor(java.util.Date.class, new CustomDateEditor(OpenmrsUtil.getDateFormat(), true));
+		binder.registerCustomEditor(java.util.Date.class, new CustomDateEditor(Context.getDateFormat(), true));
 		binder.registerCustomEditor(Location.class, new LocationEditor());
 		binder.registerCustomEditor(java.lang.Boolean.class, new CustomBooleanEditor(true)); //allow for an empty boolean value
 		binder.registerCustomEditor(Person.class, new PersonEditor());

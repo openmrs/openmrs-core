@@ -73,7 +73,7 @@ public class DWROrderService {
 		
 		Date dStartDate = null;
 		if (startDate != null) {
-			SimpleDateFormat sdf = OpenmrsUtil.getDateFormat();
+			SimpleDateFormat sdf = Context.getDateFormat();
 			try {
 				dStartDate = sdf.parse(startDate);
 			}
@@ -100,7 +100,7 @@ public class DWROrderService {
 	public void discontinueOrder(Integer orderId, String discontinueReason, String discontinueDate) {
 		Date dDiscDate = null;
 		if (discontinueDate != null) {
-			SimpleDateFormat sdf = OpenmrsUtil.getDateFormat();
+			SimpleDateFormat sdf = Context.getDateFormat();
 			try {
 				dDiscDate = sdf.parse(discontinueDate);
 			}
@@ -300,7 +300,7 @@ public class DWROrderService {
 		
 		Date discDate = null;
 		if (discontinueDate != null) {
-			SimpleDateFormat sdf = OpenmrsUtil.getDateFormat();
+			SimpleDateFormat sdf = Context.getDateFormat();
 			try {
 				discDate = sdf.parse(discontinueDate);
 			}
@@ -342,7 +342,7 @@ public class DWROrderService {
 		
 		Date discDate = null;
 		if (discontinueDate != null) {
-			SimpleDateFormat sdf = OpenmrsUtil.getDateFormat();
+			SimpleDateFormat sdf = Context.getDateFormat();
 			try {
 				discDate = sdf.parse(discontinueDate);
 			}

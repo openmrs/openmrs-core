@@ -77,7 +77,7 @@ public class NealReportController implements Controller {
 		String fDate = ServletRequestUtils.getStringParameter(request, "fDate", "");
 		String tDate = ServletRequestUtils.getStringParameter(request, "tDate", "");
 		
-		SimpleDateFormat sdfEntered = OpenmrsUtil.getDateFormat();
+		SimpleDateFormat sdfEntered = Context.getDateFormat();
 		SimpleDateFormat sdfExpected = new SimpleDateFormat("yyyy-MM-dd");
 		
 		Date fromDate = null;

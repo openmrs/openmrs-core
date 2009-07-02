@@ -150,7 +150,7 @@ public class DataExportFunctions {
 		
 		locale = Context.getLocale();
 		dateFormatLong = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, locale);
-		dateFormatShort = OpenmrsUtil.getDateFormat();
+		dateFormatShort = Context.getDateFormat();
 		dateFormatYmd = new SimpleDateFormat("yyyy-MM-dd", locale);
 	}
 	
@@ -1045,7 +1045,6 @@ public class DataExportFunctions {
 	//		
 	//		return returnList;
 	//	}
-	
 	/**
 	 * Calculate the years between two dates (age).
 	 * 

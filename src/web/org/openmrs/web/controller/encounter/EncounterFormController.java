@@ -74,7 +74,7 @@ public class EncounterFormController extends SimpleFormController {
 		super.initBinder(request, binder);
 		
 		binder.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, true));
-		binder.registerCustomEditor(java.util.Date.class, new CustomDateEditor(OpenmrsUtil.getDateFormat(), true));
+		binder.registerCustomEditor(java.util.Date.class, new CustomDateEditor(Context.getDateFormat(), true));
 		binder.registerCustomEditor(EncounterType.class, new EncounterTypeEditor());
 		binder.registerCustomEditor(Location.class, new LocationEditor());
 		binder.registerCustomEditor(Form.class, new FormEditor());

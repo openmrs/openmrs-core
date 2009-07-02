@@ -21,7 +21,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.Locale;
 import java.util.Vector;
 
 import javax.servlet.ServletException;
@@ -118,8 +117,7 @@ public class SummaryServlet extends HttpServlet {
 	private Cohort getPatientSet(HttpServletRequest request, HttpServletResponse response) throws ServletException,
 	                                                                                      IOException {
 		
-		Locale locale = Context.getLocale();
-		DateFormat dateFormat = OpenmrsUtil.getDateFormat();
+		DateFormat dateFormat = Context.getDateFormat();
 		String startDateString = ServletRequestUtils.getStringParameter(request, "startDate", "");
 		String endDateString = ServletRequestUtils.getStringParameter(request, "endDate", "");
 		String locationString = ServletRequestUtils.getStringParameter(request, "location", "");

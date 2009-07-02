@@ -42,7 +42,6 @@ import org.openmrs.api.EncounterService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
 
 public class QuickReportServlet extends HttpServlet {
@@ -105,7 +104,7 @@ public class QuickReportServlet extends HttpServlet {
 		EncounterService es = Context.getEncounterService();
 		ConceptService cs = Context.getConceptService();
 		
-		DateFormat dateFormat = OpenmrsUtil.getDateFormat();
+		DateFormat dateFormat = Context.getDateFormat();
 		velocityContext.put("date", dateFormat);
 		
 		Concept c = cs.getConcept(new Integer("5096")); // RETURN VISIT DATE
@@ -178,7 +177,7 @@ public class QuickReportServlet extends HttpServlet {
 	                                                                                                              throws ServletException {
 		EncounterService es = Context.getEncounterService();
 		
-		DateFormat dateFormat = OpenmrsUtil.getDateFormat();
+		DateFormat dateFormat = Context.getDateFormat();
 		velocityContext.put("date", dateFormat);
 		
 		Calendar cal = Calendar.getInstance();
@@ -240,7 +239,7 @@ public class QuickReportServlet extends HttpServlet {
 	                                                                                                         throws ServletException {
 		ObsService os = Context.getObsService();
 		
-		velocityContext.put("date", OpenmrsUtil.getDateFormat());
+		velocityContext.put("date", Context.getDateFormat());
 		velocityContext.put("locale", Context.getLocale());
 		List<Obs> obs = os.getVoidedObservations();
 		

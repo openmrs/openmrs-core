@@ -117,7 +117,7 @@ public class DataEntryStatisticsController extends SimpleFormController {
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
 		
-		binder.registerCustomEditor(java.util.Date.class, new CustomDateEditor(OpenmrsUtil.getDateFormat(), true, 10));
+		binder.registerCustomEditor(java.util.Date.class, new CustomDateEditor(Context.getDateFormat(), true, 10));
 	}
 	
 	protected Object formBackingObject(HttpServletRequest request) throws ServletException {

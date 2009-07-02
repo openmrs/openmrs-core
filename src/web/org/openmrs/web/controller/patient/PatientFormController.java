@@ -54,7 +54,6 @@ import org.openmrs.propertyeditor.LocationEditor;
 import org.openmrs.propertyeditor.PatientIdentifierTypeEditor;
 import org.openmrs.propertyeditor.TribeEditor;
 import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.controller.person.PersonFormController;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
@@ -90,7 +89,7 @@ public class PatientFormController extends PersonFormController {
 		
 		NumberFormat nf = NumberFormat.getInstance(Context.getLocale());
 		binder.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, nf, true));
-		binder.registerCustomEditor(java.util.Date.class, new CustomDateEditor(OpenmrsUtil.getDateFormat(), true, 10));
+		binder.registerCustomEditor(java.util.Date.class, new CustomDateEditor(Context.getDateFormat(), true, 10));
 		binder.registerCustomEditor(Tribe.class, new TribeEditor());
 		binder.registerCustomEditor(PatientIdentifierType.class, new PatientIdentifierTypeEditor());
 		binder.registerCustomEditor(Location.class, new LocationEditor());

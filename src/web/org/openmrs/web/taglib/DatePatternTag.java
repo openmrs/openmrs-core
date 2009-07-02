@@ -19,7 +19,7 @@ import javax.servlet.jsp.tagext.TagSupport;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.api.context.Context;
 
 /**
  * Returns a string like mm/dd/yyyy for the current user
@@ -37,7 +37,7 @@ public class DatePatternTag extends TagSupport {
 	 */
 	public int doStartTag() {
 		
-		SimpleDateFormat dateFormat = OpenmrsUtil.getDateFormat();
+		SimpleDateFormat dateFormat = Context.getDateFormat();
 		
 		try {
 			pageContext.getOut().write(dateFormat.toLocalizedPattern().toLowerCase());
