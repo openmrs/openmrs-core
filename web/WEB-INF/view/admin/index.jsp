@@ -53,10 +53,17 @@
 				</div>
 			</openmrs:hasPrivilege>
 			
-			<openmrs:hasPrivilege privilege="View Encounters,Manage Locations,Manage Encounter Types">
+			<openmrs:hasPrivilege privilege="View Encounters,Manage Encounter Types">
 				<div class="adminMenuList">
 					<h4><spring:message code="Encounter.header"/></h4>
 						<%@ include file="encounters/localHeader.jsp" %>
+				</div>
+			</openmrs:hasPrivilege>
+			
+			<openmrs:hasPrivilege privilege="Manage Locations">
+				<div class="adminMenuList">
+					<h4><spring:message code="Location.header"/></h4>
+						<%@ include file="locations/localHeader.jsp" %>
 				</div>
 			</openmrs:hasPrivilege>
 			
