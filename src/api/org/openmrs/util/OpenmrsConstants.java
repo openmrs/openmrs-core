@@ -1043,13 +1043,12 @@ public final class OpenmrsConstants {
 		return languages;
 	}
 	
+	@Deprecated
 	private static Map<String, String> OPENMRS_LOCALE_DATE_PATTERNS = null;
 	
 	/**
-	 * This method is necessary until SimpleDateFormat(SHORT, java.util.locale) returns a pattern
-	 * with a four digit year <locale.toString().toLowerCase(), pattern>
-	 * 
 	 * @return Mapping of Locales to locale specific date pattern
+	 * @deprecated use the {@link org.openmrs.api.context.Context#getDateFormat()}
 	 */
 	public static final Map<String, String> OPENMRS_LOCALE_DATE_PATTERNS() {
 		if (OPENMRS_LOCALE_DATE_PATTERNS == null) {
