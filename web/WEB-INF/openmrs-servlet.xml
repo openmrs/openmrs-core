@@ -89,9 +89,10 @@
 				<prop key="admin/encounters/encounter.form">encounterForm</prop>
 				<prop key="admin/encounters/encounterType.list">encounterTypeList</prop>
 				<prop key="admin/encounters/encounterType.form">encounterTypeForm</prop>
-				<prop key="admin/encounters/location.list">locationList</prop>
-				<prop key="admin/encounters/location.form">locationForm</prop>
 				<prop key="admin/encounters/encounterDisplay.list">encounterDisplayController</prop>
+
+				<prop key="admin/locations/location.list">locationList</prop>
+				<prop key="admin/locations/location.form">locationForm</prop>
 
 				<prop key="dictionary/concept.form">conceptForm</prop>
 				<prop key="dictionary/conceptStats.form">conceptStatsForm</prop>
@@ -574,7 +575,7 @@
 	<!-- ** Location ** -->
 	<bean id="locationList" class="org.openmrs.web.controller.encounter.LocationListController">
 		<property name="commandName"><value>locationList</value></property>
-		<property name="formView"><value>/admin/encounters/locationList</value></property>
+		<property name="formView"><value>/admin/locations/locationList</value></property>
 		<property name="successView"><value>location.list</value></property>
 	</bean>
 
@@ -585,7 +586,7 @@
 		<property name="validator">
 			<ref bean="locationValidator" />
 		</property>
-		<property name="formView"><value>/admin/encounters/locationForm</value></property>
+		<property name="formView"><value>/admin/locations/locationForm</value></property>
 		<property name="successView"><value>location.list</value></property>
 	</bean>
 	<!-- ** /Location ** -->

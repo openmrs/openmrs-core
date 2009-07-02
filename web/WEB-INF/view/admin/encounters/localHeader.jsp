@@ -9,13 +9,6 @@
 			</a>
 		</li>
 	</openmrs:hasPrivilege>
-	<openmrs:hasPrivilege privilege="Manage Locations">
-		<li <c:if test='<%= request.getRequestURI().contains("location") %>'>class="active"</c:if>>
-			<a href="${pageContext.request.contextPath}/admin/encounters/location.list">
-				<spring:message code="Location.manage"/>
-			</a>
-		</li>
-	</openmrs:hasPrivilege>
 	<openmrs:hasPrivilege privilege="Manage Encounter Types">
 		<li <c:if test='<%= request.getRequestURI().contains("encounterType") %>'>class="active"</c:if>>
 			<a href="${pageContext.request.contextPath}/admin/encounters/encounterType.list">
