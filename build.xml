@@ -177,7 +177,7 @@
 				<include name="**/*"/>
 				<exclude name="**/web/**" />
 				<exclude name="junit*/" /> <!-- the junit built files -->
-				<exclude name="**/*Test.class" />
+				<exclude name="**/*Test*.class" />
 				<exclude name="**/include/" /> <!-- to skip all xml and omod files -->
 				<exclude name="**/test/" />
 				<exclude name="liquibase-data/" /> <!-- to skip the liquibase starter xml files -->
@@ -322,7 +322,7 @@
 				<include name="**/web/**/*.class" />
 				<include name="**/web/**/*.vm" /> <!-- velocity macro files for initial setup -->
 				<exclude name="**/test/" />
-				<exclude name="**/*Test.class" />
+				<exclude name="**/*Test*.class" /><!-- more inclusive with trailing wildcard -->
 			</classes>
 			<classes file="${metadata.dir}/api/log4j/log4j.xml" />
 			<classes file="${metadata.dir}/api/log4j/velocity.properties" />
