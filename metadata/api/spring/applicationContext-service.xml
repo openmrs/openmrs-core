@@ -689,6 +689,7 @@
 	
 	<context:component-scan base-package="org.openmrs">
         <context:include-filter type="annotation" expression="org.openmrs.annotation.Handler"/>
+        <context:exclude-filter type="regex" expression=".*Test.*"/>
     </context:component-scan>
     
 </beans>
