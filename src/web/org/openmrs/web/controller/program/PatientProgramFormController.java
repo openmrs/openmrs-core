@@ -14,7 +14,6 @@
 package org.openmrs.web.controller.program;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.servlet.ServletException;
@@ -28,7 +27,6 @@ import org.openmrs.PatientProgram;
 import org.openmrs.Program;
 import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.context.Context;
-import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.web.servlet.ModelAndView;
@@ -62,8 +60,7 @@ public class PatientProgramFormController implements Controller {
 		ProgramWorkflowService pws = Context.getProgramWorkflowService();
 		
 		// make sure we parse dates the same was as if we were using the initBinder + property editor method 
-		CustomDateEditor cde = new CustomDateEditor(new SimpleDateFormat(OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS()
-		        .get(Context.getLocale().toString().toLowerCase()), Context.getLocale()), true, 10);
+		CustomDateEditor cde = new CustomDateEditor(Context.getDateFormat(), true, 10);
 		cde.setAsText(enrollmentDateStr);
 		Date enrollmentDate = (Date) cde.getValue();
 		cde.setAsText(completionDateStr);
@@ -95,8 +92,7 @@ public class PatientProgramFormController implements Controller {
 		String dateCompletedStr = request.getParameter("dateCompleted");
 		
 		// make sure we parse dates the same was as if we were using the initBinder + property editor method 
-		CustomDateEditor cde = new CustomDateEditor(new SimpleDateFormat(OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS()
-		        .get(Context.getLocale().toString().toLowerCase()), Context.getLocale()), true, 10);
+		CustomDateEditor cde = new CustomDateEditor(Context.getDateFormat(), true, 10);
 		cde.setAsText(dateCompletedStr);
 		Date dateCompleted = (Date) cde.getValue();
 		

@@ -18,7 +18,7 @@ import java.text.SimpleDateFormat;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.DrugOrder;
-import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.api.context.Context;
 
 public class DrugOrderListItem {
 	
@@ -95,7 +95,7 @@ public class DrugOrderListItem {
 		}
 		instructions = drugOrder.getInstructions();
 		
-		SimpleDateFormat sdf = OpenmrsUtil.getDateFormat();
+		SimpleDateFormat sdf = Context.getDateFormat();
 		
 		if (drugOrder.getStartDate() != null)
 			startDate = sdf.format(drugOrder.getStartDate());

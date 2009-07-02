@@ -22,7 +22,6 @@ import org.openmrs.Concept;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.Obs;
 import org.openmrs.api.context.Context;
-import org.openmrs.util.OpenmrsUtil;
 
 /**
  * A result from the logic service. A result can be 0-to-n date-values pairs. You can treat the
@@ -508,7 +507,7 @@ public class Result extends ArrayList<Result> {
 				return valueDatetime;
 			if (datatype == Datatype.TEXT && valueText != null) {
 				try {
-					return OpenmrsUtil.getDateFormat().parse(valueText);
+					return Context.getDateFormat().parse(valueText);
 				}
 				catch (Exception e) {}
 			}
@@ -592,7 +591,7 @@ public class Result extends ArrayList<Result> {
 				case CODED:
 					return (valueCoded == null ? "" : valueCoded.getBestName(Context.getLocale()).getName());
 				case DATETIME:
-					return (valueDatetime == null ? "" : OpenmrsUtil.getDateFormat().format(valueDatetime));
+					return (valueDatetime == null ? "" : Context.getDateFormat().format(valueDatetime));
 				case NUMERIC:
 					return (valueNumeric == null ? "" : String.valueOf(valueNumeric));
 				case TEXT:

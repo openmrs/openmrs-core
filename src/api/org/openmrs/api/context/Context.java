@@ -1074,12 +1074,12 @@ public class Context {
 	 * Gets the simple date format for the current user's locale. The format will be similar in size
 	 * to mm/dd/yyyy
 	 * 
-	 * @return SimpleDateFormat
-	 * @see org.openmrs.util.OpenmrsConstants#OPENMRS_LOCALE_DATE_PATTERNS()
+	 * @return SimpleDateFormat for the user's current locale
+	 * @see org.openmrs.util.OpenmrsUtil#getDateFormat(Locale)
+	 * @should return a pattern with four y characters in it
 	 */
 	public static SimpleDateFormat getDateFormat() {
-		return new SimpleDateFormat(OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS()
-		        .get(getLocale().toString().toLowerCase()), getLocale());
+		return OpenmrsUtil.getDateFormat(getLocale());
 	}
 	
 	/**
