@@ -68,7 +68,7 @@ public class OrderFormController extends SimpleFormController {
 		binder.registerCustomEditor(Boolean.class, new CustomBooleanEditor("t", "f", true));
 		binder.registerCustomEditor(Integer.class, new CustomNumberEditor(Integer.class, true));
 		binder.registerCustomEditor(Concept.class, new ConceptEditor());
-		binder.registerCustomEditor(Date.class, new CustomDateEditor(OpenmrsUtil.getDateFormat(), true));
+		binder.registerCustomEditor(Date.class, new CustomDateEditor(Context.getDateFormat(), true));
 		binder.registerCustomEditor(User.class, new UserEditor());
 		binder.registerCustomEditor(Patient.class, new PatientEditor());
 		binder.registerCustomEditor(Encounter.class, new EncounterEditor());

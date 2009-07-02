@@ -118,7 +118,7 @@ public class SummaryServlet extends HttpServlet {
 	                                                                                      IOException {
 		
 		Locale locale = Context.getLocale();
-		DateFormat dateFormat = OpenmrsUtil.getDateFormat();
+		DateFormat dateFormat = Context.getDateFormat();
 		String startDateString = ServletRequestUtils.getStringParameter(request, "startDate", "");
 		String endDateString = ServletRequestUtils.getStringParameter(request, "endDate", "");
 		String locationString = ServletRequestUtils.getStringParameter(request, "location", "");

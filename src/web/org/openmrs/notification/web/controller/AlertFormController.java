@@ -65,7 +65,7 @@ public class AlertFormController extends SimpleFormController {
 		
 		// NumberFormat nf = NumberFormat.getInstance(new Locale("en_US"));
 		binder.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, nf, true));
-		binder.registerCustomEditor(java.util.Date.class, new CustomDateEditor(OpenmrsUtil.getDateFormat(), true, 10));
+		binder.registerCustomEditor(java.util.Date.class, new CustomDateEditor(Context.getDateFormat(), true, 10));
 		
 	}
 	

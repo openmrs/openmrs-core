@@ -32,7 +32,6 @@ import org.openmrs.api.PatientService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
-import org.openmrs.util.OpenmrsUtil;
 import org.springframework.util.StringUtils;
 
 /**
@@ -74,7 +73,7 @@ public class DWRPersonService {
 		age = age.trim();
 		if (birthdate.length() > 0) {
 			// extract the year from the given birthdate string
-			DateFormat format = OpenmrsUtil.getDateFormat();
+			DateFormat format = Context.getDateFormat();
 			Date dateObject = null;
 			try {
 				dateObject = format.parse(birthdate);

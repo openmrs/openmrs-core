@@ -22,9 +22,11 @@ import static org.junit.Assert.fail;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.GlobalProperty;
@@ -265,6 +267,18 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should allow password to contain white spaces", method = "validatePassword(String,String,String)")
 	public void validatePassword_shouldAllowPasswordToContainWhiteSpaces() throws Exception {
 		OpenmrsUtil.validatePassword("admin", "Test *&^ 1234? ", "1-8");
+	}
+	
+	/**
+	 * @see {@link OpenmrsUtil#getDateFormat(Locale)}
+	 */
+	@Test
+	@Verifies(value = "should return a pattern with four y characters in it", method = "getDateFormat(Locale)")
+	public void getDateFormat_shouldReturnAPatternWithFourYCharactersInIt() throws Exception {
+		Assert.assertEquals("MM/dd/yyyy", OpenmrsUtil.getDateFormat(Locale.US).toLocalizedPattern());
+		Assert.assertEquals("dd/MM/yyyy", OpenmrsUtil.getDateFormat(Locale.UK).toLocalizedPattern());
+		Assert.assertEquals("tt.MM.uuuu", OpenmrsUtil.getDateFormat(Locale.GERMAN).toLocalizedPattern());
+		Assert.assertEquals("dd-MM-yyyy", OpenmrsUtil.getDateFormat(new Locale("pt", "pt")).toLocalizedPattern());
 	}
 	
 }

@@ -34,7 +34,6 @@ import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
 
 public class SampleFlowsheetServlet extends HttpServlet {
@@ -92,7 +91,7 @@ public class SampleFlowsheetServlet extends HttpServlet {
 			obsDate.setTime(obs.getObsDatetime());
 			if (Math.abs(obsDate.getTimeInMillis() - date.getTimeInMillis()) > 86400000) {
 				date = obsDate;
-				out.println("<tr><td class=header colspan=2>" + OpenmrsUtil.getDateFormat().format(date.getTime())
+				out.println("<tr><td class=header colspan=2>" + Context.getDateFormat().format(date.getTime())
 				        + "</td></tr>");
 			}
 			StringBuffer s = new StringBuffer("<tr><td class=label>");

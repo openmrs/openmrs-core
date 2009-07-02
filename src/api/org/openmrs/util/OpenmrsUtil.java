@@ -51,6 +51,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -127,6 +128,8 @@ import org.w3c.dom.DocumentType;
 public class OpenmrsUtil {
 	
 	private static Log log = LogFactory.getLog(OpenmrsUtil.class);
+	
+	private static Map<Locale, SimpleDateFormat> dateFormatCache = new HashMap<Locale, SimpleDateFormat>();
 	
 	/**
 	 * @param idWithoutCheckdigit
@@ -1132,18 +1135,46 @@ public class OpenmrsUtil {
 	 * locale.
 	 * 
 	 * @return a simple date format
+	 * @deprecated use {@link Context#getDateFormat()} or {@link #getDateFormat(Context#getLocale())} instead
 	 */
 	public static SimpleDateFormat getDateFormat() {
-		String localeKey = Context.getLocale().toString().toLowerCase();
+		return Context.getDateFormat();
+	}
+	
+	/**
+	 * Get the current user's date format Will look similar to "mm-dd-yyyy". Depends on user's
+	 * locale.
+	 * 
+	 * @return a simple date format
+	 * @should return a pattern with four y characters in it
+	 * @since 1.5
+	 */
+	public static SimpleDateFormat getDateFormat(Locale locale) {
+		if (dateFormatCache.containsKey(locale))
+			return dateFormatCache.get(locale);
 		
-		// get the actual pattern from the constants
-		String pattern = OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(localeKey);
+		SimpleDateFormat sdf = (SimpleDateFormat)DateFormat.getDateInstance(DateFormat.SHORT, locale);
+		String pattern = sdf.toPattern();
+
+		if (!pattern.contains("yyyy")) {
+			// otherwise, change the pattern to be a four digit year
+			pattern = pattern.replaceFirst("yy", "yyyy");
+			sdf.applyPattern(pattern);
+		}
+		if (!pattern.contains("MM")) {
+			// change the pattern to be a two digit month
+			pattern = pattern.replaceFirst("M", "MM");
+			sdf.applyPattern(pattern);
+		}
+		if (!pattern.contains("dd")) {
+			// change the pattern to be a two digit day
+			pattern = pattern.replaceFirst("d", "dd");
+			sdf.applyPattern(pattern);
+		}
 		
-		// default to the "first" locale pattern
-		if (pattern == null)
-			pattern = (String) OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().values().toArray()[0];
+		dateFormatCache.put(locale, sdf);
 		
-		return new SimpleDateFormat(pattern, Context.getLocale());
+		return sdf;
 	}
 	
 	/**
@@ -1225,9 +1256,7 @@ public class OpenmrsUtil {
 				return ed.getValue();
 			} else if (Date.class.equals(clazz)) {
 				// TODO: this uses the date format from the current session, which could cause problems if the user changes it after searching. 
-				DateFormat df = new SimpleDateFormat(OpenmrsConstants.OPENMRS_LOCALE_DATE_PATTERNS().get(
-				    Context.getLocale().toString().toLowerCase()), Context.getLocale());
-				CustomDateEditor ed = new CustomDateEditor(df, true, 10);
+				CustomDateEditor ed = new CustomDateEditor(Context.getDateFormat(), true, 10);
 				ed.setAsText(string);
 				return ed.getValue();
 			} else if (Object.class.equals(clazz)) {
@@ -1687,7 +1716,7 @@ public class OpenmrsUtil {
 				if (outStream != null)
 					outStream.close();
 			}
-			catch (IOException ioe){
+			catch (IOException ioe) {
 				//pass
 			}
 		}
