@@ -23,7 +23,7 @@ public class ConceptStateConversion extends BaseOpenmrsObject implements java.io
 	
 	public static final long serialVersionUID = 3214511L;
 	
-	protected final Log log = LogFactory.getLog(getClass());
+	private transient final Log log = LogFactory.getLog(getClass());
 	
 	// ******************
 	// Properties

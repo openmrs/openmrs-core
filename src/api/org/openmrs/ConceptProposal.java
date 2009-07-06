@@ -30,7 +30,7 @@ public class ConceptProposal extends BaseOpenmrsObject implements java.io.Serial
 	
 	public static final long serialVersionUID = 57344L;
 	
-	private Log log = LogFactory.getLog(this.getClass());
+	private transient Log log = LogFactory.getLog(this.getClass());
 	
 	// Fields
 	

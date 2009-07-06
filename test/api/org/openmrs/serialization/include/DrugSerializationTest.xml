@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataset>
+	<concept concept_id="3" retired="false" datatype_id="1" class_id="3" is_set="false" creator="1" date_created="2008-08-15 15:27:51.0" version="" uuid="0cbe2ed3-cd5f-4f46-9459-26127c9265ab"/>
+    <concept concept_id="4" retired="false" datatype_id="2" class_id="3" is_set="false" creator="1" date_created="2008-08-15 15:51:39.0" version="" changed_by="1" date_changed="2008-08-15 15:52:38.0" uuid="89ca642a-dab6-4f20-b712-e12ca4fc6d36"/>
+    <concept concept_id="5" retired="false" datatype_id="1" class_id="3" is_set="false" creator="1" date_created="2008-08-15 15:51:57.0" version="" uuid="32d3611a-6699-4d52-823f-b4b788bac3e3"/>
+	<concept_datatype concept_datatype_id="1" name="Numeric" hl7_abbreviation="NM" description="Numeric value, including integer or float (e.g., creatinine, weight)" creator="1" date_created="2004-02-02 00:00:00.0" retired="false" uuid="749b5078-8371-4849-aeab-181e3aed9415"/>
+ 	<concept_datatype concept_datatype_id="2" name="Coded" hl7_abbreviation="CWE" description="Value determined by term dictionary lookup (i.e., term identifier)" creator="1" date_created="2004-02-02 00:00:00.0" retired="false" uuid="ef301729-eec1-4de9-8bb9-3532e3abb9bc"/>
+  	<concept_class concept_class_id="3" name="Drug" description="Drug" creator="1" date_created="2004-02-02 00:00:00.0" retired="false" uuid="3d065ed4-b0b9-4710-9a17-6d8c4fd259b7"/>
+	<drug drug_id="2" concept_id="4" name="Triomune-30" combination="true" dose_strength="1.0" dosage_form="3" route="5" units="tab(s)" creator="1" date_created="2005-02-24 00:00:00.0" retired="false" uuid="3cfcf118-931c-46f7-8ff6-7b876f0d4202"/>
+</dataset>

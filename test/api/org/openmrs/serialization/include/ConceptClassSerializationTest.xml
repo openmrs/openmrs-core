@@ -1,0 +1,4 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+  <concept_class concept_class_id="4" name="Diagnosis" description="Conclusion drawn through findings" creator="1" date_created="2004-02-02 00:00:00.0" retired="1" retired_by="1" date_retired="2006-02-02 00:00:00.0" retire_reason="we don&apos;t want to use it" uuid="003d0731-92b2-102c-adee-6014420f8468"/>
+</dataset>

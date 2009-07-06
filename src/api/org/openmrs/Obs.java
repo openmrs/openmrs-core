@@ -50,7 +50,7 @@ import org.openmrs.util.Format.FORMAT_TYPE;
  */
 public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	
-	protected final static Log log = LogFactory.getLog(Obs.class);
+	private transient final static Log log = LogFactory.getLog(Obs.class);
 	
 	public static final long serialVersionUID = 112342333L;
 	

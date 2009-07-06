@@ -30,7 +30,7 @@ import org.simpleframework.xml.Root;
 @Root(strict = false)
 public class PersonAddress extends BaseOpenmrsData implements java.io.Serializable, Cloneable, Comparable<PersonAddress> {
 	
-	private static Log log = LogFactory.getLog(PersonAddress.class);
+	private transient static Log log = LogFactory.getLog(PersonAddress.class);
 	
 	public static final long serialVersionUID = 343333L;
 	

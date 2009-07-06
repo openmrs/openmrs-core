@@ -43,7 +43,7 @@ import org.simpleframework.xml.load.Replace;
 @Root(strict = false)
 public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	
-	public static final Log log = LogFactory.getLog(Person.class);
+	private transient static final Log log = LogFactory.getLog(Person.class);
 	
 	public static final long serialVersionUID = 13533L;
 	

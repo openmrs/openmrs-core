@@ -36,7 +36,7 @@ public class PersonName extends BaseOpenmrsMetadata implements java.io.Serializa
 	
 	public static final long serialVersionUID = 4353L;
 	
-	private static Log log = LogFactory.getLog(PersonName.class);
+	private transient static Log log = LogFactory.getLog(PersonName.class);
 	
 	// Fields
 	

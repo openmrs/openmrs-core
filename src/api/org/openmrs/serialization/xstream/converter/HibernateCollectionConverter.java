@@ -6,8 +6,12 @@ import java.util.HashSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.hibernate.Hibernate;
 import org.hibernate.collection.PersistentCollection;
 import org.hibernate.collection.PersistentSet;
+import org.hibernate.collection.PersistentSortedSet;
 
 import com.thoughtworks.xstream.converters.Converter;
 import com.thoughtworks.xstream.converters.ConverterLookup;
@@ -17,13 +21,15 @@ import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 
 /**
- * XStream converter that strips HB collections specific information and retrieves the underlying
+ * XStream converter that strips HB collection specific information and retrieves the underlying
  * collection which is then parsed by the delegated converter. This converter only takes care of the
- * values inside the collections while the mapper takes care of the collections naming.
+ * values inside the collections while the mapper takes care of the collection naming.
  * 
  * @author Costin Leau
  */
 public class HibernateCollectionConverter implements Converter {
+	
+	private static Log log = LogFactory.getLog(HibernateCollectionConverter.class);
 	
 	private Converter listSetConverter;
 	
@@ -60,15 +66,19 @@ public class HibernateCollectionConverter implements Converter {
 	 */
 	public void marshal(Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
 		Object collection = source;
-		
 		if (source instanceof PersistentCollection) {
 			PersistentCollection col = (PersistentCollection) source;
-			col.forceInitialization();
+			if (!Hibernate.isInitialized(source)) {
+				col.forceInitialization();
+			}
 			collection = col.getStoredSnapshot();
+			
 		}
 		
 		// the set is returned as a map by Hibernate (unclear why exactly)
-		if (source instanceof PersistentSet) {
+		if (PersistentSortedSet.class.equals(source.getClass())) {
+			collection = new TreeSet(((HashMap) collection).keySet());
+		} else if (PersistentSet.class.equals(source.getClass())) {
 			collection = new HashSet(((HashMap) collection).keySet());
 		}
 		
@@ -89,6 +99,10 @@ public class HibernateCollectionConverter implements Converter {
 			treeSetConverter.marshal(collection, writer, context);
 			return;
 		}
+		if (hashSetConverter.canConvert(collection.getClass())) {
+			hashSetConverter.marshal(collection, writer, context);
+			return;
+		}
 		
 		defaultConverter.marshal(collection, writer, context);
 	}
@@ -98,7 +112,7 @@ public class HibernateCollectionConverter implements Converter {
 	 *      com.thoughtworks.xstream.converters.UnmarshallingContext)
 	 */
 	public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
-		System.out.println("**** UNMARSHAL **** " + context.getRequiredType());
+		log.debug("**** UNMARSHAL **** " + context.getRequiredType());
 		return null;
 	}
 }

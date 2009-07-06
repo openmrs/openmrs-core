@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataset>
+    <person person_id="999" gender="M" dead="false" creator="1" date_created="2006-01-18 00:00:00.0" changed_by="1" date_changed="2008-08-18 12:24:34.0" voided="true" void_reason="For test purposes" uuid="86526ed6-3c11-11de-a0ba-001e378eb67e"/>
+    <patient patient_id="999" creator="1" date_created="2006-01-18 00:00:00.0" changed_by="1" date_changed="2008-08-18 12:24:34.0" voided="true" void_reason="For test purposes"/>
+    <patient_identifier patient_identifier_id="7" patient_id="999" identifier="XYZ" identifier_type="2" preferred="1" location_id="1" creator="1" date_created="2006-01-18 00:00:00.0" voided="false"/>
+    <patient_identifier_type patient_identifier_type_id="2" name="Old Identification Number" description="Number given out prior to the OpenMRS system (No check digit)" format="" check_digit="false" creator="1" date_created="2005-09-22 00:00:00.0" required="false" retired="false" uuid="2f470aa8-1d73-43b7-81b5-01f0c0dfa53c"/>
+    <location location_id="1" name="Unknown Location" description="The default location used when limited information is known" address1="" address2="" city_village="" state_province="" postal_code="" country="" creator="1" date_created="2005-09-22 00:00:00.0" retired="false" uuid="dc5c1fcc-0459-4201-bf70-0b90535ba362"/>
+</dataset>
