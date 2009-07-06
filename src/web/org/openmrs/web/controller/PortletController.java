@@ -63,6 +63,7 @@ public class PortletController implements Controller {
      *          (java.util.Date) now
      *          (String) size
      *          (Locale) locale
+     *          (String) portletUUID
      *          (other parameters)
      *     (if there's currently an authenticated user)
      *          (User) authenticatedUser
