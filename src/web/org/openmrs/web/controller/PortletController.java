@@ -21,6 +21,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -117,8 +118,15 @@ public class PortletController implements Controller {
 			HttpSession session = request.getSession();
 			String uniqueRequestId = (String) request.getAttribute(WebConstants.INIT_REQ_UNIQUE_ID);
 			String lastRequestId = (String) session.getAttribute(WebConstants.OPENMRS_PORTLET_LAST_REQ_ID);
-			if (uniqueRequestId.equals(lastRequestId))
+			if (uniqueRequestId.equals(lastRequestId)) {
 				model = (Map<String, Object>) session.getAttribute(WebConstants.OPENMRS_PORTLET_CACHED_MODEL);
+				
+				// remove cached parameters 
+				List<String> parameterKeys = (List<String>)model.get("parameterKeys");
+				for (String key : parameterKeys) {
+					model.remove(key);
+				}
+			}
 			if (model == null) {
 				log.debug("creating new portlet model");
 				model = new HashMap<String, Object>();
@@ -149,10 +157,13 @@ public class PortletController implements Controller {
 			model.put("id", id);
 			model.put("size", size);
 			model.put("locale", Context.getLocale());
-			model.putAll(params);
+			model.put("portletUUID", UUID.randomUUID().toString());
+			List<String> parameterKeys = new ArrayList<String>(params.keySet());
 			if (moreParams != null) {
 				model.putAll(moreParams);
+				parameterKeys.addAll(moreParams.keySet());
 			}
+			model.put("parameterKeys", parameterKeys); // so we can clean these up in the next request
 			
 			// if there's an authenticated user, put them, and their patient set, in the model
 			if (Context.getAuthenticatedUser() != null) {
@@ -294,8 +305,10 @@ public class PortletController implements Controller {
 						
 						if (Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PROGRAMS)
 						        && Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENT_PROGRAMS)) {
-							model.put("patientPrograms", Context.getProgramWorkflowService().getPatientPrograms(p,null,null,null,null,null,false));
-							model.put("patientCurrentPrograms", Context.getProgramWorkflowService().getPatientPrograms(p, null, null, new Date(), new Date(), null, false));
+							model.put("patientPrograms", Context.getProgramWorkflowService().getPatientPrograms(p, null,
+							    null, null, null, null, false));
+							model.put("patientCurrentPrograms", Context.getProgramWorkflowService().getPatientPrograms(p,
+							    null, null, new Date(), new Date(), null, false));
 						}
 						
 						model.put("patientId", patientId);
