@@ -546,6 +546,10 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		// clear the (hibernate) session to make sure nothing is cached, etc
 		Context.clearSession();
 		
+		// needed because the authenticatedUser is the only object that sticks 
+		// around after tests and the clearSession call 
+		Context.refreshAuthenticatedUser();
+		
 	}
 	
 	/**
