@@ -251,6 +251,7 @@ public interface PatientService extends OpenmrsService {
 	 * @param isPreferred if true, limits to only preferred identifiers if false, only non
 	 *            preferred. if null, ignores preferred status
 	 * @return PatientIdentifiers matching these criteria
+	 * @should return only non voided patients and patient identifiers
 	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)
