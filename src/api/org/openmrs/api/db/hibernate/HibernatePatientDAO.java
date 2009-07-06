@@ -354,6 +354,11 @@ public class HibernatePatientDAO implements PatientDAO {
 	                                                     Boolean isPreferred) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(PatientIdentifier.class);
 		
+		// join with the patient table to prevent patient identifiers from patients
+		// that already voided getting returned
+		criteria.createAlias("patient", "patient");
+		criteria.add(Expression.eq("patient.voided", false));
+		
 		// TODO add junit test for not getting voided
 		// make sure the patient object isn't voided
 		criteria.add(Expression.eq("voided", false));
@@ -625,8 +630,8 @@ public class HibernatePatientDAO implements PatientDAO {
 		        && patientIdentifier.getPatient().getPatientId() != null;
 		
 		// switched this to an hql query so the hibernate cache can be considered as well as the database
-		String hql = "select count(*) from PatientIdentifier pi, Patient p where pi.patient.patientId = p.patient.patientId " + 
-			"and p.voided = false and pi.voided = false and pi.identifier = :identifier and pi.identifierType = :idType";
+		String hql = "select count(*) from PatientIdentifier pi, Patient p where pi.patient.patientId = p.patient.patientId "
+		        + "and p.voided = false and pi.voided = false and pi.identifier = :identifier and pi.identifierType = :idType";
 		
 		if (checkPatient) {
 			hql += " and p.patientId != :ptId";

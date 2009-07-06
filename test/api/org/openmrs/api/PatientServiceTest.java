@@ -943,4 +943,24 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		patientService.mergePatients(preferred, notPreferred);
 	}
 	
+	/**
+	 * @see {@link PatientService#getPatientIdentifiers(String,List,List,List,Boolean)}
+	 */
+	@Test
+	@Verifies(value = "should return only non voided patients and patient identifiers", method = "getPatientIdentifiers(String,List<QPatientIdentifierType;>,List<QLocation;>,List<QPatient;>,Boolean)")
+	public void getPatientIdentifiers_shouldReturnOnlyNonVoidedPatientsAndPatientIdentifiers() throws Exception {
+		// sanity check. make sure there is at least one voided patient
+		Patient patient = patientService.getPatient(999);
+		Assert.assertTrue("This patient should be voided", patient.isVoided());
+		Assert.assertFalse("This test expects the patient to be voided BUT the identifier to be NONvoided",
+		    ((PatientIdentifier) (patient.getIdentifiers().toArray()[0])).isVoided());
+		
+		// now fetch all identifiers
+		List<PatientIdentifier> patientIdentifiers = patientService.getPatientIdentifiers(null, null, null, null, null);
+		for (PatientIdentifier patientIdentifier : patientIdentifiers) {
+			Assert.assertFalse("No voided identifiers should be returned", patientIdentifier.isVoided());
+			Assert.assertFalse("No identifiers of voided patients should be returned", patientIdentifier.getPatient()
+			        .isVoided());
+		}
+	}
 }
