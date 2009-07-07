@@ -168,27 +168,27 @@ img {
 <div id="dialog" title="Add new global property">
 	<form>
 		<div class="record">
-			<label for="name">Namespace</label>
+			<label for="namespace">Namespace</label>
 			<input type="text" name="namespace" id="namespace" />
 		</div>
 		<div class="record">
-			<label for="email">Property name</label>
+			<label for="property-name">Property name</label>
 			<input type="text" name="propertyName" id="propertyName" />
 		</div>
 		<div class="record">
-			<label for="password">Property value</label>
-			<input type="password" name="propertyValue" id="propertyValue" />
+			<label for="property-value">Property value</label>
+			<input type="text" name="propertyValue" id="propertyValue" />
 		</div>
 		<div class="record">
-			<label for="password">Property type</label>
-			<input type="password" name="propertyType" id="propertyType" />
+			<label for="property-type">Property type</label>
+			<input type="text" name="propertyType" id="propertyType" />
 		</div>
 	</form>
 </div>
 
-<div id="properties-container">
-
 <button id="add-global-property">Add property</button>
+
+<div id="properties-container">
 
 <ul id="tabs-pane">
 	<li class="all-properties-item"><a href="#all-properties-pane" id="all-properties-link"><spring:message code="GlobalProperty.all"/></a></li>
