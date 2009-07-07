@@ -19,6 +19,7 @@ import org.openmrs.Auditable;
 import org.openmrs.User;
 import org.openmrs.annotation.Handler;
 import org.openmrs.aop.RequiredDataAdvice;
+import org.openmrs.api.context.Context;
 
 /**
  * This class deals with any object that implements {@link Auditable}. When an {@link Auditable} is
@@ -52,10 +53,12 @@ public class AuditableSaveHandler implements SaveHandler<Auditable> {
 	 * @should set dateChanged if id is unsupported
 	 */
 	public void handle(Auditable auditable, User currentUser, Date currentDate, String reason) {
+		// Do a quick refresh of the user before saving
+		User user = Context.getUserService().getUser(currentUser.getId());
 		
 		// only set the creator and date created if they weren't set by the user already
-		if (auditable.getCreator() == null) {
-			auditable.setCreator(currentUser);
+		if (auditable.getCreator() == null) {	    	   				
+			auditable.setCreator(user);
 		}
 		
 		if (auditable.getDateCreated() == null) {
@@ -71,7 +74,7 @@ public class AuditableSaveHandler implements SaveHandler<Auditable> {
 			hasId = true; // if no "id" to check, just go ahead and set them
 		}
 		if (hasId) {
-			auditable.setChangedBy(currentUser);
+			auditable.setChangedBy(user);
 			auditable.setDateChanged(currentDate);
 		}
 	}
