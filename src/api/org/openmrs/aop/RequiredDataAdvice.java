@@ -188,6 +188,9 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 	public static <H extends RequiredDataHandler> void recursivelyHandle(Class<H> handlerType,
 	                                                                        OpenmrsObject openmrsObject, User currentUser,
 	                                                                        Date currentDate, String other) {
+		if (openmrsObject == null)
+			return;
+		
 		Class<? extends OpenmrsObject> openmrsObjectClass = openmrsObject.getClass();
 		
 		// fetch all handlers for the object being saved

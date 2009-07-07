@@ -188,6 +188,10 @@ public class CohortSearchHistory extends AbstractReportObject {
 		}
 	}
 	
+	public List<PatientFilter> getCachedFilters() {
+		return cachedFilters;
+	}
+	
 	public List<Date> getCachedResultDates() {
 		return cachedResultDates;
 	}
