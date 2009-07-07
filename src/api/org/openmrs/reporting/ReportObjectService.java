@@ -197,6 +197,7 @@ public interface ReportObjectService extends OpenmrsService {
 	 * @param history
 	 * @return CohortSearchHistory of the saved Search History of a Cohort
 	 * @throws APIException
+	 * @should save history successfully
 	 */
 	public CohortSearchHistory saveSearchHistory(CohortSearchHistory history) throws APIException;
 	
