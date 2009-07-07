@@ -160,6 +160,7 @@ public class PortletController implements Controller {
 			model.put("locale", Context.getLocale());
 			model.put("portletUUID", UUID.randomUUID().toString());
 			List<String> parameterKeys = new ArrayList<String>(params.keySet());
+			model.putAll(params);
 			if (moreParams != null) {
 				model.putAll(moreParams);
 				parameterKeys.addAll(moreParams.keySet());
