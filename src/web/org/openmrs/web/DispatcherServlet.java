@@ -13,6 +13,7 @@
  */
 package org.openmrs.web;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 
 import org.apache.commons.logging.Log;
@@ -21,6 +22,8 @@ import org.openmrs.module.Module;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.module.web.WebModuleUtil;
 import org.openmrs.util.OpenmrsClassLoader;
+import org.openmrs.web.filter.initialization.InitializationFilter;
+import org.openmrs.web.filter.update.UpdateFilter;
 import org.springframework.beans.BeansException;
 
 /**
@@ -73,6 +76,25 @@ public class DispatcherServlet extends org.springframework.web.servlet.Dispatche
 		for (Module module : ModuleFactory.getStartedModules()) {
 			ModuleFactory.loadAdvice(module);
 		}
+	}
+	
+	/**
+	 * @see javax.servlet.GenericServlet#init(javax.servlet.ServletConfig)
+	 */
+	@Override
+	public void init(ServletConfig config) throws ServletException {
+		
+		// hacky way to know if one of the startup filters needs to be run
+		if (UpdateFilter.updatesRequired()) {
+			log.info("DB updates are required, so spring initialization is being skipped");
+			throw new ServletException("Database updates are required. Visit /openmrs to run them.");
+		}
+		if (!Listener.runtimePropertiesFound()) {
+			log.info("Runtime properties are found, so spring initialization is being skipped");
+			throw new ServletException("OpenMRS initialization is required. Visit /openmrs to run the setup wizard.");
+		}
+		
+		super.init(config);
 	}
 	
 }
