@@ -1054,6 +1054,7 @@
 		<property name="defaultLayoutFormat"><value>US</value></property>
 		<property name="layoutTemplates">
 			<list>
+				<ref bean="addressTemplateSpain" />
 				<ref bean="addressTemplateRwanda" />
 				<ref bean="addressTemplateUS" />
 				<ref bean="addressTemplateKenya" />
@@ -1078,6 +1079,44 @@
 				<value>townshipDivision</value>
 				<value>subregion</value>
 				<value>region</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="addressTemplateSpain" class="org.openmrs.layout.web.address.AddressTemplate">
+		<property name="displayName"><value>Formato de Direcciones en Espana</value></property>
+		<property name="codeName"><value>spain</value></property>
+		<property name="country"><value>Spain</value></property>
+		<property name="nameMappings">
+			<props>
+				<prop key="postalCode">Location.postalCode</prop>
+				<prop key="stateProvince">Location.stateProvince</prop>
+				<prop key="cityVillage">Location.cityVillage</prop>
+				<prop key="address1">Location.address1</prop>
+				<prop key="address2">Location.address2</prop>
+				<prop key="longitude">Location.longitude</prop>
+				<prop key="latitude">Location.latitude</prop>
+				<prop key="country">Location.country</prop>
+			</props>
+		</property>
+		<property name="sizeMappings">
+			<props>
+				<prop key="postalCode">10</prop>
+				<prop key="stateProvince">10</prop>
+				<prop key="cityVillage">10</prop>
+				<prop key="address1">40</prop>
+				<prop key="address2">40</prop>
+				<prop key="longitude">10</prop>
+				<prop key="latitude">10</prop>
+				<prop key="country">10</prop>
+			</props>
+		</property>
+		<property name="lineByLineFormat">
+			<list>
+				<value>address1</value>
+				<value>address2</value>
+				<value>cityVillage stateProvince country postalCode</value>
+				<value>latitude longitude</value>
 			</list>
 		</property>
 	</bean>
@@ -1361,11 +1400,13 @@
 	</bean>
 
 	<!-- NAME LAYOUT SUPPORT -->
-
+	
+	<!-- specialTokens ordered so that the subset string 'familyName' is last -->
 	<bean id="nameSupport" class="org.openmrs.layout.web.name.NameSupport">
 		<property name="defaultLayoutFormat"><value>short</value></property>
 		<property name="layoutTemplates">
 			<list>
+				<ref bean="nameTemplateSpain" />
 				<ref bean="nameTemplateShort" />
 				<ref bean="nameTemplateLong" />
 			</list>
@@ -1376,10 +1417,36 @@
 				<value>givenName</value>
 				<value>middleName</value>
 				<value>familyNamePrefix</value>
+				<value>familyNameSuffix</value>
+				<value>familyName2</value>
+				<value>familyName</value>
+				<value>degree</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="nameTemplateSpain" class="org.openmrs.layout.web.name.NameTemplate">
+		<property name="displayName"><value>Formato de Nombres en Espana</value></property>
+		<property name="codeName"><value>spain</value></property>
+		<property name="nameMappings">
+			<props>
+				<prop key="givenName">PersonName.givenName</prop>
+				<prop key="familyName">PersonName.familyName</prop>
+				<prop key="familyName2">PersonName.familyName2</prop>
+			</props>
+		</property>
+		<property name="sizeMappings">
+			<props>
+				<prop key="givenName">30</prop>
+				<prop key="familyName">25</prop>
+				<prop key="familyName2">25</prop>
+			</props>
+		</property>
+		<property name="lineByLineFormat">
+			<list>
+				<value>givenName</value>
 				<value>familyName</value>
 				<value>familyName2</value>
-				<value>familyNameSuffix</value>
-				<value>degree</value>
 			</list>
 		</property>
 	</bean>
@@ -1411,7 +1478,7 @@
 	</bean>
 	
 	<bean id="nameTemplateLong" class="org.openmrs.layout.web.name.NameTemplate">
-		<property name="displayName"><value>Short Name Format</value></property>
+		<property name="displayName"><value>Long Name Format</value></property>
 		<property name="codeName"><value>long</value></property>
 		<property name="nameMappings">
 			<props>
