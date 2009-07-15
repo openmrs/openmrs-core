@@ -52,7 +52,7 @@ public class SynchronizationTask extends AbstractTask {
 				if ( server != null ) {
 					SyncTransmissionResponse response = SyncUtilTransmission.doFullSynchronize(server);
 					try {
-						response.createFile(true, SyncConstants.DIR_JOURNAL);
+						response.createFile(false, SyncConstants.DIR_JOURNAL);
 					} catch ( Exception e ) {
 	    				log.error("Unable to create file to store SyncTransmissionResponse: " + response.getFileName(), e);
 	    				e.printStackTrace();

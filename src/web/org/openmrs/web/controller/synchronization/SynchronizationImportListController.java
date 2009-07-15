@@ -329,7 +329,7 @@ public class SynchronizationImportListController extends SimpleFormController {
     private void sendResponse(SyncTransmissionResponse str, boolean isUpload, HttpServletResponse response) throws Exception {
     	String content = null;
 		try {
-			str.createFile(true);
+			str.createFile(false);
 			content = str.getFileOutput();
 		} catch ( Exception e ) {
 			log.error("Could not get output while writing file.  In case problem writing file, trying again to just get output.");

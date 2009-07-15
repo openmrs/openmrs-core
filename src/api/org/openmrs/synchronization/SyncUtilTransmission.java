@@ -458,7 +458,7 @@ public class SyncUtilTransmission {
                             str = SyncUtilTransmission.processSyncTransmission(initialTxFromParent);
                         } else {
                             log.info("initialTxFromParent was null coming back from parent(?)");
-                            initialResponse.createFile(true, "requestResponse");
+                            initialResponse.createFile(false, "requestResponse");
                             log.info("response was: " + initialResponse.getFileOutput());
                         }
 
@@ -467,7 +467,7 @@ public class SyncUtilTransmission {
                         if ( str != null ) {
                             log.info("Received updates from parent, so replying and sending updates of our own: " + st.getFileOutput());
                             str.setSyncTransmission(st);
-                            str.createFile(true, "/receiveAndSend");
+                            str.createFile(false, "/receiveAndSend");
                             response = SyncUtilTransmission.sendSyncTranssmission(parent, null, str);
                         } else {
                             log.info("No updates from parent, generating our own transmission");

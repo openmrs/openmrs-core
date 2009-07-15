@@ -205,7 +205,7 @@ public class SynchronizationStatusListController extends SimpleFormController {
 	        			
 	        			try {
 	        				// store this file on filesystem too
-	        				str.createFile(true, SyncConstants.DIR_JOURNAL);
+	        				str.createFile(false, SyncConstants.DIR_JOURNAL);
 	        			} catch ( Exception e ) {
 	        				log.error("Unable to create file to store SyncTransmissionResponse: " + str.getFileName());
 	        				e.printStackTrace();

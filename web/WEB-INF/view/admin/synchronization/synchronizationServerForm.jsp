@@ -110,7 +110,7 @@
 </c:choose>
 
 <div id="general">
-	<form method="post" action="synchronizationConfigServer.form">
+	<form method="post" action="">
 		<input type="hidden" name="action" value="save" />
 		<input type="hidden" name="type" value="${server.serverType}" />
 		<c:if test="${server.serverType == 'CHILD' || type == 'CHILD'}">
