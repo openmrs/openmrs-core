@@ -1390,7 +1390,7 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor
 			// serialize owner info: we will need type, prop name where set
 			// goes, and owner guid
 			Item item = xml.createItem(entityItem, "owner");
-			item.setAttribute("type", owner.getClass().getName());
+			item.setAttribute("type", this.getType(owner));
 			item.setAttribute("properyName", ownerPropertyName);
 			item.setAttribute("action", action);
 			item.setAttribute("guid", owner.getGuid());
@@ -1400,7 +1400,7 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor
 				Synchronizable entryObject = entriesHolder.get(entryKey);
 				
 				Item temp = xml.createItem(entityItem, "entry");
-				temp.setAttribute("type", entryObject.getClass().getName());
+				temp.setAttribute("type", this.getType(entryObject));
 				temp.setAttribute("action", entryKey.substring(entryKey.indexOf('|') + 1));
 				temp.setAttribute("guid", entryObject.getGuid());				
 			}
@@ -1428,5 +1428,26 @@ public class HibernateSynchronizationInterceptor extends EmptyInterceptor
 				throw new CallbackException("Error processing Persistent set, see callstack and inner expection.",
 				                            ex);
 		}
+	}
+
+	/**
+	 * Returns string representation of type for given object. The main idea is to strip off the hibernate proxy info, if it happens to be present.
+	 * 
+	 * @param obj object 
+	 * @return
+	 */
+	private String getType(Object obj) {
+		
+		//be defensive about it
+		if (obj == null) {
+			throw new CallbackException("Error trying to determine type for object; object is null.");
+		}
+		
+		Object concreteObj = obj;
+		if (obj instanceof org.hibernate.proxy.HibernateProxy) {
+			concreteObj = ((HibernateProxy)obj).getHibernateLazyInitializer().getImplementation();
+		}
+	
+		return concreteObj.getClass().getName();
 	}
 }
