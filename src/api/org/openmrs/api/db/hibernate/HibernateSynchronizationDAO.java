@@ -769,7 +769,11 @@ public class HibernateSynchronizationDAO implements SynchronizationDAO {
 		Map<RemoteServer,Set<SyncStatistic>> map = new HashMap<RemoteServer,Set<SyncStatistic>>();
 
 		String hqlChild = "select rs.nickname, ssr.state, count(*) " +
-		"from RemoteServer rs join rs.serverRecords as ssr where rs.serverId = :server_id group by rs.serverId,rs.nickname, ssr.state";
+		"from RemoteServer rs join rs.serverRecords as ssr "+
+		"where rs.serverId = :server_id and ssr.state  <> '" + SyncRecordState.NOT_SUPPOSED_TO_SYNC.toString() + "' " +
+		"group by rs.nickname, ssr.state "+
+		"order by nickname, state";
+		
 		String hqlParent = "select count(*) from SyncRecord where originalGuid = guid and state <> '" + SyncRecordState.COMMITTED.toString() + 
 		"' and state <> '" + SyncRecordState.NOT_SUPPOSED_TO_SYNC.toString() + "'";
 		
@@ -780,8 +784,8 @@ public class HibernateSynchronizationDAO implements SynchronizationDAO {
 				q.setParameter("server_id", r.getServerId());
 				List<Object[]> rows = q.list();
 				Set<SyncStatistic> props = new HashSet<SyncStatistic>();
-				if (rows.size()>0) {
-					SyncStatistic stat = new SyncStatistic(SyncStatistic.Type.SYNC_RECORD_COUNT_BY_STATE,rows.get(0)[1].toString(),rows.get(0)[2]); //state/count
+				for (Object[] row : rows) {
+					SyncStatistic stat = new SyncStatistic(SyncStatistic.Type.SYNC_RECORD_COUNT_BY_STATE,row[1].toString(),row[2]); //state/count
 					props.add(stat); 
 				}
 				map.put(r,props);
