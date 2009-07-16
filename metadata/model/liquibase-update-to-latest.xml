@@ -2422,4 +2422,48 @@
 		</modifyColumn>
 	</changeSet>
 	
+	<changeSet id="200907161638-1" author="bwolfe">
+		<comment>Change obs.value_numeric from a double(22,0) to a double</comment>
+		<modifyColumn tableName="obs"><column name="value_numeric" type="double" /></modifyColumn>
+	</changeSet>
+	
+	<changeSet id="200907161638-2" author="bwolfe">
+		<comment>Change concept_numeric columns from a double(22,0) type to a double</comment>
+		<modifyColumn tableName="concept_numeric">
+			<column name="hi_absolute" type="double" />
+			<column name="hi_critical" type="double" />
+			<column name="hi_normal" type="double" />
+			<column name="low_normal" type="double" />
+			<column name="low_critical" type="double" />
+			<column name="low_absolute" type="double" />
+		</modifyColumn>
+	</changeSet>
+	
+	<changeSet id="200907161638-3" author="bwolfe">
+		<comment>Change concept_set.sort_weight from a double(22,0) to a double</comment>
+		<modifyColumn tableName="concept_set"><column name="sort_weight" type="double" /></modifyColumn>
+	</changeSet>
+	
+	<changeSet id="200907161638-4" author="bwolfe">
+		<comment>Change concept_set_derived.sort_weight from a double(22,0) to a double</comment>
+		<modifyColumn tableName="concept_set_derived"><column name="sort_weight" type="double" /></modifyColumn>
+	</changeSet>
+	
+	<changeSet id="200907161638-5" author="bwolfe">
+		<comment>Change drug table columns from a double(22,0) to a double</comment>
+		<modifyColumn tableName="drug" >
+			<column name="dose_strength" type="double" />
+			<column name="maximum_daily_dose" type="double" />
+			<column name="minimum_daily_dose" type="double" />
+		</modifyColumn>
+	</changeSet>
+	
+	<changeSet id="200907161638-6" author="bwolfe">
+		<comment>Change drug_order.dose from a double(22,0) to a double</comment>
+		<modifyColumn tableName="drug_order">
+			<column name="dose" type="double" />
+			<column name="equivalent_daily_dose" type="double" />
+		</modifyColumn>
+	</changeSet>
+	
 </databaseChangeLog>
