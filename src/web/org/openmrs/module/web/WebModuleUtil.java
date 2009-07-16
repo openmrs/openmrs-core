@@ -35,6 +35,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import javax.servlet.Filter;
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -76,8 +77,7 @@ public class WebModuleUtil {
 	private static OpenmrsDWRServlet dwrServlet = null;
 	
 	// caches all of the modules' mapped servlets
-	private static Map<Module, Map<String, HttpServlet>> moduleServlets = Collections
-	        .synchronizedMap(new HashMap<Module, Map<String, HttpServlet>>());
+	private static Map<String, HttpServlet> moduleServlets = Collections.synchronizedMap(new HashMap<String, HttpServlet>());
 	
 	// caches all of the module loaded filters and filter-mappings
 	private static Map<Module, Collection<Filter>> moduleFilters = Collections
@@ -129,18 +129,18 @@ public class WebModuleUtil {
 				
 				String currentPath = path.replace("@LANG@", lang);
 				
-				
 				String absolutePath = realPath + currentPath;
 				File file = new File(absolutePath);
 				try {
 					if (!file.exists())
 						file.createNewFile();
-				} catch (IOException ioe){
+				}
+				catch (IOException ioe) {
 					log.error("Unable to create new file " + file.getAbsolutePath() + " " + ioe);
 				}
 				
 				Properties props = entry.getValue();
-
+				
 				// set all properties to start with 'moduleName.' if not already
 				List<Object> keys = new Vector<Object>();
 				keys.addAll(props.keySet());
@@ -325,17 +325,15 @@ public class WebModuleUtil {
 					// try starting the application context again
 					refreshWAC(servletContext);
 				}
-				
-				// find and cache the module's servlets 
-				//(only if the module started successfully previously)
-				if (ModuleFactory.isModuleStarted(mod)) {
-					loadServlets(mod);
-					loadFilters(mod, servletContext);
-				}
-				return false;
 			}
 			
-			loadFilters(mod, servletContext);
+			// find and cache the module's servlets 
+			//(only if the module started successfully previously)
+			if (ModuleFactory.isModuleStarted(mod)) {
+				log.debug("Loading servlets and filters for module: " + mod);
+				loadServlets(mod, servletContext);
+				loadFilters(mod, servletContext);
+			}
 			
 			// return true if the module needs a context refresh and we didn't do it here
 			return (moduleNeedsContextRefresh && delayContextRefresh == true);
@@ -351,12 +349,12 @@ public class WebModuleUtil {
 	 * up every time)
 	 * 
 	 * @param mod
+	 * @param servletContext the servlet context
 	 * @return this module's servlet map
 	 */
-	public static Map<String, HttpServlet> loadServlets(Module mod) {
+	public static void loadServlets(Module mod, ServletContext servletContext) {
 		Element rootNode = mod.getConfig().getDocumentElement();
 		NodeList servletTags = rootNode.getElementsByTagName("servlet");
-		Map<String, HttpServlet> servletMap = new HashMap<String, HttpServlet>();
 		
 		for (int i = 0; i < servletTags.getLength(); i++) {
 			Node node = servletTags.item(i);
@@ -395,12 +393,55 @@ public class WebModuleUtil {
 				continue;
 			}
 			
-			servletMap.put(name, httpServlet);
+			try {
+				log.debug("Initializing " + name + " servlet. - " + httpServlet + ".");
+				ServletConfig servletConfig = new ModuleServlet.SimpleServletConfig(name, servletContext);
+				httpServlet.init(servletConfig);
+			}
+			catch (Throwable t) {
+				log.warn("Unable to initialize servlet: ", t);
+				throw new ModuleException("Unable to initialize servlet: " + httpServlet, mod.getModuleId(), t);
+			}
+			
+			// don't allow modules to overwrite servlets of other modules.
+			if (moduleServlets.containsKey(name)) {
+				//log.debug("A servlet mapping with name " + name + " already exists. " + mod.getModuleId() + "'s servlet is overwriting it");
+				throw new ModuleException("A servlet mapping with name " + name + " already exists. " + mod.getModuleId()
+				        + "'s servlet is trying to overwrite it");
+			}
+			
+			log.debug("Caching the " + name + " servlet.");
+			moduleServlets.put(name, httpServlet);
 		}
+	}
+	
+	/**
+	 * Remove all of the servlets defined for this module
+	 * 
+	 * @param mod the module that is being stopped that needs its servlets removed
+	 */
+	public static void unloadServlets(Module mod) {
+		Element rootNode = mod.getConfig().getDocumentElement();
+		NodeList servletTags = rootNode.getElementsByTagName("servlet");
 		
-		moduleServlets.put(mod, servletMap);
-		
-		return servletMap;
+		for (int i = 0; i < servletTags.getLength(); i++) {
+			Node node = servletTags.item(i);
+			NodeList childNodes = node.getChildNodes();
+			String name = "";
+			for (int j = 0; j < childNodes.getLength(); j++) {
+				Node childNode = childNodes.item(j);
+				if ("servlet-name".equals(childNode.getNodeName())) {
+					if (childNode.getTextContent() != null) {
+						name = childNode.getTextContent().trim();
+						HttpServlet servlet = moduleServlets.get(name);
+						if (servlet != null) {
+							servlet.destroy(); // shut down the servlet
+							moduleServlets.remove(name);
+						}
+					}
+				}
+			}
+		}
 	}
 	
 	/**
@@ -575,9 +616,9 @@ public class WebModuleUtil {
 		if (folder.exists()) {
 			Properties emptyProperties = new Properties();
 			for (File f : folder.listFiles()) {
-				if (f.getName().startsWith("module_messages")){
-						OpenmrsUtil.storeProperties(emptyProperties, f, "");
-				}	
+				if (f.getName().startsWith("module_messages")) {
+					OpenmrsUtil.storeProperties(emptyProperties, f, "");
+				}
 			}
 		}
 		
@@ -633,7 +674,7 @@ public class WebModuleUtil {
 		// (not) deleting module message properties
 		
 		// remove the module's servlets
-		moduleServlets.remove(mod);
+		unloadServlets(mod);
 		
 		// remove the module's filters and filter mappings
 		unloadFilters(mod);
@@ -763,29 +804,12 @@ public class WebModuleUtil {
 	
 	/**
 	 * Finds the servlet defined by the servlet name
+	 * 
+	 * @param servletName the name of the servlet out of the path
+	 * @return the current servlet or null if none defined
 	 */
-	public static HttpServlet getServlet(Module mod, String servletName) {
-		Map<String, HttpServlet> servlets = moduleServlets.get(mod);
-		
-		if (log.isDebugEnabled()) {
-			log.debug("All known servlets");
-			for (Module mod1 : moduleServlets.keySet()) {
-				log.debug("--Mod: " + mod1 + "--");
-				Map<String, HttpServlet> map = moduleServlets.get(mod1);
-				for (String key : map.keySet()) {
-					log.debug("name: " + key + " class: " + map.get(key));
-				}
-			}
-		}
-		
-		// Maybe there aren't any servlets because the cache was cleared
-		// attempt to repopulate this module's servlets from the cache
-		if (servlets == null)
-			servlets = loadServlets(mod);
-		
-		if (servlets != null && servlets.containsKey(servletName))
-			return servlets.get(servletName);
-		
-		return null;
+	public static HttpServlet getServlet(String servletName) {
+		return moduleServlets.get(servletName);
 	}
+	
 }

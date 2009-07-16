@@ -353,6 +353,10 @@
  		<servlet-name>module_servlet</servlet-name>
  		<url-pattern>/moduleServlet/*</url-pattern>
 	</servlet-mapping>
+	<servlet-mapping>
+ 		<servlet-name>module_servlet</servlet-name>
+ 		<url-pattern>/ms/*</url-pattern>
+	</servlet-mapping>
 	
 	<!-- Gives access to resources within modules -->
 	<servlet>
