@@ -16,7 +16,11 @@ package org.openmrs.hl7;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import ca.uhn.hl7v2.HL7Exception;
 
@@ -26,6 +30,8 @@ import ca.uhn.hl7v2.HL7Exception;
  * @version 1.0
  */
 public class HL7Util {
+	
+	private static Log log = LogFactory.getLog(HL7Util.class);
 	
 	// Date and time format parsers
 	private final static DateFormat TIMESTAMP_FORMAT = new SimpleDateFormat("yyyyMMddHHmmss.SSSZ");
@@ -61,7 +67,8 @@ public class HL7Util {
 	 * @should handle 19780411061538.1234
 	 * @should fail on 197804110615-5
 	 * @should handle 197804110615-05
-	 * @should handle 197804110615-0500
+	 * @should handle 197804110615-0200
+	 * @should not flub dst with 20091225123000
 	 */
 	public static Date parseHL7Timestamp(String s) throws HL7Exception {
 		
@@ -69,34 +76,28 @@ public class HL7Util {
 		if (s == null || s.length() < 4 || s.length() > 24)
 			throw new HL7Exception("Invalid date '" + s + "'");
 		
-		// Parse timezone (optional in HL7 format)
-		String timeZoneOffset;
-		int tzPlus = s.indexOf('+');
-		int tzMinus = s.indexOf('-');
-		boolean timeZoneFlag = (tzPlus > 0 || tzMinus > 0);
-		if (timeZoneFlag) {
-			int tzIndex;
-			if (tzPlus > 0)
-				tzIndex = tzPlus;
-			else
-				tzIndex = tzMinus;
-			timeZoneOffset = s.substring(tzIndex);
-			if (timeZoneOffset.length() != 5)
-				System.out.println("invalid timestamp");
-			s = s.substring(0, tzIndex);
-		} else
-			timeZoneOffset = LOCAL_TIMEZONE_OFFSET;
-		
 		StringBuffer dateString = new StringBuffer();
 		dateString.append(s.substring(0, 4)); // year
 		if (s.length() >= 6)
 			dateString.append(s.substring(4, 6)); // month
 		else
 			dateString.append("01");
-		if (s.length() >= 8)
+		if (s.length() >= 8) {
 			dateString.append(s.substring(6, 8)); //day
-		else
+		} else
 			dateString.append("01");
+		
+		// Parse timezone (optional in HL7 format)
+		String timeZoneOffset;
+		try {
+			Date parsedDay = new SimpleDateFormat("yyyyMMdd").parse(s.substring(0, 8));
+			timeZoneOffset = getTimeZoneOffset(s, parsedDay);
+		}
+		catch (ParseException e) {
+			throw new HL7Exception("Error parsing date: '" + s.substring(0, 8) + "' for time zone offset'" + s + "'", e);
+		}
+		s = s.replace(timeZoneOffset, ""); // remove the timezone from the string
+		
 		if (s.length() >= 10)
 			dateString.append(s.substring(8, 10)); // hour
 		else
@@ -125,6 +126,7 @@ public class HL7Util {
 			dateString.append(s.subSequence(17, 18)); // milliseconds
 		else
 			dateString.append("0");
+		
 		dateString.append(timeZoneOffset);
 		
 		Date date;
@@ -135,6 +137,45 @@ public class HL7Util {
 			throw new HL7Exception("Error parsing date '" + s + "'");
 		}
 		return date;
+	}
+	
+	/**
+	 * Gets the timezone string for this given fullString. If fullString contains a + or - sign, the
+	 * strings after those are considered to be the timezone. <br/>
+	 * <br/>
+	 * If the fullString does not contain a timezone, the timezone is determined from the server's
+	 * timezone on the "givenDate". (givenDate is needed to account for daylight savings time.)
+	 * 
+	 * @param fullString the hl7 string being parsed
+	 * @param givenDate the date that should be used if no timezone exists on the fullString
+	 * @return a string like +0500 or -0500 for the timezone
+	 * @should return timezone string if exists in given string
+	 * @should return timezone for givenDate and not the current date
+	 */
+	protected static String getTimeZoneOffset(String fullString, Date givenDate) {
+		// Parse timezone (optional in HL7 format)
+		String timeZoneOffset;
+		int tzPlus = fullString.indexOf('+');
+		int tzMinus = fullString.indexOf('-');
+		boolean timeZoneFlag = (tzPlus > 0 || tzMinus > 0);
+		if (timeZoneFlag) {
+			int tzIndex;
+			if (tzPlus > 0)
+				tzIndex = tzPlus;
+			else
+				tzIndex = tzMinus;
+			timeZoneOffset = fullString.substring(tzIndex);
+			if (timeZoneOffset.length() != 5)
+				log.error("Invalid timestamp because its too short: " + timeZoneOffset);
+			
+		} else {
+			//set default timezone offset from the current day
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(givenDate);
+			timeZoneOffset = new SimpleDateFormat("Z").format(cal.getTime());
+		}
+		
+		return timeZoneOffset;
 	}
 	
 	/**
@@ -167,23 +208,8 @@ public class HL7Util {
 	 */
 	public static Date parseHL7Time(String s) throws HL7Exception {
 		
-		// Parse timezone (optional in HL7 format)
-		String timeZoneOffset;
-		int tzPlus = s.indexOf('+');
-		int tzMinus = s.indexOf('-');
-		boolean timeZoneFlag = (tzPlus > 0 || tzMinus > 0);
-		if (timeZoneFlag) {
-			int tzIndex;
-			if (tzPlus > 0)
-				tzIndex = tzPlus;
-			else
-				tzIndex = tzMinus;
-			timeZoneOffset = s.substring(tzIndex);
-			if (timeZoneOffset.length() != 5)
-				System.out.println("invalid timestamp");
-			s = s.substring(0, tzIndex);
-		} else
-			timeZoneOffset = LOCAL_TIMEZONE_OFFSET;
+		String timeZoneOffset = getTimeZoneOffset(s, new Date());
+		s = s.replace(timeZoneOffset, ""); // remove the timezone from the string
 		
 		StringBuffer timeString = new StringBuffer();
 		
@@ -215,6 +241,8 @@ public class HL7Util {
 			timeString.append(s.subSequence(9, 10)); // milliseconds
 		else
 			timeString.append("0");
+		
+		// Parse timezone (optional in HL7 format)
 		timeString.append(timeZoneOffset);
 		
 		Date date;
