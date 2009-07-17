@@ -31,6 +31,25 @@ import org.springframework.web.servlet.tags.NestedPathTag;
 import org.springframework.web.servlet.tags.RequestContextAwareTag;
 import org.springframework.web.util.ExpressionEvaluationUtils;
 
+/**
+ * Formats a date object in the desired type:<br/>
+ * e.g:
+ * 
+ * <pre>
+ *   &lt;openmrs:formatDate date="${dateObj}" type="textbox"/&gt;
+ * </pre>
+ * 
+ * becomes a string like: "20/11/2009" in the user's current locale. <br/>
+ * <br/>
+ * Options for "type" are:
+ * <ul>
+ * <li>xml - dd-MMM-yyyy
+ * <li>long - DateFormat.LONG
+ * <li>medium - DateFormat.MEDIUM
+ * <li>textbox - Context.getDateFormat()
+ * <li>milliseconds - current milliseconds since the epoch
+ * </ul>
+ */
 public class FormatDateTag extends TagSupport {
 	
 	public static final long serialVersionUID = 121341222L;
@@ -121,7 +140,11 @@ public class FormatDateTag extends TagSupport {
 		
 		try {
 			if (date != null) {
-				datestr = dateFormat.format(date);
+				if (type.equals("milliseconds")) {
+					datestr = "" + date.getTime();
+				} else {
+					datestr = dateFormat.format(date);
+				}
 			}
 		}
 		catch (IllegalArgumentException e) {
