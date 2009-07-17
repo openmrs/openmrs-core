@@ -23,6 +23,8 @@ import java.util.WeakHashMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.velocity.VelocityContext;
+import org.apache.velocity.runtime.RuntimeConstants;
+import org.apache.velocity.runtime.log.CommonsLogLogChute;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.app.event.EventCartridge;
 import org.apache.velocity.app.event.MethodExceptionEventHandler;
@@ -138,6 +140,11 @@ public class DataExportUtil {
 		Log log = LogFactory.getLog(DataExportUtil.class);
 		
 		VelocityEngine velocityEngine = new VelocityEngine();
+
+        velocityEngine.setProperty( RuntimeConstants.RUNTIME_LOG_LOGSYSTEM_CLASS,
+                    "org.apache.velocity.runtime.log.CommonsLogLogChute" );
+        velocityEngine.setProperty(CommonsLogLogChute.LOGCHUTE_COMMONS_LOG_NAME,
+                        "dataexport_velocity");
 		
 		try {
 			velocityEngine.init();
