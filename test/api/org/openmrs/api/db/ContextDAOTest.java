@@ -231,7 +231,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 		}
 		Context.logout();
 		
-		for (int x = 1; x <= 5; x++) {
+		for (int x = 1; x <= 8; x++) {
 			// now we fail several login attempts 
 			try {
 				dao.authenticate("admin", "not the right password");
@@ -242,7 +242,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 			}
 		}
 		
-		// those were the first five, now the sixth request 
+		// those were the first seven, now the eigth request 
 		// (with the same user and right pw) should fail
 		dao.authenticate("admin", "test");
     }
@@ -268,7 +268,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 		}
 		Context.logout();
 		
-		for (int x = 1; x <= 5; x++) {
+		for (int x = 1; x <= 8; x++) {
 			// try to authenticate with a proper 
 			try {
 				dao.authenticate("admin", "not the right password");
@@ -279,7 +279,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 			}
 		}
 		
-		// those were the first five, now the sixth request 
+		// those were the first eight, now the ninth request 
 		// (with the same user and right pw) should fail
 		dao.authenticate("admin", "test");
 	}
