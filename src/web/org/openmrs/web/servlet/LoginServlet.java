@@ -74,11 +74,8 @@ public class LoginServlet extends HttpServlet {
 		
 		boolean lockedOut = false;
 		
-		// giving only 4 tries here so that they 
-		// hit the lockout the web layer before they hit the 
-		// API lockout.  Otherwise, they would essentially have to wait 
-		// for a 10-15 min double lockout
-		if (loginAttempts > 4) {
+		// giving 100 IP tries here in case network setups are such that all users have the same IP address. 
+		if (loginAttempts > 100) {
 			lockedOut = true;
 			
 			Date lockedOutTime = lockoutDateByIP.get(ipAddress);
