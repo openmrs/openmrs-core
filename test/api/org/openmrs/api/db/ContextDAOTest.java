@@ -221,9 +221,9 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	/**
 	 * @see {@link ContextDAO#authenticate(String,String)}
 	 */
-	@Test(expected = ContextAuthenticationException.class)
-	@Verifies(value = "should lockoutUserAfterFiveFailedAttempts", method = "authenticate(String,String)")
-	public void authenticate_shouldLockoutUserAfterFiveFailedAttempts() throws Exception {
+    @Test
+    @Verifies(value = "should lockout user after eight failed attempts", method = "authenticate(String,String)")
+    public void authenticate_shouldLockoutUserAfterEightFailedAttempts() throws Exception {
 		// logout after the base setup
 		Context.logout();
 		
@@ -238,7 +238,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 		}
 		Context.logout();
 		
-		for (int x = 1; x <= 5; x++) {
+		for (int x = 1; x <= 7; x++) {
 			// try to authenticate with a proper 
 			try {
 				dao.authenticate("admin", "not the right password");
@@ -249,7 +249,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 			}
 		}
 		
-		// those were the first five, now the sixth request 
+		// those were the first seven, now the eigth request 
 		// (with the same user and right pw) should fail
 		dao.authenticate("admin", "test");
 	}
@@ -271,14 +271,16 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	public void authenticate_shouldAuthenticateWithIncorrectHashedPassword() throws Exception {
 		dao.authenticate("incorrect", "test");
 	}
-
-    /**
-     * #1580: If you type your password wrong, then log in correctly, the API will not lock you out after multiple login attempts in the future
-     * @see {@link ContextDAO#authenticate(String,String)}
-     */
+	
+	/**
+	 * #1580: If you type your password wrong, then log in correctly, the API will not lock you out
+	 * after multiple login attempts in the future
+	 * 
+	 * @see {@link ContextDAO#authenticate(String,String)}
+	 */
 	@Test(expected = ContextAuthenticationException.class)
-    @Verifies(value = "should pass regression test for 1580", method = "authenticate(String,String)")
-    public void authenticate_shouldPassRegressionTestFor1580() throws Exception {
+	@Verifies(value = "should pass regression test for 1580", method = "authenticate(String,String)")
+	public void authenticate_shouldPassRegressionTestFor1580() throws Exception {
 		// logout after the base setup
 		Context.logout();
 		
@@ -286,7 +288,8 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 		try {
 			dao.authenticate("admin", "not the right password");
 			Assert.fail("Not sure why this username/password combo worked");
-		} catch (ContextAuthenticationException authException) {
+		}
+		catch (ContextAuthenticationException authException) {
 			// pass
 		}
 		
@@ -299,7 +302,7 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 		}
 		Context.logout();
 		
-		for (int x = 1; x <= 5; x++) {
+		for (int x = 1; x <= 8; x++) {
 			// now we fail several login attempts 
 			try {
 				dao.authenticate("admin", "not the right password");
@@ -310,9 +313,9 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 			}
 		}
 		
-		// those were the first five, now the sixth request 
+		// those were the first eight, now the ninth request 
 		// (with the same user and right pw) should fail
 		dao.authenticate("admin", "test");
-    }
+	}
 	
 }
