@@ -36,7 +36,7 @@ public class SerializationServiceImpl extends BaseOpenmrsService implements Seri
 	public Log log = LogFactory.getLog(this.getClass());
 	
 	//***** Properties (set by spring)
-	private Map<Class<? extends OpenmrsSerializer>, OpenmrsSerializer> serializerMap;
+	private static Map<Class<? extends OpenmrsSerializer>, OpenmrsSerializer> serializerMap;
 	
 	private OpenmrsSerializer defaultSerializer;
 	
