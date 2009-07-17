@@ -12,6 +12,10 @@
 	var $j = jQuery.noConflict(); 
 </script>
 
+<openmrs:globalProperty key="dashboard.encounters.showViewLink" var="showViewLink" defaultValue="true"/>
+<openmrs:globalProperty key="dashboard.encounters.showEditLink" var="showEditLink" defaultValue="true"/>
+		
+
 <c:if test="${model.showPagination == 'true'}">
 <script type="text/javascript">
 	$j(document).ready(function() {
@@ -19,7 +23,22 @@
 			"sPaginationType": "two_button",
 			"bAutoWidth": false,
 			"bFilter": false,
+			"aaSorting": [[3,'desc']], // perform first pass sort on initialisation on encounter.encounterDatetime column
+			"iDisplayLength": 20,
+			"aoColumns": [
+				{ "bVisible": false, "sType": "numeric" },
+				{ "bVisible": ${showEditLink}, "iDataSort": 0 }, // sort this column by using the previous invisible column for encounterIds,
+				{ "bVisible": ${showViewLink}, "iDataSort": 0 }, // sort this column by using the first invisible column for encounterIds,
+            	{ "iDataSort": 3 }, // sort the date in this column by using the next invisible column for time in milliseconds
+            	{ "bVisible": false, "sType": "numeric" },
+            	null,
+            	null,
+            	null,
+            	null,
+            	null
+        	],
 			"oLanguage": {
+					"sLengthMenu": 'Show <select><option value="20">20</option><option value="50">50</option><option value="100">100</option></select> entries',
 					"sZeroRecords": '<spring:message code="Encounter.no.previous"/>'
 			}
 		} );
@@ -99,8 +118,6 @@ Parameters
 	</c:if>
 
 	<openmrs:hasPrivilege privilege="View Encounters">
-		<openmrs:globalProperty key="dashboard.encounters.showViewLink" var="showViewLink" defaultValue="false"/>
-		<openmrs:globalProperty key="dashboard.encounters.showEditLink" var="showEditLink" defaultValue="false"/>
 		<div id="encounters">
 			<div class="boxHeader${model.patientVariation}"><c:choose><c:when test="${empty model.title}"><spring:message code="Encounter.header"/></c:when><c:otherwise><spring:message code="${model.title}"/></c:otherwise></c:choose></div>
 			<div class="box${model.patientVariation}">
@@ -108,6 +125,7 @@ Parameters
 					<table cellspacing="0" cellpadding="2" id="patientEncountersTable">
 						<thead>
 							<tr>
+								<th> hidden Encounter id </th>
 								<th class="encounterEdit" align="center"><c:if test="${showEditLink == 'true'}">
 									<spring:message code="general.edit"/>
 								</c:if></th>
@@ -115,6 +133,7 @@ Parameters
 								 	<spring:message code="general.view"/>
 								</c:if></th>
 								<th class="encounterDatetimeHeader"> <spring:message code="Encounter.datetime"/> </th>
+								<th> hidden Encounter.datetime </th>
 								<th class="encounterTypeHeader"> <spring:message code="Encounter.type"/>     </th>
 								<th class="encounterProviderHeader"> <spring:message code="Encounter.provider"/> </th>
 								<th class="encounterFormHeader"> <spring:message code="Encounter.form"/>     </th>
@@ -125,6 +144,10 @@ Parameters
 						<tbody>
 							<openmrs:forEachEncounter encounters="${model.patientEncounters}" sortBy="encounterDatetime" descending="true" var="enc" num="${model.num}">
 								<tr class="<c:choose><c:when test="${count % 2 == 0}">evenRow</c:when><c:otherwise>oddRow</c:otherwise></c:choose>">
+									<td>
+										<%--  this column contains the encounter id and will be used for sorting in the dataTable's encounter edit column --%>
+										${enc.encounterId}
+									</td>
 									<td class="encounterEdit" align="center">
 										<c:if test="${showEditLink == 'true'}">
 											<openmrs:hasPrivilege privilege="Edit Encounters">
@@ -160,6 +183,10 @@ Parameters
 									</td>
 									<td class="encounterDatetime">
 										<openmrs:formatDate date="${enc.encounterDatetime}" type="small" />
+									</td>
+									<td>
+									<%--  this column contains milliseconds and will be used for sorting in the dataTable's encounterDatetime column --%>
+										<openmrs:formatDate date="${enc.encounterDatetime}" type="milliseconds" />
 									</td>
 					 				<td class="encounterType">${enc.encounterType.name}</td>
 					 				<td class="encounterProvider">${enc.provider.personName}</td>
