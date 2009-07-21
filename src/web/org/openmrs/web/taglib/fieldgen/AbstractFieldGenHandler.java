@@ -23,7 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.web.taglib.FieldGenTag;
 import org.openmrs.web.taglib.HtmlIncludeTag;
 
-public abstract class AbstractFieldGenHandler {
+public abstract class AbstractFieldGenHandler implements FieldGenHandler {
 	
 	protected final Log log = LogFactory.getLog(getClass());
 	
