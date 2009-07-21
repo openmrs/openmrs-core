@@ -21,8 +21,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
@@ -31,8 +29,6 @@ import org.openmrs.util.OpenmrsUtil;
 public class PatientProgram extends BaseOpenmrsData implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 0L;
-	
-	private transient final Log log = LogFactory.getLog(getClass());
 	
 	// ******************
 	// Properties
@@ -302,12 +298,11 @@ public class PatientProgram extends BaseOpenmrsData implements java.io.Serializa
 	public boolean equals(Object obj) {
 		if (obj != null && obj instanceof PatientProgram) {
 			PatientProgram p = (PatientProgram) obj;
-			if (this.getPatientProgramId() == null) {
-				return p.getPatientProgramId() == null;
+			if (this.getPatientProgramId() != null) {
+				return (this.getPatientProgramId().equals(p.getPatientProgramId()));
 			}
-			return (this.getPatientProgramId().equals(p.getPatientProgramId()));
 		}
-		return false;
+		return this == obj;
 	}
 	
 	/** @see Object#toString() */
