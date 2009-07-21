@@ -253,12 +253,11 @@ public class ProgramWorkflow implements java.io.Serializable {
 	public boolean equals(Object obj) {
 		if (obj != null && obj instanceof ProgramWorkflow) {
 			ProgramWorkflow p = (ProgramWorkflow) obj;
-			if (this.getProgramWorkflowId() == null) {
-				return p.getProgramWorkflowId() == null;
+			if (this.getProgramWorkflowId() != null) {
+				return (this.getProgramWorkflowId().equals(p.getProgramWorkflowId()));
 			}
-			return (this.getProgramWorkflowId().equals(p.getProgramWorkflowId()));
 		}
-		return false;
+		return this == obj;
 	}
 	
 	/** @see Object#toString() */

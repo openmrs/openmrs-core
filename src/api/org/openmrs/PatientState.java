@@ -135,12 +135,11 @@ public class PatientState implements java.io.Serializable {
 	public boolean equals(Object obj) {
 		if (obj != null && obj instanceof PatientState) {
 			PatientState p = (PatientState) obj;
-			if (this.getPatientStateId() == null) {
-				return p.getPatientStateId() == null;
+			if (this.getPatientStateId() != null) {
+				return (this.getPatientStateId().equals(p.getPatientStateId()));
 			}
-			return (this.getPatientStateId().equals(p.getPatientStateId()));
 		}
-		return false;
+		return this == obj;
 	}
 	
 	/** @see Object#toString() */

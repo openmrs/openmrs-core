@@ -126,12 +126,11 @@ public class Program implements java.io.Serializable {
 	public boolean equals(Object obj) {
 		if (obj != null && obj instanceof Program) {
 			Program p = (Program) obj;
-			if (this.getProgramId() == null) {
-				return p.getProgramId() == null;
+			if (this.getProgramId() != null) {
+				return (this.getProgramId().equals(p.getProgramId()));
 			}
-			return (this.getProgramId().equals(p.getProgramId()));
 		}
-		return false;
+		return this == obj;
 	}
 	
 	/** @see Object#toString() */
