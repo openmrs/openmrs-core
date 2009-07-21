@@ -22,8 +22,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIException;
 import org.openmrs.api.SerializationService;
+import org.openmrs.api.context.Context;
 import org.openmrs.serialization.OpenmrsSerializer;
 import org.openmrs.serialization.SerializationException;
+import org.openmrs.util.OpenmrsConstants;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -37,8 +39,6 @@ public class SerializationServiceImpl extends BaseOpenmrsService implements Seri
 	
 	//***** Properties (set by spring)
 	private static Map<Class<? extends OpenmrsSerializer>, OpenmrsSerializer> serializerMap;
-	
-	private OpenmrsSerializer defaultSerializer;
 	
 	//***** Service method implementations *****
 	
@@ -56,8 +56,15 @@ public class SerializationServiceImpl extends BaseOpenmrsService implements Seri
 	 * @see org.openmrs.api.SerializationService#getDefaultSerializer()
 	 */
 	public OpenmrsSerializer getDefaultSerializer() {
-		if (defaultSerializer != null) {
-			return defaultSerializer;
+		String prop = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_SERIALIZER);
+		try {
+			Class<?> clazz = Context.loadClass(prop);
+			if (clazz != null && OpenmrsSerializer.class.isAssignableFrom(clazz)) {
+				return (OpenmrsSerializer) clazz.newInstance();
+			}
+		}
+		catch (Exception e) {
+			log.warn("No default serializer specified - trying first serializer found.");
 		}
 		if (serializerMap != null && !serializerMap.isEmpty()) {
 			return serializerMap.values().iterator().next();
@@ -127,12 +134,5 @@ public class SerializationServiceImpl extends BaseOpenmrsService implements Seri
 				serializerMap.put(s.getClass(), s);
 			}
 		}
-	}
-	
-	/**
-	 * @param defaultSerializer the defaultSerializer to set
-	 */
-	public void setDefaultSerializer(OpenmrsSerializer defaultSerializer) {
-		this.defaultSerializer = defaultSerializer;
 	}
 }

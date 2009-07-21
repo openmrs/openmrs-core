@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.openmrs.OpenmrsMetadata;
 import org.openmrs.OpenmrsObject;
+import org.openmrs.serialization.OpenmrsSerializer;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -60,6 +61,18 @@ public interface SerializedObjectDAO {
 	 * @should throw an exception if object not supported
 	 */
 	public <T extends OpenmrsObject> T saveObject(T object) throws DAOException;
+	
+	/**
+	 * Saves a Serialized Object to the database, using the specified {@link OpenmrsSerializer}
+	 * 
+	 * @param object The object to save
+	 * @param serializer The {@link OpenmrsSerializer} to use
+	 * @return the saved object
+	 * @throws DAOException
+	 * @should save the passed object if supported
+	 * @should throw an exception if object not supported
+	 */
+	public <T extends OpenmrsObject> T saveObject(T object, OpenmrsSerializer serializer) throws DAOException;	
 	
 	/**
 	 * Retrieves all non-retired/voided Serialized Objects from the database that match the passed
