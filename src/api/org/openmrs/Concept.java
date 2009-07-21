@@ -760,7 +760,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		
 		if (compatibleNames == null) {
 			compatibleNames = new Vector<ConceptName>();
-			for (ConceptName possibleName : names) {
+			for (ConceptName possibleName : getNames()) {
 				if (LocaleUtility.areCompatible(possibleName.getLocale(), desiredLocale)) {
 					compatibleNames.add(possibleName);
 				}
@@ -847,7 +847,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		}
 		
 		if (bestMatch == null) {
-			log.warn("No compatible concept name found for default locale for concept id " + conceptId);
+			log.info("No compatible concept name found for default locale for concept id " + conceptId);
 		}
 		
 		return bestMatch;
@@ -1004,7 +1004,30 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 */
 	@ElementList
 	public Collection<ConceptName> getNames() {
-		return names;
+		return getNames(false);
+	}
+	
+	/**
+	 * @return Returns the names.
+	 * @param includeVoided Include voided ConceptNames if true.
+	 */
+	@ElementList
+	public Collection<ConceptName> getNames(boolean includeVoided) {
+		Collection<ConceptName> ret = new HashSet<ConceptName>();
+		if (includeVoided){
+			if (names != null)
+				return names;
+			else
+				return ret;
+		} else {
+			if (names != null){
+				for (ConceptName cn : names){
+					if (!cn.isVoided())
+						ret.add(cn);
+				}
+			}	
+			return ret;
+		}
 	}
 	
 	/**
