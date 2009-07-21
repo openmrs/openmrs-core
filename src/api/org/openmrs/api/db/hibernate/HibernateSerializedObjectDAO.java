@@ -133,10 +133,17 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.SerializedObjectDAO#saveObject(OpenmrsObject)
+	 * @see SerializedObjectDAO#saveObject(OpenmrsObject)
 	 */
 	public <T extends OpenmrsObject> T saveObject(T object) throws DAOException {
-		
+		return saveObject(object, null);
+	}
+	
+	/**
+     * @see SerializedObjectDAO#saveObject(OpenmrsObject, OpenmrsSerializer)
+     */
+    public <T extends OpenmrsObject> T saveObject(T object, OpenmrsSerializer serializer) throws DAOException {
+
 		Class<? extends OpenmrsObject> baseType = getRegisteredTypeForObject(object);
 		if (baseType == null) {
 			throw new DAOException("SerializedObjectDAO does not support saving objects of type <" + object.getClass() + ">");
@@ -147,7 +154,7 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 			serializedObject = new SerializedObject();
 		}
 		
-		OpenmrsSerializer serializer = getSerializer(serializedObject);
+		serializer = getSerializer(serializedObject, serializer);
 		String data = null;
 		try {
 			data = serializer.serialize(object);
@@ -199,7 +206,7 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 		object.setId(serializedObject.getId());
 		return object;
 	}
-	
+
 	/**
 	 * @see org.openmrs.api.db.SerializedObjectDAO#purgeObject(Integer)
 	 */
@@ -262,7 +269,7 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 		if (serializedObject == null) {
 			return null;
 		}
-		OpenmrsSerializer serializer = getSerializer(serializedObject);
+		OpenmrsSerializer serializer = getSerializer(serializedObject, null);
 		T obj = null;
 		try {
 			obj = (T) serializer.deserialize(serializedObject.getSerializedData(), serializedObject.getSubtype());
@@ -283,8 +290,10 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 	 * SerializedObject, defaulting to the default system serializer if none is explicitly set on
 	 * the object
 	 */
-	private OpenmrsSerializer getSerializer(SerializedObject o) {
-		OpenmrsSerializer s = Context.getSerializationService().getDefaultSerializer();
+	private OpenmrsSerializer getSerializer(SerializedObject o, OpenmrsSerializer s) {
+		if (s == null) {
+			s = Context.getSerializationService().getDefaultSerializer();
+		}
 		if (o != null && o.getSerializationClass() != null) {
 			s = Context.getSerializationService().getSerializer(o.getSerializationClass());
 		}
