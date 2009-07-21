@@ -21,8 +21,6 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.util.NaturalStrings;
 
 /**
@@ -31,8 +29,6 @@ import org.openmrs.util.NaturalStrings;
 public class ProgramWorkflow extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	private static final long serialVersionUID = 1L;
-	
-	private transient final Log log = LogFactory.getLog(getClass());
 	
 	// ******************
 	// Properties
@@ -252,12 +248,11 @@ public class ProgramWorkflow extends BaseOpenmrsMetadata implements java.io.Seri
 	public boolean equals(Object obj) {
 		if (obj != null && obj instanceof ProgramWorkflow) {
 			ProgramWorkflow p = (ProgramWorkflow) obj;
-			if (this.getProgramWorkflowId() == null) {
-				return p.getProgramWorkflowId() == null;
+			if (this.getProgramWorkflowId() != null) {
+				return (this.getProgramWorkflowId().equals(p.getProgramWorkflowId()));
 			}
-			return (this.getProgramWorkflowId().equals(p.getProgramWorkflowId()));
 		}
-		return false;
+		return this == obj;
 	}
 	
 	/** @see Object#toString() */

@@ -58,12 +58,11 @@ public class ConceptStateConversion extends BaseOpenmrsObject implements java.io
 	public boolean equals(Object obj) {
 		if (obj != null && obj instanceof ConceptStateConversion) {
 			ConceptStateConversion p = (ConceptStateConversion) obj;
-			if (this.getConceptStateConversionId() == null) {
-				return p.getConceptStateConversionId() == null;
+			if (this.getConceptStateConversionId() != null) {
+				return (this.getConceptStateConversionId().equals(p.getConceptStateConversionId()));
 			}
-			return (this.getConceptStateConversionId().equals(p.getConceptStateConversionId()));
 		}
-		return false;
+		return this == obj;
 	}
 	
 	/** @see Object#toString() */

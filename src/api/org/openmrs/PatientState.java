@@ -15,8 +15,6 @@ package org.openmrs;
 
 import java.util.Date;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
@@ -25,8 +23,6 @@ import org.openmrs.util.OpenmrsUtil;
 public class PatientState extends BaseOpenmrsData implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 0L;
-	
-	private transient final Log log = LogFactory.getLog(getClass());
 	
 	// ******************
 	// Properties
@@ -118,12 +114,11 @@ public class PatientState extends BaseOpenmrsData implements java.io.Serializabl
 	public boolean equals(Object obj) {
 		if (obj != null && obj instanceof PatientState) {
 			PatientState p = (PatientState) obj;
-			if (this.getPatientStateId() == null) {
-				return p.getPatientStateId() == null;
+			if (this.getPatientStateId() != null) {
+				return (this.getPatientStateId().equals(p.getPatientStateId()));
 			}
-			return (this.getPatientStateId().equals(p.getPatientStateId()));
 		}
-		return false;
+		return this == obj;
 	}
 	
 	/** @see Object#toString() */
