@@ -1062,7 +1062,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @return true if the entity was removed, false otherwise
 	 */
 	public boolean removeName(ConceptName conceptName) {
-		if (getNames() != null)
+		if (names != null)
 			return names.remove(conceptName);
 		else
 			return false;
