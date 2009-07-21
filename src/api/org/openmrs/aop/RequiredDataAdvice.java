@@ -138,7 +138,7 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 		} else if (methodName.startsWith("unvoid")) {
 			Voidable voidable = (Voidable) args[0];
 			Date originalDateVoided = voidable.getDateVoided();
-			recursivelyHandle(UnvoidHandler.class, voidable, Context.getAuthenticatedUser(), originalDateVoided, null);
+			recursivelyHandle(UnvoidHandler.class, voidable, Context.getAuthenticatedUser(), originalDateVoided, null, null);
 			
 		} else if (methodName.startsWith("retire")) {
 			Retireable retirable = (Retireable) args[0];
@@ -148,7 +148,7 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 		} else if (methodName.startsWith("unretire")) {
 			Retireable retirable = (Retireable) args[0];
 			Date originalDateRetired = retirable.getDateRetired();
-			recursivelyHandle(UnretireHandler.class, retirable, Context.getAuthenticatedUser(), originalDateRetired, null);
+			recursivelyHandle(UnretireHandler.class, retirable, Context.getAuthenticatedUser(), originalDateRetired, null, null);
 			
 		}
 		
@@ -168,7 +168,7 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 	@SuppressWarnings("unchecked")
 	public static <H extends RequiredDataHandler> void recursivelyHandle(Class<H> handlerType, OpenmrsObject openmrsObject,
 	                                                                     String reason) {
-		recursivelyHandle(handlerType, openmrsObject, Context.getAuthenticatedUser(), new Date(), reason);
+		recursivelyHandle(handlerType, openmrsObject, Context.getAuthenticatedUser(), new Date(), reason, null);
 	}
 	
 	/**
@@ -180,18 +180,25 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 	 * @param openmrsObject the object that is being acted upon
 	 * @param currentUser the current user to set recursively on the object
 	 * @param currentDate the date to set recursively on the object
-	 * @param other an optional second argument that was passed to the service method (usually a
-	 *            void/retire reason)
+	 * @param other an optional second argument that was passed to the service method (usually a void/retire reason)
+	 * @param alreadyHandled an optional list of objects that have already been handled and should not be
+	 *        processed again.  this is intended to prevent infinite recursion when handling collection properties.
+	 *        
 	 * @see HandlerUtil#getHandlersForType(Class, Class)
 	 */
 	@SuppressWarnings("unchecked")
 	public static <H extends RequiredDataHandler> void recursivelyHandle(Class<H> handlerType,
 	                                                                        OpenmrsObject openmrsObject, User currentUser,
-	                                                                        Date currentDate, String other) {
+	                                                                        Date currentDate, String other,
+	                                                                        List<OpenmrsObject> alreadyHandled) {
 		if (openmrsObject == null)
 			return;
 		
 		Class<? extends OpenmrsObject> openmrsObjectClass = openmrsObject.getClass();
+		
+		if (alreadyHandled == null) {
+			alreadyHandled = new ArrayList<OpenmrsObject>();
+		}
 		
 		// fetch all handlers for the object being saved
 		List<H> handlers = HandlerUtil.getHandlersForType(handlerType, openmrsObjectClass);
@@ -200,6 +207,7 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 		for (H handler : handlers) {
 			handler.handle(openmrsObject, currentUser, currentDate, other);
 		}
+		alreadyHandled.add(openmrsObject);
 		
 		List<Field> allInheritedFields = new ArrayList<Field>();
 		getAllInheritedFields(openmrsObjectClass, allInheritedFields);
@@ -213,7 +221,9 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 				
 				if (childCollection != null) {
 					for (Object collectionElement : childCollection) {
-						recursivelyHandle(handlerType, (OpenmrsObject) collectionElement, currentUser, currentDate, other);
+						if (!alreadyHandled.contains(collectionElement)) {
+							recursivelyHandle(handlerType, (OpenmrsObject) collectionElement, currentUser, currentDate, other, alreadyHandled);
+						}
 					}
 				}
 			}

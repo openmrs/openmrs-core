@@ -231,7 +231,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 */
 	@Deprecated
 	public void setRequiredProperties(User creator, Date dateCreated) {
-		RequiredDataAdvice.recursivelyHandle(SaveHandler.class, this, creator, dateCreated, null);
+		RequiredDataAdvice.recursivelyHandle(SaveHandler.class, this, creator, dateCreated, null, null);
 	}
 	
 	// Property accessors
