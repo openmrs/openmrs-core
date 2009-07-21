@@ -1011,7 +1011,6 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @return Returns the names.
 	 * @param includeVoided Include voided ConceptNames if true.
 	 */
-	@ElementList
 	public Collection<ConceptName> getNames(boolean includeVoided) {
 		Collection<ConceptName> ret = new HashSet<ConceptName>();
 		if (includeVoided){
