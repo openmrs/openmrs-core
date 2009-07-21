@@ -27,6 +27,7 @@ import org.openmrs.Form;
 import org.openmrs.Person;
 import org.openmrs.module.Extension;
 import org.openmrs.module.ModuleFactory;
+import org.openmrs.module.Extension.MEDIA_TYPE;
 import org.openmrs.module.web.FormEntryContext;
 import org.openmrs.module.web.extension.FormEntryHandler;
 import org.openmrs.module.web.extension.provider.Link;
@@ -61,7 +62,7 @@ public class PatientEncountersPortletController extends PortletController {
 	            return temp;
             }
     	});
-    	List<Extension> handlers = ModuleFactory.getExtensions("formentryHandler");
+    	List<Extension> handlers = ModuleFactory.getExtensions("org.openmrs.module.web.extension.FormEntryHandler", MEDIA_TYPE.html);
     	if (handlers != null) {
     		for (Extension ext : handlers) {
     			FormEntryHandler handler = (FormEntryHandler) ext;
