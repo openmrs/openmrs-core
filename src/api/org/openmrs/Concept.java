@@ -1071,7 +1071,6 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 	 * @return Returns the names.
 	 * @param includeVoided Include voided ConceptNames if true.
 	 */
-	@ElementList
 	public Collection<ConceptName> getNames(boolean includeVoided) {
 		Collection<ConceptName> ret = new HashSet<ConceptName>();
 		if (includeVoided){
