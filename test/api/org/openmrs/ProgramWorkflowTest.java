@@ -64,7 +64,7 @@ public class ProgramWorkflowTest {
 	 * @see {@link Program#equals(Object)}
 	 */
 	@Test
-	public void equals_programShouldReturnFalseIfInstancesAreDifferentAndIdentifiersAreNull() throws Exception {
+	public void equals_shouldReturnFalseIfProgramInstancesAreDifferentAndIdsAreNull() throws Exception {
 		Program program1 = new Program();
 		Program program2 = new Program();
 		Assert.assertFalse(program1.equals(program2));
@@ -75,7 +75,7 @@ public class ProgramWorkflowTest {
 	 * @see {@link ProgramWorkflow#equals(Object)}
 	 */
 	@Test
-	public void equals_programWorkflowShouldReturnFalseIfInstancesAreDifferentAndIdentifiersAreNull() throws Exception {
+	public void equals_shouldReturnFalseIfProgramWorkflowInstancesAreDifferentAndIdsAreNull() throws Exception {
 		ProgramWorkflow workflow1 = new ProgramWorkflow();
 		ProgramWorkflow workflow2 = new ProgramWorkflow();
 		Assert.assertFalse(workflow1.equals(workflow2));	
@@ -86,7 +86,7 @@ public class ProgramWorkflowTest {
 	 * @see {@link ProgramWorkflowState#equals(Object)}
 	 */
 	@Test
-	public void equals_programWorkflowStateShouldReturnFalseIfInstancesAreDifferentAndIdentifiersAreNull() throws Exception {
+	public void equals_shouldReturnFalseIfProgramWorkflowStateInstancesAreDifferentAndIdsAreNull() throws Exception {
 		ProgramWorkflowState state1 = new ProgramWorkflowState();
 		ProgramWorkflowState state2 = new ProgramWorkflowState();
 		Assert.assertFalse(state1.equals(state2));
@@ -97,7 +97,7 @@ public class ProgramWorkflowTest {
 	 * @see {@link PatientProgram#equals(Object)}
 	 */
 	@Test
-	public void equals_patientProgramShouldReturnFalseIfInstancesAreDifferentAndIdentifiersAreNull() throws Exception {
+	public void equals_shouldReturnFalseIfPatientProgramInstancesAreDifferentAndIsAreNull() throws Exception {
 		PatientProgram p1 = new PatientProgram();
 		PatientProgram p2 = new PatientProgram();
 		Assert.assertFalse(p1.equals(p2));
@@ -108,7 +108,7 @@ public class ProgramWorkflowTest {
 	 * @see {@link PatientSate#equals(Object)}
 	 */
 	@Test
-	public void equals_patientStateShouldReturnFalseIfInstancesAreDifferentAndIdentifiersAreNull() throws Exception {
+	public void equals_shouldReturnFalseIfPatientStateInstancesAreDifferentAndIdsAreNull() throws Exception {
 		PatientState state1 = new PatientState();
 		PatientState state2 = new PatientState();
 		Assert.assertFalse(state1.equals(state2));	
@@ -119,7 +119,7 @@ public class ProgramWorkflowTest {
 	 * @see {@link ConceptStateConversion#equals(Object)}
 	 */
 	@Test
-	public void equals_conceptStateConversionShouldReturnFalseIfInstancesAreDifferentAndIdentifiersAreNull() throws Exception {
+	public void equals_shouldReturnFalseIfConceptStateConversionInstancesAreDifferentAndIdsAreNull() throws Exception {
 		ConceptStateConversion c1 = new ConceptStateConversion();
 		ConceptStateConversion c2 = new ConceptStateConversion();
 		Assert.assertFalse(c1.equals(c2));
