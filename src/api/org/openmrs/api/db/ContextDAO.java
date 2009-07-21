@@ -44,7 +44,7 @@ public interface ContextDAO {
 	 * @should not authenticate given non null password when password in database is null
 	 * @should not authenticate when password in database is empty
 	 * @should give identical error messages between username and password mismatch
-	 * @should lockout user after five failed attempts
+	 * @should lockout user after eight failed attempts
 	 * @should authenticateWithCorrectHashedPassword
 	 * @should authenticateWithIncorrectHashedPassword
 	 * @should set uuid on user property when authentication fails with valid user

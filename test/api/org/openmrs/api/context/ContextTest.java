@@ -21,11 +21,10 @@ import org.junit.Test;
 import org.openmrs.Location;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
-import org.openmrs.serialization.OpenmrsSerializer;
-import org.openmrs.serialization.xstream.XStreamSerializer;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.LocaleUtility;
+import org.springframework.validation.Validator;
 
 /**
  * TODO add methods for all context tests
@@ -157,9 +156,9 @@ public class ContextTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should return a list of all registered beans of the passed type", method = "getRegisteredComponents(Class)")
 	public void getRegisteredComponents_shouldReturnAListOfAllRegisteredBeansOfThePassedType() throws Exception {
-		List<OpenmrsSerializer> l = Context.getRegisteredComponents(OpenmrsSerializer.class);
-		Assert.assertEquals(1, l.size());
-		Assert.assertEquals(XStreamSerializer.class, l.iterator().next().getClass());
+		List<Validator> validators = Context.getRegisteredComponents(Validator.class);
+		Assert.assertTrue(validators.size() > 0);
+		Assert.assertTrue(Validator.class.isAssignableFrom(validators.iterator().next().getClass()));
 	}
 	
 	/**

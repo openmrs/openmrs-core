@@ -1,4 +1,0 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<dataset>
-  <concept_datatype concept_datatype_id="4" name="N/A" hl7_abbreviation="ZZ" description="Not associated with a datatype (e.g., term answers, sets)" creator="1" date_created="2004-02-02 00:00:00.0" retired="0" uuid="003d9648-92b2-102c-adee-6014420f8468"/>
-</dataset>
