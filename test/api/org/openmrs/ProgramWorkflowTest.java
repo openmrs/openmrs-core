@@ -58,6 +58,71 @@ public class ProgramWorkflowTest {
 				Assert.fail("Wha?!");
 			x++;
 		}
-		
+	}
+	
+	/**
+	 * @see {@link Program#equals(Object)}
+	 */
+	@Test
+	public void equals_programShouldReturnFalseIfInstancesAreDifferentAndIdentifiersAreNull() throws Exception {
+		Program program1 = new Program();
+		Program program2 = new Program();
+		Assert.assertFalse(program1.equals(program2));
+		Assert.assertTrue(program1.equals(program1));	
+	}
+	
+	/**
+	 * @see {@link ProgramWorkflow#equals(Object)}
+	 */
+	@Test
+	public void equals_programWorkflowShouldReturnFalseIfInstancesAreDifferentAndIdentifiersAreNull() throws Exception {
+		ProgramWorkflow workflow1 = new ProgramWorkflow();
+		ProgramWorkflow workflow2 = new ProgramWorkflow();
+		Assert.assertFalse(workflow1.equals(workflow2));	
+		Assert.assertTrue(workflow1.equals(workflow1));	
+	}
+	
+	/**
+	 * @see {@link ProgramWorkflowState#equals(Object)}
+	 */
+	@Test
+	public void equals_programWorkflowStateShouldReturnFalseIfInstancesAreDifferentAndIdentifiersAreNull() throws Exception {
+		ProgramWorkflowState state1 = new ProgramWorkflowState();
+		ProgramWorkflowState state2 = new ProgramWorkflowState();
+		Assert.assertFalse(state1.equals(state2));
+		Assert.assertTrue(state1.equals(state1));
+	}
+	
+	/**
+	 * @see {@link PatientProgram#equals(Object)}
+	 */
+	@Test
+	public void equals_patientProgramShouldReturnFalseIfInstancesAreDifferentAndIdentifiersAreNull() throws Exception {
+		PatientProgram p1 = new PatientProgram();
+		PatientProgram p2 = new PatientProgram();
+		Assert.assertFalse(p1.equals(p2));
+		Assert.assertTrue(p1.equals(p1));
+	}
+	
+	/**
+	 * @see {@link PatientSate#equals(Object)}
+	 */
+	@Test
+	public void equals_patientStateShouldReturnFalseIfInstancesAreDifferentAndIdentifiersAreNull() throws Exception {
+		PatientState state1 = new PatientState();
+		PatientState state2 = new PatientState();
+		Assert.assertFalse(state1.equals(state2));	
+		Assert.assertTrue(state1.equals(state1));
+	}
+	
+	/**
+	 * @see {@link ConceptStateConversion#equals(Object)}
+	 */
+	@Test
+	public void equals_conceptStateConversionShouldReturnFalseIfInstancesAreDifferentAndIdentifiersAreNull() throws Exception {
+		ConceptStateConversion c1 = new ConceptStateConversion();
+		ConceptStateConversion c2 = new ConceptStateConversion();
+		Assert.assertFalse(c1.equals(c2));
+		Assert.assertTrue(c1.equals(c1));
 	}
 }

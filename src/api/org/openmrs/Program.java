@@ -17,8 +17,6 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Root;
 
@@ -29,8 +27,6 @@ import org.simpleframework.xml.Root;
 public class Program extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 3214567L;
-	
-	private transient final Log log = LogFactory.getLog(getClass());
 	
 	// ******************
 	// Properties
@@ -111,12 +107,11 @@ public class Program extends BaseOpenmrsMetadata implements java.io.Serializable
 	public boolean equals(Object obj) {
 		if (obj != null && obj instanceof Program) {
 			Program p = (Program) obj;
-			if (this.getProgramId() == null) {
-				return p.getProgramId() == null;
+			if (this.getProgramId() != null) {
+				return (this.getProgramId().equals(p.getProgramId()));
 			}
-			return (this.getProgramId().equals(p.getProgramId()));
 		}
-		return false;
+		return this == obj;
 	}
 	
 	/** @see Object#toString() */
