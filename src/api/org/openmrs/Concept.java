@@ -466,7 +466,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	public ConceptName findNameTaggedWith(ConceptNameTag conceptNameTag) {
 		ConceptName taggedName = null;
 		for (ConceptName possibleName : getNames()) {
-			if (!possibleName.isVoided() && possibleName.hasTag(conceptNameTag)) {
+			if (possibleName.hasTag(conceptNameTag)) {
 				taggedName = possibleName;
 				break;
 			}
@@ -525,7 +525,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 			currentNames = getNames(locale);
 		
 		for (ConceptName currentName : currentNames) {
-			if (!currentName.isVoided() && name.equals(currentName.getName()))
+			if (name.equals(currentName.getName()))
 				return true;
 		}
 		
@@ -760,8 +760,8 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		
 		if (compatibleNames == null) {
 			compatibleNames = new Vector<ConceptName>();
-			for (ConceptName possibleName : names) {
-				if (!possibleName.isVoided() && LocaleUtility.areCompatible(possibleName.getLocale(), desiredLocale)) {
+			for (ConceptName possibleName : getNames()) {
+				if (LocaleUtility.areCompatible(possibleName.getLocale(), desiredLocale)) {
 					compatibleNames.add(possibleName);
 				}
 			}
@@ -847,7 +847,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		}
 		
 		if (bestMatch == null) {
-			log.warn("No compatible concept name found for default locale for concept id " + conceptId);
+			log.info("No compatible concept name found for default locale for concept id " + conceptId);
 		}
 		
 		return bestMatch;
@@ -965,7 +965,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		
 		for (Iterator<ConceptName> i = getNames().iterator(); i.hasNext() && foundName == null;) {
 			ConceptName possibleName = i.next();
-			if (!possibleName.isVoided() && ((shortestName == null) || (possibleName.getName().length() < shortestName.getName().length()))) {
+			if ((shortestName == null) || (possibleName.getName().length() < shortestName.getName().length())) {
 				shortestName = possibleName;
 			}
 		}
@@ -994,7 +994,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 */
 	public boolean isNamed(String name) {
 		for (ConceptName cn : getNames())
-			if (!cn.isVoided() && name.equals(cn.getName()))
+			if (name.equals(cn.getName()))
 				return true;
 		return false;
 	}
@@ -1004,7 +1004,30 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 */
 	@ElementList
 	public Collection<ConceptName> getNames() {
-		return names;
+		return getNames(false);
+	}
+	
+	/**
+	 * @return Returns the names.
+	 * @param includeVoided Include voided ConceptNames if true.
+	 */
+	@ElementList
+	public Collection<ConceptName> getNames(boolean includeVoided) {
+		Collection<ConceptName> ret = new HashSet<ConceptName>();
+		if (includeVoided){
+			if (names != null)
+				return names;
+			else
+				return ret;
+		} else {
+			if (names != null){
+				for (ConceptName cn : names){
+					if (!cn.isVoided())
+						ret.add(cn);
+				}
+			}	
+			return ret;
+		}
 	}
 	
 	/**
@@ -1248,7 +1271,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		String desiredLanguage = locale.getLanguage();
 		Collection<ConceptName> syns = new Vector<ConceptName>();
 		for (ConceptName possibleSynonym : getNames()) {
-			if (!possibleSynonym.isVoided() && possibleSynonym.hasTag(ConceptNameTag.SYNONYM)) {
+			if (possibleSynonym.hasTag(ConceptNameTag.SYNONYM)) {
 				String lang = possibleSynonym.getLocale().getLanguage();
 				if (lang.equals(desiredLanguage))
 					syns.add(possibleSynonym);
