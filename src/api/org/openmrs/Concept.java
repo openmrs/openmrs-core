@@ -561,7 +561,7 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 	public ConceptName getName(Locale locale, boolean exact) {
 		
 		// fail early if this concept has no names defined
-		if (getNames() == null || names.size() == 0) {
+		if (names == null || names.size() == 0) {
 			if (log.isDebugEnabled())
 				log.debug("there are no names defined for: " + conceptId);
 			return null;
@@ -649,7 +649,7 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 	 */
 	public ConceptName getPreferredName(Locale forLocale) {
 		// fail early if this concept has no names defined
-		if (getNames() == null || names.size() == 0) {
+		if (names == null || names.size() == 0) {
 			if (log.isDebugEnabled())
 				log.debug("there are no names defined for: " + conceptId);
 			return null;
@@ -716,7 +716,7 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 	public ConceptName getBestName(Locale locale) {
 		
 		// fail early if this concept has no names defined
-		if (getNames() == null || names.size() == 0) {
+		if (names == null || names.size() == 0) {
 			if (log.isDebugEnabled())
 				log.debug("there are no names defined for: " + conceptId);
 			return null;
@@ -851,7 +851,7 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 	public ConceptName getBestShortName(Locale locale) {
 		
 		// fail early if this concept has no names defined
-		if (getNames() == null || names.size() == 0) {
+		if (names == null || names.size() == 0) {
 			if (log.isDebugEnabled())
 				log.debug("there are no names defined for: " + conceptId);
 			return null;
@@ -1106,7 +1106,7 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 	public boolean addName(ConceptName conceptName) {
 		boolean nameListWasModified = false;
 		conceptName.setConcept(this);
-		if (getNames() == null)
+		if (names == null)
 			names = new HashSet<ConceptName>();
 		if (conceptName != null && !names.contains(conceptName)) {
 			nameListWasModified = names.add(conceptName);
@@ -1124,7 +1124,7 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 	 * @return true if the entity was removed, false otherwise
 	 */
 	public boolean removeName(ConceptName conceptName) {
-		if (getNames() != null)
+		if (names != null)
 			return names.remove(conceptName);
 		else
 			return false;
