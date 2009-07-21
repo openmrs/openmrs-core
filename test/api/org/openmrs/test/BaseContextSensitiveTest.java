@@ -61,6 +61,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
+import org.openmrs.module.ModuleUtil;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -75,8 +76,9 @@ import org.springframework.transaction.annotation.Transactional;
  * down. (because spring is started before test cases are run). Normal test cases do not need to
  * extend anything
  */
-@ContextConfiguration(locations = { "classpath:applicationContext-service.xml" })
-@TestExecutionListeners( { TransactionalTestExecutionListener.class, SkipBaseSetupAnnotationExecutionListener.class })
+@ContextConfiguration(locations = { "classpath:applicationContext-service.xml", "classpath*:moduleApplicationContext.xml" })
+@TestExecutionListeners( { TransactionalTestExecutionListener.class, SkipBaseSetupAnnotationExecutionListener.class,
+        StartModuleExecutionListener.class })
 @Transactional
 public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringContextTests {
 	
@@ -595,6 +597,10 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	 */
 	@AfterClass
 	public static void closeSessionAfterEachClass() throws Exception {
+		// close any modules that might have been loaded by the @StartModules class annotation
+		ModuleUtil.shutdown();
+		
+		// clean up the session so we don't leak memory
 		Context.closeSession();
 	}
 	

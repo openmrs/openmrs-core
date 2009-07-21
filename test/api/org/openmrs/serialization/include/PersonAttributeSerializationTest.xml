@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<dataset>
-	<person_attribute person_attribute_id="1" person_id="501" value="" person_attribute_type_id="1" creator="1" date_created="2008-08-15 15:46:47.0" voided="false" uuid="0768f3da-b692-44b7-a33f-abf2c450474e"/>
-    <person_attribute_type person_attribute_type_id="1" name="Race" description="Group of persons related by common descent or heredity" format="java.lang.String" searchable="false" creator="1" date_created="2007-05-04 09:59:23.0" retired="true" retired_by="1" date_retired="2008-08-15 00:00:00.0" retire_reason="test" uuid="b3b6d540-a32e-44c7-91b3-292d97667518" sort_weight="5"/>
-    <person person_id="501" gender="F" dead="false" creator="1" date_created="2008-08-15 15:46:47.0" voided="false" uuid="df8ae447-6745-45be-b859-403241d9913c"/>
-    <users user_id="501" system_id="2-6" username="bruno" password="ff6d1655327d385e11a04e1632b4f33ceb8fafd2" salt="5d32c5fd9fde391c755f1f4dfd5e1d6e3debe6" secret_question="" creator="1" date_created="2008-08-15 15:46:47.0" changed_by="1" date_changed="2008-08-15 15:47:07.0" voided="true" void_reason="Test purposes"/>
-    <role role="Provider" description="General privileges held by all providers" uuid="3480cb6d-c291-46c8-8d3a-96dc33d199fb"/>
-    <user_role user_id="501" role="Provider"/>
-</dataset>

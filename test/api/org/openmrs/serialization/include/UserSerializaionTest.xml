@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<dataset>
-    <person person_id="501" gender="F" dead="false" creator="1" date_created="2008-08-15 15:46:47.0" changed_by="1" date_changed="2008-08-15 15:47:07.0" voided="true" date_voided="2008-08-30 15:47:07.0" voided_by="1" void_reason="Test purposes" uuid="df8ae447-6745-45be-b859-403241d9913c"/>
-    <users user_id="501" system_id="2-6" username="bruno" password="ff6d1655327d385e11a04e1632b4f33ceb8fafd2" salt="5d32c5fd9fde391c755f1f4dfd5e1d6e3debe6" secret_question="" creator="1" date_created="2008-08-15 15:46:47.0" changed_by="1" date_changed="2008-08-15 15:47:07.0" voided="true" date_voided="2008-08-30 15:47:07.0" voided_by="1" void_reason="Test purposes"/>
-    <role role="Provider" description="General privileges held by all providers" uuid="3480cb6d-c291-46c8-8d3a-96dc33d199fb"/>
-    <user_role user_id="501" role="Provider"/>
-    <user_property user_id="501" property="lockoutTimestamp" property_value="0"/>
-    <user_property user_id="501" property="loginAttempts" property_value="0"/>
-</dataset>

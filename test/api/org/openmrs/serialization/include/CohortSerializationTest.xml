@@ -1,7 +1,0 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<dataset>
-  <cohort cohort_id="1" name="old cohorts" description="This is a cohort in which every one&apos;s age is above 60" creator="1" date_created="2006-10-20 00:00:00.0" voided="0" uuid="57b9e333-751c-4291-80d1-449412ac2cd3"/>
-  <cohort_member cohort_id="1" patient_id="6"/>
-  <cohort_member cohort_id="1" patient_id="7"/>
-  <cohort_member cohort_id="1" patient_id="8"/>
-</dataset>

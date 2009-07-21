@@ -300,12 +300,9 @@
 	<bean id="serializationServiceTarget" class="org.openmrs.api.impl.SerializationServiceImpl">
 		<property name="serializers">
 			<list>
-				<ref bean="xstreamSerializer"/>
 			</list>
 		</property>
-		<property name="defaultSerializer" ref="xstreamSerializer"/>
 	</bean>
-	<bean id="xstreamSerializer" class="org.openmrs.serialization.xstream.XStreamSerializer"/>
 	<!-- /SerializationService setup -->
 	
 	
