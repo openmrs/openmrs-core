@@ -26,6 +26,7 @@ import java.util.Locale;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.test.Verifies;
+import org.openmrs.web.taglib.ConceptTag;
 
 /**
  * Behavior-driven tests of the Concept class.
@@ -393,4 +394,127 @@ public class ConceptTest {
 		Assert.assertNull(concept.getName(localeToSearch, true));
 	}
 	
+	
+	/**
+	 * @see {@link Concept#getNames(Boolean)}
+	 */
+	@Test
+	@Verifies(value = "should not fail if getName(boolean) is only finding voided conceptNames when true", method = "getName(Boolean)")
+	public void getNamesBoolean_shouldNotReturnVoidedConceptName() throws Exception {
+		Locale localeToSearch = new Locale("en");
+		
+		Concept concept = new Concept();
+		ConceptName conceptName = new ConceptName("some name", localeToSearch);
+		conceptName.setVoided(true);
+		concept.addName(conceptName);
+		Collection<ConceptName> cns = concept.getNames(false);
+		Assert.assertNotNull(cns);
+		Assert.assertEquals(cns.size(), 0) ;
+		cns = concept.getNames(true);
+		Assert.assertEquals(cns.size(), 1) ;
+	}
+	
+	/**
+	 * @see {@link Concept#getNames()}
+	 */
+	@Test
+	@Verifies(value = "should not fail if getNames() is correctly calling getNames(false)", method = "getNames()")
+	public void getNames_shouldNotReturnVoidedConceptName() throws Exception {
+		Locale localeToSearch = new Locale("en");
+		
+		Concept concept = new Concept();
+		ConceptName conceptName = new ConceptName("some name", localeToSearch);
+		conceptName.setVoided(true);
+		concept.addName(conceptName);
+		Collection<ConceptName> cns = concept.getNames();
+		Assert.assertNotNull(cns);
+		Assert.assertEquals(cns.size(), 0) ;
+	}
+	
+	/**
+	 * @see {@link Concept#getBestName(Locale)}
+	 */
+	@Test
+	@Verifies(value = "getBestName should not return voided conceptName, should return non-voided concept in other locale ", method = "getBestName(Locale)")
+	public void getBestName_shouldReturnNonVoidedConceptName() throws Exception {
+		Locale localeToSearch = new Locale("en");
+		Locale nonMatchingNameLocale = new Locale("fr");
+		Concept concept = new Concept();
+		
+		ConceptName conceptName = new ConceptName("some name", localeToSearch);
+		conceptName.setVoided(true);
+		concept.addName(conceptName);
+		
+		ConceptName conceptNameOther = new ConceptName("some other name", nonMatchingNameLocale);
+		concept.addName(conceptNameOther);
+		
+		ConceptName cn = concept.getBestName(localeToSearch);
+		Assert.assertEquals(cn.getLocale(), nonMatchingNameLocale) ;
+		Assert.assertEquals(cn.getName(), "some other name") ;
+	}
+	
+	/**
+	 * @see {@link Concept#getBestShortName(Locale)}
+	 */
+	@Test
+	@Verifies(value = "getBestShortName should not return voided conceptName, should return non-voided concept in other locale even if not short", method = "getBestShortName(Locale)")
+	public void getBestShortName_shouldReturnNonVoidedConceptName() throws Exception {
+		Locale localeToSearch = new Locale("en");
+		Locale nonMatchingNameLocale = new Locale("fr");
+		Concept concept = new Concept();
+		
+		ConceptName conceptName = new ConceptName("some name", localeToSearch);
+		conceptName.setVoided(true);
+		concept.setShortName(localeToSearch,conceptName);
+		
+		ConceptName conceptNameOther = new ConceptName("some other name", nonMatchingNameLocale);
+		concept.addName(conceptNameOther);
+		
+		ConceptName cn = concept.getBestShortName(localeToSearch);
+		Assert.assertEquals(cn.getLocale(), nonMatchingNameLocale) ;
+		Assert.assertEquals(cn.getName(), "some other name") ;
+	}
+	
+	/**
+	 * @see {@link Concept#getNames(Locale)}
+	 */
+	@Test
+	@Verifies(value = "getName(Locale) should not return voided conceptName, should return non-voided concept in other locale even if not short", method = "getName(Locale)")
+	public void getNamesLocale_shouldReturnNonVoidedConceptName() throws Exception {
+		Locale localeToSearch = new Locale("en");
+		Concept concept = new Concept();
+		
+		ConceptName conceptName = new ConceptName("some name", localeToSearch);
+		conceptName.setVoided(true);
+		concept.addName(conceptName);
+		
+		Collection<ConceptName> cns = concept.getNames(localeToSearch);
+		Assert.assertEquals(cns.size(), 0) ;
+	}
+	
+	
+	/**
+	 * @see {@link Concept#getNames(Locale)}
+	 */
+	@Test
+	@Verifies(value = "getNames(Locale) should return an empty Collection if no concept names", method = "getBestName(Locale)")
+	public void getNamesLocale_shouldReturnEmptyCollection() throws Exception {
+		Locale localeToSearch = new Locale("en");
+		Concept concept = new Concept();
+		
+		Collection<ConceptName> cns = concept.getNames(localeToSearch);
+		Assert.assertEquals(cns.size(), 0) ;
+	}
+	
+	/**
+	 * @see {@link Concept#getBestName(Locale)}
+	 */
+	@Test
+	@Verifies(value = "getBestName should return null if no concept names", method = "getBestName(Locale)")
+	public void getBestNameLocale_shouldReturnNull() throws Exception {
+		Locale localeToSearch = new Locale("en");
+		Concept concept = new Concept();
+		ConceptName conceptName = concept.getBestName(localeToSearch);
+		Assert.assertNull(conceptName) ;
+	}
 }
