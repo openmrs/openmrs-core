@@ -89,8 +89,8 @@ public class DispatcherServlet extends org.springframework.web.servlet.Dispatche
 			log.info("DB updates are required, so spring initialization is being skipped");
 			throw new ServletException("Database updates are required. Visit /openmrs to run them.");
 		}
-		if (!Listener.runtimePropertiesFound()) {
-			log.info("Runtime properties are found, so spring initialization is being skipped");
+		if (InitializationFilter.initializationRequired()) {
+			log.info("Runtime properties were not found, so spring initialization is being skipped");
 			throw new ServletException("OpenMRS initialization is required. Visit /openmrs to run the setup wizard.");
 		}
 		
