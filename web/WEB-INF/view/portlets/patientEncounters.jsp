@@ -80,11 +80,6 @@ Parameters
 						width: '90%',
 						modal: true
 					});
-					$j("#formEntryTable").dataTable({
-						"bPaginate": false,
-						"bSort": false,
-						"bAutoWidth": false
-					});
 					$j('button.showFormEntryDialog').click(function() {
 						$j('#formEntryDialog').dialog('open');
 					});
