@@ -29,6 +29,7 @@ import org.openmrs.reporting.PatientCharacteristicFilter;
 import org.openmrs.reporting.PatientSearch;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.SkipBaseSetup;
+import org.openmrs.test.Verifies;
 
 /**
  * Tests methods in the CohortService class TODO add all the rest of the tests
@@ -79,5 +80,37 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		assertNotNull(exampleCohort);
 		assertEquals(2, exampleCohort.size());
 		assertFalse(exampleCohort.isVoided());
+	}
+	
+	
+	/**
+	 * @see {@link CohortService#purgeCohort(Cohort)}
+	 */
+	@Test
+	@Verifies(value = "should delete cohort from database", method = "purgeCohort(Cohort)")
+	public void purgeCohort_shouldDeleteCohortFromDatabase() throws Exception {
+		executeDataSet("org/openmrs/api/include/CohortServiceTest-cohort.xml");
+		List<Cohort> allCohorts = service.getAllCohorts(true);
+		assertEquals(2, allCohorts.size());
+		service.purgeCohort(allCohorts.get(0));
+		allCohorts = service.getAllCohorts(true);
+		assertEquals(1, allCohorts.size());
+	}
+	
+	/**
+	 * @see {@link CohortService#getCohorts(String)}
+	 */
+	@Test
+	@Verifies(value = "should match cohorts by partial name", method = "getCohorts(String)")
+	public void getCohorts_shouldMatchCohortsByPartialName() throws Exception {
+		executeDataSet("org/openmrs/api/include/CohortServiceTest-cohort.xml");
+		List<Cohort> matchedCohorts = service.getCohorts("Example");
+		assertEquals(2, matchedCohorts.size());
+		matchedCohorts = service.getCohorts("e Coh");
+		assertEquals(2, matchedCohorts.size());
+		matchedCohorts = service.getCohorts("hort");
+		assertEquals(2, matchedCohorts.size());
+		matchedCohorts = service.getCohorts("Examples");
+		assertEquals(0, matchedCohorts.size());
 	}
 }
