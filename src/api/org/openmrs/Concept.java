@@ -553,7 +553,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	public ConceptName getName(Locale locale, boolean exact) {
 		
 		// fail early if this concept has no names defined
-		if (names == null || getNames().size() == 0) {
+		if (getNames().size() == 0) {
 			if (log.isDebugEnabled())
 				log.debug("there are no names defined for: " + conceptId);
 			return null;
@@ -584,7 +584,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 */
 	public ConceptName getPreferredName(Locale forLocale) {
 		// fail early if this concept has no names defined
-		if (names == null || names.size() == 0) {
+		if (getNames().size() == 0) {
 			if (log.isDebugEnabled())
 				log.debug("there are no names defined for: " + conceptId);
 			return null;
@@ -654,7 +654,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	public ConceptName getBestName(Locale locale) {
 		
 		// fail early if this concept has no names defined
-		if (names == null || names.size() == 0) {
+		if (getNames().size() == 0) {
 			if (log.isDebugEnabled())
 				log.debug("there are no names defined for: " + conceptId);
 			return null;
@@ -792,7 +792,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	public ConceptName getBestShortName(Locale locale) {
 		
 		// fail early if this concept has no names defined
-		if (names == null || names.size() == 0) {
+		if (getNames().size() == 0) {
 			if (log.isDebugEnabled())
 				log.debug("there are no names defined for: " + conceptId);
 			return null;
