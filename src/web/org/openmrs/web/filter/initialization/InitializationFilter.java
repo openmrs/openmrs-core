@@ -135,10 +135,10 @@ public class InitializationFilter extends StartupFilter {
 	/**
 	 * Variable set at the end of the wizard when spring is being restarted
 	 */
-	private boolean initializationComplete = false;
+	private static boolean initializationComplete = false;
 	
 	synchronized protected void setInitializationComplete(boolean initializationComplete) {
-		this.initializationComplete = initializationComplete;
+		InitializationFilter.initializationComplete = initializationComplete;
 	}
 	
 	/**
@@ -462,8 +462,16 @@ public class InitializationFilter extends StartupFilter {
 		// If progress.vm makes an ajax request even immediately after initialization has completed
 		// let the request pass in order to let progress.vm load the start page of OpenMRS
 		// (otherwise progress.vm is displayed "forever")
-		return !PROGRESS_VM_AJAXREQUEST.equals(httpRequest.getParameter("page"))
-		        && (Listener.runtimePropertiesFound() || isInitializationComplete());
+		return !PROGRESS_VM_AJAXREQUEST.equals(httpRequest.getParameter("page")) && !initializationRequired();
+	}
+	
+	/**
+	 * Public method that returns true if database+runtime properties initialization is required
+	 * 
+	 * @return true if this initialization wizard needs to run
+	 */
+	public static boolean initializationRequired() {
+		return isInitializationComplete() == false && Listener.runtimePropertiesFound() == false;
 	}
 	
 	/**
@@ -551,7 +559,7 @@ public class InitializationFilter extends StartupFilter {
 	 * 
 	 * @return true if this has been run already
 	 */
-	synchronized private boolean isInitializationComplete() {
+	synchronized private static boolean isInitializationComplete() {
 		return initializationComplete;
 	}
 	
