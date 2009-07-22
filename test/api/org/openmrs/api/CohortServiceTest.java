@@ -119,4 +119,34 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		Assert.assertNull(Context.getCohortService().getCohortByUuid("some invalid uuid"));
 	}
 	
+	/**
+	 * @see {@link CohortService#purgeCohort(Cohort)}
+	 */
+	@Test
+	@Verifies(value = "should delete cohort from database", method = "purgeCohort(Cohort)")
+	public void purgeCohort_shouldDeleteCohortFromDatabase() throws Exception {
+		executeDataSet("org/openmrs/api/include/CohortServiceTest-cohort.xml");
+		List<Cohort> allCohorts = service.getAllCohorts(true);
+		assertEquals(2, allCohorts.size());
+		service.purgeCohort(allCohorts.get(0));
+		allCohorts = service.getAllCohorts(true);
+		assertEquals(1, allCohorts.size());
+	}
+	
+	/**
+	 * @see {@link CohortService#getCohorts(String)}
+	 */
+	@Test
+	@Verifies(value = "should match cohorts by partial name", method = "getCohorts(String)")
+	public void getCohorts_shouldMatchCohortsByPartialName() throws Exception {
+		executeDataSet("org/openmrs/api/include/CohortServiceTest-cohort.xml");
+		List<Cohort> matchedCohorts = service.getCohorts("Example");
+		assertEquals(2, matchedCohorts.size());
+		matchedCohorts = service.getCohorts("e Coh");
+		assertEquals(2, matchedCohorts.size());
+		matchedCohorts = service.getCohorts("hort");
+		assertEquals(2, matchedCohorts.size());
+		matchedCohorts = service.getCohorts("Examples");
+		assertEquals(0, matchedCohorts.size());
+	}
 }

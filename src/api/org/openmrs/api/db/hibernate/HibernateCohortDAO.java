@@ -20,6 +20,8 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Expression;
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.Cohort;
@@ -78,16 +80,19 @@ public class HibernateCohortDAO implements CohortDAO {
 	 * @see org.openmrs.api.db.CohortDAO#deleteCohort(org.openmrs.Cohort)
 	 */
 	public Cohort deleteCohort(Cohort cohort) throws DAOException {
-		// TODO Auto-generated method stub
+		sessionFactory.getCurrentSession().delete(cohort);
 		return null;
 	}
 	
 	/**
 	 * @see org.openmrs.api.db.CohortDAO#getCohorts(java.lang.String)
 	 */
+	@SuppressWarnings("unchecked")
 	public List<Cohort> getCohorts(String nameFragment) throws DAOException {
-		// TODO Auto-generated method stub
-		return null;
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Cohort.class);
+		criteria.add(Expression.ilike("name", nameFragment, MatchMode.ANYWHERE));
+		criteria.addOrder(Order.asc("name"));
+		return criteria.list();
 	}
 	
 	/**
