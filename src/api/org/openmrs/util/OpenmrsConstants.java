@@ -715,6 +715,8 @@ public final class OpenmrsConstants {
 	
 	public static final String GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_ANYWHERE = "ANYWHERE";
 	
+	public static final String GLOBAL_PROPERTY_DEFAULT_SERIALIZER = "serialization.defaultSerializer";
+	
 	/**
 	 * At OpenMRS startup these global properties/default values/descriptions are inserted into the
 	 * database if they do not exist yet.

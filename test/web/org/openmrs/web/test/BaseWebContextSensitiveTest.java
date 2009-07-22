@@ -24,7 +24,6 @@ import org.springframework.test.context.TestExecutionListeners;
  * right type of controller, etc.
  */
 @ContextConfiguration(locations = { "classpath:openmrs-servlet.xml" }, inheritLocations = true)
-@TestExecutionListeners(value = {}, inheritListeners = true)
 public abstract class BaseWebContextSensitiveTest extends BaseContextSensitiveTest {
 	
 }

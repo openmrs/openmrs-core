@@ -1,6 +1,0 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<dataset>
-	  <person_name person_name_id="2" preferred="true" person_id="2" prefix="Mr." given_name="Horatio" middle_name="Test" family_name="Hornblower" family_name_suffix="Esq." creator="1" date_created="2005-09-22 00:00:00.0" voided="false" void_reason="" uuid="399e3a7b-6482-487d-94ce-c07bb3ca3cc7"/>
-	  <patient patient_id="2" creator="1" date_created="2005-09-22 00:00:00.0" changed_by="1" date_changed="2008-08-18 12:29:59.0" voided="false" void_reason=""/>
-	  <person person_id="2" gender="M" birthdate="1975-04-08 00:00:00.0" dead="false" creator="1" date_created="2005-09-22 00:00:00.0" voided="false" uuid="da7f524f-27ce-4bb2-86d6-6d1d05312bd5"/>
-</dataset>

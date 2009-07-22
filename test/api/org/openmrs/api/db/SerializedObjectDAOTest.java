@@ -15,20 +15,28 @@ package org.openmrs.api.db;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Date;
 import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.openmrs.User;
+import org.openmrs.api.context.Context;
 import org.openmrs.api.db.hibernate.HibernateSerializedObjectDAO;
 import org.openmrs.report.ReportSchema;
 import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.StartModule;
+import org.openmrs.test.StartModuleExecutionListener;
 import org.openmrs.test.Verifies;
+import org.springframework.test.annotation.DirtiesContext;
 
 /**
  * This class tests the {@link SerializedObjectDAO} linked to from the Context. Currently that file
  * is the {@link HibernateSerializedObjectDAO}.
  */
+// The @StartModule also requires @DirtiesContext on last method in class
+@StartModule( { "org/openmrs/api/db/include/serialization.xstream-0.1.1.omod" })
 public class SerializedObjectDAOTest extends BaseContextSensitiveTest {
 	
 	private SerializedObjectDAO dao = null;
@@ -41,11 +49,15 @@ public class SerializedObjectDAOTest extends BaseContextSensitiveTest {
 	 */
 	@Before
 	public void runBeforeEachTest() throws Exception {
+		
+		Assert.assertNotNull(Context.getSerializationService().getDefaultSerializer());
+		
 		executeDataSet("org/openmrs/api/db/include/SerializedObjectDAOTest-initialData.xml");
 		if (dao == null) {
 			dao = (SerializedObjectDAO) applicationContext.getBean("serializedObjectDAO");
 			dao.registerSupportedType(ReportSchema.class);
 		}
+		
 	}
 	
 	@Test
@@ -70,6 +82,8 @@ public class SerializedObjectDAOTest extends BaseContextSensitiveTest {
 		ReportSchema data = new ReportSchema();
 		data.setName("NewReport");
 		data.setDescription("This is to test saving a report");
+		data.setCreator(new User(1));
+		data.setDateCreated(new Date());
 		data = dao.saveObject(data);
 		Assert.assertNotNull(data.getId());
 		ReportSchema newData = dao.getObject(ReportSchema.class, data.getId());
@@ -125,5 +139,17 @@ public class SerializedObjectDAOTest extends BaseContextSensitiveTest {
 		dao.purgeObject(2);
 		l = dao.getAllObjects(ReportSchema.class);
 		assertEquals(1, l.size());
+	}
+	
+	/**
+	 * Must be the last method in this class so that the next class gets a clean spring app context
+	 * 
+	 * @see StartModuleExecutionListener
+	 * @see StartModule
+	 */
+	@DirtiesContext
+	@Test
+	public void shouldMarkContextAsDirty() {
+		// this is a dummy test just so the @DirtiesContext annotation is the last method
 	}
 }

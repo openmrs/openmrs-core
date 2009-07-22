@@ -1,4 +1,0 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<dataset>
-  <concept_source concept_source_id="1" name="SNOMED" description="Systematized Nomenclature of Medicine -- Clinical Terms" hl7_code="test" creator="1" date_created="2006-01-20 00:00:00.0" voided="0" uuid="14ea70c7-fe49-46ae-9957-8a678c82d1d8"/>
-</dataset>
