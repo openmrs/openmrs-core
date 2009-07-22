@@ -737,7 +737,7 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 		
 		if (compatibleNames.size() == 0) {
 			// no compatible names, so return first available name
-			Iterator<ConceptName> nameIt = names.iterator();
+			Iterator<ConceptName> nameIt = getNames().iterator();
 			bestMatch = nameIt.next();
 		} else if (compatibleNames.size() == 1) {
 			bestMatch = compatibleNames.get(0);
@@ -872,7 +872,7 @@ public class Concept implements java.io.Serializable, Attributable<Concept> {
 		
 		if (compatibleNames.size() == 0) {
 			// no compatible names, so return first available name
-			Iterator<ConceptName> nameIt = names.iterator();
+			Iterator<ConceptName> nameIt = getNames().iterator();
 			bestMatch = nameIt.next();
 		} else if (compatibleNames.size() == 1) {
 			// only 1? it must be the best
