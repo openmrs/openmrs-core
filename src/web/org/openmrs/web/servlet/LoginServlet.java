@@ -34,6 +34,7 @@ import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.OpenmrsCookieLocaleResolver;
 import org.openmrs.web.WebConstants;
+import static org.openmrs.web.WebConstants.GP_ALLOWED_LOGIN_ATTEMPTS_PER_IP;
 
 /**
  * This servlet accepts the username and password from the login form and authenticates the user to
@@ -74,8 +75,18 @@ public class LoginServlet extends HttpServlet {
 		
 		boolean lockedOut = false;
 		
-		// giving 100 IP tries here in case network setups are such that all users have the same IP address. 
-		if (loginAttempts > 100) {
+		// look up the allowed # of attempts per IP
+		Integer allowedLockoutAttempts = 100;
+		String allowedLockoutAttemptsGP = Context.getAdministrationService().getGlobalProperty(GP_ALLOWED_LOGIN_ATTEMPTS_PER_IP, "100");
+		try {
+			allowedLockoutAttempts = Integer.valueOf(allowedLockoutAttemptsGP.trim());
+		}
+		catch (NumberFormatException nfe) {
+			log.error("Unable to format '" + allowedLockoutAttemptsGP + "' from global property " + GP_ALLOWED_LOGIN_ATTEMPTS_PER_IP + " as an integer");
+		}
+		
+		// allowing for configurable login attempts here in case network setups are such that all users have the same IP address. 
+		if (allowedLockoutAttempts > 0 && loginAttempts > allowedLockoutAttempts) {
 			lockedOut = true;
 			
 			Date lockedOutTime = lockoutDateByIP.get(ipAddress);
