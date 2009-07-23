@@ -26,7 +26,6 @@ import java.util.Locale;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.test.Verifies;
-import org.openmrs.web.taglib.ConceptTag;
 
 /**
  * Behavior-driven tests of the Concept class.
