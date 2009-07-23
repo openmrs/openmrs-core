@@ -14,6 +14,7 @@
 package org.openmrs.aop;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -29,6 +30,7 @@ import org.openmrs.ConceptNumeric;
 import org.openmrs.Location;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.api.APIException;
+import org.openmrs.api.impl.ConceptServiceImpl;
 import org.openmrs.test.Verifies;
 
 /**
@@ -248,4 +250,14 @@ public class RequiredDataAdviceTest {
 		RequiredDataAdvice.isOpenmrsObjectCollection(locations.getClass(), locations);
 	}
 	
+	/**
+	 * @see {@link RequiredDataAdvice#before(Method,null,Object)}
+	 */
+	@Test
+	@Verifies(value = "should not fail on update method with no arguments", method = "before(Method,null,Object)")
+	public void before_shouldNotFailOnUpdateMethodWithNoArguments() throws Throwable {
+		Method method = ConceptServiceImpl.class.getMethod("updateConceptWords", (Class[]) null);
+		new RequiredDataAdvice().before(method, null, new ConceptServiceImpl());
+		new RequiredDataAdvice().before(method, new Object[] {}, new ConceptServiceImpl());
+	}
 }
