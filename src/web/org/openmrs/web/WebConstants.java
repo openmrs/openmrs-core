@@ -70,4 +70,11 @@ public class WebConstants {
 	 */
 	public static final String SETUP_PAGE_URL = "initialsetup";
 	
+	/**
+	 * Global property name for the number of times one IP can fail at logging in before being
+	 * locked out. A value of 0 for this property means no IP lockout checks.
+	 * 
+	 * @see org.openmrs.web.servlet.LoginServlet
+	 */
+	public static String GP_ALLOWED_LOGIN_ATTEMPTS_PER_IP = "security.loginAttemptsAllowedPerIP";
 }
