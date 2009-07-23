@@ -93,14 +93,21 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 	/**
 	 * @see org.springframework.aop.MethodBeforeAdvice#before(java.lang.reflect.Method,
 	 *      java.lang.Object[], java.lang.Object)
+	 * @should not fail on update method with no arguments
 	 */
 	@SuppressWarnings("unchecked")
 	public void before(Method method, Object[] args, Object target) throws Throwable {
 		String methodName = method.getName();
 		
-		// the "create" and "update" are in to cover old deprecated methods since AOP doesn't occur
+		// the "create" is there to cover old deprecated methods since AOP doesn't occur
 		// on method calls within a class, only on calls to methods from external classes to methods
-		if (methodName.startsWith("save") || methodName.startsWith("create") || methodName.startsWith("update")) {
+		// "update" is not an option here because there are multiple methods that start with "update" but is
+		// not updating the primary argument. eg: ConceptService.updateConceptWord(Concept)
+		if (methodName.startsWith("save") || methodName.startsWith("create")) {
+			// skip out early if there are no arguments
+			if (args == null || args.length == 0)
+				return;
+			
 			Object mainArgument = args[0];
 			
 			// fail early on a null parameter
