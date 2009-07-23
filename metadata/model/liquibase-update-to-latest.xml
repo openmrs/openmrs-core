@@ -351,6 +351,9 @@
 	</changeSet>
 	
 	<changeSet id="20090224-1256" author="Keelhaul+bwolfe">
+		<preConditions>
+			<not><columnExists tableName="location" columnName="parent_location"/></not>
+		</preConditions>
 		<comment>
 			Add parent_location column to location table
 		</comment>
