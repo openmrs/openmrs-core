@@ -32,7 +32,7 @@ import org.springframework.util.StringUtils;
  * A Person can have zero to n PersonName(s).
  */
 @Root(strict = false)
-public class PersonName extends BaseOpenmrsMetadata implements java.io.Serializable, Cloneable, Comparable<PersonName> {
+public class PersonName extends BaseOpenmrsData implements java.io.Serializable, Cloneable, Comparable<PersonName> {
 	
 	public static final long serialVersionUID = 4353L;
 	
@@ -61,14 +61,6 @@ public class PersonName extends BaseOpenmrsMetadata implements java.io.Serializa
 	private String familyNameSuffix;
 	
 	private String degree;
-	
-	private Boolean voided = false;
-	
-	private User voidedBy;
-	
-	private Date dateVoided;
-	
-	private String voidReason;
 	
 	// Constructors
 	
@@ -225,11 +217,13 @@ public class PersonName extends BaseOpenmrsMetadata implements java.io.Serializa
 	// Property accessors
 	
 	/**
+	 * This still exists on PersonName for the SimpleFramework annotation
+	 * 
 	 * @return Returns the dateVoided.
 	 */
 	@Element(required = false)
 	public Date getDateVoided() {
-		return dateVoided;
+		return super.getDateVoided();
 	}
 	
 	/**
@@ -237,7 +231,7 @@ public class PersonName extends BaseOpenmrsMetadata implements java.io.Serializa
 	 */
 	@Element(required = false)
 	public void setDateVoided(Date dateVoided) {
-		this.dateVoided = dateVoided;
+		super.setDateVoided(dateVoided);
 	}
 	
 	/**
@@ -437,13 +431,6 @@ public class PersonName extends BaseOpenmrsMetadata implements java.io.Serializa
 	}
 	
 	/**
-	 * @return Returns the voided.
-	 */
-	public Boolean isVoided() {
-		return voided;
-	}
-	
-	/**
 	 * @see #isVoided()
 	 */
 	@Attribute(required = true)
@@ -452,43 +439,53 @@ public class PersonName extends BaseOpenmrsMetadata implements java.io.Serializa
 	}
 	
 	/**
+	 * This still exists on PersonName for the SimpleFramework annotation
+	 * 
 	 * @param voided The voided to set.
 	 */
 	@Attribute(required = true)
 	public void setVoided(Boolean voided) {
-		this.voided = voided;
+		super.setVoided(voided);
 	}
 	
 	/**
+	 * This still exists on PersonName for the SimpleFramework annotation
+	 * 
 	 * @return Returns the voidedBy.
 	 */
 	@Element(required = false)
 	public User getVoidedBy() {
-		return voidedBy;
+		return super.getVoidedBy();
 	}
 	
 	/**
+	 * This still exists on PersonName for the SimpleFramework annotation
+	 * 
 	 * @param voidedBy The voidedBy to set.
 	 */
 	@Element(required = false)
 	public void setVoidedBy(User voidedBy) {
-		this.voidedBy = voidedBy;
+		super.setVoidedBy(voidedBy);
 	}
 	
 	/**
+	 * This still exists on PersonName for the SimpleFramework annotation
+	 * 
 	 * @return Returns the voidReason.
 	 */
 	@Element(data = true, required = false)
 	public String getVoidReason() {
-		return voidReason;
+		return super.getVoidReason();
 	}
 	
 	/**
+	 * This still exists on PersonName for the SimpleFramework annotation
+	 * 
 	 * @param voidReason The voidReason to set.
 	 */
 	@Element(data = true, required = false)
 	public void setVoidReason(String voidReason) {
-		this.voidReason = voidReason;
+		super.setVoidReason(voidReason);
 	}
 	
 	/**
