@@ -21,51 +21,12 @@ Parameters
 <div id="encounterPortlet">
 
 	<openmrs:globalProperty var="viewEncounterWhere" key="dashboard.encounters.viewWhere" defaultValue="newWindow"/>
-	<openmrs:globalProperty var="enableFormEntry" key="dashboard.encounters.enableFormEntry" defaultValue="true"/>
+	<openmrs:globalProperty var="enableFormEntryInEncounters" key="dashboard.encounters.enableFormEntry" defaultValue="true"/>
 
-	<c:if test="${enableFormEntry}">
+	<c:if test="${enableFormEntryInEncounters}">
 		<openmrs:hasPrivilege privilege="Form Entry">
 			<div id="formEntryDialog">
-			
-				<c:set var="anyUpdatedFormEntryModules" value="false"/> 
-				<openmrs:extensionPoint pointId="org.openmrs.module.web.extension.FormEntryHandler" type="html"> 
- 					<c:set var="anyUpdatedFormEntryModules" value="true"/> 
-				</openmrs:extensionPoint> 
-				<c:if test="${!anyUpdatedFormEntryModules}"> 
-					<span class="error"><spring:message code="FormEntry.noModulesInstalled"/></span> 
-					<br/><br/> 
-				</c:if> 
- 
-				<c:if test="${anyUpdatedFormEntryModules}"> 
-					<table id="formEntryTable">
-						<thead>
-							<tr>
-								<th><spring:message code="general.name"/></th>
-								<th><spring:message code="Form.version"/></th>
-							</tr>
-						</thead>
-						<tbody>
-							<c:forEach var="entry" items="${model.formToEntryUrlMap}">
-								<openmrs:hasPrivilege privilege="${entry.value.requiredPrivilege}">
-									<c:url var="formUrl" value="${entry.value.formEntryUrl}">
-										<c:param name="personId" value="${model.personId}"/>
-										<c:param name="patientId" value="${model.patientId}"/>
-										<c:param name="formId" value="${entry.key.formId}"/>
-									</c:url>
-									<tr>
-										<td>
-											<a href="${formUrl}">${entry.key.name}</a>
-										</td>
-										<td>
-											${entry.key.version}
-											<c:if test="${!entry.key.published}"><i>(<spring:message code="Form.unpublished"/>)</i></c:if>
-										</td>
-									</tr>
-								</openmrs:hasPrivilege>
-							</c:forEach>
-						</tbody>
-					</table>
-				</c:if>		
+				<openmrs:portlet url="personFormEntry" personId="${patient.personId}"/>
  			</div>
 
 			<button class="showFormEntryDialog" style="margin-left: 2em; margin-bottom: 0.5em"><spring:message code="FormEntry.fillOutForm"/></button>
