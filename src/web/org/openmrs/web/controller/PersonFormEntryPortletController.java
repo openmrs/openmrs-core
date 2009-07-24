@@ -14,9 +14,10 @@
 package org.openmrs.web.controller;
 
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -27,58 +28,50 @@ import org.openmrs.module.ModuleFactory;
 import org.openmrs.module.Extension.MEDIA_TYPE;
 import org.openmrs.module.web.FormEntryContext;
 import org.openmrs.module.web.extension.FormEntryHandler;
+import org.openmrs.util.OpenmrsUtil;
+
 
 /**
- * Controller for the patientEncounters portlet.
+ * Controller for the PersonFormEntry portlet
  * 
- * Provides a map telling which forms have their view and edit links overridden by form entry modules  
+ * Provides a map telling which url to hit to enter each form
  */
-public class PatientEncountersPortletController extends PortletController {
+public class PersonFormEntryPortletController extends PortletController {
 
 	/**
      * @see org.openmrs.web.controller.PortletController#populateModel(javax.servlet.http.HttpServletRequest, java.util.Map)
      */
     @Override
     protected void populateModel(HttpServletRequest request, Map<String, Object> model) {
-    	if (model.containsKey("formToEditUrlMap")) {
+    	if (model.containsKey("formToEntryUrlMap")) {
     		return;
     	}
     	Person person = (Person) model.get("person");
     	if (person == null)
     		throw new IllegalArgumentException("This portlet may only be used in the context of a Person");
-    	
-    	Map<Form, String> viewUrlMap = new HashMap<Form, String>();
-    	Map<Form, String> editUrlMap = new HashMap<Form, String>();
+    	FormEntryContext fec = new FormEntryContext(person);
+    	Map<Form, FormEntryHandler> entryUrlMap = new TreeMap<Form, FormEntryHandler>(new Comparator<Form>() {
+    		public int compare(Form left, Form right) {
+    			int temp = left.getName().toLowerCase().compareTo(right.getName().toLowerCase());
+    			if (temp == 0)
+    				temp = OpenmrsUtil.compareWithNullAsLowest(left.getVersion(), right.getVersion());
+	            return temp;
+            }
+    	});
     	List<Extension> handlers = ModuleFactory.getExtensions("org.openmrs.module.web.extension.FormEntryHandler", MEDIA_TYPE.html);
     	if (handlers != null) {
     		for (Extension ext : handlers) {
     			FormEntryHandler handler = (FormEntryHandler) ext;
-    			{ // view
-    				Collection<Form> toView = handler.getFormsModuleCanView();
-    				if (toView != null) {
-    					if (handler.getViewFormUrl() == null)
-        					throw new IllegalArgumentException("form entry handler " + handler.getClass() + " is trying to handle viewing forms but specifies no URL");
-    					for (Form form : toView) {
-    						viewUrlMap.put(form, handler.getViewFormUrl());
-    					}
-    				}
-    			}
-    			{ // edit
-    				Collection<Form> toEdit = handler.getFormsModuleCanEdit();
-    				if (toEdit != null) {
-        				if (handler.getEditFormUrl() == null)
-        					throw new IllegalArgumentException("form entry handler " + handler.getClass() + " is trying to handle editing forms but specifies no URL");
-    					for (Form form : toEdit) {
-    						editUrlMap.put(form, handler.getEditFormUrl());
-    					}
-    				}
-    			}
+				Collection<Form> toEnter = handler.getFormsModuleCanEnter(fec);
+				if (toEnter != null) {
+					for (Form form : toEnter) {
+						entryUrlMap.put(form, handler);
+					}
+				}
     		}
     	}
-    	model.put("formToViewUrlMap", viewUrlMap);
-    	model.put("formToEditUrlMap", editUrlMap);
+    	model.put("formToEntryUrlMap", entryUrlMap);
+    	model.put("anyUpdatedFormEntryModules", handlers != null && handlers.size() > 0);
     }
 
-	
-	
 }
