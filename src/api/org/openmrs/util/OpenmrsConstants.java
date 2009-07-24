@@ -762,6 +762,10 @@ public final class OpenmrsConstants {
 		                "List of programs to show Enrollment details of in the patient header. List of workflows to show current status of in the patient header. These will only be displayed if they belong to a program listed above. (Should be a comma-separated list of program_workflow_ids.)"));
 		props.add(new GlobalProperty("dashboard.relationships.show_types", "",
 		        "Types of relationships separated by commas.  Doctor/Patient,Parent/Child"));
+		props.add(new GlobalProperty("FormEntry.enableDashboardTab", "true",
+		        "true/false whether or not to show a Form Entry tab on the patient dashboard"));
+		props.add(new GlobalProperty("FormEntry.enableOnEncounterTab", "false",
+		        "true/false whether or not to show a Enter Form button on the encounters tab of the patient dashboard"));
 		props
 		        .add(new GlobalProperty(
 		                "dashboard.regimen.displayDrugSetIds",
