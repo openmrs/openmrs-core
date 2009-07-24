@@ -105,6 +105,11 @@ public class OpenmrsFilter extends OncePerRequestFilter {
 		Context.setUserContext(userContext);
 		Thread.currentThread().setContextClassLoader(OpenmrsClassLoader.getInstance());
 		
+		// Refresh the authenticated user to prevent LazyInitializationException.
+		// #1588 - LazyInitializationException: issue with User when serializing some objects
+		if (Context.isAuthenticated())  
+			Context.refreshAuthenticatedUser();
+		
 		log.debug("before chain.Filter");
 		
 		// continue the filter chain (going on to spring, authorization, etc)
