@@ -49,6 +49,8 @@
 Parameters
 	model.num == \d  limits the number of encounters shown to the value given
 	model.showPagination == 'true' lists off the encounters in a paginated table
+	model.hideHeader == 'true' hides the 'All Encounter' header above the table listing
+	model.hideFormEntry == 'true' does not show the "Enter Forms" popup no matter what the gp has
 --%>
 
 <div id="portlet${model.portletUUID}">
@@ -57,10 +59,10 @@ Parameters
 	<openmrs:globalProperty var="viewEncounterWhere" key="dashboard.encounters.viewWhere" defaultValue="newWindow"/>
 	<openmrs:globalProperty var="enableFormEntryInEncounters" key="FormEntry.enableOnEncounterTab" defaultValue="false"/>
 
-	<c:if test="${enableFormEntryInEncounters}">
+	<c:if test="${enableFormEntryInEncounters && !model.hideFormEntry}">
 		<openmrs:hasPrivilege privilege="Form Entry">
 			<div id="formEntryDialog">
-				<openmrs:portlet url="personFormEntry" personId="${patient.personId}"/>
+				<openmrs:portlet url="personFormEntry" personId="${patient.personId}" id="encounterTabFormEntryPopup" parameters="showLastThreeEncounters=false"/>
 			</div>
 
 			<button class="showFormEntryDialog" style="margin-left: 2em; margin-bottom: 0.5em"><spring:message code="FormEntry.fillOutForm"/></button>
