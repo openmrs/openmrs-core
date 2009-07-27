@@ -63,7 +63,7 @@ public class PortletController implements Controller {
      *          (java.util.Date) now
      *          (String) size
      *          (Locale) locale
-     *          (String) portletUUID
+     *          (String) portletUUID // unique for each instance of any portlet
      *          (other parameters)
      *     (if there's currently an authenticated user)
      *          (User) authenticatedUser
@@ -158,7 +158,7 @@ public class PortletController implements Controller {
 			model.put("id", id);
 			model.put("size", size);
 			model.put("locale", Context.getLocale());
-			model.put("portletUUID", UUID.randomUUID().toString());
+			model.put("portletUUID", UUID.randomUUID().toString().replace("-", ""));
 			List<String> parameterKeys = new ArrayList<String>(params.keySet());
 			model.putAll(params);
 			if (moreParams != null) {
