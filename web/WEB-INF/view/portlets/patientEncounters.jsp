@@ -70,11 +70,12 @@ Parameters
 						resizable: false,
 						width: '90%',
 						modal: true
-		$j("#displayEncounterPopupIframe").load(function() { $j('#displayEncounterPopupLoading').hide(); });
-					});
-					$j('button.showFormEntryDialog').click(function() {
-						$j('#formEntryDialog').dialog('open');
-					});
+					})
+					$j("#displayEncounterPopupIframe").load(function() { $j('#displayEncounterPopupLoading').hide(); });
+				});
+
+				$j('button.showFormEntryDialog').click(function() {
+					$j('#formEntryDialog').dialog('open');
 				});
 			</script>
 
