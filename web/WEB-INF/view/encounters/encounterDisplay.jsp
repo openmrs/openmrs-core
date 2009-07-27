@@ -4,7 +4,6 @@
 
 <%@ include file="/WEB-INF/template/headerMinimal.jsp" %>
 
-<openmrs:globalProperty var="viewEncounterWhere" key="dashboard.encounters.viewWhere" defaultValue="newWindow"/>
 <openmrs:globalProperty var="showEmptyFields" key="dashboard.encounters.showEmptyFields" defaultValue="true"/>
 
 <script type="text/javascript">
@@ -24,59 +23,10 @@
 
 </script>
 
-<div class="boxHeader">
-	<div style="border-bottom: 1px white solid; color: white">
-		<c:set var="patient" value="${model.encounter.patient}"/>
-		<center>
-			<b>
-				${patient.personName.givenName} ${patient.personName.middleName} ${patient.personName.familyName}
-			</b>
-			|
-			<c:if test="${patient.age > 0}">${patient.age} <spring:message code="Person.age.years"/></c:if>
-			<c:if test="${patient.age == 0}">< 1 <spring:message code="Person.age.year"/></c:if>
-			<c:forEach var="identifier" items="${patient.identifiers}">
-				|
-				${identifier.identifierType.name}: ${identifier.identifier}
-			</c:forEach>
-
-		</center>
-	</div>
-	<div style="float: right">
-		<c:if test="${viewEncounterWhere == 'newWindow' || viewEncounterWhere == 'oneNewWindow'}">
-			<a href="javascript:self.close();">[ <spring:message code="general.closeWindow" /> ]</a>
-		</c:if>
-		<c:if test="${viewEncounterWhere != 'newWindow' && viewEncounterWhere != 'oneNewWindow'}">
-			<a href="javascript:window.history.back()">[ <spring:message code="general.navigateBack" /> ]</a>
-		</c:if>
-		<openmrs:hasPrivilege privilege="Edit Encounters">
-			<br/>
-			<c:choose>
-				<c:when test="${viewEncounterWhere == 'newWindow' || viewEncounterWhere == 'oneNewWindow'}">
-					<a href="javascript:window.opener.location = '${pageContext.request.contextPath}/admin/encounters/encounter.form?encounterId=${model.encounter.encounterId}'; window.parent.focus(); window.close();">[ <spring:message code="general.edit"/> ]</a>
-				</c:when>
-				<c:otherwise>
-					<a href="${pageContext.request.contextPath}/admin/encounters/encounter.form?encounterId=${model.encounter.encounterId}">[ <spring:message code="general.edit"/> ]</a>
-				</c:otherwise>
-			</c:choose>
-		</openmrs:hasPrivilege>
-	</div>
-	<spring:message code="Encounter.title"/>: <b>${model.encounter.encounterType.name}<b>
-		<spring:message code="general.onDate"/> <b><openmrs:formatDate date="${model.encounter.encounterDatetime}"/></b>
-		<spring:message code="general.atLocation"/> <b>${model.encounter.location}</b>
-	<br/>
-	<spring:message code="Encounter.form"/>: <b>${model.encounter.form.name}</b>
-	<c:if test="${model.usePages}">
-		<br/>
-		<spring:message code="FormField.pageNumber"/>
-		<c:forEach var="pageNumber" items="${model.pageNumbers}">
-			<%-- TODO: get rid of
-				style="color: white"
-			--%>
-			&nbsp;&nbsp;
-			<a style="color: white" href="javascript:showPage(${pageNumber})">${pageNumber}</a>
-			&nbsp;&nbsp;
-		</c:forEach>
-	</c:if>
+<div style="float: right">
+	<openmrs:hasPrivilege privilege="Edit Encounters">
+		<a href="javascript:void(0)" onClick="window.parent.location = '${pageContext.request.contextPath}/admin/encounters/encounter.form?encounterId=${model.encounter.encounterId}'; return false;">[ <spring:message code="Encounter.edit"/> ]</a>
+	</openmrs:hasPrivilege>
 </div>
 
 <c:forEach var="pageEntry" items="${model.pages}">
