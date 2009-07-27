@@ -72,7 +72,7 @@ public class DownloadDictionaryServlet extends HttpServlet {
 			Iterator<Concept> conceptIterator = cs.conceptIterator();
 			while (conceptIterator.hasNext()) {
 				Concept c = conceptIterator.next();
-				if (c.isRetired() == false) {
+				if (!c.isRetired()) {
 					
 					line = c.getConceptId() + ",";
 					String name, description;
