@@ -144,7 +144,7 @@
 		<div id="patientEncounters" style="display:none;">
 			
 			<openmrs:extensionPoint pointId="org.openmrs.patientDashboard.EncountersTabHeader" type="html" parameters="patientId=${patient.patientId}" />
-			<openmrs:portlet url="patientEncounters" id="patientDashboardEncounters" patientId="${patient.patientId}" parameters="showPagination=true"/>
+			<openmrs:portlet url="patientEncounters" id="patientDashboardEncounters" patientId="${patient.patientId}" parameters="showPagination=true|formEntryReturnUrl=${pageContext.request.contextPath}/patientDashboard.form"/>
 			
 		</div>
 	</openmrs:hasPrivilege>
@@ -169,7 +169,7 @@
 			<div id="formEntry" style="display:none;">
 			
 				<openmrs:extensionPoint pointId="org.openmrs.patientDashboard.FormEntryTabHeader" type="html" parameters="patientId=${patient.patientId}" />
-				<openmrs:portlet url="personFormEntry" id="formEntryPortlet" personId="${patient.personId}" parameters="showDecoration=true|showLastThreeEncounters=true"/>
+				<openmrs:portlet url="personFormEntry" id="formEntryPortlet" personId="${patient.personId}" parameters="showDecoration=true|showLastThreeEncounters=true|returnUrl=${pageContext.request.contextPath}/patientDashboard.form"/>
 				
 			</div>
 		</openmrs:hasPrivilege>

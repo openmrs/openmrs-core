@@ -1068,12 +1068,21 @@
 		Prints out the value of the given OpenMRS object.
 		Currently limited to a few datatypes, this will be extended to handle other types as well.
 		If you specify...
+			var : the value will be set as a page variable instead of being printed
 			concept | conceptId : the name of that concept will be printed
 			obsValue : the value of that obs will be printed
+			location | locationId : the name of that location will be printed
+			encounterType | encounterTypeId : the name of that encounter type will be printed
+			encounter | encounterId : a one-line summary of that encounter will be printed
 	</description>
 	<name>format</name>
 	<tag-class>org.openmrs.web.taglib.FormatTag</tag-class>
 	<body-content>empty</body-content>
+	<attribute>
+		<name>var</name>
+		<required>false</required>
+		<rtexprvalue>false</rtexprvalue>
+	</attribute>
 	<attribute>
 		<name>concept</name>
 		<required>false</required>
@@ -1096,6 +1105,36 @@
 	</attribute>
 	<attribute>
 		<name>userId</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>encounterId</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>encounter</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>encounterTypeId</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>encounterType</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>locationId</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>location</name>
 		<required>false</required>
 		<rtexprvalue>true</rtexprvalue>
 	</attribute>

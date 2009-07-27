@@ -13,7 +13,34 @@
 </script>
 
 <openmrs:globalProperty key="dashboard.encounters.showViewLink" var="showViewLink" defaultValue="true"/>
-<openmrs:globalProperty key="dashboard.encounters.showEditLink" var="showEditLink" defaultValue="true"/>	
+<openmrs:globalProperty key="dashboard.encounters.showEditLink" var="showEditLink" defaultValue="true"/>
+
+<div id="displayEncounterPopup">
+	<div id="displayEncounterPopupLoading"><spring:message code="general.loading"/></div>
+	<iframe id="displayEncounterPopupIframe" width="100%" height="100%" marginWidth="0" marginHeight="0" frameBorder="0" scrolling="auto"></iframe>
+</div>
+
+<script type="text/javascript">
+	$j(document).ready(function() {
+		$j('#displayEncounterPopup').dialog({
+				title: 'dynamic',
+				autoOpen: false,
+				draggable: false,
+				resizable: false,
+				width: '95%',
+				modal: true,
+				open: function(a, b) { $j('#displayEncounterPopupLoading').show(); }
+		});
+	});
+
+	function loadUrlIntoEncounterPopup(title, urlToLoad) {
+		$j("#displayEncounterPopupIframe").attr("src", urlToLoad);
+		$j('#displayEncounterPopup')
+			.dialog('option', 'title', title)
+			.dialog('option', 'height', $j(window).height() - 50) 
+			.dialog('open');
+	}
+</script>
 
 <c:if test="${model.showPagination == 'true'}">
 <script type="text/javascript">
@@ -41,6 +68,7 @@
 					"sZeroRecords": '<spring:message code="Encounter.no.previous"/>'
 			}
 		} );
+		$j("#displayEncounterPopupIframe").load(function() { $j('#displayEncounterPopupLoading').hide(); });
 	} );
 </script>
 </c:if>
@@ -51,6 +79,7 @@ Parameters
 	model.showPagination == 'true' lists off the encounters in a paginated table
 	model.hideHeader == 'true' hides the 'All Encounter' header above the table listing
 	model.hideFormEntry == 'true' does not show the "Enter Forms" popup no matter what the gp has
+	model.formEntryReturnUrl == what URL to return to when a form has been cancelled or successfully filled out
 --%>
 
 <div id="portlet${model.portletUUID}">
@@ -62,7 +91,7 @@ Parameters
 	<c:if test="${enableFormEntryInEncounters && !model.hideFormEntry}">
 		<openmrs:hasPrivilege privilege="Form Entry">
 			<div id="formEntryDialog">
-				<openmrs:portlet url="personFormEntry" personId="${patient.personId}" id="encounterTabFormEntryPopup" parameters="showLastThreeEncounters=false"/>
+				<openmrs:portlet url="personFormEntry" personId="${patient.personId}" id="encounterTabFormEntryPopup" parameters="showLastThreeEncounters=false|returnUrl=${model.formEntryReturnUrl}"/>
 			</div>
 
 			<button class="showFormEntryDialog" style="margin-left: 2em; margin-bottom: 0.5em"><spring:message code="FormEntry.fillOutForm"/></button>
@@ -134,20 +163,16 @@ Parameters
 									</td>
 									<td class="encounterView" align="center">
 										<c:if test="${showViewLink}">
-											<c:choose>
-												<c:when test="${ model.formToViewUrlMap[enc.form] != null }">
-													<a href="${model.formToViewUrlMap[enc.form]}?encounterId=${enc.encounterId}">
-														<img src="${pageContext.request.contextPath}/images/file.gif" title="<spring:message code="general.view"/>" border="0" align="top" />
-													</a>
-												</c:when>
-												<c:otherwise>
-													<c:if test="${fn:length(enc.allObs) > 0}">
-														<a href="#encounterId=${enc.encounterId}" onClick="handleGetObservations('${enc.encounterId}'); return false;">
-															<img src="${pageContext.request.contextPath}/images/file.gif" title="<spring:message code="general.view"/>" border="0" align="top" />
-														</a>
-													</c:if>
-												</c:otherwise>
-											</c:choose>
+											<c:set var="viewEncounterUrl" value="${pageContext.request.contextPath}/admin/encounters/encounterDisplay.list?encounterId=${enc.encounterId}"/>
+											<c:if test="${ model.formToViewUrlMap[enc.form] != null }">
+												<c:url var="viewEncounterUrl" value="${model.formToViewUrlMap[enc.form]}">
+													<c:param name="encounterId" value="${enc.encounterId}"/>
+													<c:param name="inPopup" value="true"/>
+												</c:url>
+											</c:if>
+											<a href="javascript:void(0)" onClick="loadUrlIntoEncounterPopup('<openmrs:format encounter="${enc}"/>', '${viewEncounterUrl}'); return false;">
+												<img src="${pageContext.request.contextPath}/images/file.gif" title="<spring:message code="general.view"/>" border="0" align="top" />
+											</a>
 										</c:if>
 									</td>
 									<td class="encounterDatetime">
@@ -192,7 +217,6 @@ Parameters
 			<%--
 			DWRObsService.getObservations(encounterId, handleRefreshObsData);
 			document.getElementById("encounterId").value = encounterId;
-			--%>
 			<c:choose>
 				<c:when test="${viewEncounterWhere == 'newWindow'}">
 					var formWindow = window.open('${pageContext.request.contextPath}/admin/encounters/encounterDisplay.list?encounterId=' + encounterId, '${enc.encounterId}', 'toolbar=no,width=800,height=600,resizable=yes,scrollbars=yes');
@@ -206,6 +230,8 @@ Parameters
 					window.location = '${pageContext.request.contextPath}/admin/encounters/encounterDisplay.list?encounterId=' + encounterId;
 				</c:otherwise>
 			</c:choose>
+			--%>
+			loadUrlIntoEncounterPopup('Test title', '${pageContext.request.contextPath}/admin/encounters/encounterDisplay.list?encounterId=' + encounterId);
 		}
 
 		<%--
