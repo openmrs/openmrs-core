@@ -3,6 +3,7 @@
 Parameters:
 	showDecoration (boolean): whether or not to put this in a box
 	showLastThreeEncounters (boolean): whether or not to show a snippet of encounters
+	returnUrl (String): where to go back to when a form has been cancelled or successfully filled out
 --%>
 
 <openmrs:htmlInclude file="/scripts/jquery/jquery-1.3.2.min.js" />
@@ -71,6 +72,7 @@ Parameters:
 					<c:url var="formUrl" value="${entry.value.formEntryUrl}">
 						<c:param name="personId" value="${model.personId}"/>
 						<c:param name="patientId" value="${model.patientId}"/>
+						<c:param name="returnUrl" value="${model.returnUrl}"/>
 						<c:param name="formId" value="${entry.key.formId}"/>
 					</c:url>
 					<tr>
