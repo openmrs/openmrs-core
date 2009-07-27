@@ -55,7 +55,7 @@
 				{ "bVisible": false, "sType": "numeric" },
 				{ "bVisible": ${showEditLink}, "iDataSort": 0 }, // sort this column by using the previous invisible column for encounterIds,
 				{ "bVisible": ${showViewLink}, "iDataSort": 0 }, // sort this column by using the first invisible column for encounterIds,
-            	{ "iDataSort": 3 }, // sort the date in this column by using the next invisible column for time in milliseconds
+            	{ "iDataSort": 4 }, // sort the date in this column by using the next invisible column for time in milliseconds
             	{ "bVisible": false, "sType": "numeric" },
             	null,
             	null,
@@ -123,7 +123,7 @@ Parameters
 					<table cellspacing="0" cellpadding="2" id="patientEncountersTable">
 						<thead>
 							<tr>
-								<th> hidden Encounter id </th>
+								<th class="hidden"> hidden Encounter id </th>
 								<th class="encounterEdit" align="center"><c:if test="${showEditLink == 'true'}">
 									<spring:message code="general.edit"/>
 								</c:if></th>
@@ -131,7 +131,7 @@ Parameters
 								 	<spring:message code="general.view"/>
 								</c:if></th>
 								<th class="encounterDatetimeHeader"> <spring:message code="Encounter.datetime"/> </th>
-								<th> hidden Encounter.datetime </th>
+								<th class="hidden"> hidden Encounter.datetime </th>
 								<th class="encounterTypeHeader"> <spring:message code="Encounter.type"/>     </th>
 								<th class="encounterProviderHeader"> <spring:message code="Encounter.provider"/> </th>
 								<th class="encounterFormHeader"> <spring:message code="Encounter.form"/>     </th>
@@ -142,7 +142,7 @@ Parameters
 						<tbody>
 							<openmrs:forEachEncounter encounters="${model.patientEncounters}" sortBy="encounterDatetime" descending="true" var="enc" num="${model.num}">
 								<tr class="<c:choose><c:when test="${count % 2 == 0}">evenRow</c:when><c:otherwise>oddRow</c:otherwise></c:choose>">
-									<td>
+									<td class="hidden">
 										<%--  this column contains the encounter id and will be used for sorting in the dataTable's encounter edit column --%>
 										${enc.encounterId}
 									</td>
@@ -178,7 +178,7 @@ Parameters
 									<td class="encounterDatetime">
 										<openmrs:formatDate date="${enc.encounterDatetime}" type="small" />
 									</td>
-									<td>
+									<td class="hidden">
 									<%--  this column contains milliseconds and will be used for sorting in the dataTable's encounterDatetime column --%>
 										<openmrs:formatDate date="${enc.encounterDatetime}" type="milliseconds" />
 									</td>
@@ -194,6 +194,13 @@ Parameters
 				</div>
 			</div>
 		</div>
+		
+		<c:if test="${model.showPagination != 'true'}">
+			<script type="text/javascript">
+				// hide the columns in the above table if datatable isn't doing it already 
+				$j(".hidden").hide();
+			</script>
+		</c:if>
 	</openmrs:hasPrivilege>
 	
 	<openmrs:htmlInclude file="/dwr/interface/DWRObsService.js" />
