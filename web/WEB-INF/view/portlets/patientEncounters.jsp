@@ -85,7 +85,6 @@ Parameters
 <div id="portlet${model.portletUUID}">
 <div id="encounterPortlet">
 
-	<openmrs:globalProperty var="viewEncounterWhere" key="dashboard.encounters.viewWhere" defaultValue="newWindow"/>
 	<openmrs:globalProperty var="enableFormEntryInEncounters" key="FormEntry.enableOnEncounterTab" defaultValue="false"/>
 
 	<c:if test="${enableFormEntryInEncounters && !model.hideFormEntry}">
