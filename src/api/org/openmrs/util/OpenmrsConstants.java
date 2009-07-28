@@ -736,9 +736,6 @@ public final class OpenmrsConstants {
 		
 		props.add(new GlobalProperty("dashboard.overview.showConcepts", "",
 		        "Comma delimited list of concepts ids to show on the patient dashboard overview tab"));
-		props
-		        .add(new GlobalProperty("dashboard.encounters.viewWhere", "newWindow",
-		                "Defines how the 'View Encounter' link should act. Known values: 'sameWindow', 'newWindow', 'oneNewWindow'"));
 		props.add(new GlobalProperty("dashboard.encounters.showEmptyFields", "true",
 		        "true/false whether or not to show empty fields on the 'View Encounter' window"));
 		props

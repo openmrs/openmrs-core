@@ -22,8 +22,7 @@ Parameters
 
 <div id="encounterPortlet">
 
-	<openmrs:globalProperty var="viewEncounterWhere" key="dashboard.encounters.viewWhere" defaultValue="newWindow"/>
-	<openmrs:globalProperty var="enableFormEntryInEncounters" key="dashboard.encounters.enableFormEntry" defaultValue="true"/>
+	<openmrs:globalProperty var="enableFormEntryInEncounters" key="FormEntry.enableOnEncounterTab" defaultValue="false"/>
 	
 	<div id="displayEncounterPopup"> 
  		        <div id="displayEncounterPopupLoading"><spring:message code="general.loading"/></div> 
