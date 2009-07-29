@@ -505,6 +505,7 @@ public class ORUR01Handler implements Application {
 			} else {
 				try {
 					obs.setValueCoded(getConcept(value, uid));
+					obs.setValueCodedName(getConceptName(value));
 				}
 				catch (NumberFormatException e) {
 					throw new HL7Exception("Invalid concept ID '" + valueIdentifier + "' for OBX-5 value '" + valueName
