@@ -70,6 +70,10 @@
   <concept_description concept_description_id="12" concept_id="18" description="Did the patient receive food assistance?" locale="en" creator="1" date_created="2008-08-18 12:31:52.0"/>
   <concept_description concept_description_id="13" concept_id="20" description="When did the patient receive the food package?" locale="en" creator="1" date_created="2008-08-18 12:33:37.0"/>
   <concept_description concept_description_id="14" concept_id="23" description="Holder for all things edible" locale="en" creator="1" date_created="2008-08-18 12:38:58.0"/>
+  <concept_map concept_map_id="1" source="1" source_code="WGT234" comment="A person's weight in kilograms" creator="1" date_created="2004-08-12 00:00:00.0" concept_id="5089"/>
+  <concept_map concept_map_id="2" source="1" source_code="CD41003" comment="A person's CD4" creator="1" date_created="2004-08-12 00:00:00.0" concept_id="5497"/>
+  <concept_map concept_map_id="3" source="2" source_code="2332523" comment="A person's weight in kilograms" creator="1" date_created="2004-08-12 00:00:00.0" concept_id="5089"/>
+  <concept_map concept_map_id="4" source="2" source_code="7345693" comment="A person's CD4" creator="1" date_created="2004-08-12 00:00:00.0" concept_id="5497"/>
   <concept_name concept_id="5089" name="WEIGHT (KG)" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="1439" voided="false"/>
   <concept_name concept_id="5497" name="CD4 COUNT" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="1847" voided="false"/>
   <concept_name concept_id="7" name="YES" locale="en" creator="1" date_created="2008-08-15 13:52:53.0" concept_name_id="2449" voided="false"/>
@@ -153,6 +157,8 @@
   <concept_name_tag_map concept_name_id="2481" concept_name_tag_id="3"/>
   <concept_numeric concept_id="5497" hi_normal="1497.0" low_critical="99.0" low_normal="445.0" hi_critical="1800.0" hi_absolute="2500.0" low_absolute="0.0" units="cells/mmL" precise="false"/>
   <concept_numeric concept_id="5089" hi_normal="250.0" low_critical="0.0" units="kg" precise="true"/>
+  <concept_source concept_source_id="1" name="Some Standardized Terminology" description="A made up source" hl7_code="SSTRM" creator="1" date_created="2005-02-24 00:00:00.0" />
+  <concept_source concept_source_id="2" name="SNOMED CT" description="'Systematized Nomenclature of Medicine--Clinical Terms' is a comprehensive clinical terminology" hl7_code="SNOMED-CT" creator="1" date_created="2005-02-24 00:00:00.0" />
   <concept_set concept_id="18" concept_set="23" sort_weight="0.0" creator="1" date_created="2008-08-18 12:38:58.0"/>
   <concept_set concept_id="19" concept_set="23" sort_weight="2.0" creator="1" date_created="2008-08-18 12:38:58.0"/>
   <concept_set concept_id="20" concept_set="23" sort_weight="1.0" creator="1" date_created="2008-08-18 12:38:58.0"/>

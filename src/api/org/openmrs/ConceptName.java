@@ -18,7 +18,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Locale;
 
-import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
@@ -103,7 +102,7 @@ public class ConceptName implements java.io.Serializable {
 		}
 		ConceptName rhs = (ConceptName) obj;
 		if (this.conceptNameId != null && rhs.conceptNameId != null)
-			return (this.conceptNameId == rhs.conceptNameId);
+			return (this.conceptNameId.equals(rhs.conceptNameId));
 		else
 			return this == obj;
 	}
@@ -112,12 +111,10 @@ public class ConceptName implements java.io.Serializable {
 	 * @see java.lang.Object#hashCode()
 	 */
 	public int hashCode() {
-		if (this.getConcept() == null || this.getName() == null || this.getLocale() == null)
+		if (this.getConceptNameId() == null)
 			return super.hashCode();
 		int hash = 3;
-		hash = hash + 31 * this.getConcept().hashCode();
-		hash = hash + 31 * this.getName().hashCode();
-		hash = hash + 31 * this.getLocale().hashCode();
+		hash = hash + 31 * this.getConceptNameId();
 		return hash;
 	}
 	
@@ -499,6 +496,9 @@ public class ConceptName implements java.io.Serializable {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
+		if (this.name == null)
+			return "ConceptNameId: " + this.conceptNameId;
+		
 		return this.name;
 	}
 	

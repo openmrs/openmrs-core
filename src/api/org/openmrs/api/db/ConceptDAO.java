@@ -13,7 +13,6 @@
  */
 package org.openmrs.api.db;
 
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -300,5 +299,10 @@ public interface ConceptDAO {
 	 * @see org.openmrs.api.ConceptService#conceptIterator()
 	 */
 	public Iterator<Concept> conceptIterator();
+
+	/**
+	 * @see org.openmrs.api.ConceptService#getConceptByMapping(java.lang.String, java.lang.String)
+	 */
+	public Concept getConceptByMapping(String conceptCode, String mappingCode);
 	
 }
