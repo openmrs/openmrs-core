@@ -234,6 +234,12 @@ function gotoUser(select, userId) {
 	var foundMatchingScript = false;
 	for (var i = 0; i < scriptElements.length && !foundMatchingScript; i++) {
 		var src = scriptElements[i].src;
+		
+		// strip out the ?v=... part of the src url
+		var indexOfQuestionMark = src.indexOf("?");
+		if (indexOfQuestionMark != -1)
+			src = src.substring(0, indexOfQuestionMark);
+		
 		// check to see if src ends with filename
 		if (src.length >= filename.length && src.indexOf(filename)==(src.length - filename.length)) {
         	foundMatchingScript = true;
@@ -249,7 +255,7 @@ function gotoUser(select, userId) {
 		headElement.appendChild(script);
     }
  }
-
+ 
  /**
   * This parses a string into a js date object.  This only works on numbered dates, not
   * dates that have strings in them: (ie. 05-06-2009 will work, but 55-JUN-2009 will not work).
