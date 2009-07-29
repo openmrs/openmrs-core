@@ -1337,4 +1337,11 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		return dao.getConceptNameTag(id);
 	}
 	
+	/**
+	 * @see org.openmrs.api.ConceptService#getConceptByMapping(java.lang.String, java.lang.String)
+	 */
+	public Concept getConceptByMapping(String conceptCode, String mappingCode) throws APIException {
+		return dao.getConceptByMapping(conceptCode, mappingCode);
+	}
+	
 }

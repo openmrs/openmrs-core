@@ -313,6 +313,11 @@ public interface ConceptDAO {
 	 * @see org.openmrs.api.ConceptService#conceptIterator()
 	 */
 	public Iterator<Concept> conceptIterator();
+
+	/**
+	 * @see org.openmrs.api.ConceptService#getConceptByMapping(java.lang.String, java.lang.String)
+	 */
+	public Concept getConceptByMapping(String conceptCode, String mappingCode);
 	
 	/**
 	 * Auto generated method comment

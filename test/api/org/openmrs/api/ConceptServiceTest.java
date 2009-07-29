@@ -243,10 +243,9 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * This test will fail if it takes more than 15 seconds to run. (Checks for an error with the
 	 * iterator looping forever) The @Timed annotation is used as an alternative to
-	 * 
-	 * @Test(timeout=15000) so that the Spring transactions work correctly. Junit has a "feature"
-	 *                      where it executes the befores/afters in a thread separate from the one
-	 *                      that the actual test ends up running in when timed.
+	 * "@Test(timeout=15000)" so that the Spring transactions work correctly. Junit has a "feature"
+	 * where it executes the befores/afters in a thread separate from the one that the actual test
+	 * ends up running in when timed.
 	 * @see {@link ConceptService#conceptIterator()}
 	 */
 	@Test()
@@ -398,6 +397,36 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(1847, words.get(0).getConceptName().getConceptNameId().intValue());
 		
 		TestUtil.printOutTableContents(getConnection(), "concept_word");
+	}
+	
+	/**
+	 * @see {@link ConceptService#getConceptByMapping(String,String)}
+	 */
+	@Test
+	@Verifies(value = "should get concept with given code and mapping", method = "getConceptByMapping(String,String)")
+	public void getConceptByMapping_shouldGetConceptWithGivenCodeAndMapping() throws Exception {
+		Concept concept = conceptService.getConceptByMapping("WGT234", "SSTRM");
+		Assert.assertEquals(new Concept(5089), concept);
+	}
+	
+	/**
+	 * @see {@link ConceptService#getConceptByMapping(String,String)}
+	 */
+	@Test
+	@Verifies(value = "should return null if code does not exist", method = "getConceptByMapping(String,String)")
+	public void getConceptByMapping_shouldReturnNullIfCodeDoesNotExist() throws Exception {
+		Concept concept = conceptService.getConceptByMapping("A random concept code", "SSTRM");
+		Assert.assertNull(concept);
+	}
+	
+	/**
+	 * @see {@link ConceptService#getConceptByMapping(String,String)}
+	 */
+	@Test
+	@Verifies(value = "should return null if mapping does not exist", method = "getConceptByMapping(String,String)")
+	public void getConceptByMapping_shouldReturnNullIfMappingDoesNotExist() throws Exception {
+		Concept concept = conceptService.getConceptByMapping("WGT234", "A random mapping code");
+		Assert.assertNull(concept);
 	}
 
 	/**
@@ -650,7 +679,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 			throws Exception {
 		String uuid = "75f5b378-5065-11de-80cb-001e378eb67e";
 		ConceptSource conceptSource = Context.getConceptService().getConceptSourceByUuid(uuid);
-		Assert.assertEquals(1, (int)conceptSource.getConceptSourceId());
+		Assert.assertEquals(3, (int)conceptSource.getConceptSourceId());
 	}
 
 	/**

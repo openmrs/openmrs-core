@@ -24,6 +24,7 @@ import org.openmrs.ConceptClass;
 import org.openmrs.ConceptComplex;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptDescription;
+import org.openmrs.ConceptMap;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptNameTag;
 import org.openmrs.ConceptNumeric;
@@ -1183,6 +1184,21 @@ public interface ConceptService extends OpenmrsService {
 	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
 	public Iterator<Concept> conceptIterator();
 	
+	/**
+	 * Looks up a concept via its code and {@link ConceptMap}ping
+	 * 
+	 * @param conceptCode the foreign concept code in the given mapping
+	 * @param mappingCode the map code to look up
+	 * @return null if no concept found, or the concept with the given hl7Code mapping
+	 * @throws APIException
+	 * @should get concept with given code and mapping
+	 * @should return null if code does not exist
+	 * @should return null if mapping does not exist
+	 */
+	@Transactional(readOnly = true)
+	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	public Concept getConceptByMapping(String conceptCode, String mappingCode) throws APIException;
+
 	/**
 	 * Get all the concept name tags defined in the database, included voided ones
 	 * 

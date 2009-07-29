@@ -48,6 +48,7 @@ import org.openmrs.ConceptComplex;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptDerived;
 import org.openmrs.ConceptDescription;
+import org.openmrs.ConceptMap;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptNameTag;
 import org.openmrs.ConceptNumeric;
@@ -1102,6 +1103,24 @@ public class HibernateConceptDAO implements ConceptDAO {
 			throw new UnsupportedOperationException();
 		}
 		
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.ConceptDAO#getConceptByMapping(java.lang.String, java.lang.String)
+	 */
+	public Concept getConceptByMapping(String conceptCode, String mappingCode) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ConceptMap.class);
+		
+		// select the concept as the return value
+		criteria.setProjection(Projections.property("concept"));
+		
+		criteria.add(Expression.eq("sourceCode", conceptCode));
+		
+		// join to conceptSource and match to the hl7Code
+		criteria.createAlias("source", "conceptSource");
+		criteria.add(Expression.eq("conceptSource.hl7Code", mappingCode));
+		
+		return (Concept) criteria.uniqueResult();
 	}
 	
 	/**
