@@ -56,6 +56,11 @@ public class FormConstants {
 	
 	public static final String HL7_LOCAL_CONCEPT = "99DCT";
 	
+	/**
+	 * Used in hl7 sextuplets: 123^Primary name^99DCT^345^Chosen name^99NAM
+	 */
+	public static final String HL7_LOCAL_CONCEPT_NAME = "99NAM";
+	
 	public static final String HL7_LOCAL_DRUG = "99RX";
 	
 	// List of datatypes that do not require complex definitions

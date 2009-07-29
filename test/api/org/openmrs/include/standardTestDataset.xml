@@ -71,6 +71,10 @@
   <concept_description concept_description_id="12" concept_id="18" description="Did the patient receive food assistance?" locale="en" creator="1" date_created="2008-08-18 12:31:52.0" uuid="da9959c7-1b8a-4cc6-8503-565f0a486914"/>
   <concept_description concept_description_id="13" concept_id="20" description="When did the patient receive the food package?" locale="en" creator="1" date_created="2008-08-18 12:33:37.0" uuid="78441eab-42d0-408e-8577-ed369e56aa79"/>
   <concept_description concept_description_id="14" concept_id="23" description="Holder for all things edible" locale="en" creator="1" date_created="2008-08-18 12:38:58.0" uuid="0a7e860b-d73c-4033-be1e-2053ee025c5b"/>
+  <concept_map concept_map_id="1" source="1" source_code="WGT234" comment="A person's weight in kilograms" creator="1" date_created="2004-08-12 00:00:00.0" concept_id="5089"/>
+  <concept_map concept_map_id="2" source="1" source_code="CD41003" comment="A person's CD4" creator="1" date_created="2004-08-12 00:00:00.0" concept_id="5497"/>
+  <concept_map concept_map_id="3" source="2" source_code="2332523" comment="A person's weight in kilograms" creator="1" date_created="2004-08-12 00:00:00.0" concept_id="5089"/>
+  <concept_map concept_map_id="4" source="2" source_code="7345693" comment="A person's CD4" creator="1" date_created="2004-08-12 00:00:00.0" concept_id="5497"/>
   <concept_name concept_id="5089" name="WEIGHT (KG)" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="1439" voided="false" uuid="9bc5693a-f558-40c9-8177-145a4b119ca7"/>
   <concept_name concept_id="5497" name="CD4 COUNT" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="1847" voided="false" uuid="6e77e374-18a1-4ec6-8ed4-4152a5a7d6a1"/>
   <concept_name concept_id="7" name="YES" locale="en" creator="1" date_created="2008-08-15 13:52:53.0" concept_name_id="2449" voided="false" uuid="ef7ac747-7980-443c-b11f-4617aa587703"/>
@@ -155,10 +159,12 @@
   <concept_numeric concept_id="5497" hi_normal="1497.0" low_critical="99.0" low_normal="445.0" hi_critical="1800.0" hi_absolute="2500.0" low_absolute="0.0" units="cells/mmL" precise="false"/>
   <concept_numeric concept_id="5089" hi_normal="250.0" low_critical="0.0" units="kg" precise="true"/>
   <concept_proposal concept_proposal_id="1" original_text="I want this concept but I can't have it" state="REJECT" encounter_id="3" obs_concept_id="4" creator="1" date_created="2009-06-03 13:55:12.0" uuid="57a68666-5067-11de-80cb-001e378eb67e"/>
+  <concept_source concept_source_id="1" name="Some Standardized Terminology" description="A made up source" hl7_code="SSTRM" creator="1" date_created="2005-02-24 00:00:00.0" uuid="00001827-639f-4cb4-961f-1e025bf80000"/>
+  <concept_source concept_source_id="2" name="SNOMED CT" description="'Systematized Nomenclature of Medicine--Clinical Terms' is a comprehensive clinical terminology" hl7_code="SNOMED-CT" creator="1" date_created="2005-02-24 00:00:00.0" uuid="j3nfjk33-639f-4cb4-961f-1e025b908433"/>
   <concept_set concept_set_id="1" concept_id="18" concept_set="23" sort_weight="0.0" creator="1" date_created="2008-08-18 12:38:58.0" uuid="1a111827-639f-4cb4-961f-1e025bf88d90"/>
   <concept_set concept_set_id="2" concept_id="19" concept_set="23" sort_weight="2.0" creator="1" date_created="2008-08-18 12:38:58.0" uuid="df26fc1a-6fc0-4867-8982-9e5dfe3f8265"/>
   <concept_set concept_set_id="3" concept_id="20" concept_set="23" sort_weight="1.0" creator="1" date_created="2008-08-18 12:38:58.0" uuid="fdefaa94-3f99-464c-8b1f-3e1d1c61335c"/>
-  <concept_source concept_source_id="1" name="ICD-10" description="International Classification of Disease, version 10" hl7_code="I10" creator="1" date_created="2009-06-03 13:41:25.0" voided="false" uuid="75f5b378-5065-11de-80cb-001e378eb67e"/>
+  <concept_source concept_source_id="3" name="ICD-10" description="International Classification of Disease, version 10" hl7_code="I10" creator="1" date_created="2009-06-03 13:41:25.0" voided="false" uuid="75f5b378-5065-11de-80cb-001e378eb67e"/>
   <concept_state_conversion concept_state_conversion_id="1" concept_id="16" program_workflow_id="2" program_workflow_state_id="1" uuid="6c72b064-506d-11de-80cb-001e378eb67e"/> 
   <drug drug_id="2" concept_id="792" name="Triomune-30" combination="true" dose_strength="1.0" units="tab(s)" creator="1" date_created="2005-02-24 00:00:00.0" retired="false" uuid="3cfcf118-931c-46f7-8ff6-7b876f0d4202"/>
   <drug drug_id="3" concept_id="88" name="Aspirin" combination="false" dose_strength="325.0" units="mg" creator="1" date_created="2005-02-24 00:00:00.0" retired="false" uuid="05ec820a-d297-44e3-be6e-698531d9dd3f"/>

@@ -37,6 +37,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.hl7.HL7InError;
 import org.openmrs.hl7.HL7InQueueProcessor;
 import org.openmrs.hl7.HL7Service;
+import org.openmrs.util.FormConstants;
 import org.openmrs.util.OpenmrsConstants;
 
 import ca.uhn.hl7v2.HL7Exception;
@@ -52,6 +53,7 @@ import ca.uhn.hl7v2.model.v25.datatype.CX;
 import ca.uhn.hl7v2.model.v25.datatype.DLD;
 import ca.uhn.hl7v2.model.v25.datatype.DT;
 import ca.uhn.hl7v2.model.v25.datatype.DTM;
+import ca.uhn.hl7v2.model.v25.datatype.ID;
 import ca.uhn.hl7v2.model.v25.datatype.IS;
 import ca.uhn.hl7v2.model.v25.datatype.NM;
 import ca.uhn.hl7v2.model.v25.datatype.PL;
@@ -102,6 +104,7 @@ public class ORUR01Handler implements Application {
 	 * @should not create problem list observation with concept proposals
 	 * @should append to an existing encounter
 	 * @should create obs group for OBRs
+	 * @should create obs valueCodedName 
 	 */
 	public Message processMessage(Message message) throws ApplicationException {
 		
@@ -211,7 +214,7 @@ public class ORUR01Handler implements Application {
 			// if we're not ignoring this obs group, create an 
 			// Obs grouper object that the underlying obs objects will use
 			Obs obsGrouper = null;
-			Concept obrConcept = getConcept(obr);
+			Concept obrConcept = getConcept(obr.getUniversalServiceIdentifier(), messageControlId);
 			if (obrConcept != null && !ignoredConcepts.contains(obrConcept)) {
 				// maybe check for a parent obs group from OBR-29 Parent ?
 				
@@ -240,7 +243,7 @@ public class ORUR01Handler implements Application {
 				OBX obx = orderObs.getOBSERVATION(j).getOBX();
 				try {
 					log.debug("Parsing observation");
-					Obs obs = parseObs(encounter, obx, obr);
+					Obs obs = parseObs(encounter, obx, obr, messageControlId);
 					if (obs != null) {
 						
 						// if we're backfilling an encounter, don't use 
@@ -409,11 +412,12 @@ public class ORUR01Handler implements Application {
 	 * @param encounter The Encounter object this Obs is a member of
 	 * @param obx The hl7 obx message
 	 * @param obr The parent hl7 or message
+	 * @param uid unique string for this message for any error reporting purposes
 	 * @return Obs pojo with all values filled in
 	 * @throws HL7Exception if there is a parsing exception
 	 * @throws ProposingConceptException if the answer to this obs is a proposed concept
 	 */
-	private Obs parseObs(Encounter encounter, OBX obx, OBR obr) throws HL7Exception, ProposingConceptException {
+	private Obs parseObs(Encounter encounter, OBX obx, OBR obr, String uid) throws HL7Exception, ProposingConceptException {
 		if (log.isDebugEnabled())
 			log.debug("parsing observation: " + obx);
 		Varies[] values = obx.getObservationValue();
@@ -425,10 +429,10 @@ public class ORUR01Handler implements Application {
 		String hl7Datatype = values[0].getName();
 		if (log.isDebugEnabled())
 			log.debug("  datatype = " + hl7Datatype);
-		Concept concept = getConcept(obx);
+		Concept concept = getConcept(obx.getObservationIdentifier(), uid);
 		if (log.isDebugEnabled())
 			log.debug("  concept = " + concept.getConceptId());
-		ConceptName conceptName = getConceptName(obx);
+		ConceptName conceptName = getConceptName(obx.getObservationIdentifier());
 		if (log.isDebugEnabled())
 			log.debug("  concept-name = " + conceptName);
 		
@@ -468,10 +472,9 @@ public class ORUR01Handler implements Application {
 			} else {
 				log.debug("    not proposal");
 				try {
-					Concept valueConcept = new Concept();
-					valueConcept.setConceptId(new Integer(valueIdentifier));
+					Concept valueConcept = getConcept(value, uid);
 					obs.setValueCoded(valueConcept);
-					if ("99RX".equals(value.getNameOfAlternateCodingSystem().getValue())) {
+					if (FormConstants.HL7_LOCAL_DRUG.equals(value.getNameOfAlternateCodingSystem().getValue())) {
 						Drug valueDrug = new Drug();
 						valueDrug.setDrugId(new Integer(value.getAlternateIdentifier().getValue()));
 						obs.setValueDrug(valueDrug);
@@ -501,10 +504,8 @@ public class ORUR01Handler implements Application {
 				throw new ProposingConceptException(concept, valueName);
 			} else {
 				try {
-					Concept valueCoded = new Concept();
-					valueCoded.setConceptId(new Integer(valueIdentifier));
-					obs.setValueCoded(valueCoded);
-					obs.setValueCodedName(valueCoded.getName()); // ABKTODO: presume current locale?
+					obs.setValueCoded(getConcept(value, uid));
+					obs.setValueCodedName(getConceptName(value));
 				}
 				catch (NumberFormatException e) {
 					throw new HL7Exception("Invalid concept ID '" + valueIdentifier + "' for OBX-5 value '" + valueName
@@ -556,39 +557,58 @@ public class ORUR01Handler implements Application {
 	/**
 	 * Derive a concept name from the CWE component of an hl7 message.
 	 * 
-	 * @param value
+	 * @param cwe
 	 * @return
 	 * @throws HL7Exception
 	 */
 	private ConceptName getConceptName(CWE cwe) throws HL7Exception {
 		ST altIdentifier = cwe.getAlternateIdentifier();
-		String hl7ConceptNameId = (altIdentifier != null) ? altIdentifier.getValue() : null;
-		return getConceptName(hl7ConceptNameId);
+		ID altCodingSystem = cwe.getNameOfAlternateCodingSystem();
+		return getConceptName(altIdentifier, altCodingSystem);
 	}
 	
 	/**
-	 * Derive a concept name from the OBX component of an hl7 message.
+	 * Derive a concept name from the CE component of an hl7 message.
 	 * 
-	 * @param obx observation segment containing the concept-name id
+	 * @param ce
+	 * @return
+	 * @throws HL7Exception
+	 */
+	private ConceptName getConceptName(CE ce) throws HL7Exception {
+		ST altIdentifier = ce.getAlternateIdentifier();
+		ID altCodingSystem = ce.getNameOfAlternateCodingSystem();
+		return getConceptName(altIdentifier, altCodingSystem);
+	}
+	
+	/**
+	 * Derive a concept name from the CWE component of an hl7 message.
+	 * 
+	 * @param altIdentifier
+	 * @param altCodingSystem
 	 * @return
 	 */
-	private ConceptName getConceptName(OBX obx) throws HL7Exception {
-		ST altIdentifier = obx.getObservationIdentifier().getAlternateIdentifier();
-		String hl7ConceptNameId = (altIdentifier != null) ? altIdentifier.getValue() : null;
-		return getConceptName(hl7ConceptNameId);
+	private ConceptName getConceptName(ST altIdentifier, ID altCodingSystem) throws HL7Exception {
+		if (altIdentifier != null) {
+			if (FormConstants.HL7_LOCAL_CONCEPT_NAME.equals(altCodingSystem.getValue())) {
+				String hl7ConceptNameId = altIdentifier.getValue();
+				return getConceptName(hl7ConceptNameId);
+			}
+		}
+		
+		return null;
 	}
 	
 	/**
-	 * Utility method to retrieve the concept-name specified in an hl7 message observation segment.
+	 * Utility method to retrieve the openmrs ConceptName specified in an hl7 message observation
+	 * segment. This method assumes that the check for 99NAM has been done already and is being
+	 * given an openmrs conceptNameId
 	 * 
-	 * @param hl7ConceptNameId
-	 * @param namedConcept
-	 * @return
+	 * @param hl7ConceptNameId internal ConceptNameId to look up
+	 * @return ConceptName from the database
 	 * @throws HL7Exception
 	 */
 	private ConceptName getConceptName(String hl7ConceptNameId) throws HL7Exception {
 		ConceptName specifiedConceptName = null;
-		// TODO: don't assume that all concepts are local (available in the host concept dictionary)
 		if (hl7ConceptNameId != null) {
 			// get the exact concept name specified by the id
 			try {
@@ -597,9 +617,7 @@ public class ORUR01Handler implements Application {
 				specifiedConceptName.setConceptNameId(conceptNameId);
 			}
 			catch (NumberFormatException e) {
-				// if it is not a valid number, more than likely it is an older
-				// hl7 message that is in the format conceptid^conceptname
-				// instead of the new conceptid^conceptnameid^conceptname
+				// if it is not a valid number, more than likely it is a bad hl7 message
 				log.debug("Invalid concept name ID '" + hl7ConceptNameId + "'", e);
 			}
 		}
@@ -619,48 +637,66 @@ public class ORUR01Handler implements Application {
 	}
 	
 	/**
-	 * parentGroup.g Get a openmrs Concept object out of the given hl7 obx
+	 * Get an openmrs Concept object out of the given hl7 coded element
 	 * 
-	 * @param obx obx section to pull from
+	 * @param codedElement ce to pull from
+	 * @param uid unique string for this message for any error reporting purposes
 	 * @return new Concept object
 	 * @throws HL7Exception if parsing errors occur
 	 */
-	private Concept getConcept(OBX obx) throws HL7Exception {
-		// TODO: don't assume that all concepts are local
-		String hl7ConceptId = obx.getObservationIdentifier().getIdentifier().getValue();
-		try {
-			Integer conceptId = new Integer(hl7ConceptId);
-			Concept concept = new Concept();
-			concept.setConceptId(conceptId);
-			return concept;
-		}
-		catch (NumberFormatException e) {
-			throw new HL7Exception("Invalid concept ID '" + hl7ConceptId + "'");
-		}
+	private Concept getConcept(CE codedElement, String uid) throws HL7Exception {
+		String hl7ConceptId = codedElement.getIdentifier().getValue();
+		
+		String codingSystem = codedElement.getNameOfCodingSystem().getValue();
+		return getConcept(hl7ConceptId, codingSystem, uid);
 	}
 	
 	/**
-	 * Get the openmrs Concept object out of the given obr or null if there is none
+	 * Get an openmrs Concept object out of the given hl7 coded with exceptions element
 	 * 
-	 * @param obr hl7 OBR section to pull from
-	 * @return new concept object
-	 * @throws HL7Exception if parsing errors occur]
-	 * @see {@link #getDatetime(TS)}
+	 * @param codedElement cwe to pull from
+	 * @param uid unique string for this message for any error reporting purposes
+	 * @return new Concept object
+	 * @throws HL7Exception if parsing errors occur
 	 */
-	private Concept getConcept(OBR obr) throws HL7Exception {
-		// TODO: don't assume that all concepts are local
-		String hl7ConceptId = obr.getUniversalServiceIdentifier().getIdentifier().getValue();
+	private Concept getConcept(CWE codedElement, String uid) throws HL7Exception {
+		String hl7ConceptId = codedElement.getIdentifier().getValue();
 		
-		if (hl7ConceptId == null)
-			return null;
-		
-		try {
-			Integer conceptId = new Integer(hl7ConceptId);
-			Concept concept = new Concept(conceptId);
+		String codingSystem = codedElement.getNameOfCodingSystem().getValue();
+		return getConcept(hl7ConceptId, codingSystem, uid);
+	}
+	
+	/**
+	 * Get a concept object representing this conceptId and coding system.<br/>
+	 * If codingSystem is 99DCT, then a new Concept with the given conceptId is returned.<br/>
+	 * Otherwise, the coding system is looked up in the ConceptMap for an openmrs concept mapped to
+	 * that code.
+	 * 
+	 * @param hl7ConceptId the given hl7 conceptId
+	 * @param codingSystem the coding system for this conceptid (e.g. 99DCT)
+	 * @param uid unique string for this message for any error reporting purposes
+	 * @return a Concept object or null if no conceptId with given coding system found
+	 * @should return null if codingSystem not found
+	 * @should return a Concept if given local coding system
+	 * @should return a mapped Concept if given a valid mapping
+	 */
+	protected Concept getConcept(String hl7ConceptId, String codingSystem, String uid) throws HL7Exception {
+		if (FormConstants.HL7_LOCAL_CONCEPT.equals(codingSystem)) {
+			// the concept is local
+			try {
+				Integer conceptId = new Integer(hl7ConceptId);
+				Concept concept = new Concept(conceptId);
+				return concept;
+			}
+			catch (NumberFormatException e) {
+				throw new HL7Exception("Invalid concept ID '" + hl7ConceptId + "' in hl7 message with uid: " + uid);
+			}
+		} else {
+			// the concept is not local, look it up in our mapping
+			Concept concept = Context.getConceptService().getConceptByMapping(hl7ConceptId, codingSystem);
+			if (concept == null)
+				log.error("Unable to find concept with code: " + hl7ConceptId + " and mapping: " + codingSystem + " in hl7 message with uid: " + uid);
 			return concept;
-		}
-		catch (NumberFormatException e) {
-			throw new HL7Exception("Invalid concept ID '" + hl7ConceptId + "'");
 		}
 	}
 	
