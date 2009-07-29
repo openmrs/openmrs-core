@@ -102,7 +102,7 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, java.io
 		}
 		ConceptName rhs = (ConceptName) obj;
 		if (this.conceptNameId != null && rhs.conceptNameId != null)
-			return (this.conceptNameId == rhs.conceptNameId);
+			return (this.conceptNameId.equals(rhs.conceptNameId));
 		else
 			return this == obj;
 	}
@@ -111,12 +111,10 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, java.io
 	 * @see java.lang.Object#hashCode()
 	 */
 	public int hashCode() {
-		if (this.getConcept() == null || this.getName() == null || this.getLocale() == null)
+		if (this.getConceptNameId() == null)
 			return super.hashCode();
 		int hash = 3;
-		hash = hash + 31 * this.getConcept().hashCode();
-		hash = hash + 31 * this.getName().hashCode();
-		hash = hash + 31 * this.getLocale().hashCode();
+		hash = hash + 31 * this.getConceptNameId();
 		return hash;
 	}
 	
@@ -498,6 +496,9 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, java.io
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
+		if (this.name == null)
+			return "ConceptNameId: " + this.conceptNameId;
+		
 		return this.name;
 	}
 	
