@@ -27,7 +27,7 @@ public class ShortPasswordException extends PasswordException {
 	private static final long serialVersionUID = 31620091002L;
 	
 	public ShortPasswordException() {
-		super("error.password.length");
+		super("error.password.short");
 	}
 	
 	public ShortPasswordException(String message) {
