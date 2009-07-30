@@ -96,8 +96,6 @@
 	| <openmrs:hasPrivilege privilege="Edit Concepts"><a href="concept.form" id="newConcept" valign="middle"></openmrs:hasPrivilege><spring:message code="general.new"/><openmrs:hasPrivilege privilege="Edit Concepts"></a></openmrs:hasPrivilege>
 </c:if>
 
-<openmrs:extensionPoint pointId="org.openmrs.dictionary.conceptFormHeader" type="html" />
-
 <form class="inlineForm" action="index.htm" method="get">
   &nbsp; &nbsp; &nbsp;
   <input type="text" id="searchPhrase" name="phrase" size="18"> 
@@ -111,6 +109,8 @@
 	<c:if test="${command.concept.retired}">
 		<div class="retiredMessage"><div><spring:message code="Concept.retiredMessage"/></div></div>
 	</c:if>
+	
+	<openmrs:extensionPoint pointId="org.openmrs.dictionary.conceptHeader" type="html" />
 	
 	<table id="conceptTable" cellpadding="2" cellspacing="0">
 		<tr>
@@ -370,6 +370,8 @@
 			</td>
 		</tr>
 	</table>
+	
+	<openmrs:extensionPoint pointId="org.openmrs.dictionary.conceptFooter" type="html" />
 </c:if>
 
 <script type="text/javascript">
