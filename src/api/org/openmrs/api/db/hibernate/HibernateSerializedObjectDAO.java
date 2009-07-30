@@ -154,7 +154,9 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 			serializedObject = new SerializedObject();
 		}
 		
-		serializer = getSerializer(serializedObject, serializer);
+		if (serializer == null) {
+			serializer = getSerializer(serializedObject);
+		}
 		String data = null;
 		try {
 			data = serializer.serialize(object);
@@ -269,7 +271,7 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 		if (serializedObject == null) {
 			return null;
 		}
-		OpenmrsSerializer serializer = getSerializer(serializedObject, null);
+		OpenmrsSerializer serializer = getSerializer(serializedObject);
 		T obj = null;
 		try {
 			obj = (T) serializer.deserialize(serializedObject.getSerializedData(), serializedObject.getSubtype());
@@ -290,14 +292,11 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 	 * SerializedObject, defaulting to the default system serializer if none is explicitly set on
 	 * the object
 	 */
-	private OpenmrsSerializer getSerializer(SerializedObject o, OpenmrsSerializer s) {
-		if (s == null) {
-			s = Context.getSerializationService().getDefaultSerializer();
-		}
+	private OpenmrsSerializer getSerializer(SerializedObject o) {
 		if (o != null && o.getSerializationClass() != null) {
-			s = Context.getSerializationService().getSerializer(o.getSerializationClass());
+			return Context.getSerializationService().getSerializer(o.getSerializationClass());
 		}
-		return s;
+		return Context.getSerializationService().getDefaultSerializer();
 	}
 	
 	//***** Property access *****
