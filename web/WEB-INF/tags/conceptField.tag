@@ -44,6 +44,9 @@
 	<openmrs:forEachRecord name="answer" concept="${model.showAnswers}">
 		<c:set var="conceptFieldTag_anyAnswers" value="true"/>
 	</openmrs:forEachRecord>
+	<c:if test="${!conceptFieldTag_anyAnswers}">
+		<% org.apache.commons.logging.LogFactory.getLog(getClass()).error("No answers found for concept id: " + showAnswers + " for field: " + formFieldName); %>
+	</c:if>
 </c:if>
 
 <c:choose>
