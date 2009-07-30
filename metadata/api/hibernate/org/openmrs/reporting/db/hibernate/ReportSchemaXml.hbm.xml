@@ -25,6 +25,9 @@
 			
 		<property name="xml" type="java.lang.String" column="xml_data"
 			length="65535" />
+			
+		<property name="uuid" type="java.lang.String"
+			column="uuid" length="36" unique="true" />
 
 	</class>
 </hibernate-mapping>
