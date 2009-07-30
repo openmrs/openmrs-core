@@ -193,13 +193,22 @@ public class DWRConceptService {
 		return objectList;
 	}
 	
+	/**
+	 * Get a {@link ConceptListItem} by its internal database id.
+	 * 
+	 * @param conceptId the id to look for
+	 * @return a {@link ConceptListItem} or null if conceptId is not found
+	 */
 	public ConceptListItem getConcept(Integer conceptId) {
 		Locale locale = Context.getLocale();
 		ConceptService cs = Context.getConceptService();
 		Concept c = cs.getConcept(conceptId);
+		if (c == null)
+			return null;
+		
 		ConceptName cn = c.getName(locale);
 		
-		return c == null ? null : new ConceptListItem(c, cn, locale);
+		return new ConceptListItem(c, cn, locale);
 	}
 	
 	public List<ConceptListItem> findProposedConcepts(String text) {
@@ -215,12 +224,28 @@ public class DWRConceptService {
 		return cli;
 	}
 	
-	public List<Object> findConceptAnswers(String text, Integer conceptId, boolean includeVoided, boolean includeDrugConcepts) {
+	/**
+	 * Find a list of {@link ConceptListItem} or {@link ConceptDrugListItem}s that are answers to
+	 * the given question. The given question is determined by the given <code>conceptId</code>
+	 * 
+	 * @param text the text to search for within the answers
+	 * @param conceptId the conceptId of the question concept
+	 * @param includeVoided if true, voided answers are included
+	 * @param includeDrugConcepts if true, drug concepts are searched too
+	 * @return list of {@link ConceptListItem} or {@link ConceptDrugListItem} answers that match the
+	 *         query
+	 * @throws Exception if given conceptId is not found
+	 */
+	public List<Object> findConceptAnswers(String text, Integer conceptId, boolean includeVoided, boolean includeDrugConcepts)
+	                                                                                                                          throws Exception {
 		
 		Locale locale = Context.getLocale();
 		ConceptService cs = Context.getConceptService();
 		
 		Concept concept = cs.getConcept(conceptId);
+		
+		if (concept == null)
+			throw new Exception("Unable to find a concept with id: " + conceptId);
 		
 		List<ConceptWord> words = cs.findConceptAnswers(text, locale, concept, includeVoided);
 		
