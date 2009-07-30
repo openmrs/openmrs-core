@@ -105,8 +105,6 @@
 	| <a href="concept.form" id="newConcept" valign="middle"><spring:message code="general.new"/></a>
 </c:if>
 
-<openmrs:extensionPoint pointId="org.openmrs.dictionary.conceptFormHeader" type="html" />
-
 <form class="inlineForm" action="index.htm" method="get">
   &nbsp; &nbsp; 
   <input type="text" id="searchPhrase" name="phrase" size="18"> 
@@ -136,6 +134,8 @@
 		<br/>
 	</c:if>
 </c:if>
+
+<openmrs:extensionPoint pointId="org.openmrs.dictionary.conceptFormHeader" type="html" />
 
 <form method="post" action="">
 
@@ -607,6 +607,8 @@
 </div>
 
 </form>
+
+<openmrs:extensionPoint pointId="org.openmrs.dictionary.conceptFormFooter" type="html" />
 
 <script type="text/javascript">
 	selectTab(document.getElementById("${command.locales[0]}Tab"));
