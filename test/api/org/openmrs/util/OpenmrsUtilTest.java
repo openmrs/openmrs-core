@@ -38,6 +38,7 @@ import org.openmrs.api.ShortPasswordException;
 import org.openmrs.api.WeakPasswordException;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.TestUtil;
 import org.openmrs.test.Verifies;
 
 /**
@@ -201,8 +202,8 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 * @see {@link OpenmrsUtil#validatePassword(String,String,String)}
 	 */
 	@Test(expected = InvalidCharactersPasswordException.class)
-	@Verifies(value = "should fail with digit only password", method = "validatePassword(String,String,String)")
-	public void validatePassword_shouldFailWithDigitOnlyPassword() throws Exception {
+	@Verifies(value = "should fail with digit only password by default", method = "validatePassword(String,String,String)")
+	public void validatePassword_shouldFailWithDigitOnlyPasswordByDefault() throws Exception {
 		OpenmrsUtil.validatePassword("admin", "12345678", "1-8");
 	}
 	
@@ -210,8 +211,29 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 * @see {@link OpenmrsUtil#validatePassword(String,String,String)}
 	 */
 	@Test(expected = InvalidCharactersPasswordException.class)
-	@Verifies(value = "should fail with char only password", method = "validatePassword(String,String,String)")
-	public void validatePassword_shouldFailWithCharOnlyPassword() throws Exception {
+	@Verifies(value = "should fail with digit only password if not allowed", method = "validatePassword(String,String,String)")
+	public void validatePassword_shouldFailWithDigitOnlyPasswordIfNotAllowed() throws Exception {
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_NON_DIGIT, "true");
+		OpenmrsUtil.validatePassword("admin", "12345678", "1-8");
+	}
+	
+	/**
+	 * @see {@link OpenmrsUtil#validatePassword(String,String,String)}
+	 */
+	@Test
+	@Verifies(value = "should pass with digit only password if allowed", method = "validatePassword(String,String,String)")
+	public void validatePassword_shouldPassWithDigitOnlyPasswordIfAllowed() throws Exception {
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_NON_DIGIT, "false");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "false");
+		OpenmrsUtil.validatePassword("admin", "12345678", "1-8");
+	}
+	
+	/**
+	 * @see {@link OpenmrsUtil#validatePassword(String,String,String)}
+	 */
+	@Test(expected = InvalidCharactersPasswordException.class)
+	@Verifies(value = "should fail with char only password by default", method = "validatePassword(String,String,String)")
+	public void validatePassword_shouldFailWithCharOnlyPasswordByDefault() throws Exception {
 		OpenmrsUtil.validatePassword("admin", "testonly", "1-8");
 	}
 	
@@ -219,8 +241,49 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 * @see {@link OpenmrsUtil#validatePassword(String,String,String)}
 	 */
 	@Test(expected = InvalidCharactersPasswordException.class)
-	@Verifies(value = "should fail without upper case char password", method = "validatePassword(String,String,String)")
-	public void validatePassword_shouldFailWithoutUpperCaseCharPassword() throws Exception {
+	@Verifies(value = "should fail with char only password if not allowed", method = "validatePassword(String,String,String)")
+	public void validatePassword_shouldFailWithCharOnlyPasswordIfNotAllowed() throws Exception {
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_DIGIT, "true");
+		OpenmrsUtil.validatePassword("admin", "testonly", "1-8");
+	}
+	
+	/**
+	 * @see {@link OpenmrsUtil#validatePassword(String,String,String)}
+	 */
+	@Test
+	@Verifies(value = "should pass with char only password if allowed", method = "validatePassword(String,String,String)")
+	public void validatePassword_shouldPassWithCharOnlyPasswordIfAllowed() throws Exception {
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_DIGIT, "false");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "false");
+		OpenmrsUtil.validatePassword("admin", "testonly", "1-8");
+	}
+	
+	/**
+	 * @see {@link OpenmrsUtil#validatePassword(String,String,String)}
+	 */
+	@Test(expected = InvalidCharactersPasswordException.class)
+	@Verifies(value = "should fail without upper and lower case password by default", method = "validatePassword(String,String,String)")
+	public void validatePassword_shouldFailWithoutUpperAndLowerCasePasswordByDefault() throws Exception {
+		OpenmrsUtil.validatePassword("admin", "test0nl1", "1-8");
+	}
+	
+	/**
+	 * @see {@link OpenmrsUtil#validatePassword(String,String,String)}
+	 */
+	@Test(expected = InvalidCharactersPasswordException.class)
+	@Verifies(value = "should fail without upper and lower case password if not allowed", method = "validatePassword(String,String,String)")
+	public void validatePassword_shouldFailWithoutUpperAndLowerCasePasswordIfNotAllowed() throws Exception {
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "true");
+		OpenmrsUtil.validatePassword("admin", "test0nl1", "1-8");
+	}
+	
+	/**
+	 * @see {@link OpenmrsUtil#validatePassword(String,String,String)}
+	 */
+	@Test
+	@Verifies(value = "should pass without upper and lower case password if allowed", method = "validatePassword(String,String,String)")
+	public void validatePassword_shouldPassWithoutUpperAndLowerCasePasswordIfAllowed() throws Exception {
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "false");
 		OpenmrsUtil.validatePassword("admin", "test0nl1", "1-8");
 	}
 	
@@ -228,8 +291,8 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 * @see {@link OpenmrsUtil#validatePassword(String,String,String)}
 	 */
 	@Test(expected = WeakPasswordException.class)
-	@Verifies(value = "should fail with password equals to user name", method = "validatePassword(String,String,String)")
-	public void validatePassword_shouldFailWithPasswordEqualsToUserName() throws Exception {
+	@Verifies(value = "should fail with password equals to user name by default", method = "validatePassword(String,String,String)")
+	public void validatePassword_shouldFailWithPasswordEqualsToUserNameByDefault() throws Exception {
 		OpenmrsUtil.validatePassword("Admin1234", "Admin1234", "1-8");
 	}
 	
@@ -237,8 +300,48 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 * @see {@link OpenmrsUtil#validatePassword(String,String,String)}
 	 */
 	@Test(expected = WeakPasswordException.class)
-	@Verifies(value = "should fail with password equals to system id", method = "validatePassword(String,String,String)")
-	public void validatePassword_shouldFailWithPasswordEqualsToSystemId() throws Exception {
+	@Verifies(value = "should fail with password equals to user name if not allowed", method = "validatePassword(String,String,String)")
+	public void validatePassword_shouldFailWithPasswordEqualsToUserNameIfNotAllowed() throws Exception {
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_CANNOT_MATCH_USERNAME_OR_SYSTEMID, "true");
+		OpenmrsUtil.validatePassword("Admin1234", "Admin1234", "1-8");
+	}
+	
+	/**
+	 * @see {@link OpenmrsUtil#validatePassword(String,String,String)}
+	 */
+	@Test
+	@Verifies(value = "should pass with password equals to user name if allowed", method = "validatePassword(String,String,String)")
+	public void validatePassword_shouldPassWithPasswordEqualsToUserNameIfAllowed() throws Exception {
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_CANNOT_MATCH_USERNAME_OR_SYSTEMID, "false");
+		OpenmrsUtil.validatePassword("Admin1234", "Admin1234", "1-8");
+	}
+	
+	/**
+	 * @see {@link OpenmrsUtil#validatePassword(String,String,String)}
+	 */
+	@Test(expected = WeakPasswordException.class)
+	@Verifies(value = "should fail with password equals to system id by default", method = "validatePassword(String,String,String)")
+	public void validatePassword_shouldFailWithPasswordEqualsToSystemIdByDefault() throws Exception {
+		OpenmrsUtil.validatePassword("admin", "Admin1234", "Admin1234");
+	}
+	
+	/**
+	 * @see {@link OpenmrsUtil#validatePassword(String,String,String)}
+	 */
+	@Test(expected = WeakPasswordException.class)
+	@Verifies(value = "should fail with password equals to system id if not allowed", method = "validatePassword(String,String,String)")
+	public void validatePassword_shouldFailWithPasswordEqualsToSystemIdIfNotAllowed() throws Exception {
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_CANNOT_MATCH_USERNAME_OR_SYSTEMID, "true");
+		OpenmrsUtil.validatePassword("admin", "Admin1234", "Admin1234");
+	}
+	
+	/**
+	 * @see {@link OpenmrsUtil#validatePassword(String,String,String)}
+	 */
+	@Test
+	@Verifies(value = "should pass with password equals to system id if allowed", method = "validatePassword(String,String,String)")
+	public void validatePassword_shouldPassWithPasswordEqualsToSystemIdIfAllowed() throws Exception {
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_CANNOT_MATCH_USERNAME_OR_SYSTEMID, "false");
 		OpenmrsUtil.validatePassword("admin", "Admin1234", "Admin1234");
 	}
 	
@@ -246,9 +349,49 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 * @see {@link OpenmrsUtil#validatePassword(String,String,String)}
 	 */
 	@Test(expected = ShortPasswordException.class)
-	@Verifies(value = "should fail with short password", method = "validatePassword(String,String,String)")
-	public void validatePassword_shouldFailWithShortPassword() throws Exception {
+	@Verifies(value = "should fail with short password by default", method = "validatePassword(String,String,String)")
+	public void validatePassword_shouldFailWithShortPasswordByDefault() throws Exception {
 		OpenmrsUtil.validatePassword("admin", "1234567", "1-8");
+	}
+	
+	/**
+	 * @see {@link OpenmrsUtil#validatePassword(String,String,String)}
+	 */
+	@Test(expected = ShortPasswordException.class)
+	@Verifies(value = "should fail with short password if not allowed", method = "validatePassword(String,String,String)")
+	public void validatePassword_shouldFailWithShortPasswordIfNotAllowed() throws Exception {
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_MINIMUM_LENGTH, "6");
+		OpenmrsUtil.validatePassword("admin", "12345", "1-8");
+	}
+	
+	/**
+	 * @see {@link OpenmrsUtil#validatePassword(String,String,String)}
+	 */
+	@Test
+	@Verifies(value = "should pass with short password if allowed", method = "validatePassword(String,String,String)")
+	public void validatePassword_shouldPassWithShortPasswordIfAllowed() throws Exception {
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_MINIMUM_LENGTH, "0");
+		OpenmrsUtil.validatePassword("admin", "H4t", "1-8");
+	}
+	
+	/**
+	 * @see {@link OpenmrsUtil#validatePassword(String,String,String)}
+	 */
+	@Test(expected = InvalidCharactersPasswordException.class)
+	@Verifies(value = "should fail with password not matching configured regex", method = "validatePassword(String,String,String)")
+	public void validatePassword_shouldFailWithPasswordNotMatchingConfiguredRegex() throws Exception {
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_CUSTOM_REGEX, "[A-Z][a-z][0-9][0-9][a-z][A-Z][a-z][a-z][a-z][a-z]");
+		OpenmrsUtil.validatePassword("admin", "he11oWorld", "1-8");
+	}
+	
+	/**
+	 * @see {@link OpenmrsUtil#validatePassword(String,String,String)}
+	 */
+	@Test
+	@Verifies(value = "should pass with password matching configured regex", method = "validatePassword(String,String,String)")
+	public void validatePassword_shouldPassWithPasswordMatchingConfiguredRegex() throws Exception {
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_CUSTOM_REGEX, "[A-Z][a-z][0-9][0-9][a-z][A-Z][a-z][a-z][a-z][a-z]");
+		OpenmrsUtil.validatePassword("admin", "He11oWorld", "1-8");
 	}
 	
 	/**
@@ -281,4 +424,81 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 		Assert.assertEquals("dd-MM-yyyy", OpenmrsUtil.getDateFormat(new Locale("pt", "pt")).toLocalizedPattern());
 	}
 	
+	/**
+	 * @see {@link OpenmrsUtil#containsUpperAndLowerCase(String)}
+	 */
+	@Test
+	@Verifies(value = "should return true if string contains upper and lower case", method = "containsUpperAndLowerCase(String)")
+	public void containsUpperAndLowerCase_shouldReturnTrueIfStringContainsUpperAndLowerCase() throws Exception {
+		Assert.assertTrue(OpenmrsUtil.containsUpperAndLowerCase("Hello"));
+		Assert.assertTrue(OpenmrsUtil.containsUpperAndLowerCase("methodName"));
+		Assert.assertTrue(OpenmrsUtil.containsUpperAndLowerCase("the letter K"));
+		Assert.assertTrue(OpenmrsUtil.containsUpperAndLowerCase("The number 10"));
+	}
+	
+	/**
+	 * @see {@link OpenmrsUtil#containsUpperAndLowerCase(String)}
+	 */
+	@Test
+	@Verifies(value = "should return false if string does not contain lower case characters", method = "containsUpperAndLowerCase(String)")
+	public void containsUpperAndLowerCase_shouldReturnFalseIfStringDoesNotContainLowerCaseCharacters() throws Exception {
+		Assert.assertFalse(OpenmrsUtil.containsUpperAndLowerCase("HELLO"));
+		Assert.assertFalse(OpenmrsUtil.containsUpperAndLowerCase("THE NUMBER 10?"));
+		Assert.assertFalse(OpenmrsUtil.containsUpperAndLowerCase(""));
+		Assert.assertFalse(OpenmrsUtil.containsUpperAndLowerCase(null));
+	}
+	
+	/**
+	 * @see {@link OpenmrsUtil#containsUpperAndLowerCase(String)}
+	 */
+	@Test
+	@Verifies(value = "should return false if string does not contain upper case characters", method = "containsUpperAndLowerCase(String)")
+	public void containsUpperAndLowerCase_shouldReturnFalseIfStringDoesNotContainUpperCaseCharacters() throws Exception {
+		Assert.assertFalse(OpenmrsUtil.containsUpperAndLowerCase("hello"));
+		Assert.assertFalse(OpenmrsUtil.containsUpperAndLowerCase("the number 10?"));
+		Assert.assertFalse(OpenmrsUtil.containsUpperAndLowerCase(""));
+		Assert.assertFalse(OpenmrsUtil.containsUpperAndLowerCase(null));
+	}
+
+	/**
+	 * @see {@link OpenmrsUtil#containsOnlyDigits(String)}
+	 */
+	@Test
+	@Verifies(value = "should return true if string contains only digits", method = "containsOnlyDigits(String)")
+	public void containsOnlyDigits_shouldReturnTrueIfStringContainsOnlyDigits() throws Exception {
+		Assert.assertTrue(OpenmrsUtil.containsOnlyDigits("1234567890"));
+	}
+	
+	/**
+	 * @see {@link OpenmrsUtil#containsOnlyDigits(String)}
+	 */
+	@Test
+	@Verifies(value = "should return false if string contains any non-digits", method = "containsOnlyDigits(String)")
+	public void containsOnlyDigits_shouldReturnFalseIfStringContainsAnyNonDigits() throws Exception {
+		Assert.assertFalse(OpenmrsUtil.containsOnlyDigits("1.23"));
+		Assert.assertFalse(OpenmrsUtil.containsOnlyDigits("123A"));
+		Assert.assertFalse(OpenmrsUtil.containsOnlyDigits("12 3"));
+		Assert.assertFalse(OpenmrsUtil.containsOnlyDigits(""));
+		Assert.assertFalse(OpenmrsUtil.containsOnlyDigits(null));
+	}
+
+	/**
+	 * @see {@link OpenmrsUtil#containsDigit(String)}
+	 */
+	@Test
+	@Verifies(value = "should return true if string contains any digits", method = "containsDigit(String)")
+	public void containsDigit_shouldReturnTrueIfStringContainsAnyDigits() throws Exception {
+		Assert.assertTrue(OpenmrsUtil.containsDigit("There is 1 digit here."));
+	}
+	
+	/**
+	 * @see {@link OpenmrsUtil#containsDigit(String)}
+	 */
+	@Test
+	@Verifies(value = "should return false if string contains no digits", method = "containsDigit(String)")
+	public void containsDigit_shouldReturnFalseIfStringContainsNoDigits() throws Exception {
+		Assert.assertFalse(OpenmrsUtil.containsDigit("ABC .$!@#$%^&*()-+=/?><.,~`|[]"));
+		Assert.assertFalse(OpenmrsUtil.containsDigit(""));
+		Assert.assertFalse(OpenmrsUtil.containsDigit(null));
+	}
 }

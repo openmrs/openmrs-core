@@ -62,6 +62,7 @@ import java.util.Vector;
 import java.util.jar.JarFile;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 import java.util.zip.ZipEntry;
 
 import javax.xml.transform.OutputKeys;
@@ -71,6 +72,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Level;
@@ -119,6 +121,7 @@ import org.openmrs.xml.OpenmrsCycleStrategy;
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.load.Persister;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
+import org.springframework.context.NoSuchMessageException;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentType;
 
@@ -1810,38 +1813,194 @@ public class OpenmrsUtil {
 	}
 	
 	/**
-	 * Utility to check the validity of a password for a certain {@link User}. Valid password are
-	 * string with:
-	 * <ul>
-	 * <li>8 character minimum length
-	 * <li>have at least one digit
-	 * <li>have at least one upper case character
-	 * <li>not equal to {@link User}'s username or system id
-	 * </ul>
-	 * The regular expression currently used is "^(?=.*?[0-9])(?=.*?[A-Z])[\\w]*$".
+	 * Utility method for getting the translation for the passed code
+	 * @param code the message key to lookup
+	 * @param args the replacement values for the translation string
+	 * @return the message, or if not found, the code
+	 */
+	public static String getMessage(String code, Object... args) {
+		Locale l = Context.getLocale();
+		try {
+			String translation = Context.getMessageSourceService().getMessage(code, args, l);
+			if (translation != null) {
+				return translation;
+			}
+		}
+		catch (NoSuchMessageException e) {
+			log.warn("Message code <"+code+"> not found for locale " + l);
+		}
+		return code;
+	}
+	
+	/**
+	 * Utility to check the validity of a password for a certain {@link User}. 
+	 * Passwords must be non-null.  Their required strength is configured via global properties:
+	 * <table>
+	 * 		<tr><th>Description</th><th>Property</th><th>Default Value</th></tr>
+	 * 		<tr>
+	 * 			<th>Require that it not match the {@link User}'s username or system id
+	 * 			<th>{@link OpenmrsConstants#GP_PASSWORD_CANNOT_MATCH_USERNAME_OR_SYSTEMID}</th>
+	 * 			<th>true</th>
+	 * 		</tr>
+	 * 		<tr>
+	 * 			<th>Require a minimum length
+	 * 			<th>{@link OpenmrsConstants#GP_PASSWORD_MINIMUM_LENGTH}</th>
+	 * 			<th>8</th>
+	 * 		</tr>
+	 * 		<tr>
+	 * 			<th>Require both an upper and lower case character
+	 * 			<th>{@link OpenmrsConstants#GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE}</th>
+	 * 			<th>true</th>
+	 * 		</tr>
+	 * 		<tr>
+	 * 			<th>Require at least one numeric character
+	 * 			<th>{@link OpenmrsConstants#GP_PASSWORD_REQUIRES_DIGIT}</th>
+	 * 			<th>true</th>
+	 * 		</tr>
+	 * 		<tr>
+	 * 			<th>Require at least one non-numeric character
+	 * 			<th>{@link OpenmrsConstants#GP_PASSWORD_REQUIRES_NON_DIGIT}</th>
+	 * 			<th>true</th>
+	 * 		</tr>
+	 * 		<tr>
+	 * 			<th>Require a match on the specified regular expression
+	 * 			<th>{@link OpenmrsConstants#GP_PASSWORD_CUSTOM_REGEX}</th>
+	 * 			<th>null</th>
+	 * 		</tr>
+	 * </table>
 	 * 
 	 * @param username user name of the user with password to validated
 	 * @param password string that will be validated
 	 * @param systemId system id of the user with password to be validated
 	 * @throws PasswordException
 	 * @since 1.5
-	 * @should fail with short password
-	 * @should fail with digit only password
-	 * @should fail with char only password
-	 * @should fail without upper case char password
-	 * @should fail with password equals to user name
-	 * @should fail with password equals to system id
+	 * @should fail with short password by default
+	 * @should fail with short password if not allowed
+	 * @should pass with short password if allowed
+	 * @should fail with digit only password by default
+	 * @should fail with digit only password if not allowed
+	 * @should pass with digit only password if allowed
+	 * @should fail with char only password by default
+	 * @should fail with char only password if not allowed
+	 * @should pass with char only password if allowed
+	 * @should fail without both upper and lower case password by default
+	 * @should fail without both upper and lower case password if not allowed
+	 * @should pass without both upper and lower case password if allowed
+	 * @should fail with password equals to user name by default
+	 * @should fail with password equals to user name if not allowed
+	 * @should pass with password equals to user name if allowed
+	 * @should fail with password equals to system id by default
+	 * @should fail with password equals to system id if not allowed
+	 * @should pass with password equals to system id if allowed
+	 * @should fail with password not matching configured regex
+	 * @should pass with password matching configured regex
 	 * @should allow password to contain non alphanumeric characters
 	 * @should allow password to contain white spaces
 	 */
 	public static void validatePassword(String username, String password, String systemId) throws PasswordException {
-		if (password.length() < 8)
-			throw new ShortPasswordException();
-		Pattern pattern = Pattern.compile("^(?=.*?[0-9])(?=.*?[A-Z])[\\w|\\W]*$");
-		Matcher matcher = pattern.matcher(password);
-		if (!matcher.matches())
-			throw new InvalidCharactersPasswordException();
-		if (password.equals(username) || password.equals(systemId))
+
+		AdministrationService svc = Context.getAdministrationService();
+		
+		if (password == null) {
 			throw new WeakPasswordException();
+		}
+		
+		String userGp = svc.getGlobalProperty(OpenmrsConstants.GP_PASSWORD_CANNOT_MATCH_USERNAME_OR_SYSTEMID, "true");
+		if ("true".equals(userGp) && (password.equals(username) || password.equals(systemId))) {
+			throw new WeakPasswordException();
+		}
+		
+		String lengthGp = svc.getGlobalProperty(OpenmrsConstants.GP_PASSWORD_MINIMUM_LENGTH, "8");
+		if (StringUtils.isNotEmpty(lengthGp)) {
+			try {
+				int minLength = Integer.parseInt(lengthGp);
+				if (password.length() < minLength) {
+					throw new ShortPasswordException(getMessage("error.password.length", lengthGp));
+				}
+			}
+			catch (NumberFormatException nfe) {
+				log.warn("Error in global property <" + OpenmrsConstants.GP_PASSWORD_MINIMUM_LENGTH + "> must be an Integer");
+			}
+		}
+		
+		String caseGp = svc.getGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "true");
+		if ("true".equals(caseGp) && !containsUpperAndLowerCase(password)) {
+			throw new InvalidCharactersPasswordException(getMessage("error.password.requireMixedCase"));
+		}
+		
+		String digitGp = svc.getGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_DIGIT, "true");
+		if ("true".equals(digitGp) && !containsDigit(password)) {
+			throw new InvalidCharactersPasswordException(getMessage("error.password.requireNumber"));
+		}
+		
+		String nonDigitGp = svc.getGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_NON_DIGIT, "true");
+		if ("true".equals(nonDigitGp) && containsOnlyDigits(password)) {
+			throw new InvalidCharactersPasswordException(getMessage("error.password.requireLetter"));
+		}
+
+		String regexGp = svc.getGlobalProperty(OpenmrsConstants.GP_PASSWORD_CUSTOM_REGEX);
+		if (StringUtils.isNotEmpty(regexGp)) {
+			try {
+				Pattern pattern = Pattern.compile(regexGp);
+				Matcher matcher = pattern.matcher(password);
+				if (!matcher.matches()) {
+					throw new InvalidCharactersPasswordException(getMessage("error.password.different"));
+				}
+			}
+			catch (PatternSyntaxException pse) {
+				log.warn("Invalid regex of " + regexGp + " defined in global property <" + 
+						  OpenmrsConstants.GP_PASSWORD_CUSTOM_REGEX + ">.");
+			}
+		}
+	}
+
+	/**
+	 * @param test the string to test
+	 * @return true if the passed string contains both upper and lower case characters
+	 * @should return true if string contains upper and lower case
+	 * @should return false if string does not contain lower case characters
+	 * @should return false if string does not contain upper case characters
+	 */
+	public static boolean containsUpperAndLowerCase(String test) {
+		if (test != null) {
+			Pattern pattern = Pattern.compile("^(?=.*?[A-Z])(?=.*?[a-z])[\\w|\\W]*$");
+			Matcher matcher = pattern.matcher(test);
+			return matcher.matches();
+		}
+		return false;
+	}
+	
+	/**
+	 * @param test the string to test
+	 * @return true if the passed string contains only numeric characters
+	 * @should return true if string contains only digits
+	 * @should return false if string contains any non-digits
+	 */
+	public static boolean containsOnlyDigits(String test) {
+		if (test != null) {
+			for (char c : test.toCharArray()) {
+				if (!Character.isDigit(c)) {
+					return false;
+				}
+			}
+		}
+		return StringUtils.isNotEmpty(test);
+	}
+	
+	/**
+	 * @param test the string to test
+	 * @return true if the passed string contains any numeric characters
+	 * @should return true if string contains any digits
+	 * @should return false if string contains no digits
+	 */
+	public static boolean containsDigit(String test) {
+		if (test != null) {
+			for (char c : test.toCharArray()) {
+				if (Character.isDigit(c)) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 }

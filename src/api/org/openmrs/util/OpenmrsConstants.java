@@ -718,6 +718,41 @@ public final class OpenmrsConstants {
 	public static final String GLOBAL_PROPERTY_DEFAULT_SERIALIZER = "serialization.defaultSerializer";
 	
 	/**
+	 * Global property name that allows specification of whether user passwords must contain 
+	 * both upper and lower case characters.  Allowable values are "true", "false", and null
+	 */
+	public static String GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE = "security.passwordRequiresUpperAndLowerCase";
+
+	/**
+	 * Global property name that allows specification of whether user passwords require non-digits.
+	 * Allowable values are "true", "false", and null
+	 */
+	public static String GP_PASSWORD_REQUIRES_NON_DIGIT = "security.passwordRequiresNonDigit";
+	
+	/**
+	 * Global property name that allows specification of whether user passwords must contain digits.
+	 * Allowable values are "true", "false", and null
+	 */
+	public static String GP_PASSWORD_REQUIRES_DIGIT = "security.passwordRequiresDigit";
+	
+	/**
+	 * Global property name that allows specification of whether user passwords can match username or system id.
+	 * Allowable values are "true", "false", and null
+	 */
+	public static String GP_PASSWORD_CANNOT_MATCH_USERNAME_OR_SYSTEMID = "security.passwordCannotMatchUsername";
+	
+	/**
+	 * Global property name that allows specification of whether user passwords have a minimum length requirement
+	 * Allowable values are any integer
+	 */
+	public static String GP_PASSWORD_MINIMUM_LENGTH = "security.passwordMinimumLength";
+	
+	/**
+	 * Global property name that allows specification of a regular expression that passwords must adhere to
+	 */
+	public static String GP_PASSWORD_CUSTOM_REGEX = "security.passwordCustomRegex";
+	
+	/**
 	 * At OpenMRS startup these global properties/default values/descriptions are inserted into the
 	 * database if they do not exist yet.
 	 * 
@@ -970,6 +1005,24 @@ public final class OpenmrsConstants {
 		                OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE,
 		                OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE_DEFAULT_VALUE,
 		                "Specifies the default locale. You can specify both the language code(ISO-639) and the country code(ISO-3166), e.g. 'en_GB' or just country: e.g. 'en'"));
+		
+		props.add(new GlobalProperty(GP_PASSWORD_CANNOT_MATCH_USERNAME_OR_SYSTEMID, "true",
+									 "Configure whether passwords must not match user's username or system id"));
+		
+		props.add(new GlobalProperty(GP_PASSWORD_CUSTOM_REGEX, "",
+									 "Configure a custom regular expression that a password must match"));
+		
+		props.add(new GlobalProperty(GP_PASSWORD_MINIMUM_LENGTH, "8",
+									 "Configure the minimum length required of all passwords"));
+	
+		props.add(new GlobalProperty(GP_PASSWORD_REQUIRES_DIGIT, "true",
+		 							 "Configure whether passwords must contain at least one digit"));
+		
+		props.add(new GlobalProperty(GP_PASSWORD_REQUIRES_NON_DIGIT, "true",
+		 							 "Configure whether passwords must contain at least one non-digit"));
+		
+		props.add(new GlobalProperty(GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "true",
+		 							 "Configure whether passwords must contain both upper and lower case characters"));
 		
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);
