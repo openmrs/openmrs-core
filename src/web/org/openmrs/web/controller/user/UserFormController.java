@@ -120,7 +120,7 @@ public class UserFormController extends PersonFormController {
 			//check password strength
 			if (password.length() > 0) {
 				try {
-					OpenmrsUtil.validatePassword(user.getUsername(), password, String.valueOf(user.getUserId()));
+					OpenmrsUtil.validatePassword(user.getUsername(), password, user.getSystemId());
 				}
 				catch (PasswordException e) {
 					errors.reject(e.getMessage());
