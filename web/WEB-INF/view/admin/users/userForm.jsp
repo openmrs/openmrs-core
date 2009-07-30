@@ -82,7 +82,7 @@
 		<c:if test="${modifyPasswords == true}">
 			<tr>
 				<td><spring:message code="User.usersPassword" /></td>
-				<td><input type="password" name="userFormPassword" value="<c:if test="${isNewUser == false}">XXXXXXXXXXXXXXX</c:if>" autocomplete="off"/> <i><spring:message code="User.password.description"/></i></td>
+				<td><input type="password" name="userFormPassword" value="<c:if test="${isNewUser == false}">XXXXXXXXXXXXXXX</c:if>" autocomplete="off"/></td>
 	
 			</tr>
 			<tr>

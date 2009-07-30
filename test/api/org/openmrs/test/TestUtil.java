@@ -25,6 +25,8 @@ import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.database.QueryDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
 import org.dbunit.ext.hsqldb.HsqldbDataTypeFactory;
+import org.openmrs.GlobalProperty;
+import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
@@ -175,4 +177,17 @@ public class TestUtil {
 		}
 	}
 	
+	/**
+	 * Utility method that allows tests to easily configure and save a global property
+	 * @param string the name of the property to save
+	 * @param value the value of the property to save
+	 */
+	public static void saveGlobalProperty(String name, String value) {
+		GlobalProperty gp = Context.getAdministrationService().getGlobalPropertyObject(name);
+		if (gp == null) {
+			gp = new GlobalProperty(name);
+		}
+		gp.setPropertyValue(value);
+		Context.getAdministrationService().saveGlobalProperty(gp);
+	}
 }
