@@ -129,9 +129,11 @@ public class ForEachRecordTag extends BodyTagSupport {
 			if (concept == null)
 				throw new IllegalArgumentException("Must specify concept");
 			Concept c = OpenmrsUtil.getConceptByIdOrName(concept);
-			if (c == null)
-				throw new IllegalArgumentException("Can't find concept " + concept);
-			if (c.getAnswers() != null)
+			if (c == null) {
+				log.error("Can't find concept with name or id of: " + concept + " and so no answers will be returned");
+				records = null;
+			}
+			else if (c.getAnswers() != null)
 				records = c.getAnswers().iterator();
 			else
 				records = new ArrayList<Concept>().iterator();
