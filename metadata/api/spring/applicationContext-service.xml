@@ -685,8 +685,8 @@
 	<bean id="requireNameValidator" class="org.openmrs.validator.RequireNameValidator"/>
 	
 	<context:component-scan base-package="org.openmrs">
-        <context:include-filter type="annotation" expression="org.openmrs.annotation.Handler"/>
-        <context:exclude-filter type="regex" expression=".*Test.*"/>
-    </context:component-scan>
+		<context:include-filter type="annotation" expression="org.openmrs.annotation.Handler"/>
+		<context:exclude-filter type="custom" expression="org.openmrs.util.TestTypeFilter"/> <!-- Excludes classes with unit test super classes -->
+	</context:component-scan>
     
 </beans>
