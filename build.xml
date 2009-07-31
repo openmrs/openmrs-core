@@ -182,6 +182,10 @@
 				<exclude name="**/test/" />
 				<exclude name="liquibase-data/" /> <!-- to skip the liquibase starter xml files -->
 			</fileset>
+			<fileset dir="${build.dir}">
+				<!-- For spring's exclusion of tests that were accidentally put into omods -->
+				<include name="org/openmrs/util/TestTypeFilter.class" />
+			</fileset>
 		</jar>
 	</target>
 
@@ -233,6 +237,9 @@
 				<include name="**/test/*.class" /> <!-- include the helper files -->
 				<include name="**/*Test*.class" /> <!-- include all junit tests and inner classes -->
 				<include name="**/include/*.xml" />
+				
+				<!-- For spring's exclusion of tests. These are in the openmrs-api.jar file -->
+				<exclude name="org/openmrs/util/TestTypeFilter.class" /> 
 			</fileset>
 			<!-- Put this xml in a separate fileset so that its in the root of the jar file -->
 			<fileset file="${build.dir}/org/openmrs/test/TestingApplicationContext.xml" />
