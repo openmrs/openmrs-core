@@ -1,0 +1,4 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+    <encounter encounter_id="1000" patient_id="2" encounter_type="6" provider_id="1" location_id="1" encounter_datetime="2009-08-03 00:00:00.0" creator="1" date_created="2008-08-01 15:16:00.0" voided="false" uuid="2ce2aa56-8062-11de-9ba9-001e378eb67e" />
+</dataset>
