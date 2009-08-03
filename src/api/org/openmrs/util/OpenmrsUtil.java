@@ -1295,7 +1295,6 @@ public class OpenmrsUtil {
 					String valueAsString = sa.getValue();
 					String testForExpression = search.getArgumentValue(sa.getName());
 					if (testForExpression != null) {
-						valueAsString = testForExpression;
 						log.debug("Setting " + sa.getName() + " to: " + valueAsString);
 						if (evalContext != null && EvaluationContext.isExpression(valueAsString)) {
 							Object evaluated = evalContext.evaluateExpression(testForExpression);
