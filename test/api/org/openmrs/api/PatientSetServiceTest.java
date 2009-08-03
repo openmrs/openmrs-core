@@ -29,6 +29,7 @@ import org.junit.Test;
 import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.DrugOrder;
+import org.openmrs.EncounterType;
 import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.Person;
@@ -46,6 +47,8 @@ import org.openmrs.test.Verifies;
 public class PatientSetServiceTest extends BaseContextSensitiveTest {
 	
 	PatientSetService service;
+	
+	protected static final String EXTRA_DATA_XML = "org/openmrs/api/include/PatientSetServiceTest-extraData.xml";
 	
 	@Before
 	public void getService() {
@@ -275,5 +278,21 @@ public class PatientSetServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(1, cohort.size());
 		Assert.assertTrue(cohort.contains(7));
 	}
+
+	/**
+     * @see {@link PatientSetService#getPatientsHavingEncounters(List<QEncounterType;>,Location,Form,Date,Date,Integer,Integer)}
+     */
+    @Test
+    @Verifies(value = "should get patients with encounters of multiple types", method = "getPatientsHavingEncounters(List<QEncounterType;>,Location,Form,Date,Date,Integer,Integer)")
+    public void getPatientsHavingEncounters_shouldGetPatientsWithEncountersOfMultipleTypes() throws Exception {
+    	executeDataSet(EXTRA_DATA_XML);
+    	List<EncounterType> list = new ArrayList<EncounterType>();
+    	list.add(new EncounterType(1));
+    	Cohort withOneType = service.getPatientsHavingEncounters(list, null, null, null, null, null, null);
+    	Assert.assertEquals(1, withOneType.size());
+    	list.add(new EncounterType(6));
+    	Cohort withTwoTypes = service.getPatientsHavingEncounters(list, null, null, null, null, null, null);
+    	Assert.assertEquals(2, withTwoTypes.size());
+    }
 	
 }

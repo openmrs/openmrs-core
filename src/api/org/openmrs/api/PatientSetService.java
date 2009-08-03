@@ -156,6 +156,7 @@ public interface PatientSetService {
 	 * @return Cohort with matching Patients
 	 * @should get all patients with encounters when no parameters specified
 	 * @should get patients with encounters of type
+	 * @should get patients with encounters of multiple types
 	 * @should get patients with encounters at location
 	 * @should get patients with encounters from form
 	 * @should get patients with encounters before date
