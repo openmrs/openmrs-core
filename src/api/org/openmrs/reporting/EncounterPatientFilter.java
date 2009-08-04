@@ -123,6 +123,11 @@ public class EncounterPatientFilter extends CachingPatientFilter {
 		return ret.toString();
 	}
 	
+	/**
+	 * @see org.openmrs.reporting.CachingPatientFilter#filterImpl(org.openmrs.report.EvaluationContext)
+	 * 
+	 * @should get patients given multiple encounter types
+	 */
 	@Override
 	public Cohort filterImpl(EvaluationContext context) {
 		PatientSetService service = Context.getPatientSetService();
