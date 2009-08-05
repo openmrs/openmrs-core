@@ -1138,7 +1138,8 @@ public class OpenmrsUtil {
 	 * locale.
 	 * 
 	 * @return a simple date format
-	 * @deprecated use {@link Context#getDateFormat()} or {@link #getDateFormat(Context#getLocale())} instead
+	 * @deprecated use {@link Context#getDateFormat()} or {@link
+	 *             #getDateFormat(Context#getLocale())} instead
 	 */
 	public static SimpleDateFormat getDateFormat() {
 		return Context.getDateFormat();
@@ -1156,9 +1157,9 @@ public class OpenmrsUtil {
 		if (dateFormatCache.containsKey(locale))
 			return dateFormatCache.get(locale);
 		
-		SimpleDateFormat sdf = (SimpleDateFormat)DateFormat.getDateInstance(DateFormat.SHORT, locale);
+		SimpleDateFormat sdf = (SimpleDateFormat) DateFormat.getDateInstance(DateFormat.SHORT, locale);
 		String pattern = sdf.toPattern();
-
+		
 		if (!pattern.contains("yyyy")) {
 			// otherwise, change the pattern to be a four digit year
 			pattern = pattern.replaceFirst("yy", "yyyy");
@@ -1696,9 +1697,9 @@ public class OpenmrsUtil {
 	}
 	
 	/**
-	 * Convenience method to replace Properties.store(), which isn't UTF-8 compliant
-	 * NOTE:  In Java 6, you will be able to pass the load() and store() methods a UTF-8 Reader/Writer 
-	 * object as an argument, making this method unnecessary.
+	 * Convenience method to replace Properties.store(), which isn't UTF-8 compliant <br/>
+	 * NOTE: In Java 6, you will be able to pass the load() and store() methods a UTF-8
+	 * Reader/Writer object as an argument, making this method unnecessary.
 	 * 
 	 * @param properties
 	 * @param file
@@ -1725,9 +1726,9 @@ public class OpenmrsUtil {
 	}
 	
 	/**
-	 * Convenience method to replace Properties.store(), which isn't UTF-8 compliant
-	 * NOTE:  In Java 6, you will be able to pass the load() and store() methods a UTF-8 Reader/Writer 
-	 * object as an argument.
+	 * Convenience method to replace Properties.store(), which isn't UTF-8 compliant NOTE: In Java
+	 * 6, you will be able to pass the load() and store() methods a UTF-8 Reader/Writer object as an
+	 * argument.
 	 * 
 	 * @param properties
 	 * @param file
@@ -1762,9 +1763,9 @@ public class OpenmrsUtil {
 	/**
 	 * This method is a replacement for Properties.load(InputStream) so that we can load in utf-8
 	 * characters. Currently the load method expects the inputStream to point to a latin1 encoded
-	 * file.
-	 * NOTE:  In Java 6, you will be able to pass the load() and store() methods a UTF-8 Reader/Writer 
-	 * object as an argument, making this method unnecesary.
+	 * file. <br/>
+	 * NOTE: In Java 6, you will be able to pass the load() and store() methods a UTF-8
+	 * Reader/Writer object as an argument, making this method unnecesary.
 	 * 
 	 * @param props the properties object to write into
 	 * @param input the input stream to read from
@@ -1813,6 +1814,7 @@ public class OpenmrsUtil {
 	
 	/**
 	 * Utility method for getting the translation for the passed code
+	 * 
 	 * @param code the message key to lookup
 	 * @param args the replacement values for the translation string
 	 * @return the message, or if not found, the code
@@ -1826,46 +1828,55 @@ public class OpenmrsUtil {
 			}
 		}
 		catch (NoSuchMessageException e) {
-			log.warn("Message code <"+code+"> not found for locale " + l);
+			log.warn("Message code <" + code + "> not found for locale " + l);
+		}
+		catch (APIException apiEx) {
+			// in case the services aren't set up yet
+			log.debug("Unable to get code: " + code, apiEx);
+			return code;
 		}
 		return code;
 	}
 	
 	/**
-	 * Utility to check the validity of a password for a certain {@link User}. 
-	 * Passwords must be non-null.  Their required strength is configured via global properties:
+	 * Utility to check the validity of a password for a certain {@link User}. Passwords must be
+	 * non-null. Their required strength is configured via global properties:
 	 * <table>
-	 * 		<tr><th>Description</th><th>Property</th><th>Default Value</th></tr>
-	 * 		<tr>
-	 * 			<th>Require that it not match the {@link User}'s username or system id
-	 * 			<th>{@link OpenmrsConstants#GP_PASSWORD_CANNOT_MATCH_USERNAME_OR_SYSTEMID}</th>
-	 * 			<th>true</th>
-	 * 		</tr>
-	 * 		<tr>
-	 * 			<th>Require a minimum length
-	 * 			<th>{@link OpenmrsConstants#GP_PASSWORD_MINIMUM_LENGTH}</th>
-	 * 			<th>8</th>
-	 * 		</tr>
-	 * 		<tr>
-	 * 			<th>Require both an upper and lower case character
-	 * 			<th>{@link OpenmrsConstants#GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE}</th>
-	 * 			<th>true</th>
-	 * 		</tr>
-	 * 		<tr>
-	 * 			<th>Require at least one numeric character
-	 * 			<th>{@link OpenmrsConstants#GP_PASSWORD_REQUIRES_DIGIT}</th>
-	 * 			<th>true</th>
-	 * 		</tr>
-	 * 		<tr>
-	 * 			<th>Require at least one non-numeric character
-	 * 			<th>{@link OpenmrsConstants#GP_PASSWORD_REQUIRES_NON_DIGIT}</th>
-	 * 			<th>true</th>
-	 * 		</tr>
-	 * 		<tr>
-	 * 			<th>Require a match on the specified regular expression
-	 * 			<th>{@link OpenmrsConstants#GP_PASSWORD_CUSTOM_REGEX}</th>
-	 * 			<th>null</th>
-	 * 		</tr>
+	 * <tr>
+	 * <th>Description</th>
+	 * <th>Property</th>
+	 * <th>Default Value</th>
+	 * </tr>
+	 * <tr>
+	 * <th>Require that it not match the {@link User}'s username or system id
+	 * <th>{@link OpenmrsConstants#GP_PASSWORD_CANNOT_MATCH_USERNAME_OR_SYSTEMID}</th>
+	 * <th>true</th>
+	 * </tr>
+	 * <tr>
+	 * <th>Require a minimum length
+	 * <th>{@link OpenmrsConstants#GP_PASSWORD_MINIMUM_LENGTH}</th>
+	 * <th>8</th>
+	 * </tr>
+	 * <tr>
+	 * <th>Require both an upper and lower case character
+	 * <th>{@link OpenmrsConstants#GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE}</th>
+	 * <th>true</th>
+	 * </tr>
+	 * <tr>
+	 * <th>Require at least one numeric character
+	 * <th>{@link OpenmrsConstants#GP_PASSWORD_REQUIRES_DIGIT}</th>
+	 * <th>true</th>
+	 * </tr>
+	 * <tr>
+	 * <th>Require at least one non-numeric character
+	 * <th>{@link OpenmrsConstants#GP_PASSWORD_REQUIRES_NON_DIGIT}</th>
+	 * <th>true</th>
+	 * </tr>
+	 * <tr>
+	 * <th>Require a match on the specified regular expression
+	 * <th>{@link OpenmrsConstants#GP_PASSWORD_CUSTOM_REGEX}</th>
+	 * <th>null</th>
+	 * </tr>
 	 * </table>
 	 * 
 	 * @param username user name of the user with password to validated
@@ -1895,21 +1906,44 @@ public class OpenmrsUtil {
 	 * @should pass with password matching configured regex
 	 * @should allow password to contain non alphanumeric characters
 	 * @should allow password to contain white spaces
+	 * @should still work without an open session
 	 */
 	public static void validatePassword(String username, String password, String systemId) throws PasswordException {
-
-		AdministrationService svc = Context.getAdministrationService();
+		
+		// default values for all of the global properties
+		String userGp = "true";
+		String lengthGp = "8";
+		String caseGp = "true";
+		String digitGp = "true";
+		String nonDigitGp = "true";
+		String regexGp = null;
+		AdministrationService svc = null;
+		
+		try {
+			svc = Context.getAdministrationService();
+		}
+		catch (APIException apiEx) {
+			// if a service isn't available, fail quietly and just do the defaults
+			log.debug("Unable to get global properties", apiEx);
+		}
+		
+		if (svc != null) {
+			userGp = svc.getGlobalProperty(OpenmrsConstants.GP_PASSWORD_CANNOT_MATCH_USERNAME_OR_SYSTEMID, userGp);
+			lengthGp = svc.getGlobalProperty(OpenmrsConstants.GP_PASSWORD_MINIMUM_LENGTH, lengthGp);
+			caseGp = svc.getGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, caseGp);
+			digitGp = svc.getGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_DIGIT, digitGp);
+			nonDigitGp = svc.getGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_NON_DIGIT, nonDigitGp);
+			regexGp = svc.getGlobalProperty(OpenmrsConstants.GP_PASSWORD_CUSTOM_REGEX, regexGp);
+		}
 		
 		if (password == null) {
 			throw new WeakPasswordException();
 		}
 		
-		String userGp = svc.getGlobalProperty(OpenmrsConstants.GP_PASSWORD_CANNOT_MATCH_USERNAME_OR_SYSTEMID, "true");
 		if ("true".equals(userGp) && (password.equals(username) || password.equals(systemId))) {
 			throw new WeakPasswordException();
 		}
 		
-		String lengthGp = svc.getGlobalProperty(OpenmrsConstants.GP_PASSWORD_MINIMUM_LENGTH, "8");
 		if (StringUtils.isNotEmpty(lengthGp)) {
 			try {
 				int minLength = Integer.parseInt(lengthGp);
@@ -1918,26 +1952,24 @@ public class OpenmrsUtil {
 				}
 			}
 			catch (NumberFormatException nfe) {
-				log.warn("Error in global property <" + OpenmrsConstants.GP_PASSWORD_MINIMUM_LENGTH + "> must be an Integer");
+				log
+				        .warn("Error in global property <" + OpenmrsConstants.GP_PASSWORD_MINIMUM_LENGTH
+				                + "> must be an Integer");
 			}
 		}
 		
-		String caseGp = svc.getGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "true");
 		if ("true".equals(caseGp) && !containsUpperAndLowerCase(password)) {
 			throw new InvalidCharactersPasswordException(getMessage("error.password.requireMixedCase"));
 		}
 		
-		String digitGp = svc.getGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_DIGIT, "true");
 		if ("true".equals(digitGp) && !containsDigit(password)) {
 			throw new InvalidCharactersPasswordException(getMessage("error.password.requireNumber"));
 		}
 		
-		String nonDigitGp = svc.getGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_NON_DIGIT, "true");
 		if ("true".equals(nonDigitGp) && containsOnlyDigits(password)) {
 			throw new InvalidCharactersPasswordException(getMessage("error.password.requireLetter"));
 		}
-
-		String regexGp = svc.getGlobalProperty(OpenmrsConstants.GP_PASSWORD_CUSTOM_REGEX);
+		
 		if (StringUtils.isNotEmpty(regexGp)) {
 			try {
 				Pattern pattern = Pattern.compile(regexGp);
@@ -1947,12 +1979,12 @@ public class OpenmrsUtil {
 				}
 			}
 			catch (PatternSyntaxException pse) {
-				log.warn("Invalid regex of " + regexGp + " defined in global property <" + 
-						  OpenmrsConstants.GP_PASSWORD_CUSTOM_REGEX + ">.");
+				log.warn("Invalid regex of " + regexGp + " defined in global property <"
+				        + OpenmrsConstants.GP_PASSWORD_CUSTOM_REGEX + ">.");
 			}
 		}
 	}
-
+	
 	/**
 	 * @param test the string to test
 	 * @return true if the passed string contains both upper and lower case characters
