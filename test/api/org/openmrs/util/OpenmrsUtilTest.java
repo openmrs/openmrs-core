@@ -380,7 +380,8 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	@Test(expected = InvalidCharactersPasswordException.class)
 	@Verifies(value = "should fail with password not matching configured regex", method = "validatePassword(String,String,String)")
 	public void validatePassword_shouldFailWithPasswordNotMatchingConfiguredRegex() throws Exception {
-		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_CUSTOM_REGEX, "[A-Z][a-z][0-9][0-9][a-z][A-Z][a-z][a-z][a-z][a-z]");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_CUSTOM_REGEX,
+		    "[A-Z][a-z][0-9][0-9][a-z][A-Z][a-z][a-z][a-z][a-z]");
 		OpenmrsUtil.validatePassword("admin", "he11oWorld", "1-8");
 	}
 	
@@ -390,7 +391,8 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should pass with password matching configured regex", method = "validatePassword(String,String,String)")
 	public void validatePassword_shouldPassWithPasswordMatchingConfiguredRegex() throws Exception {
-		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_CUSTOM_REGEX, "[A-Z][a-z][0-9][0-9][a-z][A-Z][a-z][a-z][a-z][a-z]");
+		TestUtil.saveGlobalProperty(OpenmrsConstants.GP_PASSWORD_CUSTOM_REGEX,
+		    "[A-Z][a-z][0-9][0-9][a-z][A-Z][a-z][a-z][a-z][a-z]");
 		OpenmrsUtil.validatePassword("admin", "He11oWorld", "1-8");
 	}
 	
@@ -459,7 +461,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 		Assert.assertFalse(OpenmrsUtil.containsUpperAndLowerCase(""));
 		Assert.assertFalse(OpenmrsUtil.containsUpperAndLowerCase(null));
 	}
-
+	
 	/**
 	 * @see {@link OpenmrsUtil#containsOnlyDigits(String)}
 	 */
@@ -481,7 +483,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 		Assert.assertFalse(OpenmrsUtil.containsOnlyDigits(""));
 		Assert.assertFalse(OpenmrsUtil.containsOnlyDigits(null));
 	}
-
+	
 	/**
 	 * @see {@link OpenmrsUtil#containsDigit(String)}
 	 */
@@ -500,5 +502,20 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 		Assert.assertFalse(OpenmrsUtil.containsDigit("ABC .$!@#$%^&*()-+=/?><.,~`|[]"));
 		Assert.assertFalse(OpenmrsUtil.containsDigit(""));
 		Assert.assertFalse(OpenmrsUtil.containsDigit(null));
+	}
+	
+	/**
+	 * The validate password method should be in a separate jvm here so that the Context and
+	 * services are not available to the validatePassword (similar to how its used in the
+	 * initialization wizard), but that is not possible to set up on a test-by-test basis, so we
+	 * settle by making the user context not available.
+	 * 
+	 * @see {@link OpenmrsUtil#validatePassword(String,String,String)}
+	 */
+	@Test
+	@Verifies(value = "should still work without an open session", method = "validatePassword(String,String,String)")
+	public void validatePassword_shouldStillWorkWithoutAnOpenSession() throws Exception {
+		Context.closeSession();
+		OpenmrsUtil.validatePassword("admin", "1234Password", "systemId");
 	}
 }

@@ -91,10 +91,13 @@ public class DatabaseUpdater {
 	public static void executeChangelog(String changelog, Map<String, Object> userInput) throws DatabaseUpdateException,
 	                                                                                    InputRequiredException {
 		
+		log.debug("Executing changelog: " + changelog);
+		
 		// a call back that, well, does nothing
 		ChangeSetExecutorCallback doNothingCallback = new ChangeSetExecutorCallback() {
 			
 			public void executing(ChangeSet changeSet, int numChangeSetsToRun) {
+				log.debug("Executing changeset: " + changeSet.getId() + " numChangeSetsToRun: " + numChangeSetsToRun);
 			}
 			
 		};
@@ -175,6 +178,7 @@ public class DatabaseUpdater {
 			}
 		}
 		
+		log.debug("Setting up liquibase object to run changelog: " + changeLogFile);
 		Liquibase liquibase = getLiquibase(changeLogFile);
 		int numChangeSetsToRun = liquibase.listUnrunChangeSets(contexts).size();
 		Database database = liquibase.getDatabase();
