@@ -1927,7 +1927,8 @@ public class OpenmrsUtil {
 			log.debug("Unable to get global properties", apiEx);
 		}
 		
-		if (svc != null) {
+		if (svc != null && Context.isSessionOpen()) {
+			// (the session won't be open here to allow for the unit test to fake not having the admin service available)
 			userGp = svc.getGlobalProperty(OpenmrsConstants.GP_PASSWORD_CANNOT_MATCH_USERNAME_OR_SYSTEMID, userGp);
 			lengthGp = svc.getGlobalProperty(OpenmrsConstants.GP_PASSWORD_MINIMUM_LENGTH, lengthGp);
 			caseGp = svc.getGlobalProperty(OpenmrsConstants.GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, caseGp);
