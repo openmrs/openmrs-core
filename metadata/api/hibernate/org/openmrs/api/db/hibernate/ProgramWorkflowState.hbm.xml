@@ -14,7 +14,7 @@
 		<discriminator column="program_workflow_state_id" insert="false" />
 		
 		<property name="uuid" type="java.lang.String"
-			column="uuid" length="36" unique="true" />
+			column="uuid" length="38" unique="true" />
 
 		<property name="initial" type="java.lang.Boolean" column="initial" length="1" not-null="true" />
 		

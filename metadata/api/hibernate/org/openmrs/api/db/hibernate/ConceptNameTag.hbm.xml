@@ -25,7 +25,7 @@
 			column="void_reason" length="255" />
 		<many-to-one name="voidedBy" class="User" column="voided_by" />
 		
-		<property name="uuid" type="java.lang.String" column="uuid" length="36" unique="true" />
+		<property name="uuid" type="java.lang.String" column="uuid" length="38" unique="true" />
 	</class>
 	
 </hibernate-mapping>

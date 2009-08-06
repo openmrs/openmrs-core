@@ -12,7 +12,7 @@
 		</id>
 		
 		<property name="uuid" type="java.lang.String"
-			column="uuid" length="36" unique="true"  />
+			column="uuid" length="38" unique="true"  />
 
 		<property name="sortWeight" type="java.lang.Double"
 			column="sort_weight" length="22" not-null="true"/>

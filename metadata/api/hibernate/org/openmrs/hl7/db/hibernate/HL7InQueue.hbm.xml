@@ -34,6 +34,6 @@
 			column="message_state" not-null="false" length="4" />
 		
 		<property name="uuid" type="java.lang.String"
-			column="uuid" length="36" unique="true" />
+			column="uuid" length="38" unique="true" />
 	</class>
 </hibernate-mapping>
