@@ -14,7 +14,7 @@
 		<discriminator column="program_workflow_id" insert="false" />
 
 		<property name="uuid" type="java.lang.String"
-			column="uuid" length="36" unique="true" />
+			column="uuid" length="38" unique="true" />
 
 		<property name="dateCreated" type="java.util.Date" column="date_created" not-null="true" length="19" />
 		

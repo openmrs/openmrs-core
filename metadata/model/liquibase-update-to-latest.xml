@@ -825,375 +825,375 @@
 		</createIndex>
 	</changeSet>
 	
-	<changeSet id="20090402-1515-cohort" author="bwolfe">
+	<changeSet id="20090402-1515-38-cohort" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="cohort" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to cohort table</comment>
 		<addColumn tableName="cohort">
-			<column name="uuid" type="UUID" />
+			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-concept" author="bwolfe">
+	<changeSet id="20090402-1515-38-concept" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="concept" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to concept table</comment>
 		<addColumn tableName="concept">
-			<column name="uuid" type="UUID" />
+			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-concept_answer" author="bwolfe">
+	<changeSet id="20090402-1515-38-concept_answer" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="concept_answer" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to concept_answer table</comment>
 		<addColumn tableName="concept_answer">
-			<column name="uuid" type="UUID" />
+			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-concept_class" author="bwolfe">
+	<changeSet id="20090402-1515-38-concept_class" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="concept_class" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to concept_class table</comment>
 		<addColumn tableName="concept_class">
-			<column name="uuid" type="UUID" />
+			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-concept_datatype" author="bwolfe">
+	<changeSet id="20090402-1515-38-concept_datatype" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="concept_datatype" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to concept_datatype table</comment>
 		<addColumn tableName="concept_datatype">
-			<column name="uuid" type="UUID" />
+			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-concept_description" author="bwolfe">
+	<changeSet id="20090402-1515-38-concept_description" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="concept_description" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to concept_description table</comment>
 		<addColumn tableName="concept_description">
-			<column name="uuid" type="UUID" />
+			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-concept_map" author="bwolfe">
+	<changeSet id="20090402-1515-38-concept_map" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="concept_map" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to concept_map table</comment>
 		<addColumn tableName="concept_map">
-			<column name="uuid" type="UUID" />
+			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-concept_name" author="bwolfe">
+	<changeSet id="20090402-1515-38-concept_name" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="concept_name" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to concept_name table</comment>
 		<addColumn tableName="concept_name">
-			<column name="uuid" type="UUID" />
+			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-concept_name_tag" author="bwolfe">
+	<changeSet id="20090402-1515-38-concept_name_tag" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="concept_name_tag" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to concept_name_tag table</comment>
 		<addColumn tableName="concept_name_tag">
-			<column name="uuid" type="UUID" />
+			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-concept_proposal" author="bwolfe">
+	<changeSet id="20090402-1515-38-concept_proposal" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="concept_proposal" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to concept_proposal table</comment>
 		<addColumn tableName="concept_proposal">
-			<column name="uuid" type="UUID" />
+			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-concept_set" author="bwolfe">
+	<changeSet id="20090402-1515-38-concept_set" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="concept_set" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to concept_set table</comment>
 		<addColumn tableName="concept_set">
-			<column name="uuid" type="UUID" />
+			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-concept_source" author="bwolfe">
+	<changeSet id="20090402-1515-38-concept_source" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="concept_source" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to concept_source table</comment>
 		<addColumn tableName="concept_source">
-			<column name="uuid" type="UUID" />
+			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-concept_state_conversion" author="bwolfe">
+	<changeSet id="20090402-1515-38-concept_state_conversion" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="concept_state_conversion" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to concept_state_conversion table</comment>
 		<addColumn tableName="concept_state_conversion">
-			<column name="uuid" type="UUID" />
+			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-drug" author="bwolfe">
+	<changeSet id="20090402-1515-38-drug" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="drug" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to drug table</comment>
 		<addColumn tableName="drug">
-			<column name="uuid" type="UUID" />
+			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-encounter" author="bwolfe">
+	<changeSet id="20090402-1515-38-encounter" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="encounter" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to encounter table</comment>
 		<addColumn tableName="encounter">
-			<column name="uuid" type="UUID" />
+			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-encounter_type" author="bwolfe">
+	<changeSet id="20090402-1515-38-encounter_type" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="encounter_type" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to encounter_type table</comment>
 		<addColumn tableName="encounter_type">
-			<column name="uuid" type="UUID" />
+			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-field" author="bwolfe">
+	<changeSet id="20090402-1515-38-field" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="field" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to field table</comment>
 		<addColumn tableName="field">
-			<column name="uuid" type="UUID" />
+			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-field_answer" author="bwolfe">
+	<changeSet id="20090402-1515-38-field_answer" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="field_answer" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to field_answer table</comment>
 		<addColumn tableName="field_answer">
-			<column name="uuid" type="UUID" />
+			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-field_type" author="bwolfe">
+	<changeSet id="20090402-1515-38-field_type" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="field_type" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to field_type table</comment>
 		<addColumn tableName="field_type">
-			<column name="uuid" type="UUID" />
+			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-form" author="bwolfe">
+	<changeSet id="20090402-1515-38-form" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="form" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to form table</comment>
 		<addColumn tableName="form">
-			<column name="uuid" type="UUID" />
+			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-form_field" author="bwolfe">
+	<changeSet id="20090402-1515-38-form_field" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="form_field" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to form_field table</comment>
 		<addColumn tableName="form_field">
-			<column name="uuid" type="UUID" />
+			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-global_property" author="bwolfe">
+	<changeSet id="20090402-1515-38-global_property" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="global_property" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to global_property table</comment>
 		<addColumn tableName="global_property">
-			<column name="uuid" type="UUID" />
+			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-hl7_in_archive" author="bwolfe">
+	<changeSet id="20090402-1515-38-hl7_in_archive" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="hl7_in_archive" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to hl7_in_archive table</comment>
 		<addColumn tableName="hl7_in_archive">
-			<column name="uuid" type="UUID" />
+			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-hl7_in_error" author="bwolfe">
+	<changeSet id="20090402-1515-38-hl7_in_error" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="hl7_in_error" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to hl7_in_error table</comment>
 		<addColumn tableName="hl7_in_error">
-			<column name="uuid" type="UUID" />
+			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-hl7_in_queue" author="bwolfe">
+	<changeSet id="20090402-1515-38-hl7_in_queue" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="hl7_in_queue" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to hl7_in_queue table</comment>
 		<addColumn tableName="hl7_in_queue">
-			<column name="uuid" type="UUID" />
+			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-hl7_source" author="bwolfe">
+	<changeSet id="20090402-1515-38-hl7_source" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="hl7_source" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to hl7_source table</comment>
 		<addColumn tableName="hl7_source">
-			<column name="uuid" type="UUID" />
+			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-location" author="bwolfe">
+	<changeSet id="20090402-1515-38-location" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="location" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to location table</comment>
 		<addColumn tableName="location">
-			<column name="uuid" type="UUID" />
+			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-location_tag" author="bwolfe">
+	<changeSet id="20090402-1515-38-location_tag" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="location_tag" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to location_tag table</comment>
 		<addColumn tableName="location_tag">
-			<column name="uuid" type="UUID" />
+			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-note" author="bwolfe">
+	<changeSet id="20090402-1515-38-note" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="note" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to note table</comment>
 		<addColumn tableName="note">
-			<column name="uuid" type="UUID" />
+			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-notification_alert" author="bwolfe">
+	<changeSet id="20090402-1515-38-notification_alert" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="notification_alert" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to notification_alert table</comment>
 		<addColumn tableName="notification_alert">
-			<column name="uuid" type="UUID" />
+			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-notification_template" author="bwolfe">
+	<changeSet id="20090402-1515-38-notification_template" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="notification_template" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to notification_template table</comment>
 		<addColumn tableName="notification_template">
-			<column name="uuid" type="UUID" />
+			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-obs" author="bwolfe">
+	<changeSet id="20090402-1515-38-obs" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="obs" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to obs table</comment>
 		<addColumn tableName="obs">
-			<column name="uuid" type="UUID" />
+			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-order_type" author="bwolfe">
+	<changeSet id="20090402-1515-38-order_type" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="order_type" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to order_type table</comment>
 		<addColumn tableName="order_type">
-			<column name="uuid" type="UUID" />
+			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-orders" author="bwolfe">
+	<changeSet id="20090402-1515-38-orders" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="orders" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to orders table</comment>
 		<addColumn tableName="orders">
-			<column name="uuid" type="UUID" />
+			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-patient_identifier" author="bwolfe">
+	<changeSet id="20090402-1515-38-patient_identifier" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="patient_identifier" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to patient_identifier table</comment>
 		<addColumn tableName="patient_identifier">
-			<column name="uuid" type="UUID" />
+			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-patient_identifier_type" author="bwolfe">
+	<changeSet id="20090402-1515-38-patient_identifier_type" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="patient_identifier_type" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to patient_identifier_type table</comment>
 		<addColumn tableName="patient_identifier_type">
-			<column name="uuid" type="UUID" />
+			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-patient_program" author="bwolfe">
+	<changeSet id="20090402-1515-38-patient_program" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="patient_program" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to patient_program table</comment>
 		<addColumn tableName="patient_program">
-			<column name="uuid" type="UUID" />
+			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-patient_state" author="bwolfe">
+	<changeSet id="20090402-1515-38-patient_state" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="patient_state" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to patient_state table</comment>
 		<addColumn tableName="patient_state">
-			<column name="uuid" type="UUID" />
+			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-person" author="bwolfe">
+	<changeSet id="20090402-1515-38-person" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="person" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to person table</comment>
 		<addColumn tableName="person">
-			<column name="uuid" type="UUID" />
+			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-person_address" author="bwolfe">
+	<changeSet id="20090402-1515-38-person_address" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="person_address" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to person_address table</comment>
 		<addColumn tableName="person_address">
-			<column name="uuid" type="UUID" />
+			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-person_attribute" author="bwolfe">
+	<changeSet id="20090402-1515-38-person_attribute" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="person_attribute" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to person_attribute table</comment>
 		<addColumn tableName="person_attribute">
-			<column name="uuid" type="UUID" />
+			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-person_attribute_type" author="bwolfe">
+	<changeSet id="20090402-1515-38-person_attribute_type" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="person_attribute_type" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to person_attribute_type table</comment>
 		<addColumn tableName="person_attribute_type">
-			<column name="uuid" type="UUID" />
+			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-person_name" author="bwolfe">
+	<changeSet id="20090402-1515-38-person_name" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="person_name" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to person_name table</comment>
 		<addColumn tableName="person_name">
-			<column name="uuid" type="UUID" />
+			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-privilege" author="bwolfe">
+	<changeSet id="20090402-1515-38-privilege" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="privilege" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to privilege table</comment>
 		<addColumn tableName="privilege">
-			<column name="uuid" type="UUID" />
+			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-program" author="bwolfe">
+	<changeSet id="20090402-1515-38-program" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="program" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to program table</comment>
 		<addColumn tableName="program">
-			<column name="uuid" type="UUID" />
+			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-program_workflow" author="bwolfe">
+	<changeSet id="20090402-1515-38-program_workflow" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="program_workflow" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to program_workflow table</comment>
 		<addColumn tableName="program_workflow">
-			<column name="uuid" type="UUID" />
+			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-program_workflow_state" author="bwolfe">
+	<changeSet id="20090402-1515-38-program_workflow_state" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="program_workflow_state" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to program_workflow_state table</comment>
 		<addColumn tableName="program_workflow_state">
-			<column name="uuid" type="UUID" />
+			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-relationship" author="bwolfe">
+	<changeSet id="20090402-1515-38-relationship" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="relationship" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to relationship table</comment>
 		<addColumn tableName="relationship">
-			<column name="uuid" type="UUID" />
+			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-relationship_type" author="bwolfe">
+	<changeSet id="20090402-1515-38-relationship_type" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="relationship_type" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to relationship_type table</comment>
 		<addColumn tableName="relationship_type">
-			<column name="uuid" type="UUID" />
+			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-report_object" author="bwolfe">
+	<changeSet id="20090402-1515-38-report_object" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="report_object" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to report_object table</comment>
 		<addColumn tableName="report_object">
-			<column name="uuid" type="UUID" />
+			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-report_schema_xml" author="bwolfe">
+	<changeSet id="20090402-1515-38-report_schema_xml" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="report_schema_xml" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to report_schema_xml table</comment>
 		<addColumn tableName="report_schema_xml">
-			<column name="uuid" type="UUID" />
+			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-role" author="bwolfe">
+	<changeSet id="20090402-1515-38-role" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="role" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to role table</comment>
 		<addColumn tableName="role">
-			<column name="uuid" type="UUID" />
+			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
-	<changeSet id="20090402-1515-serialized_object" author="bwolfe">
+	<changeSet id="20090402-1515-38-serialized_object" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="serialized_object" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to serialized_object table</comment>
 		<addColumn tableName="serialized_object">
-			<column name="uuid" type="UUID" />
+			<column name="uuid" type="char(38)" />
 		</addColumn>
 	</changeSet>
 
@@ -1818,62 +1818,64 @@
 	</changeSet>
 	
 	<changeSet id="20090402-1518" author="bwolfe">
+		<validCheckSum>64e353f08027fb48155b5be8a69cfca</validCheckSum> <!-- Checksum when datatype was "uuid" -->
+		<validCheckSum>dfaf705d7776613e619dedf3e06d7640</validCheckSum><!-- New checksum when datatype is "char(38)" -->
 		<comment>
 			Now that UUID generation is done, set the uuid columns to not "NOT NULL" 
 		</comment>
 		
-		<addNotNullConstraint tableName="cohort" columnName="uuid" columnDataType="UUID"/>
-		<addNotNullConstraint tableName="concept" columnName="uuid" columnDataType="UUID" />
-		<addNotNullConstraint tableName="concept_answer" columnName="uuid" columnDataType="UUID" />
-		<addNotNullConstraint tableName="concept_class" columnName="uuid" columnDataType="UUID" />
-		<addNotNullConstraint tableName="concept_datatype" columnName="uuid" columnDataType="UUID" />
-		<addNotNullConstraint tableName="concept_description" columnName="uuid" columnDataType="UUID" />
-		<addNotNullConstraint tableName="concept_map" columnName="uuid" columnDataType="UUID" />
-		<addNotNullConstraint tableName="concept_name" columnName="uuid" columnDataType="UUID" />
-		<addNotNullConstraint tableName="concept_name_tag" columnName="uuid" columnDataType="UUID" />
-		<addNotNullConstraint tableName="concept_proposal" columnName="uuid" columnDataType="UUID" />
-		<addNotNullConstraint tableName="concept_set" columnName="uuid" columnDataType="UUID" />
-		<addNotNullConstraint tableName="concept_source" columnName="uuid" columnDataType="UUID" />
-		<addNotNullConstraint tableName="concept_state_conversion" columnName="uuid" columnDataType="UUID" />
-		<addNotNullConstraint tableName="drug" columnName="uuid" columnDataType="UUID" />
-		<addNotNullConstraint tableName="encounter" columnName="uuid" columnDataType="UUID" />
-		<addNotNullConstraint tableName="encounter_type" columnName="uuid" columnDataType="UUID" />
-		<addNotNullConstraint tableName="field" columnName="uuid" columnDataType="UUID" />
-		<addNotNullConstraint tableName="field_answer" columnName="uuid" columnDataType="UUID" />
-		<addNotNullConstraint tableName="field_type" columnName="uuid" columnDataType="UUID" />
-		<addNotNullConstraint tableName="form" columnName="uuid" columnDataType="UUID" />
-		<addNotNullConstraint tableName="form_field" columnName="uuid" columnDataType="UUID" />
-		<addNotNullConstraint tableName="global_property" columnName="uuid" columnDataType="UUID" />
-		<addNotNullConstraint tableName="hl7_in_archive" columnName="uuid" columnDataType="UUID" />
-		<addNotNullConstraint tableName="hl7_in_error" columnName="uuid" columnDataType="UUID" />
-		<addNotNullConstraint tableName="hl7_in_queue" columnName="uuid" columnDataType="UUID" />
-		<addNotNullConstraint tableName="hl7_source" columnName="uuid" columnDataType="UUID" />
-		<addNotNullConstraint tableName="location" columnName="uuid" columnDataType="UUID" />
-		<addNotNullConstraint tableName="location_tag" columnName="uuid" columnDataType="UUID" />
-		<addNotNullConstraint tableName="note" columnName="uuid" columnDataType="UUID" />
-		<addNotNullConstraint tableName="notification_alert" columnName="uuid" columnDataType="UUID" />
-		<addNotNullConstraint tableName="notification_template" columnName="uuid" columnDataType="UUID" />
-		<addNotNullConstraint tableName="obs" columnName="uuid" columnDataType="UUID" />
-		<addNotNullConstraint tableName="order_type" columnName="uuid" columnDataType="UUID" />
-		<addNotNullConstraint tableName="orders" columnName="uuid" columnDataType="UUID" />
-		<addNotNullConstraint tableName="patient_identifier" columnName="uuid" columnDataType="UUID" />
-		<addNotNullConstraint tableName="patient_identifier_type" columnName="uuid" columnDataType="UUID" />
-		<addNotNullConstraint tableName="patient_program" columnName="uuid" columnDataType="UUID" />
-		<addNotNullConstraint tableName="patient_state" columnName="uuid" columnDataType="UUID" />
-		<addNotNullConstraint tableName="person" columnName="uuid" columnDataType="UUID" />
-		<addNotNullConstraint tableName="person_address" columnName="uuid" columnDataType="UUID" />
-		<addNotNullConstraint tableName="person_attribute" columnName="uuid" columnDataType="UUID" />
-		<addNotNullConstraint tableName="person_attribute_type" columnName="uuid" columnDataType="UUID" />
-		<addNotNullConstraint tableName="person_name" columnName="uuid" columnDataType="UUID" />
-		<addNotNullConstraint tableName="privilege" columnName="uuid" columnDataType="UUID" />
-		<addNotNullConstraint tableName="program" columnName="uuid" columnDataType="UUID" />
-		<addNotNullConstraint tableName="program_workflow" columnName="uuid" columnDataType="UUID" />
-		<addNotNullConstraint tableName="program_workflow_state" columnName="uuid" columnDataType="UUID" />
-		<addNotNullConstraint tableName="relationship_type" columnName="uuid" columnDataType="UUID" />
-		<addNotNullConstraint tableName="report_object" columnName="uuid" columnDataType="UUID" />
-		<addNotNullConstraint tableName="report_schema_xml" columnName="uuid" columnDataType="UUID" />
-		<addNotNullConstraint tableName="role" columnName="uuid" columnDataType="UUID" />
-		<addNotNullConstraint tableName="serialized_object" columnName="uuid" columnDataType="UUID" />
+		<addNotNullConstraint tableName="cohort" columnName="uuid" columnDataType="char(38)"/>
+		<addNotNullConstraint tableName="concept" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="concept_answer" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="concept_class" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="concept_datatype" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="concept_description" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="concept_map" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="concept_name" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="concept_name_tag" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="concept_proposal" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="concept_set" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="concept_source" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="concept_state_conversion" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="drug" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="encounter" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="encounter_type" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="field" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="field_answer" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="field_type" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="form" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="form_field" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="global_property" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="hl7_in_archive" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="hl7_in_error" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="hl7_in_queue" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="hl7_source" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="location" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="location_tag" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="note" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="notification_alert" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="notification_template" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="obs" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="order_type" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="orders" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="patient_identifier" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="patient_identifier_type" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="patient_program" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="patient_state" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="person" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="person_address" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="person_attribute" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="person_attribute_type" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="person_name" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="privilege" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="program" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="program_workflow" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="program_workflow_state" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="relationship_type" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="report_object" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="report_schema_xml" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="role" columnName="uuid" columnDataType="char(38)" />
+		<addNotNullConstraint tableName="serialized_object" columnName="uuid" columnDataType="char(38)" />
 	</changeSet>
 
 	

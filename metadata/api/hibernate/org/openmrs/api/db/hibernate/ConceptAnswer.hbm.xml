@@ -26,7 +26,7 @@
 		<property name="dateCreated" type="java.util.Date" column="date_created" not-null="true" />
 		<many-to-one name="creator" class="User" column="creator" not-null="true"/>		
 		
-		<property name="uuid" type="java.lang.String" column="uuid" length="36" unique="true" />		
+		<property name="uuid" type="java.lang.String" column="uuid" length="38" unique="true" />		
 
 	</class>
 	

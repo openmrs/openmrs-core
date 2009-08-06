@@ -16,7 +16,7 @@
 	</id>
     
 		<property name="uuid" type="java.lang.String"
-			column="uuid" length="36" unique="true" />
+			column="uuid" length="38" unique="true" />
 
     <many-to-one name="patient" column="patient_id"	class="org.openmrs.Patient"/>
 	<property name="identifier" type="java.lang.String" length="50"/>

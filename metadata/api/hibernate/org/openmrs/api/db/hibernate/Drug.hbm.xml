@@ -40,7 +40,7 @@
 			not-null="false" />
 
 		<property name="uuid" type="java.lang.String"
-			column="uuid" length="36" unique="true" />
+			column="uuid" length="38" unique="true" />
 
 		<!-- bi-directional one-to-many association to DrugOrder -->
 		<!--

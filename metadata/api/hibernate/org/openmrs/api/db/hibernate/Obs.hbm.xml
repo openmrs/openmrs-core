@@ -14,7 +14,7 @@
 		<discriminator column="obs_id" insert="false" />
 
 		<property name="uuid" type="java.lang.String"
-			column="uuid" length="36" unique="true" />
+			column="uuid" length="38" unique="true" />
 
 		<property name="personId" type="java.lang.Integer" length="11" 
 			column="person_id" not-null="true" insert="false" update="false" />
