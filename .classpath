@@ -65,7 +65,7 @@
 	<classpathentry kind="lib" path="lib/benerator/databene-webdecs-0.4.5.jar"/>
 	<classpathentry kind="lib" path="lib/commons-io/commons-io-1.4.jar"/>
 	<classpathentry kind="lib" path="lib/dwr/dwr-205.jar" sourcepath="/openmrs-source/dwr-2.0.5-src.zip"/>
-	<classpathentry kind="lib" path="lib/liquibase/liquibase-1.9.1-mod.jar" sourcepath="lib/liquibase/liquibase-1.9.1-mod.jar"/>
+	<classpathentry kind="lib" path="lib/liquibase/liquibase-1.9.4-mod.jar" sourcepath="/liquibase-19x"/>
 	<classpathentry kind="lib" path="lib/xstream/xstream-1.3.1.jar"/>
 	<classpathentry kind="output" path="build/"/>
 </classpath>
