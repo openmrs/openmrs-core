@@ -248,9 +248,26 @@
 		</c:forEach>
 	</table>
 	</div>
-
+	
 	<br />
-	<a href="${pageContext.request.contextPath}/admin/observations/obs.form?encounterId=${encounter.encounterId}"><spring:message code="Obs.add"/></a>
+	<div id="encounterFormAddObsMenu">
+		<openmrs:hasPrivilege privilege="Add Observations">
+			<div>
+				<a href="${pageContext.request.contextPath}/admin/observations/obs.form?encounterId=${encounter.encounterId}">
+					<spring:message code="Obs.add"/>
+				</a>
+			</div>
+		</openmrs:hasPrivilege>
+		<openmrs:extensionPoint pointId="org.openmrs.admin.encounters.encounterFormAddObsMenu" type="html" requiredClass="org.openmrs.module.web.extension.LinkProviderExtension">
+			<c:forEach items="${extension.links}" var="link">
+				<openmrs:hasPrivilege privilege="${link.requiredPrivilege}">
+					<div>
+						<a href="<c:url value="${link.url}" />"><spring:message code="${link.label}"/></a>
+					</div>
+				</openmrs:hasPrivilege>
+			</c:forEach>
+		</openmrs:extensionPoint>
+	</div>
 	<br />
 	
 </c:if>
