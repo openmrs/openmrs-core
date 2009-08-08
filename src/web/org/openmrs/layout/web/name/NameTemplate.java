@@ -19,6 +19,7 @@ import org.openmrs.layout.web.LayoutSupport;
 import org.openmrs.layout.web.LayoutTemplate;
 
 public class NameTemplate extends LayoutTemplate {
+	
 	private static Log log = LogFactory.getLog(NameTemplate.class);
 	
 	public String getLayoutToken() {
@@ -28,11 +29,10 @@ public class NameTemplate extends LayoutTemplate {
 	public String getNonLayoutToken() {
 		return "IS_NOT_NAME_TOKEN";
 	}
-
+	
 	@Override
 	public LayoutSupport getLayoutSupportInstance() {
 		return NameSupport.getInstance();
 	}
-	
 	
 }

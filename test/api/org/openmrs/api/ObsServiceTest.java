@@ -65,15 +65,15 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		LocationService locationService = Context.getLocationService();
 		ObsService obsService = Context.getObsService();
 		ConceptService conceptService = Context.getConceptService();
-
+		
 		Obs o = new Obs();
 		
 		//testing creation
 		
 		Order order1 = null;
 		Concept concept1 = conceptService.getConcept(1);
-		Patient patient1 = new Patient(2);  
-		Encounter encounter1 = (Encounter)es.getEncounter(1);
+		Patient patient1 = new Patient(2);
+		Encounter encounter1 = (Encounter) es.getEncounter(1);
 		Date datetime1 = new Date();
 		Location location1 = locationService.getLocation(1);
 		Integer groupId1 = new Integer(1);
@@ -116,9 +116,9 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		
 		Order order2 = null;
 		Concept concept2 = conceptService.getConcept(2);
-		Patient patient2 = new Patient(1); 
+		Patient patient2 = new Patient(1);
 		System.out.println("patient2: " + patient2.getPatientId());
-		Encounter encounter2 = (Encounter)es.getEncounter(2);
+		Encounter encounter2 = (Encounter) es.getEncounter(2);
 		Date datetime2 = new Date();
 		Location location2 = locationService.getLocation(1);
 		Integer valueGroupId2 = new Integer(3);
@@ -157,9 +157,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		  object is pointed to by the o1ToUpdate parameter that was passed in) */
 		// the saved obs should NOT have the new values
 		//assertFalse(o1ToUpdate.getValueNumeric().equals(valueNumeric2));
-		
 		// make sure the dateCreated 
-		
 		
 		Obs o3 = obsService.getObs(o1ToUpdateSaved.getObsId());
 		System.out.println("o3.isComplex? " + o3.isComplexObs());
@@ -222,7 +220,6 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		// should have failed early when it saw we were voiding a voided obs
 		assertFalse(reason.equals(obs.getVoidReason()));
 		
-		
 		// now do a valid voiding
 		obs.setVoided(Boolean.FALSE);
 		Obs voidedObs = obsService.voidObs(obs, reason);
@@ -239,7 +236,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		assertTrue(voidedObs.getObsId().equals(obs.getObsId()));
 		assertTrue(voidedObs.getObsId().equals(voidedObs.getObsId()));
 		
-	}	
+	}
 	
 	/**
 	 * Creates then updates a complex obs
@@ -250,10 +247,10 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	public void shouldComplexObsCreateUpdateDelete() throws Exception {
 		
 		// we don't have any complex obs in the system yet
-	}	
+	}
 	
 	/**
-	 * TODO 
+	 * TODO
 	 * 
 	 * @throws Exception
 	 */
@@ -277,7 +274,6 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		assertTrue("The first mimetype should be in the list", mimeTypes.contains(m1));
 		////////////////////////////////////////
 		
-		
 		//testing creation
 		
 		MimeType mimeType = new MimeType();
@@ -296,7 +292,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		assertNotNull(mimeTypes);
 		
 		boolean found = false;
-		for(Iterator<MimeType> i = mimeTypes.iterator(); i.hasNext();) {
+		for (Iterator<MimeType> i = mimeTypes.iterator(); i.hasNext();) {
 			MimeType mimeType2 = i.next();
 			assertNotNull(mimeType);
 			//check .equals function
@@ -309,7 +305,6 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		//assert that the new mimeType was returned in the list
 		assertTrue(found);
 		
-		
 		//check update
 		newMimeType.setMimeType("another test");
 		obsService.saveMimeType(newMimeType);
@@ -317,17 +312,15 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		MimeType newerMimeType = obsService.getMimeType(newMimeType.getMimeTypeId());
 		assertTrue(newerMimeType.getMimeType().equals(newMimeType.getMimeType()));
 		
-		
 		//check deletion
 		obsService.purgeMimeType(newerMimeType);
 		
 		assertNull(obsService.getMimeType(newMimeType.getMimeTypeId()));
-
+		
 	}
 	
 	/**
-	 * Tests the auto updating of the creator and dateCreated attrs 
-	 * when saving an obs
+	 * Tests the auto updating of the creator and dateCreated attrs when saving an obs
 	 * 
 	 * @throws Exception
 	 */
@@ -376,7 +369,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		ConceptService conceptService = Context.getConceptService();
 		Concept numeric = conceptService.getConcept(1);
 		ObsValidator validator = new ObsValidator();
-
+		
 		Obs obs = new Obs();
 		
 		// set the required properties
@@ -386,22 +379,22 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(obs, "obs");
 		validator.validate(obs, errors);
 		assertTrue("Should have errors: no question", errors.hasErrors());
-
+		
 		obs.setConcept(numeric);
 		errors = new BindException(obs, "obs");
 		validator.validate(obs, errors);
 		assertTrue("Should have errors: no value", errors.hasErrors());
-
+		
 		obs.setValueText("This is text");
 		errors = new BindException(obs, "obs");
 		validator.validate(obs, errors);
 		assertTrue("Should have errors: no numeric value", errors.hasErrors());
-
+		
 		obs.setValueNumeric(350d);
 		errors = new BindException(obs, "obs");
 		validator.validate(obs, errors);
 		assertFalse("Should have no errors.  But has: " + errors, errors.hasErrors());
-
+		
 		Person p = new Person(1);
 		
 		Obs parent = new Obs();
@@ -439,8 +432,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * This tests certain aspects of saving obs that are obsGroups or are
-	 * members of other obsGroups
+	 * This tests certain aspects of saving obs that are obsGroups or are members of other obsGroups
 	 * 
 	 * @throws Exception
 	 */
@@ -500,16 +492,15 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		assertNotNull(groupMember2.getDateCreated());
 		
 		// make sure the api didn't change the obsId of the first group member
-		Obs firstMember = (Obs)(obsGroup.getGroupMembers().toArray()[0]);
-		Obs secondMember = (Obs)(obsGroup.getGroupMembers().toArray()[1]);
+		Obs firstMember = (Obs) (obsGroup.getGroupMembers().toArray()[0]);
+		Obs secondMember = (Obs) (obsGroup.getGroupMembers().toArray()[1]);
 		if (firstMember.getConcept().equals(new Concept(1))) {
 			// the set of members gets jumpbled after save.  The first one
 			// we added above had a concept with id 1.
 			assertEquals(groupMember1OriginalObsId, firstMember.getObsId());
 			// make sure the second group member is still there
 			assertEquals(groupMember2, secondMember);
-		}
-		else {
+		} else {
 			assertEquals(groupMember1OriginalObsId, secondMember.getObsId());
 			// make sure the second group member is still there
 			assertEquals(groupMember2, firstMember);
@@ -518,18 +509,18 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * 
-	 * This test tests multi-level heirarchy obsGroup cascades for create, delete, update, void, and unvoid
+	 * This test tests multi-level heirarchy obsGroup cascades for create, delete, update, void, and
+	 * unvoid
 	 * 
 	 * @throws Exception
 	 */
 	@Test
 	public void shouldSaveUpdateDeleteVoidObsGroupCascades() throws Exception {
 		executeDataSet(INITIAL_OBS_XML);
-
+		
 		ObsService os = Context.getObsService();
 		ConceptService cs = Context.getConceptService();
-
+		
 		//create an obs
 		Obs o = new Obs();
 		o.setConcept(cs.getConcept(1));
@@ -539,7 +530,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		o.setObsDatetime(new Date());
 		o.setPerson(new Patient(2));
 		o.setValueText("original obs value text");
-
+		
 		//create a second obs
 		Obs o2 = new Obs();
 		o2.setConcept(cs.getConcept(1));
@@ -549,7 +540,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		o2.setObsDatetime(new Date());
 		o2.setValueText("second obs value text");
 		o2.setPerson(new Patient(2));
-
+		
 		//create a parent obs
 		Obs oParent = new Obs();
 		oParent.setConcept(cs.getConcept(2)); //in the concept set table as a set
@@ -558,7 +549,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		oParent.setLocation(new Location(1));
 		oParent.setObsDatetime(new Date());
 		oParent.setPerson(new Patient(2));
-
+		
 		//add o and o2 to the parent obs
 		oParent.addGroupMember(o2);
 		oParent.addGroupMember(o);
@@ -572,9 +563,9 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		oGP.setObsDatetime(new Date());
 		oGP.setPerson(new Patient(2));
 		oGP.setValueText("grandparent obs value text");
-
+		
 		oGP.addGroupMember(oParent);
-
+		
 		//create a leaf observation
 		Obs o3 = new Obs();
 		o3.setConcept(cs.getConcept(1));
@@ -584,7 +575,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		o3.setObsDatetime(new Date());
 		o3.setValueText("leaf obs value text");
 		o3.setPerson(new Patient(2));
-
+		
 		//and add it to the grandparent
 		oGP.addGroupMember(o3);
 		
@@ -609,13 +600,13 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		oGGGP.setObsDatetime(new Date());
 		oGGGP.setValueText("great great grandparent value text");
 		oGGGP.setPerson(new Patient(2));
-
+		
 		oGGGP.addGroupMember(oGGP);
-
+		
 		//Create the great great grandparent
 		os.saveObs(oGGGP, null);
 		int oGGGPId = oGGGP.getObsId();
-
+		
 		//now navigate the tree and make sure that all tree members have obs_ids
 		//indicating that they've been saved (unsaved_value in the hibernate mapping set to null so
 		// the notNull assertion is sufficient):		
@@ -635,23 +626,23 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 					if (parent.isObsGrouping()) {
 						assertEquals(parent.getGroupMembers().size(), 2);
 						assertNotNull(parent.getObsId());
-						for (Obs child:parent.getGroupMembers()){
+						for (Obs child : parent.getGroupMembers()) {
 							assertNotNull(child.getObsId());
 							//make an edit to a value so that we can save the great great grandfather
 							//and see if the changes have been reflected:
 							child.setValueText("testingUpdate");
 						}
 					}
-
+					
 				}
-
+				
 			}
 		}
 		
 		Obs oGGGPThatWasUpdated = os.saveObs(oGGGP, "Updating obs group parent");
 		
 		//now, re-walk the tree to verify that the bottom-level leaf obs have the new text value:
-	
+		
 		int childOneId = 0;
 		int childTwoId = 0;
 		assertTrue(oGGGPThatWasUpdated.isObsGrouping());
@@ -670,22 +661,22 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 						assertEquals(parent.getGroupMembers().size(), 2);
 						assertNotNull(parent.getObsId());
 						int i = 0;
-						for (Obs child : parent.getGroupMembers()){
+						for (Obs child : parent.getGroupMembers()) {
 							assertEquals("testingUpdate", child.getValueText());
 							//set childIds, so that we can test voids/unvoids/delete
 							if (i == 0)
 								childOneId = child.getObsId();
-							else 
+							else
 								childTwoId = child.getObsId();
 							i++;
 						}
 					}
-
+					
 				}
-
+				
 			}
 		}
-	
+		
 		//check voiding:
 		//first, just create an Obs, and void it, and verify:
 		Obs oVoidTest = new Obs();
@@ -713,7 +704,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		
 		Obs childLeafObs = os.getObs(childOneId);
 		assertTrue(childLeafObs.isVoided());
-	
+		
 		//now test the un-void:
 		os.unvoidObs(oGGGPThatWasUpdated);
 		assertFalse(oGGGPThatWasUpdated.isVoided());
@@ -729,7 +720,6 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		childLeafObs = os.getObs(childOneId);
 		assertFalse(childLeafObs.isVoided());
 		
-		
 		//now, test the feature that unvoid doesn't happen unless child obs has the same dateVoided as
 		// the Obj argument that gets passed into unvoid:
 		
@@ -737,7 +727,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		childLeafObs = os.getObs(childOneId);
 		assertTrue(childLeafObs.isVoided());
 		
-		childLeafObs.setDateVoided(new Date(childLeafObs.getDateVoided().getTime() - 5000)); 
+		childLeafObs.setDateVoided(new Date(childLeafObs.getDateVoided().getTime() - 5000));
 		//os.saveObs(childLeafObs, "saving child leaf obs");
 		os.unvoidObs(oGGGPThatWasUpdated);
 		
@@ -764,10 +754,10 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * Creates a simple Obs Group consisting of one parent and one child.
-	 * Assumes INITIAL_OBS_XML is being used.
+	 * Creates a simple Obs Group consisting of one parent and one child. Assumes INITIAL_OBS_XML is
+	 * being used.
 	 */
-	private void createObsGroup(Obs parent, Obs child, ConceptService cs, ObsService os){
+	private void createObsGroup(Obs parent, Obs child, ConceptService cs, ObsService os) {
 		child.setConcept(cs.getConcept(1));
 		child.setDateCreated(new Date());
 		child.setCreator(Context.getAuthenticatedUser());
@@ -775,8 +765,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		child.setObsDatetime(new Date());
 		child.setValueText("test");
 		child.setPerson(new Patient(2));
-
-
+		
 		parent.setConcept(cs.getConcept(2)); //in the concept set table as a set
 		parent.setDateCreated(new Date());
 		parent.setCreator(Context.getAuthenticatedUser());
@@ -790,8 +779,8 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * This test makes sure that child obs on a parent obs are given an obs group id when the 
-	 * parent obs is created
+	 * This test makes sure that child obs on a parent obs are given an obs group id when the parent
+	 * obs is created
 	 * 
 	 * @throws Throwable
 	 */
@@ -799,13 +788,13 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	public void shouldCreateObsGroupId() throws Throwable {
 		
 		executeDataSet(INITIAL_OBS_XML);
-
+		
 		ConceptService cs = Context.getConceptService();
 		ObsService os = Context.getObsService();
 		
 		Obs child = new Obs();
 		Obs oParent = new Obs();
-
+		
 		createObsGroup(oParent, child, cs, os);
 		
 		// save the obs ids
@@ -826,18 +815,16 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		assertTrue(fetchedParent.isObsGrouping());
 		assertEquals(1, fetchedParent.getGroupMembers().size());
 		
-		
 	}
-		
+	
 	/**
-	 * 
-	 * Unit test for findObsByGroupId... yeah, it's deprecated, but doesn't hurt to check
-	 * that it's doing what we want it to be doing.
+	 * Unit test for findObsByGroupId... yeah, it's deprecated, but doesn't hurt to check that it's
+	 * doing what we want it to be doing.
 	 * 
 	 * @throws Throwable
 	 */
 	@Test
-	public void shouldFindObsByGroupId() throws Throwable{
+	public void shouldFindObsByGroupId() throws Throwable {
 		executeDataSet(INITIAL_OBS_XML);
 		
 		ConceptService cs = Context.getConceptService();
@@ -868,14 +855,13 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		List<Obs> obs4 = os.findObsByGroupId(oParent.getObsId());
 		
 		assertTrue(obs.equals(obs2));
-		assertTrue(obs3.size()==0);
+		assertTrue(obs3.size() == 0);
 		assertTrue(obs4.contains(child));
 		assertTrue(obs4.contains(child2));
 	}
 	
 	/**
-	 * This method gets observations and only fetches obs
-	 * that are for patients
+	 * This method gets observations and only fetches obs that are for patients
 	 * 
 	 * @throws Exception
 	 */
@@ -899,8 +885,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * This method gets observations and only fetches obs
-	 * that are for users
+	 * This method gets observations and only fetches obs that are for users
 	 * 
 	 * @throws Exception
 	 */

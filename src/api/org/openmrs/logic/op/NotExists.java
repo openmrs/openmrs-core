@@ -14,9 +14,9 @@
 package org.openmrs.logic.op;
 
 public class NotExists implements Operator {
-
-    public String toString() {
-        return "NOT EXISTS";
-    }
-    
+	
+	public String toString() {
+		return "NOT EXISTS";
+	}
+	
 }

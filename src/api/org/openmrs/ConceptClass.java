@@ -79,7 +79,8 @@ public class ConceptClass implements java.io.Serializable, Synchronizable {
 	}
 	
 	public int hashCode() {
-		if (this.getConceptClassId() == null) return super.hashCode();
+		if (this.getConceptClassId() == null)
+			return super.hashCode();
 		return this.getConceptClassId().hashCode();
 	}
 

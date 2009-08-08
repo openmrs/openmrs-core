@@ -40,61 +40,87 @@ public class CohortSearchHistory extends AbstractReportObject {
 	protected transient final Log log = LogFactory.getLog(getClass());
 	
 	public class CohortSearchHistoryItemHolder {
-		private PatientSearch search; 
+		
+		private PatientSearch search;
+		
 		private PatientFilter filter;
+		
 		private String name;
+		
 		private String description;
+		
 		private Boolean saved;
+		
 		private Cohort cachedResult;
+		
 		private Date cachedResultDate;
-		public CohortSearchHistoryItemHolder() { }
+		
+		public CohortSearchHistoryItemHolder() {
+		}
+		
 		public Cohort getCachedResult() {
 			return cachedResult;
 		}
+		
 		public void setCachedResult(Cohort cachedResult) {
 			this.cachedResult = cachedResult;
 		}
+		
 		public Date getCachedResultDate() {
 			return cachedResultDate;
 		}
+		
 		public void setCachedResultDate(Date cachedResultDate) {
 			this.cachedResultDate = cachedResultDate;
 		}
+		
 		public PatientSearch getSearch() {
-        	return search;
-        }
+			return search;
+		}
+		
 		public void setSearch(PatientSearch search) {
-        	this.search = search;
-        }
+			this.search = search;
+		}
+		
 		public PatientFilter getFilter() {
-        	return filter;
-        }
+			return filter;
+		}
+		
 		public void setFilter(PatientFilter filter) {
-        	this.filter = filter;
-        }
+			this.filter = filter;
+		}
+		
 		public String getDescription() {
-        	return description;
-        }
+			return description;
+		}
+		
 		public void setDescription(String description) {
-        	this.description = description;
-        }
+			this.description = description;
+		}
+		
 		public String getName() {
-        	return name;
-        }
+			return name;
+		}
+		
 		public void setName(String name) {
-        	this.name = name;
-        }
+			this.name = name;
+		}
+		
 		public Boolean getSaved() {
-        	return saved;
-        }
+			return saved;
+		}
+		
 		public void setSaved(Boolean saved) {
-        	this.saved = saved;
-        }
+			this.saved = saved;
+		}
 	}
 	
 	private List<PatientSearch> searchHistory;
+	
 	private volatile List<PatientFilter> cachedFilters;
+	
 	private volatile List<Cohort> cachedResults;
+	
 	private volatile List<Date> cachedResultDates;
 	
 	public CohortSearchHistory() {
@@ -145,7 +171,7 @@ public class CohortSearchHistory extends AbstractReportObject {
 	public List<PatientSearch> getSearchHistory() {
 		return searchHistory;
 	}
-
+	
 	public void setSearchHistory(List<PatientSearch> searchHistory) {
 		this.searchHistory = searchHistory;
 		cachedFilters = new ArrayList<PatientFilter>();
@@ -157,11 +183,11 @@ public class CohortSearchHistory extends AbstractReportObject {
 			cachedResultDates.add(null);
 		}
 	}
-
+	
 	public List<Date> getCachedResultDates() {
 		return cachedResultDates;
 	}
-
+	
 	public List<Cohort> getCachedResults() {
 		return cachedResults;
 	}
@@ -198,7 +224,9 @@ public class CohortSearchHistory extends AbstractReportObject {
 	}
 	
 	/**
-	 * @return zero-based indices that should also be removed due to cascading. (These will already have had 1 subtracted from them, since we know that a search from above is being deleted) 
+	 * @return zero-based indices that should also be removed due to cascading. (These will already
+	 *         have had 1 subtracted from them, since we know that a search from above is being
+	 *         deleted)
 	 */
 	private synchronized List<Integer> removeSearchItemHelper(int i) {
 		// 1. Decrement any number in a CohortHistoryCompositionFilter that's greater than i.
@@ -222,10 +250,11 @@ public class CohortSearchHistory extends AbstractReportObject {
 			cachedFilters.set(i, OpenmrsUtil.toPatientFilter(searchHistory.get(i), this));
 		return cachedFilters.get(i);
 	}
-
+	
 	/**
 	 * @param i
-	 * @return patient set resulting from the i_th filter in the search history. (cached if possible)
+	 * @return patient set resulting from the i_th filter in the search history. (cached if
+	 *         possible)
 	 */
 	public Cohort getPatientSet(int i, EvaluationContext context) {
 		return getPatientSet(i, true, context);
@@ -238,7 +267,7 @@ public class CohortSearchHistory extends AbstractReportObject {
 	 * @param useCache whether to use a cached result, if available
 	 * @return patient set resulting from the i_th filter in the search history
 	 */
-    public Cohort getPatientSet(int i, boolean useCache, EvaluationContext context) {
+	public Cohort getPatientSet(int i, boolean useCache, EvaluationContext context) {
 		checkArrayLengths();
 		Cohort ret = null;
 		if (useCache) {
@@ -246,7 +275,7 @@ public class CohortSearchHistory extends AbstractReportObject {
 		}
 		if (ret == null) {
 			ensureCachedFilter(i);
-			PatientFilter pf = cachedFilters.get(i); 
+			PatientFilter pf = cachedFilters.get(i);
 			Cohort everyone = Context.getPatientSetService().getAllPatients();
 			ret = pf.filter(everyone, context);
 			cachedFilters.set(i, pf);
@@ -255,37 +284,37 @@ public class CohortSearchHistory extends AbstractReportObject {
 		}
 		return ret;
 	}
-
-    public Cohort getLastPatientSet(EvaluationContext context) {
-    	if (searchHistory.size() > 0)
-    		return getPatientSet(searchHistory.size() - 1, context);
-    	else
-    		return new Cohort();
-    }
-    
-    public Cohort getPatientSetCombineWithAnd(EvaluationContext context) {
-    	Set<Integer> current = null;
-    	for (int i = 0; i < searchHistory.size(); ++i) {
-    		Cohort ps = getPatientSet(i, context);
-    		if (current == null)
-    			current = new HashSet<Integer>(ps.getMemberIds());
-    		else
-    			current.retainAll(ps.getMemberIds());
-    	}
-    	if (current == null)
-    		return Context.getPatientSetService().getAllPatients();
-    	else {
-    		return new Cohort("Cohort anded together", "", current);
-    	}
-    }
-    
-    public Cohort getPatientSetCombineWithOr(EvaluationContext context) {
-    	Set<Integer> ret = new HashSet<Integer>();
-    	for (int i = 0; i < searchHistory.size(); ++i) {
-    		ret.addAll(getPatientSet(i, context).getMemberIds());
-    	}
-    	return new Cohort("Cohort or'd together", "", ret);
-    }
+	
+	public Cohort getLastPatientSet(EvaluationContext context) {
+		if (searchHistory.size() > 0)
+			return getPatientSet(searchHistory.size() - 1, context);
+		else
+			return new Cohort();
+	}
+	
+	public Cohort getPatientSetCombineWithAnd(EvaluationContext context) {
+		Set<Integer> current = null;
+		for (int i = 0; i < searchHistory.size(); ++i) {
+			Cohort ps = getPatientSet(i, context);
+			if (current == null)
+				current = new HashSet<Integer>(ps.getMemberIds());
+			else
+				current.retainAll(ps.getMemberIds());
+		}
+		if (current == null)
+			return Context.getPatientSetService().getAllPatients();
+		else {
+			return new Cohort("Cohort anded together", "", current);
+		}
+	}
+	
+	public Cohort getPatientSetCombineWithOr(EvaluationContext context) {
+		Set<Integer> ret = new HashSet<Integer>();
+		for (int i = 0; i < searchHistory.size(); ++i) {
+			ret.addAll(getPatientSet(i, context).getMemberIds());
+		}
+		return new Cohort("Cohort or'd together", "", ret);
+	}
 	
 	// Just in case someone has modified the searchHistory list directly. Maybe I should make that getter return an unmodifiable list.
 	// TODO: this isn't actually good enough. Use the unmodifiable list method instead
@@ -304,7 +333,7 @@ public class CohortSearchHistory extends AbstractReportObject {
 		while (cachedResultDates.size() < n)
 			cachedResultDates.add(null);
 	}
-
+	
 	public PatientSearch createCompositionFilter(String description) {
 		Set<String> andWords = new HashSet<String>();
 		Set<String> orWords = new HashSet<String>();
@@ -317,9 +346,9 @@ public class CohortSearchHistory extends AbstractReportObject {
 		orWords.add("+");
 		notWords.add("not");
 		notWords.add("!");
-
+		
 		List<Object> currentLine = new ArrayList<Object>();
-
+		
 		try {
 			StreamTokenizer st = new StreamTokenizer(new StringReader(description));
 			st.ordinaryChar('(');
@@ -352,11 +381,12 @@ public class CohortSearchHistory extends AbstractReportObject {
 						throw new IllegalArgumentException("Don't recognize " + st.sval);
 				}
 			}
-		} catch (Exception ex) {
-			log.error("Error in description string: " + description, ex);
-			return null; 
 		}
-
+		catch (Exception ex) {
+			log.error("Error in description string: " + description, ex);
+			return null;
+		}
+		
 		if (!testCompositionList(currentLine)) {
 			log.error("Description string failed test: " + description);
 			return null;
@@ -391,7 +421,7 @@ public class CohortSearchHistory extends AbstractReportObject {
 			} else {
 				throw new RuntimeException("Programming error! unexpected class " + o.getClass());
 			}
-			lastIsNot = ( (o instanceof BooleanOperator) && (((BooleanOperator) o) == BooleanOperator.NOT) );
+			lastIsNot = ((o instanceof BooleanOperator) && (((BooleanOperator) o) == BooleanOperator.NOT));
 			lastIsOperator = o instanceof BooleanOperator;
 		}
 		if (list.size() > 2 && !anyOperator)

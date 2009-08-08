@@ -31,37 +31,30 @@ import org.openmrs.scheduler.SchedulerConstants;
 import org.openmrs.synchronization.SyncConstants;
 
 /**
- * Constants used in OpenMRS. Contents built from build properties (version, 
- * version_short, and expected_database).  Some are set at runtime (database,
- * database version).
- * 
- *  This file should contain all privilege names and global property names.
- *  
- *  Those strings added to the static CORE_* methods will be written to the 
- *  database at startup if they don't exist yet.
+ * Constants used in OpenMRS. Contents built from build properties (version, version_short, and
+ * expected_database). Some are set at runtime (database, database version). This file should
+ * contain all privilege names and global property names. Those strings added to the static CORE_*
+ * methods will be written to the database at startup if they don't exist yet.
  */
 public final class OpenmrsConstants {
 	//private static Log log = LogFactory.getLog(OpenmrsConstants.class);
 	
 	/**
-	 * This is the hard coded primary key of the order type for DRUG.
-	 * This has to be done because some logic in the API acts on this
-	 * order type
+	 * This is the hard coded primary key of the order type for DRUG. This has to be done because
+	 * some logic in the API acts on this order type
 	 */
 	public static final int ORDERTYPE_DRUG = 2;
 	
 	/**
-	 * This is the hard coded primary key of the concept class for DRUG.
-	 * This has to be done because some logic in the API acts on this
-	 * concept class
+	 * This is the hard coded primary key of the concept class for DRUG. This has to be done because
+	 * some logic in the API acts on this concept class
 	 */
 	public static final int CONCEPT_CLASS_DRUG = 3;
 	
 	/**
-	 * hack alert:
-	 * During an ant build, the openmrs api jar manifest file is loaded with 
-	 * these values.  When constructing the OpenmrsConstants class file, the
-	 * api jar is read and the values are copied in as constants
+	 * hack alert: During an ant build, the openmrs api jar manifest file is loaded with these
+	 * values. When constructing the OpenmrsConstants class file, the api jar is read and the values
+	 * are copied in as constants
 	 */ 
 	private static final Package THIS_PACKAGE = OpenmrsConstants.class.getPackage();
 	public static final String OPENMRS_VERSION = THIS_PACKAGE.getSpecificationVendor();
@@ -71,8 +64,8 @@ public final class OpenmrsConstants {
 	public static String DATABASE_BUSINESS_NAME = "openmrs";
 	
 	/**
-	 * This is loaded at runtime from (Hibernate)Util.checkDatabaseVersion
-	 * and will contain the current database version
+	 * This is loaded at runtime from (Hibernate)Util.checkDatabaseVersion and will contain the
+	 * current database version
 	 */
 	public static String DATABASE_VERSION = null;	
 	
@@ -89,18 +82,13 @@ public final class OpenmrsConstants {
 	public static final Integer CIVIL_STATUS_CONCEPT_ID = 1054;
 	
 	/**
-	 * The directory that will store filesystem data about openmrs like
-	 * module omods, generated data exports, etc.  This shouldn't be 
-	 * accessed directory, the OpenmrsUtil.getApplicationDataDirectory()
-	 * should be used.
-	 * 
-	 * This should be null here. This constant will hold the value of the 
-	 * user's runtime property for the application_data_directory and is
-	 * set programmatically at startup.  This value is set in the openmrs
-	 * startup method
-	 * 
-	 * If this is null, the getApplicationDataDirectory() uses some
-	 * OS heuristics to determine where to put an app data dir. 
+	 * The directory that will store filesystem data about openmrs like module omods, generated data
+	 * exports, etc. This shouldn't be accessed directory, the
+	 * OpenmrsUtil.getApplicationDataDirectory() should be used. This should be null here. This
+	 * constant will hold the value of the user's runtime property for the
+	 * application_data_directory and is set programmatically at startup. This value is set in the
+	 * openmrs startup method If this is null, the getApplicationDataDirectory() uses some OS
+	 * heuristics to determine where to put an app data dir.
 	 * 
 	 * @see #APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY
 	 * @see OpenmrsUtil.getApplicationDataDirectory()
@@ -109,8 +97,9 @@ public final class OpenmrsConstants {
 	public static String APPLICATION_DATA_DIRECTORY = null;
 	
 	/**
-	 * The name of the runtime property that a user can set that will
-	 * specify where openmrs's application directory is
+	 * The name of the runtime property that a user can set that will specify where openmrs's
+	 * application directory is
+	 * 
 	 * @see #APPLICATION_DATA_DIRECTORY
 	 */
 	public static String APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY = "application_data_directory";
@@ -137,9 +126,8 @@ public final class OpenmrsConstants {
 	}
 	
 	/**
-	 * A gender character to gender name map
-	 * 
-	 * TODO issues with localization. How should this be handled?
+	 * A gender character to gender name map TODO issues with localization. How should this be
+	 * handled?
 	 * 
 	 * @return
 	 */
@@ -336,12 +324,9 @@ public final class OpenmrsConstants {
 	private static Map<String, String> CORE_PRIVILEGES = null;
 	
 	/**
-	 * These are the privileges that are required by OpenMRS.  Upon
-	 * startup, if any of these privileges do not exist in the database,
-	 * they are inserted.
-	 * 
-	 * These privileges are not allowed to be deleted.  They are marked
-	 * as 'locked' in the administration screens.
+	 * These are the privileges that are required by OpenMRS. Upon startup, if any of these
+	 * privileges do not exist in the database, they are inserted. These privileges are not allowed
+	 * to be deleted. They are marked as 'locked' in the administration screens.
 	 * 
 	 * @return privileges core to the system
 	 */
@@ -460,7 +445,8 @@ public final class OpenmrsConstants {
 			CORE_PRIVILEGES.put(PRIV_VIEW_ROLES, "Able to view user roles");
 			CORE_PRIVILEGES.put(PRIV_MANAGE_ROLES, "Able to add/edit/delete user roles");
 			
-			CORE_PRIVILEGES.put(PRIV_VIEW_NAVIGATION_MENU, "Able to view the navigation menu (Home, View Patients, Dictionary, Administration, My Profile)");
+			CORE_PRIVILEGES.put(PRIV_VIEW_NAVIGATION_MENU,
+			    "Able to view the navigation menu (Home, View Patients, Dictionary, Administration, My Profile)");
 			CORE_PRIVILEGES.put(PRIV_VIEW_ADMIN_FUNCTIONS, "Able to view the 'Administration' link in the navigation bar");
 			
 			CORE_PRIVILEGES.put(PRIV_DASHBOARD_OVERVIEW, "Able to view the 'Overview' tab on the patient dashboard");
@@ -509,18 +495,17 @@ public final class OpenmrsConstants {
 	public static final String PROVIDER_ROLE = "Provider";
 	
 	/**
-	 * All roles returned by this method are inserted into the database
-	 * if they do not exist already.
-	 * 
-	 * These roles are also forbidden to be deleted from the administration
-	 * screens.
+	 * All roles returned by this method are inserted into the database if they do not exist
+	 * already. These roles are also forbidden to be deleted from the administration screens.
 	 * 
 	 * @return roles that are core to the system
 	 */
 	public static final Map<String, String> CORE_ROLES() {
 		Map<String, String> roles = new HashMap<String, String>();
 		
-		roles.put(SUPERUSER_ROLE, "Assigned to developers of OpenMRS. Gives additional access to change fundamental structure of the database model.");
+		roles
+		        .put(SUPERUSER_ROLE,
+		            "Assigned to developers of OpenMRS. Gives additional access to change fundamental structure of the database model.");
 		roles.put(ANONYMOUS_ROLE, "Privileges for non-authenticated users.");
 		roles.put(AUTHENTICATED_ROLE, "Privileges gained once authentication has been established.");
 		roles.put(PROVIDER_ROLE, "All users with the 'Provider' role will appear as options in the default Infopath ");
@@ -553,6 +538,9 @@ public final class OpenmrsConstants {
 	public static final String GLOBAL_PROPERTY_PATIENT_SEARCH_MAX_RESULTS  = "patient.searchMaxResults";
 	public static final String GLOBAL_PROPERTY_GZIP_ENABLED                = "gzip.enabled";
 	public static final String GLOBAL_PROPERTY_MEDICAL_RECORD_OBSERVATIONS = "concept.medicalRecordObservations";
+	
+	public static final String GLOBAL_PROPERTY_PROBLEM_LIST                = "concept.problemList";
+	
 	public static final String GLOBAL_PROPERTY_REPORT_XML_MACROS           = "report.xmlMacros";
 	public static final String GLOBAL_PROPERTY_STANDARD_DRUG_REGIMENS      = "dashboard.regimen.standardRegimens";
 	public static final String GLOBAL_PROPERTY_DEFAULT_PATIENT_IDENTIFIER_VALIDATOR = "patient.defaultPatientIdentifierValidator";	
@@ -562,184 +550,214 @@ public final class OpenmrsConstants {
 	public static final String GLOBAL_PROPERTY_IMPLEMENTATION_ID           = "implementation_id";
 	public static final String GLOBAL_PROPERTY_NEWPATIENTFORM_RELATIONSHIPS         = "newPatientForm.relationships";
 	
+	public static final String GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE = "patientSearch.matchMode";
+	
+	public static final String GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_ANYWHERE = "ANYWHERE";
+	
 	/**
-	 * These properties (and default values) are set if not found in the database 
-	 * when OpenMRS is started if they do not exist yet
+	 * These properties (and default values) are set if not found in the database when OpenMRS is
+	 * started if they do not exist yet
 	 * 
 	 * @return
 	 */
 	public static final List<GlobalProperty> CORE_GLOBAL_PROPERTIES() {
 		List<GlobalProperty> props = new Vector<GlobalProperty>();
 		
-		props.add(new GlobalProperty("use_patient_attribute.tribe", "true", "Indicates whether or not the 'tribe' attribute is shown when viewing/searching for patients"));
-		props.add(new GlobalProperty("use_patient_attribute.healthCenter", "false", "Indicates whether or not the 'health center' attribute is shown when viewing/searching for patients"));
-		props.add(new GlobalProperty("use_patient_attribute.mothersName", "false", "Indicates whether or not mother's name is able to be added/viewed for a patient"));
+		props.add(new GlobalProperty("use_patient_attribute.tribe", "true",
+		        "Indicates whether or not the 'tribe' attribute is shown when viewing/searching for patients"));
+		props.add(new GlobalProperty("use_patient_attribute.healthCenter", "false",
+		        "Indicates whether or not the 'health center' attribute is shown when viewing/searching for patients"));
+		props.add(new GlobalProperty("use_patient_attribute.mothersName", "false",
+		        "Indicates whether or not mother's name is able to be added/viewed for a patient"));
 
-		props.add(new GlobalProperty("new_patient_form.showRelationships", "false", "true/false whether or not to show the relationship editor on the addPatient.htm screen"));
+		props.add(new GlobalProperty("new_patient_form.showRelationships", "false",
+		        "true/false whether or not to show the relationship editor on the addPatient.htm screen"));
 
-		props.add(new GlobalProperty("dashboard.overview.showConcepts", "", "Comma delimited list of concepts ids to show on the patient dashboard overview tab"));
-		props.add(new GlobalProperty("dashboard.encounters.viewWhere", "newWindow", "Defines how the 'View Encounter' link should act. Known values: 'sameWindow', 'newWindow', 'oneNewWindow'"));
-		props.add(new GlobalProperty("dashboard.encounters.showEmptyFields", "true", "true/false whether or not to show empty fields on the 'View Encounter' window"));
-		props.add(new GlobalProperty("dashboard.encounters.usePages", "smart", "true/false/smart on how to show the pages on the 'View Encounter' window.  'smart' means that if > 50% of the fields have page numbers defined, show data in pages"));
-		props.add(new GlobalProperty("dashboard.encounters.showViewLink", "true", "true/false whether or not to show the 'View Encounter' link on the patient dashboard"));
-		props.add(new GlobalProperty("dashboard.encounters.showEditLink", "true", "true/false whether or not to show the 'Edit Encounter' link on the patient dashboard"));
-		props.add(new GlobalProperty("dashboard.relationships.show_types", "", "Types of relationships separated by commas.  Doctor/Patient,Parent/Child"));
-		props.add(new GlobalProperty("dashboard.regimen.displayDrugSetIds", "ANTIRETROVIRAL DRUGS,TUBERCULOSIS TREATMENT DRUGS", "Drug sets that appear on the Patient Dashboard Regimen tab. Comma separated list of name of concepts that are defined as drug sets."));
+		props.add(new GlobalProperty("dashboard.overview.showConcepts", "",
+		        "Comma delimited list of concepts ids to show on the patient dashboard overview tab"));
+		props
+		        .add(new GlobalProperty("dashboard.encounters.viewWhere", "newWindow",
+		                "Defines how the 'View Encounter' link should act. Known values: 'sameWindow', 'newWindow', 'oneNewWindow'"));
+		props.add(new GlobalProperty("dashboard.encounters.showEmptyFields", "true",
+		        "true/false whether or not to show empty fields on the 'View Encounter' window"));
+		props
+		        .add(new GlobalProperty(
+		                "dashboard.encounters.usePages",
+		                "smart",
+		                "true/false/smart on how to show the pages on the 'View Encounter' window.  'smart' means that if > 50% of the fields have page numbers defined, show data in pages"));
+		props.add(new GlobalProperty("dashboard.encounters.showViewLink", "true",
+		        "true/false whether or not to show the 'View Encounter' link on the patient dashboard"));
+		props.add(new GlobalProperty("dashboard.encounters.showEditLink", "true",
+		        "true/false whether or not to show the 'Edit Encounter' link on the patient dashboard"));
+		props.add(new GlobalProperty("dashboard.header.programs_to_show", "",
+				"List of programs to show Enrollment details of in the patient header. (Should be an ordered comma-separated list of program_ids or names.)"));
+		props.add(new GlobalProperty("dashboard.header.workflows_to_show", "",
+				"List of programs to show Enrollment details of in the patient header. List of workflows to show current status of in the patient header. These will only be displayed if they belong to a program listed above. (Should be a comma-separated list of program_workflow_ids.)"));
+		props.add(new GlobalProperty("dashboard.relationships.show_types", "",
+		        "Types of relationships separated by commas.  Doctor/Patient,Parent/Child"));
+		props
+		        .add(new GlobalProperty(
+		                "dashboard.regimen.displayDrugSetIds",
+		                "ANTIRETROVIRAL DRUGS,TUBERCULOSIS TREATMENT DRUGS",
+		                "Drug sets that appear on the Patient Dashboard Regimen tab. Comma separated list of name of concepts that are defined as drug sets."));
 		
-		String standardRegimens = "<list>" +
-			"  <regimenSuggestion>" +
-			"    <drugComponents>" +
-			"      <drugSuggestion>" +
-			"        <drugId>2</drugId>" +
-			"        <dose>1</dose>" +
-			"        <units>tab(s)</units>" +
-			"        <frequency>2/day x 7 days/week</frequency>" +
-			"        <instructions></instructions>" +
-			"      </drugSuggestion>" +
-			"    </drugComponents>" +
-			"    <displayName>3TC + d4T(30) + NVP (Triomune-30)</displayName>" +
-			"    <codeName>standardTri30</codeName>" +
-			"    <canReplace>ANTIRETROVIRAL DRUGS</canReplace>" +
-			"  </regimenSuggestion>" +
-			"  <regimenSuggestion>" +
-			"    <drugComponents>" +
-			"      <drugSuggestion>" +
-			"        <drugId>3</drugId>" +
-			"        <dose>1</dose>" +
-			"        <units>tab(s)</units>" +
-			"        <frequency>2/day x 7 days/week</frequency>" +
-			"        <instructions></instructions>" +
-			"      </drugSuggestion>" +
-			"    </drugComponents>" +
-			"    <displayName>3TC + d4T(40) + NVP (Triomune-40)</displayName>" +
-			"    <codeName>standardTri40</codeName>" +
-			"    <canReplace>ANTIRETROVIRAL DRUGS</canReplace>" +
-			"  </regimenSuggestion>" +
-			"  <regimenSuggestion>" +
-			"    <drugComponents>" +
-			"      <drugSuggestion>" +
-			"        <drugId>39</drugId>" +
-			"        <dose>1</dose>" +
-			"        <units>tab(s)</units>" +
-			"        <frequency>2/day x 7 days/week</frequency>" +
-			"        <instructions></instructions>" +
-			"      </drugSuggestion>" +
-			"      <drugSuggestion>" +
-			"        <drugId>22</drugId>" +
-			"        <dose>200</dose>" +
-			"        <units>mg</units>" +
-			"        <frequency>2/day x 7 days/week</frequency>" +
-			"        <instructions></instructions>" +
-			"      </drugSuggestion>" +
-			"    </drugComponents>" +
-			"    <displayName>AZT + 3TC + NVP</displayName>" +
-			"    <codeName>standardAztNvp</codeName>" +
-			"    <canReplace>ANTIRETROVIRAL DRUGS</canReplace>" +
-			"  </regimenSuggestion>" +
-			"  <regimenSuggestion>" +
-			"    <drugComponents>" +
-			"      <drugSuggestion reference=\"../../../regimenSuggestion[3]/drugComponents/drugSuggestion\"/>" +
-			"      <drugSuggestion>" +
-			"        <drugId>11</drugId>" +
-			"        <dose>600</dose>" +
-			"        <units>mg</units>" +
-			"        <frequency>1/day x 7 days/week</frequency>" +
-			"        <instructions></instructions>" +
-			"      </drugSuggestion>" +
-			"    </drugComponents>" +
-			"    <displayName>AZT + 3TC + EFV(600)</displayName>" +
-			"    <codeName>standardAztEfv</codeName>" +
-			"    <canReplace>ANTIRETROVIRAL DRUGS</canReplace>" +
-			"  </regimenSuggestion>" +
-			"  <regimenSuggestion>" +
-			"    <drugComponents>" +
-			"      <drugSuggestion>" +
-			"        <drugId>5</drugId>" +
-			"        <dose>30</dose>" +
-			"        <units>mg</units>" +
-			"        <frequency>2/day x 7 days/week</frequency>" +
-			"        <instructions></instructions>" +
-			"      </drugSuggestion>" +
-			"      <drugSuggestion>" +
-			"        <drugId>42</drugId>" +
-			"        <dose>150</dose>" +
-			"        		<units>mg</units>" +
-			"        <frequency>2/day x 7 days/week</frequency>" +
-			"        <instructions></instructions>" +
-			"      </drugSuggestion>" +
-			"      <drugSuggestion reference=\"../../../regimenSuggestion[4]/drugComponents/drugSuggestion[2]\"/>" +
-			"    </drugComponents>" +
-			"    <displayName>d4T(30) + 3TC + EFV(600)</displayName>" +
-			"    <codeName>standardD4t30Efv</codeName>" +
-			"    <canReplace>ANTIRETROVIRAL DRUGS</canReplace>" +
-			"  </regimenSuggestion>" +
-			"  <regimenSuggestion>" +
-			"    <drugComponents>" +
-			"      <drugSuggestion>" +
-			"        <drugId>6</drugId>" +
-			"        <dose>40</dose>" +
-			"        <units>mg</units>" +
-			"        <frequency>2/day x 7 days/week</frequency>" +
-			"        <instructions></instructions>" +
-			"      </drugSuggestion>" +
-			"      <drugSuggestion reference=\"../../../regimenSuggestion[5]/drugComponents/drugSuggestion[2]\"/>" +
-			"      <drugSuggestion reference=\"../../../regimenSuggestion[4]/drugComponents/drugSuggestion[2]\"/>" +
-			"    </drugComponents>" +
-			"    <displayName>d4T(40) + 3TC + EFV(600)</displayName>" +
-			"    <codeName>standardD4t40Efv</codeName>" +
-			"    <canReplace>ANTIRETROVIRAL DRUGS</canReplace>" +
-			"  </regimenSuggestion>" +
-			"</list>"; 
-		props.add(new GlobalProperty(GLOBAL_PROPERTY_STANDARD_DRUG_REGIMENS, standardRegimens, "XML description of standard drug regimens, to be shown as shortcuts on the dashboard regimen entry tab"));		
+		String standardRegimens = "<list>" + "  <regimenSuggestion>" + "    <drugComponents>" + "      <drugSuggestion>"
+		        + "        <drugId>2</drugId>" + "        <dose>1</dose>" + "        <units>tab(s)</units>"
+		        + "        <frequency>2/day x 7 days/week</frequency>" + "        <instructions></instructions>"
+		        + "      </drugSuggestion>" + "    </drugComponents>"
+		        + "    <displayName>3TC + d4T(30) + NVP (Triomune-30)</displayName>"
+		        + "    <codeName>standardTri30</codeName>" + "    <canReplace>ANTIRETROVIRAL DRUGS</canReplace>"
+		        + "  </regimenSuggestion>" + "  <regimenSuggestion>" + "    <drugComponents>" + "      <drugSuggestion>"
+		        + "        <drugId>3</drugId>" + "        <dose>1</dose>" + "        <units>tab(s)</units>"
+		        + "        <frequency>2/day x 7 days/week</frequency>" + "        <instructions></instructions>"
+		        + "      </drugSuggestion>" + "    </drugComponents>"
+		        + "    <displayName>3TC + d4T(40) + NVP (Triomune-40)</displayName>"
+		        + "    <codeName>standardTri40</codeName>" + "    <canReplace>ANTIRETROVIRAL DRUGS</canReplace>"
+		        + "  </regimenSuggestion>" + "  <regimenSuggestion>" + "    <drugComponents>" + "      <drugSuggestion>"
+		        + "        <drugId>39</drugId>" + "        <dose>1</dose>" + "        <units>tab(s)</units>"
+		        + "        <frequency>2/day x 7 days/week</frequency>" + "        <instructions></instructions>"
+		        + "      </drugSuggestion>" + "      <drugSuggestion>" + "        <drugId>22</drugId>"
+		        + "        <dose>200</dose>" + "        <units>mg</units>"
+		        + "        <frequency>2/day x 7 days/week</frequency>" + "        <instructions></instructions>"
+		        + "      </drugSuggestion>" + "    </drugComponents>" + "    <displayName>AZT + 3TC + NVP</displayName>"
+		        + "    <codeName>standardAztNvp</codeName>" + "    <canReplace>ANTIRETROVIRAL DRUGS</canReplace>"
+		        + "  </regimenSuggestion>" + "  <regimenSuggestion>" + "    <drugComponents>"
+		        + "      <drugSuggestion reference=\"../../../regimenSuggestion[3]/drugComponents/drugSuggestion\"/>"
+		        + "      <drugSuggestion>" + "        <drugId>11</drugId>" + "        <dose>600</dose>"
+		        + "        <units>mg</units>" + "        <frequency>1/day x 7 days/week</frequency>"
+		        + "        <instructions></instructions>" + "      </drugSuggestion>" + "    </drugComponents>"
+		        + "    <displayName>AZT + 3TC + EFV(600)</displayName>" + "    <codeName>standardAztEfv</codeName>"
+		        + "    <canReplace>ANTIRETROVIRAL DRUGS</canReplace>" + "  </regimenSuggestion>" + "  <regimenSuggestion>"
+		        + "    <drugComponents>" + "      <drugSuggestion>" + "        <drugId>5</drugId>"
+		        + "        <dose>30</dose>" + "        <units>mg</units>"
+		        + "        <frequency>2/day x 7 days/week</frequency>" + "        <instructions></instructions>"
+		        + "      </drugSuggestion>" + "      <drugSuggestion>" + "        <drugId>42</drugId>"
+		        + "        <dose>150</dose>" + "        		<units>mg</units>"
+		        + "        <frequency>2/day x 7 days/week</frequency>" + "        <instructions></instructions>"
+		        + "      </drugSuggestion>"
+		        + "      <drugSuggestion reference=\"../../../regimenSuggestion[4]/drugComponents/drugSuggestion[2]\"/>"
+		        + "    </drugComponents>" + "    <displayName>d4T(30) + 3TC + EFV(600)</displayName>"
+		        + "    <codeName>standardD4t30Efv</codeName>" + "    <canReplace>ANTIRETROVIRAL DRUGS</canReplace>"
+		        + "  </regimenSuggestion>" + "  <regimenSuggestion>" + "    <drugComponents>" + "      <drugSuggestion>"
+		        + "        <drugId>6</drugId>" + "        <dose>40</dose>" + "        <units>mg</units>"
+		        + "        <frequency>2/day x 7 days/week</frequency>" + "        <instructions></instructions>"
+		        + "      </drugSuggestion>"
+		        + "      <drugSuggestion reference=\"../../../regimenSuggestion[5]/drugComponents/drugSuggestion[2]\"/>"
+		        + "      <drugSuggestion reference=\"../../../regimenSuggestion[4]/drugComponents/drugSuggestion[2]\"/>"
+		        + "    </drugComponents>" + "    <displayName>d4T(40) + 3TC + EFV(600)</displayName>"
+		        + "    <codeName>standardD4t40Efv</codeName>" + "    <canReplace>ANTIRETROVIRAL DRUGS</canReplace>"
+		        + "  </regimenSuggestion>" + "</list>";
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_STANDARD_DRUG_REGIMENS, standardRegimens,
+		        "XML description of standard drug regimens, to be shown as shortcuts on the dashboard regimen entry tab"));
 		
 		props.add(new GlobalProperty("concept.weight", "5089", "Concept id of the concept defining the WEIGHT concept"));
 		props.add(new GlobalProperty("concept.height", "5090", "Concept id of the concept defining the HEIGHT concept"));
-		props.add(new GlobalProperty("concept.cd4_count", "5497", "Concept id of the concept defining the CD4 count concept"));
-		props.add(new GlobalProperty("concept.causeOfDeath", "5002", "Concept id of the concept defining the CAUSE OF DEATH concept"));
+		props
+		        .add(new GlobalProperty("concept.cd4_count", "5497",
+		                "Concept id of the concept defining the CD4 count concept"));
+		props.add(new GlobalProperty("concept.causeOfDeath", "5002",
+		        "Concept id of the concept defining the CAUSE OF DEATH concept"));
 		props.add(new GlobalProperty("concept.none", "1107", "Concept id of the concept defining the NONE concept"));
-		props.add(new GlobalProperty("concept.otherNonCoded", "5622", "Concept id of the concept defining the OTHER NON-CODED concept"));
-		props.add(new GlobalProperty("concept.patientDied", "1742", "Concept id of the concept defining the PATIEND DIED concept"));
-		props.add(new GlobalProperty("concept.reasonExitedCare", "1811", "Concept id of the concept defining the REASON EXITED CARE concept"));
-		props.add(new GlobalProperty("concept.reasonOrderStopped", "1812", "Concept id of the concept defining the REASON ORDER STOPPED concept"));
+		props.add(new GlobalProperty("concept.otherNonCoded", "5622",
+		        "Concept id of the concept defining the OTHER NON-CODED concept"));
+		props.add(new GlobalProperty("concept.patientDied", "1742",
+		        "Concept id of the concept defining the PATIEND DIED concept"));
+		props.add(new GlobalProperty("concept.reasonExitedCare", "1811",
+		        "Concept id of the concept defining the REASON EXITED CARE concept"));
+		props.add(new GlobalProperty("concept.reasonOrderStopped", "1812",
+		        "Concept id of the concept defining the REASON ORDER STOPPED concept"));
 
-		props.add(new GlobalProperty("mail.transport_protocol", "smtp", "Transport protocol for the messaging engine. Valid values: smtp"));
+		props.add(new GlobalProperty("mail.transport_protocol", "smtp",
+		        "Transport protocol for the messaging engine. Valid values: smtp"));
 		props.add(new GlobalProperty("mail.smtp_host", "localhost", "SMTP host name"));
 		props.add(new GlobalProperty("mail.smtp_port", "25", "SMTP port"));
 		props.add(new GlobalProperty("mail.from", "info@openmrs.org", "Email address to use as the default from address"));
-		props.add(new GlobalProperty("mail.debug", "false", "true/false whether to print debugging information during mailing"));
+		props.add(new GlobalProperty("mail.debug", "false",
+		        "true/false whether to print debugging information during mailing"));
 		props.add(new GlobalProperty("mail.smtp_auth", "false", "true/false whether the smtp host requires authentication"));
 		props.add(new GlobalProperty("mail.user", "test", "Username of the SMTP user (if smtp_auth is enabled)"));
 		props.add(new GlobalProperty("mail.password", "test", "Password for the SMTP user (if smtp_auth is enabled)"));
-		props.add(new GlobalProperty("mail.default_content_type", "text/plain", "Content type to append to the mail messages"));
+		props.add(new GlobalProperty("mail.default_content_type", "text/plain",
+		        "Content type to append to the mail messages"));
 		
-		props.add(new GlobalProperty(ModuleConstants.REPOSITORY_FOLDER_PROPERTY, ModuleConstants.REPOSITORY_FOLDER_PROPERTY_DEFAULT, "Name of the folder in which to store the modules"));
+		props.add(new GlobalProperty(ModuleConstants.REPOSITORY_FOLDER_PROPERTY,
+		        ModuleConstants.REPOSITORY_FOLDER_PROPERTY_DEFAULT, "Name of the folder in which to store the modules"));
 		
-		props.add(new GlobalProperty("layout.address.format", "general", "Format in which to display the person addresses.  Valid values are general, kenya, rwanda, usa, and lesotho"));
-		props.add(new GlobalProperty("layout.name.format", "short", "Format in which to display the person names.  Valid values are short, full"));
+		props
+		        .add(new GlobalProperty("layout.address.format", "general",
+		                "Format in which to display the person addresses.  Valid values are general, kenya, rwanda, usa, and lesotho"));
+		props.add(new GlobalProperty("layout.name.format", "short",
+		        "Format in which to display the person names.  Valid values are short, long"));
 		
 		// TODO should be changed to text defaults and constants should be removed
-		props.add(new GlobalProperty("scheduler.username", SchedulerConstants.SCHEDULER_DEFAULT_USERNAME, "Username for the OpenMRS user that will perform the scheduler activities"));
-		props.add(new GlobalProperty("scheduler.password", SchedulerConstants.SCHEDULER_DEFAULT_PASSWORD, "Password for the OpenMRS user that will perform the scheduler activities"));
+		props.add(new GlobalProperty("scheduler.username", SchedulerConstants.SCHEDULER_DEFAULT_USERNAME,
+		        "Username for the OpenMRS user that will perform the scheduler activities"));
+		props.add(new GlobalProperty("scheduler.password", SchedulerConstants.SCHEDULER_DEFAULT_PASSWORD,
+		        "Password for the OpenMRS user that will perform the scheduler activities"));
 		
-		props.add(new GlobalProperty(GLOBAL_PROPERTY_CONCEPTS_LOCKED, "false", "true/false whether or not concepts can be edited in this database."));
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_CONCEPTS_LOCKED, "false",
+		        "true/false whether or not concepts can be edited in this database."));
 		
-		props.add(new GlobalProperty(GLOBAL_PROPERTY_PATIENT_LISTING_ATTRIBUTES, "", "A comma delimited list of PersonAttributeType names that should be displayed for patients in _lists_"));
-		props.add(new GlobalProperty(GLOBAL_PROPERTY_PATIENT_VIEWING_ATTRIBUTES, "", "A comma delimited list of PersonAttributeType names that should be displayed for patients when _viewing individually_"));
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_PATIENT_LISTING_ATTRIBUTES, "",
+		        "A comma delimited list of PersonAttributeType names that should be displayed for patients in _lists_"));
+		props
+		        .add(new GlobalProperty(GLOBAL_PROPERTY_PATIENT_VIEWING_ATTRIBUTES, "",
+		                "A comma delimited list of PersonAttributeType names that should be displayed for patients when _viewing individually_"));
 		
-		props.add(new GlobalProperty(GLOBAL_PROPERTY_USER_LISTING_ATTRIBUTES, "", "A comma delimited list of PersonAttributeType names that should be displayed for users in _lists_"));
-		props.add(new GlobalProperty(GLOBAL_PROPERTY_USER_VIEWING_ATTRIBUTES, "", "A comma delimited list of PersonAttributeType names that should be displayed for users when _viewing individually_"));
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_USER_LISTING_ATTRIBUTES, "",
+		        "A comma delimited list of PersonAttributeType names that should be displayed for users in _lists_"));
+		props
+		        .add(new GlobalProperty(GLOBAL_PROPERTY_USER_VIEWING_ATTRIBUTES, "",
+		                "A comma delimited list of PersonAttributeType names that should be displayed for users when _viewing individually_"));
 		
-		props.add(new GlobalProperty(GLOBAL_PROPERTY_PATIENT_IDENTIFIER_REGEX, "^0*@SEARCH@([A-Z]+-[0-9])?$", "A MySQL regular expression for the patient identifier search strings.  The @SEARCH@ string is replaced at runtime with the user's search string.  An empty regex will cause a simply 'like' sql search to be used"));
-		props.add(new GlobalProperty(GLOBAL_PROPERTY_PATIENT_IDENTIFIER_PREFIX, "", "This property is only used if " + GLOBAL_PROPERTY_PATIENT_IDENTIFIER_REGEX + " is empty.  The string here is prepended to the sql indentifier search string.  The sql becomes \"... where identifier like '<PREFIX><QUERY STRING><SUFFIX>';\".  Typically this value is either a percent sign (%) or empty."));
-		props.add(new GlobalProperty(GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SUFFIX, "%", "This property is only used if " + GLOBAL_PROPERTY_PATIENT_IDENTIFIER_REGEX + " is empty.  The string here is prepended to the sql indentifier search string.  The sql becomes \"... where identifier like '<PREFIX><QUERY STRING><SUFFIX>';\".  Typically this value is either a percent sign (%) or empty."));
-		props.add(new GlobalProperty(GLOBAL_PROPERTY_PATIENT_SEARCH_MAX_RESULTS, "1000", "The maximum number of results returned by patient searches"));
+		props
+		        .add(new GlobalProperty(
+		                GLOBAL_PROPERTY_PATIENT_IDENTIFIER_REGEX,
+		                "^0*@SEARCH@([A-Z]+-[0-9])?$",
+		                "A MySQL regular expression for the patient identifier search strings.  The @SEARCH@ string is replaced at runtime with the user's search string.  An empty regex will cause a simply 'like' sql search to be used"));
+		props
+		        .add(new GlobalProperty(
+		                GLOBAL_PROPERTY_PATIENT_IDENTIFIER_PREFIX,
+		                "",
+		                "This property is only used if "
+		                        + GLOBAL_PROPERTY_PATIENT_IDENTIFIER_REGEX
+		                        + " is empty.  The string here is prepended to the sql indentifier search string.  The sql becomes \"... where identifier like '<PREFIX><QUERY STRING><SUFFIX>';\".  Typically this value is either a percent sign (%) or empty."));
+		props
+		        .add(new GlobalProperty(
+		                GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SUFFIX,
+		                "%",
+		                "This property is only used if "
+		                        + GLOBAL_PROPERTY_PATIENT_IDENTIFIER_REGEX
+		                        + " is empty.  The string here is prepended to the sql indentifier search string.  The sql becomes \"... where identifier like '<PREFIX><QUERY STRING><SUFFIX>';\".  Typically this value is either a percent sign (%) or empty."));
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_PATIENT_SEARCH_MAX_RESULTS, "1000",
+		        "The maximum number of results returned by patient searches"));
 		
-        props.add(new GlobalProperty(GLOBAL_PROPERTY_GZIP_ENABLED, "false", "Set to 'true' to turn on OpenMRS's gzip filter, and have the webapp compress data before sending it to any client that supports it. Generally use this if you are running Tomcat standalone. If you are running Tomcat behind Apache, then you'd want to use Apache to do gzip compression."));
-        props.add(new GlobalProperty(GLOBAL_PROPERTY_REPORT_XML_MACROS, "", "Macros that will be applied to Report Schema XMLs when they are interpreted. This should be java.util.properties format."));
+		props
+		        .add(new GlobalProperty(
+		                GLOBAL_PROPERTY_GZIP_ENABLED,
+		                "false",
+		                "Set to 'true' to turn on OpenMRS's gzip filter, and have the webapp compress data before sending it to any client that supports it. Generally use this if you are running Tomcat standalone. If you are running Tomcat behind Apache, then you'd want to use Apache to do gzip compression."));
+		props
+		        .add(new GlobalProperty(GLOBAL_PROPERTY_REPORT_XML_MACROS, "",
+		                "Macros that will be applied to Report Schema XMLs when they are interpreted. This should be java.util.properties format."));
 		
-		props.add(new GlobalProperty(GLOBAL_PROPERTY_MEDICAL_RECORD_OBSERVATIONS, "1238", "The concept id of the MEDICAL_RECORD_OBSERVATIONS concept.  This concept_id is presumed to be the generic grouping (obr) concept in hl7 messages.  An obs_group row is not created for this concept."));
+		props
+		        .add(new GlobalProperty(
+		                GLOBAL_PROPERTY_MEDICAL_RECORD_OBSERVATIONS,
+		                "1238",
+		                "The concept id of the MEDICAL_RECORD_OBSERVATIONS concept.  This concept_id is presumed to be the generic grouping (obr) concept in hl7 messages.  An obs_group row is not created for this concept."));
+		
+		props
+        .add(new GlobalProperty(
+                GLOBAL_PROPERTY_PROBLEM_LIST,
+                "1284",
+                "The concept id of the PROBLEM LIST concept.  This concept_id is presumed to be the generic grouping (obr) concept in hl7 messages.  An obs_group row is not created for this concept."));
         
-		props.add(new GlobalProperty(GLOBAL_PROPERTY_LOG_LEVEL, LOG_LEVEL_INFO, "log level used by the logger 'org.openmrs'. This value will override the log4j.xml value. Valid values are trace, debug, info, warn, error or fatal"));
+		props
+		        .add(new GlobalProperty(
+		                GLOBAL_PROPERTY_LOG_LEVEL,
+		                LOG_LEVEL_INFO,
+		                "log level used by the logger 'org.openmrs'. This value will override the log4j.xml value. Valid values are trace, debug, info, warn, error or fatal"));
         
         props.add(new GlobalProperty(SyncConstants.LAST_SYNC_LOCAL, "", "Timestamp of the last sucessful sync push from child to parent."));
         props.add(new GlobalProperty(SyncConstants.LAST_SYNC_REMOTE, "", "Timestamp of the last sucessful sync pull from parent."));
@@ -750,15 +768,32 @@ public final class OpenmrsConstants {
         props.add(new GlobalProperty(SyncConstants.PROPERTY_SERVER_ID, "", "The short numeric id for this server. Should clearly identify this server from other servers. May be used as prefix for assigning user system ids."));
         props.add(new GlobalProperty(SyncConstants.PROPERTY_VERSION, "", "Synchronization version number. Do not edit, it is populated automatically during database upgrade process."));
         
-        props.add(new GlobalProperty(GLOBAL_PROPERTY_DEFAULT_PATIENT_IDENTIFIER_VALIDATOR, LUHN_IDENTIFIER_VALIDATOR, "This property sets the default patient identifier validator.  The default validator is only used in a handful of (mostly legacy) instances.  For example, it's used to generate the isValidCheckDigit calculated column and to append the string \"(default)\" to the name of the default validator on the editPatientIdentifierType form."));
+		props
+		        .add(new GlobalProperty(
+		                GLOBAL_PROPERTY_DEFAULT_PATIENT_IDENTIFIER_VALIDATOR,
+		                LUHN_IDENTIFIER_VALIDATOR,
+		                "This property sets the default patient identifier validator.  The default validator is only used in a handful of (mostly legacy) instances.  For example, it's used to generate the isValidCheckDigit calculated column and to append the string \"(default)\" to the name of the default validator on the editPatientIdentifierType form."));
 
-        props.add(new GlobalProperty(GLOBAL_PROPERTY_PATIENT_IDENTIFIER_IMPORTANT_TYPES, "", "A comma delimited list of PatientIdentifier names : PatientIdentifier locations that will be displayed on the patient dashboard.  E.g.: TRACnet ID:Rwanda,ELDID:Kenya"));
+		props
+		        .add(new GlobalProperty(
+		                GLOBAL_PROPERTY_PATIENT_IDENTIFIER_IMPORTANT_TYPES,
+		                "",
+		                "A comma delimited list of PatientIdentifier names : PatientIdentifier locations that will be displayed on the patient dashboard.  E.g.: TRACnet ID:Rwanda,ELDID:Kenya"));
         
-        props.add(new GlobalProperty(GLOBAL_PROPERTY_ENCOUNTER_FORM_OBS_SORT_ORDER, "number", "The sort order for the obs listed on the encounter edit form.  'number' sorts on the associated numbering from the form schema.  'weight' sorts on the order displayed in the form schema."));
+		props
+		        .add(new GlobalProperty(
+		                GLOBAL_PROPERTY_ENCOUNTER_FORM_OBS_SORT_ORDER,
+		                "number",
+		                "The sort order for the obs listed on the encounter edit form.  'number' sorts on the associated numbering from the form schema.  'weight' sorts on the order displayed in the form schema."));
         
-		props.add(new GlobalProperty(GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, "en", "Comma delimited list of locales allowed for use on system"));
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, "en, es, fr, it, pt",
+		        "Comma delimited list of locales allowed for use on system"));
 		
-		props.add(new GlobalProperty(GLOBAL_PROPERTY_NEWPATIENTFORM_RELATIONSHIPS, "", "Comma separated list of the RelationshipTypes to show on the new/short patient form.  The list is defined like '3a, 4b, 7a'.  The number is the RelationshipTypeId and the 'a' vs 'b' part is which side of the relationship is filled in by the user."));
+		props
+		        .add(new GlobalProperty(
+		                GLOBAL_PROPERTY_NEWPATIENTFORM_RELATIONSHIPS,
+		                "",
+		                "Comma separated list of the RelationshipTypes to show on the new/short patient form.  The list is defined like '3a, 4b, 7a'.  The number is the RelationshipTypeId and the 'a' vs 'b' part is which side of the relationship is filled in by the user."));
 		
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);
@@ -829,14 +864,12 @@ public final class OpenmrsConstants {
 		return languages;
 	}
 	
+	@Deprecated
 	private static Map<String, String> OPENMRS_LOCALE_DATE_PATTERNS = null;
 	
 	/**
-	 * This method is necessary until SimpleDateFormat(SHORT, java.util.locale) returns a 
-	 *   pattern with a four digit year
-	 *   <locale.toString().toLowerCase(), pattern>
-	 *   
 	 * @return Mapping of Locales to locale specific date pattern
+	 * @deprecated use the {@link org.openmrs.api.context.Context#getDateFormat()}
 	 */
 	public static final Map<String, String> OPENMRS_LOCALE_DATE_PATTERNS() {
 		if (OPENMRS_LOCALE_DATE_PATTERNS == null) {
@@ -869,23 +902,21 @@ public final class OpenmrsConstants {
 	public static final String USER_PROPERTY_NOTIFICATION_FORMAT 	= "notificationFormat";		// text/plain, text/html
 		
 	/**
-	 * Name of the user_property that stores the number of unsuccessful 
-	 * login attempts this user has made 
+	 * Name of the user_property that stores the number of unsuccessful login attempts this user has
+	 * made
 	 */
 	public static final String USER_PROPERTY_LOGIN_ATTEMPTS         = "loginAttempts";
 	
 	/**
-	 * Name of the user_property that stores the time the user was locked
-	 * out due to too many login attempts
+	 * Name of the user_property that stores the time the user was locked out due to too many login
+	 * attempts
 	 */
 	public static final String USER_PROPERTY_LOCKOUT_TIMESTAMP      = "lockoutTimestamp";
 	
 	/**
-	 * A user property name. The value should be a comma-separated ordered 
-	 * list of fully qualified locales within which the user is a proficient 
-	 * speaker. The list should be ordered from the most to the least proficiency.
-	 * 
-	 * Example:
+	 * A user property name. The value should be a comma-separated ordered list of fully qualified
+	 * locales within which the user is a proficient speaker. The list should be ordered from the
+	 * most to the least proficiency. Example:
 	 * <code>proficientLocales = en_US, en_GB, en, fr_RW</code>
 	 */
 	public static final String USER_PROPERTY_PROFICIENT_LOCALES			= "proficientLocales";
@@ -921,22 +952,20 @@ public final class OpenmrsConstants {
 	public static final String RUNTIMEPROPERTY_APPLICATION_DATA_DIR = "openmrs.application_data_dir";
 
 	/** 
-	* Shortcut booleans used to make some OS specific checks
-    * more generic; note the *nix flavored check is missing
-    * some less obvious choices
+	 * Shortcut booleans used to make some OS specific checks more generic; note the *nix flavored
+	 * check is missing some less obvious choices
     */
-	public static final boolean UNIX_BASED_OPERATING_SYSTEM = 
-        (OPERATING_SYSTEM.indexOf(OPERATING_SYSTEM_LINUX) > -1 ||
-         OPERATING_SYSTEM.indexOf(OPERATING_SYSTEM_SUNOS) > -1 ||
-         OPERATING_SYSTEM.indexOf(OPERATING_SYSTEM_FREEBSD) > -1 ||
-         OPERATING_SYSTEM.indexOf(OPERATING_SYSTEM_OSX) > -1);
+	public static final boolean UNIX_BASED_OPERATING_SYSTEM = (OPERATING_SYSTEM.indexOf(OPERATING_SYSTEM_LINUX) > -1
+	        || OPERATING_SYSTEM.indexOf(OPERATING_SYSTEM_SUNOS) > -1
+	        || OPERATING_SYSTEM.indexOf(OPERATING_SYSTEM_FREEBSD) > -1 || OPERATING_SYSTEM.indexOf(OPERATING_SYSTEM_OSX) > -1);
+	
     public static final boolean WINDOWS_BASED_OPERATING_SYSTEM = OPERATING_SYSTEM.indexOf("Windows") > -1;
-    public static final boolean WINDOWS_VISTA_OPERATING_SYSTEM = 
-		OPERATING_SYSTEM.equals(OPERATING_SYSTEM_WINDOWS_VISTA);
 		
+	public static final boolean WINDOWS_VISTA_OPERATING_SYSTEM = OPERATING_SYSTEM.equals(OPERATING_SYSTEM_WINDOWS_VISTA);
+	
 	/**
-	 * Marker put into the serialization session map to tell @Replace methods 
-	 * whether or not to do just the very basic serialization
+	 * Marker put into the serialization session map to tell @Replace methods whether or not to do
+	 * just the very basic serialization
 	 */
 	public static final String SHORT_SERIALIZATION = "isShortSerialization";
 	
@@ -954,13 +983,15 @@ public final class OpenmrsConstants {
     public static final String LOG_LEVEL_FATAL = "fatal";
     
     /**
-	 * These enumerations should be used in ObsService and PersonService getters  
-	 * to help determine which type of object to restrict on
+	 * These enumerations should be used in ObsService and PersonService getters to help determine
+	 * which type of object to restrict on
 	 * 
 	 * @see org.openmrs.api.ObsService
 	 * @see org.openmrs.api.PersonService 
 	 */
-	public static enum PERSON_TYPE {PERSON, PATIENT, USER}
+	public static enum PERSON_TYPE {
+		PERSON, PATIENT, USER
+	}
     
     //Patient Identifier Validators
 	public static final String LUHN_IDENTIFIER_VALIDATOR = LuhnIdentifierValidator.class.getName();

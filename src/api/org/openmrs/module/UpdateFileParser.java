@@ -42,7 +42,9 @@ public class UpdateFileParser {
 	
 	// these properties store the 'best fit' (most recent update that will fit with the current code version)
 	private String moduleId = null;
+	
 	private String currentVersion = null;
+	
 	private String downloadURL = null;
 	
 	/**
@@ -89,8 +91,7 @@ public class UpdateFileParser {
 				this.moduleId = getElement(rootNode, configVersion, "moduleId");
 				this.currentVersion = getElement(rootNode, configVersion, "currentVersion");
 				this.downloadURL = getElement(rootNode, configVersion, "downloadURL");
-			}
-			else if ("1.1".equals(configVersion)) {
+			} else if ("1.1".equals(configVersion)) {
 				
 				this.moduleId = rootNode.getAttribute("moduleId");
 				
@@ -98,14 +99,15 @@ public class UpdateFileParser {
 				this.currentVersion = ""; // default to the lowest version possible
 				
 				// loop over all 'update' tags
-				for (Integer i=0; i < nodes.getLength(); i++) {
-					Element currentNode = (Element)nodes.item(i);
+				for (Integer i = 0; i < nodes.getLength(); i++) {
+					Element currentNode = (Element) nodes.item(i);
 					String currentVersion = getElement(currentNode, configVersion, "currentVersion");
 					// if the currently saved version is less than the current tag
 					if (ModuleUtil.compareVersion(this.currentVersion, currentVersion) < 0) {
 						String requireOpenMRSVersion = getElement(currentNode, configVersion, "requireOpenMRSVersion");
 						// if the openmrs code version is compatible, this node is a winner
-						if (requireOpenMRSVersion == null || ModuleUtil.compareVersion(OpenmrsConstants.OPENMRS_VERSION_SHORT, requireOpenMRSVersion) >= 0) {
+						if (requireOpenMRSVersion == null
+						        || ModuleUtil.compareVersion(OpenmrsConstants.OPENMRS_VERSION_SHORT, requireOpenMRSVersion) >= 0) {
 							this.currentVersion = currentVersion;
 							this.downloadURL = getElement(currentNode, configVersion, "downloadURL");
 						}
@@ -121,11 +123,12 @@ public class UpdateFileParser {
 			if (stringReader != null)
 				stringReader.close();
 		}
-			
+		
 	}
 	
 	/**
 	 * Generic method to get a module tag
+	 * 
 	 * @param element
 	 * @param version
 	 * @param tag
@@ -139,6 +142,7 @@ public class UpdateFileParser {
 	
 	/**
 	 * List of the valid sqldiff versions
+	 * 
 	 * @return
 	 */
 	private static List<String> validConfigVersions() {
@@ -154,14 +158,14 @@ public class UpdateFileParser {
 	public String getDownloadURL() {
 		return downloadURL;
 	}
-
+	
 	/**
 	 * @return the moduleId
 	 */
 	public String getModuleId() {
 		return moduleId;
 	}
-
+	
 	/**
 	 * @return the version
 	 */

@@ -25,9 +25,7 @@ import org.openmrs.util.OpenmrsConstants;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Contains methods pertaining to Users in the system
- * 
- * Use:<br/>
+ * Contains methods pertaining to Users in the system Use:<br/>
  * 
  * <pre>
  *   List<User> users = Context.getUserService().getAllUsers();
@@ -40,6 +38,7 @@ public interface UserService extends OpenmrsService {
 
 	/**
 	 * Saves a user to the database.
+	 * 
 	 * @param user
 	 * @param password
 	 * @returns a User object 
@@ -59,6 +58,7 @@ public interface UserService extends OpenmrsService {
 
 	/**
 	 * Get user by internal user identifier.
+	 * 
 	 * @param userId internal identifier
 	 * @return requested user
 	 * @throws APIException
@@ -72,6 +72,7 @@ public interface UserService extends OpenmrsService {
 
 	/**
 	 * Get user by username (user's login identifier)
+	 * 
 	 * @param username user's identifier used for authentication
 	 * @return requested user
 	 * @throws APIException
@@ -82,6 +83,7 @@ public interface UserService extends OpenmrsService {
 
 	/**
 	 * true/false if username or systemId is already in db in username or system_id columns
+	 * 
 	 * @param User to compare
 	 * @return boolean
 	 * @throws APIException
@@ -92,6 +94,7 @@ public interface UserService extends OpenmrsService {
 
 	/**
 	 * Get users by role granted
+	 * 
 	 * @param Role role that the Users must have to be returned 
 	 * @return users with requested role
 	 * @throws APIException
@@ -102,6 +105,7 @@ public interface UserService extends OpenmrsService {
 
 	/**
 	 * Save changes to given <code>user</code> to the database.
+	 * 
 	 * @param user
 	 * @throws APIException
 	 * @see {@link #saveUser(User, String)}
@@ -127,10 +131,9 @@ public interface UserService extends OpenmrsService {
 	public void revokeUserRole(User user, Role role) throws APIException;
 
 	/** 
-	 * Mark user as voided (effectively deleting user without removing
-	 * their data &mdash; since anything the user touched in the database
-	 * will still have their internal identifier and point to the voided
-	 * user for historical tracking purposes.
+	 * Mark user as voided (effectively deleting user without removing their data &mdash; since
+	 * anything the user touched in the database will still have their internal identifier and point
+	 * to the voided user for historical tracking purposes.
 	 * 
 	 * @param user
 	 * @param reason
@@ -141,8 +144,7 @@ public interface UserService extends OpenmrsService {
 	public User voidUser(User user, String reason) throws APIException;
 
 	/**
-	 * Clear voided flag for user (equivalent to an "undelete" or
-	 * Lazarus Effect for user)
+	 * Clear voided flag for user (equivalent to an "undelete" or Lazarus Effect for user)
 	 * 
 	 * @param user
 	 * @return the given user unvoided
@@ -160,8 +162,8 @@ public interface UserService extends OpenmrsService {
 	public void deleteUser(User user) throws APIException;
 	
     /**
-     * Completely remove a location from the database (not reversible).
-     * This method delegates to #purgeLocation(location, boolean) method.
+	 * Completely remove a location from the database (not reversible). This method delegates to
+	 * #purgeLocation(location, boolean) method.
      * 
      * @param user the User to remove from the database.
      */
@@ -169,19 +171,14 @@ public interface UserService extends OpenmrsService {
     public void purgeUser(User user) throws APIException;
 
     /**
-     * Completely remove a user from the database (not reversible).
-     * 
-	 * This is a delete from the database. This is included for troubleshooting and
-	 * low-level system administration. Ideally, this method should <b>never</b>
-	 * be called &mdash; <code>Users</code> should be <em>voided</em> and
-	 * not <em>deleted</em> altogether (since many foreign key constraints
-	 * depend on users, deleting a user would require deleting all traces, and
-	 * any historical trail would be lost).
-	 * 
-	 * This method only clears user roles and attempts to delete the user
-	 * record. If the user has been included in any other parts of the database
-	 * (through a foreign key), the attempt to delete the user will violate
-	 * foreign key constraints and fail.
+	 * Completely remove a user from the database (not reversible). This is a delete from the
+	 * database. This is included for troubleshooting and low-level system administration. Ideally,
+	 * this method should <b>never</b> be called &mdash; <code>Users</code> should be
+	 * <em>voided</em> and not <em>deleted</em> altogether (since many foreign key constraints
+	 * depend on users, deleting a user would require deleting all traces, and any historical trail
+	 * would be lost). This method only clears user roles and attempts to delete the user record. If
+	 * the user has been included in any other parts of the database (through a foreign key), the
+	 * attempt to delete the user will violate foreign key constraints and fail.
      * 
      * @param cascade <code>true</code> to delete associated content
      */
@@ -196,6 +193,7 @@ public interface UserService extends OpenmrsService {
 	
 	/**
 	 * Returns all privileges currently possible for any User
+	 * 
 	 * @return Global list of privileges
 	 * @throws APIException
 	 */
@@ -210,6 +208,7 @@ public interface UserService extends OpenmrsService {
 	
 	/**
 	 * Returns all roles currently possible for any User
+	 * 
 	 * @return Global list of roles
 	 * @throws APIException
 	 */
@@ -262,6 +261,7 @@ public interface UserService extends OpenmrsService {
 	
 	/**
 	 * Returns role object with given string role
+	 * 
 	 * @return Role
 	 * @throws APIException
 	 */
@@ -273,6 +273,7 @@ public interface UserService extends OpenmrsService {
 
 	/**
 	 * Returns Privilege in the system with given String privilege
+	 * 
 	 * @return Privilege
 	 * @throws APIException
 	 */
@@ -291,6 +292,7 @@ public interface UserService extends OpenmrsService {
 	
 	/**
 	 * Returns all users in the system
+	 * 
 	 * @return Global list of users
 	 * @throws APIException
 	 */
@@ -301,6 +303,7 @@ public interface UserService extends OpenmrsService {
 	/**
 	 * Changes the <code>user<code>'s password
 	 * ** Restricted to Super User access**
+	 * 
 	 * @param u user
 	 * @param pw2 new password
 	 * @throws APIException
@@ -311,6 +314,7 @@ public interface UserService extends OpenmrsService {
 
 	/**
 	 * Changes the current user's password.  
+	 * 
 	 * @param pw current password
 	 * @param pw2 new password
 	 * @throws APIException
@@ -341,13 +345,15 @@ public interface UserService extends OpenmrsService {
 	public boolean isSecretAnswer(User u, String answer) throws APIException;
 	
 	/**
-	 * Return a user if any part of the search matches first/last/system id and the 
-	 * user has one at least one of the given <code>roles</code> assigned to them
+	 * Return a user if any part of the search matches first/last/system id and the user has one at
+	 * least one of the given <code>roles</code> assigned to them
 	 * 
-	 * @param nameSearch
-	 * @param roles
-	 * @param includeVoided
-	 * @return
+	 * @param nameSearch string to compare to the beginning of user's given/middle/family/family2
+	 *            names
+	 * @param roles all the Roles the user must contain
+	 * @param includeVoided true/false whether to include voided users
+	 * @return list of users matching the given attributes
+	 * @should match search to familyName2
 	 */
 	@Transactional(readOnly=true)
 	@Authorized({OpenmrsConstants.PRIV_VIEW_USERS})
@@ -387,9 +393,7 @@ public interface UserService extends OpenmrsService {
 	public List<User> getAllUsers(List<Role> roles, boolean includeVoided) throws APIException;
 
 	/**
-	 * Adds the <code>key</code>/<code>value</code> pair to the 
-	 * given <code>user</code>.
-	 * 
+	 * Adds the <code>key</code>/<code>value</code> pair to the given <code>user</code>.
 	 * <b>Implementations of this method should handle privileges</b>
 	 * 
 	 * @param user
@@ -400,9 +404,7 @@ public interface UserService extends OpenmrsService {
 	public User setUserProperty(User user, String key, String value) throws APIException;
 	
 	/**
-	 * Removes the property denoted by <code>key</code> from the 
-	 * <code>user</code>'s properties.
-	 * 
+	 * Removes the property denoted by <code>key</code> from the <code>user</code>'s properties.
 	 * <b>Implementations of this method should handle privileges</b>
 	 * 
 	 * @param user
@@ -412,8 +414,9 @@ public interface UserService extends OpenmrsService {
 	public User removeUserProperty(User user, String key) throws APIException;
 	
 	/**
-	 * Get/generate/find the next system id to be doled out.  Assume check digit /not/ applied
-	 * in this method
+	 * Get/generate/find the next system id to be doled out. Assume check digit /not/ applied in
+	 * this method
+	 * 
 	 * @return new system id
 	 */
 	String generateSystemId();

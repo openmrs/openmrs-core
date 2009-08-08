@@ -35,8 +35,8 @@ public class EncounterTypeTest {
 	}
 	
 	/**
-	 * Makes sure that two different encounterType objects that have the same 
-	 * encounterType id are considered equal 
+	 * Makes sure that two different encounterType objects that have the same encounterType id are
+	 * considered equal
 	 * 
 	 * @throws Exception
 	 */
@@ -50,8 +50,8 @@ public class EncounterTypeTest {
 	}
 	
 	/**
-	 * Makes sure that two different encounterType objects that have different
-	 * encounterType ids are considered unequal
+	 * Makes sure that two different encounterType objects that have different encounterType ids are
+	 * considered unequal
 	 * 
 	 * @throws Exception
 	 */
@@ -65,8 +65,8 @@ public class EncounterTypeTest {
 	}
 	
 	/**
-	 * Makes sure that two different encounterType objects that have the same 
-	 * encounterType id are considered equal (checks for NPEs)
+	 * Makes sure that two different encounterType objects that have the same encounterType id are
+	 * considered equal (checks for NPEs)
 	 * 
 	 * @throws Exception
 	 */
@@ -79,8 +79,8 @@ public class EncounterTypeTest {
 	}
 	
 	/**
-	 * Makes sure that two different encounterType objects are unequal when
-	 * one of them doesn't have an encounterType id defined (checks for NPEs)
+	 * Makes sure that two different encounterType objects are unequal when one of them doesn't have
+	 * an encounterType id defined (checks for NPEs)
 	 * 
 	 * @throws Exception
 	 */
@@ -101,8 +101,8 @@ public class EncounterTypeTest {
 	}
 	
 	/**
-	 * Make sure we can call {@link EncounterType#hashCode()} with all null
-	 * attributes on encounterType and still get a hashcode
+	 * Make sure we can call {@link EncounterType#hashCode()} with all null attributes on
+	 * encounterType and still get a hashcode
 	 * 
 	 * @throws Exception
 	 */
@@ -110,5 +110,5 @@ public class EncounterTypeTest {
 	public void shouldGetHashCodeWithNullAttributes() throws Exception {
 		new EncounterType().hashCode();
 	}
-		
+	
 }

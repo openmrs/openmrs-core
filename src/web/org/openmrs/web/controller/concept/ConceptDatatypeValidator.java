@@ -21,12 +21,11 @@ import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 public class ConceptDatatypeValidator implements Validator {
-
+	
 	/** Log for this class and subclasses */
 	protected final Log log = LogFactory.getLog(getClass());
-
+	
 	/**
-	 * 
 	 * Determines if the command object being submitted is a valid type
 	 * 
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
@@ -34,22 +33,21 @@ public class ConceptDatatypeValidator implements Validator {
 	public boolean supports(Class c) {
 		return c.equals(ConceptDatatype.class);
 	}
-
+	
 	/**
-	 * 
 	 * Checks the form object for any inconsistencies/errors
 	 * 
-	 * @see org.springframework.validation.Validator#validate(java.lang.Object, org.springframework.validation.Errors)
+	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
+	 *      org.springframework.validation.Errors)
 	 */
 	public void validate(Object obj, Errors errors) {
-		ConceptDatatype cd = (ConceptDatatype)obj;
+		ConceptDatatype cd = (ConceptDatatype) obj;
 		if (cd == null) {
 			errors.rejectValue("conceptDatatype", "error.general");
-		}
-		else {
+		} else {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "description", "error.description");
 		}
 	}
-
+	
 }

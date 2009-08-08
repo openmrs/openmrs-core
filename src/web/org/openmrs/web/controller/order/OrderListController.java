@@ -40,17 +40,19 @@ import org.springframework.web.servlet.view.RedirectView;
 
 public class OrderListController extends SimpleFormController {
 	
-    /** Logger for this class and subclasses */
-    protected final Log log = LogFactory.getLog(getClass());
-
+	/** Logger for this class and subclasses */
+	protected final Log log = LogFactory.getLog(getClass());
+	
 	/**
+	 * The onSubmit function receives the form/command object that was modified by the input form
+	 * and saves it to the db
 	 * 
-	 * The onSubmit function receives the form/command object that was modified
-	 *   by the input form and saves it to the db
-	 * 
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
+	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
+	 *      org.springframework.validation.BindException)
 	 */
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
+	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
+	                                BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
 		
@@ -61,7 +63,7 @@ public class OrderListController extends SimpleFormController {
 			
 			String success = "";
 			String error = "";
-
+			
 			MessageSourceAccessor msa = getMessageSourceAccessor();
 			String deleted = msa.getMessage("general.deleted");
 			String notDeleted = msa.getMessage("general.cannot.delete");
@@ -69,12 +71,14 @@ public class OrderListController extends SimpleFormController {
 			for (String p : orderList) {
 				try {
 					os.deleteOrder(os.getOrder(Integer.valueOf(p)));
-					if (!success.equals("")) success += "<br/>";
+					if (!success.equals(""))
+						success += "<br/>";
 					success += ord + " " + p + " " + deleted;
 				}
 				catch (APIException e) {
 					log.warn("Error deleting order", e);
-					if (!error.equals("")) error += "<br/>";
+					if (!error.equals(""))
+						error += "<br/>";
 					error += ord + " " + p + " " + notDeleted;
 				}
 			}
@@ -85,48 +89,47 @@ public class OrderListController extends SimpleFormController {
 			if (!error.equals(""))
 				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error);
 		}
-			
+		
 		return new ModelAndView(new RedirectView(view));
 	}
-
+	
 	/**
-	 * 
-	 * This is called prior to displaying a form for the first time.  It tells Spring
-	 *   the form/command object to load into the request
+	 * This is called prior to displaying a form for the first time. It tells Spring the
+	 * form/command object to load into the request
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-    protected Object formBackingObject(HttpServletRequest request) throws ServletException {
-
+	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
+		
 		//default empty Object
 		List<Order> orderList = new Vector<Order>();
 		
 		//only fill the Object is the user has authenticated properly
 		if (Context.isAuthenticated()) {
 			OrderService os = Context.getOrderService();
-	    	orderList = os.getOrders();
+			orderList = os.getOrders();
 		}
-    	
-        return orderList;
-    }
-
+		
+		return orderList;
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest, java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	protected Map referenceData(HttpServletRequest request, Object obj, Errors err) throws Exception {
-		Map<Integer,String> conceptNames = new HashMap<Integer,String>();
+		Map<Integer, String> conceptNames = new HashMap<Integer, String>();
 		
-		List<Order> orderList = (List<Order>)obj;
+		List<Order> orderList = (List<Order>) obj;
 		
-		for ( Order order : orderList ) {
+		for (Order order : orderList) {
 			Concept c = order.getConcept();
 			String cName = c.getName(request.getLocale()).getName();
 			conceptNames.put(c.getConceptId(), cName);
 		}
 		
-		Map<String,Object> refData = new HashMap<String,Object>();
+		Map<String, Object> refData = new HashMap<String, Object>();
 		refData.put("conceptNames", conceptNames);
 		
 		return refData;

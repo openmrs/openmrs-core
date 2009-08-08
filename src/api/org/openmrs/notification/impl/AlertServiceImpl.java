@@ -35,26 +35,26 @@ import org.openmrs.notification.db.AlertDAO;
  * @see org.openmrs.notification.AlertService
  */
 public class AlertServiceImpl extends BaseOpenmrsService implements Serializable, AlertService {
-
+	
 	private static final long serialVersionUID = 564561231321112365L;
-
+	
 	private Log log = LogFactory.getLog(this.getClass());
-
+	
 	private AlertDAO dao;
-
+	
 	/**
 	 * Default constructor
 	 */
 	public AlertServiceImpl() {
 	}
-
+	
 	/**
 	 * @see org.openmrs.notification.AlertService#setAlertDAO(org.openmrs.notification.db.AlertDAO)
 	 */
 	public void setAlertDAO(AlertDAO dao) {
 		this.dao = dao;
 	}
-
+	
 	/**
 	 * @see org.openmrs.notification.AlertService#createAlert(org.openmrs.notification.Alert)
 	 * @deprecated
@@ -62,23 +62,23 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 	public void createAlert(Alert alert) throws APIException {
 		saveAlert(alert);
 	}
-
+	
 	/**
 	 * @see org.openmrs.notification.AlertService#saveAlert(org.openmrs.notification.Alert)
 	 */
 	public Alert saveAlert(Alert alert) throws APIException {
 		log.debug("Create a alert " + alert);
-
+		
 		if (alert.getCreator() == null)
 			alert.setCreator(Context.getAuthenticatedUser());
 		if (alert.getDateCreated() == null)
 			alert.setDateCreated(new Date());
-
+		
 		if (alert.getAlertId() != null) {
 			alert.setChangedBy(Context.getAuthenticatedUser());
 			alert.setDateChanged(new Date());
 		}
-
+		
 		// Make sure all recipients are assigned to this alert
 		if (alert.getRecipients() != null) {
 			for (AlertRecipient recipient : alert.getRecipients()) {
@@ -86,35 +86,33 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 					recipient.setAlert(alert);
 			}
 		}
-
+		
 		return dao.saveAlert(alert);
 	}
-
+	
 	/**
-	 * @see org.openmrs.notification.AlertService#createAlert(java.lang.String,
-	 *      org.openmrs.User)
+	 * @see org.openmrs.notification.AlertService#createAlert(java.lang.String, org.openmrs.User)
 	 * @deprecated
 	 */
 	public void createAlert(String text, User user) throws APIException {
 		saveAlert(new Alert(text, user));
 	}
-
+	
 	/**
 	 * @see org.openmrs.notification.AlertService#createAlert(java.lang.String,
 	 *      java.util.Collection)
 	 */
-	public void createAlert(String text, Collection<User> users)
-	        throws APIException {
+	public void createAlert(String text, Collection<User> users) throws APIException {
 		saveAlert(new Alert(text, users));
 	}
-
+	
 	/**
 	 * @see org.openmrs.notification.AlertService#getAlert(java.lang.Integer)
 	 */
 	public Alert getAlert(Integer alertId) throws APIException {
 		return dao.getAlert(alertId);
 	}
-
+	
 	/**
 	 * @see org.openmrs.notification.AlertService#updateAlert(org.openmrs.notification.Alert)
 	 * @deprecated
@@ -122,14 +120,14 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 	public void updateAlert(Alert alert) throws APIException {
 		saveAlert(alert);
 	}
-
+	
 	/**
 	 * @see org.openmrs.notification.AlertService#purgeAlert(org.openmrs.notification.Alert)
 	 */
 	public void purgeAlert(Alert alert) throws APIException {
 		dao.deleteAlert(alert);
 	}
-
+	
 	/**
 	 * @see org.openmrs.notification.AlertService#markAlertRead(org.openmrs.notification.Alert)
 	 * @deprecated
@@ -137,7 +135,7 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 	public void markAlertRead(Alert alert) throws APIException {
 		saveAlert(alert.markAlertRead());
 	}
-
+	
 	/**
 	 * @see org.openmrs.notification.AlertService#getAllAlerts(org.openmrs.User)
 	 * @deprecated
@@ -146,7 +144,7 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 		log.debug("Getting all alerts for user " + user);
 		return getAlerts(user, true, true);
 	}
-
+	
 	/**
 	 * @see org.openmrs.notification.AlertService#getAllActiveAlerts(org.openmrs.User)
 	 */
@@ -154,7 +152,7 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 		log.debug("Getting all active alerts for user " + user);
 		return getAlerts(user, true, false);
 	}
-
+	
 	/**
 	 * @see org.openmrs.notification.AlertService#getAlerts(org.openmrs.User)
 	 * @deprecated
@@ -163,41 +161,38 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 		log.debug("Getting unread alerts for user " + user);
 		return getAlertsByUser(user);
 	}
-
+	
 	/**
 	 * @see org.openmrs.notification.AlertService#getAlertsByUser(org.openmrs.User)
 	 */
 	public List<Alert> getAlertsByUser(User user) throws APIException {
 		log.debug("Getting unread alerts for user " + user);
-
+		
 		if (user == null) {
 			if (Context.isAuthenticated())
 				user = Context.getAuthenticatedUser();
 			else
 				user = new User();
 		}
-
+		
 		return getAlerts(user, false, false);
 	}
-
+	
 	/**
 	 * @see org.openmrs.notification.AlertService#getAlerts()
 	 */
 	public List<Alert> getAlerts() throws APIException {
 		return getAlertsByUser(null);
 	}
-
+	
 	/**
-	 * @see org.openmrs.notification.AlertService#getAlerts(org.openmrs.User,
-	 *      boolean, boolean)
+	 * @see org.openmrs.notification.AlertService#getAlerts(org.openmrs.User, boolean, boolean)
 	 */
-	public List<Alert> getAlerts(User user, boolean includeRead,
-	        boolean includeExpired) throws APIException {
-		log.debug("Getting alerts for user " + user + " read? " + includeRead
-		        + " expired? " + includeExpired);
+	public List<Alert> getAlerts(User user, boolean includeRead, boolean includeExpired) throws APIException {
+		log.debug("Getting alerts for user " + user + " read? " + includeRead + " expired? " + includeExpired);
 		return dao.getAlerts(user, includeRead, includeExpired);
 	}
-
+	
 	/**
 	 * @see org.openmrs.notification.AlertService#getAllAlerts()
 	 */
@@ -205,7 +200,7 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 		log.debug("Getting alerts for all users");
 		return getAllAlerts(false);
 	}
-
+	
 	/**
 	 * @see org.openmrs.notification.AlertService#getAllAlerts(boolean)
 	 */
@@ -213,5 +208,5 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 		log.debug("Getting alerts for all users");
 		return dao.getAllAlerts(includeExpired);
 	}
-
+	
 }

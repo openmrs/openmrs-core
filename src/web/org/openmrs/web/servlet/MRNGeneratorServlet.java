@@ -27,16 +27,14 @@ import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
 
 public class MRNGeneratorServlet extends HttpServlet {
-
+	
 	/**
 	 * TODO Where to put this (mostly) AMRS-specific servlet ?
 	 */
 	
-	
 	public static final long serialVersionUID = 1231231L;
 	
-	protected void doPost(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		String site = request.getParameter("site");
 		String prefix = request.getParameter("mrn_prefix");
@@ -47,8 +45,8 @@ public class MRNGeneratorServlet extends HttpServlet {
 		if (prefix == null)
 			prefix = "";
 		
-		if (site == null || first == null || count == null || 
-				site.length()==0 || first.length()==0 || count.length()==0) {
+		if (site == null || first == null || count == null || site.length() == 0 || first.length() == 0
+		        || count.length() == 0) {
 			session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "MRNGenerator.all.required");
 			response.sendRedirect("admin/maintenance/mrnGenerator.htm");
 			return;
@@ -62,7 +60,7 @@ public class MRNGeneratorServlet extends HttpServlet {
 		// log who generated this list
 		as.mrnGeneratorLog(site, mrnFirst, mrnCount);
 		
-		String filename = site + "_" + mrnFirst + "-" + (mrnFirst + (mrnCount - 1)) + prefix + ".txt"; 
+		String filename = site + "_" + mrnFirst + "-" + (mrnFirst + (mrnCount - 1)) + prefix + ".txt";
 		
 		response.setHeader("Content-Type", "text");
 		response.setHeader("Content-Disposition", "attachment; filename=" + filename);
@@ -78,7 +76,7 @@ public class MRNGeneratorServlet extends HttpServlet {
 			catch (Exception e) {
 				throw new ServletException(e);
 			}
-			line = line + "-" + checkdigit;  
+			line = line + "-" + checkdigit;
 			
 			response.getOutputStream().println(line);
 			

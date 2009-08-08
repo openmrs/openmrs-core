@@ -21,14 +21,11 @@ import org.openmrs.synchronization.Synchronizable;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
- * A ConceptProposal is a temporary holder for concept that should be 
- * in the system.  
- * 
- * When defining an observation, a user can "propose" a new concept if one 
- * isn't found already. The proposal is a simple text entry that will be 
- * reviewed later.  When a proposal is (edited and) accepted, the encounter
- * that prompted this proposal is updated with a new observation pointing
- * at the new (or edited) concept.  
+ * A ConceptProposal is a temporary holder for concept that should be in the system. When defining
+ * an observation, a user can "propose" a new concept if one isn't found already. The proposal is a
+ * simple text entry that will be reviewed later. When a proposal is (edited and) accepted, the
+ * encounter that prompted this proposal is updated with a new observation pointing at the new (or
+ * edited) concept.
  */
 public class ConceptProposal implements java.io.Serializable, Synchronizable {
 
@@ -72,7 +69,8 @@ public class ConceptProposal implements java.io.Serializable, Synchronizable {
 	// Constructors
 
 	/** default constructor */
-	public ConceptProposal() {	}
+	public ConceptProposal() {
+	}
 
 	/** constructor with id */
 	public ConceptProposal(Integer conceptProposalId) {
@@ -95,7 +93,8 @@ public class ConceptProposal implements java.io.Serializable, Synchronizable {
 	 * @see java.lang.Object#hashCode()
 	 */
 	public int hashCode() {
-		if (this.getConceptProposalId() == null) return super.hashCode();
+		if (this.getConceptProposalId() == null)
+			return super.hashCode();
 		int hash = 9;
 		hash = 31 * this.getConceptProposalId() + hash;
 		return hash;
@@ -290,11 +289,8 @@ public class ConceptProposal implements java.io.Serializable, Synchronizable {
 	}
 	
 	/**
-	 * Convenience method to mark this proposal as rejected.
-	 * 
-	 * Be sure to call Context.getConceptService().saveConceptProposal(/thisObject/)
-	 * after calling this method
-	 * 
+	 * Convenience method to mark this proposal as rejected. Be sure to call
+	 * Context.getConceptService().saveConceptProposal(/thisObject/) after calling this method
 	 */
 	public void rejectConceptProposal() {
 		setState(OpenmrsConstants.CONCEPT_PROPOSAL_REJECT);

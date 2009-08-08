@@ -19,16 +19,13 @@ import java.util.Set;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Interface for a service which expands on the basic capabilities 
- * of a message source. 
- * 
+ * Interface for a service which expands on the basic capabilities of a message source.
  */
 @Transactional
 public interface MessageSourceService extends MutableMessageSource {
 	
 	/**
-	 * Get the message with the given code from the current user's
-	 * selected locale.
+	 * Get the message with the given code from the current user's selected locale.
 	 * 
 	 * @see #getMessage(String arg0, Object[] arg1, java.util.Locale arg2)
 	 * @param s message code to retrieve
@@ -38,8 +35,7 @@ public interface MessageSourceService extends MutableMessageSource {
 	public String getMessage(String s);
 	
 	/**
-	 * Gets the message source service which is currently providing
-	 * services.
+	 * Gets the message source service which is currently providing services.
 	 * 
      * @return the activeMessageSource
      */
@@ -55,17 +51,13 @@ public interface MessageSourceService extends MutableMessageSource {
     
 
 	/**
-	 * Presumes to append the messages to a message.properties file which is
-	 * already being monitored by the super
-	 * ReloadableResourceBundleMessageSource.
-	 * 
-	 * This is a blind, trusting hack.
+	 * Presumes to append the messages to a message.properties file which is already being monitored
+	 * by the super ReloadableResourceBundleMessageSource. This is a blind, trusting hack.
 	 * 
 	 * @see org.openmrs.message.MessageSourceService#publishProperties(java.util.Properties,
 	 *      java.lang.String, java.lang.String, java.lang.String)
 	 */
-	public void publishProperties(Properties props, String locale,
-	        String namespace, String name, String version);
+	public void publishProperties(Properties props, String locale, String namespace, String name, String version);
 
 	/**
      * @return the availableMessageSources
@@ -76,7 +68,6 @@ public interface MessageSourceService extends MutableMessageSource {
 	/**
      * @param availableMessageSources the availableMessageSources to set
      */
-    public void setMessageSources(
-            Set<MutableMessageSource> availableMessageSources);
+	public void setMessageSources(Set<MutableMessageSource> availableMessageSources);
 	
 }

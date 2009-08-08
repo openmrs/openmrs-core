@@ -30,7 +30,7 @@ public class WebUtil {
 		
 		return s;
 	}
-
+	
 	public static String escapeQuotes(String s) {
 		
 		if (s == null)
@@ -49,7 +49,7 @@ public class WebUtil {
 		
 		return s;
 	}
-
+	
 	public static String escapeQuotesAndNewlines(String s) {
 		if (s == null)
 			return "";
@@ -61,10 +61,8 @@ public class WebUtil {
 	}
 	
 	/**
-	 * Strips out the path from a string
-	 * if "C:\documents\file.doc", will return "file.doc"
-	 * if "file.doc", will return "file.doc"
-	 * if "/home/file.doc" will return "file.doc"
+	 * Strips out the path from a string if "C:\documents\file.doc", will return "file.doc" if
+	 * "file.doc", will return "file.doc" if "/home/file.doc" will return "file.doc"
 	 * 
 	 * @param filename
 	 * @return filename stripped down

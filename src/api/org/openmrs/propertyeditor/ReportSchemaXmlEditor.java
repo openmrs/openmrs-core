@@ -10,10 +10,11 @@ import org.openmrs.report.ReportSchemaXml;
 import org.springframework.util.StringUtils;
 
 public class ReportSchemaXmlEditor extends PropertyEditorSupport {
-
+	
 	private Log log = LogFactory.getLog(this.getClass());
 	
-	public ReportSchemaXmlEditor() {}
+	public ReportSchemaXmlEditor() {
+	}
 	
 	public void setAsText(String text) throws IllegalArgumentException {
 		if (StringUtils.hasText(text)) {
@@ -25,18 +26,16 @@ public class ReportSchemaXmlEditor extends PropertyEditorSupport {
 				log.error("Error setting text: " + text, ex);
 				throw new IllegalArgumentException("ReportSchemaXml not found: " + ex.getMessage());
 			}
-		}
-		else {
+		} else {
 			setValue(null);
 		}
 	}
-
+	
 	public String getAsText() {
 		ReportSchemaXml rsx = (ReportSchemaXml) getValue();
 		if (rsx == null || rsx.getReportSchemaId() == null) {
 			return "";
-		}
-		else {
+		} else {
 			return rsx.getReportSchemaId().toString();
 		}
 	}

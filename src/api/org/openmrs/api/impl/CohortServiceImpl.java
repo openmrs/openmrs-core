@@ -139,7 +139,8 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
     }
 
 	/**
-     * @see org.openmrs.api.CohortService#removePatientFromCohort(org.openmrs.Cohort, org.openmrs.Patient)
+	 * @see org.openmrs.api.CohortService#removePatientFromCohort(org.openmrs.Cohort,
+	 *      org.openmrs.Patient)
      */
     public Cohort removePatientFromCohort(Cohort cohort, Patient patient) {
     	if (cohort.contains(patient)) {
@@ -209,7 +210,8 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
      * @return
      * @throws APIException
      */
-    private CohortDefinitionProvider getCohortDefinitionProvider(Class<? extends CohortDefinition> definitionClass) throws APIException {
+	private CohortDefinitionProvider getCohortDefinitionProvider(Class<? extends CohortDefinition> definitionClass)
+	                                                                                                               throws APIException {
     	CohortDefinitionProvider ret = cohortDefinitionProviders.get(definitionClass);
     	if (ret == null)
     		throw new APIException("No CohortDefinitionProvider registered for " + definitionClass);
@@ -218,7 +220,8 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
     }
 	
 	/**
-     * @see org.openmrs.api.CohortService#evaluate(org.openmrs.cohort.CohortDefinition, org.openmrs.report.EvaluationContext)
+	 * @see org.openmrs.api.CohortService#evaluate(org.openmrs.cohort.CohortDefinition,
+	 *      org.openmrs.report.EvaluationContext)
      */
     public Cohort evaluate(CohortDefinition definition, EvaluationContext evalContext) throws APIException {
 	    CohortDefinitionProvider provider = getCohortDefinitionProvider(definition.getClass());
@@ -287,7 +290,8 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
     /**
      * @see org.openmrs.api.CohortService#setCohortDefinitionProviders(Map)
      */
-    public void setCohortDefinitionProviders(Map<Class<? extends CohortDefinition>, CohortDefinitionProvider> providerClassMap) {
+	public void setCohortDefinitionProviders(
+	                                         Map<Class<? extends CohortDefinition>, CohortDefinitionProvider> providerClassMap) {
     	for (Map.Entry<Class<? extends CohortDefinition>, CohortDefinitionProvider> entry : providerClassMap.entrySet()) {
     		registerCohortDefinitionProvider(entry.getKey(), entry.getValue());
     	}
@@ -304,9 +308,11 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
     }
     
     /**
-     * @see org.openmrs.api.CohortService#registerCohortDefinitionProvider(java.lang.Class, org.openmrs.api.CohortDefinitionService)
+	 * @see org.openmrs.api.CohortService#registerCohortDefinitionProvider(java.lang.Class,
+	 *      org.openmrs.api.CohortDefinitionService)
      */
-    public void registerCohortDefinitionProvider(Class<? extends CohortDefinition> defClass, CohortDefinitionProvider cohortDefProvider) throws APIException {
+	public void registerCohortDefinitionProvider(Class<? extends CohortDefinition> defClass,
+	                                             CohortDefinitionProvider cohortDefProvider) throws APIException {
     	getCohortDefinitionProviders().put(defClass, cohortDefProvider);
     }
     

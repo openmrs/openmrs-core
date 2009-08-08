@@ -21,20 +21,19 @@ import org.hibernate.dialect.HSQLDialect;
 import org.hibernate.engine.SessionFactoryImplementor;
 
 /**
- * This class holds common methods and utilities that are used across
- * the hibernate related classes
+ * This class holds common methods and utilities that are used across the hibernate related classes
  */
 public class HibernateUtil {
-
+	
 	private static Log log = LogFactory.getLog(HibernateUtil.class);
 	
 	private static Dialect dialect = null;
+	
 	private static Boolean isHSQLDialect = null;
 	
 	/**
-	 * Check and cache whether the currect dialect is HSQL or not.
-	 * This is needed because some queries are different if in 
-	 * the hsql world as opposed to the mysql/postgres world
+	 * Check and cache whether the currect dialect is HSQL or not. This is needed because some
+	 * queries are different if in the hsql world as opposed to the mysql/postgres world
 	 * 
 	 * @param sessionFactory
 	 * @return true/false whether we're in hsql right now or not
@@ -43,8 +42,7 @@ public class HibernateUtil {
 		
 		if (isHSQLDialect == null)
 			// check and cache the dialect
-			isHSQLDialect = HSQLDialect.class.getName().equals(
-		                       getDialect(sessionFactory).getClass().getName());
+			isHSQLDialect = HSQLDialect.class.getName().equals(getDialect(sessionFactory).getClass().getName());
 		
 		return isHSQLDialect;
 	}
@@ -61,7 +59,7 @@ public class HibernateUtil {
 		if (dialect != null)
 			return dialect;
 		
-		SessionFactoryImplementor implementor = (SessionFactoryImplementor)sessionFactory;
+		SessionFactoryImplementor implementor = (SessionFactoryImplementor) sessionFactory;
 		dialect = implementor.getDialect();
 		
 		if (log.isDebugEnabled())

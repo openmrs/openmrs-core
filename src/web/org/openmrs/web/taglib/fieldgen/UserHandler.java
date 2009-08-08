@@ -15,9 +15,8 @@ package org.openmrs.web.taglib.fieldgen;
 
 import org.openmrs.User;
 
-
 public class UserHandler extends AbstractFieldGenHandler implements FieldGenHandler {
-
+	
 	private String defaultUrl = "user.field";
 	
 	public void run() {
@@ -26,7 +25,7 @@ public class UserHandler extends AbstractFieldGenHandler implements FieldGenHand
 		htmlInclude("/scripts/dojoUserSearchIncludes.js");
 		
 		setUrl(defaultUrl);
-		checkEmptyVal((User)null);
+		checkEmptyVal((User) null);
 		if (fieldGenTag != null) {
 			Object initialValue = this.fieldGenTag.getVal();
 			setParameter("initialValue", initialValue == null ? "" : initialValue);

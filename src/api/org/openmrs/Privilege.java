@@ -65,12 +65,14 @@ public class Privilege implements java.io.Serializable, Synchronizable {
 	}
 	
 	public boolean equals(Object obj) {
-		if (obj == null || !(obj instanceof Privilege)) return false;
+		if (obj == null || !(obj instanceof Privilege))
+			return false;
 		return privilege.equals(((Privilege)obj).privilege);
 	}
 	
 	public int hashCode() {
-		if (this.getPrivilege() == null) return super.hashCode();
+		if (this.getPrivilege() == null)
+			return super.hashCode();
 		return this.getPrivilege().hashCode();
 	}
 

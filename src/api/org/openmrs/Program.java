@@ -46,7 +46,7 @@ public class Program implements java.io.Serializable, Synchronizable {
 	private User changedBy;
 	private Date dateChanged;
 	private Boolean retired = false; 
-	private Set<ProgramWorkflow> allWorkflows;
+	private Set<ProgramWorkflow> allWorkflows = new HashSet<ProgramWorkflow>();
 	private String guid;
 	private transient String lastRecordGuid;
   
@@ -55,7 +55,8 @@ public class Program implements java.io.Serializable, Synchronizable {
 	// ******************
 	
 	/** Default Constructor */
-	public Program() { }
+	public Program() {
+	}
 	
 	/** Constructor with id */
 	public Program(Integer programId) {
@@ -68,6 +69,7 @@ public class Program implements java.io.Serializable, Synchronizable {
 	
 	/**
 	 * Adds a new {@link ProgramWorkflow} to this Program
+	 * 
 	 * @param workflow - the {@link ProgramWorkflow} to add
 	 */
 	public void addWorkflow(ProgramWorkflow workflow) {
@@ -77,6 +79,7 @@ public class Program implements java.io.Serializable, Synchronizable {
 
 	/**
 	 * Removes a {@link ProgramWorkflow} from this Program
+	 * 
 	 * @param workflow - the {@link ProgramWorkflow} to remove
 	 */
 	public void removeWorkflow(ProgramWorkflow workflow) {
@@ -88,6 +91,7 @@ public class Program implements java.io.Serializable, Synchronizable {
 	
 	/**
 	 * Retires a {@link ProgramWorkflow}
+	 * 
 	 * @param workflow - the {@link ProgramWorkflow} to retire
 	 */
 	public void retireWorkflow(ProgramWorkflow workflow) {
@@ -95,9 +99,12 @@ public class Program implements java.io.Serializable, Synchronizable {
 	}
 
 	/**
-	 * Returns a {@link ProgramWorkflow} whose {@link Concept} has any {@link ConceptName} that matches the given <code>name</name>
+	 * Returns a {@link ProgramWorkflow} whose {@link Concept} has any {@link ConceptName} that
+	 * matches the given <code>name</name>
+	 * 
 	 * @param name the {@link ProgramWorkflow} name, in any {@link Locale}
-	 * @return a {@link ProgramWorkflow} which has the passed <code>name</code> in any {@link Locale}
+	 * @return a {@link ProgramWorkflow} which has the passed <code>name</code> in any
+	 *         {@link Locale}
 	 */
 	public ProgramWorkflow getWorkflowByName(String name) {
 		for (ProgramWorkflow pw : getAllWorkflows()) {
@@ -112,12 +119,11 @@ public class Program implements java.io.Serializable, Synchronizable {
 	public boolean equals(Object obj) {
 		if (obj != null && obj instanceof Program) {
 			Program p = (Program)obj;
-			if (this.getProgramId() == null) {
-				return p.getProgramId() == null;
+			if (this.getProgramId() != null) {
+				return (this.getProgramId().equals(p.getProgramId()));
 			}
-			return (this.getProgramId().equals(p.getProgramId()));
 		}
-		return false;
+		return this == obj;
 	}
 
 	/** @see Object#toString() */

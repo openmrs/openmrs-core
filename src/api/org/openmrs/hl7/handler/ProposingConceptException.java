@@ -18,13 +18,13 @@ import org.openmrs.api.APIException;
 
 /**
  * Represents a obs that should be a proposed concept
- * 
  */
 public class ProposingConceptException extends APIException {
-
+	
 	public static final long serialVersionUID = 120002000200L;
 	
 	private Concept concept;
+	
 	private String valueName;
 	
 	/**
@@ -37,34 +37,33 @@ public class ProposingConceptException extends APIException {
 		this.concept = concept;
 		this.valueName = valueName;
 	}
-
-	/**
-     * @return the concept
-     */
-    public Concept getConcept() {
-    	return concept;
-    }
-
-	/**
-     * @param concept the concept to set
-     */
-    public void setConcept(Concept concept) {
-    	this.concept = concept;
-    }
-
-	/**
-     * @return the valueName
-     */
-    public String getValueName() {
-    	return valueName;
-    }
-
-	/**
-     * @param valueName the valueName to set
-     */
-    public void setValueName(String valueName) {
-    	this.valueName = valueName;
-    }
 	
+	/**
+	 * @return the concept
+	 */
+	public Concept getConcept() {
+		return concept;
+	}
+	
+	/**
+	 * @param concept the concept to set
+	 */
+	public void setConcept(Concept concept) {
+		this.concept = concept;
+	}
+	
+	/**
+	 * @return the valueName
+	 */
+	public String getValueName() {
+		return valueName;
+	}
+	
+	/**
+	 * @param valueName the valueName to set
+	 */
+	public void setValueName(String valueName) {
+		this.valueName = valueName;
+	}
 	
 }

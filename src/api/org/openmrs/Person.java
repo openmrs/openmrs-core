@@ -35,12 +35,10 @@ import org.simpleframework.xml.Root;
 import org.simpleframework.xml.load.Replace;
 
 /**
- * A Person in the system. This can be either a small person stub, or 
- * indicative of an actual Patient or User in the system as well.
- * 
- * This class holds the generic person things that both users and patients
- * share.  Things like birthdate, names, addresses, and attributes are all 
- * generified into the person table (and hence this super class)
+ * A Person in the system. This can be either a small person stub, or indicative of an actual
+ * Patient or User in the system as well. This class holds the generic person things that both users
+ * and patients share. Things like birthdate, names, addresses, and attributes are all generified
+ * into the person table (and hence this super class)
  * 
  * @see org.openmrs.Patient
  * @see org.openmrs.User
@@ -88,9 +86,8 @@ public class Person implements java.io.Serializable, Synchronizable {
 	private boolean isUser;
 	
 	/** 
-	 * Convenience map from PersonAttributeType.name to PersonAttribute
-	 * This is "cached" for each user upon first load.  When an 
-	 * attribute is changed, the cache is cleared and rebuilt on next
+	 * Convenience map from PersonAttributeType.name to PersonAttribute This is "cached" for each
+	 * user upon first load. When an attribute is changed, the cache is cleared and rebuilt on next
 	 * access. 
 	 */
 	Map<String, PersonAttribute> attributeMap = null;
@@ -98,11 +95,12 @@ public class Person implements java.io.Serializable, Synchronizable {
 	/**
 	 * default empty constructor
 	 */
-	public Person() { }
+	public Person() {
+	}
 	
 	/**
-	 * This constructor is used to build a person object from another
-	 * person object (usually a patient or a user subobject).
+	 * This constructor is used to build a person object from another person object (usually a
+	 * patient or a user subobject).
 	 * 
 	 * @param person Person to create this person object from
 	 */
@@ -177,8 +175,7 @@ public class Person implements java.io.Serializable, Synchronizable {
 	}
 
 	/**
-	 * @param personId
-	 *            The personId to set.
+	 * @param personId The personId to set.
 	 */
 	@Attribute(required=true)
 	public void setPersonId(Integer personId) {
@@ -194,8 +191,7 @@ public class Person implements java.io.Serializable, Synchronizable {
 	}
 
 	/**
-	 * @param gender
-	 *            person's gender
+	 * @param gender person's gender
 	 */
 	@Attribute(required=false)
 	public void setGender(String gender) {
@@ -211,8 +207,7 @@ public class Person implements java.io.Serializable, Synchronizable {
 	}
 
 	/**
-	 * @param birthdate
-	 *            person's date of birth
+	 * @param birthdate person's date of birth
 	 */
 	@Element(required=false)
 	public void setBirthdate(Date birthdate) {
@@ -235,8 +230,7 @@ public class Person implements java.io.Serializable, Synchronizable {
 	}
 
 	/**
-	 * @param birthdateEstimated
-	 *            true if person's birthdate is estimated
+	 * @param birthdateEstimated true if person's birthdate is estimated
 	 */
 	@Attribute(required=true)
 	public void setBirthdateEstimated(Boolean birthdateEstimated) {
@@ -275,8 +269,7 @@ public class Person implements java.io.Serializable, Synchronizable {
 	}
 
 	/**
-	 * @param deathDate
-	 *            date of person's death
+	 * @param deathDate date of person's death
 	 */
 	@Element(required=false)
 	public void setDeathDate(Date deathDate) {
@@ -292,8 +285,7 @@ public class Person implements java.io.Serializable, Synchronizable {
 	}
 
 	/**
-	 * @param causeOfDeath
-	 *            cause of person's death
+	 * @param causeOfDeath cause of person's death
 	 */
 	@Element(required=false)
 	public void setCauseOfDeath(Concept causeOfDeath) {
@@ -312,8 +304,7 @@ public class Person implements java.io.Serializable, Synchronizable {
 	}
 
 	/**
-	 * @param personAddresses
-	 *            list of known addresses for person
+	 * @param personAddresses list of known addresses for person
 	 * @see org.openmrs.PersonAddress
 	 */
 	@ElementList(required=false)
@@ -333,8 +324,7 @@ public class Person implements java.io.Serializable, Synchronizable {
 	}
 
 	/**
-	 * @param names
-	 *            update all known names for person
+	 * @param names update all known names for person
 	 * @see org.openmrs.PersonName
 	 */
 	@ElementList
@@ -368,8 +358,7 @@ public class Person implements java.io.Serializable, Synchronizable {
 	}
 	
 	/**
-	 * @param attributes
-	 *            update all known attributes for person
+	 * @param attributes update all known attributes for person
 	 * @see org.openmrs.PersonAttribute
 	 */
 	@ElementList
@@ -382,11 +371,10 @@ public class Person implements java.io.Serializable, Synchronizable {
 	// Convenience methods
 	
 	/**
-	 * Convenience Method
-	 * Adds the <code>attribute</code> to this person's attribute list if the attribute doesn't exist already
-	 * Voids any current attribute with type = <code>newAttribute.getAttributeType()</code>
-	 * 
-	 * ** NOTE: This effectively limits persons to only one attribute of any given type **
+	 * Convenience Method Adds the <code>attribute</code> to this person's attribute list if the
+	 * attribute doesn't exist already Voids any current attribute with type =
+	 * <code>newAttribute.getAttributeType()</code> ** NOTE: This effectively limits persons to only
+	 * one attribute of any given type **
 	 * 
 	 * @param name
 	 */
@@ -417,8 +405,9 @@ public class Person implements java.io.Serializable, Synchronizable {
 	}
 
 	/**
-	 * Convenience Method
-	 * Removes the <code>attribute</code> from this person's attribute list if the attribute exists already
+	 * Convenience Method Removes the <code>attribute</code> from this person's attribute list if
+	 * the attribute exists already
+	 * 
 	 * @param attribute
 	 */
 	public void removeAttribute(PersonAttribute attribute) {
@@ -428,8 +417,8 @@ public class Person implements java.io.Serializable, Synchronizable {
 	}
 		
 	/**
-	 * Convenience Method
-	 * Returns the first non-voided person attribute matching a person attribute type
+	 * Convenience Method Returns the first non-voided person attribute matching a person attribute
+	 * type
 	 * 
 	 * @param pat
 	 * @return PersonAttribute
@@ -445,8 +434,9 @@ public class Person implements java.io.Serializable, Synchronizable {
 	}
 	
 	/**
-	 * Convenience Method
-	 * Returns this person's first attribute that has a PersonAttributeType.name equal to <code>attributeName</code>
+	 * Convenience Method Returns this person's first attribute that has a PersonAttributeType.name
+	 * equal to <code>attributeName</code>
+	 * 
 	 * @param attribute
 	 */
 	public PersonAttribute getAttribute(String attributeName) {
@@ -462,8 +452,9 @@ public class Person implements java.io.Serializable, Synchronizable {
 	}
 	
 	/**
-	 * Convenience Method
-	 * Returns this person's first attribute that has a PersonAttributeType.id equal to <code>attributeTypeId</code>
+	 * Convenience Method Returns this person's first attribute that has a PersonAttributeType.id
+	 * equal to <code>attributeTypeId</code>
+	 * 
 	 * @param attribute
 	 */
 	public PersonAttribute getAttribute(Integer attributeTypeId) {
@@ -476,8 +467,9 @@ public class Person implements java.io.Serializable, Synchronizable {
 	}
 	
 	/**
-	 * Convenience Method
-	 * Returns all of this person's attributes that have a PersonAttributeType.name equal to <code>attributeName</code>
+	 * Convenience Method Returns all of this person's attributes that have a
+	 * PersonAttributeType.name equal to <code>attributeName</code>
+	 * 
 	 * @param attribute
 	 */
 	public List<PersonAttribute> getAttributes(String attributeName) {
@@ -494,8 +486,9 @@ public class Person implements java.io.Serializable, Synchronizable {
 	}
 	
 	/**
-	 * Convenience Method
-	 * Returns all of this person's attributes that have a PersonAttributeType.id equal to <code>attributeTypeId</code>
+	 * Convenience Method Returns all of this person's attributes that have a PersonAttributeType.id
+	 * equal to <code>attributeTypeId</code>
+	 * 
 	 * @param attribute
 	 */
 	public List<PersonAttribute> getAttributes(Integer attributeTypeId) {
@@ -512,8 +505,9 @@ public class Person implements java.io.Serializable, Synchronizable {
 	
 	
 	/**
-	 * Convenience Method
-	 * Returns all of this person's attributes that have a PersonAttributeType equal to <code>personAttributeType</code>
+	 * Convenience Method Returns all of this person's attributes that have a PersonAttributeType
+	 * equal to <code>personAttributeType</code>
+	 * 
 	 * @param attribute
 	 */
 	public List<PersonAttribute> getAttributes(PersonAttributeType personAttributeType) {
@@ -527,8 +521,8 @@ public class Person implements java.io.Serializable, Synchronizable {
 	}
 	
 	/**
-	 * Convenience Method
-	 * Returns all of this person's attributes in map form: <String, PersonAttribute>
+	 * Convenience Method Returns all of this person's attributes in map form: <String,
+	 * PersonAttribute>
 	 * 
 	 * @param attribute
 	 */
@@ -561,8 +555,9 @@ public class Person implements java.io.Serializable, Synchronizable {
 	}
 	
 	/**
-	 * Convenience Method
-	 * Adds the <code>name</code> to this person's name list if the name doesn't exist already
+	 * Convenience Method Adds the <code>name</code> to this person's name list if the name doesn't
+	 * exist already
+	 * 
 	 * @param name
 	 */
 	public void addName(PersonName name) {
@@ -576,8 +571,9 @@ public class Person implements java.io.Serializable, Synchronizable {
 	}
 
 	/**
-	 * Convenience Method
-	 * Removes the <code>name</code> from this person's name list if the name exists already
+	 * Convenience Method Removes the <code>name</code> from this person's name list if the name
+	 * exists already
+	 * 
 	 * @param name
 	 */
 	public void removeName(PersonName name) {
@@ -586,8 +582,9 @@ public class Person implements java.io.Serializable, Synchronizable {
 	}
 
 	/**
-	 * Convenience Method
-	 * Adds the <code>address</code> to this person's address list if the address doesn't exist already
+	 * Convenience Method Adds the <code>address</code> to this person's address list if the address
+	 * doesn't exist already
+	 * 
 	 * @param address
 	 */
 	public void addAddress(PersonAddress address) {
@@ -601,8 +598,9 @@ public class Person implements java.io.Serializable, Synchronizable {
 	}
 
 	/**
-	 * Convenience Method
-	 * Removes the <code>address</code> from this person's address list if the address exists already
+	 * Convenience Method Removes the <code>address</code> from this person's address list if the
+	 * address exists already
+	 * 
 	 * @param address
 	 */
 	public void removeAddress(PersonAddress address) {
@@ -611,10 +609,8 @@ public class Person implements java.io.Serializable, Synchronizable {
 	}
 	
 	/**
-	 * Convenience Method 
-	 * Get the "preferred" name for the person.
-	 * 
-	 * Returns a blank PersonName object if no names are given
+	 * Convenience Method Get the "preferred" name for the person. Returns a blank PersonName object
+	 * if no names are given
 	 * 
 	 * @return Returns the "preferred" person name.
 	 */
@@ -627,8 +623,7 @@ public class Person implements java.io.Serializable, Synchronizable {
 	}
 	
 	/**
-	 * Convenience method to get the given name attribute on this
-	 * person's preferred PersonName
+	 * Convenience method to get the given name attribute on this person's preferred PersonName
 	 * 
 	 * @return String given name of the person
 	 */
@@ -641,8 +636,7 @@ public class Person implements java.io.Serializable, Synchronizable {
 	}
 	
 	/**
-	 * Convenience method to get the middle name attribute on this
-	 * person's preferred PersonName
+	 * Convenience method to get the middle name attribute on this person's preferred PersonName
 	 * 
 	 * @return String middle name of the person
 	 */
@@ -655,8 +649,7 @@ public class Person implements java.io.Serializable, Synchronizable {
 	}
 	
 	/**
-	 * Convenience method to get the family name attribute on this
-	 * person's preferred PersonName
+	 * Convenience method to get the family name attribute on this person's preferred PersonName
 	 * 
 	 * @return String family name of the person
 	 */
@@ -669,8 +662,7 @@ public class Person implements java.io.Serializable, Synchronizable {
 	}
 	
 	/**
-	 * Convenience Method
-	 * To get the "preferred" address for person.
+	 * Convenience Method To get the "preferred" address for person.
 	 * 
 	 * @return Returns the "preferred" person address.
 	 */
@@ -683,8 +675,7 @@ public class Person implements java.io.Serializable, Synchronizable {
 	}
 	
 	/**
-	 * Convenience Method
-	 * Calculates person's age based on the birthdate
+	 * Convenience Method Calculates person's age based on the birthdate
 	 * 
 	 * @return integer age
 	 */
@@ -696,7 +687,11 @@ public class Person implements java.io.Serializable, Synchronizable {
 	 * Convenience method: calculates the person's age on a given date based on the birthdate
 	 * 
 	 * @param onDate (null defaults to today)
-	 * @return
+	 * @return int value of the person's age
+	 * @should get age before birthday
+	 * @should get age on birthday with no minutes defined
+	 * @should get age on birthday with minutes defined
+	 * @should get age after birthday
 	 */
 	public Integer getAge(Date onDate) {
 		if (birthdate == null)
@@ -711,20 +706,26 @@ public class Person implements java.io.Serializable, Synchronizable {
 		
 		int age = today.get(Calendar.YEAR) - bday.get(Calendar.YEAR);
 		
-		//tricky bit:
-		// set birthday calendar to this year
-		// if the current date is less that the new 'birthday', subtract a year
-		bday.set(Calendar.YEAR, today.get(Calendar.YEAR));
-		if (today.before(bday))
-			age = age -1;
+		//Adjust age when today's date is before the person's birthday
+		int todaysMonth = today.get(Calendar.MONTH);
+		int bdayMonth = bday.get(Calendar.MONTH);
+		int todaysDay = today.get(Calendar.DAY_OF_MONTH);
+		int bdayDay = bday.get(Calendar.DAY_OF_MONTH);
+		
+		if (todaysMonth < bdayMonth) {
+			age--;
+		} else if (todaysMonth == bdayMonth && todaysDay < bdayDay) {
+			// we're only comparing on month and day, not minutes, etc
+			age--;
+		}
 		
 		return age;
 	}
 	
 	/**
-	 * Convenience method: sets a person's birth date from an age as of the given date
-	 * Also sets flag indicating that the birth date is inexact.
-	 * This sets the person's birth date to January 1 of the year that matches this age and date
+	 * Convenience method: sets a person's birth date from an age as of the given date Also sets
+	 * flag indicating that the birth date is inexact. This sets the person's birth date to January
+	 * 1 of the year that matches this age and date
 	 * 
 	 * @param age (the age to set)
 	 * @param onDate (null defaults to today)
@@ -815,8 +816,8 @@ public class Person implements java.io.Serializable, Synchronizable {
     }
 
 	/**
-	 * This should only be set by the database layer by looking
-	 * at whether a row exists in the patient table
+	 * This should only be set by the database layer by looking at whether a row exists in the
+	 * patient table
 	 * 
      * @param isPatient whether this person is a patient or not
      */
@@ -833,8 +834,8 @@ public class Person implements java.io.Serializable, Synchronizable {
     }
 
 	/**
-	 * This should only be set by the database layer by looking
-	 * at whether a row exists in the user table
+	 * This should only be set by the database layer by looking at whether a row exists in the user
+	 * table
 	 * 
      * @param isUser whether this person is a user or not
      */
@@ -860,12 +861,10 @@ public class Person implements java.io.Serializable, Synchronizable {
     }
 
 	/**
-	 * If the serializer wishes, don't serialize this entire object, just the important
-	 * parts
+	 * If the serializer wishes, don't serialize this entire object, just the important parts
 	 * 
 	 * @param sessionMap serialization session information
 	 * @return Person object to serialize 
-	 * 
 	 * @see OpenmrsUtil#isShortSerialization(Map)
 	 */
 	@Replace

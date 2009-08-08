@@ -45,7 +45,6 @@ public class FormUtil {
 	 * Converts a string into a valid XML token (tag name)
 	 * 
 	 * @param s string to convert into XML token
-	 * 
 	 * @return valid XML token based on s
 	 */
 	public static String getXmlToken(String s) {
@@ -79,8 +78,7 @@ public class FormUtil {
 		swapChars.put("\\\\", "backslash");
 
 		// start by cleaning whitespace and converting to lowercase
-		s = s.replaceAll("^\\s+", "").replaceAll("\\s+$", "").replaceAll(
-				"\\s+", "_").toLowerCase();
+		s = s.replaceAll("^\\s+", "").replaceAll("\\s+$", "").replaceAll("\\s+", "_").toLowerCase();
 
 		// swap characters
 		Set<Entry<String, String>> swaps = swapChars.entrySet();
@@ -119,13 +117,11 @@ public class FormUtil {
 	/**
 	 * Generates a new, unique tag name for any given string
 	 * 
-	 * @param s
-	 *            string to convert into a unique XML tag
-	 * @param tagList
-	 *            java.util.Vector containing all previously created tags. If
-	 *            the tagList is null, it will be initialized automatically
-	 * @returns unique XML tag name from given string (guaranteed not to
-	 *          duplicate any tag names already within <code>tagList</code>)
+	 * @param s string to convert into a unique XML tag
+	 * @param tagList java.util.Vector containing all previously created tags. If the tagList is
+	 *            null, it will be initialized automatically
+	 * @returns unique XML tag name from given string (guaranteed not to duplicate any tag names
+	 *          already within <code>tagList</code>)
 	 */
 	public static String getNewTag(String s, Vector<String> tagList) {
 		String token = getXmlToken(s);
@@ -143,22 +139,17 @@ public class FormUtil {
 	}
 
 	/**
-	 * Returns a sorted and structured map of <code>FormField</code>s for the
-	 * given OpenMRS form. The root sections of the schema are stored under a
-	 * key of zero (i.e., <code>java.lang.Integer.<em>valueOf(0)</em></code>).
-	 * All other entries represent sequences of children stored under the
-	 * identifier (<code>formField.<em>getFormFieldId()</em></code>) of
-	 * their parent FormField.
+	 * Returns a sorted and structured map of <code>FormField</code>s for the given OpenMRS form.
+	 * The root sections of the schema are stored under a key of zero (i.e.,
+	 * <code>java.lang.Integer.<em>valueOf(0)</em></code>). All other entries represent sequences of
+	 * children stored under the identifier (<code>formField.<em>getFormFieldId()</em></code>) of
+	 * their parent FormField. The form structure is sorted by the natural sorting order of the
+	 * <code>FormField</code>s (as defined by the <em>.equals()</em> and <em>.compareTo()</em>
+	 * methods).
 	 * 
-	 * The form structure is sorted by the natural sorting order of the
-	 * <code>FormField</code>s (as defined by the <em>.equals()</em> and
-	 * <em>.compareTo()</em> methods).
-	 * 
-	 * @param form
-	 *            form for which structure is requested
-	 * @return sorted map of <code>FormField</code>s, where the top-level
-	 *         fields are under the key zero and all other leaves are stored
-	 *         under their parent <code>FormField</code>'s id.
+	 * @param form form for which structure is requested
+	 * @return sorted map of <code>FormField</code>s, where the top-level fields are under the key
+	 *         zero and all other leaves are stored under their parent <code>FormField</code>'s id.
 	 */
 	public static TreeMap<Integer, TreeSet<FormField>> getFormStructure(Form form) {
 		TreeMap<Integer, TreeSet<FormField>> formStructure = new TreeMap<Integer, TreeSet<FormField>>();
@@ -173,8 +164,7 @@ public class FormUtil {
 			} else {
 				// child branches/leaves are added to their parent's branch
 				if (!formStructure.containsKey(parent.getFormFieldId()))
-					formStructure.put(parent.getFormFieldId(),
-							new TreeSet<FormField>());
+					formStructure.put(parent.getFormFieldId(), new TreeSet<FormField>());
 				formStructure.get(parent.getFormFieldId()).add(formField);
 			}
 		}
@@ -186,8 +176,7 @@ public class FormUtil {
 		return dateToString(new Date());
 	}
 
-	private static final DateFormat dateFormatter = new SimpleDateFormat(
-			"yyyy-MM-dd'T'HH:mm:ssZ");
+	private static final DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
 
 	public static String dateToString(Date date) {
 		String dateString = dateFormatter.format(new Date());
@@ -197,15 +186,13 @@ public class FormUtil {
 	}
 
 	/**
-	 * Get a string somewhat unique to this form.
-	 * Combines the form's id and version and build
+	 * Get a string somewhat unique to this form. Combines the form's id and version and build
 	 * 
 	 * @param form Form to get the uri for
 	 * @return String representing this form
 	 */
 	public static String getFormUriWithoutExtension(Form form) {
-		return form.getFormId() + "-" + form.getVersion() + "-"
-				+ form.getBuild();
+		return form.getFormId() + "-" + form.getVersion() + "-" + form.getBuild();
 	}
 	
 	/**
@@ -213,7 +200,6 @@ public class FormUtil {
 	 * 
 	 * @param concept Concept to convert to a string
 	 * @param locale Locale to use for the concept name
-	 * 
 	 * @return String representation of the given concept
 	 */
 	public static String conceptToString(Concept concept, Locale locale) {
@@ -222,21 +208,15 @@ public class FormUtil {
 	}
 	
 	/**
-	 * Turn the given concept/concept-name pair into a string acceptable to for hl7 and forms 
+	 * Turn the given concept/concept-name pair into a string acceptable for hl7 and forms
 	 * 
 	 * @param concept Concept to convert to a string
 	 * @param localizedName specific localized concept-name
-	 * 
 	 * @return String representation of the given concept
 	 */
 	public static String conceptToString(Concept concept, ConceptName localizedName) {
-		//Temporary fix: rollback the change bellow to presereve existing forms
-		//proper fix under discussion
-		return concept.getConceptId() + "^" + localizedName.getName() + "^" + FormConstants.HL7_LOCAL_CONCEPT;
-		/*return concept.getConceptId() + "^" + localizedName.getName()
-				+ "^" + FormConstants.HL7_LOCAL_CONCEPT
-				+ "^" + localizedName.getConceptNameId() + "^" + localizedName.getName()
-				+ "^" + FormConstants.HL7_LOCAL_CONCEPT; */
+		return concept.getConceptId() + "^" + localizedName.getName() + "^" + FormConstants.HL7_LOCAL_CONCEPT; // + "^"
+		        // + localizedName.getConceptNameId() + "^" + localizedName.getName() + "^" + FormConstants.HL7_LOCAL_CONCEPT_NAME;
 	}
 	
 	/**
@@ -246,7 +226,6 @@ public class FormUtil {
 	 * @return String representation of the given drug
 	 */
 	public static String drugToString(Drug drug) {
-		return drug.getDrugId() + "^" + drug.getName() + "^"
-				+ FormConstants.HL7_LOCAL_DRUG;
+		return drug.getDrugId() + "^" + drug.getName() + "^" + FormConstants.HL7_LOCAL_DRUG;
 	}
 }

@@ -22,12 +22,10 @@ import org.openmrs.synchronization.Synchronizable;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
- * A Role is just an aggregater of {@link Privilege}s.  {@link User}s contain
- * a number of roles (Users DO NOT contain any privileges directly)
- * 
- * Roles can be grouped by inheriting other roles.  If a user is given Role A
- * that inherits from Role B, the user has all rights/abilities for both Role A's 
- * privileges and for Role B's privileges.
+ * A Role is just an aggregater of {@link Privilege}s. {@link User}s contain a number of roles
+ * (Users DO NOT contain any privileges directly) Roles can be grouped by inheriting other roles. If
+ * a user is given Role A that inherits from Role B, the user has all rights/abilities for both Role
+ * A's privileges and for Role B's privileges.
  * 
  * @see Privilege
  */
@@ -82,7 +80,8 @@ public class Role implements java.io.Serializable, Synchronizable {
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	public boolean equals(Object obj) {
-		if (obj == null || !(obj instanceof Role) || role == null) return false;
+		if (obj == null || !(obj instanceof Role) || role == null)
+			return false;
 		return role.equals(((Role)obj).getRole());
 	}
 	
@@ -90,7 +89,8 @@ public class Role implements java.io.Serializable, Synchronizable {
 	 * @see java.lang.Object#hashCode()
 	 */
 	public int hashCode() {
-		if (this.getRole() == null) return super.hashCode();
+		if (this.getRole() == null)
+			return super.hashCode();
 		return this.getRole().hashCode();
 	}
 
@@ -126,6 +126,7 @@ public class Role implements java.io.Serializable, Synchronizable {
 
 	/**
 	 * Adds the given Privilege to the list of privileges
+	 * 
 	 * @param privilege Privilege to add
 	 */
 	public void addPrivilege(Privilege privilege) {
@@ -137,6 +138,7 @@ public class Role implements java.io.Serializable, Synchronizable {
 	
 	/**
 	 * Removes the given Privilege from the list of privileges
+	 * 
 	 * @param privilegen Privilege to remove
 	 */
 	public void removePrivilege(Privilege privilege) {
@@ -166,9 +168,8 @@ public class Role implements java.io.Serializable, Synchronizable {
 	}
 	
 	/**
-	 * Looks for the given <code>privilegeName</code> privilege name in this 
-	 * roles privileges.  This method does not recurse through the 
-	 * inherited roles
+	 * Looks for the given <code>privilegeName</code> privilege name in this roles privileges. This
+	 * method does not recurse through the inherited roles
 	 * 
 	 * @param privilegeName String name of a privilege
 	 * @return true/false whether this role has the given privilege
@@ -203,8 +204,7 @@ public class Role implements java.io.Serializable, Synchronizable {
 	}
 	
 	/**
-	 * Convenience method to test whether or not this role extends/
-	 * inherits from any other roles
+	 * Convenience method to test whether or not this role extends/ inherits from any other roles
 	 * 
 	 * @return true/false whether this role inherits from other roles
 	 */
@@ -226,14 +226,14 @@ public class Role implements java.io.Serializable, Synchronizable {
 	}
 	
 	/**
-	 * Returns the full set of roles be looping over inherited roles.
-	 * Duplicate roles are dropped.
+	 * Returns the full set of roles be looping over inherited roles. Duplicate roles are dropped.
 	 * 
 	 * @param children Roles already looped over
 	 * @return Set<Role> Current and inherited roles
 	 */
 	public Set<Role> recurseOverParents(final Set<Role> children) {
-		if (!this.inheritsRoles()) return children;
+		if (!this.inheritsRoles())
+			return children;
 		
 		Set<Role> allRoles = new HashSet<Role>();	//total roles (parents + children)
 		Set<Role> myRoles = new HashSet<Role>();	//new roles

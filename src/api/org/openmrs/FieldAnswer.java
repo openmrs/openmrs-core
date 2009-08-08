@@ -19,6 +19,7 @@ import org.openmrs.synchronization.Synchronizable;
 
 /**
  * FieldAnswer 
+ * 
  * @version 1.0
  */
 public class FieldAnswer implements java.io.Serializable, Synchronizable {
@@ -66,19 +67,18 @@ public class FieldAnswer implements java.io.Serializable, Synchronizable {
 	public boolean equals(Object obj) {
 		if (obj instanceof FieldAnswer) {
 			FieldAnswer fa = (FieldAnswer)obj;
-			return (field.equals(fa.getField()) &&
-					concept.equals(fa.getConcept()));
+			return (field.equals(fa.getField()) && concept.equals(fa.getConcept()));
 		}
 		return false;
 	}
 	
 	public int hashCode() {
-		if (this.getField() == null || this.getConcept() == null) return super.hashCode();
+		if (this.getField() == null || this.getConcept() == null)
+			return super.hashCode();
 		return this.getConcept().hashCode() + this.getField().hashCode();
 	}
 
 	/**
-	 * 
 	 * @return boolean whether or not this fieldAnswer has been modified
 	 */
 	public boolean isDirty() {

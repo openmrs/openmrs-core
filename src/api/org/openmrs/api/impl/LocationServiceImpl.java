@@ -25,10 +25,8 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.db.LocationDAO;
 
 /**
- * Default implementation of the {@link LocationService}
- * 
- * This class should not be instantiated alone, get a service class
- * from the Context: Context.getLocationService();
+ * Default implementation of the {@link LocationService} This class should not be instantiated
+ * alone, get a service class from the Context: Context.getLocationService();
  * 
  * @see org.openmrs.api.context.Context
  * @see org.openmrs.api.LocationService
@@ -107,6 +105,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	
 	/**
 	 * TODO: Not yet implemented for guid.
+	 * 
 	 * @see org.openmrs.api.LocationService#getLocationByGuid(java.lang.String)
 	 */
 	public Location getLocationByGuid(String guid) throws APIException {

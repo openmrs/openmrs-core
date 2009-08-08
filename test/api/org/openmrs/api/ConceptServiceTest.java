@@ -18,6 +18,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
@@ -26,48 +29,44 @@ import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Concept;
+import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptName;
+import org.openmrs.ConceptNameTag;
 import org.openmrs.ConceptNumeric;
+import org.openmrs.ConceptWord;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.SkipBaseSetup;
 import org.openmrs.test.TestUtil;
+import org.openmrs.test.Verifies;
 
 /**
- * This test class (should) contain tests for all of the ConcepService methods
- * 
- * TODO clean up and finish this test class
+ * This test class (should) contain tests for all of the ConcepService methods TODO clean up and
+ * finish this test class
  * 
  * @see org.openmrs.api.ConceptService
  */
-@SkipBaseSetup
 public class ConceptServiceTest extends BaseContextSensitiveTest {
-		
+	
 	protected ConceptService conceptService = null;
+	
 	protected static final String INITIAL_CONCEPTS_XML = "org/openmrs/api/include/ConceptServiceTest-initialConcepts.xml";
 	
 	/**
-	 * Run this before each unit test in this class.
-	 * 
-	 * The "@Before" method in {@link BaseContextSensitiveTest} is run
-	 * right before this method.
+	 * Run this before each unit test in this class. The "@Before" method in
+	 * {@link BaseContextSensitiveTest} is run right before this method.
 	 * 
 	 * @throws Exception
 	 */
 	@Before
 	public void runBeforeAllTests() throws Exception {
-		initializeInMemoryDatabase();
-		executeDataSet(INITIAL_CONCEPTS_XML);
-		authenticate();
 		conceptService = Context.getConceptService();
 	}
 	
 	/**
-	 * Test getting a concept by name and by partial name. 
-	 * 
-	 * NOTE: This test assumes that there are at least a few concepts 
-	 * in the database system
+	 * Test getting a concept by name and by partial name. NOTE: This test assumes that there are at
+	 * least a few concepts in the database system
 	 * 
 	 * @throws Exception
 	 */
@@ -75,8 +74,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	public void shouldGetConceptByName() throws Exception {
 		
 		// get the first concept in the dictionary
-		Concept firstConcept = conceptService.getConcept(1);
-		assertNotNull("There should be a concept with id of 1", firstConcept);
+		Concept firstConcept = conceptService.getConcept(3);
+		assertNotNull("There should be a concept with id of 3", firstConcept);
 		
 		// get the concept by its name
 		String name = firstConcept.getName().getName();
@@ -85,18 +84,45 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		
 		// substring the name and try to get it again
 		List<Concept> firstConceptsByPartialNameList = conceptService.getConceptsByName(name.substring(1));
-		assertTrue("You should be able to get the concept by partial name", firstConceptsByPartialNameList.contains(firstConcept));
+		assertTrue("You should be able to get the concept by partial name", firstConceptsByPartialNameList
+		        .contains(firstConcept));
 		
+	}
+	
+	/**
+	 * @see {@link ConceptService#saveConcept(Concept)}
+	 */
+	@Test
+	@Verifies(value = "should reuse concept name tags that already exist in the database", method = "saveConcept(Concept)")
+	public void saveConcept_shouldReuseConceptNameTagsThatAlreadyExistInTheDatabase() throws Exception {
+		executeDataSet("org/openmrs/api/include/ConceptServiceTest-tags.xml");
+		
+		ConceptService cs = Context.getConceptService();
+		
+		// make sure the name tag exists already
+		ConceptNameTag cnt = cs.getConceptNameTagByName("preferred_en");
+		Assert.assertNotNull(cnt);
+		
+		ConceptName cn = new ConceptName("Some name", Locale.ENGLISH);
+		
+		Concept concept = new Concept();
+		concept.setPreferredName(Locale.ENGLISH, cn);
+		concept.setDatatype(new ConceptDatatype(1));
+		concept.setConceptClass(new ConceptClass(1));
+		
+		cs.saveConcept(concept);
+		
+		Collection<ConceptNameTag> savedConceptNameTags = concept.getBestName(Locale.ENGLISH).getTags();
+		ConceptNameTag savedConceptNameTag = (ConceptNameTag) savedConceptNameTags.toArray()[0];
+		Assert.assertEquals(cnt.getConceptNameTagId(), savedConceptNameTag.getConceptNameTagId());
 	}
 	
 	@Test
 	@SkipBaseSetup
 	public void shouldSaveConceptNumeric() throws Exception {
-		TestUtil.printOutTableContents(getConnection(), "concept");
-		
+		authenticate();
 		initializeInMemoryDatabase();
-		
-		ConceptService conceptService = Context.getConceptService();
+		executeDataSet(INITIAL_CONCEPTS_XML);
 		
 		// this tests saving a current concept as a newly changed conceptnumeric
 		// assumes there is already a concept in the database  
@@ -128,7 +154,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Concept firstConcept = conceptService.getConcept(1);
 		assertEquals("a new conceptnumeric", firstConcept.getName(Locale.US).getName());
 		assertTrue(firstConcept instanceof ConceptNumeric);
-		ConceptNumeric firstConceptNumeric = (ConceptNumeric)firstConcept;
+		ConceptNumeric firstConceptNumeric = (ConceptNumeric) firstConcept;
 		assertEquals(20.0, firstConceptNumeric.getHiAbsolute().doubleValue(), 0);
 		
 		// check the second concept
@@ -143,50 +169,132 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		// check the third concept
 		Concept thirdConcept = conceptService.getConcept(cn3.getConceptId());
 		assertTrue(thirdConcept instanceof ConceptNumeric);
-		ConceptNumeric thirdConceptNumeric = (ConceptNumeric)thirdConcept;
+		ConceptNumeric thirdConceptNumeric = (ConceptNumeric) thirdConcept;
 		assertEquals("a brand new conceptnumeric", thirdConceptNumeric.getName(Locale.US).getName());
 		assertEquals(50.0, thirdConceptNumeric.getHiAbsolute().doubleValue(), 0);
 		
 	}
-
-    /**
-     * @verifies {@link ConceptService#saveConcept(Concept)}
-     * test = should generate id for new concept if none is specified
-     */
-    @Test
-    public void saveConcept_shouldGenerateIdForNewConceptIfNoneIsSpecified()
-            throws Exception {
-    	Concept concept = new Concept();
-    	concept.addName(new ConceptName("Weight", Locale.US));
-    	concept.setConceptId(null);
-    	concept.setDatatype(Context.getConceptService().getConceptDatatypeByName("Numeric"));
-    	concept.setConceptClass(Context.getConceptService().getConceptClassByName("Finding"));
-    	
-    	concept = Context.getConceptService().saveConcept(concept);
-    	assertFalse(concept.getConceptId().equals(5089));
-    }
-
-    /**
-     * @verifies {@link ConceptService#saveConcept(Concept)}
-     * test = should keep id for new concept if one is specified
-     */
-    @Test
-    public void saveConcept_shouldKeepIdForNewConceptIfOneIsSpecified()
-            throws Exception {
-    	for (Concept c : Context.getConceptService().getAllConcepts())
-    		System.out.println(c.getConceptId() + " -> " + c.getName().getName());
-    	Assert.assertNull("There should be no concept with id 5089", Context.getConceptService().getConcept(5089));
-    	
-    	Concept concept = new Concept();
-    	concept.addName(new ConceptName("Weight", Locale.US));
-    	concept.setConceptId(5089);
-    	concept.setDatatype(Context.getConceptService().getConceptDatatypeByName("Numeric"));
-    	concept.setConceptClass(Context.getConceptService().getConceptClassByName("Finding"));
-    	
-    	concept = Context.getConceptService().saveConcept(concept);
-    	for (Concept c : Context.getConceptService().getAllConcepts())
-    		System.out.println(c.getConceptId() + " -> " + c.getName().getName());
-    	assertTrue(concept.getConceptId().equals(5089));
-    }
-
+	
+	/**
+	 * @verifies {@link ConceptService#saveConcept(Concept)} test = should generate id for new
+	 *           concept if none is specified
+	 */
+	@Test
+	public void saveConcept_shouldGenerateIdForNewConceptIfNoneIsSpecified() throws Exception {
+		Concept concept = new Concept();
+		concept.addName(new ConceptName("Weight", Locale.US));
+		concept.setConceptId(null);
+		concept.setDatatype(Context.getConceptService().getConceptDatatypeByName("Numeric"));
+		concept.setConceptClass(Context.getConceptService().getConceptClassByName("Finding"));
+		
+		concept = conceptService.saveConcept(concept);
+		assertFalse(concept.getConceptId().equals(5089));
+	}
+	
+	/**
+	 * @see {@link ConceptService#conceptIterator()}
+	 */
+	@Test
+	@Verifies(value = "should iterate over all concepts", method = "conceptIterator()")
+	public void conceptIterator_shouldIterateOverAllConcepts() throws Exception {
+		Iterator<Concept> iterator = Context.getConceptService().conceptIterator();
+		
+		Assert.assertTrue(iterator.hasNext());
+		
+		Assert.assertEquals(3, iterator.next().getConceptId().intValue());
+	}
+	
+	/**
+	 * This test will fail if it takes more than 15 seconds to run. (Checks for an error with the
+	 * iterator looping forever) The @Timed annotation is used as an alternative to
+	 * "@Test(timeout=15000)" so that the Spring transactions work correctly. Junit has a "feature"
+	 * where it executes the befores/afters in a thread separate from the one that the actual test
+	 * ends up running in when timed.
+	 * @see {@link ConceptService#conceptIterator()}
+	 */
+	@Test()
+	@Verifies(value = "should start with the smallest concept id", method = "conceptIterator()")
+	public void conceptIterator_shouldStartWithTheSmallestConceptId() throws Exception {
+		List<Concept> allConcepts = Context.getConceptService().getAllConcepts();
+		int numberofconcepts = allConcepts.size();
+		
+		// sanity check
+		Assert.assertTrue(numberofconcepts > 0);
+		
+		// now count up the number of concepts the iterator returns
+		int iteratorCount = 0;
+		Iterator<Concept> iterator = Context.getConceptService().conceptIterator();
+		while (iterator.hasNext() && iteratorCount < numberofconcepts + 5) { // the lt check is in case of infinite loops 
+			iterator.next();
+			iteratorCount++;
+		}
+		Assert.assertEquals(numberofconcepts, iteratorCount);
+	}
+	
+	/**
+	 * @verifies {@link ConceptService#saveConcept(Concept)} test = should keep id for new concept
+	 *           if one is specified
+	 */
+	@Test
+	public void saveConcept_shouldKeepIdForNewConceptIfOneIsSpecified() throws Exception {
+		int unusedConceptId = 343434;
+		
+		Assert.assertNull("There should be no concept with id " + unusedConceptId, Context.getConceptService().getConcept(
+		    unusedConceptId));
+		
+		Concept concept = new Concept();
+		concept.addName(new ConceptName("Weight", Locale.US));
+		concept.setConceptId(unusedConceptId);
+		concept.setDatatype(Context.getConceptService().getConceptDatatypeByName("Numeric"));
+		concept.setConceptClass(Context.getConceptService().getConceptClassByName("Finding"));
+		
+		concept = Context.getConceptService().saveConcept(concept);
+		assertTrue(concept.getConceptId().equals(unusedConceptId));
+	}
+	
+	/**
+	 * @see ConceptService#getConceptWords(String, List, boolean, List, List, List, List, Concept,
+	 *      Integer, Integer)
+	 */
+	@Test
+	@Verifies(value = "should return the best matched name", method = "getConceptWords(String,List<QLocale;>,null,List<QConceptClass;>,List<QConceptClass;>,List<QConceptDatatype;>,List<QConceptDatatype;>,Concept,Integer,Integer)")
+	public void getConceptWords_shouldReturnTheBestMatchedName() throws Exception {
+		executeDataSet("org/openmrs/api/include/ConceptServiceTest-words.xml");
+		List<ConceptWord> words = Context.getConceptService().getConceptWords("cd4",
+		    Collections.singletonList(Locale.ENGLISH), false, null, null, null, null, null, null, null);
+		Assert.assertEquals(1847, words.get(0).getConceptName().getConceptNameId().intValue());
+		
+		TestUtil.printOutTableContents(getConnection(), "concept_word");
+	}
+	
+	/**
+	 * @see {@link ConceptService#getConceptByMapping(String,String)}
+	 */
+	@Test
+	@Verifies(value = "should get concept with given code and mapping", method = "getConceptByMapping(String,String)")
+	public void getConceptByMapping_shouldGetConceptWithGivenCodeAndMapping() throws Exception {
+		Concept concept = conceptService.getConceptByMapping("WGT234", "SSTRM");
+		Assert.assertEquals(new Concept(5089), concept);
+	}
+	
+	/**
+	 * @see {@link ConceptService#getConceptByMapping(String,String)}
+	 */
+	@Test
+	@Verifies(value = "should return null if code does not exist", method = "getConceptByMapping(String,String)")
+	public void getConceptByMapping_shouldReturnNullIfCodeDoesNotExist() throws Exception {
+		Concept concept = conceptService.getConceptByMapping("A random concept code", "SSTRM");
+		Assert.assertNull(concept);
+	}
+	
+	/**
+	 * @see {@link ConceptService#getConceptByMapping(String,String)}
+	 */
+	@Test
+	@Verifies(value = "should return null if mapping does not exist", method = "getConceptByMapping(String,String)")
+	public void getConceptByMapping_shouldReturnNullIfMappingDoesNotExist() throws Exception {
+		Concept concept = conceptService.getConceptByMapping("WGT234", "A random mapping code");
+		Assert.assertNull(concept);
+	}
+	
 }

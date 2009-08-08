@@ -38,20 +38,18 @@ import org.openmrs.util.FormUtil;
 import org.openmrs.web.WebUtil;
 
 /**
- * A collection of methods used by DWR for access forms, fields, and FormFields.
- * 
- * These methods are similar to the {@link FormService} methods
- * and have been chosen to be exposed via dwr to allow for 
- * access via javascript.
+ * A collection of methods used by DWR for access forms, fields, and FormFields. These methods are
+ * similar to the {@link FormService} methods and have been chosen to be exposed via dwr to allow
+ * for access via javascript.
  */
 public class DWRFormService {
-
+	
 	protected final Log log = LogFactory.getLog(getClass());
 	
 	public List<FormListItem> findForms(String text, boolean includeUnpublished) {
 		List<FormListItem> forms = new Vector<FormListItem>();
 		
-		for(Form form : Context.getFormService().findForms(text, includeUnpublished, false)) {
+		for (Form form : Context.getFormService().findForms(text, includeUnpublished, false)) {
 			forms.add(new FormListItem(form));
 		}
 		
@@ -61,7 +59,7 @@ public class DWRFormService {
 	public List<FormListItem> getForms(boolean includeUnpublished) {
 		List<FormListItem> forms = new Vector<FormListItem>();
 		
-		for(Form form : Context.getFormService().getForms(!includeUnpublished)) {
+		for (Form form : Context.getFormService().getForms(!includeUnpublished)) {
 			forms.add(new FormListItem(form));
 		}
 		
@@ -89,11 +87,11 @@ public class DWRFormService {
 			formFields.add(new FormFieldListItem(ff, Context.getLocale()));
 		return formFields;
 	}
-
+	
 	public List<FieldListItem> findFields(String txt) {
 		List<FieldListItem> fields = new Vector<FieldListItem>();
 		
-		for(Field field : Context.getFormService().findFields(txt))
+		for (Field field : Context.getFormService().findFields(txt))
 			fields.add(new FieldListItem(field, Context.getLocale()));
 		
 		return fields;
@@ -116,7 +114,7 @@ public class DWRFormService {
 		
 		if (concept != null) {
 			for (Field field : Context.getFormService().findFields(concept)) {
-				FieldListItem fli = new FieldListItem(field, locale); 
+				FieldListItem fli = new FieldListItem(field, locale);
 				if (!objects.contains(fli))
 					objects.add(fli);
 				fieldForConceptAdded.put(concept.getConceptId(), true);
@@ -129,7 +127,7 @@ public class DWRFormService {
 			
 		}
 		
-		for(Field field : Context.getFormService().findFields(txt)) {
+		for (Field field : Context.getFormService().findFields(txt)) {
 			FieldListItem fi = new FieldListItem(field, locale);
 			if (!objects.contains(fi)) {
 				objects.add(fi);
@@ -154,7 +152,7 @@ public class DWRFormService {
 				fieldForConceptAdded.put(concept.getConceptId(), true);
 			}
 		}
-
+		
 		Collections.sort(objects, new FieldConceptSort<Object>(locale));
 		
 		return objects;
@@ -166,15 +164,16 @@ public class DWRFormService {
 		return generateJSTree(formFields, 0, Context.getLocale());
 	}
 	
-	public Integer[] saveFormField(Integer fieldId, String name, String fieldDesc, Integer fieldTypeId, Integer conceptId, String table, String attr, 
-			String defaultValue, boolean multiple, Integer formFieldId, Integer formId, Integer parent, Integer number, String part, Integer page, Integer min, Integer max, boolean required, float sortWeight) {
+	public Integer[] saveFormField(Integer fieldId, String name, String fieldDesc, Integer fieldTypeId, Integer conceptId,
+	                               String table, String attr, String defaultValue, boolean multiple, Integer formFieldId,
+	                               Integer formId, Integer parent, Integer number, String part, Integer page, Integer min,
+	                               Integer max, boolean required, float sortWeight) {
 		
 		FormField ff = null;
 		Field field = null;
 		
 		FormService fs = Context.getFormService();
 		ConceptService cs = Context.getConceptService();
-		
 		
 		if (formFieldId != null && formFieldId != 0)
 			ff = fs.getFormField(formFieldId);
@@ -196,7 +195,7 @@ public class DWRFormService {
 		
 		log.debug("fieldId: " + fieldId);
 		log.debug("formFieldId: " + formFieldId);
-		log.debug("parentId: "+ parent);
+		log.debug("parentId: " + parent);
 		log.debug("parent: " + ff.getParent());
 		
 		if (fieldId != null && fieldId != 0)
@@ -219,14 +218,14 @@ public class DWRFormService {
 		field.setAttributeName(attr);
 		field.setDefaultValue(defaultValue);
 		field.setSelectMultiple(multiple);
-	
+		
 		ff.setField(field);
 		fs.updateFormField(ff);
 		
 		fieldId = ff.getField().getFieldId();
 		formFieldId = ff.getFormFieldId();
 		
-		Integer[] arr = {fieldId, formFieldId};
+		Integer[] arr = { fieldId, formFieldId };
 		
 		return arr;
 	}
@@ -237,8 +236,8 @@ public class DWRFormService {
 			//Context.closeSession();
 		}
 	}
-    
-    private String generateJSTree(TreeMap<Integer, TreeSet<FormField>> formFields, Integer current, Locale locale) {
+	
+	private String generateJSTree(TreeMap<Integer, TreeSet<FormField>> formFields, Integer current, Locale locale) {
 		String s = "";
 		
 		if (formFields.containsKey(current)) {
@@ -253,10 +252,10 @@ public class DWRFormService {
 		
 		return s;
 	}
-    
-    private String generateFormFieldJavascript(FormField ff, Locale locale) {
-    	
-    	String parent = "''";
+	
+	private String generateFormFieldJavascript(FormField ff, Locale locale) {
+		
+		String parent = "''";
 		if (ff.getParent() != null)
 			parent = ff.getParent().getFormFieldId().toString();
 		
@@ -277,68 +276,58 @@ public class DWRFormService {
 		fields.add(field);
 		int size = Context.getFormService().getForms(null, null, null, null, null, null, fields).size();
 		
-    	return "addNode(tree, {formFieldId: " + ff.getFormFieldId() + ", " + 
-    					"parent: " + parent + ", " + 
-    					"fieldId: " + field.getFieldId() + ", " + 
-    					"fieldName: \"" + WebUtil.escapeQuotesAndNewlines(field.getName()) + "\", " + 
-    					"description: \"" + WebUtil.escapeQuotesAndNewlines(field.getDescription()) + "\", " +
-    					"fieldType: " + field.getFieldType().getFieldTypeId() + ", " + 
-    					"conceptId: " + concept.getConceptId() + ", " + 
-						"conceptName: \"" + WebUtil.escapeQuotesAndNewlines(conceptName.getName()) + "\", " + 
-    					"tableName: \"" + field.getTableName() + "\", " + 
-    					"attributeName: \"" + field.getAttributeName() + "\", " + 
-    					"defaultValue: \"" + WebUtil.escapeQuotesAndNewlines(field.getDefaultValue()) + "\", " + 
-    					"selectMultiple: " + field.getSelectMultiple() + ", " + 
-    					"numForms: " + size + ", " + 
-    					"isSet: " + isSet + ", " +
-    						
-    					"fieldNumber: " + ff.getFieldNumber() + ", " + 
-    					"fieldPart: \"" + (ff.getFieldPart() == null ? "" : WebUtil.escapeQuotesAndNewlines(ff.getFieldPart())) + "\", " + 
-    					"pageNumber: " + ff.getPageNumber() + ", " + 
-    					"minOccurs: " + ff.getMinOccurs() + ", " + 
-    					"maxOccurs: " + ff.getMaxOccurs() + ", " + 
-    					"isRequired: " + ff.isRequired() + ", " + 
-    					"sortWeight: " + ff.getSortWeight() + "});";
-    }
-    
-    /**
-     * Sorts loosely on:
-     *   FieldListItems first, then concepts
-     *   FieldListItems with higher number of forms first, then lower
-     *   Concepts with shorter names before longer names
-     * @author bwolfe
-     *
-     * @param <Obj>
-     */
-    
-    private class FieldConceptSort<Obj extends Object> implements Comparator<Object> {
+		return "addNode(tree, {formFieldId: " + ff.getFormFieldId() + ", " + "parent: " + parent + ", " + "fieldId: "
+		        + field.getFieldId() + ", " + "fieldName: \"" + WebUtil.escapeQuotesAndNewlines(field.getName()) + "\", "
+		        + "description: \"" + WebUtil.escapeQuotesAndNewlines(field.getDescription()) + "\", " + "fieldType: "
+		        + field.getFieldType().getFieldTypeId() + ", " + "conceptId: " + concept.getConceptId() + ", "
+		        + "conceptName: \"" + WebUtil.escapeQuotesAndNewlines(conceptName.getName()) + "\", " + "tableName: \""
+		        + field.getTableName() + "\", " + "attributeName: \"" + field.getAttributeName() + "\", "
+		        + "defaultValue: \"" + WebUtil.escapeQuotesAndNewlines(field.getDefaultValue()) + "\", "
+		        + "selectMultiple: " + field.getSelectMultiple() + ", " + "numForms: " + size + ", " + "isSet: " + isSet
+		        + ", " +
+
+		        "fieldNumber: " + ff.getFieldNumber() + ", " + "fieldPart: \""
+		        + (ff.getFieldPart() == null ? "" : WebUtil.escapeQuotesAndNewlines(ff.getFieldPart())) + "\", "
+		        + "pageNumber: " + ff.getPageNumber() + ", " + "minOccurs: " + ff.getMinOccurs() + ", " + "maxOccurs: "
+		        + ff.getMaxOccurs() + ", " + "isRequired: " + ff.isRequired() + ", " + "sortWeight: " + ff.getSortWeight()
+		        + "});";
+	}
+	
+	/**
+	 * Sorts loosely on: FieldListItems first, then concepts FieldListItems with higher number of
+	 * forms first, then lower Concepts with shorter names before longer names
+	 * 
+	 * @author bwolfe
+	 * @param <Obj>
+	 */
+	
+	private class FieldConceptSort<Obj extends Object> implements Comparator<Object> {
+		
 		Locale locale;
+		
 		FieldConceptSort(Locale locale) {
 			this.locale = locale;
 		}
+		
 		public int compare(Object o1, Object o2) {
 			if (o1 instanceof FieldListItem && o2 instanceof FieldListItem) {
-				FieldListItem f1 = (FieldListItem)o1;
-				FieldListItem f2 = (FieldListItem)o2;
+				FieldListItem f1 = (FieldListItem) o1;
+				FieldListItem f2 = (FieldListItem) o2;
 				Integer numForms1 = f1.getNumForms();
 				Integer numForms2 = f2.getNumForms();
 				return numForms2.compareTo(numForms1);
-			}
-			else if (o1 instanceof FieldListItem && o2 instanceof ConceptListItem) {
+			} else if (o1 instanceof FieldListItem && o2 instanceof ConceptListItem) {
 				return -1;
-			}
-			else if (o1 instanceof ConceptListItem && o2 instanceof FieldListItem) {
+			} else if (o1 instanceof ConceptListItem && o2 instanceof FieldListItem) {
 				return 1;
-			}
-			else if (o1 instanceof ConceptListItem && o2 instanceof ConceptListItem) {
-				ConceptListItem c1 = (ConceptListItem)o1;
-				ConceptListItem c2 = (ConceptListItem)o2;
+			} else if (o1 instanceof ConceptListItem && o2 instanceof ConceptListItem) {
+				ConceptListItem c1 = (ConceptListItem) o1;
+				ConceptListItem c2 = (ConceptListItem) o2;
 				int length1 = c1.getName().length();
 				int length2 = c2.getName().length();
 				return new Integer(length1).compareTo(new Integer(length2));
-			}
-			else
+			} else
 				return 0;
 		}
-    }
+	}
 }

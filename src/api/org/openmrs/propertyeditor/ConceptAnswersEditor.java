@@ -29,14 +29,15 @@ import org.openmrs.api.context.Context;
 import org.springframework.util.StringUtils;
 
 public class ConceptAnswersEditor extends PropertyEditorSupport {
-
+	
 	private Log log = LogFactory.getLog(this.getClass());
 	
-	public ConceptAnswersEditor() {	}
+	public ConceptAnswersEditor() {
+	}
 	
 	/**
-	 * loops over the textbox assigned to this property.  The textbox is assumed to be a
-	 * string of conceptIds^drugIds separated by spaces
+	 * loops over the textbox assigned to this property. The textbox is assumed to be a string of
+	 * conceptIds^drugIds separated by spaces
 	 */
 	@SuppressWarnings("unchecked")
 	public void setAsText(String text) throws IllegalArgumentException {
@@ -54,7 +55,7 @@ public class ConceptAnswersEditor extends PropertyEditorSupport {
 					requestConceptIds.add(id);
 			}
 			
-			Collection<ConceptAnswer> originalConceptAnswers = (Collection<ConceptAnswer>)getValue();
+			Collection<ConceptAnswer> originalConceptAnswers = (Collection<ConceptAnswer>) getValue();
 			if (originalConceptAnswers == null)
 				originalConceptAnswers = new HashSet<ConceptAnswer>();
 			
@@ -70,8 +71,8 @@ public class ConceptAnswersEditor extends PropertyEditorSupport {
 					if (id.equals(origConceptAnswer.getAnswerConcept().getConceptId())) {
 						if (drugId == null && answerDrug == null)
 							answerDeleted = false;
-						else if ((drugId != null && answerDrug != null) &&
-							drugId.equals(origConceptAnswer.getAnswerDrug().getDrugId()))
+						else if ((drugId != null && answerDrug != null)
+						        && drugId.equals(origConceptAnswer.getAnswerDrug().getDrugId()))
 							answerDeleted = false;
 					}
 				}
@@ -80,7 +81,7 @@ public class ConceptAnswersEditor extends PropertyEditorSupport {
 			}
 			
 			// loop over those deleted answers to delete them
-			for(ConceptAnswer conceptAnswer : deletedConceptAnswers) {
+			for (ConceptAnswer conceptAnswer : deletedConceptAnswers) {
 				originalConceptAnswers.remove(conceptAnswer);
 			}
 			
@@ -94,8 +95,8 @@ public class ConceptAnswersEditor extends PropertyEditorSupport {
 					if (id.equals(origConceptAnswer.getAnswerConcept().getConceptId())) {
 						if (drugId == null && answerDrug == null)
 							newAnswerConcept = false;
-						else if ((drugId != null && answerDrug != null) &&
-							drugId.equals(origConceptAnswer.getAnswerDrug().getDrugId()))
+						else if ((drugId != null && answerDrug != null)
+						        && drugId.equals(origConceptAnswer.getAnswerDrug().getDrugId()))
 							newAnswerConcept = false;
 					}
 				}
@@ -119,36 +120,37 @@ public class ConceptAnswersEditor extends PropertyEditorSupport {
 				log.debug("id: " + i);
 			
 			setValue(originalConceptAnswers);
-		}
-		else {
+		} else {
 			setValue(null);
 		}
 	}
 	
 	/**
-	 * Parses the string and returns the Integer concept id
-	 * Expected string: "123" or "123^34"  ("conceptId^drugId")
+	 * Parses the string and returns the Integer concept id Expected string: "123" or "123^34"
+	 * ("conceptId^drugId")
+	 * 
 	 * @param conceptId
 	 * @return
 	 */
 	private Integer getConceptId(String conceptId) {
-		if (conceptId.contains("^")) 
+		if (conceptId.contains("^"))
 			return Integer.valueOf(conceptId.substring(0, conceptId.indexOf("^")));
 		else
 			return Integer.valueOf(conceptId);
 	}
 	
 	/**
-	 * Parses the string and returns the Integer drug id or null if none
-	 * Expected string: "123" or "123^34"  ("conceptId^drugId")
+	 * Parses the string and returns the Integer drug id or null if none Expected string: "123" or
+	 * "123^34" ("conceptId^drugId")
+	 * 
 	 * @param conceptId
 	 * @return
 	 */
 	private Integer getDrugId(String conceptId) {
 		if (conceptId.contains("^"))
-			return Integer.valueOf(conceptId.substring(conceptId.indexOf("^")+1, conceptId.length()));
+			return Integer.valueOf(conceptId.substring(conceptId.indexOf("^") + 1, conceptId.length()));
 		
-		return null;	
+		return null;
 	}
-
+	
 }

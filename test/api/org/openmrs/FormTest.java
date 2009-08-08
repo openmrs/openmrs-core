@@ -35,8 +35,7 @@ public class FormTest {
 	}
 	
 	/**
-	 * Makes sure that two different form objects that have the same 
-	 * form id are considered equal 
+	 * Makes sure that two different form objects that have the same form id are considered equal
 	 * 
 	 * @throws Exception
 	 */
@@ -50,8 +49,8 @@ public class FormTest {
 	}
 	
 	/**
-	 * Makes sure that two different form objects that have different
-	 * form ids are considered unequal
+	 * Makes sure that two different form objects that have different form ids are considered
+	 * unequal
 	 * 
 	 * @throws Exception
 	 */
@@ -65,8 +64,8 @@ public class FormTest {
 	}
 	
 	/**
-	 * Makes sure that two different form objects that have the same 
-	 * form id are considered equal (checks for NPEs)
+	 * Makes sure that two different form objects that have the same form id are considered equal
+	 * (checks for NPEs)
 	 * 
 	 * @throws Exception
 	 */
@@ -79,8 +78,8 @@ public class FormTest {
 	}
 	
 	/**
-	 * Makes sure that two different form objects are unequal when
-	 * one of them doesn't have an form id defined (checks for NPEs)
+	 * Makes sure that two different form objects are unequal when one of them doesn't have an form
+	 * id defined (checks for NPEs)
 	 * 
 	 * @throws Exception
 	 */
@@ -101,8 +100,8 @@ public class FormTest {
 	}
 	
 	/**
-	 * Make sure we can call {@link Form#hashCode()} with all null
-	 * attributes on form and still get a hashcode
+	 * Make sure we can call {@link Form#hashCode()} with all null attributes on form and still get
+	 * a hashcode
 	 * 
 	 * @throws Exception
 	 */
@@ -110,5 +109,5 @@ public class FormTest {
 	public void shouldGetHashCodeWithNullAttributes() throws Exception {
 		new Form().hashCode();
 	}
-		
+	
 }

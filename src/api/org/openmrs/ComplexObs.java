@@ -17,6 +17,7 @@ import org.openmrs.synchronization.Synchronizable;
 
 /**
  * ComplexObs 
+ * 
  * @version 1.0
  */
 public class ComplexObs extends Obs implements java.io.Serializable, Synchronizable {
@@ -69,8 +70,8 @@ public class ComplexObs extends Obs implements java.io.Serializable, Synchroniza
 	}
 	
 	/** 
-	 * overriding parent function isComplexObs function to allow an easier check of 
-	 * complex vs noncomplex
+	 * overriding parent function isComplexObs function to allow an easier check of complex vs
+	 * noncomplex
 	 * 
 	 * @return true/false whether this is a complex observation
 	 * @see org.openmrs.Obs#isComplexObs
@@ -84,6 +85,7 @@ public class ComplexObs extends Obs implements java.io.Serializable, Synchroniza
 
 	/**
 	 * Gets the Universal Resource Number for this complex obs
+	 * 
 	 * @return urn string
 	 */
 	public String getUrn() {
@@ -92,6 +94,7 @@ public class ComplexObs extends Obs implements java.io.Serializable, Synchroniza
 
 	/**
 	 * Sets the Universal Resource Number for this complex obs
+	 * 
 	 * @param urn string
 	 */
 	public void setUrn(String urn) {
@@ -100,6 +103,7 @@ public class ComplexObs extends Obs implements java.io.Serializable, Synchroniza
 
 	/**
 	 * gets the value of this complex observation
+	 * 
 	 * @return complex value string
 	 */
 	public String getComplexValue() {
@@ -108,6 +112,7 @@ public class ComplexObs extends Obs implements java.io.Serializable, Synchroniza
 
 	/**
 	 * Sets the value of this complex observation
+	 * 
 	 * @param complexValue value string
 	 */
 	public void setComplexValue(String complexValue) {
@@ -116,6 +121,7 @@ public class ComplexObs extends Obs implements java.io.Serializable, Synchroniza
 
 	/**
 	 * gets the mime type object of this complex observation
+	 * 
 	 * @return MimeType object
 	 */
 	public MimeType getMimeType() {
@@ -124,6 +130,7 @@ public class ComplexObs extends Obs implements java.io.Serializable, Synchroniza
 
 	/**
 	 * Sets mime type object of this complex observation
+	 * 
 	 * @param mimeType object
 	 */
 	public void setMimeType(MimeType mimeType) {

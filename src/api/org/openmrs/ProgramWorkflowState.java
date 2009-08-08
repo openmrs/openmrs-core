@@ -67,7 +67,8 @@ public class ProgramWorkflowState implements Serializable, Synchronizable {
       this.guid = guid;
   }
 
-	public ProgramWorkflowState() { }
+	public ProgramWorkflowState() {
+	}
 
 	/** Constructor with id */
 	public ProgramWorkflowState(Integer programWorkflowStateId) {
@@ -82,12 +83,11 @@ public class ProgramWorkflowState implements Serializable, Synchronizable {
 	public boolean equals(Object obj) {
 		if (obj != null && obj instanceof ProgramWorkflowState) {
 			ProgramWorkflowState p = (ProgramWorkflowState)obj;
-			if (this.getProgramWorkflowStateId() == null) {
-				return p.getProgramWorkflowStateId() == null;
+			if (this.getProgramWorkflowStateId() != null) {
+				return (this.getProgramWorkflowStateId().equals(p.getProgramWorkflowStateId()));
 			}
-			return (this.getProgramWorkflowStateId().equals(p.getProgramWorkflowStateId()));
 		}
-		return false;
+		return this == obj;
 	}
 	
 	/** @see Object#toString() */

@@ -69,8 +69,8 @@ public class OrderType implements java.io.Serializable, Synchronizable {
 	}
 	
 	/**
-	 * Convenience constructor that takes in the elements
-	 * required to save this OrderType to the database
+	 * Convenience constructor that takes in the elements required to save this OrderType to the
+	 * database
 	 * 
 	 * @param name The name of this order Type
 	 * @param description A short description about this order type
@@ -96,7 +96,8 @@ public class OrderType implements java.io.Serializable, Synchronizable {
 	 * @see java.lang.Object#hashCode()
 	 */
 	public int hashCode() {
-		if (this.getOrderTypeId() == null) return super.hashCode();
+		if (this.getOrderTypeId() == null)
+			return super.hashCode();
 		return this.getOrderTypeId().hashCode();
 	}
 

@@ -38,12 +38,10 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ProgramWorkflowDAO;
 
 /**
- * Default implementation of the ProgramWorkflow-related services class.
- * 
- * This method should not be invoked by itself.  Spring injection is used
- * to inject this implementation into the ServiceContext.  Which 
- * implementation is injected is determined by the spring application 
- * context file: /metadata/api/spring/applicationContext.xml
+ * Default implementation of the ProgramWorkflow-related services class. This method should not be
+ * invoked by itself. Spring injection is used to inject this implementation into the
+ * ServiceContext. Which implementation is injected is determined by the spring application context
+ * file: /metadata/api/spring/applicationContext.xml
  * 
  * @see org.openmrs.api.ProgramWorkflowService
  */
@@ -54,7 +52,8 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 
 	protected ProgramWorkflowDAO dao;
 	
-	public ProgramWorkflowServiceImpl() { }
+	public ProgramWorkflowServiceImpl() {
+	}
 	
 	/**
 	 * @see org.openmrs.api.ProgramWorkflowService#setProgramWorkflowDAO(org.openmrs.api.db.ProgramWorkflowDAO)
@@ -108,10 +107,11 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 		}
 			if (workflow.getProgram() == null) {
 				workflow.setProgram(program);
+			} else if (!workflow.getProgram().equals(program)) {
+				throw new APIException(
+				        "This Program contains a ProgramWorkflow whose parent Program is already assigned to "
+				                + workflow.getProgram());
 			}
-			else if (!workflow.getProgram().equals(program)) {
-				throw new APIException("This Program contains a ProgramWorkflow whose parent Program is already assigned to " + workflow.getProgram());
-		}
 		
 			// ProgramWorkflowState
 			for (ProgramWorkflowState state : workflow.getStates()) {
@@ -131,12 +131,13 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 					}
 				if (state.getProgramWorkflow() == null) {
 					state.setProgramWorkflow(workflow);
+				} else if (!state.getProgramWorkflow().equals(workflow)) {
+					throw new APIException(
+					        "This ProgramWorkflow contains a State whose parent ProgramWorkflow is already assigned to "
+					                + workflow.getProgram());
 				}
-				else if (!state.getProgramWorkflow().equals(workflow)) {
-					throw new APIException("This ProgramWorkflow contains a State whose parent ProgramWorkflow is already assigned to " + workflow.getProgram());
 				}
 			}
-		}
 		return dao.saveProgram(program);
 	}
 	
@@ -270,8 +271,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 			if (patientProgram.getDateVoided() == null) {
 				patientProgram.setDateVoided(currentDate);
 			}
-		}
-		else {
+		} else {
 			patientProgram.setVoidedBy(null);
 			patientProgram.setVoidReason(null);
 			patientProgram.setDateVoided(null);
@@ -284,9 +284,10 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 			}
 			if (state.getPatientProgram() == null) {
 				state.setPatientProgram(patientProgram);
-			}
-			else if (!state.getPatientProgram().equals(patientProgram)) {
-				throw new APIException("This PatientProgram contains a ProgramWorkflowState whose parent is already assigned to " + state.getPatientProgram());
+			} else if (!state.getPatientProgram().equals(patientProgram)) {
+				throw new APIException(
+				        "This PatientProgram contains a ProgramWorkflowState whose parent is already assigned to "
+				                + state.getPatientProgram());
 			}
 	    	if (state.getCreator() == null) {
 	    		state.setCreator(currentUser);
@@ -309,8 +310,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 				if (state.getVoidReason() == null && patientProgram.getVoidReason() != null) {
 					state.setVoidReason(patientProgram.getVoidReason());
 			}
-		}
-			else {
+			} else {
 				state.setVoidedBy(null);
 				state.setVoidReason(null);
 				state.setDateVoided(null);
@@ -327,14 +327,19 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	}
 	
 	/**
-     * @see org.openmrs.api.ProgramWorkflowService#getPatientPrograms(org.openmrs.Patient, org.openmrs.Program, java.util.Date, java.util.Date, java.util.Date, java.util.Date)
+	 * @see org.openmrs.api.ProgramWorkflowService#getPatientPrograms(org.openmrs.Patient,
+	 *      org.openmrs.Program, java.util.Date, java.util.Date, java.util.Date, java.util.Date)
 	 */
-    public List<PatientProgram> getPatientPrograms(Patient patient, Program program, Date minEnrollmentDate, Date maxEnrollmentDate, Date minCompletionDate, Date maxCompletionDate, boolean includeVoided) throws APIException {
-    	return dao.getPatientPrograms(patient, program, minEnrollmentDate, maxEnrollmentDate, minCompletionDate, maxCompletionDate, includeVoided);
+	public List<PatientProgram> getPatientPrograms(Patient patient, Program program, Date minEnrollmentDate,
+	                                               Date maxEnrollmentDate, Date minCompletionDate, Date maxCompletionDate,
+	                                               boolean includeVoided) throws APIException {
+		return dao.getPatientPrograms(patient, program, minEnrollmentDate, maxEnrollmentDate, minCompletionDate,
+		    maxCompletionDate, includeVoided);
 	}
 
     /**
-	 * @see org.openmrs.api.impl.ProgramWorkflowService#getPatientPrograms(Cohort, Collection<Program>)
+	 * @see org.openmrs.api.impl.ProgramWorkflowService#getPatientPrograms(Cohort,
+	 *      Collection<Program>)
 	 */
 	public List<PatientProgram> getPatientPrograms(Cohort cohort, Collection<Program> programs) {
 		if (cohort.getMemberIds().size() < 1)
@@ -352,7 +357,8 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	}
 	
 	/**
-     * @see org.openmrs.api.ProgramWorkflowService#purgePatientProgram(org.openmrs.PatientProgram, boolean)
+	 * @see org.openmrs.api.ProgramWorkflowService#purgePatientProgram(org.openmrs.PatientProgram,
+	 *      boolean)
      */
     public void purgePatientProgram(PatientProgram patientProgram, boolean cascade) throws APIException {
     	if (cascade && !patientProgram.getStates().isEmpty()) {
@@ -362,7 +368,8 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	}
 
     /**
-     * @see org.openmrs.api.ProgramWorkflowService#voidPatientProgram(org.openmrs.PatientProgram, java.lang.String)
+	 * @see org.openmrs.api.ProgramWorkflowService#voidPatientProgram(org.openmrs.PatientProgram,
+	 *      java.lang.String)
 	 */
 	public PatientProgram voidPatientProgram(PatientProgram patientProgram, String reason) {
 		patientProgram.setVoided(true);
@@ -371,7 +378,8 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	}
 	
     /**
-     * @see org.openmrs.api.ProgramWorkflowService#voidPatientProgram(org.openmrs.PatientProgram, java.lang.String)
+	 * @see org.openmrs.api.ProgramWorkflowService#voidPatientProgram(org.openmrs.PatientProgram,
+	 *      java.lang.String)
 	 */
 	public PatientProgram unvoidPatientProgram(PatientProgram patientProgram) {
 		Date voidDate = patientProgram.getDateVoided();
@@ -424,21 +432,27 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 		}
 		
 	/**
-     * @see org.openmrs.api.ProgramWorkflowService#purgeConceptStateConversion(org.openmrs.ConceptStateConversion, boolean)
+	 * @see org.openmrs.api.ProgramWorkflowService#purgeConceptStateConversion(org.openmrs.ConceptStateConversion,
+	 *      boolean)
      */
-    public void purgeConceptStateConversion(ConceptStateConversion conceptStateConversion, boolean cascade) throws APIException {
+	public void purgeConceptStateConversion(ConceptStateConversion conceptStateConversion, boolean cascade)
+	                                                                                                       throws APIException {
     	dao.deleteConceptStateConversion(conceptStateConversion);
 	}
 	
     /**
-     * @see org.openmrs.api.ProgramWorkflowService#triggerStateConversion(org.openmrs.Patient, org.openmrs.Concept, java.util.Date)
+	 * @see org.openmrs.api.ProgramWorkflowService#triggerStateConversion(org.openmrs.Patient,
+	 *      org.openmrs.Concept, java.util.Date)
 	 */
 	public void triggerStateConversion(Patient patient, Concept trigger, Date dateConverted) {
 
 		// Check input parameters
-		if ( patient == null ) throw new APIException("Attempting to convert state of an invalid patient");
-		if ( trigger == null ) throw new APIException("Attempting to convert state for a patient without a valid trigger concept");
-		if ( dateConverted == null ) throw new APIException("Invalid date for converting patient state");
+		if (patient == null)
+			throw new APIException("Attempting to convert state of an invalid patient");
+		if (trigger == null)
+			throw new APIException("Attempting to convert state for a patient without a valid trigger concept");
+		if (dateConverted == null)
+			throw new APIException("Invalid date for converting patient state");
 
 		for (PatientProgram patientProgram : getPatientPrograms(patient, null, null, null, null, null, false)) {
 			Set<ProgramWorkflow> workflows = patientProgram.getProgram().getWorkflows();
@@ -458,7 +472,8 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 				
 				if (transitionState != null && workflow.isLegalTransition(currentState, transitionState)) {
 					patientProgram.transitionToState(transitionState, dateConverted);
-					log.debug("State Conversion Triggered: patientProgram=" + patientProgram + " transition from " + currentState + " to " + transitionState + " on " + dateConverted);
+					log.debug("State Conversion Triggered: patientProgram=" + patientProgram + " transition from "
+					        + currentState + " to " + transitionState + " on " + dateConverted);
 				}
 			}
 			
@@ -474,7 +489,8 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	}
 	
 	/**
-	 * @see org.openmrs.api.ProgramWorkflowService#getConceptStateConversion(org.openmrs.ProgramWorkflow, org.openmrs.Concept)
+	 * @see org.openmrs.api.ProgramWorkflowService#getConceptStateConversion(org.openmrs.ProgramWorkflow,
+	 *      org.openmrs.Concept)
 	 */
 	public ConceptStateConversion getConceptStateConversion(ProgramWorkflow workflow, Concept trigger) {
 		return dao.getConceptStateConversion(workflow, trigger);
@@ -538,7 +554,8 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	}
 
 	/**
-	 * @see org.openmrs.api.ProgramWorkflowService#getWorkflow(org.openmrs.Program, java.lang.String)
+	 * @see org.openmrs.api.ProgramWorkflowService#getWorkflow(org.openmrs.Program,
+	 *      java.lang.String)
 	 * @deprecated
 	 */
 	public ProgramWorkflow getWorkflow(Program program, String name) {
@@ -546,7 +563,8 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 		}
 	
 	/**
-	 * @see org.openmrs.api.ProgramWorkflowService#voidWorkflow(org.openmrs.ProgramWorkflow, java.lang.String)
+	 * @see org.openmrs.api.ProgramWorkflowService#voidWorkflow(org.openmrs.ProgramWorkflow,
+	 *      java.lang.String)
 	 * @deprecated
 	 */
 	public void voidWorkflow(ProgramWorkflow w, String reason) {
@@ -598,7 +616,8 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	}
 
 	/**
-	 * @see org.openmrs.api.ProgramWorkflowService#getState(org.openmrs.ProgramWorkflow, java.lang.String)
+	 * @see org.openmrs.api.ProgramWorkflowService#getState(org.openmrs.ProgramWorkflow,
+	 *      java.lang.String)
 	 * @deprecated
 	 */
 	public ProgramWorkflowState getState(ProgramWorkflow programWorkflow, String name) {
@@ -606,7 +625,8 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	}
 
 	/**
-	 * @see org.openmrs.api.ProgramWorkflowService#getPossibleNextStates(org.openmrs.PatientProgram, org.openmrs.ProgramWorkflow)
+	 * @see org.openmrs.api.ProgramWorkflowService#getPossibleNextStates(org.openmrs.PatientProgram,
+	 *      org.openmrs.ProgramWorkflow)
 	 * @deprecated
 	 */
 	public List<ProgramWorkflowState> getPossibleNextStates(PatientProgram patientProgram, ProgramWorkflow workflow) {
@@ -614,7 +634,8 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	}
 	
 	/**
-	 * @see org.openmrs.api.ProgramWorkflowService#isLegalTransition(org.openmrs.ProgramWorkflowState, org.openmrs.ProgramWorkflowState)
+	 * @see org.openmrs.api.ProgramWorkflowService#isLegalTransition(org.openmrs.ProgramWorkflowState,
+	 *      org.openmrs.ProgramWorkflowState)
 	 * @deprecated
 	 */
 	public boolean isLegalTransition(ProgramWorkflowState fromState, ProgramWorkflowState toState) {
@@ -643,10 +664,12 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	}
 		
 	/**
-	 * @see org.openmrs.api.ProgramWorkflowService#enrollPatientInProgram(org.openmrs.Patient, org.openmrs.Program, java.util.Date, java.util.Date, org.openmrs.User)
+	 * @see org.openmrs.api.ProgramWorkflowService#enrollPatientInProgram(org.openmrs.Patient,
+	 *      org.openmrs.Program, java.util.Date, java.util.Date, org.openmrs.User)
 	 * @deprecated
 	 */
-	public void enrollPatientInProgram(Patient patient, Program program, Date enrollmentDate, Date completionDate, User creator) {
+	public void enrollPatientInProgram(Patient patient, Program program, Date enrollmentDate, Date completionDate,
+	                                   User creator) {
 		PatientProgram p = new PatientProgram();
 		p.setPatient(patient);
 		p.setProgram(program);
@@ -665,7 +688,8 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	}
 
 	/**
-	 * @see org.openmrs.api.ProgramWorkflowService#patientsInProgram(org.openmrs.Program, java.util.Date, java.util.Date)
+	 * @see org.openmrs.api.ProgramWorkflowService#patientsInProgram(org.openmrs.Program,
+	 *      java.util.Date, java.util.Date)
 	 * @deprecated
 	 */
 	public Collection<Integer> patientsInProgram(Program program, Date fromDate, Date toDate) {
@@ -678,7 +702,8 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	}
 		
 	/**
-	 * @see org.openmrs.api.ProgramWorkflowService#getCurrentPrograms(org.openmrs.Patient, java.util.Date)
+	 * @see org.openmrs.api.ProgramWorkflowService#getCurrentPrograms(org.openmrs.Patient,
+	 *      java.util.Date)
 	 * @deprecated
 	 */
 	public Collection<PatientProgram> getCurrentPrograms(Patient patient, Date onDate) {
@@ -692,7 +717,8 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	}
 	
 	/**
-	 * @see org.openmrs.api.ProgramWorkflowService#isInProgram(org.openmrs.Patient, org.openmrs.Program, java.util.Date, java.util.Date)
+	 * @see org.openmrs.api.ProgramWorkflowService#isInProgram(org.openmrs.Patient,
+	 *      org.openmrs.Program, java.util.Date, java.util.Date)
 	 * @deprecated
 	 */
 	public boolean isInProgram(Patient patient, Program program, Date fromDate, Date toDate) {
@@ -718,7 +744,8 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 		}
 
 	/**
-	 * @see org.openmrs.api.ProgramWorkflowService#getLatestState(org.openmrs.PatientProgram, org.openmrs.ProgramWorkflow)
+	 * @see org.openmrs.api.ProgramWorkflowService#getLatestState(org.openmrs.PatientProgram,
+	 *      org.openmrs.ProgramWorkflow)
 	 * @deprecated
 	 */
 	public PatientState getLatestState(PatientProgram patientProgram, ProgramWorkflow workflow) {
@@ -752,16 +779,19 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 		}
 
 	/**
-	 * @see org.openmrs.api.ProgramWorkflowService#changeToState(org.openmrs.PatientProgram, org.openmrs.ProgramWorkflow, org.openmrs.ProgramWorkflowState, java.util.Date)
+	 * @see org.openmrs.api.ProgramWorkflowService#changeToState(org.openmrs.PatientProgram,
+	 *      org.openmrs.ProgramWorkflow, org.openmrs.ProgramWorkflowState, java.util.Date)
 	 * @deprecated
 	 */
-	public void changeToState(PatientProgram patientProgram, ProgramWorkflow workflow, ProgramWorkflowState state, Date onDate) {
+	public void changeToState(PatientProgram patientProgram, ProgramWorkflow workflow, ProgramWorkflowState state,
+	                          Date onDate) {
 		patientProgram.transitionToState(state, onDate);
 		savePatientProgram(patientProgram);
 	}
 		
 	/**
-	 * @see org.openmrs.api.ProgramWorkflowService#voidLastState(org.openmrs.PatientProgram, org.openmrs.ProgramWorkflow, java.lang.String)
+	 * @see org.openmrs.api.ProgramWorkflowService#voidLastState(org.openmrs.PatientProgram,
+	 *      org.openmrs.ProgramWorkflow, java.lang.String)
 	 * @deprecated
 	 */
 	public void voidLastState(PatientProgram patientProgram, ProgramWorkflow workflow, String voidReason) {
@@ -769,7 +799,8 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	}
 	
 	/**
-	 * @see org.openmrs.api.ProgramWorkflowService#terminatePatientProgram(org.openmrs.PatientProgram, org.openmrs.ProgramWorkflowState, java.util.Date)
+	 * @see org.openmrs.api.ProgramWorkflowService#terminatePatientProgram(org.openmrs.PatientProgram,
+	 *      org.openmrs.ProgramWorkflowState, java.util.Date)
 	 * @deprecated
 	 */
 	public void terminatePatientProgram(PatientProgram patientProgram, ProgramWorkflowState finalState, Date terminatedOn) {

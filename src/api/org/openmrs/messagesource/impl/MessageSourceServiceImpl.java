@@ -30,17 +30,11 @@ import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
 
 /**
- * Extensible implementation of the MessageSourceService, which relies on
- * injected implementations of MutableMessageSource to actually provide the 
- * services. 
- * 
- * The sub-services are loaded by special BeanPostProcessor handling, which
- * looks for beans named 
- * 
- * For example: ResourceBundleMessageSourceService can be specified in
- * the applicationContext-service.xml file to use the usual .properties
- * files to provide messages. 
- * 
+ * Extensible implementation of the MessageSourceService, which relies on injected implementations
+ * of MutableMessageSource to actually provide the services. The sub-services are loaded by special
+ * BeanPostProcessor handling, which looks for beans named For example:
+ * ResourceBundleMessageSourceService can be specified in the applicationContext-service.xml file to
+ * use the usual .properties files to provide messages.
  */
 public class MessageSourceServiceImpl implements MessageSourceService {
 		
@@ -58,8 +52,7 @@ public class MessageSourceServiceImpl implements MessageSourceService {
 	}
 	
 	/**
-	 * Gets the message source service which is currently providing
-	 * services.
+	 * Gets the message source service which is currently providing services.
 	 * 
      * @return the activeMessageSource
      */
@@ -72,14 +65,12 @@ public class MessageSourceServiceImpl implements MessageSourceService {
 	 * 
      * @param activeMessageSource the activeMessageSourceService to set
      */
-    public void setActiveMessageSource(
-            MutableMessageSource activeMessageSource) {
+	public void setActiveMessageSource(MutableMessageSource activeMessageSource) {
     	
     	log.debug("Setting activeMessageSource: " + activeMessageSource);
     	
     	this.activeMessageSource = activeMessageSource;
-    	if (!availableMessageSources.contains(activeMessageSource))
-    	{
+		if (!availableMessageSources.contains(activeMessageSource)) {
     		availableMessageSources.add(activeMessageSource);
     	}
     }
@@ -94,18 +85,14 @@ public class MessageSourceServiceImpl implements MessageSourceService {
 	}
 	
 	/**
-	 * Presumes to append the messages to a message.properties file which is
-	 * already being monitored by the super
-	 * ReloadableResourceBundleMessageSource.
-	 * 
-	 * This is a blind, trusting hack.
+	 * Presumes to append the messages to a message.properties file which is already being monitored
+	 * by the super ReloadableResourceBundleMessageSource. This is a blind, trusting hack.
 	 * 
 	 * @see org.openmrs.message.MessageSourceService#publishProperties(java.util.Properties,
 	 *      java.lang.String, java.lang.String, java.lang.String)
 	 * @deprecated use {@link #merge(MutableMessageSource, boolean)} instead
 	 */
-	public void publishProperties(Properties props, String locale,
-	        String namespace, String name, String version) {
+	public void publishProperties(Properties props, String locale, String namespace, String name, String version) {
 		activeMessageSource.publishProperties(props, locale, namespace, name, version);
 	}
 
@@ -119,25 +106,26 @@ public class MessageSourceServiceImpl implements MessageSourceService {
     }
 
 	/**
-     * @see org.springframework.context.MessageSource#getMessage(org.springframework.context.MessageSourceResolvable, java.util.Locale)
+	 * @see org.springframework.context.MessageSource#getMessage(org.springframework.context.MessageSourceResolvable,
+	 *      java.util.Locale)
      */
     public String getMessage(MessageSourceResolvable arg0, Locale arg1) {
     	return activeMessageSource.getMessage(arg0, arg1);
     }
 
 	/**
-     * @see org.springframework.context.MessageSource#getMessage(java.lang.String, java.lang.Object[], java.util.Locale)
+	 * @see org.springframework.context.MessageSource#getMessage(java.lang.String,
+	 *      java.lang.Object[], java.util.Locale)
      */
-    public String getMessage(String arg0, Object[] arg1, Locale arg2)
-            throws NoSuchMessageException {
+	public String getMessage(String arg0, Object[] arg1, Locale arg2) throws NoSuchMessageException {
     	return activeMessageSource.getMessage(arg0, arg1, arg2);
     }
 
 	/**
-     * @see org.springframework.context.MessageSource#getMessage(java.lang.String, java.lang.Object[], java.lang.String, java.util.Locale)
+	 * @see org.springframework.context.MessageSource#getMessage(java.lang.String,
+	 *      java.lang.Object[], java.lang.String, java.util.Locale)
      */
-    public String getMessage(String arg0, Object[] arg1, String arg2,
-            Locale arg3) {
+	public String getMessage(String arg0, Object[] arg1, String arg2, Locale arg3) {
     	return activeMessageSource.getMessage(arg0, arg1, arg2, arg3);
     }
 
@@ -166,8 +154,7 @@ public class MessageSourceServiceImpl implements MessageSourceService {
 	/**
      * @param availableMessageSources the availableMessageSources to set
      */
-    public void setMessageSources(
-            Set<MutableMessageSource> availableMessageSources) {
+	public void setMessageSources(Set<MutableMessageSource> availableMessageSources) {
     	this.availableMessageSources.addAll(availableMessageSources);
     }
 
@@ -181,8 +168,7 @@ public class MessageSourceServiceImpl implements MessageSourceService {
     }
 
 	/**
-	 * Merges messages from another message source into the
-	 * active (current) message source.
+	 * Merges messages from another message source into the active (current) message source.
 	 * 
      * @see org.openmrs.message.MutableMessageSource#merge(org.openmrs.message.MutableMessageSource)
      */
@@ -191,7 +177,8 @@ public class MessageSourceServiceImpl implements MessageSourceService {
     }
 
 	/**
-     * @see org.openmrs.messagesource.MutableMessageSource#getPresentation(java.lang.String, java.util.Locale)
+	 * @see org.openmrs.messagesource.MutableMessageSource#getPresentation(java.lang.String,
+	 *      java.util.Locale)
      */
     public PresentationMessage getPresentation(String key, Locale forLocale) {
     	return activeMessageSource.getPresentation(key, forLocale);

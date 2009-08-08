@@ -23,6 +23,7 @@ import org.openmrs.synchronization.Synchronizable;
 public class ConceptStateConversion implements Synchronizable {
 	
 	public static final long serialVersionUID = 3214511L;
+	
 	protected final Log log = LogFactory.getLog(getClass());
 	
 	// ******************
@@ -30,8 +31,11 @@ public class ConceptStateConversion implements Synchronizable {
 	// ******************
 	
 	private Integer conceptStateConversionId;
+	
 	private Concept concept;
+	
 	private ProgramWorkflow programWorkflow;
+	
 	private ProgramWorkflowState programWorkflowState;
 	private String guid;
     private transient String lastRecordGuid;
@@ -56,7 +60,8 @@ public class ConceptStateConversion implements Synchronizable {
 	// ******************
 	
 	/** Default Constructor */
-	public ConceptStateConversion() { }
+	public ConceptStateConversion() {
+	}
 	
 	/** Constructor with id */
 	public ConceptStateConversion(Integer conceptStateConversionId) {
@@ -70,18 +75,18 @@ public class ConceptStateConversion implements Synchronizable {
 	/** @see Object#equals(Object) */
 	public boolean equals(Object obj) {
 		if (obj != null && obj instanceof ConceptStateConversion) {
-			ConceptStateConversion p = (ConceptStateConversion)obj;
-			if (this.getConceptStateConversionId() == null) {
-				return p.getConceptStateConversionId() == null;
+			ConceptStateConversion p = (ConceptStateConversion) obj;
+			if (this.getConceptStateConversionId() != null) {
+				return (this.getConceptStateConversionId().equals(p.getConceptStateConversionId()));
 			}
-			return (this.getConceptStateConversionId().equals(p.getConceptStateConversionId()));
 		}
-		return false;
+		return this == obj;
 	}
-
+	
 	/** @see Object#toString() */
 	public String toString() {
-		return("ConceptStateConversion: Concept[" + concept + "] results in State [" + programWorkflowState + "] for workflow [" + programWorkflow + "]");
+		return ("ConceptStateConversion: Concept[" + concept + "] results in State [" + programWorkflowState
+		        + "] for workflow [" + programWorkflow + "]");
 	}
 	
 	// ******************
@@ -94,49 +99,49 @@ public class ConceptStateConversion implements Synchronizable {
 	public Concept getConcept() {
 		return concept;
 	}
-
+	
 	/**
 	 * @param concept The concept to set.
 	 */
 	public void setConcept(Concept concept) {
 		this.concept = concept;
 	}
-
+	
 	/**
 	 * @return Returns the conceptStateConversionId.
 	 */
 	public Integer getConceptStateConversionId() {
 		return conceptStateConversionId;
 	}
-
+	
 	/**
 	 * @param conceptStateConversionId The conceptStateConversionId to set.
 	 */
 	public void setConceptStateConversionId(Integer conceptStateConversionId) {
 		this.conceptStateConversionId = conceptStateConversionId;
 	}
-
+	
 	/**
 	 * @return Returns the programWorkflow.
 	 */
 	public ProgramWorkflow getProgramWorkflow() {
 		return programWorkflow;
 	}
-
+	
 	/**
 	 * @param programWorkflow The programWorkflow to set.
 	 */
 	public void setProgramWorkflow(ProgramWorkflow programWorkflow) {
 		this.programWorkflow = programWorkflow;
 	}
-
+	
 	/**
 	 * @return Returns the programWorkflowState.
 	 */
 	public ProgramWorkflowState getProgramWorkflowState() {
 		return programWorkflowState;
 	}
-
+	
 	/**
 	 * @param programWorkflowState The programWorkflowState to set.
 	 */

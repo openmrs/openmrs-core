@@ -21,12 +21,11 @@ import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 public class ReportObjectValidator implements Validator {
-
+	
 	/** Log for this class and subclasses */
 	protected final Log log = LogFactory.getLog(getClass());
-
+	
 	/**
-	 * 
 	 * Determines if the command object being submitted is a valid type
 	 * 
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
@@ -34,21 +33,20 @@ public class ReportObjectValidator implements Validator {
 	public boolean supports(Class c) {
 		//String clsName = c.getName();
 		// could also check if superclass is an AbstractReportObject
-		return c.getSuperclass().equals(AbstractReportObject.class); 
+		return c.getSuperclass().equals(AbstractReportObject.class);
 		//return Helper.isStringInArray(clsName, ReportObjectService.getAllReportObjectClasses());
 	}
-
 	
 	/**
-	 * 
 	 * Checks the form object for any inconsistencies/errors
 	 * 
-	 * @see org.springframework.validation.Validator#validate(java.lang.Object, org.springframework.validation.Errors)
+	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
+	 *      org.springframework.validation.Errors)
 	 */
 	public void validate(Object obj, Errors errors) {
 		
-		if ( obj instanceof AbstractReportObject ) {
-			AbstractReportObject reportObject = (AbstractReportObject)obj;
+		if (obj instanceof AbstractReportObject) {
+			AbstractReportObject reportObject = (AbstractReportObject) obj;
 			if (reportObject == null) {
 				errors.rejectValue("report object", "error.general");
 			} else {
@@ -60,5 +58,5 @@ public class ReportObjectValidator implements Validator {
 			errors.rejectValue("report object", "error.general");
 		}
 	}
-
+	
 }

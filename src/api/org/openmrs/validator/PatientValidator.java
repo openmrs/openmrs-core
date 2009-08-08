@@ -19,14 +19,14 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 /**
- * This class validates a Patient object.  
- * TODO: Eventually, all Patient validation should be done through this class.  I.e.
- * it should not be done in classes like newPatientFormController.
+ * This class validates a Patient object. TODO: Eventually, all Patient validation should be done
+ * through this class. I.e. it should not be done in classes like newPatientFormController.
  */
 public class PatientValidator implements Validator {
-
+	
 	/**
 	 * Returns whether or not this validator supports validating a given class.
+	 * 
 	 * @param c The class to check for support.
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
@@ -34,12 +34,14 @@ public class PatientValidator implements Validator {
 	public boolean supports(Class c) {
 		return Patient.class.isAssignableFrom(c);
 	}
-
+	
 	/**
-	 * Validates the given Patient.  Currently just checks for errors in identifiers.
-	 * TODO: Check for errors in all Patient fields.
+	 * Validates the given Patient. Currently just checks for errors in identifiers. TODO: Check for
+	 * errors in all Patient fields.
+	 * 
 	 * @param obj The patient to validate.
-	 * @see org.springframework.validation.Validator#validate(java.lang.Object, org.springframework.validation.Errors)
+	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
+	 *      org.springframework.validation.Errors)
 	 */
 	public void validate(Object obj, Errors errors) {
 		Patient patient = (Patient) obj;

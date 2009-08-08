@@ -26,20 +26,23 @@ import org.databene.benerator.factory.GeneratorFactory;
 public class MockPresentationMessage extends PresentationMessage {
 	
 	static String CODE_PATTERN = "[a-z]{4,12}";
+	
 	static Generator<String> codeGenerator;
 	
 	static Generator<String> localeGenerator;
 	
 	static String MESSAGE_PATTERN = "[a-z]*";
+	
 	static Generator<String> messageGenerator;
-
+	
 	static String DESCRIPTION_PATTERN = "[a-z]*";
+	
 	static Generator<String> descriptionGenerator;
 	
 	static {
 		// create the generators used by the factory
 		codeGenerator = GeneratorFactory.getUniqueRegexStringGenerator(CODE_PATTERN, 4, 12, null);
-		List<String> possibleLocales = Arrays.asList(new String[] {"en", "fr", "pt", "en_US", "en_UK"});
+		List<String> possibleLocales = Arrays.asList(new String[] { "en", "fr", "pt", "en_US", "en_UK" });
 		localeGenerator = GeneratorFactory.getSampleGenerator(possibleLocales);
 		messageGenerator = GeneratorFactory.getUniqueRegexStringGenerator(MESSAGE_PATTERN, 2, 20, null);
 		descriptionGenerator = GeneratorFactory.getUniqueRegexStringGenerator(DESCRIPTION_PATTERN, 2, 20, null);
@@ -63,28 +66,26 @@ public class MockPresentationMessage extends PresentationMessage {
 		
 		return new MockPresentationMessage(code, locale, message, description);
 	}
-
+	
 	/**
-     * Auto generated method comment
-     * 
-     * @param string
-     * @return
-     */
-    public static MockPresentationMessage createMockPresentationMessage(
-            String localeSpec) {
-    	return createMockPresentationMessage(new Locale(localeSpec));
-    }
-
+	 * Auto generated method comment
+	 * 
+	 * @param string
+	 * @return
+	 */
+	public static MockPresentationMessage createMockPresentationMessage(String localeSpec) {
+		return createMockPresentationMessage(new Locale(localeSpec));
+	}
+	
 	/**
-     * Auto generated method comment
-     * 
-     * @param string
-     * @return
-     */
-    public static MockPresentationMessage createMockPresentationMessage(
-            Locale forLocale) {
-    	MockPresentationMessage mockedMessage = createMockPresentationMessage();
-    	mockedMessage.setLocale(forLocale);
-    	return mockedMessage;
-    }
+	 * Auto generated method comment
+	 * 
+	 * @param string
+	 * @return
+	 */
+	public static MockPresentationMessage createMockPresentationMessage(Locale forLocale) {
+		MockPresentationMessage mockedMessage = createMockPresentationMessage();
+		mockedMessage.setLocale(forLocale);
+		return mockedMessage;
+	}
 }

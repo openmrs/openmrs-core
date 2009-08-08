@@ -27,9 +27,8 @@ public abstract class BoxExt extends Extension {
 	public abstract String getPortletUrl();
 	
 	/**
-	 * The title is used as the title for the boxHeader.
-	 * The returned String can be either straight up plain
-	 * text or a Spring message code.
+	 * The title is used as the title for the boxHeader. The returned String can be either straight
+	 * up plain text or a Spring message code.
 	 * 
 	 * @return String title
 	 */
@@ -43,14 +42,12 @@ public abstract class BoxExt extends Extension {
 	public abstract String getContent();
 	
 	/**
-	 * Returns the required privilege in order to see this section.  Can be a 
-	 * comma delimited list of privileges.  
-	 * If the default empty string is returned, only an authenticated 
-	 * user is required
+	 * Returns the required privilege in order to see this section. Can be a comma delimited list of
+	 * privileges. If the default empty string is returned, only an authenticated user is required
 	 * 
 	 * @return Privilege string
 	 */
 	public String getRequiredPrivilege() {
 		return "";
-	}	
+	}
 }

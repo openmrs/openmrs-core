@@ -19,7 +19,6 @@ import org.openmrs.api.context.Context;
 
 /**
  *  Implementation of the stateful task that sends an email.
- *
  */
 public class SendEmailTask extends AbstractTask { 
 
@@ -28,8 +27,6 @@ public class SendEmailTask extends AbstractTask {
 
 	/** 
 	 *  Process the next form entry in the database and then remove the form entry from the database.
-	 *
-	 *
 	 */
 	public void execute() {		
 		log.info("****************************** SEND EMAIL TASK:  Executing task ...");

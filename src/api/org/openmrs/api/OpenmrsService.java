@@ -17,22 +17,17 @@ import org.openmrs.api.context.ServiceContext;
 import org.openmrs.api.impl.BaseOpenmrsService;
 
 /**
- * Base OpenMRS Service Interface
+ * Base OpenMRS Service Interface All services registered to the {@link ServiceContext} are required
+ * to implement this interface. It is recommended that all services extend the
+ * {@link BaseOpenmrsService} abstract class to buffer themselves from changes to this interface.
  * 
- * All services registered to the {@link ServiceContext} are 
- * required to implement this interface.  It is recommended
- * that all services extend the {@link BaseOpenmrsService} abstract
- * class to buffer themselves from changes to this interface.
- *
  * @see BaseOpenmrsService
  */
 public interface OpenmrsService {
-
+	
 	/**
-	 * Called when the OpenMRS service layer is initializing.
-	 * 
-	 * This occurs when a new module is loaded or during
-	 * the initial server/api start
+	 * Called when the OpenMRS service layer is initializing. This occurs when a new module is
+	 * loaded or during the initial server/api start
 	 */
 	public void onStartup();
 	

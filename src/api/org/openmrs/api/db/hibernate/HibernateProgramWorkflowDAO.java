@@ -39,10 +39,8 @@ import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.ProgramWorkflowDAO;
 
 /**
- * Hibernate specific ProgramWorkflow related functions
- * 
- * This class should not be used directly.  All calls should go through the
- * {@link org.openmrs.api.ProgramWorkflowService} methods.
+ * Hibernate specific ProgramWorkflow related functions This class should not be used directly. All
+ * calls should go through the {@link org.openmrs.api.ProgramWorkflowService} methods.
  * 
  * @see org.openmrs.api.db.ProgramWorkflowDAO
  * @see org.openmrs.api.ProgramWorkflowService
@@ -53,10 +51,12 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 
 	private SessionFactory sessionFactory;
 	
-	private HibernateProgramWorkflowDAO() { }
+	private HibernateProgramWorkflowDAO() {
+	}
 	
 	/**
 	 * Hibernate Session Factory
+	 * 
 	 * @param sessionFactory
 	 */
 	public void setSessionFactory(SessionFactory sessionFactory) { 
@@ -122,8 +122,7 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
     public PatientProgram savePatientProgram(PatientProgram patientProgram) throws DAOException {
 		if (patientProgram.getPatientProgramId() == null) {
 			sessionFactory.getCurrentSession().save(patientProgram);
-		}
-		else {
+		} else {
 			sessionFactory.getCurrentSession().merge(patientProgram);
 		}
 		return patientProgram;
@@ -137,10 +136,13 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 	}
 
 	/**
-     * @see org.openmrs.api.db.ProgramWorkflowDAO#getPatientPrograms(org.openmrs.Patient, org.openmrs.Program, java.util.Date, java.util.Date, java.util.Date, java.util.Date)
+	 * @see org.openmrs.api.db.ProgramWorkflowDAO#getPatientPrograms(org.openmrs.Patient,
+	 *      org.openmrs.Program, java.util.Date, java.util.Date, java.util.Date, java.util.Date)
      */
 	@SuppressWarnings("unchecked")
-    public List<PatientProgram> getPatientPrograms(Patient patient, Program program, Date minEnrollmentDate, Date maxEnrollmentDate, Date minCompletionDate, Date maxCompletionDate, boolean includeVoided) throws DAOException {
+	public List<PatientProgram> getPatientPrograms(Patient patient, Program program, Date minEnrollmentDate,
+	                                               Date maxEnrollmentDate, Date minCompletionDate, Date maxCompletionDate,
+	                                               boolean includeVoided) throws DAOException {
         Criteria crit = sessionFactory.getCurrentSession().createCriteria(PatientProgram.class);
         if (patient != null) {
         	crit.add(Expression.eq("patient", patient));
@@ -168,7 +170,9 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 
     /**
      * TODO: refactor this
-     * @see org.openmrs.api.db.ProgramWorkflowDAO#getPatientPrograms(org.openmrs.Cohort, java.util.Collection)
+	 * 
+	 * @see org.openmrs.api.db.ProgramWorkflowDAO#getPatientPrograms(org.openmrs.Cohort,
+	 *      java.util.Collection)
      */
     @SuppressWarnings("unchecked")
     public List<PatientProgram> getPatientPrograms(Cohort cohort, Collection<Program> programs) {
@@ -204,8 +208,7 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
     public ConceptStateConversion saveConceptStateConversion(ConceptStateConversion csc) throws DAOException {
 		if (csc.getConceptStateConversionId() == null) {
 			sessionFactory.getCurrentSession().save(csc);
-		}
-		else {
+		} else {
 			sessionFactory.getCurrentSession().merge(csc);
 		}
 		return csc;
@@ -223,7 +226,8 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
      * @see org.openmrs.api.db.ProgramWorkflowDAO#getConceptStateConversion(java.lang.Integer)
      */
 	public ConceptStateConversion getConceptStateConversion(Integer conceptStateConversionId) {
-		return (ConceptStateConversion) sessionFactory.getCurrentSession().get(ConceptStateConversion.class, conceptStateConversionId);
+		return (ConceptStateConversion) sessionFactory.getCurrentSession().get(ConceptStateConversion.class,
+		    conceptStateConversionId);
 	}
 
 	/**
@@ -234,7 +238,8 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 	}
 
 	/**
-	 * @see org.openmrs.api.db.ProgramWorkflowDAO#getConceptStateConversion(org.openmrs.ProgramWorkflow, org.openmrs.Concept)
+	 * @see org.openmrs.api.db.ProgramWorkflowDAO#getConceptStateConversion(org.openmrs.ProgramWorkflow,
+	 *      org.openmrs.Concept)
 	 */
 	public ConceptStateConversion getConceptStateConversion(ProgramWorkflow workflow, Concept trigger) {
 		ConceptStateConversion csc = null;

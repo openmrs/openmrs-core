@@ -20,59 +20,58 @@ import org.simpleframework.xml.ElementMap;
 import org.simpleframework.xml.Root;
 
 /**
- *	Report Data obtained from evaluating a ReportSchema 
- *  with a given EvaluationContext.  
- *
+ * Report Data obtained from evaluating a ReportSchema with a given EvaluationContext.
  */
 @Root
 public class ReportData {
 	
 	private ReportSchema reportSchema;
+	
 	private EvaluationContext evaluationContext;
+	
 	private Map<String, DataSet> dataSets;
-
-	public ReportData() { }
-
-	@ElementMap(required=false)
+	
+	public ReportData() {
+	}
+	
+	@ElementMap(required = false)
 	public Map<String, DataSet> getDataSets() {
-    	return dataSets;
-    }
-
-	@ElementMap(required=false)
+		return dataSets;
+	}
+	
+	@ElementMap(required = false)
 	public void setDataSets(Map<String, DataSet> dataSets) {
-    	this.dataSets = dataSets;
-    }
-
+		this.dataSets = dataSets;
+	}
+	
 	/**
-	 * Returns the EvaluationContext that was used
-	 * to obtain this ReportData.
+	 * Returns the EvaluationContext that was used to obtain this ReportData.
 	 * 
 	 * @return
 	 */
 	//@Element(required=false)
 	public EvaluationContext getEvaluationContext() {
-    	return evaluationContext;
-    }
-
+		return evaluationContext;
+	}
+	
 	/**
-	 * Saves the EvaluationContext that was used
-	 * to obtain this ReportData.
+	 * Saves the EvaluationContext that was used to obtain this ReportData.
 	 * 
 	 * @param evaluationContext
 	 */
 	//@Element(required=false)
 	public void setEvaluationContext(EvaluationContext evaluationContext) {
-    	this.evaluationContext = evaluationContext;
-    }
-		
+		this.evaluationContext = evaluationContext;
+	}
+	
 	@Element
 	public ReportSchema getReportSchema() {
-    	return reportSchema;
-    }
-
+		return reportSchema;
+	}
+	
 	@Element
 	public void setReportSchema(ReportSchema reportSchema) {
-    	this.reportSchema = reportSchema;
-    }
-
+		this.reportSchema = reportSchema;
+	}
+	
 }

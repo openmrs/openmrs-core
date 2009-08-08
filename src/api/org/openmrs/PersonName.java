@@ -77,7 +77,8 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
 	// Constructors
 
 	/** default constructor */
-	public PersonName() { }
+	public PersonName() {
+	}
 
 	/** constructor with id */
 	public PersonName(Integer personNameId) {
@@ -102,7 +103,6 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
 	 * 
 	 * @param obj PersonName to compare to
 	 * @return boolean true/false whether or not they are the same objects
-	 * 
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	public boolean equals(Object obj) {
@@ -111,10 +111,10 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
 			if (this.personNameId != null && pname.getPersonNameId() != null)
 				return (this.personNameId.equals(pname.getPersonNameId())); 
 			else {
-				return (OpenmrsUtil.nullSafeEquals(getPerson(), pname.getPerson()) &&
-						OpenmrsUtil.nullSafeEquals(getGivenName(), pname.getGivenName()) &&
-						OpenmrsUtil.nullSafeEquals(getMiddleName(), pname.getMiddleName()) &&
-						OpenmrsUtil.nullSafeEquals(getFamilyName(), pname.getFamilyName()));
+				return (OpenmrsUtil.nullSafeEquals(getPerson(), pname.getPerson())
+				        && OpenmrsUtil.nullSafeEquals(getGivenName(), pname.getGivenName())
+				        && OpenmrsUtil.nullSafeEquals(getMiddleName(), pname.getMiddleName()) && OpenmrsUtil.nullSafeEquals(
+				    getFamilyName(), pname.getFamilyName()));
 			}
 				
 		}
@@ -125,17 +125,16 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
 	 * @see java.lang.Object#hashCode()
 	 */
 	public int hashCode() {
-		if (this.getPersonNameId() == null) return super.hashCode();
+		if (this.getPersonNameId() == null)
+			return super.hashCode();
 		return this.getPersonNameId().hashCode();
 	}
 	
 	/**
-	 * Compares this PersonName object to the given otherName. This method
-	 * differs from {@link #equals(Object)} in that this method compares the
-	 * inner fields of each name for equality.
-	 * 
-	 * Note: Null/empty fields on <code>otherName</code> /will not/ cause a
-	 * false value to be returned
+	 * Compares this PersonName object to the given otherName. This method differs from
+	 * {@link #equals(Object)} in that this method compares the inner fields of each name for
+	 * equality. Note: Null/empty fields on <code>otherName</code> /will not/ cause a false value to
+	 * be returned
 	 * 
 	 * @param otherName PersonName with which to compare
 	 * @return boolean true/false whether or not they are the same names
@@ -152,8 +151,7 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
 		// loop over all of the selected methods and compare this and other
 		for (String methodName : methods) {
 			try {
-				Method method = nameClass.getMethod(methodName,
-				                                       new Class[] {});
+				Method method = nameClass.getMethod(methodName, new Class[] {});
 
 				String thisValue = (String) method.invoke(this);
 				String otherValue = (String) method.invoke(otherName);
@@ -161,11 +159,14 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
 				if (otherValue != null && otherValue.length() > 0)
 					returnValue &= otherValue.equals(thisValue);
 
-			} catch (NoSuchMethodException e) {
+			}
+			catch (NoSuchMethodException e) {
 				log.warn("No such method for comparison " + methodName, e);
-			} catch (IllegalAccessException e) {
+			}
+			catch (IllegalAccessException e) {
 				log.error("Error while comparing names", e);
-			} catch (InvocationTargetException e) {
+			}
+			catch (InvocationTargetException e) {
 				log.error("Error while comparing names", e);
 			}
 
@@ -175,9 +176,9 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
 	}
 	
 	/**
-	 * bitwise copy of the personName object.  
-	 * NOTICE: THIS WILL NOT COPY THE PATIENT OBJECT.  The PersonName.person object in
-	 * this object AND the cloned object will point at the same person
+	 * bitwise copy of the personName object. NOTICE: THIS WILL NOT COPY THE PATIENT OBJECT. The
+	 * PersonName.person object in this object AND the cloned object will point at the same person
+	 * 
 	 * @return New PersonName object
 	 */
 	public static PersonName newInstance(PersonName pn) {
@@ -559,14 +560,22 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
 	 */
 	public String toString() {
 		List<String> temp = new ArrayList<String>();
-		if (getPrefix() != null) temp.add(getPrefix());
-		if (getGivenName() != null) temp.add(getGivenName());
-		if (getMiddleName() != null) temp.add(getMiddleName());
-		if (getFamilyNamePrefix() != null) temp.add(getFamilyNamePrefix());
-		if (getFamilyName() != null) temp.add(getFamilyName());
-		if (getFamilyName2() != null) temp.add(getFamilyName2());
-		if (getFamilyNameSuffix() != null) temp.add(getFamilyNameSuffix());
-		if (getDegree() != null) temp.add(getDegree());
+		if (getPrefix() != null)
+			temp.add(getPrefix());
+		if (getGivenName() != null)
+			temp.add(getGivenName());
+		if (getMiddleName() != null)
+			temp.add(getMiddleName());
+		if (getFamilyNamePrefix() != null)
+			temp.add(getFamilyNamePrefix());
+		if (getFamilyName() != null)
+			temp.add(getFamilyName());
+		if (getFamilyName2() != null)
+			temp.add(getFamilyName2());
+		if (getFamilyNameSuffix() != null)
+			temp.add(getFamilyNameSuffix());
+		if (getDegree() != null)
+			temp.add(getDegree());
 		
 		String nameString = StringUtils.collectionToDelimitedString(temp, " ");
 		
@@ -574,9 +583,9 @@ public class PersonName implements java.io.Serializable, Cloneable, Comparable<P
 	}
 	
 	/**
-	 * TODO: the behavior of this method needs to be controlled by some sort of 
-	 * 		 global property because an implementation can define how they want
-	 * 		 their names to look (which fields to show/hide) 
+	 * TODO: the behavior of this method needs to be controlled by some sort of global property
+	 * because an implementation can define how they want their names to look (which fields to
+	 * show/hide)
 	 * 
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */

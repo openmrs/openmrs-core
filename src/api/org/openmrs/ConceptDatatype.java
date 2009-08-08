@@ -146,8 +146,7 @@ public class ConceptDatatype implements java.io.Serializable, Synchronizable {
 	}
 
 	/**
-	 * @param hl7Abbreviation
-	 *            The hl7Abbreviation to set.
+	 * @param hl7Abbreviation The hl7Abbreviation to set.
 	 */
 	@Attribute
 	public void setHl7Abbreviation(String hl7Abbreviation) {
@@ -192,20 +191,17 @@ public class ConceptDatatype implements java.io.Serializable, Synchronizable {
 	}
 
 	/**
-	 * @return <code>true</code> if datatype is coded (i.e., an identifier
-	 *         from a vocabulary)
+	 * @return <code>true</code> if datatype is coded (i.e., an identifier from a vocabulary)
 	 */
 	public boolean isCoded() {
 		return CODED.equals(getHl7Abbreviation());
 	}
 
 	/**
-	 * @return <code>true</code> if datatype is some representation of date or
-	 *         time
+	 * @return <code>true</code> if datatype is some representation of date or time
 	 */
 	public boolean isDate() {
-		return DATE.equals(getHl7Abbreviation())
-				|| DATETIME.equals(getHl7Abbreviation())
+		return DATE.equals(getHl7Abbreviation()) || DATETIME.equals(getHl7Abbreviation())
 				|| TIME.equals(getHl7Abbreviation());
 	}
 
@@ -213,8 +209,7 @@ public class ConceptDatatype implements java.io.Serializable, Synchronizable {
 	 * @return <code>true</code> if datatype is text-based
 	 */
 	public boolean isText() {
-		return TEXT.equals(getHl7Abbreviation())
-				|| DOCUMENT.equals(getHl7Abbreviation());
+		return TEXT.equals(getHl7Abbreviation()) || DOCUMENT.equals(getHl7Abbreviation());
 	}
 	
 	/**

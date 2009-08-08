@@ -16,13 +16,10 @@ package org.openmrs.patient.impl;
 import org.openmrs.patient.UnallowedIdentifierException;
 
 /**
- * The Verhoeff Check Digit Validator catches all single errors and all adjacent transpositions.  See:
- * http://www.cs.utsa.edu/~wagner/laws/verhoeff.html
- * 
- * and
- * 
- * Wagner, Neal.  "Verhoeff's Decimal Error Detection".  The Laws of Cryptography with Java Code.  p 54.  San Antonio, TX: 2003. 
- * http://www.cs.utsa.edu/~wagner/lawsbookcolor/laws.pdf
+ * The Verhoeff Check Digit Validator catches all single errors and all adjacent transpositions.
+ * See: http://www.cs.utsa.edu/~wagner/laws/verhoeff.html and Wagner, Neal.
+ * "Verhoeff's Decimal Error Detection". The Laws of Cryptography with Java Code. p 54. San Antonio,
+ * TX: 2003. http://www.cs.utsa.edu/~wagner/lawsbookcolor/laws.pdf
  */
 public class VerhoeffIdentifierValidator extends BaseHyphenatedIdentifierValidator {
 
@@ -58,12 +55,12 @@ public class VerhoeffIdentifierValidator extends BaseHyphenatedIdentifierValidat
     }
     
     /**
-     * @override to disallow numeric check digits and identifiers that are not exactly VERHOEFF_ID_LENGTH long.
+	 * @override to disallow numeric check digits and identifiers that are not exactly
+	 *           VERHOEFF_ID_LENGTH long.
      * @see org.openmrs.patient.impl.BaseHyphenatedIdentifierValidator#isValid(java.lang.String)
      */
     @Override
-	public boolean isValid(String identifier)
-    	throws UnallowedIdentifierException {
+	public boolean isValid(String identifier) throws UnallowedIdentifierException {
     	
     	if(Character.isDigit(identifier.charAt(identifier.length()-1)))
     		throw new UnallowedIdentifierException("Check digit can not be numeric.");
@@ -77,13 +74,13 @@ public class VerhoeffIdentifierValidator extends BaseHyphenatedIdentifierValidat
      * @see org.openmrs.patient.impl.BaseHyphenatedIdentifierValidator#getValidIdentifier(java.lang.String)
      */
     @Override
-	public String getValidIdentifier(String undecoratedIdentifier)
-		throws UnallowedIdentifierException {
+	public String getValidIdentifier(String undecoratedIdentifier) throws UnallowedIdentifierException {
     	
     	String result = super.getValidIdentifier(undecoratedIdentifier);
     	
     	if(undecoratedIdentifier.length() != VERHOEFF_UNDECORATED_ID_LENGTH)
-    		throw new UnallowedIdentifierException("Undecorated identifier must be " + VERHOEFF_UNDECORATED_ID_LENGTH + " digits long.");
+			throw new UnallowedIdentifierException("Undecorated identifier must be " + VERHOEFF_UNDECORATED_ID_LENGTH
+			        + " digits long.");
     	
     	return result;
     }
@@ -121,17 +118,10 @@ public class VerhoeffIdentifierValidator extends BaseHyphenatedIdentifierValidat
     private static final int[] F0 = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
     private static final int[] F1 = {1, 5, 7, 6, 2, 8, 3, 0, 9, 4};
     
-    private static final int[][] op= {
-        {0, 1, 2, 3, 4, 5, 6, 7, 8, 9},
-        {1, 2, 3, 4, 0, 6, 7, 8, 9, 5},
-        {2, 3, 4, 0, 1, 7, 8, 9, 5, 6},
-        {3, 4, 0, 1, 2, 8, 9, 5, 6, 7},
-        {4, 0, 1, 2, 3, 9, 5, 6, 7, 8},
-        {5, 9, 8, 7, 6, 0, 4, 3, 2 ,1},
-        {6, 5, 9, 8, 7, 1, 0, 4, 3, 2},
-        {7, 6, 5, 9, 8, 2, 1, 0, 4, 3},
-        {8, 7, 6, 5, 9, 3, 2, 1, 0, 4},
-        {9, 8, 7, 6, 5, 4, 3, 2, 1, 0} };
+	private static final int[][] op = { { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }, { 1, 2, 3, 4, 0, 6, 7, 8, 9, 5 },
+	        { 2, 3, 4, 0, 1, 7, 8, 9, 5, 6 }, { 3, 4, 0, 1, 2, 8, 9, 5, 6, 7 }, { 4, 0, 1, 2, 3, 9, 5, 6, 7, 8 },
+	        { 5, 9, 8, 7, 6, 0, 4, 3, 2, 1 }, { 6, 5, 9, 8, 7, 1, 0, 4, 3, 2 }, { 7, 6, 5, 9, 8, 2, 1, 0, 4, 3 },
+	        { 8, 7, 6, 5, 9, 3, 2, 1, 0, 4 }, { 9, 8, 7, 6, 5, 4, 3, 2, 1, 0 } };
    
      private static final int[] inv = {0, 4, 3, 2, 1, 5, 6, 7, 8, 9};
 }

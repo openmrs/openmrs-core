@@ -35,18 +35,22 @@ import org.openmrs.util.OpenmrsUtil;
  * @deprecated Use org.openmrs.reporting.DrugOrderFilter instead
  */
 public class DrugOrderPatientFilter extends AbstractPatientFilter implements PatientFilter, Comparable<DrugOrderPatientFilter> {
-
+	
 	protected transient final Log log = LogFactory.getLog(getClass());
-    private static final long serialVersionUID = 1L;
+	
+	private static final long serialVersionUID = 1L;
 	
 	private Integer drugId; // replace this with drug
+	
 	private Concept drugConcept;
+	
 	private GroupMethod groupMethod;
-	private Date onDate; 
+	
+	private Date onDate;
 	
 	public DrugOrderPatientFilter() {
 		super.setType("Patient Filter");
-		super.setSubType("Drug Order Patient Filter");	
+		super.setSubType("Drug Order Patient Filter");
 	}
 	
 	public boolean isReadyToRun() {
@@ -61,41 +65,42 @@ public class DrugOrderPatientFilter extends AbstractPatientFilter implements Pat
 		if (groupMethod == GroupMethod.NONE)
 			return -1;
 		else
-			return (drugId == null ? 0 : drugId) + (onDate == null ? 0 : (int) (System.currentTimeMillis() - onDate.getTime()));
+			return (drugId == null ? 0 : drugId)
+			        + (onDate == null ? 0 : (int) (System.currentTimeMillis() - onDate.getTime()));
 	}
 	
 	public GroupMethod getGroupMethod() {
 		return groupMethod;
 	}
-
+	
 	public void setGroupMethod(GroupMethod groupMethod) {
 		this.groupMethod = groupMethod;
 	}
-
+	
 	public java.util.Date getOnDate() {
 		return onDate;
 	}
-
+	
 	public void setOnDate(Date onDate) {
 		this.onDate = onDate;
 	}
-
+	
 	public Integer getDrugId() {
 		return drugId;
 	}
-
+	
 	public void setDrugId(Integer drugId) {
 		this.drugId = drugId;
 	}
-
+	
 	public Concept getDrugConcept() {
 		return drugConcept;
 	}
-
+	
 	public void setDrugConcept(Concept drugConcept) {
 		this.drugConcept = drugConcept;
 	}
-
+	
 	public Cohort filter(Cohort input, EvaluationContext context) {
 		Set<Integer> drugIds = new HashSet<Integer>();
 		if (groupMethod != null && groupMethod == GroupMethod.NONE) {
@@ -113,7 +118,7 @@ public class DrugOrderPatientFilter extends AbstractPatientFilter implements Pat
 		PatientSetService service = Context.getPatientSetService();
 		return service.getPatientsHavingDrugOrder(input == null ? null : input.getMemberIds(), drugIds, onDate);
 	}
-
+	
 	public Cohort filterInverse(Cohort input, EvaluationContext context) {
 		Set<Integer> drugIds = new HashSet<Integer>();
 		if (groupMethod != null && groupMethod == GroupMethod.NONE) {
@@ -158,5 +163,5 @@ public class DrugOrderPatientFilter extends AbstractPatientFilter implements Pat
 			sb.append(" on " + getOnDate());
 		return sb.toString();
 	}
-
+	
 }

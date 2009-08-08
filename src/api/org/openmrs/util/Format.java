@@ -27,11 +27,13 @@ import org.openmrs.api.context.Context;
 public class Format {
 	
 	private static Log log = LogFactory.getLog(Format.class);
-
-	public enum FORMAT_TYPE {DATE, TIME, TIMESTAMP};
+	
+	public enum FORMAT_TYPE {
+		DATE, TIME, TIMESTAMP
+	};
 	
 	public static String formatPercentage(double pct) {
-		return NumberFormat.getPercentInstance().format(pct); 
+		return NumberFormat.getPercentInstance().format(pct);
 	}
 	
 	public static String formatPercentage(Number pct) {
@@ -41,9 +43,9 @@ public class Format {
 			return NumberFormat.getPercentInstance().format(pct.doubleValue());
 		}
 	}
-
+	
 	public static String format(double d) {
-		return "" + ((d == (int) d) ? (int) d : d); 
+		return "" + ((d == (int) d) ? (int) d : d);
 	}
 	
 	public static String format(Double d) {
@@ -69,9 +71,10 @@ public class Format {
 		
 		if (type == FORMAT_TYPE.TIMESTAMP)
 			dateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, locale);
-		else if(type == FORMAT_TYPE.TIME)
+		else if (type == FORMAT_TYPE.TIME)
 			dateFormat = DateFormat.getTimeInstance(DateFormat.MEDIUM, locale);
-		else //if (type == FORMAT_TYPE.DATE) (default)
+		else
+			//if (type == FORMAT_TYPE.DATE) (default)
 			dateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM, locale);
 		
 		return date == null ? "" : dateFormat.format(date);

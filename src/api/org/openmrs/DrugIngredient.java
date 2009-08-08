@@ -17,7 +17,6 @@ import org.openmrs.synchronization.Synchronizable;
 
 /**
  * DrugIngredient
- * 
  */
 public class DrugIngredient implements java.io.Serializable, Synchronizable {
 
@@ -55,14 +54,14 @@ public class DrugIngredient implements java.io.Serializable, Synchronizable {
 	public boolean equals(Object obj) {
 		if (obj instanceof DrugIngredient) {
 			DrugIngredient c = (DrugIngredient)obj;
-			return (this.drug.equals(c.getDrug()) &&
-					this.ingredient.equals(c.getIngredient()));
+			return (this.drug.equals(c.getDrug()) && this.ingredient.equals(c.getIngredient()));
 		}
 		return false;
 	}
 	
 	public int hashCode() {
-		if (this.getDrug() == null || this.getIngredient() == null) return super.hashCode();
+		if (this.getDrug() == null || this.getIngredient() == null)
+			return super.hashCode();
 		return this.getDrug().hashCode() + this.getIngredient().hashCode();
 	}
 
@@ -76,8 +75,7 @@ public class DrugIngredient implements java.io.Serializable, Synchronizable {
 	}
 
 	/**
-	 * @param drug
-	 *            The drug to set.
+	 * @param drug The drug to set.
 	 */
 	public void setDrug(Concept drug) {
 		this.drug = drug;
@@ -91,8 +89,7 @@ public class DrugIngredient implements java.io.Serializable, Synchronizable {
 	}
 
 	/**
-	 * @param ingredient
-	 *            The ingredient to set.
+	 * @param ingredient The ingredient to set.
 	 */
 	public void setIngredient(Concept ingredient) {
 		this.ingredient = ingredient;

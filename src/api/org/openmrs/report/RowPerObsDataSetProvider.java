@@ -27,10 +27,11 @@ import org.openmrs.api.context.Context;
  *
  */
 public class RowPerObsDataSetProvider implements DataSetProvider {
-
+	
 	protected Log log = LogFactory.getLog(this.getClass());
 	
-	public RowPerObsDataSetProvider() { }
+	public RowPerObsDataSetProvider() {
+	}
 	
 	/**
 	 * @see org.openmrs.report.DataSetProvider#canEvaluate(org.openmrs.report.DataSetDefinition)
@@ -38,29 +39,31 @@ public class RowPerObsDataSetProvider implements DataSetProvider {
 	public boolean canEvaluate(DataSetDefinition dataSetDefinition) {
 		return dataSetDefinition instanceof RowPerObsDataSetDefinition;
 	}
-
-	/**
-	 * @see org.openmrs.report.DataSetProvider#evaluate(org.openmrs.report.DataSetDefinition, org.openmrs.Cohort, org.openmrs.report.EvaluationContext)
-	 */
-	public DataSet evaluate(DataSetDefinition dataSetDefinition,
-	        Cohort inputCohort, EvaluationContext evalContext) {
 	
+	/**
+	 * @see org.openmrs.report.DataSetProvider#evaluate(org.openmrs.report.DataSetDefinition,
+	 *      org.openmrs.Cohort, org.openmrs.report.EvaluationContext)
+	 */
+	public DataSet evaluate(DataSetDefinition dataSetDefinition, Cohort inputCohort, EvaluationContext evalContext) {
+		
 		RowPerObsDataSetDefinition definition = (RowPerObsDataSetDefinition) dataSetDefinition;
 		Cohort patients = inputCohort;
 		if (definition.getFilter() != null) {
 			if (patients != null)
-				patients = Cohort.intersect(patients, Context.getCohortService().evaluate(definition.getFilter(), evalContext));
+				patients = Cohort.intersect(patients, Context.getCohortService().evaluate(definition.getFilter(),
+				    evalContext));
 			else
 				patients = Context.getCohortService().evaluate(definition.getFilter(), evalContext);
 		}
-
+		
 		RowPerObsDataSet ret = new RowPerObsDataSet();
 		ret.setDefinition(definition);
 		ret.setEvaluationContext(evalContext);
 		List<Concept> concepts = new ArrayList<Concept>(definition.getQuestions());
-		List<Obs> list = Context.getObsService().getObservations(patients, concepts, definition.getFromDate(), definition.getToDate());
+		List<Obs> list = Context.getObsService().getObservations(patients, concepts, definition.getFromDate(),
+		    definition.getToDate());
 		ret.setData(list);
 		return ret;
 	}
-
+	
 }

@@ -14,9 +14,9 @@
 package org.openmrs.logic.op;
 
 public class After implements Operator {
-
-    public String toString() {
-        return "AFTER";
-    }
-    
+	
+	public String toString() {
+		return "AFTER";
+	}
+	
 }

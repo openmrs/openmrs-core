@@ -24,42 +24,43 @@ import org.openmrs.notification.AlertService;
 import org.openmrs.util.OpenmrsConstants;
 
 public class DWRAlertService {
-
+	
 	protected final Log log = LogFactory.getLog(getClass());
-
+	
 	/**
-	 * Calls the corresponding AlertService.getAlertsByUser(null) method
-	 * to get alerts for the current user or for the authenticated role
+	 * Calls the corresponding AlertService.getAlertsByUser(null) method to get alerts for the
+	 * current user or for the authenticated role
 	 * 
 	 * @return
 	 */
 	public List<AlertListItem> getAlerts() {
-
+		
 		// The list of AlertListItems that we will return
 		List<AlertListItem> alerts = new Vector<AlertListItem>();
-
+		
 		// get out context
 		try {
 			AlertService as = Context.getAlertService();
-
+			
 			// loop over the Alerts to create AlertListItems
 			for (Alert a : as.getAlertsByUser(null)) {
 				alerts.add(new AlertListItem(a));
 			}
-
-		} catch (Exception e) {
+			
+		}
+		catch (Exception e) {
 			log.error("Error getting alerts", e);
 		}
 		return alerts;
 	}
-
+	
 	/**
 	 * Calls the corresponding AlertService.markAlertRead(Alert) method
 	 * 
 	 * @param alertId
 	 */
 	public void markAlertRead(Integer alertId) {
-
+		
 		try {
 			AlertService as = Context.getAlertService();
 			
@@ -78,7 +79,8 @@ public class DWRAlertService {
 			if (alert != null)
 				as.saveAlert(alert.markAlertRead());
 			
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			log.error("Error while marking alert '" + alertId + "' as read", e);
 		}
 		finally {

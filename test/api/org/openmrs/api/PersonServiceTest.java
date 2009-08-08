@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Patient;
@@ -36,21 +37,24 @@ import org.openmrs.RelationshipType;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.Verifies;
 
 /**
- * This class tests methods in the PersonService class.
- * 
- * TODO: Test all methods in the PersonService class.
+ * This class tests methods in the PersonService class. TODO: Test all methods in the PersonService
+ * class. TODO: Test all methods in the PersonService class.
  */
 public class PersonServiceTest extends BaseContextSensitiveTest {
-
+	
 	protected static final String CREATE_PATIENT_XML = "org/openmrs/api/include/PatientServiceTest-createPatient.xml";
+	
 	protected static final String CREATE_RELATIONSHIP_XML = "org/openmrs/api/include/PersonServiceTest-createRelationship.xml";
-
+	
 	protected PatientService ps = null;
+	
 	protected AdministrationService adminService = null;
+	
 	protected PersonService personService = null;
-
+	
 	@Before
 	public void onSetUpInTransaction() throws Exception {
 		if (ps == null) {
@@ -59,11 +63,11 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 			personService = Context.getPersonService();
 		}
 	}
-
+	
 	/**
-	 * Tests a voided relationship between personA and Person B to see if it is
-	 * still listed when retrieving unvoided relationships for personA and if it is
-	 * still listed when retrieving unvoided relationships for personB.
+	 * Tests a voided relationship between personA and Person B to see if it is still listed when
+	 * retrieving unvoided relationships for personA and if it is still listed when retrieving
+	 * unvoided relationships for personB.
 	 * 
 	 * @throws Exception
 	 */
@@ -71,7 +75,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	public void shouldGetUnvoidedRelationships() throws Exception {
 		executeDataSet(CREATE_PATIENT_XML);
 		executeDataSet(CREATE_RELATIONSHIP_XML);
-
+		
 		// Create Patient#3.
 		Patient patient = new Patient();
 		PersonName pName = new PersonName();
@@ -109,14 +113,14 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		sibling.setRelationshipType(personService.getRelationshipType(4));
 		// relationship.setCreator(Context.getUserService().getUser(1));
 		personService.saveRelationship(sibling);
-
+		
 		// Make Patient#3 the Doctor of Patient#2.
 		Relationship doctor = new Relationship();
 		doctor.setPersonB(ps.getPatient(2));
 		doctor.setPersonA(patient);
 		doctor.setRelationshipType(personService.getRelationshipType(3));
 		personService.saveRelationship(doctor);
-
+		
 		// Get unvoided relationships before voiding any.
 		Person p = personService.getPerson(2);
 		List<Relationship> aRels = personService.getRelationshipsByPerson(p);
@@ -130,18 +134,17 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		rTypeTmp = personService.getRelationshipTypeByName("booya");
 		assertNull(rTypeTmp);
 		
-
 		// Uncomment for console output.
 		//System.out.println("Relationships before voiding all:");
 		//System.out.println(aRels);
 		//System.out.println(bRels);
-
+		
 		// Void all relationships.
 		List<Relationship> allRels = personService.getAllRelationships();
 		for (Relationship r : allRels) {
 			personService.voidRelationship(r, "Because of a JUnit test.");
 		}
-
+		
 		// Get unvoided relationships after voiding all of them.
 		List<Relationship> updatedARels = personService.getRelationshipsByPerson(p);
 		List<Relationship> updatedBRels = personService.getRelationshipsByPerson(patient);
@@ -149,14 +152,13 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		//System.out.println("Relationships after voiding all:");
 		//System.out.println(updatedARels);
 		//System.out.println(updatedBRels);
-
+		
 		// Neither Patient#2 or Patient#3 should have any relationships now.
 		assertEquals(updatedARels, updatedBRels);
 	}
 	
 	/**
-	 * This test should get the first/last name out of a string into a
-	 * PersonName object.
+	 * This test should get the first/last name out of a string into a PersonName object.
 	 * 
 	 * @throws Exception
 	 */
@@ -174,9 +176,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies savePersonAttributeType
-	 * 	test = set the date created and creator on new
-	 * 
+	 * @verifies savePersonAttributeType test = set the date created and creator on new
 	 * @throws Exception
 	 */
 	@Test
@@ -194,9 +194,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies savePersonAttributeType
-	 * 	test = set the date changed and changed by on update
-	 * 
+	 * @verifies savePersonAttributeType test = set the date changed and changed by on update
 	 * @throws Exception
 	 */
 	@Test
@@ -213,5 +211,98 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		assertEquals(new User(1), pat.getChangedBy());
 		assertNotNull(pat.getDateChanged());
 	}
-	 
+	
+	/**
+	 * @see {@link PersonService#getSimilarPeople(String,Integer,String)}
+	 */
+	@Test
+	@Verifies(value = "should accept greater than three names", method = "getSimilarPeople(String,Integer,String)")
+	public void getSimilarPeople_shouldAcceptGreaterThanThreeNames() throws Exception {
+		executeDataSet("org/openmrs/api/include/PersonServiceTest-names.xml");
+		Set<Person> matches = Context.getPersonService().getSimilarPeople("Darius Graham Jazayeri Junior", 1979, "M");
+		Assert.assertEquals(2, matches.size());
+		Assert.assertTrue(matches.contains(new Person(1006)));
+		Assert.assertTrue(matches.contains(new Person(1007)));
+	}
+	
+	/**
+	 * @see {@link PersonService#getSimilarPeople(String,Integer,String)}
+	 */
+	@Test
+	@Verifies(value = "should match single search to any name part", method = "getSimilarPeople(String,Integer,String)")
+	public void getSimilarPeople_shouldMatchSingleSearchToAnyNamePart() throws Exception {
+		executeDataSet("org/openmrs/api/include/PersonServiceTest-names.xml");
+		Set<Person> matches = Context.getPersonService().getSimilarPeople("Darius", 1979, "M");
+		Assert.assertEquals(9, matches.size());
+		Assert.assertTrue(matches.contains(new Person(1000)));
+		Assert.assertTrue(matches.contains(new Person(1001)));
+		Assert.assertTrue(matches.contains(new Person(1002)));
+		Assert.assertTrue(matches.contains(new Person(1003)));
+		Assert.assertTrue(matches.contains(new Person(1004)));
+		Assert.assertTrue(matches.contains(new Person(1005)));
+		Assert.assertTrue(matches.contains(new Person(1006)));
+		Assert.assertTrue(matches.contains(new Person(1007)));
+		Assert.assertTrue(matches.contains(new Person(1008)));
+	}
+	
+	/**
+	 * @see {@link PersonService#getSimilarPeople(String,Integer,String)}
+	 */
+	@Test
+	@Verifies(value = "should match two word search to any name part", method = "getSimilarPeople(String,Integer,String)")
+	public void getSimilarPeople_shouldMatchTwoWordSearchToAnyNamePart() throws Exception {
+		executeDataSet("org/openmrs/api/include/PersonServiceTest-names.xml");
+		Set<Person> matches = Context.getPersonService().getSimilarPeople("Darius Graham", 1979, "M");
+		Assert.assertEquals(6, matches.size());
+		Assert.assertTrue(matches.contains(new Person(1000)));
+		Assert.assertTrue(matches.contains(new Person(1003)));
+		Assert.assertTrue(matches.contains(new Person(1004)));
+		Assert.assertTrue(matches.contains(new Person(1005)));
+		Assert.assertTrue(matches.contains(new Person(1006)));
+		Assert.assertTrue(matches.contains(new Person(1007)));
+	}
+	
+	/**
+	 * @see {@link PersonService#getSimilarPeople(String,Integer,String)}
+	 */
+	@Test
+	@Verifies(value = "should match three word search to any name part", method = "getSimilarPeople(String,Integer,String)")
+	public void getSimilarPeople_shouldMatchThreeWordSearchToAnyNamePart() throws Exception {
+		executeDataSet("org/openmrs/api/include/PersonServiceTest-names.xml");
+		Set<Person> matches = Context.getPersonService().getSimilarPeople("Darius Graham Jazayeri", 1979, "M");
+		Assert.assertEquals(3, matches.size());
+		Assert.assertTrue(matches.contains(new Person(1003)));
+		Assert.assertTrue(matches.contains(new Person(1006)));
+		Assert.assertTrue(matches.contains(new Person(1007)));
+	}
+	
+	/**
+	 * @see {@link PersonService#getPeople(String,Boolean)}
+	 */
+	@Test
+	@Verifies(value = "should match search to familyName2", method = "getPeople(String,Boolean)")
+	public void getPeople_shouldMatchSearchToFamilyName2() throws Exception {
+		executeDataSet("org/openmrs/api/include/PersonServiceTest-extranames.xml");
+		
+		List<Person> people = Context.getPersonService().getPeople("Johnson", false);
+		Assert.assertEquals(3, people.size());
+		Assert.assertTrue(people.contains(new Patient(2)));
+		Assert.assertTrue(people.contains(new Patient(4)));
+		Assert.assertTrue(people.contains(new Patient(5)));
+	}
+	
+	/**
+	 * @see {@link PersonService#getSimilarPeople(String,Integer,String)}
+	 */
+	@Test
+	@Verifies(value = "should match search to familyName2", method = "getSimilarPeople(String,Integer,String)")
+	public void getSimilarPeople_shouldMatchSearchToFamilyName2() throws Exception {
+		executeDataSet("org/openmrs/api/include/PersonServiceTest-extranames.xml");
+		
+		Set<Person> people = Context.getPersonService().getSimilarPeople("Johnson", null, "M");
+		Assert.assertEquals(2, people.size());
+		Assert.assertTrue(people.contains(new Patient(2)));
+		Assert.assertTrue(people.contains(new Patient(4)));
+	}
+	
 }

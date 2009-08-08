@@ -41,12 +41,10 @@ import org.openmrs.order.OrderUtil;
 import org.openmrs.order.RegimenSuggestion;
 
 /**
- * Default implementation of the Order-related services class.
- * 
- * This method should not be invoked by itself.  Spring injection is used
- * to inject this implementation into the ServiceContext.  Which 
- * implementation is injected is determined by the spring application 
- * context file: /metadata/api/spring/applicationContext.xml
+ * Default implementation of the Order-related services class. This method should not be invoked by
+ * itself. Spring injection is used to inject this implementation into the ServiceContext. Which
+ * implementation is injected is determined by the spring application context file:
+ * /metadata/api/spring/applicationContext.xml
  * 
  * @see org.openmrs.api.OrderService
  */
@@ -150,7 +148,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 
 	/**
-	 * @see org.openmrs.api.OrderService#discontinueOrder(org.openmrs.Order, org.openmrs.Concept, java.util.Date)
+	 * @see org.openmrs.api.OrderService#discontinueOrder(org.openmrs.Order, org.openmrs.Concept,
+	 *      java.util.Date)
 	 */
 	public Order discontinueOrder(Order order, Concept discontinueReason, Date discontinueDate) throws APIException {
 		order.setDiscontinued(Boolean.TRUE);
@@ -246,7 +245,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	/**
 	 * TODO: Refactor, generalize, or remove this method
 	 * 
-	 * @see org.openmrs.api.OrderService#createOrdersAndEncounter(org.openmrs.Patient, java.util.Collection)
+	 * @see org.openmrs.api.OrderService#createOrdersAndEncounter(org.openmrs.Patient,
+	 *      java.util.Collection)
 	 */
 	public void createOrdersAndEncounter(Patient p, Collection<Order> orders) throws APIException {
 
@@ -308,8 +308,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	/**
      * @see org.openmrs.api.OrderService#getOrder(java.lang.Integer, java.lang.Class)
      */
-    public <o extends Order> o getOrder(Integer orderId, Class<o> orderClassType)
-            throws APIException {
+	public <o extends Order> o getOrder(Integer orderId, Class<o> orderClassType) throws APIException {
     	return dao.getOrder(orderId, orderClassType);
 	}
 
@@ -328,14 +327,16 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
-     * @see org.openmrs.api.OrderService#getOrders(java.lang.Class, java.util.List, java.util.List, org.openmrs.api.OrderService.ORDER_STATUS, java.util.List, java.util.List, java.util.List)
+	 * @see org.openmrs.api.OrderService#getOrders(java.lang.Class, java.util.List, java.util.List,
+	 *      org.openmrs.api.OrderService.ORDER_STATUS, java.util.List, java.util.List,
+	 *      java.util.List)
      */
-    public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType,
-            List<Patient> patients, List<Concept> concepts,
-            ORDER_STATUS status, List<User> orderers,
+	public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
+	                                               List<Concept> concepts, ORDER_STATUS status, List<User> orderers,
             List<Encounter> encounters, List<OrderType> orderTypes) {
     	if (orderClassType == null)
-    		throw new APIException("orderClassType cannot be null.  An order type of Order.class or DrugOrder.class is required");
+			throw new APIException(
+			        "orderClassType cannot be null.  An order type of Order.class or DrugOrder.class is required");
     	
     	if (patients == null)
     		patients = new Vector<Patient>();
@@ -401,11 +402,11 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
-     * @see org.openmrs.api.OrderService#getDrugOrdersByPatient(org.openmrs.Patient, org.openmrs.api.OrderService.ORDER_STATUS, boolean)
+	 * @see org.openmrs.api.OrderService#getDrugOrdersByPatient(org.openmrs.Patient,
+	 *      org.openmrs.api.OrderService.ORDER_STATUS, boolean)
      */
     @SuppressWarnings("unchecked")
-    public List<DrugOrder> getDrugOrdersByPatient(Patient patient,
-            ORDER_STATUS orderStatus, boolean includeVoided) {
+	public List<DrugOrder> getDrugOrdersByPatient(Patient patient, ORDER_STATUS orderStatus, boolean includeVoided) {
 		if (patient == null)
 			throw new APIException("Unable to get drug orders if not given a patient");
 		
@@ -425,9 +426,12 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		List<DrugOrder> ret = new ArrayList<DrugOrder>();
 		
 				for (DrugOrder drugOrder : drugOrders) {
-					if ( orderStatus == ORDER_STATUS.CURRENT && drugOrder.isCurrent() ) ret.add(drugOrder);
-					else if ( orderStatus == ORDER_STATUS.NOTVOIDED && !drugOrder.getVoided() ) ret.add(drugOrder);
-					else if ( orderStatus == ORDER_STATUS.COMPLETE && drugOrder.isDiscontinued() ) ret.add(drugOrder);
+					if (orderStatus == ORDER_STATUS.CURRENT && drugOrder.isCurrent())
+						ret.add(drugOrder);
+					else if (orderStatus == ORDER_STATUS.NOTVOIDED && !drugOrder.getVoided())
+						ret.add(drugOrder);
+					else if (orderStatus == ORDER_STATUS.COMPLETE && drugOrder.isDiscontinued())
+						ret.add(drugOrder);
 				}
 				
 				return ret;
@@ -439,7 +443,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 		
 	/**
-     * @see org.openmrs.api.OrderService#getDrugOrdersByPatient(org.openmrs.Patient, org.openmrs.api.OrderService.ORDER_STATUS)
+	 * @see org.openmrs.api.OrderService#getDrugOrdersByPatient(org.openmrs.Patient,
+	 *      org.openmrs.api.OrderService.ORDER_STATUS)
 	 */
     public List<DrugOrder> getDrugOrdersByPatient(Patient patient, ORDER_STATUS orderStatus) {
 	    return getDrugOrdersByPatient(patient, orderStatus, false);
@@ -485,7 +490,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 				}
 				
 	/**
-	 * 
 	 * @see org.openmrs.api.OrderService#getStandardRegimens()
 	 */
 	public List<RegimenSuggestion> getStandardRegimens () {
@@ -494,7 +498,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		
 		try {
 			dos = DrugOrderSupport.getInstance();
-		} catch ( Exception e ) {
+		}
+		catch (Exception e) {
 			log.error("Error getting instance of DrugOrderSupport object", e);
 		}
 		
@@ -511,15 +516,18 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @see org.openmrs.api.OrderService#getDrugSetsByConcepts(java.util.List, java.util.List)
 	 * @deprecated use {@link OrderUtil#getDrugSetsByConcepts(List, List)}
 	 */
-	public Map<Concept,List<DrugOrder>> getDrugSetsByConcepts(List<DrugOrder> drugOrders, List<Concept> drugSets) throws APIException {
+	public Map<Concept, List<DrugOrder>> getDrugSetsByConcepts(List<DrugOrder> drugOrders, List<Concept> drugSets)
+	                                                                                                              throws APIException {
 		return OrderUtil.getDrugSetsByConcepts(drugOrders, drugSets);
 				}
 
 	/**
-	 * @see org.openmrs.api.OrderService#getDrugSetsByDrugSetIdList(java.util.List, java.lang.String, java.lang.String)
+	 * @see org.openmrs.api.OrderService#getDrugSetsByDrugSetIdList(java.util.List,
+	 *      java.lang.String, java.lang.String)
 	 * @deprecated use {@link OrderUtil#getDrugSetsByDrugSetIdList(List, String, String)}
 	 */
-	public Map<String, List<DrugOrder>> getDrugSetsByDrugSetIdList(List<DrugOrder> orderList, String drugSetIdList, String delimiter) {
+	public Map<String, List<DrugOrder>> getDrugSetsByDrugSetIdList(List<DrugOrder> orderList, String drugSetIdList,
+	                                                               String delimiter) {
 		return OrderUtil.getDrugSetsByDrugSetIdList(orderList, drugSetIdList, delimiter);
 					}
 			
@@ -532,7 +540,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 		
 	/**
-	 * @see org.openmrs.api.OrderService#discontinueDrugSet(org.openmrs.Patient, java.lang.String, org.openmrs.Concept, java.util.Date)
+	 * @see org.openmrs.api.OrderService#discontinueDrugSet(org.openmrs.Patient, java.lang.String,
+	 *      org.openmrs.Concept, java.util.Date)
 	 * @deprecated use {@link OrderUtil#discontinueDrugSet(Patient, String, Concept, Date)}
 	 */
 	public void discontinueDrugSet(Patient patient, String drugSetId, Concept discontinueReason, Date discontinueDate) {
@@ -540,7 +549,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 
 	/**
-	 * @see org.openmrs.api.OrderService#voidDrugSet(org.openmrs.Patient, java.lang.String, java.lang.String, int)
+	 * @see org.openmrs.api.OrderService#voidDrugSet(org.openmrs.Patient, java.lang.String,
+	 *      java.lang.String, int)
 	 * @deprecated use {@link OrderUtil#voidDrugSet(Patient, String, String, ORDER_STATUS)}
 	 */
 	public void voidDrugSet(Patient patient, String drugSetId, String voidReason, int whatToVoid) {
@@ -548,7 +558,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#discontinueAllOrders(org.openmrs.Patient, org.openmrs.Concept, java.util.Date)
+	 * @see org.openmrs.api.OrderService#discontinueAllOrders(org.openmrs.Patient,
+	 *      org.openmrs.Concept, java.util.Date)
 	 * @deprecated use {@link OrderUtil#discontinueAllOrders(Patient, Concept, Date)}
 	 */
 	public void discontinueAllOrders(Patient patient, Concept discontinueReason, Date discontinueDate) {
@@ -556,10 +567,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 
 	/**
-	 * Convenience method to convert between the old integer Order status and the
-	 * new enumeration ORDER_STATUS.
-	 * 
-	 * This method can be removed when all deprecated methods using the Integer order
+	 * Convenience method to convert between the old integer Order status and the new enumeration
+	 * ORDER_STATUS. This method can be removed when all deprecated methods using the Integer order
 	 * status are removed
 	 * 
 	 * @param oldOrderStatus

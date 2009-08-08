@@ -42,12 +42,9 @@ import org.openmrs.util.OpenmrsUtil;
  *
  */
 public class PatientSearchTest extends BaseContextSensitiveTest {
-
+	
 	/**
-	 * Set up the database with the initial dataset before every test method
-	 * in this class.
-	 * 
-	 * 
+	 * Set up the database with the initial dataset before every test method in this class.
 	 */
 	@Before
 	public void runBeforeEachTest() throws Exception {
@@ -93,9 +90,8 @@ public class PatientSearchTest extends BaseContextSensitiveTest {
 			search.setFilterClass(ObsPatientFilter.class);
 			List<SearchArgument> args = new ArrayList<SearchArgument>();
 			args.add(new SearchArgument("timeModifier", "ANY", PatientSetService.TimeModifier.class));
-			args.add(new SearchArgument("question",
-			                            Context.getConceptService().getConceptByName("CD4 COUNT").getConceptId().toString(),
-			                            Concept.class));
+			args.add(new SearchArgument("question", Context.getConceptService().getConceptByName("CD4 COUNT").getConceptId()
+			        .toString(), Concept.class));
 			args.add(new SearchArgument("withinLastDays", "${howManyDays}", Integer.class));
 			search.setArguments(args);
 		}

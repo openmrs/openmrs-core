@@ -16,9 +16,7 @@ package org.openmrs.messagesource.impl;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -34,6 +32,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.messagesource.MutableMessageSource;
 import org.openmrs.messagesource.PresentationMessage;
 import org.openmrs.util.LocaleUtility;
+import org.openmrs.util.OpenmrsUtil;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -41,19 +40,18 @@ import org.springframework.context.support.ReloadableResourceBundleMessageSource
 import org.springframework.core.io.Resource;
 
 /**
- * ResourceBundleMessageSource extends ReloadableResourceBundleMessageSource to 
- * provide the additional features of a MutableMessageSource.  
- * 
+ * ResourceBundleMessageSource extends ReloadableResourceBundleMessageSource to provide the
+ * additional features of a MutableMessageSource.
  */
-public class MutableResourceBundleMessageSource extends ReloadableResourceBundleMessageSource
-	implements MutableMessageSource, ApplicationContextAware {
+public class MutableResourceBundleMessageSource extends ReloadableResourceBundleMessageSource implements MutableMessageSource, ApplicationContextAware {
 	
 	private static final String PROPERTIES_FILE_COMMENT = "OpenMRS Application Messages";
 
 	private static Log log = LogFactory.getLog(MutableResourceBundleMessageSource.class);
 	private ApplicationContext applicationContext;
 	
-	/** Local reference to basenames used to search for properties files.
+	/**
+	 * Local reference to basenames used to search for properties files.
 	 */
 	private String[] basenames = new String[0];
 
@@ -71,8 +69,8 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 	}
 	
 	/**
-	 * This method looks at the current property files and deduces what
-	 * locales are available from those
+	 * This method looks at the current property files and deduces what locales are available from
+	 * those
 	 * 
 	 * @see #getLocales()
 	 * @see #findPropertiesFiles()
@@ -104,13 +102,9 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 	}
 
 	/**
-     * Utility method for deriving a locale from a filename, presumed
-     * to have an embedded locale specification near the end.
-     * 
-     * For instance messages_it.properties
-     * 
-     * if the filename is messages.properties, the Locale is presumed to 
-     * be the default set for Java
+	 * Utility method for deriving a locale from a filename, presumed to have an embedded locale
+	 * specification near the end. For instance messages_it.properties if the filename is
+	 * messages.properties, the Locale is presumed to be the default set for Java
      * 
      * @param filename the name to parse
      * @return Locale derived from the given string
@@ -119,16 +113,15 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
     	Locale parsedLocale = null;
     	
     	// trim off leading basename
-		for (String basename : basenames)
-		{
+		for (String basename : basenames) {
 			File basefilename = new File(basename);
 			basename = basefilename.getPath();
 			
 			int indexOfLastPart = basename.lastIndexOf(File.separatorChar) + 1;
-			if (indexOfLastPart > 0) basename = basename.substring(indexOfLastPart);
+			if (indexOfLastPart > 0)
+				basename = basename.substring(indexOfLastPart);
 			
-			if (filename.startsWith(basename))
-			{
+			if (filename.startsWith(basename)) {
 				filename = filename.substring(basename.length());
 			}
 		}
@@ -138,9 +131,7 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 		
 		if (localespec.equals("")) {
 			parsedLocale = Locale.getDefault();
-		}
-		else
-		{
+		} else {
 			localespec = localespec.substring(1); // trim off leading '_'
 			parsedLocale = LocaleUtility.fromSpecification(localespec);
 		}
@@ -148,57 +139,33 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
     }
 
 	/**
-	 * Presumes to append the messages to a message.properties file which is
-	 * already being monitored by the super
-	 * ReloadableResourceBundleMessageSource.
-	 * 
-	 * This is a blind, trusting hack.
+	 * Presumes to append the messages to a message.properties file which is already being monitored
+	 * by the super ReloadableResourceBundleMessageSource. This is a blind, trusting hack.
 	 * 
 	 * @see org.openmrs.message.MessageSourceService#publishProperties(java.util.Properties,
 	 *      java.lang.String, java.lang.String, java.lang.String)
 	 */
-	public void publishProperties(Properties props, String locale,
-	        String namespace, String name, String version) {
+	public void publishProperties(Properties props, String locale, String namespace, String name, String version) {
 
 		String filePrefix = (namespace.length() > 0) ? (namespace + "_") : "";
-		String propertiesPath = "/WEB-INF/" + filePrefix + "messages" + locale
-		        + ".properties";
-
-		OutputStream outStream = null;
+		String propertiesPath = "/WEB-INF/" + filePrefix + "messages" + locale + ".properties";
+		Resource propertiesResource = applicationContext.getResource(propertiesPath);
 		try {
-
-			Resource propertiesResource = applicationContext
-			        .getResource(propertiesPath);
 			File propertiesFile = propertiesResource.getFile();
 
 			if (!propertiesFile.exists())
 				propertiesFile.createNewFile();
-
-			outStream = new FileOutputStream(propertiesFile, true);
-
 			// append the properties to the appropriate messages file
-			props.store(outStream, namespace + ": " + name + " v" + version);
-
-		} catch (IOException e) {
-			log.error("Unable to load in locale: '" + locale
-			        + "' properties for " + namespace + ": " + name, e);
-		} finally {
-			if (outStream != null) {
-				try {
-					outStream.close();
-				} catch (IOException e) {
-					log.warn("Couldn't close outStream", e);
-				}
+			OpenmrsUtil.storeProperties(props, propertiesFile, namespace + ": " + name + " v" + version);
+		} catch (Exception ex){
+			log.error("Error creating new properties file");
 			}
 		}
-
-	}
 
 	/**
 	 * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework.context.ApplicationContext)
 	 */
-	public void setApplicationContext(ApplicationContext applicationContext)
-	        throws BeansException {
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
 
 	}
@@ -211,22 +178,17 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
     public Collection<PresentationMessage> getPresentations() {
     	Collection<PresentationMessage> presentations = new Vector<PresentationMessage>();
     	
-    	for (File propertiesFile : findPropertiesFiles())
-    	{
+		for (File propertiesFile : findPropertiesFiles()) {
     		Locale currentLocale = parseLocaleFrom(propertiesFile.getName());
     		Properties props = new Properties();
     		try {
-	            props.load(new FileInputStream(propertiesFile));
+				OpenmrsUtil.loadProperties(props, new FileInputStream(propertiesFile));
 	            for (Map.Entry<Object, Object> property : props.entrySet()) {
-	            	presentations.add(new PresentationMessage(property.getKey().toString(), 
-	            			currentLocale,
-	            			property.getValue().toString(), 
-	            			""));
+					presentations.add(new PresentationMessage(property.getKey().toString(), currentLocale, property
+					        .getValue().toString(), ""));
+				}
 	            }
-            } catch (FileNotFoundException e) {
-	            // TODO Auto-generated catch block
-	            log.error("Error generated", e);
-            } catch (IOException e) {
+			catch (FileNotFoundException e) {
 	            // TODO Auto-generated catch block
 	            log.error("Error generated", e);
             }
@@ -239,6 +201,7 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
     
     /**
      * Override to obtain a local reference to the basenames.
+	 * 
      * @see org.springframework.context.support.ReloadableResourceBundleMessageSource#setBasename(java.lang.String)
      */
     @Override
@@ -249,6 +212,7 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 
 	/**
      * Override to obtain a local reference to the basenames.
+	 * 
      * @see org.springframework.context.support.ReloadableResourceBundleMessageSource#setBasenames(java.lang.String[])
      */
     @Override
@@ -262,20 +226,19 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
      */
     public void addPresentation(PresentationMessage message) {
 	    File propertyFile = findPropertiesFileFor(message.getCode());
-	    if (propertyFile != null)
-	    {
+		if (propertyFile != null) {
 	    	Properties props = new Properties();
 	    	try {
 	    		FileInputStream fis = new FileInputStream(propertyFile);
-	            props.load(fis);
+				OpenmrsUtil.loadProperties(props, fis);
 	            fis.close();
 	            props.setProperty(message.getCode(), message.getMessage());
-	            FileOutputStream fos = new FileOutputStream(propertyFile);
-	            props.store(fos, "OpenMRS Application Messages");
-	            fos.close();
-            } catch (FileNotFoundException e) {
+				OpenmrsUtil.storeProperties(props, propertyFile, "OpenMRS Application Messages");
+			}
+			catch (FileNotFoundException e) {
 	            log.error("Error generated", e);
-            } catch (IOException e) {
+			}
+			catch (IOException e) {
 	            log.error("Error generated", e);
             }
 	    }
@@ -287,28 +250,27 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
      */
     public void removePresentation(PresentationMessage message) {
 	    File propertyFile = findPropertiesFileFor(message.getCode());
-	    if (propertyFile != null)
-	    {
+		if (propertyFile != null) {
 	    	Properties props = new Properties();
 	    	try {
 	    		FileInputStream fis = new FileInputStream(propertyFile);
-	            props.load(fis);
+				OpenmrsUtil.loadProperties(props, fis);
 	            fis.close();
 	            props.remove(message.getCode());
-	            FileOutputStream fos = new FileOutputStream(propertyFile);
-	            props.store(fos, PROPERTIES_FILE_COMMENT);
-	            fos.close();
-            } catch (FileNotFoundException e) {
+				OpenmrsUtil.storeProperties(props, propertyFile, PROPERTIES_FILE_COMMENT);
+			}
+			catch (FileNotFoundException e) {
 	            log.error("Error generated", e);
-            } catch (IOException e) {
+			}
+			catch (IOException e) {
 	            log.error("Error generated", e);
             }
 	    }
     }
     
 	/**
-	 * Convenience method to scan the available properties files,
-	 * looking for the one that has a definition for the given code.
+	 * Convenience method to scan the available properties files, looking for the one that has a
+	 * definition for the given code.
      * 
      * @param code
      * @return the file which defines the code, or null if not found
@@ -317,18 +279,15 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
     	Properties props = new Properties();
     	File foundFile = null;
     	
-    	for (File propertiesFile : findPropertiesFiles())
-    	{
+		for (File propertiesFile : findPropertiesFiles()) {
     		props.clear();
     		try {
-	            props.load(new FileInputStream(propertiesFile));
-            } catch (FileNotFoundException e) {
-	            log.error("Error generated", e);
-            } catch (IOException e) {
+				OpenmrsUtil.loadProperties(props, new FileInputStream(propertiesFile));
+			}
+			catch (FileNotFoundException e) {
 	            log.error("Error generated", e);
             }
-    		if (props.containsKey(code))
-    		{
+			if (props.containsKey(code)) {
     			foundFile = propertiesFile;
     			break;
     		}
@@ -337,19 +296,16 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
     }
 
 	/**
-     * Searches the filesystem for message properties files. 
-     * 
-     * ABKTODO: consider caching this, rather than searching every time
+	 * Searches the filesystem for message properties files. ABKTODO: consider caching this, rather
+	 * than searching every time
      * 
      * @return collection of property file names
      */
-    private Collection<File> findPropertiesFiles()
-    {
+	private Collection<File> findPropertiesFiles() {
     	Collection<File> propertiesFiles = new Vector<File>();
 
 		try {
-			for (String basename : basenames)
-			{
+			for (String basename : basenames) {
 				File basefilename = new File(basename);
 				basename = basefilename.getPath();
 				int nameIndex = basename.lastIndexOf(File.separatorChar) + 1;
@@ -357,11 +313,8 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 				String namePrefix = basename.substring(nameIndex);
 				Resource propertiesDir = applicationContext.getResource(basedir);
 				boolean filesFound = false;
-				for (File possibleFile : propertiesDir.getFile().listFiles())
-				{
-					if (possibleFile.getName().startsWith(namePrefix) &&
-							possibleFile.getName().endsWith(".properties"))
-					{
+				for (File possibleFile : propertiesDir.getFile().listFiles()) {
+					if (possibleFile.getName().startsWith(namePrefix) && possibleFile.getName().endsWith(".properties")) {
 						propertiesFiles.add(possibleFile);
 						filesFound = true;
 					}
@@ -370,7 +323,8 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 					log.debug("No messages for basename " + basename);
 				}
 			}
-        } catch (IOException e) {
+		}
+		catch (IOException e) {
 	        log.error("Error generated", e);
         }
         if (log.isWarnEnabled() && (propertiesFiles.size() == 0)) {
@@ -400,12 +354,10 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
             propList.add(propertiesFile);
             
     		try {
-	            props.load(new FileInputStream(propertiesFile));
+				OpenmrsUtil.loadProperties(props, new FileInputStream(propertiesFile));
 	            fileToPropertiesMap.put(propertiesFile, props);
-            } catch (FileNotFoundException e) {
-	            // TODO Auto-generated catch block
-	            log.error("Error generated", e);
-            } catch (IOException e) {
+			}
+			catch (FileNotFoundException e) {
 	            // TODO Auto-generated catch block
 	            log.error("Error generated", e);
             }
@@ -426,7 +378,8 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
     					propertyDestination = possibleDestination;
     					propExists = true;
     					break;
-    				} else if (propertyDestination == null) propertyDestination = possibleDestination;
+					} else if (propertyDestination == null)
+						propertyDestination = possibleDestination;
     			}
 				if ((propExists && overwrite) || !propExists) {
 					propertyDestination.put(message.getCode(), message.getMessage());
@@ -448,7 +401,8 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
     }
 
 	/**
-     * @see org.openmrs.messagesource.MutableMessageSource#getPresentation(java.lang.String, java.util.Locale)
+	 * @see org.openmrs.messagesource.MutableMessageSource#getPresentation(java.lang.String,
+	 *      java.util.Locale)
      */
     public PresentationMessage getPresentation(String key, Locale forLocale) {
 	    // TODO Auto-generated method stub
@@ -458,8 +412,7 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 	/**
      * @see org.openmrs.messagesource.MutableMessageSource#getPresentationsInLocale(java.util.Locale)
      */
-    public Collection<PresentationMessage> getPresentationsInLocale(
-            Locale locale) {
+	public Collection<PresentationMessage> getPresentationsInLocale(Locale locale) {
 	    // TODO Auto-generated method stub
 	    return null;
     }

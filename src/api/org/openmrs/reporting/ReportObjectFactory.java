@@ -29,12 +29,13 @@ import org.openmrs.api.context.Context;
  *
  */
 public class ReportObjectFactory {
-
+	
 	private static ReportObjectFactory singleton;
 	
 	private static Log log = LogFactory.getLog(ReportObjectFactory.class);
 	
 	private String defaultValidator;
+	
 	private List<ReportObjectFactoryModule> modules;
 	
 	/**
@@ -63,13 +64,13 @@ public class ReportObjectFactory {
 	 * @return
 	 */
 	public List<String> getReportObjectTypes() {
-		if ( modules != null ) {
+		if (modules != null) {
 			List<String> uniqueTypes = new Vector<String>();
 			for (ReportObjectFactoryModule mod : modules) {
 				if (!uniqueTypes.contains(mod.getType()))
 					uniqueTypes.add(mod.getType());
 			}
-
+			
 			return uniqueTypes;
 		} else {
 			return Collections.emptyList();
@@ -83,14 +84,14 @@ public class ReportObjectFactory {
 	 * @return
 	 */
 	public List<String> getReportObjectSubTypes(String type) {
-		if ( modules != null && type != null ) {
+		if (modules != null && type != null) {
 			List<String> uniqueTypes = new Vector<String>();
 			for (ReportObjectFactoryModule mod : modules) {
-				if ( type.equals(mod.getType()) && !uniqueTypes.contains(mod.getDisplayName())) {
+				if (type.equals(mod.getType()) && !uniqueTypes.contains(mod.getDisplayName())) {
 					uniqueTypes.add(mod.getDisplayName());
 				}
 			}
-
+			
 			return uniqueTypes;
 		} else {
 			return Collections.emptyList();
@@ -108,15 +109,15 @@ public class ReportObjectFactory {
 		boolean retVal = false;
 		
 		List<String> availableTypes = getReportObjectTypes();
-		if ( availableTypes.contains(type) )  {
+		if (availableTypes.contains(type)) {
 			List<String> availableSubTypes = getReportObjectSubTypes(type);
-			if ( availableSubTypes.contains(subType) ) {
+			if (availableSubTypes.contains(subType)) {
 				retVal = true;
 			}
 		}
 		return retVal;
 	}
-
+	
 	/**
 	 * Auto generated method comment
 	 * 
@@ -124,20 +125,20 @@ public class ReportObjectFactory {
 	 * @return
 	 */
 	public String getReportObjectClassBySubType(String subType) {
-		if ( modules != null && subType != null ) {
+		if (modules != null && subType != null) {
 			String className = "";
 			for (ReportObjectFactoryModule mod : modules) {
-				if ( subType.equals(mod.getDisplayName()) ) {
+				if (subType.equals(mod.getDisplayName())) {
 					className = mod.getClassName();
 				}
 			}
-
+			
 			return className;
 		} else {
 			return "";
 		}
 	}
-
+	
 	/**
 	 * Auto generated method comment
 	 * 
@@ -145,39 +146,39 @@ public class ReportObjectFactory {
 	 * @return
 	 */
 	public String getReportObjectClassByName(String name) {
-		if ( modules != null && name != null ) {
+		if (modules != null && name != null) {
 			String className = "";
 			for (ReportObjectFactoryModule mod : modules) {
-				if ( name.equals(mod.getName()) ) {
+				if (name.equals(mod.getName())) {
 					className = mod.getClassName();
 				}
 			}
-
+			
 			return className;
 		} else {
 			return "";
 		}
 	}
-
+	
 	/**
 	 * Auto generated method comment
 	 * 
 	 * @return
 	 */
 	public List<String> getAllReportObjectClasses() {
-		if ( modules != null ) {
+		if (modules != null) {
 			List<String> uniqueClasses = new Vector<String>();
-			for ( ReportObjectFactoryModule mod : modules) {
+			for (ReportObjectFactoryModule mod : modules) {
 				if (!uniqueClasses.contains(mod.getClassName()))
 					uniqueClasses.add(mod.getClassName());
 			}
-
+			
 			return uniqueClasses;
 		} else {
 			return Collections.emptyList();
 		}
 	}
-
+	
 	/**
 	 * Auto generated method comment
 	 * 
@@ -185,15 +186,15 @@ public class ReportObjectFactory {
 	 * @return
 	 */
 	public String getReportObjectValidatorByClass(String currentClassName) {
-		if ( modules != null && currentClassName != null ) {
+		if (modules != null && currentClassName != null) {
 			String validator = "";
-			for ( int i = 0; i < modules.size(); i++ ) {
+			for (int i = 0; i < modules.size(); i++) {
 				ReportObjectFactoryModule mod = modules.get(i);
-				if ( currentClassName.equals(mod.getClassName()) ) {
+				if (currentClassName.equals(mod.getClassName())) {
 					validator = mod.getValidatorClass();
 				}
 			}
-
+			
 			return validator;
 		} else {
 			return "";
@@ -208,18 +209,20 @@ public class ReportObjectFactory {
 	 * @param context
 	 * @return
 	 */
-	public static AbstractReportObject getInstance(String reportObjectName, Map<String, Object> initialValues, Context context) {
+	public static AbstractReportObject getInstance(String reportObjectName, Map<String, Object> initialValues,
+	                                               Context context) {
 		ReportObjectFactory rof = ReportObjectFactory.singleton;
 		String className = rof.getReportObjectClassByName(reportObjectName);
 		AbstractReportObject reportObj = null;
 		
-		if ( className != null ) {
+		if (className != null) {
 			try {
 				Class cls = Class.forName(className);
 				reportObj = ReportObjectFactory.getInstance(cls, initialValues);
 				// attempt to populate setters with initialValues Map
-
-			} catch ( Throwable t ) {
+				
+			}
+			catch (Throwable t) {
 				log.error("Could not create class: " + className + " when trying to get report object from the factory");
 			}
 		}
@@ -237,19 +240,21 @@ public class ReportObjectFactory {
 	public static AbstractReportObject getInstance(Class reportObjectClass, Map<String, Object> initialValues) {
 		AbstractReportObject reportObj = null;
 		
-		if ( reportObjectClass != null ) {
+		if (reportObjectClass != null) {
 			try {
 				Constructor ct = reportObjectClass.getConstructor();
-				reportObj = (AbstractReportObject)ct.newInstance();
+				reportObj = (AbstractReportObject) ct.newInstance();
 				reportObj = ReportObjectFactory.initInstance(reportObj, initialValues);
-			} catch ( Throwable t ) {
-				log.error("Could not instantiate class: " + reportObjectClass.getName() + " when trying to get report object from the factory");
+			}
+			catch (Throwable t) {
+				log.error("Could not instantiate class: " + reportObjectClass.getName()
+				        + " when trying to get report object from the factory");
 			}
 		}
 		
 		return reportObj;
 	}
-
+	
 	/**
 	 * Auto generated method comment
 	 * 
@@ -258,12 +263,12 @@ public class ReportObjectFactory {
 	 * @return
 	 */
 	private static AbstractReportObject initInstance(AbstractReportObject reportObj, Map<String, Object> initialValues) {
-		if ( reportObj != null && initialValues != null ) {
-			for ( Iterator<String> i = initialValues.keySet().iterator(); i.hasNext(); ) {
+		if (reportObj != null && initialValues != null) {
+			for (Iterator<String> i = initialValues.keySet().iterator(); i.hasNext();) {
 				String key = i.next();
 				Object val = initialValues.get(key);
 				Class valClass = val.getClass();
-				String methodName = "set" + key.substring(0,1).toUpperCase() + key.substring(1);
+				String methodName = "set" + key.substring(0, 1).toUpperCase() + key.substring(1);
 				Class[] setterParamClasses = new Class[1];
 				setterParamClasses[0] = valClass;
 				Object[] setterParams = new Object[1];
@@ -271,51 +276,64 @@ public class ReportObjectFactory {
 				Method m = null;
 				try {
 					m = reportObj.getClass().getMethod(methodName, setterParamClasses);
-				} catch ( NoSuchMethodException nsme ) {
+				}
+				catch (NoSuchMethodException nsme) {
 					Class[] setterParamSupers = new Class[1];
 					setterParamSupers[0] = valClass.getSuperclass();
 					try {
 						m = reportObj.getClass().getMethod(methodName, setterParamSupers);
-					} catch ( Exception e ) {
-						m = null;
-						log.error("Could not instantiate setter method [" + methodName + "()] for field [" + key + "] in class [" + reportObj.getClass().getName() + "] while initializing report object fields.");
 					}
-				} catch ( Exception e ) {
-					m = null;
-					log.error("Could not instantiate setter method [" + methodName + "()] for field [" + key + "] in class [" + reportObj.getClass().getName() + "] while initializing report object fields.");
+					catch (Exception e) {
+						m = null;
+						log.error("Could not instantiate setter method [" + methodName + "()] for field [" + key
+						        + "] in class [" + reportObj.getClass().getName()
+						        + "] while initializing report object fields.");
+					}
 				}
-
-				if ( m != null ) {
+				catch (Exception e) {
+					m = null;
+					log
+					        .error("Could not instantiate setter method [" + methodName + "()] for field [" + key
+					                + "] in class [" + reportObj.getClass().getName()
+					                + "] while initializing report object fields.");
+				}
+				
+				if (m != null) {
 					try {
 						Object fieldObj = m.invoke(reportObj, setterParams);
-					} catch ( Exception e ) {
-						log.error("Could not invoke setter method [" + methodName + "()] for field [" + key + "] in class [" + reportObj.getClass().getName() + "] while initializing report object fields.");
+					}
+					catch (Exception e) {
+						log.error("Could not invoke setter method [" + methodName + "()] for field [" + key + "] in class ["
+						        + reportObj.getClass().getName() + "] while initializing report object fields.");
 					}
 				}
 			}
 		}
-
+		
 		return reportObj;
 	}
-
+	
 	/**
 	 * @return Returns the defaultValidator.
 	 */
 	public String getDefaultValidator() {
 		return defaultValidator;
 	}
+	
 	/**
 	 * @param defaultValidator The defaultValidator to set.
 	 */
 	public void setDefaultValidator(String defaultValidator) {
 		this.defaultValidator = defaultValidator;
 	}
+	
 	/**
 	 * @return Returns the modules.
 	 */
 	public List<ReportObjectFactoryModule> getModules() {
 		return modules;
 	}
+	
 	/**
 	 * @param modules The modules to set.
 	 */

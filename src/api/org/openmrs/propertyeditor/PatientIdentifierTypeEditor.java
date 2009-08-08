@@ -23,13 +23,14 @@ import org.openmrs.api.context.Context;
 import org.springframework.util.StringUtils;
 
 public class PatientIdentifierTypeEditor extends PropertyEditorSupport {
-
+	
 	private Log log = LogFactory.getLog(this.getClass());
 	
-	public PatientIdentifierTypeEditor() {	}
+	public PatientIdentifierTypeEditor() {
+	}
 	
 	public void setAsText(String text) throws IllegalArgumentException {
-		PatientService ps = Context.getPatientService(); 
+		PatientService ps = Context.getPatientService();
 		if (StringUtils.hasText(text)) {
 			try {
 				setValue(ps.getPatientIdentifierType(Integer.valueOf(text)));
@@ -38,20 +39,18 @@ public class PatientIdentifierTypeEditor extends PropertyEditorSupport {
 				log.error("Error setting text: " + text, ex);
 				throw new IllegalArgumentException("Identifier Type not found: " + ex.getMessage());
 			}
-		}
-		else {
+		} else {
 			setValue(null);
 		}
 	}
-
+	
 	public String getAsText() {
 		PatientIdentifierType t = (PatientIdentifierType) getValue();
 		if (t == null) {
 			return "";
-		}
-		else {
+		} else {
 			return t.getPatientIdentifierTypeId().toString();
 		}
 	}
-
+	
 }

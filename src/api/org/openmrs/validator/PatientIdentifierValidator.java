@@ -50,7 +50,9 @@ public class PatientIdentifierValidator implements Validator {
 
 	/**
 	 * Validates a PatientIdentifier. 
-	 * @see org.springframework.validation.Validator#validate(java.lang.Object, org.springframework.validation.Errors)
+	 * 
+	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
+	 *      org.springframework.validation.Errors)
 	 */
 	public void validate(Object obj, Errors errors) {
 		PatientIdentifier pi = (PatientIdentifier) obj;
@@ -64,9 +66,9 @@ public class PatientIdentifierValidator implements Validator {
 	
 	/**
 	 * Checks that the given {@link PatientIdentifier} is valid
+	 * 
 	 * @param pi - the {@link PatientIdentifier} to validate
 	 * @throws PatientIdentifierException if the {@link PatientIdentifier} is invalid
-	 * 
 	 * @should fail validation if PatientIdentifier is null
 	 * @should pass validation if PatientIdentifier is voided
 	 * @should fail validation if another patient has a matching identifier of the same type
@@ -83,12 +85,10 @@ public class PatientIdentifierValidator implements Validator {
 		if (!pi.isVoided()) {
 
 			// Check is already in use by another patient
-			List<Patient> patsWithId = Context.getPatientService().getPatients(null, pi.getIdentifier(), Arrays.asList(pi.getIdentifierType()), true);
-			for (Patient pat : patsWithId) {
-				if (!pat.equals(pi.getPatient())) {
-					throw new IdentifierNotUniqueException("Identifier " + pi.getIdentifier() + " already in use by patient #" + pat.getPatientId());
+			if (Context.getPatientService().isIdentifierInUseByAnotherPatient(pi)) {
+				throw new IdentifierNotUniqueException("Identifier " + pi.getIdentifier()
+			        + " already in use by another patient");
 				}
-			}
 			
 			// Check that this is a identifier is valid
 			validateIdentifier(pi.getIdentifier(), pi.getIdentifierType());
@@ -102,7 +102,6 @@ public class PatientIdentifierValidator implements Validator {
 	 * @param pit - the {@link PatientIdentifierType} to validate against
 	 * @param identifier - the identifier to check against the passed {@link PatientIdentifierType}
 	 * @throws PatientIdentifierException if the identifier is invalid
-	 * 
 	 * @should fail validation if PatientIdentifierType is null
 	 * @should fail validation if identifier is blank
 	 * @see checkIdentifierAgainstFormat(String, String)
@@ -137,7 +136,6 @@ public class PatientIdentifierValidator implements Validator {
 	 * @param format - the regular expression format to validate against
 	 * @param identifier - the identifier to check against the passed {@link PatientIdentifierType}
 	 * @throws PatientIdentifierException if the identifier is does not match the format
-	 * 
 	 * @should fail validation if identifier is blank
 	 * @should fail validation if identifier does not match the format
 	 * @should pass validation if identifier matches the format
@@ -159,7 +157,8 @@ public class PatientIdentifierValidator implements Validator {
 		// Check identifier against regular expression format
 		if (!identifier.matches(format)) {
 			log.debug("The two DO NOT match");
-			throw new InvalidIdentifierFormatException("Identifier [" + identifier + "] does not match required format: " + format);
+			throw new InvalidIdentifierFormatException("Identifier [" + identifier + "] does not match required format: "
+			        + format);
 		}
 		log.debug("The two match!!");
 	}
@@ -170,13 +169,13 @@ public class PatientIdentifierValidator implements Validator {
 	 * @param format - the regular expression format to validate against
 	 * @param identifier - the identifier to check against the passed {@link PatientIdentifierType}
 	 * @throws PatientIdentifierException if the identifier is does not match the format
-	 * 
 	 * @should fail validation if identifier is blank
 	 * @should fail validation if identifier is invalid
 	 * @should pass validation if identifier is valid
 	 * @should pass validation if validator is null
 	 */
-	public static void checkIdentifierAgainstValidator(String identifier, IdentifierValidator validator) throws PatientIdentifierException {
+	public static void checkIdentifierAgainstValidator(String identifier, IdentifierValidator validator)
+	                                                                                                    throws PatientIdentifierException {
 		
 		log.debug("Checking identifier: " + identifier + " against validator: " + validator);
 		
@@ -196,7 +195,8 @@ public class PatientIdentifierValidator implements Validator {
 			}
 		}
 		catch(UnallowedIdentifierException e) {
-			throw new InvalidCheckDigitException("Identifier " + identifier +" is not appropriate for validation scheme " + validator.getName());
+			throw new InvalidCheckDigitException("Identifier " + identifier + " is not appropriate for validation scheme "
+			        + validator.getName());
 		}
 		log.debug("The identifier passed validation.");
 	

@@ -22,19 +22,18 @@ import org.simpleframework.xml.graph.LabelLogic;
 import org.simpleframework.xml.stream.NodeMap;
 
 /**
- * This label logic will convert hibernate proxy class names to
- * their equivalent pojo class names
- * 
+ * This label logic will convert hibernate proxy class names to their equivalent pojo class names
  */
 public class OpenmrsLabelLogic implements LabelLogic {
 	
 	private static Log log = LogFactory.getLog(OpenmrsLabelLogic.class);
 	
 	/**
-	 * @see org.simpleframework.xml.graph.LabelLogic#getLabel(java.lang.Class, java.lang.Object, java.lang.Class, org.simpleframework.xml.stream.NodeMap)
+	 * @see org.simpleframework.xml.graph.LabelLogic#getLabel(java.lang.Class, java.lang.Object,
+	 *      java.lang.Class, org.simpleframework.xml.stream.NodeMap)
 	 */
 	public String getLabel(Class field, Object value, Class real, NodeMap node) {
-    	String simpleName = real.getSimpleName();
+		String simpleName = real.getSimpleName();
 		simpleName = Introspector.decapitalize(simpleName);
 		Class type = value.getClass();
 		
@@ -42,9 +41,9 @@ public class OpenmrsLabelLogic implements LabelLogic {
 			
 			// default value for "label"'s value is the name of the class
 			String realClassName = real.getName();
-
+			
 			// if its a hibernate set, get the real object's type
-			if (value instanceof PersistentCollection) 
+			if (value instanceof PersistentCollection)
 				realClassName = getHibernateInstanceClass(type.getName());
 			
 			// if we're cglib enhanced, ignore putting this class on the node
@@ -53,15 +52,14 @@ public class OpenmrsLabelLogic implements LabelLogic {
 				// don't have to return the classes for basic things
 				if (type != field)
 					return realClassName;
-			}
-			else {
+			} else {
 				// check for each of the overriding pojo types
 				for (String objectName : new String[] { "User", "Patient", "ComplexObs", "ConceptNumeric" }) {
 					String className = "org.openmrs." + objectName;
 					if (realClassName.startsWith(className)) {
 						
-					    if (!field.getName().equals(className))
-					    	return className;
+						if (!field.getName().equals(className))
+							return className;
 					}
 				}
 				
@@ -71,11 +69,11 @@ public class OpenmrsLabelLogic implements LabelLogic {
 		
 		// don't put a label in
 		return null;
-    }
+	}
 	
-    /**
-	 * Convenience method to alter the name of hibernate collections to their
-	 * normal non-proxied equivalents 
+	/**
+	 * Convenience method to alter the name of hibernate collections to their normal non-proxied
+	 * equivalents
 	 * 
 	 * @param typename classname of the object
 	 * @return deproxied classname
@@ -91,7 +89,7 @@ public class OpenmrsLabelLogic implements LabelLogic {
 			return "java.util.Map";
 		else if (typename.contains("hibernate"))
 			log.warn("Unknown possible invalid serialized object type: " + typename);
-
+		
 		return typename;
 	}
 }

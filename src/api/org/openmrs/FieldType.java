@@ -77,7 +77,8 @@ public class FieldType implements java.io.Serializable, Synchronizable {
 	}
 	
 	public int hashCode() {
-		if (this.getFieldTypeId() == null) return super.hashCode();
+		if (this.getFieldTypeId() == null)
+			return super.hashCode();
 		return this.getFieldTypeId().hashCode();
 	}
 
@@ -167,6 +168,5 @@ public class FieldType implements java.io.Serializable, Synchronizable {
 		this.name = name;
 	}
 
-	
-
 }
+	

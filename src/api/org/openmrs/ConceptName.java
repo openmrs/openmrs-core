@@ -27,8 +27,8 @@ import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 
 /**
- * ConceptName is the real world term used to express a Concept within the idiom of a particular locale.   
- * 
+ * ConceptName is the real world term used to express a Concept within the idiom of a particular
+ * locale.
  */
 @Root
 public class ConceptName implements java.io.Serializable, Synchronizable {
@@ -36,7 +36,6 @@ public class ConceptName implements java.io.Serializable, Synchronizable {
 	public static final long serialVersionUID = 33226787L;
 
 	// Fields
-
 	private Integer conceptNameId;
 	private Concept concept;
 	private String name;
@@ -109,26 +108,29 @@ public class ConceptName implements java.io.Serializable, Synchronizable {
 
 	/**
 	 * @see java.lang.Object#equals(java.lang.Object)
+	 * @should compare on conceptNameId if non null
+	 * @should not return true with different objects and null ids
+	 * @should default to object equality
 	 */
 	public boolean equals(Object obj) {
 		if (!(obj instanceof ConceptName)) {
 			return false;
 		}
 		ConceptName rhs = (ConceptName)obj;
-		return (this.conceptNameId == rhs.conceptNameId);
+		if (this.conceptNameId != null && rhs.conceptNameId != null)
+			return (this.conceptNameId.equals(rhs.conceptNameId));
+		else
+			return this == obj;
 	}
 
 	/**
 	 * @see java.lang.Object#hashCode()
 	 */
 	public int hashCode() {
-		if (this.getConcept() == null || this.getName() == null
-				|| this.getLocale() == null)
+		if (this.getConceptNameId() == null)
 			return super.hashCode();
 		int hash = 3;
-		hash = hash + 31 * this.getConcept().hashCode();
-		hash = hash + 31 * this.getName().hashCode();
-		hash = hash + 31 * this.getLocale().hashCode();
+		hash = hash + 31 * this.getConceptNameId();
 		return hash;
 	}
 	
@@ -140,11 +142,13 @@ public class ConceptName implements java.io.Serializable, Synchronizable {
 	 */
 	public String getShortestName() {
 		if (concept != null) {
-			return concept.getBestShortName(this.locale).getName();
-		} else {
+			ConceptName bestShortName = concept.getBestShortName(this.locale);
+			if (bestShortName != null)
+				return bestShortName.getName();
+		}
+		
 			return getName();
 		}
-	}
 
 	/**
 	 * @return Returns the conceptId.
@@ -207,10 +211,12 @@ public class ConceptName implements java.io.Serializable, Synchronizable {
 	 */
 	public String getShortName() {
 		if (concept != null) {
-			return concept.getBestShortName(Context.getLocale()).getName();
-		} else {
+			ConceptName bestShortName = concept.getBestShortName(Context.getLocale());
+			if (bestShortName != null)
+				return bestShortName.getName();
+		}
+		
 			return null;
-	}
 	}
 
 	/**
@@ -219,10 +225,12 @@ public class ConceptName implements java.io.Serializable, Synchronizable {
 	 */
 	public String getDescription() {
 		if (concept != null) {
-			return concept.getDescription().getDescription();
-		} else {
+			ConceptDescription description = concept.getDescription();
+			if (description != null)
+				return description.getDescription();
+		}
+		
 			return null;
-	}
 	}
 
 	/**
@@ -234,8 +242,7 @@ public class ConceptName implements java.io.Serializable, Synchronizable {
 	}
 
 	/**
-	 * @param creator
-	 *            The creator to set.
+	 * @param creator The creator to set.
 	 */
 	@Element
 	public void setCreator(User creator) {
@@ -251,8 +258,7 @@ public class ConceptName implements java.io.Serializable, Synchronizable {
 	}
 
 	/**
-	 * @param dateCreated
-	 *            The dateCreated to set.
+	 * @param dateCreated The dateCreated to set.
 	 */
 	@Element
 	public void setDateCreated(Date dateCreated) {
@@ -370,9 +376,8 @@ public class ConceptName implements java.io.Serializable, Synchronizable {
 	}
 	
 	/**
-	 * Adds a tag to the concept name. If the tag is new (has no
-	 * existing occurrences) a new ConceptNameTag will be created
-	 * with a blank description.
+	 * Adds a tag to the concept name. If the tag is new (has no existing occurrences) a new
+	 * ConceptNameTag will be created with a blank description.
 	 * 
 	 * @param tag human-readable text string for the tag
 	 */
@@ -381,9 +386,8 @@ public class ConceptName implements java.io.Serializable, Synchronizable {
 	}
 
 	/**
-	 * Adds a tag to the concept name. If the tag is new (has no
-	 * existing occurrences) a new ConceptNameTag will be created
-	 * with the given description.
+	 * Adds a tag to the concept name. If the tag is new (has no existing occurrences) a new
+	 * ConceptNameTag will be created with the given description.
 	 * 
 	 * @param tag human-readable text string for the tag
 	 * @param description description of the tag's purpose
@@ -402,7 +406,8 @@ public class ConceptName implements java.io.Serializable, Synchronizable {
 		if (tags == null)
 			tags = new HashSet<ConceptNameTag>();
 
-		if (!tags.contains(tag)) tags.add(tag);
+		if (!tags.contains(tag))
+			tags.add(tag);
 	}
 	
 	/**
@@ -411,7 +416,8 @@ public class ConceptName implements java.io.Serializable, Synchronizable {
 	 * @param tag the tag to remove
 	 */
 	public void removeTag(ConceptNameTag tag) {
-		if (tags.contains(tag)) tags.remove(tag);
+		if (tags.contains(tag))
+			tags.remove(tag);
 	}
 	
 	/**
@@ -464,8 +470,18 @@ public class ConceptName implements java.io.Serializable, Synchronizable {
 	}
 	
 	/**
-	 * Convenience method for determining whether this
-	 * is a short name.
+	 * Checks whether the name is the preferred name explicitly preferred
+	 * 
+	 * @return true if the name is tagged as 'preferred'
+	 * @should return true if this tag has a preferred tag
+	 * @should return false if this tag doesnt have the preferred tag
+	 */
+	public Boolean isPreferred() {
+		return hasTag(ConceptNameTag.PREFERRED);
+	}
+	
+	/**
+	 * Convenience method for determining whether this is a short name.
 	 * 
 	 * @return true if the tags include "short", false otherwise
 	 */
@@ -497,6 +513,9 @@ public class ConceptName implements java.io.Serializable, Synchronizable {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
+		if (this.name == null)
+			return "ConceptNameId: " + this.conceptNameId;
+		
 		return this.name;
 	}
 }

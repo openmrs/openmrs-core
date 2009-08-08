@@ -25,12 +25,8 @@ import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 
 /**
- * Person-related database functions
- * This is used by the PersonService.  This should not be used directly,
- * but rather used through the methods on the PersonService.
- * 
- * Use case:
- * <code>
+ * Person-related database functions This is used by the PersonService. This should not be used
+ * directly, but rather used through the methods on the PersonService. Use case: <code>
  *   PersonService ps = Context.getPersonService();
  *   ps....
  *   
@@ -42,7 +38,8 @@ import org.openmrs.RelationshipType;
 public interface PersonDAO {
 	
 	/**
-	 * @see org.openmrs.api.PersonService#getSimilarPeople(java.lang.String, java.lang.Integer, java.lang.String)
+	 * @see org.openmrs.api.PersonService#getSimilarPeople(java.lang.String, java.lang.Integer,
+	 *      java.lang.String)
 	 */
 	public Set<Person> getSimilarPeople(String name, Integer birthyear, String gender) throws DAOException;
 	
@@ -62,10 +59,11 @@ public interface PersonDAO {
     public void deletePersonAttributeType(PersonAttributeType type) throws DAOException;
     
     /**
-     * @see org.openmrs.api.PersonService#getPersonAttributeTypes(java.lang.String, java.lang.String, java.lang.Integer, java.lang.Boolean)
+	 * @see org.openmrs.api.PersonService#getPersonAttributeTypes(java.lang.String,
+	 *      java.lang.String, java.lang.Integer, java.lang.Boolean)
      */
-    public List<PersonAttributeType> getPersonAttributeTypes(String exactName,
-            String format, Integer foreignKey, Boolean searchable) throws DAOException;
+	public List<PersonAttributeType> getPersonAttributeTypes(String exactName, String format, Integer foreignKey,
+	                                                         Boolean searchable) throws DAOException;
 
     /**
      * @see org.openmrs.api.PersonService#getAllPersonAttributeTypes()
@@ -106,8 +104,7 @@ public interface PersonDAO {
     /**
      * @see org.openmrs.api.PersonService#getRelationshipTypes(java.lang.String, java.lang.Boolean)
      */
-    public List<RelationshipType> getRelationshipTypes(String relationshipTypeName,
-            Boolean preferred) throws DAOException;
+	public List<RelationshipType> getRelationshipTypes(String relationshipTypeName, Boolean preferred) throws DAOException;
             
     /**
      * @see org.openmrs.api.PersonService#savePerson(org.openmrs.Person)
@@ -135,10 +132,11 @@ public interface PersonDAO {
     public void deleteRelationship(Relationship relationship) throws DAOException;	
 
     /**
-     * @see org.openmrs.api.PersonService#getRelationships(org.openmrs.Person, org.openmrs.Person, org.openmrs.RelationshipType)
+	 * @see org.openmrs.api.PersonService#getRelationships(org.openmrs.Person, org.openmrs.Person,
+	 *      org.openmrs.RelationshipType)
      */
-    public List<Relationship> getRelationships(Person fromPerson,
-            Person toPerson, RelationshipType relType) throws DAOException;
+	public List<Relationship> getRelationships(Person fromPerson, Person toPerson, RelationshipType relType)
+	                                                                                                        throws DAOException;
     
     	/**
      * @see org.openmrs.api.PersonService#saveRelationshipType(org.openmrs.RelationshipType)

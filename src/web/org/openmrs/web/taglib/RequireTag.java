@@ -32,23 +32,27 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
 
 public class RequireTag extends TagSupport {
-
+	
 	public static final long serialVersionUID = 122998L;
 	
 	private final Log log = LogFactory.getLog(getClass());
-
+	
 	private String privilege;
+	
 	private String otherwise;
+	
 	private String redirect;
+	
 	private boolean errorOccurred;
+	
 	public int doStartTag() {
 		
 		errorOccurred = false;
-		HttpServletResponse httpResponse = (HttpServletResponse)pageContext.getResponse();
+		HttpServletResponse httpResponse = (HttpServletResponse) pageContext.getResponse();
 		HttpSession httpSession = pageContext.getSession();
-		HttpServletRequest request = (HttpServletRequest)pageContext.getRequest();
+		HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
 		String request_ip_addr = request.getLocalAddr();
-		String session_ip_addr = (String)httpSession.getAttribute(WebConstants.OPENMRS_CLIENT_IP_HTTPSESSION_ATTR);
+		String session_ip_addr = (String) httpSession.getAttribute(WebConstants.OPENMRS_CLIENT_IP_HTTPSESSION_ATTR);
 		
 		UserContext userContext = Context.getUserContext();
 		
@@ -63,12 +67,11 @@ public class RequireTag extends TagSupport {
 			errorOccurred = true;
 			if (userContext.isAuthenticated()) {
 				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "require.unauthorized");
-				log.warn("The user: '" + Context.getAuthenticatedUser() + "' has attempted to access: " + redirect + " which requires privilege: " + privilege);
-			}
-			else
+				log.warn("The user: '" + Context.getAuthenticatedUser() + "' has attempted to access: " + redirect
+				        + " which requires privilege: " + privilege);
+			} else
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "require.login");
-		}
-		else if (userContext.hasPrivilege(privilege) && userContext.isAuthenticated()) {
+		} else if (userContext.hasPrivilege(privilege) && userContext.isAuthenticated()) {
 			// redirect users to password change form
 			User user = userContext.getAuthenticatedUser();
 			Boolean forcePasswordChange = new Boolean(user.getUserProperty(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD));
@@ -98,7 +101,7 @@ public class RequireTag extends TagSupport {
 				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "require.ip_addr");
 			}
 		}
-	
+		
 		log.debug("session ip addr: " + session_ip_addr);
 		
 		if (errorOccurred) {
@@ -124,40 +127,39 @@ public class RequireTag extends TagSupport {
 		
 		return SKIP_BODY;
 	}
-
+	
 	/**
-     * Determines if the given ip addresses are the same.
-     * 
-     * @param session_ip_addr
-     * @param request_ip_addr
-     * @return true/false whether these IPs are different
-     */
-    private boolean differentIpAddresses(String sessionIpAddr, String requestIpAddr) {
-    	if (sessionIpAddr == null || requestIpAddr == null)
-    		return false;
-    	
-    	// IE7 and firefox store "localhost" IP addresses differently.
-    	// To accomodate switching from firefox browing to IE taskpane,
-    	// we assume these addresses to be equivalent
-    	List<String> equivalentAddresses = new ArrayList<String>();
-    	equivalentAddresses.add("127.0.0.1");
-    	equivalentAddresses.add("0.0.0.0");
-    	
-    	// if the addresses are equal, all is well
-    	if (sessionIpAddr.equals(requestIpAddr))
-    		return false;
-    	// if they aren't equal, but we consider them to be, also all is well
-    	else if (equivalentAddresses.contains(sessionIpAddr) && 
-    			equivalentAddresses.contains(requestIpAddr)){
-    		return false;
-    	}
-    	
-    	// the IP addresses were not equal, (don't continue with this user)
-	    return true;
-    }
-
+	 * Determines if the given ip addresses are the same.
+	 * 
+	 * @param session_ip_addr
+	 * @param request_ip_addr
+	 * @return true/false whether these IPs are different
+	 */
+	private boolean differentIpAddresses(String sessionIpAddr, String requestIpAddr) {
+		if (sessionIpAddr == null || requestIpAddr == null)
+			return false;
+		
+		// IE7 and firefox store "localhost" IP addresses differently.
+		// To accomodate switching from firefox browing to IE taskpane,
+		// we assume these addresses to be equivalent
+		List<String> equivalentAddresses = new ArrayList<String>();
+		equivalentAddresses.add("127.0.0.1");
+		equivalentAddresses.add("0.0.0.0");
+		
+		// if the addresses are equal, all is well
+		if (sessionIpAddr.equals(requestIpAddr))
+			return false;
+		// if they aren't equal, but we consider them to be, also all is well
+		else if (equivalentAddresses.contains(sessionIpAddr) && equivalentAddresses.contains(requestIpAddr)) {
+			return false;
+		}
+		
+		// the IP addresses were not equal, (don't continue with this user)
+		return true;
+	}
+	
 	public int doEndTag() {
-		if ( errorOccurred )
+		if (errorOccurred)
 			return SKIP_PAGE;
 		else
 			return EVAL_PAGE;
@@ -166,23 +168,23 @@ public class RequireTag extends TagSupport {
 	public String getPrivilege() {
 		return privilege;
 	}
-
+	
 	public void setPrivilege(String privilege) {
 		this.privilege = privilege;
 	}
-
+	
 	public String getOtherwise() {
 		return otherwise;
 	}
-
+	
 	public void setOtherwise(String otherwise) {
 		this.otherwise = otherwise;
 	}
-
+	
 	public String getRedirect() {
 		return redirect;
 	}
-
+	
 	public void setRedirect(String redirect) {
 		this.redirect = redirect;
 	}

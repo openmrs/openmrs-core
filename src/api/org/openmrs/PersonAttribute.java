@@ -30,16 +30,12 @@ import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 
 /**
- * A PersonAttribute is meant as way for implementations to add arbitrary
- * information about a user/patient to their database.
- * 
- * PersonAttributes are essentially just key-value pairs.  However, the 
- * PersonAttributeType can be defined in such a way that the value portion
- * of this PersonAttribute is a foreign key to another database table (like
- * to the location table, or concept table).  This gives a PersonAttribute
- * the ability to link to any other part of the database
- * 
- * A Person can have zero to n PersonAttribute(s).
+ * A PersonAttribute is meant as way for implementations to add arbitrary information about a
+ * user/patient to their database. PersonAttributes are essentially just key-value pairs. However,
+ * the PersonAttributeType can be defined in such a way that the value portion of this
+ * PersonAttribute is a foreign key to another database table (like to the location table, or
+ * concept table). This gives a PersonAttribute the ability to link to any other part of the
+ * database A Person can have zero to n PersonAttribute(s).
  * 
  * @see org.openmrs.PersonAttributeType
  * @see org.openmrs.Attributable
@@ -88,6 +84,7 @@ public class PersonAttribute implements java.io.Serializable, Synchronizable, Co
 	
 	/**
 	 * Constructor for creating a basic attribute
+	 * 
 	 * @param attributeType
 	 * @param value
 	 */
@@ -145,19 +142,18 @@ public class PersonAttribute implements java.io.Serializable, Synchronizable, Co
 	 * @see java.lang.Object#hashCode()
 	 */
 	public int hashCode() {
-		if (this.getPersonAttributeId() == null) return super.hashCode();
+		if (this.getPersonAttributeId() == null)
+			return super.hashCode();
 		int hash = 5;
 		hash += 29 * hash + this.getPersonAttributeId().hashCode();
 		return hash;
 	}
 	
 	/**
-	 * Compares this PersonAttribute object to the given otherAttribute. This method
-	 * differs from {@link #equals(Object)} in that this method compares the
-	 * inner fields of each attribute for equality.
-	 * 
-	 * Note: Null/empty fields on <code>otherAttribute</code> /will not/ cause a
-	 * false value to be returned
+	 * Compares this PersonAttribute object to the given otherAttribute. This method differs from
+	 * {@link #equals(Object)} in that this method compares the inner fields of each attribute for
+	 * equality. Note: Null/empty fields on <code>otherAttribute</code> /will not/ cause a false
+	 * value to be returned
 	 * 
 	 * @param otherAttribute PersonAttribute with which to compare
 	 * @return boolean true/false whether or not they are the same attributes
@@ -174,8 +170,7 @@ public class PersonAttribute implements java.io.Serializable, Synchronizable, Co
 		// loop over all of the selected methods and compare this and other
 		for (String methodAttribute : methods) {
 			try {
-				Method method = attributeClass.getMethod(methodAttribute,
-				                                       new Class[] {});
+				Method method = attributeClass.getMethod(methodAttribute, new Class[] {});
 
 				Object thisValue = method.invoke(this);
 				Object otherValue = method.invoke(otherAttribute);
@@ -183,11 +178,14 @@ public class PersonAttribute implements java.io.Serializable, Synchronizable, Co
 				if (otherValue != null)
 					returnValue &= otherValue.equals(thisValue);
 
-			} catch (NoSuchMethodException e) {
+			}
+			catch (NoSuchMethodException e) {
 				log.warn("No such method for comparison " + methodAttribute, e);
-			} catch (IllegalAccessException e) {
+			}
+			catch (IllegalAccessException e) {
 				log.error("Error while comparing attributes", e);
-			} catch (InvocationTargetException e) {
+			}
+			catch (InvocationTargetException e) {
 				log.error("Error while comparing attributes", e);
 			}
 
@@ -380,12 +378,15 @@ public class PersonAttribute implements java.io.Serializable, Synchronizable, Co
 
 	/**
 	 * @see java.lang.Object#toString()
+	 * @should return toString of hydrated value
 	 */
 	@SuppressWarnings("unchecked")
     public String toString() {
 		Object o = getHydratedObject();
 		if (o instanceof Attributable)
 			return ((Attributable)o).getDisplayString();
+		else if (o != null)
+			return o.toString();
 		
 		return this.value;
 	}
@@ -407,10 +408,8 @@ public class PersonAttribute implements java.io.Serializable, Synchronizable, Co
 	}
 	
 	/**
-	 * Will try to create an object of class 'PersonAttributeType.format'.  If that 
-	 * implements <code>Attributable</code>, hydrate(value) is called.
-	 * 
-	 * Defaults to just returning getValue()
+	 * Will try to create an object of class 'PersonAttributeType.format'. If that implements
+	 * <code>Attributable</code>, hydrate(value) is called. Defaults to just returning getValue()
 	 * 
 	 * @return hydrated object or getValue()
 	 */
@@ -434,12 +433,14 @@ public class PersonAttribute implements java.io.Serializable, Synchronizable, Co
 	
 	/**
 	 * Convenience method for voiding this attribute
+	 * 
 	 * @param reason
 	 */
 	public void voidAttribute(String reason) {
 		setVoided(true);
 		setVoidedBy(Context.getAuthenticatedUser());
 		setVoidReason(reason);
+		setDateVoided(new Date());
 	}
 
 	/**
@@ -451,7 +452,8 @@ public class PersonAttribute implements java.io.Serializable, Synchronizable, Co
     	if (retValue == 0)
     		retValue = OpenmrsUtil.compareWithNullAsLatest(getDateCreated(), other.getDateCreated());
     	if (retValue == 0)
-    		retValue = getAttributeType().getPersonAttributeTypeId().compareTo(other.getAttributeType().getPersonAttributeTypeId());
+			retValue = getAttributeType().getPersonAttributeTypeId().compareTo(
+			    other.getAttributeType().getPersonAttributeTypeId());
     	if (retValue == 0)
     		retValue = OpenmrsUtil.compareWithNullAsGreatest(getValue(), other.getValue());
     	if (retValue == 0)

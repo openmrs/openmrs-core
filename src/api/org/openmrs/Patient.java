@@ -26,8 +26,9 @@ import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.synchronization.Synchronizable;
 
 /**
- * Defines a Patient in the system.  A patient is simply an extension
- * of a person and all that that implies.
+ * Defines a Patient in the system. A patient is simply an extension of a person and all that that
+ * implies.
+ * 
  * @version 2.0
  */
 public class Patient extends Person 
@@ -76,14 +77,11 @@ public class Patient extends Person
 	}
 	
 	/**
-	 * Compares two objects for similarity
-	 * 
-	 * This must pass through to the parent object (org.openmrs.Person) in order to get similarity
-	 * of person/patient objects
+	 * Compares two objects for similarity This must pass through to the parent object
+	 * (org.openmrs.Person) in order to get similarity of person/patient objects
 	 * 
 	 * @param obj
 	 * @return boolean true/false whether or not they are the same objects
-	 * 
 	 * @see org.openmrs.Person#equals(java.lang.Object)
 	 */
 	public boolean equals(Object obj) {
@@ -91,10 +89,9 @@ public class Patient extends Person
 	}
 
 	/**
-	 * The hashcode for a patient/person is used to index the objects in a tree
-	 * 
-	 * This must pass through to the parent object (org.openmrs.Person) in order to get similarity
-	 * of person/patient objects
+	 * The hashcode for a patient/person is used to index the objects in a tree This must pass
+	 * through to the parent object (org.openmrs.Person) in order to get similarity of
+	 * person/patient objects
 	 * 
 	 * @see org.openmrs.Person#hashCode()
 	 */
@@ -112,9 +109,8 @@ public class Patient extends Person
 	}
 
 	/**
-	 * Sets the internal identifier for a patient. <b>This should never be
-	 * called directly</b>. It exists only for the use of the supporting
-	 * infrastructure.
+	 * Sets the internal identifier for a patient. <b>This should never be called directly</b>. It
+	 * exists only for the use of the supporting infrastructure.
 	 * 
 	 * @param patientId
 	 */
@@ -124,8 +120,8 @@ public class Patient extends Person
 	}
 	
 	/**
-	 * Overrides the parent setPersonId(Integer) so that we can be sure patient id
-	 * is also set correctly.
+	 * Overrides the parent setPersonId(Integer) so that we can be sure patient id is also set
+	 * correctly.
 	 * 
 	 * @see org.openmrs.Person#setPersonId(java.lang.Integer)
 	 */
@@ -142,19 +138,17 @@ public class Patient extends Person
 	}
 
 	/**
-	 * @param tribe
-	 *            patient's tribe
+	 * @param tribe patient's tribe
 	 */
 	public void setTribe(Tribe tribe) {
 		this.tribe = tribe;
 	}
 
 	/**
-	 * Get all of this patients identifiers -- both voided and non-voided
-	 * ones.  If you want only non-voided identifiers, use {@link #getActiveIdentifiers()}
+	 * Get all of this patients identifiers -- both voided and non-voided ones. If you want only
+	 * non-voided identifiers, use {@link #getActiveIdentifiers()}
 	 * 
 	 * @return Set of all known identifiers for this patient
-	 * 
 	 * @see org.openmrs.PatientIdentifier
 	 * @see #getActiveIdentifiers()
 	 */
@@ -165,8 +159,7 @@ public class Patient extends Person
 	}
 
 	/**
-	 * @param patientIdentifiers
-	 *            update all known identifiers for patient
+	 * @param patientIdentifiers update all known identifiers for patient
 	 * @see org.openmrs.PatientIdentifier
 	 */
 	public void setIdentifiers(Set<PatientIdentifier> identifiers) {
@@ -175,11 +168,11 @@ public class Patient extends Person
 
 	/**
 	 * Will add this PatientIdentifier if the patient doesn't contain it already
+	 * 
 	 * @param patientIdentifier
 	 */
 	/**
-	 * Will only add PatientIdentifiers in this list that this
-	 * patient does not have already
+	 * Will only add PatientIdentifiers in this list that this patient does not have already
 	 *  
 	 * @param patientIdentifiers
 	 */
@@ -190,6 +183,7 @@ public class Patient extends Person
 	
 	/**
 	 * Will add this PatientIdentifier if the patient doesn't contain it already
+	 * 
 	 * @param patientIdentifier
 	 */
 	public void addIdentifier(PatientIdentifier patientIdentifier) {
@@ -201,10 +195,8 @@ public class Patient extends Person
 	}
 
 	/**
-	 * Convenience method to remove the given identifier from this patient's
-	 * list of identifiers.
-	 * 
-	 * If <code>patientIdentifier</code> is null, nothing is done.
+	 * Convenience method to remove the given identifier from this patient's list of identifiers. If
+	 * <code>patientIdentifier</code> is null, nothing is done.
 	 * 
 	 * @param patientIdentifier the identifier to remove
 	 */
@@ -214,9 +206,8 @@ public class Patient extends Person
 	}
 	
 	/**
-	 * Convenience method to get the first "preferred" identifier for a patient.
-	 * Otherwise, returns the first non-voided identifier
-	 * Otherwise, null
+	 * Convenience method to get the first "preferred" identifier for a patient. Otherwise, returns
+	 * the first non-voided identifier Otherwise, null
 	 * 
 	 * @return Returns the "preferred" patient identifier.
 	 */
@@ -237,9 +228,8 @@ public class Patient extends Person
 	}
 	
 	/**
-	 * 
-	 * Returns the first (preferred) patient identifier matching a <code>PatientIdentifierType</code>
-	 * Otherwise, returns the first non-voided identifier
+	 * Returns the first (preferred) patient identifier matching a
+	 * <code>PatientIdentifierType</code> Otherwise, returns the first non-voided identifier
 	 * Otherwise, null
 	 * 
 	 * @param identifierType
@@ -265,12 +255,12 @@ public class Patient extends Person
 	 * 
 	 * @param identifierTypeId
 	 * @return preferred patient identifier
-	 *
 	 */
 	public PatientIdentifier getPatientIdentifier(Integer identifierTypeId) {
 		if (getIdentifiers() != null && getIdentifiers().size() > 0) {
 			for (PatientIdentifier id : getIdentifiers()) {
-					if (id.isPreferred() && !id.isVoided() && identifierTypeId.equals(id.getIdentifierType().getPatientIdentifierTypeId()))
+				if (id.isPreferred() && !id.isVoided()
+				        && identifierTypeId.equals(id.getIdentifierType().getPatientIdentifierTypeId()))
 						return id;
 			}
 			for (PatientIdentifier id : getIdentifiers()) {
@@ -305,8 +295,8 @@ public class Patient extends Person
 	}
 	
 	/**
-	 * Returns only the non-voided identifiers for this patient.
-	 * If you want <u>all</u> identifiers, use {@link #getIdentifiers()}
+	 * Returns only the non-voided identifiers for this patient. If you want <u>all</u> identifiers,
+	 * use {@link #getIdentifiers()}
 	 * 
 	 * @return list of non-voided identifiers for this patient
 	 * @see #getIdentifiers()
@@ -324,8 +314,8 @@ public class Patient extends Person
 	
 	
 	/**
-	 * Returns only the non-voided identifiers for this patient.
-	 * If you want <u>all</u> identifiers, use {@link #getIdentifiers()}
+	 * Returns only the non-voided identifiers for this patient. If you want <u>all</u> identifiers,
+	 * use {@link #getIdentifiers()}
 	 * 
 	 * @return list of non-voided identifiers for this patient
 	 * @param identifierType

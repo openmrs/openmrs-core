@@ -23,13 +23,14 @@ import org.openmrs.api.context.Context;
 import org.springframework.util.StringUtils;
 
 public class OrderTypeEditor extends PropertyEditorSupport {
-
+	
 	private Log log = LogFactory.getLog(this.getClass());
 	
-	public OrderTypeEditor() {	}
+	public OrderTypeEditor() {
+	}
 	
 	public void setAsText(String text) throws IllegalArgumentException {
-		OrderService os = Context.getOrderService(); 
+		OrderService os = Context.getOrderService();
 		if (StringUtils.hasText(text)) {
 			try {
 				setValue(os.getOrderType(Integer.valueOf(text)));
@@ -38,24 +39,23 @@ public class OrderTypeEditor extends PropertyEditorSupport {
 				log.error("Error setting text: " + text, ex);
 				throw new IllegalArgumentException("Order type not found: " + ex.getMessage());
 			}
-		}
-		else {
+		} else {
 			setValue(null);
 		}
 	}
-
+	
 	public String getAsText() {
-		OrderType ot = (OrderType)getValue();
+		OrderType ot = (OrderType) getValue();
 		if (ot == null) {
 			return "";
 		} else {
 			Integer orderTypeId = ot.getOrderTypeId();
-			if ( orderTypeId == null ) {
+			if (orderTypeId == null) {
 				return "";
 			} else {
 				return orderTypeId.toString();
 			}
 		}
 	}
-
+	
 }

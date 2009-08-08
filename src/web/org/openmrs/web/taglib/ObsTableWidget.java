@@ -70,13 +70,15 @@ public class ObsTableWidget extends TagSupport {
 	private String conceptLink = null;
 	//private String combineBy = "day";
 	
-	public ObsTableWidget() { }
+	public ObsTableWidget() {
+	}
 	
 	public String getConcepts() {
 		return concepts;
 	}
 	public void setConcepts(String concepts) {
-		if (concepts == null || concepts.length() == 0) return;
+		if (concepts == null || concepts.length() == 0)
+			return;
 		this.concepts = concepts;
 	}
 	public String getConceptLink() {
@@ -89,49 +91,56 @@ public class ObsTableWidget extends TagSupport {
 		return cssClass;
 	}
 	public void setCssClass(String cssClass) {
-		if (cssClass == null || cssClass.length() == 0) return;
+		if (cssClass == null || cssClass.length() == 0)
+			return;
 		this.cssClass = cssClass;
 	}
 	public String getId() {
 		return id;
 	}
 	public void setId(String id) {
-		if (id == null || id.length() == 0) return;
+		if (id == null || id.length() == 0)
+			return;
 		this.id = id;
 	}
 	public Boolean getShowEmptyConcepts() {
 		return showEmptyConcepts;
 	}
 	public void setShowEmptyConcepts(Boolean showEmptyConcepts) {
-		if (showEmptyConcepts == null) return;
+		if (showEmptyConcepts == null)
+			return;
 		this.showEmptyConcepts= showEmptyConcepts;
 	}
 	public Boolean getShowConceptHeader() {
 		return showConceptHeader;
 	}
 	public void setShowConceptHeader(Boolean showHeader) {
-		if (showHeader == null) return;
+		if (showHeader == null)
+			return;
 		this.showConceptHeader = showHeader;
 	}
 	public Boolean getShowDateHeader() {
 		return showDateHeader;
 	}
 	public void setShowDateHeader(Boolean showDateHeader) {
-		if (showDateHeader == null) return;
+		if (showDateHeader == null)
+			return;
 		this.showDateHeader = showDateHeader;
 	}
 	public String getSort() {
 		return sortDescending ? "desc" : "asc";
 	}
 	public void setSort(String sort) {
-		if (sort == null || sort.length() == 0) return;
+		if (sort == null || sort.length() == 0)
+			return;
 		sortDescending = !sort.equals("asc");
 	}
 	public String getOrientation() {
 		return orientVertical ? "vertical" : "horizontal";
 	}
 	public void setOrientation(String orientation) {
-		if (orientation == null || orientation.length() == 0) return;
+		if (orientation == null || orientation.length() == 0)
+			return;
 		orientVertical = !orientation.equals("horizontal");
 	}
 	public Collection<Obs> getObservations() {
@@ -144,21 +153,24 @@ public class ObsTableWidget extends TagSupport {
 		return fromDate;
 	}
 	public void setFromDate(Date fromDate) {
-		if (fromDate == null) return;
+		if (fromDate == null)
+			return;
 		this.fromDate = fromDate;
 	}
 	public Date getToDate() {
 		return toDate;
 	}
 	public void setToDate(Date toDate) {
-		if (toDate == null) return;
+		if (toDate == null)
+			return;
 		this.toDate = toDate;
 	}
 	public Integer getLimit() {
 		return limit;
 	}
 	public void setLimit(Integer limit) {
-		if (limit == null) return;
+		if (limit == null)
+			return;
 		this.limit = limit;
 	}
 	public Boolean getCombineEqualResults() {
@@ -189,7 +201,8 @@ public class ObsTableWidget extends TagSupport {
 			} else {
 				try {
 					c = cs.getConcept(Integer.valueOf(s.trim()));
-				} catch (Exception ex) { }
+			}
+				catch (Exception ex) {}
 			}
 			if (c != null) {
 				if (isSet) {
@@ -219,7 +232,8 @@ public class ObsTableWidget extends TagSupport {
 			if (conceptIds.contains(conceptId)) {
 				Date thisDate = o.getObsDatetime();
 				// TODO: allow grouping by day/week/month/etc
-				if ( (fromDate != null && thisDate.compareTo(fromDate) < 0) || (toDate != null && thisDate.compareTo(toDate) > 0) ) {
+				if ((fromDate != null && thisDate.compareTo(fromDate) < 0)
+				        || (toDate != null && thisDate.compareTo(toDate) > 0)) {
 					continue;
 				}
 				dates.add(thisDate);
@@ -330,7 +344,7 @@ public class ObsTableWidget extends TagSupport {
 					List<Obs> list = groupedObs.get(key);
 					if (list != null) {
 						if (combineEqualResults) {
-							Collection<String> unique = new LinkedHashSet<String>();
+							Set<String> unique = new LinkedHashSet<String>();
 							for (Obs obs : list)
 								unique.add(obs.getValueAsString(loc));
 							for (String s : unique)
@@ -350,7 +364,8 @@ public class ObsTableWidget extends TagSupport {
 		try {
 			JspWriter w = pageContext.getOut();
 			w.println(ret);
-		} catch (IOException ex) {
+		}
+		catch (IOException ex) {
 			log.error("Error while starting ObsTableWidget tag", ex);
 		}
 		return SKIP_BODY;

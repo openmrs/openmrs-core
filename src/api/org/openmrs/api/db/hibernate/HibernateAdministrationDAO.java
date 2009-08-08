@@ -54,8 +54,7 @@ import org.openmrs.util.OpenmrsUtil;
  * @see org.openmrs.api.db.AdministrationDAO
  * @see org.openmrs.api.AdministrationService
  */
-public class HibernateAdministrationDAO implements
-		AdministrationDAO {
+public class HibernateAdministrationDAO implements AdministrationDAO {
 
 	protected Log log = LogFactory.getLog(getClass());
 
@@ -67,7 +66,8 @@ public class HibernateAdministrationDAO implements
 	// for global properties, which should not be synchronized
     private HibernateSynchronizationInterceptor synchronizationInterceptor;
     	
-	public HibernateAdministrationDAO() { }
+	public HibernateAdministrationDAO() {
+	}
 	
 	/**
 	 * Set session factory
@@ -235,7 +235,8 @@ public class HibernateAdministrationDAO implements
 	
 	public void deleteReportObject(Integer reportObjectId) throws DAOException {
 		ReportObjectWrapper wrappedReportObject = new ReportObjectWrapper();
-		wrappedReportObject = (ReportObjectWrapper)sessionFactory.getCurrentSession().get(ReportObjectWrapper.class, reportObjectId);
+		wrappedReportObject = (ReportObjectWrapper) sessionFactory.getCurrentSession().get(ReportObjectWrapper.class,
+		    reportObjectId);
 		
 		sessionFactory.getCurrentSession().delete(wrappedReportObject);
 	}
@@ -255,7 +256,6 @@ public class HibernateAdministrationDAO implements
 	}
 	
 	/**
-	 * 
 	 * @see org.openmrs.api.db.AdministrationDAO#getGlobalPropertyObject(java.lang.String)
 	 */
 	public GlobalProperty getGlobalPropertyObject(String propertyName) {
@@ -296,10 +296,12 @@ public class HibernateAdministrationDAO implements
 	}
 
 	/**
-	 * @see org.openmrs.api.db.AdministrationDAO#getDataEntryStatistics(java.util.Date, java.util.Date, java.lang.String, java.lang.String, java.lang.String)
+	 * @see org.openmrs.api.db.AdministrationDAO#getDataEntryStatistics(java.util.Date,
+	 *      java.util.Date, java.lang.String, java.lang.String, java.lang.String)
 	 */
 	@SuppressWarnings("unchecked")
-	public List<DataEntryStatistic> getDataEntryStatistics(Date fromDate, Date toDate, String encounterColumn, String orderColumn, String groupBy) throws DAOException {
+	public List<DataEntryStatistic> getDataEntryStatistics(Date fromDate, Date toDate, String encounterColumn,
+	                                                       String orderColumn, String groupBy) throws DAOException {
 				
 		// for all encounters, find user, form name, and number of entries
 		
@@ -356,13 +358,14 @@ public class HibernateAdministrationDAO implements
 		// data entry stats with extended info
 
 		// check if there's anything else to group by
-		if (groupBy == null) groupBy = "";
+		if (groupBy == null)
+			groupBy = "";
 		if (groupBy.length() != 0)
 			groupBy = "e." + groupBy + ", ";
 		log.debug("GROUP BY IS " + groupBy);
 
-		String hql = "select " + groupBy + "e." + encounterColumn + ", e.encounterType" + ", e.form, count(distinct e.encounterId), count(o.obsId) " +
-				"from Obs o right join o.encounter as e ";
+		String hql = "select " + groupBy + "e." + encounterColumn + ", e.encounterType"
+		        + ", e.form, count(distinct e.encounterId), count(o.obsId) " + "from Obs o right join o.encounter as e ";
 		if (fromDate != null || toDate != null) {
 			String s = "where ";
 			if (fromDate != null)
@@ -376,7 +379,8 @@ public class HibernateAdministrationDAO implements
 		}
 		
 		hql += "group by ";
-		if ( groupBy.length() > 0 ) hql += groupBy + " ";
+		if (groupBy.length() > 0)
+			hql += groupBy + " ";
 		hql += "e." + encounterColumn + ", e.encounterType, e.form ";
 		Query q = sessionFactory.getCurrentSession().createQuery(hql);
 		if (fromDate != null)
@@ -412,8 +416,7 @@ public class HibernateAdministrationDAO implements
 		
 		
 		// for orders, count how many were created. (should eventually count something with voided/changed)
-		hql = "select o." + orderColumn + ", o.orderType.name, count(*) " +
-				"from Order o ";
+		hql = "select o." + orderColumn + ", o.orderType.name, count(*) " + "from Order o ";
 		if (fromDate != null || toDate != null) {
 			String s = "where ";
 			if (fromDate != null)
@@ -452,10 +455,9 @@ public class HibernateAdministrationDAO implements
 		boolean dataManipulation = false;
 		
 		String sqlLower = sql.toLowerCase();
-		if (sqlLower.startsWith("insert") || sqlLower.startsWith("update") || 
-			sqlLower.startsWith("delete") || sqlLower.startsWith("alter") ||
-			sqlLower.startsWith("drop")  || sqlLower.startsWith("create") ||
-			sqlLower.startsWith("rename")) {
+		if (sqlLower.startsWith("insert") || sqlLower.startsWith("update") || sqlLower.startsWith("delete")
+		        || sqlLower.startsWith("alter") || sqlLower.startsWith("drop") || sqlLower.startsWith("create")
+		        || sqlLower.startsWith("rename")) {
 				dataManipulation = true;
 		}
 
@@ -480,8 +482,7 @@ public class HibernateAdministrationDAO implements
 				List<Object> row = new Vector<Object>();
 				row.add(i);
 				results.add(row);
-			}
-			else {
+			} else {
 				ResultSet resultSet = ps.executeQuery();
 				
 				ResultSetMetaData rmd = resultSet.getMetaData();

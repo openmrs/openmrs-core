@@ -52,6 +52,7 @@ dojo.widget.defineWidget(
 	showHeaderRow: false,
 	allowAutoList: true,
 	useOnKeyDown: false,
+	isInNumberMode: false, /* quick way to tell if the user has hit enter and yellow is showing telling them to choose a numeral */
 	
 	// check box options
 	showIncludeRetired: false,
@@ -98,14 +99,6 @@ dojo.widget.defineWidget(
 		// add search label
 		if (this.searchLabel)
 			this.searchLabelNode.innerHTML = this.searchLabel;
-			
-		// move default DWR error handling to the status bar
-		var handler = function(ex) {
-			if (typeof ex == "string")
-				window.status = "DWR warning/error: " + ex;
-		};
-		DWREngine.setErrorHandler(handler);
-		DWREngine.setWarningHandler(handler);
 	},
 		
 	fillInTemplate: function(args, frag){
@@ -255,22 +248,25 @@ dojo.widget.defineWidget(
 					//   mouse event)"
 					if (!this.text.match(/\d/) || this.allowAutoListWithNumber()) {
 						// force enter key for strings like 1,2,5,11
-						if (this.text.match(/^\s*\d+\s*(,\d+\s*)+$/))
+						if (this.text.match(/^\s*\d+\s*(,\d+\s*)+$/)) {
 							return false;
+						}
 						
-						// If there isn't a number in the search (force usage of enter key)
-						this.hideHighlight();
-						if (this.text.length > 1 && 
-								(this.text.length != 2 || !this.text.match(/\d/) || this.objectsFound == null || this.objectsFound.length < this.text)) {
+						// If there isn't a number in the search, reset the colors
+						if (!this.text.match(/\d/)) {
+							this.hideHighlight();
+						}
+						
+						if (this.text != null && this.text.length == 0 && this.key == dojo.event.browser.keys.KEY_BACKSPACE) {
+							// allows for "resetting" default list when user hits backspace on empty field
+							this.resetSearch();
+							this.searchCleared();
+						}
+						else if (this.text.length >= this.minSearchCharacters && this.isInNumberMode == false ) {
 							this.clearPagingBars();
 							dojo.debug('setting preFindObjects timeout for other key: ' + this.key);
 							var callback = function(ts, text) { return function() {ts.findObjects(text)}};
 							this.searchTimeout = setTimeout(callback(this, this.text), this.searchDelay);
-						}
-						else if (this.text != null && this.text.length == 0 && this.key == dojo.event.browser.keys.KEY_BACKSPACE) {
-							// allows for "resetting" default list when user hits backspace on empty field
-							this.resetSearch();
-							this.searchCleared();
 						}
 					}
 					if (this.event.type == "submit") {
@@ -409,7 +405,24 @@ dojo.widget.defineWidget(
 			
 	},
 	
-	doObjectsFound: function(objs) {
+	/* the most recently returned call count */
+	lastCallCount: 0,
+	
+	/* The most recently sent call count */
+	callCount: 1,
+	
+	doObjectsFound: function(objs, unusedData, extraData, currentCallCount) {
+		/* optionally passed in from the doFindObjects method */
+		if (currentCallCount) {
+			if (this.lastCallCount > currentCallCount) {
+				/* There has been a callback to this method after the call for these
+				   results was made.  Ignore this request. */
+				/* alert("Ignoring: " + objs.length + " results"); */
+				return;
+			}
+			this.lastCallCount = currentCallCount;
+		}
+	
 		// convert objs from single obj into array (if needed)
 		if (objs.length == null)
 			objs = [objs]
@@ -448,6 +461,7 @@ dojo.widget.defineWidget(
 			this.inputNode.className = "searchHighlight";
 			this.inputNode.focus();
 		}
+		this.isInNumberMode = true;
 	},
 
 
@@ -460,6 +474,7 @@ dojo.widget.defineWidget(
 		}
 
 		this.inputNode.className = "";
+		this.isInNumberMode = false;
 	},
 
 
@@ -767,12 +782,12 @@ dojo.widget.defineWidget(
 		// if its a shortened page
 		if (lastItemDisplayed > total)
 			lastItemDisplayed = total;
-		
+			
 		// there may be strings mixed in the list, correct the list size here
-		//if (lastItemDisplayed != this.objectsFound.length) {
-		//	total = total - (lastItemDisplayed - this.objectsFound.length);
-		//	lastItemDisplayed = this.objectsFound.length;
-		//}
+		if (lastItemDisplayed > this.objectsFound.length) {
+			total = total - (lastItemDisplayed - this.objectsFound.length);
+			lastItemDisplayed = this.objectsFound.length;
+		}
 		
 		this.infoBar.innerHTML = '';
 		if (this.lastPhraseSearched != null)
@@ -910,9 +925,15 @@ dojo.widget.defineWidget(
 		
 	},
 	
+	/* This call keeps track of the order in which calls are sent and received 
+	   from the server.  This information is passed on to the "method" given
+	   in the params.  (Ideally the method would look at this id and ignore
+	   any calls that were sent before, and yet received after, the latest call)  
+	 */
 	simpleClosure: function(thisObj, method, extra) { 
+		var storedCallCount = this.callCount++;
 		return function(arg1, arg2) {
-				  return thisObj[method](arg1, arg2, extra);
+				  return thisObj[method](arg1, arg2, extra, storedCallCount);
 				}; 
 	},
 	

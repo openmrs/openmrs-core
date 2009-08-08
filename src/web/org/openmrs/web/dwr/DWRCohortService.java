@@ -39,7 +39,7 @@ public class DWRCohortService {
 		Cohort c = Context.getCohortService().getCohort(cohortId);
 		Context.getCohortService().removePatientFromCohort(c, p);
 	}
-
+	
 	public Vector<ListItem> getCohorts() {
 		Vector<ListItem> ret = new Vector<ListItem>();
 		for (Cohort c : Context.getCohortService().getCohorts()) {
@@ -55,5 +55,5 @@ public class DWRCohortService {
 		}
 		return ret;
 	}
-
+	
 }

@@ -23,6 +23,7 @@ import org.openmrs.synchronization.Synchronizable;
 
 /**
  * Form
+ * 
  * @version 1.0
  */
 public class Form implements java.io.Serializable, Synchronizable {
@@ -115,8 +116,7 @@ public class Form implements java.io.Serializable, Synchronizable {
 	}
 
 	/**
-	 * @param formId
-	 *            The formId to set.
+	 * @param formId The formId to set.
 	 */
 	public void setFormId(Integer formId) {
 		this.formId = formId;
@@ -130,8 +130,7 @@ public class Form implements java.io.Serializable, Synchronizable {
 	}
 
 	/**
-	 * @param name
-	 *            The name to set.
+	 * @param name The name to set.
 	 */
 	public void setName(String name) {
 		this.name = name;
@@ -145,8 +144,7 @@ public class Form implements java.io.Serializable, Synchronizable {
 	}
 
 	/**
-	 * @param version
-	 *            The version to set.
+	 * @param version The version to set.
 	 */
 	public void setVersion(String version) {
 		this.version = version;
@@ -160,8 +158,7 @@ public class Form implements java.io.Serializable, Synchronizable {
 	}
 
 	/**
-	 * @param build
-	 *            The build number to set
+	 * @param build The build number to set
 	 */
 	public void setBuild(Integer build) {
 		this.build = build;
@@ -175,8 +172,7 @@ public class Form implements java.io.Serializable, Synchronizable {
 	}
 
 	/**
-	 * @param published
-	 *            The published to set.
+	 * @param published The published to set.
 	 */
 	public void setPublished(Boolean published) {
 		this.published = published;
@@ -190,8 +186,7 @@ public class Form implements java.io.Serializable, Synchronizable {
 	}
 
 	/**
-	 * @param description
-	 *            The description to set.
+	 * @param description The description to set.
 	 */
 	public void setDescription(String description) {
 		this.description = description;
@@ -205,8 +200,7 @@ public class Form implements java.io.Serializable, Synchronizable {
 	}
 
 	/**
-	 * @param encounterType
-	 *            type of encounter associated with this form
+	 * @param encounterType type of encounter associated with this form
 	 */
 	public void setEncounterType(EncounterType encounterType) {
 		this.encounterType = encounterType;
@@ -245,8 +239,7 @@ public class Form implements java.io.Serializable, Synchronizable {
 	}
 
 	/**
-	 * @param creator
-	 *            The creator to set.
+	 * @param creator The creator to set.
 	 */
 	public void setCreator(User creator) {
 		this.creator = creator;
@@ -260,8 +253,7 @@ public class Form implements java.io.Serializable, Synchronizable {
 	}
 
 	/**
-	 * @param dateCreated
-	 *            The dateCreated to set.
+	 * @param dateCreated The dateCreated to set.
 	 */
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
@@ -275,8 +267,7 @@ public class Form implements java.io.Serializable, Synchronizable {
 	}
 
 	/**
-	 * @param changedBy
-	 *            The changedBy to set.
+	 * @param changedBy The changedBy to set.
 	 */
 	public void setChangedBy(User changedBy) {
 		this.changedBy = changedBy;
@@ -290,8 +281,7 @@ public class Form implements java.io.Serializable, Synchronizable {
 	}
 
 	/**
-	 * @param dateChanged
-	 *            The dateChanged to set.
+	 * @param dateChanged The dateChanged to set.
 	 */
 	public void setDateChanged(Date dateChanged) {
 		this.dateChanged = dateChanged;
@@ -309,8 +299,7 @@ public class Form implements java.io.Serializable, Synchronizable {
 	}
 
 	/**
-	 * @param retired
-	 *            The retired status to set.
+	 * @param retired The retired status to set.
 	 */
 	public void setRetired(Boolean retired) {
 		this.retired = retired;
@@ -324,8 +313,7 @@ public class Form implements java.io.Serializable, Synchronizable {
 	}
 
 	/**
-	 * @param retiredBy
-	 *            The retiredBy to set.
+	 * @param retiredBy The retiredBy to set.
 	 */
 	public void setRetiredBy(User retiredBy) {
 		this.retiredBy = retiredBy;
@@ -339,8 +327,7 @@ public class Form implements java.io.Serializable, Synchronizable {
 	}
 
 	/**
-	 * @param dateRetired
-	 *            The dateRetired to set.
+	 * @param dateRetired The dateRetired to set.
 	 */
 	public void setDateRetired(Date dateRetired) {
 		this.dateRetired = dateRetired;
@@ -354,8 +341,7 @@ public class Form implements java.io.Serializable, Synchronizable {
 	}
 
 	/**
-	 * @param retiredReason
-	 *            The retiredReason to set.
+	 * @param retiredReason The retiredReason to set.
 	 */
 	public void setRetiredReason(String retiredReason) {
 		this.retiredReason = retiredReason;
@@ -407,8 +393,7 @@ public class Form implements java.io.Serializable, Synchronizable {
 	}
 
 	/**
-	 * @param formFields
-	 *            The formFields to set.
+	 * @param formFields The formFields to set.
 	 */
 	public void setFormFields(Set<FormField> formFields) {
 		this.formFields = formFields;
@@ -417,8 +402,7 @@ public class Form implements java.io.Serializable, Synchronizable {
 	/**
 	 * Adds a FormField to the list of form fields
 	 * 
-	 * @param FormField
-	 *            to be added
+	 * @param FormField to be added
 	 */
 	public void addFormField(FormField formField) {
 		if (formFields == null)
@@ -432,8 +416,7 @@ public class Form implements java.io.Serializable, Synchronizable {
 	/**
 	 * Removes a FormField from the list of form fields
 	 * 
-	 * @param FormField
-	 *            formField to be removed
+	 * @param FormField formField to be removed
 	 */
 	public void removeFormField(FormField formField) {
 		if (formFields != null) {

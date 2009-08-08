@@ -24,7 +24,7 @@ import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
 
 public class DWRPatientSetService {
-
+	
 	protected final Log log = LogFactory.getLog(getClass());
 	
 	public void clearMyPatientSet() {
@@ -76,14 +76,15 @@ public class DWRPatientSetService {
 		}
 	}
 	*/
-	
+
 	public Vector<PatientListItem> getPatients(String patientIds) {
 		Vector<PatientListItem> ret = new Vector<PatientListItem>();
 		List<Integer> ptIds = new ArrayList<Integer>();
 		for (String s : patientIds.split(",")) {
 			try {
 				ptIds.add(Integer.valueOf(s));
-			} catch (Exception ex) { }
+			}
+			catch (Exception ex) {}
 		}
 		List<Patient> patients = Context.getPatientSetService().getPatients(ptIds);
 		for (Patient patient : patients) {
@@ -91,13 +92,13 @@ public class DWRPatientSetService {
 		}
 		return ret;
 	}
-		
+	
 	public void addToMyPatientSet(Integer ptId) {
 		Context.getPatientSetService().addToMyPatientSet(ptId);
 	}
-
+	
 	public void removeFromMyPatientSet(Integer ptId) {
 		Context.getPatientSetService().removeFromMyPatientSet(ptId);
 	}
-
+	
 }

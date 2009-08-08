@@ -20,26 +20,16 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.synchronization.Synchronizable;
 
 /**
- * Dates should be interpreted as follows:
- *    If startDate is null then the order has been going on "since the beginning of time"
- *    Otherwise the order starts on startDate
+ * Dates should be interpreted as follows: If startDate is null then the order has been going on
+ * "since the beginning of time" Otherwise the order starts on startDate If discontinued is non-null
+ * and true, then the following fields should be ignored: autoExpireDate if discontinuedDate is null
+ * then the order was discontinued "the instant after it began" otherwise it was given from its
+ * starting date until discontinuedDate Otherwise (discontinued is null or false) if autoExpireDate
+ * is null, the order is set to go forever otherwise the order goes until autoExpireDate the
+ * following fields should be ignored: discontinuedBy discontinuedDate discontinuedReason It is an
+ * error to have discontinued be true and have discontinuedDate be after autoExpireDate. However
+ * this is not checked for in the database or the application.
  *    
- *    If discontinued is non-null and true, then
- *       the following fields should be ignored:
- *          autoExpireDate
- *       if discontinuedDate is null then the order was discontinued "the instant after it began"
- *          otherwise it was given from its starting date until discontinuedDate
- *    
- *    Otherwise (discontinued is null or false)
- *       if autoExpireDate is null, the order is set to go forever
- *          otherwise the order goes until autoExpireDate
- *       the following fields should be ignored:
- *          discontinuedBy
- *          discontinuedDate
- *          discontinuedReason
- * 
- * It is an error to have discontinued be true and have discontinuedDate be after autoExpireDate.
- *    However this is not checked for in the database or the application.
  * @version 1.0
  */
 public class Order implements java.io.Serializable, Synchronizable {
@@ -110,8 +100,8 @@ public class Order implements java.io.Serializable, Synchronizable {
 	}
 	
 	/**
-	 * The purpose of this method is to allow subclasses of Order to delegate a portion of
-	 * their copy() method back to the superclass, in case the base class implementation changes. 
+	 * The purpose of this method is to allow subclasses of Order to delegate a portion of their
+	 * copy() method back to the superclass, in case the base class implementation changes.
 	 * 
 	 * @param ret an Order that will have the state of <code>this</code> copied into it
 	 * @return the Order that was passed in, with state copied into it
@@ -159,13 +149,13 @@ public class Order implements java.io.Serializable, Synchronizable {
 	}
 	
 	public int hashCode() {
-		if (this.getOrderId() == null) return super.hashCode();
+		if (this.getOrderId() == null)
+			return super.hashCode();
 		return this.getOrderId().hashCode();
 	}
 
 	/**
-	 * true/false whether or not this is a drug order
-	 * overridden in extending class drugOrders. 
+	 * true/false whether or not this is a drug order overridden in extending class drugOrders.
 	 */
 	public boolean isDrugOrder() {
 		return false;
@@ -307,8 +297,7 @@ public class Order implements java.io.Serializable, Synchronizable {
 	}
 	
 	/**
-	 * Whether or not this Order has been deleted/voided
-	 * from the system or not
+	 * Whether or not this Order has been deleted/voided from the system or not
 	 * 
 	 * @return true/false on the void status
 	 */
@@ -451,6 +440,7 @@ public class Order implements java.io.Serializable, Synchronizable {
 	
 	/**
 	 * Convenience method to determine if order is current
+	 * 
 	 * @param checkDate - the date on which to check order. if null, will use current date
 	 * @return boolean indicating whether the order was current on the input date
 	 */
@@ -500,6 +490,7 @@ public class Order implements java.io.Serializable, Synchronizable {
 	
 	/**
 	 * Convenience method to determine if order is discontinued at a given time
+	 * 
 	 * @param checkDate - the date on which to check order. if null, will use current date
 	 * @return boolean indicating whether the order was discontinued on the input date
 	 */
@@ -548,10 +539,7 @@ public class Order implements java.io.Serializable, Synchronizable {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		return "Order. orderId: " + orderId + 
-			   " patient: " + patient + 
-			   " orderType: " + orderType + 
-			   " concept: " + concept;
+		return "Order. orderId: " + orderId + " patient: " + patient + " orderType: " + orderType + " concept: " + concept;
 	}
 
 }

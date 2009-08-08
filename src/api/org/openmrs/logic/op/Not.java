@@ -14,9 +14,9 @@
 package org.openmrs.logic.op;
 
 public class Not implements Operator {
-
-    public String toString() {
-        return "NOT";
-    }
-    
+	
+	public String toString() {
+		return "NOT";
+	}
+	
 }

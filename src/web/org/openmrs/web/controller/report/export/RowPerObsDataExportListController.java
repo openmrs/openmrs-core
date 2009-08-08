@@ -51,72 +51,63 @@ import org.springframework.web.servlet.view.RedirectView;
  * 
  */
 public class RowPerObsDataExportListController extends SimpleFormController {
-
+	
 	/** Logger for this class and subclasses */
 	protected final Log log = LogFactory.getLog(getClass());
-
+	
 	/**
-	 * 
-	 * Allows for Integers to be used as values in input tags. Normally, only
-	 * strings and lists are expected
+	 * Allows for Integers to be used as values in input tags. Normally, only strings and lists are
+	 * expected
 	 * 
 	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest,
 	 *      org.springframework.web.bind.ServletRequestDataBinder)
 	 */
-	protected void initBinder(HttpServletRequest request,
-	        ServletRequestDataBinder binder) throws Exception {
+	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
-		binder.registerCustomEditor(java.lang.Integer.class,
-		                            new CustomNumberEditor(java.lang.Integer.class,
-		                                                   true));
+		binder.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, true));
 	}
-
+	
 	/**
-	 * 
-	 * The onSubmit function receives the form/command object that was modified
-	 * by the input form and saves it to the db
+	 * The onSubmit function receives the form/command object that was modified by the input form
+	 * and saves it to the db
 	 * 
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
 	 */
-	protected ModelAndView onSubmit(HttpServletRequest request,
-	        HttpServletResponse response, Object obj, BindException errors)
-	        throws Exception {
-
+	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
+	                                BindException errors) throws Exception {
+		
 		HttpSession httpSession = request.getSession();
-
+		
 		String view = getFormView();
 		if (Context.isAuthenticated()) {
 			String[] reportList = request.getParameterValues("dataExportId");
 			String action = request.getParameter("action");
-
+			
 			AdministrationService as = Context.getAdministrationService();
-
+			
 			String success = "";
 			String error = "";
-
+			
 			MessageSourceAccessor msa = getMessageSourceAccessor();
 			String deleted = msa.getMessage("general.deleted");
 			String notDeleted = msa.getMessage("general.cannot.delete");
 			String textDataExport = msa.getMessage("DataExport.dataExport");
 			String noneDeleted = msa.getMessage("DataExport.nonedeleted");
-
+			
 			String generated = msa.getMessage("DataExport.generated");
 			String notGenerated = msa.getMessage("DataExport.notGenerated");
 			String noneGenerated = msa.getMessage("DataExport.noneGenerated");
-
+			
 			if (msa.getMessage("DataExport.generate").equals(action)) {
 				if (reportList == null)
 					success = noneGenerated;
 				else {
 					ReportObjectService rs = Context.getReportObjectService();
 					EvaluationContext evalContext = new EvaluationContext();
-					evalContext.addParameterValue(new Parameter("general.user",
-					                                            "Authenticated User",
-					                                            org.openmrs.User.class,
-					                                            null),
-					                              Context.getAuthenticatedUser());
+					evalContext.addParameterValue(new Parameter("general.user", "Authenticated User",
+					        org.openmrs.User.class, null), Context.getAuthenticatedUser());
 					for (String id : reportList) {
 						DataExportReportObject report = null;
 						try {
@@ -124,24 +115,21 @@ public class RowPerObsDataExportListController extends SimpleFormController {
 							DataExportUtil.generateExport(report, null, evalContext);
 							if (!success.equals(""))
 								success += "<br/>";
-							success += textDataExport + " '" + report.getName()
-							        + "' " + generated;
-						} catch (Exception e) {
+							success += textDataExport + " '" + report.getName() + "' " + generated;
+						}
+						catch (Exception e) {
 							log.warn("Error generating report object", e);
 							if (!error.equals(""))
 								error += "<br/>";
 							if (report == null)
-								error += textDataExport + " #" + id + " "
-								        + notGenerated;
+								error += textDataExport + " #" + id + " " + notGenerated;
 							else
-								error += textDataExport + " '"
-								        + report.getName() + "' "
-								        + notGenerated;
+								error += textDataExport + " '" + report.getName() + "' " + notGenerated;
 						}
 					}
 				}
 			} else if (msa.getMessage("DataExport.delete").equals(action)) {
-
+				
 				if (reportList != null) {
 					for (String p : reportList) {
 						// TODO convenience method deleteDataExport(Integer) ??
@@ -150,74 +138,71 @@ public class RowPerObsDataExportListController extends SimpleFormController {
 							if (!success.equals(""))
 								success += "<br/>";
 							success += textDataExport + " " + p + " " + deleted;
-						} catch (APIException e) {
+						}
+						catch (APIException e) {
 							log.warn("Error deleting report object", e);
 							if (!error.equals(""))
 								error += "<br/>";
-							error += textDataExport + " " + p + " "
-							        + notDeleted;
+							error += textDataExport + " " + p + " " + notDeleted;
 						}
 					}
 				} else {
 					success += noneDeleted;
 				}
 			}
-
+			
 			view = getSuccessView();
 			if (!success.equals(""))
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success);
 			if (!error.equals(""))
 				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error);
 		}
-
+		
 		return new ModelAndView(new RedirectView(view));
 	}
-
+	
 	/**
-	 * 
-	 * This is called prior to displaying a form for the first time. It tells
-	 * Spring the form/command object to load into the request
+	 * This is called prior to displaying a form for the first time. It tells Spring the
+	 * form/command object to load into the request
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-	protected Object formBackingObject(HttpServletRequest request)
-	        throws ServletException {
-
+	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
+		
 		// default empty Object
 		List<AbstractReportObject> reportList = new Vector<AbstractReportObject>();
-
+		
 		// only fill the Object is the user has authenticated properly
 		if (Context.isAuthenticated()) {
 			ReportObjectService rs = Context.getReportObjectService();
 			// ReportObjectService rs = new TestReportService();
 			reportList = rs.getReportObjectsByType(RowPerObsDataExportReportObject.TYPE_NAME);
 		}
-
+		
 		return reportList;
 	}
-
+	
 	/**
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest,
 	 *      java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	protected Map referenceData(HttpServletRequest request, Object command,
-	        Errors errors) throws Exception {
-
+	protected Map referenceData(HttpServletRequest request, Object command, Errors errors) throws Exception {
+		
 		Map<String, Object> map = new HashMap<String, Object>();
-
+		
 		List<AbstractReportObject> reportList = (List<AbstractReportObject>) command;
 		Map<AbstractReportObject, Date> generatedDates = new HashMap<AbstractReportObject, Date>();
 		Map<AbstractReportObject, String> generatedSizes = new HashMap<AbstractReportObject, String>();
-
+		
 		// add the last modified date of the generated file as reference data
 		for (AbstractReportObject report : reportList) {
 			File file = DataExportUtil.getGeneratedFile((RowPerObsDataExportReportObject) report);
-
+			
 			if (file.exists()) {
 				generatedDates.put(report, new Date(file.lastModified()));
-
+				
 				Long size = file.length(); // returned in bytes
 				if (size > 1024 * 1024)
 					generatedSizes.put(report, size / (1024 * 1024) + "MB");
@@ -227,12 +212,12 @@ public class RowPerObsDataExportListController extends SimpleFormController {
 					generatedSizes.put(report, size + "B");
 			}
 		}
-
+		
 		map.put("generatedDates", generatedDates);
 		map.put("generatedSizes", generatedSizes);
-
+		
 		return map;
-
+		
 	}
-
+	
 }

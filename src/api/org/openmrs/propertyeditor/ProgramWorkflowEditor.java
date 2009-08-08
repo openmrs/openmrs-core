@@ -23,13 +23,14 @@ import org.openmrs.api.context.Context;
 import org.springframework.util.StringUtils;
 
 public class ProgramWorkflowEditor extends PropertyEditorSupport {
-
+	
 	private Log log = LogFactory.getLog(this.getClass());
 	
-	public ProgramWorkflowEditor() {	}
+	public ProgramWorkflowEditor() {
+	}
 	
 	public void setAsText(String text) throws IllegalArgumentException {
-		ProgramWorkflowService pws = Context.getProgramWorkflowService(); 
+		ProgramWorkflowService pws = Context.getProgramWorkflowService();
 		if (StringUtils.hasText(text)) {
 			try {
 				setValue(pws.getWorkflow(Integer.valueOf(text)));
@@ -38,20 +39,18 @@ public class ProgramWorkflowEditor extends PropertyEditorSupport {
 				log.error("Error setting text" + text, ex);
 				throw new IllegalArgumentException("Program Workflow not found: " + ex.getMessage());
 			}
-		}
-		else {
+		} else {
 			setValue(null);
 		}
 	}
-
+	
 	public String getAsText() {
-		ProgramWorkflow pw = (ProgramWorkflow)getValue();
+		ProgramWorkflow pw = (ProgramWorkflow) getValue();
 		if (pw == null) {
 			return "";
-		}
-		else {
+		} else {
 			return pw.getProgramWorkflowId().toString();
 		}
 	}
-
+	
 }

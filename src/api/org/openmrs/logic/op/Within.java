@@ -14,9 +14,9 @@
 package org.openmrs.logic.op;
 
 public class Within implements Operator {
-
-    public String toString() {
-        return "WITHIN";
-    }
-    
+	
+	public String toString() {
+		return "WITHIN";
+	}
+	
 }

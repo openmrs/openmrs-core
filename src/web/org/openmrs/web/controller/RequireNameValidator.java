@@ -23,7 +23,7 @@ import org.springframework.validation.Validator;
  *
  */
 public class RequireNameValidator implements Validator {
-
+	
 	/**
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
@@ -35,15 +35,17 @@ public class RequireNameValidator implements Validator {
 			if (pd.getWriteMethod() == null)
 				return false;
 			return true;
-		} catch (Exception ex) { }
+		}
+		catch (Exception ex) {}
 		return false;
 	}
-
+	
 	/**
-	 * @see org.springframework.validation.Validator#validate(java.lang.Object, org.springframework.validation.Errors)
+	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
+	 *      org.springframework.validation.Errors)
 	 */
 	public void validate(Object o, Errors errors) {
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
 	}
-
+	
 }

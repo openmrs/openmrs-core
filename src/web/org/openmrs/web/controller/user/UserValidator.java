@@ -20,12 +20,11 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 public class UserValidator implements Validator {
-
+	
 	/** Log for this class and subclasses */
 	protected final Log log = LogFactory.getLog(getClass());
-
+	
 	/**
-	 * 
 	 * Determines if the command object being submitted is a valid type
 	 * 
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
@@ -33,22 +32,21 @@ public class UserValidator implements Validator {
 	public boolean supports(Class c) {
 		return c.equals(User.class);
 	}
-
+	
 	/**
-	 * 
 	 * Checks the form object for any inconsistencies/errors
 	 * 
-	 * @see org.springframework.validation.Validator#validate(java.lang.Object, org.springframework.validation.Errors)
+	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
+	 *      org.springframework.validation.Errors)
 	 */
 	public void validate(Object obj, Errors errors) {
-		User user = (User)obj;
+		User user = (User) obj;
 		if (user == null) {
 			errors.rejectValue("user", "error.general");
-		}
-		else {
+		} else {
 			if (user.isVoided() && user.getVoidReason().trim().equals(""))
 				errors.rejectValue("voidReason", "error.null");
 		}
 	}
-
+	
 }

@@ -76,7 +76,7 @@ mail server have been configured correctly.
 	<tr>
 	<td colspan="2" align="center"><input name="submit" type="submit" value="Send Message"/></td>
 	</tr>
-
+</table>
 </form>
 
 

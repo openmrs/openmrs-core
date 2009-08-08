@@ -39,39 +39,41 @@ import org.springframework.web.servlet.view.RedirectView;
 
 public class FieldFormController extends SimpleFormController {
 	
-    /** Logger for this class and subclasses */
-    protected final Log log = LogFactory.getLog(getClass());
-    
+	/** Logger for this class and subclasses */
+	protected final Log log = LogFactory.getLog(getClass());
+	
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
-	    binder.registerCustomEditor(java.lang.Integer.class,
-                new CustomNumberEditor(java.lang.Integer.class, true));
+		binder.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, true));
 	}
-    
-	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse reponse, Object obj, BindException errors) throws Exception {
+	
+	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse reponse, Object obj,
+	                                             BindException errors) throws Exception {
 		
-		Field field = (Field)obj;
+		Field field = (Field) obj;
 		
-    	field = setObjects(field, request);
-
+		field = setObjects(field, request);
+		
 		return super.processFormSubmission(request, reponse, field, errors);
 	}
-
-	/** 
+	
+	/**
+	 * The onSubmit function receives the form/command object that was modified by the input form
+	 * and saves it to the db
 	 * 
-	 * The onSubmit function receives the form/command object that was modified
-	 *   by the input form and saves it to the db
-	 * 
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
+	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
+	 *      org.springframework.validation.BindException)
 	 */
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
+	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
+	                                BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
 		
 		String view = getFormView();
 		
 		if (Context.isAuthenticated()) {
-			Field field = (Field)obj;
+			Field field = (Field) obj;
 			field = setObjects(field, request);
 			Context.getFormService().updateField(field);
 			view = getSuccessView();
@@ -81,34 +83,33 @@ public class FieldFormController extends SimpleFormController {
 		
 		return new ModelAndView(new RedirectView(view));
 	}
-
+	
 	/**
-	 * 
-	 * This is called prior to displaying a form for the first time.  It tells Spring
-	 *   the form/command object to load into the request
+	 * This is called prior to displaying a form for the first time. It tells Spring the
+	 * form/command object to load into the request
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-    protected Object formBackingObject(HttpServletRequest request) throws ServletException {
-
+	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
+		
 		Field field = null;
 		
 		if (Context.isAuthenticated()) {
 			FormService fs = Context.getFormService();
 			String fieldId = request.getParameter("fieldId");
-	    	if (fieldId != null)
-	    		field = fs.getField(Integer.valueOf(fieldId));
+			if (fieldId != null)
+				field = fs.getField(Integer.valueOf(fieldId));
 		}
 		
 		if (field == null)
 			field = new Field();
-    	
-        return field;
-    }
-
+		
+		return field;
+	}
+	
 	protected Map referenceData(HttpServletRequest request, Object obj, Errors errors) throws Exception {
 		
-		Field field = (Field)obj;
+		Field field = (Field) obj;
 		Locale locale = Context.getLocale();
 		
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -122,7 +123,7 @@ public class FieldFormController extends SimpleFormController {
 				map.put("conceptName", field.getConcept().getName(locale));
 			else
 				map.put("conceptName", "");
-			defaultVerbose = Context.getAuthenticatedUser().getUserProperty(OpenmrsConstants.USER_PROPERTY_SHOW_VERBOSE); 
+			defaultVerbose = Context.getAuthenticatedUser().getUserProperty(OpenmrsConstants.USER_PROPERTY_SHOW_VERBOSE);
 		}
 		
 		map.put("defaultVerbose", defaultVerbose.equals("true") ? true : false);
@@ -131,7 +132,7 @@ public class FieldFormController extends SimpleFormController {
 	}
 	
 	private Field setObjects(Field field, HttpServletRequest request) {
-
+		
 		if (Context.isAuthenticated()) {
 			String conceptId = request.getParameter("conceptId");
 			if (conceptId != null && conceptId.length() > 0)
@@ -143,7 +144,7 @@ public class FieldFormController extends SimpleFormController {
 		}
 		
 		return field;
-
+		
 	}
-    
+	
 }

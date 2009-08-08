@@ -16,10 +16,8 @@ package org.openmrs;
 import org.openmrs.synchronization.SynchronizableInstance;
 
 /**
- * Global properties are simple key-value pairs persisted in the database
- * 
- * GPs can be thought of as something similar to environment variables used
- * in operating systems. 
+ * Global properties are simple key-value pairs persisted in the database GPs can be thought of as
+ * something similar to environment variables used in operating systems.
  */
 public class GlobalProperty implements SynchronizableInstance {
 	private String property = "";
@@ -40,7 +38,8 @@ public class GlobalProperty implements SynchronizableInstance {
 	/**
 	 * Default empty constructor
 	 */
-	public GlobalProperty() {	}
+	public GlobalProperty() {
+	}
 	
 	/**
 	 * Constructor defining the key for this GP
@@ -145,7 +144,8 @@ public class GlobalProperty implements SynchronizableInstance {
 	 * @see java.lang.Object#hashCode()
 	 */
 	public int hashCode() {
-		if (this.property == null) return super.hashCode();
+		if (this.property == null)
+			return super.hashCode();
 		
 		int hash = 5 * this.property.hashCode();
 		

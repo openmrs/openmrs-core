@@ -20,9 +20,8 @@ import org.openmrs.notification.AlertService;
 import org.openmrs.test.BaseContextSensitiveTest;
 
 /**
- * This class tests the hibernate alert data access.  
- * 
- * TODO Consider changing this and all subsequent tests to use dbunit
+ * This class tests the hibernate alert data access. TODO Consider changing this and all subsequent
+ * tests to use dbunit
  */
 public class HibernateAlertDAOTest extends BaseContextSensitiveTest {
 	
@@ -30,7 +29,7 @@ public class HibernateAlertDAOTest extends BaseContextSensitiveTest {
 	public void runBeforeEachTest() throws Exception {
 		authenticate();
 	}
-
+	
 	/**
 	 * Test that you can get alerts
 	 * 
@@ -43,5 +42,5 @@ public class HibernateAlertDAOTest extends BaseContextSensitiveTest {
 		System.out.println(as.getAllAlerts());
 		
 	}
-
+	
 }

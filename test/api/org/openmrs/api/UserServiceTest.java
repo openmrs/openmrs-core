@@ -22,8 +22,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.Cohort;
+import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
 import org.openmrs.Privilege;
@@ -32,6 +34,7 @@ import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.SkipBaseSetup;
+import org.openmrs.test.Verifies;
 import org.springframework.test.annotation.Rollback;
 
 /**
@@ -40,7 +43,7 @@ import org.springframework.test.annotation.Rollback;
 public class UserServiceTest extends BaseContextSensitiveTest {
 	
 	protected static final String XML_FILENAME = "org/openmrs/api/include/UserServiceTest.xml";
-
+	
 	/**
 	 * Test that we can create a user
 	 * 
@@ -74,10 +77,9 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	private static boolean shouldCreateUserWhoIsPatientAlreadyTestWasRun = false;
 	
 	/**
-	 * Creates a user object that was a patient/person object already.
-	 * This test is set to _NOT_ roll back when finished.  This commits the
-	 * transaction which is then checked in the method directly following:
-	 * {@link #shouldCheckThatPatientUserWasCreatedSuccessfully()}
+	 * Creates a user object that was a patient/person object already. This test is set to _NOT_
+	 * roll back when finished. This commits the transaction which is then checked in the method
+	 * directly following: {@link #shouldCheckThatPatientUserWasCreatedSuccessfully()}
 	 * 
 	 * @throws Exception
 	 */
@@ -125,15 +127,12 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * This method works in tandem with the {@link #shouldCreateUserWhoIsPatientAlready()}
-	 * test.  The @shouldCreateUserWhoIsPatientAlready test is set to commit its 
-	 * transaction.  This test then checks that the username, etc was created correctly.
-	 * 
-	 * This test deletes all data in the db at the end of it, so this
-	 * transaction needs to be marked as non-rollback.  If it was not marked
-	 * as such, then the db retains the multiple users that we've added in 
-	 * these two tests and bad things could happen.  (Namely, in tests that
-	 * expect there to be only one user in the database)
+	 * This method works in tandem with the {@link #shouldCreateUserWhoIsPatientAlready()} test. The @shouldCreateUserWhoIsPatientAlready
+	 * test is set to commit its transaction. This test then checks that the username, etc was
+	 * created correctly. This test deletes all data in the db at the end of it, so this transaction
+	 * needs to be marked as non-rollback. If it was not marked as such, then the db retains the
+	 * multiple users that we've added in these two tests and bad things could happen. (Namely, in
+	 * tests that expect there to be only one user in the database)
 	 * 
 	 * @throws Exception
 	 */
@@ -145,8 +144,8 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		// and so only has this limited setup
 		
 		try {
-			assertTrue("This test should not be run without first running 'shouldCreateUserWhoIsPatient' test method", 
-			           shouldCreateUserWhoIsPatientAlreadyTestWasRun);
+			assertTrue("This test should not be run without first running 'shouldCreateUserWhoIsPatient' test method",
+			    shouldCreateUserWhoIsPatientAlreadyTestWasRun);
 			
 			UserService userService = Context.getUserService();
 			
@@ -246,9 +245,24 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		role2.setPrivileges(privileges2);
 		
 		us.saveUser(u.addRole(role1), null);
-
+		
 		us.saveUser(u.addRole(role2), null);
 		
 	}
-
+	
+	/**
+	 * @see {@link UserService#getUsers(String,List,boolean)}
+	 */
+	@Test
+	@Verifies(value = "should match search to familyName2", method = "getUsers(String,List<QRole;>,null)")
+	public void getUsers_shouldMatchSearchToFamilyName2() throws Exception {
+		executeDataSet("org/openmrs/api/include/PersonServiceTest-extranames.xml");
+		
+		List<User> users = Context.getUserService().getUsers("Johnson", null, false);
+		Assert.assertEquals(3, users.size());
+		Assert.assertTrue(users.contains(new Patient(2)));
+		Assert.assertTrue(users.contains(new Patient(4)));
+		Assert.assertTrue(users.contains(new Patient(5)));
+	}
+	
 }

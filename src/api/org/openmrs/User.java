@@ -36,16 +36,12 @@ import org.simpleframework.xml.load.Replace;
 import org.simpleframework.xml.load.Validate;
 
 /**
- * Defines a User in the system.  A user is simply an extension
- * of a person and all that that implies.  A user is defined as someone who
- * will be manipulating the system and must log in or is being referred to in
- * another part of the system (as a provider, creator, etc)
- * 
- * Users are special <code>Person</code>s in that they have login credentials 
- * (login/password) and can have special user properties.  User properties are
- * just simple key-value pairs for either quick info or display specific info
- * that needs to be persisted (like locale preferences, search options, etc)
- * 
+ * Defines a User in the system. A user is simply an extension of a person and all that that
+ * implies. A user is defined as someone who will be manipulating the system and must log in or is
+ * being referred to in another part of the system (as a provider, creator, etc) Users are special
+ * <code>Person</code>s in that they have login credentials (login/password) and can have special
+ * user properties. User properties are just simple key-value pairs for either quick info or display
+ * specific info that needs to be persisted (like locale preferences, search options, etc)
  */
 public class User extends Person implements java.io.Serializable, Synchronizable {
 
@@ -79,7 +75,8 @@ public class User extends Person implements java.io.Serializable, Synchronizable
 	// Constructors
 
 	/** default constructor */
-	public User() { }
+	public User() {
+	}
 
 	/** constructor with id */
 	public User(Integer userId) {
@@ -96,6 +93,7 @@ public class User extends Person implements java.io.Serializable, Synchronizable
 	
 	/**
 	 * Return true if this user has all privileges
+	 * 
 	 * @return true/false if this user is defined as a super user
 	 */
 	public boolean isSuperUser() {
@@ -110,10 +108,9 @@ public class User extends Person implements java.io.Serializable, Synchronizable
 	}
 
 	/**
-	 * This method shouldn't be used directly.  Use org.openmrs.api.context.Context#hasPrivilege
-	 * so that anonymous/authenticated/proxy privileges are all included
-	 * 
-	 * Return true if this user has the specified privilege
+	 * This method shouldn't be used directly. Use org.openmrs.api.context.Context#hasPrivilege so
+	 * that anonymous/authenticated/proxy privileges are all included Return true if this user has
+	 * the specified privilege
 	 * 
 	 * @param privilege
 	 * @return true/false depending on whether user has specified privilege
@@ -177,8 +174,8 @@ public class User extends Person implements java.io.Serializable, Synchronizable
 	}
 	
 	/**
-	 * Get <i>all</i> privileges this user has.  This delves into all 
-	 * of the roles that a person has, appending unique privileges
+	 * Get <i>all</i> privileges this user has. This delves into all of the roles that a person has,
+	 * appending unique privileges
 	 * 
 	 * @return Collection of complete Privileges this user has
 	 */
@@ -198,14 +195,11 @@ public class User extends Person implements java.io.Serializable, Synchronizable
 	}
 	
 	/**
-	 * Compares two objects for similarity
-	 * 
-	 * This must pass through to the parent object (org.openmrs.Person) in order to get similarity
-	 * of person/user objects
+	 * Compares two objects for similarity This must pass through to the parent object
+	 * (org.openmrs.Person) in order to get similarity of person/user objects
 	 * 
 	 * @param obj
 	 * @return boolean true/false whether or not they are the same objects
-	 * 
 	 * @see org.openmrs.Person#equals(java.lang.Object)
 	 */
 	public boolean equals(Object obj) {
@@ -213,10 +207,8 @@ public class User extends Person implements java.io.Serializable, Synchronizable
 	}
 
 	/**
-	 * The hashcode for a user/person is used to index the objects in a tree
-	 * 
-	 * This must pass through to the parent object (org.openmrs.Person) in order to get similarity
-	 * of person/user objects
+	 * The hashcode for a user/person is used to index the objects in a tree This must pass through
+	 * to the parent object (org.openmrs.Person) in order to get similarity of person/user objects
 	 * 
 	 * @see org.openmrs.Person#hashCode()
 	 */
@@ -227,9 +219,8 @@ public class User extends Person implements java.io.Serializable, Synchronizable
 	// Property accessors
 
 	/**
-	 * 
-	 * Returns all roles attributed to this user by expanding the role list
-	 * to include the parents of the assigned roles
+	 * Returns all roles attributed to this user by expanding the role list to include the parents
+	 * of the assigned roles
 	 * 
 	 * @return all roles (inherited from parents and given) for this user
 	 */
@@ -296,6 +287,7 @@ public class User extends Person implements java.io.Serializable, Synchronizable
 
 	/**
 	 * Remove the given Role from the list of roles for this User
+	 * 
 	 * @param roleservation
 	 * @return this user with the given role removed
 	 */
@@ -340,8 +332,8 @@ public class User extends Person implements java.io.Serializable, Synchronizable
 	}
 	
 	/**
-	 * Overrides the parent setPersonId(Integer) so that we can be sure user id
-	 * is also set correctly.
+	 * Overrides the parent setPersonId(Integer) so that we can be sure user id is also set
+	 * correctly.
 	 * 
 	 * @see org.openmrs.Person#setPersonId(java.lang.Integer)
 	 */
@@ -417,8 +409,9 @@ public class User extends Person implements java.io.Serializable, Synchronizable
 	}
 	
 	/**
-	 * Get prop property from this user's properties.
-	 * If prop is not found in properties, return empty string
+	 * Get prop property from this user's properties. If prop is not found in properties, return
+	 * empty string
+	 * 
 	 * @param prop
 	 * @return property value
 	 */
@@ -430,13 +423,12 @@ public class User extends Person implements java.io.Serializable, Synchronizable
 	}
 	
 	/**
-	 * Get prop property from this user's properties.
-	 * If prop is not found in properties, return <code>defaultValue</code>
+	 * Get prop property from this user's properties. If prop is not found in properties, return
+	 * <code>defaultValue</code>
 	 * 
 	 * @param prop
 	 * @param defaultValue
 	 * @return property value
-	 * 
 	 * @see getUserProperty(java.lang.String)
 	 */
 	public String getUserProperty(String prop, String defaultValue) {
@@ -606,12 +598,10 @@ public class User extends Person implements java.io.Serializable, Synchronizable
     */
 	
 	/**
-	 * If the serializer wishes, don't serialize this entire object, just the important
-	 * parts
+	 * If the serializer wishes, don't serialize this entire object, just the important parts
 	 * 
 	 * @param sessionMap serialization session information
 	 * @return User object to serialize 
-	 * 
 	 * @see OpenmrsUtil#isShortSerialization(Map)
 	 */
 	@Replace
@@ -636,8 +626,7 @@ public class User extends Person implements java.io.Serializable, Synchronizable
 	}
 
 	/**
-	 * Returns a list of Locales for which the User 
-	 * is considered proficient.
+	 * Returns a list of Locales for which the User is considered proficient.
      * 
      * @return List of the User's proficient locales
      */
@@ -665,6 +654,7 @@ public class User extends Person implements java.io.Serializable, Synchronizable
 				}
 			}
     	}
-    	return proficientLocales;
+		// return a copy so that the list isn't changed by other processes
+		return new ArrayList<Locale>(proficientLocales);
     }
 }

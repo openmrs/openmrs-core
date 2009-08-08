@@ -51,6 +51,7 @@ public class ConceptDerived extends Concept implements java.io.Serializable, Syn
 
 	/**
 	 * Returns the rule for the derived concept
+	 * 
 	 * @return rule for the derived concept
 	 */
 	public String getRule() {
@@ -59,6 +60,7 @@ public class ConceptDerived extends Concept implements java.io.Serializable, Syn
 
 	/**
 	 * Updates rule for derived concept
+	 * 
 	 * @param rule new rule for derived concept
 	 */
 	public void setRule(String rule) {
@@ -67,6 +69,7 @@ public class ConceptDerived extends Concept implements java.io.Serializable, Syn
 
 	/**
 	 * Date that rule was last compiled
+	 * 
 	 * @return date that rule was last compiled
 	 */
 	public Date getCompileDate() {
@@ -75,6 +78,7 @@ public class ConceptDerived extends Concept implements java.io.Serializable, Syn
 
 	/**
 	 * Updates date on which rule was last compiled
+	 * 
 	 * @param date on which rule was compiled
 	 */
 	public void setCompileDate(Date compileDate) {
@@ -83,6 +87,7 @@ public class ConceptDerived extends Concept implements java.io.Serializable, Syn
 	
 	/**
 	 * Result status of last compilation of rule
+	 * 
 	 * @return result status of last compilation of rule
 	 */
 	public String getCompileStatus() {
@@ -91,6 +96,7 @@ public class ConceptDerived extends Concept implements java.io.Serializable, Syn
 	
 	/**
 	 * Sets result status of last compilation of rule
+	 * 
 	 * @param compileStatus result status of last compilation of rule
 	 */
 	public void setCompileStatus(String compileStatus) {
@@ -99,6 +105,7 @@ public class ConceptDerived extends Concept implements java.io.Serializable, Syn
 	
 	/**
 	 * Returns the full name (including package) of class implementing the rule
+	 * 
 	 * @return full name (including package) of class implementing the rule
 	 */
 	public String getClassName() {
@@ -107,6 +114,7 @@ public class ConceptDerived extends Concept implements java.io.Serializable, Syn
 	
 	/**
 	 * Updates the name of the class that implements this rule
+	 * 
 	 * @param className name of class that implements this rule
 	 */
 	public void setClassName(String className) {

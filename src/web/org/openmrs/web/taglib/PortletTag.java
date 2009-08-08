@@ -49,12 +49,12 @@ public class PortletTag extends ImportSupport {
 	}
 	
 	public int doStartTag() throws JspException {
-
 		if (url == null) {
 			log.warn("URL came through as NULL to PortletTag - this is a big problem");
 			url = "";
 		}
-		if (id == null) id = "";
+		if (id == null)
+			id = "";
 		
 		try {
 			if (url.equals(""))
@@ -71,8 +71,7 @@ public class PortletTag extends ImportSupport {
 						log.warn("no module found with id: " + moduleId);
 					else
 						url = "/module/" + moduleId + "/portlets/" + url;	
-				}
-				else
+				} else
 					url = "/portlets/" + url;
 				
 				// opening portlet tag
@@ -84,7 +83,8 @@ public class PortletTag extends ImportSupport {
 				// add attrs to request so that the controller (and portlet) can see/use them
 				pageContext.getRequest().setAttribute("org.openmrs.portlet.id", id);
 				pageContext.getRequest().setAttribute("org.openmrs.portlet.size", size);
-				pageContext.getRequest().setAttribute("org.openmrs.portlet.parameters", OpenmrsUtil.parseParameterList(parameters));
+				pageContext.getRequest().setAttribute("org.openmrs.portlet.parameters",
+				    OpenmrsUtil.parseParameterList(parameters));
 				pageContext.getRequest().setAttribute("org.openmrs.portlet.patientId", patientId);
 				pageContext.getRequest().setAttribute("org.openmrs.portlet.personId", personId);
 				pageContext.getRequest().setAttribute("org.openmrs.portlet.encounterId", encounterId);

@@ -20,10 +20,11 @@ import org.openmrs.report.EvaluationContext;
  * 
  */
 public class CohortFilter extends AbstractPatientFilter implements PatientFilter {
-
+	
 	private Cohort cohort;
 	
-	public CohortFilter() { }
+	public CohortFilter() {
+	}
 	
 	public CohortFilter(Cohort cohort) {
 		this.cohort = cohort;
@@ -49,20 +50,20 @@ public class CohortFilter extends AbstractPatientFilter implements PatientFilter
 			temp = getCohort();
 		return input == null ? temp : Cohort.intersect(input, temp);
 	}
-
+	
 	public Cohort filterInverse(Cohort input, EvaluationContext context) {
 		Cohort temp = new Cohort();
 		if (getCohort() != null)
 			temp = getCohort();
 		return Cohort.subtract(input, temp);
 	}
-
+	
 	public boolean isReadyToRun() {
 		return cohort != null;
 	}
 	
 	// getters and setters
-
+	
 	public Cohort getCohort() {
 		return cohort;
 	}
@@ -70,5 +71,5 @@ public class CohortFilter extends AbstractPatientFilter implements PatientFilter
 	public void setCohort(Cohort cohort) {
 		this.cohort = cohort;
 	}
-
+	
 }

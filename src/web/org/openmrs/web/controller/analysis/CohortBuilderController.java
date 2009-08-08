@@ -44,27 +44,30 @@ import org.springframework.web.servlet.mvc.Controller;
 import org.springframework.web.servlet.view.RedirectView;
 
 public class CohortBuilderController implements Controller {
-
+	
 	protected final Log log = LogFactory.getLog(getClass());
 	
 	private String formView;
+	
 	private String successView;
+	
 	private List<String> links;
 	
-	public CohortBuilderController() { }
+	public CohortBuilderController() {
+	}
 	
 	public String getFormView() {
 		return formView;
 	}
-
+	
 	public void setFormView(String formView) {
 		this.formView = formView;
 	}
-
+	
 	public String getSuccessView() {
 		return successView;
 	}
-
+	
 	public void setSuccessView(String successView) {
 		this.successView = successView;
 	}
@@ -72,7 +75,7 @@ public class CohortBuilderController implements Controller {
 	public List<String> getLinks() {
 		return links;
 	}
-
+	
 	public void setLinks(List<String> links) {
 		this.links = links;
 	}
@@ -84,8 +87,9 @@ public class CohortBuilderController implements Controller {
 	private CohortSearchHistory getMySearchHistory(HttpServletRequest request) {
 		return (CohortSearchHistory) Context.getVolatileUserData("CohortBuilderSearchHistory");
 	}
-
-	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	
+	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException,
+	                                                                                           IOException {
 		Map<String, Object> model = new HashMap<String, Object>();
 		if (Context.isAuthenticated()) {
 			CohortSearchHistory history = getMySearchHistory(request);
@@ -100,7 +104,8 @@ public class CohortBuilderController implements Controller {
 				for (int i = 0; i < shortcutSpecs.length; ++i) {
 					try {
 						shortcuts.add(new Shortcut(shortcutSpecs[i]));
-					} catch (Exception ex) {
+					}
+					catch (Exception ex) {
 						log.error("Exception trying to create filter from shortcut", ex);
 					}
 				}
@@ -120,10 +125,11 @@ public class CohortBuilderController implements Controller {
 			
 			List<Concept> genericDrugs = Context.getConceptService().getConceptsWithDrugsInFormulary();
 			Collections.sort(genericDrugs, new Comparator<Concept>() {
-					public int compare(Concept left, Concept right) {
-						return left.getName().getName().compareTo(right.getName().getName());
-					}
-				});
+				
+				public int compare(Concept left, Concept right) {
+					return left.getName().getName().compareTo(right.getName().getName());
+				}
+			});
 			
 			List<Concept> drugSets = new ArrayList<Concept>();
 			{
@@ -155,13 +161,22 @@ public class CohortBuilderController implements Controller {
 	}
 	
 	public class Shortcut {
+		
 		private String label;
+		
 		private PatientFilter patientFilter;
+		
 		private String className;
+		
 		private List<ArgHolder> args;
+		
 		private Boolean hasPromptArgs;
+		
 		private String vars;
-		public Shortcut() { }
+		
+		public Shortcut() {
+		}
+		
 		public Shortcut(String spec) {
 			// possible formats:
 			// (1) just the name of a saved filter
@@ -173,7 +188,7 @@ public class CohortBuilderController implements Controller {
 				label = spec.substring(0, spec.indexOf(":"));
 				spec = spec.substring(spec.indexOf(":") + 1);
 			}
-			if (spec.startsWith("@")) {		
+			if (spec.startsWith("@")) {
 				// could be "@org.openmrs.reporting.ArvTreatmentGroupFilter(group#java.lang.String)"
 				// could be "@org.openmrs.reporting.PatientCharacteristicFilter(gender=m#java.lang.String)"
 				List<ArgHolder> temp = new ArrayList<ArgHolder>();
@@ -195,7 +210,8 @@ public class CohortBuilderController implements Controller {
 						Class clz;
 						try {
 							clz = Class.forName(u[1]);
-						} catch (ClassNotFoundException ex) {
+						}
+						catch (ClassNotFoundException ex) {
 							throw new IllegalArgumentException(ex);
 						}
 						if (u[0].indexOf('=') > 0) {
@@ -240,55 +256,70 @@ public class CohortBuilderController implements Controller {
 			}
 			setLabel(label);
 		}
+		
 		public boolean isConcrete() {
 			return patientFilter != null;
 		}
+		
 		public String getLabel() {
 			return label;
 		}
+		
 		public void setLabel(String label) {
 			this.label = label;
 		}
+		
 		public PatientFilter getPatientFilter() {
 			return patientFilter;
 		}
+		
 		public void setPatientFilter(PatientFilter patientFilter) {
 			this.patientFilter = patientFilter;
 		}
+		
 		public String getClassName() {
 			return className;
 		}
+		
 		public void setClassName(String className) {
 			this.className = className;
 		}
+		
 		public List<ArgHolder> getArgs() {
 			return args;
 		}
+		
 		public void setArgs(List<ArgHolder> args) {
 			this.args = args;
 		}
+		
 		public Boolean getHasPromptArgs() {
 			return hasPromptArgs;
 		}
+		
 		public void setHasPromptArgs(Boolean hasPromptArgs) {
 			this.hasPromptArgs = hasPromptArgs;
 		}
+		
 		public String getVars() {
 			return vars;
 		}
+		
 		public void setVars(String vars) {
 			this.vars = vars;
 		}
 	}
 	
-	public ModelAndView clearHistory(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	public ModelAndView clearHistory(HttpServletRequest request, HttpServletResponse response) throws ServletException,
+	                                                                                          IOException {
 		if (Context.isAuthenticated()) {
 			setMySearchHistory(request, null);
 		}
 		return new ModelAndView(new RedirectView(getSuccessView()));
 	}
 	
-	public ModelAndView addFilter(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	public ModelAndView addFilter(HttpServletRequest request, HttpServletResponse response) throws ServletException,
+	                                                                                       IOException {
 		if (Context.isAuthenticated()) {
 			CohortSearchHistory history = getMySearchHistory(request);
 			String temp = request.getParameter("filter_id");
@@ -303,7 +334,8 @@ public class CohortBuilderController implements Controller {
 			temp = request.getParameter("search_id");
 			if (temp != null) {
 				Integer searchId = new Integer(temp);
-				PatientSearchReportObject ro = (PatientSearchReportObject) Context.getReportObjectService().getReportObject(searchId);
+				PatientSearchReportObject ro = (PatientSearchReportObject) Context.getReportObjectService().getReportObject(
+				    searchId);
 				if (ro != null)
 					history.addSearchItem(PatientSearch.createSavedSearchReference(searchId));
 				else
@@ -315,8 +347,7 @@ public class CohortBuilderController implements Controller {
 				Cohort c = Context.getCohortService().getCohort(cohortId);
 				if (c != null) {
 					history.addSearchItem(PatientSearch.createSavedCohortReference(cohortId));
-				}
-				else
+				} else
 					log.warn("addCohort(id) didn't find " + cohortId);
 			}
 			temp = request.getParameter("composition");
@@ -331,7 +362,8 @@ public class CohortBuilderController implements Controller {
 		return new ModelAndView(new RedirectView(getSuccessView()));
 	}
 	
-	public ModelAndView removeFilter(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	public ModelAndView removeFilter(HttpServletRequest request, HttpServletResponse response) throws ServletException,
+	                                                                                          IOException {
 		if (Context.isAuthenticated()) {
 			CohortSearchHistory history = getMySearchHistory(request);
 			String temp = request.getParameter("index");
@@ -344,53 +376,71 @@ public class CohortBuilderController implements Controller {
 	}
 	
 	public class ArgHolder {
+		
 		private Class argClass;
+		
 		private String argName;
+		
 		private Object argValue;
-		public ArgHolder() { }
+		
+		public ArgHolder() {
+		}
+		
 		public ArgHolder(Class argClass, String argName, Object argValue) {
 			this.argClass = argClass;
 			this.argName = argName;
 			this.argValue = argValue;
 		}
+		
 		public Class getArgClass() {
 			return argClass;
 		}
+		
 		public void setArgClass(Class argClass) {
 			this.argClass = argClass;
 		}
+		
 		public String getArgName() {
 			return argName;
 		}
+		
 		public void setArgName(String argName) {
 			this.argName = argName;
 		}
+		
 		public Object getArgValue() {
 			return argValue;
 		}
+		
 		public void setArgValue(Object argValue) {
 			this.argValue = argValue;
 		}
+		
 		public boolean hasValue() {
-			return argValue != null && ((argValue instanceof String && ((String) argValue).length() > 0) || (argValue instanceof String[] && ((String[]) argValue).length > 0));
+			return argValue != null
+			        && ((argValue instanceof String && ((String) argValue).length() > 0) || (argValue instanceof String[] && ((String[]) argValue).length > 0));
 		}
+		
 		public String toString() {
 			return "(" + argClass + ") " + argName + " = " + argValue;
 		}
 	}
 	
 	private boolean checkClassHelper(Class checkFor, Class checkFirst, Class checkNext) {
-		return checkFor.equals(checkFirst) || ((checkFirst.equals(Object.class) || checkFirst.equals(List.class) )&& checkFor.equals(checkNext));
+		return checkFor.equals(checkFirst)
+		        || ((checkFirst.equals(Object.class) || checkFirst.equals(List.class)) && checkFor.equals(checkNext));
 	}
 	
-	public ModelAndView addDynamicFilter(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, ClassNotFoundException {
+	public ModelAndView addDynamicFilter(HttpServletRequest request, HttpServletResponse response) throws ServletException,
+	                                                                                              IOException,
+	                                                                                              ClassNotFoundException {
 		if (Context.isAuthenticated()) {
 			String filterClassName = request.getParameter("filterClass");
 			String temp = request.getParameter("vars");
 			String[] args = temp.split(",");
 			log.debug(args.length + " args: vars=" + temp);
 			List<ArgHolder> argValues = new ArrayList<ArgHolder>();
-	
+			
 			for (String arg : args) {
 				log.debug("looking at: " + arg);
 				if (arg.trim().length() == 0)
@@ -414,17 +464,19 @@ public class CohortBuilderController implements Controller {
 				}
 				try {
 					c = Class.forName(u[1]);
-				} catch (ClassNotFoundException ex) {
+				}
+				catch (ClassNotFoundException ex) {
 					throw new IllegalArgumentException(ex);
 				}
-				argValues.add(new ArgHolder(c, name, isList ? request.getParameterValues(name) : request.getParameter(name)));
+				argValues
+				        .add(new ArgHolder(c, name, isList ? request.getParameterValues(name) : request.getParameter(name)));
 			}
 			
 			log.debug("argValues has size " + argValues.size());
 			
 			// Refactoring to create a PatientSearch instead of a PatientFilter
 			PatientSearch search = new PatientSearch();
-            search.setFilterClass(Class.forName(filterClassName));
+			search.setFilterClass(Class.forName(filterClassName));
 			for (ArgHolder arg : argValues) {
 				Object val = arg.getArgValue();
 				if (val instanceof String[]) {
@@ -438,7 +490,7 @@ public class CohortBuilderController implements Controller {
 				}
 			}
 			log.debug("Created PatientSearch: " + search);
-
+			
 			if (search != null) {
 				CohortSearchHistory history = getMySearchHistory(request);
 				history.addSearchItem(search);
@@ -447,12 +499,13 @@ public class CohortBuilderController implements Controller {
 		return new ModelAndView(new RedirectView(getSuccessView()));
 	}
 	
-	public ModelAndView saveHistory(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	public ModelAndView saveHistory(HttpServletRequest request, HttpServletResponse response) throws ServletException,
+	                                                                                         IOException {
 		// TODO: fix this!
 		if (Context.isAuthenticated()) {
 			String name = request.getParameter("name");
 			String description = request.getParameter("description");
-			if ( (name == null || "".equals(name)) && (description == null || "".equals(description)) ) {
+			if ((name == null || "".equals(name)) && (description == null || "".equals(description))) {
 				throw new RuntimeException("Name and Description are required");
 			}
 			CohortSearchHistory history = getMySearchHistory(request);
@@ -464,46 +517,60 @@ public class CohortBuilderController implements Controller {
 		}
 		return new ModelAndView(new RedirectView(getSuccessView()));
 	}
-
+	
 	private List<LinkSpec> linkHelper() {
-    	List<LinkSpec> ret = new ArrayList<LinkSpec>();
-    	for (String spec : links) {
-    		ret.add(new LinkSpec(spec));
-    	}
+		List<LinkSpec> ret = new ArrayList<LinkSpec>();
+		for (String spec : links) {
+			ret.add(new LinkSpec(spec));
+		}
 		return ret;
 	}
 	
 	public class LinkArg {
+		
 		String name;
+		
 		String value;
-		public LinkArg() { }
+		
+		public LinkArg() {
+		}
+		
 		public LinkArg(String name, String value) {
 			this.name = name;
 			this.value = value;
 		}
+		
 		public LinkArg(String nameEqualsValue) {
 			int i = nameEqualsValue.indexOf('=');
 			name = nameEqualsValue.substring(0, i);
 			value = nameEqualsValue.substring(i + 1);
 		}
+		
 		public String getName() {
 			return name;
 		}
+		
 		public void setName(String name) {
 			this.name = name;
 		}
+		
 		public String getValue() {
 			return value;
 		}
+		
 		public void setValue(String value) {
 			this.value = value;
 		}
 	}
 	
 	public class LinkSpec {
+		
 		String label;
+		
 		String url;
+		
 		List<LinkArg> arguments = new ArrayList<LinkArg>();
+		
 		public LinkSpec(String spec) {
 			StringTokenizer st = new StringTokenizer(spec, ":");
 			url = st.nextToken();
@@ -512,12 +579,15 @@ public class CohortBuilderController implements Controller {
 				arguments.add(new LinkArg(st.nextToken()));
 			}
 		}
+		
 		public List<LinkArg> getArguments() {
 			return arguments;
 		}
+		
 		public String getLabel() {
 			return label;
 		}
+		
 		public String getUrl() {
 			return url;
 		}

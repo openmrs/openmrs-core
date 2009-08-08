@@ -20,15 +20,13 @@ import org.junit.Test;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
- * This class tests all methods that are not getter or setters 
- * in the Role java object
- * 
- * TODO: finish this test class for Role
+ * This class tests all methods that are not getter or setters in the Role java object TODO: finish
+ * this test class for Role
  * 
  * @see Role
  */
 public class RoleTest {
-
+	
 	/**
 	 * Test the adding and removing of privileges to a role
 	 * 
@@ -44,26 +42,31 @@ public class RoleTest {
 		
 		Privilege priv1 = new Privilege("priv1");
 		role.addPrivilege(priv1);
-		assertTrue("The role should have 1 privilege but instead has " + role.getPrivileges().size(), role.getPrivileges().size() == 1);
+		assertTrue("The role should have 1 privilege but instead has " + role.getPrivileges().size(), role.getPrivileges()
+		        .size() == 1);
 		
 		// adding the same privilege should not be allowed
 		role.addPrivilege(priv1);
-		assertTrue("The role should have 1 privilege but instead has " + role.getPrivileges().size(), role.getPrivileges().size() == 1);
+		assertTrue("The role should have 1 privilege but instead has " + role.getPrivileges().size(), role.getPrivileges()
+		        .size() == 1);
 		
 		// adding a different privilege with the same name should not be allowed
 		Privilege priv2 = new Privilege(priv1.getPrivilege());
 		role.addPrivilege(priv2);
-		assertTrue("The role should have 1 privilege but instead has " + role.getPrivileges().size(), role.getPrivileges().size() == 1);
+		assertTrue("The role should have 1 privilege but instead has " + role.getPrivileges().size(), role.getPrivileges()
+		        .size() == 1);
 		
 		Privilege priv3 = new Privilege("priv3");
 		
 		// removing a fake privilege shouldn't do anything
 		role.removePrivilege(priv3);
-		assertTrue("The role should have 1 privilege but instead has " + role.getPrivileges().size(), role.getPrivileges().size() == 1);
+		assertTrue("The role should have 1 privilege but instead has " + role.getPrivileges().size(), role.getPrivileges()
+		        .size() == 1);
 		
 		// removing the first privilege
 		role.removePrivilege(priv1);
-		assertTrue("The role should have 0 privileges but instead has " + role.getPrivileges().size(), role.getPrivileges().size() == 0);
+		assertTrue("The role should have 0 privileges but instead has " + role.getPrivileges().size(), role.getPrivileges()
+		        .size() == 0);
 	}
 	
 	/**
@@ -85,11 +88,11 @@ public class RoleTest {
 		assertTrue("This roles should have the privilege", role.hasPrivilege("priv1"));
 		assertFalse("This roles should not have the privilege", role.hasPrivilege("some other privilege name"));
 		
-		
 		// check super user "super" status
 		role = new Role(OpenmrsConstants.SUPERUSER_ROLE);
 		
-		assertTrue("Super users are super special and should have all privileges", role.hasPrivilege("Some weird privilege name that shouldn't be there"));
+		assertTrue("Super users are super special and should have all privileges", role
+		        .hasPrivilege("Some weird privilege name that shouldn't be there"));
 	}
 	
 	/**

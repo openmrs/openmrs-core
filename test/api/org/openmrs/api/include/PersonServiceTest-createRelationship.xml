@@ -16,9 +16,9 @@
   <concept_name_tag concept_name_tag_id="14" tag="preferred_ZM" description="preferred name in Zambia" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
   <concept_name_tag concept_name_tag_id="15" tag="preferred_ZW" description="preferred name in Zimbabwe" creator="1" date_created="2007-06-20 00:00:00.0" voided="false"/>
   <global_property property="database_version" property_value="1.4.0.16"/>
-  <relationship relationship_id="1" person_a="2" relationship="2" person_b="1" creator="1" date_created="2008-01-01 00:00:00.0" voided="false"/>
-  <relationship_type relationship_type_id="2" a_is_to_b="Parent" b_is_to_a="Child" preferred="0" weight="0" description="" creator="1" date_created="2007-01-01 00:00:00.0"/>
-  <relationship_type relationship_type_id="3" a_is_to_b="Doctor" b_is_to_a="Patient" preferred="0" weight="0" description="Relationship from a primary care provider to the patient" creator="1" date_created="2007-01-01 00:00:00.0"/>
-  <relationship_type relationship_type_id="4" a_is_to_b="Sibling" b_is_to_a="Sibling" preferred="0" weight="0" description="Relationship between brother/sister, brother/brother, and sister/sister" creator="1" date_created="2007-01-01 00:00:00.0"/>
-  <relationship_type relationship_type_id="5" a_is_to_b="Aunt/Uncle" b_is_to_a="Niece/Nephew" preferred="0" weight="0" description="" creator="1" date_created="2007-01-01 00:00:00.0"/>
+  <relationship relationship_id="1" person_a="2" relationship="2" person_b="1" creator="1" date_created="2008-01-01 00:00:00.0" voided="false" guid="b70cb368-cf80-4a22-9d75-5d0d1f9b75dc"/>
+  <relationship_type relationship_type_id="2" a_is_to_b="Parent" b_is_to_a="Child" preferred="0" weight="0" description="" creator="1" date_created="2007-01-01 00:00:00.0" guid="7aa68365-e758-4dce-b918-2f8a1f26bb1c"/>
+  <relationship_type relationship_type_id="3" a_is_to_b="Doctor" b_is_to_a="Patient" preferred="0" weight="0" description="Relationship from a primary care provider to the patient" creator="1" date_created="2007-01-01 00:00:00.0" guid="21275268-89df-42f9-b0e3-b1996a25eed5"/>
+  <relationship_type relationship_type_id="4" a_is_to_b="Sibling" b_is_to_a="Sibling" preferred="0" weight="0" description="Relationship between brother/sister, brother/brother, and sister/sister" creator="1" date_created="2007-01-01 00:00:00.0" guid="3fb0da52-68ad-4b87-aa42-418b19e81d43"/>
+  <relationship_type relationship_type_id="5" a_is_to_b="Aunt/Uncle" b_is_to_a="Niece/Nephew" preferred="0" weight="0" description="" creator="1" date_created="2007-01-01 00:00:00.0" guid="9400232c-7979-4091-8b84-2726a33e9c24"/>
 </dataset>

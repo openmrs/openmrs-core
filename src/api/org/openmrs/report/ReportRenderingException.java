@@ -19,9 +19,9 @@ import org.openmrs.api.APIException;
  *
  */
 public class ReportRenderingException extends APIException {
-
-    private static final long serialVersionUID = 1L;
-
+	
+	private static final long serialVersionUID = 1L;
+	
 	public ReportRenderingException(String message) {
 		super(message);
 	}

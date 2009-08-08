@@ -13,7 +13,12 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Date;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.logging.Log;
@@ -25,6 +30,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.stat.QueryStatistics;
 import org.hibernate.stat.Statistics;
+import org.openmrs.GlobalProperty;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
@@ -36,10 +42,8 @@ import org.springframework.orm.hibernate3.SessionHolder;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 /**
- * Hibernate specific implementation of the {@link ContextDAO}.
- * 
- * These methods should not be used directly, instead, the methods
- * on the static {@link Context} file should be used.
+ * Hibernate specific implementation of the {@link ContextDAO}. These methods should not be used
+ * directly, instead, the methods on the static {@link Context} file should be used.
  * 
  * @see ContextDAO
  * @see Context
@@ -54,8 +58,8 @@ public class HibernateContextDAO implements ContextDAO {
 	private SessionFactory sessionFactory;
 
 	/**
-	 * Session factory to use for this DAO.  This is usually
-	 * injected by spring and its application context.
+	 * Session factory to use for this DAO. This is usually injected by spring and its application
+	 * context.
 	 * 
 	 * @param sessionFactory
 	 */
@@ -66,8 +70,7 @@ public class HibernateContextDAO implements ContextDAO {
 	/**
 	 * @see org.openmrs.api.db.ContextDAO#authenticate(java.lang.String, java.lang.String)
 	 */
-	public User authenticate(String login, String password)
-			throws ContextAuthenticationException {
+	public User authenticate(String login, String password) throws ContextAuthenticationException {
 		
 		String errorMsg = "Invalid username and/or password: " + login;
 		
@@ -80,24 +83,18 @@ public class HibernateContextDAO implements ContextDAO {
 			// loginWithoutDash is used to compare to the system id
 			String loginWithDash = login;
 			if (login.matches("\\d{2,}"))
-				loginWithDash = login.substring(0, login.length() - 1) + "-" 
-						+ login.charAt(login.length() - 1);
+				loginWithDash = login.substring(0, login.length() - 1) + "-" + login.charAt(login.length() - 1);
 	
 			try {
-				candidateUser = (User) session
-						.createQuery(
-							"from User u where (u.username = ? or u.systemId = ? or u.systemId = ?) and u.voided = 0")
-						.setString(0, login)
-						.setString(1, login)
-						.setString(2, loginWithDash)
-						.uniqueResult();
-			} catch (HibernateException he) {
-				log.error("Got hibernate exception while logging in: '" + login
-						+ "'", he);
-			} catch (Exception e) {
-				log.error(
-						"Got regular exception while logging in: '" + login + "'",
-						e);
+				candidateUser = (User) session.createQuery(
+				    "from User u where (u.username = ? or u.systemId = ? or u.systemId = ?) and u.voided = 0").setString(0,
+				    login).setString(1, login).setString(2, loginWithDash).uniqueResult();
+			}
+			catch (HibernateException he) {
+				log.error("Got hibernate exception while logging in: '" + login + "'", he);
+			}
+			catch (Exception e) {
+				log.error("Got regular exception while logging in: '" + login + "'", e);
 			}
 		}
 		
@@ -108,32 +105,30 @@ public class HibernateContextDAO implements ContextDAO {
 			
 			String lockoutTimeString = candidateUser.getUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, null);
 			Long lockoutTime = null;
-			if (lockoutTimeString != null)
+			if (lockoutTimeString != null && !lockoutTimeString.equals("0"))
 				lockoutTime = Long.valueOf(lockoutTimeString);
 			
 			// if they've been locked out, don't continue with the authentication
 			if (lockoutTime != null) {
 				// unlock them after 5 mins, otherwise reset the timestamp 
 				// to now and make them wait another 5 mins 
-				if (new Date().getTime() - lockoutTime > 300000)
+				if (new Date().getTime() - lockoutTime > 300000) {
 					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, "0");
-				else {
-					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, String.valueOf(new Date().getTime()));
-					throw new ContextAuthenticationException("Invalid number of connection attempts. Please try again later.");
+					candidateUser.removeUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP);
+					saveUserProperties(candidateUser);
+				} else {
+					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, String
+					        .valueOf(new Date().getTime()));
+					throw new ContextAuthenticationException(
+					        "Invalid number of connection attempts. Please try again later.");
 				}
 			}
 			
-			String passwordOnRecord = (String) session.createSQLQuery(
-					"select password from users where user_id = ?")
-						.addScalar("password", Hibernate.STRING)
-						.setInteger(0, candidateUser.getUserId())
-						.uniqueResult();
+			String passwordOnRecord = (String) session.createSQLQuery("select password from users where user_id = ?")
+			        .addScalar("password", Hibernate.STRING).setInteger(0, candidateUser.getUserId()).uniqueResult();
 			
-			String saltOnRecord = (String) session.createSQLQuery(
-					"select salt from users where user_id = ?")
-					.addScalar("salt", Hibernate.STRING)
-					.setInteger(0, candidateUser.getUserId())
-					.uniqueResult();
+			String saltOnRecord = (String) session.createSQLQuery("select salt from users where user_id = ?").addScalar(
+			    "salt", Hibernate.STRING).setInteger(0, candidateUser.getUserId()).uniqueResult();
 	
 			String hashedPassword = Security.encodeString(password + saltOnRecord);
 			
@@ -148,26 +143,25 @@ public class HibernateContextDAO implements ContextDAO {
 				Integer attempts = getUsersLoginAttempts(candidateUser);
 				if (attempts > 0) {
 					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, "0");
-					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, "0");
+					candidateUser.removeUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP);
 					saveUserProperties(candidateUser);
 				}
 				
 				// skip out of the method early (instead of throwing the exception)
 				// to indicate that this is the valid user
 				return candidateUser;
-			}
-			else {
+			} else {
 				// the user failed the username/password, increment their
 				// attempts here and set the "lockout" timestamp if necessary
 				Integer attempts = getUsersLoginAttempts(candidateUser);
 				
 				attempts++;
 				
-				if (attempts >= 5) {
+				if (attempts >= 8) {
 					// set the user as locked out at this exact time
-					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, String.valueOf(new Date().getTime()));
-				}
-				else {
+					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, String
+					        .valueOf(new Date().getTime()));
+				} else {
 					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, String.valueOf(attempts));
 				}
 				
@@ -177,15 +171,13 @@ public class HibernateContextDAO implements ContextDAO {
 		
 		// throw this exception only once in the same place with the same
 		// message regardless of username/pw combo entered
-		log.info("Failed login attempt (login=" + login + ") - "
-					+ errorMsg);
+		log.info("Failed login attempt (login=" + login + ") - " + errorMsg);
 		throw new ContextAuthenticationException(errorMsg);
 		
 	}
 	
 	/**
-	 * Call the UserService to save the given user while proxying the
-	 * privileges needed to do so.
+	 * Call the UserService to save the given user while proxying the privileges needed to do so.
 	 * 
 	 * @param user the User to save
 	 */
@@ -194,8 +186,7 @@ public class HibernateContextDAO implements ContextDAO {
 	}
 	
 	/**
-	 * Get the integer stored for the given user that is their
-	 * number of login attempts
+	 * Get the integer stored for the given user that is their number of login attempts
 	 * 
 	 * @param user the user to check
 	 * @return the # of login attempts for this user defaulting to zero if none defined
@@ -205,7 +196,8 @@ public class HibernateContextDAO implements ContextDAO {
 		Integer attempts = 0;
 		try {
 			attempts = Integer.valueOf(attemptsString);
-		} catch (NumberFormatException e) {
+		}
+		catch (NumberFormatException e) {
 			// skip over errors and leave the attempts at zero
 		}
 		return attempts;
@@ -220,18 +212,14 @@ public class HibernateContextDAO implements ContextDAO {
 		log.debug("HibernateContext: Opening Hibernate Session");
 		if (TransactionSynchronizationManager.hasResource(sessionFactory)) {
 			if (log.isDebugEnabled())
-				log.debug("Participating in existing session ("
-						+ sessionFactory.hashCode() + ")");
+				log.debug("Participating in existing session (" + sessionFactory.hashCode() + ")");
 			participate = true;
 		} else {
 			if (log.isDebugEnabled())
-				log.debug("Registering session with synchronization manager ("
-						+ sessionFactory.hashCode() + ")");
-			Session session = SessionFactoryUtils.getSession(sessionFactory,
-					true);
+				log.debug("Registering session with synchronization manager (" + sessionFactory.hashCode() + ")");
+			Session session = SessionFactoryUtils.getSession(sessionFactory, true);
 			session.setFlushMode(FlushMode.MANUAL);
-			TransactionSynchronizationManager.bindResource(sessionFactory,
-					new SessionHolder(session));
+			TransactionSynchronizationManager.bindResource(sessionFactory, new SessionHolder(session));
 		}
 	}
 
@@ -250,7 +238,8 @@ public class HibernateContextDAO implements ContextDAO {
 						Session session = ((SessionHolder)value).getSession();
 						SessionFactoryUtils.releaseSession(session, sessionFactory);
 					}
-				} catch (RuntimeException e) {
+				}
+				catch (RuntimeException e) {
 					log.error("Unexpected exception on closing Hibernate Session", e);
 				}
 			}
@@ -305,6 +294,110 @@ public class HibernateContextDAO implements ContextDAO {
 
 	}
 
+	/**
+	 * Compares core data against the current database and inserts data into the database where
+	 * necessary
+	 */
+	public void checkCoreDataset() {
+		PreparedStatement psSelect;
+		PreparedStatement psInsert;
+		PreparedStatement psUpdate;
+		Map<String, String> map;
+		
+		// setting core roles
+		try {
+			Connection conn = sessionFactory.getCurrentSession().connection();
+			
+			// Ticket #900 - Made explicit reference to columns
+			psSelect = conn.prepareStatement("SELECT role, description FROM role WHERE UPPER(role) = UPPER(?)");
+			psInsert = conn.prepareStatement("INSERT INTO role (role, description) VALUES (?, ?)");
+			
+			map = OpenmrsConstants.CORE_ROLES();
+			for (String role : map.keySet()) {
+				psSelect.setString(1, role);
+				ResultSet result = psSelect.executeQuery();
+				if (!result.next()) {
+					/*
+					psInsert.setString(1, role);
+					psInsert.setString(2, map.get(role));
+					psInsert.execute();
+					*/
+					throw new RuntimeException("Create-core-roles code has not been updated for sync");
+				}
+			}
+			
+			conn.commit();
+		}
+		catch (Exception e) {
+			log.error("Error while setting core roles for openmrs system", e);
+		}
+		
+		// setting core privileges
+		try {
+			Connection conn = sessionFactory.getCurrentSession().connection();
+			
+			// Ticket #900 - Made explicit reference to columns
+			psSelect = conn
+			        .prepareStatement("SELECT privilege, description FROM privilege WHERE UPPER(privilege) = UPPER(?)");
+			psInsert = conn.prepareStatement("INSERT INTO privilege (privilege, description) VALUES (?, ?)");
+			
+			map = OpenmrsConstants.CORE_PRIVILEGES();
+			for (String priv : map.keySet()) {
+				psSelect.setString(1, priv);
+				ResultSet result = psSelect.executeQuery();
+				if (!result.next()) {
+					/*
+					psInsert.setString(1, priv);
+					psInsert.setString(2, map.get(priv));
+					psInsert.execute();
+					*/
+					throw new RuntimeException("Create-core-privileges code has not been updated for sync");
+				}
+			}
+			
+			conn.commit();
+		}
+		catch (SQLException e) {
+			log.error("Error while setting core privileges", e);
+		}
+		
+		// setting core global properties
+		try {
+			Connection conn = sessionFactory.getCurrentSession().connection();
+			
+			// Ticket #900 - Made explicit reference to columns
+			psSelect = conn
+			        .prepareStatement("SELECT property, property_value, description FROM global_property WHERE UPPER(property) = UPPER(?)");
+			psInsert = conn
+			        .prepareStatement("INSERT INTO global_property (property, property_value, description) VALUES (?, ?, ?)");
+			// this update should only be temporary until everyone has the new global property description code 
+			psUpdate = conn
+			        .prepareStatement("UPDATE global_property SET description = ? WHERE UPPER(property) = UPPER(?) AND description IS null");
+			
+			for (GlobalProperty gp : OpenmrsConstants.CORE_GLOBAL_PROPERTIES()) {
+				psSelect.setString(1, gp.getProperty());
+				ResultSet result = psSelect.executeQuery();
+				if (!result.next()) {
+					psInsert.setString(1, gp.getProperty());
+					psInsert.setString(2, gp.getPropertyValue());
+					psInsert.setString(3, gp.getDescription());
+					psInsert.execute();
+				} else {
+					// should only be temporary 
+					psUpdate.setString(1, gp.getDescription());
+					psUpdate.setString(2, gp.getProperty());
+					psUpdate.execute();
+				}
+			}
+			
+			conn.commit();
+		}
+		catch (SQLException e) {
+			log.error("Error while setting core global properties", e);
+		}
+		
+	}
+	
 	private void showUsageStatistics() {
 		if (sessionFactory.getStatistics().isStatisticsEnabled()) {
 			log.debug("Getting query statistics: ");

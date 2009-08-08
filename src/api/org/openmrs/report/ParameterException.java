@@ -20,14 +20,14 @@ import org.openmrs.api.APIException;
  */
 public class ParameterException extends APIException {
 	
-    private static final long serialVersionUID = 3393200101L;
-
-    public ParameterException() {
-    	super();
-    }
-    
+	private static final long serialVersionUID = 3393200101L;
+	
+	public ParameterException() {
+		super();
+	}
+	
 	public ParameterException(String message) {
 		super(message);
 	}
-
+	
 }

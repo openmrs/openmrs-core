@@ -14,9 +14,9 @@
 package org.openmrs.logic.op;
 
 public class Equals implements Operator {
-
-    public String toString() {
-        return "EQUALS";
-    }
-    
+	
+	public String toString() {
+		return "EQUALS";
+	}
+	
 }

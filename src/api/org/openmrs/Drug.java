@@ -88,7 +88,8 @@ public class Drug implements java.io.Serializable, Synchronizable {
 	}
 	
 	public int hashCode() {
-		if (this.getDrugId() == null) return super.hashCode();
+		if (this.getDrugId() == null)
+			return super.hashCode();
 		return this.getDrugId().hashCode();
 	}
 
@@ -105,6 +106,7 @@ public class Drug implements java.io.Serializable, Synchronizable {
 
 	/**
 	 * Sets the internal identification number for this drug
+	 * 
 	 * @param drugId
 	 */
 	public void setDrugId(Integer drugId) {
@@ -112,8 +114,8 @@ public class Drug implements java.io.Serializable, Synchronizable {
 	}
 
 	/**
-	 * Gets the entires concept drug name in the form of
-	 * CONCEPTNAME (Drug: DRUGNAME)
+	 * Gets the entires concept drug name in the form of CONCEPTNAME (Drug: DRUGNAME)
+	 * 
 	 * @param locale
 	 * @return full drug name (with concept name appended)
 	 */
@@ -125,6 +127,7 @@ public class Drug implements java.io.Serializable, Synchronizable {
 	}
 	/**
 	 * Gets the name of this drug
+	 * 
 	 * @return String
 	 */
 	public String getName() {
@@ -133,6 +136,7 @@ public class Drug implements java.io.Serializable, Synchronizable {
 
 	/**
 	 * Sets the name of this drug
+	 * 
 	 * @param name
 	 */
 	public void setName(String name) {
@@ -141,6 +145,7 @@ public class Drug implements java.io.Serializable, Synchronizable {
 
 	/**
 	 * Gets whether or not this is a combination drug
+	 * 
 	 * @return Boolean
 	 */
 	public Boolean isCombination() {
@@ -153,6 +158,7 @@ public class Drug implements java.io.Serializable, Synchronizable {
 
 	/**
 	 * Sets whether or not this is a combination drug
+	 * 
 	 * @param combination
 	 */
 	public void setCombination(Boolean combination) {
@@ -161,6 +167,7 @@ public class Drug implements java.io.Serializable, Synchronizable {
 
 	/**
 	 * Gets the dose strength of this drug
+	 * 
 	 * @return Double
 	 */
 	public Double getDoseStrength() {
@@ -169,6 +176,7 @@ public class Drug implements java.io.Serializable, Synchronizable {
 
 	/**
 	 * Sets the dose strength
+	 * 
 	 * @param Double
 	 */
 	public void setDoseStrength(Double doseStrength) {
@@ -177,6 +185,7 @@ public class Drug implements java.io.Serializable, Synchronizable {
 
 	/**
 	 * Gets the units
+	 * 
 	 * @return String
 	 */
 	public String getUnits() {
@@ -185,6 +194,7 @@ public class Drug implements java.io.Serializable, Synchronizable {
 
 	/**
 	 * Sets the units
+	 * 
 	 * @param String
 	 */
 	public void setUnits(String units) {
@@ -193,6 +203,7 @@ public class Drug implements java.io.Serializable, Synchronizable {
 
 	/**
 	 * Gets the date created
+	 * 
 	 * @return Date
 	 */
 	public Date getDateCreated() {
@@ -201,6 +212,7 @@ public class Drug implements java.io.Serializable, Synchronizable {
 
 	/**
 	 * Sets the date this was created
+	 * 
 	 * @param Date
 	 */
 	public void setDateCreated(Date dateCreated) {
@@ -209,6 +221,7 @@ public class Drug implements java.io.Serializable, Synchronizable {
 
 	/**
 	 * Gets the concept this drug is tied to
+	 * 
 	 * @return Concept
 	 */
 	public Concept getConcept() {
@@ -217,6 +230,7 @@ public class Drug implements java.io.Serializable, Synchronizable {
 
 	/**
 	 * Sets the concept this drug is tied to
+	 * 
 	 * @param Concept
 	 */
 	public void setConcept(Concept concept) {
@@ -225,6 +239,7 @@ public class Drug implements java.io.Serializable, Synchronizable {
 
 	/**
 	 * Gets the creator of this drug record
+	 * 
 	 * @return User
 	 */
 	public User getCreator() {
@@ -233,6 +248,7 @@ public class Drug implements java.io.Serializable, Synchronizable {
 
 	/**
 	 * Sets the creator of this drug record
+	 * 
 	 * @param User
 	 */
 	public void setCreator(User creator) {

@@ -38,6 +38,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.hl7.HL7InError;
 import org.openmrs.hl7.HL7InQueueProcessor;
 import org.openmrs.hl7.HL7Service;
+import org.openmrs.util.FormConstants;
 import org.openmrs.util.OpenmrsConstants;
 
 import ca.uhn.hl7v2.HL7Exception;
@@ -49,13 +50,14 @@ import ca.uhn.hl7v2.model.Type;
 import ca.uhn.hl7v2.model.Varies;
 import ca.uhn.hl7v2.model.v25.datatype.CE;
 import ca.uhn.hl7v2.model.v25.datatype.CWE;
+import ca.uhn.hl7v2.model.v25.datatype.CX;
 import ca.uhn.hl7v2.model.v25.datatype.DLD;
 import ca.uhn.hl7v2.model.v25.datatype.DT;
 import ca.uhn.hl7v2.model.v25.datatype.DTM;
+import ca.uhn.hl7v2.model.v25.datatype.ID;
 import ca.uhn.hl7v2.model.v25.datatype.IS;
 import ca.uhn.hl7v2.model.v25.datatype.NM;
 import ca.uhn.hl7v2.model.v25.datatype.PL;
-import ca.uhn.hl7v2.model.v25.datatype.SI;
 import ca.uhn.hl7v2.model.v25.datatype.ST;
 import ca.uhn.hl7v2.model.v25.datatype.TM;
 import ca.uhn.hl7v2.model.v25.datatype.TS;
@@ -73,13 +75,10 @@ import ca.uhn.hl7v2.parser.EncodingCharacters;
 import ca.uhn.hl7v2.parser.PipeParser;
 
 /**
- * Parses ORUR01 messages into openmrs Encounter objects
- * 
- * Usage:
- * GenericParser parser = new GenericParser();
- * MessageTypeRouter router = new MessageTypeRouter();
- * router.registerApplication("ORU", "R01", new ORUR01Handler());
- * Message hl7message = parser.parse(somehl7string);
+ * Parses ORUR01 messages into openmrs Encounter objects Usage: GenericParser parser = new
+ * GenericParser(); MessageTypeRouter router = new MessageTypeRouter();
+ * router.registerApplication("ORU", "R01", new ORUR01Handler()); Message hl7message =
+ * parser.parse(somehl7string);
  * 
  * @see HL7InQueueProcessor
  */
@@ -88,8 +87,8 @@ public class ORUR01Handler implements Application {
 	private Log log = LogFactory.getLog(ORUR01Handler.class);
 
 	/**
-	 * Always returns true, assuming that the router calling this handler will
-	 * only call this handler with ORU_R01 messages.
+	 * Always returns true, assuming that the router calling this handler will only call this
+	 * handler with ORU_R01 messages.
 	 * 
 	 * @returns true
 	 */
@@ -99,12 +98,19 @@ public class ORUR01Handler implements Application {
 
 	/**
 	 * Processes an ORU R01 event message
+	 * 
+	 * @should create encounter and obs from hl7 message
+	 * @should create basic concept proposal
+	 * @should create concept proposal and with obs alongside
+	 * @should not create problem list observation with concept proposals
+	 * @should append to an existing encounter
+	 * @should create obs group for OBRs
+	 * @should create obs valueCodedName 
 	 */
 	public Message processMessage(Message message) throws ApplicationException {
 
 		if (!(message instanceof ORU_R01))
-			throw new ApplicationException(
-					"Invalid message sent to ORU_R01 handler");
+			throw new ApplicationException("Invalid message sent to ORU_R01 handler");
 
 		log.debug("Processing ORU_R01 message");
 
@@ -112,11 +118,12 @@ public class ORUR01Handler implements Application {
 		try {
 			ORU_R01 oru = (ORU_R01) message;
 			response = processORU_R01(oru);
-		} catch (ClassCastException e) {
-			log.error("Error casting " + message.getClass().getName()
-					+ " to ORU_R01", e);
+		}
+		catch (ClassCastException e) {
+			log.error("Error casting " + message.getClass().getName() + " to ORU_R01", e);
 			throw new ApplicationException("Invalid message type for handler");
-		} catch (HL7Exception e) {
+		}
+		catch (HL7Exception e) {
 			log.error("Error while processing ORU_R01 message", e);
 			throw new ApplicationException(e);
 		}
@@ -133,6 +140,7 @@ public class ORUR01Handler implements Application {
 	 * @return the processed message
 	 * @throws HL7Exception
 	 */
+	@SuppressWarnings("deprecation")
 	private Message processORU_R01(ORU_R01 oru) throws HL7Exception {
 
 		// TODO: ideally, we would branch or alter our behavior based on the
@@ -159,24 +167,22 @@ public class ORUR01Handler implements Application {
 		// application)
 		String messageControlId = msh.getMessageControlID().getValue();
 		if (log.isDebugEnabled())
-			log.debug("Found HL7 message in inbound queue with control id = "
-					+ messageControlId);
+			log.debug("Found HL7 message in inbound queue with control id = " + messageControlId);
 
 		HL7Service hl7Service = Context.getHL7Service();
 
 		// create the encounter
 		Patient patient = getPatient(pid);
 		if (log.isDebugEnabled())
-			log.debug("Processing HL7 message for patient "
-					+ patient.getPatientId());
+			log.debug("Processing HL7 message for patient " + patient.getPatientId());
 		Encounter encounter = createEncounter(msh, patient, pv1, orc);
 		
 		// do the discharge to location logic
 		try {
 			updateHealthCenter(patient, pv1);
-		} catch (Exception e) {
-			log.error("Error while processing Discharge To Location ("
-					+ messageControlId + ")", e);
+		}
+		catch (Exception e) {
+			log.error("Error while processing Discharge To Location (" + messageControlId + ")", e);
 		}
 
 		// list of concepts proposed in the obs of this encounter.
@@ -186,22 +192,28 @@ public class ORUR01Handler implements Application {
 		
 		// create observations
 		if (log.isDebugEnabled())
-			log.debug("Creating observations for message " + messageControlId
-					+ "...");
+			log.debug("Creating observations for message " + messageControlId + "...");
 		// we ignore all MEDICAL_RECORD_OBSERVATIONS that are OBRs.  We do not 
 		// create obs_groups for them
-		String ignoreOBRConceptId = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_MEDICAL_RECORD_OBSERVATIONS, "1238");
-		Concept ignoreOBRConcept = null;
+		List<Concept> ignoredConcepts = new ArrayList<Concept>();
+		
+		String ignoreOBRConceptId = Context.getAdministrationService().getGlobalProperty(
+		    OpenmrsConstants.GLOBAL_PROPERTY_MEDICAL_RECORD_OBSERVATIONS, "1238");
 		if (ignoreOBRConceptId.length() > 0)
-			ignoreOBRConcept = new Concept(Integer.valueOf(ignoreOBRConceptId)); 
+			ignoredConcepts.add(new Concept(Integer.valueOf(ignoreOBRConceptId)));
+		
+		// we also ignore all PROBLEM_LIST that are OBRs
+		ignoreOBRConceptId = Context.getAdministrationService().getGlobalProperty(
+		    OpenmrsConstants.GLOBAL_PROPERTY_PROBLEM_LIST, "1284");
+		if (ignoreOBRConceptId.length() > 0)
+			ignoredConcepts.add(new Concept(Integer.valueOf(ignoreOBRConceptId)));
 		
 		ORU_R01_PATIENT_RESULT patientResult = oru.getPATIENT_RESULT();
 		int numObr = patientResult.getORDER_OBSERVATIONReps();
 		for (int i = 0; i < numObr; i++) {
 			if (log.isDebugEnabled())
 				log.debug("Processing OBR (" + i + " of " + numObr + ")");
-			ORU_R01_ORDER_OBSERVATION orderObs = patientResult
-					.getORDER_OBSERVATION(i);
+			ORU_R01_ORDER_OBSERVATION orderObs = patientResult.getORDER_OBSERVATION(i);
 			
 			// the parent obr 
 			OBR obr = orderObs.getOBR();
@@ -209,8 +221,8 @@ public class ORUR01Handler implements Application {
 			// if we're not ignoring this obs group, create an 
 			// Obs grouper object that the underlying obs objects will use
 			Obs obsGrouper = null;
-			Concept obrConcept = getConcept(obr, idToGuidMap);
-			if (obrConcept != null && ignoreOBRConcept != null && !ignoreOBRConcept.equals(obrConcept)) {
+			Concept obrConcept = getConcept(obr.getUniversalServiceIdentifier(), messageControlId, idToGuidMap);
+			if (obrConcept != null && !ignoredConcepts.contains(obrConcept)) {
 				// maybe check for a parent obs group from OBR-29 Parent ?
 				
 				// create an obs for this obs group too
@@ -239,7 +251,7 @@ public class ORUR01Handler implements Application {
 				OBX obx = orderObs.getOBSERVATION(j).getOBX();
 				try {
 					log.debug("Parsing observation");
-					Obs obs = parseObs(encounter, obx, obr, idToGuidMap);
+					Obs obs = parseObs(encounter, obx, obr, messageControlId, idToGuidMap);
 					if (obs != null) {
 						
 						// if we're backfilling an encounter, don't use 
@@ -264,17 +276,18 @@ public class ORUR01Handler implements Application {
 							log.debug("Done with this obs");
 						}
 					}
-				} catch (ProposingConceptException proposingException) {
+				}
+				catch (ProposingConceptException proposingException) {
 					Concept questionConcept = proposingException.getConcept();
 					String value = proposingException.getValueName();
 					conceptProposals.add(createConceptProposal(encounter, questionConcept, value));
-				} catch (HL7Exception e) {
+				}
+				catch (HL7Exception e) {
 					// Handle obs-level exceptions
 					log.warn("HL7Exception", e);
 					HL7InError hl7InError = new HL7InError();
 					hl7InError.setError(e.getMessage());
-					hl7InError.setErrorDetails(PipeParser.encode(obx,
-							new EncodingCharacters('|', "^~\\&")));
+					hl7InError.setErrorDetails(PipeParser.encode(obx, new EncodingCharacters('|', "^~\\&")));
 					hl7InError.setHL7SourceKey(messageControlId);
 					hl7Service.saveHL7InError(hl7InError);
 				}
@@ -344,33 +357,27 @@ public class ORUR01Handler implements Application {
 	}
 
 	/**
-	 * This method does not call the database to create the encounter
-	 * row. The encounter is only created after all obs have been
-	 * attached to it 
-	 *   
-	 * Creates an encounter pojo to be attached later. 
-	 * 
-	 * This method does not create an encounterId
+	 * This method does not call the database to create the encounter row. The encounter is only
+	 * created after all obs have been attached to it Creates an encounter pojo to be attached
+	 * later. This method does not create an encounterId
 	 * 
 	 * @param msh
 	 * @param patient
 	 * @param pv1
 	 * @param orc
 	 * @return
-	 * 
 	 * @throws HL7Exception
 	 */
-	private Encounter createEncounter(MSH msh, Patient patient, PV1 pv1, ORC orc)
-			throws HL7Exception {
+	private Encounter createEncounter(MSH msh, Patient patient, PV1 pv1, ORC orc) throws HL7Exception {
 		
 		// the encounter we will return
 		Encounter encounter = null;
 
-		// look for the encounter id in PV1-1
-		SI idType = pv1.getSetIDPV1();
+		// look for the encounter id in PV1-19
+		CX visitNumber = pv1.getVisitNumber();
 		Integer encounterId = null;
 		try {
-			encounterId = Integer.valueOf(idType.getValue());
+			encounterId = Integer.valueOf(visitNumber.getIDNumber().getValue());
 		}
 		catch (NumberFormatException e) {
 			// pass
@@ -381,8 +388,7 @@ public class ORUR01Handler implements Application {
 		// the database
 		if (encounterId != null) {
 			encounter = Context.getEncounterService().getEncounter(encounterId);
-		}
-		else {
+		} else {
 			// if no encounter_id was passed in, this is a new
 			// encounter, create the object
 			encounter = new Encounter();
@@ -414,12 +420,13 @@ public class ORUR01Handler implements Application {
 	 * @param encounter The Encounter object this Obs is a member of
 	 * @param obx The hl7 obx message
 	 * @param obr The parent hl7 or message
+	 * @param uid unique string for this message for any error reporting purposes
 	 * @param idToGuid the idTOGuidMap.
 	 * @return Obs pojo with all values filled in
 	 * @throws HL7Exception if there is a parsing exception
 	 * @throws ProposingConceptException if the answer to this obs is a proposed concept
 	 */
-	private Obs parseObs(Encounter encounter, OBX obx, OBR obr, Map<Integer, String> idToGuidMap) throws HL7Exception, ProposingConceptException {
+	private Obs parseObs(Encounter encounter, OBX obx, OBR obr, String uid, Map<Integer, String> idToGuidMap) throws HL7Exception, ProposingConceptException {
 		if (log.isDebugEnabled())
 			log.debug("parsing observation: " + obx);
 		
@@ -432,10 +439,10 @@ public class ORUR01Handler implements Application {
 		String hl7Datatype = values[0].getName();
 		if (log.isDebugEnabled())
 			log.debug("  datatype = " + hl7Datatype);
-		Concept concept = getConcept(obx, idToGuidMap);
+		Concept concept = getConcept(obx.getObservationIdentifier(), uid, idToGuidMap);
 		if (log.isDebugEnabled())
 			log.debug("  concept = " + concept.getConceptId());
-		ConceptName conceptName = getConceptName(obx);
+		ConceptName conceptName = getConceptName(obx.getObservationIdentifier());
 		if (log.isDebugEnabled())
 			log.debug("  concept-name = " + conceptName);
 		
@@ -475,16 +482,11 @@ public class ORUR01Handler implements Application {
 			} else {
 				log.debug("    not proposal");
 				try {
-					Concept valueConcept = new Concept();
-                    Integer id = new Integer(valueIdentifier);
-					valueConcept.setConceptId(id);
-                    valueConcept.setGuid(idToGuidMap.get(id));
-					obs.setValueCoded(valueConcept);
-					if ("99RX".equals(value.getNameOfAlternateCodingSystem()
-							.getValue())) {
+					Concept valueCoded = getConcept(value, uid, idToGuidMap);
+					obs.setValueCoded(valueCoded);
+					if (FormConstants.HL7_LOCAL_DRUG.equals(value.getNameOfAlternateCodingSystem().getValue())) {
 						Drug valueDrug = new Drug();
-						valueDrug.setDrugId(new Integer(value
-								.getAlternateIdentifier().getValue()));
+						valueDrug.setDrugId(new Integer(value.getAlternateIdentifier().getValue()));
 						obs.setValueDrug(valueDrug);
 					} else {
 						ConceptName valueConceptName = getConceptName(value);
@@ -496,10 +498,10 @@ public class ORUR01Handler implements Application {
 							obs.setValueCodedName(valueConceptName);
 						}
 					}
-				} catch (NumberFormatException e) {
-					throw new HL7Exception("Invalid concept ID '"
-							+ valueIdentifier + "' for OBX-5 value '"
-							+ valueName + "'");
+				}
+				catch (NumberFormatException e) {
+					throw new HL7Exception("Invalid concept ID '" + valueIdentifier + "' for OBX-5 value '" + valueName
+					        + "'");
 				}
 			}
 			if (log.isDebugEnabled())
@@ -510,25 +512,19 @@ public class ORUR01Handler implements Application {
 			String valueName = value.getText().getValue();
 			if (isConceptProposal(valueIdentifier)) {
 				throw new ProposingConceptException(concept, valueName);
-			}
-			else {
+			} else {
 				try {
-                    Integer id = new Integer(valueIdentifier);
-					Concept valueCoded = new Concept();
-					valueCoded.setConceptId(id);
-                    valueCoded.setGuid(idToGuidMap.get(id));
-					obs.setValueCoded(valueCoded);
-					obs.setValueCodedName(valueCoded.getName()); // ABKTODO: presume current locale?
-				} catch (NumberFormatException e) {
-					throw new HL7Exception("Invalid concept ID '"
-							+ valueIdentifier + "' for OBX-5 value '"
-							+ valueName + "'");
+					obs.setValueCoded(getConcept(value, uid, idToGuidMap));
+					obs.setValueCodedName(getConceptName(value));
+				}
+				catch (NumberFormatException e) {
+					throw new HL7Exception("Invalid concept ID '" + valueIdentifier + "' for OBX-5 value '" + valueName
+					        + "'");
 				}
 			}
 		} else if ("DT".equals(hl7Datatype)) {
 			DT value = (DT) obx5;
-			Date valueDate = getDate(value.getYear(), value.getMonth(), value
-					.getDay(), 0, 0, 0);
+			Date valueDate = getDate(value.getYear(), value.getMonth(), value.getDay(), 0, 0, 0);
 			if (value == null || valueDate == null) {
 				log.warn("Not creating null valued obs for concept " + concept);
 				return null;
@@ -536,9 +532,8 @@ public class ORUR01Handler implements Application {
 			obs.setValueDatetime(valueDate);
 		} else if ("TS".equals(hl7Datatype)) {
 			DTM value = ((TS) obx5).getTime();
-			Date valueDate = getDate(value.getYear(), value.getMonth(), value
-					.getDay(), value.getHour(), value.getMinute(), value
-					.getSecond());
+			Date valueDate = getDate(value.getYear(), value.getMonth(), value.getDay(), value.getHour(), value.getMinute(),
+			    value.getSecond());
 			if (value == null || valueDate == null) {
 				log.warn("Not creating null valued obs for concept " + concept);
 				return null;
@@ -546,8 +541,7 @@ public class ORUR01Handler implements Application {
 			obs.setValueDatetime(valueDate);
 		} else if ("TM".equals(hl7Datatype)) {
 			TM value = (TM) obx5;
-			Date valueTime = getDate(0, 0, 0, value.getHour(), value
-					.getMinute(), value.getSecond());
+			Date valueTime = getDate(0, 0, 0, value.getHour(), value.getMinute(), value.getSecond());
 			if (value == null || valueTime == null) {
 				log.warn("Not creating null valued obs for concept " + concept);
 				return null;
@@ -564,8 +558,7 @@ public class ORUR01Handler implements Application {
 			// unsupported data type
 			// TODO: support RP (report), SN (structured numeric)
 			// do we need to support BIT just in case it slips thru?
-			throw new HL7Exception("Unsupported observation datatype '"
-					+ hl7Datatype + "'");
+			throw new HL7Exception("Unsupported observation datatype '" + hl7Datatype + "'");
 		}
 		
 		return obs;
@@ -574,50 +567,67 @@ public class ORUR01Handler implements Application {
 	/**
 	 * Derive a concept name from the CWE component of an hl7 message.
      * 
-     * @param value
+	 * @param cwe
      * @return
 	 * @throws HL7Exception 
      */
     private ConceptName getConceptName(CWE cwe) throws HL7Exception {
     	ST altIdentifier = cwe.getAlternateIdentifier();
-    	String hl7ConceptNameId = (altIdentifier != null) ? altIdentifier.getValue() : null;
-    	return getConceptName(hl7ConceptNameId);
+		ID altCodingSystem = cwe.getNameOfAlternateCodingSystem();
+		return getConceptName(altIdentifier, altCodingSystem);
+	}
+	
+	/**
+	 * Derive a concept name from the CE component of an hl7 message.
+	 * 
+	 * @param ce
+	 * @return
+	 * @throws HL7Exception
+	 */
+	private ConceptName getConceptName(CE ce) throws HL7Exception {
+		ST altIdentifier = ce.getAlternateIdentifier();
+		ID altCodingSystem = ce.getNameOfAlternateCodingSystem();
+		return getConceptName(altIdentifier, altCodingSystem);
     }
 
 	/**
-	 * Derive a concept name from the OBX component of an hl7 message.
+	 * Derive a concept name from the CWE component of an hl7 message.
      * 
-     * @param obx observation segment containing the concept-name id
+	 * @param altIdentifier
+	 * @param altCodingSystem
      * @return
      */
-    private ConceptName getConceptName(OBX obx) throws HL7Exception {
-    	ST altIdentifier = obx.getObservationIdentifier().getAlternateIdentifier();
-    	String hl7ConceptNameId = (altIdentifier != null) ? altIdentifier.getValue() : null;
-		return getConceptName(hl7ConceptNameId);
-    }
+	private ConceptName getConceptName(ST altIdentifier, ID altCodingSystem) throws HL7Exception {
+		if (altIdentifier != null) {
+			if (FormConstants.HL7_LOCAL_CONCEPT_NAME.equals(altCodingSystem.getValue())) {
+				String hl7ConceptNameId = altIdentifier.getValue();
+				return getConceptName(hl7ConceptNameId);
+		    }
+		}
 
+		return null;
+	}
+	
 	/**
-     * Utility method to retrieve the concept-name specified
-     * in an hl7 message observation segment. 
+	 * Utility method to retrieve the openmrs ConceptName specified in an hl7 message observation
+	 * segment. This method assumes that the check for 99NAM has been done already and is being
+	 * given an openmrs conceptNameId
      * 
-     * @param hl7ConceptNameId
-     * @param namedConcept
-     * @return
+	 * @param hl7ConceptNameId internal ConceptNameId to look up
+	 * @return ConceptName from the database
 	 * @throws HL7Exception 
      */
     private ConceptName getConceptName(String hl7ConceptNameId) throws HL7Exception {
     	ConceptName specifiedConceptName = null;
-		// TODO: don't assume that all concepts are local (available in the host concept dictionary)
 		if (hl7ConceptNameId != null) {
 			// get the exact concept name specified by the id
 			try {
 				Integer conceptNameId = new Integer(hl7ConceptNameId);
 				specifiedConceptName = new ConceptName();
 				specifiedConceptName.setConceptNameId(conceptNameId);
-			} catch (NumberFormatException e) {
-				// if it is not a valid number, more than likely it is an older
-				// hl7 message that is in the format conceptid^conceptname
-				// instead of the new conceptid^conceptnameid^conceptname
+			}
+			catch (NumberFormatException e) {
+				// if it is not a valid number, more than likely it is a bad hl7 message
 				log.debug("Invalid concept name ID '" + hl7ConceptNameId + "'", e);
 			}
 		} 
@@ -628,65 +638,81 @@ public class ORUR01Handler implements Application {
 		return identifier.equals(OpenmrsConstants.PROPOSED_CONCEPT_IDENTIFIER);
 	}
 
-	private Date getDate(int year, int month, int day, int hour, int minute,
-			int second) {
+	private Date getDate(int year, int month, int day, int hour, int minute, int second) {
 		Calendar cal = Calendar.getInstance();
 		// Calendar.set(MONTH, int) is zero-based, Hl7 is not
 		cal.set(year, month - 1, day, hour, minute, second);
 		return cal.getTime();
 	}
 	
-	/**parentGroup.g
-	 * Get a openmrs Concept object out of the given hl7 obx 
+	/**
+	 * Get an openmrs Concept object out of the given hl7 coded element
 	 * 
 	 * @param obx obx section to pull from
+	 * @param uid unique string for this message for any error reporting purposes
 	 * @param idToGuidMap the idToGuidMap
 	 * @return new Concept object
 	 * @throws HL7Exception if parsing errors occur
 	 */
-	private Concept getConcept(OBX obx, Map<Integer, String> idToGuidMap) throws HL7Exception {
-		// TODO: don't assume that all concepts are local
-		String hl7ConceptId = obx.getObservationIdentifier().getIdentifier()
-				.getValue();
-		try {
-			Integer conceptId = new Integer(hl7ConceptId);
-			Concept concept = new Concept();
-			concept.setConceptId(conceptId);
-            concept.setGuid(idToGuidMap.get(conceptId));
-			return concept;
-		} catch (NumberFormatException e) {
-			throw new HL7Exception("Invalid concept ID '" + hl7ConceptId + "'");
-		}
+	private Concept getConcept(CE codedElement, String uid, Map<Integer, String> idToGuidMap) throws HL7Exception {
+		String hl7ConceptId = codedElement.getIdentifier().getValue();
+		
+		String codingSystem = codedElement.getNameOfCodingSystem().getValue();
+		return getConcept(hl7ConceptId, codingSystem, uid, idToGuidMap);
 	}
 	
 	/**
-	 * Get the openmrs Concept object out of the given obr or null if there is none
+	 * Get an openmrs Concept object out of the given hl7 coded with exceptions element
 	 * 
-	 * @param obr hl7 OBR section to pull from
-	 * @return new concept object
-	 * @throws HL7Exception if parsing errors occur]
-	 * @see {@link #getDatetime(TS)}
+	 * @param codedElement cwe to pull from
+	 * @param uid unique string for this message for any error reporting purposes
+	 * @return new Concept object
+	 * @throws HL7Exception if parsing errors occur
 	 */
-	private Concept getConcept(OBR obr, Map<Integer, String> idToGuidMap) throws HL7Exception {
-		// TODO: don't assume that all concepts are local
-		String hl7ConceptId = obr.getUniversalServiceIdentifier().getIdentifier().getValue();
+	private Concept getConcept(CWE codedElement, String uid, Map<Integer, String> idToGuidMap) throws HL7Exception {
+		String hl7ConceptId = codedElement.getIdentifier().getValue();
 		
-		if (hl7ConceptId == null)
-			return null;
+		String codingSystem = codedElement.getNameOfCodingSystem().getValue();
+		return getConcept(hl7ConceptId, codingSystem, uid, idToGuidMap);
+	}
 		
+	/**
+	 * Get a concept object representing this conceptId and coding system.<br/>
+	 * If codingSystem is 99DCT, then a new Concept with the given conceptId is returned.<br/>
+	 * Otherwise, the coding system is looked up in the ConceptMap for an openmrs concept mapped to
+	 * that code.
+	 * 
+	 * @param hl7ConceptId the given hl7 conceptId
+	 * @param codingSystem the coding system for this conceptid (e.g. 99DCT)
+	 * @param uid unique string for this message for any error reporting purposes
+	 * @return a Concept object or null if no conceptId with given coding system found
+	 * @should return null if codingSystem not found
+	 * @should return a Concept if given local coding system
+	 * @should return a mapped Concept if given a valid mapping
+	 */
+	protected Concept getConcept(String hl7ConceptId, String codingSystem, String uid, Map<Integer, String> idToGuidMap) throws HL7Exception {
+		if (FormConstants.HL7_LOCAL_CONCEPT.equals(codingSystem)) {
+			// the concept is local
 		try {
 			Integer conceptId = new Integer(hl7ConceptId);
 			Concept concept = new Concept(conceptId);
 			concept.setGuid(idToGuidMap.get(conceptId));
 			return concept;
-		} catch (NumberFormatException e) {
-			throw new HL7Exception("Invalid concept ID '" + hl7ConceptId + "'");
+		}
+			catch (NumberFormatException e) {
+				throw new HL7Exception("Invalid concept ID '" + hl7ConceptId + "' in hl7 message with uid: " + uid);
+			}
+		} else {
+			// the concept is not local, look it up in our mapping
+			Concept concept = Context.getConceptService().getConceptByMapping(hl7ConceptId, codingSystem);
+			if (concept == null)
+				log.error("Unable to find concept with code: " + hl7ConceptId + " and mapping: " + codingSystem + " in hl7 message with uid: " + uid);
+			return concept;
 		}
 	}
 
 	/**
-	 * Pull the timestamp for this obx out. if an invalid
-	 * date is found, null is returned
+	 * Pull the timestamp for this obx out. if an invalid date is found, null is returned
 	 * 
 	 * @param obx the obs to parse and get the timestamp from
 	 * @return an obx timestamp or null
@@ -699,8 +725,7 @@ public class ORUR01Handler implements Application {
 	}
 	
 	/**
-	 * Pull the timestamp for this obr out. if an invalid
-	 * date is found, null is returned
+	 * Pull the timestamp for this obr out. if an invalid date is found, null is returned
 	 * 
 	 * @param obr
 	 * @return
@@ -727,10 +752,10 @@ public class ORUR01Handler implements Application {
 			return null;
 
 		try {
-			datetime = getDate(value.getYear(), value.getMonth(), value
-					.getDay(), value.getHour(), value.getMinute(), value
+			datetime = getDate(value.getYear(), value.getMonth(), value.getDay(), value.getHour(), value.getMinute(), value
 					.getSecond());
-		} catch (DataTypeException e) {
+		}
+		catch (DataTypeException e) {
 
 		}
 		return datetime;
@@ -758,8 +783,7 @@ public class ORUR01Handler implements Application {
 
 	private Location getLocation(PV1 pv1) throws HL7Exception {
 		PL hl7Location = pv1.getAssignedPatientLocation();
-		Integer locationId = Context.getHL7Service().resolveLocationId(
-				hl7Location);
+		Integer locationId = Context.getHL7Service().resolveLocationId(hl7Location);
 		if (locationId == null)
 			throw new HL7Exception("Could not resolve location");
 		return Context.getEncounterService().getLocation(locationId);
@@ -768,9 +792,9 @@ public class ORUR01Handler implements Application {
 	private Form getForm(MSH msh) throws HL7Exception {
 		Integer formId = null;
 		try {
-			formId = Integer.parseInt(msh.getMessageProfileIdentifier(0)
-					.getEntityIdentifier().getValue());
-		} catch (Exception e) {
+			formId = Integer.parseInt(msh.getMessageProfileIdentifier(0).getEntityIdentifier().getValue());
+		}
+		catch (Exception e) {
 			throw new HL7Exception("Error parsing form id from message", e);
 		}
 
@@ -798,25 +822,16 @@ public class ORUR01Handler implements Application {
         return Context.getUserService().getUser(entererId);
 	}
 
-	private Date getDateEntered(ORC orc) throws HL7Exception {
-		return tsToDate(orc.getDateTimeOfTransaction());
-	}
-
 	//TODO: Debug (and use) methods in HL7Util instead
 	private Date tsToDate(TS ts) throws HL7Exception {
 		// need to handle timezone
 		String dtm = ts.getTime().getValue();
 		int year = Integer.parseInt(dtm.substring(0, 4));
-		int month = (dtm.length() >= 6 ? Integer.parseInt(dtm.substring(4, 6)) - 1
-				: 0);
-		int day = (dtm.length() >= 8 ? Integer.parseInt(dtm.substring(6, 8))
-				: 1);
-		int hour = (dtm.length() >= 10 ? Integer.parseInt(dtm.substring(8, 10))
-				: 0);
-		int min = (dtm.length() >= 12 ? Integer.parseInt(dtm.substring(10, 12))
-				: 0);
-		int sec = (dtm.length() >= 14 ? Integer.parseInt(dtm.substring(12, 14))
-				: 0);
+		int month = (dtm.length() >= 6 ? Integer.parseInt(dtm.substring(4, 6)) - 1 : 0);
+		int day = (dtm.length() >= 8 ? Integer.parseInt(dtm.substring(6, 8)) : 1);
+		int hour = (dtm.length() >= 10 ? Integer.parseInt(dtm.substring(8, 10)) : 0);
+		int min = (dtm.length() >= 12 ? Integer.parseInt(dtm.substring(10, 12)) : 0);
+		int sec = (dtm.length() >= 14 ? Integer.parseInt(dtm.substring(12, 14)) : 0);
 		Calendar cal = Calendar.getInstance();
 		cal.set(year, month, day, hour, min, sec);
 		// if (cal.getTimeZone().getRawOffset() != timeZoneOffsetMillis) {
@@ -828,16 +843,14 @@ public class ORUR01Handler implements Application {
 	}
 
 	/**
-	 * Creates a ConceptProposal object that will need to be
-	 * saved to the database at a later point.
+	 * Creates a ConceptProposal object that will need to be saved to the database at a later point.
 	 * 
 	 * @param encounter
 	 * @param concept
 	 * @param originalText
 	 * @return
 	 */
-	private ConceptProposal createConceptProposal(Encounter encounter, Concept concept,
-			String originalText) {
+	private ConceptProposal createConceptProposal(Encounter encounter, Concept concept, String originalText) {
 		// value is a proposed concept, create a ConceptProposal
 		// instead of an Obs for this observation
 		// TODO: at this point if componentSeparator (^) is in text,
@@ -879,16 +892,14 @@ public class ORUR01Handler implements Application {
 			Integer newLocationId = Integer.parseInt(dischargeToLocation);
 			// Hydrate a full patient object from patient object containing only
 			// identifier
-			patient = Context.getPatientService().getPatient(
-					patient.getPatientId());
+			patient = Context.getPatientService().getPatient(patient.getPatientId());
 			
-			PersonAttributeType healthCenterAttrType = Context.getPersonService().getPersonAttributeTypeByName("Health Center");
+			PersonAttributeType healthCenterAttrType = Context.getPersonService().getPersonAttributeTypeByName(
+			    "Health Center");
 			
 			if (healthCenterAttrType == null) {
-				log.error("A person attribute type with name 'Health Center' is not defined but patient " + 
-						patient.getPatientId() + 
-						" is trying to change their health center to " + 
-						newLocationId);
+				log.error("A person attribute type with name 'Health Center' is not defined but patient "
+				        + patient.getPatientId() + " is trying to change their health center to " + newLocationId);
 				return;
 			}
 			
@@ -897,9 +908,7 @@ public class ORUR01Handler implements Application {
 			if (currentHealthCenter == null || !currentHealthCenter.equals(newLocationId.toString())) {
 				PersonAttribute newHealthCenter = new PersonAttribute(healthCenterAttrType, newLocationId.toString());
 				
-				log.debug("Updating patient's location from "
-						+ currentHealthCenter + " to "
-						+ newLocationId);
+				log.debug("Updating patient's location from " + currentHealthCenter + " to " + newLocationId);
 				
 				// add attribute (and void old if there is one)
 				patient.addAttribute(newHealthCenter);

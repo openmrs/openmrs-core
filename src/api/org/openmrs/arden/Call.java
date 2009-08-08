@@ -22,52 +22,53 @@ import java.util.StringTokenizer;
  * 
  */
 public class Call {
+	
 	private String callVar = null;
+	
 	private String callMethod = null;
+	
 	private ArrayList<String> parameters = null;
-
+	
 	public Call(String callVar, String callMethod) {
 		this.callVar = callVar;
 		this.callMethod = callMethod;
 		this.parameters = new ArrayList<String>();
 	}
-
+	
 	public String getCallVar() {
 		return callVar;
 	}
-
+	
 	public void setCallVar(String callVar) {
 		this.callVar = callVar;
 	}
-
+	
 	public String getCallMethod() {
 		return callMethod;
 	}
-
+	
 	public void setCallMethod(String callMethod) {
 		this.callMethod = callMethod;
 	}
-
+	
 	public void write(Writer w) {
 		try {
-
+			
 			for (int i = 0; i < parameters.size(); i++) {
 				String currParam = parameters.get(i);
-				w.append("parameters.put(\"param" + (i+1) + "\",\"" + currParam
-				        + "\");");
+				w.append("parameters.put(\"param" + (i + 1) + "\",\"" + currParam + "\");");
 			}
-
+			
 			w.append("\t\t\t\t");
 			if (getCallVar() != null && getCallVar().length() > 0) {
 				w.append("Result " + getCallVar() + " = ");
 			}
-			w.append("logicService.eval(patient, \"" + getCallMethod()
-			        + "\",parameters);");
+			w.append("logicService.eval(patient, \"" + getCallMethod() + "\",parameters);");
 			
-		} catch (Exception e) {
 		}
+		catch (Exception e) {}
 	}
-
+	
 	public void addParameter(String parameter) {
 		this.parameters.add(parameter);
 	}

@@ -71,14 +71,14 @@ public class ConceptSet implements java.io.Serializable, Synchronizable {
 				return false;
 			
 			ConceptSet c = (ConceptSet)obj;
-			return (this.concept.equals(c.getConcept()) &&
-					this.conceptSet.equals(c.getConceptSet()));
+			return (this.concept.equals(c.getConcept()) && this.conceptSet.equals(c.getConceptSet()));
 		}
 		return false;
 	}
 	
 	public int hashCode() {
-		if (this.getConcept() == null || this.getConceptSet() == null) return super.hashCode();
+		if (this.getConcept() == null || this.getConceptSet() == null)
+			return super.hashCode();
 		return this.getConcept().hashCode() + this.getConceptSet().hashCode();
 	}
 
@@ -139,8 +139,7 @@ public class ConceptSet implements java.io.Serializable, Synchronizable {
 	}
 
 	/**
-	 * @param sortWeight
-	 *            The sortWeight to set.
+	 * @param sortWeight The sortWeight to set.
 	 */
 	@Attribute
 	public void setSortWeight(Double sortWeight) {
@@ -156,8 +155,7 @@ public class ConceptSet implements java.io.Serializable, Synchronizable {
 	}
 
 	/**
-	 * @param creator
-	 *            The creator to set.
+	 * @param creator The creator to set.
 	 */
 	@Element
 	public void setCreator(User creator) {
@@ -173,8 +171,7 @@ public class ConceptSet implements java.io.Serializable, Synchronizable {
 	}
 
 	/**
-	 * @param dateCreated
-	 *            The dateCreated to set.
+	 * @param dateCreated The dateCreated to set.
 	 */
 	@Element
 	public void setDateCreated(Date dateCreated) {

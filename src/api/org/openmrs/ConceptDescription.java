@@ -23,14 +23,10 @@ import org.simpleframework.xml.Root;
 
 /**
  * ConceptDescription is the localized description of a concept.   
- * 
  */
 @Root
 public class ConceptDescription implements java.io.Serializable, Synchronizable {
 
-	/**
-     * 
-     */
     private static final long serialVersionUID = -7223075113369136584L;
 
 	// Fields
@@ -51,6 +47,15 @@ public class ConceptDescription implements java.io.Serializable, Synchronizable 
 
 	/** default constructor */
 	public ConceptDescription() {
+	}
+	
+	/**
+	 * Constructor that takes in the primary key for this object
+	 * 
+	 * @param conceptDescriptionId the id for this description
+	 */
+	public ConceptDescription(Integer conceptDescriptionId) {
+		this.conceptDescriptionId = conceptDescriptionId;
 	}
 	
 	/**
@@ -131,8 +136,7 @@ public class ConceptDescription implements java.io.Serializable, Synchronizable 
 	}
 
 	/**
-	 * @param creator
-	 *            The creator to set.
+	 * @param creator The creator to set.
 	 */
 	@Element
 	public void setCreator(User creator) {
@@ -148,8 +152,7 @@ public class ConceptDescription implements java.io.Serializable, Synchronizable 
 	}
 
 	/**
-	 * @param dateCreated
-	 *            The dateCreated to set.
+	 * @param dateCreated The dateCreated to set.
 	 */
 	@Element
 	public void setDateCreated(Date dateCreated) {
@@ -166,8 +169,7 @@ public class ConceptDescription implements java.io.Serializable, Synchronizable 
 	}
 
 	/**
-	 * @param creator
-	 *            The creator to set.
+	 * @param creator The creator to set.
 	 */
 	@Element(required=false)
 	public void setChangedBy(User changedBy) {
@@ -209,18 +211,17 @@ public class ConceptDescription implements java.io.Serializable, Synchronizable 
     }
 
 	/**
-	 * 
 	 * @see java.lang.Object#hashCode()
 	 */
 	public int hashCode() {
-		if (this.getConceptDescriptionId() == null) return super.hashCode();
+		if (this.getConceptDescriptionId() == null)
+			return super.hashCode();
 		int hash = 8;
 		hash = 31 * this.getConceptDescriptionId() + hash;
 		return hash;
 	}
 
 	/**
-	 * 
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
@@ -229,13 +230,19 @@ public class ConceptDescription implements java.io.Serializable, Synchronizable 
 
 	/**
      * @see java.lang.Object#equals(Object)
+	 * @should compare on id if its non null
+	 * @should not return true with different objects and null ids
+	 * @should default to object equality
      */
     public boolean equals(Object object) {
     	if (!(object instanceof ConceptDescription)) {
     		return false;
     	}
     	ConceptDescription rhs = (ConceptDescription) object;
-    	return (this.conceptDescriptionId == rhs.conceptDescriptionId);
+		if (conceptDescriptionId != null && rhs.conceptDescriptionId != null)
+			return this.conceptDescriptionId == rhs.conceptDescriptionId;
+		else
+			return this == object;
     }
 
 }

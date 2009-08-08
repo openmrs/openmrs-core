@@ -37,29 +37,31 @@ import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
 
 public class DataExportServlet extends HttpServlet {
-
+	
 	public static final long serialVersionUID = 1231222L;
+	
 	private static Log log = LogFactory.getLog(DataExportServlet.class);
 	
-	protected void doGet(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		String reportId = request.getParameter("dataExportId");
 		HttpSession session = request.getSession();
 		
-		if (reportId == null || reportId.length()==0 ) {
+		if (reportId == null || reportId.length() == 0) {
 			session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "error.null");
 			return;
 		}
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS)) {
-			session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Privilege required: " + OpenmrsConstants.PRIV_VIEW_PATIENTS);
-			session.setAttribute(WebConstants.OPENMRS_LOGIN_REDIRECT_HTTPSESSION_ATTR, request.getRequestURI() + "?" + request.getQueryString());
+			session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Privilege required: "
+			        + OpenmrsConstants.PRIV_VIEW_PATIENTS);
+			session.setAttribute(WebConstants.OPENMRS_LOGIN_REDIRECT_HTTPSESSION_ATTR, request.getRequestURI() + "?"
+			        + request.getQueryString());
 			response.sendRedirect(request.getContextPath() + "/login.htm");
 			return;
 		}
 		
 		ReportObjectService rs = Context.getReportObjectService();
-		DataExportReportObject dataExport = (DataExportReportObject)rs.getReportObject(Integer.valueOf(reportId));
+		DataExportReportObject dataExport = (DataExportReportObject) rs.getReportObject(Integer.valueOf(reportId));
 		
 		File file = DataExportUtil.getGeneratedFile(dataExport);
 		
@@ -73,13 +75,16 @@ public class DataExportServlet extends HttpServlet {
 		response.setHeader("Pragma", "no-cache");
 		
 		InputStream inStream = null;
-		try { 
+		try {
 			inStream = new FileInputStream(file);
 			OpenmrsUtil.copyFile(inStream, response.getOutputStream());
 		}
 		finally {
 			if (inStream != null)
-				try { inStream.close(); } catch (Exception e) {}
+				try {
+					inStream.close();
+				}
+				catch (Exception e) {}
 		}
 		
 	}

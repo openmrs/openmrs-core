@@ -91,10 +91,13 @@ public interface ConceptDAO {
 	 * @return List<Concept>
 	 * @throws DAOException
 	 */
-	public List<Concept> getConcepts(String name, Locale loc, boolean searchOnPhrase, List<ConceptClass> classes, List<ConceptDatatype> datatypes) throws DAOException;
+	public List<Concept> getConcepts(String name, Locale loc, boolean searchOnPhrase, List<ConceptClass> classes,
+	                                 List<ConceptDatatype> datatypes) throws DAOException;
 	
 	/**
-	 * @see org.openmrs.api.ConceptService#getConceptWords(java.lang.String, java.util.Locale, boolean, java.util.List, java.util.List, java.util.List, java.util.List, Concept, int, int)
+	 * @see org.openmrs.api.ConceptService#getConceptWords(java.lang.String, java.util.Locale,
+	 *      boolean, java.util.List, java.util.List, java.util.List, java.util.List, Concept, int,
+	 *      int)
 	 */
 	public List<ConceptWord> getConceptWords(String phrase, List<Locale> locales, boolean includeRetired, 
 	 	                     			List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses,
@@ -263,7 +266,10 @@ public interface ConceptDAO {
 
 	public ConceptNameTag getConceptNameTagByName(String name);
 
-	public List<ConceptNameTag> getConceptNameTags();
+	/**
+	 * @see org.openmrs.api.ConceptService#getAllConceptNameTags()
+	 */
+	public List<ConceptNameTag> getAllConceptNameTags();
 	
 	/**
 	 * @see org.openmrs.api.ConceptService#getConceptSource(java.lang.Integer)
@@ -291,7 +297,6 @@ public interface ConceptDAO {
 	public Set<Locale> getLocalesOfConceptNames();
 	
 	/**
-     * 
      * @see ConceptService#getMaxConceptId()
      */
     public Integer getMaxConceptId();
@@ -301,6 +306,11 @@ public interface ConceptDAO {
      */
     public Iterator<Concept> conceptIterator();
     
+	/**
+	 * @see org.openmrs.api.ConceptService#getConceptByMapping(java.lang.String, java.lang.String)
+	 */
+	public Concept getConceptByMapping(String conceptCode, String mappingCode);
+	
 	/**
      * Auto generated method comment
      * 

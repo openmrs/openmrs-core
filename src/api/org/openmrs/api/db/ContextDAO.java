@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Defines the functions that the Context needs to access the database
+ * 
  * @version 1.1
  */
 public interface ContextDAO {
@@ -32,7 +33,6 @@ public interface ContextDAO {
 	 * @param password user's password
 	 * @return a valid user if authentication succeeds
 	 * @throws ContextAuthenticationException
-	 * 
 	 * @should authenticate given username and password
 	 * @should authenticate given systemId and password
 	 * @should authenticate given systemId without hyphen and password
@@ -46,15 +46,14 @@ public interface ContextDAO {
 	 * @should not authenticate given non null password when password in database is null
 	 * @should not authenticate when password in database is empty
 	 * @should give identical error messages between username and password mismatch
-	 * @should lockout after five attempts
+	 * @should lockout after eight attempts
+	 * @should pass regression test for 1580
 	 */
 	@Transactional(noRollbackFor=ContextAuthenticationException.class)
-	public User authenticate(String username, String password)
-		throws ContextAuthenticationException;
+	public User authenticate(String username, String password) throws ContextAuthenticationException;
 
 	/**
 	 * Open session.
-	 *
 	 */
 	public void openSession();
 
@@ -71,10 +70,9 @@ public interface ContextDAO {
 	public void clearSession();
 	
 	/**
-	 * Used to clear a cached object out of a session in the middle of a unit of work.
-	 * 
-	 * Future updates to this object will not be saved.  Future gets of this object will
-	 * not fetch this cached copy
+	 * Used to clear a cached object out of a session in the middle of a unit of work. Future
+	 * updates to this object will not be saved. Future gets of this object will not fetch this
+	 * cached copy
 	 * 
 	 * @param obj The object to evict/remove from the session
 	 * @see Context.evictFromSession(Object)
@@ -82,19 +80,26 @@ public interface ContextDAO {
 	public void evictFromSession(Object obj);
 	
 	/**
-	 * Starts the OpenMRS System
-	 * Should be called prior to any kind of activity
+	 * Starts the OpenMRS System Should be called prior to any kind of activity
+	 * 
 	 * @param Properties
 	 */
 	@Transactional
 	public void startup(Properties props);
 	
 	/**
-	 * Stops the OpenMRS System
-	 * Should be called after all activity has ended and application is closing
+	 * Stops the OpenMRS System Should be called after all activity has ended and application is
+	 * closing
 	 */
 	@Transactional
 	public void shutdown();
+	
+	/**
+	 * Compares core data against the current database and inserts data into the database where
+	 * necessary
+	 */
+	@Transactional
+	public void checkCoreDataset();
 	
 	public void closeDatabaseConnection();
 

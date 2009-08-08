@@ -29,19 +29,21 @@ import org.simpleframework.xml.Root;
 
 /**
  * Definition of a dataset that produces one-row-per-PatientProgram. Output might look like:
- *   patientId, programName, programId, enrollmentDate, completionDate, patientProgramId
- *   123, "HIV PROGRAM", 1, "2008-01-01", null, 5383
- *   123, "TB PROGRAM", 2, "2006-04-11", "2006-10-11", 4253
+ * patientId, programName, programId, enrollmentDate, completionDate, patientProgramId 123,
+ * "HIV PROGRAM", 1, "2008-01-01", null, 5383 123, "TB PROGRAM", 2, "2006-04-11", "2006-10-11", 4253
+ * 
  * @see RowPerProgramEnrollmentDataSet
  */
 @Root
 public class RowPerProgramEnrollmentDataSetDefinition implements DataSetDefinition {
-
-	@Attribute(required=true)
+	
+	@Attribute(required = true)
 	private String name;
+	
 	private Collection<Program> programs;
+	
 	private CohortDefinition filter;
-
+	
 	public RowPerProgramEnrollmentDataSetDefinition() {
 		programs = new HashSet<Program>();
 	}
@@ -59,7 +61,7 @@ public class RowPerProgramEnrollmentDataSetDefinition implements DataSetDefiniti
 		ret[5] = Integer.class; // patientProgramId
 		return Arrays.asList(ret);
 	}
-
+	
 	/**
 	 * @see org.openmrs.report.DataSetDefinition#getColumnKeys()
 	 */
@@ -73,46 +75,46 @@ public class RowPerProgramEnrollmentDataSetDefinition implements DataSetDefiniti
 		ret[5] = "patientProgramId";
 		return Arrays.asList(ret);
 	}
-
+	
 	/**
 	 * @see org.openmrs.report.DataSetDefinition#getName()
 	 */
 	public String getName() {
 		return name;
 	}
-
+	
 	/**
 	 * @see org.openmrs.report.DataSetDefinition#setName(java.lang.String)
 	 */
 	public void setName(String name) {
 		this.name = name;
 	}
-
+	
 	/**
 	 * @see org.openmrs.report.Parameterizable#getParameters()
 	 */
 	public List<Parameter> getParameters() {
 		return new ArrayList<Parameter>();
 	}
-
-	@ElementList(required=false)
+	
+	@ElementList(required = false)
 	public Collection<Program> getPrograms() {
-    	return programs;
-    }
-
-	@ElementList(required=false)
+		return programs;
+	}
+	
+	@ElementList(required = false)
 	public void setPrograms(Collection<Program> programs) {
-    	this.programs = programs;
-    }
-
-	@Element(data=true, required=false)
+		this.programs = programs;
+	}
+	
+	@Element(data = true, required = false)
 	public CohortDefinition getFilter() {
-    	return filter;
-    }
-
-	@Element(data=true, required=false)
+		return filter;
+	}
+	
+	@Element(data = true, required = false)
 	public void setFilter(CohortDefinition filter) {
-    	this.filter = filter;
-    }
-
+		this.filter = filter;
+	}
+	
 }

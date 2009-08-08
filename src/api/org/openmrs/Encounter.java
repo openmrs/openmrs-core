@@ -22,13 +22,10 @@ import java.util.Set;
 import org.openmrs.synchronization.Synchronizable;
 
 /**
- * An Encounter represents one visit or interaction of a patient with a healthcare worker.
- * 
- * Every encounter can have 0 to n Observations associated with it
- * Every encounter can have 0 to n Orders associated with it
- * 
- * The patientId attribute should be equal to patient.patientId and is
- * only included this second time for performance increases on bulk calls. 
+ * An Encounter represents one visit or interaction of a patient with a healthcare worker. Every
+ * encounter can have 0 to n Observations associated with it Every encounter can have 0 to n Orders
+ * associated with it The patientId attribute should be equal to patient.patientId and is only
+ * included this second time for performance increases on bulk calls.
  * 
  * @see Obs 
  * @see Order
@@ -92,7 +89,6 @@ public class Encounter implements java.io.Serializable, Synchronizable {
 	 * @param obj Encounter object to compare to
 	 * @return boolean true/false whether or not they are the same objects
 	 * @see java.lang.Object#equals(java.lang.Object)
-	 * 
 	 * @should equal encounter with same encounter id
 	 * @should not equal encounter with different encounter id
 	 * @should fail on null
@@ -114,12 +110,12 @@ public class Encounter implements java.io.Serializable, Synchronizable {
 	
 	/**
 	 * @see java.lang.Object#hashCode()
-	 * 
 	 * @should have same hashcode when equal
 	 * @should have different hash code when not equal
 	 */
 	public int hashCode() {
-		if (this.getEncounterId() == null) return super.hashCode();
+		if (this.getEncounterId() == null)
+			return super.hashCode();
 		return this.getEncounterId().hashCode();
 	}
 
@@ -210,8 +206,7 @@ public class Encounter implements java.io.Serializable, Synchronizable {
 	}
 
 	/**
-	 * @return Returns a Set<Obs> of all non-voided, non-obsGroup children Obs
-	 *         of this Encounter
+	 * @return Returns a Set<Obs> of all non-voided, non-obsGroup children Obs of this Encounter
 	 */
 	public Set<Obs> getObs() {
 		Set<Obs> ret = new HashSet<Obs>();
@@ -229,10 +224,8 @@ public class Encounter implements java.io.Serializable, Synchronizable {
 	}
 	
 	/**
-	 * Convenience method to recursively get all leaf obs 
-	 * of this encounter.  This method goes down into
-	 * each obs and adds all non-grouping obs to the return
-	 * list
+	 * Convenience method to recursively get all leaf obs of this encounter. This method goes down
+	 * into each obs and adds all non-grouping obs to the return list
 	 * 
 	 * @param obsParent current obs to loop over
 	 * @return list of leaf obs
@@ -250,8 +243,7 @@ public class Encounter implements java.io.Serializable, Synchronizable {
 						leaves.addAll(getObsLeaves(child));
 				}
 			}
-		}
-		else if (obsParent.isVoided() == false) {
+		} else if (obsParent.isVoided() == false) {
 			leaves.add(obsParent);
 		}
 		
@@ -259,8 +251,9 @@ public class Encounter implements java.io.Serializable, Synchronizable {
 	}
 	
 	/**
-	 * Returns all Obs where Obs.encounterId = Encounter.encounterId
-	 * In practice, this method should not be used very often...
+	 * Returns all Obs where Obs.encounterId = Encounter.encounterId In practice, this method should
+	 * not be used very often...
+	 * 
 	 * @param boolean includeVoided specifies whether or not to include voided Obs
 	 * @return Returns the all Obs.
 	 */
@@ -282,8 +275,7 @@ public class Encounter implements java.io.Serializable, Synchronizable {
 	}
 	
 	/**
-	 * Convenience method to call {@link #getAllObs(boolean)}
-	 * with a false parameter
+	 * Convenience method to call {@link #getAllObs(boolean)} with a false parameter
 	 * 
 	 * @return all non-voided obs
 	 */
@@ -336,6 +328,7 @@ public class Encounter implements java.io.Serializable, Synchronizable {
 
 	/**
 	 * Remove the given observation from the list of obs for this Encounter
+	 * 
 	 * @param observation
 	 */
 	public void removeObs(Obs observation) {
@@ -362,6 +355,7 @@ public class Encounter implements java.io.Serializable, Synchronizable {
 	
 	/**
 	 * Add the given Order to the list of orders for this Encounter
+	 * 
 	 * @param order
 	 */
 	public void addOrder(Order order) {
@@ -375,6 +369,7 @@ public class Encounter implements java.io.Serializable, Synchronizable {
 
 	/**
 	 * Remove the given observation from the list of orders for this Encounter
+	 * 
 	 * @param order
 	 */
 	public void removeOrder(Order order) {
@@ -453,8 +448,7 @@ public class Encounter implements java.io.Serializable, Synchronizable {
 	}
 
 	/**
-	 * @param voided
-	 *            The voided status to set.
+	 * @param voided The voided status to set.
 	 */
 	public void setVoided(Boolean voided) {
 		this.voided = voided;
@@ -468,8 +462,7 @@ public class Encounter implements java.io.Serializable, Synchronizable {
 	}
 
 	/**
-	 * @param voidedBy
-	 *            The voidedBy to set.
+	 * @param voidedBy The voidedBy to set.
 	 */
 	public void setVoidedBy(User voidedBy) {
 		this.voidedBy = voidedBy;
@@ -483,8 +476,7 @@ public class Encounter implements java.io.Serializable, Synchronizable {
 	}
 
 	/**
-	 * @param voidReason
-	 *            The voidReason to set.
+	 * @param voidReason The voidReason to set.
 	 */
 	public void setVoidReason(String voidReason) {
 		this.voidReason = voidReason;
@@ -498,8 +490,7 @@ public class Encounter implements java.io.Serializable, Synchronizable {
 	}
 
 	/**
-	 * @param dateVoided
-	 *            The dateVoided to set.
+	 * @param dateVoided The dateVoided to set.
 	 */
 	public void setDateVoided(Date dateVoided) {
 		this.dateVoided = dateVoided;

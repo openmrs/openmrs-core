@@ -18,10 +18,9 @@ import java.util.Date;
 import org.openmrs.synchronization.Synchronizable;
 
 /**
- * The FormField object relates/orders the <code>fields</code> on a <code>form</code>
- * 
- * A form can have many 0 to n fields associated with it in a hierarchical manor.  This
- * FormField object governs what/how that takes place
+ * The FormField object relates/orders the <code>fields</code> on a <code>form</code> A form can
+ * have many 0 to n fields associated with it in a hierarchical manor. This FormField object governs
+ * what/how that takes place
  * 
  * @see org.openmrs.Form
  * @see org.openmrs.Field
@@ -82,7 +81,6 @@ public class FormField implements java.io.Serializable, Comparable<FormField>, S
 	 * 
 	 * @param obj
 	 * @return boolean true/false whether or not they are the same objects
-	 * 
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	public boolean equals(Object obj) {
@@ -109,13 +107,8 @@ public class FormField implements java.io.Serializable, Comparable<FormField>, S
 	}
 
 	/**
-	 * Sort order for the form fields in the schema.
-	 * 
-	 * Attempts:
-	 * 	1) sortWeight
-	 * 	2) fieldNumber
-	 * 	3) fieldPart
-	 * 	4) fieldName
+	 * Sort order for the form fields in the schema. Attempts: 1) sortWeight 2) fieldNumber 3)
+	 * fieldPart 4) fieldName
 	 * 
 	 * @param f FormField to compare this object to
 	 * @return -1, 0, or +1 depending on the difference between the FormFields
@@ -183,8 +176,7 @@ public class FormField implements java.io.Serializable, Comparable<FormField>, S
 	}
 
 	/**
-	 * @param formFieldId
-	 *            The formFieldId to set.
+	 * @param formFieldId The formFieldId to set.
 	 */
 	public void setFormFieldId(Integer formFieldId) {
 		this.formFieldId = formFieldId;
@@ -198,8 +190,7 @@ public class FormField implements java.io.Serializable, Comparable<FormField>, S
 	}
 
 	/**
-	 * @param formField
-	 *            The formField to set.
+	 * @param formField The formField to set.
 	 */
 	public void setParent(FormField parent) {
 		this.parent = parent;
@@ -213,8 +204,7 @@ public class FormField implements java.io.Serializable, Comparable<FormField>, S
 	}
 
 	/**
-	 * @param form
-	 *            The form to set.
+	 * @param form The form to set.
 	 */
 	public void setForm(Form form) {
 		this.form = form;
@@ -228,8 +218,7 @@ public class FormField implements java.io.Serializable, Comparable<FormField>, S
 	}
 
 	/**
-	 * @param field
-	 *            The field to set.
+	 * @param field The field to set.
 	 */
 	public void setField(Field field) {
 		this.field = field;
@@ -243,8 +232,7 @@ public class FormField implements java.io.Serializable, Comparable<FormField>, S
 	}
 
 	/**
-	 * @param fieldNumber
-	 *            The fieldNumber to set.
+	 * @param fieldNumber The fieldNumber to set.
 	 */
 	public void setFieldNumber(Integer fieldNumber) {
 		this.fieldNumber = fieldNumber;
@@ -258,8 +246,7 @@ public class FormField implements java.io.Serializable, Comparable<FormField>, S
 	}
 
 	/**
-	 * @param fieldPart
-	 *            The fieldPart to set.
+	 * @param fieldPart The fieldPart to set.
 	 */
 	public void setFieldPart(String fieldPart) {
 		this.fieldPart = fieldPart;
@@ -273,8 +260,7 @@ public class FormField implements java.io.Serializable, Comparable<FormField>, S
 	}
 
 	/**
-	 * @param pageNumber
-	 *            The pageNumber to set.
+	 * @param pageNumber The pageNumber to set.
 	 */
 	public void setPageNumber(Integer pageNumber) {
 		this.pageNumber = pageNumber;
@@ -288,8 +274,7 @@ public class FormField implements java.io.Serializable, Comparable<FormField>, S
 	}
 
 	/**
-	 * @param minOccurs
-	 *            The minOccurs to set.
+	 * @param minOccurs The minOccurs to set.
 	 */
 	public void setMinOccurs(Integer minOccurs) {
 		this.minOccurs = minOccurs;
@@ -303,8 +288,7 @@ public class FormField implements java.io.Serializable, Comparable<FormField>, S
 	}
 
 	/**
-	 * @param maxOccurs
-	 *            The maxOccurs to set.
+	 * @param maxOccurs The maxOccurs to set.
 	 */
 	public void setMaxOccurs(Integer maxOccurs) {
 		this.maxOccurs = maxOccurs;
@@ -325,8 +309,7 @@ public class FormField implements java.io.Serializable, Comparable<FormField>, S
 	}
 
 	/**
-	 * @param required
-	 *            The required status to set.
+	 * @param required The required status to set.
 	 */
 	public void setRequired(Boolean required) {
 		this.required = required;
@@ -354,8 +337,7 @@ public class FormField implements java.io.Serializable, Comparable<FormField>, S
 	}
 
 	/**
-	 * @param creator
-	 *            The creator to set.
+	 * @param creator The creator to set.
 	 */
 	public void setCreator(User creator) {
 		this.creator = creator;
@@ -369,8 +351,7 @@ public class FormField implements java.io.Serializable, Comparable<FormField>, S
 	}
 
 	/**
-	 * @param dateCreated
-	 *            The dateCreated to set.
+	 * @param dateCreated The dateCreated to set.
 	 */
 	public void setDateCreated(Date dateCreated) {
 		this.dateCreated = dateCreated;
@@ -384,8 +365,7 @@ public class FormField implements java.io.Serializable, Comparable<FormField>, S
 	}
 
 	/**
-	 * @param changedBy
-	 *            The changedBy to set.
+	 * @param changedBy The changedBy to set.
 	 */
 	public void setChangedBy(User changedBy) {
 		this.changedBy = changedBy;
@@ -399,8 +379,7 @@ public class FormField implements java.io.Serializable, Comparable<FormField>, S
 	}
 
 	/**
-	 * @param dateChanged
-	 *            The dateChanged to set.
+	 * @param dateChanged The dateChanged to set.
 	 */
 	public void setDateChanged(Date dateChanged) {
 		this.dateChanged = dateChanged;

@@ -72,7 +72,8 @@ public class MimeType implements java.io.Serializable, Synchronizable {
 	}
 	
 	public int hashCode() {
-		if (this.getMimeTypeId() == null) return super.hashCode();
+		if (this.getMimeTypeId() == null)
+			return super.hashCode();
 		return this.getMimeTypeId().hashCode();
 	}
 

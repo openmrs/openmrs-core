@@ -26,10 +26,8 @@ import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 
 /**
- * This class is the representation of a person's address. This class is
- * many-to-one to the Person class, so a Person/Patient/User can have zero 
- * to n addresses
- * 
+ * This class is the representation of a person's address. This class is many-to-one to the Person
+ * class, so a Person/Patient/User can have zero to n addresses
  */
 @Root(strict=false)
 public class PersonAddress implements java.io.Serializable, Cloneable, Synchronizable,  Comparable<PersonAddress> {
@@ -80,7 +78,8 @@ public class PersonAddress implements java.io.Serializable, Cloneable, Synchroni
 	// Constructors
 
 	/** default constructor */
-	public PersonAddress() { }
+	public PersonAddress() {
+	}
 
 	/** constructor with id */
 	public PersonAddress(Integer personAddressId) {
@@ -91,39 +90,33 @@ public class PersonAddress implements java.io.Serializable, Cloneable, Synchroni
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		return "a1:" + getAddress1() + ", a2:" + getAddress2() + ", cv:"
-		        + getCityVillage() + ", sp:" + getStateProvince() + ", c:"
-		        + getCountry() + ", cd:" + getCountyDistrict() + ", nc:"
-		        + getNeighborhoodCell() + ", pc:" + getPostalCode() + ", lat:"
-		        + getLatitude() + ", long:" + getLongitude();
+		return "a1:" + getAddress1() + ", a2:" + getAddress2() + ", cv:" + getCityVillage() + ", sp:" + getStateProvince()
+		        + ", c:" + getCountry() + ", cd:" + getCountyDistrict() + ", nc:" + getNeighborhoodCell() + ", pc:"
+		        + getPostalCode() + ", lat:" + getLatitude() + ", long:" + getLongitude();
 	}
 
 	/**
-	 * Compares this address to the given object/address for similarity.  Uses 
-	 * the very basic comparison of just the PersonAddress.personAddressId
+	 * Compares this address to the given object/address for similarity. Uses the very basic
+	 * comparison of just the PersonAddress.personAddressId
 	 * 
 	 * @param obj Object (Usually PersonAddress) with which to compare
 	 * @return boolean true/false whether or not they are the same objects
-	 * 
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	public boolean equals(Object obj) {
 		if (obj instanceof PersonAddress) {
 			PersonAddress p = (PersonAddress) obj;
-			if (this.getPersonAddressId() != null
-			        && p.getPersonAddressId() != null)
+			if (this.getPersonAddressId() != null && p.getPersonAddressId() != null)
 				return (this.getPersonAddressId().equals(p.getPersonAddressId()));
 		}
 		return false;
 	}
 
 	/**
-	 * Compares this PersonAddress object to the given otherAddress. This method
-	 * differs from {@link #equals(Object)} in that this method compares the
-	 * inner fields of each address for equality.
-	 * 
-	 * Note: Null/empty fields on <code>otherAddress</code> /will not/ cause a
-	 * false value to be returned
+	 * Compares this PersonAddress object to the given otherAddress. This method differs from
+	 * {@link #equals(Object)} in that this method compares the inner fields of each address for
+	 * equality. Note: Null/empty fields on <code>otherAddress</code> /will not/ cause a false value
+	 * to be returned
 	 * 
 	 * @param otherAddress PersonAddress with which to compare
 	 * @return boolean true/false whether or not they are the same addresses
@@ -133,10 +126,8 @@ public class PersonAddress implements java.io.Serializable, Cloneable, Synchroni
 		boolean returnValue = true;
 
 		// these are the methods to compare. All are expected to be Strings
-		String[] methods = { "getAddress1", "getAddress2", "getCityVillage",
-		        "getNeighborhoodCell", "getCountyDistrict",
-		        "getTownshipDivision", "getRegion", "getSubregion",
-		        "getStateProvince", "getCountry", "getPostalCode",
+		String[] methods = { "getAddress1", "getAddress2", "getCityVillage", "getNeighborhoodCell", "getCountyDistrict",
+		        "getTownshipDivision", "getRegion", "getSubregion", "getStateProvince", "getCountry", "getPostalCode",
 		        "getLatitude", "getLongitude" };
 
 		Class addressClass = this.getClass();
@@ -144,8 +135,7 @@ public class PersonAddress implements java.io.Serializable, Cloneable, Synchroni
 		// loop over all of the selected methods and compare this and other
 		for (String methodName : methods) {
 			try {
-				Method method = addressClass.getMethod(methodName,
-				                                       new Class[] {});
+				Method method = addressClass.getMethod(methodName, new Class[] {});
 
 				String thisValue = (String) method.invoke(this);
 				String otherValue = (String) method.invoke(otherAddress);
@@ -153,11 +143,14 @@ public class PersonAddress implements java.io.Serializable, Cloneable, Synchroni
 				if (otherValue != null && otherValue.length() > 0)
 					returnValue &= otherValue.equals(thisValue);
 
-			} catch (NoSuchMethodException e) {
+			}
+			catch (NoSuchMethodException e) {
 				log.warn("No such method for comparison " + methodName, e);
-			} catch (IllegalAccessException e) {
+			}
+			catch (IllegalAccessException e) {
 				log.error("Error while comparing addresses", e);
-			} catch (InvocationTargetException e) {
+			}
+			catch (InvocationTargetException e) {
 				log.error("Error while comparing addresses", e);
 			}
 
@@ -176,16 +169,17 @@ public class PersonAddress implements java.io.Serializable, Cloneable, Synchroni
 	}
 
 	/**
-	 * bitwise copy of the personAddress object. NOTICE: THIS WILL NOT COPY THE
-	 * PATIENT OBJECT. The PersonAddress.person object in this object AND the
-	 * cloned object will point at the same person
+	 * bitwise copy of the personAddress object. NOTICE: THIS WILL NOT COPY THE PATIENT OBJECT. The
+	 * PersonAddress.person object in this object AND the cloned object will point at the same
+	 * person
 	 * 
 	 * @return New PersonAddress object
 	 */
 	public Object clone() {
 		try {
 			return super.clone();
-		} catch (CloneNotSupportedException e) {
+		}
+		catch (CloneNotSupportedException e) {
 			throw new InternalError("PersonAddress should be cloneable");
 		}
 	}
@@ -505,19 +499,16 @@ public class PersonAddress implements java.io.Serializable, Cloneable, Synchroni
 	}
 
 	/**
-	 * Convenience method to test whether any of the fields in this address are
-	 * set
+	 * Convenience method to test whether any of the fields in this address are set
 	 * 
-	 * @return whether any of the address fields (address1, address2,
-	 *         cityVillage, stateProvince, country, countyDistrict,
-	 *         neighborhoodCell, postalCode, latitude, longitude) are non-null
+	 * @return whether any of the address fields (address1, address2, cityVillage, stateProvince,
+	 *         country, countyDistrict, neighborhoodCell, postalCode, latitude, longitude) are
+	 *         non-null
 	 */
 	public boolean isBlank() {
-		return getAddress1() == null && getAddress2() == null
-		        && getCityVillage() == null && getStateProvince() == null
-		        && getCountry() == null && getCountyDistrict() == null
-		        && getNeighborhoodCell() == null && getPostalCode() == null
-		        && getLatitude() == null && getLongitude() == null;
+		return getAddress1() == null && getAddress2() == null && getCityVillage() == null && getStateProvince() == null
+		        && getCountry() == null && getCountyDistrict() == null && getNeighborhoodCell() == null
+		        && getPostalCode() == null && getLatitude() == null && getLongitude() == null;
 	}
 
 	/**

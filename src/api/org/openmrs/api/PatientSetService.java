@@ -50,7 +50,8 @@ public interface PatientSetService {
 
 	/**
 	 * @param ps The set you want to export as XML
-	 * @return an XML representation of this patient-set, including patient characteristics, and observations
+	 * @return an XML representation of this patient-set, including patient characteristics, and
+	 *         observations
 	 */
 	@Transactional(readOnly=true)
 	public String exportXml(Cohort ps);
@@ -62,39 +63,49 @@ public interface PatientSetService {
 	public Cohort getAllPatients() throws DAOException;
 
 	@Transactional(readOnly=true)
-	public Cohort getPatientsByCharacteristics(String gender,
-			Date minBirthdate, Date maxBirthdate) throws DAOException;
+	public Cohort getPatientsByCharacteristics(String gender, Date minBirthdate, Date maxBirthdate) throws DAOException;
 
 	@Transactional(readOnly=true)
-	public Cohort getPatientsByCharacteristics(String gender,
-			Date minBirthdate, Date maxBirthdate, Integer minAge,
-			Integer maxAge, Boolean aliveOnly, Boolean deadOnly)
-			throws DAOException;
+	public Cohort getPatientsByCharacteristics(String gender, Date minBirthdate, Date maxBirthdate, Integer minAge,
+	                                           Integer maxAge, Boolean aliveOnly, Boolean deadOnly) throws DAOException;
 	
 	@Transactional(readOnly=true)
-	public Cohort getPatientsByCharacteristics(String gender,
-			Date minBirthdate, Date maxBirthdate, Integer minAge,
+	public Cohort getPatientsByCharacteristics(String gender, Date minBirthdate, Date maxBirthdate, Integer minAge,
 			Integer maxAge, Boolean aliveOnly, Boolean deadOnly, Date effectiveDate)
 			throws DAOException;
 
 	@Transactional(readOnly=true)
-	public Cohort getPatientsHavingNumericObs(Integer conceptId,
-			TimeModifier timeModifier, PatientSetService.Modifier modifier,
-			Number value, Date fromDate, Date toDate);
+	public Cohort getPatientsHavingNumericObs(Integer conceptId, TimeModifier timeModifier,
+	                                          PatientSetService.Modifier modifier, Number value, Date fromDate, Date toDate);
 	
+	/**
+	 * Searches for patients who have observations as described by the arguments to this method
+	 * 
+	 * @param conceptId
+	 * @param timeModifier
+	 * @param modifier
+	 * @param value
+	 * @param fromDate
+	 * @param toDate
+	 * @return all patients with observations matching the arguments to this method
+	 * @should get patients by concept and true boolean value
+	 * @should get patients by concept and false boolean value
+	 */
 	@Transactional(readOnly=true)
-	public Cohort getPatientsHavingObs(Integer conceptId,
-			TimeModifier timeModifier, Modifier modifier, Object value,
+	public Cohort getPatientsHavingObs(Integer conceptId, TimeModifier timeModifier, Modifier modifier, Object value,
 			Date fromDate, Date toDate);
 	
 	@Transactional(readOnly=true)
-	public Cohort getPatientsHavingEncounters(EncounterType encounterType, Location location, Form form, Date fromDate, Date toDate, Integer minCount, Integer maxCount);
+	public Cohort getPatientsHavingEncounters(EncounterType encounterType, Location location, Form form, Date fromDate,
+	                                          Date toDate, Integer minCount, Integer maxCount);
 	
 	@Transactional(readOnly=true)
-	public Cohort getPatientsHavingEncounters(List<EncounterType> encounterTypeList, Location location, Form form, Date fromDate, Date toDate, Integer minCount, Integer maxCount);
+	public Cohort getPatientsHavingEncounters(List<EncounterType> encounterTypeList, Location location, Form form,
+	                                          Date fromDate, Date toDate, Integer minCount, Integer maxCount);
 	
 	@Transactional(readOnly=true)
-	public Cohort getPatientsByProgramAndState(Program program, List<ProgramWorkflowState> stateList, Date fromDate, Date toDate);
+	public Cohort getPatientsByProgramAndState(Program program, List<ProgramWorkflowState> stateList, Date fromDate,
+	                                           Date toDate);
 
 	@Transactional(readOnly=true)
 	public Cohort getPatientsInProgram(Program program, Date fromDate, Date toDate);
@@ -123,65 +134,66 @@ public interface PatientSetService {
 	/**
 	 * Returns a Cohort of patient who had drug orders for a set of drugs active on a certain date.
 	 * Can also be used to find patient with no drug orders on that date.
+	 * 
 	 * @param patientIds Collection of patientIds you're interested in. NULL means all patients.
-	 * @param takingAny Collection of drugIds the patient is taking. (Or the empty set to mean "any drug" or NULL to mean "no drugs")
+	 * @param takingAny Collection of drugIds the patient is taking. (Or the empty set to mean
+	 *            "any drug" or NULL to mean "no drugs")
 	 * @param onDate Which date to look at the patients' drug orders. (NULL defaults to now().)
 	 */
 	@Transactional(readOnly=true)
-	public Cohort getPatientsHavingDrugOrder(
-			Collection<Integer> patientIds, Collection<Integer> takingIds,
-			Date onDate);
+	public Cohort getPatientsHavingDrugOrder(Collection<Integer> patientIds, Collection<Integer> takingIds, Date onDate);
 
 	/**
-	 * Returns a Cohort of patient who had drug orders for a set of drugs active between a pair of dates.
-	 * Can also be used to find patient with no drug orders on that date.
+	 * Returns a Cohort of patient who had drug orders for a set of drugs active between a pair of
+	 * dates. Can also be used to find patient with no drug orders on that date.
+	 * 
 	 * @param patientIds Collection of patientIds you're interested in. NULL means all patients.
-	 * @param drugIds Collection of drugIds the patient is taking. (Or the empty set to mean "any drug" or NULL to mean "no drugs")
+	 * @param drugIds Collection of drugIds the patient is taking. (Or the empty set to mean
+	 *            "any drug" or NULL to mean "no drugs")
 	 * @param groupMethod whether to do NONE, ALL, or ANY of the list of specified ids.
-	 * @param fromDate Beginning of date range to look at (NULL defaults to toDate if that isn't null, or now() if it is.) 
-	 * @param toDate End of date range to look at (NULL defaults to fromDate if that isn't null, or now() if it is.)
+	 * @param fromDate Beginning of date range to look at (NULL defaults to toDate if that isn't
+	 *            null, or now() if it is.)
+	 * @param toDate End of date range to look at (NULL defaults to fromDate if that isn't null, or
+	 *            now() if it is.)
 	 */
 	@Transactional(readOnly=true)
-	public Cohort getPatientsHavingDrugOrder(
-			Collection<Integer> patientIds, Collection<Integer> drugIds, GroupMethod groupMethod,
-			Date fromDate, Date toDate);
+	public Cohort getPatientsHavingDrugOrder(Collection<Integer> patientIds, Collection<Integer> drugIds,
+	                                         GroupMethod groupMethod, Date fromDate, Date toDate);
 	
 	/**
-	 * @return A Cohort of patients who had drug order for particular drugs or generics, with start dates within a range, with end dates within a range, and a reason for discontinuation. 
+	 * @return A Cohort of patients who had drug order for particular drugs or generics, with start
+	 *         dates within a range, with end dates within a range, and a reason for
+	 *         discontinuation.
 	 */
 	@Transactional(readOnly=true)
-	public Cohort getPatientsHavingDrugOrder(
-			List<Drug> drug, List<Concept> drugConcept,
-			Date startDateFrom, Date startDateTo,
-			Date stopDateFrom, Date stopDateTo,
-			Boolean discontinued, List<Concept> discontinuedReason);
+	public Cohort getPatientsHavingDrugOrder(List<Drug> drug, List<Concept> drugConcept, Date startDateFrom,
+	                                         Date startDateTo, Date stopDateFrom, Date stopDateTo, Boolean discontinued,
+	                                         List<Concept> discontinuedReason);
 	
 	/**
 	 * At least one of attribute and value must be non-null
+	 * 
 	 * @param attribute if not null, look for this attribute
 	 * @param value if not null, look for this value
-	 * @return Cohort of patients who have a person attribute (optionally) with attributeType of attribute and (optionally) value of value.
+	 * @return Cohort of patients who have a person attribute (optionally) with attributeType of
+	 *         attribute and (optionally) value of value.
 	 */
 	@Transactional(readOnly=true)
 	public Cohort getPatientsHavingPersonAttribute(PersonAttributeType attribute, String value);
 	
 	@Transactional(readOnly=true)
-	public Map<Integer, String> getShortPatientDescriptions(
-			Collection<Integer> patientIds);
+	public Map<Integer, String> getShortPatientDescriptions(Collection<Integer> patientIds);
 
 	@Transactional(readOnly=true)
-	public Map<Integer, List<Obs>> getObservations(Cohort patients,
-			Concept concept);
+	public Map<Integer, List<Obs>> getObservations(Cohort patients, Concept concept);
 
 	/**
 	 * Date range is inclusive of both endpoints 
 	 */
 	@Transactional(readOnly=true)
-	public Map<Integer, List<Obs>> getObservations(Cohort patients,
-			Concept concept, Date fromDate, Date toDate);
+	public Map<Integer, List<Obs>> getObservations(Cohort patients, Concept concept, Date fromDate, Date toDate);
 
 	/**
-	 * 
 	 * Map<patientId, List<Obs values>>
 	 * 
 	 * @param patients
@@ -192,10 +204,9 @@ public interface PatientSetService {
 	public Map<Integer, List<List<Object>>> getObservationsValues(Cohort patients, Concept c);
 	
 	/**
-	 * Returns a mapping from patient id to obs for concept <code>c</code>
-	 * 
-	 * The returned List< attribute value > is [obs value, attr value, attr value, attr value...]
-	 * The returned List<List< attribute value >> represents the obs rows 
+	 * Returns a mapping from patient id to obs for concept <code>c</code> The returned List<
+	 * attribute value > is [obs value, attr value, attr value, attr value...] The returned
+	 * List<List< attribute value >> represents the obs rows
 	 * 
 	 * @param patients
 	 * @param c
@@ -206,7 +217,6 @@ public interface PatientSetService {
 	public Map<Integer, List<List<Object>>> getObservationsValues(Cohort patients, Concept c, List<String> attributes);
 	
 	/**
-	 * 
 	 * @param patients
 	 * @param encType
 	 * @return
@@ -215,7 +225,6 @@ public interface PatientSetService {
 	public Map<Integer, Encounter> getEncountersByType(Cohort patients, EncounterType encType);
 	
 	/**
-	 * 
 	 * @param patients
 	 * @param encTypes
 	 * @param attr
@@ -224,7 +233,6 @@ public interface PatientSetService {
 	public Map<Integer, Object> getEncounterAttrsByType(Cohort patients, List<EncounterType> encTypes, String attr);
 	
 	/**
-	 * 
 	 * @param patients
 	 * @param encType
 	 * @return
@@ -235,7 +243,6 @@ public interface PatientSetService {
 	
 
 	/**
-	 * 
 	 * @param patients
 	 * @return
 	 */
@@ -243,17 +250,14 @@ public interface PatientSetService {
 	public Map<Integer, Encounter> getEncounters(Cohort patients);
 	
 	/**
-	 * 
 	 * @param patients
 	 * @param encType
 	 * @return
 	 */
 	@Transactional(readOnly=true)
-	public Map<Integer, Encounter> getFirstEncountersByType(
-			Cohort patients, EncounterType encType);
+	public Map<Integer, Encounter> getFirstEncountersByType(Cohort patients, EncounterType encType);
 	
 	/**
-	 * 
 	 * @param patients
 	 * @param types
 	 * @return
@@ -263,7 +267,6 @@ public interface PatientSetService {
 	
 
 	/**
-	 * 
 	 * @param patients
 	 * @param encTypes
 	 * @param attr
@@ -274,7 +277,6 @@ public interface PatientSetService {
 	
 	
 	/**
-	 * 
 	 * @param patients
 	 * @param className
 	 * @param property
@@ -282,22 +284,18 @@ public interface PatientSetService {
 	 * @return
 	 */
 	@Transactional(readOnly=true)
-	public Map<Integer, Object> getPatientAttributes(Cohort patients,
-			String className, String property, boolean returnAll);
+	public Map<Integer, Object> getPatientAttributes(Cohort patients, String className, String property, boolean returnAll);
 
 	/**
-	 * 
 	 * @param patients
 	 * @param classNameDotProperty
 	 * @param returnAll
 	 * @return
 	 */
 	@Transactional(readOnly=true)
-	public Map<Integer, Object> getPatientAttributes(Cohort patients,
-			String classNameDotProperty, boolean returnAll);
+	public Map<Integer, Object> getPatientAttributes(Cohort patients, String classNameDotProperty, boolean returnAll);
 
 	/**
-	 * 
 	 * @param patients
 	 * @param attributeName
 	 * @param joinClass
@@ -305,21 +303,21 @@ public interface PatientSetService {
 	 * @param outputColumn
 	 * @param returnAll
 	 * @return
-	 */@Transactional(readOnly=true)
-	public Map<Integer, Object> getPersonAttributes(Cohort patients,
-			String attributeName, String joinClass, String joinProperty, String outputColumn, boolean returnAll);
+	 */
+	@Transactional(readOnly = true)
+	public Map<Integer, Object> getPersonAttributes(Cohort patients, String attributeName, String joinClass,
+	                                                String joinProperty, String outputColumn, boolean returnAll);
 	
 	/**
-	 * 
 	 * @param patients
 	 * @return
 	 */
 	@Transactional(readOnly=true)
-	public Map<Integer, Map<String, Object>> getCharacteristics(
-			Cohort patients);
+	public Map<Integer, Map<String, Object>> getCharacteristics(Cohort patients);
 
 	/**
 	 * Gets a map of patient identifiers by identifier type, indexed by patient primary key.
+	 * 
 	 * @param patients
 	 * @param type
 	 * @return
@@ -329,7 +327,6 @@ public interface PatientSetService {
 
 
 	/**
-	 * 
 	 * @param identifiers
 	 * @return
 	 */
@@ -337,7 +334,6 @@ public interface PatientSetService {
 	public Cohort convertPatientIdentifier(List<String> identifiers);
 	
 	/**
-	 * 
 	 * @param patientIds
 	 * @return
 	 */
@@ -345,43 +341,43 @@ public interface PatientSetService {
 	public List<Patient> getPatients(Collection<Integer> patientIds);
 
 	/**
-	 * 
 	 * @param ps
+	 * @deprecated The "My Patient Set" feature will be removed in 1.5
 	 */
 	public void setMyPatientSet(Cohort ps);
 
 	/**
-	 * 
 	 * @return
+	 * @deprecated The "My Patient Set" feature will be removed in 1.5
 	 */
 	@Transactional(readOnly=true)
 	public Cohort getMyPatientSet();
 
 	/**
-	 * 
 	 * @param ptId
+	 * @deprecated The "My Patient Set" feature will be removed in 1.5
 	 */
 	public void addToMyPatientSet(Integer ptId);
 
 	/**
-	 * 
 	 * @param ptId
+	 * @deprecated The "My Patient Set" feature will be removed in 1.5
 	 */
 	public void removeFromMyPatientSet(Integer ptId);
 
+	/**
+	 * @deprecated The "My Patient Set" feature will be removed in 1.5
+	 */
 	public void clearMyPatientSet();
 
 	@Transactional(readOnly=true)
-	public Map<Integer, PatientState> getCurrentStates(Cohort ps,
-			ProgramWorkflow wf);
+	public Map<Integer, PatientState> getCurrentStates(Cohort ps, ProgramWorkflow wf);
 
 	@Transactional(readOnly=true)
-	public Map<Integer, PatientProgram> getCurrentPatientPrograms(
-			Cohort ps, Program program);
+	public Map<Integer, PatientProgram> getCurrentPatientPrograms(Cohort ps, Program program);
 
 	@Transactional(readOnly=true)
-	public Map<Integer, PatientProgram> getPatientPrograms(Cohort ps,
-			Program program);
+	public Map<Integer, PatientProgram> getPatientPrograms(Cohort ps, Program program);
 	
 	@Transactional(readOnly=true)
 	public Map<Integer, List<Relationship>> getRelationships(Cohort ps, RelationshipType relType);
@@ -390,18 +386,18 @@ public interface PatientSetService {
 	public Map<Integer, List<Person>> getRelatives(Cohort ps, RelationshipType relType, boolean forwards);
 	
 	/**
-	 * @return all active drug orders whose drug concept is in the given set (or all drugs if that's null) 
+	 * @return all active drug orders whose drug concept is in the given set (or all drugs if that's
+	 *         null)
 	 */
 	@Transactional(readOnly=true)
-	public Map<Integer, List<DrugOrder>> getCurrentDrugOrders(Cohort ps,
-			Concept drugSet);
+	public Map<Integer, List<DrugOrder>> getCurrentDrugOrders(Cohort ps, Concept drugSet);
 
 	/**
-	 * @return all active or finished drug orders whose drug concept is in the given set (or all drugs if that's null) 
+	 * @return all active or finished drug orders whose drug concept is in the given set (or all
+	 *         drugs if that's null)
 	 */
 	@Transactional(readOnly=true)
-	public Map<Integer, List<DrugOrder>> getDrugOrders(Cohort ps,
-			Concept drugSet);
+	public Map<Integer, List<DrugOrder>> getDrugOrders(Cohort ps, Concept drugSet);
 
 	/**
 	 * Gets a list of encounters associated with the given form, filtered by the given patient set.
@@ -415,11 +411,7 @@ public interface PatientSetService {
 	
 	
 	public enum Modifier {
-		LESS_THAN ("<"),
-		LESS_EQUAL ("<="),
-		EQUAL ("="),
-		GREATER_EQUAL (">="),
-		GREATER_THAN (">");
+		LESS_THAN("<"), LESS_EQUAL("<="), EQUAL("="), GREATER_EQUAL(">="), GREATER_THAN(">");
 
 		public final String sqlRep;
 		Modifier(String sqlRep) {
@@ -431,33 +423,20 @@ public interface PatientSetService {
 	}
 	
 	public enum TimeModifier {
-		ANY,
-		NO,
-		FIRST,
-		LAST,
-		MIN,
-		MAX,
-		AVG;
+		ANY, NO, FIRST, LAST, MIN, MAX, AVG;
 	}
 
 	public enum BooleanOperator {
-		AND,
-		OR,
-		NOT;
+		AND, OR, NOT;
 	}
 	
 	// probably should combine this with TimeModifier
 	public enum GroupMethod {
-		ANY,
-		ALL,
-		NONE;
+		ANY, ALL, NONE;
 	}
 	
 	public enum PatientLocationMethod {
-		EARLIEST_ENCOUNTER,
-		LATEST_ENCOUNTER,
-		ANY_ENCOUNTER,
-		PATIENT_HEALTH_CENTER
+		EARLIEST_ENCOUNTER, LATEST_ENCOUNTER, ANY_ENCOUNTER, PATIENT_HEALTH_CENTER
 	}
 	
 }

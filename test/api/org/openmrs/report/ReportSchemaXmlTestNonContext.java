@@ -21,7 +21,7 @@ import org.junit.Test;
  * Tests the small class ReportSchemaXml without database accesses
  */
 public class ReportSchemaXmlTestNonContext {
-
+	
 	/**
 	 * Test the updateFromAttributes method
 	 * 
@@ -36,9 +36,12 @@ public class ReportSchemaXmlTestNonContext {
 		xml.append("		Sample monthly PEPFAR report, modeled after the lesotho one\n");
 		xml.append("	</description>\n");
 		xml.append("	<parameters class=\"java.util.ArrayList\">\n");
-		xml.append("		<parameter clazz=\"java.util.Date\"><name>report.startDate</name><label>When does the report period start?</label></parameter>/>\n");
-		xml.append("		<parameter clazz=\"java.util.Date\"><name>report.endDate</name><label>When does the report period end?</label></parameter>\n");
-		xml.append("		<parameter clazz=\"org.openmrs.Location\"><name>report.location</name><label>For which clinic is this report?</label></parameter>\n");
+		xml
+		        .append("		<parameter clazz=\"java.util.Date\"><name>report.startDate</name><label>When does the report period start?</label></parameter>/>\n");
+		xml
+		        .append("		<parameter clazz=\"java.util.Date\"><name>report.endDate</name><label>When does the report period end?</label></parameter>\n");
+		xml
+		        .append("		<parameter clazz=\"org.openmrs.Location\"><name>report.location</name><label>For which clinic is this report?</label></parameter>\n");
 		xml.append("	</parameters>\n");
 		xml.append("	<dataSets class=\"java.util.ArrayList\">\n");
 		xml.append("		<dataSetDefinition class=\"org.openmrs.dataset.CohortDataSetDefinition\" name=\"Cohorts\">\n");
@@ -52,7 +55,8 @@ public class ReportSchemaXmlTestNonContext {
 		xml.append("				<entry>\n");
 		xml.append("					<string>1.b</string>\n");
 		xml.append("					<cohort class=\"org.openmrs.reporting.PatientSearch\">\n");
-		xml.append("						<specification>[Male] and [Adult] and [EnrolledOnDate|untilDate=${report.startDate - 1d}]</specification>\n");
+		xml
+		        .append("						<specification>[Male] and [Adult] and [EnrolledOnDate|untilDate=${report.startDate - 1d}]</specification>\n");
 		xml.append("					</cohort>\n");
 		xml.append("				</entry>\n");
 		xml.append("			</strategies>\n");
@@ -68,8 +72,8 @@ public class ReportSchemaXmlTestNonContext {
 		reportSchemaXml.updateXmlFromAttributes();
 		
 		String newXml = reportSchemaXml.getXml();
-		assertTrue("The id in the xml should be set from the reportSchemaXml object", newXml.contains(" reportSchemaId=\"1\" "));
-		
+		assertTrue("The id in the xml should be set from the reportSchemaXml object", newXml
+		        .contains(" reportSchemaId=\"1\" "));
 		
 		// now test with reportSchemaId already set
 		xml = new StringBuilder();
@@ -79,9 +83,12 @@ public class ReportSchemaXmlTestNonContext {
 		xml.append("		Sample monthly PEPFAR report, modeled after the lesotho one\n");
 		xml.append("	</description>\n");
 		xml.append("	<parameters class=\"java.util.ArrayList\">\n");
-		xml.append("		<parameter clazz=\"java.util.Date\"><name>report.startDate</name><label>When does the report period start?</label></parameter>/>\n");
-		xml.append("		<parameter clazz=\"java.util.Date\"><name>report.endDate</name><label>When does the report period end?</label></parameter>\n");
-		xml.append("		<parameter clazz=\"org.openmrs.Location\"><name>report.location</name><label>For which clinic is this report?</label></parameter>\n");
+		xml
+		        .append("		<parameter clazz=\"java.util.Date\"><name>report.startDate</name><label>When does the report period start?</label></parameter>/>\n");
+		xml
+		        .append("		<parameter clazz=\"java.util.Date\"><name>report.endDate</name><label>When does the report period end?</label></parameter>\n");
+		xml
+		        .append("		<parameter clazz=\"org.openmrs.Location\"><name>report.location</name><label>For which clinic is this report?</label></parameter>\n");
 		xml.append("	</parameters>\n");
 		xml.append("	<dataSets class=\"java.util.ArrayList\">\n");
 		xml.append("		<dataSetDefinition class=\"org.openmrs.dataset.CohortDataSetDefinition\" name=\"Cohorts\">\n");
@@ -95,7 +102,8 @@ public class ReportSchemaXmlTestNonContext {
 		xml.append("				<entry>\n");
 		xml.append("					<string>1.b</string>\n");
 		xml.append("					<cohort class=\"org.openmrs.reporting.PatientSearch\">\n");
-		xml.append("						<specification>[Male] and [Adult] and [EnrolledOnDate|untilDate=${report.startDate - 1d}]</specification>\n");
+		xml
+		        .append("						<specification>[Male] and [Adult] and [EnrolledOnDate|untilDate=${report.startDate - 1d}]</specification>\n");
 		xml.append("					</cohort>\n");
 		xml.append("				</entry>\n");
 		xml.append("			</strategies>\n");
@@ -111,7 +119,8 @@ public class ReportSchemaXmlTestNonContext {
 		reportSchemaXml.updateXmlFromAttributes();
 		
 		newXml = reportSchemaXml.getXml();
-		assertTrue("The id in the xml should be set from the reportSchemaXml object", newXml.contains(" reportSchemaId=\"12\">"));
+		assertTrue("The id in the xml should be set from the reportSchemaXml object", newXml
+		        .contains(" reportSchemaId=\"12\">"));
 		
 		xml = new StringBuilder();
 		xml.append("<reportSchema id=\"1\" reportSchemaId=\'1\'>\n");
@@ -120,9 +129,12 @@ public class ReportSchemaXmlTestNonContext {
 		xml.append("		Sample monthly PEPFAR report, modeled after the lesotho one\n");
 		xml.append("	</description>\n");
 		xml.append("	<parameters class=\"java.util.ArrayList\">\n");
-		xml.append("		<parameter clazz=\"java.util.Date\"><name>report.startDate</name><label>When does the report period start?</label></parameter>/>\n");
-		xml.append("		<parameter clazz=\"java.util.Date\"><name>report.endDate</name><label>When does the report period end?</label></parameter>\n");
-		xml.append("		<parameter clazz=\"org.openmrs.Location\"><name>report.location</name><label>For which clinic is this report?</label></parameter>\n");
+		xml
+		        .append("		<parameter clazz=\"java.util.Date\"><name>report.startDate</name><label>When does the report period start?</label></parameter>/>\n");
+		xml
+		        .append("		<parameter clazz=\"java.util.Date\"><name>report.endDate</name><label>When does the report period end?</label></parameter>\n");
+		xml
+		        .append("		<parameter clazz=\"org.openmrs.Location\"><name>report.location</name><label>For which clinic is this report?</label></parameter>\n");
 		xml.append("	</parameters>\n");
 		xml.append("	<dataSets class=\"java.util.ArrayList\">\n");
 		xml.append("		<dataSetDefinition class=\"org.openmrs.dataset.CohortDataSetDefinition\" name=\"Cohorts\">\n");
@@ -136,7 +148,8 @@ public class ReportSchemaXmlTestNonContext {
 		xml.append("				<entry>\n");
 		xml.append("					<string>1.b</string>\n");
 		xml.append("					<cohort class=\"org.openmrs.reporting.PatientSearch\">\n");
-		xml.append("						<specification>[Male] and [Adult] and [EnrolledOnDate|untilDate=${report.startDate - 1d}]</specification>\n");
+		xml
+		        .append("						<specification>[Male] and [Adult] and [EnrolledOnDate|untilDate=${report.startDate - 1d}]</specification>\n");
 		xml.append("					</cohort>\n");
 		xml.append("				</entry>\n");
 		xml.append("			</strategies>\n");
@@ -152,7 +165,8 @@ public class ReportSchemaXmlTestNonContext {
 		reportSchemaXml.updateXmlFromAttributes();
 		
 		newXml = reportSchemaXml.getXml();
-		assertTrue("The id in the xml should be set from the reportSchemaXml object", newXml.contains(" reportSchemaId=\"1234\">"));
+		assertTrue("The id in the xml should be set from the reportSchemaXml object", newXml
+		        .contains(" reportSchemaId=\"1234\">"));
 		
 		xml = new StringBuilder();
 		xml.append("<reportSchema reportSchemaId=\'1\' id=\"1\">\n");
@@ -161,9 +175,12 @@ public class ReportSchemaXmlTestNonContext {
 		xml.append("		Sample monthly PEPFAR report, modeled after the lesotho one\n");
 		xml.append("	</description>\n");
 		xml.append("	<parameters class=\"java.util.ArrayList\">\n");
-		xml.append("		<parameter clazz=\"java.util.Date\"><name>report.startDate</name><label>When does the report period start?</label></parameter>/>\n");
-		xml.append("		<parameter clazz=\"java.util.Date\"><name>report.endDate</name><label>When does the report period end?</label></parameter>\n");
-		xml.append("		<parameter clazz=\"org.openmrs.Location\"><name>report.location</name><label>For which clinic is this report?</label></parameter>\n");
+		xml
+		        .append("		<parameter clazz=\"java.util.Date\"><name>report.startDate</name><label>When does the report period start?</label></parameter>/>\n");
+		xml
+		        .append("		<parameter clazz=\"java.util.Date\"><name>report.endDate</name><label>When does the report period end?</label></parameter>\n");
+		xml
+		        .append("		<parameter clazz=\"org.openmrs.Location\"><name>report.location</name><label>For which clinic is this report?</label></parameter>\n");
 		xml.append("	</parameters>\n");
 		xml.append("	<dataSets class=\"java.util.ArrayList\">\n");
 		xml.append("		<dataSetDefinition class=\"org.openmrs.dataset.CohortDataSetDefinition\" name=\"Cohorts\">\n");
@@ -177,7 +194,8 @@ public class ReportSchemaXmlTestNonContext {
 		xml.append("				<entry>\n");
 		xml.append("					<string>1.b</string>\n");
 		xml.append("					<cohort class=\"org.openmrs.reporting.PatientSearch\">\n");
-		xml.append("						<specification>[Male] and [Adult] and [EnrolledOnDate|untilDate=${report.startDate - 1d}]</specification>\n");
+		xml
+		        .append("						<specification>[Male] and [Adult] and [EnrolledOnDate|untilDate=${report.startDate - 1d}]</specification>\n");
 		xml.append("					</cohort>\n");
 		xml.append("				</entry>\n");
 		xml.append("			</strategies>\n");
@@ -193,7 +211,8 @@ public class ReportSchemaXmlTestNonContext {
 		reportSchemaXml.updateXmlFromAttributes();
 		
 		newXml = reportSchemaXml.getXml();
-		assertTrue("The id in the xml should be set from the reportSchemaXml object", newXml.contains(" reportSchemaId=\"1234\" "));
+		assertTrue("The id in the xml should be set from the reportSchemaXml object", newXml
+		        .contains(" reportSchemaId=\"1234\" "));
 	}
-
+	
 }

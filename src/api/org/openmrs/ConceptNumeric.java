@@ -18,8 +18,7 @@ import org.simpleframework.xml.Attribute;
 
 
 /**
- * The ConceptNumeric extends upon the Concept object by adding some
- * number range values 
+ * The ConceptNumeric extends upon the Concept object by adding some number range values
  * 
  * @see Concept
  */
@@ -63,8 +62,9 @@ public class ConceptNumeric extends Concept implements java.io.Serializable, Syn
 	}
 	
 	/**
-	 * Optional constructor for turning a Concept into a ConceptNumeric
-	 * Note: This cannot copy over numeric specific values
+	 * Optional constructor for turning a Concept into a ConceptNumeric Note: This cannot copy over
+	 * numeric specific values
+	 * 
 	 * @param c
 	 */
 	public ConceptNumeric(Concept c) {
@@ -79,6 +79,8 @@ public class ConceptNumeric extends Concept implements java.io.Serializable, Syn
 		this.setDateCreated(c.getDateCreated());
 		this.setSet(c.isSet());
 		this.setNames(c.getNames());
+		this.setDescriptions(c.getDescriptions());
+		this.setConceptMappings(c.getConceptMappings());
 		this.setRetired(c.isRetired());
 		this.setVersion(c.getVersion());
 		
@@ -107,7 +109,8 @@ public class ConceptNumeric extends Concept implements java.io.Serializable, Syn
 	 * @see org.openmrs.Concept#hashCode()
 	 */
 	public int hashCode() {
-		if (getConceptId() == null) return super.hashCode();
+		if (getConceptId() == null)
+			return super.hashCode();
 		int hash = 6;
 		if (getConceptId() != null)
 			hash = hash + getConceptId().hashCode() * 31;
@@ -222,9 +225,8 @@ public class ConceptNumeric extends Concept implements java.io.Serializable, Syn
 	}
 	
 	/**
-	 * 
-	 * This method will <i>always</i> return true for ConceptNumeric
-	 * objects that have a datatype of Numeric
+	 * This method will <i>always</i> return true for ConceptNumeric objects that have a datatype of
+	 * Numeric
 	 * 
 	 * @see org.openmrs.Concept#isNumeric()
 	 */

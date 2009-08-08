@@ -32,23 +32,23 @@ import org.simpleframework.xml.Serializer;
  * TODO: create a test database and test against that
  */
 public class RowPerProgramEnrollmentDatasetTest extends BaseContextSensitiveTest {
-    
-    /**
-     * TODO: fix this so it uses asserts instead of printing to stdout
-     * 
-     * @throws Exception
-     */
-    @Test
+	
+	/**
+	 * TODO: fix this so it uses asserts instead of printing to stdout
+	 * 
+	 * @throws Exception
+	 */
+	@Test
 	public void shouldSerialization() throws Exception {
-    	initializeInMemoryDatabase();
-    	executeDataSet("org/openmrs/report/include/RowPerProgramEnrollment.xml");
-    	authenticate();
+		initializeInMemoryDatabase();
+		executeDataSet("org/openmrs/report/include/RowPerProgramEnrollment.xml");
+		authenticate();
 		
 		EvaluationContext evalContext = new EvaluationContext();
 		PatientSearch kids = PatientSearch.createFilterSearch(PatientCharacteristicFilter.class);
 		kids.addArgument("maxAge", "3", Integer.class);
 		Cohort kidsCohort = Context.getCohortService().evaluate(kids, evalContext);
-
+		
 		RowPerProgramEnrollmentDataSetDefinition definition = new RowPerProgramEnrollmentDataSetDefinition();
 		definition.setName("Row per enrollment");
 		//commenting this out because serializing PatientSearches is not yet implemented
@@ -76,6 +76,6 @@ public class RowPerProgramEnrollmentDatasetTest extends BaseContextSensitiveTest
 		ReportData data = Context.getReportService().evaluate(rs, kidsCohort, evalContext);
 		System.out.println("Result=");
 		new TsvReportRenderer().render(data, null, System.out);
-    }
-    
+	}
+	
 }

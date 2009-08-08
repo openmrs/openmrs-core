@@ -116,7 +116,8 @@ public class Relationship implements java.io.Serializable, Synchronizable {
 	}
 	
 	public int hashCode() {
-		if (this.getRelationshipId() == null) return super.hashCode();
+		if (this.getRelationshipId() == null)
+			return super.hashCode();
 		return this.getRelationshipId().hashCode();
 	}
 

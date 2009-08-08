@@ -145,9 +145,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	}
 
 	/**
-	 * Voids an Obs
-	 * 
-	 * If the Obs argument is an obsGroup, all group members will be voided.
+	 * Voids an Obs If the Obs argument is an obsGroup, all group members will be voided.
 	 * 
 	 * @see org.openmrs.api.ObsService#voidObs(org.openmrs.Obs, java.lang.String)
 	 * @param Obs obs the Obs to void
@@ -181,8 +179,8 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	}
 	
 	/**
-	 * Convenience method that recursively finds all child/grandchild/greatgrandchild
-	 * group members of the given parentObs
+	 * Convenience method that recursively finds all child/grandchild/greatgrandchild group members
+	 * of the given parentObs
 	 * 
 	 * @param parentObs
 	 * @param childMembers
@@ -199,10 +197,8 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	}
 
 	/**
-	 * Unvoids an Obs
-	 * 
-	 * If the Obs argument is an obsGroup, all group members
-	 * with the same dateVoided will also be unvoided.
+	 * Unvoids an Obs If the Obs argument is an obsGroup, all group members with the same dateVoided
+	 * will also be unvoided.
 	 * 
 	 * @see org.openmrs.api.ObsService#unvoidObs(org.openmrs.Obs)
 	 * @param Obs obs the Obs to unvoid
@@ -284,8 +280,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	/**
      * @see org.openmrs.api.ObsService#voidMimeType(org.openmrs.MimeType, java.lang.String)
      */
-    public MimeType voidMimeType(MimeType mimeType, String reason)
-            throws APIException {
+	public MimeType voidMimeType(MimeType mimeType, String reason) throws APIException {
     	// TODO implement voidMimeType
 	    throw new APIException("Not yet implemented");
 	}
@@ -306,15 +301,13 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 
 	/**
      * @see org.openmrs.api.ObsService#getObservations(java.util.List, java.util.List, 
-     * 		java.util.List, java.util.List, List, List, java.util.List, 
-     * 		java.lang.Integer, java.lang.Integer, java.util.Date, 
-     * 		java.util.Date, boolean)
+	 *      java.util.List, java.util.List, List, List, java.util.List, java.lang.Integer,
+	 *      java.lang.Integer, java.util.Date, java.util.Date, boolean)
      */
-    public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters,
-            List<Concept> questions, List<Concept> answers,
-            List<PERSON_TYPE> personTypes, List<Location> locations, List<String> sort,
-            Integer mostRecentN, Integer obsGroupId, Date fromDate,
-            Date toDate, boolean includeVoidedObs) throws APIException {
+	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
+	                                 List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations,
+	                                 List<String> sort, Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate,
+	                                 boolean includeVoidedObs) throws APIException {
     	if (whom == null)
     		whom = new Vector<Person>();
     	
@@ -342,15 +335,13 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
     	if (mostRecentN == null)
     		mostRecentN = -1;
     	
-    	return dao.getObservations(whom, encounters, questions, answers, personTypes, 
-    	                           locations, sort, mostRecentN, obsGroupId, 
-    	                           fromDate, toDate, includeVoidedObs);
+		return dao.getObservations(whom, encounters, questions, answers, personTypes, locations, sort, mostRecentN,
+		    obsGroupId, fromDate, toDate, includeVoidedObs);
     }
     
     /**
-     * This implementation queries the obs table comparing the given
-     * <code>searchString</code> with the patient's identifier, encounterId, 
-     * and obsId
+	 * This implementation queries the obs table comparing the given <code>searchString</code> with
+	 * the patient's identifier, encounterId, and obsId
      *  
      * @see org.openmrs.api.ObsService#getObservations(java.lang.String)
      */
@@ -395,6 +386,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	
 	/**
 	 * Correct use case:
+	 * 
 	 * <pre>
 	 * Obs parent = new Obs();
 	 * Obs child1 = new Obs();
@@ -404,19 +396,16 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 * parent.addGroupMember(child2);
 	 * </pre>
 	 * 
-	 * @deprecated This method should no longer need to be called on the api. This
-	 * 			  was meant as temporary until we created a true ObsGroup pojo.
-	 * 
+	 * @deprecated This method should no longer need to be called on the api. This was meant as
+	 *             temporary until we created a true ObsGroup pojo.
 	 * @see org.openmrs.api.ObsService#createObsGroup(org.openmrs.Obs[])
 	 */
 	public void createObsGroup(Obs[] obs) throws APIException {
 		if (obs == null || obs.length < 1)
 			return; // silently tolerate calls with missing/empty parameter
 		
-		String conceptIdStr = Context.getAdministrationService().
-		getGlobalProperty(
-			  OpenmrsConstants.GLOBAL_PROPERTY_MEDICAL_RECORD_OBSERVATIONS, 
-          "1238");
+		String conceptIdStr = Context.getAdministrationService().getGlobalProperty(
+		    OpenmrsConstants.GLOBAL_PROPERTY_MEDICAL_RECORD_OBSERVATIONS, "1238");
 		// fail silently if a default obs group is not defined
 		if (conceptIdStr == null || conceptIdStr.length() == 0)
 			return;
@@ -426,9 +415,9 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 		
 		// if they defined a bad concept, bail
 		if (defaultObsGroupConcept == null)
-		throw new APIException("There is no concept defined with concept id: " + conceptIdStr +
-		               "You should correctly define the default obs group concept id with the global propery" + 
-		               OpenmrsConstants.GLOBAL_PROPERTY_MEDICAL_RECORD_OBSERVATIONS);
+			throw new APIException("There is no concept defined with concept id: " + conceptIdStr
+			        + "You should correctly define the default obs group concept id with the global propery"
+			        + OpenmrsConstants.GLOBAL_PROPERTY_MEDICAL_RECORD_OBSERVATIONS);
 		
 		Obs obsGroup = new Obs();
 		obsGroup.setConcept(defaultObsGroupConcept);
@@ -472,7 +461,8 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	}
 
 	/**
-	 * @see org.openmrs.api.ObsService#getObservations(org.openmrs.Concept, org.openmrs.Location, java.lang.String, java.lang.Integer, boolean includeVoided)
+	 * @see org.openmrs.api.ObsService#getObservations(org.openmrs.Concept, org.openmrs.Location,
+	 *      java.lang.String, java.lang.Integer, boolean includeVoided)
 	 * @deprecated
 	 */
 	public List<Obs> getObservations(Concept c, Location loc, String sort, Integer personType, boolean includeVoided) {
@@ -484,12 +474,13 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 		// make the sort list from the given sort string
 		List<String> sortList = makeSortList(sort);
 		
-		return getObservations(null, null, questions, null, getPersonTypeEnumerations(personType), locations, sortList, null, null, null, null, includeVoided);
+		return getObservations(null, null, questions, null, getPersonTypeEnumerations(personType), locations, sortList,
+		    null, null, null, null, includeVoided);
 	}
 	
 	/**
-     * Convenience method for turning a string like "location.locationId asc, obs.valueDatetime desc"
-     * into a list of strings to sort on
+	 * Convenience method for turning a string like
+	 * "location.locationId asc, obs.valueDatetime desc" into a list of strings to sort on
      * 
      * @param sort string
      * @return simple list of strings to sort on without asc/desc
@@ -515,14 +506,12 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
     }
 
 	/**
-	 * This method should be removed when all methods using an Integer
-	 * personType are removed.
+	 * This method should be removed when all methods using an Integer personType are removed. This
+	 * method does a bitwise compare on <code>personType</code> and returns a list of PERSON_TYPEs
+	 * that are comparable
 	 * 
-	 * This method does a bitwise compare on <code>personType</code> and returns
-	 * a list of PERSON_TYPEs that are comparable
-	 * 
-	 * @param personType Integer corresponding to {@link ObsService#PERSON},
-	 * 		{@link ObsService#USER}, or {@link ObsService#PATIENT},  
+	 * @param personType Integer corresponding to {@link ObsService#PERSON}, {@link ObsService#USER}
+	 *            , or {@link ObsService#PATIENT},
 	 * @return the enumeration that corresponds to the given integer (old way of doing it)
 	 */
 	@SuppressWarnings("deprecation")
@@ -531,23 +520,21 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 		if (personType == null) {
 			personTypes.add(PERSON_TYPE.PERSON);
 			return personTypes;
-		}
-		else if ((personType & ObsService.PATIENT) == ObsService.PATIENT) {
+		} else if ((personType & ObsService.PATIENT) == ObsService.PATIENT) {
 			personTypes.add(PERSON_TYPE.PATIENT);
 			return personTypes;
-		}
-		else if ((personType & ObsService.USER) == ObsService.USER) {
+		} else if ((personType & ObsService.USER) == ObsService.USER) {
 			personTypes.add(PERSON_TYPE.USER);
 			return personTypes;
-		}
-		else {
+		} else {
 			// default to an all-encompassing search
 			return personTypes;
 		}
 	}
 
 	/**
-	 * @see org.openmrs.api.ObsService#getObservations(org.openmrs.Person, org.openmrs.Concept, boolean)
+	 * @see org.openmrs.api.ObsService#getObservations(org.openmrs.Person, org.openmrs.Concept,
+	 *      boolean)
 	 * @deprecated
 	 */
 	public Set<Obs> getObservations(Person who, Concept question, boolean includeVoided) {
@@ -568,7 +555,8 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	}
 
 	/**
-	 * @see org.openmrs.api.ObsService#getLastNObservations(java.lang.Integer, org.openmrs.Person, org.openmrs.Concept, boolean includeVoided)
+	 * @see org.openmrs.api.ObsService#getLastNObservations(java.lang.Integer, org.openmrs.Person,
+	 *      org.openmrs.Concept, boolean includeVoided)
 	 * @deprecated
 	 */
 	public List<Obs> getLastNObservations(Integer n, Person who, Concept question, boolean includeVoided) {
@@ -581,7 +569,8 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	}
 
 	/**
-	 * @see org.openmrs.api.ObsService#getObservations(org.openmrs.Concept, java.lang.String, java.lang.Integer, boolean includeVoided)
+	 * @see org.openmrs.api.ObsService#getObservations(org.openmrs.Concept, java.lang.String,
+	 *      java.lang.Integer, boolean includeVoided)
 	 * @deprecated
 	 */
 	public List<Obs> getObservations(Concept question, String sort, Integer personType, boolean includeVoided) {
@@ -591,34 +580,40 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 		// make the sort list from the given sort string
 		List<String> sortList = makeSortList(sort);
 		
-		return getObservations(null, null, questions, null, getPersonTypeEnumerations(personType), null, sortList, null, null, null, null, includeVoided);
+		return getObservations(null, null, questions, null, getPersonTypeEnumerations(personType), null, sortList, null,
+		    null, null, null, includeVoided);
 	}
 	
 	/**
-	 * @see org.openmrs.api.ObsService#getObservationsAnsweredByConcept(org.openmrs.Concept, java.lang.Integer, boolean includeVoided)
+	 * @see org.openmrs.api.ObsService#getObservationsAnsweredByConcept(org.openmrs.Concept,
+	 *      java.lang.Integer, boolean includeVoided)
 	 * @deprecated
 	 */
 	public List<Obs> getObservationsAnsweredByConcept(Concept answer, Integer personType, boolean includeVoided) {
 		List<Concept> answers = new Vector<Concept>();
 		answers.add(answer);
 		
-		return getObservations(null, null, null, answers, getPersonTypeEnumerations(personType), null, null, null, null, null, null, includeVoided);
+		return getObservations(null, null, null, answers, getPersonTypeEnumerations(personType), null, null, null, null,
+		    null, null, includeVoided);
 	}
 	
 	/**
-	 * @see org.openmrs.api.ObsService#getNumericAnswersForConcept(org.openmrs.Concept, java.lang.Boolean, java.lang.Integer, boolean includeVoided)
+	 * @see org.openmrs.api.ObsService#getNumericAnswersForConcept(org.openmrs.Concept,
+	 *      java.lang.Boolean, java.lang.Integer, boolean includeVoided)
 	 * @deprecated
 	 */
-	public List<Object[]> getNumericAnswersForConcept(Concept answer, Boolean sortByValue, Integer personType, boolean includeVoided) {
+	public List<Object[]> getNumericAnswersForConcept(Concept question, Boolean sortByValue, Integer personType,
+	                                                  boolean includeVoided) {
 		List<String> sortList = new Vector<String>();
 		if (sortByValue) {
 			sortList.add("valueNumeric");
 		}
 		
-		List<Concept> answers = new Vector<Concept>();
-		answers.add(answer);
+		List<Concept> questions = new Vector<Concept>();
+		questions.add(question);
 		
-		List<Obs> obs = getObservations(null, null, null, answers, getPersonTypeEnumerations(personType), null, sortList, null, null, null, null, includeVoided);
+		List<Obs> obs = getObservations(null, null, questions, null, getPersonTypeEnumerations(personType), null, sortList,
+		    null, null, null, null, includeVoided);
 		
 		List<Object[]> returnList = new Vector<Object[]>();
 		
@@ -646,7 +641,8 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	}
 
 	/**
-	 * @see org.openmrs.api.ObsService#findObservations(java.lang.String, boolean, java.lang.Integer)
+	 * @see org.openmrs.api.ObsService#findObservations(java.lang.String, boolean,
+	 *      java.lang.Integer)
 	 * @deprecated
 	 */
 	public List<Obs> findObservations(String search, boolean includeVoided, Integer personType) {
@@ -689,7 +685,8 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	}
 	
 	/**
-	 * @see org.openmrs.api.ObsService#getObservations(java.util.List<org.openmrs.Concept>, java.util.Date, java.util.Data)
+	 * @see org.openmrs.api.ObsService#getObservations(java.util.List<org.openmrs.Concept>,
+	 *      java.util.Date, java.util.Data)
 	 * @deprecated
 	 */
 	public List<Obs> getObservations(List<Concept> concepts, Date fromDate, Date toDate) {
@@ -697,7 +694,8 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	}
 	
 	/**
-	 * @see org.openmrs.api.ObsService#getObservations(Cohort patients, List<Concept> concepts, Date fromDate, Date toDate)
+	 * @see org.openmrs.api.ObsService#getObservations(Cohort patients, List<Concept> concepts, Date
+	 *      fromDate, Date toDate)
 	 */
 	public List<Obs> getObservations(Cohort patients, List<Concept> concepts, Date fromDate, Date toDate) {
 		List<Person> persons = new Vector<Person>();

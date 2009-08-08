@@ -140,7 +140,7 @@ public class SyncOnDeleteTest extends SyncBaseTest {
 		runSyncTest(new SyncTestHelper() {
 			public void runOnChild() {				
 				Patient p = Context.getPatientService().getPatient(2);
-				Context.getPatientService().deletePatient(p);				
+				Context.getPatientService().purgePatient(p);				
 			}
 			public void runOnParent() {
 				/*

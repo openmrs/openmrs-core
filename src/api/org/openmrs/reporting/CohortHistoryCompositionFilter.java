@@ -11,29 +11,31 @@ import org.openmrs.api.PatientSetService.BooleanOperator;
 import org.openmrs.cohort.CohortSearchHistory;
 import org.openmrs.report.EvaluationContext;
 
-public class CohortHistoryCompositionFilter extends AbstractPatientFilter
-		implements PatientFilter {
+public class CohortHistoryCompositionFilter extends AbstractPatientFilter implements PatientFilter {
 	
 	protected final static Log log = LogFactory.getLog(CohortHistoryCompositionFilter.class);
+	
 	public static final long serialVersionUID = 6736677001L;
 	
 	private CohortSearchHistory history;
+	
 	private List<Object> parsedCompositionString;
 	
-	public CohortHistoryCompositionFilter() { }
-
+	public CohortHistoryCompositionFilter() {
+	}
+	
 	public CohortSearchHistory getHistory() {
 		return history;
 	}
-
+	
 	public void setHistory(CohortSearchHistory history) {
 		this.history = history;
 	}
-
+	
 	public List<Object> getParsedCompositionString() {
 		return parsedCompositionString;
 	}
-
+	
 	public void setParsedCompositionString(List<Object> parsedCompositionString) {
 		this.parsedCompositionString = parsedCompositionString;
 	}
@@ -42,7 +44,8 @@ public class CohortHistoryCompositionFilter extends AbstractPatientFilter
 		return nameHelper(parsedCompositionString);
 	}
 	
-	public void setName(String name) { }
+	public void setName(String name) {
+	}
 	
 	private String nameHelper(List list) {
 		StringBuilder ret = new StringBuilder();
@@ -58,40 +61,43 @@ public class CohortHistoryCompositionFilter extends AbstractPatientFilter
 	}
 	
 	/**
-	 * Call this to notify this composition filter that the _i_th element of the search history
-	 * has been removed, and it potentially needs to renumber its constituent parts
-	 * @return whether or not this filter itself should be removed (because it directly references the removed history element
-	 *//*
-	public boolean removeFromHistoryNotify(int i) {
-		return removeHelper(parsedCompositionString, i);
-	}
-	
-	private boolean removeHelper(List<Object> list, int i) {
-		boolean ret = false;
-		for (ListIterator<Object> iter = list.listIterator(); iter.hasNext(); ) {
-			Object o = iter.next();
-			if (o instanceof List)
-				ret |= removeHelper((List) o, i);
-			else if (o instanceof Integer) {
-				Integer ref = (Integer) o;
-				if (ref == i) {
-					ret = true;
-					iter.set("-1");
-				} else if (ref < i)
-					iter.set(ref - 1);
-			}
+	 * Call this to notify this composition filter that the _i_th element of the search history has
+	 * been removed, and it potentially needs to renumber its constituent parts
+	 * 
+	 * @return whether or not this filter itself should be removed (because it directly references
+	 *         the removed history element
+	 */
+	/*
+		public boolean removeFromHistoryNotify(int i) {
+			return removeHelper(parsedCompositionString, i);
 		}
-		return ret;
-	}
-	*/
-	
+		
+		private boolean removeHelper(List<Object> list, int i) {
+			boolean ret = false;
+			for (ListIterator<Object> iter = list.listIterator(); iter.hasNext(); ) {
+				Object o = iter.next();
+				if (o instanceof List)
+					ret |= removeHelper((List) o, i);
+				else if (o instanceof Integer) {
+					Integer ref = (Integer) o;
+					if (ref == i) {
+						ret = true;
+						iter.set("-1");
+					} else if (ref < i)
+						iter.set(ref - 1);
+				}
+			}
+			return ret;
+		}
+		*/
+
 	private PatientFilter toPatientFilter(List<Object> phrase) {
 		// Recursive step:
 		// * if anything in this list is a list, then recurse on that
 		// * if anything in this list is a number, replace it with the relevant filter from the history
 		log.debug("Starting with " + phrase);
 		List<Object> use = new ArrayList<Object>();
-		for (ListIterator<Object> i = phrase.listIterator(); i.hasNext(); ) {
+		for (ListIterator<Object> i = phrase.listIterator(); i.hasNext();) {
 			Object o = i.next();
 			if (o instanceof List)
 				use.add(toPatientFilter((List<Object>) o));
@@ -106,7 +112,7 @@ public class CohortHistoryCompositionFilter extends AbstractPatientFilter
 		
 		// first, replace all [..., NOT, PatientFilter, ...] with [ ..., InvertedPatientFilter, ...]
 		boolean invertTheNext = false;
-		for (ListIterator<Object> i = use.listIterator(); i.hasNext(); ) {
+		for (ListIterator<Object> i = use.listIterator(); i.hasNext();) {
 			Object o = i.next();
 			if (o instanceof BooleanOperator) {
 				if ((BooleanOperator) o == BooleanOperator.NOT) {
@@ -149,12 +155,12 @@ public class CohortHistoryCompositionFilter extends AbstractPatientFilter
 	public PatientFilter toCohortDefinition() {
 		return toPatientFilter(getParsedCompositionString());
 	}
-
+	
 	public Cohort filter(Cohort input, EvaluationContext context) {
 		PatientFilter pf = toPatientFilter(getParsedCompositionString());
 		return pf.filter(input, context);
 	}
-
+	
 	public Cohort filterInverse(Cohort input, EvaluationContext context) {
 		PatientFilter pf = toPatientFilter(getParsedCompositionString());
 		return pf.filterInverse(input, context);
@@ -163,5 +169,5 @@ public class CohortHistoryCompositionFilter extends AbstractPatientFilter
 	public boolean isReadyToRun() {
 		return true;
 	}
-
+	
 }

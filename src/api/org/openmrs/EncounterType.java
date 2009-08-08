@@ -66,8 +66,8 @@ public class EncounterType implements java.io.Serializable, Synchronizable {
 	}
 	
 	/**
-	 * Required values constructor.  This is the minimum number of values
-	 * that must be non-null in order to have a successful save to the database
+	 * Required values constructor. This is the minimum number of values that must be non-null in
+	 * order to have a successful save to the database
 	 * 
 	 * @param name the name of this encounter type
 	 * @param description a short description of why this encounter type exists
@@ -98,7 +98,8 @@ public class EncounterType implements java.io.Serializable, Synchronizable {
 	 * @see java.lang.Object#hashCode()
 	 */
 	public int hashCode() {
-		if (this.getEncounterTypeId() == null) return super.hashCode();
+		if (this.getEncounterTypeId() == null)
+			return super.hashCode();
 		return this.getEncounterTypeId().hashCode();
 	}
 

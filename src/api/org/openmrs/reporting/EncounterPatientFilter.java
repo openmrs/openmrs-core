@@ -31,40 +31,56 @@ import org.openmrs.report.EvaluationContext;
 import org.openmrs.util.OpenmrsUtil;
 
 public class EncounterPatientFilter extends CachingPatientFilter {
-
-    private static final long serialVersionUID = 1L;
-    
+	
+	private static final long serialVersionUID = 1L;
+	
 	private EncounterType encounterType;
+	
 	private List<EncounterType> encounterTypeList;
+	
 	private Form form;
+	
 	private Integer atLeastCount;
+	
 	private Integer atMostCount;
+	
 	private Integer withinLastDays;
+	
 	private Integer withinLastMonths;
+	
 	private Integer untilDaysAgo;
+	
 	private Integer untilMonthsAgo;
+	
 	private Date sinceDate;
+	
 	private Date untilDate;
+	
 	private Location location;
 	
-	public EncounterPatientFilter() { }
+	public EncounterPatientFilter() {
+	}
 	
 	@Override
-    public String getCacheKey() {
+	public String getCacheKey() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(getClass().getName()).append(".");
 		sb.append(getForm() == null ? null : getForm().getFormId()).append(".");
-	    sb.append(OpenmrsUtil.fromDateHelper(null, withinLastDays, withinLastMonths, untilDaysAgo, untilMonthsAgo, sinceDate, untilDate)).append(".");
-	    sb.append(OpenmrsUtil.toDateHelper(null, withinLastDays, withinLastMonths, untilDaysAgo, untilMonthsAgo, sinceDate, untilDate)).append(".");
+		sb.append(
+		    OpenmrsUtil.fromDateHelper(null, withinLastDays, withinLastMonths, untilDaysAgo, untilMonthsAgo, sinceDate,
+		        untilDate)).append(".");
+		sb.append(
+		    OpenmrsUtil.toDateHelper(null, withinLastDays, withinLastMonths, untilDaysAgo, untilMonthsAgo, sinceDate,
+		        untilDate)).append(".");
 		sb.append(getAtLeastCount()).append(".");
 		sb.append(getAtMostCount()).append(".");
 		sb.append(getLocation() == null ? null : getLocation().getLocationId()).append(".");
 		if (getEncounterTypeList() != null)
 			for (EncounterType t : getEncounterTypeList())
 				sb.append(t.getEncounterTypeId()).append(",");
-	    return sb.toString();
-    }
-
+		return sb.toString();
+	}
+	
 	public String getDescription() {
 		Locale locale = Context.getLocale();
 		StringBuffer ret = new StringBuffer();
@@ -79,7 +95,7 @@ public class EncounterPatientFilter extends CachingPatientFilter {
 		}
 		if (encounterTypeList != null) {
 			ret.append("[");
-			for (Iterator<EncounterType> i = encounterTypeList.iterator(); i.hasNext(); ) {
+			for (Iterator<EncounterType> i = encounterTypeList.iterator(); i.hasNext();) {
 				ret.append(" " + i.next().getName());
 				if (i.hasNext())
 					ret.append(" ,");
@@ -110,12 +126,12 @@ public class EncounterPatientFilter extends CachingPatientFilter {
 	@Override
 	public Cohort filterImpl(EvaluationContext context) {
 		PatientSetService service = Context.getPatientSetService();
-		return service.getPatientsHavingEncounters(encounterTypeList, location, form,
-				OpenmrsUtil.fromDateHelper(null, withinLastDays, withinLastMonths, untilDaysAgo, untilMonthsAgo, sinceDate, untilDate),
-				OpenmrsUtil.toDateHelper(null, withinLastDays, withinLastMonths, untilDaysAgo, untilMonthsAgo, sinceDate, untilDate),
-				atLeastCount, atMostCount);
+		return service.getPatientsHavingEncounters(encounterTypeList, location, form, OpenmrsUtil.fromDateHelper(null,
+		    withinLastDays, withinLastMonths, untilDaysAgo, untilMonthsAgo, sinceDate, untilDate), OpenmrsUtil.toDateHelper(
+		    null, withinLastDays, withinLastMonths, untilDaysAgo, untilMonthsAgo, sinceDate, untilDate), atLeastCount,
+		    atMostCount);
 	}
-
+	
 	public boolean isReadyToRun() {
 		return true;
 	}
@@ -155,6 +171,7 @@ public class EncounterPatientFilter extends CachingPatientFilter {
 	public EncounterType getEncounterType() {
 		return encounterType;
 	}
+	
 	@Deprecated
 	public void setEncounterType(EncounterType encounterType) {
 		this.encounterType = encounterType;
@@ -162,93 +179,93 @@ public class EncounterPatientFilter extends CachingPatientFilter {
 			setEncounterTypeList(new ArrayList<EncounterType>());
 		getEncounterTypeList().add(encounterType);
 	}
-
+	
 	public List<EncounterType> getEncounterTypeList() {
-    	return encounterTypeList;
-    }
-
+		return encounterTypeList;
+	}
+	
 	public void setEncounterTypeList(List<EncounterType> encounterTypeList) {
-    	this.encounterTypeList = encounterTypeList;
-    }
-
+		this.encounterTypeList = encounterTypeList;
+	}
+	
 	public Date getSinceDate() {
 		return sinceDate;
 	}
-
+	
 	public void setSinceDate(Date sinceDate) {
 		this.sinceDate = sinceDate;
 	}
-
+	
 	public Date getUntilDate() {
 		return untilDate;
 	}
-
+	
 	public void setUntilDate(Date untilDate) {
 		this.untilDate = untilDate;
 	}
-
+	
 	public Integer getUntilDaysAgo() {
 		return untilDaysAgo;
 	}
-
+	
 	public void setUntilDaysAgo(Integer untilDaysAgo) {
 		this.untilDaysAgo = untilDaysAgo;
 	}
-
+	
 	public Integer getUntilMonthsAgo() {
 		return untilMonthsAgo;
 	}
-
+	
 	public void setUntilMonthsAgo(Integer untilMonthsAgo) {
 		this.untilMonthsAgo = untilMonthsAgo;
 	}
-
+	
 	public Integer getWithinLastDays() {
 		return withinLastDays;
 	}
-
+	
 	public void setWithinLastDays(Integer withinLastDays) {
 		this.withinLastDays = withinLastDays;
 	}
-
+	
 	public Integer getWithinLastMonths() {
 		return withinLastMonths;
 	}
-
+	
 	public void setWithinLastMonths(Integer withinLastMonths) {
 		this.withinLastMonths = withinLastMonths;
 	}
-
+	
 	public Integer getAtLeastCount() {
 		return atLeastCount;
 	}
-
+	
 	public void setAtLeastCount(Integer atLeastCount) {
 		this.atLeastCount = atLeastCount;
 	}
-
+	
 	public Integer getAtMostCount() {
 		return atMostCount;
 	}
-
+	
 	public void setAtMostCount(Integer atMostCount) {
 		this.atMostCount = atMostCount;
 	}
-
+	
 	public Location getLocation() {
 		return location;
 	}
-
+	
 	public void setLocation(Location location) {
 		this.location = location;
 	}
-
+	
 	public Form getForm() {
 		return form;
 	}
-
+	
 	public void setForm(Form form) {
 		this.form = form;
 	}
-
+	
 }

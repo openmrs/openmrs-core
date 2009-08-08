@@ -24,15 +24,18 @@ import org.openmrs.User;
 import org.openmrs.api.context.Context;
 
 public class UserWidgetTag extends TagSupport {
-
+	
 	public static final long serialVersionUID = 1L;
+	
 	private final Log log = LogFactory.getLog(getClass());
 	
 	private Integer userId;
+	
 	private String size = "normal";
 	
-	public UserWidgetTag() { }
-
+	public UserWidgetTag() {
+	}
+	
 	public void setSize(String size) {
 		this.size = size;
 	}
@@ -50,7 +53,8 @@ public class UserWidgetTag extends TagSupport {
 			if ("full".equals(size)) {
 				w.print(" <i>(" + user.getUsername() + ")</i>");
 			}
-		} catch (IOException ex) {
+		}
+		catch (IOException ex) {
 			log.error("Error while starting userWidget tag", ex);
 		}
 		return SKIP_BODY;

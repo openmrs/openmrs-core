@@ -15,12 +15,11 @@ package org.openmrs.report;
 
 import java.util.Map;
 
-
 /**
- * DataSet which is key-value pairs, instead of a full two-dimensional table 
+ * DataSet which is key-value pairs, instead of a full two-dimensional table
  */
 public interface MapDataSet<T extends Object> extends DataSet {
-
+	
 	Map<String, T> getData();
 	
 }

@@ -27,7 +27,6 @@ import org.openmrs.notification.MessageException;
 
 /**
  *  Sample implementation of task that shows how to send emails to users/roles via message service.
- *
  */
 public class AlertReminderTask extends AbstractTask { 
 
@@ -47,8 +46,7 @@ public class AlertReminderTask extends AbstractTask {
 			
 			// Get all unread alerts
 			// TODO Change to getAllAlerts(Boolean includeRead, Boolean includeExpired);
-			Collection<Alert> alerts = 
-				Context.getAlertService().getAllAlerts(false);
+			Collection<Alert> alerts = Context.getAlertService().getAllAlerts(false);
 			
 			// Send alert notifications to users who have unread alerts
 			sendAlertNotifications(alerts);
@@ -72,17 +70,16 @@ public class AlertReminderTask extends AbstractTask {
 		try { 
 			
 			// Create a new message
-			Message message = 
-				Context.getMessageService().createMessage("Alert Reminder", "You have unread alerts.");
+			Message message = Context.getMessageService().createMessage("Alert Reminder", "You have unread alerts.");
 
 			// Get all recipients
-			Collection<User> users = 
-				getRecipients(alerts);
+			Collection<User> users = getRecipients(alerts);
 			
 			// Send a message to each person only once
 			Context.getMessageService().sendMessage(message, users);
 			
-		} catch (MessageException e) { 
+		}
+		catch (MessageException e) {
 			log.error(e);
 		}
 	}

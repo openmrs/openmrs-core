@@ -23,7 +23,7 @@ import org.openmrs.module.web.extension.provider.LinkProvider;
  *
  */
 public abstract class LinkProviderExtension extends Extension implements LinkProvider {
-
+	
 	public abstract List<Link> getLinks();
 	
 	/**
@@ -32,5 +32,5 @@ public abstract class LinkProviderExtension extends Extension implements LinkPro
 	public MEDIA_TYPE getMediaType() {
 		return MEDIA_TYPE.html;
 	}
-
+	
 }

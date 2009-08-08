@@ -13,12 +13,15 @@
  */
 package org.openmrs.synchronization.engine;
 
+import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
+
+import junit.framework.Assert;
 
 import org.junit.Test;
 import org.openmrs.Concept;
@@ -100,6 +103,9 @@ public class SyncConceptTest extends SyncBaseTest {
 			public void runOnParent() {
 				//Concept c = cs.getConceptByName("SOMETHING NUMERIC");
 				// assertNotNull("Failed to create numeric", c);
+				System.out.println("1: " + cs.getConcept(conceptId));
+				assertNotNull("No names got transferred", cs.getConcept(conceptId).getNames());
+				assertTrue("No names got transferred", cs.getConcept(conceptId).getNames().size() > 0);
 				assertEquals(cs.getConcept(conceptId).getName().getName(), "SOMETHING NUMERIC");
 				ConceptNumeric cn = cs.getConceptNumeric(conceptId);
 				assertEquals("Concept numeric absolute low values do not match", (Double)0d, cn.getLowAbsolute());

@@ -40,10 +40,8 @@ import org.openmrs.validator.FormValidator;
 import org.springframework.validation.BindException;
 
 /**
- * Default implementation of the {@link FormService}
- * 
- * This class should not be instantiated alone, get a service class
- * from the Context: Context.getFormService();
+ * Default implementation of the {@link FormService} This class should not be instantiated alone,
+ * get a service class from the Context: Context.getFormService();
  * 
  * @see org.openmrs.api.context.Context
  * @see org.openmrs.api.FormService
@@ -313,9 +311,11 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	}
 	
 	/**
-	 * @see org.openmrs.api.FormService#getFormField(org.openmrs.Form, org.openmrs.Concept, java.util.Collection, boolean)
+	 * @see org.openmrs.api.FormService#getFormField(org.openmrs.Form, org.openmrs.Concept,
+	 *      java.util.Collection, boolean)
 	 */
-	public FormField getFormField(Form form, Concept concept, Collection<FormField> ignoreFormFields, boolean force) throws APIException {
+	public FormField getFormField(Form form, Concept concept, Collection<FormField> ignoreFormFields, boolean force)
+	                                                                                                                throws APIException {
 		// create an empty ignoreFormFields list if none was passed in
 		if (ignoreFormFields == null)
 			ignoreFormFields = Collections.emptyList();
@@ -340,8 +340,9 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	}
 	
 	/**
-	 * Set the change time and (conditionally) creation time attributes for all
-	 * of this form's formfields and for fields of those formfields
+	 * Set the change time and (conditionally) creation time attributes for all of this form's
+	 * formfields and for fields of those formfields
+	 * 
 	 * @param form Form to update FormFields for
 	 */
 	private void updateFormFieldProperties(FormField formField, Date ts) {
@@ -445,14 +446,14 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
     }
 
 	/**
-     * @see org.openmrs.api.FormService#getFields(java.util.Collection, java.util.Collection, java.util.Collection, java.util.Collection, java.util.Collection, java.lang.Boolean, java.util.Collection, java.util.Collection, java.lang.Boolean)
+	 * @see org.openmrs.api.FormService#getFields(java.util.Collection, java.util.Collection,
+	 *      java.util.Collection, java.util.Collection, java.util.Collection, java.lang.Boolean,
+	 *      java.util.Collection, java.util.Collection, java.lang.Boolean)
      */
-    public List<Field> getFields(Collection<Form> forms,
-            Collection<FieldType> fieldTypes, Collection<Concept> concepts,
-            Collection<String> tableNames, Collection<String> attributeNames,
-            Boolean selectMultiple, Collection<FieldAnswer> containsAllAnswers,
-            Collection<FieldAnswer> containsAnyAnswer, Boolean retired)
-            throws APIException {
+	public List<Field> getFields(Collection<Form> forms, Collection<FieldType> fieldTypes, Collection<Concept> concepts,
+	                             Collection<String> tableNames, Collection<String> attributeNames, Boolean selectMultiple,
+	                             Collection<FieldAnswer> containsAllAnswers, Collection<FieldAnswer> containsAnyAnswer,
+	                             Boolean retired) throws APIException {
     	
     	if (forms == null)
     		forms = Collections.emptyList();
@@ -475,10 +476,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
     	if (containsAnyAnswer == null)
     		containsAnyAnswer = Collections.emptyList();
     	
-	    return dao.getFields(forms,
-                              fieldTypes, concepts,
-                              tableNames, attributeNames,
-                              selectMultiple, containsAllAnswers,
+		return dao.getFields(forms, fieldTypes, concepts, tableNames, attributeNames, selectMultiple, containsAllAnswers,
                               containsAnyAnswer, retired);
     }
 
@@ -519,30 +517,24 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
     }
     
     /**
-     * @deprecated see {@link #getForms(String, Boolean, Collection, Boolean, Collection, Collection, Collection)}
+	 * @deprecated see
+	 *             {@link #getForms(String, Boolean, Collection, Boolean, Collection, Collection, Collection)}
      */
-    public List<Form> getForms(String partialName, Boolean published,
-            Collection<EncounterType> encounterTypes, Boolean retired,
-            Collection<FormField> containingAnyFormField,
+	public List<Form> getForms(String partialName, Boolean published, Collection<EncounterType> encounterTypes,
+	                           Boolean retired, Collection<FormField> containingAnyFormField,
             Collection<FormField> containingAllFormFields) {
 	    
-    	return getForms(partialName,
-    	                published,
-		                encounterTypes,
-		                retired,
-		                containingAnyFormField,
-		                containingAllFormFields,
+		return getForms(partialName, published, encounterTypes, retired, containingAnyFormField, containingAllFormFields,
 		                null);
     }
     
     /**
-     * @see org.openmrs.api.FormService#getForms(java.lang.String, java.lang.Boolean, java.util.Collection, java.lang.Boolean, java.util.Collection, java.util.Collection)
+	 * @see org.openmrs.api.FormService#getForms(java.lang.String, java.lang.Boolean,
+	 *      java.util.Collection, java.lang.Boolean, java.util.Collection, java.util.Collection)
      */
-    public List<Form> getForms(String partialName, Boolean published,
-            Collection<EncounterType> encounterTypes, Boolean retired,
-            Collection<FormField> containingAnyFormField,
-            Collection<FormField> containingAllFormFields,
-            Collection<Field> fields) {
+	public List<Form> getForms(String partialName, Boolean published, Collection<EncounterType> encounterTypes,
+	                           Boolean retired, Collection<FormField> containingAnyFormField,
+	                           Collection<FormField> containingAllFormFields, Collection<Field> fields) {
 	    
     	if (encounterTypes == null)
     		encounterTypes = Collections.emptyList();
@@ -556,13 +548,8 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
     	if (fields == null)
     		fields = Collections.emptyList();
     	
-    	return dao.getForms(partialName,
-		                    published,
-		                    encounterTypes,
-		                    retired,
-		                    containingAnyFormField,
-		                    containingAllFormFields,
-		                    fields);
+		return dao.getForms(partialName, published, encounterTypes, retired, containingAnyFormField,
+		    containingAllFormFields, fields);
     }
 
 	/**
@@ -652,6 +639,12 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
     		form.setRetiredBy(null);
     		form.setRetiredReason(null);
     	}
+		else {
+			if (form.getRetiredBy() == null)
+				form.setRetiredBy(Context.getAuthenticatedUser());
+			if (form.getDateRetired() == null)
+				form.setDateRetired(new Date());
+		}
     	
     	BindException errors = new BindException(form, "form");
     	formValidator.validate(form, errors);
@@ -741,6 +734,9 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
      * @see org.openmrs.api.FormService#getFormsContainingConcept(org.openmrs.Concept)
      */
     public List<Form> getFormsContainingConcept(Concept concept) throws APIException {
+		if (concept.getConceptId() == null)
+			return Collections.emptyList();
+		
 	    return dao.getFormsContainingConcept(concept);
     }
 

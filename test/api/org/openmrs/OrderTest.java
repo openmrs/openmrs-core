@@ -22,10 +22,8 @@ import java.text.SimpleDateFormat;
 import org.junit.Test;
 
 /**
- * This class tests all methods that are not getter or setters 
- * in the Order java object
- * 
- * TODO: finish this test class for Order
+ * This class tests all methods that are not getter or setters in the Order java object TODO: finish
+ * this test class for Order
  * 
  * @see Order
  */
@@ -55,14 +53,14 @@ public class OrderTest {
 		o.setDiscontinued(true);
 		assertFalse("shouldn't be discontinued before start date", o.isDiscontinued(ymd.parse("2006-10-26")));
 		assertTrue("should be discontinued since discontinuedDate is missing", o.isDiscontinued(ymd.parse("2007-10-26")));
-
+		
 		o.setDiscontinuedDate(ymd.parse("2007-11-01"));
 		assertFalse("shouldn't be discontinued before start date", o.isDiscontinued(ymd.parse("2006-10-26")));
 		assertFalse("shouldn't be discontinued before discontinuedDate", o.isDiscontinued(ymd.parse("2007-10-26")));
 		assertTrue("should be discontinued after discontinuedDate", o.isDiscontinued(ymd.parse("2007-11-26")));
 		
 	}
-
+	
 	/**
 	 * Tests the {@link Order#isCurrent()} method
 	 * 
@@ -71,10 +69,10 @@ public class OrderTest {
 	@Test
 	public void shouldIsCurrent() throws Exception {
 		DateFormat ymd = new SimpleDateFormat("yyyy-MM-dd");
-
+		
 		Order o = new Order();
 		assertTrue("startDate==null && no end date should always be current", o.isCurrent(ymd.parse("2007-10-26")));
-
+		
 		o.setStartDate(ymd.parse("2007-01-01"));
 		assertFalse("shouldn't be current before startDate", o.isCurrent(ymd.parse("2006-10-26")));
 		assertTrue("should be current after startDate", o.isCurrent(ymd.parse("2007-10-26")));
@@ -105,5 +103,5 @@ public class OrderTest {
 		assertTrue("should be current between startDate and discontinuedDate", o.isCurrent(ymd.parse("2007-10-26")));
 		assertFalse("shouldn't be current after discontinuedDate", o.isCurrent(ymd.parse("2007-11-26")));
 	}
-
+	
 }

@@ -19,6 +19,7 @@ import org.openmrs.layout.web.LayoutSupport;
 import org.openmrs.layout.web.LayoutTemplate;
 
 public class AddressTemplate extends LayoutTemplate {
+	
 	private static Log log = LogFactory.getLog(AddressTemplate.class);
 	
 	public String getLayoutToken() {
@@ -28,7 +29,7 @@ public class AddressTemplate extends LayoutTemplate {
 	public String getNonLayoutToken() {
 		return "IS_NOT_ADDR_TOKEN";
 	}
-
+	
 	@Override
 	public LayoutSupport getLayoutSupportInstance() {
 		return AddressSupport.getInstance();

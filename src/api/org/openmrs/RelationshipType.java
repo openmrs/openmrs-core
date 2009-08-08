@@ -18,27 +18,15 @@ import java.util.Date;
 import org.openmrs.synchronization.Synchronizable;
 
 /**
- * Defines a type of relationship between two people in the database.
- * 
- * A relationship is two-way.  There is a name for the relationship in both
- * directions.  
- * 
- * For example: 
- * a) physician Joe
- * b) patient Bob
- * Joe is the "physician of" Bob <u>and</u> Bob is the patient of Joe.  Once you
- * can establish one of the two relationships, you automatically know the other.  
- * 
- * ALL relationships are two-way and can be defined as such.
- * 
- * RelationshipTypes should be defined as <b>gender non-specific</b>
- * For example:
- * A mother and her son.  Instead of having a RelationshipType defined as mother-son,
- * it should be defined as Parent-child.  (This avoids the duplicative types that would
- * come out like father-son, father-daughter, mother-daughter)
- * 
- * In English, we run into a tricky RelationshipType with aunts and uncles.  We have 
- * chosen to define them as aunt/uncle-niece/nephew.    
+ * Defines a type of relationship between two people in the database. A relationship is two-way.
+ * There is a name for the relationship in both directions. For example: a) physician Joe b) patient
+ * Bob Joe is the "physician of" Bob <u>and</u> Bob is the patient of Joe. Once you can establish
+ * one of the two relationships, you automatically know the other. ALL relationships are two-way and
+ * can be defined as such. RelationshipTypes should be defined as <b>gender non-specific</b> For
+ * example: A mother and her son. Instead of having a RelationshipType defined as mother-son, it
+ * should be defined as Parent-child. (This avoids the duplicative types that would come out like
+ * father-son, father-daughter, mother-daughter) In English, we run into a tricky RelationshipType
+ * with aunts and uncles. We have chosen to define them as aunt/uncle-niece/nephew.
  */
 public class RelationshipType implements java.io.Serializable, Synchronizable {
 
@@ -89,7 +77,6 @@ public class RelationshipType implements java.io.Serializable, Synchronizable {
 	 * 
 	 * @param obj RelationshipType to compare to this object
 	 * @return boolean true/false whether or not they are the same objects
-	 * 
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	public boolean equals(Object obj) {
@@ -104,7 +91,8 @@ public class RelationshipType implements java.io.Serializable, Synchronizable {
 	 * @see java.lang.Object#hashCode()
 	 */
 	public int hashCode() {
-		if (this.getRelationshipTypeId() == null) return super.hashCode();
+		if (this.getRelationshipTypeId() == null)
+			return super.hashCode();
 		return this.getRelationshipTypeId().hashCode();
 	}
 
@@ -153,9 +141,9 @@ public class RelationshipType implements java.io.Serializable, Synchronizable {
 	}
 
 	/**
-	 * The java bean specifications says that if an attribute has the second letter
-	 * capitalized (as the "I" is), the initial "a" is not to be capitalized.
-	 * Both Spring and Hibernate use this "getter" definition
+	 * The java bean specifications says that if an attribute has the second letter capitalized (as
+	 * the "I" is), the initial "a" is not to be capitalized. Both Spring and Hibernate use this
+	 * "getter" definition
 	 *  
 	 * @return the aIsToB
 	 */
@@ -187,8 +175,8 @@ public class RelationshipType implements java.io.Serializable, Synchronizable {
 	}
 	
 	/**
-	 * "Preferred" relationship types are those that should be shown as
-	 * default types when adding/editing a person's relationships
+	 * "Preferred" relationship types are those that should be shown as default types when
+	 * adding/editing a person's relationships
 	 * 
 	 * @return the preferred status
 	 */
@@ -197,8 +185,8 @@ public class RelationshipType implements java.io.Serializable, Synchronizable {
 	}
 
 	/**
-	 * "Preferred" relationship types are those that should be shown as
-	 * default types when adding/editing a person's relationships
+	 * "Preferred" relationship types are those that should be shown as default types when
+	 * adding/editing a person's relationships
 	 *
 	 * @param preferred sets the preferred status of this relationship type
 	 */

@@ -23,13 +23,10 @@ import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.synchronization.Synchronizable;
 
 /**
- * A <code>Patient</code> can have zero to n identifying PatientIdentifier(s).  
- * 
- * PatientIdentifiers are anything from medical record numbers, to social
- * security numbers, to driver's licenses.  The type of identifier is defined by 
- * the PatientIdentifierType.
- * 
- * A PatientIdentifier also contains a Location.
+ * A <code>Patient</code> can have zero to n identifying PatientIdentifier(s). PatientIdentifiers
+ * are anything from medical record numbers, to social security numbers, to driver's licenses. The
+ * type of identifier is defined by the PatientIdentifierType. A PatientIdentifier also contains a
+ * Location.
  * 
  * @see org.openmrs.PatientIdentifierType
  */
@@ -70,6 +67,7 @@ public class PatientIdentifier implements java.io.Serializable, Synchronizable, 
 	
 	/**
 	 * Convenience constructor for creating a basic identifier
+	 * 
 	 * @param identifier String identifier
 	 * @param type PatientIdentifierType
 	 * @param location Location of the identifier
@@ -108,7 +106,8 @@ public class PatientIdentifier implements java.io.Serializable, Synchronizable, 
 	 * @see java.lang.Object#hashCode()
 	 */
 	public int hashCode() {
-		if (this.getPatient() == null && this.getIdentifier() == null && this.getIdentifierType() == null) return super.hashCode();
+		if (this.getPatient() == null && this.getIdentifier() == null && this.getIdentifierType() == null)
+			return super.hashCode();
 		int hash = 5;
 		if (getPatient() != null)
 			hash += 31 * hash + this.getPatient().hashCode();
@@ -120,12 +119,10 @@ public class PatientIdentifier implements java.io.Serializable, Synchronizable, 
 	}
 	
 	/**
-	 * Compares this PatientIdentifier object to the given otherIdentifier. This method
-	 * differs from {@link #equals(Object)} in that this method compares the
-	 * inner fields of each identifier for equality.
-	 * 
-	 * Note: Null/empty fields on <code>otherIdentifier</code> /will not/ cause a
-	 * false value to be returned
+	 * Compares this PatientIdentifier object to the given otherIdentifier. This method differs from
+	 * {@link #equals(Object)} in that this method compares the inner fields of each identifier for
+	 * equality. Note: Null/empty fields on <code>otherIdentifier</code> /will not/ cause a false
+	 * value to be returned
 	 * 
 	 * @param otherIdentifier PatientiIdentifier with which to compare
 	 * @return boolean true/false whether or not they are the same names
@@ -141,8 +138,7 @@ public class PatientIdentifier implements java.io.Serializable, Synchronizable, 
 		// loop over all of the selected methods and compare this and other
 		for (String methodName : methods) {
 			try {
-				Method method = identifierClass.getMethod(methodName,
-				                                       new Class[] {});
+				Method method = identifierClass.getMethod(methodName, new Class[] {});
 
 				Object thisValue = method.invoke(this);
 				Object otherValue = method.invoke(otherIdentifier);
@@ -150,11 +146,14 @@ public class PatientIdentifier implements java.io.Serializable, Synchronizable, 
 				if (otherValue != null)
 					returnValue &= otherValue.equals(thisValue);
 
-			} catch (NoSuchMethodException e) {
+			}
+			catch (NoSuchMethodException e) {
 				log.warn("No such method for comparison " + methodName, e);
-			} catch (IllegalAccessException e) {
+			}
+			catch (IllegalAccessException e) {
 				log.error("Error while comparing identifiers", e);
-			} catch (InvocationTargetException e) {
+			}
+			catch (InvocationTargetException e) {
 				log.error("Error while comparing identifiers", e);
 			}
 
@@ -354,7 +353,8 @@ public class PatientIdentifier implements java.io.Serializable, Synchronizable, 
 	    	if (retValue == 0)
 	    		retValue = OpenmrsUtil.compareWithNullAsLatest(getDateCreated(), other.getDateCreated());
 	    	if (retValue == 0)
-	    		retValue = OpenmrsUtil.compareWithNullAsGreatest(getIdentifierType().getPatientIdentifierTypeId(), other.getIdentifierType().getPatientIdentifierTypeId());
+				retValue = OpenmrsUtil.compareWithNullAsGreatest(getIdentifierType().getPatientIdentifierTypeId(), other
+				        .getIdentifierType().getPatientIdentifierTypeId());
 	    	if (retValue == 0)
 	    		retValue = OpenmrsUtil.compareWithNullAsGreatest(getIdentifier(), other.getIdentifier());
 	    	

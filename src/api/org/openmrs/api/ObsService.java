@@ -32,18 +32,16 @@ import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * The ObsService deals with saving and getting Obs to/from the
- * database
+ * The ObsService deals with saving and getting Obs to/from the database Usage:
  * 
- * Usage:
  * <pre>
  *  ObsService obsService = Context.getObsService();
  *  // get the obs for patient with internal identifier of 1235
  *  List<Obs> someObsList = obsService.getObservationsByPerson(new Patient(1235));
  * </pre>
  * 
- * There are also a number of convenience methods for extracting obs
- * pertaining to certain Concepts, people, or encounters
+ * There are also a number of convenience methods for extracting obs pertaining to certain Concepts,
+ * people, or encounters
  *
  * @see org.openmrs.Obs
  * @see org.openmrs.ComplexObs
@@ -72,9 +70,8 @@ public interface ObsService extends OpenmrsService {
 	public static final Integer USER = 4;
 	
 	/**
-	 * Set the given <code>dao</code> on this obs service. 
-	 * The dao will act as the conduit through with all obs
-	 * calls get to the database
+	 * Set the given <code>dao</code> on this obs service. The dao will act as the conduit through
+	 * with all obs calls get to the database
 	 * 
 	 * @param dao specific ObsDAO to use for this service
 	 */
@@ -92,9 +89,8 @@ public interface ObsService extends OpenmrsService {
 	
 	/**
 	 * Create a grouping of observations (observations linked by
-	 * {@link org.openmrs.Obs#getObsGroupId()}
+	 * {@link org.openmrs.Obs#getObsGroupId()} The proper use is:
 	 * 
-	 * The proper use is:
 	 * <pre>
 	 * Obs obsGroup = new Obs();
 	 * for (Obs member : obs) {
@@ -105,10 +101,9 @@ public interface ObsService extends OpenmrsService {
 	 * 
 	 * @param obs - array of observations to be grouped
 	 * @throws APIException
-	 * @deprecated This method should no longer need to be called on the api. This
-	 * 			  was meant as temporary until we created a true ObsGroup pojo.
-	 * 			  Replaced by {@link #createObsGroup(Obs, List)}
-	 * 
+	 * @deprecated This method should no longer need to be called on the api. This was meant as
+	 *             temporary until we created a true ObsGroup pojo. Replaced by
+	 *             {@link #createObsGroup(Obs, List)}
 	 * @see #createObsGroup(Obs, List)
 	 */
 	@Authorized(OpenmrsConstants.PRIV_ADD_OBS)
@@ -142,25 +137,18 @@ public interface ObsService extends OpenmrsService {
 	public void updateObs(Obs obs) throws APIException;
 
 	/**
-	 * Save the given obs to the database. This will move the
-	 * contents of the given <code>obs</code> to the database. This
-	 * acts as both the initial save and an update kind of save.
-	 * The returned obs will be the same as the obs passed in. It is
-	 * included for chaining.
-	 * 
-	 * If this is an initial save, the obsId on the given
-	 * <code>obs</code> object will be updated to reflect the auto
-	 * numbering from the database.  The obsId on the returned obs
-	 * will also have this number.
-	 * 
-	 * If there is already an obsId on the given <code>obs</code> object,
-	 * the given obs will be voided and a new row in the database will be
-	 * created that has a new obs id.
+	 * Save the given obs to the database. This will move the contents of the given <code>obs</code>
+	 * to the database. This acts as both the initial save and an update kind of save. The returned
+	 * obs will be the same as the obs passed in. It is included for chaining. If this is an initial
+	 * save, the obsId on the given <code>obs</code> object will be updated to reflect the auto
+	 * numbering from the database. The obsId on the returned obs will also have this number. If
+	 * there is already an obsId on the given <code>obs</code> object, the given obs will be voided
+	 * and a new row in the database will be created that has a new obs id.
 	 * 
 	 * @param obs the Obs to save to the database
 	 * @param changeMessage String explaining why <code>obs</code> is being changed. If 
-	 * 		<code>obs</code> is a new obs, changeMessage is nullable, or if 
-	 * 		it is being updated, it would be required
+	 *            <code>obs</code> is a new obs, changeMessage is nullable, or if it is being
+	 *            updated, it would be required
 	 * @return Obs that was saved to the database
 	 * @throws APIException
 	 */
@@ -203,8 +191,7 @@ public interface ObsService extends OpenmrsService {
 	public Obs unvoidObs(Obs obs) throws APIException;
 
 	/**
-	 * This method shouldn't be used.  Use either {@link #purgeObs(Obs)} or
-	 * {@link #voidObs(Obs)}
+	 * This method shouldn't be used. Use either {@link #purgeObs(Obs)} or {@link #voidObs(Obs)}
 	 * 
 	 * @param Obs
 	 * @throws APIException
@@ -214,12 +201,10 @@ public interface ObsService extends OpenmrsService {
 	public void deleteObs(Obs obs) throws APIException;
 	
 	/**
-	 * Completely remove an observation from the database. This should typically
-	 * not be called because we don't want to ever lose data.  The data really
-	 * <i>should</i> be voided and then it is not seen in interface any longer 
-	 * (see #voidObs(Obs) for that one)
-	 * 
-	 * If other things link to this obs, an error will be thrown.
+	 * Completely remove an observation from the database. This should typically not be called
+	 * because we don't want to ever lose data. The data really <i>should</i> be voided and then it
+	 * is not seen in interface any longer (see #voidObs(Obs) for that one) If other things link to
+	 * this obs, an error will be thrown.
 	 * 
 	 * @param Obs
 	 * @throws APIException
@@ -228,14 +213,13 @@ public interface ObsService extends OpenmrsService {
 	public void purgeObs(Obs obs) throws APIException;
 	
 	/**
-	 * Completely remove an observation from the database. This should typically
-	 * not be called because we don't want to ever lose data.  The data really
-	 * <i>should</i> be voided and then it is not seen in interface any longer 
-	 * (see #voidObs(Obs) for that one)
+	 * Completely remove an observation from the database. This should typically not be called
+	 * because we don't want to ever lose data. The data really <i>should</i> be voided and then it
+	 * is not seen in interface any longer (see #voidObs(Obs) for that one)
 	 * 
 	 * @param Obs the observation to remove from the database
-	 * @param cascade true/false whether or not to cascade down to other things
-	 * 			that link to this observation (like Orders and ObsGroups)
+	 * @param cascade true/false whether or not to cascade down to other things that link to this
+	 *            observation (like Orders and ObsGroups)
 	 * @throws APIException
 	 * @see #purgeObs(Obs, boolean)
 	 */
@@ -260,8 +244,7 @@ public interface ObsService extends OpenmrsService {
 	public List<MimeType> getAllMimeTypes() throws APIException;
 	
 	/**
-	 * Gets all mime types and disregards the retired ones
-	 * if <code>includeRetired</code> is true
+	 * Gets all mime types and disregards the retired ones if <code>includeRetired</code> is true
 	 * 
 	 * @param includeRetired true/false of whether to also return the retired ones
 	 * @return list of MimeTypes lll
@@ -285,9 +268,8 @@ public interface ObsService extends OpenmrsService {
 	public MimeType getMimeTypeByGuid(String guid) throws APIException;
 
 	/**
-	 * Save the given <code>mimeType</code> to the database.
-	 * If mimeType is not null, the mimeType is updated in the database.
-	 * If mimeType is null, a new mimeType is added to the database
+	 * Save the given <code>mimeType</code> to the database. If mimeType is not null, the mimeType
+	 * is updated in the database. If mimeType is null, a new mimeType is added to the database
 	 * 
 	 * @param mimeType mimeType
 	 * @return mimeType that was saved/updated in the database
@@ -297,9 +279,8 @@ public interface ObsService extends OpenmrsService {
 	public MimeType saveMimeType(MimeType mimeType) throws APIException;
 	
 	/**
-	 * This effectively removes the given mimeType from the system.  Voided
-	 * mimeTypes are still linked to from complexObs, they just aren't shown 
-	 * in the list of available mimeTypes 
+	 * This effectively removes the given mimeType from the system. Voided mimeTypes are still
+	 * linked to from complexObs, they just aren't shown in the list of available mimeTypes
 	 * 
 	 * @param mimeType the MimeType to remove
 	 * @param reason the reason this mimeType is being voided
@@ -311,9 +292,8 @@ public interface ObsService extends OpenmrsService {
 	public MimeType voidMimeType(MimeType mimeType, String reason) throws APIException;
 	
 	/**
-	 * This completely removes the given <code>MimeType</code> from the database.
-	 * If data has been stored already that points at this mimeType an
-	 * exception is thrown
+	 * This completely removes the given <code>MimeType</code> from the database. If data has been
+	 * stored already that points at this mimeType an exception is thrown
 	 * 
 	 * @param mimeType the MimeType to remove
 	 * @throws APIException
@@ -331,9 +311,7 @@ public interface ObsService extends OpenmrsService {
 	public Set<Obs> getObservations(Person who, boolean includeVoided);
 
 	/**
-	 * Get all Observations for the given person.
-	 * 
-	 * Does not return voided observations
+	 * Get all Observations for the given person. Does not return voided observations
 	 * 
 	 * @param who the user to match on
 	 * @return
@@ -344,23 +322,22 @@ public interface ObsService extends OpenmrsService {
 	public List<Obs> getObservationsByPerson(Person who);
 	
 	/**
-	 * This method fetches observations according to the criteria in
-	 * the given arguments.  All arguments are optional and nullable.  If
-	 * more than one argument is non-null, the result is equivalent to an
-	 * "and"ing of the arguments. (e.g. if both a <code>location</code> and 
-	 * a <code>fromDate</code> are given, only Obs that are <u>both</u> at 
-	 * that Location and after the fromDate are returned).
-	 * 
-	 * Note: If <code>whom</code> has elements, <code>personType</code> is ignored 
+	 * This method fetches observations according to the criteria in the given arguments. All
+	 * arguments are optional and nullable. If more than one argument is non-null, the result is
+	 * equivalent to an "and"ing of the arguments. (e.g. if both a <code>location</code> and a
+	 * <code>fromDate</code> are given, only Obs that are <u>both</u> at that Location and after the
+	 * fromDate are returned). Note: If <code>whom</code> has elements, <code>personType</code> is
+	 * ignored
 	 * 
 	 * @param whom List<Person> to restrict obs to (optional)
 	 * @param encounters List<Encounter> to restrict obs to (optional)
 	 * @param questions List<Concept> to restrict the obs to (optional)
 	 * @param answers List<Concept> to restrict the valueCoded to (optional)
-	 * @param personType PERSON_TYPE objects to restrict this to. Only used if <code>whom</code> not an
-	 * 				empty list (optional)
+	 * @param personType PERSON_TYPE objects to restrict this to. Only used if <code>whom</code> not
+	 *            an empty list (optional)
 	 * @param locations The org.openmrs.Location objects to restrict to (optional)
-	 * @param sort list of column names to sort on (obsId, obsDatetime, etc) if null, defaults to obsDatetime (optional)
+	 * @param sort list of column names to sort on (obsId, obsDatetime, etc) if null, defaults to
+	 *            obsDatetime (optional)
 	 * @param mostRecentN restrict the number of obs returned to this size (optional)
 	 * @param obsGroupId the Obs.getObsGroupId() to this integer (optional)
 	 * @param fromDate the earliest Obs date to get (optional)
@@ -371,16 +348,13 @@ public interface ObsService extends OpenmrsService {
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_OBS)
-	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, 
-	                                 List<Concept> questions, List<Concept> answers, 
-	                                 List<PERSON_TYPE> personTypes, List<Location> locations, 
-	                                 List<String> sort, Integer mostRecentN, Integer obsGroupId, 
-	                                 Date fromDate, Date toDate, boolean includeVoidedObs) 
-	                                 throws APIException;
+	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
+	                                 List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations,
+	                                 List<String> sort, Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate,
+	                                 boolean includeVoidedObs) throws APIException;
 	
 	/**
-	 * This method searches the obs table based on the given
-	 * <code>searchString</code>.
+	 * This method searches the obs table based on the given <code>searchString</code>.
 	 * 
 	 * @param searchString The string to search on
 	 * @return observations matching the given string 
@@ -391,7 +365,8 @@ public interface ObsService extends OpenmrsService {
 	public List<Obs> getObservations(String searchString) throws APIException;
 	
 	/**
-	 * @deprecated use {@link #getObservations(List, Encounter, List, List, List, List, String, Integer, Integer, Date, Date, boolean)}
+	 * @deprecated use
+	 *             {@link #getObservations(List, Encounter, List, List, List, List, String, Integer, Integer, Date, Date, boolean)}
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_OBS)
@@ -405,8 +380,8 @@ public interface ObsService extends OpenmrsService {
 	public Set<Obs> getObservations(Person who, Concept question, boolean includeVoided);
 	
 	/**
-	 * Get all nonvoided observations for the given patient with the given
-	 * concept as the question concept (conceptId)
+	 * Get all nonvoided observations for the given patient with the given concept as the question
+	 * concept (conceptId)
 	 * 
 	 * @param who person to match on
 	 * @param question conceptId to match on
@@ -414,47 +389,49 @@ public interface ObsService extends OpenmrsService {
 	 * @throws APIException
 	 * @see {@link #getObservations(List, List, List, List, List, List, List, Integer, Integer, Date, Date, boolean)}
 	 */
+	@Transactional(readOnly = true)
 	public List<Obs> getObservationsByPersonAndConcept(Person who, Concept question) throws APIException;
 	
 	/**
-	 * @deprecated use {@link #getObservations(List, List, List, org.openmrs.api.ObsService.PERSON_TYPE, Location, String, Integer, Integer, Date, Date, boolean)}
+	 * @deprecated use
+	 *             {@link #getObservations(List, List, List, org.openmrs.api.ObsService.PERSON_TYPE, Location, String, Integer, Integer, Date, Date, boolean)}
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_OBS)
-	public List<Obs> getLastNObservations(Integer n, Person who,
-			Concept question, boolean includeVoided);
+	public List<Obs> getLastNObservations(Integer n, Person who, Concept question, boolean includeVoided);
 
 	/**
-	 * @deprecated use {@link #getObservations(List, List, List, org.openmrs.api.ObsService.PERSON_TYPE, Location, String, Integer, Integer, Date, Date, boolean)}
+	 * @deprecated use
+	 *             {@link #getObservations(List, List, List, org.openmrs.api.ObsService.PERSON_TYPE, Location, String, Integer, Integer, Date, Date, boolean)}
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_OBS)
 	public List<Obs> getObservations(Concept question, String sort, Integer personType, boolean includeVoided);
 
 	/**
-	 * @deprecated use {@link #getObservations(List, List, List, org.openmrs.api.ObsService.PERSON_TYPE, Location, String, Integer, Integer, Date, Date, boolean)}
+	 * @deprecated use
+	 *             {@link #getObservations(List, List, List, org.openmrs.api.ObsService.PERSON_TYPE, Location, String, Integer, Integer, Date, Date, boolean)}
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_OBS)
 	public List<Obs> getObservationsAnsweredByConcept(Concept answer, Integer personType, boolean includeVoided);
 	
 	/**
-	 * Return all numeric answer values for the given concept ordered by value
-	 * numeric low to high
-	 * 
+	 * Return all numeric answer values for the given concept ordered by value numeric low to high
 	 * personType should be one of PATIENT, PERSON, or USER;
 	 * 
 	 * @param concept
-	 * @param sortByValue true/false if sorting by valueNumeric. If false, will
-	 *        sort by obsDatetime
+	 * @param sortByValue true/false if sorting by valueNumeric. If false, will sort by obsDatetime
 	 * @param personType
-	 * @deprecated use {@link #getObservations(List, Encounter, List, List, org.openmrs.api.ObsService.PERSON_TYPE, Location, String, Integer, Integer, Date, Date, boolean)}
-	 * 
-	 * @return List<Object[]> [0]=<code>obsId</code>, [1]=<code>obsDatetime</code>, [2]=<code>valueNumeric</code>s
+	 * @deprecated use
+	 *             {@link #getObservations(List, Encounter, List, List, org.openmrs.api.ObsService.PERSON_TYPE, Location, String, Integer, Integer, Date, Date, boolean)}
+	 * @return List<Object[]> [0]=<code>obsId</code>, [1]=<code>obsDatetime</code>, [2]=
+	 *         <code>valueNumeric</code>s
 	 **/
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_OBS)
-	public List<Object[]> getNumericAnswersForConcept(Concept answer, Boolean sortByValue, Integer personType, boolean includeVoided);
+	public List<Object[]> getNumericAnswersForConcept(Concept answer, Boolean sortByValue, Integer personType,
+	                                                  boolean includeVoided);
 	
 	/**
 	 * @deprecated use org.openmrs.Encounter.getObservations()
@@ -465,35 +442,40 @@ public interface ObsService extends OpenmrsService {
 	public Set<Obs> getObservations(Encounter whichEncounter);
 
 	/**
-	 * @deprecated use {@link #getObservations(List, List, List, org.openmrs.api.ObsService.PERSON_TYPE, Location, String, Integer, Integer, Date, Date, boolean)}
+	 * @deprecated use
+	 *             {@link #getObservations(List, List, List, org.openmrs.api.ObsService.PERSON_TYPE, Location, String, Integer, Integer, Date, Date, boolean)}
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_OBS)
 	public List<Obs> getVoidedObservations();
 
 	/**
-	 * @deprecated use {@link #getObservations(List, List, List, org.openmrs.api.ObsService.PERSON_TYPE, Location, String, Integer, Integer, Date, Date, boolean)}
+	 * @deprecated use
+	 *             {@link #getObservations(List, List, List, org.openmrs.api.ObsService.PERSON_TYPE, Location, String, Integer, Integer, Date, Date, boolean)}
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_OBS)
 	public List<Obs> findObservations(String search, boolean includeVoided, Integer personType);
 
 	/**
-	 * @deprecated should use Obs.getGroupMembers() or {@link #getObservations(List, List, List, org.openmrs.api.ObsService.PERSON_TYPE, Location, String, Integer, Integer, Date, Date, boolean)}
+	 * @deprecated should use Obs.getGroupMembers() or
+	 *             {@link #getObservations(List, List, List, org.openmrs.api.ObsService.PERSON_TYPE, Location, String, Integer, Integer, Date, Date, boolean)}
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_OBS)
 	public List<Obs> findObsByGroupId(Integer obsGroupId);
 
 	/**
-	 * @deprecated use {@link #getObservations(List, List, List, org.openmrs.api.ObsService.PERSON_TYPE, Location, String, Integer, Integer, Date, Date, boolean)}
+	 * @deprecated use
+	 *             {@link #getObservations(List, List, List, org.openmrs.api.ObsService.PERSON_TYPE, Location, String, Integer, Integer, Date, Date, boolean)}
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_OBS)
 	public List<Obs> getObservations(List<Concept> concepts, Date fromDate, Date toDate, boolean includeVoided);
 
 	/**
-	 * @deprecated use {@link #getObservations(List, List, List, org.openmrs.api.ObsService.PERSON_TYPE, Location, String, Integer, Integer, Date, Date, boolean)}
+	 * @deprecated use
+	 *             {@link #getObservations(List, List, List, org.openmrs.api.ObsService.PERSON_TYPE, Location, String, Integer, Integer, Date, Date, boolean)}
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_OBS)
@@ -501,7 +483,8 @@ public interface ObsService extends OpenmrsService {
 
 	
 	/**
-	 * @deprecated use {@link #getObservations(List, List, List, org.openmrs.api.ObsService.PERSON_TYPE, Location, String, Integer, Integer, Date, Date, boolean)}
+	 * @deprecated use
+	 *             {@link #getObservations(List, List, List, org.openmrs.api.ObsService.PERSON_TYPE, Location, String, Integer, Integer, Date, Date, boolean)}
 	 */
 	@Transactional(readOnly=true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_OBS)

@@ -21,10 +21,8 @@ import org.simpleframework.xml.Root;
 import org.openmrs.synchronization.Synchronizable;
 
 /**
- * A concept source is defined as any institution that keeps a concept
- * dictionary. Examples are ICD9, ICD10, SNOMED, or any other OpenMRS
- * implementation
- * 
+ * A concept source is defined as any institution that keeps a concept dictionary. Examples are
+ * ICD9, ICD10, SNOMED, or any other OpenMRS implementation
  */
 @Root
 public class ConceptSource implements java.io.Serializable, Synchronizable {
@@ -211,7 +209,6 @@ public class ConceptSource implements java.io.Serializable, Synchronizable {
 	}
 
 	/**
-	 * 
 	 * @return the voided status
 	 */
 	public Boolean isVoided() {
@@ -219,8 +216,8 @@ public class ConceptSource implements java.io.Serializable, Synchronizable {
 	}
 
 	/**
-	 * This method exists to satisfy spring and hibernates slightly bung use of
-	 * Boolean object getters and setters.
+	 * This method exists to satisfy spring and hibernates slightly bung use of Boolean object
+	 * getters and setters.
 	 * 
 	 * @deprecated Use the "proper" isVoided method.
 	 * @see #isVoided()

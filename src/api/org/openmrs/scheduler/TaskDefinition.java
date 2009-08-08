@@ -180,8 +180,8 @@ public class TaskDefinition {
   	} 
 
   	/**
-	 * Set the start time for when the task should be executed. For instance,
-	 * use "new Date()", if you want it to start now.
+	 * Set the start time for when the task should be executed. For instance, use "new Date()", if
+	 * you want it to start now.
   	 *
   	 * @param  startTime   start time for the task
   	 */
@@ -273,8 +273,7 @@ public class TaskDefinition {
 	}
   
 	/**
-	 * Convenience method that asks SchedulerUtil for 
-	 * it's next execution time.  
+	 * Convenience method that asks SchedulerUtil for it's next execution time.
 	 * 
 	 * @return
 	 */
@@ -383,15 +382,9 @@ public class TaskDefinition {
      */
     @Override
     public String toString() {
-    	return 
-    		"[TaskDefinition " + 
-    			" id=" + getId() + 
-    			" name=" + getName() + 
-    			" class=" + getTaskClass() + 
-    			" startTime=" + getStartTime() + 
-    			" repeatInterval=" + this.getRepeatInterval() + 
-    			" secondsUntilNext=" + this.getSecondsUntilNextExecutionTime() + 
-    		"]";
+		return "[TaskDefinition " + " id=" + getId() + " name=" + getName() + " class=" + getTaskClass() + " startTime="
+		        + getStartTime() + " repeatInterval=" + this.getRepeatInterval() + " secondsUntilNext="
+		        + this.getSecondsUntilNextExecutionTime() + "]";
     }
 	
 	/**
@@ -404,8 +397,8 @@ public class TaskDefinition {
     }
 	
     /**
-     * Sets the runnable task instance associated with this definition.
-     * This should be set by the scheduler which instantiates the task.
+	 * Sets the runnable task instance associated with this definition. This should be set by the
+	 * scheduler which instantiates the task.
      * 
      * @param tastkInstance
      */

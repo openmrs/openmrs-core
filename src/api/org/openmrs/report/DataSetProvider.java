@@ -15,27 +15,21 @@ package org.openmrs.report;
 
 import org.openmrs.Cohort;
 
-
 /**
  * Implementations of this interface perform the work of converting from a {@link DataSetDefinition}
- * to a {@link DataSet}. 
- *
- * This is one of three interfaces that work together to define and evaluate an OpenMRS DataSet.
- * You need to implement all three of DataSetProvider, {@link DataSetDefinition}, and {@link DataSet}
- * in order to get useful behavior. For example: {@link RowPerObsDataSetProvider},
- * {@link RowPerObsDataSetDefinition}, and {@link RowPerObsDataSet}
- * 
- * The metadata that describes what data will be produced is defined in {@link DataSetDefinition}
- * 
- * The logic that evaluates that metadata goes in an implementation of this interface.
- * 
- * After evaluation, the data is represented by a {@link DataSet}.
+ * to a {@link DataSet}. This is one of three interfaces that work together to define and evaluate
+ * an OpenMRS DataSet. You need to implement all three of DataSetProvider, {@link DataSetDefinition}
+ * , and {@link DataSet} in order to get useful behavior. For example:
+ * {@link RowPerObsDataSetProvider}, {@link RowPerObsDataSetDefinition}, and
+ * {@link RowPerObsDataSet} The metadata that describes what data will be produced is defined in
+ * {@link DataSetDefinition} The logic that evaluates that metadata goes in an implementation of
+ * this interface. After evaluation, the data is represented by a {@link DataSet}.
  * 
  * @see DataSetDefinition
  * @see DataSet
  */
 public interface DataSetProvider {
-
+	
 	/**
 	 * @param dataSetDefinition
 	 * @return Whether this provider can evaluate the given definition
@@ -43,7 +37,8 @@ public interface DataSetProvider {
 	public boolean canEvaluate(DataSetDefinition dataSetDefinition);
 	
 	/**
-	 * Evaluate a dataset on a given input cohort (which may be null, and may be ignored by some data sets)  
+	 * Evaluate a dataset on a given input cohort (which may be null, and may be ignored by some
+	 * data sets)
 	 * 
 	 * @param dataSetDefinition
 	 * @param inputCohort

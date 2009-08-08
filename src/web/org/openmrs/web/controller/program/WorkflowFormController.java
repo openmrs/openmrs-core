@@ -37,51 +37,51 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
 
 public class WorkflowFormController extends SimpleFormController {
-
+	
 	protected final Log log = LogFactory.getLog(getClass());
 	
-    protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
-    	super.initBinder(request, binder);
-    	binder.registerCustomEditor(java.lang.Integer.class,
-                new CustomNumberEditor(java.lang.Integer.class, true));
-    }
-
-
+	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
+		super.initBinder(request, binder);
+		binder.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, true));
+	}
+	
 	/**
-	 * This is called prior to displaying a form for the first time.  It tells Spring
-	 *   the form/command object to load into the request
+	 * This is called prior to displaying a form for the first time. It tells Spring the
+	 * form/command object to load into the request
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-    protected Object formBackingObject(HttpServletRequest request) throws ServletException {
-    	log.debug("called formBackingObject");
+	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
+		log.debug("called formBackingObject");
 		
 		ProgramWorkflow wf = null;
 		
 		if (Context.isAuthenticated()) {
 			ProgramWorkflowService ps = Context.getProgramWorkflowService();
 			String programWorkflowId = request.getParameter("programWorkflowId");
-	    	if (programWorkflowId != null)
-	    		wf = ps.getWorkflow(Integer.valueOf(programWorkflowId));
-
-	    	if (wf == null)
+			if (programWorkflowId != null)
+				wf = ps.getWorkflow(Integer.valueOf(programWorkflowId));
+			
+			if (wf == null)
 				throw new IllegalArgumentException("Can't find workflow");
 		}
 		
 		if (wf == null)
 			wf = new ProgramWorkflow();
 		
-        return wf;
-    }
-    
-    
+		return wf;
+	}
+	
 	/**
-	 * The onSubmit function receives the form/command object that was modified
-	 *   by the input form and saves it to the db
+	 * The onSubmit function receives the form/command object that was modified by the input form
+	 * and saves it to the db
 	 * 
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
+	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
+	 *      org.springframework.validation.BindException)
 	 */
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
+	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
+	                                BindException errors) throws Exception {
 		log.debug("about to save " + obj);
 		
 		HttpSession httpSession = request.getSession();
@@ -90,12 +90,12 @@ public class WorkflowFormController extends SimpleFormController {
 		
 		if (Context.isAuthenticated()) {
 			ProgramWorkflow wf = (ProgramWorkflow) obj;
-
+			
 			// get list of states, and update the command object
 			String statesStr = request.getParameter("newStates");
 			// This is a brute-force algorithm, but n will be small.
 			Set<Integer> doneSoFar = new HashSet<Integer>(); // concept ids done so far
-			for (StringTokenizer st = new StringTokenizer(statesStr, "|"); st.hasMoreTokens(); ) {
+			for (StringTokenizer st = new StringTokenizer(statesStr, "|"); st.hasMoreTokens();) {
 				String str = st.nextToken();
 				String[] tmp = str.split(",");
 				Integer conceptId = Integer.valueOf(tmp[0]);
@@ -135,6 +135,5 @@ public class WorkflowFormController extends SimpleFormController {
 		
 		return new ModelAndView(new RedirectView(view));
 	}
-    
 	
 }

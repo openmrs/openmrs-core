@@ -33,7 +33,7 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 
 public class DWRCohortBuilderService {
-
+	
 	protected final Log log = LogFactory.getLog(getClass());
 	
 	public Integer getResultCountForFilterId(Integer filterId) {
@@ -41,7 +41,7 @@ public class DWRCohortBuilderService {
 		if (pf == null)
 			return null;
 		Cohort everyone = Context.getPatientSetService().getAllPatients();
-		Cohort filtered = (Cohort)pf.filter(everyone, null);
+		Cohort filtered = (Cohort) pf.filter(everyone, null);
 		return filtered.size();
 	}
 	
@@ -82,13 +82,13 @@ public class DWRCohortBuilderService {
 		Cohort ps = history.getLastPatientSet(null);
 		return ps;
 	}
-		
+	
 	public List<ListItem> getSavedSearches(boolean includeParameterized) {
 		List<ListItem> ret = new ArrayList<ListItem>();
-		List<AbstractReportObject> savedSearches = Context.getReportObjectService().getReportObjectsByType(OpenmrsConstants.REPORT_OBJECT_TYPE_PATIENTSEARCH);
+		List<AbstractReportObject> savedSearches = Context.getReportObjectService().getReportObjectsByType(
+		    OpenmrsConstants.REPORT_OBJECT_TYPE_PATIENTSEARCH);
 		for (ReportObject ps : savedSearches) {
-			if (includeParameterized ||
-					((PatientSearchReportObject) ps).getPatientSearch().getParameters().size() == 0) {
+			if (includeParameterized || ((PatientSearchReportObject) ps).getPatientSearch().getParameters().size() == 0) {
 				ListItem li = new ListItem();
 				li.setId(ps.getReportObjectId());
 				li.setName(ps.getName());
@@ -129,7 +129,7 @@ public class DWRCohortBuilderService {
 		}
 		return ret;
 	}
-
+	
 	/**
 	 * Auto generated method comment
 	 * 
@@ -190,7 +190,7 @@ public class DWRCohortBuilderService {
 		history.setDescription(description);
 		Context.getReportObjectService().saveSearchHistory(history);
 	}
-		
+	
 	/**
 	 * Auto generated method comment
 	 * 
@@ -201,7 +201,8 @@ public class DWRCohortBuilderService {
 	}
 	
 	/**
-	 * Saves an element from the search history as a PatientSearch 
+	 * Saves an element from the search history as a PatientSearch
+	 * 
 	 * @param name The name to give the saved filter
 	 * @param description The description to give the saved filter
 	 * @param indexInHistory The index into the authenticated user's search history
@@ -221,7 +222,8 @@ public class DWRCohortBuilderService {
 			Context.getReportObjectService().saveReportObject(ro);
 			history.getSearchHistory().set(indexInHistory, PatientSearch.createSavedSearchReference(ro.getReportObjectId()));
 			return true;
-		} catch (Exception ex) {
+		}
+		catch (Exception ex) {
 			log.error("Exception", ex);
 			return false;
 		}
@@ -244,8 +246,8 @@ public class DWRCohortBuilderService {
 	}
 	
 	/**
-	 * This isn't really useful because most of the properties don't have DWR converters.
-	 * I'm leaving it here in case I get to work on it later.
+	 * This isn't really useful because most of the properties don't have DWR converters. I'm
+	 * leaving it here in case I get to work on it later.
 	 */
 	public CohortSearchHistory getUserSearchHistory() {
 		return getMySearchHistory();

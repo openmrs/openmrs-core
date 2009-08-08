@@ -49,48 +49,60 @@ public class NoteServiceImpl implements NoteService, Serializable {
 	
 	/**
 	 * Public constructor.
-	 *
 	 */
-	public NoteServiceImpl() { }
+	public NoteServiceImpl() {
+	}
 	
 	/**
 	 * Get all notes from the database.
+	 * 
 	 * @return
 	 * @throws Exception
 	 */
-	public Collection<Note> getNotes() throws Exception {log.info("Get all notes"); return getNoteDAO().getNotes();
+	public Collection<Note> getNotes() throws Exception {
+		log.info("Get all notes");
+		return getNoteDAO().getNotes();
 	}
   
 	
 	/**
 	 * Creates a new note.
+	 * 
 	 * @param note to be created
 	 * @throws APIException
 	 */
-	public void createNote(Note note) throws Exception {log.info("Create a note " + note);
-		getNoteDAO().createNote(note); 	}
+	public void createNote(Note note) throws Exception {
+		log.info("Create a note " + note);
+		getNoteDAO().createNote(note);
+	}
 
 	/**
 	 * Get note by internal identifier
+	 * 
 	 * @param noteId internal note identifier
 	 * @return note with given internal identifier
 	 * @throws APIException
 	 */
-	public Note getNote(Integer noteId) throws Exception {log.info("Get note " + noteId);
+	public Note getNote(Integer noteId) throws Exception {
+		log.info("Get note " + noteId);
 		return getNoteDAO().getNote(noteId);
 	}
 
 	/**
 	 * Update a note.
+	 * 
 	 * @param note to be updated
 	 * @throws APIException
 	 */
-	public void updateNote(Note note) throws Exception {log.info("Update note " + note); getNoteDAO().updateNote(note);
+	public void updateNote(Note note) throws Exception {
+		log.info("Update note " + note);
+		getNoteDAO().updateNote(note);
 	}
 
 
 	/**
 	 * Get notes by user. 
+	 * 
 	 * @param note to be updated
 	 * @throws APIException
 	 */

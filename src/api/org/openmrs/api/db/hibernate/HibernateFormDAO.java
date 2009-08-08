@@ -40,10 +40,8 @@ import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.FormDAO;
 
 /**
- * Hibernate specific Form related functions
- * 
- * This class should not be used directly.  All calls should go through the
- * {@link org.openmrs.api.FormService} methods.
+ * Hibernate specific Form related functions This class should not be used directly. All calls
+ * should go through the {@link org.openmrs.api.FormService} methods.
  * 
  * @see org.openmrs.api.db.FormDAO
  * @see org.openmrs.api.FormService
@@ -68,6 +66,7 @@ public class HibernateFormDAO implements FormDAO {
 	
 	/**
 	 * Returns the form object originally passed in, which will have been persisted.
+	 * 
 	 * @see org.openmrs.api.db.FormService#createForm(org.openmrs.Form)
 	 */
 	public Form saveForm(Form form) throws DAOException {
@@ -101,8 +100,7 @@ public class HibernateFormDAO implements FormDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<FormField> getFormFields(Form form) throws DAOException {
-		return sessionFactory.getCurrentSession().createCriteria(FormField.class, "ff")
-			.add(Expression.eq("ff.form", form))
+		return sessionFactory.getCurrentSession().createCriteria(FormField.class, "ff").add(Expression.eq("ff.form", form))
 			.list();
 	}
 
@@ -182,19 +180,20 @@ public class HibernateFormDAO implements FormDAO {
 
 	
 	/**
-	 * @see org.openmrs.api.FormService#getFormField(org.openmrs.Form, org.openmrs.Concept, java.util.Collection, boolean)
-	 * @see org.openmrs.api.db.FormDAO#getFormField(org.openmrs.Form, org.openmrs.Concept, java.util.Collection, boolean)
+	 * @see org.openmrs.api.FormService#getFormField(org.openmrs.Form, org.openmrs.Concept,
+	 *      java.util.Collection, boolean)
+	 * @see org.openmrs.api.db.FormDAO#getFormField(org.openmrs.Form, org.openmrs.Concept,
+	 *      java.util.Collection, boolean)
 	 */
 	@SuppressWarnings("unchecked")
-    public FormField getFormField(Form form, Concept concept, Collection<FormField> ignoreFormFields, boolean force) throws DAOException {
+	public FormField getFormField(Form form, Concept concept, Collection<FormField> ignoreFormFields, boolean force)
+	                                                                                                                throws DAOException {
 		if (form == null) {
 			log.debug("form is null, no fields will be matched");
 			return null;
 		}
-		Criteria crit = sessionFactory.getCurrentSession().createCriteria(FormField.class, "ff")
-			.createAlias("field", "field")
-			.add(Expression.eq("field.concept", concept))
-			.add(Expression.eq("form", form));
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(FormField.class, "ff").createAlias("field",
+		    "field").add(Expression.eq("field.concept", concept)).add(Expression.eq("form", form));
 		
 		// get the list of all formfields with this concept for this form
 		List<FormField> formFields = crit.list();
@@ -221,8 +220,7 @@ public class HibernateFormDAO implements FormDAO {
 				log.debug(err);
 				return null;
 			}
-		}
-		else { // if formFields.size() is still greater than 0
+		} else { // if formFields.size() is still greater than 0
 			FormField ff = (FormField)formFields.get(0); 
 			return ff;
 		}
@@ -299,14 +297,15 @@ public class HibernateFormDAO implements FormDAO {
 	}
 	
 	/**
-     * @see org.openmrs.api.db.FormDAO#getFields(java.util.Collection, java.util.Collection, java.util.Collection, java.util.Collection, java.util.Collection, java.lang.Boolean, java.util.Collection, java.util.Collection, java.lang.Boolean)
+	 * @see org.openmrs.api.db.FormDAO#getFields(java.util.Collection, java.util.Collection,
+	 *      java.util.Collection, java.util.Collection, java.util.Collection, java.lang.Boolean,
+	 *      java.util.Collection, java.util.Collection, java.lang.Boolean)
 	 */
     @SuppressWarnings("unchecked")
-    public List<Field> getFields(Collection<Form> forms,
-            Collection<FieldType> fieldTypes, Collection<Concept> concepts,
-            Collection<String> tableNames, Collection<String> attributeNames,
-            Boolean selectMultiple, Collection<FieldAnswer> containsAllAnswers,
-            Collection<FieldAnswer> containsAnyAnswer, Boolean retired) throws DAOException {
+	public List<Field> getFields(Collection<Form> forms, Collection<FieldType> fieldTypes, Collection<Concept> concepts,
+	                             Collection<String> tableNames, Collection<String> attributeNames, Boolean selectMultiple,
+	                             Collection<FieldAnswer> containsAllAnswers, Collection<FieldAnswer> containsAnyAnswer,
+	                             Boolean retired) throws DAOException {
     	
     	Criteria crit = sessionFactory.getCurrentSession().createCriteria(Field.class);
 		
@@ -353,14 +352,14 @@ public class HibernateFormDAO implements FormDAO {
 	}
 
 	/**
-     * @see org.openmrs.api.db.FormDAO#getForms(java.lang.String, java.lang.Boolean, java.util.Collection, java.lang.Boolean, java.util.Collection, java.util.Collection, java.util.Collection)
+	 * @see org.openmrs.api.db.FormDAO#getForms(java.lang.String, java.lang.Boolean,
+	 *      java.util.Collection, java.lang.Boolean, java.util.Collection, java.util.Collection,
+	 *      java.util.Collection)
 	 */
     @SuppressWarnings("unchecked")
-    public List<Form> getForms(String partialName, Boolean published,
-            Collection<EncounterType> encounterTypes, Boolean retired,
-            Collection<FormField> containingAnyFormField,
-            Collection<FormField> containingAllFormFields,
-            Collection<Field> fields) throws DAOException {
+	public List<Form> getForms(String partialName, Boolean published, Collection<EncounterType> encounterTypes,
+	                           Boolean retired, Collection<FormField> containingAnyFormField,
+	                           Collection<FormField> containingAllFormFields, Collection<Field> fields) throws DAOException {
 
     	Criteria crit = sessionFactory.getCurrentSession().createCriteria(Form.class, "form");
 		

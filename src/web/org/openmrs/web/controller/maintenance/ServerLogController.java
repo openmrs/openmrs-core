@@ -31,33 +31,35 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
 
 /**
- * Get the log lines from the MEMORY_APPENDER appender of log4j as a String list and give it
- * to the view.
+ * Get the log lines from the MEMORY_APPENDER appender of log4j as a String list and give it to the
+ * view.
  * 
  * @see org.openmrs.util.MemoryAppender
  */
 public class ServerLogController extends SimpleFormController {
-    protected final Log log = LogFactory.getLog(getClass());
-
-	/** 
+	
+	protected final Log log = LogFactory.getLog(getClass());
+	
+	/**
+	 * The onSubmit function receives the form/command object that was modified by the input form
+	 * and saves it to the db
 	 * 
-	 * The onSubmit function receives the form/command object that was modified
-	 *   by the input form and saves it to the db
-	 * 
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
+	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
+	 *      org.springframework.validation.BindException)
 	 */
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
+	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
+	                                BindException errors) throws Exception {
 		return new ModelAndView(new RedirectView(getSuccessView()));
 	}
-    
+	
 	/**
-	 * 
-	 * This is called prior to displaying a form for the first time.  It tells Spring
-	 *   the form/command object to load into the request
+	 * This is called prior to displaying a form for the first time. It tells Spring the
+	 * form/command object to load into the request
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-    protected List<String> formBackingObject(HttpServletRequest request) throws ServletException {
+	protected List<String> formBackingObject(HttpServletRequest request) throws ServletException {
 		Appender appender = Logger.getRootLogger().getAppender("MEMORY_APPENDER");
 		if (appender instanceof MemoryAppender) {
 			MemoryAppender memoryAppender = (MemoryAppender) appender;
@@ -66,5 +68,5 @@ public class ServerLogController extends SimpleFormController {
 		} else {
 			return new ArrayList<String>();
 		}
-    }	
+	}
 }

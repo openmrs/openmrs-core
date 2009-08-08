@@ -22,6 +22,7 @@ import org.openmrs.synchronization.Synchronizable;
 
 /**
  * Location 
+ * 
  * @version 1.0
  */
 public class Location implements java.io.Serializable, Attributable<Location>, Synchronizable {
@@ -113,7 +114,8 @@ public class Location implements java.io.Serializable, Attributable<Location>, S
 	}
 	
 	public int hashCode() {
-		if (this.getLocationId() == null) return super.hashCode();
+		if (this.getLocationId() == null)
+			return super.hashCode();
 		return this.getLocationId().hashCode();
 	}
 

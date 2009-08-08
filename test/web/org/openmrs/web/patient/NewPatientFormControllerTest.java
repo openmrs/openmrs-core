@@ -23,6 +23,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Location;
@@ -33,11 +34,11 @@ import org.openmrs.Relationship;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PersonService.ATTR_VIEW_TYPE;
 import org.openmrs.api.context.Context;
-import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.SkipBaseSetup;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
 import org.openmrs.web.controller.patient.NewPatientFormController;
 import org.openmrs.web.controller.patient.ShortPatientModel;
+import org.openmrs.web.test.BaseWebContextSensitiveTest;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
@@ -48,9 +49,10 @@ import org.springframework.web.servlet.view.RedirectView;
  * Test the methods on the {@link org.openmrs.web.controller.patient.NewPatientFormController}
  */
 @SkipBaseSetup
-public class NewPatientFormControllerTest extends BaseContextSensitiveTest {
-
+public class NewPatientFormControllerTest extends BaseWebContextSensitiveTest {
+	
 	protected static final String CONTROLLER_DATA = "org/openmrs/web/patient/include/NewPatientFormControllerTest.xml";
+	
 	protected static final String CONTROLLER_PATIENTS_DATA = "org/openmrs/web/patient/include/NewPatientFormControllerTest-patients.xml";
 	
 	@Before
@@ -62,14 +64,13 @@ public class NewPatientFormControllerTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * This test just loads the page without giving it any parameters.
-	 * This should load the page just fine without errors (and the user
-	 * would see empty input boxes all around).
+	 * This test just loads the page without giving it any parameters. This should load the page
+	 * just fine without errors (and the user would see empty input boxes all around).
 	 * 
 	 * @throws Exception
 	 */
-	@SuppressWarnings({ "unchecked" })
-    @Test
+	@SuppressWarnings( { "unchecked" })
+	@Test
 	public void shouldPageLoadWithEmptyParameters() throws Exception {
 		NewPatientFormController controller = new NewPatientFormController();
 		MockHttpServletRequest request = new MockHttpServletRequest();
@@ -78,18 +79,17 @@ public class NewPatientFormControllerTest extends BaseContextSensitiveTest {
 		request.setMethod("GET");
 		ModelAndView modelAndView = controller.handleRequest(request, response);
 		
-		Map<String, Object> model = (Map<String, Object>)modelAndView.getModel().get("model");
+		Map<String, Object> model = (Map<String, Object>) modelAndView.getModel().get("model");
 		
 	}
 	
 	/**
-	 * This test will fill in all the required fields on the 
-	 * form to test a successful submission
+	 * This test will fill in all the required fields on the form to test a successful submission
 	 * 
 	 * @throws Exception
 	 */
-	@SuppressWarnings({ "unchecked" })
-    @Test
+	@SuppressWarnings( { "unchecked" })
+	@Test
 	public void shouldSubmitWithAllFieldsEnteredCorrectly() throws Exception {
 		
 		PatientService ps = Context.getPatientService();
@@ -129,7 +129,7 @@ public class NewPatientFormControllerTest extends BaseContextSensitiveTest {
 		
 		// make sure it is redirecting to the right place after a successful submit
 		assertEquals(RedirectView.class, modelAndView.getView().getClass());
-		RedirectView redirectView = (RedirectView)modelAndView.getView();
+		RedirectView redirectView = (RedirectView) modelAndView.getView();
 		assertTrue(redirectView.getUrl().startsWith("patientDashboard.form"));
 		
 		// make sure a John was created
@@ -138,13 +138,13 @@ public class NewPatientFormControllerTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * This test submits a page without an identifier.  It should not bomb out
-	 * and it should display properly again
+	 * This test submits a page without an identifier. It should not bomb out and it should display
+	 * properly again
 	 * 
 	 * @throws Exception
 	 */
-	@SuppressWarnings({ "unchecked" })
-    @Test
+	@SuppressWarnings( { "unchecked" })
+	@Test
 	public void shouldSubmitWithNoIdentifierFilledIn() throws Exception {
 		
 		PatientService ps = Context.getPatientService();
@@ -193,7 +193,7 @@ public class NewPatientFormControllerTest extends BaseContextSensitiveTest {
 		Map<String, Object> model = modelAndView.getModel();
 		
 		// get the formbacking object
-		ShortPatientModel shortPatient = (ShortPatientModel)model.get(controller.getCommandName());
+		ShortPatientModel shortPatient = (ShortPatientModel) model.get(controller.getCommandName());
 		assertNotNull(shortPatient);
 		
 		// make sure the formbackingobject for the redirected form has all the data
@@ -212,8 +212,8 @@ public class NewPatientFormControllerTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	@SuppressWarnings({ "unchecked" })
-    @Test
+	@SuppressWarnings( { "unchecked" })
+	@Test
 	public void shouldSubmitChangedIdentifierLocation() throws Exception {
 		executeDataSet(CONTROLLER_PATIENTS_DATA);
 		
@@ -238,7 +238,6 @@ public class NewPatientFormControllerTest extends BaseContextSensitiveTest {
 		controller.setApplicationContext(applicationContext);
 		controller.setSuccessView("patientDashboard.form");
 		controller.setFormView("newPatient.form");
-		controller.setSessionForm(true);
 		
 		// set up the request and do an initial "get" as if the user loaded the
 		// page for the first time
@@ -274,7 +273,7 @@ public class NewPatientFormControllerTest extends BaseContextSensitiveTest {
 		
 		// make sure it is redirecting to the right place after a successful submit
 		assertEquals(RedirectView.class, modelAndView.getView().getClass());
-		RedirectView redirectView = (RedirectView)modelAndView.getView();
+		RedirectView redirectView = (RedirectView) modelAndView.getView();
 		assertTrue(redirectView.getUrl().startsWith("patientDashboard.form"));
 		
 		// make sure John's identifier location was modified
@@ -282,7 +281,7 @@ public class NewPatientFormControllerTest extends BaseContextSensitiveTest {
 		assertNotNull(patient);
 		assertNotNull(patient.getIdentifiers());
 		assertFalse(patient.getIdentifiers().isEmpty());
-		PatientIdentifier identifier = (PatientIdentifier)patient.getIdentifiers().toArray()[0]; 
+		PatientIdentifier identifier = (PatientIdentifier) patient.getIdentifiers().toArray()[0];
 		assertEquals(2, identifier.getLocation().getLocationId().intValue());
 		
 	}
@@ -292,8 +291,8 @@ public class NewPatientFormControllerTest extends BaseContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	@SuppressWarnings({ "unchecked" })
-    @Test
+	@SuppressWarnings( { "unchecked" })
+	@Test
 	public void shouldAddRelationship() throws Exception {
 		executeDataSet(CONTROLLER_PATIENTS_DATA);
 		executeDataSet("org/openmrs/web/patient/include/NewPatientFormControllerTest-addRelationship.xml");
@@ -305,7 +304,6 @@ public class NewPatientFormControllerTest extends BaseContextSensitiveTest {
 		controller.setApplicationContext(applicationContext);
 		controller.setSuccessView("patientDashboard.form");
 		controller.setFormView("newPatient.form");
-		controller.setSessionForm(true);
 		
 		// set up the request and do an initial "get" as if the user loaded the
 		// page for the first time
@@ -345,10 +343,68 @@ public class NewPatientFormControllerTest extends BaseContextSensitiveTest {
 		// make sure a relationship between John and person id 3 was created
 		Patient patient = ps.getPatient(2);
 		assertNotNull(patient);
-		List<Relationship> relationships = Context.getPersonService().getRelationships(null, patient, Context.getPersonService().getRelationshipType(1));
+		List<Relationship> relationships = Context.getPersonService().getRelationships(null, patient,
+		    Context.getPersonService().getRelationshipType(1));
 		assertEquals(1, relationships.size());
 		// we submitted 1a=3, so the created relationship personA should be 3
 		assertEquals(new Person(3), relationships.get(0).getPersonA());
 		
+	}
+	
+	/**
+	 * This test changes creating a patient object from an already existing user object
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void shouldCreatePatientFromExistingUser() throws Exception {
+		PatientService ps = Context.getPatientService();
+		
+		// sanity check to make sure a patient#1 doesn't exist
+		Assert.assertNull(ps.getPatient(3));
+		Assert.assertNull(ps.getPatient(4));
+		
+		executeDataSet(CONTROLLER_PATIENTS_DATA);
+		
+		// set up the controller
+		NewPatientFormController controller = new NewPatientFormController();
+		controller.setApplicationContext(applicationContext);
+		controller.setSuccessView("patientDashboard.form");
+		controller.setFormView("newPatient.form");
+		
+		// set up the request and do an initial "get" as if the user loaded the
+		// page for the first time and selected an existing user (that isn't a patient yet0)
+		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/admin/patients/newPatient.form?patientId=3");
+		request.setSession(new MockHttpSession(null));
+		HttpServletResponse response = new MockHttpServletResponse();
+		ModelAndView initialPageLoad = controller.handleRequest(request, response);
+		
+		// set this to be a page submission
+		request.setMethod("POST");
+		
+		// add all of the parameters that are expected
+		// all but the location should match the patient info in the xml file
+		request.addParameter("patientId", "3");
+		request.addParameter("name.givenName", "John");
+		request.addParameter("name.familyName", "Doe");
+		request.addParameter("identifier", "12345678");
+		request.addParameter("identifierType", "1");
+		request.addParameter("location", "2");
+		request.addParameter("preferred", "1");
+		request.addParameter("gender", "F");
+		request.addParameter("birthdate", "05/05/1959");
+		request.addParameter("birthdateEstimated", "0");
+		
+		// send the parameters to the controller
+		ModelAndView modelAndView = controller.handleRequest(request, response);
+		
+		// make sure it is redirecting to the right place after a successful submit
+		assertEquals(RedirectView.class, modelAndView.getView().getClass());
+		RedirectView redirectView = (RedirectView) modelAndView.getView();
+		assertTrue(redirectView.getUrl().startsWith("patientDashboard.form"));
+		
+		// make sure a patient row for #1 was created, not #3
+		Assert.assertNotNull(ps.getPatient(3));
+		Assert.assertNull(ps.getPatient(4));
 	}
 }

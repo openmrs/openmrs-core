@@ -32,17 +32,17 @@ import org.openmrs.notification.db.AlertDAO;
  * Hibernate specific implementation of the
  */
 public class HibernateAlertDAO implements AlertDAO {
-
+	
 	private final Log log = LogFactory.getLog(getClass());
-
+	
 	/**
 	 * Hibernate session factory
 	 */
 	private SessionFactory sessionFactory;
-
+	
 	public HibernateAlertDAO() {
 	}
-
+	
 	/**
 	 * Set session factory
 	 * 
@@ -51,7 +51,7 @@ public class HibernateAlertDAO implements AlertDAO {
 	public void setSessionFactory(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
-
+	
 	/**
 	 * @see org.openmrs.notification.db.AlertDAO#saveAlert(org.openmrs.notification.Alert)
 	 */
@@ -59,15 +59,14 @@ public class HibernateAlertDAO implements AlertDAO {
 		sessionFactory.getCurrentSession().saveOrUpdate(alert);
 		return alert;
 	}
-
+	
 	/**
 	 * @see org.openmrs.notification.db.AlertDAO#getAlert(java.lang.Integer)
 	 */
 	public Alert getAlert(Integer alertId) throws DAOException {
-		return (Alert) sessionFactory.getCurrentSession().get(Alert.class,
-		                                                      alertId);
+		return (Alert) sessionFactory.getCurrentSession().get(Alert.class, alertId);
 	}
-
+	
 	/**
 	 * @see org.openmrs.notification.db.AlertDAO#deleteAlert(org.openmrs.notification.Alert)
 	 */
@@ -79,35 +78,29 @@ public class HibernateAlertDAO implements AlertDAO {
 	 * @see org.openmrs.notification.AlertService#getAllAlerts(boolean)
 	 */
 	@SuppressWarnings("unchecked")
-    public List<Alert> getAllAlerts(boolean includeExpired) throws DAOException {
+	public List<Alert> getAllAlerts(boolean includeExpired) throws DAOException {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Alert.class);
 		
 		// exclude the expired alerts unless requested
 		if (includeExpired == false)
-			crit.add(Expression.or(Expression.isNull("dateToExpire"),
-			                       Expression.gt("dateToExpire", new Date())));
-
+			crit.add(Expression.or(Expression.isNull("dateToExpire"), Expression.gt("dateToExpire", new Date())));
+		
 		return crit.list();
 	}
-
+	
 	/**
-	 * @see org.openmrs.notification.db.AlertDAO#getAlerts(org.openmrs.User,
-	 *      boolean, boolean)
+	 * @see org.openmrs.notification.db.AlertDAO#getAlerts(org.openmrs.User, boolean, boolean)
 	 */
 	@SuppressWarnings("unchecked")
-	public List<Alert> getAlerts(User user, boolean includeRead,
-	        boolean includeExpired) throws DAOException {
-		log.debug("Getting alerts for user " + user + " read? " + includeRead
-		        + " expired? " + includeExpired);
-
-		Criteria crit = sessionFactory.getCurrentSession()
-		                              .createCriteria(Alert.class, "alert");
-
+	public List<Alert> getAlerts(User user, boolean includeRead, boolean includeExpired) throws DAOException {
+		log.debug("Getting alerts for user " + user + " read? " + includeRead + " expired? " + includeExpired);
+		
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Alert.class, "alert");
+		
 		if (user != null && user.getUserId() != null) {
 			crit.createCriteria("recipients", "recipient");
 			crit.add(Expression.eq("recipient.recipient", user));
-		}
-		else {
+		} else {
 			// getting here means we passed in no user or a blank user.
 			// a null recipient column means get stuff for the anonymous user
 			//crit.add(Expression.isNull("recipient.recipient"));
@@ -116,21 +109,20 @@ public class HibernateAlertDAO implements AlertDAO {
 			// we may need to remodel how recipients are handled to get anonymous users alerts
 			return Collections.emptyList();
 		}
-
+		
 		// exclude the expired alerts unless requested
 		if (includeExpired == false)
-			crit.add(Expression.or(Expression.isNull("dateToExpire"),
-			                       Expression.gt("dateToExpire", new Date())));
-
+			crit.add(Expression.or(Expression.isNull("dateToExpire"), Expression.gt("dateToExpire", new Date())));
+		
 		// exclude the read alerts unless requested
 		if (includeRead == false && (user != null && user.getUserId() != null)) {
 			crit.add(Expression.eq("alertRead", false));
 			crit.add(Expression.eq("recipient.alertRead", false));
 		}
-
+		
 		crit.addOrder(Order.desc("dateChanged"));
-
+		
 		return crit.list();
 	}
-
+	
 }

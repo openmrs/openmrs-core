@@ -105,9 +105,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * Creates then updates a form field
-	 * 
-	 * TODO fix and activate this test method
+	 * Creates then updates a form field TODO fix and activate this test method
 	 * 
 	 * @throws Exception
 	 */
@@ -213,9 +211,9 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		
 		//testing creation
 		
-		Concept concept1  = conceptService.getConcept(1);
-		String  name1     = "name1";
-		String  descript1 = "descript1";
+		Concept concept1 = conceptService.getConcept(1);
+		String name1 = "name1";
+		String descript1 = "descript1";
 		FieldType fieldtype1 = formService.getAllFieldTypes().get(0);
 		String table1 = "table1";
 		String attr1 = "attr1";
@@ -237,9 +235,9 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		
 		Field field2 = formService.getField(field1.getFieldId());
 		
-		Concept concept2  = conceptService.getConcept(2);
-		String  name2     = "name2";
-		String  descript2 = "descript2";
+		Concept concept2 = conceptService.getConcept(2);
+		String name2 = "name2";
+		String descript2 = "descript2";
 		FieldType fieldtype2 = formService.getAllFieldTypes().get(1);
 		String table2 = "table2";
 		String attr2 = "attr2";
@@ -278,8 +276,8 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * Tests the FormService.getFormFields(Form, Concept) and 
-	 * getFormFields(Form,Concept,Collection) methods
+	 * Tests the FormService.getFormFields(Form, Concept) and getFormFields(Form,Concept,Collection)
+	 * methods
 	 * 
 	 * @throws Exception
 	 */
@@ -318,15 +316,15 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * Make sure that multiple forms are returned if a field is on a form
-	 * more than once
+	 * Make sure that multiple forms are returned if a field is on a form more than once
 	 * 
-	 * @verifies {@link FormService#getForms(String,Boolean,Collection<QEncounterType;>,Boolean,Collection<QFormField;>,Collection<QFormField;>,Collection<QField;>)}
-	 * test = should get multiple of the same form by field
+	 * @verifies {@link 
+	 *           FormService#getForms(String,Boolean,Collection<QEncounterType;>,Boolean,Collection
+	 *           <QFormField;>,Collection<QFormField;>,Collection<QField;>)} test = should get
+	 *           multiple of the same form by field
 	 */
 	@Test
-	public void getForms_shouldGetMultipleOfTheSameFormByField()
-			throws Exception {
+	public void getForms_shouldGetMultipleOfTheSameFormByField() throws Exception {
 		executeDataSet(INITIAL_FIELDS_XML);
 		executeDataSet("org/openmrs/api/include/FormServiceTest-formFields.xml");
 		
@@ -339,10 +337,9 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		
 		Assert.assertEquals(3, forms.size());
 	}
-
+	
 	/**
-	 * @verifies {@link FormService#saveFieldType(FieldType)}
-	 * test = should create new field type
+	 * @verifies {@link FormService#saveFieldType(FieldType)} test = should create new field type
 	 */
 	@Test
 	public void saveFieldType_shouldCreateNewFieldType() throws Exception {
@@ -358,10 +355,10 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		
 		Assert.assertNotNull(formService.getFieldType(fieldType.getFieldTypeId()));
 	}
-
+	
 	/**
-	 * @verifies {@link FormService#saveFieldType(FieldType)}
-	 * test = should update existing field type
+	 * @verifies {@link FormService#saveFieldType(FieldType)} test = should update existing field
+	 *           type
 	 */
 	@Test
 	public void saveFieldType_shouldUpdateExistingFieldType() throws Exception {
@@ -377,5 +374,5 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		FieldType refetchedFieldType = formService.getFieldType(1);
 		Assert.assertEquals("SOME OTHER NEW NAME", refetchedFieldType.getName());
 	}
-
+	
 }

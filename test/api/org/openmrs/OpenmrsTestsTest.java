@@ -27,17 +27,16 @@ import org.junit.Test;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
- * Runs tests on the openmrs junit tests
- * 
- * TODO: add unit test to make sure all tests have a call to assert* in them.
- * 		This would help prevent people from making tests that just print
- * 		results to the screen 
+ * Runs tests on the openmrs junit tests TODO: add unit test to make sure all tests have a call to
+ * assert* in them. This would help prevent people from making tests that just print results to the
+ * screen
  */
 @SuppressWarnings("unchecked")
 public class OpenmrsTestsTest {
 	
 	private ClassLoader classLoader = this.getClass().getClassLoader();
-    private List<Class> testClasses = null;
+	
+	private List<Class> testClasses = null;
 	
 	/**
 	 * Make sure there is at least one _other_ test case out there
@@ -52,8 +51,7 @@ public class OpenmrsTestsTest {
 	}
 	
 	/**
-	 * Makes sure all test methods in org.openmrs.test start 
-	 * with the word "should" 
+	 * Makes sure all test methods in org.openmrs.test start with the word "should"
 	 * 
 	 * @throws Exception
 	 */
@@ -64,23 +62,23 @@ public class OpenmrsTestsTest {
 		
 		for (Class<TestCase> currentClass : classes) {
 			for (Method method : currentClass.getMethods()) {
-	    		
-	    		// make sure every "test" method (determined by having 
-	    		// the @Test annotation) starts with "testShould"
-	    		if (method.getAnnotation(Test.class) != null) {
-	    			String methodName = method.getName();
-		    		
-	    			boolean passes = methodName.startsWith("should") || methodName.contains("_should");
-	    			assertTrue(currentClass.getName() + "#" + methodName + " is supposed to either 1) start with 'should' or 2) contain '_should' but it doesn't", passes);
-	    		}
-	    	}
+				
+				// make sure every "test" method (determined by having 
+				// the @Test annotation) starts with "testShould"
+				if (method.getAnnotation(Test.class) != null) {
+					String methodName = method.getName();
+					
+					boolean passes = methodName.startsWith("should") || methodName.contains("_should");
+					assertTrue(currentClass.getName() + "#" + methodName
+					        + " is supposed to either 1) start with 'should' or 2) contain '_should' but it doesn't", passes);
+				}
+			}
 		}
 	}
 	
 	/**
-	 * Makes sure all "should___" methods in org.openmrs.test have an
-	 * "@Test" annotation on it.  This is to help prevent devs from 
-	 * forgetting to put the annotation and then seeing all tests pass
+	 * Makes sure all "should___" methods in org.openmrs.test have an "@Test" annotation on it. This
+	 * is to help prevent devs from forgetting to put the annotation and then seeing all tests pass
 	 * because the new test wasn't actually ran
 	 * 
 	 * @throws Exception
@@ -90,13 +88,15 @@ public class OpenmrsTestsTest {
 		// loop over all methods in all test classes
 		for (Class<TestCase> currentClass : getTestClasses()) {
 			for (Method method : currentClass.getMethods()) {
-	    		String methodName = method.getName();
+				String methodName = method.getName();
 				
 				// make sure every should___ method has an @Test annotation
 				if (methodName.startsWith("should") || methodName.contains("_should")) {
-					assertTrue(currentClass.getName() + "#" + methodName + " does not have the @Test annotation on it even though the method name starts with 'should'", method.getAnnotation(Test.class) != null);
+					assertTrue(currentClass.getName() + "#" + methodName
+					        + " does not have the @Test annotation on it even though the method name starts with 'should'",
+					    method.getAnnotation(Test.class) != null);
 				}
-	    	}
+			}
 		}
 	}
 	
@@ -130,12 +130,11 @@ public class OpenmrsTestsTest {
 	}
 	
 	/**
-	 * Recurses into the given directory checking that all test 
-	 * methods start with "testShould"
+	 * Recurses into the given directory checking that all test methods start with "testShould"
 	 * 
 	 * @param directory to loop through the files of
 	 */
-    private List<Class> getTestClassesInDirectory(File directory) {
+	private List<Class> getTestClassesInDirectory(File directory) {
 		
 		List<Class> currentDirTestClasses = new ArrayList<Class>();
 		
@@ -157,13 +156,14 @@ public class OpenmrsTestsTest {
 				className = className.substring(className.indexOf("org.openmrs."));
 				
 				try {
-	                Class<?> currentClass = classLoader.loadClass(className);
-	                
-                	currentDirTestClasses.add(currentClass);
-	                
-                } catch (ClassNotFoundException e) {
-	               System.out.println("Unable to load class: " + className + " error: " + e.getMessage());
-                }
+					Class<?> currentClass = classLoader.loadClass(className);
+					
+					currentDirTestClasses.add(currentClass);
+					
+				}
+				catch (ClassNotFoundException e) {
+					System.out.println("Unable to load class: " + className + " error: " + e.getMessage());
+				}
 			}
 		}
 		

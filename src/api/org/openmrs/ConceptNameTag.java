@@ -23,7 +23,6 @@ import org.simpleframework.xml.Root;
 
 /**
  * ConceptNameTag is a textual tag which can be applied to a ConceptName.
- * 
  */
 @Root
 public class ConceptNameTag implements java.io.Serializable, Synchronizable {
@@ -38,21 +37,18 @@ public class ConceptNameTag implements java.io.Serializable, Synchronizable {
 	public static final String DEFAULT = "default";
 
 	/**
-	 * Short name for a concept. Does not indicate any preference
-	 * for the name. 
+	 * Short name for a concept. Does not indicate any preference for the name.
 	 */
 	public static final String SHORT = "short";
 
 	/**
 	 * A different word with similar meaning.
-	 * 
-	 * @deprecated All names for a concept are synonyms.
 	 */
 	public static final String SYNONYM = "synonym";
 
 	/**
-	 * Preferred name for a language. Can be applied to only one name within the
-	 * set of names within a language.
+	 * Preferred name for a language. Can be applied to only one name within the set of names within
+	 * a language.
 	 */
 	public static final String PREFERRED = "preferred";
 
@@ -79,8 +75,7 @@ public class ConceptNameTag implements java.io.Serializable, Synchronizable {
 	}
 
 	/**
-	 * Public constructor. Use factory methods to obtain
-	 * copies of the desired tags. 
+	 * Public constructor. Use factory methods to obtain copies of the desired tags.
 	 * 
 	 * @param tag
 	 * @param description
@@ -291,8 +286,8 @@ public class ConceptNameTag implements java.io.Serializable, Synchronizable {
 	}
 
 	/**
-	 * A factory method for generating a tag which indicates that a 
-	 * name is the preferred term within a particular language.
+	 * A factory method for generating a tag which indicates that a name is the preferred term
+	 * within a particular language.
 	 * 
 	 * @param locale locale from which the language component will be used
 	 * @return concept-name-tag
@@ -303,8 +298,8 @@ public class ConceptNameTag implements java.io.Serializable, Synchronizable {
 	
 
 	/**
-	 * A factory method which generates a preferred country tag from
-	 * the country-code portion of a locale.
+	 * A factory method which generates a preferred country tag from the country-code portion of a
+	 * locale.
 	 * 
 	 * @param locale locale from which the country-code will be used
 	 * @return 	concept-name-tag for country, or null if country component wasn't specified in locale
@@ -329,8 +324,8 @@ public class ConceptNameTag implements java.io.Serializable, Synchronizable {
     }
 
 	/**
-	 * A factory method that generates strings for preferred language tags.
-	 * The tag will have no description.
+	 * A factory method that generates strings for preferred language tags. The tag will have no
+	 * description.
      * 
      * @param language ISO-639 two letter language code
      * @return

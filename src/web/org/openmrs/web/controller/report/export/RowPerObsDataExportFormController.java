@@ -51,47 +51,47 @@ import org.springframework.web.servlet.view.RedirectView;
  */
 public class RowPerObsDataExportFormController extends SimpleFormController {
 	
-    /** Logger for this class and subclasses */
-    protected final Log log = LogFactory.getLog(getClass());
-    
+	/** Logger for this class and subclasses */
+	protected final Log log = LogFactory.getLog(getClass());
+	
 	/**
+	 * Allows for Integers to be used as values in input tags. Normally, only strings and lists are
+	 * expected
 	 * 
-	 * Allows for Integers to be used as values in input tags.
-	 *   Normally, only strings and lists are expected 
-	 * 
-	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest, org.springframework.web.bind.ServletRequestDataBinder)
+	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest,
+	 *      org.springframework.web.bind.ServletRequestDataBinder)
 	 */
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
-        
-        binder.registerCustomEditor(java.lang.Integer.class,
-                new CustomNumberEditor(java.lang.Integer.class, true));
-        binder.registerCustomEditor(org.openmrs.Location.class,
-        		new LocationEditor());
+		
+		binder.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, true));
+		binder.registerCustomEditor(org.openmrs.Location.class, new LocationEditor());
 	}
-
-	/** 
+	
+	/**
+	 * The onSubmit function receives the form/command object that was modified by the input form
+	 * and saves it to the db
 	 * 
-	 * The onSubmit function receives the form/command object that was modified
-	 *   by the input form and saves it to the db
-	 * 
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
+	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
+	 *      org.springframework.validation.BindException)
 	 */
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
+	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
+	                                BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
 		
 		String view = getFormView();
 		
 		if (Context.isAuthenticated()) {
-			RowPerObsDataExportReportObject report = (RowPerObsDataExportReportObject)obj;
+			RowPerObsDataExportReportObject report = (RowPerObsDataExportReportObject) obj;
 			
 			// create PatientSet from selected values in report
 			String[] patientIds = request.getParameterValues("patientId");
 			report.setPatientIds(new Vector<Integer>());
 			if (patientIds != null)
 				for (String patientId : patientIds)
-					if (patientId != null && !patientId.equals("")) 
+					if (patientId != null && !patientId.equals(""))
 						report.addPatientId(Integer.valueOf(patientId));
 			
 			Integer location = ServletRequestUtils.getIntParameter(request, "location", 0);
@@ -119,20 +119,19 @@ public class RowPerObsDataExportFormController extends SimpleFormController {
 								// for backwards compatibility to pre 1.0.43
 								Concept c = Context.getConceptService().getConceptByName(conceptId);
 								if (c == null)
-									throw new APIException("Concept name : + '" + conceptId + "' could not be found in the dictionary");
+									throw new APIException("Concept name : + '" + conceptId
+									        + "' could not be found in the dictionary");
 								conceptId = c.getConceptId().toString();
 							}
 							String[] extras = request.getParameterValues("conceptExtra_" + columnId);
 							report.setRowPerObsColumn(columnName, conceptId, extras);
-						}
-						else {
+						} else {
 							columnName = request.getParameter("calculatedName_" + columnId);
 							if (columnName != null) {
 								// calculated column
 								String columnValue = request.getParameter("calculatedValue_" + columnId);
 								report.addCalculatedColumn(columnName, columnValue);
-							}
-							else {
+							} else {
 								columnName = request.getParameter("cohortName_" + columnId);
 								if (columnName != null) {
 									// cohort column
@@ -146,15 +145,19 @@ public class RowPerObsDataExportFormController extends SimpleFormController {
 									Integer searchId = null;
 									try {
 										cohortId = Integer.valueOf(cohortIdValue);
-									} catch (Exception ex) { }
+									}
+									catch (Exception ex) {}
 									try {
 										filterId = Integer.valueOf(filterIdValue);
-									} catch (Exception ex) { }
+									}
+									catch (Exception ex) {}
 									try {
 										searchId = Integer.valueOf(searchIdValue);
-									} catch (Exception ex) { }
+									}
+									catch (Exception ex) {}
 									if (cohortId != null || filterId != null || searchId != null)
-										report.addCohortColumn(columnName, cohortId, filterId, searchId, valueIfTrue, valueIfFalse);
+										report.addCohortColumn(columnName, cohortId, filterId, searchId, valueIfTrue,
+										    valueIfFalse);
 								} else
 									log.warn("Cannot determine column type for column: " + columnId);
 							}
@@ -179,32 +182,33 @@ public class RowPerObsDataExportFormController extends SimpleFormController {
 		
 		return new ModelAndView(new RedirectView(view));
 	}
-
+	
 	/**
-	 * This is called prior to displaying a form for the first time.  It tells Spring
-	 *   the form/command object to load into the request
+	 * This is called prior to displaying a form for the first time. It tells Spring the
+	 * form/command object to load into the request
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-    protected Object formBackingObject(HttpServletRequest request) throws ServletException {
-
+	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
+		
 		DataExportReportObject report = null;
 		
 		if (Context.isAuthenticated()) {
 			ReportObjectService rs = Context.getReportObjectService();
 			String reportId = request.getParameter("dataExportId");
-	    	if (reportId != null)
-	    		report = (RowPerObsDataExportReportObject)rs.getReportObject(Integer.valueOf(reportId));	
+			if (reportId != null)
+				report = (RowPerObsDataExportReportObject) rs.getReportObject(Integer.valueOf(reportId));
 		}
 		
 		if (report == null)
 			report = new RowPerObsDataExportReportObject();
-    	
-        return report;
-    }
-    
+		
+		return report;
+	}
+	
 	/**
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest, java.lang.Object, org.springframework.validation.Errors)
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest,
+	 *      java.lang.Object, org.springframework.validation.Errors)
 	 */
 	protected Map<String, Object> referenceData(HttpServletRequest request, Object obj, Errors errs) throws Exception {
 		
@@ -221,5 +225,5 @@ public class RowPerObsDataExportFormController extends SimpleFormController {
 		
 		return map;
 	}
-    
+	
 }

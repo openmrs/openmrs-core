@@ -24,7 +24,7 @@ import org.openmrs.notification.Message;
  * Unit testing for the Message class
  */
 public class MessageTest {
-
+	
 	private Message createTestMessage1() {
 		int id = 1;
 		String recipients = "recipient1@example.com,recipient2@example.com";
@@ -59,8 +59,9 @@ public class MessageTest {
 		String attachmentContentType = "text/plain";
 		String attachmentFileName = "moo.txt";
 		
-		Message toTest = new Message(id, recipients, sender, subject, content, attachment, attachmentContentType, attachmentFileName);
-		assertEquals((int)toTest.getId(), 1);
+		Message toTest = new Message(id, recipients, sender, subject, content, attachment, attachmentContentType,
+		        attachmentFileName);
+		assertEquals((int) toTest.getId(), 1);
 		assertEquals(recipients, toTest.getRecipients());
 		assertEquals(sender, toTest.getSender());
 		assertEquals(subject, toTest.getSubject());
@@ -87,7 +88,7 @@ public class MessageTest {
 		
 		testMessage.addRecipient(newRecipient);
 		
-		assertEquals(testMessage.getRecipients(), oldRecipients +","+ newRecipient);
+		assertEquals(testMessage.getRecipients(), oldRecipients + "," + newRecipient);
 	}
 	
 	@Test

@@ -30,7 +30,7 @@ import org.openmrs.test.BaseContextSensitiveTest;
  *
  */
 public class PatientFilterTest extends BaseContextSensitiveTest {
-
+	
 	DateFormat ymd = new SimpleDateFormat("yyyy-MM-dd");
 	
 	@Test
@@ -44,7 +44,7 @@ public class PatientFilterTest extends BaseContextSensitiveTest {
 		DrugOrderFilter filter = new DrugOrderFilter();
 		filter.setAnyOrAll(PatientSetService.GroupMethod.ANY);
 		filter.setDrugList(Collections.singletonList(inh));
-
+		
 		assertEquals("No dates should get 1", 1, filter.filter(null, ec).size());
 		
 		filter.setUntilDate(ymd.parse("2004-06-01"));

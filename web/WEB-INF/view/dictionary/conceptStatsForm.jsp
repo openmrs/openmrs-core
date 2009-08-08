@@ -81,9 +81,9 @@
 		<table>
 			<tr>
 				<td><spring:message code="Concept.stats.numberObs"/></td>
-				<td>${fn:length(obsNumerics)}</td>
+				<td>${size}</td>
 			</tr>
-			<c:if test="${fn:length(obsNumerics) > 0}">
+			<c:if test="${size > 0}">
 				<tr>
 					<td><spring:message code="Concept.stats.minValue"/></td>
 					<td>${min}</td>
@@ -106,27 +106,29 @@
 						<openmrs:displayChart chart="${histogram}" width="800" height="300" />
 					</td>
 				</tr>
-				<tr>
-					<td valign="top"><spring:message code="Concept.stats.histogramOutliers"/></td>
-					<td>
-						<openmrs:displayChart chart="${histogramOutliers}" width="800" height="300" />
-						<br/> <a href="#" onclick="return showHideOutliers(this)"><spring:message code="Concept.stats.histogram.showOutliers"/></a> (<c:out value="${fn:length(outliers)}"/>)
-						<br/>
-						<div id="outliers" style="display: none">
-							<table>
-							<c:forEach items="${outliers}" var="outlier">
-								<tr>
-									<td><a target="_edit_obs" href="${pageContext.request.contextPath}/admin/observations/obs.form?obsId=${outlier[0]}">
-										<spring:message code="general.edit"/></a>
-									</td>
-									<td><b>${outlier[2]}</b></td>
-									<td>(${outlier[1]})</td>
-								</tr>
-							</c:forEach>
-							</table>
-						</div>
-					</td>
-				</tr>
+				<c:if test="${fn:length(outliers) > 0}">
+					<tr>
+						<td valign="top"><spring:message code="Concept.stats.histogramOutliers"/></td>
+						<td>
+							<openmrs:displayChart chart="${histogramOutliers}" width="800" height="300" />
+							<br/> <a href="#" onclick="return showHideOutliers(this)"><spring:message code="Concept.stats.histogram.showOutliers"/></a> (<c:out value="${fn:length(outliers)}"/>)
+							<br/>
+							<div id="outliers" style="display: none">
+								<table>
+								<c:forEach items="${outliers}" var="outlier">
+									<tr>
+										<td><a target="_edit_obs" href="${pageContext.request.contextPath}/admin/observations/obs.form?obsId=${outlier[0]}">
+											<spring:message code="general.edit"/></a>
+										</td>
+										<td><b>${outlier[2]}</b></td>
+										<td>(${outlier[1]})</td>
+									</tr>
+								</c:forEach>
+								</table>
+							</div>
+						</td>
+					</tr>
+				</c:if>
 				<tr>
 					<td valign="top"><spring:message code="Concept.stats.timeSeries"/></td>
 					<td>

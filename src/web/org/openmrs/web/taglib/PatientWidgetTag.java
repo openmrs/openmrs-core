@@ -24,17 +24,19 @@ import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
 
 public class PatientWidgetTag extends TagSupport {
-
+	
 	public static final long serialVersionUID = 112341L;
+	
 	private final Log log = LogFactory.getLog(getClass());
 	
 	private Integer patientId;
+	
 	private String size = "normal";
-
+	
 	public Integer getPatientId() {
 		return patientId;
 	}
-
+	
 	public void setPatientId(Integer patientId) {
 		this.patientId = patientId;
 	}
@@ -42,11 +44,11 @@ public class PatientWidgetTag extends TagSupport {
 	public String getSize() {
 		return size;
 	}
-
+	
 	public void setSize(String size) {
 		this.size = size;
 	}
-
+	
 	public int doStartTag() {
 		
 		/*
@@ -73,7 +75,7 @@ public class PatientWidgetTag extends TagSupport {
 			if (showPatientInfo) {
 				if (patient.getGender() != null) {
 					//String s = messageSource.getMessage("Patient.gender." + (patient.getGender().toLowerCase().startsWith("m") ? "male" : "female"), null, locale);
-					String s = patient.getGender().toLowerCase().startsWith("m") ? "Male" : "Female";  
+					String s = patient.getGender().toLowerCase().startsWith("m") ? "Male" : "Female";
 					w.print(", " + s);
 				}
 				if (patient.getAge() != null) {
@@ -82,7 +84,8 @@ public class PatientWidgetTag extends TagSupport {
 					w.print(", " + patient.getAge() + " year(s) old");
 				}
 			}
-		} catch (IOException ex) {
+		}
+		catch (IOException ex) {
 			log.error("Error while starting patientWidget tag", ex);
 		}
 		return SKIP_BODY;

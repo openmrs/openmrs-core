@@ -27,80 +27,81 @@ import org.openmrs.report.DataSetProvider;
 import org.openmrs.report.EvaluationContext;
 
 /**
- * Default implementation of the data set service. 
- * 
+ * Default implementation of the data set service.
  */
 public class DataSetServiceImpl implements DataSetService {
-
+	
 	public Log log = LogFactory.getLog(this.getClass());
-
+	
 	/**
-	 * Saved list of DataSetProviders allowed to be used by the dataset service 
+	 * Saved list of DataSetProviders allowed to be used by the dataset service
 	 */
 	private static List<DataSetProvider> providers;
 	
 	/**
 	 * Default no-arg constructor
 	 */
-	public DataSetServiceImpl() {}
-
-	/**
-     * @see org.openmrs.api.DataSetService#setProviders(java.util.Collection)
-     */
-    public void setProviders(List<DataSetProvider> newProviders) {
-    	for (DataSetProvider provider : newProviders) {
-    		registerProvider(provider);
-    	}
-    }
-    
-    /**
-     * @see org.openmrs.api.DataSetService#getProviders()
-     */
-    public List<DataSetProvider> getProviders() {
-    	 if (providers == null) 
-    		providers = new Vector<DataSetProvider>();
-    	 
-    	 return providers;
-    }
-    
-    /**
-     * @see org.openmrs.api.DataSetService#registerProvider(org.openmrs.report.DataSetProvider)
-     */
-    public void registerProvider(DataSetProvider newProvider) {
-    	for (DataSetProvider currentProvider : getProviders()) {
-    		if (currentProvider.getClass().equals(newProvider.getClass()))
-    			return;
-    	}
-    	
-    	// we only get here if there isn't already a provider registered for this class
-    	providers.add(newProvider);
-    }
+	public DataSetServiceImpl() {
+	}
 	
 	/**
-     * @see org.openmrs.api.DataSetService#removeProvider(org.openmrs.report.DataSetProvider)
-     */
-    public void removeProvider(DataSetProvider provider) {
-    	getProviders().remove(provider);
-    }
-
+	 * @see org.openmrs.api.DataSetService#setProviders(java.util.Collection)
+	 */
+	public void setProviders(List<DataSetProvider> newProviders) {
+		for (DataSetProvider provider : newProviders) {
+			registerProvider(provider);
+		}
+	}
+	
 	/**
-     * @see org.openmrs.api.DataSetService#getProvider(org.openmrs.report.DataSetDefinition)
-     */
-    public DataSetProvider getProvider(DataSetDefinition definition) {
-    	for (DataSetProvider p : getProviders())
-    		if (p.canEvaluate(definition))
-    			return p;
-	    return null;
-    }
-    
+	 * @see org.openmrs.api.DataSetService#getProviders()
+	 */
+	public List<DataSetProvider> getProviders() {
+		if (providers == null)
+			providers = new Vector<DataSetProvider>();
+		
+		return providers;
+	}
+	
 	/**
-     * @see org.openmrs.api.DataSetService#evaluate(org.openmrs.report.DataSetDefinition, org.openmrs.Cohort, org.openmrs.report.EvaluationContext)
-     */
-    public DataSet evaluate(DataSetDefinition definition, Cohort inputCohort, EvaluationContext evalContext) {
-    	DataSetProvider provider = getProvider(definition);
-    	if (provider == null)
-    		throw new APIException("No DataSetProvider found for (" + definition.getClass() + ") " + definition.getName());
-    	return provider.evaluate(definition, inputCohort, evalContext);
-    }
-
+	 * @see org.openmrs.api.DataSetService#registerProvider(org.openmrs.report.DataSetProvider)
+	 */
+	public void registerProvider(DataSetProvider newProvider) {
+		for (DataSetProvider currentProvider : getProviders()) {
+			if (currentProvider.getClass().equals(newProvider.getClass()))
+				return;
+		}
+		
+		// we only get here if there isn't already a provider registered for this class
+		providers.add(newProvider);
+	}
+	
+	/**
+	 * @see org.openmrs.api.DataSetService#removeProvider(org.openmrs.report.DataSetProvider)
+	 */
+	public void removeProvider(DataSetProvider provider) {
+		getProviders().remove(provider);
+	}
+	
+	/**
+	 * @see org.openmrs.api.DataSetService#getProvider(org.openmrs.report.DataSetDefinition)
+	 */
+	public DataSetProvider getProvider(DataSetDefinition definition) {
+		for (DataSetProvider p : getProviders())
+			if (p.canEvaluate(definition))
+				return p;
+		return null;
+	}
+	
+	/**
+	 * @see org.openmrs.api.DataSetService#evaluate(org.openmrs.report.DataSetDefinition,
+	 *      org.openmrs.Cohort, org.openmrs.report.EvaluationContext)
+	 */
+	public DataSet evaluate(DataSetDefinition definition, Cohort inputCohort, EvaluationContext evalContext) {
+		DataSetProvider provider = getProvider(definition);
+		if (provider == null)
+			throw new APIException("No DataSetProvider found for (" + definition.getClass() + ") " + definition.getName());
+		return provider.evaluate(definition, inputCohort, evalContext);
+	}
+	
 }

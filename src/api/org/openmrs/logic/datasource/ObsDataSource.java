@@ -29,80 +29,77 @@ import org.openmrs.logic.result.Result;
 import org.openmrs.logic.util.Util;
 
 /**
- * Provides access to clinical observations.  The keys for this data source are the primary
- * names of all tests within the concept dictionary.
- * 
- * Results have a result date equal to the observation datetime and a value based on
- * the observed value. 
+ * Provides access to clinical observations. The keys for this data source are the primary names of
+ * all tests within the concept dictionary. Results have a result date equal to the observation
+ * datetime and a value based on the observed value.
  */
 public class ObsDataSource implements LogicDataSource {
 	
 	private static final Collection<String> keys = new ArrayList<String>();
+	
 	private LogicObsDAO logicObsDAO;
 	
 	public void setLogicObsDAO(LogicObsDAO logicObsDAO) {
 		this.logicObsDAO = logicObsDAO;
 	}
-
+	
 	public LogicObsDAO getLogicObsDAO() {
 		return logicObsDAO;
 	}
 	
-    /**
-     * 
-     * @throws LogicException 
-     * @see org.openmrs.logic.datasource.LogicDataSource#read(org.openmrs.logic.LogicContext, org.openmrs.Cohort, org.openmrs.logic.LogicCriteria)
-     */
-    public Map<Integer, Result> read(LogicContext context, Cohort patients,
-            LogicCriteria criteria) throws LogicException {
-
-        Map<Integer, Result> finalResult = new HashMap<Integer, Result>();
-        // TODO: make the obs service method more efficient (so we don't have to re-organize
-        // into groupings by patient...or it can be done most expeditiously
-        List<Obs> obs = getLogicObsDAO().getObservations(patients, criteria);
-
-        // group the received observations by patient and convert them to
-        // Results
-        for (Obs ob : obs) {
-        	int personId = ob.getPerson().getPersonId();
-        	Result result = finalResult.get(personId);
-            if (result==null)
-            {
-            	result = new Result();
-                finalResult.put(personId, result);
-            }
-            
-            result.add(new Result(ob));
-        }
-        
-        Util.applyAggregators(finalResult, criteria,patients);
-        
-        return finalResult;
-    }
-
-    /**
-     * @see org.openmrs.logic.datasource.LogicDataSource#getDefaultTTL()
-     */
-    public int getDefaultTTL() {
-        return 60 * 30; // 30 minutes
-    }
-
-    /**
-     * @see org.openmrs.logic.datasource.LogicDataSource#getKeys()
-     */
-    public Collection<String> getKeys() {
+	/**
+	 * @throws LogicException
+	 * @see org.openmrs.logic.datasource.LogicDataSource#read(org.openmrs.logic.LogicContext,
+	 *      org.openmrs.Cohort, org.openmrs.logic.LogicCriteria)
+	 */
+	public Map<Integer, Result> read(LogicContext context, Cohort patients, LogicCriteria criteria) throws LogicException {
+		
+		Map<Integer, Result> finalResult = new HashMap<Integer, Result>();
+		// TODO: make the obs service method more efficient (so we don't have to re-organize
+		// into groupings by patient...or it can be done most expeditiously
+		List<Obs> obs = getLogicObsDAO().getObservations(patients, criteria);
+		
+		// group the received observations by patient and convert them to
+		// Results
+		for (Obs ob : obs) {
+			int personId = ob.getPerson().getPersonId();
+			Result result = finalResult.get(personId);
+			if (result == null) {
+				result = new Result();
+				finalResult.put(personId, result);
+			}
+			
+			result.add(new Result(ob));
+		}
+		
+		Util.applyAggregators(finalResult, criteria, patients);
+		
+		return finalResult;
+	}
+	
+	/**
+	 * @see org.openmrs.logic.datasource.LogicDataSource#getDefaultTTL()
+	 */
+	public int getDefaultTTL() {
+		return 60 * 30; // 30 minutes
+	}
+	
+	/**
+	 * @see org.openmrs.logic.datasource.LogicDataSource#getKeys()
+	 */
+	public Collection<String> getKeys() {
 		return keys;
 	}
-
-    /**
-     * @see org.openmrs.logic.datasource.LogicDataSource#hasKey(java.lang.String)
-     */
-    public boolean hasKey(String key) {
-        return getKeys().contains(key);
-    }
-    
-    public void addKey(String key){
-    	getKeys().add(key);
-    }
-
+	
+	/**
+	 * @see org.openmrs.logic.datasource.LogicDataSource#hasKey(java.lang.String)
+	 */
+	public boolean hasKey(String key) {
+		return getKeys().contains(key);
+	}
+	
+	public void addKey(String key) {
+		getKeys().add(key);
+	}
+	
 }

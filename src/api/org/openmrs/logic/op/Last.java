@@ -14,9 +14,9 @@
 package org.openmrs.logic.op;
 
 public class Last implements Operator {
-
-    public String toString() {
-        return "LAST";
-    }
-    
+	
+	public String toString() {
+		return "LAST";
+	}
+	
 }

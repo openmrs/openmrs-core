@@ -35,16 +35,11 @@ import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.OrderDAO;
 
 /**
- * This class should not be used directly.  This is just a common 
- * implementation of the OrderDAO that is used by the OrderService.
- * 
- * This class is injected by spring into the desired OrderService
- * class.  This injection is determined by the xml mappings and 
- * elements in the spring application context:
- * /metadata/api/spring/applicationContext.xml
- * 
- * The OrderService should be used for all Order related database 
- * manipulation.
+ * This class should not be used directly. This is just a common implementation of the OrderDAO that
+ * is used by the OrderService. This class is injected by spring into the desired OrderService
+ * class. This injection is determined by the xml mappings and elements in the spring application
+ * context: /metadata/api/spring/applicationContext.xml The OrderService should be used for all
+ * Order related database manipulation.
  * 
  * @see org.openmrs.api.OrderService
  * @see org.openmrs.api.db.OrderDAO
@@ -58,7 +53,8 @@ public class HibernateOrderDAO implements OrderDAO {
 	 */
 	private SessionFactory sessionFactory;
 	
-	public HibernateOrderDAO() { }
+	public HibernateOrderDAO() {
+	}
 
 	/**
 	 * Set session factory
@@ -147,13 +143,16 @@ public class HibernateOrderDAO implements OrderDAO {
 	}
 
 	/**
-     * @see org.openmrs.api.db.OrderDAO#getOrders(java.lang.Class, java.util.List, java.util.List, org.openmrs.api.OrderService.ORDER_STATUS, java.util.List, java.util.List, java.util.List)
-     * @see org.openmrs.api.OrderService#getOrders(java.lang.Class, java.util.List, java.util.List, org.openmrs.api.OrderService.ORDER_STATUS, java.util.List, java.util.List, java.util.List)
+	 * @see org.openmrs.api.db.OrderDAO#getOrders(java.lang.Class, java.util.List, java.util.List,
+	 *      org.openmrs.api.OrderService.ORDER_STATUS, java.util.List, java.util.List,
+	 *      java.util.List)
+	 * @see org.openmrs.api.OrderService#getOrders(java.lang.Class, java.util.List, java.util.List,
+	 *      org.openmrs.api.OrderService.ORDER_STATUS, java.util.List, java.util.List,
+	 *      java.util.List)
 	 */
 	@SuppressWarnings("unchecked")
-    public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType,
-            List<Patient> patients, List<Concept> concepts,
-            ORDER_STATUS status, List<User> orderers,
+	public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
+	                                               List<Concept> concepts, ORDER_STATUS status, List<User> orderers,
             List<Encounter> encounters, List<OrderType> orderTypes) {
 
     	Criteria crit = sessionFactory.getCurrentSession().createCriteria(orderClassType);

@@ -62,14 +62,14 @@ public class ConceptSetDerived implements java.io.Serializable, Synchronizable {
 	public boolean equals(Object obj) {
 		if (obj instanceof ConceptSetDerived) {
 			ConceptSetDerived c = (ConceptSetDerived)obj;
-			return (this.concept.equals(c.getConcept()) &&
-					this.conceptSet.equals(c.getConceptSet()));
+			return (this.concept.equals(c.getConcept()) && this.conceptSet.equals(c.getConceptSet()));
 		}
 		return false;
 	}
 	
 	public int hashCode() {
-		if (this.getConcept() == null || this.getConceptSet() == null) return super.hashCode();
+		if (this.getConcept() == null || this.getConceptSet() == null)
+			return super.hashCode();
 		return this.getConcept().hashCode() + this.getConceptSet().hashCode();
 	}
 
@@ -105,8 +105,7 @@ public class ConceptSetDerived implements java.io.Serializable, Synchronizable {
 	}
 
 	/**
-	 * @param sortWeight
-	 *            The sortWeight to set.
+	 * @param sortWeight The sortWeight to set.
 	 */
 	public void setSortWeight(Double sortWeight) {
 		this.sortWeight = sortWeight;

@@ -24,13 +24,14 @@ import org.openmrs.util.OpenmrsConstants;
 import org.springframework.util.StringUtils;
 
 public class LocationEditor extends PropertyEditorSupport {
-
+	
 	private Log log = LogFactory.getLog(this.getClass());
 	
-	public LocationEditor() {	}
+	public LocationEditor() {
+	}
 	
 	public void setAsText(String text) throws IllegalArgumentException {
-		EncounterService es = Context.getEncounterService(); 
+		EncounterService es = Context.getEncounterService();
 		if (StringUtils.hasText(text)) {
 			try {
 				setValue(es.getLocation(Integer.valueOf(text)));
@@ -39,20 +40,18 @@ public class LocationEditor extends PropertyEditorSupport {
 				log.error("Error setting text: " + text, ex);
 				throw new IllegalArgumentException("Location not found: " + ex.getMessage());
 			}
-		}
-		else {
+		} else {
 			setValue(null);
 		}
 	}
-
+	
 	public String getAsText() {
 		Location t = (Location) getValue();
 		if (t == null && Context.isAuthenticated()) {
 			return null; //return Context.getAuthenticatedUser().getUserProperty(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCATION);
-		}
-		else {
+		} else {
 			return t.getLocationId().toString();
 		}
 	}
-
+	
 }

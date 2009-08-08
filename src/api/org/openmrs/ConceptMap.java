@@ -20,8 +20,8 @@ import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 /**
- * The concept map object represents a mapping of Concept to ConceptSource.   
- * A concept can have 0 to N mappings to any and all concept sources in the database.
+ * The concept map object represents a mapping of Concept to ConceptSource. A concept can have 0 to
+ * N mappings to any and all concept sources in the database.
  */
 @Root
 public class ConceptMap implements java.io.Serializable, Synchronizable {
@@ -89,7 +89,8 @@ public class ConceptMap implements java.io.Serializable, Synchronizable {
 	 * @see java.lang.Object#hashCode()
 	 */
 	public int hashCode() {
-		if (this.getConceptMapId() == null) return super.hashCode();
+		if (this.getConceptMapId() == null)
+			return super.hashCode();
 		return this.getConceptMapId().hashCode();
 	}
 

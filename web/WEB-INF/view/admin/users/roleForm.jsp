@@ -48,8 +48,8 @@
 		<th><spring:message code="Role.role"/></th>
 		<td>
 			<spring:bind path="role.role">
-				<c:if test="${role.role == null}"><input type="text" id="role" name="${status.expression}" value="${status.value}" onChange="updateRoleName()"></c:if>
-				<c:if test="${!(role.role == null)}">${status.value}</c:if>				
+				<c:if test="${param.roleName == null}"><input type="text" id="role" name="${status.expression}" value="${status.value}" onChange="updateRoleName()"></c:if>
+				<c:if test="${!(param.roleName == null)}">${status.value}</c:if>				
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>

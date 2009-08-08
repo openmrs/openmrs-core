@@ -30,9 +30,8 @@ import org.openmrs.reporting.db.ReportObjectDAO;
 /**
  *
  */
-public class HibernateReportObjectDAO implements
-		ReportObjectDAO {
-
+public class HibernateReportObjectDAO implements ReportObjectDAO {
+	
 	protected final Log log = LogFactory.getLog(getClass());
 	
 	/**
@@ -40,14 +39,15 @@ public class HibernateReportObjectDAO implements
 	 */
 	private SessionFactory sessionFactory;
 	
-	public HibernateReportObjectDAO() { }
-
+	public HibernateReportObjectDAO() {
+	}
+	
 	/**
 	 * Set session factory
 	 * 
 	 * @param sessionFactory
 	 */
-	public void setSessionFactory(SessionFactory sessionFactory) { 
+	public void setSessionFactory(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
 	
@@ -55,41 +55,44 @@ public class HibernateReportObjectDAO implements
 	 * @see org.openmrs.reporting.db.ReportObjectDAO#getAllReportObjects()
 	 */
 	@SuppressWarnings("unchecked")
-    public List<AbstractReportObject> getAllReportObjects() {
+	public List<AbstractReportObject> getAllReportObjects() {
 		List<AbstractReportObject> reportObjects = new Vector<AbstractReportObject>();
 		//List<ReportObjectWrapper> wrappedObjects = new Vector<ReportObjectWrapper>();
 		//wrappedObjects.addAll((ArrayList<ReportObjectWrapper>)sessionFactory.getCurrentSession().createQuery("from ReportObjectWrapper order by date_created, name").list());
-		List<ReportObjectWrapper> wrappedObjects = sessionFactory.getCurrentSession().createQuery("from ReportObjectWrapper order by date_created, name").list();
-		for ( ReportObjectWrapper wrappedObject : wrappedObjects ) {
+		List<ReportObjectWrapper> wrappedObjects = sessionFactory.getCurrentSession().createQuery(
+		    "from ReportObjectWrapper order by date_created, name").list();
+		for (ReportObjectWrapper wrappedObject : wrappedObjects) {
 			try {
-				AbstractReportObject reportObject = (AbstractReportObject)wrappedObject.getReportObject();
-				if ( reportObject.getReportObjectId() == null ) {
+				AbstractReportObject reportObject = (AbstractReportObject) wrappedObject.getReportObject();
+				if (reportObject.getReportObjectId() == null) {
 					reportObject.setReportObjectId(wrappedObject.getReportObjectId());
 				}
 				reportObjects.add(reportObject);
-			} catch (Exception ex) {
+			}
+			catch (Exception ex) {
 				log.error("Error retrieving report object with id=" + wrappedObject.getReportObjectId(), ex);
 			}
 		}
 		return reportObjects;
 	}
-
+	
 	/**
 	 * @see org.openmrs.reporting.db.ReportObjectDAO#getReportObject(java.lang.Integer)
 	 */
 	public AbstractReportObject getReportObject(Integer reportObjId) throws DAOException {
-		ReportObjectWrapper wrappedReportObject = (ReportObjectWrapper)sessionFactory.getCurrentSession().get(ReportObjectWrapper.class, reportObjId);
-
+		ReportObjectWrapper wrappedReportObject = (ReportObjectWrapper) sessionFactory.getCurrentSession().get(
+		    ReportObjectWrapper.class, reportObjId);
+		
 		if (wrappedReportObject == null)
 			return null;
 		
 		AbstractReportObject reportObject = wrappedReportObject.getReportObject();
-		if ( reportObject.getReportObjectId() == null )
+		if (reportObject.getReportObjectId() == null)
 			reportObject.setReportObjectId(wrappedReportObject.getReportObjectId());
 		
 		return reportObject;
 	}
-
+	
 	/**
 	 * @see org.openmrs.reporting.db.ReportObjectDAO#deleteReportObject(org.openmrs.reporting.AbstractReportObject)
 	 */
@@ -101,7 +104,7 @@ public class HibernateReportObjectDAO implements
 		wrappedReportObject.setDateCreated(new Date());
 		sessionFactory.getCurrentSession().delete(wrappedReportObject);
 	}
-
+	
 	/**
 	 * @see org.openmrs.reporting.db.ReportObjectDAO#saveReportObject(org.openmrs.reporting.AbstractReportObject)
 	 */
@@ -114,9 +117,9 @@ public class HibernateReportObjectDAO implements
 			wrappedReportObject.setCreator(Context.getAuthenticatedUser());
 			wrappedReportObject.setDateCreated(new Date());
 			
-		}
-		else {
-			wrappedReportObject = (ReportObjectWrapper)sessionFactory.getCurrentSession().get(ReportObjectWrapper.class, reportObj.getReportObjectId());
+		} else {
+			wrappedReportObject = (ReportObjectWrapper) sessionFactory.getCurrentSession().get(ReportObjectWrapper.class,
+			    reportObj.getReportObjectId());
 			wrappedReportObject.setReportObject(reportObj);
 			wrappedReportObject.setChangedBy(Context.getAuthenticatedUser());
 			wrappedReportObject.setDateChanged(new Date());
@@ -128,27 +131,28 @@ public class HibernateReportObjectDAO implements
 		reportObj.setReportObjectId(wrappedReportObject.getReportObjectId());
 		return reportObj;
 	}
-
+	
 	/**
 	 * @see org.openmrs.reporting.db.ReportObjectDAO#getReportObjectsByType(java.lang.String)
 	 */
 	@SuppressWarnings("unchecked")
-    public List<AbstractReportObject> getReportObjectsByType(String reportObjectType) throws DAOException {
+	public List<AbstractReportObject> getReportObjectsByType(String reportObjectType) throws DAOException {
 		List<AbstractReportObject> reportObjects = new Vector<AbstractReportObject>();
-
-		Query query = sessionFactory.getCurrentSession().createQuery("from ReportObjectWrapper ro where ro.type=:type order by date_created, name");
+		
+		Query query = sessionFactory.getCurrentSession().createQuery(
+		    "from ReportObjectWrapper ro where ro.type=:type order by date_created, name");
 		query.setString("type", reportObjectType);
 		List<ReportObjectWrapper> wrappedObjects = query.list();
-		for ( ReportObjectWrapper wrappedObject : wrappedObjects ) {
+		for (ReportObjectWrapper wrappedObject : wrappedObjects) {
 			AbstractReportObject reportObject = wrappedObject.getReportObject();
 			
 			// Added a null check - report object could be null if there's an error with XML serialization/deserialization 
-			if (reportObject != null) { 
-				if ( reportObject.getReportObjectId() == null ) {
+			if (reportObject != null) {
+				if (reportObject.getReportObjectId() == null) {
 					reportObject.setReportObjectId(wrappedObject.getReportObjectId());
 				}
 				reportObjects.add(reportObject);
-			} 
+			}
 		}
 		return reportObjects;
 	}

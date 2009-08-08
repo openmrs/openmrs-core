@@ -26,7 +26,7 @@ import org.openmrs.scheduler.TaskDefinition;
  * @version 1.0
  */
 public interface SchedulerDAO {
-
+	
 	/**
 	 * Creates a new task.
 	 * 
@@ -34,7 +34,7 @@ public interface SchedulerDAO {
 	 * @throws DAOException
 	 */
 	public void createTask(TaskDefinition taskDefinition) throws DAOException;
-
+	
 	/**
 	 * Get task by internal identifier
 	 * 
@@ -43,15 +43,15 @@ public interface SchedulerDAO {
 	 * @throws DAOException
 	 */
 	public TaskDefinition getTask(Integer taskId) throws DAOException;
-
+	
 	/**
-	 * Update task 
+	 * Update task
 	 * 
 	 * @param task to be updated
 	 * @throws DAOException
 	 */
 	public void updateTask(TaskDefinition task) throws DAOException;
-
+	
 	/**
 	 * Find all tasks with a given identifier
 	 * 
@@ -62,21 +62,21 @@ public interface SchedulerDAO {
 	public List<TaskDefinition> getTasks() throws DAOException;
 	
 	/**
-	 * Delete task from database. 
+	 * Delete task from database.
 	 * 
 	 * @param task task to be deleted
 	 * @throws DAOException
 	 */
 	public void deleteTask(TaskDefinition task) throws DAOException;
-
+	
 	/**
-	 * Delete task from database. 
+	 * Delete task from database.
 	 * 
-	 * @param taskId 	identifier of task to be deleted
+	 * @param taskId identifier of task to be deleted
 	 * @throws DAOException
 	 */
 	public void deleteTask(Integer taskId) throws DAOException;
-
+	
 	/**
 	 * Creates a new schedule.
 	 * 
@@ -84,7 +84,6 @@ public interface SchedulerDAO {
 	 * @throws DAOException
 	 */
 	//public void createSchedule(Schedule schedule) throws DAOException;
-
 	/**
 	 * Get schedule by internal identifier
 	 * 
@@ -93,7 +92,7 @@ public interface SchedulerDAO {
 	 * @throws DAOException
 	 */
 	public Schedule getSchedule(Integer scheduleId) throws DAOException;
-
+	
 	/**
 	 * Get task by public name.
 	 * 
@@ -101,8 +100,8 @@ public interface SchedulerDAO {
 	 * @return task with given public name
 	 * @throws DAOException
 	 */
-    public TaskDefinition getTaskByName(String name) throws DAOException;
-
+	public TaskDefinition getTaskByName(String name) throws DAOException;
+	
 	/**
 	 * Update a schedule.
 	 * 
@@ -110,7 +109,6 @@ public interface SchedulerDAO {
 	 * @throws DAOException
 	 */
 	//public void updateSchedule(Schedule schedule) throws DAOException;
-
 	/**
 	 * Get all schedules.
 	 * 
@@ -118,13 +116,11 @@ public interface SchedulerDAO {
 	 * @throws DAOException
 	 */
 	//public Set<Schedule> getSchedules() throws DAOException;
-	
 	/**
-	 * Delete schedule from database. 
+	 * Delete schedule from database.
 	 * 
 	 * @param schedule schedule to be deleted
 	 * @throws DAOException
 	 */
 	//public void deleteSchedule(Schedule schedule) throws DAOException;
-
 }

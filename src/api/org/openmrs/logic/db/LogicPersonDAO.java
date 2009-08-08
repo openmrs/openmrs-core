@@ -23,13 +23,14 @@ import org.openmrs.logic.LogicCriteria;
  *
  */
 public interface LogicPersonDAO {
-
-    /**
-     * Returns a subset of persons that match given criteria 
-     * @param personIds list of persons to apply the criteria to
-     * @param criteria logic criteria to be applied to the person list
-     * @return subset of persons that match the criteria
-     */
-    public List<Person> getPersons(Collection<Integer> personIds, LogicCriteria criteria);
-
+	
+	/**
+	 * Returns a subset of persons that match given criteria
+	 * 
+	 * @param personIds list of persons to apply the criteria to
+	 * @param criteria logic criteria to be applied to the person list
+	 * @return subset of persons that match the criteria
+	 */
+	public List<Person> getPersons(Collection<Integer> personIds, LogicCriteria criteria);
+	
 }

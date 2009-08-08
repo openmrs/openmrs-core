@@ -1,3 +1,4 @@
+<%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -88,9 +89,12 @@
 
 			<script type="text/javascript">
 				//// prevents users getting popup alerts when viewing pages
-				var handler = function(ex) {
-					if (typeof ex == "string")
-						window.status = "DWR warning/error: " + ex;
+				var handler = function(msg, ex) {
+					if (ex && ex.localizedMessage) {
+						alert("An error occurred: " + ex.message);
+					}
+					else if (typeof msg == "string")
+						window.status = "DWR warning/error: " + msg + ". " + ex;
 				};
 				DWREngine.setErrorHandler(handler);
 				DWREngine.setWarningHandler(handler);

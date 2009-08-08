@@ -26,7 +26,7 @@
 			<tr class="<c:choose><c:when test="${varStatus.index % 2 == 0}">evenRow</c:when><c:otherwise>oddRow</c:otherwise></c:choose>">
 				<td valign="top"><input type="checkbox" name="dataExportId" value="${dataExport.reportObjectId}"></td>
 				<td valign="top">
-					<a href="dataExport.form?dataExportId=${dataExport.reportObjectId}">${dataExport.name}</a>
+					<a href="rowPerObsDataExport.form?dataExportId=${dataExport.reportObjectId}">${dataExport.name}</a>
 				</td>
 				<td valign="top">${dataExport.description}</td>
 				<td>

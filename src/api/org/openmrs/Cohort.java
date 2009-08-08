@@ -34,10 +34,11 @@ import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 
 /**
- * This class represents a list of patientIds.
- * If it is generated from a CohortDefinition via {@link ReportService#evaluate(org.openmrs.report.ReportSchema, Cohort, EvaluationContext)}
- * then it will contain a link back to the CohortDefinition it came from and the
- * EvalutionContext that definition was evaluated in.
+ * This class represents a list of patientIds. If it is generated from a CohortDefinition via
+ * {@link ReportService#evaluate(org.openmrs.report.ReportSchema, Cohort, EvaluationContext)} then
+ * it will contain a link back to the CohortDefinition it came from and the EvalutionContext that
+ * definition was evaluated in.
+ * 
  * @see org.openmrs.cohort.CohortDefinition
  */
 @Root(strict=false)
@@ -66,8 +67,8 @@ public class Cohort implements Serializable {
 	}
 	
 	/**
-	 * Convenience constructor to create a Cohort object that
-	 * has an primarykey/internal identifier of <code>cohortId</code>
+	 * Convenience constructor to create a Cohort object that has an primarykey/internal identifier
+	 * of <code>cohortId</code>
 	 * 
 	 * @param cohortId the internal identifier for this cohort
 	 */
@@ -77,7 +78,9 @@ public class Cohort implements Serializable {
 	}
 	
 	/**
-	 * This constructor does not check whether the database contains patients with the given ids, but @see CohortService.saveCohort(Cohort) will.
+	 * This constructor does not check whether the database contains patients with the given ids,
+	 * but @see CohortService.saveCohort(Cohort) will.
+	 * 
 	 * @param name
 	 * @param description optional description
 	 * @param ids option array of Integer ids
@@ -91,7 +94,9 @@ public class Cohort implements Serializable {
 	}
 	
 	/**
-	 * This constructor does not check whether the database contains patients with the given ids, but @see CohortService.saveCohort(Cohort) will.
+	 * This constructor does not check whether the database contains patients with the given ids,
+	 * but @see CohortService.saveCohort(Cohort) will.
+	 * 
 	 * @param name
 	 * @param description optional description
 	 * @param patients optional array of patients
@@ -106,8 +111,11 @@ public class Cohort implements Serializable {
 	}
 	
 	/**
-	 * This constructor does not check whether the database contains patients with the given ids, but @see CohortService.saveCohort(Cohort) will.
-	 * @param patientsOrIds optional collection which may contain Patients, or patientIds which may be Integers, Strings, or anything whose toString() can be parsed to an Integer.
+	 * This constructor does not check whether the database contains patients with the given ids,
+	 * but @see CohortService.saveCohort(Cohort) will.
+	 * 
+	 * @param patientsOrIds optional collection which may contain Patients, or patientIds which may
+	 *            be Integers, Strings, or anything whose toString() can be parsed to an Integer.
 	 */
 	@SuppressWarnings("unchecked")
     public Cohort(Collection patientsOrIds) {
@@ -115,10 +123,13 @@ public class Cohort implements Serializable {
 	}
 	
 	/**
-	 * This constructor does not check whether the database contains patients with the given ids, but @see CohortService.saveCohort(Cohort) will.
+	 * This constructor does not check whether the database contains patients with the given ids,
+	 * but @see CohortService.saveCohort(Cohort) will.
+	 * 
 	 * @param name
 	 * @param description optional description
-	 * @param patientsOrIds optional collection which may contain Patients, or patientIds which may be Integers, Strings, or anything whose toString() can be parsed to an Integer.
+	 * @param patientsOrIds optional collection which may contain Patients, or patientIds which may
+	 *            be Integers, Strings, or anything whose toString() can be parsed to an Integer.
 	 */
 	@SuppressWarnings("unchecked")
     public Cohort(String name, String description, Collection patientsOrIds) {
@@ -138,8 +149,9 @@ public class Cohort implements Serializable {
 	}
 	
 	/**
-	 * Convenience contructor taking in a string that is a list of comma separated patient ids
-	 * This constructor does not check whether the database contains patients with the given ids, but @see CohortService.saveCohort(Cohort) will.
+	 * Convenience contructor taking in a string that is a list of comma separated patient ids This
+	 * constructor does not check whether the database contains patients with the given ids, but @see
+	 * CohortService.saveCohort(Cohort) will.
 	 * 
 	 * @param commaSeparatedIds
 	 */
@@ -191,7 +203,8 @@ public class Cohort implements Serializable {
 	}
 	
 	public int hashCode() {
-		if (this.getCohortId() == null) return super.hashCode();
+		if (this.getCohortId() == null)
+			return super.hashCode();
 		int hash = 8;
 		hash = 31 * this.getCohortId() + hash;
 		return hash;
@@ -220,7 +233,6 @@ public class Cohort implements Serializable {
 	// static utility methods
 	
 	/**
-	 * 
 	 * Returns the union of two cohorts
 	 * 
 	 * @param a The first Cohort
@@ -238,7 +250,6 @@ public class Cohort implements Serializable {
 	}
 	
 	/**
-	 * 
 	 * Returns the intersection of two cohorts
 	 * 
 	 * @param a The first Cohort
@@ -256,7 +267,6 @@ public class Cohort implements Serializable {
 	}
 	
 	/**
-	 * 
 	 * Subtracts a cohort from a cohort
 	 * 
 	 * @param a the original Cohort
@@ -380,9 +390,8 @@ public class Cohort implements Serializable {
 	}
 
 	/**
-	 * This method is only here for some backwards compatibility 
-	 * with the PatientSet object that this Cohort object 
-	 * replaced.  Do not use this method.
+	 * This method is only here for some backwards compatibility with the PatientSet object that
+	 * this Cohort object replaced. Do not use this method.
 	 * 
 	 * @deprecated use #getMemberIds()
 	 * @return the memberIds

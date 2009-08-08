@@ -17,6 +17,7 @@ import org.openmrs.synchronization.Synchronizable;
 
 /**
  * Tribe
+ * 
  * @version 1.0
  */
 public class Tribe implements java.io.Serializable, Synchronizable {
@@ -70,7 +71,8 @@ public class Tribe implements java.io.Serializable, Synchronizable {
 	}
 	
 	public int hashCode() {
-		if (this.getTribeId() == null) return super.hashCode();
+		if (this.getTribeId() == null)
+			return super.hashCode();
 		return this.getTribeId().hashCode();
 	}
 
@@ -124,5 +126,5 @@ public class Tribe implements java.io.Serializable, Synchronizable {
 		this.tribeId = tribeId;
 	}
 
-
 }
+

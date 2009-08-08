@@ -23,19 +23,21 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 public class ListPickerTag extends TagSupport {
-
+	
 	public static final long serialVersionUID = 1122112233L;
 	
 	private final Log log = LogFactory.getLog(getClass());
 	
 	private String name;
+	
 	private Collection<Object> allItems;
+	
 	private Collection<Object> currentItems;
 	
 	public int doStartTag() {
 		
 		if (name == null)
-			name = "list" + (int)(Math.random() * 100);
+			name = "list" + (int) (Math.random() * 100);
 		if (currentItems == null)
 			currentItems = new Vector<Object>();
 		if (allItems == null)
@@ -68,30 +70,30 @@ public class ListPickerTag extends TagSupport {
 		catch (IOException e) {
 			log.error(e);
 		}
-
+		
 		return SKIP_BODY;
 	}
-
+	
 	public Collection<Object> getAllItems() {
 		return allItems;
 	}
-
+	
 	public void setAllItems(Collection<Object> allItems) {
 		this.allItems = allItems;
 	}
-
+	
 	public Collection<Object> getCurrentItems() {
 		return currentItems;
 	}
-
+	
 	public void setCurrentItems(Collection<Object> currentItems) {
 		this.currentItems = currentItems;
 	}
-
+	
 	public String getName() {
 		return name;
 	}
-
+	
 	public void setName(String name) {
 		this.name = name;
 	}

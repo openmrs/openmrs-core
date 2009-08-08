@@ -42,35 +42,37 @@ import org.openmrs.api.EncounterService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
 
 public class QuickReportServlet extends HttpServlet {
-
+	
 	public static final long serialVersionUID = 1231231L;
+	
 	private Log log = LogFactory.getLog(this.getClass());
 	
-	protected void doGet(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html");
 		
 		String reportType = request.getParameter("reportType");
 		HttpSession session = request.getSession();
 		
-		if (reportType == null || reportType.length()==0 ) {
+		if (reportType == null || reportType.length() == 0) {
 			session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "error.null");
 			return;
 		}
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS)) {
-			session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Privilege required: " + OpenmrsConstants.PRIV_VIEW_PATIENTS);
-			session.setAttribute(WebConstants.OPENMRS_LOGIN_REDIRECT_HTTPSESSION_ATTR, request.getRequestURI() + "?" + request.getQueryString());
+			session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Privilege required: "
+			        + OpenmrsConstants.PRIV_VIEW_PATIENTS);
+			session.setAttribute(WebConstants.OPENMRS_LOGIN_REDIRECT_HTTPSESSION_ATTR, request.getRequestURI() + "?"
+			        + request.getQueryString());
 			response.sendRedirect(request.getContextPath() + "/login.htm");
 			return;
 		}
 		
 		try {
 			Velocity.init();
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			log.error("Error initializing Velocity engine", e);
 		}
 		VelocityContext velocityContext = new VelocityContext();
@@ -83,8 +85,7 @@ public class QuickReportServlet extends HttpServlet {
 		}
 		if (reportType.equals("ATTENDED CLINIC THIS WEEK")) {
 			doAttendedClinic(velocityContext, report, request);
-		}
-		else if (reportType.equals("VOIDED OBS")) {
+		} else if (reportType.equals("VOIDED OBS")) {
 			doVoidedObs(velocityContext, report, request);
 		}
 		
@@ -97,12 +98,13 @@ public class QuickReportServlet extends HttpServlet {
 		
 	}
 	
-	private void doReturnVisitDate(VelocityContext velocityContext, PrintWriter report, HttpServletRequest request) throws ServletException {
+	private void doReturnVisitDate(VelocityContext velocityContext, PrintWriter report, HttpServletRequest request)
+	                                                                                                               throws ServletException {
 		ObsService os = Context.getObsService();
 		EncounterService es = Context.getEncounterService();
 		ConceptService cs = Context.getConceptService();
 		
-		DateFormat dateFormat = OpenmrsUtil.getDateFormat();
+		DateFormat dateFormat = Context.getDateFormat();
 		velocityContext.put("date", dateFormat);
 		
 		Concept c = cs.getConcept(new Integer("5096")); // RETURN VISIT DATE
@@ -122,8 +124,7 @@ public class QuickReportServlet extends HttpServlet {
 			catch (ParseException e) {
 				throw new ServletException("Error parsing 'Start Date'", e);
 			}
-		}
-		else
+		} else
 			cal.setTime(new Date());
 		
 		// if they don't input an end date, assume they meant "this week"
@@ -134,8 +135,7 @@ public class QuickReportServlet extends HttpServlet {
 			start = cal.getTime();
 			cal.add(Calendar.DAY_OF_MONTH, 7);
 			end = cal.getTime();
-		}
-		else {
+		} else {
 			// they put in an end date, assume literal start and end
 			start = cal.getTime();
 			try {
@@ -153,7 +153,8 @@ public class QuickReportServlet extends HttpServlet {
 			allObs = os.getObservations(c, "location.locationId asc, obs.valueDatetime asc", ObsService.PATIENT, true);
 		else {
 			Location locationObj = es.getLocation(Integer.valueOf(location));
-			allObs = os.getObservations(c, locationObj, "location.locationId asc, obs.valueDatetime asc", ObsService.PATIENT, true);
+			allObs = os.getObservations(c, locationObj, "location.locationId asc, obs.valueDatetime asc",
+			    ObsService.PATIENT, true);
 		}
 		
 		List<Obs> obs = new Vector<Obs>();
@@ -166,17 +167,17 @@ public class QuickReportServlet extends HttpServlet {
 		
 		if (obs != null) {
 			velocityContext.put("observations", obs);
-		}
-		else {
+		} else {
 			report.append("No Observations found");
 		}
-
+		
 	}
 	
-	private void doAttendedClinic(VelocityContext velocityContext, PrintWriter report, HttpServletRequest request) throws ServletException {
+	private void doAttendedClinic(VelocityContext velocityContext, PrintWriter report, HttpServletRequest request)
+	                                                                                                              throws ServletException {
 		EncounterService es = Context.getEncounterService();
 		
-		DateFormat dateFormat = OpenmrsUtil.getDateFormat();
+		DateFormat dateFormat = Context.getDateFormat();
 		velocityContext.put("date", dateFormat);
 		
 		Calendar cal = Calendar.getInstance();
@@ -195,8 +196,7 @@ public class QuickReportServlet extends HttpServlet {
 			catch (ParseException e) {
 				throw new ServletException("Error parsing 'Start Date'", e);
 			}
-		}
-		else
+		} else
 			cal.setTime(new Date());
 		
 		// if they don't input an end date, assume they meant "this week"
@@ -207,8 +207,7 @@ public class QuickReportServlet extends HttpServlet {
 			start = cal.getTime();
 			cal.add(Calendar.DAY_OF_MONTH, 7);
 			end = cal.getTime();
-		}
-		else {
+		} else {
 			// they put in an end date, assume literal start and end
 			start = cal.getTime();
 			try {
@@ -231,23 +230,22 @@ public class QuickReportServlet extends HttpServlet {
 		
 		if (encounters != null) {
 			velocityContext.put("encounters", encounters);
-		}
-		else {
+		} else {
 			report.append("No Encounters found");
 		}
 	}
 	
-	private void doVoidedObs(VelocityContext velocityContext, PrintWriter report, HttpServletRequest request) throws ServletException {
+	private void doVoidedObs(VelocityContext velocityContext, PrintWriter report, HttpServletRequest request)
+	                                                                                                         throws ServletException {
 		ObsService os = Context.getObsService();
 		
-		velocityContext.put("date", OpenmrsUtil.getDateFormat());
+		velocityContext.put("date", Context.getDateFormat());
 		velocityContext.put("locale", Context.getLocale());
 		List<Obs> obs = os.getVoidedObservations();
 		
 		if (obs != null) {
 			velocityContext.put("observations", obs);
-		}
-		else {
+		} else {
 			report.append("No Observations found");
 		}
 		
@@ -278,8 +276,7 @@ public class QuickReportServlet extends HttpServlet {
 			template += "  <td>$!{date.format($e.encounterDatetime)}</td>\n";
 			template += " </tr>\n";
 			template += "#end\n";
-		}
-		else if (reportType.equals("VOIDED OBS")) {
+		} else if (reportType.equals("VOIDED OBS")) {
 			template += " <tr> \n";
 			template += "  <th>Id</th><th>Patient</th><th>Encounter</th>";
 			template += "  <th>Concept</th><th>Voided Answer</th>";

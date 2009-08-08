@@ -55,7 +55,8 @@ public class PersonAttributeType implements java.io.Serializable, Synchronizable
     }
 
 	/** default constructor */
-	public PersonAttributeType() {}
+	public PersonAttributeType() {
+	}
 
 	/** constructor with id */
 	public PersonAttributeType(Integer PersonAttributeTypeId) {
@@ -66,7 +67,8 @@ public class PersonAttributeType implements java.io.Serializable, Synchronizable
 	 * @see java.lang.Object#hashCode()
 	 */
 	public int hashCode() {
-		if (this.getPersonAttributeTypeId() == null) return super.hashCode();
+		if (this.getPersonAttributeTypeId() == null)
+			return super.hashCode();
 		return 7 * this.getPersonAttributeTypeId().hashCode();
 	}
 

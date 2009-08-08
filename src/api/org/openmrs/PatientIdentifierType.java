@@ -62,7 +62,8 @@ public class PatientIdentifierType implements java.io.Serializable, Synchronizab
 	}
 	
 	public int hashCode() {
-		if (this.getPatientIdentifierTypeId() == null) return super.hashCode();
+		if (this.getPatientIdentifierTypeId() == null)
+			return super.hashCode();
 		return this.getPatientIdentifierTypeId().hashCode();
 	}
 
@@ -197,8 +198,8 @@ public class PatientIdentifierType implements java.io.Serializable, Synchronizab
 
 	/**
 	 * @return Returns the checkdigit.
-	 * @deprecated No need to know if it has a check digit now that any validator algorithm
-	 * can be chosen.
+	 * @deprecated No need to know if it has a check digit now that any validator algorithm can be
+	 *             chosen.
 	 */
 	public Boolean getCheckDigit() {
 		return hasCheckDigit();
@@ -206,8 +207,8 @@ public class PatientIdentifierType implements java.io.Serializable, Synchronizab
 	
 	/**
 	 * @return Returns the checkdigit.
-	 * @deprecated No need to know if it has a check digit now that any validator algorithm
-	 * can be chosen.
+	 * @deprecated No need to know if it has a check digit now that any validator algorithm can be
+	 *             chosen.
 	 */
 	public Boolean hasCheckDigit() {
 		return checkDigit;
@@ -294,7 +295,6 @@ public class PatientIdentifierType implements java.io.Serializable, Synchronizab
     }
 
 	/**
-     *
      * @return Whether this identifier type has a validator.
      */
     public boolean hasValidator() {
@@ -302,9 +302,8 @@ public class PatientIdentifierType implements java.io.Serializable, Synchronizab
     }
 
 	/**
-	 * TODO: make this return a more debug-worth string instead
-	 * 		of just the name.  Check the webapp to make
-	 * 		sure it is not depending on this
+	 * TODO: make this return a more debug-worth string instead of just the name. Check the webapp
+	 * to make sure it is not depending on this
 	 * 
 	 * @see java.lang.Object#toString()
 	 */

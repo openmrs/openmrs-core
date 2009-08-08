@@ -36,28 +36,33 @@ import org.openmrs.report.ReportSchema;
  *
  */
 public abstract class DelimitedTextReportRenderer implements ReportRenderer {
-
+	
 	public abstract String getFilenameExtension();
+	
 	public abstract String getBeforeColumnDelimiter();
+	
 	public abstract String getAfterColumnDelimiter();
+	
 	public abstract String getBeforeRowDelimiter();
+	
 	public abstract String getAfterRowDelimiter();
+	
 	public abstract String escape(String text);
 	
 	/**
 	 * @see org.openmrs.report.ReportRenderer#getLinkUrl(org.openmrs.report.ReportSchema)
 	 */
 	public String getLinkUrl(ReportSchema schema) {
-	    return null;
-    }
+		return null;
+	}
 	
 	/**
 	 * @see org.openmrs.report.ReportRenderer#getFilename(org.openmrs.report.ReportSchema)
 	 */
 	public String getFilename(ReportSchema schema, String argument) {
 		return schema.getName() + "." + getFilenameExtension();
-    }
-
+	}
+	
 	/**
 	 * @see org.openmrs.report.ReportRenderer#getRenderingModes(org.openmrs.report.ReportSchema)
 	 */
@@ -66,7 +71,7 @@ public abstract class DelimitedTextReportRenderer implements ReportRenderer {
 			return null;
 		else
 			return Collections.singleton(new RenderingMode(this, this.getLabel(), null, Integer.MIN_VALUE));
-    }
+	}
 	
 	/**
 	 * @see org.openmrs.report.ReportRenderer#render(ReportData, String, OutputStream)
@@ -75,6 +80,7 @@ public abstract class DelimitedTextReportRenderer implements ReportRenderer {
 		PrintWriter pw = new PrintWriter(out);
 		render(results, argument, pw);
 	}
+	
 	/**
 	 * @see org.openmrs.report.ReportRenderer#render(ReportData, String, Writer)
 	 */
@@ -92,7 +98,7 @@ public abstract class DelimitedTextReportRenderer implements ReportRenderer {
 		writer.write(getAfterRowDelimiter());
 		
 		// data rows
-		for (Iterator<Map<String, Object>> i = dataset.iterator(); i.hasNext(); ) {
+		for (Iterator<Map<String, Object>> i = dataset.iterator(); i.hasNext();) {
 			writer.write(getBeforeRowDelimiter());
 			Map<String, Object> map = i.next();
 			for (String colKey : colKeys) {
@@ -100,9 +106,8 @@ public abstract class DelimitedTextReportRenderer implements ReportRenderer {
 				writer.write(getBeforeColumnDelimiter());
 				if (colValue != null)
 					if (dataset instanceof CohortDataSet) {
-						writer.write(escape(Integer.toString(((Cohort)colValue).size())));
-					}
-					else {
+						writer.write(escape(Integer.toString(((Cohort) colValue).size())));
+					} else {
 						writer.write(escape(colValue.toString()));
 					}
 				writer.write(getAfterColumnDelimiter());
@@ -112,5 +117,5 @@ public abstract class DelimitedTextReportRenderer implements ReportRenderer {
 		
 		writer.flush();
 	}
-
+	
 }
