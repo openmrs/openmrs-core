@@ -45,6 +45,10 @@ public class RelationshipType extends BaseOpenmrsMetadata implements java.io.Ser
 	private String aIsToB;
 	
 	private String bIsToA;
+
+    private String aNK1;
+
+    private String bNK1;
 	
 	private Integer weight = 0;
 	
@@ -199,5 +203,41 @@ public class RelationshipType extends BaseOpenmrsMetadata implements java.io.Ser
 		setRelationshipTypeId(id);
 		
 	}
+
+    /**
+     * Set HL7 NK1 Relationship Code for Person A
+     * @see org.openmrs.hl7.HL7Constants.NK1
+     * @param aNK1
+     */
+    public void setANK1(String aNK1) {
+        this.aNK1 = aNK1;
+    }
+
+    /**
+     * Get HL7 NK1 Relationship Code for Person A
+     * @see org.openmrs.hl7.HL7Constants.NK1
+     * @return
+     */
+    public String getANK1() {
+        return this.aNK1;
+    }
+
+    /**
+     * Set HL7 NK1 Relationship Code for Person B
+     * @see org.openmrs.hl7.HL7Constants.NK1
+     * @param bNK1
+     */
+    public void setBNK1(String bNK1) {
+        this.bNK1 = bNK1;
+    }
+
+    /**
+     * Get HL7 NK1 Relationship Code for Person B
+     * @see org.openmrs.hl7.HL7Constants.NK1
+     * @return
+     */
+    public String getBNK1() {
+        return this.bNK1;
+    }
 	
 }

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component>
+	<exclude-output/>
+	<contentEntry url="file:///home/brian/IdeaProjects/openmrs-hl7-nk1">
+		<testFolder url="file:///home/brian/IdeaProjects/openmrs-hl7-nk1/test/api"/>
+		<testFolder url="file:///home/brian/IdeaProjects/openmrs-hl7-nk1/test/web"/>
+	</contentEntry>
+</component>
