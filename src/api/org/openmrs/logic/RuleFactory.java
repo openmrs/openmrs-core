@@ -121,6 +121,7 @@ public class RuleFactory {
 	 * @throws LogicException
 	 */
 	public Rule getRule(String token) throws LogicException {
+		Rule rule = null;
 		if (token == null)
 			throw new LogicException("Token cannot be null");
 		
@@ -130,7 +131,23 @@ public class RuleFactory {
 		if (!getRuleMap().containsKey(token))
 			throw new LogicException("No token \"" + token + "\" registered");
 		
-		return getRuleMap().get(token);
+		Rule r =  getRuleMap().get(token);
+		Class clas = r.getClass();
+		try {
+	        Object obj = clas.newInstance();
+	        rule = (Rule) obj;
+	       // log.error("Object created of type: " + clas.getName() + "for object ID: " + obj.hashCode());
+        }
+        catch (InstantiationException e) {
+	        // TODO Auto-generated catch block
+	        log.error("Error creating new instance of Rule", e);
+        }
+        catch (IllegalAccessException e) {
+	        // TODO Auto-generated catch block
+	        log.error("Error creating new instance of Rule", e);
+        }
+		return rule;
+		
 	}
 	
 	/**

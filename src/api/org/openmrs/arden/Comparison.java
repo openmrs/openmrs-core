@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 /**
- * 
+ * This class translates comparisons within MLM if statements into java
  */
 public class Comparison implements ArdenBaseTreeParserTokenTypes {
 	
@@ -41,6 +41,10 @@ public class Comparison implements ArdenBaseTreeParserTokenTypes {
 		this.answer = answer;
 	}
 	
+	public Object getAnswer() {
+		return answer;
+	}
+	
 	public void setKey(String key, String keyList) {
 		this.key = key;
 		this.keyList = keyList;
@@ -61,7 +65,7 @@ public class Comparison implements ArdenBaseTreeParserTokenTypes {
 		return this.answerList;
 	}
 	
-	public String getCompOpCode(MLMObjectElement objElement) throws Exception {
+	public String getCompOpCode(MLMObjectElement objElement, boolean isAnswerVar) throws Exception {
 		String retStr = "";
 		
 		if (objElement != null) {
@@ -97,9 +101,9 @@ public class Comparison implements ArdenBaseTreeParserTokenTypes {
 				switch (operator) {
 					case IN:
 						if (keyList != null) {
-							retStr += key + ".contains(getResultList_" + keyList + "())";
+							retStr += "containsIgnoreCase(getResultList_" + keyList + "()," + key + ")";
 						} else {
-							retStr += key + ".contains(getResultList_" + key + "())";
+							retStr += "containsIgnoreCase(getResultList_" + key + "()," + key + ")";
 						}
 						break;
 					case EQUALS:
@@ -114,21 +118,29 @@ public class Comparison implements ArdenBaseTreeParserTokenTypes {
 					case GTE:
 						if (this.answer instanceof Integer || this.answer instanceof Double || this.answer instanceof Float) {
 							retStr += key + ".toNumber() >= " + this.answer;
+						} else if (isAnswerVar) {
+							retStr += key + ".toNumber() >=  " + this.answer + ".toNumber()";
 						}
 						break;
 					case GT:
 						if (this.answer instanceof Integer || this.answer instanceof Double || this.answer instanceof Float) {
 							retStr += key + ".toNumber() > " + this.answer;
+						} else if (isAnswerVar) {
+							retStr += key + ".toNumber() >  " + this.answer + ".toNumber()";
 						}
 						break;
 					case LT:
 						if (this.answer instanceof Integer || this.answer instanceof Double || this.answer instanceof Float) {
 							retStr += key + ".toNumber() < " + this.answer;
+						} else if (isAnswerVar) {
+							retStr += key + ".toNumber() <  " + this.answer + ".toNumber()";
 						}
 						break;
 					case LTE:
 						if (this.answer instanceof Integer || this.answer instanceof Double || this.answer instanceof Float) {
 							retStr += key + ".toNumber() <= " + this.answer;
+						} else if (isAnswerVar) {
+							retStr += key + ".toNumber() <=  " + this.answer + ".toNumber()";
 						}
 						break;
 					
@@ -153,9 +165,9 @@ public class Comparison implements ArdenBaseTreeParserTokenTypes {
 		return retStr;
 	}
 	
-	public void write(Writer w, MLMObjectElement objElement) {
+	public void write(Writer w, MLMObjectElement objElement, boolean isAnswerVar) {
 		try {
-			String comparisonString = getCompOpCode(objElement);
+			String comparisonString = getCompOpCode(objElement, isAnswerVar);
 			if (comparisonString != null && comparisonString.length() > 0) {
 				w.append(comparisonString);
 			}
@@ -186,10 +198,11 @@ public class Comparison implements ArdenBaseTreeParserTokenTypes {
 						answer = itr.next();
 						if (answer instanceof Integer || answer instanceof Double || answer instanceof Float) {
 							retStr += "\n\t\tResult aList = new Result();";
-							retStr += "\n\t\taList.put(new Result(" + answer + "));";
+							retStr += "\n\t\taList.add(new Result(" + answer + "));";
 						} else {
 							retStr += "\n\t\tConceptService conceptService = Context.getConceptService();";
-							retStr += "\n\t\tResult aList = new Result(conceptService.getConcept(\"" + answer + "\"));";
+							retStr += "\n\t\tResult aList = new Result();";
+							retStr += "\n\t\taList.add(new Result(conceptService.getConcept(\"" + answer + "\")));";
 						}
 					}
 					

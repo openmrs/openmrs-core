@@ -100,288 +100,345 @@ public class ArdenServiceImpl implements ArdenService {
 	 */
 	private boolean parseFile(FileInputStream s, String fn, String outFolder) throws Exception {
 		boolean retVal = true;
-		try {
-			Date Today = new Date();
-			String cfn;
+		 try {
+			  Date Today = new Date(); 
+		      String cfn;  
+		      
+		      AdministrationService adminService = Context.getAdministrationService();
+			  String packagePrefix = adminService.getGlobalProperty("dss.rulePackagePrefix");
+		    
+		      MLMObject ardObj = new MLMObject(Context.getLocale(), null);
+		      
+		      // Create a scanner that reads from the input stream passed to us
+		      ArdenBaseLexer lexer = new ArdenBaseLexer(s);
+
+		      // Create a parser that reads from the scanner
+		      ArdenBaseParser parser = new ArdenBaseParser(lexer);
+		      
+		      // start parsing at the compilationUnit rule
+		      parser.startRule();
+		      BaseAST t = (BaseAST) parser.getAST();
+	      	      
+		      log.debug(t.toStringTree());     // prints maintenance
+		     
+		      ArdenBaseTreeParser treeParser = new ArdenBaseTreeParser();
+		      
+		      
+		     String maintenance =  treeParser.maintenance(t, ardObj);
+	
+		     cfn = ardObj.getClassName();
+		     OutputStream os = new FileOutputStream(outFolder + cfn+".java");
+				
+		     Writer w = new OutputStreamWriter(os);
+		     log.info("Writing to file - " + cfn+".java");
+	
+		 	 w.write("/********************************************************************" + "\n Translated from - " + fn + " on " +  Today.toString()+ "\n\n");
+		 	 w.write(maintenance);
+		 	
+		 	 t = (BaseAST)t.getNextSibling(); // Move to library
+		 	 log.debug(t.toStringTree());   // prints library
+		     String library = treeParser.library(t, ardObj);
+		     w.write(library);
+		     w.write("\n********************************************************************/\n");
+		     if(packagePrefix == null || packagePrefix.length()==0)
+		     {
+		    	 w.write("package org.openmrs.module.dss.rule;\n\n");
+		     }
+		     else
+		     {	 
+		    	 w.write("package " + packagePrefix + ";\n\n");
+		     }
+		     w.write("import java.util.ArrayList;\n");
+		     w.write("import java.util.HashMap;\n");
+		     w.write("import java.util.List;\n");
+		     w.write("import java.util.Map;\n");
+		     w.write("import java.util.Set;\n");
+			    
+		     w.write("import org.apache.commons.logging.Log;\n");
+		     w.write("import org.apache.commons.logging.LogFactory;\n");
+		     w.write("import org.openmrs.Patient;\n");
+             w.write("import org.openmrs.api.context.Context;\n");
+             w.write("import org.openmrs.logic.LogicContext;\n");
+             w.write("import org.openmrs.logic.LogicCriteria;\n");
+             w.write("import org.openmrs.logic.LogicException;\n");
+             w.write("import org.openmrs.logic.LogicService;\n");
+             w.write("import org.openmrs.logic.Rule;\n");
+             w.write("import org.openmrs.logic.result.Result;\n");
+             w.write("import org.openmrs.logic.result.Result.Datatype;\n");
+             w.write("import org.openmrs.logic.rule.RuleParameterInfo;\n");
+             w.write("import org.openmrs.module.dss.DssRule;\n");
+             w.write("import org.openmrs.logic.Duration;\n");
+             w.write("import java.util.StringTokenizer;\n\n");
+             w.write("import org.openmrs.api.ConceptService;\n");
+             w.write("import java.text.SimpleDateFormat;\n");
+		     
+		     String classname = ardObj.getClassName();
+		     w.write("public class " + classname + " implements Rule, DssRule{\n\n"); // Start of class
+		     w.write("\tprivate Patient patient;\n\tprivate String firstname;\n");
+		     w.write("\tprivate ArrayList<String> actions;\n");
+		     w.write("\tprivate HashMap<String, String> userVarMap;\n\n");
+		     w.write("\tprivate HashMap <String, Result> resultLookup;\n\n");
+		     
+		     w.write("\tprivate Log log = LogFactory.getLog(this.getClass());\n");
+		     w.write("\tprivate LogicService logicService = Context.getLogicService();\n\n");
+		     
+		     w.flush();
+		     
+		     
+		     /**************************************************************************************
+		      * Implement the other interface methods
+		      */
+		     
+		     String str = "";
+		     w.write("\t/*** @see org.openmrs.logic.rule.Rule#getDuration()*/\n\t" +
+		     "public int getDuration() {\n\t\treturn 60*30;   // 30 minutes\n\t}\n\n");
+
+		     w.write("\t/*** @see org.openmrs.logic.rule.Rule#getDatatype(String)*/\n\t" +
+		     "public Datatype getDatatype(String token) {\n\t" +
+		         "\treturn Datatype.TEXT;\n\t}\n\n");
+		     
+		     w.write("\t/*** @see org.openmrs.logic.rule.Rule#getParameterList()*/\n\t" +
+		     "public Set<RuleParameterInfo> getParameterList() {\n\t\treturn null;\n\t}\n\n");
+
+		     w.write("\t/*** @see org.openmrs.logic.rule.Rule#getDependencies()*/\n\t" +
+		     "public String[] getDependencies() {\n\t\treturn new String[] { };\n\t}\n\n");
+		     
+		     w.write("\t/*** @see org.openmrs.logic.rule.Rule#getTTL()*/\n\t" + 
+		     "public int getTTL() {\n\t\treturn 0; //60 * 30; // 30 minutes\n\t}\n\n");
+
+		     w.write("\t/*** @see org.openmrs.logic.rule.Rule#getDatatype(String)*/\n\t" +
+		     "public Datatype getDefaultDatatype() {\n\t\treturn Datatype.CODED;\n\t}\n\n");
+             
+		     str = ardObj.getAuthor();
+		     if(str != null && str.length() == 0){
+		    	 str = null;
+		     }
+		     if(str != null){
+		    	 str = "\"" + str + "\"";
+		     }
+		     w.write("\t/*** @see org.openmrs.module.dss.DssRule#getAuthor()*/\n" + 
+				     "\tpublic String getAuthor(){\n" +
+				     	"\t\treturn "+str+";\n" +
+				     "\t}\n\n");
+		     
+		     str = ardObj.getCitations();
+		     if(str != null && str.length() == 0){
+		    	 str = null;
+		     }
+		     if(str != null){
+		    	 str = "\"" + str + "\"";
+		     }
+		     w.write("\t/*** @see org.openmrs.module.dss.DssRule#getCitations()*/\n" + 
+				     "\tpublic String getCitations(){\n" +
+				     "\t\treturn " + str + ";\n" +
+				     "\t}\n\n");
+		     
+		    
+		     str = ardObj.getDate();
+		     if(str != null && str.length() == 0){
+		    	 str = null;
+		     }
+		     if(str != null){
+		    	 str = "\"" + str + "\"";
+		     }
+		     w.write("\t/*** @see org.openmrs.module.dss.DssRule#getDate()*/\n" + 
+				     "\tpublic String getDate(){\n" +
+				     "\t\treturn " + str + ";\n" +
+				     "\t}\n\n");
+		     str = ardObj.getExplanation();
+		     if(str != null && str.length() == 0){
+		    	 str = null;
+		     }
+		     if(str != null){
+		    	 str = "\"" + str + "\"";
+		     }
+		     w.write("\t/*** @see org.openmrs.module.dss.DssRule#getExplanation()*/\n" + 
+				     "\tpublic String getExplanation(){\n" +
+				     "\t\treturn " + str + ";\n" +
+		     		 "\t}\n\n");
+		    
+		     str = ardObj.getInstitution();
+		     if(str != null && str.length() == 0){
+		    	 str = null;
+		     }
+		     if(str != null){
+		    	 str = "\"" + str + "\"";
+		     }
+		     w.write("\t/*** @see org.openmrs.module.dss.DssRule#getInstitution()*/\n" + 
+				     "\tpublic String getInstitution(){\n" +
+				     "\t\treturn " + str + ";\n" +
+     		 		 "\t}\n\n");
+		     str = ardObj.getKeywords();	
+		     if(str != null && str.length() == 0){
+		    	 str = null;
+		     }
+		     if(str != null){
+		    	 str = "\"" + str + "\"";
+		     }
+		     w.write("\t/*** @see org.openmrs.module.dss.DssRule#getKeywords()*/\n" + 
+				     "\tpublic String getKeywords(){\n" +
+				     "\t\treturn " + str + ";\n" +
+		 		 	 "\t}\n\n");
+		     str = ardObj.getLinks();
+		     if(str != null && str.length() == 0){
+		    	 str = null;
+		     }
+		     if(str != null){
+		    	 str = "\"" + str + "\"";
+		     }
+		     w.write("\t/*** @see org.openmrs.module.dss.DssRule#getLinks()*/\n" + 
+				     "\tpublic String getLinks(){\n" +
+				     "\t\treturn " + str + ";\n" +
+ 		 	 		 "\t}\n\n");
+		    
+		     str = ardObj.getPurpose();
+		     if(str != null && str.length() == 0){
+		    	 str = null;
+		     }
+		     if(str != null){
+		    	 str = "\"" + str + "\"";
+		     }
+		     w.write("\t/*** @see org.openmrs.module.dss.DssRule#getPurpose()*/\n" + 
+				     "\tpublic String getPurpose(){\n" +
+				     "\t\treturn " + str + ";\n" +
+	 	 		 	 "\t}\n\n");
+		     str = ardObj.getSpecialist();
+		     if(str != null && str.length() == 0){
+		    	 str = null;
+		     }
+		     if(str != null){
+		    	 str = "\"" + str + "\"";
+		     }
+		     w.write("\t/*** @see org.openmrs.module.dss.DssRule#getSpecialist()*/\n" + 
+				     "\tpublic String getSpecialist(){\n" +
+				     "\t\treturn " + str + ";\n" +
+	 		 	 	 "\t}\n\n");
+		    
+		     str = ardObj.getTitle();
+		     if(str != null && str.length() == 0){
+		    	 str = null;
+		     }
+		     if(str != null){
+		    	 str = "\"" + str + "\"";
+		     }
+		     w.write("\t/*** @see org.openmrs.module.dss.DssRule#getTitle()*/\n" + 
+				     "\tpublic String getTitle(){\n" +
+				     "\t\treturn " + str + ";\n" +
+		 	 	 	 "\t}\n\n");
+		     double d = ardObj.getVersion();
+		     w.write("\t/*** @see org.openmrs.module.dss.DssRule#getVersion()*/\n" + 
+				     "\tpublic Double getVersion(){\n" +
+				     "\t\treturn " + d + ";\n" +
+ 	 	 	 		 "\t}\n\n");
+		     str = ardObj.getType();
+		     if(str != null && str.length() == 0){
+		    	 str = null;
+		     }
+		     if(str != null){
+		    	 str = "\"" + str + "\"";
+		     }
+		     w.write("\t/*** @see org.openmrs.module.dss.DssRule#getType()*/\n" + 
+				     "\tpublic String getType(){\n"+
+				     "\t\treturn " + str + ";\n" +
+	 	 		 	 "\t}\n\n");
+		     		    		     
+		     /**************************************************************************************/	
+		     
+		     t = (BaseAST)t.getNextSibling();  // Move to Knowledge
+		     log.debug(t.toStringTree());   // prints knowledge
+		     String knowledge_text = treeParser.knowledge_text(t, ardObj);
+		     
+		     
+		     /**************************************************Write Knowledge dependent section**********************************************/
+		     Integer p = ardObj.getPriority();
+		     w.write("\t/*** @see org.openmrs.module.dss.DssRule#getPriority()*/\n" + 
+				     "\tpublic Integer getPriority(){\n" +
+				     "\t\treturn " + p + ";\n" +
+	 		 	 	"\t}\n\n");
+
+		     str = ardObj.getData();
+		     if(str != null && str.length() == 0){
+		    	 str = null;
+		     }
+		     if(str != null){
+		    	 str = "\"" + str + "\"";
+		     }
+		     w.write("\t/*** @see org.openmrs.module.dss.DssRule#getData()*/\n" + 
+				     "\tpublic String getData(){\n" +
+				     "\t\treturn " + str + ";\n" +
+		 	 		 "\t}\n\n");
+		     
+		     str = ardObj.getLogic();
+		     if(str != null && str.length() == 0){
+		    	 str = null;
+		     }
+		     if(str != null){
+		    	 str = "\"" + str + "\"";
+		     }
+		     w.write("\t/*** @see org.openmrs.module.dss.DssRule#getLogic()*/\n" + 
+				     "\tpublic String getLogic(){\n" +
+				     "\t\treturn " + str + ";\n" +
+ 	 		 		 "\t}\n\n");
+		     
+		     str = ardObj.getAction();
+		     if(str != null && str.length() == 0){
+		    	 str = null;
+		     }
+		     if(str != null){
+		    	 str = "\"" + str + "\"";
+		     }
+		     w.write("\t/*** @see org.openmrs.module.dss.DssRule#getAction()*/\n" + 
+				     "\tpublic String getAction(){\n" +
+				     "\t\treturn " + str + ";\n" +
+		 		 	 "\t}\n\n");
+		     
+		     Integer ageMin = ardObj.getAgeMin();
+		     w.write("\t/*** @see org.openmrs.module.dss.DssRule#getAgeMin()*/\n" + 
+				     "\tpublic Integer getAgeMin(){\n" +
+				     "\t\treturn " + ageMin + ";\n" +
+ 		 	 		 "\t}\n\n");
+		     
+		     str = ardObj.getAgeMinUnits();
+		     if(str != null && str.length() == 0){
+		    	 str = null;
+		     }
+		     if(str != null){
+		    	 str = "\"" + str + "\"";
+		     }
+		     w.write("\t/*** @see org.openmrs.module.dss.DssRule#getAgeMinUnits()*/\n" + 
+				     "\tpublic String getAgeMinUnits(){\n" +
+				     "\t\treturn " + str + ";\n" +
+	 	 		 	 "\t}\n\n");
+		     
+		     Integer ageMax = ardObj.getAgeMax();
+		     w.write("\t/*** @see org.openmrs.module.dss.DssRule#getAgeMax()*/\n" + 
+				     "\tpublic Integer getAgeMax(){\n" +
+				     "\t\treturn " + ageMax + ";\n" +
+		     		 "\t}\n\n");
+		     
+		     str = ardObj.getAgeMaxUnits();
+		     if(str != null && str.length() == 0){
+		    	 str = null;
+		     }
+		     if(str != null){
+		    	 str = "\"" + str + "\"";
+		     }
+		     w.write("\t/*** @see org.openmrs.module.dss.DssRule#getAgeMaxUnits()*/\n" + 
+				     "\tpublic String getAgeMaxUnits(){\n" +
+				     "\t\treturn " + str + ";\n" +
+     		 		 "\t}\n\n");
+		    
+		    w.write("private static boolean containsIgnoreCase(Result key,List<Result> lst){\n");
+			w.write("for(Result element:lst){\n");
+			w.write("if(key != null&&key.toString().equalsIgnoreCase(element.toString())){\n");
+			w.write("	return true;\n");
+			w.write("}\n");
+			w.write("}	\n");
+			w.write("return false;\n");
+			w.write("}\n");
 			
-			AdministrationService adminService = Context.getAdministrationService();
-			String packagePrefix = adminService.getGlobalProperty("dss.rulePackagePrefix");
-			
-			MLMObject ardObj = new MLMObject(Context.getLocale(), null);
-			
-			// Create a scanner that reads from the input stream passed to us
-			ArdenBaseLexer lexer = new ArdenBaseLexer(s);
-			
-			// Create a parser that reads from the scanner
-			ArdenBaseParser parser = new ArdenBaseParser(lexer);
-			
-			// start parsing at the compilationUnit rule
-			parser.startRule();
-			BaseAST t = (BaseAST) parser.getAST();
-			
-			log.debug(t.toStringTree()); // prints maintenance
-			
-			ArdenBaseTreeParser treeParser = new ArdenBaseTreeParser();
-			
-			String maintenance = treeParser.maintenance(t, ardObj);
-			
-			cfn = ardObj.getClassName();
-			OutputStream os = new FileOutputStream(outFolder + cfn + ".java");
-			
-			Writer w = new OutputStreamWriter(os);
-			log.info("Writing to file - " + cfn + ".java");
-			
-			w.write("/********************************************************************" + "\n Translated from - " + fn
-			        + " on " + Today.toString() + "\n\n");
-			w.write(maintenance);
-			
-			t = (BaseAST) t.getNextSibling(); // Move to library
-			log.debug(t.toStringTree()); // prints library
-			String library = treeParser.library(t, ardObj);
-			w.write(library);
-			w.write("\n********************************************************************/\n");
-			if (packagePrefix == null || packagePrefix.length() == 0) {
-				w.write("package org.openmrs.module.dss.rule;\n\n");
-			} else {
-				w.write("package " + packagePrefix + ";\n\n");
-			}
-			w.write("import java.util.ArrayList;\n");
-			w.write("import java.util.HashMap;\n");
-			w.write("import java.util.List;\n");
-			w.write("import java.util.Map;\n");
-			w.write("import java.util.Set;\n");
-			
-			w.write("import org.apache.commons.logging.Log;\n");
-			w.write("import org.apache.commons.logging.LogFactory;\n");
-			w.write("import org.openmrs.Patient;\n");
-			w.write("import org.openmrs.api.context.Context;\n");
-			w.write("import org.openmrs.logic.LogicContext;\n");
-			w.write("import org.openmrs.logic.LogicCriteria;\n");
-			w.write("import org.openmrs.logic.LogicException;\n");
-			w.write("import org.openmrs.logic.LogicService;\n");
-			w.write("import org.openmrs.logic.Rule;\n");
-			w.write("import org.openmrs.logic.result.Result;\n");
-			w.write("import org.openmrs.logic.result.Result.Datatype;\n");
-			w.write("import org.openmrs.logic.rule.RuleParameterInfo;\n");
-			w.write("import org.openmrs.module.dss.DssRule;\n");
-			w.write("import org.openmrs.logic.Duration;\n");
-			w.write("import java.util.StringTokenizer;\n\n");
-			w.write("import org.openmrs.api.ConceptService;\n");
-			w.write("import java.text.SimpleDateFormat;\n");
-			
-			String classname = ardObj.getClassName();
-			w.write("public class " + classname + " implements Rule, DssRule{\n\n"); // Start of class
-			w.write("\tprivate Patient patient;\n\tprivate String firstname;\n");
-			w.write("\tprivate ArrayList<String> actions;\n");
-			w.write("\tprivate HashMap<String, String> userVarMap;\n\n");
-			w.write("\tprivate HashMap <String, Result> resultLookup;\n\n");
-			
-			w.write("\tprivate Log log = LogFactory.getLog(this.getClass());\n");
-			w.write("\tprivate LogicService logicService = Context.getLogicService();\n\n");
-			
-			w.flush();
-			
-			/**************************************************************************************
-			 * Implement the other interface methods
-			 */
-			
-			String str = "";
-			w.write("\t/*** @see org.openmrs.logic.rule.Rule#getDuration()*/\n\t"
-			        + "public int getDuration() {\n\t\treturn 60*30;   // 30 minutes\n\t}\n\n");
-			
-			w.write("\t/*** @see org.openmrs.logic.rule.Rule#getDatatype(String)*/\n\t"
-			        + "public Datatype getDatatype(String token) {\n\t" + "\treturn Datatype.TEXT;\n\t}\n\n");
-			
-			w.write("\t/*** @see org.openmrs.logic.rule.Rule#getParameterList()*/\n\t"
-			        + "public Set<RuleParameterInfo> getParameterList() {\n\t\treturn null;\n\t}\n\n");
-			
-			w.write("\t/*** @see org.openmrs.logic.rule.Rule#getDependencies()*/\n\t"
-			        + "public String[] getDependencies() {\n\t\treturn new String[] { };\n\t}\n\n");
-			
-			w.write("\t/*** @see org.openmrs.logic.rule.Rule#getTTL()*/\n\t"
-			        + "public int getTTL() {\n\t\treturn 0; //60 * 30; // 30 minutes\n\t}\n\n");
-			
-			w.write("\t/*** @see org.openmrs.logic.rule.Rule#getDatatype(String)*/\n\t"
-			        + "public Datatype getDefaultDatatype() {\n\t\treturn Datatype.CODED;\n\t}\n\n");
-			
-			str = ardObj.getAuthor();
-			if (str != null && str.length() == 0) {
-				str = null;
-			}
-			if (str != null) {
-				str = "\"" + str + "\"";
-			}
-			w.write("\t/*** @see org.openmrs.module.dss.DssRule#getAuthor()*/\n" + "\tpublic String getAuthor(){\n"
-			        + "\t\treturn " + str + ";\n" + "\t}\n\n");
-			
-			str = ardObj.getCitations();
-			if (str != null && str.length() == 0) {
-				str = null;
-			}
-			if (str != null) {
-				str = "\"" + str + "\"";
-			}
-			w.write("\t/*** @see org.openmrs.module.dss.DssRule#getCitations()*/\n" + "\tpublic String getCitations(){\n"
-			        + "\t\treturn " + str + ";\n" + "\t}\n\n");
-			
-			str = ardObj.getDate();
-			if (str != null && str.length() == 0) {
-				str = null;
-			}
-			if (str != null) {
-				str = "\"" + str + "\"";
-			}
-			w.write("\t/*** @see org.openmrs.module.dss.DssRule#getDate()*/\n" + "\tpublic String getDate(){\n"
-			        + "\t\treturn " + str + ";\n" + "\t}\n\n");
-			str = ardObj.getExplanation();
-			if (str != null && str.length() == 0) {
-				str = null;
-			}
-			if (str != null) {
-				str = "\"" + str + "\"";
-			}
-			w.write("\t/*** @see org.openmrs.module.dss.DssRule#getExplanation()*/\n"
-			        + "\tpublic String getExplanation(){\n" + "\t\treturn " + str + ";\n" + "\t}\n\n");
-			
-			str = ardObj.getInstitution();
-			if (str != null && str.length() == 0) {
-				str = null;
-			}
-			if (str != null) {
-				str = "\"" + str + "\"";
-			}
-			w.write("\t/*** @see org.openmrs.module.dss.DssRule#getInstitution()*/\n"
-			        + "\tpublic String getInstitution(){\n" + "\t\treturn " + str + ";\n" + "\t}\n\n");
-			str = ardObj.getKeywords();
-			if (str != null && str.length() == 0) {
-				str = null;
-			}
-			if (str != null) {
-				str = "\"" + str + "\"";
-			}
-			w.write("\t/*** @see org.openmrs.module.dss.DssRule#getKeywords()*/\n" + "\tpublic String getKeywords(){\n"
-			        + "\t\treturn " + str + ";\n" + "\t}\n\n");
-			str = ardObj.getLinks();
-			if (str != null && str.length() == 0) {
-				str = null;
-			}
-			if (str != null) {
-				str = "\"" + str + "\"";
-			}
-			w.write("\t/*** @see org.openmrs.module.dss.DssRule#getLinks()*/\n" + "\tpublic String getLinks(){\n"
-			        + "\t\treturn " + str + ";\n" + "\t}\n\n");
-			
-			str = ardObj.getPurpose();
-			if (str != null && str.length() == 0) {
-				str = null;
-			}
-			if (str != null) {
-				str = "\"" + str + "\"";
-			}
-			w.write("\t/*** @see org.openmrs.module.dss.DssRule#getPurpose()*/\n" + "\tpublic String getPurpose(){\n"
-			        + "\t\treturn " + str + ";\n" + "\t}\n\n");
-			str = ardObj.getSpecialist();
-			if (str != null && str.length() == 0) {
-				str = null;
-			}
-			if (str != null) {
-				str = "\"" + str + "\"";
-			}
-			w.write("\t/*** @see org.openmrs.module.dss.DssRule#getSpecialist()*/\n" + "\tpublic String getSpecialist(){\n"
-			        + "\t\treturn " + str + ";\n" + "\t}\n\n");
-			
-			str = ardObj.getTitle();
-			if (str != null && str.length() == 0) {
-				str = null;
-			}
-			if (str != null) {
-				str = "\"" + str + "\"";
-			}
-			w.write("\t/*** @see org.openmrs.module.dss.DssRule#getTitle()*/\n" + "\tpublic String getTitle(){\n"
-			        + "\t\treturn " + str + ";\n" + "\t}\n\n");
-			double d = ardObj.getVersion();
-			w.write("\t/*** @see org.openmrs.module.dss.DssRule#getVersion()*/\n" + "\tpublic Double getVersion(){\n"
-			        + "\t\treturn " + d + ";\n" + "\t}\n\n");
-			str = ardObj.getType();
-			if (str != null && str.length() == 0) {
-				str = null;
-			}
-			if (str != null) {
-				str = "\"" + str + "\"";
-			}
-			w.write("\t/*** @see org.openmrs.module.dss.DssRule#getType()*/\n" + "\tpublic String getType(){\n"
-			        + "\t\treturn " + str + ";\n" + "\t}\n\n");
-			
-			/**************************************************************************************/
-			
-			t = (BaseAST) t.getNextSibling(); // Move to Knowledge
-			log.debug(t.toStringTree()); // prints knowledge
-			String knowledge_text = treeParser.knowledge_text(t, ardObj);
-			
-			/************************************************** Write Knowledge dependent section **********************************************/
-			Integer p = ardObj.getPriority();
-			w.write("\t/*** @see org.openmrs.module.dss.DssRule#getPriority()*/\n" + "\tpublic Integer getPriority(){\n"
-			        + "\t\treturn " + p + ";\n" + "\t}\n\n");
-			
-			str = ardObj.getData();
-			if (str != null && str.length() == 0) {
-				str = null;
-			}
-			if (str != null) {
-				str = "\"" + str + "\"";
-			}
-			w.write("\t/*** @see org.openmrs.module.dss.DssRule#getData()*/\n" + "\tpublic String getData(){\n"
-			        + "\t\treturn " + str + ";\n" + "\t}\n\n");
-			
-			str = ardObj.getLogic();
-			if (str != null && str.length() == 0) {
-				str = null;
-			}
-			if (str != null) {
-				str = "\"" + str + "\"";
-			}
-			w.write("\t/*** @see org.openmrs.module.dss.DssRule#getLogic()*/\n" + "\tpublic String getLogic(){\n"
-			        + "\t\treturn " + str + ";\n" + "\t}\n\n");
-			
-			str = ardObj.getAction();
-			if (str != null && str.length() == 0) {
-				str = null;
-			}
-			if (str != null) {
-				str = "\"" + str + "\"";
-			}
-			w.write("\t/*** @see org.openmrs.module.dss.DssRule#getAction()*/\n" + "\tpublic String getAction(){\n"
-			        + "\t\treturn " + str + ";\n" + "\t}\n\n");
-			
-			Integer ageMin = ardObj.getAgeMin();
-			w.write("\t/*** @see org.openmrs.module.dss.DssRule#getAgeMin()*/\n" + "\tpublic Integer getAgeMin(){\n"
-			        + "\t\treturn " + ageMin + ";\n" + "\t}\n\n");
-			
-			str = ardObj.getAgeMinUnits();
-			if (str != null && str.length() == 0) {
-				str = null;
-			}
-			if (str != null) {
-				str = "\"" + str + "\"";
-			}
-			w.write("\t/*** @see org.openmrs.module.dss.DssRule#getAgeMinUnits()*/\n"
-			        + "\tpublic String getAgeMinUnits(){\n" + "\t\treturn " + str + ";\n" + "\t}\n\n");
-			
-			Integer ageMax = ardObj.getAgeMax();
-			w.write("\t/*** @see org.openmrs.module.dss.DssRule#getAgeMax()*/\n" + "\tpublic Integer getAgeMax(){\n"
-			        + "\t\treturn " + ageMax + ";\n" + "\t}\n\n");
-			
-			str = ardObj.getAgeMaxUnits();
-			if (str != null && str.length() == 0) {
-				str = null;
-			}
-			if (str != null) {
-				str = "\"" + str + "\"";
-			}
-			w.write("\t/*** @see org.openmrs.module.dss.DssRule#getAgeMaxUnits()*/\n"
-			        + "\tpublic String getAgeMaxUnits(){\n" + "\t\treturn " + str + ";\n" + "\t}\n\n");
-			
-			w.write("\tpublic static String toProperCase(String str){\n\n");
+		    w.write("\tprivate static String toProperCase(String str){\n\n");
+
 			w.write("\t\tif(str == null || str.length()<1){\n");
 			w.write("\t\t\treturn str;\n");
 			w.write("\t\t}\n\n");

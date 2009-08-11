@@ -27,9 +27,7 @@ import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.Cohort;
-import org.openmrs.Concept;
 import org.openmrs.Encounter;
-import org.openmrs.api.context.Context;
 import org.openmrs.logic.Duration;
 import org.openmrs.logic.LogicCriteria;
 import org.openmrs.logic.LogicExpression;
@@ -39,7 +37,8 @@ import org.openmrs.logic.db.LogicEncounterDAO;
 import org.openmrs.logic.op.Operator;
 
 /**
- * 
+ * This class builds the hibernate statements needed to execute logic evaluations for the
+ * EncounterDatasource
  */
 public class HibernateLogicEncounterDAO implements LogicEncounterDAO {
 	
@@ -68,22 +67,7 @@ public class HibernateLogicEncounterDAO implements LogicEncounterDAO {
 		}
 		List<Criterion> criterion = new ArrayList<Criterion>();
 		
-		//if the leftOperand is a String and does not match any components,
-		//see if it is a concept name and restrict accordingly
-		//a null operator implies a concept restriction
-		if (leftOperand instanceof LogicExpression) {
-			String conceptName = logicExpression.getRootToken();
-			
-			Concept concept = Context.getConceptService().getConcept(conceptName);
-			criterion.add(Restrictions.eq("concept", concept));
-		}
-		
-		if (operator == null) {
-			String conceptName = logicExpression.getRootToken();
-			
-			Concept concept = Context.getConceptService().getConcept(conceptName);
-			criterion.add(Restrictions.eq("concept", concept));
-		} else if (operator == Operator.BEFORE) {
+		if (operator == Operator.BEFORE) {
 			criterion.add(Restrictions.lt("encounterDatetime", rightOperand));
 			
 		} else if (operator == Operator.AFTER) {
@@ -239,7 +223,7 @@ public class HibernateLogicEncounterDAO implements LogicEncounterDAO {
 		List<Encounter> results = new ArrayList<Encounter>();
 		
 		criteria.add(Restrictions.eq("voided", false));
-		criteria.add(Restrictions.in("person.personId", who.getMemberIds()));
+		criteria.add(Restrictions.in("patient.personId", who.getMemberIds()));
 		results.addAll(criteria.list());
 		
 		//return a single result per patient for these operators

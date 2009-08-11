@@ -49,7 +49,10 @@ public class LogicAssignment {
 		String name = getVariableName();
 		String value = getVariableValue();
 		try {
-			w.append("\t\t\tuserVarMap.put(\"" + name + "\", \"" + value + "\");\n");
+			w.append("\t\t\t//preprocess any || operator ;\n");
+			w.append("\t\t\tString val = doAction(\"" + value + "\");\n");
+		//	w.append("\t\t\tuserVarMap.put(\"" + name + "\", \"" + value + "\");\n");
+			w.append("\t\t\tuserVarMap.put(\"" + name + "\",  val);\n");
 		}
 		catch (Exception e) {}
 	}
