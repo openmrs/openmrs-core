@@ -13,25 +13,30 @@
  */
 package org.openmrs.logic;
 
+import org.openmrs.logic.rule.ReferenceRule;
 
 /**
- *
+ * Rules that implement this interface need to maintain their state across recreations. Rules are
+ * usually pseudo-static in that they don't have instance variables and don't need to be
+ * initialized. If a rule does need this, then it is a StatefulRule.
+ * 
+ * @see ReferenceRule
  */
 public interface StatefulRule extends Rule {
 	
 	/**
+	 * Convert this Rule's current state to a String so that the Rule can be recreated just as it
+	 * was before.
 	 * 
-	 * 
-	 * 
-	 * @return
+	 * @return a String representing the current state of the Rule
+	 * @see #restoreFromString(String)
 	 */
-	String saveToString();
+	public String saveToString();
 	
 	/**
+	 * Recreate the current Rule's state from the given String
 	 * 
-	 * 
-	 * 
-	 * @param state
+	 * @param state the state to restore
 	 */
-	void restoreFromString(String state);
+	public void restoreFromString(String state);
 }
