@@ -23,7 +23,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.logic.LogicContext;
 import org.openmrs.logic.LogicCriteria;
 import org.openmrs.logic.LogicException;
-import org.openmrs.logic.Rule;
+import org.openmrs.logic.StatefulRule;
 import org.openmrs.logic.datasource.LogicDataSource;
 import org.openmrs.logic.result.Result;
 import org.openmrs.logic.result.Result.Datatype;
@@ -31,7 +31,7 @@ import org.openmrs.logic.result.Result.Datatype;
 /**
  * 
  */
-public class ReferenceRule implements Rule {
+public class ReferenceRule implements StatefulRule {
 	
 	protected final Log log = LogFactory.getLog(getClass());
 	
@@ -39,7 +39,13 @@ public class ReferenceRule implements Rule {
 	
 	private String key;
 	
+	private String reference;
+	
+	public ReferenceRule() {
+	}
+	
 	public ReferenceRule(String reference) throws InvalidReferenceRuleException {
+		this.reference = reference;
 		parse(reference);
 	}
 	
@@ -107,5 +113,25 @@ public class ReferenceRule implements Rule {
 	public int getTTL() {
 		return dataSource.getDefaultTTL();
 	}
+
+	/**
+     * @see org.openmrs.logic.StatefulRule#restoreFromString(java.lang.String)
+     */
+    public void restoreFromString(String state) {
+    	try {
+    		this.reference = state;
+	        parse(state);
+        }
+        catch (InvalidReferenceRuleException e) {
+	        log.error("Error generated", e);
+        }
+    }
+
+	/**
+     * @see org.openmrs.logic.StatefulRule#saveToString()
+     */
+    public String saveToString() {
+    	return reference;
+    }
 	
 }

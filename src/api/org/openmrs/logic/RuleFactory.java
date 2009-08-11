@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
@@ -132,6 +133,10 @@ public class RuleFactory {
 			throw new LogicException("No token \"" + token + "\" registered");
 		
 		Rule r =  getRuleMap().get(token);
+        String state = StringUtils.EMPTY;
+		if (StatefulRule.class.isAssignableFrom(r.getClass()))
+			state = ((StatefulRule)r).saveToString();
+
 		Class clas = r.getClass();
 		try {
 	        Object obj = clas.newInstance();
@@ -146,6 +151,10 @@ public class RuleFactory {
 	        // TODO Auto-generated catch block
 	        log.error("Error creating new instance of Rule", e);
         }
+
+		if (StatefulRule.class.isAssignableFrom(r.getClass()))
+        	((StatefulRule)rule).restoreFromString(state);
+        
 		return rule;
 		
 	}
