@@ -91,9 +91,15 @@ public class MLMObjectElement {
 	private String getReadTypeAsString() {
 		String retVal = "";
 		if (readType != null && !readType.equals("") && !readType.equalsIgnoreCase("exist")) {
-			retVal = "." + readType + "()";
+			retVal = "." + readType;
 		} else {
-			retVal = ".last()"; // TODO: for now default
+			retVal = ".last"; // TODO: for now default
+		}
+		
+		if (howMany > 1) {
+			retVal += "(" + howMany + ")";
+		} else {
+			retVal += "()";
 		}
 		
 		return retVal;
@@ -110,8 +116,8 @@ public class MLMObjectElement {
 		
 		if (cn != null) {
 			/***************************************************************************************
-		    * 
-		    **************************************************************************************/
+			 * 
+			 **************************************************************************************/
 			if (this.datasource.equalsIgnoreCase(PARAMETERS_DATASOURCE)) {
 				w.append("\n\t\t\tResult " + key + "=new Result((String) parameters.get(\"" + key + "\")");
 			} else {

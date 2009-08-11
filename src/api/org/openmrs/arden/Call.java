@@ -17,7 +17,7 @@ import java.io.Writer;
 import java.util.ArrayList;
 
 /**
- * 
+ * This class translates the CALL function of an MLM into a logicService.eval() of a rule
  */
 public class Call {
 	
@@ -51,9 +51,6 @@ public class Call {
 	
 	public void write(Writer w) {
 		try {
-			w.append("\t\t\t\tString value = null;\n");
-			w.append("\t\t\t\tString variable = null;\n");
-			w.append("\t\t\t\tint varLen = 0;\n");
 			
 			for (int i = 0; i < parameters.size(); i++) {
 				String currParam = parameters.get(i);
@@ -68,22 +65,22 @@ public class Call {
 				w.append("\t\t\t\telse if(" + "\"" + currParam + "\"" + ".endsWith(\"_value\"))\n");
 				w.append("\t\t\t\t{\n");
 				w.append("\t\t\t\t\tvariable = " + "\"" + currParam + "\"" + ".substring(0, varLen-6); // -6 for _value\n");
-				w.append("if (resultLookup.get(variable) != null){\n");
-				w.append("\t\t\t\t\tvalue = resultLookup.get(variable).toString();\n");
-				w.append("}\n");
+				w.append("\t\t\t\t\tif (resultLookup.get(variable) != null){\n");
+				w.append("\t\t\t\t\t\tvalue = resultLookup.get(variable).toString();\n");
+				w.append("\t\t\t\t\t}\n");
 				w.append("\t\t\t\t}\n");
 				w.append("\t\t\t\telse if(" + "\"" + currParam + "\"" + ".endsWith(\"_date\"))\n");
 				w.append("\t\t\t\t{\n");
 				w.append("\t\t\t\t\tvariable = " + "\"" + currParam + "\"" + ".substring(0, varLen-5); // -5 for _date\n");
-				w.append("if (resultLookup.get(variable) != null){\n");
-				w.append("\t\t\t\t\tvalue = resultLookup.get(variable).getResultDate().toString();\n");
-				w.append("}\n");
+				w.append("\t\t\t\t\tif (resultLookup.get(variable) != null){\n");
+				w.append("\t\t\t\t\t\tvalue = resultLookup.get(variable).getResultDate().toString();\n");
+				w.append("\t\t\t\t\t}\n");
 				w.append("\t\t\t\t}\n");
 				w.append("\t\t\t\telse\n");
 				w.append("\t\t\t\t{\n");
-				w.append("if (resultLookup.get(" + "\"" + currParam + "\"" + ") != null){\n");
-				w.append("\t\t\t\t\tvalue = resultLookup.get(" + "\"" + currParam + "\"" + ").toString();\n");
-				w.append("}\n");
+				w.append("\t\t\t\t\tif (resultLookup.get(" + "\"" + currParam + "\"" + ") != null){\n");
+				w.append("\t\t\t\t\t\tvalue = resultLookup.get(" + "\"" + currParam + "\"" + ").toString();\n");
+				w.append("\t\t\t\t\t}\n");
 				w.append("\t\t\t\t}\n");
 				w.append("\t\t\t\tif(value != null){\n");
 				w.append("\t\t\t\t\tparameters.put(\"param" + (i + 1) + "\"," + "value);\n");
@@ -101,7 +98,10 @@ public class Call {
 				w.append("Result " + getCallVar() + " = ");
 			}
 			w.append("logicService.eval(patient, \"" + getCallMethod() + "\",parameters);\n");
-			
+			w.append("\t\t\t\t");
+			if (getCallVar() != null && getCallVar().length() > 0) {
+				w.append("resultLookup.put(\"" + getCallVar() + "\"," + getCallVar() + ");\n");
+			}
 		}
 		catch (Exception e) {}
 	}

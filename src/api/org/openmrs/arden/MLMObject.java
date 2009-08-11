@@ -187,7 +187,9 @@ public class MLMObject {
 			w.append("else if (variable.contains(\"_value\"))\n");
 			w.append("{\n");
 			w.append("	variable = variable.replace(\"_value\",\"\").trim();\n");
+			w.append("if(resultLookup.get(variable) != null){");
 			w.append("value = resultLookup.get(variable).toString();\n");
+			w.append("}");
 			w.append("}\n");
 			w.append("// It must be a result date\n");
 			w.append("else if (variable.contains(\"_date\"))\n");
@@ -197,8 +199,17 @@ public class MLMObject {
 			w.append("variable = variable.replace(\"_date\",\"\").trim();\n");
 			w.append("value = dateForm.format(resultLookup.get(variable).getResultDate());\n");
 			w.append("}\n");
+			w.append("else\n");
+			w.append("{\n");
+			w.append("if(resultLookup.get(variable) != null){");
+			w.append("value = resultLookup.get(variable).toString();\n");
+			w.append("}");
+			w.append("}\n");
 			
-			w.append("outStr += value;\n");
+			w.append("if (value != null)\n");
+			w.append("{\n");
+			w.append("	outStr += value;\n");
+			w.append("}\n");
 			w.append("return outStr;\n");
 			w.append("}\n");
 			
@@ -275,7 +286,7 @@ public class MLMObject {
 			w.append("\t\t\t}\n");
 			
 			w.append("\t\t\tinitAction();\n");
-			/************************************************************************************************
+			/***************************************************************************************
 			 * Do the LogicCriteria here
 			 */
 			
@@ -293,11 +304,14 @@ public class MLMObject {
 			Set<String> uniqueKeys = this.conceptMap.keySet();
 			uniqueKeys.remove("Gender");
 			
-			/***********************************************************************************************/
+			/** ******************************************************************************************** */
 			
 			w.append("\n\n\t\t\tif(evaluate_logic(parameters)){\n");
 			w.append("\t\t\t\tResult ruleResult = new Result();\n");
 			if (this.calls.get("action") != null) {
+				w.append("\t\t\t\tString value = null;\n");
+				w.append("\t\t\t\tString variable = null;\n");
+				w.append("\t\t\t\tint varLen = 0;\n");
 				for (Call currCall : this.calls.get("action")) {
 					currCall.write(w);
 				}
@@ -311,18 +325,25 @@ public class MLMObject {
 			w.append("\t\t\t}\n");
 			
 			w.append("\t\t} catch (Exception e) {\n");
+			w.append("\t\t\tlog.error(\"Error within rule\",e);\n");
 			w.append("\t\t\treturn Result.emptyResult();");
 			w.append("\n\t\t}\n\t\treturn Result.emptyResult();\n\t}\n\n");
 			
-			/*********************************************************** Added to write List forming private methods ***********************/
+			/**
+			 * *********************************************************Added to write List forming
+			 * private methods **********************
+			 */
 			LinkedHashMap<String, Comparison> compListBySection = comparisons.get("logic");
-			Iterator<Map.Entry<String, Comparison>> comparisonIteratorLogic = compListBySection.entrySet().iterator();
-			
-			while (comparisonIteratorLogic.hasNext()) {
-				Comparison comparison = comparisonIteratorLogic.next().getValue();
-				comparison.writeComparisonList(w); // write a list helper method only if the operator is IN
+			Iterator<Map.Entry<String, Comparison>> comparisonIteratorLogic = null;
+			if (compListBySection != null) {
+				comparisonIteratorLogic = compListBySection.entrySet().iterator();
+				
+				while (comparisonIteratorLogic.hasNext()) {
+					Comparison comparison = comparisonIteratorLogic.next().getValue();
+					comparison.writeComparisonList(w); // write a list helper method only if the operator is IN
+				}
 			}
-			/******************************************************************************************************************************/
+			/** *************************************************************************************************************************** */
 			
 			w.append("\tprivate boolean evaluate_logic(Map<String, Object> parameters) throws LogicException {\n\n");
 			evalListBySection = evaluateList.get("logic");
@@ -351,6 +372,9 @@ public class MLMObject {
 			
 			if (callBySection != null) {
 				callIterator = callBySection.iterator();
+				w.append("\t\t\t\tString value = null;\n");
+				w.append("\t\t\t\tString variable = null;\n");
+				w.append("\t\t\t\tint varLen = 0;\n");
 			}
 			Iterator<Conclude> concludeIterator = this.concludes.iterator();
 			comparisonIteratorLogic = compListBySection.entrySet().iterator();
@@ -467,7 +491,7 @@ public class MLMObject {
 							Comparison comparison = comparisonIterator.next().getValue();
 							;
 							if (comparison != null) {
-								comparison.write(w, objElement);
+								comparison.write(w, objElement, this.isVarCallorDataRead((String) comparison.getAnswer()));
 							}
 						}
 					} else {
@@ -636,7 +660,7 @@ public class MLMObject {
 						comparison = null;
 					}
 					if (comparison != null) {
-						comparison.write(w, objElement);
+						comparison.write(w, objElement, this.isVarCallorDataRead(comparison.getAnswer()));
 					}
 					
 				}
@@ -1126,5 +1150,42 @@ public class MLMObject {
 	
 	public String getAgeMinUnits() {
 		return ageMinUnits;
+	}
+	
+	public boolean isVarCallorDataRead(Object varObj) {
+		// find if the Variable passed in assigned to a data read or result of call to another rule. If so, the variable
+		// is treated as result for translation in comparison object
+		boolean retVal = false;
+		Iterator<String> callSectionIterator = this.calls.keySet().iterator();
+		
+		if (!(varObj instanceof String)) {
+			return retVal;
+		}
+		String var = (String) varObj;
+		
+		if (this.conceptMap.containsKey(var)) {
+			retVal = true;
+		} else if (callSectionIterator != null) {
+			while (callSectionIterator.hasNext()) {
+				ArrayList<Call> callBySection = this.calls.get(callSectionIterator.next());
+				Iterator<Call> callIterator = null;
+				
+				if (callBySection != null) {
+					callIterator = callBySection.iterator();
+					if (callIterator != null) {
+						while (callIterator.hasNext()) {
+							Call c = callIterator.next();
+							if (var.equalsIgnoreCase(c.getCallVar())) {
+								retVal = true;
+								break;
+							}
+						}
+					}
+					
+				}
+			}
+		}
+		
+		return retVal;
 	}
 }
