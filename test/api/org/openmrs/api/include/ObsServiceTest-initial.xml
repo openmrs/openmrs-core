@@ -22,8 +22,8 @@
   <concept_name_tag concept_name_tag_id="13" tag="preferred_US" description="preferred name in the United States" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" guid="72214d34-40b1-11de-95a8-001e378eb67e"/>
   <concept_name_tag concept_name_tag_id="14" tag="preferred_ZM" description="preferred name in Zambia" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" guid="72215022-40b1-11de-95a8-001e378eb67e"/>
   <concept_name_tag concept_name_tag_id="15" tag="preferred_ZW" description="preferred name in Zimbabwe" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" guid="72215310-40b1-11de-95a8-001e378eb67e"/>
-  <concept_name_tag_map concept_name_id="1" concept_name_tag_id="4" guid="722155fe-40b1-11de-95a8-001e378eb67e"/>
-  <concept_name_tag_map concept_name_id="2" concept_name_tag_id="4" guid="7221758e-40b1-11de-95a8-001e378eb67e"/>
+  <concept_name_tag_map concept_name_id="1" concept_name_tag_id="4"/>
+  <concept_name_tag_map concept_name_id="2" concept_name_tag_id="4"/>
   <encounter encounter_id="1" patient_id="2" provider_id="0" location_id="1" encounter_datetime="2005-01-01 00:00:00.0" creator="1" date_created="2005-02-01 00:00:00.0" voided="false" guid="7221793a-40b1-11de-95a8-001e378eb67e"/>
   <encounter encounter_id="2" patient_id="2" provider_id="0" location_id="1" encounter_datetime="2005-02-01 00:00:00.0" creator="1" date_created="2005-03-01 00:00:00.0" voided="false" guid="72217c64-40b1-11de-95a8-001e378eb67e"/>
   <global_property property="database_version" property_value="1.4.0.16" guid="72217f7a-40b1-11de-95a8-001e378eb67e"/>

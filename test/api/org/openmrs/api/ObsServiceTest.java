@@ -117,6 +117,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		Order order2 = null;
 		Concept concept2 = conceptService.getConcept(2);
 		Patient patient2 = new Patient(1);
+		patient2.setGuid("1234");
 		System.out.println("patient2: " + patient2.getPatientId());
 		Encounter encounter2 = (Encounter) es.getEncounter(2);
 		Date datetime2 = new Date();
