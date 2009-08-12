@@ -107,7 +107,6 @@ public class SyncAdminTest extends SyncBaseTest {
 
 	@Test
     @NotTransactional
-    @Ignore
 	public void shouldEditProgram() throws Exception {
 		runSyncTest(new SyncTestHelper() {
 			ProgramWorkflowService ps = Context.getProgramWorkflowService();
@@ -136,7 +135,6 @@ public class SyncAdminTest extends SyncBaseTest {
 
 	@Test
     @NotTransactional	
-    @Ignore
 	public void shouldCreateLocation() throws Exception {
 		runSyncTest(new SyncTestHelper() {
 			public void runOnChild() {
@@ -153,7 +151,6 @@ public class SyncAdminTest extends SyncBaseTest {
 
 	@Test
     @NotTransactional
-    @Ignore
 	public void shouldEditLocation() throws Exception {
 		runSyncTest(new SyncTestHelper() {
 			public void runOnChild() {
@@ -176,6 +173,7 @@ public class SyncAdminTest extends SyncBaseTest {
 	 * 
 	 * @throws Exception
 	 */
+	@Ignore
 	@Test
     @NotTransactional
 	public void shouldEditSaveGlobalProperty() throws Exception {
