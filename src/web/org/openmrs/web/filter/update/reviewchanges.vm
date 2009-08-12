@@ -21,13 +21,19 @@
 							
 			jQuery("#lastActionMessage").html(data.message);
 			
+			/* put checkmarks next to all executed changesets except the last one (the last one is currently executing) */
 			for (var x = lastIndex; x < data.changesetIds.length; x++) {
 				var changesetId = data.changesetIds[x];
-				jQuery("#" + changesetId).show();
+				jQuery("#" + changesetId + "loading").hide();
+				jQuery("#" + changesetId + "checkmark").show();
 			}
 			
 			/* save the last point in the list for next time */
 			lastIndex = data.changesetIds.length - 1;
+			
+			/* show the loading image next to the last changeset because that one is currently executing */
+			jQuery("#" + data.executingChangesetId + "checkmark").hide();
+			jQuery("#" + data.executingChangesetId + "loading").show();
 			
 			jQuery("#logLinesDiv").show();
 			var logLines = "";
@@ -80,7 +86,10 @@
 						</tr>
 						#foreach ($change in $changes)
 							<tr>
-								<td><img id="${change.id}" class="changesetImage" src="images/checkmark.png"/></td>
+								<td>
+									<img id="${change.id}checkmark" class="changesetImage" src="images/checkmark.png"/>
+									<img id="${change.id}loading" class="changesetImage" src="images/loading.gif"/>
+								</td>
 								<td>${change.comments}</td>
 								<td>${change.description}</td>
 								<td>${change.author}</td>
