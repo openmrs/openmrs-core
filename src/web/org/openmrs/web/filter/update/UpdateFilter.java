@@ -180,6 +180,7 @@ public class UpdateFilter extends StartupFilter {
 				result.put("updatesRequired", updatesRequired());
 				result.put("message", updateJob.getMessage());
 				result.put("changesetIds", updateJob.getChangesetIds());
+				result.put("executingChangesetId", updateJob.getExecutingChangesetId());
 				Appender appender = Logger.getRootLogger().getAppender("MEMORY_APPENDER");
 				if (appender instanceof MemoryAppender) {
 					MemoryAppender memoryAppender = (MemoryAppender) appender;
@@ -379,6 +380,8 @@ public class UpdateFilter extends StartupFilter {
 		
 		private Thread thread;
 		
+		private String executingChangesetId = null;
+		
 		private List<String> changesetIds = new ArrayList<String>();
 		
 		private List<String> errors = new ArrayList<String>();
@@ -434,10 +437,15 @@ public class UpdateFilter extends StartupFilter {
 		
 		synchronized public void addChangesetId(String changesetid) {
 			this.changesetIds.add(changesetid);
+			this.executingChangesetId = changesetid;
 		}
 		
 		synchronized public List<String> getChangesetIds() {
 			return changesetIds;
+		}
+		
+		synchronized public String getExecutingChangesetId() {
+			return executingChangesetId;
 		}
 		
 		/**
@@ -479,6 +487,7 @@ public class UpdateFilter extends StartupFilter {
 							setMessage("Updating the database to the latest version");
 							DatabaseUpdater.executeChangelog(null, null, new PrintingChangeSetExecutorCallback(
 							        "Updating database tables to latest version "));
+							executingChangesetId = null; // clear out the last changeset
 						}
 						catch (InputRequiredException inputRequired) {
 							// the user would be stepped through the questions returned here.
