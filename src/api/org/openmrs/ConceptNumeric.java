@@ -50,6 +50,7 @@ public class ConceptNumeric extends Concept implements java.io.Serializable, Syn
 
 	/** default constructor */
 	public ConceptNumeric() {
+		super();
 	}
 	
 	/**

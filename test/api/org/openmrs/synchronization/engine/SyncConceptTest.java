@@ -28,6 +28,7 @@ import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptName;
+import org.openmrs.ConceptNameTag;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptSet;
 import org.openmrs.api.ConceptService;
@@ -54,7 +55,8 @@ public class SyncConceptTest extends SyncBaseTest {
 				
 				//this doesn't work with in-mem DB
 				//conceptId = cs.getNextAvailableId();
-				Concept coded = new Concept(conceptId);
+				Concept coded = new Concept();
+				coded.setConceptId(conceptId);
 				coded.setDatatype(cs.getConceptDatatypeByName("Coded"));
 				coded.setConceptClass(cs.getConceptClassByName("Question"));
 				coded.setSet(false);
@@ -69,6 +71,7 @@ public class SyncConceptTest extends SyncBaseTest {
 				Concept c = cs.getConcept(conceptId);
 				log.info("names: " + c.getNames().size());
 				assertNotNull("Failed to create coded concept", c);
+				assertTrue("Failed to transfer names", c.getNames().size() > 0);
 				assertEquals(c.getConceptClass().getConceptClassId(), cs.getConceptClassByName("Question").getConceptClassId());
 				assertEquals(c.getDatatype().getConceptDatatypeId(), cs.getConceptDatatypeByName("Coded").getConceptDatatypeId());
 				
@@ -131,7 +134,8 @@ public class SyncConceptTest extends SyncBaseTest {
 			public void runOnChild() {
 				cs = Context.getConceptService();
 
-				ConceptNumeric cn = new ConceptNumeric(conceptNumericId);
+				ConceptNumeric cn = new ConceptNumeric();
+				cn.setConceptId(conceptNumericId);
 				cn.addName(new ConceptName("SOMETHING NUMERIC", Context.getLocale()));
 				cn.setDatatype(cs.getConceptDatatypeByName("Numeric"));
 				cn.setConceptClass(cs.getConceptClassByName("Question"));
@@ -141,7 +145,8 @@ public class SyncConceptTest extends SyncBaseTest {
 				cn.setHiCritical(100d);
 				cs.saveConcept(cn);
 				
-				Concept coded = new Concept(conceptCodedId);
+				Concept coded = new Concept();
+				coded.setConceptId(conceptCodedId);
 				coded.addName(new ConceptName("SOMETHING CODED", Context.getLocale()));
 				coded.setDatatype(cs.getConceptDatatypeByName("Coded"));
 				coded.setConceptClass(cs.getConceptClassByName("Question"));
@@ -312,12 +317,12 @@ public class SyncConceptTest extends SyncBaseTest {
 		runSyncTest(new SyncTestHelper() {
 			ConceptService cs = Context.getConceptService();
 			int numTagsBefore;
-			final static String MY_TAG = "Concept of the month"; 
 			public void runOnChild() {
 				Concept wt = cs.getConceptByName("WEIGHT");
 				ConceptName cn = wt.getName();
 				numTagsBefore = cn.getTags().size();
-				cn.addTag(MY_TAG);
+				ConceptNameTag tag = cs.getConceptNameTagByName("default");
+				cn.addTag(tag);
 				cs.saveConcept(wt);
 			}
 			public void runOnParent() {
@@ -325,7 +330,7 @@ public class SyncConceptTest extends SyncBaseTest {
 				assertNotNull(wt);
 				ConceptName cn = wt.getName();
 				assertEquals("Should be one more tag than before", numTagsBefore + 1, cn.getTags().size());
-				assertEquals("tag not added", true, cn.hasTag(MY_TAG));
+				assertEquals("tag not added", true, cn.hasTag("default"));
 			}
 		});
 	}
