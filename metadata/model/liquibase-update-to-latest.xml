@@ -2471,4 +2471,32 @@
 		</modifyColumn>
 	</changeSet>
 	
+	<changeSet id="20090803-1" author="jkariuki">
+		<comment>Add a new 'Administrator' role that will replace the 'System Developer' role</comment>
+		<insert tableName="role">
+			<column name="role" value="Administrator"/>
+			<column name="description" value="Assigned to Administrators of OpenMRS. Gives additional access to change core aspects of the system."/>
+			<column name="uuid" valueNumeric="name-of-uuid-function"/>
+		</insert>
+		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
+		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
+		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
+		<modifySql><replace replace="name-of-uuid-function" with="current_timestamp * 99999999999999"/></modifySql>
+	</changeSet>
+	
+	<changeSet id="20090808-2" author="jkariuki">
+		<comment>Switch all users that had the 'System Developer' role to having the 'Administrator' role</comment>
+		<update tableName="user_role">
+			<column name="role" value="Administrator"/>
+			<where>role='System Developer'</where>
+		</update>
+	</changeSet>
+	
+	<changeSet id="20090808-3" author="jkariuki">
+		<comment>Remove the now obsolete 'System Developer' role</comment>
+		<delete tableName="role">
+			<where>role='System Developer'</where>
+		</delete>
+	</changeSet>
+	
 </databaseChangeLog>

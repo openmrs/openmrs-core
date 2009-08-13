@@ -5,7 +5,7 @@
 	<div class="content">
 		<table align="center" cellspacing="5" cellpadding="9">
 			<tr>
-				<td colspan="2" class="question">Log in as a $superuserrole to continue.</td>
+				<td colspan="2" class="question">Log in as a User that has the $superuserrole role to continue.</td>
 			</tr>
             <tr>
                 <td>OpenMRS Username</td>

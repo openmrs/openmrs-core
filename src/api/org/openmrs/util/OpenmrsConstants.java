@@ -617,7 +617,7 @@ public final class OpenmrsConstants {
 	}
 	
 	// Baked in Roles:
-	public static final String SUPERUSER_ROLE = "System Developer";
+	public static final String SUPERUSER_ROLE = "Administrator";
 	
 	public static final String ANONYMOUS_ROLE = "Anonymous";
 	
@@ -636,7 +636,7 @@ public final class OpenmrsConstants {
 		
 		roles
 		        .put(SUPERUSER_ROLE,
-		            "Assigned to developers of OpenMRS. Gives additional access to change fundamental structure of the database model.");
+		            "Assigned to Administrators of OpenMRS. Gives additional access to change core aspects of the system.");
 		roles.put(ANONYMOUS_ROLE, "Privileges for non-authenticated users.");
 		roles.put(AUTHENTICATED_ROLE, "Privileges gained once authentication has been established.");
 		roles.put(PROVIDER_ROLE, "All users with the 'Provider' role will appear as options in the default Infopath ");
