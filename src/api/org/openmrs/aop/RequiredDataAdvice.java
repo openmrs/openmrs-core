@@ -323,17 +323,20 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 	 * @should return true if field is openmrsObject list
 	 * @should return true if field is openmrsObject set
 	 * @should return false if field is collection of other objects
+	 * @should return false if field is collection of parameterized type
 	 * @should return false if field is not a collection
 	 */
 	@SuppressWarnings("unchecked")
 	protected static boolean isOpenmrsObjectCollection(Field field) {
 		if (Collection.class.isAssignableFrom(field.getType())) {
-			ParameterizedType type = (ParameterizedType) field.getGenericType();
-			
-			if (OpenmrsObject.class.isAssignableFrom((Class) type.getActualTypeArguments()[0]))
-				return true;
+			try {
+				ParameterizedType type = (ParameterizedType) field.getGenericType();
+				return (OpenmrsObject.class.isAssignableFrom((Class) type.getActualTypeArguments()[0]));
+			}
+			catch (ClassCastException e) {
+				// Do nothing.  If this exception is thrown, then field is not a Collection of OpenmrsObjects
+			}
 		}
-		
 		return false;
 	}
 	
