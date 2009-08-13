@@ -147,8 +147,8 @@ public class UpdateFilter extends StartupFilter {
 					log.error("Unable to sleep", e);
 					throw new ServletException("Got interrupted while trying to sleep thread", e);
 				}
-				errors.add("Unable to authenticate as a " + OpenmrsConstants.SUPERUSER_ROLE
-				        + ". Invalid username or password");
+				errors.add("Unable to authenticate as a User with the " + OpenmrsConstants.SUPERUSER_ROLE
+				        + " role. Invalid username or password");
 				renderTemplate(DEFAULT_PAGE, referenceMap, writer);
 			}
 		} // step two
@@ -257,7 +257,9 @@ public class UpdateFilter extends StartupFilter {
 	 * @should return false if given user does not have the super user role
 	 */
 	protected boolean isSuperUser(Connection connection, Integer userId) throws Exception {
-		String select = "select 1 from user_role where user_id = ? and role = ?";
+		// the 'System Developer' part of this string is left because the super user
+		// role used to be named that.  This has to be in here so that admins can authenticate 
+		String select = "select 1 from user_role where user_id = ? and (role = ? or role = 'System Developer')";
 		PreparedStatement statement = connection.prepareStatement(select);
 		statement.setInt(1, userId);
 		statement.setString(2, OpenmrsConstants.SUPERUSER_ROLE);
