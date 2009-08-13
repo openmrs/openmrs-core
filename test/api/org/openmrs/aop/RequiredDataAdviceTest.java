@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.Assert;
@@ -44,7 +45,7 @@ public class RequiredDataAdviceTest {
 	private class MiniOpenmrsObject extends BaseOpenmrsObject {
 		
 		private List<Location> locations;
-		
+
 		public List<Location> getLocations() {
 			return locations;
 		}
@@ -52,7 +53,7 @@ public class RequiredDataAdviceTest {
 		public void setLocations(List<Location> locs) {
 			this.locations = locs;
 		}
-		
+
 		public Integer getId() {
 			return null;
 		}
@@ -172,7 +173,17 @@ public class RequiredDataAdviceTest {
 		
 		private Set<Locale> locales;
 		
+		private List<Map<String, String>> nestedGenericProperty;
+		
 		private Integer id;
+
+        public List<Map<String, String>> getNestedGenericProperty() {
+        	return nestedGenericProperty;
+        }
+
+        public void setNestedGenericProperty(List<Map<String, String>> nestedGenericProperty) {
+        	this.nestedGenericProperty = nestedGenericProperty;
+        }
 		
 		public Set<Locale> getLocales() {
 			return locales;
@@ -199,6 +210,16 @@ public class RequiredDataAdviceTest {
 	public void isOpenmrsObjectCollection_shouldReturnFalseIfFieldIsCollectionOfOtherObjects() throws Exception {
 		Assert.assertFalse(RequiredDataAdvice.isOpenmrsObjectCollection(ClassWithOtherFields.class
 		        .getDeclaredField("locales")));
+	}
+	
+	/**
+	 * @see {@link RequiredDataAdvice#isOpenmrsObjectCollection(Field)}
+	 */
+	@Test
+	@Verifies(value = "should return false if field is collection of parameterized type", method = "isOpenmrsObjectCollection(Field)")
+	public void isOpenmrsObjectCollection_shouldReturnFalseIfFieldIsCollectionOfParameterizedType() throws Exception {
+		Assert.assertFalse(RequiredDataAdvice.isOpenmrsObjectCollection(ClassWithOtherFields.class
+				.getDeclaredField("nestedGenericProperty")));
 	}
 	
 	/**
