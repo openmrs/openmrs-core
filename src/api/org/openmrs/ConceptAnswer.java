@@ -15,30 +15,40 @@ package org.openmrs;
 
 import java.util.Date;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 
 /**
- * ConceptAnswer
+ * This class represents one option for an answer to a question type of {@link Concept}. The link to
+ * the parent question Concept is stored in {@link #getConcept()} and the answer this object is
+ * representing is stored in {@link #getAnswerConcept()}.
+ * 
+ * @see Concept#getAnswers()
  */
 @Root
 public class ConceptAnswer extends BaseOpenmrsObject implements Auditable, java.io.Serializable {
 	
 	public static final long serialVersionUID = 3744L;
 	
-	private transient Log log = LogFactory.getLog(this.getClass());
-	
 	// Fields
 	private Integer conceptAnswerId;
 	
-	private Concept concept; // concept to answer
+	/**
+	 * The question concept that this object is answering
+	 */
+	private Concept concept;
 	
-	private Concept answerConcept; // answer for <code>concept</code>
+	/**
+	 * The answer to the question
+	 */
+	private Concept answerConcept;
 	
-	private Drug answerDrug; // answer in drug form for <code>concept</code>
+	/**
+	 * The {@link Drug} answer to the question. This can be null if this does not represent a drug
+	 * type of answer
+	 */
+	private Drug answerDrug;
 	
 	private User creator;
 	
@@ -64,6 +74,10 @@ public class ConceptAnswer extends BaseOpenmrsObject implements Auditable, java.
 		this.answerDrug = d;
 	}
 	
+	/**
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 * @should not return true given an object with just a null drug answer
+	 */
 	public boolean equals(Object obj) {
 		if (obj instanceof ConceptAnswer) {
 			ConceptAnswer c = (ConceptAnswer) obj;
@@ -71,13 +85,25 @@ public class ConceptAnswer extends BaseOpenmrsObject implements Auditable, java.
 				return (this.conceptAnswerId.equals(c.getConceptAnswerId()));
 			else {
 				boolean ret = true;
-				if (this.concept != null && c.getConcept() != null)
+				
+				// if one side is null and the other is not, return false
+				if (concept == null && c.getConcept() != null)
+					return false;
+				else if (this.concept != null)
 					ret = ret && this.concept.equals(c.getConcept());
-				if (this.answerConcept != null && c.getAnswerConcept() != null)
+				
+				// if one side is null and the other is not, return false
+				if (this.answerConcept == null && c.getAnswerConcept() != null)
+					return false;
+				else if (this.answerConcept != null)
 					ret = ret && this.answerConcept.equals(c.getAnswerConcept());
-				if (this.answerDrug != null && c.getAnswerDrug() != null)
+				
+				// if one side is null and the other is not, return false
+				if (this.answerDrug == null && c.getAnswerDrug() != null)
+					return false;
+				else if (this.answerDrug != null)
 					ret = ret && this.answerDrug.equals(c.getAnswerDrug());
-				//log.debug("asdf " + getAnswerConcept().getConceptId() + "=" + c.getAnswerConcept().getConceptId() + "?" + ret);
+				
 				return ret;
 			}
 			
