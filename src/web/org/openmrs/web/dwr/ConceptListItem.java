@@ -113,10 +113,10 @@ public class ConceptListItem {
 	private void initialize(Concept concept, ConceptName conceptName, Locale locale) {
 		if (concept != null) {
 			conceptId = concept.getConceptId();
-			conceptNameId = conceptName.getConceptNameId();
 			ConceptName conceptShortName = concept.getShortNameInLocale(locale);
 			name = shortName = description = "";
 			if (conceptName != null) {
+				conceptNameId = conceptName.getConceptNameId();
 				name = WebUtil.escapeHTML(conceptName.getName());
 				
 				// if the name hit is not the preferred one, put the preferred one here
