@@ -10,6 +10,12 @@
 <script type="text/javascript" src="<c:url value="/scripts/jquery/jquery-ui-1.7.2/jquery-ui-1.7.2.core.min.js"/>"></script>
 <script type="text/javascript" src="<c:url value="/scripts/jquery/jquery-ui-1.7.2/jquery-ui-1.7.2.tabs.min.js"/>"></script>
 <script type="text/javascript" src="<c:url value="/scripts/jquery/jquery-ui-1.7.2/jquery-ui-1.7.2.dialog.min.js"/>"></script>
+<script src="/openmrs/dwr/interface/DWRAdministrationService.js" type="text/javascript" ></script>
+<link rel="stylesheet" href="http://dev.jquery.com/view/trunk/plugins/autocomplete/jquery.autocomplete.css" type="text/css" />
+<script type="text/javascript" src="http://dev.jquery.com/view/trunk/plugins/autocomplete/lib/jquery.bgiframe.min.js"></script>
+<script type="text/javascript" src="http://dev.jquery.com/view/trunk/plugins/autocomplete/lib/jquery.dimensions.js"></script>
+<script type="text/javascript" src="http://dev.jquery.com/view/trunk/plugins/autocomplete/jquery.autocomplete.js"></script>
+<script type="text/javascript" src="http://dev.jquery.com/view/trunk/plugins/validate/jquery.validate.js"></script>
 
 <style type="text/css">
 #dialog {
@@ -56,7 +62,8 @@ $(function() {
 		modal: true,
 		width: 404,
 		buttons: {
-			'Create property': function() {
+			'Save': function() {
+				DWRAdministrationService.setGlobalProperty($('#property-namespace').val(), $('#property-name').val(), $('#property-type').val(), $('#property-value').val(), $('#property-description').val());
 				$(this).dialog('close');
 			},
 			'Cancel': function() {
@@ -70,7 +77,28 @@ $(function() {
 	$('#add-global-property').click(function() {
 		$('#dialog').dialog('open');
 	});
-	
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+	var autocompleteList = "java.lang.String;java.util.List<String>".split(";");
+	$("#property-type").autocomplete(
+		autocompleteList,
+		{ autoFill: true, delay: 0, minChars: 0 }
+	);
+	$("#add-property-form").validate({
+		rules : {
+			"propertyName": "required",
+			"propertyType": "required",
+			"propertyValue": "required"
+		},
+		messages : {
+			"propertyName": "Name is required",
+			"propertyType": "Type is required",
+			"propertyValue": "Value is required"
+		}
+	});
 });
 </script>
 
@@ -166,22 +194,26 @@ img {
 </style>
 
 <div id="dialog" title="Add new global property">
-	<form>
+	<form id="add-property-form">
 		<div class="record">
-			<label for="namespace">Namespace</label>
-			<input type="text" name="namespace" id="namespace" />
+			<label for="property-namespace">Namespace</label>
+			<input type="text" name="propertyNamespace" id="property-namespace" />
 		</div>
 		<div class="record">
 			<label for="property-name">Property name</label>
-			<input type="text" name="propertyName" id="propertyName" />
-		</div>
-		<div class="record">
-			<label for="property-value">Property value</label>
-			<input type="text" name="propertyValue" id="propertyValue" />
+			<input type="text" name="propertyName" id="property-name" />
 		</div>
 		<div class="record">
 			<label for="property-type">Property type</label>
-			<input type="text" name="propertyType" id="propertyType" />
+			<input type="text" name="propertyType" id="property-type" />
+		</div>
+		<div class="record">
+			<label for="property-value">Property value</label>
+			<input type="text" name="propertyValue" id="property-value" />
+		</div>
+		<div class="record">
+			<label for="property-description">Description</label>
+			<textarea name="propertyDescription" id="property-description"></textarea>
 		</div>
 	</form>
 </div>

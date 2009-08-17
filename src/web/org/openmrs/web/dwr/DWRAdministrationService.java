@@ -13,12 +13,21 @@
  */
 package org.openmrs.web.dwr;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.StringTokenizer;
+
+import org.apache.log4j.Logger;
+import org.openmrs.GlobalProperty;
 import org.openmrs.api.context.Context;
 
 /**
  *
  */
 public class DWRAdministrationService {
+	
+	private static final Logger log = Logger.getLogger(DWRAdministrationService.class);
 	
 	/**
 	 * Gets the value of a global property
@@ -31,13 +40,36 @@ public class DWRAdministrationService {
 	}
 	
 	/**
-	 * Sets the value of a global property
+	 * Sets the type and the value of a global property
 	 * 
+	 * @param namespace
 	 * @param name
-	 * @param newValue
+	 * @param type
+	 * @param value
+	 * @param description
 	 */
-	public void setGlobalProperty(String name, String newValue) {
-		Context.getAdministrationService().setGlobalProperty(name, newValue);
+	public void setGlobalProperty(String namespace, String name, String type, String value, String description) {
+
+		GlobalProperty globalProperty = new GlobalProperty();
+
+		if (namespace != "") {
+			globalProperty.setProperty(namespace + "." + name);
+		} else {
+			globalProperty.setProperty(name);
+		}
+
+		globalProperty.setDefaultPropertyType(type);
+		globalProperty.setPropertyType(type);
+
+		log.debug("Given value: " + value);
+		
+		globalProperty.setDefaultPropertyValue(value);
+		globalProperty.setPropertyValue(value);
+
+		globalProperty.setDescription(description);
+		globalProperty.setCreator(Context.getAuthenticatedUser());
+		globalProperty.setDateCreated(new Date());
+
+		Context.getAdministrationService().saveGlobalProperty(globalProperty);
 	}
-	
 }

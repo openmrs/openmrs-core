@@ -29,7 +29,7 @@ public class GlobalProperty {
 	
 	private String description;
 	
-	private String defaultPropertyValue;
+	private String defaultPropertyValue = "java.lang.String";
 	
 	private String propertyType;
 	
