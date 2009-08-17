@@ -195,7 +195,7 @@
 			<fileset file="${metadata.dir}/images/openmrs-logo-small.gif" />
 		</copy>
 		<javadoc packagenames="org.openmrs.*" destdir="${doc.dir}/api" classpathref="api.compile.classpath" author="true" version="true" windowtitle="${doc.title}" header="${doc.header}" footer="${doc.footer}" bottom="${doc.bottom}">
-			<tag name="should" scope="all" description="Behavior test descriptor for a method" /> 
+			<tag name="should" scope="all" description="Expected behavior: " />
 			<packageset dir="${src.dir}/api" defaultexcludes="yes">
 				<include name="org/openmrs/**" />
 				<exclude name="**/.svn" />
