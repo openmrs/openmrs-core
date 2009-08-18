@@ -313,7 +313,7 @@ public class WebModuleUtil {
 						log.warn(msg + " for module: " + mod.getModuleId(), e);
 					
 					try {
-						ModuleFactory.stopModule(mod); //remove jar from classloader play 
+						ModuleFactory.stopModule(mod, true, true); //remove jar from classloader play 
 						stopModule(mod, servletContext, true);
 					}
 					catch (Exception e2) {
