@@ -278,7 +278,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @param includeRetired
 	 * @return encounter types list
 	 * @throws APIException
-	 * @should non return retired types
+	 * @should not return retired types
 	 * @should include retired types with true includeRetired parameter
 	 */
 	@Transactional(readOnly = true)

@@ -30,7 +30,6 @@ import java.util.Vector;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
@@ -971,11 +970,11 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link EncounterService#getAllEncounterTypes(null)}
+	 * @see {@link EncounterService#getAllEncounterTypes(boolean)}
 	 */
 	@Test
-	@Verifies(value = "should non return retired types", method = "getAllEncounterTypes(null)")
-	public void getAllEncounterTypes_shouldNonReturnRetiredTypes() throws Exception {
+	@Verifies(value = "should not return retired types", method = "getAllEncounterTypes(boolean)")
+	public void getAllEncounterTypes_shouldNotReturnRetiredTypes() throws Exception {
 		EncounterService encounterService = Context.getEncounterService();
 		List<EncounterType> encounterTypes = encounterService.getAllEncounterTypes(false);
 		
@@ -985,18 +984,6 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		// make sure we only get the two non retired encounter types
 		// defined in the initialData.xml
 		assertEquals(2, encounterTypes.size());
-	}
-	
-	/**
-	 * @see {@link EncounterService#getAllEncounterTypes()}
-	 */
-	@Test
-	@Verifies(value = "should not return retired types", method = "getAllEncounterTypes()")
-	public void getAllEncounterTypes_shouldNotReturnRetiredTypes() throws Exception {
-		EncounterService encounterService = Context.getEncounterService();
-		List<EncounterType> types = encounterService.getAllEncounterTypes();
-		assertNotNull(types);
-		assertEquals(2, types.size());
 	}
 	
 	/**
