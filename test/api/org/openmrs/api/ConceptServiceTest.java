@@ -717,5 +717,20 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	public void getDrugByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid()
 			throws Exception {
 		Assert.assertNull(Context.getConceptService().getDrugByUuid("some invalid uuid"));
-	}	
+	}
+
+	/**
+     * @see {@link ConceptService#getConceptByName(String)}
+     * 
+     */
+    @Test
+    @Verifies(value = "should find concepts with names in more specific locales", method = "getConceptByName(String)")
+    public void getConceptByName_shouldFindConceptsWithNamesInMoreSpecificLocales() throws Exception {
+    	executeDataSet(INITIAL_CONCEPTS_XML);
+    	// sanity check
+    	Assert.assertEquals(Context.getLocale(), Locale.UK);
+    	
+    	// make sure that concepts are found that have a specific locale on them
+    	Assert.assertNotNull(Context.getConceptService().getConceptByName("Numeric name with en_GB locale"));
+    }	
 }
