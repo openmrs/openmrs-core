@@ -8,6 +8,7 @@
   <concept_description concept_description_id="2" concept_id="2" description="this is another description" locale="en" creator="1" date_created="2005-01-01 00:00:00.0" uuid="a72dac37-b593-46a1-a24b-e3da6dbcc521"/>
   <concept_name concept_id="1" name="Some non numeric concept name" locale="en" creator="1" date_created="2005-01-01 00:00:00.0" concept_name_id="1" voided="false" uuid="8edfd54f-b189-43dd-86e0-913591978e48"/>
   <concept_name concept_id="2" name="Some numeric concept name" locale="en" creator="1" date_created="2005-01-01 00:00:00.0" concept_name_id="2" voided="false" uuid="d8402dab-1e32-4f17-9654-a889a4eb9a89"/>
+  <concept_name concept_id="2" name="Numeric name with en_GB locale" locale="en_GB" creator="1" date_created="2005-01-01 00:00:00.0" concept_name_id="2" voided="false" uuid="bbbb2dab-1e32-4f17-a654-0000a4eb9a8e"/>
   <concept_name_tag concept_name_tag_id="1" tag="default" description="name to use when nothing else is available" creator="1" date_created="2007-05-01 00:00:00.0" voided="false" uuid="7066d481-5a17-40a4-bdb0-c4981c8587d1"/>
   <concept_name_tag concept_name_tag_id="2" tag="short" description="preferred short name for a concept" creator="1" date_created="2007-05-01 00:00:00.0" voided="false" uuid="d5160f03-f1a8-4dea-b958-2fc763a05ace"/>
   <concept_name_tag concept_name_tag_id="3" tag="synonym" description="a different word with similar meaning" creator="1" date_created="2007-05-01 00:00:00.0" voided="false" uuid="01d2e521-bca7-4ad6-b408-9ed6b8642659"/>
