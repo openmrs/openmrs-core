@@ -218,14 +218,17 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should keep id for new concept if one is specified", method = "saveConcept(Concept)")
 	public void saveConcept_shouldKeepIdForNewConceptIfOneIsSpecified() throws Exception {
+		Integer conceptId = 343434; // a nonexistent concept id;
+		Assert.assertNull(conceptService.getConcept(conceptId)); // sanity check
+		
 		Concept concept = new Concept();
 		concept.addName(new ConceptName("Weight", Locale.US));
-		concept.setConceptId(5089);
+		concept.setConceptId(conceptId);
 		concept.setDatatype(Context.getConceptService().getConceptDatatypeByName("Numeric"));
 		concept.setConceptClass(Context.getConceptService().getConceptClassByName("Finding"));
 		
 		concept = Context.getConceptService().saveConcept(concept);
-		assertTrue(concept.getConceptId().equals(5089));
+		assertTrue(concept.getConceptId().equals(conceptId));
 	}
 	
 	/**

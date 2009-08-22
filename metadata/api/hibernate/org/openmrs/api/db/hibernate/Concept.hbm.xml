@@ -10,7 +10,8 @@
 		<!--  cache usage="read-write"/ -->
 		
 		<id name="conceptId" type="java.lang.Integer"
-			column="concept_id">
+			column="concept_id"
+			unsaved-value="undefined">
 			<generator class="org.openmrs.api.db.hibernate.NativeIfNotAssignedIdentityGenerator" />
 		</id>
 
