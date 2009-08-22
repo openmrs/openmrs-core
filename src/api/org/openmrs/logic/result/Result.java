@@ -582,7 +582,7 @@ public class Result extends ArrayList<Result> {
 	public String toString() {
 		if (isSingleResult()) {
 			if (datatype == null) {
-				return valueText;
+				return valueText == null ? "" : valueText;
 			}
 			
 			switch (datatype) {
