@@ -142,22 +142,19 @@ public class HibernatePatientDAO implements PatientDAO {
 		}
 		
 		if (stubInsertNeeded) {
-			/*
-		try {
-				PreparedStatement ps = connection
-				        .prepareStatement("INSERT INTO patient (patient_id, creator, voided, date_created) VALUES (?, ?, 0, ?)");
-			
-			ps.setInt(1, patient.getPatientId());
-			ps.setInt(2, patient.getCreator().getUserId());
-			ps.setDate(3, new java.sql.Date(patient.getDateCreated().getTime()));
-	
-			ps.executeUpdate();
+			try {
+					PreparedStatement ps = connection
+					        .prepareStatement("INSERT INTO patient (patient_id, creator, voided, date_created) VALUES (?, ?, 0, ?)");
+				
+				ps.setInt(1, patient.getPatientId());
+				ps.setInt(2, patient.getCreator().getUserId());
+				ps.setDate(3, new java.sql.Date(patient.getDateCreated().getTime()));
+		
+				ps.executeUpdate();
+				}
+				catch (SQLException e) {
+				log.warn("SQL Exception while trying to create a patient stub", e);
 			}
-			catch (SQLException e) {
-			log.warn("SQL Exception while trying to create a patient stub", e);
-		}
-			*/
-			throw new RuntimeException("This uses a PreparedStatement so it won't work with sync");
 		}
 		
 		// commenting this out to get the save patient as a user option to work correctly
