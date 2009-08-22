@@ -164,9 +164,12 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	public boolean equals(Object obj) {
 		if (obj instanceof Concept) {
 			Concept c = (Concept) obj;
-			return (this.getConceptId().equals(c.getConceptId()));
+			if (getConceptId() == null && c.getConceptId() == null)
+				return c == obj;
+			if (getConceptId() != null)
+				return (this.getConceptId().equals(c.getConceptId()));
 		}
-		return false;
+		return this == obj;
 	}
 	
 	/**
@@ -242,7 +245,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 */
 	public void addAnswer(ConceptAnswer conceptAnswer) {
 		if (conceptAnswer != null) {
-			if (getAnswers() == null) {
+			if (getAnswers(true) == null) {
 				answers = new HashSet<ConceptAnswer>();
 				conceptAnswer.setConcept(this);
 				answers.add(conceptAnswer);
