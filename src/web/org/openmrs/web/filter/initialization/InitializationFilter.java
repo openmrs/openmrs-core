@@ -158,6 +158,9 @@ public class InitializationFilter extends StartupFilter {
 		if (!runtimeProperties.exists()) {
 			try {
 				runtimeProperties.createNewFile();
+				// reset the error objects in case of refresh
+				wizardModel.canCreate = true;
+				wizardModel.cannotCreateErrorMessage = "";
 			}
 			catch (IOException io) {
 				wizardModel.canCreate = false;

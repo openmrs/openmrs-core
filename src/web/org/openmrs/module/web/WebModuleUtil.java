@@ -188,6 +188,7 @@ public class WebModuleUtil {
 						else {
 							absPath.append("/view/module/");
 						}
+						
 						absPath.append(mod.getModuleId() + "/" + filepath);
 						if (log.isDebugEnabled())
 							log.debug("Moving file from: " + name + " to " + absPath);
@@ -199,10 +200,16 @@ public class WebModuleUtil {
 								outFile.mkdirs();
 							}
 						} else {
+							// make the parent directories in case it doesn't exist
+							File parentDir = outFile.getParentFile();
+							if (!parentDir.exists()) {
+								parentDir.mkdirs();
+							}
+							
 							//if (outFile.getName().endsWith(".jsp") == false)
 							//	outFile = new File(absPath.replace("/", File.separator) + MODULE_NON_JSP_EXTENSION);
 							
-							// copy the contents over to the webpp for non directories
+							// copy the contents over to the webapp for non directories
 							OutputStream outStream = new FileOutputStream(outFile, false);
 							InputStream inStream = jarFile.getInputStream(entry);
 							OpenmrsUtil.copyFile(inStream, outStream);
