@@ -52,7 +52,7 @@
 				<tbody>
 	</c:if>
 			
-					<form method="post">
+				<form method="post">
 					<input type="hidden" name="moduleId" value="${module.moduleId}" />
 					<tr class="<c:choose><c:when test="${varStatus.index % 2 == 0}">oddRow</c:when><c:otherwise>evenRow</c:otherwise></c:choose>" id="${module.moduleId}">
 						<c:choose>
@@ -70,9 +70,10 @@
 								<td valign="top"><input type="image" src="${pageContext.request.contextPath}/images/trash.gif" name="unload" onclick="return confirm('<spring:message code="Module.unloadWarning"/>');" title="<spring:message code="Module.unload.help"/>" title="<spring:message code="Module.unload"/>" alt="<spring:message code="Module.unload"/>" /></td>
 							</c:when>
 							<c:otherwise>
-								<td valign="top" align="center" colspan="2">
+								<td valign="top">
 									<img src="${pageContext.request.contextPath}/images/lock.gif" title="<spring:message code="Module.locked.help"/>" alt="<spring:message code="Module.locked"/>" />
 								</td>
+								<td></td>
 							</c:otherwise>
 						</c:choose>
 						<td valign="top">${module.name} <c:if test="${not module.started}"><b id="moduleNotStarted" style="white-space: nowrap">[<spring:message code="Module.notStarted"/>]</b></c:if></td>
