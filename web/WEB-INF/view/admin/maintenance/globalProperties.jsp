@@ -11,6 +11,7 @@
 <script type="text/javascript" src="<c:url value="/scripts/jquery/jquery-ui-1.7.2/jquery-ui-1.7.2.tabs.min.js"/>"></script>
 <script type="text/javascript" src="<c:url value="/scripts/jquery/jquery-ui-1.7.2/jquery-ui-1.7.2.dialog.min.js"/>"></script>
 <script src="/openmrs/dwr/interface/DWRAdministrationService.js" type="text/javascript" ></script>
+<script src="/openmrs/dwr/interface/DWRConceptService.js" type="text/javascript" ></script>
 <link rel="stylesheet" href="http://dev.jquery.com/view/trunk/plugins/autocomplete/jquery.autocomplete.css" type="text/css" />
 <script type="text/javascript" src="http://dev.jquery.com/view/trunk/plugins/autocomplete/lib/jquery.bgiframe.min.js"></script>
 <script type="text/javascript" src="http://dev.jquery.com/view/trunk/plugins/autocomplete/lib/jquery.dimensions.js"></script>
@@ -82,11 +83,27 @@ $(function() {
 
 <script type="text/javascript">
 $(document).ready(function() {
-	var autocompleteList = "java.lang.String;java.util.List<String>".split(";");
+	var autocompleteList = "java.lang.String;org.openmrs.Concept".split(";");
 	$("#property-type").autocomplete(
-		autocompleteList,
-		{ autoFill: true, delay: 0, minChars: 0 }
-	);
+		autocompleteList, 
+		{ 
+			autoFill: true, 
+			delay: 0, 
+			minChars: 0 
+		}
+	).result(function () {
+		// TODO: show concepts autocomplete
+		if ($("#property-type").val() == "org.openmrs.Concept") {
+			$("#property-value").autocomplete(
+				DWRConceptService.getAllConcepts(),
+				{ 
+					autoFill: true, 
+					delay: 0, 
+					minChars: 0 
+				}
+			);
+		}  
+	});
 	$("#add-property-form").validate({
 		rules : {
 			"propertyName": "required",

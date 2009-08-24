@@ -61,6 +61,7 @@
 	
 		<create creator="new" javascript="DWRConceptService">
 			<param name="class" value="org.openmrs.web.dwr.DWRConceptService" />
+			<include method="getAllConcepts" />
 			<include method="findConcepts" />
 			<include method="findConceptAnswers" />
 			<include method="getQuestionsForAnswer" />

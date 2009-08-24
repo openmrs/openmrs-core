@@ -32,9 +32,11 @@ import org.openmrs.ConceptWord;
 import org.openmrs.Drug;
 import org.openmrs.Field;
 import org.openmrs.User;
+import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.impl.ConceptServiceImpl;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 
@@ -376,4 +378,8 @@ public class DWRConceptService {
 		return ret;
 	}
 	
+	public List<Concept> getAllConcepts() {
+		
+		return Context.getConceptService().getAllConcepts(null, true, true);
+	}
 }
