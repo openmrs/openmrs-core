@@ -16,7 +16,6 @@ package org.openmrs.web.filter.initialization;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.Writer;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -126,7 +125,7 @@ public class InitializationFilter extends StartupFilter {
 	/**
 	 * The model object that holds all the properties that the rendered templates use. All
 	 * attributes on this object are made available to all templates via reflection in the
-	 * {@link #renderTemplate(String, Map, Writer)} method.
+	 * {@link #renderTemplate(String, Map, httpResponse)} method.
 	 */
 	private InitializationWizardModel wizardModel = null;
 	
@@ -149,8 +148,6 @@ public class InitializationFilter extends StartupFilter {
 	 */
 	protected void doGet(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException,
 	                                                                                      ServletException {
-		
-		Writer writer = httpResponse.getWriter();
 		
 		Map<String, Object> referenceMap = new HashMap<String, Object>();
 		
@@ -183,7 +180,8 @@ public class InitializationFilter extends StartupFilter {
 		wizardModel.runtimePropertiesPath = runtimeProperties.getAbsolutePath();
 		
 		// do step one of the wizard
-		renderTemplate(DEFAULT_PAGE, referenceMap, writer);
+		httpResponse.setContentType("text/html");
+		renderTemplate(DEFAULT_PAGE, referenceMap, httpResponse);
 	}
 	
 	/**
@@ -197,7 +195,6 @@ public class InitializationFilter extends StartupFilter {
 		
 		String page = httpRequest.getParameter("page");
 		Map<String, Object> referenceMap = new HashMap<String, Object>();
-		Writer writer = httpResponse.getWriter();
 		
 		// TODO make these page names variables.
 		// step one
@@ -238,13 +235,13 @@ public class InitializationFilter extends StartupFilter {
 				page = DATABASE_TABLES_AND_USER;
 			}
 			
-			renderTemplate(page, referenceMap, writer);
+			renderTemplate(page, referenceMap, httpResponse);
 			
 		} // step two
 		else if (DATABASE_TABLES_AND_USER.equals(page)) {
 			
 			if ("Back".equals(httpRequest.getParameter("back"))) {
-				renderTemplate(DATABASE_SETUP, referenceMap, writer);
+				renderTemplate(DATABASE_SETUP, referenceMap, httpResponse);
 				return;
 			}
 			
@@ -276,12 +273,12 @@ public class InitializationFilter extends StartupFilter {
 				page = OTHER_RUNTIME_PROPS;
 			}
 			
-			renderTemplate(page, referenceMap, writer);
+			renderTemplate(page, referenceMap, httpResponse);
 		} // step three
 		else if (OTHER_RUNTIME_PROPS.equals(page)) {
 			
 			if ("Back".equals(httpRequest.getParameter("back"))) {
-				renderTemplate(DATABASE_TABLES_AND_USER, referenceMap, writer);
+				renderTemplate(DATABASE_TABLES_AND_USER, referenceMap, httpResponse);
 				return;
 			}
 			
@@ -294,13 +291,13 @@ public class InitializationFilter extends StartupFilter {
 				page = IMPLEMENTATION_ID_SETUP;
 			}
 			
-			renderTemplate(page, referenceMap, writer);
+			renderTemplate(page, referenceMap, httpResponse);
 			
 		} // optional step four
 		else if (ADMIN_USER_SETUP.equals(page)) {
 			
 			if ("Back".equals(httpRequest.getParameter("back"))) {
-				renderTemplate(OTHER_RUNTIME_PROPS, referenceMap, writer);
+				renderTemplate(OTHER_RUNTIME_PROPS, referenceMap, httpResponse);
 				return;
 			}
 			
@@ -310,14 +307,14 @@ public class InitializationFilter extends StartupFilter {
 			// throw back to admin user if passwords don't match
 			if (!wizardModel.adminUserPassword.equals(adminUserConfirm)) {
 				errors.add("Admin passwords don't match");
-				renderTemplate(ADMIN_USER_SETUP, referenceMap, writer);
+				renderTemplate(ADMIN_USER_SETUP, referenceMap, httpResponse);
 				return;
 			}
 			
 			// throw back if the user didn't put in a password
 			if (wizardModel.adminUserPassword.equals("")) {
 				errors.add("An admin password is required");
-				renderTemplate(ADMIN_USER_SETUP, referenceMap, writer);
+				renderTemplate(ADMIN_USER_SETUP, referenceMap, httpResponse);
 				return;
 			}
 			
@@ -327,7 +324,7 @@ public class InitializationFilter extends StartupFilter {
 			catch (PasswordException p) {
 				errors
 				        .add("The password is not long enough, does not contain both uppercase characters and a number, or matches the username.");
-				renderTemplate(ADMIN_USER_SETUP, referenceMap, writer);
+				renderTemplate(ADMIN_USER_SETUP, referenceMap, httpResponse);
 				return;
 			}
 			
@@ -335,16 +332,16 @@ public class InitializationFilter extends StartupFilter {
 				page = IMPLEMENTATION_ID_SETUP;
 			}
 			
-			renderTemplate(page, referenceMap, writer);
+			renderTemplate(page, referenceMap, httpResponse);
 			
 		} // optional step five 
 		else if (IMPLEMENTATION_ID_SETUP.equals(page)) {
 			
 			if ("Back".equals(httpRequest.getParameter("back"))) {
 				if (wizardModel.createTables)
-					renderTemplate(ADMIN_USER_SETUP, referenceMap, writer);
+					renderTemplate(ADMIN_USER_SETUP, referenceMap, httpResponse);
 				else
-					renderTemplate(OTHER_RUNTIME_PROPS, referenceMap, writer);
+					renderTemplate(OTHER_RUNTIME_PROPS, referenceMap, httpResponse);
 				return;
 			}
 			
@@ -356,7 +353,7 @@ public class InitializationFilter extends StartupFilter {
 			// throw back if the user-specified ID is invalid (contains ^ or |).
 			if (wizardModel.implementationId.indexOf('^') != -1 || wizardModel.implementationId.indexOf('|') != -1) {
 				errors.add("Implementation ID cannot contain '^' or '|'");
-				renderTemplate(IMPLEMENTATION_ID_SETUP, referenceMap, writer);
+				renderTemplate(IMPLEMENTATION_ID_SETUP, referenceMap, httpResponse);
 				return;
 			}
 			
@@ -364,11 +361,11 @@ public class InitializationFilter extends StartupFilter {
 				page = WIZARD_COMPLETE;
 			}
 			
-			renderTemplate(page, referenceMap, writer);
+			renderTemplate(page, referenceMap, httpResponse);
 		} else if (WIZARD_COMPLETE.equals(page)) {
 			
 			if ("Back".equals(httpRequest.getParameter("back"))) {
-				renderTemplate(IMPLEMENTATION_ID_SETUP, referenceMap, writer);
+				renderTemplate(IMPLEMENTATION_ID_SETUP, referenceMap, httpResponse);
 				return;
 			}
 			
@@ -376,7 +373,7 @@ public class InitializationFilter extends StartupFilter {
 			
 			initJob = new InitializationCompletion();
 			initJob.start();
-			renderTemplate(PROGRESS_VM, referenceMap, writer);
+			renderTemplate(PROGRESS_VM, referenceMap, httpResponse);
 		} else if (PROGRESS_VM_AJAXREQUEST.equals(page)) {
 			httpResponse.setContentType("text/json");
 			httpResponse.setHeader("Cache-Control", "no-cache");
@@ -400,7 +397,7 @@ public class InitializationFilter extends StartupFilter {
 				}
 			}
 			
-			writer.write(toJSONString(result));
+			httpResponse.getWriter().write(toJSONString(result));
 		}
 	}
 	
