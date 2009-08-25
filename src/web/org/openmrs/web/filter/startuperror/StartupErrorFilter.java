@@ -51,7 +51,7 @@ public class StartupErrorFilter extends StartupFilter {
 	protected void doGet(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException,
 	                                                                                      ServletException {
 		
-		renderTemplate(DEFAULT_PAGE, new HashMap<String, Object>(), httpResponse.getWriter());
+		renderTemplate(DEFAULT_PAGE, new HashMap<String, Object>(), httpResponse);
 	}
 	
 	/**
