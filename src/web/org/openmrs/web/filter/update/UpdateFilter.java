@@ -14,7 +14,6 @@
 package org.openmrs.web.filter.update;
 
 import java.io.IOException;
-import java.io.Writer;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -103,12 +102,10 @@ public class UpdateFilter extends StartupFilter {
 	protected void doGet(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException,
 	                                                                                      ServletException {
 		
-		Writer writer = httpResponse.getWriter();
-		
 		Map<String, Object> referenceMap = new HashMap<String, Object>();
 		
 		// do step one of the wizard
-		renderTemplate(DEFAULT_PAGE, referenceMap, writer);
+		renderTemplate(DEFAULT_PAGE, referenceMap, httpResponse);
 	}
 	
 	/**
@@ -123,7 +120,6 @@ public class UpdateFilter extends StartupFilter {
 		
 		String page = httpRequest.getParameter("page");
 		Map<String, Object> referenceMap = new HashMap<String, Object>();
-		Writer writer = httpResponse.getWriter();
 		
 		// step one
 		if (DEFAULT_PAGE.equals(page)) {
@@ -136,7 +132,7 @@ public class UpdateFilter extends StartupFilter {
 				log.debug("Authentication successful.  Redirecting to 'reviewupdates' page.");
 				// set a variable so we know that the user started here
 				authenticatedSuccessfully = true;
-				renderTemplate(REVIEW_CHANGES, referenceMap, writer);
+				renderTemplate(REVIEW_CHANGES, referenceMap, httpResponse);
 			} else {
 				// if not authenticated, show main page again
 				try {
@@ -149,14 +145,14 @@ public class UpdateFilter extends StartupFilter {
 				}
 				errors.add("Unable to authenticate as a User with the " + OpenmrsConstants.SUPERUSER_ROLE
 				        + " role. Invalid username or password");
-				renderTemplate(DEFAULT_PAGE, referenceMap, writer);
+				renderTemplate(DEFAULT_PAGE, referenceMap, httpResponse);
 			}
 		} // step two
 		else if (REVIEW_CHANGES.equals(page)) {
 			
 			if (!authenticatedSuccessfully) {
 				// throw the user back to the main page because they are cheating
-				renderTemplate(DEFAULT_PAGE, referenceMap, writer);
+				renderTemplate(DEFAULT_PAGE, referenceMap, httpResponse);
 				return;
 			}
 			
@@ -164,7 +160,7 @@ public class UpdateFilter extends StartupFilter {
 			updateJob.start();
 			
 			referenceMap.put("updateJobStarted", true);
-			renderTemplate(REVIEW_CHANGES, referenceMap, writer);
+			renderTemplate(REVIEW_CHANGES, referenceMap, httpResponse);
 			
 		} else if (PROGRESS_VM_AJAXREQUEST.equals(page)) {
 			
@@ -191,7 +187,7 @@ public class UpdateFilter extends StartupFilter {
 			}
 			
 			String jsonText = toJSONString(result);
-			writer.write(jsonText);
+			httpResponse.getWriter().write(jsonText);
 		}
 	}
 	

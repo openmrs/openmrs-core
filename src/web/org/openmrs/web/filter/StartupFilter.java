@@ -19,7 +19,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.Writer;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -143,8 +142,7 @@ public abstract class StartupFilter implements Filter {
             // Linux requires setting logging properties to initialize Velocity Context.            
             props.setProperty( RuntimeConstants.RUNTIME_LOG_LOGSYSTEM_CLASS,
                 "org.apache.velocity.runtime.log.CommonsLogLogChute" );
-            props.setProperty(CommonsLogLogChute.LOGCHUTE_COMMONS_LOG_NAME,
-                "initial_wizard_velocity");
+			props.setProperty(CommonsLogLogChute.LOGCHUTE_COMMONS_LOG_NAME, "initial_wizard_velocity");
 			
 			// so the vm pages can import the header/footer
 			props.setProperty(RuntimeConstants.RESOURCE_LOADER, "class");
@@ -189,7 +187,9 @@ public abstract class StartupFilter implements Filter {
 	 * @param referenceMap
 	 * @param writer
 	 */
-	protected void renderTemplate(String templateName, Map<String, Object> referenceMap, Writer writer) throws IOException {
+	protected void renderTemplate(String templateName, Map<String, Object> referenceMap, HttpServletResponse httpResponse)
+	                                                                                                                      throws IOException {
+		
 		VelocityContext velocityContext = new VelocityContext();
 		
 		if (referenceMap != null) {
@@ -221,9 +221,12 @@ public abstract class StartupFilter implements Filter {
 		
 		velocityContext.put("errors", errors);
 		
+		// explicitly set the content type for the response because some servlet containers are assuming text/plain
+		httpResponse.setContentType("text/html");
+		
 		try {
-			velocityEngine.evaluate(velocityContext, writer, this.getClass().getName(), new InputStreamReader(
-			        templateInputStream));
+			velocityEngine.evaluate(velocityContext, httpResponse.getWriter(), this.getClass().getName(),
+			    new InputStreamReader(templateInputStream));
 		}
 		catch (Exception e) {
 			throw new RuntimeException("Unable to process template: " + fullTemplatePath, e);
@@ -246,7 +249,7 @@ public abstract class StartupFilter implements Filter {
 	
 	/**
 	 * This string is prepended to all templateNames passed to
-	 * {@link #renderTemplate(String, Map, Writer)}
+	 * {@link #renderTemplate(String, Map, HttpServletResponse)}
 	 * 
 	 * @return string to prepend as the path for the templates
 	 */
@@ -334,8 +337,8 @@ public abstract class StartupFilter implements Filter {
 	}
 	
 	/**
-	 * Convenience method to convert the given object to a JSON string.
-	 * Supports Maps, Lists, Strings, Boolean, Double
+	 * Convenience method to convert the given object to a JSON string. Supports Maps, Lists,
+	 * Strings, Boolean, Double
 	 * 
 	 * @param object object to convert to json
 	 * @return JSON string to be eval'd in javascript
@@ -344,9 +347,9 @@ public abstract class StartupFilter implements Filter {
 		StringBuffer sb = new StringBuffer();
 		
 		if (object instanceof Map)
-			toJSONString((Map<String, Object>)object, sb);
+			toJSONString((Map<String, Object>) object, sb);
 		else if (object instanceof List)
-			toJSONString((List)object, sb);
+			toJSONString((List) object, sb);
 		else if (object instanceof Boolean)
 			sb.append(object.toString());
 		else
