@@ -667,7 +667,8 @@ public class ModuleFactory {
 			String moduleId = mod.getModuleId();
 			
 			// don't allow mandatory modules to be stopped
-			if (!isFailedStartup && ModuleUtil.getMandatoryModules().contains(moduleId)) {
+			// don't use database checks here because spring might be in a bad state
+			if (!isFailedStartup && mod.isMandatory()) {
 				throw new MandatoryModuleException(moduleId);
 			}
 			
