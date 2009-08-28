@@ -581,8 +581,9 @@ public final class Listener extends ContextLoaderListener {
 	 * Call WebModuleUtil.startModule on each started module
 	 * 
 	 * @param servletContext
+	 * @throws MandatoryModuleException if the context cannot restart due to a mandatory module exception
 	 */
-	public static void performWebStartOfModules(ServletContext servletContext) {
+	public static void performWebStartOfModules(ServletContext servletContext) throws MandatoryModuleException {
 		Log log = LogFactory.getLog(Listener.class);
 		
 		List<Module> startedModules = new ArrayList<Module>();
@@ -603,6 +604,10 @@ public final class Listener extends ContextLoaderListener {
 			try {
 				WebModuleUtil.refreshWAC(servletContext);
 			}
+			catch (MandatoryModuleException mme) {
+				// pass this up to the calling method so that openmrs loading stops
+				throw mme;
+			}
 			catch (Throwable t) {
 				log.fatal("Unable to refresh the spring application context. Unloading all modules,  Error was:", t);
 				try {
@@ -611,6 +616,10 @@ public final class Listener extends ContextLoaderListener {
 						ModuleFactory.stopModule(mod, true); // pass in the true value here so that the global properties aren't written to
 					}
 					WebModuleUtil.refreshWAC(servletContext);
+				}
+				catch (MandatoryModuleException mme) {
+					// pass this up to the calling method so that openmrs loading stops
+					throw mme;
 				}
 				catch (Throwable t2) {
 					log.warn("caught another error: ", t2);
