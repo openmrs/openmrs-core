@@ -494,7 +494,17 @@ public class HibernateConceptDAO implements ConceptDAO {
 				matchmode = MatchMode.ANYWHERE;
 			
 			criteria.add(Expression.like("names.name", name, matchmode));
-			criteria.add(Expression.like("names.locale", loc.getLanguage().substring(0, 2), MatchMode.START));
+			
+			String language = loc.getLanguage();
+			if (language.length() > 2) {
+				// if searching in specific locale like en_US
+				criteria.add(Expression.or(Expression.eq("names.locale", loc.getLanguage()), 
+							 Expression.eq("names.locale", loc.getLanguage().substring(0, 2))));
+			}
+			else {
+				// if searching in general locale like just "en"
+				criteria.add(Expression.like("names.locale", loc.getLanguage(), MatchMode.START));
+			}
 		}
 		
 		if (classes.size() > 0)
