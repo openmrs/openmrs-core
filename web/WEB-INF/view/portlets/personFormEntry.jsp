@@ -6,6 +6,12 @@ Parameters:
 	returnUrl (String): where to go back to when a form has been cancelled or successfully filled out
 --%>
 
+<style type="text/css">
+	.EncounterTypeClass {
+		color: lightgrey;
+	}
+</style>
+		
 <openmrs:htmlInclude file="/scripts/jquery/jquery-1.3.2.min.js" />
 <openmrs:htmlInclude file="/scripts/jquery/dataTables/css/dataTables.css" />
 <openmrs:htmlInclude file="/scripts/jquery/dataTables/js/jquery.dataTables.min.js" />
@@ -44,8 +50,15 @@ Parameters:
 			   without that selector, the .dialog() call for the popup was calling this twice */
 			$j("#formEntryTableParent${model.id} > #formEntryTable${model.id}").dataTable({
 				"bPaginate": false,
-				"bSort": false,
-				"bAutoWidth": false
+				"bAutoWidth": false,
+				"aaSorting": [[0, 'asc']],
+				"aoColumns":
+					[
+						{ "iDataSort": 1 },
+						{ "bVisible": false, "sType": "numeric" },
+						null,
+						{ "sClass": "EncounterTypeClass" }
+					]
 			});
 		});
 		function startDownloading() {
@@ -59,15 +72,17 @@ Parameters:
 		}
 	</script>
 	<div id="formEntryTableParent${model.id}">
-	<table id="formEntryTable${model.id}">
+	<table id="formEntryTable${model.id}" cellspacing="0" cellpadding="3">
 		<thead>
 			<tr>
 				<th><spring:message code="general.name"/></th>
+				<th><!-- Hidden column for sorting previous column --></th>
 				<th><spring:message code="Form.version"/></th>
+				<th class="EncounterTypeClass"><spring:message code="Encounter.type"/></th>
 			</tr>
 		</thead>
 		<tbody>
-			<c:forEach var="entry" items="${model.formToEntryUrlMap}">
+			<c:forEach var="entry" items="${model.formToEntryUrlMap}" varStatus="rowCounter">
 				<openmrs:hasPrivilege privilege="${entry.value.requiredPrivilege}">
 					<c:url var="formUrl" value="${entry.value.formEntryUrl}">
 						<c:param name="personId" value="${model.personId}"/>
@@ -80,8 +95,14 @@ Parameters:
 							<a href="${formUrl}" onclick="startDownloading();">${entry.key.name}</a>
 						</td>
 						<td>
+							${rowCounter.count}
+						</td>
+						<td>
 							${entry.key.version}
 							<c:if test="${!entry.key.published}"><i>(<spring:message code="Form.unpublished"/>)</i></c:if>
+						</td>
+						<td>
+							${entry.key.encounterType.name}
 						</td>
 					</tr>
 				</openmrs:hasPrivilege>
