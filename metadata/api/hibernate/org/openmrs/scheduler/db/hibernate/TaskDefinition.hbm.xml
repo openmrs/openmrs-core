@@ -13,6 +13,9 @@
 		</id>
 		<discriminator column="task_config_id" insert="false" />
 		
+		<property name="uuid" type="java.lang.String"
+			column="uuid" length="38" unique="true" />
+			
 		<!-- Properties -->
 		<property name="name" 
 				type="java.lang.String" 

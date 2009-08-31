@@ -2499,4 +2499,63 @@
 		</delete>
 	</changeSet>
 	
+	<changeSet id="20090831-1039-38-scheduler_task_config" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><columnExists tableName="scheduler_task_config" columnName="uuid"/></not></preConditions>
+		<comment>Adding "uuid" column to scheduler_task_config table</comment>
+		<addColumn tableName="scheduler_task_config">
+			<column name="uuid" type="char(38)" />
+		</addColumn>
+	</changeSet>
+	
+	<changeSet id="20090831-1040-scheduler_task_config" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<comment>Generating UUIDs for all rows in scheduler_task_config table via built in uuid function.</comment>
+		<update tableName="scheduler_task_config" >
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+			<where>uuid is null</where>
+		</update>
+		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
+		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
+		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
+	</changeSet>
+	
+	<changeSet id="20090831-1041-scheduler_task_config" author="bwolfe">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<or>
+					<dbms type="mysql" />
+					<dbms type="oracle" />
+					<dbms type="mssql" />
+				</or>
+			</not>
+		</preConditions>
+		<comment>
+			Adding UUIDs to all rows in scheduler_task_config table via a java class for non mysql/oracle/mssql databases.
+		</comment>
+		<customChange class="org.openmrs.util.databasechange.GenerateUuid">
+			<param name="tableNames">
+				scheduler_task_config
+			</param>
+			<param name="columnName" value="uuid"/>
+			<param name="idExceptions">
+				scheduler_task_config=task_config_id
+			</param>
+		</customChange>
+	</changeSet>
+	
+	<changeSet id="20090831-1042-scheduler_task_config" author="bwolfe">
+		<comment>
+			Now that UUID generation is done for scheduler_task_config, set the uuid column to not "NOT NULL" 
+		</comment>
+		<addNotNullConstraint tableName="scheduler_task_config" columnName="uuid" columnDataType="char(38)"/>
+	</changeSet>
+	
+	<changeSet id="20090831-1043-scheduler_task_config" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><indexExists indexName="scheduler_task_config_uuid_index"/></not></preConditions>
+		<comment>Creating unique index on scheduler_task_config.uuid column</comment>
+		<createIndex tableName="scheduler_task_config" unique="true" indexName="scheduler_task_config_uuid_index" >
+			<column name="uuid" />
+		</createIndex>
+	</changeSet>
+	
 </databaseChangeLog>
