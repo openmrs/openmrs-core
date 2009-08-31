@@ -249,6 +249,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 * "@Test(timeout=15000)" so that the Spring transactions work correctly. Junit has a "feature"
 	 * where it executes the befores/afters in a thread separate from the one that the actual test
 	 * ends up running in when timed.
+	 * 
 	 * @see {@link ConceptService#conceptIterator()}
 	 */
 	@Test()
@@ -431,306 +432,302 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Concept concept = conceptService.getConceptByMapping("WGT234", "A random mapping code");
 		Assert.assertNull(concept);
 	}
-
+	
 	/**
 	 * @see {@link ConceptService#getConceptAnswerByUuid(String)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should find object given valid uuid", method = "getConceptAnswerByUuid(String)")
-	public void getConceptAnswerByUuid_shouldFindObjectGivenValidUuid()
-			throws Exception {
+	public void getConceptAnswerByUuid_shouldFindObjectGivenValidUuid() throws Exception {
 		String uuid = "b1230431-2fe5-49fc-b535-ae42bc849747";
 		ConceptAnswer conceptAnswer = Context.getConceptService().getConceptAnswerByUuid(uuid);
-		Assert.assertEquals(1, (int)conceptAnswer.getConceptAnswerId());
+		Assert.assertEquals(1, (int) conceptAnswer.getConceptAnswerId());
 	}
-
+	
 	/**
 	 * @see {@link ConceptService#getConceptAnswerByUuid(String)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should return null if no object found with given uuid", method = "getConceptAnswerByUuid(String)")
-	public void getConceptAnswerByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid()
-			throws Exception {
+	public void getConceptAnswerByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
 		Assert.assertNull(Context.getConceptService().getConceptAnswerByUuid("some invalid uuid"));
 	}
-
+	
 	/**
 	 * @see {@link ConceptService#getConceptByUuid(String)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should find object given valid uuid", method = "getConceptByUuid(String)")
-	public void getConceptByUuid_shouldFindObjectGivenValidUuid()
-			throws Exception {
+	public void getConceptByUuid_shouldFindObjectGivenValidUuid() throws Exception {
 		String uuid = "0cbe2ed3-cd5f-4f46-9459-26127c9265ab";
 		Concept concept = Context.getConceptService().getConceptByUuid(uuid);
-		Assert.assertEquals(3, (int)concept.getConceptId());
+		Assert.assertEquals(3, (int) concept.getConceptId());
 	}
-
+	
 	/**
 	 * @see {@link ConceptService#getConceptByUuid(String)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should return null if no object found with given uuid", method = "getConceptByUuid(String)")
-	public void getConceptByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid()
-			throws Exception {
+	public void getConceptByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
 		Assert.assertNull(Context.getConceptService().getConceptByUuid("some invalid uuid"));
 	}
-
+	
 	/**
 	 * @see {@link ConceptService#getConceptClassByUuid(String)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should find object given valid uuid", method = "getConceptClassByUuid(String)")
-	public void getConceptClassByUuid_shouldFindObjectGivenValidUuid()
-			throws Exception {
+	public void getConceptClassByUuid_shouldFindObjectGivenValidUuid() throws Exception {
 		String uuid = "97097dd9-b092-4b68-a2dc-e5e5be961d42";
 		ConceptClass conceptClass = Context.getConceptService().getConceptClassByUuid(uuid);
-		Assert.assertEquals(1, (int)conceptClass.getConceptClassId());
+		Assert.assertEquals(1, (int) conceptClass.getConceptClassId());
 	}
-
+	
 	/**
 	 * @see {@link ConceptService#getConceptClassByUuid(String)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should return null if no object found with given uuid", method = "getConceptClassByUuid(String)")
-	public void getConceptClassByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid()
-			throws Exception {
+	public void getConceptClassByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
 		Assert.assertNull(Context.getConceptService().getConceptClassByUuid("some invalid uuid"));
 	}
-
+	
 	/**
 	 * @see {@link ConceptService#getConceptDatatypeByUuid(String)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should find object given valid uuid", method = "getConceptDatatypeByUuid(String)")
-	public void getConceptDatatypeByUuid_shouldFindObjectGivenValidUuid()
-			throws Exception {
+	public void getConceptDatatypeByUuid_shouldFindObjectGivenValidUuid() throws Exception {
 		String uuid = "749b5078-8371-4849-aeab-181e3aed9415";
 		ConceptDatatype conceptDatatype = Context.getConceptService().getConceptDatatypeByUuid(uuid);
-		Assert.assertEquals(1, (int)conceptDatatype.getConceptDatatypeId());
+		Assert.assertEquals(1, (int) conceptDatatype.getConceptDatatypeId());
 	}
-
+	
 	/**
 	 * @see {@link ConceptService#getConceptDatatypeByUuid(String)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should return null if no object found with given uuid", method = "getConceptDatatypeByUuid(String)")
-	public void getConceptDatatypeByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid()
-			throws Exception {
+	public void getConceptDatatypeByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
 		Assert.assertNull(Context.getConceptService().getConceptDatatypeByUuid("some invalid uuid"));
 	}
-
+	
 	/**
 	 * @see {@link ConceptService#getConceptDescriptionByUuid(String)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should find object given valid uuid", method = "getConceptDescriptionByUuid(String)")
-	public void getConceptDescriptionByUuid_shouldFindObjectGivenValidUuid()
-			throws Exception {
+	public void getConceptDescriptionByUuid_shouldFindObjectGivenValidUuid() throws Exception {
 		String uuid = "5f4d710b-d333-40b7-b449-6e0e739d15d0";
-		ConceptDescription conceptDescription = Context.getConceptService().getConceptDescriptionByUuid(uuid);		
-		Assert.assertEquals(1, (int)conceptDescription.getConceptDescriptionId());
+		ConceptDescription conceptDescription = Context.getConceptService().getConceptDescriptionByUuid(uuid);
+		Assert.assertEquals(1, (int) conceptDescription.getConceptDescriptionId());
 	}
-
+	
 	/**
 	 * @see {@link ConceptService#getConceptDescriptionByUuid(String)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should return null if no object found with given uuid", method = "getConceptDescriptionByUuid(String)")
-	public void getConceptDescriptionByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid()
-			throws Exception {
+	public void getConceptDescriptionByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
 		Assert.assertNull(Context.getConceptService().getConceptDescriptionByUuid("some invalid uuid"));
 	}
-
+	
 	/**
 	 * @see {@link ConceptService#getConceptNameByUuid(String)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should find object given valid uuid", method = "getConceptNameByUuid(String)")
-	public void getConceptNameByUuid_shouldFindObjectGivenValidUuid()
-			throws Exception {
+	public void getConceptNameByUuid_shouldFindObjectGivenValidUuid() throws Exception {
 		String uuid = "9bc5693a-f558-40c9-8177-145a4b119ca7";
 		ConceptName conceptName = Context.getConceptService().getConceptNameByUuid(uuid);
-		Assert.assertEquals(1439,(int) conceptName.getConceptNameId());
+		Assert.assertEquals(1439, (int) conceptName.getConceptNameId());
 	}
-
+	
 	/**
 	 * @see {@link ConceptService#getConceptNameByUuid(String)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should return null if no object found with given uuid", method = "getConceptNameByUuid(String)")
-	public void getConceptNameByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid()
-			throws Exception {
+	public void getConceptNameByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
 		Assert.assertNull(Context.getConceptService().getConceptNameByUuid("some invalid uuid"));
 	}
-
+	
 	/**
 	 * @see {@link ConceptService#getConceptNameTagByUuid(String)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should find object given valid uuid", method = "getConceptNameTagByUuid(String)")
-	public void getConceptNameTagByUuid_shouldFindObjectGivenValidUuid()
-			throws Exception {
+	public void getConceptNameTagByUuid_shouldFindObjectGivenValidUuid() throws Exception {
 		String uuid = "9e9df183-2328-4117-acd8-fb9bf400911d";
 		ConceptNameTag conceptNameTag = Context.getConceptService().getConceptNameTagByUuid(uuid);
-		Assert.assertEquals(1, (int)conceptNameTag.getConceptNameTagId());
+		Assert.assertEquals(1, (int) conceptNameTag.getConceptNameTagId());
 	}
-
+	
 	/**
 	 * @see {@link ConceptService#getConceptNameTagByUuid(String)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should return null if no object found with given uuid", method = "getConceptNameTagByUuid(String)")
-	public void getConceptNameTagByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid()
-			throws Exception {
+	public void getConceptNameTagByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
 		Assert.assertNull(Context.getConceptService().getConceptNameTagByUuid("some invalid uuid"));
 	}
-
+	
 	/**
 	 * @see {@link ConceptService#getConceptNumericByUuid(String)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should find object given valid uuid", method = "getConceptNumericByUuid(String)")
-	public void getConceptNumericByUuid_shouldFindObjectGivenValidUuid()
-			throws Exception {
+	public void getConceptNumericByUuid_shouldFindObjectGivenValidUuid() throws Exception {
 		String uuid = "c607c80f-1ea9-4da3-bb88-6276ce8868dd";
 		ConceptNumeric conceptNumeric = Context.getConceptService().getConceptNumericByUuid(uuid);
-		Assert.assertEquals(5089, (int)conceptNumeric.getConceptId());
+		Assert.assertEquals(5089, (int) conceptNumeric.getConceptId());
 	}
-
+	
 	/**
 	 * @see {@link ConceptService#getConceptNumericByUuid(String)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should return null if no object found with given uuid", method = "getConceptNumericByUuid(String)")
-	public void getConceptNumericByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid()
-			throws Exception {
+	public void getConceptNumericByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
 		Assert.assertNull(Context.getConceptService().getConceptNumericByUuid("some invalid uuid"));
 	}
-
+	
 	/**
 	 * @see {@link ConceptService#getConceptProposalByUuid(String)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should find object given valid uuid", method = "getConceptProposalByUuid(String)")
-	public void getConceptProposalByUuid_shouldFindObjectGivenValidUuid()
-			throws Exception {
+	public void getConceptProposalByUuid_shouldFindObjectGivenValidUuid() throws Exception {
 		String uuid = "57a68666-5067-11de-80cb-001e378eb67e";
 		ConceptProposal conceptProposal = Context.getConceptService().getConceptProposalByUuid(uuid);
-		Assert.assertEquals(1, (int)conceptProposal.getConceptProposalId());
+		Assert.assertEquals(1, (int) conceptProposal.getConceptProposalId());
 	}
-
+	
 	/**
 	 * @see {@link ConceptService#getConceptProposalByUuid(String)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should return null if no object found with given uuid", method = "getConceptProposalByUuid(String)")
-	public void getConceptProposalByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid()
-			throws Exception {
+	public void getConceptProposalByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
 		Assert.assertNull(Context.getConceptService().getConceptProposalByUuid("some invalid uuid"));
 	}
-
+	
 	/**
 	 * @see {@link ConceptService#getConceptSetByUuid(String)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should find object given valid uuid", method = "getConceptSetByUuid(String)")
-	public void getConceptSetByUuid_shouldFindObjectGivenValidUuid()
-			throws Exception {
+	public void getConceptSetByUuid_shouldFindObjectGivenValidUuid() throws Exception {
 		String uuid = "1a111827-639f-4cb4-961f-1e025bf88d90";
 		ConceptSet conceptSet = Context.getConceptService().getConceptSetByUuid(uuid);
-		Assert.assertEquals(1, (int)conceptSet.getConceptSetId());
+		Assert.assertEquals(1, (int) conceptSet.getConceptSetId());
 	}
-
+	
 	/**
 	 * @see {@link ConceptService#getConceptSetByUuid(String)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should return null if no object found with given uuid", method = "getConceptSetByUuid(String)")
-	public void getConceptSetByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid()
-			throws Exception {
+	public void getConceptSetByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
 		Assert.assertNull(Context.getConceptService().getConceptSetByUuid("some invalid uuid"));
 	}
-
+	
 	/**
 	 * @see {@link ConceptService#getConceptSourceByUuid(String)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should find object given valid uuid", method = "getConceptSourceByUuid(String)")
-	public void getConceptSourceByUuid_shouldFindObjectGivenValidUuid()
-			throws Exception {
+	public void getConceptSourceByUuid_shouldFindObjectGivenValidUuid() throws Exception {
 		String uuid = "75f5b378-5065-11de-80cb-001e378eb67e";
 		ConceptSource conceptSource = Context.getConceptService().getConceptSourceByUuid(uuid);
-		Assert.assertEquals(3, (int)conceptSource.getConceptSourceId());
+		Assert.assertEquals(3, (int) conceptSource.getConceptSourceId());
 	}
-
+	
 	/**
 	 * @see {@link ConceptService#getConceptSourceByUuid(String)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should return null if no object found with given uuid", method = "getConceptSourceByUuid(String)")
-	public void getConceptSourceByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid()
-			throws Exception {
+	public void getConceptSourceByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
 		Assert.assertNull(Context.getConceptService().getConceptSourceByUuid("some invalid uuid"));
 	}
-
+	
 	/**
 	 * @see {@link ConceptService#getDrugByUuid(String)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should find object given valid uuid", method = "getDrugByUuid(String)")
 	public void getDrugByUuid_shouldFindObjectGivenValidUuid() throws Exception {
 		String uuid = "3cfcf118-931c-46f7-8ff6-7b876f0d4202";
 		Drug drug = Context.getConceptService().getDrugByUuid(uuid);
-		Assert.assertEquals(2, (int)drug.getDrugId());
+		Assert.assertEquals(2, (int) drug.getDrugId());
 	}
-
+	
 	/**
 	 * @see {@link ConceptService#getDrugByUuid(String)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should return null if no object found with given uuid", method = "getDrugByUuid(String)")
-	public void getDrugByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid()
-			throws Exception {
+	public void getDrugByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
 		Assert.assertNull(Context.getConceptService().getDrugByUuid("some invalid uuid"));
 	}
-
+	
 	/**
-     * @see {@link ConceptService#getConceptByName(String)}
-     * 
-     */
-    @Test
-    @Verifies(value = "should find concepts with names in more specific locales", method = "getConceptByName(String)")
-    public void getConceptByName_shouldFindConceptsWithNamesInMoreSpecificLocales() throws Exception {
-    	executeDataSet(INITIAL_CONCEPTS_XML);
-    	// sanity check
-    	Assert.assertEquals(Context.getLocale(), Locale.UK);
-    	
-    	// make sure that concepts are found that have a specific locale on them
-    	Assert.assertNotNull(Context.getConceptService().getConceptByName("Numeric name with en_GB locale"));
-    }	
+	 * This tests for being able to find concepts with names in en_GB locale when the user is in the
+	 * en locale.
+	 * 
+	 * @see {@link ConceptService#getConceptByName(String)}
+	 */
+	@Test
+	@Verifies(value = "should find concepts with names in more specific locales", method = "getConceptByName(String)")
+	public void getConceptByName_shouldFindConceptsWithNamesInMoreSpecificLocales() throws Exception {
+		Locale origLocale = Context.getLocale();
+		
+		executeDataSet(INITIAL_CONCEPTS_XML);
+		Context.setLocale(Locale.ENGLISH);
+		
+		// make sure that concepts are found that have a specific locale on them
+		Assert.assertNotNull(Context.getConceptService().getConceptByName("Numeric name with en_GB locale"));
+		
+		// find concepts with same generic locale
+		Assert.assertNotNull(Context.getConceptService().getConceptByName("Some numeric concept name"));
+		
+		// reset the locale for the next test
+		Context.setLocale(origLocale);
+	}
+	
+	/**
+	 * This tests for being able to find concepts with names in the en locale when the user is in
+	 * the en_GB locale
+	 * 
+	 * @see {@link ConceptService#getConceptByName(String)}
+	 */
+	@Test
+	@Verifies(value = "should find concepts with names in more generic locales", method = "getConceptByName(String)")
+	public void getConceptByName_shouldFindConceptsWithNamesInMoreGenericLocales() throws Exception {
+		executeDataSet(INITIAL_CONCEPTS_XML);
+		// sanity check
+		Assert.assertEquals(Context.getLocale(), Locale.UK);
+		
+		// make sure that concepts are found that have a specific locale on them
+		Assert.assertNotNull(Context.getConceptService().getConceptByName("Some numeric concept name"));
+	}
+	
+	/**
+	 * This tests for being able to find concepts with names in en_GB locale when the user is in the
+	 * en_GB locale.
+	 * 
+	 * @see {@link ConceptService#getConceptByName(String)}
+	 */
+	@Test
+	@Verifies(value = "should find concepts with names in same specific locale", method = "getConceptByName(String)")
+	public void getConceptByName_shouldFindConceptsWithNamesInSameSpecificLocale() throws Exception {
+		executeDataSet(INITIAL_CONCEPTS_XML);
+		// sanity check
+		Assert.assertEquals(Context.getLocale(), Locale.UK);
+		
+		// make sure that concepts are found that have a specific locale on them
+		Assert.assertNotNull(Context.getConceptService().getConceptByName("Numeric name with en_GB locale"));
+	}
 }

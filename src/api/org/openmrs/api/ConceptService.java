@@ -348,6 +348,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @should get concept by partial name
 	 * @should return null given null parameter
 	 * @should find concepts with names in more specific locales
+	 * @should find concepts with names in more generic locales
+	 * @should find concepts with names in same specific locale
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
