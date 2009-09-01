@@ -51,12 +51,14 @@
 		<property name="dateChanged" type="java.util.Date"
 			column="date_changed" length="19" />
 
+		<!--
 		<set name="answers" lazy="true" inverse="true" cascade="save-update">
 			<key>
 				<column name="field_id" />
 			</key>
 			<one-to-many class="FieldAnswer" />
 		</set>
+		-->
 		
 		<set name="forms" table="form_field" lazy="true" inverse="true" cascade="none">
 			<key column="field_id" />

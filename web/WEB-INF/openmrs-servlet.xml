@@ -800,7 +800,6 @@
 	</bean>
 
 	<bean id="fieldForm" class="org.openmrs.web.controller.form.FieldFormController">
-		<property name="sessionForm"><value>true</value></property>
 		<property name="commandName"><value>field</value></property>
 		<property name="formView"><value>/admin/forms/fieldForm</value></property>
 		<property name="successView"><value>field.list</value></property>
@@ -819,7 +818,6 @@
 	<!--  Validator and Form Controller for the add/edit forms page -->
 	<bean id="fieldTypeValidator" class="org.openmrs.validator.FieldTypeValidator" />
 	<bean id="fieldTypeForm" class="org.openmrs.web.controller.form.FieldTypeFormController">
-		<property name="sessionForm"><value>true</value></property>
 		<property name="commandName"><value>fieldType</value></property>
 		<property name="validator">
 			<ref bean="fieldTypeValidator" />
