@@ -215,7 +215,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should not fail with null ignoreFormFields argument", method = "getFormField(Form,Concept,Collection<QFormField;>,null)")
 	public void getFormField_shouldNotFailWithNullIgnoreFormFieldsArgument() throws Exception {
 		// test that a null ignoreFormFields doesn't error out
-		FormField ff = Context.getFormService().getFormField(new Form(1), new Concept(1), null, false);
+		FormField ff = Context.getFormService().getFormField(new Form(1), new Concept(3), null, false);
 		assertNotNull(ff);
 	}
 	
