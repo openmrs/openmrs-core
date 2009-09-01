@@ -353,19 +353,19 @@
 				<b><spring:message code="Concept.resources" /></b>
 			</td>
 			<td>
-				<a href="index.htm?phrase=<openmrs:format concept="${concept}" />"
+				<a href="index.htm?phrase=<openmrs:format concept="${command.concept}" />"
 				       target="_similar_terms" onclick="addName(this)">Similar Concepts</a><br/>
-				<a href="http://www2.merriam-webster.com/cgi-bin/mwmednlm?book=Medical&va=<openmrs:format concept="${concept}" />"
+				<a href="http://www2.merriam-webster.com/cgi-bin/mwmednlm?book=Medical&va=<openmrs:format concept="${command.concept}" />"
 				       target="_blank" onclick="addName(this)">Merriam Webster&reg;</a><br/>
-				<a href="http://www.google.com/search?q=<openmrs:format concept="${concept}" />"
+				<a href="http://www.google.com/search?q=<openmrs:format concept="${command.concept}" />"
 				       target="_blank" onclick="addName(this)">Google&trade;</a><br/>
-				<a href="http://www.utdol.com/application/vocab.asp?submit=Go&search=<openmrs:format concept="${concept}" />"
+				<a href="http://www.utdol.com/application/vocab.asp?submit=Go&search=<openmrs:format concept="${command.concept}" />"
 				       target="_blank" onclick="addName(this)">UpToDate&reg;</a><br/>
-				<a href="http://dictionary.reference.com/search?submit=Go&q=<openmrs:format concept="${concept}" />"
+				<a href="http://dictionary.reference.com/search?submit=Go&q=<openmrs:format concept="${command.concept}" />"
 				       target="_blank" onclick="addName(this)">Dictionary.com&reg;</a><br/>
-				<a href="http://search.atomz.com/search/?sp-a=sp1001878c&sp-q=<openmrs:format concept="${concept}" />"
+				<a href="http://search.atomz.com/search/?sp-a=sp1001878c&sp-q=<openmrs:format concept="${command.concept}" />"
 				       target="_blank" onclick="addName(this)">Lab Tests Online</a><br/>
-				<a href="http://en.wikipedia.org/wiki/<openmrs:format concept="${concept}" />"
+				<a href="http://en.wikipedia.org/wiki/<openmrs:format concept="${command.concept}" />"
 				       target="_blank"><spring:message code="Concept.wikipedia" /></a>
 			</td>
 		</tr>
