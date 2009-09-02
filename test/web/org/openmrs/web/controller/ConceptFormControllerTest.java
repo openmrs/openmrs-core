@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.Concept;
+import org.openmrs.ConceptComplex;
 import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptNumeric;
@@ -637,6 +638,38 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 		Concept concept = cs.getConcept(21);
 		assertNotNull(concept);
 		assertEquals(0, concept.getAnswers().size());
+	}
+	
+	/**
+	 * This test makes sure that ConceptComplex objects can be edited
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void shouldEditConceptComplex() throws Exception {
+		executeDataSet("org/openmrs/api/include/ObsServiceTest-complex.xml");
+		
+		ConceptService cs = Context.getConceptService();
+		
+		ConceptFormController conceptFormController = (ConceptFormController) applicationContext.getBean("conceptForm");
+		MockHttpServletRequest mockRequest = new MockHttpServletRequest();
+		
+		mockRequest.setMethod("POST");
+		mockRequest.setParameter("action", "");
+		mockRequest.setParameter("conceptId", "8473");
+		mockRequest.setParameter("namesByLocale[en].name", "A complex concept");
+		mockRequest.setParameter("concept.datatype", "13");
+		mockRequest.setParameter("concept.class", "5");
+		mockRequest.setParameter("handlerKey", "TextHandler"); // switching it from an ImageHandler to a TextHandler
+		
+		ModelAndView mav = conceptFormController.handleRequest(mockRequest, new MockHttpServletResponse());
+		assertNotNull(mav);
+		assertTrue(mav.getModel().isEmpty());
+		
+		Concept concept = cs.getConcept(8473);
+		assertEquals(ConceptComplex.class, concept.getClass());
+		ConceptComplex complex = (ConceptComplex) concept;
+		assertEquals("TextHandler", complex.getHandler());
 	}
 	
 }
