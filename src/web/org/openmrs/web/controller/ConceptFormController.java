@@ -413,7 +413,7 @@ public class ConceptFormController extends SimpleFormController {
 				
 			} else if (concept.getDatatype().getName().equals("Complex")) {
 				ConceptComplex complexConcept;
-				if (concept instanceof ConceptNumeric)
+				if (concept instanceof ConceptComplex)
 					complexConcept = (ConceptComplex) concept;
 				else {
 					complexConcept = new ConceptComplex(concept);
