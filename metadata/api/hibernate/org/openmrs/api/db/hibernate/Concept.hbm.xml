@@ -50,7 +50,7 @@
 			<one-to-many class="ConceptDescription" />
 		</set>
 		
-		<set name="answers" lazy="true" cascade="all,evict"
+		<set name="answers" lazy="true" cascade="all,delete-orphan"
 				table="concept_answer" order-by="concept_answer_id asc" access="field" inverse="true">
 			<key column="concept_id" not-null="true" />
 			<one-to-many class="ConceptAnswer"/>
@@ -59,7 +59,7 @@
 		<!-- This will need to be changed to lazy="false" if we ever have a subobject that would need to store/load this 
 		     (Right now, ConceptNumerics, ConceptComplex, and ConceptDerived objects do not have child concepts (aka, are not sets) -->
 		<set name="conceptSets" table="concept_set" lazy="true"
-				cascade="all,evict" order-by="sort_weight asc" inverse="true">
+				cascade="all,delete-orphan" order-by="sort_weight asc" inverse="true">
 			<key not-null="true">
 				<column name="concept_set" />
 			</key>
