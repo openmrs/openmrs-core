@@ -12,8 +12,8 @@ public class PatientIdentifierTest {
 	 * 
 	 */
 	@Test
-	@Verifies(value = "should should compare when patient and identifier and type is null", method = "equals(Object)")
-	public void equals_shouldShouldCompareWhenPatientAndIdentifierAndTypeIsNull()
+	@Verifies(value = "should compare when patient and identifier and type is null", method = "equals(Object)")
+	public void equals_shouldCompareWhenPatientAndIdentifierAndTypeIsNull()
 			throws Exception {
 		
 		Patient patient = new Patient();
