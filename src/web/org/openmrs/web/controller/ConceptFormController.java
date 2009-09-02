@@ -392,6 +392,13 @@ public class ConceptFormController extends SimpleFormController {
 				}
 			}
 			
+			// if the user changed the datatype to be non "Coded", erase past saved datatypes
+			if (!concept.getDatatype().isCoded()) {
+				if (concept.getAnswers(true) != null) {
+					concept.getAnswers(true).clear();
+				}
+			}
+			
 			// add in subobject specific code
 			if (concept.getDatatype().getName().equals("Numeric")) {
 				ConceptNumeric cn;
