@@ -14,10 +14,9 @@
 package org.openmrs.propertyeditor;
 
 import java.beans.PropertyEditorSupport;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
@@ -27,22 +26,38 @@ import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.springframework.util.StringUtils;
 
+/**
+ * Turns a list of concept ids "123 1234 1235" into a List of ConceptSets
+ */
 public class ConceptSetsEditor extends PropertyEditorSupport {
 	
 	private Log log = LogFactory.getLog(this.getClass());
 	
-	public ConceptSetsEditor() {
+	private Collection<ConceptSet> originalConceptSets = null;
+	
+	/**
+	 * Default constructor taking in the current sets on a concept 
+	 * 
+	 * @param conceptSets the current object on the concept
+	 */
+	public ConceptSetsEditor(Collection<ConceptSet> conceptSets) {
+		if (conceptSets == null)
+			originalConceptSets = new Vector<ConceptSet>();
+		
+		this.originalConceptSets = conceptSets;
 	}
 	
-	@SuppressWarnings("unchecked")
+	/**
+	 * @see java.beans.PropertyEditorSupport#setAsText(java.lang.String)
+	 */
 	public void setAsText(String text) throws IllegalArgumentException {
-		log.debug("setting text: " + text);
+		log.debug("setting conceptSets with text: " + text);
+		
 		if (StringUtils.hasText(text)) {
 			ConceptService cs = Context.getConceptService();
 			String[] conceptIds = text.split(" ");
 			List<Integer> requestConceptIds = new Vector<Integer>();
-			Set<ConceptSet> newSets = new HashSet<ConceptSet>();
-			//set up parameter Synonym Set for easier add/delete functions
+			//set up parameter Set for easier add/delete functions
 			// and removal of duplicates
 			for (String id : conceptIds) {
 				id = id.trim();
@@ -50,32 +65,45 @@ public class ConceptSetsEditor extends PropertyEditorSupport {
 					requestConceptIds.add(Integer.valueOf(id));
 			}
 			
-			// Union the original and request (submitted) sets to get the 'clean' sets
-			//   marks request as seen with Integer(-1) instead of removing to retain order
-			Collection<ConceptSet> originalConceptSets = (Collection<ConceptSet>) getValue();
-			if (originalConceptSets == null)
-				originalConceptSets = new Vector<ConceptSet>();
-			for (ConceptSet origConceptSet : originalConceptSets) {
-				for (int x = 0; x < requestConceptIds.size(); x++) {
-					if (requestConceptIds.get(x).equals(origConceptSet.getConcept().getConceptId())) {
-						origConceptSet.setSortWeight(Double.valueOf(x));
-						newSets.add(origConceptSet);
-						requestConceptIds.set(x, new Integer(-1)); //'erasing' concept id in order to keep list size/sort intact
+			// used when adding in concept sets
+			List<Integer> originalConceptSetIds = new ArrayList<Integer>(originalConceptSets.size());
+			
+			// remove all sets that aren't in the request (aka, that have been deleted by the user)
+			Collection<ConceptSet> copyOfOriginalConceptSets = new ArrayList<ConceptSet>(originalConceptSets);
+			for (ConceptSet origConceptSet : copyOfOriginalConceptSets) {
+				if (!requestConceptIds.contains(origConceptSet.getConcept().getConceptId()))
+					originalConceptSets.remove(origConceptSet);
+				
+				// add to quick list used when adding later
+				originalConceptSetIds.add(origConceptSet.getConcept().getConceptId());
+			}
+			
+			// insert all sets that are new (aka, that have been added by the user).
+			// Also normalize all weight attributes
+			for (int x = 0; x < requestConceptIds.size(); x++) {
+				Integer requestConceptId = requestConceptIds.get(x);
+				
+				// if this isn't in the originalList, add it
+				
+				if (!originalConceptSetIds.contains(requestConceptId)) {
+					// the null weight will be reset in the next step of normalization
+					originalConceptSets.add(new ConceptSet(cs.getConcept(requestConceptId), new Double(x)));
+				}
+				else {
+					// find this conceptId in the original set and set its weight
+					for (ConceptSet conceptSet : originalConceptSets) {
+						if (conceptSet.getConcept().getConceptId().equals(requestConceptId)) {
+							conceptSet.setSortWeight(new Double(x));
+						}
 					}
 				}
 			}
 			
-			//add all remaining parameter synonyms
-			for (int x = 0; x < requestConceptIds.size(); x++) {
-				Integer conceptId = requestConceptIds.get(x);
-				if (!conceptId.equals(new Integer(-1)))
-					newSets.add(new ConceptSet(cs.getConcept(conceptId), Double.valueOf(x)));
-			}
-			
-			setValue(newSets);
 		} else {
-			setValue(null);
+			originalConceptSets.clear();
 		}
+		
+		setValue(originalConceptSets);
 	}
 	
 }

@@ -85,6 +85,8 @@ public class ConceptFormController extends SimpleFormController {
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
 		
+		ConceptFormBackingObject commandObject = (ConceptFormBackingObject) binder.getTarget();
+		
 		NumberFormat nf = NumberFormat.getInstance(Context.getLocale());
 		binder.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, nf, true));
 		binder.registerCustomEditor(java.lang.Double.class, new CustomNumberEditor(java.lang.Double.class, nf, true));
@@ -92,8 +94,8 @@ public class ConceptFormController extends SimpleFormController {
 		    SimpleDateFormat.SHORT, Context.getLocale()), true));
 		binder.registerCustomEditor(org.openmrs.ConceptClass.class, new ConceptClassEditor());
 		binder.registerCustomEditor(org.openmrs.ConceptDatatype.class, new ConceptDatatypeEditor());
-		binder.registerCustomEditor(java.util.Collection.class, "concept.conceptSets", new ConceptSetsEditor());
-		binder.registerCustomEditor(java.util.Collection.class, "concept.answers", new ConceptAnswersEditor());
+		binder.registerCustomEditor(java.util.Collection.class, "concept.conceptSets", new ConceptSetsEditor(commandObject.getConcept().getConceptSets()));
+		binder.registerCustomEditor(java.util.Collection.class, "concept.answers", new ConceptAnswersEditor(commandObject.getConcept().getAnswers(true)));
 		binder.registerCustomEditor(org.openmrs.ConceptSource.class, new ConceptSourceEditor());
 	}
 	
@@ -384,8 +386,11 @@ public class ConceptFormController extends SimpleFormController {
 			}
 			
 			// if the user unchecked the concept sets box, erase past saved sets
-			if (!concept.isSet())
-				concept.setConceptSets(null);
+			if (!concept.isSet()) {
+				if (concept.getConceptSets() != null) {
+					concept.getConceptSets().clear();
+				}
+			}
 			
 			// add in subobject specific code
 			if (concept.getDatatype().getName().equals("Numeric")) {

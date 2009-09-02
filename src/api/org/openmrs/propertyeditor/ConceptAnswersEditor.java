@@ -28,36 +28,43 @@ import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.springframework.util.StringUtils;
 
+/**
+ * Handles lists of conceptids that correspond to answers.
+ */
 public class ConceptAnswersEditor extends PropertyEditorSupport {
 	
 	private Log log = LogFactory.getLog(this.getClass());
 	
-	public ConceptAnswersEditor() {
+	private Collection<ConceptAnswer> originalConceptAnswers = null;
+	
+	/**
+	 * Default constructor taking in the original answers. This should be the actual list on the
+	 * pojo object to prevent hibernate errors later on.
+	 * 
+	 * @param originalAnswers the list on the pojo
+	 */
+	public ConceptAnswersEditor(Collection<ConceptAnswer> originalAnswers) {
+		if (originalAnswers == null)
+			originalConceptAnswers = new HashSet<ConceptAnswer>();
+		else
+			originalConceptAnswers = originalAnswers;
 	}
 	
 	/**
 	 * loops over the textbox assigned to this property. The textbox is assumed to be a string of
 	 * conceptIds^drugIds separated by spaces
 	 */
-	@SuppressWarnings("unchecked")
 	public void setAsText(String text) throws IllegalArgumentException {
-		
 		if (StringUtils.hasText(text)) {
 			ConceptService cs = Context.getConceptService();
 			String[] conceptIds = text.split(" ");
 			List<String> requestConceptIds = new Vector<String>();
-			//Set<ConceptAnswer> newAnswers = new HashSet<ConceptAnswer>();
-			//set up parameter answer Set for easier add/delete functions
-			// and removal of duplicates
+			//set up parameter answer Set for easier add/delete functions and removal of duplicates
 			for (String id : conceptIds) {
 				id = id.trim();
 				if (!id.equals("") && !requestConceptIds.contains(id)) //remove whitespace, blank lines, and duplicates
 					requestConceptIds.add(id);
 			}
-			
-			Collection<ConceptAnswer> originalConceptAnswers = (Collection<ConceptAnswer>) getValue();
-			if (originalConceptAnswers == null)
-				originalConceptAnswers = new HashSet<ConceptAnswer>();
 			
 			Collection<ConceptAnswer> deletedConceptAnswers = new HashSet<ConceptAnswer>();
 			
@@ -95,8 +102,7 @@ public class ConceptAnswersEditor extends PropertyEditorSupport {
 					if (id.equals(origConceptAnswer.getAnswerConcept().getConceptId())) {
 						if (drugId == null && answerDrug == null)
 							newAnswerConcept = false;
-						else if ((drugId != null && answerDrug != null)
-						        && drugId.equals(origConceptAnswer.getAnswerDrug().getDrugId()))
+						else if ((drugId != null && answerDrug != null) && drugId.equals(answerDrug.getDrugId()))
 							newAnswerConcept = false;
 					}
 				}
@@ -118,11 +124,11 @@ public class ConceptAnswersEditor extends PropertyEditorSupport {
 			log.debug("requestConceptIds: ");
 			for (String i : requestConceptIds)
 				log.debug("id: " + i);
-			
-			setValue(originalConceptAnswers);
 		} else {
-			setValue(null);
+			originalConceptAnswers.clear();
 		}
+		
+		setValue(originalConceptAnswers);
 	}
 	
 	/**
