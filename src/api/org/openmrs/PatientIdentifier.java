@@ -73,21 +73,15 @@ public class PatientIdentifier extends BaseOpenmrsData implements java.io.Serial
 	 * 
 	 * @param obj
 	 * @return boolean true/false whether or not they are the same objects
+	 * @should should compare when patient and identifier and type is null
 	 */
 	public boolean equals(Object obj) {
 		if (obj instanceof PatientIdentifier) {
 			PatientIdentifier p = (PatientIdentifier) obj;
-			boolean ret = true;
-			if (patient != null && p.getPatient() != null)
-				ret = ret && patient.equals(p.getPatient());
-			if (identifier != null && p.getIdentifier() != null)
-				ret = ret && identifier.equals(p.getIdentifier());
-			if (identifierType != null && p.getIdentifierType() != null)
-				ret = ret && identifierType.equals(p.getIdentifierType());
-			// location is no longer part of the key for identifier
-			//if (location != null && p.getLocation() != null)
-			//	ret = ret && location.equals(p.getLocation());
-			return ret;
+			boolean ret = (patient != null && patient.equals(p.getPatient())) &&
+							(identifier != null && identifier.equals(p.getIdentifier())) &&
+							(identifierType != null && identifierType.equals(p.getIdentifierType()));
+			return ret || p == this;
 		}
 		return false;
 	}
