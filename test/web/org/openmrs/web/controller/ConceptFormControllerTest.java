@@ -551,4 +551,62 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 		Assert.assertEquals(EXPECTED_HI_CRITICAL, formBackingObject.getHiCritical());
 	}
 	
+	/**
+	 * This tests removing a concept set
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void shouldRemoveConceptSet() throws Exception {
+		ConceptService cs = Context.getConceptService();
+		
+		ConceptFormController conceptFormController = (ConceptFormController) applicationContext.getBean("conceptForm");
+		MockHttpServletRequest mockRequest = new MockHttpServletRequest();
+		
+		mockRequest.setMethod("POST");
+		mockRequest.setParameter("action", "");
+		mockRequest.setParameter("conceptId", "23");
+		mockRequest.setParameter("namesByLocale[en].name", "FOOD CONSTRUCT");
+		mockRequest.setParameter("concept.datatype", "4");
+		mockRequest.setParameter("concept.class", "10");
+		mockRequest.setParameter("concept.conceptSets", "18 19");
+		
+		ModelAndView mav = conceptFormController.handleRequest(mockRequest, new MockHttpServletResponse());
+		assertNotNull(mav);
+		assertTrue(mav.getModel().isEmpty());
+		
+		Concept concept = cs.getConcept(23);
+		assertNotNull(concept);
+		assertEquals(2, concept.getConceptSets().size());
+	}
+	
+	/**
+	 * This tests removing an answer
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void shouldRemoveConceptAnswer() throws Exception {
+		ConceptService cs = Context.getConceptService();
+		
+		ConceptFormController conceptFormController = (ConceptFormController) applicationContext.getBean("conceptForm");
+		MockHttpServletRequest mockRequest = new MockHttpServletRequest();
+		
+		mockRequest.setMethod("POST");
+		mockRequest.setParameter("action", "");
+		mockRequest.setParameter("conceptId", "21");
+		mockRequest.setParameter("namesByLocale[en].name", "FOOD ASSISTANCE FOR ENTIRE FAMILY");
+		mockRequest.setParameter("concept.datatype", "2");
+		mockRequest.setParameter("concept.class", "7");
+		mockRequest.setParameter("concept.answers", "7 8");
+		
+		ModelAndView mav = conceptFormController.handleRequest(mockRequest, new MockHttpServletResponse());
+		assertNotNull(mav);
+		assertTrue(mav.getModel().isEmpty());
+		
+		Concept concept = cs.getConcept(21);
+		assertNotNull(concept);
+		assertEquals(2, concept.getAnswers().size());
+	}
+	
 }

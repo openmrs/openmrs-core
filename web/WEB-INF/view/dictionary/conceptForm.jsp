@@ -5,7 +5,9 @@
 <openmrs:require privilege="Edit Concepts" otherwise="/login.htm" redirect="/dictionary/concept.form" />
 
 <openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
-<script type="text/javascript" src="conceptForm.js"></script>
+<openmrs:htmlInclude file="/dwr/interface/DWRConceptService.js" />
+
+<openmrs:htmlInclude file="/dictionary/conceptForm.js" />
 
 <script type="text/javascript">
 	function addName(anchor) {
