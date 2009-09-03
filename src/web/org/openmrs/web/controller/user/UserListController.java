@@ -75,8 +75,8 @@ public class UserListController extends SimpleFormController {
 		
 		//only fill the Object is the user has authenticated properly
 		if (Context.isAuthenticated()) {
-			UserService us = Context.getUserService();
-			userList = us.getAllUsers();
+			//UserService us = Context.getUserService();
+			//userList = us.getAllUsers();
 		}
 		
 		return userList;
