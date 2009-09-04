@@ -109,7 +109,15 @@ public class OptionsFormController extends SimpleFormController {
 		if (!errors.hasErrors()) {
 			User loginUser = Context.getAuthenticatedUser();
 			UserService us = Context.getUserService();
-			User user = us.getUser(loginUser.getUserId());
+			User user = null;
+			try {
+				Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
+				user = us.getUser(loginUser.getUserId());
+			}
+			finally {
+				Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
+			}
+			
 			OptionsForm opts = (OptionsForm) obj;
 			
 			Map<String, String> properties = user.getUserProperties();
@@ -207,14 +215,15 @@ public class OptionsFormController extends SimpleFormController {
 				
 				try {
 					Context.addProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
+					Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
 					us.saveUser(user, null);
+					// update login user object so that the new name is visible in the webapp
+					Context.refreshAuthenticatedUser();
 				}
 				finally {
 					Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
+					Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
 				}
-				
-				// update login user object so that the new name is visible in the webapp
-				Context.refreshAuthenticatedUser();
 				
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "options.saved");
 			} else {
