@@ -69,7 +69,7 @@ dojo.widget.defineWidget(
 		templateString: '<span id="$' + '{this.widgetId}"><span style="white-space: nowrap"><span dojoAttachPoint="displayNode"></span> <input type="hidden" value="" dojoAttachPoint="hiddenInputNode" /><input type="button" value="<spring:message code="general.select" />" dojoAttachPoint="changeButton" class="smallButton" /> </span><span dojoAttachPoint="otherNode"><input type="text" value="" dojoAttachPoint="otherInputNode" /></span><div class="description" dojoAttachPoint="descriptionDisplayNode"></div> </span>',
 		templateCssPath: "",
 		
-		postCreate: function(){
+		postCreate: function(createdObject) {
 			var widg = dojo.widget.manager.getWidgetById(this.searchWidget);
 			
 			if (widg) {
@@ -104,7 +104,22 @@ dojo.widget.defineWidget(
 				
 			}
 			else {
-				alert("searchWidget not found: '" + this.searchWidget + "'");
+				/* If the widget is not found, it might just not be loaded yet (like maybe
+					 theres a user and patient search widget on the page(, try a few times */
+				var attempts = createdObject["attemptNum"];
+				if (attempts == null)
+					attempts = 0;
+				/* try again in 100 milliseconds 5 times*/
+				if (attempts < 5) {
+					createdObject["attemptNum"] = attempts++;
+					var callback = function(ths, attempts) { return function() {ths.postCreate(createdObject)}};
+					setTimeout(callback(this, attempts), 100);
+					return; /* stop processing until we find the widget */
+				}
+				else {
+					alert("searchWidget not found: '" + this.searchWidget + "'");
+				}
+				
 			}
 			
 			if (this.hiddenInputName)
