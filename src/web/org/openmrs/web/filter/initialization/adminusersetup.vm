@@ -23,6 +23,7 @@
      		</tr>
                 <tr>
                     <td colspan= "2">
+                        <input type="submit" style="display: none"/> <!-- the first submit button that will be used when the user pushed the "enter" key in the form -->
                         <input class="button" name="back" type="submit" value="Back"/> &nbsp; &nbsp;
                         <input class="button" type="submit" value="Continue"/>
                     </td>
