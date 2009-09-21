@@ -83,6 +83,8 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 	// TODO do this with an annotation on the field? or on the method?
 	protected static List<String> fieldAccess = new ArrayList<String>();
 	
+	//private static Log log = LogFactory.getLog(RequiredDataAdvice.class);
+	
 	static {
 		fieldAccess.add("Concept.answers");
 		fieldAccess.add("Encounter.obs");
@@ -249,15 +251,18 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 	 * @throws NullPointerException if <code>fields</code> is null
 	 * @should get all declared fields on given class
 	 * @should get all declared fields on parent class as well
+	 * @should not fail given null fields
 	 */
 	@SuppressWarnings("unchecked")
 	protected static void getAllInheritedFields(Class<? extends OpenmrsObject> openmrsObjectClass, List<Field> fields)
 	                                                                                                                  throws NullPointerException {
-		fields.addAll(Arrays.asList(openmrsObjectClass.getDeclaredFields()));
-		Class<?> superClass = openmrsObjectClass.getSuperclass();
-		if (superClass != null) {
-			if (OpenmrsObject.class.isAssignableFrom(superClass))
-				getAllInheritedFields((Class<OpenmrsObject>) superClass, fields);
+		if (fields != null) { 
+			fields.addAll(Arrays.asList(openmrsObjectClass.getDeclaredFields()));
+			Class<?> superClass = openmrsObjectClass.getSuperclass();
+			if (superClass != null) {
+				if (OpenmrsObject.class.isAssignableFrom(superClass))
+					getAllInheritedFields((Class<OpenmrsObject>) superClass, fields);
+			}
 		}
 	}
 	

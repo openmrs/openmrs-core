@@ -28,6 +28,7 @@ import org.junit.Test;
 import org.openmrs.BaseOpenmrsObject;
 import org.openmrs.Concept;
 import org.openmrs.ConceptNumeric;
+import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.api.APIException;
@@ -45,7 +46,7 @@ public class RequiredDataAdviceTest {
 	private class MiniOpenmrsObject extends BaseOpenmrsObject {
 		
 		private List<Location> locations;
-
+		
 		public List<Location> getLocations() {
 			return locations;
 		}
@@ -53,7 +54,7 @@ public class RequiredDataAdviceTest {
 		public void setLocations(List<Location> locs) {
 			this.locations = locs;
 		}
-
+		
 		public Integer getId() {
 			return null;
 		}
@@ -176,14 +177,14 @@ public class RequiredDataAdviceTest {
 		private List<Map<String, String>> nestedGenericProperty;
 		
 		private Integer id;
-
-        public List<Map<String, String>> getNestedGenericProperty() {
-        	return nestedGenericProperty;
-        }
-
-        public void setNestedGenericProperty(List<Map<String, String>> nestedGenericProperty) {
-        	this.nestedGenericProperty = nestedGenericProperty;
-        }
+		
+		public List<Map<String, String>> getNestedGenericProperty() {
+			return nestedGenericProperty;
+		}
+		
+		public void setNestedGenericProperty(List<Map<String, String>> nestedGenericProperty) {
+			this.nestedGenericProperty = nestedGenericProperty;
+		}
 		
 		public Set<Locale> getLocales() {
 			return locales;
@@ -219,7 +220,7 @@ public class RequiredDataAdviceTest {
 	@Verifies(value = "should return false if field is collection of parameterized type", method = "isOpenmrsObjectCollection(Field)")
 	public void isOpenmrsObjectCollection_shouldReturnFalseIfFieldIsCollectionOfParameterizedType() throws Exception {
 		Assert.assertFalse(RequiredDataAdvice.isOpenmrsObjectCollection(ClassWithOtherFields.class
-				.getDeclaredField("nestedGenericProperty")));
+		        .getDeclaredField("nestedGenericProperty")));
 	}
 	
 	/**
@@ -280,5 +281,14 @@ public class RequiredDataAdviceTest {
 		Method method = ConceptServiceImpl.class.getMethod("updateConceptWords", (Class[]) null);
 		new RequiredDataAdvice().before(method, null, new ConceptServiceImpl());
 		new RequiredDataAdvice().before(method, new Object[] {}, new ConceptServiceImpl());
+	}
+	
+	/**
+	 * @see {@link RequiredDataAdvice#getAllInheritedFields(Class<+QOpenmrsObject;>,List<QField;>)}
+	 */
+	@Test
+	@Verifies(value = "should not fail given null fields", method = "getAllInheritedFields(Class<+QOpenmrsObject;>,List<QField;>)")
+	public void getAllInheritedFields_shouldNotFailGivenNullFields() throws Exception {
+		new RequiredDataAdvice().getAllInheritedFields(Form.class, null);
 	}
 }
