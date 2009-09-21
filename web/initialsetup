@@ -1,0 +1,31 @@
+<html>
+<head>
+  <script type="text/javascript">
+    document.location = "./"
+  </script>
+</head>
+<body>
+
+
+<!-- 
+
+**************************
+** NOTE TO DEVELOPERS  **
+**************************
+This is only a placeholder page only used when a user refreshes a web page that was half-way 
+through an initialization, update, or error filter 
+
+This page is not reached otherwise.  The StartupFilters are placed first in the hierarchy of
+servlets in our web.xml.  That web.xml stops any kind of spring startup if the user needs 
+initialization, db updating, or if there was an error.
+
+See 
+org.openmrs.web.filter.initialization.InitializationFilter.java
+org.openmrs.web.filter.update.UpdateFilter.java
+org.openmrs.web.filter.startuperror.StartupErrorFilter.java
+
+and the velocity *.vm scripts associated with them to edit the initialsetup ui.
+ 
+--> 
+
+</body>
