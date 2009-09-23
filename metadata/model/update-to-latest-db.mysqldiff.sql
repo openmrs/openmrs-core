@@ -2217,11 +2217,11 @@ CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
 BEGIN
 	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_db_version, '.', '0') FROM global_property WHERE property = 'database_version') THEN
 
-		CREATE INDEX concept_word_concept_idx on concept_word (concept_id); 
+		CREATE INDEX concept_word_concept_idx on concept_word (concept_id);
 		
-		ALTER TABLE `concept_word` DROP PRIMARY KEY;
-
-		ALTER TABLE `concept_word` ADD PRIMARY KEY (`concept_name_id`, `word`, `locale`);
+		--These are not needed in sync because our primary key is concept_word_id
+		--ALTER TABLE `concept_word` DROP PRIMARY KEY;
+		--ALTER TABLE `concept_word` ADD PRIMARY KEY (`concept_name_id`, `word`, `locale`);
 		
 		UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
 

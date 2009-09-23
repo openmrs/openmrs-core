@@ -438,16 +438,50 @@
 		<echo>Installing ${webapp.name} to ${tomcat.manager.url} as tomcat user named ${tomcat.username}</echo>
 		<deploy url="${tomcat.manager.url}" username="${tomcat.username}" password="${tomcat.password}" path="/${webapp.name}" war="${dist.dir}/${webapp.name}.war" />
 	</target>
+	
+	<target name="installparent" description="Install application in Tomcat" depends="package-web">
+		<echo>Installing syncparent to ${tomcat.manager.url} as tomcat user named ${tomcat.username}</echo>
+		<deploy url="${tomcat.manager.url}" username="${tomcat.username}" password="${tomcat.password}" path="/syncparent" war="${dist.dir}/${webapp.name}.war" />
+	</target>
+	
+	<target name="installchild" description="Install application in Tomcat" depends="package-web">
+		<echo>Installing syncchild to ${tomcat.manager.url} as tomcat user named ${tomcat.username}</echo>
+		<deploy url="${tomcat.manager.url}" username="${tomcat.username}" password="${tomcat.password}" path="/syncchild" war="${dist.dir}/${webapp.name}.war" />
+	</target>
 
 	<target name="remove" depends="init" description="Remove application in Tomcat">
 		<echo>Removing ${webapp.name} from ${tomcat.manager.url} as tomcat user named ${tomcat.username}</echo>
 		<undeploy url="${tomcat.manager.url}" username="${tomcat.username}" password="${tomcat.password}" path="/${webapp.name}" />
+	</target>
+	
+	<target name="removeparent" depends="init" description="Remove application in Tomcat">
+		<echo>Removing syncparent from ${tomcat.manager.url} as tomcat user named ${tomcat.username}</echo>
+		<undeploy url="${tomcat.manager.url}" username="${tomcat.username}" password="${tomcat.password}" path="/syncparent" />
+	</target>
+	
+	<target name="removechild" depends="init" description="Remove application in Tomcat">
+		<echo>Removing syncchild from ${tomcat.manager.url} as tomcat user named ${tomcat.username}</echo>
+		<undeploy url="${tomcat.manager.url}" username="${tomcat.username}" password="${tomcat.password}" path="/syncchild" />
 	</target>
 
 	<target name="update" description="Update application in Tomcat">
 		<antcall target="remove" />
 		<sleep seconds="2" />
 		<antcall target="install" />
+		<antcall target="growl" />
+	</target>
+	
+	<target name="updateparent" description="Update application in Tomcat">
+		<antcall target="removeparent" />
+		<sleep seconds="2" />
+		<antcall target="installparent" />
+		<antcall target="growl" />
+	</target>
+	
+	<target name="updatechild" description="Update application in Tomcat">
+		<antcall target="removechild" />
+		<sleep seconds="2" />
+		<antcall target="installchild" />
 		<antcall target="growl" />
 	</target>
 	

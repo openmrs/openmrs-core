@@ -1141,6 +1141,18 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 				cn.setConcept(concept);
 				
 				if (cn.getTags() != null) {
+
+					// this loop was taken from ConceptNameSaveHandler in 1.5.x, with minor mods
+					for (ConceptNameTag tag : cn.getTags()) {
+						if (tag.getConceptNameTagId() == null) {
+							ConceptNameTag possibleReplacementTag = Context.getConceptService()
+							        .getConceptNameTagByName(tag.getTag());
+							if (possibleReplacementTag != null) {
+								cn.removeTag(tag);
+								cn.addTag(possibleReplacementTag);
+							}
+						}
+					}
 					for (ConceptNameTag tag : cn.getTags()) {
 						if (tag.getConceptNameTagId() == null) {
 							ConceptNameTag possibleReplacementTag = getConceptNameTagByName(tag.getTag());

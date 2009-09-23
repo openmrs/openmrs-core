@@ -403,6 +403,37 @@ CREATE PROCEDURE sync_diff_procedure (IN new_sync_version VARCHAR(10))
 delimiter ;
 call sync_diff_procedure('1.0.4');
 
+#----------------------------------------
+# OpenMRS sync Datamodel version 1.0.5
+# remove guid from concept_name_tag_map if exists; no neeed.
+#----------------------------------------
+
+DROP PROCEDURE IF EXISTS sync_diff_procedure;
+
+delimiter //
+
+CREATE PROCEDURE sync_diff_procedure (IN new_sync_version VARCHAR(10))
+ BEGIN
+	IF (SELECT REPLACE(property_value, '.', '0') < REPLACE(new_sync_version, '.', '0') FROM global_property WHERE property = 'synchronization.version') THEN
+	SELECT CONCAT('Updating synchronization to ', new_sync_version) AS 'Synchronization Datamodel Update:' FROM dual;
+
+	# ----------------------------------------------------------------------------------------
+	# remove user_role.guid if exists
+	# ----------------------------------------------------------------------------------------
+	IF ( SELECT count(*) > 0 FROM INFORMATION_SCHEMA.Columns WHERE table_schema = schema() AND table_name = 'concept_name_tag_map' AND column_name = 'guid' ) THEN
+		ALTER TABLE `concept_name_tag_map` DROP COLUMN `guid`;
+	END IF;
+	
+	UPDATE `global_property` SET property_value=new_sync_version WHERE property = 'synchronization.version';	
+		
+	
+	END IF;
+ END;
+//
+
+delimiter ;
+call sync_diff_procedure('1.0.5');
+
 #-----------------------------------
 # Clean up - Keep this section at the very bottom of diff script
 #-----------------------------------
