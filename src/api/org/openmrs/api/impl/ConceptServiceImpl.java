@@ -1217,6 +1217,14 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	}
 	
 	/**
+	 * @see org.openmrs.api.ConceptService#retireConceptSource(org.openmrs.ConceptSource,String)
+	 */
+	public ConceptSource retireConceptSource(ConceptSource cs, String reason) throws APIException {
+		// retireReason is automatically set in BaseRetireHandler
+		return dao.saveConceptSource(cs);
+	}
+	
+	/**
 	 * @see org.openmrs.api.ConceptService#saveConceptSource(org.openmrs.ConceptSource)
 	 */
 	public ConceptSource saveConceptSource(ConceptSource conceptSource) throws APIException {

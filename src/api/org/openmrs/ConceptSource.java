@@ -24,7 +24,7 @@ import org.simpleframework.xml.Root;
  * ICD9, ICD10, SNOMED, or any other OpenMRS implementation
  */
 @Root
-public class ConceptSource extends BaseOpenmrsObject implements Auditable, Voidable, java.io.Serializable {
+public class ConceptSource extends BaseOpenmrsMetadata implements Voidable, java.io.Serializable {
 	
 	public static final long serialVersionUID = 375L;
 	
@@ -32,23 +32,7 @@ public class ConceptSource extends BaseOpenmrsObject implements Auditable, Voida
 	
 	private Integer conceptSourceId;
 	
-	private String name;
-	
-	private String description;
-	
 	private String hl7Code;
-	
-	private User creator;
-	
-	private Date dateCreated;
-	
-	private Boolean voided = false;
-	
-	private User voidedBy;
-	
-	private Date dateVoided;
-	
-	private String voidReason;
 	
 	// Constructors
 	
@@ -100,20 +84,14 @@ public class ConceptSource extends BaseOpenmrsObject implements Auditable, Voida
 		this.conceptSourceId = conceptSourceId;
 	}
 	
-	/**
-	 * @return Returns the creator.
-	 */
 	@Element
 	public User getCreator() {
-		return creator;
+		return super.getCreator();
 	}
 	
-	/**
-	 * @param creator The creator to set.
-	 */
 	@Element
 	public void setCreator(User creator) {
-		this.creator = creator;
+		super.setCreator(creator);
 	}
 	
 	/**
@@ -121,7 +99,7 @@ public class ConceptSource extends BaseOpenmrsObject implements Auditable, Voida
 	 */
 	@Element
 	public Date getDateCreated() {
-		return dateCreated;
+		return super.getDateCreated();
 	}
 	
 	/**
@@ -129,39 +107,35 @@ public class ConceptSource extends BaseOpenmrsObject implements Auditable, Voida
 	 */
 	@Element
 	public void setDateCreated(Date dateCreated) {
-		this.dateCreated = dateCreated;
+		super.setDateCreated(dateCreated);
 	}
 	
 	/**
 	 * @return Returns the dateVoided.
 	 */
+	@Deprecated
 	@Element(required = false)
 	public Date getDateVoided() {
-		return dateVoided;
+		return getDateRetired();
 	}
 	
 	/**
 	 * @param dateVoided The dateVoided to set.
 	 */
+	@Deprecated
 	@Element(required = false)
 	public void setDateVoided(Date dateVoided) {
-		this.dateVoided = dateVoided;
+		setDateRetired(dateVoided);
 	}
 	
-	/**
-	 * @return Returns the description.
-	 */
 	@Element(data = true)
 	public String getDescription() {
-		return description;
+		return super.getDescription();
 	}
 	
-	/**
-	 * @param description The description to set.
-	 */
 	@Element(data = true)
 	public void setDescription(String description) {
-		this.description = description;
+		super.setDescription(description);
 	}
 	
 	/**
@@ -180,36 +154,33 @@ public class ConceptSource extends BaseOpenmrsObject implements Auditable, Voida
 		this.hl7Code = hl7Code;
 	}
 	
-	/**
-	 * @return Returns the name.
-	 */
 	@Element(data = true)
 	public String getName() {
-		return name;
+		return super.getName();
 	}
 	
-	/**
-	 * @param name The concept source name to set.
-	 */
 	@Element(data = true)
 	public void setName(String name) {
-		this.name = name;
+		super.setName(name);
 	}
 	
 	/**
 	 * @return the voided status
+	 * @deprecated use isRetired
 	 */
+	@Deprecated
 	public Boolean isVoided() {
-		return voided;
+		return isRetired();
 	}
 	
 	/**
 	 * This method exists to satisfy spring and hibernates slightly bung use of Boolean object
 	 * getters and setters.
 	 * 
-	 * @deprecated Use the "proper" isVoided method.
+	 * @deprecated Use the "proper" isRetired method.
 	 * @see #isVoided()
 	 */
+	@Deprecated
 	@Attribute
 	public Boolean getVoided() {
 		return isVoided();
@@ -217,42 +188,52 @@ public class ConceptSource extends BaseOpenmrsObject implements Auditable, Voida
 	
 	/**
 	 * @param voided The voided status
+	 * @deprecated use setRetired
 	 */
+	@Deprecated
 	@Attribute
 	public void setVoided(Boolean voided) {
-		this.voided = voided;
+		setRetired(voided);
 	}
 	
 	/**
 	 * @return Returns the openmrs user that voided this source
+	 * @deprecated use getRetiredBy
 	 */
+	@Deprecated
 	@Element(required = false)
 	public User getVoidedBy() {
-		return voidedBy;
+		return getRetiredBy();
 	}
 	
 	/**
 	 * @param voidedBy The openmrs user that voided this source
+	 * @deprecated use setRetiredBy
 	 */
+	@Deprecated
 	@Element(required = false)
 	public void setVoidedBy(User voidedBy) {
-		this.voidedBy = voidedBy;
+		setRetiredBy(voidedBy);
 	}
 	
 	/**
 	 * @return Returns the reason this source was voided
+	 * @deprecated use getRetireReason
 	 */
+	@Deprecated
 	@Element(data = true, required = false)
 	public String getVoidReason() {
-		return voidReason;
+		return getRetireReason();
 	}
 	
 	/**
 	 * @param voidReason The reason this source is voided
+	 * @deprecated use setRetireReason
 	 */
+	@Deprecated
 	@Element(data = true, required = false)
 	public void setVoidReason(String voidReason) {
-		this.voidReason = voidReason;
+		setRetireReason(voidReason);
 	}
 	
 	/**
@@ -269,39 +250,5 @@ public class ConceptSource extends BaseOpenmrsObject implements Auditable, Voida
 	 */
 	public void setId(Integer id) {
 		setConceptSourceId(id);
-	}
-	
-	/**
-	 * Not currently used. Always returns null.
-	 * 
-	 * @see org.openmrs.Auditable#getChangedBy()
-	 */
-	public User getChangedBy() {
-		return null;
-	}
-	
-	/**
-	 * Not currently used. Always returns null.
-	 * 
-	 * @see org.openmrs.Auditable#getDateChanged()
-	 */
-	public Date getDateChanged() {
-		return null;
-	}
-	
-	/**
-	 * Not currently used.
-	 * 
-	 * @see org.openmrs.Auditable#setChangedBy(org.openmrs.User)
-	 */
-	public void setChangedBy(User changedBy) {
-	}
-	
-	/**
-	 * Not currently used.
-	 * 
-	 * @see org.openmrs.Auditable#setDateChanged(java.util.Date)
-	 */
-	public void setDateChanged(Date dateChanged) {
 	}
 }

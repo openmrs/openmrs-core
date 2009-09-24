@@ -48,6 +48,7 @@ public class ConceptSourceListController extends SimpleFormController {
 	 * The onSubmit function receives the form/command object that was modified by the input form
 	 * and saves it to the db
 	 * 
+	 * @should retire concept source
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
@@ -67,21 +68,30 @@ public class ConceptSourceListController extends SimpleFormController {
 			String error = "";
 			
 			MessageSourceAccessor msa = getMessageSourceAccessor();
-			String deleted = msa.getMessage("general.deleted");
-			String notDeleted = msa.getMessage("general.cannot.delete");
-			for (String conceptSourceId : conceptSourceIdList) {
-				try {
-					ConceptSource source = cs.getConceptSource(Integer.valueOf(conceptSourceId));
-					cs.purgeConceptSource(source);
-					if (!success.equals(""))
-						success += "<br>";
-					success += conceptSourceId + " " + deleted;
-				}
-				catch (APIException e) {
-					log.warn("Error deleting concept source", e);
-					if (!error.equals(""))
-						error += "<br>";
-					error += conceptSourceId + " " + notDeleted;
+			String deleted = msa.getMessage("general.retired");
+			String notDeleted = msa.getMessage("general.cannot.retire");
+			String retireReason = request.getParameter("retireReason");
+			if (retireReason == null || retireReason.length() == 0) {
+				error = getMessageSourceAccessor().getMessage("general.retiredReason.empty");
+				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error);
+				return showForm(request, response, errors);
+			}
+			
+			if (conceptSourceIdList != null) {
+				for (String conceptSourceId : conceptSourceIdList) {
+					try {
+						ConceptSource source = cs.getConceptSource(Integer.valueOf(conceptSourceId));
+						cs.retireConceptSource(source, retireReason);
+						if (!success.equals(""))
+							success += "<br>";
+						success += conceptSourceId + " " + deleted;
+					}
+					catch (APIException e) {
+						log.warn("Error deleting concept source", e);
+						if (!error.equals(""))
+							error += "<br>";
+						error += conceptSourceId + " " + notDeleted;
+					}
 				}
 			}
 			

@@ -2558,4 +2558,23 @@
 		</createIndex>
 	</changeSet>
 	
+	<changeSet id="20090907-1" author="Knoll_Frank">
+		<comment>Rename the concept_source.date_voided column to date_retired</comment>
+		<renameColumn tableName="concept_source" oldColumnName="date_voided" newColumnName="date_retired" columnDataType="datetime" />
+	</changeSet>
+	<changeSet id="20090907-2" author="Knoll_Frank">
+		<comment>Rename the concept_source.voided_by column to retired_by</comment>	
+		<dropForeignKeyConstraint baseTableName="concept_source" constraintName="user_who_voided_concept_source" />
+		<renameColumn tableName="concept_source" oldColumnName="voided_by" newColumnName="retired_by" columnDataType="int" />
+		<addForeignKeyConstraint baseColumnNames="retired_by" baseTableName="concept_source" constraintName="user_who_retired_concept_source" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users" />
+	</changeSet>
+	<changeSet id="20090907-3" author="Knoll_Frank">
+		<comment>Rename the concept_source.voided column to retired</comment>
+		<renameColumn tableName="concept_source" oldColumnName="voided" newColumnName="retired" columnDataType="smallint" />
+	</changeSet>
+	<changeSet id="20090907-4" author="Knoll_Frank">
+		<comment>Rename the concept_source.void_reason column to retire_reason</comment>
+		<renameColumn tableName="concept_source" oldColumnName="void_reason" newColumnName="retire_reason" columnDataType="varchar(255)" />
+	</changeSet>
+	
 </databaseChangeLog>

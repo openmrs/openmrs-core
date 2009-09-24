@@ -103,7 +103,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @param uuid
 	 * @return
 	 * @should find object given valid uuid
-	 * @should return null if no object found with given uuid 
+	 * @should return null if no object found with given uuid
 	 */
 	@Transactional(readOnly = true)
 	public Concept getConceptByUuid(String uuid);
@@ -444,7 +444,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @param uuid
 	 * @return
 	 * @should find object given valid uuid
-	 * @should return null if no object found with given uuid 
+	 * @should return null if no object found with given uuid
 	 */
 	@Transactional(readOnly = true)
 	public Drug getDrugByUuid(String uuid);
@@ -602,7 +602,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @param uuid
 	 * @return
 	 * @should find object given valid uuid
-	 * @should return null if no object found with given uuid 
+	 * @should return null if no object found with given uuid
 	 */
 	@Transactional(readOnly = true)
 	public ConceptClass getConceptClassByUuid(String uuid);
@@ -613,7 +613,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @param uuid
 	 * @return
 	 * @should find object given valid uuid
-	 * @should return null if no object found with given uuid 
+	 * @should return null if no object found with given uuid
 	 */
 	@Transactional(readOnly = true)
 	public ConceptAnswer getConceptAnswerByUuid(String uuid);
@@ -624,7 +624,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @param uuid
 	 * @return
 	 * @should find object given valid uuid
-	 * @should return null if no object found with given uuid 
+	 * @should return null if no object found with given uuid
 	 */
 	@Transactional(readOnly = true)
 	public ConceptName getConceptNameByUuid(String uuid);
@@ -635,7 +635,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @param uuid
 	 * @return
 	 * @should find object given valid uuid
-	 * @should return null if no object found with given uuid 
+	 * @should return null if no object found with given uuid
 	 */
 	@Transactional(readOnly = true)
 	public ConceptSet getConceptSetByUuid(String uuid);
@@ -646,7 +646,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @param uuid
 	 * @return
 	 * @should find object given valid uuid
-	 * @should return null if no object found with given uuid 
+	 * @should return null if no object found with given uuid
 	 */
 	@Transactional(readOnly = true)
 	public ConceptSource getConceptSourceByUuid(String uuid);
@@ -736,7 +736,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @param uuid
 	 * @return
 	 * @should find object given valid uuid
-	 * @should return null if no object found with given uuid 
+	 * @should return null if no object found with given uuid
 	 */
 	@Transactional(readOnly = true)
 	public ConceptDatatype getConceptDatatypeByUuid(String uuid);
@@ -844,7 +844,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @param uuid
 	 * @return
 	 * @should find object given valid uuid
-	 * @should return null if no object found with given uuid 
+	 * @should return null if no object found with given uuid
 	 */
 	@Transactional(readOnly = true)
 	public ConceptNumeric getConceptNumericByUuid(String uuid);
@@ -1035,7 +1035,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @param uuid
 	 * @return
 	 * @should find object given valid uuid
-	 * @should return null if no object found with given uuid 
+	 * @should return null if no object found with given uuid
 	 */
 	@Transactional(readOnly = true)
 	public ConceptProposal getConceptProposalByUuid(String uuid);
@@ -1074,7 +1074,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @param uuid
 	 * @return
 	 * @should find object given valid uuid
-	 * @should return null if no object found with given uuid 
+	 * @should return null if no object found with given uuid
 	 */
 	@Transactional(readOnly = true)
 	public ConceptNameTag getConceptNameTagByUuid(String uuid);
@@ -1160,6 +1160,21 @@ public interface ConceptService extends OpenmrsService {
 	public ConceptSource purgeConceptSource(ConceptSource cs) throws APIException;
 	
 	/**
+	 * This effectively removes a concept source from the database. The source can still be
+	 * referenced by old data, but no new data should use this source.
+	 * 
+	 * @param cs the concept source to retire
+	 * @param reason why the concept source is to be retired, must not be empty of null
+	 * @return the retired concept source
+	 * @throws APIException
+	 * @should retire concept source
+	 * @should throw exception if empty reason given
+	 * @should throw exception if null reason given
+	 */
+	@Authorized(OpenmrsConstants.PRIV_PURGE_CONCEPT_SOURCES)
+	public ConceptSource retireConceptSource(ConceptSource cs, String reason) throws APIException;
+	
+	/**
 	 * Creates a new Concept name tag.
 	 * 
 	 * @param nameTag the name tag to be saved
@@ -1201,7 +1216,7 @@ public interface ConceptService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
 	public Concept getConceptByMapping(String conceptCode, String mappingCode) throws APIException;
-
+	
 	/**
 	 * Get all the concept name tags defined in the database, included voided ones
 	 * 
@@ -1228,7 +1243,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @param uuid
 	 * @return
 	 * @should find object given valid uuid
-	 * @should return null if no object found with given uuid 
+	 * @should return null if no object found with given uuid
 	 */
 	@Transactional(readOnly = true)
 	public ConceptDescription getConceptDescriptionByUuid(String uuid);

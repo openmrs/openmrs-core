@@ -730,4 +730,38 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		// make sure that concepts are found that have a specific locale on them
 		Assert.assertNotNull(Context.getConceptService().getConceptByName("Numeric name with en_GB locale"));
 	}
+	
+	/**
+	 * @see {@link ConceptService#retireConceptSource(ConceptSource,String)}
+	 */
+	@Test
+	@Verifies(value = "should retire concept source", method = "retireConceptSource(ConceptSource,String)")
+	public void retireConceptSource_shouldRetireConceptSource() throws Exception {
+		ConceptSource cs = conceptService.getConceptSource(3);
+		conceptService.retireConceptSource(cs, "dummy reason for retirement");
+		
+		cs = conceptService.getConceptSource(3);
+		Assert.assertTrue(cs.isRetired());
+		Assert.assertEquals("dummy reason for retirement", cs.getRetireReason());
+	}
+	
+	/**
+	 * @see {@link ConceptService#retireConceptSource(ConceptSource,String)}
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	@Verifies(value = "should throw exception if empty reason given", method = "retireConceptSource(ConceptSource,String)")
+	public void retireConceptSource_shouldThrowExceptionIfEmptyReasonGiven() throws Exception {
+		ConceptSource cs = conceptService.getConceptSource(3);
+		conceptService.retireConceptSource(cs, "");
+	}
+	
+	/**
+	 * @see {@link ConceptService#retireConceptSource(ConceptSource,String)}
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	@Verifies(value = "should throw exception if null reason given", method = "retireConceptSource(ConceptSource,String)")
+	public void retireConceptSource_shouldThrowExceptionIfNullReasonGiven() throws Exception {
+		ConceptSource cs = conceptService.getConceptSource(3);
+		conceptService.retireConceptSource(cs, null);
+	}
 }

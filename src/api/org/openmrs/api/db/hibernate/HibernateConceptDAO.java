@@ -498,10 +498,9 @@ public class HibernateConceptDAO implements ConceptDAO {
 			String language = loc.getLanguage();
 			if (language.length() > 2) {
 				// if searching in specific locale like en_US
-				criteria.add(Expression.or(Expression.eq("names.locale", loc.getLanguage()), 
-							 Expression.eq("names.locale", loc.getLanguage().substring(0, 2))));
-			}
-			else {
+				criteria.add(Expression.or(Expression.eq("names.locale", loc.getLanguage()), Expression.eq("names.locale",
+				    loc.getLanguage().substring(0, 2))));
+			} else {
 				// if searching in general locale like just "en"
 				criteria.add(Expression.like("names.locale", loc.getLanguage(), MatchMode.START));
 			}
@@ -1013,7 +1012,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	public List<ConceptSource> getAllConceptSources() {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ConceptSource.class);
 		
-		criteria.add(Expression.eq("voided", false));
+		criteria.add(Expression.eq("retired", false));
 		
 		return criteria.list();
 	}
