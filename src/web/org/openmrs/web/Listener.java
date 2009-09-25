@@ -162,7 +162,7 @@ public final class Listener extends ContextLoaderListener {
 			return true;
 		
 		try {
-			return DatabaseUpdater.updatesRequired();
+			return DatabaseUpdater.updatesRequired() && !DatabaseUpdater.allowAutoUpdate();
 		}
 		catch (Throwable t) {
 			throw new ServletException(t);

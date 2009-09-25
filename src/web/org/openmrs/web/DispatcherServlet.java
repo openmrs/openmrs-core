@@ -21,6 +21,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.module.web.WebModuleUtil;
+import org.openmrs.util.DatabaseUpdater;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.web.filter.initialization.InitializationFilter;
 import org.openmrs.web.filter.update.UpdateFilter;
@@ -85,7 +86,7 @@ public class DispatcherServlet extends org.springframework.web.servlet.Dispatche
 	public void init(ServletConfig config) throws ServletException {
 		
 		// hacky way to know if one of the startup filters needs to be run
-		if (UpdateFilter.updatesRequired()) {
+		if (UpdateFilter.updatesRequired() && !DatabaseUpdater.allowAutoUpdate()) {
 			log.info("DB updates are required, so spring initialization is being skipped");
 			throw new ServletException("Database updates are required. Visit /openmrs to run them.");
 		}
