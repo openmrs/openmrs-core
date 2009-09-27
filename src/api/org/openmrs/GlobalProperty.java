@@ -144,4 +144,11 @@ public class GlobalProperty extends BaseOpenmrsObject {
 	public void setId(Integer id) {
 		throw new UnsupportedOperationException();
 	}
+	
+	/**
+	 * @see java.lang.Object#toString()
+	 */
+	public String toString() {
+		return "property: " + getProperty() + " value: " + getPropertyValue();
+	}
 }
