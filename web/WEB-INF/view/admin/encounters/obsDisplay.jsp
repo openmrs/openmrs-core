@@ -25,7 +25,10 @@
 				<td class="obsConceptName" style="padding-left: ${padding}"><a href="${pageContext.request.contextPath}/admin/observations/obs.form?obsId=${obs.obsId}" onclick="return click('${obs.obsId}')">${obs.concept.name.name}</a></td>
 				<td class="obsValue"><openmrs:format obsValue="${obs}" /></td>
 				<td class="obsAlerts" valign="middle" align="right">
-					<span class="obsEdit"><c:if test="${fn:contains(editedObs, obs.obsId)}"><img src="${pageContext.request.contextPath}/images/alert.gif" title='<spring:message code="Obs.edited"/>' /></c:if></span>
+					<c:choose>
+						<c:when test="${fn:contains(editedObs, obs.obsId)}"><span class="obsEdit"><img src="${pageContext.request.contextPath}/images/alert.gif" title='<spring:message code="Obs.edited"/>' /></span></c:when>
+						<c:otherwise><span class="obsEdit"><c:if test="${fn:contains(obsAfterEncounter, obs.obsId)}"><img src="${pageContext.request.contextPath}/images/alertPlus.gif" title='<spring:message code="Obs.afterEncounter.created"/>' /></c:if></span></c:otherwise>
+					</c:choose>
 					<span class="obsComment"><c:if test="${obs.comment != null && obs.comment != ''}"><img src="${pageContext.request.contextPath}/images/note.gif" title="${obs.comment}" /></c:if></span>
 				</td>
 				<td class="obsCreator" style="white-space: nowrap;">
