@@ -471,7 +471,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	}
 	
 	/**
-	 * Generates system ids based on the following algorithm scheme: <server name>-user_id-check
+	 * Generates system ids based on the following algorithm scheme: user_id-check
 	 * digit
 	 * 
 	 * @see org.openmrs.api.UserService#generateSystemId()
