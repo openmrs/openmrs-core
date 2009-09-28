@@ -381,8 +381,14 @@ dojo.widget.defineWidget(
 	findObjects: function(phrase) {
 		
 		dojo.debug('findObjects initialized with search on: ' + phrase);
+		//do not allow wildcard characters of % or *
+		if (phrase.indexOf("%",0) != -1 || phrase.indexOf("*",0) != -1) {
+			this.objectsFound = new Array();
+			this.objectsFound.push('<spring:message code="SearchResults.noWildcards" javaScriptEscape="true"/> ');
+			this.doObjectsFound(this.objectsFound);
+		}
 		//must have at least x characters entered or that character be a number
-		if (phrase.length >= this.minSearchCharacters || (parseInt(phrase) >= 0 && parseInt(phrase) <= 99)) {
+		else if (phrase.length >= this.minSearchCharacters || (parseInt(phrase) >= 0 && parseInt(phrase) <= 99)) {
 			this.resetSearch(phrase);
 			dojo.event.topic.publish(this.eventNames.findObjects, phrase);
 			dojo.debug("Calling doFindObjects with " + phrase);
