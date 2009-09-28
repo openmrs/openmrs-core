@@ -160,6 +160,8 @@ public interface PatientService extends OpenmrsService {
 	 * @return patients that matched the given criteria (and are not voided)
 	 * @throws APIException
 	 * @should search familyName2 with name
+	 * @should not allow percentage wildcard character
+	 * @should not allow asterisk wildcard character
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_PATIENTS })
