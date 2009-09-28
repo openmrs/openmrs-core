@@ -58,8 +58,19 @@ public final class OpenmrsConstants {
 	 */
 	private static final Package THIS_PACKAGE = OpenmrsConstants.class.getPackage();
 	
+	/**
+	 * This holds the current openmrs code version.  This version is a string containing 
+	 * spaces and words.<br/>
+	 * The format is:<br/>
+	 * <i>major</i>.<i>minor</i>.<i>maintenance</i> <i>suffix</i> Build <i>buildNumber</i>
+	 */
 	public static final String OPENMRS_VERSION = THIS_PACKAGE.getSpecificationVendor();
 	
+	/**
+	 * This holds the current openmrs code version in a short space-less string.<br/>
+	 * The format is:<br/>
+	 * <i>major</i>.<i>minor</i>.<i>maintenance</i>.<i>revision</i>-<i>suffix</i>
+	 */
 	public static final String OPENMRS_VERSION_SHORT = THIS_PACKAGE.getSpecificationVersion();
 	
 	/**
