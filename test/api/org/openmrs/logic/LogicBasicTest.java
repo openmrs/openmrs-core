@@ -28,13 +28,14 @@ import org.openmrs.Cohort;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
 import org.openmrs.logic.result.Result;
+import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.SkipBaseSetup;
 
 /**
  * TODO add more tests
  */
 @SkipBaseSetup
-public class LogicBasicTest extends LogicBaseContextSensitiveTest {
+public class LogicBasicTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * Runs the basic stuff since we have SkipBaseSetup on the whole class
@@ -44,9 +45,8 @@ public class LogicBasicTest extends LogicBaseContextSensitiveTest {
 	@Before
 	public void runBeforeEachTest() throws Exception {
 		initializeInMemoryDatabase();
-		//executeDataSet("org/openmrs/logic/include/LargeTestDatabase.xml");
+		executeDataSet("org/openmrs/logic/include/LogicStandardDatasets.xml");
 		executeDataSet("org/openmrs/logic/include/LogicTests-patients.xml");
-		
 		authenticate();
 	}
 	
@@ -114,7 +114,7 @@ public class LogicBasicTest extends LogicBaseContextSensitiveTest {
 		Patient patient = Context.getPatientService().getPatient(2);
 		Result result = Context.getLogicService().eval(patient,
 		    new LogicCriteria("CURRENT ANTIRETROVIRAL DRUGS USED FOR TREATMENT"));
-		//Assert.assertTrue(result.exists());
+		Assert.assertTrue(result.exists());
 	}
 	
 	/**
@@ -151,10 +151,12 @@ public class LogicBasicTest extends LogicBaseContextSensitiveTest {
 			cohort.addMember(ids.get(i));
 		}
 		cohort.addMember(2);
-		long l = System.currentTimeMillis();
+		//long l = System.currentTimeMillis();
 		//System.out.println(new Date());
 		LogicService ls = Context.getLogicService();
 		Map<Integer, Result> m = ls.eval(cohort, "WEIGHT (KG)");
+		Assert.assertNotNull(m);
+		Assert.assertTrue(m.size() > 0);
 		//System.out.println(m.toString());
 		//System.out.println(String.valueOf(System.currentTimeMillis() - l) + " milliseconds");
 		

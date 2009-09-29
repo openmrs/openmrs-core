@@ -26,19 +26,19 @@ import org.openmrs.Cohort;
 import org.openmrs.api.context.Context;
 import org.openmrs.logic.datasource.LogicDataSource;
 import org.openmrs.logic.result.Result;
+import org.openmrs.test.BaseContextSensitiveTest;
 
 /**
  * Tests the ObsDataSource functionality
  */
-public class ObsDataSourceTest extends LogicBaseContextSensitiveTest {
+public class ObsDataSourceTest extends BaseContextSensitiveTest {
 	
 	private Log log = LogFactory.getLog(this.getClass());
 	
 	@Before
 	public void runBeforeEachTest() throws Exception {
-		initializeInMemoryDatabase();
+		executeDataSet("org/openmrs/logic/include/LogicStandardDatasets.xml");
 		executeDataSet("org/openmrs/logic/include/ObsDataSourceTest.xml");
-		authenticate();
 	}
 	
 	/**
@@ -58,11 +58,5 @@ public class ObsDataSourceTest extends LogicBaseContextSensitiveTest {
 		context = null;
 		assertNotNull(result);
 		assertEquals(2, result.size());
-		
-		for (Integer id : result.keySet()) {
-			for (Result r : result.get(id)) {
-				log.error("PatientID: " + id + ", CD4 COUNT: " + r.toNumber());
-			}
-		}
 	}
 }

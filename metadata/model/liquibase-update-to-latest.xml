@@ -2498,7 +2498,7 @@
 			<where>role='System Developer'</where>
 		</delete>
 	</changeSet>
-	
+    
 	<changeSet id="20090831-1039-38-scheduler_task_config" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="scheduler_task_config" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to scheduler_task_config table</comment>
@@ -2576,5 +2576,84 @@
 		<comment>Rename the concept_source.void_reason column to retire_reason</comment>
 		<renameColumn tableName="concept_source" oldColumnName="void_reason" newColumnName="retire_reason" columnDataType="varchar(255)" />
 	</changeSet>
+	
+    <changeSet id="200909281005-1" author="nribeka">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="logic_rule_token"/>
+            </not>
+        </preConditions>
+        <comment>Create logic token table to store all registered token</comment>
+        <createTable tableName="logic_rule_token">
+            <column name="logic_rule_token_id" type="int">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column name="creator" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueDate="0002-11-30T00:00:00.0" name="date_created" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="changed_by" type="int"/>
+            <column name="date_changed" type="datetime"/>
+            <column name="token" type="varchar(512)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="class_name" type="varchar(512)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="state" type="varchar(512)" />
+        </createTable>
+    </changeSet>
+    
+    <changeSet id="200909281005-2" author="nribeka">
+        <preConditions onFail="HALT">
+            <not>
+                <tableExists tableName="logic_rule_token_tag"/>
+            </not>
+        </preConditions>
+        <comment>Create logic token tag table to store all tag associated with a token</comment>
+        <createTable tableName="logic_rule_token_tag">
+            <column name="logic_rule_token_id" type="int">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column name="tag" type="varchar(512)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    
+    <changeSet id="200909281005-3" author="nribeka">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="token_tag"/>
+            </not>
+        </preConditions>
+        <comment>Adding foreign key for token tag</comment>
+        <addForeignKeyConstraint baseTableName="logic_rule_token_tag" baseColumnNames="logic_rule_token_id" constraintName="token_tag"
+                                 referencedTableName="logic_rule_token" referencedColumnNames="logic_rule_token_id" />
+    </changeSet>
+    
+    <changeSet id="200909281005-4" author="nribeka">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="token_tag_creator"/>
+            </not>
+        </preConditions>
+        <comment>Adding foreign key for token</comment>
+        <addForeignKeyConstraint baseTableName="logic_rule_token" baseColumnNames="creator" constraintName="token_tag_creator"
+                                 referencedTableName="person" referencedColumnNames="person_id" />
+    </changeSet>
+    
+    <changeSet id="200909281005-5" author="nribeka">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="token_tag_changed_by"/>
+            </not>
+        </preConditions>
+        <comment>Adding foreign key for token</comment>
+        <addForeignKeyConstraint baseTableName="logic_rule_token" baseColumnNames="logic_rule_token_id" constraintName="token_tag_changed_by"
+                                 referencedTableName="changed_by" referencedColumnNames="person_id" />
+    </changeSet>
 	
 </databaseChangeLog>
