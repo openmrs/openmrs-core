@@ -45,7 +45,7 @@ public class ProgramFormController extends SimpleFormController {
 		Program program = (Program) binder.getTarget();
 		
 		binder.registerCustomEditor(Concept.class, new ConceptEditor());
-		binder.registerCustomEditor(java.util.Collection.class, "workflows", new WorkflowCollectionEditor(program));
+		binder.registerCustomEditor(java.util.Collection.class, "allWorkflows", new WorkflowCollectionEditor(program));
 	}
 	
 	/**
@@ -79,6 +79,7 @@ public class ProgramFormController extends SimpleFormController {
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
+	 * @should save workflows with program
 	 */
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
 	                                BindException errors) throws Exception {
