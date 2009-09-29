@@ -34,7 +34,7 @@
 	</logger>
 	
 	<logger name="org.openmrs.test">
-		<level value="INFO" />
+		<level value="TRACE" />
 	</logger>
 	
 	<logger name="org.hibernate.SQL">
