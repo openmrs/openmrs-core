@@ -145,7 +145,7 @@
 	<tr id="workflowSetRow">
 		<th valign="top"><spring:message code="Program.workflows" /></th>
 		<td valign="top">
-			<spring:bind path="program.workflows">
+			<spring:bind path="program.allWorkflows">
 				<input type="hidden" name="${status.expression}" id="workflowsValue" value="${status.value}" />
 				<c:if test="${status.errorMessage != ''}">
 					<span class="error">
