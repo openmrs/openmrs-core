@@ -17,12 +17,24 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.Calendar;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.openmrs.test.BaseContextSensitiveTest;
 
 /**
  * 
  */
-public class LogicCriteriaTest {
+public class LogicCriteriaTest extends BaseContextSensitiveTest {
+	
+	/**
+	 * Runs the basic stuff
+	 * 
+	 * @throws Exception
+	 */
+	@Before
+	public void runBeforeEachTest() throws Exception {
+		executeDataSet("org/openmrs/logic/include/LogicStandardDatasets.xml");
+	}
 	
 	/**
 	 * TODO break this test into a lot of smaller tests

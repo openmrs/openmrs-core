@@ -16,6 +16,7 @@ package org.openmrs.logic.impl;
 import java.io.ByteArrayInputStream;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +32,6 @@ import org.openmrs.logic.LogicException;
 import org.openmrs.logic.LogicService;
 import org.openmrs.logic.Rule;
 import org.openmrs.logic.RuleClassLoader;
-import org.openmrs.logic.RuleFactory;
 import org.openmrs.logic.datasource.LogicDataSource;
 import org.openmrs.logic.queryparser.LogicQueryBaseParser;
 import org.openmrs.logic.queryparser.LogicQueryLexer;
@@ -63,7 +63,13 @@ public class LogicServiceImpl implements LogicService {
 	 * Default constructor. Creates a new RuleFactory (and populates it)
 	 */
 	public LogicServiceImpl() {
-		ruleFactory = new RuleFactory();
+	}
+	
+	/**
+	 * @param ruleFactory the ruleFactory to set
+	 */
+	public void setRuleFactory(RuleFactory ruleFactory) {
+		this.ruleFactory = ruleFactory;
 	}
 	
 	/**
@@ -80,14 +86,32 @@ public class LogicServiceImpl implements LogicService {
 	 * @see org.openmrs.logic.LogicService#getTokens()
 	 */
 	public Set<String> getTokens() {
-		return ruleFactory.getTokens();
+		Set<String> tokens = new HashSet<String>();
+		tokens.addAll(getAllTokens());
+		return tokens;
+	}
+	
+	/**
+	 * @see org.openmrs.logic.LogicService#getAllTokens()
+	 */
+	public List<String> getAllTokens() {
+		return ruleFactory.getAllTokens();
 	}
 	
 	/**
 	 * @see org.openmrs.logic.LogicService#findToken(java.lang.String)
 	 */
 	public Set<String> findToken(String token) {
-		return ruleFactory.findTokens(token);
+		Set<String> tokens = new HashSet<String>();
+		tokens.addAll(getTokens(token));
+		return tokens;
+	}
+	
+	/**
+	 * @see org.openmrs.logic.LogicService#getTokens(java.lang.String)
+	 */
+	public List<String> getTokens(String partialToken) {
+		return ruleFactory.findTokens(partialToken);
 	}
 	
 	/**
@@ -216,6 +240,15 @@ public class LogicServiceImpl implements LogicService {
 	 * @see org.openmrs.logic.LogicService#findTags(java.lang.String)
 	 */
 	public Set<String> findTags(String partialTag) {
+		Set<String> tags = new HashSet<String>();
+		tags.addAll(getTags(partialTag));
+		return tags;
+	}
+	
+	/**
+	 * @see org.openmrs.logic.LogicService#getTags(java.lang.String)
+	 */
+	public List<String> getTags(String partialTag) {
 		return ruleFactory.findTags(partialTag);
 	}
 	
@@ -227,9 +260,25 @@ public class LogicServiceImpl implements LogicService {
 	}
 	
 	/**
+	 * @see org.openmrs.logic.LogicService#getTokenTags(java.lang.String)
+	 */
+	public Set<String> getTokenTags(String token) {
+		return ruleFactory.getTagsByToken(token);
+	}
+	
+	/**
 	 * @see org.openmrs.logic.LogicService#getTokensByTag(java.lang.String)
 	 */
 	public Set<String> getTokensByTag(String tag) {
+		Set<String> tokens = new HashSet<String>();
+		tokens.addAll(getTokensWithTag(tag));
+		return tokens;
+	}
+	
+	/**
+	 * @see org.openmrs.logic.LogicService#getTokensWithTag(java.lang.String)
+	 */
+	public List<String> getTokensWithTag(String tag) {
 		return ruleFactory.getTokensByTag(tag);
 	}
 	

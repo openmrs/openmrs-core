@@ -175,7 +175,21 @@
 	<bean id="logicEncounterDataSource" class="org.openmrs.logic.datasource.EncounterDataSource">
 		<property name="logicEncounterDAO"><ref bean="logicEncounterDAO"></ref></property>
 	</bean>
-	<bean id="logicProgramDataSource" class="org.openmrs.logic.datasource.ProgramDataSource">
+	<bean id="logicProgramDataSource" class="org.openmrs.logic.datasource.ProgramDataSource" />
+	<bean id="logicRuleTokenTarget" class="org.openmrs.logic.db.hibernate.HibernateLogicRuleTokenDAO">
+		<property name="sessionFactory"><ref bean="sessionFactory" /></property>
+	</bean>
+	<bean id="logicRuleTokenDAO" class="org.springframework.aop.framework.ProxyFactoryBean">
+		<property name="proxyInterfaces"><value>org.openmrs.logic.db.LogicRuleTokenDAO</value></property>
+		<property name="target"><ref local="logicRuleTokenTarget"/></property>
+		<property name="interceptorNames">
+			<list>
+				<value>requiredDataInterceptor</value>
+			</list>
+		</property>
+	</bean>
+	<bean id="ruleFactory" class="org.openmrs.logic.impl.RuleFactory">
+		<property name="logicRuleTokenDAO"><ref bean="logicRuleTokenDAO" /></property>
 	</bean>
 
 	<!--  **************************  SCHEDULER SERVICE  *************************  -->
@@ -327,6 +341,7 @@
 	
 	<!--  Logic Service and Logic Data source setup -->
 	<bean id="logicServiceTarget" class="org.openmrs.logic.impl.LogicServiceImpl">
+		<property name="ruleFactory"><ref bean="ruleFactory" /></property>
 		<property name="logicDataSources">
 			<map>
 				<entry key="encounter"><ref bean="logicEncounterDataSource" /></entry>
