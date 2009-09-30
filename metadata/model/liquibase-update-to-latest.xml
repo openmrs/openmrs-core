@@ -2558,6 +2558,24 @@
 		</createIndex>
 	</changeSet>
 	
+	<changeSet id="200908291938-1" author="dthomas">
+		<comment>set hl7_code in ConceptSource to nullable column</comment>
+		<modifyColumn tableName="concept_source">
+			<column name="hl7_code" type="varchar(50)">
+				<constraints nullable="true" />
+			</column>
+		</modifyColumn>
+	</changeSet>
+	
+	<changeSet id="200908291938-2" author="dthomas">
+		<comment>set voided in ConceptSource to tinyint(1) not null</comment>
+		<modifyColumn tableName="concept_source">
+			<column name="voided" type="tinyint(1)">
+				<constraints nullable="false" />
+			</column>
+		</modifyColumn>
+	</changeSet>
+	
 	<changeSet id="20090907-1" author="Knoll_Frank">
 		<comment>Rename the concept_source.date_voided column to date_retired</comment>
 		<renameColumn tableName="concept_source" oldColumnName="date_voided" newColumnName="date_retired" columnDataType="datetime" />

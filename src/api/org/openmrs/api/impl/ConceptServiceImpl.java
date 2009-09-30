@@ -34,6 +34,7 @@ import org.openmrs.ConceptClass;
 import org.openmrs.ConceptComplex;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptDescription;
+import org.openmrs.ConceptMap;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptNameTag;
 import org.openmrs.ConceptNumeric;
@@ -1350,6 +1351,24 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 */
 	public Concept getConceptByMapping(String conceptCode, String mappingCode) throws APIException {
 		return dao.getConceptByMapping(conceptCode, mappingCode);
+	}
+	
+	/**
+	 * @see org.openmrs.api.ConceptService#getConceptsByConceptSource(org.openmrs.ConceptSource)
+	 */
+	public List<ConceptMap> getConceptsByConceptSource(ConceptSource conceptSource) throws APIException {
+		List<ConceptMap> ret = dao.getConceptsByConceptSource(conceptSource);
+		if (ret != null)
+			return ret;
+		else
+			return new ArrayList<ConceptMap>();
+	}
+	
+	/**
+	 * @see org.openmrs.api.ConceptService#getConceptSourceByName(java.lang.String)
+	 */
+	public ConceptSource getConceptSourceByName(String conceptSourceName) throws APIException{
+		return dao.getConceptSourceByName(conceptSourceName);
 	}
 	
 }

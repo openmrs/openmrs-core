@@ -26,7 +26,7 @@
 			
 		<property name="dateCreated" type="java.util.Date"
 			column="date_created" not-null="true" length="19" />
-		<property name="retired" type="boolean" column="retired" />
+		<property name="retired" type="boolean" column="retired" not-null="true"/>
 		<property name="dateRetired" type="java.util.Date"
 			column="date_retired" length="19" />
 		<property name="retireReason" type="java.lang.String"

@@ -1247,4 +1247,24 @@ public class HibernateConceptDAO implements ConceptDAO {
 		return (ConceptNameTag) sessionFactory.getCurrentSession().createQuery(
 		    "from ConceptNameTag cnt where cnt.uuid = :uuid").setString("uuid", uuid).uniqueResult();
 	}
+	
+	/**
+	 * @see org.openmrs.api.db.ConceptDAO#getConceptsByConceptSourceName(java.lang.String, java.lang.String)
+	 */
+	@SuppressWarnings("unchecked")
+	public List<ConceptMap> getConceptsByConceptSource(ConceptSource conceptSource) throws DAOException {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ConceptMap.class, "map");
+		criteria.add(Expression.eq("map.source", conceptSource));
+		return (List<ConceptMap>) criteria.list();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.ConceptDAO#getConceptSourceByName(java.lang.String)
+	 */
+	@SuppressWarnings("unchecked")
+	public ConceptSource getConceptSourceByName(String conceptSourceName) throws DAOException {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ConceptSource.class, "source");
+		criteria.add(Expression.eq("source.name", conceptSourceName));
+		return (ConceptSource) criteria.uniqueResult();
+	}
 }
