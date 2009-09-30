@@ -333,9 +333,18 @@
 	<!-- /Data Set Service setup -->
 	
 	
-	<bean id="hL7ServiceTarget" class="org.openmrs.hl7.impl.HL7ServiceImpl">
-		<property name="HL7DAO"><ref bean="hL7DAO"/></property>	
+	<bean id="hL7ServiceTarget" class="org.openmrs.hl7.impl.HL7ServiceImpl" factory-method="getInstance">
+		<property name="HL7DAO"><ref bean="hL7DAO"/></property>
+		<property name="parser"><bean class="ca.uhn.hl7v2.parser.GenericParser" /></property>
+		<property name="router"><bean class="ca.uhn.hl7v2.app.MessageTypeRouter" /></property>
+		<property name="HL7Handlers">
+			<map>
+				<entry key="ORU_R01"><bean class="org.openmrs.hl7.handler.ORUR01Handler"/></entry>
+				<entry key="ADT_A28"><bean class="org.openmrs.hl7.handler.ADTA28Handler"/></entry>
+			</map>
+		</property>
 	</bean>
+	
 	<bean id="ardenServiceTarget" class="org.openmrs.arden.impl.ArdenServiceImpl">
 	</bean>
 	

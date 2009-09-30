@@ -56,13 +56,13 @@ public class HL7Constants {
 	
 	public static final String PRIV_PURGE_HL7_IN_EXCEPTION = "Purge HL7 Inbound Exception";
 	
-	public static final int HL7_STATUS_PENDING = 0;
+	public static final Integer HL7_STATUS_PENDING = 0;
 	
-	public static final int HL7_STATUS_PROCESSING = 1;
+	public static final Integer HL7_STATUS_PROCESSING = 1;
 	
-	public static final int HL7_STATUS_PROCESSED = 2;
+	public static final Integer HL7_STATUS_PROCESSED = 2;
 	
-	public static final int HL7_STATUS_ERROR = 3;
+	public static final Integer HL7_STATUS_ERROR = 3;
 	
 	/**
 	 * @since 1.5

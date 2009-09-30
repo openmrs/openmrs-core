@@ -59,8 +59,8 @@ public final class OpenmrsConstants {
 	private static final Package THIS_PACKAGE = OpenmrsConstants.class.getPackage();
 	
 	/**
-	 * This holds the current openmrs code version.  This version is a string containing 
-	 * spaces and words.<br/>
+	 * This holds the current openmrs code version. This version is a string containing spaces and
+	 * words.<br/>
 	 * The format is:<br/>
 	 * <i>major</i>.<i>minor</i>.<i>maintenance</i> <i>suffix</i> Build <i>buildNumber</i>
 	 */
@@ -645,9 +645,8 @@ public final class OpenmrsConstants {
 	public static final Map<String, String> CORE_ROLES() {
 		Map<String, String> roles = new HashMap<String, String>();
 		
-		roles
-		        .put(SUPERUSER_ROLE,
-		            "Assigned to Administrators of OpenMRS. Gives additional access to change core aspects of the system.");
+		roles.put(SUPERUSER_ROLE,
+		    "Assigned to Administrators of OpenMRS. Gives additional access to change core aspects of the system.");
 		roles.put(ANONYMOUS_ROLE, "Privileges for non-authenticated users.");
 		roles.put(AUTHENTICATED_ROLE, "Privileges gained once authentication has been established.");
 		roles.put(PROVIDER_ROLE, "All users with the 'Provider' role will appear as options in the default Infopath ");
@@ -728,12 +727,14 @@ public final class OpenmrsConstants {
 	
 	public static final String GLOBAL_PROPERTY_DEFAULT_SERIALIZER = "serialization.defaultSerializer";
 	
+	public static final String GLOBAL_PROPERTY_IGNORE_MISSING_NONLOCAL_PATIENTS = "hl7_processor.ignore_missing_patient_non_local";
+	
 	/**
-	 * Global property name that allows specification of whether user passwords must contain 
-	 * both upper and lower case characters.  Allowable values are "true", "false", and null
+	 * Global property name that allows specification of whether user passwords must contain both
+	 * upper and lower case characters. Allowable values are "true", "false", and null
 	 */
 	public static String GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE = "security.passwordRequiresUpperAndLowerCase";
-
+	
 	/**
 	 * Global property name that allows specification of whether user passwords require non-digits.
 	 * Allowable values are "true", "false", and null
@@ -747,19 +748,20 @@ public final class OpenmrsConstants {
 	public static String GP_PASSWORD_REQUIRES_DIGIT = "security.passwordRequiresDigit";
 	
 	/**
-	 * Global property name that allows specification of whether user passwords can match username or system id.
-	 * Allowable values are "true", "false", and null
+	 * Global property name that allows specification of whether user passwords can match username
+	 * or system id. Allowable values are "true", "false", and null
 	 */
 	public static String GP_PASSWORD_CANNOT_MATCH_USERNAME_OR_SYSTEMID = "security.passwordCannotMatchUsername";
 	
 	/**
-	 * Global property name that allows specification of whether user passwords have a minimum length requirement
-	 * Allowable values are any integer
+	 * Global property name that allows specification of whether user passwords have a minimum
+	 * length requirement Allowable values are any integer
 	 */
 	public static String GP_PASSWORD_MINIMUM_LENGTH = "security.passwordMinimumLength";
 	
 	/**
-	 * Global property name that allows specification of a regular expression that passwords must adhere to
+	 * Global property name that allows specification of a regular expression that passwords must
+	 * adhere to
 	 */
 	public static String GP_PASSWORD_CUSTOM_REGEX = "security.passwordCustomRegex";
 	
@@ -1034,6 +1036,9 @@ public final class OpenmrsConstants {
 		
 		props.add(new GlobalProperty(GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "true",
 		 							 "Configure whether passwords must contain both upper and lower case characters"));
+		
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_IGNORE_MISSING_NONLOCAL_PATIENTS, "false",
+									 "If true, hl7 messages for patients that are not found and are non-local will silently be dropped/ignored"));
 		
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);
