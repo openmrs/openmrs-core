@@ -1248,4 +1248,32 @@ public interface ConceptService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	public ConceptDescription getConceptDescriptionByUuid(String uuid);
 	
+	/**
+	 * 
+	 * Lookup a ConceptSource by its name property
+	 * 
+	 * @param conceptSourceName
+	 * @return ConceptSource 
+	 * @throws APIException
+	 * @should get ConceptSource with the given name
+	 * @should return null if no ConceptSource with that name is found.
+	 */
+	@Transactional(readOnly = true)
+	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	public ConceptSource getConceptSourceByName(String conceptSourceName) throws APIException;
+	
+	/**
+	 * 
+	 * Looks up a list of ConceptMaps for a given ConceptSource
+	 * 
+	 * @param conceptSource
+	 * @return a List<ConceptMap> object
+	 * @throws APIException
+	 * @should return a List<ConceptMap> if concept mappings found
+	 * @should return empty List<ConceptMap> if none found
+	 */
+	@Transactional(readOnly = true)
+	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	public List<ConceptMap> getConceptsByConceptSource(ConceptSource conceptSource) throws APIException;
+	
 }

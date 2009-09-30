@@ -26,6 +26,7 @@ import org.openmrs.ConceptComplex;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptDerived;
 import org.openmrs.ConceptDescription;
+import org.openmrs.ConceptMap;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptNameTag;
 import org.openmrs.ConceptNumeric;
@@ -391,5 +392,16 @@ public interface ConceptDAO {
 	public ConceptDescription getConceptDescriptionByUuid(String uuid);
 	
 	public ConceptNameTag getConceptNameTagByUuid(String uuid);
+	
+	/**
+	 * @see org.openmrs.api.ConceptService#getConceptsByConceptSource(org.openmrs.ConceptSource)
+	 */
+	public List<ConceptMap> getConceptsByConceptSource(ConceptSource conceptSourceName) throws DAOException;
+	
+	
+	/**
+	 * @see org.openmrs.api.ConceptService#getConceptSourceByName(java.lang.String)
+	 */
+	public ConceptSource getConceptSourceByName(String conceptSourceName) throws DAOException;
 	
 }
