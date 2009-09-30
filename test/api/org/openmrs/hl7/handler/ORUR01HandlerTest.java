@@ -17,12 +17,17 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.FileOutputStream;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Vector;
 
+import org.dbunit.database.DatabaseConnection;
+import org.dbunit.database.IDatabaseConnection;
+import org.dbunit.database.QueryDataSet;
+import org.dbunit.dataset.xml.FlatXmlDataSet;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -102,6 +107,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		cal.setTime(firstObs.getValueDatetime());
 		Date firstObsValueDatetime = cal.getTime();
 		assertEquals("The date should be the 29th", returnVisitDate.toString(), firstObsValueDatetime.toString());
+		
 	}
 	
 	/**

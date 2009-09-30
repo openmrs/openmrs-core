@@ -91,4 +91,9 @@
   <concept_name_tag_map concept_name_id="1285" concept_name_tag_id="4"/>
   <concept_name_tag_map concept_name_id="2394" concept_name_tag_id="4"/>
   
+  <hl7_in_queue hl7_in_queue_id="1" hl7_source="1" hl7_source_key="asdf" message_state="0" date_created="2004-08-12 00:00:00.0" uuid="bbbb7348-5bf2-4050-b824-0aa009499999" hl7_data="MSH|^~\&amp;|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID&#xD;PID|||3^^^^||John3^Doe^||&#xD;PV1||O|1^Unknown Location||||1^Super User (1-8)|||||||||||||||||||||||||||||||||||||20080212|||||||V&#xD;ORC|RE||||||||20080226102537|1^Super User&#xD;OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT&#xD;OBX|1|NM|5497^CD4, BY FACS^99DCT||450|||||||||20080206&#xD;OBX|2|DT|5096^RETURN VISIT DATE^99DCT||20080229|||||||||20080212" />
+  
+  <!-- A bad hl7 message -->
+  <hl7_in_queue hl7_in_queue_id="2" hl7_source="1" hl7_source_key="asdf" message_state="0" date_created="2004-08-12 00:00:00.0" uuid="cccc7348-5bf2-4050-b824-0aa009490000" hl7_data="a malformed hl7 message" />
+  
 </dataset>

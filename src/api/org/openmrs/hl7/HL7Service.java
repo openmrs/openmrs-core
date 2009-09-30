@@ -24,6 +24,7 @@ import org.openmrs.hl7.db.HL7DAO;
 import org.springframework.transaction.annotation.Transactional;
 
 import ca.uhn.hl7v2.HL7Exception;
+import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.model.v25.datatype.PL;
 import ca.uhn.hl7v2.model.v25.datatype.XCN;
 import ca.uhn.hl7v2.model.v25.segment.PID;
@@ -372,5 +373,45 @@ public interface HL7Service extends OpenmrsService {
 	 *             EncounterService.createEncounter(Encounter) method
 	 */
 	public void encounterCreated(Encounter encounter);
+	
+	/**
+	 * Process the given {@link HL7InQueue} item. <br/>
+	 * If an error occurs while processing, a new {@link HL7InError} is created and saved. <br/>
+	 * If no error occurs, a new {@link HL7InArchive} is created and saved.<br/>
+	 * The given {@link HL7InQueue} is removed from the hl7 in queue table regardless of success or
+	 * failure of the processing.
+	 * 
+	 * @param inQueue the {@link HL7InQueue} to parse and save all encounters/obs to the db
+	 * @return the processed {@link HL7InQueue}
+	 * @should create HL7InArchive after successful parsing
+	 * @should create HL7InError after failed parsing
+	 * @should fail if given inQueue is already marked as processing
+	 * @should parse oru r01 message using overridden parser provided by a module
+	 */
+	public HL7InQueue processHL7InQueue(HL7InQueue inQueue) throws HL7Exception;
+	
+	/**
+	 * Parses the given string and returns the resulting {@link Message}
+	 * 
+	 * @param hl7String the hl7 string to parse and save
+	 * @return the {@link Message} that the given hl7 string represents
+	 * @throws HL7Exception
+	 * @see #processHL7InQueue(HL7InQueue)
+	 * @should parse the given string into Message
+	 */
+	public Message processHL7String(String hl7String) throws HL7Exception;
+	
+	/**
+	 * Parses the given {@link Message} and saves the resulting content to the database
+	 * 
+	 * @param hl7Message the {@link Message} to process and save to the db.
+	 * @return the processed message
+	 * @throws HL7Exception
+	 * @see {@link #processHL7String(String)}
+	 * @see #processHL7InQueue(HL7InQueue)
+	 * @should save hl7Message to the database
+	 * @should parse message type supplied by module
+	 */
+	public Message processHL7Message(Message hl7Message) throws HL7Exception;
 	
 }
