@@ -157,8 +157,8 @@
   <concept_name_tag_map concept_name_id="2481" concept_name_tag_id="3"/>
   <concept_numeric concept_id="5497" hi_normal="1497.0" low_critical="99.0" low_normal="445.0" hi_critical="1800.0" hi_absolute="2500.0" low_absolute="0.0" units="cells/mmL" precise="false"/>
   <concept_numeric concept_id="5089" hi_normal="250.0" low_critical="0.0" units="kg" precise="true"/>
-  <concept_source concept_source_id="1" name="Some Standardized Terminology" description="A made up source" hl7_code="SSTRM" creator="1" date_created="2005-02-24 00:00:00.0" />
-  <concept_source concept_source_id="2" name="SNOMED CT" description="'Systematized Nomenclature of Medicine--Clinical Terms' is a comprehensive clinical terminology" hl7_code="SNOMED-CT" creator="1" date_created="2005-02-24 00:00:00.0" />
+  <concept_source concept_source_id="1" name="Some Standardized Terminology" description="A made up source" hl7_code="SSTRM" creator="1" date_created="2005-02-24 00:00:00.0" voided="false"/>
+  <concept_source concept_source_id="2" name="SNOMED CT" description="'Systematized Nomenclature of Medicine--Clinical Terms' is a comprehensive clinical terminology" hl7_code="SNOMED-CT" creator="1" date_created="2005-02-24 00:00:00.0" voided="false"/>
   <concept_set concept_id="18" concept_set="23" sort_weight="0.0" creator="1" date_created="2008-08-18 12:38:58.0"/>
   <concept_set concept_id="19" concept_set="23" sort_weight="2.0" creator="1" date_created="2008-08-18 12:38:58.0"/>
   <concept_set concept_id="20" concept_set="23" sort_weight="1.0" creator="1" date_created="2008-08-18 12:38:58.0"/>
