@@ -2442,4 +2442,22 @@
 		</modifyColumn>
 	</changeSet>
 	
+	<changeSet id="200908291938-1" author="dthomas">
+		<comment>set hl7_code in ConceptSource to null</comment>
+		<modifyColumn tableName="concept_source">
+			<column name="hl7_code" type="varchar(50)">
+				<constraints nullable="true" />
+			</column>
+		</modifyColumn>
+	</changeSet>
+	
+	<changeSet id="200908291938-2" author="dthomas">
+		<comment>set voided in ConceptSource to tinyint(1) not null</comment>
+		<modifyColumn tableName="concept_source">
+			<column name="voided" type="tinyint(1)">
+				<constraints nullable="false" />
+			</column>
+		</modifyColumn>
+	</changeSet>
+	
 </databaseChangeLog>
