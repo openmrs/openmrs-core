@@ -1011,19 +1011,34 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getConceptByMapping(java.lang.String, java.lang.String)
 	 */
-	public Concept getConceptByMapping(String conceptCode, String mappingCode) {
+	public Concept getConceptByMapping(String conceptCode, String hl7Code) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ConceptMap.class);
-		
 		// select the concept as the return value
 		criteria.setProjection(Projections.property("concept"));
-		
 		criteria.add(Expression.eq("sourceCode", conceptCode));
-		
 		// join to conceptSource and match to the hl7Code
 		criteria.createAlias("source", "conceptSource");
-		criteria.add(Expression.eq("conceptSource.hl7Code", mappingCode));
-		
+		criteria.add(Expression.eq("conceptSource.hl7Code", hl7Code));
 		return (Concept) criteria.uniqueResult();
 	}
 	
+	/**
+	 * @see org.openmrs.api.db.ConceptDAO#getConceptsByConceptSourceName(java.lang.String, java.lang.String)
+	 */
+	@SuppressWarnings("unchecked")
+	public List<ConceptMap> getConceptsByConceptSource(ConceptSource conceptSource) throws DAOException {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ConceptMap.class, "map");
+		criteria.add(Expression.eq("map.source", conceptSource));
+		return (List<ConceptMap>) criteria.list();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.ConceptDAO#getConceptSourceByName(java.lang.String)
+	 */
+	@SuppressWarnings("unchecked")
+	public ConceptSource getConceptSourceByName(String conceptSourceName) throws DAOException {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ConceptSource.class, "source");
+		criteria.add(Expression.eq("source.name", conceptSourceName));
+		return (ConceptSource) criteria.uniqueResult();
+	}
 }

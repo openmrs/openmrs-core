@@ -2152,6 +2152,24 @@ delimiter ;
 call diff_procedure('1.4.2.01');
 
 
+#-----------------------------------------------------------
+# OpenMRS Datamodel version 1.4.2.02
+# Dave Thomas            Sept 20 2009
+#
+# Small updates to ConceptMap architecture
+#-----------------------------------------------------------
+DROP PROCEDURE IF EXISTS diff_procedure;
+delimiter //
+CREATE PROCEDURE diff_procedure (IN new_db_version VARCHAR(10))
+BEGIN
+	ALTER TABLE `concept_source` MODIFY COLUMN `hl7_code` VARCHAR(50) NULL;
+    ALTER TABLE `concept_source` MODIFY COLUMN `voided` tinyint(1) NOT NULL;
+	UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
+END;
+//
+delimiter ;
+call diff_procedure('1.4.2.02');
+
 #-----------------------------------
 # Clean up - Keep this section at the very bottom of diff script
 #-----------------------------------
