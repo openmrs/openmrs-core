@@ -2558,24 +2558,6 @@
 		</createIndex>
 	</changeSet>
 	
-	<changeSet id="200908291938-1" author="dthomas">
-		<comment>set hl7_code in ConceptSource to nullable column</comment>
-		<modifyColumn tableName="concept_source">
-			<column name="hl7_code" type="varchar(50)">
-				<constraints nullable="true" />
-			</column>
-		</modifyColumn>
-	</changeSet>
-	
-	<changeSet id="200908291938-2" author="dthomas">
-		<comment>set voided in ConceptSource to tinyint(1) not null</comment>
-		<modifyColumn tableName="concept_source">
-			<column name="voided" type="tinyint(1)">
-				<constraints nullable="false" />
-			</column>
-		</modifyColumn>
-	</changeSet>
-	
 	<changeSet id="20090907-1" author="Knoll_Frank">
 		<comment>Rename the concept_source.date_voided column to date_retired</comment>
 		<renameColumn tableName="concept_source" oldColumnName="date_voided" newColumnName="date_retired" columnDataType="datetime" />
@@ -2595,6 +2577,24 @@
 		<renameColumn tableName="concept_source" oldColumnName="void_reason" newColumnName="retire_reason" columnDataType="varchar(255)" />
 	</changeSet>
 	
+	<changeSet id="200908291938-1" author="dthomas">
+		<comment>set hl7_code in ConceptSource to nullable column</comment>
+		<modifyColumn tableName="concept_source">
+			<column name="hl7_code" type="varchar(50)">
+				<constraints nullable="true" />
+			</column>
+		</modifyColumn>
+	</changeSet>
+	
+	<changeSet id="200908291938-2a" author="dthomas">
+		<comment>set retired in ConceptSource to tinyint(1) not null</comment>
+		<modifyColumn tableName="concept_source">
+			<column name="retired" type="tinyint(1)">
+				<constraints nullable="false" />
+			</column>
+		</modifyColumn>
+	</changeSet>
+	
     <changeSet id="200909281005-1" author="nribeka">
         <preConditions onFail="MARK_RAN">
             <not>
@@ -2603,7 +2603,7 @@
         </preConditions>
         <comment>Create logic token table to store all registered token</comment>
         <createTable tableName="logic_rule_token">
-            <column autoIncrement="true" name="logic_rule_token_id" type="int">
+            <column name="logic_rule_token_id" type="int">
                 <constraints primaryKey="true" nullable="false" />
             </column>
             <column name="creator" type="int">
@@ -2625,7 +2625,7 @@
     </changeSet>
     
     <changeSet id="200909281005-2" author="nribeka">
-        <preConditions onFail="HALT">
+        <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="logic_rule_token_tag"/>
             </not>
@@ -2647,31 +2647,47 @@
                 <foreignKeyConstraintExists foreignKeyName="token_tag"/>
             </not>
         </preConditions>
-        <comment>Adding foreign key for token tag</comment>
+        <comment>Adding foreign key for primary key of logic_rule_token_tag</comment>
         <addForeignKeyConstraint baseTableName="logic_rule_token_tag" baseColumnNames="logic_rule_token_id" constraintName="token_tag"
                                  referencedTableName="logic_rule_token" referencedColumnNames="logic_rule_token_id" />
     </changeSet>
     
-    <changeSet id="200909281005-4" author="nribeka">
+    <changeSet id="200909281005-4a" author="nribeka">
         <preConditions onFail="MARK_RAN">
-            <not>
-                <foreignKeyConstraintExists foreignKeyName="token_creator"/>
-            </not>
+            <foreignKeyConstraintExists foreignKeyName="token_tag_creator"/>
         </preConditions>
-        <comment>Adding foreign key for token</comment>
-        <addForeignKeyConstraint baseTableName="logic_rule_token" baseColumnNames="creator" constraintName="token_creator"
-                                 referencedTableName="person" referencedColumnNames="person_id" />
+        <comment>Removing bad foreign key for logic_rule_token.creator</comment>
+        <dropForeignKeyConstraint baseTableName="logic_rule_token" constraintName="token_tag_creator" />
     </changeSet>
     
-    <changeSet id="200909281005-5" author="nribeka">
+    <changeSet id="200909281005-4aa" author="nribeka">
+        <preConditions onFail="MARK_RAN">
+            <foreignKeyConstraintExists foreignKeyName="token_creator"/>
+        </preConditions>
+        <comment>Removing bad foreign key for logic_rule_token.creator</comment>
+        <dropForeignKeyConstraint baseTableName="logic_rule_token" constraintName="token_creator" />
+    </changeSet>
+    
+    <changeSet id="200909281005-4b" author="nribeka">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="token_creator_fk"/>
+            </not>
+        </preConditions>
+        <comment>Adding correct foreign key for logic_rule_token.creator</comment>
+        <addForeignKeyConstraint baseTableName="logic_rule_token" baseColumnNames="creator" constraintName="token_creator_fk"
+                                 referencedTableName="users" referencedColumnNames="user_id" />
+    </changeSet>
+    
+    <changeSet id="200909281005-5a" author="nribeka">
         <preConditions onFail="MARK_RAN">
             <not>
                 <foreignKeyConstraintExists foreignKeyName="token_changed_by"/>
             </not>
         </preConditions>
-        <comment>Adding foreign key for token</comment>
+        <comment>Adding foreign key for logic_rule_token.changed_by</comment>
         <addForeignKeyConstraint baseTableName="logic_rule_token" baseColumnNames="changed_by" constraintName="token_changed_by"
-                                 referencedTableName="person" referencedColumnNames="person_id" />
+                                 referencedTableName="users" referencedColumnNames="user_id" />
     </changeSet>
 	
 </databaseChangeLog>
