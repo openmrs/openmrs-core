@@ -25,7 +25,6 @@ import org.openmrs.logic.LogicCriteria;
 import org.openmrs.logic.LogicException;
 import org.openmrs.logic.StatefulRule;
 import org.openmrs.logic.datasource.LogicDataSource;
-import org.openmrs.logic.datasource.ObsDataSource;
 import org.openmrs.logic.result.Result;
 import org.openmrs.logic.result.Result.Datatype;
 
@@ -63,9 +62,6 @@ public class ReferenceRule implements StatefulRule {
 		String dataSourceName = reference.substring(0, firstDotIndex);
 		key = reference.substring(firstDotIndex + 1);
 		dataSource = Context.getLogicService().getLogicDataSource(dataSourceName);
-		// TODO: hack to load the keys of obs data source
-		if (dataSource.getClass().isAssignableFrom(ObsDataSource.class))
-			((ObsDataSource) dataSource).addKey(key);
 		if (dataSource == null)
 			throw new InvalidReferenceRuleException("Invalid logic data source: " + dataSourceName);
 		if (key == null || !dataSource.hasKey(key))

@@ -2603,7 +2603,7 @@
         </preConditions>
         <comment>Create logic token table to store all registered token</comment>
         <createTable tableName="logic_rule_token">
-            <column name="logic_rule_token_id" type="int">
+            <column autoIncrement="true" name="logic_rule_token_id" type="int">
                 <constraints primaryKey="true" nullable="false" />
             </column>
             <column name="creator" type="int">
@@ -2655,23 +2655,23 @@
     <changeSet id="200909281005-4" author="nribeka">
         <preConditions onFail="MARK_RAN">
             <not>
-                <foreignKeyConstraintExists foreignKeyName="token_tag_creator"/>
+                <foreignKeyConstraintExists foreignKeyName="token_creator"/>
             </not>
         </preConditions>
         <comment>Adding foreign key for token</comment>
-        <addForeignKeyConstraint baseTableName="logic_rule_token" baseColumnNames="creator" constraintName="token_tag_creator"
+        <addForeignKeyConstraint baseTableName="logic_rule_token" baseColumnNames="creator" constraintName="token_creator"
                                  referencedTableName="person" referencedColumnNames="person_id" />
     </changeSet>
     
     <changeSet id="200909281005-5" author="nribeka">
         <preConditions onFail="MARK_RAN">
             <not>
-                <foreignKeyConstraintExists foreignKeyName="token_tag_changed_by"/>
+                <foreignKeyConstraintExists foreignKeyName="token_changed_by"/>
             </not>
         </preConditions>
         <comment>Adding foreign key for token</comment>
-        <addForeignKeyConstraint baseTableName="logic_rule_token" baseColumnNames="logic_rule_token_id" constraintName="token_tag_changed_by"
-                                 referencedTableName="changed_by" referencedColumnNames="person_id" />
+        <addForeignKeyConstraint baseTableName="logic_rule_token" baseColumnNames="changed_by" constraintName="token_changed_by"
+                                 referencedTableName="person" referencedColumnNames="person_id" />
     </changeSet>
 	
 </databaseChangeLog>
