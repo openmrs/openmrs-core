@@ -62,7 +62,7 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 			// for the following elements Order.hbm.xml says: not-null="true"
 			ValidationUtils.rejectIfEmpty(errors, "prn", "error.null");
 			ValidationUtils.rejectIfEmpty(errors, "complex", "error.null");
-			ValidationUtils.rejectIfEmpty(errors, "drug", "error.null");
+			//ValidationUtils.rejectIfEmpty(errors, "drug", "error.null");
 		}
 	}
 }
