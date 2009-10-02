@@ -399,7 +399,7 @@ public interface HL7Service extends OpenmrsService {
 	 * @see #processHL7InQueue(HL7InQueue)
 	 * @should parse the given string into Message
 	 */
-	public Message processHL7String(String hl7String) throws HL7Exception;
+	public Message parseHL7String(String hl7String) throws HL7Exception;
 	
 	/**
 	 * Parses the given {@link Message} and saves the resulting content to the database

@@ -618,7 +618,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 		try {
 			// Parse the inbound HL7 message using the parser
 			// NOT making a direct call here so that AOP can happen around this method
-			Message parsedMessage = Context.getHL7Service().processHL7String(hl7Message);
+			Message parsedMessage = Context.getHL7Service().parseHL7String(hl7Message);
 			
 			// Send the parsed message to our receiver routine for processing into db
 			// NOT making a direct call here so that AOP can happen around this method
@@ -681,9 +681,9 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	}
 	
 	/**
-	 * @see org.openmrs.hl7.HL7Service#processHL7Message(java.lang.String)
+	 * @see org.openmrs.hl7.HL7Service#parseHL7Message(java.lang.String)
 	 */
-	public Message processHL7String(String hl7Message) throws HL7Exception {
+	public Message parseHL7String(String hl7Message) throws HL7Exception {
 		// Any pre-parsing for HL7 messages would go here
 		// or a module can use AOP to pre-parse the message
 		
