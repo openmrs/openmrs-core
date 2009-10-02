@@ -459,10 +459,10 @@ CREATE TABLE `concept_source` (
   `concept_source_id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL DEFAULT '',
   `description` text NOT NULL,
-  `hl7_code` varchar(50) NOT NULL DEFAULT '',
+  `hl7_code` varchar(50) DEFAULT NULL,
   `creator` int(11) NOT NULL DEFAULT '0',
   `date_created` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `voided` tinyint(4) DEFAULT NULL,
+  `voided` tinyint(1) NOT NULL,
   `voided_by` int(11) DEFAULT NULL,
   `date_voided` datetime DEFAULT NULL,
   `void_reason` varchar(255) DEFAULT NULL,
@@ -1990,11 +1990,11 @@ CREATE TABLE `users` (
 SET character_set_client = @saved_cs_client;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
-INSERT INTO global_property VALUES ('database_version','1.4.2.01',NULL);
-
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
 /*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2009-06-12 18:44:50
+-- Dump completed on 2009-10-02 14:29:39
+
+INSERT INTO global_property VALUES ('database_version','1.4.2.02',NULL);

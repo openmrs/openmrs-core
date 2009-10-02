@@ -14,11 +14,14 @@
 -- Current Database: `openmrs`
 --
 
+/*!40000 DROP DATABASE IF EXISTS `openmrs`*/;
+
 create database openmrs default character set utf8;
 DELETE FROM mysql.user WHERE User='test';
 flush privileges;
 CREATE USER 'test'@'localhost' IDENTIFIED BY 'test';
 GRANT ALL ON openmrs.* TO test;
+
 
 USE `openmrs`;
 
@@ -589,10 +592,10 @@ CREATE TABLE `concept_source` (
   `concept_source_id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL DEFAULT '',
   `description` text NOT NULL,
-  `hl7_code` varchar(50) NOT NULL DEFAULT '',
+  `hl7_code` varchar(50) DEFAULT NULL,
   `creator` int(11) NOT NULL DEFAULT '0',
   `date_created` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `voided` tinyint(4) DEFAULT NULL,
+  `voided` tinyint(1) NOT NULL,
   `voided_by` int(11) DEFAULT NULL,
   `date_voided` datetime DEFAULT NULL,
   `void_reason` varchar(255) DEFAULT NULL,
@@ -1055,7 +1058,7 @@ SET character_set_client = @saved_cs_client;
 --
 
 /*!40000 ALTER TABLE `global_property` DISABLE KEYS */;
-INSERT INTO `global_property` VALUES ('concept.causeOfDeath','5002',NULL),('concept.reasonOrderStopped','6098',NULL),('database_version','1.4.2.01',NULL),('patient.displayAttributeTypes','Birthplace',NULL);
+INSERT INTO `global_property` VALUES ('concept.causeOfDeath','5002',NULL),('concept.reasonOrderStopped','6098',NULL),('database_version','1.4.2.02',NULL),('patient.displayAttributeTypes','Birthplace',NULL);
 /*!40000 ALTER TABLE `global_property` ENABLE KEYS */;
 
 --
@@ -2422,4 +2425,4 @@ INSERT INTO `users` VALUES (1,'admin','','4a1750c8607dfa237de36c6305715c22341518
 /*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2009-06-12 18:44:48
+-- Dump completed on 2009-10-02 14:29:37

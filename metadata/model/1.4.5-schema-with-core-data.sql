@@ -33,8 +33,8 @@ CREATE TABLE `cohort` (
   KEY `cohort_creator` (`creator`),
   KEY `user_who_voided_cohort` (`voided_by`),
   KEY `user_who_changed_cohort` (`changed_by`),
-  CONSTRAINT `cohort_creator` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`),
   CONSTRAINT `user_who_changed_cohort` FOREIGN KEY (`changed_by`) REFERENCES `users` (`user_id`),
+  CONSTRAINT `cohort_creator` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`),
   CONSTRAINT `user_who_voided_cohort` FOREIGN KEY (`voided_by`) REFERENCES `users` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 SET character_set_client = @saved_cs_client;
@@ -128,11 +128,11 @@ CREATE TABLE `concept` (
   KEY `concept_datatypes` (`datatype_id`),
   KEY `user_who_changed_concept` (`changed_by`),
   KEY `user_who_retired_concept` (`retired_by`),
+  CONSTRAINT `user_who_retired_concept` FOREIGN KEY (`retired_by`) REFERENCES `users` (`user_id`),
   CONSTRAINT `concept_classes` FOREIGN KEY (`class_id`) REFERENCES `concept_class` (`concept_class_id`),
   CONSTRAINT `concept_creator` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`),
   CONSTRAINT `concept_datatypes` FOREIGN KEY (`datatype_id`) REFERENCES `concept_datatype` (`concept_datatype_id`),
-  CONSTRAINT `user_who_changed_concept` FOREIGN KEY (`changed_by`) REFERENCES `users` (`user_id`),
-  CONSTRAINT `user_who_retired_concept` FOREIGN KEY (`retired_by`) REFERENCES `users` (`user_id`)
+  CONSTRAINT `user_who_changed_concept` FOREIGN KEY (`changed_by`) REFERENCES `users` (`user_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6099 DEFAULT CHARSET=utf8;
 SET character_set_client = @saved_cs_client;
 
@@ -596,10 +596,10 @@ CREATE TABLE `concept_source` (
   `concept_source_id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL DEFAULT '',
   `description` text NOT NULL,
-  `hl7_code` varchar(50) NOT NULL DEFAULT '',
+  `hl7_code` varchar(50) DEFAULT NULL,
   `creator` int(11) NOT NULL DEFAULT '0',
   `date_created` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `voided` tinyint(4) DEFAULT NULL,
+  `voided` tinyint(1) NOT NULL,
   `voided_by` int(11) DEFAULT NULL,
   `date_voided` datetime DEFAULT NULL,
   `void_reason` varchar(255) DEFAULT NULL,
@@ -809,10 +809,10 @@ CREATE TABLE `encounter` (
   KEY `encounter_creator` (`creator`),
   KEY `encounter_form` (`form_id`),
   KEY `user_who_voided_encounter` (`voided_by`),
+  CONSTRAINT `encounter_patient` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`patient_id`) ON UPDATE CASCADE,
   CONSTRAINT `encounter_form` FOREIGN KEY (`form_id`) REFERENCES `form` (`form_id`),
   CONSTRAINT `encounter_ibfk_1` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`),
   CONSTRAINT `encounter_location` FOREIGN KEY (`location_id`) REFERENCES `location` (`location_id`),
-  CONSTRAINT `encounter_patient` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`patient_id`) ON UPDATE CASCADE,
   CONSTRAINT `encounter_provider` FOREIGN KEY (`provider_id`) REFERENCES `users` (`user_id`),
   CONSTRAINT `encounter_type_id` FOREIGN KEY (`encounter_type`) REFERENCES `encounter_type` (`encounter_type_id`),
   CONSTRAINT `user_who_voided_encounter` FOREIGN KEY (`voided_by`) REFERENCES `users` (`user_id`)
@@ -1150,7 +1150,7 @@ SET character_set_client = @saved_cs_client;
 --
 
 /*!40000 ALTER TABLE `global_property` DISABLE KEYS */;
-INSERT INTO `global_property` VALUES ('concept.causeOfDeath','5002',NULL),('concept.reasonOrderStopped','6098',NULL),('database_version','1.4.2.01',NULL),('patient.displayAttributeTypes','Birthplace',NULL);
+INSERT INTO `global_property` VALUES ('concept.causeOfDeath','5002',NULL),('concept.reasonOrderStopped','6098',NULL),('database_version','1.4.2.02',NULL),('patient.displayAttributeTypes','Birthplace',NULL);
 /*!40000 ALTER TABLE `global_property` ENABLE KEYS */;
 
 --
@@ -1357,10 +1357,10 @@ CREATE TABLE `note` (
   KEY `user_who_created_note` (`creator`),
   KEY `user_who_changed_note` (`changed_by`),
   KEY `note_hierarchy` (`parent`),
+  CONSTRAINT `patient_note` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`patient_id`) ON UPDATE CASCADE,
   CONSTRAINT `encounter_note` FOREIGN KEY (`encounter_id`) REFERENCES `encounter` (`encounter_id`),
   CONSTRAINT `note_hierarchy` FOREIGN KEY (`parent`) REFERENCES `note` (`note_id`),
   CONSTRAINT `obs_note` FOREIGN KEY (`obs_id`) REFERENCES `obs` (`obs_id`),
-  CONSTRAINT `patient_note` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`patient_id`) ON UPDATE CASCADE,
   CONSTRAINT `user_who_changed_note` FOREIGN KEY (`changed_by`) REFERENCES `users` (`user_id`),
   CONSTRAINT `user_who_created_note` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -1423,8 +1423,8 @@ CREATE TABLE `notification_alert_recipient` (
   PRIMARY KEY (`alert_id`,`user_id`),
   KEY `alert_read_by_user` (`user_id`),
   KEY `id_of_alert` (`alert_id`),
-  CONSTRAINT `alert_read_by_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
-  CONSTRAINT `id_of_alert` FOREIGN KEY (`alert_id`) REFERENCES `notification_alert` (`alert_id`)
+  CONSTRAINT `id_of_alert` FOREIGN KEY (`alert_id`) REFERENCES `notification_alert` (`alert_id`),
+  CONSTRAINT `alert_read_by_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 SET character_set_client = @saved_cs_client;
 
@@ -1681,10 +1681,10 @@ CREATE TABLE `patient_identifier` (
   KEY `identifier_voider` (`voided_by`),
   KEY `identifier_location` (`location_id`),
   KEY `identifier_name` (`identifier`),
+  CONSTRAINT `identifies_patient` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`patient_id`) ON UPDATE CASCADE,
   CONSTRAINT `defines_identifier_type` FOREIGN KEY (`identifier_type`) REFERENCES `patient_identifier_type` (`patient_identifier_type_id`),
   CONSTRAINT `identifier_creator` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`),
   CONSTRAINT `identifier_voider` FOREIGN KEY (`voided_by`) REFERENCES `users` (`user_id`),
-  CONSTRAINT `identifies_patient` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`patient_id`) ON UPDATE CASCADE,
   CONSTRAINT `patient_identifier_ibfk_2` FOREIGN KEY (`location_id`) REFERENCES `location` (`location_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 SET character_set_client = @saved_cs_client;
@@ -1805,11 +1805,11 @@ CREATE TABLE `patient_state` (
   KEY `patient_state_creator` (`creator`),
   KEY `patient_state_changer` (`changed_by`),
   KEY `patient_state_voider` (`voided_by`),
+  CONSTRAINT `state_for_patient` FOREIGN KEY (`state`) REFERENCES `program_workflow_state` (`program_workflow_state_id`),
   CONSTRAINT `patient_program_for_state` FOREIGN KEY (`patient_program_id`) REFERENCES `patient_program` (`patient_program_id`),
-  CONSTRAINT `patient_state_changer` FOREIGN KEY (`changed_by`) REFERENCES `users` (`user_id`),
   CONSTRAINT `patient_state_creator` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`),
-  CONSTRAINT `patient_state_voider` FOREIGN KEY (`voided_by`) REFERENCES `users` (`user_id`),
-  CONSTRAINT `state_for_patient` FOREIGN KEY (`state`) REFERENCES `program_workflow_state` (`program_workflow_state_id`)
+  CONSTRAINT `patient_state_changer` FOREIGN KEY (`changed_by`) REFERENCES `users` (`user_id`),
+  CONSTRAINT `patient_state_voider` FOREIGN KEY (`voided_by`) REFERENCES `users` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 SET character_set_client = @saved_cs_client;
 
@@ -1939,10 +1939,10 @@ CREATE TABLE `person_attribute` (
   KEY `attribute_creator` (`creator`),
   KEY `attribute_changer` (`changed_by`),
   KEY `attribute_voider` (`voided_by`),
+  CONSTRAINT `defines_attribute_type` FOREIGN KEY (`person_attribute_type_id`) REFERENCES `person_attribute_type` (`person_attribute_type_id`),
+  CONSTRAINT `attribute_voider` FOREIGN KEY (`voided_by`) REFERENCES `users` (`user_id`),
   CONSTRAINT `attribute_changer` FOREIGN KEY (`changed_by`) REFERENCES `users` (`user_id`),
   CONSTRAINT `attribute_creator` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`),
-  CONSTRAINT `attribute_voider` FOREIGN KEY (`voided_by`) REFERENCES `users` (`user_id`),
-  CONSTRAINT `defines_attribute_type` FOREIGN KEY (`person_attribute_type_id`) REFERENCES `person_attribute_type` (`person_attribute_type_id`),
   CONSTRAINT `identifies_person` FOREIGN KEY (`person_id`) REFERENCES `person` (`person_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 SET character_set_client = @saved_cs_client;
@@ -1967,7 +1967,7 @@ CREATE TABLE `person_attribute_type` (
   `description` text NOT NULL,
   `format` varchar(50) DEFAULT NULL,
   `foreign_key` int(11) DEFAULT NULL,
-  `searchable` int(1) NOT NULL DEFAULT '0',
+  `searchable` tinyint(1) NOT NULL DEFAULT '0',
   `creator` int(11) NOT NULL DEFAULT '0',
   `date_created` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `changed_by` int(11) DEFAULT NULL,
@@ -2197,8 +2197,8 @@ CREATE TABLE `relationship` (
   KEY `relationship_type` (`relationship`),
   KEY `relation_creator` (`creator`),
   KEY `relation_voider` (`voided_by`),
-  CONSTRAINT `person_a` FOREIGN KEY (`person_a`) REFERENCES `person` (`person_id`) ON UPDATE CASCADE,
   CONSTRAINT `person_b` FOREIGN KEY (`person_b`) REFERENCES `person` (`person_id`) ON UPDATE CASCADE,
+  CONSTRAINT `person_a` FOREIGN KEY (`person_a`) REFERENCES `person` (`person_id`) ON UPDATE CASCADE,
   CONSTRAINT `relationship_type_id` FOREIGN KEY (`relationship`) REFERENCES `relationship_type` (`relationship_type_id`),
   CONSTRAINT `relation_creator` FOREIGN KEY (`creator`) REFERENCES `users` (`user_id`),
   CONSTRAINT `relation_voider` FOREIGN KEY (`voided_by`) REFERENCES `users` (`user_id`)
@@ -2323,7 +2323,7 @@ SET character_set_client = @saved_cs_client;
 --
 
 /*!40000 ALTER TABLE `role` DISABLE KEYS */;
-INSERT INTO `role` VALUES ('Anonymous','Privileges for non-authenticated users.'),('Authenticated','Privileges gained once authentication has been established.');
+INSERT INTO `role` VALUES ('Anonymous','Privileges for non-authenticated users.'),('Authenticated','Privileges gained once authentication has been established.'),('Clinician','Users who are a part of direct patient care.'),('Data Assistant','Clerks who perform data entry.'),('Data Manager','User who maintains clinical data stored within the OpenMRS repository.'),('Provider','General privileges held by all providers'),('System Developer','Developers of the OpenMRS .. have additional access to change fundamental structure of the database model.');
 /*!40000 ALTER TABLE `role` ENABLE KEYS */;
 
 --
@@ -2557,4 +2557,4 @@ INSERT INTO `users` VALUES (1,'admin','','4a1750c8607dfa237de36c6305715c22341518
 /*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2009-06-12 18:44:58
+-- Dump completed on 2009-10-02 14:29:51
