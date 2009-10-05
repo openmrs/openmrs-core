@@ -602,7 +602,7 @@
 		</property>
 	</bean>
 	
-	<bean id="sessionFactory" class="org.openmrs.api.db.hibernate.HibernateSessionFactoryBean">
+	<bean id="sessionFactory" class="org.openmrs.api.db.hibernate.HibernateSessionFactoryBean" autowire="byType">
 		<property name="configLocations">
 			<list>
 				<value>classpath:hibernate.cfg.xml</value>
