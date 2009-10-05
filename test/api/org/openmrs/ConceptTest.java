@@ -393,4 +393,57 @@ public class ConceptTest {
 		Assert.assertNull(concept.getName(localeToSearch, true));
 	}
 	
+	/**
+	 * @see {@link Concept#equals(Object)}
+	 */
+	@Test
+	@Verifies(value = "should confirm two new concept objects are equal", method = "equals(Object)")
+	public void equals_shouldConfirmTwoNewConceptObjectsAreEqual() throws Exception {
+		Concept concept = new Concept(); // an object with a null concept id
+		Assert.assertTrue(concept.equals(concept));
+	}
+	
+	/**
+	 * @see {@link Concept#equals(Object)}
+	 */
+	@Test
+	@Verifies(value = "should not fail if concept id is null", method = "equals(Object)")
+	public void equals_shouldNotFailIfConceptIdIsNull() throws Exception {
+		Concept left = new Concept(); // a null concept id
+		Concept right = new Concept(1); // a non-null concept id
+		Assert.assertFalse(left.equals(right));
+	}
+	
+	/**
+	 * @see {@link Concept#equals(Object)}
+	 */
+	@Test
+	@Verifies(value = "should not fail if given obj has null conceptid", method = "equals(Object)")
+	public void equals_shouldNotFailIfGivenObjHasNullConceptid() throws Exception {
+		Concept left = new Concept(1); // a non-null concept id
+		Concept right = new Concept(); // a null concept id
+		Assert.assertFalse(left.equals(right));
+	}
+	
+	/**
+	 * @see {@link Concept#equals(Object)}
+	 */
+	@Test
+	@Verifies(value = "should not fail if given obj is null", method = "equals(Object)")
+	public void equals_shouldNotFailIfGivenObjIsNull() throws Exception {
+		Concept left = new Concept(1); // a non-null concept id
+		Assert.assertFalse(left.equals(null));
+	}
+	
+	/**
+	 * @see {@link Concept#addAnswer(ConceptAnswer)}
+	 */
+	@Test
+	@Verifies(value = "should not fail if answers list is null", method = "addAnswer(ConceptAnswer)")
+	public void addAnswer_shouldNotFailIfAnswersListIsNull() throws Exception {
+		ConceptAnswer ca = new ConceptAnswer(123);
+		Concept c = new Concept();
+		c.setAnswers(null); // make sure the list is null
+		c.addAnswer(ca);
+	}
 }

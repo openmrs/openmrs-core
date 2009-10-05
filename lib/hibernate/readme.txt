@@ -1,4 +1,4 @@
-There are 2 changes to the hibernate jar file:
+There is 1 change to the hibernate jar file:
 
 See hibernate.patch in this folder.
 
@@ -8,4 +8,3 @@ See hibernate.patch in this folder.
    This Hibernate forum post has more information on the patch committed:
    http://forum.hibernate.org/viewtopic.php?p=2400324
 
-2) http://dev.openmrs.org/ticket/725 "Fix Users who are Patients"

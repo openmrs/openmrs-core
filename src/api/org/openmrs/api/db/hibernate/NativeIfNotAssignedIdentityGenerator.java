@@ -42,6 +42,7 @@ public class NativeIfNotAssignedIdentityGenerator extends IdentityGenerator impl
 	
 	private String entityName;
 	
+	@Override
 	public Serializable generate(SessionImplementor session, Object entity) throws HibernateException {
 		Serializable id;
 		EntityPersister persister = session.getEntityPersister(entityName, entity);
