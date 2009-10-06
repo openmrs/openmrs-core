@@ -147,7 +147,8 @@ public class FormatTag extends TagSupport {
      * @param encounterType
      */
     private void printEncounterType(StringBuilder sb, EncounterType encounterType) {
-	    sb.append(encounterType.getName());
+    	if (encounterType != null)
+    		sb.append(encounterType.getName());
     }
 
 	/**
