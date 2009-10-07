@@ -197,7 +197,9 @@ public class MLMObject {
 			w.append("String pattern = \"MM/dd/yy\";\n");
 			w.append("SimpleDateFormat dateForm = new SimpleDateFormat(pattern);\n");
 			w.append("variable = variable.replace(\"_date\",\"\").trim();\n");
+			w.append("if(resultLookup.get(variable) != null){");
 			w.append("value = dateForm.format(resultLookup.get(variable).getResultDate());\n");
+			w.append("}");
 			w.append("}\n");
 			w.append("else\n");
 			w.append("{\n");
@@ -325,7 +327,7 @@ public class MLMObject {
 			w.append("\t\t\t}\n");
 			
 			w.append("\t\t} catch (Exception e) {\n");
-			w.append("\t\t\tlog.error(\"Error within rule\",e);\n");
+			w.append("\t\t\tlog.error(e.getMessage(),e);\n");
 			w.append("\t\t\treturn Result.emptyResult();");
 			w.append("\n\t\t}\n\t\treturn Result.emptyResult();\n\t}\n\n");
 			
