@@ -934,8 +934,8 @@ public final class OpenmrsConstants {
 		props
 		        .add(new GlobalProperty(
 		                GLOBAL_PROPERTY_PATIENT_IDENTIFIER_REGEX,
-		                "^0*@SEARCH@([A-Z]+-[0-9])?$",
-		                "A MySQL regular expression for the patient identifier search strings.  The @SEARCH@ string is replaced at runtime with the user's search string.  An empty regex will cause a simply 'like' sql search to be used"));
+		                "",
+		                "WARNING: Using this search property can cause a drop in mysql performance with large patient sets.  A MySQL regular expression for the patient identifier search strings.  The @SEARCH@ string is replaced at runtime with the user's search string.  An empty regex will cause a simply 'like' sql search to be used. Example: ^0*@SEARCH@([A-Z]+-[0-9])?$"));
 		props
 		        .add(new GlobalProperty(
 		                GLOBAL_PROPERTY_PATIENT_IDENTIFIER_PREFIX,
@@ -946,7 +946,7 @@ public final class OpenmrsConstants {
 		props
 		        .add(new GlobalProperty(
 		                GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SUFFIX,
-		                "%",
+		                "",
 		                "This property is only used if "
 		                        + GLOBAL_PROPERTY_PATIENT_IDENTIFIER_REGEX
 		                        + " is empty.  The string here is prepended to the sql indentifier search string.  The sql becomes \"... where identifier like '<PREFIX><QUERY STRING><SUFFIX>';\".  Typically this value is either a percent sign (%) or empty."));
