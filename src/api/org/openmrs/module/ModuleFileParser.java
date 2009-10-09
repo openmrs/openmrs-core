@@ -36,6 +36,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Privilege;
+import org.openmrs.api.APIException;
 import org.openmrs.util.OpenmrsUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -435,6 +436,8 @@ public class ModuleFileParser {
 					InputStream inStream = null;
 					try {
 						ZipEntry entry = jarfile.getEntry(file);
+						if (entry == null)
+							throw new ModuleException("No message properties file '" + file + "' for language '" + lang + "'");
 						inStream = jarfile.getInputStream(entry);
 						Properties props = new Properties();
 						OpenmrsUtil.loadProperties(props, inStream);
