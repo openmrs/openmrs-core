@@ -67,7 +67,7 @@ public class PatientProgramFormController implements Controller {
 		Date completionDate = (Date) cde.getValue();
 		Patient patient = Context.getPatientService().getPatient(Integer.valueOf(patientIdStr));
 		Program program = pws.getProgram(Integer.valueOf(programIdStr));
-		if (!pws.getPatientPrograms(patient, program, null, enrollmentDate, completionDate, null, false).isEmpty())
+		if (!pws.getPatientPrograms(patient, program, null, completionDate, enrollmentDate, null, false).isEmpty())
 			request.getSession().setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Program.error.already");
 		else {
 			PatientProgram pp = new PatientProgram();
