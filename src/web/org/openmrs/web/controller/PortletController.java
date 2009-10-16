@@ -21,6 +21,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -62,6 +63,7 @@ public class PortletController implements Controller {
      *          (java.util.Date) now
      *          (String) size
      *          (Locale) locale
+     *          (String) portletUUID // unique for each instance of any portlet
      *          (other parameters)
      *     (if there's currently an authenticated user)
      *          (User) authenticatedUser
@@ -149,6 +151,7 @@ public class PortletController implements Controller {
 			model.put("id", id);
 			model.put("size", size);
 			model.put("locale", Context.getLocale());
+			model.put("portletUUID", UUID.randomUUID().toString().replace("-", ""));
 			model.putAll(params);
 			if (moreParams != null) {
 				model.putAll(moreParams);
