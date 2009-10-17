@@ -2219,10 +2219,6 @@ BEGIN
 
 		CREATE INDEX concept_word_concept_idx on concept_word (concept_id);
 		
-		--These are not needed in sync because our primary key is concept_word_id
-		--ALTER TABLE `concept_word` DROP PRIMARY KEY;
-		--ALTER TABLE `concept_word` ADD PRIMARY KEY (`concept_name_id`, `word`, `locale`);
-		
 		UPDATE `global_property` SET property_value=new_db_version WHERE property = 'database_version';
 
 	END IF;
