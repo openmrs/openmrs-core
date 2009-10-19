@@ -48,6 +48,8 @@ public class TestTypeFilter implements TypeFilter {
 		superClassNamesToExclude.add("org.openmrs.test.BaseModuleContextSensitiveTest");
 		superClassNamesToExclude.add("org.openmrs.web.test.BaseWebContextSensitiveTest");
 		superClassNamesToExclude.add("org.openmrs.web.test.BaseModuleWebContextSensitiveTest");
+		superClassNamesToExclude.add("org.springframework.test.AbstractTransactionalSpringContextTests");
+		superClassNamesToExclude.add("org.openmrs.BaseTest");
 		superClassNamesToExclude.add("junit.framework.TestCase");
 	}
 	
