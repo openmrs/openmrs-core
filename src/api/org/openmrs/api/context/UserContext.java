@@ -108,7 +108,8 @@ public class UserContext {
 		if (log.isDebugEnabled())
 			log.debug("Refreshing authenticated user");
 		
-		user = Context.getUserService().getUser(user.getUserId());
+		if (user != null)
+			user = Context.getUserService().getUser(user.getUserId());
 	}
 	
 	/**
