@@ -60,11 +60,6 @@
 		</set>
 		-->
 		
-		<set name="forms" table="form_field" lazy="true" inverse="true" cascade="none">
-			<key column="field_id" />
-			<many-to-many column="form_id" class="Form" />
-		</set>
-		
 		<many-to-one name="retiredBy" class="org.openmrs.User"
 			column="retired_by" />
 		<property name="dateRetired" type="java.util.Date"

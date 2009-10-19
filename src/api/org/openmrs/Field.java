@@ -43,9 +43,6 @@ public class Field extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	private Set<FieldAnswer> answers;
 	
-	
-	private Set<Form> forms;
-	
 	// Constructors
 	
 	/** default constructor */
@@ -219,12 +216,22 @@ public class Field extends BaseOpenmrsMetadata implements java.io.Serializable {
 		}
 	}
 	
+	/**
+	 * @deprecated This method always returns null. Forms that a Field is on are managed through the
+	 *             {@link FormField} object
+	 */
+	@Deprecated
 	public Set<Form> getForms() {
-		return forms;
+		return null;
 	}
 	
+	/**
+	 * @deprecated This method does nothing. Forms that a Field is on are managed through the
+	 *             {@link FormField} object
+	 */
+	@Deprecated
 	public void setForms(Set<Form> forms) {
-		this.forms = forms;
+		
 	}
 	
 	/**
