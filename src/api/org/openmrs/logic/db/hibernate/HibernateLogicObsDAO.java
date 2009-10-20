@@ -78,7 +78,7 @@ public class HibernateLogicObsDAO implements LogicObsDAO {
 		//the root token can be a concept name for the obs datasource
 		String rootToken = logicExpression.getRootToken();
 		
-		Concept concept = Context.getConceptService().getConcept(rootToken);
+		Concept concept = getConceptForToken(rootToken);
 		if (concept != null) {
 			criterion.add(Restrictions.eq("concept", concept));
 		} else {
@@ -269,6 +269,15 @@ public class HibernateLogicObsDAO implements LogicObsDAO {
 			}
 		}
 		return c;
+	}
+	
+	/**
+	 * Retrieves the Concept given the passed root token name.
+	 * @param token the token to lookup
+	 * @return the Concept that matches the passed token
+	 */
+	protected Concept getConceptForToken(String token) {
+		return Context.getConceptService().getConcept(token);
 	}
 	
 	// Helper function, converts logic service's criteria into Hibernate's
