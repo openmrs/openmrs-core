@@ -1125,9 +1125,9 @@ public class HibernateConceptDAO implements ConceptDAO {
 		
 		criteria.add(Expression.eq("sourceCode", conceptCode));
 		
-		// join to conceptSource and match to the hl7Code
+		// join to conceptSource and match to the hl7Code or name
 		criteria.createAlias("source", "conceptSource");
-		criteria.add(Expression.eq("conceptSource.hl7Code", mappingCode));
+		criteria.add(Expression.or(Expression.eq("conceptSource.name", mappingCode), Expression.eq("conceptSource.hl7Code", mappingCode)));
 		
 		return (Concept) criteria.uniqueResult();
 	}

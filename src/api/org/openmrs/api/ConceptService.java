@@ -1203,13 +1203,18 @@ public interface ConceptService extends OpenmrsService {
 	public Iterator<Concept> conceptIterator();
 	
 	/**
-	 * Looks up a concept via its code and {@link ConceptMap}ping
+	 * Looks up a concept via {@link ConceptMap}
+	 * This will return the {@link Concept} which contains a {@link ConceptMap} entry
+	 * whose <code>sourceCode</code> is equal to the passed <code>conceptCode</code>
+	 * and whose {@link ConceptSource} has either a <code>name</code> or <code>hl7Code</code> 
+	 * that is equal to the passed <code>mappingCode</code>
 	 * 
-	 * @param conceptCode the foreign concept code in the given mapping
-	 * @param mappingCode the map code to look up
-	 * @return null if no concept found, or the concept with the given hl7Code mapping
+	 * @param conceptCode the code associated with a concept within a given {@link ConceptSource}
+	 * @param mappingCode the name or hl7Code of the {@link ConceptSource} to check
+	 * @return the {@link Concept} that has the given mapping, or null if no {@link Concept} found
 	 * @throws APIException
-	 * @should get concept with given code and mapping
+	 * @should get concept with given code and and source hl7 code
+	 * @should get concept with given code and source name
 	 * @should return null if code does not exist
 	 * @should return null if mapping does not exist
 	 */
