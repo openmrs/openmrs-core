@@ -30,6 +30,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.context.support.MessageSourceAccessor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
@@ -87,6 +88,12 @@ public class EncounterTypeListController extends SimpleFormController {
 						if (!success.equals(""))
 							success += "<br/>";
 						success += p + " " + deleted;
+					}
+					catch (DataIntegrityViolationException e) {
+						log.warn("Error deleting encounter type", e);
+						if (!error.equals(""))
+							error += "<br/>";
+						error += notDeleted;
 					}
 					catch (APIException e) {
 						log.warn("Error deleting encounter type", e);
