@@ -44,7 +44,7 @@ public class PostHl7Controller implements Controller {
 			if (StringUtils.hasText(username) && StringUtils.hasText(password)) {
 				Context.authenticate(username, password);
 			} else {
-				model.put("error", "RemoteCommunication.missingAuthentication");
+				model.put("error", "PostHl7.missingAuthentication");
 			}
 		}
 		if (Context.isAuthenticated()) {
@@ -61,7 +61,7 @@ public class PostHl7Controller implements Controller {
 				Context.getHL7Service().saveHL7InQueue(hl7InQueue);
 				success = true;
 			} else {
-				model.put("error", "RemoteCommunication.sourceAndhl7MessageParametersRequired");
+				model.put("error", "PostHl7.sourceAndhl7MessageParametersRequired");
 			}
 		}
 		model.put("success", success);

@@ -176,7 +176,14 @@ public class HL7InQueue extends BaseOpenmrsObject implements Serializable {
 	}
 	
 	/**
+	 * Can be one of the states in the {@link HL7Constants} file.
+	 * 
 	 * @return Returns the message State.
+	 * @see HL7Constants#HL7_STATUS_PENDING
+	 * @see HL7Constants#HL7_STATUS_ERROR
+	 * @see HL7Constants#HL7_STATUS_PROCESSED
+	 * @see HL7Constants#HL7_STATUS_PROCESSING
+	 * @see HL7Constants#HL7_STATUS_DELETED
 	 */
 	public Integer getMessageState() {
 		return messageState;
