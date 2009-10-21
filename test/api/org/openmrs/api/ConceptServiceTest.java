@@ -407,9 +407,19 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link ConceptService#getConceptByMapping(String,String)}
 	 */
 	@Test
-	@Verifies(value = "should get concept with given code and mapping", method = "getConceptByMapping(String,String)")
-	public void getConceptByMapping_shouldGetConceptWithGivenCodeAndMapping() throws Exception {
+	@Verifies(value = "should get concept with given code and source hl7 code", method = "getConceptByMapping(String,String)")
+	public void getConceptByMapping_shouldGetConceptWithGivenCodeAndSourceHl7Code() throws Exception {
 		Concept concept = conceptService.getConceptByMapping("WGT234", "SSTRM");
+		Assert.assertEquals(new Concept(5089), concept);
+	}
+	
+	/**
+	 * @see {@link ConceptService#getConceptByMapping(String,String)}
+	 */
+	@Test
+	@Verifies(value = "should get concept with given code and source hl7 name", method = "getConceptByMapping(String,String)")
+	public void getConceptByMapping_shouldGetConceptWithGivenCodeAndSourceName() throws Exception {
+		Concept concept = conceptService.getConceptByMapping("WGT234", "Some Standardized Terminology");
 		Assert.assertEquals(new Concept(5089), concept);
 	}
 	
