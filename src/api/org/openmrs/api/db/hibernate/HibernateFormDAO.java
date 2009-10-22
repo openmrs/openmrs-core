@@ -246,7 +246,7 @@ public class HibernateFormDAO implements FormDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Form> getFormsContainingConcept(Concept c) throws DAOException {
-		String q = "select distinct field.forms from Field field where field.concept = :concept";
+		String q = "select distinct ff.form from FormField ff where ff.field.concept = :concept";
 		Query query = sessionFactory.getCurrentSession().createQuery(q);
 		query.setEntity("concept", c);
 		
