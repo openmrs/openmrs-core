@@ -350,6 +350,7 @@ public interface FormService extends OpenmrsService {
 	 * @param concept the concept to search for in forms
 	 * @return forms containing the specified concept in their schema
 	 * @throws APIException
+	 * @should get all forms for concept
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_FORMS)

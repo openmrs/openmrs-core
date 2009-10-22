@@ -441,4 +441,16 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		// the uuid should be set by this method so that the field can be saved successfully
 		Assert.assertNotNull(field.getUuid());
 	}
+
+	/**
+     * @see {@link FormService#getFormsContainingConcept(Concept)}
+     * 
+     */
+    @Test
+    @Verifies(value = "should get all forms for concept", method = "getFormsContainingConcept(Concept)")
+    public void getFormsContainingConcept_shouldGetAllFormsForConcept() throws Exception {
+	    Concept concept = Context.getConceptService().getConcept(3);
+	    
+	    Assert.assertEquals(1, Context.getFormService().getFormsContainingConcept(concept).size());
+    }
 }
