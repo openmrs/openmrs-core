@@ -16,6 +16,8 @@ package org.openmrs.logic;
 import java.util.Calendar;
 import java.util.Map;
 
+import junit.framework.Assert;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
@@ -23,8 +25,11 @@ import org.junit.Test;
 import org.openmrs.Cohort;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
+import org.openmrs.logic.datasource.ObsDataSource;
 import org.openmrs.logic.result.Result;
+import org.openmrs.logic.rule.ReferenceRule;
 import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.SkipBaseSetup;
 
 /**
  * TODO: add more tests to this test case
@@ -352,5 +357,25 @@ public class LogicServiceTest extends BaseContextSensitiveTest {
 		catch (LogicException e) {
 			log.error("Error generated", e);
 		}
+	}
+	
+	@Test
+	@SkipBaseSetup
+	public void parseString_shouldCorrectlyParseExpressionWithOnlyAggregatorAndToken() throws Exception {
+		
+    	ObsDataSource obsDataSource = (ObsDataSource) Context.getLogicService().getLogicDataSource("obs");
+    	obsDataSource.addKey("WEIGHT (KG)");
+    	Context.getLogicService().updateRule("WEIGHT (KG)", new ReferenceRule("obs.WEIGHT (KG)"));
+		
+		LogicCriteria lastCriteria = Context.getLogicService().parseString("LAST \"WEIGHT (KG)\"");
+		Result lastResult = Context.getLogicService().eval(new Patient(3), lastCriteria);
+		Assert.assertEquals(1, lastResult.size());
+		Assert.assertEquals(70.0, lastResult.toNumber());
+		
+		LogicCriteria firstCriteria = Context.getLogicService().parseString("FIRST \"WEIGHT (KG)\"");
+		Result firstResult = Context.getLogicService().eval(new Patient(3), firstCriteria);
+		Assert.assertEquals(firstResult.size(), 1);
+		Assert.assertEquals(60.0, firstResult.toNumber());
+		
 	}
 }

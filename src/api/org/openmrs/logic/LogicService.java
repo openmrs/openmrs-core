@@ -327,6 +327,12 @@ public interface LogicService {
 	
 	public void loadRule(String tokenName, String ruleClassName) throws Exception;
 	
+	/**
+	 * Constructs a new LogicCriteria from the passed input String
+	 * @param inStr the input string to parse
+	 * @return the LogicCriteria parsed from the passed input String
+	 * @should correctly parse expression with only aggregator and token
+	 */
 	public LogicCriteria parseString(String inStr);
 	
 }

@@ -284,10 +284,9 @@ public class LogicQueryTreeParser extends antlr.TreeParser implements LogicQuery
 				
 				if (lcFormed == false) // just a terminal symbol like CD4 COUNT
 				{
-					lc_return = new LogicCriteria(null, a);
-				} else {
-					lc_return = lc.applyTransform(transform);
+					lc = new LogicCriteria(null, a);
 				}
+				lc_return = lc.applyTransform(transform);
 				return lc_return;
 				
 			}
