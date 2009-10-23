@@ -432,6 +432,8 @@ public class ModuleFileParser {
 					InputStream inStream = null;
 					try {
 						ZipEntry entry = jarfile.getEntry(file);
+						if (entry == null)
+							throw new ModuleException("No message properties file '" + file + "' for language '" + lang + "'");
 						inStream = jarfile.getInputStream(entry);
 						Properties props = new Properties();
 						OpenmrsUtil.loadProperties(props, inStream);
