@@ -106,7 +106,7 @@ public class UpdateFileParser {
 						String requireOpenMRSVersion = getElement(currentNode, configVersion, "requireOpenMRSVersion");
 						// if the openmrs code version is compatible, this node is a winner
 						if (requireOpenMRSVersion == null
-						        || ModuleUtil.compareVersion(OpenmrsConstants.OPENMRS_VERSION_SHORT, requireOpenMRSVersion) >= 0) {
+						        || ModuleUtil.matchRequiredVersions(OpenmrsConstants.OPENMRS_VERSION_SHORT, requireOpenMRSVersion)) {
 							this.currentVersion = currentVersion;
 							this.downloadURL = getElement(currentNode, configVersion, "downloadURL");
 						}
