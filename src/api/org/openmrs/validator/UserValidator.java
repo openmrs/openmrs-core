@@ -13,6 +13,10 @@
  */
 package org.openmrs.validator;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.User;
@@ -45,6 +49,7 @@ public class UserValidator implements Validator {
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
 	 */
+	
 	public void validate(Object obj, Errors errors) {
 		User user = (User) obj;
 		if (user == null) {
@@ -52,6 +57,46 @@ public class UserValidator implements Validator {
 		} else {
 			if (user.isVoided() && user.getVoidReason().trim().equals(""))
 				errors.rejectValue("voidReason", "error.null");
+		}
+		
+		if (!isUserNameValid(user.getUsername()))
+			errors.rejectValue("username", "error.username.pattern");
+	}
+	
+	/**
+	 * Convenience method to check the given username against the regular expression. <br/>
+	 * <br/>
+	 * A valid username will have following:
+	 * <li>Begins with Alphanumeric characters
+	 * <li>only followed by more alphanumeric characters (may include . - _) 
+	 * <li>can be at most 50 characters
+	 * <li>minimum 2 chars case-insensitive Examples:
+	 * <li>The following username will pass validation: A123_.-XYZ9
+	 * 
+	 * @param username the username string to check
+	 * @return true if the username is ok
+	 * @should validate username with only alpha numerics
+	 * @should validate username with alpha dash and underscore
+	 * @should validate username with alpha dash underscore and dot
+	 * @should validate username with exactly max size name
+	 * @should not validate username with less than minimumLength
+	 * @should not validate username with invalid character
+	 * @should not validate username with more than maximum size
+	 */
+	public boolean isUserNameValid(String username) {
+		//Initialize reg ex for userName pattern 
+		String expression = "^[\\w][\\Q_\\E\\w-\\.]{1,49}$";
+		
+		try {
+			//Make the comparison case-insensitive.
+			Pattern pattern = Pattern.compile(expression, Pattern.CASE_INSENSITIVE);
+			Matcher matcher = pattern.matcher(username);
+			
+			return matcher.matches();
+		}
+		catch (PatternSyntaxException pex) {
+			log.error("Username Pattern Syntax exception in UserValidator", pex);
+			return false;
 		}
 	}
 	
