@@ -162,6 +162,8 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @should confirm two new concept objects are equal
 	 */
 	public boolean equals(Object obj) {
+		if (obj == null)
+			return false;
 		if (obj instanceof Concept) {
 			Concept c = (Concept) obj;
 			if (getConceptId() == null && c.getConceptId() == null)
