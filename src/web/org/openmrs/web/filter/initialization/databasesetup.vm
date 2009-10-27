@@ -35,7 +35,7 @@
                     <td colspan="2" class="question">Please specify how to connect to your currently installed database server:</td>
                 </tr>
 			     		<tr>
-                    <td colspan="2" >Database Connection: &nbsp;<input type="text" name="database_connection" size="45" value="${databaseConnection}" /> <span style="font-size:12px;">(@DBNAME@ will be replaced with your chosen database name)</span></td>
+                    <td colspan="2" >Database Connection: &nbsp;<input type="text" name="database_connection" size="45" value="${databaseConnection}" /> <span style="font-size:12px;">(Advanced use only. @DBNAME@ will automatically be replaced by this wizard with your chosen database name)</span></td>
 			     		</tr>
 			     		<tr>
                     <td colspan="2" class="question">Do you currently have an OpenMRS database installed that you would like to connect to?</td>
