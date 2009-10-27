@@ -34,6 +34,7 @@ import java.util.Vector;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.GlobalProperty;
@@ -196,6 +197,86 @@ public class ModuleUtil {
 	}
 	
 	/**
+	 * Method to check whether required openmrs version in the config file
+	 * match the currently installed openmrs version
+	 * 
+	 * The require version number in the config file can be in the following
+	 * format:
+	 *   1.2.3
+	 *   1.2.*
+	 *   1.2.2 - 1.2.3
+	 *   1.2.* - 1.3.*
+	 * 
+	 * @param version openmrs version number to be compared
+	 * @param value value in the config file for required openmrs version
+	 * @return true if the required openmrs version match the current version
+	 * @should allow ranged required version
+	 * @should allow ranged required version with wild card
+	 * @should allow ranged required version with wild card on one end
+	 * @should allow single entry for required version
+	 * @should allow required version with wild card
+	 * @should allow non numeric character required version
+	 * @should allow ranged non numeric character required version
+	 * @should allow ranged non numeric character with wild card
+	 * @should allow ranged non numeric character with wild card on one end
+	 * @should return false when openmrs version beyond wild card range
+	 * @should return false when required version beyond openmrs version
+	 * @should return false when required version with wild card beyond openmrs version
+	 * @should return false when required version with wild card on one end beyond openmrs version
+	 * @should return false when single entry required version beyond openmrs version
+	 * @should allow release type in the version
+	 */
+	public static boolean matchRequiredVersions(String version, String value) {
+		// need to externalize this string
+		String separator = "-";
+		if (value.indexOf("*") > 0 || value.indexOf(separator) > 0) {
+			// if it contains "*" or "-" then we must separate those two
+			// assume it's always going to be two part
+			// assign the upper and lower bound
+			// if there's no "-" to split lower and upper bound
+			// then assign the same value for the lower and upper
+			String lowerBound = value;
+			String upperBound = value;
+			
+			int indexOfSeparator = value.indexOf(separator);
+			while(indexOfSeparator > 0) {
+				lowerBound = value.substring(0, indexOfSeparator);
+				upperBound = value.substring(indexOfSeparator + 1);
+				if (upperBound.matches("^\\s?\\d+.*"))
+					break;
+				indexOfSeparator = value.indexOf(separator, indexOfSeparator + 1);
+			}
+			
+			// only preserve part of the string that match the following format:
+			// - xx.yy.*
+			// - xx.yy.zz*
+			lowerBound = StringUtils.remove(lowerBound, lowerBound.replaceAll("^\\s?\\d+[\\.\\d+\\*?|\\.\\*]+", ""));
+			upperBound = StringUtils.remove(upperBound, upperBound.replaceAll("^\\s?\\d+[\\.\\d+\\*?|\\.\\*]+", ""));
+			
+			// if the lower contains "*" then change it to zero
+			if (lowerBound.indexOf("*") > 0)
+				lowerBound = lowerBound.replaceAll("\\*", "0");
+				
+			// if the upper contains "*" then change it to 999
+			// assuming 999 will be the max revision number for openmrs
+			if (upperBound.indexOf("*") > 0)
+				upperBound = upperBound.replaceAll("\\*", "999");
+			
+			int lowerReturn = compareVersion(version, lowerBound);
+			
+			int upperReturn = compareVersion(version, upperBound);
+			
+			if (lowerReturn >= 0 && upperReturn <= 0)
+				return true;
+			else
+				return false;
+			
+		} else {
+			return (compareVersion(version, value) >= 0);
+		}
+	}
+	
+	/**
 	 * Compares <code>version</code> to <code>value</code> version and value are strings like
 	 * w.x.y.z Returns <code>0</code> if either <code>version</code> or <code>value</code> is null.
 	 * 
@@ -209,7 +290,6 @@ public class ModuleUtil {
 	 */
 	public static int compareVersion(String version, String value) {
 		try {
-			
 			if (version == null || value == null)
 				return 0;
 			

@@ -382,7 +382,7 @@ public class ModuleFactory {
 				// of OpenMRS code
 				String requireVersion = module.getRequireOpenmrsVersion();
 				if (requireVersion != null && !requireVersion.equals(""))
-					if (ModuleUtil.compareVersion(OpenmrsConstants.OPENMRS_VERSION_SHORT, requireVersion) < 0)
+					if (!ModuleUtil.matchRequiredVersions(OpenmrsConstants.OPENMRS_VERSION_SHORT, requireVersion))
 						throw new ModuleException("Module requires at least version '" + requireVersion
 						        + "'.  Current code version is only '" + OpenmrsConstants.OPENMRS_VERSION_SHORT + "'",
 						        module.getName());
