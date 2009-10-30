@@ -149,6 +149,7 @@ public class OptionsFormController extends SimpleFormController {
 					
 					if (!errors.hasErrors()) {
 						us.changePassword(opts.getOldPassword(), password);
+						opts.setSecretQuestionPassword(password);
 						if (properties.containsKey(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD))
 							properties.remove(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD);
 					}
