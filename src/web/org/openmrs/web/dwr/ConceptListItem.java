@@ -122,7 +122,8 @@ public class ConceptListItem {
 				// if the name hit is not the preferred one, put the preferred one here
 				if (!conceptName.isPreferred()) {
 					ConceptName preferredNameObj = concept.getPreferredName(locale);
-					preferredName = preferredNameObj.getName();
+					if (preferredNameObj != null)
+						preferredName = preferredNameObj.getName();
 				}
 			}
 			if (conceptShortName != null) {
