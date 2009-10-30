@@ -293,6 +293,9 @@ public final class OpenmrsConstants {
 	
 	public static final String PRIV_PURGE_FORMS = "Purge Forms";
 	
+	// This name is historic, since that's what it was originally called in the infopath formentry module
+	public static final String PRIV_FORM_ENTRY = "Form Entry";
+	
 	@Deprecated
 	public static final String PRIV_VIEW_REPORTS = "View Reports";
 	
@@ -534,6 +537,7 @@ public final class OpenmrsConstants {
 			
 			CORE_PRIVILEGES.put(PRIV_VIEW_FORMS, "Able to view forms");
 			CORE_PRIVILEGES.put(PRIV_MANAGE_FORMS, "Able to add/edit/delete forms");
+			CORE_PRIVILEGES.put(PRIV_FORM_ENTRY, "Able to fill out forms");
 			
 			CORE_PRIVILEGES.put(PRIV_VIEW_REPORTS, "Able to view reports");
 			CORE_PRIVILEGES.put(PRIV_ADD_REPORTS, "Able to add reports");
