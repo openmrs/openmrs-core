@@ -668,7 +668,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 */
 	@Deprecated
 	public void setGlobalProperties(List<GlobalProperty> props) throws APIException {
-		saveGlobalProperties(props);
+		Context.getAdministrationService().saveGlobalProperties(props);
 	}
 	
 	/**
@@ -687,7 +687,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 */
 	@Deprecated
 	public void setGlobalProperty(String propertyName, String propertyValue) throws APIException {
-		saveGlobalProperty(new GlobalProperty(propertyName, propertyValue));
+		Context.getAdministrationService().saveGlobalProperty(new GlobalProperty(propertyName, propertyValue));
 	}
 	
 	/**
@@ -696,7 +696,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 */
 	@Deprecated
 	public void setGlobalProperty(GlobalProperty gp) throws APIException {
-		saveGlobalProperty(gp);
+		Context.getAdministrationService().saveGlobalProperty(gp);
 	}
 	
 	/**
@@ -716,7 +716,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	@Deprecated
 	public void addGlobalProperty(String propertyName, String propertyValue) throws APIException {
 		//dao.addGlobalProperty(propertyName, propertyValue);
-		saveGlobalProperty(new GlobalProperty(propertyName, propertyValue));
+		Context.getAdministrationService().saveGlobalProperty(new GlobalProperty(propertyName, propertyValue));
 	}
 	
 	/**
