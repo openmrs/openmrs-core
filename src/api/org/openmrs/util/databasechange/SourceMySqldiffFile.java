@@ -66,7 +66,7 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 	public void execute(Database database) throws CustomChangeException, UnsupportedChangeException {
 		
 		Properties runtimeProperties = Context.getRuntimeProperties();
-
+		
 		// if we're in a "generate sql file" mode, quit early
 		if (runtimeProperties.size() == 0)
 			return;
@@ -85,19 +85,31 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 			throw new CustomChangeException("Unable to copy " + sqlFile + " to file: " + tmpOutputFile.getAbsolutePath(), e);
 		}
 		
-		
 		// build the mysql command line string
 		List<String> commands = new ArrayList<String>();
+		String username = runtimeProperties.getProperty("connection.username");
+		String password = runtimeProperties.getProperty("connection.password");
+		String databaseName;
 		try {
 			commands.add("mysql");
-			commands.add("-u" + runtimeProperties.getProperty("connection.username"));
-			commands.add("-p" + runtimeProperties.getProperty("connection.password"));
-			commands.add("-e" + "source " + tmpOutputFile.getAbsolutePath() + ";");
-			commands.add(connection.getCatalog());
+			commands.add("-u" + username);
+			commands.add("-p" + password);
+			String path = tmpOutputFile.getAbsolutePath();
+			if (!OpenmrsConstants.UNIX_BASED_OPERATING_SYSTEM) {
+				// windows hacks
+				path = fixWindowsPathHack(path);
+			}
+			
+			commands.add("-esource " + path);
+			databaseName = connection.getCatalog();
+			commands.add(databaseName);
 		}
 		catch (SQLException e) {
 			throw new CustomChangeException("Unable to generate command string for file: " + sqlFile, e);
 		}
+		
+		// to be used in error messages if this fails
+		String errorCommand = "\"mysql -u" + runtimeProperties.getProperty("connection.username") + " -p -e\"source " + tmpOutputFile.getAbsolutePath() + "\"" + databaseName;
 		
 		// run the command line string
 		StringBuffer output = new StringBuffer();
@@ -108,11 +120,8 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 		catch (IOException io) {
 			if (io.getMessage().endsWith("not found")) {
 				throw new UnsupportedChangeException("Unable to run command: " + commands.get(0)
-				        + ".  Make sure that it is on the PATH and then restart your server and try again. "
-				        + " Or run `mysql -u -p -e\"source " + tmpOutputFile.getAbsolutePath() + "\"` at the command line",
-				        io);
-			} else {
-				throw new UnsupportedChangeException("Error while executing command: '" + commands.get(0) + "'", io);
+				        + ".  Make sure that it is on the PATH and then restart your server and try again. " + " Or run "
+				        + errorCommand + " at the command line with the appropriate full mysql path", io);
 			}
 		}
 		catch (Exception e) {
@@ -124,13 +133,42 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 		if (exitValue != 0) {
 			log.error("There was an error while running the " + commands.get(0) + " command.  Command output: "
 			        + output.toString());
-			throw new UnsupportedChangeException("There was an error while running the " + commands.get(0)
-			        + " command.  Command output: " + output.toString());
+			throw new UnsupportedChangeException(
+			        "There was an error while running the "
+			                + commands.get(0)
+			                + " command. See your server's error log for the full error output. As an alternative, you"
+			                + " can run this command manually on your database to skip over this error.  Run this at the command line "
+			                + errorCommand + "  ");
 		} else {
 			// a normal exit value
 			log.debug("Output of exec: " + output);
 		}
 		
+	}
+	
+	/**
+	 * A hacky way to get rid of the spaces in the java exec call because mysql and java are not
+	 * communicating well
+	 * 
+	 * @param path
+	 * @return
+	 */
+	private String fixWindowsPathHack(String path) {
+		StringBuffer returnedPath = new StringBuffer();
+		
+		path = path.replace("\\", "/"); // so java doesn't freak out with windows backslashes
+		for (String pathPart : path.split("/")) {
+			if (pathPart.contains(" ")) {
+				// shorten to the first 6 characters uppercased
+				pathPart = pathPart.substring(0, 6).toUpperCase();
+				// add in the tilda and assume the first one (very hacky part)
+				pathPart = pathPart + "~1";
+			}
+			returnedPath.append(pathPart).append("/");
+		}
+		returnedPath.deleteCharAt(returnedPath.length() - 1);
+		
+		return returnedPath.toString();
 	}
 	
 	/**
