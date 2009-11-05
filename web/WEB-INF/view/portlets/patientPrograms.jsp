@@ -79,7 +79,8 @@
 		if (currentProgramBeingEdited == null)
 			return;
 		var idToDelete = currentProgramBeingEdited;
-		DWRProgramWorkflowService.deletePatientProgram(idToDelete, '', function() {
+		var voidReason = document.getElementById("voidReason_PatientProgram").value;
+		DWRProgramWorkflowService.deletePatientProgram(idToDelete, voidReason , function() {
 				hideLayer('editPatientProgramPopup');
 				refreshPage();
 			});
@@ -183,9 +184,22 @@
 				<input type="button" value="<spring:message code="general.cancel"/>" onClick="currentProgramBeingEdited = null; hideLayer('editPatientProgramPopup')" />
 			</td>
 			<td align="center">
-				<input type="button" value="<spring:message code="general.delete"/>" onClick="handleDeleteProgram()" />
+				<!-- <input type="button" value="<spring:message code="general.delete"/>" onClick="handleDeleteProgram()" />	 -->	
+				<span style="position: relative">
+				    <input type="button" id="deletePatientProgramButton" value="<spring:message code="general.delete"/>" onClick="showDiv('deletePatientProgramDiv')" />
+					<div id="deletePatientProgramDiv" style="position: absolute; padding: 1em; bottom: -5px; left: 0px; z-index: 9; width: 250px; border: 1px black solid; background-color: #E0E0F0; display: none">
+					    <spring:message code="general.voidReasonQuestion"/>:&nbsp;&nbsp;<input type="text" id="voidReason_PatientProgram" size="15" />
+						<br/><br/>
+						<div align="center">
+							<input type="button" value="<spring:message code="general.delete"/>" onclick="handleDeleteProgram()"/>
+							&nbsp; &nbsp; &nbsp;
+							<input type="button" value="<spring:message code="general.cancel" />" onClick="hideDiv('deletePatientProgramDiv')"/>
+						</div>
+					</div>
+				</span>
 			</td>
 		</tr>
+		
 	</table>
 </div>
 					<div id="editWorkflowPopup" style="position: absolute; background-color: #e0e0e0; z-index: 5; padding: 10px; border: 1px black dashed; display: none">
