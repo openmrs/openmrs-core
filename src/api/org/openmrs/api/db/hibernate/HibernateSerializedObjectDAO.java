@@ -324,6 +324,14 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 	 * @param supportedTypes the supportedTypes to set
 	 */
 	public void setSupportedTypes(List<Class<? extends OpenmrsObject>> supportedTypes) {
-		this.supportedTypes = supportedTypes;
+		if (this.supportedTypes == null) {
+			this.supportedTypes = new ArrayList<Class<? extends OpenmrsObject>>();
+		}
+		if (supportedTypes != null) {
+			for (Class<? extends OpenmrsObject> clazz : supportedTypes) {
+				this.supportedTypes.add(clazz);
+			}
+		}
+		
 	}
 }
