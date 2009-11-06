@@ -17,6 +17,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -27,6 +29,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleFactory;
+import org.openmrs.module.ModuleUtil;
 import org.openmrs.util.OpenmrsUtil;
 
 public class ModuleResourcesServlet extends HttpServlet {
@@ -42,38 +45,29 @@ public class ModuleResourcesServlet extends HttpServlet {
 		log.debug("In service method for module servlet: " + request.getPathInfo());
 		
 		String path = request.getPathInfo();
-		Integer i = path.indexOf("/", 1);
-		String moduleId = path.substring(1, i);
 		
-		log.debug("ModuleId: " + moduleId);
-		
-		Module mod = ModuleFactory.getModuleById(moduleId);
-		
-		if (mod == null) {
-			log.warn("No module with id '" + moduleId + "' exists");
+		Module module = ModuleUtil.getModuleForPath(path);
+		if (module == null) {
+			log.warn("No module handles the path: " + path);
 			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 			return;
 		}
-		
-		log.debug("nextslash: " + i + 1);
-		String otherPath = path.substring(i);
-		
-		String realPath = getServletContext().getRealPath("");
-		realPath = realPath + MODULE_PATH + moduleId + "/resources/" + otherPath;
-		
+
+		String relativePath = ModuleUtil.getPathForResource(module, path);
+		String realPath = getServletContext().getRealPath("") + MODULE_PATH + module.getModuleIdAsPath() + "/resources" + relativePath;
 		realPath = realPath.replace("/", File.separator);
 		
 		log.debug("Real path: " + realPath);
 		
 		File f = new File(realPath);
 		if (!f.exists()) {
-			log.warn("No object with path '" + realPath + "' exists for module with id '" + moduleId + "'");
+			log.warn("No object with path '" + realPath + "' exists for module '" + module.getModuleId() + "'");
 			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 			return;
 		}
 		
 		InputStream is = new FileInputStream(f);
-		OpenmrsUtil.copyFile(is, response.getOutputStream());
+		OpenmrsUtil.copyFile(is, response.getOutputStream());		
 		
 	}
 	

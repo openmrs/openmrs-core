@@ -189,7 +189,9 @@ public class WebModuleUtil {
 							absPath.append("/view/module/");
 						}
 						
-						absPath.append(mod.getModuleId() + "/" + filepath);
+						// if a module id has a . in it, we should treat that as a /, i.e. files in the module
+						// ui.springmvc should go in folder names like .../ui/springmvc/...
+						absPath.append(mod.getModuleIdAsPath() + "/" + filepath);
 						if (log.isDebugEnabled())
 							log.debug("Moving file from: " + name + " to " + absPath);
 						
@@ -286,7 +288,7 @@ public class WebModuleUtil {
 			
 			// mark to delete the entire module web directory on exit 
 			// this will usually only be used when an improper shutdown has occurred.
-			String folderPath = realPath + "/WEB-INF/view/module/" + mod.getModuleId();
+			String folderPath = realPath + "/WEB-INF/view/module/" + mod.getModuleIdAsPath();
 			File outFile = new File(folderPath.replace("/", File.separator));
 			outFile.deleteOnExit();
 			
