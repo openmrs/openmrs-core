@@ -311,6 +311,13 @@ public final class Module {
 	}
 	
 	/**
+     * @return the module id, with all . replaced with /
+     */
+    public String getModuleIdAsPath() {
+	    return moduleId == null ? null : moduleId.replace('.', '/');
+    }
+	
+	/**
 	 * @param moduleId the module id to set
 	 */
 	public void setModuleId(String moduleId) {

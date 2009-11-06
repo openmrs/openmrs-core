@@ -716,4 +716,62 @@ public class ModuleUtil {
 		return mandatoryModuleIds;
 	}
 	
+	/**
+	 * <pre>
+	 * Gets the module that should handle a path. The path you pass in should be a module id (in
+	 * path format, i.e. /ui/springmvc, not ui.springmvc) followed by a resource. Something like
+	 * the following:
+	 *   /ui/springmvc/css/ui.css
+	 *   
+	 * The first running module out of the following would be returned:
+	 *   ui.springmvc.css
+	 *   ui.springmvc
+	 *   ui
+	 * </pre>
+	 * 
+	 * @param path
+	 * @return the running module that matches the most of the given path
+	 * 
+	 * @should handle ui springmvc css ui dot css when ui dot springmvc module is running
+	 * @should handle ui springmvc css ui dot css when ui module is running
+	 * @should return null for ui springmvc css ui dot css when no relevant module is running
+	 */
+    public static Module getModuleForPath(String path) {
+    	int ind = path.lastIndexOf('/');
+    	if (ind <= 0) {
+    		throw new IllegalArgumentException("Input must be /moduleId/resource. Input needs a / after the first character: " + path);
+    	}
+    	String moduleId = path.startsWith("/") ? path.substring(1, ind) : path.substring(0, ind);
+    	moduleId = moduleId.replace('/', '.');
+    	// iterate over progressively shorter module ids
+    	while (true) {
+    		Module mod = ModuleFactory.getStartedModuleById(moduleId);
+    		if (mod != null)
+    			return mod;
+    		// try the next shorter module id
+    		ind = moduleId.lastIndexOf('.');
+    		if (ind < 0)
+    			break;
+    		moduleId = moduleId.substring(0, ind);
+    	}
+	    return null;
+    }
+
+	/**
+     * Takes a global path and returns the local path within the specified module.
+     * For example calling this method with the path "/ui/springmvc/css/ui.css" and the ui.springmvc module,
+     * you would get "/css/ui.css".
+     * 
+     * @param module
+     * @param path
+     * @return
+     * 
+     * @should handle ui springmvc css ui dot css example
+     */
+    public static String getPathForResource(Module module, String path) {
+    	if (path.startsWith("/"))
+    		path = path.substring(1);
+    	return path.substring(module.getModuleIdAsPath().length());
+    }
+
 }
