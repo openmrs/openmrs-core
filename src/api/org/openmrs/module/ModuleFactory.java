@@ -337,6 +337,15 @@ public class ModuleFactory {
 		return getLoadedModulesMap().get(moduleId);
 	}
 	
+ 	/**
+	 * @param moduleId
+	 * @return Module matching moduleId, if it is started or null otherwise
+	 */
+	public static Module getStartedModuleById(String moduleId) {
+		return getStartedModulesMap().get(moduleId);
+	}
+
+	
 	/**
 	 * @param module package
 	 * @return Module matching module package or null if none
