@@ -327,11 +327,14 @@
 	<servlet>
 		<servlet-name>openmrs</servlet-name>
 		<servlet-class>org.openmrs.web.DispatcherServlet</servlet-class>
+		<!-- empty contextConfigLocation passed in here so that module
+		     startup and spring annotation config happen correctly. Spring
+		     must be taking the config file locations from the main param 
+		     defined at the top of this xml file -->
 		<init-param>
 	        <param-name>contextConfigLocation</param-name>
 	        <param-value>
-	        	/WEB-INF/openmrs-servlet.xml
-       			classpath*:/moduleApplicationContext.xml
+
 	        </param-value>
 	    </init-param>
 		<!-- Don't use "load-on-startup" in case initial setup wizard is needed -->
