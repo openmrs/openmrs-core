@@ -102,7 +102,7 @@ public class ConceptName extends BaseOpenmrsObject implements Auditable, java.io
 		}
 		ConceptName rhs = (ConceptName) obj;
 		if (this.conceptNameId != null && rhs.conceptNameId != null)
-			return (this.conceptNameId.equals(rhs.concept));
+			return (this.conceptNameId.equals(rhs.conceptNameId));
 		else
 			return this == obj;
 	}
