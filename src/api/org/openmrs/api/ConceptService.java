@@ -1168,8 +1168,6 @@ public interface ConceptService extends OpenmrsService {
 	 * @return the retired concept source
 	 * @throws APIException
 	 * @should retire concept source
-	 * @should throw exception if empty reason given
-	 * @should throw exception if null reason given
 	 */
 	@Authorized(OpenmrsConstants.PRIV_PURGE_CONCEPT_SOURCES)
 	public ConceptSource retireConceptSource(ConceptSource cs, String reason) throws APIException;
