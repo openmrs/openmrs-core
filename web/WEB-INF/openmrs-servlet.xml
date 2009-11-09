@@ -35,7 +35,17 @@
 	</bean>
 	
 	<!-- So that controllers can use annotations like @Controller and @RequestMapping -->
-	<bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping"/>
+	<bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
+		<!-- makes annotations more important than default mappings -->
+		<property name="order"><value>98</value></property>
+		<!-- allows for locale changes on any annotation based page -->
+		<property name="interceptors">
+			<list>
+				<ref bean="localeChangeInterceptor" />
+				<!-- <ref bean="openSessionInViewInterceptor"/> -->
+			</list>
+		</property>
+	</bean>
 	
 	<!-- The default place to look for controllers that have annotations -->
 	<context:component-scan base-package="org.openmrs.web.controller" />
