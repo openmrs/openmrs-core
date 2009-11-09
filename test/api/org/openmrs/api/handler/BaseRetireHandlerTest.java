@@ -120,17 +120,7 @@ public class BaseRetireHandlerTest {
 		handler.handle(retireable, null, null, "THE REASON");
 		Assert.assertNull(retireable.getRetireReason());
 	}
-	
-	/**
-	 * @see {@link BaseRetireHandler#handle(Retireable,User,Date,String)}
-	 */
-	@Test(expected = IllegalArgumentException.class)
-	@Verifies(value = "should throw IllegalArgumentException if retireReason is empty", method = "handle(Retireable,User,Date,String)")
-	public void handle_shouldThrowIllegalArgumentExceptionIfRetireReasonIsEmpty() throws Exception {
-		RetireHandler<Retireable> handler = new BaseRetireHandler();
-		handler.handle(new Location(), null, null, null);
-	}
-	
+
 	/**
 	 * @see {@link BaseRetireHandler#handle(Retireable,User,Date,String)}
 	 */

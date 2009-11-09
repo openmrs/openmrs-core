@@ -19,8 +19,6 @@ import org.openmrs.Retireable;
 import org.openmrs.User;
 import org.openmrs.annotation.Handler;
 import org.openmrs.aop.RequiredDataAdvice;
-import org.openmrs.api.APIException;
-import org.springframework.util.StringUtils;
 
 /**
  * This handler makes sure the when a retired object is saved with the retired bit set to true, the
@@ -56,7 +54,6 @@ public class RetireSaveHandler implements SaveHandler<Retireable> {
 	 *      org.openmrs.User, java.util.Date, java.lang.String)
 	 * @should not set the retired bit
 	 * @should not set the retireReason
-	 * @should throw APIException if retireReason is empty
 	 * @should set retired by
 	 * @should not set retired by if non null
 	 * @should set dateRetired
@@ -72,12 +69,7 @@ public class RetireSaveHandler implements SaveHandler<Retireable> {
 		
 		// only set the values if the user saved this object and set the retired bit
 		if (retireableObject.isRetired()) {
-			
-			if (!StringUtils.hasLength(retireableObject.getRetireReason()))
-				throw new APIException(
-				        "The retired bit was set to true, so a retire reason is required at save time for object: "
-				                + retireableObject + " of class: " + retireableObject.getClass());
-			
+		
 			if (retireableObject.getRetiredBy() == null) {
 				retireableObject.setRetiredBy(currentUser);
 			}

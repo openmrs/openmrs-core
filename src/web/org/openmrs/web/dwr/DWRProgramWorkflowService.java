@@ -185,6 +185,7 @@ public class DWRProgramWorkflowService {
 		ProgramWorkflowService s = Context.getProgramWorkflowService();
 		PatientProgram pp = s.getPatientProgram(patientProgramId);
 		ProgramWorkflow wf = s.getWorkflow(programWorkflowId);
-		s.voidLastState(pp, wf, voidReason);
+		pp.voidLastState(wf, Context.getAuthenticatedUser(), new Date(), voidReason);
+		Context.getProgramWorkflowService().savePatientProgram(pp);
 	}
 }

@@ -56,13 +56,9 @@ public class BaseRetireHandler implements RetireHandler<Retireable> {
 	 * @should set dateRetired
 	 * @should not set dateRetired if non null
 	 * @should not set the retireReason if already voided
-	 * @should throw IllegalArgumentException if retireReason is empty
 	 * @should set retiredBy even if retired bit is set but retiredBy is null
 	 */
 	public void handle(Retireable retireableObject, User retiringUser, Date retireDate, String retireReason) {
-		
-		if (retireReason == null || retireReason.equals(""))
-			throw new IllegalArgumentException("The 'reason' argument is required");
 		
 		// skip over doing retire stuff if already retired
 		if (!retireableObject.isRetired() || retireableObject.getRetiredBy() == null) {

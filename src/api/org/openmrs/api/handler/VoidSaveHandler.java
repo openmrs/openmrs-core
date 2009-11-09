@@ -19,8 +19,6 @@ import org.openmrs.User;
 import org.openmrs.Voidable;
 import org.openmrs.annotation.Handler;
 import org.openmrs.aop.RequiredDataAdvice;
-import org.openmrs.api.APIException;
-import org.springframework.util.StringUtils;
 
 /**
  * This handler makes sure the when a voided object is saved with the voided bit set to true, the
@@ -56,7 +54,6 @@ public class VoidSaveHandler implements SaveHandler<Voidable> {
 	 *      org.openmrs.User, java.util.Date, java.lang.String)
 	 * @should not set the voided bit
 	 * @should not set the voidReason
-	 * @should throw APIException if voidReason is empty
 	 * @should set voided by
 	 * @should not set voided by if non null
 	 * @should set dateVoided
@@ -72,12 +69,7 @@ public class VoidSaveHandler implements SaveHandler<Voidable> {
 		
 		// only set the values if the user saved this object and set the voided bit
 		if (voidableObject.isVoided()) {
-			
-			if (!StringUtils.hasLength(voidableObject.getVoidReason()))
-				throw new APIException(
-				        "The voided bit was set to true, so a void reason is required at save time for object: "
-				                + voidableObject + " of class: " + voidableObject.getClass());
-			
+
 			if (voidableObject.getVoidedBy() == null) {
 				voidableObject.setVoidedBy(currentUser);
 			}
