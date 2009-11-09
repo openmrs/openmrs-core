@@ -754,24 +754,4 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(cs.isRetired());
 		Assert.assertEquals("dummy reason for retirement", cs.getRetireReason());
 	}
-	
-	/**
-	 * @see {@link ConceptService#retireConceptSource(ConceptSource,String)}
-	 */
-	@Test(expected = IllegalArgumentException.class)
-	@Verifies(value = "should throw exception if empty reason given", method = "retireConceptSource(ConceptSource,String)")
-	public void retireConceptSource_shouldThrowExceptionIfEmptyReasonGiven() throws Exception {
-		ConceptSource cs = conceptService.getConceptSource(3);
-		conceptService.retireConceptSource(cs, "");
-	}
-	
-	/**
-	 * @see {@link ConceptService#retireConceptSource(ConceptSource,String)}
-	 */
-	@Test(expected = IllegalArgumentException.class)
-	@Verifies(value = "should throw exception if null reason given", method = "retireConceptSource(ConceptSource,String)")
-	public void retireConceptSource_shouldThrowExceptionIfNullReasonGiven() throws Exception {
-		ConceptSource cs = conceptService.getConceptSource(3);
-		conceptService.retireConceptSource(cs, null);
-	}
 }

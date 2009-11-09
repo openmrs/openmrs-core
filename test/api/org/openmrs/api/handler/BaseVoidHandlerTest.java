@@ -124,16 +124,6 @@ public class BaseVoidHandlerTest {
 	/**
 	 * @see {@link BaseVoidHandler#handle(Voidable,User,Date,String)}
 	 */
-	@Test(expected = IllegalArgumentException.class)
-	@Verifies(value = "should throw IllegalArgumentException if voidReason is empty", method = "handle(Voidable,User,Date,String)")
-	public void handle_shouldThrowIllegalArgumentExceptionIfVoidReasonIsEmpty() throws Exception {
-		VoidHandler<Voidable> handler = new BaseVoidHandler();
-		handler.handle(new Person(), null, null, null);
-	}
-	
-	/**
-	 * @see {@link BaseVoidHandler#handle(Voidable,User,Date,String)}
-	 */
 	@Test
 	@Verifies(value = "should set voidedBy even if voided bit is set but voidedBy is null", method = "handle(Voidable,User,Date,String)")
 	public void handle_shouldSetVoidedByEvenIfVoidedBitIsSetButVoidedByIsNull() throws Exception {
