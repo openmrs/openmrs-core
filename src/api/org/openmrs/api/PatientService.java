@@ -55,7 +55,7 @@ public interface PatientService extends OpenmrsService {
 	 * @see #savePatient(Patient)
 	 * @deprecated replaced by #savePatient(Patient)
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_ADD_PATIENTS })
+	@Authorized( { OpenmrsConstants.PRIV_ADD_PATIENTS } )
 	public Patient createPatient(Patient patient) throws APIException;
 	
 	/**
@@ -129,7 +129,7 @@ public interface PatientService extends OpenmrsService {
 	 * @return patients in the system
 	 * @throws APIException
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_PATIENTS })
+	@Authorized({ OpenmrsConstants.PRIV_VIEW_PATIENTS } )
 	@Transactional(readOnly = true)
 	public List<Patient> getAllPatients(boolean includeVoided) throws APIException;
 	
@@ -162,6 +162,8 @@ public interface PatientService extends OpenmrsService {
 	 * @should search familyName2 with name
 	 * @should not allow percentage wildcard character
 	 * @should not allow asterisk wildcard character
+	 * @should support simple regex 
+ 	 * @should support pattern using last digit as check digit  
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_PATIENTS })

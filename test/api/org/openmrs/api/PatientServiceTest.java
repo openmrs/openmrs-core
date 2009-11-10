@@ -983,4 +983,37 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 			        .isVoided());
 		}
 	}
+	
+	/**
+	 * @see {@link PatientService#getPatients(String, String, java.util.List, boolean)}
+	 */
+	@Test
+	@Verifies(value = "support simple regex", method = "getPatients(null,Identifier,null,false)")
+	public void getPatients_shouldSupportSimpleRegex() throws Exception {
+		Context.getAdministrationService().saveGlobalProperty(
+		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_REGEX, "^0*@SEARCH@([A-Z]+-[0-9])?$"));
+		PatientIdentifier identifier = new PatientIdentifier("1234-4", new PatientIdentifierType(1), new Location(1));
+		identifier.setCreator(new User(1));
+		identifier.setDateCreated(new Date());
+		Context.getPatientService().getPatient(2).addIdentifier(identifier);
+		assertEquals(1, Context.getPatientService().getPatients("1234-4").size());
+	}
+	
+	/**
+	 * @see {@link PatientService#getPatients(String, String, java.util.List, boolean)}
+	 */
+	@Test
+	@Verifies(value = "support pattern using last digit as check digit", method = "getPatients(null,Identifier,null,false)")
+	public void getPatients_shouldSupportPatternUsingLastDigitAsCheckDigit() throws Exception {
+		Context.getAdministrationService().saveGlobalProperty(
+		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SEARCH_PATTERN,
+		            "@SEARCH@,0@SEARCH@,@SEARCH-1@-@CHECKDIGIT@,0@SEARCH-1@-@CHECKDIGIT@"));
+		//"^(0*@SEARCH-1@-@CHECKDIGIT@)$")); 
+		PatientIdentifier identifier = new PatientIdentifier("1234-4", new PatientIdentifierType(1), new Location(1));
+		identifier.setCreator(new User(1));
+		identifier.setDateCreated(new Date());
+		Context.getPatientService().getPatient(2).addIdentifier(identifier);
+		assertEquals(1, Context.getPatientService().getPatients("12344").size());
+		assertEquals(1, Context.getPatientService().getPatients("1234-4").size());
+	} 
 }
