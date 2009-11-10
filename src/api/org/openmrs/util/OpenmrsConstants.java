@@ -692,6 +692,8 @@ public final class OpenmrsConstants {
 	
 	public static final String GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SUFFIX = "patient.identifierSuffix";
 	
+	public static final String GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SEARCH_PATTERN = "patient.identifierSearchPattern";
+	
 	public static final String GLOBAL_PROPERTY_PATIENT_SEARCH_MAX_RESULTS = "patient.searchMaxResults";
 	
 	public static final String GLOBAL_PROPERTY_GZIP_ENABLED = "gzip.enabled";
@@ -954,6 +956,12 @@ public final class OpenmrsConstants {
 		                "This property is only used if "
 		                        + GLOBAL_PROPERTY_PATIENT_IDENTIFIER_REGEX
 		                        + " is empty.  The string here is prepended to the sql indentifier search string.  The sql becomes \"... where identifier like '<PREFIX><QUERY STRING><SUFFIX>';\".  Typically this value is either a percent sign (%) or empty."));
+		props
+        .add(new GlobalProperty(
+        	GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SEARCH_PATTERN,
+                "",
+                "If this is empty, the regex or suffix/prefix search is used.  Comma separated list of identifiers to check.  Allows for faster searching of multiple options rather than the slow regex. e.g. @SEARCH@,0@SEARCH@,@SEARCH-1@-@CHECKDIGIT@,0@SEARCH-1@-@CHECKDIGIT@ would turn a request for \"4127\" into a search for \"in ('4127','04127','412-7','0412-7')\""));
+		
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_PATIENT_SEARCH_MAX_RESULTS, "1000",
 		        "The maximum number of results returned by patient searches"));
 		

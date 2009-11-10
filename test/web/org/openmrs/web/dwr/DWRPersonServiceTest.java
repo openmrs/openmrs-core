@@ -33,7 +33,7 @@ public class DWRPersonServiceTest extends BaseWebContextSensitiveTest {
 	public void findPeopleByRoles_shouldMatchOnPatientIdentifiers() throws Exception {
 		DWRPersonService dwrPersonService = new DWRPersonService();
 		
-		List<PersonListItem> persons = dwrPersonService.findPeopleByRoles("1234", false, null);
+		List<PersonListItem> persons = dwrPersonService.findPeopleByRoles("12345K", false, null);
 		
 		Assert.assertEquals(1, persons.size());
 		Assert.assertEquals(new PersonListItem(6), persons.get(0));
