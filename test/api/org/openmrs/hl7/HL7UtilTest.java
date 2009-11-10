@@ -14,6 +14,7 @@
 package org.openmrs.hl7;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
@@ -91,9 +92,16 @@ public class HL7UtilTest {
 	@SuppressWarnings("deprecation")
 	@Verifies(value = "should handle 0615", method = "parseHL7Time(String)")
 	public void parseHL7Time_shouldHandle0615() throws Exception {
+		// set tz to be a __non DST__ timezone so this junit test works everywhere and always
+		TimeZone originalTimeZone = TimeZone.getDefault();
+		TimeZone.setDefault(TimeZone.getTimeZone("EAT"));
+		
 		Date parsedDate = HL7Util.parseHL7Time("0615");
-		Assert.assertEquals(5, parsedDate.getHours()); // hours are zero-based
+		Assert.assertEquals(6, parsedDate.getHours());
 		Assert.assertEquals(15, parsedDate.getMinutes());
+		
+		// reset the timezone
+		TimeZone.setDefault(originalTimeZone);
 	}
 	
 }
