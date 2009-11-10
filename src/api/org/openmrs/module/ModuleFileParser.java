@@ -15,6 +15,8 @@ package org.openmrs.module;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -82,6 +84,38 @@ public class ModuleFileParser {
 			throw new ModuleException("Module file does not have the correct .omod file extension", moduleFile.getName());
 		
 		this.moduleFile = moduleFile;
+	}
+	
+	/**
+	 * Convenience constructor to parse the given inputStream file into an omod. <br/>
+	 * This copies the stream into a temporary file just so things can be parsed.<br/>
+	 * 
+	 * @param inputStream the inputStream pointing to an omod file
+	 */
+	public ModuleFileParser(InputStream inputStream) {
+		
+		FileOutputStream outputStream = null;
+		try {
+			moduleFile = File.createTempFile("moduleUpgrade", "omod");
+			outputStream = new FileOutputStream(moduleFile);
+			OpenmrsUtil.copyFile(inputStream, outputStream);
+		}
+		catch (FileNotFoundException e) {
+			throw new ModuleException("Can't create module file", e);
+		}
+		catch (IOException e) {
+			throw new ModuleException("Can't create module file", e);
+		}
+		finally {
+			try {
+				inputStream.close();
+			}
+			catch (Exception e) { /* pass */}
+			try {
+				outputStream.close();
+			}
+			catch (Exception e) { /* pass */}
+		}
 	}
 	
 	/**
