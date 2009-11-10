@@ -4,31 +4,48 @@
 	
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
+<openmrs:htmlInclude file="/scripts/jquery/jquery-1.3.2.min.js" />
+<script type="text/javascript">
+	var $j = jQuery.noConflict(); 
+</script>
 
 <h2><spring:message code="Module.header" /></h2>	
 
 <p><spring:message code="Module.notice" /></p>
 
-<b class="boxHeader"><spring:message code="Module.add" /></b>
-<div class="box">
-	<form id="moduleAddForm" action="module.list" method="post" enctype="multipart/form-data">
-		<spring:message code="Module.addJar"/>: 
-		<input type="file" name="moduleFile" size="40" <c:if test="${allowAdmin!='true'}">disabled="disabled"</c:if> />
-		<input type="hidden" name="action" value="upload"/>
-		
-		<div id="moduleUploadButton" style="margin-top: 5px;">
+<div style="width: 49.5%; float: left; margin-left: 4px;">
+	<b class="boxHeader"><spring:message code="Module.add"/></b>
+	<div class="box">
+		<form id="moduleAddForm" action="module.list" method="post" enctype="multipart/form-data">
+			<input type="file" name="moduleFile" size="40" <c:if test="${allowAdmin!='true'}">disabled="disabled"</c:if> />
+			<input type="hidden" name="action" value="upload"/>
+			
 			<c:choose>
 				<c:when test="${allowAdmin == 'true'}">
-					<input type="submit" value='<spring:message code="Module.add"/>'/>
+					<input type="submit" value='<spring:message code="Module.upload"/>'/>
 				</c:when>
 				<c:otherwise>
 					${disallowUploads}
 				</c:otherwise>
 			</c:choose>
-		</div>
-	</form>
+		</form>
+	</div>
 </div>
+<c:if test="${allowAdmin=='true'}">
+<div style="width: 49.5%; float: right; margin-right: 4px">
+	<b class="boxHeader"><spring:message code="Module.upgrade"/></b>
+	<div class="box">
+		<form method="post" id="uploadUpdateForm" enctype="multipart/form-data">
+			<input type="file" name="moduleFile" size="40" />
+			<input type="hidden" name="action" value="upload"/>
+			<input type="hidden" name="update" value="true"/>
+			<input type="submit" value='<spring:message code="Module.upload"/>'/>
+		</form>
+	</div>
+</div>
+</c:if>
 
+<br style="clear:both"/>
 <br/>
 
 <c:forEach var="module" items="${moduleList}" varStatus="varStatus">
