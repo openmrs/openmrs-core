@@ -17,6 +17,7 @@ import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -46,6 +47,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.PatientDAO;
 import org.openmrs.util.OpenmrsConstants;
+import org.springframework.util.StringUtils;
 
 /**
  * Hibernate specific database methods for the PatientService
@@ -239,33 +241,43 @@ public class HibernatePatientDAO implements PatientDAO {
 			
 			// do the identifier restriction
 			if (identifier != null) {
-				AdministrationService adminService = Context.getAdministrationService();
-				String regex = adminService.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_REGEX, "");
-				
 				// if the user wants an exact search, match on that.
 				if (matchIdentifierExactly) {
 					criteria.add(Expression.eq("ids.identifier", identifier));
 				} else {
+					AdministrationService adminService = Context.getAdministrationService();
+					String regex = adminService.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_REGEX, "");
+					String patternSearch = adminService.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SEARCH_PATTERN, "");
+					
 					// remove padding from identifier search string
 					if (Pattern.matches("^\\^.{1}\\*.*$", regex)) {
 						String padding = regex.substring(regex.indexOf("^") + 1, regex.indexOf("*"));
 						Pattern pattern = Pattern.compile("^" + padding + "+");
 						identifier = pattern.matcher(identifier).replaceFirst("");
 					}
+					
+					if (StringUtils.hasLength(patternSearch)) {
+						// split the pattern before replacing in case the user searched on a comma
+						List<String> searchPatterns = new ArrayList<String>();
+						// replace the @SEARCH@, etc in all elements
+						for (String pattern : patternSearch.split(","))
+							searchPatterns.add(replaceSearchString(pattern, identifier));
+						criteria.add(Expression.in("ids.identifier", searchPatterns));
+					}
 					// if the regex is empty, default to a simple "like" search or if 
 					// we're in hsql world, also only do the simple like search (because
 					// hsql doesn't know how to deal with 'regexp'
-					if (regex.equals("") || HibernateUtil.isHSQLDialect(sessionFactory)) {
+					else if (regex.equals("") || HibernateUtil.isHSQLDialect(sessionFactory)) {
 						String prefix = adminService.getGlobalProperty(
 						    OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_PREFIX, "");
 						String suffix = adminService.getGlobalProperty(
-						    OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SUFFIX, "%");
+						    OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SUFFIX, "");
 						StringBuffer likeString = new StringBuffer(prefix).append(identifier).append(suffix);
 						criteria.add(Expression.like("ids.identifier", likeString.toString()));
 					}
 					// if the regex is present, search on that
 					else {
-						regex = regex.replace("@SEARCH@", identifier);
+						regex = replaceSearchString(regex, identifier);
 						criteria.add(Restrictions.sqlRestriction("identifier regexp ?", regex, Hibernate.STRING));
 					}
 				}
@@ -289,6 +301,26 @@ public class HibernatePatientDAO implements PatientDAO {
 		criteria.setMaxResults(getMaximumSearchResults());
 		
 		return criteria.list();
+	}
+	
+	/**
+	 * Puts @SEARCH@, @SEARCH-1@, and @CHECKDIGIT@ into the search string
+	 * 
+	 * @param regex the admin-defined search string containing the @..@'s to be replaced
+	 * @param identifierSearched the user entered search string
+	 * @return
+	 */
+	private String replaceSearchString(String regex, String identifierSearched) {
+		String returnString = regex.replaceAll("@SEARCH@", identifierSearched);
+		if (identifierSearched.length() > 1) {
+			// for 2 or more character searches, we allow regex to use last character as check digit 
+			returnString = returnString.replaceAll("@SEARCH-1@", identifierSearched.substring(0, identifierSearched.length() - 1));
+			returnString = returnString.replaceAll("@CHECKDIGIT@", identifierSearched.substring(identifierSearched.length() - 1));
+		} else {
+			returnString = returnString.replaceAll("@SEARCH-1@", "");
+			returnString = returnString.replaceAll("@CHECKDIGIT@", "");
+		}
+		return returnString;
 	}
 	
 	/**
