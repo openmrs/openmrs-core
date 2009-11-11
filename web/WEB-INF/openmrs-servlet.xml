@@ -1300,6 +1300,18 @@
 				<prop key="country">Kenya</prop>
 			</props>
 		</property>
+        <property name="elementRegex">
+            <props>
+                <prop key="latitude">^(\\d{1,3}\\s)\\d\\d.(\\d{2,3})\\s*$</prop>
+                <prop key="longitude">^(\\d{1,3}\\s)\\d\\d.(\\d{2,3})\\s*$</prop>
+            </props>
+        </property>
+        <property name="elementRegexFormats">
+            <props>
+                 <prop key="latitude">123 45.000</prop>
+                 <prop key="longitude">123 45.000</prop>
+            </props>
+        </property>
 		<property name="lineByLineFormat">
 			<list>
 				<value>address1</value>

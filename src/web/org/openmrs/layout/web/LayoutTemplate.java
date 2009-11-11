@@ -37,7 +37,9 @@ public abstract class LayoutTemplate {
 	protected Map<String, String> sizeMappings;
 	
 	protected Map<String, String> elementDefaults;
-	
+    protected Map<String,String> elementRegex;
+    protected Map<String,String> elementRegexFormats;
+
 	protected List<String> lineByLineFormat;
 	
 	protected int maxTokens = 0; // The largest number of tokens on one given line
@@ -225,7 +227,52 @@ public abstract class LayoutTemplate {
 	public void setElementDefaults(Map<String, String> elementDefaults) {
 		this.elementDefaults = elementDefaults;
 	}
-	
+
+ 	/**
+     * Get the element regular expressions.
+     * These can be used to enforce that an element
+     * matches a regex.
+     *
+	 * @return the elementRegex
+	 */
+	public Map<String, String> getElementRegex() {
+		return elementRegex;
+	}
+
+	/**
+     * Set the element regular expressions.
+     * These can be used to enforce that an element
+     * matches a regex.
+     *
+	 * @param elementRegex the elementRegex to set
+	 */
+	public void setElementRegex(Map<String, String> elementRegex) {
+		this.elementRegex = elementRegex;
+	}
+
+    /**
+     * Get the element formats.
+     * These can be used to display an example format
+     * that an element should look like.
+     *
+	 * @return the elementFormats
+	 */
+	public Map<String, String> getElementRegexFormats() {
+		return elementRegexFormats;
+	}
+
+	/**
+     * Set the element formats.
+     * These can be used to display an example format
+     * that an element should look like.
+     *
+	 * @param elementFormats the elementFormats to set
+	 */
+	public void setElementRegexFormats(Map<String, String> elementRegexFormats) {
+		this.elementRegexFormats = elementRegexFormats;
+	}
+    
+
 	/**
 	 * @return the lineByLineFormat
 	 */
