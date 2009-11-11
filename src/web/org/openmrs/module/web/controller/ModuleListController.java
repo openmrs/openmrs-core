@@ -14,6 +14,7 @@
 package org.openmrs.module.web.controller;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
@@ -33,6 +34,7 @@ import org.openmrs.module.Module;
 import org.openmrs.module.ModuleConstants;
 import org.openmrs.module.ModuleException;
 import org.openmrs.module.ModuleFactory;
+import org.openmrs.module.ModuleFileParser;
 import org.openmrs.module.ModuleUtil;
 import org.openmrs.module.web.WebModuleUtil;
 import org.openmrs.util.OpenmrsConstants;
@@ -102,9 +104,29 @@ public class ModuleListController extends SimpleFormController {
 					File moduleFile = null;
 					Module module = null;
 					try {
-						inputStream = multipartModuleFile.getInputStream();
-						moduleFile = ModuleUtil.insertModuleFile(inputStream, filename);
+						
+						// if user is using the "upload an update" form instead of the main form
+						Boolean updateModule = ServletRequestUtils.getBooleanParameter(request, "update", false);
+						if (updateModule) {
+							// parse the module so that we can get the id
+							
+							Module tmpModule = new ModuleFileParser(multipartModuleFile.getInputStream()).parse();
+							Module existingModule = ModuleFactory.getModuleById(tmpModule.getModuleId());
+							if (existingModule != null) {
+								ModuleFactory.stopModule(existingModule, false, true); // stop the module with these parameters so that mandatory modules can be upgraded
+								WebModuleUtil.stopModule(existingModule, getServletContext());
+								ModuleFactory.unloadModule(existingModule);
+							}
+							moduleFile = ModuleUtil.insertModuleFile(new FileInputStream(tmpModule.getFile()), filename); // copy the omod over to the repo folder
+						}
+						else {
+							// not an update, just copy the module file right to the repo folder
+							inputStream = multipartModuleFile.getInputStream();
+							moduleFile = ModuleUtil.insertModuleFile(inputStream, filename);
+						}
+						
 						module = ModuleFactory.loadModule(moduleFile);
+						
 					}
 					catch (ModuleException me) {
 						log.warn("Unable to load and start module", me);

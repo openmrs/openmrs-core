@@ -56,6 +56,7 @@ import org.openmrs.arden.ArdenService;
 import org.openmrs.hl7.HL7Service;
 import org.openmrs.logic.LogicService;
 import org.openmrs.messagesource.MessageSourceService;
+import org.openmrs.module.MandatoryModuleException;
 import org.openmrs.module.ModuleUtil;
 import org.openmrs.notification.AlertService;
 import org.openmrs.notification.MessageException;
@@ -726,7 +727,8 @@ public class Context {
 	 * @see InputRequiredException#getRequiredInput() InputRequiredException#getRequiredInput() for
 	 *      the required question/datatypes
 	 */
-	public static void startup(Properties props) throws DatabaseUpdateException, InputRequiredException {
+	public static void startup(Properties props) throws DatabaseUpdateException, InputRequiredException,
+	                                            MandatoryModuleException {
 		// do any context database specific startup
 		getContextDAO().startup(props);
 		
@@ -768,7 +770,8 @@ public class Context {
 	 */
 	public static void startup(String url, String username, String password, Properties properties)
 	                                                                                               throws DatabaseUpdateException,
-	                                                                                               InputRequiredException {
+	                                                                                               InputRequiredException,
+	                                                                                               MandatoryModuleException {
 		if (properties == null)
 			properties = new Properties();
 		

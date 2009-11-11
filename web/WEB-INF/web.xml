@@ -175,9 +175,19 @@
 		<servlet-name>dwr-invoker</servlet-name>
 		<url-pattern>/dwr/*</url-pattern>
 	</servlet-mapping>
-
-	<!--  Should be the first filter so that if setup is needed, all requests go
-	      through this filter first-->
+	
+	<!--  Should be the first filter so that if any database updates are needed, they can be run by an admin-->
+	<filter>
+        <filter-name>StartupErrorFilter</filter-name>
+        <filter-class>org.openmrs.web.filter.startuperror.StartupErrorFilter</filter-class>
+    </filter>
+    <filter-mapping>
+		<filter-name>StartupErrorFilter</filter-name> 
+		<url-pattern>/*</url-pattern> 
+	</filter-mapping>
+	<!--  End first filter -->
+	<!--  Should be the second filter so that if setup is needed, all requests go
+	      through this filter next-->
 	<filter>
         <filter-name>InitializationFilter</filter-name>
         <filter-class>org.openmrs.web.filter.initialization.InitializationFilter</filter-class>
@@ -186,8 +196,8 @@
 		<filter-name>InitializationFilter</filter-name> 
 		<url-pattern>/*</url-pattern> 
 	</filter-mapping>
-	<!--  End first filter -->
-	<!--  Should be the second filter so that if any database updates are needed, they can be run by an admin-->
+	<!--  End second filter -->
+	<!--  Should be the third filter so that if any database updates are needed, they can be run by an admin-->
 	<filter>
         <filter-name>UpdateFilter</filter-name>
         <filter-class>org.openmrs.web.filter.update.UpdateFilter</filter-class>
@@ -196,7 +206,7 @@
 		<filter-name>UpdateFilter</filter-name> 
 		<url-pattern>/*</url-pattern> 
 	</filter-mapping>
-	<!--  End second filter -->
+	<!--  End third filter -->
 	<filter>
 		<filter-name>charsetFilter</filter-name>
 		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>

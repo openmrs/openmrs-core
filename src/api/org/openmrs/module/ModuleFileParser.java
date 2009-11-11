@@ -15,6 +15,8 @@ package org.openmrs.module;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -65,6 +67,7 @@ public class ModuleFileParser {
 		validConfigVersions.add("1.0");
 		validConfigVersions.add("1.1");
 		validConfigVersions.add("1.2");
+		validConfigVersions.add("1.3");
 	}
 	
 	/**
@@ -80,6 +83,38 @@ public class ModuleFileParser {
 			throw new ModuleException("Module file does not have the correct .omod file extension", moduleFile.getName());
 		
 		this.moduleFile = moduleFile;
+	}
+	
+	/**
+	 * Convenience constructor to parse the given inputStream file into an omod. <br/>
+	 * This copies the stream into a temporary file just so things can be parsed.<br/>
+	 * 
+	 * @param inputStream the inputStream pointing to an omod file
+	 */
+	public ModuleFileParser(InputStream inputStream) {
+		
+		FileOutputStream outputStream = null;
+		try {
+			moduleFile = File.createTempFile("moduleUpgrade", "omod");
+			outputStream = new FileOutputStream(moduleFile);
+			OpenmrsUtil.copyFile(inputStream, outputStream);
+		}
+		catch (FileNotFoundException e) {
+			throw new ModuleException("Can't create module file", e);
+		}
+		catch (IOException e) {
+			throw new ModuleException("Can't create module file", e);
+		}
+		finally {
+			try {
+				inputStream.close();
+			}
+			catch (Exception e) { /* pass */}
+			try {
+				outputStream.close();
+			}
+			catch (Exception e) { /* pass */}
+		}
 	}
 	
 	/**
@@ -234,6 +269,8 @@ public class ModuleFileParser {
 			module.setConfig(configDoc);
 			
 			module.setLog4j(log4jDoc);
+			
+			module.setMandatory(getMandatory(rootNode, configVersion, jarfile));
 			
 			module.setFile(moduleFile);
 		}
@@ -573,5 +610,23 @@ public class ModuleFileParser {
 				mappings.add(s2);
 		}
 		return mappings;
+	}
+	
+	/**
+	 * Looks for the "<mandatory>" element in the config file and returns true if the value is
+	 * exactly "true".
+	 * 
+	 * @param rootNode
+	 * @param configVersion
+	 * @param jarfile
+	 * @return true if the mandatory element is set to true
+	 */
+	private boolean getMandatory(Element rootNode, String configVersion, JarFile jarfile) {
+		if (Double.parseDouble(configVersion) >= 1.3) {
+			String mandatory = getElement(rootNode, configVersion, "mandatory");
+			return "true".equalsIgnoreCase(mandatory);
+		}
+		
+		return false; // this module has an older config file
 	}
 }

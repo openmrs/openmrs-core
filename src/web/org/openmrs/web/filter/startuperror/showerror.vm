@@ -1,0 +1,15 @@
+#parse($headerTemplate)
+
+<b>The following error occurred at startup:</b>
+<div>
+${errorAtStartup.message}<br/>
+<pre>
+${stacktrace}
+</pre>
+</div>
+
+<br/>
+
+See the server log for full output.			
+
+#parse($footerTemplate)

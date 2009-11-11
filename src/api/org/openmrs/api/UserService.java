@@ -460,6 +460,6 @@ public interface UserService extends OpenmrsService {
 	 * 
 	 * @return new system id
 	 */
-	String generateSystemId();
+	public String generateSystemId();
 	
 }

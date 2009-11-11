@@ -9,26 +9,39 @@
 
 <p><spring:message code="Module.notice" /></p>
 
-<b class="boxHeader"><spring:message code="Module.add" /></b>
-<div class="box">
-	<form id="moduleAddForm" action="module.list" method="post" enctype="multipart/form-data">
-		<spring:message code="Module.addJar"/>: 
-		<input type="file" name="moduleFile" size="40" <c:if test="${allowAdmin!='true'}">disabled="disabled"</c:if> />
-		<input type="hidden" name="action" value="upload"/>
-		
-		<div id="moduleUploadButton" style="margin-top: 5px;">
+<div style="width: 49.5%; float: left; margin-left: 4px;">
+	<b class="boxHeader"><spring:message code="Module.add"/></b>
+	<div class="box">
+		<form id="moduleAddForm" action="module.list" method="post" enctype="multipart/form-data">
+			<input type="file" name="moduleFile" size="40" <c:if test="${allowAdmin!='true'}">disabled="disabled"</c:if> />
+			<input type="hidden" name="action" value="upload"/>
+			
 			<c:choose>
 				<c:when test="${allowAdmin == 'true'}">
-					<input type="submit" value='<spring:message code="Module.add"/>'/>
+					<input type="submit" value='<spring:message code="Module.upload"/>'/>
 				</c:when>
 				<c:otherwise>
 					${disallowUploads}
 				</c:otherwise>
 			</c:choose>
-		</div>
-	</form>
+		</form>
+	</div>
 </div>
+<c:if test="${allowAdmin=='true'}">
+<div style="width: 49.5%; float: right; margin-right: 4px">
+	<b class="boxHeader"><spring:message code="Module.upgrade"/></b>
+	<div class="box">
+		<form method="post" id="uploadUpdateForm" enctype="multipart/form-data">
+			<input type="file" name="moduleFile" size="40" />
+			<input type="hidden" name="action" value="upload"/>
+			<input type="hidden" name="update" value="true"/>
+			<input type="submit" value='<spring:message code="Module.upload"/>'/>
+		</form>
+	</div>
+</div>
+</c:if>
 
+<br style="clear:both"/>
 <br/>
 
 <c:forEach var="module" items="${moduleList}" varStatus="varStatus">
@@ -52,22 +65,29 @@
 				<tbody>
 	</c:if>
 			
-					<form method="post">
+				<form method="post">
 					<input type="hidden" name="moduleId" value="${module.moduleId}" />
 					<tr class="<c:choose><c:when test="${varStatus.index % 2 == 0}">oddRow</c:when><c:otherwise>evenRow</c:otherwise></c:choose>" id="${module.moduleId}">
-						<c:if test="${allowAdmin=='true'}">
-							<td valign="top">
-								<c:choose>
-									<c:when test="${not module.started}">
-										<input type="image" src="${pageContext.request.contextPath}/images/play.gif" name="start" onclick="document.getElementById('hiddenAction').value = this.value" title="<spring:message code="Module.start.help"/>" alt="<spring:message code="Module.start"/>" />
-									</c:when>
-									<c:otherwise>
-										<input type="image" src="${pageContext.request.contextPath}/images/stop.gif" name="stop" onclick="document.getElementById('hiddenAction').value = this.value" title="<spring:message code="Module.stop.help"/>" alt="<spring:message code="Module.stop"/>" />
-									</c:otherwise>
-								</c:choose>
-							</td>
-							<td valign="top"><input type="image" src="${pageContext.request.contextPath}/images/trash.gif" name="unload" onclick="return confirm('<spring:message code="Module.unloadWarning"/>');" title="<spring:message code="Module.unload.help"/>" title="<spring:message code="Module.unload"/>" alt="<spring:message code="Module.unload"/>" /></td>
-						</c:if>
+						<c:choose>
+							<c:when test="${allowAdmin=='true' && module.mandatory == false}">
+								<td valign="top">
+									<c:choose>
+										<c:when test="${not module.started}">
+											<input type="image" src="${pageContext.request.contextPath}/images/play.gif" name="start" onclick="document.getElementById('hiddenAction').value = this.value" title="<spring:message code="Module.start.help"/>" alt="<spring:message code="Module.start"/>" />
+										</c:when>
+										<c:otherwise>
+											<input type="image" src="${pageContext.request.contextPath}/images/stop.gif" name="stop" onclick="document.getElementById('hiddenAction').value = this.value" title="<spring:message code="Module.stop.help"/>" alt="<spring:message code="Module.stop"/>" />
+										</c:otherwise>
+									</c:choose>
+								</td>
+								<td valign="top"><input type="image" src="${pageContext.request.contextPath}/images/trash.gif" name="unload" onclick="return confirm('<spring:message code="Module.unloadWarning"/>');" title="<spring:message code="Module.unload.help"/>" title="<spring:message code="Module.unload"/>" alt="<spring:message code="Module.unload"/>" /></td>
+							</c:when>
+							<c:otherwise>
+								<td valign="top" align="left" colspan="2">
+									<img src="${pageContext.request.contextPath}/images/lock.gif" title="<spring:message code="Module.locked.help"/>" alt="<spring:message code="Module.locked"/>" />
+								</td>
+							</c:otherwise>
+						</c:choose>
 						<td valign="top">${module.name} <c:if test="${not module.started}"><b id="moduleNotStarted" style="white-space: nowrap">[<spring:message code="Module.notStarted"/>]</b></c:if></td>
 						<td valign="top">${module.version}</td>
 						<td valign="top">${module.author}</td>
