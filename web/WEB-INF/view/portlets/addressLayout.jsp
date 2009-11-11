@@ -1,5 +1,53 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
+<script type="text/javascript">
+
+    // The originally defined onSubmit function
+    // We replace this with "return false;" until all errors are fixed
+    var origOnSubmit = null;
+
+    /**
+     * Validate the input format according to the regular expression.
+     * If not valid, the background is highlighted and a formatting Hint is displayed.
+     *
+     * @param obj the input dom object
+     * @param regex regular expression defined in the localized AddressTemplate in openmrs-servlet.xml
+     * @param codeName the token.codeName (e.g.: "latitude")
+     */
+    function validateFormat(obj, regex, codeName) {
+        var formatMsg = "formatMsg_" + codeName;
+        var resultArray = obj.value.match(regex);
+        var tips = document.getElementsByName(formatMsg);
+        if (resultArray || obj.value == null || obj.value == "") {
+            obj.style.background="";
+            for (var i=0; i<tips.length; i++) {
+                tips[i].style.display = "none";
+            }
+            if (origOnSubmit != null) {
+            	// replace the parent form's onsubmit with the one
+            	// we saved because we put in a temporary "return false" in the onsubmit
+            	obj.form.onsubmit = origOnSubmit;
+            	origOnSubmit = null;
+            }
+        }
+        else {
+            obj.style.background="yellow";
+            for (var i=0; i<tips.length; i++) {
+                tips[i].style.display = "";
+            }
+            
+            if (origOnSubmit == null) {
+        		// this is the first time there was an error, save the current
+        		// onSubmit for the form and replace it with a 
+        		origOnSubmit = obj.form.onsubmit;
+        		obj.form.onsubmit = function() { alert(<spring:message code="fix.error" />); return false; };
+        	}
+        }
+        
+    }
+
+</script>
+
 <c:if test="${model.authenticatedUser != null}">
 	<c:choose>
 		<c:when test="${model.size == 'columnHeaders'}">
@@ -109,12 +157,19 @@
 									<td><spring:message code="${token.displayText}" /></td>
 									<td <c:if test="${tokenStatus.last && tokenStatus.index < model.layoutTemplate.maxTokens}">colspan="${model.layoutTemplate.maxTokens - tokenStatus.index}"</c:if>>
 										<spring:bind path="${token.codeName}">
-											<c:if test="${status.value == null}">
-												<input type="text" name="${status.expression}" value="${model.layoutTemplate.elementDefaults[token.codeName]}" size="${token.displaySize}" />
-											</c:if>
-											<c:if test="${status.value != null}">
-												<input type="text" name="${status.expression}" value="${status.value}" size="${token.displaySize}" />
-											</c:if>
+                                            <input type="text"   name="${status.expression}"  value="${status.value}" size="${token.displaySize}"
+                                                onkeyup="<c:if test='${model.layoutTemplate.elementRegex[token.codeName] !="" }'>validateFormat(this, '${model.layoutTemplate.elementRegex[token.codeName]}','${token.codeName}' )</c:if>"
+                                            />
+                                            <i name="formatMsg_${token.codeName}" style="font-weight: normal; font-size: xx-small; color: red; display: none">
+                                                 <c:choose>
+                                                     <c:when test="${model.layoutTemplate.elementRegexFormats[token.codeName] != null }" >
+                                                        (<spring:message code="general.format" />: ${model.layoutTemplate.elementRegexFormats[token.codeName]})
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <spring:message code="general.invalid" />&nbsp;<spring:message code="general.format" />
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </i>
 											<c:if test="${model.layoutShowErrors != 'false'}">
 												<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 											</c:if>
