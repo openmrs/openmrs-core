@@ -152,7 +152,6 @@
 				i = i + 1;
 			}
 		}
-		alert("original on submit");
 	}
 	
 	function identifierOrTypeChanged(input) {
