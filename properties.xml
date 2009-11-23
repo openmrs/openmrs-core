@@ -57,7 +57,6 @@
 		<fileset dir="${junit.dir}" includes="*.jar" />
 		<fileset dir="${log4j.dir}" includes="*.jar" />
 		<fileset dir="${mail.dir}" includes="*.jar" />
-		<!--<fileset dir="${quartz.dir}" includes="*.jar" />-->
     	<fileset dir="${slf4j.dir}" includes="*.jar" />
     	<fileset dir="${simple.dir}" includes="*.jar" />
 		<fileset dir="${spring.dir}" includes="*.jar" />
