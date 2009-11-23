@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -103,17 +104,18 @@ public class ModuleListController extends SimpleFormController {
 					InputStream inputStream = null;
 					File moduleFile = null;
 					Module module = null;
+					Boolean updateModule = ServletRequestUtils.getBooleanParameter(request, "update", false);
+					List<Module> dependentModulesStopped = null;
 					try {
 						
 						// if user is using the "upload an update" form instead of the main form
-						Boolean updateModule = ServletRequestUtils.getBooleanParameter(request, "update", false);
 						if (updateModule) {
 							// parse the module so that we can get the id
 							
 							Module tmpModule = new ModuleFileParser(multipartModuleFile.getInputStream()).parse();
 							Module existingModule = ModuleFactory.getModuleById(tmpModule.getModuleId());
 							if (existingModule != null) {
-								ModuleFactory.stopModule(existingModule, false, true); // stop the module with these parameters so that mandatory modules can be upgraded
+								dependentModulesStopped = ModuleFactory.stopModule(existingModule, false, true); // stop the module with these parameters so that mandatory modules can be upgraded
 								WebModuleUtil.stopModule(existingModule, getServletContext());
 								ModuleFactory.unloadModule(existingModule);
 							}
@@ -126,7 +128,6 @@ public class ModuleListController extends SimpleFormController {
 						}
 						
 						module = ModuleFactory.loadModule(moduleFile);
-						
 					}
 					catch (ModuleException me) {
 						log.warn("Unable to load and start module", me);
@@ -150,8 +151,17 @@ public class ModuleListController extends SimpleFormController {
 					if (module != null) {
 						ModuleFactory.startModule(module);
 						WebModuleUtil.startModule(module, getServletContext(), false);
-						if (module.isStarted())
+						if (module.isStarted()) {
 							success = msa.getMessage("Module.loadedAndStarted", new String[] { module.getName() });
+							
+							if (updateModule && dependentModulesStopped != null) {
+								for (Module depMod : dependentModulesStopped) {
+									ModuleFactory.startModule(depMod);
+									WebModuleUtil.startModule(depMod, getServletContext(), false);
+								}
+							}
+							
+						}
 						else
 							success = msa.getMessage("Module.loaded", new String[] { module.getName() });
 					}
