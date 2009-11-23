@@ -177,7 +177,8 @@ public class ModuleFactory {
 					
 					// if a 'moduleid.started' property doesn't exist, start the module anyway
 					// as this is probably the first time they are loading it
-					if (startedProp == null || startedProp.equals("true") || "true".equalsIgnoreCase(mandatoryProp) || mod.isMandatory()) {
+					if (startedProp == null || startedProp.equals("true") || "true".equalsIgnoreCase(mandatoryProp)
+					        || mod.isMandatory()) {
 						if (requiredModulesStarted(mod))
 							try {
 								if (log.isDebugEnabled())
@@ -666,10 +667,14 @@ public class ModuleFactory {
 	 * @param skipOverStartedProperty true if we don't want to set &lt;moduleid&gt;.started to false
 	 * @param isFailedStartup true if this is being called as a cleanup because of a failed module
 	 *            startup
+	 * @return list of dependent modules that were stopped because this module was stopped. This
+	 *         will never be null.
 	 */
 	@SuppressWarnings("unchecked")
-	public static void stopModule(Module mod, boolean skipOverStartedProperty, boolean isFailedStartup)
-	                                                                                                   throws MandatoryModuleException {
+	public static List<Module> stopModule(Module mod, boolean skipOverStartedProperty, boolean isFailedStartup)
+	                                                                                                           throws MandatoryModuleException {
+		
+		List<Module> dependentModulesStopped = new Vector<Module>();
 		
 		if (mod != null) {
 			String moduleId = mod.getModuleId();
@@ -687,8 +692,10 @@ public class ModuleFactory {
 			List<Module> startedModulesCopy = new ArrayList<Module>();
 			startedModulesCopy.addAll(getStartedModules());
 			for (Module dependentModule : startedModulesCopy) {
-				if (!dependentModule.equals(mod) && dependentModule.getRequiredModules().contains(modulePackage))
-					stopModule(dependentModule, skipOverStartedProperty);
+				if (!dependentModule.equals(mod) && dependentModule.getRequiredModules().contains(modulePackage)) {
+					dependentModulesStopped.add(dependentModule);
+					dependentModulesStopped.addAll(stopModule(dependentModule, skipOverStartedProperty, isFailedStartup));
+				}
 			}
 			
 			getStartedModulesMap().remove(moduleId);
@@ -771,6 +778,8 @@ public class ModuleFactory {
 				}
 			}
 		}
+		
+		return dependentModulesStopped;
 	}
 	
 	private static ModuleClassLoader removeClassLoader(Module mod) {
