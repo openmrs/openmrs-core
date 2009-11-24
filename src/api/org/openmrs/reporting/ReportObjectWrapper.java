@@ -279,7 +279,7 @@ public class ReportObjectWrapper extends BaseOpenmrsObject {
 		this.setDescription(obj.getDescription());
 		this.setType(obj.getType());
 		this.setSubType(obj.getSubType());
-		
+		this.setUuid(obj.getUuid());
 		/*
 		this.setCreator(obj.getCreator());
 		this.setDateCreated(obj.getDateCreated());
@@ -299,7 +299,7 @@ public class ReportObjectWrapper extends BaseOpenmrsObject {
 		if (xml != null) {
 			ReportObjectXMLDecoder roxd = new ReportObjectXMLDecoder(this.xml);
 			AbstractReportObject reportObj = roxd.toAbstractReportObject();
-			
+			reportObj.setUuid(this.getUuid());
 			return reportObj;
 		} else {
 			return null;
