@@ -2689,5 +2689,100 @@
         <addForeignKeyConstraint baseTableName="logic_rule_token" baseColumnNames="changed_by" constraintName="token_changed_by"
                                  referencedTableName="users" referencedColumnNames="user_id" />
     </changeSet>
+    
+    	<changeSet id="200910271049-1" author="bwolfe">
+		<comment>Setting core field types to have standard UUIDs</comment>
+		<update tableName="field_type"><column name="uuid" value="8d5e7d7c-c2cc-11de-8d13-0010c6dffd0f"/><where>field_type_id= '1' and name = 'Concept'</where></update>
+		<update tableName="field_type"><column name="uuid" value="8d5e8196-c2cc-11de-8d13-0010c6dffd0f"/><where>field_type_id= '2' and name = 'Database element'</where></update>
+		<update tableName="field_type"><column name="uuid" value="8d5e836c-c2cc-11de-8d13-0010c6dffd0f"/><where>field_type_id= '3' and name = 'Set of Concepts'</where></update>
+		<update tableName="field_type"><column name="uuid" value="8d5e852e-c2cc-11de-8d13-0010c6dffd0f"/><where>field_type_id= '4' and name = 'Miscellaneous Set'</where></update>
+		<update tableName="field_type"><column name="uuid" value="8d5e86fa-c2cc-11de-8d13-0010c6dffd0f"/><where>field_type_id= '5' and name = 'Section'</where></update>
+	</changeSet>
+	
+	<changeSet id="200910271049-2" author="bwolfe">
+		<comment>Setting core person attribute types to have standard UUIDs</comment>
+		<update tableName="person_attribute_type"><column name="uuid" value="8d8718c2-c2cc-11de-8d13-0010c6dffd0f"/><where>person_attribute_type_id= '2' and name = 'Birthplace'</where></update>
+		<update tableName="person_attribute_type"><column name="uuid" value="8d871afc-c2cc-11de-8d13-0010c6dffd0f"/><where>person_attribute_type_id= '3' and name = 'Citizenship'</where></update>
+		<update tableName="person_attribute_type"><column name="uuid" value="8d871f2a-c2cc-11de-8d13-0010c6dffd0f"/><where>person_attribute_type_id= '5' and name = 'Civil Status'</where></update>
+		<update tableName="person_attribute_type"><column name="uuid" value="8d87236c-c2cc-11de-8d13-0010c6dffd0f"/><where>person_attribute_type_id= '7' and name = 'Health Center'</where></update>
+		<update tableName="person_attribute_type"><column name="uuid" value="8d872150-c2cc-11de-8d13-0010c6dffd0f"/><where>person_attribute_type_id= '6' and name = 'Health District'</where></update>
+		<update tableName="person_attribute_type"><column name="uuid" value="8d871d18-c2cc-11de-8d13-0010c6dffd0f"/><where>person_attribute_type_id= '4' and name = 'Mother\'s Name'</where></update>
+		<update tableName="person_attribute_type"><column name="uuid" value="8d871386-c2cc-11de-8d13-0010c6dffd0f"/><where>person_attribute_type_id= '1' and name = 'Race'</where></update>
+	</changeSet>
+	
+	<changeSet id="200910271049-3" author="bwolfe">
+		<comment>Setting core encounter types to have standard UUIDs</comment>
+		<update tableName="encounter_type"><column name="uuid" value="8d5b27bc-c2cc-11de-8d13-0010c6dffd0f"/><where>encounter_type_id= '1' and name = 'ADULTINITIAL'</where></update>
+		<update tableName="encounter_type"><column name="uuid" value="8d5b2be0-c2cc-11de-8d13-0010c6dffd0f"/><where>encounter_type_id= '2' and name = 'ADULTRETURN'</where></update>
+		<update tableName="encounter_type"><column name="uuid" value="8d5b2dde-c2cc-11de-8d13-0010c6dffd0f"/><where>encounter_type_id= '3' and name = 'PEDSINITIAL'</where></update>
+		<update tableName="encounter_type"><column name="uuid" value="8d5b3108-c2cc-11de-8d13-0010c6dffd0f"/><where>encounter_type_id= '4' and name = 'PEDSRETURN'</where></update>
+	</changeSet>
+	
+	<changeSet id="200910271049-4" author="bwolfe">
+		<comment>Setting core concept datatypes to have standard UUIDs</comment>
+		<update tableName="concept_datatype"><column name="uuid" value="8d4a4488-c2cc-11de-8d13-0010c6dffd0f"/><where>concept_datatype_id= '1' and name = 'Numeric'</where></update>
+		<update tableName="concept_datatype"><column name="uuid" value="8d4a48b6-c2cc-11de-8d13-0010c6dffd0f"/><where>concept_datatype_id= '2' and name = 'Coded'</where></update>
+		<update tableName="concept_datatype"><column name="uuid" value="8d4a4ab4-c2cc-11de-8d13-0010c6dffd0f"/><where>concept_datatype_id= '3' and name = 'Text'</where></update>
+		<update tableName="concept_datatype"><column name="uuid" value="8d4a4c94-c2cc-11de-8d13-0010c6dffd0f"/><where>concept_datatype_id= '4' and name = 'N/A'</where></update>
+		<update tableName="concept_datatype"><column name="uuid" value="8d4a4e74-c2cc-11de-8d13-0010c6dffd0f"/><where>concept_datatype_id= '5' and name = 'Document'</where></update>
+		<update tableName="concept_datatype"><column name="uuid" value="8d4a505e-c2cc-11de-8d13-0010c6dffd0f"/><where>concept_datatype_id= '6' and name = 'Date'</where></update>
+		<update tableName="concept_datatype"><column name="uuid" value="8d4a591e-c2cc-11de-8d13-0010c6dffd0f"/><where>concept_datatype_id= '7' and name = 'Time'</where></update>
+		<update tableName="concept_datatype"><column name="uuid" value="8d4a5af4-c2cc-11de-8d13-0010c6dffd0f"/><where>concept_datatype_id= '8' and name = 'Datetime'</where></update>
+		<update tableName="concept_datatype"><column name="uuid" value="8d4a5cca-c2cc-11de-8d13-0010c6dffd0f"/><where>concept_datatype_id= '10' and name = 'Boolean'</where></update>
+		<update tableName="concept_datatype"><column name="uuid" value="8d4a5e96-c2cc-11de-8d13-0010c6dffd0f"/><where>concept_datatype_id= '11' and name = 'Rule'</where></update>
+		<update tableName="concept_datatype"><column name="uuid" value="8d4a606c-c2cc-11de-8d13-0010c6dffd0f"/><where>concept_datatype_id= '12' and name = 'Structured Numeric'</where></update>
+		<update tableName="concept_datatype"><column name="uuid" value="8d4a6242-c2cc-11de-8d13-0010c6dffd0f"/><where>concept_datatype_id= '13' and name = 'Complex'</where></update>
+	</changeSet>
+	
+	<changeSet id="200910271049-5" author="bwolfe">
+		<comment>Setting core relationship types to have standard UUIDs</comment>
+		<update tableName="relationship_type"><column name="uuid" value="8d919b58-c2cc-11de-8d13-0010c6dffd0f"/><where> relationship_type_id = '1' and a_is_to_b = 'Doctor' and b_is_to_a = 'Patient'</where></update>
+		<update tableName="relationship_type"><column name="uuid" value="8d91a01c-c2cc-11de-8d13-0010c6dffd0f"/><where> relationship_type_id = '2' and a_is_to_b = 'Sibling' and b_is_to_a = 'Sibling'</where></update>
+		<update tableName="relationship_type"><column name="uuid" value="8d91a210-c2cc-11de-8d13-0010c6dffd0f"/><where> relationship_type_id = '3' and a_is_to_b = 'Parent' and b_is_to_a = 'Child'</where></update>
+		<update tableName="relationship_type"><column name="uuid" value="8d91a3dc-c2cc-11de-8d13-0010c6dffd0f"/><where> relationship_type_id = '4' and a_is_to_b = 'Aunt/Uncle' and b_is_to_a = 'Niece/Nephew'</where></update>
+	</changeSet>
+	
+	<changeSet id="200910271049-6" author="bwolfe">
+		<comment>Setting core concept classes to have standard UUIDs</comment>
+		<update tableName="concept_class"><column name="uuid" value="8d4907b2-c2cc-11de-8d13-0010c6dffd0f"/><where>concept_class_id= '1' and name = 'Test'</where></update>
+		<update tableName="concept_class"><column name="uuid" value="8d490bf4-c2cc-11de-8d13-0010c6dffd0f"/><where>concept_class_id= '2' and name = 'Procedure'</where></update>
+		<update tableName="concept_class"><column name="uuid" value="8d490dfc-c2cc-11de-8d13-0010c6dffd0f"/><where>concept_class_id= '3' and name = 'Drug'</where></update>
+		<update tableName="concept_class"><column name="uuid" value="8d4918b0-c2cc-11de-8d13-0010c6dffd0f"/><where>concept_class_id= '4' and name = 'Diagnosis'</where></update>
+		<update tableName="concept_class"><column name="uuid" value="8d491a9a-c2cc-11de-8d13-0010c6dffd0f"/><where>concept_class_id= '5' and name = 'Finding'</where></update>
+		<update tableName="concept_class"><column name="uuid" value="8d491c7a-c2cc-11de-8d13-0010c6dffd0f"/><where>concept_class_id= '6' and name = 'Anatomy'</where></update>
+		<update tableName="concept_class"><column name="uuid" value="8d491e50-c2cc-11de-8d13-0010c6dffd0f"/><where>concept_class_id= '7' and name = 'Question'</where></update>
+		<update tableName="concept_class"><column name="uuid" value="8d492026-c2cc-11de-8d13-0010c6dffd0f"/><where>concept_class_id= '8' and name = 'LabSet'</where></update>
+		<update tableName="concept_class"><column name="uuid" value="8d4923b4-c2cc-11de-8d13-0010c6dffd0f"/><where>concept_class_id= '9' and name = 'MedSet'</where></update>
+		<update tableName="concept_class"><column name="uuid" value="8d492594-c2cc-11de-8d13-0010c6dffd0f"/><where>concept_class_id= '10' and name = 'ConvSet'</where></update>
+		<update tableName="concept_class"><column name="uuid" value="8d492774-c2cc-11de-8d13-0010c6dffd0f"/><where>concept_class_id= '11' and name = 'Misc'</where></update>
+		<update tableName="concept_class"><column name="uuid" value="8d492954-c2cc-11de-8d13-0010c6dffd0f"/><where>concept_class_id= '12' and name = 'Symptom'</where></update>
+		<update tableName="concept_class"><column name="uuid" value="8d492b2a-c2cc-11de-8d13-0010c6dffd0f"/><where>concept_class_id= '13' and name = 'Symptom/Finding'</where></update>
+		<update tableName="concept_class"><column name="uuid" value="8d492d0a-c2cc-11de-8d13-0010c6dffd0f"/><where>concept_class_id= '14' and name = 'Specimen'</where></update>
+		<update tableName="concept_class"><column name="uuid" value="8d492ee0-c2cc-11de-8d13-0010c6dffd0f"/><where>concept_class_id= '15' and name = 'Misc Order'</where></update>
+	</changeSet>
+	
+	<changeSet id="200910271049-7" author="bwolfe">
+		<comment>Setting core patient identifier types to have standard UUIDs</comment>
+		<update tableName="patient_identifier_type"><column name="uuid" value="8d79403a-c2cc-11de-8d13-0010c6dffd0f"/><where>patient_identifier_type_id= '2' and name = 'Old Identification Number'</where></update>
+		<update tableName="patient_identifier_type"><column name="uuid" value="8d793bee-c2cc-11de-8d13-0010c6dffd0f"/><where>patient_identifier_type_id= '1' and name = 'OpenMRS Identification Number'</where></update>
+	</changeSet>
+	
+	<changeSet id="200910271049-8" author="bwolfe">
+		<comment>Setting core location to have standard UUIDs</comment>
+		<update tableName="location"><column name="uuid" value="8d6c993e-c2cc-11de-8d13-0010c6dffd0f"/><where>location_id= '1' and name = 'Unknown Location'</where></update>
+	</changeSet>
+	
+	<changeSet id="200910271049-9" author="bwolfe">
+		<comment>Setting core hl7 source to have standard UUIDs</comment>
+		<update tableName="hl7_source"><column name="uuid" value="8d6b8bb6-c2cc-11de-8d13-0010c6dffd0f"/><where>hl7_source_id= '1' and name = 'LOCAL'</where></update>
+	</changeSet>
+	
+	<changeSet id="200910271049-10" author="bwolfe">
+		<comment>Setting core roles to have standard UUIDs</comment>
+		<update tableName="role"><column name="uuid" value="774b2af3-6437-4e5a-a310-547554c7c65c"/><where> role = 'Anonymous'</where></update>
+		<update tableName="role"><column name="uuid" value="f7fd42ef-880e-40c5-972d-e4ae7c990de2"/><where> role = 'Authenticated'</where></update>
+		<update tableName="role"><column name="uuid" value="8d94f280-c2cc-11de-8d13-0010c6dffd0f"/><where> role = 'Provider'</where></update>
+		<update tableName="role"><column name="uuid" value="8d94f852-c2cc-11de-8d13-0010c6dffd0f"/><where> role = 'System Developer'</where></update>
+	</changeSet>
 	
 </databaseChangeLog>
