@@ -47,6 +47,10 @@ public class ProgramValidator implements Validator {
 	 * 
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
+	 * @should fail validation if name is null or empty or whitespace
+	 * @should fail validation if program name already in use
+	 * @should fail validation if concept is null or empty or whitespace
+	 * @should pass validation if all required fields have proper values
 	 */
 	public void validate(Object obj, Errors errors) {
 		Program p = (Program) obj;

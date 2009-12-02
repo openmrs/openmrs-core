@@ -109,13 +109,18 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 	 * 
 	 * @param obj
 	 * @return boolean true/false whether or not they are the same objects
+	 * @should return true if personAttributeIds match
+	 * @should return false if personAttributeIds do not match
+	 * @should match on object equality if a personAttributeId is null
 	 */
 	public boolean equals(Object obj) {
 		if (obj instanceof PersonAttribute) {
 			PersonAttribute attr = (PersonAttribute) obj;
-			return attr.getPersonAttributeId() != null && attr.getPersonAttributeId().equals(getPersonAttributeId());
+			if (attr.getPersonAttributeId() != null && getPersonAttributeId() != null)
+				return attr.getPersonAttributeId().equals(getPersonAttributeId());
+			
 		}
-		return false;
+		return this == obj;
 	}
 	
 	/**
@@ -137,6 +142,7 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 	 * 
 	 * @param otherAttribute PersonAttribute with which to compare
 	 * @return boolean true/false whether or not they are the same attributes
+	 * @should return true if attributeType value and void status are the same
 	 */
 	@SuppressWarnings("unchecked")
 	public boolean equalsContent(PersonAttribute otherAttribute) {
@@ -260,6 +266,8 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 	 * <code>Attributable</code>, hydrate(value) is called. Defaults to just returning getValue()
 	 * 
 	 * @return hydrated object or getValue()
+	 * @should load class in format property
+	 * @should still load class in format property if not Attributable
 	 */
 	@SuppressWarnings("unchecked")
 	public Object getHydratedObject() {
@@ -283,6 +291,7 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 	 * Convenience method for voiding this attribute
 	 * 
 	 * @param reason
+	 * @should set voided bit to true
 	 */
 	public void voidAttribute(String reason) {
 		setVoided(true);
@@ -293,6 +302,11 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 	
 	/**
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 * @should return negative if other attribute is voided
+	 * @should return negative if other attribute has earlier date created
+	 * @should return negative if this attribute has lower attribute type than argument
+	 * @should return negative if other attribute has lower value
+	 * @should return negative if this attribute has lower attribute id than argument
 	 */
 	public int compareTo(PersonAttribute other) {
 		int retValue = 0;

@@ -425,6 +425,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * Get a listing or important variables used in openmrs
 	 * 
 	 * @return a map from variable name to variable value
+	 * @should return all registered system variables
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_ADMIN_FUNCTIONS)
@@ -467,6 +468,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * 
 	 * @param propertyName property key to look for
 	 * @return the global property that matches the given <code>propertyName</code>
+	 * @should return null when no global property match given property name
 	 */
 	@Transactional(readOnly = true)
 	public GlobalProperty getGlobalPropertyObject(String propertyName);

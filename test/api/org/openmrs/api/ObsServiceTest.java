@@ -16,7 +16,6 @@ package org.openmrs.api;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -26,12 +25,13 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -42,7 +42,6 @@ import org.openmrs.Obs;
 import org.openmrs.Order;
 import org.openmrs.Patient;
 import org.openmrs.Person;
-import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.impl.ObsServiceImpl;
 import org.openmrs.obs.ComplexData;
@@ -65,306 +64,6 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	protected static final String COMPLEX_OBS_XML = "org/openmrs/api/include/ObsServiceTest-complex.xml";
 	
 	/**
-	 * Creates then updates an obs
-	 * 
-	 * @throws Exception
-	 */
-	@Test
-	public void shouldSaveObs() throws Exception {
-		
-		executeDataSet(INITIAL_OBS_XML);
-		
-		EncounterService es = Context.getEncounterService();
-		LocationService locationService = Context.getLocationService();
-		ObsService obsService = Context.getObsService();
-		ConceptService conceptService = Context.getConceptService();
-		
-		Obs o = new Obs();
-		
-		//testing creation
-		
-		Order order1 = null;
-		Concept concept1 = conceptService.getConcept(1);
-		Patient patient1 = new Patient(2);
-		Encounter encounter1 = es.getEncounter(1);
-		Date datetime1 = new Date();
-		Location location1 = locationService.getLocation(1);
-		Integer valueGroupId1 = new Integer(5);
-		Date valueDatetime1 = new Date();
-		Concept valueCoded1 = conceptService.getConcept(2);
-		Double valueNumeric1 = 1.0;
-		String valueModifier1 = "a1";
-		String valueText1 = "value text1";
-		String comment1 = "commenting1";
-		
-		o.setOrder(order1);
-		o.setConcept(concept1);
-		o.setPerson(patient1);
-		o.setEncounter(encounter1);
-		o.setObsDatetime(datetime1);
-		o.setLocation(location1);
-		o.setValueGroupId(valueGroupId1);
-		o.setValueDatetime(valueDatetime1);
-		o.setValueCoded(valueCoded1);
-		o.setValueNumeric(valueNumeric1);
-		o.setValueModifier(valueModifier1);
-		o.setValueText(valueText1);
-		o.setComment(comment1);
-		
-		// do the initial save to the database
-		Obs oSaved = obsService.saveObs(o, null);
-		// make sure the returned Obs and the passed in obs
-		// now both have primary key obsIds
-		assertTrue(oSaved.getObsId().equals(o.getObsId()));
-		
-		assertNotNull(o.getDateCreated());
-		assertNotNull(o.getCreator());
-		
-		// get the same obs again and change all of the variables to 
-		// makes sure that we update correctly.
-		
-		Obs o1ToUpdate = obsService.getObs(o.getObsId());
-		assertNotNull(o1ToUpdate);
-		
-		Order order2 = null;
-		Concept concept2 = conceptService.getConcept(2);
-		Patient patient2 = new Patient(1);
-		Encounter encounter2 = es.getEncounter(2);
-		Date datetime2 = new Date();
-		Location location2 = locationService.getLocation(1);
-		Integer valueGroupId2 = new Integer(3);
-		Date valueDatetime2 = new Date();
-		Concept valueCoded2 = conceptService.getConcept(2);
-		Double valueNumeric2 = 2.0;
-		String valueModifier2 = "cc";
-		String valueText2 = "value text2";
-		String comment2 = "commenting2";
-		
-		o1ToUpdate.setOrder(order2);
-		o1ToUpdate.setConcept(concept2);
-		o1ToUpdate.setPerson(patient2);
-		o1ToUpdate.setEncounter(encounter2);
-		o1ToUpdate.setObsDatetime(datetime2);
-		o1ToUpdate.setLocation(location2);
-		o1ToUpdate.setValueGroupId(valueGroupId2);
-		o1ToUpdate.setValueDatetime(valueDatetime2);
-		o1ToUpdate.setValueCoded(valueCoded2);
-		o1ToUpdate.setValueNumeric(valueNumeric2);
-		o1ToUpdate.setValueModifier(valueModifier2);
-		o1ToUpdate.setValueText(valueText2);
-		o1ToUpdate.setComment(comment2);
-		
-		// do an update in the database for the same Obs
-		Obs o1ToUpdateSaved = obsService.saveObs(o1ToUpdate, "Updating o1 with all new values");
-		
-		// the returned obs should have a different obs id
-		assertFalse(o1ToUpdateSaved.getObsId().equals(o1ToUpdate.getObsId()));
-		
-		// the returned obs should have the new values
-		assertTrue(o1ToUpdateSaved.getValueNumeric().equals(valueNumeric2));
-		
-		/* Grrr. This cannot be checked because java is pass-by-value. 
-		  (updating the argument in the saveObs() method does not change which
-		  object is pointed to by the o1ToUpdate parameter that was passed in) */
-		// the saved obs should NOT have the new values
-		//assertFalse(o1ToUpdate.getValueNumeric().equals(valueNumeric2));
-		// make sure the dateCreated 
-		Obs o3 = obsService.getObs(o1ToUpdateSaved.getObsId());
-		
-		//o1ToUpdateSaved should equal o3 and neither should equal o1
-		assertTrue(o1ToUpdateSaved.equals(o3));
-		assertFalse(o1ToUpdateSaved.equals(o));
-		assertFalse(o3.equals(o));
-		if (order2 != null)
-			assertTrue(o3.getOrder().equals(order2));
-		assertTrue(o3.getPerson().equals(patient2));
-		assertTrue(o3.getComment().equals(comment2));
-		assertTrue(o3.getConcept().equals(concept2));
-		assertTrue(o3.getEncounter().equals(encounter2));
-		assertTrue(o3.getObsDatetime().equals(datetime2));
-		assertTrue(o3.getLocation().equals(location2));
-		assertTrue(o3.getValueGroupId().equals(valueGroupId2));
-		assertTrue(o3.getValueDatetime().equals(valueDatetime2));
-		assertTrue(o3.getValueCoded().equals(valueCoded2));
-		assertTrue(o3.getValueNumeric().equals(valueNumeric2));
-		assertTrue(o3.getValueModifier().equals(valueModifier2));
-		assertTrue(o3.getValueText().equals(valueText2));
-		
-		// test that the obs is voided 
-		obsService.voidObs(o3, "testing void function");
-		
-		Obs o4 = obsService.getObs(o3.getObsId());
-		
-		assertTrue(o4.getVoidReason().equals("testing void function"));
-		assertTrue(o4.getVoidedBy().equals(o3.getVoidedBy()));
-		assertTrue(o4.isVoided());
-		
-	}
-	
-	/**
-	 * Tests that an obs is voided in the db
-	 * 
-	 * @throws Exception
-	 */
-	@Test
-	public void shouldVoidObs() throws Exception {
-		executeDataSet(INITIAL_OBS_XML);
-		ObsService obsService = Context.getObsService();
-		
-		Obs obs = new Obs(new Patient(2), new Concept(1), new Date(), new Location(1));
-		
-		Obs savedObs = obsService.saveObs(obs, null);
-		
-		// we should get back the same obs as we passed in for a create
-		assertTrue(savedObs.equals(obs));
-		
-		// a voided obs shouldn't be passed through to the database
-		obs.setVoided(Boolean.TRUE);
-		obs.setVoidedBy(new User(1));
-		String reason = "Testing voiding a voided obs";
-		Obs notVoidedObs = obsService.voidObs(obs, reason);
-		// we should get back the same obs as we passed in for a create
-		assertTrue(notVoidedObs.equals(obs));
-		
-		// the void reason should not have been set by the voidObs method because it
-		// should have failed early when it saw we were voiding a voided obs
-		assertFalse(reason.equals(obs.getVoidReason()));
-		
-		// now do a valid voiding
-		obs.setVoided(Boolean.FALSE);
-		Obs voidedObs = obsService.voidObs(obs, reason);
-		// we should get back the same obs as we passed in for a create
-		assertTrue(voidedObs.equals(obs));
-		
-		// the void reason should not have been set by the voidObs method because it
-		// should have failed early when it saw we were voiding a voided obs
-		assertTrue(reason.equals(obs.getVoidReason()));
-		
-		Obs voidedObsFetched = obsService.getObs(obs.getObsId());
-		assertTrue(voidedObsFetched.isVoided());
-		assertTrue(reason.equals(voidedObsFetched.getVoidReason()));
-		assertTrue(voidedObs.getObsId().equals(obs.getObsId()));
-		assertTrue(voidedObs.getObsId().equals(voidedObs.getObsId()));
-		
-	}
-	
-	/**
-	 * Tests the auto updating of the creator and dateCreated attrs when saving an obs
-	 * 
-	 * @throws Exception
-	 */
-	@Test
-	public void shouldObsCreatorMetaData() throws Exception {
-		
-		executeDataSet(INITIAL_OBS_XML);
-		
-		ObsService obsService = Context.getObsService();
-		
-		Obs o = new Obs(new Person(2), new Concept(1), new Date(), new Location(1));
-		o.setValueNumeric(1.0);
-		
-		Obs savedObs = obsService.saveObs(o, null);
-		
-		// there should be creation metadata
-		assertNotNull(o.getCreator());
-		assertNotNull(o.getDateCreated());
-		
-		// the metadata should match between passed in object and returned object
-		// on the initial save
-		assertEquals(savedObs.getCreator(), o.getCreator());
-		assertEquals(savedObs.getDateCreated(), o.getDateCreated());
-		
-		savedObs.setValueNumeric(2.0);
-		Obs updatedObs = obsService.saveObs(savedObs, "updating");
-		
-		// there should still be creation metadata
-		assertNotNull(updatedObs.getCreator());
-		assertNotNull(updatedObs.getDateCreated());
-		
-		// the metadata should be different for the obs passed in
-		// and the obs that was returned
-		assertNotSame(updatedObs.getDateCreated(), o.getDateCreated());
-		
-	}
-	
-	/**
-	 * This tests certain aspects of saving obs that are obsGroups or are members of other obsGroups
-	 * 
-	 * @throws Exception
-	 */
-	@Test
-	public void shouldObsGroupCreateUpdate() throws Exception {
-		executeDataSet(INITIAL_OBS_XML);
-		ObsService obsService = Context.getObsService();
-		
-		Obs obsGroup = new Obs();
-		obsGroup.setConcept(new Concept(1));
-		obsGroup.setObsDatetime(new Date());
-		obsGroup.setPerson(new Patient(2));
-		obsGroup.setLocation(new Location(2));
-		
-		Obs groupMember1 = new Obs();
-		groupMember1.setConcept(new Concept(1));
-		groupMember1.setValueNumeric(1.0);
-		groupMember1.setObsDatetime(new Date());
-		groupMember1.setPerson(new Patient(2));
-		groupMember1.setLocation(new Location(2));
-		obsGroup.addGroupMember(groupMember1);
-		
-		// sanity check
-		assertTrue(obsGroup.hasGroupMembers());
-		
-		obsService.saveObs(obsGroup, null);
-		
-		// make sure the api filled in all of the necessary ids
-		assertNotNull(obsGroup.getObsId());
-		assertNotNull(obsGroup.getCreator());
-		assertNotNull(obsGroup.getDateCreated());
-		assertNotNull(obsGroup.getGroupMembers());
-		assertNotNull(groupMember1.getObsId());
-		assertNotNull(groupMember1.getObsGroup());
-		assertNotNull(groupMember1.getCreator());
-		assertNotNull(groupMember1.getDateCreated());
-		
-		// save the obs id of the firstly added group member
-		Integer groupMember1OriginalObsId = groupMember1.getObsId();
-		
-		Obs groupMember2 = new Obs();
-		groupMember2.setConcept(new Concept(2));
-		groupMember2.setObsDatetime(new Date());
-		groupMember2.setPerson(new Patient(2));
-		groupMember2.setLocation(new Location(2));
-		obsGroup.addGroupMember(groupMember2);
-		// sanity checks
-		assertEquals(2, obsGroup.getGroupMembers().size());
-		assertNotNull(groupMember2.getObsGroup());
-		
-		obsService.saveObs(obsGroup, "Updating obs group");
-		
-		// make sure the api filled in all of the necessary ids again
-		assertNotNull(groupMember2.getObsId());
-		assertNotNull(groupMember2.getObsGroup());
-		assertNotNull(groupMember2.getCreator());
-		assertNotNull(groupMember2.getDateCreated());
-		
-		// make sure the api didn't change the obsId of the first group member
-		Obs firstMember = (Obs) (obsGroup.getGroupMembers().toArray()[0]);
-		Obs secondMember = (Obs) (obsGroup.getGroupMembers().toArray()[1]);
-		if (firstMember.getConcept().equals(new Concept(1))) {
-			// the set of members gets jumpbled after save.  The first one
-			// we added above had a concept with id 1.
-			assertEquals(groupMember1OriginalObsId, firstMember.getObsId());
-			// make sure the second group member is still there
-			assertEquals(groupMember2, secondMember);
-		} else {
-			assertEquals(groupMember1OriginalObsId, secondMember.getObsId());
-			// make sure the second group member is still there
-			assertEquals(groupMember2, firstMember);
-		}
-		
-	}
-	
-	/**
 	 * This test tests multi-level heirarchy obsGroup cascades for create, delete, update, void, and
 	 * unvoid
 	 * 
@@ -379,7 +78,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		
 		//create an obs
 		Obs o = new Obs();
-		o.setConcept(cs.getConcept(1));
+		o.setConcept(cs.getConcept(3));
 		o.setDateCreated(new Date());
 		o.setCreator(Context.getAuthenticatedUser());
 		o.setLocation(new Location(1));
@@ -389,7 +88,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		
 		//create a second obs
 		Obs o2 = new Obs();
-		o2.setConcept(cs.getConcept(1));
+		o2.setConcept(cs.getConcept(3));
 		o2.setDateCreated(new Date());
 		o2.setCreator(Context.getAuthenticatedUser());
 		o2.setLocation(new Location(1));
@@ -399,7 +98,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		
 		//create a parent obs
 		Obs oParent = new Obs();
-		oParent.setConcept(cs.getConcept(2)); //in the concept set table as a set
+		oParent.setConcept(cs.getConcept(23)); //in the concept set table as a set
 		oParent.setDateCreated(new Date());
 		oParent.setCreator(Context.getAuthenticatedUser());
 		oParent.setLocation(new Location(1));
@@ -412,7 +111,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		
 		//create a grandparent obs
 		Obs oGP = new Obs();
-		oGP.setConcept(cs.getConcept(1));
+		oGP.setConcept(cs.getConcept(3));
 		oGP.setDateCreated(new Date());
 		oGP.setCreator(Context.getAuthenticatedUser());
 		oGP.setLocation(new Location(1));
@@ -424,7 +123,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		
 		//create a leaf observation
 		Obs o3 = new Obs();
-		o3.setConcept(cs.getConcept(1));
+		o3.setConcept(cs.getConcept(3));
 		o3.setDateCreated(new Date());
 		o3.setCreator(Context.getAuthenticatedUser());
 		o3.setLocation(new Location(1));
@@ -437,7 +136,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		
 		//create a great-grandparent
 		Obs oGGP = new Obs();
-		oGGP.setConcept(cs.getConcept(1));
+		oGGP.setConcept(cs.getConcept(3));
 		oGGP.setDateCreated(new Date());
 		oGGP.setCreator(Context.getAuthenticatedUser());
 		oGGP.setLocation(new Location(1));
@@ -449,7 +148,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		
 		//create a great-great grandparent
 		Obs oGGGP = new Obs();
-		oGGGP.setConcept(cs.getConcept(1));
+		oGGGP.setConcept(cs.getConcept(3));
 		oGGGP.setDateCreated(new Date());
 		oGGGP.setCreator(Context.getAuthenticatedUser());
 		oGGGP.setLocation(new Location(1));
@@ -610,146 +309,13 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * Creates a simple Obs Group consisting of one parent and one child. Assumes INITIAL_OBS_XML is
-	 * being used.
-	 */
-	private void createObsGroup(Obs parent, Obs child, ConceptService cs, ObsService os) {
-		child.setConcept(cs.getConcept(1));
-		child.setDateCreated(new Date());
-		child.setCreator(Context.getAuthenticatedUser());
-		child.setLocation(new Location(1));
-		child.setObsDatetime(new Date());
-		child.setValueText("test");
-		child.setPerson(new Patient(2));
-		
-		parent.setConcept(cs.getConcept(2)); //in the concept set table as a set
-		parent.setDateCreated(new Date());
-		parent.setCreator(Context.getAuthenticatedUser());
-		parent.setLocation(new Location(1));
-		parent.setObsDatetime(new Date());
-		parent.setPerson(new Patient(2));
-		
-		parent.addGroupMember(child);
-		
-		os.saveObs(parent, null);
-	}
-	
-	/**
-	 * This test makes sure that child obs on a parent obs are given an obs group id when the parent
-	 * obs is created
-	 * 
-	 * @throws Throwable
-	 */
-	@Test
-	public void shouldCreateObsGroupId() throws Throwable {
-		
-		executeDataSet(INITIAL_OBS_XML);
-		
-		ConceptService cs = Context.getConceptService();
-		ObsService os = Context.getObsService();
-		
-		Obs child = new Obs();
-		Obs oParent = new Obs();
-		
-		createObsGroup(oParent, child, cs, os);
-		
-		// save the obs ids
-		Integer parentObsId = oParent.getObsId();
-		assertNotNull(parentObsId);
-		
-		Integer childObsId = child.getObsId();
-		assertNotNull(childObsId);
-		
-		// clear out the session so we can refetch and test that it saved correctly
-		oParent = null;
-		child = null;
-		Context.clearSession();
-		
-		// try to get the same obs back and make sure it has children
-		
-		Obs fetchedParent = os.getObs(parentObsId);
-		assertTrue(fetchedParent.isObsGrouping());
-		assertEquals(1, fetchedParent.getGroupMembers().size());
-		
-	}
-	
-	/**
-	 * Unit test for findObsByGroupId... yeah, it's deprecated, but doesn't hurt to check that it's
-	 * doing what we want it to be doing.
-	 * 
-	 * @throws Throwable
-	 */
-	@SuppressWarnings("deprecation")
-    @Test
-	public void shouldFindObsByGroupId() throws Throwable {
-		executeDataSet(INITIAL_OBS_XML);
-		
-		ConceptService cs = Context.getConceptService();
-		ObsService os = Context.getObsService();
-		
-		Obs child = new Obs();
-		Obs oParent = new Obs();
-		
-		createObsGroup(oParent, child, cs, os);
-		
-		//These should both return just the child.
-		List<Obs> obs = os.findObsByGroupId(child.getObsGroupId());
-		List<Obs> obs2 = os.findObsByGroupId(oParent.getObsId());
-		
-		//This shouldn't return anything.
-		List<Obs> obs3 = os.findObsByGroupId(child.getObsId());
-		
-		Obs child2 = new Obs();
-		child2.setConcept(cs.getConcept(1)); //in the concept set table as a set
-		child2.setDateCreated(new Date());
-		child2.setCreator(Context.getAuthenticatedUser());
-		child2.setLocation(new Location(2));
-		child2.setObsDatetime(new Date());
-		child2.setPerson(new Patient(2));
-		
-		oParent.addGroupMember(child2);
-		//oParent.setRequiredData(new OpenmrsObject.DefaultRequiredDataHelper(Context.getAuthenticatedUser(), new Date()));
-		
-		List<Obs> obs4 = os.findObsByGroupId(oParent.getObsId());
-		
-		assertTrue(obs.equals(obs2));
-		assertTrue(obs3.size() == 0);
-		assertTrue(obs4.contains(child));
-		assertTrue(obs4.contains(child2));
-	}
-	
-	/**
-	 * This method gets observations and only fetches obs that are for patients
-	 * 
-	 * @throws Exception
-	 */
-	@Test
-	public void shouldGetObservationsRestrictedToPatients() throws Exception {
-		executeDataSet(INITIAL_OBS_XML);
-		
-		ObsService os = Context.getObsService();
-		
-		Concept c = new Concept(1); // a pseudo RETURN VISIT DATE
-		List<Concept> questions = new Vector<Concept>();
-		questions.add(c);
-		
-		List<PERSON_TYPE> personTypes = new Vector<PERSON_TYPE>();
-		personTypes.add(PERSON_TYPE.PATIENT);
-		
-		List<Obs> obs = os.getObservations(c, "location.locationId asc, obs.valueDatetime asc", ObsService.PATIENT, true);
-		
-		assertEquals(4, obs.size());
-		//os.getObservations(null, null, questions, null, personTypes, null, "obs.valueDatetime asc", null, null, null, null, false);
-	}
-	
-	/**
 	 * This method gets observations and only fetches obs that are for patients
 	 * 
 	 * @see ObsService#getObservations(List, List, List, List, List, List, List, Integer, Integer,
 	 *      Date, Date, boolean)
 	 */
 	@Test
-	@Verifies(value = "should compare dates using lte and gte", method = "getObservations(List<QPerson;>,List<QEncounter;>,List<QConcept;>,List<QConcept;>,List<QPERSON_TYPE;>,List<QLocation;>,List<QString;>,Integer,Integer,Date,Date,null)")
+	@Verifies(value = "should compare dates using lte and gte", method = "getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean)")
 	public void getObservations_shouldCompareDatesUsingLteAndGte() throws Exception {
 		executeDataSet(INITIAL_OBS_XML);
 		
@@ -813,31 +379,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * This method gets observations and only fetches obs that are for users
-	 * 
-	 * @throws Exception
-	 */
-	@Test
-	public void shouldGetObservationsRestrictedToUsers() throws Exception {
-		executeDataSet(INITIAL_OBS_XML);
-		
-		ObsService os = Context.getObsService();
-		
-		Concept c = new Concept(1); // a pseudo RETURN VISIT DATE
-		List<Concept> questions = new Vector<Concept>();
-		questions.add(c);
-		
-		List<PERSON_TYPE> personTypes = new Vector<PERSON_TYPE>();
-		personTypes.add(PERSON_TYPE.PATIENT);
-		
-		List<Obs> obs = os.getObservations(c, "location.locationId asc, obs.valueDatetime asc", ObsService.USER, true);
-		
-		assertEquals(2, obs.size());
-		//os.getObservations(null, null, questions, null, personTypes, null, "obs.valueDatetime asc", null, null, null, null, false);
-	}
-	
-	/**
-	 * @see {@link ObsService#getComplexObs(Integer,String)}
+	 * @see ObsService#getComplexObs(Integer,String)
 	 */
 	@Test
 	@Verifies(value = "should fill in complex data object for complex obs", method = "getComplexObs(Integer,String)")
@@ -855,7 +397,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ObsService#getComplexObs(Integer,String)}
+	 * @see ObsService#getComplexObs(Integer,String)
 	 */
 	@Test
 	@Verifies(value = "should not fail with null view", method = "getComplexObs(Integer,String)")
@@ -868,7 +410,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ObsService#getComplexObs(Integer,String)}
+	 * @see ObsService#getComplexObs(Integer,String)
 	 */
 	@Test
 	@Verifies(value = "should return normal obs for non complex obs", method = "getComplexObs(Integer,String)")
@@ -883,7 +425,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ObsService#getHandler(String)}
+	 * @see ObsService#getHandler(String)
 	 */
 	@Test
 	@Verifies(value = "should have default image and text handlers registered by spring", method = "getHandler(String)")
@@ -897,7 +439,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ObsService#getHandler(String)}
+	 * @see ObsService#getHandler(String)
 	 */
 	@Test
 	@Verifies(value = "should get handler with matching key", method = "getHandler(String)")
@@ -909,7 +451,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ObsService#getHandlers()}
+	 * @see ObsService#getHandlers()
 	 */
 	@Test
 	@Verifies(value = "should never return null", method = "getHandlers()")
@@ -921,7 +463,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ObsService#registerHandler(String,ComplexObsHandler)}
+	 * @see ObsService#registerHandler(String,ComplexObsHandler)
 	 */
 	@Test
 	@Verifies(value = "should register handler with the given key", method = "registerHandler(String,ComplexObsHandler)")
@@ -935,7 +477,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ObsService#registerHandler(String,String)}
+	 * @see ObsService#registerHandler(String,String)
 	 */
 	@Test
 	@Verifies(value = "should load handler and register key", method = "registerHandler(String,String)")
@@ -950,7 +492,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ObsService#removeHandler(String)}
+	 * @see ObsService#removeHandler(String)
 	 */
 	@Test
 	@Verifies(value = "should not fail with invalid key", method = "removeHandler(String)")
@@ -959,7 +501,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ObsService#removeHandler(String)}
+	 * @see ObsService#removeHandler(String)
 	 */
 	@Test
 	@Verifies(value = "should remove handler with matching key", method = "removeHandler(String)")
@@ -978,7 +520,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ObsService#saveObs(Obs,String)}
+	 * @see ObsService#saveObs(Obs,String)
 	 */
 	@Test
 	@Verifies(value = "should create new file from complex data for new obs", method = "saveObs(Obs,String)")
@@ -1020,7 +562,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ObsService#saveObs(Obs,String)}
+	 * @see ObsService#saveObs(Obs,String)
 	 */
 	@Test
 	@Verifies(value = "should not overwrite file when updating a complex obs", method = "saveObs(Obs,String)")
@@ -1085,7 +627,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ObsService#setHandlers(Map<QString;QComplexObsHandler;>)}
+	 * @see ObsService#setHandlers(Map<QString;QComplexObsHandler;>)}
 	 */
 	@Test
 	@Verifies(value = "should add new handlers with new keys", method = "setHandlers(Map<QString;QComplexObsHandler;>)")
@@ -1107,7 +649,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ObsService#setHandlers(Map<QString;QComplexObsHandler;>)}
+	 * @see ObsService#setHandlers(Map<QString;QComplexObsHandler;>)}
 	 */
 	@Test
 	@Verifies(value = "should override handlers with same key", method = "setHandlers(Map<QString;QComplexObsHandler;>)")
@@ -1136,7 +678,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ObsService#saveObs(Obs,String)}
+	 * @see ObsService#saveObs(Obs,String)
 	 */
 	@Test
 	@Verifies(value = "should void the given obs in the database", method = "saveObs(Obs,String)")
@@ -1149,27 +691,574 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		obs = Context.getObsService().getObs(7);
 		Assert.assertTrue(obs.isVoided());
 	}
-
+	
 	/**
-	 * @see {@link ObsService#getObsByUuid(String)}
-	 * 
+	 * @see ObsService#getObs(Integer)
 	 */
 	@Test
-	@Verifies(value = "should find object given valid uuid", method = "getObsByUuid(String)")
-	public void getObsByUuid_shouldFindObjectGivenValidUuid() throws Exception {
-		String uuid = "39fb7f47-e80a-4056-9285-bd798be13c63";
-		Obs obs = Context.getObsService().getObsByUuid(uuid);
-		Assert.assertEquals(7,(int) obs.getObsId());
+	@Verifies(value = "should get obs matching given obsId", method = "getObs(Integer)")
+	public void getObs_shouldGetObsMatchingGivenObsId() throws Exception {
+		ObsService obsService = Context.getObsService();
+		
+		Obs obs = obsService.getObs(7);
+		
+		Assert.assertEquals(new Concept(5089), obs.getConcept());
 	}
-
+	
 	/**
-	 * @see {@link ObsService#getObsByUuid(String)}
-	 * 
+	 * @see ObsService#getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean)
 	 */
 	@Test
-	@Verifies(value = "should return null if no object found with given uuid", method = "getObsByUuid(String)")
-	public void getObsByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid()
-			throws Exception {
-		Assert.assertNull(Context.getObsService().getObsByUuid("some invalid uuid"));
-	}	
+	@Verifies(value = "should get all obs assigned to given encounters", method = "getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean)")
+	public void getObservations_shouldGetAllObsAssignedToGivenEncounters() throws Exception {
+		ObsService obsService = Context.getObsService();
+		
+		List<Obs> obss = obsService.getObservations(null, Collections.singletonList(new Encounter(4)), null, null, null,
+		    null, null, null, null, null, null, false);
+		
+		Assert.assertEquals(6, obss.size());
+	}
+	
+	/**
+	 * @see ObsService#getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean)
+	 */
+	@Test
+	@Verifies(value = "should get all obs with answer concept in given answers parameter", method = "getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean)")
+	public void getObservations_shouldGetAllObsWithAnswerConceptInGivenAnswersParameter() throws Exception {
+		executeDataSet(INITIAL_OBS_XML);
+		
+		ObsService obsService = Context.getObsService();
+		
+		List<Obs> obss = obsService.getObservations(null, null, null, Collections.singletonList(new Concept(7)), null, null,
+		    null, null, null, null, null, false);
+		
+		Assert.assertEquals(1, obss.size());
+		
+		Assert.assertEquals(11, obss.get(0).getObsId().intValue());
+	}
+	
+	/**
+	 * @see ObsService#getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean)
+	 */
+	@Test
+	@Verifies(value = "should get all obs with question concept in given questions parameter", method = "getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean)")
+	public void getObservations_shouldGetAllObsWithQuestionConceptInGivenQuestionsParameter() throws Exception {
+		ObsService obsService = Context.getObsService();
+		
+		List<Obs> obss = obsService.getObservations(null, null, Collections.singletonList(new Concept(5497)), null, null,
+		    null, null, null, null, null, null, false);
+		
+		Assert.assertEquals(2, obss.size());
+	}
+	
+	/**
+	 * @see ObsService#getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean)
+	 */
+	@Test
+	@Verifies(value = "should include voided obs if includeVoidedObs is true", method = "getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean)")
+	public void getObservations_shouldIncludeVoidedObsIfIncludeVoidedObsIsTrue() throws Exception {
+		executeDataSet(INITIAL_OBS_XML);
+		
+		ObsService obsService = Context.getObsService();
+		
+		List<Obs> obss = obsService.getObservations(Collections.singletonList(new Person(9)), null, null, null, null, null,
+		    null, null, null, null, null, true);
+		
+		Assert.assertEquals(2, obss.size());
+		
+		Assert.assertEquals(10, obss.get(0).getObsId().intValue());
+		Assert.assertEquals(9, obss.get(1).getObsId().intValue());
+	}
+	
+	/**
+	 * @see ObsService#getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean)
+	 */
+	@Test
+	@Verifies(value = "should limit number of obs returned to mostReturnN parameter", method = "getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean)")
+	public void getObservations_shouldLimitNumberOfObsReturnedToMostReturnNParameter() throws Exception {
+		executeDataSet(INITIAL_OBS_XML);
+		
+		ObsService obsService = Context.getObsService();
+		
+		List<Obs> obss = obsService.getObservations(Collections.singletonList(new Person(8)), null, null, null, null, null,
+		    null, 1, null, null, null, false);
+		
+		Assert.assertEquals(1, obss.size());
+		
+		Assert.assertEquals(8, obss.get(0).getObsId().intValue());
+	}
+	
+	/**
+	 * @see ObsService#getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean)
+	 */
+	@Test
+	@Verifies(value = "should not include voided obs", method = "getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean)")
+	public void getObservations_shouldNotIncludeVoidedObs() throws Exception {
+		executeDataSet(INITIAL_OBS_XML);
+		
+		ObsService obsService = Context.getObsService();
+		
+		List<Obs> obss = obsService.getObservations(Collections.singletonList(new Person(9)), null, null, null, null, null,
+		    null, null, null, null, null, false);
+		
+		Assert.assertEquals(1, obss.size());
+		
+		Assert.assertEquals(9, obss.get(0).getObsId().intValue());
+	}
+	
+	/**
+	 * @see ObsService#getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean)
+	 */
+	@Test
+	@Verifies(value = "should return obs whose groupId is given obsGroupId", method = "getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean)")
+	public void getObservations_shouldReturnObsWhoseGroupIdIsGivenObsGroupId() throws Exception {
+		executeDataSet(INITIAL_OBS_XML);
+		
+		ObsService obsService = Context.getObsService();
+		
+		List<Obs> obss = obsService.getObservations(null, null, null, null, null, null, null, null, 2 /*obsGroupId*/, null,
+		    null, false);
+		
+		Assert.assertEquals(1, obss.size());
+	}
+	
+	/**
+	 * @see ObsService#getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean)
+	 */
+	@Test
+	@Verifies(value = "should return obs whose person is a patient only", method = "getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean)")
+	public void getObservations_shouldReturnObsWhosePersonIsAPatientOnly() throws Exception {
+		executeDataSet(INITIAL_OBS_XML);
+		
+		ObsService obsService = Context.getObsService();
+		
+		List<Obs> obss = obsService.getObservations(null, null, null, null, Collections.singletonList(PERSON_TYPE.PATIENT),
+		    null, null, null, null, null, null, false);
+		
+		Assert.assertEquals(13, obss.size());
+	}
+	
+	/**
+	 * @see ObsService#getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean)
+	 */
+	@Test
+	@Verifies(value = "should return all obs whose person is a person only", method = "getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean)")
+	public void getObservations_shouldReturnAllObsWhosePersonIsAPersonOnly() throws Exception {
+		executeDataSet(INITIAL_OBS_XML);
+		
+		ObsService obsService = Context.getObsService();
+		
+		List<Obs> obss = obsService.getObservations(null, null, null, null, Collections.singletonList(PERSON_TYPE.PERSON),
+		    null, null, null, null, null, null, false);
+		
+		Assert.assertEquals(15, obss.size());
+	}
+	
+	/**
+	 * @see ObsService#getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean)
+	 */
+	@Test
+	@Verifies(value = "should return obs whose person is a user only", method = "getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean)")
+	public void getObservations_shouldReturnObsWhosePersonIsAUserOnly() throws Exception {
+		executeDataSet(INITIAL_OBS_XML);
+		
+		ObsService obsService = Context.getObsService();
+		
+		List<Obs> obss = obsService.getObservations(null, null, null, null, Collections.singletonList(PERSON_TYPE.USER),
+		    null, null, null, null, null, null, false);
+		
+		Assert.assertEquals(1, obss.size());
+	}
+	
+	/**
+	 * @see ObsService#getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean)
+	 */
+	@Test
+	@Verifies(value = "should return obs with location in given locations parameter", method = "getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean)")
+	public void getObservations_shouldReturnObsWithLocationInGivenLocationsParameter() throws Exception {
+		ObsService obsService = Context.getObsService();
+		
+		List<Obs> obss = obsService.getObservations(null, null, null, null, null,
+		    Collections.singletonList(new Location(1)), null, null, null, null, null, false);
+		
+		Assert.assertEquals(8, obss.size());
+	}
+	
+	/**
+	 * @see ObsService#getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean)
+	 */
+	@Test
+	@Verifies(value = "should sort returned obs by conceptId if sort is concept", method = "getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean)")
+	public void getObservations_shouldSortReturnedObsByConceptIdIfSortIsConcept() throws Exception {
+		ObsService obsService = Context.getObsService();
+		
+		List<Obs> obss = obsService.getObservations(Collections.singletonList(new Person(7)), null, null, null, null, null,
+		    Collections.singletonList("concept"), null, null, null, null, false);
+		
+		// check the order of a few of the obs returned
+		Assert.assertEquals(11, obss.get(0).getObsId().intValue());
+		Assert.assertEquals(9, obss.get(1).getObsId().intValue());
+		Assert.assertEquals(16, obss.get(2).getObsId().intValue());
+	}
+	
+	/**
+	 * @see ObsService#getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean)
+	 */
+	@Test
+	@Verifies(value = "should sort returned obs by obsDatetime if sort is empty", method = "getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean)")
+	public void getObservations_shouldSortReturnedObsByObsDatetimeIfSortIsEmpty() throws Exception {
+		executeDataSet(INITIAL_OBS_XML);
+		
+		ObsService obsService = Context.getObsService();
+		
+		List<Obs> obss = obsService.getObservations(Collections.singletonList(new Person(8)), null, null, null, null, null,
+		    new ArrayList<String>(), null, null, null, null, false);
+		
+		Assert.assertEquals(8, obss.get(0).getObsId().intValue());
+		Assert.assertEquals(7, obss.get(1).getObsId().intValue());
+	}
+	
+	/**
+	 * @see ObsService#getObservations(String)
+	 */
+	@Test
+	@Verifies(value = "should get obs matching patient identifier in searchString", method = "getObservations(String)")
+	public void getObservations_shouldGetObsMatchingPatientIdentifierInSearchString() throws Exception {
+		executeDataSet(INITIAL_OBS_XML);
+		
+		ObsService obsService = Context.getObsService();
+		
+		List<Obs> obss = obsService.getObservations("12345K");
+		
+		Assert.assertEquals(2, obss.size());
+		Assert.assertEquals(4, obss.get(0).getObsId().intValue());
+		Assert.assertEquals(3, obss.get(1).getObsId().intValue());
+	}
+	
+	/**
+	 * @see ObsService#getObservations(String)
+	 */
+	@Test
+	@Verifies(value = "should get obs matching encounterId in searchString", method = "getObservations(String)")
+	public void getObservations_shouldGetObsMatchingEncounterIdInSearchString() throws Exception {
+		ObsService obsService = Context.getObsService();
+		
+		List<Obs> obss = obsService.getObservations("5");
+		
+		Assert.assertEquals(1, obss.size());
+		Assert.assertEquals(16, obss.get(0).getObsId().intValue());
+	}
+	
+	/**
+	 * @see ObsService#getObservations(String)
+	 */
+	@Test
+	@Verifies(value = "should get obs matching obsId 1n searchString", method = "getObservations(String)")
+	public void getObservations_shouldGetObsMatchingObsIdInSearchString() throws Exception {
+		ObsService obsService = Context.getObsService();
+		
+		List<Obs> obss = obsService.getObservations("15");
+		
+		Assert.assertEquals(1, obss.size());
+		Assert.assertEquals(15, obss.get(0).getObsId().intValue());
+	}
+	
+	/**
+	 * @see ObsService#getObservationsByPerson(Person)
+	 */
+	@Test
+	@Verifies(value = "should get all observations assigned to given person", method = "getObservationsByPerson(Person)")
+	public void getObservationsByPerson_shouldGetAllObservationsAssignedToGivenPerson() throws Exception {
+		ObsService obsService = Context.getObsService();
+		
+		List<Obs> obss = obsService.getObservationsByPerson(new Person(7));
+		
+		Assert.assertEquals(9, obss.size());
+		Assert.assertEquals(16, obss.get(0).getObsId().intValue());
+		Assert.assertEquals(7, obss.get(8).getObsId().intValue());
+	}
+	
+	/**
+	 * @see ObsService#getObservationsByPersonAndConcept(Person,Concept)
+	 */
+	@Test
+	@Verifies(value = "should get observations matching person and question", method = "getObservationsByPersonAndConcept(Person,Concept)")
+	public void getObservationsByPersonAndConcept_shouldGetObservationsMatchingPersonAndQuestion() throws Exception {
+		ObsService obsService = Context.getObsService();
+		
+		List<Obs> obss = obsService.getObservationsByPersonAndConcept(new Person(7), new Concept(5089));
+		
+		Assert.assertEquals(3, obss.size());
+		Assert.assertEquals(16, obss.get(0).getObsId().intValue());
+		Assert.assertEquals(10, obss.get(1).getObsId().intValue());
+		Assert.assertEquals(7, obss.get(2).getObsId().intValue());
+	}
+	
+	/**
+	 * @see ObsService#getObservationsByPersonAndConcept(Person,Concept)
+	 */
+	@Test
+	@Verifies(value = "should not fail with null person parameter", method = "getObservationsByPersonAndConcept(Person,Concept)")
+	public void getObservationsByPersonAndConcept_shouldNotFailWithNullPersonParameter() throws Exception {
+		ObsService obsService = Context.getObsService();
+		
+		obsService.getObservationsByPersonAndConcept(null, new Concept(7));
+	}
+	
+	/**
+	 * @see ObsService#purgeObs(Obs)
+	 */
+	@Test
+	@Verifies(value = "should delete the given obs from the database", method = "purgeObs(Obs)")
+	public void purgeObs_shouldDeleteTheGivenObsFromTheDatabase() throws Exception {
+		ObsService obsService = Context.getObsService();
+		Obs obs = obsService.getObs(7);
+		
+		obsService.purgeObs(obs);
+		
+		Assert.assertNull(obsService.getObs(7));
+	}
+	
+	/**
+	 * @see ObsService#purgeObs(Obs,boolean)
+	 */
+	@Test(expected = APIException.class)
+	@Verifies(value = "should throw APIException if given true cascade", method = "purgeObs(Obs,boolean)")
+	public void purgeObs_shouldThrowAPIExceptionIfGivenTrueCascade() throws Exception {
+		Context.getObsService().purgeObs(new Obs(1), true);
+	}
+	
+	/**
+	 * @see ObsService#saveObs(Obs,String)
+	 */
+	@Test
+	@Verifies(value = "should allow changing of every property on obs", method = "saveObs(Obs,String)")
+	public void saveObs_shouldAllowChangingOfEveryPropertyOnObs() throws Exception {
+		ObsService obsService = Context.getObsService();
+		
+		Order order = null;
+		Concept concept = new Concept(3);
+		Patient patient = new Patient(2);
+		Encounter encounter = new Encounter(3);
+		Date datetime = new Date();
+		Location location = new Location(1);
+		Integer valueGroupId = new Integer(7);
+		Date valueDatetime = new Date();
+		Concept valueCoded = new Concept(3);
+		Double valueNumeric = 2.0;
+		String valueModifier = "cc";
+		String valueText = "value text2";
+		String comment = "commenting2";
+		
+		Obs oToUpdate = new Obs();
+		oToUpdate.setOrder(order);
+		oToUpdate.setConcept(concept);
+		oToUpdate.setPerson(patient);
+		oToUpdate.setEncounter(encounter);
+		oToUpdate.setObsDatetime(datetime);
+		oToUpdate.setLocation(location);
+		oToUpdate.setValueGroupId(valueGroupId);
+		oToUpdate.setValueDatetime(valueDatetime);
+		oToUpdate.setValueCoded(valueCoded);
+		oToUpdate.setValueNumeric(valueNumeric);
+		oToUpdate.setValueModifier(valueModifier);
+		oToUpdate.setValueText(valueText);
+		oToUpdate.setComment(comment);
+		
+		// do an update in the database for the same Obs
+		Obs o1ToUpdateSaved = obsService.saveObs(oToUpdate, "Updating o1 with all new values");
+		
+		Obs obsSaved = obsService.getObs(o1ToUpdateSaved.getObsId());
+		
+		assertEquals(order, obsSaved.getOrder());
+		assertEquals(patient, obsSaved.getPerson());
+		assertEquals(comment, obsSaved.getComment());
+		assertEquals(concept, obsSaved.getConcept());
+		assertEquals(encounter, obsSaved.getEncounter());
+		assertEquals(datetime, obsSaved.getObsDatetime());
+		assertEquals(location, obsSaved.getLocation());
+		assertEquals(valueGroupId, obsSaved.getValueGroupId());
+		assertEquals(valueDatetime, obsSaved.getValueDatetime());
+		assertEquals(valueCoded, obsSaved.getValueCoded());
+		assertEquals(valueNumeric, obsSaved.getValueNumeric());
+		assertEquals(valueModifier, obsSaved.getValueModifier());
+		assertEquals(valueText, obsSaved.getValueText());
+	}
+	
+	/**
+	 * @see ObsService#saveObs(Obs,String)
+	 */
+	@Test
+	@Verifies(value = "should create very basic obs and add new obsId", method = "saveObs(Obs,String)")
+	public void saveObs_shouldCreateVeryBasicObsAndAddNewObsId() throws Exception {
+		Obs o = new Obs();
+		o.setConcept(new Concept(3));
+		o.setPerson(new Patient(2));
+		o.setEncounter(new Encounter(3));
+		o.setObsDatetime(new Date());
+		o.setLocation(new Location(1));
+		
+		Obs oSaved = Context.getObsService().saveObs(o, null);
+		
+		// make sure the returned Obs and the passed in obs
+		// now both have primary key obsIds
+		assertTrue(oSaved.getObsId().equals(o.getObsId()));
+	}
+	
+	/**
+	 * @see ObsService#saveObs(Obs,String)
+	 */
+	@Test
+	@Verifies(value = "should return a different object when updating an obs", method = "saveObs(Obs,String)")
+	public void saveObs_shouldReturnADifferentObjectWhenUpdatingAnObs() throws Exception {
+		ObsService obsService = Context.getObsService();
+		
+		Obs obs = obsService.getObs(7);
+		
+		// change something on the obs and save it again
+		obs.setComment("A new comment");
+		Obs obsSaved = obsService.saveObs(obs, "Testing that a new obs is returned");
+		
+		assertFalse(obsSaved.getObsId().equals(obs.getObsId()));
+	}
+	
+	/**
+	 * @see ObsService#unvoidObs(Obs)
+	 */
+	@Test
+	@Verifies(value = "should cascade unvoid to child grouped obs", method = "unvoidObs(Obs)")
+	public void unvoidObs_shouldCascadeUnvoidToChildGroupedObs() throws Exception {
+		executeDataSet(INITIAL_OBS_XML);
+		
+		ObsService obsService = Context.getObsService();
+		
+		// a obs with child groups
+		Obs parentObs = obsService.getObs(2);
+		
+		obsService.voidObs(parentObs, "testing void cascade to child obs groups");
+		
+		Assert.assertTrue(obsService.getObs(9).isVoided());
+		Assert.assertTrue(obsService.getObs(10).isVoided());
+	}
+	
+	/**
+	 * @see ObsService#unvoidObs(Obs)
+	 */
+	@Test
+	@Verifies(value = "should unset voided bit on given obs", method = "unvoidObs(Obs)")
+	public void unvoidObs_shouldUnsetVoidedBitOnGivenObs() throws Exception {
+		ObsService obsService = Context.getObsService();
+		
+		Obs obs = obsService.getObs(7);
+		
+		obsService.unvoidObs(obs);
+		
+		assertFalse(obs.isVoided());
+	}
+	
+	/**
+	 * @see ObsService#voidObs(Obs,String)
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	@Verifies(value = "should fail if reason parameter is empty", method = "voidObs(Obs,String)")
+	public void voidObs_shouldFailIfReasonParameterIsEmpty() throws Exception {
+		ObsService obsService = Context.getObsService();
+		
+		Obs obs = obsService.getObs(7);
+		
+		obsService.voidObs(obs, "");		
+	}
+	
+	/**
+	 * @see ObsService#voidObs(Obs,String)
+	 */
+	@Test
+	@Verifies(value = "should set voided bit on given obs", method = "voidObs(Obs,String)")
+	public void voidObs_shouldSetVoidedBitOnGivenObs() throws Exception {
+		ObsService obsService = Context.getObsService();
+		
+		Obs obs = obsService.getObs(7);
+		
+		obsService.voidObs(obs, "testing void function");
+		
+		assertTrue(obs.isVoided());
+	}
+	
+	/**
+	 * @see ObsService#saveObs(Obs,String)
+	 */
+	@Test
+	@Verifies(value = "should set creator and dateCreated on new obs", method = "saveObs(Obs,String)")
+	public void saveObs_shouldSetCreatorAndDateCreatedOnNewObs() throws Exception {
+		Obs o = new Obs();
+		o.setConcept(new Concept(3));
+		o.setPerson(new Patient(2));
+		o.setEncounter(new Encounter(3));
+		o.setObsDatetime(new Date());
+		o.setLocation(new Location(1));
+		
+		Context.getObsService().saveObs(o, null);
+		assertNotNull(o.getDateCreated());
+		assertNotNull(o.getCreator());
+	}
+	
+	/**
+	 * @see ObsService#saveObs(Obs,String)
+	 */
+	@Test
+	@Verifies(value = "should cascade save to child obs groups", method = "saveObs(Obs,String)")
+	public void saveObs_shouldCascadeSaveToChildObsGroups() throws Exception {
+		ObsService obsService = Context.getObsService();
+		
+		Obs parentObs = new Obs();
+		parentObs.setConcept(new Concept(3));
+		parentObs.setObsDatetime(new Date());
+		parentObs.setPerson(new Patient(2));
+		parentObs.setLocation(new Location(1));
+		
+		Obs groupMember = new Obs();
+		groupMember.setConcept(new Concept(3));
+		groupMember.setValueNumeric(1.0);
+		groupMember.setObsDatetime(new Date());
+		groupMember.setPerson(new Patient(2));
+		groupMember.setLocation(new Location(1));
+		parentObs.addGroupMember(groupMember);
+		
+		obsService.saveObs(parentObs, null);
+		
+		// make sure the child obs was saved
+		Assert.assertNotNull(groupMember.getObsId());
+	}
+	
+	/**
+	 * @see ObsService#saveObs(Obs,String)
+	 */
+	@Test
+	@Verifies(value = "should cascade update to new child obs groups", method = "saveObs(Obs,String)")
+	public void saveObs_shouldCascadeUpdateToNewChildObsGroups() throws Exception {
+		executeDataSet(INITIAL_OBS_XML);
+		
+		ObsService obsService = Context.getObsService();
+		
+		// a obs with child groups
+		Obs parentObs = obsService.getObs(2);
+		
+		Obs groupMember = new Obs();
+		groupMember.setConcept(new Concept(3));
+		groupMember.setObsDatetime(new Date());
+		groupMember.setPerson(new Patient(2));
+		groupMember.setLocation(new Location(2));
+		parentObs.addGroupMember(groupMember);
+		assertNotNull(groupMember.getObsGroup());
+		
+		obsService.saveObs(parentObs, "Updating obs group");
+		
+		// make sure the api filled in all of the necessary ids again
+		assertNotNull(groupMember.getObsId());
+		
+		// make sure the api didn't change the obsId of the first group member
+		Assert.assertEquals(9, parentObs.getGroupMembers().toArray(new Obs[] {})[0].getObsId().intValue());
+		
+	}
+	
 }

@@ -44,6 +44,10 @@ public class StateConversionValidator implements Validator {
 	 * 
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
+	 * @should fail validation if concept is null or empty or whitespace
+	 * @should fail validation if programWorkflow is null or empty or whitespace
+	 * @should fail validation if programWorkflowState is null or empty or whitespace
+	 * @should pass validation if all required fields have proper values
 	 */
 	public void validate(Object obj, Errors errors) {
 		ConceptStateConversion c = (ConceptStateConversion) obj;

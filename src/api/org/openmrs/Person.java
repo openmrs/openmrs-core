@@ -143,6 +143,7 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	 * Default constructor taking in the primary key personId value
 	 * 
 	 * @param personId Integer internal id for this person
+	 * @should set person id
 	 */
 	public Person(Integer personId) {
 		this.personId = personId;
@@ -150,6 +151,11 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	
 	/**
 	 * @see java.lang.Object#equals(java.lang.Object)
+	 * @should equal person with same person id
+	 * @should not equal person with different person id
+	 * @should not equal on null
+	 * @should equal person objects with no person id
+	 * @should not equal person objects when one has null person id
 	 */
 	public boolean equals(Object obj) {
 		if (obj instanceof Person) {
@@ -166,6 +172,9 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	
 	/**
 	 * @see java.lang.Object#hashCode()
+	 * @should have same hashcode when equal
+	 * @should have different hash code when not equal
+	 * @should get hash code with null attributes
 	 */
 	public int hashCode() {
 		if (this.getPersonId() == null)
@@ -304,6 +313,8 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	/**
 	 * @return list of known addresses for person
 	 * @see org.openmrs.PersonAddress
+	 * @should not get voided addresses
+	 * @should not fail with null addresses
 	 */
 	@ElementList(required = false)
 	public Set<PersonAddress> getAddresses() {
@@ -324,6 +335,8 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	/**
 	 * @return all known names for person
 	 * @see org.openmrs.PersonName
+	 * @should not get voided names
+	 * @should not fail with null names
 	 */
 	@ElementList
 	public Set<PersonName> getNames() {
@@ -344,6 +357,8 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	/**
 	 * @return all known attributes for person
 	 * @see org.openmrs.PersonAttribute
+	 * @should not get voided attributes
+	 * @should not fail with null attributes
 	 */
 	@ElementList
 	public Set<PersonAttribute> getAttributes() {
@@ -356,6 +371,8 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	 * Returns only the non-voided attributes for this person
 	 * 
 	 * @return list attributes
+	 * @should not get voided attributes
+	 * @should not fail with null attributes
 	 */
 	public List<PersonAttribute> getActiveAttributes() {
 		List<PersonAttribute> attrs = new Vector<PersonAttribute>();
@@ -387,6 +404,10 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	 * NOTE: This effectively limits persons to only one attribute of any given type **
 	 * 
 	 * @param newAttribute PersonAttribute to add to the Person
+	 * @should fail when new attribute exist
+	 * @should fail when new atribute are the same type with same value
+	 * @should void old attribute when new attribute are the same type with different value
+	 * @should remove attribute when old attribute are temporary
 	 */
 	public void addAttribute(PersonAttribute newAttribute) {
 		newAttribute.setPerson(this);
@@ -420,6 +441,9 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	 * attribute exists already.
 	 * 
 	 * @param attribute
+	 * @should not fail when person attribute is null
+	 * @should not fail when person attribute is not exist
+	 * @should remove attribute when exist
 	 */
 	public void removeAttribute(PersonAttribute attribute) {
 		if (attributes != null)
@@ -433,6 +457,9 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	 * 
 	 * @param pat
 	 * @return PersonAttribute
+	 * @should not fail when attribute type is null
+	 * @should not return voided attribute
+	 * @should return null when given attribute type is not exist
 	 */
 	public PersonAttribute getAttribute(PersonAttributeType pat) {
 		if (pat != null)

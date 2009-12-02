@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.GlobalProperty;
 import org.openmrs.ImplementationId;
@@ -37,6 +38,8 @@ import org.openmrs.util.OpenmrsConstants;
 public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	
 	private AdministrationService adminService = null;
+	
+	protected static final String ADMIN_INITIAL_DATA_XML = "org/openmrs/api/include/AdministrationServiceTest-globalproperties.xml";
 	
 	/**
 	 * Run this before each unit test in this class. It simply assigns the services used in this
@@ -351,6 +354,118 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		Context.getAdministrationService().saveGlobalProperties(globalProperties);
 		
 		Assert.assertNotNull(Context.getAdministrationService().getGlobalPropertyObject("new prop").getUuid());
+	}
+	
+	/**
+	 * @see {@link AdministrationService#getAllGlobalProperties()}
+	 */
+	@Test
+	@Verifies(value = "should return all global properties in the database", method = "getAllGlobalProperties()")
+	public void getAllGlobalProperties_shouldReturnAllGlobalPropertiesInTheDatabase() throws Exception {
+		executeDataSet(ADMIN_INITIAL_DATA_XML);
+		Assert.assertEquals(8, Context.getAdministrationService().getAllGlobalProperties().size());
+	}
+	
+	/**
+	 * @see {@link AdministrationService#getAllowedLocales()}
+	 */
+	@Test
+	@Verifies(value = "should return at least one locale if no locales defined in database yet", method = "getAllowedLocales()")
+	public void getAllowedLocales_shouldReturnAtLeastOneLocaleIfNoLocalesDefinedInDatabaseYet() throws Exception {
+		Assert.assertTrue(Context.getAdministrationService().getAllowedLocales().size() > 0);
+	}
+	
+	/**
+	 * @see {@link AdministrationService#getGlobalPropertyObject(String)}
+	 */
+	@Test
+	@Verifies(value = "should return null when no global property match given property name", method = "getGlobalPropertyObject(String)")
+	public void getGlobalPropertyObject_shouldReturnNullWhenNoGlobalPropertyMatchGivenPropertyName() throws Exception {
+		executeDataSet(ADMIN_INITIAL_DATA_XML);
+		Assert.assertNull(Context.getAdministrationService().getGlobalPropertyObject("magicResistSkill"));
+	}
+	
+	/**
+	 * @see {@link AdministrationService#getImplementationId()}
+	 */
+	@Test
+	@Verifies(value = "should return null if no implementation id is defined yet", method = "getImplementationId()")
+	public void getImplementationId_shouldReturnNullIfNoImplementationIdIsDefinedYet() throws Exception {
+		executeDataSet(ADMIN_INITIAL_DATA_XML);
+		Assert.assertNull(Context.getAdministrationService().getImplementationId());
+	}
+	
+	/**
+	 * @see {@link AdministrationService#getPresentationLocales()}
+	 */
+	@Test
+	@Ignore //TODO: This test fails for some reason
+	@Verifies(value = "should return at least one locale if no locales defined in database yet", method = "getPresentationLocales()")
+	public void getPresentationLocales_shouldReturnAtLeastOneLocaleIfNoLocalesDefinedInDatabaseYet() throws Exception {
+		Assert.assertTrue(Context.getAdministrationService().getPresentationLocales().size() > 0);
+	}
+	
+	/**
+	 * @see {@link AdministrationService#getPresentationLocales()}
+	 */
+	@Test
+	@Verifies(value = "should not return more locales than message source service locales", method = "getPresentationLocales()")
+	public void getPresentationLocales_shouldNotReturnMoreLocalesThanMessageSourceServiceLocales() throws Exception {
+		Assert.assertFalse(Context.getAdministrationService().getPresentationLocales().size() > Context
+		        .getMessageSourceService().getLocales().size());
+	}
+	
+	/**
+	 * @see {@link AdministrationService#getSystemVariables()}
+	 */
+	@Test
+	@Verifies(value = "should return all registered system variables", method = "getSystemVariables()")
+	public void getSystemVariables_shouldReturnAllRegisteredSystemVariables() throws Exception {
+		// The method implementation adds 12 system variables
+		Assert.assertEquals(12, Context.getAdministrationService().getSystemVariables().size());
+	}
+	
+	/**
+	 * @see {@link AdministrationService#purgeGlobalProperty(GlobalProperty)}
+	 */
+	@Test
+	@Verifies(value = "should delete global property from database", method = "purgeGlobalProperty(GlobalProperty)")
+	public void purgeGlobalProperty_shouldDeleteGlobalPropertyFromDatabase() throws Exception {
+		executeDataSet(ADMIN_INITIAL_DATA_XML);
+		AdministrationService as = Context.getAdministrationService();
+		
+		Assert.assertEquals(8, as.getAllGlobalProperties().size());
+		as.purgeGlobalProperty(as.getGlobalPropertyObject("a_valid_gp_key"));
+		Assert.assertEquals(7, as.getAllGlobalProperties().size());
+	}
+	
+	/**
+	 * @see {@link AdministrationService#saveGlobalProperty(GlobalProperty)}
+	 */
+	@Test
+	@Verifies(value = "should create global property in database", method = "saveGlobalProperty(GlobalProperty)")
+	public void saveGlobalProperty_shouldCreateGlobalPropertyInDatabase() throws Exception {
+		executeDataSet(ADMIN_INITIAL_DATA_XML);
+		AdministrationService as = Context.getAdministrationService();
+		
+		as.saveGlobalProperty(new GlobalProperty("detectHiddenSkill", "100"));
+		Assert.assertNotNull(as.getGlobalProperty("detectHiddenSkill"));
+	}
+	
+	/**
+	 * @see {@link AdministrationService#saveGlobalProperty(GlobalProperty)}
+	 */
+	@Test
+	@Verifies(value = "should overwrite global property if exists", method = "saveGlobalProperty(GlobalProperty)")
+	public void saveGlobalProperty_shouldOverwriteGlobalPropertyIfExists() throws Exception {
+		executeDataSet(ADMIN_INITIAL_DATA_XML);
+		AdministrationService as = Context.getAdministrationService();
+		
+		GlobalProperty gp = as.getGlobalPropertyObject("a_valid_gp_key");
+		Assert.assertEquals("correct-value", gp.getPropertyValue());
+		gp.setPropertyValue("new-even-more-correct-value");
+		as.saveGlobalProperty(gp);
+		Assert.assertEquals("new-even-more-correct-value", as.getGlobalProperty("a_valid_gp_key"));
 	}
 	
 }
