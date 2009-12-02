@@ -15,10 +15,13 @@ package org.openmrs.validator;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.openmrs.User;
 import org.openmrs.test.Verifies;
+import org.springframework.validation.BindException;
+import org.springframework.validation.Errors;
 
 /**
- * Tests for {@link UserValidator}
+ * Tests methods on the {@link UserValidator} class.
  */
 public class UserValidatorTest {
 	
@@ -95,6 +98,48 @@ public class UserValidatorTest {
 		String username = "12345678901234567890123456789012345678901AAAAABBBAABABABABA";
 		Assert.assertTrue(username.length() > 50);
 		Assert.assertFalse(userValidator.isUserNameValid(username));
+	}	
+	
+	/**
+	 * @see {@link UserValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail validation if voided and voidReason is null or empty or whitespace", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfVoidedAndVoidReasonIsNullOrEmptyOrWhitespace() throws Exception {
+		User user = new User();
+		user.setUsername("test");
+		user.setVoidReason(null);
+		user.setVoided(true);
+		
+		Errors errors = new BindException(user, "user");
+		new UserValidator().validate(user, errors);
+		Assert.assertTrue(errors.hasFieldErrors("voidReason"));
+		
+		user.setVoidReason("");
+		errors = new BindException(user, "user");
+		new UserValidator().validate(user, errors);
+		Assert.assertTrue(errors.hasFieldErrors("voidReason"));
+		
+		user.setVoidReason(" ");
+		errors = new BindException(user, "user");
+		new UserValidator().validate(user, errors);
+		Assert.assertTrue(errors.hasFieldErrors("voidReason"));
 	}
 	
+	/**
+	 * @see {@link UserValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should pass validation if all required fields have proper values", method = "validate(Object,Errors)")
+	public void validate_shouldPassValidationIfAllRequiredFieldsHaveProperValues() throws Exception {
+		User user = new User();
+		user.setUsername("test");
+		user.setVoided(true);
+		user.setVoidReason("for the lulz");
+		
+		Errors errors = new BindException(user, "user");
+		new UserValidator().validate(user, errors);
+		
+		Assert.assertFalse(errors.hasErrors());
+	}
 }

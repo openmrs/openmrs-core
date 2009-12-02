@@ -41,6 +41,7 @@ public interface FormService extends OpenmrsService {
 	 * @param form the Form to save
 	 * @return the Form that was saved
 	 * @throws APIException
+	 * @should save given form successfully
 	 */
 	@Authorized(OpenmrsConstants.PRIV_MANAGE_FORMS)
 	public Form saveForm(Form form) throws APIException;
@@ -57,6 +58,7 @@ public interface FormService extends OpenmrsService {
 	 * @param formId internal identifier
 	 * @return requested form
 	 * @throws APIException
+	 * @should return null if no form exists with given formId
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_FORMS)
@@ -69,6 +71,7 @@ public interface FormService extends OpenmrsService {
 	 * @param name exact name of the form to fetch
 	 * @return requested form
 	 * @throws APIException
+	 * @should return null if no form has the exact form name
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_FORMS)
@@ -93,6 +96,7 @@ public interface FormService extends OpenmrsService {
 	 * @param version exact version of the form to fetch
 	 * @return requested form
 	 * @throws APIException
+	 * @should get the specific version of the form with the given name
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_FORMS)
@@ -103,6 +107,7 @@ public interface FormService extends OpenmrsService {
 	 * 
 	 * @return all Forms, including retired ones
 	 * @throws APIException
+	 * @should return all forms including retired
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_FORMS)
@@ -114,6 +119,8 @@ public interface FormService extends OpenmrsService {
 	 * @param includeRetired whether or not to return retired forms
 	 * @return all forms, possibly including retired ones
 	 * @throws APIException
+	 * @should return retired forms if includeRetired is true
+	 * @should not return retired forms if includeRetired is false
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_FORMS)
@@ -127,6 +134,8 @@ public interface FormService extends OpenmrsService {
 	 * @param onlyLatestVersion whether or not to return only the latest version of each form (by
 	 *            name)
 	 * @return forms with names similar to fuzzyName
+	 * @should match forms with partial match on name
+	 * @should only return one form per name if onlyLatestVersion is true
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_FORMS)
@@ -155,6 +164,14 @@ public interface FormService extends OpenmrsService {
 	 *            a form, that form is returning more than once in this list
 	 * @return All forms that match the criteria
 	 * @should get multiple of the same form by field
+	 * @should return duplicate form when given fields included in form multiple times
+	 * @should only return published forms when given published equals true
+	 * @should return both published and unpublished when given published is null
+	 * @should match to forms with fuzzy partialNameSearch
+	 * @should return forms with encounterType in given encounterTypes
+	 * @should return unretired forms when retired equals false
+	 * @should return retired forms when retired equals true
+	 * @should return all forms including retired and unretired when retired is null
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_FORMS)
@@ -167,6 +184,7 @@ public interface FormService extends OpenmrsService {
 	 * 
 	 * @return all published non-retired forms
 	 * @throws APIException
+	 * @should only return published forms that are not retired
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_FORMS)
@@ -229,6 +247,7 @@ public interface FormService extends OpenmrsService {
 	 * @param form the Form to retire
 	 * @param reason the retiredReason to set
 	 * @throws APIException
+	 * @should set the retired bit before saving
 	 */
 	@Authorized(OpenmrsConstants.PRIV_MANAGE_FORMS)
 	public void retireForm(Form form, String reason) throws APIException;
@@ -238,6 +257,8 @@ public interface FormService extends OpenmrsService {
 	 * 
 	 * @param form the Form to revive
 	 * @throws APIException
+	 * 
+	 * @should unset the retired bit before saving
 	 */
 	@Authorized(OpenmrsConstants.PRIV_MANAGE_FORMS)
 	public void unretireForm(Form form) throws APIException;
@@ -248,6 +269,8 @@ public interface FormService extends OpenmrsService {
 	 * 
 	 * @param form
 	 * @throws APIException
+	 * 
+	 * @should delete given form successfully
 	 */
 	@Authorized(OpenmrsConstants.PRIV_MANAGE_FORMS)
 	public void purgeForm(Form form) throws APIException;
@@ -259,6 +282,8 @@ public interface FormService extends OpenmrsService {
 	 * @param form
 	 * @param cascade whether or not to cascade delete all dependent objects (including encounters!)
 	 * @throws APIException
+	 * 
+	 * @should throw APIException if cascade is true
 	 */
 	@Authorized(OpenmrsConstants.PRIV_MANAGE_FORMS)
 	public void purgeForm(Form form, boolean cascade) throws APIException;
@@ -291,6 +316,7 @@ public interface FormService extends OpenmrsService {
 	 * 
 	 * @return list of all field types
 	 * @throws APIException
+	 * @should also get retired field types
 	 */
 	@Authorized(OpenmrsConstants.PRIV_VIEW_FIELD_TYPES)
 	@Transactional(readOnly = true)
@@ -302,6 +328,9 @@ public interface FormService extends OpenmrsService {
 	 * @param includeRetired true/false whether to include the retired field types
 	 * @return list of all field types
 	 * @throws APIException
+	 * 
+	 * @should get all field types including retired when includeRetired equals true
+	 * @should get all field types excluding retired when includeRetired equals false
 	 */
 	@Authorized(OpenmrsConstants.PRIV_VIEW_FIELD_TYPES)
 	@Transactional(readOnly = true)
@@ -313,6 +342,8 @@ public interface FormService extends OpenmrsService {
 	 * @param fieldTypeId Integer id of FieldType to get
 	 * @return fieldType with given internal identifier
 	 * @throws APIException
+	 * 
+	 * @should return null when no field type matching given id
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_FIELD_TYPES)
@@ -350,6 +381,7 @@ public interface FormService extends OpenmrsService {
 	 * @param concept the concept to search for in forms
 	 * @return forms containing the specified concept in their schema
 	 * @throws APIException
+	 * @should get forms with field matching given concept
 	 * @should get all forms for concept
 	 */
 	@Transactional(readOnly = true)
@@ -368,6 +400,7 @@ public interface FormService extends OpenmrsService {
 	 * 
 	 * @return all FormFields in the database
 	 * @throws APIException
+	 * @should get all form fields including retired
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_FORMS)
@@ -389,6 +422,11 @@ public interface FormService extends OpenmrsService {
 	 * @param fuzzySearchPhrase
 	 * @return Fields with names similar to or containing the given phrase
 	 * @throws APIException
+	 * 
+	 * @should get fields with name matching fuzzySearchPhrase at beginning
+	 * @should get fields with name matching fuzzySearchPhrase at middle
+	 * @should get fields with name matching fuzzySearchPhrase at end
+	 * @should return fields in alphabetical order by name
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_FORMS)
@@ -407,6 +445,8 @@ public interface FormService extends OpenmrsService {
 	 * @param concept the concept to search for in the Field table
 	 * @return fields that point to the given concept
 	 * @throws APIException
+	 * 
+	 * @should get fields with concept matching given concept
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_FORMS)
@@ -417,6 +457,8 @@ public interface FormService extends OpenmrsService {
 	 * 
 	 * @return all Fields
 	 * @throws APIException
+	 * 
+	 * @should get all fields including retired
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_FORMS)
@@ -428,6 +470,9 @@ public interface FormService extends OpenmrsService {
 	 * @param includeRetired whether or not to include retired Fields
 	 * @return all Fields
 	 * @throws APIException
+	 * 
+	 * @should get all fields including retired when includeRetired is true
+	 * @should get all fields excluding retired when includeRetired is false
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_FORMS)
@@ -447,6 +492,13 @@ public interface FormService extends OpenmrsService {
 	 * @param retired only retired/unretired fields
 	 * @return all Fields matching the given criteria
 	 * @throws APIException
+	 * 
+	 * @should get fields with form in given forms
+	 * @should get fields with type in given fieldTypes
+	 * @should get fields with concept in given concepts
+	 * @should get fields with tableName in given tableNames
+	 * @should get fields with attributeName in given attributeNames
+	 * @should get fields with selectMultiple equals true when given selectMultiple equals true
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_FORMS)
@@ -468,6 +520,7 @@ public interface FormService extends OpenmrsService {
 	 * @param fieldId the id of the Field to fetch
 	 * @return the Field with the given id
 	 * @throws APIException
+	 * @should return null if no field exists with given fieldId
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_FORMS)
@@ -501,6 +554,7 @@ public interface FormService extends OpenmrsService {
 	 * @param field the Field to save
 	 * @return the Field that was saved
 	 * @throws APIException
+	 * @should save given field successfully
 	 */
 	@Authorized(OpenmrsConstants.PRIV_MANAGE_FORMS)
 	public Field saveField(Field field) throws APIException;
@@ -522,6 +576,7 @@ public interface FormService extends OpenmrsService {
 	 * 
 	 * @param field the Field to purge
 	 * @throws APIException
+	 * @should delete given field successfully
 	 */
 	@Authorized(OpenmrsConstants.PRIV_MANAGE_FORMS)
 	public void purgeField(Field field) throws APIException;
@@ -533,6 +588,7 @@ public interface FormService extends OpenmrsService {
 	 * @param field the Field to purge
 	 * @param cascade whether to cascade delete all FormFields pointing to this field
 	 * @throws APIException
+	 * @should throw APIException if cascade is true
 	 */
 	@Authorized(OpenmrsConstants.PRIV_MANAGE_FORMS)
 	public void purgeField(Field field, boolean cascade) throws APIException;
@@ -549,6 +605,7 @@ public interface FormService extends OpenmrsService {
 	 * @param formFieldId the internal id to search on
 	 * @return the FormField with the given id
 	 * @throws APIException
+	 * @should return null if no formField exists with given id
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_FORMS)
@@ -575,6 +632,7 @@ public interface FormService extends OpenmrsService {
 	 * @return Formfield for this concept on this form
 	 * @throws APIException
 	 * @see #getFormField(Form, Concept, Collection, boolean)
+	 * @should get formField for given form and concept
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_FORMS)
@@ -614,6 +672,7 @@ public interface FormService extends OpenmrsService {
 	 * @return the formField that was just saved
 	 * @throws APIException
 	 * @should propagate save to the Field property on the given FormField
+	 * @should save given formField successfully
 	 */
 	@Authorized(OpenmrsConstants.PRIV_MANAGE_FORMS)
 	public FormField saveFormField(FormField formField) throws APIException;
@@ -635,6 +694,7 @@ public interface FormService extends OpenmrsService {
 	 * 
 	 * @param formField the FormField to purge
 	 * @throws APIException
+	 * @should delete the given form field successfully
 	 */
 	@Authorized(OpenmrsConstants.PRIV_MANAGE_FORMS)
 	public void purgeFormField(FormField formField) throws APIException;
@@ -660,6 +720,7 @@ public interface FormService extends OpenmrsService {
 	 * @param field the Field to retire
 	 * @return the Field that was retired
 	 * @throws APIException
+	 * @should set the retired bit before saving
 	 */
 	@Authorized(OpenmrsConstants.PRIV_MANAGE_FORMS)
 	public Field retireField(Field field) throws APIException;
@@ -670,6 +731,7 @@ public interface FormService extends OpenmrsService {
 	 * @param field the Field to unretire
 	 * @return the Field that was unretired
 	 * @throws APIException
+	 * @should unset the retired bit before saving
 	 */
 	@Authorized(OpenmrsConstants.PRIV_MANAGE_FORMS)
 	public Field unretireField(Field field) throws APIException;
@@ -692,6 +754,8 @@ public interface FormService extends OpenmrsService {
 	 * 
 	 * @param fieldType the field type to purge
 	 * @throws APIException
+	 * 
+	 * @should delete the given field type successfully
 	 */
 	@Authorized(OpenmrsConstants.PRIV_PURGE_FIELD_TYPES)
 	public void purgeFieldType(FieldType fieldType) throws APIException;

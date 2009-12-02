@@ -116,6 +116,7 @@ public interface ObsService extends OpenmrsService {
 	 * @param obsId integer obsId of observation desired
 	 * @return matching Obs
 	 * @throws APIException
+	 * @should get obs matching given obsId
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_OBS)
@@ -160,6 +161,12 @@ public interface ObsService extends OpenmrsService {
 	 * @should create new file from complex data for new obs
 	 * @should not overwrite file when updating a complex obs
 	 * @should void the given obs in the database
+	 * @should create very basic obs and add new obsId
+	 * @should allow changing of every property on obs
+	 * @should return a different object when updating an obs
+	 * @should set creator and dateCreated on new obs
+	 * @should cascade save to child obs groups
+	 * @should cascade update to new child obs groups
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_ADD_OBS, OpenmrsConstants.PRIV_EDIT_OBS })
 	public Obs saveObs(Obs obs, String changeMessage) throws APIException;
@@ -170,6 +177,8 @@ public interface ObsService extends OpenmrsService {
 	 * @param obs Obs to void
 	 * @param reason String reason it's being voided
 	 * @throws APIException
+	 * @should set voided bit on given obs
+	 * @should fail if reason parameter is empty
 	 */
 	@Authorized(OpenmrsConstants.PRIV_EDIT_OBS)
 	public Obs voidObs(Obs obs, String reason) throws APIException;
@@ -177,8 +186,10 @@ public interface ObsService extends OpenmrsService {
 	/**
 	 * Revive an observation (pull a Lazarus)
 	 * 
-	 * @param obs
+	 * @param obs Obs to unvoid
 	 * @throws APIException
+	 * @should unset voided bit on given obs
+	 * @should cascade unvoid to child grouped obs
 	 */
 	@Authorized(OpenmrsConstants.PRIV_EDIT_OBS)
 	public Obs unvoidObs(Obs obs) throws APIException;
@@ -202,6 +213,8 @@ public interface ObsService extends OpenmrsService {
 	 * 
 	 * @param obs
 	 * @throws APIException
+	 * @see #purgeObs(Obs, boolean)
+	 * @should delete the given obs from the database
 	 */
 	@Authorized(OpenmrsConstants.PRIV_DELETE_OBS)
 	public void purgeObs(Obs obs) throws APIException;
@@ -216,6 +229,7 @@ public interface ObsService extends OpenmrsService {
 	 *            observation (like Orders and ObsGroups)
 	 * @throws APIException
 	 * @see #purgeObs(Obs, boolean)
+	 * @should throw APIException if given true cascade
 	 */
 	@Authorized(OpenmrsConstants.PRIV_DELETE_OBS)
 	public void purgeObs(Obs obs, boolean cascade) throws APIException;
@@ -314,6 +328,7 @@ public interface ObsService extends OpenmrsService {
 	 * @return a List<Obs> object containing all non-voided observations for the specified person
 	 * @see #getObservations(List, List, List, List, List, List, List, Integer, Integer, Date, Date,
 	 *      boolean)
+	 * @should get all observations assigned to given person
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_OBS)
@@ -350,6 +365,19 @@ public interface ObsService extends OpenmrsService {
 	 * @return list of Observations that match all of the criteria given in the arguments
 	 * @throws APIException
 	 * @should compare dates using lte and gte
+	 * @should get all obs assigned to given encounters
+	 * @should get all obs with question concept in given questions parameter
+	 * @should get all obs with answer concept in given answers parameter
+	 * @should return all obs whose person is a person only
+	 * @should return obs whose person is a patient only
+	 * @should return obs whose person is a user only
+	 * @should return obs with location in given locations parameter
+	 * @should sort returned obs by obsDatetime if sort is empty
+	 * @should sort returned obs by conceptId if sort is concept
+	 * @should limit number of obs returned to mostReturnN parameter
+	 * @should return obs whose groupId is given obsGroupId
+	 * @should not include voided obs
+	 * @should include voided obs if includeVoidedObs is true
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_OBS)
@@ -364,6 +392,9 @@ public interface ObsService extends OpenmrsService {
 	 * @param searchString The string to search on
 	 * @return observations matching the given string
 	 * @throws APIException
+	 * @should get obs matching patient identifier in searchString
+	 * @should get obs matching encounterId in searchString
+	 * @should get obs matching obsId in searchString
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_OBS)
@@ -394,6 +425,8 @@ public interface ObsService extends OpenmrsService {
 	 * @throws APIException
 	 * @see #getObservations(List, List, List, List, List, List, List, Integer, Integer, Date, Date,
 	 *      boolean)
+	 * @should get observations matching person and question
+	 * @should not fail with null person parameter
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_OBS)

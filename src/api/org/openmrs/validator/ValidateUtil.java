@@ -76,6 +76,7 @@ public class ValidateUtil {
 	 * 
 	 * @param obj the object to validate
 	 * @throws APIException thrown if a binding exception occurs
+	 * @should throw APIException if errors occur during validation
 	 */
 	public static void validate(Object obj) throws APIException {
 		BindException errors = new BindException(obj, "");

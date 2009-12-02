@@ -27,11 +27,13 @@ import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.MimeType;
 import org.openmrs.Obs;
+import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.aop.RequiredDataAdvice;
 import org.openmrs.api.APIException;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.ObsService;
+import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ObsDAO;
 import org.openmrs.api.handler.SaveHandler;
@@ -331,12 +333,16 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 * @see org.openmrs.api.ObsService#getObservations(java.lang.String)
 	 */
 	public List<Obs> getObservations(String searchString) {
-		EncounterService es = Context.getEncounterService();
 		
 		// search on patient identifier
-		List<Encounter> encounters = es.getEncountersByPatientIdentifier(searchString);
+		PatientService ps = Context.getPatientService();
+		List<Patient> patients = ps.getPatients(null, searchString, null, false);
+		List<Person> persons = new Vector<Person>();
+		persons.addAll(patients);
 		
 		// try to search on encounterId
+		EncounterService es = Context.getEncounterService();
+		List<Encounter> encounters = new Vector<Encounter>();
 		try {
 			Encounter e = es.getEncounter(Integer.valueOf(searchString));
 			if (e != null)
@@ -346,7 +352,10 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 			// pass
 		}
 		
-		List<Obs> returnList = getObservations(null, encounters, null, null, null, null, null, null, null, null, null, false);
+		List<Obs> returnList = new Vector<Obs>();
+		
+		if (encounters.size() > 0 || persons.size() > 0)
+			returnList = getObservations(persons, encounters, null, null, null, null, null, null, null, null, null, false);
 		
 		// try to search on obsId
 		try {
@@ -535,6 +544,9 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 		return obsSet;
 	}
 	
+	/**
+	 * @see org.openmrs.api.ObsService#getObservationsByPersonAndConcept(org.openmrs.Person, org.openmrs.Concept)
+	 */
 	public List<Obs> getObservationsByPersonAndConcept(Person who, Concept question) throws APIException {
 		List<Person> whom = new Vector<Person>();
 		if (who != null && who.getPersonId() != null)

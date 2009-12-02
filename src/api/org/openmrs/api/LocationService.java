@@ -68,6 +68,7 @@ public interface LocationService extends OpenmrsService {
 	 * 
 	 * @param locationId integer primary key of the location to find
 	 * @return Location object that has location.locationId = <code>locationId</code> passed in.
+	 * @should return null when no location match given location id
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_LOCATIONS })
@@ -79,6 +80,7 @@ public interface LocationService extends OpenmrsService {
 	 * 
 	 * @param name the exact name of the location to match on
 	 * @return Location matching the <code>name</code> to Location.name
+	 * @should return null when no location match given location name
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_LOCATIONS })
@@ -88,6 +90,7 @@ public interface LocationService extends OpenmrsService {
 	 * Returns the default location for this implementation.
 	 * 
 	 * @return The default location for this implementation.
+	 * @should return default location for the implementation
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_LOCATIONS })
@@ -110,6 +113,7 @@ public interface LocationService extends OpenmrsService {
 	 * #getAllLocations(boolean) method
 	 * 
 	 * @return locations that are in the database
+	 * @should return all locations including retired
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_LOCATIONS })
@@ -119,7 +123,8 @@ public interface LocationService extends OpenmrsService {
 	 * Returns all locations.
 	 * 
 	 * @param includeRetired whether or not to include retired locations
-	 * @should return locations when includeRetired is false
+	 * @should return all locations when includeRetired is true
+	 * @should return only unretired locations when includeRetires is false
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_LOCATIONS })
@@ -131,6 +136,7 @@ public interface LocationService extends OpenmrsService {
 	 * insensitive. matching this <code>nameFragment</code>
 	 * 
 	 * @param nameFragment is the string used to search for locations
+	 * @should return empty list when no location match the name fragment
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_LOCATIONS })
@@ -142,6 +148,7 @@ public interface LocationService extends OpenmrsService {
 	 * @param tag LocationTag criterion
 	 * @since 1.5
 	 * @should get locations by tag
+	 * @should return empty list when no locations has the given tag
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_LOCATIONS })
@@ -153,6 +160,8 @@ public interface LocationService extends OpenmrsService {
 	 * @param tags Set of LocationTag criteria
 	 * @since 1.5
 	 * @should get locations having all tags
+	 * @should return empty list when no location has the given tags
+	 * @should return all unretired locations given an empty tag list
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_LOCATIONS })
@@ -164,6 +173,8 @@ public interface LocationService extends OpenmrsService {
 	 * @param tags Set of LocationTag criteria
 	 * @since 1.5
 	 * @should get locations having any tag
+	 * @should return empty list when no location has the given tags
+	 * @should return empty list when given an empty tag list
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_LOCATIONS })
@@ -175,6 +186,7 @@ public interface LocationService extends OpenmrsService {
 	 * @param location location to be retired
 	 * @param reason is the reason why the location is being retired
 	 * @should retire location successfully
+	 * @should throw IllegalArgumentException when no reason is given
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_MANAGE_LOCATIONS })
 	public Location retireLocation(Location location, String reason) throws APIException;
@@ -186,6 +198,7 @@ public interface LocationService extends OpenmrsService {
 	 * @param location
 	 * @return the newly unretired location
 	 * @throws APIException
+	 * @should unretire retired location
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_MANAGE_LOCATIONS })
 	public Location unretireLocation(Location location) throws APIException;
@@ -221,6 +234,7 @@ public interface LocationService extends OpenmrsService {
 	 * @return LocationTag object that has LocationTag.locationTagId = <code>locationTagId</code>
 	 *         passed in.
 	 * @since 1.5
+	 * @should return null when no location tag match given id
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_LOCATIONS })
@@ -234,6 +248,7 @@ public interface LocationService extends OpenmrsService {
 	 * @return LocationTag matching the name to LocationTag.tag
 	 * @since 1.5
 	 * @should get location tag by name
+	 * @should return null when no location tag match given name
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_LOCATIONS })
@@ -245,6 +260,7 @@ public interface LocationService extends OpenmrsService {
 	 * 
 	 * @return location tags that are in the database
 	 * @since 1.5
+	 * @should return all location tags including retired
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_LOCATIONS })
@@ -255,6 +271,8 @@ public interface LocationService extends OpenmrsService {
 	 * 
 	 * @param includeRetired whether or not to include retired location tags
 	 * @since 1.5
+	 * @should return all location tags if includeRetired is true
+	 * @should return only unretired location tags if includeRetired is false
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_LOCATIONS })
@@ -267,6 +285,7 @@ public interface LocationService extends OpenmrsService {
 	 * 
 	 * @param search is the string used to search for tags
 	 * @since 1.5
+	 * @should return empty list when no location tag match given search string
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_LOCATIONS })
@@ -277,8 +296,10 @@ public interface LocationService extends OpenmrsService {
 	 * 
 	 * @param tag location tag to be retired
 	 * @param reason is the reason why the location tag is being retired
-	 * @should retire location tag successfully
 	 * @since 1.5
+	 * @should retire location tag successfully
+	 * @should retire location tag with given reason
+	 * @should throw IllegalArgumentException when no reason is given
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_MANAGE_LOCATION_TAGS })
 	public LocationTag retireLocationTag(LocationTag tag, String reason) throws APIException;
@@ -291,6 +312,7 @@ public interface LocationService extends OpenmrsService {
 	 * @return the newly unretired location tag
 	 * @throws APIException
 	 * @since 1.5
+	 * @should unretire retired location tag
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_MANAGE_LOCATION_TAGS })
 	public LocationTag unretireLocationTag(LocationTag tag) throws APIException;

@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+  <person_attribute_type person_attribute_type_id="16" name="Credit Card" description="Credit card number of the person" format="java.lang.String" searchable="false" creator="1" date_created="2009-05-17 09:59:23.0" retired="true" retired_by="1" date_retired="2009-05-17 10:00:00.0" retire_reason="test" sort_weight="16" uuid="b3ghd540-a32e-44c7-91b3-292d97667518"/>
+  <person_attribute_type person_attribute_type_id="17" name="Credit Card Expiration Date" description="Expiration date of the person's credit card" format="java.lang.String" searchable="false" creator="1" date_created="2009-05-17 09:59:23.0" retired="true" retired_by="1" date_retired="2009-05-17 10:00:00.0" sort_weight="17" uuid="54gh8400-1683-4d71-a1ac-98d40836ff7c"/>
+  <person_attribute_type person_attribute_type_id="18" name="Credit Card Security Code" description="Security code of the person's credit card" format="org.openmrs.String" searchable="false" creator="1" date_created="2009-05-17 09:53:36.0" retired="true" retired_by="1" date_retired="2009-05-17 10:00:00.0" sort_weight="18" uuid="a0gh521c-dbbd-4c10-81b2-1b7ab18330df"/>
+</dataset>

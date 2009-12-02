@@ -218,6 +218,10 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 			}
 			
 			// TODO: check patient has at least one "sufficient" identifier
+			// TODO: what makes a patient identifier unique ... can you have the 
+			// 		 same identifier number at different locations?  if so, then this
+			// 		 check duplicate algorithm does not handle this case
+			
 			
 			// check this patient for duplicate identifiers+identifierType
 			if (identifiersUsed.contains(pi.getIdentifier() + " id type #: "
@@ -601,6 +605,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 			minSearchCharacters = Integer.valueOf(minSearchCharactersStr);
 		}
 		catch (NumberFormatException e) {
+			// TODO: Should be an application constant
 			minSearchCharacters = 3;
 		}
 		
@@ -913,7 +918,6 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 * @param exitDate
 	 * @param cause
 	 */
-	// TODO: Patients should actually be allowed to exit multiple times 
 	private void saveReasonForExitObs(Patient patient, Date exitDate, Concept cause) throws APIException {
 		
 		if (patient == null)

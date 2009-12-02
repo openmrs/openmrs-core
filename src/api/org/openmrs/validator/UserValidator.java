@@ -20,6 +20,7 @@ import java.util.regex.PatternSyntaxException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.User;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
@@ -48,6 +49,8 @@ public class UserValidator implements Validator {
 	 * 
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
+	 * @should fail validation if voided and voidReason is null or empty or whitespace
+	 * @should pass validation if all required fields have proper values
 	 */
 	
 	public void validate(Object obj, Errors errors) {
@@ -55,7 +58,7 @@ public class UserValidator implements Validator {
 		if (user == null) {
 			errors.rejectValue("user", "error.general");
 		} else {
-			if (user.isVoided() && user.getVoidReason().trim().equals(""))
+			if (user.isVoided() && !StringUtils.hasText(user.getVoidReason()))
 				errors.rejectValue("voidReason", "error.null");
 		}
 		
@@ -82,16 +85,19 @@ public class UserValidator implements Validator {
 	 * @should not validate username with less than minimumLength
 	 * @should not validate username with invalid character
 	 * @should not validate username with more than maximum size
+	 * @should not validate when username is null
 	 */
 	public boolean isUserNameValid(String username) {
 		//Initialize reg ex for userName pattern 
 		String expression = "^[\\w][\\Q_\\E\\w-\\.]{1,49}$";
 		
+		if (username == null)
+			return false;
+		
 		try {
 			//Make the comparison case-insensitive.
 			Pattern pattern = Pattern.compile(expression, Pattern.CASE_INSENSITIVE);
-			Matcher matcher = pattern.matcher(username);
-			
+			Matcher matcher = pattern.matcher(username);			
 			return matcher.matches();
 		}
 		catch (PatternSyntaxException pex) {

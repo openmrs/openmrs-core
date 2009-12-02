@@ -182,6 +182,7 @@ public interface PersonService {
 	 * 
 	 * @param type type to be purged from the database
 	 * @throws APIException
+	 * @should delete person attribute type from database
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_PURGE_PERSON_ATTRIBUTE_TYPES })
 	public void purgePersonAttributeType(PersonAttributeType type) throws APIException;
@@ -193,6 +194,7 @@ public interface PersonService {
 	 * @param person person to be voided
 	 * @param reason reason for voiding person
 	 * @return the person that was voided
+	 * @should return voided person with given reason
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_EDIT_PERSONS })
 	public Person voidPerson(Person person, String reason) throws APIException;
@@ -202,6 +204,7 @@ public interface PersonService {
 	 * 
 	 * @param person person to be revived
 	 * @return the person that was unvoided
+	 * @should unvoid the given person
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_EDIT_PERSONS })
 	public Person unvoidPerson(Person person) throws APIException;
@@ -210,6 +213,7 @@ public interface PersonService {
 	 * Delete a Person Attribute Type
 	 * 
 	 * @param attrTypeId
+	 * @deprecated use (@link #purgePersonAttributeType(PersonAttributeType))
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_MANAGE_PERSON_ATTRIBUTE_TYPES })
 	public void deletePersonAttributeType(Integer attrTypeId) throws APIException;
@@ -225,6 +229,7 @@ public interface PersonService {
 	 * 
 	 * @see #getAllPersonAttributeTypes(boolean)
 	 * @return All person attribute types including the retired ones
+	 * @should return all person attribute types including retired
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_PERSON_ATTRIBUTE_TYPES })
@@ -236,6 +241,8 @@ public interface PersonService {
 	 * @param includeRetired boolean - include retired attribute types as well?
 	 * @return List<PersonAttributeType> object of all PersonAttributeTypes, possibly including
 	 *         retired ones
+	 * @should return all person attribute types including retired when include retired is true
+	 * @should return all person attribute types excluding retired when include retired is false
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_PERSON_ATTRIBUTE_TYPES })
@@ -258,6 +265,8 @@ public interface PersonService {
 	 *            nonsearchable and if null returns all
 	 * @return list of PersonAttributeTypes matching the given parameters
 	 * @throws APIException
+	 * @should return person attribute types matching given parameters
+	 * @should return empty list when no person attribute types match given parameters
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_PERSON_ATTRIBUTE_TYPES })
@@ -269,16 +278,17 @@ public interface PersonService {
 	 * 
 	 * @param typeId PersonAttributeType.personAttributeTypeId to match on
 	 * @return the type matching this id or null if none was found
+	 * @should return null when no person attribute with the given id exist
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_PERSON_ATTRIBUTE_TYPES })
 	public PersonAttributeType getPersonAttributeType(Integer typeId) throws APIException;
 	
 	/**
-	 * Get PersonAttributeType by its UUID
+	 * Gets a person attribute type with the given uuid.
 	 * 
-	 * @param uuid
-	 * @return
+	 * @param uuid	the universally unique identifier to lookup
+	 * @return a person attribute type with the given uuid
 	 * @should find object given valid uuid
 	 * @should return null if no object found with given uuid 
 	 */
@@ -291,6 +301,8 @@ public interface PersonService {
 	 * @param id the PersonAttribute.personAttributeId to match on
 	 * @return the matching PersonAttribute or null if none was found
 	 * @throws APIException
+	 * @should return null when PersonAttribute with given id does not exist
+	 * @should return person attribute when PersonAttribute with given id does exist
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_PERSON_ATTRIBUTE_TYPES })
@@ -301,6 +313,8 @@ public interface PersonService {
 	 * 
 	 * @param typeName
 	 * @return the PersonAttributeType that has the given name or null if none found
+	 * @should return person attribute type when name matches given typeName
+	 * @should return null when no person attribute type match given typeName
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_PERSON_ATTRIBUTE_TYPES })
@@ -319,6 +333,8 @@ public interface PersonService {
 	 * @param relationshipId
 	 * @return Relationship the relationship to match on or null if none found
 	 * @throws APIException
+	 * @should return relationship with given id
+	 * @should return null when relationship with given id does not exist
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_RELATIONSHIPS })
@@ -340,6 +356,8 @@ public interface PersonService {
 	 * 
 	 * @return non-voided Relationship list
 	 * @throws APIException
+	 * @return list of all unvoided relationship
+	 * @should return all unvoided relationships
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_RELATIONSHIPS })
@@ -351,6 +369,8 @@ public interface PersonService {
 	 * @param includeVoided true/false whether to include the voided relationships
 	 * @return non-voided Relationship list
 	 * @throws APIException
+	 * @should return all relationship including voided when include voided equals true
+	 * @should return all relationship excluding voided when include voided equals false
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_RELATIONSHIPS })
@@ -371,6 +391,8 @@ public interface PersonService {
 	 * @return Relationship list
 	 * @throws APIException
 	 * @should only get unvoided relationships
+	 * @should fetch relationships associated with the given person
+	 * @should fetch unvoided relationships only
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_RELATIONSHIPS })
@@ -405,6 +427,10 @@ public interface PersonService {
 	 * @param relType (optional) The RelationshipType to match
 	 * @return relationships matching the given parameters
 	 * @throws APIException
+	 * @should fetch relationships matching the given from person
+	 * @should fetch relationships matching the given to person
+	 * @should fetch relationships matching the given rel type
+	 * @should return empty list when no relationship matching given parameters exist
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_RELATIONSHIPS })
@@ -416,6 +442,7 @@ public interface PersonService {
 	 * 
 	 * @return relationshipType list
 	 * @throws APIException
+	 * @should return all relationship types
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_RELATIONSHIP_TYPES })
@@ -433,16 +460,20 @@ public interface PersonService {
 	 * @param relationshipTypeId
 	 * @return relationshipType with given internal identifier or null if none found
 	 * @throws APIException
+	 * 
+	 * @should return relationship type with the given relationship type id
+	 * @should return null when no relationship type matches given relationship type id
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_RELATIONSHIP_TYPES })
 	public RelationshipType getRelationshipType(Integer relationshipTypeId) throws APIException;
 	
 	/**
-	 * Get RelationshipType by its UUID
+	 * Gets the relationship type with the given uuid.
 	 * 
 	 * @param uuid
 	 * @return
+	 * @throws APIException
 	 * @should find object given valid uuid
 	 * @should return null if no object found with given uuid 
 	 */
@@ -461,6 +492,7 @@ public interface PersonService {
 	 * @param relationshipTypeName name to match on
 	 * @return RelationshipType with given name or null if none found
 	 * @throws APIException
+	 * @should return null when no relationship type match the given name
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_RELATIONSHIP_TYPES })
@@ -474,6 +506,8 @@ public interface PersonService {
 	 *            types. if null returns both
 	 * @return RelationshipTypes with given name and preferred status
 	 * @throws APIException
+	 * @should return list of preferred relationship type matching given name
+	 * @should return empty list when no preferred relationship type match the given name
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_RELATIONSHIP_TYPES })
@@ -486,6 +520,7 @@ public interface PersonService {
 	 * @param searchString string to match to a relationship type name
 	 * @return list of relationship types or empty list if none found
 	 * @throws APIException
+	 * @should return empty list when no relationship type match the search string
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_RELATIONSHIP_TYPES })
@@ -504,6 +539,8 @@ public interface PersonService {
 	 * @param relationship relationship to be created or updated
 	 * @return relationship that was created or updated
 	 * @throws APIException
+	 * @should create new object when relationship id is null
+	 * @should update existing object when relationship id is not null
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_ADD_RELATIONSHIPS, OpenmrsConstants.PRIV_EDIT_RELATIONSHIPS })
 	public Relationship saveRelationship(Relationship relationship) throws APIException;
@@ -525,6 +562,7 @@ public interface PersonService {
 	 * 
 	 * @param relationship relationship to be purged from the database
 	 * @throws APIException
+	 * @should delete relationship from the database
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_PURGE_RELATIONSHIPS })
 	public void purgeRelationship(Relationship relationship) throws APIException;
@@ -536,6 +574,7 @@ public interface PersonService {
 	 * @param voidReason String reason the relationship is being voided.
 	 * @return the newly saved relationship
 	 * @throws APIException
+	 * @should void relationship with the given reason
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_DELETE_RELATIONSHIPS })
 	public Relationship voidRelationship(Relationship relationship, String voidReason) throws APIException;
@@ -546,6 +585,7 @@ public interface PersonService {
 	 * @param relationship Relationship to unvoid
 	 * @return the newly unvoided relationship
 	 * @throws APIException
+	 * @should unvoid voided relationship
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_EDIT_RELATIONSHIPS })
 	public Relationship unvoidRelationship(Relationship relationship) throws APIException;
@@ -562,6 +602,8 @@ public interface PersonService {
 	 * @param person person to be created or updated
 	 * @return person who was created or updated
 	 * @throws APIException
+	 * @should create new object when person id is null
+	 * @should update existing object when person id is not null
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_ADD_PERSONS, OpenmrsConstants.PRIV_EDIT_PERSONS })
 	public Person savePerson(Person person) throws APIException;
@@ -583,6 +625,7 @@ public interface PersonService {
 	 * 
 	 * @param person person to be purged from the database
 	 * @throws APIException
+	 * @should delete person from the database
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_PURGE_PERSONS })
 	public void purgePerson(Person person) throws APIException;
@@ -637,6 +680,7 @@ public interface PersonService {
 	 * @param personId internal identifier of person to get
 	 * @return Person person with given internal identifier
 	 * @throws APIException
+	 * @should return null when no person has the given id
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_PERSONS })
@@ -674,6 +718,8 @@ public interface PersonService {
 	 * @param relationshipType type to be created or updated
 	 * @return relationship type that was created or updated
 	 * @throws APIException
+	 * @should create new object when relationship type id is null
+	 * @should update existing object when relationship type id is not null
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_MANAGE_RELATIONSHIP_TYPES })
 	public RelationshipType saveRelationshipType(RelationshipType relationshipType) throws APIException;
@@ -695,6 +741,7 @@ public interface PersonService {
 	 * 
 	 * @param relationshipType relationship type to be purged
 	 * @throws APIException
+	 * @should delete relationship type from the database
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_PURGE_RELATIONSHIP_TYPES })
 	public void purgeRelationshipType(RelationshipType relationshipType) throws APIException;
@@ -714,7 +761,7 @@ public interface PersonService {
 	                                                                                                         throws APIException;
 	
 	/**
-	 * @deprecated use {@link #getPersonAttributeTypes(PERSON_TYPE, ATTR_VIEW_TYPE)}
+	 * @deprecated use {@link #getPersonAttributeTypes(String, String)}
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_PERSON_ATTRIBUTE_TYPES })
@@ -747,6 +794,7 @@ public interface PersonService {
 	 * @param relationshipType type of relationship for which to retrieve all relationships
 	 * @return all relationships for the given type of relationship
 	 * @throws APIException
+	 * @should return empty map when no relationship has the matching relationship type
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_RELATIONSHIPS })

@@ -46,6 +46,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * Creates then updates a form
 	 * 
+	 * FIXME Break this test case into separate tests
 	 * @throws Exception
 	 */
 	@Test
@@ -225,8 +226,8 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link FormService#getForms(String, Boolean, java.util.Collection, Boolean, java.util.Collection, java.util.Collection, java.util.Collection) 
 	 */
 	@Test
-	@Verifies(value = "should get multiple of the same form by field", method = "getForms(String,Boolean,Collection,Boolean,Collection,Collection,Collection)")
-	public void getForms_shouldGetMultipleOfTheSameFormByField() throws Exception {
+	@Verifies(value = "should return duplicate form when given fields included in form multiple times", method = "getForms(String,Boolean,Collection,Boolean,Collection,Collection,Collection)")
+	public void getForms_shouldReturnDuplicateFormWhenGivenFieldsIncludedInFormMultipleTimes() throws Exception {
 		executeDataSet(INITIAL_FIELDS_XML);
 		executeDataSet("org/openmrs/api/include/FormServiceTest-formFields.xml");
 		

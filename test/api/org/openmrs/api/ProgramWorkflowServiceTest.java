@@ -64,11 +64,6 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		}
 	}
 	
-	/**
-	 * @see org.openmrs.testutil.BaseContextSensitiveTest#useInMemoryDatabase()
-	 * 
-	 @Override public Boolean useInMemoryDatabase( ) { return false; }
-	 */
 	
 	/**
 	 * Tests fetching a PatientProgram, updating and saving it, and subsequently fetching the
@@ -175,7 +170,8 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		}
 		TestUtil.assertCollectionContentsEquals(Arrays.asList(new String[] { "SINGLE", "MARRIED" }), names);
 	}
-
+	
+	
 	/**
 	 * @see {@link ProgramWorkflowService#getConceptStateConversionByUuid(String)}
 	 * 
@@ -319,6 +315,7 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 			throws Exception {
 		Assert.assertNull(Context.getProgramWorkflowService().getWorkflowByUuid("some invalid uuid"));
 	}
+
 	
 	//	/**
 	//	 * This method should be uncommented when you want to examine the actual hibernate
@@ -337,5 +334,9 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	//	    
 	//    	return props;
 	//    }
+	
+	
+	
+	
 	
 }

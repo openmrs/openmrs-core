@@ -41,6 +41,8 @@ import org.openmrs.ConceptProposal;
 import org.openmrs.ConceptSet;
 import org.openmrs.ConceptSource;
 import org.openmrs.ConceptWord;
+import org.openmrs.Encounter;
+import org.openmrs.Obs;
 import org.openmrs.Drug;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
@@ -247,7 +249,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 * This test will fail if it takes more than 15 seconds to run. (Checks for an error with the
 	 * iterator looping forever) The @Timed annotation is used as an alternative to
 	 * "@Test(timeout=15000)" so that the Spring transactions work correctly. Junit has a "feature"
-	 * where it executes the befores/afters in a thread separate from the one that the actual test
+	 * where it executes the befores/afters in a thread separate from the one that the actual test 
 	 * ends up running in when timed.
 	 * 
 	 * @see {@link ConceptService#conceptIterator()}
@@ -401,6 +403,44 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(1847, words.get(0).getConceptName().getConceptNameId().intValue());
 		
 		TestUtil.printOutTableContents(getConnection(), "concept_word");
+	}
+	
+	
+	/**
+	 * This test had to be added to ConceptServiceTest because ConceptTest does
+	 * not currently support context sensitive tests (and shouldn't need to).
+	 * 
+	 * TODO This test case passes here, but fails in the core reporting module.
+	 * TODO: determine whether we want to remove this test case
+	 * 
+	 * @see {@link Concept#equals(Object)}
+	 */
+	@Test
+	@SkipBaseSetup
+	@Verifies(value = "should return true when comparing two identical concept numeric objects", method = "equals(Object)")
+	public void equals_shouldReturnTrueWhenComparingTwoIdenticalConceptNumericObjects()
+			throws Exception {
+		initializeInMemoryDatabase();
+		
+		// TODO Cleanup - dataset has way more data than necessary
+		executeDataSet("org/openmrs/api/include/ConceptServiceTest-numerics.xml");
+
+		authenticate();		
+
+		Concept concept1 = Context.getConceptService().getConcept(new Integer(1016));
+		Assert.assertNotNull(concept1);
+		
+		Encounter encounter = Context.getEncounterService().getEncounter(new Integer(14943));
+		Assert.assertNotNull(encounter);
+		Assert.assertNotNull(encounter.getObs());
+		
+		for (Obs obs : encounter.getObs()) { 
+			if (obs.getConcept().getConceptId() == concept1.getConceptId()) { 
+				Assert.assertTrue(obs.getConcept().equals(concept1));
+				Assert.assertTrue(concept1.equals(obs.getConcept()));
+			}
+				
+		}
 	}
 	
 	/**
@@ -754,4 +794,9 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(cs.isRetired());
 		Assert.assertEquals("dummy reason for retirement", cs.getRetireReason());
 	}
+	
+	
+	
+	
+	
 }
