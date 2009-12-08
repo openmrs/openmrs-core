@@ -34,12 +34,16 @@ public class ListPickerTag extends TagSupport {
 	
 	private Collection<Object> currentItems;
 	
+	private Collection<Object> inheritedItems;
+	
 	public int doStartTag() {
 		
 		if (name == null)
 			name = "list" + (int) (Math.random() * 100);
 		if (currentItems == null)
 			currentItems = new Vector<Object>();
+		if (inheritedItems == null)
+			inheritedItems = new Vector<Object>();
 		if (allItems == null)
 			allItems = new Vector<Object>();
 		
@@ -47,17 +51,27 @@ public class ListPickerTag extends TagSupport {
 		
 		for (Object item : allItems) {
 			boolean checked = false;
+			boolean inherited = false;
 			if (currentItems.contains(item))
 				checked = true;
+			if (inheritedItems.contains(item))
+				inherited = true;
 			String id = name + "." + item.toString().replace(" ", "");
-			str += "<span class='listItem" + (checked ? " listItemChecked" : "") + "'>";
-			str += "<input type='checkbox'";
-			str += "  name='" + name + "'";
-			str += "  id='" + id + "'";
-			str += "  value='" + item + "'";
-			str += "  onclick='this.parentNode.className=\"listItem \" + (this.checked == true ? \"listItemChecked\" : \"\");'";
-			if (checked)
-				str += "  checked='checked' ";
+			if (inherited) {
+				str += "<span class='listItem listItemChecked'>";
+				str += "<input type='checkbox' name=''";
+				str += " checked='checked'";
+				str += " disabled='disabled'";
+			} else {
+				str += "<span class='listItem" + (checked ? " listItemChecked" : "") + "'>";
+				str += "<input type='checkbox'";
+				str += " name='" + name + "'";
+				str += " id='" + id + "'";
+				str += " value='" + item + "'";
+				str += " onclick='this.parentNode.className=\"listItem \" + (this.checked == true ? \"listItemChecked\" : \"\");'";
+				if (checked)
+					str += "  checked='checked' ";
+			}
 			str += " /><label for='" + id + "'>" + item + "</label>";
 			str += "</span>\n";
 		}
@@ -88,6 +102,14 @@ public class ListPickerTag extends TagSupport {
 	
 	public void setCurrentItems(Collection<Object> currentItems) {
 		this.currentItems = currentItems;
+	}
+	
+	public Collection<Object> getInheritedItems() {
+		return currentItems;
+	}
+	
+	public void setInheritedItems(Collection<Object> inheritedItems) {
+		this.inheritedItems = inheritedItems;
 	}
 	
 	public String getName() {
