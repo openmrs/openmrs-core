@@ -34,8 +34,10 @@ import org.openmrs.PersonAttributeType;
 import org.openmrs.PersonName;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
+import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.PersonDAO;
+import org.openmrs.util.OpenmrsConstants;
 
 /**
  * Hibernate specific Person database methods. <br/>
@@ -53,7 +55,7 @@ import org.openmrs.api.db.PersonDAO;
  */
 public class HibernatePersonDAO implements PersonDAO {
 	
-	protected final Log log = LogFactory.getLog(getClass());
+	protected final static Log log = LogFactory.getLog(HibernatePersonDAO.class);
 	
 	/**
 	 * Hibernate session factory
@@ -274,7 +276,26 @@ public class HibernatePersonDAO implements PersonDAO {
 			criteria.add(Expression.eq("dead", dead));
 		criteria.addOrder(Order.asc("personId"));
 		criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+		criteria.setMaxResults(getMaximumSearchResults());
 		return criteria.list();
+	}
+	
+	/**
+	 * Fetch the max results value from the global properties table
+	 * 
+	 * @return Integer value for the patient search max results global property
+	 */
+	protected static Integer getMaximumSearchResults() {
+		try {
+			return Integer.valueOf(Context.getAdministrationService().getGlobalProperty(
+			    OpenmrsConstants.GLOBAL_PROPERTY_PERSON_SEARCH_MAX_RESULTS, String.valueOf(OpenmrsConstants.GLOBAL_PROPERTY_PERSON_SEARCH_MAX_RESULTS_DEFAULT_VALUE)));
+		}
+		catch (Exception e) {
+			log.warn("Unable to convert the global property " + OpenmrsConstants.GLOBAL_PROPERTY_PERSON_SEARCH_MAX_RESULTS
+			        + "to a valid integer. Returning the default " + OpenmrsConstants.GLOBAL_PROPERTY_PERSON_SEARCH_MAX_RESULTS_DEFAULT_VALUE);
+		}
+		
+		return OpenmrsConstants.GLOBAL_PROPERTY_PERSON_SEARCH_MAX_RESULTS_DEFAULT_VALUE;
 	}
 	
 	/**
