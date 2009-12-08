@@ -130,11 +130,13 @@ public class RoleFormController extends SimpleFormController {
 		if (Context.isAuthenticated()) {
 			List<Role> allRoles = Context.getUserService().getAllRoles();
 			Set<Role> inheritingRoles = new HashSet<Role>();
+			Set<Privilege> inheritedPrivileges = new HashSet<Privilege>();
 			allRoles.remove(role);
 			for (Role r : allRoles) {
 				if (r.getInheritedRoles().contains(role))
 					inheritingRoles.add(r);
 			}
+			addInheritedPrivileges(role, inheritedPrivileges);
 			
 			for (String s : OpenmrsConstants.AUTO_ROLES()) {
 				Role r = Context.getUserService().getRole(s);
@@ -143,6 +145,7 @@ public class RoleFormController extends SimpleFormController {
 			
 			map.put("allRoles", allRoles);
 			map.put("inheritingRoles", inheritingRoles);
+			map.put("inheritedPrivileges", inheritedPrivileges);
 			map.put("privileges", Context.getUserService().getAllPrivileges());
 			map.put("superuser", OpenmrsConstants.SUPERUSER_ROLE);
 		}
@@ -173,4 +176,23 @@ public class RoleFormController extends SimpleFormController {
 		return role;
 	}
 	
+	/**
+	 * Fills the inherited privilege set recursively from the entire hierarchy of inheriting roles.
+	 * 
+	 * @param role The root role
+	 * @param inheritedPrivileges The set to fill
+	 */
+	private void addInheritedPrivileges(Role role, Set<Privilege> inheritedPrivileges) {
+		if (role.getInheritedRoles() != null) {
+			for (Role r : role.getInheritedRoles()) {
+				if (r.getPrivileges() != null) {
+					for (Privilege p : r.getPrivileges()) {
+						if (!inheritedPrivileges.contains(p))
+							inheritedPrivileges.add(p);
+					}
+				}
+				addInheritedPrivileges(r, inheritedPrivileges);
+			}
+		}
+	}
 }

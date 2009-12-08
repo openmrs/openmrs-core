@@ -88,6 +88,7 @@
 		<th></th>
 		<td>
 			<i><spring:message code="Role.inheritedRoles.description"/></i>
+			<br/>
 			<c:if test="${role.role == superuser}"><spring:message code="Role.superuser.hasAllRolesAndPrivileges"/></c:if>
 			<c:if test="${role.role != superuser}">
 				<openmrs:listPicker name="inheritedRoles" allItems="${allRoles}" currentItems="${role.inheritedRoles}" />
@@ -100,9 +101,11 @@
 	<tr>
 		<th></th>
 		<td>
+			<i><spring:message code="Role.inheritedPrivileges.description"/></i>
+			<br/>
 			<c:if test="${role.role == superuser}"><spring:message code="Role.superuser.hasAllRolesAndPrivileges"/></c:if>
 			<c:if test="${role.role != superuser}">
-				<openmrs:listPicker name="privileges" allItems="${privileges}" currentItems="${role.privileges}" />
+				<openmrs:listPicker name="privileges" allItems="${privileges}" currentItems="${role.privileges}" inheritedItems="${inheritedPrivileges}" />
 			</c:if>
 		</td>
 	</tr>
