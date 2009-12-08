@@ -298,7 +298,7 @@ public class HibernatePatientDAO implements PatientDAO {
 		
 		// restricting the search to the max search results value
 		criteria.setFirstResult(0);
-		criteria.setMaxResults(getMaximumSearchResults());
+		criteria.setMaxResults(HibernatePersonDAO.getMaximumSearchResults());
 		
 		return criteria.list();
 	}
@@ -631,24 +631,6 @@ public class HibernatePatientDAO implements PatientDAO {
 	public PatientIdentifierType getPatientIdentifierTypeByUuid(String uuid) {
 		return (PatientIdentifierType) sessionFactory.getCurrentSession().createQuery(
 		    "from PatientIdentifierType pit where pit.uuid = :uuid").setString("uuid", uuid).uniqueResult();
-	}
-	
-	/**
-	 * Fetch the max results value from the global properties table
-	 * 
-	 * @return Integer value for the patient search max results global property
-	 */
-	private Integer getMaximumSearchResults() {
-		try {
-			return Integer.valueOf(Context.getAdministrationService().getGlobalProperty(
-			    OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MAX_RESULTS, "1000"));
-		}
-		catch (Exception e) {
-			log.warn("Unable to convert the global property " + OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MAX_RESULTS
-			        + "to a valid integer. Returning the default 1000");
-		}
-		
-		return 1000;
 	}
 	
 	/**

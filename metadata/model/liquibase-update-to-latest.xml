@@ -2785,4 +2785,9 @@
 		<update tableName="role"><column name="uuid" value="8d94f852-c2cc-11de-8d13-0010c6dffd0f"/><where> role = 'System Developer'</where></update>
 	</changeSet>
 	
+	<changeSet id="200912071501-1" author="arthurs"> 
+		<comment>Change name for patient.searchMaxResults global property to person.searchMaxResults</comment> 
+		<update tableName="global_property"><column name="property" value="person.searchMaxResults"/><where> property = 'patient.searchMaxResults'</where></update> 
+	</changeSet>
+	 
 </databaseChangeLog>
