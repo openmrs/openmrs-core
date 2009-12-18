@@ -498,9 +498,15 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	}
 	
 	/**
-	 * @see java.lang.Object#toString()
+	 * Convenience method to get all the names of this
+	 * PersonName and concatonating them together with
+	 * spaces in between.  If any part of {@link #getPrefix()},
+	 * {@link #getGivenName()}, {@link #getMiddleName()}, etc
+	 * are null, they are not included in the returned name
+	 * 
+	 * @return all of the parts of this {@link PersonName} joined with spaces
 	 */
-	public String toString() {
+	public String getFullName() {
 		List<String> temp = new ArrayList<String>();
 		if (getPrefix() != null)
 			temp.add(getPrefix());
@@ -524,6 +530,19 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 		return nameString.trim();
 	}
 	
+	/**
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+    	// TODO find all uses of this toString() method and 
+    	// change them to use the getFullName() method.  This
+    	// to string should print out the #getPersonNameId() and 
+    	// all of the values for each part
+    	
+    	return getFullName();
+    }
+
 	/**
 	 * TODO: the behavior of this method needs to be controlled by some sort of global property
 	 * because an implementation can define how they want their names to look (which fields to

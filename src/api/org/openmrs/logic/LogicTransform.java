@@ -13,10 +13,20 @@
  */
 package org.openmrs.logic;
 
+import org.openmrs.logic.op.Count;
+import org.openmrs.logic.op.First;
+import org.openmrs.logic.op.Last;
 import org.openmrs.logic.op.Operator;
+import org.openmrs.logic.op.TransformOperator;
+import org.openmrs.logic.result.Result;
 
 /**
- *
+ * LogicTransform is internal representation of the transformation applied to the LogicCriteria <br /><br />
+ * 
+ * Example: <br />
+ * <code>count()</code> will apply the {@link Count} operator and return the total number of {@link Result} instead of the Result itself
+ * <code>first(2)</code> will apply the {@link First} operator and return the first two {@link Result} out of the entire Result
+ * 
  */
 public class LogicTransform {
 	
@@ -35,6 +45,11 @@ public class LogicTransform {
 		this.transformOperator = transformOperator;
 	}
 	
+	/**
+	 * Get the {@link TransformOperator} in this LogicTransform object
+	 * 
+	 * @return the current TransformOperator
+	 */
 	public Operator getTransformOperator() {
 		return transformOperator;
 	}
@@ -56,6 +71,10 @@ public class LogicTransform {
 		return result.toString();
 	}
 	
+	/**
+	 * Get number of {@link Result} object should be returned by the current criteria. <br>
+	 * Only for {@link First} and {@link Last}
+	 */
 	public Integer getNumResults() {
 		return numResults;
 	}
@@ -64,6 +83,12 @@ public class LogicTransform {
 		return sortColumn;
 	}
 	
+	/**
+	 * Set number of {@link Result} object should be returned by the current criteria. <br>
+	 * Only for {@link First} and {@link Last}
+	 * 
+	 * @param numResults the total Result expected from this criteria
+	 */
 	public void setNumResults(Integer numResults) {
 		this.numResults = numResults;
 	}

@@ -13,7 +13,15 @@
  */
 package org.openmrs.logic.op;
 
-public class Or implements Operator {
+import org.openmrs.logic.LogicCriteria;
+
+/**
+ * The  Or operator is a disjunction operator to combine two or more {@link LogicCriteria} objects.<br /><br />
+ * Example: <br />
+ * - <code>logicService.parse("'CD4 COUNT'").or(logicService.parse("'WEIGHT (KG)'"));</code><br />
+ *   The above will give us a criteria to check if there's "CD4 COUNT" or "WEIGHT (KG)" observations
+ */
+public class Or implements LogicalOperator {
 	
 	public String toString() {
 		return "OR";

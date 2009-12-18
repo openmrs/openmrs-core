@@ -73,7 +73,6 @@
         <property name="dataSetService"><ref bean="dataSetService"/></property>
         <property name="hl7Service"><ref bean="hL7Service"/></property>
         <property name="ardenService"><ref bean="ardenService"/></property>
-        <property name="logicService"><ref bean="logicService"/></property>
         <property name="messageSourceService"><ref bean="messageSourceService"/></property>
 	</bean>	
 	
@@ -153,43 +152,6 @@
 	</bean>
 	<bean id="hL7DAO" class="org.openmrs.hl7.db.hibernate.HibernateHL7DAO">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
-	</bean>
-
-	<!-- *************************** LOGIC SERVICE ************************* -->
-	
-	<bean id="logicObsDAO" class="org.openmrs.logic.db.hibernate.HibernateLogicObsDAO">
-		<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
-	</bean>
-	<bean id="logicPersonDAO" class="org.openmrs.logic.db.hibernate.HibernateLogicPersonDAO">
-		<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
-	</bean>
-	<bean id="logicEncounterDAO" class="org.openmrs.logic.db.hibernate.HibernateLogicEncounterDAO">
-		<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
-	</bean>
-	<bean id="logicObsDataSource" class="org.openmrs.logic.datasource.ObsDataSource">
-		<property name="logicObsDAO"><ref bean="logicObsDAO"></ref></property>
-	</bean>
-	<bean id="logicPersonDataSource" class="org.openmrs.logic.datasource.PersonDataSource">
-		<property name="logicPersonDAO"><ref bean="logicPersonDAO"></ref></property>
-	</bean>
-	<bean id="logicEncounterDataSource" class="org.openmrs.logic.datasource.EncounterDataSource">
-		<property name="logicEncounterDAO"><ref bean="logicEncounterDAO"></ref></property>
-	</bean>
-	<bean id="logicProgramDataSource" class="org.openmrs.logic.datasource.ProgramDataSource" />
-	<bean id="logicRuleTokenTarget" class="org.openmrs.logic.db.hibernate.HibernateLogicRuleTokenDAO">
-		<property name="sessionFactory"><ref bean="sessionFactory" /></property>
-	</bean>
-	<bean id="logicRuleTokenDAO" class="org.springframework.aop.framework.ProxyFactoryBean">
-		<property name="proxyInterfaces"><value>org.openmrs.logic.db.LogicRuleTokenDAO</value></property>
-		<property name="target"><ref local="logicRuleTokenTarget"/></property>
-		<property name="interceptorNames">
-			<list>
-				<value>requiredDataInterceptor</value>
-			</list>
-		</property>
-	</bean>
-	<bean id="ruleFactory" class="org.openmrs.logic.impl.RuleFactory">
-		<property name="logicRuleTokenDAO"><ref bean="logicRuleTokenDAO" /></property>
 	</bean>
 
 	<!--  **************************  SCHEDULER SERVICE  *************************  -->
@@ -348,20 +310,6 @@
 	<bean id="ardenServiceTarget" class="org.openmrs.arden.impl.ArdenServiceImpl">
 	</bean>
 	
-	<!--  Logic Service and Logic Data source setup -->
-	<bean id="logicServiceTarget" class="org.openmrs.logic.impl.LogicServiceImpl">
-		<property name="ruleFactory"><ref bean="ruleFactory" /></property>
-		<property name="logicDataSources">
-			<map>
-				<entry key="encounter"><ref bean="logicEncounterDataSource" /></entry>
-				<entry key="obs"><ref bean="logicObsDataSource" /></entry>
-				<entry key="person"><ref bean="logicPersonDataSource" /></entry>
-				<entry key="program"><ref bean="logicProgramDataSource" /></entry>
-			</map>
-		</property>
-	</bean>
-	<!-- /Logic Service and Logic Data Source setup -->
-	
 	<bean id="messageSourceServiceTarget" class="org.openmrs.messagesource.impl.MessageSourceServiceImpl">
 		<property name="activeMessageSource"><ref bean="mutableResourceBundleMessageSource"/>
 		</property>
@@ -382,7 +330,6 @@
 		<property name="cacheSeconds" value="1" />
 		<property name="defaultEncoding"><value>UTF-8</value></property>
 	</bean>
-	<!-- /Logic Service and Logic Data Source setup -->
 	
 	<bean id="patientService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 		<property name="transactionManager"><ref local="transactionManager"/></property>
@@ -559,14 +506,6 @@
 	<bean id="ardenService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 		<property name="transactionManager"><ref local="transactionManager"/></property>
 		<property name="target"><ref local="ardenServiceTarget"/></property>
-		<property name="preInterceptors">
-			<ref local="serviceInterceptors" />
-		</property>
-		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
-	</bean>
-	<bean id="logicService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager"><ref local="transactionManager"/></property>
-		<property name="target"><ref local="logicServiceTarget"/></property>
 		<property name="preInterceptors">
 			<ref local="serviceInterceptors" />
 		</property>

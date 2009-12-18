@@ -13,7 +13,10 @@
  */
 package org.openmrs.logic.op;
 
-public class Not implements Operator {
+/**
+ * The Not operator will negate the a logic expression
+ */
+public class Not implements LogicalOperator {
 	
 	public String toString() {
 		return "NOT";

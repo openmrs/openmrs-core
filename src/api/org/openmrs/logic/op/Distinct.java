@@ -14,9 +14,13 @@
 package org.openmrs.logic.op;
 
 /**
- *
+ * The Distinct operator will filter out duplicate results and return a set of distinct results.<br /><br />
+ * 
+ * Example: <br />
+ * - <code>logicService.parse("EncounterDataSource.ENCOUNTER_KEY").distinct();</code><br />
+ *   The above will give us a criteria to get all distinct encounter type from the system
  */
-public class Distinct implements Operator {
+public class Distinct implements TransformOperator {
 	
 	public String toString() {
 		return "DISTINCT";
