@@ -396,6 +396,28 @@ public interface LogicService {
 	
 	public void loadRule(String tokenName, String ruleClassName) throws Exception;
 	
+	/**
+	 * Parse a criteria String to create a new LogicCriteria. <br /><br />
+	 * 
+	 * Example: <br />
+	 * <code>logicService.parseString("LAST 'CD4 COUNT' < 200");</code>
+	 * 
+	 * @param inStr LogicCriteria expression in a plain String object.
+	 * @return LogicCriteria using all possible operand and operator from the String input
+	 * @deprecated use {@link LogicService#parse(String)}
+	 */
+	@Deprecated
 	public LogicCriteria parseString(String inStr);
+	
+	/**
+	 * Parse a criteria String to create a new LogicCriteria. <br /><br />
+	 * 
+	 * Example: <br />
+	 * <code>logicService.parseString("LAST 'CD4 COUNT' < 200");</code>
+	 * 
+	 * @param criteria LogicCriteria expression in a plain String object.
+	 * @return LogicCriteria using all possible operand and operator from the String input
+	 */
+	public LogicCriteria parse(String criteria);
 	
 }
