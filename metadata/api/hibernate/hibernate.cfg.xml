@@ -78,9 +78,6 @@
 		
 		<!-- Scheduler -->
 		<mapping resource="org/openmrs/scheduler/db/hibernate/TaskDefinition.hbm.xml" />
-		
-		<!-- Logic -->
-		<mapping resource="org/openmrs/logic/db/hibernate/LogicRuleToken.hbm.xml"/>
 
   </session-factory>
 

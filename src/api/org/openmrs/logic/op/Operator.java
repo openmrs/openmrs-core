@@ -13,46 +13,55 @@
  */
 package org.openmrs.logic.op;
 
+/**
+ * An operator used within a logical expression.
+ */
 public interface Operator {
 	
-	public static final Operator AND = new And();
+	// comparison operators
+	public static final Operator CONTAINS = ComparisonOperator.CONTAINS;
 	
+	public static final Operator EQUALS = ComparisonOperator.EQUALS;
+	
+	public static final Operator WITHIN = ComparisonOperator.WITHIN;
+	
+	public static final Operator GT = ComparisonOperator.GT;
+	
+	public static final Operator GTE = ComparisonOperator.GTE;
+	
+	public static final Operator LT = ComparisonOperator.LT;
+	
+	public static final Operator LTE = ComparisonOperator.LTE;
+	
+	public static final Operator BEFORE = ComparisonOperator.BEFORE;
+	
+	public static final Operator AFTER = ComparisonOperator.AFTER;
+	
+	public static final Operator IN = ComparisonOperator.IN;
+	
+	// weird operator
 	public static final Operator ASOF = new AsOf();
 	
-	public static final Operator OR = new Or();
+	// logical operators
+	public static final Operator AND = LogicalOperator.AND;
 	
-	public static final Operator NOT = new Not();
+	public static final Operator OR = LogicalOperator.OR;
 	
-	public static final Operator BEFORE = new Before();
+	public static final Operator NOT = LogicalOperator.NOT;
 	
-	public static final Operator AFTER = new After();
+	// transform operators
+	public static final Operator LAST = TransformOperator.LAST;
 	
-	public static final Operator CONTAINS = new Contains();
+	public static final Operator FIRST = TransformOperator.FIRST;
 	
-	public static final Operator EQUALS = new Equals();
+	public static final Operator DISTINCT = TransformOperator.DISTINCT;
 	
-	public static final Operator GT = new GreaterThan();
+	public static final Operator EXISTS = TransformOperator.EXISTS;
 	
-	public static final Operator GTE = new GreaterThanEquals();
+	public static final Operator NOT_EXISTS = TransformOperator.NOT_EXISTS;
 	
-	public static final Operator LT = new LessThan();
+	public static final Operator COUNT = TransformOperator.COUNT;
 	
-	public static final Operator LTE = new LessThanEquals();
-	
-	public static final Operator LAST = new Last();
-	
-	public static final Operator FIRST = new First();
-	
-	public static final Operator EXISTS = new Exists();
-	
-	public static final Operator NOT_EXISTS = new NotExists();
-	
-	public static final Operator WITHIN = new Within();
-	
-	public static final Operator DISTINCT = new Distinct();
-	
-	public static final Operator COUNT = new Count();
-	
-	public static final Operator AVERAGE = new Average();
+	public static final Operator AVERAGE = TransformOperator.AVERAGE;
 	
 }

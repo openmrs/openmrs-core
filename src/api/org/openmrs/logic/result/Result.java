@@ -22,15 +22,24 @@ import org.openmrs.Concept;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.Obs;
 import org.openmrs.api.context.Context;
+import org.openmrs.logic.LogicException;
 
 /**
- * A result from the logic service. A result can be 0-to-n date-values pairs. You can treat the
- * result as a list or easily coerce it into a simple value as needed. When possible, results carry
- * references to more complex objects so that code that deals with results and has some prior
- * knowledge of the objects returned by a particular rule can more easily get to the full-featured
- * objects instead of the simplified values in the date-value pairs. TODO: eliminate unnecessary
- * methods (toDatetime(), getDatetime(), and getDate() should all do the same thing) TODO: better
- * support/handling of NULL_RESULT
+ * 
+ * A result from the logic service. A result can be 0-to-n date-values pairs.
+ * You can treat the result as a list or easily coerce it into a simple value as
+ * needed. <br/><br/>
+ * 
+ * When possible, results carry references to more complex objects so that code
+ * that deals with results and has some prior knowledge of the objects returned
+ * by a particular rule can more easily get to the full-featured objects instead
+ * of the simplified values in the date-value pairs.<br/><br/>
+ * 
+ * TODO: eliminate unnecessary methods (toDatetime(), getDatetime(), and
+ * getDate() should all do the same thing)<br/>
+ * 
+ * TODO: better support/handling of NULL_RESULT
+ * 
  */
 public class Result extends ArrayList<Result> {
 	
@@ -45,7 +54,26 @@ public class Result extends ArrayList<Result> {
 	 * "15 percent" or "Fifteen percent."
 	 */
 	public enum Datatype {
-		BOOLEAN, CODED, DATETIME, NUMERIC, TEXT
+		/**
+		 * Represents a true/false type of result
+		 */
+		BOOLEAN,
+		/**
+		 * Represents a Concept type of result
+		 */
+		CODED,
+		/**
+		 * Represents a date type of result
+		 */
+		DATETIME,
+		/**
+		 * Represents number (float, double, int) type of results
+		 */
+		NUMERIC,
+		/**
+		 * Represents string type of results
+		 */
+		TEXT
 	}
 	
 	private Datatype datatype;
@@ -74,6 +102,7 @@ public class Result extends ArrayList<Result> {
 	 * list of other results.
 	 * 
 	 * @param result the result that will be the sole member of the new result
+	 * @should not fail with null result
 	 */
 	public Result(Result result) {
 		if (result != null) {
@@ -85,6 +114,8 @@ public class Result extends ArrayList<Result> {
 	 * Builds a result from a list of results
 	 * 
 	 * @param list a list of results
+	 * @should not fail with null list
+	 * @should not fail with empty list
 	 */
 	public Result(List<Result> list) {
 		if (!(list == null || list.size() < 1))
@@ -259,11 +290,12 @@ public class Result extends ArrayList<Result> {
 	 * 
 	 * @param resultDate
 	 * @param datatype
-	 * @param valueNumeric
-	 * @param valueDatetime
-	 * @param valueCoded
-	 * @param valueText
 	 * @param valueBoolean
+	 * @param valueCoded
+	 * @param valueDatetime
+	 * @param valueNumeric
+	 * @param valueText
+	 * @param object
 	 */
 	public Result(Date resultDate, Datatype datatype, Boolean valueBoolean, Concept valueCoded, Date valueDatetime,
 	    Double valueNumeric, String valueText, Object object) {
@@ -391,10 +423,20 @@ public class Result extends ArrayList<Result> {
 		return this.get(0).getResultDate();
 	}
 	
+	/**
+	 * Get the result object
+	 * 
+	 * @return the underlying result object
+	 */
 	public Object getResultObject() {
 		return this.resultObject;
 	}
 	
+	/**
+	 * Set the result object
+	 * 
+	 * @param object
+	 */
 	public void setResultObject(Object object) {
 		this.resultObject = object;
 	}
@@ -612,13 +654,15 @@ public class Result extends ArrayList<Result> {
 	/**
 	 * @return the object associated with the result (generally, this is used internally or for
 	 *         advanced rule design)
+	 * @should return resultObject for single results
+	 * @should return all results for result list
 	 */
 	public Object toObject() {
-		if (this.size() < 1)
-			return null;
+		if (isSingleResult())
+			return resultObject;
 		if (this.size() == 1)
 			return this.get(0).toObject();
-		return this.toArray();
+		throw new LogicException("This result represents more than one result, you cannot call toObject on multiple results");
 	}
 	
 	/**
@@ -730,7 +774,11 @@ public class Result extends ArrayList<Result> {
 			return false;
 		Result r = (Result) obj;
 		
-		if (r instanceof EmptyResult && obj instanceof EmptyResult) {
+		if (EmptyResult.class.isAssignableFrom(r.getClass()) && this.isEmpty()) {
+			return true;
+		}
+		
+		if (EmptyResult.class.isAssignableFrom(this.getClass()) && r.isEmpty()) {
 			return true;
 		}
 		
@@ -775,6 +823,7 @@ public class Result extends ArrayList<Result> {
 	 *         return the result only if <em>index</em> is equal to zero (0); otherwise, returns an
 	 *         empty result
 	 * @see java.util.List#get(int)
+	 * @should get empty result for indexes out of range
 	 */
 	@Override
 	public Result get(int index) {
@@ -789,11 +838,23 @@ public class Result extends ArrayList<Result> {
 	
 	/**
 	 * @return the chronologically (based on result date) first result
+	 * @should get the first result given multiple results
+	 * @should get the result given a single result
+	 * @should get an empty result given an empty result
+	 * @should not get the result with null result date given other results
+	 * @should get one result with null result dates for all results
 	 */
 	public Result earliest() {
 		if (isSingleResult())
 			return this;
+		
 		Result first = emptyResult();
+		
+		// default the returned result to the first item
+		// in case all resultDates are null
+		if (size() > 0)
+			first = get(0);
+		
 		for (Result r : this) {
 			if (r != null && r.getResultDate() != null
 			        && (first.getResultDate() == null || r.getResultDate().before(first.getResultDate()))) {
@@ -805,19 +866,34 @@ public class Result extends ArrayList<Result> {
 	
 	/**
 	 * @return the chronologically (based on result date) last result
+	 * @should get the most recent result given multiple results
+	 * @should get the result given a single result
+	 * @should get an empty result given an empty result
+	 * @should get the result with null result date
 	 */
 	public Result latest() {
 		if (isSingleResult())
 			return this;
 		Result last = emptyResult();
+		
+		// default the returned result to the first item
+		// in case all resultDates are null
+		if (size() > 0)
+			last = get(0);
+		
 		for (Result r : this) {
-			if ((last.getResultDate() == null || r.getResultDate().after(last.getResultDate()))) {
+			if ((last.getResultDate() == null || (r.getResultDate() != null && r.getResultDate().after(last.getResultDate())))) {
 				last = r;
 			}
 		}
 		return last;
 	}
 	
+	/**
+	 * Convenience method to know if this Result represents multiple results or not
+	 * 
+	 * @return true/false whether this is just one Result or more than one
+	 */
 	private boolean isSingleResult() {
 		return (this.size() < 1);
 	}

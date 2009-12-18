@@ -13,7 +13,14 @@
  */
 package org.openmrs.logic.op;
 
-public class NotExists implements Operator {
+/**
+ * The NotExists operator test whether a criteria will exist for person or not.<br /><br />
+ * 
+ * Example: <br />
+ * - <code>logicService.parse("EncounterDataSource.ENCOUNTER_KEY").equals("ADULTRETURN").notExists();</code><br />
+ *   The above will give us a criteria to test whether ADULTRETURN encounter exists or not
+ */
+public class NotExists implements TransformOperator {
 	
 	public String toString() {
 		return "NOT EXISTS";

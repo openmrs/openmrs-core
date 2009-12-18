@@ -13,13 +13,18 @@
  */
 package org.openmrs.logic;
 
+import org.openmrs.logic.op.ComparisonOperator;
+import org.openmrs.logic.op.Operand;
+
 /**
  * Represents a duration of time &mdash; e.g., one year, two weeks, or 18 months. Used within
- * criteria
+ * criteria.
+ * 
+ * Use the <code>Duration duration = Duration.days(5.0);</code> to get a duration object
  * 
  * @see org.openmrs.logic.LogicCriteria
  */
-public class Duration {
+public class Duration implements Operand {
 	
 	public static enum Units {
 		SECONDS, MINUTES, HOURS, DAYS, WEEKS, MONTHS, YEARS
@@ -29,6 +34,13 @@ public class Duration {
 	
 	private Units units;
 	
+	/**
+	 * Private contructor used by the static methods on this class. Use the
+	 * <code>Duration duration = Duration.days(5.0);</code> to get a duration object
+	 * 
+	 * @param duration
+	 * @param units
+	 */
 	private Duration(Double duration, Units units) {
 		this.duration = duration;
 		this.units = units;
@@ -233,6 +245,13 @@ public class Duration {
 	 */
 	public static Duration years(int duration) {
 		return years(new Double(duration));
+	}
+	
+	/**
+	 * @see org.openmrs.logic.op.Operand#supports(org.openmrs.logic.op.ComparisonOperator)
+	 */
+	public boolean supports(ComparisonOperator operator) {
+		return (ComparisonOperator.WITHIN.equals(operator));
 	}
 	
 }

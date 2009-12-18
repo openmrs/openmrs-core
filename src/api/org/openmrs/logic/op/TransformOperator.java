@@ -11,32 +11,25 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.logic;
+package org.openmrs.logic.op;
 
 /**
- * Thrown if a logic query cannot be parsed.
- * 
- * @see LogicCriteria#parse(String)
- * @see LogicQueryParser
+ * Marker for all transform operator.
  */
-public class LogicQueryParseException extends Exception {
+public interface TransformOperator extends Operator {
 	
-	private static final long serialVersionUID = 5337024824358532576L;
+	public static final TransformOperator LAST = new Last();
 	
-	public LogicQueryParseException() {
-		super();
-	}
+	public static final TransformOperator FIRST = new First();
 	
-	public LogicQueryParseException(Throwable t) {
-		super(t);
-	}
+	public static final TransformOperator DISTINCT = new Distinct();
 	
-	public LogicQueryParseException(String message) {
-		super(message);
-	}
+	public static final TransformOperator EXISTS = new Exists();
 	
-	public LogicQueryParseException(String message, Throwable t) {
-		super(message, t);
-	}
+	public static final TransformOperator NOT_EXISTS = new NotExists();
+	
+	public static final TransformOperator COUNT = new Count();
+	
+	public static final TransformOperator AVERAGE = new Average();
 	
 }

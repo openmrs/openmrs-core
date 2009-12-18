@@ -24,6 +24,7 @@ import org.openmrs.logic.datasource.LogicDataSource;
 import org.openmrs.logic.result.Result;
 import org.openmrs.logic.result.Result.Datatype;
 import org.openmrs.logic.rule.RuleParameterInfo;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * The Logic Service provides a mechanism for both registering and consuming business logic in the
@@ -67,6 +68,7 @@ import org.openmrs.logic.rule.RuleParameterInfo;
  * @see org.openmrs.logic.LogicCriteria
  * @see org.openmrs.logic.datasource.LogicDataSource
  */
+@Transactional
 public interface LogicService {
 	
 	/**
@@ -197,8 +199,8 @@ public interface LogicService {
 	 * Evaluates a query for a given patient
 	 * 
 	 * @param who <code>Patient</code> for whom the query is to be run
-	 * @param criteria <code>LogicCriteria</code> question to be answered (along with the token) for
-	 *            the given patient
+	 * @param criteria <code>Criteria</code> question to be answered (along with the token) for the
+	 *            given patient
 	 * @param parameters <code>Map</code> of arguments to be passed to the rule
 	 * @return <code>Result</code> of query
 	 * @throws LogicException

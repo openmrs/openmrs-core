@@ -1,8 +1,0 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<dataset>
-  <concept concept_id="12232" retired="false" datatype_id="1" class_id="1" is_set="false" creator="1" date_created="2005-01-01 00:00:00.0" uuid="d4c4b980-b6f1-4421-93d3-b69e862db738"/>
-  <concept_description concept_description_id="12232" concept_id="12232" description="Temperature" locale="en" creator="1" date_created="2005-01-01 00:00:00.0" uuid="93bff72d-cc37-4532-9089-52d7ebf65a5f"/>
-  <concept_name concept_id="12232" name="TEMPERATURE (C)" locale="en" creator="1" date_created="2005-01-01 00:00:00.0" concept_name_id="12232" voided="false" uuid="ec6c649a-7e4e-468a-b561-6c33a27c2f11"/>
-  <concept_name_tag concept_name_tag_id="4" tag="preferred" description="preferred name in a language" creator="1" date_created="2007-05-01 00:00:00.0" voided="false" uuid="c971ef34-3690-4877-944e-8db79a6a92fe"/>
-  <concept_name_tag_map concept_name_id="12232" concept_name_tag_id="4"/>
-</dataset>

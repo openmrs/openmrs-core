@@ -14,7 +14,11 @@
 package org.openmrs.logic.op;
 
 /**
- *
+ * The AsOf operator works with a date object to test whether an expression will yield result after a certain date position<br /><br />
+ * 
+ * Example: <br />
+ * - <code>logicService.parse("'CD4 COUNT'").asOf(Context.getDateformat().parse("2009/12/04");</code><br />
+ *   The above will give us a criteria to check if there's "CD4 COUNT" observations as of 12/04/2009
  */
 public class AsOf implements Operator {
 	

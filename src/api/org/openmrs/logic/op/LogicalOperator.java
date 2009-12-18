@@ -11,26 +11,17 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.logic.rule;
-
-import org.openmrs.logic.LogicException;
+package org.openmrs.logic.op;
 
 /**
- * 
+ * Marker for the logical operator
  */
-public class InvalidReferenceRuleException extends LogicException {
+public interface LogicalOperator extends Operator {
 	
-	/**
-     * 
-     */
-    private static final long serialVersionUID = 4674001309936851685L;
-
-	public InvalidReferenceRuleException() {
-		super();
-	}
+	public static final LogicalOperator AND = new And();
 	
-	public InvalidReferenceRuleException(String message) {
-		super(message);
-	}
+	public static final LogicalOperator OR = new Or();
+	
+	public static final LogicalOperator NOT = new Not();
 	
 }

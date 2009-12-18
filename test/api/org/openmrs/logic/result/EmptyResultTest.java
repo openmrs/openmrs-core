@@ -11,26 +11,32 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.logic.db;
+package org.openmrs.logic.result;
 
-import java.util.Collection;
-import java.util.List;
-
-import org.openmrs.Person;
-import org.openmrs.logic.LogicCriteria;
+import org.junit.Assert;
+import org.junit.Test;
 
 /**
- *
+ * Tests the {@link EmptyResult} class
  */
-public interface LogicPersonDAO {
+public class EmptyResultTest {
 	
 	/**
-	 * Returns a subset of persons that match given criteria
-	 * 
-	 * @param personIds list of persons to apply the criteria to
-	 * @param criteria logic criteria to be applied to the person list
-	 * @return subset of persons that match the criteria
+	 * @verifies {@link EmptyResult#isEmpty()}
+	 * test = should return true
 	 */
-	public List<Person> getPersons(Collection<Integer> personIds, LogicCriteria criteria);
+	@Test
+	public void isEmpty_shouldReturnTrue() throws Exception {
+		Assert.assertTrue(new EmptyResult().isEmpty());
+	}
+
+	/**
+	 * @verifies {@link EmptyResult#isNull()}
+	 * test = should return true
+	 */
+	@Test
+	public void isNull_shouldReturnTrue() throws Exception {
+		Assert.assertTrue(new EmptyResult().isNull());
+	}
 	
 }
