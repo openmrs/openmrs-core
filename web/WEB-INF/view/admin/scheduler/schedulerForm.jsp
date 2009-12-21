@@ -195,8 +195,8 @@ window.onload = init;
 		<tr>
 			<td valign="top"><spring:message code="general.createdBy"/></td>
 			<td valign="top">
-				<spring:bind path="task.createdBy">
-					${status.value}
+				<spring:bind path="task.creator">
+					<openmrs:format user="${status.value}"/>
 				</spring:bind>
 			</td>
 		</tr>
@@ -204,7 +204,7 @@ window.onload = init;
 			<td valign="top"><spring:message code="general.dateCreated"/></td>
 			<td valign="top">
 				<spring:bind path="task.dateCreated">
-					${status.value}
+					<openmrs:formatDate date="${status.editor.value}" type="long"/>
 				</spring:bind>
 			</td>
 		</tr>
@@ -212,7 +212,7 @@ window.onload = init;
 			<td valign="top"><spring:message code="general.changedBy"/></td>
 			<td valign="top">
 				<spring:bind path="task.changedBy">
-					${status.value}
+					<openmrs:format user="${status.value}"/>
 				</spring:bind>
 			</td>
 		</tr>
@@ -220,7 +220,7 @@ window.onload = init;
 			<td valign="top"><spring:message code="general.dateChanged"/></td>
 			<td valign="top">
 				<spring:bind path="task.dateChanged">
-					${status.value}
+					<openmrs:formatDate date="${status.editor.value}" type="long"/>
 				</spring:bind>
 			</td>
 		</tr>
