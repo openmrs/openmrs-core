@@ -161,6 +161,7 @@
 				</c:if>	
 			</th>
 		</tr></table>
+		<openmrs:extensionPoint pointId="org.openmrs.patientDashboard.afterLastEncounter" type="html" parameters="patientId=${model.patient.patientId}" />
 	</div>
 	
 	<script type="text/javascript">
