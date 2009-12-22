@@ -457,7 +457,7 @@ public class NewPatientFormController extends SimpleFormController {
 				catch (PatientIdentifierException pie) {
 					log.error(pie);
 					patient.removeIdentifier(pie.getPatientIdentifier());
-					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PatientIdentifier.error.general");
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, pie.getMessage());
 					//errors = new BindException(new PatientIdentifierException(msa.getMessage("PatientIdentifier.error.general")), "givenName");
 					isError = true;
 				}
