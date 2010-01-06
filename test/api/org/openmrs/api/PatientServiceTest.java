@@ -853,8 +853,37 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		patientIdentifier.setVoidReason("Testing whether voided identifiers are ignored");
 		patient.addIdentifier(patientIdentifier);
 		
+		// add a non-voided identifier so that the initial "at least one nonvoided identifier" check passes
+		patientIdentifier = new PatientIdentifier();
+		patientIdentifier.setIdentifier("a non empty string");
+		patientIdentifier.setIdentifierType(Context.getPatientService().getAllPatientIdentifierTypes(false).get(0));
+		patientIdentifier.setVoided(false);
+		patientIdentifier.setVoidedBy(Context.getAuthenticatedUser());
+		patientIdentifier.setVoidReason("Testing whether voided identifiers are ignored");
+		patient.addIdentifier(patientIdentifier);
+		
 		// If the identifier is ignored, it won't throw a BlankIdentifierException as it should
 		Context.getPatientService().checkPatientIdentifiers(patient);				
+		
+	}
+	
+	/**
+	 * @see {@link PatientService#checkPatientIdentifiers(Patient)}
+	 */
+	@Test(expected = InsufficientIdentifiersException.class)
+	@Verifies(value = "should require one non voided patient identifier", method = "checkPatientIdentifiers(Patient)")
+	public void checkPatientIdentifiers_shouldRequireOneNonVoidedPatientIdentifier() throws Exception {
+		
+		Patient patient = new Patient();
+		PatientIdentifier patientIdentifier = new PatientIdentifier();
+		patientIdentifier.setIdentifierType(Context.getPatientService().getAllPatientIdentifierTypes(false).get(0));
+		patientIdentifier.setVoided(true);
+		patientIdentifier.setVoidedBy(Context.getAuthenticatedUser());
+		patientIdentifier.setVoidReason("Testing whether voided identifiers are ignored");
+		patient.addIdentifier(patientIdentifier);
+		
+		// this patient only has a voided identifier, so saving is not allowed
+		Context.getPatientService().checkPatientIdentifiers(patient);
 		
 	}
 

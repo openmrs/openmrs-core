@@ -499,6 +499,7 @@ public interface PatientService extends OpenmrsService {
 	 * @should throw error when patient has empty patient identifiers
 	 * @should throw error when patient has identical identifiers
 	 * @should throw error when patient does not have one or more required identifiers
+	 * @should require one non voided patient identifier
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_PATIENT_IDENTIFIERS })
 	public void checkPatientIdentifiers(Patient patient) throws PatientIdentifierException;
