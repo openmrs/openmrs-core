@@ -11,10 +11,9 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.api.db.hibernate;
+package org.openmrs.api.db;
 
 import org.openmrs.BaseOpenmrsMetadata;
-import org.openmrs.OpenmrsObject;
 import org.openmrs.serialization.OpenmrsSerializer;
 
 /**
@@ -24,9 +23,9 @@ public class SerializedObject extends BaseOpenmrsMetadata {
 	
 	private Integer id;
 	
-	private Class<? extends OpenmrsObject> type;
+	private String type;
 	
-	private Class<? extends OpenmrsObject> subtype;
+	private String subtype;
 	
 	private Class<? extends OpenmrsSerializer> serializationClass;
 	
@@ -67,28 +66,28 @@ public class SerializedObject extends BaseOpenmrsMetadata {
 	/**
 	 * @return the type
 	 */
-	public Class<? extends OpenmrsObject> getType() {
+	public String getType() {
 		return type;
 	}
 	
 	/**
 	 * @param type the type to set
 	 */
-	public void setType(Class<? extends OpenmrsObject> type) {
+	public void setType(String type) {
 		this.type = type;
 	}
 	
 	/**
 	 * @return the subtype
 	 */
-	public Class<? extends OpenmrsObject> getSubtype() {
+	public String getSubtype() {
 		return subtype;
 	}
 	
 	/**
 	 * @param subtype the subtype to set
 	 */
-	public void setSubtype(Class<? extends OpenmrsObject> subtype) {
+	public void setSubtype(String subtype) {
 		this.subtype = subtype;
 	}
 	
