@@ -5,19 +5,17 @@
     
 <hibernate-mapping package="org.openmrs.api">
 
-<class name="org.openmrs.api.db.hibernate.SerializedObject" table="serialized_object">
+<class name="org.openmrs.api.db.SerializedObject" table="serialized_object">
 
     <id name="id" type="java.lang.Integer" column="serialized_object_id">
         <generator class="native" />
     </id>
     
-    <property name="uuid" type="java.lang.String"
-			column="uuid" length="38" unique="true" />
-    
+    <property name="uuid" type="java.lang.String" column="uuid" length="38" unique="true" />
     <property name="name" type="string" column="name" not-null="true" length="255" />
     <property name="description" type="string" column="description" length="5000" />
-    <property name="type" type="class" column="type" not-null="true" length="255" />
-    <property name="subtype" type="class" column="subtype" not-null="true" length="255" />
+    <property name="type" type="string" column="type" not-null="true" length="255" />
+    <property name="subtype" type="string" column="subtype" not-null="true" length="255" />
     <property name="serializationClass" type="class"  column="serialization_class" not-null="true" length="255" /> 
 	<property name="serializedData" type="text" column="serialized_data" /> 
 	<property name="dateCreated" type="java.util.Date" column="date_created" not-null="true" length="19" />
