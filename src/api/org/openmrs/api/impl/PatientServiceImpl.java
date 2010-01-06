@@ -184,8 +184,8 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 */
 	public void checkPatientIdentifiers(Patient patient) throws PatientIdentifierException {
 		// check patient has at least one identifier
-		if (patient.getIdentifiers().size() < 1)
-			throw new InsufficientIdentifiersException("At least one Patient Identifier is required");
+		if (!patient.isVoided() && patient.getActiveIdentifiers().size() < 1)
+			throw new InsufficientIdentifiersException("At least one nonvoided Patient Identifier is required");
 		
 		List<PatientIdentifier> identifiers = new Vector<PatientIdentifier>();
 		identifiers.addAll(patient.getIdentifiers());
@@ -330,23 +330,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		if (patient == null)
 			return null;
 		
-		User voidedBy = Context.getAuthenticatedUser();
-		Date voidDate = new Date();
-		
-		if (patient.getIdentifiers() != null)
-			for (PatientIdentifier pi : patient.getIdentifiers()) {
-				if (!pi.isVoided()) {
-					pi.setVoided(true);
-					pi.setVoidReason(reason);
-					pi.setDateVoided(voidDate);
-					pi.setVoidedBy(voidedBy);
-				}
-			}
-		
-		patient.setVoided(true);
-		patient.setVoidedBy(voidedBy);
-		patient.setDateVoided(voidDate);
-		patient.setVoidReason(reason);
+		// patient and patientidentifier attributes taken care of by the BaseUnvoidHandler
 		
 		return savePatient(patient);
 	}
@@ -358,22 +342,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		if (patient == null)
 			return null;
 		
-		String voidReason = patient.getVoidReason();
-		if (voidReason == null)
-			voidReason = "";
-		
-		for (PatientIdentifier pi : patient.getIdentifiers()) {
-			if (voidReason.equals(pi.getDateVoided())) {
-				pi.setVoided(false);
-				pi.setVoidReason(null);
-				pi.setDateVoided(null);
-				pi.setVoidedBy(null);
-			}
-		}
-		patient.setVoided(false);
-		patient.setVoidedBy(null);
-		patient.setDateVoided(null);
-		patient.setVoidReason(null);
+		// patient and patientidentifier attributes taken care of by the BaseUnvoidHandler
 		
 		return savePatient(patient);
 	}
@@ -865,7 +834,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 			preferred.setCauseOfDeath(notPreferred.getCauseOfDeath());
 		
 		// void the non preferred patient
-		voidPatient(notPreferred, "Merged with patient #" + preferred.getPatientId());
+		Context.getPatientService().voidPatient(notPreferred, "Merged with patient #" + preferred.getPatientId());
 		
 		// Save the newly update preferred patient
 		// This must be called _after_ voiding the nonPreferred patient so that
