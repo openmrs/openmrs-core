@@ -2789,5 +2789,35 @@
 		<comment>Change name for patient.searchMaxResults global property to person.searchMaxResults</comment> 
 		<update tableName="global_property"><column name="property" value="person.searchMaxResults"/><where> property = 'patient.searchMaxResults'</where></update> 
 	</changeSet>
-	 
+
+	<changeSet id="200912141552" author="madanmohan">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="encounter" columnName="changed_by" />
+			</not>
+		</preConditions>
+		<comment>
+			Add changed_by column to encounter table
+		</comment>
+		<addColumn tableName="encounter">
+			<column name="changed_by" type="int" />
+		</addColumn>
+		<addForeignKeyConstraint constraintName="encounter_changed_by"
+			baseTableName="encounter" baseColumnNames="changed_by"
+			referencedTableName="users" referencedColumnNames="user_id" />
+	</changeSet>
+		
+	<changeSet id="200912141553" author="madanmohan">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="encounter" columnName="date_changed" />
+			</not>
+		</preConditions>
+		<comment>
+			Add date_changed column to encounter table
+		</comment>
+		<addColumn tableName="encounter">
+			<column name="date_changed" type="datetime" />
+		</addColumn>
+	</changeSet>	
 </databaseChangeLog>

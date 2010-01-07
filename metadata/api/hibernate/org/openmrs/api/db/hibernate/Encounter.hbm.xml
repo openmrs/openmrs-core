@@ -29,8 +29,14 @@
 			column="date_voided" length="19" />
 		<property name="voidReason" type="java.lang.String"
 			column="void_reason" length="255" />
+		<property name="dateChanged" type="java.util.Date" 
+			column="date_changed" not-null="false" length="19" />
 
 		<!-- Associations -->
+		<!-- bi-directional many-to-one association to User -->
+		<many-to-one name="changedBy" class="User" not-null="false">
+			<column name="changed_by" />
+		</many-to-one>
 
 		<!-- bi-directional many-to-one association to Patient -->
 		<many-to-one name="patient" class="Patient" not-null="true">
