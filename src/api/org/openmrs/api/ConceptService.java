@@ -1146,6 +1146,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @throws APIException
 	 * @should not set creator if one is supplied already
 	 * @should not set date created if one is supplied already
+	 * @should save a ConceptSource with a null hl7Code
+	 * @should not save a ConceptSource if voided is null
 	 */
 	@Authorized(OpenmrsConstants.PRIV_MANAGE_CONCEPT_SOURCES)
 	public ConceptSource saveConceptSource(ConceptSource conceptSource) throws APIException;
@@ -1259,7 +1261,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @return ConceptSource 
 	 * @throws APIException
 	 * @should get ConceptSource with the given name
-	 * @should return null if no ConceptSource with that name is found.
+	 * @should return null if no ConceptSource with that name is found
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
@@ -1272,8 +1274,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @param conceptSource
 	 * @return a List<ConceptMap> object
 	 * @throws APIException
-	 * @should return a List<ConceptMap> if concept mappings found
-	 * @should return empty List<ConceptMap> if none found
+	 * @should return a List of ConceptMaps if concept mappings found
+	 * @should return empty List of ConceptMaps if none found
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
