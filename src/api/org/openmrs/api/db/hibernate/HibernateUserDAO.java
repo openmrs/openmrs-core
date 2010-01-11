@@ -17,8 +17,12 @@ import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
@@ -27,10 +31,11 @@ import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
-import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.HSQLDialect;
+import org.openmrs.Person;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
@@ -71,10 +76,7 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	public User saveUser(User user, String password) {
 		
-		insertUserStubIfNeeded(user);
-		
 		sessionFactory.getCurrentSession().saveOrUpdate(user);
-		
 		if (password != null) {
 			//update the new user with the password
 			String salt = Security.getRandomToken();
@@ -83,7 +85,6 @@ public class HibernateUserDAO implements UserDAO {
 			updateUserPassword(hashedPassword, salt, Context.getAuthenticatedUser().getUserId(), new Date(), user
 			        .getUserId());
 		}
-		
 		return user;
 	}
 	
@@ -93,7 +94,7 @@ public class HibernateUserDAO implements UserDAO {
 	@SuppressWarnings("unchecked")
 	public User getUserByUsername(String username) {
 		Query query = sessionFactory.getCurrentSession().createQuery(
-		    "from User u where u.voided = 0 and (u.username = ? or u.systemId = ?)");
+		    "from User u where u.retired = 0 and (u.username = ? or u.systemId = ?)");
 		query.setString(0, username);
 		query.setString(1, username);
 		List<User> users = query.list();
@@ -163,84 +164,10 @@ public class HibernateUserDAO implements UserDAO {
 	}
 	
 	/**
-	 * Inserts a row into the user table.<br/>
-	 * <br/>
-	 * This avoids hibernate's bunging of our person/patient/user inheritance
-	 * 
-	 * @param user the user to create a stub for
-	 */
-	private void insertUserStubIfNeeded(User user) {
-		Connection connection = sessionFactory.getCurrentSession().connection();
-		
-		boolean stubInsertNeeded = false;
-		
-		PreparedStatement ps = null;
-		
-		if (user.getUserId() != null) {
-			// check if there is a row with a matching users.user_id 
-			try {
-				ps = connection.prepareStatement("SELECT * FROM users WHERE user_id = ?");
-				ps.setInt(1, user.getUserId());
-				ps.execute();
-				
-				if (ps.getResultSet().next())
-					stubInsertNeeded = false;
-				else
-					stubInsertNeeded = true;
-				
-			}
-			catch (SQLException e) {
-				log.error("Error while trying to see if this person is a user already", e);
-			}
-			finally {
-				if (ps != null) {
-					try {
-						ps.close();
-					}
-					catch (SQLException e) {
-						log.error("Error generated while closing statement", e);
-					}
-				}
-			}
-		}
-		
-		if (stubInsertNeeded) {
-			try {
-				ps = connection
-				        .prepareStatement("INSERT INTO users (user_id, system_id, creator, date_created, voided) VALUES (?, ?, ?, ?, ?)");
-				
-				ps.setInt(1, user.getUserId());
-				ps.setString(2, user.getSystemId());
-				ps.setInt(3, user.getCreator().getUserId());
-				ps.setDate(4, new java.sql.Date(user.getDateCreated().getTime()));
-				ps.setBoolean(5, false);
-				
-				ps.executeUpdate();
-				
-			}
-			catch (SQLException e) {
-				log.warn("SQL Exception while trying to create a user stub", e);
-			}
-			finally {
-				if (ps != null) {
-					try {
-						ps.close();
-					}
-					catch (SQLException e) {
-						log.error("Error generated while closing statement", e);
-					}
-				}
-			}
-		}
-		
-		//sessionFactory.getCurrentSession().flush();
-	}
-	
-	/**
 	 * @see org.openmrs.api.UserService#deleteUser(org.openmrs.User)
 	 */
 	public void deleteUser(User user) {
-		HibernatePersonDAO.deletePersonAndAttributes(sessionFactory, user);
+		sessionFactory.getCurrentSession().delete(user);
 	}
 	
 	/**
@@ -461,51 +388,60 @@ public class HibernateUserDAO implements UserDAO {
 	 * @see org.openmrs.api.UserService#getUsers(java.lang.String, java.util.List, boolean)
 	 */
 	@SuppressWarnings("unchecked")
-	public List<User> getUsers(String name, List<Role> roles, boolean includeVoided) {
+	public List<User> getUsers(String name, List<Role> roles, boolean includeRetired) {
 		log.debug("name: " + name);
 		
-		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(User.class);
-		criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+		// Create an HQL query like this:
+		// select distinct user
+		// from User as user inner join user.person.names as name
+		// where (user.username like :name1 or ...and for systemId givenName familyName familyName2...)
+		//   and (user.username like :name2 or ...and for systemId givenName familyName familyName2...)
+		//   ...repeat for all name fragments...
+		//   and user.retired = false
+		// order by username asc
+		
+		List<String> criteria = new ArrayList<String>();
+		int counter = 0;
+		Map<String, String> namesMap = new HashMap<String, String>();
 		if (name != null) {
-			criteria.createAlias("names", "name");
-			
 			name = name.replace(", ", " ");
 			String[] names = name.split(" ");
 			for (String n : names) {
 				if (n != null && n.length() > 0) {
-					criteria.add(Expression.or(Expression.like("name.familyName2", name, MatchMode.START), Expression.or(
-					    Expression.like("name.givenName", n, MatchMode.START), Expression.or(Expression.like(
-					        "name.familyName", n, MatchMode.START), Expression.or(Expression.like("name.middleName", n,
-					        MatchMode.START), Expression.or(Expression.like("systemId", n, MatchMode.START), Expression
-					            .like("username", n, MatchMode.START)))))));
+					// compare each fragment of the query against username, systemId, given, middle, family, and family2
+					String key = "name" + ++counter;
+					String value = n + "%";
+					namesMap.put(key, value);
+					criteria.add("(user.username like :" + key + " or user.systemId like :" + key + " or name.givenName like :" + key + " or name.middleName like :" + key + " or name.familyName like :" + key + " or name.familyName2 like :" + key + ")");
 				}
 			}
 		}
-		/*
-		if (roles != null && roles.size() > 0) {
-			criteria.createAlias("roles", "r")
-				.add(Expression.in("r.role", roles))
-				.createAlias("groups", "g")
-				.createAlias("g.roles", "gr")
-					.add(Expression.or(
-							Expression.in("r.role", roles),
-							Expression.in("gr.role", roles)
-							));
-		}
-		 */
+		if (includeRetired == false)
+			criteria.add("user.retired = false");
 
-		if (includeVoided == false)
-			criteria.add(Expression.eq("voided", false));
+		// build the hql query
+		String hql = "select distinct user from User as user inner join user.person.names as name ";
+		if (criteria.size() > 0)
+			hql += "where ";
+		for (Iterator<String> i = criteria.iterator(); i.hasNext(); ) {
+			hql += i.next() + " ";
+			if (i.hasNext())
+				hql += "and ";
+		}
+		hql += " order by username asc";
+		Query query = sessionFactory.getCurrentSession().createQuery(hql);
+		for (Map.Entry<String, String> e : namesMap.entrySet())
+			query.setString(e.getKey(), e.getValue());
 		
-		criteria.addOrder(Order.asc("userId"));
-		
-		// TODO figure out how to get Hibernate to do the sql for us
+		// Now apply the roles criteria
+		// TODO add this to the HQL query
+		// maybe: +inner join user.roles as role +where role.id in :roleIdList
 		
 		if (roles != null && roles.size() > 0) {
 			List returnList = new Vector();
 			
 			log.debug("looping through to find matching roles");
-			for (Object o : criteria.list()) {
+			for (Object o : query.list()) {
 				User u = (User) o;
 				for (Role r : roles)
 					if (u.hasRole(r.getRole(), true)) {
@@ -517,7 +453,7 @@ public class HibernateUserDAO implements UserDAO {
 			return returnList;
 		} else {
 			log.debug("not looping because there appears to be no roles");
-			return criteria.list();
+			return query.list();
 		}
 		
 	}
@@ -553,11 +489,11 @@ public class HibernateUserDAO implements UserDAO {
 	 * @see org.openmrs.api.UserService#getUsersByName(java.lang.String, java.lang.String, boolean)
 	 */
 	@SuppressWarnings("unchecked")
-	public List<User> getUsersByName(String givenName, String familyName, boolean includeVoided) {
+	public List<User> getUsersByName(String givenName, String familyName, boolean includeRetired) {
 		List<User> users = new Vector<User>();
 		String query = "from User u where u.names.givenName = :givenName and u.names.familyName = :familyName";
-		if (!includeVoided)
-			query += " and u.voided = false";
+		if (!includeRetired)
+			query += " and u.retired = false";
 		Query q = sessionFactory.getCurrentSession().createQuery(query).setString("givenName", givenName).setString(
 		    "familyName", familyName);
 		for (User u : (List<User>) q.list()) {
@@ -621,5 +557,18 @@ public class HibernateUserDAO implements UserDAO {
 	public void updateLoginCredential(LoginCredential credential) {
 		sessionFactory.getCurrentSession().update(credential);
 	}
+
+	/**
+     * @see org.openmrs.api.db.UserDAO#getUsersByPerson(org.openmrs.Person, boolean)
+     */
+    @SuppressWarnings("unchecked")
+    public List<User> getUsersByPerson(Person person, boolean includeRetired) {
+	    Criteria crit = sessionFactory.getCurrentSession().createCriteria(User.class);
+	    if (person != null)
+	    	crit.add(Restrictions.eq("person", person));
+	    if (!includeRetired)
+	    	crit.add(Restrictions.eq("retired", false));
+	    return (List<User>) crit.list();
+    }
 	
 }

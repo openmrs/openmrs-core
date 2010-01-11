@@ -2,15 +2,6 @@
 	<li class="first">
 		<a href="${pageContext.request.contextPath}/admin"><spring:message code="admin.title.short"/></a>
 	</li>
-	<c:if test="'Still working on this' == 'true'">
-		<openmrs:hasPrivilege privilege="Manage Relationships">
-			<li <c:if test='<%= request.getRequestURI().contains("relationship") %>'>class="active"</c:if>>
-				<a href="${pageContext.request.contextPath}/admin/person/relationship.list">
-					<spring:message code="Relationship.manage"/>
-				</a>
-			</li>
-		</openmrs:hasPrivilege>
-	</c:if>
 	<openmrs:hasPrivilege privilege="Manage Relationship Types">
 		<li <c:if test='<%= request.getRequestURI().contains("relationshipType") %>'>class="active"</c:if>>
 			<a href="${pageContext.request.contextPath}/admin/person/relationshipType.list">

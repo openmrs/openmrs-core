@@ -32,7 +32,6 @@ import org.openmrs.api.PatientService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
-import org.springframework.util.StringUtils;
 
 /**
  * DWR methods for ajaxy effects on {@link Person} objects.
@@ -41,26 +40,22 @@ public class DWRPersonService {
 	
 	protected final Log log = LogFactory.getLog(getClass());
 	
+	
 	/**
-	 * Searches for Person records that have a name similar ot the given name, a birthdate that is
-	 * null or within a few years of the given birthdate, and a gender that matches. <br/>
-	 * <br/>
-	 * To prevent creating "Users that are Patients": <br/>
-	 * <br/>
-	 * If personType is user, only Person objects and User objects are returned (No patients). <br/>
-	 * <br/>
-	 * If personType is patient, only Person objects and Patient objects are returned (No users). <br/>
-	 * <br/>
-	 * If personType is person, both User objects and Patient objects are returned.
+	 * Searches for Person records that have a name similar to the given name, a birthdate that is
+	 * null or within a few years of the given birthdate, and a gender that matches.
+	 * 
+	 * Note: this method contains a non-backwards-compatible change between 1.5 and 1.6, since DWR has
+	 * trouble with method overloading. The String personType parameter was removed, since User no longer
+	 * extends Person
 	 * 
 	 * @param name
 	 * @param birthyear
 	 * @param age
 	 * @param gender
-	 * @param personType either user, patient, person, or empty.
 	 * @return
 	 */
-	public List<?> getSimilarPeople(String name, String birthdate, String age, String gender, String personType) {
+	public List<?> getSimilarPeople(String name, String birthdate, String age, String gender) {
 		Vector<Object> personList = new Vector<Object>();
 		
 		Integer userId = Context.getAuthenticatedUser().getUserId();
@@ -95,13 +90,8 @@ public class DWRPersonService {
 		
 		if (gender.length() < 1)
 			gender = null;
-		
-		if (!StringUtils.hasLength(personType)) {
-			personType = "person";
-		}
-		
-		Set<Person> persons = ps.getSimilarPeople(name, d, gender, personType);
-		
+			
+		Set<Person> persons = ps.getSimilarPeople(name, d, gender);
 		
 		personList = new Vector<Object>(persons.size());
 		for (Person p : persons) {
@@ -154,8 +144,8 @@ public class DWRPersonService {
 					}
 				}
 			
-			for (Person p : us.getUsers(searchPhrase, roleList, includeVoided)) {
-				personList.add(PersonListItem.createBestMatch(p));
+			for (User u : us.getUsers(searchPhrase, roleList, includeVoided)) {
+				personList.add(new UserListItem(u));
 			}
 			
 		} else {

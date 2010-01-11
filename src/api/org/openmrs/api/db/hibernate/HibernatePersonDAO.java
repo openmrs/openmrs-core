@@ -76,7 +76,7 @@ public class HibernatePersonDAO implements PersonDAO {
 	 * @see org.openmrs.api.db.PersonDAO#getSimilarPeople(java.lang.String,java.lang.Integer,java.lang.String,java.lang.String)
 	 */
 	@SuppressWarnings("unchecked")
-	public Set<Person> getSimilarPeople(String name, Integer birthyear, String gender, String personType) throws DAOException {
+	public Set<Person> getSimilarPeople(String name, Integer birthyear, String gender) throws DAOException {
 		if (birthyear == null)
 			birthyear = 0;
 		
@@ -227,12 +227,6 @@ public class HibernatePersonDAO implements PersonDAO {
 		} else if (gender != null) {
 			q += " and " + genderMatch;
 		}
-		
-		if (personType.equals("patient"))
-			q += " and p.user = 0";
-		
-		if (personType.equals("user"))
-			q += " and p.patient = 0";
 		
 		q += " order by pname.givenName asc,";
 		q += " pname.middleName asc,";

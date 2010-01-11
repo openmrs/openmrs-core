@@ -159,9 +159,9 @@ public class DWRUserService {
 		
 		public int compare(User user1, User user2) {
 			
-			// compare on full name (and then on person id in case the names are identical) 
-			String name1 = "" + user1.getPersonName() + user1.getPersonId();
-			String name2 = "" + user2.getPersonName() + user2.getPersonId();
+			// compare on full name (and then on user id in case the names are identical) 
+			String name1 = "" + user1.getPersonName() + user1.getUserId();
+			String name2 = "" + user2.getPersonName() + user2.getUserId();
 			
 			return name1.compareTo(name2);
 		}

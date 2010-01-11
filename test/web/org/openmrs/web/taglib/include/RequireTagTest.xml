@@ -16,11 +16,11 @@
   <role_privilege role="Manager" privilege="Manage Thingamajigs" />
   
   <person person_id="505" gender="F" dead="false" creator="1" date_created="2008-08-15 15:46:47.0" voided="false" uuid="e69facd2-56d0-44c6-b8fd-52e287474c2e"/>
-  <users user_id="505" system_id="6-7" username="whirleygiguser" password="4a1750c8607d0fa237de36c6305715c223415189" salt="c788c6ad82a157b712392ca695dfcf2eed193d7f" secret_question="" creator="1" date_created="2008-08-15 15:57:09.0" changed_by="1" date_changed="2008-08-18 11:51:56.0" voided="false" void_reason=""/>
+  <users user_id="505" person_id="505" system_id="6-7" username="whirleygiguser" password="4a1750c8607d0fa237de36c6305715c223415189" salt="c788c6ad82a157b712392ca695dfcf2eed193d7f" secret_question="" creator="1" date_created="2008-08-15 15:57:09.0" changed_by="1" date_changed="2008-08-18 11:51:56.0" retired="false" retire_reason="" uuid="0f8a0e5a-e6d7-11de-8404-001e378eb67e"/>
   <user_role user_id="505" role="WhirleyGig Manager" />
 
   <person person_id="506" gender="M" dead="false" creator="1" date_created="2008-08-15 15:57:09.0" voided="false" uuid="9a2e8cb8-81a7-46ba-a33a-7ff176de9a9e"/>
-  <users user_id="506" system_id="7-5" username="overallmanager" password="4a1750c8607d0fa237de36c6305715c223415189" salt="c788c6ad82a157b712392ca695dfcf2eed193d7f" secret_question="" creator="1" date_created="2008-08-15 15:57:09.0" changed_by="1" date_changed="2008-08-18 11:51:56.0" voided="false" void_reason=""/>
+  <users user_id="506" person_id="506" system_id="7-5" username="overallmanager" password="4a1750c8607d0fa237de36c6305715c223415189" salt="c788c6ad82a157b712392ca695dfcf2eed193d7f" secret_question="" creator="1" date_created="2008-08-15 15:57:09.0" changed_by="1" date_changed="2008-08-18 11:51:56.0" retired="false" retire_reason="" uuid="39582370-e6d7-11de-8404-001e378eb67e"/>
   <user_role user_id="506" role="Manager" />
   
 </dataset>

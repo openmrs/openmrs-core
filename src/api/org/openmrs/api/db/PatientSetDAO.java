@@ -44,9 +44,15 @@ import org.openmrs.api.PatientSetService.PatientLocationMethod;
 import org.openmrs.api.PatientSetService.TimeModifier;
 
 public interface PatientSetDAO {
-	
+
+	/**
+	 * @deprecated
+	 */
 	public String exportXml(Cohort ps) throws DAOException;
 	
+	/**
+	 * @deprecated
+	 */
 	public String exportXml(Integer patientId) throws DAOException;
 	
 	public Cohort getAllPatients();

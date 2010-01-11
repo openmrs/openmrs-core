@@ -52,7 +52,7 @@
   
   <person person_id="4" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" gender="M"  uuid="c2482297-d022-42ae-a4b8-6f14b73f12fa"/>
   <person_name person_id="4" person_name_id="4" preferred="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" given_name="Some" middle_name="Other" family_name="User"  uuid="6ca5379d-b9d7-4b42-b65f-cdcbc94a54dd"/>
-  <users user_id="4" username="2nduser" system_id="2ndusersystemid" voided="false" creator="1" date_created="2005-01-01 00:00:00.0"/>
+  <users user_id="4" person_id="4" username="2nduser" system_id="2ndusersystemid" retired="false" creator="1" date_created="2005-01-01 00:00:00.0" uuid="1ae5c06a-e136-11de-babe-001e378eb67e"/>
   
   <concept_datatype concept_datatype_id="1" name="Numeric" hl7_abbreviation="NM" description="Numeric value, including integer or float" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="5dfd8346-661e-46d4-8470-3146d6d229e9"/>
   <concept concept_id="1" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" is_set="false" uuid="f0bae10a-c964-482b-bfc1-a97671349951"/>

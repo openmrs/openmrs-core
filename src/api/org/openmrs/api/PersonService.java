@@ -115,9 +115,9 @@ public interface PersonService {
 	 * @should limit personType equals Patient searches to only Patients
 	 * @should limit personType equals User searches to only Users
 	 * @should limit return all Persons with personType equals Person
+	 * @deprecated @see {@link #getSimilarPeople(String, Integer, String)} 
 	 */
-	public Set<Person> getSimilarPeople(String nameSearch, Integer birthyear, String gender, String personType)
-	                                                                                                           throws APIException;
+	public Set<Person> getSimilarPeople(String nameSearch, Integer birthyear, String gender, String personType) throws APIException;
 	
 	/**
 	 * Find a person matching the <tt>searchPhrase</tt> search string
@@ -805,4 +805,5 @@ public interface PersonService {
 	 */
 	@Transactional(readOnly = true)
 	public Map<Person, List<Person>> getRelationships(RelationshipType relationshipType) throws APIException;
+	
 }

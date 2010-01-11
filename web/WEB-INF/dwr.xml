@@ -224,7 +224,7 @@
 			DWRConceptService.getDrugs(Integer conceptId, boolean showConcept);
 			DWRConceptService.findDrugs(String phrase, boolean includeRetired);
 			DWREncounterService.findEncounters(String phrase, boolean includeVoided);
-			DWRPersonService.getSimilarPeople(String name, String birthdate, String age, String gender, String personType);
+			DWRPersonService.getSimilarPeople(String name, String birthdate, String age, String gender);
 			DWRUserService.findUsers(String phrase, List<String> roles, boolean includeVoided);
 			DWRUserService.getAllUsers(List<String> roles, boolean includeVoided);
 			DWRObsService.getObservations(Integer encounterId);

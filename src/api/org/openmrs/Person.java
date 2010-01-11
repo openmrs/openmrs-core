@@ -24,6 +24,9 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.api.APIException;
+import org.openmrs.api.PersonService;
+import org.openmrs.api.UserService;
 import org.openmrs.util.OpenmrsUtil;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
@@ -33,19 +36,18 @@ import org.simpleframework.xml.load.Replace;
 
 /**
  * A Person in the system. This can be either a small person stub, or indicative of an actual
- * Patient or User in the system as well. This class holds the generic person things that both users
+ * Patient in the system. This class holds the generic person things that both the stubs
  * and patients share. Things like birthdate, names, addresses, and attributes are all generified
  * into the person table (and hence this super class)
  * 
  * @see org.openmrs.Patient
- * @see org.openmrs.User
  */
 @Root(strict = false)
 public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	
 	private transient static final Log log = LogFactory.getLog(Person.class);
 	
-	public static final long serialVersionUID = 13533L;
+	public static final long serialVersionUID = 2L;
 	
 	protected Integer personId;
 	
@@ -84,9 +86,7 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	private String personVoidReason;
 	
 	private boolean isPatient;
-	
-	private boolean isUser;
-	
+		
 	/**
 	 * Convenience map from PersonAttributeType.name to PersonAttribute.<br/>
 	 * <br/>
@@ -883,22 +883,12 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	
 	/**
 	 * @return true/false whether this person is a user or not
+	 * @deprecated use {@link UserService#getUsersByPerson(Person, boolean)}
 	 */
 	public boolean isUser() {
-		return isUser;
+		return false;
 	}
-	
-	/**
-	 * This should only be set by the database layer by looking at whether a row exists in the user
-	 * table
-	 * 
-	 * @param isUser whether this person is a user or not
-	 */
-	@SuppressWarnings("unused")
-	private void setUser(boolean isUser) {
-		this.isUser = isUser;
-	}
-	
+		
 	/**
 	 * @see java.lang.Object#toString()
 	 */

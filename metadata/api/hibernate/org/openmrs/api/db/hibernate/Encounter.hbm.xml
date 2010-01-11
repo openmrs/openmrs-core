@@ -69,8 +69,8 @@
 		<many-to-one name="creator" class="User" not-null="true">
 			<column name="creator" />
 		</many-to-one>
-		<!-- bi-directional many-to-one association to User -->
-		<many-to-one name="provider" class="User" not-null="true">
+		<!-- bi-directional many-to-one association to Person -->
+		<many-to-one name="provider" class="Person" not-null="true">
 			<column name="provider_id" />
 		</many-to-one>
 		<many-to-one name="voidedBy" class="User">

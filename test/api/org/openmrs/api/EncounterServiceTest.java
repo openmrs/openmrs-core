@@ -38,6 +38,7 @@ import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.Order;
 import org.openmrs.Patient;
+import org.openmrs.Person;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
@@ -74,7 +75,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		encounter.setEncounterType(new EncounterType(1));
 		encounter.setEncounterDatetime(new Date());
 		encounter.setPatient(new Patient(3));
-		encounter.setProvider(new User(1));
+		encounter.setProvider(new Person(1));
 		
 		EncounterService es = Context.getEncounterService();
 		es.saveEncounter(encounter);
@@ -146,7 +147,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		enc.setEncounterType(new EncounterType(1));
 		enc.setEncounterDatetime(new Date());
 		enc.setPatient(new Patient(3));
-		enc.setProvider(new User(1));
+		enc.setProvider(new Person(1));
 		es.saveEncounter(enc);
 		
 		// Now add an obs to it

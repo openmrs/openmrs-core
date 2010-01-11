@@ -264,7 +264,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		
 		Encounter e = new Encounter();
 		e.setPatient(p);
-		e.setProvider(unknownUser);
+		e.setProvider(unknownUser.getPerson());
 		e.setLocation(unknownLocation);
 		e.setEncounterDatetime(new Date());
 		// TODO: Remove hardcoded encounter type
