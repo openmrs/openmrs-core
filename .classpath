@@ -35,8 +35,8 @@
 	<classpathentry kind="lib" path="lib/tomcat/servlet-api.jar" sourcepath="/openmrs-source/apache-tomcat-5.5.20-src.zip"/>
 	<classpathentry kind="lib" path="lib/tomcat/catalina.jar" sourcepath="/openmrs-source/apache-tomcat-6.0.14-src.zip"/>
 	<classpathentry kind="lib" path="lib/tomcat/naming-resources.jar" sourcepath="/openmrs-source/apache-tomcat-5.5.20-src.zip"/>
-	<classpathentry kind="lib" path="lib/spring-framework/spring-2.5.6.jar" sourcepath="/openmrs-source/spring-2.5.1-src.zip"/>
-	<classpathentry kind="lib" path="lib/spring-framework/spring-test.jar" sourcepath="/openmrs-source/spring-framework-2.5.1-with-dependencies.zip"/>
+	<classpathentry kind="lib" path="lib/spring-framework/spring-2.5.6.jar" sourcepath="/openmrs-source/spring-framework-2.5.6.SEC02-src.zip"/>
+	<classpathentry kind="lib" path="lib/spring-framework/spring-test.jar" sourcepath="/openmrs-source/spring-framework-2.5.6.SEC02-src.zip"/>
 	<classpathentry kind="lib" path="lib/spring-framework/spring-webmvc.jar" sourcepath="/openmrs-source/spring-webmvc-sources.zip"/>
 	<classpathentry kind="lib" path="lib/mail/activation.jar"/>
 	<classpathentry kind="lib" path="lib/mail/mail.jar"/>

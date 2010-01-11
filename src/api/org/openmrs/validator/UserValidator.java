@@ -19,8 +19,10 @@ import java.util.regex.PatternSyntaxException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Person;
 import org.openmrs.User;
 import org.springframework.util.StringUtils;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
@@ -49,7 +51,7 @@ public class UserValidator implements Validator {
 	 * 
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
-	 * @should fail validation if voided and voidReason is null or empty or whitespace
+	 * @should fail validation if retired and retireReason is null or empty or whitespace
 	 * @should pass validation if all required fields have proper values
 	 */
 	
@@ -58,8 +60,22 @@ public class UserValidator implements Validator {
 		if (user == null) {
 			errors.rejectValue("user", "error.general");
 		} else {
-			if (user.isVoided() && !StringUtils.hasText(user.getVoidReason()))
-				errors.rejectValue("voidReason", "error.null");
+			if (user.isRetired() && !StringUtils.hasText(user.getRetireReason()))
+				errors.rejectValue("retireReason", "error.null");
+			if (user.getPerson() == null) {
+				errors.rejectValue("person", "error.null");
+			} else {
+				// check that required person details are filled out
+				Person person = user.getPerson();
+				if (person.getGender() == null)
+					errors.rejectValue("person.gender", "error.null");
+				if (person.getDead() == null)
+					errors.rejectValue("person.dead", "error.null");
+				if (person.getVoided() == null)
+					errors.rejectValue("person.voided", "error.null");
+				if (person.getPersonName() == null || !StringUtils.hasText(person.getPersonName().toString()))
+					errors.rejectValue("person", "Person.names.length");
+			}
 		}
 		
 		if (!isUserNameValid(user.getUsername()))

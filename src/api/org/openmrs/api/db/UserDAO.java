@@ -15,9 +15,11 @@ package org.openmrs.api.db;
 
 import java.util.List;
 
+import org.openmrs.Person;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
+import org.openmrs.api.UserService;
 
 /**
  * Database methods for the UserService
@@ -193,5 +195,10 @@ public interface UserDAO {
 	 * @see org.openmrs.api.UserService#generateSystemId()
 	 */
 	public Integer generateSystemId() throws DAOException;
+
+	/**
+     * @see UserService#getUsersByPerson(Person, boolean)
+     */
+    public List<User> getUsersByPerson(Person person, boolean includeRetired);
 	
 }

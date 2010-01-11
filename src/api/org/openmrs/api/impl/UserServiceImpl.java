@@ -20,6 +20,7 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Person;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
@@ -145,10 +146,17 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 * @see org.openmrs.api.UserService#voidUser(org.openmrs.User, java.lang.String)
 	 */
 	public User voidUser(User user, String reason) throws APIException {
-		user.setVoided(true);
-		user.setVoidReason(reason);
-		user.setVoidedBy(Context.getAuthenticatedUser());
-		user.setDateVoided(new Date());
+		return Context.getUserService().retireUser(user, reason);
+	}
+	
+	/**
+	 * @see org.openmrs.api.UserService#retireUser(org.openmrs.User, java.lang.String)
+	 */
+	public User retireUser(User user, String reason) throws APIException {
+		user.setRetired(true);
+		user.setRetireReason(reason);
+		user.setRetiredBy(Context.getAuthenticatedUser());
+		user.setDateRetired(new Date());
 		
 		return saveUser(user, null);
 	}
@@ -157,10 +165,17 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 * @see org.openmrs.api.UserService#unvoidUser(org.openmrs.User)
 	 */
 	public User unvoidUser(User user) throws APIException {
-		user.setVoided(false);
-		user.setVoidReason(null);
-		user.setVoidedBy(null);
-		user.setDateVoided(null);
+		return Context.getUserService().unretireUser(user);
+	}
+	
+	/**
+	 * @see org.openmrs.api.UserService#unretireUser(org.openmrs.User)
+	 */
+	public User unretireUser(User user) throws APIException {
+		user.setRetired(false);
+		user.setRetireReason(null);
+		user.setRetiredBy(null);
+		user.setDateRetired(null);
 		
 		return saveUser(user, null);
 	}
@@ -361,6 +376,13 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	public List<User> getUsersByName(String givenName, String familyName, boolean includeVoided) throws APIException {
 		return dao.getUsersByName(givenName, familyName, includeVoided);
 	}
+	
+	/**
+     * @see org.openmrs.api.UserService#getUsersByPerson(org.openmrs.Person, boolean)
+     */
+    public List<User> getUsersByPerson(Person person, boolean includeRetired) throws APIException {
+	    return dao.getUsersByPerson(person, includeRetired);
+    }
 	
 	/**
 	 * @see org.openmrs.api.UserService#getAllUsers(List, boolean)

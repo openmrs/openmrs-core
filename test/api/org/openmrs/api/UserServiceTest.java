@@ -72,10 +72,11 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		UserService us = Context.getUserService();
 		
 		User u = new User();
+		u.setPerson(new Person());
 		
 		u.addName(new PersonName("Benjamin", "A", "Wolfe"));
 		u.setUsername("bwolfe");
-		u.setGender("M");
+		u.getPerson().setGender("M");
 		
 		User createdUser = us.saveUser(u, "some arbitrary password to use");
 		
@@ -90,7 +91,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	 * variable used to help prevent the {@link #shouldCheckThatPatientUserWasCreatedSuccessfully()}
 	 * method from method run alone accidentally
 	 */
-	private static boolean shouldCreateUserWhoIsPatientAlreadyTestWasRun = false;
+	private static Integer shouldCreateUserWhoIsPatientAlreadyTestUserIdCreated = null;
 	
 	/**
 	 * Creates a user object that was a patient/person object already. This test is set to _NOT_
@@ -124,11 +125,12 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		
 		// get the person object we'll make into a user
 		Person personToMakeUser = Context.getPersonService().getPerson(2);
+		// this avoids a lazy init exception, since we're going to clear the session
+		((Patient) personToMakeUser).getIdentifiers().size();
 		Context.clearSession();
 		// this is the user object we'll be saving
 		User user = new User(personToMakeUser);
 		
-		user.setUserId(2);
 		user.setUsername("bwolfe");
 		user.setSystemId("asdf");
 		user.addRole(new Role("Some Role", "This is a test role")); //included in xml file
@@ -138,10 +140,10 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		assertTrue(user.hasRole("Some Role"));
 		
 		// do the actual creating of the user object
-		userService.saveUser(user, null);
+		userService.saveUser(user, "password");
+		Assert.assertNotNull("User was not created", userService.getUser(user.getUserId()));
 		
-		shouldCreateUserWhoIsPatientAlreadyTestWasRun = true;
-		//System.out.println("Just set the boolean var");
+		shouldCreateUserWhoIsPatientAlreadyTestUserIdCreated = user.getUserId();
 	}
 	
 	/**
@@ -162,13 +164,13 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		// and so only has this limited setup
 		
 		try {
-			assertTrue("This test should not be run without first running 'shouldCreateUserWhoIsPatient' test method",
-			    shouldCreateUserWhoIsPatientAlreadyTestWasRun);
+			assertNotNull("This test should not be run without first running 'shouldCreateUserWhoIsPatient' test method",
+			    shouldCreateUserWhoIsPatientAlreadyTestUserIdCreated);
 			
 			UserService userService = Context.getUserService();
 			
 			// get the same user we just created and make sure the user portion exists
-			User fetchedUser = userService.getUser(2);
+			User fetchedUser = userService.getUser(shouldCreateUserWhoIsPatientAlreadyTestUserIdCreated);
 			User fetchedUser3 = userService.getUser(3);
 			if (fetchedUser3 != null)
 				throw new Exception("There is a user with id #3");
@@ -180,10 +182,8 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 			
 			Context.clearSession();
 			
-			// there should only be 2 users in the system. (the super user that is
-			// authenticated to this test and the user we just created)
 			List<User> allUsers = userService.getAllUsers();
-			assertEquals(6, allUsers.size());
+			assertEquals(9, allUsers.size());
 			
 			// there should still only be the one patient we created in the xml file
 			Cohort allPatientsSet = Context.getPatientSetService().getAllPatients();
@@ -360,9 +360,9 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		
 		List<User> users = Context.getUserService().getUsers("Johnson", null, false);
 		Assert.assertEquals(3, users.size());
-		Assert.assertTrue(users.contains(new Patient(2)));
-		Assert.assertTrue(users.contains(new Patient(4)));
-		Assert.assertTrue(users.contains(new Patient(5)));
+		Assert.assertTrue(users.contains(new User(2)));
+		Assert.assertTrue(users.contains(new User(4)));
+		Assert.assertTrue(users.contains(new User(5)));
 	}
 	
 	/**
@@ -453,7 +453,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should find object given valid uuid", method = "getUserByUuid(String)")
 	public void getUserByUuid_shouldFindObjectGivenValidUuid() throws Exception {
-		String uuid = "df8ae447-6745-45be-b859-403241d9913c";
+		String uuid = "c1d8f5c2-e131-11de-babe-001e378eb67e";
 		User user = Context.getUserService().getUserByUuid(uuid);
 		Assert.assertEquals(501, (int)user.getUserId());
 	}
@@ -556,7 +556,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	public void getAllUsers_shouldNotContainsAnyDuplicateUsers() throws Exception {
 		executeDataSet(XML_FILENAME);
 		List<User> users = Context.getUserService().getAllUsers();
-		Assert.assertEquals(7, users.size());
+		Assert.assertEquals(10, users.size());
 		// TODO Need to test with duplicate data in the dataset (not sure if that's possible)
 		
 	}
@@ -934,36 +934,6 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link UserService#unvoidUser(User)}
-	 */
-	@Test
-	@Verifies(value = "should unvoid and unmark all attributes", method = "unvoidUser(User)")
-	public void unvoidUser_shouldUnvoidAndUnmarkAllAttributes() throws Exception {
-		UserService userService = Context.getUserService();
-		User user = userService.getUser(501);
-		userService.unvoidUser(user);
-		Assert.assertFalse(user.isVoided());
-		Assert.assertNull(user.getDateVoided());
-		Assert.assertNull(user.getVoidedBy());
-		Assert.assertNull(user.getVoidReason());
-	}
-	
-	/**
-	 * @see {@link UserService#voidUser(User,String)}
-	 */
-	@Test
-	@Verifies(value = "should void user and set attributes", method = "voidUser(User,String)")
-	public void voidUser_shouldVoidUserAndSetAttributes() throws Exception {
-		UserService userService = Context.getUserService();
-		User user = userService.getUser(502);
-		userService.voidUser(user, "because");
-		Assert.assertTrue(user.isVoided());
-		Assert.assertNotNull(user.getDateVoided());
-		Assert.assertNotNull(user.getVoidedBy());
-		Assert.assertEquals("because", user.getVoidReason());
-	}
-	
-	/**
 	 * @see {@link UserService#saveRole(Role)}
 	 */
 	@Test
@@ -990,5 +960,63 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		//		Context.getUserService().saveRole(role);
 		
 		// stack overflow error getting thrown in handlers 
+	}
+
+	/**
+     * @see {@link UserService#getUsersByPerson(Person,null)}
+     * 
+     */
+    @Test
+    @Verifies(value = "should fetch all accounts for a person when include retired is true", method = "getUsersByPerson(Person,null)")
+    public void getUsersByPerson_shouldFetchAllAccountsForAPersonWhenIncludeRetiredIsTrue() throws Exception {
+    	executeDataSet(XML_FILENAME);
+    	Person person = new Person(508);
+	    List<User> users = Context.getUserService().getUsersByPerson(person, true);
+	    Assert.assertEquals(3, users.size());
+    }
+
+	/**
+     * @see {@link UserService#getUsersByPerson(Person,null)}
+     * 
+     */
+    @Test
+    @Verifies(value = "should not fetch retired accounts when include retired is false", method = "getUsersByPerson(Person,null)")
+    public void getUsersByPerson_shouldNotFetchRetiredAccountsWhenIncludeRetiredIsFalse() throws Exception {
+    	executeDataSet(XML_FILENAME);
+    	Person person = new Person(508);
+	    List<User> users = Context.getUserService().getUsersByPerson(person, false);
+	    Assert.assertEquals(2, users.size());
+    }
+
+	/**
+     * @see {@link UserService#retireUser(User,String)}
+     * 
+     */
+    @Test
+    @Verifies(value = "should retire user and set attributes", method = "retireUser(User,String)")
+    public void retireUser_shouldRetireUserAndSetAttributes() throws Exception {
+		UserService userService = Context.getUserService();
+		User user = userService.getUser(502);
+		userService.retireUser(user, "because");
+		Assert.assertTrue(user.isRetired());
+		Assert.assertNotNull(user.getDateRetired());
+		Assert.assertNotNull(user.getRetiredBy());
+		Assert.assertEquals("because", user.getRetireReason());
+	}
+
+	/**
+     * @see {@link UserService#unretireUser(User)}
+     * 
+     */
+    @Test
+    @Verifies(value = "should unretire and unmark all attributes", method = "unretireUser(User)")
+    public void unretireUser_shouldUnretireAndUnmarkAllAttributes() throws Exception {
+		UserService userService = Context.getUserService();
+		User user = userService.getUser(501);
+		userService.unretireUser(user);
+		Assert.assertFalse(user.isRetired());
+		Assert.assertNull(user.getDateRetired());
+		Assert.assertNull(user.getRetiredBy());
+		Assert.assertNull(user.getRetireReason());
 	}	
 }

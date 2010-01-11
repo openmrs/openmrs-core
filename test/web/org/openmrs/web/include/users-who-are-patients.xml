@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <dataset>
 	<person person_id="777" gender="F" birthdate="1976-08-25 00:00:00.0" dead="false" creator="1" date_created="2006-01-18 00:00:00.0" voided="false" uuid="c3731030-40cc-11de-95a8-001e378eb67e"/>
-	<users user_id="777" system_id="2-6" username="alsopatient" password="ff6d1655327d385e11a04e1632b4f33ceb8fafd2" salt="5d32c5fd9fde391c755f1f4dfd5e1d6e3debe6" secret_question="" creator="1" date_created="2008-08-15 15:46:47.0" voided="false"/>
+	<users user_id="777" person_id="777" system_id="2-6" username="alsopatient" password="ff6d1655327d385e11a04e1632b4f33ceb8fafd2" salt="5d32c5fd9fde391c755f1f4dfd5e1d6e3debe6" secret_question="" creator="1" date_created="2008-08-15 15:46:47.0" retired="false"/>
 	<patient patient_id="777" creator="1" date_created="2006-01-18 00:00:00.0" changed_by="1" date_changed="2008-08-18 12:25:57.0" voided="false" void_reason=""/>
 	<patient_identifier patient_identifier_id="777" patient_id="777" identifier="909" identifier_type="2" preferred="0" location_id="1" creator="1" date_created="2005-09-22 00:00:00.0" voided="false" void_reason="" uuid="3f1410a2-40d4-11de-a14a-001e378eb67e"/>
 	<patient_identifier patient_identifier_id="778" patient_id="777" identifier="909-6" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-09-22 00:00:00.0" voided="false" void_reason="" uuid="451b44fc-40d4-11de-a14a-001e378eb67e"/>

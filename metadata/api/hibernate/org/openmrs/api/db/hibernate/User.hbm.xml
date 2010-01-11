@@ -5,12 +5,19 @@
 
 <hibernate-mapping package="org.openmrs">
 
-	<joined-subclass name="User" table="users" extends="Person">
+	<class name="User" table="users">
 
-		<key column="user_id" not-null="true" on-delete="cascade" />
-
-		<property name="userId" type="int" not-null="true" access="field"
-			column="user_id" update="false" insert="false" />
+		<id name="userId" type="java.lang.Integer" column="user_id" unsaved-value="0">
+			<generator class="native" />
+		</id>
+		
+		<discriminator column="user_id" insert="false" />
+		
+		<property name="uuid" type="java.lang.String"
+			column="uuid" length="38" unique="true" not-null="true"/>
+			
+		<many-to-one name="person" class="Person" column="person_id"
+			not-null="true" lazy="false" cascade="save-update"/>
 
 		<property name="systemId" type="java.lang.String" not-null="true"
 			column="system_id" length="50" />
@@ -27,15 +34,15 @@
 		<property name="dateChanged" type="java.util.Date" column="date_changed"
 			length="19" />
 
-		<property name="voided" type="boolean" column="voided"
+		<property name="retired" type="boolean" column="retired"
 			length="1" not-null="true" />
 
-		<many-to-one name="voidedBy" class="User" column="voided_by" />
+		<many-to-one name="retiredBy" class="User" column="retired_by" />
 
-		<property name="dateVoided" type="java.util.Date" column="date_voided"
+		<property name="dateRetired" type="java.util.Date" column="date_retired"
 			length="19" />
 
-		<property name="voidReason" type="java.lang.String" column="void_reason"
+		<property name="retireReason" type="java.lang.String" column="retire_reason"
 			length="255" />
 
 		<property name="secretQuestion" type="java.lang.String"
@@ -62,6 +69,6 @@
 				length="255" />
 		</map>
 
-	</joined-subclass>
+	</class>
 
 </hibernate-mapping>

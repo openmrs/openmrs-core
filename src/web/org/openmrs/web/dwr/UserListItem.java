@@ -34,7 +34,7 @@ public class UserListItem extends PersonListItem {
 	}
 	
 	public UserListItem(User user) {
-		super(user);
+		super(user.getPerson());
 		
 		if (user != null) {
 			userId = user.getUserId();

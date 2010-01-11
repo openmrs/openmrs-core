@@ -30,6 +30,7 @@ import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
+import org.openmrs.Person;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.User;
@@ -386,7 +387,7 @@ public class ORUR01Handler implements Application {
 			encounter = new Encounter();
 			
 			Date encounterDate = getEncounterDate(pv1);
-			User provider = getProvider(pv1);
+			Person provider = getProvider(pv1);
 			Location location = getLocation(pv1);
 			Form form = getForm(msh);
 			EncounterType encounterType = getEncounterType(msh, form);
@@ -755,13 +756,12 @@ public class ORUR01Handler implements Application {
 		return tsToDate(pv1.getAdmitDateTime());
 	}
 	
-	private User getProvider(PV1 pv1) throws HL7Exception {
+	private Person getProvider(PV1 pv1) throws HL7Exception {
 		XCN hl7Provider = pv1.getAttendingDoctor(0);
-		Integer providerId = Context.getHL7Service().resolveUserId(hl7Provider);
+		Integer providerId = Context.getHL7Service().resolvePersonId(hl7Provider);
 		if (providerId == null)
 			throw new HL7Exception("Could not resolve provider");
-		User provider = new User();
-		provider.setUserId(providerId);
+		Person provider = new Person(providerId);
 		return provider;
 	}
 	

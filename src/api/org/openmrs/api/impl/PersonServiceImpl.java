@@ -71,19 +71,16 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 *      java.lang.String)
 	 */
 	public Set<Person> getSimilarPeople(String name, Integer birthyear, String gender) throws APIException {
-		return getSimilarPeople(name, birthyear, gender, "person");
+		return dao.getSimilarPeople(name, birthyear, gender);
 	}
 	
 	/**
 	 * @see org.openmrs.api.PersonService#getSimilarPeople(java.lang.String, java.lang.Integer, java.lang.String, java.lang.String)
+	 * @deprecated @see {@link #getSimilarPeople(String, Integer, String)}
 	 */
 	public Set<Person> getSimilarPeople(String nameSearch, Integer birthyear, String gender, String personType)
 	                                                                                                           throws APIException {
-		if (!personType.equals("person") && !personType.equals("user") && !personType.equals("patient")) {
-			throw new IllegalArgumentException("PersonType argument must be 'person', 'user', or 'patient' but was: " + personType);
-		}
-		
-		return dao.getSimilarPeople(nameSearch, birthyear, gender, personType);
+		return getSimilarPeople(nameSearch, birthyear, gender);
 	}
 	
 	/**
@@ -139,7 +136,8 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		}
 		// If roles *are* defined then find matching users who have the given roles.
 		else {
-			people.addAll(Context.getUserService().findUsers(searchPhrase, roles, includeVoided));
+			for (User u : Context.getUserService().findUsers(searchPhrase, roles, includeVoided))
+				people.add(u.getPerson());
 		}
 		
 		return people;
@@ -389,9 +387,8 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		savePerson(person);
 		Context.getPatientService().voidPatient(Context.getPatientService().getPatient(person.getPersonId()), reason);
 		UserService us = Context.getUserService();
-		User user = us.getUser(person.getPersonId());
-		if (user != null)
-			us.voidUser(user, reason);
+		for (User user : us.getUsersByPerson(person, false))
+			us.retireUser(user, reason);
 		
 		return person;
 	}

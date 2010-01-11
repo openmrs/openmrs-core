@@ -63,7 +63,7 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
 import org.openmrs.web.WebConstants;
-import org.openmrs.web.controller.user.UserFormController;
+import org.openmrs.web.controller.person.PersonFormController;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.context.support.MessageSourceAccessor;
@@ -638,7 +638,7 @@ public class NewPatientFormController extends SimpleFormController {
 			String age = request.getParameter("addAge");
 			
 			p = new Patient();
-			UserFormController.getMiniPerson(p, name, gender, date, age);
+			PersonFormController.getMiniPerson(p, name, gender, date, age);
 			
 			patient = new ShortPatientModel(p);
 		}

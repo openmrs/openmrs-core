@@ -1114,6 +1114,16 @@
 		<rtexprvalue>true</rtexprvalue>
 	</attribute>
 	<attribute>
+		<name>personId</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>person</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
 		<name>encounterId</name>
 		<required>false</required>
 		<rtexprvalue>true</rtexprvalue>

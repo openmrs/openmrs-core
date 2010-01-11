@@ -13,8 +13,11 @@
  */
 package org.openmrs.api.handler;
 
+import java.util.ArrayList;
 import java.util.Date;
 
+import org.openmrs.OpenmrsObject;
+import org.openmrs.Patient;
 import org.openmrs.User;
 import org.openmrs.annotation.Handler;
 import org.openmrs.aop.RequiredDataAdvice;
@@ -40,5 +43,13 @@ public class UserSaveHandler implements SaveHandler<User> {
 		// if the user doesn't have a system id, generate one
 		if (user.getSystemId() == null || user.getSystemId().equals(""))
 			user.setSystemId(Context.getUserService().generateSystemId());
+		
+		// the framework only automatically recurses on properties that are Collection<OpenmrsObject>
+		// so we need to do this manually
+		if (user.getPerson() != null) {
+			if (user.getPerson() instanceof Patient)
+				((Patient) user.getPerson()).getIdentifiers().iterator().next();
+			RequiredDataAdvice.recursivelyHandle(SaveHandler.class, user.getPerson(), creator, dateCreated, other, new ArrayList<OpenmrsObject>());
+		}
 	}
 }

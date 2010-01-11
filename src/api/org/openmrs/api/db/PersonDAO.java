@@ -43,9 +43,9 @@ public interface PersonDAO {
 	
 	/**
 	 * @see org.openmrs.api.PersonService#getSimilarPeople(java.lang.String, java.lang.Integer,
-	 *      java.lang.String, java.lang.String)
+	 *      java.lang.String)
 	 */
-	public Set<Person> getSimilarPeople(String name, Integer birthyear, String gender, String personType) throws DAOException;
+	public Set<Person> getSimilarPeople(String name, Integer birthyear, String gender) throws DAOException;
 	
 	/**
 	 * @see org.openmrs.api.PersonService#getPeople(String, Boolean)

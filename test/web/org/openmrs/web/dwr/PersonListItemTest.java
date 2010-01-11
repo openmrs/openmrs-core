@@ -65,14 +65,5 @@ public class PersonListItemTest extends BaseWebContextSensitiveTest {
 		PersonListItem listItem = PersonListItem.createBestMatch(Context.getPersonService().getPerson(2));
 		Assert.assertTrue(listItem instanceof PersonListItem);
 	}
-	
-	/**
-	 * @see {@link PersonListItem#createBestMatch(Person)}
-	 */
-	@Test
-	@Verifies(value = "should return UserListItem given user parameter", method = "createBestMatch(Person)")
-	@SuppressWarnings("unused")
-	public void createBestMatch_shouldReturnUserListItemGivenUserParameter() throws Exception {
-		UserListItem listItem = (UserListItem) PersonListItem.createBestMatch(Context.getPersonService().getPerson(1));
-	}
+
 }

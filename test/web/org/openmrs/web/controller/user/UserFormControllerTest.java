@@ -13,44 +13,36 @@
  */
 package org.openmrs.web.controller.user;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.junit.Assert;
 import org.junit.Test;
+import org.openmrs.PersonName;
 import org.openmrs.User;
 import org.openmrs.test.Verifies;
 import org.openmrs.web.test.BaseWebContextSensitiveTest;
 import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.mock.web.MockHttpSession;
+import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindException;
+import org.springframework.web.context.request.ServletWebRequest;
+import org.springframework.web.context.request.WebRequest;
 
 /**
- * Tests the {@link UserFormController} class.
+ * Tests the {@link oldUserFormController} class.
  */
 public class UserFormControllerTest extends BaseWebContextSensitiveTest {
-	
+
 	/**
-	 * @see {@link UserFormController#formBackingObject(HttpServletRequest)}
-	 */
-	// @Transactional annotation needed because the parent class is @Transactional and so screws propagates to this readOnly test
-	@Transactional(readOnly = true)
-	@Test
-	@Verifies(value = "should get empty form with valid user", method = "formBackingObject(HttpServletRequest)")
-	public void formBackingObject_shouldGetEmptyFormWithValidUser() throws Exception {
-		MockHttpServletRequest request = new MockHttpServletRequest("GET", "");
-		request.setParameter("userId", "1");
-		
-		HttpServletResponse response = new MockHttpServletResponse();
-		
-		UserFormController controller = (UserFormController) applicationContext.getBean("userForm");
-		
-		ModelAndView modelAndView = controller.handleRequest(request, response);
-		
-		// make sure there is a "userId" filled in on the concept
-		User command = (User) modelAndView.getModel().get("user");
-		Assert.assertNotNull(command.getUserId());
-	}
+     * @see {@link UserFormController#handleSubmission(WebRequest,HttpSession,String,String,String,null,User,BindingResult)}
+     * 
+     */
+    @Test
+    @Verifies(value = "should work for an example", method = "handleSubmission(WebRequest,HttpSession,String,String,String,null,User,BindingResult)")
+    public void handleSubmission_shouldWorkForAnExample() throws Exception {
+	    UserFormController controller = new UserFormController();
+	    WebRequest request = new ServletWebRequest(new MockHttpServletRequest());
+	    User user = controller.formBackingObject(request, null);
+	    user.addName(new PersonName("This", "is", "Test"));
+	    user.getPerson().setGender("F");
+	    controller.handleSubmission(request, new MockHttpSession(), new ModelMap(), "Save User", "pass123", "pass123", new String[0], user, new BindException(user, "user"));
+    }
 	
 }

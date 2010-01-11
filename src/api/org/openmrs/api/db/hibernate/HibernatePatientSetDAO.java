@@ -116,6 +116,10 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		this.sessionFactory = sessionFactory;
 	}
 	
+	/**
+	 * @deprecated
+	 * @see org.openmrs.api.db.PatientSetDAO#exportXml(org.openmrs.Cohort)
+	 */
 	public String exportXml(Cohort ps) throws DAOException {
 		// TODO: This is inefficient for large patient sets.
 		StringBuffer ret = new StringBuffer("<patientset>");
@@ -212,6 +216,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	
 	/**
 	 * Note that the formatting may depend on locale
+	 * @deprecated
 	 */
 	public String exportXml(Integer patientId) throws DAOException {
 		Locale locale = Context.getLocale();
@@ -343,11 +348,11 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 						temp.appendChild(doc.createTextNode(f.getName()));
 						metadataNode.appendChild(temp);
 					}
-					User u = e.getProvider();
+					Person u = e.getProvider();
 					if (u != null) {
 						Element temp = doc.createElement("provider");
-						temp.setAttribute("provider_id", u.getUserId().toString());
-						temp.appendChild(doc.createTextNode(formatUserName(u)));
+						temp.setAttribute("provider_id", u.getPersonId().toString());
+						temp.appendChild(doc.createTextNode(u.getPersonName().toString()));
 						metadataNode.appendChild(temp);
 					}
 				}

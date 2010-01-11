@@ -344,6 +344,14 @@ public interface HL7Service extends OpenmrsService {
 	public Integer resolveUserId(XCN xcn) throws HL7Exception;
 	
 	/**
+	 * @param xcn HL7 component of data type XCN (extended composite ID number and name for persons)
+	 *            (see HL7 2.5 manual Ch.2A.86)
+	 * @return Internal ID # of the specified person, or null if that person can't be found or is
+	 *         ambiguous
+	 */
+	public Integer resolvePersonId(XCN xcn) throws HL7Exception;
+	
+	/**
 	 * @param pl HL7 component of data type PL (person location) (see Ch 2.A.53)
 	 * @return internal identifier of the specified location, or null if it is not found or
 	 *         ambiguous

@@ -7,7 +7,7 @@
 
 <h2><spring:message code="User.manage.title"/></h2>
 
-<a href="${pageContext.request.contextPath}/admin/person/addPerson.htm?personType=user"><spring:message code="User.add"/></a>
+<a href="user.form"><spring:message code="User.add"/></a>
 
 <br/><br/>
 

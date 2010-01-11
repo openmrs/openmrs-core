@@ -15,6 +15,8 @@ package org.openmrs.validator;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.openmrs.Person;
+import org.openmrs.PersonName;
 import org.openmrs.User;
 import org.openmrs.test.Verifies;
 import org.springframework.validation.BindException;
@@ -104,26 +106,26 @@ public class UserValidatorTest {
 	 * @see {@link UserValidator#validate(Object,Errors)}
 	 */
 	@Test
-	@Verifies(value = "should fail validation if voided and voidReason is null or empty or whitespace", method = "validate(Object,Errors)")
-	public void validate_shouldFailValidationIfVoidedAndVoidReasonIsNullOrEmptyOrWhitespace() throws Exception {
+	@Verifies(value = "should fail validation if retired and retireReason is null or empty or whitespace", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfRetiredAndRetireReasonIsNullOrEmptyOrWhitespace() throws Exception {
 		User user = new User();
 		user.setUsername("test");
-		user.setVoidReason(null);
-		user.setVoided(true);
+		user.setRetireReason(null);
+		user.setRetired(true);
 		
 		Errors errors = new BindException(user, "user");
 		new UserValidator().validate(user, errors);
-		Assert.assertTrue(errors.hasFieldErrors("voidReason"));
+		Assert.assertTrue(errors.hasFieldErrors("retireReason"));
 		
-		user.setVoidReason("");
+		user.setRetireReason("");
 		errors = new BindException(user, "user");
 		new UserValidator().validate(user, errors);
-		Assert.assertTrue(errors.hasFieldErrors("voidReason"));
+		Assert.assertTrue(errors.hasFieldErrors("retireReason"));
 		
-		user.setVoidReason(" ");
+		user.setRetireReason(" ");
 		errors = new BindException(user, "user");
 		new UserValidator().validate(user, errors);
-		Assert.assertTrue(errors.hasFieldErrors("voidReason"));
+		Assert.assertTrue(errors.hasFieldErrors("retireReason"));
 	}
 	
 	/**
@@ -134,8 +136,11 @@ public class UserValidatorTest {
 	public void validate_shouldPassValidationIfAllRequiredFieldsHaveProperValues() throws Exception {
 		User user = new User();
 		user.setUsername("test");
-		user.setVoided(true);
-		user.setVoidReason("for the lulz");
+		user.setRetired(true);
+		user.setRetireReason("for the lulz");
+		user.setPerson(new Person(999));
+		user.getPerson().addName(new PersonName("Users", "Need", "People"));
+		user.getPerson().setGender("F");
 		
 		Errors errors = new BindException(user, "user");
 		new UserValidator().validate(user, errors);

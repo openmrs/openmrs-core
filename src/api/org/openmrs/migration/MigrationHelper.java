@@ -126,6 +126,7 @@ public class MigrationHelper {
 				continue;
 			}
 			User user = new User();
+			user.setPerson(new Person());
 			PersonName pn = new PersonName(e.getAttribute("first_name"), "", e.getAttribute("last_name"));
 			user.addName(pn);
 			user.setUsername(username);
@@ -226,6 +227,7 @@ public class MigrationHelper {
 			}
 			if (user == null && autoCreateUsers) {
 				user = new User();
+				user.setPerson(new Person());
 				PersonName pn = new PersonName(userFirstName, "", userLastName);
 				user.addName(pn);
 				user.setUsername(username);

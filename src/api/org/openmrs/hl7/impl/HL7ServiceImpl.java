@@ -27,6 +27,7 @@ import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
+import org.openmrs.Person;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
@@ -455,7 +456,38 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 			}
 		}
 	}
-	
+
+	/**
+	 * @see org.openmrs.hl7.HL7Service#resolvePersonId(ca.uhn.hl7v2.model.v25.datatype.XCN)
+	 */
+	public Integer resolvePersonId(XCN xcn) throws HL7Exception {
+		String idNumber = xcn.getIDNumber().getValue();
+		String familyName = xcn.getFamilyName().getSurname().getValue();
+		String givenName = xcn.getGivenName().getValue();
+		
+		if (idNumber != null && idNumber.length() > 0) {
+			try {
+				Person person = Context.getPersonService().getPerson(new Integer(idNumber));
+				return person.getPersonId();
+			}
+			catch (Exception e) {
+				log.error("Invalid person ID '" + idNumber + "'", e);
+				return null;
+			}
+		} else {
+			List<Person> persons = Context.getPersonService().getPeople(givenName + " " + familyName, null);
+			if (persons.size() == 1) {
+				return persons.get(0).getPersonId();
+			} else if (persons.size() == 0) {
+				log.error("Couldn't find a person named " + givenName + " " + familyName);
+				return null;
+			} else {
+				log.error("Found more than one person named " + givenName + " " + familyName);
+				return null;
+			}
+		}
+	}
+
 	/**
 	 * @param pl HL7 component of data type PL (person location) (see Ch 2.A.53)
 	 * @return internal identifier of the specified location, or null if it is not found or

@@ -30,7 +30,7 @@ import java.util.Set;
  */
 public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 	
-	public static final long serialVersionUID = 7844L;
+	public static final long serialVersionUID = 2L;
 	
 	// Fields
 	
@@ -48,7 +48,7 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 	
 	private EncounterType encounterType;
 	
-	private User provider;
+	private Person provider;
 	
 	private Set<Order> orders;
 	
@@ -402,18 +402,27 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 	
 	/**
 	 * @return Returns the provider.
+	 * @since 1.6 (used to return User)
 	 */
-	public User getProvider() {
+	public Person getProvider() {
 		return provider;
 	}
 	
 	/**
 	 * @param provider The provider to set.
+	 * @deprecated use {@link #setProvider(Person)} 
 	 */
 	public void setProvider(User provider) {
-		this.provider = provider;
+		setProvider(provider.getPerson());
 	}
 	
+	/**
+     * @param provider The provider to set.
+     */
+    public void setProvider(Person provider) {
+	    this.provider = provider;
+    }
+
 	/**
 	 * @return Returns the form.
 	 */

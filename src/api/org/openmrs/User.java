@@ -25,6 +25,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.api.APIException;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
@@ -33,22 +34,22 @@ import org.simpleframework.xml.load.Replace;
 import org.simpleframework.xml.load.Validate;
 
 /**
- * Defines a User in the system. A user is simply an extension of a person and all that that
- * implies. A user is defined as someone who will be manipulating the system and must log in or is
- * being referred to in another part of the system (as a provider, creator, etc) Users are special
- * <code>Person</code>s in that they have login credentials (login/password) and can have special
- * user properties. User properties are just simple key-value pairs for either quick info or display
- * specific info that needs to be persisted (like locale preferences, search options, etc)
+ * Defines a User Account in the system. This account belongs to a {@link Person} in the system,
+ * although that person may have other user accounts. Users have login credentials (username/password)
+ * and can have special user properties. User properties are just simple key-value pairs for either quick
+ * info or display specific info that needs to be persisted (like locale preferences, search options, etc)
  */
-public class User extends Person implements java.io.Serializable {
+public class User extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
-	public static final long serialVersionUID = 4489L;
+	public static final long serialVersionUID = 2L;
 	
 	private transient Log log = LogFactory.getLog(getClass());
 	
 	// Fields
 	
 	private Integer userId;
+	
+	private Person person;
 	
 	private String systemId;
 	
@@ -72,15 +73,12 @@ public class User extends Person implements java.io.Serializable {
 	
 	/** constructor with id */
 	public User(Integer userId) {
-		super(userId);
 		this.userId = userId;
 	}
 	
 	/** constructor with person object */
 	public User(Person person) {
-		super(person);
-		if (person != null)
-			userId = person.getPersonId();
+		this.person = person;
 	}
 	
 	/**
@@ -191,25 +189,33 @@ public class User extends Person implements java.io.Serializable {
 	}
 	
 	/**
-	 * Compares two objects for similarity This must pass through to the parent object
-	 * (org.openmrs.Person) in order to get similarity of person/user objects
+	 * Compares two objects for similarity
 	 * 
 	 * @param obj
 	 * @return boolean true/false whether or not they are the same objects
-	 * @see org.openmrs.Person#equals(java.lang.Object)
 	 */
 	public boolean equals(Object obj) {
-		return super.equals(obj);
+		if (obj instanceof User) {
+			User user = (User) obj;
+			
+			if (getUserId() != null && user.getUserId() != null)
+				return userId.equals(user.getUserId());
+		}
+		
+		// if userId is null for either object, for equality the
+		// two objects must be the same
+		return this == obj;
 	}
 	
 	/**
-	 * The hashcode for a user/person is used to index the objects in a tree This must pass through
-	 * to the parent object (org.openmrs.Person) in order to get similarity of person/user objects
+	 * The hashcode for a user is used to index the objects in a tree
 	 * 
 	 * @see org.openmrs.Person#hashCode()
 	 */
 	public int hashCode() {
-		return super.hashCode();
+		if (getUserId() == null)
+			return super.hashCode();
+		return getUserId().hashCode();
 	}
 	
 	// Property accessors
@@ -323,21 +329,30 @@ public class User extends Person implements java.io.Serializable {
 	 */
 	@Attribute(required = true)
 	public void setUserId(Integer userId) {
-		super.setPersonId(userId);
 		this.userId = userId;
 	}
 	
 	/**
-	 * Overrides the parent setPersonId(Integer) so that we can be sure user id is also set
-	 * correctly.
-	 * 
-	 * @see org.openmrs.Person#setPersonId(java.lang.Integer)
+	 * @deprecated see {@link #setPerson(Person)}
 	 */
 	public void setPersonId(Integer personId) {
-		super.setPersonId(personId);
-		this.userId = personId;
+		throw new APIException("You need to call setPerson(Person)");
 	}
 	
+	/**
+     * @return the person
+     */
+    public Person getPerson() {
+    	return person;
+    }
+	
+    /**
+     * @param person the person to set
+     */
+    public void setPerson(Person person) {
+    	this.person = person;
+    }
+
 	/**
 	 * @return Returns the username.
 	 */
@@ -369,7 +384,7 @@ public class User extends Person implements java.io.Serializable {
 	}
 	
 	public String toString() {
-		return "" + getPersonName();
+		return username;
 	}
 	
 	/**
@@ -434,6 +449,43 @@ public class User extends Person implements java.io.Serializable {
 		return defaultValue;
 	}
 	
+	/**
+	 * @see Person#addName(PersonName)
+	 */
+	public void addName(PersonName name) {
+		getPerson().addName(name);
+	}
+	
+	/**
+	 * @see Person#getPersonName()
+	 */
+	public PersonName getPersonName() {
+		return getPerson() == null ? null : getPerson().getPersonName();
+	}
+	
+	/**
+	 * Get givenName on the Person this user account belongs to
+	 * @see Person#getGivenName()
+	 */
+	public String getGivenName() {
+		return getPerson() == null ? null : getPerson().getGivenName();
+	}
+	
+	/**
+	 * Get familyName on the Person this user account belongs to
+	 * @see Person#getFamilyName()
+	 */
+	public String getFamilyName() {
+		return getPerson() == null ? null : getPerson().getFamilyName();
+	}
+	
+	/**
+     * @see org.openmrs.Person#getNames()
+     */
+    public Set<PersonName> getNames() {
+	    return person.getNames();
+    }
+
 	/**
 	 * @deprecated use <tt>getGivenName</tt> on <tt>Person</tt>
 	 * @return String user's first name

@@ -25,6 +25,7 @@ import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
 import org.openmrs.Location;
 import org.openmrs.Obs;
+import org.openmrs.Person;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.springframework.util.StringUtils;
@@ -55,6 +56,10 @@ public class FormatTag extends TagSupport {
 	
 	private User user;
 	
+	private Integer personId;
+	
+	private Person person;
+	
 	private Integer encounterId;
 	
 	private Encounter encounter;
@@ -84,6 +89,11 @@ public class FormatTag extends TagSupport {
 		if (user != null)
 			printUser(sb, user);
 		
+		if (personId != null)
+			person = Context.getPersonService().getPerson(personId);
+		if (person != null)
+			printPerson(sb, person);
+		
 		if (encounterId != null)
 			encounter = Context.getEncounterService().getEncounter(encounterId);
 		if (encounter != null) {
@@ -93,7 +103,7 @@ public class FormatTag extends TagSupport {
 			sb.append(" | ");
 			printDate(sb, encounter.getEncounterDatetime());
 			sb.append(" | ");
-			printUser(sb, encounter.getProvider());
+			printPerson(sb, encounter.getProvider());
 		}
 		
 		if (encounterTypeId != null)
@@ -158,7 +168,19 @@ public class FormatTag extends TagSupport {
      * @param u
      */
     private void printUser(StringBuilder sb, User u) {
-    	sb.append(u.getPersonName());
+    	sb.append(u.getUsername());
+    	if (u.getPerson() != null)
+    		sb.append(" (").append(u.getPersonName()).append(")");
+    }
+    
+    /**
+     * formats a person and prints it to sb
+     * 
+     * @param sb
+     * @param p
+     */
+    private void printPerson(StringBuilder sb, Person p) {
+    	sb.append(p.getPersonName());
     }
 
 	public int doEndTag() {
@@ -173,6 +195,8 @@ public class FormatTag extends TagSupport {
 		obsValue = null;
 		userId = null;
 		user = null;
+		personId = null;
+		person = null;
 		encounterId = null;
 		encounter = null;
 		encounterTypeId = null;

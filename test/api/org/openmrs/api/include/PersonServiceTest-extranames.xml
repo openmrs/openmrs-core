@@ -4,10 +4,10 @@
   <patient patient_id="3" creator="1" date_created="2005-01-01 00:00:00.0" voided="true"/>
   <patient patient_id="4" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
   <patient patient_id="5" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
-  <users user_id="2" creator="1" system_id="" date_created="2005-01-01 00:00:00.0" voided="false"/>
-  <users user_id="3" creator="1" system_id="" date_created="2005-01-01 00:00:00.0" voided="true"/>
-  <users user_id="4" creator="1" system_id="" date_created="2005-01-01 00:00:00.0" voided="false"/>
-  <users user_id="5" creator="1" system_id="" date_created="2005-01-01 00:00:00.0" voided="false"/>
+  <users user_id="2" person_id="2" creator="1" system_id="" date_created="2005-01-01 00:00:00.0" retired="false" uuid="9670a7aa-e135-11de-babe-001e378eb67e"/>
+  <users user_id="3" person_id="3" creator="1" system_id="" date_created="2005-01-01 00:00:00.0" retired="true" uuid="9afcecb6-e135-11de-babe-001e378eb67e"/>
+  <users user_id="4" person_id="4" creator="1" system_id="" date_created="2005-01-01 00:00:00.0" retired="false" uuid="9f6bf698-e135-11de-babe-001e378eb67e"/>
+  <users user_id="5" person_id="5" creator="1" system_id="" date_created="2005-01-01 00:00:00.0" retired="false" uuid="a2e2e4da-e135-11de-babe-001e378eb67e"/>
   <patient_identifier patient_identifier_id="51" patient_id="2" identifier="1234" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="64020a1a-4dc8-417b-b12a-0e91518f68f2"/>
   <patient_identifier patient_identifier_id="41" patient_id="2" identifier="12345" identifier_type="1" preferred="0" location_id="1" creator="1" date_created="2004-01-01 00:00:00.0" voided="false" uuid="42236d1a-0b5e-43bd-a562-973104f1484e"/>
   <patient_identifier patient_identifier_id="31" patient_id="3" identifier="4567" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="2d7c3067-346a-4cc8-9f67-66bb5b149153"/>
@@ -21,4 +21,5 @@
   <person_name person_name_id="3" preferred="true" person_id="3" prefix="" given_name="I" middle_name="am" family_name="voided" family_name2="Johnson" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="1be83481-5ace-4a97-8510-d2e1257b6f6a"/>
   <person_name person_name_id="4" preferred="true" person_id="4" prefix="Mr." given_name="John" middle_name="Andrew" family_name="Johnson" family_name2="" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="23da3d4a-9a12-44b7-bcc0-7ed72664adda"/>
   <person_name person_name_id="5" preferred="true" person_id="5" prefix="Mrs." given_name="Jean" middle_name="Joan" family_name="Claude" family_name2="Johnson" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="5e6571cc-c7f2-41de-b289-f55f8fe79c6f"/>
+  <person_name person_name_id="6" preferred="false" person_id="5" prefix="Mrs." given_name="Jean" middle_name="Foobar" family_name="Claude" family_name2="Johnson" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="5e6571cc-c7f2-41de-b289-f55f8fe79ddd"/>
 </dataset>

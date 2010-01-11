@@ -64,20 +64,17 @@ public class PersonListItem {
 	
 	/**
 	 * Creates an instance of a subclass of PersonListItem which is best suited for the parameter.
-	 * If a {@link Patient} is passed in, a {@link PatientListItem} is returned. If a {@link User}
-	 * is passed in, a {@link UserListItem} is returned.
+	 * If a {@link Patient} is passed in, a {@link PatientListItem} is returned, otherwise a
+	 * {@link PersonListItem} is returned.
 	 * 
 	 * @param person the {@link Person} object to covert to a {@link PersonListItem}
 	 * @return a {@link PersonListItem} or subclass thereof
 	 * @should return PatientListItem given patient parameter
-	 * @should return UserListItem given user parameter
 	 * @should return PersonListItem given person parameter
 	 */
 	public static PersonListItem createBestMatch(Person person) {
 		if (person instanceof Patient) {
 			return new PatientListItem((Patient) person);
-		} else if (person instanceof User) {
-			return new UserListItem((User) person);
 		} else {
 			return new PersonListItem(person);
 		}

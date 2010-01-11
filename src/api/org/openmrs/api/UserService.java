@@ -15,6 +15,7 @@ package org.openmrs.api;
 
 import java.util.List;
 
+import org.openmrs.Person;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
@@ -159,6 +160,7 @@ public interface UserService extends OpenmrsService {
 	 * @return the given user voided out
 	 * @throws APIException
 	 * @should void user and set attributes
+	 * @deprecated use {@link #retireUser(User, String)}
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_EDIT_USERS })
 	public User voidUser(User user, String reason) throws APIException;
@@ -170,9 +172,32 @@ public interface UserService extends OpenmrsService {
 	 * @return the given user unvoided
 	 * @throws APIException
 	 * @should unvoid and unmark all attributes
+	 * @deprecated use {@link #unretireUser(User)}
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_EDIT_USERS })
 	public User unvoidUser(User user) throws APIException;
+	
+	/**
+     * Deactive a user account so that it can no longer log in.
+     * 
+     * @param user
+     * @param reason
+     * @throws APIException
+     * @should retire user and set attributes
+     */
+	@Authorized( { OpenmrsConstants.PRIV_EDIT_USERS })
+    public User retireUser(User user, String reason) throws APIException;
+    
+    /**
+     * Clears retired flag for a user.
+     * 
+     * @param user
+     * @param reason
+     * @throws APIException
+     * @should unretire and unmark all attributes
+     */
+	@Authorized( { OpenmrsConstants.PRIV_EDIT_USERS })
+    public User unretireUser(User user) throws APIException;
 	
 	/**
 	 * @see #voidUser(User, String)
@@ -489,6 +514,20 @@ public interface UserService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_USERS })
 	public List<User> getUsersByName(String givenName, String familyName, boolean includeVoided) throws APIException;
+	
+	/**
+	 * Get all user accounts that belong to a given person.
+	 * 
+	 * @param person
+	 * @param includeRetired
+	 * @return all user accounts that belong to person, including retired ones if specified
+	 * @throws APIException
+	 * @should fetch all accounts for a person when include retired is true
+	 * @should not fetch retired accounts when include retired is false
+	 */
+	@Transactional(readOnly = true)
+	@Authorized( { OpenmrsConstants.PRIV_VIEW_USERS })
+	public List<User> getUsersByPerson(Person person, boolean includeRetired) throws APIException;
 	
 	/**
 	 * @deprecated use {@link #getUsers(String, List, boolean)}
