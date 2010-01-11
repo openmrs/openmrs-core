@@ -322,11 +322,10 @@ public class UpdateFilter extends StartupFilter {
 		
 		log.debug("Initializing the UpdateFilter");
 		
-		model = new UpdateFilterModel();
-		
 		Properties properties = Listener.getRuntimeProperties();
 		
 		if (properties != null) {
+			model = new UpdateFilterModel();
 			Context.setRuntimeProperties(properties);
 			try {
 				if (model.changes == null)
