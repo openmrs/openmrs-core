@@ -510,7 +510,7 @@ table.patientTreatmentPrograms td {
 	background-color: #999999;
 }
 
-#content .boxHeader a:link {
+#content .boxHeader a:link, #content .boxHeader a, #content .boxHeader a:visited, #content .boxHeader a:hover {
 	color: white;
 }
 
