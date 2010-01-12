@@ -1767,25 +1767,14 @@ public class OpenmrsUtil {
 	 * NOTE: In Java 6, you will be able to pass the load() and store() methods a UTF-8
 	 * Reader/Writer object as an argument, making this method unnecesary.
 	 * 
+	 * @deprecated use {@link #loadProperties(Properties, File)}
 	 * @param props the properties object to write into
 	 * @param input the input stream to read from
 	 */
 	public static void loadProperties(Properties props, InputStream input) {
 		try {
-			BufferedReader reader = new BufferedReader(new InputStreamReader(input, "UTF-8"));
-			while (reader.ready()) {
-				String line = reader.readLine();
-				if (line.length() > 0 && line.charAt(0) != '#') {
-					int pos = line.indexOf("=");
-					if (pos > 0) {
-						String keyString = line.substring(0, pos);
-						String valueString = line.substring(pos + 1);
-						if (keyString != null && keyString.length() > 0) {
-							props.put(keyString, fixPropertiesValueString(valueString));
-						}
-					}
-				}
-			}
+			InputStreamReader reader = new InputStreamReader(input, "UTF-8");
+			props.load(reader);
 			reader.close();
 		}
 		catch (UnsupportedEncodingException uee) {
@@ -1795,6 +1784,42 @@ public class OpenmrsUtil {
 			log.error("Unable to read properties from properties file " + ioe);
 		}
 	}
+	
+	
+	/**
+	 * Convenience method used to load properties from the given file.  
+	 * 
+	 * @param props	the properties object to be loaded into
+	 * @param propertyFile the properties file to read
+	 */
+	public static void loadProperties(Properties props, File propertyFile) { 
+		InputStream inputStream = null;
+		try { 
+			inputStream = new FileInputStream(propertyFile);
+			InputStreamReader reader = new InputStreamReader(inputStream, "UTF-8");
+			props.load(reader);
+		}
+		catch (FileNotFoundException fnfe) {
+			log.error("Unable to find properties file" + fnfe);
+		}
+		catch (UnsupportedEncodingException uee) {
+			log.error("Unsupported encoding used in properties file" + uee);
+		}
+		catch (IOException ioe) {
+			log.error("Unable to read properties from properties file" + ioe);			
+		} 
+		finally { 
+			try { 
+				if (inputStream != null) 
+					inputStream.close();
+			} 
+			catch (IOException ioe) { 
+				log.error("Unable to close properties file " + ioe);				
+			}
+		}		
+	}
+	
+	
 	
 	/**
 	 * By default java will escape colons and equal signs when writing properites files. <br/>
