@@ -13,7 +13,6 @@
  */
 package org.openmrs.web.controller.person;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -37,6 +36,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.context.request.WebRequest;
 
 /**
  * Controls the moving/deleting of {@link PersonAttributeType}s.
@@ -76,56 +76,12 @@ public class PersonAttributeTypeListController {
 		//only fill the Object if the user has authenticated properly
 		if (Context.isAuthenticated()) {
 			PersonService ps = Context.getPersonService();
-			attributeTypeList = ps.getAllPersonAttributeTypes();
+			attributeTypeList = ps.getAllPersonAttributeTypes(true);
 		}
 		
 		modelMap.addAttribute("personAttributeTypeList", attributeTypeList);
 		
 		return "/admin/person/personAttributeTypeList";
-	}
-	
-	/**
-	 * Called when the user wants to delete some attribute types
-	 * 
-	 * @param personAttributeTypeId the list of ids the user checked
-	 * @param httpSession the current session
-	 */
-	@RequestMapping(method = RequestMethod.POST, params = "action=delete")
-	protected String delete(ArrayList<Integer> personAttributeTypeId, HttpSession httpSession) {
-		MessageSourceService mss = Context.getMessageSourceService();
-		PersonService ps = Context.getPersonService();
-		
-		String type = mss.getMessage("PersonAttributeType.title");
-		String deleted = mss.getMessage("general.deleted");
-		String notDeleted = mss.getMessage("general.cannot.delete");
-		String success = "";
-		String error = "";
-		
-		if (personAttributeTypeId != null) {
-			for (Integer id : personAttributeTypeId) {
-				try {
-					ps.deletePersonAttributeType(id);
-					if (!success.equals(""))
-						success += "<br/>";
-					success += type + " #" + id + " " + deleted;
-				}
-				catch (Exception e) {
-					log.warn("Error deleting person attribute type", e);
-					if (!error.equals(""))
-						error += "<br/>";
-					error += type + " #" + id + " " + notDeleted;
-				}
-			}
-		} else {
-			error = mss.getMessage("PersonAttributeType.select");
-		}
-		
-		if (!success.equals(""))
-			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success);
-		if (!error.equals(""))
-			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error);
-		
-		return "redirect:/admin/person/personAttributeType.list";
 	}
 	
 	/**

@@ -96,11 +96,6 @@ public interface PersonDAO {
 	public List<Relationship> getAllRelationships(boolean includeVoided) throws DAOException;
 	
 	/**
-	 * @see org.openmrs.api.PersonService#getAllRelationshipTypes()
-	 */
-	public List<RelationshipType> getAllRelationshipTypes() throws DAOException;
-	
-	/**
 	 * @see org.openmrs.api.PersonService#getRelationshipType(java.lang.Integer)
 	 */
 	public RelationshipType getRelationshipType(Integer relationshipTypeId) throws DAOException;
@@ -189,4 +184,9 @@ public interface PersonDAO {
 	 * @return
 	 */
 	public PersonAttributeType getPersonAttributeTypeByUuid(String uuid);
+
+	/**
+     * @see org.openmrs.api.PersonService#getAllRelationshipTypes(java.lang.Boolean)
+     */
+    public List<RelationshipType> getAllRelationshipTypes(boolean includeRetired);
 }

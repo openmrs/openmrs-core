@@ -55,76 +55,6 @@ public class RelationshipTypeListController extends SimpleFormController {
 	}
 	
 	/**
-	 * The onSubmit function receives the form/command object that was modified by the input form
-	 * and saves it to the db
-	 * 
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
-	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
-	 *      org.springframework.validation.BindException)
-	 */
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
-	                                BindException errors) throws Exception {
-		
-		HttpSession httpSession = request.getSession();
-		
-		String view = getFormView();
-		if (Context.isAuthenticated()) {
-			String success = "";
-			String error = "";
-			
-			MessageSourceAccessor msa = getMessageSourceAccessor();
-			
-			String[] relationshipTypeList = request.getParameterValues("relationshipTypeId");
-			if (relationshipTypeList != null) {
-				PersonService ps = Context.getPersonService();
-				
-				String deleted = msa.getMessage("general.deleted");
-				String notDeleted = msa.getMessage("RelationshipType.cannot.delete");
-				for (String p : relationshipTypeList) {
-					try {
-						ps.purgeRelationshipType(ps.getRelationshipType(Integer.valueOf(p)));
-						if (!success.equals(""))
-							success += "<br/>";
-						success += p + " " + deleted;
-					}
-					catch (DataIntegrityViolationException e) {
-						error = handleRelationshipTypeIntegrityException(e, error, notDeleted);
-					}
-					catch (APIException e) {
-						error = handleRelationshipTypeIntegrityException(e, error, notDeleted);
-					}
-				}
-			} else
-				error = msa.getMessage("RelationshipType.select");
-			
-			view = getSuccessView();
-			if (!success.equals(""))
-				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success);
-			if (!error.equals(""))
-				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error);
-		}
-		
-		return new ModelAndView(new RedirectView(view));
-	}
-	
-	/**
-	 * Logs a relationship type delete data integrity violation exception and returns a user friedly
-	 * message of the problem that occured.
-	 * 
-	 * @param e the exception.
-	 * @param error the error message.
-	 * @param notDeleted the not deleted error message.
-	 * @return the formatted error message.
-	 */
-	private String handleRelationshipTypeIntegrityException(Exception e, String error, String notDeleted) {
-		log.warn("Error deleting relationship type", e);
-		if (!error.equals(""))
-			error += "<br/>";
-		error += notDeleted;
-		return error;
-	}
-	
-	/**
 	 * This is called prior to displaying a form for the first time. It tells Spring the
 	 * form/command object to load into the request
 	 * 
@@ -138,7 +68,7 @@ public class RelationshipTypeListController extends SimpleFormController {
 		//only fill the Object is the user has authenticated properly
 		if (Context.isAuthenticated()) {
 			PersonService ps = Context.getPersonService();
-			relationshipTypeList = ps.getAllRelationshipTypes();
+			relationshipTypeList = ps.getAllRelationshipTypes(true);
 		}
 		
 		return relationshipTypeList;

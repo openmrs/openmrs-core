@@ -27,6 +27,7 @@ import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.type.StringType;
+import org.openmrs.PatientIdentifierType;
 import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
@@ -453,24 +454,6 @@ public class HibernatePersonDAO implements PersonDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.PersonService#getAllRelationshipTypes()
-	 * @see org.openmrs.api.db.PersonDAO#getAllRelationshipTypes()
-	 */
-	@SuppressWarnings("unchecked")
-	public List<RelationshipType> getAllRelationshipTypes() throws DAOException {
-		
-		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(RelationshipType.class, "t");
-		
-		/**
-		 * if (!includeRetired) criteria.add(Expression.eq("retired", false));
-		 */
-		
-		criteria.addOrder(Order.asc("weight"));
-		
-		return criteria.list();
-	}
-	
-	/**
 	 * @see org.openmrs.api.PersonService#saveRelationshipType(org.openmrs.RelationshipType)
 	 * @see org.openmrs.api.db.PersonDAO#saveRelationshipType(org.openmrs.RelationshipType)
 	 */
@@ -608,4 +591,20 @@ public class HibernatePersonDAO implements PersonDAO {
 		return (RelationshipType) sessionFactory.getCurrentSession().createQuery(
 		    "from RelationshipType rt where rt.uuid = :uuid").setString("uuid", uuid).uniqueResult();
 	}
+
+	/**
+     * @see org.openmrs.api.db.PersonDAO#getAllRelationshipTypes(boolean)
+     */
+    @SuppressWarnings("unchecked")
+    public List<RelationshipType> getAllRelationshipTypes(boolean includeRetired) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(RelationshipType.class);
+		criteria.addOrder(Order.asc("weight"));
+		
+		if (includeRetired == false) {
+			criteria.add(Expression.eq("retired", false));
+		}
+		
+		return criteria.list();
+    }
+
 }

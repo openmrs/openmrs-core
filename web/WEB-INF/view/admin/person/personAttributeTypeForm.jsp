@@ -5,9 +5,22 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
+<script type="text/javascript">
+
+	function confirmPurge() {
+		if (confirm("Are you sure you want to purge this object? It will be permanently removed from the system.")) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+</script>
+
 <h2><spring:message code="PersonAttributeType.title"/></h2>
 
 <form method="post">
+<fieldset>
 <table>
 	<tr>
 		<td><spring:message code="general.name"/></td>
@@ -101,8 +114,42 @@
 </table>
 <input type="hidden" name="personAttributeTypeId:int" value="${personAttributeType.personAttributeTypeId}">
 <br />
-<input type="submit" value="<spring:message code="PersonAttributeType.save"/>">
+<input type="submit" value="<spring:message code="PersonAttributeType.save"/>" name="save">
+</fieldset>
 </form>
+
+<br/>
+
+<c:if test="${not personAttributeType.retired && not empty personAttributeType.personAttributeTypeId}">
+	<form method="post">
+		<fieldset>
+			<h4><spring:message code="PersonAttributeType.retirePersonAttributeType"/></h4>
+			
+			<b><spring:message code="general.reason"/></b>
+			<input type="text" value="" size="40" name="retireReason" />
+			<spring:hasBindErrors name="personAttributeType">
+				<c:forEach items="${errors.allErrors}" var="error">
+					<c:if test="${error.code == 'retireReason'}"><span class="error"><spring:message code="${error.defaultMessage}" text="${error.defaultMessage}"/></span></c:if>
+				</c:forEach>
+			</spring:hasBindErrors>
+			<br/>
+			<input type="submit" value='<spring:message code="PersonAttributeType.retirePersonAttributeType"/>' name="retire"/>
+		</fieldset>
+	</form>
+</c:if>
+
+<br/>
+
+<c:if test="${not empty personAttributeType.personAttributeTypeId}">
+	<openmrs:hasPrivilege privilege="Purge Person Attribute Types">
+		<form id="purge" method="post" onsubmit="return confirmPurge()">
+			<fieldset>
+				<h4><spring:message code="PersonAttributeType.purgePersonAttributeType"/></h4>
+				<input type="submit" value='<spring:message code="PersonAttributeType.purgePersonAttributeType"/>' name="purge" />
+			</fieldset>
+		</form>
+	</openmrs:hasPrivilege>
+</c:if>
 
 <script type="text/javascript">
  document.forms[0].elements[0].focus();

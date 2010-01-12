@@ -21,10 +21,13 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.RelationshipType;
+import org.openmrs.api.APIException;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
@@ -86,9 +89,46 @@ public class RelationshipTypeFormController extends SimpleFormController {
 		
 		if (Context.isAuthenticated()) {
 			RelationshipType relationshipType = (RelationshipType) obj;
-			Context.getPersonService().saveRelationshipType(relationshipType);
-			view = getSuccessView();
-			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "RelationshipType.saved");
+			PersonService ps = Context.getPersonService();
+			
+			//to save the relationship type
+			if (request.getParameter("save") != null) {
+				ps.saveRelationshipType(relationshipType);
+				view = getSuccessView();
+				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "RelationshipType.saved");
+			}
+			
+			// if the user is retiring out the relationshipType
+			else if (request.getParameter("retire") != null) {
+				String retireReason = request.getParameter("retireReason");
+				if (relationshipType.getRelationshipTypeId() != null && !(StringUtils.hasText(retireReason))) {
+					errors.reject("retireReason", "general.retiredReason.empty");
+					return showForm(request, response, errors);
+				}
+				
+				ps.retireRelationshipType(relationshipType, retireReason);
+				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "RelationshipType.retiredSuccessfully");
+				
+				view = getSuccessView();
+			}
+			
+			// if the user is purging the relationshipType
+			else if (request.getParameter("purge") != null) {
+				try{
+					ps.purgeRelationshipType(relationshipType);
+					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "RelationshipType.purgedSuccessfully");
+					view = getSuccessView();
+				}
+				catch (DataIntegrityViolationException e) {
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "error.object.inuse.cannot.purge");
+					return showForm(request, response, errors);
+				}
+				catch (APIException e) {
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "error.general: " + e.getLocalizedMessage());
+					return showForm(request, response, errors);
+				}
+			}
+			
 		}
 		
 		return new ModelAndView(new RedirectView(view));

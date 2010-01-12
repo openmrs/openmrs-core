@@ -55,76 +55,6 @@ public class PatientIdentifierTypeListController extends SimpleFormController {
 	}
 	
 	/**
-	 * The onSubmit function receives the form/command object that was modified by the input form
-	 * and saves it to the db
-	 * 
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
-	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
-	 *      org.springframework.validation.BindException)
-	 */
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
-	                                BindException errors) throws Exception {
-		
-		HttpSession httpSession = request.getSession();
-		
-		String view = getFormView();
-		if (Context.isAuthenticated()) {
-			String success = "";
-			String error = "";
-			
-			MessageSourceAccessor msa = getMessageSourceAccessor();
-			
-			String[] identifierTypeList = request.getParameterValues("patientIdentifierTypeId");
-			if (identifierTypeList != null) {
-				PatientService ps = Context.getPatientService();
-				
-				String deleted = msa.getMessage("general.deleted");
-				String notDeleted = msa.getMessage("PatientIdentifierType.cannot.delete");
-				for (String p : identifierTypeList) {
-					try {
-						ps.purgePatientIdentifierType(ps.getPatientIdentifierType(Integer.valueOf(p)));
-						if (!success.equals(""))
-							success += "<br/>";
-						success += p + " " + deleted;
-					}
-					catch (DataIntegrityViolationException e) {
-						error = handleIdentifierIntegrityException(e, error, notDeleted);
-					}
-					catch (APIException e) {
-						error = handleIdentifierIntegrityException(e, error, notDeleted);
-					}
-				}
-			} else
-				error = msa.getMessage("PatientIdentifierType.select");
-			
-			view = getSuccessView();
-			if (!success.equals(""))
-				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success);
-			if (!error.equals(""))
-				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error);
-		}
-		
-		return new ModelAndView(new RedirectView(view));
-	}
-	
-	/**
-	 * Logs a Patient Identifier Type delete data integrity violation exception and returns a user
-	 * friedly message of the problem that occured.
-	 * 
-	 * @param e the exception.
-	 * @param error the error message.
-	 * @param notDeleted the role not deleted error message.
-	 * @return the formatted error message.
-	 */
-	private String handleIdentifierIntegrityException(Exception e, String error, String notDeleted) {
-		log.warn("Error deleting patient identifier type", e);
-		if (!error.equals(""))
-			error += "<br/>";
-		error += notDeleted;
-		return error;
-	}
-	
-	/**
 	 * This is called prior to displaying a form for the first time. It tells Spring the
 	 * form/command object to load into the request
 	 * 
@@ -138,7 +68,7 @@ public class PatientIdentifierTypeListController extends SimpleFormController {
 		//only fill the Object is the user has authenticated properly
 		if (Context.isAuthenticated()) {
 			PatientService ps = Context.getPatientService();
-			identifierTypeList = ps.getAllPatientIdentifierTypes();
+			identifierTypeList = ps.getAllPatientIdentifierTypes(true);
 		}
 		
 		return identifierTypeList;

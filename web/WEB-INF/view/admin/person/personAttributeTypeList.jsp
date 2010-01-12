@@ -26,8 +26,16 @@
 			<tr>
 				<td valign="top"><input type="checkbox" name="personAttributeTypeId" value="${personAttributeType.personAttributeTypeId}"></td>
 			<!--<td valign="top">${personAttributeType.sortWeight}</td> -->
-				<td valign="top"><a href="personAttributeType.form?personAttributeTypeId=${personAttributeType.personAttributeTypeId}">
-					   ${personAttributeType.name}
+				<td valign="top">
+					<a href="personAttributeType.form?personAttributeTypeId=${personAttributeType.personAttributeTypeId}">
+						<c:choose>
+							<c:when test="${personAttributeType.retired == true}">
+								<del>${personAttributeType.name}</del>
+							</c:when>
+							<c:otherwise>
+								${personAttributeType.name}
+							</c:otherwise>
+						</c:choose>
 					</a>
 				</td>
 				<td valign="top">${personAttributeType.format}</td>
@@ -40,7 +48,6 @@
 	<input type="hidden" name="action" id="saveAction" value=""/>
 	<input type="submit" value='<spring:message code="PersonAttributeType.moveup"/>' onclick="document.getElementById('saveAction').value='moveup'">
 	<input type="submit" value='<spring:message code="PersonAttributeType.movedown"/>' onclick="document.getElementById('saveAction').value='movedown'">
-	<input type="submit" value='<spring:message code="PersonAttributeType.delete"/>' onclick="document.getElementById('saveAction').value='delete'">
 </form>
 
 <form method="post" style="display: none;">
