@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <dataset>
-  <concept concept_id="1" retired="false" datatype_id="0" class_id="0" is_set="false" creator="1" date_created="2005-01-01 00:00:00.0" uuid="957eba27-2b38-43e8-91a9-4dfe3956a32d"/>
-  <concept concept_id="2" retired="false" datatype_id="0" class_id="0" is_set="false" creator="1" date_created="2005-01-01 00:00:00.0" uuid="92b910bd-298c-4ecf-a632-661ae2f446bf"/>
+  <concept concept_id="1" retired="false" datatype_id="2" class_id="7" is_set="false" creator="1" date_created="2005-01-01 00:00:00.0" uuid="957eba27-2b38-43e8-91a9-4dfe3956a32d"/>
+  <concept concept_id="2" retired="false" datatype_id="1" class_id="7" is_set="false" creator="1" date_created="2005-01-01 00:00:00.0" uuid="92b910bd-298c-4ecf-a632-661ae2f446bf"/>
   <concept_datatype concept_datatype_id="1" name="Numeric" hl7_abbreviation="NM" description="Numeric value, including integer or float" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="598756b4-9676-4b54-8a35-6b368088c505"/>
   <concept_datatype concept_datatype_id="3" name="Text" hl7_abbreviation="ST" description="Structured text" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="1f9c5fae-6f88-4ad0-a74c-6e7705edd52e"/>
   <concept_description concept_description_id="1" concept_id="1" description="this is a description" locale="en" creator="1" date_created="2005-01-01 00:00:00.0" uuid="0a6f34ea-043a-4e69-b418-1d7bb66b99b6"/>
