@@ -29,10 +29,16 @@ public class SendEmailTask extends AbstractTask {
 	 * Process the next form entry in the database and then remove the form entry from the database.
 	 */
 	public void execute() {
-		log.info("****************************** SEND EMAIL TASK:  Executing task ...");
-		if (!Context.isAuthenticated()) {
-			authenticate();
-		}
+        try {
+            Context.openSession();
+            log.info("****************************** SEND EMAIL TASK:  Executing task ...");
+            if (!Context.isAuthenticated()) {
+                authenticate();
+            }
+
+        } finally {
+            Context.closeSession();
+        }
 		
 	}
 	

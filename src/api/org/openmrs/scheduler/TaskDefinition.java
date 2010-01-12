@@ -40,6 +40,8 @@ public class TaskDefinition extends BaseOpenmrsMetadata {
 	// Scheduling metadata
 	private Date startTime;
 	
+	private Date lastExecutionTime;
+	
 	private Long repeatInterval; // NOW in seconds to give us ability to
 	
 	// support longer intervals (years, decades,
@@ -149,6 +151,24 @@ public class TaskDefinition extends BaseOpenmrsMetadata {
 	public void setStartTime(Date startTime) {
 		this.startTime = startTime;
 	}
+	
+	/**
+	 * Get the time the task was last executed.
+	 * 
+	 * @return long last execution time
+	 */
+	public Date getLastExecutionTime() {
+		return lastExecutionTime;
+	}
+	
+	/**
+	 * Set the time the task was last executed
+	 * 
+	 * @param lastExecutionTime last execution time
+	 */
+	public void setLastExecutionTime(Date lastExecutionTime) {
+		this.lastExecutionTime = lastExecutionTime;
+	}	
 	
 	/**
 	 * Gets the number of seconds until task is executed again.

@@ -288,6 +288,12 @@ window.onload = init;
 				</spring:bind>
 			</td>
 		</tr>
+		<tr>
+			<td valign="top"><spring:message code="Scheduler.scheduleForm.lastExecutionTime"/>:</td>
+			<td>
+				<openmrs:formatDate date="${task.lastExecutionTime}" type="long" />
+			</td>
+		</tr>		
 	</table>
 </fieldset>
 

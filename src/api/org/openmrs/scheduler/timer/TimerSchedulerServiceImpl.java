@@ -212,8 +212,7 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 				// if we were unable to get a class, just quit
 				if (clientTask != null) {
 					
-					schedulerTask = new TimerSchedulerTask(clientTask);
-					
+					schedulerTask = new TimerSchedulerTask(clientTask);					
 					taskDefinition.setTaskInstance(clientTask);
 					
 					// Once this method is called, the timer is set to start at the given start time.

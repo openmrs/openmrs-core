@@ -71,6 +71,13 @@ public abstract class AbstractTask implements Task {
 	}
 	
 	/**
+	 * @see org.openmrs.scheduler.Task#getTaskDefinition()
+	 */
+	public TaskDefinition getTaskDefinition() { 
+		return this.taskDefinition;
+	}
+	
+	/**
 	 * @see org.openmrs.scheduler.Task#shutdown()
 	 */
 	public void shutdown() {

@@ -21,7 +21,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.scheduler.TaskDefinition;
 
 /**
- * Implementation of the stateful task that sends an email.
+ * Implementation of a simple task that throws an exception every 10 executions.
  */
 public class TestTask extends AbstractTask {
 	
