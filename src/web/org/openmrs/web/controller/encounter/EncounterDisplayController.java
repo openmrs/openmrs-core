@@ -39,7 +39,7 @@ import org.springframework.web.servlet.mvc.Controller;
 
 /**
  * This is the java controller for the /openmrs/admin/encounters/encounterDisplay.list page. The jsp
- * for this display popup is located at /web/WEB-INF/view/encounters/encounerDisplay.jsp
+ * for this display popup is located at /web/WEB-INF/view/encounters/encounterDisplay.jsp
  */
 public class EncounterDisplayController implements Controller {
 	
