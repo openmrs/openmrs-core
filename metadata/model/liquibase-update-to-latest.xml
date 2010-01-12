@@ -2972,5 +2972,21 @@
 			</param>
 		</customChange>
 	</changeSet>
+
+	<changeSet id="200912151032" author="n.nehete">
+		<preConditions onFail="HALT">
+			<sqlCheck expectedResult="All encounters have a non-null encounter type.">
+				<![CDATA[
+					SELECT case when count(*) > 0 
+							then 'There are rows in the encounter table with an empty encounter type.  Encounter type is a required field and must be populated.  These encounters need to be fixed manually by setting an appropriate encounter type.' 
+							else 'All encounters have a non-null encounter type.' end 
+					FROM encounter where encounter_type is null;
+				]]>
+			</sqlCheck>
+		</preConditions>
+	
+		<comment>Encounter Type should not be null when saving an Encounter</comment>
+		<addNotNullConstraint tableName="encounter" columnName="encounter_type" columnDataType="int" />
+	</changeSet>	
 	
 </databaseChangeLog>
