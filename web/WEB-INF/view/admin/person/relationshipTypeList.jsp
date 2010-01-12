@@ -16,22 +16,27 @@
 <form method="post" class="box">
 	<table>
 		<tr>
-			<th> </th>
 			<th> <spring:message code="RelationshipType.names"/> </th>
 			<th> <spring:message code="general.description"/> </th>
 		</tr>
 		<c:forEach var="relationshipType" items="${relationshipTypeList}">
 			<tr>
-				<td valign="top"><input type="checkbox" name="relationshipTypeId" value="${relationshipType.relationshipTypeId}"></td>
-				<td valign="top"><a href="relationshipType.form?relationshipTypeId=${relationshipType.relationshipTypeId}">
-					   ${relationshipType}
+				<td valign="top">
+					<a href="relationshipType.form?relationshipTypeId=${relationshipType.relationshipTypeId}">
+						<c:choose>
+							<c:when test="${relationshipType.retired == true}">
+								<del>${relationshipType}</del>
+							</c:when>
+							<c:otherwise>
+								${relationshipType}
+							</c:otherwise>
+						</c:choose>
 					</a>
 				</td>
 				<td valign="top">${relationshipType.description}</td>
 			</tr>
 		</c:forEach>
 	</table>
-	<input type="submit" value="<spring:message code="RelationshipType.delete"/>" name="action">
 </form>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

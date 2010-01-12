@@ -166,6 +166,22 @@ public interface PersonService {
 	public PersonAttributeType savePersonAttributeType(PersonAttributeType type) throws APIException;
 	
 	/**
+	 * Retire a Person Attribute Type
+	 * 
+	 * @param attrTypeId, retiredReason
+	 */
+	@Authorized( { OpenmrsConstants.PRIV_MANAGE_PERSON_ATTRIBUTE_TYPES })
+	public PersonAttributeType retirePersonAttributeType(PersonAttributeType type, String retiredReason) throws APIException;
+	
+	/**
+	 * Retire a Person Relationship Type
+	 * 
+	 * @param relationshipType, retiredReason
+	 */
+	@Authorized( { OpenmrsConstants.PRIV_MANAGE_RELATIONSHIP_TYPES })
+	public RelationshipType retireRelationshipType(RelationshipType type, String retiredReason) throws APIException;
+	
+	/**
 	 * @deprecated {@link #savePersonAttributeType(PersonAttributeType)}
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_MANAGE_PERSON_ATTRIBUTE_TYPES })
@@ -447,6 +463,17 @@ public interface PersonService {
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_RELATIONSHIP_TYPES })
 	public List<RelationshipType> getAllRelationshipTypes() throws APIException;
+	
+	/**
+	 * Get all relationshipTypes with the option of including the retired types
+	 * 
+	 * @param includeRetired boolean - include retired relationshipTypes as well?
+	 * @return relationshipType list
+	 * @throws APIException
+	 */
+	@Transactional(readOnly = true)
+	@Authorized( { OpenmrsConstants.PRIV_VIEW_RELATIONSHIP_TYPES })
+	public List<RelationshipType> getAllRelationshipTypes(boolean includeRetired) throws APIException;
 	
 	/**
 	 * @deprecated use {@link #getAllRelationshipTypes()}

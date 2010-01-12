@@ -18,16 +18,21 @@
 <form method="post" class="box">
 	<table>
 		<tr>
-			<th> </th>
 			<th> <spring:message code="general.name" /> </th>
 			<th> <spring:message code="general.description" /> </th>
 		</tr>
 		<c:forEach var="encounterType" items="${encounterTypeList}">
 			<tr>
-				<td valign="top"><input type="checkbox" name="encounterTypeId" value="${encounterType.encounterTypeId}"></td>
 				<td valign="top">
 					<a href="encounterType.form?encounterTypeId=${encounterType.encounterTypeId}">
-					   ${encounterType.name}
+						<c:choose>
+							<c:when test="${encounterType.retired == true}">
+								<del>${encounterType.name}</del>
+							</c:when>
+							<c:otherwise>
+								${encounterType.name}
+							</c:otherwise>
+						</c:choose>
 					</a>
 				</td>
 				<td valign="top">${encounterType.description}</td>
@@ -36,7 +41,6 @@
 	</table>
 	<openmrs:extensionPoint pointId="org.openmrs.admin.encounters.encounterTypeList.inForm" type="html" />
 	
-	<input type="submit" value="<spring:message code="EncounterType.delete"/>" name="action">
 </form>
 
 <openmrs:extensionPoint pointId="org.openmrs.admin.encounters.encounterTypeList.footer" type="html" />

@@ -2689,8 +2689,8 @@
         <addForeignKeyConstraint baseTableName="logic_rule_token" baseColumnNames="changed_by" constraintName="token_changed_by"
                                  referencedTableName="users" referencedColumnNames="user_id" />
     </changeSet>
-    
-    	<changeSet id="200910271049-1" author="bwolfe">
+   
+    <changeSet id="200910271049-1" author="bwolfe">
 		<comment>Setting core field types to have standard UUIDs</comment>
 		<update tableName="field_type"><column name="uuid" value="8d5e7d7c-c2cc-11de-8d13-0010c6dffd0f"/><where>field_type_id= '1' and name = 'Concept'</where></update>
 		<update tableName="field_type"><column name="uuid" value="8d5e8196-c2cc-11de-8d13-0010c6dffd0f"/><where>field_type_id= '2' and name = 'Database element'</where></update>
@@ -3001,5 +3001,67 @@
 			</column>
 		</addColumn>
 	</changeSet>    	
+	
+    <changeSet id="20091001-1023" author="rcrichton">
+    	<preConditions onFail="MARK_RAN">
+    		<not>
+    			<columnExists tableName="relationship_type" columnName="retired"/>
+    		</not>
+    	</preConditions>
+		<comment>add retired column to relationship_type table</comment>
+		<addColumn tableName="relationship_type">
+			<column name="retired" type="tinyint(1)" defaultValue="0">
+				<constraints nullable="false" />
+			</column>
+		</addColumn>
+	</changeSet>
+	
+	<changeSet id="20091001-1024" author="rcrichton">
+		<preConditions onFail="MARK_RAN">
+    		<not>
+    			<columnExists tableName="relationship_type" columnName="retired_by"/>
+    		</not>
+    	</preConditions>
+		<comment>add retired_by column to relationship_type table</comment>
+		<addColumn tableName="relationship_type">
+			<column name="retired_by" type="int"/>
+		</addColumn>
+	</changeSet>
+	
+	<changeSet id="20091001-1025" author="rcrichton">
+		<preConditions onFail="MARK_RAN">
+			<not><foreignKeyConstraintExists foreignKeyName="user_who_retired_relationship_type"/></not>
+		</preConditions>
+		<comment>
+			Create the foreign key from the relationship.retired_by to users.user_id.
+		</comment>
+		<addForeignKeyConstraint constraintName="user_who_retired_relationship_type"
+			baseTableName="relationship_type" baseColumnNames="retired_by"
+			referencedTableName="users" referencedColumnNames="user_id" />
+    </changeSet>
+	
+	<changeSet id="20091001-1026" author="rcrichton">
+		<preConditions onFail="MARK_RAN">
+    		<not>
+    			<columnExists tableName="relationship_type" columnName="date_retired"/>
+    		</not>
+    	</preConditions>
+		<comment>add date_retired column to relationship_type table</comment>
+		<addColumn tableName="relationship_type">
+			<column name="date_retired" type="datetime" />
+		</addColumn>
+	</changeSet>
+	
+	<changeSet id="20091001-1027" author="rcrichton">
+		<preConditions onFail="MARK_RAN">
+    		<not>
+    			<columnExists tableName="relationship_type" columnName="retire_reason"/>
+    		</not>
+    	</preConditions>
+		<comment>add retire_reason column to relationship_type table</comment>
+		<addColumn tableName="relationship_type">
+			<column name="retire_reason" type="varchar(255)" />
+		</addColumn>
+	</changeSet>	
 	
 </databaseChangeLog>

@@ -28,12 +28,15 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.Privilege;
+import org.openmrs.api.APIException;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
 import org.openmrs.propertyeditor.PrivilegeEditor;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.taglib.fieldgen.FieldGenHandlerFactory;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -80,10 +83,45 @@ public class PersonAttributeTypeFormController extends SimpleFormController {
 		
 		if (Context.isAuthenticated()) {
 			PersonAttributeType attrType = (PersonAttributeType) obj;
+			PersonService ps = Context.getPersonService();
 				
-			Context.getPersonService().savePersonAttributeType(attrType);
-			view = getSuccessView();
-			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "PersonAttributeType.saved");
+			if (request.getParameter("save") != null) {
+				ps.savePersonAttributeType(attrType);
+				view = getSuccessView();
+				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "PersonAttributeType.saved");
+			}
+			
+			// if the user is retiring out the personAttributeType
+			else if (request.getParameter("retire") != null) {
+				String retireReason = request.getParameter("retireReason");
+				if (attrType.getPersonAttributeTypeId() != null && !(StringUtils.hasText(retireReason))) {
+					errors.reject("retireReason", "general.retiredReason.empty");
+					return showForm(request, response, errors);
+				}
+				
+				ps.retirePersonAttributeType(attrType, retireReason);
+				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "PersonAttributeType.retiredSuccessfully");
+				
+				view = getSuccessView();
+			}
+			
+			// if the user is purging the personAttributeType
+			else if (request.getParameter("purge") != null) {
+				try {
+					ps.purgePersonAttributeType(attrType);
+					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "PersonAttributeType.purgedSuccessfully");
+					view = getSuccessView();
+				}
+				catch (DataIntegrityViolationException e) {
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "error.object.inuse.cannot.purge");
+					view = "personAttributeType.form?personAttributeTypeId=" + attrType.getPersonAttributeTypeId();
+				}
+				catch (APIException e) {
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "error.general: " + e.getLocalizedMessage());
+					view = "personAttributeType.form?personAttributeTypeId=" + attrType.getPersonAttributeTypeId();
+				}
+			}
+			
 		}
 		
 		return new ModelAndView(new RedirectView(view));

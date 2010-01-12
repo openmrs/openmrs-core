@@ -552,7 +552,7 @@ public final class OpenmrsConstants {
 			
 			CORE_PRIVILEGES.put(PRIV_VIEW_IDENTIFIER_TYPES, "Able to view patient identifier types");
 			CORE_PRIVILEGES.put(PRIV_MANAGE_RELATIONSHIPS, "Able to add/edit/delete relationships");
-			CORE_PRIVILEGES.put(PRIV_MANAGE_IDENTIFIER_TYPES, "Able to add/edit/delete patient identifier types");
+			CORE_PRIVILEGES.put(PRIV_MANAGE_IDENTIFIER_TYPES, "Able to add/edit/retire patient identifier types");
 			
 			CORE_PRIVILEGES.put(PRIV_VIEW_LOCATIONS, "Able to view locations");
 			CORE_PRIVILEGES.put(PRIV_MANAGE_LOCATIONS, "Able to add/edit/delete locations");
@@ -565,7 +565,7 @@ public final class OpenmrsConstants {
 			CORE_PRIVILEGES.put(PRIV_MANAGE_CONCEPT_DATATYPES, "Able to add/edit/retire concept datatypes");
 			
 			CORE_PRIVILEGES.put(PRIV_VIEW_ENCOUNTER_TYPES, "Able to view encounter types");
-			CORE_PRIVILEGES.put(PRIV_MANAGE_ENCOUNTER_TYPES, "Able to add/edit/delete encounter types");
+			CORE_PRIVILEGES.put(PRIV_MANAGE_ENCOUNTER_TYPES, "Able to add/edit/retire encounter types");
 			
 			CORE_PRIVILEGES.put(PRIV_VIEW_PRIVILEGES, "Able to view user privileges");
 			CORE_PRIVILEGES.put(PRIV_MANAGE_PRIVILEGES, "Able to add/edit/delete privileges");
@@ -607,7 +607,7 @@ public final class OpenmrsConstants {
 			CORE_PRIVILEGES.put(PRIV_MANAGE_SCHEDULER, "Able to add/edit/remove scheduled tasks");
 			
 			CORE_PRIVILEGES.put(PRIV_VIEW_PERSON_ATTRIBUTE_TYPES, "Able to view person attribute types");
-			CORE_PRIVILEGES.put(PRIV_MANAGE_PERSON_ATTRIBUTE_TYPES, "Able to add/edit/delete person attribute types");
+			CORE_PRIVILEGES.put(PRIV_MANAGE_PERSON_ATTRIBUTE_TYPES, "Able to add/edit/retire person attribute types");
 			
 			CORE_PRIVILEGES.put(PRIV_VIEW_PERSONS, "Able to view person objects");
 			CORE_PRIVILEGES.put(PRIV_ADD_PERSONS, "Able to add person objects");

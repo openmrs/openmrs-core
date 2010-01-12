@@ -192,6 +192,23 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	}
 	
 	/**
+     * @see org.openmrs.api.PersonService#retirePersonAttributeType(org.openmrs.PersonAttributeType)
+	 */
+    public PersonAttributeType retirePersonAttributeType(PersonAttributeType type, String retiredReason)
+    		throws APIException {
+    	if (retiredReason == null || retiredReason.length() < 1) {
+			throw new APIException("A reason is required when retiring a person attribute type");
+		}
+		
+		type.setRetired(true);
+		type.setRetiredBy(Context.getAuthenticatedUser());
+		type.setRetireReason(retiredReason);
+		type.setDateRetired(new Date());
+    	
+    	return dao.savePersonAttributeType(type);
+    }
+	
+	/**
 	 * @deprecated use {@link #savePersonAttributeType(PersonAttributeType)}
 	 */
 	public void createPersonAttributeType(PersonAttributeType type) throws APIException {
@@ -582,7 +599,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 * @see org.openmrs.api.PersonService#getAllRelationshipTypes()
 	 */
 	public List<RelationshipType> getAllRelationshipTypes() throws APIException {
-		return dao.getAllRelationshipTypes();
+		return getAllRelationshipTypes(false);
 	}
 	
 	/**
@@ -843,5 +860,27 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	public RelationshipType getRelationshipTypeByUuid(String uuid) throws APIException {
 		return dao.getRelationshipTypeByUuid(uuid);
 	}
+
+	/**
+     * @see org.openmrs.api.PersonService#getAllRelationshipTypes(boolean)
+     */
+    public List<RelationshipType> getAllRelationshipTypes(boolean includeRetired) throws APIException {
+	    return dao.getAllRelationshipTypes(includeRetired);
+    }
+
+	/**
+     * @see org.openmrs.api.PersonService#retireRelationshipType(org.openmrs.RelationshipType, java.lang.String)
+     */
+    public RelationshipType retireRelationshipType(RelationshipType type, String retiredReason) throws APIException {
+		if (retiredReason == null || retiredReason.length() < 1) {
+			throw new APIException("A reason is required when retiring a relationship type");
+		}
+		
+		type.setRetired(true);
+		type.setRetiredBy(Context.getAuthenticatedUser());
+		type.setDateRetired(new Date());
+		type.setRetireReason(retiredReason);
+		return saveRelationshipType(type);
+    }
 	
 }

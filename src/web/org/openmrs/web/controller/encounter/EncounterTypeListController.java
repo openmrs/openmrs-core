@@ -54,61 +54,6 @@ public class EncounterTypeListController extends SimpleFormController {
 	}
 	
 	/**
-	 * The onSubmit function receives the form/command object that was modified by the input form
-	 * and saves it to the db
-	 * 
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
-	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
-	 *      org.springframework.validation.BindException)
-	 * @should not fail if no encounter types are selected
-	 */
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
-	                                BindException errors) throws Exception {
-		
-		HttpSession httpSession = request.getSession();
-		
-		String view = getFormView();
-		if (Context.isAuthenticated()) {
-			String success = "";
-			String error = "";
-			
-			MessageSourceAccessor msa = getMessageSourceAccessor();
-			
-			String[] encounterTypeList = request.getParameterValues("encounterTypeId");
-			if (encounterTypeList != null) {
-				EncounterService es = Context.getEncounterService();
-				
-				String deleted = msa.getMessage("general.deleted");
-				String notDeleted = msa.getMessage("general.cannot.delete");
-				for (String p : encounterTypeList) {
-					//TODO convenience method deleteEncounterType(Integer) ??
-					try {
-						es.purgeEncounterType(es.getEncounterType(Integer.valueOf(p)));
-						if (!success.equals(""))
-							success += "<br/>";
-						success += p + " " + deleted;
-					}
-					catch (APIException e) {
-						log.warn("Error deleting encounter type", e);
-						if (!error.equals(""))
-							error += "<br/>";
-						error += p + " " + notDeleted;
-					}
-				}
-			} else
-				error = msa.getMessage("EncounterType.select");
-			
-			view = getSuccessView();
-			if (!success.equals(""))
-				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success);
-			if (!error.equals(""))
-				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error);
-		}
-		
-		return new ModelAndView(new RedirectView(view));
-	}
-	
-	/**
 	 * This is called prior to displaying a form for the first time. It tells Spring the
 	 * form/command object to load into the request
 	 * 
@@ -122,7 +67,7 @@ public class EncounterTypeListController extends SimpleFormController {
 		//only fill the Object is the user has authenticated properly
 		if (Context.isAuthenticated()) {
 			EncounterService es = Context.getEncounterService();
-			encounterTypeList = es.getAllEncounterTypes();
+			encounterTypeList = es.getAllEncounterTypes(true);
 		}
 		
 		return encounterTypeList;

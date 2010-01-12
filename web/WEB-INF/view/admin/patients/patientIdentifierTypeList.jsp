@@ -15,22 +15,27 @@
 <form method="post" class="box">
 	<table>
 		<tr>
-			<th> </th>
 			<th> <spring:message code="general.name"/> </th>
 			<th> <spring:message code="general.description"/> </th>
 		</tr>
 		<c:forEach var="patientIdentifierType" items="${patientIdentifierTypeList}">
 			<tr>
-				<td valign="top"><input type="checkbox" name="patientIdentifierTypeId" value="${patientIdentifierType.patientIdentifierTypeId}"></td>
-				<td valign="top"><a href="patientIdentifierType.form?patientIdentifierTypeId=${patientIdentifierType.patientIdentifierTypeId}">
-					   ${patientIdentifierType.name}
+				<td valign="top">
+					<a href="patientIdentifierType.form?patientIdentifierTypeId=${patientIdentifierType.patientIdentifierTypeId}">
+						<c:choose>
+							<c:when test="${patientIdentifierType.retired == true}">
+								<del>${patientIdentifierType.name}</del>
+							</c:when>
+							<c:otherwise>
+								${patientIdentifierType.name}
+							</c:otherwise>
+						</c:choose>
 					</a>
 				</td>
 				<td valign="top">${patientIdentifierType.description}</td>
 			</tr>
 		</c:forEach>
 	</table>
-	<input type="submit" value="<spring:message code="PatientIdentifierType.delete"/>" name="action">
 </form>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

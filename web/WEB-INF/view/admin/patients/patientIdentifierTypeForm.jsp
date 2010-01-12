@@ -5,9 +5,22 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
+<script type="text/javascript">
+
+	function confirmPurge() {
+		if (confirm("Are you sure you want to purge this object? It will be permanently removed from the system.")) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+</script>
+
 <h2><spring:message code="PatientIdentifierType.title"/></h2>
 
 <form method="post">
+<fieldset>
 <table>
 	<tr>
 		<td><spring:message code="general.name"/></td>
@@ -87,8 +100,42 @@
 </table>
 <input type="hidden" name="patientIdentifierTypeId:int" value="${patientIdentifierType.patientIdentifierTypeId}">
 <br />
-<input type="submit" value="<spring:message code="PatientIdentifierType.save"/>">
+<input type="submit" value="<spring:message code="PatientIdentifierType.save"/>" name="save" />
+</fieldset>
 </form>
+
+<br/>
+
+<c:if test="${not patientIdentifierType.retired && not empty patientIdentifierType.patientIdentifierTypeId}">
+	<form method="post">
+		<fieldset>
+			<h4><spring:message code="PatientIdentifierType.retirePatientIdentifierType"/></h4>
+			
+			<b><spring:message code="general.reason"/></b>
+			<input type="text" value="" size="40" name="retireReason" />
+			<spring:hasBindErrors name="patientIdentifierType">
+				<c:forEach items="${errors.allErrors}" var="error">
+					<c:if test="${error.code == 'retireReason'}"><span class="error"><spring:message code="${error.defaultMessage}" text="${error.defaultMessage}"/></span></c:if>
+				</c:forEach>
+			</spring:hasBindErrors>
+			<br/>
+			<input type="submit" value='<spring:message code="PatientIdentifierType.retirePatientIdentifierType"/>' name="retire"/>
+		</fieldset>
+	</form>
+</c:if>
+
+<br/>
+
+<c:if test="${not empty patientIdentifierType.patientIdentifierTypeId}">
+	<openmrs:hasPrivilege privilege="Purge Identifier Types">
+		<form id="purge" method="post" onsubmit="return confirmPurge()">
+			<fieldset>
+				<h4><spring:message code="PatientIdentifierType.purgePatientIdentifierType"/></h4>
+				<input type="submit" value='<spring:message code="PatientIdentifierType.purgePatientIdentifierType"/>' name="purge" />
+			</fieldset>
+		</form>
+	</openmrs:hasPrivilege>
+</c:if>
 
 <script type="text/javascript">
  document.forms[0].elements[0].focus();
