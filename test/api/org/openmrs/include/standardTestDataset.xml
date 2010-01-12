@@ -285,8 +285,8 @@
   <program_workflow_state program_workflow_state_id="5" program_workflow_id="2" concept_id="17" initial="false" terminal="false" creator="1" date_created="2008-08-15 17:04:50.0" retired="false" uuid="860b3a13-d4b1-4f0a-b526-278652fa1809"/>
   <relationship relationship_id="1" person_a="502" relationship="1" person_b="2" creator="1" date_created="2008-08-18 11:50:15.0" voided="false" uuid="c18717dd-5d78-4a0e-84fc-ee62c5f0676a"/>
   <relationship relationship_id="2" person_a="502" relationship="1" person_b="7" creator="1" date_created="2008-08-18 11:53:50.0" voided="false" uuid="8c0a3d9c-bf61-496b-95b0-72e6bc4a2b83"/>
-  <relationship_type relationship_type_id="1" a_is_to_b="Doctor" b_is_to_a="Patient" preferred="0" weight="0" description="Relationship from a primary care provider to the patient" creator="1" date_created="2007-05-04 09:59:22.0" uuid="6d9002ea-a96b-4889-af78-82d48c57a110"/>
-  <relationship_type relationship_type_id="5" a_is_to_b="Parent" b_is_to_a="Child" preferred="0" weight="0" description="parent and child" creator="1" date_created="2008-08-15 15:55:18.0" uuid="2a5f4ff4-a179-4b8a-aa4c-40f71956eabc"/>
+  <relationship_type relationship_type_id="1" a_is_to_b="Doctor" b_is_to_a="Patient" preferred="0" weight="0" description="Relationship from a primary care provider to the patient" creator="1" date_created="2007-05-04 09:59:22.0" retired="false" uuid="6d9002ea-a96b-4889-af78-82d48c57a110"/>
+  <relationship_type relationship_type_id="5" a_is_to_b="Parent" b_is_to_a="Child" preferred="0" weight="0" description="parent and child" creator="1" date_created="2008-08-15 15:55:18.0" retired="false" uuid="2a5f4ff4-a179-4b8a-aa4c-40f71956eabc"/>
   <role role="Provider" description="General privileges held by all providers" uuid="3480cb6d-c291-46c8-8d3a-96dc33d199fb"/>
   <user_role user_id="501" role="Provider"/>
   <user_role user_id="502" role="Provider"/>

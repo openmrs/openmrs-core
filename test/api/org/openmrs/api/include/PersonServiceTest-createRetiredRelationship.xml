@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <dataset>
   <relationship relationship_id="6" person_a="7" relationship="2" person_b="1" creator="1" date_created="2008-01-01 00:00:00.0" voided="true" voided_by="1" date_voided="2009-05-17 10:00:00.0" void_reason="testing only" uuid="b7ghb368-cf80-4a22-9d75-5d0d1f9b75dc"/>
-  <relationship_type relationship_type_id="12" a_is_to_b="Parent" b_is_to_a="Child" preferred="0" weight="0" description="" creator="1" date_created="2007-01-01 00:00:00.0" uuid="7agh8365-e758-4dce-b918-2f8a1f26bb1c"/>
-  <relationship_type relationship_type_id="13" a_is_to_b="Doctor" b_is_to_a="Patient" preferred="0" weight="0" description="Relationship from a primary care provider to the patient" creator="1" date_created="2007-01-01 00:00:00.0" uuid="21gh5268-89df-42f9-b0e3-b1996a25eed5"/>
-  <relationship_type relationship_type_id="14" a_is_to_b="Sibling" b_is_to_a="Sibling" preferred="1" weight="0" description="Relationship between brother/sister, brother/brother, and sister/sister" creator="1" date_created="2007-01-01 00:00:00.0" uuid="3fghda52-68ad-4b87-aa42-418b19e81d43"/>
-  <relationship_type relationship_type_id="15" a_is_to_b="Aunt/Uncle" b_is_to_a="Niece/Nephew" preferred="1" weight="0" description="" creator="1" date_created="2007-01-01 00:00:00.0" uuid="94gh232c-7979-4091-8b84-2726a33e9c24"/>
+  <relationship_type relationship_type_id="12" a_is_to_b="Parent" b_is_to_a="Child" preferred="0" weight="0" description="" creator="1" date_created="2007-01-01 00:00:00.0" retired="false" uuid="7agh8365-e758-4dce-b918-2f8a1f26bb1c"/>
+  <relationship_type relationship_type_id="13" a_is_to_b="Doctor" b_is_to_a="Patient" preferred="0" weight="0" description="Relationship from a primary care provider to the patient" creator="1" date_created="2007-01-01 00:00:00.0" retired="false" uuid="21gh5268-89df-42f9-b0e3-b1996a25eed5"/>
+  <relationship_type relationship_type_id="14" a_is_to_b="Sibling" b_is_to_a="Sibling" preferred="1" weight="0" description="Relationship between brother/sister, brother/brother, and sister/sister" creator="1" date_created="2007-01-01 00:00:00.0" retired="false" uuid="3fghda52-68ad-4b87-aa42-418b19e81d43"/>
+  <relationship_type relationship_type_id="15" a_is_to_b="Aunt/Uncle" b_is_to_a="Niece/Nephew" preferred="1" weight="0" description="" creator="1" date_created="2007-01-01 00:00:00.0" retired="false" uuid="94gh232c-7979-4091-8b84-2726a33e9c24"/>
 </dataset>
