@@ -44,6 +44,10 @@
 				type="java.lang.String" 
 				column="start_time_pattern"
 				length="50" />
+
+		<property name="lastExecutionTime" 
+				type="java.util.Date" 
+				column="last_execution_time" />
 		
 		<property name="startOnStartup" 
 				type="java.lang.Boolean" 

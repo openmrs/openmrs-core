@@ -17,10 +17,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.List;
+import java.util.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -30,6 +27,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.scheduler.tasks.AbstractTask;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsClassLoader;
+import org.openmrs.util.OpenmrsConstants;
 
 /**
  * TODO test all methods in ScheduleService
@@ -37,7 +35,7 @@ import org.openmrs.util.OpenmrsClassLoader;
 public class SchedulerServiceTest extends BaseContextSensitiveTest {
 	
 	private static Log log = LogFactory.getLog(SchedulerServiceTest.class);
-	
+
 	@Test
 	public void shouldResolveValidTaskClass() throws Exception {
 		String className = "org.openmrs.scheduler.tasks.TestTask";
@@ -332,5 +330,106 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 		
 		def = service.getTaskByName(TASK_NAME);
 		Assert.assertEquals(Context.getAuthenticatedUser().getUserId(), def.getCreator().getUserId());
+	}
+    
+	/**
+	 * Sample task that does not extend AbstractTask
+	 */
+	static class BareTask implements Task {
+		public static ArrayList outputList = new ArrayList();
+		
+		public void execute() {
+			synchronized (outputList) {
+				outputList.add("TEST");	            
+            }
+		}
+
+        public TaskDefinition getTaskDefinition() {
+	        return null;
+        }
+                                                            
+        public void initialize(TaskDefinition definition) {
+        }
+
+        public boolean isExecuting() {
+        	return false;
+        }
+
+        public void shutdown() {}
+	}
+	
+	/**
+	 * Task which does not return TaskDefinition in getTaskDefinition should run without throwing exceptions.
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void shouldNotThrowExceptionWhenTaskDefinitionIsNull() throws Exception {
+		SchedulerService schedulerService = Context.getSchedulerService();
+		
+		TaskDefinition td = new TaskDefinition();
+		td.setId(10);
+        td.setName("Task");
+		td.setStartOnStartup(false);
+		td.setRepeatInterval(1L);
+		td.setTaskClass(BareTask.class.getName());
+
+		Calendar startTime = Calendar.getInstance();
+		startTime.add(Calendar.SECOND, 1);
+		td.setStartTime(startTime.getTime());
+		schedulerService.scheduleTask(td);
+		Thread.sleep(2000);
+		schedulerService.shutdownTask(td);
+		
+		assertTrue(BareTask.outputList.contains("TEST"));
+        System.out.println(BareTask.outputList);
+	}
+
+	/**
+	 * Task opens a session and stores the execution time.
+	 */
+	static class SessionTask extends AbstractTask {
+		public void execute() {
+            try {
+                // Do something
+                Context.openSession();
+                Context.addProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_IMPLEMENTATION_ID);
+                Context.getAdministrationService().getImplementationId();
+                actualExecutionTime = System.currentTimeMillis();
+
+            } finally {
+                Context.removeProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_IMPLEMENTATION_ID);
+                Context.closeSession();
+            }
+
+		}
+	}
+
+    public static Long actualExecutionTime;
+
+    /**
+     * Check saved last execution time.
+     */
+    @Test
+	public void shouldSaveLastExecutionTime() throws Exception {
+        final String NAME = "Session Task";
+		SchedulerService service = Context.getSchedulerService();
+
+		TaskDefinition td = new TaskDefinition();
+		td.setName(NAME);
+		td.setStartOnStartup(false);
+		td.setRepeatInterval(1L);
+		td.setTaskClass(SessionTask.class.getName());
+        Calendar startTime = Calendar.getInstance();
+        startTime.add(Calendar.SECOND, 1);
+        td.setStartTime(startTime.getTime());
+    	service.saveTask(td);
+
+		service.scheduleTask(td);
+		Thread.sleep(2000);
+		service.shutdownTask(td);
+
+        td = service.getTaskByName(NAME);
+		assertEquals("Last execution time in seconds is wrong", actualExecutionTime.longValue() / 1000, td.getLastExecutionTime().getTime() / 1000);
 	}
 }

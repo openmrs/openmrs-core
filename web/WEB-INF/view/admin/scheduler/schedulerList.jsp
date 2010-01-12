@@ -37,6 +37,7 @@
 						<th><spring:message code="Scheduler.list.status"/></th>
 						<th class="left"><spring:message code="Scheduler.list.taskClass"/></th>
 						<th class="left"><spring:message code="Scheduler.list.schedule"/></th>
+						<th class="left"><spring:message code="Scheduler.list.lastExecutionTime"/></th>
 						<th><spring:message code="Scheduler.list.startOnStartup"/></th>
 					</tr>
 					<c:forEach var="task" items="${taskList}" varStatus="varStatus">
@@ -73,6 +74,9 @@
 								 	<br/>from <strong>${taskStartTime}</strong>, 
 								 	<br/>starting on <strong>${taskStartDate}</strong>
 								</c:if>							
+							</td>
+							<td class="left">
+								<openmrs:formatDate date="${task.lastExecutionTime}" type="long" />
 							</td>
 							<td>
 								<c:choose>

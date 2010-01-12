@@ -2983,10 +2983,23 @@
 					FROM encounter where encounter_type is null;
 				]]>
 			</sqlCheck>
-		</preConditions>
-	
+		</preConditions>	
 		<comment>Encounter Type should not be null when saving an Encounter</comment>
 		<addNotNullConstraint tableName="encounter" columnName="encounter_type" columnDataType="int" />
 	</changeSet>	
+	
+	<changeSet id="201001072007" author="upul">
+		<preConditions onFail="MARK_RAN">
+			<not><columnExists tableName="scheduler_task_config" columnName="last_execution_time"/></not>
+		</preConditions>
+		<comment>
+			Add last execution time column to scheduler_task_config table
+		</comment>		
+		<addColumn tableName="scheduler_task_config">
+			<column name="last_execution_time" type="DATETIME">
+				<constraints nullable="true"/>
+			</column>
+		</addColumn>
+	</changeSet>    	
 	
 </databaseChangeLog>
