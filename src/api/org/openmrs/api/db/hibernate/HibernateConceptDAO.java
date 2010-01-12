@@ -158,10 +158,16 @@ public class HibernateConceptDAO implements ConceptDAO {
 					ps2.setInt(1, concept.getConceptId());
 					ps2.executeUpdate();
 				} else {
-					// no stub insert is needed because either a concept row 
-					// doesn't exist or a concept_numeric row does exist
+					//concept is changed from numeric to something else
+					// hence row should be deleted from the concept_numeric
+					if (!concept.isNumeric()) {
+						ps2 = connection.prepareStatement("DELETE FROM concept_numeric WHERE concept_id = ?");
+						ps2.setInt(1, concept.getConceptId());
+						ps2.executeUpdate();
+					} else {
+						// it is indeed numeric now... don't delete
+					}
 				}
-				
 			}
 			catch (SQLException e) {
 				log.error("Error while trying to see if this ConceptNumeric is in the concept_numeric table already", e);
@@ -207,7 +213,6 @@ public class HibernateConceptDAO implements ConceptDAO {
 					// no stub insert is needed because either a concept row 
 					// doesn't exist or a concept_numeric row does exist
 				}
-				
 			}
 			catch (SQLException e) {
 				log.error("Error while trying to see if this ConceptComplex is in the concept_complex table already", e);
