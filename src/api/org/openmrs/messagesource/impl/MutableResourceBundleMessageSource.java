@@ -180,13 +180,13 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 			Locale currentLocale = parseLocaleFrom(propertiesFile.getName());
 			Properties props = new Properties();
 			try {
-				OpenmrsUtil.loadProperties(props, new FileInputStream(propertiesFile));
+				OpenmrsUtil.loadProperties(props, propertiesFile);
 				for (Map.Entry<Object, Object> property : props.entrySet()) {
 					presentations.add(new PresentationMessage(property.getKey().toString(), currentLocale, property
 					        .getValue().toString(), ""));
 				}
 			}
-			catch (FileNotFoundException e) {
+			catch (Exception e) {
 				// TODO Auto-generated catch block
 				log.error("Error generated", e);
 			}
@@ -224,16 +224,11 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 		if (propertyFile != null) {
 			Properties props = new Properties();
 			try {
-				FileInputStream fis = new FileInputStream(propertyFile);
-				OpenmrsUtil.loadProperties(props, fis);
-				fis.close();
+				OpenmrsUtil.loadProperties(props, propertyFile);
 				props.setProperty(message.getCode(), message.getMessage());
 				OpenmrsUtil.storeProperties(props, propertyFile, "OpenMRS Application Messages");
 			}
-			catch (FileNotFoundException e) {
-				log.error("Error generated", e);
-			}
-			catch (IOException e) {
+			catch (Exception e) {
 				log.error("Error generated", e);
 			}
 		}
@@ -247,16 +242,11 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 		if (propertyFile != null) {
 			Properties props = new Properties();
 			try {
-				FileInputStream fis = new FileInputStream(propertyFile);
-				OpenmrsUtil.loadProperties(props, new FileInputStream(propertyFile));
-				fis.close();
+				OpenmrsUtil.loadProperties(props, propertyFile);
 				props.remove(message.getCode());
 				OpenmrsUtil.storeProperties(props, propertyFile, PROPERTIES_FILE_COMMENT);
 			}
-			catch (FileNotFoundException e) {
-				log.error("Error generated", e);
-			}
-			catch (IOException e) {
+			catch (Exception e) {
 				log.error("Error generated", e);
 			}
 		}
@@ -276,9 +266,9 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 		for (File propertiesFile : findPropertiesFiles()) {
 			props.clear();
 			try {
-				OpenmrsUtil.loadProperties(props, new FileInputStream(propertiesFile));
+				OpenmrsUtil.loadProperties(props, propertiesFile);
 			}
-			catch (FileNotFoundException e) {
+			catch (Exception e) {
 				log.error("Error generated", e);
 			}
 			if (props.containsKey(code)) {
@@ -348,10 +338,10 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 			propList.add(propertiesFile);
 			
 			try {
-				OpenmrsUtil.loadProperties(props, new FileInputStream(propertiesFile));
+				OpenmrsUtil.loadProperties(props, propertiesFile);
 				fileToPropertiesMap.put(propertiesFile, props);
 			}
-			catch (FileNotFoundException e) {
+			catch (Exception e) {
 				// TODO Auto-generated catch block
 				log.error("Error generated", e);
 			}
