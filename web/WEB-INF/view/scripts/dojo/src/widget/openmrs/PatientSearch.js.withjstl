@@ -75,7 +75,7 @@ dojo.widget.defineWidget(
 		
 		searchOnPatientNameText: "<spring:message javaScriptEscape="true" code="PatientSearch.searchOnName"/>",
 		noPatientsFoundText: "<spring:message javaScriptEscape="true" code="PatientSearch.noneFound"/> <br/> ",
-		addPatientLink: "<a href='<openmrs:contextPath />/admin/person/addPerson.htm?personType=patient'><spring:message javaScriptEscape="true" code="Patient.addNew"/></a>",
+		addPatientLink: "<a href='<openmrs:contextPath />/admin/person/addPerson.htm?personType=patient&viewType=shortEdit'><spring:message javaScriptEscape="true" code="Patient.addNew"/></a>",
 		
 		getId: function(p) {
 			var td = document.createElement("td");
