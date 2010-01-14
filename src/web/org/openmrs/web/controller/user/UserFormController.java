@@ -99,6 +99,7 @@ public class UserFormController {
 
 	@RequestMapping(value="/admin/users/user.form", method=RequestMethod.GET)
 	public String showForm(@RequestParam(required=false, value="userId") Integer userId,
+	                       @RequestParam(required=false, value="createNewPerson") String createNewPerson,
 	                       @ModelAttribute("user") User user,
 	                       ModelMap model) {
 
@@ -107,6 +108,9 @@ public class UserFormController {
 		model.addAttribute("isNewUser", user == null || user.getUserId() == null);
 		if (user == null || user.getUserId() == null || Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_USER_PASSWORDS))
 			model.addAttribute("modifyPasswords", true);
+		
+		if (createNewPerson != null)
+			model.addAttribute("createNewPerson", createNewPerson);
 				
 		// not using the default view name because I'm converting from an existing form
 		return "admin/users/userForm";
@@ -123,6 +127,7 @@ public class UserFormController {
 	                               @RequestParam(required=false, value="userFormPassword") String password,
 	                               @RequestParam(required=false, value="confirm") String confirm,
 	                               @RequestParam(required=false, value="roleStrings") String[] roles,
+	                               @RequestParam(required=false, value="createNewPerson") String createNewPerson,
 	                               @ModelAttribute("user") User user, BindingResult errors) {
 		
 		UserService us = Context.getUserService();
@@ -233,8 +238,7 @@ public class UserFormController {
 			uv.validate(user, errors);
 			
 			if (errors.hasErrors()) {
-				//**** return showForm(user.getUserId(), user.getPerson().getPersonId(), user, model);
-				return showForm(user.getUserId(), user, model);
+				return showForm(user.getUserId(), createNewPerson, user, model);
 			}
 			
 			if (isNewUser(user))
