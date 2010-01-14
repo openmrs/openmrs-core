@@ -5,8 +5,12 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
+<c:set var="errorsFromPreviousSubmit" value="false"/>
+<spring:hasBindErrors name="user">
+	<c:set var="errorsFromPreviousSubmit" value="true"/>
+</spring:hasBindErrors>
 <c:choose>
-	<c:when test="${empty param.userId && empty param.person_id && empty param.createNewPerson}">	
+	<c:when test="${errorsFromPreviousSubmit == 'false' && empty param.userId && empty param.person_id && empty createNewPerson}">	
 		<script type="text/javascript">
 			function personSelectedCallback(relType, person) {
 				if (person != null && person.personId != null) {
@@ -70,10 +74,13 @@
 </spring:hasBindErrors>
 
 <form id="thisUserForm" method="post" action="user.form" autocomplete="off">
+	<c:if test="${createNewPerson}">
+		<input type="hidden" name="createNewPerson" value="true"/>
+	</c:if>
 	<fieldset>
 		<legend><spring:message code="User.demographicInfo"/></legend>
 		<c:choose>
-			<c:when test="${not empty param.createNewPerson}">
+			<c:when test="${not empty createNewPerson}">
 				<table>
 					<spring:bind path="user.person">
 						<c:if test="${status.errorMessage != ''}">
