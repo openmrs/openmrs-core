@@ -3062,6 +3062,45 @@
 		<addColumn tableName="relationship_type">
 			<column name="retire_reason" type="varchar(255)" />
 		</addColumn>
-	</changeSet>	
+	</changeSet>
+
+	<changeSet id="20091215-0208" author="sunbiz">
+		<comment>
+			Prune concepts rows orphaned in concept_numeric tables
+		</comment>
+		<sql>
+			<![CDATA[
+				DELETE concept_numeric FROM concept_numeric
+				INNER JOIN concept ON concept.concept_id = concept_numeric.concept_id
+				AND concept.datatype_id NOT IN (1,12)
+			]]>
+		</sql>
+	</changeSet>
+
+	<changeSet id="20091215-0209" author="jmiranda">
+		<comment>
+			Prune concepts rows orphaned in concept_complex tables
+		</comment>
+		<sql>
+			<![CDATA[
+				DELETE concept_complex FROM concept_complex
+				INNER JOIN concept ON concept.concept_id = concept_complex.concept_id 
+				AND concept.datatype_id NOT IN (5, 13)
+			]]>
+		</sql>
+	</changeSet>
+
+	<changeSet id="20091215-0210" author="jmiranda">
+		<comment>
+			Prune concepts rows orphaned in concept_derived tables
+		</comment>
+		<sql>
+			<![CDATA[			
+				DELETE concept_derived FROM concept_derived
+				INNER JOIN concept ON concept.concept_id = concept_derived.concept_id 
+				AND concept.datatype_id <> 11	
+			]]>
+		</sql>
+	</changeSet>
 	
 </databaseChangeLog>
