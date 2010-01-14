@@ -74,6 +74,9 @@
 </spring:hasBindErrors>
 
 <form id="thisUserForm" method="post" action="user.form" autocomplete="off">
+	<c:if test="${param.userId != null}">
+		<input type="hidden" name="userId" value="${param.userId}"/>
+	</c:if>
 	<c:if test="${createNewPerson}">
 		<input type="hidden" name="createNewPerson" value="true"/>
 	</c:if>
