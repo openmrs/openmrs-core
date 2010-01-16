@@ -178,6 +178,7 @@ public class DWRProgramWorkflowService {
 		if (onDateDMY != null && onDateDMY.length() > 0)
 			onDate = ymdDf.parse(onDateDMY);
 		pp.transitionToState(st, onDate);
+		s.savePatientProgram(pp);
 	}
 	
 	public void voidLastState(Integer patientProgramId, Integer programWorkflowId, String voidReason) {
