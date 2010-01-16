@@ -5,6 +5,7 @@
 <%@ attribute name="searchLabel" required="false" %>
 <%@ attribute name="searchLabelCode" required="false" %>
 <%@ attribute name="searchLabelArguments" required="false" %>
+<%@ attribute name="roles" required="false" %>
 <%@ attribute name="initialValue" required="false" %> <%-- This should be a personId --%>
 <%@ attribute name="linkUrl" required="false" %>
 <%@ attribute name="callback" required="false" %>
