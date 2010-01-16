@@ -110,7 +110,7 @@
 			<th><spring:message code="Encounter.provider"/></th>
 			<td>
 				<spring:bind path="encounter.provider">
-					<openmrs_tag:personField formFieldName="providerId" searchLabelCode="Encounter.provider.find" initialValue="${status.value.userId}" roles="Provider;" callback="enableSaveButton"/>
+					<openmrs_tag:personField formFieldName="providerId" initialValue="${status.value.personId}" roles="Provider" callback="enableSaveButton"/>
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
 			</td>
