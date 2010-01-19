@@ -183,6 +183,8 @@ public final class OpenmrsConstants {
 	
 	public static final String PRIV_PURGE_CONCEPTS = "Purge Concepts";
 	
+	public static final String PRIV_MANAGE_CONCEPT_NAME_TAGS = "Manage Concept Name tags";
+	
 	public static final String PRIV_VIEW_CONCEPT_PROPOSALS = "View Concept Proposals";
 	
 	public static final String PRIV_ADD_CONCEPT_PROPOSALS = "Add Concept Proposals";
@@ -493,6 +495,8 @@ public final class OpenmrsConstants {
 			
 			CORE_PRIVILEGES.put(PRIV_VIEW_CONCEPTS, "Able to view concept entries");
 			CORE_PRIVILEGES.put(PRIV_MANAGE_CONCEPTS, "Able to add/edit/delete concept entries");
+			
+			CORE_PRIVILEGES.put(PRIV_MANAGE_CONCEPT_NAME_TAGS, "Able to add/edit/delete concept name tags");
 			
 			CORE_PRIVILEGES.put(PRIV_VIEW_CONCEPT_PROPOSALS, "Able to view concept proposals to the system");
 			CORE_PRIVILEGES.put(PRIV_ADD_CONCEPT_PROPOSALS, "Able to add concept proposals to the system");

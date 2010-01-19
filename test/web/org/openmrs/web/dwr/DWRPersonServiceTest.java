@@ -21,7 +21,7 @@ import org.openmrs.test.Verifies;
 import org.openmrs.web.test.BaseWebContextSensitiveTest;
 
 /**
- * Test the different aspects of {@link DWRPersonServiceTest}
+ * Test the different aspects of {@link DWRPersonService}
  */
 public class DWRPersonServiceTest extends BaseWebContextSensitiveTest {
 	

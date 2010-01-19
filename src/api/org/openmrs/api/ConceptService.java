@@ -1175,12 +1175,15 @@ public interface ConceptService extends OpenmrsService {
 	public ConceptSource retireConceptSource(ConceptSource cs, String reason) throws APIException;
 	
 	/**
-	 * Creates a new Concept name tag.
+	 * Creates a new Concept name tag if none exists.  If a tag exists with the same
+	 * name then that existing tag is returned.
 	 * 
-	 * @param nameTag the name tag to be saved
-	 * @return the newly created Concept name tag
+	 * @param nameTag the concept name tag to be saved
+	 * @return the newly created or existing concept name tag
+	 * @should save a concept name tag if tag does not exist
+	 * @should not save a concept name tag if tag exists
 	 */
-	@Authorized(OpenmrsConstants.PRIV_MANAGE_CONCEPTS)
+	@Authorized(OpenmrsConstants.PRIV_MANAGE_CONCEPT_NAME_TAGS)
 	public ConceptNameTag saveConceptNameTag(ConceptNameTag nameTag);
 	
 	/**
