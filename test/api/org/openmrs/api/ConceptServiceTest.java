@@ -13,9 +13,10 @@
  */
 package org.openmrs.api;
 
-import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
@@ -43,9 +44,9 @@ import org.openmrs.ConceptProposal;
 import org.openmrs.ConceptSet;
 import org.openmrs.ConceptSource;
 import org.openmrs.ConceptWord;
+import org.openmrs.Drug;
 import org.openmrs.Encounter;
 import org.openmrs.Obs;
-import org.openmrs.Drug;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
@@ -916,8 +917,43 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 
 	}
 	
+	/**
+	 * @verifies {@link ConceptService#saveConceptNameTag(ConceptNameTag)}
+	 * test = should save a concept name tag if tag does not exist
+	 */
+	@Test(expected=Exception.class)
+	public void saveConceptSource_shouldSaveAConceptNameTagIfATagDoesNotExist()
+			throws Exception {
+		ConceptNameTag nameTag = new ConceptNameTag();
+		nameTag.setTag("a new tag");
+		
+		ConceptNameTag savedNameTag = conceptService.saveConceptNameTag(nameTag);
+		
+		assertNotNull(nameTag.getId());
+		assertEquals(savedNameTag.getId(), nameTag.getId());
+	}	
 	
-	
-	
-	
+	/**
+	 * @verifies {@link ConceptService#saveConceptNameTag(ConceptNameTag)}
+	 * test = should not save a concept name tag if tag exists
+	 */
+	@Test(expected=Exception.class)
+	public void saveConceptSource_shouldNotSaveAConceptNameTagIfTagExists()
+			throws Exception {
+		String tag = "a new tag";
+		
+		ConceptNameTag nameTag = new ConceptNameTag();
+		nameTag.setTag(tag);
+		
+		conceptService.saveConceptNameTag(nameTag);
+		
+		ConceptNameTag secondNameTag = new ConceptNameTag();
+		secondNameTag.setTag(tag);		
+		
+		ConceptNameTag existingConceptNameTag = conceptService.saveConceptNameTag(secondNameTag);
+		
+		assertNull(secondNameTag.getId());
+		assertEquals(existingConceptNameTag.getId(), nameTag.getId());
+	}	
+		
 }
