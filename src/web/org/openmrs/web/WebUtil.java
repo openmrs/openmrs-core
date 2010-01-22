@@ -55,6 +55,7 @@ public class WebUtil {
 			return "";
 		
 		s = s.replace("\"", "\\\"");
+		s = s.replace("\r\n", "\\r\\n");
 		s = s.replace("\n", "\\n");
 		
 		return s;
