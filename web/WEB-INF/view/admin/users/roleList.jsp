@@ -1,11 +1,12 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
 <openmrs:require privilege="Manage Roles" otherwise="/login.htm" redirect="/admin/users/role.list" />
-	
+<spring:message var="pageTitle" code="Role.manage.titlebar" scope="page"/>
+
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-<h2><spring:message code="Role.manage.title"/></h2>	
+<h2><spring:message code="Role.manage.title"/></h2>
 
 <a href="role.form"><spring:message code="Role.add"/></a>
 <br/><br/>

@@ -1,8 +1,17 @@
 <%@ include file="/WEB-INF/template/include.jsp"%>
 
-<%@ include file="/WEB-INF/template/header.jsp"%>
-
 <openmrs:require privilege="Edit Concepts" otherwise="/login.htm" redirect="/dictionary/concept.form" />
+
+<c:choose>
+	<c:when test="${command.concept.conceptId != null}">
+		<spring:message var="pageTitle" code="Concept.edit.titlebar" scope="page" arguments="${command.concept.name}"/>
+	</c:when>
+	<c:otherwise>
+		<spring:message var="pageTitle" code="Concept.creatingNewConcept.titlebar" scope="page"/>
+	</c:otherwise>
+</c:choose>
+
+<%@ include file="/WEB-INF/template/header.jsp"%>
 
 <openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
 <openmrs:htmlInclude file="/dwr/interface/DWRConceptService.js" />

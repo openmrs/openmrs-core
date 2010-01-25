@@ -1,11 +1,12 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
 <openmrs:require privilege="Manage Privileges" otherwise="/login.htm" redirect="/admin/users/privilege.list" />
+<spring:message var="pageTitle" code="Privilege.manage.titlebar" scope="page"/>	
 	
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-<h2><spring:message code="Privilege.manage.title"/></h2>	
+<h2><spring:message code="Privilege.manage.title"/></h2>
 
 <a href="privilege.form"><spring:message code="Privilege.add"/></a>
 <br/><br/>

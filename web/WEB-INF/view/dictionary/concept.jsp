@@ -1,5 +1,5 @@
 <%@ include file="/WEB-INF/template/include.jsp"%>
-
+<spring:message var="pageTitle" code="Concept.view.titlebar" scope="page" arguments="${command.concept.name}"/>
 <%@ include file="/WEB-INF/template/header.jsp"%>
 
 <openmrs:require privilege="View Concepts" otherwise="/login.htm"
