@@ -1,11 +1,12 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
 <openmrs:require privilege="Manage Alerts" otherwise="/login.htm" redirect="/admin/users/alert.list" />
+<spring:message var="pageTitle" code="Alert.manage.titlebar" scope="page"/>
 	
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-<h2><spring:message code="Alert.manage.title"/></h2>	
+<h2><spring:message code="Alert.manage.title"/></h2>
 
 <a href="alert.form"><spring:message code="Alert.add"/></a>
 <br/><br/>

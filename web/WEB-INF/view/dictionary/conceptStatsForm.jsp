@@ -1,9 +1,11 @@
 <%@ include file="/WEB-INF/template/include.jsp"%>
 
+<openmrs:require privilege="View Observations" otherwise="/login.htm" redirect="/dictionary/conceptStats.form" />
+
+<spring:message var="pageTitle" code="Concept.stats.titlebar" scope="page" arguments="${concept.name}"/>	
+
 <%@ include file="/WEB-INF/template/header.jsp"%>
 
-<openmrs:require privilege="View Observations" otherwise="/login.htm"
-	redirect="/dictionary/conceptStats.form" />
 
 <style>
 	.inlineForm {
