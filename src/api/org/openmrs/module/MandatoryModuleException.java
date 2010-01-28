@@ -26,7 +26,7 @@ import org.openmrs.util.OpenmrsUtil;
  * @see Context#startup()
  * @see ModuleUtil#getMandatoryModules()
  */
-public class MandatoryModuleException extends RuntimeException {
+public class MandatoryModuleException extends ModuleMustStartException {
 	
 	public static final long serialVersionUID = 236472655L;
 	
