@@ -42,6 +42,8 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.MandatoryModuleException;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleFactory;
+import org.openmrs.module.ModuleMustStartException;
+import org.openmrs.module.OpenmrsRequiredModuleException;
 import org.openmrs.module.web.WebModuleUtil;
 import org.openmrs.scheduler.SchedulerUtil;
 import org.openmrs.util.DatabaseUpdateException;
@@ -189,6 +191,11 @@ public final class Listener extends ContextLoaderListener {
 		}
 		catch (MandatoryModuleException mandatoryModEx) {
 			throw new ServletException(mandatoryModEx);
+		}
+		catch (OpenmrsRequiredModuleException reqModEx) {
+			// don't wrap this error in a ServletException because we want to deal with it differently
+			// in the StartupErrorFilter class
+			throw reqModEx;
 		}
 		
 		
@@ -581,9 +588,10 @@ public final class Listener extends ContextLoaderListener {
 	 * Call WebModuleUtil.startModule on each started module
 	 * 
 	 * @param servletContext
-	 * @throws MandatoryModuleException if the context cannot restart due to a mandatory module exception
+	 * @throws ModuleMustStartException if the context cannot restart due to a
+	 *             {@link MandatoryModuleException} or {@link OpenmrsRequiredModuleException}
 	 */
-	public static void performWebStartOfModules(ServletContext servletContext) throws MandatoryModuleException {
+	public static void performWebStartOfModules(ServletContext servletContext) throws ModuleMustStartException {
 		Log log = LogFactory.getLog(Listener.class);
 		
 		List<Module> startedModules = new ArrayList<Module>();
@@ -604,9 +612,9 @@ public final class Listener extends ContextLoaderListener {
 			try {
 				WebModuleUtil.refreshWAC(servletContext);
 			}
-			catch (MandatoryModuleException mme) {
+			catch (ModuleMustStartException ex) {
 				// pass this up to the calling method so that openmrs loading stops
-				throw mme;
+				throw ex;
 			}
 			catch (Throwable t) {
 				log.fatal("Unable to refresh the spring application context. Unloading all modules,  Error was:", t);
@@ -617,9 +625,9 @@ public final class Listener extends ContextLoaderListener {
 					}
 					WebModuleUtil.refreshWAC(servletContext);
 				}
-				catch (MandatoryModuleException mme) {
+				catch (ModuleMustStartException ex) {
 					// pass this up to the calling method so that openmrs loading stops
-					throw mme;
+					throw ex;
 				}
 				catch (Throwable t2) {
 					log.warn("caught another error: ", t2);

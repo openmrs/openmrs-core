@@ -27,7 +27,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
@@ -57,7 +59,7 @@ public class ModuleUtil {
 	 * 
 	 * @param props Properties (OpenMRS runtime properties)
 	 */
-	public static void startup(Properties props) throws MandatoryModuleException {
+	public static void startup(Properties props) throws ModuleMustStartException, OpenmrsRequiredModuleException {
 		
 		String moduleListString = props.getProperty(ModuleConstants.RUNTIMEPROPERTY_MODULE_LIST_TO_LOAD);
 		
@@ -127,6 +129,9 @@ public class ModuleUtil {
 				log.debug("Found and loaded " + modules.size() + " module(s)");
 		}
 		
+		// make sure all openmrs required moduls are loaded and started
+		checkOpenmrsRequiredModulesStarted();
+		
 		// make sure all mandatory modules are loaded and started
 		checkMandatoryModulesStarted();
 	}
@@ -169,7 +174,7 @@ public class ModuleUtil {
 		if (OpenmrsUtil.folderContains(folder, filename))
 			throw new ModuleException(filename + " is already associated with a loaded module.");
 		
-		File file = new File(folder.getAbsolutePath() + File.separator + filename);
+		File file = new File(folder.getAbsolutePath(), filename);
 		
 		FileOutputStream outputStream = null;
 		try {
@@ -197,19 +202,20 @@ public class ModuleUtil {
 	}
 	
 	/**
-	 * Method to check whether required openmrs version in the config file
-	 * match the currently installed openmrs version
-	 * 
+	 * This method is an enhancement of {@link #compareVersion(String, String)} and adds support
+	 * for wildcard characters and upperbounds.
+	 * <br/><br/>
 	 * The require version number in the config file can be in the following
 	 * format:
-	 *   1.2.3
-	 *   1.2.*
-	 *   1.2.2 - 1.2.3
-	 *   1.2.* - 1.3.*
-	 * 
+	 * <ul>
+	 *   <li>1.2.3</li>
+	 *   <li>1.2.*</li>
+	 *   <li>1.2.2 - 1.2.3</li>
+	 *   <li>1.2.* - 1.3.*</li>
+	 * </ul>
 	 * @param version openmrs version number to be compared
 	 * @param value value in the config file for required openmrs version
-	 * @return true if the required openmrs version match the current version
+	 * @return true if the <code>version</code> is within the <code>value</code>
 	 * @should allow ranged required version
 	 * @should allow ranged required version with wild card
 	 * @should allow ranged required version with wild card on one end
@@ -686,6 +692,40 @@ public class ModuleUtil {
 		// any module ids left in the list are not started
 		if (mandatoryModuleIds.size() > 0) {
 			throw new MandatoryModuleException(mandatoryModuleIds);
+		}
+	}
+	
+	/**
+	 * Looks at the list of modules in {@link ModuleConstants#REQUIRED_MODULES} to make
+	 * sure that all modules that are required by OpenMRS are started and have at least
+	 * a minimum version that OpenMRS needs.
+	 * 
+	 * @throws ModuleException if a module that is required by OpenMRS is not started
+	 * @should throw ModuleException if a required module is not started
+	 */
+	protected static void checkOpenmrsRequiredModulesStarted() throws OpenmrsRequiredModuleException {
+		
+		// make a copy of the constant so we can modify the list
+		Map<String, String> requiredModules = new HashMap<String, String>(ModuleConstants.REQUIRED_MODULES);
+		
+		Collection<Module> startedModules = ModuleFactory.getStartedModulesMap().values();
+		
+		// loop through the current modules and test them
+		for (Module mod : startedModules) {
+			String moduleId = mod.getModuleId();
+			if (requiredModules.containsKey(moduleId)) {
+				String reqVersion = requiredModules.get(moduleId);
+				if (matchRequiredVersions(mod.getVersion(), reqVersion))
+					requiredModules.remove(moduleId);
+				else
+					log.debug("Module: " + moduleId + " is started, but its version: " + mod.getVersion()
+				        + " is not within the required version: " + reqVersion);
+			}
+		}
+		
+		// any module ids left in the list are not started
+		if (requiredModules.size() > 0) {
+			throw new OpenmrsRequiredModuleException(requiredModules);
 		}
 	}
 	

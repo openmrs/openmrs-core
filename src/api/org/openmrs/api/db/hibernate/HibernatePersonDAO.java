@@ -27,7 +27,6 @@ import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.type.StringType;
-import org.openmrs.PatientIdentifierType;
 import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
@@ -278,7 +277,7 @@ public class HibernatePersonDAO implements PersonDAO {
 	/**
 	 * Fetch the max results value from the global properties table
 	 * 
-	 * @return Integer value for the patient search max results global property
+	 * @return Integer value for the person search max results global property
 	 */
 	protected static Integer getMaximumSearchResults() {
 		try {
