@@ -558,14 +558,32 @@ public final class Module {
 		this.mappingFiles = mappingFiles;
 	}
 	
+	/**
+	 * This property is set by the module owner to tell OpenMRS that once it is installed, it must
+	 * always startup. This is intended for modules with system-critical monitoring or security
+	 * checks that should always be in place.
+	 * 
+	 * @return true if this module has said that it should always start up
+	 */
 	public boolean isMandatory() {
-    	return mandatory;
-    }
+		return mandatory;
+	}
 
     public void setMandatory(boolean mandatory) {
     	this.mandatory = mandatory;
     }
-	
+    
+    /**
+	 * This is a convenience method to know whether this module is required by OpenMRS. A module is
+	 * 'required' when this module is essentially part of the core code and must exist at all times
+	 * 
+	 * @return true if this is an OpenMRS required module
+	 * @see {@link ModuleConstants#REQUIRED_MODULES}
+	 */
+	public boolean isRequired() {
+		return ModuleConstants.REQUIRED_MODULES.containsKey(moduleId);
+	}
+
 	public boolean isStarted() {
 		return ModuleFactory.isModuleStarted(this);
 	}

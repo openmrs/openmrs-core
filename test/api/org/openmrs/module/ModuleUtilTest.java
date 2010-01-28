@@ -87,6 +87,15 @@ public class ModuleUtilTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @see {@link ModuleUtil#checkOpenmrsRequiredModulesStarted()}
+	 */
+	@Test(expected = OpenmrsRequiredModuleException.class)
+	@Verifies(value = "throw ModuleException if a required module is not started", method = "checkOpenmrsRequiredModulesStarted()")
+	public void checkMandatoryModulesStarted_throwModuleExceptionIfARequiredModuleIsNotStarted() throws Exception {
+		ModuleUtil.checkOpenmrsRequiredModulesStarted();
+	}
+	
+	/**
 	 * @see {@link ModuleUtil#getMandatoryModules()}
 	 */
 	@Test

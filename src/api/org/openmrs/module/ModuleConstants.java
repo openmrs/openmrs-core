@@ -13,10 +13,24 @@
  */
 package org.openmrs.module;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Constants used by the module system in openmrs
  */
 public class ModuleConstants {
+	
+	/**
+	 * A map from moduleid to required version for all required modules.  A
+	 * module with at least the given version is required to start before 
+	 * openmrs will fully start.
+	 */
+	public static final Map<String, String> REQUIRED_MODULES = new HashMap<String, String>();
+	
+	static {
+		REQUIRED_MODULES.put("logic", "0.2");
+	}
 	
 	/**
 	 * Name of the file in the module repository to ping to question for updates to a module
