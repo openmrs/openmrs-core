@@ -512,7 +512,7 @@ public class ModuleFactory {
 				try {
 					boolean skipOverStartedProperty = false;
 					
-					if (e instanceof MandatoryModuleException)
+					if (e instanceof ModuleMustStartException)
 						skipOverStartedProperty = true;
 					
 					stopModule(module, skipOverStartedProperty, true);
@@ -672,7 +672,7 @@ public class ModuleFactory {
 	 */
 	@SuppressWarnings("unchecked")
 	public static List<Module> stopModule(Module mod, boolean skipOverStartedProperty, boolean isFailedStartup)
-	                                                                                                           throws MandatoryModuleException {
+	                                                                                                           throws ModuleMustStartException {
 		
 		List<Module> dependentModulesStopped = new Vector<Module>();
 		
@@ -683,6 +683,10 @@ public class ModuleFactory {
 			// don't use database checks here because spring might be in a bad state
 			if (!isFailedStartup && mod.isMandatory()) {
 				throw new MandatoryModuleException(moduleId);
+			}
+			
+			if (!isFailedStartup && ModuleConstants.REQUIRED_MODULES.containsKey(moduleId)) {
+				throw new OpenmrsRequiredModuleException(moduleId);
 			}
 			
 			String modulePackage = mod.getPackageName();

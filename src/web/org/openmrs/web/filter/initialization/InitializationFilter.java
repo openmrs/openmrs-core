@@ -45,6 +45,7 @@ import org.openmrs.ImplementationId;
 import org.openmrs.api.PasswordException;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.MandatoryModuleException;
+import org.openmrs.module.OpenmrsRequiredModuleException;
 import org.openmrs.module.web.WebModuleUtil;
 import org.openmrs.scheduler.SchedulerConstants;
 import org.openmrs.scheduler.SchedulerUtil;
@@ -857,6 +858,13 @@ public class InitializationFilter extends StartupFilter {
 							    "A mandatory module failed to start. Fix the error or unmark it as mandatory to continue.",
 							    mandatoryModEx);
 							reportError(mandatoryModEx.getMessage(), DEFAULT_PAGE);
+							return;
+						}
+						catch (OpenmrsRequiredModuleException requiredModEx) {
+							log.warn(
+							    "A required module failed to start. Make sure that all required modules (with the required minimum versions) are installed and starting properly.",
+							    requiredModEx);
+							reportError(requiredModEx.getMessage(), DEFAULT_PAGE);
 							return;
 						}
 						
