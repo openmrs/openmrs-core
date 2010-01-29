@@ -181,6 +181,10 @@ public final class Listener extends ContextLoaderListener {
 		// start openmrs
 		try {
 			Context.openSession();
+			
+			// load core modules that are packaged into the webapp
+			Listener.loadCoreModules(servletContext);
+			
 			Context.startup(getRuntimeProperties());
 		}
 		catch (DatabaseUpdateException updateEx) {
@@ -202,9 +206,6 @@ public final class Listener extends ContextLoaderListener {
 		// TODO catch openmrs errors here and drop the user back out to the setup screen
 		
 		try {
-			
-			// load modules
-			Listener.loadAndStartCoreModules(servletContext);
 			
 			// web load modules
 			Listener.performWebStartOfModules(servletContext);
@@ -408,12 +409,14 @@ public final class Listener extends ContextLoaderListener {
 	}
 	
 	/**
-	 * Load the core modules This method assumes that the WebModuleUtil.startup() will be called
-	 * later for modules loaded here
+	 * Load the core modules from web/WEB-INF/coreModules. <br/>
+	 * <br/>
+	 * This method assumes that the api startup() and WebModuleUtil.startup() will be called later
+	 * for modules that loaded here
 	 * 
-	 * @param servletContext
+	 * @param servletContext the current servlet context for the webapp
 	 */
-	public static void loadAndStartCoreModules(ServletContext servletContext) {
+	public static void loadCoreModules(ServletContext servletContext) {
 		Log log = LogFactory.getLog(Listener.class);
 		
 		String path = servletContext.getRealPath("");
@@ -429,15 +432,11 @@ public final class Listener extends ContextLoaderListener {
 			return;
 		}
 		
-		// to know if we need to start any modules
-		boolean aModuleLoaded = false;
-		
 		// loop over the modules and load the modules that we can
 		for (File f : folder.listFiles()) {
 			if (!f.getName().startsWith(".")) { // ignore .svn folder and the like
 				try {
-					Module mod = ModuleFactory.loadModule(f, false);
-					aModuleLoaded = true;
+					Module mod = ModuleFactory.loadModule(f);
 					log.debug("Loaded module: " + mod + " successfully");
 				}
 				catch (Throwable t) {
@@ -445,9 +444,6 @@ public final class Listener extends ContextLoaderListener {
 				}
 			}
 		}
-		
-		if (aModuleLoaded)
-			ModuleFactory.startModules();
 	}
 	
 	/**

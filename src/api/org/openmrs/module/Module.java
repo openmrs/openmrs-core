@@ -581,7 +581,7 @@ public final class Module {
 	 * @see {@link ModuleConstants#REQUIRED_MODULES}
 	 */
 	public boolean isRequired() {
-		return ModuleConstants.REQUIRED_MODULES.containsKey(moduleId);
+		return !ModuleUtil.ignoreRequiredModules() && ModuleConstants.REQUIRED_MODULES.containsKey(moduleId);
 	}
 
 	public boolean isStarted() {
