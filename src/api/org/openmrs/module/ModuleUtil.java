@@ -705,6 +705,10 @@ public class ModuleUtil {
 	 */
 	protected static void checkOpenmrsRequiredModulesStarted() throws OpenmrsRequiredModuleException {
 		
+		// if there is a property telling us to ignore required modules, drop out early
+		if (ignoreRequiredModules())
+			return;
+		
 		// make a copy of the constant so we can modify the list
 		Map<String, String> requiredModules = new HashMap<String, String>(ModuleConstants.REQUIRED_MODULES);
 		
@@ -727,6 +731,16 @@ public class ModuleUtil {
 		if (requiredModules.size() > 0) {
 			throw new OpenmrsRequiredModuleException(requiredModules);
 		}
+	}
+	
+	/**
+	 * Uses the runtime properties to determine if the required modules should be enforced or not.
+	 * 
+	 * @return true if the required modules list can be ignored.
+	 */
+	public static boolean ignoreRequiredModules() {
+		String ignoreReqModules = Context.getRuntimeProperties().getProperty(ModuleConstants.IGNORE_REQUIRED_MODULES_PROPERTY, "false");
+		return Boolean.parseBoolean(ignoreReqModules);
 	}
 	
 	/**

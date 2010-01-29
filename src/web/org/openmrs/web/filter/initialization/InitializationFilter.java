@@ -833,6 +833,10 @@ public class InitializationFilter extends StartupFilter {
 						// start openmrs
 						try {
 							Context.openSession();
+
+							// load core modules so that required modules are known at openmrs startup
+							Listener.loadCoreModules(filterConfig.getServletContext());
+							
 							Context.startup(runtimeProperties);
 						}
 						catch (DatabaseUpdateException updateEx) {
@@ -908,9 +912,6 @@ public class InitializationFilter extends StartupFilter {
 								Context.getUserService().changePassword("test", wizardModel.adminUserPassword);
 								Context.logout();
 							}
-							
-							// load modules
-							Listener.loadAndStartCoreModules(filterConfig.getServletContext());
 							
 							// web load modules
 							Listener.performWebStartOfModules(filterConfig.getServletContext());

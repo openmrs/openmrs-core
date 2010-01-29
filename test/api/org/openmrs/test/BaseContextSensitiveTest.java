@@ -61,6 +61,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
+import org.openmrs.module.ModuleConstants;
 import org.openmrs.module.ModuleUtil;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.springframework.test.context.ContextConfiguration;
@@ -194,6 +195,9 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 			// automatically create the tables defined in the hbm files
 			runtimeProperties.setProperty(Environment.HBM2DDL_AUTO, "create-drop");
 		}
+		
+		// we don't want to try to load required modules in tests
+		runtimeProperties.setProperty(ModuleConstants.IGNORE_REQUIRED_MODULES_PROPERTY, "true");
 		
 		return runtimeProperties;
 	}
