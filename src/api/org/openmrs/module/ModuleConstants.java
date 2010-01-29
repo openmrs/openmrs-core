@@ -33,6 +33,12 @@ public class ModuleConstants {
 	}
 	
 	/**
+	 * Used to determine if the {@link #REQUIRED_MODULES} list should be used or not. For unit
+	 * testing this is set to true to allow for faster runs with less dependencies.
+	 */
+	public static final String IGNORE_REQUIRED_MODULES_PROPERTY = "module.ignore_required_status";
+	
+	/**
 	 * Name of the file in the module repository to ping to question for updates to a module
 	 */
 	public static final String UPDATE_FILE_NAME = "update.rdf";
