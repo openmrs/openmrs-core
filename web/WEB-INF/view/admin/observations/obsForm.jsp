@@ -453,7 +453,7 @@
 		<th><spring:message code="general.value"/></th>
 		<spring:bind path="valueText">
 			<td>
-				<textarea name="${status.expression}" rows="3" cols="35">${status.value}</textarea>
+				<textarea name="${status.expression}" rows="9" cols="80">${status.value}</textarea>
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</td>
 		</spring:bind>
