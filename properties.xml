@@ -82,6 +82,7 @@
 		<fileset dir="${commons-lang.dir}" includes="*.jar" />
 		<fileset dir="${commons-beanutils.dir}" includes="*.jar" />
 		<fileset dir="${commons-collections.dir}" includes="*.jar" />
+    	<fileset dir="${commons-fileupload.dir}" includes="*.jar" />
 		<fileset dir="${dwr.dir}" includes="*.jar" />
 		<fileset dir="${hibernate.dir}" includes="*.jar" />
     	<fileset dir="${hl7api.dir}" includes="*.jar" />
