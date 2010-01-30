@@ -632,7 +632,7 @@ public final class OpenmrsConstants {
 	}
 	
 	// Baked in Roles:
-	public static final String SUPERUSER_ROLE = "Administrator";
+	public static final String SUPERUSER_ROLE = "System Developer";
 	
 	public static final String ANONYMOUS_ROLE = "Anonymous";
 	
