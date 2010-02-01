@@ -50,6 +50,8 @@ public class AddPersonController extends SimpleFormController {
 	
 	private final String USER_EDIT_URL = "/admin/users/user.form";
 	
+	private final String FORM_ENTRY_ERROR_URL = "/admin/person/entryError";
+
 	/** Parameters passed in view request object **/
 	private String name = "";
 	
@@ -64,7 +66,9 @@ public class AddPersonController extends SimpleFormController {
 	private String personId = "";
 	
 	private String viewType = "view";
-	
+
+	private boolean invalidAgeFormat = false;
+
 	/**
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
@@ -126,6 +130,7 @@ public class AddPersonController extends SimpleFormController {
 			
 			Integer userId = Context.getAuthenticatedUser().getUserId();
 			
+			invalidAgeFormat = false;
 			getParametersFromRequest(request);
 			
 			log.debug("name: " + name + " birthdate: " + birthdate + " age: " + age + " gender: " + gender);
@@ -149,7 +154,12 @@ public class AddPersonController extends SimpleFormController {
 					Calendar c = Calendar.getInstance();
 					c.setTime(new Date());
 					d = c.get(Calendar.YEAR);
-					d = d - Integer.parseInt(age);
+					try {
+						d = d - Integer.parseInt(age);
+					} catch (NumberFormatException e) {
+						// In theory, this should never happen -- Javascript in the UI should prevent this... 
+						invalidAgeFormat = true;
+					}
 				}
 				
 				if (gender.length() < 1)
@@ -177,7 +187,15 @@ public class AddPersonController extends SimpleFormController {
 		log.debug("In showForm method");
 		
 		ModelAndView mav = super.showForm(request, response, errors);
-		
+
+		// If a invalid age is submitted, give the user a useful error message.
+		if (invalidAgeFormat) {
+			mav = new ModelAndView(FORM_ENTRY_ERROR_URL);
+			mav.addObject("errorTitle", "Person.age.error");
+			mav.addObject("errorMessage", "Person.birthdate.required");
+			return mav;
+		}
+
 		Object o = mav.getModel().get(this.getCommandName());
 		
 		List personList = (List) o;

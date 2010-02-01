@@ -5,7 +5,7 @@
 	<openmrs:require privilege="Add Patients" otherwise="/login.htm" redirect="/index.htm" />
 	
 	<openmrs:htmlInclude file="/scripts/calendar/calendar.js" />
-	
+
 	<div id="createPatient">
 		<b class="boxHeader">
 			<c:choose>
@@ -21,6 +21,7 @@
 			<spring:message code="Person.search.instructions"/> <br/>
 			
 			<form method="get" action="${model.postURL}" onSubmit="return validateForm()">
+				
 				<table>
 					<tr>
 						<td><spring:message code="Person.name"/></td>
@@ -59,7 +60,7 @@
 			</form>
 		</div>
 		
-		<script type="text/javascript">
+		<script type="text/javascript"><!--
 			clearError("name");
 			clearError("birthdate");
 			clearError("gender");
@@ -91,13 +92,16 @@
 						}
 					}
 					else if (age.value != "") {
-						if (age.value < 0 || age.value > 120) {
+						if (isInteger(age.value) == false) {
+							document.getElementById("birthdateError").style.display = "";
+							result = false;
+						} else if (age.value < 0 || age.value > 120) {
 							document.getElementById("birthdateError").style.display = "";
 							result = false;
 						}
 					}
 				}
-				
+		
 				if (male.checked == false && female.checked == false) {
 					document.getElementById("genderError").style.display = "";
 					result = false;
@@ -146,7 +150,23 @@
 			function clearError(errorName) {
 				document.getElementById(errorName + "Error").style.display = "none";
 			}
-		</script>
+
+			function isInteger(val)
+			{
+			    if(val==null) {
+			        return false;
+			    }
+			    if (val.length==0) {
+			        return false;
+			    }
+			    for (var i = 0; i < val.length; i++) {
+			        var ch = val.charAt(i);
+			        if (ch < "0" || ch > "9") return false;
+			    }
+			    return true;
+			}
+			
+		--></script>
 		
 	</div>
 
