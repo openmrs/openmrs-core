@@ -83,7 +83,7 @@
 	function obsSearchClear( patientField, conceptField, encounterField ) {
 		if ( patientField.length > 0 ) {
 			dwr.util.setValue(patientField, "");
-			var patPopup = dojo.widget.manager.getWidgetById("patientId_selection");
+			var patPopup = dojo.widget.manager.getWidgetById("personId_selection");
 			if ( patPopup ) {
 				patPopup.displayNode.innerHTML = "";
 				patPopup.setChangeButtonValue();
