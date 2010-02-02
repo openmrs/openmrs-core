@@ -2077,7 +2077,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		criteria.addOrder(org.hibernate.criterion.Order.desc("patient.personId"));
 		
 		List<PatientIdentifier> identifiers = criteria.list();
-		log.info("IDS: " + identifiers);
+		if (log.isDebugEnabled())
+			log.debug("IDS: " + identifiers);
 		
 		// set up the return map
 		for (PatientIdentifier identifier : identifiers) {
