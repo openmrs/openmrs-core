@@ -94,6 +94,7 @@ public class ModuleFactory {
 	 * 
 	 * @param module
 	 * @param replaceIfExists unload a module that has the same moduleId if one is loaded already
+	 * @return module the module that was loaded or if the module exists already with the same version, the old module
 	 */
 	public static Module loadModule(Module module, Boolean replaceIfExists) throws ModuleException {
 		
@@ -102,11 +103,23 @@ public class ModuleFactory {
 		
 		Module oldModule = getLoadedModulesMap().get(module.getModuleId());
 		if (oldModule != null) {
-			if (replaceIfExists == true) {
-				// TODO need to stop the module in the web layer as well.
+			int versionComparison = ModuleUtil.compareVersion(oldModule.getVersion(), module.getVersion());
+			if (versionComparison < 0) {
+				// if oldModule version is lower, unload it and use the new
 				unloadModule(oldModule);
-			} else
-				throw new ModuleException("A module with the same id already exists", module.getModuleId());
+			} else if (versionComparison == 0) {
+				if (replaceIfExists) {
+					// if the versions are the same and we're told to replaceIfExists, use the new
+					unloadModule(oldModule);
+				}
+				else
+					// if the versions are equal and we're not told to replaceIfExists, jump out of here in a bad way
+					throw new ModuleException("A module with the same id and version already exists", module.getModuleId());
+			}
+			else {
+				// if the older (already loaded) module is newer, keep that original one that was loaded. return that one.
+				return oldModule;
+			}
 		}
 		
 		getLoadedModulesMap().put(module.getModuleId(), module);
