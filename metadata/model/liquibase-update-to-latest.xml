@@ -286,6 +286,9 @@
 	</changeSet>
 	
 	<changeSet id="20090224-1229" author="Keelhaul+bwolfe">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="location_tag"/></not>
+		</preConditions>
 		<comment>
 			Add location tags table
 		</comment>
@@ -323,6 +326,9 @@
 	</changeSet>
 	
 	<changeSet id="20090224-1250" author="Keelhaul+bwolfe">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="location_tag_map"/></not>
+		</preConditions>
 		<comment>
 			Add location tag map table
 		</comment>
@@ -369,6 +375,9 @@
 	</changeSet>
 	
 	<changeSet id="20090225-1551" author="dthomas">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="location_tag" columnName="name"/>
+		</preConditions>
 		<comment>
 			Change location_tag.name to location_tag.tag and location_tag.retired_reason to location_tag.retire_reason
 		</comment>
