@@ -196,10 +196,10 @@
 										<spring:bind path="voided">
 											<input type="hidden" name="_${status.expression}"/>
 											<input type="checkbox" name="${status.expression}" 
-												   <c:if test="${status.value == true}">checked="checked"</c:if> 
+												   <c:if test="${status.value == true}">checked="checked"</c:if>
+										</spring:bind> 
 												   onClick="toggleLayer('<spring:bind path="personNameId">voidReasonRow-${status.value}</spring:bind>'); if (voidedBoxClicked) voidedBoxClicked(this); "
 											/>
-										</spring:bind>
 									</td>
 								</tr>
 								<tr id="<spring:bind path="personNameId">voidReasonRow-${status.value}</spring:bind>"
