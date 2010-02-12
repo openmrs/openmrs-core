@@ -84,9 +84,9 @@ public class PersonFormController extends SimpleFormController {
 			errors.reject("auth.invalid");
 		} else {
 			// Make sure they assign a name
-			if (person.getPersonName().getGivenName() == "")
+			if (person.getPersonName().getGivenName().trim().equals(""))
 				errors.rejectValue("names[0].givenName", "Person.name.required");
-			if (person.getPersonName().getFamilyName() == "")
+			if (person.getPersonName().getFamilyName().trim().equals(""))
 				errors.rejectValue("names[0].familyName", "Person.name.required");
 			
 			// Make sure they choose a gender
