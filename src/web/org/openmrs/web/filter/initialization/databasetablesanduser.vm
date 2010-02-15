@@ -7,7 +7,7 @@
 					<td colspan="2"><strong>Step 2 of 6</strong></td>
 				</tr>
 			 	<tr>
-					<td colspan="2" class="question" >Do you need OpenMRS to automatically create the tables for your current database - openmrs?</td>
+					<td colspan="2" class="question" >Do you need OpenMRS to automatically create the tables for your current database - ${databaseName}?</td>
 			 	</tr>
 			 	<tr>
 					<td>Yes: <input type="radio" name="create_tables" value="yes" #if( $createTables == true )checked="checked"#end /></td>
