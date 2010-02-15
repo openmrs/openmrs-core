@@ -262,6 +262,9 @@ public class ModuleClassLoader extends URLClassLoader {
 	protected void collectRequiredModuleImports() {
 		// collect imported modules (exclude duplicates)
 		Map<String, Module> publicImportsMap = new WeakHashMap<String, Module>(); //<module ID, Module>
+		for(String moduleId : ModuleConstants.REQUIRED_MODULES.keySet()) {
+			publicImportsMap.put(moduleId, ModuleFactory.getModuleById(moduleId));
+		}
 		
 		for (String requiredPackage : getModule().getRequiredModules()) {
 			Module requiredModule = ModuleFactory.getModuleByPackage(requiredPackage);
