@@ -93,6 +93,12 @@ public class UpdateFilter extends StartupFilter {
 	private UpdateFilterCompletion updateJob;
 	
 	/**
+	 * Variable set to true as soon as the update begins and set to false when the process ends
+	 * This thread should only be accesses thorugh the sychronized method.
+	 */
+	private static boolean isDatabaseUpdateInProgress = false;
+	
+	/**
 	 * Called by {@link #doFilter(ServletRequest, ServletResponse, FilterChain)} on GET requests
 	 * 
 	 * @param httpRequest
@@ -131,7 +137,9 @@ public class UpdateFilter extends StartupFilter {
 			if (authenticateAsSuperUser(username, password)) {
 				log.debug("Authentication successful.  Redirecting to 'reviewupdates' page.");
 				// set a variable so we know that the user started here
-				authenticatedSuccessfully = true;
+				authenticatedSuccessfully = true;	
+				//Set variable to tell us whether updates are already in progress
+				referenceMap.put("isDatabaseUpdateInProgress", isDatabaseUpdateInProgress);				
 				renderTemplate(REVIEW_CHANGES, referenceMap, httpResponse);
 			} else {
 				// if not authenticated, show main page again
@@ -154,12 +162,20 @@ public class UpdateFilter extends StartupFilter {
 				// throw the user back to the main page because they are cheating
 				renderTemplate(DEFAULT_PAGE, referenceMap, httpResponse);
 				return;
+			}		   
+            
+			//if no one has run any required updates
+			if (!isDatabaseUpdateInProgress) {
+				isDatabaseUpdateInProgress = true;
+				updateJob = new UpdateFilterCompletion();
+				updateJob.start();
+				
+				referenceMap.put("updateJobStarted", true);				
+			} else{
+				referenceMap.put("isDatabaseUpdateInProgress", true);
+				referenceMap.put("updateJobStarted", false);				
 			}
 			
-			updateJob = new UpdateFilterCompletion();
-			updateJob.start();
-			
-			referenceMap.put("updateJobStarted", true);
 			renderTemplate(REVIEW_CHANGES, referenceMap, httpResponse);
 			
 		} else if (PROGRESS_VM_AJAXREQUEST.equals(page)) {
@@ -214,7 +230,7 @@ public class UpdateFilter extends StartupFilter {
 			PreparedStatement statement = connection.prepareStatement(select);
 			statement.setString(1, usernameOrSystemId);
 			statement.setString(2, usernameOrSystemId);
-
+			
 			if (statement.execute()) {
 				ResultSet results = statement.getResultSet();
 				if (results.next()) {
@@ -227,7 +243,10 @@ public class UpdateFilter extends StartupFilter {
 			}
 		}
 		catch (Throwable t) {
-			log.error("Error while trying to authenticate as super user. Ignore this if you are upgrading from OpenMRS 1.5 to 1.6", t);
+			log
+			        .error(
+			            "Error while trying to authenticate as super user. Ignore this if you are upgrading from OpenMRS 1.5 to 1.6",
+			            t);
 			
 			// we may not have upgraded User to have retired instead of voided yet, so if the query above fails, we try
 			// again the old way
@@ -236,7 +255,7 @@ public class UpdateFilter extends StartupFilter {
 				PreparedStatement statement = connection.prepareStatement(select);
 				statement.setString(1, usernameOrSystemId);
 				statement.setString(2, usernameOrSystemId);
-	
+				
 				if (statement.execute()) {
 					ResultSet results = statement.getResultSet();
 					if (results.next()) {
@@ -247,7 +266,8 @@ public class UpdateFilter extends StartupFilter {
 						return Security.hashMatches(storedPassword, passwordToHash) && isSuperUser(connection, userId);
 					}
 				}
-			} catch (Throwable t2) {
+			}
+			catch (Throwable t2) {
 				log.error("Error while trying to authenticate as super user (voided version)", t);
 			}
 		}
@@ -391,9 +411,7 @@ public class UpdateFilter extends StartupFilter {
 	
 	/**
 	 * This class controls the final steps and is used by the ajax calls to know what updates have
-	 * been executed.
-	 * 
-	 * TODO: Break this out into a separate (non-inner) class
+	 * been executed. TODO: Break this out into a separate (non-inner) class
 	 */
 	private class UpdateFilterCompletion {
 		
@@ -544,6 +562,8 @@ public class UpdateFilter extends StartupFilter {
 						if (!hasErrors()) {
 							setUpdatesRequired(false);
 						}
+						//reset to let other user's make requests after updates are run
+						isDatabaseUpdateInProgress = false;
 					}
 				}
 			};

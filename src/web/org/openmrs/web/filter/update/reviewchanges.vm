@@ -67,14 +67,18 @@
 		<table align="center" cellspacing="5" cellpadding="9">
 			<tr>
 				<td colspan="3" class="question">
-					#if( $updateJobStarted != true )
-						The following database updates are required:
-					#end
-					#if( $updateJobStarted == true )
-						The following database updates are being executed:
+					#if($isDatabaseUpdateInProgress)
+						Another User is already running database updates!
+					#else
+						#if( $updateJobStarted != true )
+							The following database updates are required:							
+						#else
+							The following database updates are being executed:
+						#end
 					#end
 				</td>
 			</tr>
+			#if($isDatabaseUpdateInProgress != true)
 			<tr>
 				<td>
 					<table>
@@ -83,7 +87,7 @@
 							<th>Description of Update</th>
 							<th>Actions</th>
 							<th>Author</th>
-						</tr>
+						</tr>						
 						#foreach ($change in $changes)
 							<tr>
 								<td>
@@ -94,11 +98,12 @@
 								<td>${change.description}</td>
 								<td>${change.author}</td>
 							</tr>
-						#end
+						#end						
 					</table>
 				</td>
 			</tr>
-			#if( $updateJobStarted != true )
+			#end
+			#if( $updateJobStarted != true && $isDatabaseUpdateInProgress != true )
 				<tr>
 					<td colspan="3"><input type="submit" value="Run Updates" class="button"/></td>
 				</tr>
