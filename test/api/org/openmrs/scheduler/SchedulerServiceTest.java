@@ -17,10 +17,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.List;
+import java.util.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -433,6 +430,6 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 		service.shutdownTask(td);
 
         td = service.getTaskByName(NAME);
-		assertEquals("Last execution time in seconds is wrong", actualExecutionTime.longValue() / 1000, td.getLastExecutionTime().getTime() / 1000, 1);
+		assertEquals("Last execution time in seconds is wrong", actualExecutionTime.longValue() / 1000, td.getLastExecutionTime().getTime() / 1000);
 	}
 }

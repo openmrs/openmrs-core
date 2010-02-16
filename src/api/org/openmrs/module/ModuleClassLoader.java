@@ -42,7 +42,6 @@ import java.util.WeakHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.api.APIException;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsUtil;
 
@@ -263,13 +262,6 @@ public class ModuleClassLoader extends URLClassLoader {
 	protected void collectRequiredModuleImports() {
 		// collect imported modules (exclude duplicates)
 		Map<String, Module> publicImportsMap = new WeakHashMap<String, Module>(); //<module ID, Module>
-		for(String moduleId : ModuleConstants.REQUIRED_MODULES.keySet()) {
-			Module moduleClassLoader = ModuleFactory.getModuleById(moduleId);
-			if (moduleClassLoader == null)
-				throw new APIException("Should not be here.  All 'required' modules by the api should be started and their classloaders should be available");
-
-			publicImportsMap.put(moduleId, moduleClassLoader);
-		}
 		
 		for (String requiredPackage : getModule().getRequiredModules()) {
 			Module requiredModule = ModuleFactory.getModuleByPackage(requiredPackage);
