@@ -263,12 +263,19 @@ public class ModuleClassLoader extends URLClassLoader {
 	protected void collectRequiredModuleImports() {
 		// collect imported modules (exclude duplicates)
 		Map<String, Module> publicImportsMap = new WeakHashMap<String, Module>(); //<module ID, Module>
+		
 		for(String moduleId : ModuleConstants.REQUIRED_MODULES.keySet()) {
-			Module moduleClassLoader = ModuleFactory.getModuleById(moduleId);
-			if (moduleClassLoader == null)
+			Module module = ModuleFactory.getModuleById(moduleId);
+			
+			if (module == null && !ModuleUtil.ignoreRequiredModules()) {
+				log.error("Unable to find an openmrs required loaded module with id: " + moduleId);
 				throw new APIException("Should not be here.  All 'required' modules by the api should be started and their classloaders should be available");
-
-			publicImportsMap.put(moduleId, moduleClassLoader);
+			}
+			
+			// if this is already the classloader for one of the core modules, don't put it on the import list
+			if (module != null && !moduleId.equals(this.getModule().getModuleId())) {
+				publicImportsMap.put(moduleId, module);
+			}
 		}
 		
 		for (String requiredPackage : getModule().getRequiredModules()) {
@@ -481,7 +488,7 @@ public class ModuleClassLoader extends URLClassLoader {
 		// add this module to the list of modules we've tried already
 		seenModules.add(getModule().getModuleId());
 		
-		// look through this module's imports to see if it the class
+		// look through this module's imports to see if the class
 		// can be loaded from them
 		for (Module publicImport : requiredModules) {
 			if (seenModules.contains(publicImport.getModuleId()))
@@ -489,7 +496,10 @@ public class ModuleClassLoader extends URLClassLoader {
 			
 			ModuleClassLoader mcl = ModuleFactory.getModuleClassLoader(publicImport);
 			
-			result = mcl.loadClass(name, resolve, requestor, seenModules);
+			// the mcl will be null if a required module isn't started yet (like at openmrs startup)
+			if (mcl != null) {
+				result = mcl.loadClass(name, resolve, requestor, seenModules);
+			}
 			
 			if (result != null) {
 				/*if (resolve) {
