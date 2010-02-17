@@ -158,12 +158,12 @@ public class FieldGenTag extends TagSupport {
 						if (isNullable == null)
 							isNullable = "";
 						if (trueLabel == null)
-							trueLabel = "true";
+							trueLabel = Context.getMessageSourceService().getMessage("general.yes");
 						if (falseLabel == null)
-							falseLabel = "false";
+							falseLabel = Context.getMessageSourceService().getMessage("general.no");
 						if (unknownLabel == null)
-							unknownLabel = "unknown";
-						
+							unknownLabel = Context.getMessageSourceService().getMessage("general.unknown");
+
 						if ("false".equalsIgnoreCase(isNullable) || "f".equalsIgnoreCase(isNullable)
 						        || "0".equals(isNullable)) {
 							output = "<input type=\"radio\" name=\"" + formFieldName + "\" id=\"" + formFieldName
