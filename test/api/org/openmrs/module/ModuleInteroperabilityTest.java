@@ -20,7 +20,6 @@ import org.junit.Test;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.SkipBaseSetup;
 import org.openmrs.test.StartModule;
-import org.openmrs.test.StartModuleExecutionListener;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.springframework.test.annotation.DirtiesContext;
 
@@ -29,7 +28,7 @@ import org.springframework.test.annotation.DirtiesContext;
  * and during normal file usage.
  */
 @SkipBaseSetup
-@StartModule( { "org/openmrs/module/include/atd-0.51.omod", "org/openmrs/module/include/dssmodule-1.44.omod" })
+@StartModule( { "org/openmrs/module/include/logic-0.2.omod", "org/openmrs/module/include/dssmodule-1.44.omod", "org/openmrs/module/include/atd-0.51.omod" })
 public class ModuleInteroperabilityTest extends BaseContextSensitiveTest {
 	
 	/**

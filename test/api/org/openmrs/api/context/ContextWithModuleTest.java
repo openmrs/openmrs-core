@@ -13,18 +13,19 @@
  */
 package org.openmrs.api.context;
 
+import java.util.Properties;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.module.ModuleClassLoader;
+import org.openmrs.module.ModuleConstants;
 import org.openmrs.module.ModuleInteroperabilityTest;
 import org.openmrs.module.ModuleUtil;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.SkipBaseSetup;
-import org.openmrs.test.StartModule;
 import org.openmrs.test.Verifies;
-import org.springframework.test.annotation.DirtiesContext;
 
 /**
  * This test class is meant just for testing the {@link Context#loadClass(String)} method. This
@@ -33,11 +34,6 @@ import org.springframework.test.annotation.DirtiesContext;
  * 
  * @see ContextTest
  */
-//NOTE! This module is modified heavily from the original atd modules.
-// the "/lib" folder has been emptied to compact the size.
-// the "/metadata/sqldiff.xml" file has been deleted in order to load the modules into hsql.
-//    (the sql tables are built from hibernate mapping files automatically in unit tests)
-@StartModule( { "org/openmrs/module/include/logic-0.2.omod", "org/openmrs/api/context/include/dssmodule-1.44.omod" })
 public class ContextWithModuleTest extends BaseContextSensitiveTest {
 	
 	@Before
@@ -51,12 +47,29 @@ public class ContextWithModuleTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * This class file uses the atd and dss modules to test the compatibility
+	 * 
+	 * @see org.openmrs.test.BaseContextSensitiveTest#getRuntimeProperties()
+	 */
+	public Properties getRuntimeProperties() {
+		Properties props = super.getRuntimeProperties();
+		
+		// NOTE! This module is modified heavily from the original atd modules.
+		// the "/lib" folder has been emptied to compact the size.
+		// the "/metadata/sqldiff.xml" file has been deleted in order to load the modules into hsql.
+		//    (the sql tables are built from hibernate mapping files automatically in unit tests)
+		props.setProperty(ModuleConstants.RUNTIMEPROPERTY_MODULE_LIST_TO_LOAD,
+			"org/openmrs/module/include/logic-0.2.omod org/openmrs/api/context/include/dssmodule-1.44.omod");
+		
+		return props;
+	}
+	
+	/**
 	 * @see {@link Context#loadClass(String)}
 	 */
 	@Test
 	@SkipBaseSetup
 	@Verifies(value = "should load class with the OpenmrsClassLoader", method = "loadClass(String)")
-	@DirtiesContext
 	public void loadClass_shouldLoadClassWithOpenmrsClassLoader() throws Exception {
 		Class<?> c = Context.loadClass("org.openmrs.module.dssmodule.DssService");
 		Assert.assertTrue("Should be loaded by OpenmrsClassLoader", c.getClassLoader() instanceof ModuleClassLoader);
