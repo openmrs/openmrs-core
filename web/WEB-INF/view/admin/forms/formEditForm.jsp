@@ -20,7 +20,7 @@
 	<div class="retiredMessage"><div><spring:message code="Form.retiredMessage"/></div></div>
 </c:if>
 
-<c:if test="${empty param.duplicate}">
+<c:if test="${form.formId != null && empty param.duplicate}">
 <br/>
 <a href="#designSchema"><spring:message code="Form.designSchema" /></a>
 <c:if test="${form.formId != 1}">
@@ -178,7 +178,7 @@
 	document.getElementById('retiredReasonRow').style.display = document.getElementById('retired').checked ==true ? '' : 'none';
 </script>
 
-<c:if test="${empty param.duplicate}">
+<c:if test="${form.formId != null && empty param.duplicate}">
 <!-- SCHEMA SECTION -->
 
 <a name="designSchema"></a>
