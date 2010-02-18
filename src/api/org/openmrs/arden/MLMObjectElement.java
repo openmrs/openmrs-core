@@ -122,7 +122,7 @@ public class MLMObjectElement {
 				w.append("\n\t\t\tResult " + key + "=new Result((String) parameters.get(\"" + key + "\")");
 			} else {
 				w.append("\n\t\t\tResult " + key + "=context.read(\n\t\t\t\tpatient,context.getLogicDataSource(\""
-				        + this.datasource + "\"),\n\t\t\t\tnew LogicCriteria(\"" + cn.trim() + "\")");
+				        + this.datasource + "\"),\n\t\t\t\tnew LogicCriteriaImpl(\"" + cn.trim() + "\")");
 			}
 			if (hasWhere) {
 				if (whereType.equals("withinPreceding")) {
