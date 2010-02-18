@@ -187,11 +187,13 @@ public class ModuleFactory {
 					String key = mod.getModuleId() + ".started";
 					String startedProp = as.getGlobalProperty(key, null);
 					String mandatoryProp = as.getGlobalProperty(mod.getModuleId() + ".mandatory", null);
+					// if this is a required module and we're not ignoring required modules, this module should always start
+					boolean isRequiredByOpenmrs = ModuleConstants.REQUIRED_MODULES.containsKey(mod.getModuleId()) && !ModuleUtil.ignoreRequiredModules();
 					
 					// if a 'moduleid.started' property doesn't exist, start the module anyway
 					// as this is probably the first time they are loading it
 					if (startedProp == null || startedProp.equals("true") || "true".equalsIgnoreCase(mandatoryProp)
-					        || mod.isMandatory()) {
+					        || mod.isMandatory() || isRequiredByOpenmrs) {
 						if (requiredModulesStarted(mod))
 							try {
 								if (log.isDebugEnabled())
