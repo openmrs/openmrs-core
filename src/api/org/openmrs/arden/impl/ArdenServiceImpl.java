@@ -159,7 +159,7 @@ public class ArdenServiceImpl implements ArdenService {
 		     w.write("import org.openmrs.Patient;\n");
              w.write("import org.openmrs.api.context.Context;\n");
              w.write("import org.openmrs.logic.LogicContext;\n");
-             w.write("import org.openmrs.logic.LogicCriteria;\n");
+             w.write("import org.openmrs.logic.LogicCriteriaImpl;\n");
              w.write("import org.openmrs.logic.LogicException;\n");
              w.write("import org.openmrs.logic.LogicService;\n");
              w.write("import org.openmrs.logic.Rule;\n");
