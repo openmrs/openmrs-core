@@ -719,7 +719,7 @@ public class ModuleUtil {
 			String moduleId = mod.getModuleId();
 			if (requiredModules.containsKey(moduleId)) {
 				String reqVersion = requiredModules.get(moduleId);
-				if (matchRequiredVersions(mod.getVersion(), reqVersion))
+				if (compareVersion(mod.getVersion(), reqVersion) >= 0)
 					requiredModules.remove(moduleId);
 				else
 					log.debug("Module: " + moduleId + " is started, but its version: " + mod.getVersion()
