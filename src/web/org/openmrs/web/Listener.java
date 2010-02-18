@@ -617,7 +617,7 @@ public final class Listener extends ContextLoaderListener {
 				try {
 					WebModuleUtil.shutdownModules(servletContext);
 					for (Module mod : ModuleFactory.getLoadedModules()) {// use loadedModules to avoid a concurrentmodificationexception
-						ModuleFactory.stopModule(mod, true); // pass in the true value here so that the global properties aren't written to
+						ModuleFactory.stopModule(mod, true, true); // pass in one true value here so that the global properties aren't written to and the second true so core modules can be stopped 
 					}
 					WebModuleUtil.refreshWAC(servletContext);
 				}
