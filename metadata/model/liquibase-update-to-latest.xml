@@ -2480,10 +2480,15 @@
 		</modifyColumn>
 	</changeSet>
 	
-	<changeSet id="20090803-1" author="jkariuki">
-		<comment>Add a new 'Administrator' role that will replace the 'System Developer' role</comment>
+	<changeSet id="20100128-1" author="djazayeri">
+		<preConditions onFail="MARK_RAN">
+			<sqlCheck expectedResult="0">
+				SELECT COUNT(*) FROM role where role = 'System Developer'
+			</sqlCheck>
+		</preConditions>
+		<comment>Adding 'System Developer' role again (see ticket #1499)</comment>
 		<insert tableName="role">
-			<column name="role" value="Administrator"/>
+			<column name="role" value="System Developer"/>
 			<column name="description" value="Assigned to Administrators of OpenMRS. Gives additional access to change core aspects of the system."/>
 			<column name="uuid" valueNumeric="name-of-uuid-function"/>
 		</insert>
@@ -2491,23 +2496,29 @@
 		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
 		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
 		<modifySql><replace replace="name-of-uuid-function" with="current_timestamp * 99999999999999"/></modifySql>
-	</changeSet>
+	</changeSet>	
 	
-	<changeSet id="20090808-2" author="jkariuki">
-		<comment>Switch all users that had the 'System Developer' role to having the 'Administrator' role</comment>
+	<changeSet id="20100128-2" author="djazayeri">
+		<preConditions onFail="MARK_RAN">
+			<changeSetExecuted id="20090803-1" author="jkariuki" changeLogFile="liquibase-update-to-latest.xml"/>
+		</preConditions>
+		<comment>Switching users back from 'Administrator' to 'System Developer' (see ticket #1499)</comment>
 		<update tableName="user_role">
-			<column name="role" value="Administrator"/>
-			<where>role='System Developer'</where>
+			<column name="role" value="System Developer"/>
+			<where>role='Administrator'</where>
 		</update>
 	</changeSet>
 	
-	<changeSet id="20090808-3" author="jkariuki">
-		<comment>Remove the now obsolete 'System Developer' role</comment>
+	<changeSet id="20100128-3" author="djazayeri">
+		<preConditions onFail="MARK_RAN">
+			<changeSetExecuted id="20090803-1" author="jkariuki" changeLogFile="liquibase-update-to-latest.xml"/>
+		</preConditions>
+		<comment>Deleting 'Administrator' role (see ticket #1499)</comment>
 		<delete tableName="role">
-			<where>role='System Developer'</where>
+			<where>role='Administrator'</where>
 		</delete>
 	</changeSet>
-    
+	    
 	<changeSet id="20090831-1039-38-scheduler_task_config" author="bwolfe">
 		<preConditions onFail="MARK_RAN"><not><columnExists tableName="scheduler_task_config" columnName="uuid"/></not></preConditions>
 		<comment>Adding "uuid" column to scheduler_task_config table</comment>
