@@ -18,12 +18,12 @@ import org.openmrs.api.context.Context;
 /**
  * This is throw at OpenMRS startup when one or more modules that really need to start didn't start.
  * This can happen with "mandatory" modules that must start once they are installed for the first
- * time and for "openmrs required" modules that are set as required by the OpenMRS code base and
+ * time and for "openmrs core" required modules that are set as core by the OpenMRS code base and
  * every installation needs it.
  * 
  * @see Context#startup(java.util.Properties)
  * @see MandatoryModuleException
- * @see OpenmrsRequiredModuleException
+ * @see OpenmrsCoreModuleException
  */
 public abstract class ModuleMustStartException extends RuntimeException {
 	

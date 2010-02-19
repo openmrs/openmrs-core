@@ -37,7 +37,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.ModuleUtil;
-import org.openmrs.module.OpenmrsRequiredModuleException;
+import org.openmrs.module.OpenmrsCoreModuleException;
 import org.openmrs.web.Listener;
 import org.openmrs.web.filter.StartupFilter;
 
@@ -64,8 +64,8 @@ public class StartupErrorFilter extends StartupFilter {
 	protected void doGet(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException,
 	                                                                                      ServletException {
 		
-		if (getModel().errorAtStartup instanceof OpenmrsRequiredModuleException)
-			renderTemplate("requiredmoduleerror.vm", new HashMap<String, Object>(), httpResponse);
+		if (getModel().errorAtStartup instanceof OpenmrsCoreModuleException)
+			renderTemplate("coremoduleerror.vm", new HashMap<String, Object>(), httpResponse);
 		else
 			renderTemplate(DEFAULT_PAGE, new HashMap<String, Object>(), httpResponse);
 	}
@@ -78,7 +78,7 @@ public class StartupErrorFilter extends StartupFilter {
 	protected void doPost(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException,
 	                                                                                       ServletException {
 		// if they are uploading modules
-		if (getModel().errorAtStartup instanceof OpenmrsRequiredModuleException) {
+		if (getModel().errorAtStartup instanceof OpenmrsCoreModuleException) {
 			RequestContext requestContext = new ServletRequestContext(httpRequest);
 			if (!ServletFileUpload.isMultipartContent(requestContext))
 				throw new ServletException("The request is not a valid multipart/form-data upload request");
@@ -102,7 +102,9 @@ public class StartupErrorFilter extends StartupFilter {
 			
 			Map<String, Object> map = new HashMap<String, Object>();
 			map.put("success", Boolean.TRUE);
-			renderTemplate("requiredmoduleerror.vm", map, httpResponse);
+			renderTemplate("coremoduleerror.vm", map, httpResponse);
+			
+			// TODO restart openmrs here instead of going to coremodulerror template
 		}
 	}
 	
