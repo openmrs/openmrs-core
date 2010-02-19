@@ -52,6 +52,7 @@ import org.dbunit.dataset.DefaultTable;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ReplacementDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
+import org.dbunit.dataset.xml.XmlDataSet;
 import org.dbunit.ext.hsqldb.HsqldbDataTypeFactory;
 import org.dbunit.operation.DatabaseOperation;
 import org.hibernate.SessionFactory;
@@ -451,10 +452,62 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 				if (reader != null)
 					reader.close();
 			}
+			
+			// cache the xmldataset for future runs of this file
+			cachedDatasets.put(datasetFilename, xmlDataSetToRun);
 		}
 		
-		// cache the xmldataset for future runs of this file
-		cachedDatasets.put(datasetFilename, xmlDataSetToRun);
+		executeDataSet(xmlDataSetToRun);
+	}
+	
+	/**
+	 * Runs the xml data file at the classpath location specified by <code>datasetFilename</code>
+	 * using XmlDataSet. It simply creates an {@link IDataSet} and calls
+	 * {@link #executeDataSet(IDataSet)}. <br/>
+	 * <br/>
+	 * This method is different than {@link #executeDataSet(String)} in that this one does not
+	 * expect a flat file xml but instead a true XmlDataSet. <br/>
+	 * <br/>
+	 * In addition, there is no replacing of [NULL] values in strings.
+	 * 
+	 * @param datasetFilename String path/filename on the classpath of the xml data set to clean
+	 *            insert into the current database
+	 * @see #getConnection()
+	 * @see #executeDataSet(IDataSet)
+	 */
+	public void executeXmlDataSet(String datasetFilename) throws Exception {
+		
+		// try to get the given filename from the cache
+		IDataSet xmlDataSetToRun = cachedDatasets.get(datasetFilename);
+		
+		// if we didn't find it in the cache, load it
+		if (xmlDataSetToRun == null) {
+			File file = new File(datasetFilename);
+			
+			InputStream fileInInputStreamFormat = null;
+			
+			// try to load the file if its a straight up path to the file or
+			// if its a classpath path to the file
+			if (file.exists())
+				fileInInputStreamFormat = new FileInputStream(datasetFilename);
+			else {
+				fileInInputStreamFormat = getClass().getClassLoader().getResourceAsStream(datasetFilename);
+				if (fileInInputStreamFormat == null)
+					throw new FileNotFoundException("Unable to find '" + datasetFilename + "' in the classpath");
+			}
+			
+			XmlDataSet xmlDataSet = null;
+			try {
+				xmlDataSet = new XmlDataSet(fileInInputStreamFormat);
+				xmlDataSetToRun = xmlDataSet;
+			}
+			finally {
+				fileInInputStreamFormat.close();
+			}
+			
+			// cache the xmldataset for future runs of this file
+			cachedDatasets.put(datasetFilename, xmlDataSetToRun);
+		}
 		
 		executeDataSet(xmlDataSetToRun);
 	}
@@ -640,5 +693,6 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	public void skipBaseSetup() throws Exception {
 		skipBaseSetup = true;
 	}
+	
 	
 }
