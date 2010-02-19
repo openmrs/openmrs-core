@@ -17,17 +17,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.FileOutputStream;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Vector;
 
-import org.dbunit.database.DatabaseConnection;
-import org.dbunit.database.IDatabaseConnection;
-import org.dbunit.database.QueryDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSet;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -340,5 +335,22 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		Assert.assertNull(new ORUR01Handler().getConcept("123", "a nonexistent coding system", "n3jn2345g89n4"));
 		Assert.assertNull(new ORUR01Handler().getConcept("93939434834", "SSTRM", "xcjk23h89gn34k234"));
 	}
+	
+	/**
+	 * @see {@link ORUR01Handler#getConcept(String,String)}
+	 */
+	@Test
+	@Verifies(value = "should send message to error queue for empty concept proposals", method = "processMessage(Message)")
+	public void processMessage__shouldSendMessageToErrorEueueForEmptyConceptProposals()
+	                                                                                                                      throws Exception {
+		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080630094800||ORU^R01|kgWdFt0SVwwClOfJm3pe|P|2.5|1||||||||15^AMRS.ELD.FORMID\rPID|||3^^^^~d3811480^^^^||John3^Doe^||\rPV1||O|1^Unknown||||1^Super User (admin)|||||||||||||||||||||||||||||||||||||20080208|||||||V\rORC|RE||||||||20080208000000|1^Super User\rOBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\rOBR|1|||1284^PROBLEM LIST^99DCT\rOBX|1|CWE|6042^PROBLEM ADDED^99DCT||PROPOSED^^99DCT|||||||||20080208";
+		int numberOfErrors = Context.getHL7Service().getAllHL7InErrors().size();
+		Message hl7message = parser.parse(hl7string);
+		router.processMessage(hl7message);
+		Context.getHL7Service().getAllHL7InErrors();
+		//number or errors in queue should have incremented by 1
+		Assert.assertEquals(numberOfErrors + 1, Context.getHL7Service().getAllHL7InErrors().size());
+		
+	}	
 	
 }
