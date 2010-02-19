@@ -59,7 +59,7 @@ public class ModuleUtil {
 	 * 
 	 * @param props Properties (OpenMRS runtime properties)
 	 */
-	public static void startup(Properties props) throws ModuleMustStartException, OpenmrsRequiredModuleException {
+	public static void startup(Properties props) throws ModuleMustStartException, OpenmrsCoreModuleException {
 		
 		String moduleListString = props.getProperty(ModuleConstants.RUNTIMEPROPERTY_MODULE_LIST_TO_LOAD);
 		
@@ -130,7 +130,7 @@ public class ModuleUtil {
 		}
 		
 		// make sure all openmrs required moduls are loaded and started
-		checkOpenmrsRequiredModulesStarted();
+		checkOpenmrsCoreModulesStarted();
 		
 		// make sure all mandatory modules are loaded and started
 		checkMandatoryModulesStarted();
@@ -696,51 +696,51 @@ public class ModuleUtil {
 	}
 	
 	/**
-	 * Looks at the list of modules in {@link ModuleConstants#REQUIRED_MODULES} to make
-	 * sure that all modules that are required by OpenMRS are started and have at least
+	 * Looks at the list of modules in {@link ModuleConstants#CORE_MODULES} to make
+	 * sure that all modules that are core to OpenMRS are started and have at least
 	 * a minimum version that OpenMRS needs.
 	 * 
-	 * @throws ModuleException if a module that is required by OpenMRS is not started
-	 * @should throw ModuleException if a required module is not started
+	 * @throws ModuleException if a module that is core to OpenMRS is not started
+	 * @should throw ModuleException if a core module is not started
 	 */
-	protected static void checkOpenmrsRequiredModulesStarted() throws OpenmrsRequiredModuleException {
+	protected static void checkOpenmrsCoreModulesStarted() throws OpenmrsCoreModuleException {
 		
 		// if there is a property telling us to ignore required modules, drop out early
-		if (ignoreRequiredModules())
+		if (ignoreCoreModules())
 			return;
 		
 		// make a copy of the constant so we can modify the list
-		Map<String, String> requiredModules = new HashMap<String, String>(ModuleConstants.REQUIRED_MODULES);
+		Map<String, String> coreModules = new HashMap<String, String>(ModuleConstants.CORE_MODULES);
 		
 		Collection<Module> startedModules = ModuleFactory.getStartedModulesMap().values();
 		
 		// loop through the current modules and test them
 		for (Module mod : startedModules) {
 			String moduleId = mod.getModuleId();
-			if (requiredModules.containsKey(moduleId)) {
-				String reqVersion = requiredModules.get(moduleId);
-				if (compareVersion(mod.getVersion(), reqVersion) >= 0)
-					requiredModules.remove(moduleId);
+			if (coreModules.containsKey(moduleId)) {
+				String coreReqVersion = coreModules.get(moduleId);
+				if (compareVersion(mod.getVersion(), coreReqVersion) >= 0)
+					coreModules.remove(moduleId);
 				else
-					log.debug("Module: " + moduleId + " is started, but its version: " + mod.getVersion()
-				        + " is not within the required version: " + reqVersion);
+					log.debug("Module: " + moduleId + " is a core module and is started, but its version: " + mod.getVersion()
+				        + " is not within the required version: " + coreReqVersion);
 			}
 		}
 		
 		// any module ids left in the list are not started
-		if (requiredModules.size() > 0) {
-			throw new OpenmrsRequiredModuleException(requiredModules);
+		if (coreModules.size() > 0) {
+			throw new OpenmrsCoreModuleException(coreModules);
 		}
 	}
 	
 	/**
-	 * Uses the runtime properties to determine if the required modules should be enforced or not.
+	 * Uses the runtime properties to determine if the core modules should be enforced or not.
 	 * 
-	 * @return true if the required modules list can be ignored.
+	 * @return true if the core modules list can be ignored.
 	 */
-	public static boolean ignoreRequiredModules() {
-		String ignoreReqModules = Context.getRuntimeProperties().getProperty(ModuleConstants.IGNORE_REQUIRED_MODULES_PROPERTY, "false");
-		return Boolean.parseBoolean(ignoreReqModules);
+	public static boolean ignoreCoreModules() {
+		String ignoreCoreModules = Context.getRuntimeProperties().getProperty(ModuleConstants.IGNORE_CORE_MODULES_PROPERTY, "false");
+		return Boolean.parseBoolean(ignoreCoreModules);
 	}
 	
 	/**

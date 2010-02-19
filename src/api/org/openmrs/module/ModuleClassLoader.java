@@ -264,12 +264,12 @@ public class ModuleClassLoader extends URLClassLoader {
 		// collect imported modules (exclude duplicates)
 		Map<String, Module> publicImportsMap = new WeakHashMap<String, Module>(); //<module ID, Module>
 		
-		for(String moduleId : ModuleConstants.REQUIRED_MODULES.keySet()) {
+		for(String moduleId : ModuleConstants.CORE_MODULES.keySet()) {
 			Module module = ModuleFactory.getModuleById(moduleId);
 			
-			if (module == null && !ModuleUtil.ignoreRequiredModules()) {
-				log.error("Unable to find an openmrs required loaded module with id: " + moduleId);
-				throw new APIException("Should not be here.  All 'required' modules by the api should be started and their classloaders should be available");
+			if (module == null && !ModuleUtil.ignoreCoreModules()) {
+				log.error("Unable to find an openmrs core loaded module with id: " + moduleId);
+				throw new APIException("Should not be here.  All 'core' required modules by the api should be started and their classloaders should be available");
 			}
 			
 			// if this is already the classloader for one of the core modules, don't put it on the import list

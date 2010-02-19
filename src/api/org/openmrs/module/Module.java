@@ -574,14 +574,14 @@ public final class Module {
     }
     
     /**
-	 * This is a convenience method to know whether this module is required by OpenMRS. A module is
-	 * 'required' when this module is essentially part of the core code and must exist at all times
+	 * This is a convenience method to know whether this module is core to OpenMRS. A module is
+	 * 'core' when this module is essentially part of the core code and must exist at all times
 	 * 
-	 * @return true if this is an OpenMRS required module
-	 * @see {@link ModuleConstants#REQUIRED_MODULES}
+	 * @return true if this is an OpenMRS core module
+	 * @see {@link ModuleConstants#CORE_MODULES}
 	 */
-	public boolean isRequired() {
-		return !ModuleUtil.ignoreRequiredModules() && ModuleConstants.REQUIRED_MODULES.containsKey(moduleId);
+	public boolean isCoreModule() {
+		return !ModuleUtil.ignoreCoreModules() && ModuleConstants.CORE_MODULES.containsKey(moduleId);
 	}
 
 	public boolean isStarted() {
