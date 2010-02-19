@@ -311,7 +311,8 @@
 		</th>
 		<td valign="top">
 			<spring:bind path="command.concept.datatype">
-				<select class="smallWidth" name="${status.expression}" id="datatype" onChange="changeDatatype(this);">
+				<select class="smallWidth" name="${status.expression}" id="datatype" onChange="changeDatatype(this);"
+										   <c:if test="${dataTypeReadOnly == true}">disabled="disabled"</c:if>>
 					<c:forEach items="${datatypes}" var="cd">
 						<option value="${cd.conceptDatatypeId}"
 							<c:if test="${cd.conceptDatatypeId == status.value}">selected="selected"</c:if>>${cd.name}</option>
@@ -319,6 +320,7 @@
 				</select>
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
+			<c:if test="${dataTypeReadOnly == true}">(<spring:message code="Concept.datatype.readonly"/>)</c:if>
 		</td>
 	</tr>
 	<tr id="codedDatatypeRow">

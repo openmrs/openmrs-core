@@ -31,6 +31,7 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.NonUniqueObjectException;
 import org.hibernate.Query;
+import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Conjunction;
 import org.hibernate.criterion.DetachedCriteria;
@@ -158,7 +159,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 					ps2 = connection.prepareStatement("INSERT INTO concept_numeric (concept_id, precise) VALUES (?, false)");
 					ps2.setInt(1, concept.getConceptId());
 					ps2.executeUpdate();
-				} 
+				}
 				// Converting from concept numeric:  The concept and concept numeric rows both exist, so we need to delete concept_numeric.
 				else {
 					//concept is changed from numeric to something else
@@ -167,8 +168,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 						ps2 = connection.prepareStatement("DELETE FROM concept_numeric WHERE concept_id = ?");
 						ps2.setInt(1, concept.getConceptId());
 						ps2.executeUpdate();
-					} 
-					else {
+					} else {
 						// it is indeed numeric now... don't delete
 					}
 				}
@@ -194,7 +194,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 					}
 				}
 			}
-		} 
+		}
 		// check the concept complex table
 		else if (concept instanceof ConceptComplex) {
 			
@@ -217,7 +217,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 					ps2 = connection.prepareStatement("INSERT INTO concept_complex (concept_id) VALUES (?)");
 					ps2.setInt(1, concept.getConceptId());
 					ps2.executeUpdate();
-				} 
+				}
 				// Converting from concept complex:  The concept and concept complex rows both exist, so we need to delete the concept_complex row.
 				// no stub insert is needed because either a concept row doesn't exist OR a concept_complex row does exist
 				else {
@@ -227,8 +227,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 						ps2 = connection.prepareStatement("DELETE FROM concept_complex WHERE concept_id = ?");
 						ps2.setInt(1, concept.getConceptId());
 						ps2.executeUpdate();
-					} 
-					else {
+					} else {
 						// it is indeed numeric now... don't delete
 					}
 					
@@ -255,7 +254,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 					}
 				}
 			}
-		} 		
+		}
 		// check the concept_derived table
 		else if (concept instanceof ConceptDerived) {
 			
@@ -278,7 +277,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 					ps2 = connection.prepareStatement("INSERT INTO concept_derived (concept_id) VALUES (?)");
 					ps2.setInt(1, concept.getConceptId());
 					ps2.executeUpdate();
-				} 
+				}
 				// Converting from concept derived:  The concept and concept derived rows both exist, so we need to delete the concept_derived row.
 				// no stub insert is needed because either a concept row doesn't exist OR a concept_derived row does exist
 				else {
@@ -288,8 +287,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 						ps2 = connection.prepareStatement("DELETE FROM concept_derived WHERE concept_id = ?");
 						ps2.setInt(1, concept.getConceptId());
 						ps2.executeUpdate();
-					} 
-					else {
+					} else {
 						// it is indeed derived now... don't delete
 					}
 					
@@ -315,7 +313,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 						log.error("Error generated while closing statement", e);
 					}
 				}
-			}			
+			}
 		}
 	}
 	
@@ -1211,7 +1209,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 		
 		// join to conceptSource and match to the hl7Code or name
 		criteria.createAlias("source", "conceptSource");
-		criteria.add(Expression.or(Expression.eq("conceptSource.name", mappingCode), Expression.eq("conceptSource.hl7Code", mappingCode)));
+		criteria.add(Expression.or(Expression.eq("conceptSource.name", mappingCode), Expression.eq("conceptSource.hl7Code",
+		    mappingCode)));
 		
 		return (Concept) criteria.uniqueResult();
 	}
@@ -1333,7 +1332,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.ConceptDAO#getConceptsByConceptSourceName(java.lang.String, java.lang.String)
+	 * @see org.openmrs.api.db.ConceptDAO#getConceptsByConceptSourceName(java.lang.String,
+	 *      java.lang.String)
 	 */
 	@SuppressWarnings("unchecked")
 	public List<ConceptMap> getConceptsByConceptSource(ConceptSource conceptSource) throws DAOException {
@@ -1351,4 +1351,17 @@ public class HibernateConceptDAO implements ConceptDAO {
 		criteria.add(Expression.eq("source.name", conceptSourceName));
 		return (ConceptSource) criteria.uniqueResult();
 	}
+	
+	/**
+	 * @see org.openmrs.api.db.ConceptDAO#getSavedConceptDatatype(org.openmrs.Concept)
+	 */
+	public ConceptDatatype getSavedConceptDatatype(Concept concept) {
+		SQLQuery sql = sessionFactory.getCurrentSession().createSQLQuery(
+		    "select datatype.* from " + "concept_datatype datatype, " + "concept concept " + "where "
+		            + "datatype.concept_datatype_id = concept.datatype_id " + "and concept.concept_id=:conceptId")
+		        .addEntity(ConceptDatatype.class);
+		sql.setInteger("conceptId", concept.getConceptId());
+		return (ConceptDatatype) sql.uniqueResult();
+	}
+	
 }

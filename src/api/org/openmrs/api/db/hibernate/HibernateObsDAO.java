@@ -16,6 +16,7 @@ package org.openmrs.api.db.hibernate;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
@@ -23,6 +24,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.criterion.Subqueries;
@@ -141,34 +143,77 @@ public class HibernateObsDAO implements ObsDAO {
 	                                 List<String> sortList, Integer mostRecentN, Integer obsGroupId, Date fromDate,
 	                                 Date toDate, boolean includeVoidedObs) throws DAOException {
 		
+		Criteria criteria = createGetObservationsCriteria(whom, encounters, questions, answers, personTypes, locations,
+		    sortList, mostRecentN, obsGroupId, fromDate, toDate, includeVoidedObs);
+		
+		return criteria.list();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.ObsDAO#getObservationCount(java.util.List, java.util.List,
+	 *      java.util.List, java.util.List, java.util.List, java.util.List, java.lang.Integer,
+	 *      java.util.Date, java.util.Date, boolean)
+	 */
+	public Integer getObservationCount(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
+	                                   List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations,
+	                                   Integer obsGroupId, Date fromDate, Date toDate, boolean includeVoidedObs)
+	                                                                                                            throws DAOException {
+		Criteria criteria = createGetObservationsCriteria(whom, encounters, questions, answers, personTypes, locations,
+		    null, null, obsGroupId, fromDate, toDate, includeVoidedObs);
+		criteria.setProjection(Projections.rowCount());
+		return (Integer) criteria.list().get(0);
+	}
+	
+	/**
+	 * A utility method for creating a criteria based on parameters (which are optional)
+	 * 
+	 * @param whom
+	 * @param encounters
+	 * @param questions
+	 * @param answers
+	 * @param personTypes
+	 * @param locations
+	 * @param sortList
+	 * @param mostRecentN
+	 * @param obsGroupId
+	 * @param fromDate
+	 * @param toDate
+	 * @param includeVoidedObs
+	 * @return
+	 */
+	private Criteria createGetObservationsCriteria(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
+	                                               List<Concept> answers, List<PERSON_TYPE> personTypes,
+	                                               List<Location> locations, List<String> sortList, Integer mostRecentN,
+	                                               Integer obsGroupId, Date fromDate, Date toDate, boolean includeVoidedObs) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Obs.class, "obs");
 		
-		if (whom.size() > 0)
+		if (CollectionUtils.isNotEmpty(whom))
 			criteria.add(Restrictions.in("person", whom));
 		
-		if (encounters.size() > 0)
+		if (CollectionUtils.isNotEmpty(encounters))
 			criteria.add(Restrictions.in("encounter", encounters));
 		
-		if (questions.size() > 0)
+		if (CollectionUtils.isNotEmpty(questions))
 			criteria.add(Restrictions.in("concept", questions));
 		
-		if (answers.size() > 0)
+		if (CollectionUtils.isNotEmpty(answers))
 			criteria.add(Restrictions.in("valueCoded", answers));
 		
-		getCriteriaPersonModifier(criteria, personTypes);
+		if (CollectionUtils.isNotEmpty(personTypes))
+			getCriteriaPersonModifier(criteria, personTypes);
 		
-		if (locations.size() > 0)
+		if (CollectionUtils.isNotEmpty(locations))
 			criteria.add(Restrictions.in("location", locations));
 		
 		// TODO add an option for each sort item to be asc/desc
-		if (sortList.size() > 0) {
+		if (CollectionUtils.isNotEmpty(sortList)) {
 			for (String sort : sortList) {
 				if (sort != null && !"".equals(sort))
 					criteria.addOrder(Order.desc(sort));
 			}
 		}
 		
-		if (mostRecentN > 0)
+		if (mostRecentN != null && mostRecentN > 0)
 			criteria.setMaxResults(mostRecentN);
 		
 		if (obsGroupId != null) {
@@ -184,8 +229,7 @@ public class HibernateObsDAO implements ObsDAO {
 		
 		if (includeVoidedObs == false)
 			criteria.add(Restrictions.eq("voided", false));
-		
-		return criteria.list();
+		return criteria;
 	}
 	
 	/**

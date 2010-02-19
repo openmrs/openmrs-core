@@ -17,7 +17,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptClass;
@@ -147,6 +146,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @param concept The <code>Concept</code> or <code>ConceptNumeric</code> to save or update
 	 * @return the <code>Concept</code> or <code>ConceptNumeric</code> that was saved or updated
 	 * @throws APIException
+	 * @throws ConceptsLockedException
+	 * @throws ConceptInUseException
 	 * @should put generated concept id onto returned concept
 	 * @should create new concept in database
 	 * @should update concept already existing in database
@@ -1175,8 +1176,8 @@ public interface ConceptService extends OpenmrsService {
 	public ConceptSource retireConceptSource(ConceptSource cs, String reason) throws APIException;
 	
 	/**
-	 * Creates a new Concept name tag if none exists.  If a tag exists with the same
-	 * name then that existing tag is returned.
+	 * Creates a new Concept name tag if none exists. If a tag exists with the same name then that
+	 * existing tag is returned.
 	 * 
 	 * @param nameTag the concept name tag to be saved
 	 * @return the newly created or existing concept name tag
@@ -1257,11 +1258,10 @@ public interface ConceptService extends OpenmrsService {
 	public ConceptDescription getConceptDescriptionByUuid(String uuid);
 	
 	/**
-	 * 
 	 * Lookup a ConceptSource by its name property
 	 * 
 	 * @param conceptSourceName
-	 * @return ConceptSource 
+	 * @return ConceptSource
 	 * @throws APIException
 	 * @should get ConceptSource with the given name
 	 * @should return null if no ConceptSource with that name is found
@@ -1271,7 +1271,6 @@ public interface ConceptService extends OpenmrsService {
 	public ConceptSource getConceptSourceByName(String conceptSourceName) throws APIException;
 	
 	/**
-	 * 
 	 * Looks up a list of ConceptMaps for a given ConceptSource
 	 * 
 	 * @param conceptSource
@@ -1283,5 +1282,16 @@ public interface ConceptService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
 	public List<ConceptMap> getConceptsByConceptSource(ConceptSource conceptSource) throws APIException;
+	
+	/**
+	 * Checks if there are any observations (including voided observations) for a concept.
+	 * 
+	 * @param concept which used or not used by an observation
+	 * @return boolean true if the concept is used by an observation
+	 * @throws APIException
+	 */
+	@Transactional(readOnly = true)
+	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	public boolean hasAnyObservation(Concept concept);
 	
 }

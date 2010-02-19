@@ -314,7 +314,7 @@ public interface ConceptDAO {
 	 * @see org.openmrs.api.ConceptService#conceptIterator()
 	 */
 	public Iterator<Concept> conceptIterator();
-
+	
 	/**
 	 * @see org.openmrs.api.ConceptService#getConceptByMapping(java.lang.String, java.lang.String)
 	 */
@@ -398,10 +398,20 @@ public interface ConceptDAO {
 	 */
 	public List<ConceptMap> getConceptsByConceptSource(ConceptSource conceptSourceName) throws DAOException;
 	
-	
 	/**
 	 * @see org.openmrs.api.ConceptService#getConceptSourceByName(java.lang.String)
 	 */
 	public ConceptSource getConceptSourceByName(String conceptSourceName) throws DAOException;
+	
+	/**
+	 * Gets the value of conceptDatatype currently saved in the database for the given concept,
+	 * bypassing any caches. This is used prior to saving an concept so that we can change the obs
+	 * if need be
+	 * 
+	 * @param concept for which the conceptDatatype should be fetched
+	 * @return the conceptDatatype currently in the database for this concept
+	 * @should get saved conceptDatatype from database
+	 */
+	public ConceptDatatype getSavedConceptDatatype(Concept concept);
 	
 }
