@@ -45,6 +45,7 @@ import org.openmrs.ConceptWord;
 import org.openmrs.Drug;
 import org.openmrs.Obs;
 import org.openmrs.api.APIException;
+import org.openmrs.api.ConceptInUseException;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.ConceptsLockedException;
 import org.openmrs.api.context.Context;
@@ -148,6 +149,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		
 		// make sure the administrator hasn't turned off concept editing
 		checkIfLocked();
+		checkIfDatatypeCanBeChanged(concept);
 		
 		Concept conceptToReturn = dao.saveConcept(concept);
 		
@@ -1367,8 +1369,47 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	/**
 	 * @see org.openmrs.api.ConceptService#getConceptSourceByName(java.lang.String)
 	 */
-	public ConceptSource getConceptSourceByName(String conceptSourceName) throws APIException{
+	public ConceptSource getConceptSourceByName(String conceptSourceName) throws APIException {
 		return dao.getConceptSourceByName(conceptSourceName);
+	}
+	
+	/**
+	 * Utility method to check if the concept is already attached to an observation (including
+	 * voided ones) and if the datatype of the concept has changed, an exception indicating that the
+	 * datatype cannot be modified will be reported if the concept is attached to an observation.
+	 * 
+	 * @param concept
+	 * @throws ConceptsDataTypeCannotBeModifiedException
+	 */
+	private void checkIfDatatypeCanBeChanged(Concept concept) {
+		if (concept.getId() != null) {
+			if (hasAnyObservation(concept) && hasDatatypeChanged(concept)) {
+				throw new ConceptInUseException();
+			}
+		}
+	}
+	
+	/**
+	 * Utility method which loads the previous version of a concept to check if the datatype has
+	 * changed.
+	 * 
+	 * @param concept to be modified
+	 * @return boolean indicating change in the datatype
+	 */
+	private boolean hasDatatypeChanged(Concept concept) {
+		ConceptDatatype oldConceptDatatype = dao.getSavedConceptDatatype(concept);
+		return !oldConceptDatatype.equals(concept.getDatatype());
+	}
+	
+	/**
+	 * @see org.openmrs.api.ConceptService#hasAnyObservation(org.openmrs.Concept)
+	 */
+	public boolean hasAnyObservation(Concept concept) {
+		List<Concept> concepts = new Vector<Concept>();
+		concepts.add(concept);
+		Integer count = Context.getObsService().getObservationCount(null, null, concepts, null, null, null, null, null,
+		    null, true);
+		return count > 0;
 	}
 	
 }

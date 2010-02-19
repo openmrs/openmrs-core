@@ -295,37 +295,28 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	                                 List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations,
 	                                 List<String> sort, Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate,
 	                                 boolean includeVoidedObs) throws APIException {
-		if (whom == null)
-			whom = new Vector<Person>();
-		
-		if (encounters == null)
-			encounters = new Vector<Encounter>();
-		
-		if (questions == null)
-			questions = new Vector<Concept>();
-		
-		if (answers == null)
-			answers = new Vector<Concept>();
-		
-		if (personTypes == null)
-			personTypes = new Vector<PERSON_TYPE>();
-		
-		if (locations == null)
-			locations = new Vector<Location>();
 		
 		if (sort == null)
 			sort = new Vector<String>();
 		if (sort.isEmpty())
 			sort.add("obsDatetime");
 		
-		// default to returning all observations
-		if (mostRecentN == null)
-			mostRecentN = -1;
-		
 		return dao.getObservations(whom, encounters, questions, answers, personTypes, locations, sort, mostRecentN,
 		    obsGroupId, fromDate, toDate, includeVoidedObs);
 	}
 	
+	/**
+     * @see org.openmrs.api.ObsService#getObservationCount(java.util.List, java.util.List, java.util.List, java.util.List, java.util.List,
+     *  java.util.List, java.lang.Integer, java.util.Date, java.util.Date, boolean)
+     */
+    public Integer getObservationCount(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
+                                       List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations,
+                                       Integer obsGroupId, Date fromDate, Date toDate, boolean includeVoidedObs)
+                                                                                                                throws APIException {
+    	return dao.getObservationCount(whom, encounters, questions, answers, personTypes, locations, obsGroupId, fromDate, toDate,
+    		includeVoidedObs);
+    }
+    
 	/**
 	 * This implementation queries the obs table comparing the given <code>searchString</code> with
 	 * the patient's identifier, encounterId, and obsId
@@ -819,5 +810,5 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	public void removeHandler(String key) {
 		handlers.remove(key);
 	}
-	
+
 }

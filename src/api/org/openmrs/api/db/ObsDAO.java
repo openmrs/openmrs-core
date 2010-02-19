@@ -71,9 +71,6 @@ public interface ObsDAO {
 	public void deleteMimeType(MimeType mimeType) throws DAOException;
 	
 	/**
-	 * Assumes that <code>whom</code>, <code>encounters</code>, <code>locations</code>,
-	 * <code>personTypes</code>, <code>questions</code>, and <code>answers</code> are non-null lists
-	 * 
 	 * @see org.openmrs.api.ObsService#getObservations(java.util.List, java.util.List,
 	 *      java.util.List, java.util.List, java.util.List, java.util.List, java.util.List,
 	 *      java.lang.Integer, java.lang.Integer, java.util.Date, java.util.Date, boolean)
@@ -82,6 +79,14 @@ public interface ObsDAO {
 	                                 List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations,
 	                                 List<String> sort, Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate,
 	                                 boolean includeVoidedObs) throws DAOException;
+	
+	/**
+	 * @see org.openmrs.api.ObsService#getObservationCount(java.util.List, java.util.List, java.util.List, java.util.List, 
+	 * 		java.util.List, java.util.List, java.lang.Integer, java.util.Date, java.util.Date, boolean)
+	 */
+	public Integer getObservationCount(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
+	                                 List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations,
+	                                 Integer obsGroupId, Date fromDate, Date toDate,boolean includeVoidedObs) throws DAOException;
 	
 	/**
 	 * Auto generated method comment

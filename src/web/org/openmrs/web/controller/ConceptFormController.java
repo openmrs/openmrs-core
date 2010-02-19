@@ -227,6 +227,7 @@ public class ConceptFormController extends SimpleFormController {
 		ConceptService cs = Context.getConceptService();
 		
 		String defaultVerbose = "false";
+		
 		if (Context.isAuthenticated())
 			defaultVerbose = Context.getAuthenticatedUser().getUserProperty(OpenmrsConstants.USER_PROPERTY_SHOW_VERBOSE);
 		map.put("defaultVerbose", defaultVerbose.equals("true") ? true : false);
@@ -236,6 +237,14 @@ public class ConceptFormController extends SimpleFormController {
 		//get complete class and datatype lists 
 		map.put("classes", cs.getAllConceptClasses());
 		map.put("datatypes", cs.getAllConceptDatatypes());
+		
+		String conceptId = request.getParameter("conceptId");
+		boolean dataTypeReadOnly = false;
+		if (conceptId != null) {
+			Concept concept = cs.getConcept(Integer.valueOf(conceptId));
+			dataTypeReadOnly = cs.hasAnyObservation(concept);
+		}
+		map.put("dataTypeReadOnly", dataTypeReadOnly);
 		
 		//get complex handlers
 		map.put("handlers", Context.getObsService().getHandlers());
