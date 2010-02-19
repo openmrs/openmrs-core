@@ -625,17 +625,17 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 		
 		mockRequest.setMethod("POST");
 		mockRequest.setParameter("action", "");
-		mockRequest.setParameter("conceptId", "21");
-		mockRequest.setParameter("namesByLocale[en].name", "FOOD ASSISTANCE FOR ENTIRE FAMILY");
+		mockRequest.setParameter("conceptId", "4"); // this must be a concept id that is not used in an observation in order to be changed
+		mockRequest.setParameter("namesByLocale[en].name", "CIVIL STATUS");
 		mockRequest.setParameter("concept.datatype", "1"); // set it to something other than "Coded"
-		mockRequest.setParameter("concept.class", "7");
-		mockRequest.setParameter("concept.answers", "7 8 22");
+		mockRequest.setParameter("concept.class", "10");
+		mockRequest.setParameter("concept.answers", "5 6");
 		
 		ModelAndView mav = conceptFormController.handleRequest(mockRequest, new MockHttpServletResponse());
 		assertNotNull(mav);
 		assertTrue(mav.getModel().isEmpty());
 		
-		Concept concept = cs.getConcept(21);
+		Concept concept = cs.getConcept(4);
 		assertNotNull(concept);
 		assertEquals(0, concept.getAnswers().size());
 	}

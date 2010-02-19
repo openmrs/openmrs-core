@@ -27,6 +27,8 @@
   <concept_answer concept_answer_id="1" concept_id="21" answer_concept="7" creator="1" date_created="2008-08-18 12:34:26.0" uuid="b1230431-2fe5-49fc-b535-ae42bc849747"/>
   <concept_answer concept_answer_id="2" concept_id="21" answer_concept="8" creator="1" date_created="2008-08-18 12:34:26.0" uuid="f67e537b-d9f9-45c4-846b-79ed1ba88778"/>
   <concept_answer concept_answer_id="3" concept_id="21" answer_concept="22" creator="1" date_created="2008-08-18 12:34:58.0" uuid="11e15f3b-3237-40e9-9c24-cb7916a4868b"/>
+  <concept_answer concept_answer_id="4" concept_id="4" answer_concept="5" creator="1" date_created="2008-08-18 12:34:26.0" uuid="e47e537b-d9f9-45c4-846b-79ed1ba81111"/>
+  <concept_answer concept_answer_id="5" concept_id="4" answer_concept="6" creator="1" date_created="2008-08-18 12:34:58.0" uuid="22e15f3b-3237-40e9-9c24-cb7916a42222"/>
   <concept_class concept_class_id="1" name="Test" description="Acq. during patient encounter (vitals, labs, etc.)" creator="1" date_created="2004-02-02 00:00:00.0" retired="false" uuid="97097dd9-b092-4b68-a2dc-e5e5be961d42"/>
   <concept_class concept_class_id="2" name="Procedure" description="Describes a clinical procedure" creator="1" date_created="2004-03-02 00:00:00.0" retired="false" uuid="77177ce7-1410-40ee-bbad-ff6905ee3095"/>
   <concept_class concept_class_id="3" name="Drug" description="Drug" creator="1" date_created="2004-02-02 00:00:00.0" retired="false" uuid="3d065ed4-b0b9-4710-9a17-6d8c4fd259b7"/>
