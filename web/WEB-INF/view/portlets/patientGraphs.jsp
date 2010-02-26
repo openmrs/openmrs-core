@@ -69,33 +69,58 @@ table#labTestTable th {
 			<tr>
 				<td align="center">
 					<c:if test="${fn:length(userConcepts) > 0}">
-						<openmrs:obsTable
-							observations="${model.patientObs}"
-							concepts="${fn:replace(userConcepts, '-', '|')}"
-							conceptLink="admin/observations/personObs.form?personId=${model.patientId}&"
-							id="labTestTable"
-							showEmptyConcepts="false"
-							showConceptHeader="true"
-							showDateHeader="true"
-							orientation="horizontal"
-							sort="asc"
-							combineEqualResults="true"
-							limit="-1"
-						/>
+						<div style="width: 750px; overflow: auto; border: 1px solid black;"> 
+							<openmrs:obsTable
+								observations="${model.patientObs}"
+								concepts="${fn:replace(userConcepts, '-', '|')}"
+								conceptLink="admin/observations/personObs.form?personId=${model.patientId}&"
+								id="labTestTable"
+								showEmptyConcepts="false"
+								showConceptHeader="true"
+								showDateHeader="true"
+								orientation="horizontal"
+								sort="asc"
+								combineEqualResults="true"
+								limit="-1"
+							/>
+						</div>
 					</c:if>
 				</td>
 			</tr>
-			<c:forEach items="${fn:split(graphConceptString, '-')}" var="conceptId">
+			<c:forEach items="${fn:split(graphConceptString, '-')}" var="conceptId" varStatus="varStatus">
 				<c:if test="${conceptId != ''}">
 					<tr>
-						<td align="center" id="conceptBox-${conceptId}">
-							<spring:message code="general.loading"/>
+						<td>
+						<div>
+						<div align="center" id="conceptBox-${conceptId}"><spring:message
+							code="general.loading" /></div>
+						<div align="center">
+						<div style="width: 750px; overflow: auto; border: 1px solid black;">
+		
+						<openmrs:obsTable observations="${model.patientObs}"
+							concepts="${conceptId}"
+							conceptLink="admin/observations/personObs.form?personId=${model.patientId}&"
+							id="labTestTable" showEmptyConcepts="false"
+							showConceptHeader="true" showDateHeader="true"
+							orientation="horizontal" sort="asc" combineEqualResults="true"
+							limit="-1" />
+						</div>
+						<div align="center" valign="top" style="font-size: .9em"><a
+							href="?patientId=${patient.patientId}&patientGraphConceptRemove=true&patientGraphConcept=${conceptId}"><spring:message
+							code="general.remove" /></a> <br />
+						<br />
+						</div>
+		
+						</div>
+		
+		
+						</div>
 						</td>
 					</tr>
 					<tr>
-						<td align="center" valign="top" style="font-size: .9em">
-							<a href="?patientId=${patient.patientId}&patientGraphConceptRemove=true&patientGraphConcept=${conceptId}"><spring:message code="general.remove"/></a>
-							<br/><br/>
+						<td><br />
+						<hr />
+						<br />
 						</td>
 					</tr>
 				</c:if>
@@ -104,9 +129,8 @@ table#labTestTable th {
 				<td>
 					<form>
 						<spring:message code="patientGraphs.addNewGraph" />
-						<span dojoType="ConceptSearch" widgetId="cSearch" includeDatatypes="Numeric"></span>
+						<span dojoType="ConceptSearch" widgetId="cSearch" includeDatatypes="Numeric"></span><br/>
 						<span dojoType="OpenmrsPopup" searchWidget="cSearch" searchTitle='<spring:message code="Concept.find"/>' changeButtonValue='<spring:message code="general.choose"/>'></span> 
-						<br/>
 					</form>
 				</td>
 			</tr>
@@ -118,7 +142,7 @@ table#labTestTable th {
 			<c:forEach items="${fn:split(graphConceptString, '-')}" var="conceptId">
 				<c:if test="${conceptId != ''}">
 					<openmrs:concept conceptId="${conceptId}" var="concept" nameVar="name" numericVar="num">
-						document.getElementById('conceptBox-${conceptId}').innerHTML = '<img src="${pageContext.request.contextPath}/showGraphServlet?patientId=${patient.patientId}&conceptId=${conceptId}&width=500&height=300&minRange=<c:out value="${num.lowAbsolute}" default="0.0"/>&maxRange=<c:out value="${num.hiAbsolute}" default="200.0"/>" />';
+						document.getElementById('conceptBox-${conceptId}').innerHTML = '<img src="${pageContext.request.contextPath}/showGraphServlet?patientId=${patient.patientId}&conceptId=${conceptId}&width=600&height=300&minRange=<c:out value="${num.lowAbsolute}" default="0.0"/>&maxRange=<c:out value="${num.hiAbsolute}" default="200.0"/>" />';
 					</openmrs:concept>
 				</c:if>
 			</c:forEach>
