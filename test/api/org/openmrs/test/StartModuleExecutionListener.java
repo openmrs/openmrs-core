@@ -19,6 +19,8 @@ import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.SerializedObjectDAOTest;
+import org.openmrs.module.Module;
+import org.openmrs.module.ModuleClassLoader;
 import org.openmrs.module.ModuleConstants;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.module.ModuleInteroperabilityTest;
@@ -40,8 +42,9 @@ import org.springframework.test.context.support.AbstractTestExecutionListener;
  */
 public class StartModuleExecutionListener extends AbstractTestExecutionListener {
 	
-	// there is one ExecutionListener instance per class, so this instance variable works well for us
-	private boolean springAlreadyRestartedOnce = false;
+	// stores the last class that restarted the module system because we only 
+	// want it restarted once per class, not once per method
+	private static String lastClassRun = "";
 	
 	/**
 	 * called before @BeforeTransaction methods
@@ -55,16 +58,27 @@ public class StartModuleExecutionListener extends AbstractTestExecutionListener 
 		// if the developer listed some modules with the @StartModule annotation on the class
 		if (startModuleAnnotation != null) {
 			
-			if (!springAlreadyRestartedOnce) {
+			if (!lastClassRun.equals(testContext.getTestClass().getSimpleName())) {
+				// mark this with our class so that the services are only restarted once
+				lastClassRun = testContext.getTestClass().getSimpleName();
+				
 				if (!Context.isSessionOpen())
 					Context.openSession();
 				
-				// load the omod
+				// load the omods that the dev defined for this class
 				String modulesToLoad = StringUtils.join(startModuleAnnotation.value(), " ");
-				Properties props = new Properties();
+				
+				Properties props = BaseContextSensitiveTest.runtimeProperties;
 				props.setProperty(ModuleConstants.RUNTIMEPROPERTY_MODULE_LIST_TO_LOAD, modulesToLoad);
-				ModuleUtil.startup(props);
-				Assert.assertEquals("Some of the modules did not start successfully", startModuleAnnotation.value().length,
+				try {
+					ModuleUtil.startup(props);
+				}
+				catch (Exception e) {
+					System.out.println("Error while starting modules: ");
+					e.printStackTrace(System.out);
+					throw e;
+				}
+				Assert.assertTrue("Some of the modules did not start successfully for " + testContext.getTestClass().getSimpleName() + ". Only " + ModuleFactory.getStartedModules().size() + " modules started instead of " + startModuleAnnotation.value().length, startModuleAnnotation.value().length <=
 				    ModuleFactory.getStartedModules().size());
 				
 				// refresh spring so the Services are recreated (aka serializer gets put into the SerializationService)
@@ -73,9 +87,6 @@ public class StartModuleExecutionListener extends AbstractTestExecutionListener 
 				
 				// session is closed by the test framework
 				//Context.closeSession();
-				
-				// mark this as true so that the services are only restarted once
-				springAlreadyRestartedOnce = true;
 			}
 		}
 	}
