@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -180,7 +181,7 @@ public class ModuleFactory {
 				Context.addProxyPrivilege("");
 				AdministrationService as = Context.getAdministrationService();
 				// try and start the modules that should be started
-				for (Module mod : getLoadedModules()) {
+				for (Module mod : getLoadedModulesCoreFirst()) {
 					if (mod.isStarted())
 						continue; // skip over modules that are already started
 						
@@ -273,6 +274,25 @@ public class ModuleFactory {
 		
 	}
 	
+	/**
+     * Returns all modules found/loaded into the system (started and not started), with the core modules at the start of that list
+	 * 
+	 * @return <code>List<Module></code> of the modules loaded into the system, with the core modules first.
+     */
+    public static List<Module> getLoadedModulesCoreFirst() {
+	    List<Module> list = new ArrayList<Module>(getLoadedModules());
+	    final Collection<String> coreModuleIds = ModuleConstants.REQUIRED_MODULES.keySet();
+	    Collections.sort(list, new Comparator<Module>() {
+			@Override
+            public int compare(Module left, Module right) {
+				Integer leftVal = coreModuleIds.contains(left.getModuleId()) ? 0 : 1;
+				Integer rightVal = coreModuleIds.contains(right.getModuleId()) ? 0 : 1;
+				return leftVal.compareTo(rightVal);
+			}
+	    });
+	    return list;
+    }
+
 	/**
 	 * Convenience method to return a List of Strings containing a description of which modules the
 	 * passed module requires but which are not started. The returned description of each module is
