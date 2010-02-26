@@ -223,7 +223,8 @@ public class ObsTableWidget extends TagSupport {
 	
 	public int doStartTag() {
 		Locale loc = Context.getLocale();
-		DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT, loc);
+		DateFormat df = Context.getDateFormat();
+			//DateFormat.getDateInstance(DateFormat.SHORT, loc);
 		
 		// determine which concepts we care about
 		List<Concept> conceptList = new ArrayList<Concept>();
@@ -301,7 +302,12 @@ public class ObsTableWidget extends TagSupport {
 			Collections.reverse(dateOrder);
 		
 		if (limit > 0 && limit < dateOrder.size()) {
+			if (!sortDescending) {
+				dateOrder = dateOrder.subList(dateOrder.size() - limit, dateOrder.size());
+			} 
+			else { 
 			dateOrder = dateOrder.subList(0, limit);
+		}
 		}
 		
 		StringBuilder ret = new StringBuilder();
@@ -336,7 +342,7 @@ public class ObsTableWidget extends TagSupport {
 				if (showDateHeader)
 					ret.append("<th>" + df.format(date) + "</th>");
 				for (Concept c : conceptList) {
-					ret.append("<td>");
+					ret.append("<td align=\"center\">");
 					String key = c.getConceptId() + "." + date;
 					List<Obs> list = groupedObs.get(key);
 					if (list != null) {
@@ -380,7 +386,7 @@ public class ObsTableWidget extends TagSupport {
 					ret.append("</th>");
 				}
 				for (Date date : dateOrder) {
-					ret.append("<td>");
+					ret.append("<td align=\"center\">");
 					String key = c.getConceptId() + "." + date;
 					List<Obs> list = groupedObs.get(key);
 					if (list != null) {
