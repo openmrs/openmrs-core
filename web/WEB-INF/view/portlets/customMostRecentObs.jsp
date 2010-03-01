@@ -58,6 +58,6 @@
 			var valueText = dwr.util.getValue(document.getElementById('value_' + conceptId));
 			var obsDate = dwr.util.getValue(document.getElementById('date_' + conceptId));
 			var patientId = ${model.patient.patientId};
-			DWRObsService.createObs(patientId, encounterId, conceptId, valueText, obsDate, refreshPage());
+			DWRObsService.createObs(patientId, encounterId, conceptId, valueText, obsDate, refreshPage);
 		}
 </script>
