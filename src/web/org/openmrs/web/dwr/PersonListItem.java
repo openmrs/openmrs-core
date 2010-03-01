@@ -53,8 +53,10 @@ public class PersonListItem {
 	private Date birthdate;
 	
 	private Boolean birthdateEstimated = false;
-	
-	private String address1;
+
+    private Integer age;
+
+    private String address1;
 	
 	private String address2;
 	
@@ -125,7 +127,8 @@ public class PersonListItem {
 			gender = person.getGender();
 			birthdate = person.getBirthdate();
 			birthdateEstimated = person.isBirthdateEstimated();
-			voided = person.isPersonVoided();
+            age = person.getAge();
+            voided = person.isPersonVoided();
 			
 			// add in the person attributes
 			for (PersonAttribute attribute : person.getActiveAttributes()) {
@@ -264,25 +267,6 @@ public class PersonListItem {
 	}
 	
 	public Integer getAge() {
-		
-		if (birthdate == null)
-			return null;
-		
-		Calendar today = Calendar.getInstance();
-		
-		Calendar bday = Calendar.getInstance();
-		bday.setTime(birthdate);
-		
-		int age = today.get(Calendar.YEAR) - bday.get(Calendar.YEAR);
-		
-		//tricky bit:
-		// set birthday calendar to this year
-		// if the current date is less that the new 'birthday', subtract a year
-		bday.set(Calendar.YEAR, today.get(Calendar.YEAR));
-		if (today.before(bday)) {
-			age = age - 1;
-		}
-		
 		return age;
 	}
 	

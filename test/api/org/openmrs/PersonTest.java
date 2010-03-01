@@ -364,4 +364,78 @@ public class PersonTest {
 		person.setBirthdate(birthdate.getTime());
 		assertEquals(person.getAge(onDate.getTime()), 2, 0);
 	}
+
+	/**
+	 * @see {@link Person#getAge()}
+	 */
+	@Test
+	@Verifies(value = "should get age after death", method = "getAge()")
+	public void getAge_shouldGetAgeAfterDeath() throws Exception {
+		Calendar birthdate = Calendar.getInstance();
+		birthdate.set(1990, Calendar.JUNE, 2);
+		Calendar deathDate = Calendar.getInstance();
+		deathDate.set(2000, Calendar.JUNE, 3);
+		Person person = new Person();
+		person.setBirthdate(birthdate.getTime());
+        person.setDead(true);
+        person.setDeathDate(deathDate.getTime());
+        assertEquals(10, person.getAge(), 0);
+	}
+
+	/**
+	 * @see {@link Person#getAge(Date)}
+	 */
+	@Test
+	@Verifies(value = "should get age with given date after death", method = "getAge(Date)")
+	public void getAge_shouldGetAgeWithGivenDateAfterDeath() throws Exception {
+		Calendar birthdate = Calendar.getInstance();
+		birthdate.set(1990, Calendar.JUNE, 2);
+		Calendar deathDate = Calendar.getInstance();
+		deathDate.set(2000, Calendar.JUNE, 3);
+        Calendar givenDate = Calendar.getInstance();
+        givenDate.set(2010, Calendar.JUNE, 3);
+		Person person = new Person();
+		person.setBirthdate(birthdate.getTime());
+        person.setDead(true);
+        person.setDeathDate(deathDate.getTime());
+        assertEquals(10, person.getAge(givenDate.getTime()), 0);
+	}
+
+	/**
+	 * @see {@link Person#getAge(Date)}
+	 */
+	@Test
+	@Verifies(value = "should get age with given date before death", method = "getAge(Date)")
+	public void getAge_shouldGetAgeWithGivenDateBeforeDeath() throws Exception {
+		Calendar birthdate = Calendar.getInstance();
+		birthdate.set(1990, Calendar.JUNE, 2);
+		Calendar deathDate = Calendar.getInstance();
+		deathDate.set(2000, Calendar.JUNE, 3);
+        Calendar givenDate = Calendar.getInstance();
+        givenDate.set(1995, Calendar.JUNE, 3);
+		Person person = new Person();
+		person.setBirthdate(birthdate.getTime());
+        person.setDead(true);
+        person.setDeathDate(deathDate.getTime());
+        assertEquals(5, person.getAge(givenDate.getTime()), 0);
+	}
+
+	/**
+	 * @see {@link Person#getAge(Date)}
+	 */
+	@Test
+	@Verifies(value = "should get age with given date before birth", method = "getAge(Date)")
+	public void getAge_shouldGetAgeWithGivenDateBeforeBirth() throws Exception {
+		Calendar birthdate = Calendar.getInstance();
+		birthdate.set(1990, Calendar.JUNE, 2);
+		Calendar deathDate = Calendar.getInstance();
+		deathDate.set(2000, Calendar.JUNE, 3);
+        Calendar givenDate = Calendar.getInstance();
+        givenDate.set(1985, Calendar.JUNE, 3);
+		Person person = new Person();
+		person.setBirthdate(birthdate.getTime());
+        person.setDead(true);
+        person.setDeathDate(deathDate.getTime());
+        assertEquals(-5, person.getAge(givenDate.getTime()), 0);
+	}
 }
