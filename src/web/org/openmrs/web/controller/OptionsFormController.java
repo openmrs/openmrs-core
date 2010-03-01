@@ -35,6 +35,7 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.OptionsForm;
 import org.openmrs.web.WebConstants;
+import org.openmrs.web.user.UserProperties;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
@@ -150,8 +151,7 @@ public class OptionsFormController extends SimpleFormController {
 					if (!errors.hasErrors()) {
 						us.changePassword(opts.getOldPassword(), password);
 						opts.setSecretQuestionPassword(password);
-						if (properties.containsKey(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD))
-							properties.remove(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD);
+						new UserProperties(user.getUserProperties()).setSupposedToChangePassword(false);
 					}
 				}
 				catch (APIException e) {

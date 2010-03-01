@@ -34,6 +34,8 @@ import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.OpenmrsCookieLocaleResolver;
 import org.openmrs.web.WebConstants;
+import org.openmrs.web.user.UserProperties;
+
 import static org.openmrs.web.WebConstants.GP_ALLOWED_LOGIN_ATTEMPTS_PER_IP;
 
 /**
@@ -143,9 +145,7 @@ public class LoginServlet extends HttpServlet {
 						}
 					}
 					
-					Boolean forcePasswordChange = new Boolean(user
-					        .getUserProperty(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD));
-					if (forcePasswordChange) {
+					if (new UserProperties(user.getUserProperties()).isSupposedToChangePassword()) {
 						httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "User.password.change");
 						redirect = request.getContextPath() + "/options.form#Change Login Info";
 					}

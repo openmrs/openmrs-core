@@ -42,7 +42,7 @@ public class UserFormControllerTest extends BaseWebContextSensitiveTest {
 	    User user = controller.formBackingObject(request, null);
 	    user.addName(new PersonName("This", "is", "Test"));
 	    user.getPerson().setGender("F");
-	    controller.handleSubmission(request, new MockHttpSession(), new ModelMap(), "Save User", "pass123", "pass123", new String[0], "true", user, new BindException(user, "user"));
+	    controller.handleSubmission(request, new MockHttpSession(), new ModelMap(), "Save User", "pass123", "pass123", null, new String[0], "true", user, new BindException(user, "user"));
     }
 	
 }
