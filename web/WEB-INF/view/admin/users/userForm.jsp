@@ -170,7 +170,7 @@
 				<tr>
 					<td><spring:message code="User.forceChange" /></td>
 					<td>
-						<input type="checkbox" name="${changePasswordName}" value="true" <c:if test="${changePassword == true}">checked</c:if> />
+						<input type="checkbox" name="forcePassword" value="true" <c:if test="${changePassword == true}">checked</c:if> />
 						<i><spring:message code="User.forceChange.description"/></i>
 					</td>
 				</tr>

@@ -391,6 +391,8 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable {
 	 * @return Returns the userProperties.
 	 */
 	public Map<String, String> getUserProperties() {
+		if (userProperties == null)
+			userProperties = new HashMap<String, String>();
 		return userProperties;
 	}
 	
@@ -405,10 +407,7 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable {
 	 * Convenience method. Adds the given property to the user's properties
 	 */
 	public void setUserProperty(String prop, String value) {
-		if (getUserProperties() == null)
-			userProperties = new HashMap<String, String>();
-		
-		userProperties.put(prop, value);
+		getUserProperties().put(prop, value);
 	}
 	
 	/**

@@ -30,6 +30,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.context.UserContext;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
+import org.openmrs.web.user.UserProperties;
 import org.springframework.util.StringUtils;
 
 /**
@@ -113,9 +114,9 @@ public class RequireTag extends TagSupport {
 		} else if (hasPrivilege && userContext.isAuthenticated()) {
 			// redirect users to password change form
 			User user = userContext.getAuthenticatedUser();
-			Boolean forcePasswordChange = new Boolean(user.getUserProperty(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD));
 			log.debug("Login redirect: " + redirect);
-			if (forcePasswordChange && !redirect.contains("options.form")) {
+			if (new UserProperties(user.getUserProperties()).isSupposedToChangePassword()
+			        && !redirect.contains("options.form")) {
 				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "User.password.change");
 				errorOccurred = true;
 				redirect = request.getContextPath() + "/options.form#Change Login Info";
