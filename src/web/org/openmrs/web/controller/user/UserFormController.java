@@ -13,10 +13,8 @@
  */
 package org.openmrs.web.controller.user;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
@@ -37,6 +35,7 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.validator.UserValidator;
 import org.openmrs.web.WebConstants;
+import org.openmrs.web.user.UserProperties;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -105,13 +104,16 @@ public class UserFormController {
 
 		// the formBackingObject method above sets up user, depending on userId and personId parameters   
 		
-		model.addAttribute("isNewUser", user == null || user.getUserId() == null);
-		if (user == null || user.getUserId() == null || Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_USER_PASSWORDS))
+		model.addAttribute("isNewUser", isNewUser(user));
+		if (isNewUser(user) || Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_USER_PASSWORDS))
 			model.addAttribute("modifyPasswords", true);
 		
 		if (createNewPerson != null)
 			model.addAttribute("createNewPerson", createNewPerson);
-				
+		
+		if(!isNewUser(user))
+			model.addAttribute("changePassword",new UserProperties(user.getUserProperties()).isSupposedToChangePassword());
+		
 		// not using the default view name because I'm converting from an existing form
 		return "admin/users/userForm";
 	}
@@ -126,6 +128,7 @@ public class UserFormController {
 	                               @RequestParam(required=false, value="action") String action,
 	                               @RequestParam(required=false, value="userFormPassword") String password,
 	                               @RequestParam(required=false, value="confirm") String confirm,
+	                               @RequestParam(required=false, value="forcePassword") Boolean forcePassword,
 	                               @RequestParam(required=false, value="roleStrings") String[] roles,
 	                               @RequestParam(required=false, value="createNewPerson") String createNewPerson,
 	                               @ModelAttribute("user") User user, BindingResult errors) {
@@ -204,23 +207,7 @@ public class UserFormController {
 			else
 				user.getRoles().retainAll(newRoles);
 			
-			Map<String, String> properties = user.getUserProperties();
-			if (properties == null)
-				properties = new HashMap<String, String>();
 
-			Boolean newChangePassword = false;
-			String chk = request.getParameter(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD);
-			
-			if (chk != null)
-				newChangePassword = true;
-			
-			if (!newChangePassword.booleanValue() && properties.containsKey(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD)) {
-				properties.remove(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD);
-			}
-			if (newChangePassword.booleanValue()) {
-				properties.put(OpenmrsConstants.USER_PROPERTY_CHANGE_PASSWORD, newChangePassword.toString());
-			}
-			
 			String[] keys = request.getParameterValues("property");
 			String[] values = request.getParameterValues("value");
 			
@@ -228,11 +215,11 @@ public class UserFormController {
 				for (int x = 0; x < keys.length; x++) {
 					String key = keys[x];
 					String val = values[x];
-					properties.put(key, val);
+					user.setUserProperty(key, val);
 				}
 			}
-						
-			user.setUserProperties(properties);
+							
+			new UserProperties(user.getUserProperties()).setSupposedToChangePassword(forcePassword);
 			
 			UserValidator uv = new UserValidator();
 			uv.validate(user, errors);
