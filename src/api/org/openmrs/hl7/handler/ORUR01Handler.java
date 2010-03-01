@@ -105,7 +105,8 @@ public class ORUR01Handler implements Application {
 	 * @should not create problem list observation with concept proposals
 	 * @should append to an existing encounter
 	 * @should create obs group for OBRs
-	 * @should create obs valueCodedName 
+	 * @should create obs valueCodedName
+	 * @should send message to error queue for empty concept proposals
 	 */
 	public Message processMessage(Message message) throws ApplicationException {
 		
@@ -237,6 +238,7 @@ public class ORUR01Handler implements Application {
 			
 			// loop over the obs and create each object, adding it to the encounter
 			int numObs = orderObs.getOBSERVATIONReps();
+			String errorInHL7Queue = null;
 			for (int j = 0; j < numObs; j++) {
 				if (log.isDebugEnabled())
 					log.debug("Processing OBS (" + j + " of " + numObs + ")");
@@ -273,16 +275,29 @@ public class ORUR01Handler implements Application {
 				catch (ProposingConceptException proposingException) {
 					Concept questionConcept = proposingException.getConcept();
 					String value = proposingException.getValueName();
-					conceptProposals.add(createConceptProposal(encounter, questionConcept, value));
+					//if the sender never specified any text for the proposed concept
+					if (value != null && !value.equals(""))
+						conceptProposals.add(createConceptProposal(encounter, questionConcept, value));
+					else {
+						errorInHL7Queue = Context.getMessageSourceService().getMessage("Hl7.proposed.concept.name.empty");
+						break;//stop any further processing of current message
+					}
+					
 				}
 				catch (HL7Exception e) {
+					errorInHL7Queue = e.getMessage();
+				}
+				finally {
 					// Handle obs-level exceptions
-					log.warn("HL7Exception", e);
-					HL7InError hl7InError = new HL7InError();
-					hl7InError.setError(e.getMessage());
-					hl7InError.setErrorDetails(PipeParser.encode(obx, new EncodingCharacters('|', "^~\\&")));
-					hl7InError.setHL7SourceKey(messageControlId);
-					hl7Service.saveHL7InError(hl7InError);
+					if (errorInHL7Queue != null) {
+						log.warn("HL7Exception: " + errorInHL7Queue);
+						HL7InError hl7InError = new HL7InError();
+						hl7InError.setError(errorInHL7Queue);
+						hl7InError.setErrorDetails(PipeParser.encode(obx, new EncodingCharacters('|', "^~\\&")));
+						hl7InError.setHL7SourceKey(messageControlId);
+						hl7InError.setHL7Data(PipeParser.encode(oru, new EncodingCharacters('|', "^~\\&")));
+						hl7Service.saveHL7InError(hl7InError);
+					}
 				}
 			}
 			
@@ -696,7 +711,8 @@ public class ORUR01Handler implements Application {
 			// the concept is not local, look it up in our mapping
 			Concept concept = Context.getConceptService().getConceptByMapping(hl7ConceptId, codingSystem);
 			if (concept == null)
-				log.error("Unable to find concept with code: " + hl7ConceptId + " and mapping: " + codingSystem + " in hl7 message with uid: " + uid);
+				log.error("Unable to find concept with code: " + hl7ConceptId + " and mapping: " + codingSystem
+				        + " in hl7 message with uid: " + uid);
 			return concept;
 		}
 	}
