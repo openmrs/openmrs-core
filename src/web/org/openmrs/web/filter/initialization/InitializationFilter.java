@@ -45,7 +45,7 @@ import org.openmrs.ImplementationId;
 import org.openmrs.api.PasswordException;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.MandatoryModuleException;
-import org.openmrs.module.OpenmrsRequiredModuleException;
+import org.openmrs.module.OpenmrsCoreModuleException;
 import org.openmrs.module.web.WebModuleUtil;
 import org.openmrs.scheduler.SchedulerConstants;
 import org.openmrs.scheduler.SchedulerUtil;
@@ -835,7 +835,7 @@ public class InitializationFilter extends StartupFilter {
 							Context.openSession();
 
 							// load core modules so that required modules are known at openmrs startup
-							Listener.loadCoreModules(filterConfig.getServletContext());
+							Listener.loadBundledModules(filterConfig.getServletContext());
 							
 							Context.startup(runtimeProperties);
 						}
@@ -864,11 +864,11 @@ public class InitializationFilter extends StartupFilter {
 							reportError(mandatoryModEx.getMessage(), DEFAULT_PAGE);
 							return;
 						}
-						catch (OpenmrsRequiredModuleException requiredModEx) {
+						catch (OpenmrsCoreModuleException coreModEx) {
 							log.warn(
-							    "A required module failed to start. Make sure that all required modules (with the required minimum versions) are installed and starting properly.",
-							    requiredModEx);
-							reportError(requiredModEx.getMessage(), DEFAULT_PAGE);
+							    "A core module failed to start. Make sure that all core modules (with the required minimum versions) are installed and starting properly.",
+							    coreModEx);
+							reportError(coreModEx.getMessage(), DEFAULT_PAGE);
 							return;
 						}
 						

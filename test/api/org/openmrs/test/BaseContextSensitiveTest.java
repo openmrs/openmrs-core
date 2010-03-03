@@ -196,8 +196,8 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 			runtimeProperties.setProperty(Environment.HBM2DDL_AUTO, "create-drop");
 		}
 		
-		// we don't want to try to load required modules in tests
-		runtimeProperties.setProperty(ModuleConstants.IGNORE_REQUIRED_MODULES_PROPERTY, "true");
+		// we don't want to try to load core modules in tests
+		runtimeProperties.setProperty(ModuleConstants.IGNORE_CORE_MODULES_PROPERTY, "true");
 		
 		return runtimeProperties;
 	}

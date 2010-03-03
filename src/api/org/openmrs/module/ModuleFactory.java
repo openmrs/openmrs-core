@@ -188,13 +188,13 @@ public class ModuleFactory {
 					String key = mod.getModuleId() + ".started";
 					String startedProp = as.getGlobalProperty(key, null);
 					String mandatoryProp = as.getGlobalProperty(mod.getModuleId() + ".mandatory", null);
-					// if this is a required module and we're not ignoring required modules, this module should always start
-					boolean isRequiredByOpenmrs = ModuleConstants.REQUIRED_MODULES.containsKey(mod.getModuleId()) && !ModuleUtil.ignoreRequiredModules();
+					// if this is a core module and we're not ignoring core modules, this module should always start
+					boolean isCoreToOpenmrs = ModuleConstants.CORE_MODULES.containsKey(mod.getModuleId()) && !ModuleUtil.ignoreCoreModules();
 					
 					// if a 'moduleid.started' property doesn't exist, start the module anyway
 					// as this is probably the first time they are loading it
 					if (startedProp == null || startedProp.equals("true") || "true".equalsIgnoreCase(mandatoryProp)
-					        || mod.isMandatory() || isRequiredByOpenmrs) {
+					        || mod.isMandatory() || isCoreToOpenmrs) {
 						if (requiredModulesStarted(mod))
 							try {
 								if (log.isDebugEnabled())
@@ -281,7 +281,7 @@ public class ModuleFactory {
      */
     public static List<Module> getLoadedModulesCoreFirst() {
 	    List<Module> list = new ArrayList<Module>(getLoadedModules());
-	    final Collection<String> coreModuleIds = ModuleConstants.REQUIRED_MODULES.keySet();
+	    final Collection<String> coreModuleIds = ModuleConstants.CORE_MODULES.keySet();
 	    Collections.sort(list, new Comparator<Module>() {
 			@Override
             public int compare(Module left, Module right) {
@@ -720,8 +720,8 @@ public class ModuleFactory {
 				throw new MandatoryModuleException(moduleId);
 			}
 			
-			if (!isFailedStartup && ModuleConstants.REQUIRED_MODULES.containsKey(moduleId)) {
-				throw new OpenmrsRequiredModuleException(moduleId);
+			if (!isFailedStartup && ModuleConstants.CORE_MODULES.containsKey(moduleId)) {
+				throw new OpenmrsCoreModuleException(moduleId);
 			}
 			
 			String modulePackage = mod.getPackageName();

@@ -22,21 +22,21 @@ import java.util.Map;
 public class ModuleConstants {
 	
 	/**
-	 * A map from moduleid to required version for all required modules.  A
-	 * module with at least the given version is required to start before 
-	 * openmrs will fully start.
+	 * A map from "moduleid" to "required version" for all core modules that are required by
+	 * openmrs. A module with at least the given version is required to start before openmrs will
+	 * fully start.
 	 */
-	public static final Map<String, String> REQUIRED_MODULES = new HashMap<String, String>();
-	
+	public static final Map<String, String> CORE_MODULES = new HashMap<String, String>();
+
 	static {
-		REQUIRED_MODULES.put("logic", "0.2");
+		CORE_MODULES.put("logic", "0.2");
 	}
 	
 	/**
-	 * Used to determine if the {@link #REQUIRED_MODULES} list should be used or not. For unit
+	 * Used to determine if the {@link #CORE_MODULES} list should be used or not. For unit
 	 * testing this is set to true to allow for faster runs with less dependencies.
 	 */
-	public static final String IGNORE_REQUIRED_MODULES_PROPERTY = "module.ignore_required_status";
+	public static final String IGNORE_CORE_MODULES_PROPERTY = "module.ignore_core_status";
 	
 	/**
 	 * Name of the file in the module repository to ping to question for updates to a module
