@@ -6,7 +6,7 @@ Modules uploaded successfully.  Restart OpenMRS or your server to continue.
 </div>
 #else
 
-<b>The following modules are required by OpenMRS but could not be found and/or started:</b> #foreach ($entry in ${errorAtStartup.modules.entrySet()}) ${entry.key} #end
+<b>The following modules are core to OpenMRS but could not be found and/or started:</b> #foreach ($entry in ${errorAtStartup.modules.entrySet()}) ${entry.key} #end
 <br/>
 <br/>
 Please upload a new version of each of these modules and restart OpenMRS to continue.

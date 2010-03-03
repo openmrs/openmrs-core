@@ -18,34 +18,34 @@ import java.util.Map;
 import org.openmrs.api.context.Context;
 
 /**
- * This error is thrown when OpenMRS is started but there is a module that is required by OpenMRS
+ * This error is thrown when OpenMRS is started but there is a module that is core to OpenMRS
  * and that module is not present or did not start <br/>
  * <br/>
- * This error is also thrown when trying to stop a module that is marked as required.
+ * This error is also thrown when trying to stop a module that is marked as core.
  * 
  * @see Context#startup()
  * @see ModuleUtil#startup(java.util.Properties)
- * @see ModuleConstants#REQUIRED_MODULES
+ * @see ModuleConstants#CORE_MODULES
  */
-public class OpenmrsRequiredModuleException extends ModuleMustStartException {
+public class OpenmrsCoreModuleException extends ModuleMustStartException {
 	
 	public static final long serialVersionUID = 1L;
 	
 	private Map<String, String> modules;
 	
 	/**
-	 * This constructor is used when a user tries to stop a required module.
+	 * This constructor is used when a user tries to stop a core module.
 	 * 
 	 * @param moduleId the module id that is trying to be stopped
 	 */
-	public OpenmrsRequiredModuleException(String moduleId) {
-		super("The " + moduleId + " module is set as 'required' by OpenMRS and so cannot be stopped or unloaded.");
+	public OpenmrsCoreModuleException(String moduleId) {
+		super("The " + moduleId + " module is set as 'core' by OpenMRS and so cannot be stopped or unloaded.");
 	}
 	
 	/**
-	 * @param moduleIds map from module id to version that is required and didn't start
+	 * @param moduleIds map from module id to version that is core and didn't start
 	 */
-	public OpenmrsRequiredModuleException(Map<String, String> modules) {
+	public OpenmrsCoreModuleException(Map<String, String> modules) {
 		super(createMessage(modules));
 		
 		// set the moduleIds property for use by the StartupErrorFilter
@@ -60,7 +60,7 @@ public class OpenmrsRequiredModuleException extends ModuleMustStartException {
 	 * @return the string to display to the user
 	 */
 	private static String createMessage(Map<String, String> modules) {
-		String msg = "The following modules are marked as 'required' by OpenMRS but were unable to start: ";
+		String msg = "The following modules are marked as 'core' by OpenMRS but were unable to start: ";
 		for (Map.Entry<String, String> entry : modules.entrySet()) {
 			msg += entry.getKey() + " v" + entry.getValue() + ", ";
 		}
