@@ -38,6 +38,7 @@ import org.openmrs.web.WebConstants;
 import org.openmrs.web.user.UserProperties;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
@@ -155,7 +156,20 @@ public class UserFormController {
 			}
 			return "redirect:/index.htm";
 		
-		} else {
+		} else if (mss.getMessage("User.retire").equals(action)) {
+			String retireReason = request.getParameter("retireReason");
+			if (!(StringUtils.hasText(retireReason))) {
+				errors.rejectValue("retireReason", "general.retiredReason.empty");
+				return showForm(user.getUserId(), createNewPerson, user, model);
+			} else {
+				us.retireUser(user, retireReason);
+				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "User.retiredMessage");
+			}
+			
+		} else if(mss.getMessage("User.unRetire").equals(action)) {
+			us.unretireUser(user);
+			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "User.unRetiredMessage");
+		}else {
 				
 			// check if username is already in the database
 			if (us.hasDuplicateUsername(user))

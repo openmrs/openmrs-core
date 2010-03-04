@@ -267,6 +267,37 @@
 	</c:if>
 </form>
 
+<br/>
+
+<c:if test="${not empty user.userId}">
+	<form method="post" action="user.form">
+		<c:if test="${param.userId != null}">
+			<input type="hidden" name="userId" value="${param.userId}"/>
+		</c:if>
+		<fieldset>
+			<c:choose>
+				<c:when test="${not user.retired}">
+					<h4><spring:message code="User.retire"/></h4>
+					
+					<b><spring:message code="general.reason"/></b>
+					<spring:bind path="user.retireReason">
+						<input type="text" 
+								name="${status.expression}" 
+								value="${status.value}" 
+								autocomplete="off" />
+						<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+					</spring:bind>
+					<br/>
+					<input type="submit" value='<spring:message code="User.retire"/>' name="action"/>			
+				</c:when>
+				<c:otherwise>
+					<input type="submit" value='<spring:message code="User.unRetire"/>' name="action"/>	
+				</c:otherwise>
+			</c:choose>
+		</fieldset>
+	</form>
+</c:if>
+
 <script type="text/javascript">
  document.forms[0].elements[0].focus();
 </script>
