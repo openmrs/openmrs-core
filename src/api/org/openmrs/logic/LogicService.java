@@ -394,8 +394,6 @@ public interface LogicService {
 	 */
 	public void removeLogicDataSource(String name);
 	
-	public void loadRule(String tokenName, String ruleClassName) throws Exception;
-	
 	/**
 	 * Parse a criteria String to create a new LogicCriteria. <br /><br />
 	 * 
