@@ -35,8 +35,8 @@ dojo.widget.defineWidget(
 		},
 		
 		doFindObjects: function(text) {
-			var tmpIncludeVoided = (this.showIncludeVoided && this.includeVoided.checked);
-			DWRUserService.findUsers(text, this.roles, tmpIncludeVoided, this.simpleClosure(this, "doObjectsFound"));
+			var tmpIncludeRetired = (this.showIncludeRetired && this.includeRetired.checked);
+			DWRUserService.findUsers(text, this.roles, tmpIncludeRetired, this.simpleClosure(this, "doObjectsFound"));
 			
 			return false;
 		},
@@ -52,8 +52,8 @@ dojo.widget.defineWidget(
 		},
 		
 		showAll: function() {
-			var tmpIncludeVoided = (this.showIncludeVoided && this.includeVoided.checked);
-			DWRUserService.getAllUsers(this.roles, tmpIncludeVoided, this.simpleClosure(this, "doObjectsFound"));
+			var tmpIncludeRetired = (this.showIncludeRetired && this.includeRetired.checked);
+			DWRUserService.getAllUsers(this.roles, tmpIncludeRetired, this.simpleClosure(this, "doObjectsFound"));
 		},
 		
 		getCellFunctions: function() {

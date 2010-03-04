@@ -66,7 +66,7 @@
 </script>
 
 <div class="box">
-	<div dojoType="UserSearch" widgetId="uSearch" searchLabel='<spring:message code="User.find"/>' showIncludeVoided="true" showRoles="true"></div>
+	<div dojoType="UserSearch" widgetId="uSearch" searchLabel='<spring:message code="User.find"/>' showIncludeRetired="true" showRoles="true"></div>
 </div>
 
 <br/><br/>
