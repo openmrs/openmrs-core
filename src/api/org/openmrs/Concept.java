@@ -167,7 +167,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		if (obj instanceof Concept) {
 			Concept c = (Concept) obj;
 			if (getConceptId() == null && c.getConceptId() == null)
-				return c == obj;
+				return this == obj;
 			if (getConceptId() != null)
 				return (this.getConceptId().equals(c.getConceptId()));
 		}
