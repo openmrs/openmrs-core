@@ -64,10 +64,16 @@ public interface ContextDAO {
 	public void closeSession();
 	
 	/**
-	 * Clear session.
+	 * @see org.openmrs.api.context.Context#clearSession()
 	 */
 	@Transactional
 	public void clearSession();
+	
+	/**
+	 * @see org.openmrs.api.context.Context#flushSession()
+	 */
+	@Transactional
+	public void flushSession();
 	
 	/**
 	 * Used to clear a cached object out of a session in the middle of a unit of work. Future
