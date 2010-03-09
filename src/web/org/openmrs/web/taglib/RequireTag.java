@@ -277,11 +277,11 @@ public class RequireTag extends TagSupport {
 		this.allPrivileges = allPrivileges;
 	}
 	
-	public String getAnyPrivileges() {
+	public String getAnyPrivilege() {
 		return anyPrivilege;
 	}
 	
-	public void setAnyPrivileges(String anyPrivilege) {
+	public void setAnyPrivilege(String anyPrivilege) {
 		this.anyPrivilege = anyPrivilege;
 	}
 	
