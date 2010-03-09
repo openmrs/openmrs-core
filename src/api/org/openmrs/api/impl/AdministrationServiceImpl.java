@@ -17,6 +17,7 @@ import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -977,7 +978,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 			globalLocaleList.globalPropertyChanged(allowedLocalesProperty);
 		}
 		
-		return globalLocaleList.getAllowedLocales();
+		return new ArrayList<Locale>(globalLocaleList.getAllowedLocales());
 	}
 	
 	/**
