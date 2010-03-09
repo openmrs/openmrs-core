@@ -683,11 +683,19 @@ public class Context {
 	}
 	
 	/**
-	 * Used to clear cached objects out of a session in the middle of a unit of work.
+	 * Clears cached changes made so far during this unit of work without writing them to the database
 	 */
 	public static void clearSession() {
 		log.trace("clearing session");
 		getContextDAO().clearSession();
+	}
+	
+	/**
+	 * Forces any changes made so far in this unit of work to be written to the database
+	 */
+	public static void flushSession() {
+		log.trace("flushing session");
+		getContextDAO().flushSession();
 	}
 	
 	/**
