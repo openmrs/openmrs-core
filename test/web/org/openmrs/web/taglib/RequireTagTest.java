@@ -41,7 +41,7 @@ public class RequireTagTest extends BaseWebContextSensitiveTest {
 		
 		RequireTag tag = new RequireTag();
 		tag.setPageContext(new MockPageContext());
-		tag.setAnyPrivileges("Manage WhirleyGigs, Manage WhoopDeDoos");
+		tag.setAnyPrivilege("Manage WhirleyGigs, Manage WhoopDeDoos");
 		
 		// the tag passes
 		Assert.assertEquals(Tag.SKIP_BODY, tag.doStartTag());
@@ -125,7 +125,7 @@ public class RequireTagTest extends BaseWebContextSensitiveTest {
 		
 		RequireTag tag = new RequireTag();
 		tag.setPageContext(new MockPageContext());
-		tag.setAnyPrivileges("Random Privilege, Other Random Privilege");
+		tag.setAnyPrivilege("Random Privilege, Other Random Privilege");
 		
 		// the tag passes
 		Assert.assertEquals(Tag.SKIP_PAGE, tag.doStartTag());
