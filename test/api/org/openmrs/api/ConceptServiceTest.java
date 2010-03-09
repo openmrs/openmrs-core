@@ -553,7 +553,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should find object given valid uuid", method = "getConceptDatatypeByUuid(String)")
 	public void getConceptDatatypeByUuid_shouldFindObjectGivenValidUuid() throws Exception {
-		String uuid = "749b5078-8371-4849-aeab-181e3aed9415";
+		String uuid = "8d4a4488-c2cc-11de-8d13-0010c6dffd0f";
 		ConceptDatatype conceptDatatype = Context.getConceptService().getConceptDatatypeByUuid(uuid);
 		Assert.assertEquals(1, (int) conceptDatatype.getConceptDatatypeId());
 	}
