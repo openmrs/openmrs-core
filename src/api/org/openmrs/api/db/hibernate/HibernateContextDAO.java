@@ -259,6 +259,13 @@ public class HibernateContextDAO implements ContextDAO {
 	}
 	
 	/**
+	 * @see org.openmrs.api.db.ContextDAO#flushSession()
+	 */
+	public void flushSession() {
+		sessionFactory.getCurrentSession().flush();
+	}
+	
+	/**
 	 * @see org.openmrs.api.context.Context#startup(Properties)
 	 */
 	public void startup(Properties properties) {
