@@ -2,6 +2,9 @@
 
 <c:if test="${model.authenticatedUser != null}">
 
+	<openmrs:htmlInclude file="/dwr/interface/DWRAdministrationService.js" />
+	<openmrs:htmlInclude file="/dwr/util.js" />
+
 	<c:if test="${not empty model.title}">
 		<h3>${model.title}</h3>
 	</c:if>
