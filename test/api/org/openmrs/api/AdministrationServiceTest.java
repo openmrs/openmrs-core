@@ -467,5 +467,16 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		as.saveGlobalProperty(gp);
 		Assert.assertEquals("new-even-more-correct-value", as.getGlobalProperty("a_valid_gp_key"));
 	}
+
+	/**
+     * @see {@link AdministrationService#getAllowedLocales()}
+     * 
+     */
+    @Test
+    @Verifies(value = "should not return duplicates even if the global property has them", method = "getAllowedLocales()")
+    public void getAllowedLocales_shouldNotReturnDuplicatesEvenIfTheGlobalPropertyHasThem() throws Exception {
+    	Context.getAdministrationService().saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, "en,fr,es,en"));
+		Assert.assertEquals(3, Context.getAdministrationService().getAllowedLocales().size());
+    }
 	
 }

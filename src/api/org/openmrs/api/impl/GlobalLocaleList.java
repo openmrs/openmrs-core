@@ -13,9 +13,9 @@
  */
 package org.openmrs.api.impl;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Locale;
+import java.util.Set;
 
 import org.openmrs.GlobalProperty;
 import org.openmrs.api.GlobalPropertyListener;
@@ -28,13 +28,13 @@ import org.openmrs.util.OpenmrsConstants;
  */
 public class GlobalLocaleList implements GlobalPropertyListener {
 	
-	private List<Locale> allowedLocales = null;
+	private LinkedHashSet<Locale> allowedLocales = null;
 	
 	/**
 	 * @see org.openmrs.api.GlobalPropertyListener#globalPropertyChanged(org.openmrs.GlobalProperty)
 	 */
 	public void globalPropertyChanged(GlobalProperty newValue) {
-		allowedLocales = new ArrayList<Locale>();
+		allowedLocales = new LinkedHashSet<Locale>();
 		for (String allowedLocaleString : newValue.getPropertyValue().split(",")) {
 			try {
 				Locale allowedLocale = LocaleUtility.fromSpecification(allowedLocaleString.trim());
@@ -53,7 +53,7 @@ public class GlobalLocaleList implements GlobalPropertyListener {
 	 * @see org.openmrs.api.GlobalPropertyListener#globalPropertyDeleted(java.lang.String)
 	 */
 	public void globalPropertyDeleted(String propertyName) {
-		allowedLocales = new ArrayList<Locale>();
+		allowedLocales = new LinkedHashSet<Locale>();
 	}
 	
 	/**
@@ -68,9 +68,9 @@ public class GlobalLocaleList implements GlobalPropertyListener {
 	 * 
 	 * @return List<Locale> object with allowed Locales defined by the administrator
 	 */
-	public List<Locale> getAllowedLocales() {
+	public Set<Locale> getAllowedLocales() {
 		if (allowedLocales == null) {
-			allowedLocales = new ArrayList<Locale>();
+			allowedLocales = new LinkedHashSet<Locale>();
 			allowedLocales.add(Locale.ENGLISH);
 		}
 		return allowedLocales;
