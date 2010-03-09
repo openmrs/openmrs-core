@@ -568,4 +568,15 @@ public class ConceptTest {
 		c.setAnswers(null); // make sure the list is null
 		c.addAnswer(ca);
 	}
+	
+	/**
+	 * @see {@link Concept#equals(Object)}
+	 */
+	@Test
+	@Verifies(value = "should confirm two new different concepts are not equal when their ConceptId are null", method = "equals(Object)")
+	public void equals_shouldConfirmTwoNewDifferentConceptsAreNotEqualWhenTheirConceptIdAreNull() throws Exception {
+		Concept one = new Concept();
+		Concept two = new Concept();
+		Assert.assertFalse(one.equals(two));
+	}
 }
