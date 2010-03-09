@@ -42,6 +42,21 @@ public class ConceptDatatype extends BaseOpenmrsMetadata implements java.io.Seri
 	
 	public static final String TIME = "TM";
 	
+	// UUIDs for core datatypes
+	
+	public static final String NUMERIC_UUID = "8d4a4488-c2cc-11de-8d13-0010c6dffd0f";
+	public static final String CODED_UUID = "8d4a48b6-c2cc-11de-8d13-0010c6dffd0f";
+	public static final String TEXT_UUID = "8d4a4ab4-c2cc-11de-8d13-0010c6dffd0f";
+	public static final String N_A_UUID = "8d4a4c94-c2cc-11de-8d13-0010c6dffd0f";
+	public static final String DOCUMENT_UUID = "8d4a4e74-c2cc-11de-8d13-0010c6dffd0f";
+	public static final String DATE_UUID = "8d4a505e-c2cc-11de-8d13-0010c6dffd0f";
+	public static final String TIME_UUID = "8d4a591e-c2cc-11de-8d13-0010c6dffd0f";
+	public static final String DATETIME_UUID = "8d4a5af4-c2cc-11de-8d13-0010c6dffd0f";
+	public static final String BOOLEAN_UUID = "8d4a5cca-c2cc-11de-8d13-0010c6dffd0f";
+	public static final String RULE_UUID = "8d4a5e96-c2cc-11de-8d13-0010c6dffd0f";
+	public static final String STRUCTURED_NUMERIC_UUID = "8d4a606c-c2cc-11de-8d13-0010c6dffd0f";
+	public static final String COMPLEX_UUID = "8d4a6242-c2cc-11de-8d13-0010c6dffd0f";
+	
 	// Fields
 	
 	private Integer conceptDatatypeId;
@@ -107,41 +122,48 @@ public class ConceptDatatype extends BaseOpenmrsMetadata implements java.io.Seri
 	/*
 	 * Convenience methods for resolving common data types
 	 */
+	
+	/**
+	 * @return <code>true</code> if datatype is N/A, i.e. this concept is only an answer, not a question
+	 */
+	public boolean isAnswerOnly() {
+		return N_A_UUID.equals(getUuid());
+	}
 
 	/**
 	 * @return <code>true</code> if datatype is a numeric datatype
 	 */
 	public boolean isNumeric() {
-		return NUMERIC.equals(getHl7Abbreviation());
+		return NUMERIC_UUID.equals(getUuid());
 	}
 	
 	/**
 	 * @return <code>true</code> if datatype is coded (i.e., an identifier from a vocabulary)
 	 */
 	public boolean isCoded() {
-		return CODED.equals(getHl7Abbreviation());
+		return CODED_UUID.equals(getUuid());
 	}
 	
 	/**
 	 * @return <code>true</code> if datatype is some representation of date or time
 	 */
 	public boolean isDate() {
-		return DATE.equals(getHl7Abbreviation()) || DATETIME.equals(getHl7Abbreviation())
-		        || TIME.equals(getHl7Abbreviation());
+		return DATE_UUID.equals(getUuid()) || DATETIME_UUID.equals(getUuid())
+		        || TIME_UUID.equals(getUuid());
 	}
 	
 	/**
 	 * @return <code>true</code> if datatype is text-based
 	 */
 	public boolean isText() {
-		return TEXT.equals(getHl7Abbreviation()) || DOCUMENT.equals(getHl7Abbreviation());
+		return TEXT_UUID.equals(getUuid()) || DOCUMENT_UUID.equals(getUuid());
 	}
 	
 	/**
 	 * @return <code>true</code> if datatype is boolean
 	 */
 	public boolean isBoolean() {
-		return BOOLEAN.equals(getHl7Abbreviation());
+		return BOOLEAN_UUID.equals(getUuid());
 	}
 	
 	/**
