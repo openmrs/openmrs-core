@@ -246,8 +246,10 @@ public class HibernatePatientDAO implements PatientDAO {
 					criteria.add(Expression.eq("ids.identifier", identifier));
 				} else {
 					AdministrationService adminService = Context.getAdministrationService();
-					String regex = adminService.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_REGEX, "");
-					String patternSearch = adminService.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SEARCH_PATTERN, "");
+					String regex = adminService.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_REGEX,
+					    "");
+					String patternSearch = adminService.getGlobalProperty(
+					    OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SEARCH_PATTERN, "");
 					
 					// remove padding from identifier search string
 					if (Pattern.matches("^\\^.{1}\\*.*$", regex)) {
@@ -314,8 +316,10 @@ public class HibernatePatientDAO implements PatientDAO {
 		String returnString = regex.replaceAll("@SEARCH@", identifierSearched);
 		if (identifierSearched.length() > 1) {
 			// for 2 or more character searches, we allow regex to use last character as check digit 
-			returnString = returnString.replaceAll("@SEARCH-1@", identifierSearched.substring(0, identifierSearched.length() - 1));
-			returnString = returnString.replaceAll("@CHECKDIGIT@", identifierSearched.substring(identifierSearched.length() - 1));
+			returnString = returnString.replaceAll("@SEARCH-1@", identifierSearched.substring(0,
+			    identifierSearched.length() - 1));
+			returnString = returnString.replaceAll("@CHECKDIGIT@", identifierSearched
+			        .substring(identifierSearched.length() - 1));
 		} else {
 			returnString = returnString.replaceAll("@SEARCH-1@", "");
 			returnString = returnString.replaceAll("@CHECKDIGIT@", "");
@@ -659,4 +663,34 @@ public class HibernatePatientDAO implements PatientDAO {
 		}
 		return !query.uniqueResult().toString().equals("0");
 	}
+	
+	/**
+	 * @see org.openmrs.api.db.PatientDAO#getPatientIdentifier(java.lang.Integer)
+	 */
+	public PatientIdentifier getPatientIdentifier(Integer patientIdentifierId) throws DAOException {
+		
+		return (PatientIdentifier) sessionFactory.getCurrentSession().get(PatientIdentifier.class, patientIdentifierId);
+		
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.PatientDAO#savePatientIdentifier(org.openmrs.PatientIdentifier)
+	 */
+	public PatientIdentifier savePatientIdentifier(PatientIdentifier patientIdentifier) {
+		
+		sessionFactory.getCurrentSession().saveOrUpdate(patientIdentifier);
+		return patientIdentifier;
+		
+	}
+	
+	/**
+	 * @see org.openmrs.api.PatientService#purgePatientIdentifier(org.openmrs.PatientIdentifier)
+	 * @see org.openmrs.api.db.PatientDAO#deletePatientIdentifier(org.openmrs.PatientIdentifier)
+	 */
+	public void deletePatientIdentifier(PatientIdentifier patientIdentifier) throws DAOException {
+		
+		sessionFactory.getCurrentSession().delete(patientIdentifier);
+		
+	}
+	
 }

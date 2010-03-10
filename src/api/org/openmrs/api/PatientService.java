@@ -730,4 +730,58 @@ public interface PatientService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	public boolean isIdentifierInUseByAnotherPatient(PatientIdentifier patientIdentifier);
 	
+	/**
+	 * Returns a patient identifier that matches the given patientIndentifier id
+	 * 
+	 * @param patientIdentifier the patientIdentifier id
+	 * @return the patientIdentifier matching the Id
+	 * @throws APIException
+	 * @should return the patientIdentifier with the given id
+	 */
+	@Authorized( { OpenmrsConstants.PRIV_VIEW_PATIENT_IDENTIFIERS })
+	@Transactional(readOnly = true)
+	public PatientIdentifier getPatientIdentifier(Integer patientIdentifierId) throws APIException;
+	
+	/**
+	 * Void patient identifier (functionally delete patient identifier from system)
+	 * 
+	 * @param patient patientIdentifier to be voided
+	 * @param reason reason for voiding patient identifier
+	 * @return the voided patient identifier
+	 * @throws APIException
+	 * @should void given patient identifier with given reaso
+	 * @should throw an APIException if the reason is null
+	 * @should throw an APIException if the reason is an empty string
+	 * @should throw an APIException if the reason is a white space character
+	 */
+	@Authorized( { OpenmrsConstants.PRIV_DELETE_PATIENT_IDENTIFIERS })
+	public PatientIdentifier voidPatientIdentifier(PatientIdentifier patientIdentifier, String reason) throws APIException;
+	
+	/**
+	 * Saved the given <code>patientIndentifier</code> to the database
+	 * 
+	 * @param patientIndentifier patientIndentifier to be created or updated
+	 * @return patientIndentifier that was created or updated
+	 * @throws APIException
+	 * @should create new patientIndentifier
+	 * @should update an existing patient identifier
+	 * @should throw an APIException when a null argument is passed
+	 * @should throw an APIException when one of the required fields is null
+	 * @should throw an APIException if the patientIdentifier string is a white space
+	 * @should throw an APIException if the patientIdentifier string is an empty string
+	 * 
+	 */
+	@Authorized( { OpenmrsConstants.PRIV_ADD_PATIENT_IDENTIFIERS, OpenmrsConstants.PRIV_EDIT_PATIENT_IDENTIFIERS })
+	public PatientIdentifier savePatientIdentifier(PatientIdentifier patientIdentifier) throws APIException;
+	
+	/**
+	 * Purge PatientIdentifier (cannot be undone)
+	 * 
+	 * @param patientIdentifier PatientIdentifier to purge from the database
+	 * @throws APIException
+	 * @should delete patient identifier from database
+	 */
+	@Authorized( { OpenmrsConstants.PRIV_PURGE_PATIENT_IDENTIFIERS })
+	public void purgePatientIdentifier(PatientIdentifier patientIdentifier) throws APIException;
+	
 }
