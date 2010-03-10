@@ -257,8 +257,7 @@ public class ProgramWorkflow extends BaseOpenmrsMetadata implements java.io.Seri
 	
 	/** @see Object#toString() */
 	public String toString() {
-		return "ProgramWorkflow(id=" + getProgramWorkflowId() + ", concept=" + getConcept() + ", states=" + getStates()
-		        + ")";
+		return "ProgramWorkflow(id=" + getProgramWorkflowId() + ")";
 	}
 	
 	// ******************

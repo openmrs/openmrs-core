@@ -6,6 +6,7 @@
 <%@ include file="localHeader.jsp" %>
 
 <openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
+<openmrs:htmlInclude file="/dwr/util.js" />
 
 <script type="text/javascript">
 	var states = new Array();
