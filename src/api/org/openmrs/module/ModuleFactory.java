@@ -969,15 +969,14 @@ public class ModuleFactory {
 	 * Get a module's classloader
 	 * 
 	 * @param mod Module to fetch the class loader for
-	 * @return ModuleClassLoader pertaining to this module
+	 * @return ModuleClassLoader pertaining to this module. Returns null if the module is not started
 	 * @throws ModuleException if the module does not have a registered classloader
 	 */
 	public static ModuleClassLoader getModuleClassLoader(Module mod) throws ModuleException {
-		
 		ModuleClassLoader mcl = getModuleClassLoaderMap().get(mod);
 		
 		if (mcl == null)
-			throw new ModuleException("Module not found", mod.getName());
+			log.debug("Module classloader not found for module with id: " + mod.getModuleId());
 		
 		return mcl;
 	}
@@ -986,14 +985,14 @@ public class ModuleFactory {
 	 * Get a module's classloader via the module id
 	 * 
 	 * @param moduleId <code>String</code> id of the module
-	 * @return ModuleClassLoader pertaining to this module
+	 * @return ModuleClassLoader pertaining to this module.  Returns null if the module is not started
 	 * @throws ModuleException if this module isn't started or doesn't have a classloader
 	 * @see #getModuleClassLoader(Module)
 	 */
 	public static ModuleClassLoader getModuleClassLoader(String moduleId) throws ModuleException {
 		Module mod = getStartedModulesMap().get(moduleId);
 		if (mod == null)
-			throw new ModuleException("Module id not found in list of started modules: ", moduleId);
+			log.debug("Module id not found in list of started modules: " + mod.getModuleId());
 		
 		return getModuleClassLoader(mod);
 	}
