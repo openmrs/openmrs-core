@@ -780,7 +780,8 @@ public class ModuleClassLoader extends URLClassLoader {
 			
 			ModuleClassLoader mcl = ModuleFactory.getModuleClassLoader(publicImport);
 			
-			result = mcl.findResource(name, requestor, seenModules);
+			if (mcl != null)
+				result = mcl.findResource(name, requestor, seenModules);
 			
 			if (result != null) {
 				break; // found resource in publicly imported module
@@ -832,7 +833,8 @@ public class ModuleClassLoader extends URLClassLoader {
 			
 			ModuleClassLoader mcl = ModuleFactory.getModuleClassLoader(publicImport);
 			
-			mcl.findResources(result, name, requestor, seenModules);
+			if (mcl != null)
+				mcl.findResources(result, name, requestor, seenModules);
 		}
 		
 	}
