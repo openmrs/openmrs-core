@@ -24,6 +24,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.Vector;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
@@ -39,7 +40,6 @@ import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonName;
 import org.openmrs.Relationship;
-import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.BlankIdentifierException;
 import org.openmrs.api.DuplicateIdentifierException;
@@ -166,7 +166,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 */
 	public List<Patient> getPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,
 	                                 boolean matchIdentifierExactly) throws APIException {
-
+		
 		if (name != null && (name.contains("%") || name.contains("*")))
 			throw new APIException(Context.getMessageSourceService().getMessage("SearchResults.noWildcardsAllowed"));
 		
@@ -221,7 +221,6 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 			// TODO: what makes a patient identifier unique ... can you have the 
 			// 		 same identifier number at different locations?  if so, then this
 			// 		 check duplicate algorithm does not handle this case
-			
 			
 			// check this patient for duplicate identifiers+identifierType
 			if (identifiersUsed.contains(pi.getIdentifier() + " id type #: "
@@ -680,8 +679,9 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		for (Relationship rel : personService.getRelationshipsByPerson(notPreferred)) {
 			if (!rel.isVoided()) {
 				// skip over this relationship if its just between the preferred and notpreferred patients
-				if (!((rel.getPersonA().equals(notPreferred) && rel.getPersonB().equals(preferred)) ||
-						rel.getPersonB().equals(notPreferred) && rel.getPersonA().equals(preferred))) {
+				if (!((rel.getPersonA().equals(notPreferred) && rel.getPersonB().equals(preferred)) || rel.getPersonB()
+				        .equals(notPreferred)
+				        && rel.getPersonA().equals(preferred))) {
 					Relationship tmpRel = rel.copy();
 					if (tmpRel.getPersonA().equals(notPreferred))
 						tmpRel.setPersonA(preferred);
@@ -689,7 +689,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 						tmpRel.setPersonB(preferred);
 					log.debug("Copying relationship " + rel.getRelationshipId() + " to " + preferred.getPatientId());
 					personService.saveRelationship(tmpRel);
-						}
+				}
 			}
 		}
 		
@@ -1179,5 +1179,52 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 */
 	public boolean isIdentifierInUseByAnotherPatient(PatientIdentifier patientIdentifier) {
 		return dao.isIdentifierInUseByAnotherPatient(patientIdentifier);
+	}
+	
+	/**
+	 * @see org.openmrs.api.PatientService#getPatientIdentifier(java.lang.Integer)
+	 */
+	public PatientIdentifier getPatientIdentifier(Integer patientIdentifierId) throws APIException {
+		
+		return dao.getPatientIdentifier(patientIdentifierId);
+	}
+	
+	/**
+	 * @see org.openmrs.api.PatientService#voidPatientIdentifier(org.openmrs.PatientIdentifier,
+	 *      java.lang.String)
+	 */
+	@Override
+	public PatientIdentifier voidPatientIdentifier(PatientIdentifier patientIdentifier, String reason) throws APIException {
+		
+		if (patientIdentifier == null || StringUtils.isBlank(reason))
+			throw new APIException("patientIdentifier can't be null and the reason should not be an empty string");
+		return savePatientIdentifier(patientIdentifier);
+		
+	}
+	
+	/**
+	 * @see org.openmrs.api.PatientService#savePatientIdentifier(org.openmrs.PatientIdentifier)
+	 */
+	public PatientIdentifier savePatientIdentifier(PatientIdentifier patientIdentifier) throws APIException {
+		//if the argument or the following required fields are not specified
+		if (patientIdentifier == null || patientIdentifier.getPatient() == null
+		        || patientIdentifier.getIdentifierType() == null || patientIdentifier.getLocation() == null
+		        || StringUtils.isBlank(patientIdentifier.getIdentifier()))
+			throw new APIException("PatientIdentifier argument or one of its required fields is null or invalid");
+		if (patientIdentifier.getPatientIdentifierId() == null) {
+			Context.requirePrivilege(OpenmrsConstants.PRIV_ADD_PATIENT_IDENTIFIERS);
+		} else
+			Context.requirePrivilege(OpenmrsConstants.PRIV_EDIT_PATIENT_IDENTIFIERS);
+		
+		return dao.savePatientIdentifier(patientIdentifier);
+	}
+	
+	/**
+	 * @see org.openmrs.api.PatientService#purgePatientIdentifier(org.openmrs.PatientIdentifier)
+	 */
+	public void purgePatientIdentifier(PatientIdentifier patientIdentifier) throws APIException {
+		
+		dao.deletePatientIdentifier(patientIdentifier);
+		
 	}
 }

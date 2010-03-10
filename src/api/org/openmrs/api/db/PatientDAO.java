@@ -124,4 +124,19 @@ public interface PatientDAO {
 	 */
 	public PatientIdentifierType getPatientIdentifierTypeByUuid(String uuid);
 	
+	/**
+	 * @see org.openmrs.api.PatientService#getPatientIdentifier(java.lang.Integer)
+	 */
+	public PatientIdentifier getPatientIdentifier(Integer patientIdentifierId) throws DAOException;
+	
+	/**
+	 * @see org.openmrs.api.PatientService#savePatientIdentifier(org.openmrs.PatientIdentifier)
+	 */
+	public PatientIdentifier savePatientIdentifier(PatientIdentifier patientIdentifier);
+	
+	/**
+	 * @see org.openmrs.api.PatientService#purgePatientIdentifier(org.openmrs.PatientIdentifier)
+	 */
+	public void deletePatientIdentifier(PatientIdentifier patientIdentifier) throws DAOException;
+	
 }
