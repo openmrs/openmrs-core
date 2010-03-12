@@ -18,6 +18,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.User;
+import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.api.db.hibernate.HibernateContextDAO;
@@ -221,9 +222,9 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 	/**
 	 * @see {@link ContextDAO#authenticate(String,String)}
 	 */
-    @Test
-    @Verifies(value = "should lockout user after eight failed attempts", method = "authenticate(String,String)")
-    public void authenticate_shouldLockoutUserAfterEightFailedAttempts() throws Exception {
+	@Test
+	@Verifies(value = "should lockout user after eight failed attempts", method = "authenticate(String,String)")
+	public void authenticate_shouldLockoutUserAfterEightFailedAttempts() throws Exception {
 		// logout after the base setup
 		Context.logout();
 		
@@ -316,6 +317,43 @@ public class ContextDAOTest extends BaseContextSensitiveTest {
 		// those were the first eight, now the ninth request 
 		// (with the same user and right pw) should fail
 		dao.authenticate("admin", "test");
+	}
+	
+	/**
+	 * @verifies {@link ContextDAO#authenticate(String,String)} test = should throw a
+	 *           ContextAuthenticationException if username is an empty string
+	 */
+	@Test(expected = ContextAuthenticationException.class)
+	@Verifies(value = "should throw a ContextAuthenticationException if username is an empty string", method = "authenticate(String,String)")
+	public void authenticate_shouldThrowAContextAuthenticationExceptionIfUsernameIsAnEmptyString() throws Exception {
+		//update a user with a username that is an empty string for this test
+		UserService us = Context.getUserService();
+		
+		User u = us.getUser(1);
+		u.setUsername("");
+		u.getPerson().setGender("M");
+		
+		us.saveUser(u, "password");
+		dao.authenticate("", "password");
+		
+	}
+	
+	/**
+	 * @verifies {@link ContextDAO#authenticate(String,String)} test = should throw a
+	 *           ContextAuthenticationException if username is white space
+	 */
+	@Test(expected = ContextAuthenticationException.class)
+	@Verifies(value = "should throw a ContextAuthenticationException if username is white space", method = "authenticate(String,String)")
+	public void authenticate_shouldThrowAContextAuthenticationExceptionIfUsernameIsWhiteSpace() throws Exception {
+		//update a user with a username that is an empty string for this test
+		UserService us = Context.getUserService();
+		
+		User u = us.getUser(1);
+		u.setUsername("  ");
+		u.getPerson().setGender("M");
+		
+		us.saveUser(u, "password");
+		dao.authenticate("  ", "password");
 	}
 	
 }
