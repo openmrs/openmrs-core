@@ -139,6 +139,19 @@ public interface PatientSetService {
 	public Cohort getPatientsHavingObs(Integer conceptId, TimeModifier timeModifier, Modifier modifier, Object value,
 	                                   Date fromDate, Date toDate);
 	
+	/**
+	 * Searches for patients who have encounters as described by the arguments to this method
+	 * 
+	 * @param encounterType
+	 * @param location
+	 * @param form
+	 * @param fromDate
+	 * @param toDate
+	 * @param minCount
+	 * @param maxCount
+	 * @return all patients with encounters matching the arguments to this method
+	 * @should get all patients with encounters when no parameters specified
+	 */
 	@Transactional(readOnly = true)
 	public Cohort getPatientsHavingEncounters(EncounterType encounterType, Location location, Form form, Date fromDate,
 	                                          Date toDate, Integer minCount, Integer maxCount);

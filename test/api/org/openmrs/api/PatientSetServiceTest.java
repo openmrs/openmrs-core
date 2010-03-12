@@ -294,5 +294,16 @@ public class PatientSetServiceTest extends BaseContextSensitiveTest {
     	Cohort withTwoTypes = service.getPatientsHavingEncounters(list, null, null, null, null, null, null);
     	Assert.assertEquals(2, withTwoTypes.size());
     }
+
+	/**
+     * @see {@link PatientSetService#getPatientsHavingEncounters(EncounterType,Location,Form,Date,Date,Integer,Integer)}
+     */
+    @Test
+    @Verifies(value = "should get all patients with encounters when no parameters specified", method = "getPatientsHavingEncounters(List<EncounterType>,Location,Form,Date,Date,Integer,Integer)")
+    public void getPatientsHavingEncounters_shouldGetAllPatientsWithEncountersWhenNoParametersSpecified() throws Exception {
+	    Cohort withEncs = Context.getPatientSetService().getPatientsHavingEncounters((EncounterType) null, null, null, null, null, null, null);
+	    Assert.assertEquals(1, withEncs.size());
+	    Assert.assertTrue(withEncs.contains(7));
+    }
 	
 }
