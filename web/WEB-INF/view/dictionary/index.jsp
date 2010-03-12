@@ -21,7 +21,9 @@
 		
 		dojo.event.topic.subscribe("cSearch/select", 
 			function(msg) {
-				document.location = "concept.htm?conceptId=" + msg.objs[0].conceptId;
+                if (msg.objs[0].conceptId != undefined) {  
+			        document.location = "concept.htm?conceptId=" + msg.objs[0].conceptId;
+                }
 			}
 		);
 		
