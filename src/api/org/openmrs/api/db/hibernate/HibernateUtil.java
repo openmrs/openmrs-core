@@ -67,4 +67,17 @@ public class HibernateUtil {
 		
 		return dialect;
 	}
+	
+	/**
+	 * Fetch sql wildcards and their escaped versions, the first index contains an array of sql
+	 * wildcards and the second index contains an array of their respective escaped versions
+	 * 
+	 * @return a two dimensional array of sql wildcards and their escaped versions
+	 */
+	public static String[][] getSqlWildCardsAndTheirEscapedVersions() {
+		//Add to this array more wild cards if you know any that have been omitted
+		//and make sure to update the array of replacements with an escaped one for it
+		return new String[][] { { "%", "_" }, { "\\%", "\\_" } };
+	}
+	
 }
