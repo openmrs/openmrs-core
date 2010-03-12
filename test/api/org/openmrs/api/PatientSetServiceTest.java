@@ -310,8 +310,8 @@ public class PatientSetServiceTest extends BaseContextSensitiveTest {
      * @see {@link PatientSetService#getPatientsHavingEncounters(List<EncounterType>,Location,Form,Date,Date,Integer,Integer)}
      */
     @Test
-    @Verifies(value = "get all patients with encounters when passed an empty encounterTypeList", method = "getPatientsHavingEncounters(List<EncounterType>,Location,Form,Date,Date,Integer,Integer)")
-    public void getPatientsHavingEncounters_getAllPatientsWithEncountersWhenPassedAnEmptyEncounterTypeList() throws Exception {
+    @Verifies(value = "should get all patients with encounters when passed an empty encounterTypeList", method = "getPatientsHavingEncounters(List<EncounterType>,Location,Form,Date,Date,Integer,Integer)")
+    public void getPatientsHavingEncounters_shouldGetAllPatientsWithEncountersWhenPassedAnEmptyEncounterTypeList() throws Exception {
     	Cohort c = Context.getPatientSetService().getPatientsHavingEncounters(new ArrayList<EncounterType>(), null, null, null, null, null, null);
     	Assert.assertEquals(1, c.size());
     	Assert.assertTrue(c.contains(7));
