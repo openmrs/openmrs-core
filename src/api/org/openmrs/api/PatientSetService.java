@@ -177,6 +177,7 @@ public interface PatientSetService {
 	 * @should get patients with encounters between dates
 	 * @should get patients with at least n encounters
 	 * @should get patients with at most n encounters
+	 * @should get all patients with encounters when passed an empty encounterTypeList
 	 */
 	@Transactional(readOnly = true)
 	public Cohort getPatientsHavingEncounters(List<EncounterType> encounterTypeList, Location location, Form form,

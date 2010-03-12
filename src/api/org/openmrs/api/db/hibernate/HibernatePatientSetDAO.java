@@ -727,7 +727,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	public Cohort getPatientsHavingEncounters(List<EncounterType> encounterTypeList, Location location, Form form,
 	                                          Date fromDate, Date toDate, Integer minCount, Integer maxCount) {
 		List<Integer> encTypeIds = null;
-		if (encounterTypeList != null) {
+		if (encounterTypeList != null && encounterTypeList.size() > 0) {
 			encTypeIds = new ArrayList<Integer>();
 			for (EncounterType t : encounterTypeList)
 				encTypeIds.add(t.getEncounterTypeId());
