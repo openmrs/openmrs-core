@@ -18,6 +18,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.FlushMode;
@@ -77,6 +78,9 @@ public class HibernateContextDAO implements ContextDAO {
 		User candidateUser = null;
 		
 		if (login != null) {
+			//if username is blank or white space character(s)
+			if (StringUtils.isEmpty(login) || StringUtils.isWhitespace(login))
+				throw new ContextAuthenticationException(errorMsg);
 			
 			// loginWithoutDash is used to compare to the system id
 			String loginWithDash = login;

@@ -49,6 +49,8 @@ public interface ContextDAO {
 	 * @should authenticateWithIncorrectHashedPassword
 	 * @should set uuid on user property when authentication fails with valid user
 	 * @should pass regression test for 1580 
+	 * @should throw a ContextAuthenticationException if username is an empty string
+	 * @should should throw a ContextAuthenticationException if username is white space
 	 */
 	@Transactional(noRollbackFor = ContextAuthenticationException.class)
 	public User authenticate(String username, String password) throws ContextAuthenticationException;
