@@ -136,7 +136,7 @@ public class PatientSetServiceImpl implements PatientSetService {
 	
 	public Cohort getPatientsHavingEncounters(EncounterType encounterType, Location location, Form form, Date fromDate,
 	                                          Date toDate, Integer minCount, Integer maxCount) {
-		List<EncounterType> list = Collections.singletonList(encounterType);
+		List<EncounterType> list = encounterType == null ? null : Collections.singletonList(encounterType);
 		return getPatientSetDAO().getPatientsHavingEncounters(list, location, form, fromDate, toDate, minCount, maxCount);
 	}
 	
