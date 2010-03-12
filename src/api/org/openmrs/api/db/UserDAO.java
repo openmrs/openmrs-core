@@ -105,6 +105,7 @@ public interface UserDAO {
 	
 	/**
 	 * @see org.openmrs.api.UserService#getUsers(java.lang.String, java.util.List, boolean)
+	 * @should escape sql wildcards in searchPhrase
 	 */
 	public List<User> getUsers(String nameSearch, List<Role> roles, boolean includeVoided) throws DAOException;
 	

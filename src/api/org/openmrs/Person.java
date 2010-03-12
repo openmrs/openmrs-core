@@ -24,8 +24,6 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.api.APIException;
-import org.openmrs.api.PersonService;
 import org.openmrs.api.UserService;
 import org.openmrs.util.OpenmrsUtil;
 import org.simpleframework.xml.Attribute;

@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
@@ -389,7 +390,12 @@ public class HibernateUserDAO implements UserDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<User> getUsers(String name, List<Role> roles, boolean includeRetired) {
+		
 		log.debug("name: " + name);
+		if (name != null)
+			//insert an escape backslash before each sql wildcard			
+			name = StringUtils.replaceEach(name, HibernateUtil.getSqlWildCardsAndTheirEscapedVersions()[0], HibernateUtil
+			        .getSqlWildCardsAndTheirEscapedVersions()[1]);
 		
 		// Create an HQL query like this:
 		// select distinct user
@@ -412,18 +418,20 @@ public class HibernateUserDAO implements UserDAO {
 					String key = "name" + ++counter;
 					String value = n + "%";
 					namesMap.put(key, value);
-					criteria.add("(user.username like :" + key + " or user.systemId like :" + key + " or name.givenName like :" + key + " or name.middleName like :" + key + " or name.familyName like :" + key + " or name.familyName2 like :" + key + ")");
+					criteria.add("(user.username like :" + key + " or user.systemId like :" + key
+					        + " or name.givenName like :" + key + " or name.middleName like :" + key
+					        + " or name.familyName like :" + key + " or name.familyName2 like :" + key + ")");
 				}
 			}
 		}
 		if (includeRetired == false)
 			criteria.add("user.retired = false");
-
+		
 		// build the hql query
 		String hql = "select distinct user from User as user inner join user.person.names as name ";
 		if (criteria.size() > 0)
 			hql += "where ";
-		for (Iterator<String> i = criteria.iterator(); i.hasNext(); ) {
+		for (Iterator<String> i = criteria.iterator(); i.hasNext();) {
 			hql += i.next() + " ";
 			if (i.hasNext())
 				hql += "and ";
@@ -557,18 +565,18 @@ public class HibernateUserDAO implements UserDAO {
 	public void updateLoginCredential(LoginCredential credential) {
 		sessionFactory.getCurrentSession().update(credential);
 	}
-
+	
 	/**
-     * @see org.openmrs.api.db.UserDAO#getUsersByPerson(org.openmrs.Person, boolean)
-     */
-    @SuppressWarnings("unchecked")
-    public List<User> getUsersByPerson(Person person, boolean includeRetired) {
-	    Criteria crit = sessionFactory.getCurrentSession().createCriteria(User.class);
-	    if (person != null)
-	    	crit.add(Restrictions.eq("person", person));
-	    if (!includeRetired)
-	    	crit.add(Restrictions.eq("retired", false));
-	    return (List<User>) crit.list();
-    }
+	 * @see org.openmrs.api.db.UserDAO#getUsersByPerson(org.openmrs.Person, boolean)
+	 */
+	@SuppressWarnings("unchecked")
+	public List<User> getUsersByPerson(Person person, boolean includeRetired) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(User.class);
+		if (person != null)
+			crit.add(Restrictions.eq("person", person));
+		if (!includeRetired)
+			crit.add(Restrictions.eq("retired", false));
+		return (List<User>) crit.list();
+	}
 	
 }
