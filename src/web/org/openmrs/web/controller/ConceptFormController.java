@@ -202,17 +202,15 @@ public class ConceptFormController extends SimpleFormController {
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-	protected ConceptFormBackingObject formBackingObject(HttpServletRequest request) throws ServletException {
-		
+	protected ConceptFormBackingObject formBackingObject(HttpServletRequest request) throws ServletException {		
 		String conceptId = request.getParameter("conceptId");
-		if (conceptId == null) {
-			return new ConceptFormBackingObject(new Concept());
-		} else {
+		try { 
 			ConceptService cs = Context.getConceptService();
 			Concept concept = cs.getConcept(Integer.valueOf(conceptId));
-			return new ConceptFormBackingObject(concept);
-		}
-		
+			return new ConceptFormBackingObject(concept);			
+		} catch (NumberFormatException ex) {
+			return new ConceptFormBackingObject(new Concept());
+		}		
 	}
 	
 	/**
@@ -240,9 +238,11 @@ public class ConceptFormController extends SimpleFormController {
 		
 		String conceptId = request.getParameter("conceptId");
 		boolean dataTypeReadOnly = false;
-		if (conceptId != null) {
+		try {
 			Concept concept = cs.getConcept(Integer.valueOf(conceptId));
 			dataTypeReadOnly = cs.hasAnyObservation(concept);
+		} catch (NumberFormatException ex){
+			// nothing to do
 		}
 		map.put("dataTypeReadOnly", dataTypeReadOnly);
 		
