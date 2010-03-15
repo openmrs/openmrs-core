@@ -587,7 +587,7 @@ public final class Listener extends ContextLoaderListener {
 	 * @throws ModuleMustStartException if the context cannot restart due to a
 	 *             {@link MandatoryModuleException} or {@link OpenmrsCoreModuleException}
 	 */
-	public static void performWebStartOfModules(ServletContext servletContext) throws ModuleMustStartException {
+	public static void performWebStartOfModules(ServletContext servletContext) throws ModuleMustStartException, Throwable {
 		Log log = LogFactory.getLog(Listener.class);
 		
 		List<Module> startedModules = new ArrayList<Module>();
@@ -617,16 +617,20 @@ public final class Listener extends ContextLoaderListener {
 				try {
 					WebModuleUtil.shutdownModules(servletContext);
 					for (Module mod : ModuleFactory.getLoadedModules()) {// use loadedModules to avoid a concurrentmodificationexception
-						ModuleFactory.stopModule(mod, true, true); // pass in one true value here so that the global properties aren't written to and the second true so core modules can be stopped 
+						if (!mod.isCoreModule() && !mod.isMandatory())
+							ModuleFactory.stopModule(mod, true, true); 
 					}
 					WebModuleUtil.refreshWAC(servletContext);
 				}
-				catch (ModuleMustStartException ex) {
+				catch (MandatoryModuleException ex) {
 					// pass this up to the calling method so that openmrs loading stops
-					throw ex;
+					throw new MandatoryModuleException(ex.getModuleId(), "Got an error while starting a mandatory module: " + t.getMessage() + ". Check the server logs for more information");
 				}
 				catch (Throwable t2) {
+					// a mandatory or core module is causing spring to fail to start up.  We don't want those
+					// stopped so we must report this error to the higher authorities
 					log.warn("caught another error: ", t2);
+					throw t2;
 				}
 			}
 		}
