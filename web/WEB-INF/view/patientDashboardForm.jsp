@@ -2,7 +2,15 @@
 <openmrs:require privilege="View Patients" otherwise="/login.htm" redirect="/patientDashboard.form" />
 
 <c:set var="OPENMRS_VIEWING_PATIENT_ID" scope="request" value="${patient.patientId}"/>
-<spring:message var="pageTitle" code="patientDashboard.title" scope="page"/>
+<openmrs:globalProperty var="enablePatientName" key="dashboard.showPatientName" defaultValue="false"/>
+
+<c:if test="${enablePatientName}">
+	<c:set var="patientName" value="${patient.personName.fullName} (${patient.patientIdentifier})"/>
+	<spring:message var="pageTitle" text="${patientName}" scope="page"/>
+</c:if>
+<c:if test="${!enablePatientName}">
+	<spring:message var="pageTitle" code="patientDashboard.title" scope="page"/>
+</c:if>
 <%@ include file="/WEB-INF/template/header.jsp" %>
 
 <script type="text/javascript">
