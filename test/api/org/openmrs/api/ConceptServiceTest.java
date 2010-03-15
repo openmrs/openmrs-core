@@ -412,11 +412,9 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * This test had to be added to ConceptServiceTest because ConceptTest does
-	 * not currently support context sensitive tests (and shouldn't need to).
-	 * 
-	 * TODO This test case passes here, but fails in the core reporting module.
-	 * TODO: determine whether we want to remove this test case
+	 * This test had to be added to ConceptServiceTest because ConceptTest does not currently
+	 * support context sensitive tests (and shouldn't need to). TODO This test case passes here, but
+	 * fails in the core reporting module. TODO: determine whether we want to remove this test case
 	 * 
 	 * @see {@link Concept#equals(Object)}
 	 */
@@ -800,8 +798,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies {@link ConceptService#saveConcept(Concept)}
-	 * test = should create new concept in database
+	 * @verifies {@link ConceptService#saveConcept(Concept)} test = should create new concept in
+	 *           database
 	 */
 	@SkipBaseSetup
 	@Test
@@ -812,16 +810,17 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		authenticate();
 		
 		Concept conceptToAdd = new Concept();
+		conceptToAdd.addName(new ConceptName("new name", Locale.US));
 		assertFalse(conceptService.getAllConcepts().contains(conceptToAdd));
 		conceptService.saveConcept(conceptToAdd);
 		assertTrue(conceptService.getAllConcepts().contains(conceptToAdd));
 	}
 	
 	/**
-	 * @verifies {@link ConceptService#saveConcept(Concept)}
-	 * test = should update concept already existing in database
+	 * @verifies {@link ConceptService#saveConcept(Concept)} test = should update concept already
+	 *           existing in database
 	 */
-	@SkipBaseSetup
+	//@SkipBaseSetup
 	@Test
 	@Verifies(value = "should update concept already existing in database", method = "saveConcept(Concept)")
 	public void saveConcept_shouldUpdateConceptAlreadyExistingInDatabase() throws Exception {
@@ -842,8 +841,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies {@link ConceptService#getConceptSourceByName(String)}
-	 * test = should get ConceptSource with the given name
+	 * @verifies {@link ConceptService#getConceptSourceByName(String)} test = should get
+	 *           ConceptSource with the given name
 	 */
 	@Test
 	public void getConceptSourceByName_shouldGetConceptSourceWithTheGivenName() throws Exception {
@@ -852,8 +851,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies {@link ConceptService#getConceptSourceByName(String)}
-	 * test = should return null if no ConceptSource with that name is found
+	 * @verifies {@link ConceptService#getConceptSourceByName(String)} test = should return null if
+	 *           no ConceptSource with that name is found
 	 */
 	@Test
 	public void getConceptSourceByName_shouldReturnNullIfNoConceptSourceWithThatNameIsFound() throws Exception {
@@ -862,8 +861,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies {@link ConceptService#getConceptsByConceptSource(ConceptSource)}
-	 * test = should return a List of ConceptMaps if concept mappings found
+	 * @verifies {@link ConceptService#getConceptsByConceptSource(ConceptSource)} test = should
+	 *           return a List of ConceptMaps if concept mappings found
 	 */
 	@Test
 	public void getConceptsByConceptSource_shouldReturnAListOfConceptMapsIfConceptMappingsFound() throws Exception {
@@ -873,8 +872,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies {@link ConceptService#getConceptsByConceptSource(ConceptSource)}
-	 * test = should return empty List of ConceptMaps if none found
+	 * @verifies {@link ConceptService#getConceptsByConceptSource(ConceptSource)} test = should
+	 *           return empty List of ConceptMaps if none found
 	 */
 	@Test
 	public void getConceptsByConceptSource_shouldReturnEmptyListOfConceptMapsIfNoneFound() throws Exception {
@@ -884,8 +883,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies {@link ConceptService#saveConceptSource(ConceptSource)}
-	 * test = should save a ConceptSource with a null hl7Code
+	 * @verifies {@link ConceptService#saveConceptSource(ConceptSource)} test = should save a
+	 *           ConceptSource with a null hl7Code
 	 */
 	@Test
 	public void saveConceptSource_shouldSaveAConceptSourceWithANullHl7Code() throws Exception {
@@ -901,8 +900,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies {@link ConceptService#saveConceptSource(ConceptSource)}
-	 * test = should not save a ConceptSource if voided is null
+	 * @verifies {@link ConceptService#saveConceptSource(ConceptSource)} test = should not save a
+	 *           ConceptSource if voided is null
 	 */
 	@Test(expected = Exception.class)
 	public void saveConceptSource_shouldNotSaveAConceptSourceIfVoidedIsNull() throws Exception {
@@ -915,8 +914,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies {@link ConceptService#saveConceptNameTag(ConceptNameTag)}
-	 * test = should save a concept name tag if tag does not exist
+	 * @verifies {@link ConceptService#saveConceptNameTag(ConceptNameTag)} test = should save a
+	 *           concept name tag if tag does not exist
 	 */
 	@Test(expected = Exception.class)
 	public void saveConceptNameTag_shouldSaveAConceptNameTagIfATagDoesNotExist() throws Exception {
@@ -930,8 +929,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies {@link ConceptService#saveConceptNameTag(ConceptNameTag)}
-	 * test = should not save a concept name tag if tag exists
+	 * @verifies {@link ConceptService#saveConceptNameTag(ConceptNameTag)} test = should not save a
+	 *           concept name tag if tag exists
 	 */
 	@Test(expected = Exception.class)
 	public void saveConceptNameTag_shouldNotSaveAConceptNameTagIfTagExists() throws Exception {

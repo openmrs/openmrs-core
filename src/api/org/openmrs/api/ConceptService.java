@@ -17,6 +17,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptClass;
@@ -329,11 +330,13 @@ public interface ConceptService extends OpenmrsService {
 	public List<Concept> getConcepts(String sortBy, String dir) throws APIException;
 	
 	/**
-	 * Returns a list of concepts matching any part of a concept name
+	 * Returns a list of concepts matching any part of a concept name, this method is case
+	 * insensitive to the concept name string
 	 * 
 	 * @param name The search string
 	 * @throws APIException
 	 * @return a List<Concept> object containing all of the matching concepts
+	 * @should pass irrespective of the case of the passed parameter
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
@@ -1207,11 +1210,10 @@ public interface ConceptService extends OpenmrsService {
 	public Iterator<Concept> conceptIterator();
 	
 	/**
-	 * Looks up a concept via {@link ConceptMap}
-	 * This will return the {@link Concept} which contains a {@link ConceptMap} entry
-	 * whose <code>sourceCode</code> is equal to the passed <code>conceptCode</code>
-	 * and whose {@link ConceptSource} has either a <code>name</code> or <code>hl7Code</code> 
-	 * that is equal to the passed <code>mappingCode</code>
+	 * Looks up a concept via {@link ConceptMap} This will return the {@link Concept} which contains
+	 * a {@link ConceptMap} entry whose <code>sourceCode</code> is equal to the passed
+	 * <code>conceptCode</code> and whose {@link ConceptSource} has either a <code>name</code> or
+	 * <code>hl7Code</code> that is equal to the passed <code>mappingCode</code>
 	 * 
 	 * @param conceptCode the code associated with a concept within a given {@link ConceptSource}
 	 * @param mappingCode the name or hl7Code of the {@link ConceptSource} to check
