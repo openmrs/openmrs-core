@@ -30,13 +30,26 @@ public class MandatoryModuleException extends ModuleMustStartException {
 	
 	public static final long serialVersionUID = 236472655L;
 	
+	private String moduleId;
+	
 	/**
 	 * This constructor is used when a user tries to stop a mandatory module.
 	 * 
 	 * @param moduleId the module id that is trying to be stopped
 	 */
 	public MandatoryModuleException(String moduleId) {
-		super("The " + moduleId + " module is marked as 'mandatory' and so cannot be stopped or unloaded.");
+		this(moduleId, "");
+	}
+	
+	/**
+	 * This constructor is used when a user tries to stop a mandatory module.
+	 * 
+	 * @param moduleId the module id that is trying to be stopped
+	 * @param extraErrorMessage extra data to provide in the error's message
+	 */
+	public MandatoryModuleException(String moduleId, String extraErrorMessage) {
+		super("The " + moduleId + " module is marked as 'mandatory' and so cannot be stopped or unloaded. " + extraErrorMessage);
+		this.moduleId = moduleId;
 	}
 	
 	/**
@@ -45,5 +58,15 @@ public class MandatoryModuleException extends ModuleMustStartException {
 	public MandatoryModuleException(List<String> moduleIds) {
 		super("The following modules are marked as 'mandatory' but were unable to start: "
 		        + OpenmrsUtil.join(moduleIds, ","));
+		this.moduleId = OpenmrsUtil.join(moduleIds, ",");
+	}
+	
+	/**
+	 * The id (or ids) of the module that is mandatory
+	 * 
+	 * @return the module id (or ids) that caused this exception
+	 */
+	public String getModuleId() {
+		return moduleId;
 	}
 }
