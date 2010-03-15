@@ -44,6 +44,7 @@ import org.openmrs.Form;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.ConceptsLockedException;
+import org.openmrs.api.DuplicateConceptNameException;
 import org.openmrs.api.context.Context;
 import org.openmrs.propertyeditor.ConceptAnswersEditor;
 import org.openmrs.propertyeditor.ConceptClassEditor;
@@ -94,8 +95,10 @@ public class ConceptFormController extends SimpleFormController {
 		    SimpleDateFormat.SHORT, Context.getLocale()), true));
 		binder.registerCustomEditor(org.openmrs.ConceptClass.class, new ConceptClassEditor());
 		binder.registerCustomEditor(org.openmrs.ConceptDatatype.class, new ConceptDatatypeEditor());
-		binder.registerCustomEditor(java.util.Collection.class, "concept.conceptSets", new ConceptSetsEditor(commandObject.getConcept().getConceptSets()));
-		binder.registerCustomEditor(java.util.Collection.class, "concept.answers", new ConceptAnswersEditor(commandObject.getConcept().getAnswers(true)));
+		binder.registerCustomEditor(java.util.Collection.class, "concept.conceptSets", new ConceptSetsEditor(commandObject
+		        .getConcept().getConceptSets()));
+		binder.registerCustomEditor(java.util.Collection.class, "concept.answers", new ConceptAnswersEditor(commandObject
+		        .getConcept().getAnswers(true)));
 		binder.registerCustomEditor(org.openmrs.ConceptSource.class, new ConceptSourceEditor());
 	}
 	
@@ -173,6 +176,12 @@ public class ConceptFormController extends SimpleFormController {
 			} else {
 				Concept concept = conceptBackingObject.getConceptFromFormData();
 				
+				//if the user is editing a concept, initialise the associated creator property
+				//this is aimed at avoiding a lazy initialisation exception when rendering
+				//the jsp after validation has failed
+				if(concept.getConceptId() != null)
+					concept.getCreator().getPersonName();
+				
 				try {
 					cs.saveConcept(concept);
 					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Concept.saved");
@@ -182,6 +191,11 @@ public class ConceptFormController extends SimpleFormController {
 					log.error("Tried to save concept while concepts were locked", cle);
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Concept.concepts.locked");
 					errors.reject("concept", "Concept.concepts.locked");
+				}
+				catch (DuplicateConceptNameException e) {
+					log.error("Tried to save concept with a duplicate name");
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Concept.cannot.save");
+					errors.reject("Concept.name.duplicate", "Duplicate concept name");					
 				}
 				catch (APIException e) {
 					log.error("Error while trying to save concept", e);

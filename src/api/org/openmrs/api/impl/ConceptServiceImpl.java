@@ -55,7 +55,10 @@ import org.openmrs.scheduler.SchedulerService;
 import org.openmrs.scheduler.Task;
 import org.openmrs.scheduler.TaskDefinition;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.validator.ConceptValidator;
 import org.springframework.util.StringUtils;
+import org.springframework.validation.BindException;
+import org.springframework.validation.Errors;
 
 /**
  * Default Implementation of ConceptService service layer classes
@@ -151,6 +154,12 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		checkIfLocked();
 		checkIfDatatypeCanBeChanged(concept);
 		
+		//check that there is no concept already using the preferred concept name in the locale 
+		Errors errors = new BindException(concept, "concept");
+		new ConceptValidator().validate(concept, errors);
+		if (errors.hasErrors()) 
+			throw new APIException("Validation errors found");
+				
 		Concept conceptToReturn = dao.saveConcept(concept);
 		
 		// add/remove entries in the concept_word table (used for searching)
