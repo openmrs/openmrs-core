@@ -247,7 +247,7 @@ public class PatientFormController extends PersonFormController {
 				
 				if (gNames != null) {
 					for (int i = 0; i < gNames.length; i++) {
-						if (gNames[i] != "") { //skips invalid and blank address data box
+						if (!"".equals(gNames[i])) { //skips invalid and blank address data box
 							PersonName pn = new PersonName();
 							if (namePrefStatus != null && namePrefStatus.length > i)
 								pn.setPreferred(new Boolean(namePrefStatus[i]));

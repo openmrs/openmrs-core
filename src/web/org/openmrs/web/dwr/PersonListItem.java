@@ -118,7 +118,7 @@ public class PersonListItem {
 					givenName = pn.getGivenName();
 					first = false;
 				} else {
-					if (otherNames != "")
+					if (!"".equals(otherNames))
 						otherNames += ",";
 					otherNames += " " + pn.getGivenName() + " " + pn.getMiddleName() + " " + pn.getFamilyName();
 				}

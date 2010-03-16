@@ -316,8 +316,8 @@ public class ModuleUtil {
 			for (int x = 0; x < versions.size(); x++) {
 				String verNum = versions.get(x).trim();
 				String valNum = values.get(x).trim();
-				Integer ver = new Integer(verNum == "" ? "0" : verNum);
-				Integer val = new Integer(valNum == "" ? "0" : valNum);
+				Integer ver = new Integer("".equals(verNum) ? "0" : verNum);
+				Integer val = new Integer("".equals(valNum) ? "0" : valNum);
 				
 				int ret = ver.compareTo(val);
 				if (ret != 0)

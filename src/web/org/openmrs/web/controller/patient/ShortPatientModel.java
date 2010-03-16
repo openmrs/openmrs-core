@@ -82,7 +82,7 @@ public class ShortPatientModel {
 					identifier = pi.getIdentifier();
 					first = false;
 				} else {
-					if (otherIdentifiers != "")
+					if (!"".equals(otherIdentifiers))
 						otherIdentifiers += ",";
 					otherIdentifiers += " " + pi.getIdentifier();
 				}
@@ -95,7 +95,7 @@ public class ShortPatientModel {
 					setName(pn);
 					first = false;
 				} else {
-					if (otherNames != "")
+					if (!"".equals(otherNames))
 						otherNames += ",";
 					otherNames += " " + pn.getGivenName() + " " + pn.getMiddleName() + " " + pn.getFamilyName();
 				}

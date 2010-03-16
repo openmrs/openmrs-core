@@ -89,7 +89,7 @@ public class DWRConceptService {
 			localesToSearchOn.add(defaultLocale);
 			
 			// if country is specified, also add the generic language locale
-			if (defaultLocale.getCountry() != "") {
+			if (!"".equals(defaultLocale.getCountry())) {
 				localesToSearchOn.add(new Locale(defaultLocale.getLanguage()));
 			}
 			

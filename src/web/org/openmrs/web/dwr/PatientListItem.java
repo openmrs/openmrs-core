@@ -48,7 +48,7 @@ public class PatientListItem extends PersonListItem {
 					identifierCheckDigit = pi.getIdentifierType().hasCheckDigit();
 					first = false;
 				} else {
-					if (otherIdentifiers != "")
+					if (!"".equals(otherIdentifiers))
 						otherIdentifiers += ",";
 					otherIdentifiers += " " + pi.getIdentifier();
 				}
