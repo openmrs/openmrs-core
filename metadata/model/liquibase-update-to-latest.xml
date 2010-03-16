@@ -3123,4 +3123,13 @@
 		</sql>
 	</changeSet>
 	
+	<changeSet id="20100306-095513" author="thilini.hg">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="notification_alert" columnName="user_id"/>
+		</preConditions>
+		<comment>Dropping unused user_id column from notification alert table</comment>
+		<dropForeignKeyConstraint baseTableName="notification_alert" constraintName="alert_assigned_to_user"/>
+		<dropColumn tableName="notification_alert" columnName="user_id"/>
+	</changeSet>
+	
 </databaseChangeLog>
