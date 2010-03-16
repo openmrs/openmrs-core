@@ -547,7 +547,7 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable {
 					Locale proficientLocale = LocaleUtility.fromSpecification(proficientLocaleSpec);
 					if (!proficientLocales.contains(proficientLocale)) {
 						proficientLocales.add(proficientLocale);
-						if (proficientLocale.getCountry() != "") {
+						if (!"".equals(proficientLocale.getCountry())) {
 							// add the language also
 							Locale languageOnlyLocale = LocaleUtility.fromSpecification(proficientLocale.getLanguage());
 							if (!proficientLocales.contains(languageOnlyLocale)) {

@@ -310,7 +310,7 @@ public class ConceptNameTag extends BaseOpenmrsObject implements Auditable, Void
 	public static ConceptNameTag preferredCountryTagFor(Locale locale) {
 		ConceptNameTag preferredCountryTag = null;
 		String country = locale.getCountry();
-		if (country != "") {
+		if (!"".equals(country)) {
 			preferredCountryTag = preferredCountryTagFor(locale.getCountry());
 		}
 		return preferredCountryTag;
