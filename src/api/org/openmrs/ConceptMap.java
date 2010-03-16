@@ -35,9 +35,7 @@ public class ConceptMap extends BaseOpenmrsObject implements Auditable, java.io.
 	private Concept concept;
 	
 	private ConceptSource source;
-	
-	private Integer sourceId;
-	
+		
 	private String sourceCode;
 	
 	private String comment;
@@ -193,19 +191,6 @@ public class ConceptMap extends BaseOpenmrsObject implements Auditable, java.io.
 		this.sourceCode = sourceCode;
 	}
 	
-	/**
-	 * @return Returns the sourceId.
-	 */
-	public Integer getSourceId() {
-		return sourceId;
-	}
-	
-	/**
-	 * @param sourceId The sourceId to set.
-	 */
-	public void setSourceId(Integer sourceId) {
-		this.sourceId = sourceId;
-	}
 	
 	/**
 	 * @since 1.5
