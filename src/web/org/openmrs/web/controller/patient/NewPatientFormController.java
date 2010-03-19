@@ -68,6 +68,7 @@ import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.orm.ObjectRetrievalFailureException;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindException;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -603,7 +604,7 @@ public class NewPatientFormController extends SimpleFormController {
 		if (Context.isAuthenticated()) {
 			PatientService ps = Context.getPatientService();
 			String patientId = request.getParameter("patientId");
-			if (patientId != null) {
+			if (StringUtils.hasText(patientId)) {
 				try {
 					id = Integer.valueOf(patientId);
 					p = ps.getPatient(id);
