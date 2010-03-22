@@ -43,12 +43,24 @@ Parameters:
 	--%>
 	<openmrs:globalProperty key="FormEntry.patientForms.goBackOnEntry" var="goBackOnEntry" defaultValue="false"/>
 	
-	<script type="text/javascript">
+	<script type="text/javascript">	
 		var $j = jQuery.noConflict();
+
+		<%-- global var and datatable filter for showRetired --%>
+		var showRetiredFormsForEntry${model.id} = false;
+		$j.fn.dataTableExt.afnFiltering.push(
+			function( oSettings, aData, iDataIndex ) {
+				if (oSettings.sTableId != 'formEntryTable${model.id}')
+					return true;
+				else
+					return showRetiredFormsForEntry${model.id} || aData[4] == 'false';
+			}
+		);
+
 		$j(document).ready(function() {
 			/* the parent selector here only only allows one datatable call per formEntryTable.
 			   without that selector, the .dialog() call for the popup was calling this twice */
-			$j("#formEntryTableParent${model.id} > #formEntryTable${model.id}").dataTable({
+			var oTable${model.id} = $j("#formEntryTableParent${model.id} > #formEntryTable${model.id}").dataTable({
 				"bPaginate": false,
 				"bAutoWidth": false,
 				"aaSorting": [[0, 'asc']],
@@ -57,10 +69,22 @@ Parameters:
 						{ "iDataSort": 1 },
 						{ "bVisible": false, "sType": "numeric" },
 						null,
-						{ "sClass": "EncounterTypeClass" }
+						{ "sClass": "EncounterTypeClass" },
+						{ "bVisible": false }
 					]
 			});
+			oTable${model.id}.fnDraw(); <%-- trigger filter-and-draw of datatable now --%>
+
+			<%-- trigger filter-and-draw of the datatable whenever the showRetired checkbox changes --%>
+			$j('#showRetired${model.id}').click(function() {
+				showRetiredFormsForEntry${model.id} = this.checked;
+				oTable${model.id}.fnDraw();
+			});
+
+			<%-- move the showRetired checkbox inside the flow of the datatable after the filter --%>
+			$j('#handleForShowRetired${model.id}').appendTo($j('#formEntryTable${model.id}_filter'));
 		});
+	
 		function startDownloading() {
 			<c:if test="${goBackOnEntry}">
 				timeOut = setTimeout("goBackToPatientSearch()", 30000);
@@ -72,6 +96,10 @@ Parameters:
 		}
 	</script>
 	<div id="formEntryTableParent${model.id}">
+	<span id="handleForShowRetired${model.id}">
+		&nbsp;&nbsp;&nbsp;&nbsp;
+		<input type="checkbox" id="showRetired${model.id}"/> <spring:message code="SearchResults.includeRetired"/>
+	</span>
 	<table id="formEntryTable${model.id}" cellspacing="0" cellpadding="3">
 		<thead>
 			<tr>
@@ -79,6 +107,7 @@ Parameters:
 				<th><!-- Hidden column for sorting previous column --></th>
 				<th><spring:message code="Form.version"/></th>
 				<th class="EncounterTypeClass"><spring:message code="Encounter.type"/></th>
+				<th><!-- Hidden column for retired --></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -90,7 +119,7 @@ Parameters:
 						<c:param name="returnUrl" value="${model.returnUrl}"/>
 						<c:param name="formId" value="${entry.key.formId}"/>
 					</c:url>
-					<tr>
+					<tr<c:if test="${entry.key.retired}"> class="retired"</c:if>>
 						<td>
 							<a href="${formUrl}" onclick="startDownloading();">${entry.key.name}</a>
 						</td>
@@ -104,6 +133,7 @@ Parameters:
 						<td>
 							${entry.key.encounterType.name}
 						</td>
+						<td>${entry.key.retired}</td>
 					</tr>
 				</openmrs:hasPrivilege>
 			</c:forEach>
