@@ -17,6 +17,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -69,7 +71,8 @@ public class ModuleListController extends SimpleFormController {
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
 	 */
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command,
+	@Override
+    protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command,
 	                                BindException errors) throws Exception {
 		
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_MODULES))
@@ -91,80 +94,93 @@ public class ModuleListController extends SimpleFormController {
 			action = "unload";
 		
 		// handle module upload
-		if ("upload".equals(action) && request instanceof MultipartHttpServletRequest) {
-			MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
-			MultipartFile multipartModuleFile = multipartRequest.getFile("moduleFile");
-			if (multipartModuleFile != null && !multipartModuleFile.isEmpty()) {
-				// double check upload permissions
-				if (!ModuleUtil.allowAdmin()) {
-					error = msa.getMessage("Module.disallowUploads",
-					    new String[] { ModuleConstants.RUNTIMEPROPERTY_ALLOW_ADMIN });
-				} else {
-					String filename = WebUtil.stripFilename(multipartModuleFile.getOriginalFilename());
-					InputStream inputStream = null;
-					File moduleFile = null;
-					Module module = null;
-					Boolean updateModule = ServletRequestUtils.getBooleanParameter(request, "update", false);
-					List<Module> dependentModulesStopped = null;
-					try {
-						
-						// if user is using the "upload an update" form instead of the main form
-						if (updateModule) {
-							// parse the module so that we can get the id
-							
-							Module tmpModule = new ModuleFileParser(multipartModuleFile.getInputStream()).parse();
-							Module existingModule = ModuleFactory.getModuleById(tmpModule.getModuleId());
-							if (existingModule != null) {
-								dependentModulesStopped = ModuleFactory.stopModule(existingModule, false, true); // stop the module with these parameters so that mandatory modules can be upgraded
-								WebModuleUtil.stopModule(existingModule, getServletContext());
-								ModuleFactory.unloadModule(existingModule);
+		if ("upload".equals(action)) {
+			// double check upload permissions
+			if (!ModuleUtil.allowAdmin()) {
+				error = msa.getMessage("Module.disallowUploads",
+				    new String[] { ModuleConstants.RUNTIMEPROPERTY_ALLOW_ADMIN });
+			} else {
+				InputStream inputStream = null;
+				File moduleFile = null;
+				Module module = null;
+				Boolean updateModule = ServletRequestUtils.getBooleanParameter(request, "update", false);
+				Boolean downloadModule = ServletRequestUtils.getBooleanParameter(request, "download", false);
+				List<Module> dependentModulesStopped = null;
+				try {
+					if (downloadModule) {
+						String downloadURL = request.getParameter("downloadURL");
+						if (downloadURL == null) {
+							throw new MalformedURLException("Couldn't download module because no url was provided");
+						}
+						String fileName = downloadURL.substring(downloadURL.lastIndexOf("/") + 1);
+						final URL url = new URL(downloadURL);
+						inputStream = ModuleUtil.getURLStream(url);
+						moduleFile = ModuleUtil.insertModuleFile(inputStream, fileName);
+					}
+					else if (request instanceof MultipartHttpServletRequest) {
+					
+						MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+						MultipartFile multipartModuleFile = multipartRequest.getFile("moduleFile");
+						if (multipartModuleFile != null && !multipartModuleFile.isEmpty()) {
+							String filename = WebUtil.stripFilename(multipartModuleFile.getOriginalFilename());
+							// if user is using the "upload an update" form instead of the main form
+							if (updateModule) {
+								// parse the module so that we can get the id
+								
+								Module tmpModule = new ModuleFileParser(multipartModuleFile.getInputStream()).parse();
+								Module existingModule = ModuleFactory.getModuleById(tmpModule.getModuleId());
+								if (existingModule != null) {
+									dependentModulesStopped = ModuleFactory.stopModule(existingModule, false, true); // stop the module with these parameters so that mandatory modules can be upgraded
+									WebModuleUtil.stopModule(existingModule, getServletContext());
+									ModuleFactory.unloadModule(existingModule);
+								}
+								inputStream = new FileInputStream(tmpModule.getFile());
+								moduleFile = ModuleUtil.insertModuleFile(inputStream, filename); // copy the omod over to the repo folder
 							}
-							moduleFile = ModuleUtil.insertModuleFile(new FileInputStream(tmpModule.getFile()), filename); // copy the omod over to the repo folder
+							else {
+								// not an update, or a download, just copy the module file right to the repo folder
+								inputStream = multipartModuleFile.getInputStream();
+								moduleFile = ModuleUtil.insertModuleFile(inputStream, filename);
+							}
 						}
-						else {
-							// not an update, just copy the module file right to the repo folder
-							inputStream = multipartModuleFile.getInputStream();
-							moduleFile = ModuleUtil.insertModuleFile(inputStream, filename);
-						}
-						
-						module = ModuleFactory.loadModule(moduleFile);
 					}
-					catch (ModuleException me) {
-						log.warn("Unable to load and start module", me);
-						error = me.getMessage();
+					module = ModuleFactory.loadModule(moduleFile);
+				}
+				catch (ModuleException me) {
+					log.warn("Unable to load and start module", me);
+					error = me.getMessage();
+				}
+				finally {
+					// clean up the module repository folder
+					try {
+						if (inputStream != null)
+							inputStream.close();
 					}
-					finally {
-						// clean up the module repository folder
-						try {
-							if (inputStream != null)
-								inputStream.close();
-						}
-						catch (IOException io) {
-							log.warn("Unable to close temporary input stream", io);
-						}
-						
-						if (module == null && moduleFile != null)
-							moduleFile.delete();
+					catch (IOException io) {
+						log.warn("Unable to close temporary input stream", io);
 					}
 					
-					// if we didn't have trouble loading the module, start it
-					if (module != null) {
-						ModuleFactory.startModule(module);
-						WebModuleUtil.startModule(module, getServletContext(), false);
-						if (module.isStarted()) {
-							success = msa.getMessage("Module.loadedAndStarted", new String[] { module.getName() });
-							
-							if (updateModule && dependentModulesStopped != null) {
-								for (Module depMod : dependentModulesStopped) {
-									ModuleFactory.startModule(depMod);
-									WebModuleUtil.startModule(depMod, getServletContext(), false);
-								}
+					if (module == null && moduleFile != null)
+						moduleFile.delete();
+				}
+				
+				// if we didn't have trouble loading the module, start it
+				if (module != null) {
+					ModuleFactory.startModule(module);
+					WebModuleUtil.startModule(module, getServletContext(), false);
+					if (module.isStarted()) {
+						success = msa.getMessage("Module.loadedAndStarted", new String[] { module.getName() });
+						
+						if (updateModule && dependentModulesStopped != null) {
+							for (Module depMod : dependentModulesStopped) {
+								ModuleFactory.startModule(depMod);
+								WebModuleUtil.startModule(depMod, getServletContext(), false);
 							}
-							
 						}
-						else
-							success = msa.getMessage("Module.loaded", new String[] { module.getName() });
+						
 					}
+					else
+						success = msa.getMessage("Module.loaded", new String[] { module.getName() });
 				}
 			}
 		}
@@ -239,7 +255,8 @@ public class ModuleListController extends SimpleFormController {
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
+	@Override
+    protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 		
 		Collection<Module> modules = ModuleFactory.getLoadedModules();
 		
@@ -249,16 +266,19 @@ public class ModuleListController extends SimpleFormController {
 	}
 	
 	@Override
-	protected Map<String, String> referenceData(HttpServletRequest request) throws Exception {
-		
-		Map<String, String> map = new HashMap<String, String>();
+	protected Map<String, Object> referenceData(HttpServletRequest request) throws Exception {
+		Map<String, Object> map = new HashMap<String, Object>();
 		MessageSourceAccessor msa = getMessageSourceAccessor();
 		
 		map.put("allowAdmin", ModuleUtil.allowAdmin().toString());
 		map.put("disallowUploads", msa.getMessage("Module.disallowUploads",
 		    new String[] { ModuleConstants.RUNTIMEPROPERTY_ALLOW_ADMIN }));
 		
+		map.put("openmrsVersion", OpenmrsConstants.OPENMRS_VERSION_SHORT);
+		map.put("moduleRepositoryURL", WebConstants.MODULE_REPOSITORY_URL);
+		
+		map.put("loadedModules", ModuleFactory.getLoadedModules());
+		
 		return map;
 	}
-	
 }

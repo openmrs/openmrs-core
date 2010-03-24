@@ -5,11 +5,53 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 <openmrs:htmlInclude file="/scripts/jquery/jquery-1.3.2.min.js" />
+<openmrs:htmlInclude file="/scripts/jquery/dataTables/css/dataTables.css" />
+<openmrs:htmlInclude file="/scripts/jquery/dataTables/js/jquery.dataTables.min.js" />
+<openmrs:htmlInclude file="/scripts/jquery-ui/js/jquery-ui-1.7.2.custom.min.js" />
+<openmrs:htmlInclude file="/scripts/jquery-ui/css/redmond/jquery-ui-1.7.2.custom.css" />
 <script type="text/javascript">
 	var $j = jQuery.noConflict(); 
+	var oTable;
+
+	$j(document).ready(function() {
+		oTable = $j('#findModuleTable').dataTable({
+			"aoColumns": [ { "sName": "Action", "bSortable": false,
+					         "fnRender": function ( oObj ) {
+									var downloadURL = oObj.aData[0];
+									return '<form action="module.list" method="post"><input type="hidden" name="download" value="true" /><input type="hidden" name="action" value="upload" /><input type="hidden" name="downloadURL" value="' + downloadURL + '" /><input type="submit" value="<spring:message code="Module.install" />" /></form>';
+								}
+							},
+							{ "sName": "Name" },
+							{ "sName": "Version" },
+							{ "sName": "Author" },
+							{ "sName": "Description" }
+			  			 ],
+			"bLengthChange": false,			  			 
+			"aaSorting": [[1,'asc'], [2,'desc']],
+			"bAutoWidth": false,
+			"sPaginationType": "two_button",
+			"bProcessing": true,
+			"bServerSide": true,
+			"fnServerData": function ( sSource, aoData, fnCallback ) {
+								aoData.push( { "name": "openmrs_version", "value": "${openmrsVersion}" } );
+
+								<c:forEach var="module" items="${loadedModules}">
+								  aoData.push( { "name": "excludeModule", "value": "${module.moduleId}" } );
+								</c:forEach>
+
+								$j.ajax( {
+					                "dataType": 'jsonp',
+				                	"type": "GET",
+				                	"url": "${moduleRepositoryURL}/findModules",
+				                	"data": aoData,
+				                	"success": fnCallback
+				            	} );
+				        	}
+		});
+	});
 </script>
 
-<h2><spring:message code="Module.header" /></h2>	
+<h2><spring:message code="Module.header" /></h2>
 
 <p><spring:message code="Module.notice" /></p>
 
@@ -46,7 +88,29 @@
 </c:if>
 
 <br style="clear:both"/>
+
+<c:if test="${allowAdmin=='true'}">
 <br/>
+<div id="findModule">
+	<b class="boxHeader"><spring:message code="Module.findAndDownload" arguments="${moduleRepositoryURL}" /></b>
+	<div class="box">
+		<table id="findModuleTable" cellpadding="5" cellspacing="0">
+    		<thead>
+       			<tr>
+					<th><spring:message code="general.action"/></th>
+					<th><spring:message code="general.name"/></th>
+					<th><spring:message code="general.version"/></th>
+					<th><spring:message code="general.author"/></th>
+					<th><spring:message code="general.description"/></th>
+       			</tr>
+   			</thead>
+   			<tbody>
+    		</tbody>
+		</table>
+	</div>
+</div>
+<br/>
+</c:if>
 
 <c:forEach var="module" items="${moduleList}" varStatus="varStatus">
 	<c:if test="${varStatus.first}">
