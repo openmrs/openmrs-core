@@ -84,18 +84,15 @@ public class DispatcherServlet extends org.springframework.web.servlet.Dispatche
 	 */
 	@Override
 	public void init(ServletConfig config) throws ServletException {
+		super.init(config);
 		
 		// hacky way to know if one of the startup filters needs to be run
 		if (UpdateFilter.updatesRequired() && !DatabaseUpdater.allowAutoUpdate()) {
-			log.info("DB updates are required, so spring initialization is being skipped");
-			throw new ServletException("Database updates are required. Go to the /openmrs url on your server to run them. (e.g. http://localhost:8080/openmrs)");
+			log.info("DB updates are required, the update wizard must be run");
 		}
 		if (InitializationFilter.initializationRequired()) {
-			log.info("Runtime properties were not found, so spring initialization is being skipped");
-			throw new ServletException("OpenMRS initialization is required. Go to the /openmrs url on your server to run the initialization wizard. (e.g. http://localhost:8080/openmrs)");
+			log.info("Runtime properties were not found, initialization is required");
 		}
-		
-		super.init(config);
 	}
 	
 }
