@@ -63,7 +63,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	
 	public static final long serialVersionUID = 57332L;
 	
-	private transient final Log log = LogFactory.getLog(Concept.class);
+	private static final Log log = LogFactory.getLog(Concept.class);
 	
 	// Fields
 	
