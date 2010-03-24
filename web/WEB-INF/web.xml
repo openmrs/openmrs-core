@@ -22,6 +22,11 @@
         <param-name>build.timestamp</param-name>
         <param-value>@TIMESTAMP@</param-value>
     </context-param>
+    <context-param>
+      <param-name>module.repository.url</param-name>
+      <!-- <param-value>http://localhost:8080/modules</param-value> -->
+      <param-value>http://modules.openmrs.org/modules</param-value>
+    </context-param>
 	<!-- // End init parameters -->
 	
 	<servlet>

@@ -71,6 +71,11 @@ public class WebConstants {
 	public static final String SETUP_PAGE_URL = "initialsetup";
 	
 	/**
+	 * The url of the module repository.  This is filled in at startup by the value in web.xml
+	 */
+	public static String MODULE_REPOSITORY_URL = "";
+	
+	/**
 	 * Global property name for the number of times one IP can fail at logging in before being
 	 * locked out. A value of 0 for this property means no IP lockout checks.
 	 * 

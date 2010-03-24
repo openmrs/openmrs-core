@@ -231,6 +231,7 @@ public final class Listener extends ContextLoaderListener {
 	private void loadConstants(ServletContext servletContext) {
 		WebConstants.BUILD_TIMESTAMP = servletContext.getInitParameter("build.timestamp");
 		WebConstants.WEBAPP_NAME = getContextPath(servletContext);
+		WebConstants.MODULE_REPOSITORY_URL = servletContext.getInitParameter("module.repository.url");
 	}
 	
 	/**

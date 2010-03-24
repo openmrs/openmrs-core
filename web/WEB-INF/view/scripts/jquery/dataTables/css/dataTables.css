@@ -3,10 +3,7 @@
  */
 
 .dataTables_wrapper {
-	position: relative;
-	min-height: 302px;
-	_height: 302px;
-	clear: both;
+	padding-bottom: 2em;
 }
 
 .dataTables_processing {
@@ -74,14 +71,6 @@
 .sorting {
 	background: url('../images/sort_both.jpg') no-repeat center right;
 	padding-right: 20px;
-}
-
-tr.odd {
-	background-color: whitesmoke;
-}
-
-tr.even {
-	background-color: white;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
