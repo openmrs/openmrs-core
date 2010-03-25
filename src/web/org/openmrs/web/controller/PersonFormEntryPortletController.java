@@ -55,6 +55,8 @@ public class PersonFormEntryPortletController extends PortletController {
     			int temp = left.getName().toLowerCase().compareTo(right.getName().toLowerCase());
     			if (temp == 0)
     				temp = OpenmrsUtil.compareWithNullAsLowest(left.getVersion(), right.getVersion());
+    			if (temp == 0)
+    				temp = OpenmrsUtil.compareWithNullAsGreatest(left.getId(), right.getId());
 	            return temp;
             }
     	});
