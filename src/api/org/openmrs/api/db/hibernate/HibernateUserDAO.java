@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
@@ -392,10 +391,8 @@ public class HibernateUserDAO implements UserDAO {
 	public List<User> getUsers(String name, List<Role> roles, boolean includeRetired) {
 		
 		log.debug("name: " + name);
-		if (name != null)
-			//insert an escape backslash before each sql wildcard			
-			name = StringUtils.replaceEach(name, HibernateUtil.getSqlWildCardsAndTheirEscapedVersions()[0], HibernateUtil
-			        .getSqlWildCardsAndTheirEscapedVersions()[1]);
+		
+		name = HibernateUtil.escapeSqlWildcards(name, sessionFactory);
 		
 		// Create an HQL query like this:
 		// select distinct user

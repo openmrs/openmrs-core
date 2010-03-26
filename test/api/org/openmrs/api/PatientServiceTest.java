@@ -549,26 +549,6 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PatientService#getPatients(String,String,List,boolean)}
-	 */
-	@Test(expected = APIException.class)
-	@Verifies(value = "should not allow percentage wildcard character", method = "getPatients(String,String,List,boolean)")
-	public void getPatients_shouldNotAllowPercentageWildcardCharacter() throws Exception {
-		// the following method call should throw an APIException due to the '%' wildcard character
-		Context.getPatientService().getPatients("Col%").size();
-	}
-	
-	/**
-	 * @see {@link PatientService#getPatients(String,String,List,boolean)}
-	 */
-	@Test(expected = APIException.class)
-	@Verifies(value = "should not allow asterisk wildcard character", method = "getPatients(String,String,List,b oolean)")
-	public void getPatients_shouldNotAllowAsteriskWildcardCharacter() throws Exception {
-		// the following method call should throw an APIException due to the '*' wildcard character
-		Context.getPatientService().getPatients("Col*").size();
-	}
-	
-	/**
 	 * @see {@link PatientService#getPatients(String)}
 	 */
 	@Test

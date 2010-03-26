@@ -175,8 +175,6 @@ public interface PatientService extends OpenmrsService {
 	 * @should not return duplicates
 	 * @should return empty list when no match is found
 	 * @should search familyName2 with name
-	 * @should not allow percentage wildcard character
-	 * @should not allow asterisk wildcard character
 	 * @should support simple regex 
  	 * @should support pattern using last digit as check digit  
 	 */
