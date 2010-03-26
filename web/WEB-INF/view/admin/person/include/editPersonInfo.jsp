@@ -92,7 +92,9 @@
 			<c:set var="authorized" value="true" />
 		</c:otherwise>
 	</c:choose>
-
+	<c:choose>
+	<c:when test="${attrType.retired == true}"></c:when>
+	<c:otherwise>
 	<tr>
 		<td><spring:message code="PersonAttributeType.${fn:replace(attrType.name, ' ', '')}" text="${attrType.name}"/></td>
 		<td>
@@ -112,6 +114,8 @@
 			</c:choose>
 		</td>
 	</tr>
+	</c:otherwise>
+	</c:choose>
 
 </openmrs:forEachDisplayAttributeType>
 
