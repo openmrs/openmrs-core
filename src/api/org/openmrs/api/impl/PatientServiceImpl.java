@@ -167,12 +167,6 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	public List<Patient> getPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,
 	                                 boolean matchIdentifierExactly) throws APIException {
 		
-		if (name != null && (name.contains("%") || name.contains("*")))
-			throw new APIException(Context.getMessageSourceService().getMessage("SearchResults.noWildcardsAllowed"));
-		
-		if (identifier != null && (identifier.contains("%") || identifier.contains("*")))
-			throw new APIException(Context.getMessageSourceService().getMessage("SearchResults.noWildcardsAllowed"));
-		
 		if (identifierTypes == null)
 			identifierTypes = Collections.emptyList();
 		

@@ -189,6 +189,9 @@ public class HibernatePatientDAO implements PatientDAO {
 	public List<Patient> getPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,
 	                                 boolean matchIdentifierExactly) throws DAOException {
 		
+		name = HibernateUtil.escapeSqlWildcards(name, sessionFactory);
+		identifier = HibernateUtil.escapeSqlWildcards(identifier, sessionFactory);
+		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Patient.class);
 		
 		criteria.createAlias("names", "name");

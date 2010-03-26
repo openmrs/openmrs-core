@@ -13,8 +13,12 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import java.sql.SQLException;
+
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.HSQLDialect;
@@ -69,15 +73,38 @@ public class HibernateUtil {
 	}
 	
 	/**
-	 * Fetch sql wildcards and their escaped versions, the first index contains an array of sql
-	 * wildcards and the second index contains an array of their respective escaped versions
+	 * Escapes all sql wildcards in the given string, returns the same string if it doesn't contain
+	 * any sql wildcards
 	 * 
-	 * @return a two dimensional array of sql wildcards and their escaped versions
+	 * @param oldString the string in which to escape the sql wildcards
+	 * @return the string with sql wildcards escaped if any found otherwise the original string is
+	 *         returned
 	 */
-	public static String[][] getSqlWildCardsAndTheirEscapedVersions() {
-		//Add to this array more wild cards if you know any that have been omitted
-		//and make sure to update the array of replacements with an escaped one for it
-		return new String[][] { { "%", "_" }, { "\\%", "\\_" } };
+	public static String escapeSqlWildcards(String oldString, SessionFactory sessionFactory) {
+		
+		//replace all sql wildcards if any
+		if (!StringUtils.isBlank(oldString)) {
+			
+			String escapeCharacter = "";
+			try {
+				//get the database specific escape character from the metadata
+				escapeCharacter = sessionFactory.getCurrentSession().connection().getMetaData().getSearchStringEscape();
+				
+			}
+			catch (HibernateException e) {
+				
+				log.warn("Error generated", e);
+			}
+			catch (SQLException e) {
+				
+				log.warn("Error generated", e);
+			}
+			//insert an escape character before each sql wildcard in the search phrase                  
+			return StringUtils.replaceEach(oldString, new String[] { "%", "_", "*" }, new String[] { escapeCharacter + "%",
+			        escapeCharacter + "_", escapeCharacter + "*" });
+		} else
+			return oldString;
+		
 	}
 	
 }
