@@ -18,7 +18,7 @@
 			</c:if>
 		</div>
 		<table id="patientHeaderGeneralInfo">
-			<tr>
+			<tr class="patientHeaderGeneralInfoRow">
 				<td id="patientHeaderPatientGender">
 					<c:if test="${model.patient.gender == 'M'}"><img src="${pageContext.request.contextPath}/images/male.gif" alt='<spring:message code="Person.gender.male"/>' id="maleGenderIcon"/></c:if>
 					<c:if test="${model.patient.gender == 'F'}"><img src="${pageContext.request.contextPath}/images/female.gif" alt='<spring:message code="Person.gender.female"/>' id="femaleGenderIcon"/></c:if>
@@ -52,7 +52,7 @@
 				<td id="patientDashboardHeaderExtension">
 					<openmrs:extensionPoint pointId="org.openmrs.patientDashboard.Header" type="html" parameters="patientId=${model.patient.patientId}" />
 				</td>
-				<td style="width: 100%;">&nbsp;</td>
+				<td style="width: 100%;" class="patientHeaderEmptyData">&nbsp;</td>
 				<td id="patientHeaderOtherIdentifiers">
 					<c:if test="${fn:length(model.patient.activeIdentifiers) > 1}">
 						<c:forEach var="identifier" items="${model.patient.activeIdentifiers}" begin="1" end="1">
@@ -68,7 +68,7 @@
 					</c:if>
 				</td>
 				<c:if test="${fn:length(model.patient.activeIdentifiers) > 2}">
-					<td width="32">
+					<td width="32" class="patientHeaderShowMoreIdentifiersData">
 						<small><a id="patientHeaderShowMoreIdentifiers" onclick="return showMoreIdentifiers()" title='<spring:message code="patientDashboard.showMoreIdentifers"/>'><spring:message code="general.nMore" arguments="${fn:length(model.patient.activeIdentifiers) - 2}"/></a></small>
 					</td>
 				</c:if>
@@ -93,17 +93,17 @@
 		<c:forEach var="programNameOrId" items="${programIdsToShow}">
 			<c:forEach var="programEnrollment" items="${model.patientCurrentPrograms}">
 				<c:if test="${ programEnrollment.program.programId == programNameOrId || programEnrollment.program.name == programNameOrId }">
-					<table><tr>
-						<th>${ programEnrollment.program.name }</th>
-						<td>|</td>
-						<td><spring:message code="Program.enrolled"/>:</td>
-						<th><openmrs:formatDate date="${programEnrollment.dateEnrolled}" type="medium" /></th>
+					<table class="programEnrollmentTable"><tr>
+						<th class="programEnrollmentNameHeader">${ programEnrollment.program.name }</th>
+						<td class="programEnrollmentBarData">|</td>
+						<td class="programEnrollmentName"><spring:message code="Program.enrolled"/>:</td>
+						<th class="programEnrollmentDateHeader"><openmrs:formatDate date="${programEnrollment.dateEnrolled}" type="medium" /></th>
 						<c:forEach items="${programEnrollment.currentStates}" var="patientState">
 						    <c:set var="temp" value=",${patientState.state.programWorkflow.programWorkflowId},"/>
 							<c:if test="${ fn:contains(workflowsToShow, temp) }">
-								<td>|</td>
-								<td>${patientState.state.programWorkflow.concept.name}:</td>
-								<th>${patientState.state.concept.name}</th>
+								<td class="programEnrollmentBarData">|</td>
+								<td class="patientStateProgramWorkflowNameData">${patientState.state.programWorkflow.concept.name}:</td>
+								<th class="patientStateConceptNameHeader">${patientState.state.concept.name}</th>
 							</c:if>
 						</c:forEach>
 					</tr></table>
@@ -116,11 +116,11 @@
 			<openmrs:globalProperty key="concept.height" var="heightConceptId"/>
 			<openmrs:globalProperty key="concept.cd4_count" var="cd4ConceptId"/>
 			
-			<tr>
+			<tr class="patientObsRow">
 				<th id="patientHeaderObsWeight">
 					<spring:message code="Patient.bmi"/>: ${model.patientBmiAsString}
 				</th>
-				<th> 
+				<th class="patientHeaderObsWeightHeightHeader"> 
 					<small>
 						(
 						<spring:message code="Patient.weight"/>:
@@ -150,8 +150,8 @@
 				</td>
 			</tr>
 		</table>
-		<table><tr>
-			<td><spring:message code="Patient.lastEncounter"/>:</td>
+		<table class="patientLastEncounterTable"><tr class="patientLastEncounterRow">
+			<td class="patientLastEncounterData"><spring:message code="Patient.lastEncounter"/>:</td>
 			<th>
 				<c:forEach items='${openmrs:sort(model.patientEncounters, "encounterDatetime", true)}' var="lastEncounter" varStatus="lastEncounterStatus" end="0">
 					${lastEncounter.encounterType.name} @ ${lastEncounter.location.name}, <openmrs:formatDate date="${lastEncounter.encounterDatetime}" type="medium" />
