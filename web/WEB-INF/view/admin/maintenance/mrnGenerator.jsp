@@ -112,7 +112,7 @@
 			pageContext.setAttribute("rows", org.openmrs.api.context.Context.getAdministrationService().getMRNGeneratorLog());
 		%>
 		<c:forEach items="${rows}" var="row" varStatus="status">
-			<tr class="<c:choose><c:when test="${status.index % 2 == 0}">evenRow</c:when><c:otherwise>oddRow</c:otherwise></c:choose>">
+			<tr class="${status.index % 2 == 0 ? 'evenRow' : 'oddRow'}">
 				<td>${row.date}</td>
 				<td>${row.user}</td>
 				<td>${row.site}</td>

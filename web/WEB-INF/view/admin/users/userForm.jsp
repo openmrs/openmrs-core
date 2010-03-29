@@ -219,7 +219,7 @@
 								</thead>
 								<tbody id="userPropsList">
 								<c:forEach var="userProp" items="${user.userProperties}" varStatus="status">
-									<tr class="<c:choose><c:when test="${status.index % 2 == 0}">evenRow</c:when><c:otherwise>oddRow</c:otherwise></c:choose>">
+									<tr class='${status.index % 2 == 0 ? "evenRow" : "oddRow"}'>
 										<td valign="top">
 											<input type="hidden" name="property"
 												value="${userProp.key}" maxlength="250" />

@@ -28,7 +28,7 @@
 <c:choose>
 	<c:when test="${empty logLines}">
 		<table cellpadding="4" cellspacing="0">
-			<tr class="<c:choose><c:when test="${status.index % 2 == 0}">evenRow</c:when><c:otherwise>oddRow</c:otherwise></c:choose>">
+			<tr class='${status.index % 2 == 0 ? "evenRow" : "oddRow" }'>
 				<td>No logs to display</td>
 			</tr>
 		</table>
@@ -37,7 +37,7 @@
 	
 		<table cellpadding="4" cellspacing="0">
 			<c:forEach var="logLine" varStatus="status" items="${logLines}">
-				<tr class="<c:choose><c:when test="${status.index % 2 == 0}">evenRow</c:when><c:otherwise>oddRow</c:otherwise></c:choose>">
+				<tr class='${status.index % 2 == 0 ? "evenRow" : "oddRow" }'>
 					<td>${fn:escapeXml(logLine)}</td>
 				</tr>
 			</c:forEach>

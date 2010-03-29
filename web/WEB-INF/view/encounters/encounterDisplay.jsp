@@ -44,7 +44,7 @@
 		<%-- Loop over the rows on this page --%>
 		<c:forEach var="fieldHolder" items="${thisPage}" varStatus="varStatus">
 			<c:if test="${ showEmptyFields || not empty fieldHolder.obs }">
-				<tr valign="top" class='<c:choose><c:when test="${rowStatus == true}">evenRow<c:set var="rowStatus" value="false"/></c:when><c:otherwise>oddRow<c:set var="rowStatus" value="true"/></c:otherwise></c:choose>'>
+				<tr valign="top" class='${rowStatus == true ? "evenRow" : "oddRow" }'>
 					<th class="encounterViewLabel">${fieldHolder.label}</th>
 					<td>
 						<c:choose>
@@ -83,19 +83,18 @@
 								<table class="encounterFormInnerTable" cellspacing="0" cellpadding="4">
 								<c:forEach var="obs" items="${fieldHolder.obs}" varStatus="varStatusInner">
 									<c:if test="${varStatusInner.first}">
-										<tr <c:if test="${varStatusInner.count > 1}">class='<c:choose><c:when test="${rowStatus == true}">evenRow<c:set var="rowStatus" value="false"/></c:when><c:otherwise>oddRow<c:set var="rowStatus" value="true"/></c:otherwise></c:choose>'</c:if>>
-										<td class="encounterViewObsConcept"><openmrs_tag:concept conceptId="${obs.concept.conceptId}"/>:</td>
-										<td class="encounterViewObsAnswer">
-									</c:if>
-											<span class="encounterViewObsValue"><openmrs:format obsValue="${obs}" /></span>
-											<c:if test="${not empty obs.obsDatetime && obs.obsDatetime != model.encounter.encounterDatetime}">
-												<span class="encounterViewObsDatetime">
-													<spring:message code="general.onDate"/>
-													<openmrs:formatDate date="${obs.obsDatetime}"/>
-												</span>
-											</c:if>
-											<br/>
-									<c:if test="${varStatusInner.last}">
+										<tr <c:if test="${varStatusInner.count > 1}"> class='${rowStatus == true ? "evenRow" : "oddRow" }' </c:if>>
+											<td class="encounterViewObsConcept"><openmrs_tag:concept conceptId="${obs.concept.conceptId}"/>:</td>
+											<td class="encounterViewObsAnswer">
+										<span class="encounterViewObsValue"><openmrs:format obsValue="${obs}" /></span>
+										<c:if test="${not empty obs.obsDatetime && obs.obsDatetime != model.encounter.encounterDatetime}">
+											<span class="encounterViewObsDatetime">
+												<spring:message code="general.onDate"/>
+												<openmrs:formatDate date="${obs.obsDatetime}"/>
+											</span>
+										</c:if>
+										<br/>
+										<c:if test="${varStatusInner.last}" />
 										</td>
 										</tr>
 									</c:if>

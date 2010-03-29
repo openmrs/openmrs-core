@@ -37,7 +37,7 @@
 		</thead>
 		<tbody id="globalPropsList">
 			<c:forEach var="globalProp" items="${globalProps}" varStatus="status">
-				<tr class="<c:choose><c:when test="${status.index % 2 == 0}">evenRow</c:when><c:otherwise>oddRow</c:otherwise></c:choose>">
+				<tr class="${status.index % 2 == 0 ? 'evenRow' : 'oddRow' }">
 					<td valign="top"><input type="text" name="property" value="${globalProp.property}" size="50" maxlength="250" onchange="edited()" /></td>
 					<td valign="top">
 						<c:choose>
@@ -51,7 +51,7 @@
 					</td>
 					<td valign="top" rowspan="2"><input type="button" value='<spring:message code="general.remove" />' class="closeButton" onclick="edited(); remove(this)" /></td>
 				</tr>
-				<tr class="<c:choose><c:when test="${status.index % 2 == 0}">evenRow</c:when><c:otherwise>oddRow</c:otherwise></c:choose>">
+				<tr class="${status.index % 2 == 0 ? 'evenRow' : 'oddRow' }">
 					<td colspan="2" valign="top" class="description">
 						<textarea name="description" class="descriptionBox" 
 							rows="2" cols="96" onchange="edited()"
