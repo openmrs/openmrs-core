@@ -139,6 +139,7 @@ public class ConceptFormController extends SimpleFormController {
 	 *      org.springframework.validation.BindException)
 	 * @should display numeric values from table
 	 * @should copy numeric values into numeric concepts
+	 * @should return a concept with a null id if no match is found
 	 */
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
 	                                BindException errors) throws Exception {
@@ -179,7 +180,7 @@ public class ConceptFormController extends SimpleFormController {
 				//if the user is editing a concept, initialise the associated creator property
 				//this is aimed at avoiding a lazy initialisation exception when rendering
 				//the jsp after validation has failed
-				if(concept.getConceptId() != null)
+				if (concept.getConceptId() != null)
 					concept.getCreator().getPersonName();
 				
 				try {
@@ -195,7 +196,7 @@ public class ConceptFormController extends SimpleFormController {
 				catch (DuplicateConceptNameException e) {
 					log.error("Tried to save concept with a duplicate name");
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Concept.cannot.save");
-					errors.reject("Concept.name.duplicate", "Duplicate concept name");					
+					errors.reject("Concept.name.duplicate", "Duplicate concept name");
 				}
 				catch (APIException e) {
 					log.error("Error while trying to save concept", e);
@@ -216,15 +217,20 @@ public class ConceptFormController extends SimpleFormController {
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-	protected ConceptFormBackingObject formBackingObject(HttpServletRequest request) throws ServletException {		
+	protected ConceptFormBackingObject formBackingObject(HttpServletRequest request) throws ServletException {
 		String conceptId = request.getParameter("conceptId");
-		try { 
+		try {
 			ConceptService cs = Context.getConceptService();
 			Concept concept = cs.getConcept(Integer.valueOf(conceptId));
-			return new ConceptFormBackingObject(concept);			
-		} catch (NumberFormatException ex) {
+			if (concept == null) {
+				return new ConceptFormBackingObject(new Concept());
+			} else {
+				return new ConceptFormBackingObject(concept);
+			}
+		}
+		catch (NumberFormatException ex) {
 			return new ConceptFormBackingObject(new Concept());
-		}		
+		}
 	}
 	
 	/**
@@ -255,7 +261,8 @@ public class ConceptFormController extends SimpleFormController {
 		try {
 			Concept concept = cs.getConcept(Integer.valueOf(conceptId));
 			dataTypeReadOnly = cs.hasAnyObservation(concept);
-		} catch (NumberFormatException ex){
+		}
+		catch (NumberFormatException ex) {
 			// nothing to do
 		}
 		map.put("dataTypeReadOnly", dataTypeReadOnly);

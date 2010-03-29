@@ -54,6 +54,7 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 	 */
 	@Test
 	public void shouldGetConcept() throws Exception {
+		
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", "");
 		request.setParameter("conceptId", "3");
 		
@@ -670,6 +671,24 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 		assertEquals(ConceptComplex.class, concept.getClass());
 		ConceptComplex complex = (ConceptComplex) concept;
 		assertEquals("TextHandler", complex.getHandler());
+	}
+	
+	/**
+	 * @see {@link ConceptFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)}
+	 */
+	@Test
+	@Verifies(value = "should return a concept with a null id if no match is found", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")
+	public void onSubmit_shouldReturnAConceptWithANullIdIfNoMatchIsFound() throws Exception {
+		
+		ConceptFormController conceptFormController = (ConceptFormController) applicationContext.getBean("conceptForm");
+		MockHttpServletRequest mockRequest = new MockHttpServletRequest();
+		mockRequest.setMethod("GET");
+		mockRequest.setParameter("conceptId", "57432223");
+		ModelAndView mav = conceptFormController.handleRequest(mockRequest, new MockHttpServletResponse());
+		assertNotNull(mav);
+		ConceptFormBackingObject formBackingObject = (ConceptFormBackingObject) mav.getModel().get("command");
+		assertNotNull(formBackingObject.getConcept());
+		assertNull(formBackingObject.getConcept().getConceptId());
 	}
 	
 }
