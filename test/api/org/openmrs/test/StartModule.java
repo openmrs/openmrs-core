@@ -9,6 +9,7 @@ import java.lang.annotation.Target;
  * Putting this annotation on a method will start the listed modules.
  * 
  * @see BaseContextSensitiveTest
+ * @see StartModuleExecutionListener
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target( { ElementType.TYPE })

@@ -370,6 +370,7 @@
 			<lib dir="${xerces.dir}" includes="*.jar" excludes="*Samples*.jar" />
 			<lib dir="${xstream.dir}" includes="*.jar" />
 			<lib dir="${liquibase.dir}" includes="*.jar" />
+			<lib dir="${json.dir}" includes="*.jar" />
 		</war>
 	</target>
 	
