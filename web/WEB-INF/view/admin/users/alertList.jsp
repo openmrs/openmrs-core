@@ -24,7 +24,7 @@
 			<th> <spring:message code="Alert.dateToExpire"/> </th>
 		</tr>
 	<c:forEach var="alert" items="${alertList}" varStatus="rowStatus">
-		<tr class="<c:choose><c:when test="${rowStatus.index % 2 == 0}">evenRow</c:when><c:otherwise>oddRow</c:otherwise></c:choose>">
+		<tr class='${rowStatus.index % 2 == 0 ? "evenRow" : "oddRow"}'>
 			<td style="text-align: center">
 				<c:if test="${alert.dateToExpire == null || today < alert.dateToExpire}">
 					<input type="checkbox" name="alertId" value="${alert.alertId}">

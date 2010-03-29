@@ -140,7 +140,7 @@ Parameters
 						</thead>
 						<tbody>
 							<openmrs:forEachEncounter encounters="${model.patientEncounters}" sortBy="encounterDatetime" descending="true" var="enc" num="${model.num}">
-								<tr class="<c:choose><c:when test="${count % 2 == 0}">evenRow</c:when><c:otherwise>oddRow</c:otherwise></c:choose>">
+								<tr class='${status.index % 2 == 0 ? "evenRow" : "oddRow"}'>
 									<td class="hidden">
 										<%--  this column contains the encounter id and will be used for sorting in the dataTable's encounter edit column --%>
 										${enc.encounterId}

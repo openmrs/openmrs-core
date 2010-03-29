@@ -22,7 +22,7 @@
 		<th><spring:message code="general.author" /></th>
 	</tr>
 	<c:forEach items="${databaseChanges}" var="databaseChange" varStatus="varStatus">
-		<tr class="<c:choose><c:when test="${varStatus.index % 2 == 0}">evenRow</c:when><c:otherwise>oddRow</c:otherwise></c:choose>">
+		<tr class="${varStatus.index % 2 == 0 ? 'evenRow' : 'oddRow'}">
 			<td style="white-space: nowrap"><openmrs:formatDate date="${databaseChange.ranDate}" type="medium" /></td>
 			<td>${databaseChange.comments}</td>
 			<td>${databaseChange.description}</td>

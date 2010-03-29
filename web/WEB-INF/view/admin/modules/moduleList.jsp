@@ -135,7 +135,7 @@
 			
 				<form method="post">
 					<input type="hidden" name="moduleId" value="${module.moduleId}" />
-					<tr class="<c:choose><c:when test="${varStatus.index % 2 == 0}">oddRow</c:when><c:otherwise>evenRow</c:otherwise></c:choose>" id="${module.moduleId}">
+					<tr class='${varStatus.index % 2 == 0 ? "oddRow" : "evenRow" }' id="${module.moduleId}">
 						<c:choose>
 							<c:when test="${allowAdmin=='true' && module.mandatory == false && module.coreModule == false}">
 								<td valign="top">
@@ -202,13 +202,13 @@
 <b class="boxHeader"><spring:message code="Module.help" /></b>
 <div class="box">
 	<ul>
-		<li><i><spring:message code="Module.help.load"/></i>
+		<li><i><spring:message code="Module.help.load"/></i></li>
 		<c:if test="${fn:length(moduleList) > 0}">
-			<li><i><spring:message code="Module.help.unload"/></i>
-			<li><i><spring:message code="Module.help.startStop"/></i>
-			<li><i><spring:message code="Module.help.update"/></i>
+			<li><i><spring:message code="Module.help.unload"/></i></li>
+			<li><i><spring:message code="Module.help.startStop"/></i></li>
+			<li><i><spring:message code="Module.help.update"/></i></li>
 		</c:if>
-		<li><i><spring:message code="Module.help.findMore"/></i>
+		<li><i><spring:message code="Module.help.findMore"/></i></li>
 	</ul>
 </div>
 

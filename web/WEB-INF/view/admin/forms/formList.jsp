@@ -45,7 +45,7 @@
 
 		</tr>
 		<c:forEach var="form" items="${formList}" varStatus="status">
-			<tr class="<c:if test="${form.retired}">voided </c:if><c:choose><c:when test="${status.index % 2 == 0}">evenRow</c:when><c:otherwise>oddRow</c:otherwise></c:choose>">
+			<tr class='${status.index % 2 == 0 ? "evenRow" : "oddRow"} ${form.retired ? "voided" : ""}'>
 				<td valign="top" style="white-space: nowrap"><a href="formEdit.form?formId=${form.formId}">${form.name}</a></td>
 				<td valign="top">${form.version}</td>
 				<td valign="top">${form.build}</td>

@@ -21,7 +21,7 @@
 		<th><spring:message code="SystemInfo.value"/></th>
 	</tr>
 	<c:forEach items="${vars}" var="var" varStatus="status">
-		<tr class="<c:choose><c:when test="${status.index % 2 == 0}">evenRow</c:when><c:otherwise>oddRow</c:otherwise></c:choose>">
+		<tr class='${status.index % 2 == 0 ? "evenRow" : "oddRow"}'>
 			<td>${var.key}</td>
 			<td>${var.value}</td>
 		</tr>
@@ -36,7 +36,7 @@
 		<th><spring:message code="SystemInfo.value"/></th>
 	</tr>
 	<c:forEach items="${schedVars}" var="var" varStatus="status">
-		<tr class="<c:choose><c:when test="${status.index % 2 == 0}">evenRow</c:when><c:otherwise>oddRow</c:otherwise></c:choose>">
+		<tr class='${status.index % 2 == 0 ? "evenRow" : "oddRow"}'>
 			<td>${var.key}</td>
 			<td>${var.value}</td>
 		</tr>
