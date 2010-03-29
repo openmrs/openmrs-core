@@ -18,6 +18,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -51,6 +52,7 @@ import org.openmrs.scheduler.SchedulerConstants;
 import org.openmrs.scheduler.SchedulerUtil;
 import org.openmrs.util.DatabaseUpdateException;
 import org.openmrs.util.DatabaseUpdater;
+import org.openmrs.util.DatabaseUtil;
 import org.openmrs.util.InputRequiredException;
 import org.openmrs.util.MemoryAppender;
 import org.openmrs.util.OpenmrsConstants;
@@ -60,6 +62,8 @@ import org.openmrs.web.Listener;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.filter.StartupFilter;
 import org.springframework.web.context.ContextLoader;
+
+import java.sql.DatabaseMetaData;
 
 /**
  * This is the first filter that is processed. It is only active when starting OpenMRS for the very
@@ -472,7 +476,7 @@ public class InitializationFilter extends StartupFilter {
 	 * @return true if this initialization wizard needs to run
 	 */
 	public static boolean initializationRequired() {
-		return isInitializationComplete() == false && Listener.runtimePropertiesFound() == false;
+		return !isInitializationComplete();
 	}
 	
 	/**
@@ -481,6 +485,15 @@ public class InitializationFilter extends StartupFilter {
 	public void init(FilterConfig filterConfig) throws ServletException {
 		super.init(filterConfig);
 		wizardModel = new InitializationWizardModel();
+		//set whether need to do initialization work
+		if (Listener.runtimePropertiesFound()) {
+			boolean dbEmpty = isDatabaseEmpty(Listener.getRuntimeProperties());
+			//if database is not empty, then let UpdaterFilter to judge whether need database update
+			setInitializationComplete(!dbEmpty);
+		} else {
+			//if runtime-properties file doesn't exist, have to do initialization work
+			setInitializationComplete(false);
+		}
 	}
 	
 	/**
@@ -671,7 +684,7 @@ public class InitializationFilter extends StartupFilter {
 						if (!wizardModel.hasCurrentOpenmrsDatabase) {
 							setMessage("Create database");
 							// connect via jdbc and create a database
-							String sql = "create database `?` default character set utf8";
+							String sql = "create database if not exists `?` default character set utf8";
 							int result = executeStatement(false, wizardModel.createDatabaseUsername,
 							    wizardModel.createDatabasePassword, sql, wizardModel.databaseName);
 							// throw the user back to the main screen if this error occurs
@@ -952,6 +965,7 @@ public class InitializationFilter extends StartupFilter {
 					}
 					finally {
 						if (!hasErrors()) {
+							// set this so that the wizard isn't run again on next page load
 							setInitializationComplete(true);
 						}
 					}
@@ -960,5 +974,66 @@ public class InitializationFilter extends StartupFilter {
 			
 			thread = new Thread(r);
 		}
+	}
+	
+	/**
+	 * Check whether openmrs database is empty.  Having just one non-liquibase table
+	 * in the given database qualifies this as a non-empty database.
+	 * 
+	 * @param props the runtime properties
+	 * @return true/false whether openmrs database is empty or doesn't exist yet
+	 */
+	private static boolean isDatabaseEmpty(Properties props) {
+		if (props != null) {
+			String databaseConnectionFinalUrl = props.getProperty("connection.url");
+			if (databaseConnectionFinalUrl == null)
+				return true;
+			
+			String connectionUsername = props.getProperty("connection.username");
+			if (connectionUsername == null)
+				return true;
+			
+			String connectionPassword = props.getProperty("connection.password");
+			if (connectionPassword == null)
+				return true;
+			
+			Connection connection = null;
+			try {
+				DatabaseUtil.loadDatabaseDriver(databaseConnectionFinalUrl);
+				connection = DriverManager.getConnection(databaseConnectionFinalUrl, connectionUsername, connectionPassword);
+				
+				DatabaseMetaData dbMetaData = (DatabaseMetaData) connection.getMetaData();
+				
+				String[] types = { "TABLE" };
+				
+				//get all tables
+				ResultSet tbls = dbMetaData.getTables(null, null, null, types);
+				
+				while(tbls.next()){
+					String tableName = tbls.getString("TABLE_NAME");
+					//if any table exist besides "liquibasechangelog" or "liquibasechangeloglock", return false
+					if(!("liquibasechangelog".equals(tableName)) && !("liquibasechangeloglock".equals(tableName)))
+						return false;
+				}
+				return true;
+			}
+			catch (Exception e) {
+				//pass
+			}
+			finally {
+				try {
+					if (connection != null) {
+						connection.close();
+					}
+				}
+				catch (Throwable t) {
+					//pass
+				}
+			}
+			//if catch an exception while query database, then consider as database is empty.
+			return true;
+		}
+		else
+			return true;
 	}
 }

@@ -23,7 +23,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -40,7 +39,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Appender;
 import org.apache.log4j.Logger;
-import org.openmrs.api.context.Context;
 import org.openmrs.util.DatabaseUpdateException;
 import org.openmrs.util.DatabaseUpdater;
 import org.openmrs.util.InputRequiredException;
@@ -50,6 +48,7 @@ import org.openmrs.util.Security;
 import org.openmrs.util.DatabaseUpdater.ChangeSetExecutorCallback;
 import org.openmrs.web.Listener;
 import org.openmrs.web.filter.StartupFilter;
+import org.openmrs.web.filter.initialization.InitializationFilter;
 import org.springframework.web.context.ContextLoader;
 
 /**
@@ -343,11 +342,12 @@ public class UpdateFilter extends StartupFilter {
 		
 		log.debug("Initializing the UpdateFilter");
 		
-		Properties properties = Listener.getRuntimeProperties();
-		
-		if (properties != null) {
+		if (!InitializationFilter.initializationRequired()) {
 			model = new UpdateFilterModel();
-			Context.setRuntimeProperties(properties);
+			/*
+			 * In this case, Listener#runtimePropertiesFound == true and InitializationFilter Wizard is skipped,
+			 * so no need to reset Context's RuntimeProperties again, because of Listener.contextInitialized has set it.
+			 */
 			try {
 				if (model.changes == null)
 					updatesRequired = false;
@@ -361,8 +361,11 @@ public class UpdateFilter extends StartupFilter {
 				throw new ServletException("Unable to determine if updates are required", e);
 			}
 		} else {
-			// the wizard runs the updates, so they will not need any updates.
-			log.debug("Setting updates required to false because the user doesn't have any runtime properties yet");
+			/*
+			 * The initialization wizard will update the database to the latest version, so the user will not need any updates here.
+			 * See end of InitializationFilter#InitializationCompletion
+			 */
+			log.debug("Setting updates required to false because the user doesn't have any runtime properties yet or database is empty");
 			setUpdatesRequired(false);
 		}
 	}

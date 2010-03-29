@@ -91,7 +91,7 @@ public class DispatcherServlet extends org.springframework.web.servlet.Dispatche
 			log.info("DB updates are required, the update wizard must be run");
 		}
 		if (InitializationFilter.initializationRequired()) {
-			log.info("Runtime properties were not found, initialization is required");
+			log.info("Runtime properties were not found or the database is empty, so initialization is required");
 		}
 	}
 	
