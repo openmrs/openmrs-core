@@ -219,9 +219,8 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 			// check this patient for duplicate identifiers+identifierType
 			if (identifiersUsed.contains(pi.getIdentifier() + " id type #: "
 			        + pi.getIdentifierType().getPatientIdentifierTypeId())) {
-				patient.removeIdentifier(pi);
 				throw new DuplicateIdentifierException("This patient has two identical identifiers of type "
-				        + pi.getIdentifierType().getName() + ": " + pi.getIdentifier() + ", deleting one of them", pi);
+				        + pi.getIdentifierType().getName() + ": " + pi.getIdentifier(), pi);
 			} else {
 				identifiersUsed.add(pi.getIdentifier() + " id type #: "
 				        + pi.getIdentifierType().getPatientIdentifierTypeId());
