@@ -4,16 +4,16 @@
 <div class="box${model.patientVariation}">
 	<table class="personName">
 		<thead>
-			<tr>
-				<th><spring:message code="Person.names"/></th>
+			<tr class="patientDemographicsHeaderRow">
+				<th class="patientDemographicsPersonNameHeader"><spring:message code="Person.names"/></th>
 				<openmrs:forEachDisplayAttributeType personType="patient" displayType="viewing" var="attrType">
-					<th><spring:message code="PersonAttributeType.${fn:replace(attrType.name, ' ', '')}" text="${attrType.name}"/></th>
+					<th class="patientDemographicsPersonAttTypeHeader"><spring:message code="PersonAttributeType.${fn:replace(attrType.name, ' ', '')}" text="${attrType.name}"/></th>
 				</openmrs:forEachDisplayAttributeType>
 			</tr>
 		</thead>
 		<tbody>
-			<tr>
-				<td valign="top">
+			<tr class="patientDemographicsRow">
+				<td valign="top" class="patientDemographicsData" >
 					<c:forEach var="name" items="${model.patient.names}" varStatus="status">
 						<c:if test="${!name.voided}">
 							<% request.setAttribute("name", pageContext.getAttribute("name")); %>
@@ -24,7 +24,7 @@
 					</c:forEach>
 				</td>
 				<openmrs:forEachDisplayAttributeType personType="patient" displayType="viewing" var="attrType">
-					<td valign="top">${model.patient.attributeMap[attrType.name]}</td>
+					<td valign="top" class="patientDemographicsAttrName">${model.patient.attributeMap[attrType.name]}</td>
 				</openmrs:forEachDisplayAttributeType>
 			</tr>
 		</tbody>

@@ -24,7 +24,7 @@
 <div id="patientActionsBoxHeader" class="boxHeader${model.patientVariation}"><spring:message code="Patient.actions" /></div>
 <div id="patientActionsBox" class="box${model.patientVariation}">
 	<table id="patientActions">
-		<tr>
+		<tr class="patientActionsRow">
 			<td id="patientActionsPatientSummary">
 				<openmrs:extensionPoint pointId="org.openmrs.patientDashboard.patientSummary">
 					<a href="javascript:window.open('${extension.url}?patientId=${model.patient.patientId}', 'summaryWindow', 'toolbar=no,width=660,height=600,resizable=yes,scrollbars=yes').focus()">${extension.label}</a>
@@ -34,7 +34,7 @@
 	</table>
 	<table id="patientActions">
 		<openmrs:extensionPoint pointId="org.openmrs.patientDashboard.patientActionsContent" type="html" parameters="patientId=${model.patient.patientId}"/> 
-		<tr>
+		<tr class="patientActionsRow">
 		<c:if test="${empty model.patientReasonForExit}">
 			<td id="patientActionsOutcome">
 				<div id="patientActionsOutcomeLink">					
@@ -43,7 +43,7 @@
 				<div id="patientActionsOutcomeForm" style="display:none; padding: 3px; border: 1px black dashed">
 					<form method="post" id="exitForm">
 						<table id="outcomeFormTable">
-							<tr>
+							<tr class="patientOutcomeRow">
 								<td id="patientActionsOutcomeReason">
 									<span id="patientOutcomeTextReason"><spring:message code="Patient.outcome.exitType" /></span>
 									<openmrs:fieldGen type="org.openmrs.Patient.exitReason" formFieldName="reasonForExit" val="" parameters="optionHeader=[blank]|globalProp=concept.reasonExitedCare|onChange=updateCauseField()" />
@@ -54,8 +54,8 @@
 									<openmrs:globalProperty key="concept.otherNonCoded" var="conceptOther" />
 									<openmrs:fieldGen type="org.openmrs.Concept" formFieldName="causeOfDeath" val="${status.value}" parameters="showAnswers=${conceptCauseOfDeath}|showOther=${conceptOther}|otherValue=${causeOfDeathOther}" />
 								</td>
-							<tr>
-							<tr>
+							</tr>
+							<tr class="patientOutcomeRow">
 								<td id="patientActionsOutcomeDate">
 									<span id="patientOutcomeTextExitDate"><spring:message code="Patient.outcome.exitDate" /></span>
 									<openmrs:fieldGen type="java.util.Date" formFieldName="dateOfExit" val="" parameters="noBind=true" />
