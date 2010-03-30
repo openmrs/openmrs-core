@@ -575,6 +575,7 @@ public final class Listener extends ContextLoaderListener {
 			
 		}
 		catch (Throwable t) {
+			log.debug("Got an error while attempting to load the runtime properties", t);
 			log.warn("Unable to find a runtime properties file. Initial setup is needed. View the webapp to run the setup wizard.");
 			return null;
 		}
