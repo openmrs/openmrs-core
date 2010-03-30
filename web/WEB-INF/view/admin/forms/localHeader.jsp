@@ -10,7 +10,7 @@
 		</li>
 	</openmrs:hasPrivilege>
 	<openmrs:hasPrivilege privilege="Edit Forms">
-		<li <c:if test='<%= request.getRequestURI().contains("forms/fields") %>'>class="active"</c:if>>
+		<li <c:if test='<%= request.getRequestURI().contains("fieldForm") || request.getRequestURI().contains("fieldList") %>'>class="active"</c:if>>
 			<a href="${pageContext.request.contextPath}/admin/forms/field.list" class="retired">
 				<spring:message code="Field.manage"/>
 			</a>
