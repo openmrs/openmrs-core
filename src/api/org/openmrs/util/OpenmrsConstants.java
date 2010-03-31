@@ -661,7 +661,7 @@ public final class OpenmrsConstants {
 		
 		return roles;
 	}
-	
+
 	/**
 	 * These roles are given to a user automatically and cannot be assigned
 	 * 
@@ -675,6 +675,8 @@ public final class OpenmrsConstants {
 		
 		return roles;
 	}
+	
+	public static final String GLOBAL_PROPERTY_DRUG_FREQUENCIES = "dashboard.regimen.displayFrequencies";
 	
 	public static final String GLOBAL_PROPERTY_CONCEPTS_LOCKED = "concepts.locked";
 	
@@ -831,6 +833,12 @@ public final class OpenmrsConstants {
 		                "ANTIRETROVIRAL DRUGS,TUBERCULOSIS TREATMENT DRUGS",
 		                "Drug sets that appear on the Patient Dashboard Regimen tab. Comma separated list of name of concepts that are defined as drug sets."));
 		
+		props
+        		.add(new GlobalProperty(
+        				GLOBAL_PROPERTY_DRUG_FREQUENCIES,
+        				"7 days/week,6 days/week,5 days/week,4 days/week,3 days/week,2 days/week,1 days/week",
+                		"Frequency of a drug order that appear on the Patient Dashboard. Comma separated list of name of concepts that are defined as drug frequencies."));
+
 		String standardRegimens = "<list>" + "  <regimenSuggestion>" + "    <drugComponents>" + "      <drugSuggestion>"
 		        + "        <drugId>2</drugId>" + "        <dose>1</dose>" + "        <units>tab(s)</units>"
 		        + "        <frequency>2/day x 7 days/week</frequency>" + "        <instructions></instructions>"

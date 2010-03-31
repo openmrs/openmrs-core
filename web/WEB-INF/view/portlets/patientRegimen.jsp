@@ -81,10 +81,16 @@
 											</select>
 											<span class="patientAddFlexibleDataSpan"> x </span>
 											<select name="frequencyWeek" id="frequencyWeek">
-												<%--<option value="<spring:message code="DrugOrder.frequency.everyDay" />"><spring:message code="DrugOrder.frequency.everyDay" /></option>--%>
-												<% for ( int i = 7; i >= 1; i-- ) { %>
-													<option value="<%= i %> <spring:message code="DrugOrder.frequency.days" />/<spring:message code="DrugOrder.frequency.week" />"><%= i %> <spring:message code="DrugOrder.frequency.days" />/<spring:message code="DrugOrder.frequency.week" /></option>
-												<% } %>
+												<openmrs:globalProperty var="drugFrequencies" key="dashboard.regimen.displayFrequencies" listSeparator="," />
+												<c:if test="${empty drugFrequencies}">
+													<option disabled>&nbsp; <spring:message code="DrugOrder.add.error.missingFrequency.interactions" arguments="dashboard.regimen.displayFrequencies"/></option>
+												</c:if>
+												<c:if test="${not empty drugFrequencies}">
+													<c:forEach var="drugFrequency" items="${drugFrequencies}">
+														<option value="${drugFrequency}">${drugFrequency}</option>
+													</c:forEach>
+												</c:if>											
+
 											</select>
 										</td>
 									</tr>
