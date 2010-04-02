@@ -183,6 +183,8 @@
 
 <a name="designSchema"></a>
 
+<openmrs:htmlInclude file="/dwr/util.js" />
+<openmrs:htmlInclude file="/dwr/interface/DWRFormService.js" />
 <openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
 <openmrs:htmlInclude file="/admin/forms/formSchemaDesign.js" />
 
