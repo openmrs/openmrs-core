@@ -68,27 +68,34 @@ public class ConceptDrugFormController extends SimpleFormController {
 	                                BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
-		
 		String view = getFormView();
 		
 		if (Context.isAuthenticated()) {
 			Drug drug = (Drug) obj;
 			ConceptService conceptService = Context.getConceptService();
-			drug.setConcept(conceptService.getConcept(Integer.valueOf(request.getParameter("conceptId"))));
-			if (drug.isRetired() && drug.getRetiredBy() == null) {
-				// if this is a "new" retiring, call retireDrug to set appropriate attributes
-				drug.setRetired(false);
-				conceptService.retireDrug(drug, drug.getRetireReason());
-			} else if (!drug.isRetired() && drug.getRetiredBy() != null) {
-				// if this was just retired, call unretireDrug to unset appropriate attributes
-				drug.setRetired(true);
+			if (request.getParameter("retireDrug") != null) {
+				String retireReason = request.getParameter("retireReason");
+				if (drug.getId() != null && (retireReason == null || retireReason.length() == 0)) {
+					errors.reject("retireReason", "ConceptDrug.retire.reason.empty");
+					return showForm(request, response, errors);
+				}
+				
+				conceptService.retireDrug(drug, retireReason);
+				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "ConceptDrug.retiredSuccessfully");
+			}
+
+			// if this obs is already voided and needs to be unvoided
+			else if (request.getParameter("unretireDrug") != null) {
 				conceptService.unretireDrug(drug);
+				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "ConceptDrug.unretiredSuccessfully");
 			} else {
+				drug.setConcept(conceptService.getConcept(Integer.valueOf(request.getParameter("conceptId"))));
 				conceptService.saveDrug(drug);
+				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "ConceptDrug.saved");
 			}
 			
 			view = getSuccessView();
-			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "ConceptDrug.saved");
+			
 		}
 		
 		return new ModelAndView(new RedirectView(view));

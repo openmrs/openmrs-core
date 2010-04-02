@@ -207,26 +207,14 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 * @throws APIException
 	 */
 	public Drug retireDrug(Drug drug, String reason) throws APIException {
-		
-		if (drug.isRetired() == false) {
-			drug.setRetired(true);
-			drug.setRetireReason(reason);
 			return dao.saveDrug(drug);
-		}
-		
-		return drug;
 	}
 	
 	/**
 	 * @see org.openmrs.api.ConceptService#unretireDrug(org.openmrs.Drug)
 	 */
 	public Drug unretireDrug(Drug drug) throws APIException {
-		if (drug.isRetired() == true) {
-			drug.setRetired(false);
 			return dao.saveDrug(drug);
-		}
-		
-		return drug;
 	}
 	
 	/**
