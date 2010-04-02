@@ -683,8 +683,9 @@ public class Context {
 	}
 	
 	/**
-	 * Clears cached changes made so far during this unit of work without writing them to the database.
-	 * If you call this method, and later call closeSession() or flushSession() your changes are still lost.
+	 * Clears cached changes made so far during this unit of work without writing them to the
+	 * database. If you call this method, and later call closeSession() or flushSession() your
+	 * changes are still lost.
 	 */
 	public static void clearSession() {
 		log.trace("clearing session");
@@ -733,7 +734,8 @@ public class Context {
 	 * @param props Runtime properties to use for startup
 	 * @throws InputRequiredException if the {@link DatabaseUpdater} has determined that updates
 	 *             cannot continue without input from the user
-	 * @throws DatabaseUpdateException if database updates are required, see {@link DatabaseUpdater#executeChangelog()}
+	 * @throws DatabaseUpdateException if database updates are required, see
+	 *             {@link DatabaseUpdater#executeChangelog()}
 	 * @throws ModuleMustStartException if a module that should be started is not able to
 	 * @see InputRequiredException#getRequiredInput() InputRequiredException#getRequiredInput() for
 	 *      the required question/datatypes
@@ -775,7 +777,7 @@ public class Context {
 	 * @param properties Other startup properties
 	 * @throws InputRequiredException if the {@link DatabaseUpdater} has determined that updates
 	 *             cannot continue without input from the user
-	 * @throws DatabaseUpdateException if the database must be updated.  See {@link DatabaseUpdater}
+	 * @throws DatabaseUpdateException if the database must be updated. See {@link DatabaseUpdater}
 	 * @throws ModuleMustStartException if a module that should start is not able to
 	 * @see #startup(Properties)
 	 * @see InputRequiredException#getRequiredInput() InputRequiredException#getRequiredInput() for
@@ -851,6 +853,7 @@ public class Context {
 	 * 
 	 * @param cls The Class of the service to get
 	 * @return The requested Service
+	 * @should return the same object when called multiple times for the same class
 	 */
 	public static <T extends Object> T getService(Class<? extends T> cls) {
 		return getServiceContext().getService(cls);

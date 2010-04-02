@@ -21,6 +21,7 @@ import org.junit.Test;
 import org.openmrs.Location;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
+import org.openmrs.api.PatientService;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.LocaleUtility;
@@ -170,5 +171,19 @@ public class ContextTest extends BaseContextSensitiveTest {
 		List<Location> l = Context.getRegisteredComponents(Location.class);
 		Assert.assertNotNull(l);
 		Assert.assertEquals(0, l.size());
+	}
+	
+	/**
+	 * Prevents regression after patch from #2174:
+	 * "Prevent duplicate proxies and AOP in context services"
+	 * 
+	 * @see {@link Context#getService(Class)}
+	 */
+	@Test
+	@Verifies(value = "should return the same object when called multiple times for the same class", method = "getService(Class)")
+	public void getService_shouldReturnTheSameObjectWhenCalledMultipleTimesForTheSameClass() throws Exception {
+		PatientService ps1 = Context.getService(PatientService.class);
+		PatientService ps2 = Context.getService(PatientService.class);
+		Assert.assertTrue(ps1 == ps2);
 	}
 }
