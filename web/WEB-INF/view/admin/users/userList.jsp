@@ -14,7 +14,9 @@
 
 <b class="boxHeader"><spring:message code="User.list.title"/></b>
 
+<openmrs:htmlInclude file="/dwr/util.js" />
 <openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
+<openmrs:htmlInclude file="/dwr/interface/DWRUserService.js" />
 
 <script type="text/javascript">
 	dojo.require("dojo.widget.openmrs.UserSearch");

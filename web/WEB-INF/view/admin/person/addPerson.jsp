@@ -25,11 +25,13 @@
 	<c:otherwise>
 		
 		<form method="post" action="" id="addPersonForm">
+				
+		<openmrs:htmlInclude file="/dwr/interface/DWRPersonService.js" />
+		
+		<openmrs:htmlInclude file="/dwr/util.js" />
 		
 		<openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
-		
-		<script type='text/javascript' src='/amrs/dwr/interface/DWRPersonService.js'></script>
-		
+				
 		<script type="text/javascript">
 			dojo.require("dojo.widget.openmrs.PersonSearch");
 			
