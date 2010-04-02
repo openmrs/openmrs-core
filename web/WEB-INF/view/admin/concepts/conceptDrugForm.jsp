@@ -47,7 +47,19 @@
 <openmrs:extensionPoint pointId="org.openmrs.admin.concepts.conceptDrugForm.afterTitle" type="html" parameters="drugId=${drug.drugId}" />
 
 <c:if test="${drug.retired}">
-	<div class="retiredMessage"><div><spring:message code="ConceptDrug.retiredMessage"/></div></div>
+<form action="" method="post">
+	<div class="retiredMessage">
+	<div>
+	<spring:message code="ConceptDrug.retiredMessage"/>
+	${drug.retiredBy.personName}
+				<openmrs:formatDate date="${drug.dateRetired}" type="medium" />
+				-
+				${drug.retireReason}
+				<input type="submit" value='<spring:message code="ConceptDrug.unretireDrug"/>' name="unretireDrug"/>
+			
+	</div>
+	</div>
+	</form>
 </c:if>
 
 <spring:hasBindErrors name="drug">
@@ -56,6 +68,7 @@
 </spring:hasBindErrors>
 
 <form method="post">
+<fieldset>
 <table cellpadding="3" cellspacing="0" id="table">
 	<tr>
 		<th><spring:message code="general.name"/></th>
@@ -128,38 +141,7 @@
 			</spring:bind>
 		</td>
 	</tr>
-	<tr>
-		<th><spring:message code="general.retired"/></th>
-		<td>
-			<spring:bind path="drug.retired">
-				<input type="hidden" name="_${status.expression}" value=""/>		
-				<input type="checkbox" name="${status.expression}"
-					   id="${status.expression}" 
-					   <c:if test="${status.value == true}">checked</c:if>
-					   onchange="document.getElementById('retiredReasonRow').style.display = (this.checked == true) ? '' : 'none';"
-			    />
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
-			</spring:bind>
-		</td>
-	</tr>
-	<tr id="retiredReasonRow">
-		<th><spring:message code="general.retiredReason"/></th>
-		<td>
-			<spring:bind path="drug.retireReason">
-				<input type="text" name="${status.expression}" id="retiredReason" value="${status.value}" />
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-			</spring:bind>
-		</td>
-	</tr>
-	<c:if test="${drug.retired && drug.retiredBy != null}">
-		<tr>
-			<th><spring:message code="general.retiredBy" /></th>
-			<td>
-				<a href="#View User" onclick="return gotoUser(null, '${drug.retiredBy.userId}')">${drug.retiredBy.personName}</a> -
-				<openmrs:formatDate date="${drug.dateRetired}" type="medium" />
-			</td>
-		</tr>
-	</c:if>
+	
 	<c:if test="${drug.creator != null}">
 		<tr>
 			<th><spring:message code="general.createdBy" /></th>
@@ -178,8 +160,27 @@
 <input type="submit" value='<spring:message code="ConceptDrug.save"/>'>
 &nbsp;
 <input type="button" value='<spring:message code="general.cancel"/>' onclick="history.go(-1); return; document.location='index.htm?autoJump=false&phrase=<request:parameter name="phrase"/>'">
+</fieldset>
 </form>
-
+<br/>
+<br/>
+<c:if test="${not drug.retired && not empty drug.drugId}">
+	<form action="" method="post">
+		<fieldset>
+			<h4><spring:message code="ConceptDrug.retireDrug"/></h4>
+			
+			<b><spring:message code="general.reason"/></b>
+			<input type="text" value="" size="40" name="retireReason" />
+			<spring:hasBindErrors name="drug">
+				<c:forEach items="${errors.allErrors}" var="error">
+					<c:if test="${error.code == 'retireReason'}"><span class="error"><spring:message code="${error.defaultMessage}" text="${error.defaultMessage}"/></span></c:if>
+				</c:forEach>
+			</spring:hasBindErrors>
+			<br/>
+			<input type="submit" value='<spring:message code="ConceptDrug.retireDrug"/>' name="retireDrug"/>
+		</fieldset>
+	</form>
+</c:if>
 <script type="text/javascript">
 	document.getElementById('retiredReasonRow').style.display = document.getElementById('retired').checked ==true ? '' : 'none';
 </script>
