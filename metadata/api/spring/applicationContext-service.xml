@@ -50,7 +50,7 @@
 	<!--  **************************  SERVICE CONTEXT CONFIGURATION  *************************  -->
 
 	<!-- Single application context (our own context, not Spring's ApplicationContext -->
-	<bean id="serviceContext" class="org.openmrs.api.context.ServiceContext" factory-method="getInstance">
+	<bean id="serviceContext" class="org.openmrs.api.context.ServiceContext" factory-method="getInstance" destroy-method="destroyInstance">
         <property name="patientService"><ref bean="patientService"/></property>
         <property name="personService"><ref bean="personService"/></property>
         <property name="conceptService"><ref bean="conceptService"/></property>
