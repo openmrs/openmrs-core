@@ -128,7 +128,8 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 */
 	public Obs(Person person, Concept question, Date obsDatetime, Location location) {
 		this.person = person;
-		this.personId = person.getPersonId();
+		if (person != null)
+			this.personId = person.getPersonId();
 		this.concept = question;
 		this.obsDatetime = obsDatetime;
 		this.location = location;
