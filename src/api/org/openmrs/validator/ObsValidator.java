@@ -18,7 +18,9 @@ import java.util.List;
 
 import org.openmrs.Concept;
 import org.openmrs.ConceptDatatype;
+import org.openmrs.ConceptNumeric;
 import org.openmrs.Obs;
+import org.openmrs.api.context.Context;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
@@ -103,6 +105,29 @@ public class ObsValidator implements Validator {
 					errors.rejectValue("valueNumeric", "error.null");
 				else
 					errors.rejectValue("groupMembers", "Obs.error.inGroupMember");
+			} else if (dt.isNumeric()) {
+				ConceptNumeric cn = Context.getConceptService().getConceptNumeric(c.getConceptId());
+				// If the concept numeric is not precise, the value cannot be a float, so raise an error 
+				if (!cn.isPrecise() && Math.ceil(obs.getValueNumeric()) != obs.getValueNumeric()) {
+					if (atRootNode)
+						errors.rejectValue("valueNumeric", "error.precision");
+					else
+						errors.rejectValue("groupMembers", "Obs.error.inGroupMember");
+				}
+				// If the number is higher than the absolute range, raise an error 
+				if (cn.getHiAbsolute() != null && cn.getHiAbsolute() < obs.getValueNumeric()) {
+					if (atRootNode)
+						errors.rejectValue("valueNumeric", "error.outOfRange.high");
+					else
+						errors.rejectValue("groupMembers", "Obs.error.inGroupMember");
+				}
+				// If the number is lower than the absolute range, raise an error as well 
+				if (cn.getLowAbsolute() != null && cn.getLowAbsolute() > obs.getValueNumeric()) {
+					if (atRootNode)
+						errors.rejectValue("valueNumeric", "error.outOfRange.low");
+					else
+						errors.rejectValue("groupMembers", "Obs.error.inGroupMember");
+				}
 			} else if (dt.isText() && obs.getValueText() == null) {
 				if (atRootNode)
 					errors.rejectValue("valueText", "error.null");
