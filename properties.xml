@@ -98,7 +98,8 @@
 		<fileset dir="${velocity.dir}" includes="*.jar" />
     	<fileset dir="${xerces.dir}" includes="*.jar" />
     	<fileset dir="${xstream.dir}" includes="*.jar" />
-    	<fileset dir="${liquibase.dir}" includes="*.jar"/>    	
+    	<fileset dir="${liquibase.dir}" includes="*.jar"/>
+    	<fileset dir="${json.dir}" includes="*.jar"/>
     </path>
 
 </project>
