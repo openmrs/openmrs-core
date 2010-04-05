@@ -229,7 +229,7 @@
 		text-align: left;
 	}
 	*>#numericRangeError, *>.obsValue {
-		visibility: hidden;
+		visibility: visible;
 	}
 	#numericRangeError {
 		font-weight: bold;
