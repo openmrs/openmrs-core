@@ -42,7 +42,7 @@ public class PatientDashboardGraphControllerTest extends BaseWebContextSensitive
 		ModelMap map = new ModelMap();
 		controller.showGraphData(2, 1, map);
 		PatientGraphData graph = (PatientGraphData) map.get("graph");
-		Assert.assertEquals("{\"absolute\":{\"high\":50.0,\"low\":2.0},\"critical\":{\"high\":null,\"low\":null},\"normal\":{\"high\":null,\"low\":null},\"data\":[[1139509800000,2.0],[1139423400000,1.0]]}", graph
+		Assert.assertEquals("{\"absolute\":{\"high\":50.0,\"low\":2.0},\"critical\":{\"high\":null,\"low\":null},\"normal\":{\"high\":null,\"low\":null},\"data\":[[1139547600000,2.0],[1139461200000,1.0]]}", graph
 		        .toString());
 	}
 	
