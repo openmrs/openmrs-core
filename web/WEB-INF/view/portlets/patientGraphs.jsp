@@ -1,5 +1,11 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
+<openmrs:htmlInclude file="/scripts/jquery/jquery-1.3.2.min.js" />
+<openmrs:htmlInclude file="/scripts/flot/jquery.flot.js" />
+<openmrs:htmlInclude file="/scripts/flot/jquery.flot.multiple.threshold.js"/> 
 
+<script type="text/javascript">
+	var $j = jQuery.noConflict();
+</script>
 <openmrs:htmlInclude file="/scripts/dojoConfig.js"/>
 <openmrs:htmlInclude file="/scripts/dojo/dojo.js"/>
 
@@ -92,7 +98,7 @@ table#labTestTable th {
 					<tr>
 						<td>
 						<div>
-						<div align="center" id="conceptBox-${conceptId}"><spring:message
+						<div  style="margin: 0pt auto; height: 300px; width: 600px; align: center" align="center" id="conceptBox-${conceptId}"><spring:message
 							code="general.loading" /></div>
 						<div align="center">
 						<div style="width: 750px; overflow: auto; border: 1px solid black;">
@@ -141,9 +147,60 @@ table#labTestTable th {
 		function loadGraphs() {
 			<c:forEach items="${fn:split(graphConceptString, '-')}" var="conceptId">
 				<c:if test="${conceptId != ''}">
-					<openmrs:concept conceptId="${conceptId}" var="concept" nameVar="name" numericVar="num">
-						document.getElementById('conceptBox-${conceptId}').innerHTML = '<img src="${pageContext.request.contextPath}/showGraphServlet?patientId=${patient.patientId}&conceptId=${conceptId}&width=600&height=300&minRange=<c:out value="${num.lowAbsolute}" default="0.0"/>&maxRange=<c:out value="${num.hiAbsolute}" default="200.0"/>" />';
-					</openmrs:concept>
+					$j.getJSON("patientGraphJson.form?patientId=${patient.patientId}&conceptId=${conceptId}", function(json){
+						  $j.plot($j('#conceptBox-${conceptId}'),
+						  [
+						  {
+						  	data:json.data,lines:{show:true},color:"rgb(0,0,0)",
+						  	constraints:
+						  	[
+						  	{
+                           	    threshold: {above:json.normal.high},
+                           	    color: "rgb(255,126,0)"
+                          	},
+                          	{
+                           	    threshold: {below:json.normal.low},
+                           	    color: "rgb(255,126,0)"
+                          	},
+                          	{
+                           	    threshold: {above:json.absolute.high},
+                           	    color: "rgb(20,20,20)"
+                          	},
+                          	{
+                           	    threshold: {below:json.absolute.low},
+                           	    color: "rgb(20,20,20)"
+                          	},
+                          	{
+                           	    threshold: {above:json.critical.high},
+                           	    color: "rgb(200,0,0)"
+                          	},
+                          	{
+                           	    threshold: {below:json.critical.low},
+                           	    color: "rgb(200,0,0)"
+                          	}	                        
+                          	]
+                          	}],
+                          	{ 
+								xaxis: { 
+										mode: "time",minTickSize: [1, "month"]
+										},
+								yaxis: {
+										min: findMaxAndMin(json.data).min-10, max: findMaxAndMin(json.data).max+10
+						  				}
+							}
+                          );
+						  
+							function findMaxAndMin(dataset) {
+								if(undefined == dataset)return undefined;
+								var arr = [];
+								for( var i=0;i<dataset.length;i++){
+								   arr[i] = dataset[i][1];
+								}
+								arr.sort(function(p1,p2){return p1-p2});
+								return { min:arr[0],max:arr[arr.length-1]};
+							}
+					}
+					);
 				</c:if>
 			</c:forEach>
 		}

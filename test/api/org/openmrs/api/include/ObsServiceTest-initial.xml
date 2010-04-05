@@ -1,6 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <dataset>
   <concept concept_id="1" retired="false" datatype_id="1" class_id="0" is_set="false" creator="1" date_created="2005-01-01 00:00:00.0" uuid="4a5048b1-cf85-4c64-9339-7cab41e5e364"/>
+  <concept_numeric concept_id="1" hi_absolute="50.0" low_absolute="2.0" precise="false"/>
   <concept_description concept_description_id="1" concept_id="1" description="this is a description" locale="en" creator="1" date_created="2005-01-01 00:00:00.0" uuid="8b46218d-8dcf-4f45-91b5-837d11486a53"/>
   <concept_name concept_id="1" name="Some concept name" locale="en" creator="1" date_created="2005-01-01 00:00:00.0" concept_name_id="1" voided="false" uuid="8add472b-156b-468f-ad62-d9333fb86976"/>
   <concept_name_tag_map concept_name_id="1" concept_name_tag_id="4"/>
