@@ -14,6 +14,8 @@
 
 <openmrs:htmlInclude file="/scripts/dojoConfig.js" />
 <openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
+<openmrs:htmlInclude file="/dwr/interface/DWRPersonService.js" />
+
 
 <script type="text/javascript">
 	
