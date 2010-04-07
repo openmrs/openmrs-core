@@ -2,6 +2,7 @@
 <classpath>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="src" path="src/api"/>
+	<classpathentry kind="src" path="web/WEB-INF"/>
 	<classpathentry kind="src" path="src/web"/>
 	<classpathentry kind="src" path="test/api"/>
 	<classpathentry kind="src" path="test/web"/>
@@ -54,7 +55,6 @@
 	<classpathentry kind="lib" path="metadata/api/hibernate"/>
 	<classpathentry kind="lib" path="metadata/api/log4j/junit"/>
 	<classpathentry kind="lib" path="metadata/model"/>
-	<classpathentry kind="lib" path="web/WEB-INF"/>
 	<classpathentry kind="lib" path="lib/jfreechart/jcommon-1.0.15.jar"/>
 	<classpathentry kind="lib" path="lib/jfreechart/jfreechart-1.0.12.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
