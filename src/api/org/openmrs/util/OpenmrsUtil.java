@@ -1151,11 +1151,12 @@ public class OpenmrsUtil {
 	 * 
 	 * @return a simple date format
 	 * @should return a pattern with four y characters in it
+	 * @should not allow the returned SimpleDateFormat to be modified
 	 * @since 1.5
 	 */
 	public static SimpleDateFormat getDateFormat(Locale locale) {
 		if (dateFormatCache.containsKey(locale))
-			return dateFormatCache.get(locale);
+			return (SimpleDateFormat) dateFormatCache.get(locale).clone();
 		
 		SimpleDateFormat sdf = (SimpleDateFormat) DateFormat.getDateInstance(DateFormat.SHORT, locale);
 		String pattern = sdf.toPattern();
@@ -1178,7 +1179,7 @@ public class OpenmrsUtil {
 		
 		dateFormatCache.put(locale, sdf);
 		
-		return sdf;
+		return (SimpleDateFormat) sdf.clone();
 	}
 	
 	/**
