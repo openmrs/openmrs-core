@@ -637,15 +637,33 @@
 		<property name="validatorClass"><value>org.openmrs.reporting.ShortDescriptionProducerValidator</value></property>
 	</bean>
 
-	<bean class="org.openmrs.validator.ValidateUtil">
-		<property name="validators">
-			<list>
-				<bean class="org.openmrs.validator.DrugOrderValidator"/>
-				<bean class="org.openmrs.validator.OrderValidator"/>
-			</list>
-		</property>
-	</bean>
+	<!--  **************************  VALIDATOR CONFIGURATION  *************************  -->
+	<!--  Configuration for all openmrs validators                                        -->
+	
+	<bean id="patientValidator" class="org.openmrs.validator.PatientValidator" />
+	<bean id="locationValidator" class="org.openmrs.validator.LocationValidator"/>
+	<bean id="personNameValidator" class="org.openmrs.validator.PersonNameValidator" />
+	<bean id="patientIdentifierValidator" class="org.openmrs.validator.PatientIdentifierValidator" />
+	<bean id="patientIdentifierTypeValidator" class="org.openmrs.validator.PatientIdentifierTypeValidator" />
+	<bean id="personAttributeTypeValidator" class="org.openmrs.validator.PersonAttributeTypeValidator" />
+	<bean id="userValidator" class="org.openmrs.validator.UserValidator" />
+	<bean id="roleValidator" class="org.openmrs.validator.RoleValidator" />
+	<bean id="privilegeValidator" class="org.openmrs.validator.PrivilegeValidator" />
+	<bean id="encounterTypeValidator" class="org.openmrs.validator.EncounterTypeValidator" />
+	<bean id="conceptClassValidator" class="org.openmrs.validator.ConceptClassValidator" />
+	<bean id="conceptDatatypeValidator" class="org.openmrs.validator.ConceptDatatypeValidator" />
+	<bean id="formEditValidator" class="org.openmrs.validator.FormValidator" />
+	<bean id="fieldTypeValidator" class="org.openmrs.validator.FieldTypeValidator" />
+	<bean id="programValidator" class="org.openmrs.validator.ProgramValidator" />
+	<bean id="stateConversionValidator" class="org.openmrs.validator.StateConversionValidator" />
+	<bean id="taskValidator" class="org.openmrs.validator.SchedulerFormValidator" />
+	<bean id="obsValidator" class="org.openmrs.validator.ObsValidator" />
+	<bean id="orderTypeValidator" class="org.openmrs.validator.OrderTypeValidator" />
+	<bean id="orderValidator" class="org.openmrs.validator.OrderValidator" />
+	<bean id="drugOrderValidator" class="org.openmrs.validator.DrugOrderValidator" />
 	<bean id="requireNameValidator" class="org.openmrs.validator.RequireNameValidator"/>
+
+	<!--  ************************ END VALIDATOR CONFIGURATION  ************************  -->
 	
 	<context:component-scan base-package="org.openmrs">
 		<context:include-filter type="annotation" expression="org.openmrs.annotation.Handler"/>

@@ -21,6 +21,7 @@ import java.util.Vector;
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.HandlerUtil;
 import org.springframework.validation.BindException;
 import org.springframework.validation.ObjectError;
 import org.springframework.validation.Validator;
@@ -43,13 +44,13 @@ import org.springframework.validation.Validator;
  */
 public class ValidateUtil {
 	
-	private static Set<Validator> validators = new LinkedHashSet<Validator>();
-	
 	/**
+	 * @deprecated in favor of using HandlerUtil to reflexively get validators
 	 * @param newValidators the validators to set
 	 */
+	@Deprecated
 	public void setValidators(List<Validator> newValidators) {
-		validators.addAll(newValidators);
+		
 	}
 	
 	/**
@@ -60,6 +61,8 @@ public class ValidateUtil {
 	 */
 	protected static List<Validator> getValidators(Object obj) {
 		List<Validator> matchingValidators = new Vector<Validator>();
+		
+		List<Validator> validators = HandlerUtil.getHandlersForType(Validator.class, obj.getClass());
 		
 		for (Validator validator : validators) {
 			if (validator.supports(obj.getClass())) {

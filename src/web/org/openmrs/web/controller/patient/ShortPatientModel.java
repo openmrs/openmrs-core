@@ -59,7 +59,23 @@ public class ShortPatientModel {
 	// private Location healthCenter = null;
 	// private String mothersName;
 	
+	/**
+	* Indicates whether or not patient is dead.
+	*
+	* @return true if patient is dead, otherwise false.
+	* @deprecated
+	*/
+	@Deprecated	
 	public Boolean getDead() {
+		return dead;
+	}
+	
+	/**
+	* Indicates whether or not patient is dead.
+	*
+	* @return true if patient is dead, otherwise false
+	*/
+	public Boolean isDead() {
 		return dead;
 	}
 	

@@ -1022,7 +1022,7 @@ public class OpenmrsUtil {
 			throw new ModuleException("Error while saving dwrmodulexml back to dwr-modules.xml", e);
 		}
 		catch (FileNotFoundException e) {
-			throw new ModuleException("/WEB-INF/dwr-modules.xml file doesn't exist.", e);
+			throw new ModuleException(outFile.getAbsolutePath() + " file doesn't exist.", e);
 		}
 		finally {
 			try {

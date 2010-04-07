@@ -16,6 +16,7 @@ package org.openmrs.validator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Form;
+import org.openmrs.annotation.Handler;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
@@ -24,6 +25,7 @@ import org.springframework.validation.Validator;
  * This checks a Form object to make sure that it passes all API requirements. E.g. it must have a
  * name and version, if it is retired it must have metadata about that, etc.
  */
+@Handler(supports = { Form.class }, order = 50)
 public class FormValidator implements Validator {
 	
 	/** Log for this class and subclasses */
