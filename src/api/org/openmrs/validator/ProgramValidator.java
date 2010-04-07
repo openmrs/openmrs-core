@@ -18,6 +18,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Program;
+import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
@@ -28,6 +29,7 @@ import org.springframework.validation.Validator;
  * 
  * @since 1.5
  */
+@Handler(supports = { Program.class }, order = 50)
 public class ProgramValidator implements Validator {
 	
 	protected final Log log = LogFactory.getLog(getClass());

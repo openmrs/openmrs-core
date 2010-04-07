@@ -26,7 +26,7 @@
 				<c:forEach items="${line}" var="token">
 					<c:if test="${token.isToken == model.layoutTemplate.layoutToken}">
 						<spring:bind path="${token.codeName}">
-							${status.value}
+							<c:out value="${status.value}"/>
 						</spring:bind>
 					</c:if>
 				</c:forEach>
@@ -49,7 +49,7 @@
 								<c:if test="${token.isToken == model.layoutTemplate.layoutToken}">
 									<td>
 										<spring:bind path="${token.codeName}">
-											${status.value}
+											<c:out value="${status.value}"/>
 										</spring:bind>
 									</td>
 								</c:if>
@@ -75,7 +75,7 @@
 												<input type="text" name="${status.expression}" value="${model.layoutTemplate.elementDefaults[token.codeName]}" size="${token.displaySize}" />
 											</c:if>
 											<c:if test="${status.value != null}">
-												<input type="text" name="${status.expression}" value="${status.value}" size="${token.displaySize}" />
+												<input type="text" name="${status.expression}" value="<c:out value="${status.value}"/>" size="${token.displaySize}" />
 											</c:if>
 											<c:if test="${model.layoutShowErrors != 'false'}">
 												<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>

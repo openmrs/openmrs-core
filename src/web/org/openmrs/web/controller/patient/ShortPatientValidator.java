@@ -11,7 +11,7 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.validator;
+package org.openmrs.web.controller.patient;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -19,27 +19,22 @@ import java.util.Date;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.Patient;
-import org.openmrs.PatientIdentifier;
-import org.openmrs.PersonName;
+import org.openmrs.validator.PersonNameValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 /**
- * This class validates a Patient object. 
+ * This class validates a Short Patient Model object in the {@link NewPatientFormController}
  */
-public class PatientValidator implements Validator {
+public class ShortPatientValidator implements Validator {
 	
 	private static Log log = LogFactory.getLog(PersonNameValidator.class);
 
 	@Autowired
-	PersonNameValidator personNameValidator;
+	private PersonNameValidator personNameValidator;
 
-	@Autowired
-	PatientIdentifierValidator patientIdentifierValidator;
-	
 	/**
 	 * Returns whether or not this validator supports validating a given class.
 	 * 
@@ -49,18 +44,18 @@ public class PatientValidator implements Validator {
 	@SuppressWarnings("unchecked")
 	public boolean supports(Class c) {
 		log.error(this.getClass().getName() + ".supports: " + c.getName());
-		return Patient.class.isAssignableFrom(c);
+		return ShortPatientModel.class.isAssignableFrom(c);
 	}
 	
 	/**
-	 * Validates the given Patient. Currently just checks for errors in identifiers. TODO: Check for
-	 * errors in all Patient fields.
+	 * Validates the given Patient.
 	 * 
 	 * @param obj The patient to validate.
-	 * @param errors Errors
+	 * @param errors The patient to validate.
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
 	 * @should fail validation if gender is blank
+	 * @should fail validation if birthdate is blank
 	 * @should fail validation if birthdate makes patient older that 120 years old
 	 * @should fail validation if birthdate is a future date
 	 * @should fail validation if voidReason is blank when patient is voided
@@ -68,46 +63,34 @@ public class PatientValidator implements Validator {
 	 */
 	public void validate(Object obj, Errors errors) {
 		
-		log.error(this.getClass().getName()+ ".validate..." );
+		ShortPatientModel shortPatientModel = (ShortPatientModel) obj;
 		
-		Patient patient = (Patient) obj;
-		
-		if (patient != null) {
-			for (PersonName personName : patient.getNames()) {
-				personNameValidator.validate(personName, errors);
-			}
-		}
+		personNameValidator.validatePersonName(shortPatientModel.getName(), errors, false, false);
 
 		// Make sure they choose a gender
-		if (StringUtils.isBlank(patient.getGender())) errors.rejectValue("gender", "Person.gender.required");
+		if (StringUtils.isBlank(shortPatientModel.getGender())) errors.rejectValue("gender", "Person.gender.required");
 
 		// check patients birthdate against future dates and really old dates
-		if (patient.getBirthdate() != null) {
-			if (patient.getBirthdate().after(new Date()))
+		if (shortPatientModel.getBirthdate() != null) {
+			if (shortPatientModel.getBirthdate().after(new Date()))
 				errors.rejectValue("birthdate", "error.date.future");
 			else {
 				Calendar c = Calendar.getInstance();
 				c.setTime(new Date());
 				c.add(Calendar.YEAR, -120); // patient cannot be older than 120 years old 
-				if (patient.getBirthdate().before(c.getTime())) {
+				if (shortPatientModel.getBirthdate().before(c.getTime())) {
 					errors.rejectValue("birthdate", "error.date.nonsensical");
 				}
 			}
+		} else {
+			errors.rejectValue("birthdate", "error.required", new Object[]{"Birthdate"}, "");
 		}
 		
 		//	 Patient Info 
-		if (patient.isPersonVoided())
+		if (shortPatientModel.getVoided())
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "voidReason", "error.null");
-		if (patient.isDead() && (patient.getCauseOfDeath() == null))
+		if (shortPatientModel.isDead() && (shortPatientModel.getCauseOfDeath() == null))
 			errors.rejectValue("causeOfDeath", "Patient.dead.causeOfDeathNull");
 
-		if (!errors.hasErrors()) {
-			// Validate PatientIdentifers
-			if (patient != null && patient.getIdentifiers() != null) {
-				for (PatientIdentifier identifier : patient.getIdentifiers()) {
-					patientIdentifierValidator.validate(identifier, errors);
-				}
-			}
-		}
 	}
 }

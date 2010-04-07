@@ -21,6 +21,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
+import org.openmrs.annotation.Handler;
 import org.openmrs.api.APIException;
 import org.openmrs.api.DuplicateConceptNameException;
 import org.openmrs.api.context.Context;
@@ -30,6 +31,7 @@ import org.springframework.validation.Validator;
 /**
  * Validates methods of the {@link Concept} object.
  */
+@Handler(supports = { Concept.class }, order = 50)
 public class ConceptValidator implements Validator {
 	
 	/** Log for this class and subclasses */

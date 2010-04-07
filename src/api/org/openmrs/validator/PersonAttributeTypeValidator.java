@@ -14,6 +14,7 @@
 package org.openmrs.validator;
 
 import org.openmrs.PersonAttributeType;
+import org.openmrs.annotation.Handler;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
 import org.springframework.validation.Errors;
@@ -25,6 +26,7 @@ import org.springframework.validation.Validator;
  * 
  * @since 1.5
  */
+@Handler(supports = { PersonAttributeType.class }, order = 50)
 public class PersonAttributeTypeValidator implements Validator {
 	
 	/**

@@ -18,6 +18,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
+import org.openmrs.annotation.Handler;
 import org.openmrs.api.BlankIdentifierException;
 import org.openmrs.api.IdentifierNotUniqueException;
 import org.openmrs.api.InvalidCheckDigitException;
@@ -32,6 +33,7 @@ import org.springframework.validation.Validator;
 /**
  * This class validates a PatientIdentifier object.
  */
+@Handler(supports = { PatientIdentifier.class }, order = 50)
 public class PatientIdentifierValidator implements Validator {
 	
 	private static Log log = LogFactory.getLog(PatientIdentifierValidator.class);

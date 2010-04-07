@@ -117,7 +117,7 @@ public class HandlerUtil {
 			int order1 = getOrderOfHandler(handlers.get(0).getClass());
 			int order2 = getOrderOfHandler(handlers.get(1).getClass());
 			if (order1 == order2) {
-				throw new APIException("No preferred handler specified of type " + handlerType + " for " + type);
+				throw new APIException("There are at least 2 handlers of type " + handlerType + " for " + type + " and neither is more preferred than the other");
 			}
 		}
 		

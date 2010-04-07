@@ -14,7 +14,6 @@
 package org.openmrs.web.controller.patient;
 
 import java.text.NumberFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -64,13 +63,13 @@ import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.controller.person.PersonFormController;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindException;
-import org.springframework.validation.ValidationUtils;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
@@ -87,7 +86,12 @@ public class NewPatientFormController extends SimpleFormController {
 	
 	/** Logger for this class and subclasses */
 	protected final Log log = LogFactory.getLog(getClass());
-	
+
+    @Autowired
+    public void setShortPatientValidator(ShortPatientValidator shortPatientValidator){
+    	super.setValidator(shortPatientValidator);
+    }
+
 	// identifiers submitted with the form.  Stored here so that they can
 	// be redisplayed for the user after an error
 	Set<PatientIdentifier> newIdentifiers = new HashSet<PatientIdentifier>();
@@ -126,7 +130,6 @@ public class NewPatientFormController extends SimpleFormController {
 			
 			String action = request.getParameter("action");
 			if (action == null || action.equals(msa.getMessage("general.save"))) {
-				ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name.familyName", "error.name");
 				
 				String[] identifiers = request.getParameterValues("identifier");
 				String[] types = request.getParameterValues("identifierType");
@@ -189,25 +192,6 @@ public class NewPatientFormController extends SimpleFormController {
 							}
 							
 						}
-					}
-				}
-			}
-			
-			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "gender", "error.null");
-			
-			if (shortPatient.getBirthdate() == null) {
-				Object[] args = { "Birthdate" };
-				errors.rejectValue("birthdate", "error.required", args, "");
-			} else {
-				// check patients birthdate against future dates and really old dates
-				if (shortPatient.getBirthdate().after(new Date()))
-					errors.rejectValue("birthdate", "error.date.future");
-				else {
-					Calendar c = Calendar.getInstance();
-					c.setTime(new Date());
-					c.add(Calendar.YEAR, -120); // patient cannot be older than 120 years old 
-					if (shortPatient.getBirthdate().before(c.getTime())) {
-						errors.rejectValue("birthdate", "error.date.nonsensical");
 					}
 				}
 			}

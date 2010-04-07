@@ -16,6 +16,7 @@ package org.openmrs.validator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Privilege;
+import org.openmrs.annotation.Handler;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
@@ -25,6 +26,7 @@ import org.springframework.validation.Validator;
  * 
  * @since 1.5
  */
+@Handler(supports = { Privilege.class }, order = 50)
 public class PrivilegeValidator implements Validator {
 	
 	/** Log for this class and subclasses */

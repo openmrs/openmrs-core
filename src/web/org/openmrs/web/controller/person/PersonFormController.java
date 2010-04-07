@@ -37,10 +37,14 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.propertyeditor.ConceptEditor;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
+import org.openmrs.validator.PatientValidator;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.validation.BindException;
 import org.springframework.validation.ValidationUtils;
+import org.springframework.validation.Validator;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
@@ -83,15 +87,6 @@ public class PersonFormController extends SimpleFormController {
 		if (!Context.isAuthenticated()) {
 			errors.reject("auth.invalid");
 		} else {
-			// Make sure they assign a name
-			if (person.getPersonName().getGivenName().trim().equals(""))
-				errors.rejectValue("names[0].givenName", "Person.name.required");
-			if (person.getPersonName().getFamilyName().trim().equals(""))
-				errors.rejectValue("names[0].familyName", "Person.name.required");
-			
-			// Make sure they choose a gender
-			if (person.getGender() == null || person.getGender().equals(""))
-				errors.rejectValue("gender", "Person.gender.required");
 			
 			// look for person attributes in the request and save to person
 			for (PersonAttributeType type : Context.getPersonService().getPersonAttributeTypes(PERSON_TYPE.PERSON, null)) {
@@ -126,32 +121,14 @@ public class PersonFormController extends SimpleFormController {
 					person.addAttribute(attribute);
 				}
 			}
-			
-			// check patients birthdate against future dates and really old dates
-			if (person.getBirthdate() != null) {
-				if (person.getBirthdate().after(new Date()))
-					errors.rejectValue("birthdate", "error.date.future");
-				else {
-					Calendar c = Calendar.getInstance();
-					c.setTime(new Date());
-					c.add(Calendar.YEAR, -120); // patient cannot be older than 120 years old 
-					if (person.getBirthdate().before(c.getTime())) {
-						errors.rejectValue("birthdate", "error.date.nonsensical");
-					}
-				}
-			}
-			
-			//	 Patient Info 
-			//ValidationUtils.rejectIfEmptyOrWhitespace(errors, "birthdate", "error.null");
-			if (person.isPersonVoided())
-				ValidationUtils.rejectIfEmptyOrWhitespace(errors, "voidReason", "error.null");
-			if (person.isDead() && (person.getCauseOfDeath() == null))
-				errors.rejectValue("causeOfDeath", "Patient.dead.causeOfDeathNull");
-			
+
 		}
 		
 		if (log.isDebugEnabled())
 			log.debug("Person Attributes: \n" + person.printAttributes());
+		
+		if (errors.hasErrors()) return showForm(request, response, errors);
+
 		
 		return super.processFormSubmission(request, response, person, errors);
 	}

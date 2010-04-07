@@ -20,6 +20,7 @@ import org.openmrs.Concept;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.Obs;
+import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
@@ -34,6 +35,7 @@ import org.springframework.validation.Validator;
  * 
  * @see org.openmrs.Obs
  */
+@Handler(supports = { Obs.class }, order = 50)
 public class ObsValidator implements Validator {
 	
 	/**
