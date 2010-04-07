@@ -3132,4 +3132,19 @@
 		<dropColumn tableName="notification_alert" columnName="user_id"/>
 	</changeSet>
 	
+	<changeSet id="20100322-0908" author="syhaas">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="concept_answer" columnName="sort_weight"/>
+			</not>
+		</preConditions>
+		<comment>Adding sort_weight column to concept_answers table and initially sets the sort_weight to the concept_answer_id</comment>
+		<addColumn tableName="concept_answer">
+			<column name="sort_weight" type="double"></column>
+		</addColumn>
+		<update tableName="concept_answer">
+			<column name="sort_weight" valueNumeric="concept_answer_id"/>
+		</update>
+	</changeSet>
+	
 </databaseChangeLog>

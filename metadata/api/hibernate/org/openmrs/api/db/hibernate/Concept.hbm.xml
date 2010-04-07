@@ -51,7 +51,7 @@
 		</set>
 		
 		<set name="answers" lazy="true" cascade="all,delete-orphan"
-				table="concept_answer" order-by="concept_answer_id asc" access="field" inverse="true">
+				table="concept_answer" order-by="sort_weight asc, concept_answer_id asc" access="field" inverse="true">
 			<key column="concept_id" not-null="true" />
 			<one-to-many class="ConceptAnswer"/>
 		</set>

@@ -579,4 +579,21 @@ public class ConceptTest {
 		Concept two = new Concept();
 		Assert.assertFalse(one.equals(two));
 	}
+	
+	/**
+	 * @see {@link Concept#addAnswer(ConceptAnswer)}
+	 */
+	@Test
+	@Verifies(value = "set the sort weight to the max plus one if not provided", method="addAnswer(ConceptAnswer)")
+	public void addAnswer_shouldSetTheSortWeightToTheMaxPlusOneIfNotProvided() throws Exception {
+		ConceptAnswer ca = new ConceptAnswer(123);
+		Concept c = new Concept();
+		c.setAnswers(null);//make sure null list
+		c.addAnswer(ca);
+		Assert.assertEquals(1d, ca.getSortWeight().doubleValue(), 0);
+		
+		ConceptAnswer ca2 = new ConceptAnswer(456);
+		c.addAnswer(ca2);
+		Assert.assertEquals(2d, ca2.getSortWeight().doubleValue(), 0);
+	}
 }

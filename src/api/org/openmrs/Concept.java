@@ -15,7 +15,6 @@ package org.openmrs;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -207,9 +206,10 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @param locale
 	 * @return the answers for this concept sorted according to ConceptAnswerComparator
 	 */
+	@Deprecated
 	public Collection<ConceptAnswer> getSortedAnswers(Locale locale) {
 		Vector<ConceptAnswer> sortedAnswers = new Vector<ConceptAnswer>(getAnswers());
-		Collections.sort(sortedAnswers, new ConceptAnswerComparator(locale));
+		Collections.sort(sortedAnswers);
 		return sortedAnswers;
 	}
 	
@@ -222,13 +222,14 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @should return actual answers object if given includeRetired is true
 	 */
 	public Collection<ConceptAnswer> getAnswers(boolean includeRetired) {
-		if (includeRetired == false)
+		if (!includeRetired)
 			return getAnswers();
 		return answers;
 	}
 	
 	/**
-	 * Set this Concept as having the given <code>answers</code>
+	 * Set this Concept as having the given <code>answers</code>; This method assumes that the
+	 * sort_weight has already been set.
 	 * 
 	 * @param answers The answers to set.
 	 */
@@ -244,6 +245,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @should add the ConceptAnswer to Concept
 	 * @should not fail if answers list is null
 	 * @should not fail if answers contains ConceptAnswer already
+	 * @should set the sort weight to the max plus one if not provided
 	 */
 	public void addAnswer(ConceptAnswer conceptAnswer) {
 		if (conceptAnswer != null) {
@@ -254,6 +256,13 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 			} else if (!answers.contains(conceptAnswer)) {
 				conceptAnswer.setConcept(this);
 				answers.add(conceptAnswer);
+			}
+			
+			if ((conceptAnswer.getSortWeight() == null) || (conceptAnswer.getSortWeight() <= 0)) {
+				//find largest sort weight
+				ConceptAnswer a = Collections.max(answers);
+				Double sortWeight = (a == null) ? 1d : ((a.getSortWeight() == null) ? 1d : a.getSortWeight() + 1d);//a.sortWeight can be NULL
+				conceptAnswer.setSortWeight(sortWeight);
 			}
 		}
 	}
@@ -1018,18 +1027,18 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 */
 	public Collection<ConceptName> getNames(boolean includeVoided) {
 		Collection<ConceptName> ret = new HashSet<ConceptName>();
-		if (includeVoided){
+		if (includeVoided) {
 			if (names != null)
 				return names;
 			else
 				return ret;
 		} else {
-			if (names != null){
-				for (ConceptName cn : names){
+			if (names != null) {
+				for (ConceptName cn : names) {
 					if (!cn.isVoided())
 						ret.add(cn);
 				}
-			}	
+			}
 			return ret;
 		}
 	}
@@ -1389,28 +1398,6 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		if (conceptId == null)
 			return "";
 		return conceptId.toString();
-	}
-	
-	/**
-	 * Internal class used to sort ConceptAnswer lists. We sort answers by the concept name, which
-	 * requires the locale to be specified.
-	 */
-	private class ConceptAnswerComparator implements Comparator<ConceptAnswer> {
-		
-		Locale locale;
-		
-		ConceptAnswerComparator(Locale locale) {
-			this.locale = locale;
-		}
-		
-		public int compare(ConceptAnswer a1, ConceptAnswer a2) {
-			String n1 = a1.getConcept().getName(locale).getName();
-			String n2 = a2.getConcept().getName(locale).getName();
-			int c = n1.compareTo(n2);
-			if (c == 0)
-				c = a1.getConcept().getConceptId().compareTo(a2.getConcept().getConceptId());
-			return c;
-		}
 	}
 	
 	/**

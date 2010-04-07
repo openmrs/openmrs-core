@@ -27,7 +27,7 @@ import org.simpleframework.xml.Root;
  * @see Concept#getAnswers()
  */
 @Root
-public class ConceptAnswer extends BaseOpenmrsObject implements Auditable, java.io.Serializable {
+public class ConceptAnswer extends BaseOpenmrsObject implements Auditable, java.io.Serializable, Comparable<ConceptAnswer> {
 	
 	public static final long serialVersionUID = 3744L;
 	
@@ -53,6 +53,8 @@ public class ConceptAnswer extends BaseOpenmrsObject implements Auditable, java.
 	private User creator;
 	
 	private Date dateCreated;
+	
+	private Double sortWeight;
 	
 	// Constructors
 	
@@ -269,4 +271,30 @@ public class ConceptAnswer extends BaseOpenmrsObject implements Auditable, java.
 	 */
 	public void setDateChanged(Date dateChanged) {
 	}
+
+	/**
+	 * @return Returns the sortWeight.
+	 */
+	@Attribute
+	public Double getSortWeight() {
+		return sortWeight;
+	}
+
+	/**
+	 * @param sortWeight The sortWeight to set.
+	 */
+	@Attribute
+	public void setSortWeight(Double sortWeight) {
+		this.sortWeight = sortWeight;
+	}
+
+	/**
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    public int compareTo(ConceptAnswer ca) {
+    	if((getSortWeight() == null) && (ca.getSortWeight() != null)) return -1;
+    	if((getSortWeight() != null) && (ca.getSortWeight() == null)) return 1;
+    	if((getSortWeight() == null) && (ca.getSortWeight() == null)) return 0;
+		return (getSortWeight() < ca.getSortWeight()) ? -1 : (getSortWeight() > ca.getSortWeight()) ? 1 : 0;
+    }
 }
