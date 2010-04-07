@@ -342,6 +342,8 @@
 					<td valign="top" class="buttons">
 						<span dojoType="ConceptSearch" widgetId="aSearch" includeDrugConcepts="true"></span><span dojoType="OpenmrsPopup" searchWidget="aSearch" searchTitle='<spring:message code="Concept.find"/>' changeButtonValue='<spring:message code="general.add"/>' showConceptIds="true" showIfHiding="true"></span>
 						<input type="button" value="<spring:message code="general.remove"/>" class="smallButton" onClick="removeItem('answerNames', 'answerIds', ' ');"/><br/>
+						<input type="button" value="<spring:message code="general.move_up"/>" class="smallButton" onClick="moveUp('answerNames', 'answerIds');" style="display: block" />
+						<input type="button" value="<spring:message code="general.move_down"/>" class="smallButton" onClick="moveDown('answerNames', 'answerIds');" style="display: block" />
 					</td>
 				</tr>
 			</table>

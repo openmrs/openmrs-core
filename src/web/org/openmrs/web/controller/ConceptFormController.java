@@ -16,10 +16,10 @@ package org.openmrs.web.controller;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.Vector;
 
 import javax.servlet.ServletException;
@@ -720,7 +720,7 @@ public class ConceptFormController extends SimpleFormController {
 		 * @return
 		 */
 		public Map<String, String> getConceptAnswers() {
-			Map<String, String> conceptAnswers = new TreeMap<String, String>();
+			Map<String, String> conceptAnswers = new LinkedHashMap<String, String>();
 			// get concept answers with locale decoded names
 			for (ConceptAnswer answer : concept.getAnswers(true)) {
 				log.debug("getting answers");

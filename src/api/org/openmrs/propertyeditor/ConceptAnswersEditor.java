@@ -52,7 +52,10 @@ public class ConceptAnswersEditor extends PropertyEditorSupport {
 	
 	/**
 	 * loops over the textbox assigned to this property. The textbox is assumed to be a string of
-	 * conceptIds^drugIds separated by spaces
+	 * conceptIds^drugIds separated by spaces.
+	 * 
+	 * @param text list of conceptIds (not conceptAnswerIds)
+	 * @should set the sort weights with the least possible changes
 	 */
 	public void setAsText(String text) throws IllegalArgumentException {
 		if (StringUtils.hasText(text)) {
@@ -117,6 +120,51 @@ public class ConceptAnswersEditor extends PropertyEditorSupport {
 				}
 			}
 			
+			//loop over to set the order
+			//as the list comes into 'requestConceptIds' in the order the user wants
+			//  there are 2 conditions that will require the sort_weights to be reassigned
+			//    1) any ConceptAnswer.sortWeight == NULL (meaning it is just added)
+			//    2) the list is not in ASCENDING order (example sort order of the list is 1, 2, 10, 9)
+			//  -startIdx (start index) is where in this list we will start to reassign the sort_weights
+			Double lastWeightSeen = null;
+			int startIdx = -1;//the idx to start at, if we have a NULL sort weight (new concept answer) or sort weights are not ascending
+			for (int i = 0; i < requestConceptIds.size() - 1; i++) {
+				Integer id1 = getConceptId(requestConceptIds.get(i));
+				ConceptAnswer ca1 = getConceptAnswerFromOriginal(id1);
+				
+				if (ca1.getSortWeight() == null) {
+					if (lastWeightSeen == null) {
+						//start at 1, we're at the beginning
+						lastWeightSeen = 1d;
+					} else {
+						//we start at +1
+						lastWeightSeen += 1;
+					}
+					startIdx = i;
+					break;
+				}
+				
+				Integer id2 = getConceptId(requestConceptIds.get(i + 1));
+				ConceptAnswer ca2 = getConceptAnswerFromOriginal(id2);
+				int c = ca1.compareTo(ca2);
+				if (c > 0) {
+					startIdx = i;
+					lastWeightSeen = ca1.getSortWeight();
+					break;
+				}
+				
+				lastWeightSeen = ca1.getSortWeight();
+			}
+			
+			if (startIdx != -1) {
+				//then we need to re-weight
+				for (int i = startIdx; i < requestConceptIds.size(); i++) {
+					Integer id = getConceptId(requestConceptIds.get(i));
+					ConceptAnswer ca = getConceptAnswerFromOriginal(id);
+					ca.setSortWeight(lastWeightSeen++);
+				}
+			}
+			
 			log.debug("originalConceptAnswers.getConceptId(): ");
 			for (ConceptAnswer a : originalConceptAnswers)
 				log.debug("id: " + a.getAnswerConcept().getConceptId());
@@ -129,6 +177,18 @@ public class ConceptAnswersEditor extends PropertyEditorSupport {
 		}
 		
 		setValue(originalConceptAnswers);
+	}
+	
+	/**
+	 * find this conceptId in the original set and set its weight
+	 */
+	private ConceptAnswer getConceptAnswerFromOriginal(Integer id) {
+		for (ConceptAnswer ca : originalConceptAnswers) {
+			if (ca.getAnswerConcept().getConceptId().equals(id)) {
+				return ca;
+			}
+		}
+		return null;
 	}
 	
 	/**
