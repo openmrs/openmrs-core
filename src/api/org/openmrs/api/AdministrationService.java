@@ -671,5 +671,16 @@ public interface AdministrationService extends OpenmrsService {
 	 */
 	@Transactional(readOnly = true)
 	public Set<Locale> getPresentationLocales();
-	
+
+	/**
+	 * Returns a global property according to the type specified
+	 * 
+	 * @param <T>
+	 * @param propertyName
+	 * @should get property value in the proper type specified
+	 * @should return default value if property name does not exist	 
+	 * @return property value in the type of the default value
+	 * @since 1.7
+	 */
+	public <T> T getGlobalPropertyValue(String propertyName, T defaultValue) throws APIException;
 }

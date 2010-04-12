@@ -363,7 +363,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should return all global properties in the database", method = "getAllGlobalProperties()")
 	public void getAllGlobalProperties_shouldReturnAllGlobalPropertiesInTheDatabase() throws Exception {
 		executeDataSet(ADMIN_INITIAL_DATA_XML);
-		Assert.assertEquals(8, Context.getAdministrationService().getAllGlobalProperties().size());
+		Assert.assertEquals(10, Context.getAdministrationService().getAllGlobalProperties().size());
 	}
 	
 	/**
@@ -399,7 +399,8 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link AdministrationService#getPresentationLocales()}
 	 */
 	@Test
-	@Ignore //TODO: This test fails for some reason
+	@Ignore
+	//TODO: This test fails for some reason
 	@Verifies(value = "should return at least one locale if no locales defined in database yet", method = "getPresentationLocales()")
 	public void getPresentationLocales_shouldReturnAtLeastOneLocaleIfNoLocalesDefinedInDatabaseYet() throws Exception {
 		Assert.assertTrue(Context.getAdministrationService().getPresentationLocales().size() > 0);
@@ -434,9 +435,9 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(ADMIN_INITIAL_DATA_XML);
 		AdministrationService as = Context.getAdministrationService();
 		
-		Assert.assertEquals(8, as.getAllGlobalProperties().size());
+		Assert.assertEquals(10, as.getAllGlobalProperties().size());
 		as.purgeGlobalProperty(as.getGlobalPropertyObject("a_valid_gp_key"));
-		Assert.assertEquals(7, as.getAllGlobalProperties().size());
+		Assert.assertEquals(9, as.getAllGlobalProperties().size());
 	}
 	
 	/**
@@ -467,16 +468,59 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		as.saveGlobalProperty(gp);
 		Assert.assertEquals("new-even-more-correct-value", as.getGlobalProperty("a_valid_gp_key"));
 	}
-
-	/**
-     * @see {@link AdministrationService#getAllowedLocales()}
-     * 
-     */
-    @Test
-    @Verifies(value = "should not return duplicates even if the global property has them", method = "getAllowedLocales()")
-    public void getAllowedLocales_shouldNotReturnDuplicatesEvenIfTheGlobalPropertyHasThem() throws Exception {
-    	Context.getAdministrationService().saveGlobalProperty(new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, "en,fr,es,en"));
-		Assert.assertEquals(3, Context.getAdministrationService().getAllowedLocales().size());
-    }
 	
+	/**
+	 * @see {@link AdministrationService#getAllowedLocales()}
+	 */
+	@Test
+	@Verifies(value = "should not return duplicates even if the global property has them", method = "getAllowedLocales()")
+	public void getAllowedLocales_shouldNotReturnDuplicatesEvenIfTheGlobalPropertyHasThem() throws Exception {
+		Context.getAdministrationService().saveGlobalProperty(
+		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, "en,fr,es,en"));
+		Assert.assertEquals(3, Context.getAdministrationService().getAllowedLocales().size());
+	}
+	
+	/**
+	 * @see {@link AdministrationService#getGlobalPropertyValue()}
+	 */
+	@Test
+	@Verifies(value = "should get property value in the proper type specified", method = "getGlobalPropertyValue()")
+	public void getGlobalPropertyValue_shouldReturnValueInTheSpecifiedIntegerType() throws Exception {
+		// put the global property into the database
+		executeDataSet("org/openmrs/api/include/AdministrationServiceTest-globalproperties.xml");
+		
+		Object value = adminService.getGlobalPropertyValue("valid.integer", new Integer(4));
+		
+		Assert.assertTrue(value instanceof Integer);
+		Assert.assertEquals(new Integer(1234), value);
+	}
+	
+	/**
+	 * @see {@link AdministrationService#getGlobalPropertyValue()}
+	 */
+	@Test
+	@Verifies(value = "should return default value if property name does not exist", method = "getGlobalPropertyValue()")
+	public void getGlobalPropertyValue_shouldReturnDefaultValueForMissingProperty() throws Exception {
+		// put the global property into the database
+		executeDataSet("org/openmrs/api/include/AdministrationServiceTest-globalproperties.xml");
+		
+		Object value = adminService.getGlobalPropertyValue("does.not.exist", new Integer(1234));
+		
+		Assert.assertEquals(new Integer(1234), value);
+	}
+	
+	/**
+	 * @see {@link AdministrationService#getGlobalPropertyValue()}
+	 */
+	@Test
+	@Verifies(value = "should get property value in the proper type specified", method = "getGlobalPropertyValue()")
+	public void getGlobalPropertyValue_shouldReturnValueInTheSpecifiedDoubleType() throws Exception {
+		// put the global property into the database
+		executeDataSet("org/openmrs/api/include/AdministrationServiceTest-globalproperties.xml");
+		
+		Object retValue = adminService.getGlobalPropertyValue("valid.double", new Double(4.34));
+		
+		Assert.assertTrue(retValue instanceof Double);
+		Assert.assertEquals(new Double(1234.54), retValue);
+	}
 }
