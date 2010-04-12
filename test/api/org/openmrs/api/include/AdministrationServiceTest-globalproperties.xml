@@ -6,5 +6,7 @@
   <global_property property="fake.module.bcde" property_value="correct-value2" uuid="25a50a3b-4ac0-47fd-b43b-12e78da9a791"/>
   <global_property property="fake.module.cdef" property_value="correct-value3" uuid="b8173553-bc4b-40e6-b177-456b55b2e769"/>
   <global_property property="fake.module1.abcd" property_value="YOU LOSE" uuid="81e43fc2-7ca9-4592-8c69-a6486ebbe678"/>
-  <global_property property="fake.moduleabcd" property_value="EPIC FAIL" uuid="b7225607-d0c4-4e44-8be5-31e1ac7e1dda"/> 
+  <global_property property="fake.moduleabcd" property_value="EPIC FAIL" uuid="b7225607-d0c4-4e44-8be5-31e1ac7e1dda"/>
+  <global_property property="valid.integer" property_value="1234" uuid="b7225607-d0c4-4e44-8be5-31e1ac7e1fda"/>
+  <global_property property="valid.double" property_value="1234.54" uuid="b7225607-d0c4-4e44-8be6-31e1ac7e1fda"/>
 </dataset>
