@@ -78,6 +78,7 @@ public interface LogicService {
 	 * @deprecated use {@link #getAllTokens()}
 	 */
 	@Deprecated
+	@Transactional(readOnly = true)
 	public Set<String> getTokens();
 	
 	/**
@@ -86,6 +87,7 @@ public interface LogicService {
 	 * @return all known (registered) tokens
 	 * @should return all registered token
 	 */
+	@Transactional(readOnly = true)
 	public List<String> getAllTokens();
 	
 	/**
@@ -96,6 +98,7 @@ public interface LogicService {
 	 * @deprecated use {@link #getTokens(String)}
 	 */
 	@Deprecated
+	@Transactional(readOnly = true)
 	public Set<String> findToken(String token);
 	
 	/**
@@ -107,6 +110,7 @@ public interface LogicService {
 	 * @should return all registered token matching the input partially
 	 * @should not fail when input is null
 	 */
+	@Transactional(readOnly = true)
 	public List<String> getTokens(String partialToken);
 	
 	/**
@@ -172,6 +176,7 @@ public interface LogicService {
 	 * @return patient-specific result from given rule
 	 * @throws LogicException
 	 */
+	@Transactional(readOnly = true)
 	public Result eval(Patient who, String token) throws LogicException;
 	
 	/**
@@ -183,6 +188,7 @@ public interface LogicService {
 	 * @return patient-specific result from given rule
 	 * @throws LogicException
 	 */
+	@Transactional(readOnly = true)
 	public Result eval(Patient who, String token, Map<String, Object> parameters) throws LogicException;
 	
 	/**
@@ -193,6 +199,7 @@ public interface LogicService {
 	 * @return result of query
 	 * @throws LogicException
 	 */
+	@Transactional(readOnly = true)
 	public Result eval(Patient who, LogicCriteria criteria) throws LogicException;
 	
 	/**
@@ -205,6 +212,7 @@ public interface LogicService {
 	 * @return <code>Result</code> of query
 	 * @throws LogicException
 	 */
+	@Transactional(readOnly = true)
 	public Result eval(Patient who, LogicCriteria criteria, Map<String, Object> parameters) throws LogicException;
 	
 	/**
@@ -215,6 +223,7 @@ public interface LogicService {
 	 * @return result for each patient
 	 * @throws LogicException
 	 */
+	@Transactional(readOnly = true)
 	public Map<Integer, Result> eval(Cohort who, String token) throws LogicException;
 	
 	/**
@@ -226,6 +235,7 @@ public interface LogicService {
 	 * @return result for each patient
 	 * @throws LogicException
 	 */
+	@Transactional(readOnly = true)
 	public Map<Integer, Result> eval(Cohort who, String token, Map<String, Object> parameters) throws LogicException;
 	
 	/**
@@ -236,6 +246,7 @@ public interface LogicService {
 	 * @return result for each patient
 	 * @throws LogicException
 	 */
+	@Transactional(readOnly = true)
 	public Map<Integer, Result> eval(Cohort who, LogicCriteria criteria) throws LogicException;
 	
 	/**
@@ -247,8 +258,8 @@ public interface LogicService {
 	 * @return result for each patient
 	 * @throws LogicException
 	 */
-	public Map<Integer, Result> eval(Cohort who, LogicCriteria criteria, Map<String, Object> parameters)
-	                                                                                                    throws LogicException;
+	@Transactional(readOnly = true)
+	public Map<Integer, Result> eval(Cohort who, LogicCriteria criteria, Map<String, Object> parameters) throws LogicException;
 	
 	/**
 	 * Evaluates a collection of queries for a set of patients
@@ -258,7 +269,7 @@ public interface LogicService {
 	 * @return results for each patient
 	 * @throws LogicException
 	 */
-	
+	@Transactional(readOnly = true)
 	public Map<LogicCriteria, Map<Integer, Result>> eval(Cohort who, List<LogicCriteria> criterias) throws LogicException;
 	
 	/**
@@ -287,6 +298,7 @@ public interface LogicService {
 	 * @deprecated use {@link #getTokenTags(String)}
 	 */
 	@Deprecated
+	@Transactional(readOnly = true)
 	public Collection<String> getTagsByToken(String token);
 	
 	/**
@@ -296,6 +308,7 @@ public interface LogicService {
 	 * @return collection of tags
 	 * @should return set of tags for a certain token
 	 */
+	@Transactional(readOnly = true)
 	public Set<String> getTokenTags(String token);
 	
 	/**
@@ -306,6 +319,7 @@ public interface LogicService {
 	 * @deprecated use {@link #getTokensWithTag(String)}
 	 */
 	@Deprecated
+	@Transactional(readOnly = true)
 	public Set<String> getTokensByTag(String tag);
 	
 	/**
@@ -315,6 +329,7 @@ public interface LogicService {
 	 * @return collection of tokens
 	 * @should return set of token associated with a tag
 	 */
+	@Transactional(readOnly = true)
 	public List<String> getTokensWithTag(String tag);
 	
 	/**
@@ -325,6 +340,7 @@ public interface LogicService {
 	 * @deprecated use {@link #getTags(String)}
 	 */
 	@Deprecated
+	@Transactional(readOnly = true)
 	public Set<String> findTags(String partialTag);
 	
 	/**
@@ -334,6 +350,7 @@ public interface LogicService {
 	 * @return collection of tags
 	 * @should return set of tags matching input tag partially
 	 */
+	@Transactional(readOnly = true)
 	public List<String> getTags(String partialTag);
 	
 	/**
@@ -345,6 +362,7 @@ public interface LogicService {
 	 * @param token token to look the datatype up for
 	 * @return datatype of the given token
 	 */
+	@Transactional(readOnly = true)
 	public Datatype getDefaultDatatype(String token);
 	
 	/**
@@ -352,6 +370,7 @@ public interface LogicService {
 	 * 
 	 * @return list of parameters
 	 */
+	@Transactional(readOnly = true)
 	public Set<RuleParameterInfo> getParameterList(String token);
 	
 	/**
@@ -369,6 +388,7 @@ public interface LogicService {
 	 * 
 	 * @return all registered logic data sources
 	 */
+	@Transactional(readOnly = true)
 	public Map<String, LogicDataSource> getLogicDataSources();
 	
 	/**
@@ -385,6 +405,7 @@ public interface LogicService {
 	 * @return the logic data source with the given name or <code>null</code> if there is no data
 	 *         source registered under the given name (must be an exact match)
 	 */
+	@Transactional(readOnly = true)
 	public LogicDataSource getLogicDataSource(String name);
 	
 	/**
@@ -405,6 +426,7 @@ public interface LogicService {
 	 * @deprecated use {@link LogicService#parse(String)}
 	 */
 	@Deprecated
+	@Transactional(readOnly = true)
 	public LogicCriteria parseString(String inStr);
 	
 	/**
@@ -416,6 +438,7 @@ public interface LogicService {
 	 * @param criteria LogicCriteria expression in a plain String object.
 	 * @return LogicCriteria using all possible operand and operator from the String input
 	 */
+	@Transactional(readOnly = true)
 	public LogicCriteria parse(String criteria);
 	
 }
