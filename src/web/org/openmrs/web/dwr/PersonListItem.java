@@ -13,7 +13,6 @@
  */
 package org.openmrs.web.dwr;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,7 +23,6 @@ import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonName;
-import org.openmrs.User;
 
 /**
  * A mini/simplified Person object. Used as the return object from DWR methods to allow javascript
@@ -40,6 +38,8 @@ public class PersonListItem {
 	
 	private Integer personId;
 	
+	private String uuid = "";
+	
 	private String familyName = "";
 	
 	private String middleName = "";
@@ -53,10 +53,10 @@ public class PersonListItem {
 	private Date birthdate;
 	
 	private Boolean birthdateEstimated = false;
-
-    private Integer age;
-
-    private String address1;
+	
+	private Integer age;
+	
+	private String address1;
 	
 	private String address2;
 	
@@ -108,6 +108,7 @@ public class PersonListItem {
 		
 		if (person != null) {
 			personId = person.getPersonId();
+			uuid = person.getUuid();
 			
 			// get patient's names
 			boolean first = true;
@@ -127,8 +128,8 @@ public class PersonListItem {
 			gender = person.getGender();
 			birthdate = person.getBirthdate();
 			birthdateEstimated = person.isBirthdateEstimated();
-            age = person.getAge();
-            voided = person.isPersonVoided();
+			age = person.getAge();
+			voided = person.isPersonVoided();
 			
 			// add in the person attributes
 			for (PersonAttribute attribute : person.getActiveAttributes()) {
@@ -286,6 +287,12 @@ public class PersonListItem {
 	 */
 	public void setPersonId(Integer personId) {
 		this.personId = personId;
+	}
+	
+	public String getUuid() {
+		if (uuid == null)
+			return "";
+		return uuid;
 	}
 	
 }

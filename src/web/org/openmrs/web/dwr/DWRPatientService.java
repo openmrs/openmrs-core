@@ -162,7 +162,7 @@ public class DWRPatientService {
 		PatientService ps = Context.getPatientService();
 		Patient p = ps.getPatient(patientId);
 		PatientListItem pli = new PatientListItem(p);
-		if (p.getAddresses() != null && p.getAddresses().size() > 0) {
+		if (p != null && p.getAddresses() != null && p.getAddresses().size() > 0) {
 			PersonAddress pa = (PersonAddress) p.getAddresses().toArray()[0];
 			pli.setAddress1(pa.getAddress1());
 			pli.setAddress2(pa.getAddress2());

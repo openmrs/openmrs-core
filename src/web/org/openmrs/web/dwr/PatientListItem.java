@@ -28,6 +28,8 @@ public class PatientListItem extends PersonListItem {
 	
 	private Boolean identifierCheckDigit = false;
 	
+	private String identifierTypeName = "";
+	
 	private String otherIdentifiers = "";
 	
 	public PatientListItem() {
@@ -109,6 +111,20 @@ public class PatientListItem extends PersonListItem {
 	 */
 	public void setIdentifierCheckDigit(Boolean identifierCheckDigit) {
 		this.identifierCheckDigit = identifierCheckDigit;
+	}
+	
+	/**
+	 * @param identifierTypeName the identifierTypeName to set
+	 */
+	public void setIdentifierTypeName(String identifierTypeName) {
+		this.identifierTypeName = identifierTypeName;
+	}
+	
+	/**
+	 * @return the identifierTypeName
+	 */
+	public String getIdentifierTypeName() {
+		return identifierTypeName;
 	}
 	
 }
