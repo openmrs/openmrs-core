@@ -128,6 +128,8 @@ public class UserFormController {
 	                               ModelMap model,
 	                               @RequestParam(required=false, value="action") String action,
 	                               @RequestParam(required=false, value="userFormPassword") String password,
+	                               @RequestParam(required=false, value="secretQuestion") String secretQuestion,
+	                               @RequestParam(required=false, value="secretAnswer") String secretAnswer,
 	                               @RequestParam(required=false, value="confirm") String confirm,
 	                               @RequestParam(required=false, value="forcePassword") Boolean forcePassword,
 	                               @RequestParam(required=false, value="roleStrings") String[] roles,
@@ -242,19 +244,22 @@ public class UserFormController {
 				return showForm(user.getUserId(), createNewPerson, user, model);
 			}
 			
-			if (isNewUser(user))
+			if (isNewUser(user)){
 				us.saveUser(user, password);
-			else {
+            } else {
 				us.saveUser(user, null);
-				
+                
 				if (!password.equals("") && Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_USER_PASSWORDS)) {
 					if (log.isDebugEnabled())
 						log.debug("calling changePassword for user " + user + " by user " + Context.getAuthenticatedUser());
 					us.changePassword(user, password);
 				}
-				
 			}
-
+            
+            if (StringUtils.hasLength(secretQuestion) || StringUtils.hasLength(secretAnswer)) {
+            	us.changeQuestionAnswer(user, secretQuestion, secretAnswer);
+            }
+            
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "User.saved");
 		}
 		return "redirect:user.list";

@@ -14,9 +14,6 @@
 package org.openmrs.api.db.hibernate;
 
 import java.math.BigInteger;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -33,8 +30,6 @@ import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
-import org.hibernate.dialect.Dialect;
-import org.hibernate.dialect.HSQLDialect;
 import org.openmrs.Person;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
@@ -324,52 +319,22 @@ public class HibernateUserDAO implements UserDAO {
 			throw new DAOException("Passwords don't match");
 		}
 		
-		log.info("Updating secret question and answer for " + u.getUsername());
-		credentials.setSecretQuestion(question);
-		credentials.setSecretAnswer(answer);
-		updateLoginCredential(credentials);
+		changeQuestionAnswer(u, question, answer);
 	}
 	
 	/**
 	 * @see org.openmrs.api.UserService#changeQuestionAnswer(User, String, String)
 	 */
 	public void changeQuestionAnswer(User u, String question, String answer) throws DAOException {
-		Connection connection = sessionFactory.getCurrentSession().connection();
-		PreparedStatement ps = null;
-		try {
-			
-			String sql = "UPDATE `users` SET secret_question = ?, secret_answer = ?, date_changed = ?, changed_by = ? WHERE user_id = ?";
-			
-			// if we're in a junit test, we're probably using hsql...and hsql 
-			// does not like the backtick.  Replace the backtick with the hsql 
-			// escape character: the double quote (or nothing). 
-			Dialect dialect = HibernateUtil.getDialect(sessionFactory);
-			if (HSQLDialect.class.getName().equals(dialect.getClass().getName()))
-				sql = sql.replace("`", "");
-			
-			ps = connection.prepareStatement(sql);
-			
-			ps.setString(1, question);
-			ps.setString(2, answer);
-			ps.setDate(3, new java.sql.Date(new Date().getTime()));
-			ps.setInt(4, Context.getAuthenticatedUser().getUserId());
-			ps.setInt(5, u.getUserId());
-			
-			ps.executeUpdate();
-		}
-		catch (SQLException e) {
-			throw new DAOException("SQL Exception while trying to update a user's secret question", e);
-		}
-		finally {
-			if (ps != null) {
-				try {
-					ps.close();
-				}
-				catch (SQLException e) {
-					log.error("Error generated while closing statement", e);
-				}
-			}
-		}
+		log.info("Updating secret question and answer for " + u.getUsername());
+		
+		LoginCredential credentials = getLoginCredential(u);
+		credentials.setSecretQuestion(question);
+		credentials.setSecretAnswer(answer);
+		credentials.setDateChanged(new Date());
+		credentials.setChangedBy(u);
+		
+		updateLoginCredential(credentials);
 	}
 	
 	/**
