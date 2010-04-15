@@ -2992,7 +2992,7 @@
 			</param>
 		</customChange>
 	</changeSet>
-
+	
 	<changeSet id="200912151032" author="n.nehete">
 		<preConditions onFail="HALT">
 			<sqlCheck expectedResult="All encounters have a non-null encounter type.">
@@ -3195,4 +3195,14 @@
 		<addNotNullConstraint tableName="notification_alert_recipient" columnName="uuid" columnDataType="char(38)"/>
 	</changeSet>
 	
+	<changeSet id="20100413-1509" author="djazayeri">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="location_tag" columnName="tag"/>
+		</preConditions>
+		<comment>
+			Change location_tag.tag to location_tag.name
+		</comment>
+		<renameColumn tableName="location_tag"
+   			 oldColumnName="tag" newColumnName="name" columnDataType="varchar(50)"/>
+	</changeSet>
 </databaseChangeLog>

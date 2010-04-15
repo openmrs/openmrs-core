@@ -12,7 +12,7 @@
 		
 		<discriminator column="location_tag_id" insert="false" />
 		
-		<property name="tag" type="java.lang.String" not-null="true" length="50"/>
+		<property name="name" type="java.lang.String" not-null="true" length="50"/>
 		<property name="description" type="java.lang.String" length="255" />
 		<property name="dateCreated" type="java.util.Date" column="date_created" not-null="true" length="19" />
 		<many-to-one name="creator" class="User" not-null="true" />
@@ -20,6 +20,7 @@
 		<property name="dateRetired" type="java.util.Date" column="date_retired" length="19" />
 		<property name="retireReason" type="java.lang.String" column="retire_reason" length="255" />
 		<property name="retired" type="boolean" length="1" not-null="true" />
+		<property name="uuid" type="java.lang.String" length="38" unique="true" />
 
 	</class>
 </hibernate-mapping>
