@@ -14,9 +14,9 @@
 package org.openmrs;
 
 /**
- * An LocationTag defines how a certain kind of {@link Encounter}.
+ * An LocationTag allows categorization of {@link Location}s
  * 
- * @see Encounter
+ * @see Location
  * @since 1.5
  */
 public class LocationTag extends BaseOpenmrsMetadata implements java.io.Serializable {
@@ -24,8 +24,6 @@ public class LocationTag extends BaseOpenmrsMetadata implements java.io.Serializ
 	public static final long serialVersionUID = 7654L;
 	
 	private Integer locationTagId;
-	
-	private String tag;
 	
 	// Constructors
 	
@@ -42,11 +40,11 @@ public class LocationTag extends BaseOpenmrsMetadata implements java.io.Serializ
 	 * Required values constructor. This is the minimum number of values that must be non-null in
 	 * order to have a successful save to the database
 	 * 
-	 * @param tag the name of this encounter type
+	 * @param name the name of this encounter type
 	 * @param description a short description of why this encounter type exists
 	 */
-	public LocationTag(String tag, String description) {
-		this.tag = tag;
+	public LocationTag(String name, String description) {
+		setName(name);
 		setDescription(description);
 	}
 	
@@ -94,20 +92,24 @@ public class LocationTag extends BaseOpenmrsMetadata implements java.io.Serializ
 	
 	/**
 	 * @return Returns the tag.
+	 * @deprecated use {@link #getName()} instead
 	 */
+	@Deprecated
 	public String getTag() {
-		return tag;
+		return getName();
 	}
 	
 	/**
 	 * @param tag The tag to set.
+	 * @deprecated use {@link #setName(String)} instead
 	 */
+	@Deprecated
 	public void setTag(String tag) {
-		this.tag = tag;
+		setName(tag);
 	}
 	
 	public String toString() {
-		return tag;
+		return getName();
 	}
 	
 	/**

@@ -60,10 +60,10 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 				
 				// only check transient (aka non-precreated) location tags
 				if (tag.getLocationTagId() == null) {
-					if (!StringUtils.hasLength(tag.getTag()))
+					if (!StringUtils.hasLength(tag.getName()))
 						throw new APIException("A tag name is required");
 					
-					LocationTag existing = Context.getLocationService().getLocationTagByName(tag.getTag());
+					LocationTag existing = Context.getLocationService().getLocationTagByName(tag.getName());
 					if (existing != null) {
 						location.removeTag(tag);
 						location.addTag(existing);
@@ -123,6 +123,13 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	 */
 	public Location getLocationByUuid(String uuid) throws APIException {
 		return dao.getLocationByUuid(uuid);
+	}
+	
+	/**
+	 * @see org.openmrs.api.LocationService#getLocationTagByUuid(java.lang.String)
+	 */
+	public LocationTag getLocationTagByUuid(String uuid) throws APIException {
+		return dao.getLocationTagByUuid(uuid);
 	}
 	
 	/**
@@ -216,7 +223,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	 * @see org.openmrs.api.LocationService#saveLocationTag(org.openmrs.LocationTag)
 	 */
 	public LocationTag saveLocationTag(LocationTag tag) throws APIException {
-		if (tag.getTag() == null) {
+		if (tag.getName() == null) { // TODO check whether this is automatically handled by SaveHandler for OpenmrsMetadata
 			throw new APIException("Tag name is required");
 		}
 		return dao.saveLocationTag(tag);

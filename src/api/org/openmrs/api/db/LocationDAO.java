@@ -132,5 +132,11 @@ public interface LocationDAO {
 	 * @return location matching uuid
 	 */
 	public Location getLocationByUuid(String uuid);
+
+	/**
+     * @param uuid
+     * @return
+     */
+    public LocationTag getLocationTagByUuid(String uuid);
 	
 }

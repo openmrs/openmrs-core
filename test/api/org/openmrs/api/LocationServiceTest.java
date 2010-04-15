@@ -28,7 +28,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.LocationTag;
 import org.openmrs.api.context.Context;
@@ -493,7 +492,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	public void saveLocationTag_shouldCreateLocationTagSuccessfully() throws Exception {
 		LocationTag tag = new LocationTag();
 		
-		tag.setTag("testing");
+		tag.setName("testing");
 		tag.setDescription("desc");
 		
 		LocationService ls = Context.getLocationService();
@@ -520,14 +519,14 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		LocationTag tag = ls.getLocationTag(1);
 		
 		// save the current values for comparison later
-		String origName = tag.getTag();
+		String origName = tag.getName();
 		String origDesc = tag.getDescription();
 		
 		// add values that are different than the ones in the initialData.xml file
 		String newName = "new name";
 		String newDesc = "new desc";
 		
-		tag.setTag(newName);
+		tag.setName(newName);
 		tag.setDescription(newDesc);
 		
 		// save to the db
@@ -537,7 +536,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		LocationTag newestTag = ls.getLocationTag(tag.getLocationTagId());
 		
 		assertFalse("The name should be different", origName.equals(newName));
-		assertTrue("The name should NOT be different", newestTag.getTag().equals(newName));
+		assertTrue("The name should NOT be different", newestTag.getName().equals(newName));
 		assertFalse("The name should be different", origDesc.equals(newDesc));
 		assertTrue("The name should NOT be different", newestTag.getDescription().equals(newDesc));
 	}
@@ -559,7 +558,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		
 		// Create a tag
 		LocationTag tag = new LocationTag();
-		tag.setTag("tag name");
+		tag.setName("tag name");
 		ls.saveLocationTag(tag);
 		
 		// Add tag to location
@@ -898,7 +897,26 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	public void getLocationByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid()
 			throws Exception {
 		Assert.assertNull(Context.getLocationService().getLocationByUuid("some invalid uuid"));
-	}		
-	
-	
+	}
+
+	/**
+     * @see {@link LocationService#getLocationTagByUuid(String)}
+     * 
+     */
+    @Test
+    @Verifies(value = "should find object given valid uuid", method = "getLocationTagByUuid(String)")
+    public void getLocationTagByUuid_shouldFindObjectGivenValidUuid() throws Exception {
+    	Assert.assertEquals(Integer.valueOf(3), Context.getLocationService().getLocationTagByUuid("0d0eaea2-47ed-11df-bc8b-001e378eb67e").getLocationTagId());
+    }
+
+	/**
+     * @see {@link LocationService#getLocationTagByUuid(String)}
+     * 
+     */
+    @Test
+    @Verifies(value = "should return null if no object found with given uuid", method = "getLocationTagByUuid(String)")
+    public void getLocationTagByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
+    	Assert.assertNull(Context.getLocationService().getLocationTagByUuid("ffffffff-47ed-11df-bc8b-001e378eb67e"));
+    }		
+		
 }

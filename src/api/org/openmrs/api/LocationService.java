@@ -109,6 +109,18 @@ public interface LocationService extends OpenmrsService {
 	public Location getLocationByUuid(String uuid) throws APIException;
 	
 	/**
+	 * Returns a location tag by uuid
+	 * 
+	 * @param uuid is the uuid of the desired location tag
+	 * @return location tag with the given uuid
+	 * @should find object given valid uuid
+	 * @should return null if no object found with given uuid
+	 */
+	@Transactional(readOnly = true)
+	@Authorized( { OpenmrsConstants.PRIV_VIEW_LOCATIONS })
+	public LocationTag getLocationTagByUuid(String uuid) throws APIException;
+	
+	/**
 	 * Returns all locations, includes retired locations. This method delegates to the
 	 * #getAllLocations(boolean) method
 	 * 
