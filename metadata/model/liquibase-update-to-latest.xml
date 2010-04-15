@@ -3147,4 +3147,52 @@
 		</update>
 	</changeSet>
 	
+	<changeSet id="20100412-2217" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><not><columnExists tableName="notification_alert_recipient" columnName="uuid"/></not></preConditions>
+		<comment>Adding "uuid" column to notification_alert_recipient table</comment>
+		<addColumn tableName="notification_alert_recipient">
+			<column name="uuid" type="char(38)" />
+		</addColumn>
+	</changeSet>
+
+	<changeSet id="20100412-2218" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><or><dbms type="mysql" /><dbms type="oracle" /><dbms type="mssql" /></or></preConditions>
+		<comment>Generating UUIDs for all rows in notification_alert_recipient table via built in uuid function.</comment>
+		<update tableName="notification_alert_recipient" >
+			<column name="uuid" valueNumeric="name-of-uuid-function" />
+			<where>uuid is null</where>
+		</update>
+		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
+		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
+		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
+	</changeSet>
+
+	<changeSet id="20100412-2219" author="bwolfe">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<or>
+					<dbms type="mysql" />
+					<dbms type="oracle" />
+					<dbms type="mssql" />
+				</or>
+			</not>
+		</preConditions>
+		<comment>
+			Adding UUIDs to notification_alert_recipient table via a java class (if needed).
+		</comment>
+		<customChange class="org.openmrs.util.databasechange.GenerateUuid">
+			<param name="tableNames">
+				notification_alert_recipient
+			</param>
+			<param name="columnName" value="uuid"/>
+		</customChange>
+	</changeSet>
+	
+	<changeSet id="20100412-2220" author="bwolfe">
+		<comment>
+			Now that UUID generation is done, set the notification_alert_recipient.uuid column to not "NOT NULL" 
+		</comment>
+		<addNotNullConstraint tableName="notification_alert_recipient" columnName="uuid" columnDataType="char(38)"/>
+	</changeSet>
+	
 </databaseChangeLog>
