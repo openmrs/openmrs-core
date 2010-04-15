@@ -310,6 +310,24 @@
         <url-pattern>*.xsn</url-pattern>
     </filter-mapping>
 
+	<filter>
+		<filter-name>forcePasswordChangeFilter</filter-name>
+		<filter-class>org.openmrs.module.web.filter.ForcePasswordChangeFilter</filter-class>
+		<init-param>
+			<param-name>changePasswordForm</param-name>
+			<param-value>/admin/users/changePassword.form</param-value>
+		</init-param>
+		<init-param>
+			<param-name>excludeURL</param-name>
+			<param-value>changePasswordForm,logout,.js,.css,.gif,.jpg,.jpeg,.png</param-value>
+		</init-param>
+	</filter>
+	
+	<filter-mapping>
+		<filter-name>forcePasswordChangeFilter</filter-name> 
+		<url-pattern>/*</url-pattern> 
+	</filter-mapping>
+		
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>
 		<welcome-file>index.form</welcome-file>

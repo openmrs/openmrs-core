@@ -147,7 +147,7 @@ public class LoginServlet extends HttpServlet {
 					
 					if (new UserProperties(user.getUserProperties()).isSupposedToChangePassword()) {
 						httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "User.password.change");
-						redirect = request.getContextPath() + "/options.form#Change Login Info";
+						redirect = request.getContextPath() + "/changePassword.form";
 					}
 					
 					// In case the user has no preferences, make sure that the context has some locale set

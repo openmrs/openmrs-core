@@ -198,7 +198,7 @@
 					</tr>
 					<tr>
 						<td><spring:message code="User.secretAnswer" /></td>
-						<td><input type="password" autocomplete="off" name="secretAnswer" size="50" value="<c:if test="${isNewUser == false}">XXXXXXXXXXXXXXX</c:if>"/> <i><spring:message code="general.optional"/></i></td>
+						<td><input type="password" autocomplete="off" name="secretAnswer" size="50" value=""/> <i><spring:message code="general.optional"/></i></td>
 					</tr>
 				</c:if>
 			
