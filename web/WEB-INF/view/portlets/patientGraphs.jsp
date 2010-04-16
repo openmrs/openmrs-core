@@ -6,6 +6,7 @@
 <script type="text/javascript">
 	var $j = jQuery.noConflict();
 </script>
+
 <openmrs:htmlInclude file="/scripts/dojoConfig.js"/>
 <openmrs:htmlInclude file="/scripts/dojo/dojo.js"/>
 
@@ -147,6 +148,10 @@ table#labTestTable th {
 		function loadGraphs() {
 			<c:forEach items="${fn:split(graphConceptString, '-')}" var="conceptId">
 				<c:if test="${conceptId != ''}">
+				<openmrs:globalProperty var="colorAbsolute" key="graph.color.absolute"/>
+				<openmrs:globalProperty var="colorNormal" key="graph.color.normal"/>
+				<openmrs:globalProperty var="colorCritical" key="graph.color.critical"/>
+				
 					$j.getJSON("patientGraphJson.form?patientId=${patient.patientId}&conceptId=${conceptId}", function(json){
 						  $j.plot($j('#conceptBox-${conceptId}'),
 						  [
@@ -156,27 +161,27 @@ table#labTestTable th {
 						  	[
 						  	{
                            	    threshold: {above:json.normal.high},
-                           	    color: "rgb(255,126,0)"
+                           	    color: "${colorNormal}"
                           	},
                           	{
                            	    threshold: {below:json.normal.low},
-                           	    color: "rgb(255,126,0)"
+                           	    color: "${colorNormal}"
                           	},
                           	{
                            	    threshold: {above:json.absolute.high},
-                           	    color: "rgb(20,20,20)"
+                           	    color: "${colorAbsolute}"
                           	},
                           	{
                            	    threshold: {below:json.absolute.low},
-                           	    color: "rgb(20,20,20)"
+                           	    color: "${colorAbsolute}"
                           	},
                           	{
                            	    threshold: {above:json.critical.high},
-                           	    color: "rgb(200,0,0)"
+                           	    color: "${colorCritical}"
                           	},
                           	{
                            	    threshold: {below:json.critical.low},
-                           	    color: "rgb(200,0,0)"
+                           	    color: "${colorCritical}"
                           	}	                        
                           	]
                           	}],

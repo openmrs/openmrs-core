@@ -782,6 +782,21 @@ public final class OpenmrsConstants {
 	public static String GP_PASSWORD_CUSTOM_REGEX = "security.passwordCustomRegex";
 	
 	/**
+	 * Global property name for absolute color for patient graphs.
+	 */
+	public static final String GP_GRAPH_COLOR_ABSOLUTE = "graph.color.absolute";
+	
+	/**
+	 * Global property name for normal color for patient graphs.
+	 */
+	public static final String GP_GRAPH_COLOR_NORMAL = "graph.color.normal";
+	
+	/**
+	 * Global property name for critical color for patient graphs.
+	 */
+	public static final String GP_GRAPH_COLOR_CRITICAL = "graph.color.critical";
+	
+	/**
 	 * At OpenMRS startup these global properties/default values/descriptions are inserted into the
 	 * database if they do not exist yet.
 	 * 
@@ -838,6 +853,15 @@ public final class OpenmrsConstants {
         				GLOBAL_PROPERTY_DRUG_FREQUENCIES,
         				"7 days/week,6 days/week,5 days/week,4 days/week,3 days/week,2 days/week,1 days/week",
                 		"Frequency of a drug order that appear on the Patient Dashboard. Comma separated list of name of concepts that are defined as drug frequencies."));
+		
+		props.add(new GlobalProperty(GP_GRAPH_COLOR_ABSOLUTE, "rgb(20,20,20)",
+		        "Color of the 'invalid' section of numeric graphs on the patient dashboard."));
+		
+		props.add(new GlobalProperty(GP_GRAPH_COLOR_NORMAL, "rgb(255,126,0)",
+		        "Color of the 'normal' section of numeric graphs on the patient dashboard."));
+		
+		props.add(new GlobalProperty(GP_GRAPH_COLOR_CRITICAL, "rgb(200,0,0)",
+		        "Color of the 'critical' section of numeric graphs on the patient dashboard."));
 
 		String standardRegimens = "<list>" + "  <regimenSuggestion>" + "    <drugComponents>" + "      <drugSuggestion>"
 		        + "        <drugId>2</drugId>" + "        <dose>1</dose>" + "        <units>tab(s)</units>"
