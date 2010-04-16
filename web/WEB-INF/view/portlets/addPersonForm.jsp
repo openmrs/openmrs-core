@@ -128,7 +128,7 @@
 				}
 				else if (datePatternStart == 'y') { /* Y-M-D */
 					year = birthdate.substr(0, 4);
-					month = birthdate.substr(3, 2);
+					month = birthdate.substr(5, 2);
 					day = birthdate.substr(8, 2);
 				}
 				else { /* (datePatternStart == 'd') D-M-Y */
