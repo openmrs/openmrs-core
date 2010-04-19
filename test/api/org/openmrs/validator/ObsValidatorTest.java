@@ -186,9 +186,6 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(obs, "obs");
 		new ObsValidator().validate(obs, errors);
 		
-		Assert.assertFalse(errors.hasFieldErrors("person"));
-		Assert.assertFalse(errors.hasFieldErrors("concept"));
-		Assert.assertFalse(errors.hasFieldErrors("obsDatetime"));
 		Assert.assertTrue(errors.hasFieldErrors("valueText"));
 	}
 	
@@ -236,4 +233,24 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		Assert.assertFalse(errors.hasErrors());
 	}
 	
+	/**
+	 * @see {@link ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail validation if concept value for text datatype is greater than the maximum length", method = "validate(java.lang.Object, org.springframework.validation.Errors)")
+	public void validate_shouldFailValidationIfValueTextIsGreaterThanTheMaximumLength() throws Exception {
+		Obs obs = new Obs();
+		obs.setPerson(Context.getPersonService().getPerson(2));
+		obs.setConcept(Context.getConceptService().getConcept(19));
+		obs.setObsDatetime(new Date());
+		obs.setValueText("the limit of valueText is 50. So we are trying to test it with more than 50 characters and this is the test text	1");
+		
+		Errors errors = new BindException(obs, "obs");
+		new ObsValidator().validate(obs, errors);
+		
+		Assert.assertFalse(errors.hasFieldErrors("person"));
+		Assert.assertFalse(errors.hasFieldErrors("concept"));
+		Assert.assertFalse(errors.hasFieldErrors("obsDatetime"));
+		Assert.assertTrue(errors.hasFieldErrors("valueText"));
+	}
 }

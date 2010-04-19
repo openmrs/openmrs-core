@@ -38,6 +38,8 @@ import org.springframework.validation.Validator;
 @Handler(supports = { Obs.class }, order = 50)
 public class ObsValidator implements Validator {
 	
+	public final static int VALUE_TEXT_MAX_LENGTH = 50;
+	
 	/**
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
@@ -133,6 +135,15 @@ public class ObsValidator implements Validator {
 			} else if (dt.isText() && obs.getValueText() == null) {
 				if (atRootNode)
 					errors.rejectValue("valueText", "error.null");
+				else
+					errors.rejectValue("groupMembers", "Obs.error.inGroupMember");
+			}
+			
+			//If valueText is longer than the maxlength, raise an error as well.
+			if (dt.isText() && obs.getValueText() != null
+					&& obs.getValueText().length() > VALUE_TEXT_MAX_LENGTH) {
+				if (atRootNode)
+					errors.rejectValue("valueText", "error.exceededMaxLengthOfField");
 				else
 					errors.rejectValue("groupMembers", "Obs.error.inGroupMember");
 			}
