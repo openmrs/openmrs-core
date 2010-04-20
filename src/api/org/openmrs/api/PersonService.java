@@ -272,7 +272,7 @@ public interface PersonService {
 	public List<PersonAttributeType> getPersonAttributeTypes() throws APIException;
 	
 	/**
-	 * Find person attribute types matching the given parameters
+	 * Find person attribute types matching the given parameters.  Retired types are included in the results
 	 * 
 	 * @param exactName (optional) The name of type
 	 * @param format (optional) The format for this type

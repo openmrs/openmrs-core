@@ -550,7 +550,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 			throws Exception {
 		executeDataSet("org/openmrs/api/include/PersonServiceTest-createRetiredPersonAttributeType.xml");
 		
-		List<PersonAttributeType> attributeTypes = Context.getPersonService().getPersonAttributeTypes("Credit Card", null, null, null);
+		List<PersonAttributeType> attributeTypes = Context.getPersonService().getPersonAttributeTypes("A nonexistent attr type name", null, null, null);
 		Assert.assertNotNull(attributeTypes);
 		Assert.assertTrue("Number of matched attribute type is 0", attributeTypes.isEmpty());
 		
@@ -560,7 +560,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		
 		attributeTypes = Context.getPersonService().getPersonAttributeTypes(null, null, null, false);
 		Assert.assertNotNull(attributeTypes);
-		Assert.assertTrue("Number of matched attribute type is 2", attributeTypes.size() == 2);
+		Assert.assertTrue("Number of matched attribute type is 6", attributeTypes.size() == 6);
 	}
 
 	/**
@@ -573,7 +573,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 			throws Exception {
 		executeDataSet("org/openmrs/api/include/PersonServiceTest-createRetiredPersonAttributeType.xml");
 		
-		List<PersonAttributeType> attributeTypes = Context.getPersonService().getPersonAttributeTypes("Credit Card", "java.lang.String", null, false);
+		List<PersonAttributeType> attributeTypes = Context.getPersonService().getPersonAttributeTypes("A non-existent attr type name", "java.lang.String", null, false);
 		Assert.assertNotNull(attributeTypes);
 		Assert.assertTrue("Should return empty list", attributeTypes.isEmpty());
 	}
