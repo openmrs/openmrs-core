@@ -358,7 +358,6 @@ public class HibernatePersonDAO implements PersonDAO {
 	public List<PersonAttributeType> getPersonAttributeTypes(String exactName, String format, Integer foreignKey,
 	                                                         Boolean searchable) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(PersonAttributeType.class, "r");
-		criteria.add(Expression.eq("retired", false));
 		
 		if (exactName != null)
 			criteria.add(Expression.eq("name", exactName));
