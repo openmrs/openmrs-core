@@ -344,4 +344,58 @@ public class ModuleUtilTest extends BaseContextSensitiveTest {
 	    Assert.assertNull(ModuleUtil.getModuleForPath(path));
     }
 
+    /**
+     * @see {@link ModuleUtil#checkRequiredVersion(String, String)}
+     */
+    @Test(expected = ModuleException.class)
+    @Verifies(value = "should throw ModuleException if openmrs version beyond wild card range", method = "checkRequiredVersion(String, String)")
+    public void checkRequiredVersion_shouldThrowModuleExceptionIfOpenmrsVersionBeyondWildCardRange() throws Exception {
+    	String openmrsVersion = "1.4.3";
+		String requiredOpenmrsVersion = "1.3.*";
+		ModuleUtil.checkRequiredVersion(openmrsVersion, requiredOpenmrsVersion);
+    }
+    
+    /**
+     * @see {@link ModuleUtil#checkRequiredVersion(String, String)}
+     */
+    @Test(expected = ModuleException.class)
+    @Verifies(value = "should throw ModuleException if required version beyond openmrs version", method = "checkRequiredVersion(String, String)")
+    public void checkRequiredVersion_shouldThrowModuleExceptionIfRequiredVersionBeyondOpenmrsVersion() throws Exception {
+    	String openmrsVersion = "1.4.3";
+		String requiredOpenmrsVersion = "1.5.*";
+		ModuleUtil.checkRequiredVersion(openmrsVersion, requiredOpenmrsVersion);
+    }
+    
+    /**
+     * @see {@link ModuleUtil#checkRequiredVersion(String, String)}
+     */
+    @Test(expected = ModuleException.class)
+    @Verifies(value = "should throw ModuleException if required version with wild card beyond openmrs version", method = "checkRequiredVersion(String, String)")
+    public void checkRequiredVersion_shouldThrowModuleExceptionIfRequiredVersionWithWildCardBeyondOpenmrsVersion() throws Exception {
+    	String openmrsVersion = "1.4.3";
+		String requiredOpenmrsVersion = "1.5.* - 1.6.*";
+		ModuleUtil.checkRequiredVersion(openmrsVersion, requiredOpenmrsVersion);
+    }
+    
+    /**
+     * @see {@link ModuleUtil#checkRequiredVersion(String, String)}
+     */
+    @Test(expected = ModuleException.class)
+    @Verifies(value = "should throw ModuleException if required version with wild card on one end beyond openmrs version", method = "checkRequiredVersion(String, String)")
+    public void checkRequiredVersion_shouldThrowModuleExceptionIfRequiredVersionWithWildCardOnOneEndBeyondOpenmrsVersion() throws Exception {
+    	String openmrsVersion = "1.4.3";
+		String requiredOpenmrsVersion = "1.4.5 - 1.5.*";
+		ModuleUtil.checkRequiredVersion(openmrsVersion, requiredOpenmrsVersion);
+    }
+    
+    /**
+     * @see {@link ModuleUtil#checkRequiredVersion(String, String)}
+     */
+    @Test(expected = ModuleException.class)
+    @Verifies(value = "should throw ModuleException if single entry required version beyond openmrs version", method = "checkRequiredVersion(String, String)")
+    public void checkRequiredVersion_shouldThrowModuleExceptionIfSingleEntryRequiredVersionBeyondOpenmrsVersion() throws Exception {
+    	String openmrsVersion = "1.4.3";
+		String requiredOpenmrsVersion = "1.5.0";
+		ModuleUtil.checkRequiredVersion(openmrsVersion, requiredOpenmrsVersion);
+    }
 }
