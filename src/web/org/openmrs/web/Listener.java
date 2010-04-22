@@ -159,16 +159,11 @@ public final class Listener extends ContextLoaderListener {
 	 * 
 	 * @return true if one of the filters needs to take some action
 	 */
-	private boolean setupNeeded() throws ServletException {
+	private boolean setupNeeded() throws Exception {
 		if (!runtimePropertiesFound)
 			return true;
 		
-		try {
-			return DatabaseUpdater.updatesRequired() && !DatabaseUpdater.allowAutoUpdate();
-		}
-		catch (Throwable t) {
-			throw new ServletException(t);
-		}
+		return DatabaseUpdater.updatesRequired() && !DatabaseUpdater.allowAutoUpdate();
 	}
 	
 	/**

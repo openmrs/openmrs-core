@@ -16,6 +16,7 @@ package org.openmrs.util;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -303,7 +304,12 @@ public class DatabaseUpdater {
 		Connection connection = null;
 		try {
 			connection = getConnection();
-			
+		}
+		catch (SQLException e) {
+			throw new Exception("Unable to get a connection to the database.  Please check your openmrs runtime properties file and make sure you have the correct connection.username and connection.password set", e);
+		}
+		
+		try {
 			Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(connection);
 			database.setDatabaseChangeLogTableName("liquibasechangelog");
 			database.setDatabaseChangeLogLockTableName("liquibasechangeloglock");
@@ -535,7 +541,7 @@ public class DatabaseUpdater {
 			
 		}
 		catch (Exception e) {
-			throw new RuntimeException("error getting unrun updates on the database", e);
+			throw new RuntimeException("Error occurred while trying to get the updates needed for the database. " + e.getMessage(), e);
 		}
 		finally {
 			try {
