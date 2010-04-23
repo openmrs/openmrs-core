@@ -52,7 +52,7 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 			name.setDateCreated(new Date());
 			u.addName(name);
 			u.setUsername(wildcard + "test" + wildcard);
-			Context.getUserService().saveUser(u, "my password");			
+			Context.getUserService().saveUser(u, "Openmr5xy");			
 			
 			//we expect only one matching name or or systemId  to be returned		
 			int size = dao.getUsers(wildcard + "ca", null, false).size();

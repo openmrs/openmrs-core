@@ -77,7 +77,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		u.setUsername("bwolfe");
 		u.getPerson().setGender("M");
 		
-		User createdUser = us.saveUser(u, "some arbitrary password to use");
+		User createdUser = us.saveUser(u, "Openmr5xy");
 		
 		// if we're returning the object from create methods, check validity
 		assertTrue("The user returned by the create user method should equal the passed in user", createdUser.equals(u));
@@ -130,7 +130,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		assertTrue(user.hasRole("Some Role"));
 		
 		// do the actual creating of the user object
-		userService.saveUser(user, "password");
+		userService.saveUser(user, "Openmr5xy");
 		Assert.assertNotNull("User was not created", userService.getUser(user.getUserId()));
 		
 		Integer shouldCreateUserWhoIsPatientAlreadyTestUserIdCreated = user.getUserId();
@@ -967,14 +967,13 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		Assert.assertNotNull(user.getRetiredBy());
 		Assert.assertEquals("because", user.getRetireReason());
 	}
-
+	
 	/**
-     * @see {@link UserService#unretireUser(User)}
-     * 
-     */
-    @Test
-    @Verifies(value = "should unretire and unmark all attributes", method = "unretireUser(User)")
-    public void unretireUser_shouldUnretireAndUnmarkAllAttributes() throws Exception {
+	 * @see {@link UserService#unretireUser(User)}
+	 */
+	@Test
+	@Verifies(value = "should unretire and unmark all attributes", method = "unretireUser(User)")
+	public void unretireUser_shouldUnretireAndUnmarkAllAttributes() throws Exception {
 		UserService userService = Context.getUserService();
 		User user = userService.getUser(501);
 		userService.unretireUser(user);
@@ -982,5 +981,27 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		Assert.assertNull(user.getDateRetired());
 		Assert.assertNull(user.getRetiredBy());
 		Assert.assertNull(user.getRetireReason());
-	}	
+	}
+
+	/**
+	 * Test that user is not created with a weak password
+	 * 
+	 * @see {@link UserService#saveUser(User,String)}
+	 */
+	@Test(expected = PasswordException.class)
+	@Verifies(value = "fail to create the user with a weak password", method = "saveUser(User,String)")
+	public void saveUser_shouldFailToCreateTheUserWithAWeakPassword() throws Exception {
+		assertTrue("The context needs to be correctly authenticated to by a user", Context.isAuthenticated());
+		
+		UserService us = Context.getUserService();
+		
+		User u = new User();
+		u.setPerson(new Person());
+		
+		u.addName(new PersonName("Benjamin", "A", "Wolfe"));
+		u.setUsername("bwolfe");
+		u.getPerson().setGender("M");
+		
+		us.saveUser(u, "short");
+	}
 }
