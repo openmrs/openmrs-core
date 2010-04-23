@@ -84,9 +84,8 @@ public final class Listener extends ContextLoaderListener {
 	}
 	
 	/**
-	 * Boolean flag set by the {@link #contextInitialized(ServletContextEvent)} method
-	 * if an error occurred when trying to start up.  The StartupErrorFilter displays
-	 * the error to the admin
+	 * Boolean flag set by the {@link #contextInitialized(ServletContextEvent)} method if an error
+	 * occurred when trying to start up. The StartupErrorFilter displays the error to the admin
 	 * 
 	 * @return true/false if an error occurred when starting up
 	 */
@@ -196,7 +195,6 @@ public final class Listener extends ContextLoaderListener {
 			// in the StartupErrorFilter class
 			throw coreModEx;
 		}
-		
 		
 		// TODO catch openmrs errors here and drop the user back out to the setup screen
 		
@@ -571,7 +569,8 @@ public final class Listener extends ContextLoaderListener {
 		}
 		catch (Throwable t) {
 			log.debug("Got an error while attempting to load the runtime properties", t);
-			log.warn("Unable to find a runtime properties file. Initial setup is needed. View the webapp to run the setup wizard.");
+			log
+			        .warn("Unable to find a runtime properties file. Initial setup is needed. View the webapp to run the setup wizard.");
 			return null;
 		}
 		return props;
@@ -603,7 +602,7 @@ public final class Listener extends ContextLoaderListener {
 		
 		if (someModuleNeedsARefresh) {
 			try {
-				WebModuleUtil.refreshWAC(servletContext);
+				WebModuleUtil.refreshWAC(servletContext, true, null);
 			}
 			catch (ModuleMustStartException ex) {
 				// pass this up to the calling method so that openmrs loading stops
@@ -615,13 +614,14 @@ public final class Listener extends ContextLoaderListener {
 					WebModuleUtil.shutdownModules(servletContext);
 					for (Module mod : ModuleFactory.getLoadedModules()) {// use loadedModules to avoid a concurrentmodificationexception
 						if (!mod.isCoreModule() && !mod.isMandatory())
-							ModuleFactory.stopModule(mod, true, true); 
+							ModuleFactory.stopModule(mod, true, true);
 					}
-					WebModuleUtil.refreshWAC(servletContext);
+					WebModuleUtil.refreshWAC(servletContext, true, null);
 				}
 				catch (MandatoryModuleException ex) {
 					// pass this up to the calling method so that openmrs loading stops
-					throw new MandatoryModuleException(ex.getModuleId(), "Got an error while starting a mandatory module: " + t.getMessage() + ". Check the server logs for more information");
+					throw new MandatoryModuleException(ex.getModuleId(), "Got an error while starting a mandatory module: "
+					        + t.getMessage() + ". Check the server logs for more information");
 				}
 				catch (Throwable t2) {
 					// a mandatory or core module is causing spring to fail to start up.  We don't want those

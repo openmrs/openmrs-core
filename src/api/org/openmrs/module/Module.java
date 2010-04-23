@@ -57,6 +57,8 @@ public final class Module {
 	
 	private Activator activator;
 	
+	private ModuleActivator moduleActivator;
+	
 	private String activatorName;
 	
 	private String requireOpenmrsVersion;
@@ -132,7 +134,9 @@ public final class Module {
 	
 	/**
 	 * @return the activator
+	 * @depreacated replaced by {@link Module#getModuleActivator()}
 	 */
+	@Deprecated
 	public Activator getActivator() {
 		try {
 			ModuleClassLoader classLoader = ModuleFactory.getModuleClassLoader(this);
@@ -160,6 +164,42 @@ public final class Module {
 	 */
 	public void setActivator(Activator activator) {
 		this.activator = activator;
+	}
+	
+	/**
+	 * @return the moduleActivator
+	 */
+	public ModuleActivator getModuleActivator() {
+		try {
+			ModuleClassLoader classLoader = ModuleFactory.getModuleClassLoader(this);
+			if (classLoader == null)
+				throw new ModuleException("The classloader is null", getModuleId());
+			
+			Class<?> c = classLoader.loadClass(getActivatorName());
+			Object o = c.newInstance();
+			if (ModuleActivator.class.isAssignableFrom(o.getClass()))
+				setModuleActivator((ModuleActivator) o);
+			
+		}
+		catch (ClassNotFoundException e) {
+			
+			throw new ModuleException("Unable to load/find moduleActivator: '" + getActivatorName() + "'", name, e);
+		}
+		catch (IllegalAccessException e) {
+			throw new ModuleException("Unable to load/access moduleActivator: '" + getActivatorName() + "'", name, e);
+		}
+		catch (InstantiationException e) {
+			throw new ModuleException("Unable to load/instantiate moduleActivator: '" + getActivatorName() + "'", name, e);
+		}
+		
+		return moduleActivator;
+	}
+	
+	/**
+	 * @param moduleActivator the moduleActivator to set
+	 */
+	public void setModuleActivator(ModuleActivator moduleActivator) {
+		this.moduleActivator = moduleActivator;
 	}
 	
 	/**
@@ -311,11 +351,11 @@ public final class Module {
 	}
 	
 	/**
-     * @return the module id, with all . replaced with /
-     */
-    public String getModuleIdAsPath() {
-	    return moduleId == null ? null : moduleId.replace('.', '/');
-    }
+	 * @return the module id, with all . replaced with /
+	 */
+	public String getModuleIdAsPath() {
+		return moduleId == null ? null : moduleId.replace('.', '/');
+	}
 	
 	/**
 	 * @param moduleId the module id to set
@@ -568,12 +608,12 @@ public final class Module {
 	public boolean isMandatory() {
 		return mandatory;
 	}
-
-    public void setMandatory(boolean mandatory) {
-    	this.mandatory = mandatory;
-    }
-    
-    /**
+	
+	public void setMandatory(boolean mandatory) {
+		this.mandatory = mandatory;
+	}
+	
+	/**
 	 * This is a convenience method to know whether this module is core to OpenMRS. A module is
 	 * 'core' when this module is essentially part of the core code and must exist at all times
 	 * 
@@ -583,7 +623,7 @@ public final class Module {
 	public boolean isCoreModule() {
 		return !ModuleUtil.ignoreCoreModules() && ModuleConstants.CORE_MODULES.containsKey(moduleId);
 	}
-
+	
 	public boolean isStarted() {
 		return ModuleFactory.isModuleStarted(this);
 	}

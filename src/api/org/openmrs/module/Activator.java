@@ -14,21 +14,31 @@
 package org.openmrs.module;
 
 /**
- * This interface must be implemented by modules and referenced by the Module-Activator property in
- * the module manifest
+ * This interface will be removed in version 2.0, you should extend {@link BaseModuleActivator}.
  * 
+ * @deprecated replaced by {@link BaseModuleActivator}
+ * @see BaseModuleActivator
  * @version 1.0
  */
+@Deprecated
 public interface Activator {
 	
 	/**
 	 * Called on module start/load
+	 * 
+	 * @deprecated
+	 * @see BaseModuleActivator#started()
 	 */
+	@Deprecated
 	public void startup();
 	
 	/**
 	 * Called on module end
+	 * 
+	 * @deprecated
+	 * @see BaseModuleActivator#stopped()
 	 */
+	@Deprecated
 	public void shutdown();
 	
 }
