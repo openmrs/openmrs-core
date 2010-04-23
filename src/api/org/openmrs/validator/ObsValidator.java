@@ -99,7 +99,7 @@ public class ObsValidator implements Validator {
 					errors.rejectValue("valueCoded", "error.null");
 				else
 					errors.rejectValue("groupMembers", "Obs.error.inGroupMember");
-			} else if (dt.isDate() && obs.getValueDatetime() == null) {
+			} else if (dt.isDateTime() && obs.getValueDatetime() == null) {
 				if (atRootNode)
 					errors.rejectValue("valueDatetime", "error.null");
 				else
@@ -140,8 +140,7 @@ public class ObsValidator implements Validator {
 			}
 			
 			//If valueText is longer than the maxlength, raise an error as well.
-			if (dt.isText() && obs.getValueText() != null
-					&& obs.getValueText().length() > VALUE_TEXT_MAX_LENGTH) {
+			if (dt.isText() && obs.getValueText() != null && obs.getValueText().length() > VALUE_TEXT_MAX_LENGTH) {
 				if (atRootNode)
 					errors.rejectValue("valueText", "error.exceededMaxLengthOfField");
 				else
