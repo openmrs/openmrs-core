@@ -256,7 +256,7 @@ public class UserFormController {
 				}
 			}
             
-            if (StringUtils.hasLength(secretQuestion) || StringUtils.hasLength(secretAnswer)) {
+            if (StringUtils.hasLength(secretQuestion) && StringUtils.hasLength(secretAnswer)) {
             	us.changeQuestionAnswer(user, secretQuestion, secretAnswer);
             }
             
