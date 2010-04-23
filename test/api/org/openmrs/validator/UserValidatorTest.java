@@ -100,7 +100,7 @@ public class UserValidatorTest {
 		String username = "12345678901234567890123456789012345678901AAAAABBBAABABABABA";
 		Assert.assertTrue(username.length() > 50);
 		Assert.assertFalse(userValidator.isUserNameValid(username));
-	}	
+	}
 	
 	/**
 	 * @see {@link UserValidator#validate(Object,Errors)}
@@ -146,5 +146,35 @@ public class UserValidatorTest {
 		new UserValidator().validate(user, errors);
 		
 		Assert.assertFalse(errors.hasErrors());
+	}
+	
+	/**
+	 * @see {@link UserValidator#isUserNameValid(String)}
+	 */
+	@Test
+	@Verifies(value = "should validate when username is null", method = "isUserNameValid(String)")
+	public void isUserNameValid_shouldValidateWhenUsernameIsNull() throws Exception {
+		UserValidator userValidator = new UserValidator();
+		Assert.assertTrue(userValidator.isUserNameValid(null));
+	}
+	
+	/**
+	 * @see {@link UserValidator#isUserNameValid(String)}
+	 */
+	@Test
+	@Verifies(value = "should validate when username is the empty string", method = "isUserNameValid(String)")
+	public void isUserNameValid_shouldValidateWhenUsernameIsTheEmptyString() throws Exception {
+		UserValidator userValidator = new UserValidator();
+		Assert.assertTrue(userValidator.isUserNameValid(""));
+	}
+	
+	/**
+	 * @see {@link UserValidator#isUserNameValid(String)}
+	 */
+	@Test
+	@Verifies(value = "should not validate when username is whitespace only", method = "isUserNameValid(String)")
+	public void isUserNameValid_shouldNotValidateWhenUsernameIsWhitespaceOnly() throws Exception {
+		UserValidator userValidator = new UserValidator();
+		Assert.assertFalse(userValidator.isUserNameValid("  "));
 	}
 }
