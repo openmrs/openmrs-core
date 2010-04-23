@@ -99,7 +99,7 @@ public class ObsValidator implements Validator {
 					errors.rejectValue("valueCoded", "error.null");
 				else
 					errors.rejectValue("groupMembers", "Obs.error.inGroupMember");
-			} else if (dt.isDateTime() && obs.getValueDatetime() == null) {
+			} else if ((dt.isDateTime() || dt.isDate() || dt.isTime()) && obs.getValueDatetime() == null) {
 				if (atRootNode)
 					errors.rejectValue("valueDatetime", "error.null");
 				else
