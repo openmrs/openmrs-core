@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Person;
@@ -235,6 +236,15 @@ public class UserFormController extends PersonFormController {
 					us.changePassword(user, password);
 				}
 				
+			}
+			
+			// if secretAnswer has been entered, change the users secretAnswer
+			String newSecretAnswer = request.getParameter("secretAnswer");
+			if (!StringUtils.isEmpty(newSecretAnswer)) {
+				if (log.isDebugEnabled()) {
+					log.debug("calling changeQuestionAnswer for user " + user + " by user " + Context.getAuthenticatedUser());
+				}
+				us.changeQuestionAnswer(user, user.getSecretQuestion(), newSecretAnswer);
 			}
 			
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "User.saved");
