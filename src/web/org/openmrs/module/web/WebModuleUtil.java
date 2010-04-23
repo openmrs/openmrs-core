@@ -311,7 +311,15 @@ public class WebModuleUtil {
 					log.debug("Refreshing context for module" + mod);
 				
 				try {
-					refreshWAC(servletContext);
+					refreshWAC(servletContext, false, mod);
+					
+					try {
+						if (mod.getModuleActivator() != null)// if extends BaseModuleActivator
+							mod.getModuleActivator().started();
+					}					
+					catch (Throwable t) {
+						log.warn("Unable to call module's Activator.started() method", t);
+					}
 					log.debug("Done Refreshing WAC");
 				}
 				catch (Exception e) {
@@ -332,7 +340,7 @@ public class WebModuleUtil {
 					}
 					
 					// try starting the application context again
-					refreshWAC(servletContext);
+					refreshWAC(servletContext, false, mod);
 				}
 			}
 			
@@ -749,7 +757,7 @@ public class WebModuleUtil {
 			//	log.warn("Unable to reinitialize webapplicationcontext for dispatcherservlet for module: " + mod.getName(), se);
 			//}
 			
-			refreshWAC(servletContext);
+			refreshWAC(servletContext, false, null);
 		}
 		
 	}
@@ -758,15 +766,19 @@ public class WebModuleUtil {
 	 * Stops, closes, and refreshes the Spring context for the given <code>servletContext</code>
 	 * 
 	 * @param servletContext
-	 * @return
+	 * @param isOpenmrsStartup if this refresh is being done at application startup
+	 * @param startedModule the module that was just started and waiting on the context refresh
+	 * @return The newly refreshed webApplicationContext
 	 */
-	public static XmlWebApplicationContext refreshWAC(ServletContext servletContext) {
+	public static XmlWebApplicationContext refreshWAC(ServletContext servletContext, boolean isOpenmrsStartup,
+	                                                  Module startedModule) {
 		XmlWebApplicationContext wac = (XmlWebApplicationContext) WebApplicationContextUtils
 		        .getWebApplicationContext(servletContext);
 		if (log.isDebugEnabled())
 			log.debug("Refreshing web applciation Context of class: " + wac.getClass().getName());
 		
-		XmlWebApplicationContext newAppContext = (XmlWebApplicationContext) ModuleUtil.refreshApplicationContext(wac);
+		XmlWebApplicationContext newAppContext = (XmlWebApplicationContext) ModuleUtil.refreshApplicationContext(wac,
+		    isOpenmrsStartup, startedModule);
 		
 		try {
 			// must "refresh" the spring dispatcherservlet as well to add in 

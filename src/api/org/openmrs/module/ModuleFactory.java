@@ -95,7 +95,8 @@ public class ModuleFactory {
 	 * 
 	 * @param module
 	 * @param replaceIfExists unload a module that has the same moduleId if one is loaded already
-	 * @return module the module that was loaded or if the module exists already with the same version, the old module
+	 * @return module the module that was loaded or if the module exists already with the same
+	 *         version, the old module
 	 */
 	public static Module loadModule(Module module, Boolean replaceIfExists) throws ModuleException {
 		
@@ -112,12 +113,10 @@ public class ModuleFactory {
 				if (replaceIfExists) {
 					// if the versions are the same and we're told to replaceIfExists, use the new
 					unloadModule(oldModule);
-				}
-				else
+				} else
 					// if the versions are equal and we're not told to replaceIfExists, jump out of here in a bad way
 					throw new ModuleException("A module with the same id and version already exists", module.getModuleId());
-			}
-			else {
+			} else {
 				// if the older (already loaded) module is newer, keep that original one that was loaded. return that one.
 				return oldModule;
 			}
@@ -189,7 +188,8 @@ public class ModuleFactory {
 					String startedProp = as.getGlobalProperty(key, null);
 					String mandatoryProp = as.getGlobalProperty(mod.getModuleId() + ".mandatory", null);
 					// if this is a core module and we're not ignoring core modules, this module should always start
-					boolean isCoreToOpenmrs = ModuleConstants.CORE_MODULES.containsKey(mod.getModuleId()) && !ModuleUtil.ignoreCoreModules();
+					boolean isCoreToOpenmrs = ModuleConstants.CORE_MODULES.containsKey(mod.getModuleId())
+					        && !ModuleUtil.ignoreCoreModules();
 					
 					// if a 'moduleid.started' property doesn't exist, start the module anyway
 					// as this is probably the first time they are loading it
@@ -275,24 +275,27 @@ public class ModuleFactory {
 	}
 	
 	/**
-     * Returns all modules found/loaded into the system (started and not started), with the core modules at the start of that list
+	 * Returns all modules found/loaded into the system (started and not started), with the core
+	 * modules at the start of that list
 	 * 
-	 * @return <code>List<Module></code> of the modules loaded into the system, with the core modules first.
-     */
-    public static List<Module> getLoadedModulesCoreFirst() {
-	    List<Module> list = new ArrayList<Module>(getLoadedModules());
-	    final Collection<String> coreModuleIds = ModuleConstants.CORE_MODULES.keySet();
-	    Collections.sort(list, new Comparator<Module>() {
+	 * @return <code>List<Module></code> of the modules loaded into the system, with the core
+	 *         modules first.
+	 */
+	public static List<Module> getLoadedModulesCoreFirst() {
+		List<Module> list = new ArrayList<Module>(getLoadedModules());
+		final Collection<String> coreModuleIds = ModuleConstants.CORE_MODULES.keySet();
+		Collections.sort(list, new Comparator<Module>() {
+			
 			@Override
-            public int compare(Module left, Module right) {
+			public int compare(Module left, Module right) {
 				Integer leftVal = coreModuleIds.contains(left.getModuleId()) ? 0 : 1;
 				Integer rightVal = coreModuleIds.contains(right.getModuleId()) ? 0 : 1;
 				return leftVal.compareTo(rightVal);
 			}
-	    });
-	    return list;
-    }
-
+		});
+		return list;
+	}
+	
 	/**
 	 * Convenience method to return a List of Strings containing a description of which modules the
 	 * passed module requires but which are not started. The returned description of each module is
@@ -411,7 +414,7 @@ public class ModuleFactory {
 	}
 	
 	/**
-	 * Runs through extensionPoints and then calls mod.Activator.startup()
+	 * Runs through extensionPoints and then calls mod.BaseModuleActivator.willStart()
 	 * 
 	 * @param module Module to start
 	 */
@@ -520,7 +523,10 @@ public class ModuleFactory {
 				// should be near the bottom so the module has all of its stuff
 				// set up for it already.
 				try {
-					module.getActivator().startup();
+					if (module.getModuleActivator() != null)// if extends BaseModuleActivator
+						module.getModuleActivator().willStart();
+					else
+						module.getActivator().startup();//implements old Activator interface
 				}
 				catch (ModuleException e) {
 					// just rethrow module exceptions. This should be used for a
@@ -528,12 +534,11 @@ public class ModuleFactory {
 					throw e;
 				}
 				catch (Exception e) {
-					throw new ModuleException("Error while calling module's Activator.startup() method", e);
+					throw new ModuleException("Error while calling module's Activator.startup()/willStart() method", e);
 				}
 				
 				// erase any previous startup error
 				module.clearStartupError();
-				
 			}
 			catch (Exception e) {
 				log.warn("Error while trying to start module: " + moduleId, e);
@@ -708,6 +713,14 @@ public class ModuleFactory {
 		List<Module> dependentModulesStopped = new Vector<Module>();
 		
 		if (mod != null) {
+			try {
+				if (mod.getModuleActivator() != null)// if extends BaseModuleActivator
+					mod.getModuleActivator().willStop();
+			}
+			catch (Throwable t) {
+				log.warn("Unable to call module's Activator.willStop() method", t);
+			}
+			
 			String moduleId = mod.getModuleId();
 			
 			// don't allow mandatory modules to be stopped
@@ -788,11 +801,10 @@ public class ModuleFactory {
 			}
 			
 			try {
-				mod.getActivator().shutdown();
-			}
-			catch (ModuleException me) {
-				// essentially ignore thrown ModuleExceptions.
-				log.debug("Exception encountered while calling module's activator.shutdown()", me);
+				if (mod.getModuleActivator() != null)//extends BaseModuleActivator
+					mod.getModuleActivator().stopped();
+				else
+					mod.getActivator().shutdown();//implements old  Activator interface
 			}
 			catch (Throwable t) {
 				log.warn("Unable to call module's Activator.shutdown() method", t);
@@ -965,7 +977,8 @@ public class ModuleFactory {
 	 * Get a module's classloader
 	 * 
 	 * @param mod Module to fetch the class loader for
-	 * @return ModuleClassLoader pertaining to this module. Returns null if the module is not started
+	 * @return ModuleClassLoader pertaining to this module. Returns null if the module is not
+	 *         started
 	 * @throws ModuleException if the module does not have a registered classloader
 	 */
 	public static ModuleClassLoader getModuleClassLoader(Module mod) throws ModuleException {
@@ -981,7 +994,8 @@ public class ModuleFactory {
 	 * Get a module's classloader via the module id
 	 * 
 	 * @param moduleId <code>String</code> id of the module
-	 * @return ModuleClassLoader pertaining to this module.  Returns null if the module is not started
+	 * @return ModuleClassLoader pertaining to this module. Returns null if the module is not
+	 *         started
 	 * @throws ModuleException if this module isn't started or doesn't have a classloader
 	 * @see #getModuleClassLoader(Module)
 	 */

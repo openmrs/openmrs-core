@@ -203,12 +203,10 @@ public class ModuleUtil {
 	
 	/**
 	 * This method is an enhancement of {@link #compareVersion(String, String)} and adds support for
-	 * wildcard characters and upperbounds. 
-	 * <br/><br/>
-	 * 
-	 * This method calls {@link ModuleUtil#checkRequiredVersion(String, String)} internally.
-	 * <br/><br/>
-	 * 
+	 * wildcard characters and upperbounds. <br/>
+	 * <br/>
+	 * This method calls {@link ModuleUtil#checkRequiredVersion(String, String)} internally. <br/>
+	 * <br/>
 	 * The require version number in the config file can be in the following format:
 	 * <ul>
 	 * <li>1.2.3</li>
@@ -267,11 +265,11 @@ public class ModuleUtil {
 	 * @param version openmrs version number to be compared
 	 * @param value value in the config file for required openmrs version
 	 * @throws ModuleException if the <code>version</code> is not within the <code>value</code>
-	 * 
 	 * @should throw ModuleException if openmrs version beyond wild card range
 	 * @should throw ModuleException if required version beyond openmrs version
 	 * @should throw ModuleException if required version with wild card beyond openmrs version
-	 * @should throw ModuleException if required version with wild card on one end beyond openmrs version
+	 * @should throw ModuleException if required version with wild card on one end beyond openmrs
+	 *         version
 	 * @should throw ModuleException if single entry required version beyond openmrs version
 	 */
 	public static void checkRequiredVersion(String version, String value) throws ModuleException {
@@ -676,13 +674,35 @@ public class ModuleUtil {
 	}
 	
 	/**
-	 * Refreshes the given application context "properly" in OpenMRS. Will first shut down the
-	 * Context and destroy the classloader, then will refresh and set everything back up again
-	 * 
-	 * @param ctx Spring application context that needs refreshing
-	 * @return AbstractRefreshableApplicationContext the newly refreshed application context
+	 * @see ModuleUtil#refreshApplicationContext(AbstractRefreshableApplicationContext, Module)
 	 */
 	public static AbstractRefreshableApplicationContext refreshApplicationContext(AbstractRefreshableApplicationContext ctx) {
+		return refreshApplicationContext(ctx, false, null);
+	}
+	
+	/**
+	 * Refreshes the given application context "properly" in OpenMRS. Will first shut down the
+	 * Context and destroy the classloader, then will refresh and set everything back up again.
+	 * 
+	 * @param ctx Spring application context that needs refreshing.
+	 * @param isOpenmrsStartup if this refresh is being done at application startup.
+	 * @param startedModule the module that was just started and waiting on the context refresh.
+	 * @return AbstractRefreshableApplicationContext The newly refreshed application context.
+	 */
+	public static AbstractRefreshableApplicationContext refreshApplicationContext(AbstractRefreshableApplicationContext ctx,
+	                                                                              boolean isOpenmrsStartup,
+	                                                                              Module startedModule) {
+		//notify all started modules that we are about to refresh the context
+		for (Module module : ModuleFactory.getStartedModules()) {
+			try {
+				if (module.getModuleActivator() != null)
+					module.getModuleActivator().willRefreshContext();
+			}
+			catch (Throwable t) {
+				log.warn("Unable to call willRefreshContext() method in the module's activator", t);
+			}
+		}
+		
 		OpenmrsClassLoader.saveState();
 		ServiceContext.destroyInstance();
 		
@@ -718,6 +738,21 @@ public class ModuleUtil {
 		
 		for (Module module : ModuleFactory.getStartedModules()) {
 			ModuleFactory.loadAdvice(module);
+			try {
+				if (module.getModuleActivator() != null) {
+					module.getModuleActivator().contextRefreshed();
+					//if it is system start up, call the started method for all started modules
+					if (isOpenmrsStartup)
+						module.getModuleActivator().started();
+					//if refreshing the context after a user started or uploaded a new module
+					else if (!isOpenmrsStartup && module.equals(startedModule))
+						module.getModuleActivator().started();
+				}
+				
+			}
+			catch (Throwable t) {
+				log.warn("Unable to invoke method on the module's activator ", t);
+			}
 		}
 		
 		return ctx;
@@ -744,9 +779,9 @@ public class ModuleUtil {
 	}
 	
 	/**
-	 * Looks at the list of modules in {@link ModuleConstants#CORE_MODULES} to make
-	 * sure that all modules that are core to OpenMRS are started and have at least
-	 * a minimum version that OpenMRS needs.
+	 * Looks at the list of modules in {@link ModuleConstants#CORE_MODULES} to make sure that all
+	 * modules that are core to OpenMRS are started and have at least a minimum version that OpenMRS
+	 * needs.
 	 * 
 	 * @throws ModuleException if a module that is core to OpenMRS is not started
 	 * @should throw ModuleException if a core module is not started
@@ -770,8 +805,8 @@ public class ModuleUtil {
 				if (compareVersion(mod.getVersion(), coreReqVersion) >= 0)
 					coreModules.remove(moduleId);
 				else
-					log.debug("Module: " + moduleId + " is a core module and is started, but its version: " + mod.getVersion()
-				        + " is not within the required version: " + coreReqVersion);
+					log.debug("Module: " + moduleId + " is a core module and is started, but its version: "
+					        + mod.getVersion() + " is not within the required version: " + coreReqVersion);
 			}
 		}
 		
@@ -787,7 +822,8 @@ public class ModuleUtil {
 	 * @return true if the core modules list can be ignored.
 	 */
 	public static boolean ignoreCoreModules() {
-		String ignoreCoreModules = Context.getRuntimeProperties().getProperty(ModuleConstants.IGNORE_CORE_MODULES_PROPERTY, "false");
+		String ignoreCoreModules = Context.getRuntimeProperties().getProperty(ModuleConstants.IGNORE_CORE_MODULES_PROPERTY,
+		    "false");
 		return Boolean.parseBoolean(ignoreCoreModules);
 	}
 	
@@ -833,47 +869,46 @@ public class ModuleUtil {
 	 * 
 	 * @param path
 	 * @return the running module that matches the most of the given path
-	 * 
 	 * @should handle ui springmvc css ui dot css when ui dot springmvc module is running
 	 * @should handle ui springmvc css ui dot css when ui module is running
 	 * @should return null for ui springmvc css ui dot css when no relevant module is running
 	 */
-    public static Module getModuleForPath(String path) {
-    	int ind = path.lastIndexOf('/');
-    	if (ind <= 0) {
-    		throw new IllegalArgumentException("Input must be /moduleId/resource. Input needs a / after the first character: " + path);
-    	}
-    	String moduleId = path.startsWith("/") ? path.substring(1, ind) : path.substring(0, ind);
-    	moduleId = moduleId.replace('/', '.');
-    	// iterate over progressively shorter module ids
-    	while (true) {
-    		Module mod = ModuleFactory.getStartedModuleById(moduleId);
-    		if (mod != null)
-    			return mod;
-    		// try the next shorter module id
-    		ind = moduleId.lastIndexOf('.');
-    		if (ind < 0)
-    			break;
-    		moduleId = moduleId.substring(0, ind);
-    	}
-	    return null;
-    }
-
+	public static Module getModuleForPath(String path) {
+		int ind = path.lastIndexOf('/');
+		if (ind <= 0) {
+			throw new IllegalArgumentException(
+			        "Input must be /moduleId/resource. Input needs a / after the first character: " + path);
+		}
+		String moduleId = path.startsWith("/") ? path.substring(1, ind) : path.substring(0, ind);
+		moduleId = moduleId.replace('/', '.');
+		// iterate over progressively shorter module ids
+		while (true) {
+			Module mod = ModuleFactory.getStartedModuleById(moduleId);
+			if (mod != null)
+				return mod;
+			// try the next shorter module id
+			ind = moduleId.lastIndexOf('.');
+			if (ind < 0)
+				break;
+			moduleId = moduleId.substring(0, ind);
+		}
+		return null;
+	}
+	
 	/**
-     * Takes a global path and returns the local path within the specified module.
-     * For example calling this method with the path "/ui/springmvc/css/ui.css" and the ui.springmvc module,
-     * you would get "/css/ui.css".
-     * 
-     * @param module
-     * @param path
-     * @return
-     * 
-     * @should handle ui springmvc css ui dot css example
-     */
-    public static String getPathForResource(Module module, String path) {
-    	if (path.startsWith("/"))
-    		path = path.substring(1);
-    	return path.substring(module.getModuleIdAsPath().length());
-    }
-
+	 * Takes a global path and returns the local path within the specified module. For example
+	 * calling this method with the path "/ui/springmvc/css/ui.css" and the ui.springmvc module, you
+	 * would get "/css/ui.css".
+	 * 
+	 * @param module
+	 * @param path
+	 * @return
+	 * @should handle ui springmvc css ui dot css example
+	 */
+	public static String getPathForResource(Module module, String path) {
+		if (path.startsWith("/"))
+			path = path.substring(1);
+		return path.substring(module.getModuleIdAsPath().length());
+	}
+	
 }
