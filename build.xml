@@ -412,7 +412,7 @@
         
 		<!-- on Ubuntu, requires "libnotify-bin" package -->
 		<exec executable="notify-send" os="Linux" logError="true" failifexecutionfails="false">
-			<arg line="'OpenMRS is ready' 'Build completed'" />
+			<arg line="-i ${basedir}/web/images/openmrs_logo_white.gif 'OpenMRS is ready' 'Build completed'" />
 		</exec>
 	</target>
 
