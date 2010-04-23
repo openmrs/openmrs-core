@@ -188,7 +188,7 @@ public class ChangePasswordFormControllerTest extends BaseWebContextSensitiveTes
 		new UserProperties(user.getUserProperties()).setSupposedToChangePassword(true);
 		
 		UserService us = Context.getUserService();
-		us.saveUser(user, "test");
+		us.saveUser(user, "Openmr5xy");
 		
 		ChangePasswordFormController controller = new ChangePasswordFormController();
 		BindException errors = new BindException(controller.formBackingObject(), "user");
@@ -210,7 +210,7 @@ public class ChangePasswordFormControllerTest extends BaseWebContextSensitiveTes
 		new UserProperties(user.getUserProperties()).setSupposedToChangePassword(true);
 		
 		UserService us = Context.getUserService();
-		us.saveUser(user, "test");
+		us.saveUser(user, "Openmr5xy");
 		
 		ChangePasswordFormController controller = new ChangePasswordFormController();
 		BindException errors = new BindException(controller.formBackingObject(), "user");
@@ -246,7 +246,7 @@ public class ChangePasswordFormControllerTest extends BaseWebContextSensitiveTes
 		new UserProperties(user.getUserProperties()).setSupposedToChangePassword(true);
 
 		UserService us = Context.getUserService();
-		us.saveUser(user, "test");
+		us.saveUser(user, "Openmr5xy");
 
 		ChangePasswordFormController controller = new ChangePasswordFormController();
 		BindException errors = new BindException(controller.formBackingObject(), "user");

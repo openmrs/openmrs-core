@@ -26,12 +26,14 @@ import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
+import org.openmrs.api.PasswordException;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.UserDAO;
 import org.openmrs.patient.impl.LuhnIdentifierValidator;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
 
 /**
  * Default implementation of the user service. This class should not be used on its own. The current
@@ -83,6 +85,10 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 			        + " is already in use.");
 		
 		// TODO Check required fields for user!!
+		
+		if (user.getUserId() == null && password != null) {
+			OpenmrsUtil.validatePassword(user.getUsername(), password, user.getSystemId());
+		}
 		
 		return dao.saveUser(user, password);
 	}
@@ -378,11 +384,11 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	}
 	
 	/**
-     * @see org.openmrs.api.UserService#getUsersByPerson(org.openmrs.Person, boolean)
-     */
-    public List<User> getUsersByPerson(Person person, boolean includeRetired) throws APIException {
-	    return dao.getUsersByPerson(person, includeRetired);
-    }
+	 * @see org.openmrs.api.UserService#getUsersByPerson(org.openmrs.Person, boolean)
+	 */
+	public List<User> getUsersByPerson(Person person, boolean includeRetired) throws APIException {
+		return dao.getUsersByPerson(person, includeRetired);
+	}
 	
 	/**
 	 * @see org.openmrs.api.UserService#getAllUsers(List, boolean)
@@ -493,8 +499,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	}
 	
 	/**
-	 * Generates system ids based on the following algorithm scheme: user_id-check
-	 * digit
+	 * Generates system ids based on the following algorithm scheme: user_id-check digit
 	 * 
 	 * @see org.openmrs.api.UserService#generateSystemId()
 	 */
