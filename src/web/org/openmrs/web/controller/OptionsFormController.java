@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.PersonName;
@@ -168,8 +169,10 @@ public class OptionsFormController extends SimpleFormController {
 				if (!errors.hasErrors()) {
 					try {
 						user.setSecretQuestion(opts.getSecretQuestionNew());
-						us.changeQuestionAnswer(opts.getSecretQuestionPassword(), opts.getSecretQuestionNew(), opts
+						if (!StringUtils.isEmpty(opts.getSecretAnswerNew())) {
+							us.changeQuestionAnswer(opts.getSecretQuestionPassword(), opts.getSecretQuestionNew(), opts
 						        .getSecretAnswerNew());
+						}
 					}
 					catch (APIException e) {
 						errors.rejectValue("secretQuestionPassword", "error.password.match");
