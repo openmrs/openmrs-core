@@ -102,14 +102,17 @@ public class UserValidator implements Validator {
 	 * @should not validate username with less than minimumLength
 	 * @should not validate username with invalid character
 	 * @should not validate username with more than maximum size
-	 * @should not validate when username is null
+	 * @should validate when username is null
+	 * @should validate when username is the empty string
+	 * @should not validate when username is whitespace only
 	 */
 	public boolean isUserNameValid(String username) {
 		//Initialize reg ex for userName pattern 
 		String expression = "^[\\w][\\Q_\\E\\w-\\.]{1,49}$";
 		
-		if (username == null)
-			return false;
+		// empty usernames are allowed
+		if (!StringUtils.hasLength((username)))
+			return true;
 		
 		try {
 			//Make the comparison case-insensitive.
