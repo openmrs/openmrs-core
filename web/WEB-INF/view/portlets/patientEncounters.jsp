@@ -181,10 +181,10 @@ Parameters
 									<%--  this column contains milliseconds and will be used for sorting in the dataTable's encounterDatetime column --%>
 										<openmrs:formatDate date="${enc.encounterDatetime}" type="milliseconds" />
 									</td>
-					 				<td class="encounterType">${enc.encounterType.name}</td>
-					 				<td class="encounterProvider">${enc.provider.personName}</td>
+					 				<td class="encounterType"><openmrs:format encounterType="${enc.encounterType}"/></td>
+					 				<td class="encounterProvider"><openmrs:format person="${enc.provider}"/></td>
 					 				<td class="encounterForm">${enc.form.name}</td>
-					 				<td class="encounterLocation">${enc.location.name}</td>
+					 				<td class="encounterLocation"><openmrs:format location="${enc.location}"/></td>
 					 				<td class="encounterEnterer">${enc.creator.personName}</td>
 								</tr>
 							</openmrs:forEachEncounter>
