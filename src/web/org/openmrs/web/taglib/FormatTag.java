@@ -123,7 +123,8 @@ public class FormatTag extends TagSupport {
 		} else {
 			try {
 				pageContext.getOut().write(sb.toString());
-			} catch (IOException e) {
+			}
+			catch (IOException e) {
 				log.error("Failed to write to pageContext.getOut()", e);
 			}
 		}
@@ -131,58 +132,58 @@ public class FormatTag extends TagSupport {
 	}
 	
 	/**
-     * formats a date and prints it to sb
-     * 
-     * @param sb
-     * @param date
-     */
-    private void printDate(StringBuilder sb, Date date) {
-	    sb.append(Context.getDateFormat().format(date));
-    }
-
+	 * formats a date and prints it to sb
+	 * 
+	 * @param sb
+	 * @param date
+	 */
+	private void printDate(StringBuilder sb, Date date) {
+		sb.append(Context.getDateFormat().format(date));
+	}
+	
 	/**
-     * formats a location and prints it to sb
-     * 
-     * @param sb
-     * @param location
-     */
-    private void printLocation(StringBuilder sb, Location location) {
-	    sb.append(location.getName());
-    }
-
+	 * formats a location and prints it to sb
+	 * 
+	 * @param sb
+	 * @param location
+	 */
+	private void printLocation(StringBuilder sb, Location location) {
+		sb.append(location.getName());
+	}
+	
 	/**
-     * formats an encounter type and prints it to sb
-     * 
-     * @param sb
-     * @param encounterType
-     */
-    private void printEncounterType(StringBuilder sb, EncounterType encounterType) {
-    	if (encounterType != null)
-    		sb.append(encounterType.getName());
-    }
-
+	 * formats an encounter type and prints it to sb
+	 * 
+	 * @param sb
+	 * @param encounterType
+	 */
+	private void printEncounterType(StringBuilder sb, EncounterType encounterType) {
+		if (encounterType != null)
+			sb.append(encounterType.getName());
+	}
+	
 	/**
-     * formats a user and prints it to sb
-     * 
-     * @param sb
-     * @param u
-     */
-    private void printUser(StringBuilder sb, User u) {
-    	sb.append(u.getUsername());
-    	if (u.getPerson() != null)
-    		sb.append(" (").append(u.getPersonName()).append(")");
-    }
-    
-    /**
-     * formats a person and prints it to sb
-     * 
-     * @param sb
-     * @param p
-     */
-    private void printPerson(StringBuilder sb, Person p) {
-    	sb.append(p.getPersonName());
-    }
-
+	 * formats a user and prints it to sb
+	 * 
+	 * @param sb
+	 * @param u
+	 */
+	private void printUser(StringBuilder sb, User u) {
+		sb.append(u.getUsername());
+		if (u.getPerson() != null)
+			sb.append(" (").append(u.getPersonName()).append(")");
+	}
+	
+	/**
+	 * formats a person and prints it to sb
+	 * 
+	 * @param sb
+	 * @param p
+	 */
+	private void printPerson(StringBuilder sb, Person p) {
+		sb.append(p.getPersonName());
+	}
+	
 	public int doEndTag() {
 		reset();
 		return EVAL_PAGE;
@@ -202,7 +203,7 @@ public class FormatTag extends TagSupport {
 		encounterTypeId = null;
 		encounterType = null;
 		locationId = null;
-		location = null;		
+		location = null;
 	}
 	
 	public Integer getConceptId() {
@@ -244,61 +245,76 @@ public class FormatTag extends TagSupport {
 	public void setUser(User user) {
 		this.user = user;
 	}
-
-    public Integer getEncounterId() {
-    	return encounterId;
-    }
-
-    public void setEncounterId(Integer encounterId) {
-    	this.encounterId = encounterId;
-    }
-
-    public Encounter getEncounter() {
-    	return encounter;
-    }
-
-    public void setEncounter(Encounter encounter) {
-    	this.encounter = encounter;
-    }
 	
-    public Integer getEncounterTypeId() {
-    	return encounterTypeId;
-    }
+	public Integer getEncounterId() {
+		return encounterId;
+	}
 	
-    public void setEncounterTypeId(Integer encounterTypeId) {
-    	this.encounterTypeId = encounterTypeId;
-    }
+	public void setEncounterId(Integer encounterId) {
+		this.encounterId = encounterId;
+	}
 	
-    public EncounterType getEncounterType() {
-    	return encounterType;
-    }
-
-    public void setEncounterType(EncounterType encounterType) {
-    	this.encounterType = encounterType;
-    }
+	public Encounter getEncounter() {
+		return encounter;
+	}
 	
-    public Integer getLocationId() {
-    	return locationId;
-    }
-
-    public void setLocationId(Integer locationId) {
-    	this.locationId = locationId;
-    }
-    
-    public Location getLocation() {
-    	return location;
-    }
-
-    public void setLocation(Location location) {
-    	this.location = location;
-    }
+	public void setEncounter(Encounter encounter) {
+		this.encounter = encounter;
+	}
 	
-    public String getVar() {
-    	return var;
-    }
+	public Integer getEncounterTypeId() {
+		return encounterTypeId;
+	}
 	
-    public void setVar(String var) {
-    	this.var = var;
-    }
+	public void setEncounterTypeId(Integer encounterTypeId) {
+		this.encounterTypeId = encounterTypeId;
+	}
 	
+	public EncounterType getEncounterType() {
+		return encounterType;
+	}
+	
+	public void setEncounterType(EncounterType encounterType) {
+		this.encounterType = encounterType;
+	}
+	
+	public Integer getLocationId() {
+		return locationId;
+	}
+	
+	public void setLocationId(Integer locationId) {
+		this.locationId = locationId;
+	}
+	
+	public Location getLocation() {
+		return location;
+	}
+	
+	public void setLocation(Location location) {
+		this.location = location;
+	}
+	
+	public String getVar() {
+		return var;
+	}
+	
+	public void setVar(String var) {
+		this.var = var;
+	}
+	
+	public Integer getPersonId() {
+		return personId;
+	}
+	
+	public void setPersonId(Integer personId) {
+		this.personId = personId;
+	}
+	
+	public Person getPerson() {
+		return person;
+	}
+	
+	public void setPerson(Person person) {
+		this.person = person;
+	}
 }
