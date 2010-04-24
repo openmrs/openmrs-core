@@ -10,9 +10,6 @@
  * under the License.
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
- * 
- * Code adapted from the Java Plug-in Framework (JPF) - LGPL - Copyright (C)
- * 2004-2006 Dmitry Olshansky
  */
 package org.openmrs.module;
 
@@ -48,6 +45,9 @@ import org.openmrs.util.OpenmrsUtil;
 
 /**
  * Standard implementation of module class loader.
+ * 
+ * Code adapted from the Java Plug-in Framework (JPF) - LGPL - Copyright (C)
+ * 2004-2006 Dmitry Olshansky
  */
 public class ModuleClassLoader extends URLClassLoader {
 	
