@@ -136,6 +136,9 @@ public class Comparison implements ArdenBaseTreeParserTokenTypes {
 							case LT:
 								comparator = "<";
 								break;
+							default:
+								assert false; // execution should not reach this point
+								break;
 						}
 						if (this.answer instanceof Integer || this.answer instanceof Double || this.answer instanceof Float) {
 							retStr += "("+key + ".toNumber()!= null&&"+key + ".toNumber() "+comparator+" " + this.answer+")";
