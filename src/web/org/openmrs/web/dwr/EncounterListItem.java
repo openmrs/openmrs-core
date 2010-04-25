@@ -118,8 +118,8 @@ public class EncounterListItem {
 		return PersonName;
 	}
 	
-	public void setPersonName(String PersonName) {
-		this.PersonName = PersonName;
+	public void setPersonName(String newPersonName) {
+		this.PersonName = newPersonName;
 	}
 	
 	public String getProviderName() {
