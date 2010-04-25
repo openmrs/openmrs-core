@@ -42,8 +42,8 @@ public class PersonAttributeType extends BaseOpenmrsMetadata implements java.io.
 	}
 	
 	/** constructor with id */
-	public PersonAttributeType(Integer PersonAttributeTypeId) {
-		this.personAttributeTypeId = PersonAttributeTypeId;
+	public PersonAttributeType(Integer myPersonAttributeTypeId) {
+		this.personAttributeTypeId = myPersonAttributeTypeId;
 	}
 	
 	/**
@@ -127,11 +127,11 @@ public class PersonAttributeType extends BaseOpenmrsMetadata implements java.io.
 	}
 	
 	/**
-	 * @param PersonAttributeTypeId The PersonAttributeTypeId to set.
+	 * @param newPersonAttributeTypeId The PersonAttributeTypeId to set.
 	 */
 	@Attribute(required = false)
-	public void setPersonAttributeTypeId(Integer PersonAttributeTypeId) {
-		this.personAttributeTypeId = PersonAttributeTypeId;
+	public void setPersonAttributeTypeId(Integer newPersonAttributeTypeId) {
+		this.personAttributeTypeId = newPersonAttributeTypeId;
 	}
 	
 	/**
