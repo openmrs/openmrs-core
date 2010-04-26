@@ -74,7 +74,7 @@ public class PatientSearch implements CohortDefinition {
 	
 	private static final long serialVersionUID = -8913742497675209159L;
 	
-	protected static transient final Log log = LogFactory.getLog(PatientSearch.class);
+	protected static final Log log = LogFactory.getLog(PatientSearch.class);
 	
 	private static Set<String> andWords = new HashSet<String>();
 	

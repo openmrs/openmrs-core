@@ -32,7 +32,7 @@ public class PatientIdentifier extends BaseOpenmrsData implements java.io.Serial
 	
 	public static final long serialVersionUID = 1123121L;
 	
-	private transient static Log log = LogFactory.getLog(PatientIdentifier.class);
+	private static final Log log = LogFactory.getLog(PatientIdentifier.class);
 	
 	// Fields
 	

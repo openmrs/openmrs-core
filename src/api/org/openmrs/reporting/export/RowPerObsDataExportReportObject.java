@@ -37,7 +37,7 @@ import org.openmrs.util.OpenmrsUtil;
 @Deprecated
 public class RowPerObsDataExportReportObject extends DataExportReportObject implements Serializable {
 	
-	public transient final static long serialVersionUID = 123123999L;
+	public static final long serialVersionUID = 123123999L;
 	
 	private List<Integer> patientIds = new Vector<Integer>();
 	
@@ -56,9 +56,9 @@ public class RowPerObsDataExportReportObject extends DataExportReportObject impl
 	
 	RowPerObsColumn rowPerObsColumn = null;
 	
-	public transient final static String TYPE_NAME = "Obs Per Row Data Export";
+	public static final String TYPE_NAME = "Obs Per Row Data Export";
 	
-	public transient final static String SUB_TYPE_NAME = "Obs Per Row Data Export";
+	public static final String SUB_TYPE_NAME = "Obs Per Row Data Export";
 	
 	/**
 	 * Default Constructor

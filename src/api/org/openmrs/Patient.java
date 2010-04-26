@@ -34,7 +34,7 @@ public class Patient extends Person implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 93123L;
 	
-	private transient static final Log log = LogFactory.getLog(Patient.class);
+	private static final Log log = LogFactory.getLog(Patient.class);
 	
 	// Fields
 	

@@ -34,7 +34,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
  */
 public class GZIPFilter extends OncePerRequestFilter {
 	
-	private final transient Log log = LogFactory.getLog(GZIPFilter.class);
+	private static final Log log = LogFactory.getLog(GZIPFilter.class);
 	
 	private Boolean cachedGZipEnabledFlag = null;
 	
