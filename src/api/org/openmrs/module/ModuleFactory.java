@@ -285,8 +285,6 @@ public class ModuleFactory {
 		List<Module> list = new ArrayList<Module>(getLoadedModules());
 		final Collection<String> coreModuleIds = ModuleConstants.CORE_MODULES.keySet();
 		Collections.sort(list, new Comparator<Module>() {
-			
-			@Override
 			public int compare(Module left, Module right) {
 				Integer leftVal = coreModuleIds.contains(left.getModuleId()) ? 0 : 1;
 				Integer rightVal = coreModuleIds.contains(right.getModuleId()) ? 0 : 1;
@@ -1002,7 +1000,7 @@ public class ModuleFactory {
 	public static ModuleClassLoader getModuleClassLoader(String moduleId) throws ModuleException {
 		Module mod = getStartedModulesMap().get(moduleId);
 		if (mod == null)
-			log.debug("Module id not found in list of started modules: " + mod.getModuleId());
+			log.debug("Module id not found in list of started modules: " + moduleId);
 		
 		return getModuleClassLoader(mod);
 	}
