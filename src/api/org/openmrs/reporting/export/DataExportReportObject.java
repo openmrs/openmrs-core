@@ -37,9 +37,9 @@ import org.openmrs.util.OpenmrsUtil;
 @Deprecated
 public class DataExportReportObject extends AbstractReportObject implements Serializable {
 	
-	public transient final static long serialVersionUID = 1231231343212L;
+	public static final long serialVersionUID = 1231231343212L;
 	
-	private transient static Log log = LogFactory.getLog(DataExportReportObject.class);
+	private static final Log log = LogFactory.getLog(DataExportReportObject.class);
 	
 	private List<Integer> patientIds = new Vector<Integer>();
 	
@@ -56,19 +56,19 @@ public class DataExportReportObject extends AbstractReportObject implements Seri
 	
 	List<ExportColumn> columns = new Vector<ExportColumn>();
 	
-	public transient final static String TYPE_NAME = "Data Export";
+	public static final String TYPE_NAME = "Data Export";
 	
-	public transient final static String SUB_TYPE_NAME = "Data Export";
+	public static final String SUB_TYPE_NAME = "Data Export";
 	
-	public transient final static String MODIFIER_ANY = "any";
+	public static final String MODIFIER_ANY = "any";
 	
-	public transient final static String MODIFIER_FIRST = "first";
+	public static final String MODIFIER_FIRST = "first";
 	
-	public transient final static String MODIFIER_FIRST_NUM = "firstNum";
+	public static final String MODIFIER_FIRST_NUM = "firstNum";
 	
-	public transient final static String MODIFIER_LAST = "mostRecent";
+	public static final String MODIFIER_LAST = "mostRecent";
 	
-	public transient final static String MODIFIER_LAST_NUM = "mostRecentNum";
+	public static final String MODIFIER_LAST_NUM = "mostRecentNum";
 	
 	/**
 	 * Default Constructor

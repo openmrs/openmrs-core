@@ -41,7 +41,7 @@ import org.openmrs.util.OpenmrsUtil;
 @Deprecated
 public class CohortSearchHistory extends AbstractReportObject {
 	
-	protected transient final Log log = LogFactory.getLog(getClass());
+	protected static final Log log = LogFactory.getLog(CohortSearchHistory.class);
 	
 	public class CohortSearchHistoryItemHolder {
 		

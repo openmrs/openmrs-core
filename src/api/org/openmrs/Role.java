@@ -32,7 +32,7 @@ public class Role extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 1234233L;
 	
-	private transient static Log log = LogFactory.getLog(Role.class);
+	private static final Log log = LogFactory.getLog(Role.class);
 	
 	// Fields
 	

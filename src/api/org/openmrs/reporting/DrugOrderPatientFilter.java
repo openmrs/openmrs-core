@@ -37,7 +37,7 @@ import org.openmrs.util.OpenmrsUtil;
 @Deprecated
 public class DrugOrderPatientFilter extends AbstractPatientFilter implements PatientFilter, Comparable<DrugOrderPatientFilter> {
 	
-	protected transient final Log log = LogFactory.getLog(getClass());
+	protected static final Log log = LogFactory.getLog(DrugOrderPatientFilter.class);
 	
 	private static final long serialVersionUID = 1L;
 	

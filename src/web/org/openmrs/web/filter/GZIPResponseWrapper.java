@@ -31,7 +31,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class GZIPResponseWrapper extends HttpServletResponseWrapper {
 	
-	private transient final Log log = LogFactory.getLog(GZIPResponseWrapper.class);
+	private static final Log log = LogFactory.getLog(GZIPResponseWrapper.class);
 	
 	protected HttpServletResponse origResponse = null;
 	

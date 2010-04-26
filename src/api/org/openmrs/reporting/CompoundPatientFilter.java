@@ -30,7 +30,7 @@ import org.openmrs.report.EvaluationContext;
 @Deprecated
 public class CompoundPatientFilter extends AbstractPatientFilter implements PatientFilter {
 	
-	protected transient final Log log = LogFactory.getLog(getClass());
+	protected static final Log log = LogFactory.getLog(CompoundPatientFilter.class);
 	
 	private BooleanOperator operator;
 	
