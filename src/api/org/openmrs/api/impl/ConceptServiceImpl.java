@@ -1250,7 +1250,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	private TaskDefinition createConceptWordUpdateTask() {
 		TaskDefinition conceptWordUpdateTaskDef = new TaskDefinition();
 		conceptWordUpdateTaskDef.setTaskClass("org.openmrs.scheduler.tasks.ConceptWordUpdateTask");
-		conceptWordUpdateTaskDef.setRepeatInterval(0l); // zero interval means do not repeat
+		conceptWordUpdateTaskDef.setRepeatInterval(0L); // zero interval means do not repeat
 		conceptWordUpdateTaskDef.setStartOnStartup(false);
 		conceptWordUpdateTaskDef.setStartTime(null); // to induce immediate execution
 		conceptWordUpdateTaskDef.setName(CONCEPT_WORD_UPDATE_TASK_NAME);

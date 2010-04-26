@@ -140,10 +140,7 @@ public class HibernateUserDAO implements UserDAO {
 		Long count = (Long) query.uniqueResult();
 		
 		log.debug("# users found: " + count);
-		if (count == null || count == 0)
-			return false;
-		else
-			return true;
+		return (count != null && count != 0);
 	}
 	
 	/**
