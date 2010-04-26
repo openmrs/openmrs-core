@@ -967,7 +967,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		return new Cohort(query.list());
 	}
 	
-	private static final long MS_PER_YEAR = 365l * 24 * 60 * 60 * 1000l;
+	private static final long MS_PER_YEAR = 365L * 24 * 60 * 60 * 1000L;
 	
 	@SuppressWarnings("unchecked")
 	public Map<Integer, String> getShortPatientDescriptions(Collection<Integer> patientIds) throws DAOException {

@@ -173,7 +173,7 @@ public class DWRObsService {
 					throw e;
 				}
 			}
-			obs.setValueDatetime(obsDateValue) ;
+			obs.setValueDatetime(obsDateValue);
 		} else {
 			obs.setValueText(valueText);
 		}

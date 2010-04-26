@@ -128,7 +128,7 @@ public class PersonNameValidator implements Validator {
 	 * @param arrayInd indicates whether or not a names[0] array needs to be prepended to field
 	 * @return formated 
 	 */
-	private String getFieldKey (String field, boolean arrayInd, boolean testInd) {
+	private String getFieldKey(String field, boolean arrayInd, boolean testInd) {
 		return testInd ? field : arrayInd ? "names[0]." + field : "name." + field;
 	}
 	
