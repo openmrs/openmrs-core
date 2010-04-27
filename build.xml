@@ -341,7 +341,7 @@
 			</classes>
 			<lib file="${dist.dir}/${openmrs.api.name}" />
 			<lib dir="${antlr.dir}" includes="*.jar" />
-			<lib dir="${asm.dir}" includes="*.jar" />
+			<!-- lib dir="${asm.dir}" includes="*.jar" /-->
 			<lib dir="${c3p0.dir}" includes="*.jar" />
 			<lib dir="${cglib.dir}" includes="*.jar" />
 			<lib dir="${commons-beanutils.dir}" includes="*.jar" />

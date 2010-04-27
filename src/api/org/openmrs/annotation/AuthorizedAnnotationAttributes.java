@@ -20,8 +20,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.springframework.metadata.Attributes;
-
 /**
  * Annotation attributes metadata implementation used for authorization method interception.
  * <p>
@@ -60,7 +58,7 @@ import org.springframework.metadata.Attributes;
  * @see org.openmrs.annotation.Authorized
  */
 @SuppressWarnings("unchecked")
-public class AuthorizedAnnotationAttributes implements Attributes {
+public class AuthorizedAnnotationAttributes {
 	
 	/**
 	 * Get the <code>Secured</code> attributes for a given target class.
