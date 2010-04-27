@@ -29,6 +29,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.util.OpenmrsUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.orm.hibernate3.LocalSessionFactoryBean;
 
@@ -38,25 +39,27 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
 	
 	protected Set<String> tmpMappingResources = new HashSet<String>();
 	
-	protected static Interceptor globalSessionInterceptor = null;
+	//removed static here because autowiring cannot be done on static members
+	@Autowired(required=false)
+	protected Interceptor globalSessionInterceptor = null;
 	
 	/**
-	 * Sets the session interceptor for the hibernate sessions. <br/>
-	 * This should be set within the spring application context of a module
-	 * 
-	 * @param globalSessionInterceptor
-	 */
-	public void setGlobalSessionInterceptor(Interceptor globalSessionInterceptor) {
-		log.debug("Spring setter for global Hibernate Session Interceptor for SessionFactory called with interceptor: "
-		        + globalSessionInterceptor);
-		
-		if (HibernateSessionFactoryBean.globalSessionInterceptor != null) {
-			log.warn("Overwriting current interceptor: " + HibernateSessionFactoryBean.globalSessionInterceptor
-			        + " with another interceptor: " + globalSessionInterceptor);
-		}
-		
-		HibernateSessionFactoryBean.globalSessionInterceptor = globalSessionInterceptor;
-	}
+     * Sets the session interceptor for the hibernate sessions. <br/>
+     * This should be set within the spring application context of a module
+     * 
+     * @param globalSessionInterceptor
+     */
+    public void setGlobalSessionInterceptor(Interceptor globalSessionInterceptor) {
+    	log.debug("Spring setter for global Hibernate Session Interceptor for SessionFactory called with interceptor: "
+    	        + globalSessionInterceptor);
+    	
+    	if (this.globalSessionInterceptor != null) {
+    		log.warn("Overwriting current interceptor: " + this.globalSessionInterceptor + " with another interceptor: "
+    		        + globalSessionInterceptor);
+    	}
+    	
+    	this.globalSessionInterceptor = globalSessionInterceptor;
+    }
 	
 	//public SessionFactory newSessionFactory(Configuration config) throws HibernateException {
 	public Configuration newConfiguration() throws HibernateException {
@@ -138,7 +141,6 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
 		// just check for testing module's hbm files here?
 		
 		super.afterPropertiesSet();
-		
 	}
 	
 	/**
