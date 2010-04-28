@@ -21,6 +21,7 @@
 	
 	<!-- setup the path and properties for liquibase targets -->
 	<mkdir dir="build" />
+	<mkdir dir="dist" />
 	<path id="classpath">
         <fileset dir="${liquibase.dir}">
             <include name="*.jar"/>
