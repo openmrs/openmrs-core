@@ -1153,6 +1153,16 @@
 		<required>false</required>
 		<rtexprvalue>true</rtexprvalue>
 	</attribute>
+	<attribute>
+		<name>locationTagId</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>locationTag</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
 </tag>
 <tag>
 	<description>
@@ -1225,6 +1235,12 @@
 	<name>filterEncountersByType</name>
 	<function-class>org.openmrs.web.taglib.functions.Filter</function-class>
 	<function-signature>java.util.Set filterEncountersByType(java.util.Collection, java.lang.Integer)</function-signature>
-</function>	
+</function>
+
+<function>
+	<name>collectionContains</name>
+	<function-class>org.openmrs.web.taglib.functions.CollectionContains</function-class>
+	<function-signature>java.lang.Boolean collectionContains(java.util.Collection, java.lang.Object)</function-signature>
+</function>
 	
 </taglib>

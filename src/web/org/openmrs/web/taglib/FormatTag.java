@@ -24,7 +24,9 @@ import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
 import org.openmrs.Location;
+import org.openmrs.LocationTag;
 import org.openmrs.Obs;
+import org.openmrs.OpenmrsMetadata;
 import org.openmrs.Person;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
@@ -34,7 +36,6 @@ import org.springframework.util.StringUtils;
  * <pre>
  * Prints out a pretty-formatted versions of an OpenMRS object
  * TODO: add the other openmrs domain objects
- * TODO: allow this to be written to a pageContext variable instead of just the jsp
  * TODO: add a size=compact|NORMAL|full|? option
  * </pre>
  */
@@ -72,6 +73,10 @@ public class FormatTag extends TagSupport {
 	
 	private Location location;
 	
+	private Integer locationTagId; 
+
+	private LocationTag locationTag; 
+	
 	public int doStartTag() {
 		StringBuilder sb = new StringBuilder();
 		if (conceptId != null)
@@ -97,9 +102,9 @@ public class FormatTag extends TagSupport {
 		if (encounterId != null)
 			encounter = Context.getEncounterService().getEncounter(encounterId);
 		if (encounter != null) {
-			printEncounterType(sb, encounter.getEncounterType());
+			printMetadata(sb, encounter.getEncounterType());
 			sb.append(" @");
-			printLocation(sb, encounter.getLocation());
+			printMetadata(sb, encounter.getLocation());
 			sb.append(" | ");
 			printDate(sb, encounter.getEncounterDatetime());
 			sb.append(" | ");
@@ -109,13 +114,19 @@ public class FormatTag extends TagSupport {
 		if (encounterTypeId != null)
 			encounterType = Context.getEncounterService().getEncounterType(encounterTypeId);
 		if (encounterType != null) {
-			printEncounterType(sb, encounterType);
+			printMetadata(sb, encounterType);
 		}
 		
 		if (locationId != null)
 			location = Context.getLocationService().getLocation(locationId);
 		if (location != null) {
-			printLocation(sb, location);
+			printMetadata(sb, location);
+		}
+		
+		if (locationTagId != null)
+			locationTag = Context.getLocationService().getLocationTag(locationTagId);
+		if (locationTag != null) {
+			printMetadata(sb, locationTag);
 		}
 		
 		if (StringUtils.hasText(var)) {
@@ -142,26 +153,15 @@ public class FormatTag extends TagSupport {
 	}
 	
 	/**
-	 * formats a location and prints it to sb
+	 * formats any OpenmrsMetadata and prints it to sb
 	 * 
 	 * @param sb
-	 * @param location
+	 * @param metadata
 	 */
-	private void printLocation(StringBuilder sb, Location location) {
-		sb.append(location.getName());
+	private void printMetadata(StringBuilder sb, OpenmrsMetadata metadata) {
+		sb.append(metadata.getName());
 	}
-	
-	/**
-	 * formats an encounter type and prints it to sb
-	 * 
-	 * @param sb
-	 * @param encounterType
-	 */
-	private void printEncounterType(StringBuilder sb, EncounterType encounterType) {
-		if (encounterType != null)
-			sb.append(encounterType.getName());
-	}
-	
+		
 	/**
 	 * formats a user and prints it to sb
 	 * 
@@ -169,9 +169,16 @@ public class FormatTag extends TagSupport {
 	 * @param u
 	 */
 	private void printUser(StringBuilder sb, User u) {
+		sb.append("<span class=\"user\">");
+	 	sb.append("<span class=\"username\">"); 
 		sb.append(u.getUsername());
-		if (u.getPerson() != null)
+		sb.append("</span>");
+		if (u.getPerson() != null) {
+			sb.append("<span class=\"personName\">");
 			sb.append(" (").append(u.getPersonName()).append(")");
+			sb.append("</span>");
+		}
+		sb.append("</span>");
 	}
 	
 	/**
@@ -204,6 +211,8 @@ public class FormatTag extends TagSupport {
 		encounterType = null;
 		locationId = null;
 		location = null;
+		locationTagId = null;
+		locationTag = null;
 	}
 	
 	public Integer getConceptId() {
@@ -292,8 +301,24 @@ public class FormatTag extends TagSupport {
 	
 	public void setLocation(Location location) {
 		this.location = location;
-	}
+	}	
 	
+    public Integer getLocationTagId() {
+    	return locationTagId;
+    }
+
+    public void setLocationTagId(Integer locationTagId) {
+    	this.locationTagId = locationTagId;
+    }
+
+    public LocationTag getLocationTag() {
+    	return locationTag;
+    }
+	
+    public void setLocationTag(LocationTag locationTag) {
+    	this.locationTag = locationTag;
+    }
+
 	public String getVar() {
 		return var;
 	}
