@@ -128,8 +128,14 @@ public class PortletTag extends ImportSupport {
 	}
 	
 	private void resetValues() {
-		id = parameters = patientIds = moduleId = "";
-		personId = patientId = encounterId = userId = null;
+		id = "";
+		parameters = "";
+		patientIds = "";
+		moduleId = "";
+		personId = null;
+		patientId = null;
+		encounterId = null;
+		userId = null;
 		parameterMap = null;
 	}
 	

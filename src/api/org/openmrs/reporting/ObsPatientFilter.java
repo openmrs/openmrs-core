@@ -146,12 +146,15 @@ public class ObsPatientFilter extends CachingPatientFilter {
 			ConceptName questionName = null;
 			if (question == null)
 				ret.append("CONCEPT");
-			else if ((questionName = question.getName(locale, false)) != null)
-				ret.append(questionName);
 			else {
-				question = Context.getConceptService().getConcept(question.getConceptId());
 				questionName = question.getName(locale, false);
-				ret.append(questionName);
+				if (questionName != null)
+					ret.append(questionName);
+				else {
+					question = Context.getConceptService().getConcept(question.getConceptId());
+					questionName = question.getName(locale, false);
+					ret.append(questionName);
+				}
 			}
 			if (value != null && modifier != null) {
 				ret.append(" " + modifier.getSqlRepresentation() + " ");

@@ -113,7 +113,8 @@ public class ConceptWordUpdateTask extends AbstractTask {
 					throw e;
 				}
 				finally {
-					isExecuting = shouldExecute = false;
+					isExecuting = false;
+					shouldExecute = false;
 					SchedulerService ss = Context.getSchedulerService();
 					TaskDefinition conceptWordUpdateTaskDef = ss
 					        .getTaskByName(ConceptServiceImpl.CONCEPT_WORD_UPDATE_TASK_NAME);
