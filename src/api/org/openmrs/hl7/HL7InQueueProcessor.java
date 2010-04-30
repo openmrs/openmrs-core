@@ -86,8 +86,8 @@ public class HL7InQueueProcessor /* implements Runnable */{
 	public boolean processNextHL7InQueue() {
 		boolean entryProcessed = false;
 		HL7Service hl7Service = Context.getHL7Service();
-		HL7InQueue hl7InQueue;
-		if ((hl7InQueue = hl7Service.getNextHL7InQueue()) != null) {
+		HL7InQueue hl7InQueue = hl7Service.getNextHL7InQueue();
+		if (hl7InQueue != null) {
 			processHL7InQueue(hl7InQueue);
 			entryProcessed = true;
 		}

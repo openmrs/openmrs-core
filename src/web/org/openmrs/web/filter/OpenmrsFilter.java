@@ -93,8 +93,8 @@ public class OpenmrsFilter extends OncePerRequestFilter {
 		} else {
 			// set username as attribute on session so parent servlet container 
 			// can identify sessions easier
-			User user;
-			if ((user = userContext.getAuthenticatedUser()) != null)
+			User user = userContext.getAuthenticatedUser();
+			if (user != null)
 				httpSession.setAttribute("username", user.getUsername());
 		}
 		

@@ -83,7 +83,8 @@ public class ForEachAlertTag extends LoopTagSupport {
 	public void release() {
 		// Clean out the variables
 		user = null;
-		includeRead = includeExpired = false;
+		includeRead = false;
+		includeExpired = false;
 	}
 	
 	public Boolean getIncludeExpired() {
