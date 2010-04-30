@@ -31,7 +31,9 @@
 	<!-- Base definitions (cannot be overwritten by user property file) -->
 	<property file="build.properties" />
 
-	
+	<!-- CheckStyle properties -->
+	<property file="openmrs-checkstyle.properties" />
+
 	<!-- Taskdefs -->
 	
 	<taskdef resource="net/sf/antcontrib/antcontrib.properties">
@@ -44,6 +46,11 @@
 			<pathelement path="${tomcat.dir}/catalina-ant.jar" />
 		</classpath>
 	</taskdef>
+ 	<taskdef resource="checkstyletask.properties">
+         <classpath>
+ 			<pathelement path="${checkstyle.dir}/checkstyle-all-5.1.jar"/>
+         </classpath>
+ 	</taskdef>
 	
 	<!-- Load user's build properties -->
 	<echo message="Attempting to load: ${env.OPENMRS_BUILD_PROPERTIES_FILE}" />
@@ -496,6 +503,12 @@
 		</antlr>
 	</target>
 	-->
+	
+	<target name="checkstyle" description="Validate code style">
+		<checkstyle config="${metadata.dir}/openmrs-checkstyle.xml">
+			<fileset dir="${src.dir}" includes="**/*.java" />
+		</checkstyle>
+	</target>
 		
 	<target name="hl7-test" description="Spawns the HL7API test panel for testing HL7 messages (see http://hl7api.sourceforge.net)">
 		<java classname="ca.uhn.hl7v2.app.TestPanel" fork="yes" spawn="yes">
