@@ -77,7 +77,7 @@ public class ConceptValidator implements Validator {
 				return;
 			
 			//if the new concept name is in a different locale other than openmrs' default one
-			if (newConcept.getName().getLocale() != null && newConcept.getName().getLocale() != Context.getLocale())
+			if (newConcept.getName().getLocale() != null && !newConcept.getName().getLocale().equals(Context.getLocale()))
 				newName = newConcept.getName().getName();
 			else
 				newName = newConcept.getPreferredName(Context.getLocale()).getName();
@@ -98,7 +98,7 @@ public class ConceptValidator implements Validator {
 			for (Concept c : matchingConcepts) {
 				
 				//If updating a concept, read past the concept being updated
-				if (newConcept.getConceptId() != null && c.getConceptId() == newConcept.getConceptId())
+				if (newConcept.getConceptId() != null && c.getConceptId().intValue() == newConcept.getConceptId())
 					continue;
 				//get only duplicates that are not retired
 				if (c.getPreferredName(Context.getLocale()).getName().equalsIgnoreCase(newName) && !c.isRetired()) {
