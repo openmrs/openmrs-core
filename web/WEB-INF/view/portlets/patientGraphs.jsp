@@ -1,11 +1,6 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
-<openmrs:htmlInclude file="/scripts/jquery/jquery-1.3.2.min.js" />
 <openmrs:htmlInclude file="/scripts/flot/jquery.flot.js" />
 <openmrs:htmlInclude file="/scripts/flot/jquery.flot.multiple.threshold.js"/> 
-
-<script type="text/javascript">
-	var $j = jQuery.noConflict();
-</script>
 
 <openmrs:htmlInclude file="/scripts/dojoConfig.js"/>
 <openmrs:htmlInclude file="/scripts/dojo/dojo.js"/>
