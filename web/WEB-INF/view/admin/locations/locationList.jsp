@@ -38,6 +38,7 @@
 			<th> </th>
 			<th> <spring:message code="general.name" /> </th>
 			<th> <spring:message code="general.description" /> </th>
+			<th> <spring:message code="Location.tags" /> </th>
 		</tr>
 		<c:forEach var="location" items="${locationList}">
 			<tr <c:if test="${location.retired}">class="retired"</c:if>>
@@ -46,6 +47,11 @@
 					<a href="location.form?locationId=${location.locationId}">${location.name}</a> (${location.locationId})
 				</td>
 				<td valign="top">${location.description}</td>
+				<td valign="top">
+					<c:forEach var="tag" items="${location.tags}" varStatus="vs">
+						<openmrs:format locationTag="${tag}"/><c:if test="${!vs.last}">,</c:if>
+					</c:forEach>
+				</td>
 			</tr>
 		</c:forEach>
 	</table>

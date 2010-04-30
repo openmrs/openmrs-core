@@ -13,6 +13,11 @@
  */
 package org.openmrs.web.controller.encounter;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -21,9 +26,13 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Location;
+import org.openmrs.LocationTag;
 import org.openmrs.api.APIException;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.context.Context;
+import org.openmrs.propertyeditor.LocationEditor;
+import org.openmrs.propertyeditor.LocationTagEditor;
+import org.openmrs.util.MetadataComparator;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.validation.BindException;
@@ -48,6 +57,20 @@ public class LocationFormController extends SimpleFormController {
 		super.initBinder(request, binder);
 		//NumberFormat nf = NumberFormat.getInstance(new Locale("en_US"));
 		binder.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, true));
+		binder.registerCustomEditor(Location.class, new LocationEditor());
+		binder.registerCustomEditor(LocationTag.class, new LocationTagEditor());
+	}
+	
+	/**
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest)
+	 */
+	@Override
+	protected Map<String, Object> referenceData(HttpServletRequest request) throws Exception {
+		Map<String, Object> ret = new HashMap<String, Object>();
+		List<LocationTag> tags = Context.getLocationService().getAllLocationTags();
+		Collections.sort(tags, new MetadataComparator(Context.getLocale()));
+		ret.put("locationTags", tags);
+		return ret;
 	}
 	
 	/**

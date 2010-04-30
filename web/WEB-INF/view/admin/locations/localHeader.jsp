@@ -4,9 +4,23 @@
 	</li>
 	
 	<openmrs:hasPrivilege privilege="Manage Locations">
-		<li <c:if test='<%= request.getRequestURI().contains("location") %>'>class="active"</c:if>>
+		<li <c:if test='<%= request.getRequestURI().contains("location") && !request.getRequestURI().contains("Tag") && !request.getRequestURI().contains("hierarchy") %>'>class="active"</c:if>>
 			<a href="${pageContext.request.contextPath}/admin/locations/location.list">
 				<spring:message code="Location.manage"/>
+			</a>
+		</li>
+	</openmrs:hasPrivilege>
+	<openmrs:hasPrivilege privilege="Manage Location Tags">
+		<li <c:if test='<%= request.getRequestURI().contains("locationTag") %>'>class="active"</c:if>>
+			<a href="${pageContext.request.contextPath}/admin/locations/locationTag.list">
+				<spring:message code="LocationTag.manage"/>
+			</a>
+		</li>
+	</openmrs:hasPrivilege>
+	<openmrs:hasPrivilege privilege="View Locations">
+		<li <c:if test='<%= request.getRequestURI().contains("hierarchy") %>'>class="active"</c:if>>
+			<a href="${pageContext.request.contextPath}/admin/locations/hierarchy.list">
+				<spring:message code="Location.hierarchy.view"/>
 			</a>
 		</li>
 	</openmrs:hasPrivilege>

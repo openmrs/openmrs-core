@@ -57,10 +57,32 @@
 		<spring:nestedPath path="location">
 			<openmrs:portlet url="addressLayout" id="addressPortlet" size="full" parameters="layoutShowTable=false|layoutShowExtended=false|layoutShowErrors=false" />
 		</spring:nestedPath>
+		<tr>
+			<td valign="top"><spring:message code="Location.parentLocation"/></td>
+			<td colspan="5">
+				<spring:bind path="location.parentLocation">
+					<openmrs_tag:locationField formFieldName="parentLocation" initialValue="${status.value}" optionHeader="[blank]"/>
+					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+				</spring:bind>
+			</td>
+		</tr>
+		<tr>
+			<td valign="top"><spring:message code="Location.tags"/></td>
+			<td colspan="5">
+				<spring:bind path="location.tags">
+					<input type="hidden" name="_tags"/>
+					<c:forEach var="t" items="${locationTags}">
+						<input type="checkbox" name="tags" value="${t.id}" <c:if test="${openmrs:collectionContains(status.value, t)}">checked="true"</c:if>/>
+						<openmrs:format locationTag="${t}"/>
+					</c:forEach>
+					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+				</spring:bind>
+			</td>
+		</tr>
 		<c:if test="${!(location.creator == null)}">
 			<tr>
 				<td><spring:message code="general.createdBy" /></td>
-				<td>
+				<td colspan="5">
 					${location.creator.personName} -
 					<openmrs:formatDate date="${location.dateCreated}" type="long" />
 				</td>
@@ -73,7 +95,6 @@
 </fieldset>
 </form>
 
-<br/>
 <br/>
 
 <c:if test="${not location.retired && not empty location.locationId}">
@@ -92,6 +113,20 @@
 		</fieldset>
 	</form>
 </c:if>
+
+<br/>
+
+<fieldset>
+	<h4><spring:message code="Location.childLocations"/></h4>
+	<ul>
+		<c:if test="${empty location.childLocations}">
+			<li><spring:message code="general.none"/></li>
+		</c:if>
+		<c:forEach var="child" items="${location.childLocations}">
+			<li><openmrs:format location="${child}"/></li>
+		</c:forEach>
+	</ul>
+</fieldset>
 
 <openmrs:extensionPoint pointId="org.openmrs.admin.locations.locationForm.footer" type="html" parameters="locationId=${location.locationId}" />
 

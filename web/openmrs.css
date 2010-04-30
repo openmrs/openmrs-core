@@ -1208,3 +1208,10 @@ table td#summaryHeaderPatientGender {
 .forgotPasswordLink {
 	font-size: small;
 }
+.required {
+	color: red;
+	font-weight: bold;
+}
+.user .personName {
+	font-size: 0.8em;
+}
