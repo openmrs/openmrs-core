@@ -98,7 +98,7 @@ public class ConceptValidator implements Validator {
 			for (Concept c : matchingConcepts) {
 				
 				//If updating a concept, read past the concept being updated
-				if (newConcept.getConceptId() != null && c.getConceptId().intValue() == newConcept.getConceptId())
+				if (newConcept.getConceptId() != null && c.getConceptId().equals(newConcept.getConceptId()))
 					continue;
 				//get only duplicates that are not retired
 				if (c.getPreferredName(Context.getLocale()).getName().equalsIgnoreCase(newName) && !c.isRetired()) {
