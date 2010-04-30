@@ -4,13 +4,11 @@
 	
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
-<openmrs:htmlInclude file="/scripts/jquery/jquery-1.3.2.min.js" />
 <openmrs:htmlInclude file="/scripts/jquery/dataTables/css/dataTables.css" />
 <openmrs:htmlInclude file="/scripts/jquery/dataTables/js/jquery.dataTables.min.js" />
 <openmrs:htmlInclude file="/scripts/jquery-ui/js/jquery-ui-1.7.2.custom.min.js" />
 <openmrs:htmlInclude file="/scripts/jquery-ui/css/redmond/jquery-ui-1.7.2.custom.css" />
 <script type="text/javascript">
-	var $j = jQuery.noConflict(); 
 	var oTable;
 
 	$j(document).ready(function() {

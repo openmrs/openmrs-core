@@ -21,6 +21,9 @@
 		<openmrs:htmlInclude file="/style.css" />
 		<openmrs:htmlInclude file="/dwr/engine.js" />
 		<openmrs:htmlInclude file="/dwr/interface/DWRAlertService.js" />
+		<c:if test="${empty DO_NOT_INCLUDE_JQUERY}">
+			<openmrs:htmlInclude file="/scripts/jquery/jquery.min.js" />
+		</c:if>
 
 		<c:choose>
 			<c:when test="${!empty pageTitle}">
@@ -33,6 +36,9 @@
 
 
 		<script type="text/javascript">
+			<c:if test="${empty DO_NOT_INCLUDE_JQUERY}">
+				var $j = jQuery.noConflict();
+			</c:if>
 			/* variable used in js to know the context path */
 			var openmrsContextPath = '${pageContext.request.contextPath}';
 		</script>

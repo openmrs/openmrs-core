@@ -12,7 +12,6 @@ Parameters:
 	}
 </style>
 		
-<openmrs:htmlInclude file="/scripts/jquery/jquery-1.3.2.min.js" />
 <openmrs:htmlInclude file="/scripts/jquery/dataTables/css/dataTables.css" />
 <openmrs:htmlInclude file="/scripts/jquery/dataTables/js/jquery.dataTables.min.js" />
 
@@ -44,8 +43,6 @@ Parameters:
 	<openmrs:globalProperty key="FormEntry.patientForms.goBackOnEntry" var="goBackOnEntry" defaultValue="false"/>
 	
 	<script type="text/javascript">	
-		var $j = jQuery.noConflict();
-
 		<%-- global var and datatable filter for showRetired --%>
 		var showRetiredFormsForEntry${model.id} = false;
 		$j.fn.dataTableExt.afnFiltering.push(
