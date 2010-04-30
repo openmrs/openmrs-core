@@ -84,5 +84,6 @@
 	<classpathentry kind="lib" path="lib/asm/asm-util-2.2.3.jar"/>
 	<classpathentry kind="lib" path="lib/cglib/cglib-nodep-2.2.jar"/>
 	<classpathentry kind="lib" path="lib/spring-framework/com.springsource.org.aopalliance-1.0.0.jar"/>
+	<classpathentry kind="lib" path="lib/checkstyle/checkstyle-all-5.1.jar"/>
 	<classpathentry kind="output" path="build/"/>
 </classpath>
