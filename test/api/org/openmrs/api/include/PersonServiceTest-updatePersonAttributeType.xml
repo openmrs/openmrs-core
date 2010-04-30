@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+	<global_property property="patient.headerAttributeTypes" property_value="Race,Birthpalce" uuid="4ed94d61-a3d8-4fc4-a96f-4d2bfbb3b5bd" />
+	<global_property property="patient.listingAttributeTypes" property_value="Race,Birthpalce" uuid="4ed94d61-a3d8-4fc4-a96f-4d2bfbb3c4re" />
+	<global_property property="patient.viewingAttributeTypes" property_value="Birthpalce" uuid="4ed94d61-a3d8-4fc4-a96f-4d2bfbb3b3tf" />
+</dataset>

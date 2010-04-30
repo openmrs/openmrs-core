@@ -23,6 +23,7 @@ import org.openmrs.PersonAttributeType;
 import org.openmrs.PersonName;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
+import org.openmrs.util.OpenmrsConstants;
 
 /**
  * Person-related database functions
@@ -184,6 +185,20 @@ public interface PersonDAO {
 	 * @return
 	 */
 	public PersonAttributeType getPersonAttributeTypeByUuid(String uuid);
+	
+	/**
+	 * Gets the value of name currently saved in the database for the given personAttributeType,
+	 * bypassing any caches. This is used prior to saving an personAttributeType, so that we can
+	 * change the vlaue of any global property which is in
+	 * {@link OpenmrsConstants#GLOBAL_PROPERTIES_OF_PERSON_ATTRIBUTES} and reference the given
+	 * personAttributeType.
+	 * <br/>
+	 * 
+	 * @param personAttributeType the personAttributeType get the the name of
+	 * @return the name currently in the database for this personAttributeType
+	 * @should get saved personAttributeType name from database
+	 */
+	public String getSavedPersonAttributeTypeName(PersonAttributeType personAttributeType);
 
 	/**
      * @see org.openmrs.api.PersonService#getAllRelationshipTypes(java.lang.Boolean)

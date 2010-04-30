@@ -692,6 +692,15 @@ public final class OpenmrsConstants {
 	
 	public static final String GLOBAL_PROPERTY_USER_HEADER_ATTRIBUTES = "user.headerAttributeTypes";
 	
+	/**
+	 * Array of all core global property names that represent comma-separated lists of PersonAttributeTypes.
+	 * (If you rename a PersonAttributeType then these global properties are potentially modified.) 
+	 */
+	public static final String[] GLOBAL_PROPERTIES_OF_PERSON_ATTRIBUTES = { GLOBAL_PROPERTY_PATIENT_LISTING_ATTRIBUTES,
+	        GLOBAL_PROPERTY_PATIENT_VIEWING_ATTRIBUTES, GLOBAL_PROPERTY_PATIENT_HEADER_ATTRIBUTES,
+	        GLOBAL_PROPERTY_USER_LISTING_ATTRIBUTES, GLOBAL_PROPERTY_USER_VIEWING_ATTRIBUTES,
+	        GLOBAL_PROPERTY_USER_HEADER_ATTRIBUTES };
+	
 	public static final String GLOBAL_PROPERTY_PATIENT_IDENTIFIER_REGEX = "patient.identifierRegex";
 	
 	public static final String GLOBAL_PROPERTY_PATIENT_IDENTIFIER_PREFIX = "patient.identifierPrefix";
@@ -780,7 +789,7 @@ public final class OpenmrsConstants {
 	 * adhere to
 	 */
 	public static String GP_PASSWORD_CUSTOM_REGEX = "security.passwordCustomRegex";
-	
+		
 	/**
 	 * Global property name for absolute color for patient graphs.
 	 */
