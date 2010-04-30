@@ -371,7 +371,7 @@
 						${relationshipMap.value.relationshipType.aIsToB}
 					</th>
 					<td class="inputCell">
-						<openmrs_tag:personField formFieldName="${relationshipMap.key}" searchLabelCode="Person.find" initialValue="${relationshipMap.value.personA.personId}" linkUrl="" callback="" />
+						<openmrs_tag:personField formFieldName="${relationshipMap.key}" searchLabelCode="Person.find" initialValue="${relationshipMap.value.personA.personId}" linkUrl="" callback="" canAddNewPerson="true" />
 					</td>
 				</tr>
 			</c:when>
@@ -381,7 +381,7 @@
 						${relationshipMap.value.relationshipType.bIsToA}
 					</th>
 					<td class="inputCell">
-						<openmrs_tag:personField formFieldName="${relationshipMap.key}" searchLabelCode="Person.find" initialValue="${relationshipMap.value.personB.personId}" linkUrl="" callback="" />
+						<openmrs_tag:personField formFieldName="${relationshipMap.key}" searchLabelCode="Person.find" initialValue="${relationshipMap.value.personB.personId}" linkUrl="" callback="" canAddNewPerson="true"/>
 					</td>
 			</c:otherwise>
 		</c:choose>
