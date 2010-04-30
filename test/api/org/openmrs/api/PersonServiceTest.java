@@ -41,6 +41,7 @@ import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
+import org.openmrs.util.OpenmrsConstants;
 
 /**
  * This class tests methods in the PersonService class. TODO: Test all methods in the PersonService
@@ -213,6 +214,39 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		
 		assertEquals(new User(1), pat.getChangedBy());
 		assertNotNull(pat.getDateChanged());
+	}
+	
+	/**
+	 * @see {@link PersonService#savePersonAttributeType(PersonAttributeType)}
+	 */
+	@Test
+	@Verifies(value = "should update any global property which reference this type", method = "savePersonAttributeType(PersonAttributeType)")
+	public void savePersonAttributeType_shouldUpdateAnyGlobalPropertyWhichReferenceThisType() throws Exception {
+		executeDataSet("org/openmrs/api/include/PersonServiceTest-updatePersonAttributeType.xml");
+		PersonService service = Context.getPersonService();
+		AdministrationService as = Context.getAdministrationService();
+		
+		// get the type and change its name
+		PersonAttributeType pat = service.getPersonAttributeType(1);
+		assertEquals("Race", pat.getName());
+		
+		String patientHeader = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_HEADER_ATTRIBUTES);
+		assertEquals("Race,Birthpalce", patientHeader);
+		String patientListing = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_LISTING_ATTRIBUTES);
+		assertEquals("Race,Birthpalce", patientListing);
+		String patientViewing = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_VIEWING_ATTRIBUTES);
+		assertEquals("Birthpalce", patientViewing);
+		
+		pat.setName("Race Updated");
+		pat = service.savePersonAttributeType(pat);
+		assertEquals("Race Updated", pat.getName());
+		
+		patientHeader = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_HEADER_ATTRIBUTES);
+		assertEquals("Race Updated,Birthpalce", patientHeader);
+		patientListing = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_LISTING_ATTRIBUTES);
+		assertEquals("Race Updated,Birthpalce", patientListing);
+		patientViewing = as.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_VIEWING_ATTRIBUTES);
+		assertEquals("Birthpalce", patientViewing);
 	}
 	
 	/**

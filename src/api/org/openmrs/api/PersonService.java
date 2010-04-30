@@ -154,13 +154,20 @@ public interface PersonService {
 	public Set<Person> findPeople(String searchPhrase, boolean includeVoided, List<String> roles) throws APIException;
 	
 	/**
-	 * Save the given person attribute type in the database
+	 * Save the given person attribute type in the database. 
+	 * <br/>
+	 * 
+	 * If the given type's Id is not empty, then also need to change any global property which is in
+	 * {@link OpenmrsConstants#GLOBAL_PROPERTIES_OF_PERSON_ATTRIBUTES} and reference this given type,
+	 * prior to saving this given type. 
+	 * <br/>
 	 * 
 	 * @param type
 	 * @return the saved person attribute type
 	 * @throws APIException
 	 * @should set the date created and creator on new
 	 * @should set the date changed and changed by on update
+	 * @should update any global property which reference this type
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_MANAGE_PERSON_ATTRIBUTE_TYPES })
 	public PersonAttributeType savePersonAttributeType(PersonAttributeType type) throws APIException;

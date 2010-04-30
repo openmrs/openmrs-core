@@ -25,6 +25,7 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.GlobalProperty;
 import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.PersonAddress;
@@ -183,9 +184,34 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		if (type.getSortWeight() == null) {
 			List<PersonAttributeType> allTypes = Context.getPersonService().getAllPersonAttributeTypes();
 			if (allTypes.size() > 0)
-				type.setSortWeight(allTypes.get(allTypes.size()-1).getSortWeight() + 1);
+				type.setSortWeight(allTypes.get(allTypes.size() - 1).getSortWeight() + 1);
 			else
 				type.setSortWeight(1.0);
+		}
+		
+		if (type.getId() != null) {
+			String oldTypeName = dao.getSavedPersonAttributeTypeName(type);
+			String newTypeName = type.getName();
+			
+			if (!oldTypeName.equals(newTypeName)) {
+				List<GlobalProperty> props = new ArrayList<GlobalProperty>();
+				
+				AdministrationService as = Context.getAdministrationService();
+				
+				for (String propName : OpenmrsConstants.GLOBAL_PROPERTIES_OF_PERSON_ATTRIBUTES) {
+					props.add(as.getGlobalPropertyObject(propName));
+				}
+				
+				for (GlobalProperty prop : props) {
+					if (prop != null) {
+						String propVal = prop.getPropertyValue();
+						if (propVal != null && propVal.indexOf(oldTypeName) != -1) {
+							prop.setPropertyValue(propVal.replaceFirst(oldTypeName, newTypeName));
+							as.saveGlobalProperty(prop);
+						}
+					}
+				}
+			}
 		}
 		
 		return dao.savePersonAttributeType(type);
