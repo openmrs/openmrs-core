@@ -28,8 +28,10 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.GlobalProperty;
 import org.openmrs.User;
@@ -230,7 +232,7 @@ public class HibernateAdministrationDAO implements AdministrationDAO {
 	 * @see org.openmrs.api.db.AdministrationDAO#getGlobalProperty(java.lang.String)
 	 */
 	public String getGlobalProperty(String propertyName) throws DAOException {
-		GlobalProperty gp = (GlobalProperty) sessionFactory.getCurrentSession().get(GlobalProperty.class, propertyName);
+		GlobalProperty gp = getGlobalPropertyObject(propertyName);
 		
 		// if no gp exists, return a null value
 		if (gp == null)
@@ -243,8 +245,9 @@ public class HibernateAdministrationDAO implements AdministrationDAO {
 	 * @see org.openmrs.api.db.AdministrationDAO#getGlobalPropertyObject(java.lang.String)
 	 */
 	public GlobalProperty getGlobalPropertyObject(String propertyName) {
-		GlobalProperty gp = (GlobalProperty) sessionFactory.getCurrentSession().get(GlobalProperty.class, propertyName);
-		
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(GlobalProperty.class);
+		GlobalProperty gp = (GlobalProperty) criteria.add(Restrictions.eq("property", propertyName)).uniqueResult();
+
 		// if no gp exists, hibernate returns a null value
 		
 		return gp;
@@ -262,7 +265,8 @@ public class HibernateAdministrationDAO implements AdministrationDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<GlobalProperty> getAllGlobalProperties() throws DAOException {
-		return sessionFactory.getCurrentSession().createCriteria(GlobalProperty.class).list();
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(GlobalProperty.class);
+		return criteria.addOrder(Order.asc("property")).list();
 	}
 	
 	/**
