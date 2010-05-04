@@ -111,10 +111,11 @@ public class GlobalProperty extends BaseOpenmrsObject {
 	public boolean equals(Object o) {
 		if (o instanceof GlobalProperty) {
 			GlobalProperty gp = (GlobalProperty) o;
-			return (property != null && property.equals(gp.getProperty()));
+			if (property != null && property.equals(gp.getProperty()))
+				return true;
 		}
 		
-		return false;
+		return this == o;
 	}
 	
 	/**

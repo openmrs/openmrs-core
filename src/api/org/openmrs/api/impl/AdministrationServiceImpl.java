@@ -758,7 +758,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		log.debug("saving a list of global properties");
 		
 		// delete all properties not in this new list
-		for (GlobalProperty gp : getGlobalProperties()) {
+		for (GlobalProperty gp : getAllGlobalProperties()) {
 			if (!props.contains(gp))
 				purgeGlobalProperty(gp);
 		}

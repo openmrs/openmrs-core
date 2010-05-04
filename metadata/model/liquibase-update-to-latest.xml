@@ -3210,4 +3210,17 @@
 		<renameColumn tableName="location_tag"
    			 oldColumnName="tag" newColumnName="name" columnDataType="varchar(50)"/>
 	</changeSet>
+	
+	<changeSet id="20100427-1334" author="bwolfe">
+		<preConditions onFail="MARK_RAN">
+			<dbms type="mysql" />
+		</preConditions>
+		<comment>
+			Changing the datatype of global_property.property for mysql databases
+		</comment>
+		<modifyColumn tableName="global_property">
+			<column name="property" type="varbinary(255)" />
+		</modifyColumn>
+	</changeSet>
+	
 </databaseChangeLog>
