@@ -75,12 +75,12 @@ public class PatientFormController extends PersonFormController {
 	
 	/** Logger for this class and subclasses */
 	protected final Log log = LogFactory.getLog(getClass());
-
-    @Autowired
-    public void setPatientValidator(PatientValidator patientValidator){
-    	super.setValidator(patientValidator);
-    }
-    
+	
+	@Autowired
+	public void setPatientValidator(PatientValidator patientValidator) {
+		super.setValidator(patientValidator);
+	}
+	
 	/**
 	 * Allows for other Objects to be used as values in input tags. Normally, only strings and lists
 	 * are expected
@@ -472,14 +472,18 @@ public class PatientFormController extends PersonFormController {
 									String otherConcept = Context.getAdministrationService().getGlobalProperty(
 									    "concept.otherNonCoded");
 									Concept conceptOther = Context.getConceptService().getConcept(otherConcept);
+									boolean deathReasonChanged = false;
 									if (conceptOther != null) {
+										String otherInfo = ServletRequestUtils.getStringParameter(request,
+										    "causeOfDeath_other", "");
 										if (conceptOther.equals(currCause)) {
 											// seems like this is an other concept - let's try to get the "other" field info
-											String otherInfo = ServletRequestUtils.getStringParameter(request,
-											    "causeOfDeath_other", "");
+											deathReasonChanged = !otherInfo.equals(obsDeath.getValueText());
 											log.debug("Setting value_text as " + otherInfo);
 											obsDeath.setValueText(otherInfo);
 										} else {
+											// non empty text value implies concept changed from OTHER NON CODED to NONE
+											deathReasonChanged = !otherInfo.equals("");
 											log.debug("New concept is NOT the OTHER concept, so setting to blank");
 											obsDeath.setValueText("");
 										}
@@ -487,8 +491,12 @@ public class PatientFormController extends PersonFormController {
 										log.debug("Don't seem to know about an OTHER concept, so deleting value_text");
 										obsDeath.setValueText("");
 									}
-									
-									Context.getObsService().saveObs(obsDeath, obsDeath.getVoidReason());
+									boolean shouldSaveObs = (null == obsDeath.getId()) || deathReasonChanged;
+									if (shouldSaveObs) {
+										if (null == obsDeath.getVoidReason())
+											obsDeath.setVoidReason("Changed in patient demographics editor");
+										Context.getObsService().saveObs(obsDeath, obsDeath.getVoidReason());
+									}
 								} else {
 									log.debug("Current cause is still null - aborting mission");
 								}
