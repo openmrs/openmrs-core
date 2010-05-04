@@ -30,8 +30,21 @@
 					</c:choose>
 				</td>
 				<td>
-					<input type="text" size="80" id="gp_${ind}" onKeyUp="showDiv('gp_${ind}_actions')"/>
-				</td>
+					<c:set var="readOnly" value="${model.readOnly}"/>
+					<c:if test="${not readOnly}">
+						<openmrs:hasPrivilege privilege="Manage Global Properties" inverse="true">
+							<c:set var="readOnly" value="true"/>
+						</openmrs:hasPrivilege>
+					</c:if>
+					<c:choose>
+						<c:when test="${readOnly}">
+							<c:out value="${prop.propertyValue}"></c:out>
+						</c:when>
+						<c:otherwise>	
+							<input type="text" size="80" id="gp_${ind}" onKeyUp="showDiv('gp_${ind}_actions')"/>		
+						</c:otherwise>
+					</c:choose>
+                </td>
 				<td style="width: 10em">
 					<span id="gp_${ind}_actions" style="display: none">
 						<input type="button" value="<spring:message code="general.save"/>"
