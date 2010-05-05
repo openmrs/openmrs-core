@@ -355,7 +355,8 @@ public class ConceptTest {
 		
 		Concept concept = new Concept();
 		concept.addName(new ConceptName("some name", definedNameLocale));
-		Assert.assertNull(concept.getName(localeToSearch, true));
+		Assert.assertNotNull(concept.getName(localeToSearch, true));
+		Assert.assertEquals("some name", concept.getName(localeToSearch, true).getName());
 	}
 	
 	/**
@@ -584,7 +585,7 @@ public class ConceptTest {
 	 * @see {@link Concept#addAnswer(ConceptAnswer)}
 	 */
 	@Test
-	@Verifies(value = "set the sort weight to the max plus one if not provided", method="addAnswer(ConceptAnswer)")
+	@Verifies(value = "set the sort weight to the max plus one if not provided", method = "addAnswer(ConceptAnswer)")
 	public void addAnswer_shouldSetTheSortWeightToTheMaxPlusOneIfNotProvided() throws Exception {
 		ConceptAnswer ca = new ConceptAnswer(123);
 		Concept c = new Concept();
