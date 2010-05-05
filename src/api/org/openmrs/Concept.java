@@ -579,7 +579,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		// matches on any name in the current locale, or first name available
 		ConceptName bestName = getBestName(locale);
 		
-		if (exact && bestName.getLocale() != locale)
+		if (exact && !bestName.getLocale().equals(locale))
 			return null; // no exact match found
 		else
 			return bestName;
