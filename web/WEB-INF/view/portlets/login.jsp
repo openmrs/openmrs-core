@@ -29,19 +29,21 @@
 	</table>
 	<br/>
 	
-	<c:choose>
-		<c:when test="${not empty model.redirect}">
-			<input type="hidden" name="redirect" value="${model.redirect}" />
-		</c:when>
-		<c:when test="${redirect != ''}">
-			<input type="hidden" name="redirect" value="${redirect}" />
-		</c:when>
-		<c:otherwise>
-			<input type="hidden" name="redirect" value="" />
-		</c:otherwise>
-	</c:choose>
-	
-	<input type="hidden" name="refererURL" value='<request:header name="referer" />' />
+	<c:if test="${param.noredirect}">
+		<c:choose>
+			<c:when test="${not empty model.redirect}">
+				<input type="hidden" name="redirect" value="${model.redirect}" />
+			</c:when>
+			<c:when test="${redirect != ''}">
+				<input type="hidden" name="redirect" value="${redirect}" />
+			</c:when>
+			<c:otherwise>
+				<input type="hidden" name="redirect" value="" />
+			</c:otherwise>
+		</c:choose>
+		
+		<input type="hidden" name="refererURL" value='<request:header name="referer" />' />
+	</c:if>
 	
 </form>
 

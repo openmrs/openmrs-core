@@ -13,6 +13,8 @@
  */
 package org.openmrs.web.servlet;
 
+import static org.openmrs.web.WebConstants.GP_ALLOWED_LOGIN_ATTEMPTS_PER_IP;
+
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
@@ -35,8 +37,6 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.OpenmrsCookieLocaleResolver;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.user.UserProperties;
-
-import static org.openmrs.web.WebConstants.GP_ALLOWED_LOGIN_ATTEMPTS_PER_IP;
 
 /**
  * This servlet accepts the username and password from the login form and authenticates the user to
@@ -76,15 +76,17 @@ public class LoginServlet extends HttpServlet {
 		loginAttempts++;
 		
 		boolean lockedOut = false;
-		
 		// look up the allowed # of attempts per IP
 		Integer allowedLockoutAttempts = 100;
-		String allowedLockoutAttemptsGP = Context.getAdministrationService().getGlobalProperty(GP_ALLOWED_LOGIN_ATTEMPTS_PER_IP, "100");
+		
+		String allowedLockoutAttemptsGP = Context.getAdministrationService().getGlobalProperty(
+		    GP_ALLOWED_LOGIN_ATTEMPTS_PER_IP, "100");
 		try {
 			allowedLockoutAttempts = Integer.valueOf(allowedLockoutAttemptsGP.trim());
 		}
 		catch (NumberFormatException nfe) {
-			log.error("Unable to format '" + allowedLockoutAttemptsGP + "' from global property " + GP_ALLOWED_LOGIN_ATTEMPTS_PER_IP + " as an integer");
+			log.error("Unable to format '" + allowedLockoutAttemptsGP + "' from global property "
+			        + GP_ALLOWED_LOGIN_ATTEMPTS_PER_IP + " as an integer");
 		}
 		
 		// allowing for configurable login attempts here in case network setups are such that all users have the same IP address. 
@@ -112,6 +114,7 @@ public class LoginServlet extends HttpServlet {
 			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "auth.login.tooManyAttempts");
 		} else {
 			try {
+				
 				String username = request.getParameter("uname");
 				String password = request.getParameter("pw");
 				
@@ -122,8 +125,8 @@ public class LoginServlet extends HttpServlet {
 				Context.authenticate(username, password);
 				
 				if (Context.isAuthenticated()) {
-					httpSession.setAttribute("loginAttempts", 0);
 					
+					httpSession.setAttribute("loginAttempts", 0);
 					User user = Context.getAuthenticatedUser();
 					
 					// load the user's default locale if possible
@@ -167,6 +170,7 @@ public class LoginServlet extends HttpServlet {
 					
 					// unset login attempts by this user because they were
 					// able to successfully log in
+					
 					loginAttemptsByIP.remove(ipAddress);
 					
 					return;
@@ -201,7 +205,8 @@ public class LoginServlet extends HttpServlet {
 		if (redirect == null || redirect.equals("")) {
 			redirect = request.getParameter("refererURL");
 			if (redirect != null) {
-				int index = redirect.indexOf(request.getContextPath(), 9);
+				// checking for a redirect like /openmrs/openmrs (for some reason)
+				int index = redirect.indexOf(request.getContextPath(), 2);
 				if (index != -1)
 					redirect = redirect.substring(index);
 			}
@@ -211,28 +216,33 @@ public class LoginServlet extends HttpServlet {
 		if (redirect == null || redirect.equals("")) {
 			redirect = request.getContextPath();
 		}
+
+		// don't redirect back to the login page on success. (I assume the login page is {something}login.{something}
+		else if (redirect.contains("login.")) {
+			log.debug("Redirect contains 'login.', redirecting to main page");
+			redirect = request.getContextPath();
+		}
+
+		// don't redirect to pages outside of openmrs
+		else if (!redirect.startsWith(request.getContextPath())) {
+			log.debug("redirect is outside of openmrs, redirecting to main page");
+			redirect = request.getContextPath();
+		}
+
+		// don't redirect back to the initialsetup page
+		else if (redirect.endsWith(WebConstants.SETUP_PAGE_URL)) {
+			log.debug("redirect is back to the setup page because this is their first ever login");
+			redirect = request.getContextPath();
+		}
+
+		else if (redirect.contains("/options.form") || redirect.contains("/changePassword.form")
+		        || redirect.contains("/forgotPassword.form")) {
+			log
+			        .debug("The user was on a page for setting/changing passwords. Send them to the homepage to reduce confusion");
+			redirect = request.getContextPath();
+		}
 		
 		log.debug("Going to use redirect: '" + redirect + "'");
-		
-		if (redirect != null) {
-			// don't redirect back to the login page on success. (I assume the login page is {something}login.{something}
-			if (redirect.contains("login.")) {
-				log.debug("Redirect contains 'login.', redirecting to main page");
-				redirect = request.getContextPath();
-			}
-			
-			// don't redirect to pages outside of openmrs
-			if (!redirect.startsWith(request.getContextPath())) {
-				log.debug("redirect is outside of openmrs, redirecting to main page");
-				redirect = request.getContextPath();
-			}
-			
-			// don't redirect back to the initialsetup page
-			if (redirect.endsWith(WebConstants.SETUP_PAGE_URL)) {
-				log.debug("redirect is back to the setup page because this is their first ever login");
-				redirect = request.getContextPath();
-			}
-		}
 		
 		return redirect;
 	}
