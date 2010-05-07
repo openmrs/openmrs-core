@@ -1158,6 +1158,10 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 */
 	@SuppressWarnings("unchecked")
 	public IdentifierValidator getIdentifierValidator(String pivClassName) {
+		if (StringUtils.isBlank(pivClassName)) {
+			return null;
+		}
+		
 		try {
 			return getIdentifierValidator(((Class<IdentifierValidator>) Context.loadClass(pivClassName)));
 		}
@@ -1178,7 +1182,6 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 * @see org.openmrs.api.PatientService#getPatientIdentifier(java.lang.Integer)
 	 */
 	public PatientIdentifier getPatientIdentifier(Integer patientIdentifierId) throws APIException {
-		
 		return dao.getPatientIdentifier(patientIdentifierId);
 	}
 	

@@ -695,6 +695,7 @@ public interface PatientService extends OpenmrsService {
 	
 	/**
      * @should return patient identifier validator given class name
+     * @should treat empty strings like a null entry
      */
 	public IdentifierValidator getIdentifierValidator(String pivClassName);
 	
