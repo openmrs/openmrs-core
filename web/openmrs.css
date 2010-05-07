@@ -40,10 +40,12 @@ a:hover {
 
 #openmrs_msg {
 	background: url(images/info.gif) no-repeat center left;
+	background-color: lightyellow;
 }
 
 #openmrs_error {
 	background: url(images/error.gif) no-repeat center left;
+	background-color: lightpink;
 }
 
 #openmrs_msg, #openmrs_error { 
@@ -51,7 +53,6 @@ a:hover {
 	margin-bottom: 5px;
 	border: 1px dashed lightgrey;
 	padding: 2px 2px 2px 18px;
-	background-color: InfoBackground;
 }
 
 #userBar {
