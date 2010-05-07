@@ -112,6 +112,15 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @see {@link PatientService#getIdentifierValidator(String)}
+	 */
+	@Test
+	@Verifies(value = "should treat empty strings like a null entry", method = "getIdentifierValidator()")
+	public void getAllIdentifierValidators_shouldTreatEmptyStringsLikeANullEntry() throws Exception {
+		Assert.assertEquals(null, patientService.getIdentifierValidator(""));
+	}
+	
+	/**
 	 * Tests creation of a patient and then subsequent fetching of that patient by internal id TODO:
 	 * Split this into multiple tests, then un-ignore this
 	 * 
