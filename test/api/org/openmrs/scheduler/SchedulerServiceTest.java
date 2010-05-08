@@ -19,7 +19,6 @@ import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -66,20 +65,20 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * Longer running class used to demonstrate tasks running concurrently
 	 */
-	static class SampleTask1 extends AbstractTask {
+	static class ExecutePrintingTask extends AbstractTask {
 		
 		public void execute() {
 			synchronized (outputForConcurrentTasks) {
-				outputForConcurrentTasks.add("START-1");
+				outputForConcurrentTasks.add(getTaskDefinition().getProperty("id"));
 			}
 			try {
-				Thread.sleep(3000);
+				Thread.sleep(Integer.valueOf(getTaskDefinition().getProperty("delay")));
 			}
 			catch (InterruptedException e) {
 				log.error("Error generated", e);
 			}
 			synchronized (outputForConcurrentTasks) {
-				outputForConcurrentTasks.add("END-1");
+				outputForConcurrentTasks.add(getTaskDefinition().getProperty("id"));
 			}
 		}
 	}
@@ -87,7 +86,7 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * Shorter running class used to demonstrate tasks running concurrently
 	 */
-	static class SampleTask2 extends AbstractTask {
+	static class SampleTassk2 extends AbstractTask {
 		
 		public void execute() {
 			synchronized (outputForConcurrentTasks) {
@@ -124,31 +123,23 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 		TaskDefinition t1 = new TaskDefinition();
 		t1.setId(1);
 		t1.setStartOnStartup(false);
-		t1.setRepeatInterval(10L);
-		t1.setTaskClass(SampleTask1.class.getName());
+		t1.setStartTime(null);
+		t1.setTaskClass(ExecutePrintingTask.class.getName());
+		t1.setProperty("id", "TASK-1");
+		t1.setProperty("delay", "400"); // must be longer than t2's delay
 		
 		TaskDefinition t2 = new TaskDefinition();
 		t2.setId(2);
 		t2.setStartOnStartup(false);
-		t2.setRepeatInterval(10L);
-		t2.setTaskClass(SampleTask2.class.getName());
-		
-		Calendar startTime1 = Calendar.getInstance();
-		startTime1.add(Calendar.SECOND, 1);
-		t1.setStartTime(startTime1.getTime());
-		
-		Calendar startTime2 = Calendar.getInstance();
-		startTime2.setTime(startTime1.getTime());
-		// Task2 starts one second after Task1
-		startTime2.add(Calendar.SECOND, 1);
-		t2.setStartTime(startTime2.getTime());
+		t2.setStartTime(null);
+		t2.setTaskClass(ExecutePrintingTask.class.getName());
+		t2.setProperty("id", "TASK-2");
+		t2.setProperty("delay", "100"); // must be shorter than t1's delay
 		
 		schedulerService.scheduleTask(t1);
 		schedulerService.scheduleTask(t2);
-		Thread.sleep(5000);
-		schedulerService.shutdownTask(t1);
-		schedulerService.shutdownTask(t2);
-		assertEquals(Arrays.asList("START-1", "START-2", "END-2", "END-1"), outputForConcurrentTasks);
+		Thread.sleep(600); // must be longer than t2's delay
+		assertEquals(Arrays.asList("TASK-1", "TASK-2", "TASK-2", "TASK-1"), outputForConcurrentTasks);
 	}
 	
 	private static List<String> outputForConcurrentInit = new ArrayList<String>();
@@ -156,46 +147,22 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * Longer init'ing class for concurrent init test
 	 */
-	static class SampleTask3 extends AbstractTask {
+	static class SimpleTask extends AbstractTask {
 		
 		public void initialize(TaskDefinition config) {
 			synchronized (outputForConcurrentInit) {
-				outputForConcurrentInit.add("INIT-START-3");
+				outputForConcurrentInit.add(config.getProperty("id"));
 			}
 			super.initialize(config);
 			try {
-				Thread.sleep(3000);
+				// must be less than delay before printing
+				Thread.sleep(Integer.valueOf(config.getProperty("delay")));
 			}
 			catch (InterruptedException e) {
 				log.error("Error generated", e);
 			}
 			synchronized (outputForConcurrentInit) {
-				outputForConcurrentInit.add("INIT-END-3");
-			}
-		}
-		
-		public void execute() {
-		}
-	}
-	
-	/**
-	 * Shorter init'ing class for the concurrent init test
-	 */
-	static class SampleTask4 extends AbstractTask {
-		
-		public void initialize(TaskDefinition config) {
-			synchronized (outputForConcurrentInit) {
-				outputForConcurrentInit.add("INIT-START-4");
-			}
-			super.initialize(config);
-			try {
-				Thread.sleep(1000);
-			}
-			catch (InterruptedException e) {
-				log.error("Error generated", e);
-			}
-			synchronized (outputForConcurrentInit) {
-				outputForConcurrentInit.add("INIT-END-4");
+				outputForConcurrentInit.add(config.getProperty("id"));
 			}
 		}
 		
@@ -222,31 +189,28 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 		TaskDefinition t3 = new TaskDefinition();
 		t3.setId(3);
 		t3.setStartOnStartup(false);
-		t3.setRepeatInterval(10L);
-		t3.setTaskClass(SampleTask3.class.getName());
+		t3.setStartTime(null); // so it starts immediately
+		t3.setTaskClass(SimpleTask.class.getName());
+		t3.setProperty("id", "TASK-3");
+		t3.setProperty("delay", "300"); // must be longer than t4's delay
 		
 		TaskDefinition t4 = new TaskDefinition();
 		t4.setId(4);
 		t4.setStartOnStartup(false);
-		t4.setRepeatInterval(10L);
-		t4.setTaskClass(SampleTask4.class.getName());
+		t4.setStartTime(null); // so it starts immediately
+		t4.setTaskClass(SimpleTask.class.getName());
+		t4.setProperty("id", "TASK-4");
+		t4.setProperty("delay", "100");
 		
-		Calendar startTime3 = Calendar.getInstance();
-		startTime3.add(Calendar.SECOND, 1);
-		t3.setStartTime(startTime3.getTime());
+		// both of these tasks start immediately
+		schedulerService.scheduleTask(t3); // starts first, ends last
+		schedulerService.scheduleTask(t4); // starts last, ends first
+		Thread.sleep(500); // must be greater than task3 delay so that it prints out its end
+		assertEquals(Arrays.asList("TASK-3", "TASK-4", "TASK-4", "TASK-3"), outputForConcurrentInit);
 		
-		Calendar startTime4 = Calendar.getInstance();
-		startTime4.setTime(startTime3.getTime());
-		// Task4 starts one second after Task3
-		startTime4.add(Calendar.SECOND, 1);
-		t4.setStartTime(startTime4.getTime());
-		
-		schedulerService.scheduleTask(t3);
-		schedulerService.scheduleTask(t4);
-		Thread.sleep(4000);
+		// cleanup
 		schedulerService.shutdownTask(t3);
 		schedulerService.shutdownTask(t4);
-		assertEquals(Arrays.asList("INIT-START-3", "INIT-START-4", "INIT-END-4", "INIT-END-3"), outputForConcurrentInit);
 	}
 	
 	private static List<String> outputForInitExecSync = new ArrayList<String>();
@@ -259,7 +223,7 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 			}
 			super.initialize(config);
 			try {
-				Thread.sleep(2000);
+				Thread.sleep(700);
 			}
 			catch (InterruptedException e) {
 				log.error("Error generated", e);
@@ -271,16 +235,7 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 		
 		public void execute() {
 			synchronized (outputForInitExecSync) {
-				outputForInitExecSync.add("START-5");
-			}
-			try {
-				Thread.sleep(2000);
-			}
-			catch (InterruptedException e) {
-				log.error("Error generated", e);
-			}
-			synchronized (outputForInitExecSync) {
-				outputForInitExecSync.add("END-5");
+				outputForInitExecSync.add("IN EXECUTE");
 			}
 		}
 	}
@@ -305,16 +260,12 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 		TaskDefinition t5 = new TaskDefinition();
 		t5.setId(5);
 		t5.setStartOnStartup(false);
-		t5.setRepeatInterval(10L);
+		t5.setStartTime(null); // immediate start
 		t5.setTaskClass(SampleTask5.class.getName());
 		
-		Calendar startTime5 = Calendar.getInstance();
-		startTime5.add(Calendar.SECOND, 1);
-		t5.setStartTime(startTime5.getTime());
 		schedulerService.scheduleTask(t5);
-		Thread.sleep(5000);
-		schedulerService.shutdownTask(t5);
-		assertEquals(Arrays.asList("INIT-START-5", "INIT-END-5", "START-5", "END-5"), outputForInitExecSync);
+		Thread.sleep(1200);
+		assertEquals(Arrays.asList("INIT-START-5", "INIT-END-5", "IN EXECUTE"), outputForInitExecSync);
 	}
 	
 	@Test
@@ -327,7 +278,7 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 		def.setName(TASK_NAME);
 		def.setStartOnStartup(false);
 		def.setRepeatInterval(10L);
-		def.setTaskClass(SampleTask1.class.getName());
+		def.setTaskClass(ExecutePrintingTask.class.getName());
 		service.saveTask(def);
 		Assert.assertEquals(1, service.getRegisteredTasks().size());
 		
@@ -374,18 +325,13 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 		td.setId(10);
         td.setName("Task");
 		td.setStartOnStartup(false);
-		td.setRepeatInterval(1L);
 		td.setTaskClass(BareTask.class.getName());
+		td.setStartTime(null);
 
-		Calendar startTime = Calendar.getInstance();
-		startTime.add(Calendar.SECOND, 1);
-		td.setStartTime(startTime.getTime());
 		schedulerService.scheduleTask(td);
-		Thread.sleep(2000);
-		schedulerService.shutdownTask(td);
+		Thread.sleep(500);
 		
 		assertTrue(BareTask.outputList.contains("TEST"));
-        System.out.println(BareTask.outputList);
 	}
 
 	/**
@@ -421,16 +367,12 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 		TaskDefinition td = new TaskDefinition();
 		td.setName(NAME);
 		td.setStartOnStartup(false);
-		td.setRepeatInterval(1L);
 		td.setTaskClass(SessionTask.class.getName());
-        Calendar startTime = Calendar.getInstance();
-        startTime.add(Calendar.SECOND, 1);
-        td.setStartTime(startTime.getTime());
+        td.setStartTime(null);
     	service.saveTask(td);
 
 		service.scheduleTask(td);
-		Thread.sleep(2000);
-		service.shutdownTask(td);
+		Thread.sleep(500);
 
         td = service.getTaskByName(NAME);
 		assertEquals("Last execution time in seconds is wrong", actualExecutionTime.longValue() / 1000, td.getLastExecutionTime().getTime() / 1000, 1);
