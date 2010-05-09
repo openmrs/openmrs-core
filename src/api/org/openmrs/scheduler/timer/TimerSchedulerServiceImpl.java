@@ -219,9 +219,10 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 					// NOTE:  We need to adjust the repeat interval as the JDK Timer expects time in milliseconds and 
 					// we record by seconds.  
 					
-					long repeatInterval = taskDefinition.getRepeatInterval()
-					        * SchedulerConstants.SCHEDULER_MILLIS_PER_SECOND;
-					
+					long repeatInterval = 0;
+					if (taskDefinition.getRepeatInterval() != null)
+						repeatInterval = taskDefinition.getRepeatInterval() * SchedulerConstants.SCHEDULER_MILLIS_PER_SECOND;
+
 					if (taskDefinition.getStartTime() != null) {
 						// Need to calculate the "next execution time" because the scheduled time is most likely in the past
 						// and the JDK timer will run the task X number of times from the start time until now to catch up.
