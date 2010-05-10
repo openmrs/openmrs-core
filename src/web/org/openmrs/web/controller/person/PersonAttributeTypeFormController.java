@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -84,13 +85,13 @@ public class PersonAttributeTypeFormController extends SimpleFormController {
 		if (Context.isAuthenticated()) {
 			PersonAttributeType attrType = (PersonAttributeType) obj;
 			PersonService ps = Context.getPersonService();
-				
+			
 			if (request.getParameter("save") != null) {
 				ps.savePersonAttributeType(attrType);
 				view = getSuccessView();
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "PersonAttributeType.saved");
 			}
-			
+
 			// if the user is retiring out the personAttributeType
 			else if (request.getParameter("retire") != null) {
 				String retireReason = request.getParameter("retireReason");
@@ -104,7 +105,7 @@ public class PersonAttributeTypeFormController extends SimpleFormController {
 				
 				view = getSuccessView();
 			}
-			
+
 			// if the user is purging the personAttributeType
 			else if (request.getParameter("purge") != null) {
 				try {
@@ -164,7 +165,14 @@ public class PersonAttributeTypeFormController extends SimpleFormController {
 			privileges = Context.getUserService().getAllPrivileges();
 		}
 		
-		Set<String> formats = FieldGenHandlerFactory.getSingletonInstance().getHandlers().keySet();
+		Set<String> formats = new TreeSet<String>(FieldGenHandlerFactory.getSingletonInstance().getHandlers().keySet());
+		
+		// these formats are handled directly by the FieldGenTag.java class and so aren't in the 
+		// "handlers" list in openmrs-servlet.xml
+		formats.add("java.lang.Character");
+		formats.add("java.lang.Integer");
+		formats.add("java.lang.Float");
+		formats.add("java.lang.Boolean");
 		
 		map.put("privileges", privileges);
 		map.put("formats", formats);
