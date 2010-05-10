@@ -26,7 +26,7 @@
 	var getSystemId = function(u) {
 		if (typeof u == 'string') return u;
 		s = " &nbsp; " + u.systemId;;	
-		if (u.voided)
+		if (u.retired)
 			s = "<span class='retired'>" + s + "</span>";
 		return s;
 	}

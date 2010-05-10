@@ -30,6 +30,8 @@ public class UserListItem extends PersonListItem {
 	
 	private String[] roles = new String[0];
 	
+	private Boolean retired = Boolean.FALSE;
+	
 	public UserListItem() {
 	}
 	
@@ -45,6 +47,8 @@ public class UserListItem extends PersonListItem {
 			for (Role r : user.getRoles()) {
 				roles[i++] = r.getRole();
 			}
+			this.retired = user.isRetired();
+			setVoided(retired); // so the parent PersonListItem class works is someone tries to use .voided
 		}
 	}
 	
@@ -79,5 +83,13 @@ public class UserListItem extends PersonListItem {
 	public void setUsername(String username) {
 		this.username = username;
 	}
+
+    public Boolean getRetired() {
+    	return retired;
+    }
+
+    public void setRetired(Boolean retired) {
+    	this.retired = retired;
+    }
 	
 }
