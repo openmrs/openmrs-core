@@ -151,17 +151,18 @@ public class UserFormController {
 			try {
 				Context.getUserService().purgeUser(user);
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "User.delete.success");
+				return "redirect:/admin/users/user.list";			
 			} catch (Exception ex) {
-				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "User.delete.failure");
-				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ARGS, ex.getMessage());
+				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "User.delete.failure");
 				log.error("Failed to delete user", ex);
+				return "redirect:/admin/users/user.form?userId="+request.getParameter("userId");
 			}
-			return "redirect:/index.htm";
+			
 		
 		} else if (mss.getMessage("User.retire").equals(action)) {
 			String retireReason = request.getParameter("retireReason");
 			if (!(StringUtils.hasText(retireReason))) {
-				errors.rejectValue("retireReason", "general.retiredReason.empty");
+				errors.rejectValue("retireReason", "User.disableReason.empty");
 				return showForm(user.getUserId(), createNewPerson, user, model);
 			} else {
 				us.retireUser(user, retireReason);
@@ -264,7 +265,6 @@ public class UserFormController {
 		}
 		return "redirect:user.list";
 	}
-
 	/**
 	 * Superficially determines if this form is being filled out for a new user (basically just
 	 * looks for a primary key (user_id)

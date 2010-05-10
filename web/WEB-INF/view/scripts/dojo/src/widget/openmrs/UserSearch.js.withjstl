@@ -25,6 +25,8 @@ dojo.widget.defineWidget(
 		
 		showUsername: true,
 		
+		includeRetiredLabel: '<spring:message code="SearchResults.includeDisabled" javaScriptEscape="true"/>',
+		
 		postCreate: function(){
 			dojo.debug("postCreate in UserSearch");
 			
