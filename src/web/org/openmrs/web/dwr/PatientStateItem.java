@@ -32,6 +32,10 @@ public class PatientStateItem {
 	
 	private Date endDate;
 	
+	private String creator;
+	
+	private Date dateCreated;
+	
 	public PatientStateItem() {
 	}
 	
@@ -42,6 +46,8 @@ public class PatientStateItem {
 		workflowName = s.getState().getProgramWorkflow().getConcept().getName(Context.getLocale(), false).getName();
 		startDate = s.getStartDate();
 		endDate = s.getEndDate();
+		creator = s.getCreator().getPersonName().getFullName();
+		dateCreated = s.getDateCreated();
 	}
 	
 	public Date getEndDate() {
@@ -91,5 +97,20 @@ public class PatientStateItem {
 	public void setWorkflowName(String workflowName) {
 		this.workflowName = workflowName;
 	}
-	
+
+	public String getCreator() {
+    	return creator;
+    }
+
+    public void setCreator(String creator) {
+    	this.creator = creator;
+    }
+
+    public Date getDateCreated() {
+    	return dateCreated;
+    }
+
+    public void setDateCreated(Date dateCreated) {
+    	this.dateCreated = dateCreated;
+    }
 }

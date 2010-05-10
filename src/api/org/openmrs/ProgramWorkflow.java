@@ -221,8 +221,7 @@ public class ProgramWorkflow extends BaseOpenmrsMetadata implements java.io.Seri
 	}
 	
 	/**
-	 * Returns a List<{@link ProgramWorkflowState}> including all possible next
-	 * ProgramWorkflowStates, for the passed {@link PatientProgram} ordered by {@link ConceptName}.
+	 * Check whether it is allowable to transition from <code>fromState</code> to  <code>toState</code>.
 	 * 
 	 * @param fromState {@link ProgramWorkflowState} to check transition from
 	 * @param toState {@link ProgramWorkflowState} to check transition to
