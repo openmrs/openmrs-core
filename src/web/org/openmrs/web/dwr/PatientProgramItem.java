@@ -35,6 +35,14 @@ public class PatientProgramItem {
 	
 	private Date dateCompleted;
 	
+	private String creator;
+	
+	private Date dateCreated;
+	
+	private String changedBy;
+	
+	private Date dateChanged;
+	
 	private Map<String, Integer> workflows; // workflow name -> programWorkflowId
 	
 	public PatientProgramItem() {
@@ -45,6 +53,12 @@ public class PatientProgramItem {
 		patientId = p.getPatient().getPatientId();
 		dateEnrolled = p.getDateEnrolled();
 		dateCompleted = p.getDateCompleted();
+		creator = p.getCreator().getPersonName().getFullName();
+		dateCreated = p.getDateCreated();
+		if (p.getChangedBy() != null) {
+			changedBy = p.getChangedBy().getPersonName().getFullName();
+			dateChanged = p.getDateChanged();
+		}
 		name = p.getProgram().getConcept().getName(Context.getLocale(), false).getName();
 		workflows = new HashMap<String, Integer>();
 		for (ProgramWorkflow wf : p.getProgram().getWorkflows()) {
@@ -109,5 +123,60 @@ public class PatientProgramItem {
 	public String getDateCompletedAsYmd() {
 		return dateCompleted == null ? null : ymdDf.format(dateCompleted);
 	}
+    
+    /**
+     * @return the creator
+     */
+    public String getCreator() {
+    	return creator;
+    }
 	
+    /**
+     * @param creator the creator to set
+     */
+    public void setCreator(String creator) {
+    	this.creator = creator;
+    }
+
+	/**
+     * @return the dateCreated
+     */
+    public Date getDateCreated() {
+    	return dateCreated;
+    }
+	
+    /**
+     * @param dateCreated the dateCreated to set
+     */
+    public void setDateCreated(Date dateCreated) {
+    	this.dateCreated = dateCreated;
+    }
+	
+    /**
+     * @return the changedBy
+     */
+    public String getChangedBy() {
+    	return changedBy;
+    }
+	
+    /**
+     * @param changedBy the changedBy to set
+     */
+    public void setChangedBy(String changedBy) {
+    	this.changedBy = changedBy;
+    }
+
+    /**
+     * @return the dateChanged
+     */
+    public Date getDateChanged() {
+    	return dateChanged;
+    }
+	
+    /**
+     * @param dateChanged the dateChanged to set
+     */
+    public void setDateChanged(Date dateChanged) {
+    	this.dateChanged = dateChanged;
+    }
 }

@@ -135,6 +135,16 @@
 							if (count == goUntil)
 								str += ' <a href="javascript:handleVoidLastState()" style="color: red">[x]</a>';
 							return str;
+						},
+						function(state) {
+							var str = '';
+							str += '<small>&nbsp;&nbsp;';
+							str += '<spring:message code="general.createdBy" javaScriptEscape="true" />&nbsp;';
+							str += state.creator;
+							str += '&nbsp;<spring:message code="general.onDate" javaScriptEscape="true" />&nbsp;';
+							str += getDateString(state.dateCreated);
+							str += '</small>';
+							return str;
 						}
 					], { escapeHtml:false });
 			});
@@ -147,6 +157,7 @@
 	
 	function showEditPatientProgramPopup(patientProgramId) {
 		hideLayer('editWorkflowPopup');
+		hideLayer('changedByTR');
 		currentProgramBeingEdited = patientProgramId;
 		$('programNameElement').innerHTML = '<spring:message code="general.loading" javaScriptEscape="true"/>';
 		$('enrollmentDateElement').value = '';
@@ -156,6 +167,14 @@
 				$('programNameElement').innerHTML = program.name;
 				$('enrollmentDateElement').value = formatDate(program.dateEnrolledAsYmd);
 				$('completionDateElement').value = formatDate(program.dateCompletedAsYmd);
+				$('createdByElement').innerHTML = program.creator;//program.creator is just a String object, not User class
+				$('dateCreatedElement').innerHTML = getDateString(program.dateCreated);
+				//show changedBy and date_changed only if changedBy is not empty
+				if(!isEmpty(program.changedBy)){
+					$('changedByElement').innerHTML = program.changedBy;//program.creator is just a String object, not User class
+					$('dateChangedElement').innerHTML = getDateString(program.dateChanged);
+					showLayer('changedByTR');
+				}
 			});
 	}
 </script>
@@ -168,11 +187,17 @@
 		</tr>
 		<tr>
 			<td><spring:message code="Program.dateEnrolled"/>:</td>
-			<td><input type="text" id="enrollmentDateElement" size="10" onClick="showCalendar(this)" />
+			<td><input type="text" id="enrollmentDateElement" size="10" onClick="showCalendar(this)" /></td>
 		</tr>
 		<tr>
 			<td><spring:message code="Program.dateCompleted"/>:</td>
-			<td><input type="text" id="completionDateElement" size="10" onClick="showCalendar(this)" />
+			<td><input type="text" id="completionDateElement" size="10" onClick="showCalendar(this)" /></td>
+		</tr>
+		<tr>
+			<td><spring:message code="general.createdBy" />:</td><td><span id="createdByElement"></span>&nbsp;<spring:message code="general.onDate" />&nbsp;<span id="dateCreatedElement"></span></td>
+		</tr>
+		<tr id="changedByTR" style="display:none;">
+			<td><spring:message code="general.changedBy" />:</td><td><span id="changedByElement"></span>&nbsp;<spring:message code="general.onDate" />&nbsp;<span id="dateChangedElement"></span></td>
 		</tr>
 	</table>
 	<table width="400">
@@ -228,10 +253,7 @@
 		<table width="100%" border="0">
 			<tr bgcolor="whitesmoke">
 				<td><spring:message code="Program.program"/></td>
-				<td><spring:message code="Program.dateEnrolled"/>
-				
-			
-				</td>
+				<td><spring:message code="Program.dateEnrolled"/></td>
 				<td><spring:message code="Program.dateCompleted"/></td>
 				<td><spring:message code="Program.state"/></td>
 			</tr>
