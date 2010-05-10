@@ -135,11 +135,11 @@ public class FieldGenTag extends TagSupport {
 					}
 					startVal = (startVal == null) ? "" : startVal.toLowerCase();
 					if ("false".equals(startVal) || "0".equals(startVal))
-						startVal = "f";
+						startVal = "false";
 					if ("true".equals(startVal) || "1".equals(startVal))
-						startVal = "t";
+						startVal = "true";
 					if ("unknown".equals(startVal) || "?".equals(startVal))
-						startVal = "u";
+						startVal = "unknown";
 					
 					String forceInputType = this.parameterMap != null ? (String) this.parameterMap.get("forceInputType")
 					        : null;
@@ -153,7 +153,7 @@ public class FieldGenTag extends TagSupport {
 					
 					if ("checkbox".equals(forceInputType)) {
 						output = "<input type=\"checkbox\" name=\"" + formFieldName + "\" id=\"" + formFieldName
-						        + "\" value=\"t\"" + ("t".equals(startVal) ? " checked" : "") + "/> ";
+						        + "\" value=\"true\"" + ("true".equals(startVal) ? " checked" : "") + "/> ";
 					} else {
 						if (isNullable == null)
 							isNullable = "";
@@ -163,27 +163,27 @@ public class FieldGenTag extends TagSupport {
 							falseLabel = Context.getMessageSourceService().getMessage("general.no");
 						if (unknownLabel == null)
 							unknownLabel = Context.getMessageSourceService().getMessage("general.unknown");
-
+						
 						if ("false".equalsIgnoreCase(isNullable) || "f".equalsIgnoreCase(isNullable)
 						        || "0".equals(isNullable)) {
 							output = "<input type=\"radio\" name=\"" + formFieldName + "\" id=\"" + formFieldName
-							        + "_f\" value=\"f\"" + ("f".equals(startVal) ? " checked" : "") + "/> ";
+							        + "_f\" value=\"false\"" + ("false".equals(startVal) ? " checked" : "") + "/> ";
 							output += falseLabel;
 							output += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 							output += "<input type=\"radio\" name=\"" + formFieldName + "\" id=\"" + formFieldName
-							        + "_t\" value=\"t\"" + ("t".equals(startVal) ? " checked" : "") + "/> ";
+							        + "_t\" value=\"true\"" + ("true".equals(startVal) ? " checked" : "") + "/> ";
 							output += trueLabel;
 						} else {
 							output = "<input type=\"radio\" name=\"" + formFieldName + "\" id=\"" + formFieldName
-							        + "_f\" value=\"f\"" + ("f".equals(startVal) ? " checked" : "") + "/> ";
+							        + "_f\" value=\"false\"" + ("false".equals(startVal) ? " checked" : "") + "/> ";
 							output += falseLabel;
 							output += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 							output += "<input type=\"radio\" name=\"" + formFieldName + "\" id=\"" + formFieldName
-							        + "_t\" value=\"t\"" + ("t".equals(startVal) ? " checked" : "") + "/> ";
+							        + "_t\" value=\"true\"" + ("true".equals(startVal) ? " checked" : "") + "/> ";
 							output += trueLabel;
 							output += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 							output += "<input type=\"radio\" name=\"" + formFieldName + "\" id=\"" + formFieldName
-							        + "_u\" value=\"u\"" + ("u".equals(startVal) ? " checked" : "") + "/> ";
+							        + "_u\" value=\"unknown\"" + ("unknown".equals(startVal) ? " checked" : "") + "/> ";
 							output += unknownLabel;
 						}
 					}

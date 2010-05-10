@@ -410,7 +410,7 @@
 							type="${attrType.format}" 
 							formFieldName="${attrType.personAttributeTypeId}" 
 							val="${patient.attributeMap[attrType.name].hydratedObject}" 
-							parameters="optionHeader=[blank]|showAnswers=${attrType.foreignKey}" />
+							parameters="optionHeader=[blank]|showAnswers=${attrType.foreignKey}|isNullable=false" /> <%-- isNullable=false so booleans don't have 'unknown' radiobox --%>
 					</c:when>
 					<c:otherwise>
 						${patient.attributeMap[attrType.name].hydratedObject}
