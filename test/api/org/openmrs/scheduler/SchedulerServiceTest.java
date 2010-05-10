@@ -84,27 +84,6 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * Shorter running class used to demonstrate tasks running concurrently
-	 */
-	static class SampleTassk2 extends AbstractTask {
-		
-		public void execute() {
-			synchronized (outputForConcurrentTasks) {
-				outputForConcurrentTasks.add("START-2");
-			}
-			try {
-				Thread.sleep(1000);
-			}
-			catch (InterruptedException e) {
-				log.error("Error generated", e);
-			}
-			synchronized (outputForConcurrentTasks) {
-				outputForConcurrentTasks.add("END-2");
-			}
-		}
-	}
-	
-	/**
 	 * Demonstrates concurrent running for tasks
 	 * 
 	 * <pre>
@@ -137,6 +116,7 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 		t2.setProperty("delay", "100"); // must be shorter than t1's delay
 		
 		schedulerService.scheduleTask(t1);
+		Thread.sleep(50); // so t2 doesn't start before t1 due to random millisecond offsets
 		schedulerService.scheduleTask(t2);
 		Thread.sleep(600); // must be longer than t2's delay
 		assertEquals(Arrays.asList("TASK-1", "TASK-2", "TASK-2", "TASK-1"), outputForConcurrentTasks);
