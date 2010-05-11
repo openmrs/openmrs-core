@@ -28,7 +28,7 @@ import org.springframework.test.annotation.DirtiesContext;
  * and during normal file usage.
  */
 @SkipBaseSetup
-@StartModule( { "org/openmrs/module/include/logic-0.2.omod", "org/openmrs/module/include/dssmodule-1.44.omod", "org/openmrs/module/include/atd-0.51.omod" })
+@StartModule( { "org/openmrs/module/include/dssmodule-1.44.omod", "org/openmrs/module/include/atd-0.51.omod" })
 public class ModuleInteroperabilityTest extends BaseContextSensitiveTest {
 	
 	/**
