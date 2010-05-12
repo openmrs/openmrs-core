@@ -43,7 +43,6 @@ public class ShortPatientValidator implements Validator {
 	 */
 	@SuppressWarnings("unchecked")
 	public boolean supports(Class c) {
-		log.error(this.getClass().getName() + ".supports: " + c.getName());
 		return ShortPatientModel.class.isAssignableFrom(c);
 	}
 	
