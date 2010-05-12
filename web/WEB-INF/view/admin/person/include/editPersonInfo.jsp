@@ -109,7 +109,7 @@
 					</spring:bind>
 				</c:when>
 				<c:otherwise>
-					<spring:bind path="attributeMap">${status.value[attrType.name].hydratedObject}</spring:bind>
+					<spring:bind path="attributeMap">${status.value[attrType.name]}</spring:bind>
 				</c:otherwise>
 			</c:choose>
 		</td>
