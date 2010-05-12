@@ -3229,8 +3229,8 @@
 				<indexExists indexName="encounter_datetime_idx"/>
 			</not>
 		</preConditions>
-		<comment>Add an index to the encounter.encounter_datetime column for statistical
-			anaylsis.</comment>
+		<comment>Add an index to the encounter.encounter_datetime column to speed up statistical
+			analysis.</comment>
 		<createIndex tableName="encounter" indexName="encounter_datetime_idx">
 			<column name="encounter_datetime"/>
 		</createIndex>
@@ -3242,7 +3242,7 @@
 				<indexExists indexName="obs_datetime_idx"/>
 			</not>
 		</preConditions>
-		<comment>Add an index to the obs.obs_datetime column for statistical anaylsis.</comment>
+		<comment>Add an index to the obs.obs_datetime column to speed up statistical analysis.</comment>
 		<createIndex tableName="obs" indexName="obs_datetime_idx">
 			<column name="obs_datetime"/>
 		</createIndex>
