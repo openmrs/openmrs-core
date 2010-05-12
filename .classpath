@@ -51,7 +51,8 @@
 	<classpathentry kind="lib" path="metadata/model"/>
 	<classpathentry kind="lib" path="lib/jfreechart/jcommon-1.0.15.jar"/>
 	<classpathentry kind="lib" path="lib/jfreechart/jfreechart-1.0.12.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="lib" path="lib/junit/junit-4.8.1.jar"/>
+	<classpathentry kind="lib" path="lib/junit/junit-dep-4.8.1.jar"/>
 	<classpathentry kind="lib" path="lib/velocity/velocity-1.6-beta1.jar" sourcepath="/openmrs-source/velocity-1.6-beta1.zip"/>
 	<classpathentry kind="lib" path="lib/commons-lang/commons-lang-2.4.jar"/>
 	<classpathentry kind="lib" path="lib/benerator/databene-benerator-0.5.5.jar"/>
