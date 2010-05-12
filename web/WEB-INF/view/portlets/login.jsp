@@ -29,7 +29,7 @@
 	</table>
 	<br/>
 	
-	<c:if test="${param.noredirect}">
+	<c:if test="${not param.noredirect}">
 		<c:choose>
 			<c:when test="${not empty model.redirect}">
 				<input type="hidden" name="redirect" value="${model.redirect}" />

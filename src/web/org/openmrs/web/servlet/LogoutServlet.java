@@ -44,7 +44,7 @@ public class LogoutServlet extends HttpServlet {
 		
 		Context.logout();
 		
-		response.sendRedirect(request.getContextPath() + "?noredirect=true");
+		response.sendRedirect(request.getContextPath() + "/index.htm?noredirect=true");
 		
 		// clears attributes and makes sure that no one can access this session
 		httpSession.invalidate();
