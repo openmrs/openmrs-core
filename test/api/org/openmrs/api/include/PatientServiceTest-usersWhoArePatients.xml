@@ -18,12 +18,12 @@
   <location location_id="1" name="Test Location" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="68c33387-944b-42cf-94f2-a1a7c4600317"/>
   <patient patient_id="2" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
   <patient patient_id="3" creator="2" date_created="2005-01-01 00:00:00.0" voided="false"/>
-  <patient_identifier patient_identifier_id="1" patient_id="2" identifier="1234" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="0b57e2c0-7b5d-4c5a-a639-f263bd9489b0"/>
-  <patient_identifier patient_identifier_id="2" patient_id="3" identifier="12345" identifier_type="1" preferred="1" location_id="1" creator="2" date_created="2005-01-01 00:00:00.0" voided="false" uuid="d2e991fb-8461-4ed3-9153-4f6ae42a68a0"/>
+  <patient_identifier patient_identifier_id="1" patient_id="2" identifier="1234" identifier_type="2" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="0b57e2c0-7b5d-4c5a-a639-f263bd9489b0"/>
+  <patient_identifier patient_identifier_id="2" patient_id="3" identifier="12345" identifier_type="2" preferred="1" location_id="1" creator="2" date_created="2005-01-01 00:00:00.0" voided="false" uuid="d2e991fb-8461-4ed3-9153-4f6ae42a68a0"/>
   <patient_identifier_type patient_identifier_type_id="1" name="Test Identifier Type" description="Test description" check_digit="false" creator="1" date_created="2005-01-01 00:00:00.0" required="false" retired="false" uuid="35516873-7c45-44d0-86a5-35f0129ec190"/>
   <person person_id="2" gender="M" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="fa6995c5-2774-4231-ac40-b4aa2b9ca22e"/>
   <person person_id="3" gender="M" dead="false" creator="2" date_created="2005-01-01 00:00:00.0" voided="false" uuid="796ac6f7-be83-4bfc-bf96-08ed61a98236"/>
   <person_name person_name_id="2" preferred="true" person_id="2" given_name="John" middle_name=" " family_name="Doe" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="c12b5aa7-4a92-448f-944a-8f412dcac848"/>
   <person_name person_name_id="3" preferred="true" person_id="3" given_name="John" middle_name=" " family_name="Doe" creator="2" date_created="2005-01-01 00:00:00.0" voided="false" uuid="bd2130f4-66b4-460c-899e-4e907785836b"/>
-  <users user_id="2" system_id="2ndusersystemid" username="2nduser" creator="1" date_created="2005-01-01 00:00:00.0" voided="false"/>
+  <users user_id="2" person_id="2" system_id="2ndusersystemid" username="2nduser" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="eeee30f4-66b4-460c-89ae-4e9077858333"/>
 </dataset>
