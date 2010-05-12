@@ -66,8 +66,8 @@ public interface EncounterDAO {
 	 *      java.util.Collection, java.util.Collection, boolean)
 	 */
 	public List<Encounter> getEncounters(Patient patient, Location location, Date fromDate, Date toDate,
-	                                     Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes,
-	                                     Collection<User> providers, boolean includeVoided);
+		Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes,
+		Collection<User> providers, boolean includeVoided);
 	
 	/**
 	 * Save an Encounter Type
@@ -132,19 +132,26 @@ public interface EncounterDAO {
 	public Date getSavedEncounterDatetime(Encounter encounter);
 	
 	/**
-	 * Auto generated method comment
+	 * Find {@link Encounter} matching a uuid
 	 * 
 	 * @param uuid
-	 * @return
+	 * @return {@link Encounter}
 	 */
 	public Encounter getEncounterByUuid(String uuid);
 	
 	/**
-	 * Auto generated method comment
+	 * Find {@link EncounterType} matching a uuid
 	 * 
 	 * @param uuid
-	 * @return
+	 * @return {@link EncounterType}
 	 */
 	public EncounterType getEncounterTypeByUuid(String uuid);
 	
+	/**
+	 * Get a list of {@link Encounter} by Patient name or identifier
+	 *
+	 * @param query patient name or identifier
+	 * @return list of {@link Encounter}
+	 */
+	List<Encounter> getEncountersByPatient(String query);
 }
