@@ -43,7 +43,7 @@
 <div id="findEncounter">
 	<b class="boxHeader"><spring:message code="Encounter.find"/></b>
 	<div class="box">
-		<div dojoType="EncounterSearch" widgetId="eSearch" showIncludeVoided="true" <request:existsParameter name="autoJump">allowAutoJump='true'</request:existsParameter> encounterId='<request:parameter name="encounterId" />'></div>
+		<div dojoType="EncounterSearch" widgetId="eSearch" showIncludeVoided="true" searchLabel='<spring:message code="Encounter.search"/>' <request:existsParameter name="autoJump">allowAutoJump='true'</request:existsParameter> encounterId='<request:parameter name="encounterId" />'></div>
 	</div>
 </div>
 

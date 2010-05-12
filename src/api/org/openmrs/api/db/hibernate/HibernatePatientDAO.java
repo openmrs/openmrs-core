@@ -17,37 +17,26 @@ import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
-import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
-import org.hibernate.Hibernate;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
-import org.hibernate.criterion.LogicalExpression;
-import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Restrictions;
-import org.hibernate.criterion.SimpleExpression;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
-import org.openmrs.api.AdministrationService;
-import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.PatientDAO;
-import org.openmrs.util.OpenmrsConstants;
-import org.springframework.util.StringUtils;
 
 /**
  * Hibernate specific database methods for the PatientService
@@ -86,8 +75,8 @@ public class HibernatePatientDAO implements PatientDAO {
 	 */
 	public Patient savePatient(Patient patient) throws DAOException {
 		if (patient.getPatientId() == null) {
-			// if we're saving a new patient, just do the normal thing 
-			// and rows in the person and patient table will be created by 
+			// if we're saving a new patient, just do the normal thing
+			// and rows in the person and patient table will be created by
 			// hibernate
 			sessionFactory.getCurrentSession().saveOrUpdate(patient);
 			return patient;
@@ -102,8 +91,8 @@ public class HibernatePatientDAO implements PatientDAO {
 			// things up
 			insertPatientStubIfNeeded(patient);
 			
-			// TODO: A merge is necessary here because hibernate thinks that Patients and 
-			// 		Persons are the same objects.  So it sees a Person object in the 
+			// TODO: A merge is necessary here because hibernate thinks that Patients and
+			// 		Persons are the same objects.  So it sees a Person object in the
 			//      cache and claims it is a duplicate of this Patient object.
 			//patient = (Patient) sessionFactory.getCurrentSession().merge(patient);
 			sessionFactory.getCurrentSession().saveOrUpdate(patient);
@@ -126,7 +115,7 @@ public class HibernatePatientDAO implements PatientDAO {
 		PreparedStatement ps = null;
 		
 		if (patient.getPatientId() != null) {
-			// check if there is a row with a matching patient.patient_id 
+			// check if there is a row with a matching patient.patient_id
 			try {
 				ps = connection.prepareStatement("SELECT * FROM patient WHERE patient_id = ?");
 				ps.setInt(1, patient.getPatientId());
@@ -154,7 +143,7 @@ public class HibernatePatientDAO implements PatientDAO {
 		if (stubInsertNeeded) {
 			try {
 				ps = connection
-				        .prepareStatement("INSERT INTO patient (patient_id, creator, voided, date_created) VALUES (?, ?, 0, ?)");
+				.prepareStatement("INSERT INTO patient (patient_id, creator, voided, date_created) VALUES (?, ?, 0, ?)");
 				
 				ps.setInt(1, patient.getPatientId());
 				ps.setInt(2, patient.getCreator().getUserId());
@@ -187,176 +176,15 @@ public class HibernatePatientDAO implements PatientDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Patient> getPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,
-	                                 boolean matchIdentifierExactly) throws DAOException {
-		
-		name = HibernateUtil.escapeSqlWildcards(name, sessionFactory);
-		identifier = HibernateUtil.escapeSqlWildcards(identifier, sessionFactory);
-		
+		boolean matchIdentifierExactly) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Patient.class);
-		
-		criteria.createAlias("names", "name");
-		criteria.addOrder(Order.asc("name.givenName"));
-		criteria.addOrder(Order.asc("name.middleName"));
-		criteria.addOrder(Order.asc("name.familyName"));
-		
-		// get only distinct patients 
-		criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-		
-		if (name != null) {
-			// TODO simple name search to start testing, will need to make "real"
-			// name search
-			// i.e. split on whitespace, guess at first/last name, etc
-			// TODO return the matched name instead of the primary name
-			// possible solution: "select new" org.openmrs.PatientListItem and
-			// return a list of those
-			
-			name = name.replaceAll("  ", " ");
-			name = name.replace(", ", " ");
-			String[] names = name.split(" ");
-			
-			// TODO add junit test for searching on voided patient names
-			
-			String nameSoFar = names[0];
-			for (int i = 0; i < names.length; i++) {
-				String n = names[i];
-				if (n != null && n.length() > 0) {
-					LogicalExpression oneNameSearch = getNameSearch(n);
-					LogicalExpression searchExpression = oneNameSearch;
-					if (i > 0) {
-						nameSoFar += " " + n;
-						LogicalExpression fullNameSearch = getNameSearch(nameSoFar);
-						searchExpression = Expression.or(oneNameSearch, fullNameSearch);
-					}
-					criteria.add(searchExpression);
-				}
-			}
-			
-		}
-		
-		// do the restriction on either identifier string or types
-		if (identifier != null || identifierTypes.size() > 0) {
-			
-			// TODO add junit test for searching on voided identifiers
-			
-			// add the join on the identifiers table
-			criteria.createAlias("identifiers", "ids");
-			criteria.add(Expression.eq("ids.voided", false));
-			
-			// do the identifier restriction
-			if (identifier != null) {
-				// if the user wants an exact search, match on that.
-				if (matchIdentifierExactly) {
-					criteria.add(Expression.eq("ids.identifier", identifier));
-				} else {
-					AdministrationService adminService = Context.getAdministrationService();
-					String regex = adminService.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_REGEX,
-					    "");
-					String patternSearch = adminService.getGlobalProperty(
-					    OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SEARCH_PATTERN, "");
-					
-					// remove padding from identifier search string
-					if (Pattern.matches("^\\^.{1}\\*.*$", regex)) {
-						String padding = regex.substring(regex.indexOf("^") + 1, regex.indexOf("*"));
-						Pattern pattern = Pattern.compile("^" + padding + "+");
-						identifier = pattern.matcher(identifier).replaceFirst("");
-					}
-					
-					if (StringUtils.hasLength(patternSearch)) {
-						// split the pattern before replacing in case the user searched on a comma
-						List<String> searchPatterns = new ArrayList<String>();
-						// replace the @SEARCH@, etc in all elements
-						for (String pattern : patternSearch.split(","))
-							searchPatterns.add(replaceSearchString(pattern, identifier));
-						criteria.add(Expression.in("ids.identifier", searchPatterns));
-					}
-					// if the regex is empty, default to a simple "like" search or if 
-					// we're in hsql world, also only do the simple like search (because
-					// hsql doesn't know how to deal with 'regexp'
-					else if (regex.equals("") || HibernateUtil.isHSQLDialect(sessionFactory)) {
-						String prefix = adminService.getGlobalProperty(
-						    OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_PREFIX, "");
-						String suffix = adminService.getGlobalProperty(
-						    OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SUFFIX, "");
-						StringBuffer likeString = new StringBuffer(prefix).append(identifier).append(suffix);
-						criteria.add(Expression.like("ids.identifier", likeString.toString()));
-					}
-					// if the regex is present, search on that
-					else {
-						regex = replaceSearchString(regex, identifier);
-						criteria.add(Restrictions.sqlRestriction("identifier regexp ?", regex, Hibernate.STRING));
-					}
-				}
-			}
-			
-			// TODO add a junit test for patientIdentifierType restrictions
-			
-			// do the type restriction
-			if (identifierTypes.size() > 0) {
-				criteria.add(Expression.in("ids.identifierType", identifierTypes));
-			}
-		}
-		
-		// TODO add junit test for searching on voided patients
-		
-		// make sure the patient object isn't voided
-		criteria.add(Expression.eq("voided", false));
-		
+		criteria = new PatientSearchCriteria(sessionFactory, criteria).prepareCriteria(name, identifier, identifierTypes,
+			matchIdentifierExactly);
 		// restricting the search to the max search results value
 		criteria.setFirstResult(0);
 		criteria.setMaxResults(HibernatePersonDAO.getMaximumSearchResults());
 		
 		return criteria.list();
-	}
-	
-	/**
-	 * Puts @SEARCH@, @SEARCH-1@, and @CHECKDIGIT@ into the search string
-	 * 
-	 * @param regex the admin-defined search string containing the @..@'s to be replaced
-	 * @param identifierSearched the user entered search string
-	 * @return
-	 */
-	private String replaceSearchString(String regex, String identifierSearched) {
-		String returnString = regex.replaceAll("@SEARCH@", identifierSearched);
-		if (identifierSearched.length() > 1) {
-			// for 2 or more character searches, we allow regex to use last character as check digit 
-			returnString = returnString.replaceAll("@SEARCH-1@", identifierSearched.substring(0,
-			    identifierSearched.length() - 1));
-			returnString = returnString.replaceAll("@CHECKDIGIT@", identifierSearched
-			        .substring(identifierSearched.length() - 1));
-		} else {
-			returnString = returnString.replaceAll("@SEARCH-1@", "");
-			returnString = returnString.replaceAll("@CHECKDIGIT@", "");
-		}
-		return returnString;
-	}
-	
-	/**
-	 * Returns a criteria object comparing the given string to each part of the name. <br/>
-	 * <br/>
-	 * This criteria is essentially:
-	 * 
-	 * <pre>
-	 * ... where voided = false &amp;&amp; name in (familyName2, familyName, middleName, givenName)
-	 * </pre>
-	 * 
-	 * @param name
-	 * @return
-	 */
-	private LogicalExpression getNameSearch(String name) {
-		
-		MatchMode mode = MatchMode.START;
-		String matchModeConstant = OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE;
-		String modeGp = Context.getAdministrationService().getGlobalProperty(matchModeConstant);
-		if (OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_ANYWHERE.equalsIgnoreCase(modeGp)) {
-			mode = MatchMode.ANYWHERE;
-		}
-		SimpleExpression givenName = Expression.like("name.givenName", name, mode);
-		SimpleExpression middleName = Expression.like("name.middleName", name, mode);
-		SimpleExpression familyName = Expression.like("name.familyName", name, mode);
-		SimpleExpression familyName2 = Expression.like("name.familyName2", name, mode);
-		
-		return Expression.and(Expression.eq("name.voided", false), Expression.or(familyName2, Expression.or(familyName,
-		    Expression.or(middleName, givenName))));
 	}
 	
 	/**
@@ -388,9 +216,9 @@ public class HibernatePatientDAO implements PatientDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<PatientIdentifier> getPatientIdentifiers(String identifier,
-	                                                     List<PatientIdentifierType> patientIdentifierTypes,
-	                                                     List<Location> locations, List<Patient> patients,
-	                                                     Boolean isPreferred) throws DAOException {
+		List<PatientIdentifierType> patientIdentifierTypes,
+		List<Location> locations, List<Patient> patients,
+		Boolean isPreferred) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(PatientIdentifier.class);
 		
 		// join with the patient table to prevent patient identifiers from patients
@@ -441,7 +269,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	 */
 	public PatientIdentifierType getPatientIdentifierType(Integer patientIdentifierTypeId) throws DAOException {
 		return (PatientIdentifierType) sessionFactory.getCurrentSession().get(PatientIdentifierType.class,
-		    patientIdentifierTypeId);
+			patientIdentifierTypeId);
 	}
 	
 	/**
@@ -467,7 +295,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<PatientIdentifierType> getPatientIdentifierTypes(String name, String format, Boolean required,
-	                                                             Boolean hasCheckDigit) throws DAOException {
+		Boolean hasCheckDigit) throws DAOException {
 		// TODO test this method
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(PatientIdentifierType.class);
@@ -610,8 +438,8 @@ public class HibernatePatientDAO implements PatientDAO {
 		 * Query query = session.createQuery(select);
 		 * 
 		 * patients = query.list(); }
-		*/
-
+		 */
+		
 		return patients;
 	}
 	
@@ -622,14 +450,14 @@ public class HibernatePatientDAO implements PatientDAO {
 		Patient p = null;
 		
 		p = (Patient) sessionFactory.getCurrentSession().createQuery("from Patient p where p.uuid = :uuid").setString(
-		    "uuid", uuid).uniqueResult();
+			"uuid", uuid).uniqueResult();
 		
 		return p;
 	}
 	
 	public PatientIdentifier getPatientIdentifierByUuid(String uuid) {
 		return (PatientIdentifier) sessionFactory.getCurrentSession().createQuery(
-		    "from PatientIdentifier p where p.uuid = :uuid").setString("uuid", uuid).uniqueResult();
+		"from PatientIdentifier p where p.uuid = :uuid").setString("uuid", uuid).uniqueResult();
 	}
 	
 	/**
@@ -637,7 +465,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	 */
 	public PatientIdentifierType getPatientIdentifierTypeByUuid(String uuid) {
 		return (PatientIdentifierType) sessionFactory.getCurrentSession().createQuery(
-		    "from PatientIdentifierType pit where pit.uuid = :uuid").setString("uuid", uuid).uniqueResult();
+		"from PatientIdentifierType pit where pit.uuid = :uuid").setString("uuid", uuid).uniqueResult();
 	}
 	
 	/**
@@ -648,11 +476,11 @@ public class HibernatePatientDAO implements PatientDAO {
 	 */
 	public boolean isIdentifierInUseByAnotherPatient(PatientIdentifier patientIdentifier) {
 		boolean checkPatient = patientIdentifier.getPatient() != null
-		        && patientIdentifier.getPatient().getPatientId() != null;
+		&& patientIdentifier.getPatient().getPatientId() != null;
 		
 		// switched this to an hql query so the hibernate cache can be considered as well as the database
 		String hql = "select count(*) from PatientIdentifier pi, Patient p where pi.patient.patientId = p.patient.patientId "
-		        + "and p.voided = false and pi.voided = false and pi.identifier = :identifier and pi.identifierType = :idType";
+			+ "and p.voided = false and pi.voided = false and pi.identifier = :identifier and pi.identifierType = :idType";
 		
 		if (checkPatient) {
 			hql += " and p.patientId != :ptId";
