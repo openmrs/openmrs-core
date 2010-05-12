@@ -19,7 +19,7 @@
 			</li>
 		</openmrs:hasPrivilege>
 	</c:if>
-	<openmrs:hasPrivilege privilege="Add Patients,Edit Patients,Delete Patients,View Patients">
+	<openmrs:hasPrivilege privilege="Edit Patients">
 		<li <c:if test='<%= request.getRequestURI().contains("patients/findDuplicatePatients") %>'>class="active"</c:if>>
 			<a href="${pageContext.request.contextPath}/admin/patients/findDuplicatePatients.htm">
 				<spring:message code="Patient.merge.find"/>

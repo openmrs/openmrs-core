@@ -2,7 +2,7 @@
 	<li class="first">
 		<a href="${pageContext.request.contextPath}/admin"><spring:message code="admin.title.short"/></a>
 	</li>
-	<openmrs:hasPrivilege privilege="Add Users,Edit Users,Delete Users,View Users">
+	<openmrs:hasPrivilege privilege="Edit Users">
 		<li <c:if test='<%= request.getRequestURI().contains("users/user") %>'>class="active"</c:if>>
 			<a href="${pageContext.request.contextPath}/admin/users/user.list">
 				<spring:message code="User.manage"/>
