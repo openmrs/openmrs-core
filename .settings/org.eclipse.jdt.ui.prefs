@@ -1,4 +1,4 @@
-#Thu May 13 11:15:09 EDT 2010
+#Sun May 16 13:19:50 EDT 2010
 eclipse.preferences.version=1
 editor_save_participant_org.eclipse.jdt.ui.postsavelistener.cleanup=true
 formatter_profile=_OpenMRS Formatter
@@ -29,7 +29,7 @@ sp_cleanup.make_local_variable_final=false
 sp_cleanup.make_parameters_final=false
 sp_cleanup.make_private_fields_final=true
 sp_cleanup.make_type_abstract_if_missing_method=false
-sp_cleanup.make_variable_declarations_final=true
+sp_cleanup.make_variable_declarations_final=false
 sp_cleanup.never_use_blocks=false
 sp_cleanup.never_use_parentheses_in_expressions=true
 sp_cleanup.on_save_use_additional_actions=true
