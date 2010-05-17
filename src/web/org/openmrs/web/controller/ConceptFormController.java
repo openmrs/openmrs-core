@@ -261,6 +261,8 @@ public class ConceptFormController extends SimpleFormController {
 		try {
 			Concept concept = cs.getConcept(Integer.valueOf(conceptId));
 			dataTypeReadOnly = cs.hasAnyObservation(concept);
+			if (concept != null && concept.getDatatype().isBoolean())
+				map.put("isBoolean", true);
 		}
 		catch (NumberFormatException ex) {
 			// nothing to do

@@ -109,7 +109,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		Assert.assertFalse(errors.hasFieldErrors("person"));
 		Assert.assertFalse(errors.hasFieldErrors("concept"));
 		Assert.assertFalse(errors.hasFieldErrors("obsDatetime"));
-		Assert.assertTrue(errors.hasFieldErrors("valueNumeric")); // Booleans translates to numeric at the moment
+		Assert.assertTrue(errors.hasFieldErrors("valueBoolean"));
 	}
 	
 	/**
@@ -243,7 +243,8 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		obs.setPerson(Context.getPersonService().getPerson(2));
 		obs.setConcept(Context.getConceptService().getConcept(19));
 		obs.setObsDatetime(new Date());
-		obs.setValueText("the limit of valueText is 50. So we are trying to test it with more than 50 characters and this is the test text	1");
+		obs
+		        .setValueText("the limit of valueText is 50. So we are trying to test it with more than 50 characters and this is the test text	1");
 		
 		Errors errors = new BindException(obs, "obs");
 		new ObsValidator().validate(obs, errors);

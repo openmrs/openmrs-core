@@ -89,9 +89,9 @@ public class ObsValidator implements Validator {
 			errors.rejectValue("concept", "error.null");
 		} else {
 			ConceptDatatype dt = c.getDatatype();
-			if (dt.isBoolean() && obs.getValueAsBoolean() == null) {
+			if (dt.isBoolean() && obs.getValueBoolean() == null) {
 				if (atRootNode)
-					errors.rejectValue("valueNumeric", "error.null");
+					errors.rejectValue("valueBoolean", "error.null");
 				else
 					errors.rejectValue("groupMembers", "Obs.error.inGroupMember");
 			} else if (dt.isCoded() && obs.getValueCoded() == null) {

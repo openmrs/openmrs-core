@@ -316,7 +316,7 @@ public class WebModuleUtil {
 					try {
 						if (mod.getModuleActivator() != null)// if extends BaseModuleActivator
 							mod.getModuleActivator().started();
-					}					
+					}
 					catch (Throwable t) {
 						log.warn("Unable to call module's Activator.started() method", t);
 					}

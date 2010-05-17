@@ -244,4 +244,28 @@ function removeParentElement(btn) {
 	btn.parentNode.parentNode.removeChild(btn.parentNode);
 }
 
+
+/**
+ * Calls the server via ajax to convert the concept datatype from boolean to coded
+ * @param confirmationMessage the confirmation message to display to the user
+ * @param conceptId the concept id of the concept to be converted
+ */
+function addAnswerToBooleanConcept(confirmationMessage, conceptId){
+	 
+	if (confirm(confirmationMessage)) {
+		DWRConceptService.convertBooleanConceptToCoded(conceptId, function(reply) {
+		    if(reply != null){
+		    	if(reply == "refresh"){
+		    		//refresh page to display the changes
+		    		location.reload();
+		    	}
+		    	else{
+		    		$j("#addAnswerError").html(reply);
+		    		$j("#addAnswerError").show();
+		    	}
+		    }
+		});	
+    }
+}
+
 document.onkeypress = hotkeys;

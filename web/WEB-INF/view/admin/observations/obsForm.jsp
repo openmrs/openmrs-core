@@ -393,12 +393,12 @@
 	</c:if>
 	<tr id="valueBooleanRow" class="obsValue">
 		<th><spring:message code="general.value"/></th>
-		<spring:bind path="valueNumeric">
+		<spring:bind path="valueBoolean">
 			<td>
 				<select name="${status.expression}" id="valueBooleanSelect">
-					<option value="" <c:if test="${status.value == null}">selected</c:if>></option>
-					<option value="1" <c:if test="${status.value != null && status.value != 0}">selected</c:if>><spring:message code="general.true"/></option>
-					<option value="0" <c:if test="${status.value == 0}">selected</c:if>><spring:message code="general.false"/></option>
+					<option value="" <c:if test="${status.value == null || status.value == ''}">selected</c:if>></option>
+					<option value="true" <c:if test="${status.value == 'true'}">selected</c:if>><spring:message code="general.true"/></option>
+					<option value="false" <c:if test="${status.value == 'false'}">selected</c:if>><spring:message code="general.false"/></option>
 				</select>
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</td>
