@@ -33,9 +33,16 @@ import org.openmrs.api.context.Context;
  */
 public class GlobalPropertyPortletController extends PortletController {
 	
+	/**
+	 * @see org.openmrs.web.controller.PortletController#populateModel(javax.servlet.http.HttpServletRequest,
+	 *      java.util.Map)
+	 * @should exclude multiple prefixes
+	 */
 	@Override
 	protected void populateModel(HttpServletRequest request, Map<String, Object> model) {
 		if (Context.isAuthenticated()) {
+			setupModelForModule(model);
+			
 			String propertyPrefix = (String) model.get("propertyPrefix");
 			if (propertyPrefix == null) {
 				propertyPrefix = "";
@@ -46,11 +53,25 @@ public class GlobalPropertyPortletController extends PortletController {
 				excludePrefix = null;
 				model.put("excludePrefix", excludePrefix);
 			}
+			
+			String[] prefixes = new String[0];
+			if (excludePrefix != null) {
+				prefixes = excludePrefix.split(";");
+			}
+			
 			List<GlobalProperty> properties = new ArrayList<GlobalProperty>();
 			for (GlobalProperty p : Context.getAdministrationService().getAllGlobalProperties()) {
-				if (p.getProperty().startsWith(propertyPrefix)
-				        && (excludePrefix == null || !p.getProperty().startsWith(excludePrefix))) {
-					properties.add(p);
+				if (p.getProperty().startsWith(propertyPrefix)) {
+					boolean found = false;
+					for (String prefix : prefixes) {
+						if (p.getProperty().startsWith(prefix)) {
+							found = true;
+							break;
+						}
+					}
+					if (!found) {
+						properties.add(p);
+					}
 				}
 			}
 			model.put("properties", properties);
@@ -59,6 +80,39 @@ public class GlobalPropertyPortletController extends PortletController {
 			if ("false".equals(model.get("showHeader")))
 				showHeader = false;
 			model.put("showHeader", showHeader);
+		}
+	}
+	
+	/**
+	 * Sets propertyPrefix to "${forModule}.", hidePrefix to "true" and excludePrefix to
+	 * excludePrefix + "${forModule}.started;${forModule}.mandatory" if forModule parameter is
+	 * present.
+	 * 
+	 * @should change model if forModule is present
+	 * @should not change mode if forModule is not present
+	 * @should not override excludePrefix but concatenate
+	 */
+	protected void setupModelForModule(Map<String, Object> model) {
+		if (Context.isAuthenticated()) {
+			String forModule = (String) model.get("forModule");
+			if ("".equals(forModule)) {
+				forModule = null;
+				model.put("forModule", forModule);
+			}
+			
+			if (forModule != null) {
+				String modulePrefix = forModule + ".";
+				model.put("propertyPrefix", modulePrefix);
+				model.put("hidePrefix", "true");
+				
+				String excludePrefix = (String) model.get("excludePrefix");
+				if (excludePrefix == null) {
+					excludePrefix = "";
+				} else {
+					excludePrefix += ";";
+				}
+				model.put("excludePrefix", excludePrefix + modulePrefix + "started;" + modulePrefix + "mandatory");
+			}
 		}
 	}
 	
