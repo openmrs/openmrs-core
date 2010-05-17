@@ -81,6 +81,8 @@
   <person person_id="2" gender="M" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="2178037d-f86b-4f12-8d8b-be3ebc220022"/>
   <person person_id="3" gender="F" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="4f8b3970-7407-429c-a903-9704785519ef"/>
   <person_name person_name_id="2" preferred="true" person_id="3" given_name="John3" middle_name=" " family_name="Doe" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="24865f9b-1943-45ae-81ba-7925dece6c84"/>
+  <relationship_type relationship_type_id="2" preferred="0" weight="0" creator="1" date_created="2007-05-04 00:00:00.0" retired="0" uuid="8d91a01c-c2cc-11de-8d13-0010c6dffd0f" a_is_to_b="Sibling" b_is_to_a="Sibling" description="Relationship between brother/sister, brother/brother, and sister/sister"/>
+  <relationship_type relationship_type_id="3" preferred="0" weight="0" creator="1" date_created="2007-05-04 00:00:00.0" retired="0" uuid="8d91a210-c2cc-11de-8d13-0010c6dffd0f" a_is_to_b="Parent" b_is_to_a="Child" description="Relationship from a mother/father to the child"/>
   
   <obs obs_id="1" concept_id="905" value_numeric="100" obs_datetime="2007-05-01 00:00:00.0" person_id="2" location_id="1" creator="1" date_created="2005-03-01 00:00:00.0" voided="0" uuid="92cf9a23-850a-408d-a31e-3b6fa286e0e5"/>
   

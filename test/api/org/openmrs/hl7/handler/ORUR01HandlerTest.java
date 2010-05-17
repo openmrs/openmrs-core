@@ -32,16 +32,23 @@ import org.openmrs.ConceptProposal;
 import org.openmrs.Encounter;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
+import org.openmrs.Person;
+import org.openmrs.Relationship;
+import org.openmrs.RelationshipType;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.ObsService;
+import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 
+import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.app.ApplicationException;
 import ca.uhn.hl7v2.app.MessageTypeRouter;
 import ca.uhn.hl7v2.model.Message;
+import ca.uhn.hl7v2.model.v25.message.ORU_R01;
+import ca.uhn.hl7v2.model.v25.segment.NK1;
 import ca.uhn.hl7v2.parser.GenericParser;
 
 /**
@@ -79,11 +86,22 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	public void processMessage_shouldCreateEncounterAndObsFromHl7Message() throws Exception {
 		ObsService obsService = Context.getObsService();
 		
-		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\rPID|||3^^^^||John3^Doe^||\rPV1||O|1^Unknown Location||||1^Super User (1-8)|||||||||||||||||||||||||||||||||||||20080212|||||||V\rORC|RE||||||||20080226102537|1^Super User\rOBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\rOBX|1|NM|5497^CD4, BY FACS^99DCT||450|||||||||20080206\rOBX|2|DT|5096^RETURN VISIT DATE^99DCT||20080229|||||||||20080212";
+		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\r"
+		        + "PID|||3^^^^||John3^Doe^||\r"
+		        + "PV1||O|1^Unknown Location||||1^Super User (1-8)|||||||||||||||||||||||||||||||||||||20080212|||||||V\r"
+		        + "ORC|RE||||||||20080226102537|1^Super User\r"
+		        + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r"
+		        + "OBX|1|NM|5497^CD4, BY FACS^99DCT||450|||||||||20080206\r"
+		        + "OBX|2|DT|5096^RETURN VISIT DATE^99DCT||20080229|||||||||20080212";
 		Message hl7message = parser.parse(hl7string);
 		router.processMessage(hl7message);
 		
 		Patient patient = new Patient(3);
+		
+		// check for an encounter
+		List<Encounter> encForPatient3 = Context.getEncounterService().getEncountersByPatient(patient);
+		assertNotNull(encForPatient3);
+		assertTrue("There should be an encounter created", encForPatient3.size() == 1);
 		
 		// check for any obs
 		List<Obs> obsForPatient3 = obsService.getObservationsByPerson(patient);
@@ -116,7 +134,16 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	public void processMessage_shouldCreateObsGroupForOBRs() throws Exception {
 		ObsService obsService = Context.getObsService();
 		
-		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226103553||ORU^R01|OD9PWqcD9g0NKn81rvSD|P|2.5|1||||||||66^AMRS.ELD.FORMID\rPID|||3^^^^||John^Doe^||\rPV1||O|1^Unknown Location||||1^Super User (1-8)|||||||||||||||||||||||||||||||||||||20080205|||||||V\rORC|RE||||||||20080226103428|1^Super User\rOBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\rOBX|1|DT|1592^MISSED RETURNED VISIT DATE^99DCT||20080201|||||||||20080205\rOBR|2|||1726^FOLLOW-UP ACTION^99DCT\rOBX|1|CWE|1558^PATIENT CONTACT METHOD^99DCT|1|1555^PHONE^99DCT|||||||||20080205\rOBX|2|NM|1553^NUMBER OF ATTEMPTS^99DCT|1|1|||||||||20080205\rOBX|3|NM|1554^SUCCESSFUL^99DCT|1|1|||||||||20080205";
+		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226103553||ORU^R01|OD9PWqcD9g0NKn81rvSD|P|2.5|1||||||||66^AMRS.ELD.FORMID\r"
+		        + "PID|||3^^^^||John^Doe^||\r"
+		        + "PV1||O|1^Unknown Location||||1^Super User (1-8)|||||||||||||||||||||||||||||||||||||20080205|||||||V\r"
+		        + "ORC|RE||||||||20080226103428|1^Super User\r"
+		        + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r"
+		        + "OBX|1|DT|1592^MISSED RETURNED VISIT DATE^99DCT||20080201|||||||||20080205\r"
+		        + "OBR|2|||1726^FOLLOW-UP ACTION^99DCT\r"
+		        + "OBX|1|CWE|1558^PATIENT CONTACT METHOD^99DCT|1|1555^PHONE^99DCT|||||||||20080205\r"
+		        + "OBX|2|NM|1553^NUMBER OF ATTEMPTS^99DCT|1|1|||||||||20080205\r"
+		        + "OBX|3|NM|1554^SUCCESSFUL^99DCT|1|1|||||||||20080205";
 		Message hl7message = parser.parse(hl7string);
 		router.processMessage(hl7message);
 		
@@ -195,7 +222,12 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		// to append to
 		assertNotNull(Context.getEncounterService().getEncounter(3));
 		
-		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080902151831||ORU^R01|yow3LEP6bycnLfoPyI31|P|2.5|1||||||||3^AMRS.ELD.FORMID\rPID|||7^^^^||Indakasi^Testarius^Ambote||\rPV1||O|1||||1^Super User (1-8)||||||||||||3|||||||||||||||||||||||||20080831|||||||V\rORC|RE||||||||20080902150000|1^Super User\rOBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\rOBX|1|NM|10^CD4 COUNT^99DCT||250|||||||||20080831";
+		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080902151831||ORU^R01|yow3LEP6bycnLfoPyI31|P|2.5|1||||||||3^AMRS.ELD.FORMID\r"
+		        + "PID|||7^^^^||Indakasi^Testarius^Ambote||\r"
+		        + "PV1||O|1||||1^Super User (1-8)||||||||||||3|||||||||||||||||||||||||20080831|||||||V\r"
+		        + "ORC|RE||||||||20080902150000|1^Super User\r"
+		        + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r"
+		        + "OBX|1|NM|10^CD4 COUNT^99DCT||250|||||||||20080831";
 		Message hl7message = parser.parse(hl7string);
 		router.processMessage(hl7message);
 		
@@ -223,7 +255,14 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		List<ConceptProposal> proposals = Context.getConceptService().getAllConceptProposals(false);
 		Assert.assertEquals(0, proposals.size());
 		
-		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080924022306||ORU^R01|Z185fTD0YozQ5kvQZD7i|P|2.5|1||||||||3^AMRS.ELD.FORMID\rPID|||7^^^^||Joe^S^Mith||\rPV1||O|1^Unknown Module 2||||1^Joe (1-1)|||||||||||||||||||||||||||||||||||||20080212|||||||V\rORC|RE||||||||20080219085345|1^Joe\rOBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\rOBX|18|DT|5096^RETURN VISIT DATE^99DCT||20080506|||||||||20080212\rOBR|19|||5096^PROBLEM LIST^99DCT\rOBX|1|CWE|5096^PROBLEM ADDED^99DCT||PROPOSED^PELVIC MASS^99DCT|||||||||20080212";
+		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080924022306||ORU^R01|Z185fTD0YozQ5kvQZD7i|P|2.5|1||||||||3^AMRS.ELD.FORMID\r"
+		        + "PID|||7^^^^||Joe^S^Mith||\r"
+		        + "PV1||O|1^Unknown Module 2||||1^Joe (1-1)|||||||||||||||||||||||||||||||||||||20080212|||||||V\r"
+		        + "ORC|RE||||||||20080219085345|1^Joe\r"
+		        + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r"
+		        + "OBX|18|DT|5096^RETURN VISIT DATE^99DCT||20080506|||||||||20080212\r"
+		        + "OBR|19|||5096^PROBLEM LIST^99DCT\r"
+		        + "OBX|1|CWE|5096^PROBLEM ADDED^99DCT||PROPOSED^PELVIC MASS^99DCT|||||||||20080212";
 		Message hl7message = parser.parse(hl7string);
 		router.processMessage(hl7message);
 		
@@ -245,7 +284,16 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		List<ConceptProposal> proposals = Context.getConceptService().getAllConceptProposals(false);
 		Assert.assertEquals(0, proposals.size());
 		
-		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20081006115934||ORU^R01|a1NZBpKqu54QyrWBEUKf|P|2.5|1||||||||3^AMRS.ELD.FORMID\rPID|||7^^^^~asdf^^^^||Joe^ ^Smith||\rPV1||O|1^Bishop Muge||||1^asdf asdf (5-9)|||||||||||||||||||||||||||||||||||||20081003|||||||V\rORC|RE||||||||20081006115645|1^Super User\rOBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\rOBX|1|CWE|5096^PAY CATEGORY^99DCT||5096^PILOT^99DCT|||||||||20081003\rOBX|2|DT|5096^RETURN VISIT DATE^99DCT||20081004|||||||||20081003\rOBR|3|||5096^PROBLEM LIST^99DCT\rOBX|1|CWE|5018^PROBLEM ADDED^99DCT||5096^HUMAN IMMUNODEFICIENCY VIRUS^99DCT|||||||||20081003\rOBX|2|CWE|5089^PROBLEM ADDED^99DCT||PROPOSED^ASDFASDFASDF^99DCT|||||||||20081003";
+		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20081006115934||ORU^R01|a1NZBpKqu54QyrWBEUKf|P|2.5|1||||||||3^AMRS.ELD.FORMID\r"
+		        + "PID|||7^^^^~asdf^^^^||Joe^ ^Smith||\r"
+		        + "PV1||O|1^Bishop Muge||||1^asdf asdf (5-9)|||||||||||||||||||||||||||||||||||||20081003|||||||V\r"
+		        + "ORC|RE||||||||20081006115645|1^Super User\r"
+		        + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r"
+		        + "OBX|1|CWE|5096^PAY CATEGORY^99DCT||5096^PILOT^99DCT|||||||||20081003\r"
+		        + "OBX|2|DT|5096^RETURN VISIT DATE^99DCT||20081004|||||||||20081003\r"
+		        + "OBR|3|||5096^PROBLEM LIST^99DCT\r"
+		        + "OBX|1|CWE|5018^PROBLEM ADDED^99DCT||5096^HUMAN IMMUNODEFICIENCY VIRUS^99DCT|||||||||20081003\r"
+		        + "OBX|2|CWE|5089^PROBLEM ADDED^99DCT||PROPOSED^ASDFASDFASDF^99DCT|||||||||20081003";
 		Message hl7message = parser.parse(hl7string);
 		router.processMessage(hl7message);
 		
@@ -267,7 +315,13 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		ConceptService conceptService = Context.getConceptService();
 		EncounterService encService = Context.getEncounterService();
 		
-		String hl7String = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080630094800||ORU^R01|kgWdFt0SVwwClOfJm3pe|P|2.5|1||||||||15^AMRS.ELD.FORMID\rPID|||3^^^^~d3811480^^^^||John3^Doe^||\rPV1||O|1^Unknown||||1^Super User (admin)|||||||||||||||||||||||||||||||||||||20080208|||||||V\rORC|RE||||||||20080208000000|1^Super User\rOBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\rOBR|1|||1284^PROBLEM LIST^99DCT\rOBX|1|CWE|6042^PROBLEM ADDED^99DCT||PROPOSED^SEVERO DOLOR DE CABEZA^99DCT|||||||||20080208";
+		String hl7String = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080630094800||ORU^R01|kgWdFt0SVwwClOfJm3pe|P|2.5|1||||||||15^AMRS.ELD.FORMID\r"
+		        + "PID|||3^^^^~d3811480^^^^||John3^Doe^||\r"
+		        + "PV1||O|1^Unknown||||1^Super User (admin)|||||||||||||||||||||||||||||||||||||20080208|||||||V\r"
+		        + "ORC|RE||||||||20080208000000|1^Super User\r"
+		        + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r"
+		        + "OBR|1|||1284^PROBLEM LIST^99DCT\r"
+		        + "OBX|1|CWE|6042^PROBLEM ADDED^99DCT||PROPOSED^SEVERO DOLOR DE CABEZA^99DCT|||||||||20080208";
 		Message hl7message = parser.parse(hl7String);
 		router.processMessage(hl7message);
 		
@@ -298,7 +352,14 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		// sanity check to make sure this obs doesn't exist already 
 		Assert.assertEquals(0, obsService.getObservationsByPersonAndConcept(patient, concept).size());
 		
-		String hl7String = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20090728170332||ORU^R01|gu99yBh4loLX2mh9cHaV|P|2.5|1||||||||4^AMRS.ELD.FORMID\rPID|||3^^^^||Beren^John^Bondo||\rPV1||O|1^Unknown||||1^Super User (admin)|||||||||||||||||||||||||||||||||||||20090714|||||||V\rORC|RE||||||||20090728165937|1^Super User\rOBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\rOBX|2|NM|5497^CD4 COUNT^99DCT||123|||||||||20090714\rOBR|3|||23^FOOD CONSTRUCT^99DCT\rOBX|1|CWE|21^FOOD ASSISTANCE FOR ENTIRE FAMILY^99DCT||22^UNKNOWN^99DCT^2471^UNKNOWN^99NAM|||||||||20090714";
+		String hl7String = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20090728170332||ORU^R01|gu99yBh4loLX2mh9cHaV|P|2.5|1||||||||4^AMRS.ELD.FORMID\r"
+		        + "PID|||3^^^^||Beren^John^Bondo||\r"
+		        + "PV1||O|1^Unknown||||1^Super User (admin)|||||||||||||||||||||||||||||||||||||20090714|||||||V\r"
+		        + "ORC|RE||||||||20090728165937|1^Super User\r"
+		        + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r"
+		        + "OBX|2|NM|5497^CD4 COUNT^99DCT||123|||||||||20090714\r"
+		        + "OBR|3|||23^FOOD CONSTRUCT^99DCT\r"
+		        + "OBX|1|CWE|21^FOOD ASSISTANCE FOR ENTIRE FAMILY^99DCT||22^UNKNOWN^99DCT^2471^UNKNOWN^99NAM|||||||||20090714";
 		Message hl7message = parser.parse(hl7String);
 		router.processMessage(hl7message);
 		
@@ -354,4 +415,240 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		router.processMessage(hl7message);
 	}
 	
+	/**
+	 * @see {@link ORUR01Handler#processNK1(Patient,NK1)}
+	 */
+	@Test
+	@Verifies(value = "should create a relationship from a NK1 segment", method = "processNK1(Patient,NK1)")
+	public void processNK1_shouldCreateARelationshipFromANK1Segment() throws Exception {
+		PersonService personService = Context.getPersonService();
+		Patient patient = new Patient(3); // the patient that is the focus of this hl7 message
+		Patient relative = new Patient(2); // the patient that is related to patientA
+		
+		// process a message with a single NK1 segment
+		// defines relative as patient's Parent
+		String hl7String = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20090728170332||ORU^R01|gu99yBh4loLX2mh9cHaV|P|2.5|1||||||||4^AMRS.ELD.FORMID\r"
+		        + "PID|||3^^^^||Beren^John^Bondo||\r"
+		        + "NK1|1|Jones^Jane^Lee^^RN|3A^Parent^99REL||||||||||||F|19751016|||||||||||||||||2^^^L^PI\r"
+		        + "PV1||O|1^Unknown||||1^Super User (admin)|||||||||||||||||||||||||||||||||||||20090714|||||||V\r"
+		        + "ORC|RE||||||||20090728165937|1^Super User\r"
+		        + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r"
+		        + "OBX|2|NM|5497^CD4 COUNT^99DCT||123|||||||||20090714\r"
+		        + "OBR|3|||23^FOOD CONSTRUCT^99DCT\r"
+		        + "OBX|1|CWE|21^FOOD ASSISTANCE FOR ENTIRE FAMILY^99DCT||22^UNKNOWN^99DCT^2471^UNKNOWN^99NAM|||||||||20090714";
+		
+		ORUR01Handler oruHandler = new ORUR01Handler();
+		Message hl7message = parser.parse(hl7String);
+		ORU_R01 oru = (ORU_R01) hl7message;
+		List<NK1> nk1List = oruHandler.getNK1List(oru);
+		for (NK1 nk1 : nk1List)
+			oruHandler.processNK1(patient, nk1);
+		
+		// verify relationship was created
+		List<Relationship> rels = personService.getRelationships(relative, patient, new RelationshipType(3));
+		Assert.assertTrue("new relationship was not created", !rels.isEmpty() && rels.size() == 1);
+	}
+	
+	/**
+	 * @see {@link ORUR01Handler#processNK1(Patient,NK1)}
+	 */
+	@Test(expected = HL7Exception.class)
+	@Verifies(value = "should fail if the coding system is not 99REL", method = "processNK1(Patient,NK1)")
+	public void processNK1_shouldFailIfTheCodingSystemIsNot99REL() throws Exception {
+		// process a message with an invalid coding system
+		Patient patient = new Patient(3); // the patient that is the focus of this hl7 message
+		String hl7String = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20090728170332||ORU^R01|gu99yBh4loLX2mh9cHaV|P|2.5|1||||||||4^AMRS.ELD.FORMID\r"
+		        + "PID|||3^^^^||Beren^John^Bondo||\r"
+		        + "NK1|1|Jones^Jane^Lee^^RN|3A^Parent^ACKFOO||||||||||||F|19751016|||||||||||||||||2^^^L^PI\r"
+		        + "PV1||O|1^Unknown||||1^Super User (admin)|||||||||||||||||||||||||||||||||||||20090714|||||||V\r"
+		        + "ORC|RE||||||||20090728165937|1^Super User\r"
+		        + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r"
+		        + "OBX|2|NM|5497^CD4 COUNT^99DCT||123|||||||||20090714\r"
+		        + "OBR|3|||23^FOOD CONSTRUCT^99DCT\r"
+		        + "OBX|1|CWE|21^FOOD ASSISTANCE FOR ENTIRE FAMILY^99DCT||22^UNKNOWN^99DCT^2471^UNKNOWN^99NAM|||||||||20090714";
+		ORUR01Handler oruHandler = new ORUR01Handler();
+		Message hl7message = parser.parse(hl7String);
+		ORU_R01 oru = (ORU_R01) hl7message;
+		List<NK1> nk1List = oruHandler.getNK1List(oru);
+		for (NK1 nk1 : nk1List)
+			oruHandler.processNK1(patient, nk1);
+	}
+	
+	/**
+	 * @see {@link ORUR01Handler#processNK1(Patient,NK1)}
+	 */
+	@Test(expected = HL7Exception.class)
+	@Verifies(value = "should fail if the relationship identifier is formatted improperly", method = "processNK1(Patient,NK1)")
+	public void processNK1_shouldFailIfTheRelationshipIdentifierIsFormattedImproperly() throws Exception {
+		// process a message with an invalid relationship identifier format
+		Patient patient = new Patient(3); // the patient that is the focus of this hl7 message
+		String hl7String = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20090728170332||ORU^R01|gu99yBh4loLX2mh9cHaV|P|2.5|1||||||||4^AMRS.ELD.FORMID\r"
+		        + "PID|||3^^^^||Beren^John^Bondo||\r"
+		        + "NK1|1|Jones^Jane^Lee^^RN|3C^Parent^99REL||||||||||||F|19751016|||||||||||||||||2^^^L^PI\r"
+		        + "PV1||O|1^Unknown||||1^Super User (admin)|||||||||||||||||||||||||||||||||||||20090714|||||||V\r"
+		        + "ORC|RE||||||||20090728165937|1^Super User\r"
+		        + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r"
+		        + "OBX|2|NM|5497^CD4 COUNT^99DCT||123|||||||||20090714\r"
+		        + "OBR|3|||23^FOOD CONSTRUCT^99DCT\r"
+		        + "OBX|1|CWE|21^FOOD ASSISTANCE FOR ENTIRE FAMILY^99DCT||22^UNKNOWN^99DCT^2471^UNKNOWN^99NAM|||||||||20090714";
+		ORUR01Handler oruHandler = new ORUR01Handler();
+		Message hl7message = parser.parse(hl7String);
+		ORU_R01 oru = (ORU_R01) hl7message;
+		List<NK1> nk1List = oruHandler.getNK1List(oru);
+		for (NK1 nk1 : nk1List)
+			oruHandler.processNK1(patient, nk1);
+	}
+	
+	/**
+	 * @see {@link ORUR01Handler#processNK1(Patient,NK1)}
+	 */
+	@Test(expected = HL7Exception.class)
+	@Verifies(value = "should fail if the relationship type is not found", method = "processNK1(Patient,NK1)")
+	public void processNK1_shouldFailIfTheRelationshipTypeIsNotFound() throws Exception {
+		// process a message with a non-existent relationship type
+		Patient patient = new Patient(3); // the patient that is the focus of this hl7 message
+		String hl7String = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20090728170332||ORU^R01|gu99yBh4loLX2mh9cHaV|P|2.5|1||||||||4^AMRS.ELD.FORMID\r"
+		        + "PID|||3^^^^||Beren^John^Bondo||\r"
+		        + "NK1|1|Jones^Jane^Lee^^RN|3952A^Fifth Cousin Twice Removed^99REL||||||||||||F|19751016|||||||||||||||||2^^^L^PI\r"
+		        + "PV1||O|1^Unknown||||1^Super User (admin)|||||||||||||||||||||||||||||||||||||20090714|||||||V\r"
+		        + "ORC|RE||||||||20090728165937|1^Super User\r"
+		        + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r"
+		        + "OBX|2|NM|5497^CD4 COUNT^99DCT||123|||||||||20090714\r"
+		        + "OBR|3|||23^FOOD CONSTRUCT^99DCT\r"
+		        + "OBX|1|CWE|21^FOOD ASSISTANCE FOR ENTIRE FAMILY^99DCT||22^UNKNOWN^99DCT^2471^UNKNOWN^99NAM|||||||||20090714";
+		ORUR01Handler oruHandler = new ORUR01Handler();
+		Message hl7message = parser.parse(hl7String);
+		ORU_R01 oru = (ORU_R01) hl7message;
+		List<NK1> nk1List = oruHandler.getNK1List(oru);
+		for (NK1 nk1 : nk1List)
+			oruHandler.processNK1(patient, nk1);
+	}
+	
+	/**
+	 * @see {@link ORUR01Handler#processNK1(Patient,NK1)}
+	 */
+	@Test
+	@Verifies(value = "should not create a relationship if one exists", method = "processNK1(Patient,NK1)")
+	public void processNK1_shouldNotCreateARelationshipIfOneExists() throws Exception {
+		PersonService personService = Context.getPersonService();
+		Patient patient = new Patient(3); // the patient that is the focus of this hl7 message
+		Patient relative = new Patient(2); // the patient that is related to patientA
+		
+		// create a relationship in the database
+		Relationship rel = new Relationship();
+		rel.setRelationshipType(new RelationshipType(3));
+		rel.setPersonA(relative);
+		rel.setPersonB(patient);
+		personService.saveRelationship(rel);
+		
+		// verify relationship exists
+		Assert.assertEquals(1, personService.getRelationships(relative, patient, new RelationshipType(3)).size());
+		
+		// process a message with a single NK1 segment
+		// defines relative as patient's Parent
+		String hl7String = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20090728170332||ORU^R01|gu99yBh4loLX2mh9cHaV|P|2.5|1||||||||4^AMRS.ELD.FORMID\r"
+		        + "PID|||3^^^^||Beren^John^Bondo||\r"
+		        + "NK1|1|Jones^Jane^Lee^^RN|3A^Parent^99REL||||||||||||F|19751016|||||||||||||||||2^^^L^PI\r"
+		        + "PV1||O|1^Unknown||||1^Super User (admin)|||||||||||||||||||||||||||||||||||||20090714|||||||V\r"
+		        + "ORC|RE||||||||20090728165937|1^Super User\r"
+		        + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r"
+		        + "OBX|2|NM|5497^CD4 COUNT^99DCT||123|||||||||20090714\r"
+		        + "OBR|3|||23^FOOD CONSTRUCT^99DCT\r"
+		        + "OBX|1|CWE|21^FOOD ASSISTANCE FOR ENTIRE FAMILY^99DCT||22^UNKNOWN^99DCT^2471^UNKNOWN^99NAM|||||||||20090714";
+		
+		ORUR01Handler oruHandler = new ORUR01Handler();
+		Message hl7message = parser.parse(hl7String);
+		ORU_R01 oru = (ORU_R01) hl7message;
+		List<NK1> nk1List = oruHandler.getNK1List(oru);
+		for (NK1 nk1 : nk1List)
+			oruHandler.processNK1(patient, nk1);
+		
+		// verify existing relationship
+		List<Relationship> rels = personService.getRelationships(relative, patient, new RelationshipType(3));
+		Assert.assertTrue("existing relationship was not retained", !rels.isEmpty() && rels.size() == 1);
+	}
+	
+	/**
+	 * @see {@link ORUR01Handler#processORU_R01(ORU_R01)}
+	 */
+	@Test
+	@Verifies(value = "should process multiple NK1 segments", method = "processORU_R01(ORU_R01)")
+	public void processORU_R01_shouldProcessMultipleNK1Segments() throws Exception {
+		PersonService personService = Context.getPersonService();
+		Patient patient = new Patient(3); // the patient that is the focus of this hl7 message
+		Patient relative = new Patient(2); // the patient that is related to patientA
+		
+		// create a relationship in the database
+		Relationship newRel = new Relationship();
+		newRel.setRelationshipType(new RelationshipType(3));
+		newRel.setPersonA(relative);
+		newRel.setPersonB(patient);
+		personService.saveRelationship(newRel);
+		
+		// verify relationship exists
+		Assert.assertEquals(1, personService.getRelationships(relative, patient, new RelationshipType(3)).size());
+		
+		// process a new message with multiple NK1 segments
+		// this one defines patientB as patientA's Sibling and Patient
+		String hl7String = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20090728170333||ORU^R01|gu99yBh4loLX2mh9cHaV|P|2.5|1||||||||4^AMRS.ELD.FORMID\r"
+		        + "PID|||3^^^^||Beren^John^Bondo||\r"
+		        + "NK1|1|Jones^Jane^Lee^^RN|2A^Sibling^99REL||||||||||||F|19751016|||||||||||||||||2^^^L^PI\r"
+		        + "NK1|2|Jones^Jane^Lee^^RN|1B^Patient^99REL||||||||||||F|19751016|||||||||||||||||2^^^L^PI\r"
+		        + "PV1||O|1^Unknown||||1^Super User (admin)|||||||||||||||||||||||||||||||||||||20090714|||||||V\r"
+		        + "ORC|RE||||||||20090728165937|1^Super User\r"
+		        + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r"
+		        + "OBX|2|NM|5497^CD4 COUNT^99DCT||123|||||||||20090714\r"
+		        + "OBR|3|||23^FOOD CONSTRUCT^99DCT\r"
+		        + "OBX|1|CWE|21^FOOD ASSISTANCE FOR ENTIRE FAMILY^99DCT||22^UNKNOWN^99DCT^2471^UNKNOWN^99NAM|||||||||20090714";
+		
+		Message hl7message = parser.parse(hl7String);
+		router.processMessage(hl7message);
+		
+		// verify existing relationship
+		List<Relationship> rels = personService.getRelationships(relative, patient, new RelationshipType(3));
+		Assert.assertTrue("existing relationship was not retained", !rels.isEmpty() && rels.size() == 1);
+		
+		// verify first new relationship
+		rels = personService.getRelationships(patient, relative, new RelationshipType(2));
+		Assert.assertTrue("first new relationship was not created", !rels.isEmpty() && rels.size() == 1);
+		
+		// verify second new relationship
+		rels = personService.getRelationships(patient, relative, new RelationshipType(1));
+		Assert.assertTrue("second new relationship was not created", !rels.isEmpty() && rels.size() == 1);
+	}
+	
+	/**
+	 * @see {@link ORUR01Handler#processNK1(Patient,NK1)}
+	 */
+	@Test
+	@Verifies(value = "should create a person if the relative is not found", method = "processNK1(Patient,NK1)")
+	public void processNK1_shouldCreateAPersonIfTheRelativeIsNotFound() throws Exception {
+		// process a message with an invalid relative identifier
+		PersonService personService = Context.getPersonService();
+		Patient patient = new Patient(3); // the patient that is the focus of this hl7 message
+		
+		String hl7String = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20090728170332||ORU^R01|gu99yBh4loLX2mh9cHaV|P|2.5|1||||||||4^AMRS.ELD.FORMID\r"
+		        + "PID|||3^^^^||Beren^John^Bondo||\r"
+		        + "NK1|1|Jones^Jane^Lee^^RN|3A^Parent^99REL||||||||||||F|19751016|||||||||||||||||2178037d-f86b-4f12-8d8b-be3ebc220029^^^UUID^v4\r"
+		        + "PV1||O|1^Unknown||||1^Super User (admin)|||||||||||||||||||||||||||||||||||||20090714|||||||V\r"
+		        + "ORC|RE||||||||20090728165937|1^Super User\r"
+		        + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r"
+		        + "OBX|2|NM|5497^CD4 COUNT^99DCT||123|||||||||20090714\r"
+		        + "OBR|3|||23^FOOD CONSTRUCT^99DCT\r"
+		        + "OBX|1|CWE|21^FOOD ASSISTANCE FOR ENTIRE FAMILY^99DCT||22^UNKNOWN^99DCT^2471^UNKNOWN^99NAM|||||||||20090714";
+		ORUR01Handler oruHandler = new ORUR01Handler();
+		Message hl7message = parser.parse(hl7String);
+		ORU_R01 oru = (ORU_R01) hl7message;
+		List<NK1> nk1List = oruHandler.getNK1List(oru);
+		for (NK1 nk1 : nk1List)
+			oruHandler.processNK1(patient, nk1);
+		
+		// find the relative in the database
+		Person relative = personService.getPersonByUuid("2178037d-f86b-4f12-8d8b-be3ebc220029");
+		Assert.assertNotNull("a new person was not created", relative);
+		
+		// see if the relative made it into the relationship properly
+		List<Relationship> rels = personService.getRelationships(relative, patient, new RelationshipType(3));
+		Assert.assertTrue("new relationship was not created", !rels.isEmpty() && rels.size() == 1);
+	}
 }

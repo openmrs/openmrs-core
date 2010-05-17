@@ -16,7 +16,10 @@ package org.openmrs.hl7.handler;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -33,6 +36,8 @@ import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonAttributeType;
+import org.openmrs.Relationship;
+import org.openmrs.RelationshipType;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.hl7.HL7InQueueProcessor;
@@ -65,6 +70,7 @@ import ca.uhn.hl7v2.model.v25.group.ORU_R01_ORDER_OBSERVATION;
 import ca.uhn.hl7v2.model.v25.group.ORU_R01_PATIENT_RESULT;
 import ca.uhn.hl7v2.model.v25.message.ORU_R01;
 import ca.uhn.hl7v2.model.v25.segment.MSH;
+import ca.uhn.hl7v2.model.v25.segment.NK1;
 import ca.uhn.hl7v2.model.v25.segment.OBR;
 import ca.uhn.hl7v2.model.v25.segment.OBX;
 import ca.uhn.hl7v2.model.v25.segment.ORC;
@@ -139,6 +145,7 @@ public class ORUR01Handler implements Application {
 	 * @param oru the message to process
 	 * @return the processed message
 	 * @throws HL7Exception
+	 * @should process multiple NK1 segments
 	 */
 	@SuppressWarnings("deprecation")
 	private Message processORU_R01(ORU_R01 oru) throws HL7Exception {
@@ -153,6 +160,7 @@ public class ORUR01Handler implements Application {
 		// extract segments for convenient use below
 		MSH msh = getMSH(oru);
 		PID pid = getPID(oru);
+		List<NK1> nk1List = getNK1List(oru);
 		PV1 pv1 = getPV1(oru);
 		ORC orc = getORC(oru); // we're using the ORC assoc with first OBR to
 		// hold data enterer and date entered for now
@@ -179,6 +187,10 @@ public class ORUR01Handler implements Application {
 			log.error("Error while processing Discharge To Location (" + messageControlId + ")", e);
 		}
 		
+		// process NK1 (relationship) segments
+		for (NK1 nk1 : nk1List)
+			processNK1(patient, nk1);
+		
 		// list of concepts proposed in the obs of this encounter.
 		// these proposals need to be created after the encounter
 		// has been created
@@ -187,7 +199,7 @@ public class ORUR01Handler implements Application {
 		// create observations
 		if (log.isDebugEnabled())
 			log.debug("Creating observations for message " + messageControlId + "...");
-		// we ignore all MEDICAL_RECORD_OBSERVATIONS that are OBRs.  We do not 
+		// we ignore all MEDICAL_RECORD_OBSERVATIONS that are OBRs.  We do not
 		// create obs_groups for them
 		List<Concept> ignoredConcepts = new ArrayList<Concept>();
 		
@@ -209,10 +221,10 @@ public class ORUR01Handler implements Application {
 				log.debug("Processing OBR (" + i + " of " + numObr + ")");
 			ORU_R01_ORDER_OBSERVATION orderObs = patientResult.getORDER_OBSERVATION(i);
 			
-			// the parent obr 
+			// the parent obr
 			OBR obr = orderObs.getOBR();
 			
-			// if we're not ignoring this obs group, create an 
+			// if we're not ignoring this obs group, create an
 			// Obs grouper object that the underlying obs objects will use
 			Obs obsGrouper = null;
 			Concept obrConcept = getConcept(obr.getUniversalServiceIdentifier(), messageControlId);
@@ -248,7 +260,7 @@ public class ORUR01Handler implements Application {
 					Obs obs = parseObs(encounter, obx, obr, messageControlId);
 					if (obs != null) {
 						
-						// if we're backfilling an encounter, don't use 
+						// if we're backfilling an encounter, don't use
 						// the creator/dateCreated from the encounter
 						if (encounter.getEncounterId() != null) {
 							obs.setCreator(getEnterer(orc));
@@ -258,7 +270,7 @@ public class ORUR01Handler implements Application {
 						// set the obsGroup on this obs
 						if (obsGrouper != null)
 							// set the obs to the group.  This assumes the group is already
-							// on the encounter and that when the encounter is saved it will 
+							// on the encounter and that when the encounter is saved it will
 							// propagate to the children obs
 							obsGrouper.addGroupMember(obs);
 						
@@ -315,9 +327,9 @@ public class ORUR01Handler implements Application {
 		// requires that one obs be created (in the database) before others can
 		// be linked to it, forcing us to save the encounter prematurely."
 		//
-		// NOTE: The above referenced fix is now done.  This method is 
-		// deprecated and will be removed in the next release.  All modules 
-		// should modify their AOP methods to hook around 
+		// NOTE: The above referenced fix is now done.  This method is
+		// deprecated and will be removed in the next release.  All modules
+		// should modify their AOP methods to hook around
 		// EncounterService.createEncounter(Encounter).
 		hl7Service.encounterCreated(encounter);
 		
@@ -331,9 +343,87 @@ public class ORUR01Handler implements Application {
 		
 	}
 	
-	// private String getSendingApplication(ORU_R01 oru) {
-	// return oru.getMSH().getSendingApplication().getUniversalID().getValue();
-	// }
+	/**
+	 * process an NK1 segment and add relationships if needed
+	 * 
+	 * @param patient
+	 * @param nk1
+	 * @throws HL7Exception
+	 * @should create a relationship from a NK1 segment
+	 * @should not create a relationship if one exists
+	 * @should create a person if the relative is not found
+	 * @should fail if the coding system is not 99REL
+	 * @should fail if the relationship identifier is formatted improperly
+	 * @should fail if the relationship type is not found
+	 */
+	protected void processNK1(Patient patient, NK1 nk1) throws HL7Exception {
+		// guarantee we are working with our custom coding system
+		String relCodingSystem = nk1.getRelationship().getNameOfCodingSystem().getValue();
+		if (!relCodingSystem.equals(FormConstants.HL7_LOCAL_RELATIONSHIP))
+			throw new HL7Exception("Relationship coding system '" + relCodingSystem + "' unknown in NK1 segment.");
+		
+		// get the relationship type identifier
+		String relIdentifier = nk1.getRelationship().getIdentifier().getValue();
+		
+		// validate the format of the relationship identifier
+		if (!Pattern.matches("[0-9]+[AB]", relIdentifier))
+			throw new HL7Exception("Relationship type '" + relIdentifier + "' improperly formed in NK1 segment.");
+		
+		// get the type ID
+		Integer relTypeId = 0;
+		try {
+			relTypeId = Integer.parseInt(relIdentifier.substring(0, relIdentifier.length() - 1));
+		}
+		catch (NumberFormatException e) {
+			throw new HL7Exception("Relationship type '" + relIdentifier + "' improperly formed in NK1 segment.");
+		}
+		
+		// find the relationship type
+		RelationshipType relType = Context.getPersonService().getRelationshipType(relTypeId);
+		if (relType == null)
+			throw new HL7Exception("Relationship type '" + relTypeId + "' in NK1 segment not found");
+		
+		// find the relative
+		Person relative = getRelative(nk1);
+		
+		// determine if the patient is person A or B; the relIdentifier indicates
+		// the relative's side of the relationship, so the patient is the inverse
+		boolean patientIsPersonA = relIdentifier.endsWith("B");
+		boolean patientCanBeEitherPerson = relType.getbIsToA().equals(relType.getaIsToB());
+		
+		// look at existing relationships to determine if a new one is needed
+		Set<Relationship> rels = new HashSet<Relationship>();
+		if (relative != null) {
+			if (patientCanBeEitherPerson || patientIsPersonA)
+				rels.addAll(Context.getPersonService().getRelationships(patient, relative, relType));
+			if (patientCanBeEitherPerson || !patientIsPersonA)
+				rels.addAll(Context.getPersonService().getRelationships(relative, patient, relType));
+		}
+		
+		// create a relationship if none is found
+		if (rels.isEmpty()) {
+			
+			// check the relative's existence
+			if (relative == null) {
+				// create one based on NK1 information
+				relative = Context.getHL7Service().createPersonFromNK1(nk1);
+				if (relative == null)
+					throw new HL7Exception("could not create a new relative from NK1 segment");
+			}
+			
+			// create the relationship
+			Relationship relation = new Relationship();
+			if (patientCanBeEitherPerson || patientIsPersonA) {
+				relation.setPersonA(patient);
+				relation.setPersonB(relative);
+			} else {
+				relation.setPersonA(relative);
+				relation.setPersonB(patient);
+			}
+			relation.setRelationshipType(relType);
+			Context.getPersonService().saveRelationship(relation);
+		}
+	}
 	
 	/**
 	 * Not used
@@ -351,6 +441,25 @@ public class ORUR01Handler implements Application {
 	
 	private PID getPID(ORU_R01 oru) {
 		return oru.getPATIENT_RESULT().getPATIENT().getPID();
+	}
+	
+	/**
+	 * finds NK1 segments in an ORU_R01 message. all HAPI-rendered Messages have at least one NK1
+	 * segment but if the original message truly does not contain an NK1, the setID will be null on
+	 * the generated NK1
+	 * 
+	 * @param oru ORU_R01 message to be parsed for NK1 segments
+	 * @return list of not-null NK1 segments
+	 * @throws HL7Exception
+	 */
+	public List<NK1> getNK1List(ORU_R01 oru) throws HL7Exception {
+		List<NK1> res = new ArrayList<NK1>();
+		// there will always be at least one NK1, even if the original message does not contain one
+		for (int i = 0; i < oru.getPATIENT_RESULT().getPATIENT().getNK1Reps(); i++)
+			// if the setIDNK1 value is null, this NK1 is blank
+			if (oru.getPATIENT_RESULT().getPATIENT().getNK1(i).getSetIDNK1().getValue() != null)
+				res.add(oru.getPATIENT_RESULT().getPATIENT().getNK1(i));
+		return res;
 	}
 	
 	private PV1 getPV1(ORU_R01 oru) {
@@ -791,6 +900,21 @@ public class ORUR01Handler implements Application {
 		Patient patient = new Patient();
 		patient.setPatientId(patientId);
 		return patient;
+	}
+	
+	/**
+	 * gets a relative based on an NK1 segment
+	 * 
+	 * @param nk1 an NK1 segment from the HL7 request
+	 * @return a matching Person or null if not found
+	 * @throws HL7Exception
+	 */
+	private Person getRelative(NK1 nk1) throws HL7Exception {
+		// if there are no associated party identifiers, the person will not exist
+		if (nk1.getNextOfKinAssociatedPartySIdentifiers().length < 1)
+			return null;
+		// find the related person via given IDs
+		return Context.getHL7Service().resolvePersonFromIdentifiers(nk1.getNextOfKinAssociatedPartySIdentifiers());
 	}
 	
 	private Location getLocation(PV1 pv1) throws HL7Exception {
