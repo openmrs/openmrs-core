@@ -27,7 +27,9 @@ import org.junit.Test;
 import org.openmrs.Concept;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
+import org.openmrs.Person;
 import org.openmrs.api.context.Context;
+import org.openmrs.hl7.handler.ORUR01Handler;
 import org.openmrs.hl7.impl.HL7ServiceImpl;
 import org.openmrs.module.ModuleConstants;
 import org.openmrs.module.ModuleUtil;
@@ -37,6 +39,9 @@ import org.openmrs.test.Verifies;
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.app.Application;
 import ca.uhn.hl7v2.model.Message;
+import ca.uhn.hl7v2.model.v25.datatype.CX;
+import ca.uhn.hl7v2.model.v25.message.ORU_R01;
+import ca.uhn.hl7v2.model.v25.segment.NK1;
 
 /**
  * Tests methods in the {@link HL7Service}
@@ -121,7 +126,13 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 		executeDataSet("org/openmrs/hl7/include/ORUTest-initialData.xml");
 		HL7Service hl7service = Context.getHL7Service();
 		Message message = hl7service
-		        .parseHL7String("MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\rPID|||3^^^^||John3^Doe^||\rPV1||O|1^Unknown Location||||1^Super User (1-8)|||||||||||||||||||||||||||||||||||||20080212|||||||V\rORC|RE||||||||20080226102537|1^Super User\rOBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\rOBX|1|NM|5497^CD4, BY FACS^99DCT||450|||||||||20080206\rOBX|2|DT|5096^RETURN VISIT DATE^99DCT||20080229|||||||||20080212");
+		        .parseHL7String("MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\r"
+		                + "PID|||3^^^^||John3^Doe^||\r"
+		                + "PV1||O|1^Unknown Location||||1^Super User (1-8)|||||||||||||||||||||||||||||||||||||20080212|||||||V\r"
+		                + "ORC|RE||||||||20080226102537|1^Super User\r"
+		                + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r"
+		                + "OBX|1|NM|5497^CD4, BY FACS^99DCT||450|||||||||20080206\r"
+		                + "OBX|2|DT|5096^RETURN VISIT DATE^99DCT||20080229|||||||||20080212");
 		
 		Message result = hl7service.processHL7Message(message);
 		Assert.assertNotNull(result);
@@ -143,7 +154,13 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 	public void parseHL7String_shouldParseTheGivenStringIntoMessage() throws Exception {
 		HL7Service hl7service = Context.getHL7Service();
 		Message message = hl7service
-		        .parseHL7String("MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\rPID|||3^^^^||John3^Doe^||\rPV1||O|1^Unknown Location||||1^Super User (1-8)|||||||||||||||||||||||||||||||||||||20080212|||||||V\rORC|RE||||||||20080226102537|1^Super User\rOBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\rOBX|1|NM|5497^CD4, BY FACS^99DCT||450|||||||||20080206\rOBX|2|DT|5096^RETURN VISIT DATE^99DCT||20080229|||||||||20080212");
+		        .parseHL7String("MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\r"
+		                + "PID|||3^^^^||John3^Doe^||\r"
+		                + "PV1||O|1^Unknown Location||||1^Super User (1-8)|||||||||||||||||||||||||||||||||||||20080212|||||||V\r"
+		                + "ORC|RE||||||||20080226102537|1^Super User\r"
+		                + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r"
+		                + "OBX|1|NM|5497^CD4, BY FACS^99DCT||450|||||||||20080206\r"
+		                + "OBX|2|DT|5096^RETURN VISIT DATE^99DCT||20080229|||||||||20080212");
 		Assert.assertNotNull(message);
 	}
 	
@@ -171,7 +188,13 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 		
 		HL7Service hl7service = Context.getHL7Service();
 		Message message = hl7service
-		        .parseHL7String("MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ADR^A19|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\rPID|||3^^^^||John3^Doe^||\rPV1||O|1^Unknown Location||||1^Super User (1-8)|||||||||||||||||||||||||||||||||||||20080212|||||||V\rORC|RE||||||||20080226102537|1^Super User\rOBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\rOBX|1|NM|5497^CD4, BY FACS^99DCT||450|||||||||20080206\rOBX|2|DT|5096^RETURN VISIT DATE^99DCT||20080229|||||||||20080212");
+		        .parseHL7String("MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ADR^A19|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\r"
+		                + "PID|||3^^^^||John3^Doe^||\r"
+		                + "PV1||O|1^Unknown Location||||1^Super User (1-8)|||||||||||||||||||||||||||||||||||||20080212|||||||V\r"
+		                + "ORC|RE||||||||20080226102537|1^Super User\r"
+		                + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r"
+		                + "OBX|1|NM|5497^CD4, BY FACS^99DCT||450|||||||||20080206\r"
+		                + "OBX|2|DT|5096^RETURN VISIT DATE^99DCT||20080229|||||||||20080212");
 		Assert.assertNotNull(message);
 		
 		try {
@@ -227,4 +250,370 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 		
 		ModuleUtil.shutdown();
 	}
+	
+	/**
+	 * @see {@link HL7Service#resolvePersonFromIdentifiers(null)}
+	 */
+	@Test
+	@Verifies(value = "should find a person based on a patient identifier", method = "resolvePersonFromIdentifiers(null)")
+	public void resolvePersonFromIdentifiers_shouldFindAPersonBasedOnAPatientIdentifier() throws Exception {
+		executeDataSet("org/openmrs/hl7/include/ORUTest-initialData.xml");
+		HL7Service hl7service = Context.getHL7Service();
+		Message message = hl7service
+		        .parseHL7String("MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\r"
+		                + "PID|||3^^^^||John3^Doe^||\r"
+		                + "NK1|1|Hornblower^Horatio^L|2B^Sibling^99REL||||||||||||M|19410501|||||||||||||||||1234^^^Test Identifier Type^PT||||\r"
+		                + "PV1||O|1^Unknown Location||||1^Super User (1-8)|||||||||||||||||||||||||||||||||||||20080212|||||||V\r"
+		                + "ORC|RE||||||||20080226102537|1^Super User\r"
+		                + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r"
+		                + "OBX|1|NM|5497^CD4, BY FACS^99DCT||450|||||||||20080206\r"
+		                + "OBX|2|DT|5096^RETURN VISIT DATE^99DCT||20080229|||||||||20080212");
+		ORU_R01 oru = (ORU_R01) message;
+		List<NK1> nk1List = new ORUR01Handler().getNK1List(oru);
+		Assert.assertEquals("too many NK1s parsed out", 1, nk1List.size());
+		Person expected = new Person(2);
+		Person result = hl7service.resolvePersonFromIdentifiers(nk1List.get(0).getNextOfKinAssociatedPartySIdentifiers());
+		Assert.assertNotNull("should have found a person", result);
+		Assert.assertEquals("found the wrong person", expected, result);
+	}
+	
+	/**
+	 * @see {@link HL7Service#resolvePersonFromIdentifiers(null)}
+	 */
+	@Test
+	@Verifies(value = "should find a person based on a UUID", method = "resolvePersonFromIdentifiers(null)")
+	public void resolvePersonFromIdentifiers_shouldFindAPersonBasedOnAUUID() throws Exception {
+		executeDataSet("org/openmrs/hl7/include/ORUTest-initialData.xml");
+		HL7Service hl7service = Context.getHL7Service();
+		Message message = hl7service
+		        .parseHL7String("MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\r"
+		                + "PID|||3^^^^||John3^Doe^||\r"
+		                + "NK1|1|Hornblower^Horatio^L|2B^Sibling^99REL||||||||||||M|19410501|||||||||||||||||2178037d-f86b-4f12-8d8b-be3ebc220022^^^UUID^v4||||\r"
+		                + "PV1||O|1^Unknown Location||||1^Super User (1-8)|||||||||||||||||||||||||||||||||||||20080212|||||||V\r"
+		                + "ORC|RE||||||||20080226102537|1^Super User\r"
+		                + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r"
+		                + "OBX|1|NM|5497^CD4, BY FACS^99DCT||450|||||||||20080206\r"
+		                + "OBX|2|DT|5096^RETURN VISIT DATE^99DCT||20080229|||||||||20080212");
+		ORU_R01 oru = (ORU_R01) message;
+		List<NK1> nk1List = new ORUR01Handler().getNK1List(oru);
+		Assert.assertEquals("too many NK1s parsed out", 1, nk1List.size());
+		Person expected = new Person(2);
+		Person result = hl7service.resolvePersonFromIdentifiers(nk1List.get(0).getNextOfKinAssociatedPartySIdentifiers());
+		Assert.assertNotNull("should have found a person", result);
+		Assert.assertEquals("found the wrong person", expected, result);
+	}
+	
+	/**
+	 * @see {@link HL7Service#resolvePersonFromIdentifiers(null)}
+	 */
+	@Test
+	@Verifies(value = "should find a person based on the internal person ID", method = "resolvePersonFromIdentifiers(null)")
+	public void resolvePersonFromIdentifiers_shouldFindAPersonBasedOnTheInternalPersonID() throws Exception {
+		executeDataSet("org/openmrs/hl7/include/ORUTest-initialData.xml");
+		HL7Service hl7service = Context.getHL7Service();
+		Message message = hl7service
+		        .parseHL7String("MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\r"
+		                + "PID|||3^^^^||John3^Doe^||\r"
+		                + "NK1|1|Hornblower^Horatio^L|2B^Sibling^99REL||||||||||||M|19410501|||||||||||||||||2^^^L^PN||||\r"
+		                + "PV1||O|1^Unknown Location||||1^Super User (1-8)|||||||||||||||||||||||||||||||||||||20080212|||||||V\r"
+		                + "ORC|RE||||||||20080226102537|1^Super User\r"
+		                + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r"
+		                + "OBX|1|NM|5497^CD4, BY FACS^99DCT||450|||||||||20080206\r"
+		                + "OBX|2|DT|5096^RETURN VISIT DATE^99DCT||20080229|||||||||20080212");
+		ORU_R01 oru = (ORU_R01) message;
+		List<NK1> nk1List = new ORUR01Handler().getNK1List(oru);
+		Assert.assertEquals("too many NK1s parsed out", 1, nk1List.size());
+		Person expected = new Person(2);
+		Person result = hl7service.resolvePersonFromIdentifiers(nk1List.get(0).getNextOfKinAssociatedPartySIdentifiers());
+		Assert.assertNotNull("should have found a person", result);
+		Assert.assertEquals("found the wrong person", expected, result);
+	}
+	
+	/**
+	 * @see {@link HL7Service#resolvePersonFromIdentifiers(null)}
+	 */
+	@Test
+	@Verifies(value = "should return null if no person is found", method = "resolvePersonFromIdentifiers(null)")
+	public void resolvePersonFromIdentifiers_shouldReturnNullIfNoPersonIsFound() throws Exception {
+		executeDataSet("org/openmrs/hl7/include/ORUTest-initialData.xml");
+		HL7Service hl7service = Context.getHL7Service();
+		Message message = hl7service
+		        .parseHL7String("MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\r"
+		                + "PID|||3^^^^||John3^Doe^||\r"
+		                + "NK1|1|Hornblower^Horatio^L|2B^Sibling^99REL||||||||||||M|19410501|||||||||||||||||1000^^^L^PN||||\r"
+		                + "PV1||O|1^Unknown Location||||1^Super User (1-8)|||||||||||||||||||||||||||||||||||||20080212|||||||V\r"
+		                + "ORC|RE||||||||20080226102537|1^Super User\r"
+		                + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r"
+		                + "OBX|1|NM|5497^CD4, BY FACS^99DCT||450|||||||||20080206\r"
+		                + "OBX|2|DT|5096^RETURN VISIT DATE^99DCT||20080229|||||||||20080212");
+		ORU_R01 oru = (ORU_R01) message;
+		List<NK1> nk1List = new ORUR01Handler().getNK1List(oru);
+		Assert.assertEquals("too many NK1s parsed out", 1, nk1List.size());
+		Person result = hl7service.resolvePersonFromIdentifiers(nk1List.get(0).getNextOfKinAssociatedPartySIdentifiers());
+		Assert.assertNull("should not have found a person", result);
+	}
+	
+	/**
+	 * @see {@link HL7Service#createPersonFromNK1(NK1)}
+	 */
+	@Test(expected = HL7Exception.class)
+	@Verifies(value = "should fail if a person with the same UUID exists", method = "getPersonFromNK1(NK1)")
+	public void getPersonFromNK1_shouldFailIfAPersonWithTheSameUUIDExists() throws Exception {
+		executeDataSet("org/openmrs/hl7/include/ORUTest-initialData.xml");
+		HL7Service hl7service = Context.getHL7Service();
+		Message message = hl7service
+		        .parseHL7String("MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\r"
+		                + "PID|||3^^^^||John3^Doe^||\r"
+		                + "NK1|1|Hornblower^Horatio^L|2B^Sibling^99REL||||||||||||M|19410501|||||||||||||||||2178037d-f86b-4f12-8d8b-be3ebc220022^^^UUID^v4||||\r"
+		                + "PV1||O|1^Unknown Location||||1^Super User (1-8)|||||||||||||||||||||||||||||||||||||20080212|||||||V\r"
+		                + "ORC|RE||||||||20080226102537|1^Super User\r"
+		                + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r"
+		                + "OBX|1|NM|5497^CD4, BY FACS^99DCT||450|||||||||20080206\r"
+		                + "OBX|2|DT|5096^RETURN VISIT DATE^99DCT||20080229|||||||||20080212");
+		ORU_R01 oru = (ORU_R01) message;
+		List<NK1> nk1List = new ORUR01Handler().getNK1List(oru);
+		hl7service.createPersonFromNK1(nk1List.get(0));
+		Assert.fail("should have thrown an exception");
+	}
+	
+	/**
+	 * @see {@link HL7Service#createPersonFromNK1(NK1)}
+	 */
+	@Test(expected = HL7Exception.class)
+	@Verifies(value = "should fail if no birthdate specified", method = "getPersonFromNK1(NK1)")
+	public void getPersonFromNK1_shouldFailIfNoBirthdateSpecified() throws Exception {
+		HL7Service hl7service = Context.getHL7Service();
+		Message message = hl7service
+		        .parseHL7String("MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\r"
+		                + "PID|||3^^^^||John3^Doe^||\r"
+		                + "NK1|1|Hornblower^Horatio^L|2B^Sibling^99REL||||||||||||M||||||||||||||||||2178037d-f86b-4f12-8d8b-be3ebc220022^^^UUID^v4||||\r"
+		                + "PV1||O|1^Unknown Location||||1^Super User (1-8)|||||||||||||||||||||||||||||||||||||20080212|||||||V\r"
+		                + "ORC|RE||||||||20080226102537|1^Super User\r"
+		                + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r"
+		                + "OBX|1|NM|5497^CD4, BY FACS^99DCT||450|||||||||20080206\r"
+		                + "OBX|2|DT|5096^RETURN VISIT DATE^99DCT||20080229|||||||||20080212");
+		ORU_R01 oru = (ORU_R01) message;
+		List<NK1> nk1List = new ORUR01Handler().getNK1List(oru);
+		hl7service.createPersonFromNK1(nk1List.get(0));
+		Assert.fail("should have thrown an exception");
+	}
+	
+	/**
+	 * @see {@link HL7Service#createPersonFromNK1(NK1)}
+	 */
+	@Test(expected = HL7Exception.class)
+	@Verifies(value = "should fail if no gender specified", method = "getPersonFromNK1(NK1)")
+	public void getPersonFromNK1_shouldFailIfNoGenderSpecified() throws Exception {
+		HL7Service hl7service = Context.getHL7Service();
+		Message message = hl7service
+		        .parseHL7String("MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\r"
+		                + "PID|||3^^^^||John3^Doe^||\r"
+		                + "NK1|1|Hornblower^Horatio^L|2B^Sibling^99REL|||||||||||||19410501|||||||||||||||||2178037d-f86b-4f12-8d8b-be3ebc220022^^^UUID^v4||||\r"
+		                + "PV1||O|1^Unknown Location||||1^Super User (1-8)|||||||||||||||||||||||||||||||||||||20080212|||||||V\r"
+		                + "ORC|RE||||||||20080226102537|1^Super User\r"
+		                + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r"
+		                + "OBX|1|NM|5497^CD4, BY FACS^99DCT||450|||||||||20080206\r"
+		                + "OBX|2|DT|5096^RETURN VISIT DATE^99DCT||20080229|||||||||20080212");
+		ORU_R01 oru = (ORU_R01) message;
+		List<NK1> nk1List = new ORUR01Handler().getNK1List(oru);
+		hl7service.createPersonFromNK1(nk1List.get(0));
+		Assert.fail("should have thrown an exception");
+	}
+	
+	/**
+	 * @see {@link HL7Service#createPersonFromNK1(NK1)}
+	 */
+	@Test(expected = HL7Exception.class)
+	@Verifies(value = "should fail on an invalid gender", method = "getPersonFromNK1(NK1)")
+	public void getPersonFromNK1_shouldFailOnAnInvalidGender() throws Exception {
+		HL7Service hl7service = Context.getHL7Service();
+		Message message = hl7service
+		        .parseHL7String("MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\r"
+		                + "PID|||3^^^^||John3^Doe^||\r"
+		                + "NK1|1|Hornblower^Horatio^L|2B^Sibling^99REL||||||||||||Q|19410501|||||||||||||||||2178037d-f86b-4f12-8d8b-be3ebc220022^^^UUID^v4||||\r"
+		                + "PV1||O|1^Unknown Location||||1^Super User (1-8)|||||||||||||||||||||||||||||||||||||20080212|||||||V\r"
+		                + "ORC|RE||||||||20080226102537|1^Super User\r"
+		                + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r"
+		                + "OBX|1|NM|5497^CD4, BY FACS^99DCT||450|||||||||20080206\r"
+		                + "OBX|2|DT|5096^RETURN VISIT DATE^99DCT||20080229|||||||||20080212");
+		ORU_R01 oru = (ORU_R01) message;
+		List<NK1> nk1List = new ORUR01Handler().getNK1List(oru);
+		hl7service.createPersonFromNK1(nk1List.get(0));
+		Assert.fail("should have thrown an exception");
+	}
+	
+	/**
+	 * @see {@link HL7Service#createPersonFromNK1(NK1)}
+	 */
+	@Test
+	@Verifies(value = "should return a saved new person", method = "getPersonFromNK1(NK1)")
+	public void getPersonFromNK1_shouldReturnASavedNewPerson() throws Exception {
+		HL7Service hl7service = Context.getHL7Service();
+		Message message = hl7service
+		        .parseHL7String("MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\r"
+		                + "PID|||3^^^^||John3^Doe^||\r"
+		                + "NK1|1|Hornblower^Horatio^L|2B^Sibling^99REL||||||||||||M|19410501|||||||||||||||||2178037d-f86b-4f12-8d8b-be3ebc220022^^^UUID^v4||||\r"
+		                + "PV1||O|1^Unknown Location||||1^Super User (1-8)|||||||||||||||||||||||||||||||||||||20080212|||||||V\r"
+		                + "ORC|RE||||||||20080226102537|1^Super User\r"
+		                + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r"
+		                + "OBX|1|NM|5497^CD4, BY FACS^99DCT||450|||||||||20080206\r"
+		                + "OBX|2|DT|5096^RETURN VISIT DATE^99DCT||20080229|||||||||20080212");
+		ORU_R01 oru = (ORU_R01) message;
+		List<NK1> nk1List = new ORUR01Handler().getNK1List(oru);
+		Person result = hl7service.createPersonFromNK1(nk1List.get(0));
+		Assert.assertNotNull("should have returned a person", result);
+		Assert.assertNotNull("the person should exist", Context.getPersonService().getPersonByUuid(result.getUuid()));
+	}
+	
+	/**
+	 * @see {@link HL7Service#createPersonFromNK1(NK1)}
+	 */
+	@Test
+	@Verifies(value = "should return a Patient if valid patient identifiers exist", method = "getPersonFromNK1(NK1)")
+	public void getPersonFromNK1_shouldReturnAPatientIfValidPatientIdentifiersExist() throws Exception {
+		executeDataSet("org/openmrs/hl7/include/ORUTest-initialData.xml");
+		HL7Service hl7service = Context.getHL7Service();
+		Message message = hl7service
+		        .parseHL7String("MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\r"
+		                + "PID|||3^^^^||John3^Doe^||\r"
+		                + "NK1|1|Hornblower^Horatio^L|2B^Sibling^99REL||||||||||||M|19410501|||||||||||||||||2178037d-f86b-4f12-8d8b-be3ebc220029^^^UUID^v4~9-1^^^Test Identifier Type^PT||||\r"
+		                + "PV1||O|1^Unknown Location||||1^Super User (1-8)|||||||||||||||||||||||||||||||||||||20080212|||||||V\r"
+		                + "ORC|RE||||||||20080226102537|1^Super User\r"
+		                + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r"
+		                + "OBX|1|NM|5497^CD4, BY FACS^99DCT||450|||||||||20080206\r"
+		                + "OBX|2|DT|5096^RETURN VISIT DATE^99DCT||20080229|||||||||20080212");
+		ORU_R01 oru = (ORU_R01) message;
+		List<NK1> nk1List = new ORUR01Handler().getNK1List(oru);
+		Person result = hl7service.createPersonFromNK1(nk1List.get(0));
+		Assert.assertNotNull("should have returned something", result);
+		Assert.assertTrue("should have returned a Patient", result instanceof Patient);
+	}
+	
+	/**
+	 * @see {@link HL7Service#getUuidFromIdentifiers(null)}
+	 */
+	@Test
+	@Verifies(value = "should find a UUID in any position of the array", method = "getUuidFromIdentifiers(null)")
+	public void getUuidFromIdentifiers_shouldFindAUUIDInAnyPositionOfTheArray() throws Exception {
+		// at the beginning of the list
+		HL7Service hl7service = Context.getHL7Service();
+		Message message = hl7service
+		        .parseHL7String("MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\r"
+		                + "PID|||3^^^^||John3^Doe^||\r"
+		                + "NK1|1|Hornblower^Horatio^L|2B^Sibling^99REL||||||||||||M|19410501|||||||||||||||||2178037d-f86b-4f12-8d8b-be3ebc220022^^^UUID^v4~5^^^L^PN||||\r"
+		                + "PV1||O|1^Unknown Location||||1^Super User (1-8)|||||||||||||||||||||||||||||||||||||20080212|||||||V\r"
+		                + "ORC|RE||||||||20080226102537|1^Super User\r"
+		                + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r"
+		                + "OBX|1|NM|5497^CD4, BY FACS^99DCT||450|||||||||20080206\r"
+		                + "OBX|2|DT|5096^RETURN VISIT DATE^99DCT||20080229|||||||||20080212");
+		ORU_R01 oru = (ORU_R01) message;
+		List<NK1> nk1List = new ORUR01Handler().getNK1List(oru);
+		CX[] identifiers = nk1List.get(0).getNextOfKinAssociatedPartySIdentifiers();
+		String result = hl7service.getUuidFromIdentifiers(identifiers);
+		Assert.assertEquals("2178037d-f86b-4f12-8d8b-be3ebc220022", result);
+		result = null;
+		
+		// at the end of the list
+		message = hl7service
+		        .parseHL7String("MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\r"
+		                + "PID|||3^^^^||John3^Doe^||\r"
+		                + "NK1|1|Hornblower^Horatio^L|2B^Sibling^99REL||||||||||||M|19410501|||||||||||||||||5^^^L^PN~2178037d-f86b-4f12-8d8b-be3ebc220022^^^UUID^v4||||\r"
+		                + "PV1||O|1^Unknown Location||||1^Super User (1-8)|||||||||||||||||||||||||||||||||||||20080212|||||||V\r"
+		                + "ORC|RE||||||||20080226102537|1^Super User\r"
+		                + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r"
+		                + "OBX|1|NM|5497^CD4, BY FACS^99DCT||450|||||||||20080206\r"
+		                + "OBX|2|DT|5096^RETURN VISIT DATE^99DCT||20080229|||||||||20080212");
+		oru = (ORU_R01) message;
+		nk1List = new ORUR01Handler().getNK1List(oru);
+		identifiers = nk1List.get(0).getNextOfKinAssociatedPartySIdentifiers();
+		result = hl7service.getUuidFromIdentifiers(identifiers);
+		Assert.assertEquals("2178037d-f86b-4f12-8d8b-be3ebc220022", result);
+		result = null;
+		
+		// middle of the list
+		message = hl7service
+		        .parseHL7String("MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\r"
+		                + "PID|||3^^^^||John3^Doe^||\r"
+		                + "NK1|1|Hornblower^Horatio^L|2B^Sibling^99REL||||||||||||M|19410501|||||||||||||||||5^^^L^PN~2178037d-f86b-4f12-8d8b-be3ebc220022^^^UUID^v4~101-3^^^MTRH^PT||||\r"
+		                + "PV1||O|1^Unknown Location||||1^Super User (1-8)|||||||||||||||||||||||||||||||||||||20080212|||||||V\r"
+		                + "ORC|RE||||||||20080226102537|1^Super User\r"
+		                + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r"
+		                + "OBX|1|NM|5497^CD4, BY FACS^99DCT||450|||||||||20080206\r"
+		                + "OBX|2|DT|5096^RETURN VISIT DATE^99DCT||20080229|||||||||20080212");
+		oru = (ORU_R01) message;
+		nk1List = new ORUR01Handler().getNK1List(oru);
+		identifiers = nk1List.get(0).getNextOfKinAssociatedPartySIdentifiers();
+		result = hl7service.getUuidFromIdentifiers(identifiers);
+		Assert.assertEquals("2178037d-f86b-4f12-8d8b-be3ebc220022", result);
+	}
+	
+	/**
+	 * @see {@link HL7Service#getUuidFromIdentifiers(null)}
+	 */
+	@Test
+	@Verifies(value = "should return null if no UUID found", method = "getUuidFromIdentifiers(null)")
+	public void getUuidFromIdentifiers_shouldReturnNullIfNoUUIDFound() throws Exception {
+		HL7Service hl7service = Context.getHL7Service();
+		Message message = hl7service
+		        .parseHL7String("MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\r"
+		                + "PID|||3^^^^||John3^Doe^||\r"
+		                + "NK1|1|Hornblower^Horatio^L|2B^Sibling^99REL||||||||||||M|19410501||||||||||||||||5^^^L^PN||||\r"
+		                + "PV1||O|1^Unknown Location||||1^Super User (1-8)|||||||||||||||||||||||||||||||||||||20080212|||||||V\r"
+		                + "ORC|RE||||||||20080226102537|1^Super User\r"
+		                + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r"
+		                + "OBX|1|NM|5497^CD4, BY FACS^99DCT||450|||||||||20080206\r"
+		                + "OBX|2|DT|5096^RETURN VISIT DATE^99DCT||20080229|||||||||20080212");
+		ORU_R01 oru = (ORU_R01) message;
+		List<NK1> nk1List = new ORUR01Handler().getNK1List(oru);
+		CX[] identifiers = nk1List.get(0).getNextOfKinAssociatedPartySIdentifiers();
+		String result = hl7service.getUuidFromIdentifiers(identifiers);
+		Assert.assertNull("should have returned null", result);
+	}
+	
+	/**
+	 * @see {@link HL7Service#getUuidFromIdentifiers(null)}
+	 */
+	@Test
+	@Verifies(value = "should not fail if multiple similar UUIDs exist in identifiers", method = "getUuidFromIdentifiers(null)")
+	public void getUuidFromIdentifiers_shouldNotFailIfMultipleSimilarUUIDsExistInIdentifiers() throws Exception {
+		HL7Service hl7service = Context.getHL7Service();
+		Message message = hl7service
+		        .parseHL7String("MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\r"
+		                + "PID|||3^^^^||John3^Doe^||\r"
+		                + "NK1|1|Hornblower^Horatio^L|2B^Sibling^99REL||||||||||||M|19410501|||||||||||||||||2178037d-f86b-4f12-8d8b-be3ebc220022^^^UUID^v4~2178037d-f86b-4f12-8d8b-be3ebc220022^^^UUID^v4||||\r"
+		                + "PV1||O|1^Unknown Location||||1^Super User (1-8)|||||||||||||||||||||||||||||||||||||20080212|||||||V\r"
+		                + "ORC|RE||||||||20080226102537|1^Super User\r"
+		                + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r"
+		                + "OBX|1|NM|5497^CD4, BY FACS^99DCT||450|||||||||20080206\r"
+		                + "OBX|2|DT|5096^RETURN VISIT DATE^99DCT||20080229|||||||||20080212");
+		ORU_R01 oru = (ORU_R01) message;
+		List<NK1> nk1List = new ORUR01Handler().getNK1List(oru);
+		CX[] identifiers = nk1List.get(0).getNextOfKinAssociatedPartySIdentifiers();
+		String result = hl7service.getUuidFromIdentifiers(identifiers);
+		Assert.assertEquals("2178037d-f86b-4f12-8d8b-be3ebc220022", result);
+	}
+	
+	/**
+	 * @see {@link HL7Service#getUuidFromIdentifiers(null)}
+	 */
+	@Test(expected = HL7Exception.class)
+	@Verifies(value = "should fail if multiple different UUIDs exist in identifiers", method = "getUuidFromIdentifiers(null)")
+	public void getUuidFromIdentifiers_shouldFailIfMultipleDifferentUUIDsExistInIdentifiers() throws Exception {
+		HL7Service hl7service = Context.getHL7Service();
+		Message message = hl7service
+		        .parseHL7String("MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\r"
+		                + "PID|||3^^^^||John3^Doe^||\r"
+		                + "NK1|1|Hornblower^Horatio^L|2B^Sibling^99REL||||||||||||M|19410501|||||||||||||||||2178037d-f86b-4f12-8d8b-be3ebc220022^^^UUID^v4~2178037d-f86b-4f12-8d8b-be3ebc220023^^^UUID^v4||||\r"
+		                + "PV1||O|1^Unknown Location||||1^Super User (1-8)|||||||||||||||||||||||||||||||||||||20080212|||||||V\r"
+		                + "ORC|RE||||||||20080226102537|1^Super User\r"
+		                + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r"
+		                + "OBX|1|NM|5497^CD4, BY FACS^99DCT||450|||||||||20080206\r"
+		                + "OBX|2|DT|5096^RETURN VISIT DATE^99DCT||20080229|||||||||20080212");
+		ORU_R01 oru = (ORU_R01) message;
+		List<NK1> nk1List = new ORUR01Handler().getNK1List(oru);
+		CX[] identifiers = nk1List.get(0).getNextOfKinAssociatedPartySIdentifiers();
+		hl7service.getUuidFromIdentifiers(identifiers);
+		Assert.fail("should have failed");
+	}
+	
 }

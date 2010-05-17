@@ -52,16 +52,26 @@ public class FormConstants {
 	
 	public static final String HL7_BOOLEAN = "BIT";
 	
+	public static final String HL7_AUTHORITY_UUID = "UUID";
+	
+	public static final String HL7_AUTHORITY_LOCAL = "L";
+	
+	public static final Object HL7_ID_PERSON = "PN";
+	
+	public static final Object HL7_ID_PATIENT = "PI";
+	
 	public static final Integer CLASS_DRUG = 3;
-	
-	public static final String HL7_LOCAL_CONCEPT = "99DCT";
-	
+
 	/**
 	 * Used in hl7 sextuplets: 123^Primary name^99DCT^345^Chosen name^99NAM
 	 */
+	public static final String HL7_LOCAL_CONCEPT = "99DCT";
+	
 	public static final String HL7_LOCAL_CONCEPT_NAME = "99NAM";
 	
 	public static final String HL7_LOCAL_DRUG = "99RX";
+
+	public static final String HL7_LOCAL_RELATIONSHIP = "99REL";
 	
 	// List of datatypes that do not require complex definitions
 	public static final Hashtable<String, String> simpleDatatypes = new Hashtable<String, String>();

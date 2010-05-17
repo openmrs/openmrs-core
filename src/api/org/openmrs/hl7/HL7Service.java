@@ -17,6 +17,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.openmrs.Encounter;
+import org.openmrs.Person;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.APIException;
 import org.openmrs.api.OpenmrsService;
@@ -25,8 +26,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.model.Message;
+import ca.uhn.hl7v2.model.v25.datatype.CX;
 import ca.uhn.hl7v2.model.v25.datatype.PL;
 import ca.uhn.hl7v2.model.v25.datatype.XCN;
+import ca.uhn.hl7v2.model.v25.segment.NK1;
 import ca.uhn.hl7v2.model.v25.segment.PID;
 
 /**
@@ -360,11 +363,26 @@ public interface HL7Service extends OpenmrsService {
 	
 	/**
 	 * @param pid A PID segment of an hl7 message
-	 * @return The internal id number of the Patient described by the PID segment, or null of the
-	 *         patient is not found, or if the PID segment is ambiguous
+	 * @return The internal id number of the Patient described by the PID segment, or null if the
+	 *         patient is not found or if the PID segment is ambiguous
 	 * @throws HL7Exception
 	 */
 	public Integer resolvePatientId(PID pid) throws HL7Exception;
+	
+	/**
+	 * determines a person (or patient) based on identifiers from a CX array, as found in a PID or
+	 * NK1 segment; the first resolving identifier in the list wins
+	 * 
+	 * @param identifiers CX identifier list from an identifier (either PID or NK1)
+	 * @return The internal id number of a Person based on one of the given identifiers, or null if
+	 *         the Person is not found
+	 * @throws HL7Exception
+	 * @should find a person based on a patient identifier
+	 * @should find a person based on a UUID
+	 * @should find a person based on the internal person ID
+	 * @should return null if no person is found
+	 */
+	public Person resolvePersonFromIdentifiers(CX[] identifiers) throws HL7Exception;
 	
 	/**
 	 * Clean up the current memory consumption
@@ -422,4 +440,32 @@ public interface HL7Service extends OpenmrsService {
 	 */
 	public Message processHL7Message(Message hl7Message) throws HL7Exception;
 	
+	/**
+	 * finds a UUID from an array of identifiers
+	 * 
+	 * @param identifiers
+	 * @return the UUID or null
+	 * @throws HL7Exception
+	 * @should return null if no UUID found
+	 * @should find a UUID in any position of the array
+	 * @should not fail if multiple similar UUIDs exist in identifiers
+	 * @should fail if multiple different UUIDs exist in identifiers
+	 */
+	public String getUuidFromIdentifiers(CX[] identifiers) throws HL7Exception;
+	
+	/**
+	 * creates a Person from information held in an NK1 segment; if valid PatientIdentifiers
+	 * exist, a Patient will be created and returned
+	 * 
+	 * @param nk1 the NK1 segment with person information
+	 * @return the newly formed (but not saved) person
+	 * @throws HL7Exception
+	 * @should return a saved new person
+	 * @should return a Patient if valid patient identifiers exist
+	 * @should fail if a person with the same UUID exists
+	 * @should fail on an invalid gender
+	 * @should fail if no gender specified
+	 * @should fail if no birthdate specified
+	 */
+	public Person createPersonFromNK1(NK1 nk1) throws HL7Exception;
 }
