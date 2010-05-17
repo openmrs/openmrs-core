@@ -86,11 +86,11 @@ public class NewPatientFormController extends SimpleFormController {
 	
 	/** Logger for this class and subclasses */
 	protected final Log log = LogFactory.getLog(getClass());
-
-    @Autowired
-    public void setShortPatientValidator(ShortPatientValidator shortPatientValidator){
-    	super.setValidator(shortPatientValidator);
-    }
+	
+	@Autowired
+	public void setShortPatientValidator(ShortPatientValidator shortPatientValidator) {
+		super.setValidator(shortPatientValidator);
+	}
 
 	// identifiers submitted with the form.  Stored here so that they can
 	// be redisplayed for the user after an error
@@ -105,6 +105,7 @@ public class NewPatientFormController extends SimpleFormController {
 	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest,
 	 *      org.springframework.web.bind.ServletRequestDataBinder)
 	 */
+	@Override
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
 		
@@ -115,6 +116,7 @@ public class NewPatientFormController extends SimpleFormController {
 		binder.registerCustomEditor(Concept.class, "causeOfDeath", new ConceptEditor());
 	}
 	
+	@Override
 	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object obj,
 	                                             BindException errors) throws Exception {
 		
@@ -140,14 +142,23 @@ public class NewPatientFormController extends SimpleFormController {
 				
 				if (log.isDebugEnabled()) {
 					log.debug("identifiers: " + identifiers);
-					for (String s : identifiers)
-						log.debug(s);
+					if (identifiers != null) {
+						for (String s : identifiers)
+							log.debug(s);
+					}
+
 					log.debug("types: " + types);
-					for (String s : types)
-						log.debug(s);
+					if (types != null) {
+						for (String s : types)
+							log.debug(s);
+					}
+
 					log.debug("locations: " + locs);
-					for (String s : locs)
-						log.debug(s);
+					if (locs != null) {
+						for (String s : locs)
+							log.debug(s);
+					}
+					
 					log.debug("preferred: " + pref);
 				}
 				
@@ -182,7 +193,7 @@ public class NewPatientFormController extends SimpleFormController {
 							if (newIdentifiers.contains(pi))
 								newIdentifiers.remove(pi);
 							
-//							pi.setUuid(null);
+							//							pi.setUuid(null);
 							newIdentifiers.add(pi);
 							
 							if (log.isDebugEnabled()) {
@@ -212,6 +223,7 @@ public class NewPatientFormController extends SimpleFormController {
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
 	                                BindException errors) throws Exception {
@@ -355,7 +367,7 @@ public class NewPatientFormController extends SimpleFormController {
 			}
 			
 			// add the new identifiers.  First remove them so that things like
-			// changes to preferred status and location are persisted 
+			// changes to preferred status and location are persisted
 			for (PatientIdentifier identifier : newIdentifiers) {
 				// this loop is used instead of just using removeIdentifier because
 				// the identifier set on patient is a TreeSet which will use .compareTo
@@ -546,7 +558,7 @@ public class NewPatientFormController extends SimpleFormController {
 			if (!isError && !errors.hasErrors()) {
 				Map<String, Relationship> relationships = getRelationshipsMap(patient, request);
 				for (Relationship relationship : relationships.values()) {
-					// if the user added a person to this relationship, save it 
+					// if the user added a person to this relationship, save it
 					if (relationship.getPersonA() != null && relationship.getPersonB() != null)
 						personService.saveRelationship(relationship);
 				}
@@ -579,6 +591,7 @@ public class NewPatientFormController extends SimpleFormController {
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
+	@Override
 	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 		
 		newIdentifiers = new HashSet<PatientIdentifier>();
@@ -642,6 +655,7 @@ public class NewPatientFormController extends SimpleFormController {
 	 * 
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest)
 	 */
+	@Override
 	protected Map<String, Object> referenceData(HttpServletRequest request) throws Exception {
 		
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -692,7 +706,7 @@ public class NewPatientFormController extends SimpleFormController {
 			
 			// set up the property for the relationships
 			
-			// {'3a':Relationship#234, '7b':Relationship#9488} 
+			// {'3a':Relationship#234, '7b':Relationship#9488}
 			Map<String, Relationship> relationships = getRelationshipsMap(patient, request);
 			map.put("relationships", relationships);
 		}
@@ -755,7 +769,7 @@ public class NewPatientFormController extends SimpleFormController {
 				RelationshipType relationshipType = Context.getPersonService().getRelationshipType(
 				    Integer.valueOf(showRelationId));
 				
-				// flag to know if we need to create a stub relationship 
+				// flag to know if we need to create a stub relationship
 				boolean relationshipFound = false;
 				
 				if (person != null && person.getPersonId() != null) {
