@@ -27,7 +27,6 @@ import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptNumeric;
-import org.openmrs.ConceptProposal;
 import org.openmrs.ConceptSet;
 import org.openmrs.ConceptWord;
 import org.openmrs.Drug;
@@ -35,6 +34,7 @@ import org.openmrs.Field;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptService;
+import org.openmrs.api.ConceptsLockedException;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
@@ -232,7 +232,8 @@ public class DWRConceptService {
 	 * 
 	 * @param text the text to search for within the answers
 	 * @param conceptId the conceptId of the question concept
-	 * @param includeVoided (this argument is ignored now.  searching for voided answers is not logical)
+	 * @param includeVoided (this argument is ignored now. searching for voided answers is not
+	 *            logical)
 	 * @param includeDrugConcepts if true, drug concepts are searched too
 	 * @return list of {@link ConceptListItem} or {@link ConceptDrugListItem} answers that match the
 	 *         query
@@ -241,7 +242,8 @@ public class DWRConceptService {
 	public List<Object> findConceptAnswers(String text, Integer conceptId, boolean includeVoided, boolean includeDrugConcepts)
 	                                                                                                                          throws Exception {
 		
-		if (includeVoided == true) throw new APIException("You should not include voideds in the search.");
+		if (includeVoided == true)
+			throw new APIException("You should not include voideds in the search.");
 		
 		Locale locale = Context.getLocale();
 		ConceptService cs = Context.getConceptService();
@@ -362,8 +364,9 @@ public class DWRConceptService {
 		return items;
 	}
 	
-	public List<Object> findDrugs(String phrase, boolean includeRetired) throws APIException{
-		if (includeRetired == true) throw new APIException("You should not include voideds in the search.");
+	public List<Object> findDrugs(String phrase, boolean includeRetired) throws APIException {
+		if (includeRetired == true)
+			throw new APIException("You should not include voideds in the search.");
 		Locale locale = Context.getLocale();
 		ConceptService cs = Context.getConceptService();
 		
@@ -404,6 +407,31 @@ public class DWRConceptService {
 				ret.add(new ConceptListItem(ca.getAnswerConcept(), cn, locale));
 			}
 		return ret;
+	}
+	
+	/**
+	 * Converts a boolean concept that already has Obs using it to coded to allow a user to other
+	 * answers
+	 * 
+	 * @param conceptId the conceptId of the concept to be converted
+	 * @return String to act as a signal if successfully converted or an error message
+	 */
+	public String convertBooleanConceptToCoded(Integer conceptId) {
+		
+		try {
+			Context.getConceptService().convertBooleanConceptToCoded(Context.getConceptService().getConcept(conceptId));
+			//this particular message isn't displayed in the browser rather it acts as
+			//a signal that the concept was successfully converted and should refresh page. 
+			return "refresh";
+		}
+		catch (ConceptsLockedException cle) {
+			log.error("Tried to save/convert concept while concepts were locked", cle);
+			return Context.getMessageSourceService().getMessage("Concept.concepts.locked");
+		}
+		catch (APIException e) {
+			log.error("Error while trying to change the datatype of concept", e);
+			return Context.getMessageSourceService().getMessage("Concept.cannot.save");
+		}
 	}
 	
 }

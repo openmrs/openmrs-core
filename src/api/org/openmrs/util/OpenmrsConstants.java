@@ -661,7 +661,7 @@ public final class OpenmrsConstants {
 		
 		return roles;
 	}
-
+	
 	/**
 	 * These roles are given to a user automatically and cannot be assigned
 	 * 
@@ -693,8 +693,9 @@ public final class OpenmrsConstants {
 	public static final String GLOBAL_PROPERTY_USER_HEADER_ATTRIBUTES = "user.headerAttributeTypes";
 	
 	/**
-	 * Array of all core global property names that represent comma-separated lists of PersonAttributeTypes.
-	 * (If you rename a PersonAttributeType then these global properties are potentially modified.) 
+	 * Array of all core global property names that represent comma-separated lists of
+	 * PersonAttributeTypes. (If you rename a PersonAttributeType then these global properties are
+	 * potentially modified.)
 	 */
 	public static final String[] GLOBAL_PROPERTIES_OF_PERSON_ATTRIBUTES = { GLOBAL_PROPERTY_PATIENT_LISTING_ATTRIBUTES,
 	        GLOBAL_PROPERTY_PATIENT_VIEWING_ATTRIBUTES, GLOBAL_PROPERTY_PATIENT_HEADER_ATTRIBUTES,
@@ -754,6 +755,10 @@ public final class OpenmrsConstants {
 	
 	public static final String GLOBAL_PROPERTY_IGNORE_MISSING_NONLOCAL_PATIENTS = "hl7_processor.ignore_missing_patient_non_local";
 	
+	public static final String GLOBAL_PROPERTY_TRUE_CONCEPT = "concept.true";
+	
+	public static final String GLOBAL_PROPERTY_FALSE_CONCEPT = "concept.false";
+	
 	/**
 	 * Global property name that allows specification of whether user passwords must contain both
 	 * upper and lower case characters. Allowable values are "true", "false", and null
@@ -789,7 +794,7 @@ public final class OpenmrsConstants {
 	 * adhere to
 	 */
 	public static String GP_PASSWORD_CUSTOM_REGEX = "security.passwordCustomRegex";
-		
+	
 	/**
 	 * Global property name for absolute color for patient graphs.
 	 */
@@ -858,10 +863,10 @@ public final class OpenmrsConstants {
 		                "Drug sets that appear on the Patient Dashboard Regimen tab. Comma separated list of name of concepts that are defined as drug sets."));
 		
 		props
-        		.add(new GlobalProperty(
-        				GLOBAL_PROPERTY_DRUG_FREQUENCIES,
-        				"7 days/week,6 days/week,5 days/week,4 days/week,3 days/week,2 days/week,1 days/week",
-                		"Frequency of a drug order that appear on the Patient Dashboard. Comma separated list of name of concepts that are defined as drug frequencies."));
+		        .add(new GlobalProperty(
+		                GLOBAL_PROPERTY_DRUG_FREQUENCIES,
+		                "7 days/week,6 days/week,5 days/week,4 days/week,3 days/week,2 days/week,1 days/week",
+		                "Frequency of a drug order that appear on the Patient Dashboard. Comma separated list of name of concepts that are defined as drug frequencies."));
 		
 		props.add(new GlobalProperty(GP_GRAPH_COLOR_ABSOLUTE, "rgb(20,20,20)",
 		        "Color of the 'invalid' section of numeric graphs on the patient dashboard."));
@@ -871,7 +876,7 @@ public final class OpenmrsConstants {
 		
 		props.add(new GlobalProperty(GP_GRAPH_COLOR_CRITICAL, "rgb(200,0,0)",
 		        "Color of the 'critical' section of numeric graphs on the patient dashboard."));
-
+		
 		String standardRegimens = "<list>" + "  <regimenSuggestion>" + "    <drugComponents>" + "      <drugSuggestion>"
 		        + "        <drugId>2</drugId>" + "        <dose>1</dose>" + "        <units>tab(s)</units>"
 		        + "        <frequency>2/day x 7 days/week</frequency>" + "        <instructions></instructions>"
@@ -1006,12 +1011,13 @@ public final class OpenmrsConstants {
 		                        + GLOBAL_PROPERTY_PATIENT_IDENTIFIER_REGEX
 		                        + " is empty.  The string here is prepended to the sql indentifier search string.  The sql becomes \"... where identifier like '<PREFIX><QUERY STRING><SUFFIX>';\".  Typically this value is either a percent sign (%) or empty."));
 		props
-        .add(new GlobalProperty(
-        	GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SEARCH_PATTERN,
-                "",
-                "If this is empty, the regex or suffix/prefix search is used.  Comma separated list of identifiers to check.  Allows for faster searching of multiple options rather than the slow regex. e.g. @SEARCH@,0@SEARCH@,@SEARCH-1@-@CHECKDIGIT@,0@SEARCH-1@-@CHECKDIGIT@ would turn a request for \"4127\" into a search for \"in ('4127','04127','412-7','0412-7')\""));
+		        .add(new GlobalProperty(
+		                GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SEARCH_PATTERN,
+		                "",
+		                "If this is empty, the regex or suffix/prefix search is used.  Comma separated list of identifiers to check.  Allows for faster searching of multiple options rather than the slow regex. e.g. @SEARCH@,0@SEARCH@,@SEARCH-1@-@CHECKDIGIT@,0@SEARCH-1@-@CHECKDIGIT@ would turn a request for \"4127\" into a search for \"in ('4127','04127','412-7','0412-7')\""));
 		
-		props.add(new GlobalProperty(GLOBAL_PROPERTY_PERSON_SEARCH_MAX_RESULTS, String.valueOf(GLOBAL_PROPERTY_PERSON_SEARCH_MAX_RESULTS_DEFAULT_VALUE),
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_PERSON_SEARCH_MAX_RESULTS, String
+		        .valueOf(GLOBAL_PROPERTY_PERSON_SEARCH_MAX_RESULTS_DEFAULT_VALUE),
 		        "The maximum number of results returned by patient searches"));
 		
 		props
@@ -1081,28 +1087,31 @@ public final class OpenmrsConstants {
 		                "Specifies the default locale. You can specify both the language code(ISO-639) and the country code(ISO-3166), e.g. 'en_GB' or just country: e.g. 'en'"));
 		
 		props.add(new GlobalProperty(GP_PASSWORD_CANNOT_MATCH_USERNAME_OR_SYSTEMID, "true",
-									 "Configure whether passwords must not match user's username or system id"));
+		        "Configure whether passwords must not match user's username or system id"));
 		
 		props.add(new GlobalProperty(GP_PASSWORD_CUSTOM_REGEX, "",
-									 "Configure a custom regular expression that a password must match"));
+		        "Configure a custom regular expression that a password must match"));
 		
 		props.add(new GlobalProperty(GP_PASSWORD_MINIMUM_LENGTH, "8",
-									 "Configure the minimum length required of all passwords"));
-	
+		        "Configure the minimum length required of all passwords"));
+		
 		props.add(new GlobalProperty(GP_PASSWORD_REQUIRES_DIGIT, "true",
-		 							 "Configure whether passwords must contain at least one digit"));
+		        "Configure whether passwords must contain at least one digit"));
 		
 		props.add(new GlobalProperty(GP_PASSWORD_REQUIRES_NON_DIGIT, "true",
-		 							 "Configure whether passwords must contain at least one non-digit"));
+		        "Configure whether passwords must contain at least one non-digit"));
 		
 		props.add(new GlobalProperty(GP_PASSWORD_REQUIRES_UPPER_AND_LOWER_CASE, "true",
-		 							 "Configure whether passwords must contain both upper and lower case characters"));
+		        "Configure whether passwords must contain both upper and lower case characters"));
 		
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_IGNORE_MISSING_NONLOCAL_PATIENTS, "false",
-									 "If true, hl7 messages for patients that are not found and are non-local will silently be dropped/ignored"));
+		        "If true, hl7 messages for patients that are not found and are non-local will silently be dropped/ignored"));
 		
-		props.add(new GlobalProperty(GLOBAL_PROPERTY_SHOW_PATIENT_NAME, "false",
-		 							 "Whether or not to display the patient name in the patient dashboard title. Note that enabling this could be security risk if multiple users operate on the same computer."));
+		props
+		        .add(new GlobalProperty(
+		                GLOBAL_PROPERTY_SHOW_PATIENT_NAME,
+		                "false",
+		                "Whether or not to display the patient name in the patient dashboard title. Note that enabling this could be security risk if multiple users operate on the same computer."));
 		
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);

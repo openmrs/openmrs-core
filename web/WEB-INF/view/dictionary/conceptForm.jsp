@@ -318,9 +318,16 @@
 							<c:if test="${cd.conceptDatatypeId == status.value}">selected="selected"</c:if>>${cd.name}</option>
 					</c:forEach>
 				</select>
+				<c:if test="${dataTypeReadOnly == true && isBoolean != null && isBoolean == true}">					
+					<input type="button" value="<spring:message code="Concept.boolean.add.answer"/>" 
+						   onclick="addAnswerToBooleanConcept('<spring:message code="Concept.boolean.confirm.add.answer"/>', '${command.concept.conceptId}')" 
+						   title="<spring:message code="Concept.boolean.change.tooltip"/>"/>
+					<spring:message code="Concept.boolean.warning.irreversible"/>
+					<span id="addAnswerError" class="error" style="display:none"></span>
+				</c:if>				
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
-			<c:if test="${dataTypeReadOnly == true}">(<spring:message code="Concept.datatype.readonly"/>)</c:if>
+			<c:if test="${dataTypeReadOnly == true && isBoolean == null}">(<spring:message code="Concept.datatype.readonly"/>)</c:if>
 		</td>
 	</tr>
 	<tr id="codedDatatypeRow">

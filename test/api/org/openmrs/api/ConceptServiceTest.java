@@ -47,6 +47,7 @@ import org.openmrs.ConceptSource;
 import org.openmrs.ConceptWord;
 import org.openmrs.Drug;
 import org.openmrs.Encounter;
+import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.Person;
@@ -56,6 +57,7 @@ import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.SkipBaseSetup;
 import org.openmrs.test.TestUtil;
 import org.openmrs.test.Verifies;
+import org.openmrs.util.OpenmrsConstants;
 
 /**
  * This test class (should) contain tests for all of the ConcepService methods TODO clean up and
@@ -997,4 +999,126 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		}
 	}
 	
+	/**
+	 * @see {@link ConceptService#getFalse()}
+	 */
+	@Test
+	@Verifies(value = "should return the false concept", method = "getFalseConcept()")
+	public void getFalse_shouldReturnTheFalseConcept() throws Exception {
+		createTrueFalseGlobalProperties();
+		Assert.assertNotNull(conceptService.getFalseConcept());
+		Assert.assertEquals(new Concept(8), conceptService.getFalseConcept());
+	}
+	
+	/**
+	 * @see {@link ConceptService#getTrue()}
+	 */
+	@Test
+	@Verifies(value = "should return the true concept", method = "getTrueConcept()")
+	public void getTrue_shouldReturnTheTrueConcept() throws Exception {
+		createTrueFalseGlobalProperties();
+		Assert.assertNotNull(conceptService.getTrueConcept());
+		Assert.assertEquals(new Concept(7), conceptService.getTrueConcept());
+	}
+	
+	/**
+	 * @see {@link ConceptService#changeConceptFromBooleanToCoded(Concept)}
+	 */
+	@Test
+	@Verifies(value = "should convert the datatype of a boolean concept to coded", method = "changeConceptFromBooleanToCoded(Concept)")
+	public void changeConceptFromBooleanToCoded_shouldConvertTheDatatypeOfABooleanConceptToCoded() throws Exception {
+		Concept concept = conceptService.getConcept(18);
+		Assert.assertEquals(conceptService.getConceptDatatypeByName("Boolean"), concept.getDatatype());
+		conceptService.convertBooleanConceptToCoded(concept);
+		Assert.assertEquals(conceptService.getConceptDatatypeByName("Coded"), concept.getDatatype());
+	}
+	
+	/**
+	 * @see {@link ConceptService#changeConceptFromBooleanToCoded(Concept)}
+	 */
+	@Test(expected = APIException.class)
+	@Verifies(value = "should fail if the datatype of the concept is not boolean", method = "changeConceptFromBooleanToCoded(Concept)")
+	public void changeConceptFromBooleanToCoded_shouldFailIfTheDatatypeOfTheConceptIsNotBoolean() throws Exception {
+		Concept concept = conceptService.getConcept(5497);
+		conceptService.convertBooleanConceptToCoded(concept);
+	}
+	
+	/**
+	 * @see {@link ConceptService#changeConceptFromBooleanToCoded(Concept)}
+	 */
+	@Test
+	@Verifies(value = "should explicitly add false concept as a value_Coded answer", method = "changeConceptFromBooleanToCoded(Concept)")
+	public void changeConceptFromBooleanToCoded_shouldExplicitlyAddFalseConceptAsAValue_CodedAnswer() throws Exception {
+		Concept concept = conceptService.getConcept(18);
+		Collection<ConceptAnswer> answers = concept.getAnswers();
+		boolean falseConceptFound = false;
+		//initially the concept shouldn't present
+		for (ConceptAnswer conceptAnswer : answers) {
+			if (conceptAnswer.getAnswerConcept().equals(conceptService.getFalseConcept()))
+				falseConceptFound = true;
+		}
+		Assert.assertEquals(false, falseConceptFound);
+		conceptService.convertBooleanConceptToCoded(concept);
+		answers = concept.getAnswers();
+		for (ConceptAnswer conceptAnswer : answers) {
+			if (conceptAnswer.getAnswerConcept().equals(conceptService.getFalseConcept()))
+				falseConceptFound = true;
+		}
+		Assert.assertEquals(true, falseConceptFound);
+	}
+	
+	/**
+	 * @see {@link ConceptService#changeConceptFromBooleanToCoded(Concept)}
+	 */
+	@Test
+	@Verifies(value = "should explicitly add true concept as a value_Coded answer", method = "changeConceptFromBooleanToCoded(Concept)")
+	public void changeConceptFromBooleanToCoded_shouldExplicitlyAddTrueConceptAsAValue_CodedAnswer() throws Exception {
+		Concept concept = conceptService.getConcept(18);
+		Collection<ConceptAnswer> answers = concept.getAnswers();
+		boolean trueConceptFound = false;
+		for (ConceptAnswer conceptAnswer : answers) {
+			if (conceptAnswer.getAnswerConcept().equals(conceptService.getTrueConcept()))
+				trueConceptFound = true;
+		}
+		Assert.assertEquals(false, trueConceptFound);
+		conceptService.convertBooleanConceptToCoded(concept);
+		answers = concept.getAnswers();
+		for (ConceptAnswer conceptAnswer : answers) {
+			if (conceptAnswer.getAnswerConcept().equals(conceptService.getTrueConcept()))
+				trueConceptFound = true;
+		}
+		Assert.assertEquals(true, trueConceptFound);
+	}
+	
+	/**
+	 * @see {@link ConceptService#getFalseConcept()}
+	 */
+	@Test
+	@Verifies(value = "should return the false concept", method = "getFalseConcept()")
+	public void getFalseConcept_shouldReturnTheFalseConcept() throws Exception {
+		createTrueFalseGlobalProperties();
+		Assert.assertEquals(8, conceptService.getFalseConcept().getConceptId().intValue());
+	}
+	
+	/**
+	 * @see {@link ConceptService#getTrueConcept()}
+	 */
+	@Test
+	@Verifies(value = "should return the true concept", method = "getTrueConcept()")
+	public void getTrueConcept_shouldReturnTheTrueConcept() throws Exception {
+		createTrueFalseGlobalProperties();
+		Assert.assertEquals(7, conceptService.getTrueConcept().getConceptId().intValue());
+	}
+	
+	/**
+	 * Utility method that creates the global properties 'concept.true' and 'concept.false'
+	 */
+	private static void createTrueFalseGlobalProperties() {
+		GlobalProperty trueConceptGlobalProperty = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_TRUE_CONCEPT, "7",
+		        "Concept id of the concept defining the TRUE boolean concept");
+		GlobalProperty falseConceptGlobalProperty = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_FALSE_CONCEPT, "8",
+		        "Concept id of the concept defining the TRUE boolean concept");
+		Context.getAdministrationService().saveGlobalProperty(trueConceptGlobalProperty);
+		Context.getAdministrationService().saveGlobalProperty(falseConceptGlobalProperty);
+	}
 }

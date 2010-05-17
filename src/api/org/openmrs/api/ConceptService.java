@@ -992,11 +992,12 @@ public interface ConceptService extends OpenmrsService {
 	public List<Concept> getQuestionsForAnswer(Concept concept) throws APIException;
 	
 	/**
-	 * Returns all possible value-coded answers to a Concept To navigate in the other direction,
-	 * i.e., from Concept to its answers use Concept.getAnswers()
+	 * Returns all possible Concepts to which this concept is a value-coded answer. To navigate in
+	 * the other direction, i.e., from Concept to its answers use Concept.getAnswers()
 	 * 
 	 * @param concept
-	 * @return A List<Concept> containing all possible value coded answers to a question
+	 * @return A List<Concept> containing all possible questions to which this concept is a
+	 *         valued_Coded answer
 	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)
@@ -1295,5 +1296,37 @@ public interface ConceptService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
 	public boolean hasAnyObservation(Concept concept);
+	
+	/**
+	 * Returns the TRUE concept
+	 * 
+	 * @return true concept
+	 * @should return the true concept
+	 */
+	@Transactional(readOnly = true)
+	public Concept getTrueConcept();
+	
+	/**
+	 * Returns the FALSE concept
+	 * 
+	 * @return false concept
+	 * @should return the false concept
+	 */
+	@Transactional(readOnly = true)
+	public Concept getFalseConcept();
+	
+	/**
+	 * Changes the datatype of a concept from boolean to coded when it has observations it is
+	 * associated to.
+	 * 
+	 * @param conceptToChange the concept which to change
+	 * @throws APIException
+	 * @should convert the datatype of a boolean concept to coded
+	 * @should fail if the datatype of the concept is not boolean
+	 * @should explicitly add true concept as a value_Coded answer
+	 * @should explicitly add false concept as a value_Coded answer
+	 */
+	@Authorized( { OpenmrsConstants.PRIV_MANAGE_CONCEPTS })
+	public void convertBooleanConceptToCoded(Concept conceptToChange) throws APIException;
 	
 }

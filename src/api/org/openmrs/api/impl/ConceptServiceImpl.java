@@ -71,6 +71,10 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	
 	private ConceptDAO dao;
 	
+	private static Concept trueConcept;
+	
+	private static Concept falseConcept;
+	
 	/*
 	 * Name of the concept word update task. A constant, because we only
 	 * manage a single task with this name. 
@@ -157,9 +161,9 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		//check that there is no concept already using the preferred concept name in the locale 
 		Errors errors = new BindException(concept, "concept");
 		new ConceptValidator().validate(concept, errors);
-		if (errors.hasErrors()) 
+		if (errors.hasErrors())
 			throw new APIException("Validation errors found");
-				
+		
 		Concept conceptToReturn = dao.saveConcept(concept);
 		
 		// add/remove entries in the concept_word table (used for searching)
@@ -207,14 +211,14 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 * @throws APIException
 	 */
 	public Drug retireDrug(Drug drug, String reason) throws APIException {
-			return dao.saveDrug(drug);
+		return dao.saveDrug(drug);
 	}
 	
 	/**
 	 * @see org.openmrs.api.ConceptService#unretireDrug(org.openmrs.Drug)
 	 */
 	public Drug unretireDrug(Drug drug) throws APIException {
-			return dao.saveDrug(drug);
+		return dao.saveDrug(drug);
 	}
 	
 	/**
@@ -1353,6 +1357,45 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	}
 	
 	/**
+	 * @see org.openmrs.api.ConceptService#getFalseConcept()
+	 */
+	@Override
+	public Concept getFalseConcept() {
+		if (falseConcept == null)
+			setBooleanConcepts();
+		
+		return falseConcept;
+	}
+	
+	/**
+	 * @see org.openmrs.api.ConceptService#getTrueConcept()
+	 */
+	@Override
+	public Concept getTrueConcept() {
+		if (trueConcept == null)
+			setBooleanConcepts();
+		
+		return trueConcept;
+	}
+	
+	/**
+	 * Sets the TRUE and FALSE concepts by reading their ids from the global_property table
+	 */
+	private void setBooleanConcepts() {
+		
+		try {
+			trueConcept = new Concept(Integer.parseInt(Context.getAdministrationService().getGlobalProperty(
+			    OpenmrsConstants.GLOBAL_PROPERTY_TRUE_CONCEPT)));
+			falseConcept = new Concept(Integer.parseInt(Context.getAdministrationService().getGlobalProperty(
+			    OpenmrsConstants.GLOBAL_PROPERTY_FALSE_CONCEPT)));
+		}
+		catch (NumberFormatException e) {
+			log.warn("Concept ids for boolean concepts should be numbers");
+			return;
+		}
+	}
+	
+	/**
 	 * @see org.openmrs.api.ConceptService#getConceptsByConceptSource(org.openmrs.ConceptSource)
 	 */
 	public List<ConceptMap> getConceptsByConceptSource(ConceptSource conceptSource) throws APIException {
@@ -1374,6 +1417,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 * Utility method to check if the concept is already attached to an observation (including
 	 * voided ones) and if the datatype of the concept has changed, an exception indicating that the
 	 * datatype cannot be modified will be reported if the concept is attached to an observation.
+	 * This method will only allow changing boolean concepts to coded.
 	 * 
 	 * @param concept
 	 * @throws ConceptsDataTypeCannotBeModifiedException
@@ -1381,7 +1425,11 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	private void checkIfDatatypeCanBeChanged(Concept concept) {
 		if (concept.getId() != null) {
 			if (hasAnyObservation(concept) && hasDatatypeChanged(concept)) {
-				throw new ConceptInUseException();
+				//allow boolean concepts to be converted to coded				
+				if (!(dao.getSavedConceptDatatype(concept).isBoolean() && concept.getDatatype().isCoded()))
+					throw new ConceptInUseException();
+				if (log.isDebugEnabled())
+					log.debug("Converting datatype of concept with id " + concept.getConceptId() + " from Boolean to Coded");
 			}
 		}
 	}
@@ -1407,6 +1455,22 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		Integer count = Context.getObsService().getObservationCount(null, null, concepts, null, null, null, null, null,
 		    null, true);
 		return count > 0;
+	}
+	
+	/**
+	 * @see org.openmrs.api.ConceptService#convertBooleanConceptToCoded(org.openmrs.Concept)
+	 */
+	@Override
+	public void convertBooleanConceptToCoded(Concept conceptToChange) throws APIException {
+		if (conceptToChange != null) {
+			if (!conceptToChange.getDatatype().isBoolean())
+				throw new APIException("Invalid datatype of the concept to convert, should be Boolean");
+			
+			conceptToChange.setDatatype(getConceptDatatypeByName("Coded"));
+			conceptToChange.addAnswer(new ConceptAnswer(getTrueConcept()));
+			conceptToChange.addAnswer(new ConceptAnswer(getFalseConcept()));
+			Context.getConceptService().saveConcept(conceptToChange);
+		}
 	}
 	
 }

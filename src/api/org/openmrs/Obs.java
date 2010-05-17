@@ -23,10 +23,12 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.aop.RequiredDataAdvice;
 import org.openmrs.api.APIException;
+import org.openmrs.api.context.Context;
 import org.openmrs.api.handler.AuditableSaveHandler;
 import org.openmrs.api.handler.OpenmrsObjectSaveHandler;
 import org.openmrs.api.handler.SaveHandler;
@@ -586,12 +588,56 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	/**
-	 * This converts the value_numeric to a value_boolean, essentially
+	 * Sets the value of this obs to the specified valueBoolean if this obs has a boolean concept.
 	 * 
-	 * @return Boolean of the obs value
+	 * @param valueBoolean the boolean value matching the boolean coded concept to set to
+	 */
+	public void setValueBoolean(Boolean valueBoolean) {
+		if (valueBoolean != null && getConcept() != null && getConcept().getDatatype().isBoolean())
+			setValueCoded(valueBoolean.booleanValue() ? Context.getConceptService().getTrueConcept() : Context
+			        .getConceptService().getFalseConcept());
+		else if (valueBoolean == null)
+			setValueCoded(null);
+	}
+	
+	/**
+	 * Coerces a value to a Boolean representation
+	 * 
+	 * @return Boolean representation of the obs value
+	 * @should return true for value_numeric concepts if value is 1
+	 * @should return false for value_numeric concepts if value is 0
+	 * @should return null for value_numeric concepts if value is neither 1 nor 0
 	 */
 	public Boolean getValueAsBoolean() {
-		return (getValueNumeric() == null ? null : getValueNumeric() != 0);
+		
+		if (getValueCoded() != null) {
+			if (getValueCoded().equals(Context.getConceptService().getTrueConcept())) {
+				return Boolean.TRUE;
+			} else if (getValueCoded().equals(Context.getConceptService().getFalseConcept())) {
+				return Boolean.FALSE;
+			}
+		} else if (getValueNumeric() != null) {
+			if (getValueNumeric() == 1)
+				return Boolean.TRUE;
+			else if (getValueNumeric() == 0)
+				return Boolean.FALSE;
+		}
+		//returning null is preferred to defaulting to false to support validation of user input is from a form
+		return null;
+	}
+	
+	/**
+	 * Returns the boolean value if the concept of this obs is of boolean datatype
+	 * 
+	 * @return true or false if value is set otherwise null
+	 * @should return true if value coded answer concept is true concept
+	 * @should return false if value coded answer concept is false concept
+	 */
+	public Boolean getValueBoolean() {
+		if (getConcept() != null && valueCoded != null && getConcept().getDatatype().isBoolean())
+			return valueCoded.equals(Context.getConceptService().getTrueConcept());
+		
+		return null;
 	}
 	
 	/**
@@ -932,14 +978,22 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	
 	private static DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 	
+	/**
+	 * Sets the value for the obs from a string depending on the datatype of the question concept
+	 * 
+	 * @param s the string to coerce to a boolean
+	 * @should set value as boolean if the datatype of the question concept is boolean
+	 * @should fail if the value of the string is null
+	 * @should fail if the value of the string is empty
+	 */
 	public void setValueAsString(String s) throws ParseException {
 		if (log.isDebugEnabled())
 			log.debug("getConcept() == " + getConcept());
 		
-		if (getConcept() != null) {
+		if (getConcept() != null && !StringUtils.isBlank(s)) {
 			String abbrev = getConcept().getDatatype().getHl7Abbreviation();
 			if (abbrev.equals("BIT")) {
-				setValueNumeric(Boolean.valueOf(s) ? 1.0 : 0.0);
+				setValueBoolean(Boolean.valueOf(s));
 			} else if (abbrev.equals("CWE")) {
 				throw new RuntimeException("Not Yet Implemented");
 			} else if (abbrev.equals("NM") || abbrev.equals("SN")) {
@@ -951,6 +1005,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 			} else {
 				throw new RuntimeException("Don't know how to handle " + abbrev);
 			}
+			
 		} else {
 			throw new RuntimeException("concept is null for " + this);
 		}

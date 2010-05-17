@@ -73,6 +73,7 @@
 			<include method="getDrugs" />
 			<include method="findDrugs" />
 			<include method="getAnswersForQuestion" />
+			<include method="convertBooleanConceptToCoded" />
 		</create>
 		
 		<create creator="new" javascript="DWREncounterService">

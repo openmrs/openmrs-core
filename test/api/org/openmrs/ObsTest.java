@@ -209,4 +209,56 @@ public class ObsTest {
 		Assert.assertTrue(obs.isComplex());
 	}
 	
+	/**
+	 * @see {@link Obs#setValueAsString(String)}
+	 */
+	@Test(expected = RuntimeException.class)
+	@Verifies(value = "should fail if the value of the string is empty", method = "setValueAsString(String)")
+	public void setValueAsString_shouldFailIfTheValueOfTheStringIsEmpty() throws Exception {
+		Obs obs = new Obs();
+		obs.setValueAsString("");
+	}
+	
+	/**
+	 * @see {@link Obs#setValueAsString(String)}
+	 */
+	@Test(expected = RuntimeException.class)
+	@Verifies(value = "should fail if the value of the string is null", method = "setValueAsString(String)")
+	public void setValueAsString_shouldFailIfTheValueOfTheStringIsNull() throws Exception {
+		Obs obs = new Obs();
+		obs.setValueAsString(null);
+	}
+	
+	/**
+	 * @see {@link Obs#getValueAsBoolean()}
+	 */
+	@Test
+	@Verifies(value = "should return false for value_numeric concepts if value is 0", method = "getValueAsBoolean()")
+	public void getValueAsBoolean_shouldReturnFalseForValue_numericConceptsIfValueIs0() throws Exception {
+		Obs obs = new Obs();
+		obs.setValueNumeric(0.0);
+		Assert.assertEquals(false, obs.getValueAsBoolean());
+	}
+	
+	/**
+	 * @see {@link Obs#getValueAsBoolean()}
+	 */
+	@Test
+	@Verifies(value = "should return null for value_numeric concepts if value is neither 1 nor 0", method = "getValueAsBoolean()")
+	public void getValueAsBoolean_shouldReturnNullForValue_numericConceptsIfValueIsNeither1Nor0() throws Exception {
+		Obs obs = new Obs();
+		obs.setValueNumeric(24.8);
+		Assert.assertNull(obs.getValueAsBoolean());
+	}
+	
+	/**
+	 * @see {@link Obs#getValueAsBoolean()}
+	 */
+	@Test
+	@Verifies(value = "should return true for value_numeric concepts if value is 1", method = "getValueAsBoolean()")
+	public void getValueAsBoolean_shouldReturnTrueForValue_numericConceptsIfValueIs1() throws Exception {
+		Obs obs = new Obs();
+		obs.setValueNumeric(1.0);
+		Assert.assertEquals(true, obs.getValueAsBoolean());
+	}
 }

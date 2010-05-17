@@ -3267,4 +3267,9 @@
 			<column name="uuid" value="131168f4-15f5-102d-96e4-000c29c2a5d7" />
 		</insert>
 	</changeSet>
+	
+	<changeSet id="20100517-1545" author="wyclif">						
+		<comment>Switch boolean concepts/observations to be stored as coded</comment>
+		<customChange class="org.openmrs.util.databasechange.BooleanConceptChangeSet"/>				
+	</changeSet>
 </databaseChangeLog>
