@@ -39,6 +39,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 
+import ca.uhn.hl7v2.app.ApplicationException;
 import ca.uhn.hl7v2.app.MessageTypeRouter;
 import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.parser.GenericParser;
@@ -337,20 +338,20 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ORUR01Handler#getConcept(String,String)}
+	 * @see {@link ORUR01Handler#processMessage(Message)}
 	 */
-	@Test
-	@Verifies(value = "should send message to error queue for empty concept proposals", method = "processMessage(Message)")
-	public void processMessage__shouldSendMessageToErrorEueueForEmptyConceptProposals()
-	                                                                                                                      throws Exception {
-		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080630094800||ORU^R01|kgWdFt0SVwwClOfJm3pe|P|2.5|1||||||||15^AMRS.ELD.FORMID\rPID|||3^^^^~d3811480^^^^||John3^Doe^||\rPV1||O|1^Unknown||||1^Super User (admin)|||||||||||||||||||||||||||||||||||||20080208|||||||V\rORC|RE||||||||20080208000000|1^Super User\rOBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\rOBR|1|||1284^PROBLEM LIST^99DCT\rOBX|1|CWE|6042^PROBLEM ADDED^99DCT||PROPOSED^^99DCT|||||||||20080208";
-		int numberOfErrors = Context.getHL7Service().getAllHL7InErrors().size();
+	@Test(expected = ApplicationException.class)
+	@Verifies(value = "should fail on empty concept proposals", method = "processMessage(Message)")
+	public void processMessage_shouldFailOnEmptyConceptProposals() throws Exception {
+		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080630094800||ORU^R01|kgWdFt0SVwwClOfJm3pe|P|2.5|1||||||||15^AMRS.ELD.FORMID\r"
+		        + "PID|||3^^^^~d3811480^^^^||John3^Doe^||\r"
+		        + "PV1||O|1^Unknown||||1^Super User (admin)|||||||||||||||||||||||||||||||||||||20080208|||||||V\r"
+		        + "ORC|RE||||||||20080208000000|1^Super User\r"
+		        + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r"
+		        + "OBR|1|||1284^PROBLEM LIST^99DCT\r"
+		        + "OBX|1|CWE|6042^PROBLEM ADDED^99DCT||PROPOSED^^99DCT|||||||||20080208";
 		Message hl7message = parser.parse(hl7string);
 		router.processMessage(hl7message);
-		Context.getHL7Service().getAllHL7InErrors();
-		//number or errors in queue should have incremented by 1
-		Assert.assertEquals(numberOfErrors + 1, Context.getHL7Service().getAllHL7InErrors().size());
-		
-	}	
+	}
 	
 }
