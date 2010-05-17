@@ -3247,4 +3247,24 @@
 			<column name="obs_datetime"/>
 		</createIndex>
 	</changeSet>
+
+	<changeSet id="20100512-1400" author="djazayeri">
+		<preConditions onFail="MARK_RAN">
+			<sqlCheck expectedResult="0">
+				select count(*) from order_type where order_type_id = 2
+			</sqlCheck>
+		</preConditions>
+		<comment>Create core order_type for drug orders</comment>
+		<insert tableName="order_type">
+			<column name="order_type_id" valueNumeric="2" />
+			<column name="name" value="Drug Order" />
+			<column name="description" value="An order for a medication to be given to the patient" />
+			<column name="creator" valueNumeric="1" />
+			<column name="date_created" valueDate="2010-05-12" />
+			<column name="retired" valueNumeric="0" />
+			<column name="date_retired" />
+			<column name="retire_reason" />
+			<column name="uuid" value="131168f4-15f5-102d-96e4-000c29c2a5d7" />
+		</insert>
+	</changeSet>
 </databaseChangeLog>
