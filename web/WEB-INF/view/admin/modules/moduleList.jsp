@@ -10,8 +10,24 @@
 <openmrs:htmlInclude file="/scripts/jquery-ui/css/redmond/jquery-ui-1.7.2.custom.css" />
 <script type="text/javascript">
 	var oTable;
-
+	
 	$j(document).ready(function() {
+		$j('#addUpgradePopup').dialog({
+			autoOpen: false,
+			modal: true,
+			title: '<spring:message code="Module.addOrUpgrade" javaScriptEscape="true"/>',
+			width: '90%'
+		});
+				
+		$j('#addUpgradeButton').click(function() {
+			$j('#addUpgradePopup').dialog('open');
+		});
+
+		$j('.errorDetailsButton').click(function() {
+			var detailsNum = $j(this).attr('id').substring(18); // strip 'errorDetailsButton'
+			$j('#errorDetails' + detailsNum).dialog('open');
+		});
+
 		oTable = $j('#findModuleTable').dataTable({
 			"aoColumns": [ { "sName": "Action", "bSortable": false,
 					         "fnRender": function ( oObj ) {
@@ -53,62 +69,64 @@
 
 <p><spring:message code="Module.notice" /></p>
 
-<div style="width: 49.5%; float: left; margin-left: 4px;">
-	<b class="boxHeader"><spring:message code="Module.add"/></b>
-	<div class="box">
-		<form id="moduleAddForm" action="module.list" method="post" enctype="multipart/form-data">
-			<input type="file" name="moduleFile" size="40" <c:if test="${allowAdmin!='true'}">disabled="disabled"</c:if> />
-			<input type="hidden" name="action" value="upload"/>
-			
-			<c:choose>
-				<c:when test="${allowAdmin == 'true'}">
-					<input type="submit" value='<spring:message code="Module.upload"/>'/>
-				</c:when>
-				<c:otherwise>
-					${disallowUploads}
-				</c:otherwise>
-			</c:choose>
-		</form>
-	</div>
-</div>
-<c:if test="${allowAdmin=='true'}">
-<div style="width: 49.5%; float: right; margin-right: 4px">
-	<b class="boxHeader"><spring:message code="Module.upgrade"/></b>
-	<div class="box">
-		<form method="post" id="uploadUpdateForm" enctype="multipart/form-data">
-			<input type="file" name="moduleFile" size="40" />
-			<input type="hidden" name="action" value="upload"/>
-			<input type="hidden" name="update" value="true"/>
-			<input type="submit" value='<spring:message code="Module.upload"/>'/>
-		</form>
-	</div>
-</div>
-</c:if>
-
-<br style="clear:both"/>
-
-<c:if test="${allowAdmin=='true'}">
-<br/>
-<div id="findModule">
-	<b class="boxHeader"><spring:message code="Module.findAndDownload" arguments="${moduleRepositoryURL}" /></b>
-	<div class="box">
-		<table id="findModuleTable" cellpadding="5" cellspacing="0">
-    		<thead>
-       			<tr>
-					<th><spring:message code="general.action"/></th>
-					<th><spring:message code="general.name"/></th>
-					<th><spring:message code="general.version"/></th>
-					<th><spring:message code="general.author"/></th>
-					<th><spring:message code="general.description"/></th>
-       			</tr>
-   			</thead>
-   			<tbody>
-    		</tbody>
-		</table>
-	</div>
-</div>
-<br/>
-</c:if>
+<c:choose>
+	<c:when test="${allowAdmin == 'true'}">
+		<div id="buttonPanel">
+			<div style="float:left">
+				<input type="button" id="addUpgradeButton" value="<spring:message code="Module.addOrUpgrade" javaScriptEscape="true"/>"/>
+				<div id="addUpgradePopup">
+					<b class="boxHeader"><spring:message code="Module.add"/></b>
+					<div class="box">
+						<form id="moduleAddForm" action="module.list" method="post" enctype="multipart/form-data">
+							<input type="file" name="moduleFile" size="40" <c:if test="${allowAdmin!='true'}">disabled="disabled"</c:if> />
+							<input type="hidden" name="action" value="upload"/>
+							<input type="submit" value='<spring:message code="Module.upload"/>'/>
+						</form>
+					</div>
+					<br/>
+		
+					<b class="boxHeader"><spring:message code="Module.upgrade"/></b>
+					<div class="box">
+						<form method="post" id="uploadUpdateForm" enctype="multipart/form-data">
+							<input type="file" name="moduleFile" size="40" />
+							<input type="hidden" name="action" value="upload"/>
+							<input type="hidden" name="update" value="true"/>
+							<input type="submit" value='<spring:message code="Module.upload"/>'/>
+						</form>
+					</div>
+					<br/>
+		
+					<div id="findModule">
+						<b class="boxHeader"><spring:message code="Module.findAndDownload" arguments="${moduleRepositoryURL}" /></b>
+						<div class="box">
+							<table id="findModuleTable" cellpadding="5" cellspacing="0">
+					    		<thead>
+					       			<tr>
+										<th><spring:message code="general.action"/></th>
+										<th><spring:message code="general.name"/></th>
+										<th><spring:message code="general.version"/></th>
+										<th><spring:message code="general.author"/></th>
+										<th><spring:message code="general.description"/></th>
+					       			</tr>
+					   			</thead>
+					   			<tbody>
+					    		</tbody>
+							</table>
+						</div>
+					</div>
+					<br/>
+				</div>
+			</div>
+			<div style="float:left">
+				<form method="post"><input type="submit" value='<spring:message code="Module.checkForUpdates"/>'/></form>
+			</div>
+			<div style="clear:both">&nbsp;</div>
+		</div>	
+	</c:when>
+	<c:otherwise>
+		${disallowUploads}
+	</c:otherwise>
+</c:choose>
 
 <c:forEach var="module" items="${moduleList}" varStatus="varStatus">
 	<c:if test="${varStatus.first}">
@@ -160,7 +178,22 @@
 						<td valign="top">${module.author}</td>
 						<td valign="top">${fn:substring(fn:escapeXml(module.description),0, 200)}...</td>
 						<td valign="top"<c:if test="${module.startupErrorMessage != null}">class="error"</c:if> >
-							<pre style="margin: 0px;">${module.startupErrorMessage}</pre>
+							<c:if test="${module.startupErrorMessage != null}">
+								<span class="errorDetailsButton" id="errorDetailsButton${varStatus.index}">
+									<spring:message code="Module.errorClickForDetails"/>
+								</span>
+								<div class="errorDetailsDialog" id="errorDetails${varStatus.index}">
+									<pre style="margin: 0px;">${module.startupErrorMessage}</pre>
+								</div>
+								<script type="text/javascript">
+									$j('#errorDetails${varStatus.index}').dialog({
+										autoOpen: false,
+										modal: true,
+										title: '<spring:message code="Module.errorStarting" arguments="${module.name}" javaScriptEscape="true"/>',
+										width: '90%'
+									});
+								</script>
+							</c:if>
 						</td>
 						<td>
 							<c:if test="${module.downloadURL != null}">
@@ -177,13 +210,7 @@
 				</form>
 				
 	<c:if test="${varStatus.last}">
-			</tbody>
-			<tfoot>
-				<tr>
-					<td colspan="7"><form method="post"><input type="submit" value='<spring:message code="Module.checkForUpdates"/>'/></form></td>
-				</tr>
-			</tfoot>
-	
+			</tbody>	
 			</table>
 		</div>
 
