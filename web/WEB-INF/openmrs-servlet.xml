@@ -1394,6 +1394,8 @@
 		<property name="layoutTemplates">
 			<list>
 				<ref bean="nameTemplateSpain" />
+				<ref bean="nameTemplateLatinAmerica" />
+				<ref bean="nameTemplateGivenFamily" />
 				<ref bean="nameTemplateShort" />
 				<ref bean="nameTemplateLong" />
 			</list>
@@ -1437,6 +1439,58 @@
 			</list>
 		</property>
 	</bean>
+	
+	<bean id="nameTemplateLatinAmerica" class="org.openmrs.layout.web.name.NameTemplate">
+		<property name="displayName"><value>Formato de Nombres en Latino America</value></property>
+		<property name="codeName"><value>latinamerica</value></property>
+		<property name="nameMappings">
+			<props>
+				<prop key="givenName">PersonName.firstName</prop>
+				<prop key="middleName">PersonName.secondName</prop>
+				<prop key="familyName">PersonName.familyName1</prop>
+				<prop key="familyName2">PersonName.familyName2</prop>
+			</props>
+		</property>
+		<property name="sizeMappings">
+			<props>
+				<prop key="givenName">30</prop>
+				<prop key="middleName">30</prop>
+				<prop key="familyName">30</prop>
+				<prop key="familyName2">30</prop>
+			</props>
+		</property>
+		<property name="lineByLineFormat">
+			<list>
+				<value>givenName</value>
+				<value>middleName</value>
+				<value>familyName</value>
+				<value>familyName2</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="nameTemplateGivenFamily" class="org.openmrs.layout.web.name.NameTemplate">
+        <property name="displayName"><value>&quot;Given Family&quot; Format</value></property>
+        <property name="codeName"><value>givenfamily</value></property>
+        <property name="nameMappings">
+                <props>
+                        <prop key="givenName">PersonName.givenName</prop>
+                        <prop key="familyName">PersonName.familyName</prop>
+                </props>
+        </property>
+        <property name="sizeMappings">
+                <props>
+                        <prop key="givenName">30</prop>
+                        <prop key="familyName">30</prop>
+                </props>
+        </property>
+        <property name="lineByLineFormat">
+                <list>
+                        <value>givenName</value>
+                        <value>familyName</value>
+                </list>
+        </property>
+    </bean>
 
 	<bean id="nameTemplateShort" class="org.openmrs.layout.web.name.NameTemplate">
 		<property name="displayName"><value>Short Name Format</value></property>
