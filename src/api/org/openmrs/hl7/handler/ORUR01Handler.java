@@ -35,7 +35,6 @@ import org.openmrs.PersonAttribute;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
-import org.openmrs.hl7.HL7InError;
 import org.openmrs.hl7.HL7InQueueProcessor;
 import org.openmrs.hl7.HL7Service;
 import org.openmrs.util.FormConstants;
@@ -106,7 +105,7 @@ public class ORUR01Handler implements Application {
 	 * @should append to an existing encounter
 	 * @should create obs group for OBRs
 	 * @should create obs valueCodedName
-	 * @should send message to error queue for empty concept proposals
+	 * @should fail on empty concept proposals
 	 */
 	public Message processMessage(Message message) throws ApplicationException {
 		
@@ -238,7 +237,7 @@ public class ORUR01Handler implements Application {
 			
 			// loop over the obs and create each object, adding it to the encounter
 			int numObs = orderObs.getOBSERVATIONReps();
-			String errorInHL7Queue = null;
+			HL7Exception errorInHL7Queue = null;
 			for (int j = 0; j < numObs; j++) {
 				if (log.isDebugEnabled())
 					log.debug("Processing OBS (" + j + " of " + numObs + ")");
@@ -279,24 +278,22 @@ public class ORUR01Handler implements Application {
 					if (value != null && !value.equals(""))
 						conceptProposals.add(createConceptProposal(encounter, questionConcept, value));
 					else {
-						errorInHL7Queue = Context.getMessageSourceService().getMessage("Hl7.proposed.concept.name.empty");
+						errorInHL7Queue = new HL7Exception(Context.getMessageSourceService().getMessage(
+						    "Hl7.proposed.concept.name.empty"), proposingException);
 						break;//stop any further processing of current message
 					}
 					
 				}
 				catch (HL7Exception e) {
-					errorInHL7Queue = e.getMessage();
+					errorInHL7Queue = e;
 				}
 				finally {
 					// Handle obs-level exceptions
 					if (errorInHL7Queue != null) {
 						log.warn("HL7Exception: " + errorInHL7Queue);
-						HL7InError hl7InError = new HL7InError();
-						hl7InError.setError(errorInHL7Queue);
-						hl7InError.setErrorDetails(PipeParser.encode(obx, new EncodingCharacters('|', "^~\\&")));
-						hl7InError.setHL7SourceKey(messageControlId);
-						hl7InError.setHL7Data(PipeParser.encode(oru, new EncodingCharacters('|', "^~\\&")));
-						hl7Service.saveHL7InError(hl7InError);
+						throw new HL7Exception("Improperly formatted OBX: "
+						        + PipeParser.encode(obx, new EncodingCharacters('|', "^~\\&")),
+						        HL7Exception.DATA_TYPE_ERROR, errorInHL7Queue);
 					}
 				}
 			}
@@ -473,7 +470,13 @@ public class ORUR01Handler implements Application {
 				log.warn("Not creating null valued obs for concept " + concept);
 				return null;
 			}
-			obs.setValueNumeric(Double.valueOf(value));
+			try {
+				obs.setValueNumeric(Double.valueOf(value));
+			}
+			catch (NumberFormatException e) {
+				throw new HL7Exception("numeric (NM) value '" + value + "' is not numeric for concept #"
+				        + concept.getConceptId() + " (" + conceptName.getName() + ") in message " + uid, e);
+			}
 		} else if ("CWE".equals(hl7Datatype)) {
 			log.debug("  CWE observation");
 			CWE value = (CWE) obx5;
