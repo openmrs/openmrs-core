@@ -38,7 +38,7 @@ public class AlertRecipient extends BaseOpenmrsObject implements Serializable {
 	private Date dateChanged;
 	
 	// necessary for hql queries
-	private Integer recipientId;
+	private transient Integer recipientId;
 	
 	/** Default empty constructor */
 	public AlertRecipient() {
