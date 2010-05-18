@@ -54,9 +54,10 @@ public class ForEachEncounterTag extends BodyTagSupport {
 	
 	private String var;
 	
-	public int doStartTag() {
+	@Override
+    public int doStartTag() {
 		if (encounters == null || encounters.isEmpty()) {
-			log.error("ForEachEncounterTag skipping body due to 'encounters' param = " + encounters);
+			log.debug("ForEachEncounterTag skipping body due to 'encounters' param = " + encounters);
 			return SKIP_BODY;
 		}
 		// First retrieve all encounters matching the passed encounter type id, if provided.
@@ -90,7 +91,8 @@ public class ForEachEncounterTag extends BodyTagSupport {
 	/**
 	 * @see javax.servlet.jsp.tagext.IterationTag#doAfterBody()
 	 */
-	public int doAfterBody() throws JspException {
+	@Override
+    public int doAfterBody() throws JspException {
 		if (matchingEncs.size() > count && (num == null || count < num.intValue())) {
 			pageContext.setAttribute("count", count);
 			pageContext.setAttribute(var, matchingEncs.get(count++));
@@ -103,7 +105,8 @@ public class ForEachEncounterTag extends BodyTagSupport {
 	/**
 	 * @see javax.servlet.jsp.tagext.Tag#doEndTag()
 	 */
-	public int doEndTag() throws JspException {
+	@Override
+    public int doEndTag() throws JspException {
 		try {
 			if (count > 0 && bodyContent != null) {
 				count = 0;
