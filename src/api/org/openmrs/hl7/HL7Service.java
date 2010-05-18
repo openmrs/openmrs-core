@@ -18,6 +18,7 @@ import java.util.List;
 
 import org.openmrs.Encounter;
 import org.openmrs.annotation.Authorized;
+import org.openmrs.annotation.Logging;
 import org.openmrs.api.APIException;
 import org.openmrs.api.OpenmrsService;
 import org.openmrs.hl7.db.HL7DAO;
@@ -54,7 +55,8 @@ public interface HL7Service extends OpenmrsService {
 	/**
 	 * @deprecated use {@link #saveHL7Source(HL7Source)}
 	 */
-	@Authorized(HL7Constants.PRIV_MANAGE_HL7_SOURCE)
+	@Deprecated
+    @Authorized(HL7Constants.PRIV_MANAGE_HL7_SOURCE)
 	public void createHL7Source(HL7Source hl7Source) throws APIException;
 	
 	/**
@@ -80,7 +82,8 @@ public interface HL7Service extends OpenmrsService {
 	/**
 	 * @deprecated use {@link #getHL7SourceByName(String)}
 	 */
-	@Transactional(readOnly = true)
+	@Deprecated
+    @Transactional(readOnly = true)
 	@Authorized(HL7Constants.PRIV_VIEW_HL7_SOURCE)
 	public HL7Source getHL7Source(String name);
 	
@@ -96,14 +99,16 @@ public interface HL7Service extends OpenmrsService {
 	/**
 	 * @deprecated use {@link #getAllHL7Sources()}
 	 */
-	@Transactional(readOnly = true)
+	@Deprecated
+    @Transactional(readOnly = true)
 	@Authorized(HL7Constants.PRIV_VIEW_HL7_SOURCE)
 	public Collection<HL7Source> getHL7Sources();
 	
 	/**
 	 * @deprecated use {@link #saveHL7Source(HL7Source)}
 	 */
-	@Authorized(HL7Constants.PRIV_MANAGE_HL7_SOURCE)
+	@Deprecated
+    @Authorized(HL7Constants.PRIV_MANAGE_HL7_SOURCE)
 	public void updateHL7Source(HL7Source hl7Source);
 	
 	/**
@@ -128,7 +133,8 @@ public interface HL7Service extends OpenmrsService {
 	 * @see #retireHL7Source(HL7Source)
 	 * @deprecated use {@link #purgeHL7Source(HL7Source)}
 	 */
-	@Authorized(HL7Constants.PRIV_MANAGE_HL7_SOURCE)
+	@Deprecated
+    @Authorized(HL7Constants.PRIV_MANAGE_HL7_SOURCE)
 	public void deleteHL7Source(HL7Source hl7Source);
 	
 	/**
@@ -144,7 +150,8 @@ public interface HL7Service extends OpenmrsService {
 	/**
 	 * @deprecated use {@link #saveHL7InQueue(HL7InQueue)}
 	 */
-	@Authorized(HL7Constants.PRIV_ADD_HL7_IN_QUEUE)
+	@Deprecated
+    @Authorized(HL7Constants.PRIV_ADD_HL7_IN_QUEUE)
 	public void createHL7InQueue(HL7InQueue hl7InQueue);
 	
 	/**
@@ -171,7 +178,8 @@ public interface HL7Service extends OpenmrsService {
 	/**
 	 * @deprecated use {@link #getAllHL7InQueues()}
 	 */
-	@Transactional(readOnly = true)
+	@Deprecated
+    @Transactional(readOnly = true)
 	@Authorized(HL7Constants.PRIV_VIEW_HL7_IN_QUEUE)
 	public Collection<HL7InQueue> getHL7InQueues();
 	
@@ -195,7 +203,8 @@ public interface HL7Service extends OpenmrsService {
 	/**
 	 * @deprecated use {@link #purgeHL7InQueue(HL7InQueue)}
 	 */
-	@Authorized(HL7Constants.PRIV_DELETE_HL7_IN_QUEUE)
+	@Deprecated
+    @Authorized(HL7Constants.PRIV_DELETE_HL7_IN_QUEUE)
 	public void deleteHL7InQueue(HL7InQueue hl7InQueue);
 	
 	/**
@@ -211,7 +220,8 @@ public interface HL7Service extends OpenmrsService {
 	/**
 	 * @deprecated use {@link #saveHL7InArchive(HL7InArchive)}
 	 */
-	@Authorized(HL7Constants.PRIV_ADD_HL7_IN_ARCHIVE)
+	@Deprecated
+    @Authorized(HL7Constants.PRIV_ADD_HL7_IN_ARCHIVE)
 	public void createHL7InArchive(HL7InArchive hl7InArchive);
 	
 	/**
@@ -246,14 +256,16 @@ public interface HL7Service extends OpenmrsService {
 	/**
 	 * @deprecated use {@link #getAllHL7InArchives()}
 	 */
-	@Transactional(readOnly = true)
+	@Deprecated
+    @Transactional(readOnly = true)
 	@Authorized(HL7Constants.PRIV_VIEW_HL7_IN_ARCHIVE)
 	public Collection<HL7InArchive> getHL7InArchives();
 	
 	/**
 	 * @deprecated use {@link #saveHL7InArchive(HL7InArchive)}
 	 */
-	@Authorized(HL7Constants.PRIV_UPDATE_HL7_IN_ARCHIVE)
+	@Deprecated
+    @Authorized(HL7Constants.PRIV_UPDATE_HL7_IN_ARCHIVE)
 	public void updateHL7InArchive(HL7InArchive hl7InArchive);
 	
 	/**
@@ -268,7 +280,8 @@ public interface HL7Service extends OpenmrsService {
 	/**
 	 * @deprecated use {@link #purgeHL7InArchive(HL7InArchive)}
 	 */
-	@Authorized(HL7Constants.PRIV_DELETE_HL7_IN_ARCHIVE)
+	@Deprecated
+    @Authorized(HL7Constants.PRIV_DELETE_HL7_IN_ARCHIVE)
 	public void deleteHL7InArchive(HL7InArchive hl7InArchive);
 	
 	/**
@@ -284,7 +297,8 @@ public interface HL7Service extends OpenmrsService {
 	/**
 	 * @deprecated use {@link #saveHL7InError(HL7InError)}
 	 */
-	@Authorized(HL7Constants.PRIV_ADD_HL7_IN_EXCEPTION)
+	@Deprecated
+    @Authorized(HL7Constants.PRIV_ADD_HL7_IN_EXCEPTION)
 	public void createHL7InError(HL7InError hl7InError);
 	
 	/**
@@ -310,14 +324,16 @@ public interface HL7Service extends OpenmrsService {
 	/**
 	 * @deprecated use {@link #getAllHL7InErrors()}
 	 */
-	@Transactional(readOnly = true)
+	@Deprecated
+    @Transactional(readOnly = true)
 	@Authorized(HL7Constants.PRIV_VIEW_HL7_IN_EXCEPTION)
 	public Collection<HL7InError> getHL7InErrors();
 	
 	/**
 	 * @deprecated use {@link #saveHL7InError(HL7InError)}
 	 */
-	@Authorized(HL7Constants.PRIV_UPDATE_HL7_IN_EXCEPTION)
+	@Deprecated
+    @Authorized(HL7Constants.PRIV_UPDATE_HL7_IN_EXCEPTION)
 	public void updateHL7InError(HL7InError hl7InError);
 	
 	/**
@@ -332,7 +348,8 @@ public interface HL7Service extends OpenmrsService {
 	/**
 	 * @deprecated use {@link #purgeHL7InError(HL7InError)}
 	 */
-	@Authorized(HL7Constants.PRIV_DELETE_HL7_IN_EXCEPTION)
+	@Deprecated
+    @Authorized(HL7Constants.PRIV_DELETE_HL7_IN_EXCEPTION)
 	public void deleteHL7InError(HL7InError hl7InError);
 	
 	/**
@@ -380,7 +397,8 @@ public interface HL7Service extends OpenmrsService {
 	 *             handler, it is created with all obs. Any AOP hooking should be done on the
 	 *             EncounterService.createEncounter(Encounter) method
 	 */
-	public void encounterCreated(Encounter encounter);
+	@Deprecated
+    public void encounterCreated(Encounter encounter);
 	
 	/**
 	 * Process the given {@link HL7InQueue} item. <br/>
@@ -407,6 +425,7 @@ public interface HL7Service extends OpenmrsService {
 	 * @see #processHL7InQueue(HL7InQueue)
 	 * @should parse the given string into Message
 	 */
+	@Logging(ignoreAllArgumentValues = true)
 	public Message parseHL7String(String hl7String) throws HL7Exception;
 	
 	/**
