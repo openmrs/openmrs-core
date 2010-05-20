@@ -3272,4 +3272,11 @@
 		<comment>Switch boolean concepts/observations to be stored as coded</comment>
 		<customChange class="org.openmrs.util.databasechange.BooleanConceptChangeSet"/>				
 	</changeSet>
+	
+	<changeSet id="20100520-2137" author="luzhuangwei">
+		<comment>Change datatype of encounter_type.name from varchar(50) to mediumtext</comment>
+		<modifyColumn tableName="encounter_type">
+			<column name="name" type="mediumtext"/>
+		</modifyColumn>
+	</changeSet>
 </databaseChangeLog>
