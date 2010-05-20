@@ -13,6 +13,8 @@
  */
 package org.openmrs;
 
+import org.openmrs.util.LocalizedString;
+
 /**
  * An EncounterType defines how a certain kind of {@link Encounter}.
  * 
@@ -23,6 +25,8 @@ public class EncounterType extends BaseOpenmrsMetadata implements java.io.Serial
 	public static final long serialVersionUID = 789L;
 	
 	private Integer encounterTypeId;
+	
+	private LocalizedString localizedName;
 	
 	// Constructors
 	
@@ -61,7 +65,8 @@ public class EncounterType extends BaseOpenmrsMetadata implements java.io.Serial
 	 * @should have equal encounter type objects with no encounterTypeId
 	 * @should not have equal encounter type objects when one has null encounterTypeId
 	 */
-	public boolean equals(Object obj) {
+	@Override
+    public boolean equals(Object obj) {
 		if (obj == null || !(obj instanceof EncounterType))
 			return false;
 		
@@ -76,7 +81,8 @@ public class EncounterType extends BaseOpenmrsMetadata implements java.io.Serial
 	 * @see java.lang.Object#hashCode()
 	 * @should get hashCode even with null attributes
 	 */
-	public int hashCode() {
+	@Override
+    public int hashCode() {
 		if (this.getEncounterTypeId() == null)
 			return super.hashCode();
 		return this.getEncounterTypeId().hashCode();
@@ -115,4 +121,37 @@ public class EncounterType extends BaseOpenmrsMetadata implements java.io.Serial
 		
 	}
 	
+	/**
+	 * @return the localizedName
+	 */
+	public LocalizedString getLocalizedName() {
+		if (localizedName == null)
+			localizedName = new LocalizedString();
+		return localizedName;
+	}
+	
+	/**
+	 * @param localizedName the localizedName to set
+	 */
+	public void setLocalizedName(LocalizedString localizedName) {
+		this.localizedName = localizedName;
+	}
+	
+	/**
+	 * @return the name
+	 * @see LocalizedString#getValue()
+	 */
+	@Override
+	public String getName() {
+		return getLocalizedName().getValue();
+	}
+	
+	/**
+	 * @param name the name to set
+	 * @see LocalizedString#setUnlocalizedValue(String)
+	 */
+	@Override
+	public void setName(String name) {
+		getLocalizedName().setUnlocalizedValue(name);
+	}
 }
