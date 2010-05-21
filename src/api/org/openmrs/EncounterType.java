@@ -140,6 +140,7 @@ public class EncounterType extends BaseOpenmrsMetadata implements java.io.Serial
 	/**
 	 * @return the name
 	 * @see LocalizedString#getValue()
+	 * @should return unlocalized name when no localization is added
 	 */
 	@Override
 	public String getName() {
@@ -149,6 +150,7 @@ public class EncounterType extends BaseOpenmrsMetadata implements java.io.Serial
 	/**
 	 * @param name the name to set
 	 * @see LocalizedString#setUnlocalizedValue(String)
+	 * @should set unlocalized name correctly
 	 */
 	@Override
 	public void setName(String name) {
