@@ -16,6 +16,7 @@ package org.openmrs;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.test.Verifies;
+import org.openmrs.util.LocalizedString;
 
 /**
  * This class tests the all of the {@link EncounterType} non-trivial object methods.
@@ -117,5 +118,31 @@ public class EncounterTypeTest {
 	public void hashCode_shouldGetHashCodeEvenWithNullAttributes() throws Exception {
 		new EncounterType().hashCode();
 	}
+
+	/**
+     * @see {@link EncounterType#getName()}
+     * 
+     */
+    @Test
+    @Verifies(value = "should return unlocalized name when no localization is added", method = "getName()")
+    public void getName_shouldReturnUnlocalizedNameWhenNoLocalizationIsAdded() throws Exception {
+    	EncounterType type = new EncounterType();
+		String expected = "Favorite Color";
+		type.setLocalizedName(LocalizedString.deserialize(expected));
+		Assert.assertEquals(expected, type.getName());
+    }
+
+	/**
+     * @see {@link EncounterType#setName(String)}
+     * 
+     */
+    @Test
+    @Verifies(value = "should set unlocalized name correctly", method = "setName(String)")
+    public void setName_shouldSetUnlocalizedNameCorrectly() throws Exception {
+    	EncounterType type = new EncounterType();
+		String name = "Favorite Color";
+		type.setName(name);
+		Assert.assertEquals(name, type.getLocalizedName().getUnlocalizedValue());
+    }
 	
 }
