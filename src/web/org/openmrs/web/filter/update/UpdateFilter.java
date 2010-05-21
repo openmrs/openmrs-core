@@ -136,9 +136,9 @@ public class UpdateFilter extends StartupFilter {
 			if (authenticateAsSuperUser(username, password)) {
 				log.debug("Authentication successful.  Redirecting to 'reviewupdates' page.");
 				// set a variable so we know that the user started here
-				authenticatedSuccessfully = true;	
+				authenticatedSuccessfully = true;
 				//Set variable to tell us whether updates are already in progress
-				referenceMap.put("isDatabaseUpdateInProgress", isDatabaseUpdateInProgress);				
+				referenceMap.put("isDatabaseUpdateInProgress", isDatabaseUpdateInProgress);
 				renderTemplate(REVIEW_CHANGES, referenceMap, httpResponse);
 			} else {
 				// if not authenticated, show main page again
@@ -161,7 +161,7 @@ public class UpdateFilter extends StartupFilter {
 				// throw the user back to the main page because they are cheating
 				renderTemplate(DEFAULT_PAGE, referenceMap, httpResponse);
 				return;
-			}		   
+			}
             
 			//if no one has run any required updates
 			if (!isDatabaseUpdateInProgress) {
@@ -169,10 +169,10 @@ public class UpdateFilter extends StartupFilter {
 				updateJob = new UpdateFilterCompletion();
 				updateJob.start();
 				
-				referenceMap.put("updateJobStarted", true);				
+				referenceMap.put("updateJobStarted", true);
 			} else{
 				referenceMap.put("isDatabaseUpdateInProgress", true);
-				referenceMap.put("updateJobStarted", false);				
+				referenceMap.put("updateJobStarted", false);
 			}
 			
 			renderTemplate(REVIEW_CHANGES, referenceMap, httpResponse);
@@ -195,7 +195,11 @@ public class UpdateFilter extends StartupFilter {
 				Appender appender = Logger.getRootLogger().getAppender("MEMORY_APPENDER");
 				if (appender instanceof MemoryAppender) {
 					MemoryAppender memoryAppender = (MemoryAppender) appender;
-					result.put("logLines", memoryAppender.getLogLines());
+					List<String> logLines = memoryAppender.getLogLines();
+					// truncate the list to the last five so we don't overwhelm jquery
+					if (logLines.size() > 5)
+						logLines = logLines.subList(logLines.size() - 5, logLines.size());
+					result.put("logLines", logLines);
 				} else {
 					result.put("logLines", new ArrayList<String>());
 				}
@@ -294,10 +298,10 @@ public class UpdateFilter extends StartupFilter {
 	 * @should return false if given user does not have the super user role
 	 */
 	protected boolean isSuperUser(Connection connection, Integer userId) throws Exception {
-        // the 'Administrator' part of this string is necessary because if the database was upgraded 
-	 	// by OpenMRS 1.6 alpha then System Developer was renamed to that. This has to be here so we 
-	 	// can roll back that change in 1.6 beta+ 
-	 	String select = "select 1 from user_role where user_id = ? and (role = ? or role = 'Administrator')"; 
+        // the 'Administrator' part of this string is necessary because if the database was upgraded
+	 	// by OpenMRS 1.6 alpha then System Developer was renamed to that. This has to be here so we
+	 	// can roll back that change in 1.6 beta+
+	 	String select = "select 1 from user_role where user_id = ? and (role = ? or role = 'Administrator')";
 		PreparedStatement statement = connection.prepareStatement(select);
 		statement.setInt(1, userId);
 		statement.setString(2, OpenmrsConstants.SUPERUSER_ROLE);
