@@ -38,7 +38,7 @@ public class AlertRecipient extends BaseOpenmrsObject implements Serializable {
 	private Date dateChanged;
 	
 	// necessary for hql queries
-	private Integer recipientId;
+	private transient Integer recipientId;
 	
 	/** Default empty constructor */
 	public AlertRecipient() {
@@ -69,7 +69,8 @@ public class AlertRecipient extends BaseOpenmrsObject implements Serializable {
 	/**
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
-	public boolean equals(Object obj) {
+	@Override
+    public boolean equals(Object obj) {
 		if (obj instanceof AlertRecipient) {
 			AlertRecipient a = (AlertRecipient) obj;
 			if (alert != null && a.getAlert() != null && recipient != null && a.getRecipient() != null)
@@ -81,7 +82,8 @@ public class AlertRecipient extends BaseOpenmrsObject implements Serializable {
 	/**
 	 * @see java.lang.Object#hashCode()
 	 */
-	public int hashCode() {
+	@Override
+    public int hashCode() {
 		if (this.getAlert() == null)
 			return super.hashCode();
 		int hash = 8;
@@ -119,7 +121,8 @@ public class AlertRecipient extends BaseOpenmrsObject implements Serializable {
 	}
 	
 	// @override
-	public String toString() {
+	@Override
+    public String toString() {
 		return "Alert: " + alert + ". Recipient: " + recipient;
 	}
 	
