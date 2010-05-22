@@ -89,6 +89,8 @@ public final class Module {
 	
 	private boolean mandatory = Boolean.FALSE;
 	
+	private ModuleAction pendingAction = ModuleAction.PENDING_NONE;
+
 	// keep a reference to the file that we got this module from so we can delete
 	// it if necessary
 	private File file = null;
@@ -124,7 +126,8 @@ public final class Module {
 		log.debug("Creating module " + name);
 	}
 	
-	public boolean equals(Object obj) {
+	@Override
+    public boolean equals(Object obj) {
 		if (obj != null && obj instanceof Module) {
 			Module mod = (Module) obj;
 			return getModuleId().equals(mod.getModuleId());
@@ -598,6 +601,16 @@ public final class Module {
 		this.mappingFiles = mappingFiles;
 	}
 	
+	public ModuleAction getPendingAction(){
+		return pendingAction;
+	}
+
+	public void setPendingAction(ModuleAction pendingAction) {
+		this.pendingAction = pendingAction;
+	}
+	
+
+
 	/**
 	 * This property is set by the module owner to tell OpenMRS that once it is installed, it must
 	 * always startup. This is intended for modules with system-critical monitoring or security
@@ -658,7 +671,7 @@ public final class Module {
 		sb.append(t.getMessage());
 		sb.append("\n");
 		
-		// loop over and append all stacktrace elements marking the "openmrs" ones 
+		// loop over and append all stacktrace elements marking the "openmrs" ones
 		for (StackTraceElement traceElement : t.getStackTrace()) {
 			if (traceElement.getClassName().contains("openmrs"))
 				sb.append(" ** ");
@@ -681,7 +694,8 @@ public final class Module {
 		this.startupErrorMessage = null;
 	}
 	
-	public String toString() {
+	@Override
+    public String toString() {
 		if (moduleId == null)
 			return super.toString();
 		
