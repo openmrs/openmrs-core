@@ -34,6 +34,7 @@ import org.openmrs.ConceptSource;
 import org.openmrs.Form;
 import org.openmrs.ProgramWorkflowState;
 import org.openmrs.Role;
+import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.LocationService;
@@ -61,7 +62,8 @@ public class ForEachRecordTag extends BodyTagSupport {
 	
 	private Iterator<?> records;
 	
-	public int doStartTag() {
+	@Override
+    public int doStartTag() {
 		
 		records = null;
 		
@@ -137,6 +139,9 @@ public class ForEachRecordTag extends BodyTagSupport {
 				records = c.getAnswers().iterator();
 			else
 				records = new ArrayList<Concept>().iterator();
+		} else if (name.equals("allowedLocale")) {
+			AdministrationService as = Context.getAdministrationService();
+			records = as.getAllowedLocales().iterator();
 		} else {
 			try {
 				Class<?> cls = Context.loadClass(name);
@@ -161,7 +166,8 @@ public class ForEachRecordTag extends BodyTagSupport {
 	/**
 	 * @see javax.servlet.jsp.tagext.BodyTag#doInitBody()
 	 */
-	public void doInitBody() throws JspException {
+	@Override
+    public void doInitBody() throws JspException {
 		if (records.hasNext()) {
 			Object obj = records.next();
 			iterate(obj);
@@ -171,7 +177,8 @@ public class ForEachRecordTag extends BodyTagSupport {
 	/**
 	 * @see javax.servlet.jsp.tagext.IterationTag#doAfterBody()
 	 */
-	public int doAfterBody() throws JspException {
+	@Override
+    public int doAfterBody() throws JspException {
 		if (records.hasNext()) {
 			Object obj = records.next();
 			iterate(obj);
@@ -203,7 +210,8 @@ public class ForEachRecordTag extends BodyTagSupport {
 	/**
 	 * @see javax.servlet.jsp.tagext.Tag#doEndTag()
 	 */
-	public int doEndTag() throws JspException {
+	@Override
+    public int doEndTag() throws JspException {
 		try {
 			if (getBodyContent() != null && records != null)
 				getBodyContent().writeOut(getBodyContent().getEnclosingWriter());

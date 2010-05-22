@@ -56,7 +56,8 @@ public class EncounterTypeValidator implements Validator {
 		if (encounterType == null) {
 			errors.rejectValue("encounterType", "error.general");
 		} else {
-			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
+			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "localizedName.unlocalizedValue",
+			    "LocalizedName.unlocalizedName.empty");
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "description", "error.description");
 		}
 	}

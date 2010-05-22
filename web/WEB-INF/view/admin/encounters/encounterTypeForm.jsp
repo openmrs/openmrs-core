@@ -36,6 +36,7 @@
 <form method="post">
 <fieldset>
 <table>
+	<!-- 
 	<tr>
 		<td><spring:message code="general.name"/></td>
 		<td>
@@ -45,6 +46,10 @@
 			</spring:bind>
 		</td>
 	</tr>
+	 -->
+	<spring:nestedPath path="encounterType">
+		<openmrs:portlet url="localizedName" id="localizedNameLayout" /> 
+	</spring:nestedPath>
 	<tr>
 		<td valign="top"><spring:message code="general.description"/></td>
 		<td valign="top">
