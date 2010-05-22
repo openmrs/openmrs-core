@@ -103,7 +103,7 @@ public class ModuleListController extends SimpleFormController {
 				InputStream inputStream = null;
 				File moduleFile = null;
 				Module module = null;
-				Boolean updateModule = ServletRequestUtils.getBooleanParameter(request, "update", false);
+				Boolean updateModule = false;
 				Boolean downloadModule = ServletRequestUtils.getBooleanParameter(request, "download", false);
 				List<Module> dependentModulesStopped = null;
 				try {
@@ -124,24 +124,16 @@ public class ModuleListController extends SimpleFormController {
 						if (multipartModuleFile != null && !multipartModuleFile.isEmpty()) {
 							String filename = WebUtil.stripFilename(multipartModuleFile.getOriginalFilename());
 							// if user is using the "upload an update" form instead of the main form
-							if (updateModule) {
-								// parse the module so that we can get the id
-								
-								Module tmpModule = new ModuleFileParser(multipartModuleFile.getInputStream()).parse();
-								Module existingModule = ModuleFactory.getModuleById(tmpModule.getModuleId());
-								if (existingModule != null) {
-									dependentModulesStopped = ModuleFactory.stopModule(existingModule, false, true); // stop the module with these parameters so that mandatory modules can be upgraded
-									WebModuleUtil.stopModule(existingModule, getServletContext());
-									ModuleFactory.unloadModule(existingModule);
-								}
-								inputStream = new FileInputStream(tmpModule.getFile());
-								moduleFile = ModuleUtil.insertModuleFile(inputStream, filename); // copy the omod over to the repo folder
+							Module tmpModule = new ModuleFileParser(multipartModuleFile.getInputStream()).parse();
+							Module existingModule = ModuleFactory.getModuleById(tmpModule.getModuleId());
+							if (existingModule != null) {
+								updateModule = true;
+								dependentModulesStopped = ModuleFactory.stopModule(existingModule, false, true); // stop the module with these parameters so that mandatory modules can be upgraded
+								WebModuleUtil.stopModule(existingModule, getServletContext());
+								ModuleFactory.unloadModule(existingModule);
 							}
-							else {
-								// not an update, or a download, just copy the module file right to the repo folder
-								inputStream = multipartModuleFile.getInputStream();
-								moduleFile = ModuleUtil.insertModuleFile(inputStream, filename);
-							}
+							inputStream = new FileInputStream(tmpModule.getFile());
+							moduleFile = ModuleUtil.insertModuleFile(inputStream, filename); // copy the omod over to the repo folder
 						}
 					}
 					module = ModuleFactory.loadModule(moduleFile);
