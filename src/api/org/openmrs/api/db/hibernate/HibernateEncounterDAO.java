@@ -176,7 +176,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(EncounterType.class);
 		
-		criteria.addOrder(Order.asc("name"));
+		criteria.addOrder(Order.asc("localizedName"));
 		
 		if (includeRetired == false)
 			criteria.add(Expression.eq("retired", false));
