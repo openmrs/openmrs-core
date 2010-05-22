@@ -63,6 +63,16 @@
 				        	}
 		});
 	});
+	
+	//Javascript function to validate Upload
+	function validateUpload(upload){
+		if(upload.value == ''){
+			alert('<spring:message code="Module.uploadWarning"/>');
+			return false;
+		}else{
+			return true;
+		}
+	}
 </script>
 
 <h2><spring:message code="Module.header" /></h2>
@@ -75,27 +85,16 @@
 			<div style="float:left">
 				<input type="button" id="addUpgradeButton" value="<spring:message code="Module.addOrUpgrade" javaScriptEscape="true"/>"/>
 				<div id="addUpgradePopup">
-					<b class="boxHeader"><spring:message code="Module.add"/></b>
+					<b class="boxHeader"><spring:message code="Module.addOrUpgrade"/></b>
 					<div class="box">
-						<form id="moduleAddForm" action="module.list" method="post" enctype="multipart/form-data">
+						<form id="moduleAddForm" action="module.list" onSubmit="return validateUpload(this.moduleFile)" method="post" enctype="multipart/form-data">
 							<input type="file" name="moduleFile" size="40" <c:if test="${allowAdmin!='true'}">disabled="disabled"</c:if> />
 							<input type="hidden" name="action" value="upload"/>
 							<input type="submit" value='<spring:message code="Module.upload"/>'/>
 						</form>
 					</div>
 					<br/>
-		
-					<b class="boxHeader"><spring:message code="Module.upgrade"/></b>
-					<div class="box">
-						<form method="post" id="uploadUpdateForm" enctype="multipart/form-data">
-							<input type="file" name="moduleFile" size="40" />
-							<input type="hidden" name="action" value="upload"/>
-							<input type="hidden" name="update" value="true"/>
-							<input type="submit" value='<spring:message code="Module.upload"/>'/>
-						</form>
-					</div>
-					<br/>
-		
+								
 					<div id="findModule">
 						<b class="boxHeader"><spring:message code="Module.findAndDownload" arguments="${moduleRepositoryURL}" /></b>
 						<div class="box">
