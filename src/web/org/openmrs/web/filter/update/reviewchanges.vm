@@ -1,24 +1,29 @@
 #parse($headerTemplate)
 
 <script>
+	var lastIndex = 0;
+		
 	function showProgress() {
 		
-		var lastIndex = 0;
+		// schedule the next update check first so we're sure it happens (in case an error occurs)
+		setTimeout("showProgress()", 1000);
 		
 		jQuery.post("${setupPageUrl}", {page: "updateProgress.vm.ajaxRequest"} , function(data) {
-
-			if(!data.updatesRequired)
+			count = count + 1;
+			
+			
+			if(data == null || !data.updatesRequired)
 			{
-				location="index.htm";
+				window.location="index.htm";
 				return;
 			}
 			
 			if(data.hasErrors)
 			{
-				location="${setupPageUrl}";
+				window.location="${setupPageUrl}";
 				return;
 			}
-							
+			
 			jQuery("#lastActionMessage").html(data.message);
 			
 			/* put checkmarks next to all executed changesets except the last one (the last one is currently executing) */
@@ -41,12 +46,10 @@
 			{
 				logLines += data.logLines[i] + "<br />";
 			}
-			
 			jQuery("#logLines").html(logLines);
-
+			
 		}, "json");
 		
-		setTimeout("showProgress()", 1000);
 	}
 	
 	#if( $updateJobStarted == true )

@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -62,8 +63,6 @@ import org.openmrs.web.Listener;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.filter.StartupFilter;
 import org.springframework.web.context.ContextLoader;
-
-import java.sql.DatabaseMetaData;
 
 /**
  * This is the first filter that is processed. It is only active when starting OpenMRS for the very
@@ -151,7 +150,8 @@ public class InitializationFilter extends StartupFilter {
 	 * @param httpRequest
 	 * @param httpResponse
 	 */
-	protected void doGet(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException,
+	@Override
+    protected void doGet(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException,
 	                                                                                      ServletException {
 		
 		Map<String, Object> referenceMap = new HashMap<String, Object>();
@@ -195,7 +195,8 @@ public class InitializationFilter extends StartupFilter {
 	 * @param httpRequest
 	 * @param httpResponse
 	 */
-	protected void doPost(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException,
+	@Override
+    protected void doPost(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException,
 	                                                                                       ServletException {
 		
 		String page = httpRequest.getParameter("page");
@@ -266,7 +267,7 @@ public class InitializationFilter extends StartupFilter {
 			} else {
 				wizardModel.hasCurrentDatabaseUser = false;
 				wizardModel.createDatabaseUser = true;
-				// asked for the root mysql username/password 
+				// asked for the root mysql username/password
 				wizardModel.createUserUsername = httpRequest.getParameter("create_user_username");
 				checkForEmptyValue(wizardModel.createUserUsername, errors, "A user that has 'CREATE USER' privileges");
 				wizardModel.createUserPassword = httpRequest.getParameter("create_user_password");
@@ -339,7 +340,7 @@ public class InitializationFilter extends StartupFilter {
 			
 			renderTemplate(page, referenceMap, httpResponse);
 			
-		} // optional step five 
+		} // optional step five
 		else if (IMPLEMENTATION_ID_SETUP.equals(page)) {
 			
 			if ("Back".equals(httpRequest.getParameter("back"))) {
@@ -396,7 +397,11 @@ public class InitializationFilter extends StartupFilter {
 				Appender appender = Logger.getRootLogger().getAppender("MEMORY_APPENDER");
 				if (appender instanceof MemoryAppender) {
 					MemoryAppender memoryAppender = (MemoryAppender) appender;
-					result.put("logLines", memoryAppender.getLogLines());
+					List<String> logLines = memoryAppender.getLogLines();
+					// truncate the list to the last five so we don't overwhelm jquery
+					if (logLines.size() > 5)
+						logLines = logLines.subList(logLines.size() - 5, logLines.size());
+					result.put("logLines", logLines);
 				} else {
 					result.put("logLines", new ArrayList<String>());
 				}
@@ -449,21 +454,24 @@ public class InitializationFilter extends StartupFilter {
 	/**
 	 * @see org.openmrs.web.filter.StartupFilter#getTemplatePrefix()
 	 */
-	protected String getTemplatePrefix() {
+	@Override
+    protected String getTemplatePrefix() {
 		return "org/openmrs/web/filter/initialization/";
 	}
 	
 	/**
 	 * @see org.openmrs.web.filter.StartupFilter#getModel()
 	 */
-	protected Object getModel() {
+	@Override
+    protected Object getModel() {
 		return wizardModel;
 	}
 	
 	/**
 	 * @see org.openmrs.web.filter.StartupFilter#skipFilter()
 	 */
-	public boolean skipFilter(HttpServletRequest httpRequest) {
+	@Override
+    public boolean skipFilter(HttpServletRequest httpRequest) {
 		// If progress.vm makes an ajax request even immediately after initialization has completed
 		// let the request pass in order to let progress.vm load the start page of OpenMRS
 		// (otherwise progress.vm is displayed "forever")
@@ -482,7 +490,8 @@ public class InitializationFilter extends StartupFilter {
 	/**
 	 * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
 	 */
-	public void init(FilterConfig filterConfig) throws ServletException {
+	@Override
+    public void init(FilterConfig filterConfig) throws ServletException {
 		super.init(filterConfig);
 		wizardModel = new InitializationWizardModel();
 		//set whether need to do initialization work
@@ -860,8 +869,8 @@ public class InitializationFilter extends StartupFilter {
 							return;
 						}
 						catch (InputRequiredException inputRequiredEx) {
-							// TODO display a page looping over the required input and ask the user for each.  
-							// 		When done and the user and put in their say, call DatabaseUpdater.update(Map); 
+							// TODO display a page looping over the required input and ask the user for each.
+							// 		When done and the user and put in their say, call DatabaseUpdater.update(Map);
 							//		with the user's question/answer pairs
 							log
 							        .warn("Unable to continue because user input is required for the db updates and we cannot do anything about that right now");
