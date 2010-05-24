@@ -286,7 +286,7 @@ public class WebModuleUtil {
 				}
 			}
 			
-			// mark to delete the entire module web directory on exit 
+			// mark to delete the entire module web directory on exit
 			// this will usually only be used when an improper shutdown has occurred.
 			String folderPath = realPath + "/WEB-INF/view/module/" + mod.getModuleIdAsPath();
 			File outFile = new File(folderPath.replace("/", File.separator));
@@ -304,7 +304,7 @@ public class WebModuleUtil {
 				
 			}
 			
-			// refresh the spring web context to get the just-created xml 
+			// refresh the spring web context to get the just-created xml
 			// files into it (if we copied an xml file)
 			if (moduleNeedsContextRefresh && delayContextRefresh == false) {
 				if (log.isDebugEnabled())
@@ -330,7 +330,7 @@ public class WebModuleUtil {
 						log.warn(msg + " for module: " + mod.getModuleId(), e);
 					
 					try {
-						ModuleFactory.stopModule(mod, true, true); //remove jar from classloader play 
+						ModuleFactory.stopModule(mod, true, true); //remove jar from classloader play
 						stopModule(mod, servletContext, true);
 					}
 					catch (Exception e2) {
@@ -344,7 +344,7 @@ public class WebModuleUtil {
 				}
 			}
 			
-			// find and cache the module's servlets 
+			// find and cache the module's servlets
 			//(only if the module started successfully previously)
 			if (ModuleFactory.isModuleStarted(mod)) {
 				log.debug("Loading servlets and filters for module: " + mod);
@@ -639,7 +639,7 @@ public class WebModuleUtil {
 			}
 		}
 		
-		// call web shutdown for each module 
+		// call web shutdown for each module
 		for (Module mod : ModuleFactory.getLoadedModules()) {
 			stopModule(mod, servletContext, true);
 		}
@@ -781,7 +781,7 @@ public class WebModuleUtil {
 		    isOpenmrsStartup, startedModule);
 		
 		try {
-			// must "refresh" the spring dispatcherservlet as well to add in 
+			// must "refresh" the spring dispatcherservlet as well to add in
 			//the new handlerMappings
 			if (dispatcherServlet != null)
 				dispatcherServlet.reInitFrameworkServlet();
@@ -833,4 +833,38 @@ public class WebModuleUtil {
 		return moduleServlets.get(servletName);
 	}
 	
+	/**
+	 * The method which performs the Queued Module Actions and refreshes the spring
+	 * 
+	 * @param servletContext
+	 * @throws ModuleException
+	 */
+	public static void restartOpenmrs(ServletContext servletContext) throws ModuleException {
+		Iterator<String> moduleIds = ModuleFactory.getModulesWithPendingAction();
+		while (moduleIds.hasNext()) {
+			String mid = moduleIds.next();
+			Module mod = ModuleFactory.getModuleById(mid);
+			switch (mod.getPendingAction()) {
+				case PENDING_START:
+					ModuleFactory.startModule(mod);
+					startModule(mod, servletContext, true);
+					break;
+				case PENDING_STOP:
+					mod.clearStartupError();
+					ModuleFactory.stopModule(mod);
+					stopModule(mod, servletContext, true);
+					break;
+				case PENDING_UNLOAD:
+					if (ModuleFactory.isModuleStarted(mod)) {
+						ModuleFactory.stopModule(mod);
+						stopModule(mod, servletContext, true);
+					}
+					ModuleFactory.unloadModule(mod);
+					break;
+			}
+		}
+		WebModuleUtil.refreshWAC(servletContext, false, null);
+		ModuleFactory.clearAllPendingActions();
+	}
+
 }
