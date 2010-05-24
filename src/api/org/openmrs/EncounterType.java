@@ -13,7 +13,6 @@
  */
 package org.openmrs;
 
-import org.openmrs.util.LocalizedString;
 
 /**
  * An EncounterType defines how a certain kind of {@link Encounter}.

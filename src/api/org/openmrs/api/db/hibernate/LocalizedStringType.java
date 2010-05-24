@@ -22,7 +22,7 @@ import java.sql.Types;
 import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
 import org.hibernate.usertype.UserType;
-import org.openmrs.util.LocalizedString;
+import org.openmrs.LocalizedString;
 
 /**
  * Hibernate's Custom Type for {@link LocalizedString}

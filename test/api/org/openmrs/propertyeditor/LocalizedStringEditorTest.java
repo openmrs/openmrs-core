@@ -7,8 +7,8 @@ import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.openmrs.LocalizedString;
 import org.openmrs.test.Verifies;
-import org.openmrs.util.LocalizedString;
 
 public class LocalizedStringEditorTest {
 	

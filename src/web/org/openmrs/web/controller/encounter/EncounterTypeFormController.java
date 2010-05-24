@@ -52,7 +52,7 @@ public class EncounterTypeFormController extends SimpleFormController {
 		super.initBinder(request, binder);
 		//NumberFormat nf = NumberFormat.getInstance(new Locale("en_US"));
 		binder.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, true));
-		binder.registerCustomEditor(org.openmrs.util.LocalizedString.class, new LocalizedStringEditor());
+		binder.registerCustomEditor(org.openmrs.LocalizedString.class, new LocalizedStringEditor());
 	}
 	
 	/**

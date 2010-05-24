@@ -11,7 +11,7 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.util;
+package org.openmrs;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -21,6 +21,7 @@ import java.util.Map.Entry;
 
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.LocaleUtility;
 
 /**
  * This class will essentially encapsulate an unlocalized String value, and an optional Map of

@@ -1,4 +1,4 @@
-package org.openmrs.util;
+package org.openmrs;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

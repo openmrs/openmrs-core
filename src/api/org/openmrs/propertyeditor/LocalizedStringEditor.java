@@ -18,7 +18,7 @@ import java.beans.PropertyEditorSupport;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.util.LocalizedString;
+import org.openmrs.LocalizedString;
 
 /**
  * Used to get/set the attribute(which is of type {@link LocalizedString}) of any object.

@@ -16,7 +16,6 @@ package org.openmrs;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.test.Verifies;
-import org.openmrs.util.LocalizedString;
 
 /**
  * This class tests the all of the {@link EncounterType} non-trivial object methods.
