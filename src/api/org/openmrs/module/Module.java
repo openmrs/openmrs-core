@@ -90,6 +90,8 @@ public final class Module {
 	private boolean mandatory = Boolean.FALSE;
 	
 	private ModuleAction pendingAction = ModuleAction.PENDING_NONE;
+	
+	private File updateFile = null; // will be populated with the module that will upgrade this module
 
 	// keep a reference to the file that we got this module from so we can delete
 	// it if necessary
@@ -609,7 +611,13 @@ public final class Module {
 		this.pendingAction = pendingAction;
 	}
 	
-
+	public File getUpdateFile() {
+		return updateFile;
+	}
+	
+	public void setUpdateFile(File updateFile) {
+		this.updateFile = updateFile;
+	}
 
 	/**
 	 * This property is set by the module owner to tell OpenMRS that once it is installed, it must
