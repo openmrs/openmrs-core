@@ -19,6 +19,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.LocalizedString;
+import org.openmrs.serialization.LocalizedStringSerializer;
+import org.openmrs.serialization.SerializationException;
 
 /**
  * Used to get/set the attribute(which is of type {@link LocalizedString}) of any object.
@@ -41,8 +43,15 @@ public class LocalizedStringEditor extends PropertyEditorSupport {
 		log.debug("setting text: " + text);
 		if (StringUtils.isBlank(text))
 			setValue(null);
-		else
-			setValue(LocalizedString.deserialize(text));
+		else {
+			try {
+				setValue(new LocalizedStringSerializer().deserialize(text, LocalizedString.class));
+			}
+			catch (SerializationException e) {
+				// won't go here, because we always pass "LocalizedString.class" as the second param
+				// into method LocalizedStringSerializer#deserialize(String, Class)
+			}
+		}
 	}
 	
 	/**
@@ -55,8 +64,15 @@ public class LocalizedStringEditor extends PropertyEditorSupport {
 		LocalizedString localizedString = (LocalizedString) getValue();
 		if (localizedString == null)
 			return "";
-		else
-			return LocalizedString.serialize(localizedString);
+		else {
+			try {
+				return new LocalizedStringSerializer().serialize(localizedString);
+			}
+			catch (SerializationException e) {
+				// won't go here, because localizedString is always of type LocalizedString
+				return null;
+			}
+		}
 	}
 	
 }

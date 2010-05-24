@@ -13,43 +13,26 @@
  */
 package org.openmrs;
 
+import java.io.Serializable;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.api.context.Context;
-import org.openmrs.util.LocaleUtility;
 
 /**
  * This class will essentially encapsulate an unlocalized String value, and an optional Map of
  * Locale->String variants. <br />
  * This will be the data type for any fields that we wish to Localize.
  */
-public class LocalizedString {
+public class LocalizedString implements Serializable {
 	
 	public static final long serialVersionUID = 533456781L;
 	
 	private String unlocalizedValue;
 	
 	private Map<Locale, String> variants;
-	
-	/**
-	 * This is the separator between the unlocalized value and the localized values(variants)
-	 */
-	private static final String SEPERATOR = "^v1^";
-	
-	/**
-	 * This is the separator between locale and string value
-	 */
-	private static final String PARTITION = ":";
-	
-	/**
-	 * This is the separator between each pair which includes one locale and string value
-	 */
-	private static final String SPLITTER = ";";
 	
 	/**
 	 * default constructor
@@ -175,81 +158,4 @@ public class LocalizedString {
 		return unlocalizedValue.hashCode();
 	}
 	
-	/**
-	 * A utility method to serialize a LocalizedString object to a String. <br />
-	 * 
-	 * <pre>
-	 * Serialization mechanism:
-	 * Object Value ---> Database Text:
-	 * {unlocalizedValue: "Favorite Color", variants: null} ---> Favorite Color
-	 * {unlocalizedValue: "Favorite Color", variants: [en_UK = "Favourite Colour", fr = "Couleur pr¨¦f¨¦r¨¦e"]} ---> Favorite Color^v1^en_UK:Favourite Colour;fr:Couleur pr¨¦f¨¦r¨¦e
-	 * </pre>
-	 * 
-	 * @param ls - the passed LocalizedString object
-	 * @return the String get by serializing the passed LocalizedString object
-	 * @should return null if given localizedString is null
-	 * @should not fail if given localizedString hasnt variants
-	 * @should serialize correctly if given localizedString has variants
-	 */
-	public static String serialize(LocalizedString localizedString) {
-		if (localizedString != null) {
-			StringBuffer sb = new StringBuffer("");
-			sb.append(localizedString.getUnlocalizedValue());
-			if (localizedString.getVariants() != null && !localizedString.getVariants().isEmpty()) {
-				sb.append(SEPERATOR);
-				Iterator<Entry<Locale, String>> it = localizedString.getVariants().entrySet().iterator();
-				while (it.hasNext()) {
-					Entry<Locale, String> entry = it.next();
-					sb.append(entry.getKey());
-					sb.append(PARTITION);
-					sb.append(entry.getValue());
-					if (it.hasNext())
-						sb.append(SPLITTER);
-				}
-			}
-			return sb.toString();
-		}
-		return null;
-	}
-	
-	/**
-	 * A utility method to deserialize a String to a LocalizedString object. <br />
-	 * 
-	 * <pre>
-	 * Deserialization mechanism:
-	 * Database Text ---> Object Value:
-	 * Favorite Color ---> {unlocalizedValue: "Favorite Color", variants: null}
-	 * Favorite Color^v1^en_UK:Favourite Colour;fr:Couleur pr¨¦f¨¦r¨¦e ---> {unlocalizedValue: "Favorite Color", variants: [en_UK = "Favourite Colour", fr = "Couleur pr¨¦f¨¦r¨¦e"]}
-	 * </pre>
-	 * 
-	 * @param s - the passed String
-	 * @return the LocalizedString object get by deserializing the passed String
-	 * @should return null if given s is null
-	 * @should return null if given s is empty
-	 * @should not fail if given s doesnt contains variants
-	 * @should deserialize correctly if given s contains variants
-	 */
-	public static LocalizedString deserialize(String s) {
-		if (!StringUtils.isBlank(s)) {
-			LocalizedString ls = new LocalizedString();
-			//escape the special character '^'
-			String[] array1 = s.split(StringUtils.replaceEach(SEPERATOR, new String[] { "^" }, new String[] { "\\^" }));
-			ls.setUnlocalizedValue(array1[0]);
-			if (array1.length > 1) {/*has optional variants*/
-				ls.setVariants(new HashMap<Locale, String>());
-				String[] array2 = array1[1].split(SPLITTER);
-				for (String str : array2) {
-					String[] array3 = str.split(PARTITION);
-					Locale loc = LocaleUtility.fromSpecification(array3[0]);
-					//because string value is optional, so it may be empty within locale, we need to check such case
-					if (array3.length == 1)
-						ls.getVariants().put(loc, "");
-					else
-						ls.getVariants().put(loc, array3[1]);
-				}
-			}
-			return ls;
-		}
-		return null;
-	}
 }

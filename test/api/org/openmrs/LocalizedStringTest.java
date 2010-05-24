@@ -2,10 +2,8 @@ package org.openmrs;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 
@@ -18,97 +16,6 @@ import org.openmrs.test.Verifies;
  * @see LocalizedString
  */
 public class LocalizedStringTest {
-	
-	/**
-	 * @see {@link LocalizedString#deserialize(String)}
-	 */
-	@Test
-	@Verifies(value = "should not fail if given s doesnt contains variants", method = "deserialize(String)")
-	public void deserialize_shouldNotFailIfGivenSDoesntContainsVariants() throws Exception {
-		String s = "Favorite Color";
-		LocalizedString expected = new LocalizedString();
-		expected.setUnlocalizedValue("Favorite Color");
-		LocalizedString actual = LocalizedString.deserialize(s);
-		assertNull(actual.getVariants());
-		assertEquals(expected, actual);
-	}
-	
-	/**
-	 * @see {@link LocalizedString#deserialize(String)}
-	 */
-	@Test
-	@Verifies(value = "should return null if given s is empty", method = "deserialize(String)")
-	public void deserialize_shouldReturnNullIfGivenSIsEmpty() throws Exception {
-		String s = "";
-		assertNull(LocalizedString.deserialize(s));
-	}
-	
-	/**
-	 * @see {@link LocalizedString#deserialize(String)}
-	 */
-	@Test
-	@Verifies(value = "should return null if given s is null", method = "deserialize(String)")
-	public void deserialize_shouldReturnNullIfGivenSIsNull() throws Exception {
-		String s = null;
-		assertNull(LocalizedString.deserialize(s));
-	}
-	
-	/**
-	 * @see {@link LocalizedString#deserialize(String)}
-	 */
-	@Test
-	@Verifies(value = "should deserialize correctly if given s contains variants", method = "deserialize(String)")
-	public void deserialize_shouldDeserializeCorrectlyIfGivenSContainsVariants() throws Exception {
-		String s = "Favorite Color^v1^en_UK:Favourite Colour;fr:Couleur pr¨¦f¨¦r¨¦e";
-		LocalizedString expected = new LocalizedString();
-		expected.setUnlocalizedValue("Favorite Color");
-		Map<Locale, String> variants = new HashMap<Locale, String>();
-		variants.put(new Locale("en", "UK"), "Favourite Colour");
-		variants.put(new Locale("fr"), "Couleur pr¨¦f¨¦r¨¦e");
-		expected.setVariants(variants);
-		LocalizedString actual = LocalizedString.deserialize(s);
-		assertEquals(expected, actual);
-	}
-	
-	/**
-	 * @see {@link LocalizedString#serialize(LocalizedString)}
-	 */
-	@Test
-	@Verifies(value = "should not fail if given localizedString hasnt variants", method = "serialize(LocalizedString)")
-	public void serialize_shouldNotFailIfGivenLocalizedStringHasntVariants() throws Exception {
-		LocalizedString ls = new LocalizedString();
-		ls.setUnlocalizedValue("Favorite Color");
-		assertNull(ls.getVariants());
-		String expected = "Favorite Color";
-		String actual = LocalizedString.serialize(ls);
-		assertEquals(expected, actual);
-	}
-	
-	/**
-	 * @see {@link LocalizedString#serialize(LocalizedString)}
-	 */
-	@Test
-	@Verifies(value = "should return null if given localizedString is null", method = "serialize(LocalizedString)")
-	public void serialize_shouldReturnNullIfGivenLocalizedStringIsNull() throws Exception {
-		assertNull(LocalizedString.serialize(null));
-	}
-	
-	/**
-	 * @see {@link LocalizedString#serialize(LocalizedString)}
-	 */
-	@Test
-	@Verifies(value = "should serialize correctly if given localizedString has variants", method = "serialize(LocalizedString)")
-	public void serialize_shouldSerializeCorrectlyIfGivenLocalizedStringHasVariants() throws Exception {
-		LocalizedString ls = new LocalizedString();
-		ls.setUnlocalizedValue("Favorite Color");
-		Map<Locale, String> variants = new LinkedHashMap<Locale, String>();
-		variants.put(new Locale("en", "UK"), "Favourite Colour");
-		variants.put(new Locale("fr"), "Couleur pr¨¦f¨¦r¨¦e");
-		ls.setVariants(variants);
-		String expected = "Favorite Color^v1^en_UK:Favourite Colour;fr:Couleur pr¨¦f¨¦r¨¦e";
-		String actual = LocalizedString.serialize(ls);
-		assertEquals(expected, actual);
-	}
 	
 	/**
 	 * @see {@link LocalizedString#equals(Object)}

@@ -23,6 +23,8 @@ import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
 import org.hibernate.usertype.UserType;
 import org.openmrs.LocalizedString;
+import org.openmrs.serialization.LocalizedStringSerializer;
+import org.openmrs.serialization.SerializationException;
 
 /**
  * Hibernate's Custom Type for {@link LocalizedString}
@@ -97,9 +99,16 @@ public class LocalizedStringType implements UserType, Serializable {
 	@Override
 	public Object nullSafeGet(ResultSet rs, String[] names, Object owner) throws HibernateException, SQLException {
 		String value = (String) Hibernate.STRING.nullSafeGet(rs, names[0]);
-		if (value != null)
-			return LocalizedString.deserialize(value);
-		else
+		if (value != null) {
+			try {
+				return new LocalizedStringSerializer().deserialize(value, LocalizedString.class);
+			}
+			catch (SerializationException e) {
+				// won't go here, because we always pass "LocalizedString.class" as the second param
+				// into method LocalizedStringSerializer#deserialize(String, Class)
+				return value;
+			}
+		} else
 			return null;
 	}
 	
@@ -109,9 +118,16 @@ public class LocalizedStringType implements UserType, Serializable {
 	 */
 	@Override
 	public void nullSafeSet(PreparedStatement ps, Object value, int index) throws HibernateException, SQLException {
-		if (value != null)
-			Hibernate.STRING.nullSafeSet(ps, LocalizedString.serialize((LocalizedString) value), index);
-		else
+		if (value != null) {
+			String str;
+			try {
+				str = new LocalizedStringSerializer().serialize(value);
+				Hibernate.STRING.nullSafeSet(ps, str, index);
+			}
+			catch (SerializationException e) {
+				// won't go here, because value is always of type LocalizedString
+			}
+		} else
 			Hibernate.STRING.nullSafeSet(ps, value, index);
 	}
 	
