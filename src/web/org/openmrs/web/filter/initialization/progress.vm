@@ -4,12 +4,12 @@
 			jQuery.post("${setupPageUrl}", {page: "progress.vm.ajaxRequest"} , function(data) {
 				
 				if(data.initializationComplete) {
-					location="index.htm";
+					window.location="index.htm";
 					return;
 				}
 				
 				if(data.hasErrors) {
-					location= "${setupPageUrl}";
+					window.location= "${setupPageUrl}";
 					return;
 				}
 								
