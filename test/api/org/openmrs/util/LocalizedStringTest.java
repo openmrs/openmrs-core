@@ -1,11 +1,14 @@
 package org.openmrs.util;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.test.Verifies;
 
@@ -26,8 +29,8 @@ public class LocalizedStringTest {
 		LocalizedString expected = new LocalizedString();
 		expected.setUnlocalizedValue("Favorite Color");
 		LocalizedString actual = LocalizedString.deserialize(s);
-		Assert.assertNull(actual.getVariants());
-		Assert.assertEquals(expected, actual);
+		assertNull(actual.getVariants());
+		assertEquals(expected, actual);
 	}
 	
 	/**
@@ -37,7 +40,7 @@ public class LocalizedStringTest {
 	@Verifies(value = "should return null if given s is empty", method = "deserialize(String)")
 	public void deserialize_shouldReturnNullIfGivenSIsEmpty() throws Exception {
 		String s = "";
-		Assert.assertNull(LocalizedString.deserialize(s));
+		assertNull(LocalizedString.deserialize(s));
 	}
 	
 	/**
@@ -47,7 +50,7 @@ public class LocalizedStringTest {
 	@Verifies(value = "should return null if given s is null", method = "deserialize(String)")
 	public void deserialize_shouldReturnNullIfGivenSIsNull() throws Exception {
 		String s = null;
-		Assert.assertNull(LocalizedString.deserialize(s));
+		assertNull(LocalizedString.deserialize(s));
 	}
 	
 	/**
@@ -64,7 +67,7 @@ public class LocalizedStringTest {
 		variants.put(new Locale("fr"), "Couleur pr¨¦f¨¦r¨¦e");
 		expected.setVariants(variants);
 		LocalizedString actual = LocalizedString.deserialize(s);
-		Assert.assertEquals(expected, actual);
+		assertEquals(expected, actual);
 	}
 	
 	/**
@@ -75,10 +78,10 @@ public class LocalizedStringTest {
 	public void serialize_shouldNotFailIfGivenLocalizedStringHasntVariants() throws Exception {
 		LocalizedString ls = new LocalizedString();
 		ls.setUnlocalizedValue("Favorite Color");
-		Assert.assertNull(ls.getVariants());
+		assertNull(ls.getVariants());
 		String expected = "Favorite Color";
 		String actual = LocalizedString.serialize(ls);
-		Assert.assertEquals(expected, actual);
+		assertEquals(expected, actual);
 	}
 	
 	/**
@@ -87,7 +90,7 @@ public class LocalizedStringTest {
 	@Test
 	@Verifies(value = "should return null if given localizedString is null", method = "serialize(LocalizedString)")
 	public void serialize_shouldReturnNullIfGivenLocalizedStringIsNull() throws Exception {
-		Assert.assertNull(LocalizedString.serialize(null));
+		assertNull(LocalizedString.serialize(null));
 	}
 	
 	/**
@@ -104,7 +107,7 @@ public class LocalizedStringTest {
 		ls.setVariants(variants);
 		String expected = "Favorite Color^v1^en_UK:Favourite Colour;fr:Couleur pr¨¦f¨¦r¨¦e";
 		String actual = LocalizedString.serialize(ls);
-		Assert.assertEquals(expected, actual);
+		assertEquals(expected, actual);
 	}
 	
 	/**
@@ -114,7 +117,7 @@ public class LocalizedStringTest {
 	@Verifies(value = "should confirm two new LocalizedString objects are equal", method = "equals(Object)")
 	public void equals_shouldConfirmTwoNewLocalizedStringObjectsAreEqual() throws Exception {
 		LocalizedString ls = new LocalizedString();
-		Assert.assertEquals(ls, ls);
+		assertEquals(ls, ls);
 	}
 	
 	/**
@@ -126,7 +129,7 @@ public class LocalizedStringTest {
 		LocalizedString left = new LocalizedString();
 		left.setUnlocalizedValue("Favorite Color");
 		LocalizedString right = new LocalizedString();
-		Assert.assertFalse(left.equals(right));
+		assertFalse(left.equals(right));
 	}
 	
 	/**
@@ -145,7 +148,7 @@ public class LocalizedStringTest {
 		LocalizedString right = new LocalizedString();
 		right.setUnlocalizedValue("Favorite Color");
 		
-		Assert.assertFalse(left.equals(right));
+		assertFalse(left.equals(right));
 	}
 	
 	/**
@@ -155,7 +158,7 @@ public class LocalizedStringTest {
 	@Verifies(value = "should not fail if given obj is null", method = "equals(Object)")
 	public void equals_shouldNotFailIfGivenObjIsNull() throws Exception {
 		LocalizedString left = new LocalizedString();
-		Assert.assertFalse(left.equals(null));
+		assertFalse(left.equals(null));
 	}
 	
 	/**
@@ -167,7 +170,7 @@ public class LocalizedStringTest {
 		LocalizedString left = new LocalizedString();
 		LocalizedString right = new LocalizedString();
 		right.setUnlocalizedValue("Favorite Color");
-		Assert.assertFalse(left.equals(right));
+		assertFalse(left.equals(right));
 	}
 	
 	/**
@@ -186,7 +189,7 @@ public class LocalizedStringTest {
 		right.setUnlocalizedValue("Favorite Color");
 		right.setVariants(variants);
 		
-		Assert.assertFalse(left.equals(right));
+		assertFalse(left.equals(right));
 	}
 	
 	/**
@@ -205,7 +208,7 @@ public class LocalizedStringTest {
 		String expected = "Favourite Colour";
 		String actual = ls.getValue(new Locale("en", "UK"));
 		
-		Assert.assertEquals(expected, actual);
+		assertEquals(expected, actual);
 	}
 	
 	/**
@@ -224,7 +227,7 @@ public class LocalizedStringTest {
 		String expected = "Couleur pr¨¦f¨¦r¨¦e";
 		String actual = ls.getValue(new Locale("fr", "FR"));
 		
-		Assert.assertEquals(expected, actual);
+		assertEquals(expected, actual);
 	}
 	
 	/**
@@ -243,7 +246,7 @@ public class LocalizedStringTest {
 		String expected = "Favorite Color";
 		String actual = ls.getValue(new Locale("it", "IT"));
 		
-		Assert.assertEquals(expected, actual);
+		assertEquals(expected, actual);
 	}
 	
 	/**
@@ -262,7 +265,7 @@ public class LocalizedStringTest {
 		String expected = "Favorite Color";
 		String actual = ls.getValue(null);
 		
-		Assert.assertEquals(expected, actual);
+		assertEquals(expected, actual);
 	}
 	
 }
