@@ -24,8 +24,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.Vector;
 import java.util.WeakHashMap;
@@ -59,6 +62,8 @@ public class ModuleFactory {
 	
 	// maps to keep track of the memory and objects to free/close
 	protected static Map<Module, ModuleClassLoader> moduleClassLoaders = new WeakHashMap<Module, ModuleClassLoader>();
+	
+	protected static Map<String, ModuleAction> pendingModuleActions = new HashMap<String, ModuleAction>();
 	
 	/**
 	 * Add a module (in the form of a jar file) to the list of openmrs modules Returns null if an
@@ -236,7 +241,7 @@ public class ModuleFactory {
 						
 						try {
 							// don't need to check globalproperty here because
-							// it would only be on the leftover modules list if 
+							// it would only be on the leftover modules list if
 							// it were set to true already
 							startModule(leftoverModule);
 							
@@ -440,10 +445,10 @@ public class ModuleFactory {
 				
 				// don't load the advice objects into the Context
 				// At startup, the spring context isn't refreshed until all modules
-				// have been loaded.  This causes errors if called here during a 
-				// module's startup if one of these advice points is on another 
+				// have been loaded.  This causes errors if called here during a
+				// module's startup if one of these advice points is on another
 				// module because that other module's service won't have been loaded
-				// into spring yet.  All advice for all modules must be reloaded 
+				// into spring yet.  All advice for all modules must be reloaded
 				// a spring context refresh anyway, so skip the advice loading here
 				// loadAdvice(module);
 				
@@ -469,7 +474,7 @@ public class ModuleFactory {
 				
 				try {
 					// this method must check and run queries against the database.
-					// to do this, it must be "authenticated".  Give the current 
+					// to do this, it must be "authenticated".  Give the current
 					// "user" the proxy privilege so this can be done. ("user" might
 					// be nobody because this is being run at startup)
 					Context.addProxyPrivilege("");
@@ -848,7 +853,10 @@ public class ModuleFactory {
 		
 		// remove from list of loaded modules
 		getLoadedModules().remove(mod);
-		
+
+		//Remove any pending actions
+		pendingModuleActions.remove(mod.getModuleId());
+
 		if (mod != null) {
 			// remove the file from the module repository
 			File file = mod.getFile();
@@ -1164,5 +1172,89 @@ public class ModuleFactory {
 		finally {
 			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_GLOBAL_PROPERTIES);
 		}
+	}
+	
+	/**
+	 * A method to queue module actions such as Start, Stop, Unload, Upgrade, Update
+	 * 
+	 * @param moduleId
+	 * @param pendingAction
+	 */
+	public static void queueModuleAction(String moduleId, ModuleAction pendingAction) throws ModuleException {
+		Module module = getLoadedModulesMap().get(moduleId);
+		if (module != null) {
+			ModuleAction existingPendingAction = pendingModuleActions.get(moduleId);
+			if (existingPendingAction == null) {
+				switch (pendingAction) {
+					case PENDING_START:
+						saveGlobalProperty(moduleId + ".started", "true", getGlobalPropertyStartedDescription(moduleId));
+						break;
+					case PENDING_UPGRADE:
+						if (module.getUpdateFile() != null) {
+							saveGlobalProperty(moduleId + ".started", "true", getGlobalPropertyStartedDescription(moduleId));
+						} else {
+							String message = "module "+moduleId+" doesn't have a upgrade module set";
+							log.error(message);
+							throw new ModuleException(message);
+						}
+						break;
+					case PENDING_STOP:
+						saveGlobalProperty(moduleId + ".started", "false", getGlobalPropertyStartedDescription(moduleId));
+						break;
+					case PENDING_UNLOAD:
+						boolean deleted = module.getFile().delete();
+						if (!deleted) {
+							module.getFile().deleteOnExit();
+						}
+						break;
+					case PENDING_UPDATE:
+						break;
+					case PENDING_NONE:
+						break;
+				}
+			} else {
+				String message = "A pending action already exists for module id " + moduleId;
+				log.error(message);
+				throw new ModuleException(message);
+			}
+			module.setPendingAction(pendingAction);
+			pendingModuleActions.put(moduleId, pendingAction);
+		} else {
+			String message = "A module with id " + moduleId + " doesn't exist";
+			log.error(message);
+			throw new ModuleException(message);
+		}
+	}
+	
+	/**
+	 * Returns the Iterator of pendingModuleActions keyset
+	 * 
+	 * @return iterator of moduleids with pending actions;
+	 */
+	public static Iterator<String> getModulesWithPendingAction() {
+		return new HashSet<String>(pendingModuleActions.keySet()).iterator();
+	}
+
+	/**
+	 * A method to clear all pending actions
+	 */
+	public static void clearAllPendingActions() {
+		Set<String> moduleIds = new HashSet<String>(pendingModuleActions.keySet());
+		for (String moduleId : moduleIds) {
+			ModuleAction pendingAction = pendingModuleActions.remove(moduleId);
+			if (pendingAction != ModuleAction.PENDING_UNLOAD) {
+				Module mod = getLoadedModulesMap().get(moduleId);
+				mod.setPendingAction(ModuleAction.PENDING_NONE);
+			}
+		}
+	}
+
+	/**
+	 * A method to decide whether a openmrs restart is required or not
+	 * 
+	 * @return true if there are pending module actions false if not
+	 */
+	public static boolean hasPendingModuleActions() {
+		return pendingModuleActions.size() > 0;
 	}
 }
