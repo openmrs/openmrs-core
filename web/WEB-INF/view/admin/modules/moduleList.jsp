@@ -77,7 +77,35 @@
 
 <h2><spring:message code="Module.header" /></h2>
 
-<p><spring:message code="Module.notice" /></p>
+<c:if test="${hasPendingActions == 'true'}">
+	<div style="width: 100%;background-color: #FFAEB9">
+		<form name="openmrsRestartForm" method="post">
+			<div style="margin: auto;width: 70%">
+				<div style="clear:both">&nbsp;</div>
+				<spring:message code="Module.restartWarning"/> <input type="submit" value="<spring:message code="Module.restartOpenmrs"/>"/>
+				<input type="hidden" name="action" value="restartOpenmrs"/>
+				<div style="clear:both">&nbsp;</div>
+			</div> 
+		</form>		
+	</div>
+	<div style="clear:both">&nbsp;</div>
+</c:if>
+
+<c:if test="${showUpgradeConfirm == 'true'}">
+	<div style="width: 100%;background-color: #87CEFA">
+		<form name="upgradeConfirmForm" method="post">
+			<div style="margin: auto;width: 70%">
+				<div style="clear:both">&nbsp;</div>
+				<spring:message code="Module.upgradeWarning"/> <input type="submit" onclick="document.upgradeConfirmForm.action.value = 'moduleupgrade.yes';return true" value="<spring:message code="Module.upgradeWarning.yes"/>"/> <input type="submit" onclick="document.upgradeConfirmForm.action.value = 'moduleupgrade.no';return true" value="<spring:message code="Module.upgradeWarning.no"/>"/>
+				<br>
+				<p style="margin: auto;width: 70%"><input type="checkbox" name="dontShowMessage" value="true"> <spring:message code="Module.upgradeWarning.dontShow"/></p>			
+				<input type="hidden" name="action" value="confirmation"/>
+				<div style="clear:both">&nbsp;</div>
+			</div>
+		</form>
+	</div>
+	<div style="clear:both">&nbsp;</div>
+</c:if>
 
 <c:choose>
 	<c:when test="${allowAdmin == 'true'}">
@@ -152,7 +180,7 @@
 					<input type="hidden" name="moduleId" value="${module.moduleId}" />
 					<tr class='${varStatus.index % 2 == 0 ? "oddRow" : "evenRow" }' id="${module.moduleId}">
 						<c:choose>
-							<c:when test="${allowAdmin=='true' && module.mandatory == false && module.coreModule == false}">
+							<c:when test="${allowAdmin=='true' && module.mandatory == false && module.coreModule == false && module.pendingAction.action == 'none'}">
 								<td valign="top">
 									<c:choose>
 										<c:when test="${not module.started}">
@@ -175,7 +203,18 @@
 						<td valign="top">${module.name} <c:if test="${not module.started}"><b id="moduleNotStarted" style="white-space: nowrap">[<spring:message code="Module.notStarted"/>]</b></c:if></td>
 						<td valign="top">${module.version}</td>
 						<td valign="top">${module.author}</td>
-						<td valign="top">${fn:substring(fn:escapeXml(module.description),0, 200)}...</td>
+						<td valign="top">
+							<div>
+								${fn:substring(fn:escapeXml(module.description),0, 200)}...
+							<div>
+							<c:if test="${module.pendingAction.action != 'none'}">
+								<div style="color:red">
+									<i>
+									<spring:message code="Module.pendingAction" arguments="${module.pendingAction.action}" javaScriptEscape="true"/>
+									</i>
+								</div>
+							</c:if>
+						</td>
 						<td valign="top"<c:if test="${module.startupErrorMessage != null}">class="error"</c:if> >
 							<c:if test="${module.startupErrorMessage != null}">
 								<span class="errorDetailsButton" id="errorDetailsButton${varStatus.index}">
