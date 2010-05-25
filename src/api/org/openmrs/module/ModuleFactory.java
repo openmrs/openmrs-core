@@ -220,7 +220,7 @@ public class ModuleFactory {
 						
 						try {
 							// don't need to check globalproperty here because
-							// it would only be on the leftover modules list if 
+							// it would only be on the leftover modules list if
 							// it were set to true already
 							startModule(leftoverModule);
 							
@@ -408,10 +408,10 @@ public class ModuleFactory {
 				
 				// don't load the advice objects into the Context
 				// At startup, the spring context isn't refreshed until all modules
-				// have been loaded.  This causes errors if called here during a 
-				// module's startup if one of these advice points is on another 
+				// have been loaded.  This causes errors if called here during a
+				// module's startup if one of these advice points is on another
 				// module because that other module's service won't have been loaded
-				// into spring yet.  All advice for all modules must be reloaded 
+				// into spring yet.  All advice for all modules must be reloaded
 				// a spring context refresh anyway, so skip the advice loading here
 				// loadAdvice(module);
 				
@@ -437,7 +437,7 @@ public class ModuleFactory {
 				
 				try {
 					// this method must check and run queries against the database.
-					// to do this, it must be "authenticated".  Give the current 
+					// to do this, it must be "authenticated".  Give the current
 					// "user" the proxy privilege so this can be done. ("user" might
 					// be nobody because this is being run at startup)
 					Context.addProxyPrivilege("");
@@ -539,12 +539,10 @@ public class ModuleFactory {
 	 */
 	@SuppressWarnings("unchecked")
 	public static void loadAdvice(Module module) {
-		ModuleClassLoader moduleClassLoader = getModuleClassLoader(module);
-		
 		for (AdvicePoint advice : module.getAdvicePoints()) {
 			Class cls = null;
 			try {
-				cls = moduleClassLoader.loadClass(advice.getPoint());
+				cls = Context.loadClass(advice.getPoint());
 				Object aopObject = advice.getClassInstance();
 				if (Advisor.class.isInstance(aopObject)) {
 					log.debug("adding advisor: " + aopObject.getClass());
@@ -555,7 +553,8 @@ public class ModuleFactory {
 				}
 			}
 			catch (ClassNotFoundException e) {
-				throw new ModuleException("Could not load advice point: " + advice.getPoint(), e);
+				log.warn("Could not load advice point: " + advice.getPoint(), e);
+				//throw new ModuleException("Could not load advice point: " + advice.getPoint(), e);
 			}
 		}
 	}
@@ -711,7 +710,7 @@ public class ModuleFactory {
 					for (AdvicePoint advice : mod.getAdvicePoints()) {
 						Class cls = null;
 						try {
-							cls = Class.forName(advice.getPoint());
+							cls = Context.loadClass(advice.getPoint());
 							Object aopObject = advice.getClassInstance();
 							if (Advisor.class.isInstance(aopObject)) {
 								log.debug("adding advisor: " + aopObject.getClass());
