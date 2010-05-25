@@ -136,7 +136,8 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @param cn
 	 * @deprecated
 	 */
-	public Concept(ConceptNumeric cn) {
+	@Deprecated
+    public Concept(ConceptNumeric cn) {
 		conceptId = cn.getConceptId();
 		retired = cn.isRetired();
 		datatype = cn.getDatatype();
@@ -160,7 +161,8 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @should not fail if concept id is null
 	 * @should confirm two new concept objects are equal
 	 */
-	public boolean equals(Object obj) {
+	@Override
+    public boolean equals(Object obj) {
 		if (obj == null)
 			return false;
 		if (obj instanceof Concept) {
@@ -177,7 +179,8 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @see java.lang.Object#hashCode()
 	 * @should not fail if concept id is null
 	 */
-	public int hashCode() {
+	@Override
+    public int hashCode() {
 		if (this.getConceptId() == null)
 			return super.hashCode();
 		int hash = 8;
@@ -939,7 +942,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 */
 	public ConceptName getShortNameInLocale(Locale locale) {
 		ConceptName shortName = null;
-		// ABK: country will always be non-null. Empty string (instead 
+		// ABK: country will always be non-null. Empty string (instead
 		// of null) indicates no country was specified
 		String country = locale.getCountry();
 		if (country.length() != 0) {
@@ -1262,7 +1265,8 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @deprecated Use the "proper" isRetired method.
 	 * @see org.openmrs.Concept#isRetired()
 	 */
-	@Attribute
+	@Deprecated
+    @Attribute
 	public Boolean getRetired() {
 		return isRetired();
 	}
@@ -1396,7 +1400,8 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @see java.lang.Object#toString()
 	 */
-	public String toString() {
+	@Override
+    public String toString() {
 		if (conceptId == null)
 			return "";
 		return conceptId.toString();

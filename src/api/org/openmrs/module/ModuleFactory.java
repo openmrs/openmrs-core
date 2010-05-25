@@ -29,6 +29,8 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.Vector;
 import java.util.WeakHashMap;
+import java.util.jar.JarFile;
+import java.util.zip.ZipEntry;
 
 import org.aopalliance.aop.Advice;
 import org.apache.commons.logging.Log;
@@ -38,6 +40,9 @@ import org.openmrs.Privilege;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.Extension.MEDIA_TYPE;
+import org.openmrs.util.DatabaseUpdateException;
+import org.openmrs.util.DatabaseUpdater;
+import org.openmrs.util.InputRequiredException;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
@@ -59,6 +64,9 @@ public class ModuleFactory {
 	
 	// maps to keep track of the memory and objects to free/close
 	protected static Map<Module, ModuleClassLoader> moduleClassLoaders = new WeakHashMap<Module, ModuleClassLoader>();
+	
+	// the name of the file within a module file
+	private static final String MODULE_CHANGELOG_FILENAME = "liquibase.xml";
 	
 	/**
 	 * Add a module (in the form of a jar file) to the list of openmrs modules Returns null if an
@@ -486,6 +494,9 @@ public class ModuleFactory {
 					Context.removeProxyPrivilege("");
 				}
 				
+				// run module's optional liquibase.xml immediately after sqldiff.xml
+				runLiquibase(module);
+				
 				// effectively mark this module as started successfully
 				getStartedModulesMap().put(moduleId, module);
 				
@@ -664,6 +675,55 @@ public class ModuleFactory {
 			
 		}
 		
+	}
+	
+	/**
+	 * Execute all unrun changeSets in liquibase.xml for the given module
+	 * 
+	 * @param module the module being executed on
+	 */
+	private static void runLiquibase(Module module) {
+		JarFile jarFile = null;
+		boolean liquibaseFileExists = false;
+
+		try {
+			try {
+				jarFile = new JarFile(module.getFile());
+			}
+			catch (IOException e) {
+				throw new ModuleException("Unable to get jar file", module.getName(), e);
+			}
+			ZipEntry liquiEntry = jarFile.getEntry(MODULE_CHANGELOG_FILENAME);
+			
+			//check whether module has a moduleid-liquibase.xml
+			liquibaseFileExists = liquiEntry != null;
+		}
+		finally {
+			try {
+				if (jarFile != null)
+					jarFile.close();
+			}
+			catch (IOException e) {
+				log.warn("Unable to close jarfile: " + jarFile.getName());
+			}
+		}
+		
+		if (liquibaseFileExists) {
+			try {
+				// run liquibase.xml by Liquibase API
+				DatabaseUpdater.executeChangelog(MODULE_CHANGELOG_FILENAME, null, null, null, getModuleClassLoader(module));
+			}
+			catch (InputRequiredException ire) {
+				// the user would be stepped through the questions returned here.
+				throw new ModuleException("Input during database updates is not yet implemented.", module.getName(), ire);
+			}
+			catch (DatabaseUpdateException e) {
+				throw new ModuleException("Unable to update data model using liquibase.xml.", module.getName(), e);
+			}
+			catch (Exception e) {
+				throw new ModuleException("Unable to update data model using liquibase.xml.", module.getName(), e);
+			}
+		}
 	}
 	
 	/**
