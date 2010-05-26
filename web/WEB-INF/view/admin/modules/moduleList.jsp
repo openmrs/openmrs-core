@@ -79,10 +79,10 @@
 
 <c:if test="${hasPendingActions == 'true'}">
 	<div style="width: 100%;background-color: #FFAEB9">
-		<form name="openmrsRestartForm" method="post">
+		<form name="openmrsRestartForm" method="post" onsubmit="return confirm('<spring:message code="Module.restartConfirmation"/>');">
 			<div style="margin: auto;width: 70%">
 				<div style="clear:both">&nbsp;</div>
-				<spring:message code="Module.restartWarning"/> <input type="submit" value="<spring:message code="Module.restartOpenmrs"/>"/>
+				<spring:message code="Module.restartWarning"/> <input <c:if test="${showUpgradeConfirm == 'true'}">disabled="true"</c:if> type="submit" value="<spring:message code="Module.restartOpenmrs"/>"/>
 				<input type="hidden" name="action" value="restartOpenmrs"/>
 				<div style="clear:both">&nbsp;</div>
 			</div> 
