@@ -3136,7 +3136,240 @@
 		<dropForeignKeyConstraint baseTableName="notification_alert" constraintName="alert_assigned_to_user"/>
 		<dropColumn tableName="notification_alert" columnName="user_id"/>
 	</changeSet>
-	
+
+	<changeSet id="20100311-0212" author="vinodjohn">
+		<preConditions onFail="MARK_RAN">
+			<foreignKeyConstraintExists
+				foreignKeyName="role_definitions" />
+			<not>
+				<columnExists tableName="user_role" columnName="role_id" />
+				<columnExists tableName="role" columnName="role_id" />
+			</not>
+		</preConditions>
+		<comment>
+			Removing foreign key on user_role to introduce integer primary key in role table
+		</comment>
+		<dropForeignKeyConstraint constraintName="role_definitions"
+			baseTableName="user_role" />
+	</changeSet>
+
+	<changeSet id="20100311-0213" author="vinodjohn">
+		<preConditions onFail="MARK_RAN">
+			<foreignKeyConstraintExists
+				foreignKeyName="role_privilege" />
+			<not>
+				<columnExists tableName="role_privilege" columnName="role_id" />
+				<columnExists tableName="role" columnName="role_id" />
+			</not>
+		</preConditions>
+		<comment>
+			Removing foreign key on role_privilege to introduce integer primary key in role table
+		</comment>
+		<dropForeignKeyConstraint constraintName="role_privilege"
+			baseTableName="role_privilege" />
+	</changeSet>
+
+	<changeSet id="20100311-0214" author="vinodjohn">
+		<preConditions onFail="MARK_RAN">
+			<foreignKeyConstraintExists
+				foreignKeyName="parent_role" />
+			<foreignKeyConstraintExists
+				foreignKeyName="inherited_role" />
+			<not>
+				<columnExists tableName="role_role" columnName="role_id" />
+				<columnExists tableName="role" columnName="role_id" />
+			</not>
+		</preConditions>
+		<comment>
+			Removing foreign keys on role_role to introduce integer primary key in role table
+		</comment>
+		<dropForeignKeyConstraint constraintName="parent_role"
+			baseTableName="role_role" />
+		<dropForeignKeyConstraint constraintName="inherited_role"
+			baseTableName="role_role" />
+	</changeSet>
+
+	<changeSet id="20100311-0215" author="vinodjohn">
+		<preConditions onFail="MARK_RAN">
+			<foreignKeyConstraintExists
+				foreignKeyName="privilege_definitons" />
+			<not>
+				<columnExists tableName="role_privilege" columnName="privilege_id" />
+				<columnExists tableName="privilege" columnName="privilege_id" />
+			</not>
+		</preConditions>
+		<comment>
+			Removing foreign key on role_privilege to introduce integer primary key in privilege table
+		</comment>
+		<dropForeignKeyConstraint constraintName="privilege_definitons"
+			baseTableName="role_privilege" />
+	</changeSet>
+
+	<changeSet id="20100311-0216" author="vinodjohn">
+		<preConditions onFail="MARK_RAN">
+			<foreignKeyConstraintExists
+				foreignKeyName="privilege_which_can_edit" />
+			<not>
+				<columnExists tableName="person_attribute_type"
+					columnName="edit_privilege_id" />
+				<columnExists tableName="privilege" columnName="privilege_id" />
+			</not>
+		</preConditions>
+		<comment>
+			Removing foreign key on person_attribute_type to introduce integer primary key in privilege table
+		</comment>
+		<dropForeignKeyConstraint constraintName="privilege_which_can_edit"
+			baseTableName="person_attribute_type" />
+	</changeSet>
+
+	<changeSet id="20100311-0217" author="vinodjohn">
+		<preConditions onFail="MARK_RAN">
+			<primaryKeyExists tableName="role" />
+			<not>
+				<columnExists tableName="role" columnName="role_id" />
+			</not>
+		</preConditions>
+		<comment>Re-factor role replacing VARCHAR primary key type with INTEGER</comment>
+		<dropPrimaryKey tableName="role" />
+		<addUniqueConstraint tableName="role" columnNames="role"
+			constraintName="role_unique" />
+		<addColumn tableName="role">
+			<column name="role_id" type="int" autoIncrement="true">
+				<constraints nullable="false" primaryKey="true"
+					primaryKeyName="key_for_role" unique="true" uniqueConstraintName="role_id_unique" />
+			</column>
+		</addColumn>
+	</changeSet>
+
+	<changeSet id="20100311-0218" author="vinodjohn">
+		<preConditions onFail="MARK_RAN">
+			<primaryKeyExists tableName="privilege" />
+			<not>
+				<columnExists tableName="privilege" columnName="privilege_id" />
+			</not>
+		</preConditions>
+		<comment>Re-factor privilege replacing VARCHAR primary key type with INTEGER</comment>
+		<dropPrimaryKey tableName="privilege" />
+		<addUniqueConstraint tableName="privilege"
+			columnNames="privilege" constraintName="privilege_unique" />
+		<addColumn tableName="privilege">
+			<column name="privilege_id" type="int" autoIncrement="true">
+				<constraints nullable="false" primaryKey="true"
+					primaryKeyName="key_for_privilege" unique="true"
+					uniqueConstraintName="privilege_id_unique" />
+			</column>
+		</addColumn>
+	</changeSet>
+
+	<changeSet id="20100311-0219" author="vinodjohn">
+		<preConditions onFail="MARK_RAN">
+			<primaryKeyExists tableName="role_role" />
+			<not>
+				<columnExists tableName="role_role" columnName="parent_role_id" />
+				<columnExists tableName="role_role" columnName="child_role_id" />
+			</not>
+		</preConditions>
+		<comment>Re-factor role_role replacing VARCHAR primary key type with INTEGER</comment>
+		<dropPrimaryKey tableName="role_role" />
+		<addColumn tableName="role_role">
+			<column name="parent_role_id" type="int" />
+		</addColumn>
+		<addColumn tableName="role_role">
+			<column name="child_role_id" type="int" />
+		</addColumn>
+		<sql>update role, role_role set role_role.parent_role_id =
+			role.role_id where role.role = role_role.parent_role</sql>
+		<sql>update role, role_role set role_role.child_role_id =
+			role.role_id where role.role = role_role.child_role</sql>
+		<addPrimaryKey tableName="role_role" columnNames="parent_role_id,child_role_id"
+			constraintName="key_for_role_role" />
+		<dropColumn tableName="role_role" columnName="child_role" />
+		<dropColumn tableName="role_role" columnName="parent_role" />
+		<addForeignKeyConstraint constraintName="inherited_role"
+			baseTableName="role_role" baseColumnNames="child_role_id"
+			referencedTableName="role" referencedColumnNames="role_id" />
+		<addForeignKeyConstraint constraintName="parent_role"
+			baseTableName="role_role" baseColumnNames="parent_role_id"
+			referencedTableName="role" referencedColumnNames="role_id" />
+	</changeSet>
+
+	<changeSet id="20100311-0220" author="vinodjohn">
+		<preConditions onFail="MARK_RAN">
+			<primaryKeyExists tableName="role_privilege" />
+			<not>
+				<columnExists tableName="role_privilege" columnName="role_id" />
+				<columnExists tableName="role_privilege" columnName="privilege_id" />
+			</not>
+		</preConditions>
+		<comment>Re-factor role_privilege replacing VARCHAR primary key type with INTEGER</comment>
+		<dropPrimaryKey tableName="role_privilege" />
+		<addColumn tableName="role_privilege">
+			<column name="role_id" type="int" />
+		</addColumn>
+		<addColumn tableName="role_privilege">
+			<column name="privilege_id" type="int" />
+		</addColumn>
+		<sql>update role, role_privilege set role_privilege.role_id =
+			role.role_id where role.role = role_privilege.role</sql>
+		<sql>update privilege, role_privilege set
+			role_privilege.privilege_id = privilege.privilege_id where
+			privilege.privilege = role_privilege.privilege</sql>
+		<addPrimaryKey tableName="role_privilege" columnNames="privilege_id,role_id"
+			constraintName="key_for_role_privilege" />
+		<dropColumn tableName="role_privilege" columnName="role" />
+		<dropColumn tableName="role_privilege" columnName="privilege" />
+		<addForeignKeyConstraint constraintName="role_privilege"
+			baseTableName="role_privilege" baseColumnNames="role_id"
+			referencedTableName="role" referencedColumnNames="role_id" />
+		<addForeignKeyConstraint constraintName="privilege_definitions"
+			baseTableName="role_privilege" baseColumnNames="privilege_id"
+			referencedTableName="privilege" referencedColumnNames="privilege_id" />
+	</changeSet>
+
+	<changeSet id="20100311-0221" author="vinodjohn">
+		<preConditions onFail="MARK_RAN">
+			<primaryKeyExists tableName="user_role" />
+			<not>
+				<columnExists tableName="user_role" columnName="role_id" />
+			</not>
+		</preConditions>
+		<comment>Re-factor user_role replacing VARCHAR primary key type with INTEGER</comment>
+		<dropPrimaryKey tableName="user_role" />
+		<addColumn tableName="user_role">
+			<column name="role_id" type="int" />
+		</addColumn>
+		<sql>update role, user_role set user_role.role_id = role.role_id
+			where role.role = user_role.role</sql>
+		<addPrimaryKey tableName="user_role" columnNames="user_id,role_id"
+			constraintName="key_for_user_role" />
+		<addForeignKeyConstraint constraintName="role_definitions"
+			baseTableName="user_role" baseColumnNames="role_id"
+			referencedTableName="role" referencedColumnNames="role_id" />
+		<dropColumn tableName="user_role" columnName="role" />
+	</changeSet>
+
+	<changeSet id="20100311-0222" author="vinodjohn">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="person_attribute_type"
+				columnName="edit_privilege" />
+			<not>
+				<columnExists tableName="person_attribute_type"
+					columnName="edit_privilege_id" />
+			</not>
+		</preConditions>
+		<comment>Re-factor person_attribute_type replacing VARCHAR foreign key type with INTEGER</comment>
+		<addColumn tableName="person_attribute_type">
+			<column name="edit_privilege_id" type="int" />
+		</addColumn>
+		<sql>update privilege, person_attribute_type set
+			person_attribute_type.edit_privilege_id = privilege.privilege_id
+			where privilege.privilege = person_attribute_type.edit_privilege
+		</sql>
+		<dropColumn tableName="person_attribute_type" columnName="edit_privilege" />
+		<addForeignKeyConstraint constraintName="privilege_which_can_edit"
+			baseTableName="person_attribute_type" baseColumnNames="edit_privilege_id"
+			referencedTableName="privilege" referencedColumnNames="privilege_id" />
+	</changeSet>
 	<changeSet id="20100322-0908" author="syhaas">
 		<preConditions onFail="MARK_RAN">
 			<not>

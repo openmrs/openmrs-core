@@ -331,6 +331,16 @@ public interface UserService extends OpenmrsService {
 	public Role getRole(String r) throws APIException;
 	
 	/**
+	 * Returns role object with given role id
+	 * 
+	 * @return Role object for specified id
+	 * @throws APIException
+	 * @should fetch role for given role id
+	 */
+	@Transactional(readOnly = true)
+	public Role getRole(Integer roleId) throws APIException;
+	
+	/**
 	 * Get Role by its UUID
 	 * 
 	 * @param uuid
@@ -349,7 +359,17 @@ public interface UserService extends OpenmrsService {
 	 * @should fetch privilege for given name
 	 */
 	@Transactional(readOnly = true)
-	public Privilege getPrivilege(String p) throws APIException;
+	public Privilege getPrivilege(String privilege) throws APIException;
+
+	/**
+	 * Returns Privilege in the system with given privilege id
+	 * 
+	 * @return Privilege
+	 * @throws APIException
+	 * @should fetch privilege for given privilege id
+	 */
+	@Transactional(readOnly = true)
+	public Privilege getPrivilege(Integer privilegeId) throws APIException;
 	
 	/**
 	 * Get Privilege by its UUID
