@@ -86,7 +86,7 @@ public class ServiceContext implements ApplicationContextAware {
 	 */
 	private boolean useSystemClassLoader = false;
 	
-	// Cached service objects  
+	// Cached service objects
 	@SuppressWarnings("unchecked")
 	Map<Class, Object> services = new HashMap<Class, Object>();
 	
@@ -166,35 +166,35 @@ public class ServiceContext implements ApplicationContextAware {
 	 * @return encounter-related services
 	 */
 	public EncounterService getEncounterService() {
-		return (EncounterService) getService(EncounterService.class);
+		return getService(EncounterService.class);
 	}
 	
 	/**
 	 * @return location services
 	 */
 	public LocationService getLocationService() {
-		return (LocationService) getService(LocationService.class);
+		return getService(LocationService.class);
 	}
 	
 	/**
 	 * @return observation services
 	 */
 	public ObsService getObsService() {
-		return (ObsService) getService(ObsService.class);
+		return getService(ObsService.class);
 	}
 	
 	/**
 	 * @return patientset-related services
 	 */
 	public PatientSetService getPatientSetService() {
-		return (PatientSetService) getService(PatientSetService.class);
+		return getService(PatientSetService.class);
 	}
 	
 	/**
 	 * @return cohort related service
 	 */
 	public CohortService getCohortService() {
-		return (CohortService) getService(CohortService.class);
+		return getService(CohortService.class);
 	}
 	
 	/**
@@ -208,14 +208,14 @@ public class ServiceContext implements ApplicationContextAware {
 	 * @return order service
 	 */
 	public OrderService getOrderService() {
-		return (OrderService) getService(OrderService.class);
+		return getService(OrderService.class);
 	}
 	
 	/**
 	 * @return form service
 	 */
 	public FormService getFormService() {
-		return (FormService) getService(FormService.class);
+		return getService(FormService.class);
 	}
 	
 	/**
@@ -224,14 +224,14 @@ public class ServiceContext implements ApplicationContextAware {
 	 */
 	@Deprecated
 	public ReportObjectService getReportObjectService() {
-		return (ReportObjectService) getService(ReportObjectService.class);
+		return getService(ReportObjectService.class);
 	}
 	
 	/**
 	 * @return serialization service
 	 */
 	public SerializationService getSerializationService() {
-		return (SerializationService) getService(SerializationService.class);
+		return getService(SerializationService.class);
 	}
 	
 	/**
@@ -240,42 +240,42 @@ public class ServiceContext implements ApplicationContextAware {
 	 */
 	@Deprecated
 	public ReportService getReportService() {
-		return (ReportService) getService(ReportService.class);
+		return getService(ReportService.class);
 	}
 	
 	/**
 	 * @return admin-related services
 	 */
 	public AdministrationService getAdministrationService() {
-		return (AdministrationService) getService(AdministrationService.class);
+		return getService(AdministrationService.class);
 	}
 	
 	/**
 	 * @return programWorkflowService
 	 */
 	public ProgramWorkflowService getProgramWorkflowService() {
-		return (ProgramWorkflowService) getService(ProgramWorkflowService.class);
+		return getService(ProgramWorkflowService.class);
 	}
 	
 	/**
 	 * @return ardenService
 	 */
 	public ArdenService getArdenService() {
-		return (ArdenService) getService(ArdenService.class);
+		return getService(ArdenService.class);
 	}
 	
 	/**
 	 * @return logicService
 	 */
 	public LogicService getLogicService() {
-		return (LogicService) getService(LogicService.class);
+		return getService(LogicService.class);
 	}
 	
 	/**
 	 * @return scheduler service
 	 */
 	public SchedulerService getSchedulerService() {
-		return (SchedulerService) getService(SchedulerService.class);
+		return getService(SchedulerService.class);
 	}
 	
 	/**
@@ -291,7 +291,7 @@ public class ServiceContext implements ApplicationContextAware {
 	 * @return alert service
 	 */
 	public AlertService getAlertService() {
-		return (AlertService) getService(AlertService.class);
+		return getService(AlertService.class);
 	}
 	
 	/**
@@ -326,7 +326,7 @@ public class ServiceContext implements ApplicationContextAware {
 	 * @return message service
 	 */
 	public MessageService getMessageService() {
-		return (MessageService) getService(MessageService.class);
+		return getService(MessageService.class);
 	}
 	
 	/**
@@ -342,7 +342,7 @@ public class ServiceContext implements ApplicationContextAware {
 	 * @return the hl7Service
 	 */
 	public HL7Service getHL7Service() {
-		return (HL7Service) getService(HL7Service.class);
+		return getService(HL7Service.class);
 	}
 	
 	/**
@@ -442,14 +442,14 @@ public class ServiceContext implements ApplicationContextAware {
 	 */
 	@Deprecated
 	public DataSetService getDataSetService() {
-		return (DataSetService) getService(DataSetService.class);
+		return getService(DataSetService.class);
 	}
 	
 	/**
 	 * @return patient related services
 	 */
 	public PatientService getPatientService() {
-		return (PatientService) getService(PatientService.class);
+		return getService(PatientService.class);
 	}
 	
 	/**
@@ -463,7 +463,7 @@ public class ServiceContext implements ApplicationContextAware {
 	 * @return person related services
 	 */
 	public PersonService getPersonService() {
-		return (PersonService) getService(PersonService.class);
+		return getService(PersonService.class);
 	}
 	
 	/**
@@ -477,7 +477,7 @@ public class ServiceContext implements ApplicationContextAware {
 	 * @return concept related services
 	 */
 	public ConceptService getConceptService() {
-		return (ConceptService) getService(ConceptService.class);
+		return getService(ConceptService.class);
 	}
 	
 	/**
@@ -491,7 +491,7 @@ public class ServiceContext implements ApplicationContextAware {
 	 * @return user-related services
 	 */
 	public UserService getUserService() {
-		return (UserService) getService(UserService.class);
+		return getService(UserService.class);
 	}
 	
 	/**
@@ -507,7 +507,7 @@ public class ServiceContext implements ApplicationContextAware {
 	 * @return MessageSourceService
 	 */
 	public MessageSourceService getMessageSourceService() {
-		return (MessageSourceService) getService(MessageSourceService.class);
+		return getService(MessageSourceService.class);
 	}
 	
 	/**
@@ -609,9 +609,10 @@ public class ServiceContext implements ApplicationContextAware {
 	private void removeAddedAdvisors(Class cls) {
 		Advised advisedService = (Advised) services.get(cls);
 		Set<Advisor> advisorsToRemove = addedAdvisors.get(cls);
-		if (advisedService != null && advisorsToRemove != null)
-			for (Advisor advisor : advisorsToRemove)
+		if (advisedService != null && advisorsToRemove != null) {
+			for (Advisor advisor : advisorsToRemove.toArray(new Advisor[] {}))
 				removeAdvisor(cls, advisor);
+		}
 	}
 	
 	/**
@@ -635,9 +636,10 @@ public class ServiceContext implements ApplicationContextAware {
 	private void removeAddedAdvice(Class cls) {
 		Advised advisedService = (Advised) services.get(cls);
 		Set<Advice> adviceToRemove = addedAdvice.get(cls);
-		if (advisedService != null && adviceToRemove != null)
-			for (Advice advice : adviceToRemove)
+		if (advisedService != null && adviceToRemove != null) {
+			for (Advice advice : adviceToRemove.toArray(new Advice[] {}))
 				removeAdvice(cls, advice);
+		}
 	}
 	
 	/**
@@ -663,7 +665,7 @@ public class ServiceContext implements ApplicationContextAware {
 		if (log.isTraceEnabled())
 			log.trace("Getting service: " + cls);
 		
-		// if the context is refreshing, wait until it is 
+		// if the context is refreshing, wait until it is
 		// done -- otherwise a null service might be returned
 		synchronized (refreshingContext) {
 			if (refreshingContext.booleanValue())
