@@ -20,7 +20,9 @@ import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
 
 import org.junit.Assert;
@@ -78,7 +80,7 @@ public class ConceptTest {
 		Locale primaryLocale = Locale.US;
 		Concept testConcept = createMockConcept(1, primaryLocale);
 		
-		// concept should only have US and generic english names. 
+		// concept should only have US and generic english names.
 		// add an incompatible name -- en_UK
 		int initialNameCollectionSize = testConcept.getNames().size();
 		ConceptName name_en_UK = ConceptNameTest.createMockConceptName(initialNameCollectionSize + 1, Locale.UK);
@@ -597,4 +599,237 @@ public class ConceptTest {
 		c.addAnswer(ca2);
 		Assert.assertEquals(2d, ca2.getSortWeight().doubleValue(), 0);
 	}
+	
+	/**
+	 * @see {@link Concept#addSetMember(Concept,int)}
+	 */
+	@Test
+	@Verifies(value = "should add the concept to the current list of conceptSet", method = "addSetMember(Concept,int)")
+	public void addSetMember_shouldAddTheConceptToTheCurrentListOfConceptSet() throws Exception {
+		Concept concept = new Concept();
+		Concept setMember = new Concept(1);
+		
+		Assert.assertEquals(0, concept.getConceptSets().size());
+		
+		concept.addSetMember(setMember);
+		
+		Assert.assertEquals(1, concept.getConceptSets().size());
+		
+	}
+	
+	/**
+	 * @see {@link Concept#addSetMember(Concept)}
+	 */
+	@Test
+	@Verifies(value = "should add concept as a conceptSet", method = "addSetMember(Concept)")
+	public void addSetMember_shouldAddConceptAsAConceptSet() throws Exception {
+		Concept concept = new Concept();
+		Concept setMember = new Concept(1);
+		concept.addSetMember(setMember);
+		
+		ConceptSet conceptSet = (ConceptSet) concept.getConceptSets().toArray()[0];
+		
+		Assert.assertEquals(setMember, conceptSet.getConcept());
+	}
+	
+	/**
+	 * @see {@link Concept#addSetMember(Concept,int)}
+	 */
+	@Test
+	@Verifies(value = "should assign the calling component as parent to the ConceptSet", method = "addSetMember(Concept,int)")
+	public void addSetMember_shouldAssignTheCallingComponentAsParentToTheConceptSet() throws Exception {
+		Concept concept = new Concept();
+		Concept setMember = new Concept(11);
+		concept.addSetMember(setMember);
+		
+		ConceptSet conceptSet = (ConceptSet) concept.getConceptSets().toArray()[0];
+		
+		Assert.assertEquals(concept, conceptSet.getConceptSet());
+	}
+	
+	/**
+	 * @see {@link Concept#addSetMember(Concept)}
+	 */
+	@Test
+	@Verifies(value = "should append concept to the existing list of conceptSet", method = "addSetMember(Concept)")
+	public void addSetMember_shouldAppendConceptToExistingConceptSet() throws Exception {
+		Concept concept = new Concept();
+		Concept setMember1 = new Concept(1);
+		concept.addSetMember(setMember1);
+		Concept setMember2 = new Concept(2);
+		concept.addSetMember(setMember2);
+		
+		Assert.assertEquals(setMember2, concept.getSetMembers().get(1));
+	}
+	
+	/**
+	 * @see {@link Concept#addSetMember(Concept)}
+	 */
+	@Test
+	@Verifies(value = "should place the new concept last in the list", method = "addSetMember(Concept)")
+	public void addSetMember_shouldPlaceTheNewConceptLastInTheList() throws Exception {
+		Concept concept = new Concept();
+		Concept setMember1 = new Concept(1);
+		concept.addSetMember(setMember1, 3);
+		Concept setMember2 = new Concept(2);
+		concept.addSetMember(setMember2);
+		
+		Assert.assertEquals(setMember2, concept.getSetMembers().get(1));
+	}
+	
+	/**
+	 * @see {@link Concept#getSetMembers()}
+	 */
+	@Test
+	@Verifies(value = "should return concept set members sorted according to the sort weight", method = "getSetMembers()")
+	public void getSetMembers_shouldReturnConceptSetMembersSortedAccordingToTheSortWeight() throws Exception {
+		Concept c = new Concept();
+		ConceptSet set0 = new ConceptSet(new Concept(0), 3.0);
+		ConceptSet set1 = new ConceptSet(new Concept(1), 2.0);
+		ConceptSet set2 = new ConceptSet(new Concept(2), 1.0);
+		ConceptSet set3 = new ConceptSet(new Concept(3), 0.0);
+		
+		List<ConceptSet> sets = new ArrayList<ConceptSet>();
+		sets.add(set0);
+		sets.add(set1);
+		sets.add(set2);
+		sets.add(set3);
+		
+		c.setConceptSets(sets);
+		
+		List<Concept> setMembers = c.getSetMembers();
+		setMembers = c.getSetMembers();
+		Assert.assertEquals(4, setMembers.size());
+		Assert.assertEquals(set3.getConcept(), setMembers.get(0));
+		Assert.assertEquals(set2.getConcept(), setMembers.get(1));
+		Assert.assertEquals(set1.getConcept(), setMembers.get(2));
+		Assert.assertEquals(set0.getConcept(), setMembers.get(3));
+	}
+	
+	/**
+	 * @see {@link Concept#getSetMembers()}
+	 */
+	@Test
+	@Verifies(value = "should return all the conceptMembers of current Concept", method = "getSetMembers()")
+	public void getSetMembers_shouldReturnAllTheConceptMembersOfCurrentConcept() throws Exception {
+		Concept c = new Concept();
+		
+		Concept setMember1 = new Concept(12345);
+		c.addSetMember(setMember1);
+		
+		Concept setMember2 = new Concept(67890);
+		c.addSetMember(setMember2);
+		
+		List<Concept> setMembers = c.getSetMembers();
+		
+		Assert.assertEquals(2, setMembers.size());
+		Assert.assertEquals(setMember1, setMembers.get(0));
+		Assert.assertEquals(setMember2, setMembers.get(1));
+	}
+	
+	/**
+	 * @see {@link Concept#getSetMembers()}
+	 */
+	@Test(expected = UnsupportedOperationException.class)
+	@Verifies(value = "should return unmodifiable list of conceptMember list", method = "getSetMembers()")
+	public void getSetMembers_shouldReturnUnmodifiableListOfConceptMemberList() throws Exception {
+		Concept c = new Concept();
+		c.addSetMember(new Concept(12345));
+		List<Concept> setMembers = c.getSetMembers();
+		
+		Assert.assertEquals(1, setMembers.size());
+		setMembers.add(new Concept());
+	}
+
+	/**
+	 * @see {@link Concept#addSetMember(Concept)}
+	 */
+	@Test
+	@Verifies(value = "should append concept to the existing list of conceptSet", method = "addSetMember(Concept)")
+	public void addSetMember_shouldAppendConceptToTheExistingListOfConceptSet() throws Exception {
+		Concept concept = new Concept();
+		Concept firstSetMember = new Concept(2);
+		concept.addSetMember(firstSetMember);
+		
+		Concept setMember = new Concept(3);
+		concept.addSetMember(setMember);
+		
+		ConceptSet firstConceptSet = (ConceptSet) concept.getConceptSets().toArray()[0];
+		ConceptSet secondConceptSet = (ConceptSet) concept.getConceptSets().toArray()[1];
+		Assert.assertEquals(firstSetMember, firstConceptSet.getConcept());
+		Assert.assertEquals(setMember, secondConceptSet.getConcept());
+	}
+
+	/**
+	 * @see {@link Concept#addSetMember(Concept,int)}
+	 */
+	@Test
+	@Verifies(value = "should assign the given concept as a ConceptSet", method = "addSetMember(Concept,int)")
+	public void addSetMember_shouldAssignTheGivenConceptAsAConceptSet() throws Exception {
+		Concept concept = new Concept();
+		Concept setMember = new Concept(2);
+		concept.addSetMember(setMember, 0);
+		
+		ConceptSet conceptSet = (ConceptSet) concept.getConceptSets().toArray()[0];
+		Assert.assertEquals(setMember, conceptSet.getConcept());
+	}
+
+	/**
+	 * @see {@link Concept#addSetMember(Concept,int)}
+	 */
+	@Test
+	@Verifies(value = "should insert the concept before the first with zero index", method = "addSetMember(Concept,int)")
+	public void addSetMember_shouldInsertTheConceptBeforeTheFirstWithZeroIndex() throws Exception {
+		Concept concept = new Concept();
+		Concept firstSetMember = new Concept(2);
+		concept.addSetMember(firstSetMember);
+		
+		Concept setMember = new Concept(3);
+		concept.addSetMember(setMember, 0);
+		
+		ConceptSet firstConceptSet = (ConceptSet) concept.getConceptSets().toArray()[0];
+		ConceptSet secondConceptSet = (ConceptSet) concept.getConceptSets().toArray()[1];
+		Assert.assertTrue(firstConceptSet.getSortWeight() < secondConceptSet.getSortWeight());
+	}
+
+	/**
+	 * @see {@link Concept#addSetMember(Concept,int)}
+	 */
+	@Test
+	@Verifies(value = "should insert the concept at the end with negative one index", method = "addSetMember(Concept,int)")
+	public void addSetMember_shouldInsertTheConceptAtTheEndWithNegativeOneIndex() throws Exception {
+		Concept concept = new Concept();
+		Concept firstSetMember = new Concept(2);
+		concept.addSetMember(firstSetMember);
+		
+		Concept setMember = new Concept(3);
+		concept.addSetMember(setMember, -1);
+		
+		ConceptSet secondConceptSet = (ConceptSet) concept.getConceptSets().toArray()[1];
+		Assert.assertEquals(setMember, secondConceptSet.getConcept());
+	}
+
+	/**
+	 * @see {@link Concept#addSetMember(Concept,int)}
+	 */
+	@Test
+	@Verifies(value = "should insert the concept in the third slot", method = "addSetMember(Concept,int)")
+	public void addSetMember_shouldInsertTheConceptInTheThirdSlot() throws Exception {
+		Concept concept = new Concept();
+		Concept firstSetMember = new Concept(2);
+		concept.addSetMember(firstSetMember);
+		
+		Concept secondSetMember = new Concept(3);
+		concept.addSetMember(secondSetMember);
+		
+		Concept thirdSetMember = new Concept(4);
+		concept.addSetMember(thirdSetMember);
+		
+		Concept newThirdSetMember = new Concept(5);
+		concept.addSetMember(newThirdSetMember, 2);
+		
+		ConceptSet thirdConceptSet = (ConceptSet) concept.getConceptSets().toArray()[2];
+		Assert.assertEquals(newThirdSetMember, thirdConceptSet.getConcept());
+	}
+
 }
