@@ -14,6 +14,7 @@
 package org.openmrs.module;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -1193,7 +1194,7 @@ public class ModuleFactory {
 						if (module.getUpdateFile() != null) {
 							saveGlobalProperty(moduleId + ".started", "true", getGlobalPropertyStartedDescription(moduleId));
 						} else {
-							String message = "module "+moduleId+" doesn't have a upgrade module set";
+							String message = "module " + moduleId + " doesn't have a upgrade module set";
 							log.error(message);
 							throw new ModuleException(message);
 						}
@@ -1208,6 +1209,11 @@ public class ModuleFactory {
 						}
 						break;
 					case PENDING_UPDATE:
+						if (module.getDownloadURL() == null) {
+							String message = "module " + moduleId + " doesn't have a download url set";
+							log.error(message);
+							throw new ModuleException(message);
+						}
 						break;
 					case PENDING_NONE:
 						break;
@@ -1218,7 +1224,9 @@ public class ModuleFactory {
 				throw new ModuleException(message);
 			}
 			module.setPendingAction(pendingAction);
-			pendingModuleActions.put(moduleId, pendingAction);
+			if (pendingAction != ModuleAction.PENDING_NONE) {
+				pendingModuleActions.put(moduleId, pendingAction);
+			}
 		} else {
 			String message = "A module with id " + moduleId + " doesn't exist";
 			log.error(message);
@@ -1256,5 +1264,33 @@ public class ModuleFactory {
 	 */
 	public static boolean hasPendingModuleActions() {
 		return pendingModuleActions.size() > 0;
+	}
+	
+	/**
+	 * A method to queue upgrade module action
+	 * 
+	 * @param existingModule
+	 * @param newModule
+	 * @param newModuleName
+	 * @throws ModuleException
+	 */
+	public static void upgradeModule(Module existingModule, Module newModule, String newModuleName) throws ModuleException {
+		try {
+			int compareVersion = ModuleUtil.compareVersion(existingModule.getVersion(), newModule.getVersion());
+			if (compareVersion != 0) { //Existing and new module are the same version so no need to upgrade
+				boolean deleted = existingModule.getFile().delete();
+				if (!deleted) {
+					existingModule.getFile().deleteOnExit();
+				}
+				InputStream inputStream = new FileInputStream(newModule.getFile());
+				File newModuleFile = ModuleUtil.insertModuleFile(inputStream, newModuleName);
+				existingModule.setUpdateFile(newModuleFile);
+				queueModuleAction(existingModule.getModuleId(), ModuleAction.PENDING_UPGRADE);
+			}
+		}
+		catch (Exception e) {
+			log.error("Error occured while upgrading", e);
+			throw new ModuleException(e.getMessage());
+		}
 	}
 }
