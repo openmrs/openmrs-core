@@ -51,7 +51,7 @@
 		<property name="retired" type="boolean" column="retired"
 			length="1" not-null="true" />
 			
-		<many-to-one name="editPrivilege" class="Privilege" column="edit_privilege_id" />
+		<many-to-one name="editPrivilege" class="Privilege" column="edit_privilege" />
 		
 	</class>
 	

@@ -9,21 +9,15 @@
 
 		<!--  <cache usage="read-write"/> -->
 
-		<id name="roleId" type="java.lang.Integer"
-			column="role_id"
-			unsaved-value="0">
-			<generator class="native" />
+		<id name="role" type="java.lang.String" column="role">
+			<generator class="assigned" />
 		</id>
-		
 
-		<discriminator column="role_id" insert="false" />
+		<discriminator column="role" insert="false" />
 
 		<property name="uuid" type="java.lang.String"
 			column="uuid" length="38" unique="true" />
 
-		<property name="role" type="java.lang.String"
-			column="role" unique="true" />
-			
 		<property name="description" type="java.lang.String"
 			column="description" not-null="true" length="255" />
 
@@ -33,10 +27,10 @@
 		<set name="inheritedRoles" cascade="none" lazy="false"
 			table="role_role">
 			<key>
-				<column name="child_role_id" />
+				<column name="child_role" />
 			</key>
 			<many-to-many class="Role" >
-				<column name="parent_role_id" />
+				<column name="parent_role" />
 			</many-to-many>
 		</set>
 
@@ -44,10 +38,10 @@
 		<set name="privileges" cascade="" lazy="false"
 			table="role_privilege">
 			<key>
-				<column name="role_id" />
+				<column name="role" />
 			</key>
 			<many-to-many class="Privilege" >
-				<column name="privilege_id" />
+				<column name="privilege" />
 			</many-to-many>
 		</set>
 

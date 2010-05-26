@@ -74,12 +74,7 @@ public interface UserDAO {
 	/**
 	 * @see org.openmrs.api.UserService#getRole(java.lang.String)
 	 */
-	public Role getRole(String role) throws DAOException;
-	
-	/**
-	 * @see org.openmrs.api.UserService#getRole(java.lang.Integer)
-	 */
-	public Role getRole(Integer roleId) throws DAOException;
+	public Role getRole(String r) throws DAOException;
 	
 	/**
 	 * @see org.openmrs.api.UserService#getAllRoles()
@@ -96,12 +91,7 @@ public interface UserDAO {
 	/**
 	 * @see org.openmrs.api.UserService#getPrivilege(java.lang.String)
 	 */
-	public Privilege getPrivilege(String privilege) throws DAOException;
-	
-	/**
-	 * @see org.openmrs.api.UserService#getPrivilege(java.lang.Integer)
-	 */
-	public Privilege getPrivilege(Integer privilegeId);
+	public Privilege getPrivilege(String p) throws DAOException;
 	
 	/**
 	 * @see org.openmrs.api.UserService#getAllPrivileges()
