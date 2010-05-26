@@ -57,7 +57,7 @@
 				<column name="user_id" />
 			</key>
 			<many-to-many class="Role">
-				<column name="role_id" />
+				<column name="role" />
 			</many-to-many>
 		</set>
 

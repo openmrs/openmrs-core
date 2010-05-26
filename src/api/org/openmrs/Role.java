@@ -36,8 +36,6 @@ public class Role extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	// Fields
 	
-	private Integer roleId;
-	
 	private String role;
 	
 	private Set<Privilege> privileges;
@@ -51,10 +49,6 @@ public class Role extends BaseOpenmrsMetadata implements java.io.Serializable {
 	}
 	
 	/** constructor with id */
-	public Role(Integer roleId) {
-		this.roleId = roleId;
-	}
-	
 	public Role(String role) {
 		this.role = role;
 	}
@@ -239,7 +233,7 @@ public class Role extends BaseOpenmrsMetadata implements java.io.Serializable {
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
 	public Integer getId() {
-		return getRoleId();
+		throw new UnsupportedOperationException();
 	}
 	
 	/**
@@ -247,21 +241,7 @@ public class Role extends BaseOpenmrsMetadata implements java.io.Serializable {
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
 	public void setId(Integer id) {
-		setRoleId(id);
-	}
-	
-	/**
-	 * @param roleId the roleId to set
-	 */
-	public void setRoleId(Integer roleId) {
-		this.roleId = roleId;
-	}
-	
-	/**
-	 * @return the roleId
-	 */
-	public Integer getRoleId() {
-		return roleId;
+		throw new UnsupportedOperationException();
 	}
 	
 }
