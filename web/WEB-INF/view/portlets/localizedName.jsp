@@ -34,11 +34,11 @@
 	function updateUnlocalizedValue(obj){
 		var newUnlocalizedValue = obj.value;
 		var localizedNameValue = document.getElementById("localizedNameHidden").value;
-		var pos = localizedNameValue.indexOf("\^v1\^");
+		var pos = localizedNameValue.indexOf("i18n:v1;");
 		if (pos == -1)
-			document.getElementById("localizedNameHidden").value = newUnlocalizedValue;
+			document.getElementById("localizedNameHidden").value = escapeDelimter(newUnlocalizedValue);
 		else
-			document.getElementById("localizedNameHidden").value = newUnlocalizedValue + localizedNameValue.substr(pos);
+			updateName("unlocalized", newUnlocalizedValue);// A hack way to update unlocalized name by method "updateName"
 	}	
 
 	/*
@@ -58,8 +58,8 @@
 			} else {/*update locale for those existed variant name*/
 				//just update locale in the existed match variant name(e.g., es:Hello --> en:Hello)
 				//this case mostly happen when end-user define a wrong-match variant name at first and correct later
-				var fromStr = currentLocale + ":";
-				var toStr = selectedLocale + ":";
+				var fromStr = ";" + currentLocale + ":";
+				var toStr = ";" + selectedLocale + ":";
 				var reg = new RegExp(fromStr);
 				var localizedNameValue = document.getElementById("localizedNameHidden").value;
 				document.getElementById("localizedNameHidden").value = localizedNameValue.replace(reg, toStr);
@@ -82,7 +82,7 @@
 				obj.parentNode.getElementsByTagName("input")[0].value = selectedLocale;
 			}
 		} else {/*update a existed variant name*/
-			updateVariantName(currentLocale, obj.value);
+			updateName(currentLocale, obj.value);
 		}
 	}
 
@@ -91,28 +91,37 @@
 	*/
 	function addVariantName(loc, value){
 		var localizedNameValue = document.getElementById("localizedNameHidden").value;
-		if (localizedNameValue.indexOf("\^v1\^") == -1)/*e.g., Hello --> Hello^v1^en_UK:Hello*/
-			document.getElementById("localizedNameHidden").value = localizedNameValue + "^v1^" + loc + ":" + value;
-		else/*e.g., Hello^v1^en_UK:Hello --> Hello^v1^en_UK:Hello;es:Hola*/
-			document.getElementById("localizedNameHidden").value = localizedNameValue + ";" + loc + ":" + value;
+		if (localizedNameValue.indexOf("i18n:v1;") == -1) /*e.g., Hello --> i18n:v1;unlocalized:Hello;en_UK:Hello;*/
+			document.getElementById("localizedNameHidden").value = "i18n:v1;unlocalized:" + localizedNameValue + ";";
+		document.getElementById("localizedNameHidden").value += (loc + ":" + escapeDelimter(value) + ";");
 	}
 
 	/*
-	* Update an existed variant name
+	* Update unlocalized name(when already added localization) or an existed variant name
+	* Here can update unlocalized name is because "unlocalized" also can be consider as a locale name for hacky.
 	*/
-	function updateVariantName(loc, value){
+	function updateName(loc, value){
 		var localizedNameValue = document.getElementById("localizedNameHidden").value;
-		var searchText = loc + ":";
-		var start = localizedNameValue.indexOf(searchText);
-		var end = localizedNameValue.indexOf(";", start);
-		var fromStr = "";
-		if (end != -1)
-			fromStr = localizedNameValue.substring(start, end);
-		else
-			fromStr = localizedNameValue.substr(start);
-		var toStr = loc + ":" + value;
-		var reg = new RegExp(fromStr);
-		document.getElementById("localizedNameHidden").value = localizedNameValue.replace(reg, toStr);
+		var pattern = ";" + loc + ":";
+		var pos = localizedNameValue.indexOf(pattern);
+		if (pos != -1) {
+			var prefix = localizedNameValue.substring(0, pos + pattern.length);
+			var suffix = "";
+			//cut out the sub string behind "pattern"
+			var temp = localizedNameValue.substr(pos + pattern.length);
+			//search for the next sub string like form ";xx:"
+			pattern = ";[^:;\\\\]*:";
+			var reg = new RegExp(pattern);
+			if (temp.match(reg) == null) {/*cann't find the next sub string*/
+				//the passed loc is the locale of last variant name
+				document.getElementById("localizedNameHidden").value = prefix + escapeDelimter(value) + ";";
+			} else {
+				//cut out the sub string behind the second "pattern"
+				pos = temp.match(reg).index;
+				suffix = temp.substr(pos);
+				document.getElementById("localizedNameHidden").value = prefix + escapeDelimter(value) + suffix;
+			}
+		}
 	}
 
 	/*
@@ -120,26 +129,10 @@
 	*/
 	function removeVariantName(loc, value){
 		var localizedNameValue = document.getElementById("localizedNameHidden").value;
-		var deletedValue = loc + ":" + value + ";";;
-		var reg;
-		if (localizedNameValue.indexOf(deletedValue) != -1){
-			reg = new RegExp(deletedValue);
-			document.getElementById("localizedNameHidden").value = localizedNameValue.replace(reg, "");
-			return;
-		}
-
-		deletedValue = ";" + loc + ":" + value;//may be the match variant name is in the end of "localizedNameValue"
-		if (localizedNameValue.indexOf(deletedValue) != -1) {
-			reg = new RegExp(deletedValue);
-			document.getElementById("localizedNameHidden").value = localizedNameValue.replace(reg, "");
-			return;
-		} 
-
-		deletedValue = "\^v1\^" + loc + ":" + value;//may be the match variant name is only variant name.
-		var pos = localizedNameValue.indexOf(deletedValue);
-		if (pos != -1) {
-			document.getElementById("localizedNameHidden").value = localizedNameValue.substring(0, pos);
-		} 
+		//pattern will be used in regular expression, so we should use escapeDelimter two times to escapse ";" to be "\\\\;" 
+		var pattern = ";" + loc + ":" + escapeDelimter(escapeDelimter(value)) + ";";
+		var reg = new RegExp(pattern);
+		document.getElementById("localizedNameHidden").value = localizedNameValue.replace(reg, ";");
 	}
 
 	/*
@@ -161,7 +154,17 @@
 			return true;
 		}
 	}
-	
+
+	/*
+	* escape ":" or ";" occur in passed text
+	*/
+	function escapeDelimter(text) {
+		var reg = new RegExp(":", "g");
+		text = text.replace(reg, "\\:");
+		reg = new RegExp(";", "g");
+		text = text.replace(reg, "\\;");
+		return text;
+	}	
 </script>
 
 <style>

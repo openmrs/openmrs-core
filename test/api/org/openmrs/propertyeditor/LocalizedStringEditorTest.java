@@ -27,7 +27,8 @@ public class LocalizedStringEditorTest {
 		variants.put(new Locale("fr"), "Couleur pr¨¦f¨¦r¨¦e");
 		ls.setVariants(variants);
 		editor.setValue(ls);
-		Assert.assertEquals("Favorite Color^v1^en_UK:Favourite Colour;fr:Couleur pr¨¦f¨¦r¨¦e", editor.getAsText());
+		Assert.assertEquals("i18n:v1;unlocalized:Favorite Color;en_UK:Favourite Colour;fr:Couleur pr¨¦f¨¦r¨¦e;", editor
+		        .getAsText());
 	}
 	
 	/**
@@ -75,7 +76,7 @@ public class LocalizedStringEditorTest {
     @Verifies(value = "should set value to the localized string object with the specified string", method = "setAsText(String)")
     public void setAsText_shouldSetValueToTheLocalizedStringObjectWithTheSpecifiedString() throws Exception {
     	LocalizedStringEditor editor = new LocalizedStringEditor();
-		String text = "Favorite Color^v1^en_UK:Favourite Colour;fr:Couleur pr¨¦f¨¦r¨¦e";
+		String text = "i18n:v1;unlocalized:Favorite Color;en_UK:Favourite Colour;fr:Couleur pr¨¦f¨¦r¨¦e;";
 		editor.setAsText(text);
 		LocalizedString actual = (LocalizedString) editor.getValue();
 		

@@ -21,6 +21,7 @@ import java.util.Map.Entry;
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.LocalizedString;
 import org.openmrs.util.LocaleUtility;
+import org.openmrs.util.LocalizedStringUtil;
 
 /**
  * This class is responsible for the de/serialization between LocalizedString object and a single
@@ -29,19 +30,19 @@ import org.openmrs.util.LocaleUtility;
 public class LocalizedStringSerializer implements OpenmrsSerializer {
 	
 	/**
-	 * This is the separator between the unlocalized value and the localized values(variants)
+	 * The header marks whether there are variant values in LocalizedString object
 	 */
-	private static final String SEPERATOR = "^v1^";
+	public static final String HEADER = "i18n:v1;";
 	
 	/**
-	 * This is the separator between locale and string value
+	 * The separator between locale and string value
 	 */
-	private static final String PARTITION = ":";
+	public static final String PARTITION = ":";
 	
 	/**
-	 * This is the separator between each pair which includes one locale and string value
+	 * The separator between each pair which includes one locale and string value
 	 */
-	private static final String SPLITTER = ";";
+	public static final String SPLITTER = ";";
 	
 	/**
 	 * A utility method to deserialize a String to a LocalizedString object. <br />
@@ -50,7 +51,7 @@ public class LocalizedStringSerializer implements OpenmrsSerializer {
 	 * 		Deserialization mechanism:
 	 * 		Database Text ---> Object Value:
 	 * 		Favorite Color ---> {unlocalizedValue: "Favorite Color", variants: null}
-	 * 		Favorite Color^v1^en_UK:Favourite Colour;fr:Couleur pr¨¦f¨¦r¨¦e ---> {unlocalizedValue: "Favorite Color", variants: [en_UK = "Favourite Colour", fr = "Couleur pr¨¦f¨¦r¨¦e"]}
+	 * 		i18n:v1;unlocalized:Favorite Color;en_UK:Favourite Colour;fr:Couleur pr¨¦f¨¦r¨¦e; ---> {unlocalizedValue: "Favorite Color", variants: [en_UK = "Favourite Colour", fr = "Couleur pr¨¦f¨¦r¨¦e"]}
 	 * </pre>
 	 * 
 	 * @param serializedObject - String to deserialize
@@ -62,6 +63,7 @@ public class LocalizedStringSerializer implements OpenmrsSerializer {
 	 * @should return null if given serializedObject is empty
 	 * @should not fail if given serializedObject doesnt contains variants
 	 * @should deserialize correctly if given serializedObject contains variants
+	 * @should deescape correctly if given serializedObject contains escaped delimiter
 	 * @see org.openmrs.serialization.OpenmrsSerializer#deserialize(java.lang.String,
 	 *      java.lang.Class)
 	 */
@@ -71,23 +73,29 @@ public class LocalizedStringSerializer implements OpenmrsSerializer {
 		if (LocalizedString.class.equals(clazz)) {
 			if (StringUtils.isBlank(serializedObject))
 				return null;
-			
 			LocalizedString ls = new LocalizedString();
-			//escape the special character '^'
-			String[] array1 = serializedObject.split(StringUtils.replaceEach(SEPERATOR, new String[] { "^" },
-			    new String[] { "\\^" }));
-			ls.setUnlocalizedValue(array1[0]);
-			if (array1.length > 1) {/*has optional variants*/
+			if (!serializedObject.contains(HEADER)) {
+				ls.setUnlocalizedValue(LocalizedStringUtil.deescapeDelimiter(serializedObject));
+				return (T) ls;
+			} else {
+				String[] array1 = serializedObject.split("(?<!\\\\);");
+				//ignore array1[0], because it is "i18n:v1;"
+				//parse unlocalized value
+				String[] array2 = array1[1].split("(?<!\\\\):");
+				if (array2.length == 1)
+					ls.setUnlocalizedValue("");
+				else
+					ls.setUnlocalizedValue(LocalizedStringUtil.deescapeDelimiter(array2[1]));
+				
+				//parse variant values
 				ls.setVariants(new HashMap<Locale, String>());
-				String[] array2 = array1[1].split(SPLITTER);
-				for (String str : array2) {
-					String[] array3 = str.split(PARTITION);
-					Locale loc = LocaleUtility.fromSpecification(array3[0]);
-					//because string value is optional, so it may be empty within locale, we need to check such case
-					if (array3.length == 1)
+				for (int x = 2; x < array1.length; x++) {
+					array2 = array1[x].split("(?<!\\\\):");
+					Locale loc = LocaleUtility.fromSpecification(array2[0]);
+					if (array2.length == 1)
 						ls.getVariants().put(loc, "");
 					else
-						ls.getVariants().put(loc, array3[1]);
+						ls.getVariants().put(loc, LocalizedStringUtil.deescapeDelimiter(array2[1]));
 				}
 			}
 			return (T) ls;
@@ -104,7 +112,7 @@ public class LocalizedStringSerializer implements OpenmrsSerializer {
 	 * Serialization mechanism:
 	 * Object Value ---> Database Text:
 	 * {unlocalizedValue: "Favorite Color", variants: null} ---> Favorite Color
-	 * {unlocalizedValue: "Favorite Color", variants: [en_UK = "Favourite Colour", fr = "Couleur pr¨¦f¨¦r¨¦e"]} ---> Favorite Color^v1^en_UK:Favourite Colour;fr:Couleur pr¨¦f¨¦r¨¦e
+	 * {unlocalizedValue: "Favorite Color", variants: [en_UK = "Favourite Colour", fr = "Couleur pr¨¦f¨¦r¨¦e"]} ---> i18n:v1;unlocalized:Favorite Color;en_UK:Favourite Colour;fr:Couleur pr¨¦f¨¦r¨¦e;
 	 * </pre>
 	 * 
 	 * @param o - the passed object which will be cast to LocalizedString type
@@ -113,6 +121,7 @@ public class LocalizedStringSerializer implements OpenmrsSerializer {
 	 * @should not fail if given object hasnt variants
 	 * @should serialize correctly if given object has variants
 	 * @should throw a SerializationException if given object doesnt belong to LocalizedString
+	 * @should escape correctly if given object has a name including delimiter
 	 * @see org.openmrs.serialization.OpenmrsSerializer#serialize(java.lang.Object)
 	 */
 	@Override
@@ -122,17 +131,18 @@ public class LocalizedStringSerializer implements OpenmrsSerializer {
 		if (o instanceof LocalizedString) {
 			LocalizedString localizedString = (LocalizedString) o;
 			StringBuffer sb = new StringBuffer("");
-			sb.append(localizedString.getUnlocalizedValue());
+			sb.append(LocalizedStringUtil.escapeDelimiter(localizedString.getUnlocalizedValue()));
 			if (localizedString.getVariants() != null && !localizedString.getVariants().isEmpty()) {
-				sb.append(SEPERATOR);
+				sb.insert(0, HEADER);
+				sb.insert(HEADER.length(), "unlocalized:");
+				sb.append(";");
 				Iterator<Entry<Locale, String>> it = localizedString.getVariants().entrySet().iterator();
 				while (it.hasNext()) {
 					Entry<Locale, String> entry = it.next();
 					sb.append(entry.getKey());
 					sb.append(PARTITION);
-					sb.append(entry.getValue());
-					if (it.hasNext())
-						sb.append(SPLITTER);
+					sb.append(LocalizedStringUtil.escapeDelimiter(entry.getValue()));
+					sb.append(SPLITTER);
 				}
 			}
 			return sb.toString();

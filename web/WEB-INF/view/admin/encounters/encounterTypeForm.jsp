@@ -36,17 +36,6 @@
 <form method="post">
 <fieldset>
 <table>
-	<!-- 
-	<tr>
-		<td><spring:message code="general.name"/></td>
-		<td>
-			<spring:bind path="encounterType.name">
-				<input type="text" name="name" value="${status.value}" size="35" />
-				<c:if test="${status.errorMessage != ''}"><c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if></c:if>
-			</spring:bind>
-		</td>
-	</tr>
-	 -->
 	<spring:nestedPath path="encounterType">
 		<openmrs:portlet url="localizedName" id="localizedNameLayout" /> 
 	</spring:nestedPath>

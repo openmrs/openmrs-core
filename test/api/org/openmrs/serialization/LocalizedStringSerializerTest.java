@@ -2,6 +2,7 @@ package org.openmrs.serialization;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -51,7 +52,7 @@ public class LocalizedStringSerializerTest {
 		variants.put(new Locale("en", "UK"), "Favourite Colour");
 		variants.put(new Locale("fr"), "Couleur pr¨¦f¨¦r¨¦e");
 		ls.setVariants(variants);
-		String expected = "Favorite Color^v1^en_UK:Favourite Colour;fr:Couleur pr¨¦f¨¦r¨¦e";
+		String expected = "i18n:v1;unlocalized:Favorite Color;en_UK:Favourite Colour;fr:Couleur pr¨¦f¨¦r¨¦e;";
 		OpenmrsSerializer serializer = new LocalizedStringSerializer();
 		String actual = serializer.serialize(ls);
 		assertEquals(expected, actual);
@@ -68,12 +69,30 @@ public class LocalizedStringSerializerTest {
 	}
 	
 	/**
+	 * @see {@link LocalizedStringSerializer#serialize(Object)}
+	 */
+	@Test
+	@Verifies(value = "should escape correctly if given object has a name including delimiter", method = "serialize(Object)")
+	public void serialize_shouldEscapeCorrectlyIfGivenObjectHasANameIncludingDelimiter() throws Exception {
+		LocalizedString ls = new LocalizedString();
+		ls.setUnlocalizedValue("Favorite : Color");
+		Map<Locale, String> variants = new LinkedHashMap<Locale, String>();
+		variants.put(new Locale("en", "UK"), "Favourite Colour");
+		variants.put(new Locale("fr"), "Couleur ; pr¨¦f¨¦r¨¦e");
+		ls.setVariants(variants);
+		String expected = "i18n:v1;unlocalized:Favorite \\: Color;en_UK:Favourite Colour;fr:Couleur \\; pr¨¦f¨¦r¨¦e;";
+		OpenmrsSerializer serializer = new LocalizedStringSerializer();
+		String actual = serializer.serialize(ls);
+		assertEquals(expected, actual);
+	}
+	
+	/**
 	 * @see {@link LocalizedStringSerializer#deserialize(String,Class<+QT;>)}
 	 */
 	@Test
 	@Verifies(value = "should deserialize correctly if given serializedObject contains variants", method = "deserialize(String,Class<+QT;>)")
 	public void deserialize_shouldDeserializeCorrectlyIfGivenSerializedObjectContainsVariants() throws Exception {
-		String s = "Favorite Color^v1^en_UK:Favourite Colour;fr:Couleur pr¨¦f¨¦r¨¦e";
+		String s = "i18n:v1;unlocalized:Favorite Color;en_UK:Favourite Colour;fr:Couleur pr¨¦f¨¦r¨¦e;";
 		LocalizedString expected = new LocalizedString();
 		expected.setUnlocalizedValue("Favorite Color");
 		Map<Locale, String> variants = new HashMap<Locale, String>();
@@ -132,4 +151,21 @@ public class LocalizedStringSerializerTest {
 		OpenmrsSerializer serializer = new LocalizedStringSerializer();
 		serializer.deserialize("Favorite Color", String.class);
 	}
+
+	/**
+     * @see {@link LocalizedStringSerializer#deserialize(String,Class<+QT;>)}
+     * 
+     */
+    @Test
+    @Verifies(value = "should deescape correctly if given serializedObject contains escaped delimiter", method = "deserialize(String,Class<+QT;>)")
+    public void deserialize_shouldDeescapeCorrectlyIfGivenSerializedObjectContainsEscapedDelimiter() throws Exception {
+		String s = "i18n:v1;unlocalized:Favorite \\: Color;en_UK:Favourite Colour;fr:Couleur \\; pr¨¦f¨¦r¨¦e;";
+		OpenmrsSerializer serializer = new LocalizedStringSerializer();
+		LocalizedString actual = serializer.deserialize(s, LocalizedString.class);
+		assertEquals("Favorite : Color", actual.getUnlocalizedValue());
+		assertSame(2, actual.getVariants().size());
+		assertEquals("Couleur ; pr¨¦f¨¦r¨¦e", actual.getVariants().get(new Locale("fr")));
+    }
+
+	
 }
