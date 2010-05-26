@@ -227,9 +227,17 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	/**
 	 * @see org.openmrs.api.UserService#getPrivilege(java.lang.String)
 	 */
-	public Privilege getPrivilege(String p) throws APIException {
-		return dao.getPrivilege(p);
+	public Privilege getPrivilege(String privilege) throws APIException {
+		return dao.getPrivilege(privilege);
 	}
+	
+	/**
+     * @see org.openmrs.api.UserService#getPrivilege(java.lang.Integer)
+     */
+    @Override
+    public Privilege getPrivilege(Integer privilegeId) throws APIException {
+    	return dao.getPrivilege(privilegeId);
+    }
 	
 	/**
 	 * @see org.openmrs.api.UserService#purgePrivilege(org.openmrs.Privilege)
@@ -278,8 +286,15 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	/**
 	 * @see org.openmrs.api.UserService#getRole(java.lang.String)
 	 */
-	public Role getRole(String r) throws APIException {
-		return dao.getRole(r);
+	public Role getRole(String role) throws APIException {
+		return dao.getRole(role);
+	}
+	
+	/**
+	 * @see org.openmrs.api.UserService#getRole(java.lang.Integer)
+	 */
+	public Role getRole(Integer roleId) throws APIException {
+		return dao.getRole(roleId);
 	}
 	
 	/**

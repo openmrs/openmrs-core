@@ -537,6 +537,18 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @see {@link UserService#getPrivilege(Integer)}
+	 */
+	@Test
+	@Verifies(value = "should fetch privilege for given id", method = "getPrivilege(Integer)")
+	public void getPrivilege_shouldFetchPrivilegeForGivenPrivilegeId() throws Exception {
+		executeDataSet(XML_FILENAME);
+		Privilege privilege = Context.getUserService().getPrivilege(801);
+		Assert.assertEquals("Some Privilege", privilege.getPrivilege());
+		Assert.assertEquals(new Integer(801), privilege.getPrivilegeId());
+	}
+	
+	/**
 	 * @see {@link UserService#getRole(String)}
 	 */
 	@Test
@@ -545,6 +557,18 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(XML_FILENAME);
 		Role role = Context.getUserService().getRole("Some Role");
 		Assert.assertEquals("Some Role", role.getRole());
+	}
+	
+	/**
+	 * @see {@link UserService#getRole(Integer)}
+	 */
+	@Test
+	@Verifies(value = "should fetch role for given role id", method = "getRole(Integer)")
+	public void getRole_shouldFetchRoleForGivenRoleId() throws Exception {
+		executeDataSet(XML_FILENAME);
+		Role role = Context.getUserService().getRole(704);
+		Assert.assertEquals("Some Role", role.getRole());
+		Assert.assertEquals(new Integer(704), role.getRoleId());
 	}
 	
 	/**
@@ -715,9 +739,9 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should delete given role from database", method = "purgeRole(Role)")
 	public void purgeRole_shouldDeleteGivenRoleFromDatabase() throws Exception {
 		executeDataSet(XML_FILENAME);
-		Role role = Context.getUserService().getRole("Some Role");
+		Role role = Context.getUserService().getRole(704);
 		Context.getUserService().purgeRole(role);
-		Assert.assertNull(Context.getUserService().getRole("Some Role"));
+		Assert.assertNull(Context.getUserService().getRole(704));
 	}
 	
 	/**

@@ -23,6 +23,7 @@ public class Privilege extends BaseOpenmrsMetadata implements java.io.Serializab
 	public static final long serialVersionUID = 312L;
 	
 	// Fields
+	private Integer privilegeId;
 	
 	private String privilege;
 	
@@ -33,6 +34,10 @@ public class Privilege extends BaseOpenmrsMetadata implements java.io.Serializab
 	}
 	
 	/** constructor with id */
+	public Privilege(Integer privilegeId) {
+		this.privilegeId = privilegeId;
+	}
+	
 	public Privilege(String privilege) {
 		this.privilege = privilege;
 	}
@@ -82,7 +87,7 @@ public class Privilege extends BaseOpenmrsMetadata implements java.io.Serializab
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
 	public Integer getId() {
-		throw new UnsupportedOperationException();
+		return getPrivilegeId();
 		
 	}
 	
@@ -91,7 +96,21 @@ public class Privilege extends BaseOpenmrsMetadata implements java.io.Serializab
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
 	public void setId(Integer id) {
-		throw new UnsupportedOperationException();
+		setPrivilegeId(id);
 		
 	}
+
+	/**
+     * @param privilegeId the privilegeId to set
+     */
+    public void setPrivilegeId(Integer privilegeId) {
+	    this.privilegeId = privilegeId;
+    }
+
+	/**
+     * @return the privilegeId
+     */
+    public Integer getPrivilegeId() {
+	    return privilegeId;
+    }
 }

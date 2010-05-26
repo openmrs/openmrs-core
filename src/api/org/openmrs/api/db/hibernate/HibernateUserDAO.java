@@ -190,9 +190,18 @@ public class HibernateUserDAO implements UserDAO {
 	/**
 	 * @see org.openmrs.api.UserService#getPrivilege(String)
 	 */
-	public Privilege getPrivilege(String p) throws DAOException {
-		return (Privilege) sessionFactory.getCurrentSession().get(Privilege.class, p);
+	public Privilege getPrivilege(String privilege) throws DAOException {
+		return (Privilege) sessionFactory.getCurrentSession().createCriteria(Privilege.class, "p").add(
+		    Expression.eq("p.privilege", privilege)).uniqueResult();
 	}
+	
+	/**
+	 * @see org.openmrs.api.UserService#getPrivilege(Integer)
+	 */
+    @Override
+    public Privilege getPrivilege(Integer privilegeId) {
+    	return (Privilege) sessionFactory.getCurrentSession().get(Privilege.class, privilegeId);
+    }
 	
 	/**
 	 * @see org.openmrs.api.db.UserDAO#deletePrivilege(org.openmrs.Privilege)
@@ -235,8 +244,16 @@ public class HibernateUserDAO implements UserDAO {
 	/**
 	 * @see org.openmrs.api.UserService#getRole(String)
 	 */
-	public Role getRole(String r) throws DAOException {
-		return (Role) sessionFactory.getCurrentSession().get(Role.class, r);
+	public Role getRole(String role) throws DAOException {
+		return (Role) sessionFactory.getCurrentSession().createCriteria(Role.class, "r").add(Expression.eq("r.role", role))
+		.uniqueResult();
+	}
+	
+	/**
+	 * @see org.openmrs.api.UserService#getRole(Integer)
+	 */
+	public Role getRole(Integer roleId) throws DAOException {
+		return (Role) sessionFactory.getCurrentSession().get(Role.class, roleId);
 	}
 	
 	/**

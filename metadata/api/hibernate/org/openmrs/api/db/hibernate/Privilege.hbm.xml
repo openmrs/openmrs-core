@@ -7,18 +7,21 @@
 
 	<class name="Privilege" table="privilege">
 
-		<id name="privilege" type="java.lang.String"
-			column="privilege" length="250">
-			<generator class="assigned" />
+		<id name="privilegeId" type="java.lang.Integer" column="privilege_id"
+			unsaved-value="undefined">
+			<generator class="native" />
 		</id>
 
-		<discriminator column="privilege" insert="false" />
+		<discriminator column="privilege_id" insert="false" />
 
 		<property name="uuid" type="java.lang.String"
 			column="uuid" length="38" unique="true" />
 
-		<property name="description" type="java.lang.String"
-			column="description" not-null="true" length="250" />
+		<property name="privilege" type="java.lang.String" column="privilege"
+			unique="true" />
 
+		<property name="description" type="java.lang.String" column="description"
+			not-null="true" length="250" />
+			
 	</class>
 </hibernate-mapping>
