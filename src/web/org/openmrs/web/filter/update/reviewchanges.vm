@@ -9,9 +9,7 @@
 		setTimeout("showProgress()", 1000);
 		
 		jQuery.post("${setupPageUrl}", {page: "updateProgress.vm.ajaxRequest"} , function(data) {
-			count = count + 1;
-			
-			
+		
 			if(data == null || !data.updatesRequired)
 			{
 				window.location="index.htm";
