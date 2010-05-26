@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.TreeSet;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
@@ -112,7 +113,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	public Concept() {
 		names = new HashSet<ConceptName>();
 		answers = new HashSet<ConceptAnswer>();
-		conceptSets = new HashSet<ConceptSet>();
+		conceptSets = new TreeSet<ConceptSet>();
 		descriptions = new HashSet<ConceptDescription>();
 		conceptMappings = new HashSet<ConceptMap>();
 	}
