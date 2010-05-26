@@ -23,7 +23,7 @@ import org.simpleframework.xml.Root;
  * This represents a single concept within a concept set.
  */
 @Root
-public class ConceptSet extends BaseOpenmrsObject implements Auditable, java.io.Serializable {
+public class ConceptSet extends BaseOpenmrsObject implements Auditable, java.io.Serializable, Comparable<ConceptSet>  {
 	
 	public static final long serialVersionUID = 3787L;
 	
@@ -51,7 +51,8 @@ public class ConceptSet extends BaseOpenmrsObject implements Auditable, java.io.
 		setSortWeight(weight);
 	}
 	
-	public boolean equals(Object obj) {
+	@Override
+    public boolean equals(Object obj) {
 		if (obj instanceof ConceptSet) {
 			if (concept == null || conceptSet == null)
 				return false;
@@ -62,7 +63,8 @@ public class ConceptSet extends BaseOpenmrsObject implements Auditable, java.io.
 		return false;
 	}
 	
-	public int hashCode() {
+	@Override
+    public int hashCode() {
 		if (this.getConcept() == null || this.getConceptSet() == null)
 			return super.hashCode();
 		return this.getConcept().hashCode() + this.getConceptSet().hashCode();
@@ -211,5 +213,14 @@ public class ConceptSet extends BaseOpenmrsObject implements Auditable, java.io.
 	 */
 	public void setDateChanged(Date dateChanged) {
 	}
-	
+
+	/**
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    public int compareTo(ConceptSet cs) {
+    	if((getSortWeight() == null) && (cs.getSortWeight() != null)) return -1;
+    	if((getSortWeight() != null) && (cs.getSortWeight() == null)) return 1;
+    	if((getSortWeight() == null) && (cs.getSortWeight() == null)) return 0;
+		return (getSortWeight() < cs.getSortWeight()) ? -1 : (getSortWeight() > cs.getSortWeight()) ? 1 : 0;
+    }
 }
