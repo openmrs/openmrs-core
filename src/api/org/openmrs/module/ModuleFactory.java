@@ -33,6 +33,8 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.Vector;
 import java.util.WeakHashMap;
+import java.util.jar.JarFile;
+import java.util.zip.ZipEntry;
 
 import org.aopalliance.aop.Advice;
 import org.apache.commons.logging.Log;
@@ -42,6 +44,9 @@ import org.openmrs.Privilege;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.Extension.MEDIA_TYPE;
+import org.openmrs.util.DatabaseUpdateException;
+import org.openmrs.util.DatabaseUpdater;
+import org.openmrs.util.InputRequiredException;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
@@ -64,9 +69,12 @@ public class ModuleFactory {
 	// maps to keep track of the memory and objects to free/close
 	protected static Map<Module, ModuleClassLoader> moduleClassLoaders = new WeakHashMap<Module, ModuleClassLoader>();
 	
-	protected static Map<String, ModuleAction> pendingModuleActions = new HashMap<String, ModuleAction>();
+	protected static Map<String, ModuleAction> pendingModuleActions = new HashMap<String, ModuleAction>();	
+
+	// the name of the file within a module file
+	private static final String MODULE_CHANGELOG_FILENAME = "liquibase.xml";
 	
-	/**
+        /**
 	 * Add a module (in the form of a jar file) to the list of openmrs modules Returns null if an
 	 * error occurred and/or module was not successfully loaded
 	 * 
@@ -189,7 +197,7 @@ public class ModuleFactory {
 				for (Module mod : getLoadedModulesCoreFirst()) {
 					if (mod.isStarted())
 						continue; // skip over modules that are already started
-						
+
 					String key = mod.getModuleId() + ".started";
 					String startedProp = as.getGlobalProperty(key, null);
 					String mandatoryProp = as.getGlobalProperty(mod.getModuleId() + ".mandatory", null);
@@ -291,6 +299,7 @@ public class ModuleFactory {
 		List<Module> list = new ArrayList<Module>(getLoadedModules());
 		final Collection<String> coreModuleIds = ModuleConstants.CORE_MODULES.keySet();
 		Collections.sort(list, new Comparator<Module>() {
+
 			public int compare(Module left, Module right) {
 				Integer leftVal = coreModuleIds.contains(left.getModuleId()) ? 0 : 1;
 				Integer rightVal = coreModuleIds.contains(right.getModuleId()) ? 0 : 1;
@@ -491,6 +500,9 @@ public class ModuleFactory {
 					Context.removeProxyPrivilege("");
 				}
 				
+				// run module's optional liquibase.xml immediately after sqldiff.xml
+				runLiquibase(module);
+				
 				// effectively mark this module as started successfully
 				getStartedModulesMap().put(moduleId, module);
 				
@@ -579,12 +591,10 @@ public class ModuleFactory {
 	 */
 	@SuppressWarnings("unchecked")
 	public static void loadAdvice(Module module) {
-		ModuleClassLoader moduleClassLoader = getModuleClassLoader(module);
-		
 		for (AdvicePoint advice : module.getAdvicePoints()) {
 			Class cls = null;
 			try {
-				cls = moduleClassLoader.loadClass(advice.getPoint());
+				cls = Context.loadClass(advice.getPoint());
 				Object aopObject = advice.getClassInstance();
 				if (Advisor.class.isInstance(aopObject)) {
 					log.debug("adding advisor: " + aopObject.getClass());
@@ -595,7 +605,8 @@ public class ModuleFactory {
 				}
 			}
 			catch (ClassNotFoundException e) {
-				throw new ModuleException("Could not load advice point: " + advice.getPoint(), e);
+				log.warn("Could not load advice point: " + advice.getPoint(), e);
+				//throw new ModuleException("Could not load advice point: " + advice.getPoint(), e);
 			}
 		}
 	}
@@ -670,6 +681,55 @@ public class ModuleFactory {
 			
 		}
 		
+	}
+	
+	/**
+	 * Execute all unrun changeSets in liquibase.xml for the given module
+	 * 
+	 * @param module the module being executed on
+	 */
+	private static void runLiquibase(Module module) {
+		JarFile jarFile = null;
+		boolean liquibaseFileExists = false;
+
+		try {
+			try {
+				jarFile = new JarFile(module.getFile());
+			}
+			catch (IOException e) {
+				throw new ModuleException("Unable to get jar file", module.getName(), e);
+			}
+			ZipEntry liquiEntry = jarFile.getEntry(MODULE_CHANGELOG_FILENAME);
+			
+			//check whether module has a moduleid-liquibase.xml
+			liquibaseFileExists = liquiEntry != null;
+		}
+		finally {
+			try {
+				if (jarFile != null)
+					jarFile.close();
+			}
+			catch (IOException e) {
+				log.warn("Unable to close jarfile: " + jarFile.getName());
+			}
+		}
+		
+		if (liquibaseFileExists) {
+			try {
+				// run liquibase.xml by Liquibase API
+				DatabaseUpdater.executeChangelog(MODULE_CHANGELOG_FILENAME, null, null, null, getModuleClassLoader(module));
+			}
+			catch (InputRequiredException ire) {
+				// the user would be stepped through the questions returned here.
+				throw new ModuleException("Input during database updates is not yet implemented.", module.getName(), ire);
+			}
+			catch (DatabaseUpdateException e) {
+				throw new ModuleException("Unable to update data model using liquibase.xml.", module.getName(), e);
+			}
+			catch (Exception e) {
+				throw new ModuleException("Unable to update data model using liquibase.xml.", module.getName(), e);
+			}
+		}
 	}
 	
 	/**
@@ -763,7 +823,7 @@ public class ModuleFactory {
 					for (AdvicePoint advice : mod.getAdvicePoints()) {
 						Class cls = null;
 						try {
-							cls = Class.forName(advice.getPoint());
+							cls = Context.loadClass(advice.getPoint());
 							Object aopObject = advice.getClassInstance();
 							if (Advisor.class.isInstance(aopObject)) {
 								log.debug("adding advisor: " + aopObject.getClass());

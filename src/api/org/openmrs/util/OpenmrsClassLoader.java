@@ -15,6 +15,7 @@ package org.openmrs.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.net.URL;
@@ -70,7 +71,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 		
 		//disable caching so the jars aren't locked
 		// if performance is effected, this can be disabled in favor of
-		//  copying all opened jars to a temp location 
+		//  copying all opened jars to a temp location
 		//  (ala org.apache.catalina.loader.WebappClassLoader antijarlocking)
 		URLConnection urlConnection = new OpenmrsURLConnection();
 		urlConnection.setDefaultUseCaches(false);
@@ -110,7 +111,8 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	/**
 	 * @see java.lang.ClassLoader#loadClass(java.lang.String, boolean)
 	 */
-	public Class<?> loadClass(String name, final boolean resolve) throws ClassNotFoundException {
+	@Override
+    public Class<?> loadClass(String name, final boolean resolve) throws ClassNotFoundException {
 		for (ModuleClassLoader classLoader : ModuleFactory.getModuleClassLoaders()) {
 			try {
 				//if (classLoader.isLoadingFromParent() == false)
@@ -131,7 +133,8 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	/**
 	 * @see java.net.URLClassLoader#findResource(java.lang.String)
 	 */
-	public URL findResource(final String name) {
+	@Override
+    public URL findResource(final String name) {
 		if (log.isTraceEnabled())
 			log.trace("finding resource: " + name);
 		
@@ -156,7 +159,8 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	/**
 	 * @see java.net.URLClassLoader#findResources(java.lang.String)
 	 */
-	public Enumeration<URL> findResources(final String name) throws IOException {
+	@Override
+    public Enumeration<URL> findResources(final String name) throws IOException {
 		Set<URL> results = new HashSet<URL>();
 		for (ModuleClassLoader classLoader : ModuleFactory.getModuleClassLoaders()) {
 			Enumeration<URL> urls = classLoader.findResources(name);
@@ -175,9 +179,50 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	}
 	
 	/**
+	 * Searches all known module classloaders first, then parent classloaders
+	 * 
+	 * @see java.lang.ClassLoader#getResourceAsStream(java.lang.String)
+	 */
+	@Override
+	public InputStream getResourceAsStream(String file) {
+		for (ModuleClassLoader classLoader : ModuleFactory.getModuleClassLoaders()) {
+			InputStream result = classLoader.getResourceAsStream(file);
+			if (result != null)
+				return result;
+		}
+		
+		return super.getResourceAsStream(file);
+	}
+	
+	/**
+	 * Searches all known module classloaders first, then parent classloaders
+	 * 
+	 * @see java.lang.ClassLoader#getResources(java.lang.String)
+	 */
+	@Override
+	public Enumeration<URL> getResources(String packageName) throws IOException {
+		Set<URL> results = new HashSet<URL>();
+		for (ModuleClassLoader classLoader : ModuleFactory.getModuleClassLoaders()) {
+			Enumeration<URL> urls = classLoader.getResources(packageName);
+			while (urls.hasMoreElements()) {
+				URL result = urls.nextElement();
+				if (result != null)
+					results.add(result);
+			}
+		}
+		
+		for (Enumeration<URL> en = super.getResources(packageName); en.hasMoreElements();) {
+			results.add(en.nextElement());
+		}
+		
+		return Collections.enumeration(results);
+	}
+
+	/**
 	 * @see java.lang.Object#toString()
 	 */
-	public String toString() {
+	@Override
+    public String toString() {
 		return "Openmrs" + super.toString();
 	}
 	
@@ -344,7 +389,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	 */
 	public static void saveState() {
 		
-		// TODO our services should implement a common 
+		// TODO our services should implement a common
 		// OpenmrsService so this can be generalized
 		try {
 			String key = SchedulerService.class.getName();
@@ -364,7 +409,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	 * @see #saveState()
 	 */
 	public static void restoreState() {
-		// TODO our services should implement a common 
+		// TODO our services should implement a common
 		// OpenmrsService so this can be generalized
 		try {
 			String key = SchedulerService.class.getName();
@@ -527,7 +572,8 @@ public class OpenmrsClassLoader extends URLClassLoader {
 			super(null);
 		}
 		
-		public void connect() throws IOException {
+		@Override
+        public void connect() throws IOException {
 			
 		}
 		

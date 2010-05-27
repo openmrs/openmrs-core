@@ -50,8 +50,9 @@ public class BooleanConceptChangeSet implements CustomTaskChange {
 		
 		String trueConceptName = "";
 		String falseConceptName = "";
-		final boolean trueFalseGlobalPropertiesPresent = getInt(connection, "SELECT COUNT(*) FROM global_property WHERE property IN ('"
-	        + OpenmrsConstants.GLOBAL_PROPERTY_TRUE_CONCEPT + "', '" + OpenmrsConstants.GLOBAL_PROPERTY_FALSE_CONCEPT + "')") == 2;
+		final boolean trueFalseGlobalPropertiesPresent = getInt(connection,
+		    "SELECT COUNT(*) FROM global_property WHERE property IN ('" + OpenmrsConstants.GLOBAL_PROPERTY_TRUE_CONCEPT
+		            + "', '" + OpenmrsConstants.GLOBAL_PROPERTY_FALSE_CONCEPT + "')") == 2;
 		for (String[] trueFalseConceptNames : BOOLEAN_CONCEPTS_VALUES) {
 			trueConceptName = trueFalseConceptNames[0];
 			falseConceptName = trueFalseConceptNames[1];
@@ -59,7 +60,7 @@ public class BooleanConceptChangeSet implements CustomTaskChange {
 			        + trueConceptName + "', '" + falseConceptName + "')") == 2;
 			
 			if (conceptNamesPresent) {
-				if(!trueFalseGlobalPropertiesPresent)
+				if (!trueFalseGlobalPropertiesPresent)
 					createGlobalProperties(connection, trueConceptName, falseConceptName);
 				changeObs(connection, trueConceptName, falseConceptName);
 				return;
@@ -68,9 +69,9 @@ public class BooleanConceptChangeSet implements CustomTaskChange {
 		
 		trueConceptName = BOOLEAN_CONCEPTS_VALUES[0][0];
 		falseConceptName = BOOLEAN_CONCEPTS_VALUES[0][1];
-		if(!trueFalseGlobalPropertiesPresent)
-			createConcepts(connection, trueConceptName, falseConceptName);
-		createGlobalProperties(connection, trueConceptName, falseConceptName);
+		createConcepts(connection, trueConceptName, falseConceptName);
+		if (!trueFalseGlobalPropertiesPresent)
+			createGlobalProperties(connection, trueConceptName, falseConceptName);
 		changeObs(connection, trueConceptName, falseConceptName);
 	}
 	
@@ -105,16 +106,16 @@ public class BooleanConceptChangeSet implements CustomTaskChange {
 		PreparedStatement updateStatement = null;
 		
 		try {
-			final int conceptId = getInt(connection, "SELECT MAX(concept_id) + 1 FROM concept");
-			
+			int conceptId = getInt(connection, "SELECT MAX(concept_id) FROM concept");
+			conceptId++;
 			updateStatement = connection
 			        .prepareStatement("INSERT INTO concept (concept_id, short_name, description, datatype_id, class_id, is_set, creator, date_created, uuid) VALUES (?, '', '', 4, 11, 0, 1, NOW(), ?)");
 			updateStatement.setInt(1, conceptId);
 			updateStatement.setString(2, UUID.randomUUID().toString());
 			updateStatement.executeUpdate();
 			
-			final int conceptNameId = getInt(connection, "SELECT MAX(concept_name_id) + 1 FROM concept_name");
-			
+			int conceptNameId = getInt(connection, "SELECT MAX(concept_name_id) FROM concept_name");
+			conceptNameId++;
 			updateStatement = connection
 			        .prepareStatement("INSERT INTO concept_name (concept_name_id, concept_id, locale, name, creator, date_created, uuid) VALUES (?, ?, 'en', ?, 1, NOW(), ?)");
 			updateStatement.setInt(1, conceptNameId);
@@ -198,7 +199,7 @@ public class BooleanConceptChangeSet implements CustomTaskChange {
 	 */
 	private void createGlobalProperties(DatabaseConnection connection, String trueConceptName, String falseConceptName)
 	                                                                                                                   throws CustomChangeException {
-		//set the concept_ids for the newly created boolean concepts
+		//set the concept_ids for the boolean concepts
 		trueConceptId = getInt(connection, "SELECT concept_id FROM concept_name WHERE name = '" + trueConceptName + "'");
 		falseConceptId = getInt(connection, "SELECT concept_id FROM concept_name WHERE name = '" + falseConceptName + "'");
 		
