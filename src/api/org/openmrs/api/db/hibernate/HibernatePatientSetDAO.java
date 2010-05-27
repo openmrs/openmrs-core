@@ -1917,7 +1917,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Relationship.class);
 		criteria.setCacheMode(CacheMode.IGNORE);
 		if (relType != null)
-			criteria.add(Restrictions.eq("relationship", relType));
+			criteria.add(Restrictions.eq("relationshipType", relType));
 		
 		// this "where clause" is only useful if patients were passed in
 		if (patients != null)
