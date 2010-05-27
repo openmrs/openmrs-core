@@ -13,7 +13,9 @@
  */
 package org.openmrs.api;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -34,6 +36,8 @@ import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.Person;
 import org.openmrs.ProgramWorkflowState;
+import org.openmrs.Relationship;
+import org.openmrs.RelationshipType;
 import org.openmrs.api.PatientSetService.GroupMethod;
 import org.openmrs.api.PatientSetService.Modifier;
 import org.openmrs.api.PatientSetService.TimeModifier;
@@ -317,4 +321,21 @@ public class PatientSetServiceTest extends BaseContextSensitiveTest {
     	Assert.assertTrue(c.contains(7));
     }
 	
+	/**
+	 * @see {@link PatientSetService#getRelationships(Cohort, RelationshipType)}
+	 */
+	@Test
+	@Verifies(value = "should return a list with relationships when a RelationshipType is used", method = "getRelationships(Cohort, RelationshipType)")
+	public void getRelationships_shouldReturnListWithRelations() throws Exception {
+		RelationshipType testRelationshipType = new RelationshipType(1);
+		
+		Map<Integer, List<Relationship>> results = Context.getPatientSetService().getRelationships(null, testRelationshipType);
+		assertNotNull(results);
+		assertTrue("getRelationships should return a result greater than 0", results.size() > 0);
+		for (List<Relationship> relationships : results.values()) {
+			for (Relationship relationship : relationships) {
+				assertEquals(testRelationshipType.getRelationshipTypeId(), relationship.getRelationshipType().getRelationshipTypeId());
+			}
+		}
+	}
 }

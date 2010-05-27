@@ -87,6 +87,8 @@ public class DataExportFunctions {
 	
 	public Date currentDate = new Date();
 	
+	protected Calendar calendar = null;
+
 	// Map<EncounterType, Map<patientId, Encounter>>
 	protected Map<String, Map<Integer, ?>> patientEncounterMap = new HashMap<String, Map<Integer, ?>>();
 	
@@ -643,7 +645,7 @@ public class DataExportFunctions {
 			StringBuilder sb = new StringBuilder();
 			for (Iterator<Relationship> i = rels.iterator(); i.hasNext();) {
 				Relationship r = i.next();
-				sb.append(r.getPersonA().toString());
+				sb.append(r.getPersonA().getPersonName().getFullName());
 				if (i.hasNext())
 					sb.append(" ");
 			}
@@ -1130,6 +1132,17 @@ public class DataExportFunctions {
 				return df.format(d);
 			}
 		}
+	}
+	
+	/**
+	 * Get a calendar instance for use in velocity scripts.
+	 * 
+	 * @return calendar
+	 */
+	public Calendar getCalendarInstance() {
+		if (calendar == null)
+			calendar = Calendar.getInstance(locale);
+		return calendar;
 	}
 	
 	/**
