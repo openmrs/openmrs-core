@@ -840,7 +840,7 @@ public class ModuleFactory {
 		
 		return moduleClassLoaders.remove(mod);
 	}
-	
+
 	/**
 	 * Removes module from module repository
 	 * 
@@ -854,9 +854,6 @@ public class ModuleFactory {
 		
 		// remove from list of loaded modules
 		getLoadedModules().remove(mod);
-
-		//Remove any pending actions
-		pendingModuleActions.remove(mod.getModuleId());
 
 		if (mod != null) {
 			// remove the file from the module repository
@@ -1178,10 +1175,14 @@ public class ModuleFactory {
 	/**
 	 * A method to queue module actions such as Start, Stop, Unload, Upgrade, Update
 	 * 
-	 * @param moduleId
-	 * @param pendingAction
+	 * @param moduleId id of the module which needs an action to be queued
+	 * @param pendingAction action that needs to be queued
+	 * @return true if queuing of module action was successful else false
+	 * @throws ModuleException
+	 * @should Throw ModuleException if moduleId supplied is of a non existent module.
 	 */
-	public static void queueModuleAction(String moduleId, ModuleAction pendingAction) throws ModuleException {
+	public static boolean queueModuleAction(String moduleId, ModuleAction pendingAction) throws ModuleException {
+		boolean result = true;
 		Module module = getLoadedModulesMap().get(moduleId);
 		if (module != null) {
 			ModuleAction existingPendingAction = pendingModuleActions.get(moduleId);
@@ -1195,7 +1196,7 @@ public class ModuleFactory {
 							saveGlobalProperty(moduleId + ".started", "true", getGlobalPropertyStartedDescription(moduleId));
 						} else {
 							String message = "module " + moduleId + " doesn't have a upgrade module set";
-							log.error(message);
+							log.warn(message);
 							throw new ModuleException(message);
 						}
 						break;
@@ -1211,36 +1212,44 @@ public class ModuleFactory {
 					case PENDING_UPDATE:
 						if (module.getDownloadURL() == null) {
 							String message = "module " + moduleId + " doesn't have a download url set";
-							log.error(message);
+							log.warn(message);
 							throw new ModuleException(message);
 						}
 						break;
 					case PENDING_NONE:
 						break;
 				}
+				module.setPendingAction(pendingAction);
+				if (pendingAction != ModuleAction.PENDING_NONE) {
+					pendingModuleActions.put(moduleId, pendingAction);
+				}
 			} else {
-				String message = "A pending action already exists for module id " + moduleId;
-				log.error(message);
-				throw new ModuleException(message);
-			}
-			module.setPendingAction(pendingAction);
-			if (pendingAction != ModuleAction.PENDING_NONE) {
-				pendingModuleActions.put(moduleId, pendingAction);
+				String message = "A pending action already exists for module id " + moduleId + ". No action will be added.";
+				log.warn(message);
+				result = false;
 			}
 		} else {
 			String message = "A module with id " + moduleId + " doesn't exist";
-			log.error(message);
+			log.warn(message);
 			throw new ModuleException(message);
 		}
+		return result;
 	}
 	
 	/**
 	 * Returns the Iterator of pendingModuleActions keyset
 	 * 
-	 * @return iterator of moduleids with pending actions;
+	 * @return iterator of module ids with pending actions;
+	 * @should Return an empty iterator if there are no pending module actions
 	 */
 	public static Iterator<String> getModulesWithPendingAction() {
-		return new HashSet<String>(pendingModuleActions.keySet()).iterator();
+		Iterator<String> it = null;
+		if (pendingModuleActions.size() == 0) {
+			it = new HashSet<String>().iterator();
+		} else {
+			it = new HashSet<String>(pendingModuleActions.keySet()).iterator();
+		}
+		return it;
 	}
 
 	/**
@@ -1250,6 +1259,9 @@ public class ModuleFactory {
 		Set<String> moduleIds = new HashSet<String>(pendingModuleActions.keySet());
 		for (String moduleId : moduleIds) {
 			ModuleAction pendingAction = pendingModuleActions.remove(moduleId);
+			/* If the Module Action is PENDING_UNLOAD then the module will not be in loaded map.
+			 * So no need to set its pendingAction to PENDING_NONE
+			 */
 			if (pendingAction != ModuleAction.PENDING_UNLOAD) {
 				Module mod = getLoadedModulesMap().get(moduleId);
 				mod.setPendingAction(ModuleAction.PENDING_NONE);
@@ -1269,28 +1281,63 @@ public class ModuleFactory {
 	/**
 	 * A method to queue upgrade module action
 	 * 
-	 * @param existingModule
-	 * @param newModule
-	 * @param newModuleName
+	 * @param newModule Module which should be replace the existing module
+	 * @param newModuleName Name of the new module
+	 * @return true if upgrade queuing is successful else false
 	 * @throws ModuleException
+	 * @should Throw ModuleException if there are no loaded modules for new Module id.
+	 * @should Throw ModuleException if an error occurred while marking for pending upgrade
 	 */
-	public static void upgradeModule(Module existingModule, Module newModule, String newModuleName) throws ModuleException {
-		try {
-			int compareVersion = ModuleUtil.compareVersion(existingModule.getVersion(), newModule.getVersion());
-			if (compareVersion != 0) { //Existing and new module are the same version so no need to upgrade
+	public static boolean upgradeModule(Module newModule, String newModuleName) throws ModuleException {
+		boolean result = true;
+		InputStream inputStream = null;
+		Module existingModule = getLoadedModulesMap().get(newModule.getModuleId());
+		if (existingModule != null) {
+			try {
 				boolean deleted = existingModule.getFile().delete();
 				if (!deleted) {
 					existingModule.getFile().deleteOnExit();
 				}
-				InputStream inputStream = new FileInputStream(newModule.getFile());
+				inputStream = new FileInputStream(newModule.getFile());
 				File newModuleFile = ModuleUtil.insertModuleFile(inputStream, newModuleName);
 				existingModule.setUpdateFile(newModuleFile);
-				queueModuleAction(existingModule.getModuleId(), ModuleAction.PENDING_UPGRADE);
+				result = queueModuleAction(existingModule.getModuleId(), ModuleAction.PENDING_UPGRADE);
 			}
+			catch (Exception e) {
+				log.error("Error occured while upgrading", e);
+				throw new ModuleException(e.getMessage());
+			}
+			finally {
+				try {
+					// Delete the temporary module file
+					boolean deleted = newModule.getFile().delete();
+					if (!deleted) {
+						newModule.getFile().deleteOnExit();
+					}
+					
+					if (inputStream != null) {
+						inputStream.close();
+					}
+				}
+				catch (IOException io) {
+					log.warn("Unable to close temporary input stream", io);
+				}
+			}
+		} else {
+			String message = "module " + newModule.getModuleId() + " is not loaded.";
+			log.warn(message);
+			throw new ModuleException(message);
 		}
-		catch (Exception e) {
-			log.error("Error occured while upgrading", e);
-			throw new ModuleException(e.getMessage());
-		}
+		return result;
+	}
+	
+	/**
+	 * A method to check whether there are any pending action for a module id
+	 * 
+	 * @param moduleId
+	 * @return true if there is a pending action for the module id else false
+	 */
+	public static boolean hasPendingModuleActionForModuleId(String moduleId) {
+		return pendingModuleActions.containsKey(moduleId);
 	}
 }

@@ -21,7 +21,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -31,7 +30,10 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.GlobalProperty;
+import org.openmrs.User;
 import org.openmrs.api.APIAuthenticationException;
+import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleAction;
@@ -94,9 +96,15 @@ public class ModuleListController extends SimpleFormController {
 		else if (ServletRequestUtils.getStringParameter(request, "unload.x", null) != null)
 			action = "unload";
 		
-		if ("restartOpenmrs".equals(action)) {
-			WebModuleUtil.restartOpenmrs(getServletContext());
-		} else if ("upload".equals(action)) {// handle module upload
+		if ("restartModules".equals(action)) { // Action Restart Modules
+			try {
+				WebModuleUtil.restartModules(getServletContext());
+			}
+			catch (ModuleException e) {
+				log.warn("unable to complete restart");
+				error = e.getMessage();
+			}
+		} else if ("upload".equals(action)) {// Action Upload for Add or Upgrade
 			// double check upload permissions
 			if (!ModuleUtil.allowAdmin()) {
 				error = msa.getMessage("Module.disallowUploads",
@@ -129,32 +137,34 @@ public class ModuleListController extends SimpleFormController {
 							Module existingModule = ModuleFactory.getModuleById(tmpModule.getModuleId());
 							if (existingModule != null) {
 								updateModule = true;
-								Boolean upgrade = (Boolean) httpSession.getAttribute("upgrade");
-								Boolean dntShowUpgConf = (Boolean) httpSession.getAttribute("dntShowUpgConf");
-								//existingModule.setUpgradeModule(tmpModule);
-								if (dntShowUpgConf == null || !dntShowUpgConf) {
-									httpSession.setAttribute("showUpgConf", true);
+
+								String dntShowUpgConf = getConfirmationAllowedForCurrentUser("moduleupgrade");
+								
+								if (dntShowUpgConf == null || !Boolean.parseBoolean(dntShowUpgConf)) {
+									// Show upgrade confirmation in the next page refresh
+									httpSession.setAttribute("showUpgradeConfirm", true);
+									
+									// Store module and modulename in the session so that after confirming with user can perform upgrade
 									httpSession.setAttribute("module", tmpModule);
 									httpSession.setAttribute("modulename", filename);
 								} else {
-									if (upgrade) {
-										upgradeModule(tmpModule, filename);
-									}
+									// Upgrade message is suppressed to show so upgrade without showing message
+									ModuleFactory.upgradeModule(tmpModule, filename);
 								}
 							} else {
 								//Adding of module
 								inputStream = new FileInputStream(tmpModule.getFile());
 								moduleFile = ModuleUtil.insertModuleFile(inputStream, filename); // copy the omod over to the repo folder
-								module = ModuleFactory.loadModule(moduleFile);
-								ModuleFactory.queueModuleAction(module.getModuleId(), ModuleAction.PENDING_START);
+								// Temp module no longer needed
 								tmpModule.getFile().delete();
 								tmpModule = null;
 							}
 						}
 					}
-					/*if (!updateModule) {
+					//Add or Download so load the module file
+					if (!updateModule) {
 						module = ModuleFactory.loadModule(moduleFile);
-					}*/
+					}
 				}
 				catch (ModuleException me) {
 					log.warn("Unable to load and start module", me);
@@ -172,107 +182,65 @@ public class ModuleListController extends SimpleFormController {
 					
 					if (module == null && moduleFile != null)
 						moduleFile.delete();
-
 				}
-				
-				// if we didn't have trouble loading the module, start it
-				/*if (module != null && !updateModule) {
-					ModuleFactory.startModule(module);
-					WebModuleUtil.startModule(module, getServletContext(), false);
-					if (module.isStarted()) {
-						success = msa.getMessage("Module.loadedAndStarted", new String[] { module.getName() });
-					}
-					else
-						success = msa.getMessage("Module.loaded", new String[] { module.getName() });
-				}*/
+				//Add or Download so Queue for Pending Start
+				if (!updateModule) {
+					ModuleFactory.queueModuleAction(module.getModuleId(), ModuleAction.PENDING_START);
+				}
 			}
-		}
-
-		else if (moduleId.equals("")) {
-			
-			if ("moduleupgrade.yes".equals(action) || "moduleupgrade.no".equals(action)) {
-				try {
-					Boolean dntShowUpgConf = ServletRequestUtils.getBooleanParameter(request, "dontShowMessage", false);
-					httpSession.setAttribute("dntShowUpgConf", dntShowUpgConf);
-					boolean upgrade = false;
-					if ("moduleupgrade.yes".equals(action)) {
-						//Code to Queue Upgrade
-						Module tmpModule = (Module) httpSession.getAttribute("module");
-						String filename = (String) httpSession.getAttribute("modulename");
-						//Module existingModule = ModuleFactory.getModuleById(tmpModule.getModuleId());
-						//existingModule.setUpgradeModule(tmpModule);
-						upgradeModule(tmpModule, filename);
-						upgrade = true;
-					} else {
-						upgrade = false;
-					}
-					if (dntShowUpgConf) {
-						httpSession.setAttribute("upgrade", upgrade);
-					}
-					httpSession.removeAttribute("module");
-					httpSession.removeAttribute("modulename");
-				}
-				catch (ModuleException me) {
-					log.warn("Unable to load and start module", me);
-					error = me.getMessage();
-				}
-				finally {
-					httpSession.removeAttribute("showUpgConf");
-				}
-			} else {
-				ModuleUtil.checkForModuleUpdates();
-			}
-		} else if (action.equals(msa.getMessage("Module.installUpdate"))) {
+		} else if (action.equals(msa.getMessage("Module.installUpdate"))) { // Action for Install Update
 			// download and install update
 			if (!ModuleUtil.allowAdmin()) {
 				error = msa.getMessage("Module.disallowAdministration",
 				    new String[] { ModuleConstants.RUNTIMEPROPERTY_ALLOW_ADMIN });
 			}
-			Module mod = ModuleFactory.getModuleById(moduleId);
-			if (mod.getDownloadURL() != null) {
-				ModuleFactory.stopModule(mod);
-				WebModuleUtil.stopModule(mod, getServletContext());
-				Module newModule = ModuleFactory.updateModule(mod);
-				WebModuleUtil.startModule(newModule, getServletContext(), false);
-			}
-		} else { // moduleId is not empty
+
+			ModuleFactory.queueModuleAction(moduleId, ModuleAction.PENDING_UPDATE);
+		} else if (!moduleId.equals("")) { // A module related action
 			if (!ModuleUtil.allowAdmin()) {
 				error = msa.getMessage("Module.disallowAdministration",
 				    new String[] { ModuleConstants.RUNTIMEPROPERTY_ALLOW_ADMIN });
 			} else {
 				log.debug("Module id: " + moduleId);
 				Module mod = ModuleFactory.getModuleById(moduleId);
-				
-				// Argument to pass to the success/error message
-				Object[] args = new Object[] { moduleId };
-				
+
 				if (mod == null)
-					error = msa.getMessage("Module.invalid", args);
+					error = msa.getMessage("Module.invalid", new String[] { moduleId });
 				else {
 					if ("stop".equals(action)) {
-						/*mod.clearStartupError();
-						ModuleFactory.stopModule(mod);
-						WebModuleUtil.stopModule(mod, getServletContext());
-						success = msa.getMessage("Module.stopped", args);*/
 						ModuleFactory.queueModuleAction(moduleId, ModuleAction.PENDING_STOP);
 					} else if ("start".equals(action)) {
-						/*ModuleFactory.startModule(mod);
-						WebModuleUtil.startModule(mod, getServletContext(), false);
-						if (mod.isStarted())
-							success = msa.getMessage("Module.started", args);
-						else
-							error = msa.getMessage("Module.not.started", args);*/
 						ModuleFactory.queueModuleAction(moduleId, ModuleAction.PENDING_START);
 					} else if ("unload".equals(action)) {
-						/*if (ModuleFactory.isModuleStarted(mod)) {
-							ModuleFactory.stopModule(mod); // stop the module so that when the web stop is done properly
-							WebModuleUtil.stopModule(mod, getServletContext());
-						}
-						ModuleFactory.unloadModule(mod);
-						success = msa.getMessage("Module.unloaded", args);*/
 						ModuleFactory.queueModuleAction(moduleId, ModuleAction.PENDING_UNLOAD);
 					}
 				}
+			}
+		} else { // moduleId is empty
+			if ("moduleupgrade.yes".equals(action) || "moduleupgrade.no".equals(action)) {
+				try {
+					Boolean dntShowUpgConf = ServletRequestUtils.getBooleanParameter(request, "dontShowMessage", false);
+					if ("moduleupgrade.yes".equals(action)) {
+						Module tmpModule = (Module) httpSession.getAttribute("module");
+						String filename = (String) httpSession.getAttribute("modulename");
+						ModuleFactory.upgradeModule(tmpModule, filename);
+					}
+					if (dntShowUpgConf) { //If user selected not to show upgrade confirm message
+						saveConfirmationAllowedForCurrentUser("moduleupgrade", String.valueOf(dntShowUpgConf));
+					}
+					//These attributes are no longer needed
+					httpSession.removeAttribute("module");
+					httpSession.removeAttribute("modulename");
+				}
+				catch (ModuleException me) {
+					log.warn("Unable to load and start module", me);
+					error = me.getMessage();
+				}finally{
+					// In the next page refresh this should not be shown
+					httpSession.removeAttribute("showUpgradeConfirm");
+				}
+			} else {
+				ModuleUtil.checkForModuleUpdates();
 			}
 		}
 		
@@ -320,8 +288,8 @@ public class ModuleListController extends SimpleFormController {
 		//Showing the confirmation of upgrade
 		HttpSession session = request.getSession(false);
 		Boolean showUpgradeConfirm = false;
-		if(session != null){
-			showUpgradeConfirm = (Boolean) session.getAttribute("showUpgConf");
+		if (session != null) {
+			showUpgradeConfirm = (Boolean) session.getAttribute("showUpgradeConfirm");
 			showUpgradeConfirm = showUpgradeConfirm == null ? false : showUpgradeConfirm;
 		}
 		map.put("showUpgradeConfirm", showUpgradeConfirm);
@@ -331,40 +299,56 @@ public class ModuleListController extends SimpleFormController {
 		return map;
 	}
 	
-	private void upgradeModule(Module tmpModule, String filename) throws ModuleException {
-		try {
-			List<Module> dependentModulesStopped = null;
-			Module existingModule = ModuleFactory.getModuleById(tmpModule.getModuleId());
-			dependentModulesStopped = ModuleFactory.stopModule(existingModule, false, true); // stop the module with these parameters so that mandatory modules can be upgraded
-			WebModuleUtil.stopModule(existingModule, getServletContext());
-			ModuleFactory.unloadModule(existingModule);
+	private String getConfirmationAllowedForCurrentUser(String propertyName) {
+		String result = null;
+		try{
+			Context.addProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_GLOBAL_PROPERTIES);
+			
+			User currentUser = Context.getAuthenticatedUser();
 
-			InputStream inputStream = new FileInputStream(tmpModule.getFile());
-			File moduleFile = ModuleUtil.insertModuleFile(inputStream, filename);
-			Module newModule = ModuleFactory.loadModule(moduleFile);
-		
-			ModuleFactory.startModule(newModule);
-			WebModuleUtil.startModule(newModule, getServletContext(), false);
-		
-			if (newModule.isStarted()) {
-				if (dependentModulesStopped != null) {
-					for (Module mod : dependentModulesStopped) {
-						ModuleFactory.startModule(mod);
-						WebModuleUtil.startModule(mod, getServletContext(), false);
-					}
-				}
+			AdministrationService as = Context.getAdministrationService();
+			
+			GlobalProperty gp = as.getGlobalPropertyObject(currentUser.getSystemId() + "#suppressconfirmation."
+			        + propertyName);
+			
+			if(gp != null){
+				result = gp.getPropertyValue();
 			}
 		}
-		catch (Exception e) {
-			throw new ModuleException(e.getMessage());
+		catch (Throwable t) {
+			log.warn("Unable to get global property", t);
 		}
 		finally {
-			if (tmpModule != null) {
-				boolean deleted = tmpModule.getFile().delete();
-				if (!deleted) {
-					tmpModule.getFile().deleteOnExit();
-				}
+			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_GLOBAL_PROPERTIES);
+		}
+		return result;
+	}
+	
+	private void saveConfirmationAllowedForCurrentUser(String propertyName, String propertyValue) {
+		try {
+			Context.addProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_GLOBAL_PROPERTIES);
+			
+			User currentUser = Context.getAuthenticatedUser();
+			
+			AdministrationService as = Context.getAdministrationService();
+			
+			propertyName = currentUser.getSystemId() + "#suppressconfirmation." + propertyName;
+			
+			GlobalProperty gp = as.getGlobalPropertyObject(propertyName);
+			
+			if (gp == null) {
+				gp = new GlobalProperty(propertyName, propertyValue);
+			} else {
+				gp.setPropertyValue(propertyValue);
 			}
+			
+			as.saveGlobalProperty(gp);
+		}
+		catch (Throwable t) {
+			log.warn("Unable to save global property", t);
+		}
+		finally {
+			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_GLOBAL_PROPERTIES);
 		}
 	}
 }

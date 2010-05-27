@@ -79,11 +79,11 @@
 
 <c:if test="${hasPendingActions == 'true'}">
 	<div style="width: 100%;background-color: #FFAEB9">
-		<form name="openmrsRestartForm" method="post" onsubmit="return confirm('<spring:message code="Module.restartConfirmation"/>');">
+		<form name="openmrsModulesForm" method="post" onsubmit="return confirm('<spring:message code="Module.restartConfirmation"/>');">
 			<div style="margin: auto;width: 70%">
 				<div style="clear:both">&nbsp;</div>
 				<spring:message code="Module.restartWarning"/> <input <c:if test="${showUpgradeConfirm == 'true'}">disabled="true"</c:if> type="submit" value="<spring:message code="Module.restartOpenmrs"/>"/>
-				<input type="hidden" name="action" value="restartOpenmrs"/>
+				<input type="hidden" name="action" value="restartModules"/>
 				<div style="clear:both">&nbsp;</div>
 			</div> 
 		</form>		
@@ -194,10 +194,17 @@
 								<td valign="top"><input type="image" src="${pageContext.request.contextPath}/images/trash.gif" name="unload" onclick="return confirm('<spring:message code="Module.unloadWarning"/>');" title="<spring:message code="Module.unload.help"/>" title="<spring:message code="Module.unload"/>" alt="<spring:message code="Module.unload"/>" /></td>
 							</c:when>
 							<c:otherwise>
-								<td valign="top">
-									<img src="${pageContext.request.contextPath}/images/lock.gif" title="<spring:message code="Module.locked.help"/>" alt="<spring:message code="Module.locked"/>" />
-								</td>
+								<c:choose>
+									<td valign="top">
+										<c:when test="${ module.pendingAction.action != 'none' }">
+											<img src="${pageContext.request.contextPath}/images/pending.png" title="<spring:message code="Module.pending.help"/>" alt="<spring:message code="Module.pending"/>" />
+										</c:when>
+										<c:otherwise>
+											<img src="${pageContext.request.contextPath}/images/lock.gif" title="<spring:message code="Module.locked.help"/>" alt="<spring:message code="Module.locked"/>" />
+										</c:otherwise>										
+									</td>
 								<td></td>
+								</c:choose>
 							</c:otherwise>
 						</c:choose>
 						<td valign="top">${module.name} <c:if test="${not module.started}"><b id="moduleNotStarted" style="white-space: nowrap">[<spring:message code="Module.notStarted"/>]</b></c:if></td>

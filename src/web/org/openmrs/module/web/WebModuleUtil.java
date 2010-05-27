@@ -834,13 +834,14 @@ public class WebModuleUtil {
 	}
 	
 	/**
-	 * The method which performs the Queued Module Actions and refreshes the spring
+	 * The method which performs the Queued Module Actions and refreshes the spring context
 	 * 
-	 * @param servletContext
+	 * @param servletContext The Servlet Context of the Web Application
 	 * @throws ModuleException
 	 */
-	public static void restartOpenmrs(ServletContext servletContext) throws ModuleException {
+	public static void restartModules(ServletContext servletContext) throws ModuleException {
 		Iterator<String> moduleIds = ModuleFactory.getModulesWithPendingAction();
+		boolean performedActions = moduleIds.hasNext();
 		while (moduleIds.hasNext()) {
 			String mid = moduleIds.next();
 			Module mod = ModuleFactory.getModuleById(mid);
@@ -861,9 +862,37 @@ public class WebModuleUtil {
 					}
 					ModuleFactory.unloadModule(mod);
 					break;
+				case PENDING_UPGRADE:
+					File newModuleFile = mod.getUpdateFile();
+					List<Module> dependentModules = ModuleFactory.stopModule(mod, false, true);
+					stopModule(mod, servletContext, true);
+					//Unload without deleting the file because file is already deleted
+					ModuleFactory.getLoadedModulesMap().remove(mid);
+
+					Module newModule = ModuleFactory.loadModule(newModuleFile);
+					ModuleFactory.startModule(newModule);
+					startModule(newModule, servletContext, true);
+
+					if (ModuleFactory.isModuleStarted(newModule)) {
+						for (Module dependent : dependentModules) {
+							ModuleFactory.startModule(dependent);
+							startModule(dependent, servletContext, true);
+						}
+					}
+					break;
+				case PENDING_UPDATE:
+					if (mod.getDownloadURL() != null) {
+						ModuleFactory.stopModule(mod);
+						stopModule(mod, servletContext, true);
+						Module updatedModule = ModuleFactory.updateModule(mod);
+						startModule(updatedModule, servletContext, true);
+					}
+					break;
 			}
 		}
-		WebModuleUtil.refreshWAC(servletContext, false, null);
+		if (performedActions) {
+			WebModuleUtil.refreshWAC(servletContext, false, null);
+		}
 		ModuleFactory.clearAllPendingActions();
 	}
 

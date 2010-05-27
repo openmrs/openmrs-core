@@ -17,8 +17,8 @@ package org.openmrs.module;
  * Enum used to mark a Module with pending action
  */
 public enum ModuleAction {
-	PENDING_START("start"), PENDING_STOP("stop"), PENDING_UPGRADE("upgrade"), PENDING_UNLOAD("unload"), PENDING_UPDATE(
-	        "update"), PENDING_NONE("none");
+	PENDING_START("started"), PENDING_STOP("stopped"), PENDING_UPGRADE("upgraded"), PENDING_UNLOAD("unloaded"), PENDING_UPDATE(
+	        "updated"), PENDING_NONE("none");
 	
 	private String action;
 	
