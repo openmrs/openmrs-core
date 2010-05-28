@@ -62,7 +62,7 @@
 		<many-to-one name="valueCodedName" class="ConceptName" column="value_coded_name_id" />
 		<many-to-one name="valueDrug" class="Drug" column="value_drug" />
 		<many-to-one name="order" class="Order" column="order_id" />
-		<many-to-one name="location" class="Location" not-null="true" column="location_id" />
+		<many-to-one name="location" class="Location" not-null="false" column="location_id" />
 		<many-to-one name="encounter" class="Encounter" column="encounter_id" />
 		<many-to-one name="creator" class="User" not-null="true" />
 		<many-to-one name="voidedBy" class="User" column="voided_by" />

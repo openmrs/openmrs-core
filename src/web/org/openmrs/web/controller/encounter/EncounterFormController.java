@@ -70,7 +70,8 @@ public class EncounterFormController extends SimpleFormController {
 	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest,
 	 *      org.springframework.web.bind.ServletRequestDataBinder)
 	 */
-	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
+	@Override
+    protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
 		
 		binder.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, true));
@@ -85,7 +86,8 @@ public class EncounterFormController extends SimpleFormController {
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
 	 */
-	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse reponse, Object obj,
+	@Override
+    protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse reponse, Object obj,
 	                                             BindException errors) throws Exception {
 		
 		Encounter encounter = (Encounter) obj;
@@ -106,7 +108,6 @@ public class EncounterFormController extends SimpleFormController {
 				
 				ValidationUtils.rejectIfEmptyOrWhitespace(errors, "patient", "error.null");
 				ValidationUtils.rejectIfEmptyOrWhitespace(errors, "provider", "error.null");
-				ValidationUtils.rejectIfEmptyOrWhitespace(errors, "location", "error.null");
 				ValidationUtils.rejectIfEmptyOrWhitespace(errors, "encounterDatetime", "error.null");
 				
 			}
@@ -127,7 +128,8 @@ public class EncounterFormController extends SimpleFormController {
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
 	 */
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
+	@Override
+    protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
 	                                BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
@@ -178,7 +180,8 @@ public class EncounterFormController extends SimpleFormController {
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
+	@Override
+    protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 		
 		Encounter encounter = null;
 		
@@ -200,7 +203,8 @@ public class EncounterFormController extends SimpleFormController {
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest,
 	 *      java.lang.Object, org.springframework.validation.Errors)
 	 */
-	protected Map<String, Object> referenceData(HttpServletRequest request, Object obj, Errors error) throws Exception {
+	@Override
+    protected Map<String, Object> referenceData(HttpServletRequest request, Object obj, Errors error) throws Exception {
 		
 		Encounter encounter = (Encounter) obj;
 		

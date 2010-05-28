@@ -43,7 +43,7 @@
 			<column name="patient_id" />
 		</many-to-one>
 		<!-- bi-directional many-to-one association to Location -->
-		<many-to-one name="location" class="Location" not-null="true">
+		<many-to-one name="location" class="Location" not-null="false">
 			<column name="location_id" />
 		</many-to-one>
 		<!-- bi-directional many-to-one association to Form -->
