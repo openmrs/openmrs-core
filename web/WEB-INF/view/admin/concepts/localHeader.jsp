@@ -16,11 +16,13 @@
 			</a>
 		</li>
 	</openmrs:hasPrivilege>
-	<li <c:if test='<%= request.getRequestURI().contains("Proposal") %>'>class="active"</c:if>>
-		<a href="${pageContext.request.contextPath}/admin/concepts/conceptProposal.list">
-			<spring:message code="ConceptProposal.manage"/>
-		</a>
-	</li>
+	<openmrs:hasPrivilege privilege="View Concept Proposals">
+		<li <c:if test='<%= request.getRequestURI().contains("Proposal") %>'>class="active"</c:if>>
+			<a href="${pageContext.request.contextPath}/admin/concepts/conceptProposal.list">
+				<spring:message code="ConceptProposal.manage"/>
+			</a>
+		</li>
+	</openmrs:hasPrivilege>
 	<openmrs:hasPrivilege privilege="Edit Concepts">
 		<li <c:if test='<%= request.getRequestURI().contains("Word") %>'>class="active"</c:if>>
 			<a href="${pageContext.request.contextPath}/admin/concepts/conceptWord.form">
