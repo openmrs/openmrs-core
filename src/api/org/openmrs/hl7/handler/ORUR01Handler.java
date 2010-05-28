@@ -15,6 +15,7 @@ package org.openmrs.hl7.handler;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -24,6 +25,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
+import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptProposal;
 import org.openmrs.Drug;
@@ -112,6 +114,14 @@ public class ORUR01Handler implements Application {
 	 * @should create obs group for OBRs
 	 * @should create obs valueCodedName
 	 * @should fail on empty concept proposals
+	 * @should set value_Coded matching a boolean concept for obs if the answer is 0 or 1 and
+	 *         Question datatype is coded
+	 * @should set value as boolean for obs if the answer is 0 or 1 and Question datatype is Boolean
+	 * @should set value_Numeric for obs if Question datatype is Numeric and the answer is either 0
+	 *         or 1
+	 * @should set value_Numeric for obs if Question datatype is Numeric
+	 * @should fail if question datatype is coded and a boolean is not a valid answer
+	 * @should fail if question datatype is neither Boolean nor numeric nor coded
 	 */
 	public Message processMessage(Message message) throws ApplicationException {
 		
@@ -302,7 +312,6 @@ public class ORUR01Handler implements Application {
 				finally {
 					// Handle obs-level exceptions
 					if (errorInHL7Queue != null) {
-						log.warn("HL7Exception: " + errorInHL7Queue);
 						throw new HL7Exception("Improperly formatted OBX: "
 						        + PipeParser.encode(obx, new EncodingCharacters('|', "^~\\&")),
 						        HL7Exception.DATA_TYPE_ERROR, errorInHL7Queue);
@@ -578,13 +587,43 @@ public class ORUR01Handler implements Application {
 			if (value == null || value.length() == 0) {
 				log.warn("Not creating null valued obs for concept " + concept);
 				return null;
-			}
-			try {
-				obs.setValueNumeric(Double.valueOf(value));
-			}
-			catch (NumberFormatException e) {
-				throw new HL7Exception("numeric (NM) value '" + value + "' is not numeric for concept #"
-				        + concept.getConceptId() + " (" + conceptName.getName() + ") in message " + uid, e);
+			} else if (value.equals("0") || value.equals("1")) {
+				concept = concept.hydrate(concept.getConceptId().toString());
+				obs.setConcept(concept);
+				if (concept.getDatatype().isBoolean())
+					obs.setValueBoolean(value.equals("1"));
+				else if (concept.getDatatype().isNumeric())
+					obs.setValueNumeric(Double.valueOf(value));
+				else if (concept.getDatatype().isCoded()) {
+					Concept answer = value.equals("1") ? Context.getConceptService().getTrueConcept() : Context
+					        .getConceptService().getFalseConcept();
+					boolean isValidAnswer = false;
+					Collection<ConceptAnswer> conceptAnswers = concept.getAnswers();
+					if (conceptAnswers != null && conceptAnswers.size() > 0) {
+						for (ConceptAnswer conceptAnswer : conceptAnswers) {
+							if (conceptAnswer.getAnswerConcept().equals(answer)) {
+								obs.setValueCoded(answer);
+								isValidAnswer = true;
+								break;
+							}
+						}
+					}
+					//answer the boolean answer concept was't found
+					if (!isValidAnswer)
+						throw new HL7Exception(answer.toString() + " is not a valid answer for obs with uuid " + uid);
+				} else {
+					//throw this exception to make sure that the handler doesn't silently ignore bad hl7 message
+					throw new HL7Exception("Can't set boolean concept answer for concept with id "
+					        + obs.getConcept().getConceptId());
+				}
+			} else {
+				try {
+					obs.setValueNumeric(Double.valueOf(value));
+				}
+				catch (NumberFormatException e) {
+					throw new HL7Exception("numeric (NM) value '" + value + "' is not numeric for concept #"
+					        + concept.getConceptId() + " (" + conceptName.getName() + ") in message " + uid, e);
+				}
 			}
 		} else if ("CWE".equals(hl7Datatype)) {
 			log.debug("  CWE observation");

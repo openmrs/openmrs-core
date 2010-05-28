@@ -30,6 +30,7 @@ import org.openmrs.Concept;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptProposal;
 import org.openmrs.Encounter;
+import org.openmrs.GlobalProperty;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.Person;
@@ -42,6 +43,7 @@ import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
+import org.openmrs.util.OpenmrsConstants;
 
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.app.ApplicationException;
@@ -108,7 +110,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		assertNotNull(obsForPatient3);
 		assertTrue("There should be some obs created for #3", obsForPatient3.size() > 0);
 		
-		// check for the return visit date obs 
+		// check for the return visit date obs
 		Concept returnVisitDateConcept = new Concept(5096);
 		Calendar cal = Calendar.getInstance();
 		cal.set(2008, Calendar.FEBRUARY, 29, 0, 0, 0);
@@ -156,7 +158,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		assertNotNull(obsForPatient2);
 		assertTrue("There should be some obs created for #3", obsForPatient2.size() > 0);
 		
-		// check for the missed return visit date obs 
+		// check for the missed return visit date obs
 		Concept returnVisitDateConcept = new Concept(1592);
 		Calendar cal = new GregorianCalendar();
 		cal.set(2008, Calendar.FEBRUARY, 1, 0, 0, 0);
@@ -233,7 +235,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		
 		Patient patient = new Patient(7);
 		Concept question = new Concept(10);
-		// check that the CD4 count obs in the hl7 message was appended to the 
+		// check that the CD4 count obs in the hl7 message was appended to the
 		// encounter with encounter_id == 3 and _not_ put into a new encounter
 		// that has encounter_id == (autoincremented value)
 		List<Obs> obsForPatient = Context.getObsService().getObservationsByPersonAndConcept(patient, question);
@@ -349,7 +351,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		Patient patient = new Patient(3); // the patient that is the focus of this hl7 message
 		Concept concept = new Concept(21); // the question concept for "Food assistance for entire family?"
 		
-		// sanity check to make sure this obs doesn't exist already 
+		// sanity check to make sure this obs doesn't exist already
 		Assert.assertEquals(0, obsService.getObservationsByPersonAndConcept(patient, concept).size());
 		
 		String hl7String = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20090728170332||ORU^R01|gu99yBh4loLX2mh9cHaV|P|2.5|1||||||||4^AMRS.ELD.FORMID\r"
@@ -650,5 +652,167 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		// see if the relative made it into the relationship properly
 		List<Relationship> rels = personService.getRelationships(relative, patient, new RelationshipType(3));
 		Assert.assertTrue("new relationship was not created", !rels.isEmpty() && rels.size() == 1);
+	}
+	
+	/**
+	 * @see {@link ORUR01Handler#processMessage(Message)}
+	 */
+	@Test(expected = ApplicationException.class)
+	@Verifies(value = "should fail if question datatype is coded and a boolean is not a valid answer", method = "processMessage(Message)")
+	public void processMessage_shouldFailIfQuestionDatatypeIsCodedAndABooleanIsNotAValidAnswer() throws Exception {
+		GlobalProperty trueConceptGlobalProperty = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_TRUE_CONCEPT, "7",
+		        "Concept id of the concept defining the TRUE boolean concept");
+		GlobalProperty falseConceptGlobalProperty = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_FALSE_CONCEPT, "8",
+		        "Concept id of the concept defining the TRUE boolean concept");
+		Context.getAdministrationService().saveGlobalProperty(trueConceptGlobalProperty);
+		Context.getAdministrationService().saveGlobalProperty(falseConceptGlobalProperty);
+		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\r"
+		        + "PID|||7^^^^||Collet^Test^Chebaskwony||\r"
+		        + "PV1||O|1^Unknown Location||||1^Super User (1-8)|||||||||||||||||||||||||||||||||||||20080212|||||||V\r"
+		        + "ORC|RE||||||||20080226102537|1^Super User\r"
+		        + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r"
+		        + "OBX|2|NM|4^CIVIL STATUS^99DCT||1|||||||||20080206";
+		Assert.assertEquals("Coded", Context.getConceptService().getConcept(4).getDatatype().getName());
+		Message hl7message = parser.parse(hl7string);
+		router.processMessage(hl7message);
+	}
+	
+	/**
+	 * @see {@link ORUR01Handler#processMessage(Message)}
+	 */
+	@Test(expected = ApplicationException.class)
+	@Verifies(value = "should fail if question datatype is neither Boolean nor numeric nor coded", method = "processMessage(Message)")
+	public void processMessage_shouldFailIfQuestionDatatypeIsNeitherBooleanNorNumericNorCoded() throws Exception {
+		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\r"
+		        + "PID|||7^^^^||Collet^Test^Chebaskwony||\r"
+		        + "PV1||O|1^Unknown Location||||1^Super User (1-8)|||||||||||||||||||||||||||||||||||||20080212|||||||V\r"
+		        + "ORC|RE||||||||20080226102537|1^Super User\r"
+		        + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r"
+		        + "OBX|2|NM|19^FAVORITE FOOD, NON-CODED^99DCT||1|||||||||20080206";
+		Assert.assertEquals("Text", Context.getConceptService().getConcept(19).getDatatype().getName());
+		Message hl7message = parser.parse(hl7string);
+		router.processMessage(hl7message);
+	}
+	
+	/**
+	 * @see {@link ORUR01Handler#processMessage(Message)}
+	 */
+	@Test
+	@Verifies(value = "should set value as boolean for obs if the answer is 0 or 1 and Question datatype is Boolean", method = "processMessage(Message)")
+	public void processMessage_shouldSetValueAsBooleanForObsIfTheAnswerIs0Or1AndQuestionDatatypeIsBoolean() throws Exception {
+		GlobalProperty trueConceptGlobalProperty = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_TRUE_CONCEPT, "7",
+		        "Concept id of the concept defining the TRUE boolean concept");
+		GlobalProperty falseConceptGlobalProperty = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_FALSE_CONCEPT, "8",
+		        "Concept id of the concept defining the TRUE boolean concept");
+		Context.getAdministrationService().saveGlobalProperty(trueConceptGlobalProperty);
+		Context.getAdministrationService().saveGlobalProperty(falseConceptGlobalProperty);
+		ObsService os = Context.getObsService();
+		Assert.assertNull(os.getObs(17));
+		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\r"
+		        + "PID|||7^^^^||Collet^Test^Chebaskwony||\r"
+		        + "PV1||O|1^Unknown Location||||1^Super User (1-8)|||||||||||||||||||||||||||||||||||||20080212|||||||V\r"
+		        + "ORC|RE||||||||20080226102537|1^Super User\r"
+		        + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r"
+		        + "OBX|1|NM|18^FOOD ASSISTANCE^99DCT||0|||||||||20080206";
+		//the expected question for the obs in the hl7 message has to be Boolean
+		Assert.assertEquals("Boolean", Context.getConceptService().getConcept(18).getDatatype().getName());
+		List<Obs> oldList = os.getObservationsByPersonAndConcept(new Person(7), new Concept(18));
+		Message hl7message = parser.parse(hl7string);
+		router.processMessage(hl7message);
+		List<Obs> newList = os.getObservationsByPersonAndConcept(new Person(7), new Concept(18));
+		Obs newObservation = null;
+		for (Obs newObs : newList) {
+			if (!oldList.contains(newObs) && !newObs.isObsGrouping()) {
+				newObservation = newObs;
+			}
+		}
+		Assert.assertEquals(false, newObservation.getValueBoolean());
+	}
+	
+	/**
+	 * @see {@link ORUR01Handler#processMessage(Message)}
+	 */
+	@Test
+	@Verifies(value = "should set value_Coded matching a boolean concept for obs if the answer is 0 or 1 and Question datatype is coded", method = "processMessage(Message)")
+	public void processMessage_shouldSetValue_CodedMatchingABooleanConceptForObsIfTheAnswerIs0Or1AndQuestionDatatypeIsCoded()
+	                                                                                                                         throws Exception {
+		ObsService os = Context.getObsService();
+		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\r"
+		        + "PID|||7^^^^||Collet^Test^Chebaskwony||\r"
+		        + "PV1||O|1^Unknown Location||||1^Super User (1-8)|||||||||||||||||||||||||||||||||||||20080212|||||||V\r"
+		        + "ORC|RE||||||||20080226102537|1^Super User\r"
+		        + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r"
+		        + "OBX|2|NM|21^CIVIL STATUS^99DCT||1|||||||||20080206";
+		//the expected question for the obs in the hl7 message has to be coded
+		Assert.assertEquals("Coded", Context.getConceptService().getConcept(21).getDatatype().getName());
+		List<Obs> oldList = os.getObservationsByPersonAndConcept(new Person(7), new Concept(21));
+		Message hl7message = parser.parse(hl7string);
+		router.processMessage(hl7message);
+		//hacky way to get the newly added obs and make tests on it
+		List<Obs> newList = os.getObservationsByPersonAndConcept(new Person(7), new Concept(21));
+		Obs newObservation = null;
+		for (Obs newObs : newList) {
+			if (!oldList.contains(newObs) && !newObs.isObsGrouping()) {
+				newObservation = newObs;
+			}
+		}
+		Assert.assertEquals(Context.getConceptService().getTrueConcept(), newObservation.getValueCoded());
+	}
+	
+	/**
+	 * @see {@link ORUR01Handler#processMessage(Message)}
+	 */
+	@Test
+	@Verifies(value = "should set value_Numeric for obs if Question datatype is Numeric", method = "processMessage(Message)")
+	public void processMessage_shouldSetValue_NumericForObsIfQuestionDatatypeIsNumeric() throws Exception {
+		ObsService os = Context.getObsService();
+		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\r"
+		        + "PID|||7^^^^||Collet^Test^Chebaskwony||\r"
+		        + "PV1||O|1^Unknown Location||||1^Super User (1-8)|||||||||||||||||||||||||||||||||||||20080212|||||||V\r"
+		        + "ORC|RE||||||||20080226102537|1^Super User\r"
+		        + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r"
+		        + "OBX|1|NM|5497^CD4, BY FACS^99DCT||450|||||||||20080206";
+		//the expected question for the obs in the hl7 message has to be numeric
+		Assert.assertEquals("Numeric", Context.getConceptService().getConcept(5497).getDatatype().getName());
+		List<Obs> oldList = os.getObservationsByPersonAndConcept(new Person(7), new Concept(5497));
+		Message hl7message = parser.parse(hl7string);
+		router.processMessage(hl7message);
+		List<Obs> newList = os.getObservationsByPersonAndConcept(new Person(7), new Concept(5497));
+		Obs newObservation = null;
+		for (Obs newObs : newList) {
+			if (!oldList.contains(newObs) && !newObs.isObsGrouping()) {
+				newObservation = newObs;
+			}
+		}
+		Assert.assertEquals(450, newObservation.getValueNumeric().intValue());
+	}
+	
+	/**
+	 * @see {@link ORUR01Handler#processMessage(Message)}
+	 */
+	@Test
+	@Verifies(value = "should set value_Numeric for obs if Question datatype is Numeric and the answer is either 0 or 1", method = "processMessage(Message)")
+	public void processMessage_shouldSetValue_NumericForObsIfQuestionDatatypeIsNumericAndTheAnswerIsEither0Or1()
+	                                                                                                            throws Exception {
+		ObsService os = Context.getObsService();
+		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\r"
+		        + "PID|||7^^^^||Collet^Test^Chebaskwony||\r"
+		        + "PV1||O|1^Unknown Location||||1^Super User (1-8)|||||||||||||||||||||||||||||||||||||20080212|||||||V\r"
+		        + "ORC|RE||||||||20080226102537|1^Super User\r"
+		        + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r"
+		        + "OBX|1|NM|5497^CD4, BY FACS^99DCT||1|||||||||20080206";
+		//the expected question for the obs in the hl7 message has to be numeric
+		Assert.assertEquals("Numeric", Context.getConceptService().getConcept(5497).getDatatype().getName());
+		List<Obs> oldList = os.getObservationsByPersonAndConcept(new Person(7), new Concept(5497));
+		Message hl7message = parser.parse(hl7string);
+		router.processMessage(hl7message);
+		List<Obs> newList = os.getObservationsByPersonAndConcept(new Person(7), new Concept(5497));
+		Obs newObservation = null;
+		for (Obs newObs : newList) {
+			if (!oldList.contains(newObs) && !newObs.isObsGrouping()) {
+				newObservation = newObs;
+			}
+		}
+		Assert.assertEquals(1, newObservation.getValueNumeric().intValue());
 	}
 }
