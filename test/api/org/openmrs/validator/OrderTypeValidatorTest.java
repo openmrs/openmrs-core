@@ -16,8 +16,8 @@ public class OrderTypeValidatorTest {
 	 * 
 	 */
 	@Test
-	@Verifies(value = "should fail validation if name is null or empty or whitespace", method = "validate(Object,Errors)")
-	public void validate_shouldFailValidationIfNameIsNullOrEmptyOrWhitespace()
+	@Verifies(value = "should fail validation if unlocalized name is null or empty or whitespace", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfUnlocalizedNameIsNullOrEmptyOrWhitespace()
 			throws Exception {
 		OrderType type = new OrderType();
 		type.setName(null);
@@ -25,17 +25,17 @@ public class OrderTypeValidatorTest {
 		
 		Errors errors = new BindException(type, "type");
 		new OrderTypeValidator().validate(type, errors);
-		Assert.assertTrue(errors.hasFieldErrors("name"));
+		Assert.assertTrue(errors.hasFieldErrors("localizedName.unlocalizedValue"));
 		
 		type.setName("");
 		errors = new BindException(type, "type");
 		new OrderTypeValidator().validate(type, errors);
-		Assert.assertTrue(errors.hasFieldErrors("name"));
+		Assert.assertTrue(errors.hasFieldErrors("localizedName.unlocalizedValue"));
 		
 		type.setName(" ");
 		errors = new BindException(type, "type");
 		new OrderTypeValidator().validate(type, errors);
-		Assert.assertTrue(errors.hasFieldErrors("name"));
+		Assert.assertTrue(errors.hasFieldErrors("localizedName.unlocalizedValue"));
 	}
 
 	/**
