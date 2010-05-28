@@ -16,25 +16,25 @@ public class EncounterTypeValidatorTest {
 	 * @see {@link EncounterTypeValidator#validate(Object,Errors)}
 	 */
 	@Test
-	@Verifies(value = "should fail validation if name is null or empty or whitespace", method = "validate(Object,Errors)")
-	public void validate_shouldFailValidationIfNameIsNullOrEmptyOrWhitespace() throws Exception {
+	@Verifies(value = "should fail validation if unlocalized name is null or empty or whitespace", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfUnlocalizedNameIsNullOrEmptyOrWhitespace() throws Exception {
 		EncounterType type = new EncounterType();
 		type.setName(null);
 		type.setDescription("Aaaaah");
 		
 		Errors errors = new BindException(type, "type");
 		new EncounterTypeValidator().validate(type, errors);
-		Assert.assertTrue(errors.hasFieldErrors("name"));
+		Assert.assertTrue(errors.hasFieldErrors("localizedName.unlocalizedValue"));
 		
 		type.setName("");
 		errors = new BindException(type, "type");
 		new EncounterTypeValidator().validate(type, errors);
-		Assert.assertTrue(errors.hasFieldErrors("name"));
+		Assert.assertTrue(errors.hasFieldErrors("localizedName.unlocalizedValue"));
 		
 		type.setName(" ");
 		errors = new BindException(type, "type");
 		new EncounterTypeValidator().validate(type, errors);
-		Assert.assertTrue(errors.hasFieldErrors("name"));
+		Assert.assertTrue(errors.hasFieldErrors("localizedName.unlocalizedValue"));
 	}
 	
 	/**
