@@ -161,7 +161,7 @@
 	}
 	
 	function validateNumericRange(value) {
-		if (!isNaN(value)) {
+		if (!isNaN(value) && value != '') {
 			var conceptId = conceptSelection.hiddenInputNode.value;
 			var numericErrorMessage = function(validValue) {
 				var errorTag = $('numericRangeError');
