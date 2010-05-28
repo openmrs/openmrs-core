@@ -36,6 +36,7 @@ import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.PatientIdentifierException;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.context.UserContext;
 import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.hl7.HL7Constants;
 import org.openmrs.hl7.HL7InArchive;
@@ -44,6 +45,8 @@ import org.openmrs.hl7.HL7InQueue;
 import org.openmrs.hl7.HL7Service;
 import org.openmrs.hl7.HL7Source;
 import org.openmrs.hl7.HL7Util;
+import org.openmrs.hl7.Hl7InArchivesMigrateThread;
+import org.openmrs.hl7.Hl7InArchivesMigrateThread.Status;
 import org.openmrs.hl7.db.HL7DAO;
 import org.openmrs.util.FormConstants;
 import org.openmrs.util.OpenmrsConstants;
@@ -293,31 +296,52 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	 * @see org.openmrs.hl7.HL7Service#getHL7InArchiveByState(java.lang.Integer)
 	 */
 	public List<HL7InArchive> getHL7InArchiveByState(Integer state) throws APIException {
-		return dao.getHL7InArchiveByState(state);
+		if (!isArchiveMigrationRequired()) {
+			//if the state is 'processed' return all archives from the file system since their status is processed
+			if (state.equals(HL7Constants.HL7_STATUS_PROCESSED))
+				return getAllHL7InArchives();
+			return Collections.emptyList();
+		}
+		
+		throw new APIException("Can't fetch hl7 archives by state before hl7 in archive migration has been run");
+	}
+	
+	/**
+	 * @see org.openmrs.hl7.HL7Service#getHL7InQueueByState(java.lang.Integer)
+	 */
+	public List<HL7InQueue> getHL7InQueueByState(Integer state) throws APIException {
+		return dao.getHL7InQueueByState(state);
 	}
 	
 	/**
 	 * @see org.openmrs.hl7.HL7Service#getAllHL7InArchives()
 	 */
 	public List<HL7InArchive> getAllHL7InArchives() throws APIException {
-		return dao.getAllHL7InArchives();
+		if (!isArchiveMigrationRequired())
+			return dao.getAllHL7InArchivesInFileSystem();
+		
+		throw new APIException("Can't fetch all hl7 archives before hl7 in archive migration has been run");
 	}
 	
 	/**
 	 * @see org.openmrs.hl7.HL7Service#purgeHL7InArchive(org.openmrs.hl7.HL7InArchive)
 	 */
 	public void purgeHL7InArchive(HL7InArchive hl7InArchive) throws APIException {
-		dao.deleteHL7InArchive(hl7InArchive);
+		
+		if (hl7InArchive != null) {
+			if (!isArchiveMigrationRequired())
+				dao.deleteHL7InArchiveInFileSystem(hl7InArchive.getUuid());
+			else
+				throw new APIException("Can't purge hl7 archive before hl7 in archive migration has been run and completed");
+		}
 	}
 	
 	/**
 	 * @see org.openmrs.hl7.HL7Service#saveHL7InArchive(org.openmrs.hl7.HL7InArchive)
 	 */
 	public HL7InArchive saveHL7InArchive(HL7InArchive hl7InArchive) throws APIException {
-		
 		hl7InArchive.setDateCreated(new Date());
-		
-		return dao.saveHL7InArchive(hl7InArchive);
+		return dao.saveHL7InArchiveToFileSystem(hl7InArchive);
 	}
 	
 	/**
@@ -333,7 +357,17 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	 * @see org.openmrs.hl7.HL7Service#getHL7InArchive(java.lang.Integer)
 	 */
 	public HL7InArchive getHL7InArchive(Integer hl7InArchiveId) {
+		
+		if (!isArchiveMigrationRequired())
+			throw new APIException(
+			        "The method 'getHL7InArchive(Integer hl7InArchiveId)' should not be called after"
+			        + " migration of archives has been done, instead use getHl7InArchiveByUuid()");
+		//migration is running
+		else if (isArchiveMigrationRequired() && Hl7InArchivesMigrateThread.getTransferStatus() != Status.NONE)
+			throw new APIException("Can't retrieve hl7 archive by id while archive migration is running");
+		
 		return dao.getHL7InArchive(hl7InArchiveId);
+		
 	}
 	
 	/**
@@ -796,6 +830,56 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 		}
 		
 		return message;
+	}
+	
+	/**
+	 * @see org.openmrs.hl7.HL7Service#startHl7ArchiveMigration(UserContext)
+	 */
+	
+	public boolean startHl7ArchiveMigration() throws APIException {
+		
+		if (Hl7InArchivesMigrateThread.getTransferStatus() != Status.NONE)
+			return false;
+		return Hl7InArchivesMigrateThread.startArchiveMigration();
+	}
+	
+	/**
+	 * @see org.openmrs.hl7.HL7Service#stopHl7ArchiveMigration(UserContext)
+	 */
+	
+	public void stopHl7ArchiveMigration() throws APIException {
+		if (Hl7InArchivesMigrateThread.getHl7InArchivesMigrateThread() != null)
+			Hl7InArchivesMigrateThread.getHl7InArchivesMigrateThread().stopArchiveMigration();
+	}
+	
+	/**
+	 * @see org.openmrs.hl7.HL7Service#migrateHl7InArchivesToFileSystem(Map)
+	 */
+	@Override
+	public void migrateHl7InArchivesToFileSystem(Map<String, Integer> progressStatusMap) throws APIException {
+		
+		dao.migrateHl7InArchivesToFileSystem(progressStatusMap);
+	}
+	
+	/**
+	 * @see org.openmrs.hl7.HL7Service#isArchiveMigrationRequired()
+	 */
+	@Override
+	public boolean isArchiveMigrationRequired() throws APIException {
+		return dao.isArchiveMigrationRequired();
+	}
+	
+	/**
+	 * @see org.openmrs.hl7.HL7Service#getHL7InArchiveByUuid(java.lang.String)
+	 */
+	@Override
+	public HL7InArchive getHL7InArchiveByUuid(String uuid) throws APIException {
+		if (!isArchiveMigrationRequired())
+			return dao.getHL7InArchiveByUuidFromFileSystem(uuid);
+		else if (isArchiveMigrationRequired() && Hl7InArchivesMigrateThread.getTransferStatus() == Status.NONE)
+			return dao.getHL7InArchiveByUuid(uuid);
+		
+		throw new APIException("Can't retrieve hl7 archive by uuid while archive migration is running");
 	}
 	
 	/**

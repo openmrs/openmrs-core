@@ -56,14 +56,14 @@ public class Hl7DeletedFormController extends SimpleFormController {
 	/**
 	 * This is called prior to displaying a form
 	 */
-	protected List<HL7InArchive> formBackingObject(HttpServletRequest request) throws ServletException {
-		List<HL7InArchive> hl7InArchive = new Vector<HL7InArchive>();
+	protected List<HL7InQueue> formBackingObject(HttpServletRequest request) throws ServletException {
+		List<HL7InQueue> hl7InQueue = new Vector<HL7InQueue>();
 		
-		// Get all admin deleted messages in the Hl7_in_Archive
+		// Get all admin deleted messages in the Hl7_in_Queue
 		if (Context.isAuthenticated()) {
-			hl7InArchive = Context.getHL7Service().getHL7InArchiveByState(HL7Constants.HL7_STATUS_DELETED);
+			hl7InQueue = Context.getHL7Service().getHL7InQueueByState(HL7Constants.HL7_STATUS_DELETED);
 		}
-		return hl7InArchive;
+		return hl7InQueue;
 	}
 	
 	/**

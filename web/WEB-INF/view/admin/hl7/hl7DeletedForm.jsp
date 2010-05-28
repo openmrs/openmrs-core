@@ -30,7 +30,7 @@
 					</tr>
 					<c:forEach var="queue" items="${queueForm}">
 						<tr>
-							<td valign="top"><input type="checkbox" name="queueId" value="${queue.HL7InArchiveId}"></td>	
+							<td valign="top"><input type="checkbox" name="queueId" value="${queue.HL7InQueueId}"></td>	
 							<td valign="top">${queue.HL7Source.name}</td>
 							<td valign="top">
 								<div style="overflow:auto">

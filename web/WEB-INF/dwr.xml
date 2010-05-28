@@ -203,6 +203,13 @@
 			<include method="getGlobalProperty"/>
 			<include method="setGlobalProperty"/>
 		</create>
+		
+		<create creator="new" javascript="DWRHL7Service">
+			<param name="class" value="org.openmrs.web.dwr.DWRHL7Service" />
+			<include method="startHl7ArchiveMigration"/>
+			<include method="getMigrationStatus"/>
+			<include method="stopHl7ArchiveMigration"/>
+		</create>
 				
 	</allow>
 	

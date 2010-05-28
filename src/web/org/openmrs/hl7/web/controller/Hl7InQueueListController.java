@@ -27,7 +27,6 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.hl7.HL7Constants;
-import org.openmrs.hl7.HL7InArchive;
 import org.openmrs.hl7.HL7InQueue;
 import org.openmrs.hl7.HL7Service;
 import org.openmrs.web.WebConstants;
@@ -86,14 +85,10 @@ public class Hl7InQueueListController extends SimpleFormController {
 				Object[] args = new Object[] { queueId };
 				
 				try {
-					//Move Selected HL7 inbound queue entry into the archive table
+					//Update the hl7 message's status to deleted
 					HL7InQueue hl7InQueue = hL7Service.getHL7InQueue(Integer.valueOf(queueId));
-					HL7InArchive hl7InArchive = new HL7InArchive(hl7InQueue);
-					hl7InArchive.setMessageState(HL7Constants.HL7_STATUS_DELETED);
-					hL7Service.saveHL7InArchive(hl7InArchive);
-					
-					//Delete selected Message from the InQueue table
-					hL7Service.purgeHL7InQueue(hl7InQueue);
+					hl7InQueue.setMessageState(HL7Constants.HL7_STATUS_DELETED);
+					hL7Service.saveHL7InQueue(hl7InQueue);
 					
 					//Display a message for the operation
 					success.append(msa.getMessage("Hl7inQueue.queueList.deleted", args) + "<br/>");
