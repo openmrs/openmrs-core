@@ -16,6 +16,7 @@ package org.openmrs.api.db.hibernate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -24,7 +25,6 @@ import org.hibernate.Criteria;
 import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
-import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
@@ -159,13 +159,9 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	/**
 	 * @see org.openmrs.api.EncounterService#getEncounterType(java.lang.String)
 	 */
+	@SuppressWarnings("unchecked")
 	public EncounterType getEncounterType(String name) throws DAOException {
-		Criteria crit = sessionFactory.getCurrentSession().createCriteria(EncounterType.class);
-		crit.add(Expression.eq("retired", false));
-		crit.add(Expression.eq("name", name));
-		EncounterType encounterType = (EncounterType) crit.uniqueResult();
-		
-		return encounterType;
+		return HibernateUtil.findMetadataExactlyInLocalizedColumn(name, "name", EncounterType.class, sessionFactory);
 	}
 	
 	/**
@@ -189,10 +185,14 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<EncounterType> findEncounterTypes(String name) throws DAOException {
-		return sessionFactory.getCurrentSession().createCriteria(EncounterType.class)
-		// 'ilike' case insensitive search
-		.add(Expression.ilike("name", name, MatchMode.START)).addOrder(Order.asc("name")).addOrder(
-			Order.asc("retired")).list();
+		// define query orders
+		LinkedHashMap<String, String> orders = new LinkedHashMap<String, String>();
+		orders.put("localizedName", "asc");
+		orders.put("retired", "asc");
+		
+		return HibernateUtil.findMetadataInexactlyInLocalizedColumn(name, "name", "localizedName", EncounterType.class,
+		    orders,
+		    sessionFactory);
 	}
 	
 	/**

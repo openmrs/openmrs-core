@@ -18,6 +18,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.text.DateFormat;
@@ -25,6 +26,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Vector;
 
 import org.junit.Assert;
@@ -971,6 +973,51 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+     * @see {@link EncounterService#getEncounterType(String)}
+     * 
+     */
+    @Test
+	@Verifies(value = "should return encounter type matching user current locale firstly if exist by searching variant names", method = "getEncounterType(String)")
+	public void getEncounterType_shouldReturnEncounterTypeMatchingUserCurrentLocaleFirstlyIfExistBySearchingVariantNames()
+	                                                                                                          throws Exception {
+		EncounterService encounterService = Context.getEncounterService();
+		
+		// ensure user's current locale is "en_GB"
+		assertEquals(new Locale("en", "GB"), Context.getLocale());
+		
+		// ensure there two encounter type have a same name in their variant names
+		assertEquals("Test Enc Type C", encounterService.getEncounterType(7).getLocalizedName().getVariants().get(
+		    new Locale("en", "GB")));
+		assertEquals("Test Enc Type C", encounterService.getEncounterType(8).getLocalizedName().getVariants().get(
+		    new Locale("es")));
+		
+		// should return the encounter type matching user's current locale first if exist
+		// and also more than one encounter types found in db
+		assertSame(7, encounterService.getEncounterType("Test Enc Type C").getEncounterTypeId());
+	}
+
+	/**
+     * @see {@link EncounterService#getEncounterType(String)}
+     * 
+     */
+    @Test
+    @Verifies(value = "should return first found encounter type if no records matching user current locale by searching variant names", method = "getEncounterType(String)")
+	public void getEncounterType_shouldReturnFirstFoundEncounterTypeIfNoRecordsMatchingUserCurrentLocaleBySearchingVariantNames()
+                                                                                                            throws Exception {
+		EncounterService encounterService = Context.getEncounterService();
+		
+		// ensure there two encounter type have a same variant name, and both aren't within user's current locale
+		assertEquals("Test Enc Type C2", encounterService.getEncounterType(7).getLocalizedName().getVariants().get(
+		    new Locale("fr")));
+		assertEquals("Test Enc Type C2", encounterService.getEncounterType(8).getLocalizedName().getVariants().get(
+		    new Locale("fr", "RW")));
+		
+		// should return the encounter type matching user's current locale first if exist
+		// and also more than one encounter types found in db
+		assertSame(7, encounterService.getEncounterType("Test Enc Type C2").getEncounterTypeId());
+    }
+	
+	/**
 	 * @see {@link EncounterService#getAllEncounterTypes(boolean)}
 	 */
 	@Test
@@ -984,7 +1031,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		
 		// make sure we only get the two non retired encounter types
 		// defined in the initialData.xml
-		assertEquals(2, encounterTypes.size());
+		assertEquals(4, encounterTypes.size());
 	}
 	
 	/**
@@ -998,7 +1045,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		List<EncounterType> types = encounterService.getAllEncounterTypes(true);
 		
 		// there should be five types in the database
-		assertEquals(5, types.size());
+		assertEquals(7, types.size());
 		
 		for (EncounterType type : types) {
 			if (type.isRetired())
@@ -1015,7 +1062,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	public void findEncounterTypes_shouldReturnTypesByPartialNameMatch() throws Exception {
 		EncounterService encounterService = Context.getEncounterService();
 		List<EncounterType> types = encounterService.findEncounterTypes("Test Enc");
-		assertEquals(3, types.size());
+		assertEquals(5, types.size());
 	}
 	
 	/**
@@ -1026,7 +1073,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	public void findEncounterTypes_shouldReturnTypesByPartialCaseInsensitiveMatch() throws Exception {
 		EncounterService encounterService = Context.getEncounterService();
 		List<EncounterType> types = encounterService.findEncounterTypes("Test ENC");
-		assertEquals(3, types.size());
+		assertEquals(5, types.size());
 	}
 	
 	/**
@@ -1037,7 +1084,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	public void findEncounterTypes_shouldIncludeRetiredTypesInTheResults() throws Exception {
 		EncounterService encounterService = Context.getEncounterService();
 		List<EncounterType> types = encounterService.findEncounterTypes("Test Enc");
-		assertEquals(3, types.size());
+		assertEquals(5, types.size());
 		
 		// make sure at least one of the types was retired
 		boolean foundRetired = false;
@@ -1058,7 +1105,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	public void findEncounterTypes_shouldNotPartialMatchNameOnInternalSubstrings() throws Exception {
 		EncounterService encounterService = Context.getEncounterService();
 		List<EncounterType> types = encounterService.findEncounterTypes("Test Enc Type");
-		assertEquals(3, types.size());
+		assertEquals(5, types.size());
 		
 		types = encounterService.findEncounterTypes("Enc Type");
 		assertEquals(0, types.size());
@@ -1292,5 +1339,5 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		List<Encounter> encounters = encounterService.getEncountersByPatient("12345");
 		assertEquals(3, encounters.size());
 	}
-	
+
 }
