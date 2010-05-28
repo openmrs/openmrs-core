@@ -404,6 +404,22 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	 * @see {@link ORUR01Handler#processMessage(Message)}
 	 */
 	@Test(expected = ApplicationException.class)
+	@Verifies(value = "should fail on empty concept answers", method = "processMessage(Message)")
+	public void processMessage_shouldFailOnEmptyConceptAnswers() throws Exception {
+		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080630094800||ORU^R01|kgWdFt0SVwwClOfJm3pe|P|2.5|1||||||||15^AMRS.ELD.FORMID\r"
+		        + "PID|||3^^^^~d3811480^^^^||John3^Doe^||\r"
+		        + "PV1||O|1^Unknown||||1^Super User (admin)|||||||||||||||||||||||||||||||||||||20080208|||||||V\r"
+		        + "ORC|RE||||||||20080208000000|1^Super User\r"
+		        + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r"
+		        + "OBX|1|CWE|5497^CD4, BY FACS^99DCT||^^99DCT|||||||||20080208";
+		Message hl7message = parser.parse(hl7string);
+		router.processMessage(hl7message);
+	}
+	
+	/**
+	 * @see {@link ORUR01Handler#processMessage(Message)}
+	 */
+	@Test(expected = ApplicationException.class)
 	@Verifies(value = "should fail on empty concept proposals", method = "processMessage(Message)")
 	public void processMessage_shouldFailOnEmptyConceptProposals() throws Exception {
 		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080630094800||ORU^R01|kgWdFt0SVwwClOfJm3pe|P|2.5|1||||||||15^AMRS.ELD.FORMID\r"

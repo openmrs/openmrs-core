@@ -46,6 +46,7 @@ import org.openmrs.hl7.HL7InQueueProcessor;
 import org.openmrs.hl7.HL7Service;
 import org.openmrs.util.FormConstants;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
 
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.app.Application;
@@ -114,6 +115,7 @@ public class ORUR01Handler implements Application {
 	 * @should create obs group for OBRs
 	 * @should create obs valueCodedName
 	 * @should fail on empty concept proposals
+	 * @should fail on empty concept answers
 	 * @should set value_Coded matching a boolean concept for obs if the answer is 0 or 1 and
 	 *         Question datatype is coded
 	 * @should set value as boolean for obs if the answer is 0 or 1 and Question datatype is Boolean
@@ -593,7 +595,13 @@ public class ORUR01Handler implements Application {
 				if (concept.getDatatype().isBoolean())
 					obs.setValueBoolean(value.equals("1"));
 				else if (concept.getDatatype().isNumeric())
-					obs.setValueNumeric(Double.valueOf(value));
+					try {
+						obs.setValueNumeric(Double.valueOf(value));
+					}
+					catch (NumberFormatException e) {
+						throw new HL7Exception("numeric (NM) value '" + value + "' is not numeric for concept #"
+						        + concept.getConceptId() + " (" + conceptName.getName() + ") in message " + uid, e);
+					}
 				else if (concept.getDatatype().isCoded()) {
 					Concept answer = value.equals("1") ? Context.getConceptService().getTrueConcept() : Context
 					        .getConceptService().getFalseConcept();
@@ -793,7 +801,7 @@ public class ORUR01Handler implements Application {
 	}
 	
 	private boolean isConceptProposal(String identifier) {
-		return identifier.equals(OpenmrsConstants.PROPOSED_CONCEPT_IDENTIFIER);
+		return OpenmrsUtil.nullSafeEquals(identifier, OpenmrsConstants.PROPOSED_CONCEPT_IDENTIFIER);
 	}
 	
 	private Date getDate(int year, int month, int day, int hour, int minute, int second) {
