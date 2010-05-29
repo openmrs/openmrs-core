@@ -15,6 +15,7 @@ package org.openmrs.api.db.hibernate;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -169,15 +170,12 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<EncounterType> getAllEncounterTypes(Boolean includeRetired) throws DAOException {
-		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(EncounterType.class);
-		
-		criteria.addOrder(Order.asc("localizedName"));
-		
 		if (includeRetired == false)
 			criteria.add(Expression.eq("retired", false));
-		
-		return criteria.list();
+		List<EncounterType> results = criteria.list();
+		Collections.sort(results, new MetadataNameComparator(true));
+		return results;
 	}
 	
 	/**

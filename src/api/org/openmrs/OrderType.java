@@ -106,7 +106,6 @@ public class OrderType extends BaseOpenmrsMetadata implements java.io.Serializab
 		setOrderTypeId(id);
 		
 	}
-
 	
     /**
 	 * @return the localizedName

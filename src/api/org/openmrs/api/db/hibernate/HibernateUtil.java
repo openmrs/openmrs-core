@@ -233,25 +233,36 @@ public class HibernateUtil {
 		if (orderDef.containsKey(propertyName) && !secondResults.isEmpty()) {
 			// order by localized column which is specified by columnName once more
 			// because now the results list includes some metadatas have been localized
-			if ("asc".equals(orderDef.get(propertyName))) {
-				Collections.sort(results, new Comparator<BaseOpenmrsMetadata>() {
-					
-					@Override
-					public int compare(BaseOpenmrsMetadata left, BaseOpenmrsMetadata right) {
-						return OpenmrsUtil.compareWithNullAsLowest(left.getName(), right.getName());
-					}
-				});
-			} else {
-				Collections.sort(results, new Comparator<BaseOpenmrsMetadata>() {
-					
-					@Override
-					public int compare(BaseOpenmrsMetadata left, BaseOpenmrsMetadata right) {
-						return (OpenmrsUtil.compareWithNullAsLowest(left.getName(), right.getName()) * -1);
-					}
-				});
-			}
+			if ("asc".equals(orderDef.get(propertyName)))
+				Collections.sort(results, new MetadataNameComparator(true));
+			else
+				Collections.sort(results, new MetadataNameComparator(false));
 		}
 		
 		return results;
 	}
+}
+
+/**
+ * A Comparator to compare two BaseOpenmrsMetadatas by their localized name property
+ */
+class MetadataNameComparator implements Comparator<BaseOpenmrsMetadata> {
+	
+	private boolean asc = true;
+	
+	public MetadataNameComparator(boolean asc) {
+		this.asc = asc;
+	}
+	
+	/**
+	 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+	 */
+	@Override
+	public int compare(BaseOpenmrsMetadata left, BaseOpenmrsMetadata right) {
+		if (asc == true)
+			return OpenmrsUtil.compareWithNullAsLowest(left.getName(), right.getName());
+		else
+			return (OpenmrsUtil.compareWithNullAsLowest(left.getName(), right.getName()) * -1);
+	}
+	
 }

@@ -7,6 +7,11 @@ import org.openmrs.serialization.LocalizedStringSerializer;
 import org.openmrs.serialization.OpenmrsSerializer;
 import org.openmrs.test.Verifies;
 
+/**
+ * This class tests the all of the {@link OrderType} non-trivial object methods.
+ * 
+ * @see OrderType
+ */
 public class OrderTypeTest {
 	
 	/**
