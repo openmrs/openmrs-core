@@ -27,4 +27,7 @@
   <concept_name_tag_map concept_name_id="1" concept_name_tag_id="4"/>
   <concept_name_tag_map concept_name_id="2" concept_name_tag_id="4"/>
   <concept_numeric concept_id="2" hi_absolute="123.0" precise="false"/>
+  <concept_class concept_class_id="1" name="i18n:v1;unlocalized:newName;es:newName1;fr_RW:newName2;" description="Test for get first found Concept Class not matching user current locale" creator="1" date_created="2010-02-02 00:00:00.0" retired="false" uuid="97097dd9-b092-4b68-a2dc-e5e5be9kjlhu"/>
+  <concept_class concept_class_id="2" name="i18n:v1;unlocalized:newName;en_GB:newName1;fr:newName2;" description="Test for get Concept Class matching user current locale" creator="1" date_created="2010-02-02 00:00:00.0" retired="false" uuid="97097dd9-b092-4b68-a2dc-e5e5be9kjhgf"/>
+  <concept_class concept_class_id="3" name="newName" description="Test for get Concept Class in default value" creator="1" date_created="2010-02-02 00:00:00.0" retired="false" uuid="97097dd9-b092-4b68-a2dc-e5e5besdflhu"/>	
 </dataset>

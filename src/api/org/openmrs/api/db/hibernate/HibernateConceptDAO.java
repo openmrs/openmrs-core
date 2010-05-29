@@ -16,6 +16,7 @@ package org.openmrs.api.db.hibernate;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -116,7 +117,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		if ((concept.getConceptId() != null) && (concept.getConceptId() > 0)) {
 			// this method checks the concept_numeric, concept_derived, etc tables
 			// to see if a row exists there or not.  This is needed because hibernate
-			// doesn't like to insert into concept_numeric but update concept in the 
+			// doesn't like to insert into concept_numeric but update concept in the
 			// same go.  It assumes that its either in both tables or no tables
 			insertRowIntoSubclassIfNecessary(concept);
 		}
@@ -151,7 +152,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 				// Converting to concept numeric:  A single concept row exists, but concept numeric has not been populated yet.
 				if (ps.getResultSet().next()) {
 					// we have to evict the current concept out of the session because
-					// the user probably had to change the class of this object to get it 
+					// the user probably had to change the class of this object to get it
 					// to now be a numeric
 					// (must be done before the "insert into...")
 					sessionFactory.getCurrentSession().clear();
@@ -208,7 +209,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 				// Converting to concept complex:  A single concept row exists, but concept complex has not been populated yet.
 				if (ps.getResultSet().next()) {
 					// we have to evict the current concept out of the session because
-					// the user probably had to change the class of this object to get it 
+					// the user probably had to change the class of this object to get it
 					// to now be a ConceptComplex
 					// (must be done before the "insert into...")
 					sessionFactory.getCurrentSession().clear();
@@ -268,7 +269,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 				// Converting to concept derived:  A single concept row exists, but concept derived has not been populated yet.
 				if (ps.getResultSet().next()) {
 					// we have to evict the current concept out of the session because
-					// the user probably had to change the class of this object to get it 
+					// the user probably had to change the class of this object to get it
 					// to now be ConceptDerived
 					// (must be done before the "insert into...")
 					sessionFactory.getCurrentSession().clear();
@@ -377,7 +378,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		else
 			sql += " asc";
 		Query query = sessionFactory.getCurrentSession().createQuery(sql);
-		return (List<Concept>) query.list();
+		return query.list();
 	}
 	
 	/**
@@ -407,7 +408,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 			searchCriteria.add(Expression.eq("drug.concept", concept));
 		if (drugName != null)
 			searchCriteria.add(Expression.eq("drug.name", drugName));
-		return (List<Drug>) searchCriteria.list();
+		return searchCriteria.list();
 	}
 	
 	/**
@@ -448,12 +449,13 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getConceptClasses(java.lang.String)
 	 */
-	@SuppressWarnings("unchecked")
 	public List<ConceptClass> getConceptClasses(String name) throws DAOException {
-		Criteria crit = sessionFactory.getCurrentSession().createCriteria(ConceptClass.class);
-		if (name != null)
-			crit.add(Expression.eq("name", name));
-		return crit.list();
+		List<ConceptClass> ccList = new ArrayList<ConceptClass>();
+		ConceptClass cc = HibernateUtil.findMetadataExactlyInLocalizedColumn(name, "name", ConceptClass.class,
+		    sessionFactory);
+		if (cc != null)
+			ccList.add(cc);
+		return ccList;
 	}
 	
 	/**
@@ -463,7 +465,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	public List<ConceptClass> getAllConceptClasses(boolean includeRetired) throws DAOException {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(ConceptClass.class);
 		
-		// Minor bug - was assigning includeRetired instead of evaluating 
+		// Minor bug - was assigning includeRetired instead of evaluating
 		if (includeRetired == false)
 			crit.add(Expression.eq("retired", false));
 		
@@ -618,7 +620,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		
 		locales.addAll(localesToAdd);
 		
-		//String locale = loc.getLanguage().substring(0, 2);		
+		//String locale = loc.getLanguage().substring(0, 2);
 		List<String> words = ConceptWord.getUniqueWords(phrase); //assumes getUniqueWords() removes quote(') characters.  (otherwise we would have a security leak)
 		
 		// these are the answers to restrict on
@@ -678,7 +680,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 			
 			conceptWords = searchCriteria.list();
 			
-			// trim down the list 
+			// trim down the list
 			// TODO: put this in the criteria object?
 			if (start != null && size != null) {
 				List<ConceptWord> subList = conceptWords.subList(start, start + size);
@@ -922,7 +924,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 			// TODO This 'algorithm' only solves three layers of children.  Options for correction:
 			//	1) Add a few more join statements to cover 5 layers (conceivable upper limit of layers)
 			//	2) Find the deepest layer and programmatically create the sql statements
-			//	3) Run the joins on 
+			//	3) Run the joins on
 		}
 		catch (SQLException e) {
 			throw new DAOException(e);

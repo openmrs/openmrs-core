@@ -107,7 +107,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	public void getConceptByName_shouldGetConceptByPartialName() throws Exception {
 		executeDataSet(INITIAL_CONCEPTS_XML);
 		
-		// substring of the name 
+		// substring of the name
 		String partialNameToFetch = "So";
 		
 		List<Concept> firstConceptsByPartialNameList = conceptService.getConceptsByName(partialNameToFetch);
@@ -179,7 +179,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		authenticate();
 		
 		// this tests saving a current concept as a newly changed conceptnumeric
-		// assumes there is already a concept in the database  
+		// assumes there is already a concept in the database
 		// with a concept id of #1
 		ConceptNumeric cn = new ConceptNumeric(1);
 		cn.setDatatype(new ConceptDatatype(1));
@@ -274,7 +274,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		// now count up the number of concepts the iterator returns
 		int iteratorCount = 0;
 		Iterator<Concept> iterator = Context.getConceptService().conceptIterator();
-		while (iterator.hasNext() && iteratorCount < numberofconcepts + 5) { // the lt check is in case of infinite loops 
+		while (iterator.hasNext() && iteratorCount < numberofconcepts + 5) { // the lt check is in case of infinite loops
 			iterator.next();
 			iteratorCount++;
 		}
@@ -1121,4 +1121,62 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Context.getAdministrationService().saveGlobalProperty(trueConceptGlobalProperty);
 		Context.getAdministrationService().saveGlobalProperty(falseConceptGlobalProperty);
 	}
+
+	/**
+     * @see {@link ConceptService#getConceptClassByName(String)}
+     * 
+     */
+    @Test
+    @Verifies(value = "should return concept class matching for unlocalized name if exist when no localization is", method = "getConceptClassByName(String)")
+    public void getConceptClassByName_shouldReturnConceptClassMatchingForUnlocalizedNameIfExistWhenNoLocalizationIs()
+	                                                                                                                 throws Exception {
+		executeDataSet(INITIAL_CONCEPTS_XML);
+		
+		Assert.assertEquals("newName", conceptService.getConceptClass(3).getLocalizedName().getUnlocalizedValue());
+		Assert.assertEquals("newName", conceptService.getConceptClass(1).getLocalizedName().getUnlocalizedValue());
+		Assert.assertEquals("newName", conceptService.getConceptClass(2).getLocalizedName().getUnlocalizedValue());
+	    
+		// should return the matched concept class object that hasn't been localized firstly, if exist
+		Assert.assertEquals(3, conceptService.getConceptClassByName("newName").getConceptClassId().intValue());
+    }
+
+	/**
+     * @see {@link ConceptService#getConceptClassByName(String)}
+     * 
+     */
+    @Test
+    @Verifies(value = "should return concept class matching user current locale firstly if exist by searching", method = "getConceptClassByName(String)")
+    public void getConceptClassByName_shouldReturnConceptClassMatchingUserCurrentLocaleFirstlyIfExistBySearching()
+                                                                                                                  throws Exception {
+		executeDataSet(INITIAL_CONCEPTS_XML);
+		
+		Locale userLocale = Context.getLocale();
+		Assert.assertEquals("newName1", conceptService.getConceptClass(1).getLocalizedName().getVariants().get(
+		    new Locale("es")));
+		Assert.assertEquals("newName1", conceptService.getConceptClass(2).getLocalizedName().getVariants().get(
+		    new Locale("en", "GB")));
+		Assert.assertEquals(new Locale("en", "GB"), userLocale);
+		
+		// should return the matched concept class object that hasn't been localized firstly, if exist
+		Assert.assertEquals(2, conceptService.getConceptClassByName("newName1").getConceptClassId().intValue());
+    }
+
+	/**
+     * @see {@link ConceptService#getConceptClassByName(String)}
+     * 
+     */
+    @Test
+    @Verifies(value = "should return first found concept class if no records matching user current locale by", method = "getConceptClassByName(String)")
+    public void getConceptClassByName_shouldReturnFirstFoundConceptClassIfNoRecordsMatchingUserCurrentLocaleBy()
+                                                                                                                throws Exception {
+		executeDataSet(INITIAL_CONCEPTS_XML);
+		
+		Assert.assertEquals("newName2", conceptService.getConceptClass(1).getLocalizedName().getVariants().get(
+		    new Locale("fr", "RW")));
+		Assert.assertEquals("newName2", conceptService.getConceptClass(2).getLocalizedName().getVariants().get(
+		    new Locale("fr")));
+		
+		// should return the matched concept class object that hasn't been localized firstly, if exist
+		Assert.assertEquals(1, conceptService.getConceptClassByName("newName2").getConceptClassId().intValue());
+    }
 }
