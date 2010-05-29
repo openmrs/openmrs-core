@@ -20,7 +20,7 @@
 			<td><openmrs_tag:concept conceptId="${conceptId}"/>:</td>
 			<td>
 				<b>
-				<openmrs_tag:mostRecentObs concept="${conceptId}" observations="${model.patientObs}" locale="${model.locale}" labelIfNone="general.none" showDate="true"/>
+				<openmrs_tag:mostRecentObs concept="${conceptId}" observations="${model.patientObs}" locale="${model.locale}" labelIfNone="general.none" showDate="true" showEditLink="true"/>
 				</b>
 			</td>
 			<c:if test="${allowNew}">

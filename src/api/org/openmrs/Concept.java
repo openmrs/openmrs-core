@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.TreeSet;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
@@ -112,13 +113,13 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	public Concept() {
 		names = new HashSet<ConceptName>();
 		answers = new HashSet<ConceptAnswer>();
-		conceptSets = new HashSet<ConceptSet>();
+		conceptSets = new TreeSet<ConceptSet>();
 		descriptions = new HashSet<ConceptDescription>();
 		conceptMappings = new HashSet<ConceptMap>();
 	}
 	
 	/**
-	 * /** Convenience constructor with conceptid to save to {@link #setConceptId(Integer)}. This
+	 * Convenience constructor with conceptid to save to {@link #setConceptId(Integer)}. This
 	 * effectively creates a concept stub that can be used to make other calls. Because the
 	 * {@link #equals(Object)} and {@link #hashCode()} methods rely on conceptId, this allows a stub
 	 * to masquerade as a full concept as long as other objects like {@link #getAnswers()} and
@@ -136,7 +137,8 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @param cn
 	 * @deprecated
 	 */
-	public Concept(ConceptNumeric cn) {
+	@Deprecated
+    public Concept(ConceptNumeric cn) {
 		conceptId = cn.getConceptId();
 		retired = cn.isRetired();
 		datatype = cn.getDatatype();
@@ -160,7 +162,8 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @should not fail if concept id is null
 	 * @should confirm two new concept objects are equal
 	 */
-	public boolean equals(Object obj) {
+	@Override
+    public boolean equals(Object obj) {
 		if (obj == null)
 			return false;
 		if (obj instanceof Concept) {
@@ -177,7 +180,8 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @see java.lang.Object#hashCode()
 	 * @should not fail if concept id is null
 	 */
-	public int hashCode() {
+	@Override
+    public int hashCode() {
 		if (this.getConceptId() == null)
 			return super.hashCode();
 		int hash = 8;
@@ -939,7 +943,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 */
 	public ConceptName getShortNameInLocale(Locale locale) {
 		ConceptName shortName = null;
-		// ABK: country will always be non-null. Empty string (instead 
+		// ABK: country will always be non-null. Empty string (instead
 		// of null) indicates no country was specified
 		String country = locale.getCountry();
 		if (country.length() != 0) {
@@ -1262,7 +1266,8 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @deprecated Use the "proper" isRetired method.
 	 * @see org.openmrs.Concept#isRetired()
 	 */
-	@Attribute
+	@Deprecated
+    @Attribute
 	public Boolean getRetired() {
 		return isRetired();
 	}
@@ -1323,7 +1328,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @param conceptSets The conceptSets to set.
 	 */
-	@ElementList(required = false)
+    @ElementList(required = false)
 	public void setConceptSets(Collection<ConceptSet> conceptSets) {
 		this.conceptSets = conceptSets;
 	}
@@ -1396,7 +1401,8 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @see java.lang.Object#toString()
 	 */
-	public String toString() {
+	@Override
+    public String toString() {
 		if (conceptId == null)
 			return "";
 		return conceptId.toString();
@@ -1483,4 +1489,97 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	public void setId(Integer id) {
 		setConceptId(id);
 	}
+
+	/**
+	 * Sort the ConceptSet based on the weight
+	 * 
+	 * @return sortedConceptSet Collection<ConceptSet>
+	 */
+	private List<ConceptSet> getSortedConceptSets() {
+		List<ConceptSet> cs = new Vector<ConceptSet>();
+		if (conceptSets != null) {
+			cs.addAll(conceptSets);
+			Collections.sort(cs);
+		}
+		
+		return cs;
+	}
+
+	/**
+	 * Get all the concept members of current concept
+	 * 
+	 * @since 1.7
+	 * @return List<Concept> the Concepts that are members of this Concept's set
+	 * @should return concept set members sorted according to the sort weight
+	 * @should return all the conceptMembers of current Concept
+	 * @should return unmodifiable list of conceptMember list
+	 */
+	public List<Concept> getSetMembers() {
+		List<Concept> conceptMembers = new Vector<Concept>();
+		
+		Collection<ConceptSet> sortedConceptSet = getSortedConceptSets();
+		
+		for (ConceptSet conceptSet : sortedConceptSet) {
+			conceptMembers.add(conceptSet.getConcept());
+		}
+		return Collections.unmodifiableList(conceptMembers);
+	}
+	
+	/**
+	 * Appends the concept to the end of the existing list of concept members for this Concept
+	 * 
+	 * @since 1.7
+	 * @param setMember Concept to add to the
+	 * @should add concept as a conceptSet
+	 * @should append concept to the existing list of conceptSet
+	 * @should place the new concept last in the list
+	 * @should assign the calling component as parent to the ConceptSet
+	 */
+	public void addSetMember(Concept setMember) {
+		addSetMember(setMember, -1);
+	}
+	
+	/**
+	 * Add the concept to the existing member to the list of set members in the given location. <br/>
+	 * <br/>
+	 * index of 0 is before the first concept<br/>
+	 * index of -1 is after last.<br/>
+	 * index of 1 is after the first but before the second, etc<br/>
+	 * 
+	 * @param setMember the Concept to add as a child of this Concept
+	 * @param index where in the list of set members to put this setMember
+	 * @since 1.7
+	 * @should assign the given concept as a ConceptSet
+	 * @should insert the concept before the first with zero index
+	 * @should insert the concept at the end with negative one index
+	 * @should insert the concept in the third slot
+	 * @should assign the calling component as parent to the ConceptSet
+	 * @should add the concept to the current list of conceptSet
+	 * @see #getSortedConceptSets()
+	 */
+	public void addSetMember(Concept setMember, int index) {
+		List<ConceptSet> sortedConceptSets = getSortedConceptSets();
+		int setsSize = sortedConceptSets.size();
+
+		double weight;
+
+		if (sortedConceptSets.isEmpty())
+			weight = 1000.0;
+		else if (index == -1 || index >= setsSize)
+			// deals with list size of 1 and any large index given by dev
+			weight = sortedConceptSets.get(setsSize - 1).getSortWeight() + 10.0;
+		else if (index == 0)
+			weight = sortedConceptSets.get(0).getSortWeight() - 10.0;
+		else {
+			// put the weight between two
+			double prevSortWeight = sortedConceptSets.get(index - 1).getSortWeight();
+			double nextSortWeight = sortedConceptSets.get(index).getSortWeight();
+			weight = (prevSortWeight + nextSortWeight) / 2;
+		}
+		
+		ConceptSet conceptSet = new ConceptSet(setMember, weight);
+		conceptSet.setConceptSet(this);
+		conceptSets.add(conceptSet);
+	}
+
 }

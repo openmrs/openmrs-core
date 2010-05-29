@@ -14,13 +14,10 @@
 package org.openmrs.messagesource.impl;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -58,6 +55,10 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 	 */
 	private String[] basenames = new String[0];
 	
+	private int cacheMilliSeconds = -1;
+	
+	private long lastCached = new Date().getTime();
+
 	/** Cached list of available locales. */
 	private Collection<Locale> locales;
 	
@@ -65,10 +66,19 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 	 * @see org.openmrs.messagesource.MessageSourceService#getLocales()
 	 */
 	public Collection<Locale> getLocales() {
-		if (locales == null)
+		long now = new Date().getTime();
+		if (locales == null || cacheMilliSeconds <= 0 || now - cacheMilliSeconds > lastCached) {
 			locales = findLocales();
+			lastCached = now;
+		}
 		
 		return locales;
+	}
+	
+	@Override
+    public void setCacheSeconds(int cacheSeconds) {
+		this.cacheMilliSeconds = cacheSeconds * 1000;
+		super.setCacheSeconds(cacheSeconds);
 	}
 	
 	/**
@@ -141,6 +151,7 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 	 *      java.lang.String, java.lang.String, java.lang.String, java.lang.String)
 	 * @deprecated use {@linkplain #merge(MutableMessageSource, boolean)}
 	 */
+	@Deprecated
 	public void publishProperties(Properties props, String locale, String namespace, String name, String version) {
 		
 		String filePrefix = (namespace.length() > 0) ? (namespace + "_") : "";
@@ -148,14 +159,15 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 		
 		Resource propertiesResource = applicationContext.getResource(propertiesPath);
 		try {
-		File propertiesFile = propertiesResource.getFile();
-		
-		if (!propertiesFile.exists())
-			propertiesFile.createNewFile();
+			File propertiesFile = propertiesResource.getFile();
+			
+			if (!propertiesFile.exists())
+				propertiesFile.createNewFile();
 			// append the properties to the appropriate messages file
-		OpenmrsUtil.storeProperties(props, propertiesFile, namespace + ": " + name + " v" + version);
-		
-		} catch (Exception ex){
+			OpenmrsUtil.storeProperties(props, propertiesFile, namespace + ": " + name + " v" + version);
+			
+		}
+		catch (Exception ex) {
 			log.error("Error creating new properties file");
 		}
 	}
@@ -187,8 +199,8 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 				}
 			}
 			catch (Exception e) {
-				// TODO Auto-generated catch block
-				log.error("Error generated", e);
+				// skip over errors in loading a single file
+				log.error("Unable to load properties from file: " + propertiesFile.getAbsolutePath(), e);
 			}
 		}
 		return presentations;
@@ -342,8 +354,8 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 				fileToPropertiesMap.put(propertiesFile, props);
 			}
 			catch (Exception e) {
-				// TODO Auto-generated catch block
-				log.error("Error generated", e);
+				// skip over errors in loading a single file
+				log.error("Unable to load properties from file: " + propertiesFile.getAbsolutePath(), e);
 			}
 		}
 		

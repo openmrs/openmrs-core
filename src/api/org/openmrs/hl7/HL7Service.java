@@ -15,6 +15,7 @@ package org.openmrs.hl7;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.openmrs.Encounter;
 import org.openmrs.Person;
@@ -228,7 +229,9 @@ public interface HL7Service extends OpenmrsService {
 	public void createHL7InArchive(HL7InArchive hl7InArchive);
 	
 	/**
-	 * Get the archive item with the given id
+	 * Get the archive item with the given id, If hl7 archives were moved to the file system, you
+	 * can't do a look up by hl7ArchiveId, instead call
+	 * {@link HL7Service#getHL7InArchiveByUuid(String)}
 	 * 
 	 * @param hl7InArchiveId the id to search on
 	 * @return the matching archive item
@@ -238,14 +241,40 @@ public interface HL7Service extends OpenmrsService {
 	public HL7InArchive getHL7InArchive(Integer hl7InArchiveId);
 	
 	/**
-	 * Get the archive items given a state (deleted, error, pending, processing, processed).
+	 * Get the archive item with the given uuid
 	 * 
-	 * @return list of archive item that actually were deleted
+	 * @param uuid to search on
+	 * @return the archive with the matching uuid if any found
+	 * @throws APIException
+	 * @since Version 1.7
+	 */
+	public HL7InArchive getHL7InArchiveByUuid(String uuid) throws APIException;
+	
+	/**
+	 * If hl7 migration has been run and the state matches that of processed items, the method
+	 * returns a list of all archives in the file system, for any other state , it returns an empty
+	 * list, this is because all archives would have a status of 'processed' after migration and all
+	 * deleted archives moved back into the queue with a status of 'deleted' otherwise it returns
+	 * archives with a matching state if migration hasn't yet been run.
+	 * 
+	 * @return list of archive items that match the state
+	 * @throws APIException
 	 * @since 1.5
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(HL7Constants.PRIV_VIEW_HL7_IN_ARCHIVE)
-	public List<HL7InArchive> getHL7InArchiveByState(Integer state) throws APIException;;
+	public List<HL7InArchive> getHL7InArchiveByState(Integer state) throws APIException;
+	
+	/**
+	 * Get the queue items given a state (deleted, error, pending, processing, processed).
+	 * 
+	 * @return list of hl7 queue items that match the given state
+	 * @throws APIException
+	 * @since 1.7
+	 */
+	@Transactional(readOnly = true)
+	@Authorized(HL7Constants.PRIV_VIEW_HL7_IN_QUEUE)
+	public List<HL7InQueue> getHL7InQueueByState(Integer state) throws APIException;
 	
 	/**
 	 * Get all archive hl7 queue items from the database
@@ -458,6 +487,49 @@ public interface HL7Service extends OpenmrsService {
 	 * @should parse message type supplied by module
 	 */
 	public Message processHL7Message(Message hl7Message) throws HL7Exception;
+	
+	/**
+	 * Starts the migration of hl7 in archives from the database to the file system.
+	 * 
+	 * @return true if started otherwise false
+	 * @throws APIException
+	 * @should not start if another user is already running the migration
+	 */
+	@Authorized(requireAll = true, value = { HL7Constants.PRIV_VIEW_HL7_IN_ARCHIVE, HL7Constants.PRIV_PURGE_HL7_IN_ARCHIVE,
+	        HL7Constants.PRIV_ADD_HL7_IN_QUEUE })
+	public boolean startHl7ArchiveMigration() throws APIException;
+	
+	/**
+	 * Stops migration of hl7 in archives if running.
+	 * 
+	 * @throws APIException
+	 */
+	@Authorized(HL7Constants.PRIV_VIEW_HL7_IN_ARCHIVE)
+	public void stopHl7ArchiveMigration() throws APIException;
+	
+	/**
+	 * Method is called by the archives migration thread to transfer hl7 in archives from the
+	 * hl7_in_archives database table to the file system, one is not expected to call this methods
+	 * directly, instead call {@link #startHl7ArchiveMigration()}
+	 * 
+	 * @param progressStatusMap the map holding the number of archives transferred and failed
+	 *            transfers
+	 * @throws APIException
+	 */
+	@Authorized(requireAll = true, value = { HL7Constants.PRIV_VIEW_HL7_IN_ARCHIVE, HL7Constants.PRIV_PURGE_HL7_IN_ARCHIVE,
+	        HL7Constants.PRIV_ADD_HL7_IN_QUEUE })
+	public void migrateHl7InArchivesToFileSystem(Map<String, Integer> progressStatusMap) throws APIException;
+	
+	/**
+	 * Checks if there are any rows in the hl7 in archives table returns true only if the hl7
+	 * archives table exists and has at least 1 row otherwise returns false
+	 * 
+	 * @throws APIException
+	 * @return false if the all archives were transferred otherwise returns true
+	 */
+	@Transactional(readOnly = true)
+	@Authorized(HL7Constants.PRIV_VIEW_HL7_IN_ARCHIVE)
+	public boolean isArchiveMigrationRequired() throws APIException;
 	
 	/**
 	 * finds a UUID from an array of identifiers

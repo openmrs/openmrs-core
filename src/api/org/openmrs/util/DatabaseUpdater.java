@@ -27,7 +27,6 @@ import java.util.Properties;
 import java.util.Set;
 
 import liquibase.ChangeSet;
-import liquibase.ClassLoaderFileOpener;
 import liquibase.CompositeFileOpener;
 import liquibase.DatabaseChangeLog;
 import liquibase.FileOpener;
@@ -94,16 +93,7 @@ public class DatabaseUpdater {
 		
 		log.debug("Executing changelog: " + changelog);
 		
-		// a call back that, well, does nothing
-		ChangeSetExecutorCallback doNothingCallback = new ChangeSetExecutorCallback() {
-			
-			public void executing(ChangeSet changeSet, int numChangeSetsToRun) {
-				log.debug("Executing changeset: " + changeSet.getId() + " numChangeSetsToRun: " + numChangeSetsToRun);
-			}
-			
-		};
-		
-		executeChangelog(changelog, userInput, doNothingCallback);
+		executeChangelog(changelog, userInput, null);
 	}
 	
 	/**
@@ -149,6 +139,16 @@ public class DatabaseUpdater {
 	}
 	
 	/**
+	 * @deprecated use
+	 *             {@link #executeChangelog(String, String, Map, ChangeSetExecutorCallback, ClassLoader)}
+	 */
+	@Deprecated
+    public static void executeChangelog(String changeLogFile, String contexts, Map<String, Object> userInput,
+	                                    ChangeSetExecutorCallback callback) throws Exception {
+		executeChangelog(changeLogFile, contexts, userInput, callback, null);
+	}
+	
+	/**
 	 * This code was borrowed from the liquibase jar so that we can call the given callback
 	 * function.
 	 * 
@@ -156,10 +156,12 @@ public class DatabaseUpdater {
 	 * @param contexts the liquibase changeset context
 	 * @param userInput answers given by the user
 	 * @param callback the function to call after every changeset
+	 * @param cl {@link ClassLoader} to use to find the changeLogFile (or null to use
+	 *            {@link OpenmrsClassLoader})
 	 * @throws Exception
 	 */
 	public static void executeChangelog(String changeLogFile, String contexts, Map<String, Object> userInput,
-	                                    ChangeSetExecutorCallback callback) throws Exception {
+	                                    ChangeSetExecutorCallback callback, ClassLoader cl) throws Exception {
 		final class OpenmrsUpdateVisitor extends UpdateVisitor {
 			
 			private ChangeSetExecutorCallback callback;
@@ -174,13 +176,17 @@ public class DatabaseUpdater {
 			
 			@Override
 			public void visit(ChangeSet changeSet, Database database) throws LiquibaseException {
-				callback.executing(changeSet, numChangeSetsToRun);
+				if (callback != null)
+					callback.executing(changeSet, numChangeSetsToRun);
 				super.visit(changeSet, database);
 			}
 		}
 		
+		if (cl == null)
+			cl = OpenmrsClassLoader.getInstance();
+
 		log.debug("Setting up liquibase object to run changelog: " + changeLogFile);
-		Liquibase liquibase = getLiquibase(changeLogFile);
+		Liquibase liquibase = getLiquibase(changeLogFile, cl);
 		int numChangeSetsToRun = liquibase.listUnrunChangeSets(contexts).size();
 		Database database = liquibase.getDatabase();
 		
@@ -190,11 +196,11 @@ public class DatabaseUpdater {
 		try {
 			database.checkDatabaseChangeLogTable();
 			
-			FileOpener clFO = new ClassLoaderFileOpener();
+			FileOpener openmrsFO = new ClassLoaderFileOpener(cl);
 			FileOpener fsFO = new FileSystemFileOpener();
 			
 			DatabaseChangeLog changeLog = new ChangeLogParser(new HashMap<String, Object>()).parse(changeLogFile,
-			    new CompositeFileOpener(clFO, fsFO));
+			    new CompositeFileOpener(openmrsFO, fsFO));
 			changeLog.validate(database);
 			ChangeLogIterator logIterator = new ChangeLogIterator(changeLog, new ShouldRunChangeSetFilter(database),
 			        new ContextChangeSetFilter(contexts), new DbmsChangeSetFilter(database));
@@ -275,7 +281,7 @@ public class DatabaseUpdater {
 			// TODO: This is a dumb requirement to have hibernate in here.  Clean this up
 			propertyStream = DatabaseUpdater.class.getClassLoader().getResourceAsStream("hibernate.default.properties");
 			OpenmrsUtil.loadProperties(props, propertyStream);
-			// add in all default properties that don't exist in the runtime 
+			// add in all default properties that don't exist in the runtime
 			// properties yet
 			for (Map.Entry<Object, Object> entry : props.entrySet()) {
 				if (!runtimeProperties.containsKey(entry.getKey()))
@@ -287,7 +293,7 @@ public class DatabaseUpdater {
 				propertyStream.close();
 			}
 			catch (Throwable t) {
-				// pass 
+				// pass
 			}
 		}
 	}
@@ -297,10 +303,13 @@ public class DatabaseUpdater {
 	 * database connection when finished with this Liquibase object.
 	 * liquibase.getDatabase().getConnection().close()
 	 * 
+	 * @param changeLogFile the name of the file to look for the on classpath or filesystem
+	 * @param cl the {@link ClassLoader} to use to find the file (or null to use
+	 *            {@link OpenmrsClassLoader})
 	 * @return Liquibase object based on the current connection settings
 	 * @throws Exception
 	 */
-	private static Liquibase getLiquibase(String changeLogFile) throws Exception {
+	private static Liquibase getLiquibase(String changeLogFile, ClassLoader cl) throws Exception {
 		Connection connection = null;
 		try {
 			connection = getConnection();
@@ -309,6 +318,9 @@ public class DatabaseUpdater {
 			throw new Exception("Unable to get a connection to the database.  Please check your openmrs runtime properties file and make sure you have the correct connection.username and connection.password set", e);
 		}
 		
+		if (cl == null)
+			cl = OpenmrsClassLoader.getInstance();
+
 		try {
 			Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(connection);
 			database.setDatabaseChangeLogTableName("liquibasechangelog");
@@ -320,13 +332,13 @@ public class DatabaseUpdater {
 				database.setDatabaseChangeLogLockTableName(database.getDatabaseChangeLogLockTableName().toUpperCase());
 			}
 			
-			FileOpener clFO = new ClassLoaderFileOpener();
+			FileOpener openmrsFO = new ClassLoaderFileOpener(cl);
 			FileOpener fsFO = new FileSystemFileOpener();
 			
 			if (changeLogFile == null)
 				changeLogFile = CHANGE_LOG_FILE;
 			
-			return new Liquibase(changeLogFile, new CompositeFileOpener(clFO, fsFO), database);
+			return new Liquibase(changeLogFile, new CompositeFileOpener(openmrsFO, fsFO), database);
 			
 		}
 		catch (Exception e) {
@@ -489,7 +501,7 @@ public class DatabaseUpdater {
 		Database database = null;
 		
 		try {
-			Liquibase liquibase = getLiquibase(CHANGE_LOG_FILE);
+			Liquibase liquibase = getLiquibase(CHANGE_LOG_FILE, null);
 			database = liquibase.getDatabase();
 			DatabaseChangeLog changeLog = new ChangeLogParser(new HashMap<String, Object>()).parse(CHANGE_LOG_FILE,
 			    liquibase.getFileOpener());
@@ -527,7 +539,7 @@ public class DatabaseUpdater {
 		
 		Database database = null;
 		try {
-			Liquibase liquibase = getLiquibase(null);
+			Liquibase liquibase = getLiquibase(null, null);
 			database = liquibase.getDatabase();
 			List<ChangeSet> changeSets = liquibase.listUnrunChangeSets(CONTEXT);
 			

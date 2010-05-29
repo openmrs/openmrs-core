@@ -3273,6 +3273,15 @@
 		<customChange class="org.openmrs.util.databasechange.BooleanConceptChangeSet"/>				
 	</changeSet>
 	
+	<changeSet id="20100526-1025" author="Harsha.cse">
+		<comment>
+			Drop Not-Null constraint from location column in Encounter and Obs table
+		</comment>
+		<dropNotNullConstraint tableName="encounter" columnName="location_id" columnDataType="int"/>
+		<dropNotNullConstraint tableName="obs" columnName="location_id" columnDataType="int"/>
+    </changeSet>
+	
+	<!-- following change sets are for localization tools project, and will be merged into a total change set at last -->
 	<changeSet id="20100520-2137" author="luzhuangwei">
 		<comment>Change datatype of encounter_type.name from varchar(50) to mediumtext</comment>
 		<modifyColumn tableName="encounter_type">

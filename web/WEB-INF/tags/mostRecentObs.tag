@@ -6,13 +6,22 @@
 <%@ attribute name="showUnits" required="false" type="java.lang.Boolean" %>
 <%@ attribute name="showDate" required="false" type="java.lang.Boolean" %>
 <%@ attribute name="labelIfNone" required="false" type="java.lang.String" %>
+<%@ attribute name="showEditLink" required="false" type="java.lang.Boolean" %>
 
 <c:set var="mostRecentObs_foundAny" value="false" />
 <c:forEach items="${openmrs:sort(openmrs:filterObsByConcept(observations, concept), 'obsDatetime', true)}" var="o" end="0">
 	<c:if test="${label != null}">
 		<span class="obsLabel"><spring:message code="${label}" />:</span>
 	</c:if>
-	<span class="obsValue"><openmrs:format obsValue="${o}"/></span>
+	<span class="obsValue">
+		<c:if test="${showEditLink}">
+			<a href="${pageContext.request.contextPath}/admin/observations/obs.form?obsId=${o.obsId}">
+		</c:if>
+			<openmrs:format obsValue="${o}"/>
+		<c:if test="${showEditLink}">
+			</a>
+		</c:if>
+	</span>
 	<c:if test="${showUnits}">
 		<openmrs:concept conceptId="${o.concept.conceptId}" var="c" numericVar="nv">
 			<c:if test="${nv != null}">

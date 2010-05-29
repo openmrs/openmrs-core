@@ -15,6 +15,7 @@ package org.openmrs.hl7;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.File;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -25,6 +26,7 @@ import org.apache.commons.logging.LogFactory;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.Concept;
+import org.openmrs.GlobalProperty;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.Person;
@@ -35,6 +37,8 @@ import org.openmrs.module.ModuleConstants;
 import org.openmrs.module.ModuleUtil;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
+import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
 
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.app.Application;
@@ -75,7 +79,18 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 	public void processHL7InQueue_shouldCreateHL7InArchiveAfterSuccessfulParsing() throws Exception {
 		executeDataSet("org/openmrs/hl7/include/ORUTest-initialData.xml");
 		
-		// sanity check, make sure there aren't any archive items
+		File tempDir = new File(System.getProperty("java.io.tmpdir"), HL7Constants.HL7_ARCHIVE_DIRECTORY_NAME);
+		
+		if (tempDir.exists() && tempDir.isDirectory())
+			Assert.assertEquals(true, OpenmrsUtil.deleteDirectory(tempDir));
+		
+		//set a global property for the archives directory as a temporary folder
+		GlobalProperty gp = new GlobalProperty();
+		gp.setProperty(OpenmrsConstants.GLOBAL_PROPERTY_HL7_ARCHIVE_DIRECTORY);
+		gp.setPropertyValue(tempDir.getAbsolutePath());
+		gp.setDescription("temp test dir");
+		Context.getAdministrationService().saveGlobalProperty(gp);
+		
 		HL7Service hl7service = Context.getHL7Service();
 		Assert.assertEquals(0, hl7service.getAllHL7InArchives().size());
 		
@@ -211,6 +226,22 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 		}
 		
 		ModuleUtil.shutdown();
+	}
+	
+	/**
+	 * @see {@link HL7Service#startHl7ArchiveMigration()}
+	 */
+	@Test
+	@Verifies(value = "should not start if another user is already running the migration", method = "startHl7ArchiveMigration()")
+	public void startHl7ArchiveMigration_shouldNotStartIfAnotherUserIsAlreadyRunningTheMigration() throws Exception {
+		//test that it is actually started
+		Assert.assertEquals(true, Context.getHL7Service().startHl7ArchiveMigration());
+		//try starting another thread while the fist one still runs
+		//if migration didnt get started
+		Assert.assertEquals(false, Context.getHL7Service().startHl7ArchiveMigration());
+		//wait for the migration thread to die, this is helpful for the next tests
+		//not to find the thread alive otherwise they fail
+		Thread.sleep(HL7Constants.THREAD_SLEEP_PERIOD + 100);
 	}
 	
 	/**
