@@ -209,9 +209,4 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 		this.retireReason = retireReason;
 	}
 	
-	// Now this method is hacky for HibernateUtil#findMetadataExactlyInLocalizedColumn,
-	// and will be updated after support all metadata's localization
-	public LocalizedString getLocalizedName() {
-		return null;
-	}
 }

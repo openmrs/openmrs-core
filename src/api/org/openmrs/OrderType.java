@@ -110,7 +110,6 @@ public class OrderType extends BaseOpenmrsMetadata implements java.io.Serializab
     /**
 	 * @return the localizedName
 	 */
-	@Override
 	public LocalizedString getLocalizedName() {
 		if (localizedName == null)
 			localizedName = new LocalizedString();

@@ -986,14 +986,13 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		assertEquals(new Locale("en", "GB"), Context.getLocale());
 		
 		// ensure there two encounter type have a same name in their variant names
-		assertEquals("Test Enc Type C", encounterService.getEncounterType(7).getLocalizedName().getVariants().get(
-		    new Locale("en", "GB")));
 		assertEquals("Test Enc Type C", encounterService.getEncounterType(8).getLocalizedName().getVariants().get(
+		    new Locale("en", "GB")));
+		assertEquals("Test Enc Type C", encounterService.getEncounterType(7).getLocalizedName().getVariants().get(
 		    new Locale("es")));
 		
 		// should return the encounter type matching user's current locale first if exist
-		// and also more than one encounter types found in db
-		assertSame(7, encounterService.getEncounterType("Test Enc Type C").getEncounterTypeId());
+		assertSame(8, encounterService.getEncounterType("Test Enc Type C").getEncounterTypeId());
 	}
 
 	/**
@@ -1007,13 +1006,12 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		EncounterService encounterService = Context.getEncounterService();
 		
 		// ensure there two encounter type have a same variant name, and both aren't within user's current locale
-		assertEquals("Test Enc Type C2", encounterService.getEncounterType(7).getLocalizedName().getVariants().get(
-		    new Locale("fr")));
 		assertEquals("Test Enc Type C2", encounterService.getEncounterType(8).getLocalizedName().getVariants().get(
+		    new Locale("fr")));
+		assertEquals("Test Enc Type C2", encounterService.getEncounterType(7).getLocalizedName().getVariants().get(
 		    new Locale("fr", "RW")));
 		
-		// should return the encounter type matching user's current locale first if exist
-		// and also more than one encounter types found in db
+		// should return first found encounter type if no record matching user current locale
 		assertSame(7, encounterService.getEncounterType("Test Enc Type C2").getEncounterTypeId());
     }
 	

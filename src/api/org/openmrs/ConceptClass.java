@@ -92,7 +92,6 @@ public class ConceptClass extends BaseOpenmrsMetadata implements java.io.Seriali
 	/**
 	 * @return the localizedName
 	 */
-	@Override
 	public LocalizedString getLocalizedName() {
 		if (localizedName == null)
 			localizedName = new LocalizedString();

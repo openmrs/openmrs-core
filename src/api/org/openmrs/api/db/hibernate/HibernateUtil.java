@@ -18,7 +18,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
@@ -34,7 +33,6 @@ import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.HSQLDialect;
 import org.hibernate.engine.SessionFactoryImplementor;
 import org.openmrs.BaseOpenmrsMetadata;
-import org.openmrs.api.context.Context;
 import org.openmrs.serialization.LocalizedStringSerializer;
 import org.openmrs.util.LocalizedStringUtil;
 import org.openmrs.util.OpenmrsUtil;
@@ -164,12 +162,9 @@ public class HibernateUtil {
 			// this is a less-frequent use case, more than one records are found
 			// and we should return the record which's name match within user's current locale firstly if exist
 			// , otherwise return the first found one
-			Locale userLocale = Context.getLocale();
 			for (T tt : list) {
-				Map<Locale, String> variants = tt.getLocalizedName().getVariants();
-				if (variants != null && !variants.isEmpty())
-					if (value.equals(variants.get(userLocale)))
-						return tt;
+				if (value.equals(tt.getName()))
+					return tt;
 			}
 			return list.get(0);
 		}

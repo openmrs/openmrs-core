@@ -30,8 +30,8 @@
   <encounter_type encounter_type_id="1" name="Test Enc Type B" description="Some desc" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="759799ab-c9a5-435e-b671-77773ada74e4"/>
   <encounter_type encounter_type_id="2" name="Test Enc Type A" description="Some desc 2" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="4ee21921-01cc-4720-a6bf-a61a17c4d05b"/>
   <encounter_type encounter_type_id="3" name="Test Enc Type A" description="This type is retired" creator="1" date_created="2005-01-01 00:00:00.0" retired="true" retired_by="1" date_retired="2005-01-01 00:00:00.0" retire_reason="This name intentionally matches enc type #2" uuid="070ac0c2-9b3b-485c-8e74-4bd81130c4f8"/>
-  <encounter_type encounter_type_id="7" name="i18n:v1;unlocalized:Test Enc Type C for same name;en_GB:Test Enc Type C;fr:Test Enc Type C2;" description="Some desc 3" creator="1" date_created="2010-01-01 00:00:00.0" retired="false" uuid="070ac0c2-9b3b-485c-8e74-4bd81130e4dd"/>
-  <encounter_type encounter_type_id="8" name="i18n:v1;unlocalized:Test Enc Type C for same name 2;es:Test Enc Type C;fr_RW:Test Enc Type C2;" description="Some desc 4" creator="1" date_created="2010-02-01 00:00:00.0" retired="false" uuid="070ac0c2-9b3b-485c-8e74-4bd81130e4dh"/>
+  <encounter_type encounter_type_id="7" name="i18n:v1;unlocalized:Test Enc Type C for same name 2;es:Test Enc Type C;fr_RW:Test Enc Type C2;" description="Some desc 4" creator="1" date_created="2010-02-01 00:00:00.0" retired="false" uuid="070ac0c2-9b3b-485c-8e74-4bd81130e4dh"/>
+  <encounter_type encounter_type_id="8" name="i18n:v1;unlocalized:Test Enc Type C for same name;en_GB:Test Enc Type C;fr:Test Enc Type C2;" description="Some desc 3" creator="1" date_created="2010-01-01 00:00:00.0" retired="false" uuid="070ac0c2-9b3b-485c-8e74-4bd81130e4dd"/>
     
   <patient_identifier_type patient_identifier_type_id="1" name="Test Identifier Type" description="Test description" check_digit="false" creator="1" date_created="2005-01-01 00:00:00.0" required="false" retired="false"  uuid="1d64befb-3b2e-48e5-85f5-353d43e23e45"/>
   
