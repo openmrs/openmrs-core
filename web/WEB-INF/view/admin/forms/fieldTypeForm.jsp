@@ -9,10 +9,9 @@
 
 <form method="post">
 	<table>
-		<tr>
-			<td><spring:message code="general.name" /></td>
-			<td><input type="text" name="name" value="${fieldType.name}" size="35" /></td>
-		</tr>
+		<spring:nestedPath path="fieldType">
+			<openmrs:portlet url="localizedName" id="localizedNameLayout" /> 
+		</spring:nestedPath>
 		<tr>
 			<td><spring:message code="FieldType.isSet" /></td>
 			<input type="hidden" name="_isSet" value="" />

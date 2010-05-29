@@ -26,6 +26,8 @@ public class FieldType extends BaseOpenmrsMetadata implements java.io.Serializab
 	
 	private Boolean isSet = false;
 	
+	private LocalizedString localizedName;
+	
 	// Constructors
 	
 	/** default constructor */
@@ -43,7 +45,8 @@ public class FieldType extends BaseOpenmrsMetadata implements java.io.Serializab
 	 * @param obj
 	 * @return boolean true/false whether or not they are the same objects
 	 */
-	public boolean equals(Object obj) {
+	@Override
+    public boolean equals(Object obj) {
 		if (obj instanceof FieldType) {
 			FieldType f = (FieldType) obj;
 			return (fieldTypeId.equals(f.getFieldTypeId()));
@@ -51,7 +54,8 @@ public class FieldType extends BaseOpenmrsMetadata implements java.io.Serializab
 		return false;
 	}
 	
-	public int hashCode() {
+	@Override
+    public int hashCode() {
 		if (this.getFieldTypeId() == null)
 			return super.hashCode();
 		return this.getFieldTypeId().hashCode();
@@ -103,6 +107,42 @@ public class FieldType extends BaseOpenmrsMetadata implements java.io.Serializab
 	public void setId(Integer id) {
 		setFieldTypeId(id);
 		
+	}
+	
+	/**
+	 * @return the localizedName
+	 */
+	public LocalizedString getLocalizedName() {
+		if (localizedName == null)
+			localizedName = new LocalizedString();
+		return localizedName;
+	}
+	
+	/**
+	 * @param localizedName the localizedName to set
+	 */
+	public void setLocalizedName(LocalizedString localizedName) {
+		this.localizedName = localizedName;
+	}
+	
+	/**
+	 * @return the name
+	 * @see LocalizedString#getValue()
+	 * @should return unlocalized name when no localization is added
+	 */
+	@Override
+	public String getName() {
+		return getLocalizedName().getValue();
+	}
+	
+	/**
+	 * @param name the name to set
+	 * @see LocalizedString#setUnlocalizedValue(String)
+	 * @should set unlocalized name correctly
+	 */
+	@Override
+	public void setName(String name) {
+		getLocalizedName().setUnlocalizedValue(name);
 	}
 	
 }

@@ -3302,4 +3302,11 @@
 			<column name="name" type="mediumtext"/>
 		</modifyColumn>
 	</changeSet>
+	
+	<changeSet id="20100529-2221" author="luzhuangwei">
+		<comment>Change datatype of field_type.name from varchar(50) to mediumtext</comment>
+		<modifyColumn tableName="field_type">
+			<column name="name" type="mediumtext"/>
+		</modifyColumn>
+	</changeSet>
 </databaseChangeLog>

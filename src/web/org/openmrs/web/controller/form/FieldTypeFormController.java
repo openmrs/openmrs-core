@@ -23,8 +23,10 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.FieldType;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
+import org.openmrs.propertyeditor.LocalizedStringEditor;
 import org.openmrs.web.WebConstants;
 import org.springframework.validation.BindException;
+import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
@@ -35,6 +37,19 @@ public class FieldTypeFormController extends SimpleFormController {
 	protected final Log log = LogFactory.getLog(getClass());
 	
 	/**
+	 * Register {@link LocalizedStringEditor} to transform between request parameters and
+	 * LocalizedString object
+	 * 
+	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest,
+	 *      org.springframework.web.bind.ServletRequestDataBinder)
+	 */
+	@Override
+	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
+		super.initBinder(request, binder);
+		binder.registerCustomEditor(org.openmrs.LocalizedString.class, new LocalizedStringEditor());
+	}
+	
+	/**
 	 * The onSubmit function receives the form/command object that was modified by the input form
 	 * and saves it to the db
 	 * 
@@ -42,7 +57,8 @@ public class FieldTypeFormController extends SimpleFormController {
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
 	 */
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
+	@Override
+    protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
 	                                BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
@@ -65,7 +81,8 @@ public class FieldTypeFormController extends SimpleFormController {
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
+	@Override
+    protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 		
 		FieldType fieldType = null;
 		

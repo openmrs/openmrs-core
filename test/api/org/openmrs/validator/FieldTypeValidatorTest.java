@@ -25,17 +25,17 @@ public class FieldTypeValidatorTest {
 		
 		Errors errors = new BindException(type, "type");
 		new FieldTypeValidator().validate(type, errors);
-		Assert.assertTrue(errors.hasFieldErrors("name"));
+		Assert.assertTrue(errors.hasFieldErrors("localizedName.unlocalizedValue"));
 		
 		type.setName("");
 		errors = new BindException(type, "type");
 		new FieldTypeValidator().validate(type, errors);
-		Assert.assertTrue(errors.hasFieldErrors("name"));
+		Assert.assertTrue(errors.hasFieldErrors("localizedName.unlocalizedValue"));
 		
 		type.setName(" ");
 		errors = new BindException(type, "type");
 		new FieldTypeValidator().validate(type, errors);
-		Assert.assertTrue(errors.hasFieldErrors("name"));
+		Assert.assertTrue(errors.hasFieldErrors("localizedName.unlocalizedValue"));
 	}
 
 	/**
