@@ -3272,4 +3272,12 @@
 		<comment>Switch boolean concepts/observations to be stored as coded</comment>
 		<customChange class="org.openmrs.util.databasechange.BooleanConceptChangeSet"/>				
 	</changeSet>
+	
+	<changeSet id="20100526-1025" author="Harsha.cse">
+		<comment>
+			Drop Not-Null constraint from location column in Encounter and Obs table
+		</comment>
+		<dropNotNullConstraint tableName="encounter" columnName="location_id" columnDataType="int"/>
+		<dropNotNullConstraint tableName="obs" columnName="location_id" columnDataType="int"/>
+    </changeSet>
 </databaseChangeLog>

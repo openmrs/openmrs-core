@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
-<openmrs:require privilege="" otherwise="/login.htm" redirect="/admin/concepts/conceptProposal.list" />
+<openmrs:require privilege="View Concept Proposals" otherwise="/login.htm" redirect="/admin/concepts/conceptProposal.list" />
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>

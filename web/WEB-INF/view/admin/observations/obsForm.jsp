@@ -161,7 +161,7 @@
 	}
 	
 	function validateNumericRange(value) {
-		if (!isNaN(value)) {
+		if (!isNaN(value) && value != '') {
 			var conceptId = conceptSelection.hiddenInputNode.value;
 			var numericErrorMessage = function(validValue) {
 				var errorTag = $('numericRangeError');
@@ -341,11 +341,7 @@
 		<th><spring:message code="Obs.location"/></th>
 		<td>
 			<spring:bind path="location">
-				<select name="location" <c:if test="${obs.obsId != null}">disabled</c:if>>
-					<openmrs:forEachRecord name="location">
-						<option value="${record.locationId}" <c:if test="${status.editor.value.locationId == record.locationId}">selected</c:if>>${record.name}</option>
-					</openmrs:forEachRecord>
-				</select>
+				<openmrs_tag:locationField formFieldName="location" initialValue="${status.value}"/>
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
