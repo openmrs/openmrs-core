@@ -15,7 +15,7 @@
 %>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
-	<head>
+	<head>	    
 		<openmrs:htmlInclude file="/openmrs.js" />
 		<openmrs:htmlInclude file="/openmrs.css" />
 		<openmrs:htmlInclude file="/style.css" />
@@ -52,6 +52,7 @@
 	</head>
 
 <body>
+	<div id="Overlay"></div>
 	<div id="pageBody">
 		<div id="userBar">
 			<openmrs:authentication>

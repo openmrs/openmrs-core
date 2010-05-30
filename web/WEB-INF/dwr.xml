@@ -90,6 +90,7 @@
 			<include method="findUsers"/>
 			<include method="getAllUsers"/>
 			<include method="getUser"/>
+			<include method="saveUserPropertyForCurrentUser"/>
 		</create>
 		
 		<create creator="new" javascript="DWRObsService">

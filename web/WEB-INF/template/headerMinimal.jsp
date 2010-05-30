@@ -46,6 +46,7 @@
 	</head>
 
 <body>
+	<div id="Overlay"></div>
 	<div id="pageBody">
 		<div id="contentMinimal">
 			<c:if test="${msg != null}">

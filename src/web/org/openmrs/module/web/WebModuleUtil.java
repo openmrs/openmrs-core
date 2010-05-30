@@ -890,10 +890,11 @@ public class WebModuleUtil {
 					break;
 			}
 		}
+		//Restart Spring Context only if any pending actions were performed only
 		if (performedActions) {
 			WebModuleUtil.refreshWAC(servletContext, false, null);
+			ModuleFactory.clearAllPendingActions();
 		}
-		ModuleFactory.clearAllPendingActions();
 	}
 
 }

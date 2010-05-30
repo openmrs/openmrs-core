@@ -153,13 +153,29 @@ public class DWRUserService {
 	}
 	
 	/**
+	 * Save user property for the Current User
+	 * 
+	 * @param propertyName User property name
+	 * @param propertyValue User property value
+	 */
+	public void saveUserPropertyForCurrentUser(String propertyName, String propertyValue) {
+		UserService userService = Context.getUserService();
+		
+		User currentUser = Context.getAuthenticatedUser();
+
+		User user = userService.getUser(currentUser.getUserId());
+
+		userService.setUserProperty(user, propertyName, propertyValue);
+	}
+
+	/**
 	 * Determines the order of the user's in the user list
 	 */
 	private class UserComparator implements Comparator<User> {
 		
 		public int compare(User user1, User user2) {
 			
-			// compare on full name (and then on user id in case the names are identical) 
+			// compare on full name (and then on user id in case the names are identical)
 			String name1 = "" + user1.getPersonName() + user1.getUserId();
 			String name2 = "" + user2.getPersonName() + user2.getUserId();
 			

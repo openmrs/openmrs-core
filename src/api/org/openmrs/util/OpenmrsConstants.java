@@ -80,7 +80,8 @@ public final class OpenmrsConstants {
 	 * 
 	 * @deprecated the database doesn't have just one main version now that we are using liquibase.
 	 */
-	public static final String DATABASE_VERSION_EXPECTED = THIS_PACKAGE.getImplementationVersion();
+	@Deprecated
+    public static final String DATABASE_VERSION_EXPECTED = THIS_PACKAGE.getImplementationVersion();
 	
 	public static String DATABASE_NAME = "openmrs";
 	
@@ -93,7 +94,8 @@ public final class OpenmrsConstants {
 	 * 
 	 * @deprecated the database doesn't have just one main version now that we are using liquibase.
 	 */
-	public static String DATABASE_VERSION = null;
+	@Deprecated
+    public static String DATABASE_VERSION = null;
 	
 	/**
 	 * Set true from runtime configuration to obscure patients for system demonstrations
@@ -1232,6 +1234,8 @@ public final class OpenmrsConstants {
 	
 	public static final String USER_PROPERTY_NOTIFICATION_FORMAT = "notificationFormat"; // text/plain, text/html
 	
+	public static final String USER_PROPERTY_SUPPRESS_DIALOG = "suppressDialog";
+
 	/**
 	 * Name of the user_property that stores the number of unsuccessful login attempts this user has
 	 * made

@@ -8,6 +8,11 @@
 <openmrs:htmlInclude file="/scripts/jquery/dataTables/js/jquery.dataTables.min.js" />
 <openmrs:htmlInclude file="/scripts/jquery-ui/js/jquery-ui-1.7.2.custom.min.js" />
 <openmrs:htmlInclude file="/scripts/jquery-ui/css/redmond/jquery-ui-1.7.2.custom.css" />
+<!--<openmrs:htmlInclude file="/scripts/jconfirm/js/jquery.js" />-->
+<openmrs:htmlInclude file="/scripts/jconfirm/js/jconfirm.js" />
+<openmrs:htmlInclude file="/scripts/jconfirm/css/jconfirm.css" />
+<openmrs:confirmDialog id="Restart_Confirm" messageCode="Module.restartConfirmation" button1="Module.yes" button2="Module.no" />
+<openmrs:confirmDialog id="Unload_Confirm" messageCode="Module.unloadWarning" button1="Module.yes" button2="Module.no" />
 <script type="text/javascript">
 	var oTable;
 	
@@ -21,7 +26,7 @@
 				
 		$j('#addUpgradeButton').click(function() {
 			$j('#addUpgradePopup').dialog('open');
-		});
+		});		
 
 		$j('.errorDetailsButton').click(function() {
 			var detailsNum = $j(this).attr('id').substring(18); // strip 'errorDetailsButton'
@@ -73,16 +78,39 @@
 			return true;
 		}
 	}
+	
+	//Javascript Function to show Restart Confirmation 
+	function confirmRestart(id){
+		jConfirm.confirm(id, 
+		function(){
+			$j('#openmrsModulesForm').submit();
+		},
+		function(){			
+		});
+		
+		return false;
+	}
+	
+	function confirmUnload(id){
+		jConfirm.confirm(id, 
+		function(){
+			$j('#moduleActionForm').submit();
+		},
+		function(){
+		});
+		
+		return false;
+	}
 </script>
 
 <h2><spring:message code="Module.header" /></h2>
 
 <c:if test="${hasPendingActions == 'true'}">
 	<div style="width: 100%;background-color: #FFAEB9">
-		<form name="openmrsModulesForm" method="post" onsubmit="return confirm('<spring:message code="Module.restartConfirmation"/>');">
+		<form id="openmrsModulesForm" method="post">
 			<div style="margin: auto;width: 70%">
 				<div style="clear:both">&nbsp;</div>
-				<spring:message code="Module.restartWarning"/> <input <c:if test="${showUpgradeConfirm == 'true'}">disabled="true"</c:if> type="submit" value="<spring:message code="Module.restartOpenmrs"/>"/>
+				<spring:message code="Module.restartWarning"/> <input <c:if test="${showUpgradeConfirm == 'true'}">disabled="true"</c:if> type="button" value="<spring:message code="Module.restartOpenmrs"/>" onclick="return confirmRestart('Restart_Confirm');"/>
 				<input type="hidden" name="action" value="restartModules"/>
 				<div style="clear:both">&nbsp;</div>
 			</div> 
@@ -96,9 +124,9 @@
 		<form name="upgradeConfirmForm" method="post">
 			<div style="margin: auto;width: 70%">
 				<div style="clear:both">&nbsp;</div>
-				<spring:message code="Module.upgradeWarning"/> <input type="submit" onclick="document.upgradeConfirmForm.action.value = 'moduleupgrade.yes';return true" value="<spring:message code="Module.upgradeWarning.yes"/>"/> <input type="submit" onclick="document.upgradeConfirmForm.action.value = 'moduleupgrade.no';return true" value="<spring:message code="Module.upgradeWarning.no"/>"/>
+				<spring:message code="Module.upgradeWarning"/> <input type="submit" onclick="document.upgradeConfirmForm.action.value = 'moduleupgrade.yes';return true" value="<spring:message code="Module.yes"/>"/> <input type="submit" onclick="document.upgradeConfirmForm.action.value = 'moduleupgrade.no';return true" value="<spring:message code="Module.no"/>"/>
 				<br>
-				<p style="margin: auto;width: 70%"><input type="checkbox" name="dontShowMessage" value="true"> <spring:message code="Module.upgradeWarning.dontShow"/></p>			
+				<p style="margin: auto;width: 70%"><input type="checkbox" name="dontShowMessage" value="true"> <spring:message code="Module.dontShowMessage"/></p>			
 				<input type="hidden" name="action" value="confirmation"/>
 				<div style="clear:both">&nbsp;</div>
 			</div>
@@ -145,7 +173,7 @@
 				</div>
 			</div>
 			<div style="float:left">
-				<form method="post"><input type="submit" value='<spring:message code="Module.checkForUpdates"/>'/></form>
+				<form method="post"><input type="submit" value='<spring:message code="Module.checkForUpdates"/>'/></form>				
 			</div>
 			<div style="clear:both">&nbsp;</div>
 		</div>	
@@ -176,7 +204,7 @@
 				<tbody>
 	</c:if>
 			
-				<form method="post">
+				<form id="moduleActionForm" method="post">
 					<input type="hidden" name="moduleId" value="${module.moduleId}" />
 					<tr class='${varStatus.index % 2 == 0 ? "oddRow" : "evenRow" }' id="${module.moduleId}">
 						<c:choose>
@@ -191,7 +219,7 @@
 										</c:otherwise>
 									</c:choose>
 								</td>
-								<td valign="top"><input type="image" src="${pageContext.request.contextPath}/images/trash.gif" name="unload" onclick="return confirm('<spring:message code="Module.unloadWarning"/>');" title="<spring:message code="Module.unload.help"/>" title="<spring:message code="Module.unload"/>" alt="<spring:message code="Module.unload"/>" /></td>
+								<td valign="top"><input type="image" src="${pageContext.request.contextPath}/images/trash.gif" name="unload" onclick="return confirmUnload('Unload_Confirm');" title="<spring:message code="Module.unload.help"/>" title="<spring:message code="Module.unload"/>" alt="<spring:message code="Module.unload"/>" /></td>
 							</c:when>
 							<c:otherwise>
 								<c:choose>

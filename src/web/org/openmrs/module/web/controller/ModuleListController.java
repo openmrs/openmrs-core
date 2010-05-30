@@ -30,10 +30,9 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.GlobalProperty;
 import org.openmrs.User;
 import org.openmrs.api.APIAuthenticationException;
-import org.openmrs.api.AdministrationService;
+import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleAction;
@@ -138,7 +137,7 @@ public class ModuleListController extends SimpleFormController {
 							if (existingModule != null) {
 								updateModule = true;
 
-								String dntShowUpgConf = getConfirmationAllowedForCurrentUser("moduleupgrade");
+								String dntShowUpgConf = getConfirmationAllowedForCurrentUser("moduleadmin", "moduleupgrade");
 								
 								if (dntShowUpgConf == null || !Boolean.parseBoolean(dntShowUpgConf)) {
 									// Show upgrade confirmation in the next page refresh
@@ -148,7 +147,7 @@ public class ModuleListController extends SimpleFormController {
 									httpSession.setAttribute("module", tmpModule);
 									httpSession.setAttribute("modulename", filename);
 								} else {
-									// Upgrade message is suppressed to show so upgrade without showing message
+									// Upgrade message is suppressed to show, so upgrade without showing message
 									ModuleFactory.upgradeModule(tmpModule, filename);
 								}
 							} else {
@@ -226,7 +225,7 @@ public class ModuleListController extends SimpleFormController {
 						ModuleFactory.upgradeModule(tmpModule, filename);
 					}
 					if (dntShowUpgConf) { //If user selected not to show upgrade confirm message
-						saveConfirmationAllowedForCurrentUser("moduleupgrade", String.valueOf(dntShowUpgConf));
+						saveConfirmationAllowedForCurrentUser("moduleadmin", "moduleupgrade", String.valueOf(dntShowUpgConf));
 					}
 					//These attributes are no longer needed
 					httpSession.removeAttribute("module");
@@ -299,56 +298,39 @@ public class ModuleListController extends SimpleFormController {
 		return map;
 	}
 	
-	private String getConfirmationAllowedForCurrentUser(String propertyName) {
+	private String getConfirmationAllowedForCurrentUser(String moduleId, String dialogKey) {
 		String result = null;
 		try{
-			Context.addProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_GLOBAL_PROPERTIES);
-			
 			User currentUser = Context.getAuthenticatedUser();
+			
+			UserService us = Context.getUserService();
 
-			AdministrationService as = Context.getAdministrationService();
+			User user = us.getUser(currentUser.getUserId());
+
+			String key = OpenmrsConstants.USER_PROPERTY_SUPPRESS_DIALOG + "." + moduleId + "." + dialogKey;
 			
-			GlobalProperty gp = as.getGlobalPropertyObject(currentUser.getSystemId() + "#suppressconfirmation."
-			        + propertyName);
-			
-			if(gp != null){
-				result = gp.getPropertyValue();
-			}
+			result = user.getUserProperty(key);
 		}
 		catch (Throwable t) {
 			log.warn("Unable to get global property", t);
 		}
-		finally {
-			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_GLOBAL_PROPERTIES);
-		}
 		return result;
 	}
 	
-	private void saveConfirmationAllowedForCurrentUser(String propertyName, String propertyValue) {
+	private void saveConfirmationAllowedForCurrentUser(String moduleId, String dialogkey, String value) {
 		try {
-			Context.addProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_GLOBAL_PROPERTIES);
-			
 			User currentUser = Context.getAuthenticatedUser();
 			
-			AdministrationService as = Context.getAdministrationService();
+			UserService us = Context.getUserService();
 			
-			propertyName = currentUser.getSystemId() + "#suppressconfirmation." + propertyName;
+			User user = us.getUser(currentUser.getUserId());
 			
-			GlobalProperty gp = as.getGlobalPropertyObject(propertyName);
+			String key = OpenmrsConstants.USER_PROPERTY_SUPPRESS_DIALOG + "." + moduleId + "." + dialogkey;
 			
-			if (gp == null) {
-				gp = new GlobalProperty(propertyName, propertyValue);
-			} else {
-				gp.setPropertyValue(propertyValue);
-			}
-			
-			as.saveGlobalProperty(gp);
+			us.setUserProperty(user, key, value);
 		}
 		catch (Throwable t) {
 			log.warn("Unable to save global property", t);
-		}
-		finally {
-			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_GLOBAL_PROPERTIES);
 		}
 	}
 }

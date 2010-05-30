@@ -1219,6 +1219,45 @@
 	</attribute>
 </tag>
 
+<tag>
+	<description>
+		Create a Confirmation Dialog
+	</description>
+	<name>confirmDialog</name>
+	<tag-class>org.openmrs.web.taglib.ConfirmDialogWidgetTag</tag-class>
+	<body-content>JSP</body-content>
+	<attribute>
+		<name>id</name>
+		<required>true</required>
+		<rtexprvalue>false</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>messageCode</name>
+		<required>true</required>
+		<rtexprvalue>false</rtexprvalue>
+	</attribute>	
+	<attribute>
+		<name>button1</name>
+		<required>true</required>
+		<rtexprvalue>false</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>button2</name>
+		<required>true</required>
+		<rtexprvalue>false</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>suppress</name>
+		<required>false</required>
+		<rtexprvalue>false</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>titleCode</name>
+		<required>false</required>
+		<rtexprvalue>false</rtexprvalue>
+	</attribute>
+</tag>
+
 <function>
 	<name>sort</name>
 	<function-class>org.openmrs.web.taglib.functions.Sort</function-class>

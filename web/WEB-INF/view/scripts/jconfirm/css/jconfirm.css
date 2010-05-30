@@ -1,0 +1,69 @@
+	#Overlay {  
+		position:absolute;  
+		z-index:9000;  
+		background-color:#000;  
+		display:none;  
+		cursor:wait;
+    }  
+       
+	.jConfirm_Window {  
+		position:absolute;  
+		width:440px;  
+		height:150px;  
+		display:none;  
+		z-index:9999;  	  
+	}  
+   
+	#jConfirm_Box {  
+		width:375px;   
+		height:200px;  
+		background-color:white;
+		border:2px solid #336699;
+	}  
+  
+	#jConfirm_Close {
+		float: right;	 
+		text-decoration: none;
+		padding-right: 10px;
+	}
+  
+	.jConfirm_Header {
+		float: left;
+		height:30px; 
+		line-height:30px; 
+		width:100%; 
+		background:url(../img/header.gif) repeat-x; 
+		color:#fff; 
+		font-weight:bold;
+	}
+  
+	.jConfirm_Header span {
+		padding-left: 8px;
+	}
+  
+	.jConfirm_Button {
+		float:right; 
+		margin-left:4px; 
+		width:70px; 
+		height:26px; 
+		color:#666; 
+		font-weight:bold; 
+		text-align:center; 
+		background:url(../img/button.gif) repeat-x; 
+		border:1px solid #bbb; 
+		cursor:pointer;
+	}
+  
+	#jConfirm_Message {
+		padding: 50px 20px 10px 20px;	 
+	}
+  
+	#jConfirm_Control {
+		padding-right: 20px;
+		padding-bottom: 10px;
+		postion: fixed;
+	}
+  
+	#jConfirm_Suppress {
+		padding: 0px 20px 20px 50px;	 	 
+	}
