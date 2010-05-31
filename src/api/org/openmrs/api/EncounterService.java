@@ -257,10 +257,6 @@ public interface EncounterService extends OpenmrsService {
 	 * @should return null if only retired type found
 	 * @should not get by inexact name
 	 * @should return null with null name parameter
-	 * @should return encounter type matching user current locale firstly if exist by searching
-	 *         variant names
-	 * @should return first found encounter type if no records matching user current locale by
-	 *         searching variant names
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_ENCOUNTER_TYPES })

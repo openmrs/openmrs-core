@@ -16,13 +16,14 @@ package org.openmrs.api.db.hibernate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
+import org.hibernate.Hibernate;
 import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
@@ -37,6 +38,7 @@ import org.openmrs.User;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.EncounterDAO;
+import org.openmrs.util.LocalizedStringUtil;
 
 /**
  * Hibernate specific dao for the {@link EncounterService} All calls should be made on the
@@ -160,9 +162,17 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	/**
 	 * @see org.openmrs.api.EncounterService#getEncounterType(java.lang.String)
 	 */
-	@SuppressWarnings("unchecked")
 	public EncounterType getEncounterType(String name) throws DAOException {
-		return HibernateUtil.findMetadataExactlyInLocalizedColumn(name, "name", EncounterType.class, sessionFactory);
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(EncounterType.class);
+		crit.add(Expression.eq("retired", false));
+		crit.add(Expression.sql("name = ?", LocalizedStringUtil.escapeDelimiter(name), Hibernate.STRING));
+		EncounterType encounterType = (EncounterType) crit.uniqueResult();
+		
+		if (encounterType == null) //search in those localized encounterTypes
+			encounterType = HibernateUtil.getUniqueMetadataByLocalizedColumn(name, "name", false, EncounterType.class,
+			    sessionFactory);
+		
+		return encounterType;
 	}
 	
 	/**
@@ -174,7 +184,15 @@ public class HibernateEncounterDAO implements EncounterDAO {
 		if (includeRetired == false)
 			criteria.add(Expression.eq("retired", false));
 		List<EncounterType> results = criteria.list();
-		Collections.sort(results, new MetadataNameComparator(true));
+		
+		// do java sorting on the return value of "getName()",
+		// because maybe both unlocalized and localized encounterTypes are in "results" list
+		Collections.sort(results, new Comparator<EncounterType>() {
+			@Override
+			public int compare(EncounterType left, EncounterType right) {
+				return left.getName().compareTo(right.getName());
+			}
+		});
 		return results;
 	}
 	
@@ -183,14 +201,34 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<EncounterType> findEncounterTypes(String name) throws DAOException {
-		// define query orders
-		LinkedHashMap<String, String> orders = new LinkedHashMap<String, String>();
-		orders.put("localizedName", "asc");
-		orders.put("retired", "asc");
+		List<EncounterType> results = null;
 		
-		return HibernateUtil.findMetadataInexactlyInLocalizedColumn(name, "name", "localizedName", EncounterType.class,
-		    orders,
-		    sessionFactory);
+		// firstly, search in those unlocalized encounterTypes
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(EncounterType.class);
+		crit.add(Expression.sql("UPPER(name) like ?", LocalizedStringUtil.escapeDelimiter(name).toUpperCase() + "%",
+		    Hibernate.STRING));
+		results = crit.addOrder(Order.asc("localizedName")).addOrder(Order.asc("retired")).list();
+		
+		// secondly, search in those localized encounterTypes
+		List<EncounterType> temp = HibernateUtil.findMetadatasFuzzilyByLocalizedColumn(name, "name", true, false,
+		    EncounterType.class, sessionFactory);
+		
+		// only when there exist localized encounterTypes which match the passed name,
+		// then do java sorting on the orderBy fields, this is for the quick speed of query.
+		if (!temp.isEmpty()) {
+			results.addAll(temp);
+			Collections.sort(results, new Comparator<EncounterType>() {
+				@Override
+				public int compare(EncounterType left, EncounterType right) {
+					int res = left.getName().compareTo(right.getName());
+					if (res == 0)
+						res = left.isRetired().compareTo(right.isRetired());
+					return res;
+				}
+			});
+		}
+		
+		return results;
 	}
 	
 	/**

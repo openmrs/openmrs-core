@@ -30,6 +30,7 @@ import java.util.Vector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
+import org.hibernate.Hibernate;
 import org.hibernate.NonUniqueObjectException;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
@@ -65,6 +66,7 @@ import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ConceptDAO;
 import org.openmrs.api.db.DAOException;
+import org.openmrs.util.LocalizedStringUtil;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
@@ -449,12 +451,20 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getConceptClasses(java.lang.String)
 	 */
+	@SuppressWarnings("unchecked")
 	public List<ConceptClass> getConceptClasses(String name) throws DAOException {
 		List<ConceptClass> ccList = new ArrayList<ConceptClass>();
-		ConceptClass cc = HibernateUtil.findMetadataExactlyInLocalizedColumn(name, "name", ConceptClass.class,
-		    sessionFactory);
-		if (cc != null)
-			ccList.add(cc);
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(ConceptClass.class);
+		if (name != null) {
+			// firstly, search in those conceptClasses which haven't been localized
+			crit.add(Expression.sql("name = ?", LocalizedStringUtil.escapeDelimiter(name), Hibernate.STRING));
+			ccList = crit.list();
+			
+			// secondly, search in those conceptClasses which have been localized
+			ccList.addAll(HibernateUtil.findMetadatasExactlyByLocalizedColumn(name, "name", true, ConceptClass.class,
+			    sessionFactory));
+		}
+		
 		return ccList;
 	}
 	

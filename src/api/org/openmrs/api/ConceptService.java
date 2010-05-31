@@ -591,9 +591,6 @@ public interface ConceptService extends OpenmrsService {
 	 * @param name
 	 * @return ConceptClass matching the given name
 	 * @throws APIException
-	 * @should get concept class if exist by exactly comparison
-	 * @should get concept class matching user current locale if exist
-	 * @should get the first found concept class if no record matching user current locale
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPT_CLASSES)
