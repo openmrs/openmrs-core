@@ -1245,9 +1245,14 @@
 		<name>button2</name>
 		<required>true</required>
 		<rtexprvalue>false</rtexprvalue>
-	</attribute>
+	</attribute>	
 	<attribute>
 		<name>suppress</name>
+		<required>false</required>
+		<rtexprvalue>false</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>suppressMessageCode</name>
 		<required>false</required>
 		<rtexprvalue>false</rtexprvalue>
 	</attribute>

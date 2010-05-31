@@ -8,11 +8,12 @@
 <openmrs:htmlInclude file="/scripts/jquery/dataTables/js/jquery.dataTables.min.js" />
 <openmrs:htmlInclude file="/scripts/jquery-ui/js/jquery-ui-1.7.2.custom.min.js" />
 <openmrs:htmlInclude file="/scripts/jquery-ui/css/redmond/jquery-ui-1.7.2.custom.css" />
-<!--<openmrs:htmlInclude file="/scripts/jconfirm/js/jquery.js" />-->
+<openmrs:htmlInclude file="/dwr/util.js" />
+<openmrs:htmlInclude file="/dwr/interface/DWRUserService.js" />
 <openmrs:htmlInclude file="/scripts/jconfirm/js/jconfirm.js" />
 <openmrs:htmlInclude file="/scripts/jconfirm/css/jconfirm.css" />
-<openmrs:confirmDialog id="Restart_Confirm" messageCode="Module.restartConfirmation" button1="Module.yes" button2="Module.no" />
-<openmrs:confirmDialog id="Unload_Confirm" messageCode="Module.unloadWarning" button1="Module.yes" button2="Module.no" />
+<openmrs:confirmDialog id="Restart_Confirm" messageCode="Module.restartConfirmation" button1="Module.yes" button2="Module.no" suppress="moduleadmin.modulerestart" suppressMessageCode="Module.dontShowMessage" />
+<openmrs:confirmDialog id="Unload_Confirm" messageCode="Module.unloadWarning" button1="Module.yes" button2="Module.no" suppress="moduleadmin.moduleunload" suppressMessageCode="Module.dontShowMessage" />
 <script type="text/javascript">
 	var oTable;
 	
@@ -91,10 +92,16 @@
 		return false;
 	}
 	
-	function confirmUnload(id){
+	//Javascript Function to show Unload Confirmation 
+	function confirmUnload(id, unloadId){		
+		var moduleId = unloadId.substring(6); // strip 'unload'		
+		var formId = '#form'+moduleId;
 		jConfirm.confirm(id, 
-		function(){
-			$j('#moduleActionForm').submit();
+		function(){			
+			/*var actionInput = formId+' input[name=action]';
+			alert(actionInput);
+			$j(actionInput).val('unload');*/					
+			$j(formId).submit();			
 		},
 		function(){
 		});
@@ -204,7 +211,8 @@
 				<tbody>
 	</c:if>
 			
-				<form id="moduleActionForm" method="post">
+				<form id="form${module.moduleId}" method="post">					
+					<input type="hidden" name="action" value="unload" />
 					<input type="hidden" name="moduleId" value="${module.moduleId}" />
 					<tr class='${varStatus.index % 2 == 0 ? "oddRow" : "evenRow" }' id="${module.moduleId}">
 						<c:choose>
@@ -219,7 +227,7 @@
 										</c:otherwise>
 									</c:choose>
 								</td>
-								<td valign="top"><input type="image" src="${pageContext.request.contextPath}/images/trash.gif" name="unload" onclick="return confirmUnload('Unload_Confirm');" title="<spring:message code="Module.unload.help"/>" title="<spring:message code="Module.unload"/>" alt="<spring:message code="Module.unload"/>" /></td>
+								<td valign="top"><input type="image" src="${pageContext.request.contextPath}/images/trash.gif" name="unload${module.moduleId}" onclick="return confirmUnload('Unload_Confirm',this.name);" title="<spring:message code="Module.unload.help"/>" title="<spring:message code="Module.unload"/>" alt="<spring:message code="Module.unload"/>" /></td>
 							</c:when>
 							<c:otherwise>
 								<c:choose>

@@ -158,14 +158,18 @@ public class DWRUserService {
 	 * @param propertyName User property name
 	 * @param propertyValue User property value
 	 */
-	public void saveUserPropertyForCurrentUser(String propertyName, String propertyValue) {
-		UserService userService = Context.getUserService();
+	public String saveUserPropertyForCurrentUser(String propertyName, String propertyValue) {
+		try {
+			User currentUser = Context.getAuthenticatedUser();
+			
+			Context.getUserService().setUserProperty(currentUser, propertyName, propertyValue);
+		}
+		catch (Throwable t) {
+			log.warn("Unable to save user property", t);
+		}
 		
-		User currentUser = Context.getAuthenticatedUser();
-
-		User user = userService.getUser(currentUser.getUserId());
-
-		userService.setUserProperty(user, propertyName, propertyValue);
+		//Just a Dummy Return to the Client
+		return "Success";
 	}
 
 	/**

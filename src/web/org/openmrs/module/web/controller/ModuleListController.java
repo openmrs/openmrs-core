@@ -312,7 +312,7 @@ public class ModuleListController extends SimpleFormController {
 			result = user.getUserProperty(key);
 		}
 		catch (Throwable t) {
-			log.warn("Unable to get global property", t);
+			log.warn("Unable to get user property", t);
 		}
 		return result;
 	}
@@ -324,13 +324,13 @@ public class ModuleListController extends SimpleFormController {
 			UserService us = Context.getUserService();
 			
 			User user = us.getUser(currentUser.getUserId());
-			
+
 			String key = OpenmrsConstants.USER_PROPERTY_SUPPRESS_DIALOG + "." + moduleId + "." + dialogkey;
 			
 			us.setUserProperty(user, key, value);
 		}
 		catch (Throwable t) {
-			log.warn("Unable to save global property", t);
+			log.warn("Unable to save user property", t);
 		}
 	}
 }

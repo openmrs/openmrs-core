@@ -31,6 +31,16 @@ public class ConfirmDialogWidgetTag extends TagSupport {
 	private static final long serialVersionUID = 122321211L;
 
 	private static final Log log = LogFactory.getLog(ConfirmDialogWidgetTag.class);
+	
+	private final String DEFAULT_AFFIRM = "Yes";
+	
+	private final String DEFAULT_NEGATE = "No";
+	
+	private final String DEFAULT_TITLE = "Confirmation";
+	
+	private final String DEFAULT_MESSAGE = "Message";
+	
+	private final String DEFAULT_SUPPRESS_MESSAGE = "Don't show this message again";
 
 	private String id;
 	
@@ -41,6 +51,8 @@ public class ConfirmDialogWidgetTag extends TagSupport {
 	private String button1;
 	
 	private String button2;
+	
+	private String suppressMessageCode;
 	
 	private String suppress;
 
@@ -56,25 +68,45 @@ public class ConfirmDialogWidgetTag extends TagSupport {
 
 		User user = userService.getUser(currentUser.getUserId());
 		
-		String suppressKey = OpenmrsConstants.USER_PROPERTY_SUPPRESS_DIALOG + "." + this.suppress;
-		String suppress = user
-.getUserProperty(suppressKey, "false");
+		String suppressKey = (this.suppress != null ? OpenmrsConstants.USER_PROPERTY_SUPPRESS_DIALOG + "." + this.suppress
+		        : "NA");
+
+		String suppress = user.getUserProperty(suppressKey, "false");
+		
+		String message = messageSourceService.getMessage(messageCode);
+		
+		String affirm = messageSourceService.getMessage(button1);
+		
+		String negate = messageSourceService.getMessage(button2);
+		
+		String suppressMessage = messageSourceService.getMessage(this.suppressMessageCode);
 		
 		sb.append("<div id=\""+id+"\" class=\"jConfirm_Window\">");
 		sb.append("<div id=\"jConfirm_Box\">");
-		sb.append("<div class=\"jConfirm_Header\"><span>"+(titleCode == null ? "Confirmation" : messageSourceService.getMessage(titleCode))+"</span><a href=\"#\" id=\"jConfirm_Close\">x</a></div>");
-		sb.append("<div id=\"jConfirm_Message\">"+messageSourceService.getMessage(messageCode)+"</div>");
+		sb.append("<div class=\"jConfirm_Header\"><span>"
+		        + (titleCode == null ? DEFAULT_TITLE : messageSourceService.getMessage(titleCode))
+		        + "</span><a href=\"#\" id=\"jConfirm_Close\">x</a></div>");
+		
+		sb.append("<div id=\"jConfirm_Message\">"+( message == null ? DEFAULT_MESSAGE : message )+"</div>");
 		sb.append("<input type=\"hidden\" id=\"suppress\" value=\"" + suppress + "\" />");
 		sb.append("<input type=\"hidden\" id=\"suppress_key\" value=\"" + suppressKey + "\" />");
-		sb.append("<div id=\"jConfirm_Suppress\"><input type=\"checkbox\" name=\"suppress_message\" value=\"suppressed\"/>"+messageSourceService.getMessage("Module.dontShowMessage")+"</div>");
+		sb.append("<div id=\"jConfirm_Suppress\">");
+		if (!"NA".equals(suppressKey)) { //Don't show suppress message if no suppress key is supplied
+			sb.append("<input type=\"checkbox\" name=\"suppress_message\" />"
+			        + (suppressMessage == null ? DEFAULT_SUPPRESS_MESSAGE : suppressMessage));
+		}else{
+			sb.append("<br>"); //Just to have a balanced confirmation dialog
+		}
+		sb.append("</div>");
 		sb.append("<div id=\"jConfirm_Control\">");
-		sb.append("<input type=\"button\" class=\"jConfirm_Button\" id=\"jConfirm_Affirm\" value=\""+messageSourceService.getMessage(button1)+"\" />");
-		sb.append("<input type=\"button\" class=\"jConfirm_Button\" id=\"jConfirm_Negate\" value=\""+messageSourceService.getMessage(button2)+"\" />");
+		sb.append("<input type=\"button\" class=\"jConfirm_Button\" id=\"jConfirm_Affirm\" value=\""
+		        + (affirm == null ? DEFAULT_AFFIRM : affirm) + "\" />");
+		sb.append("<input type=\"button\" class=\"jConfirm_Button\" id=\"jConfirm_Negate\" value=\""
+		        + (negate == null ? DEFAULT_NEGATE : negate) + "\" />");
 		sb.append("</div>");
 		sb.append("</div>");
 		sb.append("</div>");
 		
-
 		try {
 			JspWriter out = pageContext.getOut();
 			out.write(sb.toString());
@@ -171,5 +203,20 @@ public class ConfirmDialogWidgetTag extends TagSupport {
 	public void setTitleCode(String titleCode) {
 		this.titleCode = titleCode;
 	}
+	
+	/**
+	 * @return the suppressMessageCode
+	 */
+	public String getSuppressMessageCode() {
+		return suppressMessageCode;
+	}
+	
+	/**
+	 * @param suppressMessageCode the suppressMessageCode to set
+	 */
+	public void setSuppressMessageCode(String suppressMessage) {
+		this.suppressMessageCode = suppressMessage;
+	}
 
+	
 }
