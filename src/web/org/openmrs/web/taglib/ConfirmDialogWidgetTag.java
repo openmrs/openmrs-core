@@ -32,15 +32,15 @@ public class ConfirmDialogWidgetTag extends TagSupport {
 
 	private static final Log log = LogFactory.getLog(ConfirmDialogWidgetTag.class);
 	
-	private final String DEFAULT_AFFIRM = "Yes";
+	private final String DEFAULT_AFFIRM = "OK";
 	
-	private final String DEFAULT_NEGATE = "No";
+	private final String DEFAULT_NEGATE = "Cancel";
 	
 	private final String DEFAULT_TITLE = "Confirmation";
 	
-	private final String DEFAULT_MESSAGE = "Message";
+	private final String DEFAULT_MESSAGE = "Are you sure?";
 	
-	private final String DEFAULT_SUPPRESS_MESSAGE = "Don't show this message again";
+	private final String DEFAULT_SUPPRESS_MESSAGE = "Do not show this message again";
 
 	private String id;
 	
@@ -81,7 +81,7 @@ public class ConfirmDialogWidgetTag extends TagSupport {
 		
 		String suppressMessage = messageSourceService.getMessage(this.suppressMessageCode);
 		
-		sb.append("<div id=\""+id+"\" class=\"jConfirm_Window\">");
+		sb.append("<div style=\"display:none\" id=\"" + id + "\" class=\"jConfirm_Window\">");
 		sb.append("<div id=\"jConfirm_Box\">");
 		sb.append("<div class=\"jConfirm_Header\"><span>"
 		        + (titleCode == null ? DEFAULT_TITLE : messageSourceService.getMessage(titleCode))

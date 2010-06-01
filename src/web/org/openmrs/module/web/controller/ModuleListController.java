@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -98,8 +99,7 @@ public class ModuleListController extends SimpleFormController {
 		if ("restartModules".equals(action)) { // Action Restart Modules
 			try {
 				WebModuleUtil.restartModules(getServletContext());
-			}
-			catch (ModuleException e) {
+			}catch (ModuleException e) {
 				log.warn("unable to complete restart");
 				error = e.getMessage();
 			}
@@ -137,7 +137,7 @@ public class ModuleListController extends SimpleFormController {
 							if (existingModule != null) {
 								updateModule = true;
 
-								String dntShowUpgConf = getConfirmationAllowedForCurrentUser("moduleadmin", "moduleupgrade");
+								String dntShowUpgConf = getConfirmationAllowedForCurrentUser("moduleadmin.moduleUpgrade");
 								
 								if (dntShowUpgConf == null || !Boolean.parseBoolean(dntShowUpgConf)) {
 									// Show upgrade confirmation in the next page refresh
@@ -193,8 +193,25 @@ public class ModuleListController extends SimpleFormController {
 				error = msa.getMessage("Module.disallowAdministration",
 				    new String[] { ModuleConstants.RUNTIMEPROPERTY_ALLOW_ADMIN });
 			}
-
-			ModuleFactory.queueModuleAction(moduleId, ModuleAction.PENDING_UPDATE);
+			Module mod = ModuleFactory.getModuleById(moduleId);
+			try {
+				if(mod.getDownloadURL() != null){
+					URL url = new URL(mod.getDownloadURL());
+					InputStream inputStream = ModuleUtil.getURLStream(url);
+					Module tempModule = new ModuleFileParser(inputStream).parse();
+					String moduleName = url.getPath().substring(url.getPath().lastIndexOf("/") + 1);
+					ModuleFactory.upgradeModule(tempModule, moduleName);
+					mod.setDownloadURL(null);
+				}
+			}
+			catch (IOException e) {
+				log.warn("unable to download from url " + mod.getDownloadURL());
+				if (e instanceof UnknownHostException) {
+					error = msa.getMessage("Module.noWWWAvailable");
+				} else {
+					error = e.getMessage();
+				}
+			}
 		} else if (!moduleId.equals("")) { // A module related action
 			if (!ModuleUtil.allowAdmin()) {
 				error = msa.getMessage("Module.disallowAdministration",
@@ -225,7 +242,7 @@ public class ModuleListController extends SimpleFormController {
 						ModuleFactory.upgradeModule(tmpModule, filename);
 					}
 					if (dntShowUpgConf) { //If user selected not to show upgrade confirm message
-						saveConfirmationAllowedForCurrentUser("moduleadmin", "moduleupgrade", String.valueOf(dntShowUpgConf));
+						saveConfirmationAllowedForCurrentUser("moduleadmin.moduleUpgrade", String.valueOf(dntShowUpgConf));
 					}
 					//These attributes are no longer needed
 					httpSession.removeAttribute("module");
@@ -239,7 +256,13 @@ public class ModuleListController extends SimpleFormController {
 					httpSession.removeAttribute("showUpgradeConfirm");
 				}
 			} else {
-				ModuleUtil.checkForModuleUpdates();
+				try {
+					ModuleUtil.checkForModuleUpdates();
+				}
+				catch (UnknownHostException e) {
+					log.warn("unable to connect to repostory");
+					error = msa.getMessage("Module.noWWWAvailable");
+				}
 			}
 		}
 		
@@ -298,7 +321,7 @@ public class ModuleListController extends SimpleFormController {
 		return map;
 	}
 	
-	private String getConfirmationAllowedForCurrentUser(String moduleId, String dialogKey) {
+	private String getConfirmationAllowedForCurrentUser(String property) {
 		String result = null;
 		try{
 			User currentUser = Context.getAuthenticatedUser();
@@ -307,7 +330,7 @@ public class ModuleListController extends SimpleFormController {
 
 			User user = us.getUser(currentUser.getUserId());
 
-			String key = OpenmrsConstants.USER_PROPERTY_SUPPRESS_DIALOG + "." + moduleId + "." + dialogKey;
+			String key = OpenmrsConstants.USER_PROPERTY_SUPPRESS_DIALOG + "." + property;
 			
 			result = user.getUserProperty(key);
 		}
@@ -317,7 +340,7 @@ public class ModuleListController extends SimpleFormController {
 		return result;
 	}
 	
-	private void saveConfirmationAllowedForCurrentUser(String moduleId, String dialogkey, String value) {
+	private void saveConfirmationAllowedForCurrentUser(String property, String value) {
 		try {
 			User currentUser = Context.getAuthenticatedUser();
 			
@@ -325,7 +348,7 @@ public class ModuleListController extends SimpleFormController {
 			
 			User user = us.getUser(currentUser.getUserId());
 
-			String key = OpenmrsConstants.USER_PROPERTY_SUPPRESS_DIALOG + "." + moduleId + "." + dialogkey;
+			String key = OpenmrsConstants.USER_PROPERTY_SUPPRESS_DIALOG + "." + property;
 			
 			us.setUserProperty(user, key, value);
 		}

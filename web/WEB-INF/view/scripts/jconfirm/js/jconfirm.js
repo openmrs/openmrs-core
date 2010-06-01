@@ -9,7 +9,7 @@ var jConfirm = new function(){
 	this.id;
 	this.actioned;
 		
-	this.confirm = function(id,callback_affirm,callback_negate){
+	this.dialog = function(id,callback_affirm,callback_negate){
 		this.show(id,callback_affirm,callback_negate);		
 	}
 	
@@ -17,29 +17,34 @@ var jConfirm = new function(){
 		this.suppress = false;
 		this.overlay = '';			
 	};
+	
+	this.invokeCallback = function(callback){
+		if(callback && !this.actioned){
+			callback();
+			this.actioned = true;
+		}
+	}
 
 	this.close = function(callback){		
 		$j(this.overlay).hide();
 		$j('.jConfirm_Window').hide();		
-		var suppressKey = $j(this.id+' #suppress_key').val();
+		var suppressKey = $j(this.id+' #suppress_key').val();		
 		if(suppressKey != 'NA'){
-			var dontShow = $j(this.id+' input[name=suppress_message]').is(':checked');				
-			$j(this.id+' #suppress').val(dontShow);
-			try{
-				DWRUserService.saveUserPropertyForCurrentUser(suppressKey, dontShow, function(data){					
-					if(!this.actioned && callback){
-						callback();
-						this.actioned = true;
-					}
-				});
-			}catch(e){
-				alert(e);
-			} //Skip	
+			var dontShow = $j(this.id+' input[name=suppress_message]').is(':checked');			
+			if(this.suppress != dontShow){ //If existing suppress value and dontShow value not same				
+				$j(this.id+' #suppress').val(dontShow);
+				try{
+					DWRUserService.saveUserPropertyForCurrentUser(suppressKey, dontShow, function(data){					
+						jConfirm.invokeCallback(callback);
+					});
+				}catch(e){} //Skip
+			}else{ 
+				this.invokeCallback(callback);
+			}			
 		}else{
-			if(callback){
-				callback();
-			}
+			this.invokeCallback(callback);
 		}
+		this.suppress = '';
 	};
 	
 	this.show = function(id,callback_affirm,callback_negate){
@@ -47,11 +52,11 @@ var jConfirm = new function(){
 	
 		this.overlay = '#Overlay';
 					
-		this.suppress = $j(id+' #suppress').val();
+		this.suppress = $j(id+' #suppress').val() == 'true';	
 		
 		this.actioned = false;	
 		
-		if(this.suppress == 'false'){		
+		if(this.suppress == false){		
 					
 			//Set the Overlay to the whole screen
 			$j(this.overlay).css({'width':$j(document).width(),'height':$j(document).height()});  
@@ -87,9 +92,7 @@ var jConfirm = new function(){
 			this.id = id;
 			
 		}else{			
-			if(callback_affirm){
-				callback_affirm();
-			}			
+			this.invokeCallback(callback_affirm);			
 		}
 	}	
 }

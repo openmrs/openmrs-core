@@ -868,11 +868,11 @@ public class WebModuleUtil {
 					stopModule(mod, servletContext, true);
 					//Unload without deleting the file because file is already deleted
 					ModuleFactory.getLoadedModulesMap().remove(mid);
-
+					
 					Module newModule = ModuleFactory.loadModule(newModuleFile);
 					ModuleFactory.startModule(newModule);
 					startModule(newModule, servletContext, true);
-
+					
 					if (ModuleFactory.isModuleStarted(newModule)) {
 						for (Module dependent : dependentModules) {
 							ModuleFactory.startModule(dependent);
@@ -880,16 +880,9 @@ public class WebModuleUtil {
 						}
 					}
 					break;
-				case PENDING_UPDATE:
-					if (mod.getDownloadURL() != null) {
-						ModuleFactory.stopModule(mod);
-						stopModule(mod, servletContext, true);
-						Module updatedModule = ModuleFactory.updateModule(mod);
-						startModule(updatedModule, servletContext, true);
-					}
-					break;
 			}
 		}
+
 		//Restart Spring Context only if any pending actions were performed only
 		if (performedActions) {
 			WebModuleUtil.refreshWAC(servletContext, false, null);

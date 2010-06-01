@@ -11,9 +11,9 @@
 <openmrs:htmlInclude file="/dwr/util.js" />
 <openmrs:htmlInclude file="/dwr/interface/DWRUserService.js" />
 <openmrs:htmlInclude file="/scripts/jconfirm/js/jconfirm.js" />
-<openmrs:htmlInclude file="/scripts/jconfirm/css/jconfirm.css" />
-<openmrs:confirmDialog id="Restart_Confirm" messageCode="Module.restartConfirmation" button1="Module.yes" button2="Module.no" suppress="moduleadmin.modulerestart" suppressMessageCode="Module.dontShowMessage" />
-<openmrs:confirmDialog id="Unload_Confirm" messageCode="Module.unloadWarning" button1="Module.yes" button2="Module.no" suppress="moduleadmin.moduleunload" suppressMessageCode="Module.dontShowMessage" />
+<openmrs:htmlInclude file="/scripts/jconfirm/css/jconfirm.css" /> 
+<openmrs:confirmDialog id="Restart_Confirm" messageCode="Module.restartConfirmation" button1="general.yes" button2="general.no" suppress="moduleadmin.moduleRestart" suppressMessageCode="general.dontShowMessage" />
+<openmrs:confirmDialog id="Unload_Confirm" messageCode="Module.unloadWarning" button1="general.yes" button2="general.no" suppress="moduleadmin.moduleUnload" suppressMessageCode="general.dontShowMessage" />
 <script type="text/javascript">
 	var oTable;
 	
@@ -28,6 +28,12 @@
 		$j('#addUpgradeButton').click(function() {
 			$j('#addUpgradePopup').dialog('open');
 		});		
+		
+		$j('#moduleAddForm input[name=moduleFile]').change(function(){
+			var fileName = $j(this).val();
+			var disabled = fileName == '' ? 'disabled' : '';			
+			$j('#moduleAddForm input[name=uploadFile]').attr('disabled',disabled);
+		});
 
 		$j('.errorDetailsButton').click(function() {
 			var detailsNum = $j(this).attr('id').substring(18); // strip 'errorDetailsButton'
@@ -69,20 +75,10 @@
 				        	}
 		});
 	});
-	
-	//Javascript function to validate Upload
-	function validateUpload(upload){
-		if(upload.value == ''){
-			alert('<spring:message code="Module.uploadWarning"/>');
-			return false;
-		}else{
-			return true;
-		}
-	}
-	
+			
 	//Javascript Function to show Restart Confirmation 
 	function confirmRestart(id){
-		jConfirm.confirm(id, 
+		jConfirm.dialog(id, 
 		function(){
 			$j('#openmrsModulesForm').submit();
 		},
@@ -96,11 +92,12 @@
 	function confirmUnload(id, unloadId){		
 		var moduleId = unloadId.substring(6); // strip 'unload'		
 		var formId = '#form'+moduleId;
-		jConfirm.confirm(id, 
+		jConfirm.dialog(id, 
 		function(){			
 			/*var actionInput = formId+' input[name=action]';
 			alert(actionInput);
-			$j(actionInput).val('unload');*/					
+			$j(actionInput).val('unload');*/	
+			$j(formId).append("<input type='hidden' name='action' value='unload' />");				
 			$j(formId).submit();			
 		},
 		function(){
@@ -131,9 +128,9 @@
 		<form name="upgradeConfirmForm" method="post">
 			<div style="margin: auto;width: 70%">
 				<div style="clear:both">&nbsp;</div>
-				<spring:message code="Module.upgradeWarning"/> <input type="submit" onclick="document.upgradeConfirmForm.action.value = 'moduleupgrade.yes';return true" value="<spring:message code="Module.yes"/>"/> <input type="submit" onclick="document.upgradeConfirmForm.action.value = 'moduleupgrade.no';return true" value="<spring:message code="Module.no"/>"/>
+				<spring:message code="Module.upgradeWarning"/> <input type="submit" onclick="document.upgradeConfirmForm.action.value = 'moduleupgrade.yes';return true" value="<spring:message code="general.yes"/>"/> <input type="submit" onclick="document.upgradeConfirmForm.action.value = 'moduleupgrade.no';return true" value="<spring:message code="general.no"/>"/>
 				<br>
-				<p style="margin: auto;width: 70%"><input type="checkbox" name="dontShowMessage" value="true"> <spring:message code="Module.dontShowMessage"/></p>			
+				<p style="margin: auto;width: 70%"><input type="checkbox" name="dontShowMessage" value="true"> <spring:message code="general.dontShowMessage"/></p>			
 				<input type="hidden" name="action" value="confirmation"/>
 				<div style="clear:both">&nbsp;</div>
 			</div>
@@ -150,10 +147,10 @@
 				<div id="addUpgradePopup">
 					<b class="boxHeader"><spring:message code="Module.addOrUpgrade"/></b>
 					<div class="box">
-						<form id="moduleAddForm" action="module.list" onSubmit="return validateUpload(this.moduleFile)" method="post" enctype="multipart/form-data">
+						<form id="moduleAddForm" action="module.list" method="post" enctype="multipart/form-data">
 							<input type="file" name="moduleFile" size="40" <c:if test="${allowAdmin!='true'}">disabled="disabled"</c:if> />
 							<input type="hidden" name="action" value="upload"/>
-							<input type="submit" value='<spring:message code="Module.upload"/>'/>
+							<input type="submit" name="uploadFile" disabled="true" value='<spring:message code="Module.upload"/>'/>
 						</form>
 					</div>
 					<br/>
@@ -212,7 +209,6 @@
 	</c:if>
 			
 				<form id="form${module.moduleId}" method="post">					
-					<input type="hidden" name="action" value="unload" />
 					<input type="hidden" name="moduleId" value="${module.moduleId}" />
 					<tr class='${varStatus.index % 2 == 0 ? "oddRow" : "evenRow" }' id="${module.moduleId}">
 						<c:choose>
@@ -227,7 +223,7 @@
 										</c:otherwise>
 									</c:choose>
 								</td>
-								<td valign="top"><input type="image" src="${pageContext.request.contextPath}/images/trash.gif" name="unload${module.moduleId}" onclick="return confirmUnload('Unload_Confirm',this.name);" title="<spring:message code="Module.unload.help"/>" title="<spring:message code="Module.unload"/>" alt="<spring:message code="Module.unload"/>" /></td>
+								<td valign="top"><input type="image" src="${pageContext.request.contextPath}/images/trash.gif" name="unload" id="unload${module.moduleId}" onclick="return confirmUnload('Unload_Confirm',this.id);" title="<spring:message code="Module.unload.help"/>" title="<spring:message code="Module.unload"/>" alt="<spring:message code="Module.unload"/>" /></td>
 							</c:when>
 							<c:otherwise>
 								<c:choose>

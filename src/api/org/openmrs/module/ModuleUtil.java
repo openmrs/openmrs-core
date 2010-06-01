@@ -23,6 +23,7 @@ import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -392,7 +393,7 @@ public class ModuleUtil {
 		// try to load the repository folder straight away.
 		File folder = new File(folderName);
 		
-		// if the property wasn't a full path already, assume it was intended to be a folder in the 
+		// if the property wasn't a full path already, assume it was intended to be a folder in the
 		// application directory
 		if (!folder.exists()) {
 			folder = new File(OpenmrsUtil.getApplicationDataDirectory(), folderName);
@@ -435,7 +436,7 @@ public class ModuleUtil {
 	}
 	
 	/**
-	 * Expand the given <code>fileToExpand</code> jar to the <code>tmpModuleFile<code> directory 
+	 * Expand the given <code>fileToExpand</code> jar to the <code>tmpModuleFile<code> directory
 	 * 
 	 * If <code>name</code> is null, the entire jar is expanded. If<code>name</code> is not null,
 	 * then only that path/file is expanded.
@@ -539,10 +540,11 @@ public class ModuleUtil {
 	 * Downloads the contents of a URL and copies them to a string (Borrowed from oreilly)
 	 * 
 	 * @param url
+	 * @throws UnknownHostException
 	 * @return InputStream of contents
 	 * @should return a valid input stream for old module urls
 	 */
-	public static InputStream getURLStream(URL url) {
+	public static InputStream getURLStream(URL url) throws UnknownHostException {
 		InputStream in = null;
 		try {
 			URLConnection uc = url.openConnection();
@@ -556,6 +558,9 @@ public class ModuleUtil {
 			in = uc.getInputStream();
 		}
 		catch (IOException io) {
+			if (io instanceof UnknownHostException) {
+				throw new UnknownHostException(io.getMessage());
+			}
 			log.warn("io while reading: " + url, io);
 		}
 		
@@ -566,12 +571,13 @@ public class ModuleUtil {
 	 * Downloads the contents of a URL and copies them to a string (Borrowed from oreilly)
 	 * 
 	 * @param url
+	 * @throws UnknownHostException
 	 * @return String contents of the URL
 	 * @should return an update rdf page for old https dev urls
 	 * @should return an update rdf page for old https module urls
 	 * @should return an update rdf page for module urls
 	 */
-	public static String getURL(URL url) {
+	public static String getURL(URL url) throws UnknownHostException {
 		InputStream in = null;
 		OutputStream out = null;
 		String output = "";
@@ -585,6 +591,9 @@ public class ModuleUtil {
 			output = out.toString();
 		}
 		catch (IOException io) {
+			if (io instanceof UnknownHostException) {
+				throw new UnknownHostException(io.getMessage());
+			}
 			log.warn("io while reading: " + url, io);
 		}
 		finally {
@@ -605,9 +614,9 @@ public class ModuleUtil {
 	 * Iterates over the modules and checks each update.rdf file for an update
 	 * 
 	 * @return True if an update was found for one of the modules, false if none were found
-	 * @throws ModuleException
+	 * @throws ModuleException, UnknownHostException
 	 */
-	public static Boolean checkForModuleUpdates() throws ModuleException {
+	public static Boolean checkForModuleUpdates() throws ModuleException, UnknownHostException {
 		
 		Boolean updateFound = false;
 		
@@ -627,7 +636,7 @@ public class ModuleUtil {
 					if (content.equals(""))
 						continue;
 					
-					// process and parse the contents 
+					// process and parse the contents
 					UpdateFileParser parser = new UpdateFileParser(content);
 					parser.parse();
 					
@@ -860,7 +869,7 @@ public class ModuleUtil {
 	 * path format, i.e. /ui/springmvc, not ui.springmvc) followed by a resource. Something like
 	 * the following:
 	 *   /ui/springmvc/css/ui.css
-	 *   
+	 * 
 	 * The first running module out of the following would be returned:
 	 *   ui.springmvc.css
 	 *   ui.springmvc

@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -69,7 +70,7 @@ public class ModuleFactory {
 	// maps to keep track of the memory and objects to free/close
 	protected static Map<Module, ModuleClassLoader> moduleClassLoaders = new WeakHashMap<Module, ModuleClassLoader>();
 	
-	protected static Map<String, ModuleAction> pendingModuleActions = new HashMap<String, ModuleAction>();	
+	protected static Map<String, ModuleAction> pendingModuleActions = new HashMap<String, ModuleAction>();
 
 	// the name of the file within a module file
 	private static final String MODULE_CHANGELOG_FILENAME = "liquibase.xml";
@@ -1139,8 +1140,9 @@ public class ModuleFactory {
 	 * module
 	 * 
 	 * @param mod
+	 * @throws ModuleException, UnknownHostException
 	 */
-	public static Module updateModule(Module mod) throws ModuleException {
+	public static Module updateModule(Module mod) throws ModuleException, UnknownHostException {
 		if (mod.getDownloadURL() == null) {
 			return mod;
 		}
@@ -1172,7 +1174,6 @@ public class ModuleFactory {
 			moduleFile.delete();
 			return mod;
 		}
-		
 	}
 	
 	/**
@@ -1267,13 +1268,6 @@ public class ModuleFactory {
 						boolean deleted = module.getFile().delete();
 						if (!deleted) {
 							module.getFile().deleteOnExit();
-						}
-						break;
-					case PENDING_UPDATE:
-						if (module.getDownloadURL() == null) {
-							String message = "module " + moduleId + " doesn't have a download url set";
-							log.warn(message);
-							throw new ModuleException(message);
 						}
 						break;
 					case PENDING_NONE:
