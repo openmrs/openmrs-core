@@ -107,7 +107,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	public void getConceptByName_shouldGetConceptByPartialName() throws Exception {
 		executeDataSet(INITIAL_CONCEPTS_XML);
 		
-		// substring of the name 
+		// substring of the name
 		String partialNameToFetch = "So";
 		
 		List<Concept> firstConceptsByPartialNameList = conceptService.getConceptsByName(partialNameToFetch);
@@ -179,7 +179,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		authenticate();
 		
 		// this tests saving a current concept as a newly changed conceptnumeric
-		// assumes there is already a concept in the database  
+		// assumes there is already a concept in the database
 		// with a concept id of #1
 		ConceptNumeric cn = new ConceptNumeric(1);
 		cn.setDatatype(new ConceptDatatype(1));
@@ -274,7 +274,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		// now count up the number of concepts the iterator returns
 		int iteratorCount = 0;
 		Iterator<Concept> iterator = Context.getConceptService().conceptIterator();
-		while (iterator.hasNext() && iteratorCount < numberofconcepts + 5) { // the lt check is in case of infinite loops 
+		while (iterator.hasNext() && iteratorCount < numberofconcepts + 5) { // the lt check is in case of infinite loops
 			iterator.next();
 			iteratorCount++;
 		}
@@ -1121,4 +1121,31 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Context.getAdministrationService().saveGlobalProperty(trueConceptGlobalProperty);
 		Context.getAdministrationService().saveGlobalProperty(falseConceptGlobalProperty);
 	}
+
+	/**
+     * @see {@link ConceptService#getConceptDatatypeByName(String)}
+     */
+    @Test
+    @Verifies(value = "should not return a fuzzy match on name", method = "getConceptDatatypeByName(String)")
+    public void getConceptDatatypeByName_shouldNotReturnAFuzzyMatchOnName() throws Exception {
+		executeDataSet(INITIAL_CONCEPTS_XML);
+		ConceptDatatype result = conceptService.getConceptDatatypeByName("Tex");
+		Assert.assertNull(result);
+    }
+
+	/**
+     * @see {@link ConceptService#getConceptDatatypeByName(String)}
+     */
+    @Test
+    @Verifies(value = "should return an exact match on name", method = "getConceptDatatypeByName(String)")
+    public void getConceptDatatypeByName_shouldReturnAnExactMatchOnName() throws Exception {
+		// given 
+		executeDataSet(INITIAL_CONCEPTS_XML);
+		
+		// when 
+		ConceptDatatype result = conceptService.getConceptDatatypeByName("Text");
+		
+		// then 
+		assertEquals("Text", result.getName());
+    }
 }
