@@ -444,6 +444,17 @@
          </java>
      </target>
 	
+	<target name="tomcat-start-jrebel" description="Start Tomcat with JRebel">
+		<echo message="Copying ${jrebel.config} to ${tomcat.home}/webapps/${webapp.name}/WEB-INF/classes" />
+		<copy todir="${tomcat.home}/webapps/${webapp.name}/WEB-INF/classes" failonerror="false" overwrite="true">
+			<fileset file="${jrebel.config}" />
+		</copy>
+		<echo message="Starting Tomcat denoted by the tomcat.home property" />
+		<java jar="${tomcat.home}/bin/bootstrap.jar" fork="true">
+			<jvmarg line='-Dcatalina.home="${tomcat.home}" -Xverify:none -javaagent:${jrebel.home}/jrebel.jar=org.openmrs.util.OpenmrsClassLoader,org.openmrs.module.ModuleClassLoader -Xmx512M -Xms128M -XX:PermSize=64M -XX:MaxPermSize=128m -XX:NewSize=64m -Xdebug -Xnoagent -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5000'/>
+		</java>
+     </target>
+	
 	<target name="arden-clean-grammar">
 		<delete>
 			<fileset dir="${build.dir}/org/openmrs/arden">
