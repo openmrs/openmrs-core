@@ -24,7 +24,7 @@ import org.openmrs.notification.Template;
 
 public class HibernateTemplateDAO implements TemplateDAO {
 	
-	protected final static Log log = LogFactory.getLog(HibernatePatientDAO.class);
+	private final static Log log = LogFactory.getLog(HibernateTemplateDAO.class);
 	
 	/**
 	 * Hibernate session factory
