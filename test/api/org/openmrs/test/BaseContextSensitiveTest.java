@@ -145,6 +145,21 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	}
 	
 	/**
+	 * Modules should extend {@link BaseModuleContextSensitiveTest}, not this class. If they extend
+	 * this class, then they won't work right when run in batches.
+	 * 
+	 * @throws Exception
+	 */
+	@Before
+	public void checkNotModule() throws Exception {
+		if (this.getClass().getPackage().toString().contains("org.openmrs.module.")
+		        && !(this instanceof BaseModuleContextSensitiveTest)) {
+			throw new RuntimeException(
+			        "Module unit test classes should extend BaseModuleContextSensitiveTest, not just BaseContextSensitiveTest");
+		}
+	}
+	
+	/**
 	 * Get the number of times this class has been loaded. This is a rough approx of how many tests
 	 * have been run so far. This can be used to determine if the test is being run in a standalone
 	 * context or if other tests have been run before.
@@ -178,7 +193,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		if (runtimeProperties == null)
 			runtimeProperties = TestUtil.getRuntimeProperties(getWebappName());
 		
-		// if we're using the in-memory hypersonic database, add those 
+		// if we're using the in-memory hypersonic database, add those
 		// connection properties here to override what is in the runtime
 		// properties
 		if (useInMemoryDatabase() == true) {
@@ -220,7 +235,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		}
 		catch (ContextAuthenticationException wrongCredentialsError) {
 			if (useInMemoryDatabase()) {
-				// if we get here the user is using some database other than the standard 
+				// if we get here the user is using some database other than the standard
 				// in-memory database, prompt the user for input
 				log.error("For some reason we couldn't auth as admin:test ?!", wrongCredentialsError);
 			}
@@ -278,7 +293,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	 * Utility method for obtaining username and password through Swing interface for tests. Any
 	 * tests extending the org.openmrs.BaseTest class may simply invoke this method by name.
 	 * Username and password are returned in a two-member String array. If the user aborts, null is
-	 * returned. <b> <em>Do not call for non-interactive tests, since this method will try to 
+	 * returned. <b> <em>Do not call for non-interactive tests, since this method will try to
 	 * render an interactive dialog box for authentication!</em></b>
 	 * 
 	 * @param message string to display above username field
@@ -324,7 +339,8 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		// JOptionPane for model dialog
 		TimerTask later = new TimerTask() {
 			
-			public void run() {
+			@Override
+            public void run() {
 				if (frame != null) {
 					// bring the dialog's window to the front
 					frame.toFront();
@@ -338,7 +354,8 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		// attention grabber for those people that aren't as observant
 		TimerTask laterStill = new TimerTask() {
 			
-			public void run() {
+			@Override
+            public void run() {
 				if (frame != null) {
 					frame.toFront(); // bring the dialog's window to the
 					// front
@@ -530,7 +547,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 			DatabaseConfig config = dbUnitConn.getConfig();
 			config.setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new HsqldbDataTypeFactory());
 			
-			// for the hsql database 
+			// for the hsql database
 			String sql = "SET REFERENTIAL_INTEGRITY FALSE";
 			PreparedStatement ps = connection.prepareStatement(sql);
 			ps.execute();
@@ -605,8 +622,8 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		// clear the (hibernate) session to make sure nothing is cached, etc
 		Context.clearSession();
 		
-		// needed because the authenticatedUser is the only object that sticks 
-		// around after tests and the clearSession call 
+		// needed because the authenticatedUser is the only object that sticks
+		// around after tests and the clearSession call
 		Context.refreshAuthenticatedUser();
 		
 	}
@@ -693,6 +710,5 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	public void skipBaseSetup() throws Exception {
 		skipBaseSetup = true;
 	}
-	
 	
 }
