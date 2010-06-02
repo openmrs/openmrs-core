@@ -51,8 +51,7 @@
 
 	</head>
 
-<body>
-	<div id="Overlay"></div>
+<body>	
 	<div id="pageBody">
 		<div id="userBar">
 			<openmrs:authentication>

@@ -105,6 +105,7 @@ public class ConfirmDialogWidgetTag extends TagSupport {
 		        + (negate == null ? DEFAULT_NEGATE : negate) + "\" />");
 		sb.append("</div>");
 		sb.append("</div>");
+		//sb.append("<div id=\"Overlay\" style=\"top: 0px;left: 0px\"></div>");
 		sb.append("</div>");
 		
 		try {

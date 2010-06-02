@@ -90,15 +90,12 @@
 	
 	//Javascript Function to show Unload Confirmation 
 	function confirmUnload(id, unloadId){		
-		var moduleId = unloadId.substring(6); // strip 'unload'		
-		var formId = '#form'+moduleId;
+		var index = unloadId.substring(6); // strip 'unload'		
+		var formId = '#controlform'+index;
 		jConfirm.dialog(id, 
 		function(){			
-			/*var actionInput = formId+' input[name=action]';
-			alert(actionInput);
-			$j(actionInput).val('unload');*/	
 			$j(formId).append("<input type='hidden' name='action' value='unload' />");				
-			$j(formId).submit();			
+			$j(formId).submit();				
 		},
 		function(){
 		});
@@ -208,7 +205,7 @@
 				<tbody>
 	</c:if>
 			
-				<form id="form${module.moduleId}" method="post">					
+				<form id="controlform${varStatus.index}" method="post">					
 					<input type="hidden" name="moduleId" value="${module.moduleId}" />
 					<tr class='${varStatus.index % 2 == 0 ? "oddRow" : "evenRow" }' id="${module.moduleId}">
 						<c:choose>
@@ -223,7 +220,7 @@
 										</c:otherwise>
 									</c:choose>
 								</td>
-								<td valign="top"><input type="image" src="${pageContext.request.contextPath}/images/trash.gif" name="unload" id="unload${module.moduleId}" onclick="return confirmUnload('Unload_Confirm',this.id);" title="<spring:message code="Module.unload.help"/>" title="<spring:message code="Module.unload"/>" alt="<spring:message code="Module.unload"/>" /></td>
+								<td valign="top"><input type="image" src="${pageContext.request.contextPath}/images/trash.gif" name="unload" id="unload${varStatus.index}" onclick="return confirmUnload('Unload_Confirm',this.id);" title="<spring:message code="Module.unload.help"/>" title="<spring:message code="Module.unload"/>" alt="<spring:message code="Module.unload"/>" /></td>
 							</c:when>
 							<c:otherwise>
 								<c:choose>

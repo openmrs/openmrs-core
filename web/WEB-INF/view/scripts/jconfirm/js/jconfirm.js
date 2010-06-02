@@ -44,6 +44,7 @@ var jConfirm = new function(){
 		}else{
 			this.invokeCallback(callback);
 		}
+		$j(this.overlay).remove(); 
 		this.suppress = '';
 	};
 	
@@ -51,6 +52,8 @@ var jConfirm = new function(){
 		id = '#'+id;
 	
 		this.overlay = '#Overlay';
+		
+		$j(document.body).append("<div id='Overlay'></div>");
 					
 		this.suppress = $j(id+' #suppress').val() == 'true';	
 		
@@ -62,8 +65,8 @@ var jConfirm = new function(){
 			$j(this.overlay).css({'width':$j(document).width(),'height':$j(document).height()});  
 	
 			//Transition of the Overlay
-			$j(this.overlay).fadeIn(1000);      
-			$j(this.overlay).fadeTo("slow",0.10);    
+			$j(this.overlay).fadeIn(500);		
+			$j(this.overlay).fadeTo("slow",0.5);	
 
 			//Get the window height and width  
 			var winH = $j(window).height();
@@ -72,8 +75,9 @@ var jConfirm = new function(){
 			//Set the confirmation window to center  
 			$j(id).css('top',  winH/2-$j(id).height()/2);  
 			$j(id).css('left', winW/2-$j(id).width()/2);		
-
-			$j(id).fadeIn(2000);	
+			
+			//Transition of the jConfirm
+			$j(id).fadeIn(500);	
 		
 			$j(id+' #jConfirm_Close').click(function() {
 				jConfirm.close();		

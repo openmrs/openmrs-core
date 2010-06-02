@@ -120,10 +120,21 @@ public class ModuleListController extends SimpleFormController {
 						if (downloadURL == null) {
 							throw new MalformedURLException("Couldn't download module because no url was provided");
 						}
-						String fileName = downloadURL.substring(downloadURL.lastIndexOf("/") + 1);
-						final URL url = new URL(downloadURL);
-						inputStream = ModuleUtil.getURLStream(url);
-						moduleFile = ModuleUtil.insertModuleFile(inputStream, fileName);
+						//This code and update code are similar these will be moved to one place
+						try {
+							String fileName = downloadURL.substring(downloadURL.lastIndexOf("/") + 1);
+							final URL url = new URL(downloadURL);
+							inputStream = ModuleUtil.getURLStream(url);
+							moduleFile = ModuleUtil.insertModuleFile(inputStream, fileName);
+						}
+						catch (IOException e) {
+							log.warn("unable to download from url " + downloadURL);
+							if (e instanceof UnknownHostException) {
+								error = msa.getMessage("Module.noWWWAvailable");
+							} else {
+								error = e.getMessage();
+							}
+						}
 					}
 					else if (request instanceof MultipartHttpServletRequest) {
 					
