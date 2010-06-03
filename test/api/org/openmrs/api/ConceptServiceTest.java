@@ -251,7 +251,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 * This test will fail if it takes more than 15 seconds to run. (Checks for an error with the
 	 * iterator looping forever) The @Timed annotation is used as an alternative to
 	 * "@Test(timeout=15000)" so that the Spring transactions work correctly. Junit has a "feature"
-	 * where it executes the befores/afters in a thread separate from the one that the actual test 
+	 * where it executes the befores/afters in a thread separate from the one that the actual test
 	 * ends up running in when timed.
 	 * 
 	 * @see {@link ConceptService#conceptIterator()}
@@ -407,42 +407,41 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		TestUtil.printOutTableContents(getConnection(), "concept_word");
 	}
 	
-	
 	/**
-	 * This test had to be added to ConceptServiceTest because ConceptTest does
-	 * not currently support context sensitive tests (and shouldn't need to).
-	 * 
-	 * TODO This test case passes here, but fails in the core reporting module.
-	 * TODO: determine whether we want to remove this test case
+	 * This test had to be added to ConceptServiceTest because ConceptTest does not currently
+	 * support context sensitive tests (and shouldn't need to). TODO This test case passes here, but
+	 * fails in the core reporting module. TODO: determine whether we want to remove this test case
 	 * 
 	 * @see {@link Concept#equals(Object)}
 	 */
 	@Test
 	@SkipBaseSetup
 	@Verifies(value = "should return true when comparing two identical concept numeric objects", method = "equals(Object)")
-	public void equals_shouldReturnTrueWhenComparingTwoIdenticalConceptNumericObjects()
-			throws Exception {
+	public void equals_shouldReturnTrueWhenComparingTwoIdenticalConceptNumericObjects() throws Exception {
 		initializeInMemoryDatabase();
 		
 		// TODO Cleanup - dataset has way more data than necessary
 		executeDataSet("org/openmrs/api/include/ConceptServiceTest-numerics.xml");
-
-		authenticate();		
-
-		Concept concept1 = Context.getConceptService().getConcept(new Integer(1016));
-		Assert.assertNotNull(concept1);
 		
-		Encounter encounter = Context.getEncounterService().getEncounter(new Integer(14943));
+		authenticate();
+		
+		Encounter encounter = Context.getEncounterService().getEncounter(14943);
 		Assert.assertNotNull(encounter);
 		Assert.assertNotNull(encounter.getObs());
 		
-		for (Obs obs : encounter.getObs()) { 
-			if (obs.getConcept().getConceptId() == concept1.getConceptId()) { 
-				Assert.assertTrue(obs.getConcept().equals(concept1));
-				Assert.assertTrue(concept1.equals(obs.getConcept()));
-			}
+		boolean testedsomething = false;
+		
+		for (Obs obs : encounter.getObs()) {
+			if (obs.getConcept().getConceptId().equals(1016)) {
+				testedsomething = true;
+				Concept concept = Context.getConceptService().getConcept(1016);
+				Assert.assertEquals(obs.getConcept(), concept);
+				Assert.assertEquals(concept, obs.getConcept());
 				
+			}
 		}
+		
+		Assert.assertEquals(true, testedsomething);
 	}
 	
 	/**
@@ -796,10 +795,10 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(cs.isRetired());
 		Assert.assertEquals("dummy reason for retirement", cs.getRetireReason());
 	}
-
+	
 	/**
-	 * @verifies {@link ConceptService#saveConcept(Concept)}
-	 * test = should create new concept in database
+	 * @verifies {@link ConceptService#saveConcept(Concept)} test = should create new concept in
+	 *           database
 	 */
 	@SkipBaseSetup
 	@Test
@@ -810,20 +809,19 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		authenticate();
 		
 		Concept conceptToAdd = new Concept();
-		assertFalse(conceptService.getAllConcepts().contains(conceptToAdd));		
+		assertFalse(conceptService.getAllConcepts().contains(conceptToAdd));
 		conceptService.saveConcept(conceptToAdd);
 		assertTrue(conceptService.getAllConcepts().contains(conceptToAdd));
 	}
-
+	
 	/**
-	 * @verifies {@link ConceptService#saveConcept(Concept)}
-	 * test = should update concept already existing in database
+	 * @verifies {@link ConceptService#saveConcept(Concept)} test = should update concept already
+	 *           existing in database
 	 */
 	@SkipBaseSetup
 	@Test
 	@Verifies(value = "should update concept already existing in database", method = "saveConcept(Concept)")
-	public void saveConcept_shouldUpdateConceptAlreadyExistingInDatabase()
-			throws Exception {
+	public void saveConcept_shouldUpdateConceptAlreadyExistingInDatabase() throws Exception {
 		initializeInMemoryDatabase();
 		executeDataSet(INITIAL_CONCEPTS_XML);
 		authenticate();
@@ -839,85 +837,78 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		// see if the value was updated in the database
 		assertTrue(conceptService.getConcept(2).isSet());
 	}
-
+	
 	/**
-	 * @verifies {@link ConceptService#getConceptSourceByName(String)}
-	 * test = should get ConceptSource with the given name
+	 * @verifies {@link ConceptService#getConceptSourceByName(String)} test = should get
+	 *           ConceptSource with the given name
 	 */
 	@Test
-	public void getConceptSourceByName_shouldGetConceptSourceWithTheGivenName()
-			throws Exception {
+	public void getConceptSourceByName_shouldGetConceptSourceWithTheGivenName() throws Exception {
 		ConceptSource conceptSource = conceptService.getConceptSourceByName("SNOMED CT");
 		assertEquals("Method did not retrieve ConceptSource by name", new Integer(2), conceptSource.getConceptSourceId());
 	}
-
+	
 	/**
-	 * @verifies {@link ConceptService#getConceptSourceByName(String)}
-	 * test = should return null if no ConceptSource with that name is found
+	 * @verifies {@link ConceptService#getConceptSourceByName(String)} test = should return null if
+	 *           no ConceptSource with that name is found
 	 */
 	@Test
-	public void getConceptSourceByName_shouldReturnNullIfNoConceptSourceWithThatNameIsFound()
-			throws Exception {
+	public void getConceptSourceByName_shouldReturnNullIfNoConceptSourceWithThatNameIsFound() throws Exception {
 		ConceptSource conceptSource = conceptService.getConceptSourceByName("Some invalid name");
-		assertNull("Method did not return null when no ConceptSource with that name is found",conceptSource);
+		assertNull("Method did not return null when no ConceptSource with that name is found", conceptSource);
 	}
-
+	
 	/**
-	 * @verifies {@link ConceptService#getConceptsByConceptSource(ConceptSource)}
-	 * test = should return a List of ConceptMaps if concept mappings found
+	 * @verifies {@link ConceptService#getConceptsByConceptSource(ConceptSource)} test = should
+	 *           return a List of ConceptMaps if concept mappings found
 	 */
 	@Test
-	public void getConceptsByConceptSource_shouldReturnAListOfConceptMapsIfConceptMappingsFound()
-			throws Exception {
-		List<ConceptMap> list = conceptService.getConceptsByConceptSource(conceptService.getConceptSourceByName("SNOMED CT"));
+	public void getConceptsByConceptSource_shouldReturnAListOfConceptMapsIfConceptMappingsFound() throws Exception {
+		List<ConceptMap> list = conceptService
+		        .getConceptsByConceptSource(conceptService.getConceptSourceByName("SNOMED CT"));
 		assertEquals(2, list.size());
 	}
-
+	
 	/**
-	 * @verifies {@link ConceptService#getConceptsByConceptSource(ConceptSource)}
-	 * test = should return empty List of ConceptMaps if none found
+	 * @verifies {@link ConceptService#getConceptsByConceptSource(ConceptSource)} test = should
+	 *           return empty List of ConceptMaps if none found
 	 */
 	@Test
-	public void getConceptsByConceptSource_shouldReturnEmptyListOfConceptMapsIfNoneFound()
-			throws Exception {
-		List<ConceptMap> list = conceptService.getConceptsByConceptSource(conceptService.getConceptSourceByName("Some invalid name"));
+	public void getConceptsByConceptSource_shouldReturnEmptyListOfConceptMapsIfNoneFound() throws Exception {
+		List<ConceptMap> list = conceptService.getConceptsByConceptSource(conceptService
+		        .getConceptSourceByName("Some invalid name"));
 		assertEquals(0, list.size());
 	}
-
+	
 	/**
-	 * @verifies {@link ConceptService#saveConceptSource(ConceptSource)}
-	 * test = should save a ConceptSource with a null hl7Code
+	 * @verifies {@link ConceptService#saveConceptSource(ConceptSource)} test = should save a
+	 *           ConceptSource with a null hl7Code
 	 */
 	@Test
-	public void saveConceptSource_shouldSaveAConceptSourceWithANullHl7Code()
-			throws Exception {
+	public void saveConceptSource_shouldSaveAConceptSourceWithANullHl7Code() throws Exception {
 		ConceptSource source = new ConceptSource();
 		String aNullString = null;
 		String sourceName = "A concept source with null HL7 code";
 		source.setName(sourceName);
 		source.setHl7Code(aNullString);
 		conceptService.saveConceptSource(source);
-		assertEquals("Did not save a ConceptSource with a null hl7Code", source, conceptService.getConceptSourceByName(sourceName));
+		assertEquals("Did not save a ConceptSource with a null hl7Code", source, conceptService
+		        .getConceptSourceByName(sourceName));
 		
 	}
-
+	
 	/**
-	 * @verifies {@link ConceptService#saveConceptSource(ConceptSource)}
-	 * test = should not save a ConceptSource if voided is null
+	 * @verifies {@link ConceptService#saveConceptSource(ConceptSource)} test = should not save a
+	 *           ConceptSource if voided is null
 	 */
-	@Test(expected=Exception.class)
-	public void saveConceptSource_shouldNotSaveAConceptSourceIfVoidedIsNull()
-			throws Exception {
+	@Test(expected = Exception.class)
+	public void saveConceptSource_shouldNotSaveAConceptSourceIfVoidedIsNull() throws Exception {
 		ConceptSource source = new ConceptSource();
 		source.setVoided(null);
 		assertNull(source.getVoided());
 		
 		conceptService.saveConceptSource(source);
-
+		
 	}
-	
-	
-	
-	
 	
 }
