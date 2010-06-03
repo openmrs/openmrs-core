@@ -157,8 +157,8 @@ public class LocalizedStringSerializerTest {
      * 
      */
     @Test
-    @Verifies(value = "should deescape correctly if given serializedObject contains escaped delimiter", method = "deserialize(String,Class<+QT;>)")
-    public void deserialize_shouldDeescapeCorrectlyIfGivenSerializedObjectContainsEscapedDelimiter() throws Exception {
+    @Verifies(value = "should unescape correctly if given serializedObject contains escaped delimiter", method = "deserialize(String,Class<+QT;>)")
+	public void deserialize_shouldUnescapeCorrectlyIfGivenSerializedObjectContainsEscapedDelimiter() throws Exception {
 		String s = "i18n:v1;unlocalized:Favorite \\: Color;en_UK:Favourite Colour;fr:Couleur \\; pr¨¦f¨¦r¨¦e;";
 		OpenmrsSerializer serializer = new LocalizedStringSerializer();
 		LocalizedString actual = serializer.deserialize(s, LocalizedString.class);

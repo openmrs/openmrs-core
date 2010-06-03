@@ -63,7 +63,7 @@ public class LocalizedStringSerializer implements OpenmrsSerializer {
 	 * @should return null if given serializedObject is empty
 	 * @should not fail if given serializedObject doesnt contains variants
 	 * @should deserialize correctly if given serializedObject contains variants
-	 * @should deescape correctly if given serializedObject contains escaped delimiter
+	 * @should unescape correctly if given serializedObject contains escaped delimiter
 	 * @see org.openmrs.serialization.OpenmrsSerializer#deserialize(java.lang.String,
 	 *      java.lang.Class)
 	 */
@@ -74,18 +74,25 @@ public class LocalizedStringSerializer implements OpenmrsSerializer {
 			if (StringUtils.isBlank(serializedObject))
 				return null;
 			LocalizedString ls = new LocalizedString();
-			if (!serializedObject.contains(HEADER)) {
-				ls.setUnlocalizedValue(LocalizedStringUtil.deescapeDelimiter(serializedObject));
+			if (!serializedObject.startsWith(HEADER)) {
+				ls.setUnlocalizedValue(LocalizedStringUtil.unescapeDelimiter(serializedObject));
 				return (T) ls;
 			} else {
+				// e.g., if passed serializedObject is like "i18n:v1;unlocalized:He\;lo;es:Hola;"
+				// here "He\;lo" is just an escaped string for the original value "He;lo"
+				// so here use regex "(?<!\\\\);" to exclude "\;" when split serializedObject by delimiter ";"
 				String[] array1 = serializedObject.split("(?<!\\\\);");
+				
 				//ignore array1[0], because it is "i18n:v1;"
 				//parse unlocalized value
+				// e.g., if passed serializedObject is like "i18n:v1;unlocalized:He\:lo;es:Hola;"
+				// here "He\:lo" is just an escaped string for the original value "He:lo"
+				// so here use regex "(?<!\\\\):" to exclude "\:" when split serializedObject by delimiter ":"
 				String[] array2 = array1[1].split("(?<!\\\\):");
 				if (array2.length == 1)
 					ls.setUnlocalizedValue("");
 				else
-					ls.setUnlocalizedValue(LocalizedStringUtil.deescapeDelimiter(array2[1]));
+					ls.setUnlocalizedValue(LocalizedStringUtil.unescapeDelimiter(array2[1]));
 				
 				//parse variant values
 				ls.setVariants(new HashMap<Locale, String>());
@@ -95,7 +102,7 @@ public class LocalizedStringSerializer implements OpenmrsSerializer {
 					if (array2.length == 1)
 						ls.getVariants().put(loc, "");
 					else
-						ls.getVariants().put(loc, LocalizedStringUtil.deescapeDelimiter(array2[1]));
+						ls.getVariants().put(loc, LocalizedStringUtil.unescapeDelimiter(array2[1]));
 				}
 			}
 			return (T) ls;

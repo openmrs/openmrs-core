@@ -31,12 +31,12 @@ public class LocalizedStringUtil {
 	}
 	
 	/**
-	 * Deescape the passed text, such as convert "\:" to ":" or convert "\;" to ";"
+	 * Unescape the passed text, such as convert "\:" to ":" or convert "\;" to ";"
 	 * 
-	 * @param text - string to deescape
-	 * @return a deescaped string
+	 * @param text - string to unescape
+	 * @return a unescaped string
 	 */
-	public static String deescapeDelimiter(String text) {
+	public static String unescapeDelimiter(String text) {
 		return StringUtils.replaceEach(text, new String[] { "\\:", "\\;" }, new String[] { ":", ";" });
 	}
 }
