@@ -85,7 +85,8 @@ public class ConceptDatatype extends BaseOpenmrsMetadata implements java.io.Seri
 		this.conceptDatatypeId = conceptDatatypeId;
 	}
 	
-	public boolean equals(Object obj) {
+	@Override
+    public boolean equals(Object obj) {
 		if (obj instanceof ConceptDatatype) {
 			ConceptDatatype c = (ConceptDatatype) obj;
 			return (this.conceptDatatypeId.equals(c.getConceptDatatypeId()));
@@ -93,7 +94,8 @@ public class ConceptDatatype extends BaseOpenmrsMetadata implements java.io.Seri
 		return false;
 	}
 	
-	public int hashCode() {
+	@Override
+    public int hashCode() {
 		if (this.getConceptDatatypeId() == null)
 			return super.hashCode();
 		return this.getConceptDatatypeId().hashCode();
@@ -166,32 +168,32 @@ public class ConceptDatatype extends BaseOpenmrsMetadata implements java.io.Seri
 	
 	/**
 	 * @return <code>true</code> if datatype is representation of time
+	 * @since 1.7
 	 */
-	
 	public boolean isTime() {
 		return TIME_UUID.equals(getUuid());
 	}
 	
 	/**
 	 * @return <code>true</code> if datatype is representation of Datetime
+	 * @since 1.7
 	 */
-	
 	public boolean isDateTime() {
 		return DATETIME_UUID.equals(getUuid());
 	}
 	
 	/**
 	 * @return <code>true</code> if datatype is representation of either date or Datetime
+	 * @since 1.7
 	 */
-	
 	public boolean containsDate() {
 		return DATE_UUID.equals(getUuid()) || DATETIME_UUID.equals(getUuid());
 	}
 	
 	/**
 	 * @return <code>true</code> if datatype is representation of either time or Datetime
+	 * @since 1.7
 	 */
-	
 	public boolean containsTime() {
 		return TIME_UUID.equals(getUuid()) || DATETIME_UUID.equals(getUuid());
 	}
@@ -226,6 +228,22 @@ public class ConceptDatatype extends BaseOpenmrsMetadata implements java.io.Seri
 	public void setId(Integer id) {
 		setConceptDatatypeId(id);
 		
+	}
+	
+	/**
+	 * @return <code>true</code> if datatype is complex
+	 * @since 1.7
+	 */
+	public boolean isComplex() {
+		return COMPLEX_UUID.equals(getUuid());
+	}
+	
+	/**
+	 * @return <code>true</code> if datatype is a rule
+	 * @since 1.7
+	 */
+	public boolean isRule() {
+		return RULE_UUID.equals(getUuid());
 	}
 	
 }
