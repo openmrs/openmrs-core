@@ -531,6 +531,17 @@ public class HibernateConceptDAO implements ConceptDAO {
 	}
 	
 	/**
+	 * @see org.openmrs.api.db.ConceptDAO#getConceptDatatypeByName(String)
+	 */
+	public ConceptDatatype getConceptDatatypeByName(String name) throws DAOException {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ConceptDatatype.class);
+		if (name != null) {
+			criteria.add(Restrictions.eq("name", name));
+		}
+		return (ConceptDatatype) criteria.uniqueResult();
+	}
+
+	/**
 	 * @see org.openmrs.api.db.ConceptDAO#saveConceptDatatype(org.openmrs.ConceptDatatype)
 	 */
 	public ConceptDatatype saveConceptDatatype(ConceptDatatype cd) throws DAOException {

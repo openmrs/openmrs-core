@@ -431,20 +431,23 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		
 		authenticate();
 		
-		Concept concept1 = Context.getConceptService().getConcept(new Integer(1016));
-		Assert.assertNotNull(concept1);
-		
-		Encounter encounter = Context.getEncounterService().getEncounter(new Integer(14943));
+		Encounter encounter = Context.getEncounterService().getEncounter(14943);
 		Assert.assertNotNull(encounter);
 		Assert.assertNotNull(encounter.getObs());
 		
+		boolean testedsomething = false;
+
 		for (Obs obs : encounter.getObs()) {
-			if (obs.getConcept().getConceptId() == concept1.getConceptId()) {
-				Assert.assertTrue(obs.getConcept().equals(concept1));
-				Assert.assertTrue(concept1.equals(obs.getConcept()));
+			if (obs.getConcept().getConceptId().equals(1016)) {
+				testedsomething = true;
+				Concept concept = Context.getConceptService().getConcept(1016);
+				Assert.assertEquals(obs.getConcept(), concept);
+				Assert.assertEquals(concept, obs.getConcept());
+
 			}
-			
 		}
+		
+		Assert.assertEquals(true, testedsomething);
 	}
 	
 	/**
@@ -1121,5 +1124,31 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Context.getAdministrationService().saveGlobalProperty(trueConceptGlobalProperty);
 		Context.getAdministrationService().saveGlobalProperty(falseConceptGlobalProperty);
 	}
-	
+
+	/**
+     * @see {@link ConceptService#getConceptDatatypeByName(String)}
+     */
+    @Test
+    @Verifies(value = "should not return a fuzzy match on name", method = "getConceptDatatypeByName(String)")
+    public void getConceptDatatypeByName_shouldNotReturnAFuzzyMatchOnName() throws Exception {
+		executeDataSet(INITIAL_CONCEPTS_XML);
+		ConceptDatatype result = conceptService.getConceptDatatypeByName("Tex");
+		Assert.assertNull(result);
+    }
+
+	/**
+     * @see {@link ConceptService#getConceptDatatypeByName(String)}
+     */
+    @Test
+    @Verifies(value = "should return an exact match on name", method = "getConceptDatatypeByName(String)")
+    public void getConceptDatatypeByName_shouldReturnAnExactMatchOnName() throws Exception {
+		// given
+		executeDataSet(INITIAL_CONCEPTS_XML);
+		
+		// when
+		ConceptDatatype result = conceptService.getConceptDatatypeByName("Text");
+		
+		// then
+		assertEquals("Text", result.getName());
+    }
 }

@@ -1,4 +1,4 @@
-#Sun May 16 13:19:50 EDT 2010
+#Tue Jun 01 11:00:45 EDT 2010
 eclipse.preferences.version=1
 editor_save_participant_org.eclipse.jdt.ui.postsavelistener.cleanup=true
 formatter_profile=_OpenMRS Formatter
@@ -43,7 +43,7 @@ sp_cleanup.remove_private_constructors=true
 sp_cleanup.remove_trailing_whitespaces=true
 sp_cleanup.remove_trailing_whitespaces_all=false
 sp_cleanup.remove_trailing_whitespaces_ignore_empty=true
-sp_cleanup.remove_unnecessary_casts=true
+sp_cleanup.remove_unnecessary_casts=false
 sp_cleanup.remove_unnecessary_nls_tags=true
 sp_cleanup.remove_unused_imports=true
 sp_cleanup.remove_unused_local_variables=false

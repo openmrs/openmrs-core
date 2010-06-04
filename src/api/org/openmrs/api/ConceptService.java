@@ -731,13 +731,15 @@ public interface ConceptService extends OpenmrsService {
 	
 	/**
 	 * Find concept datatypes that contain the given name string
-	 * 
+	 *
+	 * @deprecated you *probably* want to use {@link ConceptService#getConceptDatatypeByName(String)}
 	 * @param name
 	 * @return List<ConceptDatatype> object of ConceptDatatypes matching the string
 	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPT_DATATYPES)
+	@Deprecated
 	public List<ConceptDatatype> getConceptDatatypes(String name) throws APIException;
 	
 	/**
@@ -768,6 +770,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @param name
 	 * @return ConceptDatatype matching the given name
 	 * @throws APIException
+	 * @should return an exact match on name
+	 * @should not return a fuzzy match on name
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPT_DATATYPES)

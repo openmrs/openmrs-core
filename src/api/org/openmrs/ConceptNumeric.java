@@ -92,18 +92,29 @@ public class ConceptNumeric extends Concept implements java.io.Serializable {
 	
 	/**
 	 * @see org.openmrs.Concept#equals(java.lang.Object)
+	 * @should not return true if obj is concept
 	 */
+	@Override
 	public boolean equals(Object obj) {
+		if (obj == null)
+			return false;
+
+		// now do the standard equals comparison
 		if (obj instanceof ConceptNumeric) {
 			ConceptNumeric c = (ConceptNumeric) obj;
 			return (this.getConceptId().equals(c.getConceptId()));
+		} else if (obj instanceof Concept) {
+			// use the reverse .equals in case we have hibernate proxies - #1511
+			if (obj.equals(this))
+				return true;
 		}
-		return false;
+		return obj == this;
 	}
 	
 	/**
 	 * @see org.openmrs.Concept#hashCode()
 	 */
+	@Override
 	public int hashCode() {
 		if (getConceptId() == null)
 			return super.hashCode();
@@ -226,6 +237,7 @@ public class ConceptNumeric extends Concept implements java.io.Serializable {
 	 * 
 	 * @see org.openmrs.Concept#isNumeric()
 	 */
+	@Override
 	public boolean isNumeric() {
 		return (getDatatype().getName().equals("Numeric"));
 	}
