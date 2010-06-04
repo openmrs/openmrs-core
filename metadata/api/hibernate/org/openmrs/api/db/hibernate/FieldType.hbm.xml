@@ -34,7 +34,6 @@
     	name="localizedName" 
     	column="name"
 		type="org.openmrs.api.db.hibernate.LocalizedStringType" 
-		length="1024" 
 	/>
     <property
         name="description"

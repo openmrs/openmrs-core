@@ -3283,30 +3283,30 @@
 	
 	<!-- following change sets are for localization tools project, and will be merged into a total change set at last -->
 	<changeSet id="20100520-2137" author="luzhuangwei">
-		<comment>Change datatype of encounter_type.name from varchar(50) to mediumtext</comment>
+		<comment>Change the width of name column to varchar(50)</comment>
 		<modifyColumn tableName="encounter_type">
-			<column name="name" type="mediumtext"/>
+			<column name="name" type="varchar(50)"/>
 		</modifyColumn>
 	</changeSet>
 	
 	<changeSet id="20100528-1647" author="luzhuangwei">
-		<comment>Change datatype of order_type.name from varchar(255) to mediumtext</comment>
+		<comment>Change the width of name column to varchar(50)</comment>
 		<modifyColumn tableName="order_type">
-			<column name="name" type="mediumtext"/>
+			<column name="name" type="varchar(50)"/>
 		</modifyColumn>
 	</changeSet>
 	
 	<changeSet id="20100528-2346" author="luzhuangwei">
-		<comment>Change datatype of concept_class.name from varchar(255) to mediumtext</comment>
+		<comment>Change the width of name column to varchar(50)</comment>
 		<modifyColumn tableName="concept_class">
-			<column name="name" type="mediumtext"/>
+			<column name="name" type="varchar(50)"/>
 		</modifyColumn>
 	</changeSet>
 	
 	<changeSet id="20100529-2221" author="luzhuangwei">
-		<comment>Change datatype of field_type.name from varchar(50) to mediumtext</comment>
+		<comment>Change the width of name column to varchar(50)</comment>
 		<modifyColumn tableName="field_type">
-			<column name="name" type="mediumtext"/>
+			<column name="name" type="varchar(50)"/>
 		</modifyColumn>
 	</changeSet>
 </databaseChangeLog>
