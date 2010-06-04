@@ -32,15 +32,19 @@ public class ConfirmDialogWidgetTag extends TagSupport {
 
 	private static final Log log = LogFactory.getLog(ConfirmDialogWidgetTag.class);
 	
-	private final String DEFAULT_AFFIRM = "OK";
+	private final String DEFAULT_BUTTON1 = "OK";
 	
-	private final String DEFAULT_NEGATE = "Cancel";
+	private final String DEFAULT_BUTTON2 = "Cancel";
+	
+	private final String DEFAULT_BUTTON3 = "Close";
 	
 	private final String DEFAULT_TITLE = "Confirmation";
 	
 	private final String DEFAULT_MESSAGE = "Are you sure?";
 	
 	private final String DEFAULT_SUPPRESS_MESSAGE = "Do not show this message again";
+	
+	private final String DEFAULT_BUTTON = "1";
 
 	private String id;
 	
@@ -52,6 +56,10 @@ public class ConfirmDialogWidgetTag extends TagSupport {
 	
 	private String button2;
 	
+	private String button3;
+	
+	private String defaultButton;
+
 	private String suppressMessageCode;
 	
 	private String suppress;
@@ -73,39 +81,62 @@ public class ConfirmDialogWidgetTag extends TagSupport {
 
 		String suppress = user.getUserProperty(suppressKey, "false");
 		
-		String message = messageSourceService.getMessage(messageCode);
+		String message = messageSourceService.getMessage(this.messageCode);
 		
-		String affirm = messageSourceService.getMessage(button1);
+		String button1Text = messageSourceService.getMessage(this.button1);
 		
-		String negate = messageSourceService.getMessage(button2);
+		String button2Text = messageSourceService.getMessage(this.button2);
+		
+		String button3Text = messageSourceService.getMessage(this.button3);
 		
 		String suppressMessage = messageSourceService.getMessage(this.suppressMessageCode);
 		
 		sb.append("<div style=\"display:none\" id=\"" + id + "\" class=\"jConfirm_Window\">");
+
 		sb.append("<div id=\"jConfirm_Box\">");
+
 		sb.append("<div class=\"jConfirm_Header\"><span>"
 		        + (titleCode == null ? DEFAULT_TITLE : messageSourceService.getMessage(titleCode))
 		        + "</span><a href=\"#\" id=\"jConfirm_Close\">x</a></div>");
 		
 		sb.append("<div id=\"jConfirm_Message\">"+( message == null ? DEFAULT_MESSAGE : message )+"</div>");
+
 		sb.append("<input type=\"hidden\" id=\"suppress\" value=\"" + suppress + "\" />");
+
 		sb.append("<input type=\"hidden\" id=\"suppress_key\" value=\"" + suppressKey + "\" />");
+		
+		sb.append("<input type=\"hidden\" id=\"default_button\" value=\""
+		        + (defaultButton == null ? DEFAULT_BUTTON : defaultButton)
+		        + "\" />");
+
 		sb.append("<div id=\"jConfirm_Suppress\">");
+
 		if (!"NA".equals(suppressKey)) { //Don't show suppress message if no suppress key is supplied
 			sb.append("<input type=\"checkbox\" name=\"suppress_message\" />"
 			        + (suppressMessage == null ? DEFAULT_SUPPRESS_MESSAGE : suppressMessage));
 		}else{
 			sb.append("<br>"); //Just to have a balanced confirmation dialog
 		}
+
 		sb.append("</div>");
+
 		sb.append("<div id=\"jConfirm_Control\">");
-		sb.append("<input type=\"button\" class=\"jConfirm_Button\" id=\"jConfirm_Affirm\" value=\""
-		        + (affirm == null ? DEFAULT_AFFIRM : affirm) + "\" />");
-		sb.append("<input type=\"button\" class=\"jConfirm_Button\" id=\"jConfirm_Negate\" value=\""
-		        + (negate == null ? DEFAULT_NEGATE : negate) + "\" />");
+
+		sb.append("<input type=\"button\" class=\"jConfirm_Button\" id=\"jConfirm_Button1\" value=\""
+		        + (button1Text == null ? DEFAULT_BUTTON1 : button1Text) + "\" />");
+
+		sb.append("<input type=\"button\" class=\"jConfirm_Button\" id=\"jConfirm_Button2\" value=\""
+		        + (button2Text == null ? DEFAULT_BUTTON2 : button2Text) + "\" />");
+
+		if (button3 != null) {
+			sb.append("<input type=\"button\" class=\"jConfirm_Button\" id=\"jConfirm_Button3\" value=\""
+			        + (button3Text == null ? DEFAULT_BUTTON3 : button3Text) + "\" />");
+		}
+
 		sb.append("</div>");
+
 		sb.append("</div>");
-		//sb.append("<div id=\"Overlay\" style=\"top: 0px;left: 0px\"></div>");
+
 		sb.append("</div>");
 		
 		try {
@@ -163,6 +194,37 @@ public class ConfirmDialogWidgetTag extends TagSupport {
 		this.button2 = button2;
 	}
 	
+	/**
+	 * @return the button3
+	 */
+	public String getButton3() {
+		return button3;
+	}
+	
+	/**
+	 * @param button3 the button3 to set
+	 */
+	public void setButton3(String button3) {
+		this.button3 = button3;
+	}
+	
+	/**
+	 * @return the defaultButton
+	 */
+	public String getDefaultButton() {
+		return defaultButton;
+	}
+	
+	/**
+	 * @param defaultButton the defaultButton to set
+	 */
+	public void setDefaultButton(String defaultButton) {
+		if (!(defaultButton.equals("1") || defaultButton.equals("2") || defaultButton.equals("3"))) {
+			defaultButton = "1";
+		}
+		this.defaultButton = defaultButton;
+	}
+
 	/**
 	 * @return the suppress
 	 */

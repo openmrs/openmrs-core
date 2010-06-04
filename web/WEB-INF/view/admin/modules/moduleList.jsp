@@ -83,7 +83,8 @@
 			$j('#openmrsModulesForm').submit();
 		},
 		function(){			
-		});
+		},
+		null);
 		
 		return false;
 	}
@@ -91,17 +92,20 @@
 	//Javascript Function to show Unload Confirmation 
 	function confirmUnload(id, unloadId){		
 		var index = unloadId.substring(6); // strip 'unload'		
-		var formId = '#controlform'+index;
-		jConfirm.dialog(id, 
-		function(){			
+		var formId = '#controlform'+index;		
+		jConfirm.dialog(id,
+		function(){ 
 			$j(formId).append("<input type='hidden' name='action' value='unload' />");				
-			$j(formId).submit();				
+			$j(formId).submit();
 		},
 		function(){
-		});
+		},
+		null);
 		
 		return false;
 	}
+	
+	
 </script>
 
 <h2><spring:message code="Module.header" /></h2>

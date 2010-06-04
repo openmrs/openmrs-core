@@ -1221,7 +1221,7 @@
 
 <tag>
 	<description>
-		Create a Confirmation Dialog
+		Creates a Confirmation Dialog
 	</description>
 	<name>confirmDialog</name>
 	<tag-class>org.openmrs.web.taglib.ConfirmDialogWidgetTag</tag-class>
@@ -1261,6 +1261,16 @@
 		<required>false</required>
 		<rtexprvalue>false</rtexprvalue>
 	</attribute>
+	<attribute>
+		<name>button3</name>
+		<required>false</required>
+		<rtexprvalue>false</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>defaultButton</name>
+		<required>false</required>
+		<rtexprvalue>false</rtexprvalue>
+	</attribute>	
 </tag>
 
 <function>

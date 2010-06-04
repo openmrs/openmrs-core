@@ -544,25 +544,18 @@ public class ModuleUtil {
 	 * @return InputStream of contents
 	 * @should return a valid input stream for old module urls
 	 */
-	public static InputStream getURLStream(URL url) throws UnknownHostException {
+	public static InputStream getURLStream(URL url) throws IOException {
 		InputStream in = null;
-		try {
-			URLConnection uc = url.openConnection();
-			uc.setDefaultUseCaches(false);
-			uc.setUseCaches(false);
-			uc.setRequestProperty("Cache-Control", "max-age=0,no-cache");
-			uc.setRequestProperty("Pragma", "no-cache");
+		
+		URLConnection uc = url.openConnection();
+		uc.setDefaultUseCaches(false);
+		uc.setUseCaches(false);
+		uc.setRequestProperty("Cache-Control", "max-age=0,no-cache");
+		uc.setRequestProperty("Pragma", "no-cache");
+		
+		log.error("Logging an attempt to connect to: " + url);
 			
-			log.error("Logging an attempt to connect to: " + url);
-			
-			in = uc.getInputStream();
-		}
-		catch (IOException io) {
-			if (io instanceof UnknownHostException) {
-				throw new UnknownHostException(io.getMessage());
-			}
-			log.warn("io while reading: " + url, io);
-		}
+		in = uc.getInputStream();
 		
 		return in;
 	}
@@ -577,7 +570,7 @@ public class ModuleUtil {
 	 * @should return an update rdf page for old https module urls
 	 * @should return an update rdf page for module urls
 	 */
-	public static String getURL(URL url) throws UnknownHostException {
+	public static String getURL(URL url) throws IOException {
 		InputStream in = null;
 		OutputStream out = null;
 		String output = "";
@@ -589,12 +582,6 @@ public class ModuleUtil {
 			out = new ByteArrayOutputStream();
 			OpenmrsUtil.copyFile(in, out);
 			output = out.toString();
-		}
-		catch (IOException io) {
-			if (io instanceof UnknownHostException) {
-				throw new UnknownHostException(io.getMessage());
-			}
-			log.warn("io while reading: " + url, io);
 		}
 		finally {
 			try {
@@ -616,7 +603,7 @@ public class ModuleUtil {
 	 * @return True if an update was found for one of the modules, false if none were found
 	 * @throws ModuleException, UnknownHostException
 	 */
-	public static Boolean checkForModuleUpdates() throws ModuleException, UnknownHostException {
+	public static Boolean checkForModuleUpdates() throws ModuleException, IOException {
 		
 		Boolean updateFound = false;
 		

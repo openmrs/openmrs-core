@@ -7,10 +7,9 @@ var jConfirm = new function(){
 	this.suppress;
 	this.overlay;
 	this.id;
-	this.actioned;
 		
-	this.dialog = function(id,callback_affirm,callback_negate){
-		this.show(id,callback_affirm,callback_negate);		
+	this.dialog = function(id,callback1,callback2,callback3){
+		this.show(id,callback1,callback2,callback3);		
 	}
 	
 	this.init = function(){
@@ -19,9 +18,8 @@ var jConfirm = new function(){
 	};
 	
 	this.invokeCallback = function(callback){
-		if(callback && !this.actioned){
-			callback();
-			this.actioned = true;
+		if(callback){
+			callback();			
 		}
 	}
 
@@ -45,11 +43,11 @@ var jConfirm = new function(){
 			this.invokeCallback(callback);
 		}
 		$j(this.overlay).remove(); 
-		this.suppress = '';
+		this.suppress = '';		
 	};
 	
-	this.show = function(id,callback_affirm,callback_negate){
-		id = '#'+id;
+	this.show = function(id,callback1,callback2,callback3){
+		id = '#'+id;		
 	
 		this.overlay = '#Overlay';
 		
@@ -57,7 +55,7 @@ var jConfirm = new function(){
 					
 		this.suppress = $j(id+' #suppress').val() == 'true';	
 		
-		this.actioned = false;	
+		defaultButton = $j(id+' #default_button').val();		
 		
 		if(this.suppress == false){		
 					
@@ -79,24 +77,39 @@ var jConfirm = new function(){
 			//Transition of the jConfirm
 			$j(id).fadeIn(500);	
 		
-			$j(id+' #jConfirm_Close').click(function() {
-				jConfirm.close();		
+			$j(id+' #jConfirm_Close').unbind().click(function() {
+				jConfirm.close();					
 			});			
 		
-			$j(id+' #jConfirm_Affirm').click(function() {
-				jConfirm.close(callback_affirm);						
+			$j(id+' #jConfirm_Button1').unbind().click(function() {
+				jConfirm.close(callback1);										
 			});
 			
-			$j(id+' #jConfirm_Negate').click(function() {
-				jConfirm.close(callback_negate);				
+			$j(id+' #jConfirm_Button2').unbind().click(function() {
+				jConfirm.close(callback2);						
 			});
-		
-			$j(id+' #jConfirm_Affirm').focus();
-		
-			this.id = id;
 			
-		}else{			
-			this.invokeCallback(callback_affirm);			
+			if(callback3 != null){
+				$j(id+' #jConfirm_Button3').unbind().click(function() {
+					jConfirm.close(callback3);						
+				});
+			}else{
+				$j(id+' #jConfirm_Button3').hide();
+			}
+		
+			$j(id+' #jConfirm_Button'+defaultButton).focus();
+		
+			this.id = id;			
+		}else{	
+			var callback;
+			if(defaultButton == '1'){
+				callback = callback1;
+			}else if(defaultButton == '2'){
+				callback = callback2;
+			}else{
+				callback = callback3;
+			}		
+			this.invokeCallback(callback1);			
 		}
 	}	
 }
