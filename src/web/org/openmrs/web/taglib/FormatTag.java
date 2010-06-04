@@ -73,11 +73,12 @@ public class FormatTag extends TagSupport {
 	
 	private Location location;
 	
-	private Integer locationTagId; 
+	private Integer locationTagId;
 
-	private LocationTag locationTag; 
+	private LocationTag locationTag;
 	
-	public int doStartTag() {
+	@Override
+    public int doStartTag() {
 		StringBuilder sb = new StringBuilder();
 		if (conceptId != null)
 			concept = Context.getConceptService().getConcept(conceptId);
@@ -159,7 +160,8 @@ public class FormatTag extends TagSupport {
 	 * @param metadata
 	 */
 	private void printMetadata(StringBuilder sb, OpenmrsMetadata metadata) {
-		sb.append(metadata.getName());
+		if (metadata != null)
+			sb.append(metadata.getName());
 	}
 		
 	/**
@@ -170,7 +172,7 @@ public class FormatTag extends TagSupport {
 	 */
 	private void printUser(StringBuilder sb, User u) {
 		sb.append("<span class=\"user\">");
-	 	sb.append("<span class=\"username\">"); 
+	 	sb.append("<span class=\"username\">");
 		sb.append(u.getUsername());
 		sb.append("</span>");
 		if (u.getPerson() != null) {
@@ -191,7 +193,8 @@ public class FormatTag extends TagSupport {
 		sb.append(p.getPersonName());
 	}
 	
-	public int doEndTag() {
+	@Override
+    public int doEndTag() {
 		reset();
 		return EVAL_PAGE;
 	}
@@ -301,7 +304,7 @@ public class FormatTag extends TagSupport {
 	
 	public void setLocation(Location location) {
 		this.location = location;
-	}	
+	}
 	
     public Integer getLocationTagId() {
     	return locationTagId;
