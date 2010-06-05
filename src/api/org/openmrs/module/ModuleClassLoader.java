@@ -45,8 +45,8 @@ import org.openmrs.util.OpenmrsUtil;
 
 /**
  * Standard implementation of module class loader.
- * 
- * Code adapted from the Java Plug-in Framework (JPF) - LGPL - Copyright (C)
+ * <br/>
+ * Code adapted from the Java Plug-in Framework (JPF) - LGPL - Copyright (C)<br/>
  * 2004-2006 Dmitry Olshansky
  */
 public class ModuleClassLoader extends URLClassLoader {
@@ -264,7 +264,7 @@ public class ModuleClassLoader extends URLClassLoader {
 		// collect imported modules (exclude duplicates)
 		Map<String, Module> publicImportsMap = new WeakHashMap<String, Module>(); //<module ID, Module>
 		
-		for(String moduleId : ModuleConstants.CORE_MODULES.keySet()) {
+		for (String moduleId : ModuleConstants.CORE_MODULES.keySet()) {
 			Module module = ModuleFactory.getModuleById(moduleId);
 			
 			if (module == null && !ModuleUtil.ignoreCoreModules()) {
@@ -284,7 +284,7 @@ public class ModuleClassLoader extends URLClassLoader {
 				publicImportsMap.put(requiredModule.getModuleId(), requiredModule);
 			}
 		}
-		requiredModules = (Module[]) publicImportsMap.values().toArray(new Module[publicImportsMap.size()]);
+		requiredModules = publicImportsMap.values().toArray(new Module[publicImportsMap.size()]);
 		
 	}
 	
@@ -366,6 +366,7 @@ public class ModuleClassLoader extends URLClassLoader {
 	/**
 	 * @see java.lang.ClassLoader#loadClass(java.lang.String, boolean)
 	 */
+	@Override
 	protected Class<?> loadClass(final String name, final boolean resolve) throws ClassNotFoundException {
 		Class<?> result = null;
 		if (probeParentLoaderLast) {
@@ -441,26 +442,24 @@ public class ModuleClassLoader extends URLClassLoader {
 		// the class ultimately returned (if found)
 		Class<?> result = null;
 		
-		synchronized (this) {
-			result = findLoadedClass(name);
+		result = findLoadedClass(name);
+		
+		if (result != null) {
+			checkClassVisibility(result, requestor);
 			
-			if (result != null) {
-				checkClassVisibility(result, requestor);
-				
-				/*if (resolve) {
-					resolveClass(result);
-				}*/
+			/*if (resolve) {
+				resolveClass(result);
+			}*/
 
-				// found an already loaded class in this moduleclassloader
-				return result;
-			}
-			
-			// we didn't find a loaded class and this isn't a class 
+			// found an already loaded class in this moduleclassloader
+			return result;
+		}
+		
+		synchronized (this) {
+			// we didn't find a loaded class and this isn't a class
 			// from another module
 			try {
-				synchronized (getClass()) {
-					result = findClass(name);
-				}
+				result = findClass(name);
 			}
 			catch (LinkageError le) {
 				throw le;
@@ -479,6 +478,7 @@ public class ModuleClassLoader extends URLClassLoader {
 				
 				return result; // found class in this module
 			}
+			
 		}
 		
 		// initialize the array if need be
@@ -540,7 +540,7 @@ public class ModuleClassLoader extends URLClassLoader {
 			//			ResourceFilter filter = (ResourceFilter) resourceFilters.get(lib);
 			//			if (filter == null) {
 			//				log.warn("class not visible, no class filter found, lib=" + lib
-			//						+ ", class=" + cls + ", this=" + this 
+			//						+ ", class=" + cls + ", this=" + this
 			//						+ ", requestor=" + requestor);
 			//				throw new ClassNotFoundException("class "
 			//						+ cls.getName() + " is not visible for module "
@@ -549,7 +549,7 @@ public class ModuleClassLoader extends URLClassLoader {
 			//			}
 			//			if (!filter.isClassVisible(cls.getName())) {
 			//				log.warn("class not visible, lib=" + lib
-			//						+ ", class=" + cls + ", this=" + this 
+			//						+ ", class=" + cls + ", this=" + this
 			//						+ ", requestor=" + requestor);
 			//				throw new ClassNotFoundException("class "
 			//						+ cls.getName() + " is not visible for module "
@@ -561,6 +561,7 @@ public class ModuleClassLoader extends URLClassLoader {
 	/**
 	 * @see java.lang.ClassLoader#findLibrary(java.lang.String)
 	 */
+	@Override
 	protected String findLibrary(final String name) {
 		if ((name == null) || "".equals(name.trim()))
 			return null;
@@ -570,7 +571,7 @@ public class ModuleClassLoader extends URLClassLoader {
 		}
 		String libname = System.mapLibraryName(name);
 		String result = null;
-		//TODO 
+		//TODO
 		//PathResolver pathResolver = ModuleFactory.getPathResolver();
 		//		for (Library lib : getModule().getLibraries()) {
 		//			if (lib.isCodeLibrary()) {
@@ -632,7 +633,7 @@ public class ModuleClassLoader extends URLClassLoader {
 	protected File cacheLibrary(final URL libUrl, final String libname) {
 		File cacheFolder = OpenmrsClassLoader.getLibCacheFolder();
 		if (libraryCache.containsKey(libUrl)) {
-			return (File) libraryCache.get(libUrl);
+			return libraryCache.get(libUrl);
 		}
 		
 		File result = null;
@@ -702,6 +703,7 @@ public class ModuleClassLoader extends URLClassLoader {
 	 * 
 	 * @see java.lang.ClassLoader#findResource(java.lang.String)
 	 */
+	@Override
 	public URL findResource(final String name) {
 		URL result = findResource(name, this, null);
 		
@@ -867,13 +869,13 @@ public class ModuleClassLoader extends URLClassLoader {
 		//		if (filter == null) {
 		//			log.warn("no resource filter found for library "
 		//					+ lib + ", name=" + name
-		//					+ ", URL=" + url + ", this=" + this 
+		//					+ ", URL=" + url + ", this=" + this
 		//					+ ", requestor=" + requestor);
 		//			return false;
 		//		}
 		//		if (!filter.isResourceVisible(name)) {
 		//			log.warn("resource not visible, name=" + name
-		//					+ ", URL=" + url + ", this=" + this 
+		//					+ ", URL=" + url + ", this=" + this
 		//					+ ", requestor=" + requestor);
 		//			return false;
 		//		}
@@ -899,6 +901,7 @@ public class ModuleClassLoader extends URLClassLoader {
 	/**
 	 * @see java.lang.Object#toString()
 	 */
+	@Override
 	public String toString() {
 		return "{ModuleClassLoader: uid=" + System.identityHashCode(this) + "; " + module + "}";
 	}
