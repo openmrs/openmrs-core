@@ -55,7 +55,7 @@ var jConfirm = new function(){
 					
 		this.suppress = $j(id+' #suppress').val() == 'true';	
 		
-		defaultButton = $j(id+' #default_button').val();		
+		var defaultButton = $j(id+' #default_button').val();		
 		
 		if(this.suppress == false){		
 					
@@ -101,7 +101,7 @@ var jConfirm = new function(){
 		
 			this.id = id;			
 		}else{	
-			var callback;
+			var callback;			
 			if(defaultButton == '1'){
 				callback = callback1;
 			}else if(defaultButton == '2'){
@@ -109,7 +109,7 @@ var jConfirm = new function(){
 			}else{
 				callback = callback3;
 			}		
-			this.invokeCallback(callback1);			
+			this.invokeCallback(callback);			
 		}
 	}	
 }
