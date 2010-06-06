@@ -52,7 +52,7 @@ var jConfirm = new function(){
 		this.overlay = '#Overlay';
 		
 		$j(document.body).append("<div id='Overlay'></div>");
-					
+							
 		this.suppress = $j(id+' #suppress').val() == 'true';	
 		
 		var defaultButton = $j(id+' #default_button').val();		
@@ -76,6 +76,12 @@ var jConfirm = new function(){
 			
 			//Transition of the jConfirm
 			$j(id).fadeIn(500);	
+			
+			$j(id).keyup(function(e){
+				if(e.keyCode == 27 || e.which == 27){
+					jConfirm.close();
+				}
+			});
 		
 			$j(id+' #jConfirm_Close').unbind().click(function() {
 				jConfirm.close();					
