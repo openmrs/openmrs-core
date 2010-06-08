@@ -22,6 +22,8 @@ import org.openmrs.web.controller.patient.PatientGraphData;
 import org.openmrs.web.test.BaseWebContextSensitiveTest;
 import org.springframework.ui.ModelMap;
 
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 /**
  * Test for graphs on the patient dashboard
  */
@@ -36,14 +38,16 @@ public class PatientDashboardGraphControllerTest extends BaseWebContextSensitive
 	@Verifies(value = "return json data with observation details and critical values for the concept", method = "showGraphData(Integer, Integer, ModelMap)")
 	public void shouldReturnJSONWithPatientObservationDetails() throws Exception {
 		executeDataSet("org/openmrs/api/include/ObsServiceTest-initial.xml");
-		
 		PatientDashboardGraphController controller = new PatientDashboardGraphController();
-		
-		ModelMap map = new ModelMap();
-		controller.showGraphData(2, 1, map);
-		PatientGraphData graph = (PatientGraphData) map.get("graph");
-		Assert.assertEquals("{\"absolute\":{\"high\":50.0,\"low\":2.0},\"critical\":{\"high\":null,\"low\":null},\"normal\":{\"high\":null,\"low\":null},\"data\":[[1139547600000,2.0],[1139461200000,1.0]]}", graph
-		        .toString());
+
+        long firstObsDate = new GregorianCalendar(2006, Calendar.FEBRUARY, 9).getTimeInMillis();
+        long secondObsDate = new GregorianCalendar(2006, Calendar.FEBRUARY, 10).getTimeInMillis();
+
+        ModelMap map = new ModelMap();
+        controller.showGraphData(2, 1, map);
+        PatientGraphData graph = (PatientGraphData) map.get("graph");
+        String expectedData = String.format("{\"absolute\":{\"high\":50.0,\"low\":2.0},\"critical\":{\"high\":null,\"low\":null},\"normal\":{\"high\":null,\"low\":null},\"data\":[[%d,2.0],[%d,1.0]]}", secondObsDate, firstObsDate);
+        Assert.assertEquals(expectedData, graph.toString());
 	}
 	
 	/**
