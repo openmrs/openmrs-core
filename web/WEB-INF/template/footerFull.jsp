@@ -6,8 +6,8 @@
 		<div id="footerInner">
 		
 			<span id="localeOptions">
-				<%  //removes last instance of lang= from querystring
-					String qs = request.getQueryString();
+				<%  //removes last instance of lang= from querystring and encodes the url to avoid xml problems
+					String qs = org.apache.commons.lang.StringEscapeUtils.escapeXml(request.getQueryString());
 					if (qs == null)
 						qs = "";
 					int i = qs.lastIndexOf("&lang=");
