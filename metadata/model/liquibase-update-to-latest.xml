@@ -3268,7 +3268,7 @@
 		</insert>
 	</changeSet>
 	
-	<changeSet id="20100517-1545" author="wyclif">						
+	<changeSet id="20100517-1545" author="wyclif and djazayeri">
 		<comment>Switch boolean concepts/observations to be stored as coded</comment>
 		<customChange class="org.openmrs.util.databasechange.BooleanConceptChangeSet"/>				
 	</changeSet>
