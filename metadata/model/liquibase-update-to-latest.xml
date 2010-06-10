@@ -3280,4 +3280,25 @@
 		<dropNotNullConstraint tableName="encounter" columnName="location_id" columnDataType="int"/>
 		<dropNotNullConstraint tableName="obs" columnName="location_id" columnDataType="int"/>
     </changeSet>
+    
+    <changeSet id="20100604-0933a" author="wyclif">
+    	<preConditions onFail="MARK_RAN">
+    		<columnExists columnName="message_state" tableName="hl7_in_archive" />
+    	</preConditions>
+    	<comment>
+    		Changing the default value to 2 for 'message_state' column in 'hl7_in_archive' table
+    	</comment>    	
+    	<addDefaultValue columnName="message_state" tableName="hl7_in_archive" defaultValue="2"/>
+    </changeSet>
+    
+    <changeSet id="20100604-0933b" author="wyclif">
+    	<preConditions onFail="MARK_RAN">
+    		<columnExists columnName="message_state" tableName="hl7_in_archive" />    		
+    	</preConditions>
+		<comment>Converting 0 and 1 to 2 for 'message_state' column in 'hl7_in_archive' table</comment>
+		<update tableName="hl7_in_archive">
+			<column name="message_state" value="2"/>
+			<where>message_state IN (0,1)</where>
+		</update>
+	</changeSet>
 </databaseChangeLog>
