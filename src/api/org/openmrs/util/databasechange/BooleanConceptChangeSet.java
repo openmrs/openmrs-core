@@ -17,6 +17,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import liquibase.FileOpener;
@@ -28,6 +30,8 @@ import liquibase.exception.InvalidChangeDefinitionException;
 import liquibase.exception.SetupException;
 import liquibase.exception.UnsupportedChangeException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
@@ -35,12 +39,32 @@ import org.openmrs.util.OpenmrsConstants;
  */
 public class BooleanConceptChangeSet implements CustomTaskChange {
 	
-	private int trueConceptId;
+	private static Log log = LogFactory.getLog(BooleanConceptChangeSet.class);
+
+	private Integer trueConceptId;
 	
-	private int falseConceptId;
+	private Integer falseConceptId;
 	
 	//string values for boolean concepts
-	public static final String[][] BOOLEAN_CONCEPTS_VALUES = { { "True", "False" }, { "Yes", "No" } };
+	private static Map<String, String[]> trueNames = new HashMap<String, String[]>();
+	private static Map<String, String[]> falseNames = new HashMap<String, String[]>();
+
+	// how to say True and Yes in OpenMRS core languages
+	static {
+		// names may not include spaces, or else the logic to create concept words will break
+
+		trueNames.put("en", new String[] { "True", "Yes" });
+		trueNames.put("fr", new String[] { "Vrai", "Oui" });
+		trueNames.put("es", new String[] { "Verdadero", "Sí" });
+		trueNames.put("it", new String[] { "Vero", "Sì" });
+		trueNames.put("pt", new String[] { "Verdadeiro", "Sim" });
+
+		falseNames.put("en", new String[] { "False", "No" });
+		falseNames.put("fr", new String[] { "Faux", "Non" });
+		falseNames.put("es", new String[] { "Falso", "No" });
+		falseNames.put("it", new String[] { "Falso", "No" });
+		falseNames.put("pt", new String[] { "Falso", "Não" });
+	}
 	
 	/**
 	 * @see liquibase.change.custom.CustomTaskChange#execute(liquibase.database.Database)
@@ -48,61 +72,58 @@ public class BooleanConceptChangeSet implements CustomTaskChange {
 	public void execute(Database database) throws CustomChangeException, UnsupportedChangeException {
 		DatabaseConnection connection = database.getConnection();
 		
-		String trueConceptName = "";
-		String falseConceptName = "";
+		// try to find existing concepts with the right names
+		trueConceptId = findConceptByName(connection, trueNames);
+		falseConceptId = findConceptByName(connection, falseNames);
+		
+		// if they don't exist, create them
+		if (trueConceptId == null)
+			trueConceptId = createConcept(connection, trueNames);
+		if (falseConceptId == null)
+			falseConceptId = createConcept(connection, falseNames);
+		
+		// create the global properties
 		final boolean trueFalseGlobalPropertiesPresent = getInt(connection,
 		    "SELECT COUNT(*) FROM global_property WHERE property IN ('" + OpenmrsConstants.GLOBAL_PROPERTY_TRUE_CONCEPT
 		            + "', '" + OpenmrsConstants.GLOBAL_PROPERTY_FALSE_CONCEPT + "')") == 2;
-		for (String[] trueFalseConceptNames : BOOLEAN_CONCEPTS_VALUES) {
-			trueConceptName = trueFalseConceptNames[0];
-			falseConceptName = trueFalseConceptNames[1];
-			final boolean conceptNamesPresent = getInt(connection, "SELECT COUNT(*) FROM concept_name WHERE name IN ('"
-			        + trueConceptName + "', '" + falseConceptName + "')") == 2;
-			
-			if (conceptNamesPresent) {
-				if (!trueFalseGlobalPropertiesPresent)
-					createGlobalProperties(connection, trueConceptName, falseConceptName);
-				changeObs(connection, trueConceptName, falseConceptName);
-				return;
-			}
-		}
-		
-		trueConceptName = BOOLEAN_CONCEPTS_VALUES[0][0];
-		falseConceptName = BOOLEAN_CONCEPTS_VALUES[0][1];
-		createConcepts(connection, trueConceptName, falseConceptName);
 		if (!trueFalseGlobalPropertiesPresent)
-			createGlobalProperties(connection, trueConceptName, falseConceptName);
-		changeObs(connection, trueConceptName, falseConceptName);
+			createGlobalProperties(connection, trueConceptId, falseConceptId);
+		
+		// now change all the existing obs
+		changeObs(connection);
 	}
 	
 	/**
-	 * creates the boolean concepts
+	 * Finds a concept that has any of the the given names in the given locale. If you have a
+	 * concept named 'True' in 'en_US' and you search for 'True' in 'en' this will be returned.
 	 * 
-	 * @param connection a DatabaseConnection
-	 * @param trueConceptName the concept name for boolean true values
-	 * @param falseConceptName the concept name for boolean false values
+	 * @param connection
+	 * @param names a Map from (2-letter) locale to all possible names in that locale
+	 * @return a concept id.
 	 * @throws CustomChangeException
 	 */
-	private void createConcepts(DatabaseConnection connection, String trueConceptName, String falseConceptName)
-	                                                                                                           throws CustomChangeException {
-		for (String conceptName : new String[] { trueConceptName, falseConceptName }) {
-			final boolean conceptNamePresent = getInt(connection, "SELECT COUNT(*) FROM concept_name WHERE name = '"
-			        + conceptName + "'") == 1;
-			if (!conceptNamePresent) {
-				createConcept(connection, conceptName);
-			} else
-				throw new CustomChangeException("Another concept already exists with the name '" + conceptName + "'");
+	private Integer findConceptByName(DatabaseConnection connection, Map<String, String[]> names)
+	                                                                                             throws CustomChangeException {
+		for (Map.Entry<String, String[]> e : names.entrySet()) {
+			String locale = e.getKey();
+			for (String name : e.getValue()) {
+				Integer ret = getInt(connection,
+					"select concept_id from concept_name where name = '" + name + "' and locale like '" + locale + "%'");
+				if (ret != null)
+					return ret;
+			}
 		}
-	}
+		return null;
+    }
 	
 	/**
 	 * creates a concept
 	 * 
 	 * @param connection a DatabaseConnection
-	 * @param conceptName the name of the concept to create
+	 * @param names a Map from locale to names in that locale, which will be added to the new concept
 	 * @throws CustomChangeException
 	 */
-	private void createConcept(DatabaseConnection connection, String conceptName) throws CustomChangeException {
+	private Integer createConcept(DatabaseConnection connection, Map<String, String[]> names) throws CustomChangeException {
 		PreparedStatement updateStatement = null;
 		
 		try {
@@ -114,31 +135,47 @@ public class BooleanConceptChangeSet implements CustomTaskChange {
 			updateStatement.setString(2, UUID.randomUUID().toString());
 			updateStatement.executeUpdate();
 			
+			boolean preferredDoneAlready = false; // only tag one name as preferred
+			
 			int conceptNameId = getInt(connection, "SELECT MAX(concept_name_id) FROM concept_name");
-			conceptNameId++;
-			updateStatement = connection
-			        .prepareStatement("INSERT INTO concept_name (concept_name_id, concept_id, locale, name, creator, date_created, uuid) VALUES (?, ?, 'en', ?, 1, NOW(), ?)");
-			updateStatement.setInt(1, conceptNameId);
-			updateStatement.setInt(2, conceptId);
-			updateStatement.setString(3, conceptName);
-			updateStatement.setString(4, UUID.randomUUID().toString());
-			updateStatement.executeUpdate();
+			for (Map.Entry<String, String[]> e : names.entrySet()) {
+				String locale = e.getKey();
+				for (String name : e.getValue()) {
+					conceptNameId++;
+					updateStatement = connection
+					        .prepareStatement("INSERT INTO concept_name (concept_name_id, concept_id, locale, name, creator, date_created, uuid) VALUES (?, ?, ?, ?, 1, NOW(), ?)");
+					updateStatement.setInt(1, conceptNameId);
+					updateStatement.setInt(2, conceptId);
+					updateStatement.setString(3, locale);
+					updateStatement.setString(4, name);
+					updateStatement.setString(5, UUID.randomUUID().toString());
+					updateStatement.executeUpdate();
+					
+					// Tag the first english name as preferred. This is ugly, but it's not feasible to
+					// fix this before refactoring concept_name_tags.
+					if (!preferredDoneAlready && "en".equals(locale)) {
+						updateStatement = connection
+							.prepareStatement("INSERT INTO concept_name_tag_map (concept_name_id, concept_name_tag_id) VALUES (?, 4)");
+						updateStatement.setInt(1, conceptNameId);
+						updateStatement.executeUpdate();
+						preferredDoneAlready = true;
+					}
+					
+					updateStatement = connection
+					        .prepareStatement("INSERT INTO concept_word (concept_id, word, locale, concept_name_id) VALUES (?, ?, ?, ?)");
+					updateStatement.setInt(1, conceptId);
+					updateStatement.setString(2, name);
+					updateStatement.setString(3, locale);
+					updateStatement.setInt(4, conceptNameId);
+					updateStatement.executeUpdate();
+
+				}
+			}
 			
-			updateStatement = connection
-			        .prepareStatement("INSERT INTO concept_name_tag_map (concept_name_id, concept_name_tag_id) VALUES (?, 4)");
-			updateStatement.setInt(1, conceptNameId);
-			updateStatement.executeUpdate();
-			
-			updateStatement = connection
-			        .prepareStatement("INSERT INTO concept_word (concept_id, word, locale, concept_name_id) VALUES (?, ?, 'en', ?)");
-			updateStatement.setInt(1, conceptId);
-			updateStatement.setString(2, conceptName);
-			updateStatement.setInt(3, conceptNameId);
-			updateStatement.executeUpdate();
-			
+			return conceptId;
 		}
 		catch (SQLException e) {
-			throw new CustomChangeException("Unable to create concept " + conceptName, e);
+			throw new CustomChangeException("Unable to create concept with names " + names, e);
 		}
 		finally {
 			if (updateStatement != null) {
@@ -159,8 +196,7 @@ public class BooleanConceptChangeSet implements CustomTaskChange {
 	 * @param falseConceptName the concept name for boolean false values
 	 * @throws CustomChangeException
 	 */
-	private void changeObs(DatabaseConnection connection, String trueConceptName, String falseConceptName)
-	                                                                                                      throws CustomChangeException {
+	private void changeObs(DatabaseConnection connection) throws CustomChangeException {
 		PreparedStatement updateStatement = null;
 		
 		try {
@@ -197,13 +233,8 @@ public class BooleanConceptChangeSet implements CustomTaskChange {
 	 * @param falseConceptId the concept id for false boolean concept
 	 * @throws CustomChangeException
 	 */
-	private void createGlobalProperties(DatabaseConnection connection, String trueConceptName, String falseConceptName)
-	                                                                                                                   throws CustomChangeException {
-		//set the concept_ids for the boolean concepts
-		trueConceptId = getInt(connection, "SELECT concept_id FROM concept_name WHERE name = '" + trueConceptName + "'");
-		falseConceptId = getInt(connection, "SELECT concept_id FROM concept_name WHERE name = '" + falseConceptName + "'");
-		
-		if (trueConceptId < 1 || falseConceptId < 1)
+	private void createGlobalProperties(DatabaseConnection connection, Integer trueConceptId, Integer falseConceptId) throws CustomChangeException {
+		if (trueConceptId == null || trueConceptId < 1 || falseConceptId == null || falseConceptId < 1)
 			throw new CustomChangeException("Can't create global properties for true/false concepts with invalid conceptIds");
 		PreparedStatement updateStatement = null;
 		
@@ -244,21 +275,22 @@ public class BooleanConceptChangeSet implements CustomTaskChange {
 	 * @return integer resulting from the execution of the sql statement
 	 * @throws CustomChangeException
 	 */
-	private int getInt(DatabaseConnection connection, String sql) throws CustomChangeException {
+	private Integer getInt(DatabaseConnection connection, String sql) throws CustomChangeException {
 		Statement stmt = null;
 		try {
 			stmt = connection.createStatement();
 			ResultSet rs = stmt.executeQuery(sql);
-			int result;
+			Integer result = null;
 			
 			if (rs.next()) {
 				result = rs.getInt(1);
 			} else {
-				throw new CustomChangeException("no result in getInt");
+				// this is okay, we just return null in this case
+				log.debug("Query returned no results: " + sql);
 			}
 			
 			if (rs.next()) {
-				throw new CustomChangeException("multiple results in getInt");
+				log.warn("Query returned multiple results when we expected just one: " + sql);
 			}
 			
 			return result;
