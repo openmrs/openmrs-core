@@ -52,7 +52,7 @@ public class HL7InArchive extends BaseOpenmrsObject {
 		setHL7Source(hl7InQueue.getHL7Source());
 		setHL7SourceKey(hl7InQueue.getHL7SourceKey());
 		setHL7Data(hl7InQueue.getHL7Data());
-		setMessageState(HL7Constants.HL7_STATUS_PROCESSING);
+		setMessageState(HL7Constants.HL7_STATUS_PROCESSED);
 	}
 	
 	/**
