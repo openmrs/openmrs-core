@@ -21,15 +21,16 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
 import org.openmrs.LocationTag;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsConstants;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * Shows the location hierarchy, in tree form
@@ -40,8 +41,18 @@ public class HierarchyController {
 	@RequestMapping("/admin/locations/hierarchy")
 	public void showHierarchy(ModelMap model) throws IOException {
 		model.addAttribute("json", getHierarchyAsJson());
+		model.addAttribute("locationWidgetType",
+			Context.getAdministrationService().getGlobalProperty(
+		    OpenmrsConstants.GLOBAL_PROPERTY_LOCATION_WIDGET_TYPE, "default"));
 	}
 	
+	@RequestMapping("/admin/locations/changeLocationWidgetType")
+	public String setWidgetType(@RequestParam("locationWidgetType") String widgetType) {
+		Context.getAdministrationService().saveGlobalProperty(
+		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCATION_WIDGET_TYPE, widgetType));
+		return "redirect:hierarchy.list";
+	}
+
 	/**
 	 * Gets JSON formatted for jstree jquery plugin
 	 * [
@@ -62,7 +73,7 @@ public class HierarchyController {
 		}
 		
 		// If this gets slow with lots of locations then switch out ObjectMapper for the
-		// stream-based version. (But the TODO above is more likely to be a performance hit.) 
+		// stream-based version. (But the TODO above is more likely to be a performance hit.)
 		StringWriter w = new StringWriter();
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.writeValue(w, list);

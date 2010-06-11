@@ -615,8 +615,7 @@ tr.searchHighlight {
 
 .popupSearchForm {
 	width: 500px;
-	height: 390px;
-	padding: 2px;
+	padding: 0.4em;
 	background-color: whitesmoke;
 	border: 1px solid gray;
 	position: absolute;

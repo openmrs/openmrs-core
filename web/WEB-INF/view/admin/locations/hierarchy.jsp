@@ -37,8 +37,33 @@
 	});
 </script>
 
-<spring:message code="Location.hierarchy"/>
-<div id="hierarchyTree"></div>
+<fieldset style="clear: both">
+	<legend><spring:message code="Location.hierarchy.chooseWidgetHeader"/>:</legend>
+	<form method="post" action="changeLocationWidgetType.form">
+		<spring:message code="Location.hierarchy.chooseWidgetStyle"/>:
+		<select name="locationWidgetType" onchange="submit()">
+			<option value="default" <c:if test="${locationWidgetType == 'default'}">selected="true"</c:if>>
+				<spring:message code="Location.hierarchy.widget.default"/>
+			</option>
+			<option value="tree" <c:if test="${locationWidgetType == 'tree'}">selected="true"</c:if>>
+				<spring:message code="Location.hierarchy.widget.tree"/>
+			</option>
+		</select>
+	</form>
+
+	<div style="margin: 0.5em 0;">
+		(<spring:message code="Location.hierarchy.example"/>)
+		<spring:message code="Location.hierarchy.exampleLabel"/>:
+		<openmrs:fieldGen type="org.openmrs.Location" formFieldName="locationId" val="${selectedLocation}"/>
+	</div>
+</fieldset>
+
+<br/>
+
+<fieldset style="clear: both">
+	<legend><spring:message code="Location.hierarchy"/></legend>
+	<div id="hierarchyTree"></div>
+</fieldset>
 
 <openmrs:extensionPoint pointId="org.openmrs.admin.locations.hierarchy.footer" type="html" />
 

@@ -24,7 +24,6 @@ import java.util.Vector;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Privilege;
 import org.openmrs.api.ConceptService;
-import org.openmrs.hl7.HL7Constants;
 import org.openmrs.module.ModuleConstants;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.patient.impl.LuhnIdentifierValidator;
@@ -764,6 +763,8 @@ public final class OpenmrsConstants {
 	
 	public static final String GLOBAL_PROPERTY_FALSE_CONCEPT = "concept.false";
 	
+	public static final String GLOBAL_PROPERTY_LOCATION_WIDGET_TYPE = "location.field.style";
+
 	/**
 	 * Global property name that allows specification of whether user passwords must contain both
 	 * upper and lower case characters. Allowable values are "true", "false", and null
@@ -881,6 +882,9 @@ public final class OpenmrsConstants {
 		
 		props.add(new GlobalProperty(GP_GRAPH_COLOR_CRITICAL, "rgb(200,0,0)",
 		        "Color of the 'critical' section of numeric graphs on the patient dashboard."));
+		
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_LOCATION_WIDGET_TYPE, "default",
+				"Type of widget to use for location fields"));
 		
 		String standardRegimens = "<list>" + "  <regimenSuggestion>" + "    <drugComponents>" + "      <drugSuggestion>"
 		        + "        <drugId>2</drugId>" + "        <dose>1</dose>" + "        <units>tab(s)</units>"
