@@ -417,6 +417,11 @@
  		<servlet-name>openmrs</servlet-name>
  		<url-pattern>*.list</url-pattern>
 	</servlet-mapping>
+	
+	<servlet-mapping>
+ 		<servlet-name>openmrs</servlet-name>
+ 		<url-pattern>*.json</url-pattern>
+	</servlet-mapping>
 
 	<servlet-mapping>
  		<servlet-name>openmrs</servlet-name>

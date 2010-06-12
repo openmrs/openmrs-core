@@ -26,7 +26,6 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.hl7.HL7Constants;
-import org.openmrs.hl7.HL7InArchive;
 import org.openmrs.hl7.HL7InQueue;
 import org.openmrs.hl7.HL7Service;
 import org.openmrs.web.WebConstants;
@@ -48,6 +47,7 @@ public class Hl7DeletedFormController extends SimpleFormController {
 	/**
 	 * Allows for Integers to be used as values in input tags.
 	 */
+	@Override
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
 		binder.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, true));
@@ -56,6 +56,7 @@ public class Hl7DeletedFormController extends SimpleFormController {
 	/**
 	 * This is called prior to displaying a form
 	 */
+	@Override
 	protected List<HL7InQueue> formBackingObject(HttpServletRequest request) throws ServletException {
 		List<HL7InQueue> hl7InQueue = new Vector<HL7InQueue>();
 		
@@ -70,6 +71,7 @@ public class Hl7DeletedFormController extends SimpleFormController {
 	 * This method pushes a message that had been deleted previously back into the queue to be
 	 * processed
 	 */
+	@Override
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command,
 	                                BindException errors) throws Exception {
 		HttpSession httpSession = request.getSession();
@@ -88,13 +90,10 @@ public class Hl7DeletedFormController extends SimpleFormController {
 				Object[] args = new Object[] { queueId };
 				
 				try {
-					//Restore Selected Message to the in queue table
-					HL7InArchive hl7InArchive = hL7Service.getHL7InArchive(Integer.valueOf(queueId));
-					HL7InQueue hl7InQueue = new HL7InQueue(hl7InArchive);
+					//Update the hl7 message's status to pending
+					HL7InQueue hl7InQueue = hL7Service.getHL7InQueue(Integer.valueOf(queueId));
+					hl7InQueue.setMessageState(HL7Constants.HL7_STATUS_PENDING);
 					hL7Service.saveHL7InQueue(hl7InQueue);
-					
-					//Delete selected Message from the archives table
-					hL7Service.purgeHL7InArchive(hl7InArchive);
 					
 					//Display a message for the operation
 					success.append(msa.getMessage("Hl7inQueue.queueForm.restored", args) + "<br/>");
