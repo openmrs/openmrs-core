@@ -1233,7 +1233,7 @@ public class ModuleFactory {
 	}
 	
 	/**
-	 * A method to queue module actions such as Start, Stop, Unload, Upgrade, Update
+	 * A method to queue module actions such as Start, Stop, Unload, Upgrade on loaded modules
 	 * 
 	 * @param moduleId id of the module which needs an action to be queued
 	 * @param pendingAction action that needs to be queued
@@ -1244,37 +1244,51 @@ public class ModuleFactory {
 	public static boolean queueModuleAction(String moduleId, ModuleAction pendingAction) throws ModuleException {
 		boolean result = true;
 		Module module = getLoadedModulesMap().get(moduleId);
-		if (module != null) {
+		if (module != null) { // Queue Action only if Module is Loaded
 			ModuleAction existingPendingAction = pendingModuleActions.get(moduleId);
-			if (existingPendingAction == null) {
+			if (existingPendingAction == null) { // Check whether there are any pending actions for the moduleId already
 				switch (pendingAction) {
 					case PENDING_START:
-						saveGlobalProperty(moduleId + ".started", "true", getGlobalPropertyStartedDescription(moduleId));
+						if (!isModuleStarted(module)) {
+							saveGlobalProperty(moduleId + ".started", "true", getGlobalPropertyStartedDescription(moduleId));
+						} else {
+							result = false;
+						}
 						break;
 					case PENDING_UPGRADE:
 						if (module.getUpdateFile() != null) {
 							saveGlobalProperty(moduleId + ".started", "true", getGlobalPropertyStartedDescription(moduleId));
 						} else {
-							String message = "module " + moduleId + " doesn't have a upgrade module set";
+							String message = "module " + moduleId + " doesn't have an upgrade module set";
 							log.warn(message);
+							result = false;
 							throw new ModuleException(message);
 						}
 						break;
 					case PENDING_STOP:
-						saveGlobalProperty(moduleId + ".started", "false", getGlobalPropertyStartedDescription(moduleId));
+						if (isModuleStarted(module)) {
+							saveGlobalProperty(moduleId + ".started", "false", getGlobalPropertyStartedDescription(moduleId));
+						} else {
+							result = false;
+						}
 						break;
 					case PENDING_UNLOAD:
-						boolean deleted = module.getFile().delete();
-						if (!deleted) {
-							module.getFile().deleteOnExit();
+						File moduleFile = module.getFile();
+						if (moduleFile != null) {
+							boolean deleted = moduleFile.delete();
+							if (!deleted) {
+								moduleFile.deleteOnExit();
+							}
 						}
 						break;
 					case PENDING_NONE:
 						break;
 				}
-				module.setPendingAction(pendingAction);
-				if (pendingAction != ModuleAction.PENDING_NONE) {
-					pendingModuleActions.put(moduleId, pendingAction);
+				if (result) {
+					module.setPendingAction(pendingAction);
+					if (pendingAction != ModuleAction.PENDING_NONE) {
+						pendingModuleActions.put(moduleId, pendingAction);
+					}
 				}
 			} else {
 				String message = "A pending action already exists for module id " + moduleId + ". No action will be added.";
