@@ -37,112 +37,114 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should return true if tried to start a loaded module", method = "queueModuleAction(String, ModuleAction)")
 	public void queueModuleAction_shouldReturnTrueIfTriedToStartALoadedModule() {
-		final boolean expected = true;
+		final boolean EXPECTED = true;
 		boolean actual = ModuleFactory.queueModuleAction("formimportexport", ModuleAction.PENDING_START);
-		Assert.assertEquals(expected, actual);
+		Assert.assertEquals(EXPECTED, actual);
 	}
 
 	@Test
 	@Verifies(value = "should return true if tried to stop a loaded and started module", method = "queueModuleAction(String, ModuleAction)")
 	public void queueModuleAction_shouldReturnTrueIfTriedToStopALoadedAndStartedModule() {
-		final boolean expected = true;
-		final String moduleId = "restmodule";
-		ModuleFactory.getStartedModulesMap().put(moduleId, ModuleFactory.getModuleById(moduleId));
-		boolean actual = ModuleFactory.queueModuleAction(moduleId, ModuleAction.PENDING_STOP);
-		Assert.assertEquals(expected, actual);
+		final boolean EXPECTED = true;
+		final String MODULE_ID = "restmodule";
+		ModuleFactory.getStartedModulesMap().put(MODULE_ID, ModuleFactory.getModuleById(MODULE_ID));
+		boolean actual = ModuleFactory.queueModuleAction(MODULE_ID, ModuleAction.PENDING_STOP);
+		Assert.assertEquals(EXPECTED, actual);
 	}
 
 	@Test
 	@Verifies(value = "should return true if tried to unload a loaded module", method = "queueModuleAction(String, ModuleAction)")
 	public void queueModuleAction_shouldReturnTrueIfTriedToUnloadALoadedModule() {
-		final boolean expected = true;
+		final boolean EXPECTED = true;
 		boolean actual = ModuleFactory.queueModuleAction("gmapsviewer", ModuleAction.PENDING_UNLOAD);
-		Assert.assertEquals(expected, actual);
+		Assert.assertEquals(EXPECTED, actual);
 	}
 
 	@Test
 	@Verifies(value = "should return true if tried to upgrade a loaded module with a new update file", method="queueModuleAction(String, ModuleAction)")
 	public void queueModuleAction_shouldReturnTrueIfTriedToUpgradeALoadedModule() {
-		final boolean expected = true;
-		final String moduleId = "dssmodule";
-		Module upgradeModule = ModuleFactory.getModuleById(moduleId);
+		final boolean EXPECTED = true;
+		final String MODULE_ID = "dssmodule";
+		Module upgradeModule = ModuleFactory.getModuleById(MODULE_ID);
 		upgradeModule.setUpdateFile(new File("org/openmrs/module/include/dssmodule-1.44.omod"));
-		boolean actual = ModuleFactory.queueModuleAction(moduleId, ModuleAction.PENDING_UPGRADE);
-		Assert.assertEquals(expected, actual);
+		boolean actual = ModuleFactory.queueModuleAction(MODULE_ID, ModuleAction.PENDING_UPGRADE);
+		Assert.assertEquals(EXPECTED, actual);
 	}
 
 	@Test(expected = ModuleException.class)
 	@Verifies(value = "should throw ModuleException if moduleId supplied is of a non existent module", method="queueModuleAction(String, ModuleAction)")
 	public void queueModuleAction_shouldThrowModuleExceptionIfModuleIdSuppliedIsOfANonExistentModule() throws Exception {
-		final String nonExistingModuleId = "ui.springmvc";
-		ModuleFactory.queueModuleAction(nonExistingModuleId, ModuleAction.PENDING_START);
+		final String NON_EXISTING_MODULE_ID = "ui.springmvc";
+		ModuleFactory.queueModuleAction(NON_EXISTING_MODULE_ID, ModuleAction.PENDING_START);
 	}
 	
 	@Test
 	@Verifies(value = "should return false if tried to start a started module", method = "queueModuleAction(String, ModuleAction)")
 	public void queueModuleAction_shouldReturnFalseIfTriedToStartAStartedModule() {
-		final boolean expected = false;
-		final String moduleId = "restmodule";
-		Module module = ModuleFactory.getModuleById(moduleId);
-		ModuleFactory.getStartedModulesMap().put(moduleId, module);
-		boolean actual = ModuleFactory.queueModuleAction(moduleId, ModuleAction.PENDING_START);
-		Assert.assertEquals(expected, actual);
+		final boolean EXPECTED = false;
+		final String MODULE_ID = "restmodule";
+		Module module = ModuleFactory.getModuleById(MODULE_ID);
+		ModuleFactory.getStartedModulesMap().put(MODULE_ID, module);
+		boolean actual = ModuleFactory.queueModuleAction(MODULE_ID, ModuleAction.PENDING_START);
+		Assert.assertEquals(EXPECTED, actual);
 	}
 	
 	@Test
 	@Verifies(value = "should return false if tried to stop a not started module", method = "queueModuleAction(String, ModuleAction)")
 	public void queueModuleAction_shouldReturnFalseIfTriedToStopANotStartedModule() {
-		final boolean expected = false;
-		final String moduleId = "formimportexport";
-		boolean actual = ModuleFactory.queueModuleAction(moduleId, ModuleAction.PENDING_STOP);
-		Assert.assertEquals(expected, actual);
+		final boolean EXPECTED = false;
+		final String MODULE_ID = "formimportexport";
+		boolean actual = ModuleFactory.queueModuleAction(MODULE_ID, ModuleAction.PENDING_STOP);
+		Assert.assertEquals(EXPECTED, actual);
 	}
 
 	@Test
 	@Verifies(value = "should return false if tried to upgrade a loaded module without a new update file", method = "queueModuleAction(String, ModuleAction)")
 	public void queueModuleAction_shouldReturnFalseIfTriedToUpgradeALoadedModuleWithoutANewUpdateFile() {
-		final boolean expected = false;
-		final String moduleId = "formimportexport";
-		Module updateModule = ModuleFactory.getModuleById(moduleId);
+		final boolean EXPECTED = false;
+		final String MODULE_ID = "formimportexport";
+		Module updateModule = ModuleFactory.getModuleById(MODULE_ID);
 		//No update file is being set
 		updateModule.setUpdateFile(null);
-		boolean actual = ModuleFactory.queueModuleAction(moduleId, ModuleAction.PENDING_UPGRADE);
-		Assert.assertEquals(expected, actual);
+		boolean actual = ModuleFactory.queueModuleAction(MODULE_ID, ModuleAction.PENDING_UPGRADE);
+		Assert.assertEquals(EXPECTED, actual);
 	}
 	
 	@Test
 	@Verifies(value = "should return an iterator with atleast one element if a module action was queued", method = "getModulesWithPendingAction()")
 	public void getModulesWithPendingAction_shouldReturnAnIteratorWithAtleastOneElementIfAModuleActionWasQueued() {
-		final boolean expected = true;
+		final boolean EXPECTED = true;
 		boolean actual = ModuleFactory.getModulesWithPendingAction().hasNext();
-		Assert.assertEquals(expected, actual);
+		Assert.assertEquals(EXPECTED, actual);
 	}
 	
 	@Test
 	@Verifies(value = "should return true if there are modules with pending actions", method = "hasPendingModuleActions")
 	public void hasPendingModuleActions_shouldReturnTrueIfThereAreModulesWithPendingActions() {
-		final boolean expected = true;
+		final boolean EXPECTED = true;
 		boolean actual = ModuleFactory.hasPendingModuleActions();
-		Assert.assertEquals(expected, actual);
+		Assert.assertEquals(EXPECTED, actual);
 	}
 	
 	@Test
 	@Verifies(value = "should return true if there is a pending action for the given moduleId", method = "hasPendingModuleActionForModuleId(String)")
 	public void hasPendingModuleActionForModuleId_shouldReturnTrueIfThereIsAPendingActionForTheGivenModuleId() {
-		final boolean expected = true;
+		final boolean EXPECTED = true;
 		final String moduleId = "restmodule";
 		boolean actual = ModuleFactory.hasPendingModuleActionForModuleId(moduleId);
-		Assert.assertEquals(expected, actual);
+		Assert.assertEquals(EXPECTED, actual);
 	}
 
 	@Test
 	@Verifies(value = "should clear all the pending module actions", method = "clearAllPendingActions()")
 	public void clearAllPendingActions_shouldClearAllThePendingModuleActions() {
-		final boolean expected = false;
+		final boolean EXPECTED = false;
 		ModuleFactory.clearAllPendingActions();
 		boolean actual = ModuleFactory.hasPendingModuleActions();
-		Assert.assertEquals(expected, actual);
+		Assert.assertEquals(EXPECTED, actual);
 	}
+
+
 		
 	
 

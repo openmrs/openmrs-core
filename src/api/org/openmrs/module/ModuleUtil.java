@@ -135,6 +135,9 @@ public class ModuleUtil {
 		
 		// make sure all mandatory modules are loaded and started
 		checkMandatoryModulesStarted();
+		
+		// cache module repository
+		ModuleRepository.cacheModuleRepository();
 	}
 	
 	/**
