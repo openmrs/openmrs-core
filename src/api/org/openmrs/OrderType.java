@@ -26,8 +26,6 @@ public class OrderType extends BaseOpenmrsMetadata implements java.io.Serializab
 	
 	private Integer orderTypeId;
 	
-	private LocalizedString localizedName;
-	
 	// Constructors
 	
 	/** default constructor */
@@ -105,42 +103,6 @@ public class OrderType extends BaseOpenmrsMetadata implements java.io.Serializab
 	public void setId(Integer id) {
 		setOrderTypeId(id);
 		
-	}
-	
-    /**
-	 * @return the localizedName
-	 */
-	public LocalizedString getLocalizedName() {
-		if (localizedName == null)
-			localizedName = new LocalizedString();
-		return localizedName;
-	}
-	
-	/**
-	 * @param localizedName the localizedName to set
-	 */
-	public void setLocalizedName(LocalizedString localizedName) {
-		this.localizedName = localizedName;
-	}
-	
-	/**
-	 * @return the name
-	 * @see LocalizedString#getValue()
-	 * @should return unlocalized name when no localization is added
-	 */
-	@Override
-	public String getName() {
-		return getLocalizedName().getValue();
-	}
-	
-	/**
-	 * @param name the name to set
-	 * @see LocalizedString#setUnlocalizedValue(String)
-	 * @should set unlocalized name correctly
-	 */
-	@Override
-	public void setName(String name) {
-		getLocalizedName().setUnlocalizedValue(name);
 	}
 	
 }

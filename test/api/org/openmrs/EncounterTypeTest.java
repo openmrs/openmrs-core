@@ -15,8 +15,6 @@ package org.openmrs;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.openmrs.serialization.LocalizedStringSerializer;
-import org.openmrs.serialization.OpenmrsSerializer;
 import org.openmrs.test.Verifies;
 
 /**
@@ -129,8 +127,7 @@ public class EncounterTypeTest {
     public void getName_shouldReturnUnlocalizedNameWhenNoLocalizationIsAdded() throws Exception {
     	EncounterType type = new EncounterType();
 		String expected = "Favorite Color";
-		OpenmrsSerializer serializer = new LocalizedStringSerializer();
-		LocalizedString ls = serializer.deserialize(expected, LocalizedString.class);
+		LocalizedString ls = LocalizedString.valueOf(expected);
 		type.setLocalizedName(ls);
 		Assert.assertEquals(expected, type.getName());
     }
