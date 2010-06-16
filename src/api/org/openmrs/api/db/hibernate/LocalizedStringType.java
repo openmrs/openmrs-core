@@ -112,19 +112,8 @@ public class LocalizedStringType implements UserType, Serializable {
 	 */
 	@Override
 	public void nullSafeSet(PreparedStatement ps, Object value, int index) throws HibernateException, SQLException {
-		if (value != null) {
-			try {
-				Hibernate.STRING.nullSafeSet(ps, LocalizedStringUtil.serialize((LocalizedString) value), index);
-			}
-			catch (Exception e) {
-				// only convert to LocalizationException when the cause is data too long for column
-				//				if (e.getMessage().matches("^.*Data too long for column.*$"))
-				//					throw new LocalizationException(OpenmrsUtil.getMessage("Localization.error.max.length",
-				//					    new Object[] {}));
-				//				else
-				//					//throw e;
-			}
-		}
+		if (value != null)
+			Hibernate.STRING.nullSafeSet(ps, LocalizedStringUtil.serialize((LocalizedString) value), index);
 		else
 			Hibernate.STRING.nullSafeSet(ps, value, index);
 	}
