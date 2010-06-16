@@ -29,7 +29,6 @@ import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.HSQLDialect;
 import org.hibernate.engine.SessionFactoryImplementor;
 import org.openmrs.BaseOpenmrsMetadata;
-import org.openmrs.serialization.LocalizedStringSerializer;
 import org.openmrs.util.LocalizedStringUtil;
 
 /**
@@ -149,8 +148,8 @@ public class HibernateUtil {
 			Criteria crit = sessionFactory.getCurrentSession().createCriteria(searchClazz);
 			if (includeRetired == false)
 				crit.add(Expression.eq("retired", false));
-			crit.add(Expression.sql(columnName + " like ?", "%" + LocalizedStringSerializer.PARTITION
-			        + LocalizedStringUtil.escapeDelimiter(value) + LocalizedStringSerializer.SPLITTER + "%",
+			crit.add(Expression.sql(columnName + " like ?", "%" + LocalizedStringUtil.PARTITION
+			        + LocalizedStringUtil.escapeDelimiter(value) + LocalizedStringUtil.SPLITTER + "%",
 			    Hibernate.STRING));
 			results = crit.list();
 		}
@@ -236,11 +235,11 @@ public class HibernateUtil {
 		String queryValue = "";
 		if (caseSensitive == false) {
 			queryStr = "UPPER(" + columnName + ") like ?";
-			queryValue = "%" + LocalizedStringSerializer.PARTITION
+			queryValue = "%" + LocalizedStringUtil.PARTITION
 			        + LocalizedStringUtil.escapeDelimiter(value).toUpperCase() + "%";
 		} else {
 			queryStr = columnName + " like ?";
-			queryValue = "%" + LocalizedStringSerializer.PARTITION + LocalizedStringUtil.escapeDelimiter(value) + "%";
+			queryValue = "%" + LocalizedStringUtil.PARTITION + LocalizedStringUtil.escapeDelimiter(value) + "%";
 		}
 		crit.add(Expression.sql(queryStr, queryValue, Hibernate.STRING));
 		

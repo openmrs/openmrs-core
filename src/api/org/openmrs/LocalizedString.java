@@ -20,11 +20,14 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.LocalizedStringUtil;
 
 /**
  * This class will essentially encapsulate an unlocalized String value, and an optional Map of
  * Locale->String variants. <br />
  * This will be the data type for any fields that we wish to Localize.
+ * 
+ * @since 1.9
  */
 public class LocalizedString implements Serializable {
 	
@@ -158,4 +161,23 @@ public class LocalizedString implements Serializable {
 		return unlocalizedValue.hashCode();
 	}
 	
+	/**
+	 * Get a LocalizedString object by deserializing this given s
+	 * 
+	 * @param s - string to deserialize
+	 * @return a LocalizedString object
+	 * @see LocalizedStringUtil#deserialize(String)
+	 */
+	public static LocalizedString valueOf(String s) {
+		return LocalizedStringUtil.deserialize(s);
+	}
+	
+	/**
+	 * @see java.lang.Object#toString()
+	 * @see #getValue()
+	 */
+	@Override
+	public String toString() {
+		return getValue();
+	}
 }
