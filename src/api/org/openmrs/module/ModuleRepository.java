@@ -20,15 +20,15 @@ import java.net.SocketException;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.JsonToken;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
@@ -39,10 +39,15 @@ public class ModuleRepository {
 	
 	private static final Log log = LogFactory.getLog(ModuleRepository.class);
 
-	private static Date lastUpdatedDate = new Date(100, 0, 01);
+	private static Date lastUpdatedDate = new Date(100, 0, 01); // first date will be 01/01/2000
 	
 	private static Set<Module> repository = new HashSet<Module>();
-
+	
+	public static final String MODULE_REPOSITORY_CACHE_UPDATE_TASK_NAME = "ModuleRepositoryCacheUpdateTask";
+	
+	public static final String MODULE_REPOSITORY_CACHE_UPDATE_TASK_CLASS = "org.openmrs.scheduler.tasks."
+	        + MODULE_REPOSITORY_CACHE_UPDATE_TASK_NAME;
+	
 	public static void cacheModuleRepository() {
 		Thread t = new Thread() {
 			@Override
@@ -53,19 +58,23 @@ public class ModuleRepository {
 					try{
 						url = getURL();
 						jsonInputStream = ModuleUtil.getURLStream(url);
-						JsonFactory factory = new JsonFactory();
-						JsonParser parser = factory.createJsonParser(jsonInputStream);
-						parser.nextToken();
-						while (parser.nextToken() != JsonToken.END_OBJECT) {
-							String nameField = parser.getCurrentName();
-							if ("Columns".equals(nameField)) {
-								String value = parser.getText();
-							} else if ("Values".equals(nameField)) {
-								while (parser.nextToken() != JsonToken.END_OBJECT) {
-									String value = parser.getText();
-								}
+						ObjectMapper mapper = new ObjectMapper();
+						HashMap<String, Object> map = mapper.readValue(jsonInputStream, HashMap.class);
+						ArrayList<ArrayList<String>> metadata = (ArrayList<ArrayList<String>>) map.get("Values");
+						for (ArrayList<String> moduleMetaData : metadata) {
+							Module mod = new Module(moduleMetaData.get(2)); // Module Name
+							mod.setModuleId(moduleMetaData.get(0)); // Module Id
+							mod.setDownloadURL(moduleMetaData.get(1)); // Download URL
+							mod.setVersion(moduleMetaData.get(3)); // Version
+							mod.setAuthor(moduleMetaData.get(4)); // Author
+							mod.setDescription(moduleMetaData.get(5)); // Description
+							//If older version available remove it
+							if (repository.contains(mod)) {
+								repository.remove(mod);
 							}
+							repository.add(mod);
 						}
+						lastUpdatedDate = new Date();
 					}catch(MalformedURLException e){
 						log.error("Module Repository URL is malformed",e);
 						return;
