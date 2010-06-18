@@ -109,6 +109,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @should return null if no object found with given uuid
 	 */
 	@Transactional(readOnly = true)
+	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
 	public Concept getConceptByUuid(String uuid);
 	
 	/**
@@ -463,6 +464,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @should return null if no object found with given uuid
 	 */
 	@Transactional(readOnly = true)
+	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
 	public Drug getDrugByUuid(String uuid);
 	
 	/**
@@ -626,6 +628,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @should return null if no object found with given uuid
 	 */
 	@Transactional(readOnly = true)
+	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPT_CLASSES)
 	public ConceptClass getConceptClassByUuid(String uuid);
 	
 	/**
@@ -637,6 +640,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @should return null if no object found with given uuid
 	 */
 	@Transactional(readOnly = true)
+	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
 	public ConceptAnswer getConceptAnswerByUuid(String uuid);
 	
 	/**
@@ -648,6 +652,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @should return null if no object found with given uuid
 	 */
 	@Transactional(readOnly = true)
+	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
 	public ConceptName getConceptNameByUuid(String uuid);
 	
 	/**
@@ -659,6 +664,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @should return null if no object found with given uuid
 	 */
 	@Transactional(readOnly = true)
+	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
 	public ConceptSet getConceptSetByUuid(String uuid);
 	
 	/**
@@ -670,6 +676,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @should return null if no object found with given uuid
 	 */
 	@Transactional(readOnly = true)
+	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPT_SOURCES)
 	public ConceptSource getConceptSourceByUuid(String uuid);
 	
 	/**
@@ -762,6 +769,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @should return null if no object found with given uuid
 	 */
 	@Transactional(readOnly = true)
+	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPT_DATATYPES)
 	public ConceptDatatype getConceptDatatypeByUuid(String uuid);
 	
 	/**
@@ -875,6 +883,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @should return null if no object found with given uuid
 	 */
 	@Transactional(readOnly = true)
+	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
 	public ConceptNumeric getConceptNumericByUuid(String uuid);
 	
 	/**
@@ -1073,6 +1082,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @should return null if no object found with given uuid
 	 */
 	@Transactional(readOnly = true)
+	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPT_PROPOSALS)
 	public ConceptProposal getConceptProposalByUuid(String uuid);
 	
 	/**
@@ -1112,6 +1122,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @should return null if no object found with given uuid
 	 */
 	@Transactional(readOnly = true)
+	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
 	public ConceptNameTag getConceptNameTagByUuid(String uuid);
 	
 	/**
@@ -1288,6 +1299,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @should return null if no object found with given uuid
 	 */
 	@Transactional(readOnly = true)
+	@Authorized( { OpenmrsConstants.PRIV_VIEW_CONCEPTS })
 	public ConceptDescription getConceptDescriptionByUuid(String uuid);
 	
 	/**
@@ -1300,7 +1312,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @should return null if no ConceptSource with that name is found
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPT_SOURCES)
 	public ConceptSource getConceptSourceByName(String conceptSourceName) throws APIException;
 	
 	/**

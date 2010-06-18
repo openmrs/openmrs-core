@@ -67,14 +67,16 @@ public interface CohortService extends OpenmrsService {
 	 * @see #saveCohort(Cohort)
 	 * @deprecated replaced by saveCohort(Cohort)
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_ADD_COHORTS })
+	@Deprecated
+    @Authorized( { OpenmrsConstants.PRIV_ADD_COHORTS })
 	public Cohort createCohort(Cohort cohort) throws APIException;
 	
 	/**
 	 * @see #saveCohort(Cohort)
 	 * @deprecated replaced by saveCohort(Cohort)
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_EDIT_COHORTS })
+	@Deprecated
+    @Authorized( { OpenmrsConstants.PRIV_EDIT_COHORTS })
 	public Cohort updateCohort(Cohort cohort) throws APIException;
 	
 	/**
@@ -151,7 +153,8 @@ public interface CohortService extends OpenmrsService {
 	 * @see #getAllCohorts()
 	 * @deprecated replaced by getAllCohorts()
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_PATIENT_COHORTS })
+	@Deprecated
+    @Authorized( { OpenmrsConstants.PRIV_VIEW_PATIENT_COHORTS })
 	public List<Cohort> getCohorts() throws APIException;
 	
 	/**
@@ -355,6 +358,7 @@ public interface CohortService extends OpenmrsService {
 	 * @should return null if no object found with given uuid
 	 */
 	@Transactional(readOnly = true)
+	@Authorized( { OpenmrsConstants.PRIV_VIEW_PATIENT_COHORTS })
 	public Cohort getCohortByUuid(String uuid);
 	
 }
