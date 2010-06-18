@@ -194,7 +194,8 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable {
 	 * @param obj
 	 * @return boolean true/false whether or not they are the same objects
 	 */
-	public boolean equals(Object obj) {
+	@Override
+    public boolean equals(Object obj) {
 		if (obj instanceof User) {
 			User user = (User) obj;
 			
@@ -212,7 +213,8 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable {
 	 * 
 	 * @see org.openmrs.Person#hashCode()
 	 */
-	public int hashCode() {
+	@Override
+    public int hashCode() {
 		if (getUserId() == null)
 			return super.hashCode();
 		return getUserId().hashCode();
@@ -335,20 +337,23 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable {
 	/**
 	 * @deprecated see {@link #setPerson(Person)}
 	 */
-	public void setPersonId(Integer personId) {
+	@Deprecated
+    public void setPersonId(Integer personId) {
 		throw new APIException("You need to call setPerson(Person)");
 	}
 	
 	/**
-     * @return the person
-     */
+	 * @return the person
+	 * @since 1.6
+	 */
     public Person getPerson() {
     	return person;
     }
 	
-    /**
-     * @param person the person to set
-     */
+	/**
+	 * @param person the person to set
+	 * @since 1.6
+	 */
     public void setPerson(Person person) {
     	this.person = person;
     }
@@ -383,7 +388,8 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable {
 		this.secretQuestion = secretQuestion;
 	}
 	
-	public String toString() {
+	@Override
+    public String toString() {
 		return username;
 	}
 	
@@ -489,7 +495,8 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable {
 	 * @deprecated use <tt>getGivenName</tt> on <tt>Person</tt>
 	 * @return String user's first name
 	 */
-	public String getFirstName() {
+	@Deprecated
+    public String getFirstName() {
 		return getGivenName();
 	}
 	
@@ -497,7 +504,8 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable {
 	 * @deprecated use <tt>getFamilyName</tt> on <tt>Person</tt>
 	 * @return String user's last name
 	 */
-	public String getLastName() {
+	@Deprecated
+    public String getLastName() {
 		return getFamilyName();
 	}
 	
