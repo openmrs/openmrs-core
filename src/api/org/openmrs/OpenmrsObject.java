@@ -17,8 +17,6 @@ package org.openmrs;
  * This is the base interface for all OpenMRS-defined classes
  * 
  * @since 1.5
- * 
- * @since 1.5
  */
 public interface OpenmrsObject {
 	
