@@ -88,28 +88,18 @@ public class Location extends BaseOpenmrsMetadata implements java.io.Serializabl
 	 * @param obj
 	 * @return boolean true/false whether or not they are the same objects
 	 */
-	public boolean equals(Object obj) {
+	@Override
+    public boolean equals(Object obj) {
 		if (obj instanceof Location) {
 			Location loc = (Location) obj;
 			if (this.getLocationId() != null && loc.getLocationId() != null)
 				return (this.getLocationId().equals(loc.getLocationId()));
-			/*
-			 * return (this.getName().equals(loc.getName()) &&
-			 * this.getDescription().equals(loc.getDescription()) &&
-			 * this.getAddress1().equals(loc.getAddress1()) &&
-			 * this.getAddress2().equals(loc.getAddress2()) &&
-			 * this.getCityVillage().equals(loc.getCityVillage()) &&
-			 * this.getStateProvince().equals(loc.getStateProvince()) &&
-			 * this.getPostalCode().equals(loc.getPostalCode()) &&
-			 * this.getCountry().equals(loc.getCountry()) &&
-			 * this.getLatitude().equals(loc.getLatitude()) &&
-			 * this.getLongitude().equals(loc.getLongitude()));
-			 */
 		}
 		return obj == this;
 	}
 	
-	public int hashCode() {
+	@Override
+    public int hashCode() {
 		if (this.getLocationId() == null)
 			return super.hashCode();
 		return this.getLocationId().hashCode();
@@ -243,7 +233,8 @@ public class Location extends BaseOpenmrsMetadata implements java.io.Serializabl
 		this.stateProvince = stateProvince;
 	}
 	
-	public String toString() {
+	@Override
+    public String toString() {
 		return getName();
 	}
 	
