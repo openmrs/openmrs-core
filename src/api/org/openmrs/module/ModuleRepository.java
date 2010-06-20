@@ -29,6 +29,11 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.openmrs.GlobalProperty;
+import org.openmrs.api.AdministrationService;
+import org.openmrs.api.context.Context;
+import org.openmrs.scheduler.SchedulerService;
+import org.openmrs.scheduler.TaskDefinition;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
@@ -43,11 +48,65 @@ public class ModuleRepository {
 	
 	private static Set<Module> repository = new HashSet<Module>();
 	
-	public static final String MODULE_REPOSITORY_CACHE_UPDATE_TASK_NAME = "ModuleRepositoryCacheUpdateTask";
+	public static final String MODULE_REPOSITORY_CACHE_UPDATE_TASK_NAME = "Module Repository Cache Update";
 	
-	public static final String MODULE_REPOSITORY_CACHE_UPDATE_TASK_CLASS = "org.openmrs.scheduler.tasks."
-	        + MODULE_REPOSITORY_CACHE_UPDATE_TASK_NAME;
+	public static final String MODULE_REPOSITORY_CACHE_UPDATE_TASK_CLASS = "org.openmrs.scheduler.tasks.ModuleRepositoryCacheUpdateTask";
+
+	private static final int MODULE_ID_INDEX = 0;
 	
+	private static final int MODULE_DOWNLOAD_URL_INDEX = 1;
+	
+	private static final int MODULE_NAME_INDEX = 2;
+	
+	private static final int MODULE_VERSION_INDEX = 3;
+	
+	private static final int MODULE_AUTHOR_INDEX = 4;
+	
+	private static final int MODULE_DESCRIPTION_INDEX = 5;
+	
+	private static final String MODULE_REPOSITORY_URL = "modulerepository.url.allModules";
+	
+	private static String moduleRepositoryUrl = null;
+
+	public static void initialize() {
+		try {
+			/* Temporarily Used the authentication should be removed
+			 * once ticket http://dev.openmrs.org/ticket/1947 is completed
+			 */
+			Context.authenticate("admin", "Admin123");
+			SchedulerService ss = Context.getSchedulerService();
+			TaskDefinition task = ss.getTaskByName(MODULE_REPOSITORY_CACHE_UPDATE_TASK_NAME);
+			if (task == null) {
+				task = new TaskDefinition();
+				task.setName(MODULE_REPOSITORY_CACHE_UPDATE_TASK_NAME);
+				task.setDescription("This Task updates Module  Repository Cache");
+				task.setTaskClass(MODULE_REPOSITORY_CACHE_UPDATE_TASK_CLASS);
+				task.setStartTime(new Date());
+				task.setStartOnStartup(true);
+				task.setRepeatInterval(86400L); // Daily
+				task.setStarted(true);
+				ss.saveTask(task);
+			}
+			AdministrationService as = Context.getAdministrationService();
+			String url = as.getGlobalProperty(MODULE_REPOSITORY_URL);
+			if (url == null) {
+				url = "http://localhost:8080/modules/getAllModules?openmrsVersion=<VERSION>&lastUpdatedDate=<DATE>";
+				// url = WebConstants.MODULE_REPOSITORY_URL + "/getAllModules?openmrsVersion=<VERSION>&lastUpdatedDate=<DATE>";
+				GlobalProperty gp = new GlobalProperty();
+				gp.setProperty(MODULE_REPOSITORY_URL);
+				gp.setPropertyValue(url);
+				gp.setDescription("Get All Module Repository URL");
+				as.saveGlobalProperty(gp);
+			}
+			moduleRepositoryUrl = url;
+			Context.logout();
+			cacheModuleRepository();
+		}
+		catch (Throwable t) {
+			log.error("Error while initializing Module Repository", t);
+		}
+	}
+
 	public static void cacheModuleRepository() {
 		Thread t = new Thread() {
 			@Override
@@ -62,25 +121,26 @@ public class ModuleRepository {
 						HashMap<String, Object> map = mapper.readValue(jsonInputStream, HashMap.class);
 						ArrayList<ArrayList<String>> metadata = (ArrayList<ArrayList<String>>) map.get("Values");
 						for (ArrayList<String> moduleMetaData : metadata) {
-							Module mod = new Module(moduleMetaData.get(2)); // Module Name
-							mod.setModuleId(moduleMetaData.get(0)); // Module Id
-							mod.setDownloadURL(moduleMetaData.get(1)); // Download URL
-							mod.setVersion(moduleMetaData.get(3)); // Version
-							mod.setAuthor(moduleMetaData.get(4)); // Author
-							mod.setDescription(moduleMetaData.get(5)); // Description
+							Module mod = new Module(moduleMetaData.get(MODULE_NAME_INDEX)); // Module Name
+							mod.setModuleId(moduleMetaData.get(MODULE_ID_INDEX)); // Module Id
+							mod.setDownloadURL(moduleMetaData.get(MODULE_DOWNLOAD_URL_INDEX)); // Download URL
+							mod.setVersion(moduleMetaData.get(MODULE_VERSION_INDEX)); // Version
+							mod.setAuthor(moduleMetaData.get(MODULE_AUTHOR_INDEX)); // Author
+							mod.setDescription(moduleMetaData.get(MODULE_DESCRIPTION_INDEX)); // Description
 							//If older version available remove it
 							if (repository.contains(mod)) {
 								repository.remove(mod);
 							}
 							repository.add(mod);
 						}
+						// Set the last updated date to current date
 						lastUpdatedDate = new Date();
 					}catch(MalformedURLException e){
-						log.error("Module Repository URL is malformed",e);
+						log.error("Module Repository URL is malformed", e);
 						return;
 					}catch (IOException e) {
 						if (e instanceof SocketException || e instanceof UnknownHostException) {
-							log.error("No internet is available to cache modules",e);
+							log.error("No internet is available to cache modules", e);
 						}else{
 							log.error(e.getMessage(), e);
 						}
@@ -108,9 +168,8 @@ public class ModuleRepository {
 	}
 	
 	private static URL getURL() throws MalformedURLException {
-		return new URL("http://localhost:8080/modules/getAllModules?openmrsVersion="
-		        + OpenmrsConstants.OPENMRS_VERSION_SHORT + "&lastUpdatedDate=" + formatDate(lastUpdatedDate));
-		//return new URL(WebConstants.MODULE_REPOSITORY_URL + "/getAllModules?openmrsVersion="
-		        //+ OpenmrsConstants.OPENMRS_VERSION_SHORT + "&lastUpdatedDate=" + formatDate(lastUpdatedDate));
+		String url = moduleRepositoryUrl.replace("<VERSION>", String.valueOf(OpenmrsConstants.OPENMRS_VERSION_SHORT));
+		url = url.replace("<DATE>", formatDate(lastUpdatedDate));
+		return new URL(url);
 	}
 }
