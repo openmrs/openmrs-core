@@ -26,9 +26,6 @@ import java.util.Set;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.BaseOpenmrsObject;
-import org.openmrs.Concept;
-import org.openmrs.ConceptNumeric;
-import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.api.APIException;
@@ -61,29 +58,6 @@ public class RequiredDataAdviceTest {
 		
 		public void setId(Integer id) {
 		}
-	}
-	
-	/**
-	 * @see RequiredDataAdvice#getAllInheritedFields(Class, List)
-	 */
-	@Test
-	@Verifies(value = "should get all declared fields on given class", method = "getAllInheritedFields(Class,List)")
-	public void getAllInheritedFields_shouldGetAllDeclaredFieldsOnGivenClass() throws Exception {
-		List<Field> fields = new ArrayList<Field>();
-		RequiredDataAdvice.getAllInheritedFields(MiniOpenmrsObject.class, fields);
-		Assert.assertEquals(3, fields.size());
-	}
-	
-	/**
-	 * @see {@link RequiredDataAdvice#getAllInheritedFields(Class,List)}
-	 */
-	@Test
-	@Verifies(value = "should get all declared fields on parent class as well", method = "getAllInheritedFields(Class,List)")
-	public void getAllInheritedFields_shouldGetAllDeclaredFieldsOnParentClassAsWell() throws Exception {
-		List<Field> fields = new ArrayList<Field>();
-		RequiredDataAdvice.getAllInheritedFields(ConceptNumeric.class, fields);
-		Field conceptNamesField = Concept.class.getDeclaredField("names");
-		Assert.assertTrue(fields.contains(conceptNamesField));
 	}
 	
 	/**
@@ -145,26 +119,6 @@ public class RequiredDataAdviceTest {
 		ClassWithBadGetter oo = new ClassWithBadGetter();
 		oo.setMyLocations(new HashSet<Location>());
 		RequiredDataAdvice.getChildCollection(oo, ClassWithBadGetter.class.getDeclaredField("locations"));
-	}
-	
-	/**
-	 * @see {@link RequiredDataAdvice#isOpenmrsObjectCollection(Field)}
-	 */
-	@Test
-	@Verifies(value = "should return true if field is openmrsObject list", method = "isOpenmrsObjectCollection(Field)")
-	public void isOpenmrsObjectCollection_shouldReturnTrueIfFieldIsOpenmrsobjectList() throws Exception {
-		Assert.assertTrue(RequiredDataAdvice
-		        .isOpenmrsObjectCollection(MiniOpenmrsObject.class.getDeclaredField("locations")));
-	}
-	
-	/**
-	 * @see {@link RequiredDataAdvice#isOpenmrsObjectCollection(Field)}
-	 */
-	@Test
-	@Verifies(value = "should return true if field is openmrsObject set", method = "isOpenmrsObjectCollection(Field)")
-	public void isOpenmrsObjectCollection_shouldReturnTrueIfFieldIsOpenmrsobjectSet() throws Exception {
-		Assert.assertTrue(RequiredDataAdvice.isOpenmrsObjectCollection(ClassWithBadGetter.class
-		        .getDeclaredField("locations")));
 	}
 	
 	/**
@@ -233,43 +187,23 @@ public class RequiredDataAdviceTest {
 	}
 	
 	/**
-	 * @see RequiredDataAdvice#isOpenmrsObjectCollection(Class,Object)
-	 */
-	@Test
-	@Verifies(value = "should return false if class is collection of other objects", method = "isOpenmrsObjectCollection(Class<*>,Object)")
-	public void isOpenmrsObjectCollection_shouldReturnFalseIfClassIsCollectionOfOtherObjects() throws Exception {
-		Set<Locale> locales = new HashSet<Locale>();
-		RequiredDataAdvice.isOpenmrsObjectCollection(locales.getClass(), locales);
-	}
-	
-	/**
-	 * @see RequiredDataAdvice#isOpenmrsObjectCollection(Class,Object)
-	 */
-	@Test
-	@Verifies(value = "should return false if class is not a collection", method = "isOpenmrsObjectCollection(Class<*>,Object)")
-	public void isOpenmrsObjectCollection_shouldReturnFalseIfClassIsNotACollection() throws Exception {
-		Location location = new Location();
-		RequiredDataAdvice.isOpenmrsObjectCollection(location.getClass(), location);
-	}
-	
-	/**
 	 * @see RequiredDataAdvice#isOpenmrsObjectCollection(Class<*>,Object)
 	 */
 	@Test
-	@Verifies(value = "should return true if class is openmrsObject list", method = "isOpenmrsObjectCollection(Class<*>,Object)")
+	@Verifies(value = "should return true if class is openmrsObject list", method = "isOpenmrsObjectCollection(Object)")
 	public void isOpenmrsObjectCollection_shouldReturnTrueIfClassIsOpenmrsObjectList() throws Exception {
 		List<Location> locations = new ArrayList<Location>();
-		RequiredDataAdvice.isOpenmrsObjectCollection(locations.getClass(), locations);
+		Assert.assertTrue(RequiredDataAdvice.isOpenmrsObjectCollection(locations));
 	}
 	
 	/**
 	 * @see RequiredDataAdvice#isOpenmrsObjectCollection(Class<*>,Object)
 	 */
 	@Test
-	@Verifies(value = "should return true if class is openmrsObject set", method = "isOpenmrsObjectCollection(Class<*>,Object)")
+	@Verifies(value = "should return true if class is openmrsObject set", method = "isOpenmrsObjectCollection(Object)")
 	public void isOpenmrsObjectCollection_shouldReturnTrueIfClassIsOpenmrsObjectSet() throws Exception {
 		Set<Location> locations = new HashSet<Location>();
-		RequiredDataAdvice.isOpenmrsObjectCollection(locations.getClass(), locations);
+		Assert.assertTrue(RequiredDataAdvice.isOpenmrsObjectCollection(locations));
 	}
 	
 	/**
@@ -280,15 +214,6 @@ public class RequiredDataAdviceTest {
 	public void before_shouldNotFailOnUpdateMethodWithNoArguments() throws Throwable {
 		Method method = ConceptServiceImpl.class.getMethod("updateConceptWords", (Class[]) null);
 		new RequiredDataAdvice().before(method, null, new ConceptServiceImpl());
-		new RequiredDataAdvice().before(method, new Object[] {}, new ConceptServiceImpl());
-	}
-	
-	/**
-	 * @see {@link RequiredDataAdvice#getAllInheritedFields(Class<+QOpenmrsObject;>,List<QField;>)}
-	 */
-	@Test
-	@Verifies(value = "should not fail given null fields", method = "getAllInheritedFields(Class<+QOpenmrsObject;>,List<QField;>)")
-	public void getAllInheritedFields_shouldNotFailGivenNullFields() throws Exception {
-		new RequiredDataAdvice().getAllInheritedFields(Form.class, null);
+		new RequiredDataAdvice().before(method, new Object[] {}, new ConceptServiceImpl());		
 	}
 }

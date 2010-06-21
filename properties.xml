@@ -65,6 +65,7 @@
     	<fileset dir="${xerces.dir}" includes="*.jar" />
     	<fileset dir="${xstream.dir}" includes="*.jar" />
     	<fileset dir="${liquibase.dir}" includes="*.jar"/>    	
+    	<fileset dir="${reflectionutil.dir}" includes="*.jar"/>    		
     </path>
     <path id="api.test.classpath">
         <path refid="api.compile.classpath"/>
@@ -100,6 +101,7 @@
     	<fileset dir="${xstream.dir}" includes="*.jar" />
     	<fileset dir="${liquibase.dir}" includes="*.jar"/>
     	<fileset dir="${json.dir}" includes="*.jar"/>
+    	<fileset dir="${reflectionutil.dir}" includes="*.jar"/>
     </path>
 
 </project>
