@@ -51,6 +51,7 @@
 	<classpathentry kind="lib" path="metadata/model"/>
 	<classpathentry kind="lib" path="lib/jfreechart/jcommon-1.0.15.jar"/>
 	<classpathentry kind="lib" path="lib/jfreechart/jfreechart-1.0.12.jar"/>
+	<classpathentry kind="lib" path="lib/reflection-utils/reflectutils-0.9.14.jar"/>
 	<classpathentry kind="lib" path="lib/junit/junit-4.8.1.jar"/>
 	<classpathentry kind="lib" path="lib/junit/junit-dep-4.8.1.jar"/>
 	<classpathentry kind="lib" path="lib/velocity/velocity-1.6-beta1.jar" sourcepath="/openmrs-source/velocity-1.6-beta1.zip"/>

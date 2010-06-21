@@ -8,26 +8,26 @@
 	<tstamp>
 		<format property="timestamp" pattern="MMM dd yyyy hh:mm aa" />
 	</tstamp>
-	
+
 	<!-- Environment properties -->
-    <property environment="env"/>
-    <property name="env.COMPUTERNAME" value="${env.HOSTNAME}"/>
-	
+	<property environment="env"/>
+	<property name="env.COMPUTERNAME" value="${env.HOSTNAME}"/>
+
 	<!-- Library versions and JARs -->
-    <property name="lib.dir" location="lib" />
-    <property file="${lib.dir}/lib.properties" />
+	<property name="lib.dir" location="lib" />
+	<property file="${lib.dir}/lib.properties" />
 	<fileset id="lib.files" dir="${lib.dir}">
-        <include name="**/*.jar" />
-    </fileset>
+		<include name="**/*.jar" />
+	</fileset>
 	<path id="lib.path">
-        <fileset refid="lib.files" />
+		<fileset refid="lib.files" />
 	</path>
-	
+
 	<!-- Every java and xml file in the test directory -->
 	<fileset id="test.files" dir="${test.dir}" description="All files in /test/">
 		<include name="**/*" />
 	</fileset>
-	
+
 	<!-- Base definitions (cannot be overwritten by user property file) -->
 	<property file="build.properties" />
 
@@ -35,7 +35,7 @@
 	<property file="openmrs-checkstyle.properties" />
 
 	<!-- Taskdefs -->
-	
+
 	<taskdef resource="net/sf/antcontrib/antcontrib.properties">
 		<classpath>
 			<fileset dir="${ant-contrib.dir}" includes="*.jar" />
@@ -46,15 +46,15 @@
 			<pathelement path="${tomcat.dir}/catalina-ant.jar" />
 		</classpath>
 	</taskdef>
- 	<taskdef resource="checkstyletask.properties">
-         <classpath>
- 			<pathelement path="${checkstyle.dir}/checkstyle-all-5.1.jar"/>
-         </classpath>
- 	</taskdef>
-	
+	<taskdef resource="checkstyletask.properties">
+		<classpath>
+			<pathelement path="${checkstyle.dir}/checkstyle-all-5.1.jar"/>
+		</classpath>
+	</taskdef>
+
 	<!-- Load user's build properties -->
 	<echo message="Attempting to load: ${env.OPENMRS_BUILD_PROPERTIES_FILE}" />
-	
+
 	<available file="${env.OPENMRS_BUILD_PROPERTIES_FILE}" property="env.file.exists"/>
 	<available file="${user.home}/Application Data/OpenMRS/OPENMRS-build.properties" property="appdata.file.exists"/>
 	<available file="${user.home}/.OpenMRS/OPENMRS-build.properties" property="unix.file.exists"/>
@@ -62,7 +62,7 @@
 		<equals arg1="${env.file.exists}" arg2="true" />
 		<then>
 			<!-- Load user overrides from environment variable -->
-    		<property file="${env.OPENMRS_BUILD_PROPERTIES_FILE}"/>
+			<property file="${env.OPENMRS_BUILD_PROPERTIES_FILE}"/>
 		</then>
 		<elseif>
 			<equals arg1="${appdata.file.exists}" arg2="true" />
@@ -74,26 +74,26 @@
 		</elseif>
 		<elseif>
 			<equals arg1="${unix.file.exists}" arg2="true" />
-				<then>
+			<then>
 				<!-- Load user overrides from userhome/.OPENMRS-build.properties file -->
 				<echo message="Using build properties in: ${user.home}/.OpenMRS/OPENMRS-build.properties" />
 				<property file="${user.home}/.OpenMRS/OPENMRS-build.properties"/>
-				</then>
+			</then>
 		</elseif>
 		<else>
 			<echo message="WARNING:"/>
 			<echo message="No custom build properties found.  Using default properties" />
 		</else>
 	</if>
-	
+
 	<!-- import default properties -->
 	<import file="properties.xml" />
-	
+
 	<!-- *********************************************************** -->
 	<!-- **                     TARGETS                           ** -->
 	<!-- *********************************************************** -->
 	<target name="init" description="initialization done before most compile/packaging targets">
-		
+
 		<loadfile srcfile="${openmrs.version.revision.filename}" property="repositoryFileInput" />
 		<if>
 			<contains string="${repositoryFileInput}" substring="&lt;?xml" casesensitive="false" />
@@ -127,7 +127,7 @@
 		<property 
 			name="openmrs.api.name" 
 			value="openmrs-api-${openmrs.version.short}.jar"/>
-		
+
 		<!-- These variables are replaced in the web.xml file during compilation 
 			  and then read in by org.openmrs.web.Listener at openmrs startup -->
 		<filterset id="web.xml.variables.to.replace">
@@ -162,7 +162,7 @@
 
 	<target name="package-all" depends="package-api,package-api-tests,package-web-src"
 		description="packages api, test, and web jars for use in modules"/>
-	
+
 	<!-- the api package will contain test classes unless an "ant clean" is done right before -->
 	<target name="package-api" depends="compile-api" description="create openmrs api jar">
 		<mkdir dir="${dist.dir}" />
@@ -170,11 +170,11 @@
 			<manifest>
 				<attribute name="Class-Path" value="${openmrs.api.name}" />
 				<attribute name="Build-Timestamp" value="${timestamp}" />
-				
+
 				<!-- Build properties for OpenmrsConstants to pick up -->
 				<section name="org/openmrs/util/">
 					<attribute name="Package-Title" value="org.openmrs.util"/>
-					
+
 					<attribute name="Specification-Title" value="OpenMRS Build Version and Short Version"/>
 					<attribute name="Specification-Vendor" value="${openmrs.version.long}"/>
 					<attribute name="Specification-Version" value="${openmrs.version.shortnumericonly}"/>
@@ -208,7 +208,7 @@
 				<exclude name="**/.svn" />
 			</packageset>
 		</javadoc>
-		
+
 		<delete file="${doc.dir}/api.zip" />
 		<zip destfile="${doc.dir}/api.zip" basedir="${doc.dir}" includes="api/**" />
 	</target>
@@ -222,7 +222,7 @@
 		<!-- move files over that are required for modules to use this test-openmrs-api*.jar file -->
 		<copy todir="${build.dir}/org/openmrs/test/" file="${test.dir}/api/org/openmrs/test/TestingApplicationContext.xml" />
 		<copy todir="${build.dir}/org/openmrs/include" file="${test.dir}/api/org/openmrs/include/initialInMemoryTestDataSet.xml" />
-		
+
 		<!-- copy the extra files to the build dir in case an ant-clean was just done -->
 		<copy todir="${build.dir}">
 			<!-- dbunit files for db and api tests -->
@@ -230,7 +230,7 @@
 			<!-- module files for module tests -->
 			<fileset dir="${test.dir}/api" includes="**/*.omod"/>
 		</copy>
-		
+
 	</target>
 
 	<target name="package-api-tests" depends="compile-api-tests" description="create api-tests jar">
@@ -244,9 +244,9 @@
 				<include name="**/test/*.class" /> <!-- include the helper files -->
 				<include name="**/*Test*.class" /> <!-- include all junit tests and inner classes -->
 				<include name="**/include/*.xml" />
-				
+
 				<!-- For spring's exclusion of tests. These are in the openmrs-api.jar file -->
-				<exclude name="org/openmrs/util/TestTypeFilter.class" /> 
+				<exclude name="org/openmrs/util/TestTypeFilter.class" />
 			</fileset>
 			<!-- Put this xml in a separate fileset so that its in the root of the jar file -->
 			<fileset file="${build.dir}/org/openmrs/test/TestingApplicationContext.xml" />
@@ -263,15 +263,15 @@
 				<path location="${dist.dir}/${openmrs.api.name}" />
 			</classpath>
 		</javac>
-		
+
 		<!-- copy the extra files to the build dir in case an ant-clean was just done -->
 		<copy todir="${build.dir}">
 			<!-- vm files for the initial setup wizard -->
 			<fileset dir="${src.dir}/web" includes="**/*.vm"/>
 		</copy>
-		
+
 	</target>
-				
+
 	<target name="compile-web-tests" depends="compile-api-tests,compile-web" description="compile the java files in /test/api">
 		<mkdir dir="${build.dir}" />
 		<javac srcdir="${test.dir}/web" destdir="${build.dir}" debug="${javac.debug}" debuglevel="${javac.debuglevel}" deprecation="${compile.deprecation}" optimize="${compile.optimize}" classpathref="api.test.classpath">
@@ -285,20 +285,20 @@
 			<!-- module files for module tests -->
 			<fileset dir="${test.dir}/web" includes="**/*.omod"/>
 		</copy>
-		
+
 	</target>
 
-    <target name="deploy" depends="package-web" if="tomcat.home" description="Move war into the tomcat's webapps directory - ">
+	<target name="deploy" depends="package-web" if="tomcat.home" description="Move war into the tomcat's webapps directory - ">
 		<echo message="Deploying war file to Tomcat webapps directory"/>
-        <copy todir="${tomcat.home}/webapps" file="${dist.dir}/${webapp.name}.war"/>
-    </target>
-	
+		<copy todir="${tomcat.home}/webapps" file="${dist.dir}/${webapp.name}.war"/>
+	</target>
+
 	<target name="undeploy" if="tomcat.home" description="undeploy war file from servlet container's deployment dir">
 		<echo message="Undeploying war file from Tomcat webapps directory"/>
 		<delete file="${tomcat.home}/webapps/${webapp.name}.war"/>
 		<delete dir="${tomcat.home}/webapps/${webapp.name}"/>
-    </target>
-	
+	</target>
+
 	<target name="deploy-web" description="Copies all jsp/css/properties files to webapps dir without restarting the war">
 		<!-- If you receive errors about "Failed to Copy", make sure your user has write access to ${tomcat.home}/webapps/${webapp.name} -->
 		<copy todir="${tomcat.home}/webapps/${webapp.name}" failonerror="false">
@@ -317,26 +317,26 @@
 			</fileset>
 		</copy>
 	</target>
-	
+
 	<target name="package-web" depends="compile-web" description="create webapp war file">
 		<mkdir dir="${dist.dir}/web" />
-		
+
 		<!-- copy the web.xml file to the dist folder (for variable replacement) -->
 		<copy todir="${dist.dir}/web" preservelastmodified="true" overwrite="true">
 			<fileset file="web/WEB-INF/web.xml" />
 			<filterset refid="web.xml.variables.to.replace" />
 		</copy>
-		
+
 		<!-- Extract the liquibase files so they can be included in the war file -->
 		<unzip src="${metadata.dir}/model/liquibase-data.zip" 
 			   dest="${build.dir}/liquibase-data" />
-		
+
 		<war destfile="${dist.dir}/${webapp.name}.war" basedir="web" excludes="**/web.xml, **/test/" webxml="${dist.dir}/web/web.xml" duplicate="add">
 			<classes dir="${build.dir}">
 				<include name="**/web/**/*.class" />
 				<include name="**/web/**/*.vm" /> <!-- velocity macro files for initial setup -->
 				<exclude name="**/test/" />
-				<exclude name="**/*Test*.class" /><!-- more inclusive with trailing wildcard -->
+				<exclude name="**/*Test*.class" /> <!-- more inclusive with trailing wildcard -->
 			</classes>
 			<classes file="${metadata.dir}/api/log4j/log4j.xml" />
 			<classes file="${metadata.dir}/api/log4j/velocity.properties" />
@@ -378,9 +378,10 @@
 			<lib dir="${xstream.dir}" includes="*.jar" />
 			<lib dir="${liquibase.dir}" includes="*.jar" />
 			<lib dir="${json.dir}" includes="*.jar" />
+			<lib dir="${reflectionutil.dir}" includes="*.jar" />
 		</war>
 	</target>
-	
+
 	<target name="package-web-src" depends="compile-web" description="Create jar file containing web java src">
 		<mkdir dir="${build.dir}" />
 		<javac destdir="${build.dir}" debug="${javac.debug}" debuglevel="${javac.debuglevel}" deprecation="${compile.deprecation}" optimize="${compile.optimize}" classpathref="web.compile.classpath">
@@ -388,7 +389,7 @@
 			<src path="${src.dir}/web" />
 			<include name="**/*.java" />
 		</javac>
-		
+
 		<mkdir dir="${dist.dir}" />
 		<jar destfile="${dist.dir}/web-${openmrs.api.name}">
 			<fileset dir="${build.dir}" includes="**/web/**/*" />
@@ -412,11 +413,11 @@
 		<antcall target="remove" />
 		<sleep seconds="2" />
 		<antcall target="install" />
-		
+
 		<exec executable="/usr/local/bin/growlnotify" os="Mac OS X" logError="true" failifexecutionfails="false">
 			<arg line="-m 'OpenMRS is ready' Build completed -a Eclipse" />
 		</exec>
-        
+
 		<!-- on Ubuntu, requires "libnotify-bin" package -->
 		<exec executable="notify-send" os="Linux" logError="true" failifexecutionfails="false">
 			<arg line="-i ${basedir}/web/images/openmrs_logo_white.gif 'OpenMRS is ready' 'Build completed'" />
@@ -514,13 +515,13 @@
 		</antlr>
 	</target>
 	-->
-	
+
 	<target name="checkstyle" description="Validate code style">
 		<checkstyle config="${metadata.dir}/openmrs-checkstyle.xml">
 			<fileset dir="${src.dir}" includes="**/*.java" />
 		</checkstyle>
 	</target>
-		
+
 	<target name="hl7-test" description="Spawns the HL7API test panel for testing HL7 messages (see http://hl7api.sourceforge.net)">
 		<java classname="ca.uhn.hl7v2.app.TestPanel" fork="yes" spawn="yes">
 			<classpath>
@@ -536,26 +537,26 @@
 			</classpath>
 		</java>
 	</target>
-	
+
 	<target name="junit-report" depends="compile-api-tests,compile-web-tests" description="Run tests and create JUnit report (requires driver.jar property)">
 		<delete dir="${junit-tests.dir}" failonerror="false"/>
 		<mkdir dir="${junit-tests.dir}" />
-		
-	    <path id="junit-path">
+
+		<path id="junit-path">
 			<fileset refid="lib.files" />
-		    <pathelement path="${build.dir}"/>
-	    	<pathelement path="${metadata.dir}/api/log4j/"/>
-	    	<pathelement path="web/WEB-INF/"/>
+			<pathelement path="${build.dir}"/>
+			<pathelement path="${metadata.dir}/api/log4j/"/>
+			<pathelement path="web/WEB-INF/"/>
 			<pathelement location="${dist.dir}/${openmrs.api.name}"/>
 		</path>
-		
+
 		<!-- fork the vm so that translation happens faster -->
-        <junit fork="yes" forkmode="once" clonevm="false">
-        	<classpath refid="junit-path"/>
-        	<formatter type="xml"/>
-        	<!-- overwrite this system property so that there are less properties printed -->
-        	<sysproperty key="repositoryFileInput" value="" />
-            <batchtest todir="${junit-tests.dir}" haltonfailure="no">
+		<junit fork="yes" forkmode="once" clonevm="false">
+			<classpath refid="junit-path"/>
+			<formatter type="xml"/>
+			<!-- overwrite this system property so that there are less properties printed -->
+			<sysproperty key="repositoryFileInput" value="" />
+			<batchtest todir="${junit-tests.dir}" haltonfailure="no">
 				<fileset dir="${build.dir}">
 					<include name="org/openmrs/**/*Test.class" />
 					<exclude name="**/test/*" /> <!-- util classes used by junit -->
@@ -563,14 +564,14 @@
 				</fileset>
 			</batchtest>
 		</junit>
-		
+
 		<!-- run the web tests separately to reduce memory errors -->
 		<junit fork="yes" forkmode="once" clonevm="false">
-	    	<classpath refid="junit-path"/>
-	    	<formatter type="xml"/>
-	    	<!-- overwrite this system property so that there are less properties printed -->
-	    	<sysproperty key="repositoryFileInput" value="" />
-	        <batchtest todir="${junit-tests.dir}" haltonfailure="no">
+			<classpath refid="junit-path"/>
+			<formatter type="xml"/>
+			<!-- overwrite this system property so that there are less properties printed -->
+			<sysproperty key="repositoryFileInput" value="" />
+			<batchtest todir="${junit-tests.dir}" haltonfailure="no">
 				<fileset dir="${build.dir}">
 					<include name="org/openmrs/web/**/*Test.class" />
 					<exclude name="**/SummaryTest.class" />
@@ -578,16 +579,16 @@
 				</fileset>
 			</batchtest>
 		</junit>
-		
+
 		<delete dir="${junit-reports.dir}" failonerror="false" />
-        <mkdir dir="${junit-reports.dir}" />
-        <junitreport todir="${junit-reports.dir}">
+		<mkdir dir="${junit-reports.dir}" />
+		<junitreport todir="${junit-reports.dir}">
 			<fileset dir="${junit-tests.dir}">
 				<include name="TEST-*.xml"/>
 			</fileset>
 			<report format="frames" todir="${junit-reports.dir}"/>
 		</junitreport>
-		
+
 		<!-- TODO add other execs for different OS's. Switch to osfamily with Ant 1.7 -->
 		<exec os="Windows XP" executable="C:/Program Files/Mozilla Firefox/firefox.exe" failifexecutionfails="false">
 			<arg value="file:///${junit-reports.dir}/index.html"/>
@@ -599,7 +600,7 @@
 			<arg line="-a Firefox"/>
 			<arg value="file:///${junit-reports.dir}/index.html"/>
 		</exec>
-		
+
 	</target>
 	
 </project>
