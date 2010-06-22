@@ -34,6 +34,7 @@
     	name="localizedName" 
     	column="name"
 		type="org.openmrs.api.db.hibernate.LocalizedStringType" 
+		not-null="true" 
 	/>
     <property
         name="description"

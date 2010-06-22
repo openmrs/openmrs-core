@@ -12,9 +12,9 @@
 		</id>
 		
 		<discriminator column="encounter_type_id" insert="false" />
-		
-		<property name="localizedName" column="name" 
-			type="org.openmrs.api.db.hibernate.LocalizedStringType" />
+
+		<property name="localizedName" column="name"
+			type="org.openmrs.api.db.hibernate.LocalizedStringType" not-null="true" />
 		<property name="description" type="java.lang.String"
 			not-null="true" length="1024" />
 		<property name="dateCreated" type="java.util.Date"

@@ -18,7 +18,7 @@
 			column="uuid" length="38" unique="true" />
 
 		<property name="localizedName" column="name" 
-			type="org.openmrs.api.db.hibernate.LocalizedStringType" />
+			type="org.openmrs.api.db.hibernate.LocalizedStringType" not-null="true" />
 		<property name="description" type="java.lang.String"
 			not-null="true" length="255" />
 		<property name="dateCreated" type="java.util.Date"
