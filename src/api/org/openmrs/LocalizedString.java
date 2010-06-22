@@ -140,13 +140,9 @@ public class LocalizedString implements Serializable {
 			return false;
 		if (obj instanceof LocalizedString) {
 			LocalizedString ls = (LocalizedString) obj;
-			if ((unlocalizedValue == null && ls.getUnlocalizedValue() == null)
-			        || (unlocalizedValue != null && unlocalizedValue.equals(ls.getUnlocalizedValue()))) {
-				if (variants != null)
-					return variants.equals(ls.getVariants());
-				else
-					return ls.getVariants() == null;
-			}
+			String right = LocalizedStringUtil.serialize(ls);
+			String left = LocalizedStringUtil.serialize(this);
+			return left.equals(right);
 		}
 		return this == obj;
 	}
@@ -156,9 +152,7 @@ public class LocalizedString implements Serializable {
 	 */
 	@Override
 	public int hashCode() {
-		if (unlocalizedValue == null)
-			return super.hashCode();
-		return unlocalizedValue.hashCode();
+		return LocalizedStringUtil.serialize(this).hashCode();
 	}
 	
 	/**

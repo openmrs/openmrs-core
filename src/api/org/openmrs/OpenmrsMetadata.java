@@ -44,4 +44,14 @@ public interface OpenmrsMetadata extends OpenmrsObject, Auditable, Retireable {
 	 * @param description the description to set
 	 */
 	public void setDescription(String description);
+	
+	/**
+	 * @return the localized name
+	 */
+	public LocalizedString getLocalizedName();
+	
+	/**
+	 * @param localizedName the localizedName to set
+	 */
+	public void setLocalizedName(LocalizedString localizedName);
 }

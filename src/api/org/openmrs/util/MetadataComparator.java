@@ -19,17 +19,20 @@ import java.util.Locale;
 import org.openmrs.OpenmrsMetadata;
 
 /**
- * A comparator that sorts first based on non-retired, and second based on name. (Locale is
- * currently not used, but will be when we add the ability to localize metadata.)
+ * A comparator that sorts first based on non-retired, and second based on name. <br />
+ * Compare name within the specified locale(specified by constructor's passed argument 'locale').
+ * 
  * @since 1.7
  */
 public class MetadataComparator implements Comparator<OpenmrsMetadata> {
+	
+	private Locale locale;
 	
 	/**
 	 * @param locale
 	 */
 	public MetadataComparator(Locale locale) {
-		// locale is currently not used
+		this.locale = locale;
 	}
 	
 	/**
@@ -38,9 +41,26 @@ public class MetadataComparator implements Comparator<OpenmrsMetadata> {
 	@Override
 	public int compare(OpenmrsMetadata left, OpenmrsMetadata right) {
 		int temp = OpenmrsUtil.compareWithNullAsLowest(left.isRetired(), right.isRetired());
-		if (temp == 0)
-			temp = OpenmrsUtil.compareWithNullAsLowest(left.getName(), right.getName());
+		if (temp == 0) {
+			Locale locale = getLocale();
+			temp = OpenmrsUtil.compareWithNullAsLowest(left.getLocalizedName().getValue(locale), right.getLocalizedName()
+			        .getValue(locale));
+		}
 		return temp;
+	}
+	
+	/**
+	 * @return the locale
+	 */
+	public Locale getLocale() {
+		return locale;
+	}
+	
+	/**
+	 * @param locale the locale to set
+	 */
+	public void setLocale(Locale locale) {
+		this.locale = locale;
 	}
 	
 }
