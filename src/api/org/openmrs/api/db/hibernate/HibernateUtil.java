@@ -133,6 +133,7 @@ public class HibernateUtil {
 	 * @param searchClazz - the class related to the searched database table
 	 * @param sessionFactory - SessionFactory to create Criteria from
 	 * @return A object extends {@link BaseOpenmrsMetadata} if exist, otherwise null
+	 * @since 1.9
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T extends BaseOpenmrsMetadata> List<T> findMetadatasExactlyByLocalizedColumn(
@@ -170,6 +171,7 @@ public class HibernateUtil {
 	 * @param searchClazz - the class related to the searched database table
 	 * @param sessionFactory - SessionFactory to create Criteria from
 	 * @return A object extends {@link BaseOpenmrsMetadata} if exist, otherwise null
+	 * @since 1.9
 	 * @see HibernateUtil#findMetadatasExactlyByLocalizedColumn(String, String, boolean, Class,
 	 *      SessionFactory)
 	 */
@@ -216,6 +218,7 @@ public class HibernateUtil {
 	 * @param searchClazz - the class related to the searched database table
 	 * @param sessionFactory - SessionFactory to create Criteria from
 	 * @return A list of objects extend {@link BaseOpenmrsMetadata} if exist, otherwise null
+	 * @since 1.9
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T extends BaseOpenmrsMetadata> List<T> findMetadatasFuzzilyByLocalizedColumn(

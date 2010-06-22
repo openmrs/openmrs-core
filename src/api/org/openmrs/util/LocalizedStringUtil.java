@@ -23,6 +23,8 @@ import org.openmrs.LocalizedString;
 
 /**
  * Utility class that provides LocalizedString related methods
+ * 
+ * @since 1.9
  */
 public class LocalizedStringUtil {
 	
@@ -119,7 +121,8 @@ public class LocalizedStringUtil {
 		if (localizedString == null)
 			return null;
 		StringBuffer sb = new StringBuffer("");
-		sb.append(escapeDelimiter(localizedString.getUnlocalizedValue()));
+		if (localizedString.getUnlocalizedValue() != null)
+			sb.append(escapeDelimiter(localizedString.getUnlocalizedValue()));
 		if (localizedString.getVariants() != null && !localizedString.getVariants().isEmpty()) {
 			sb.insert(0, HEADER);
 			sb.insert(HEADER.length(), "unlocalized" + PARTITION);

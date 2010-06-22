@@ -23,6 +23,8 @@ import org.openmrs.util.LocalizedStringUtil;
 
 /**
  * Used to get/set the attribute(which is of type {@link LocalizedString}) of any object.
+ * 
+ * @since 1.9
  */
 public class LocalizedStringEditor extends PropertyEditorSupport {
 	

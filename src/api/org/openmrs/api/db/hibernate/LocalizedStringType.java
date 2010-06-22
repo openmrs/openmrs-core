@@ -96,6 +96,7 @@ public class LocalizedStringType implements UserType, Serializable {
 	/**
 	 * @see org.hibernate.usertype.UserType#nullSafeGet(java.sql.ResultSet, java.lang.String[],
 	 *      java.lang.Object)
+	 * @see LocalizedString#valueOf(String)
 	 */
 	@Override
 	public Object nullSafeGet(ResultSet rs, String[] names, Object owner) throws HibernateException, SQLException {
@@ -109,6 +110,7 @@ public class LocalizedStringType implements UserType, Serializable {
 	/**
 	 * @see org.hibernate.usertype.UserType#nullSafeSet(java.sql.PreparedStatement,
 	 *      java.lang.Object, int)
+	 * @see LocalizedStringUtil#serialize(LocalizedString)
 	 */
 	@Override
 	public void nullSafeSet(PreparedStatement ps, Object value, int index) throws HibernateException, SQLException {
