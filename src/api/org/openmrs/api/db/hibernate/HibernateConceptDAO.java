@@ -450,17 +450,6 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<ConceptClass> getConceptClasses(String name) throws DAOException {
-		//		List<ConceptClass> ccList = new ArrayList<ConceptClass>();
-		//		Criteria crit = sessionFactory.getCurrentSession().createCriteria(ConceptClass.class);
-		//		if (name != null) {
-		//			// firstly, search in those conceptClasses which haven't been localized
-		//			crit.add(Expression.sql("name = ?", name, Hibernate.STRING));
-		//			ccList = crit.list();
-		//
-		//			// secondly, search in those conceptClasses which have been localized
-		//			ccList.addAll(HibernateUtil.findMetadatasExactlyByLocalizedColumn(name, "name", true, ConceptClass.class,
-		//			    sessionFactory));
-		//		}
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(ConceptClass.class);
 		if (name != null)
 			HibernateUtil.addEqCriterionForLocalizedColumn(name, "name", crit);
