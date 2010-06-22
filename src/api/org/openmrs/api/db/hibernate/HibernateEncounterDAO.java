@@ -16,7 +16,6 @@ package org.openmrs.api.db.hibernate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -36,9 +35,10 @@ import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.User;
 import org.openmrs.api.EncounterService;
+import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.EncounterDAO;
-import org.openmrs.util.LocalizedStringUtil;
+import org.openmrs.util.MetadataComparator;
 
 /**
  * Hibernate specific dao for the {@link EncounterService} All calls should be made on the
@@ -165,7 +165,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	public EncounterType getEncounterType(String name) throws DAOException {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(EncounterType.class);
 		crit.add(Expression.eq("retired", false));
-		crit.add(Expression.sql("name = ?", LocalizedStringUtil.escapeDelimiter(name), Hibernate.STRING));
+		crit.add(Expression.sql("name = ?", name, Hibernate.STRING));
 		EncounterType encounterType = (EncounterType) crit.uniqueResult();
 		
 		if (encounterType == null) //search in those localized encounterTypes
@@ -187,12 +187,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 		
 		// do java sorting on the return value of "getName()",
 		// because maybe both unlocalized and localized encounterTypes are in "results" list
-		Collections.sort(results, new Comparator<EncounterType>() {
-			@Override
-			public int compare(EncounterType left, EncounterType right) {
-				return left.getName().compareTo(right.getName());
-			}
-		});
+		Collections.sort(results, new MetadataComparator(Context.getLocale()));
 		return results;
 	}
 	
@@ -205,28 +200,18 @@ public class HibernateEncounterDAO implements EncounterDAO {
 		
 		// firstly, search in those unlocalized encounterTypes
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(EncounterType.class);
-		crit.add(Expression.sql("UPPER(name) like ?", LocalizedStringUtil.escapeDelimiter(name).toUpperCase() + "%",
+		crit.add(Expression.sql("UPPER(name) like ?", name.toUpperCase() + "%",
 		    Hibernate.STRING));
-		results = crit.addOrder(Order.asc("localizedName")).addOrder(Order.asc("retired")).list();
+		results = crit.list();
 		
 		// secondly, search in those localized encounterTypes
 		List<EncounterType> temp = HibernateUtil.findMetadatasFuzzilyByLocalizedColumn(name, "name", true, false,
 		    EncounterType.class, sessionFactory);
 		
-		// only when there exist localized encounterTypes which match the passed name,
-		// then do java sorting on the orderBy fields, this is for the quick speed of query.
-		if (!temp.isEmpty()) {
-			results.addAll(temp);
-			Collections.sort(results, new Comparator<EncounterType>() {
-				@Override
-				public int compare(EncounterType left, EncounterType right) {
-					int res = left.getName().compareTo(right.getName());
-					if (res == 0)
-						res = left.isRetired().compareTo(right.isRetired());
-					return res;
-				}
-			});
-		}
+		results.addAll(temp);
+		
+		// do java sorting on 'retired' and 'name' field
+		Collections.sort(results, new MetadataComparator(Context.getLocale()));
 		
 		return results;
 	}

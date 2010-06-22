@@ -66,7 +66,6 @@ import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ConceptDAO;
 import org.openmrs.api.db.DAOException;
-import org.openmrs.util.LocalizedStringUtil;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
@@ -457,7 +456,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(ConceptClass.class);
 		if (name != null) {
 			// firstly, search in those conceptClasses which haven't been localized
-			crit.add(Expression.sql("name = ?", LocalizedStringUtil.escapeDelimiter(name), Hibernate.STRING));
+			crit.add(Expression.sql("name = ?", name, Hibernate.STRING));
 			ccList = crit.list();
 			
 			// secondly, search in those conceptClasses which have been localized
