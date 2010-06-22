@@ -16,9 +16,7 @@ package org.openmrs.aop;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -38,6 +36,7 @@ import org.openmrs.api.handler.UnretireHandler;
 import org.openmrs.api.handler.UnvoidHandler;
 import org.openmrs.api.handler.VoidHandler;
 import org.openmrs.util.HandlerUtil;
+import org.openmrs.util.Reflect;
 import org.springframework.aop.MethodBeforeAdvice;
 import org.springframework.util.StringUtils;
 
@@ -116,8 +115,6 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 			if (mainArgument == null)
 				return;
 			
-			Class<?> argClass = mainArgument.getClass();
-			
 			// if a second argument exists, pass that to the save handler as well
 			// (with current code, it means we're either in an obs save or a user save)
 			String other = null;
@@ -126,11 +123,13 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 			}
 			
 			// if the first argument is an OpenmrsObject, handle it now
-			if (OpenmrsObject.class.isAssignableFrom(argClass)) {
+			Reflect reflect = new Reflect(OpenmrsObject.class);
+			
+			if (reflect.isSuperClass(mainArgument)) {
 				recursivelyHandle(SaveHandler.class, (OpenmrsObject) mainArgument, other);
 			}
 			// if the first argument is a list of openmrs objects, handle them all now
-			else if (isOpenmrsObjectCollection(argClass, mainArgument)) {
+			else if (Reflect.isCollection(mainArgument) && isOpenmrsObjectCollection(mainArgument)) {
 				Collection<OpenmrsObject> openmrsObjects = (Collection<OpenmrsObject>) mainArgument;
 				
 				for (OpenmrsObject object : openmrsObjects) {
@@ -157,7 +156,8 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 		} else if (methodName.startsWith("unretire")) {
 			Retireable retirable = (Retireable) args[0];
 			Date originalDateRetired = retirable.getDateRetired();
-			recursivelyHandle(UnretireHandler.class, retirable, Context.getAuthenticatedUser(), originalDateRetired, null, null);
+			recursivelyHandle(UnretireHandler.class, retirable, Context.getAuthenticatedUser(), originalDateRetired, null,
+			    null);
 			
 		}
 		
@@ -189,17 +189,17 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 	 * @param openmrsObject the object that is being acted upon
 	 * @param currentUser the current user to set recursively on the object
 	 * @param currentDate the date to set recursively on the object
-	 * @param other an optional second argument that was passed to the service method (usually a void/retire reason)
-	 * @param alreadyHandled an optional list of objects that have already been handled and should not be
-	 *        processed again.  this is intended to prevent infinite recursion when handling collection properties.
-	 *        
+	 * @param other an optional second argument that was passed to the service method (usually a
+	 *            void/retire reason)
+	 * @param alreadyHandled an optional list of objects that have already been handled and should
+	 *            not be processed again. this is intended to prevent infinite recursion when
+	 *            handling collection properties.
 	 * @see HandlerUtil#getHandlersForType(Class, Class)
 	 */
 	@SuppressWarnings("unchecked")
-	public static <H extends RequiredDataHandler> void recursivelyHandle(Class<H> handlerType,
-	                                                                        OpenmrsObject openmrsObject, User currentUser,
-	                                                                        Date currentDate, String other,
-	                                                                        List<OpenmrsObject> alreadyHandled) {
+	public static <H extends RequiredDataHandler> void recursivelyHandle(Class<H> handlerType, OpenmrsObject openmrsObject,
+	                                                                     User currentUser, Date currentDate, String other,
+	                                                                     List<OpenmrsObject> alreadyHandled) {
 		if (openmrsObject == null)
 			return;
 		
@@ -218,12 +218,12 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 		}
 		alreadyHandled.add(openmrsObject);
 		
-		List<Field> allInheritedFields = new ArrayList<Field>();
-		getAllInheritedFields(openmrsObjectClass, allInheritedFields);
+		Reflect reflect = new Reflect(OpenmrsObject.class);
+		List<Field> allInheritedFields = reflect.getInheritedFields(openmrsObjectClass);
 		
 		// loop over all child collections of OpenmrsObjects and recursively save on those
 		for (Field field : allInheritedFields) {
-			if (isOpenmrsObjectCollection(field)) {
+			if (reflect.isCollectionField(field)) {
 				
 				// the collection we'll be looping over
 				Collection<OpenmrsObject> childCollection = getChildCollection(openmrsObject, field);
@@ -231,39 +231,14 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 				if (childCollection != null) {
 					for (Object collectionElement : childCollection) {
 						if (!alreadyHandled.contains(collectionElement)) {
-							recursivelyHandle(handlerType, (OpenmrsObject) collectionElement, currentUser, currentDate, other, alreadyHandled);
+							recursivelyHandle(handlerType, (OpenmrsObject) collectionElement, currentUser, currentDate,
+							    other, alreadyHandled);
 						}
 					}
 				}
 			}
 		}
 		
-	}
-	
-	/**
-	 * This method adds all declared {@link Field}s on the given class to the given
-	 * <code>fields</code> list. If the super class of the given <code>openmrsObjectClass</code> is
-	 * also an OpenmrsObject, then it gets all {@link Field}s on that class (and so on up the
-	 * inheritance tree).
-	 * 
-	 * @param openmrsObjectClass the {@link Class} to get fields on
-	 * @param fields the list of {@link Field}s to append the newly found list to.
-	 * @throws NullPointerException if <code>fields</code> is null
-	 * @should get all declared fields on given class
-	 * @should get all declared fields on parent class as well
-	 * @should not fail given null fields
-	 */
-	@SuppressWarnings("unchecked")
-	protected static void getAllInheritedFields(Class<? extends OpenmrsObject> openmrsObjectClass, List<Field> fields)
-	                                                                                                                  throws NullPointerException {
-		if (fields != null) { 
-			fields.addAll(Arrays.asList(openmrsObjectClass.getDeclaredFields()));
-			Class<?> superClass = openmrsObjectClass.getSuperclass();
-			if (superClass != null) {
-				if (OpenmrsObject.class.isAssignableFrom(superClass))
-					getAllInheritedFields((Class<OpenmrsObject>) superClass, fields);
-			}
-		}
 	}
 	
 	/**
@@ -320,58 +295,27 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 	}
 	
 	/**
-	 * Checks the given {@link Field} to see if it A) is a {@link Collection}/{@link Set}/
-	 * {@link List}, and B) contains {@link OpenmrsObject}s
-	 * 
-	 * @param field the field to check
-	 * @return true if it is a Collection of some kind of OpenmrsObject
-	 * @should return true if field is openmrsObject list
-	 * @should return true if field is openmrsObject set
-	 * @should return false if field is collection of other objects
-	 * @should return false if field is collection of parameterized type
-	 * @should return false if field is not a collection
-	 */
-	@SuppressWarnings("unchecked")
-	protected static boolean isOpenmrsObjectCollection(Field field) {
-		if (Collection.class.isAssignableFrom(field.getType())) {
-			try {
-				ParameterizedType type = (ParameterizedType) field.getGenericType();
-				return (OpenmrsObject.class.isAssignableFrom((Class) type.getActualTypeArguments()[0]));
-			}
-			catch (ClassCastException e) {
-				// Do nothing.  If this exception is thrown, then field is not a Collection of OpenmrsObjects
-			}
-		}
-		return false;
-	}
-	
-	/**
 	 * Checks the given {@link Class} to see if it A) is a {@link Collection}/{@link Set}/
 	 * {@link List}, and B) contains {@link OpenmrsObject}s
 	 * 
-	 * @param argClass the class to examine
 	 * @param arg the actual object being passed in
 	 * @return true if it is a Collection of some kind of OpenmrsObject
 	 * @should return true if class is openmrsObject list
 	 * @should return true if class is openmrsObject set
-	 * @should return false if class is collection of other objects
-	 * @should return false if class is not a collection
 	 */
 	@SuppressWarnings("unchecked")
-	protected static boolean isOpenmrsObjectCollection(Class<?> argClass, Object arg) {
-		if (Collection.class.isAssignableFrom(argClass)) {
-			// kind of a hacky way to test for a list of openmrs objects, but java strips out
-			// the generic info for 1.4 compat, so we don't have accesst to that info here
-			try {
-				@SuppressWarnings("unused")
-				Collection<OpenmrsObject> openmrsObjects = (Collection<OpenmrsObject>) arg;
-				return true;
-			}
-			catch (ClassCastException ex) {
-				return false;
-			}
-		}
+	protected static boolean isOpenmrsObjectCollection(Object arg) {
 		
+		// kind of a hacky way to test for a list of openmrs objects, but java strips out
+		// the generic info for 1.4 compat, so we don't have accesst to that info here
+		try {
+			@SuppressWarnings("unused")
+			Collection<OpenmrsObject> openmrsObjects = (Collection<OpenmrsObject>) arg;
+			return true;
+		}
+		catch (ClassCastException ex) {
+			ex.printStackTrace();
+		}
 		return false;
 	}
 }

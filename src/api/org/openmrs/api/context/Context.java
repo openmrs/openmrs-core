@@ -129,7 +129,7 @@ public class Context {
 	
 	private static final Log log = LogFactory.getLog(Context.class);
 	
-	// Global resources 
+	// Global resources
 	private static ContextDAO contextDAO;
 	
 	private static Session mailSession;
@@ -538,7 +538,8 @@ public class Context {
 			
 			Authenticator auth = new Authenticator() {
 				
-				public PasswordAuthentication getPasswordAuthentication() {
+				@Override
+                public PasswordAuthentication getPasswordAuthentication() {
 					return new PasswordAuthentication(getAdministrationService().getGlobalProperty("mail.user"),
 					        getAdministrationService().getGlobalProperty("mail.password"));
 				}
@@ -694,6 +695,8 @@ public class Context {
 	
 	/**
 	 * Forces any changes made so far in this unit of work to be written to the database
+	 * 
+	 * @since 1.6
 	 */
 	public static void flushSession() {
 		log.trace("flushing session");
@@ -756,7 +759,7 @@ public class Context {
 		ModuleUtil.startup(props);
 		
 		// add any privileges/roles that /must/ exist for openmrs to work correctly.
-		// TODO: Should this be one of the first things executed at startup? 
+		// TODO: Should this be one of the first things executed at startup?
 		checkCoreDataset();
 	}
 	
