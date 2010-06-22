@@ -22,10 +22,10 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
-import org.hibernate.Hibernate;
 import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
@@ -162,17 +162,21 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	/**
 	 * @see org.openmrs.api.EncounterService#getEncounterType(java.lang.String)
 	 */
+	@SuppressWarnings("unchecked")
 	public EncounterType getEncounterType(String name) throws DAOException {
+		//		Criteria crit = sessionFactory.getCurrentSession().createCriteria(EncounterType.class);
+		//		crit.add(Expression.eq("retired", false));
+		//		crit.add(Expression.sql("name = ?", name, Hibernate.STRING));
+		//		EncounterType encounterType = (EncounterType) crit.uniqueResult();
+		//
+		//		if (encounterType == null) //search in those localized encounterTypes
+		//			encounterType = HibernateUtil.getUniqueMetadataByLocalizedColumn(name, "name", false, EncounterType.class,
+		//			    sessionFactory);
+		//
+		//		return encounterType;
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(EncounterType.class);
-		crit.add(Expression.eq("retired", false));
-		crit.add(Expression.sql("name = ?", name, Hibernate.STRING));
-		EncounterType encounterType = (EncounterType) crit.uniqueResult();
-		
-		if (encounterType == null) //search in those localized encounterTypes
-			encounterType = HibernateUtil.getUniqueMetadataByLocalizedColumn(name, "name", false, EncounterType.class,
-			    sessionFactory);
-		
-		return encounterType;
+		HibernateUtil.addEqCriterionForLocalizedColumn(name, "name", crit);
+		return HibernateUtil.getUniqueMetadataByLocalizedName((List<EncounterType>) crit.list(), name);
 	}
 	
 	/**
@@ -196,23 +200,27 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<EncounterType> findEncounterTypes(String name) throws DAOException {
+		//		List<EncounterType> results = null;
+		//
+		//		// firstly, search in those unlocalized encounterTypes
+		//		Criteria crit = sessionFactory.getCurrentSession().createCriteria(EncounterType.class);
+		//		crit.add(Expression.sql("UPPER(name) like ?", name.toUpperCase() + "%",
+		//		    Hibernate.STRING));
+		//		results = crit.list();
+		//
+		//		// secondly, search in those localized encounterTypes
+		//		List<EncounterType> temp = HibernateUtil.findMetadatasFuzzilyByLocalizedColumn(name, "name", true, false,
+		//		    EncounterType.class, sessionFactory);
+		//
+		//		results.addAll(temp);
+		//
+		//		// do java sorting on 'retired' and 'name' field
+		//		Collections.sort(results, new MetadataComparator(Context.getLocale()));
 		List<EncounterType> results = null;
-		
-		// firstly, search in those unlocalized encounterTypes
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(EncounterType.class);
-		crit.add(Expression.sql("UPPER(name) like ?", name.toUpperCase() + "%",
-		    Hibernate.STRING));
+		HibernateUtil.addLikeCriterionForLocalizedColumn(name, "name", crit, false, MatchMode.START);
 		results = crit.list();
-		
-		// secondly, search in those localized encounterTypes
-		List<EncounterType> temp = HibernateUtil.findMetadatasFuzzilyByLocalizedColumn(name, "name", true, false,
-		    EncounterType.class, sessionFactory);
-		
-		results.addAll(temp);
-		
-		// do java sorting on 'retired' and 'name' field
 		Collections.sort(results, new MetadataComparator(Context.getLocale()));
-		
 		return results;
 	}
 	

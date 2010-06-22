@@ -16,7 +16,6 @@ package org.openmrs.api.db.hibernate;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -30,7 +29,6 @@ import java.util.Vector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
-import org.hibernate.Hibernate;
 import org.hibernate.NonUniqueObjectException;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
@@ -452,19 +450,21 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<ConceptClass> getConceptClasses(String name) throws DAOException {
-		List<ConceptClass> ccList = new ArrayList<ConceptClass>();
+		//		List<ConceptClass> ccList = new ArrayList<ConceptClass>();
+		//		Criteria crit = sessionFactory.getCurrentSession().createCriteria(ConceptClass.class);
+		//		if (name != null) {
+		//			// firstly, search in those conceptClasses which haven't been localized
+		//			crit.add(Expression.sql("name = ?", name, Hibernate.STRING));
+		//			ccList = crit.list();
+		//
+		//			// secondly, search in those conceptClasses which have been localized
+		//			ccList.addAll(HibernateUtil.findMetadatasExactlyByLocalizedColumn(name, "name", true, ConceptClass.class,
+		//			    sessionFactory));
+		//		}
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(ConceptClass.class);
-		if (name != null) {
-			// firstly, search in those conceptClasses which haven't been localized
-			crit.add(Expression.sql("name = ?", name, Hibernate.STRING));
-			ccList = crit.list();
-			
-			// secondly, search in those conceptClasses which have been localized
-			ccList.addAll(HibernateUtil.findMetadatasExactlyByLocalizedColumn(name, "name", true, ConceptClass.class,
-			    sessionFactory));
-		}
-		
-		return ccList;
+		if (name != null)
+			HibernateUtil.addEqCriterionForLocalizedColumn(name, "name", crit);
+		return crit.list();
 	}
 	
 	/**

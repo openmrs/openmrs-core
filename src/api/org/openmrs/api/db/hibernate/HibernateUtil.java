@@ -14,8 +14,8 @@
 package org.openmrs.api.db.hibernate;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -24,11 +24,14 @@ import org.hibernate.Criteria;
 import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Expression;
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.HSQLDialect;
 import org.hibernate.engine.SessionFactoryImplementor;
-import org.openmrs.BaseOpenmrsMetadata;
+import org.openmrs.OpenmrsMetadata;
+import org.openmrs.api.context.Context;
 import org.openmrs.util.LocalizedStringUtil;
 
 /**
@@ -115,138 +118,138 @@ public class HibernateUtil {
 	}
 	
 	/**
-	 * Find metadatas (return a list in one time) by exactly searching the localized database field
-	 * which is specified by given columnName.
-	 * <p>
-	 * Note:
-	 * <ol>
-	 * <li>The search range is just those metadatas which's name property has been localized
-	 * <li>This method returns a list because of some metadatas allow duplicated values in one
-	 * field(e.g, {@link org.openmrs.Form} allows duplicated names)</li>
-	 * <li>The search logic in this method doesn't have order by option</li>
-	 * <ol>
+	 * Add equal criterion for the localized column of {@link OpenmrsMetadata} object.
 	 * 
-	 * @param <T>
 	 * @param value - value to match
 	 * @param columnName - column to match in
-	 * @param includeRetired - if includeRetired is true, also get retired metadatas.
-	 * @param searchClazz - the class related to the searched database table
-	 * @param sessionFactory - SessionFactory to create Criteria from
-	 * @return A object extends {@link BaseOpenmrsMetadata} if exist, otherwise null
+	 * @param criteria - criteria to append search conditions
 	 * @since 1.9
 	 */
-	@SuppressWarnings("unchecked")
-	public static <T extends BaseOpenmrsMetadata> List<T> findMetadatasExactlyByLocalizedColumn(
-	                                                                                            String value,
-	                                                                                            String columnName,
-	                                                                                            boolean includeRetired,
-	                                                                                            Class<? extends T> searchClazz,
-	                                                                                            SessionFactory sessionFactory) {
-		List<T> results = new ArrayList<T>();
+	public static void addEqCriterionForLocalizedColumn(String value, String columnName, Criteria criteria) {
+		// append expression for those unlocalized metadata
+		Criterion leftExp = Expression.sql(columnName + " = ?", value, Hibernate.STRING);
 		
-		if (value != null) {
-			// Search in those metadatas have been localized
-			Criteria crit = sessionFactory.getCurrentSession().createCriteria(searchClazz);
-			if (includeRetired == false)
-				crit.add(Expression.eq("retired", false));
-			crit.add(Expression.sql(columnName + " like ?", "%" + LocalizedStringUtil.PARTITION
-			        + LocalizedStringUtil.escapeDelimiter(value) + LocalizedStringUtil.SPLITTER + "%",
-			    Hibernate.STRING));
-			results = crit.list();
-		}
+		// append expression for those localized metadata
+		String searchValue = "%" + LocalizedStringUtil.PARTITION + LocalizedStringUtil.escapeDelimiter(value)
+		        + LocalizedStringUtil.SPLITTER + "%";
+		Criterion rightExp = Expression.sql(columnName + " like ?", searchValue, Hibernate.STRING);
 		
-		return results;
+		criteria.add(Expression.or(leftExp, rightExp));
 	}
 	
 	/**
-	 * Get the unique metadata object by searching the localized database field which is specified
-	 * by given columnName.
-	 * <p>
-	 * Note: The search range is just those metadatas which's name property has been localized
+	 * Add like criterion for the localized column of {@link OpenmrsMetadata} object.
 	 * 
-	 * @param <T>
 	 * @param value - value to match
 	 * @param columnName - column to match in
-	 * @param includeRetired - if includeRetired is true, also get retired metadatas.
-	 * @param searchClazz - the class related to the searched database table
-	 * @param sessionFactory - SessionFactory to create Criteria from
-	 * @return A object extends {@link BaseOpenmrsMetadata} if exist, otherwise null
+	 * @param criteria - criteria to append search conditions
+	 * @param caseSensitive - if caseSensitive is false, do sql query similar to hibernate's "ilike"
+	 * @param mode - specify match mode, match from start, end, anywhere, or exact
 	 * @since 1.9
-	 * @see HibernateUtil#findMetadatasExactlyByLocalizedColumn(String, String, boolean, Class,
-	 *      SessionFactory)
 	 */
-	public static <T extends BaseOpenmrsMetadata> T getUniqueMetadataByLocalizedColumn(String value, String columnName,
-	                                                                                   boolean includeRetired,
-	                                                                                   Class<? extends T> searchClazz,
-	                                                                                   SessionFactory sessionFactory) {
-		List<T> results = findMetadatasExactlyByLocalizedColumn(value, columnName, includeRetired, searchClazz,
-		    sessionFactory);
+	public static void addLikeCriterionForLocalizedColumn(String value, String columnName, Criteria criteria,
+	                                                      boolean caseSensitive, MatchMode mode) {
+		Criterion leftExp = null;
+		Criterion rigthExp = null;
+		String searchValue = null;
 		
-		if (results == null || results.isEmpty())
+		if (MatchMode.START.equals(mode)) {
+			if (caseSensitive == true) {
+				// append expression for unlocalized metadata
+				leftExp = Expression.sql(columnName + " like ?", value + "%", Hibernate.STRING);
+				// append expression for localized metadata
+				searchValue = "%" + LocalizedStringUtil.PARTITION + LocalizedStringUtil.escapeDelimiter(value) + "%";
+				rigthExp = Expression.sql(columnName + " like ?", searchValue, Hibernate.STRING);
+				criteria.add(Expression.or(leftExp, rigthExp));
+			} else {
+				// append expression for unlocalized metadata
+				leftExp = Expression.sql("UPPER(" + columnName + ") like ?", (value + "%").toUpperCase(), Hibernate.STRING);
+				// append expression for localized metadata
+				searchValue = "%" + LocalizedStringUtil.PARTITION + LocalizedStringUtil.escapeDelimiter(value) + "%";
+				rigthExp = Expression.sql("UPPER(" + columnName + ") like ?", searchValue.toUpperCase(), Hibernate.STRING);
+				criteria.add(Expression.or(leftExp, rigthExp));
+			}
+		} else if (MatchMode.END.equals(mode)) {
+			if (caseSensitive == true) {
+				// append expression for unlocalized metadata
+				leftExp = Expression.sql(columnName + " like ?", "%" + value, Hibernate.STRING);
+				// append expression for localized metadata
+				searchValue = "%" + LocalizedStringUtil.escapeDelimiter(value) + LocalizedStringUtil.SPLITTER + "%";
+				rigthExp = Expression.sql(columnName + " like ?", searchValue, Hibernate.STRING);
+				criteria.add(Expression.or(leftExp, rigthExp));
+			} else {
+				// append expression for unlocalized metadata
+				leftExp = Expression.sql("UPPER(" + columnName + ") like ?", ("%" + value).toUpperCase(), Hibernate.STRING);
+				// append expression for localized metadata
+				searchValue = "%" + LocalizedStringUtil.escapeDelimiter(value) + LocalizedStringUtil.SPLITTER + "%";
+				rigthExp = Expression.sql("UPPER(" + columnName + ") like ?", searchValue.toUpperCase(), Hibernate.STRING);
+				criteria.add(Expression.or(leftExp, rigthExp));
+			}
+		} else if (MatchMode.ANYWHERE.equals(mode)) {
+			if (caseSensitive == true) {
+				// use one expression
+				leftExp = Expression.sql(columnName + " like ?", "%" + value + "%", Hibernate.STRING);
+				criteria.add(leftExp);
+			} else {
+				leftExp = Expression.sql("UPPER(" + columnName + ") like ?", ("%" + value + "%").toUpperCase(),
+				    Hibernate.STRING);
+				criteria.add(leftExp);
+			}
+		} else {//MatchMode.EXACT.equals(mode)
+			if (caseSensitive == true) {
+				// append expression for unlocalized metadata
+				leftExp = Expression.sql(columnName + " = ?", value, Hibernate.STRING);
+				// append expression for localized metadata
+				searchValue = "%" + LocalizedStringUtil.PARTITION + LocalizedStringUtil.escapeDelimiter(value)
+				        + LocalizedStringUtil.SPLITTER + "%";
+				rigthExp = Expression.sql(columnName + " like ?", searchValue, Hibernate.STRING);
+				criteria.add(Expression.or(leftExp, rigthExp));
+			} else {
+				// append expression for unlocalized metadata
+				leftExp = Expression.sql("UPPER(" + columnName + ") = ?", value.toUpperCase(), Hibernate.STRING);
+				// append expression for localized metadata
+				searchValue = "%" + LocalizedStringUtil.PARTITION + LocalizedStringUtil.escapeDelimiter(value)
+				        + LocalizedStringUtil.SPLITTER + "%";
+				rigthExp = Expression.sql("UPPER(" + columnName + ") like ?", searchValue.toUpperCase(), Hibernate.STRING);
+				criteria.add(Expression.or(leftExp, rigthExp));
+			}
+		}
+	}
+	
+	/**
+	 * Get a unique metadata from passed foundMetadata list, this is a less-frequent case in which
+	 * there are more than one found metadata while searching metadata by name column, and these
+	 * found metadata match name value in different locale.
+	 * <p>
+	 * Return strategy:
+	 * <ol>
+	 * <li>Retrun the metadata which's name match within user's current locale(if exist)</li>
+	 * <li>Return the first found metadata(if no metadata found in previous step)</li>
+	 * </ol>
+	 * 
+	 * @param <T>
+	 * @param foundMetadata - a list to get a unique metadata from
+	 * @param nameValue - value to compare with for each metadata's variant name which is within
+	 *            user's current locale
+	 * @return a unique metadata
+	 */
+	public static <T extends OpenmrsMetadata> T getUniqueMetadataByLocalizedName(List<T> foundMetadata, String nameValue) {
+		if (foundMetadata == null || foundMetadata.isEmpty())
 			return null;
-		if (results.size() == 1)
-			return results.get(0);
+		else if (foundMetadata.size() == 1)
+			return foundMetadata.get(0);
 		else {
-			// this is a less-frequent use case, more than one records are found
-			// and we should return the record which's name match within user's current locale firstly if exist
+			// this is a less-frequent use case, more than one metadata have variant name matching passed nameValue
+			// and we should return the metadata which's name match within user's current locale firstly if exist
 			// , otherwise return the first found one
-			for (T tt : results) {
-				if (value.equals(tt.getName()))
-					return tt;
+			Locale userLocale = Context.getLocale();
+			for (T metadata : foundMetadata) {
+				if (nameValue.equals(metadata.getLocalizedName().getValue(userLocale)))
+					return metadata;
 			}
 			
-			// if no record matches user's current locale, then return the first found one
-			return results.get(0);
+			// if no metadata matches user's current locale, then return the first metadata in passed foundMetadata list
+			return foundMetadata.get(0);
 		}
 	}
-	
-	/**
-	 * Find metadatas (return a list in one time) by fuzzily searching the localized database field
-	 * which is specified by given columnName.
-	 * <p>
-	 * Note:
-	 * <ul>
-	 * <li>The search logic in this method doesn't have order by option</li>
-	 * <li>The search range is just those metadatas which's name property has been localized</li>
-	 * </ul>
-	 * 
-	 * @param <T>
-	 * @param value - value to match
-	 * @param columnName - column to match in
-	 * @param includeRetired - if includeRetired is true, also get retired metadatas.
-	 * @param caseSensitive - if caseSensitive is false, do sql query similar to hibernate's "ilike"
-	 * @param searchClazz - the class related to the searched database table
-	 * @param sessionFactory - SessionFactory to create Criteria from
-	 * @return A list of objects extend {@link BaseOpenmrsMetadata} if exist, otherwise null
-	 * @since 1.9
-	 */
-	@SuppressWarnings("unchecked")
-	public static <T extends BaseOpenmrsMetadata> List<T> findMetadatasFuzzilyByLocalizedColumn(
-	                                                                                            String value,
-	                                                                                            String columnName,
-	                                                                                            boolean includeRetired,
-	                                                                                            boolean caseSensitive,
-	                                                                                            Class<? extends T> searchClazz,
-	                                                                                            SessionFactory sessionFactory) {
-		Criteria crit = sessionFactory.getCurrentSession().createCriteria(searchClazz);
-		
-		// search those metadatas have been localized
-		if (includeRetired == false)
-			crit.add(Expression.eq("retired", false));
-		
-		String queryStr = "";
-		String queryValue = "";
-		if (caseSensitive == false) {
-			queryStr = "UPPER(" + columnName + ") like ?";
-			queryValue = "%" + LocalizedStringUtil.PARTITION
-			        + LocalizedStringUtil.escapeDelimiter(value).toUpperCase() + "%";
-		} else {
-			queryStr = columnName + " like ?";
-			queryValue = "%" + LocalizedStringUtil.PARTITION + LocalizedStringUtil.escapeDelimiter(value) + "%";
-		}
-		crit.add(Expression.sql(queryStr, queryValue, Hibernate.STRING));
-		
-		return crit.list();
-	}
-	
 }
