@@ -21,9 +21,11 @@ import java.net.URL;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
@@ -48,6 +50,8 @@ public class ModuleRepository {
 	
 	private static Set<Module> repository = new HashSet<Module>();
 	
+	private static List<Module> repositoryExcludingLoaded = new ArrayList<Module>();
+
 	public static final String MODULE_REPOSITORY_CACHE_UPDATE_TASK_NAME = "Module Repository Cache Update";
 	
 	public static final String MODULE_REPOSITORY_CACHE_UPDATE_TASK_CLASS = "org.openmrs.scheduler.tasks.ModuleRepositoryCacheUpdateTask";
@@ -162,6 +166,36 @@ public class ModuleRepository {
 		t.start();
 	}
 	
+	public static List<Module> getAllModules() {
+		List<Module> modules = new ArrayList<Module>();
+
+		if (repositoryExcludingLoaded == null) {
+			repositoryExcludingLoaded = new ArrayList<Module>(repository);
+		}
+
+		Collection<Module> loadedModules = ModuleFactory.getLoadedModules();
+		
+		modules.removeAll(loadedModules);
+
+		return modules;
+	}
+
+	public static List<Module> searchModules(String search) {
+		List<Module> modules = new ArrayList<Module>();
+		if ("".equals(search)) {
+			return modules;
+		}
+
+		for (Module mod : getAllModules()) {
+			if (mod.getModuleId().contains(search) || mod.getName().contains(search)
+			        || mod.getDescription().contains(search) || mod.getAuthor().contains(search)) {
+				modules.add(mod);
+			}
+		}
+		
+		return modules;
+	}
+
 	private static String formatDate(Date d) {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		return sdf.format(d);

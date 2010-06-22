@@ -328,7 +328,7 @@ public class ModuleListController extends SimpleFormController {
 		    new String[] { ModuleConstants.RUNTIMEPROPERTY_ALLOW_ADMIN }));
 		
 		map.put("openmrsVersion", OpenmrsConstants.OPENMRS_VERSION_SHORT);
-		map.put("moduleRepositoryURL", WebConstants.MODULE_REPOSITORY_URL);
+		map.put("moduleRepositoryURL", request.getContextPath());//WebConstants.MODULE_REPOSITORY_URL);
 		
 		map.put("loadedModules", ModuleFactory.getLoadedModules());
 		

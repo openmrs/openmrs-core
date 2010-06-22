@@ -139,6 +139,16 @@
 		<url-pattern>/concept/*</url-pattern>
 	</servlet-mapping>
 	
+	<!-- Servlet for Module Repository Search -->
+	<servlet>
+		<servlet-name>findModulesServlet</servlet-name>
+		<servlet-class>org.openmrs.module.web.FindModulesServlet</servlet-class>		
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>findModulesServlet</servlet-name>
+		<url-pattern>/findModules</url-pattern>
+	</servlet-mapping>
+	
 	<listener>
 		<listener-class>net.sf.ehcache.constructs.web.ShutdownListener</listener-class>
 		<!-- Should go before Listener so that during webapp shutdown it comes after hibernate shutdown last -->
