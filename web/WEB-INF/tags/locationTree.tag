@@ -9,7 +9,7 @@
 
 
 <c:if test="${empty id}">
-	<c:set var="id" value="<%= "locTree" + Math.round(Math.random() * 1000) %>"/>
+	<c:set var="id" value='<%= "locTree" + Math.round(Math.random() * 1000) %>'/>
 </c:if>
 
 <c:if test="${empty selectLeafOnly}">
