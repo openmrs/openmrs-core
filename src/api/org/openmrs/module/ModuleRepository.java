@@ -21,7 +21,6 @@ import java.net.URL;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -50,8 +49,6 @@ public class ModuleRepository {
 	
 	private static Set<Module> repository = new HashSet<Module>();
 	
-	private static List<Module> repositoryExcludingLoaded = new ArrayList<Module>();
-
 	public static final String MODULE_REPOSITORY_CACHE_UPDATE_TASK_NAME = "Module Repository Cache Update";
 	
 	public static final String MODULE_REPOSITORY_CACHE_UPDATE_TASK_CLASS = "org.openmrs.scheduler.tasks.ModuleRepositoryCacheUpdateTask";
@@ -125,12 +122,12 @@ public class ModuleRepository {
 						HashMap<String, Object> map = mapper.readValue(jsonInputStream, HashMap.class);
 						ArrayList<ArrayList<String>> metadata = (ArrayList<ArrayList<String>>) map.get("Values");
 						for (ArrayList<String> moduleMetaData : metadata) {
-							Module mod = new Module(moduleMetaData.get(MODULE_NAME_INDEX)); // Module Name
-							mod.setModuleId(moduleMetaData.get(MODULE_ID_INDEX)); // Module Id
-							mod.setDownloadURL(moduleMetaData.get(MODULE_DOWNLOAD_URL_INDEX)); // Download URL
-							mod.setVersion(moduleMetaData.get(MODULE_VERSION_INDEX)); // Version
-							mod.setAuthor(moduleMetaData.get(MODULE_AUTHOR_INDEX)); // Author
-							mod.setDescription(moduleMetaData.get(MODULE_DESCRIPTION_INDEX)); // Description
+							Module mod = new Module(moduleMetaData.get(MODULE_NAME_INDEX).trim()); // Module Name
+							mod.setModuleId(moduleMetaData.get(MODULE_ID_INDEX).trim()); // Module Id
+							mod.setDownloadURL(moduleMetaData.get(MODULE_DOWNLOAD_URL_INDEX).trim()); // Download URL
+							mod.setVersion(moduleMetaData.get(MODULE_VERSION_INDEX).trim()); // Version
+							mod.setAuthor(moduleMetaData.get(MODULE_AUTHOR_INDEX).trim()); // Author
+							mod.setDescription(moduleMetaData.get(MODULE_DESCRIPTION_INDEX).trim()); // Description
 							//If older version available remove it
 							if (repository.contains(mod)) {
 								repository.remove(mod);
@@ -166,16 +163,14 @@ public class ModuleRepository {
 		t.start();
 	}
 	
-	public static List<Module> getAllModules() {
-		List<Module> modules = new ArrayList<Module>();
+	public static Set<Module> getAllModules() {
+		Set<Module> modules = new HashSet<Module>(repository);
 
-		if (repositoryExcludingLoaded == null) {
-			repositoryExcludingLoaded = new ArrayList<Module>(repository);
-		}
-
-		Collection<Module> loadedModules = ModuleFactory.getLoadedModules();
+		Set<Module> loadedModules = new HashSet<Module>(ModuleFactory.getLoadedModulesMap().values());
 		
-		modules.removeAll(loadedModules);
+		boolean removed = modules.removeAll(loadedModules);
+		
+		log.debug(removed);
 
 		return modules;
 	}
@@ -187,13 +182,18 @@ public class ModuleRepository {
 		}
 
 		for (Module mod : getAllModules()) {
-			if (mod.getModuleId().contains(search) || mod.getName().contains(search)
-			        || mod.getDescription().contains(search) || mod.getAuthor().contains(search)) {
+			if ((mod.getModuleId().contains(search) || mod.getName().contains(search)
+			        || mod.getDescription().contains(search) || mod.getAuthor().contains(search))
+			        && !modules.contains(mod)) {
 				modules.add(mod);
 			}
 		}
 		
 		return modules;
+	}
+	
+	public static int noOfModules() {
+		return getAllModules().size();
 	}
 
 	private static String formatDate(Date d) {

@@ -157,7 +157,7 @@
 					<br/>
 								
 					<div id="findModule">
-						<b class="boxHeader"><spring:message code="Module.findAndDownload" arguments="${moduleRepositoryURL}" /></b>
+						<b class="boxHeader"><spring:message code="Module.findAndDownload" /></b>
 						<div class="box">
 							<table id="findModuleTable" cellpadding="5" cellspacing="0">
 					    		<thead>

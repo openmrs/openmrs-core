@@ -22,8 +22,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.openmrs.api.APIAuthenticationException;
+import org.openmrs.api.context.Context;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleRepository;
+import org.openmrs.util.OpenmrsConstants;
 
 /**
  *
@@ -42,6 +45,10 @@ public class FindModulesServlet extends HttpServlet {
 	
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_MODULES)) {
+			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_MODULES);
+		}
+
 		response.setContentType("text/json");
 		response.setHeader("Cache-Control", "no-cache");
 		PrintWriter out = response.getWriter();
@@ -53,9 +60,6 @@ public class FindModulesServlet extends HttpServlet {
 		final int iDisplayLength = getIntParameter(request, "iDisplayLength", 100);
 		final String sSearch = request.getParameter("sSearch");
 
-		// final boolean bEscapeRegex =
-		// "true".equalsIgnoreCase(request.getParameter("bEscapeRegex"));
-		// final int iColumns = getIntParameter(request, "iColumns", 0);
 		final int iSortingCols = getIntParameter(request, "iSortingCols", 0);
 		final int[] sortingCols = new int[iSortingCols];
 		final String[] sortingDirs = new String[iSortingCols];
@@ -68,9 +72,9 @@ public class FindModulesServlet extends HttpServlet {
 		final String sEcho = request.getParameter("sEcho");
 
 		List<Module> modules;
-		try {			
-			modules = ModuleRepository.searchModules(sSearch);//RepositoryService.findModules(sSearch, openmrsVersion, excludeMods, sortingCols, sortingDirs);
-			iTotalRecords = modules.size();
+		try {
+			iTotalRecords = ModuleRepository.noOfModules();
+			modules = ModuleRepository.searchModules(sSearch);
 		}
 		catch (Throwable t) {
 			System.out.println("Error finding modules: " + t);
@@ -93,12 +97,9 @@ public class FindModulesServlet extends HttpServlet {
 			fromIndex = aux;
 		}
 		modules = modules.subList(fromIndex, toIndex);
-		
-		//System.out.println("searching for : " + sSearch + " and excludeModules: " + excludeModules + " and openmrs v: " + openmrsVersion);
-		
+
 		final String jsonpcallback = request.getParameter("callback");
 		
-		// to support cross site scripting and jquery's jsonp
 		if (jsonpcallback != null)
 			out.print(jsonpcallback + "(");
 		
