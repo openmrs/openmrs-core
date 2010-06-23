@@ -17,6 +17,7 @@ import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -28,15 +29,16 @@ import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
-import org.hibernate.criterion.Order;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
+import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.PatientDAO;
+import org.openmrs.util.MetadataComparator;
 
 /**
  * Hibernate specific database methods for the PatientService
@@ -281,12 +283,15 @@ public class HibernatePatientDAO implements PatientDAO {
 		// TODO test this method
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(PatientIdentifierType.class);
-		criteria.addOrder(Order.asc("name"));
 		
 		if (includeRetired == false)
 			criteria.add(Expression.eq("retired", false));
 		
-		return criteria.list();
+		List<PatientIdentifierType> pits = criteria.list();
+		// do java sorting on the return value of "getName()",
+		// because maybe both unlocalized and localized object are in returned list
+		Collections.sort(pits, new MetadataComparator(Context.getLocale()));
+		return pits;
 	}
 	
 	/**
@@ -299,10 +304,9 @@ public class HibernatePatientDAO implements PatientDAO {
 		// TODO test this method
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(PatientIdentifierType.class);
-		criteria.addOrder(Order.asc("name"));
 		
 		if (name != null)
-			criteria.add(Expression.eq("name", name));
+			HibernateUtil.addEqCriterionForLocalizedColumn(name, "name", criteria);
 		
 		if (format != null)
 			criteria.add(Expression.eq("format", format));
@@ -315,7 +319,11 @@ public class HibernatePatientDAO implements PatientDAO {
 		
 		criteria.add(Expression.eq("retired", false));
 		
-		return criteria.list();
+		List<PatientIdentifierType> pits = criteria.list();
+		// do java sorting on the return value of "getName()",
+		// because maybe both unlocalized and localized object are in returned list
+		Collections.sort(pits, new MetadataComparator(Context.getLocale()));
+		return pits;
 	}
 	
 	/**

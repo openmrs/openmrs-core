@@ -14,6 +14,7 @@
 package org.openmrs.api.db.hibernate;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -21,6 +22,7 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.MatchMode;
@@ -36,8 +38,10 @@ import org.openmrs.FieldType;
 import org.openmrs.Form;
 import org.openmrs.FormField;
 import org.openmrs.api.APIException;
+import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.FormDAO;
+import org.openmrs.util.MetadataComparator;
 
 /**
  * Hibernate specific Form related functions This class should not be used directly. All calls
@@ -235,10 +239,11 @@ public class HibernateFormDAO implements FormDAO {
 		if (includeRetired == false)
 			crit.add(Expression.eq("retired", false));
 		
-		crit.addOrder(Order.asc("name"));
-		crit.addOrder(Order.asc("formId"));
-		
-		return crit.list();
+		List<Form> forms = crit.list();
+		// do java sorting on the return value of "getName()",
+		// because maybe both unlocalized and localized object are in returned list
+		Collections.sort(forms, new MetadataComparator(Context.getLocale()));
+		return forms;
 	}
 	
 	/**
@@ -341,13 +346,15 @@ public class HibernateFormDAO implements FormDAO {
 	/**
 	 * @see org.openmrs.api.db.FormDAO#getForm(java.lang.String, java.lang.String)
 	 */
+	@SuppressWarnings("unchecked")
 	public Form getForm(String name, String version) throws DAOException {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Form.class);
 		
-		crit.add(Expression.eq("name", name));
+		HibernateUtil.addEqCriterionForLocalizedColumn(name, "name", crit);
 		crit.add(Expression.eq("version", version));
 		
-		return (Form) crit.uniqueResult();
+		List<Form> forms = crit.list();
+		return forms.isEmpty() ? null : forms.get(0);//just return the first found one while multiplies coming back
 	}
 	
 	/**
@@ -363,8 +370,10 @@ public class HibernateFormDAO implements FormDAO {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Form.class, "form");
 		
 		if (partialName != null && !"".equals(partialName)) {
-			crit.add(Expression.or(Expression.like("name", partialName, MatchMode.START), Expression.like("name", " "
-			        + partialName, MatchMode.ANYWHERE)));
+			Criterion lhs = HibernateUtil.getLikeCriterionForLocalizedColumn(partialName, "name", true, MatchMode.START);
+			Criterion rhs = HibernateUtil.getLikeCriterionForLocalizedColumn(" " + partialName, "name", true,
+			    MatchMode.ANYWHERE);
+			crit.add(Expression.or(lhs, rhs));
 		}
 		if (published != null)
 			crit.add(Expression.eq("published", published));
@@ -380,7 +389,7 @@ public class HibernateFormDAO implements FormDAO {
 			crit.add(Expression.in("formField", containingAnyFormField));
 		
 		// TODO junit test
-		//select * from form where len(containingallformfields) = (select count(*) from form_field ff where ff.form_id = form_id and form_field_id in (containingallformfields); 
+		//select * from form where len(containingallformfields) = (select count(*) from form_field ff where ff.form_id = form_id and form_field_id in (containingallformfields);
 		if (!containingAllFormFields.isEmpty()) {
 			DetachedCriteria detachedCrit = DetachedCriteria.forClass(FormField.class, "ff");
 			detachedCrit.setProjection(Projections.count("formFieldId"));
@@ -443,7 +452,7 @@ public class HibernateFormDAO implements FormDAO {
 	public List<Form> getFormsByName(String name) throws DAOException {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Form.class);
 		
-		crit.add(Expression.eq("name", name));
+		HibernateUtil.addEqCriterionForLocalizedColumn(name, "name", crit);
 		crit.add(Expression.eq("retired", false));
 		crit.addOrder(Order.desc("version"));
 		

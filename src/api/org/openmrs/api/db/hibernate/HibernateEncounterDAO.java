@@ -166,7 +166,8 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	public EncounterType getEncounterType(String name) throws DAOException {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(EncounterType.class);
 		HibernateUtil.addEqCriterionForLocalizedColumn(name, "name", crit);
-		return HibernateUtil.getUniqueMetadataByLocalizedName((List<EncounterType>) crit.list(), name);
+		List<EncounterType> types = crit.list();
+		return types.isEmpty() ? null : types.get(0);//just return the first found one while multiplies coming back
 	}
 	
 	/**
@@ -180,7 +181,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 		List<EncounterType> results = criteria.list();
 		
 		// do java sorting on the return value of "getName()",
-		// because maybe both unlocalized and localized encounterTypes are in "results" list
+		// because maybe both unlocalized and localized object are in returned list
 		Collections.sort(results, new MetadataComparator(Context.getLocale()));
 		return results;
 	}

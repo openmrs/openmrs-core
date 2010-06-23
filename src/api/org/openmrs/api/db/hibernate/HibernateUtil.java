@@ -14,8 +14,6 @@
 package org.openmrs.api.db.hibernate;
 
 import java.sql.SQLException;
-import java.util.List;
-import java.util.Locale;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -31,7 +29,6 @@ import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.HSQLDialect;
 import org.hibernate.engine.SessionFactoryImplementor;
 import org.openmrs.OpenmrsMetadata;
-import org.openmrs.api.context.Context;
 import org.openmrs.util.LocalizedStringUtil;
 
 /**
@@ -123,18 +120,11 @@ public class HibernateUtil {
 	 * @param value - value to match
 	 * @param columnName - column to match in
 	 * @param criteria - criteria to append search conditions
+	 * @see #getEqCriterionForLocalizedColumn(String, String)
 	 * @since 1.9
 	 */
 	public static void addEqCriterionForLocalizedColumn(String value, String columnName, Criteria criteria) {
-		// append expression for those unlocalized metadata
-		Criterion leftExp = Expression.sql(columnName + " = ?", value, Hibernate.STRING);
-		
-		// append expression for those localized metadata
-		String searchValue = "%" + LocalizedStringUtil.PARTITION + LocalizedStringUtil.escapeDelimiter(value)
-		        + LocalizedStringUtil.SPLITTER + "%";
-		Criterion rightExp = Expression.sql(columnName + " like ?", searchValue, Hibernate.STRING);
-		
-		criteria.add(Expression.or(leftExp, rightExp));
+		criteria.add(getEqCriterionForLocalizedColumn(value, columnName));
 	}
 	
 	/**
@@ -145,10 +135,47 @@ public class HibernateUtil {
 	 * @param criteria - criteria to append search conditions
 	 * @param caseSensitive - if caseSensitive is false, do sql query similar to hibernate's "ilike"
 	 * @param mode - specify match mode, match from start, end, anywhere, or exact
+	 * @see #getLikeCriterionForLocalizedColumn(String, String, boolean, MatchMode)
 	 * @since 1.9
 	 */
 	public static void addLikeCriterionForLocalizedColumn(String value, String columnName, Criteria criteria,
 	                                                      boolean caseSensitive, MatchMode mode) {
+		criteria.add(getLikeCriterionForLocalizedColumn(value, columnName, caseSensitive, mode));
+	}
+	
+	/**
+	 * Get equal criterion for the localized column of {@link OpenmrsMetadata} object.
+	 * 
+	 * @param value - value to match
+	 * @param columnName - column to match in
+	 * @return criterion to be used as hibernate's equal query
+	 * @since 1.9
+	 */
+	public static Criterion getEqCriterionForLocalizedColumn(String value, String columnName) {
+		// expression for those unlocalized metadata
+		Criterion leftExp = Expression.sql(columnName + " = ?", value, Hibernate.STRING);
+		
+		// expression for those localized metadata
+		String searchValue = "%" + LocalizedStringUtil.PARTITION + LocalizedStringUtil.escapeDelimiter(value)
+		        + LocalizedStringUtil.SPLITTER + "%";
+		Criterion rightExp = Expression.sql(columnName + " like ?", searchValue, Hibernate.STRING);
+		
+		return Expression.or(leftExp, rightExp);
+	}
+	
+	/**
+	 * Get like criterion for the localized column of {@link OpenmrsMetadata} object.
+	 * 
+	 * @param value - value to match
+	 * @param columnName - column to match in
+	 * @param caseSensitive - if caseSensitive is false, return sql query similar to hibernate's
+	 *            "ilike"
+	 * @param mode - specify match mode, match from start, end, anywhere, or exact
+	 * @return criterion to be used as hibernate's like or ilike query
+	 * @since 1.9
+	 */
+	public static Criterion getLikeCriterionForLocalizedColumn(String value, String columnName, boolean caseSensitive,
+	                                                           MatchMode mode) {
 		Criterion leftExp = null;
 		Criterion rigthExp = null;
 		String searchValue = null;
@@ -160,14 +187,14 @@ public class HibernateUtil {
 				// append expression for localized metadata
 				searchValue = "%" + LocalizedStringUtil.PARTITION + LocalizedStringUtil.escapeDelimiter(value) + "%";
 				rigthExp = Expression.sql(columnName + " like ?", searchValue, Hibernate.STRING);
-				criteria.add(Expression.or(leftExp, rigthExp));
+				return Expression.or(leftExp, rigthExp);
 			} else {
 				// append expression for unlocalized metadata
 				leftExp = Expression.sql("UPPER(" + columnName + ") like ?", (value + "%").toUpperCase(), Hibernate.STRING);
 				// append expression for localized metadata
 				searchValue = "%" + LocalizedStringUtil.PARTITION + LocalizedStringUtil.escapeDelimiter(value) + "%";
 				rigthExp = Expression.sql("UPPER(" + columnName + ") like ?", searchValue.toUpperCase(), Hibernate.STRING);
-				criteria.add(Expression.or(leftExp, rigthExp));
+				return Expression.or(leftExp, rigthExp);
 			}
 		} else if (MatchMode.END.equals(mode)) {
 			if (caseSensitive == true) {
@@ -176,24 +203,24 @@ public class HibernateUtil {
 				// append expression for localized metadata
 				searchValue = "%" + LocalizedStringUtil.escapeDelimiter(value) + LocalizedStringUtil.SPLITTER + "%";
 				rigthExp = Expression.sql(columnName + " like ?", searchValue, Hibernate.STRING);
-				criteria.add(Expression.or(leftExp, rigthExp));
+				return Expression.or(leftExp, rigthExp);
 			} else {
 				// append expression for unlocalized metadata
 				leftExp = Expression.sql("UPPER(" + columnName + ") like ?", ("%" + value).toUpperCase(), Hibernate.STRING);
 				// append expression for localized metadata
 				searchValue = "%" + LocalizedStringUtil.escapeDelimiter(value) + LocalizedStringUtil.SPLITTER + "%";
 				rigthExp = Expression.sql("UPPER(" + columnName + ") like ?", searchValue.toUpperCase(), Hibernate.STRING);
-				criteria.add(Expression.or(leftExp, rigthExp));
+				return Expression.or(leftExp, rigthExp);
 			}
 		} else if (MatchMode.ANYWHERE.equals(mode)) {
 			if (caseSensitive == true) {
 				// use one expression
 				leftExp = Expression.sql(columnName + " like ?", "%" + value + "%", Hibernate.STRING);
-				criteria.add(leftExp);
+				return leftExp;
 			} else {
 				leftExp = Expression.sql("UPPER(" + columnName + ") like ?", ("%" + value + "%").toUpperCase(),
 				    Hibernate.STRING);
-				criteria.add(leftExp);
+				return leftExp;
 			}
 		} else {//MatchMode.EXACT.equals(mode)
 			if (caseSensitive == true) {
@@ -203,7 +230,7 @@ public class HibernateUtil {
 				searchValue = "%" + LocalizedStringUtil.PARTITION + LocalizedStringUtil.escapeDelimiter(value)
 				        + LocalizedStringUtil.SPLITTER + "%";
 				rigthExp = Expression.sql(columnName + " like ?", searchValue, Hibernate.STRING);
-				criteria.add(Expression.or(leftExp, rigthExp));
+				return Expression.or(leftExp, rigthExp);
 			} else {
 				// append expression for unlocalized metadata
 				leftExp = Expression.sql("UPPER(" + columnName + ") = ?", value.toUpperCase(), Hibernate.STRING);
@@ -211,45 +238,8 @@ public class HibernateUtil {
 				searchValue = "%" + LocalizedStringUtil.PARTITION + LocalizedStringUtil.escapeDelimiter(value)
 				        + LocalizedStringUtil.SPLITTER + "%";
 				rigthExp = Expression.sql("UPPER(" + columnName + ") like ?", searchValue.toUpperCase(), Hibernate.STRING);
-				criteria.add(Expression.or(leftExp, rigthExp));
+				return Expression.or(leftExp, rigthExp);
 			}
-		}
-	}
-	
-	/**
-	 * Get a unique metadata from passed foundMetadata list, this is a less-frequent case in which
-	 * there are more than one found metadata while searching metadata by name column, and these
-	 * found metadata match name value in different locale.
-	 * <p>
-	 * Return strategy:
-	 * <ol>
-	 * <li>Retrun the metadata which's name match within user's current locale(if exist)</li>
-	 * <li>Return the first found metadata(if no metadata found in previous step)</li>
-	 * </ol>
-	 * 
-	 * @param <T>
-	 * @param foundMetadata - a list to get a unique metadata from
-	 * @param nameValue - value to compare with for each metadata's variant name which is within
-	 *            user's current locale
-	 * @return a unique metadata
-	 */
-	public static <T extends OpenmrsMetadata> T getUniqueMetadataByLocalizedName(List<T> foundMetadata, String nameValue) {
-		if (foundMetadata == null || foundMetadata.isEmpty())
-			return null;
-		else if (foundMetadata.size() == 1)
-			return foundMetadata.get(0);
-		else {
-			// this is a less-frequent use case, more than one metadata have variant name matching passed nameValue
-			// and we should return the metadata which's name match within user's current locale firstly if exist
-			// , otherwise return the first found one
-			Locale userLocale = Context.getLocale();
-			for (T metadata : foundMetadata) {
-				if (nameValue.equals(metadata.getLocalizedName().getValue(userLocale)))
-					return metadata;
-			}
-			
-			// if no metadata matches user's current locale, then return the first metadata in passed foundMetadata list
-			return foundMetadata.get(0);
 		}
 	}
 }
