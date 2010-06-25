@@ -53,7 +53,7 @@ public class FindModulesServlet extends HttpServlet {
 		response.setHeader("Cache-Control", "no-cache");
 		PrintWriter out = response.getWriter();
 		
-		final int iTotalRecords;
+		Integer iTotalRecords = 0;
 		
 		// the following parameters are described in http://www.datatables.net/usage/server-side
 		final int iDisplayStart = getIntParameter(request, "iDisplayStart", 0);
@@ -73,8 +73,8 @@ public class FindModulesServlet extends HttpServlet {
 
 		List<Module> modules;
 		try {
-			iTotalRecords = ModuleRepository.noOfModules();
 			modules = ModuleRepository.searchModules(sSearch);
+			iTotalRecords = ModuleRepository.getNoOfModules();
 		}
 		catch (Throwable t) {
 			System.out.println("Error finding modules: " + t);

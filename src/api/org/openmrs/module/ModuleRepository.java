@@ -25,7 +25,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.WeakHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -47,7 +49,7 @@ public class ModuleRepository {
 
 	private static Date lastUpdatedDate = new Date(100, 0, 01); // first date will be 01/01/2000
 	
-	private static Set<Module> repository = new HashSet<Module>();
+	private static Map<String, Module> repository = new WeakHashMap<String, Module>();
 	
 	public static final String MODULE_REPOSITORY_CACHE_UPDATE_TASK_NAME = "Module Repository Cache Update";
 	
@@ -68,7 +70,12 @@ public class ModuleRepository {
 	private static final String MODULE_REPOSITORY_URL = "modulerepository.url.allModules";
 	
 	private static String moduleRepositoryUrl = null;
+	
+	private static int noOfModules = 0;
 
+	/**
+	 * Initializes the ModuleRepository and calls for the first module repository cache
+	 */
 	public static void initialize() {
 		try {
 			/* Temporarily Used the authentication should be removed
@@ -99,17 +106,20 @@ public class ModuleRepository {
 				gp.setDescription("Get All Module Repository URL");
 				as.saveGlobalProperty(gp);
 			}
-			moduleRepositoryUrl = url;
 			Context.logout();
 			cacheModuleRepository();
+			moduleRepositoryUrl = url;
 		}
 		catch (Throwable t) {
 			log.error("Error while initializing Module Repository", t);
 		}
 	}
-
+	
+	/**
+	 * Creates a new Thread to Start Caching the Module Repository
+	 */
 	public static void cacheModuleRepository() {
-		Thread t = new Thread() {
+		Thread cacheThread = new Thread() {
 			@Override
             public void run() {
 				synchronized (repository) {
@@ -122,20 +132,22 @@ public class ModuleRepository {
 						HashMap<String, Object> map = mapper.readValue(jsonInputStream, HashMap.class);
 						ArrayList<ArrayList<String>> metadata = (ArrayList<ArrayList<String>>) map.get("Values");
 						for (ArrayList<String> moduleMetaData : metadata) {
+							String moduleId = moduleMetaData.get(MODULE_ID_INDEX).trim(); // Module Id
 							Module mod = new Module(moduleMetaData.get(MODULE_NAME_INDEX).trim()); // Module Name
-							mod.setModuleId(moduleMetaData.get(MODULE_ID_INDEX).trim()); // Module Id
+							mod.setModuleId(moduleId);
 							mod.setDownloadURL(moduleMetaData.get(MODULE_DOWNLOAD_URL_INDEX).trim()); // Download URL
 							mod.setVersion(moduleMetaData.get(MODULE_VERSION_INDEX).trim()); // Version
 							mod.setAuthor(moduleMetaData.get(MODULE_AUTHOR_INDEX).trim()); // Author
 							mod.setDescription(moduleMetaData.get(MODULE_DESCRIPTION_INDEX).trim()); // Description
 							//If older version available remove it
-							if (repository.contains(mod)) {
-								repository.remove(mod);
+							if (repository.containsKey(moduleId)) {
+								repository.remove(moduleId);
 							}
-							repository.add(mod);
+							repository.put(moduleId, mod);
 						}
 						// Set the last updated date to current date
 						lastUpdatedDate = new Date();
+						noOfModules = getAllModules().size();
 					}catch(MalformedURLException e){
 						log.error("Module Repository URL is malformed", e);
 						return;
@@ -160,28 +172,46 @@ public class ModuleRepository {
 				}
 			}
 		};
-		t.start();
+		cacheThread.start();
 	}
 	
+	/**
+	 * This method returns all the cached modules excluding the loaded ones
+	 * 
+	 * @return cached modules
+	 */
 	public static Set<Module> getAllModules() {
-		Set<Module> modules = new HashSet<Module>(repository);
+		Map<String, Module> modules = new HashMap<String, Module>(repository);
 
-		Set<Module> loadedModules = new HashSet<Module>(ModuleFactory.getLoadedModulesMap().values());
+		Map<String, Module> loadedModules = ModuleFactory.getLoadedModulesMap();
 		
-		boolean removed = modules.removeAll(loadedModules);
+		// Remove the already loaded modules
+		for(Module mod:loadedModules.values()){
+			modules.remove(mod.getModuleId());
+		}
 		
-		log.debug(removed);
-
-		return modules;
+		return new HashSet<Module>(modules.values());
 	}
-
+	
+	/**
+	 * This method returns modules which matches a search key
+	 * 
+	 * @param search - Module Search Key
+	 * @return search key matching modules
+	 * @should return an array list of modules for matching search
+	 */
 	public static List<Module> searchModules(String search) {
 		List<Module> modules = new ArrayList<Module>();
+
+		Set<Module> repository = getAllModules();
+		
+		noOfModules = repository.size();
+		
 		if ("".equals(search)) {
 			return modules;
 		}
 
-		for (Module mod : getAllModules()) {
+		for (Module mod : repository) {
 			if ((mod.getModuleId().contains(search) || mod.getName().contains(search)
 			        || mod.getDescription().contains(search) || mod.getAuthor().contains(search))
 			        && !modules.contains(mod)) {
@@ -192,15 +222,28 @@ public class ModuleRepository {
 		return modules;
 	}
 	
-	public static int noOfModules() {
-		return getAllModules().size();
+	/**
+	 * This method returns the no of modules in the repository excluding the loaded modules
+	 * 
+	 * @return no of modules
+	 */
+	public static int getNoOfModules() {
+		return noOfModules;
 	}
 
+	/**
+	 * @param date
+	 * @return formatted date
+	 */
 	private static String formatDate(Date d) {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		return sdf.format(d);
 	}
 	
+	/**
+	 * @return URL for caching
+	 * @throws MalformedURLException
+	 */
 	private static URL getURL() throws MalformedURLException {
 		String url = moduleRepositoryUrl.replace("<VERSION>", String.valueOf(OpenmrsConstants.OPENMRS_VERSION_SHORT));
 		url = url.replace("<DATE>", formatDate(lastUpdatedDate));
