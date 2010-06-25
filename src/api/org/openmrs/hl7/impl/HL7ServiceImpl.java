@@ -48,7 +48,6 @@ import org.openmrs.hl7.HL7Util;
 import org.openmrs.hl7.Hl7InArchivesMigrateThread;
 import org.openmrs.hl7.Hl7InArchivesMigrateThread.Status;
 import org.openmrs.hl7.db.HL7DAO;
-import org.openmrs.util.FormConstants;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.validator.PatientIdentifierValidator;
@@ -638,24 +637,24 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 					    assigningAuthority);
 					if (pit == null) {
 						// there is no matching PatientIdentifierType
-						if (assigningAuthority.equals(FormConstants.HL7_AUTHORITY_UUID)) {
+						if (assigningAuthority.equals(HL7Constants.HL7_AUTHORITY_UUID)) {
 							// the identifier is a UUID
 							Person p = Context.getPersonService().getPersonByUuid(hl7PersonId);
 							if (p != null)
 								return p;
 							log.warn("Can't find person for UUID '" + hl7PersonId + "'");
 							continue; // skip identifiers with unknown type
-						} else if (assigningAuthority.equals(FormConstants.HL7_AUTHORITY_LOCAL)) {
+						} else if (assigningAuthority.equals(HL7Constants.HL7_AUTHORITY_LOCAL)) {
 							// the ID is internal (local)
 							String idType = identifier.getIdentifierTypeCode().getValue();
 							try {
-								if (idType.equals(FormConstants.HL7_ID_PERSON)) {
+								if (idType.equals(HL7Constants.HL7_ID_PERSON)) {
 									Integer pid = Integer.parseInt(hl7PersonId);
 									// patient_id == person_id, so just look for the person
 									Person p = Context.getPersonService().getPerson(pid);
 									if (p != null)
 										return p;
-								} else if (idType.equals(FormConstants.HL7_ID_PATIENT)) {
+								} else if (idType.equals(HL7Constants.HL7_ID_PATIENT)) {
 									Integer pid = Integer.parseInt(hl7PersonId);
 									// patient_id == person_id, so just look for the person
 									Patient p = Context.getPatientService().getPatient(pid);
