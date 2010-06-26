@@ -28,7 +28,6 @@ import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Restrictions;
 import org.hibernate.criterion.Subqueries;
 import org.openmrs.Concept;
 import org.openmrs.EncounterType;
@@ -114,9 +113,10 @@ public class HibernateFormDAO implements FormDAO {
 	@SuppressWarnings("unchecked")
 	public List<Field> getFields(String search) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Field.class);
-		criteria.add(Restrictions.like("name", search, MatchMode.ANYWHERE));
-		criteria.addOrder(Order.asc("name"));
-		return criteria.list();
+		HibernateUtil.addLikeCriterionForLocalizedColumn(search, "name", criteria, true, MatchMode.ANYWHERE);
+		List<Field> fields = criteria.list();
+		Collections.sort(fields, new MetadataComparator(Context.getLocale()));
+		return fields;
 	}
 	
 	/**
@@ -126,8 +126,9 @@ public class HibernateFormDAO implements FormDAO {
 	public List<Field> getFieldsByConcept(Concept concept) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Field.class);
 		criteria.add(Expression.eq("concept", concept));
-		criteria.addOrder(Order.asc("name"));
-		return criteria.list();
+		List<Field> fields = criteria.list();
+		Collections.sort(fields, new MetadataComparator(Context.getLocale()));
+		return fields;
 	}
 	
 	/**

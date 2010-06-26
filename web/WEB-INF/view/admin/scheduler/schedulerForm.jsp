@@ -165,15 +165,9 @@ window.onload = init;
 			<td><spring:message code="general.id"/></td>
 			<td>${task.id}</td>
 		</tr>
-		<tr>
-			<td><spring:message code="general.name"/></td>
-			<td>
-				<spring:bind path="task.name">
-					<input type="text" name="name" value="${status.value}" size="35" />
-					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-				</spring:bind>
-			</td>
-		</tr>
+		<spring:nestedPath path="task">
+			<openmrs:portlet url="localizedName" id="localizedNameLayout" /> 
+		</spring:nestedPath>
 		<tr>
 			<td><spring:message code="Scheduler.taskForm.class"/></td>
 			<td>

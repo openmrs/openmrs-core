@@ -16,8 +16,8 @@
 		<property name="uuid" type="java.lang.String"
 			column="uuid" length="38" unique="true" />
 
-		<property name="name" type="java.lang.String" column="name"
-			not-null="true" length="255" />
+		<property name="localizedName" type="org.openmrs.api.db.hibernate.LocalizedStringType" 
+			column="name" not-null="true" length="1024" />
 		<property name="description" type="java.lang.String"
 			column="description" length="255" />
 		<property name="address1" type="java.lang.String"
@@ -54,7 +54,8 @@
 		
 		<many-to-one name="parentLocation" class="Location" column="parent_location" />
 		
-		<set name="childLocations" inverse="true" cascade="all" order-by="name">
+		<!-- <set name="childLocations" inverse="true" cascade="all" order-by="name">  -->
+		<set name="childLocations" inverse="true" cascade="all">
 			<key column="parent_location" />
 			<one-to-many class="Location" />
  		</set>

@@ -34,7 +34,7 @@ public class LocalizedStringType implements UserType, Serializable {
 	
 	private static final long serialVersionUID = 544321L;
 	
-	private static final int[] TYPES = new int[] { Types.LONGVARCHAR };
+	private static final int[] TYPES = new int[] { Types.VARCHAR };
 	
 	/**
 	 * @see org.hibernate.usertype.UserType#returnedClass()

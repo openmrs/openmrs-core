@@ -46,7 +46,7 @@ public class FormValidator implements Validator {
 	 * 
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
-	 * @should fail validation if name is null
+	 * @should fail validation if unlocalized name is null or empty or whitespace
 	 * @should fail validation if version is null
 	 * @should fail validation if version does not match regex
 	 * @should fail validation if retiredReason is null
@@ -58,7 +58,8 @@ public class FormValidator implements Validator {
 		if (form == null) {
 			errors.rejectValue("form", "error.general");
 		} else {
-			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
+			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "localizedName.unlocalizedValue",
+			    "LocalizedName.unlocalizedName.empty");
 			
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "version", "error.null");
 			

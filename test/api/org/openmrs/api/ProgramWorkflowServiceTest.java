@@ -321,17 +321,17 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	//	 * This method should be uncommented when you want to examine the actual hibernate
 	//	 * sql calls being made.  The calls that should be limiting the number of returned
 	//	 * patients should show a "top" or "limit" in the sql -- this proves hibernate's
-	//	 * use of a native sql limit as opposed to a java-only limit.  
-	//	 * 
+	//	 * use of a native sql limit as opposed to a java-only limit.
+	//	 *
 	//	 * Note: if enabled, this test will be considerably slower
-	//     * 
+	//     *
 	//     * @see org.openmrs.test.BaseContextSensitiveTest#getRuntimeProperties()
 	//     */
 	//    @Override
 	//    public Properties getRuntimeProperties() {
 	//	    Properties props = super.getRuntimeProperties();
 	//	    props.setProperty("hibernate.show_sql", "true");
-	//	    
+	//
 	//    	return props;
 	//    }
 	

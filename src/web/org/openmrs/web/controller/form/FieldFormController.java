@@ -25,8 +25,10 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Field;
+import org.openmrs.LocalizedString;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
+import org.openmrs.propertyeditor.LocalizedStringEditor;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
@@ -42,12 +44,15 @@ public class FieldFormController extends SimpleFormController {
 	/** Logger for this class and subclasses */
 	protected final Log log = LogFactory.getLog(getClass());
 	
-	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
+	@Override
+    protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
 		binder.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, true));
+		binder.registerCustomEditor(LocalizedString.class, new LocalizedStringEditor());
 	}
 	
-	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse reponse, Object obj,
+	@Override
+    protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse reponse, Object obj,
 	                                             BindException errors) throws Exception {
 		
 		Field field = (Field) obj;
@@ -65,7 +70,8 @@ public class FieldFormController extends SimpleFormController {
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
 	 */
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
+	@Override
+    protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
 	                                BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
@@ -90,7 +96,8 @@ public class FieldFormController extends SimpleFormController {
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
+	@Override
+    protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 		
 		Field field = null;
 		
@@ -107,7 +114,8 @@ public class FieldFormController extends SimpleFormController {
 		return field;
 	}
 	
-	protected Map<String, Object> referenceData(HttpServletRequest request, Object obj, Errors errors) throws Exception {
+	@Override
+    protected Map<String, Object> referenceData(HttpServletRequest request, Object obj, Errors errors) throws Exception {
 		
 		Field field = (Field) obj;
 		Locale locale = Context.getLocale();

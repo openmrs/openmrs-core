@@ -22,15 +22,12 @@
 <form method="post">
 <fieldset>
 <table>
-	<tr>
-		<td><spring:message code="general.name"/></td>
-		<td>
-			<spring:bind path="personAttributeType.name">
-				<input type="text" name="name" value="${status.value}" size="35" />
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-			</spring:bind>
-		</td>
-	</tr>
+	<spring:nestedPath path="personAttributeType">
+		<openmrs:portlet url="localizedName" id="localizedNameLayout" /> 
+	</spring:nestedPath>
+	<spring:bind path="personAttributeType.name">
+		<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+	</spring:bind>
 	<tr>
 		<td><spring:message code="PersonAttributeType.format"/></td>
 		<td>

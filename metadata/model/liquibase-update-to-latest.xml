@@ -3302,32 +3302,43 @@
 		</update>
 	</changeSet>
 	
-	<!-- following change sets are for localization tools project, and will be merged into a total change set at last -->
-	<changeSet id="20100520-2137" author="luzhuangwei">
-		<comment>Change the width of name column to varchar(50)</comment>
+	<changeSet id="201000623-1927" author="luzhuangwei">
+		<comment>Change the width of name column to varchar(1024) for all metadata</comment>
 		<modifyColumn tableName="encounter_type">
-			<column name="name" type="varchar(50)"/>
+			<column name="name" type="varchar(1024)"/>
 		</modifyColumn>
-	</changeSet>
-	
-	<changeSet id="20100528-1647" author="luzhuangwei">
-		<comment>Change the width of name column to varchar(50)</comment>
 		<modifyColumn tableName="order_type">
-			<column name="name" type="varchar(50)"/>
+			<column name="name" type="varchar(1024)"/>
 		</modifyColumn>
-	</changeSet>
-	
-	<changeSet id="20100528-2346" author="luzhuangwei">
-		<comment>Change the width of name column to varchar(50)</comment>
 		<modifyColumn tableName="concept_class">
-			<column name="name" type="varchar(50)"/>
+			<column name="name" type="varchar(1024)"/>
 		</modifyColumn>
-	</changeSet>
-	
-	<changeSet id="20100529-2221" author="luzhuangwei">
-		<comment>Change the width of name column to varchar(50)</comment>
 		<modifyColumn tableName="field_type">
-			<column name="name" type="varchar(50)"/>
+			<column name="name" type="varchar(1024)"/>
+		</modifyColumn>
+		<modifyColumn tableName="form">
+			<column name="name" type="varchar(1024)"/>
+		</modifyColumn>
+		<modifyColumn tableName="patient_identifier_type">
+			<column name="name" type="varchar(1024)"/>
+		</modifyColumn>
+		<modifyColumn tableName="person_attribute_type">
+			<column name="name" type="varchar(1024)"/>
+		</modifyColumn>
+		<modifyColumn tableName="scheduler_task_config">
+			<column name="name" type="varchar(1024)"/>
+		</modifyColumn>
+		<modifyColumn tableName="program">
+			<column name="name" type="varchar(1024)"/>
+		</modifyColumn>
+		<modifyColumn tableName="location">
+			<column name="name" type="varchar(1024)"/>
+		</modifyColumn>
+		<modifyColumn tableName="field">
+			<column name="name" type="varchar(1024)"/>
+		</modifyColumn>
+		<modifyColumn tableName="drug">
+			<column name="name" type="varchar(1024)"/>
 		</modifyColumn>
 	</changeSet>
 </databaseChangeLog>

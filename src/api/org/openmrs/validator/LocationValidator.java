@@ -48,7 +48,7 @@ public class LocationValidator implements Validator {
 	 * 
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
-	 * @should fail validation if name is null or empty
+	 * @should fail validation if unlocalized name is null or empty
 	 * @should fail validation if description is null or empty
 	 * @should fail validation if retired and retireReason is null or empty
 	 * @should set retired to false if retireReason is null or empty
@@ -60,7 +60,8 @@ public class LocationValidator implements Validator {
 		if (location == null) {
 			errors.rejectValue("location", "error.general");
 		} else {
-			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
+			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "localizedName.unlocalizedValue",
+			    "LocalizedName.unlocalizedName.empty");
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "description", "error.description");
 			
 			if (location.isRetired()) {

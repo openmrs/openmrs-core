@@ -27,6 +27,7 @@
 					<span class="required">*</span>
 				</td>
 			</tr>
+			
 			<tr>
 				<th><spring:message code="LocationTag.description"/></th>
 				<td><textarea name="description" rows="3" cols="72"></textarea></td>

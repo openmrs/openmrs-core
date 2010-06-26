@@ -1,19 +1,7 @@
 <table>
-	<tr>
-		<td valign="top">
-			<spring:message code="Field.name" />
-		</td>
-		<td>
-			<spring:bind path="field.name">
-				<input type="text" name="${status.expression}" id="${status.expression}" value="${status.value}" size="55" />
-				<c:if test="${status.errorMessage != ''}">
-					<span class="error">
-						${status.errorMessage}
-					</span>
-				</c:if>
-			</spring:bind>
-		</td>
-	</tr>
+	<spring:nestedPath path="field">
+		<openmrs:portlet url="localizedName" id="localizedNameLayout" /> 
+	</spring:nestedPath>
 	<tr>
 		<td valign="top">
 			<spring:message code="general.description" />

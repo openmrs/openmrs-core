@@ -91,15 +91,12 @@
 
 <form method="post" id="theForm">
 <table>
-	<tr>
-		<th><spring:message code="general.name"/></th>
-		<td>
-			<spring:bind path="program.name">
-				<input type="text" name="${status.expression}" value="${status.value}" size="35" />
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-			</spring:bind>
-		</td>
-	</tr>
+	<spring:nestedPath path="program">
+		<openmrs:portlet url="localizedName" id="localizedNameLayout" /> 
+	</spring:nestedPath>
+	<spring:bind path="program.name">
+		<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+	</spring:bind>
 	<tr>
 		<th><spring:message code="general.description"/></th>
 		<td>

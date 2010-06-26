@@ -40,13 +40,14 @@ public class PersonAttributeTypeValidator implements Validator {
 	/**
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
-	 * @should fail validation if name is null
+	 * @should fail validation if unlocalized name is null or empty or whitespace
 	 * @should fail validation if name already in use
 	 * @should pass validation if all fields are correct
 	 */
 	public void validate(Object obj, Errors errors) {
 		PersonAttributeType patObj = (PersonAttributeType) obj;
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "PersonAttributeType.error.nameEmpty");
+		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "localizedName.unlocalizedValue",
+		    "LocalizedName.unlocalizedName.empty");
 		
 		PersonService ps = Context.getPersonService();
 		PersonAttributeType pat = ps.getPersonAttributeTypeByName(patObj.getName());

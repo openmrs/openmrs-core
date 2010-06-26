@@ -21,10 +21,12 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
+import org.openmrs.LocalizedString;
 import org.openmrs.Program;
 import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.context.Context;
 import org.openmrs.propertyeditor.ConceptEditor;
+import org.openmrs.propertyeditor.LocalizedStringEditor;
 import org.openmrs.propertyeditor.WorkflowCollectionEditor;
 import org.openmrs.web.WebConstants;
 import org.springframework.validation.BindException;
@@ -38,7 +40,8 @@ public class ProgramFormController extends SimpleFormController {
 	/** Logger for this class and subclasses */
 	protected final Log log = LogFactory.getLog(getClass());
 	
-	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
+	@Override
+    protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
 		
 		// this depends on this form being a "session-form" (defined in openrms-servlet.xml)
@@ -46,6 +49,7 @@ public class ProgramFormController extends SimpleFormController {
 		
 		binder.registerCustomEditor(Concept.class, new ConceptEditor());
 		binder.registerCustomEditor(java.util.Collection.class, "allWorkflows", new WorkflowCollectionEditor(program));
+		binder.registerCustomEditor(LocalizedString.class, new LocalizedStringEditor());
 	}
 	
 	/**
@@ -54,7 +58,8 @@ public class ProgramFormController extends SimpleFormController {
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
+	@Override
+    protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 		log.debug("called formBackingObject");
 		
 		Program program = null;
@@ -81,7 +86,8 @@ public class ProgramFormController extends SimpleFormController {
 	 *      org.springframework.validation.BindException)
 	 * @should save workflows with program
 	 */
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
+	@Override
+    protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
 	                                BindException errors) throws Exception {
 		log.debug("about to save " + obj);
 		

@@ -42,7 +42,7 @@ public class SchedulerFormValidator implements Validator {
 	 * 
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
-	 * @should fail validation if name is null or empty or whitespace
+	 * @should fail validation if unlocalized name is null or empty or whitespace
 	 * @should fail validation if taskClass is empty or whitespace
 	 * @should fail validation if repeatInterval is null or empty or whitespace
 	 * @should fail validation if class is not instance of Task
@@ -58,8 +58,8 @@ public class SchedulerFormValidator implements Validator {
 			errors.rejectValue("task", "error.general");
 		} else {
 			//Won't work without name and description properties on Task Definition
-			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "Scheduler.taskForm.required", new Object[] {
-			        "Task name", taskDefinition.getName() });
+			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "localizedName.unlocalizedValue",
+			    "Scheduler.taskForm.required", new Object[] { "Task name", taskDefinition.getName() });
 			
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "taskClass", "Scheduler.taskForm.required", new Object[] {
 			        "Task class", taskDefinition.getTaskClass() });

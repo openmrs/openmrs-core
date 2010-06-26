@@ -70,16 +70,9 @@
 <form method="post">
 <fieldset>
 <table cellpadding="3" cellspacing="0" id="table">
-	<tr>
-		<th><spring:message code="general.name"/></th>
-		<td>
-			<spring:bind path="drug.name">			
-				<input type="text" name="${status.expression}" size="40" 
-					   value="${status.value}" />
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
-			</spring:bind>
-		</td>
-	</tr>
+	<spring:nestedPath path="drug">
+		<openmrs:portlet url="localizedName" id="localizedNameLayout" /> 
+	</spring:nestedPath>
 	<tr>
 		<th><spring:message code="ConceptDrug.concept"/></th>
 		<td>

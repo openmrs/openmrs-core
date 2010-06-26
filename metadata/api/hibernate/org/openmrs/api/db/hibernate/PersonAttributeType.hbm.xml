@@ -18,8 +18,8 @@
 		<property name="uuid" type="java.lang.String"
 			column="uuid" length="38" unique="true" />
 
-		<property name="name" type="java.lang.String" column="name"
-			not-null="true" length="50" />
+		<property name="localizedName" type="org.openmrs.api.db.hibernate.LocalizedStringType" 
+			column="name" not-null="true" length="1024" />
 
 		<property name="description" type="java.lang.String"
 			column="description" not-null="true" length="65535" />

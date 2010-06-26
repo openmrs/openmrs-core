@@ -30,15 +30,15 @@ public class FormValidatorTest extends BaseContextSensitiveTest {
 	 * @see {@link FormValidator#validate(Object,Errors)}
 	 */
 	@Test
-	@Verifies(value = "should fail validation if name is null", method = "validate(Object,Errors)")
-	public void validate_shouldFailValidationIfNameIsNull() throws Exception {
+	@Verifies(value = "should fail validation if unlocalized name is null or empty or whitespace", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfUnlocalizedNameIsNullOrEmptyOrWhitespace() throws Exception {
 		Form form = new Form();
 		form.setVersion("1.0");
 		
 		Errors errors = new BindException(form, "form");
 		new FormValidator().validate(form, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("name"));
+		Assert.assertTrue(errors.hasFieldErrors("localizedName.unlocalizedValue"));
 		Assert.assertFalse(errors.hasFieldErrors("version"));
 	}
 	
@@ -54,7 +54,7 @@ public class FormValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(form, "form");
 		new FormValidator().validate(form, errors);
 		
-		Assert.assertFalse(errors.hasFieldErrors("name"));
+		Assert.assertFalse(errors.hasFieldErrors("localizedName.unlocalizedValue"));
 		Assert.assertTrue(errors.hasFieldErrors("version"));
 	}
 	
@@ -71,7 +71,7 @@ public class FormValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(form, "form");
 		new FormValidator().validate(form, errors);
 		
-		Assert.assertFalse(errors.hasFieldErrors("name"));
+		Assert.assertFalse(errors.hasFieldErrors("localizedName.unlocalizedValue"));
 		Assert.assertTrue(errors.hasFieldErrors("version"));
 	}
 	
@@ -89,7 +89,7 @@ public class FormValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(form, "form");
 		new FormValidator().validate(form, errors);
 		
-		Assert.assertFalse(errors.hasFieldErrors("name"));
+		Assert.assertFalse(errors.hasFieldErrors("localizedName.unlocalizedValue"));
 		Assert.assertFalse(errors.hasFieldErrors("version"));
 		Assert.assertTrue(errors.hasFieldErrors("retireReason"));
 	}

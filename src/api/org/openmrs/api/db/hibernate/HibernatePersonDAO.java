@@ -28,6 +28,7 @@ import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.type.StringType;
+import org.openmrs.LocalizedString;
 import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
@@ -171,8 +172,8 @@ public class HibernatePersonDAO implements PersonDAO {
 		} else {
 			
 			// This is simply an alternative method of name matching which scales better
-			// for large names, although it is hard to imagine getting names with more than 
-			// six or so tokens.  This can be easily updated to attain more desirable 
+			// for large names, although it is hard to imagine getting names with more than
+			// six or so tokens.  This can be easily updated to attain more desirable
 			// results; it is just a working alternative to throwing an exception.
 			
 			q += "(";
@@ -361,7 +362,7 @@ public class HibernatePersonDAO implements PersonDAO {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(PersonAttributeType.class, "r");
 		
 		if (exactName != null)
-			criteria.add(Expression.eq("name", exactName));
+			HibernateUtil.addEqCriterionForLocalizedColumn(exactName, "name", criteria);
 		
 		if (format != null)
 			criteria.add(Expression.eq("format", format));
@@ -559,7 +560,8 @@ public class HibernatePersonDAO implements PersonDAO {
 		SQLQuery sql = sessionFactory.getCurrentSession().createSQLQuery(
 		    "select name from person_attribute_type where person_attribute_type_id = :personAttributeTypeId");
 		sql.setInteger("personAttributeTypeId", personAttributeType.getId());
-		return (String) sql.uniqueResult();
+		String serializedName = (String) sql.uniqueResult();
+		return LocalizedString.valueOf(serializedName).getValue();
 	}
 
 	/**

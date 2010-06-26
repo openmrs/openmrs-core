@@ -406,7 +406,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		if (concept != null)
 			searchCriteria.add(Expression.eq("drug.concept", concept));
 		if (drugName != null)
-			searchCriteria.add(Expression.eq("drug.name", drugName));
+			HibernateUtil.addEqCriterionForLocalizedColumn(drugName, "name", searchCriteria);
 		return searchCriteria.list();
 	}
 	
@@ -425,11 +425,11 @@ public class HibernateConceptDAO implements ConceptDAO {
 			searchCriteria.add(Expression.eq("drug.retired", false));
 			
 			Iterator<String> word = words.iterator();
-			searchCriteria.add(Expression.like("name", word.next(), MatchMode.ANYWHERE));
+			HibernateUtil.addLikeCriterionForLocalizedColumn(word.next(), "name", searchCriteria, true, MatchMode.ANYWHERE);
 			while (word.hasNext()) {
 				String w = word.next();
 				log.debug(w);
-				searchCriteria.add(Expression.like("name", w, MatchMode.ANYWHERE));
+				HibernateUtil.addLikeCriterionForLocalizedColumn(w, "name", searchCriteria, true, MatchMode.ANYWHERE);
 			}
 			searchCriteria.addOrder(Order.asc("drug.concept"));
 			conceptDrugs = searchCriteria.list();

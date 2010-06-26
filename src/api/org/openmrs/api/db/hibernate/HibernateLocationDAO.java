@@ -13,6 +13,7 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.hibernate.Criteria;
@@ -22,7 +23,9 @@ import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.openmrs.Location;
 import org.openmrs.LocationTag;
+import org.openmrs.api.context.Context;
 import org.openmrs.api.db.LocationDAO;
+import org.openmrs.util.MetadataComparator;
 
 /**
  * Hibernate location-related database functions
@@ -44,7 +47,7 @@ public class HibernateLocationDAO implements LocationDAO {
 	public Location saveLocation(Location location) {
 		if (location.getChildLocations() != null && location.getLocationId() != null) {
 			// hibernate has a problem updating child collections
-			// if the parent object was already saved so we do it 
+			// if the parent object was already saved so we do it
 			// explicitly here
 			for (Location child : location.getChildLocations())
 				if (child.getLocationId() == null)
@@ -67,8 +70,8 @@ public class HibernateLocationDAO implements LocationDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public Location getLocation(String name) {
-		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Location.class).add(
-		    Expression.eq("name", name));
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Location.class);
+		HibernateUtil.addEqCriterionForLocalizedColumn(name, "name", criteria);
 		
 		List<Location> locations = criteria.list();
 		if (null == locations || locations.isEmpty()) {
@@ -86,8 +89,9 @@ public class HibernateLocationDAO implements LocationDAO {
 		if (!includeRetired) {
 			criteria.add(Expression.like("retired", false));
 		}
-		criteria.addOrder(Order.asc("name"));
-		return criteria.list();
+		List<Location> locations = criteria.list();
+		Collections.sort(locations, new MetadataComparator(Context.getLocale()));
+		return locations;
 	}
 	
 	/**
@@ -98,9 +102,11 @@ public class HibernateLocationDAO implements LocationDAO {
 		if (search == null || search.equals(""))
 			return getAllLocations(true);
 		
-		return sessionFactory.getCurrentSession().createCriteria(Location.class)
-		// 'ilike' case insensitive search
-		        .add(Expression.ilike("name", search, MatchMode.START)).addOrder(Order.asc("name")).list();
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Location.class);
+		HibernateUtil.addLikeCriterionForLocalizedColumn(search, "name", crit, false, MatchMode.START);
+		List<Location> locations = crit.list();
+		Collections.sort(locations, new MetadataComparator(Context.getLocale()));
+		return locations;
 	}
 	
 	/**

@@ -14,6 +14,7 @@
 package org.openmrs.api.db.hibernate;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -24,7 +25,6 @@ import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.MatchMode;
-import org.hibernate.criterion.Order;
 import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.ConceptStateConversion;
@@ -34,8 +34,10 @@ import org.openmrs.PatientState;
 import org.openmrs.Program;
 import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
+import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.ProgramWorkflowDAO;
+import org.openmrs.util.MetadataComparator;
 
 /**
  * Hibernate specific ProgramWorkflow related functions.<br/>
@@ -101,9 +103,10 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 	@SuppressWarnings("unchecked")
 	public List<Program> findPrograms(String nameFragment) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Program.class, "program");
-		criteria.add(Expression.ilike("name", nameFragment, MatchMode.ANYWHERE));
-		criteria.addOrder(Order.asc("name"));
-		return criteria.list();
+		HibernateUtil.addLikeCriterionForLocalizedColumn(nameFragment, "name", criteria, false, MatchMode.ANYWHERE);
+		List<Program> programs = (List<Program>) criteria.list();
+		Collections.sort(programs, new MetadataComparator(Context.getLocale()));
+		return programs;
 	}
 	
 	/**

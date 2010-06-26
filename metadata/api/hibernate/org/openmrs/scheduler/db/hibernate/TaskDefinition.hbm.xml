@@ -17,10 +17,11 @@
 			column="uuid" length="38" unique="true" />
 			
 		<!-- Properties -->
-		<property name="name" 
-				type="java.lang.String" 
+		<property name="localizedName" 
+				type="org.openmrs.api.db.hibernate.LocalizedStringType" 
 				column="name" 
-				length="50" />
+				not-null="true"
+				length="1024" />
 		
 		<property name="description" 
 				type="java.lang.String" 

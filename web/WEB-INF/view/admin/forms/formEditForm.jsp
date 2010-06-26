@@ -37,15 +37,9 @@
 
 <form method="post" enctype="multipart/form-data">
 <table>
-	<tr>
-		<td><spring:message code="general.name"/></td>
-		<td>
-			<spring:bind path="form.name">
-				<input type="text" name="${status.expression}" value="${status.value}" size="35" />
-				<c:if test="${status.errorMessage != ''}"><c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if></c:if>
-			</spring:bind>
-		</td>
-	</tr>
+	<spring:nestedPath path="form">
+		<openmrs:portlet url="localizedName" id="localizedNameLayout" /> 
+	</spring:nestedPath>
 	<tr>
 		<td valign="top"><spring:message code="general.description"/></td>
 		<td valign="top">

@@ -18,25 +18,25 @@ public class ProgramValidatorTest extends BaseContextSensitiveTest {
 	 * @see {@link ProgramValidator#validate(Object,Errors)}
 	 */
 	@Test
-	@Verifies(value = "should fail validation if name is null or empty or whitespace", method = "validate(Object,Errors)")
-	public void validate_shouldFailValidationIfNameIsNullOrEmptyOrWhitespace() throws Exception {
+	@Verifies(value = "should fail validation if unlocalized name is null or empty or whitespace", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfUnlocalizedNameIsNullOrEmptyOrWhitespace() throws Exception {
 		Program prog = new Program();
 		prog.setName(null);
 		prog.setConcept(Context.getConceptService().getConcept(3));
 		
 		Errors errors = new BindException(prog, "prog");
 		new ProgramValidator().validate(prog, errors);
-		Assert.assertTrue(errors.hasFieldErrors("name"));
+		Assert.assertTrue(errors.hasFieldErrors("localizedName.unlocalizedValue"));
 		
 		prog.setName("");
 		errors = new BindException(prog, "prog");
 		new ProgramValidator().validate(prog, errors);
-		Assert.assertTrue(errors.hasFieldErrors("name"));
+		Assert.assertTrue(errors.hasFieldErrors("localizedName.unlocalizedValue"));
 		
 		prog.setName(" ");
 		errors = new BindException(prog, "prog");
 		new ProgramValidator().validate(prog, errors);
-		Assert.assertTrue(errors.hasFieldErrors("name"));
+		Assert.assertTrue(errors.hasFieldErrors("localizedName.unlocalizedValue"));
 	}
 	
 	/**

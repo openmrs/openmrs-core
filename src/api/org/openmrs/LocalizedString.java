@@ -47,10 +47,13 @@ public class LocalizedString implements Serializable {
 	 * copy constructor
 	 */
 	public LocalizedString(LocalizedString ls) {
-		unlocalizedValue = new String(ls.getUnlocalizedValue());
-		if (variants == null && ls.getVariants() != null) {
-			variants = new HashMap<Locale, String>();
-			variants.putAll(ls.getVariants());
+		if (ls != null) {
+			if (ls.getUnlocalizedValue() != null)
+				unlocalizedValue = new String(ls.getUnlocalizedValue());
+			if (ls.getVariants() != null) {
+				variants = new HashMap<Locale, String>();
+				variants.putAll(ls.getVariants());
+			}
 		}
 	}
 	

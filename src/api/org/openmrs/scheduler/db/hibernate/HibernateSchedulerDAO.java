@@ -19,8 +19,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Expression;
 import org.openmrs.api.db.DAOException;
+import org.openmrs.api.db.hibernate.HibernateUtil;
 import org.openmrs.scheduler.Schedule;
 import org.openmrs.scheduler.TaskDefinition;
 import org.openmrs.scheduler.db.SchedulerDAO;
@@ -90,11 +90,13 @@ public class HibernateSchedulerDAO implements SchedulerDAO {
 	 * @return task with given public name
 	 * @throws DAOException
 	 */
+	@SuppressWarnings("unchecked")
 	public TaskDefinition getTaskByName(String name) throws DAOException {
-		Criteria crit = sessionFactory.getCurrentSession().createCriteria(TaskDefinition.class).add(
-		    Expression.eq("name", name));
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(TaskDefinition.class);
+		HibernateUtil.addEqCriterionForLocalizedColumn(name, "name", crit);
+		List<TaskDefinition> tasks = (List<TaskDefinition>) crit.list();
+		TaskDefinition task = tasks.isEmpty() ? null : tasks.get(0);
 		
-		TaskDefinition task = (TaskDefinition) crit.uniqueResult();
 		
 		if (task == null) {
 			log.warn("Task '" + name + "' not found");
@@ -189,5 +191,5 @@ public class HibernateSchedulerDAO implements SchedulerDAO {
 	 * @param schedule schedule to be deleted
 	 * @throws DAOException
 	 */
-	//public void deleteSchedule(Schedule schedule) throws DAOException;	
+	//public void deleteSchedule(Schedule schedule) throws DAOException;
 }
