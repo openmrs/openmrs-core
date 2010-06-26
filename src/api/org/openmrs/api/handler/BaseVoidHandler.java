@@ -30,10 +30,10 @@ import org.openmrs.aop.RequiredDataAdvice;
  * Child collections on this {@link Voidable} that are themselves a {@link Voidable} are looped over
  * and also voided by the {@link RequiredDataAdvice} class.<br/>
  * <br/>
- * This class will only set the voiddBy and dateRetired attributes if voided is set to false. If
+ * This class will only set the voidedBy and dateVoided attributes if voided is set to false. If
  * voided is set to true it is assumed that this object is in a list of things that is getting
  * voided but that it itself was previously voided. The workaround to this is that if the voided bit
- * is true OR the voiddBy is null, the voiddBy, dateRetired, and voidReason will be set.
+ * is true OR the voidedBy is null, the voidedBy, dateVoided, and voidReason will be set.
  * 
  * @see RequiredDataAdvice
  * @see UnvoidHandler

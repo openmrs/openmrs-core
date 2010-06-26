@@ -42,9 +42,9 @@ import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
+import org.openmrs.hl7.HL7Constants;
 import org.openmrs.hl7.HL7InQueueProcessor;
 import org.openmrs.hl7.HL7Service;
-import org.openmrs.util.FormConstants;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 
@@ -370,7 +370,7 @@ public class ORUR01Handler implements Application {
 	protected void processNK1(Patient patient, NK1 nk1) throws HL7Exception {
 		// guarantee we are working with our custom coding system
 		String relCodingSystem = nk1.getRelationship().getNameOfCodingSystem().getValue();
-		if (!relCodingSystem.equals(FormConstants.HL7_LOCAL_RELATIONSHIP))
+		if (!relCodingSystem.equals(HL7Constants.HL7_LOCAL_RELATIONSHIP))
 			throw new HL7Exception("Relationship coding system '" + relCodingSystem + "' unknown in NK1 segment.");
 		
 		// get the relationship type identifier
@@ -649,7 +649,7 @@ public class ORUR01Handler implements Application {
 				try {
 					Concept valueConcept = getConcept(value, uid);
 					obs.setValueCoded(valueConcept);
-					if (FormConstants.HL7_LOCAL_DRUG.equals(value.getNameOfAlternateCodingSystem().getValue())) {
+					if (HL7Constants.HL7_LOCAL_DRUG.equals(value.getNameOfAlternateCodingSystem().getValue())) {
 						Drug valueDrug = new Drug();
 						valueDrug.setDrugId(new Integer(value.getAlternateIdentifier().getValue()));
 						obs.setValueDrug(valueDrug);
@@ -764,7 +764,7 @@ public class ORUR01Handler implements Application {
 	 */
 	private ConceptName getConceptName(ST altIdentifier, ID altCodingSystem) throws HL7Exception {
 		if (altIdentifier != null) {
-			if (FormConstants.HL7_LOCAL_CONCEPT_NAME.equals(altCodingSystem.getValue())) {
+			if (HL7Constants.HL7_LOCAL_CONCEPT_NAME.equals(altCodingSystem.getValue())) {
 				String hl7ConceptNameId = altIdentifier.getValue();
 				return getConceptName(hl7ConceptNameId);
 			}
@@ -856,7 +856,7 @@ public class ORUR01Handler implements Application {
 	 * @should return a mapped Concept if given a valid mapping
 	 */
 	protected Concept getConcept(String hl7ConceptId, String codingSystem, String uid) throws HL7Exception {
-		if (FormConstants.HL7_LOCAL_CONCEPT.equals(codingSystem)) {
+		if (HL7Constants.HL7_LOCAL_CONCEPT.equals(codingSystem)) {
 			// the concept is local
 			try {
 				Integer conceptId = new Integer(hl7ConceptId);
