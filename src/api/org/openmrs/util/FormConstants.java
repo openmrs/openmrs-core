@@ -15,6 +15,8 @@ package org.openmrs.util;
 
 import java.util.Hashtable;
 
+import org.openmrs.hl7.HL7Constants;
+
 /**
  * Constants relating to forms
  * 
@@ -36,55 +38,111 @@ public class FormConstants {
 	
 	public static final Integer FIELD_TYPE_SECTION = 5;
 	
-	public static final String HL7_TEXT = "ST";
+	/**
+	 * @deprecated Moved the constant to HL7Constants class
+	 */
+	@Deprecated
+	public static final String HL7_TEXT = HL7Constants.HL7_TEXT;
 	
-	public static final String HL7_CODED = "CE";
+	/**
+	 * @deprecated Moved the constant to HL7Constants class
+	 */
+	@Deprecated
+	public static final String HL7_CODED = HL7Constants.HL7_CODED;
 	
-	public static final String HL7_CODED_WITH_EXCEPTIONS = "CWE";
+	/**
+	 * @deprecated Moved the constant to HL7Constants class
+	 */
+	@Deprecated
+	public static final String HL7_CODED_WITH_EXCEPTIONS = HL7Constants.HL7_CODED_WITH_EXCEPTIONS;
 	
-	public static final String HL7_NUMERIC = "NM";
+	/**
+	 * @deprecated Moved the constant to HL7Constants class
+	 */
+	@Deprecated
+	public static final String HL7_NUMERIC = HL7Constants.HL7_NUMERIC;
 	
-	public static final String HL7_DATE = "DT";
+	/**
+	 * @deprecated Moved the constant to HL7Constants class
+	 */
+	@Deprecated
+	public static final String HL7_DATE = HL7Constants.HL7_DATE;
 	
-	public static final String HL7_TIME = "TM";
+	/**
+	 * @deprecated Moved the constant to HL7Constants class
+	 */
+	@Deprecated
+	public static final String HL7_TIME = HL7Constants.HL7_TIME;
 	
-	public static final String HL7_DATETIME = "TS";
+	/**
+	 * @deprecated Moved the constant to HL7Constants class
+	 */
+	@Deprecated
+	public static final String HL7_DATETIME = HL7Constants.HL7_DATETIME;
 	
-	public static final String HL7_BOOLEAN = "BIT";
+	/**
+	 * @deprecated Moved the constant to HL7Constants class
+	 */
+	@Deprecated
+	public static final String HL7_BOOLEAN = HL7Constants.HL7_BOOLEAN;
 	
-	public static final String HL7_AUTHORITY_UUID = "UUID";
+	/**
+	 * @deprecated Moved the constant to HL7Constants class
+	 */
+	@Deprecated
+	public static final String HL7_AUTHORITY_UUID = HL7Constants.HL7_AUTHORITY_UUID;
 	
-	public static final String HL7_AUTHORITY_LOCAL = "L";
+	/**
+	 * @deprecated Moved the constant to HL7Constants class
+	 */
+	@Deprecated
+	public static final String HL7_AUTHORITY_LOCAL = HL7Constants.HL7_AUTHORITY_LOCAL;
 	
-	public static final Object HL7_ID_PERSON = "PN";
+	/**
+	 * @deprecated Moved the constant to HL7Constants class
+	 */
+	@Deprecated
+	public static final Object HL7_ID_PERSON = HL7Constants.HL7_ID_PERSON;
 	
-	public static final Object HL7_ID_PATIENT = "PI";
+	/**
+	 * @deprecated Moved the constant to HL7Constants class
+	 */
+	@Deprecated
+	public static final Object HL7_ID_PATIENT = HL7Constants.HL7_ID_PATIENT;
 	
-	public static final Integer CLASS_DRUG = 3;
+	@Deprecated
+	public static final Integer CLASS_DRUG = HL7Constants.CLASS_DRUG;
 
 	/**
 	 * Used in hl7 sextuplets: 123^Primary name^99DCT^345^Chosen name^99NAM
 	 */
-	public static final String HL7_LOCAL_CONCEPT = "99DCT";
+	@Deprecated
+	public static final String HL7_LOCAL_CONCEPT = HL7Constants.HL7_LOCAL_CONCEPT;
 	
-	public static final String HL7_LOCAL_CONCEPT_NAME = "99NAM";
+	/**
+	 * @deprecated Moved the constant to HL7Constants class
+	 */
+	@Deprecated
+	public static final String HL7_LOCAL_CONCEPT_NAME = HL7Constants.HL7_LOCAL_CONCEPT_NAME;
 	
-	public static final String HL7_LOCAL_DRUG = "99RX";
-
-	public static final String HL7_LOCAL_RELATIONSHIP = "99REL";
+	/**
+	 * @deprecated Moved the constant to HL7Constants class
+	 */
+	@Deprecated
+	public static final String HL7_LOCAL_DRUG = HL7Constants.HL7_LOCAL_DRUG;
 	
-	// List of datatypes that do not require complex definitions
-	public static final Hashtable<String, String> simpleDatatypes = new Hashtable<String, String>();
-	static {
-		simpleDatatypes.put(HL7_TEXT, "xs:string");
-		simpleDatatypes.put(HL7_DATE, "xs:date");
-		simpleDatatypes.put(HL7_TIME, "xs:time");
-		simpleDatatypes.put(HL7_DATETIME, "xs:dateTime");
-		
-		// We make a special boolean type with an extra attribute
-		// to get InfoPath to treat booleans properly
-		simpleDatatypes.put(HL7_BOOLEAN, "_infopath_boolean");
-	}
+	/**
+	 * @deprecated Moved the constant to HL7Constants class
+	 */
+	@Deprecated
+	public static final String HL7_LOCAL_RELATIONSHIP = HL7Constants.HL7_LOCAL_RELATIONSHIP;
+	
+	/**
+	 * @deprecated Moved the constant to HL7Constants class, List of datatypes that do not require
+	 *             complex definitions
+	 */
+	@Deprecated
+	public static final Hashtable<String, String> simpleDatatypes = HL7Constants.simpleDatatypes;
 	
 	public static final int INDENT_SIZE = 2;
 	
