@@ -199,6 +199,7 @@ public class ModuleRepository {
 	 * @param search - Module Search Key
 	 * @return search key matching modules
 	 * @should return an array list of modules for matching search
+	 * @should return an empty array list of modules if search is empty
 	 */
 	public static List<Module> searchModules(String search) {
 		List<Module> modules = new ArrayList<Module>();
