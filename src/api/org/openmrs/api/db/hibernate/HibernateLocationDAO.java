@@ -20,7 +20,6 @@ import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.MatchMode;
-import org.hibernate.criterion.Order;
 import org.openmrs.Location;
 import org.openmrs.LocationTag;
 import org.openmrs.api.context.Context;
@@ -136,8 +135,8 @@ public class HibernateLocationDAO implements LocationDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public LocationTag getLocationTagByName(String tag) {
-		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(LocationTag.class).add(
-		    Expression.eq("name", tag));
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(LocationTag.class);
+		HibernateUtil.addEqCriterionForLocalizedColumn(tag, "name", criteria);
 		
 		List<LocationTag> tags = criteria.list();
 		if (null == tags || tags.isEmpty()) {
@@ -155,8 +154,9 @@ public class HibernateLocationDAO implements LocationDAO {
 		if (!includeRetired) {
 			criteria.add(Expression.like("retired", false));
 		}
-		criteria.addOrder(Order.asc("name"));
-		return criteria.list();
+		List<LocationTag> tags = criteria.list();
+		Collections.sort(tags, new MetadataComparator(Context.getLocale()));
+		return tags;
 	}
 	
 	/**
@@ -164,9 +164,11 @@ public class HibernateLocationDAO implements LocationDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<LocationTag> getLocationTags(String search) {
-		return sessionFactory.getCurrentSession().createCriteria(LocationTag.class)
-		// 'ilike' case insensitive search
-		        .add(Expression.ilike("name", search, MatchMode.START)).addOrder(Order.asc("name")).list();
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(LocationTag.class);
+		HibernateUtil.addLikeCriterionForLocalizedColumn(search, "name", crit, false, MatchMode.START);
+		List<LocationTag> tags = crit.list();
+		Collections.sort(tags, new MetadataComparator(Context.getLocale()));
+		return tags;
 	}
 	
 	/**

@@ -17,9 +17,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.openmrs.LocalizedString;
 import org.openmrs.Location;
 import org.openmrs.LocationTag;
 import org.openmrs.api.context.Context;
+import org.openmrs.propertyeditor.LocalizedStringEditor;
 import org.openmrs.propertyeditor.LocationTagEditor;
 import org.openmrs.util.MetadataComparator;
 import org.openmrs.validator.LocationTagValidator;
@@ -53,6 +55,7 @@ public class LocationTagController {
 	@InitBinder
 	public void initBinder(WebDataBinder wdb) {
 		wdb.registerCustomEditor(LocationTag.class, new LocationTagEditor());
+		wdb.registerCustomEditor(LocalizedString.class, new LocalizedStringEditor());
 	}
 	
 	/**
@@ -69,18 +72,20 @@ public class LocationTagController {
 	 * Add a new LocationTag (quickly, without a dedicated page)
 	 */
 	@RequestMapping("/admin/locations/locationTagAdd")
-	public String add(@RequestParam("name") String name,
+	public String add(@RequestParam("localizedName") String localizedName,
 	                  @RequestParam("description") String description,
 	                  WebRequest request) {
-		
-		if (!StringUtils.hasText(name)) {
+		LocalizedString ls = LocalizedString.valueOf(localizedName);
+		if (ls == null || !StringUtils.hasText(ls.getUnlocalizedValue())) {
 			request.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, Context.getMessageSourceService().getMessage(
-			    "LocationTag.error.name.required"), WebRequest.SCOPE_SESSION);
-		} else if (Context.getLocationService().getLocationTagByName(name) != null) {
+			    "LocalizedName.unlocalizedName.empty"), WebRequest.SCOPE_SESSION);
+		} else if (Context.getLocationService().getLocationTagByName(ls.getValue()) != null) {
 			request.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, Context.getMessageSourceService().getMessage(
 			    "LocationTag.error.name.duplicate"), WebRequest.SCOPE_SESSION);
 		} else {
-			LocationTag tag = new LocationTag(name, description);
+			LocationTag tag = new LocationTag();
+			tag.setLocalizedName(ls);
+			tag.setDescription(description);
 			Context.getLocationService().saveLocationTag(tag);
 			request.setAttribute(WebConstants.OPENMRS_MSG_ATTR, Context.getMessageSourceService().getMessage(
 			    "LocationTag.saved"), WebRequest.SCOPE_SESSION);

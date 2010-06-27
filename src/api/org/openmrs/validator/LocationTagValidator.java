@@ -43,7 +43,8 @@ public class LocationTagValidator implements Validator {
 	public void validate(Object target, Errors errors) {
 		if (target != null) {
 			LocationTag locationTag = (LocationTag) target;
-			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "LocationTag.error.name.required");
+			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "localizedName.unlocalizedValue",
+			    "LocalizedName.unlocalizedName.empty");
 		}
 	}
 	

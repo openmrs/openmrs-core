@@ -561,7 +561,8 @@ public class HibernatePersonDAO implements PersonDAO {
 		    "select name from person_attribute_type where person_attribute_type_id = :personAttributeTypeId");
 		sql.setInteger("personAttributeTypeId", personAttributeType.getId());
 		String serializedName = (String) sql.uniqueResult();
-		return LocalizedString.valueOf(serializedName).getValue();
+		LocalizedString ls = LocalizedString.valueOf(serializedName);
+		return ls == null ? null : ls.getValue();
 	}
 
 	/**

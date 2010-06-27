@@ -167,7 +167,10 @@ public class HibernateEncounterDAO implements EncounterDAO {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(EncounterType.class);
 		HibernateUtil.addEqCriterionForLocalizedColumn(name, "name", crit);
 		List<EncounterType> types = crit.list();
-		return types.isEmpty() ? null : types.get(0);//just return the first found one while multiplies coming back
+		if (null == types || types.isEmpty()) {
+			return null;
+		}
+		return types.get(0);
 	}
 	
 	/**

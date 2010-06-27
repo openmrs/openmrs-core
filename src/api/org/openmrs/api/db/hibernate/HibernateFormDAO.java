@@ -355,7 +355,10 @@ public class HibernateFormDAO implements FormDAO {
 		crit.add(Expression.eq("version", version));
 		
 		List<Form> forms = crit.list();
-		return forms.isEmpty() ? null : forms.get(0);//just return the first found one while multiplies coming back
+		if (null == forms || forms.isEmpty()) {
+			return null;
+		}
+		return forms.get(0);
 	}
 	
 	/**
