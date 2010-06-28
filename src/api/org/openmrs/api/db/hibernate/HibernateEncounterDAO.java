@@ -165,7 +165,8 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	@SuppressWarnings("unchecked")
 	public EncounterType getEncounterType(String name) throws DAOException {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(EncounterType.class);
-		HibernateUtil.addEqCriterionForLocalizedColumn(name, "name", crit);
+		crit.add(Expression.eq("retired", false));
+		HibernateUtil.addEqCriterionForLocalizedColumn(name, "localizedName", crit);
 		List<EncounterType> types = crit.list();
 		if (null == types || types.isEmpty()) {
 			return null;
@@ -196,7 +197,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	public List<EncounterType> findEncounterTypes(String name) throws DAOException {
 		List<EncounterType> results = null;
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(EncounterType.class);
-		HibernateUtil.addLikeCriterionForLocalizedColumn(name, "name", crit, false, MatchMode.START);
+		HibernateUtil.addLikeCriterionForLocalizedColumn(name, "localizedName", crit, false, MatchMode.START);
 		results = crit.list();
 		Collections.sort(results, new MetadataComparator(Context.getLocale()));
 		return results;

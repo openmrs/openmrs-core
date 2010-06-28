@@ -70,7 +70,7 @@ public class HibernateLocationDAO implements LocationDAO {
 	@SuppressWarnings("unchecked")
 	public Location getLocation(String name) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Location.class);
-		HibernateUtil.addEqCriterionForLocalizedColumn(name, "name", criteria);
+		HibernateUtil.addEqCriterionForLocalizedColumn(name, "localizedName", criteria);
 		
 		List<Location> locations = criteria.list();
 		if (null == locations || locations.isEmpty()) {
@@ -102,7 +102,7 @@ public class HibernateLocationDAO implements LocationDAO {
 			return getAllLocations(true);
 		
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Location.class);
-		HibernateUtil.addLikeCriterionForLocalizedColumn(search, "name", crit, false, MatchMode.START);
+		HibernateUtil.addLikeCriterionForLocalizedColumn(search, "localizedName", crit, false, MatchMode.START);
 		List<Location> locations = crit.list();
 		Collections.sort(locations, new MetadataComparator(Context.getLocale()));
 		return locations;
@@ -136,7 +136,7 @@ public class HibernateLocationDAO implements LocationDAO {
 	@SuppressWarnings("unchecked")
 	public LocationTag getLocationTagByName(String tag) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(LocationTag.class);
-		HibernateUtil.addEqCriterionForLocalizedColumn(tag, "name", criteria);
+		HibernateUtil.addEqCriterionForLocalizedColumn(tag, "localizedName", criteria);
 		
 		List<LocationTag> tags = criteria.list();
 		if (null == tags || tags.isEmpty()) {
@@ -165,7 +165,7 @@ public class HibernateLocationDAO implements LocationDAO {
 	@SuppressWarnings("unchecked")
 	public List<LocationTag> getLocationTags(String search) {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(LocationTag.class);
-		HibernateUtil.addLikeCriterionForLocalizedColumn(search, "name", crit, false, MatchMode.START);
+		HibernateUtil.addLikeCriterionForLocalizedColumn(search, "localizedName", crit, false, MatchMode.START);
 		List<LocationTag> tags = crit.list();
 		Collections.sort(tags, new MetadataComparator(Context.getLocale()));
 		return tags;

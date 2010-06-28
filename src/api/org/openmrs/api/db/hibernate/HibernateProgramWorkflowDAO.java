@@ -103,7 +103,7 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 	@SuppressWarnings("unchecked")
 	public List<Program> findPrograms(String nameFragment) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Program.class, "program");
-		HibernateUtil.addLikeCriterionForLocalizedColumn(nameFragment, "name", criteria, false, MatchMode.ANYWHERE);
+		HibernateUtil.addLikeCriterionForLocalizedColumn(nameFragment, "localizedName", criteria, false, MatchMode.ANYWHERE);
 		List<Program> programs = (List<Program>) criteria.list();
 		Collections.sort(programs, new MetadataComparator(Context.getLocale()));
 		return programs;

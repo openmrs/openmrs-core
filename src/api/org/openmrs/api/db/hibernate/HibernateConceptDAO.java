@@ -406,7 +406,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		if (concept != null)
 			searchCriteria.add(Expression.eq("drug.concept", concept));
 		if (drugName != null)
-			HibernateUtil.addEqCriterionForLocalizedColumn(drugName, "name", searchCriteria);
+			HibernateUtil.addEqCriterionForLocalizedColumn(drugName, "localizedName", searchCriteria);
 		return searchCriteria.list();
 	}
 	
@@ -425,7 +425,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 			searchCriteria.add(Expression.eq("drug.retired", false));
 			
 			Iterator<String> word = words.iterator();
-			HibernateUtil.addLikeCriterionForLocalizedColumn(word.next(), "name", searchCriteria, true, MatchMode.ANYWHERE);
+			HibernateUtil.addLikeCriterionForLocalizedColumn(word.next(), "localizedName", searchCriteria, true,
+			    MatchMode.ANYWHERE);
 			while (word.hasNext()) {
 				String w = word.next();
 				log.debug(w);
@@ -452,7 +453,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	public List<ConceptClass> getConceptClasses(String name) throws DAOException {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(ConceptClass.class);
 		if (name != null)
-			HibernateUtil.addEqCriterionForLocalizedColumn(name, "name", crit);
+			HibernateUtil.addEqCriterionForLocalizedColumn(name, "localizedName", crit);
 		return crit.list();
 	}
 	
@@ -1220,7 +1221,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 		
 		// join to conceptSource and match to the hl7Code or name
 		criteria.createAlias("source", "conceptSource");
-		criteria.add(Expression.or(Expression.eq("conceptSource.name", mappingCode), Expression.eq("conceptSource.hl7Code",
+		criteria.add(Expression.or(Expression.eq("conceptSource.localizedName", mappingCode), Expression.eq(
+		    "conceptSource.hl7Code",
 		    mappingCode)));
 		
 		return (Concept) criteria.uniqueResult();
@@ -1359,7 +1361,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	@SuppressWarnings("unchecked")
 	public ConceptSource getConceptSourceByName(String conceptSourceName) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ConceptSource.class, "source");
-		HibernateUtil.addEqCriterionForLocalizedColumn(conceptSourceName, "name", criteria);
+		HibernateUtil.addEqCriterionForLocalizedColumn(conceptSourceName, "localizedName", criteria);
 		List<ConceptSource> cSources = criteria.list();
 		if (null == cSources || cSources.isEmpty()) {
 			return null;

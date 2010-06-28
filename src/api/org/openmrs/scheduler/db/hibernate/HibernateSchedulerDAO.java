@@ -93,10 +93,10 @@ public class HibernateSchedulerDAO implements SchedulerDAO {
 	@SuppressWarnings("unchecked")
 	public TaskDefinition getTaskByName(String name) throws DAOException {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(TaskDefinition.class);
-		HibernateUtil.addEqCriterionForLocalizedColumn(name, "name", crit);
+		HibernateUtil.addEqCriterionForLocalizedColumn(name, "localizedName", crit);
 		List<TaskDefinition> tasks = crit.list();
 		TaskDefinition task = null;
-		if (task != null && !tasks.isEmpty())
+		if (tasks != null && !tasks.isEmpty())
 			task = tasks.get(0);
 		
 		if (task == null) {

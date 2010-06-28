@@ -362,7 +362,7 @@ public class HibernatePersonDAO implements PersonDAO {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(PersonAttributeType.class, "r");
 		
 		if (exactName != null)
-			HibernateUtil.addEqCriterionForLocalizedColumn(exactName, "name", criteria);
+			HibernateUtil.addEqCriterionForLocalizedColumn(exactName, "localizedName", criteria);
 		
 		if (format != null)
 			criteria.add(Expression.eq("format", format));

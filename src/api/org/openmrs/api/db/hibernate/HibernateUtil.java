@@ -19,7 +19,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
-import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Criterion;
@@ -152,14 +151,10 @@ public class HibernateUtil {
 	 * @since 1.9
 	 */
 	public static Criterion getEqCriterionForLocalizedColumn(String value, String columnName) {
-		// expression for those unlocalized metadata
-		Criterion leftExp = Expression.sql(columnName + " = ?", value, Hibernate.STRING);
-		
-		// expression for those localized metadata
-		String searchValue = "%" + LocalizedStringUtil.PARTITION + LocalizedStringUtil.escapeDelimiter(value)
-		        + LocalizedStringUtil.SPLITTER + "%";
-		Criterion rightExp = Expression.sql(columnName + " like ?", searchValue, Hibernate.STRING);
-		
+		Criterion leftExp = Expression.eq(columnName, value);
+		String searchValue = LocalizedStringUtil.PARTITION + LocalizedStringUtil.escapeDelimiter(value)
+		        + LocalizedStringUtil.SPLITTER;
+		Criterion rightExp = Expression.like(columnName, searchValue, MatchMode.ANYWHERE);
 		return Expression.or(leftExp, rightExp);
 	}
 	
@@ -181,65 +176,45 @@ public class HibernateUtil {
 		String searchValue = null;
 		
 		if (MatchMode.START.equals(mode)) {
+			searchValue = LocalizedStringUtil.PARTITION + LocalizedStringUtil.escapeDelimiter(value);
 			if (caseSensitive == true) {
 				// append expression for unlocalized metadata
-				leftExp = Expression.sql(columnName + " like ?", value + "%", Hibernate.STRING);
+				leftExp = Expression.like(columnName, value, mode);
 				// append expression for localized metadata
-				searchValue = "%" + LocalizedStringUtil.PARTITION + LocalizedStringUtil.escapeDelimiter(value) + "%";
-				rigthExp = Expression.sql(columnName + " like ?", searchValue, Hibernate.STRING);
-				return Expression.or(leftExp, rigthExp);
+				rigthExp = Expression.like(columnName, searchValue, MatchMode.ANYWHERE);
 			} else {
-				// append expression for unlocalized metadata
-				leftExp = Expression.sql("UPPER(" + columnName + ") like ?", (value + "%").toUpperCase(), Hibernate.STRING);
-				// append expression for localized metadata
-				searchValue = "%" + LocalizedStringUtil.PARTITION + LocalizedStringUtil.escapeDelimiter(value) + "%";
-				rigthExp = Expression.sql("UPPER(" + columnName + ") like ?", searchValue.toUpperCase(), Hibernate.STRING);
-				return Expression.or(leftExp, rigthExp);
+				leftExp = Expression.ilike(columnName, value, mode);
+				rigthExp = Expression.ilike(columnName, searchValue, MatchMode.ANYWHERE);
 			}
+			return Expression.or(leftExp, rigthExp);
 		} else if (MatchMode.END.equals(mode)) {
+			searchValue = LocalizedStringUtil.escapeDelimiter(value) + LocalizedStringUtil.SPLITTER;
 			if (caseSensitive == true) {
-				// append expression for unlocalized metadata
-				leftExp = Expression.sql(columnName + " like ?", "%" + value, Hibernate.STRING);
-				// append expression for localized metadata
-				searchValue = "%" + LocalizedStringUtil.escapeDelimiter(value) + LocalizedStringUtil.SPLITTER + "%";
-				rigthExp = Expression.sql(columnName + " like ?", searchValue, Hibernate.STRING);
-				return Expression.or(leftExp, rigthExp);
+				leftExp = Expression.like(columnName, value, mode);
+				rigthExp = Expression.like(columnName, searchValue, MatchMode.ANYWHERE);
 			} else {
-				// append expression for unlocalized metadata
-				leftExp = Expression.sql("UPPER(" + columnName + ") like ?", ("%" + value).toUpperCase(), Hibernate.STRING);
-				// append expression for localized metadata
-				searchValue = "%" + LocalizedStringUtil.escapeDelimiter(value) + LocalizedStringUtil.SPLITTER + "%";
-				rigthExp = Expression.sql("UPPER(" + columnName + ") like ?", searchValue.toUpperCase(), Hibernate.STRING);
-				return Expression.or(leftExp, rigthExp);
+				leftExp = Expression.ilike(columnName, value, mode);
+				rigthExp = Expression.ilike(columnName, searchValue, MatchMode.ANYWHERE);
 			}
+			return Expression.or(leftExp, rigthExp);
 		} else if (MatchMode.ANYWHERE.equals(mode)) {
+			if (caseSensitive == true)// use one expression
+				leftExp = Expression.like(columnName, value, mode);
+			else
+				leftExp = Expression.ilike(columnName, value, mode);
+			return leftExp;
+		} else {/*MatchMode.EXACT.equals(mode)*/
+			searchValue = LocalizedStringUtil.PARTITION + LocalizedStringUtil.escapeDelimiter(value)
+			        + LocalizedStringUtil.SPLITTER;
 			if (caseSensitive == true) {
-				// use one expression
-				leftExp = Expression.sql(columnName + " like ?", "%" + value + "%", Hibernate.STRING);
-				return leftExp;
+				leftExp = Expression.like(columnName, value, mode);
+				rigthExp = Expression.like(columnName, searchValue, MatchMode.ANYWHERE);
+				
 			} else {
-				leftExp = Expression.sql("UPPER(" + columnName + ") like ?", ("%" + value + "%").toUpperCase(),
-				    Hibernate.STRING);
-				return leftExp;
+				leftExp = Expression.ilike(columnName, value, mode);
+				rigthExp = Expression.ilike(columnName, searchValue, MatchMode.ANYWHERE);
 			}
-		} else {//MatchMode.EXACT.equals(mode)
-			if (caseSensitive == true) {
-				// append expression for unlocalized metadata
-				leftExp = Expression.sql(columnName + " = ?", value, Hibernate.STRING);
-				// append expression for localized metadata
-				searchValue = "%" + LocalizedStringUtil.PARTITION + LocalizedStringUtil.escapeDelimiter(value)
-				        + LocalizedStringUtil.SPLITTER + "%";
-				rigthExp = Expression.sql(columnName + " like ?", searchValue, Hibernate.STRING);
-				return Expression.or(leftExp, rigthExp);
-			} else {
-				// append expression for unlocalized metadata
-				leftExp = Expression.sql("UPPER(" + columnName + ") = ?", value.toUpperCase(), Hibernate.STRING);
-				// append expression for localized metadata
-				searchValue = "%" + LocalizedStringUtil.PARTITION + LocalizedStringUtil.escapeDelimiter(value)
-				        + LocalizedStringUtil.SPLITTER + "%";
-				rigthExp = Expression.sql("UPPER(" + columnName + ") like ?", searchValue.toUpperCase(), Hibernate.STRING);
-				return Expression.or(leftExp, rigthExp);
-			}
+			return Expression.or(leftExp, rigthExp);
 		}
 	}
 }

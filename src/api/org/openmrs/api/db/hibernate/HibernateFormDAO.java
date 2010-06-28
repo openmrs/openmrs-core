@@ -113,7 +113,7 @@ public class HibernateFormDAO implements FormDAO {
 	@SuppressWarnings("unchecked")
 	public List<Field> getFields(String search) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Field.class);
-		HibernateUtil.addLikeCriterionForLocalizedColumn(search, "name", criteria, true, MatchMode.ANYWHERE);
+		HibernateUtil.addLikeCriterionForLocalizedColumn(search, "localizedName", criteria, true, MatchMode.ANYWHERE);
 		List<Field> fields = criteria.list();
 		Collections.sort(fields, new MetadataComparator(Context.getLocale()));
 		return fields;
@@ -351,7 +351,7 @@ public class HibernateFormDAO implements FormDAO {
 	public Form getForm(String name, String version) throws DAOException {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Form.class);
 		
-		HibernateUtil.addEqCriterionForLocalizedColumn(name, "name", crit);
+		HibernateUtil.addEqCriterionForLocalizedColumn(name, "localizedName", crit);
 		crit.add(Expression.eq("version", version));
 		
 		List<Form> forms = crit.list();
@@ -374,8 +374,9 @@ public class HibernateFormDAO implements FormDAO {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Form.class, "form");
 		
 		if (partialName != null && !"".equals(partialName)) {
-			Criterion lhs = HibernateUtil.getLikeCriterionForLocalizedColumn(partialName, "name", true, MatchMode.START);
-			Criterion rhs = HibernateUtil.getLikeCriterionForLocalizedColumn(" " + partialName, "name", true,
+			Criterion lhs = HibernateUtil.getLikeCriterionForLocalizedColumn(partialName, "localizedName", true,
+			    MatchMode.START);
+			Criterion rhs = HibernateUtil.getLikeCriterionForLocalizedColumn(" " + partialName, "localizedName", true,
 			    MatchMode.ANYWHERE);
 			crit.add(Expression.or(lhs, rhs));
 		}
@@ -456,7 +457,7 @@ public class HibernateFormDAO implements FormDAO {
 	public List<Form> getFormsByName(String name) throws DAOException {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Form.class);
 		
-		HibernateUtil.addEqCriterionForLocalizedColumn(name, "name", crit);
+		HibernateUtil.addEqCriterionForLocalizedColumn(name, "localizedName", crit);
 		crit.add(Expression.eq("retired", false));
 		crit.addOrder(Order.desc("version"));
 		

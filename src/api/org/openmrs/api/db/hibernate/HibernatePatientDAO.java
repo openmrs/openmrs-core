@@ -306,7 +306,7 @@ public class HibernatePatientDAO implements PatientDAO {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(PatientIdentifierType.class);
 		
 		if (name != null)
-			HibernateUtil.addEqCriterionForLocalizedColumn(name, "name", criteria);
+			HibernateUtil.addEqCriterionForLocalizedColumn(name, "localizedName", criteria);
 		
 		if (format != null)
 			criteria.add(Expression.eq("format", format));

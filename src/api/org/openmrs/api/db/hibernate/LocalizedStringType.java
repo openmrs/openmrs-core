@@ -114,10 +114,19 @@ public class LocalizedStringType implements UserType, Serializable {
 	 */
 	@Override
 	public void nullSafeSet(PreparedStatement ps, Object value, int index) throws HibernateException, SQLException {
-		if (value != null)
-			Hibernate.STRING.nullSafeSet(ps, LocalizedStringUtil.serialize((LocalizedString) value), index);
-		else
+		if (value != null) {
+			if (value instanceof java.lang.String) {
+				//only in query mode(e.g., Expression.like('localizedName', value)), the type of value will be String
+				//use this tricky here, in order to support Hibernate's easy-reading query mode, such as Expression.like(propertyName, value)
+				Hibernate.STRING.nullSafeSet(ps, value, index);
+			} else {
+				//only when create/update an OpenmrsMetadata object, the type of value will be LocalizedString
+				Hibernate.STRING.nullSafeSet(ps, LocalizedStringUtil.serialize((LocalizedString) value), index);
+			}
+		}
+		else {
 			Hibernate.STRING.nullSafeSet(ps, value, index);
+		}
 	}
 	
 	/**
