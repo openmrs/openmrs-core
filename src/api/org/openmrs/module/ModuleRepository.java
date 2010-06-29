@@ -38,6 +38,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.scheduler.SchedulerService;
 import org.openmrs.scheduler.TaskDefinition;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.web.WebConstants;
 
 /**
  * Methods to cache in modules from the online repository and allows searching from administration
@@ -48,7 +49,7 @@ public class ModuleRepository {
 	
 	private static final Log log = LogFactory.getLog(ModuleRepository.class);
 
-	private static Date lastUpdatedDate = new Date(100, 0, 01); // first date will be 01/01/2000
+	private static Date lastUpdatedDate = new Date(90, 0, 01); // first date will be 01/01/2000
 	
 	private static Map<String, Module> repository = new WeakHashMap<String, Module>();
 	
@@ -107,16 +108,15 @@ public class ModuleRepository {
 		try {
 			String url = as.getGlobalProperty(MODULE_REPOSITORY_URL);
 			if (url == null) {
-				url = "http://localhost:8080/modules/getAllModules?openmrsVersion=<VERSION>&lastUpdatedDate=<DATE>";
-				// url = WebConstants.MODULE_REPOSITORY_URL + "/getAllModules?openmrsVersion=<VERSION>&lastUpdatedDate=<DATE>";
+				url = WebConstants.MODULE_REPOSITORY_URL + "/getAllModules?openmrsVersion=<VERSION>&lastUpdatedDate=<DATE>";
 				GlobalProperty gp = new GlobalProperty();
 				gp.setProperty(MODULE_REPOSITORY_URL);
 				gp.setPropertyValue(url);
 				gp.setDescription("Get All Module Repository URL");
 				as.saveGlobalProperty(gp);
 			}
-			cacheModuleRepository();
 			moduleRepositoryUrl = url;
+			cacheModuleRepository();
 		}
 		catch (Throwable t) {
 			log.error("Error while initializing Module Repository", t);

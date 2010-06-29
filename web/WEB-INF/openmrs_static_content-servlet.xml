@@ -33,7 +33,7 @@
 	<util:map id="urlRewrites">
 		<entry key="/scripts/jquery/jquery-1.3.2.min.js" value="/scripts/jquery/jquery.min.js"/>
 		<entry key="/scripts/jquery-ui/js/jquery-ui-1.7.2.custom.min.js" value="/scripts/jquery-ui/js/jquery-ui.custom.min.js"/>
-		<entry key="/scripts/jquery-ui/css/jquery-ui-1.7.2.custom.css" value="/scripts/jquery-ui/css/jquery-ui.custom.css"/>
+		<entry key="/scripts/jquery-ui/css/redmond/jquery-ui-1.7.2.custom.css" value="/scripts/jquery-ui/css/redmond/jquery-ui.custom.css"/>
 	</util:map>
 	
 	<bean id="addRewritesToHtmlIncludeTag" class="org.openmrs.web.taglib.HtmlIncludeTag">
