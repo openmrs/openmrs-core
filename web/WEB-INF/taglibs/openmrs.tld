@@ -1163,6 +1163,12 @@
 		<required>false</required>
 		<rtexprvalue>true</rtexprvalue>
 	</attribute>
+	<attribute>
+		<description>Specifies whether JavaScript special characters (if any present) should be escaped in the output text</description>
+		<name>javaScriptEscape</name>
+		<required>false</required>
+		<rtexprvalue>false</rtexprvalue>		
+	</attribute>
 </tag>
 <tag>
 	<description>

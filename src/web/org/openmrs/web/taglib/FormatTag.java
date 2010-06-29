@@ -31,6 +31,7 @@ import org.openmrs.Person;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.springframework.util.StringUtils;
+import org.springframework.web.util.JavaScriptUtils;
 
 /**
  * <pre>
@@ -74,11 +75,13 @@ public class FormatTag extends TagSupport {
 	private Location location;
 	
 	private Integer locationTagId;
-
+	
 	private LocationTag locationTag;
 	
+	private Boolean javaScriptEscape = Boolean.FALSE;
+	
 	@Override
-    public int doStartTag() {
+	public int doStartTag() {
 		StringBuilder sb = new StringBuilder();
 		if (conceptId != null)
 			concept = Context.getConceptService().getConcept(conceptId);
@@ -131,10 +134,16 @@ public class FormatTag extends TagSupport {
 		}
 		
 		if (StringUtils.hasText(var)) {
-			pageContext.setAttribute(var, sb.toString());
+			if (javaScriptEscape)
+				pageContext.setAttribute(var, JavaScriptUtils.javaScriptEscape(sb.toString()));
+			else
+				pageContext.setAttribute(var, sb.toString());
 		} else {
 			try {
-				pageContext.getOut().write(sb.toString());
+				if (javaScriptEscape)
+					pageContext.getOut().write(JavaScriptUtils.javaScriptEscape(sb.toString()));
+				else
+					pageContext.getOut().write(sb.toString());
 			}
 			catch (IOException e) {
 				log.error("Failed to write to pageContext.getOut()", e);
@@ -163,7 +172,7 @@ public class FormatTag extends TagSupport {
 		if (metadata != null)
 			sb.append(metadata.getName());
 	}
-		
+	
 	/**
 	 * formats a user and prints it to sb
 	 * 
@@ -172,7 +181,7 @@ public class FormatTag extends TagSupport {
 	 */
 	private void printUser(StringBuilder sb, User u) {
 		sb.append("<span class=\"user\">");
-	 	sb.append("<span class=\"username\">");
+		sb.append("<span class=\"username\">");
 		sb.append(u.getUsername());
 		sb.append("</span>");
 		if (u.getPerson() != null) {
@@ -194,7 +203,7 @@ public class FormatTag extends TagSupport {
 	}
 	
 	@Override
-    public int doEndTag() {
+	public int doEndTag() {
 		reset();
 		return EVAL_PAGE;
 	}
@@ -306,22 +315,22 @@ public class FormatTag extends TagSupport {
 		this.location = location;
 	}
 	
-    public Integer getLocationTagId() {
-    	return locationTagId;
-    }
-
-    public void setLocationTagId(Integer locationTagId) {
-    	this.locationTagId = locationTagId;
-    }
-
-    public LocationTag getLocationTag() {
-    	return locationTag;
-    }
+	public Integer getLocationTagId() {
+		return locationTagId;
+	}
 	
-    public void setLocationTag(LocationTag locationTag) {
-    	this.locationTag = locationTag;
-    }
-
+	public void setLocationTagId(Integer locationTagId) {
+		this.locationTagId = locationTagId;
+	}
+	
+	public LocationTag getLocationTag() {
+		return locationTag;
+	}
+	
+	public void setLocationTag(LocationTag locationTag) {
+		this.locationTag = locationTag;
+	}
+	
 	public String getVar() {
 		return var;
 	}
@@ -344,5 +353,19 @@ public class FormatTag extends TagSupport {
 	
 	public void setPerson(Person person) {
 		this.person = person;
+	}
+	
+	/**
+	 * @return the javaScriptEscape
+	 */
+	public Boolean getJavaScriptEscape() {
+		return javaScriptEscape;
+	}
+	
+	/**
+	 * @param javaScriptEscape the javaScriptEscape to set
+	 */
+	public void setJavaScriptEscape(Boolean javaScriptEscape) {
+		this.javaScriptEscape = javaScriptEscape;
 	}
 }
