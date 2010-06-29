@@ -3330,4 +3330,29 @@
 			<where>message_state IN (0,1)</where>
 		</update>
 	</changeSet>
+	
+	<changeSet id="20100323-192043" author="ricardosbarbosa">
+		<comment>
+			Removing the duplicate privilege 'Add Concept Proposal' in favor of 'Add Concept Proposals'
+		</comment>
+		<update tableName="role_privilege">
+			<column name="privilege">Add Concept Proposals</column>
+			<where>privilege = 'Add Concept Proposal' and not exists (select * from (select role, privilege from role_privilege) rp2 where rp2.role = role and rp2.privilege = 'Add Concept Proposals')</where>
+		</update>
+		<delete tableName="role_privilege"><where>privilege='Add Concept Proposal'</where></delete>
+		<delete tableName="privilege"><where>privilege='Add Concept Proposal'</where></delete>
+	</changeSet>
+		
+	<changeSet id="20100330-190413" author="ricardosbarbosa">
+		<comment>
+			Removing the duplicate privilege 'Edit Concept Proposal' in favor of 'Edit Concept Proposals'
+		</comment>		
+		<update tableName="role_privilege">
+			<column name="privilege">Edit Concept Proposals</column>
+			<where>privilege = 'Edit Concept Proposal' and not exists (select * from (select role, privilege from role_privilege) rp2 where rp2.role = role and rp2.privilege = 'Edit Concept Proposals')</where>
+		</update>
+		<delete tableName="role_privilege"><where>privilege='Edit Concept Proposal'</where></delete>
+		<delete tableName="privilege"><where>privilege='Edit Concept Proposal'</where></delete>
+	</changeSet>
+	
 </databaseChangeLog>
