@@ -92,9 +92,12 @@ public class WebModuleUtil {
 	 * Performs the webapp specific startup needs for modules Normal startup is done in
 	 * {@link ModuleFactory#startModule(Module)} If delayContextRefresh is true, the spring context
 	 * is not rerun. This will save a lot of time, but it also means that the calling method is
-	 * responsible for restarting the context if necessary. If delayContextRefresh is true and this
-	 * module should have caused a context refresh, a true value is returned. Otherwise, false is
-	 * returned
+	 * responsible for restarting the context if necessary (the calling method will also have to
+	 * call {@link #loadServlets(Module, ServletContext)} and
+	 * {@link #loadFilters(Module, ServletContext)}).<br/>
+	 * <br/>
+	 * If delayContextRefresh is true and this module should have caused a context refresh, a true
+	 * value is returned. Otherwise, false is returned
 	 * 
 	 * @param mod Module to start
 	 * @param ServletContext the current ServletContext
@@ -286,7 +289,7 @@ public class WebModuleUtil {
 				}
 			}
 			
-			// mark to delete the entire module web directory on exit 
+			// mark to delete the entire module web directory on exit
 			// this will usually only be used when an improper shutdown has occurred.
 			String folderPath = realPath + "/WEB-INF/view/module/" + mod.getModuleIdAsPath();
 			File outFile = new File(folderPath.replace("/", File.separator));
@@ -304,7 +307,7 @@ public class WebModuleUtil {
 				
 			}
 			
-			// refresh the spring web context to get the just-created xml 
+			// refresh the spring web context to get the just-created xml
 			// files into it (if we copied an xml file)
 			if (moduleNeedsContextRefresh && delayContextRefresh == false) {
 				if (log.isDebugEnabled())
@@ -330,7 +333,7 @@ public class WebModuleUtil {
 						log.warn(msg + " for module: " + mod.getModuleId(), e);
 					
 					try {
-						ModuleFactory.stopModule(mod, true, true); //remove jar from classloader play 
+						ModuleFactory.stopModule(mod, true, true); //remove jar from classloader play
 						stopModule(mod, servletContext, true);
 					}
 					catch (Exception e2) {
@@ -342,14 +345,22 @@ public class WebModuleUtil {
 					// try starting the application context again
 					refreshWAC(servletContext, false, mod);
 				}
+				
 			}
 			
-			// find and cache the module's servlets 
-			//(only if the module started successfully previously)
-			if (ModuleFactory.isModuleStarted(mod)) {
-				log.debug("Loading servlets and filters for module: " + mod);
-				loadServlets(mod, servletContext);
-				loadFilters(mod, servletContext);
+			if (!delayContextRefresh) {
+				// only loading the servlets/filters if spring is refreshed because one
+				// might depend on files being available in spring
+				// if the caller wanted to delay the refresh then they are responsible for
+				// calling these two methods on the module
+
+				// find and cache the module's servlets
+				//(only if the module started successfully previously)
+				if (ModuleFactory.isModuleStarted(mod)) {
+					log.debug("Loading servlets and filters for module: " + mod);
+					loadServlets(mod, servletContext);
+					loadFilters(mod, servletContext);
+				}
 			}
 			
 			// return true if the module needs a context refresh and we didn't do it here
@@ -639,7 +650,7 @@ public class WebModuleUtil {
 			}
 		}
 		
-		// call web shutdown for each module 
+		// call web shutdown for each module
 		for (Module mod : ModuleFactory.getLoadedModules()) {
 			stopModule(mod, servletContext, true);
 		}
@@ -781,7 +792,7 @@ public class WebModuleUtil {
 		    isOpenmrsStartup, startedModule);
 		
 		try {
-			// must "refresh" the spring dispatcherservlet as well to add in 
+			// must "refresh" the spring dispatcherservlet as well to add in
 			//the new handlerMappings
 			if (dispatcherServlet != null)
 				dispatcherServlet.reInitFrameworkServlet();
