@@ -43,6 +43,7 @@ import org.openmrs.util.OpenmrsConstants;
  * Methods to cache in modules from the online repository and allows searching from administration
  * page
  */
+@SuppressWarnings("deprecation")
 public class ModuleRepository {
 	
 	private static final Log log = LogFactory.getLog(ModuleRepository.class);
@@ -77,11 +78,14 @@ public class ModuleRepository {
 	 * Initializes the ModuleRepository and calls for the first module repository cache
 	 */
 	public static void initialize() {
+		AdministrationService as = Context.getAdministrationService();
 		try {
 			/* Temporarily Used the authentication should be removed
 			 * once ticket http://dev.openmrs.org/ticket/1947 is completed
 			 */
-			Context.authenticate("admin", "Admin123");
+			String username = as.getGlobalProperty("scheduler.username");
+			String password = as.getGlobalProperty("scheduler.password");
+			Context.authenticate(username, password);
 			SchedulerService ss = Context.getSchedulerService();
 			TaskDefinition task = ss.getTaskByName(MODULE_REPOSITORY_CACHE_UPDATE_TASK_NAME);
 			if (task == null) {
@@ -95,7 +99,12 @@ public class ModuleRepository {
 				task.setStarted(true);
 				ss.saveTask(task);
 			}
-			AdministrationService as = Context.getAdministrationService();
+		}
+		catch (Throwable t) {
+			log.error("Error while starting " + MODULE_REPOSITORY_CACHE_UPDATE_TASK_NAME, t);
+		}
+		
+		try {
 			String url = as.getGlobalProperty(MODULE_REPOSITORY_URL);
 			if (url == null) {
 				url = "http://localhost:8080/modules/getAllModules?openmrsVersion=<VERSION>&lastUpdatedDate=<DATE>";
@@ -106,13 +115,13 @@ public class ModuleRepository {
 				gp.setDescription("Get All Module Repository URL");
 				as.saveGlobalProperty(gp);
 			}
-			Context.logout();
 			cacheModuleRepository();
 			moduleRepositoryUrl = url;
 		}
 		catch (Throwable t) {
 			log.error("Error while initializing Module Repository", t);
 		}
+		Context.logout();
 	}
 	
 	/**
@@ -129,6 +138,7 @@ public class ModuleRepository {
 						url = getURL();
 						jsonInputStream = ModuleUtil.getURLStream(url);
 						ObjectMapper mapper = new ObjectMapper();
+						//Reading in the JSON from the input stream
 						HashMap<String, Object> map = mapper.readValue(jsonInputStream, HashMap.class);
 						ArrayList<ArrayList<String>> metadata = (ArrayList<ArrayList<String>>) map.get("Values");
 						for (ArrayList<String> moduleMetaData : metadata) {
