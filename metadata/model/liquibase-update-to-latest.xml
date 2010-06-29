@@ -3247,6 +3247,35 @@
 			<column name="obs_datetime"/>
 		</createIndex>
 	</changeSet>
+	
+	<changeSet id="20100426-1947" author="syhaas">
+		<preConditions onFail="MARK_RAN">
+			<sqlCheck expectedResult="0">
+				<![CDATA[
+				SELECT count(*) FROM users WHERE system_id = 'daemon'
+				]]>
+			</sqlCheck>
+		</preConditions>
+		<comment>Adding daemon user to users table</comment>
+		<insert tableName="users">
+			<column name="system_id" value="daemon"/>
+			<column name="username" value="daemon"/>
+			<column name="creator" valueNumeric="1"/>
+			<column name="date_created" valueDate="2010-04-26T13:25:00"/>
+			<column name="retired" valueNumeric="0"/>
+			<column name="uuid" value="A4F30A1B-5EB9-11DF-A648-37A07F9C90FB"/>
+		</insert>
+	</changeSet>
+	
+	<changeSet id="20100513-1947" author="syhaas">
+		<comment>Removing scheduler.username and scheduler.password global properties</comment>
+		<delete tableName="global_property">
+			<where>property = 'scheduler.username'</where>
+		</delete>
+		<delete tableName="global_property">
+			<where>property = 'scheduler.password'</where>
+		</delete>
+	</changeSet>
 
 	<changeSet id="20100512-1400" author="djazayeri">
 		<preConditions onFail="MARK_RAN">

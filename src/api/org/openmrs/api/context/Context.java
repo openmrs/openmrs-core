@@ -275,6 +275,12 @@ public class Context {
 		if (log.isDebugEnabled())
 			log.debug("Authenticating with username: " + username);
 		
+		if (Daemon.isDaemonThread()) {
+			log.error("Authentication attempted while operating on a "
+			        + "daemon thread, authenticating is not necessary or allowed");
+			return;
+		}
+
 		getUserContext().authenticate(username, password, getContextDAO());
 	}
 	
@@ -287,6 +293,9 @@ public class Context {
 	 * @should get fresh values from the database
 	 */
 	public static void refreshAuthenticatedUser() {
+		if (Daemon.isDaemonThread())
+			return;
+
 		if (log.isDebugEnabled())
 			log.debug("Refreshing authenticated user");
 		
@@ -525,7 +534,6 @@ public class Context {
 	 */
 	private static javax.mail.Session getMailSession() {
 		if (mailSession == null) {
-			
 			AdministrationService adminService = getAdministrationService();
 			
 			Properties props = new Properties();
@@ -539,7 +547,7 @@ public class Context {
 			Authenticator auth = new Authenticator() {
 				
 				@Override
-                public PasswordAuthentication getPasswordAuthentication() {
+				public PasswordAuthentication getPasswordAuthentication() {
 					return new PasswordAuthentication(getAdministrationService().getGlobalProperty("mail.user"),
 					        getAdministrationService().getGlobalProperty("mail.password"));
 				}
@@ -574,6 +582,9 @@ public class Context {
 	 * @return "active" user who has been authenticated, otherwise <code>null</code>
 	 */
 	public static User getAuthenticatedUser() {
+		if (Daemon.isDaemonThread())
+			return contextDAO.getUserByUuid(Daemon.DAEMON_USER_UUID);
+
 		return getUserContext().getAuthenticatedUser();
 	}
 	
@@ -593,7 +604,7 @@ public class Context {
 	public static void logout() {
 		if (!isSessionOpen())
 			return; // fail early if there isn't even a session open
-			
+
 		if (log.isDebugEnabled())
 			log.debug("Logging out : " + getAuthenticatedUser());
 		
@@ -612,8 +623,16 @@ public class Context {
 	
 	/**
 	 * Convenience method. Passes through to userContext.hasPrivilege(String)
+	 * 
+	 * @should give daemon user full privileges
 	 */
 	public static boolean hasPrivilege(String privilege) {
+		
+		// the daemon threads have access to all things
+		if (Daemon.isDaemonThread()) {
+			return true;
+		}
+
 		return getUserContext().hasPrivilege(privilege);
 	}
 	
@@ -816,7 +835,6 @@ public class Context {
 	 * closing
 	 */
 	public static void shutdown() {
-		
 		log.debug("Shutting down the scheduler");
 		try {
 			// Needs to be shutdown before Hibernate
@@ -1015,7 +1033,6 @@ public class Context {
 	 *      the required question/datatypes
 	 */
 	private static void checkForDatabaseUpdates(Properties props) throws DatabaseUpdateException, InputRequiredException {
-		
 		boolean updatesRequired = true;
 		try {
 			updatesRequired = DatabaseUpdater.updatesRequired();

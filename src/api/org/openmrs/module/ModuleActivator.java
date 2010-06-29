@@ -38,7 +38,9 @@ public interface ModuleActivator {
 	
 	/**
 	 * Called after a module has been loaded but before the application context is refreshed, at
-	 * this point the module's service methods aren't yet available so they can't be called.
+	 * this point the module's service methods aren't yet available so they can't be called. <br/>
+	 * <br/>
+	 * This method will be authenticated as the Daemon user and have all privileges.
 	 */
 	public void willStart();
 	
