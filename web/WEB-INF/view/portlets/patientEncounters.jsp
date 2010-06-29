@@ -164,7 +164,7 @@ Parameters
 													<c:param name="inPopup" value="true"/>
 												</c:url>
 											</c:if>
-											<a href="javascript:void(0)" onClick="loadUrlIntoEncounterPopup('<openmrs:format encounter="${enc}"/>', '${viewEncounterUrl}'); return false;">
+											<a href="javascript:void(0)" onClick="loadUrlIntoEncounterPopup('<openmrs:format encounter="${enc}" javaScriptEscape="true"/>', '${viewEncounterUrl}'); return false;">
 												<img src="${pageContext.request.contextPath}/images/file.gif" title="<spring:message code="general.view"/>" border="0" align="top" />
 											</a>
 										</c:if>

@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-
-<beans>
+   
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="
+			http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+			http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 	
 	<bean id="jspViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
 		<property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
@@ -25,15 +29,25 @@
 			</props>
 		</property>
 	</bean>
+
+	<util:map id="urlRewrites">
+		<entry key="/scripts/jquery/jquery-1.3.2.min.js" value="/scripts/jquery/jquery.min.js"/>
+		<entry key="/scripts/jquery-ui/js/jquery-ui-1.7.2.custom.min.js" value="/scripts/jquery-ui/js/jquery-ui.custom.min.js"/>
+		<entry key="/scripts/jquery-ui/css/jquery-ui-1.7.2.custom.css" value="/scripts/jquery-ui/css/jquery-ui.custom.css"/>
+	</util:map>
+	
+	<bean id="addRewritesToHtmlIncludeTag" class="org.openmrs.web.taglib.HtmlIncludeTag">
+		<property name="rewrites">
+			<ref local="urlRewrites"/>
+		</property>
+	</bean>
 	
 	<bean id="localeResolver" class="org.openmrs.web.OpenmrsCookieLocaleResolver" />
 	
 	<bean id="staticContentController" class="org.openmrs.web.controller.PseudoStaticContentController">
 		<property name="interpretJstl"><value>false</value></property>
 		<property name="rewrites">
-			<map>
-				<entry key="/scripts/jquery/jquery-1.3.2.min.js" value="/scripts/jquery/jquery.min.js"/>
-			</map>
+			<ref local="urlRewrites"/>
 		</property>
 	</bean>
 	
