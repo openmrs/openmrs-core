@@ -137,7 +137,7 @@ function addEvent(obj, eventType, fn) {
 useLoadingMessage = function(message) {
 	var loadingMessage;
 	if (message) loadingMessage = message;
-	else loadingMessage = "Loading";
+	else loadingMessage = dwrLoadingMessage; // to internationalize message
 
 	dwr.engine.setPreHook(function() {
 		var disabledZone = $('disabledZone');
