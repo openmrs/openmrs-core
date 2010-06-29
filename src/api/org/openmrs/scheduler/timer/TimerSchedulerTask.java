@@ -19,6 +19,7 @@ import java.util.TimerTask;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.context.Daemon;
 import org.openmrs.scheduler.SchedulerService;
 import org.openmrs.scheduler.SchedulerUtil;
 import org.openmrs.scheduler.Task;
@@ -43,17 +44,19 @@ public class TimerSchedulerTask extends TimerTask {
 	 * 
 	 * @see java.util.TimerTask#run()
 	 */
-	public void run() {
+	@Override
+    public void run() {
 		try {
-			task.execute();
-            if(!Context.isSessionOpen()) {
+			Daemon.executeScheduledTask(task);
+			
+			if (!Context.isSessionOpen()) {
                 Context.openSession();
             }
-            saveLastExecutionTime();			
+            saveLastExecutionTime();
 		}
 		catch (Throwable t) {
 			// Fix #862: IllegalStateException: Timer already cancelled.
-			// Suppress error in order to keep the scheduler's Timer from completely failing.  
+			// Suppress error in order to keep the scheduler's Timer from completely failing.
 			log.error(
 			    "FATAL ERROR: Task [" + task.getClass() + "] failed due to exception [" + t.getClass().getName() + "]", t);
 			SchedulerUtil.sendSchedulerError(t);
@@ -72,9 +75,9 @@ public class TimerSchedulerTask extends TimerTask {
     	try {
     		Context.addProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_SCHEDULER);
 			
-			// We re-get the task definition in case the copy set during the 
+			// We re-get the task definition in case the copy set during the
 			// task initialization has become stale.  NOTE: If a task does not
-			// extend the abstract class AbstractTask, then it's possible the 
+			// extend the abstract class AbstractTask, then it's possible the
 			// developer did not actually set the TaskDefintion on the Task.
 			// Therefore we might get an NPE below.
     		if(task.getTaskDefinition() != null) {
@@ -85,14 +88,14 @@ public class TimerSchedulerTask extends TimerTask {
     		} else {
         		log.warn("Unable to save the last execution time for task. Task.taskDefinition is null in " + task.getClass());
     		}
-    	} 
-    	catch (Exception e) { 
+    	}
+    	catch (Exception e) {
     		log.warn("Unable to save the last execution time for task ", e);
     	}
     	finally {
     		Context.removeProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_SCHEDULER);
     	}
-    }    
+    }
 	
 	/**
 	 * Shutdown the timer task and invoke the task's shutdown() callback method.

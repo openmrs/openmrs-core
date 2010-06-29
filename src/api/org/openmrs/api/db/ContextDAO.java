@@ -16,6 +16,7 @@ package org.openmrs.api.db;
 import java.util.Properties;
 
 import org.openmrs.User;
+import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,13 +49,24 @@ public interface ContextDAO {
 	 * @should authenticateWithCorrectHashedPassword
 	 * @should authenticateWithIncorrectHashedPassword
 	 * @should set uuid on user property when authentication fails with valid user
-	 * @should pass regression test for 1580 
+	 * @should pass regression test for 1580
 	 * @should throw a ContextAuthenticationException if username is an empty string
 	 * @should should throw a ContextAuthenticationException if username is white space
 	 */
 	@Transactional(noRollbackFor = ContextAuthenticationException.class)
 	public User authenticate(String username, String password) throws ContextAuthenticationException;
 	
+	/**
+	 * Gets a user given the uuid. Privilege checks are not done here because this is used by the
+	 * {@link Context#getAuthenticatedUser()} method.
+	 * 
+	 * @param uuid uuid of user to fetch
+	 * @return the User from the database
+	 * @throws ContextAuthenticationException
+	 */
+	@Transactional(readOnly = true)
+	public User getUserByUuid(String uuid) throws ContextAuthenticationException;
+
 	/**
 	 * Open session.
 	 */
