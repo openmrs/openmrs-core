@@ -59,12 +59,6 @@
 			"bProcessing": true,
 			"bServerSide": true,
 			"fnServerData": function ( sSource, aoData, fnCallback ) {
-								/*aoData.push( { "name": "openmrs_version", "value": "${openmrsVersion}" } );
-
-								<c:forEach var="module" items="${loadedModules}">
-								  aoData.push( { "name": "excludeModule", "value": "${module.moduleId}" } );
-								</c:forEach>*/
-
 								$j.ajax( {
 					                "dataType": 'jsonp',
 				                	"type": "GET",
