@@ -523,5 +523,4 @@ public class HibernatePatientDAO implements PatientDAO {
 		sessionFactory.getCurrentSession().delete(patientIdentifier);
 		
 	}
-	
 }

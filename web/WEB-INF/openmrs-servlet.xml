@@ -217,6 +217,8 @@
 				<prop key="**/patientRegimenDiscontinued.portlet">patientRegimenPortletController</prop>
 				<prop key="**/patientEncounters.portlet">patientEncountersPortletController</prop>
 				<prop key="**/personFormEntry.portlet">personFormEntryPortletController</prop>
+				<prop key="**/activeListAllergy.portlet">activeListPortletController</prop>
+				<prop key="**/activeListProblem.portlet">activeListPortletController</prop>
 				<!--<prop key="**/calendar.portlet">calendarPortletController</prop>-->
 
 				<prop key="**/*.portlet">portletController</prop>
@@ -236,6 +238,7 @@
 	<bean id="personFormEntryPortletController" class="org.openmrs.web.controller.PersonFormEntryPortletController" />
 	<bean id="addressLayoutPortletController" class="org.openmrs.web.controller.layout.AddressLayoutPortletController" />
 	<bean id="nameLayoutPortletController" class="org.openmrs.web.controller.layout.NameLayoutPortletController" />
+	<bean id="activeListPortletController" class="org.openmrs.web.controller.ActiveListPortletController" />
 	<!--<bean id="calendarPortletController" class="org.openmrs.web.controller.CalendarPortletController"/>-->
 	<bean id="springController" class="org.openmrs.web.controller.SpringController" />
 

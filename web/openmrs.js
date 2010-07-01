@@ -291,3 +291,126 @@ function gotoUser(select, userId) {
 	
 	return localeBirthDate;
  }
+
+/**
+ * @param sFormat :String - the format to use (ex: dd-mm-yyyy)
+ * @param sDate :String - the javascript Date object to use
+ * @returns javascript Date object
+ */
+function parseDateFromStringToJs(sFormat, sDate) {
+	if(sDate == null) {
+		return new Date();
+	}
+	
+	var idx;
+	var date = new Date();
+	if((idx = sFormat.search(/mm/)) != -1) {
+		date.setMonth(sDate.substring(idx, idx+2)-1);//0-11
+	}
+	if((idx = sFormat.search(/dd/)) != -1) {
+		date.setDate(sDate.substring(idx, idx+2));//1-31
+	}
+	if((idx = sFormat.search(/yyyy/)) != -1) {
+		date.setYear(sDate.substring(idx, idx+4));
+	}
+	
+	return date;
+}
+
+function tenrule(n) {
+	return ((n < 10) ? "0" : "") + n;
+}
+
+/**
+ * @param sFormat :String - the format of the date to use (ex: dd-mm-yyyy)
+ * @param jsDate :Date - a javascript Date object
+ * @returns a string in the proper format
+ */
+function parseDateFromJsToString(sFormat, jsDate) {
+ 	if(jsDate == null) {
+ 		jsDate = new Date();
+ 	}
+ 	
+ 	return sFormat.replace(/mm/, tenrule(jsDate.getMonth()+1)).replace(/dd/, tenrule(jsDate.getDate())).replace(/yyyy/, (1900+jsDate.getYear()));
+}
+
+/**
+ * DatePicker class
+ * @param dateFormat :String date format to use (ex: dd-mm-yyyy)
+ * @param id :String the id of the text box to use as the calendar
+ * @param opts :Map additional options for the jquery datepicker widget (included are dateFormat, appendText, gotoCurrent)
+ */
+function DatePicker(dateFormat, id, opts) {
+ 	var jq = $j('#' + id);
+ 	
+ 	if(opts == null) {
+ 		opts = {};
+ 	}
+ 	setOptions(opts, 'dateFormat', dateFormat.replace("yyyy", "yy"));//have to do the replace here because the datepicker only required 'yy' for 4-number year
+ 	setOptions(opts, 'appendText', "(" + dateFormat + ")");
+ 	setOptions(opts, 'gotoCurrent', true);
+ 	jq.datepicker(opts);
+ 		
+ 	this.setDate = function(date) {
+ 		var jsDate = date;
+ 		if(typeof date == 'string') {
+ 			jsDate = parseDateFromStringToJs(dateFormat, date);
+ 		}
+ 		
+ 		jq.datepicker("setDate", jsDate);
+ 	};
+ 	
+ 	this.getDate = function() {
+ 		return jq.datepicker("getDate");
+ 	};
+ 	
+ 	this.getDateAsString = function() {
+ 		return parseDateFromJsToString(dateFormat, this.getDate());
+ 	};
+}
+
+/**
+ * AutoComplete class
+ * @param id :String the id of the text box
+ * @param callback a function with 2 params (query - the text in the box, and response - use when the data is returned and takes an array as a param)
+ * @param opts :Map addtional options (included are: minChars, matchSubset, width, resultClass, formatItem)
+ */
+function AutoComplete(id, callback, opts) {
+ 	var jq = $j('#' + id);
+ 	
+ 	if(opts == null) {
+ 		opts = {};
+ 	}
+ 	setOptions(opts, 'minChars', 2);
+ 	setOptions(opts, 'matchSubset', 0);
+ 	setOptions(opts, 'width', 260);
+ 	setOptions(opts, 'resultsClass', "ac_results ui-widget-content ui-corner-all");
+ 	setOptions(opts, 'formatItem', function(item, row, numItems) {
+ 		//item = {value, name}
+ 		return item.name;
+ 	});
+ 	
+ 	jq.autocomplete(callback, opts);
+}
+
+/**
+ * Simple utility method to set a map value if the key doesnt exist
+ * @param opts :Map
+ * @param name :Object the key
+ * @param value :Object the value (can also be a function)
+ */
+function setOptions(opts, name, value) {
+	if(opts[name]) return;
+ 	opts[name] = value;
+}
+
+function colorVisibleTableRows(tableId, oddColorClass, evenColorClass, includeHeader) {
+ 	var rows = $j('#' + tableId + ' tr');
+ 	var odd = true;
+ 	for(var i=(includeHeader ? 0 : 1); i < rows.length; i++) {
+ 		if(!$j(rows[i]).is(':visible')) continue;
+ 		
+ 		$j(rows[i]).css("backgroundColor", (odd ? oddColorClass : evenColorClass));
+ 		odd = !odd;
+ 	}
+}

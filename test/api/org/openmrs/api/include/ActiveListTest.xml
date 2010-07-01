@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+  <active_list_type active_list_type_id="1" name="Allergy" description="Dude" date_created="2010-05-25 12:00:00" creator="1" retired="0" uuid="1234567890"/>
+  <active_list_type active_list_type_id="2" name="Problem" description="Massive" date_created="2010-05-25 12:00:00" creator="1" retired="0" uuid="0123456789"/>
+  <active_list active_list_id="1" voided="0" active_list_type_id="1" concept_id="18" person_id="2" creator="1" date_created="2010-05-25 12:00:00" start_date="2010-05-25 12:00:00"/>
+  <active_list active_list_id="2" voided="0" active_list_type_id="2" concept_id="18" person_id="2" creator="1" date_created="2010-05-25 12:00:00" start_date="2010-05-25 12:00:00"/>
+  <active_list_allergy active_list_id="1" allergy_type="POLLEN" severity="MILD"/>
+  <active_list_problem active_list_id="2" sort_weight="1"/>
+</dataset>

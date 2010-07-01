@@ -48,6 +48,14 @@
 			<include method="addIdentifier" />
 			<include method="exitPatientFromCare" />
 			<include method="changeHealthCenter" />
+			<include method="createAllergy"/>
+			<include method="saveAllergy"/>
+			<include method="removeAllergy"/>
+			<include method="voidAllergy"/>
+			<include method="createProblem"/>
+			<include method="saveProblem"/>
+			<include method="removeProblem"/>
+			<include method="voidProblem"/>
 		</create>
 		
 		<create creator="new" javascript="DWRPersonService">
@@ -239,6 +247,15 @@
 			DWRObsService.createObs(Integer patientId, Integer encounterId, Integer conceptId, String valueText, Date obsDate);
 			DWRMessageService.sendFeedback(String sender, String subject, String content);
 			DWRMessageService.sendMessage( String recipients, String sender, String subject, String content );
+			DWRMessageService.sendMessage(String recipients, String sender, String subject, String content);
+			DWRPatientService.createAllergy(Integer patientId, Integer allergenId, String type, String startDate, String severity, Integer reactionId);
+			DWRPatientService.saveAllergy(Integer activeListId, Integer allergenId, String type, String startDate, String severity, Integer reactionId);
+			DWRPatientService.removeAllergy(Integer activeListId, String reason);
+			DWRPatientService.voidAllergy(Integer activeListId, String reason);
+			DWRPatientService.createProblem(Integer patientId, Integer problemId, String status, String startDate, String comments);
+			DWRPatientService.saveProblem(Integer activeListId, Integer problemId, String status, String startDate, String comments);
+			DWRPatientService.removeProblem(Integer activeListId, String reason, String endDate);
+			DWRPatientService.voidProblem(Integer activeListId, String reason);
 		]]>
 	</signatures>
   	

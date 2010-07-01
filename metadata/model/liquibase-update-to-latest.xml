@@ -3355,4 +3355,176 @@
 		<delete tableName="privilege"><where>privilege='Edit Concept Proposal'</where></delete>
 	</changeSet>
 	
+    
+	<changeSet id="20100525-818-1" author="syhaas">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="active_list_type"/>
+			</not>
+		</preConditions>
+		<comment>Create active list type table.</comment>
+		<createTable tableName="active_list_type">
+			<column name="active_list_type_id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+			<column name="name" type="varchar(50)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="description" type="varchar(255)"/>
+			<column name="creator" type="int(11)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_created" type="datetime">
+				<constraints nullable="false"/>
+			</column>
+			<column name="retired" type="smallint" defaultValueNumeric="0">
+				<constraints nullable="false"/>
+			</column>
+			<column name="retired_by" type="int(11)"/>
+			<column name="date_retired" type="datetime"/>
+			<column name="retire_reason" type="varchar(255)"/>
+			<column name="uuid" type="char(38)">
+				<constraints nullable="false"/>
+			</column>
+		</createTable>
+		<addForeignKeyConstraint constraintName="user_who_retired_active_list_type"
+			baseTableName="active_list_type" baseColumnNames="retired_by"
+			referencedTableName="users" referencedColumnNames="user_id" />
+		<addForeignKeyConstraint constraintName="user_who_created_active_list_type"
+			baseTableName="active_list_type" baseColumnNames="creator"
+			referencedTableName="users" referencedColumnNames="user_id" />
+	</changeSet>
+	
+	<changeSet id="20100525-818-2" author="syhaas">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="active_list"/>
+			</not>
+		</preConditions>
+		<comment>Create active list table</comment>
+		<createTable tableName="active_list">
+			<column name="active_list_id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+			<column name="active_list_type_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="person_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="concept_id" type="int">
+				<constraints nullable="false"/>
+			</column>
+			<column name="start_obs_id" type="int"/>
+			<column name="stop_obs_id" type="int"/>
+			<column name="start_date" type="datetime">
+				<constraints nullable="false"/>
+			</column>
+			<column name="end_date" type="datetime"/>
+			<column name="comments" type="varchar(255)"/>
+			<column name="creator" type="int(11)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="date_created" type="datetime">
+				<constraints nullable="false"/>
+			</column>
+			<column name="voided" type="smallint" defaultValueNumeric="0">
+				<constraints nullable="false"/>
+			</column>
+			<column name="voided_by" type="int(11)"/>
+			<column name="date_voided" type="datetime"/>
+			<column name="void_reason" type="varchar(255)"/>
+			<column name="uuid" type="char(38)">
+				<constraints nullable="false"/>
+			</column>
+		</createTable>
+		<addForeignKeyConstraint constraintName="user_who_voided_active_list"
+			baseTableName="active_list" baseColumnNames="voided_by"
+			referencedTableName="users" referencedColumnNames="user_id" />
+		<addForeignKeyConstraint constraintName="user_who_created_active_list"
+			baseTableName="active_list" baseColumnNames="creator"
+			referencedTableName="users" referencedColumnNames="user_id" />
+		<addForeignKeyConstraint constraintName="active_list_type_of_active_list"
+			baseTableName="active_list" baseColumnNames="active_list_type_id"
+			referencedTableName="active_list_type" referencedColumnNames="active_list_type_id" />
+		<addForeignKeyConstraint constraintName="person_of_active_list"
+			baseTableName="active_list" baseColumnNames="person_id"
+			referencedTableName="person" referencedColumnNames="person_id" />
+		<addForeignKeyConstraint constraintName="concept_active_list"
+			baseTableName="active_list" baseColumnNames="concept_id"
+			referencedTableName="concept" referencedColumnNames="concept_id" />
+		<addForeignKeyConstraint constraintName="start_obs_active_list"
+			baseTableName="active_list" baseColumnNames="start_obs_id"
+			referencedTableName="obs" referencedColumnNames="obs_id" />
+		<addForeignKeyConstraint constraintName="stop_obs_active_list"
+			baseTableName="active_list" baseColumnNames="stop_obs_id"
+			referencedTableName="obs" referencedColumnNames="obs_id" />
+	</changeSet>
+	
+	<changeSet id="20100525-818-3" author="syhaas">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="active_list_allergy"/>
+			</not>
+		</preConditions>
+		<comment>Create allergen table</comment>
+		<createTable tableName="active_list_allergy">
+			<column name="active_list_id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+			<column name="allergy_type" type="varchar(50)"/>
+			<column name="reaction_concept_id" type="int"/>
+			<column name="severity" type="varchar(50)"/>
+		</createTable>
+		<addForeignKeyConstraint constraintName="reaction_allergy"
+			baseTableName="active_list_allergy" baseColumnNames="reaction_concept_id"
+			referencedTableName="concept" referencedColumnNames="concept_id" />
+	</changeSet>
+	
+	<changeSet id="20100525-818-4" author="syhaas">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="active_list_problem"/>
+			</not>
+		</preConditions>
+		<comment>Create problem table</comment>
+		<createTable tableName="active_list_problem">
+			<column name="active_list_id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+			<column name="status" type="varchar(50)"/>
+			<column name="sort_weight" type="double"/>
+		</createTable>
+	</changeSet>
+	
+	<changeSet id="20100525-818-5" author="syhaas">
+		<preConditions onFail="MARK_RAN">
+			<sqlCheck expectedResult="0">
+				SELECT count(*) FROM active_list_type
+			</sqlCheck>
+		</preConditions>
+		<comment>Inserting default active list types</comment>
+		<insert tableName="active_list_type">
+			<column name="active_list_type_id" valueNumeric="1" />
+			<column name="name" value="Allergy" />
+			<column name="description" value="An Allergy the Patient may have" />
+			<column name="creator" valueNumeric="1" />
+			<column name="date_created" valueDate="2010-05-28" />
+			<column name="retired" valueNumeric="0" />
+			<column name="date_retired" />
+			<column name="retire_reason" />
+			<column name="uuid" value="96f4f603-6a99-11df-a648-37a07f9c90fb" />
+		</insert>
+		<insert tableName="active_list_type">
+			<column name="active_list_type_id" valueNumeric="2" />
+			<column name="name" value="Problem" />
+			<column name="description" value="A Problem the Patient may have" />
+			<column name="creator" valueNumeric="1" />
+			<column name="date_created" valueDate="2010-05-28" />
+			<column name="retired" valueNumeric="0" />
+			<column name="date_retired" />
+			<column name="retire_reason" />
+			<column name="uuid" value="a0c7422b-6a99-11df-a648-37a07f9c90fb" />
+		</insert>
+	</changeSet>
 </databaseChangeLog>

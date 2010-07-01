@@ -83,6 +83,7 @@
         <property name="hl7Service"><ref bean="hL7Service"/></property>
         <property name="ardenService"><ref bean="ardenService"/></property>
         <property name="messageSourceService"><ref bean="messageSourceService"/></property>
+        <property name="activeListService"><ref bean="activeListService"/></property>
 	</bean>	
 	
 	<bean id="context" class="org.openmrs.api.context.Context">
@@ -162,6 +163,9 @@
 	<bean id="hL7DAO" class="org.openmrs.hl7.db.hibernate.HibernateHL7DAO">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
 	</bean>
+	<bean id="activeListDAO" class="org.openmrs.api.db.hibernate.HibernateActiveListDAO">
+		<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
+	</bean>
 
 	<!--  **************************  SCHEDULER SERVICE  *************************  -->
 	<!-- 
@@ -228,6 +232,9 @@
 	</bean>
 	<bean id="patientSetServiceTarget" class="org.openmrs.api.impl.PatientSetServiceImpl">
 		<property name="patientSetDAO"><ref bean="patientSetDAO"/></property>	
+	</bean>
+	<bean id="activeListServiceTarget" class="org.openmrs.api.impl.ActiveListServiceImpl">
+		<property name="activeListDAO"><ref bean="activeListDAO"/></property>	
 	</bean>
 	
 	
@@ -452,8 +459,6 @@
 		</property>
 		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
 	</bean>
-	
-	
 	<bean id="schedulerService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 		<property name="transactionManager"><ref local="transactionManager"/></property>
 		<property name="target"><ref local="schedulerServiceTarget"/></property>
@@ -520,10 +525,17 @@
 		</property>
 		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
 	</bean>
-	
 	<bean id="messageSourceService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 		<property name="transactionManager"><ref local="transactionManager"/></property>
 		<property name="target"><ref local="messageSourceServiceTarget"/></property>
+		<property name="preInterceptors">
+			<ref local="serviceInterceptors" />
+		</property>
+		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
+	</bean>
+	<bean id="activeListService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+		<property name="transactionManager"><ref local="transactionManager"/></property>
+		<property name="target"><ref local="activeListServiceTarget"/></property>
 		<property name="preInterceptors">
 			<ref local="serviceInterceptors" />
 		</property>

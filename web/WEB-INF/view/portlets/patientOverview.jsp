@@ -179,6 +179,22 @@
 	<p>
 </c:if>
 
+<openmrs:hasPrivilege privilege="View Allergies">
+<div id="patientActiveListsAllergyBoxHeader" class="boxHeader${model.patientVariation}"><spring:message code="ActiveLists.allergy.title" /></div>
+<div id="patientActiveListsAllergyBox" class="box${model.patientVariation}">
+	<openmrs:portlet url="activeListAllergy" patientId="${patient.patientId}" parameters="type=allergy"/>
+</div>
+<br/>
+</openmrs:hasPrivilege>
+
+<openmrs:hasPrivilege privilege="View Problems">
+<div id="patientActiveListsProblemBoxHeader" class="boxHeader${model.patientVariation}"><spring:message code="ActiveLists.problem.title" /></div>
+<div id="patientActiveListsProblemBox" class="box${model.patientVariation}">
+	<openmrs:portlet url="activeListProblem" patientId="${patient.patientId}" parameters="type=problem"/>
+</div>
+<br/>
+</openmrs:hasPrivilege>
+
 <openmrs:hasPrivilege privilege="View Patient Programs">
 	<div id="patientProgramsBoxHeader" class="boxHeader${model.patientVariation}"><spring:message code="Program.title"/></div>
 	<div id="patientProgramsBox" class="box${model.patientVariation}">
@@ -193,7 +209,6 @@
 	<div id="patientMostRecentObsBox" class="box${model.patientVariation}">
 		<openmrs:portlet url="customMostRecentObs" size="normal" patientId="${patient.patientId}" parameters="conceptIds=${conceptIdsToUse}|allowNew=true" />
 	</div>
-	
 	<br/>
 </c:if>
 

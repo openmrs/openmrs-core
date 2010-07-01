@@ -467,6 +467,22 @@ public final class OpenmrsConstants {
 	
 	public static final String PRIV_SQL_LEVEL_ACCESS = "SQL Level Access";
 	
+	public static final String PRIV_VIEW_PROBLEMS = "View Problems";
+	
+	public static final String PRIV_ADD_PROBLEMS = "Add Problems";
+	
+	public static final String PRIV_EDIT_PROBLEMS = "Edit Problems";
+	
+	public static final String PRIV_DELETE_PROBLEMS = "Remove Problems";
+
+	public static final String PRIV_VIEW_ALLERGIES = "View Allergies";
+	
+	public static final String PRIV_ADD_ALLERGIES = "Add Allergies";
+	
+	public static final String PRIV_EDIT_ALLERGIES = "Edit Allergies";
+	
+	public static final String PRIV_DELETE_ALLERGIES = "Remove Allergies";
+
 	/**
 	 * Cached list of core privileges
 	 */
@@ -627,6 +643,15 @@ public final class OpenmrsConstants {
 			
 			CORE_PRIVILEGES.put(PRIV_VIEW_DATABASE_CHANGES, "Able to view database changes from the admin screen");
 			CORE_PRIVILEGES.put(PRIV_MANAGE_IMPLEMENTATION_ID, "Able to view/add/edit the implementation id for the system");
+			
+			CORE_PRIVILEGES.put(PRIV_ADD_ALLERGIES, "Add allergies");
+			CORE_PRIVILEGES.put(PRIV_EDIT_ALLERGIES, "Able to edit allergies");
+			CORE_PRIVILEGES.put(PRIV_DELETE_ALLERGIES, "Remove allergies");
+			CORE_PRIVILEGES.put(PRIV_ADD_PROBLEMS, "Add problems");
+			CORE_PRIVILEGES.put(PRIV_EDIT_PROBLEMS, "Able to edit problems");
+			CORE_PRIVILEGES.put(PRIV_DELETE_PROBLEMS, "Remove problems");
+			CORE_PRIVILEGES.put(PRIV_VIEW_ALLERGIES, "Able to view allergies");
+			CORE_PRIVILEGES.put(PRIV_VIEW_PROBLEMS, "Able to view problems");
 		}
 		
 		// always add the module core privileges back on
