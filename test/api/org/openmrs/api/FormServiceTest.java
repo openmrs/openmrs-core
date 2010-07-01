@@ -43,10 +43,11 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	
 	protected static final String INITIAL_FIELDS_XML = "org/openmrs/api/include/FormServiceTest-initialFieldTypes.xml";
 	
+	protected static final String FORM_FIELDS_XML = "org/openmrs/api/include/FormServiceTest-formFields.xml";
+	
 	/**
-	 * Creates then updates a form
+	 * Creates then updates a form FIXME Break this test case into separate tests
 	 * 
-	 * FIXME Break this test case into separate tests
 	 * @throws Exception
 	 */
 	@Test
@@ -67,7 +68,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		
 		formService.saveForm(form1);
 		
-		//testing get form 
+		//testing get form
 		
 		Form form2 = formService.getForm(form1.getFormId());
 		
@@ -223,7 +224,7 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * Make sure that multiple forms are returned if a field is on a form more than once
 	 * 
-	 * @see {@link FormService#getForms(String, Boolean, java.util.Collection, Boolean, java.util.Collection, java.util.Collection, java.util.Collection) 
+	 * @see {@link FormService#getForms(String, Boolean, java.util.Collection, Boolean, java.util.Collection, java.util.Collection, java.util.Collection)
 	 */
 	@Test
 	@Verifies(value = "should return duplicate form when given fields included in form multiple times", method = "getForms(String,Boolean,Collection,Boolean,Collection,Collection,Collection)")
@@ -442,16 +443,34 @@ public class FormServiceTest extends BaseContextSensitiveTest {
 		// the uuid should be set by this method so that the field can be saved successfully
 		Assert.assertNotNull(field.getUuid());
 	}
-
+	
 	/**
-     * @see {@link FormService#getFormsContainingConcept(Concept)}
-     * 
-     */
-    @Test
-    @Verifies(value = "should get all forms for concept", method = "getFormsContainingConcept(Concept)")
-    public void getFormsContainingConcept_shouldGetAllFormsForConcept() throws Exception {
-	    Concept concept = Context.getConceptService().getConcept(3);
-	    
-	    Assert.assertEquals(1, Context.getFormService().getFormsContainingConcept(concept).size());
-    }
+	 * @see {@link FormService#getFormsContainingConcept(Concept)}
+	 */
+	@Test
+	@Verifies(value = "should get all forms for concept", method = "getFormsContainingConcept(Concept)")
+	public void getFormsContainingConcept_shouldGetAllFormsForConcept() throws Exception {
+		Concept concept = Context.getConceptService().getConcept(3);
+		
+		Assert.assertEquals(1, Context.getFormService().getFormsContainingConcept(concept).size());
+	}
+	
+	/**
+	 * @see {@link FormService#getFormsContainingConcept(Concept)}
+	 */
+	@Test
+	@Verifies(value = "should merge fields with similar attributes", method = "mergeDuplicateFields()")
+	public void mergeDuplicateFields_shouldMergeDuplicateFieldsInFormFieldsAndThenPurgeTheDuplicateFields() throws Exception {
+		
+		executeDataSet(INITIAL_FIELDS_XML);
+		executeDataSet(FORM_FIELDS_XML);
+		
+		Context.getFormService().mergeDuplicateFields();
+		
+		// duplicateField should no longer be referenced
+		Assert.assertNull(Context.getFormService().getFieldByUuid("b1843148-da2f-4349-c9c7-1164b98d91dd"));
+		
+		// duplicateField should be purged
+		Assert.assertEquals(2, Context.getFormService().getAllFields().size());
+	}
 }

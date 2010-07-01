@@ -30,6 +30,13 @@
 			</a>
 		</li>
 	</openmrs:hasPrivilege>
+	<openmrs:hasPrivilege privilege="Manage Forms">
+		<li <c:if test='<%= request.getRequestURI().contains("auditField") %>'>class="active"</c:if>>
+			<a href="${pageContext.request.contextPath}/admin/forms/auditField.form">
+				<spring:message code="FormField.auditButton"/>
+			</a>
+		</li>
+	</openmrs:hasPrivilege>
 	<openmrs:extensionPoint pointId="org.openmrs.admin.forms.localHeader" type="html">
 			<c:forEach items="${extension.links}" var="link">
 				<li <c:if test="${fn:endsWith(pageContext.request.requestURI, link.key)}">class="active"</c:if> >

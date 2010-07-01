@@ -464,5 +464,13 @@ public class HibernateFormDAO implements FormDAO {
 		sessionFactory.getCurrentSession().saveOrUpdate(fieldType);
 		return fieldType;
 	}
+
+	/**
+     * @see org.openmrs.api.db.FormDAO#getFormFieldByField(org.openmrs.Field)
+     */
+    @Override
+    public List<FormField> getFormFieldsByField(Field field) {
+    	return sessionFactory.getCurrentSession().createQuery("from FormField f where f.field = :field").setEntity("field", field).list();
+    }
 	
 }
