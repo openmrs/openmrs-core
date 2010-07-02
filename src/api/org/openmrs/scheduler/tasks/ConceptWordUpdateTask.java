@@ -32,99 +32,64 @@ public class ConceptWordUpdateTask extends AbstractTask {
 	
 	private Log log = LogFactory.getLog(ConceptWordUpdateTask.class);
 	
-	private ConceptWordUpdateThread runner;
-	
-	private Thread thread;
-	
-	/**
-	 * No-arg constructor to allow instantiation by {@link Class#newInstance()}.
-	 */
-	public ConceptWordUpdateTask() {
-		runner = new ConceptWordUpdateThread();
-		thread = new Thread(runner);
-	}
-	
+	private boolean shouldExecute = true;
+
 	/**
 	 * @see org.openmrs.scheduler.tasks.AbstractTask#execute()
 	 */
-	public void execute() {
-		thread.start();
+	@Override
+    public void execute() {
+		if (!isExecuting) {
+			isExecuting = true;
+			shouldExecute = true;
+			
+			if (log.isDebugEnabled())
+				log.debug("Updating concept words ... ");
+			try {
+				ConceptService cs = Context.getConceptService();
+				Iterator<Concept> conceptIterator = cs.conceptIterator();
+				while (conceptIterator.hasNext() && shouldExecute) {
+					Concept currentConcept = conceptIterator.next();
+					if (log.isDebugEnabled())
+						log.debug("updateConceptWords() : current concept: " + currentConcept);
+					cs.updateConceptWord(currentConcept);
+					
+					// do this to keep memory consumption low at the expense of speed
+					// we can't clear the whole session because the conceptIterator has
+					// already loaded and holds on to the next concept
+					Context.evictFromSession(currentConcept);
+				}
+			}
+			catch (APIException e) {
+				log.error("ConceptWordUpdateTask failed, because:", e);
+				throw e;
+			}
+			finally {
+				isExecuting = false;
+				shouldExecute = false;
+				SchedulerService ss = Context.getSchedulerService();
+				TaskDefinition conceptWordUpdateTaskDef = ss.getTaskByName(ConceptServiceImpl.CONCEPT_WORD_UPDATE_TASK_NAME);
+				conceptWordUpdateTaskDef.setStarted(false);
+				ss.saveTask(conceptWordUpdateTaskDef);
+				log.debug("Task set to stopped.");
+			}
+		}
 	}
 	
 	/**
 	 * @see org.openmrs.scheduler.Task#initialize(org.openmrs.scheduler.TaskDefinition)
 	 */
-	public void initialize(TaskDefinition config) {
-		;
-	}
-	
-	/**
-	 * @see org.openmrs.scheduler.Task#isExecuting()
-	 */
-	public boolean isExecuting() {
-		return thread.isAlive();
+	@Override
+    public void initialize(TaskDefinition config) {
+		// do nothing
 	}
 	
 	/**
 	 * @see org.openmrs.scheduler.Task#shutdown()
 	 */
-	public void shutdown() {
-		runner.shouldExecute = false;
+	@Override
+    public void shutdown() {
+		shouldExecute = false;
 	}
 	
-	private class ConceptWordUpdateThread implements Runnable {
-		
-		public boolean shouldExecute = true;
-		
-		public ConceptWordUpdateThread() {
-			isExecuting = false;
-		}
-		
-		/**
-		 * @see java.lang.Runnable#run()
-		 */
-		public void run() {
-			if (!isExecuting) {
-				isExecuting = true;
-				shouldExecute = true;
-				
-				Context.openSession();
-				if (log.isDebugEnabled())
-					log.debug("Updating concept words ... ");
-				try {
-					if (Context.isAuthenticated() == false)
-						authenticate();
-					ConceptService cs = Context.getConceptService();
-					Iterator<Concept> conceptIterator = cs.conceptIterator();
-					while (conceptIterator.hasNext() && shouldExecute) {
-						Concept currentConcept = conceptIterator.next();
-						if (log.isDebugEnabled())
-							log.debug("updateConceptWords() : current concept: " + currentConcept);
-						cs.updateConceptWord(currentConcept);
-						
-						// do this to keep memory consumption low at the expense of speed
-						// we can't clear the whole session because the conceptIterator has
-						// already loaded and holds on to the next concept
-						Context.evictFromSession(currentConcept); 
-					}
-				}
-				catch (APIException e) {
-					log.error("ConceptWordUpdateTask failed, because:", e);
-					throw e;
-				}
-				finally {
-					isExecuting = false;
-					shouldExecute = false;
-					SchedulerService ss = Context.getSchedulerService();
-					TaskDefinition conceptWordUpdateTaskDef = ss
-					        .getTaskByName(ConceptServiceImpl.CONCEPT_WORD_UPDATE_TASK_NAME);
-					conceptWordUpdateTaskDef.setStarted(false);
-					ss.saveTask(conceptWordUpdateTaskDef);
-					Context.closeSession();
-					log.debug("Task set to stopped.");
-				}
-			}
-		}
-		
-	}
 }

@@ -43,6 +43,7 @@ import org.openmrs.GlobalProperty;
 import org.openmrs.Privilege;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.context.Daemon;
 import org.openmrs.module.Extension.MEDIA_TYPE;
 import org.openmrs.util.DatabaseUpdateException;
 import org.openmrs.util.DatabaseUpdater;
@@ -427,11 +428,31 @@ public class ModuleFactory {
 	}
 	
 	/**
-	 * Runs through extensionPoints and then calls mod.BaseModuleActivator.willStart()
+	 * Runs through extensionPoints and then calls {@link BaseModuleActivator#willStart()} on the
+	 * Module's activator. This method is run in a new thread and is authenticated as the Daemon
+	 * user
+	 * 
+	 * @param module Module to start
+	 * @throws ModuleException if the module throws any kind of error at startup or in an activator
+	 * @see #startModuleInternal(Module)
+	 * @see Daemon#startModule(Module)
+	 */
+	public static Module startModule(Module module) throws ModuleException {
+		return Daemon.startModule(module);
+	}
+	
+	/**
+	 * This method should not be called directly.<br/>
+	 * <br/>
+	 * The {@link #startModule(Module)} (and hence {@link Daemon#startModule(Module)}) calls this
+	 * method in a new Thread and is authenticated as the {@link Daemon} user<br/>
+	 * <br/>
+	 * Runs through extensionPoints and then calls {@link BaseModuleActivator#willStart()} on the
+	 * Module's activator.
 	 * 
 	 * @param module Module to start
 	 */
-	public static Module startModule(Module module) throws ModuleException {
+	public static Module startModuleInternal(Module module) throws ModuleException {
 		
 		if (module != null) {
 			
@@ -1214,7 +1235,6 @@ public class ModuleFactory {
 	 */
 	private static void saveGlobalProperty(String key, String value, String desc) {
 		try {
-			Context.addProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_GLOBAL_PROPERTIES);
 			AdministrationService as = Context.getAdministrationService();
 			GlobalProperty gp = as.getGlobalPropertyObject(key);
 			if (gp == null)
@@ -1226,9 +1246,6 @@ public class ModuleFactory {
 		}
 		catch (Throwable t) {
 			log.warn("Unable to save the global property", t);
-		}
-		finally {
-			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_GLOBAL_PROPERTIES);
 		}
 	}
 	

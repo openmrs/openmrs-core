@@ -42,6 +42,8 @@ import org.openmrs.PersonAttribute;
 import org.openmrs.PersonName;
 import org.openmrs.Relationship;
 import org.openmrs.User;
+import org.openmrs.activelist.Allergy;
+import org.openmrs.activelist.Problem;
 import org.openmrs.api.APIException;
 import org.openmrs.api.BlankIdentifierException;
 import org.openmrs.api.DuplicateIdentifierException;
@@ -1269,5 +1271,87 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		
 		dao.deletePatientIdentifier(patientIdentifier);
 		
+	}
+	
+	/**
+	 * @see org.openmrs.api.PatientService#getProblems(org.openmrs.api.Person)
+	 */
+	public List<Problem> getProblems(Person p) throws APIException {
+		List<Problem> problems = Context.getActiveListService().getActiveListItems(Problem.class, p,
+		    Problem.ACTIVE_LIST_TYPE);
+		Collections.sort(problems);
+		return problems;
+	}
+	
+	/**
+	 * @see org.openmrs.api.PatientService#getProblem(java.lang.Integer)
+	 */
+	public Problem getProblem(Integer problemListId) throws APIException {
+		return Context.getActiveListService().getActiveListItem(Problem.class, problemListId);
+	}
+	
+	/**
+	 * @see org.openmrs.api.PatientService#saveProblem(org.openmrs.activelist.Problem)
+	 */
+	public void saveProblem(Problem problem) throws APIException {
+		//if the problem is new and doesnt have a sort weight already, set it
+		if ((problem.getId() == null) && (problem.getSortWeight() == null)) {
+			problem.setSortWeight((double) (getProblems(problem.getPerson()).size() + 1));
+		}
+		Context.getActiveListService().saveActiveListItem(problem);
+	}
+	
+	/**
+	 * @see org.openmrs.api.PatientService#removeProblem(org.openmrs.activelist.Problem,
+	 *      java.lang.String)
+	 */
+	public void removeProblem(Problem problem, String reason) throws APIException {
+		problem.setComments(reason);
+		Context.getActiveListService().removeActiveListItem(problem, null);
+	}
+	
+	/**
+	 * @see org.openmrs.api.PatientService#voidProblem(org.openmrs.activelist.Problem,
+	 *      java.lang.String)
+	 */
+	public void voidProblem(Problem problem, String reason) throws APIException {
+		Context.getActiveListService().voidActiveListItem(problem, reason);
+	}
+	
+	/**
+	 * @see org.openmrs.api.PatientService#getAllergies(org.openmrs.api.Person)
+	 */
+	public List<Allergy> getAllergies(Person p) throws APIException {
+		return Context.getActiveListService().getActiveListItems(Allergy.class, p, Allergy.ACTIVE_LIST_TYPE);
+	}
+	
+	/**
+	 * @see org.openmrs.api.PatientService#getAllergy(java.lang.Integer)
+	 */
+	public Allergy getAllergy(Integer allergyListId) throws APIException {
+		return Context.getActiveListService().getActiveListItem(Allergy.class, allergyListId);
+	}
+	
+	/**
+	 * @see org.openmrs.api.PatientService#saveAllergy(org.openmrs.activelist.Allergy)
+	 */
+	public void saveAllergy(Allergy allergy) throws APIException {
+		Context.getActiveListService().saveActiveListItem(allergy);
+	}
+	
+	/**
+	 * @see org.openmrs.api.PatientService#removeAllergy(org.openmrs.activelist.Allergy,
+	 *      java.lang.String)
+	 */
+	public void removeAllergy(Allergy allergy, String reason) throws APIException {
+		Context.getActiveListService().removeActiveListItem(allergy, null);
+	}
+	
+	/**
+	 * @see org.openmrs.api.PatientService#voidAllergy(org.openmrs.activelist.Allergy,
+	 *      java.lang.String)
+	 */
+	public void voidAllergy(Allergy allergy, String reason) throws APIException {
+		Context.getActiveListService().voidActiveListItem(allergy, reason);
 	}
 }

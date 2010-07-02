@@ -2,6 +2,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+
 <%@ page import="org.openmrs.web.WebConstants" %>
 <%
 	pageContext.setAttribute("msg", session.getAttribute(WebConstants.OPENMRS_MSG_ATTR));
@@ -23,6 +24,7 @@
 		<script type="text/javascript">
 			/* variable used in js to know the context path */
 			var openmrsContextPath = '${pageContext.request.contextPath}';
+			var dwrLoadingMessage = '<spring:message code="general.loading" />';
 		</script>
 
 		<!--  Page Title : '${pageTitle}'
@@ -54,4 +56,5 @@
 			<c:if test="${err != null}">
 				<div id="openmrs_error"><spring:message code="${err}" text="${err}" arguments="${errArgs}"/></div>
 			</c:if>
+			
 

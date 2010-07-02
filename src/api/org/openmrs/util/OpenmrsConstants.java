@@ -81,7 +81,7 @@ public final class OpenmrsConstants {
 	 * @deprecated the database doesn't have just one main version now that we are using liquibase.
 	 */
 	@Deprecated
-    public static final String DATABASE_VERSION_EXPECTED = THIS_PACKAGE.getImplementationVersion();
+	public static final String DATABASE_VERSION_EXPECTED = THIS_PACKAGE.getImplementationVersion();
 	
 	public static String DATABASE_NAME = "openmrs";
 	
@@ -95,7 +95,7 @@ public final class OpenmrsConstants {
 	 * @deprecated the database doesn't have just one main version now that we are using liquibase.
 	 */
 	@Deprecated
-    public static String DATABASE_VERSION = null;
+	public static String DATABASE_VERSION = null;
 	
 	/**
 	 * Set true from runtime configuration to obscure patients for system demonstrations
@@ -467,6 +467,22 @@ public final class OpenmrsConstants {
 	
 	public static final String PRIV_SQL_LEVEL_ACCESS = "SQL Level Access";
 	
+	public static final String PRIV_VIEW_PROBLEMS = "View Problems";
+	
+	public static final String PRIV_ADD_PROBLEMS = "Add Problems";
+	
+	public static final String PRIV_EDIT_PROBLEMS = "Edit Problems";
+	
+	public static final String PRIV_DELETE_PROBLEMS = "Remove Problems";
+
+	public static final String PRIV_VIEW_ALLERGIES = "View Allergies";
+	
+	public static final String PRIV_ADD_ALLERGIES = "Add Allergies";
+	
+	public static final String PRIV_EDIT_ALLERGIES = "Edit Allergies";
+	
+	public static final String PRIV_DELETE_ALLERGIES = "Remove Allergies";
+
 	/**
 	 * Cached list of core privileges
 	 */
@@ -627,6 +643,15 @@ public final class OpenmrsConstants {
 			
 			CORE_PRIVILEGES.put(PRIV_VIEW_DATABASE_CHANGES, "Able to view database changes from the admin screen");
 			CORE_PRIVILEGES.put(PRIV_MANAGE_IMPLEMENTATION_ID, "Able to view/add/edit the implementation id for the system");
+			
+			CORE_PRIVILEGES.put(PRIV_ADD_ALLERGIES, "Add allergies");
+			CORE_PRIVILEGES.put(PRIV_EDIT_ALLERGIES, "Able to edit allergies");
+			CORE_PRIVILEGES.put(PRIV_DELETE_ALLERGIES, "Remove allergies");
+			CORE_PRIVILEGES.put(PRIV_ADD_PROBLEMS, "Add problems");
+			CORE_PRIVILEGES.put(PRIV_EDIT_PROBLEMS, "Able to edit problems");
+			CORE_PRIVILEGES.put(PRIV_DELETE_PROBLEMS, "Remove problems");
+			CORE_PRIVILEGES.put(PRIV_VIEW_ALLERGIES, "Able to view allergies");
+			CORE_PRIVILEGES.put(PRIV_VIEW_PROBLEMS, "Able to view problems");
 		}
 		
 		// always add the module core privileges back on
@@ -764,7 +789,7 @@ public final class OpenmrsConstants {
 	public static final String GLOBAL_PROPERTY_FALSE_CONCEPT = "concept.false";
 	
 	public static final String GLOBAL_PROPERTY_LOCATION_WIDGET_TYPE = "location.field.style";
-
+	
 	/**
 	 * Global property name that allows specification of whether user passwords must contain both
 	 * upper and lower case characters. Allowable values are "true", "false", and null
@@ -884,7 +909,7 @@ public final class OpenmrsConstants {
 		        "Color of the 'critical' section of numeric graphs on the patient dashboard."));
 		
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_LOCATION_WIDGET_TYPE, "default",
-				"Type of widget to use for location fields"));
+		        "Type of widget to use for location fields"));
 		
 		String standardRegimens = "<list>" + "  <regimenSuggestion>" + "    <drugComponents>" + "      <drugSuggestion>"
 		        + "        <drugId>2</drugId>" + "        <dose>1</dose>" + "        <units>tab(s)</units>"
@@ -1353,5 +1378,13 @@ public final class OpenmrsConstants {
 	public static final String RAW_VIEW = "RAW_VIEW";
 	
 	public static final String TEXT_VIEW = "TEXT_VIEW";
+	
+	public static final String JIRA_CREATE_PATCH_URL = "http://tickets.openmrs.org/secure/CreateIssueDetails!init.jspa";
+	
+	public static final String JIRA_SIGN_UP = "http://tickets.openmrs.org/secure/Signup!default.jspa";
+	
+	public static final String JIRA_OPENMRS_TRUNK_PID = "10000";
+	
+	public static final String JIRA_BUG = "1";
 	
 }

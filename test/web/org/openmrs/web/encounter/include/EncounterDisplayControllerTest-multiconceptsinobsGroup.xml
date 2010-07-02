@@ -4,10 +4,8 @@
   <concept concept_id="1726" retired="false" datatype_id="4" class_id="7" is_set="true" creator="1" date_created="2007-06-05 17:38:53.0" version="0.1" changed_by="1" date_changed="2007-06-05 17:38:53.0" uuid="b1e42f5e-24f2-4251-b733-71994d26e097"/>
   <concept_description concept_description_id="1" concept_id="1553" description="General question:  &quot;Number of attempts&quot;" locale="en" creator="1" date_created="2007-05-09 14:38:25.0" uuid="bfb7c61d-f6e3-45d2-a04d-3b5f6ccf6297"/>
   <concept_description concept_description_id="2" concept_id="1726" description="Complex question that follow-up action was taken to track patient." locale="en" creator="1" date_created="2007-06-05 17:38:53.0" uuid="6d1b002c-e188-47b7-861e-97c60e50cee0"/>
-  <concept_name concept_id="1553" name="NUMBER OF ATTEMPTS" locale="en" creator="1" date_created="2007-05-09 14:38:25.0" concept_name_id="7" voided="false" uuid="fc70d996-cf70-450e-ad61-fa0dbbd9c00e"/>
-  <concept_name concept_id="1726" name="FOLLOW-UP ACTION" locale="en" creator="1" date_created="2007-06-05 17:38:53.0" concept_name_id="12" voided="false" uuid="f6260151-1743-4307-b80a-5120a65e2f1e"/>
-  <concept_name_tag_map concept_name_id="7" concept_name_tag_id="4"/>
-  <concept_name_tag_map concept_name_id="12" concept_name_tag_id="4"/>
+  <concept_name concept_id="1553" name="NUMBER OF ATTEMPTS" locale="en" creator="1" date_created="2007-05-09 14:38:25.0" concept_name_id="7" voided="false" uuid="fc70d996-cf70-450e-ad61-fa0dbbd9c00e" concept_name_type="FULLY_SPECIFIED" locale_preferred="0"/>
+  <concept_name concept_id="1726" name="FOLLOW-UP ACTION" locale="en" creator="1" date_created="2007-06-05 17:38:53.0" concept_name_id="12" voided="false" uuid="f6260151-1743-4307-b80a-5120a65e2f1e" concept_name_type="FULLY_SPECIFIED" locale_preferred="0"/>
   <concept_set concept_set_id="12" concept_id="1553" concept_set="1726" sort_weight="1.0" creator="1" date_created="2007-06-05 17:38:53.0" uuid="c66e4b6d-1e6e-4c97-a544-b0f65d3508e2"/>
   <obs obs_id="17" person_id="7" concept_id="1553" encounter_id="5" obs_datetime="2008-08-01 00:00:00.0" location_id="1" obs_group_id="16" value_numeric="1.0" comments="" creator="1" date_created="2008-08-18 14:09:35.0" voided="false" uuid="40acd037-c8da-4023-8c23-24359d5d001e"/>
   <obs obs_id="18" person_id="7" concept_id="1553" encounter_id="5" obs_datetime="2008-08-01 00:00:00.0" location_id="1" obs_group_id="16" value_numeric="5.0" comments="" creator="1" date_created="2008-08-18 14:09:35.0" voided="false" uuid="29f3b5d5-332e-4f7e-a61e-3e4275f8f0a2"/>

@@ -15,10 +15,7 @@ package org.openmrs.scheduler.tasks;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.api.AdministrationService;
-import org.openmrs.api.context.Context;
-import org.openmrs.api.context.ContextAuthenticationException;
-import org.openmrs.scheduler.SchedulerConstants;
+import org.openmrs.api.context.Daemon;
 import org.openmrs.scheduler.Task;
 import org.openmrs.scheduler.TaskDefinition;
 
@@ -27,13 +24,13 @@ import org.openmrs.scheduler.TaskDefinition;
  */
 public abstract class AbstractTask implements Task {
 	
-	// Logger 
-	private Log log = LogFactory.getLog(AbstractTask.class);
+	// Logger
+	private static final Log log = LogFactory.getLog(AbstractTask.class);
 	
 	// Indicates whether the task is currently running
 	protected boolean isExecuting = false;
 	
-	// The task definition of the running task 
+	// The task definition of the running task
 	protected TaskDefinition taskDefinition;
 	
 	/**
@@ -48,6 +45,7 @@ public abstract class AbstractTask implements Task {
 	 * @param taskDefinition the task definition
 	 */
 	protected AbstractTask(TaskDefinition taskDefinition) {
+		log.debug("Initializing " + taskDefinition.getName());
 		initialize(taskDefinition);
 	}
 	
@@ -73,7 +71,7 @@ public abstract class AbstractTask implements Task {
 	/**
 	 * @see org.openmrs.scheduler.Task#getTaskDefinition()
 	 */
-	public TaskDefinition getTaskDefinition() { 
+	public TaskDefinition getTaskDefinition() {
 		return this.taskDefinition;
 	}
 	
@@ -99,18 +97,10 @@ public abstract class AbstractTask implements Task {
 	}
 	
 	/**
-	 * Authenticate the context so the task can call service layer.
+	 * @deprecated this method is not used anymore. All threads are run as the {@link Daemon} user
 	 */
+	@Deprecated
 	protected void authenticate() {
-		try {
-			AdministrationService adminService = Context.getAdministrationService();
-			Context.authenticate(adminService.getGlobalProperty(SchedulerConstants.SCHEDULER_USERNAME_PROPERTY),
-			    adminService.getGlobalProperty(SchedulerConstants.SCHEDULER_PASSWORD_PROPERTY));
-			
-		}
-		catch (ContextAuthenticationException e) {
-			log.error("Error authenticating user", e);
-		}
+		// do nothing
 	}
-	
 }

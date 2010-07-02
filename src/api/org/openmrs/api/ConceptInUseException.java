@@ -18,6 +18,7 @@ package org.openmrs.api;
  * 
  * @see ConceptService#checkIfConceptIsAttachedToAnObservation()
  * @see ConceptService#saveConcept(org.openmrs.Concept)
+ * @since Version 1.7
  */
 public class ConceptInUseException extends APIException {
 	

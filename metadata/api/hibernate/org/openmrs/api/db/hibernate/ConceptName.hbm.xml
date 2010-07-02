@@ -35,7 +35,15 @@
 			<key column="concept_name_id"/>
 			<many-to-many class="ConceptNameTag" column="concept_name_tag_id"/>
 		</set>
-
+		
+		<property name="conceptNameType" column="concept_name_type" length="50">
+			<type name="org.openmrs.util.HibernateEnumType">
+				<param name="enumClassName">org.openmrs.api.ConceptNameType</param>
+			</type>
+		</property>
+		
+		<property name="localePreferred" type="java.lang.Boolean" column="locale_preferred" 
+		          length="1" not-null="true"/>
 		<property name="uuid" type="java.lang.String" column="uuid" length="38" unique="true" />		
 	</class>
 	

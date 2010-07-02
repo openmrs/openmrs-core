@@ -13,6 +13,8 @@
  */
 package org.openmrs.scheduler;
 
+import org.openmrs.api.context.Daemon;
+
 public class SchedulerConstants {
 	
 	// Number of milliseconds per second (used for readability)
@@ -31,10 +33,18 @@ public class SchedulerConstants {
 	/** The default 'subject' for emails send by the schedule */
 	public final static String SCHEDULER_DEFAULT_SUBJECT = "OpenMRS Scheduler Error";
 	
-	/** Scheduler username property - Used to create authenticated context for tasks */
+	/**
+	 * @deprecated This is not needed anymore since tasks are run as the Daemon user. See
+	 *             {@link Daemon#executeScheduledTask(Task)}
+	 */
+	@Deprecated
 	public static String SCHEDULER_USERNAME_PROPERTY = "scheduler.username";
 	
-	/** Scheduler password property - Used to create authenticated context for tasks */
+	/**
+	 * @deprecated This is not needed anymore since tasks are run as the Daemon user. See
+	 *             {@link Daemon#executeScheduledTask(Task)}
+	 */
+	@Deprecated
 	public static String SCHEDULER_PASSWORD_PROPERTY = "scheduler.password";
 	
 	/** Scheduler admin email enable property - Tell us whether we can send mail or not */

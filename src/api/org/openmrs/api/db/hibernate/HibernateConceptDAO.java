@@ -528,7 +528,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		}
 		return (ConceptDatatype) criteria.uniqueResult();
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#saveConceptDatatype(org.openmrs.ConceptDatatype)
 	 */
@@ -1356,7 +1356,6 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getConceptSourceByName(java.lang.String)
 	 */
-	@SuppressWarnings("unchecked")
 	public ConceptSource getConceptSourceByName(String conceptSourceName) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ConceptSource.class, "source");
 		criteria.add(Expression.eq("source.name", conceptSourceName));
@@ -1375,4 +1374,12 @@ public class HibernateConceptDAO implements ConceptDAO {
 		return (ConceptDatatype) sql.uniqueResult();
 	}
 	
+	/**
+	 * @see org.openmrs.api.db.ConceptDAO#getSavedConceptName(org.openmrs.ConceptName)
+	 */
+	@Override
+	public ConceptName getSavedConceptName(ConceptName conceptName) {
+		sessionFactory.getCurrentSession().refresh(conceptName);
+		return conceptName;
+	}
 }

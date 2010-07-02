@@ -13,12 +13,12 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.HSQLDialect;
@@ -73,38 +73,39 @@ public class HibernateUtil {
 	}
 	
 	/**
+	 * @see HibernateUtil#escapeSqlWildcards(String, Connection)
+	 */
+	public static String escapeSqlWildcards(String oldString, SessionFactory sessionFactory) {
+		return escapeSqlWildcards(oldString, sessionFactory.getCurrentSession().connection());
+	}
+	
+	/**
 	 * Escapes all sql wildcards in the given string, returns the same string if it doesn't contain
 	 * any sql wildcards
 	 * 
 	 * @param oldString the string in which to escape the sql wildcards
+	 * @param connection The underlying database connection
 	 * @return the string with sql wildcards escaped if any found otherwise the original string is
 	 *         returned
 	 */
-	public static String escapeSqlWildcards(String oldString, SessionFactory sessionFactory) {
+	public static String escapeSqlWildcards(String oldString, Connection connection) {
 		
 		//replace all sql wildcards if any
 		if (!StringUtils.isBlank(oldString)) {
-			
 			String escapeCharacter = "";
+			
 			try {
 				//get the database specific escape character from the metadata
-				escapeCharacter = sessionFactory.getCurrentSession().connection().getMetaData().getSearchStringEscape();
-				
-			}
-			catch (HibernateException e) {
-				
-				log.warn("Error generated", e);
+				escapeCharacter = connection.getMetaData().getSearchStringEscape();
 			}
 			catch (SQLException e) {
-				
 				log.warn("Error generated", e);
 			}
-			//insert an escape character before each sql wildcard in the search phrase                  
-			return StringUtils.replaceEach(oldString, new String[] { "%", "_", "*" }, new String[] { escapeCharacter + "%",
-			        escapeCharacter + "_", escapeCharacter + "*" });
+			//insert an escape character before each sql wildcard in the search phrase
+			return StringUtils.replaceEach(oldString, new String[] { "%", "_", "*", "'" }, new String[] {
+			        escapeCharacter + "%", escapeCharacter + "_", escapeCharacter + "*", escapeCharacter + "'" });
 		} else
 			return oldString;
-		
 	}
 	
 }

@@ -287,5 +287,13 @@ public interface FormDAO {
 	 * @return the newly saved field type
 	 */
 	public FieldType saveFieldType(FieldType fieldType) throws DAOException;
+
+	/**
+     * Return a list of FormFields given a Field
+     * 
+     * @param field
+     * @return List of FormFields
+     */
+    public List<FormField> getFormFieldsByField(Field field);
 	
 }

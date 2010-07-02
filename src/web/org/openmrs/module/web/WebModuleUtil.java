@@ -92,9 +92,12 @@ public class WebModuleUtil {
 	 * Performs the webapp specific startup needs for modules Normal startup is done in
 	 * {@link ModuleFactory#startModule(Module)} If delayContextRefresh is true, the spring context
 	 * is not rerun. This will save a lot of time, but it also means that the calling method is
-	 * responsible for restarting the context if necessary. If delayContextRefresh is true and this
-	 * module should have caused a context refresh, a true value is returned. Otherwise, false is
-	 * returned
+	 * responsible for restarting the context if necessary (the calling method will also have to
+	 * call {@link #loadServlets(Module, ServletContext)} and
+	 * {@link #loadFilters(Module, ServletContext)}).<br/>
+	 * <br/>
+	 * If delayContextRefresh is true and this module should have caused a context refresh, a true
+	 * value is returned. Otherwise, false is returned
 	 * 
 	 * @param mod Module to start
 	 * @param ServletContext the current ServletContext
@@ -342,14 +345,31 @@ public class WebModuleUtil {
 					// try starting the application context again
 					refreshWAC(servletContext, false, mod);
 				}
+				
 			}
 			
-			// find and cache the module's servlets
-			//(only if the module started successfully previously)
-			if (ModuleFactory.isModuleStarted(mod)) {
-				log.debug("Loading servlets and filters for module: " + mod);
-				loadServlets(mod, servletContext);
-				loadFilters(mod, servletContext);
+
+			
+			
+			
+			
+			
+			
+			
+			if (!delayContextRefresh) {
+				// only loading the servlets/filters if spring is refreshed because one
+				// might depend on files being available in spring
+				// if the caller wanted to delay the refresh then they are responsible for
+				// calling these two methods on the module
+
+				// find and cache the module's servlets
+				//(only if the module started successfully previously)
+				if (ModuleFactory.isModuleStarted(mod)) {
+					log.debug("Loading servlets and filters for module: " + mod);
+					loadServlets(mod, servletContext);
+					loadFilters(mod, servletContext);
+				}
+
 			}
 			
 			// return true if the module needs a context refresh and we didn't do it here

@@ -1,20 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <dataset>
-  <concept_name_tag concept_name_tag_id="1" tag="default" description="name to use when nothing else is available" creator="1" date_created="2007-05-01 00:00:00.0" voided="false" uuid="cdbc5978-1ca2-41cd-ab3b-5862e1b4b69d"/>
-  <concept_name_tag concept_name_tag_id="2" tag="short" description="preferred short name for a concept" creator="1" date_created="2007-05-01 00:00:00.0" voided="false" uuid="89a4554e-ab43-44c3-8e79-a0914ff83e87"/>
-  <concept_name_tag concept_name_tag_id="3" tag="synonym" description="a different word with similar meaning" creator="1" date_created="2007-05-01 00:00:00.0" voided="false" uuid="ca528cad-2c52-4f0a-83f5-f5e84d1a11b3"/>
-  <concept_name_tag concept_name_tag_id="4" tag="preferred" description="preferred name in English" creator="1" date_created="2007-05-01 00:00:00.0" voided="false" uuid="9add4261-9d13-460f-8d26-5842a8b9c5b1"/>
-  <concept_name_tag concept_name_tag_id="5" tag="preferred_KE" description="preferred name in Kenya" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="43860fe8-dd02-453c-94fc-3031c48010b4"/>
-  <concept_name_tag concept_name_tag_id="6" tag="preferred_LS" description="preferred name in Lesotho" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="a932bfc6-9103-47da-b728-cb17d1028db2"/>
-  <concept_name_tag concept_name_tag_id="7" tag="preferred_MW" description="preferred name in Malawi" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="cdf4b0e3-ec0b-44b7-a223-0764b3faa4d1"/>
-  <concept_name_tag concept_name_tag_id="8" tag="preferred_RW" description="preferred name in Rwanda" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="a00c237e-8d36-4231-afc9-07b3f7fd15f6"/>
-  <concept_name_tag concept_name_tag_id="9" tag="preferred_SA" description="preferred name in South Africa" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="862bab4b-d3fd-417d-bfda-4677e7d95cb4"/>
-  <concept_name_tag concept_name_tag_id="10" tag="preferred_TZ" description="preferred name in Tanzania" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="1222a739-3d1d-40ea-b3b7-54df713992f5"/>
-  <concept_name_tag concept_name_tag_id="11" tag="preferred_UG" description="preferred name in Uganda" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="837a575f-8b71-4923-a2e9-93058b6bd401"/>
-  <concept_name_tag concept_name_tag_id="12" tag="preferred_UK" description="preferred name in the United Kingdom" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="d2f2ad3e-1dc5-45af-ac02-80f4ff2030dc"/>
-  <concept_name_tag concept_name_tag_id="13" tag="preferred_US" description="preferred name in the United States" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="15e6f84d-dcf3-483c-9729-244ec29e7cd4"/>
-  <concept_name_tag concept_name_tag_id="14" tag="preferred_ZM" description="preferred name in Zambia" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="3516bc00-2a8f-4003-9045-7aff5aaaac14"/>
-  <concept_name_tag concept_name_tag_id="15" tag="preferred_ZW" description="preferred name in Zimbabwe" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="677b4fb4-25b6-4f42-808a-30b444e4b4f4"/>
   <encounter encounter_id="1" encounter_type="1" patient_id="2" provider_id="1" location_id="1" encounter_datetime="2005-01-01 00:00:00.0" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="f13d6fae-baa9-4553-955d-920098bec08f"/>
   <encounter_type encounter_type_id="1" name="Test Enc Type B" description="Some desc" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="2b377dba-62c3-4e53-91ef-b51c68899890"/>
   <location location_id="1" name="Test Location" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="3941dd4b-0b6d-4481-b979-ccdd38c76cb4"/>
