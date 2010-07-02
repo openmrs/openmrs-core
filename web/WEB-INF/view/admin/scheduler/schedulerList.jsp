@@ -19,11 +19,11 @@
 <br/><br/>
 
 <style>
-	tr.top, tr.bottom { background-color: #E7E7E7; border: 1px solid black; }
-	th, td { text-align: center; vertical-align: top; padding: 10px;  } 
-	th.left, td.left { text-align: left; } 
-	td.button { border: 0; } 
-	tr.even { background-color: #F7F7F7; }
+	schedulerTable tr.top, schedulerTable tr.bottom { background-color: #E7E7E7; border: 1px solid black; }
+	schedulerTable th, schedulerTable td { text-align: center; vertical-align: top; padding: 10px;  } 
+	schedulerTable th.left, schedulerTable td.left { text-align: left; } 
+	schedulerTable td.button { border: 0; } 
+	schedulerTable tr.even { background-color: #F7F7F7; }
 </style>
 
 <div class="scheduler">
@@ -31,7 +31,7 @@
 	<div class="box">
 		<form id="schedulerListForm" method="post">
 			<div id="schedulerTaskList" align="center">
-				<table cellpadding="0" cellspacing="0" width="100%">
+				<table cellpadding="0" cellspacing="0" width="100%" id="schedulerTable">
 					<tr class="top">
 						<th></th>
 						<th><spring:message code="Scheduler.list.status"/></th>

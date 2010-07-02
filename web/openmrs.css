@@ -15,6 +15,52 @@ body {
 	position: relative;
 	min-height: 100%;
 }
+.barsmall {
+	background-image:url(images/openmrs_green_bar_repeat.gif);
+	background-repeat:repeat-x;
+	height:27px;
+	margin-left: 0px;
+    font-family: Verdana,Arial,Helvetica,sans-serif;
+    color: #ffffff;
+}
+img.logo-reduced61 {
+	width:61px;
+	height:61px;
+}
+img.bar-round-reduced50 {
+	height:27px;
+	margin-left:-5px;
+	margin-top:0px;
+}
+
+.navList {
+		padding: 5px 0 2px 0;
+		margin: 0px;
+		text-align: center;
+		color: #ffffff;
+		width: 100%;
+	}
+	.navList li {
+		padding: 0 15px 0 18px;
+		margin-top:0px;
+		border-left: 2px solid white;
+		display:inline;
+		line-height: 1.0em;
+		white-space: nowrap;
+		font-size: 1.3em;
+        font-family: Verdana,Arial,Helvetica,sans-serif;
+	}
+	.navList > li:first-child {
+		border-left-style: none;
+	}
+	.navList li.firstChild {
+		/* IE hack to get around lack of first-child support */
+		border-left-style: none;
+	}
+	.navList a:link, .navList a:active, .navList a:visited,.navList a:hover {
+		text-decoration: none;
+		color: #ffffff;
+	}
 
 * html #pageBody {
 	height: 100%;
@@ -32,10 +78,12 @@ h1, h2, h3, h4, h5 {
 
 a, a:link, a:hover, a:visited, a:active {
 	text-decoration: underline;
-	color: #8FABC7;
+	color: #ffffff;
 }
 a:hover {
 	text-decoration: none;
+ 	text-align: left;
+ 	z-index: 6;
 }
 
 #openmrs_msg {
@@ -60,17 +108,17 @@ a:hover {
 	top: 0px;
 	left: 0px;
 	text-align: right;
-	padding: 0px 3px 0px 3px;
+	padding-top: 3px;
+    padding-right:5px;
 	margin: 0px;
-	z-index: 5;
+	z-index: 10;
 	width: 100%;
 	color: #333333;
 	line-height: 26px;
-	background-color: #ffffff;
 }
 	#userBar a:link, #userBar a:active, #userBar a:visited, #userBar a:hover,
 	#content a.offColor, #content a.offColor:link, #content a.offColor:active, #content a.offColor:visited, #content a.offColor:hover {
-		color: #eebb33;
+		color: #f57439;
 	}
 	#userBar span {
 		border-left: 1px solid #333333;
@@ -90,55 +138,13 @@ a:hover {
 	left: 0px;
 	text-align: left;
 	z-index: 6;
-	padding-left: 3px;
-}
-
-#gutter {
-	padding: 1px 0 1px 0;
-	position: absolute;
-	top: 26px;
 	width: 100%;
-	z-index: 5;
-	border-color: #8FABC7;
-	border-style: solid;
-	border-width: 1px 0 1px 0;
-	font-size: 1.05em;
-	background-color: #ffffff;
-	}
-	#navList {
-		padding: 2px 0 2px 0;
-		margin: 0px;
-		text-align: center;
-		color: #ffffff;
-		background-color: #8FABC7;
-		width: 100%;
-	}
-	#navList li {
-		padding: 0 15px 0 18px;
-		margin: auto 0 auto 0;
-		border-left: 2px solid white;
-		display: inline;
-		line-height: 1.1em;
-		white-space: nowrap;
-	}
-	#navList > li:first-child {
-		border-left-style: none;
-	}
-	#navList li.firstChild {
-		/* IE hack to get around lack of first-child support */
-		border-left-style: none;
-	}
-	#navList a:link, #navList a:active, #navList a:visited, #navList a:hover {
-		text-decoration: none;
-		font-size: 1.4em;
-		color: #ffffff;
 	}
 	
 #content {
 	margin: 0px 0 0 0;
 	width: 100%;
-	padding: 60px 10px 10px 10px;
-	font-size: 1.2em;
+	padding: 80px 10px 10px 10px;	font-size: 1.2em;
 	background-color: #ffffff;
 	z-index: 8;
 }
@@ -468,7 +474,7 @@ table.patientTreatmentPrograms td {
 	width: 7em;
 }
 .box, .boxHeader, .boxRed, .boxHeaderRed, .boxExited, .boxHeaderExited {
-	border: 1px solid #8FABC7;
+	border: 1px solid #1aac9b; /*dark orange #f48a52;*/ /* blue #8c87c5; */
 	width: 99%;
 	padding: 5px 2px 5px 2px;
 	text-align: left;
@@ -481,7 +487,7 @@ table.patientTreatmentPrograms td {
 }
 
 .boxHeader {
-	background-color: #8FABC7;
+	background-color: #1aac9b; /*light orange #f3af7;*/ /* blue #8c87c5; */
 	color: white;
 	display: block;
 	padding: 2px;
