@@ -54,6 +54,7 @@
 
 <body>
 	<div id="pageBody">
+        
 		<div id="userBar">
 			<openmrs:authentication>
 				<c:if test="${authenticatedUser != null}">
@@ -92,12 +93,6 @@
 		<div id="popupTray">
 		</div>
 		--%>
-
-		<openmrs:hasPrivilege privilege="View Navigation Menu">
-			<div id="gutter">
-				<%@ include file="/WEB-INF/template/gutter.jsp" %>
-			</div>
-		</openmrs:hasPrivilege>
 
 		<div id="content">
 
