@@ -188,8 +188,7 @@ public class ProgramWorkflow extends BaseOpenmrsMetadata implements java.io.Seri
 		Comparator<ProgramWorkflowState> stateComparator = new Comparator<ProgramWorkflowState>() {
 			
 			public int compare(ProgramWorkflowState o1, ProgramWorkflowState o2) {
-				return naturalComparator.compare(o1.getConcept().getBestName(null).getName(), o2.getConcept().getBestName(
-				    null).getName());
+				return naturalComparator.compare(o1.getConcept().getName().getName(), o2.getConcept().getName().getName());
 			}
 			
 		};
@@ -221,7 +220,8 @@ public class ProgramWorkflow extends BaseOpenmrsMetadata implements java.io.Seri
 	}
 	
 	/**
-	 * Check whether it is allowable to transition from <code>fromState</code> to  <code>toState</code>.
+	 * Check whether it is allowable to transition from <code>fromState</code> to
+	 * <code>toState</code>.
 	 * 
 	 * @param fromState {@link ProgramWorkflowState} to check transition from
 	 * @param toState {@link ProgramWorkflowState} to check transition to
@@ -244,6 +244,7 @@ public class ProgramWorkflow extends BaseOpenmrsMetadata implements java.io.Seri
 	}
 	
 	/** @see Object#equals(Object) */
+	@Override
 	public boolean equals(Object obj) {
 		if (obj != null && obj instanceof ProgramWorkflow) {
 			ProgramWorkflow p = (ProgramWorkflow) obj;
@@ -255,6 +256,7 @@ public class ProgramWorkflow extends BaseOpenmrsMetadata implements java.io.Seri
 	}
 	
 	/** @see Object#toString() */
+	@Override
 	public String toString() {
 		return "ProgramWorkflow(id=" + getProgramWorkflowId() + ")";
 	}

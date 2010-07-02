@@ -77,39 +77,39 @@
   <concept_map concept_map_id="2" source="1" source_code="CD41003" comment="A person's CD4" creator="1" date_created="2004-08-12 00:00:00.0" concept_id="5497"/>
   <concept_map concept_map_id="3" source="2" source_code="2332523" comment="A person's weight in kilograms" creator="1" date_created="2004-08-12 00:00:00.0" concept_id="5089"/>
   <concept_map concept_map_id="4" source="2" source_code="7345693" comment="A person's CD4" creator="1" date_created="2004-08-12 00:00:00.0" concept_id="5497"/>
-  <concept_name concept_id="5089" name="WEIGHT (KG)" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="1439" voided="false" uuid="9bc5693a-f558-40c9-8177-145a4b119ca7"/>
-  <concept_name concept_id="5497" name="CD4 COUNT" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="1847" voided="false" uuid="6e77e374-18a1-4ec6-8ed4-4152a5a7d6a1"/>
-  <concept_name concept_id="7" name="YES" locale="en" creator="1" date_created="2008-08-15 13:52:53.0" concept_name_id="2449" voided="false" uuid="ef7ac747-7980-443c-b11f-4617aa587703"/>
-  <concept_name concept_id="8" name="NO" locale="en" creator="1" date_created="2008-08-15 13:53:31.0" concept_name_id="2450" voided="false" uuid="b98a6ed4-77e7-4cee-aae2-81957fcd7f48"/>
-  <concept_name concept_id="9" name="HIV PROGRAM" locale="en" creator="1" date_created="2008-08-15 13:57:57.0" concept_name_id="2451" voided="false" uuid="dcf41b94-f1af-45fd-8cb9-5ef8c15bab37"/>
-  <concept_name concept_id="10" name="MDR-TB PROGRAM" locale="en" creator="1" date_created="2008-08-15 13:58:36.0" concept_name_id="2452" voided="false" uuid="01d9f62c-c96d-46f0-a7ba-75337fd149bf"/>
-  <concept_name concept_id="88" name="ASPIRIN" locale="en" creator="1" date_created="2008-08-15 14:04:20.0" concept_name_id="2453" voided="false" uuid="0e61fcd8-10ac-431f-9e96-70ab0b5b2385"/>
-  <concept_name concept_id="792" name="STAVUDINE LAMIVUDINE AND NEVIRAPINE" locale="en" creator="1" date_created="2008-08-15 14:05:56.0" concept_name_id="2454" voided="false" uuid="85481a15-1d7f-44ab-a691-d9eec71ae1d6"/>
-  <concept_name concept_id="3" name="COUGH SYRUP" locale="en" creator="1" date_created="2008-08-15 15:27:51.0" concept_name_id="2456" voided="false" uuid="b8159118-c97b-4d5a-a63e-d4aa4be0c4d3"/>
-  <concept_name concept_id="4" name="CIVIL STATUS" locale="en" creator="1" date_created="2008-08-15 15:51:39.0" concept_name_id="2457" voided="false" uuid="44369443-9a24-438e-861c-d338c5d75d60"/>
-  <concept_name concept_id="5" name="SINGLE" locale="en" creator="1" date_created="2008-08-15 15:51:57.0" concept_name_id="2458" voided="false" uuid="85b47f49-7f3e-4910-b18b-097f94d66a10"/>
-  <concept_name concept_id="6" name="MARRIED" locale="en" creator="1" date_created="2008-08-15 15:52:17.0" concept_name_id="2459" voided="false" uuid="f74e3673-983b-41e3-b872-56f0e6f7696e"/>
-  <concept_name concept_id="11" name="MALARIA PROGRAM" locale="en" creator="1" date_created="2008-08-15 16:08:18.0" concept_name_id="2460" voided="false" uuid="72ef223d-e54f-4b65-b7bb-14e046b28885"/>
-  <concept_name concept_id="12" name="TREATMENT STATUS" locale="en" creator="1" date_created="2008-08-15 16:22:03.0" concept_name_id="2461" voided="false" uuid="f1d6bf98-6285-48a0-aafd-1e2b590e6ed1"/>
-  <concept_name concept_id="13" name="ANTIRETROVIRAL TREATMENT GROUP" locale="en" creator="1" date_created="2008-08-15 16:57:42.0" concept_name_id="2462" voided="false" uuid="de132cbe-33e1-422a-8d5e-9a4c28c1ea42"/>
-  <concept_name concept_id="14" name="FOLLOWING" locale="en" creator="1" date_created="2008-08-15 16:58:44.0" concept_name_id="2463" voided="false" uuid="e821bc92-66b7-4948-8614-522f996988bb"/>
-  <concept_name concept_id="16" name="DIED" locale="en" creator="1" date_created="2008-08-15 16:59:19.0" concept_name_id="2465" voided="false" uuid="f3ba002f-861f-45fc-8cfe-5437e15a9b3b"/>
-  <concept_name concept_id="17" name="WAITING FOR RESULTS" locale="en" creator="1" date_created="2008-08-15 16:59:56.0" concept_name_id="2466" voided="false" uuid="2f7263e4-2a57-49b5-aef0-af9a259aac65"/>
-  <concept_name concept_id="18" name="FOOD ASSISTANCE" locale="en" creator="1" date_created="2008-08-18 12:31:52.0" concept_name_id="2467" voided="false" uuid="7c9da21c-dbcd-4f9c-862c-5a33123bac4f"/>
-  <concept_name concept_id="19" name="FAVORITE FOOD, NON-CODED" locale="en" creator="1" date_created="2008-08-18 12:32:35.0" concept_name_id="2468" voided="false" uuid="f4d0b584-6ce5-40e2-9ce5-fa7ec07b32b4"/>
-  <concept_name concept_id="20" name="DATE OF FOOD ASSISTANCE" locale="en" creator="1" date_created="2008-08-18 12:33:37.0" concept_name_id="2469" voided="false" uuid="b92ecd87-6bb2-4db7-9f0e-f8e8df8a5174"/>
-  <concept_name concept_id="21" name="FOOD ASSISTANCE FOR ENTIRE FAMILY" locale="en" creator="1" date_created="2008-08-18 12:34:26.0" concept_name_id="2470" voided="false" uuid="325391a8-db12-4e24-863f-5d66f7a4d713"/>
-  <concept_name concept_id="22" name="UNKNOWN" locale="en" creator="1" date_created="2008-08-18 12:34:42.0" concept_name_id="2471" voided="false" uuid="1e66dd72-bbbd-4e63-b6ab-935b569c38a1"/>
-  <concept_name concept_id="23" name="FOOD CONSTRUCT" locale="en" creator="1" date_created="2008-08-18 12:38:58.0" concept_name_id="2472" voided="false" uuid="b3ebe4f6-50b3-4e78-82b1-7d192a7ede92"/>
-  <concept_name concept_id="5089" name="WT" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="2473" voided="false" uuid="377051e1-6bde-4880-8c0c-8fbc3047c12a"/>
-  <concept_name concept_id="5497" name="CD4" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="2474" voided="false" uuid="cb1332fe-16af-4cae-a9ca-cecbd30efe5e"/>
-  <concept_name concept_id="792" name="D4T+3TC+NVP" locale="en" creator="1" date_created="2008-08-15 14:05:56.0" concept_name_id="2475" voided="false" uuid="6096e60d-ce9c-4de8-8409-81a91ab89828"/>
-  <concept_name concept_id="88" name="ASA" locale="en" creator="1" date_created="2008-08-15 14:04:20.0" concept_name_id="2476" voided="false" uuid="d2fddd31-5a0e-49e6-9ff2-522cd35ab01a"/>
-  <concept_name concept_id="5497" name="CD3+CD4+ABS CNT" locale="en" creator="1" date_created="2006-06-06 14:03:53.0" concept_name_id="2477" voided="false" uuid="8230adbf-30a9-4e18-b6d7-fc57e0c23cab"/>
-  <concept_name concept_id="792" name="D4T+3TC+NVP" locale="en" creator="1" date_created="2008-08-15 14:05:56.0" concept_name_id="2478" voided="false" uuid="d8c3d99f-f2d7-4775-9453-d7eb9935eb6f"/>
-  <concept_name concept_id="8" name="N" locale="en" creator="1" date_created="2008-08-15 13:53:31.0" concept_name_id="2479" voided="false" uuid="0ae52990-0c41-4591-8caa-31ed6a3dffa8"/>
-  <concept_name concept_id="792" name="TRIOMUNE-30" locale="en" creator="1" date_created="2008-08-15 14:05:56.0" concept_name_id="2480" voided="false" uuid="726f9e6d-bc7e-4a78-8741-c7d644d704cc"/>
-  <concept_name concept_id="7" name="Y" locale="en" creator="1" date_created="2008-08-15 13:52:53.0" concept_name_id="2481" voided="false" uuid="0631be3b-e338-4505-a876-ef3310f65896"/>
+  <concept_name concept_id="5089" name="WEIGHT (KG)" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="1439" concept_name_type="FULLY_SPECIFIED" locale_preferred="0" voided="false" uuid="9bc5693a-f558-40c9-8177-145a4b119ca7"/>
+  <concept_name concept_id="5497" name="CD4 COUNT" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="1847" concept_name_type="FULLY_SPECIFIED" locale_preferred="0" voided="false" uuid="6e77e374-18a1-4ec6-8ed4-4152a5a7d6a1"/>
+  <concept_name concept_id="7" name="YES" locale="en" creator="1" date_created="2008-08-15 13:52:53.0" concept_name_id="2449" concept_name_type="FULLY_SPECIFIED" locale_preferred="0" voided="false" uuid="ef7ac747-7980-443c-b11f-4617aa587703"/>
+  <concept_name concept_id="8" name="NO" locale="en" creator="1" date_created="2008-08-15 13:53:31.0" concept_name_id="2450" concept_name_type="FULLY_SPECIFIED" locale_preferred="0" voided="false" uuid="b98a6ed4-77e7-4cee-aae2-81957fcd7f48"/>
+  <concept_name concept_id="9" name="HIV PROGRAM" locale="en" creator="1" date_created="2008-08-15 13:57:57.0" concept_name_id="2451" concept_name_type="FULLY_SPECIFIED" locale_preferred="0" voided="false" uuid="dcf41b94-f1af-45fd-8cb9-5ef8c15bab37"/>
+  <concept_name concept_id="10" name="MDR-TB PROGRAM" locale="en" creator="1" date_created="2008-08-15 13:58:36.0" concept_name_id="2452" concept_name_type="FULLY_SPECIFIED" locale_preferred="0" voided="false" uuid="01d9f62c-c96d-46f0-a7ba-75337fd149bf"/>
+  <concept_name concept_id="88" name="ASPIRIN" locale="en" creator="1" date_created="2008-08-15 14:04:20.0" concept_name_id="2453" concept_name_type="FULLY_SPECIFIED" locale_preferred="0" voided="false" uuid="0e61fcd8-10ac-431f-9e96-70ab0b5b2385"/>
+  <concept_name concept_id="792" name="STAVUDINE LAMIVUDINE AND NEVIRAPINE" locale="en" creator="1" date_created="2008-08-15 14:05:56.0" concept_name_id="2454" concept_name_type="FULLY_SPECIFIED" locale_preferred="0" voided="false" uuid="85481a15-1d7f-44ab-a691-d9eec71ae1d6"/>
+  <concept_name concept_id="3" name="COUGH SYRUP" locale="en" creator="1" date_created="2008-08-15 15:27:51.0" concept_name_id="2456" concept_name_type="FULLY_SPECIFIED" locale_preferred="0" voided="false" uuid="b8159118-c97b-4d5a-a63e-d4aa4be0c4d3"/>
+  <concept_name concept_id="4" name="CIVIL STATUS" locale="en" creator="1" date_created="2008-08-15 15:51:39.0" concept_name_id="2457" concept_name_type="FULLY_SPECIFIED" locale_preferred="0" voided="false" uuid="44369443-9a24-438e-861c-d338c5d75d60"/>
+  <concept_name concept_id="5" name="SINGLE" locale="en" creator="1" date_created="2008-08-15 15:51:57.0" concept_name_id="2458" concept_name_type="FULLY_SPECIFIED" locale_preferred="0" voided="false" uuid="85b47f49-7f3e-4910-b18b-097f94d66a10"/>
+  <concept_name concept_id="6" name="MARRIED" locale="en" creator="1" date_created="2008-08-15 15:52:17.0" concept_name_id="2459" concept_name_type="FULLY_SPECIFIED" locale_preferred="0" voided="false" uuid="f74e3673-983b-41e3-b872-56f0e6f7696e"/>
+  <concept_name concept_id="11" name="MALARIA PROGRAM" locale="en" creator="1" date_created="2008-08-15 16:08:18.0" concept_name_id="2460" concept_name_type="FULLY_SPECIFIED" locale_preferred="0" voided="false" uuid="72ef223d-e54f-4b65-b7bb-14e046b28885"/>
+  <concept_name concept_id="12" name="TREATMENT STATUS" locale="en" creator="1" date_created="2008-08-15 16:22:03.0" concept_name_id="2461" concept_name_type="FULLY_SPECIFIED" locale_preferred="0" voided="false" uuid="f1d6bf98-6285-48a0-aafd-1e2b590e6ed1"/>
+  <concept_name concept_id="13" name="ANTIRETROVIRAL TREATMENT GROUP" locale="en" creator="1" date_created="2008-08-15 16:57:42.0" concept_name_id="2462" concept_name_type="FULLY_SPECIFIED" locale_preferred="0" voided="false" uuid="de132cbe-33e1-422a-8d5e-9a4c28c1ea42"/>
+  <concept_name concept_id="14" name="FOLLOWING" locale="en" creator="1" date_created="2008-08-15 16:58:44.0" concept_name_id="2463" concept_name_type="FULLY_SPECIFIED" locale_preferred="0" voided="false" uuid="e821bc92-66b7-4948-8614-522f996988bb"/>
+  <concept_name concept_id="16" name="DIED" locale="en" creator="1" date_created="2008-08-15 16:59:19.0" concept_name_id="2465" concept_name_type="FULLY_SPECIFIED" locale_preferred="0" voided="false" uuid="f3ba002f-861f-45fc-8cfe-5437e15a9b3b"/>
+  <concept_name concept_id="17" name="WAITING FOR RESULTS" locale="en" creator="1" date_created="2008-08-15 16:59:56.0" concept_name_id="2466" concept_name_type="FULLY_SPECIFIED" locale_preferred="0" voided="false" uuid="2f7263e4-2a57-49b5-aef0-af9a259aac65"/>
+  <concept_name concept_id="18" name="FOOD ASSISTANCE" locale="en" creator="1" date_created="2008-08-18 12:31:52.0" concept_name_id="2467" concept_name_type="FULLY_SPECIFIED" locale_preferred="0" voided="false" uuid="7c9da21c-dbcd-4f9c-862c-5a33123bac4f"/>
+  <concept_name concept_id="19" name="FAVORITE FOOD, NON-CODED" locale="en" creator="1" date_created="2008-08-18 12:32:35.0" concept_name_id="2468" concept_name_type="FULLY_SPECIFIED" locale_preferred="0" voided="false" uuid="f4d0b584-6ce5-40e2-9ce5-fa7ec07b32b4"/>
+  <concept_name concept_id="20" name="DATE OF FOOD ASSISTANCE" locale="en" creator="1" date_created="2008-08-18 12:33:37.0" concept_name_id="2469" concept_name_type="FULLY_SPECIFIED" locale_preferred="0" voided="false" uuid="b92ecd87-6bb2-4db7-9f0e-f8e8df8a5174"/>
+  <concept_name concept_id="21" name="FOOD ASSISTANCE FOR ENTIRE FAMILY" locale="en" creator="1" date_created="2008-08-18 12:34:26.0" concept_name_id="2470" concept_name_type="FULLY_SPECIFIED" locale_preferred="0" voided="false" uuid="325391a8-db12-4e24-863f-5d66f7a4d713"/>
+  <concept_name concept_id="22" name="UNKNOWN" locale="en" creator="1" date_created="2008-08-18 12:34:42.0" concept_name_id="2471" concept_name_type="FULLY_SPECIFIED" locale_preferred="0" voided="false" uuid="1e66dd72-bbbd-4e63-b6ab-935b569c38a1"/>
+  <concept_name concept_id="23" name="FOOD CONSTRUCT" locale="en" creator="1" date_created="2008-08-18 12:38:58.0" concept_name_id="2472" concept_name_type="FULLY_SPECIFIED" locale_preferred="0" voided="false" uuid="b3ebe4f6-50b3-4e78-82b1-7d192a7ede92"/>
+  <concept_name concept_id="5089" name="WT" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="2473" concept_name_type="SHORT" locale_preferred="0" voided="false" uuid="377051e1-6bde-4880-8c0c-8fbc3047c12a"/>
+  <concept_name concept_id="5497" name="CD4" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="2474" concept_name_type="SHORT" locale_preferred="0" voided="false" uuid="cb1332fe-16af-4cae-a9ca-cecbd30efe5e"/>
+  <concept_name concept_id="792" name="D4T+3TC+NVP" locale="en" creator="1" date_created="2008-08-15 14:05:56.0" concept_name_id="2475" concept_name_type="SHORT" locale_preferred="0" voided="false" uuid="6096e60d-ce9c-4de8-8409-81a91ab89828"/>
+  <concept_name concept_id="88" name="ASA" locale="en" creator="1" date_created="2008-08-15 14:04:20.0" concept_name_id="2476" concept_name_type="" locale_preferred="0" voided="false" uuid="d2fddd31-5a0e-49e6-9ff2-522cd35ab01a"/>
+  <concept_name concept_id="5497" name="CD3+CD4+ABS CNT" locale="en" creator="1" date_created="2006-06-06 14:03:53.0" concept_name_id="2477" concept_name_type="" locale_preferred="0" voided="false" uuid="8230adbf-30a9-4e18-b6d7-fc57e0c23cab"/>
+  <concept_name concept_id="792" name="D4T+3TC+NVP" locale="en" creator="1" date_created="2008-08-15 14:05:56.0" concept_name_id="2478" concept_name_type="" locale_preferred="0" voided="false" uuid="d8c3d99f-f2d7-4775-9453-d7eb9935eb6f"/>
+  <concept_name concept_id="8" name="N" locale="en" creator="1" date_created="2008-08-15 13:53:31.0" concept_name_id="2479" concept_name_type="" locale_preferred="0" voided="false" uuid="0ae52990-0c41-4591-8caa-31ed6a3dffa8"/>
+  <concept_name concept_id="792" name="TRIOMUNE-30" locale="en" creator="1" date_created="2008-08-15 14:05:56.0" concept_name_id="2480" concept_name_type="" locale_preferred="0" voided="false" uuid="726f9e6d-bc7e-4a78-8741-c7d644d704cc"/>
+  <concept_name concept_id="7" name="Y" locale="en" creator="1" date_created="2008-08-15 13:52:53.0" concept_name_id="2481" concept_name_type="" locale_preferred="0" voided="false" uuid="0631be3b-e338-4505-a876-ef3310f65896"/>
   <concept_name_tag concept_name_tag_id="1" tag="default" description="name to use when nothing else is available" creator="1" date_created="2007-05-01 00:00:00.0" voided="false" uuid="9e9df183-2328-4117-acd8-fb9bf400911d"/>
   <concept_name_tag concept_name_tag_id="2" tag="short" description="preferred short name for a concept" creator="1" date_created="2007-05-01 00:00:00.0" voided="false" uuid="57396ec9-fb90-44b2-b59a-21bc5631bf3d"/>
   <concept_name_tag concept_name_tag_id="3" tag="synonym" description="a different word with similar meaning" creator="1" date_created="2007-05-01 00:00:00.0" voided="false" uuid="cb6bc7cf-d5d3-4d51-a05b-5ea656c7413a"/>
@@ -125,39 +125,6 @@
   <concept_name_tag concept_name_tag_id="13" tag="preferred_US" description="preferred name in the United States" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="74a4b34d-b717-4bfa-ab84-07b9db2901be"/>
   <concept_name_tag concept_name_tag_id="14" tag="preferred_ZM" description="preferred name in Zambia" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="e0575570-064c-4dc2-828f-30c370645139"/>
   <concept_name_tag concept_name_tag_id="15" tag="preferred_ZW" description="preferred name in Zimbabwe" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="7bfa1526-8936-4ff2-b048-7d627ba26eee"/>
-  <concept_name_tag_map concept_name_id="1439" concept_name_tag_id="4"/>
-  <concept_name_tag_map concept_name_id="1847" concept_name_tag_id="4"/>
-  <concept_name_tag_map concept_name_id="2449" concept_name_tag_id="4"/>
-  <concept_name_tag_map concept_name_id="2450" concept_name_tag_id="4"/>
-  <concept_name_tag_map concept_name_id="2451" concept_name_tag_id="4"/>
-  <concept_name_tag_map concept_name_id="2452" concept_name_tag_id="4"/>
-  <concept_name_tag_map concept_name_id="2453" concept_name_tag_id="4"/>
-  <concept_name_tag_map concept_name_id="2454" concept_name_tag_id="4"/>
-  <concept_name_tag_map concept_name_id="2456" concept_name_tag_id="4"/>
-  <concept_name_tag_map concept_name_id="2457" concept_name_tag_id="4"/>
-  <concept_name_tag_map concept_name_id="2458" concept_name_tag_id="4"/>
-  <concept_name_tag_map concept_name_id="2459" concept_name_tag_id="4"/>
-  <concept_name_tag_map concept_name_id="2460" concept_name_tag_id="4"/>
-  <concept_name_tag_map concept_name_id="2461" concept_name_tag_id="4"/>
-  <concept_name_tag_map concept_name_id="2462" concept_name_tag_id="4"/>
-  <concept_name_tag_map concept_name_id="2463" concept_name_tag_id="4"/>
-  <concept_name_tag_map concept_name_id="2465" concept_name_tag_id="4"/>
-  <concept_name_tag_map concept_name_id="2466" concept_name_tag_id="4"/>
-  <concept_name_tag_map concept_name_id="2467" concept_name_tag_id="4"/>
-  <concept_name_tag_map concept_name_id="2468" concept_name_tag_id="4"/>
-  <concept_name_tag_map concept_name_id="2469" concept_name_tag_id="4"/>
-  <concept_name_tag_map concept_name_id="2470" concept_name_tag_id="4"/>
-  <concept_name_tag_map concept_name_id="2471" concept_name_tag_id="4"/>
-  <concept_name_tag_map concept_name_id="2472" concept_name_tag_id="4"/>
-  <concept_name_tag_map concept_name_id="2473" concept_name_tag_id="2"/>
-  <concept_name_tag_map concept_name_id="2474" concept_name_tag_id="2"/>
-  <concept_name_tag_map concept_name_id="2475" concept_name_tag_id="2"/>
-  <concept_name_tag_map concept_name_id="2476" concept_name_tag_id="3"/>
-  <concept_name_tag_map concept_name_id="2477" concept_name_tag_id="3"/>
-  <concept_name_tag_map concept_name_id="2478" concept_name_tag_id="3"/>
-  <concept_name_tag_map concept_name_id="2479" concept_name_tag_id="3"/>
-  <concept_name_tag_map concept_name_id="2480" concept_name_tag_id="3"/>
-  <concept_name_tag_map concept_name_id="2481" concept_name_tag_id="3"/>
   <concept_numeric concept_id="5497" hi_normal="1497.0" low_critical="99.0" low_normal="445.0" hi_critical="1800.0" hi_absolute="2500.0" low_absolute="0.0" units="cells/mmL" precise="false"/>
   <concept_numeric concept_id="5089" hi_normal="250.0" low_critical="0.0" units="kg" precise="true"/>
   <concept_proposal concept_proposal_id="1" original_text="I want this concept but I can't have it" state="REJECT" encounter_id="3" obs_concept_id="4" creator="1" date_created="2009-06-03 13:55:12.0" uuid="57a68666-5067-11de-80cb-001e378eb67e"/>

@@ -60,8 +60,8 @@ public class RowPerObsDatasetTest extends BaseContextSensitiveTest {
 		Calendar today = new GregorianCalendar();
 		
 		// the first patient in the dataset has a birthday in 2007, so subtract that from
-		// the current year for that patients age, then add one to make sure that patient 
-		// is in the cohort (the second patient was born in 2000, so they shouldn't 
+		// the current year for that patients age, then add one to make sure that patient
+		// is in the cohort (the second patient was born in 2000, so they shouldn't
 		// get counted)
 		Integer maxAge = today.get(Calendar.YEAR) - 2007 + 1;
 		kids.addArgument("maxAge", maxAge.toString(), Integer.class);
@@ -90,7 +90,7 @@ public class RowPerObsDatasetTest extends BaseContextSensitiveTest {
 		
 		log.error("xmlOutput: " + xmlOutput);
 		
-		rs = (ReportSchema) serializer.read(ReportSchema.class, xmlOutput);
+		rs = serializer.read(ReportSchema.class, xmlOutput);
 		assertEquals("Testing row-per-obs", rs.getName());
 		assertEquals(1, rs.getDataSetDefinitions().size());
 		

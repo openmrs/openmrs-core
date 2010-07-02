@@ -13,7 +13,9 @@
  */
 package org.openmrs.util;
 
+import java.util.LinkedHashSet;
 import java.util.Locale;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -32,6 +34,7 @@ public class LocaleUtility {
 	 * 
 	 * @deprecated use {@link #getDefaultLocale()} now
 	 */
+	@Deprecated
 	public static final Locale DEFAULT_LOCALE = Locale.UK;
 	
 	/**
@@ -130,4 +133,30 @@ public class LocaleUtility {
 		
 		return createdLocale;
 	}
+	
+	/**
+	 * Utility method that returns a collection of all openmrs system locales, the set includes the
+	 * current logged in user's preferred locale if any is set, the default locale, allowed locales
+	 * in the order they are specified in the 'allowed.locale.list' global property and 'en' at the
+	 * very end of the set if it isn't yet among them.
+	 * 
+	 * @returns a collection of all specified and allowed locales with no duplicates.
+	 * @should return a set of locales with a predictable order
+	 * @should return a set of locales with no duplicates
+	 * @should have default locale as the first element if user has no preferred locale
+	 * @should have default locale as the second element if user has a preferred locale
+	 * @should always have english included in the returned collection
+	 * @since 1.7
+	 */
+	public static Set<Locale> getLocalesInOrder() {
+		
+		Set<Locale> locales = new LinkedHashSet<Locale>();
+		locales.add(Context.getLocale());
+		locales.add(getDefaultLocale());
+		locales.addAll(Context.getAdministrationService().getAllowedLocales());
+		locales.add(Locale.ENGLISH);
+		
+		return locales;
+	}
+	
 }

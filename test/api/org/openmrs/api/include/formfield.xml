@@ -1,20 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<dataset>
-  <concept_name_tag concept_name_tag_id="1" tag="default" description="name to use when nothing else is available" creator="1" date_created="2007-05-01 00:00:00.0" voided="false" uuid="04f7960d-389c-44f6-b738-a35629b732c2"/>
-  <concept_name_tag concept_name_tag_id="2" tag="short" description="preferred short name for a concept" creator="1" date_created="2007-05-01 00:00:00.0" voided="false" uuid="3d31eb70-a386-4adb-832f-f72f13cea7d2"/>
-  <concept_name_tag concept_name_tag_id="3" tag="synonym" description="a different word with similar meaning" creator="1" date_created="2007-05-01 00:00:00.0" voided="false" uuid="17bdde47-87b1-49f1-b38a-47e2d7ffa22c"/>
-  <concept_name_tag concept_name_tag_id="4" tag="preferred" description="preferred name in a language" creator="1" date_created="2007-05-01 00:00:00.0" voided="false" uuid="c946ae07-6e71-46c4-b18f-90aba25ccfdb"/>
-  <concept_name_tag concept_name_tag_id="5" tag="preferred_KE" description="preferred name in Kenya" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="04df04c0-ad79-41dc-9c18-b3fa89013185"/>
-  <concept_name_tag concept_name_tag_id="6" tag="preferred_LS" description="preferred name in Lesotho" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="5d24f451-1bf0-44a4-a793-62180ded2fc9"/>
-  <concept_name_tag concept_name_tag_id="7" tag="preferred_MW" description="preferred name in Malawi" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="2b777d88-f4ef-449d-9a67-a7d58e23d47f"/>
-  <concept_name_tag concept_name_tag_id="8" tag="preferred_RW" description="preferred name in Rwanda" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="6537ba42-2951-4f5f-80a0-efeb56385ddf"/>
-  <concept_name_tag concept_name_tag_id="9" tag="preferred_SA" description="preferred name in South Africa" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="676a72e9-5c99-4257-b156-3f1ca045ed8d"/>
-  <concept_name_tag concept_name_tag_id="10" tag="preferred_TZ" description="preferred name in Tanzania" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="a3f51f72-5699-4e4b-9e04-55cbb35d1e99"/>
-  <concept_name_tag concept_name_tag_id="11" tag="preferred_UG" description="preferred name in Uganda" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="8f964c54-63fb-4384-8c35-8ff2141a44c6"/>
-  <concept_name_tag concept_name_tag_id="12" tag="preferred_UK" description="preferred name in the United Kingdom" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="1ef7d5df-3833-4d8d-bab3-376e5193ea7d"/>
-  <concept_name_tag concept_name_tag_id="13" tag="preferred_US" description="preferred name in the United States" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="f2965f14-15da-4f74-84ee-bd14516501c9"/>
-  <concept_name_tag concept_name_tag_id="14" tag="preferred_ZM" description="preferred name in Zambia" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="f4830496-edba-4578-b1d6-5223e61fa133"/>
-  <concept_name_tag concept_name_tag_id="15" tag="preferred_ZW" description="preferred name in Zimbabwe" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="e44e37eb-fdd5-4034-bf3f-54cfb6a06fd6"/>
+<dataset>  
   <field field_id="1" uuid="4f55827e-26fe-102b-80cb-0017a47871b2" name="SELF PAY" description="Patient pays for their own evaluation and related treatment.  Used as an answer for &quot;pay category&quot;." field_type="1" concept_id="5269" table_name="" default_value="" select_multiple="false" creator="1" date_created="2006-07-18 11:03:31.0" retired="false"/>
   <field field_id="2" uuid="4f558922-26fe-102b-80cb-0017a47871b2" name="PATIENT" description="Patient section of form" field_type="5" table_name="" default_value="" select_multiple="false" creator="1" date_created="2006-07-18 11:04:36.0" retired="false"/>
   <field field_id="3" uuid="4f558c56-26fe-102b-80cb-0017a47871b2" name="ENCOUNTER" description="Encounter section of form" field_type="5" table_name="" default_value="" select_multiple="false" creator="1" date_created="2006-07-18 11:06:52.0" retired="false"/>

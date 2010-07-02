@@ -4,7 +4,7 @@
 
   <concept concept_id="8473" retired="false" datatype_id="13" class_id="5" is_set="false" creator="1" date_created="2005-01-01 00:00:00.0" uuid="edd25bd1-56ef-4382-afda-4e15a33ad33a"/>
   <concept_complex concept_id="8473" handler="ImageHandler" />
-  
+  <concept_name concept_id="8473" name="My Name" locale="en" creator="1" date_created="2008-08-15 13:52:53.0" concept_name_id="8007" concept_name_type="FULLY_SPECIFIED" locale_preferred="0" voided="false" uuid="ef7ac747-7980-443c-b11f-4617aa582102"/>
   <concept concept_id="8474" retired="false" datatype_id="13" class_id="5" is_set="false" creator="1" date_created="2005-01-01 00:00:00.0" uuid="7afe5c4d-886d-47a8-b0cf-af67efebceb4"/>
   <concept_complex concept_id="8474" handler="TextHandler" />
   

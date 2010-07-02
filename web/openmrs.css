@@ -574,7 +574,6 @@ table.patientTreatmentPrograms td {
 	border: 1px solid lightgrey;
 	background-color: whitesmoke;
 	cursor: pointer;
-	width: 82px;
 	margin: 1px;
 }
 .closeButton {

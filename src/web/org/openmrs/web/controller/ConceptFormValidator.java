@@ -13,12 +13,15 @@
  */
 package org.openmrs.web.controller;
 
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.ConceptMap;
 import org.openmrs.ConceptName;
+import org.openmrs.api.context.Context;
 import org.openmrs.web.controller.ConceptFormController.ConceptFormBackingObject;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
@@ -50,6 +53,7 @@ public class ConceptFormValidator implements Validator {
 	 */
 	public void validate(Object obj, Errors errors) {
 		ConceptFormBackingObject backingObject = (ConceptFormBackingObject) obj;
+		Set<String> localesWithErrors = new HashSet<String>();
 		if (backingObject.getConcept() == null) {
 			errors.rejectValue("concept", "error.general");
 		} else {
@@ -64,36 +68,57 @@ public class ConceptFormValidator implements Validator {
 				}
 			}
 			
-			boolean foundAtLeastOnePreferredName = false;
+			boolean foundAtLeastOneFullySpecifiedName = false;
 			
 			for (Locale locale : backingObject.getLocales()) {
 				// validate that a void reason was given for voided synonyms
 				for (int x = 0; x < backingObject.getSynonymsByLocale().get(locale).size(); x++) {
 					ConceptName synonym = backingObject.getSynonymsByLocale().get(locale).get(x);
-					if (synonym.isVoided() && !StringUtils.hasLength(synonym.getVoidReason())) {
-						errors.rejectValue("synonymsByLocale[" + locale + "][" + x + "].voidReason",
-						    "Concept.synonyms.voidReasonRequired");
-					}
-					
 					// validate that synonym names are non-empty (null name means it was invalid and then removed)
 					if (synonym.getName() != null && synonym.getName().length() == 0) {
 						errors.rejectValue("synonymsByLocale[" + locale + "][" + x + "].name",
 						    "Concept.synonyms.textRequired");
+						localesWithErrors.add(locale.getDisplayName());
+					}
+				}
+				
+				for (int x = 0; x < backingObject.getIndexTermsByLocale().get(locale).size(); x++) {
+					ConceptName indexTerm = backingObject.getIndexTermsByLocale().get(locale).get(x);
+					// validate that indexTerm names are non-empty (null name means it was invalid and then removed)
+					if (indexTerm.getName() != null && indexTerm.getName().length() == 0) {
+						errors.rejectValue("indexTermsByLocale[" + locale + "][" + x + "].name",
+						    "Concept.indexTerms.textRequired");
+						localesWithErrors.add(locale.getDisplayName());
 					}
 				}
 				
 				// validate that at least one name in a locale is non-empty
-				if (StringUtils.hasLength(backingObject.getNamesByLocale().get(locale).getName())) {
-					foundAtLeastOnePreferredName = true;
+				if (StringUtils.hasText(backingObject.getNamesByLocale().get(locale).getName())) {
+					foundAtLeastOneFullySpecifiedName = true;
+					
+				}// if this is a new name and user has changed it into an empty string, reject it
+				else if (backingObject.getNamesByLocale().get(locale).getConceptNameId() != null) {
+					errors.rejectValue("namesByLocale[" + locale + "].name", "Concept.fullySpecified.textRequired");
+					localesWithErrors.add(locale.getDisplayName());
 				}
-				
 			}
 			
-			if (foundAtLeastOnePreferredName == false) {
-				errors.rejectValue("namesByLocale[" + backingObject.getLocales().get(0) + "].name",
-				    "Concept.name.atLeastOneRequired");
-			}
+			if (!foundAtLeastOneFullySpecifiedName)
+				errors.reject("Concept.name.atLeastOneRequired");
 			
+		}
+		
+		if (errors.hasErrors() && localesWithErrors.size() > 0) {
+			StringBuilder sb = new StringBuilder(Context.getMessageSourceService().getMessage("Concept.localesWithErrors"));
+			boolean isFirst = true;
+			for (String localeName : localesWithErrors) {
+				if (isFirst) {
+					sb.append(localeName);
+					isFirst = false;
+				} else
+					sb.append(", ").append(localeName);
+			}
+			errors.rejectValue("concept", sb.toString());
 		}
 	}
 	

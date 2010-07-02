@@ -13,6 +13,7 @@
  */
 package org.openmrs.api.impl;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -24,8 +25,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.Vector;
 
+import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
@@ -46,6 +50,7 @@ import org.openmrs.Drug;
 import org.openmrs.Obs;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptInUseException;
+import org.openmrs.api.ConceptNameInUseException;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.ConceptsLockedException;
 import org.openmrs.api.context.Context;
@@ -97,7 +102,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 * @deprecated use {@link #saveConcept(Concept)}
 	 */
 	@Deprecated
-    public void createConcept(Concept concept) {
+	public void createConcept(Concept concept) {
 		Context.getConceptService().saveConcept(concept);
 	}
 	
@@ -105,7 +110,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 * @deprecated use {@link #saveConcept(Concept)}
 	 */
 	@Deprecated
-    public void createConcept(ConceptNumeric concept) {
+	public void createConcept(ConceptNumeric concept) {
 		Context.getConceptService().saveConcept(concept);
 	}
 	
@@ -113,7 +118,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 * @deprecated use {@link #saveConcept(Concept)}
 	 */
 	@Deprecated
-    public void updateConcept(Concept concept) {
+	public void updateConcept(Concept concept) {
 		Context.getConceptService().saveConcept(concept);
 	}
 	
@@ -121,7 +126,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 * @deprecated use {@link #saveConcept(Concept)}
 	 */
 	@Deprecated
-    public void updateConcept(ConceptNumeric concept) {
+	public void updateConcept(ConceptNumeric concept) {
 		Context.getConceptService().saveConcept(concept);
 	}
 	
@@ -129,7 +134,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 * @deprecated use #saveDrug(Drug)
 	 */
 	@Deprecated
-    public void createDrug(Drug drug) {
+	public void createDrug(Drug drug) {
 		Context.getConceptService().saveDrug(drug);
 	}
 	
@@ -137,7 +142,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 * @deprecated Use #saveDrug(Drug)
 	 */
 	@Deprecated
-    public void updateDrug(Drug drug) {
+	public void updateDrug(Drug drug) {
 		Context.getConceptService().saveDrug(drug);
 	}
 	
@@ -145,7 +150,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 * @deprecated use #purgeConcept(Concept concept)
 	 */
 	@Deprecated
-    public void deleteConcept(Concept concept) {
+	public void deleteConcept(Concept concept) {
 		Context.getConceptService().purgeConcept(concept);
 	}
 	
@@ -153,7 +158,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 * @deprecated use {@link #retireConcept(Concept, String)}etireConcept
 	 */
 	@Deprecated
-    public void voidConcept(Concept concept, String reason) {
+	public void voidConcept(Concept concept, String reason) {
 		Context.getConceptService().retireConcept(concept, reason);
 	}
 	
@@ -166,11 +171,67 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		checkIfLocked();
 		checkIfDatatypeCanBeChanged(concept);
 		
-		//check that there is no concept already using the preferred concept name in the locale
+		List<ConceptName> changedConceptNames = null;
+		Map<String, ConceptName> uuidClonedConceptNameMap = null;
+		
+		if (concept.getConceptId() != null) {
+			uuidClonedConceptNameMap = new HashMap<String, ConceptName>();
+			for (ConceptName conceptName : concept.getNames()) {
+				//ingore newly added names
+				if (conceptName.getConceptNameId() != null) {
+					ConceptName clone = cloneConceptName(conceptName);
+					clone.setConceptNameId(null);
+					uuidClonedConceptNameMap.put(conceptName.getUuid(), clone);
+					
+					if (hasNameChanged(conceptName)) {
+						if (changedConceptNames == null)
+							changedConceptNames = new ArrayList<ConceptName>();
+						changedConceptNames.add(conceptName);
+					} else {
+						//put back the concept name id
+						clone.setConceptNameId(conceptName.getConceptNameId());
+						//Use the cloned version
+						try {
+							BeanUtils.copyProperties(conceptName, clone);
+						}
+						catch (IllegalAccessException e) {
+							log.error("Error generated", e);
+						}
+						catch (InvocationTargetException e) {
+							log.error("Error generated", e);
+						}
+					}
+				}
+			}
+		}
+		
 		Errors errors = new BindException(concept, "concept");
 		new ConceptValidator().validate(concept, errors);
 		if (errors.hasErrors())
 			throw new APIException("Validation errors found");
+		
+		if (CollectionUtils.isNotEmpty(changedConceptNames)) {
+			for (ConceptName changedName : changedConceptNames) {
+				//void old concept name
+				ConceptName nameInDB = changedName;
+				nameInDB.setVoided(true);
+				nameInDB.setDateVoided(new Date());
+				nameInDB.setVoidedBy(Context.getAuthenticatedUser());
+				nameInDB.setVoidReason(Context.getMessageSourceService().getMessage("Concept.name.voidReason.nameChanged"));
+				
+				//Make the voided name a synonym, this would help to avoid having multiple fully specified or preferred
+				//names in a locale incase the name is unvoided
+				if (!nameInDB.isSynonym())
+					nameInDB.setConceptNameType(null);
+				if (nameInDB.isLocalePreferred())
+					nameInDB.setLocalePreferred(false);
+				
+				//create a new concept name from the matching cloned conceptName
+				ConceptName clone = uuidClonedConceptNameMap.get(nameInDB.getUuid());
+				clone.setUuid(UUID.randomUUID().toString());
+				concept.addName(clone);
+			}
+		}
 		
 		Concept conceptToReturn = dao.saveConcept(concept);
 		
@@ -194,6 +255,16 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 */
 	public void purgeConcept(Concept concept) throws APIException {
 		checkIfLocked();
+		
+		if (concept.getConceptId() != null) {
+			for (ConceptName conceptName : concept.getNames()) {
+				if (hasAnyObservation(conceptName))
+					throw new ConceptNameInUseException("Can't delete concept with id : " + concept.getConceptId()
+					        + " because it has a name '" + conceptName.getName()
+					        + "' which is being used by some observation(s)");
+			}
+		}
+		
 		dao.purgeConcept(concept);
 	}
 	
@@ -300,7 +371,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 * @deprecated use {@link #getAllConcepts(String, boolean, boolean)}
 	 */
 	@Deprecated
-    public List<Concept> getConcepts(String sortBy, String dir) throws APIException {
+	public List<Concept> getConcepts(String sortBy, String dir) throws APIException {
 		boolean asc = true ? dir.equals("asc") : !dir.equals("asc");
 		return getAllConcepts(sortBy, asc, true);
 	}
@@ -327,6 +398,10 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 				for (Concept c : concepts) {
 					if (c.getName(Context.getLocale()).getName().compareTo(name) == 0)
 						return c;
+					for (ConceptName indexTerm : c.getIndexTermsForLocale(Context.getLocale())) {
+						if (indexTerm.getName().compareTo(name) == 0)
+							return c;
+					}
 				}
 			}
 			return concepts.get(0);
@@ -339,7 +414,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 * @deprecated use {@link #getConcept(String)}
 	 */
 	@Deprecated
-    public Concept getConceptByIdOrName(String idOrName) {
+	public Concept getConceptByIdOrName(String idOrName) {
 		return getConcept(idOrName);
 	}
 	
@@ -403,7 +478,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 *             {@link #getConceptWords(String, List, boolean, List, List, List, List, Concept, Integer, Integer)}
 	 */
 	@Deprecated
-    public List<ConceptWord> findConcepts(String phrase, Locale locale, boolean includeRetired, int start, int size) {
+	public List<ConceptWord> findConcepts(String phrase, Locale locale, boolean includeRetired, int start, int size) {
 		List<Locale> locales = new Vector<Locale>();
 		locales.add(locale);
 		
@@ -421,7 +496,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 *             {@link #getConceptWords(String, List, boolean, List, List, List, List, Concept, Integer, Integer)}
 	 */
 	@Deprecated
-    public List<ConceptWord> findConcepts(String phrase, Locale locale, boolean includeRetired) {
+	public List<ConceptWord> findConcepts(String phrase, Locale locale, boolean includeRetired) {
 		
 		List<Locale> locales = new Vector<Locale>();
 		locales.add(locale);
@@ -434,7 +509,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 *             {@link #getConceptWords(String, List, boolean, List, List, List, List, Concept, Integer, Integer)}
 	 */
 	@Deprecated
-    public List<ConceptWord> findConcepts(String phrase, Locale locale, boolean includeRetired,
+	public List<ConceptWord> findConcepts(String phrase, Locale locale, boolean includeRetired,
 	                                      List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses,
 	                                      List<ConceptDatatype> requireDatatypes, List<ConceptDatatype> excludeDatatypes) {
 		
@@ -450,7 +525,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 *             {@link #getConceptWords(String, List, boolean, List, List, List, List, Concept, Integer, Integer)}
 	 */
 	@Deprecated
-    public List<ConceptWord> findConcepts(String phrase, List<Locale> locales, boolean includeRetired,
+	public List<ConceptWord> findConcepts(String phrase, List<Locale> locales, boolean includeRetired,
 	                                      List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses,
 	                                      List<ConceptDatatype> requireDatatypes, List<ConceptDatatype> excludeDatatypes) {
 		
@@ -498,7 +573,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 				log.warn("more than one drug name returned with name:" + drugNameOrId);
 			if (drugs.size() == 0)
 				return null;
-			return (Drug) drugs.get(0);
+			return drugs.get(0);
 		}
 	}
 	
@@ -507,7 +582,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 * @deprecated use {@link #getDrug(String)}
 	 */
 	@Deprecated
-    public Drug getDrugByNameOrId(String drugNameOrId) {
+	public Drug getDrugByNameOrId(String drugNameOrId) {
 		return getDrug(drugNameOrId);
 	}
 	
@@ -515,7 +590,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 * @deprecated use {@link #getAllDrugs()}
 	 */
 	@Deprecated
-    public List<Drug> getDrugs() {
+	public List<Drug> getDrugs() {
 		return getAllDrugs();
 	}
 	
@@ -538,7 +613,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 * @deprecated use {@link #getDrugsByConcept(Concept)}
 	 */
 	@Deprecated
-    public List<Drug> getDrugs(Concept concept) {
+	public List<Drug> getDrugs(Concept concept) {
 		return getDrugsByConcept(concept);
 	}
 	
@@ -554,7 +629,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 * @deprecated Use {@link #getDrugsByConcept(Concept)}
 	 */
 	@Deprecated
-    public List<Drug> getDrugs(Concept concept, boolean includeRetired) {
+	public List<Drug> getDrugs(Concept concept, boolean includeRetired) {
 		if (includeRetired == true)
 			throw new APIException("Getting retired drugs is no longer an options.  Use the getAllDrugs() method for that");
 		
@@ -566,7 +641,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 * @deprecated Use {@link #getAllDrugs(boolean)}
 	 */
 	@Deprecated
-    public List<Drug> getDrugs(boolean includeVoided) {
+	public List<Drug> getDrugs(boolean includeVoided) {
 		return getAllDrugs(includeVoided);
 	}
 	
@@ -575,7 +650,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 * @deprecated Use {@link #getDrugs(String)}
 	 */
 	@Deprecated
-    public List<Drug> findDrugs(String phrase, boolean includeRetired) {
+	public List<Drug> findDrugs(String phrase, boolean includeRetired) {
 		if (includeRetired == true)
 			throw new APIException("Getting retired drugs is no longer an options.  Use the getAllDrugs() method for that");
 		
@@ -604,7 +679,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 * @deprecated
 	 */
 	@Deprecated
-    public List<ConceptClass> getConceptClasses() {
+	public List<ConceptClass> getConceptClasses() {
 		return getAllConceptClasses(true);
 	}
 	
@@ -674,7 +749,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 * @deprecated use {@link #getAllConceptDatatypes()}
 	 */
 	@Deprecated
-    public List<ConceptDatatype> getConceptDatatypes() {
+	public List<ConceptDatatype> getConceptDatatypes() {
 		return getAllConceptDatatypes();
 	}
 	
@@ -734,7 +809,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 * @deprecated use {@link #getConceptSetsByConcept(Concept)}
 	 */
 	@Deprecated
-    public List<ConceptSet> getConceptSets(Concept c) {
+	public List<ConceptSet> getConceptSets(Concept c) {
 		return getConceptSetsByConcept(c);
 	}
 	
@@ -750,7 +825,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 * @deprecated use {@link #getConceptsByConceptSet(Concept)}
 	 */
 	@Deprecated
-    public List<Concept> getConceptsInSet(Concept c) {
+	public List<Concept> getConceptsInSet(Concept c) {
 		return getConceptsByConceptSet(c);
 	}
 	
@@ -786,7 +861,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 * @deprecated use {@link #getAllConceptProposals(boolean)}
 	 */
 	@Deprecated
-    public List<ConceptProposal> getConceptProposals(boolean includeCompleted) {
+	public List<ConceptProposal> getConceptProposals(boolean includeCompleted) {
 		return getAllConceptProposals(includeCompleted);
 	}
 	
@@ -809,7 +884,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 * @deprecated
 	 */
 	@Deprecated
-    public List<Concept> findProposedConcepts(String text) {
+	public List<Concept> findProposedConcepts(String text) {
 		return getProposedConcepts(text);
 	}
 	
@@ -825,7 +900,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 * @deprecated
 	 */
 	@Deprecated
-    public void proposeConcept(ConceptProposal conceptProposal) {
+	public void proposeConcept(ConceptProposal conceptProposal) {
 		saveConceptProposal(conceptProposal);
 	}
 	
@@ -900,7 +975,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 * @deprecated use {@link ConceptProposal#rejectConceptProposal()}
 	 */
 	@Deprecated
-    public void rejectConceptProposal(ConceptProposal cp) {
+	public void rejectConceptProposal(ConceptProposal cp) {
 		cp.rejectConceptProposal();
 		saveConceptProposal(cp);
 	}
@@ -910,7 +985,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 * @deprecated use {@link #getConceptProposals(String)}
 	 */
 	@Deprecated
-    public List<ConceptProposal> findMatchingConceptProposals(String text) {
+	public List<ConceptProposal> findMatchingConceptProposals(String text) {
 		return getConceptProposals(text);
 	}
 	
@@ -920,7 +995,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 * @deprecated use {@link #getConceptAnswers(String, Locale, Concept)}
 	 */
 	@Deprecated
-    public List<ConceptWord> findConceptAnswers(String phrase, Locale locale, Concept concept, boolean includeRetired) {
+	public List<ConceptWord> findConceptAnswers(String phrase, Locale locale, Concept concept, boolean includeRetired) {
 		
 		return getConceptAnswers(phrase, locale, concept);
 	}
@@ -944,7 +1019,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 * @see org.openmrs.api.ConceptService#getQuestionsForAnswer(org.openmrs.Concept)
 	 */
 	@Deprecated
-    public List<Concept> getQuestionsForAnswer(Concept concept) {
+	public List<Concept> getQuestionsForAnswer(Concept concept) {
 		return getConceptsByAnswer(concept);
 	}
 	
@@ -1117,9 +1192,9 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 *            being shown to the user
 	 * @return List<ConceptWord> object containing sorted <code>ConceptWord</code>s
 	 * @should not fail with null phrase
-	 * @should weight preferred names in country higher than other preferred names
-	 * @should weight preferred names in language higher than just preferred names
-	 * @should weight preferred names higher than other names
+	 * @should weigh preferred names higher than other names in the locale
+	 * @should weigh a fully specified name higher than an indexTerm in the locale
+	 * @should weigh a fully specified name higher than a synonym in the locale
 	 * @should weight names that contain all words in search phrase higher than names that dont
 	 * @should weight better matches higher than lower matches
 	 */
@@ -1445,7 +1520,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 * This method will only allow changing boolean concepts to coded.
 	 * 
 	 * @param concept
-	 * @throws ConceptsDataTypeCannotBeModifiedException
+	 * @throws ConceptInUseException
 	 */
 	private void checkIfDatatypeCanBeChanged(Concept concept) {
 		if (concept.getId() != null) {
@@ -1498,4 +1573,57 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		}
 	}
 	
+	/**
+	 * @see org.openmrs.api.ConceptService#hasAnyObservation(org.openmrs.ConceptName)
+	 */
+	@Override
+	public boolean hasAnyObservation(ConceptName conceptName) throws APIException {
+		List<ConceptName> conceptNames = new Vector<ConceptName>();
+		conceptNames.add(conceptName);
+		Integer count = Context.getObsService().getObservationCount(conceptNames, true);
+		return count > 0;
+	}
+	
+	/**
+	 * Utility method which loads the previous version of a conceptName to check if the name
+	 * property of the given conceptName has changed.
+	 * 
+	 * @param conceptName to be modified
+	 * @return boolean indicating change in the name property
+	 */
+	private boolean hasNameChanged(ConceptName conceptName) {
+		String newName = conceptName.getName();
+		String oldName = dao.getSavedConceptName(conceptName).getName();
+		return !oldName.equalsIgnoreCase(newName);
+	}
+	
+	/**
+	 * Creates a copy of a conceptName
+	 * 
+	 * @param conceptName the conceptName to be cloned
+	 * @return the cloned conceptName
+	 */
+	private ConceptName cloneConceptName(ConceptName conceptName) {
+		ConceptName copy = new ConceptName();
+		try {
+			copy = (ConceptName) BeanUtils.cloneBean(conceptName);
+		}
+		catch (IllegalAccessException e) {
+			
+			log.warn("Error generated", e);
+		}
+		catch (InstantiationException e) {
+			
+			log.warn("Error generated", e);
+		}
+		catch (InvocationTargetException e) {
+			
+			log.warn("Error generated", e);
+		}
+		catch (NoSuchMethodException e) {
+			
+			log.warn("Error generated", e);
+		}
+		return copy;
+	}
 }

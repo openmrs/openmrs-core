@@ -1,20 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<dataset>
-  <concept_name_tag concept_name_tag_id="1" tag="default" description="name to use when nothing else is available" creator="1" date_created="2007-05-01 00:00:00.0" voided="false" uuid="b445ee21-ee8b-49e7-8d77-f7bb94c8c476"/>
-  <concept_name_tag concept_name_tag_id="2" tag="short" description="preferred short name for a concept" creator="1" date_created="2007-05-01 00:00:00.0" voided="false" uuid="e629b421-0342-48d0-8401-d05d0f41bd89"/>
-  <concept_name_tag concept_name_tag_id="3" tag="synonym" description="a different word with similar meaning" creator="1" date_created="2007-05-01 00:00:00.0" voided="false" uuid="f2d4c53c-62d3-4fee-a007-13300dcfb5e5"/>
-  <concept_name_tag concept_name_tag_id="4" tag="preferred" description="preferred name in a language" creator="1" date_created="2007-05-01 00:00:00.0" voided="false" uuid="7563f1b1-e161-4935-bba0-2b9d6214cea6"/>
-  <concept_name_tag concept_name_tag_id="5" tag="preferred_KE" description="preferred name in Kenya" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="4936e587-aa7d-4e70-bb7c-b652d41eeded"/>
-  <concept_name_tag concept_name_tag_id="6" tag="preferred_LS" description="preferred name in Lesotho" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="26b3e50c-f587-49db-95f9-848695181f7a"/>
-  <concept_name_tag concept_name_tag_id="7" tag="preferred_MW" description="preferred name in Malawi" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="7c32ada5-b111-40ba-8083-e1a04241a0fa"/>
-  <concept_name_tag concept_name_tag_id="8" tag="preferred_RW" description="preferred name in Rwanda" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="1733e4a1-792d-403e-88d7-33741380fb4b"/>
-  <concept_name_tag concept_name_tag_id="9" tag="preferred_SA" description="preferred name in South Africa" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="95f81cb6-fb83-4959-aa94-65e2fc43a7c4"/>
-  <concept_name_tag concept_name_tag_id="10" tag="preferred_TZ" description="preferred name in Tanzania" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="af527cf6-4899-40eb-bb7c-c9351cfad4b3"/>
-  <concept_name_tag concept_name_tag_id="11" tag="preferred_UG" description="preferred name in Uganda" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="c7df609a-9d52-4438-91e0-e57132471618"/>
-  <concept_name_tag concept_name_tag_id="12" tag="preferred_UK" description="preferred name in the United Kingdom" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="fb576448-f1fe-426c-8471-355a5d6f4301"/>
-  <concept_name_tag concept_name_tag_id="13" tag="preferred_US" description="preferred name in the United States" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="178a3192-79b0-4da6-85b8-adb4aea84ddc"/>
-  <concept_name_tag concept_name_tag_id="14" tag="preferred_ZM" description="preferred name in Zambia" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="555b918c-7216-4a68-b11f-925fcabac7ce"/>
-  <concept_name_tag concept_name_tag_id="15" tag="preferred_ZW" description="preferred name in Zimbabwe" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="dde10dbc-96ba-4974-8026-b4dd5904c4f2"/>
+<dataset>  
   <field field_id="1" name="Some concept" description="This is a test field" field_type="1" concept_id="1" table_name="" default_value="" select_multiple="false" creator="1" date_created="2006-07-18 11:03:31.0" retired="false" uuid="e1843048-ca2f-4349-a9b7-1165b98d91de"/>
   <field field_id="2" name="Some same concept" description="This is a duplicate field" field_type="1" concept_id="1" table_name="" default_value="" select_multiple="false" creator="1" date_created="2006-07-18 11:03:31.0" retired="false" uuid="a2843248-ca4c-4349-a3b7-1162b98d91df"/>
   <field field_id="3" name="Some same concept" description="This is a duplicate field" field_type="1" concept_id="1" table_name="" default_value="" select_multiple="false" creator="1" date_created="2006-07-18 11:03:31.0" retired="false" uuid="b1843148-da2f-4349-c9c7-1164b98d91dd"/>
