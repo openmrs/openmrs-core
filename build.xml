@@ -310,10 +310,15 @@
 				<include name="**/*.withjstl"/>
 				<include name="**/*.tag"/>
 				<include name="**/messages*.properties"/>
-				<include name="**/*_theme*.properties"/>
 				<include name="**/images/**/*" />
+				<exclude name="**/themes/*"/>
 				<!-- This fileset doesn't exclude /web/test so that 
 					 developers can easily test /web/test files by running deploy-web -->
+			</fileset>
+		</copy>
+		<copy todir="${tomcat.home}/webapps/${webapp.name}/WEB-INF/classes" failonerror="false">
+			<fileset dir="web/WEB-INF">
+				<include name="themes/*"/>
 			</fileset>
 		</copy>
 	</target>
@@ -331,7 +336,7 @@
 		<unzip src="${metadata.dir}/model/liquibase-data.zip" 
 			   dest="${build.dir}/liquibase-data" />
 
-		<war destfile="${dist.dir}/${webapp.name}.war" basedir="web" excludes="**/web.xml, **/test/" webxml="${dist.dir}/web/web.xml" duplicate="add">
+		<war destfile="${dist.dir}/${webapp.name}.war" basedir="web" excludes="**/web.xml, **/test/, **/themes/" webxml="${dist.dir}/web/web.xml" duplicate="add">
 			<classes dir="${build.dir}">
 				<include name="**/web/**/*.class" />
 				<include name="**/web/**/*.vm" /> <!-- velocity macro files for initial setup -->
@@ -344,7 +349,7 @@
 				<include name="*" /> <!-- for the initial setup files: liquibase-schema-only.xml, liquibase-core-data.xml, liquibase-demo-data.xml-->
 			</classes>
 			<classes dir="web/WEB-INF">
-				<include name="*_theme*.properties"/>
+				<include name="themes/*"/>
 			</classes>
 			<lib file="${dist.dir}/${openmrs.api.name}" />
 			<lib dir="${antlr.dir}" includes="*.jar" />
