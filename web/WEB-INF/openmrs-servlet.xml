@@ -79,6 +79,7 @@
 		<property name="interceptors">
 			<list>
 				<ref bean="localeChangeInterceptor" />
+				<ref bean="themeChangeInterceptor" />
 				<!-- <ref bean="openSessionInViewInterceptor"/> -->
 			</list>
 		</property>
@@ -110,6 +111,7 @@
 		<property name="interceptors">
 			<list>
 				<ref bean="localeChangeInterceptor" />
+				<ref bean="themeChangeInterceptor" />
 				<!-- <ref bean="openSessionInViewInterceptor"/> -->
 			</list>
 		</property>
@@ -1005,10 +1007,19 @@
 	<bean id="themeSource"
 		class="org.springframework.ui.context.support.ResourceBundleThemeSource">
 		<property name="basenamePrefix">
-			<value>standard_</value>
+			<value>/themes/</value>
 		</property>
 	</bean>
-
+	
+	<bean id="themeResolver" class="org.openmrs.web.OpenmrsCookieThemeResolver">
+		<property name="defaultThemeName"><value>green</value></property>
+	</bean>
+	
+	<bean id="themeChangeInterceptor"
+		class="org.springframework.web.servlet.theme.ThemeChangeInterceptor">
+		<property name="paramName"><value>theme</value></property>
+	</bean>
+	
 	<bean id="localeResolver" class="org.openmrs.web.OpenmrsCookieLocaleResolver" />
 
 	<bean id="localeChangeInterceptor"
