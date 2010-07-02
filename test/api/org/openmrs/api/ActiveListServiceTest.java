@@ -54,7 +54,7 @@ public class ActiveListServiceTest extends BaseContextSensitiveTest {
 	
 	//	public List<ActiveListItem> getActiveListItems(Person p, ActiveListType type) throws Exception;
 	@Test
-	public void getActiveListItems() throws Exception {
+	public void should_getActiveListItems() throws Exception {
 		Patient p = patientService.getPatient(2);
 		List<ActiveListItem> items = activeListService.getActiveListItems(p, new ActiveListType(2));
 		assertEquals(1, items.size());
@@ -63,14 +63,14 @@ public class ActiveListServiceTest extends BaseContextSensitiveTest {
 	
 	//	public <T extends ActiveListItem> List<T> getActiveListItems(Class<T> clazz, Person p, ActiveListType type) throws Exception;
 	@Test
-	public void getActiveListItems_withProblem() throws Exception {
+	public void should_getActiveListItems_withProblem() throws Exception {
 		Patient p = patientService.getPatient(2);
 		List<Problem> items = activeListService.getActiveListItems(Problem.class, p, new ActiveListType(2));
 		assertEquals(1, items.size());
 	}
 	
 	@Test
-	public void getActiveListItems_withAllergy() throws Exception {
+	public void should_getActiveListItems_withAllergy() throws Exception {
 		Patient p = patientService.getPatient(2);
 		List<Allergy> items = activeListService.getActiveListItems(Allergy.class, p, new ActiveListType(1));
 		assertEquals(1, items.size());
@@ -78,7 +78,7 @@ public class ActiveListServiceTest extends BaseContextSensitiveTest {
 
 	//	public <T extends ActiveListItem> T getActiveListItem(Class<T> clazz, Integer activeListItemId) throws Exception;
 	@Test
-	public void getActiveListItem_Allergy() throws Exception {
+	public void should_getActiveListItem_Allergy() throws Exception {
 		Allergy item = activeListService.getActiveListItem(Allergy.class, 1);
 		Assert.assertNotNull(item);
 		Assert.assertTrue(item instanceof Allergy);
@@ -88,7 +88,7 @@ public class ActiveListServiceTest extends BaseContextSensitiveTest {
 	//
 	//	public ActiveListItem saveActiveListItem(ActiveListItem item) throws Exception;
 	@Test
-	public void saveActiveListItem_Problem() throws Exception {
+	public void should_saveActiveListItem_Problem() throws Exception {
 		Patient p = patientService.getPatient(2);
 		List<Problem> items = activeListService.getActiveListItems(Problem.class, p, new ActiveListType(2));
 		assertEquals(1, items.size());
@@ -102,7 +102,7 @@ public class ActiveListServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	@Test
-	public void saveActiveListItem_Allergy() throws Exception {
+	public void should_saveActiveListItem_Allergy() throws Exception {
 		Patient p = patientService.getPatient(2);
 		List<Allergy> items = activeListService.getActiveListItems(Allergy.class, p, new ActiveListType(1));
 		assertEquals(1, items.size());
@@ -118,7 +118,7 @@ public class ActiveListServiceTest extends BaseContextSensitiveTest {
 
 	//	public ActiveListItem removeActiveListItem(ActiveListItem item, Date endDate) throws Exception;
 	@Test
-	public void removeActiveListItem_Allergy() throws Exception {
+	public void should_removeActiveListItem_Allergy() throws Exception {
 		Allergy item = activeListService.getActiveListItem(Allergy.class, 1);
 		activeListService.removeActiveListItem(item, null);
 		
@@ -129,7 +129,7 @@ public class ActiveListServiceTest extends BaseContextSensitiveTest {
 
 	//	public ActiveListItem voidActiveListItem(ActiveListItem item, String reason) throws Exception;
 	@Test
-	public void voidActiveListItem_Allergy() throws Exception {
+	public void should_voidActiveListItem_Allergy() throws Exception {
 		Allergy item = activeListService.getActiveListItem(Allergy.class, 1);
 		item = (Allergy) activeListService.voidActiveListItem(item, "Because");
 		Assert.assertTrue(item.isVoided());
