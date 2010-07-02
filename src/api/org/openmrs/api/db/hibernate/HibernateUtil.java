@@ -117,44 +117,47 @@ public class HibernateUtil {
 	 * Add equal criterion for the localized column of {@link OpenmrsMetadata} object.
 	 * 
 	 * @param value - value to match
-	 * @param columnName - column to match in
+	 * @param propertyName - column to match in
 	 * @param criteria - criteria to append search conditions
 	 * @see #getEqCriterionForLocalizedColumn(String, String)
 	 * @since 1.9
 	 */
-	public static void addEqCriterionForLocalizedColumn(String value, String columnName, Criteria criteria) {
-		criteria.add(getEqCriterionForLocalizedColumn(value, columnName));
+	public static void addEqCriterionForLocalizedColumn(String value, String propertyName, Criteria criteria) {
+		criteria.add(getEqCriterionForLocalizedColumn(value, propertyName));
 	}
 	
 	/**
 	 * Add like criterion for the localized column of {@link OpenmrsMetadata} object.
 	 * 
 	 * @param value - value to match
-	 * @param columnName - column to match in
+	 * @param propertyName - column to match in
 	 * @param criteria - criteria to append search conditions
 	 * @param caseSensitive - if caseSensitive is false, do sql query similar to hibernate's "ilike"
 	 * @param mode - specify match mode, match from start, end, anywhere, or exact
 	 * @see #getLikeCriterionForLocalizedColumn(String, String, boolean, MatchMode)
 	 * @since 1.9
 	 */
-	public static void addLikeCriterionForLocalizedColumn(String value, String columnName, Criteria criteria,
+	public static void addLikeCriterionForLocalizedColumn(String value, String propertyName, Criteria criteria,
 	                                                      boolean caseSensitive, MatchMode mode) {
-		criteria.add(getLikeCriterionForLocalizedColumn(value, columnName, caseSensitive, mode));
+		criteria.add(getLikeCriterionForLocalizedColumn(value, propertyName, caseSensitive, mode));
 	}
 	
 	/**
 	 * Get equal criterion for the localized column of {@link OpenmrsMetadata} object.
 	 * 
 	 * @param value - value to match
-	 * @param columnName - column to match in
+	 * @param propertyName - column to match in
 	 * @return criterion to be used as hibernate's equal query
 	 * @since 1.9
+	 * @should return correct criterion when has unlocalized value only
+	 * @should return correct criterion when has localized values only
+	 * @should return correct criterion when has unlocalized and localized values
 	 */
-	public static Criterion getEqCriterionForLocalizedColumn(String value, String columnName) {
-		Criterion leftExp = Expression.eq(columnName, value);
+	public static Criterion getEqCriterionForLocalizedColumn(String value, String propertyName) {
+		Criterion leftExp = Expression.eq(propertyName, value);
 		String searchValue = LocalizedStringUtil.PARTITION + LocalizedStringUtil.escapeDelimiter(value)
 		        + LocalizedStringUtil.SPLITTER;
-		Criterion rightExp = Expression.like(columnName, searchValue, MatchMode.ANYWHERE);
+		Criterion rightExp = Expression.like(propertyName, searchValue, MatchMode.ANYWHERE);
 		return Expression.or(leftExp, rightExp);
 	}
 	
@@ -162,14 +165,17 @@ public class HibernateUtil {
 	 * Get like criterion for the localized column of {@link OpenmrsMetadata} object.
 	 * 
 	 * @param value - value to match
-	 * @param columnName - column to match in
+	 * @param propertyName - column to match in
 	 * @param caseSensitive - if caseSensitive is false, return sql query similar to hibernate's
 	 *            "ilike"
 	 * @param mode - specify match mode, match from start, end, anywhere, or exact
 	 * @return criterion to be used as hibernate's like or ilike query
 	 * @since 1.9
+	 * @should return correct criterion when has unlocalized value only
+	 * @should return correct criterion when has localized values only
+	 * @should return correct criterion when has unlocalized and localized values
 	 */
-	public static Criterion getLikeCriterionForLocalizedColumn(String value, String columnName, boolean caseSensitive,
+	public static Criterion getLikeCriterionForLocalizedColumn(String value, String propertyName, boolean caseSensitive,
 	                                                           MatchMode mode) {
 		Criterion leftExp = null;
 		Criterion rigthExp = null;
@@ -179,40 +185,40 @@ public class HibernateUtil {
 			searchValue = LocalizedStringUtil.PARTITION + LocalizedStringUtil.escapeDelimiter(value);
 			if (caseSensitive == true) {
 				// append expression for unlocalized metadata
-				leftExp = Expression.like(columnName, value, mode);
+				leftExp = Expression.like(propertyName, value, mode);
 				// append expression for localized metadata
-				rigthExp = Expression.like(columnName, searchValue, MatchMode.ANYWHERE);
+				rigthExp = Expression.like(propertyName, searchValue, MatchMode.ANYWHERE);
 			} else {
-				leftExp = Expression.ilike(columnName, value, mode);
-				rigthExp = Expression.ilike(columnName, searchValue, MatchMode.ANYWHERE);
+				leftExp = Expression.ilike(propertyName, value, mode);
+				rigthExp = Expression.ilike(propertyName, searchValue, MatchMode.ANYWHERE);
 			}
 			return Expression.or(leftExp, rigthExp);
 		} else if (MatchMode.END.equals(mode)) {
 			searchValue = LocalizedStringUtil.escapeDelimiter(value) + LocalizedStringUtil.SPLITTER;
 			if (caseSensitive == true) {
-				leftExp = Expression.like(columnName, value, mode);
-				rigthExp = Expression.like(columnName, searchValue, MatchMode.ANYWHERE);
+				leftExp = Expression.like(propertyName, value, mode);
+				rigthExp = Expression.like(propertyName, searchValue, MatchMode.ANYWHERE);
 			} else {
-				leftExp = Expression.ilike(columnName, value, mode);
-				rigthExp = Expression.ilike(columnName, searchValue, MatchMode.ANYWHERE);
+				leftExp = Expression.ilike(propertyName, value, mode);
+				rigthExp = Expression.ilike(propertyName, searchValue, MatchMode.ANYWHERE);
 			}
 			return Expression.or(leftExp, rigthExp);
 		} else if (MatchMode.ANYWHERE.equals(mode)) {
 			if (caseSensitive == true)// use one expression
-				leftExp = Expression.like(columnName, value, mode);
+				leftExp = Expression.like(propertyName, value, mode);
 			else
-				leftExp = Expression.ilike(columnName, value, mode);
+				leftExp = Expression.ilike(propertyName, value, mode);
 			return leftExp;
 		} else {/*MatchMode.EXACT.equals(mode)*/
 			searchValue = LocalizedStringUtil.PARTITION + LocalizedStringUtil.escapeDelimiter(value)
 			        + LocalizedStringUtil.SPLITTER;
 			if (caseSensitive == true) {
-				leftExp = Expression.like(columnName, value, mode);
-				rigthExp = Expression.like(columnName, searchValue, MatchMode.ANYWHERE);
+				leftExp = Expression.like(propertyName, value, mode);
+				rigthExp = Expression.like(propertyName, searchValue, MatchMode.ANYWHERE);
 				
 			} else {
-				leftExp = Expression.ilike(columnName, value, mode);
-				rigthExp = Expression.ilike(columnName, searchValue, MatchMode.ANYWHERE);
+				leftExp = Expression.ilike(propertyName, value, mode);
+				rigthExp = Expression.ilike(propertyName, searchValue, MatchMode.ANYWHERE);
 			}
 			return Expression.or(leftExp, rigthExp);
 		}
