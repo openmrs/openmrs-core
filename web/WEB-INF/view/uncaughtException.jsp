@@ -9,7 +9,8 @@
 
 <%@ include file="/WEB-INF/template/headerMinimal.jsp" %>
 
-&nbsp;<br />
+&nbsp;
+<%@page import="org.openmrs.util.OpenmrsUtil"%><br />
 
 <h2>An Internal Error has Occurred</h2>
 
@@ -25,6 +26,10 @@
 			link.innerHTML = "Show stack trace";
 			trace.style.display = "none";
 		}
+	}
+
+	function goToJira(url){
+		window.open(url, '_blank', 'height=700, width=700');		
 	}
 </script>	
 
@@ -95,12 +100,19 @@ try {
 				// It's not a ServletException, so we'll just show it
 				elements = exception.getStackTrace(); 
 			}
+
+            // Collect stack trace for reporting bug description
+            StringBuilder description = new StringBuilder("EDIT_HERE\n\nStack trace:\n");
 			for (StackTraceElement element : elements) {
+                description.append(element + "\n");
 				if (element.getClassName().contains("openmrs"))
 					out.println("<b>" + element + "</b><br/>");
 				else
 					out.println(element + "<br/>");
 			}
+            description.append("\nOpenMRS Version: " + OpenmrsConstants.OPENMRS_VERSION);
+            pageContext.setAttribute("jira_description", OpenmrsUtil.shortenedStackTrace(description.toString()));
+            pageContext.setAttribute("jira_summary", exception.toString() + " EDIT_HERE");
 		}
 	} 
 	else  {
@@ -115,7 +127,28 @@ try {
 }
 %>
 	</div> <!-- close stack trace box -->
-	
+
+<br/>
 <openmrs:extensionPoint pointId="org.openmrs.uncaughtException" type="html" />
+
+<div>
+<%-- if jira_summary is defined then show report bug --%>
+<c:if test="${jira_summary != null}">
+    <form action="<%=OpenmrsConstants.JIRA_CREATE_PATCH_URL %>" target="_blank" method="get">
+    	<input type="hidden" name="pid" value="<%=OpenmrsConstants.JIRA_OPENMRS_TRUNK_PID%>" />
+        <input type="hidden" name="issuetype" value="<%=OpenmrsConstants.JIRA_BUG %>" />
+        <input type="hidden" name="summary" value="${jira_summary}" />
+        <input type="hidden" name="description" value="${jira_description}" />
+        <br/>
+        <br/>If you don't yet have an OpenMRS ID, click <a onclick="goToJira('<%=OpenmrsConstants.JIRA_SIGN_UP %>')" href="">here</a> to get one.
+        <br/>Then, click the button below to report this error.       
+        <br/>
+        <br/>
+        <input type="submit" value="Report Bug">
+    </form>
+</c:if>
+</div>
+	
+
 
 <%@ include file="/WEB-INF/template/footerMinimal.jsp" %>

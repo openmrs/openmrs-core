@@ -81,7 +81,7 @@ public final class OpenmrsConstants {
 	 * @deprecated the database doesn't have just one main version now that we are using liquibase.
 	 */
 	@Deprecated
-    public static final String DATABASE_VERSION_EXPECTED = THIS_PACKAGE.getImplementationVersion();
+	public static final String DATABASE_VERSION_EXPECTED = THIS_PACKAGE.getImplementationVersion();
 	
 	public static String DATABASE_NAME = "openmrs";
 	
@@ -95,7 +95,7 @@ public final class OpenmrsConstants {
 	 * @deprecated the database doesn't have just one main version now that we are using liquibase.
 	 */
 	@Deprecated
-    public static String DATABASE_VERSION = null;
+	public static String DATABASE_VERSION = null;
 	
 	/**
 	 * Set true from runtime configuration to obscure patients for system demonstrations
@@ -789,7 +789,7 @@ public final class OpenmrsConstants {
 	public static final String GLOBAL_PROPERTY_FALSE_CONCEPT = "concept.false";
 	
 	public static final String GLOBAL_PROPERTY_LOCATION_WIDGET_TYPE = "location.field.style";
-
+	
 	/**
 	 * Global property name that allows specification of whether user passwords must contain both
 	 * upper and lower case characters. Allowable values are "true", "false", and null
@@ -909,7 +909,7 @@ public final class OpenmrsConstants {
 		        "Color of the 'critical' section of numeric graphs on the patient dashboard."));
 		
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_LOCATION_WIDGET_TYPE, "default",
-				"Type of widget to use for location fields"));
+		        "Type of widget to use for location fields"));
 		
 		String standardRegimens = "<list>" + "  <regimenSuggestion>" + "    <drugComponents>" + "      <drugSuggestion>"
 		        + "        <drugId>2</drugId>" + "        <dose>1</dose>" + "        <units>tab(s)</units>"
@@ -1376,5 +1376,13 @@ public final class OpenmrsConstants {
 	public static final String RAW_VIEW = "RAW_VIEW";
 	
 	public static final String TEXT_VIEW = "TEXT_VIEW";
+	
+	public static final String JIRA_CREATE_PATCH_URL = "http://tickets.openmrs.org/secure/CreateIssueDetails!init.jspa";
+	
+	public static final String JIRA_SIGN_UP = "http://tickets.openmrs.org/secure/Signup!default.jspa";
+	
+	public static final String JIRA_OPENMRS_TRUNK_PID = "10000";
+	
+	public static final String JIRA_BUG = "1";
 	
 }
