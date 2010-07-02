@@ -59,6 +59,17 @@
 		<property name="defaultMethodName"><value>handleRequest</value></property>
 	</bean>
 	
+	<!--  Exception handler mappings --> 
+ 		 
+ 	<bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver"> 
+ 		<property name="exceptionMappings"> 
+ 			<map> 
+ 				<entry key="org.openmrs.api.APIException" value="uncaughtException"/> 
+ 			</map> 
+ 		</property> 
+ 		<property name="order" value="100" /> 
+ 	</bean>
+	
 	<!-- So that controllers can use annotations like @Controller and @RequestMapping
 -->
 	<bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
