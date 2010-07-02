@@ -143,7 +143,7 @@ public class OpenmrsUtil {
 	 * @should get valid check digits
 	 */
 	@Deprecated
-    public static int getCheckDigit(String idWithoutCheckdigit) throws Exception {
+	public static int getCheckDigit(String idWithoutCheckdigit) throws Exception {
 		PatientService ps = Context.getPatientService();
 		IdentifierValidator piv = ps.getDefaultIdentifierValidator();
 		
@@ -201,7 +201,7 @@ public class OpenmrsUtil {
 	 * @should throw error if given an invalid character in id
 	 */
 	@Deprecated
-    public static boolean isValidCheckDigit(String id) throws Exception {
+	public static boolean isValidCheckDigit(String id) throws Exception {
 		PatientService ps = Context.getPatientService();
 		IdentifierValidator piv = ps.getDefaultIdentifierValidator();
 		
@@ -616,7 +616,7 @@ public class OpenmrsUtil {
 	 *             {@link Person#getAge(Date)}
 	 */
 	@Deprecated
-    public static Integer ageFromBirthdate(Date birthdate) {
+	public static Integer ageFromBirthdate(Date birthdate) {
 		if (birthdate == null)
 			return null;
 		
@@ -1146,7 +1146,7 @@ public class OpenmrsUtil {
 	 *             #getDateFormat(Context#getLocale())} instead
 	 */
 	@Deprecated
-    public static SimpleDateFormat getDateFormat() {
+	public static SimpleDateFormat getDateFormat() {
 		return Context.getDateFormat();
 	}
 	
@@ -1791,11 +1791,10 @@ public class OpenmrsUtil {
 		}
 	}
 	
-	
 	/**
 	 * Convenience method used to load properties from the given file.
 	 * 
-	 * @param props	the properties object to be loaded into
+	 * @param props the properties object to be loaded into
 	 * @param propertyFile the properties file to read
 	 */
 	public static void loadProperties(Properties props, File propertyFile) {
@@ -1824,8 +1823,6 @@ public class OpenmrsUtil {
 			}
 		}
 	}
-	
-	
 	
 	/**
 	 * By default java will escape colons and equal signs when writing properites files. <br/>
@@ -2081,5 +2078,38 @@ public class OpenmrsUtil {
 				log.trace("Error occurred while closing stream", io);
 			}
 		}
+	}
+	
+	/**
+	 * Convert a stack trace into a shortened version for easier viewing and data storage, including
+	 * only those lines we are most concerned with
+	 * 
+	 * @param stackTrace original stack trace from an error
+	 * @return shortened stack trace
+	 * @should return null if stackTrace is null
+	 * @should remove springframework and reflection related lines
+	 */
+	public static String shortenedStackTrace(String stackTrace) {
+		if (stackTrace == null)
+			return null;
+
+		List<String> results = new ArrayList<String>();
+		final Pattern exclude = Pattern.compile("(org.springframework.|java.lang.reflect.Method.invoke|sun.reflect.)");
+		boolean found = false;
+
+		for (String line : stackTrace.split("\n")) {
+			Matcher m = exclude.matcher(line);
+			if (m.find())
+				found = true;
+			else {
+				if (found) {
+					found = false;
+					results.add("\tat [ignored] ...");
+				}
+				results.add(line);
+			}
+		}
+		
+		return StringUtils.join(results, "\n");
 	}
 }
