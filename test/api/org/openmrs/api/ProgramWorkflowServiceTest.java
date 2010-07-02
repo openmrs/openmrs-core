@@ -20,10 +20,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.openmrs.Concept;
+import org.openmrs.ConceptName;
 import org.openmrs.ConceptStateConversion;
 import org.openmrs.PatientProgram;
 import org.openmrs.PatientState;
@@ -63,7 +66,6 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 			cs = Context.getConceptService();
 		}
 	}
-	
 	
 	/**
 	 * Tests fetching a PatientProgram, updating and saving it, and subsequently fetching the
@@ -171,172 +173,183 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 		TestUtil.assertCollectionContentsEquals(Arrays.asList(new String[] { "SINGLE", "MARRIED" }), names);
 	}
 	
-	
 	/**
 	 * @see {@link ProgramWorkflowService#getConceptStateConversionByUuid(String)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should find object given valid uuid", method = "getConceptStateConversionByUuid(String)")
-	public void getConceptStateConversionByUuid_shouldFindObjectGivenValidUuid()
-			throws Exception {
+	public void getConceptStateConversionByUuid_shouldFindObjectGivenValidUuid() throws Exception {
 		String uuid = "6c72b064-506d-11de-80cb-001e378eb67e";
-		ConceptStateConversion conceptStateConversion = Context.getProgramWorkflowService().getConceptStateConversionByUuid(uuid);
-		Assert.assertEquals(1, (int)conceptStateConversion.getConceptStateConversionId());
+		ConceptStateConversion conceptStateConversion = Context.getProgramWorkflowService().getConceptStateConversionByUuid(
+		    uuid);
+		Assert.assertEquals(1, (int) conceptStateConversion.getConceptStateConversionId());
 	}
-
+	
 	/**
 	 * @see {@link ProgramWorkflowService#getConceptStateConversionByUuid(String)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should return null if no object found with given uuid", method = "getConceptStateConversionByUuid(String)")
-	public void getConceptStateConversionByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid()
-			throws Exception {
+	public void getConceptStateConversionByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
 		Assert.assertNull(Context.getProgramWorkflowService().getConceptStateConversionByUuid("some invalid uuid"));
 	}
-
+	
 	/**
 	 * @see {@link ProgramWorkflowService#getPatientProgramByUuid(String)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should find object given valid uuid", method = "getPatientProgramByUuid(String)")
-	public void getPatientProgramByUuid_shouldFindObjectGivenValidUuid()
-			throws Exception {
+	public void getPatientProgramByUuid_shouldFindObjectGivenValidUuid() throws Exception {
 		String uuid = "2edf272c-bf05-4208-9f93-2fa213ed0415";
 		PatientProgram patientProgram = Context.getProgramWorkflowService().getPatientProgramByUuid(uuid);
-		Assert.assertEquals(2, (int)patientProgram.getPatientProgramId());
+		Assert.assertEquals(2, (int) patientProgram.getPatientProgramId());
 	}
-
+	
 	/**
 	 * @see {@link ProgramWorkflowService#getPatientProgramByUuid(String)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should return null if no object found with given uuid", method = "getPatientProgramByUuid(String)")
-	public void getPatientProgramByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid()
-			throws Exception {
+	public void getPatientProgramByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
 		Assert.assertNull(Context.getProgramWorkflowService().getPatientProgramByUuid("some invalid uuid"));
 	}
-
+	
 	/**
 	 * @see {@link ProgramWorkflowService#getPatientStateByUuid(String)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should find object given valid uuid", method = "getPatientStateByUuid(String)")
-	public void getPatientStateByUuid_shouldFindObjectGivenValidUuid()
-			throws Exception {
+	public void getPatientStateByUuid_shouldFindObjectGivenValidUuid() throws Exception {
 		String uuid = "ea89deaa-23cc-4840-92fe-63d199c37e4c";
 		PatientState patientState = Context.getProgramWorkflowService().getPatientStateByUuid(uuid);
 		Assert.assertEquals(1, (int) patientState.getPatientStateId());
 	}
-
+	
 	/**
 	 * @see {@link ProgramWorkflowService#getPatientStateByUuid(String)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should return null if no object found with given uuid", method = "getPatientStateByUuid(String)")
-	public void getPatientStateByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid()
-			throws Exception {
+	public void getPatientStateByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
 		Assert.assertNull(Context.getProgramWorkflowService().getPatientStateByUuid("some invalid uuid"));
 	}
-
+	
 	/**
 	 * @see {@link ProgramWorkflowService#getProgramByUuid(String)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should find object given valid uuid", method = "getProgramByUuid(String)")
-	public void getProgramByUuid_shouldFindObjectGivenValidUuid()
-			throws Exception {
+	public void getProgramByUuid_shouldFindObjectGivenValidUuid() throws Exception {
 		String uuid = "eae98b4c-e195-403b-b34a-82d94103b2c0";
 		Program program = Context.getProgramWorkflowService().getProgramByUuid(uuid);
-		Assert.assertEquals(1, (int)program.getProgramId());
+		Assert.assertEquals(1, (int) program.getProgramId());
 	}
-
+	
 	/**
 	 * @see {@link ProgramWorkflowService#getProgramByUuid(String)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should return null if no object found with given uuid", method = "getProgramByUuid(String)")
-	public void getProgramByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid()
-			throws Exception {
+	public void getProgramByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
 		Assert.assertNull(Context.getProgramWorkflowService().getProgramByUuid("some invalid uuid"));
 	}
-
+	
 	/**
 	 * @see {@link ProgramWorkflowService#getStateByUuid(String)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should find object given valid uuid", method = "getStateByUuid(String)")
-	public void getStateByUuid_shouldFindObjectGivenValidUuid()
-			throws Exception {
+	public void getStateByUuid_shouldFindObjectGivenValidUuid() throws Exception {
 		String uuid = "92584cdc-6a20-4c84-a659-e035e45d36b0";
 		ProgramWorkflowState state = Context.getProgramWorkflowService().getStateByUuid(uuid);
-		Assert.assertEquals(1, (int)state.getProgramWorkflowStateId());
+		Assert.assertEquals(1, (int) state.getProgramWorkflowStateId());
 	}
-
+	
 	/**
 	 * @see {@link ProgramWorkflowService#getStateByUuid(String)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should return null if no object found with given uuid", method = "getStateByUuid(String)")
-	public void getStateByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid()
-			throws Exception {
+	public void getStateByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
 		Assert.assertNull(Context.getProgramWorkflowService().getStateByUuid("some invalid uuid"));
 	}
-
+	
 	/**
 	 * @see {@link ProgramWorkflowService#getWorkflowByUuid(String)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should find object given valid uuid", method = "getWorkflowByUuid(String)")
-	public void getWorkflowByUuid_shouldFindObjectGivenValidUuid()
-			throws Exception {
+	public void getWorkflowByUuid_shouldFindObjectGivenValidUuid() throws Exception {
 		String uuid = "84f0effa-dd73-46cb-b931-7cd6be6c5f81";
 		ProgramWorkflow programWorkflow = Context.getProgramWorkflowService().getWorkflowByUuid(uuid);
-		Assert.assertEquals(1, (int)programWorkflow.getProgramWorkflowId());
+		Assert.assertEquals(1, (int) programWorkflow.getProgramWorkflowId());
 	}
-
+	
 	/**
 	 * @see {@link ProgramWorkflowService#getWorkflowByUuid(String)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should return null if no object found with given uuid", method = "getWorkflowByUuid(String)")
-	public void getWorkflowByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid()
-			throws Exception {
+	public void getWorkflowByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
 		Assert.assertNull(Context.getProgramWorkflowService().getWorkflowByUuid("some invalid uuid"));
 	}
-
+	
+	/**
+	 * THIS TEST SHOULD BE IN THE CLASS 'PROGRAMWORKFLOWTEST.JAVA' BUT IT REQUIRES ACCESS TO THE DAO
+	 * LAYER
+	 * 
+	 * @see {@link ProgramWorkflow#getSortedStates()}
+	 */
+	
+	@Test
+	@Verifies(value = "should sort names containing numbers intelligently", method = "getSortedStates()")
+	public void getSortedStates_shouldSortNamesContainingNumbersIntelligently() throws Exception {
+		
+		ProgramWorkflow program = new ProgramWorkflow();
+		
+		ConceptName state1ConceptName = new ConceptName("Group 10", Context.getLocale());
+		Concept state1Concept = new Concept();
+		state1Concept.addName(state1ConceptName);
+		ProgramWorkflowState state1 = new ProgramWorkflowState();
+		state1.setConcept(state1Concept);
+		program.addState(state1);
+		
+		ConceptName state2ConceptName = new ConceptName("Group 2", Context.getLocale());
+		Concept state2Concept = new Concept();
+		state2Concept.addName(state2ConceptName);
+		ProgramWorkflowState state2 = new ProgramWorkflowState();
+		state2.setConcept(state2Concept);
+		program.addState(state2);
+		
+		Set<ProgramWorkflowState> sortedStates = program.getSortedStates();
+		int x = 1;
+		for (ProgramWorkflowState state : sortedStates) {
+			if (x == 1)
+				Assert.assertEquals("Group 2", state.getConcept().getName(Context.getLocale()).getName());
+			else if (x == 2)
+				Assert.assertEquals("Group 10", state.getConcept().getName(Context.getLocale()).getName());
+			else
+				Assert.fail("Wha?!");
+			x++;
+		}
+	}
 	
 	//	/**
 	//	 * This method should be uncommented when you want to examine the actual hibernate
 	//	 * sql calls being made.  The calls that should be limiting the number of returned
 	//	 * patients should show a "top" or "limit" in the sql -- this proves hibernate's
-	//	 * use of a native sql limit as opposed to a java-only limit.  
-	//	 * 
+	//	 * use of a native sql limit as opposed to a java-only limit.
+	//	 *
 	//	 * Note: if enabled, this test will be considerably slower
-	//     * 
+	//     *
 	//     * @see org.openmrs.test.BaseContextSensitiveTest#getRuntimeProperties()
 	//     */
 	//    @Override
 	//    public Properties getRuntimeProperties() {
 	//	    Properties props = super.getRuntimeProperties();
 	//	    props.setProperty("hibernate.show_sql", "true");
-	//	    
+	//
 	//    	return props;
 	//    }
-	
-	
-	
-	
 	
 }

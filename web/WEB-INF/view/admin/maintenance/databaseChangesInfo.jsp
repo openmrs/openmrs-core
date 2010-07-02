@@ -11,6 +11,11 @@
 <spring:message code="DatabaseChangesInfo.help" />
 <br/>
 <br/>
+<b><spring:message code="DatabaseChangesInfo.filename.title" /></b>
+<div style="padding-left: 20px; padding-top: 5px">${updateLogFile}</div>
+
+<br/>
+<br/>
 
 <b class="boxHeader"><spring:message code="DatabaseChangesInfo.header"/></b>
 <table cellpadding="4" cellspacing="0" border="0" class="box">

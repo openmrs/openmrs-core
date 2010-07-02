@@ -174,7 +174,7 @@ public interface ConceptDAO {
 	 * @see org.openmrs.api.ConceptService#getConceptDatatypes(java.lang.String)
 	 */
 	@Deprecated
-    public List<ConceptDatatype> getConceptDatatypes(String name) throws DAOException;
+	public List<ConceptDatatype> getConceptDatatypes(String name) throws DAOException;
 	
 	/**
 	 * @param name
@@ -423,5 +423,16 @@ public interface ConceptDAO {
 	 * @should get saved conceptDatatype from database
 	 */
 	public ConceptDatatype getSavedConceptDatatype(Concept concept);
+	
+	/**
+	 * Gets the persisted copy of the conceptName currently saved in the database for the given
+	 * conceptName, bypassing any caches. This is used prior to saving an concept so that we can
+	 * change the obs if need be or avoid breaking any obs referencing it.
+	 * 
+	 * @param conceptName ConceptName to fetch from the database
+	 * @return the persisted copy of the conceptName currently saved in the database for this
+	 *         conceptName
+	 */
+	public ConceptName getSavedConceptName(ConceptName conceptName);
 	
 }

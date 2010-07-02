@@ -6,29 +6,10 @@
   <concept_datatype concept_datatype_id="1" name="Numeric" hl7_abbreviation="NM" description="Numeric value, including integer or float (e.g., creatinine, weight)" creator="1" date_created="2004-02-02 00:00:00.0" retired="false" uuid="f4e04736-f5b6-497f-b5c0-0234bb98f706"/>
   <concept_description concept_description_id="1" concept_id="5089" description="Patient&apos;s weight in kilograms." locale="en" creator="1" date_created="2004-08-12 00:00:00.0" uuid="62ae59a6-8a49-4b8e-a3be-80284fbd5913"/>
   <concept_description concept_description_id="2" concept_id="5090" description="This is another concept." locale="en" creator="1" date_created="2004-08-12 00:00:00.0" uuid="e5d7f6b2-5700-401c-a240-1eb0ece1a4a3"/>
-  <concept_name concept_id="5089" name="WEIGHT (KG)" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="1" voided="false" uuid="5c310703-b1aa-4b70-bb2e-035f0928fe15"/>
-  <concept_name concept_id="5090" name="SOME OTHER CONCEPT" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="2" voided="false" uuid="c3f32ec2-5bce-4914-b219-fa51846176b3"/>
-  <concept_name concept_id="5089" name="WT" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="3" voided="false" uuid="b4fe0de4-188d-409c-81f0-4b9473a5fef5"/>
-  <concept_name concept_id="5090" name="WT" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="4" voided="false" uuid="30ed3ab0-4ea6-46dd-9aea-d0cd35c5916e"/>
-  <concept_name_tag concept_name_tag_id="1" tag="default" description="name to use when nothing else is available" creator="1" date_created="2007-05-01 00:00:00.0" voided="false" uuid="84726350-2d71-4f25-a39f-2b101f0cc7db"/>
-  <concept_name_tag concept_name_tag_id="2" tag="short" description="preferred short name for a concept" creator="1" date_created="2007-05-01 00:00:00.0" voided="false" uuid="dca540b6-7330-4ced-91e9-b6bf3ceaee6b"/>
-  <concept_name_tag concept_name_tag_id="3" tag="synonym" description="a different word with similar meaning" creator="1" date_created="2007-05-01 00:00:00.0" voided="false" uuid="cb3b4c9c-a012-4bd2-a50f-e1f0da6764a9"/>
-  <concept_name_tag concept_name_tag_id="4" tag="preferred" description="preferred name in a language" creator="1" date_created="2007-05-01 00:00:00.0" voided="false" uuid="4670e11e-ebf9-4808-89d9-64cad64e67c9"/>
-  <concept_name_tag concept_name_tag_id="5" tag="preferred_KE" description="preferred name in Kenya" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="51ffe040-af53-4275-a579-6e6dab14aa11"/>
-  <concept_name_tag concept_name_tag_id="6" tag="preferred_LS" description="preferred name in Lesotho" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="2157abaf-d160-45d3-a51c-f9690a3a4cc6"/>
-  <concept_name_tag concept_name_tag_id="7" tag="preferred_MW" description="preferred name in Malawi" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="67f3b6dc-d11a-4d27-9790-4769a76eadf1"/>
-  <concept_name_tag concept_name_tag_id="8" tag="preferred_RW" description="preferred name in Rwanda" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="f96d416e-5043-428c-81aa-9655574ab260"/>
-  <concept_name_tag concept_name_tag_id="9" tag="preferred_SA" description="preferred name in South Africa" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="1d239647-dedc-48f0-9096-6403f38b0cc5"/>
-  <concept_name_tag concept_name_tag_id="10" tag="preferred_TZ" description="preferred name in Tanzania" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="00bc2006-d828-48a5-ad13-eedc84f12845"/>
-  <concept_name_tag concept_name_tag_id="11" tag="preferred_UG" description="preferred name in Uganda" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="e60cf829-b3dd-4b20-8347-2da9fc216bd8"/>
-  <concept_name_tag concept_name_tag_id="12" tag="preferred_UK" description="preferred name in the United Kingdom" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="f37df6af-956f-4279-80a0-33fe72016240"/>
-  <concept_name_tag concept_name_tag_id="13" tag="preferred_US" description="preferred name in the United States" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="110f7886-6d9d-4e0e-b67b-d81b0578e41b"/>
-  <concept_name_tag concept_name_tag_id="14" tag="preferred_ZM" description="preferred name in Zambia" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="4ac196a4-86a2-43a3-bf46-3bd9856f0326"/>
-  <concept_name_tag concept_name_tag_id="15" tag="preferred_ZW" description="preferred name in Zimbabwe" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="551475f2-525e-491b-8f47-ae6e20ed5450"/>
-  <concept_name_tag_map concept_name_id="1" concept_name_tag_id="4"/>
-  <concept_name_tag_map concept_name_id="2" concept_name_tag_id="4"/>
-  <concept_name_tag_map concept_name_id="3" concept_name_tag_id="2"/>
-  <concept_name_tag_map concept_name_id="4" concept_name_tag_id="2"/>
+  <concept_name concept_id="5089" name="WEIGHT (KG)" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="1" voided="false" uuid="5c310703-b1aa-4b70-bb2e-035f0928fe15" concept_name_type="FULLY_SPECIFIED" locale_preferred="0"/>
+  <concept_name concept_id="5090" name="SOME OTHER CONCEPT" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="2" voided="false" uuid="c3f32ec2-5bce-4914-b219-fa51846176b3" concept_name_type="FULLY_SPECIFIED" locale_preferred="0"/>
+  <concept_name concept_id="5089" name="WT" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="3" voided="false" uuid="b4fe0de4-188d-409c-81f0-4b9473a5fef5" concept_name_type="SHORT" locale_preferred="0"/>
+  <concept_name concept_id="5090" name="WT" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="4" voided="false" uuid="30ed3ab0-4ea6-46dd-9aea-d0cd35c5916e" concept_name_type="SHORT" locale_preferred="0"/>
   <concept_numeric concept_id="5089" hi_absolute="250.0" low_absolute="0.0" units="kg" precise="true"/>
   <concept_numeric concept_id="5090" hi_absolute="10.0" low_absolute="0.0" units="kg" precise="true"/>
   <encounter encounter_id="1" encounter_type="2" patient_id="2" provider_id="1" location_id="1" encounter_datetime="2006-02-14 00:00:00.0" creator="1" date_created="2006-02-10 15:56:14.0" voided="false" uuid="9d15564e-619f-472b-a912-5b6afd68c0a0"/>

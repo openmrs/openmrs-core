@@ -12,7 +12,7 @@
 		display: inline;
 	}
 	#conceptTable th {
-		text-align: left;
+		text-align: right; padding-right: 15px;
 	}
 	#conceptNameTable th {
 		text-align: left;	
@@ -114,12 +114,12 @@
 	
 	<table id="conceptTable" cellpadding="2" cellspacing="0">
 		<tr>
-			<th><spring:message code="general.id"/></th>
+			<th title="<spring:message code="Concept.id.help"/>"><spring:message code="general.id"/></th>
 			<td>${command.concept.conceptId}</td>
 		</tr>
 		
 		<tr>
-			<th><spring:message code="general.locale"/></th>
+			<th title="<spring:message code="Concept.locale.help"/>"><spring:message code="general.locale"/></th>
 			<td style="padding-bottom: 0px; padding-left: 0px;">
 				<c:forEach items="${command.locales}" var="loc" varStatus="varStatus">
 					<a id="${loc}Tab" class="tab ${loc}" href="#select${loc.displayName}" onclick="return selectTab(this)">${loc.displayName}</a><c:if test="${varStatus.last==false}"> | </c:if>
@@ -128,11 +128,43 @@
 			</td>
 		</tr>
 		<tr class="localeSpecific">
-			<th title="<spring:message code="Concept.name.help"/>">
-				<spring:message code="general.name" />
+			<th title="<spring:message code="Concept.fullySpecified.help"/>">
+				<spring:message code="Concept.fullySpecifiedName" />
 			</th>
 			<c:forEach items="${command.locales}" var="loc">
 				<td class="${loc}">${command.namesByLocale[loc].name}</td>
+			</c:forEach>
+		</tr>
+		<tr class="localeSpecific">
+			<th valign="top" title="<spring:message code="Concept.synonyms.help"/>"><spring:message code="Concept.synonyms" /></th>
+			<c:forEach items="${command.locales}" var="loc">
+				<td class="${loc}">
+					<c:forEach var="synonym" items="${command.synonymsByLocale[loc]}" varStatus="varStatus">
+						<spring:bind path="command.synonymsByLocale[${loc}][${varStatus.index}]">
+							<c:if test="${!status.value.voided}">
+								<div>
+									${status.value.name}
+								</div>
+							</c:if>
+						</spring:bind>
+					</c:forEach>
+				</td>
+			</c:forEach>
+		</tr>
+		<tr class="localeSpecific">
+			<th valign="top" title="<spring:message code="Concept.indexTerms.help"/>"><spring:message code="Concept.indexTerms" /></th>
+			<c:forEach items="${command.locales}" var="loc">
+				<td class="${loc}">
+					<c:forEach var="indexTerm" items="${command.synonymsByLocale[loc]}" varStatus="varStatus">
+						<spring:bind path="command.indexTermsByLocale[${loc}][${varStatus.index}]">
+							<c:if test="${!status.value.voided}">
+								<div>
+									${status.value.name}
+								</div>
+							</c:if>
+						</spring:bind>
+					</c:forEach>
+				</td>
 			</c:forEach>
 		</tr>
 		<tr class="localeSpecific">
@@ -152,22 +184,6 @@
 					<spring:bind path="command.descriptionsByLocale[${loc}].description">
 						${status.value}
 					</spring:bind>
-				</td>
-			</c:forEach>
-		</tr>
-		<tr class="localeSpecific">
-			<th valign="top"><spring:message code="Concept.synonyms" /></th>
-			<c:forEach items="${command.locales}" var="loc">
-				<td class="${loc}">
-					<c:forEach var="synonym" items="${command.synonymsByLocale[loc]}" varStatus="varStatus">
-						<spring:bind path="command.synonymsByLocale[${loc}][${varStatus.index}]">
-							<c:if test="${!status.value.voided}">
-								<div>
-									${status.value.name}
-								</div>
-							</c:if>
-						</spring:bind>
-					</c:forEach>
 				</td>
 			</c:forEach>
 		</tr>
@@ -277,7 +293,7 @@
             </tr>
         </c:if>
 		<tr>
-			<th><spring:message code="Concept.version" /></th>
+			<th title="<spring:message code="Concept.version.help"/>"><spring:message code="Concept.version" /></th>
 			<td>
 				<spring:bind path="command.concept.version">
 					${status.value}
@@ -285,7 +301,7 @@
 			</td>
 		</tr>
 		<tr>
-			<th><spring:message code="general.retired" /></th>
+			<th title="<spring:message code="Concept.retired.help"/>"><spring:message code="general.retired" /></th>
 			<td>
 				<spring:bind path="command.concept.retired">
 					${status.value}
@@ -349,9 +365,9 @@
 		<tr><td colspan="2"><br/></td></tr>
 		
 		<tr>	
-			<td valign="top">
+			<th valign="top">
 				<b><spring:message code="Concept.resources" /></b>
-			</td>
+			</th>
 			<td>
 				<a href="index.htm?phrase=<openmrs:format concept="${command.concept}" />"
 				       target="_similar_terms" onclick="addName(this)">Similar Concepts</a><br/>

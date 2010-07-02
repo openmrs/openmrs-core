@@ -50,6 +50,7 @@ import org.openmrs.Encounter;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
 import org.openmrs.Obs;
+import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
@@ -125,10 +126,13 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		initializeInMemoryDatabase();
 		executeDataSet(INITIAL_CONCEPTS_XML);
 		authenticate();
-		
+		//This will automatically add the given locale to the list of allowed locales
+		Context.setLocale(Locale.US);
 		// this tests saving a previously conceptnumeric as just a concept
 		Concept c2 = new Concept(2);
-		c2.addName(new ConceptName("not a numeric anymore", Locale.US));
+		ConceptName cn = new ConceptName("not a numeric anymore", Locale.US);
+		c2.addName(cn);
+		
 		c2.setDatatype(new ConceptDatatype(3));
 		conceptService.saveConcept(c2);
 		
@@ -152,11 +156,13 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		initializeInMemoryDatabase();
 		executeDataSet(INITIAL_CONCEPTS_XML);
 		authenticate();
-		
+		Context.setLocale(Locale.US);
 		// this tests saving a never before in the database conceptnumeric
 		ConceptNumeric cn3 = new ConceptNumeric();
 		cn3.setDatatype(new ConceptDatatype(1));
-		cn3.addName(new ConceptName("a brand new conceptnumeric", Locale.US));
+		
+		ConceptName cn = new ConceptName("a brand new conceptnumeric", Locale.US);
+		cn3.addName(cn);
 		cn3.setHiAbsolute(50.0);
 		conceptService.saveConcept(cn3);
 		
@@ -213,7 +219,9 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should generate id for new concept if none is specified", method = "saveConcept(Concept)")
 	public void saveConcept_shouldGenerateIdForNewConceptIfNoneIsSpecified() throws Exception {
 		Concept concept = new Concept();
-		concept.addName(new ConceptName("Weight", Locale.US));
+		ConceptName cn = new ConceptName("Weight", Context.getLocale());
+		concept.addName(cn);
+		
 		concept.setConceptId(null);
 		concept.setDatatype(Context.getConceptService().getConceptDatatypeByName("Numeric"));
 		concept.setConceptClass(Context.getConceptService().getConceptClassByName("Finding"));
@@ -232,7 +240,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Assert.assertNull(conceptService.getConcept(conceptId)); // sanity check
 		
 		Concept concept = new Concept();
-		concept.addName(new ConceptName("Weight", Locale.US));
+		ConceptName cn = new ConceptName("Weight", Context.getLocale());
+		concept.addName(cn);
 		concept.setConceptId(conceptId);
 		concept.setDatatype(Context.getConceptService().getConceptDatatypeByName("Numeric"));
 		concept.setConceptClass(Context.getConceptService().getConceptClassByName("Finding"));
@@ -296,15 +305,16 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Assert.assertNotNull(cnt);
 		
 		ConceptName cn = new ConceptName("Some name", Locale.ENGLISH);
-		
+		cn.addTag(new ConceptNameTag("preferred_en", "preferred name in a language"));
 		Concept concept = new Concept();
-		concept.setPreferredName(Locale.ENGLISH, cn);
+		concept.addName(cn);
+		
 		concept.setDatatype(new ConceptDatatype(1));
 		concept.setConceptClass(new ConceptClass(1));
 		
 		cs.saveConcept(concept);
 		
-		Collection<ConceptNameTag> savedConceptNameTags = concept.getBestName(Locale.ENGLISH).getTags();
+		Collection<ConceptNameTag> savedConceptNameTags = concept.getName(Locale.ENGLISH, false).getTags();
 		ConceptNameTag savedConceptNameTag = (ConceptNameTag) savedConceptNameTags.toArray()[0];
 		Assert.assertEquals(cnt.getConceptNameTagId(), savedConceptNameTag.getConceptNameTagId());
 	}
@@ -436,14 +446,14 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Assert.assertNotNull(encounter.getObs());
 		
 		boolean testedsomething = false;
-
+		
 		for (Obs obs : encounter.getObs()) {
 			if (obs.getConcept().getConceptId().equals(1016)) {
 				testedsomething = true;
 				Concept concept = Context.getConceptService().getConcept(1016);
 				Assert.assertEquals(obs.getConcept(), concept);
 				Assert.assertEquals(concept, obs.getConcept());
-
+				
 			}
 		}
 		
@@ -764,9 +774,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should find concepts with names in more generic locales", method = "getConceptByName(String)")
 	public void getConceptByName_shouldFindConceptsWithNamesInMoreGenericLocales() throws Exception {
 		executeDataSet(INITIAL_CONCEPTS_XML);
-		// sanity check
-		Assert.assertEquals(Context.getLocale(), Locale.UK);
-		
+		//prior tests have changed the locale to 'en_US', so we need to set it back
+		Context.setLocale(Locale.UK);
 		// make sure that concepts are found that have a specific locale on them
 		Assert.assertNotNull(Context.getConceptService().getConceptByName("Some numeric concept name"));
 	}
@@ -815,7 +824,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		authenticate();
 		
 		Concept conceptToAdd = new Concept();
-		conceptToAdd.addName(new ConceptName("new name", Locale.US));
+		ConceptName cn = new ConceptName("new name", Context.getLocale());
+		conceptToAdd.addName(cn);
 		assertFalse(conceptService.getAllConcepts().contains(conceptToAdd));
 		conceptService.saveConcept(conceptToAdd);
 		assertTrue(conceptService.getAllConcepts().contains(conceptToAdd));
@@ -1124,24 +1134,24 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Context.getAdministrationService().saveGlobalProperty(trueConceptGlobalProperty);
 		Context.getAdministrationService().saveGlobalProperty(falseConceptGlobalProperty);
 	}
-
+	
 	/**
-     * @see {@link ConceptService#getConceptDatatypeByName(String)}
-     */
-    @Test
-    @Verifies(value = "should not return a fuzzy match on name", method = "getConceptDatatypeByName(String)")
-    public void getConceptDatatypeByName_shouldNotReturnAFuzzyMatchOnName() throws Exception {
+	 * @see {@link ConceptService#getConceptDatatypeByName(String)}
+	 */
+	@Test
+	@Verifies(value = "should not return a fuzzy match on name", method = "getConceptDatatypeByName(String)")
+	public void getConceptDatatypeByName_shouldNotReturnAFuzzyMatchOnName() throws Exception {
 		executeDataSet(INITIAL_CONCEPTS_XML);
 		ConceptDatatype result = conceptService.getConceptDatatypeByName("Tex");
 		Assert.assertNull(result);
-    }
-
+	}
+	
 	/**
-     * @see {@link ConceptService#getConceptDatatypeByName(String)}
-     */
-    @Test
-    @Verifies(value = "should return an exact match on name", method = "getConceptDatatypeByName(String)")
-    public void getConceptDatatypeByName_shouldReturnAnExactMatchOnName() throws Exception {
+	 * @see {@link ConceptService#getConceptDatatypeByName(String)}
+	 */
+	@Test
+	@Verifies(value = "should return an exact match on name", method = "getConceptDatatypeByName(String)")
+	public void getConceptDatatypeByName_shouldReturnAnExactMatchOnName() throws Exception {
 		// given
 		executeDataSet(INITIAL_CONCEPTS_XML);
 		
@@ -1150,5 +1160,64 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		
 		// then
 		assertEquals("Text", result.getName());
-    }
+	}
+	
+	/**
+	 * @see {@link ConceptService#purgeConcept(Concept)}
+	 */
+	@Test(expected = ConceptNameInUseException.class)
+	@Verifies(value = "should fail if any of the conceptNames of the concept is being used by an obs", method = "purgeConcept(Concept)")
+	public void purgeConcept_shouldFailIfAnyOfTheConceptNamesOfTheConceptIsBeingUsedByAnObs() throws Exception {
+		Obs o = new Obs();
+		o.setConcept(new Concept(3));
+		o.setPerson(new Patient(2));
+		o.setEncounter(new Encounter(3));
+		o.setObsDatetime(new Date());
+		o.setLocation(new Location(1));
+		ConceptName conceptName = new ConceptName(1847);
+		o.setValueCodedName(conceptName);
+		Context.getObsService().saveObs(o, null);
+		//ensure that the association between the conceptName and the obs has been established
+		Assert.assertEquals(true, conceptService.hasAnyObservation(conceptName));
+		
+		Concept concept = conceptService.getConceptByName("cd4 count");
+		//make sure the name concept name exists
+		Assert.assertNotNull(concept);
+		conceptService.purgeConcept(concept);
+	}
+	
+	/**
+	 * @see {@link ConceptService#saveConcept(Concept)}
+	 */
+	@Test
+	@Verifies(value = "should create a new conceptName when the old name is changed", method = "saveConcept(Concept)")
+	public void saveConcept_shouldCreateANewConceptNameWhenTheOldNameIsChanged() throws Exception {
+		Concept concept = conceptService.getConceptByName("cd4 count");
+		Assert.assertEquals(3, concept.getNames(true).size());
+		for (ConceptName cn : concept.getNames()) {
+			if (cn.getConceptNameId().equals(1847))
+				cn.setName("new name");
+		}
+		
+		conceptService.saveConcept(concept);
+		Assert.assertEquals(4, concept.getNames(true).size());
+	}
+	
+	/**
+	 * @see {@link ConceptService#saveConcept(Concept)}
+	 */
+	@Test
+	@Verifies(value = "should void the conceptName if the text of the name has changed", method = "saveConcept(Concept)")
+	public void saveConcept_shouldVoidTheConceptNameIfTheTextOfTheNameHasChanged() throws Exception {
+		Concept concept = conceptService.getConceptByName("cd4 count");
+		Assert.assertEquals(false, conceptService.getConceptName(1847).isVoided().booleanValue());
+		for (ConceptName cn : concept.getNames()) {
+			if (cn.getConceptNameId().equals(1847))
+				cn.setName("new name");
+		}
+		//ensure that the conceptName has actually been found and replaced
+		Assert.assertEquals(true, concept.hasName("new name", new Locale("en")));
+		conceptService.saveConcept(concept);
+		Assert.assertEquals(true, conceptService.getConceptName(1847).isVoided().booleanValue());
+	}
 }
