@@ -21,6 +21,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -35,6 +36,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import liquibase.ChangeSet;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Appender;
@@ -44,6 +47,7 @@ import org.openmrs.util.DatabaseUpdater;
 import org.openmrs.util.InputRequiredException;
 import org.openmrs.util.MemoryAppender;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.Security;
 import org.openmrs.util.DatabaseUpdater.ChangeSetExecutorCallback;
 import org.openmrs.web.Listener;
@@ -92,8 +96,8 @@ public class UpdateFilter extends StartupFilter {
 	private UpdateFilterCompletion updateJob;
 	
 	/**
-	 * Variable set to true as soon as the update begins and set to false when the process ends
-	 * This thread should only be accesses thorugh the sychronized method.
+	 * Variable set to true as soon as the update begins and set to false when the process ends This
+	 * thread should only be accesses thorugh the sychronized method.
 	 */
 	private static boolean isDatabaseUpdateInProgress = false;
 	
@@ -162,7 +166,7 @@ public class UpdateFilter extends StartupFilter {
 				renderTemplate(DEFAULT_PAGE, referenceMap, httpResponse);
 				return;
 			}
-            
+			
 			//if no one has run any required updates
 			if (!isDatabaseUpdateInProgress) {
 				isDatabaseUpdateInProgress = true;
@@ -170,7 +174,7 @@ public class UpdateFilter extends StartupFilter {
 				updateJob.start();
 				
 				referenceMap.put("updateJobStarted", true);
-			} else{
+			} else {
 				referenceMap.put("isDatabaseUpdateInProgress", true);
 				referenceMap.put("updateJobStarted", false);
 			}
@@ -186,6 +190,21 @@ public class UpdateFilter extends StartupFilter {
 				result.put("hasErrors", updateJob.hasErrors());
 				if (updateJob.hasErrors()) {
 					errors.addAll(updateJob.getErrors());
+				}
+				
+				if (updateJob.hasWarnings() && updateJob.getExecutingChangesetId() == null) {
+					result.put("hasWarnings", updateJob.hasWarnings());
+					StringBuilder sb = new StringBuilder("<ul>");
+					
+					for (String warning : updateJob.getUpdateWarnings())
+						sb.append("<li>" + warning + "</li>");
+					
+					sb.append("</ul>");
+					result.put("updateWarnings", sb.toString());
+					result.put("updateLogFile", StringUtils.replace(OpenmrsUtil.getApplicationDataDirectory()
+					        + DatabaseUpdater.DATABASE_UPDATES_LOG_FILE, "\\", "\\\\"));
+					updateJob.hasUpdateWarnings = false;
+					updateJob.getUpdateWarnings().clear();
 				}
 				
 				result.put("updatesRequired", updatesRequired());
@@ -298,10 +317,10 @@ public class UpdateFilter extends StartupFilter {
 	 * @should return false if given user does not have the super user role
 	 */
 	protected boolean isSuperUser(Connection connection, Integer userId) throws Exception {
-        // the 'Administrator' part of this string is necessary because if the database was upgraded
-	 	// by OpenMRS 1.6 alpha then System Developer was renamed to that. This has to be here so we
-	 	// can roll back that change in 1.6 beta+
-	 	String select = "select 1 from user_role where user_id = ? and (role = ? or role = 'Administrator')";
+		// the 'Administrator' part of this string is necessary because if the database was upgraded
+		// by OpenMRS 1.6 alpha then System Developer was renamed to that. This has to be here so we
+		// can roll back that change in 1.6 beta+
+		String select = "select 1 from user_role where user_id = ? and (role = ? or role = 'Administrator')";
 		PreparedStatement statement = connection.prepareStatement(select);
 		statement.setInt(1, userId);
 		statement.setString(2, OpenmrsConstants.SUPERUSER_ROLE);
@@ -369,7 +388,8 @@ public class UpdateFilter extends StartupFilter {
 			 * The initialization wizard will update the database to the latest version, so the user will not need any updates here.
 			 * See end of InitializationFilter#InitializationCompletion
 			 */
-			log.debug("Setting updates required to false because the user doesn't have any runtime properties yet or database is empty");
+			log
+			        .debug("Setting updates required to false because the user doesn't have any runtime properties yet or database is empty");
 			setUpdatesRequired(false);
 		}
 	}
@@ -435,6 +455,10 @@ public class UpdateFilter extends StartupFilter {
 		
 		private boolean erroneous = false;
 		
+		private boolean hasUpdateWarnings = false;
+		
+		private List<String> updateWarnings = new LinkedList<String>();
+		
 		synchronized public void reportError(String error) {
 			List<String> errors = new ArrayList<String>();
 			errors.add(error);
@@ -494,6 +518,22 @@ public class UpdateFilter extends StartupFilter {
 		}
 		
 		/**
+		 * @return the database updater Warnings
+		 */
+		public synchronized List<String> getUpdateWarnings() {
+			return updateWarnings;
+		}
+		
+		synchronized public boolean hasWarnings() {
+			return hasUpdateWarnings;
+		}
+		
+		synchronized public void reportWarnings(List<String> warnings) {
+			updateWarnings.addAll(warnings);
+			hasUpdateWarnings = true;
+		}
+		
+		/**
 		 * This class does all the work of creating the desired database, user, updates, etc
 		 */
 		public UpdateFilterCompletion() {
@@ -530,9 +570,14 @@ public class UpdateFilter extends StartupFilter {
 						
 						try {
 							setMessage("Updating the database to the latest version");
-							DatabaseUpdater.executeChangelog(null, null, new PrintingChangeSetExecutorCallback(
-							        "Updating database tables to latest version "));
+							List<String> warnings = DatabaseUpdater.executeChangelog(null, null,
+							    new PrintingChangeSetExecutorCallback("Updating database tables to latest version "));
 							executingChangesetId = null; // clear out the last changeset
+							
+							if (CollectionUtils.isNotEmpty(warnings)) {
+								reportWarnings(warnings);
+								warnings = null;
+							}
 						}
 						catch (InputRequiredException inputRequired) {
 							// the user would be stepped through the questions returned here.

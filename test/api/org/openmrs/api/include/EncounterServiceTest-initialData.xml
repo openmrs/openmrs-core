@@ -3,23 +3,7 @@
   <concept concept_id="1" retired="false" datatype_id="0" class_id="0" is_set="false" creator="1" date_created="2005-01-01 00:00:00.0" uuid="985ff1a2-c2ef-49fd-836f-8a1d936d9ef9"/>
   <concept_datatype concept_datatype_id="1" name="Numeric" hl7_abbreviation="NM" description="Numeric value, including integer or float" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="07ab5f37-4f18-4932-a0b5-16de3811789a"/>
   <concept_description concept_description_id="1" concept_id="1" description="this is a description" locale="en" creator="1" date_created="2005-01-01 00:00:00.0" uuid="ff6721f2-3e44-488c-a22d-e79ea06e6bc3"/>
-  <concept_name concept_id="1" name="Some non numeric concept name" locale="en" creator="1" date_created="2005-01-01 00:00:00.0" concept_name_id="1" voided="false" uuid="637de959-e1c4-41d4-b2d6-bc4335835ea9"/>
-  <concept_name_tag concept_name_tag_id="1" tag="default" description="name to use when nothing else is available" creator="1" date_created="2007-05-01 00:00:00.0" voided="false" uuid="287d7ac8-201d-4f9a-a108-a142b21d5059"/>
-  <concept_name_tag concept_name_tag_id="2" tag="short" description="preferred short name for a concept" creator="1" date_created="2007-05-01 00:00:00.0" voided="false" uuid="dff305c0-2004-40fc-85bc-0d4f19d2b4cf"/>
-  <concept_name_tag concept_name_tag_id="3" tag="synonym" description="a different word with similar meaning" creator="1" date_created="2007-05-01 00:00:00.0" voided="false" uuid="313abee8-039f-4b61-98b1-a90f837fdcfe"/>
-  <concept_name_tag concept_name_tag_id="4" tag="preferred" description="preferred name in a language" creator="1" date_created="2007-05-01 00:00:00.0" voided="false" uuid="d902163d-ec20-48a3-bd1f-f134dbd48066"/>
-  <concept_name_tag concept_name_tag_id="5" tag="preferred_KE" description="preferred name in Kenya" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="2ea106b9-e472-46b8-9690-1fd00a3fa7a7"/>
-  <concept_name_tag concept_name_tag_id="6" tag="preferred_LS" description="preferred name in Lesotho" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="762dfd90-6b22-48d4-be83-d4d355c0a3db"/>
-  <concept_name_tag concept_name_tag_id="7" tag="preferred_MW" description="preferred name in Malawi" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="329f7009-f987-41a2-9d7a-69773fd07874"/>
-  <concept_name_tag concept_name_tag_id="8" tag="preferred_RW" description="preferred name in Rwanda" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="5e958568-2dc0-4f4b-8902-844e468dd0f1"/>
-  <concept_name_tag concept_name_tag_id="9" tag="preferred_SA" description="preferred name in South Africa" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="0317f295-905b-4e5d-b2dd-3b3dbded9bec"/>
-  <concept_name_tag concept_name_tag_id="10" tag="preferred_TZ" description="preferred name in Tanzania" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="aaec0569-8f12-4654-af74-e89577d2ea52"/>
-  <concept_name_tag concept_name_tag_id="11" tag="preferred_UG" description="preferred name in Uganda" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="29f4cdfd-9a33-4252-a130-d6f4953762e0"/>
-  <concept_name_tag concept_name_tag_id="12" tag="preferred_UK" description="preferred name in the United Kingdom" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="90b06cab-6c00-4c0c-8cab-92a70d4f88d4"/>
-  <concept_name_tag concept_name_tag_id="13" tag="preferred_US" description="preferred name in the United States" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="c54509c0-8636-4fe9-9a63-9217f8448a10"/>
-  <concept_name_tag concept_name_tag_id="14" tag="preferred_ZM" description="preferred name in Zambia" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="f88f8d1f-6791-4ece-bb6b-33eb9d8f481d"/>
-  <concept_name_tag concept_name_tag_id="15" tag="preferred_ZW" description="preferred name in Zimbabwe" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="9481c7b3-e637-4631-a8d2-05b065d8b167"/>
-  <concept_name_tag_map concept_name_id="1" concept_name_tag_id="4"/>
+  <concept_name concept_id="1" name="Some non numeric concept name" locale="en" creator="1" date_created="2005-01-01 00:00:00.0" concept_name_id="1" voided="false" uuid="637de959-e1c4-41d4-b2d6-bc4335835ea9" concept_name_type="FULLY_SPECIFIED" locale_preferred="0"/>
   <location location_id="1" name="Test Location" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="c36006e5-9fbb-4f20-866b-0ece245615a1"/>
   <location location_id="2" name="Test Location 2" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="be69741b-29e9-49a1-adc9-2a726e6610e4"/>
   
@@ -56,7 +40,7 @@
   
   <concept_datatype concept_datatype_id="1" name="Numeric" hl7_abbreviation="NM" description="Numeric value, including integer or float" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="5dfd8346-661e-46d4-8470-3146d6d229e9"/>
   <concept concept_id="1" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" is_set="false" uuid="f0bae10a-c964-482b-bfc1-a97671349951"/>
-  <concept_name concept_name_id="1" concept_id="1" name="Some non numeric concept name" locale="en" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="2c996dd4-441d-4868-bce0-81d35d096843"/>
+  <concept_name concept_name_id="1" concept_id="1" name="Some non numeric concept name" locale="en" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="2c996dd4-441d-4868-bce0-81d35d096843" concept_name_type="FULLY_SPECIFIED" locale_preferred="0"/>
   
   <form form_id="1" name="Basic Form" version="0.1" build="0" published="0" description="Test form" xslt="" template="" creator="1" date_created="2005-08-07 00:00:00.0" changed_by="1" date_changed="2007-10-24 14:51:53.0" retired="false"  uuid="2a45c87e-e43d-42ff-83c7-e70a229fa99d"/>
   

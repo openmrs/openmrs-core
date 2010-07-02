@@ -230,7 +230,8 @@ function cloneElement(id, initialSizeOfClonedSiblings, inputNamePrefix) {
 	var inputs = clone.childNodes;
 	for (var x = 0; x < inputs.length; x++) {
 		var input = inputs[x];
-		if (input.name) {
+		//ingore the name of the radio button so as to maintain the button group name per locale
+		if (input.name && input.type != 'radio') {
 			input.name = inputNamePrefix + input.name.replace('[x]', '[' + numberOfClonedElements[id] + ']')
 		}
 	}
@@ -268,4 +269,47 @@ function addAnswerToBooleanConcept(confirmationMessage, conceptId){
     }
 }
 
+/**
+ * This method is called when the remove button of an existing synonymm is called, it sets the hidden checkbox to check
+ * to mark the name as voided
+ * @param checkBoxId the id of the checkbox to mark as checked
+ * @param conceptNameRowId the div element for the removed synonym to hide
+ * 
+ */
+function voidName(checkBoxId, voidInfoElementId) {	
+	//set the value of the hidden input field to true to mark that it is voided
+	document.getElementById(checkBoxId).value = "true";	
+	toggleLayer(voidInfoElementId);	
+}
+
+function cancelNameRemoval(checkBoxId, voidInfoLayerId, voidReasonElementId) {	
+	document.getElementById(checkBoxId).value = 'false';	
+	//if the user canceled removal of a name after validation errors and had entered some void reason	
+	document.getElementById(voidReasonElementId).value = "";
+	hideLayer(voidInfoLayerId);
+}
+
+/**
+ * Method is called when the user edits an existing concept name to update the radio button value to be submitted to the server
+ * @param textElement the text element whose text was edited
+ * @param the id of radio button whose value attribute to change
+ */
+function setRadioValue(textElement, radioButtonId){
+	if(textElement.value)
+		document.getElementById(radioButtonId).value = textElement.value;
+}
+
+/**
+ * Method is called when the user types in a name for a new synonym to update the radio button value to be submitted to the server
+ * @param textElement the text element whose value was edited
+ */
+function setCloneRadioValue(textElement){
+	 var inputs = textElement.parentNode.childNodes;
+	//find the radio button and set its value attribute
+	for (var x = 0; x < inputs.length; x++) {						
+		if (inputs[x].type == 'radio')
+			inputs[x].value = textElement.value;
+	}
+}
+ 
 document.onkeypress = hotkeys;

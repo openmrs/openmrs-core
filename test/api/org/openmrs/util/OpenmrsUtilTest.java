@@ -525,33 +525,169 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	@Verifies(value = "should not allow the returned SimpleDateFormat to be modified", method = "getDateFormat(Locale)")
-	public void getDateFormat_shouldNotAllowTheReturnedSimpleDateFormatToBeModified()
-			throws Exception {
-		// start with a locale that is not currently cached by getDateFormat() 
+	public void getDateFormat_shouldNotAllowTheReturnedSimpleDateFormatToBeModified() throws Exception {
+		// start with a locale that is not currently cached by getDateFormat()
 		Locale locale = new Locale("hk");
-		Assert.assertTrue("default locale is potentially already cached", 
-			!Context.getLocale().equals(locale));
+		Assert.assertTrue("default locale is potentially already cached", !Context.getLocale().equals(locale));
 		
 		// get the initially built dateformat from getDateFormat()
 		SimpleDateFormat sdf = OpenmrsUtil.getDateFormat(locale);
-		Assert.assertNotSame("initial dateFormatCache entry is modifiable", 
-			OpenmrsUtil.getDateFormat(locale), sdf);
+		Assert.assertNotSame("initial dateFormatCache entry is modifiable", OpenmrsUtil.getDateFormat(locale), sdf);
 		
 		// verify changing the pattern on our variable does not affect the cache
 		sdf.applyPattern("yyyymmdd");
-		Assert.assertTrue("initial dateFormatCache pattern is modifiable", 
-			!OpenmrsUtil.getDateFormat(locale).toPattern().equals(sdf.toPattern()));
+		Assert.assertTrue("initial dateFormatCache pattern is modifiable", !OpenmrsUtil.getDateFormat(locale).toPattern()
+		        .equals(sdf.toPattern()));
 
 		// the dateformat cache now contains the format for this locale; checking
 		// a second time will guarantee we are looking at cached data and not the
 		// initially built dateformat
 		sdf = OpenmrsUtil.getDateFormat(locale);
-		Assert.assertNotSame("cached dateFormatCache entry is modifiable", 
-			OpenmrsUtil.getDateFormat(locale), sdf);
+		Assert.assertNotSame("cached dateFormatCache entry is modifiable", OpenmrsUtil.getDateFormat(locale), sdf);
 		
 		// verify changing the pattern on our variable does not affect the cache
 		sdf.applyPattern("yyyymmdd");
-		Assert.assertTrue("cached dateFormatCache pattern is modifiable", 
-			!OpenmrsUtil.getDateFormat(locale).toPattern().equals(sdf.toPattern()));
+		Assert.assertTrue("cached dateFormatCache pattern is modifiable", !OpenmrsUtil.getDateFormat(locale).toPattern()
+		        .equals(sdf.toPattern()));
+	}
+
+	/**
+	 * @see {@link OpenmrsUtil#shortenedStackTrace(String)}
+	 */
+	@Test
+	@Verifies(value = "should remove springframework and reflection related lines", method = "shortenedStackTrace(String)")
+	public void shortenedStackTrace_shouldRemoveSpringframeworkAndReflectionRelatedLines() throws Exception {
+		String test = "ca.uhn.hl7v2.HL7Exception: Error while processing HL7 message: ORU_R01\n"
+		        + "\tat org.openmrs.hl7.impl.HL7ServiceImpl.processHL7Message(HL7ServiceImpl.java:752)\n"
+		        + "\tat sun.reflect.GeneratedMethodAccessor262.invoke(Unknown Source)\n"
+		        + "\tat sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)\n"
+		        + "\tat java.lang.reflect.Method.invoke(Method.java:597)\n"
+		        + "\tat org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:307)\n"
+		        + "\tat org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:182)\n"
+		        + "\tat org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:149)\n"
+		        + "\tat org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:106)\n"
+		        + "\tat org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:171)\n"
+		        + "\tat org.springframework.aop.framework.JdkDynamicAopProxy.invoke(JdkDynamicAopProxy.java:204)\n"
+		        + "\tat $Proxy106.processHL7Message(Unknown Source)\n"
+		        + "\tat sun.reflect.GeneratedMethodAccessor262.invoke(Unknown Source)\n"
+		        + "\tat sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)\n"
+		        + "\tat java.lang.reflect.Method.invoke(Method.java:597)\n"
+		        + "\tat org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:307)\n"
+		        + "\tat org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:182)\n"
+		        + "\tat org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:149)\n"
+		        + "\tat org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:106)\n"
+		        + "\tat org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:171)\n"
+		        + "\tat org.openmrs.aop.LoggingAdvice.invoke(LoggingAdvice.java:107)\n"
+		        + "\tat org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:171)\n"
+		        + "\tat org.springframework.aop.framework.adapter.MethodBeforeAdviceInterceptor.invoke(MethodBeforeAdviceInterceptor.java:50)\n"
+		        + "\tat org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:171)\n"
+		        + "\tat org.springframework.aop.framework.adapter.MethodBeforeAdviceInterceptor.invoke(MethodBeforeAdviceInterceptor.java:50)\n"
+		        + "\tat org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:171)\n"
+		        + "\tat org.springframework.aop.framework.JdkDynamicAopProxy.invoke(JdkDynamicAopProxy.java:204)\n"
+		        + "\tat $Proxy107.processHL7Message(Unknown Source)\n"
+		        + "\tat sun.reflect.GeneratedMethodAccessor262.invoke(Unknown Source)\n"
+		        + "\tat sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)\n"
+		        + "\tat java.lang.reflect.Method.invoke(Method.java:597)\n"
+		        + "\tat org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:307)\n"
+		        + "\tat org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:182)\n"
+		        + "\tat org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:149)\n"
+		        + "\tat org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:106)\n"
+		        + "\tat org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:171)\n"
+		        + "\tat org.springframework.aop.framework.JdkDynamicAopProxy.invoke(JdkDynamicAopProxy.java:204)\n"
+		        + "\tat $Proxy107.processHL7Message(Unknown Source)\n"
+		        + "\tat sun.reflect.GeneratedMethodAccessor262.invoke(Unknown Source)\n"
+		        + "\tat sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)\n"
+		        + "\tat java.lang.reflect.Method.invoke(Method.java:597)\n"
+		        + "\tat org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:307)\n"
+		        + "\tat org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:182)\n"
+		        + "\tat org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:149)\n"
+		        + "\tat org.springframework.aop.framework.adapter.AfterReturningAdviceInterceptor.invoke(AfterReturningAdviceInterceptor.java:50)\n"
+		        + "\tat org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:171)\n"
+		        + "\tat org.springframework.aop.framework.JdkDynamicAopProxy.invoke(JdkDynamicAopProxy.java:204)\n"
+		        + "\tat $Proxy138.processHL7Message(Unknown Source)\n"
+		        + "\tat org.openmrs.hl7.impl.HL7ServiceImpl.processHL7InQueue(HL7ServiceImpl.java:657)\n"
+		        + "\tat sun.reflect.GeneratedMethodAccessor260.invoke(Unknown Source)\n"
+		        + "\tat sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)\n"
+		        + "\tat java.lang.reflect.Method.invoke(Method.java:597)\n"
+		        + "\tat org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:307)\n"
+		        + "\tat org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:182)\n"
+		        + "\tat org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:149)\n"
+		        + "\tat org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:106)\n"
+		        + "\tat org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:171)\n"
+		        + "\tat org.springframework.aop.framework.JdkDynamicAopProxy.invoke(JdkDynamicAopProxy.java:204)\n"
+		        + "\tat $Proxy106.processHL7InQueue(Unknown Source)\n"
+		        + "\tat sun.reflect.GeneratedMethodAccessor260.invoke(Unknown Source)\n"
+		        + "\tat sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)\n"
+		        + "\tat java.lang.reflect.Method.invoke(Method.java:597)\n"
+		        + "\tat org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:307)\n"
+		        + "\tat org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:182)\n"
+		        + "\tat org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:149)\n"
+		        + "\tat org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:106)\n"
+		        + "\tat org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:171)\n"
+		        + "\tat org.openmrs.aop.LoggingAdvice.invoke(LoggingAdvice.java:107)\n"
+		        + "\tat org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:171)\n"
+		        + "\tat org.springframework.aop.framework.adapter.MethodBeforeAdviceInterceptor.invoke(MethodBeforeAdviceInterceptor.java:50)\n"
+		        + "\tat $Proxy138.processHL7InQueue(Unknown Source)\n"
+		        + "\tat org.openmrs.hl7.HL7InQueueProcessor.processHL7InQueue(HL7InQueueProcessor.java:61)\n"
+		        + "\tat org.openmrs.hl7.HL7InQueueProcessor.processNextHL7InQueue(HL7InQueueProcessor.java:91)\n"
+		        + "\tat org.openmrs.hl7.HL7InQueueProcessor.processHL7InQueue(HL7InQueueProcessor.java:110)\n"
+		        + "\tat org.openmrs.scheduler.tasks.ProcessHL7InQueueTask.execute(ProcessHL7InQueueTask.java:57)\n"
+		        + "\tat org.openmrs.scheduler.tasks.TaskThreadedInitializationWrapper.execute(TaskThreadedInitializationWrapper.java:72)\n"
+		        + "\tat org.openmrs.scheduler.timer.TimerSchedulerTask.run(TimerSchedulerTask.java:48)\n"
+		        + "\tat java.util.TimerThread.mainLoop(Timer.java:512)\n"
+		        + "\tat java.util.TimerThread.run(Timer.java:462) "
+		        + "Caused by: ca.uhn.hl7v2.app.ApplicationException: ca.uhn.hl7v2.HL7Exception: Could not resolve patient by identifier\n"
+		        + "\tat org.openmrs.hl7.handler.ORUR01Handler.processMessage(ORUR01Handler.java:132)\n"
+		        + "\tat ca.uhn.hl7v2.app.MessageTypeRouter.processMessage(MessageTypeRouter.java:52)\n"
+		        + "\tat org.openmrs.hl7.impl.HL7ServiceImpl.processHL7Message(HL7ServiceImpl.java:749) ... 101 more "
+		        + "Caused by: ca.uhn.hl7v2.HL7Exception: Could not resolve patient by identifier\n"
+		        + "\tat org.openmrs.hl7.handler.ORUR01Handler.getPatientByIdentifier(ORUR01Handler.java:998)\n"
+		        + "\tat org.openmrs.hl7.handler.ORUR01Handler.processORU_R01(ORUR01Handler.java:184)\n"
+		        + "\tat org.openmrs.hl7.handler.ORUR01Handler.processMessage(ORUR01Handler.java:124) ... 103 more";
+		String expected = "ca.uhn.hl7v2.HL7Exception: Error while processing HL7 message: ORU_R01\n"
+		        + "\tat org.openmrs.hl7.impl.HL7ServiceImpl.processHL7Message(HL7ServiceImpl.java:752)\n"
+		        + "\tat [ignored] ...\n"
+		        + "\tat $Proxy106.processHL7Message(Unknown Source)\n"
+		        + "\tat [ignored] ...\n"
+		        + "\tat org.openmrs.aop.LoggingAdvice.invoke(LoggingAdvice.java:107)\n"
+		        + "\tat [ignored] ...\n"
+		        + "\tat $Proxy107.processHL7Message(Unknown Source)\n"
+		        + "\tat [ignored] ...\n"
+		        + "\tat $Proxy107.processHL7Message(Unknown Source)\n"
+		        + "\tat [ignored] ...\n"
+		        + "\tat $Proxy138.processHL7Message(Unknown Source)\n"
+		        + "\tat org.openmrs.hl7.impl.HL7ServiceImpl.processHL7InQueue(HL7ServiceImpl.java:657)\n"
+		        + "\tat [ignored] ...\n"
+		        + "\tat $Proxy106.processHL7InQueue(Unknown Source)\n"
+		        + "\tat [ignored] ...\n"
+		        + "\tat org.openmrs.aop.LoggingAdvice.invoke(LoggingAdvice.java:107)\n"
+		        + "\tat [ignored] ...\n"
+		        + "\tat $Proxy138.processHL7InQueue(Unknown Source)\n"
+		        + "\tat org.openmrs.hl7.HL7InQueueProcessor.processHL7InQueue(HL7InQueueProcessor.java:61)\n"
+		        + "\tat org.openmrs.hl7.HL7InQueueProcessor.processNextHL7InQueue(HL7InQueueProcessor.java:91)\n"
+		        + "\tat org.openmrs.hl7.HL7InQueueProcessor.processHL7InQueue(HL7InQueueProcessor.java:110)\n"
+		        + "\tat org.openmrs.scheduler.tasks.ProcessHL7InQueueTask.execute(ProcessHL7InQueueTask.java:57)\n"
+		        + "\tat org.openmrs.scheduler.tasks.TaskThreadedInitializationWrapper.execute(TaskThreadedInitializationWrapper.java:72)\n"
+		        + "\tat org.openmrs.scheduler.timer.TimerSchedulerTask.run(TimerSchedulerTask.java:48)\n"
+		        + "\tat java.util.TimerThread.mainLoop(Timer.java:512)\n"
+		        + "\tat java.util.TimerThread.run(Timer.java:462) "
+		        + "Caused by: ca.uhn.hl7v2.app.ApplicationException: ca.uhn.hl7v2.HL7Exception: Could not resolve patient by identifier\n"
+		        + "\tat org.openmrs.hl7.handler.ORUR01Handler.processMessage(ORUR01Handler.java:132)\n"
+		        + "\tat ca.uhn.hl7v2.app.MessageTypeRouter.processMessage(MessageTypeRouter.java:52)\n"
+		        + "\tat org.openmrs.hl7.impl.HL7ServiceImpl.processHL7Message(HL7ServiceImpl.java:749) ... 101 more "
+		        + "Caused by: ca.uhn.hl7v2.HL7Exception: Could not resolve patient by identifier\n"
+		        + "\tat org.openmrs.hl7.handler.ORUR01Handler.getPatientByIdentifier(ORUR01Handler.java:998)\n"
+		        + "\tat org.openmrs.hl7.handler.ORUR01Handler.processORU_R01(ORUR01Handler.java:184)\n"
+		        + "\tat org.openmrs.hl7.handler.ORUR01Handler.processMessage(ORUR01Handler.java:124) ... 103 more";
+		Assert.assertEquals("stack trace was not shortened properly", expected, OpenmrsUtil.shortenedStackTrace(test));
+	}
+
+	/**
+	 * @see {@link OpenmrsUtil#shortenedStackTrace(String)}
+	 */
+	@Test
+	@Verifies(value = "should return null if stackTrace is null", method = "shortenedStackTrace(String)")
+	public void shortenedStackTrace_shouldReturnNullIfStackTraceIsNull() throws Exception {
+		Assert.assertNull("null value was not returned with null parameter", OpenmrsUtil.shortenedStackTrace(null));
 	}
 }

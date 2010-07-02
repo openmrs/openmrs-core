@@ -16,7 +16,9 @@ package org.openmrs.util;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Iterator;
 import java.util.Locale;
+import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -188,6 +190,79 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(Locale.US.getLanguage(), locale.getLanguage());
 		Assert.assertEquals(Locale.US.getCountry(), locale.getCountry());
 		Assert.assertEquals("Traditional,WIN", locale.getDisplayVariant());
+	}
+	
+	/**
+	 * @see {@link LocaleUtility#getLocalesInOrder()}
+	 */
+	@Test
+	@Verifies(value = "should always have english included in the returned collection", method = "getLocalesInOrder()")
+	public void getLocalesInOrder_shouldAlwaysHaveEnglishIncludedInTheReturnedCollection() throws Exception {
+		Set<Locale> localesInOrder = LocaleUtility.getLocalesInOrder();
+		Assert.assertEquals(true, localesInOrder.contains(Locale.ENGLISH));
+	}
+	
+	/**
+	 * @see {@link LocaleUtility#getLocalesInOrder()}
+	 */
+	@Test
+	@Verifies(value = "should have default locale as the first element if user has no preferred locale", method = "getLocalesInOrder()")
+	public void getLocalesInOrder_shouldHaveDefaultLocaleAsTheFirstElementIfUserHasNoPreferredLocale() throws Exception {
+		Set<Locale> localesInOrder = LocaleUtility.getLocalesInOrder();
+		Assert.assertEquals(LocaleUtility.getDefaultLocale(), localesInOrder.iterator().next());
+	}
+	
+	/**
+	 * @see {@link LocaleUtility#getLocalesInOrder()}
+	 */
+	@Test
+	@Verifies(value = "should have default locale as the second element if user has a preferred locale", method = "getLocalesInOrder()")
+	public void getLocalesInOrder_shouldHaveDefaultLocaleAsTheSecondElementIfUserHasAPreferredLocale() throws Exception {
+		Locale lu_UG = new Locale("lu", "UG");
+		Context.getUserContext().setLocale(lu_UG);
+		Set<Locale> localesInOrder = LocaleUtility.getLocalesInOrder();
+		Iterator<Locale> it = localesInOrder.iterator();
+		Assert.assertEquals(lu_UG, it.next());
+		Assert.assertEquals(LocaleUtility.getDefaultLocale(), it.next());
+	}
+	
+	/**
+	 * @see {@link LocaleUtility#getLocalesInOrder()}
+	 */
+	@Test
+	@Verifies(value = "should return a set of locales with a predictable order", method = "getLocalesInOrder()")
+	public void getLocalesInOrder_shouldReturnASetOfLocalesWithAPredictableOrder() throws Exception {
+		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, "lu, sw_KE, en_US, en",
+		        "Test Allowed list of locales");
+		Context.getAdministrationService().saveGlobalProperty(gp);
+		Locale lu_UG = new Locale("lu", "UG");
+		Context.getUserContext().setLocale(lu_UG);
+		Set<Locale> localesInOrder = LocaleUtility.getLocalesInOrder();
+		Iterator<Locale> it = localesInOrder.iterator();
+		Assert.assertEquals(new Locale("lu", "UG"), it.next());
+		Assert.assertEquals(LocaleUtility.getDefaultLocale(), it.next());
+		Assert.assertEquals(new Locale("lu"), it.next());
+		Assert.assertEquals(new Locale("sw", "KE"), it.next());
+		Assert.assertEquals(new Locale("en", "US"), it.next());
+		Assert.assertEquals(new Locale("en"), it.next());
+	}
+	
+	/**
+	 * @see {@link LocaleUtility#getLocalesInOrder()}
+	 */
+	@Test
+	@Verifies(value = "should return a set of locales with no duplicates", method = "getLocalesInOrder()")
+	public void getLocalesInOrder_shouldReturnASetOfLocalesWithNoDuplicates() throws Exception {
+		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST,
+		        "lu_UG, lu, sw_KE, en_US, en, en, sw_KE", "Test Allowed list of locales");
+		Context.getAdministrationService().saveGlobalProperty(gp);
+		GlobalProperty defaultLocale = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE, "lu",
+		        "Test Allowed list of locales");
+		Context.getAdministrationService().saveGlobalProperty(defaultLocale);
+		Locale lu_UG = new Locale("lu", "UG");
+		Context.getUserContext().setLocale(lu_UG);
+		//note that unique list of locales should be lu_UG, lu, sw_KE, en_US, en
+		Assert.assertEquals(5, LocaleUtility.getLocalesInOrder().size());
 	}
 	
 }

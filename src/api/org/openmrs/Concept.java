@@ -22,14 +22,19 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.Vector;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.api.APIException;
+import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.LocaleUtility;
+import org.openmrs.util.OpenmrsUtil;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
@@ -51,7 +56,6 @@ import org.simpleframework.xml.Root;
  * stored to a concept, get the concept, then call {@link Concept#getAnswers()}
  * 
  * @see ConceptName
- * @see ConceptNameTag
  * @see ConceptDescription
  * @see ConceptAnswer
  * @see ConceptSet
@@ -138,7 +142,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @deprecated
 	 */
 	@Deprecated
-    public Concept(ConceptNumeric cn) {
+	public Concept(ConceptNumeric cn) {
 		conceptId = cn.getConceptId();
 		retired = cn.isRetired();
 		datatype = cn.getDatatype();
@@ -163,7 +167,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @should confirm two new concept objects are equal
 	 */
 	@Override
-    public boolean equals(Object obj) {
+	public boolean equals(Object obj) {
 		if (obj == null)
 			return false;
 		if (obj instanceof Concept) {
@@ -181,7 +185,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @should not fail if concept id is null
 	 */
 	@Override
-    public int hashCode() {
+	public int hashCode() {
 		if (this.getConceptId() == null)
 			return super.hashCode();
 		int hash = 8;
@@ -421,59 +425,83 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	}
 	
 	/**
-	 * Sets the preferred name for a locale. This sets tags on the concept name to indicate that it
-	 * is preferred for the language and country. Also, the name is added to the concept. If the
-	 * country is specified in the locale, then the language is considered to be only implied as
-	 * preferred &mdash; it will only get set if there is not an existing preferred language name.
-	 * 
-	 * @param locale the locale for which to set the preferred name
-	 * @param preferredName name which is preferred in the locale
-	 * @should only allow one preferred name
+	 * @deprecated use {@link #setPreferredName(ConceptName)}
 	 */
+	@Deprecated
 	public void setPreferredName(Locale locale, ConceptName preferredName) {
-		ConceptNameTag preferredLanguage = ConceptNameTag.preferredLanguageTagFor(locale);
-		ConceptNameTag preferredCountry = ConceptNameTag.preferredCountryTagFor(locale);
-		
-		ConceptName currentPreferredNameInLanguage = getPreferredNameInLanguage(locale.getLanguage());
-		
-		if (preferredCountry != null) {
-			if (currentPreferredNameInLanguage == null) {
-				preferredName.addTag(preferredLanguage);
-			}
-			
-			ConceptName currentPreferredForCountry = getPreferredNameForCountry(locale.getCountry());
-			if (currentPreferredForCountry != null) {
-				currentPreferredForCountry.removeTag(preferredCountry);
-			}
-			preferredName.addTag(preferredCountry);
-		} else {
-			if (currentPreferredNameInLanguage != null) {
-				currentPreferredNameInLanguage.removeTag(preferredLanguage);
-			}
-			preferredName.addTag(preferredLanguage);
-		}
-		
-		addName(preferredName);
+		setPreferredName(preferredName);
 	}
 	
 	/**
-	 * Gets the explicitly preferred name for a country.
+	 * Sets the preferred name /in this locale/ to the specified conceptName and its Locale, if
+	 * there is an existing preferred name for this concept in the same locale, this one will
+	 * replace the old preferred name. Also, the name is added to the concept if it is not already
+	 * among the concept names.
+	 * 
+	 * @param preferredName The name to be marked as preferred in its locale
+	 * @should only allow one preferred name
+	 * @should add the name to the list of names if it not among them before
+	 * @should fail if the preferred name to set to is an index term
+	 */
+	public void setPreferredName(ConceptName preferredName) {
+		
+		if (preferredName.getLocale() == null)
+			throw new APIException("The locale for a concept name cannot be null");
+		else if (preferredName != null && !preferredName.isVoided() && !preferredName.isIndexTerm()) {
+			//first revert the current preferred name(if any) from being preferred
+			ConceptName oldPreferredName = getPreferredName(preferredName.getLocale());
+			if (oldPreferredName != null)
+				oldPreferredName.setLocalePreferred(false);
+			
+			preferredName.setLocalePreferred(true);
+			//add this name, if it is new or not among this concept's names
+			if (preferredName.getConceptNameId() == null || !getNames().contains(preferredName))
+				addName(preferredName);
+		} else
+			throw new APIException("Preferred name cannot be null, voided or an index term");
+	}
+	
+	/**
+	 * Gets the name explicitly marked as preferred in a locale with a matching country code.
 	 * 
 	 * @param country ISO-3166 two letter country code
-	 * @return the preferred name, or null if none has been explicitly set
+	 * @return the preferred name, or null if no match is found
+	 * @deprecated use {@link #getPreferredName(Locale)}
 	 */
+	@Deprecated
 	public ConceptName getPreferredNameForCountry(String country) {
-		return findNameTaggedWith(ConceptNameTag.preferredCountryTagFor(country));
+		//TODO add unit tests
+		if (!StringUtils.isBlank(country)) {
+			//return the first preferred name found in a locale with a matching country code
+			for (ConceptName conceptName : getNames()) {
+				if (conceptName.isPreferred() && conceptName.getLocale() != null
+				        && conceptName.getLocale().getCountry().equals(country))
+					return conceptName;
+			}
+		}
+		
+		return null;
 	}
 	
 	/**
-	 * Gets the explicitly preferred name in a language.
+	 * Gets the name explicitly marked as preferred in a locale with a matching language code.
 	 * 
-	 * @param language ISO-639 two letter language code
-	 * @return the preferred name, or null if none has been explicitly set
+	 * @param country ISO-3166 two letter language code
+	 * @return the preferred name, or null if no match is found
+	 * @deprecated use {@link #getPreferredName(Locale)}
 	 */
+	@Deprecated
 	public ConceptName getPreferredNameInLanguage(String language) {
-		return findNameTaggedWith(ConceptNameTag.preferredLanguageTagFor(language));
+		//TODO add unit tests
+		if (!StringUtils.isBlank(language)) {
+			//return the first preferred name found in a locale with a matching language code
+			for (ConceptName conceptName : getNames()) {
+				if (conceptName.isPreferred() && conceptName.getLocale() != null
+				        && conceptName.getLocale().getLanguage().equals(language))
+					return conceptName;
+			}
+		}
+		return null;
 	}
 	
 	/**
@@ -503,27 +531,75 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @return ConceptName attributed to the Concept in the given locale
 	 * @since 1.5
 	 * @see Concept#getNames(Locale) to get all the names for a locale,
-	 * @see Concept#getPreferredName(Locale) for the preferred name (if any),
-	 * @see Concept#getBestName(Locale) to get the best match for a locale.
-	 * @should get preferred fully specified country
+	 * @see Concept#getPreferredName(Locale) for the preferred name (if any)
 	 */
 	public ConceptName getName(Locale locale) {
 		return getName(locale, false);
 	}
 	
 	/**
-	 * Returns a name in the current User's chosen locale via Context.getLocale(). If a name isn't
-	 * found with an exact match, a compatible locale match is returned. If no name is found
-	 * matching either of those, the first name defined for this concept is returned.
+	 * Returns concept name, the look up for the appropriate name is done in the following order;
+	 * <ul>
+	 * <li>First name found in any locale that is explicitly marked as preferred while searching
+	 * available locales in order of preference (the locales are traversed in their order as they
+	 * are listed in the 'locale.allowed.list' including english global property).</li>
+	 * <li>First "Fully Specified" name found while searching available locales in order of
+	 * preference.</li>
+	 * <li>The first fully specified name found while searching through all names for the concept</li>
+	 * <li>The first synonym found while searching through all names for the concept.</li>
+	 * <li>The first random name found(except index terms) while searching through all names.</li>
+	 * </ul>
 	 * 
 	 * @return {@link ConceptName} in the current locale or any locale if none found
 	 * @since 1.5
 	 * @see Concept#getNames(Locale) to get all the names for a locale
 	 * @see Concept#getPreferredName(Locale) for the preferred name (if any)
-	 * @see Concept#getBestName(Locale) to get the best match for a locale
+	 * @should return the name explicitly marked as locale preferred if any is present
+	 * @should return the fully specified name in a locale if no preferred name is set
+	 * @should return null if the only added name is an index term
+	 * @should return name in broader locale incase none is found in specific one
 	 */
 	public ConceptName getName() {
-		return getName(Context.getLocale());
+		if (getNames().size() == 0) {
+			if (log.isDebugEnabled())
+				log.debug("there are no names defined for: " + conceptId);
+			return null;
+		}
+		
+		for (Locale currentLocale : LocaleUtility.getLocalesInOrder()) {
+			ConceptName preferredName = getPreferredName(currentLocale);
+			if (preferredName != null)
+				return preferredName;
+			
+			ConceptName fullySpecifiedName = getFullySpecifiedName(currentLocale);
+			if (fullySpecifiedName != null)
+				return fullySpecifiedName;
+			
+			//if the locale has an variants e.g en_GB, try names in the locale excluding the country code i.e en
+			if (!StringUtils.isBlank(currentLocale.getCountry()) || !StringUtils.isBlank(currentLocale.getVariant())) {
+				Locale broaderLocale = new Locale(currentLocale.getLanguage());
+				ConceptName prefNameInBroaderLoc = getPreferredName(broaderLocale);
+				if (prefNameInBroaderLoc != null)
+					return prefNameInBroaderLoc;
+				
+				ConceptName fullySpecNameInBroaderLoc = getFullySpecifiedName(broaderLocale);
+				if (fullySpecNameInBroaderLoc != null)
+					return fullySpecNameInBroaderLoc;
+			}
+		}
+		
+		for (ConceptName cn : getNames()) {
+			if (cn.isFullySpecifiedName())
+				return cn;
+		}
+		
+		if (getSynonyms().size() > 0)
+			return getSynonyms().iterator().next();
+		
+		//we dont expect to get here since every concept name must have atleast
+		//one fully specified name, but just in case(probably inconsistent data)
+		
+		return null;
 	}
 	
 	/**
@@ -561,14 +637,11 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @param exact true/false to return only exact locale (no default locale)
 	 * @return the closest name in the given locale, or the first name
 	 * @see Concept#getNames(Locale) to get all the names for a locale,
-	 * @see Concept#getPreferredName(Locale) for the preferred name (if any),
-	 * @see Concept#getBestName(Locale) to get the best match for a locale.
+	 * @see Concept#getPreferredName(Locale) for the preferred name (if any)
 	 * @should return exact name locale match given exact equals true
 	 * @should return loose match given exact equals false
+	 * @should return null if no names are found in locale given exact equals true
 	 * @should return any name if no locale match given exact equals false
-	 * @should not fail if no names are defined
-	 * @should return null if no locale match and exact equals true
-	 * @should support plain preferred
 	 */
 	public ConceptName getName(Locale locale, boolean exact) {
 		
@@ -581,163 +654,80 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		
 		if (log.isDebugEnabled())
 			log.debug("Getting conceptName for locale: " + locale);
-		
-		// matches on any name in the current locale, or first name available
-		ConceptName bestName = getBestName(locale);
-		
-		if (exact && !bestName.getLocale().equals(locale))
-			return null; // no exact match found
-		else
-			return bestName;
+		if (exact && locale != null) {
+			ConceptName preferredName = getPreferredName(locale);
+			if (preferredName != null)
+				return preferredName;
+			
+			ConceptName fullySpecifiedName = getFullySpecifiedName(locale);
+			if (fullySpecifiedName != null)
+				return fullySpecifiedName;
+			else if (getSynonyms(locale).size() > 0)
+				return getSynonyms(locale).iterator().next();
+			
+			return null;
+			
+		} else {
+			//just get any name
+			return getName();
+		}
 	}
 	
 	/**
-	 * Returns the name which is explicitly marked as preferred for a given locale. If the country
-	 * is specified in the locale, then the language of the name must match and the name must have a
-	 * tag indicating that it is preferred in the locale's country. If no country is specified, then
-	 * the name must have a tag indicating that it is preferred in the locale's language
+	 * Returns the name which is explicitly marked as preferred for a given locale.
 	 * 
 	 * @param forLocale locale for which to return a preferred name
-	 * @return preferred name for the locale, or null if none is tagged as such
-	 * @should support plain preferred
-	 * @should match to best name
+	 * @return preferred name for the locale, or null if no preferred name is specified
+	 * @should return the concept name explicitly marked as locale preferred
+	 * @should return null if no name is explicitly marked as locale preferred
 	 */
 	public ConceptName getPreferredName(Locale forLocale) {
-		// fail early if this concept has no names defined
-		if (getNames().size() == 0) {
-			if (log.isDebugEnabled())
-				log.debug("there are no names defined for: " + conceptId);
-			return null;
-		}
 		
 		if (log.isDebugEnabled())
 			log.debug("Getting preferred conceptName for locale: " + forLocale);
-		
-		ConceptName preferredName = null; // name which exactly match the locale
-		// and is preferred
-		if (forLocale == null)
-			forLocale = Context.getLocale(); // Don't presume en_US;
-			
-		ConceptNameTag desiredLanguageTag = ConceptNameTag.preferredLanguageTagFor(forLocale);
-		ConceptNameTag desiredCountryTag = ConceptNameTag.preferredCountryTagFor(forLocale);
-		
-		for (ConceptName possibleName : getCompatibleNames(forLocale)) {
-			if (forLocale.equals(possibleName.getLocale()) && possibleName.hasTag(ConceptNameTag.PREFERRED)) {
-				preferredName = possibleName;
-				break;
-			}
-			if (desiredCountryTag != null) {
-				// country was specified, exact match must be preferred in country
-				if (possibleName.hasTag(desiredCountryTag)) {
-					preferredName = possibleName;
-					break;
-				}
-			} else {
-				// no country specified, so only worry about matching language
-				if (possibleName.hasTag(desiredLanguageTag)) {
-					preferredName = possibleName;
-					break;
-				}
-			}
-			if ((preferredName == null) && possibleName.hasTag(ConceptNameTag.PREFERRED)) {
-				preferredName = possibleName;
-			}
-		}
-		
-		if (log.isDebugEnabled()) {
-			if (preferredName == null) {
-				log.warn("No preferred concept name found for concept id " + conceptId + " in locale " + forLocale);
-			}
-		}
-		
-		return preferredName;
-	}
-	
-	/**
-	 * Returns the best compatible name for a locale. The names are ordered as "best" according to
-	 * these rules:
-	 * <ol>
-	 * <li>preferred name in matching country (for example, tagged as PREFERRED_UG for preferred in
-	 * Uganda)</li>
-	 * <li>preferred name in matching language (for example, tagged as PREFERRED_EN for preferred
-	 * name in English)</li>
-	 * <li>any name in matching country (for example, matching Uganda)</li>
-	 * <li>any name in matching language (for example, matching English)</li>
-	 * <li>first name in any matching language</li>
-	 * </ol>
-	 * 
-	 * @param locale the language and country in which the name is used
-	 * @return the best name possible {@link ConceptName}, never null
-	 * @should support plain preferred
-	 * @should always have a best name even if none match locale
-	 */
-	public ConceptName getBestName(Locale locale) {
-		
 		// fail early if this concept has no names defined
-		if (getNames().size() == 0) {
+		if (getNames(forLocale).size() == 0) {
 			if (log.isDebugEnabled())
-				log.debug("there are no names defined for: " + conceptId);
+				log.debug("there are no names defined for concept with id: " + conceptId + " in the  locale: " + forLocale);
+			return null;
+		} else if (forLocale == null) {
+			log.warn("Locale cannot be null");
 			return null;
 		}
 		
-		if (log.isDebugEnabled())
-			log.debug("Getting conceptName for locale: " + locale);
+		for (ConceptName nameInLocale : getNames(forLocale)) {
+			if (nameInLocale.isLocalePreferred())
+				return nameInLocale;
+		}
 		
-		ConceptName bestMatch = null;
-		
-		if (locale == null)
-			locale = Context.getLocale(); // Don't presume en_US;
-			
-		ConceptNameTag desiredLanguageTag = ConceptNameTag.preferredLanguageTagFor(locale);
-		ConceptNameTag desiredCountryTag = ConceptNameTag.preferredCountryTagFor(locale);
-		
-		List<ConceptName> compatibleNames = getCompatibleNames(locale);
-		
-		if (compatibleNames.size() == 0) {
-			// no compatible names, so return first available name
-			Iterator<ConceptName> nameIt = getNames().iterator();
-			bestMatch = nameIt.next();
-		} else if (compatibleNames.size() == 1) {
-			bestMatch = compatibleNames.get(0);
-		} else {
-			// more than 1 choice? search through to find the "best"
-			for (ConceptName possibleName : compatibleNames) {
-				if (locale.equals(possibleName.getLocale()) && possibleName.hasTag(ConceptNameTag.PREFERRED)) {
-					bestMatch = possibleName;
-					break;
-				}
-				if (desiredCountryTag != null) {
-					// country was specified, exact match must be preferred in country
-					if (possibleName.hasTag(desiredCountryTag)) {
-						bestMatch = possibleName;
-						break; // can't get any better than this match
-					} else if (possibleName.hasTag(desiredLanguageTag)) {
-						bestMatch = possibleName;
-					} else if (possibleName.hasTag(ConceptNameTag.PREFERRED)) {
-						bestMatch = possibleName;
-					} else if (bestMatch == null) {
-						bestMatch = possibleName;
-					}
-				} else {
-					// no country specified, so only worry about matching language
-					if (possibleName.hasTag(desiredLanguageTag)) {
-						bestMatch = possibleName;
-						break;
-					} else if (possibleName.hasTag(ConceptNameTag.PREFERRED)) {
-						bestMatch = possibleName;
-					} else if (bestMatch == null) {
-						bestMatch = possibleName;
-					}
-				}
+		return null;
+	}
+	
+	/**
+	 * @deprecated use {@link #getName(Locale, boolean)} with a second parameter of "false"
+	 */
+	@Deprecated
+	public ConceptName getBestName(Locale locale) {
+		return getName(locale, false);
+	}
+	
+	/**
+	 * Convenience method that returns the fully specified name in the locale
+	 * 
+	 * @param locale locale from which to look up the fully specified name
+	 * @return the name explicitly marked as fully specified for the locale
+	 * @should return the name marked as fully specified for the given locale
+	 */
+	public ConceptName getFullySpecifiedName(Locale locale) {
+		if (locale != null && getNames(locale).size() > 0) {
+			//get the first fully specified name, since every concept must have a fully specified name,
+			//then, this loop will have to return a name
+			for (ConceptName conceptName : getNames(locale)) {
+				if (conceptName.isFullySpecifiedName())
+					return conceptName;
 			}
 		}
-		
-		if (bestMatch == null) {
-			log.warn("No compatible concept name found for for concept id " + conceptId);
-		}
-		
-		return bestMatch;
-		
+		return null;
 	}
 	
 	/**
@@ -791,221 +781,215 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	}
 	
 	/**
-	 * Returns the best compatible short name for a locale. The names are ordered as "best"
-	 * according to these rules:
-	 * <ol>
-	 * <li>preferred short name in matching country (for example, tagged as SHORT_UG for preferred
-	 * short in Uganda)</li>
-	 * <li>preferred short name in matching language (for example, tagged as SHORT_EN for preferred
-	 * short name in English)</li>
-	 * <li>any short name in matching country (for example, tagged as SHORT and matching the Uganda)
-	 * </li>
-	 * <li>any short name in matching language (for example, tagged as SHORT and matching the
-	 * English)</li>
-	 * <li>any name matching the locale</li>
-	 * </ol>
-	 * 
-	 * @param locale the language and country in which the short name is used
-	 * @return the best short name
-	 * @should always return a short name even if no names are tagged as short
+	 * @deprecated use {@link #getShortNameInLocale(Locale)} or
+	 *             {@link #getShortestName(Locale, Boolean)}
 	 */
+	@Deprecated
 	public ConceptName getBestShortName(Locale locale) {
-		
-		// fail early if this concept has no names defined
-		if (getNames().size() == 0) {
-			if (log.isDebugEnabled())
-				log.debug("there are no names defined for: " + conceptId);
-			return null;
-		}
-		
-		if (log.isDebugEnabled())
-			log.debug("Getting short conceptName for locale: " + locale);
-		
-		ConceptName bestMatch = null;
-		
-		if (locale == null)
-			locale = Context.getLocale(); // Don't presume en_US;
-			
-		ConceptNameTag desiredLanguageTag = ConceptNameTag.shortLanguageTagFor(locale);
-		ConceptNameTag desiredCountryTag = ConceptNameTag.shortCountryTagFor(locale);
-		
-		List<ConceptName> compatibleNames = getCompatibleNames(locale);
-		
-		if (compatibleNames.size() == 0) {
-			// no compatible names, so return first available name
-			Iterator<ConceptName> nameIt = getNames().iterator();
-			bestMatch = nameIt.next();
-		} else if (compatibleNames.size() == 1) {
-			// only 1? it must be the best
-			bestMatch = compatibleNames.get(0);
-		} else {
-			for (ConceptName possibleName : getCompatibleNames(locale)) {
-				if (desiredCountryTag != null) {
-					// country was specified, exact match must be preferred in country
-					if (possibleName.hasTag(desiredCountryTag)) {
-						bestMatch = possibleName;
-						break;
-					} else if (possibleName.hasTag(desiredLanguageTag)) {
-						bestMatch = possibleName;
-					} else if (possibleName.isShort()) {
-						bestMatch = possibleName;
-					} else if (bestMatch == null) {
-						bestMatch = possibleName;
-					}
-				} else {
-					// no country specified, so only worry about matching language
-					if (possibleName.hasTag(desiredLanguageTag)) {
-						bestMatch = possibleName;
-						break;
-					} else if (bestMatch.isShort()) {
-						bestMatch = possibleName;
-					} else if (bestMatch == null) {
-						bestMatch = possibleName;
-					}
-				}
-			}
-		}
-		
-		if (bestMatch == null) {
-			log.info("No compatible concept name found for default locale for concept id " + conceptId);
-		}
-		
-		return bestMatch;
-		
+		return getShortestName(locale, false);
 	}
 	
 	/**
-	 * Sets the short name for a locale. This sets tags on the concept name to indicate that it is
-	 * short for the language and country. Also, the name is added to the concept (if needed). <br/>
-	 * <br/>
-	 * If the country is specified in the locale, then the language is considered to be only implied
-	 * &mdash; it will only get set if there is not an existing short language name. <br/>
-	 * <br/>
-	 * If the country is not specified in the locale, then the language is considered an explicit
-	 * designation and the call is the equivalent of calling {@link #getShortNameInLanguage(String)}
-	 * .
-	 * 
-	 * @param locale the locale for which to set the short name
-	 * @param shortName name which is preferred in the locale
+	 *@deprecated use {@link #setShortName(ConceptName)}
 	 */
+	@Deprecated
 	public void setShortName(Locale locale, ConceptName shortName) {
-		ConceptNameTag shortLanguage = ConceptNameTag.shortLanguageTagFor(locale);
-		ConceptNameTag shortCountry = ConceptNameTag.shortCountryTagFor(locale);
-		
-		ConceptName currentShortNameInLanguage = getShortNameInLanguage(locale.getLanguage());
-		if (shortCountry != null) {
-			if (currentShortNameInLanguage == null) {
-				shortName.addTag(shortLanguage);
-			}
-			
-			ConceptName currentPreferredForCountry = getPreferredNameForCountry(locale.getCountry());
-			if (currentPreferredForCountry != null) {
-				currentPreferredForCountry.removeTag(shortCountry);
-			}
-			shortName.addTag(shortCountry);
-		} else {
-			if (currentShortNameInLanguage != null) {
-				currentShortNameInLanguage.removeTag(shortLanguage);
-			}
-			shortName.addTag(shortLanguage);
-		}
-		
-		addName(shortName);
+		setShortName(shortName);
 	}
 	
 	/**
-	 * Gets the explicitly specified short name for a country.
+	 * Sets the specified name as the fully specified name for the locale and the current fully
+	 * specified (if any) ceases to be the fully specified name for the locale.
+	 * 
+	 * @param newFullySpecifiedName the new fully specified name to set
+	 * @should set the concept name type of the specified name to fully specified
+	 * @should convert the previous fully specified name if any to a synonym
+	 * @should add the name to the list of names if it not among them before
+	 */
+	public void setFullySpecifiedName(ConceptName fullySpecifiedName) {
+		if (fullySpecifiedName.getLocale() == null)
+			throw new APIException("The locale for a concept name cannot be null");
+		else if (fullySpecifiedName != null && !fullySpecifiedName.isVoided()) {
+			ConceptName oldFullySpecifiedName = getFullySpecifiedName(fullySpecifiedName.getLocale());
+			if (oldFullySpecifiedName != null)
+				oldFullySpecifiedName.setConceptNameType(null);
+			fullySpecifiedName.setConceptNameType(ConceptNameType.FULLY_SPECIFIED);
+			//add this name, if it is new or not among this concept's names
+			if (fullySpecifiedName.getConceptNameId() == null || !getNames().contains(fullySpecifiedName))
+				addName(fullySpecifiedName);
+		} else
+			throw new APIException("Fully Specified name cannot be null or voided");
+	}
+	
+	/**
+	 * Sets the specified name as the short name for the locale and the current shortName(if any)
+	 * ceases to be the short name for the locale.
+	 * 
+	 * @param shortName the new shortName to set
+	 * @should set the concept name type of the specified name to short
+	 * @should convert the previous shortName if any to a synonym
+	 * @should add the name to the list of names if it not among them before
+	 */
+	public void setShortName(ConceptName shortName) {
+		if (shortName.getLocale() == null)
+			throw new APIException("The locale for a concept name cannot be null");
+		else if (shortName != null && !shortName.isVoided()) {
+			ConceptName oldShortName = getShortNameInLocale(shortName.getLocale());
+			if (oldShortName != null)
+				oldShortName.setConceptNameType(null);
+			shortName.setConceptNameType(ConceptNameType.SHORT);
+			//add this name, if it is new or not among this concept's names
+			if (shortName.getConceptNameId() == null || !getNames().contains(shortName))
+				addName(shortName);
+		} else
+			throw new APIException("Short name cannot be null or voided");
+	}
+	
+	/**
+	 * This method is deprecated, it always returns the shortName from the locale with a matching
+	 * country code.
 	 * 
 	 * @param country ISO-3166 two letter country code
 	 * @return the short name, or null if none has been explicitly set
+	 * @deprecated use {@link #getShortNameInLocale(Locale)} or
+	 *             {@link #getShortestName(Locale, Boolean)}
 	 */
+	@Deprecated
 	public ConceptName getShortNameForCountry(String country) {
-		return findNameTaggedWith(ConceptNameTag.shortCountryTagFor(country));
+		if (!StringUtils.isBlank(country)) {
+			//return the first short name found in a locale with a matching country code
+			for (ConceptName shortName : getShortNames()) {
+				if (shortName.getLocale() != null && shortName.getLocale().getCountry().equals(country))
+					return shortName;
+			}
+		}
+		
+		return null;
 	}
 	
 	/**
-	 * Gets the explicitly specified short name in a language.
+	 * This method is deprecated, it always returns the shortName from the locale with a matching
+	 * language code.
 	 * 
-	 * @param language ISO-639 two letter language code
+	 * @param country ISO-3166 two letter language code
 	 * @return the short name, or null if none has been explicitly set
+	 * @deprecated use {@link #getShortNameInLocale(Locale)} or
+	 *             {@link #getShortestName(Locale, Boolean)}
 	 */
+	@Deprecated
 	public ConceptName getShortNameInLanguage(String language) {
-		return findNameTaggedWith(ConceptNameTag.shortLanguageTagFor(language));
+		if (!StringUtils.isBlank(language)) {
+			//return the first short name found in a locale with a matching language code
+			for (ConceptName shortName : getShortNames()) {
+				if (shortName.getLocale() != null && shortName.getLocale().getLanguage().equals(language))
+					return shortName;
+			}
+		}
+		return null;
 	}
 	
 	/**
-	 * Gets the explicitly specified short name for a locale. The name returned depends on the
-	 * specificity of the locale. If country is indicated, then the name must be tagged as short in
-	 * that country, otherwise the name must be tagged as short in that language.
+	 * Gets the explicitly specified short name for a locale.
 	 * 
-	 * @param locale locale for which to return a short name
+	 * @param locale locale for which to find a short name
 	 * @return the short name, or null if none has been explicitly set
 	 */
 	public ConceptName getShortNameInLocale(Locale locale) {
-		ConceptName shortName = null;
-		// ABK: country will always be non-null. Empty string (instead
-		// of null) indicates no country was specified
-		String country = locale.getCountry();
-		if (country.length() != 0) {
-			shortName = getShortNameForCountry(country);
-		} else {
-			shortName = getShortNameInLanguage(locale.getLanguage());
-		}
-		// default to getting the name in the specific locale tagged as "short"
-		if (shortName == null) {
-			for (ConceptName name : getCompatibleNames(locale)) {
-				if (name.hasTag(ConceptNameTag.SHORT))
-					return name;
+		if (locale != null && getShortNames().size() > 0) {
+			for (ConceptName shortName : getShortNames()) {
+				if (shortName.getLocale().equals(locale))
+					return shortName;
 			}
 		}
-		return shortName;
+		return null;
 	}
 	
 	/**
-	 * Returns the preferred short form name for a locale, or if none has been identified, the
-	 * shortest name available in the locale.
+	 * Gets a collection of short names for this concept from all locales.
+	 * 
+	 * @return a collection of all short names for this concept
+	 */
+	public Collection<ConceptName> getShortNames() {
+		Vector<ConceptName> shortNames = new Vector<ConceptName>();
+		if (getNames().size() == 0) {
+			if (log.isDebugEnabled())
+				log.debug("The Concept with id: " + conceptId + " has no names");
+		} else {
+			for (ConceptName name : getNames()) {
+				if (name.isShort())
+					shortNames.add(name);
+			}
+		}
+		return shortNames;
+	}
+	
+	/**
+	 * This method is deprecated, it returns a list with only one shortName for the locale if any is
+	 * found, otherwise the list will be empty.
+	 * 
+	 * @param the locale where to find the shortName
+	 * @return a list containing a single shortName for the locale if any is found
+	 * @deprecated because each concept has only one short name per locale.
+	 * @see #getShortNameInLocale(Locale)
+	 */
+	@Deprecated
+	public Collection<ConceptName> getShortNamesForLocale(Locale locale) {
+		//return a list with only the single short name for the locale if any
+		Vector<ConceptName> shortNamesForLocale = new Vector<ConceptName>();
+		ConceptName shortNameInLocale = getShortNameInLocale(locale);
+		if (shortNameInLocale != null)
+			shortNamesForLocale.add(shortNameInLocale);
+		
+		return shortNamesForLocale;
+	}
+	
+	/**
+	 * Returns the short form name for a locale, or if none has been identified, the shortest name
+	 * available in the locale. If exact is false, the shortest name from any locale is returned
 	 * 
 	 * @param locale the language and country in which the short name is used
 	 * @param exact true/false to return only exact locale (no default locale)
 	 * @return the appropriate short name, or null if not found
+	 * @should return the name marked as the shortName for the locale if it is present
+	 * @should return the shortest name in a given locale for a concept if exact is true
+	 * @should return the shortest name for the concept from any locale if exact is false
+	 * @should return null if their are no names in the specified locale and exact is true
 	 */
 	public ConceptName getShortestName(Locale locale, Boolean exact) {
 		if (log.isDebugEnabled())
 			log.debug("Getting shortest conceptName for locale: " + locale);
 		
-		ConceptName foundName = null;
-		ConceptName shortestName = null;
+		ConceptName shortNameInLocale = getShortNameInLocale(locale);
+		if (shortNameInLocale != null)
+			return shortNameInLocale;
 		
-		if (locale == null)
-			locale = LocaleUtility.getDefaultLocale();
+		ConceptName shortestNameForLocale = null;
+		ConceptName shortestNameForConcept = null;
 		
-		String desiredLanguage = locale.getLanguage();
-		if (desiredLanguage.length() > 2)
-			desiredLanguage = desiredLanguage.substring(0, 2);
-		
-		for (Iterator<ConceptName> i = getNames().iterator(); i.hasNext() && foundName == null;) {
-			ConceptName possibleName = i.next();
-			if ((shortestName == null) || (possibleName.getName().length() < shortestName.getName().length())) {
-				shortestName = possibleName;
+		if (locale != null) {
+			for (Iterator<ConceptName> i = getNames().iterator(); i.hasNext();) {
+				ConceptName possibleName = i.next();
+				if (possibleName.getLocale().equals(locale)) {
+					if ((shortestNameForLocale == null)
+					        || (possibleName.getName().length() < shortestNameForLocale.getName().length())) {
+						shortestNameForLocale = possibleName;
+					}
+				}
+				if ((shortestNameForConcept == null)
+				        || (possibleName.getName().length() < shortestNameForConcept.getName().length())) {
+					shortestNameForConcept = possibleName;
+				}
 			}
 		}
 		
-		if (foundName == null) {
-			// no name with the given locale was found.
-			if (exact) {
-				// return null if exact match desired
+		if (exact) {
+			if (shortestNameForLocale == null)
 				log.warn("No short concept name found for concept id " + conceptId + " for locale "
 				        + locale.getDisplayName());
-			} else if (shortestName != null) {
-				// returning default name locale ("en") if exact match not
-				// desired
-				foundName = shortestName;
-			} else {
-				log.warn("No concept name found for default locale for concept id " + conceptId);
-			}
+			return shortestNameForLocale;
 		}
 		
-		return foundName;
+		return shortestNameForConcept;
 	}
 	
 	/**
@@ -1017,6 +1001,41 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 			if (name.equals(cn.getName()))
 				return true;
 		return false;
+	}
+	
+	/**
+	 * Gets the list of all non-retired concept names which are index terms for this concept
+	 * 
+	 * @return a collection of concept names which are index terms for this concept
+	 * @since 1.7
+	 */
+	public Collection<ConceptName> getIndexTerms() {
+		Collection<ConceptName> indexTerms = new Vector<ConceptName>();
+		for (ConceptName name : getNames()) {
+			if (name.isIndexTerm())
+				indexTerms.add(name);
+		}
+		return indexTerms;
+	}
+	
+	/**
+	 * Gets the list of all non-retired concept names which are index terms in a given locale
+	 * 
+	 * @param locale the locale for the index terms to return
+	 * @return a collection of concept names which are index terms in the given locale
+	 * @since 1.7
+	 */
+	public Collection<ConceptName> getIndexTermsForLocale(Locale locale) {
+		
+		Vector<ConceptName> indexTermsForLocale = new Vector<ConceptName>();
+		if (getIndexTerms().size() > 0) {
+			for (ConceptName name : getIndexTerms()) {
+				if (name.getLocale().equals(locale))
+					indexTermsForLocale.add(name);
+			}
+		}
+		
+		return indexTermsForLocale;
 	}
 	
 	/**
@@ -1061,15 +1080,40 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * Add the given ConceptName to the list of names for this Concept
 	 * 
 	 * @param conceptName
+	 * @should replace the old preferred name with a current one
+	 * @should replace the old fully specified name with a current one
+	 * @should replace the old short name with a current one
+	 * @should mark the first name added as fully specified
 	 */
 	public void addName(ConceptName conceptName) {
-		conceptName.setConcept(this);
-		if (names == null)
-			names = new HashSet<ConceptName>();
-		if (conceptName != null && !names.contains(conceptName)) {
-			names.add(conceptName);
-			if (compatibleCache != null) {
-				compatibleCache.clear(); // clear the locale cache, forcing it to be rebuilt
+		if (conceptName != null) {
+			conceptName.setConcept(this);
+			if (names == null)
+				names = new HashSet<ConceptName>();
+			if (conceptName != null && !names.contains(conceptName)) {
+				if (getNames().size() == 0
+				        && !OpenmrsUtil.nullSafeEquals(conceptName.getConceptNameType(), ConceptNameType.FULLY_SPECIFIED)) {
+					conceptName.setConceptNameType(ConceptNameType.FULLY_SPECIFIED);
+				} else {
+					if (conceptName.isPreferred() && !conceptName.isIndexTerm() && conceptName.getLocale() != null) {
+						ConceptName prefName = getPreferredName(conceptName.getLocale());
+						if (prefName != null)
+							prefName.setLocalePreferred(false);
+					}
+					if (conceptName.isFullySpecifiedName() && conceptName.getLocale() != null) {
+						ConceptName fullySpecName = getFullySpecifiedName(conceptName.getLocale());
+						if (fullySpecName != null)
+							fullySpecName.setConceptNameType(null);
+					} else if (conceptName.isShort() && conceptName.getLocale() != null) {
+						ConceptName shortName = getShortNameInLocale(conceptName.getLocale());
+						if (shortName != null)
+							shortName.setConceptNameType(null);
+					}
+				}
+				names.add(conceptName);
+				if (compatibleCache != null) {
+					compatibleCache.clear(); // clear the locale cache, forcing it to be rebuilt
+				}
 			}
 		}
 	}
@@ -1267,7 +1311,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @see org.openmrs.Concept#isRetired()
 	 */
 	@Deprecated
-    @Attribute
+	@Attribute
 	public Boolean getRetired() {
 		return isRetired();
 	}
@@ -1288,17 +1332,32 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @return Collection of ConceptNames which are synonyms for the Concept in the given locale
 	 */
 	public Collection<ConceptName> getSynonyms(Locale locale) {
-		String desiredLanguage = locale.getLanguage();
+		
 		Collection<ConceptName> syns = new Vector<ConceptName>();
-		for (ConceptName possibleSynonym : getNames()) {
-			if (possibleSynonym.hasTag(ConceptNameTag.SYNONYM)) {
-				String lang = possibleSynonym.getLocale().getLanguage();
-				if (lang.equals(desiredLanguage))
-					syns.add(possibleSynonym);
-			}
+		for (ConceptName possibleSynonymInLoc : getSynonyms()) {
+			if (locale.equals(possibleSynonymInLoc.getLocale()))
+				syns.add(possibleSynonymInLoc);
 		}
 		log.debug("returning: " + syns);
 		return syns;
+	}
+	
+	/**
+	 * Gets all the non-retired synonyms.
+	 * 
+	 * @return Collection of ConceptNames which are synonyms for the Concept or an empty list if
+	 *         none is found
+	 * @since 1.7
+	 */
+	public Collection<ConceptName> getSynonyms() {
+		Collection<ConceptName> synonyms = new Vector<ConceptName>();
+		for (ConceptName possibleSynonym : getNames()) {
+			if (possibleSynonym.isSynonym()) {
+				synonyms.add(possibleSynonym);
+			}
+		}
+		log.debug("returning: " + synonyms);
+		return synonyms;
 	}
 	
 	/**
@@ -1328,7 +1387,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	/**
 	 * @param conceptSets The conceptSets to set.
 	 */
-    @ElementList(required = false)
+	@ElementList(required = false)
 	public void setConceptSets(Collection<ConceptSet> conceptSets) {
 		this.conceptSets = conceptSets;
 	}
@@ -1402,7 +1461,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
-    public String toString() {
+	public String toString() {
 		if (conceptId == null)
 			return "";
 		return conceptId.toString();
@@ -1475,6 +1534,30 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	}
 	
 	/**
+	 * Convenience method that returns a set of all the locales in which names have been added for
+	 * this concept.
+	 * 
+	 * @return a set of all locales for names for this concept
+	 * @since 1.7
+	 * @should return all locales for conceptNames for this concept without duplicates
+	 */
+	public Set<Locale> getAllConceptNameLocales() {
+		if (getNames().size() == 0) {
+			if (log.isDebugEnabled())
+				log.debug("The Concept with id: " + conceptId + " has no names");
+			return null;
+		}
+		
+		Set<Locale> locales = new HashSet<Locale>();
+		
+		for (ConceptName cn : getNames()) {
+			locales.add(cn.getLocale());
+		}
+		
+		return locales;
+	}
+	
+	/**
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
@@ -1489,7 +1572,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	public void setId(Integer id) {
 		setConceptId(id);
 	}
-
+	
 	/**
 	 * Sort the ConceptSet based on the weight
 	 * 
@@ -1504,7 +1587,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		
 		return cs;
 	}
-
+	
 	/**
 	 * Get all the concept members of current concept
 	 * 
@@ -1560,9 +1643,9 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	public void addSetMember(Concept setMember, int index) {
 		List<ConceptSet> sortedConceptSets = getSortedConceptSets();
 		int setsSize = sortedConceptSets.size();
-
+		
 		double weight;
-
+		
 		if (sortedConceptSets.isEmpty())
 			weight = 1000.0;
 		else if (index == -1 || index >= setsSize)
@@ -1581,5 +1664,5 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		conceptSet.setConceptSet(this);
 		conceptSets.add(conceptSet);
 	}
-
+	
 }

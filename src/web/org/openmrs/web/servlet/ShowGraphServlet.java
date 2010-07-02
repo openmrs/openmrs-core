@@ -85,6 +85,7 @@ public class ShowGraphServlet extends HttpServlet {
 	 * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse)
 	 */
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		try {
 			JFreeChart chart = getChart(request);
@@ -127,9 +128,9 @@ public class ShowGraphServlet extends HttpServlet {
 				}
 			}
 			catch (IOException e) {
-				// if its tomcat and the user simply navigated away from the page, don't throw an error 
+				// if its tomcat and the user simply navigated away from the page, don't throw an error
 				if (e.getClass().getName().equals("org.apache.catalina.connector.ClientAbortException")) {
-					// do nothing 
+					// do nothing
 				} else {
 					log.error("Error class name: " + e.getClass().getName());
 					log.error("Unable to write chart", e);
@@ -202,7 +203,7 @@ public class ShowGraphServlet extends HttpServlet {
 			concept2 = Context.getConceptService().getConcept(Integer.parseInt(conceptId2));
 		if (concept1 != null) {
 			observations1 = Context.getObsService().getObservationsByPersonAndConcept(patient, concept1);
-			chartTitle = concept1.getBestName(request.getLocale()).getName();
+			chartTitle = concept1.getName().getName();
 			rangeAxisTitle = ((ConceptNumeric) concept1).getUnits();
 			minRange = ((ConceptNumeric) concept1).getLowAbsolute();
 			maxRange = ((ConceptNumeric) concept1).getHiAbsolute();
@@ -216,7 +217,7 @@ public class ShowGraphServlet extends HttpServlet {
 				String concept2Units = ((ConceptNumeric) concept2).getUnits();
 				if (concept2Units != null && concept2Units.equals(rangeAxisTitle)) {
 					observations2 = Context.getObsService().getObservationsByPersonAndConcept(patient, concept2);
-					chartTitle += " + " + concept2.getBestName(request.getLocale()).getName();
+					chartTitle += " + " + concept2.getName().getName();
 					if (((ConceptNumeric) concept2).getHiAbsolute() != null
 					        && ((ConceptNumeric) concept2).getHiAbsolute() > maxRange)
 						maxRange = ((ConceptNumeric) concept2).getHiAbsolute();
@@ -276,11 +277,11 @@ public class ShowGraphServlet extends HttpServlet {
 			timeScale = Day.class;
 			timeAxisTitle = "Date";
 		}
-		series1 = new TimeSeries(concept1.getBestName(Context.getLocale()).getName(), timeScale);
+		series1 = new TimeSeries(concept1.getName().getName(), timeScale);
 		if (concept2 == null)
 			series2 = new TimeSeries("NULL", Hour.class);
 		else
-			series2 = new TimeSeries(concept2.getBestName(Context.getLocale()).getName(), timeScale);
+			series2 = new TimeSeries(concept2.getName().getName(), timeScale);
 		
 		// Add data points for concept1
 		for (Obs obs : observations1) {
@@ -475,6 +476,7 @@ public class ShowGraphServlet extends HttpServlet {
 	/**
 	 * There are no post actions. Ignore this method.
 	 */
+	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doGet(request, response);
 	}

@@ -20,6 +20,8 @@ import junit.framework.Assert;
 import org.databene.benerator.Generator;
 import org.databene.benerator.factory.GeneratorFactory;
 import org.junit.Test;
+import org.openmrs.api.ConceptNameType;
+import org.openmrs.api.context.Context;
 import org.openmrs.test.Verifies;
 
 /**
@@ -36,15 +38,24 @@ public class ConceptNameTest {
 	}
 	
 	/**
-	 * Convenient factory method to create a populated Concept.
+	 * Convenient factory method to create a populated Concept name.
 	 * 
-	 * @param i
+	 * @param conceptNameId id for the conceptName
+	 * @param locale for the conceptName
+	 * @param conceptNameType the conceptNameType of the concept
+	 * @param isLocalePreferred if this name should be marked as preferred in its locale
 	 */
-	public static ConceptName createMockConceptName(int conceptNameId, Locale locale) {
+	public static ConceptName createMockConceptName(int conceptNameId, Locale locale, ConceptNameType conceptNameType,
+	                                                Boolean isLocalePreferred) {
 		ConceptName mockConceptName = new ConceptName();
 		
 		mockConceptName.setConceptNameId(conceptNameId);
-		mockConceptName.setLocale(locale);
+		if (locale == null)
+			mockConceptName.setLocale(Context.getLocale());
+		else
+			mockConceptName.setLocale(locale);
+		mockConceptName.setConceptNameType(conceptNameType);
+		mockConceptName.setLocalePreferred(isLocalePreferred);
 		mockConceptName.setName(nameGenerator.generate());
 		
 		return mockConceptName;
@@ -81,26 +92,4 @@ public class ConceptNameTest {
 		ConceptName firstName = new ConceptName();
 		Assert.assertTrue(firstName.equals(firstName));
 	}
-	
-	/**
-	 * @see {@link ConceptName#isPreferred()}
-	 */
-	@Test
-	@Verifies(value = "should return true if this tag has a preferred tag", method = "isPreferred()")
-	public void isPreferred_shouldReturnTrueIfThisTagHasAPreferredTag() throws Exception {
-		ConceptName name = new ConceptName("name", Locale.ENGLISH);
-		name.addTag(ConceptNameTag.PREFERRED);
-		Assert.assertTrue(name.isPreferred());
-	}
-	
-	/**
-	 * @see {@link ConceptName#isPreferred()}
-	 */
-	@Test
-	@Verifies(value = "should return false if this tag doesnt have the preferred tag", method = "isPreferred()")
-	public void isPreferred_shouldReturnFalseIfThisTagDoesntHaveThePreferredTag() throws Exception {
-		ConceptName name = new ConceptName("name", Locale.ENGLISH);
-		Assert.assertFalse(name.isPreferred());
-	}
-	
 }

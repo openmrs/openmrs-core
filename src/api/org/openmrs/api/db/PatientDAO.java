@@ -144,5 +144,4 @@ public interface PatientDAO {
 	 * @see org.openmrs.api.PatientService#purgePatientIdentifier(org.openmrs.PatientIdentifier)
 	 */
 	public void deletePatientIdentifier(PatientIdentifier patientIdentifier) throws DAOException;
-	
 }

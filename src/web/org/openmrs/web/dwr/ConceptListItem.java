@@ -40,7 +40,9 @@ public class ConceptListItem {
 	private String description;
 	
 	/**
-	 * Will be non-null if the name hit is not the preferred name
+	 * Will be non-null if the name hit is not the preferred name. The name is matched against the
+	 * fully specified name since version 1.7 when concept name tags were converted to concept name
+	 * types
 	 */
 	private String preferredName;
 	
@@ -50,6 +52,7 @@ public class ConceptListItem {
 	 * 
 	 * @deprecated not used anymore
 	 */
+	@Deprecated
 	private String synonym = "";
 	
 	private Boolean retired;
@@ -89,6 +92,9 @@ public class ConceptListItem {
 			
 			Concept concept = word.getConcept();
 			ConceptName conceptName = word.getConceptName();
+			//associate an index term to a concrete name which is fully specified or a synonym if any is found
+			if (conceptName.isIndexTerm() && conceptName.getConcept().getName() != null)
+				conceptName = concept.getName();
 			Locale locale = word.getLocale();
 			initialize(concept, conceptName, locale);
 		}
@@ -119,11 +125,15 @@ public class ConceptListItem {
 			description = "";
 			if (conceptName != null) {
 				conceptNameId = conceptName.getConceptNameId();
-				name = WebUtil.escapeHTML(conceptName.getName());
+				if (conceptName.isIndexTerm() && concept.getName() == null)
+					name = WebUtil.escapeHTML(conceptName.getName())
+					        + Context.getMessageSourceService().getMessage("Concept.no.fullySpecifiedName.found");
+				else
+					name = WebUtil.escapeHTML(conceptName.getName());
 				
-				// if the name hit is not the preferred one, put the preferred one here
-				if (!conceptName.isPreferred()) {
-					ConceptName preferredNameObj = concept.getPreferredName(locale);
+				// if the name hit is not the preferred or fully specified one, put the fully specified one here
+				if (!conceptName.isPreferred() && !conceptName.isFullySpecifiedName()) {
+					ConceptName preferredNameObj = concept.getName(locale, false);
 					if (preferredNameObj != null)
 						preferredName = preferredNameObj.getName();
 				}
@@ -157,6 +167,7 @@ public class ConceptListItem {
 	/**
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
+	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof ConceptListItem) {
 			ConceptListItem c2 = (ConceptListItem) obj;
@@ -169,6 +180,7 @@ public class ConceptListItem {
 	/**
 	 * @see java.lang.Object#hashCode()
 	 */
+	@Override
 	public int hashCode() {
 		if (conceptId != null)
 			return 31 * conceptId.hashCode();

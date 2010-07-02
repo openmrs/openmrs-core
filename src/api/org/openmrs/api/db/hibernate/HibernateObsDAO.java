@@ -29,6 +29,7 @@ import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.criterion.Subqueries;
 import org.openmrs.Concept;
+import org.openmrs.ConceptName;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.MimeType;
@@ -80,6 +81,7 @@ public class HibernateObsDAO implements ObsDAO {
 	 * @see org.openmrs.api.db.ObsDAO#getMimeType(java.lang.Integer)
 	 * @deprecated
 	 */
+	@Deprecated
 	public MimeType getMimeType(Integer mimeTypeId) throws DAOException {
 		return (MimeType) sessionFactory.getCurrentSession().get(MimeType.class, mimeTypeId);
 	}
@@ -88,6 +90,7 @@ public class HibernateObsDAO implements ObsDAO {
 	 * @see org.openmrs.api.db.ObsDAO#getAllMimeTypes(boolean)
 	 * @deprecated
 	 */
+	@Deprecated
 	@SuppressWarnings("unchecked")
 	public List<MimeType> getAllMimeTypes(boolean includeRetired) throws DAOException {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(MimeType.class);
@@ -102,6 +105,7 @@ public class HibernateObsDAO implements ObsDAO {
 	 * @see org.openmrs.api.db.ObsDAO#saveMimeType(org.openmrs.MimeType)
 	 * @deprecated
 	 */
+	@Deprecated
 	public MimeType saveMimeType(MimeType mimeType) throws DAOException {
 		sessionFactory.getCurrentSession().saveOrUpdate(mimeType);
 		return mimeType;
@@ -111,6 +115,7 @@ public class HibernateObsDAO implements ObsDAO {
 	 * @see org.openmrs.api.db.ObsDAO#deleteMimeType(org.openmrs.MimeType)
 	 * @deprecated
 	 */
+	@Deprecated
 	public void deleteMimeType(MimeType mimeType) throws DAOException {
 		sessionFactory.getCurrentSession().delete(mimeType);
 	}
@@ -121,7 +126,7 @@ public class HibernateObsDAO implements ObsDAO {
 	public Obs saveObs(Obs obs) throws DAOException {
 		if (obs.hasGroupMembers() && obs.getObsId() != null) {
 			// hibernate has a problem updating child collections
-			// if the parent object was already saved so we do it 
+			// if the parent object was already saved so we do it
 			// explicitly here
 			for (Obs member : obs.getGroupMembers())
 				if (member.getObsId() == null)
@@ -144,7 +149,7 @@ public class HibernateObsDAO implements ObsDAO {
 	                                 Date toDate, boolean includeVoidedObs) throws DAOException {
 		
 		Criteria criteria = createGetObservationsCriteria(whom, encounters, questions, answers, personTypes, locations,
-		    sortList, mostRecentN, obsGroupId, fromDate, toDate, includeVoidedObs);
+		    sortList, mostRecentN, obsGroupId, fromDate, toDate, null, includeVoidedObs);
 		
 		return criteria.list();
 	}
@@ -156,10 +161,11 @@ public class HibernateObsDAO implements ObsDAO {
 	 */
 	public Integer getObservationCount(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
 	                                   List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations,
-	                                   Integer obsGroupId, Date fromDate, Date toDate, boolean includeVoidedObs)
-	                                                                                                            throws DAOException {
+	                                   Integer obsGroupId, Date fromDate, Date toDate,
+	                                   List<ConceptName> valueCodedNameAnswers, boolean includeVoidedObs)
+	                                                                                                     throws DAOException {
 		Criteria criteria = createGetObservationsCriteria(whom, encounters, questions, answers, personTypes, locations,
-		    null, null, obsGroupId, fromDate, toDate, includeVoidedObs);
+		    null, null, obsGroupId, fromDate, toDate, valueCodedNameAnswers, includeVoidedObs);
 		criteria.setProjection(Projections.rowCount());
 		return (Integer) criteria.list().get(0);
 	}
@@ -184,7 +190,8 @@ public class HibernateObsDAO implements ObsDAO {
 	private Criteria createGetObservationsCriteria(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
 	                                               List<Concept> answers, List<PERSON_TYPE> personTypes,
 	                                               List<Location> locations, List<String> sortList, Integer mostRecentN,
-	                                               Integer obsGroupId, Date fromDate, Date toDate, boolean includeVoidedObs) {
+	                                               Integer obsGroupId, Date fromDate, Date toDate,
+	                                               List<ConceptName> valueCodedNameAnswers, boolean includeVoidedObs) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Obs.class, "obs");
 		
 		if (CollectionUtils.isNotEmpty(whom))
@@ -226,6 +233,9 @@ public class HibernateObsDAO implements ObsDAO {
 		
 		if (toDate != null)
 			criteria.add(Restrictions.le("obsDatetime", toDate));
+		
+		if (CollectionUtils.isNotEmpty(valueCodedNameAnswers))
+			criteria.add(Restrictions.in("valueCodedName", valueCodedNameAnswers));
 		
 		if (includeVoidedObs == false)
 			criteria.add(Restrictions.eq("voided", false));

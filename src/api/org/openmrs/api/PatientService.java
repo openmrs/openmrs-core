@@ -23,6 +23,9 @@ import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
+import org.openmrs.Person;
+import org.openmrs.activelist.Allergy;
+import org.openmrs.activelist.Problem;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.PatientDAO;
 import org.openmrs.patient.IdentifierValidator;
@@ -807,4 +810,115 @@ public interface PatientService extends OpenmrsService {
 	@Authorized( { OpenmrsConstants.PRIV_PURGE_PATIENT_IDENTIFIERS })
 	public void purgePatientIdentifier(PatientIdentifier patientIdentifier) throws APIException;
 	
+	/**
+	 * Get a list of the problems for the patient, sorted on sort_weight
+	 * 
+	 * @param p the Person
+	 * @return sorted set based on the sort weight of the list items
+	 * @throws APIException
+	 * @should return empty list if no problems exist for this Patient
+	 */
+	@Transactional(readOnly = true)
+	@Authorized( { OpenmrsConstants.PRIV_VIEW_PROBLEMS })
+	public List<Problem> getProblems(Person p) throws APIException;
+	
+	/**
+	 * Returns the Problem
+	 * 
+	 * @param problemListId
+	 * @return the allergy
+	 * @throws APIException
+	 */
+	@Transactional(readOnly = true)
+	@Authorized( { OpenmrsConstants.PRIV_VIEW_PROBLEMS })
+	public Problem getProblem(Integer problemListId) throws APIException;
+	
+	/**
+	 * Creates a ProblemListItem to the Patient's Problem Active List. Sets the start date to now,
+	 * if it is null. Sets the weight
+	 * 
+	 * @param problem the Problem
+	 * @throws APIException
+	 * @should save the problem and set the weight for correct ordering
+	 */
+	@Authorized( { OpenmrsConstants.PRIV_ADD_PROBLEMS, OpenmrsConstants.PRIV_EDIT_PROBLEMS })
+	public void saveProblem(Problem problem) throws APIException;
+	
+	/**
+	 * Effectively removes the Problem from the Patient's Active List by setting the stop date to
+	 * now, if null.
+	 * 
+	 * @param problem the Problem
+	 * @param reason the reason of removing the problem
+	 * @throws APIException
+	 * @should set the end date for the problem
+	 */
+	@Authorized( { OpenmrsConstants.PRIV_EDIT_PROBLEMS })
+	public void removeProblem(Problem problem, String reason) throws APIException;
+	
+	/**
+	 * Used only in cases where the Problem was entered by error
+	 * 
+	 * @param problem
+	 * @param reason
+	 * @throws APIException
+	 */
+	@Authorized( { OpenmrsConstants.PRIV_DELETE_PROBLEMS })
+	public void voidProblem(Problem problem, String reason) throws APIException;
+	
+	/**
+	 * Returns a sorted set of Allergies, sorted on sort_weight
+	 * 
+	 * @param p the Person
+	 * @return sorted set based on the sort weight of the list items
+	 * @throws APIException
+	 * @should return empty list if no allergies exist for the Patient
+	 */
+	@Transactional(readOnly = true)
+	@Authorized( { OpenmrsConstants.PRIV_VIEW_ALLERGIES })
+	public List<Allergy> getAllergies(Person p) throws APIException;
+	
+	/**
+	 * Returns the Allergy
+	 * 
+	 * @param allergyListId
+	 * @return the allergy
+	 * @throws APIException
+	 */
+	@Transactional(readOnly = true)
+	@Authorized( { OpenmrsConstants.PRIV_VIEW_ALLERGIES })
+	public Allergy getAllergy(Integer allergyListId) throws APIException;
+	
+	/**
+	 * Creates an AllergyListItem to the Patient's Allergy Active List. Sets the start date to now,
+	 * if it is null.
+	 * 
+	 * @param allergy the Allergy
+	 * @throws APIException
+	 * @should save the allergy
+	 */
+	@Authorized( { OpenmrsConstants.PRIV_ADD_ALLERGIES, OpenmrsConstants.PRIV_EDIT_ALLERGIES })
+	public void saveAllergy(Allergy allergy) throws APIException;
+	
+	/**
+	 * Resolving the allergy, effectively removes the Allergy from the Patient's Active List by
+	 * setting the stop date to now, if null.
+	 * 
+	 * @param allergy the Allergy
+	 * @param reason the reason of remove
+	 * @throws APIException
+	 * @should set the end date for the allergy
+	 */
+	@Authorized( { OpenmrsConstants.PRIV_EDIT_ALLERGIES })
+	public void removeAllergy(Allergy allergy, String reason) throws APIException;
+	
+	/**
+	 * Used only in cases where the Allergy was entered by error
+	 * 
+	 * @param allergy
+	 * @param reason
+	 * @throws APIException
+	 */
+	@Authorized( { OpenmrsConstants.PRIV_DELETE_ALLERGIES })
+	public void voidAllergy(Allergy allergy, String reason) throws APIException;
 }

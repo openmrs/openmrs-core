@@ -1,5 +1,4 @@
-<ul id="navList">
-	<li id="homeNavLink" class="firstChild">
+<ul class="navList">	<li id="homeNavLink" class="firstChild">
 		<a href="${pageContext.request.contextPath}/"><spring:message code="Navigation.home"/></a>
 	</li>
 

@@ -41,6 +41,7 @@
 			</c:if>
 			/* variable used in js to know the context path */
 			var openmrsContextPath = '${pageContext.request.contextPath}';
+			var dwrLoadingMessage = '<spring:message code="general.loading" />';
 		</script>
 
 		<openmrs:extensionPoint pointId="org.openmrs.headerFullIncludeExt" type="html" requiredClass="org.openmrs.module.web.extension.HeaderIncludeExt">
@@ -53,6 +54,7 @@
 
 <body>
 	<div id="pageBody">
+        
 		<div id="userBar">
 			<openmrs:authentication>
 				<c:if test="${authenticatedUser != null}">
@@ -91,12 +93,6 @@
 		<div id="popupTray">
 		</div>
 		--%>
-
-		<openmrs:hasPrivilege privilege="View Navigation Menu">
-			<div id="gutter">
-				<%@ include file="/WEB-INF/template/gutter.jsp" %>
-			</div>
-		</openmrs:hasPrivilege>
 
 		<div id="content">
 
@@ -141,7 +137,9 @@
 			<div id="openmrs_dwr_error" style="display:none" class="error">
 				<div id="openmrs_dwr_error_msg"></div>
 				<div id="openmrs_dwr_error_close" class="smallMessage">
-					<i><spring:message code="error.dwr.stacktrace"/></i> &nbsp; 
+					<i><spring:message code="error.dwr.stacktrace"/></i> 
 					<a href="#" onclick="this.parentNode.parentNode.style.display='none'"><spring:message code="error.dwr.hide"/></a>
 				</div>
 			</div>
+			
+			

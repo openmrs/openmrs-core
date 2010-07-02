@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- Application context definition for Spring for the OpenMRS web layer. -->
-<!-- See /metadata/api/spring/applicationContext-service.xml for layer agnostic spring setup -->
+<!-- Application context definition for Spring for the OpenMRS web layer.
+-->
+<!-- See /metadata/api/spring/applicationContext-service.xml for layer agnostic spring setup
+-->
 
 <beans xmlns="http://www.springframework.org/schema/beans"
 	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -57,7 +59,19 @@
 		<property name="defaultMethodName"><value>handleRequest</value></property>
 	</bean>
 	
-	<!-- So that controllers can use annotations like @Controller and @RequestMapping -->
+	<!--  Exception handler mappings --> 
+ 		 
+ 	<bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver"> 
+ 		<property name="exceptionMappings"> 
+ 			<map> 
+ 				<entry key="org.openmrs.api.APIException" value="uncaughtException"/> 
+ 			</map> 
+ 		</property> 
+ 		<property name="order" value="100" /> 
+ 	</bean>
+	
+	<!-- So that controllers can use annotations like @Controller and @RequestMapping
+-->
 	<bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
 		<!-- makes annotations more important than default mappings -->
 		<property name="order"><value>98</value></property>
@@ -175,7 +189,8 @@
 				<prop key="admin/forms/field.list">fieldList</prop>
 				<prop key="admin/forms/fieldType.form">fieldTypeForm</prop>
 				<prop key="admin/forms/fieldType.list">fieldTypeList</prop>
-
+				<prop key="admin/forms/auditField.form">auditFieldController</prop>
+				
 				<prop key="admin/scheduler/scheduler.list">schedulerListController</prop>
 				<prop key="admin/scheduler/scheduler.form">schedulerFormController</prop>
 
@@ -213,6 +228,8 @@
 				<prop key="**/patientRegimenDiscontinued.portlet">patientRegimenPortletController</prop>
 				<prop key="**/patientEncounters.portlet">patientEncountersPortletController</prop>
 				<prop key="**/personFormEntry.portlet">personFormEntryPortletController</prop>
+				<prop key="**/activeListAllergy.portlet">activeListPortletController</prop>
+				<prop key="**/activeListProblem.portlet">activeListPortletController</prop>
 				<!--<prop key="**/calendar.portlet">calendarPortletController</prop>-->
 
 				<prop key="**/*.portlet">portletController</prop>
@@ -232,6 +249,7 @@
 	<bean id="personFormEntryPortletController" class="org.openmrs.web.controller.PersonFormEntryPortletController" />
 	<bean id="addressLayoutPortletController" class="org.openmrs.web.controller.layout.AddressLayoutPortletController" />
 	<bean id="nameLayoutPortletController" class="org.openmrs.web.controller.layout.NameLayoutPortletController" />
+	<bean id="activeListPortletController" class="org.openmrs.web.controller.ActiveListPortletController" />
 	<!--<bean id="calendarPortletController" class="org.openmrs.web.controller.CalendarPortletController"/>-->
 	<bean id="springController" class="org.openmrs.web.controller.SpringController" />
 
@@ -312,7 +330,8 @@
 	<!-- ========================== -->
 
 	<!-- ** Order Type ** -->
-	<!--this is the optional method of declaring values in the constructor -->
+	<!--this is the optional method of declaring values in the constructor
+-->
 	<!--<bean id="orderTypeList" class="org.openmrs.web.controller.OrderTypeListController" />-->
 	<!--<bean id="orderTypeForm" class="org.openmrs.web.controller.OrderTypeFormController" />-->
 
@@ -809,6 +828,10 @@
 		<property name="commandName"><value>field</value></property>
 		<property name="formView"><value>/admin/forms/fieldForm</value></property>
 		<property name="successView"><value>field.list</value></property>
+	</bean>
+	<bean id="auditFieldController" class="org.openmrs.web.controller.form.AuditFieldController">
+		<property name="formView"><value>/admin/forms/auditFieldForm</value></property>
+		<property name="successView"><value>auditField.form</value></property>
 	</bean>
 	<!-- ** /Field  ** -->
 
@@ -1420,7 +1443,8 @@
 
 	<!-- NAME LAYOUT SUPPORT -->
 	
-	<!-- specialTokens ordered so that the subset string 'familyName' is last -->
+	<!-- specialTokens ordered so that the subset string 'familyName' is last
+-->
 	<bean id="nameSupport" class="org.openmrs.layout.web.name.NameSupport">
 		<property name="defaultLayoutFormat"><value>short</value></property>
 		<property name="layoutTemplates">

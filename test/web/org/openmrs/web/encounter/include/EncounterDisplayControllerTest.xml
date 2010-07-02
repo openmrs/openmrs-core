@@ -24,47 +24,19 @@
   <concept_description concept_description_id="10" concept_id="1558" description="General Question: &quot;What method was used to contact the patient?&quot;" locale="en" creator="305" date_created="2007-05-09 14:45:38.0" uuid="84851aa7-d8a4-4534-9019-d177818c61ba"/>
   <concept_description concept_description_id="11" concept_id="1592" description="Patients who missed their scheduled appointment date." locale="en" creator="305" date_created="2007-05-14 17:07:25.0" uuid="3659237d-eb49-4ad3-8374-7b92903fe3c7"/>
   <concept_description concept_description_id="12" concept_id="1726" description="Complex question that follow-up action was taken to track patient." locale="en" creator="305" date_created="2007-06-05 17:38:53.0" uuid="be95ea35-1599-4016-9901-f88393506b3b"/>
-  <concept_name concept_id="1" name="" locale="en" creator="1" date_created="2005-01-01 00:00:00.0" concept_name_id="1" voided="false" uuid="e98b24c3-6eba-43e9-9663-fb3769ced183"/>
-  <concept_name concept_id="905" name="MISSED ABORTION" locale="en" creator="2" date_created="2004-06-30 00:00:00.0" concept_name_id="2" voided="false" uuid="c82ead10-d548-4fd4-bbca-be1c6bfc0df0"/>
-  <concept_name concept_id="1284" name="PROBLEM LIST" locale="en" creator="2" date_created="2005-02-24 12:33:10.0" concept_name_id="3" voided="false" uuid="d12038bd-acbb-4434-862f-d3ba1ce0de25"/>
-  <concept_name concept_id="5018" name="DIARRHEA, CHRONIC" locale="en" creator="2" date_created="2004-08-12 00:00:00.0" concept_name_id="4" voided="false" uuid="7d4c386a-8362-47df-9f20-3672b58bd225"/>
-  <concept_name concept_id="5497" name="CD4, BY FACS" locale="en" creator="2" date_created="2004-08-12 00:00:00.0" concept_name_id="5" voided="false" uuid="bf8faf37-e70e-46b2-99e3-894caddbab04"/>
-  <concept_name concept_id="5096" name="RETURN VISIT DATE" locale="en" creator="2" date_created="2004-08-12 00:00:00.0" concept_name_id="6" voided="false" uuid="58648c54-7948-473e-8d46-704514c9c423"/>
-  <concept_name concept_id="1553" name="NUMBER OF ATTEMPTS" locale="en" creator="305" date_created="2007-05-09 14:38:25.0" concept_name_id="7" voided="false" uuid="680a62ee-e1d2-4595-989f-28a8191e4642"/>
-  <concept_name concept_id="1554" name="SUCCESSFUL" locale="en" creator="305" date_created="2007-05-09 14:39:34.0" concept_name_id="8" voided="false" uuid="44192f5f-9a28-4076-a66c-bf431629dfea"/>
-  <concept_name concept_id="1555" name="PHONE" locale="en" creator="305" date_created="2007-05-09 14:42:57.0" concept_name_id="9" voided="false" uuid="2d5913cc-3b54-4416-bc9a-bd2a71d7d427"/>
-  <concept_name concept_id="1558" name="PATIENT CONTACT METHOD" locale="en" creator="305" date_created="2007-05-09 14:45:38.0" concept_name_id="10" voided="false" uuid="60d4aac0-1eba-4829-903f-3efb2610bd45"/>
-  <concept_name concept_id="1592" name="MISSED RETURNED VISIT DATE" locale="en" creator="305" date_created="2007-05-14 17:07:25.0" concept_name_id="11" voided="false" uuid="d5fd3bc4-e5b7-4658-b3be-1cf1278a1b35"/>
-  <concept_name concept_id="1726" name="FOLLOW-UP ACTION" locale="en" creator="305" date_created="2007-06-05 17:38:53.0" concept_name_id="12" voided="false" uuid="e774ae7d-9b4f-4ebd-bde7-fdd05c44dd8d"/>
-  <concept_name concept_id="5497" name="CD4 COUNT" locale="en" creator="2" date_created="2004-08-12 00:00:00.0" concept_name_id="13" voided="false" uuid="65229894-ea88-42ae-99e3-e9c8a4692643"/>
-  <concept_name_tag concept_name_tag_id="1" tag="default" description="name to use when nothing else is available" creator="1" date_created="2007-05-01 00:00:00.0" voided="false" uuid="f0afc0ca-77d8-4497-9d82-205040b0687b"/>
-  <concept_name_tag concept_name_tag_id="2" tag="short" description="preferred short name for a concept" creator="1" date_created="2007-05-01 00:00:00.0" voided="false" uuid="cae68a57-94df-4e0a-87b4-427fafbedbad"/>
-  <concept_name_tag concept_name_tag_id="3" tag="synonym" description="a different word with similar meaning" creator="1" date_created="2007-05-01 00:00:00.0" voided="false" uuid="a78458a2-c096-43ed-b907-a3284804e8ab"/>
-  <concept_name_tag concept_name_tag_id="4" tag="preferred" description="preferred name in English" creator="1" date_created="2007-05-01 00:00:00.0" voided="false" uuid="e4e2c487-28d6-427d-890d-ef7e8aad501b"/>
-  <concept_name_tag concept_name_tag_id="5" tag="preferred_KE" description="preferred name in Kenya" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="c2e76ead-f1fe-46e4-950b-002814763e93"/>
-  <concept_name_tag concept_name_tag_id="6" tag="preferred_LS" description="preferred name in Lesotho" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="254c589a-a82c-4422-81f0-b5482cf13381"/>
-  <concept_name_tag concept_name_tag_id="7" tag="preferred_MW" description="preferred name in Malawi" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="f0123558-43c1-427b-a580-48c62bf6b3f2"/>
-  <concept_name_tag concept_name_tag_id="8" tag="preferred_RW" description="preferred name in Rwanda" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="756a1ea0-5c3d-4b09-83d6-c82fbe5d243a"/>
-  <concept_name_tag concept_name_tag_id="9" tag="preferred_SA" description="preferred name in South Africa" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="72b45f08-aee9-4a50-b8df-d8a76757659a"/>
-  <concept_name_tag concept_name_tag_id="10" tag="preferred_TZ" description="preferred name in Tanzania" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="91157e12-e10b-43ff-ac1a-c267e124e91c"/>
-  <concept_name_tag concept_name_tag_id="11" tag="preferred_UG" description="preferred name in Uganda" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="5863f56b-43ce-4de0-82ef-33b61b98ba57"/>
-  <concept_name_tag concept_name_tag_id="12" tag="preferred_UK" description="preferred name in the United Kingdom" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="9969bfc8-c0ce-4ca5-ac1e-1d6e09f065c5"/>
-  <concept_name_tag concept_name_tag_id="13" tag="preferred_US" description="preferred name in the United States" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="4554d3d8-7cc5-499f-8c7a-1f6322bb9bfc"/>
-  <concept_name_tag concept_name_tag_id="14" tag="preferred_ZM" description="preferred name in Zambia" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="26b7350d-c93b-44ca-b61c-5928cbdd9644"/>
-  <concept_name_tag concept_name_tag_id="15" tag="preferred_ZW" description="preferred name in Zimbabwe" creator="1" date_created="2007-06-20 00:00:00.0" voided="false" uuid="199c052b-b049-4a25-9b15-502ca437dfbc"/>
-  <concept_name_tag_map concept_name_id="1" concept_name_tag_id="4"/>
-  <concept_name_tag_map concept_name_id="2" concept_name_tag_id="4"/>
-  <concept_name_tag_map concept_name_id="3" concept_name_tag_id="4"/>
-  <concept_name_tag_map concept_name_id="4" concept_name_tag_id="4"/>
-  <concept_name_tag_map concept_name_id="5" concept_name_tag_id="4"/>
-  <concept_name_tag_map concept_name_id="6" concept_name_tag_id="4"/>
-  <concept_name_tag_map concept_name_id="7" concept_name_tag_id="4"/>
-  <concept_name_tag_map concept_name_id="8" concept_name_tag_id="4"/>
-  <concept_name_tag_map concept_name_id="9" concept_name_tag_id="4"/>
-  <concept_name_tag_map concept_name_id="10" concept_name_tag_id="4"/>
-  <concept_name_tag_map concept_name_id="11" concept_name_tag_id="4"/>
-  <concept_name_tag_map concept_name_id="12" concept_name_tag_id="4"/>
-  <concept_name_tag_map concept_name_id="13" concept_name_tag_id="2"/>
+  <concept_name concept_id="1" name="" locale="en" creator="1" date_created="2005-01-01 00:00:00.0" concept_name_id="1" voided="false" uuid="e98b24c3-6eba-43e9-9663-fb3769ced183" concept_name_type="FULLY_SPECIFIED" locale_preferred="0"/>
+  <concept_name concept_id="905" name="MISSED ABORTION" locale="en" creator="2" date_created="2004-06-30 00:00:00.0" concept_name_id="2" voided="false" uuid="c82ead10-d548-4fd4-bbca-be1c6bfc0df0" concept_name_type="FULLY_SPECIFIED" locale_preferred="0"/>
+  <concept_name concept_id="1284" name="PROBLEM LIST" locale="en" creator="2" date_created="2005-02-24 12:33:10.0" concept_name_id="3" voided="false" uuid="d12038bd-acbb-4434-862f-d3ba1ce0de25" concept_name_type="FULLY_SPECIFIED" locale_preferred="0"/>
+  <concept_name concept_id="5018" name="DIARRHEA, CHRONIC" locale="en" creator="2" date_created="2004-08-12 00:00:00.0" concept_name_id="4" voided="false" uuid="7d4c386a-8362-47df-9f20-3672b58bd225" concept_name_type="FULLY_SPECIFIED" locale_preferred="0"/>
+  <concept_name concept_id="5497" name="CD4, BY FACS" locale="en" creator="2" date_created="2004-08-12 00:00:00.0" concept_name_id="5" voided="false" uuid="bf8faf37-e70e-46b2-99e3-894caddbab04" concept_name_type="FULLY_SPECIFIED" locale_preferred="0"/>
+  <concept_name concept_id="5096" name="RETURN VISIT DATE" locale="en" creator="2" date_created="2004-08-12 00:00:00.0" concept_name_id="6" voided="false" uuid="58648c54-7948-473e-8d46-704514c9c423" concept_name_type="FULLY_SPECIFIED" locale_preferred="0"/>
+  <concept_name concept_id="1553" name="NUMBER OF ATTEMPTS" locale="en" creator="305" date_created="2007-05-09 14:38:25.0" concept_name_id="7" voided="false" uuid="680a62ee-e1d2-4595-989f-28a8191e4642" concept_name_type="FULLY_SPECIFIED" locale_preferred="0"/>
+  <concept_name concept_id="1554" name="SUCCESSFUL" locale="en" creator="305" date_created="2007-05-09 14:39:34.0" concept_name_id="8" voided="false" uuid="44192f5f-9a28-4076-a66c-bf431629dfea" concept_name_type="FULLY_SPECIFIED" locale_preferred="0"/>
+  <concept_name concept_id="1555" name="PHONE" locale="en" creator="305" date_created="2007-05-09 14:42:57.0" concept_name_id="9" voided="false" uuid="2d5913cc-3b54-4416-bc9a-bd2a71d7d427" concept_name_type="FULLY_SPECIFIED" locale_preferred="0"/>
+  <concept_name concept_id="1558" name="PATIENT CONTACT METHOD" locale="en" creator="305" date_created="2007-05-09 14:45:38.0" concept_name_id="10" voided="false" uuid="60d4aac0-1eba-4829-903f-3efb2610bd45" concept_name_type="FULLY_SPECIFIED" locale_preferred="0"/>
+  <concept_name concept_id="1592" name="MISSED RETURNED VISIT DATE" locale="en" creator="305" date_created="2007-05-14 17:07:25.0" concept_name_id="11" voided="false" uuid="d5fd3bc4-e5b7-4658-b3be-1cf1278a1b35" concept_name_type="FULLY_SPECIFIED" locale_preferred="0"/>
+  <concept_name concept_id="1726" name="FOLLOW-UP ACTION" locale="en" creator="305" date_created="2007-06-05 17:38:53.0" concept_name_id="12" voided="false" uuid="e774ae7d-9b4f-4ebd-bde7-fdd05c44dd8d" concept_name_type="FULLY_SPECIFIED" locale_preferred="0"/>
+  <concept_name concept_id="5497" name="CD4 COUNT" locale="en" creator="2" date_created="2004-08-12 00:00:00.0" concept_name_id="13" voided="false" uuid="65229894-ea88-42ae-99e3-e9c8a4692643" concept_name_type="SHORT" locale_preferred="0"/>
   <concept_set concept_set_id="123" concept_id="1553" concept_set="1726" sort_weight="1.0" creator="305" date_created="2007-06-05 17:38:53.0" uuid="ffe75225-8830-434c-a704-5f58a2c1b498"/>
   <concept_set concept_set_id="124" concept_id="1554" concept_set="1726" sort_weight="2.0" creator="305" date_created="2007-06-05 17:38:53.0" uuid="55797171-9591-4997-86dd-1dc1525838e5"/>
   <concept_set concept_set_id="125" concept_id="1558" concept_set="1726" sort_weight="0.0" creator="305" date_created="2007-06-05 17:38:53.0" uuid="53e37235-9115-4018-a7ef-788849e8c292"/>
