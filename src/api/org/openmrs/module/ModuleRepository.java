@@ -49,7 +49,7 @@ public class ModuleRepository {
 	
 	private static final Log log = LogFactory.getLog(ModuleRepository.class);
 
-	private static Date lastUpdatedDate = new Date(90, 0, 01); // first date will be 01/01/2000
+	private static Date lastUpdatedDate = new Date(100, 0, 01); // first date will be 01/01/2000
 	
 	private static Map<String, Module> repository = new WeakHashMap<String, Module>();
 	
