@@ -1,0 +1,59 @@
+.barsmall {
+	background-image: url("");
+	background-color: #8FABC7;
+	margin-top: 18px;
+	margin-bottom: 4px;
+	margin-left: -60px;
+}
+
+#logosmall {
+	margin-left: 2px; 
+	margin-top: 2px;
+}
+
+.box, .boxHeader, .boxRed, .boxHeaderRed, .boxExited, .boxHeaderExited {
+	border: 1px solid #8FABC7;
+}
+
+.boxHeader {
+	background-color: #8FABC7;
+}
+
+#patientTabs {
+	border-bottom: 1px solid navy;
+}
+
+#patientTabs a:link, #patientTabs a:visited {
+	border: 1px solid navy;
+}
+
+a, a:link, a:hover, a:visited, a:active {
+	text-decoration: underline;
+	color: #8FABC7;
+}
+
+#userBar {
+	padding: 0px 3px 0px 3px;
+	z-index: 5;
+	background-color: #ffffff;
+}
+
+#userBar a:link, #userBar a:active, #userBar a:visited, #userBar a:hover,
+	#content a.offColor, #content a.offColor:link, #content a.offColor:active, #content a.offColor:visited, #content a.offColor:hover {
+		color: #eebb33;
+}
+
+#content {
+	padding: 60px 10px 10px 10px;
+	font-size: 1.2em;
+}
+
+img.logo-reduced61 {
+	width:0px;
+	height:0px;
+}
+img.bar-round-reduced50 {
+	height:0px;
+	margin-left:0px;
+	margin-top:0px;
+}

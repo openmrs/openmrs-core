@@ -721,6 +721,8 @@ public final class OpenmrsConstants {
 	
 	public static final String GLOBAL_PROPERTY_HL7_ARCHIVE_DIRECTORY = "hl7_archive.dir";
 	
+	public static final String GLOBAL_PROPERTY_DEFAULT_THEME = "default_theme";
+
 	/**
 	 * Array of all core global property names that represent comma-separated lists of
 	 * PersonAttributeTypes. (If you rename a PersonAttributeType then these global properties are
@@ -1146,6 +1148,9 @@ public final class OpenmrsConstants {
 		                GLOBAL_PROPERTY_SHOW_PATIENT_NAME,
 		                "false",
 		                "Whether or not to display the patient name in the patient dashboard title. Note that enabling this could be security risk if multiple users operate on the same computer."));
+		
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_DEFAULT_THEME, "",
+		        "Default theme for users.  OpenMRS ships with themes of 'green', 'orange', 'blue', and 'legacy'"));
 		
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);
