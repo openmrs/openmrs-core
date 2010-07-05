@@ -15,6 +15,9 @@ body {
 	position: relative;
 	min-height: 100%;
 }
+#logocell {
+	width: 61px;
+}
 .barsmall {
 	background-image:url(images/openmrs_green_bar_repeat.gif);
 	background-repeat:repeat-x;
