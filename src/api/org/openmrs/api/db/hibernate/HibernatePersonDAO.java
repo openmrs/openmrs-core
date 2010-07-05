@@ -13,6 +13,7 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -23,11 +24,10 @@ import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Restrictions;
-import org.hibernate.type.StringType;
 import org.openmrs.LocalizedString;
 import org.openmrs.Person;
 import org.openmrs.PersonAddress;
@@ -444,13 +444,25 @@ public class HibernatePersonDAO implements PersonDAO {
 	public List<RelationshipType> getRelationshipTypes(String relationshipTypeName, Boolean preferred) throws DAOException {
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(RelationshipType.class);
-		criteria.add(Restrictions.sqlRestriction("CONCAT(a_Is_To_B, CONCAT('/', b_Is_To_A)) like (?)", relationshipTypeName,
-		    new StringType()));
-		
-		if (preferred != null)
-			criteria.add(Expression.eq("preferred", preferred));
-		
-		return criteria.list();
+		//		criteria.add(Restrictions.sqlRestriction("CONCAT(a_Is_To_B, CONCAT('/', b_Is_To_A)) like (?)", relationshipTypeName,
+		//		    new StringType()));
+		String[] arr = relationshipTypeName.split("/");
+		if (arr.length != 2) {
+			return new ArrayList<RelationshipType>();//return a empty list
+		} else {
+			String aIsToB = arr[0];
+			String bIsToA = arr[1];
+			Criterion aIsToBCrit = HibernateUtil.getLikeCriterionForLocalizedColumn(aIsToB, "localizedAIsToB", true,
+			    MatchMode.ANYWHERE);
+			Criterion bIsToACrit = HibernateUtil.getLikeCriterionForLocalizedColumn(bIsToA, "localizedBIsToA", true,
+			    MatchMode.ANYWHERE);
+			criteria.add(Expression.and(aIsToBCrit, bIsToACrit));
+			
+			if (preferred != null)
+				criteria.add(Expression.eq("preferred", preferred));
+			
+			return criteria.list();
+		}
 	}
 	
 	/**

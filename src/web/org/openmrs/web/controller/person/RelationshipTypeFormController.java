@@ -20,10 +20,12 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.LocalizedString;
 import org.openmrs.RelationshipType;
 import org.openmrs.api.APIException;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
+import org.openmrs.propertyeditor.LocalizedStringEditor;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -46,10 +48,12 @@ public class RelationshipTypeFormController extends SimpleFormController {
 	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest,
 	 *      org.springframework.web.bind.ServletRequestDataBinder)
 	 */
-	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
+	@Override
+    protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
 		//NumberFormat nf = NumberFormat.getInstance(new Locale("en_US"));
 		binder.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, true));
+		binder.registerCustomEditor(LocalizedString.class, new LocalizedStringEditor());
 	}
 	
 	/**
@@ -64,10 +68,10 @@ public class RelationshipTypeFormController extends SimpleFormController {
 		RelationshipType type = (RelationshipType) command;
 		
 		if (type.getaIsToB() == null || type.getaIsToB().equals(""))
-			errors.rejectValue("aIsToB", "RelationshipType.aIsToB.required");
+			errors.rejectValue("localizedAIsToB.unlocalizedValue", "RelationshipType.aIsToB.required");
 		
 		if (type.getbIsToA() == null || type.getbIsToA().equals(""))
-			errors.rejectValue("bIsToA", "RelationshipType.bIsToA.required");
+			errors.rejectValue("localizedBIsToA.unlocalizedValue", "RelationshipType.bIsToA.required");
 		
 		return super.processFormSubmission(request, response, type, errors);
 	}
@@ -80,7 +84,8 @@ public class RelationshipTypeFormController extends SimpleFormController {
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
 	 */
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
+	@Override
+    protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
 	                                BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
@@ -140,7 +145,8 @@ public class RelationshipTypeFormController extends SimpleFormController {
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
+	@Override
+    protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 		
 		RelationshipType identifierType = null;
 		

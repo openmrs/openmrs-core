@@ -3709,5 +3709,9 @@
 		<modifyColumn tableName="location_tag">
 			<column name="name" type="varchar(1024)"/>
 		</modifyColumn>
+		<modifyColumn tableName="relationship_type">
+			<column name="a_is_to_b" type="varchar(1024)"/>
+			<column name="b_is_to_a" type="varchar(1024)"/>
+		</modifyColumn>
 	</changeSet>
 </databaseChangeLog>

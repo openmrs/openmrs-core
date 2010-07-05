@@ -24,24 +24,40 @@
 		<property name="uuid" type="java.lang.String"
 			column="uuid" length="38" unique="true" />
 
-    <property
+    <!-- <property
         name="aIsToB"
         type="java.lang.String"
         not-null="true"
         length="50"
         access="field"
         column="a_is_to_b"
-    /> <!-- Accessing field so we don't have to use getaIsToB() -->
+    /> Accessing field so we don't have to use getaIsToB() -->
     
-    <property
+    <!-- <property
         name="bIsToA"
         type="java.lang.String"
         not-null="true"
         length="50"
         access="field"
         column="b_is_to_a"
-    /> <!-- Accessing field so we don't have to use getbIsToA() -->
+    /> Accessing field so we don't have to use getbIsToA() -->
     
+    <property 
+		name="localizedAIsToB" 
+		column="a_is_to_b"
+		type="org.openmrs.api.db.hibernate.LocalizedStringType" 
+		not-null="true" 
+		length="1024" 
+	/>
+	
+	<property 
+		name="localizedBIsToA" 
+		column="b_is_to_a"
+		type="org.openmrs.api.db.hibernate.LocalizedStringType" 
+		not-null="true" 
+		length="1024" 
+	/>
+	
     <property
         name="description"
         type="java.lang.String"

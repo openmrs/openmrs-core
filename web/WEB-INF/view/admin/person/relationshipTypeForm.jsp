@@ -17,11 +17,189 @@
 	
 </script>
 
+
+<script type="text/javascript">
+	/*
+	 * Clone the element given by the id and put the newly cloned
+	 * element right before said id.
+	 * 
+	 * @param id the string id of the element to clone
+	 */
+	function cloneElement(id) {
+		var elementToClone = document.getElementById(id);
+		var clone = elementToClone.cloneNode(true);
+		clone.id = "";
+		elementToClone.parentNode.insertBefore(clone, elementToClone);
+		clone.style.display = "";
+	}
+
+	/*
+	* Remove the related span for deleted variant aIsToB/bIsToA value and also delete related value stored in hidden "localizedAIsToB/localizedBIsToA" input
+	*/
+	function removeParentElement(btn, hiddenInputId) {
+		//delete the related variant values from "localizedXXXHidden" input
+		var currentLocale = btn.parentNode.getElementsByTagName("input")[0].value;
+		if (currentLocale.length != 0) {
+			var delValue = btn.parentNode.getElementsByTagName("input")[1].value;
+			removeVariantValue(currentLocale, delValue, hiddenInputId);
+		}
+		btn.parentNode.parentNode.removeChild(btn.parentNode);
+	}	
+
+	/*
+	* Onchange Event function for text input which stores the unlocalized value
+	*/
+	function updateUnlocalizedValue(obj, hiddenInputId){
+		var newUnlocalizedValue = obj.value;
+		var localizedValue = document.getElementById(hiddenInputId).value;
+		var pos = localizedValue.indexOf("i18n:v1;");
+		if (pos == -1)
+			document.getElementById(hiddenInputId).value = escapeDelimter(newUnlocalizedValue);
+		else
+			updateValue("unlocalized", newUnlocalizedValue);// A hack way to update unlocalized value by method "updateValue"
+	}	
+
+	/*
+	* Onchange Event function for select input which stores the locale of a variant value
+	*/
+	function updateLocale(obj, hiddenInputId){
+		var selectedLocale = obj.value;
+		var currentLocale = obj.parentNode.getElementsByTagName("input")[0].value;
+		//check whether there is already one exist value defined in selected locale
+		if (validateSelectedLocale(selectedLocale, currentLocale, obj, hiddenInputId)) {
+			if (currentLocale.length == 0){/*only new variant value's current locale is empty*/
+				//add a new variant value
+				var newVal = obj.parentNode.getElementsByTagName("input")[1].value;
+				addVariantValue(selectedLocale, newVal, hiddenInputId);
+				//update current locale to equal with selectedLocale
+				obj.parentNode.getElementsByTagName("input")[0].value = selectedLocale;
+			} else {/*update locale for those existed variant value*/
+				//just update locale in the existed match variant value(e.g., es:Hello --> en:Hello)
+				//this case mostly happen when end-user define a wrong-match variant value at first and correct later
+				var fromStr = ";" + currentLocale + ":";
+				var toStr = ";" + selectedLocale + ":";
+				var reg = new RegExp(fromStr);
+				var localizedValue = document.getElementById(hiddenInputId).value;
+				document.getElementById(hiddenInputId).value = localizedValue.replace(reg, toStr);
+				//update current locale to equal with selectedLocale
+				obj.parentNode.getElementsByTagName("input")[0].value = selectedLocale;
+			}
+		}
+	}
+
+	/*
+	* Onchange Event function for text input which stores the string value of a variant aIsToB/bIsToA
+	*/
+	function addOrUpdateVariantValue(obj, hiddenInputId){
+		var currentLocale = obj.parentNode.getElementsByTagName("input")[0].value;
+		if (currentLocale.length == 0) {/*add a new variant value*/
+			//this case only happen when end-user firstly to fill in value not select a locale for creating a variant aIsToB/bIsToA
+			var selectedLocale = obj.parentNode.getElementsByTagName("select")[0].value; 
+			if (validateSelectedLocale(selectedLocale, currentLocale, obj, hiddenInputId)) {
+				addVariantValue(selectedLocale, obj.value, hiddenInputId);
+				obj.parentNode.getElementsByTagName("input")[0].value = selectedLocale;
+			}
+		} else {/*update a existed variant value*/
+			updateValue(currentLocale, obj.value, hiddenInputId);
+		}
+	}
+
+	/*
+	* Add a new variant aIsToB/bIsToA
+	*/
+	function addVariantValue(loc, value, hiddenInputId){
+		var localizedValue = document.getElementById(hiddenInputId).value;
+		if (localizedValue.indexOf("i18n:v1;") == -1) 
+			document.getElementById(hiddenInputId).value = "i18n:v1;unlocalized:" + localizedValue + ";";
+		document.getElementById(hiddenInputId).value += (loc + ":" + escapeDelimter(value) + ";");
+	}
+
+	/*
+	* Update unlocalized value(when already added localization) or an existed variant value
+	* Here can update unlocalized value is because "unlocalized" also can be consider as a locale name for hacky.
+	*/
+	function updateValue(loc, value, hiddenInputId){
+		var localizedValue = document.getElementById(hiddenInputId).value;
+		var pattern = ";" + loc + ":";
+		var pos = localizedValue.indexOf(pattern);
+		if (pos != -1) {
+			var prefix = localizedValue.substring(0, pos + pattern.length);
+			var suffix = "";
+			//cut out the sub string behind "pattern"
+			var temp = localizedValue.substr(pos + pattern.length);
+			//search for the next sub string like form ";xx:"
+			pattern = ";[^:;\\\\]*:";
+			var reg = new RegExp(pattern);
+			if (temp.match(reg) == null) {/*cann't find the next sub string*/
+				//the passed loc is the locale of last variant value
+				document.getElementById(hiddenInputId).value = prefix + escapeDelimter(value) + ";";
+			} else {
+				//cut out the sub string behind the second "pattern"
+				pos = temp.match(reg).index;
+				suffix = temp.substr(pos);
+				document.getElementById(hiddenInputId).value = prefix + escapeDelimter(value) + suffix;
+			}
+		}
+	}
+
+	/*
+	* Remove an existed variant value(for aIsToB/bIsToA)
+	*/
+	function removeVariantValue(loc, value, hiddenInputId){
+		var localizedValue = document.getElementById(hiddenInputId).value;
+		//pattern will be used in regular expression, so we should use escapeDelimter two times to escapse ";" to be "\\\\;" 
+		var pattern = ";" + loc + ":" + escapeDelimter(escapeDelimter(value)) + ";";
+		var reg = new RegExp(pattern);
+		document.getElementById(hiddenInputId).value = localizedValue.replace(reg, ";");
+	}
+
+	/*
+	* Check whether selectedLocale of updated/added variant aIsToB/bIsToA has already been used by another existed variant aIsToB/bIsToA.
+	* @param selectedLocale - selected locale of updated/added variant value
+	* @param oldLocale - for added variant value, it's "";for updated variant value, it's old locale before changing locale select input
+	* @param obj - it can be either select input or text input in one span related to a variant aIsToB/bIsToA.;it's used to locate error span
+	*/
+	function validateSelectedLocale(selectedLocale, oldLocale, obj, hiddenInputId){
+		var localizedValue = document.getElementById(hiddenInputId).value;
+		var searchText = selectedLocale + ":";
+		var errorSpan = obj.parentNode.getElementsByTagName("span")[0];
+		if (localizedValue.indexOf(searchText) != -1 && selectedLocale != oldLocale) {
+			errorSpan.style.display = "";
+			return false;
+		}
+		else {
+			errorSpan.style.display = "none";
+			return true;
+		}
+	}
+
+	/*
+	* escape ":" or ";" occur in passed text
+	*/
+	function escapeDelimter(text) {
+		var reg = new RegExp(":", "g");
+		text = text.replace(reg, "\\:");
+		reg = new RegExp(";", "g");
+		text = text.replace(reg, "\\;");
+		return text;
+	}	
+</script>
+
+<style>
+	#newLocalizedAIsToB {
+		display: none;
+	}
+	#newLocalizedBIsToA {
+		display: none;
+	}
+</style>
+
 <h2><spring:message code="RelationshipType.title"/></h2>
 
 <form method="post">
 <fieldset>
 <table>
+	<!-- 
 	<tr>
 		<td><spring:message code="RelationshipType.aIsToB"/></td>
 		<td>
@@ -40,6 +218,127 @@
 			</spring:bind>
 		</td>
 	</tr>
+	 -->
+	<!-- Html Code for localizedAIsToB(begin) -->
+	<spring:bind path="relationshipType.localizedAIsToB">
+		<input type="hidden" id="localizedAIsToBHidden" name="${status.expression}" value="${status.value}" />
+	</spring:bind>
+	<tr>
+		<td>
+			<spring:message code="RelationshipType.aIsToB"/>
+		</td>
+		<td>
+			<spring:bind path="relationshipType.localizedAIsToB.unlocalizedValue">
+				<input type="text" value="${status.value}" onchange="updateUnlocalizedValue(this, 'localizedAIsToBHidden')" />
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+			</spring:bind>
+		</td>
+	</tr>
+	<tr>	
+		<td></td>	
+		<td>
+			<spring:bind path="relationshipType.localizedAIsToB.variants">
+				<c:forEach var="entry" items="${status.value}">
+					<span>
+						<input type="hidden" name="currentLocale" value="${entry.key}" />
+						<spring:message code="general.language"/>
+						<select onchange="updateLocale(this, 'localizedAIsToBHidden')">
+							<openmrs:forEachRecord name="allowedLocale">
+								<option value="${record}" <c:if test="${record == entry.key}">selected</c:if> >
+									${record.displayName}
+								</option>
+							</openmrs:forEachRecord>
+						</select>
+						<span class="error" style="display:none;"><spring:message code="LocalizedString.locale.duplicate" /></span>
+						<spring:message code="LocalizedString.title"/>
+						<input type="text" value="${entry.value}" class="smallWidth" onchange="addOrUpdateVariantValue(this, 'localizedAIsToBHidden')" />
+						<input type="button" value='<spring:message code="general.remove"/>' class="smallButton" onClick="removeParentElement(this, 'localizedAIsToBHidden')" />
+						<br/>
+					</span>
+				</c:forEach>
+			</spring:bind>
+			<span id="newLocalizedAIsToB">
+				<input type="hidden" name="currentLocale" value="" />
+				<spring:message code="general.language"/>
+				<select onchange="updateLocale(this, 'localizedAIsToBHidden')">
+					<openmrs:forEachRecord name="allowedLocale">
+						<option value="${record}">
+							${record.displayName}
+						</option>
+					</openmrs:forEachRecord>
+				</select>
+				<span class="error" style="display:none;"><spring:message code="LocalizedString.locale.duplicate" /></span>
+				<spring:message code="LocalizedString.title"/>
+				<input type="text" value="" class="smallWidth" onchange="addOrUpdateVariantValue(this, 'localizedAIsToBHidden')" />
+				<input type="button" value='<spring:message code="general.remove"/>' class="smallButton" onClick="removeParentElement(this, 'localizedAIsToBHidden')" />
+				<br/>
+			</span>
+			<input type="button" value='<spring:message code="LocalizedString.add"/>' class="smallButton" style="width:90px;" onClick="cloneElement('newLocalizedAIsToB')" />
+			<br/>
+		</td>		
+	</tr>
+	<!-- Html Code for localizedAIsToB (end) -->
+	
+	<!-- Html Code for localizedBIsToA(begin) -->
+	<spring:bind path="relationshipType.localizedBIsToA">
+		<input type="hidden" id="localizedBIsToAHidden" name="${status.expression}" value="${status.value}" />
+	</spring:bind>
+	<tr>
+		<td>
+			<spring:message code="RelationshipType.bIsToA"/>
+		</td>
+		<td>
+			<spring:bind path="relationshipType.localizedBIsToA.unlocalizedValue">
+				<input type="text" value="${status.value}" onchange="updateUnlocalizedValue(this, 'localizedBIsToAHidden')" />
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+			</spring:bind>
+		</td>
+	</tr>
+	<tr>	
+		<td></td>	
+		<td>
+			<spring:bind path="relationshipType.localizedBIsToA.variants">
+				<c:forEach var="entry" items="${status.value}">
+					<span>
+						<input type="hidden" name="currentLocale" value="${entry.key}" />
+						<spring:message code="general.language"/>
+						<select onchange="updateLocale(this, 'localizedBIsToAHidden')">
+							<openmrs:forEachRecord name="allowedLocale">
+								<option value="${record}" <c:if test="${record == entry.key}">selected</c:if> >
+									${record.displayName}
+								</option>
+							</openmrs:forEachRecord>
+						</select>
+						<span class="error" style="display:none;"><spring:message code="LocalizedString.locale.duplicate" /></span>
+						<spring:message code="LocalizedString.title"/>
+						<input type="text" value="${entry.value}" class="smallWidth" onchange="addOrUpdateVariantValue(this, 'localizedBIsToAHidden')" />
+						<input type="button" value='<spring:message code="general.remove"/>' class="smallButton" onClick="removeParentElement(this, 'localizedBIsToAHidden')" />
+						<br/>
+					</span>
+				</c:forEach>
+			</spring:bind>
+			<span id="newLocalizedBIsToA">
+				<input type="hidden" name="currentLocale" value="" />
+				<spring:message code="general.language"/>
+				<select onchange="updateLocale(this, 'localizedBIsToAHidden')">
+					<openmrs:forEachRecord name="allowedLocale">
+						<option value="${record}">
+							${record.displayName}
+						</option>
+					</openmrs:forEachRecord>
+				</select>
+				<span class="error" style="display:none;"><spring:message code="LocalizedString.locale.duplicate" /></span>
+				<spring:message code="LocalizedString.title"/>
+				<input type="text" value="" class="smallWidth" onchange="addOrUpdateVariantValue(this, 'localizedBIsToAHidden')" />
+				<input type="button" value='<spring:message code="general.remove"/>' class="smallButton" onClick="removeParentElement(this, 'localizedBIsToAHidden')" />
+				<br/>
+			</span>
+			<input type="button" value='<spring:message code="LocalizedString.add"/>' class="smallButton" style="width:90px;" onClick="cloneElement('newLocalizedBIsToA')" />
+			<br/>
+		</td>		
+	</tr>
+	<!-- Html Code for localizedBIsToA (end) -->
+	
 	<tr>
 		<td valign="top"><spring:message code="general.description"/></td>
 		<td valign="top">

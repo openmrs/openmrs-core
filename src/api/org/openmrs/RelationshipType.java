@@ -42,9 +42,9 @@ public class RelationshipType extends BaseOpenmrsMetadata implements java.io.Ser
 	
 	private Integer relationshipTypeId;
 	
-	private String aIsToB;
+	private LocalizedString localizedAIsToB;
 	
-	private String bIsToA;
+	private LocalizedString localizedBIsToA;
 	
 	private Integer weight = 0;
 	
@@ -68,7 +68,8 @@ public class RelationshipType extends BaseOpenmrsMetadata implements java.io.Ser
 	 * @return boolean true/false whether or not they are the same objects
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
-	public boolean equals(Object obj) {
+	@Override
+    public boolean equals(Object obj) {
 		if (relationshipTypeId != null && obj instanceof RelationshipType) {
 			RelationshipType m = (RelationshipType) obj;
 			return (relationshipTypeId.equals(m.getRelationshipTypeId()));
@@ -79,7 +80,8 @@ public class RelationshipType extends BaseOpenmrsMetadata implements java.io.Ser
 	/**
 	 * @see java.lang.Object#hashCode()
 	 */
-	public int hashCode() {
+	@Override
+    public int hashCode() {
 		if (this.getRelationshipTypeId() == null)
 			return super.hashCode();
 		return this.getRelationshipTypeId().hashCode();
@@ -115,6 +117,38 @@ public class RelationshipType extends BaseOpenmrsMetadata implements java.io.Ser
 		this.weight = weight;
 	}
 	
+    /**
+	 * @return the localizedAIsToB
+	 */
+	public LocalizedString getLocalizedAIsToB() {
+		if (localizedAIsToB == null)
+			localizedAIsToB = new LocalizedString();
+		return localizedAIsToB;
+	}
+	
+	/**
+	 * @param localizedAIsToB the localizedAIsToB to set
+	 */
+	public void setLocalizedAIsToB(LocalizedString localizedAIsToB) {
+		this.localizedAIsToB = localizedAIsToB;
+	}
+	
+	/**
+	 * @return the localizedBIsToA
+	 */
+	public LocalizedString getLocalizedBIsToA() {
+		if (localizedBIsToA == null)
+			localizedBIsToA = new LocalizedString();
+		return localizedBIsToA;
+	}
+	
+	/**
+	 * @param localizedBIsToA the localizedBIsToA to set
+	 */
+	public void setLocalizedBIsToA(LocalizedString localizedBIsToA) {
+		this.localizedBIsToA = localizedBIsToA;
+	}
+
 	/**
 	 * The java bean specifications says that if an attribute has the second letter capitalized (as
 	 * the "I" is), the initial "a" is not to be capitalized. Both Spring and Hibernate use this
@@ -123,28 +157,36 @@ public class RelationshipType extends BaseOpenmrsMetadata implements java.io.Ser
 	 * @return the aIsToB
 	 */
 	public String getaIsToB() {
-		return aIsToB;
+		return getLocalizedAIsToB().getValue();
 	}
 	
 	/**
 	 * @param aisToB the aIsToB to set
 	 */
 	public void setaIsToB(String aisToB) {
-		aIsToB = aisToB;
+		getLocalizedAIsToB().setUnlocalizedValue(aisToB);
 	}
 	
 	/**
 	 * @return the bIsToA
 	 */
 	public String getbIsToA() {
-		return bIsToA;
+		return getLocalizedBIsToA().getValue();
+	}
+	
+	/**
+	 * @param bisToA the bIsToA to set
+	 */
+	public void setbIsToA(String bisToA) {
+		getLocalizedBIsToA().setUnlocalizedValue(bisToA);
 	}
 	
 	/**
 	 * @deprecated use isPreferred(). This method is kept around for Spring/Hibernate's use
 	 * @return the preferred status
 	 */
-	@SuppressWarnings("unused")
+	@Deprecated
+    @SuppressWarnings("unused")
 	private Boolean getPreferred() {
 		return isPreferred();
 	}
@@ -169,17 +211,13 @@ public class RelationshipType extends BaseOpenmrsMetadata implements java.io.Ser
 		this.preferred = preferred;
 	}
 	
-	/**
-	 * @param bisToA the bIsToA to set
-	 */
-	public void setbIsToA(String bisToA) {
-		bIsToA = bisToA;
-	}
+	
 	
 	/**
 	 * @see java.lang.Object#toString()
 	 */
-	public String toString() {
+	@Override
+    public String toString() {
 		return getaIsToB() + "/" + getbIsToA();
 	}
 	
@@ -199,5 +237,4 @@ public class RelationshipType extends BaseOpenmrsMetadata implements java.io.Ser
 		setRelationshipTypeId(id);
 		
 	}
-	
 }
