@@ -166,7 +166,7 @@ public class ModuleListController extends SimpleFormController {
 								} else {
 									//Adding of module
 									inputStream = new FileInputStream(tmpModule.getFile());
-									moduleFile = ModuleUtil.insertModuleFile(inputStream, filename); // copy the omod over to the repo folder
+									moduleFile = ModuleUtil.insertModuleFile(inputStream, filename); // copy the omod over to the repository folder
 									// Temp module no longer needed
 									tmpModule.getFile().delete();
 									tmpModule = null;

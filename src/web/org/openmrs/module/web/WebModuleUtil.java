@@ -348,14 +348,6 @@ public class WebModuleUtil {
 				
 			}
 			
-
-			
-			
-			
-			
-			
-			
-			
 			if (!delayContextRefresh) {
 				// only loading the servlets/filters if spring is refreshed because one
 				// might depend on files being available in spring
