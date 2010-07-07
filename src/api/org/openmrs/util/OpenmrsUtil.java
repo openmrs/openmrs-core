@@ -2081,13 +2081,15 @@ public class OpenmrsUtil {
 	}
 	
 	/**
-	 * Convert a stack trace into a shortened version for easier viewing and data storage, including
-	 * only those lines we are most concerned with
+	 * Convert a stack trace into a shortened version for easier viewing and data storage, excluding
+	 * those lines we are least concerned with; should average about 60% reduction in stack trace
+	 * length
 	 * 
 	 * @param stackTrace original stack trace from an error
 	 * @return shortened stack trace
 	 * @should return null if stackTrace is null
 	 * @should remove springframework and reflection related lines
+	 * @since 1.7
 	 */
 	public static String shortenedStackTrace(String stackTrace) {
 		if (stackTrace == null)

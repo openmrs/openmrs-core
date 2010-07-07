@@ -3664,4 +3664,14 @@
 								baseTableName="concept_name_tag_map" referencedColumnNames="concept_name_tag_id" 
 								constraintName="mapped_concept_name_tag"/>
     </changeSet>
+    
+	<changeSet id="20100621-1443" author="jkeiper">
+		<comment>
+			Modify the error_details column of hl7_in_error to hold
+			stacktraces
+		</comment>
+		<modifyColumn tableName="hl7_in_error">
+			<column name="error_details" type="mediumtext" />
+		</modifyColumn>
+	</changeSet>
 </databaseChangeLog>

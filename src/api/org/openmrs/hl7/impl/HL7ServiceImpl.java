@@ -358,8 +358,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	public HL7InArchive getHL7InArchive(Integer hl7InArchiveId) {
 		
 		if (!isArchiveMigrationRequired())
-			throw new APIException(
-			        "The method 'getHL7InArchive(Integer hl7InArchiveId)' should not be called after"
+			throw new APIException("The method 'getHL7InArchive(Integer hl7InArchiveId)' should not be called after"
 			        + " migration of archives has been done, instead use getHl7InArchiveByUuid()");
 		//migration is running
 		else if (isArchiveMigrationRequired() && Hl7InArchivesMigrateThread.getTransferStatus() != Status.NONE)
@@ -802,7 +801,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 			cause.printStackTrace(pw);
 			pw.flush();
 			sw.flush();
-			hl7InError.setErrorDetails(sw.toString());
+			hl7InError.setErrorDetails(OpenmrsUtil.shortenedStackTrace(sw.toString()));
 		}
 		Context.getHL7Service().saveHL7InError(hl7InError);
 		Context.getHL7Service().purgeHL7InQueue(hl7InQueue);
