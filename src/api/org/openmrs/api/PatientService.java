@@ -622,6 +622,7 @@ public interface PatientService extends OpenmrsService {
 	 * @should not copy over relationships that are only between the preferred and notpreferred
 	 *         patient
 	 * @should not merge patient with itself
+	 * @should not create duplicate relationships
 	 * @should merge non voided encounters from non preferred to preferred patient
 	 * @should merge non duplicate patient identifiers from non preferred to preferred patient
 	 * @should merge non duplicate patient names from non preferred to preferred patient
@@ -637,6 +638,8 @@ public interface PatientService extends OpenmrsService {
 	 * @should void non preferred person object
 	 * @should change user records of non preferred person to preferred person
 	 * @should void non preferred patient
+	 * @should void all relationships for non preferred patient
+	 * @should not void relationships for same type and side with different relatives
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_EDIT_PATIENTS })
 	public void mergePatients(Patient preferred, Patient notPreferred) throws APIException;
