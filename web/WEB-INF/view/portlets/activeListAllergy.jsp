@@ -4,8 +4,6 @@
 <openmrs:htmlInclude file="/dwr/interface/DWRPatientService.js" />
 <openmrs:htmlInclude file="/dwr/interface/DWRConceptService.js" />
 <openmrs:htmlInclude file="/dwr/util.js" />
-<openmrs:htmlInclude file="/scripts/jquery/autocomplete/jquery.autocomplete.js" />
-<openmrs:htmlInclude file="/scripts/jquery/autocomplete/jquery.autocomplete.css" />
 
 <style type="text/css">
 .ui-datepicker { z-index:10100; }
@@ -45,16 +43,15 @@
 
 		var allergyCallback = new ConceptServiceCallback(showAllergyAddError);
 		var autoAllergyConcept = new AutoComplete("allergy_concept", allergyCallback.callback, {
-			onItemSelect: function(li) {
-				//set the value of the id
-				$j('#allergy_concept_id').val(li.selectValue);
+			select: function(event, ui) {
+				$j('#allergy_concept_id').val(ui.item.id);
 			}
 		});
 
 		var reactionCallback = new ConceptServiceCallback(showAllergyAddError, 'Symptom');
 		var autoReactionConcept = new AutoComplete("allergy_reaction", reactionCallback.callback, {
-			onItemSelect: function(li) {
-				$j('#allergy_reaction_id').val(li.selectValue);
+			select: function(event, ui) {
+				$j('#allergy_reaction_id').val(ui.item.id);
 			}
 		});
 
@@ -120,7 +117,7 @@
 				}
 
 				response($j.map(objs, function(item) {
-					return { name: item.name, value: item.conceptId };
+					return { label: item.name, value: item.name, id: item.conceptId };
 				}));
 			});
 		}
