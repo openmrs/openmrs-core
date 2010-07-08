@@ -42,6 +42,7 @@ import org.openmrs.module.ModuleConstants;
 import org.openmrs.module.ModuleException;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.module.ModuleFileParser;
+import org.openmrs.module.ModuleRepository;
 import org.openmrs.module.ModuleUtil;
 import org.openmrs.module.web.WebModuleUtil;
 import org.openmrs.util.OpenmrsConstants;
@@ -279,9 +280,12 @@ public class ModuleListController extends SimpleFormController {
 					try {
 						ModuleUtil.checkForModuleUpdates();
 					}
-					catch (UnknownHostException e) {
-						log.warn("unable to connect to repostory");
-						error = msa.getMessage("Module.noWWWAvailable");
+					catch (IOException e) {
+						if (e instanceof UnknownHostException || e instanceof SocketException) {
+							error = msa.getMessage("Module.noWWWAvailable");
+						} else {
+							error = e.getMessage();
+						}
 					}
 				}
 			}
@@ -291,6 +295,8 @@ public class ModuleListController extends SimpleFormController {
 			error = e.getMessage();
 		}
 		
+		ModuleRepository.checkForModuleUpdates();
+
 		view = getSuccessView();
 		
 		if (!success.equals(""))

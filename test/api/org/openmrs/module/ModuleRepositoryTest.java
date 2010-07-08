@@ -13,6 +13,7 @@
  */
 package org.openmrs.module;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -31,7 +32,12 @@ public class ModuleRepositoryTest extends BaseContextSensitiveTest {
 
 	public ModuleRepositoryTest() {
 		ModuleRepository.initialize();
-		ModuleRepository.cacheModuleRepository();
+		try {
+			ModuleRepository.cacheModuleRepository();
+		}
+		catch (IOException e) {
+			log.error(e);
+		}
 		try {
 			Thread.sleep(5000);
 		}

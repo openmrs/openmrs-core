@@ -605,58 +605,14 @@ public class ModuleUtil {
 	 * Iterates over the modules and checks each update.rdf file for an update
 	 * 
 	 * @return True if an update was found for one of the modules, false if none were found
-	 * @throws ModuleException, UnknownHostException
+	 * @throws ModuleException, IOException
 	 */
 	public static Boolean checkForModuleUpdates() throws ModuleException, IOException {
-		
-		Boolean updateFound = false;
-		
-		for (Module mod : ModuleFactory.getLoadedModules()) {
-			String updateURL = mod.getUpdateURL();
-			if (updateURL != null && !updateURL.equals("")) {
-				try {
-					// get the contents pointed to by the url
-					URL url = new URL(updateURL);
-					if (!url.toString().endsWith(ModuleConstants.UPDATE_FILE_NAME)) {
-						log.warn("Illegal url: " + url);
-						continue;
-					}
-					String content = getURL(url);
-					
-					// skip empty or invalid updates
-					if (content.equals(""))
-						continue;
-					
-					// process and parse the contents
-					UpdateFileParser parser = new UpdateFileParser(content);
-					parser.parse();
-					
-					log.debug("Update for mod: " + mod.getModuleId() + " compareVersion result: "
-					        + compareVersion(mod.getVersion(), parser.getCurrentVersion()));
-					
-					// check the udpate.rdf version against the installed version
-					if (compareVersion(mod.getVersion(), parser.getCurrentVersion()) < 0) {
-						if (mod.getModuleId().equals(parser.getModuleId())) {
-							mod.setDownloadURL(parser.getDownloadURL());
-							mod.setUpdateVersion(parser.getCurrentVersion());
-							updateFound = true;
-						} else
-							log.warn("Module id does not match in update.rdf:" + parser.getModuleId());
-					} else {
-						mod.setDownloadURL(null);
-						mod.setUpdateVersion(null);
-					}
-				}
-				catch (ModuleException e) {
-					log.warn("Unable to get updates from update.xml", e);
-				}
-				catch (MalformedURLException e) {
-					log.warn("Unable to form a URL object out of: " + updateURL, e);
-				}
-			}
-		}
-		
-		return updateFound;
+
+		// Cache Module Data from online repository and find updates
+		ModuleRepository.cacheModuleRepository();
+
+		return ModuleRepository.getNoOfModuleUpdates() > 0;
 	}
 	
 	/**

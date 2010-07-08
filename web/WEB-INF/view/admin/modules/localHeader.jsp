@@ -5,14 +5,14 @@
 	<openmrs:hasPrivilege privilege="Manage Modules">
 		<li <c:if test='<%= request.getRequestURI().contains("modules/moduleList") %>'>class="active"</c:if>>
 			<a href="${pageContext.request.contextPath}/admin/modules/module.list">
-				<spring:message code="Module.manage"/>
+				<spring:message code="Module.manage"/> <c:if test='<%= org.openmrs.module.ModuleRepository.getNoOfModuleUpdates() > 0%>'> (<%= org.openmrs.module.ModuleRepository.getNoOfModuleUpdates() %>)</c:if>
 			</a>
 		</li>
 	</openmrs:hasPrivilege>
 	<openmrs:hasPrivilege privilege="Manage Modules">
 		<li <c:if test='<%= request.getRequestURI().contains("modules/moduleProperties") %>'>class="active"</c:if>>
 			<a href="${pageContext.request.contextPath}/admin/modules/moduleProperties.form">
-				<spring:message code="Module.manageProperties"/>
+				<spring:message code="Module.manageProperties"/> 
 			</a>
 		</li>
 	</openmrs:hasPrivilege>

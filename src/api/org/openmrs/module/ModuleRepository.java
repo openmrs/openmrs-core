@@ -74,6 +74,8 @@ public class ModuleRepository {
 	private static String moduleRepositoryUrl = null;
 	
 	private static int noOfModules = 0;
+	
+	private static int noOfModuleUpdates = 0;
 
 	/**
 	 * Initializes the ModuleRepository and calls for the first module repository cache
@@ -125,64 +127,61 @@ public class ModuleRepository {
 	}
 	
 	/**
-	 * Creates a new Thread to Start Caching the Module Repository
+	 * Caches the Module Repository
 	 */
-	public static void cacheModuleRepository() {
-		Thread cacheThread = new Thread() {
-			@Override
-            public void run() {
-				synchronized (repository) {
-					URL url = null;
-					InputStream jsonInputStream = null;
-					try{
-						url = getURL();
-						jsonInputStream = ModuleUtil.getURLStream(url);
-						ObjectMapper mapper = new ObjectMapper();
-						//Reading in the JSON from the input stream
-						HashMap<String, Object> map = mapper.readValue(jsonInputStream, HashMap.class);
-						ArrayList<ArrayList<String>> metadata = (ArrayList<ArrayList<String>>) map.get("Values");
-						for (ArrayList<String> moduleMetaData : metadata) {
-							String moduleId = moduleMetaData.get(MODULE_ID_INDEX).trim(); // Module Id
-							Module mod = new Module(moduleMetaData.get(MODULE_NAME_INDEX).trim()); // Module Name
-							mod.setModuleId(moduleId);
-							mod.setDownloadURL(moduleMetaData.get(MODULE_DOWNLOAD_URL_INDEX).trim()); // Download URL
-							mod.setVersion(moduleMetaData.get(MODULE_VERSION_INDEX).trim()); // Version
-							mod.setAuthor(moduleMetaData.get(MODULE_AUTHOR_INDEX).trim()); // Author
-							mod.setDescription(moduleMetaData.get(MODULE_DESCRIPTION_INDEX).trim()); // Description
-							//If older version available remove it
-							if (repository.containsKey(moduleId)) {
-								repository.remove(moduleId);
-							}
-							repository.put(moduleId, mod);
-						}
-						// Set the last updated date to current date
-						lastUpdatedDate = new Date();
-						noOfModules = getAllModules().size();
-					}catch(MalformedURLException e){
-						log.error("Module Repository URL is malformed", e);
-						return;
-					}catch (IOException e) {
-						if (e instanceof SocketException || e instanceof UnknownHostException) {
-							log.error("No internet is available to cache modules", e);
-						}else{
-							log.error(e.getMessage(), e);
-						}
-						return;
+	public static void cacheModuleRepository() throws IOException {
+		synchronized (repository) {
+			URL url = null;
+			InputStream jsonInputStream = null;
+			try {
+				url = getURL();
+				jsonInputStream = ModuleUtil.getURLStream(url);
+				ObjectMapper mapper = new ObjectMapper();
+				//Reading in the JSON from the input stream
+				HashMap<String, Object> map = mapper.readValue(jsonInputStream, HashMap.class);
+				ArrayList<ArrayList<String>> metadata = (ArrayList<ArrayList<String>>) map.get("Values");
+				for (ArrayList<String> moduleMetaData : metadata) {
+					String moduleId = moduleMetaData.get(MODULE_ID_INDEX).trim(); // Module Id
+					Module mod = new Module(moduleMetaData.get(MODULE_NAME_INDEX).trim()); // Module Name
+					mod.setModuleId(moduleId);
+					mod.setDownloadURL(moduleMetaData.get(MODULE_DOWNLOAD_URL_INDEX).trim()); // Download URL
+					mod.setVersion(moduleMetaData.get(MODULE_VERSION_INDEX).trim()); // Version
+					mod.setAuthor(moduleMetaData.get(MODULE_AUTHOR_INDEX).trim()); // Author
+					mod.setDescription(moduleMetaData.get(MODULE_DESCRIPTION_INDEX).trim()); // Description
+					//If older version available remove it
+					if (repository.containsKey(moduleId)) {
+						repository.remove(moduleId);
 					}
-					finally {
-						if (jsonInputStream != null) {
-							try {
-								jsonInputStream.close();
-							}
-							catch (IOException e) {
-								log.error("Can not close input stream", e);
-							}
-						}
+					repository.put(moduleId, mod);
+				}
+				// Set the last updated date to current date
+				lastUpdatedDate = new Date();
+				noOfModules = getAllModules().size();
+				checkForModuleUpdates();
+			}
+			catch (MalformedURLException e) {
+				log.error("Module Repository URL is malformed", e);
+				return;
+			}
+			catch (IOException e) {
+				if (e instanceof SocketException || e instanceof UnknownHostException) {
+					log.error("No internet is available to cache modules", e);
+				} else {
+					log.error(e.getMessage(), e);
+				}
+				throw e;
+			}
+			finally {
+				if (jsonInputStream != null) {
+					try {
+						jsonInputStream.close();
+					}
+					catch (IOException e) {
+						log.error("Can not close input stream", e);
 					}
 				}
 			}
-		};
-		cacheThread.start();
+		}
 	}
 	
 	/**
@@ -240,6 +239,37 @@ public class ModuleRepository {
 	 */
 	public static int getNoOfModules() {
 		return noOfModules;
+	}
+	
+	/**
+	 * This method checks whether any latest versions of the loaded modules available in the cached
+	 * repository
+	 */
+	public static void checkForModuleUpdates() {
+		synchronized (repository) {
+			noOfModuleUpdates = 0;
+			Map<String, Module> loadedModules = ModuleFactory.getLoadedModulesMap();
+		
+			for (String key : loadedModules.keySet()) {
+				Module loadedModule = loadedModules.get(key);
+				Module repositoryModule = repository.get(key);
+			
+				if (ModuleUtil.compareVersion(loadedModule.getVersion(), repositoryModule.getVersion()) < 0) {
+					loadedModule.setDownloadURL(repositoryModule.getDownloadURL());
+					loadedModule.setUpdateVersion(repositoryModule.getVersion());
+					noOfModuleUpdates++;
+				}
+			}
+		}
+	}
+	
+	/**
+	 * This method returns the no of module updates available
+	 * 
+	 * @return no of module updates
+	 */
+	public static int getNoOfModuleUpdates() {
+		return noOfModuleUpdates;
 	}
 
 	/**

@@ -13,15 +13,26 @@
  */
 package org.openmrs.scheduler.tasks;
 
+import java.io.IOException;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.module.ModuleRepository;
 
 /**
- *
+ * Caches module meta data from online repository
  */
 public class ModuleRepositoryCacheUpdateTask extends AbstractTask {
 	
+	private static final Log log = LogFactory.getLog(ModuleRepositoryCacheUpdateTask.class);
+
 	@Override
 	public void execute() {
-		ModuleRepository.cacheModuleRepository();
+		try {
+			ModuleRepository.cacheModuleRepository();
+		}
+		catch (IOException e) {
+			log.error("Couldn't execute Update Task");
+		}
 	}
 }
