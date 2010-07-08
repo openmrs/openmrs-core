@@ -316,7 +316,7 @@ public class PersonTest {
 		Calendar onDate = Calendar.getInstance();
 		onDate.set(2008, Calendar.JUNE, 3);
 		Person person = new Person();
-		person.setBirthdate(birthdate.getTime());
+		person.setBirthdate(new ApproximateDate(birthdate.getTime()));
 		assertEquals(person.getAge(onDate.getTime()), 2, 0);
 	}
 	
@@ -331,7 +331,7 @@ public class PersonTest {
 		Calendar onDate = Calendar.getInstance();
 		onDate.set(2008, Calendar.JUNE, 1);
 		Person person = new Person();
-		person.setBirthdate(birthdate.getTime());
+		person.setBirthdate(new ApproximateDate(birthdate.getTime()));
 		assertEquals(person.getAge(onDate.getTime()), 1, 0);
 	}
 	
@@ -346,7 +346,7 @@ public class PersonTest {
 		Calendar onDate = Calendar.getInstance();
 		onDate.set(2008, Calendar.JUNE, 2, 7, 7, 7);
 		Person person = new Person();
-		person.setBirthdate(birthdate.getTime());
+		person.setBirthdate(new ApproximateDate(birthdate.getTime()));
 		assertEquals(person.getAge(onDate.getTime()), 2, 0);
 	}
 	
@@ -361,7 +361,7 @@ public class PersonTest {
 		Calendar onDate = Calendar.getInstance();
 		onDate.set(2008, Calendar.JUNE, 2);
 		Person person = new Person();
-		person.setBirthdate(birthdate.getTime());
+		person.setBirthdate(new ApproximateDate(birthdate.getTime()));
 		assertEquals(person.getAge(onDate.getTime()), 2, 0);
 	}
 
@@ -376,7 +376,7 @@ public class PersonTest {
 		Calendar deathDate = Calendar.getInstance();
 		deathDate.set(2000, Calendar.JUNE, 3);
 		Person person = new Person();
-		person.setBirthdate(birthdate.getTime());
+		person.setBirthdate(new ApproximateDate(birthdate.getTime()));
         person.setDead(true);
         person.setDeathDate(deathDate.getTime());
         assertEquals(10, person.getAge(), 0);
@@ -395,7 +395,7 @@ public class PersonTest {
         Calendar givenDate = Calendar.getInstance();
         givenDate.set(2010, Calendar.JUNE, 3);
 		Person person = new Person();
-		person.setBirthdate(birthdate.getTime());
+		person.setBirthdate(new ApproximateDate(birthdate.getTime()));
         person.setDead(true);
         person.setDeathDate(deathDate.getTime());
         assertEquals(10, person.getAge(givenDate.getTime()), 0);
@@ -414,7 +414,7 @@ public class PersonTest {
         Calendar givenDate = Calendar.getInstance();
         givenDate.set(1995, Calendar.JUNE, 3);
 		Person person = new Person();
-		person.setBirthdate(birthdate.getTime());
+		person.setBirthdate(new ApproximateDate(birthdate.getTime()));
         person.setDead(true);
         person.setDeathDate(deathDate.getTime());
         assertEquals(5, person.getAge(givenDate.getTime()), 0);
@@ -433,7 +433,7 @@ public class PersonTest {
         Calendar givenDate = Calendar.getInstance();
         givenDate.set(1985, Calendar.JUNE, 3);
 		Person person = new Person();
-		person.setBirthdate(birthdate.getTime());
+		person.setBirthdate(new ApproximateDate(birthdate.getTime()));
         person.setDead(true);
         person.setDeathDate(deathDate.getTime());
         assertEquals(-5, person.getAge(givenDate.getTime()), 0);

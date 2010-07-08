@@ -28,7 +28,7 @@ import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 /**
- * This class validates a Patient object. 
+ * This class validates a Patient object.
  */
 public class PatientValidator implements Validator {
 	
@@ -83,19 +83,19 @@ public class PatientValidator implements Validator {
 
 		// check patients birthdate against future dates and really old dates
 		if (patient.getBirthdate() != null) {
-			if (patient.getBirthdate().after(new Date()))
+			if (patient.getBirthdate().getDate().after(new Date()))
 				errors.rejectValue("birthdate", "error.date.future");
 			else {
 				Calendar c = Calendar.getInstance();
 				c.setTime(new Date());
-				c.add(Calendar.YEAR, -120); // patient cannot be older than 120 years old 
-				if (patient.getBirthdate().before(c.getTime())) {
+				c.add(Calendar.YEAR, -120); // patient cannot be older than 120 years old
+				if (patient.getBirthdate().getDate().before(c.getTime())) {
 					errors.rejectValue("birthdate", "error.date.nonsensical");
 				}
 			}
 		}
 		
-		//	 Patient Info 
+		//	 Patient Info
 		if (patient.isPersonVoided())
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "voidReason", "error.null");
 		if (patient.isDead() && (patient.getCauseOfDeath() == null))

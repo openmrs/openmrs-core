@@ -27,6 +27,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.openmrs.ApproximateDate;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
@@ -99,7 +100,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		patient.setAddresses(pAddressList);
 		patient.addAddress(pAddress);
 		patient.setDeathDate(new Date());
-		patient.setBirthdate(new Date());
+		patient.setBirthdate(new ApproximateDate(new Date()));
 		patient.setBirthdateEstimated(true);
 		patient.setGender("male");
 		List<PatientIdentifierType> patientIdTypes = ps.getAllPatientIdentifierTypes();
@@ -807,7 +808,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 
 	/**
 	 * @see {@link PersonService#getRelationshipTypes(String,Boolean)}
-	 * TODO Needs to test "preferred" 
+	 * TODO Needs to test "preferred"
 	 */
 	@Test
 	@Verifies(value = "should return list of preferred relationship type matching given name", method = "getRelationshipTypes(String,Boolean)")
@@ -1008,7 +1009,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @see {@link PersonService#unvoidPerson(Person)}
 	 * TODO NullPointerException during RequiredDataAdvice.before()
-	 * TODO Should we be able to unvoid an already not voided record?  This test assumes yes. 
+	 * TODO Should we be able to unvoid an already not voided record?  This test assumes yes.
 	 * 
 	 */
 	@Test

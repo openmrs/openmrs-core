@@ -65,7 +65,7 @@ public class ShortPatientModel {
 	* @return true if patient is dead, otherwise false.
 	* @deprecated
 	*/
-	@Deprecated	
+	@Deprecated
 	public Boolean getDead() {
 		return dead;
 	}
@@ -119,7 +119,7 @@ public class ShortPatientModel {
 			
 			gender = patient.getGender();
 			
-			birthdate = patient.getBirthdate();
+			birthdate = patient.getBirthdate().getDate();
 			birthdateEstimated = patient.isBirthdateEstimated();
 			//mothersName = patient.getMothersName();
 			//healthCenter = patient.getHealthCenter();

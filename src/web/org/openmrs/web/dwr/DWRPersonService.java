@@ -23,6 +23,7 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.ApproximateDate;
 import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
@@ -213,7 +214,7 @@ public class DWRPersonService {
 		p.addName(name);
 		try {
 			Date d = updateAge(birthdate, dateformat, age);
-			p.setBirthdate(d);
+			p.setBirthdate(new ApproximateDate(d));
 		}
 		catch (java.text.ParseException pe) {
 			log.error(pe);

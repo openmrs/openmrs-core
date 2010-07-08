@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.ApproximateDate;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
@@ -47,36 +48,36 @@ import ca.uhn.hl7v2.model.v25.segment.PID;
  * 
  * ADT/ACK - Add person or patient information (Event A28)
  * 
- * FYI:  The 3rd field of MSH contains the sending application.  
- * For example, the Rwanda lab system uses 'neal_lims'.  
+ * FYI:  The 3rd field of MSH contains the sending application.
+ * For example, the Rwanda lab system uses 'neal_lims'.
  * If neal_lims exists as an OpenMRS username, then this handler
  * will use that user as the creator for patients it creates.
  * If the sending application isn't setup as an OpenMRS user,
  * the creator will default to the user running this task.
- *  
- * TODO: You may wonder why the createPatient, validate, getMSH, 
+ * 
+ * TODO: You may wonder why the createPatient, validate, getMSH,
  * getPIH and tsToDate code is duplicated in this file (and the R01
- * message handler file? It would be more useful to have these in the 
- * HL7 Utility file.  It's a good question, and it will happen 
+ * message handler file? It would be more useful to have these in the
+ * HL7 Utility file.  It's a good question, and it will happen
  * soon.
  * 
  * The HL7 v2.5 manual table 0354 (section 2.17.3) describes A28.
- *   
- * There are many cases in HL7 where events (like A05, A14, A28, and A31) 
- * share a common structure.  This table also represented in HL7APIs 
- * eventmap properties file (http://tinyurl.com/2almfx)  -- describes 
+ * 
+ * There are many cases in HL7 where events (like A05, A14, A28, and A31)
+ * share a common structure.  This table also represented in HL7APIs
+ * eventmap properties file (http://tinyurl.com/2almfx)  -- describes
  * exactly which events share which structures.
  *
- * So the answer to the A28 event is to use the ADT_A05 message 
- * structure from within the v2.5 object hierarchy.  Without going 
- * to the table, you can see this relationship in the description 
- * of the A28 event message structure (3.3.28), which is labeled as 
- * ADT^A28^ADT_A05.  This represents the message type (ADT), 
+ * So the answer to the A28 event is to use the ADT_A05 message
+ * structure from within the v2.5 object hierarchy.  Without going
+ * to the table, you can see this relationship in the description
+ * of the A28 event message structure (3.3.28), which is labeled as
+ * ADT^A28^ADT_A05.  This represents the message type (ADT),
  * event (A28), and message structure (ADT_A05).
  * 
  * TODO: This ADT A28 handler does NOT currently handle ALL possible segments.
  * 		 Some of the segments that are not handled include these:
- * 			
+ * 
  * 			EVN (Event type) - required to be backwardly compatible
  * 			SFT (Software segment)
  * 			PD1 (Additional demographics) (*)
@@ -157,7 +158,7 @@ public class ADTA28Handler implements Application {
 		String sendingApp = msh.getSendingApplication().getComponent(0).toString();
 		log.debug("SendingApplication = " + sendingApp);
 		
-		// Search for the patient  
+		// Search for the patient
 		Integer patientId = findPatientId(pid);
 		
 		// Create new patient if the patient id doesn't exist yet
@@ -291,7 +292,7 @@ public class ADTA28Handler implements Application {
 		TS dateOfBirth = pid.getDateTimeOfBirth();
 		if (dateOfBirth == null || dateOfBirth.getTime() == null || dateOfBirth.getTime().getValue() == null)
 			throw new HL7Exception("Missing birth date in the PID segment");
-		patient.setBirthdate(tsToDate(dateOfBirth));
+		patient.setBirthdate(new ApproximateDate(tsToDate(dateOfBirth)));
 		
 		// Estimated birthdate?
 		ID precisionTemp = dateOfBirth.getDegreeOfPrecision();

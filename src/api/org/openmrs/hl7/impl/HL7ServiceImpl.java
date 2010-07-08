@@ -25,6 +25,7 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.ApproximateDate;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.Patient;
@@ -1021,7 +1022,7 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 		TS dateOfBirth = nk1.getDateTimeOfBirth();
 		if (dateOfBirth == null || dateOfBirth.getTime() == null || dateOfBirth.getTime().getValue() == null)
 			throw new HL7Exception("Missing birth date in an NK1 segment");
-		person.setBirthdate(HL7Util.parseHL7Timestamp(dateOfBirth.getTime().getValue()));
+		person.setBirthdate(new ApproximateDate(HL7Util.parseHL7Timestamp(dateOfBirth.getTime().getValue())));
 		
 		// Estimated birthdate?
 		ID precisionTemp = dateOfBirth.getDegreeOfPrecision();

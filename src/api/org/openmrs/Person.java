@@ -59,6 +59,8 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	
 	private Date birthdate;
 	
+	private ApproximateDate aBirthDate;
+
 	private Boolean birthdateEstimated = false;
 	
 	private Boolean dead = false;
@@ -84,6 +86,8 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	private String personVoidReason;
 	
 	private boolean isPatient;
+	
+	
 		
 	/**
 	 * Convenience map from PersonAttributeType.name to PersonAttribute.<br/>
@@ -117,7 +121,7 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 		attributes = person.getAttributes();
 		
 		gender = person.getGender();
-		birthdate = person.getBirthdate();
+		aBirthDate = person.getBirthdate();
 		birthdateEstimated = person.getBirthdateEstimated();
 		dead = person.isDead();
 		deathDate = person.getDeathDate();
@@ -155,7 +159,8 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	 * @should equal person objects with no person id
 	 * @should not equal person objects when one has null person id
 	 */
-	public boolean equals(Object obj) {
+	@Override
+    public boolean equals(Object obj) {
 		if (obj instanceof Person) {
 			Person person = (Person) obj;
 			
@@ -174,7 +179,8 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	 * @should have different hash code when not equal
 	 * @should get hash code with null attributes
 	 */
-	public int hashCode() {
+	@Override
+    public int hashCode() {
 		if (this.getPersonId() == null)
 			return super.hashCode();
 		return this.getPersonId().hashCode();
@@ -218,16 +224,16 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	 * @return person's date of birth
 	 */
 	@Element(required = false)
-	public Date getBirthdate() {
-		return this.birthdate;
+	public ApproximateDate getBirthdate() {
+		return this.aBirthDate;
 	}
 	
 	/**
 	 * @param birthdate person's date of birth
 	 */
 	@Element(required = false)
-	public void setBirthdate(Date birthdate) {
-		this.birthdate = birthdate;
+	public void setBirthdate(ApproximateDate birthdate) {
+		this.aBirthDate = birthdate;
 	}
 	
 	/**
@@ -237,7 +243,8 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 		// if (this.birthdateEstimated == null) {
 		// return new Boolean(false);
 		// }
-		return this.birthdateEstimated;
+		//		return this.birthdateEstimated;
+		return this.aBirthDate.isApproximated();
 	}
 	
 	@Attribute(required = true)
@@ -797,13 +804,17 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	 * @param ageOnDate (null defaults to today)
 	 */
 	public void setBirthdateFromAge(int age, Date ageOnDate) {
-		Calendar c = Calendar.getInstance();
-		c.setTime(ageOnDate == null ? new Date() : ageOnDate);
-		c.set(Calendar.DATE, 1);
-		c.set(Calendar.MONTH, Calendar.JANUARY);
-		c.add(Calendar.YEAR, -1 * age);
-		setBirthdate(c.getTime());
-		setBirthdateEstimated(true);
+		//		Calendar c = Calendar.getInstance();
+		//		c.setTime(ageOnDate == null ? new Date() : ageOnDate);
+		//		c.set(Calendar.DATE, 1);
+		//		c.set(Calendar.MONTH, Calendar.JANUARY);
+		//		c.add(Calendar.YEAR, -1 * age);
+		//		setBirthdate(c.getTime());
+		//		setBirthdateEstimated(true);
+		
+		ApproximateDate adt = new ApproximateDate();
+		adt.setDateFromAge(age);
+		setBirthdate(adt);
 	}
 	
 	public User getPersonChangedBy() {
@@ -896,14 +907,16 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	 * @return true/false whether this person is a user or not
 	 * @deprecated use {@link UserService#getUsersByPerson(Person, boolean)}
 	 */
-	public boolean isUser() {
+	@Deprecated
+    public boolean isUser() {
 		return false;
 	}
 		
 	/**
 	 * @see java.lang.Object#toString()
 	 */
-	public String toString() {
+	@Override
+    public String toString() {
 		return "Person(personId=" + personId + ")";
 	}
 	
@@ -942,5 +955,5 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 		setPersonId(id);
 		
 	}
-	
+
 }

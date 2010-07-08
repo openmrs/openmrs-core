@@ -35,6 +35,7 @@ import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.openmrs.ApproximateDate;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
 import org.openmrs.Patient;
@@ -192,7 +193,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		
 		patient.setDeathDate(new Date());
 		//patient.setCauseOfDeath("air");
-		patient.setBirthdate(new Date());
+		patient.setBirthdate(new ApproximateDate(new Date()));
 		patient.setBirthdateEstimated(true);
 		patient.setGender("male");
 		
@@ -229,7 +230,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		
 		patient.setDeathDate(new Date());
 		//patient.setCauseOfDeath("air");
-		patient.setBirthdate(new Date());
+		patient.setBirthdate(new ApproximateDate(new Date()));
 		patient.setBirthdateEstimated(true);
 		patient.setGender("male");
 		

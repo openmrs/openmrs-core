@@ -31,6 +31,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.ApproximateDate;
 import org.openmrs.Attributable;
 import org.openmrs.Concept;
 import org.openmrs.Location;
@@ -59,8 +60,8 @@ import org.openmrs.api.context.Context;
 import org.openmrs.propertyeditor.ConceptEditor;
 import org.openmrs.propertyeditor.LocationEditor;
 import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
+import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.controller.person.PersonFormController;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -395,7 +396,7 @@ public class NewPatientFormController extends SimpleFormController {
 			}
 			
 			// set the other patient attributes
-			patient.setBirthdate(shortPatient.getBirthdate());
+			patient.setBirthdate(new ApproximateDate(shortPatient.getBirthdate()));
 			patient.setBirthdateEstimated(shortPatient.getBirthdateEstimated());
 			patient.setGender(shortPatient.getGender());
 			

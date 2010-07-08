@@ -126,7 +126,7 @@ public class PersonListItem {
 			}
 			
 			gender = person.getGender();
-			birthdate = person.getBirthdate();
+			birthdate = person.getBirthdate().getDate();
 			birthdateEstimated = person.isBirthdateEstimated();
 			age = person.getAge();
 			voided = person.isPersonVoided();
@@ -142,7 +142,8 @@ public class PersonListItem {
 	/**
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
-	public boolean equals(Object obj) {
+	@Override
+    public boolean equals(Object obj) {
 		if (obj instanceof PersonListItem) {
 			PersonListItem pi = (PersonListItem) obj;
 			if (pi.getPersonId() == null || personId == null)
@@ -155,7 +156,8 @@ public class PersonListItem {
 	/**
 	 * @see java.lang.Object#hashCode()
 	 */
-	public int hashCode() {
+	@Override
+    public int hashCode() {
 		if (personId == null)
 			return super.hashCode();
 		return personId.hashCode();
