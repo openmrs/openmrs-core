@@ -57,7 +57,8 @@ import org.dbunit.ext.hsqldb.HsqldbDataTypeFactory;
 import org.dbunit.operation.DatabaseOperation;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Environment;
-import org.hibernate.dialect.HSQLDialect;
+import org.hibernate.dialect.H2Dialect;
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.openmrs.api.context.Context;
@@ -197,9 +198,9 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		// connection properties here to override what is in the runtime
 		// properties
 		if (useInMemoryDatabase() == true) {
-			runtimeProperties.setProperty(Environment.DIALECT, HSQLDialect.class.getName());
-			runtimeProperties.setProperty(Environment.URL, "jdbc:hsqldb:mem:openmrs");
-			runtimeProperties.setProperty(Environment.DRIVER, "org.hsqldb.jdbcDriver");
+			runtimeProperties.setProperty(Environment.DIALECT, H2Dialect.class.getName());
+			runtimeProperties.setProperty(Environment.URL, "jdbc:h2:mem:openmrs;DB_CLOSE_DELAY=-1");
+			runtimeProperties.setProperty(Environment.DRIVER, "org.h2.Driver");
 			runtimeProperties.setProperty(Environment.USER, "sa");
 			runtimeProperties.setProperty(Environment.PASS, "");
 			
@@ -585,6 +586,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 	 * 
 	 * @throws Exception
 	 */
+	@After
 	public void deleteAllData() throws Exception {
 		Connection connection = getConnection();
 		// convert the current session's connection to a dbunit connection
@@ -624,7 +626,8 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		
 		// needed because the authenticatedUser is the only object that sticks
 		// around after tests and the clearSession call
-		Context.refreshAuthenticatedUser();
+		if (Context.isSessionOpen())
+			Context.refreshAuthenticatedUser();
 		
 	}
 	

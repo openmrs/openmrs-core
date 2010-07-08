@@ -31,8 +31,8 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	public void runBeforeEachTest() throws Exception {
 		
 		if (dao == null)
-			// fetch the dao from the spring application context 
-			// this bean name matches the name in /metadata/spring/applicationContext-service.xml 
+			// fetch the dao from the spring application context
+			// this bean name matches the name in /metadata/spring/applicationContext-service.xml
 			dao = (PatientDAO) applicationContext.getBean("patientDAO");
 		if (pService == null)
 			pService = Context.getPatientService();
@@ -47,7 +47,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		//Note that all tests for wildcard should be pass in 2s due to the behaviour of wildcards,
 		//that is we test for the size and actual patient object returned
 		Patient patient2 = pService.getPatient(2);
-		PatientIdentifier patientIdentifier = new PatientIdentifier("\\*567", pService.getPatientIdentifierType(2), Context
+		PatientIdentifier patientIdentifier = new PatientIdentifier("*567", pService.getPatientIdentifierType(2), Context
 		        .getLocationService().getLocation(1));
 		patient2.addIdentifier(patientIdentifier);
 		pService.savePatient(patient2);
@@ -60,11 +60,11 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		pService.savePatient(patient6);
 		
 		List<PatientIdentifierType> identifierTypes = Collections.emptyList();
-		//we expect only one matching patient       
+		//we expect only one matching patient
 		int actualSize = dao.getPatients(null, "*567", identifierTypes, false).size();
 		Assert.assertEquals(1, actualSize);
 		
-		//if actually the search returned the matching patient       
+		//if actually the search returned the matching patient
 		Patient actualPatient = dao.getPatients(null, "*567", identifierTypes, false).get(0);
 		
 		Assert.assertEquals(patient2, actualPatient);
@@ -78,7 +78,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	public void getPatients_shouldEscapePercentageCharacterInIdentifierPhrase() throws Exception {
 		
 		Patient patient2 = pService.getPatient(2);
-		PatientIdentifier patientIdentifier = new PatientIdentifier("\\%567", pService.getPatientIdentifierType(2), Context
+		PatientIdentifier patientIdentifier = new PatientIdentifier("%567", pService.getPatientIdentifierType(2), Context
 		        .getLocationService().getLocation(1));
 		patient2.addIdentifier(patientIdentifier);
 		pService.savePatient(patient2);
@@ -91,11 +91,11 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		pService.savePatient(patient6);
 		
 		List<PatientIdentifierType> identifierTypes = Collections.emptyList();
-		//we expect only one matching patient       
+		//we expect only one matching patient
 		int actualSize = dao.getPatients(null, "%567", identifierTypes, false).size();
 		Assert.assertEquals(1, actualSize);
 		
-		//if actually the search returned the matching patient       
+		//if actually the search returned the matching patient
 		Patient actualPatient = dao.getPatients(null, "%567", identifierTypes, false).get(0);
 		
 		Assert.assertEquals(patient2, actualPatient);
@@ -109,7 +109,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	public void getPatients_shouldEscapeUnderscoreCharacterInIdentifierPhrase() throws Exception {
 		
 		Patient patient2 = pService.getPatient(2);
-		PatientIdentifier patientIdentifier = new PatientIdentifier("\\_567", pService.getPatientIdentifierType(2), Context
+		PatientIdentifier patientIdentifier = new PatientIdentifier("_567", pService.getPatientIdentifierType(2), Context
 		        .getLocationService().getLocation(1));
 		patient2.addIdentifier(patientIdentifier);
 		pService.savePatient(patient2);
@@ -122,11 +122,11 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		pService.savePatient(patient6);
 		
 		List<PatientIdentifierType> identifierTypes = Collections.emptyList();
-		//we expect only one matching patient       
+		//we expect only one matching patient
 		int actualSize = dao.getPatients(null, "_567", identifierTypes, false).size();
 		Assert.assertEquals(1, actualSize);
 		
-		//if actually the search returned the matching patient       
+		//if actually the search returned the matching patient
 		Patient actualPatient = dao.getPatients(null, "_567", identifierTypes, false).get(0);
 		
 		Assert.assertEquals(patient2, actualPatient);
@@ -140,7 +140,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	public void getPatients_shouldEscapePercentageCharacterInNamePhrase() throws Exception {
 		
 		Patient patient2 = pService.getPatient(2);
-		PersonName name = new PersonName("\\%cats", "and", "dogs");
+		PersonName name = new PersonName("%cats", "and", "dogs");
 		patient2.addName(name);
 		pService.savePatient(patient2);
 		
@@ -151,12 +151,12 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		pService.savePatient(patient6);
 		
 		List<PatientIdentifierType> identifierTypes = Collections.emptyList();
-		//we expect only one matching patient       
+		//we expect only one matching patient
 		int actualSize = dao.getPatients("%ca", null, identifierTypes, false).size();
 		Assert.assertEquals(1, actualSize);
 		
 		Patient actualPatient = dao.getPatients("%ca", null, identifierTypes, false).get(0);
-		//if actually the search returned the matching patient  
+		//if actually the search returned the matching patient
 		Assert.assertEquals(patient2, actualPatient);
 	}
 	
@@ -168,7 +168,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	public void getPatients_shouldEscapeUnderscoreCharacterInNamePhrase() throws Exception {
 		
 		Patient patient2 = pService.getPatient(2);
-		PersonName name = new PersonName("\\_cats", "and", "dogs");
+		PersonName name = new PersonName("_cats", "and", "dogs");
 		patient2.addName(name);
 		pService.savePatient(patient2);
 		
@@ -179,11 +179,11 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		pService.savePatient(patient6);
 		
 		List<PatientIdentifierType> identifierTypes = Collections.emptyList();
-		//we expect only one matching patient       
+		//we expect only one matching patient
 		int actualSize = dao.getPatients("_ca", null, identifierTypes, false).size();
 		Assert.assertEquals(1, actualSize);
 		
-		//if actually the search returned the matching patient       
+		//if actually the search returned the matching patient
 		Patient actualPatient = dao.getPatients("_ca", null, identifierTypes, false).get(0);
 		Assert.assertEquals(patient2, actualPatient);
 		
@@ -197,7 +197,7 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 	public void getPatients_shouldEscapeAnAsterixCharacterInNamePhrase() throws Exception {
 		
 		Patient patient2 = pService.getPatient(2);
-		PersonName name = new PersonName("\\*cats", "and", "dogs");
+		PersonName name = new PersonName("*cats", "and", "dogs");
 		patient2.addName(name);
 		pService.savePatient(patient2);
 		
@@ -208,11 +208,11 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		pService.savePatient(patient6);
 		
 		List<PatientIdentifierType> identifierTypes = Collections.emptyList();
-		//we expect only one matching patient       
+		//we expect only one matching patient
 		int actualSize = dao.getPatients("*ca", null, identifierTypes, false).size();
 		Assert.assertEquals(1, actualSize);
 		
-		//if actually the search returned the matching patient       
+		//if actually the search returned the matching patient
 		Patient actualPatient = dao.getPatients("*ca", null, identifierTypes, false).get(0);
 		Assert.assertEquals(patient2, actualPatient);
 	}
