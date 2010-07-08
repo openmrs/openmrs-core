@@ -3560,6 +3560,27 @@
 		<dropForeignKeyConstraint baseTableName="concept_name_tag_map" constraintName="mapped_concept_name_tag"/>		
     </changeSet>    
     
+    <changeSet id="20100607-1550e" author="wyclif">
+    	<preConditions onFail="MARK_RAN">
+			<not>
+				<sqlCheck expectedResult="0">
+					SELECT count(*) FROM concept_name_tag WHERE concept_name_tag_id = 4
+				</sqlCheck>
+			</not>
+		</preConditions>
+		<comment>Converting preferred names to FULLY_SPECIFIED names</comment>
+    	<update tableName="concept_name">
+			<column name="concept_name_type" value="FULLY_SPECIFIED"/>
+			<where>concept_name_id IN (SELECT concept_name_id FROM concept_name_tag_map WHERE concept_name_tag_id = 4)</where>
+		</update>			
+		<delete tableName="concept_name_tag_map">
+			<where>concept_name_tag_id = 4</where>
+		</delete>	
+		<delete tableName="concept_name_tag">
+			<where>concept_name_tag_id = 4</where>
+		</delete>
+    </changeSet>
+    
     <changeSet id="20100607-1550d" author="wyclif">
     	<preConditions onFail="MARK_RAN">
 			<not>
@@ -3580,27 +3601,6 @@
 			<where>concept_name_tag_id = 2</where>
 		</delete>
     </changeSet>
-    
-    <changeSet id="20100607-1550e" author="wyclif">
-    	<preConditions onFail="MARK_RAN">
-			<not>
-				<sqlCheck expectedResult="0">
-					SELECT count(*) FROM concept_name_tag WHERE concept_name_tag_id = 4
-				</sqlCheck>
-			</not>
-		</preConditions>
-		<comment>Converting preferred names to FULLY_SPECIFIED names</comment>
-    	<update tableName="concept_name">
-			<column name="concept_name_type" value="FULLY_SPECIFIED"/>
-			<where>concept_name_id IN (SELECT concept_name_id FROM concept_name_tag_map WHERE concept_name_tag_id = 4)</where>
-		</update>			
-		<delete tableName="concept_name_tag_map">
-			<where>concept_name_tag_id = 4</where>
-		</delete>	
-		<delete tableName="concept_name_tag">
-			<where>concept_name_tag_id = 4</where>
-		</delete>
-    </changeSet>    
     
     <changeSet id="20100607-1550f" author="wyclif">
     	<preConditions onFail="MARK_RAN">
