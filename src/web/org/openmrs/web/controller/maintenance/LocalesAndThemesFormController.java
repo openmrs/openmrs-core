@@ -23,10 +23,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 /**
- * Backs the systemDefaults.jsp page to let the admin change the default locale, default theme, etc
+ * Backs the localesAndThemes.jsp page to let the admin change the default locale, default theme,
+ * etc
  */
 @Controller
-public class SystemDefaultsFormController {
+public class LocalesAndThemesFormController {
 	
 	/**
 	 * Called for GET requests only on the databaseChangesInfo page. POST page requests are invalid
@@ -35,7 +36,7 @@ public class SystemDefaultsFormController {
 	 * @param model the key value pair that will be accessible from the jsp page
 	 * @throws Exception if there is trouble getting the database changes from liquibase
 	 */
-	@RequestMapping(method = RequestMethod.GET, value = "/admin/maintenance/systemDefaults")
+	@RequestMapping(method = RequestMethod.GET, value = "/admin/maintenance/localesAndThemes")
 	public void showPage(ModelMap model) throws Exception {
 		String theme = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_THEME);
 		model.addAttribute("theme", theme);
@@ -56,7 +57,7 @@ public class SystemDefaultsFormController {
 	 * @param locale the locale to save (en, en_GB, es, etc)
 	 * @throws Exception
 	 */
-	@RequestMapping(method = RequestMethod.POST, value = "/admin/maintenance/systemDefaults")
+	@RequestMapping(method = RequestMethod.POST, value = "/admin/maintenance/localesAndThemes")
 	public String saveDefaults(@RequestParam("theme") String theme, @RequestParam("locale") String locale) throws Exception {
 		
 		// save the theme
@@ -71,7 +72,7 @@ public class SystemDefaultsFormController {
 		localeGP.setPropertyValue(locale);
 		Context.getAdministrationService().saveGlobalProperty(localeGP);
 		
-		return "redirect:/admin/maintenance/systemDefaults.form";
+		return "redirect:/admin/maintenance/localesAndThemes.form";
 	}
 
 }

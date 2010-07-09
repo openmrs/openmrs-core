@@ -188,6 +188,10 @@ a:hover {
 	background-color: #eeeeee;
 }
 
+#footer a, a:link, #footer a:active, #footer a:visited, #footer a:hover {
+	color: #003366;
+}
+
 #footer span {
 	margin-right: 5px;
 }
@@ -198,6 +202,18 @@ a:hover {
 
 #footerInner {
 	border-top: 1px solid #bbbbbb;
+}
+
+#footer #poweredBy {
+	float: right;
+}
+
+#footer #poweredBy img {
+	height: 1.4em;
+}
+
+#footer #poweredBy a, #poweredBy a:link, #poweredBy a:active, #poweredBy a:visited {
+	text-decoration: none;
 }
 
 #menu {
