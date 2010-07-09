@@ -20,22 +20,15 @@
 		<property name="gender" type="java.lang.String" column="gender"
 			not-null="true" length="50" />
 
-		<property name="birthdate" type="java.util.Date" column="birthdate"
-			length="10" />
-
-		<property name="birthdateEstimated" type="boolean"
-			column="birthdate_estimated" />
+		<component name="birthdate" class="org.openmrs.ApproximateDate">
+			<property name="date" column="birthdate" length="10" />
+			<property name="metadata" column="birthdateEstimated" type="int" />
+		</component>
 
 		<property name="dead" type="boolean" length="1" not-null="true" />
 
 		<property name="deathDate" type="java.util.Date" column="death_date"
 			length="19" />
-
-		<component name="aBirthDate" class="org.openmrs.ApproximateDate">
-			<property name="date" />
-			<property name="metadata" type="int" />
-			<component name="partialDate" class="org.joda.time.Partial"></component>
-		</component>
 
 		<many-to-one name="causeOfDeath" class="Concept" not-null="false"
 			column="cause_of_death" />

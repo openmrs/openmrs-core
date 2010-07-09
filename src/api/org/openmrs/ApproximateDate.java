@@ -28,6 +28,8 @@ public class ApproximateDate implements Comparable<ApproximateDate> {
 	
 	private Partial partialDate = null;
 	
+	public static final int NOT_APPROXIMATED = 0;
+
 	public final static int APPROXIMATE_YEAR = 1;
 	
 	public final static int APPROXIMATE_MONTH = 2;
@@ -44,8 +46,8 @@ public class ApproximateDate implements Comparable<ApproximateDate> {
 	
 	protected final static int UNKNOWN_DAY = 1024;
 
-	private final static float DAYS_PER_YEAR = 365.2425f;
-	
+	private final static float DAYS_PER_YEAR = 365.25f;
+
 	public enum Fields {
 		YEAR, MONTH, DAY;
 	}
@@ -268,8 +270,20 @@ public class ApproximateDate implements Comparable<ApproximateDate> {
 	 * @should set the date depending on the age
 	 */
 	public void setDateFromAge(float age) {
+		this.setDateFromAge(age, null);
+	}
+	
+	/**
+	 * Auto generated method comment
+	 * 
+	 * @param age
+	 * @should set the date depending on the age
+	 */
+	public void setDateFromAge(float age, Date ageOnDate) {
 		int days = Math.round(age * DAYS_PER_YEAR);
 		Calendar calendar = Calendar.getInstance();
+		if (ageOnDate != null)
+			calendar.setTime(ageOnDate);
 		calendar.add(Calendar.DAY_OF_MONTH, -days);
 		setDate(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH), false,
 		    false, false);
@@ -309,7 +323,7 @@ public class ApproximateDate implements Comparable<ApproximateDate> {
 		}
 
 		Calendar cal = Calendar.getInstance();
-		cal.set(year, month, date);
+		cal.set(year, month, date, 0, 0, 0);
 		
 		return cal.getTime();
 	}

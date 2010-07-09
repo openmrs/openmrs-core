@@ -293,8 +293,8 @@ public class PersonTest {
 		
 		// Test standard case and ensure estimated field is set to true
 		p.setBirthdateFromAge(10, df.parse("2008-05-20"));
-		assertEquals(p.getBirthdate(), df.parse("1998-01-01"));
-		assertTrue(p.getBirthdateEstimated());
+		assertEquals(df.parse("1998-05-20"), p.getBirthdate().getDate());
+		assertTrue(p.isBirthdateEstimated());
 		
 		// Test boundary cases
 		p.setBirthdateFromAge(52, df.parse("2002-01-01"));

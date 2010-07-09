@@ -54,6 +54,7 @@
 		<fileset dir="${hibernate.dir}" includes="*.jar" />
     	<fileset dir="${hl7api.dir}" includes="*.jar" />
     	<fileset dir="${jfreechart.dir}" includes="*.jar" />
+    	<fileset dir="${jodatime.dir}" includes="*.jar" />
 		<fileset dir="${junit.dir}" includes="*.jar" />
 		<fileset dir="${log4j.dir}" includes="*.jar" />
 		<fileset dir="${mail.dir}" includes="*.jar" />
@@ -88,6 +89,7 @@
 		<fileset dir="${hibernate.dir}" includes="*.jar" />
     	<fileset dir="${hl7api.dir}" includes="*.jar" />
     	<fileset dir="${jfreechart.dir}" includes="*.jar" />
+    	<fileset dir="${jodatime.dir}" includes="*.jar" />
 		<fileset dir="${jstl.dir}" includes="*.jar" />
 		<fileset dir="${log4j.dir}" includes="*.jar" />
     	<fileset dir="${slf4j.dir}" includes="*.jar" />

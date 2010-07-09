@@ -57,11 +57,7 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	
 	private String gender;
 	
-	private Date birthdate;
-	
-	private ApproximateDate aBirthDate;
-
-	private Boolean birthdateEstimated = false;
+	private ApproximateDate birthdate = null;
 	
 	private Boolean dead = false;
 	
@@ -121,8 +117,7 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 		attributes = person.getAttributes();
 		
 		gender = person.getGender();
-		aBirthDate = person.getBirthdate();
-		birthdateEstimated = person.getBirthdateEstimated();
+		birthdate = person.getBirthdate();
 		dead = person.isDead();
 		deathDate = person.getDeathDate();
 		causeOfDeath = person.getCauseOfDeath();
@@ -225,7 +220,9 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	 */
 	@Element(required = false)
 	public ApproximateDate getBirthdate() {
-		return this.aBirthDate;
+		if (this.birthdate == null)
+			this.birthdate = new ApproximateDate();
+		return this.birthdate;
 	}
 	
 	/**
@@ -233,7 +230,7 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	 */
 	@Element(required = false)
 	public void setBirthdate(ApproximateDate birthdate) {
-		this.aBirthDate = birthdate;
+		this.birthdate = birthdate;
 	}
 	
 	/**
@@ -244,7 +241,7 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 		// return new Boolean(false);
 		// }
 		//		return this.birthdateEstimated;
-		return this.aBirthDate.isApproximated();
+		return this.getBirthdate().isApproximated();
 	}
 	
 	@Attribute(required = true)
@@ -257,7 +254,11 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	 */
 	@Attribute(required = true)
 	public void setBirthdateEstimated(Boolean birthdateEstimated) {
-		this.birthdateEstimated = birthdateEstimated;
+		if (birthdateEstimated)
+			// TODO use something like APPROXIMATE_GENERAL
+			this.getBirthdate().setApproximated(ApproximateDate.APPROXIMATE_AGE);
+		else
+			this.getBirthdate().setApproximated(ApproximateDate.NOT_APPROXIMATED);
 	}
 	
 	/**
@@ -775,7 +776,7 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
         }
 
         Calendar bday = Calendar.getInstance();
-		bday.setTime(birthdate);
+		bday.setTime(birthdate.getDate());
 		
 		int age = today.get(Calendar.YEAR) - bday.get(Calendar.YEAR);
 		
@@ -804,17 +805,7 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	 * @param ageOnDate (null defaults to today)
 	 */
 	public void setBirthdateFromAge(int age, Date ageOnDate) {
-		//		Calendar c = Calendar.getInstance();
-		//		c.setTime(ageOnDate == null ? new Date() : ageOnDate);
-		//		c.set(Calendar.DATE, 1);
-		//		c.set(Calendar.MONTH, Calendar.JANUARY);
-		//		c.add(Calendar.YEAR, -1 * age);
-		//		setBirthdate(c.getTime());
-		//		setBirthdateEstimated(true);
-		
-		ApproximateDate adt = new ApproximateDate();
-		adt.setDateFromAge(age);
-		setBirthdate(adt);
+		this.getBirthdate().setDateFromAge(age, ageOnDate);
 	}
 	
 	public User getPersonChangedBy() {

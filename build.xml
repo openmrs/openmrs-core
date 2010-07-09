@@ -363,6 +363,7 @@
 			<lib dir="${hl7api.dir}" includes="*.jar" />
 			<lib dir="${hibernate.dir}" includes="*.jar" />
 			<lib dir="${jfreechart.dir}" includes="*.jar" />
+			<lib dir="${jodatime.dir}" includes="*.jar" />
 			<lib dir="${jstl.dir}" includes="*.jar" />
 			<lib dir="${jta.dir}" includes="*.jar" />
 			<lib dir="${log4j.dir}" includes="*.jar" />
