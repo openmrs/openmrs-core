@@ -28,7 +28,7 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	
 	//***** Properties *****
 	
-	private LocalizedString localizedName;
+	private String name;
 	
 	private String description;
 	
@@ -59,37 +59,17 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	//***** Property Access *****
 	
 	/**
-	 * @return the localizedName
-	 * @since 1.9
-	 */
-	public LocalizedString getLocalizedName() {
-		if (localizedName == null)
-			localizedName = new LocalizedString();
-		return localizedName;
-	}
-	
-	/**
-	 * @param localizedName the localizedName to set
-	 * @since 1.9
-	 */
-	public void setLocalizedName(LocalizedString localizedName) {
-		this.localizedName = localizedName;
-	}
-	
-	/**
 	 * @return the name
-	 * @see LocalizedString#getValue()
 	 */
 	public String getName() {
-		return getLocalizedName().getValue();
+		return name;
 	}
 	
 	/**
 	 * @param name the name to set
-	 * @see LocalizedString#setUnlocalizedValue(String)
 	 */
 	public void setName(String name) {
-		getLocalizedName().setUnlocalizedValue(name);
+		this.name = name;
 	}
 	
 	/**

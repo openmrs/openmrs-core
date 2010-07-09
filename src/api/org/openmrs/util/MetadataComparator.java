@@ -16,6 +16,7 @@ package org.openmrs.util;
 import java.util.Comparator;
 import java.util.Locale;
 
+import org.openmrs.LocalizedMetadata;
 import org.openmrs.OpenmrsMetadata;
 
 /**
@@ -42,9 +43,13 @@ public class MetadataComparator implements Comparator<OpenmrsMetadata> {
 	public int compare(OpenmrsMetadata left, OpenmrsMetadata right) {
 		int temp = OpenmrsUtil.compareWithNullAsLowest(left.isRetired(), right.isRetired());
 		if (temp == 0) {
-			Locale locale = getLocale();
-			temp = OpenmrsUtil.compareWithNullAsLowest(left.getLocalizedName().getValue(locale), right.getLocalizedName()
-			        .getValue(locale));
+			if (left instanceof LocalizedMetadata && right instanceof LocalizedMetadata) {
+				Locale locale = getLocale();
+				temp = OpenmrsUtil.compareWithNullAsLowest(((LocalizedMetadata) left).getLocalizedName().getValue(locale),
+					((LocalizedMetadata) right).getLocalizedName().getValue(locale));
+			} else {
+				temp = OpenmrsUtil.compareWithNullAsLowest(left.getName(), right.getName());
+			}
 		}
 		return temp;
 	}

@@ -21,7 +21,7 @@ import org.simpleframework.xml.Root;
  * PersonAttributeType
  */
 @Root(strict = false)
-public class PersonAttributeType extends BaseOpenmrsMetadata implements java.io.Serializable {
+public class PersonAttributeType extends BaseLocalizedMetadata implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 2112313431211L;
 	
@@ -49,7 +49,8 @@ public class PersonAttributeType extends BaseOpenmrsMetadata implements java.io.
 	/**
 	 * @see java.lang.Object#hashCode()
 	 */
-	public int hashCode() {
+	@Override
+    public int hashCode() {
 		if (this.getPersonAttributeTypeId() == null)
 			return super.hashCode();
 		return 7 * this.getPersonAttributeTypeId().hashCode();
@@ -61,7 +62,8 @@ public class PersonAttributeType extends BaseOpenmrsMetadata implements java.io.
 	 * @param obj
 	 * @return boolean true/false whether or not they are the same objects
 	 */
-	public boolean equals(Object obj) {
+	@Override
+    public boolean equals(Object obj) {
 		if (obj instanceof PersonAttributeType) {
 			PersonAttributeType p = (PersonAttributeType) obj;
 			if (p != null)
@@ -160,7 +162,8 @@ public class PersonAttributeType extends BaseOpenmrsMetadata implements java.io.
 	/**
 	 * @see java.lang.Object#toString()
 	 */
-	public String toString() {
+	@Override
+    public String toString() {
 		return getName();
 	}
 	

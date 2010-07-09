@@ -18,7 +18,7 @@ import java.util.Locale;
 /**
  * Drug
  */
-public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable {
+public class Drug extends BaseLocalizedMetadata implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 285L;
 	
@@ -59,7 +59,8 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable {
 	 * @param obj
 	 * @return boolean true/false whether or not they are the same objects
 	 */
-	public boolean equals(Object obj) {
+	@Override
+    public boolean equals(Object obj) {
 		if (obj == null || !(obj instanceof Drug))
 			return false;
 		
@@ -67,7 +68,8 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable {
 		return (this.drugId.equals(drug.getDrugId()));
 	}
 	
-	public int hashCode() {
+	@Override
+    public int hashCode() {
 		if (this.getDrugId() == null)
 			return super.hashCode();
 		return this.getDrugId().hashCode();

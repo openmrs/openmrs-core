@@ -16,7 +16,7 @@ package org.openmrs;
 /**
  * PatientIdentifierType
  */
-public class PatientIdentifierType extends BaseOpenmrsMetadata implements java.io.Serializable {
+public class PatientIdentifierType extends BaseLocalizedMetadata implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 211231L;
 	
@@ -43,7 +43,8 @@ public class PatientIdentifierType extends BaseOpenmrsMetadata implements java.i
 		this.patientIdentifierTypeId = patientIdentifierTypeId;
 	}
 	
-	public int hashCode() {
+	@Override
+    public int hashCode() {
 		if (this.getPatientIdentifierTypeId() == null)
 			return super.hashCode();
 		return this.getPatientIdentifierTypeId().hashCode();
@@ -55,7 +56,8 @@ public class PatientIdentifierType extends BaseOpenmrsMetadata implements java.i
 	 * @param obj
 	 * @return boolean true/false whether or not they are the same objects
 	 */
-	public boolean equals(Object obj) {
+	@Override
+    public boolean equals(Object obj) {
 		if (obj instanceof PatientIdentifierType) {
 			PatientIdentifierType p = (PatientIdentifierType) obj;
 			if (getPatientIdentifierTypeId() != null && p != null)
@@ -127,7 +129,8 @@ public class PatientIdentifierType extends BaseOpenmrsMetadata implements java.i
 	 * @deprecated No need to know if it has a check digit now that any validator algorithm can be
 	 *             chosen.
 	 */
-	public Boolean getCheckDigit() {
+	@Deprecated
+    public Boolean getCheckDigit() {
 		return hasCheckDigit();
 	}
 	
@@ -136,7 +139,8 @@ public class PatientIdentifierType extends BaseOpenmrsMetadata implements java.i
 	 * @deprecated No need to know if it has a check digit now that any validator algorithm can be
 	 *             chosen.
 	 */
-	public Boolean hasCheckDigit() {
+	@Deprecated
+    public Boolean hasCheckDigit() {
 		return checkDigit;
 	}
 	
@@ -144,7 +148,8 @@ public class PatientIdentifierType extends BaseOpenmrsMetadata implements java.i
 	 * @param checkDigit The checkdigit to set.
 	 * @deprecated No need for this field now that any validator algorithm can be chosen.
 	 */
-	public void setCheckDigit(Boolean checkDigit) {
+	@Deprecated
+    public void setCheckDigit(Boolean checkDigit) {
 		this.checkDigit = checkDigit;
 	}
 	
@@ -169,7 +174,8 @@ public class PatientIdentifierType extends BaseOpenmrsMetadata implements java.i
 	 * 
 	 * @see java.lang.Object#toString()
 	 */
-	public String toString() {
+	@Override
+    public String toString() {
 		return getName();
 	}
 	

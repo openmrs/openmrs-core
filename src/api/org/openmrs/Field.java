@@ -21,7 +21,7 @@ import java.util.Set;
  * 
  * @version 1.0
  */
-public class Field extends BaseOpenmrsMetadata implements java.io.Serializable {
+public class Field extends BaseLocalizedMetadata implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 4454L;
 	
@@ -60,7 +60,8 @@ public class Field extends BaseOpenmrsMetadata implements java.io.Serializable {
 	 * @param obj
 	 * @return boolean true/false whether or not they are the same objects
 	 */
-	public boolean equals(Object obj) {
+	@Override
+    public boolean equals(Object obj) {
 		if (obj == null || !(obj instanceof Field) || fieldId == null)
 			return false;
 		
@@ -68,7 +69,8 @@ public class Field extends BaseOpenmrsMetadata implements java.io.Serializable {
 		return (this.fieldId.equals(field.getFieldId()));
 	}
 	
-	public int hashCode() {
+	@Override
+    public int hashCode() {
 		if (this.getFieldId() == null)
 			return super.hashCode();
 		return this.getFieldId().hashCode();

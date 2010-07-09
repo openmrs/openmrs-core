@@ -19,13 +19,13 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.BaseOpenmrsMetadata;
+import org.openmrs.BaseLocalizedMetadata;
 import org.openmrs.User;
 
 /**
  * Represents the metadata for a task that can be scheduled.
  */
-public class TaskDefinition extends BaseOpenmrsMetadata {
+public class TaskDefinition extends BaseLocalizedMetadata {
 	
 	private Log log = LogFactory.getLog(this.getClass());
 	
@@ -168,7 +168,7 @@ public class TaskDefinition extends BaseOpenmrsMetadata {
 	 */
 	public void setLastExecutionTime(Date lastExecutionTime) {
 		this.lastExecutionTime = lastExecutionTime;
-	}	
+	}
 	
 	/**
 	 * Gets the number of seconds until task is executed again.
@@ -330,7 +330,8 @@ public class TaskDefinition extends BaseOpenmrsMetadata {
 	/**
 	 * @deprecated use {@link #getCreator()}
 	 */
-	public Object getCreatedBy() {
+	@Deprecated
+    public Object getCreatedBy() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -338,7 +339,8 @@ public class TaskDefinition extends BaseOpenmrsMetadata {
 	/**
 	 * @deprecated use {@link #setCreator(User)}
 	 */
-	public void setCreatedBy(User authenticatedUser) {
+	@Deprecated
+    public void setCreatedBy(User authenticatedUser) {
 		// TODO Auto-generated method stub
 		
 	}

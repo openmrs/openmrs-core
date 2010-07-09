@@ -23,7 +23,7 @@ import java.util.Set;
  * 
  * @version 1.0
  */
-public class Form extends BaseOpenmrsMetadata implements java.io.Serializable {
+public class Form extends BaseLocalizedMetadata implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 845634L;
 	
@@ -70,7 +70,8 @@ public class Form extends BaseOpenmrsMetadata implements java.io.Serializable {
 	 * @should have equal form objects with no formId
 	 * @should not have equal form objects when one has null formId
 	 */
-	public boolean equals(Object obj) {
+	@Override
+    public boolean equals(Object obj) {
 		if (obj instanceof Form) {
 			Form f = (Form) obj;
 			if (this.getFormId() != null && f.getFormId() != null)
@@ -85,7 +86,8 @@ public class Form extends BaseOpenmrsMetadata implements java.io.Serializable {
 	 * @see java.lang.Object#hashCode()
 	 * @should get hashCode even with null attributes
 	 */
-	public int hashCode() {
+	@Override
+    public int hashCode() {
 		if (this.getFormId() == null)
 			return super.hashCode();
 		return this.getFormId().hashCode();
@@ -265,7 +267,8 @@ public class Form extends BaseOpenmrsMetadata implements java.io.Serializable {
 		}
 	}
 	
-	public String toString() {
+	@Override
+    public String toString() {
 		if (formId == null)
 			return "";
 		return formId.toString();
@@ -292,7 +295,8 @@ public class Form extends BaseOpenmrsMetadata implements java.io.Serializable {
 	/**
 	 * @deprecated use {@link #setRetireReason(String)}
 	 */
-	public void setRetiredReason(String reason) {
+	@Deprecated
+    public void setRetiredReason(String reason) {
 		setRetireReason(reason);
 		
 	}
@@ -300,7 +304,8 @@ public class Form extends BaseOpenmrsMetadata implements java.io.Serializable {
 	/**
 	 * @deprecated use {@link #getRetireReason()}
 	 */
-	public String getRetiredReason() {
+	@Deprecated
+    public String getRetiredReason() {
 		return getRetireReason();
 	}
 	

@@ -24,7 +24,7 @@ import org.simpleframework.xml.Root;
  * ICD9, ICD10, SNOMED, or any other OpenMRS implementation
  */
 @Root
-public class ConceptSource extends BaseOpenmrsMetadata implements Voidable, java.io.Serializable {
+public class ConceptSource extends BaseLocalizedMetadata implements Voidable, java.io.Serializable {
 	
 	public static final long serialVersionUID = 375L;
 	
@@ -48,7 +48,8 @@ public class ConceptSource extends BaseOpenmrsMetadata implements Voidable, java
 	/**
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
-	public boolean equals(Object obj) {
+	@Override
+    public boolean equals(Object obj) {
 		if (obj instanceof ConceptSource) {
 			if (conceptSourceId == null)
 				return false;
@@ -62,7 +63,8 @@ public class ConceptSource extends BaseOpenmrsMetadata implements Voidable, java
 	/**
 	 * @see java.lang.Object#hashCode()
 	 */
-	public int hashCode() {
+	@Override
+    public int hashCode() {
 		if (this.getConceptSourceId() == null)
 			return super.hashCode();
 		return conceptSourceId.hashCode();
@@ -84,12 +86,14 @@ public class ConceptSource extends BaseOpenmrsMetadata implements Voidable, java
 		this.conceptSourceId = conceptSourceId;
 	}
 	
-	@Element
+	@Override
+    @Element
 	public User getCreator() {
 		return super.getCreator();
 	}
 	
-	@Element
+	@Override
+    @Element
 	public void setCreator(User creator) {
 		super.setCreator(creator);
 	}
@@ -97,7 +101,8 @@ public class ConceptSource extends BaseOpenmrsMetadata implements Voidable, java
 	/**
 	 * @return Returns the dateCreated.
 	 */
-	@Element
+	@Override
+    @Element
 	public Date getDateCreated() {
 		return super.getDateCreated();
 	}
@@ -105,7 +110,8 @@ public class ConceptSource extends BaseOpenmrsMetadata implements Voidable, java
 	/**
 	 * @param dateCreated The dateCreated to set.
 	 */
-	@Element
+	@Override
+    @Element
 	public void setDateCreated(Date dateCreated) {
 		super.setDateCreated(dateCreated);
 	}
@@ -128,12 +134,14 @@ public class ConceptSource extends BaseOpenmrsMetadata implements Voidable, java
 		setDateRetired(dateVoided);
 	}
 	
-	@Element(data = true)
+	@Override
+    @Element(data = true)
 	public String getDescription() {
 		return super.getDescription();
 	}
 	
-	@Element(data = true)
+	@Override
+    @Element(data = true)
 	public void setDescription(String description) {
 		super.setDescription(description);
 	}
@@ -154,12 +162,14 @@ public class ConceptSource extends BaseOpenmrsMetadata implements Voidable, java
 		this.hl7Code = hl7Code;
 	}
 	
-	@Element(data = true)
+	@Override
+    @Element(data = true)
 	public String getName() {
 		return super.getName();
 	}
 	
-	@Element(data = true)
+	@Override
+    @Element(data = true)
 	public void setName(String name) {
 		super.setName(name);
 	}

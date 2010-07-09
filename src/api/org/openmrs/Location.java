@@ -27,9 +27,9 @@ import org.openmrs.api.context.Context;
  * Locations support a single hierarchy, such that each location may have one parent location.
  * 
  * A non-geographical grouping of locations, such as "All Community Health Centers" is not a location, and
- * should be modeled using {@link LocationTag}s. 
+ * should be modeled using {@link LocationTag}s.
  */
-public class Location extends BaseOpenmrsMetadata implements java.io.Serializable, Attributable<Location> {
+public class Location extends BaseLocalizedMetadata implements java.io.Serializable, Attributable<Location> {
 	
 	public static final long serialVersionUID = 455634L;
 	

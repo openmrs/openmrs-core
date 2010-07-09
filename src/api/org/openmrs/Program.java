@@ -24,7 +24,7 @@ import org.simpleframework.xml.Root;
  * Program
  */
 @Root
-public class Program extends BaseOpenmrsMetadata implements java.io.Serializable {
+public class Program extends BaseLocalizedMetadata implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 3214567L;
 	
@@ -104,7 +104,8 @@ public class Program extends BaseOpenmrsMetadata implements java.io.Serializable
 	}
 	
 	/** @see Object#equals(Object) */
-	public boolean equals(Object obj) {
+	@Override
+    public boolean equals(Object obj) {
 		if (obj != null && obj instanceof Program) {
 			Program p = (Program) obj;
 			if (this.getProgramId() != null) {
@@ -115,7 +116,8 @@ public class Program extends BaseOpenmrsMetadata implements java.io.Serializable
 	}
 	
 	/** @see Object#toString() */
-	public String toString() {
+	@Override
+    public String toString() {
 		return "Program(id=" + getProgramId() + ", concept=" + getConcept() + ", workflows=" + getWorkflows() + ")";
 	}
 	

@@ -19,7 +19,7 @@ package org.openmrs;
  * 
  * @see Encounter
  */
-public class EncounterType extends BaseOpenmrsMetadata implements java.io.Serializable {
+public class EncounterType extends BaseLocalizedMetadata implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 789L;
 	

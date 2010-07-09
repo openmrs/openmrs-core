@@ -19,7 +19,7 @@ package org.openmrs;
  * @see Location
  * @since 1.5
  */
-public class LocationTag extends BaseOpenmrsMetadata implements java.io.Serializable {
+public class LocationTag extends BaseLocalizedMetadata implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 7654L;
 	
@@ -54,7 +54,8 @@ public class LocationTag extends BaseOpenmrsMetadata implements java.io.Serializ
 	 * @param obj The LocationTag object to be compared.
 	 * @return Returns true if the objects share the same locationTagId, false otherwise.
 	 */
-	public boolean equals(Object obj) {
+	@Override
+    public boolean equals(Object obj) {
 		if (obj == null || !(obj instanceof LocationTag))
 			return false;
 		
@@ -68,7 +69,8 @@ public class LocationTag extends BaseOpenmrsMetadata implements java.io.Serializ
 	/**
 	 * @see java.lang.Object#hashCode()
 	 */
-	public int hashCode() {
+	@Override
+    public int hashCode() {
 		if (this.getLocationTagId() == null)
 			return super.hashCode();
 		return this.getLocationTagId().hashCode();
@@ -108,7 +110,8 @@ public class LocationTag extends BaseOpenmrsMetadata implements java.io.Serializ
 		setName(tag);
 	}
 	
-	public String toString() {
+	@Override
+    public String toString() {
 		return getName();
 	}
 	

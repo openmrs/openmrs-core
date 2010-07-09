@@ -18,7 +18,7 @@ package org.openmrs;
  * 
  * @see Order
  */
-public class OrderType extends BaseOpenmrsMetadata implements java.io.Serializable {
+public class OrderType extends BaseLocalizedMetadata implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 23232L;
 	

@@ -20,7 +20,7 @@ import org.simpleframework.xml.Root;
  * ConceptClass
  */
 @Root(strict = false)
-public class ConceptClass extends BaseOpenmrsMetadata implements java.io.Serializable {
+public class ConceptClass extends BaseLocalizedMetadata implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 33473L;
 	

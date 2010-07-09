@@ -16,7 +16,7 @@ package org.openmrs;
 /**
  * FieldType
  */
-public class FieldType extends BaseOpenmrsMetadata implements java.io.Serializable {
+public class FieldType extends BaseLocalizedMetadata implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 35467L;
 	
