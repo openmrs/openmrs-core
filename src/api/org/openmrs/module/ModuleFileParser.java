@@ -38,7 +38,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Privilege;
-import org.openmrs.api.APIException;
+import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -78,10 +78,11 @@ public class ModuleFileParser {
 	 */
 	public ModuleFileParser(File moduleFile) {
 		if (moduleFile == null)
-			throw new ModuleException("Module file cannot be null");
+			throw new ModuleException(Context.getMessageSourceService().getMessage("Module.error.fileCannotBeNull"));
 		
 		if (!moduleFile.getName().endsWith(".omod"))
-			throw new ModuleException("Module file does not have the correct .omod file extension", moduleFile.getName());
+			throw new ModuleException(Context.getMessageSourceService().getMessage("Module.error.invalidFileExtension"),
+			        moduleFile.getName());
 		
 		this.moduleFile = moduleFile;
 	}
@@ -101,10 +102,10 @@ public class ModuleFileParser {
 			OpenmrsUtil.copyFile(inputStream, outputStream);
 		}
 		catch (FileNotFoundException e) {
-			throw new ModuleException("Can't create module file", e);
+			throw new ModuleException(Context.getMessageSourceService().getMessage("Module.error.cannotCreateFile"), e);
 		}
 		catch (IOException e) {
-			throw new ModuleException("Can't create module file", e);
+			throw new ModuleException(Context.getMessageSourceService().getMessage("Module.error.cannotCreateFile"), e);
 		}
 		finally {
 			try {
@@ -134,20 +135,23 @@ public class ModuleFileParser {
 				jarfile = new JarFile(moduleFile);
 			}
 			catch (IOException e) {
-				throw new ModuleException("Unable to get jar file", moduleFile.getName(), e);
+				throw new ModuleException(Context.getMessageSourceService().getMessage("Module.error.cannotGetJarFile"),
+				        moduleFile.getName(), e);
 			}
 			
 			// look for config.xml in the root of the module
 			ZipEntry config = jarfile.getEntry("config.xml");
 			if (config == null)
-				throw new ModuleException("Error loading module. No config.xml found.", moduleFile.getName());
+				throw new ModuleException(Context.getMessageSourceService().getMessage("Module.error.noConfigFile"),
+				        moduleFile.getName());
 			
 			// get a config file stream
 			try {
 				configStream = jarfile.getInputStream(config);
 			}
 			catch (IOException e) {
-				throw new ModuleException("Unable to get config file stream", moduleFile.getName(), e);
+				throw new ModuleException(Context.getMessageSourceService().getMessage(
+				    "Module.error.cannotGetConfigFileStream"), moduleFile.getName(), e);
 			}
 			
 			// turn the config file into an xml document
@@ -190,11 +194,12 @@ public class ModuleFileParser {
 						out.close();
 					}
 					catch (Exception e3) {}
-					;
 				}
 				
 				log.error("config.xml content: " + output);
-				throw new ModuleException("Error parsing module config.xml file", moduleFile.getName(), e);
+				throw new ModuleException(
+				        Context.getMessageSourceService().getMessage("Module.error.cannotParseConfigFile"), moduleFile
+				                .getName(), e);
 			}
 			
 			Element rootNode = configDoc.getDocumentElement();
@@ -202,7 +207,8 @@ public class ModuleFileParser {
 			String configVersion = rootNode.getAttribute("configVersion");
 			
 			if (!validConfigVersions.contains(configVersion))
-				throw new ModuleException("Invalid config version: " + configVersion, moduleFile.getName());
+				throw new ModuleException(Context.getMessageSourceService().getMessage("Module.error.invalidConfigVersion",
+				    new Object[] { configVersion }, Context.getLocale()), moduleFile.getName());
 			
 			String name = getElement(rootNode, configVersion, "name");
 			String moduleId = getElement(rootNode, configVersion, "id");
@@ -213,11 +219,13 @@ public class ModuleFileParser {
 			
 			// do some validation
 			if (name == null || name.length() == 0)
-				throw new ModuleException("name cannot be empty", moduleFile.getName());
+				throw new ModuleException(Context.getMessageSourceService().getMessage("Module.error.nameCannotBeEmpty"),
+				        moduleFile.getName());
 			if (moduleId == null || moduleId.length() == 0)
-				throw new ModuleException("module id cannot be empty", name);
+				throw new ModuleException(Context.getMessageSourceService().getMessage("Module.error.idCannotBeEmpty"), name);
 			if (packageName == null || packageName.length() == 0)
-				throw new ModuleException("package cannot be empty", name);
+				throw new ModuleException(Context.getMessageSourceService().getMessage("Module.error.packageCannotBeEmpty"),
+				        name);
 			
 			// look for log4j.xml in the root of the module
 			Document log4jDoc = null;
@@ -471,7 +479,8 @@ public class ModuleFileParser {
 					try {
 						ZipEntry entry = jarfile.getEntry(file);
 						if (entry == null)
-							throw new ModuleException("No message properties file '" + file + "' for language '" + lang + "'");
+							throw new ModuleException(Context.getMessageSourceService().getMessage(
+							    "Module.error.NoMessagePropsFile", new Object[] { file, lang }, Context.getLocale()));
 						inStream = jarfile.getInputStream(entry);
 						Properties props = new Properties();
 						OpenmrsUtil.loadProperties(props, inStream);
