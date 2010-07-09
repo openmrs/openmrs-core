@@ -55,13 +55,13 @@
 							<td valign="top" align="center">
 								<c:choose>
 									<c:when test="${task.started}">
-										<font color="green"><strong>Started</strong></font><br>										
+										<font color="green"><strong><spring:message code="Scheduler.list.started"/></strong></font><br>										
 										<c:if test="${task.startTime!=null}">
-											<i>Runs again in <strong>${task.secondsUntilNextExecutionTime}s</strong></i>
+											<i><spring:message code="Scheduler.list.runsAgainIn" arguments="${task.secondsUntilNextExecutionTime}"/></i>
 										</c:if>
 									</c:when>
 									<c:otherwise>
-										<font color="red"><strong>Stopped</strong></font>
+										<font color="red"><strong><spring:message code="Scheduler.list.stopped"/></strong></font>
 									</c:otherwise>
 								</c:choose>
 							</td>							
@@ -69,10 +69,10 @@
 								<a href="scheduler.form?taskId=${task.id}"><strong>${task.name}</strong></a> 
 									<br/>${task.taskClass}
 							</td>
-							<td class="left">Runs every <strong>${intervals[task]}</strong> 
+							<td class="left"><spring:message code="Scheduler.list.runsEvery" arguments="${intervals[task]}"/> 
 								<c:if test="${task.startTime!=null}">								 	
-								 	<br/>from <strong>${taskStartTime}</strong>, 
-								 	<br/>starting on <strong>${taskStartDate}</strong>
+								 	<br/><spring:message code="Scheduler.list.from" arguments="${taskStartTime}"/> , 
+								 	<br/><spring:message code="Scheduler.list.startingOn" arguments="${taskStartDate}"/>
 								</c:if>							
 							</td>
 							<td class="left">
@@ -80,8 +80,8 @@
 							</td>
 							<td>
 								<c:choose>
-									<c:when test="${task.startOnStartup}"><strong>Yes</strong> (automatic)</c:when>
-									<c:otherwise><strong>No</strong> (manual)</c:otherwise>
+									<c:when test="${task.startOnStartup}"><strong><spring:message code="general.yes"/></strong> (<spring:message code="Scheduler.list.automatic"/>)</c:when>
+									<c:otherwise><strong><spring:message code="general.no"/></strong> (<spring:message code="Scheduler.list.manual"/>)</c:otherwise>
 								</c:choose>
 							</td>
 							
