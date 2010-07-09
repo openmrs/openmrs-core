@@ -40,7 +40,6 @@ import liquibase.exception.UnsupportedChangeException;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.set.ListOrderedSet;
-import org.apache.commons.lang.LocaleUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -48,6 +47,7 @@ import org.openmrs.ConceptName;
 import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.db.hibernate.HibernateUtil;
 import org.openmrs.util.DatabaseUpdater;
+import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
@@ -468,10 +468,12 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 			if (rs_defaultLocale.next()) {
 				String defaultLocaleStr = rs_defaultLocale.getString("property_value");
 				if (!StringUtils.isBlank(defaultLocaleStr) && defaultLocaleStr.length() > 1) {
-					Locale defaultLocale_GP = LocaleUtils.toLocale(defaultLocaleStr);
+					Locale defaultLocale_GP = LocaleUtility.fromSpecification(defaultLocaleStr);
 					if (defaultLocale_GP != null)
 						defaultLocale = defaultLocale_GP;
-				}
+				} else
+					updateWarnings.add("'" + defaultLocaleStr
+					        + "' is an invalid value for the global property default locale");
 			}
 			
 			allowedLocales.add(defaultLocale);
@@ -486,7 +488,10 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 					String[] localesArray = allowedLocaleStr.split(",");
 					for (String localeStr : localesArray) {
 						if (localeStr.trim().length() > 1)
-							allowedLocales.add(LocaleUtils.toLocale(localeStr.trim()));
+							allowedLocales.add(LocaleUtility.fromSpecification(localeStr.trim()));
+						else
+							updateWarnings.add("'" + localeStr
+							        + "' is an invalid value for the global property locale.allowed.list");
 					}
 				}
 			} else
@@ -551,7 +556,8 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 					conceptName.setConceptNameType(conceptNameType);
 				}
 				String localeString = rs.getString("locale");
-				conceptName.setLocale(!StringUtils.isBlank(localeString) ? LocaleUtils.toLocale(localeString) : null);
+				conceptName.setLocale(!StringUtils.isBlank(localeString) ? LocaleUtility.fromSpecification(localeString)
+				        : null);
 				conceptName.setLocalePreferred((rs.getInt("locale_preferred") == 1) ? true : false);
 				conceptName.setVoided(false);
 				
