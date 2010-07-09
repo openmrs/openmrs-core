@@ -1150,7 +1150,7 @@ public final class OpenmrsConstants {
 		                "Whether or not to display the patient name in the patient dashboard title. Note that enabling this could be security risk if multiple users operate on the same computer."));
 		
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_DEFAULT_THEME, "",
-		        "Default theme for users.  OpenMRS ships with themes of 'green', 'orange', 'blue', and 'legacy'"));
+		        "Default theme for users.  OpenMRS ships with themes of 'green', 'orange', 'purple', and 'legacy'"));
 		
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);
