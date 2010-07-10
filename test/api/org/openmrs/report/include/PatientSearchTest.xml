@@ -4,7 +4,7 @@
   <concept_class concept_class_id="1" name="Finding" description="A medical discovery" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="a40e8722-f2d7-4429-850c-10683796e1ed"/>
   <concept_datatype concept_datatype_id="1" name="Numeric" hl7_abbreviation="NM" description="Numeric value, including integer or float" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="dae964e6-8bc9-40ef-9549-54d9a3c4a0f3"/>
   <concept_description concept_description_id="1" concept_id="1" description="cd4 count" locale="en" creator="1" date_created="2005-01-01 00:00:00.0" uuid="215a3733-93bf-43ed-a26c-0ae479979ab3"/>
-  <concept_name concept_id="1" name="CD4 COUNT" locale="en" creator="1" date_created="2005-01-01 00:00:00.0" concept_name_id="1" voided="false" uuid="13ee4fe0-7043-4eb6-8fef-af60d0a92f0b" concept_name_type="FULLY_SPECIFIED" locale_preferred="0"/>
+  <concept_name concept_id="1" name="NEW CD4 COUNT" locale="en" creator="1" date_created="2005-01-01 00:00:00.0" concept_name_id="1" voided="false" uuid="13ee4fe0-7043-4eb6-8fef-af60d0a92f0b" concept_name_type="FULLY_SPECIFIED" locale_preferred="0"/>
   <encounter encounter_id="1" patient_id="2" provider_id="0" location_id="1" encounter_datetime="2005-01-01 00:00:00.0" creator="1" date_created="2005-02-01 00:00:00.0" voided="false" uuid="6b0295b6-df79-485f-a1de-d0beb49079af"/>
   <encounter encounter_id="2" patient_id="2" provider_id="0" location_id="1" encounter_datetime="2005-02-01 00:00:00.0" creator="1" date_created="2005-03-01 00:00:00.0" voided="false" uuid="a0ff6aff-a092-44c1-8bdc-770e21e85347"/>
   <location location_id="1" name="Test Location" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="f1771d8e-bf1f-4dc5-957f-0d40a5eebf08"/>

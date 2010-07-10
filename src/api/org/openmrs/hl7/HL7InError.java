@@ -16,6 +16,7 @@ package org.openmrs.hl7;
 import java.util.Date;
 
 import org.openmrs.BaseOpenmrsObject;
+import org.openmrs.api.APIException;
 
 /**
  * Represents a error in processing an hl7 message.
@@ -25,6 +26,8 @@ import org.openmrs.BaseOpenmrsObject;
  */
 public class HL7InError extends BaseOpenmrsObject {
 	
+	private static final int MAX_ERROR_DETAILS_LENGTH = 16777215;
+
 	private int hl7InErrorId;
 	
 	private HL7Source hl7Source;
@@ -136,6 +139,9 @@ public class HL7InError extends BaseOpenmrsObject {
 	 * @param errorDetails The errorDetails to set.
 	 */
 	public void setErrorDetails(String errorDetails) {
+		if (errorDetails != null && errorDetails.length() > MAX_ERROR_DETAILS_LENGTH)
+			throw new APIException("error details length of " + errorDetails.length() + " exceeds maximum length of "
+			        + MAX_ERROR_DETAILS_LENGTH);
 		this.errorDetails = errorDetails;
 	}
 	

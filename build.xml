@@ -6,7 +6,7 @@
 <project name="OpenMRS-metadata-localization" default="dist">
 
 	<tstamp>
-		<format property="timestamp" pattern="MMM dd yyyy hh:mm aa" />
+		<format property="timestamp" pattern="MMM dd yyyy hh:mm aa" locale="en" />
 	</tstamp>
 
 	<!-- Environment properties -->

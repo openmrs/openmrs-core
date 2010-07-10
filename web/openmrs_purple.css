@@ -1,0 +1,20 @@
+.barsmall {
+	background-image:url(images/openmrs_purple_bar_repeat.gif);
+	background-repeat:repeat-x;
+}
+
+.box, .boxHeader, .boxRed, .boxHeaderRed, .boxExited, .boxHeaderExited {
+	border: 1px solid #8c87c5;
+}
+
+.boxHeader {
+	background-color: #8c87c5;
+}
+
+#patientTabs {
+	border-bottom: 1px solid #8c87c5;
+}
+
+#patientTabs a:link, #patientTabs a:visited {
+	border: 1px solid #8c87c5;
+}

@@ -13,6 +13,8 @@ The following error happened somewhere on this page:<br/>
 <%
 org.apache.commons.logging.LogFactory.getLog(getClass()).error("Error on page " + request.getRequestURI(), exception);
 
+org.openmrs.api.context.Context.openSession();
+
 if (org.openmrs.api.context.Context.isAuthenticated() == false) {
 	out.println("<!-- There is no stack trace here because you are not authenticated -->");
 }
@@ -26,4 +28,5 @@ else {
 	pw.close();
 	out.println("-->");
 }
+org.openmrs.api.context.Context.closeSession();
 %>

@@ -400,7 +400,7 @@ public class HibernateUserDAO implements UserDAO {
 			if (i.hasNext())
 				hql += "and ";
 		}
-		hql += " order by username asc";
+		hql += " order by user.username asc";
 		Query query = sessionFactory.getCurrentSession().createQuery(hql);
 		for (Map.Entry<String, String> e : namesMap.entrySet())
 			query.setString(e.getKey(), e.getValue());

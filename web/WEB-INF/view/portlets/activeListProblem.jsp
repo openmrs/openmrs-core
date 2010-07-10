@@ -4,8 +4,6 @@
 <openmrs:htmlInclude file="/dwr/interface/DWRPatientService.js" />
 <openmrs:htmlInclude file="/dwr/interface/DWRConceptService.js" />
 <openmrs:htmlInclude file="/dwr/util.js" />
-<openmrs:htmlInclude file="/scripts/jquery/autocomplete/jquery.autocomplete.js" />
-<openmrs:htmlInclude file="/scripts/jquery/autocomplete/jquery.autocomplete.css" />
 
 <style type="text/css">
 .ui-datepicker { z-index:10100; }
@@ -43,9 +41,8 @@
 
 		var problemCallback = new ConceptServiceCallback(showProblemAddError);
 		var autoProblemConcept = new AutoComplete("problem_concept", problemCallback.callback, {
-			onItemSelect: function(li) {
-				//set the value of the id
-				$j('#problem_concept_id').val(li.selectValue);
+			select: function(event, ui) {
+				$j('#problem_concept_id').val(ui.item.id);
 			}
 		});
 	});

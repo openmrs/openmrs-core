@@ -20,7 +20,7 @@
 	<classpathentry kind="lib" path="lib/jstl/jstl-1.1.jar" sourcepath="/openmrs-source/apache-tomcat-5.5.20-src.zip"/>
 	<classpathentry kind="lib" path="lib/jta/jta.jar"/>
 	<classpathentry kind="lib" path="lib/junit/xmlunit-1.2.jar" sourcepath="/openmrs-source/xmlunit-1.2-src.zip"/>
-	<classpathentry kind="lib" path="lib/junit/hsqldb-1.8.0.10.jar" sourcepath="/openmrs-source/hsqldb_1_8_0_9.zip"/>
+	<classpathentry kind="lib" path="lib/junit/h2-1.2.135.jar"/>
 	<classpathentry kind="lib" path="lib/junit/dbunit-2.4.4.jar" sourcepath="/openmrs-source/dbunit-2.2-src.zip"/>
 	<classpathentry kind="lib" path="lib/mysql-connector-java/mysql-connector-java-5.1.7-bin.jar"/>
 	<classpathentry kind="lib" path="lib/commons-beanutils/commons-beanutils-bean-collections-1.7.0.jar"/>

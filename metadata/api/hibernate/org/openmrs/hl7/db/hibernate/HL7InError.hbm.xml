@@ -27,7 +27,7 @@
 		<property name="error" type="java.lang.String" length="255"
 			column="error" />
 
-		<property name="errorDetails" type="java.lang.String" length="2048"
+		<property name="errorDetails" type="java.lang.String" length="16777215"
 			column="error_details" />
 
 		<property name="dateCreated" type="java.util.Date" 

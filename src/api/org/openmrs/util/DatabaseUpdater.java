@@ -345,8 +345,9 @@ public class DatabaseUpdater {
 			database.setDatabaseChangeLogTableName("liquibasechangelog");
 			database.setDatabaseChangeLogLockTableName("liquibasechangeloglock");
 			
-			if (connection.getMetaData().getDatabaseProductName().contains("HSQL Database Engine")) {
-				// a hack because hsqldb seems to be checking table names in the metadata section case sensitively
+			if (connection.getMetaData().getDatabaseProductName().contains("HSQL Database Engine")
+			        || connection.getMetaData().getDatabaseProductName().contains("H2")) {
+				// a hack because hsqldb and h2 seem to be checking table names in the metadata section case sensitively
 				database.setDatabaseChangeLogTableName(database.getDatabaseChangeLogTableName().toUpperCase());
 				database.setDatabaseChangeLogLockTableName(database.getDatabaseChangeLogLockTableName().toUpperCase());
 			}

@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -833,7 +834,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(2, obss.intValue());
 		
 	}
-	
+
 	/**
 	 * @see ObsService#getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean)
 	 */
@@ -916,7 +917,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		
 		Assert.assertEquals(1, count.intValue());
 	}
-	
+
 	/**
 	 * @see ObsService#getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean)
 	 */
@@ -948,7 +949,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		
 		Assert.assertEquals(13, count.intValue());
 	}
-	
+
 	/**
 	 * @see ObsService#getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean)
 	 */
@@ -980,7 +981,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		
 		Assert.assertEquals(15, count.intValue());
 	}
-	
+
 	/**
 	 * @see ObsService#getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean)
 	 */
@@ -1050,7 +1051,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		ObsService obsService = Context.getObsService();
 		
 		List<Obs> obss = obsService.getObservations(Collections.singletonList(new Person(7)), null, null, null, null, null,
-		    Collections.singletonList("concept"), null, null, null, null, false);
+		    Arrays.asList(new String[] { "concept", "obsDatetime" }), null, null, null, null, false);
 		
 		// check the order of a few of the obs returned
 		Assert.assertEquals(11, obss.get(0).getObsId().intValue());
