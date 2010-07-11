@@ -107,6 +107,16 @@ public class ModuleListController extends SimpleFormController {
 					log.warn("unable to complete restart");
 					error = e.getMessage();
 				}
+			} else if ("updateCache".equals(action)) {
+				try{
+					ModuleRepository.cacheModuleRepository();
+				}catch(IOException e){
+					if (e instanceof SocketException || e instanceof UnknownHostException) {
+						error = msa.getMessage("Module.noWWWAvailable");
+					}else{
+						error = e.getMessage();
+					}
+				}
 			} else if ("upload".equals(action)) {// Action Upload for Add or Upgrade
 				// double check upload permissions
 				if (!ModuleUtil.allowAdmin()) {
@@ -348,6 +358,8 @@ public class ModuleListController extends SimpleFormController {
 		map.put("showUpgradeConfirm", showUpgradeConfirm);
 		
 		map.put("hasPendingActions", ModuleFactory.hasPendingModuleActions());
+		
+		map.put("moduleRepositoryCacheExpired", ModuleRepository.isCacheExpired());
 
 		return map;
 	}

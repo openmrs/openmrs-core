@@ -3674,4 +3674,38 @@
 			<column name="error_details" type="mediumtext" />
 		</modifyColumn>
 	</changeSet>
+	
+	<changeSet id="20100711-0814" author="shazin">
+		<comment>
+			Inserts related to Module Repository Caching.
+		</comment>		
+		<insert tableName="scheduler_task_config">
+			<column name="name" value="Module Repository Cache Update"/>
+			<column name="description" value="This Task updates Module Repository Cache"/>
+			<column name="schedulable_class" value="org.openmrs.scheduler.tasks.ModuleRepositoryCacheUpdateTask"/>
+			<column name="repeat_interval" valueNumeric="86400"/>
+			<column name="start_on_startup" valueBoolean="true"/>
+			<column name="started" valueBoolean="true"/>
+		</insert>
+		
+		<insert tableName="global_property">
+			<column name="property" value="modulerepository.url.allModules"/>
+			<column name="property_value">
+				<value>
+					<![CDATA[
+						http://modules.openmrs.org/modules/getAllModules?openmrsVersion=<VERSION>&lastUpdatedDate=<DATE>
+					]]>
+				</value>
+			</column>	
+			<column name="description" value="Get All Module Repository URL"/>
+			<column name="uuid" value="29a8ad5c-b468-4652-8c20-d003363fbc09"/>		
+		</insert>
+		
+		<insert tableName="global_property">
+			<column name="property" value="modulerepository.threshold"/>
+			<column name="property_value" value="7"/>		
+			<column name="description" value="Threshold to update the Module Repository"/>
+			<column name="uuid" value="42c5115c-2717-4b95-9d1a-3d66c70d7a84"/>
+		</insert>
+	</changeSet>
 </databaseChangeLog>

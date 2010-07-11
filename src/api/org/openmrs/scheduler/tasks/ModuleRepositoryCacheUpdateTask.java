@@ -32,7 +32,7 @@ public class ModuleRepositoryCacheUpdateTask extends AbstractTask {
 			ModuleRepository.cacheModuleRepository();
 		}
 		catch (IOException e) {
-			log.error("Couldn't execute Update Task");
+			log.error("Couldn't execute Update Task", e);
 		}
 	}
 }

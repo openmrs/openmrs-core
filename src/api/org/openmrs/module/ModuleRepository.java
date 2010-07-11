@@ -32,13 +32,9 @@ import java.util.WeakHashMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.openmrs.GlobalProperty;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
-import org.openmrs.scheduler.SchedulerService;
-import org.openmrs.scheduler.TaskDefinition;
 import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.web.WebConstants;
 
 /**
  * Methods to cache in modules from the online repository and allows searching from administration
@@ -52,10 +48,6 @@ public class ModuleRepository {
 	private static Date lastUpdatedDate = new Date(100, 0, 01); // first date will be 01/01/2000
 	
 	private static Map<String, Module> repository = new WeakHashMap<String, Module>();
-	
-	public static final String MODULE_REPOSITORY_CACHE_UPDATE_TASK_NAME = "Module Repository Cache Update";
-	
-	public static final String MODULE_REPOSITORY_CACHE_UPDATE_TASK_CLASS = "org.openmrs.scheduler.tasks.ModuleRepositoryCacheUpdateTask";
 
 	private static final int MODULE_ID_INDEX = 0;
 	
@@ -71,6 +63,8 @@ public class ModuleRepository {
 	
 	private static final String MODULE_REPOSITORY_URL = "modulerepository.url.allModules";
 	
+	private static final String MODULE_REPOSITORY_THRESHOLD = "modulerepository.threshold";
+	
 	private static String moduleRepositoryUrl = null;
 	
 	private static int noOfModules = 0;
@@ -83,47 +77,14 @@ public class ModuleRepository {
 	public static void initialize() {
 		AdministrationService as = Context.getAdministrationService();
 		try {
-			/* Temporarily Used the authentication should be removed
-			 * once ticket http://dev.openmrs.org/ticket/1947 is completed
-			 */
-			String username = as.getGlobalProperty("scheduler.username");
-			String password = as.getGlobalProperty("scheduler.password");
-			Context.authenticate(username, password);
-			SchedulerService ss = Context.getSchedulerService();
-			TaskDefinition task = ss.getTaskByName(MODULE_REPOSITORY_CACHE_UPDATE_TASK_NAME);
-			if (task == null) {
-				task = new TaskDefinition();
-				task.setName(MODULE_REPOSITORY_CACHE_UPDATE_TASK_NAME);
-				task.setDescription("This Task updates Module  Repository Cache");
-				task.setTaskClass(MODULE_REPOSITORY_CACHE_UPDATE_TASK_CLASS);
-				task.setStartTime(new Date());
-				task.setStartOnStartup(true);
-				task.setRepeatInterval(86400L); // Daily
-				task.setStarted(true);
-				ss.saveTask(task);
-			}
-		}
-		catch (Throwable t) {
-			log.error("Error while starting " + MODULE_REPOSITORY_CACHE_UPDATE_TASK_NAME, t);
-		}
-		
-		try {
 			String url = as.getGlobalProperty(MODULE_REPOSITORY_URL);
-			if (url == null) {
-				url = WebConstants.MODULE_REPOSITORY_URL + "/getAllModules?openmrsVersion=<VERSION>&lastUpdatedDate=<DATE>";
-				GlobalProperty gp = new GlobalProperty();
-				gp.setProperty(MODULE_REPOSITORY_URL);
-				gp.setPropertyValue(url);
-				gp.setDescription("Get All Module Repository URL");
-				as.saveGlobalProperty(gp);
-			}
 			moduleRepositoryUrl = url;
 			cacheModuleRepository();
 		}
 		catch (Throwable t) {
 			log.error("Error while initializing Module Repository", t);
 		}
-		Context.logout();
+
 	}
 	
 	/**
@@ -254,7 +215,8 @@ public class ModuleRepository {
 				Module loadedModule = loadedModules.get(key);
 				Module repositoryModule = repository.get(key);
 			
-				if (ModuleUtil.compareVersion(loadedModule.getVersion(), repositoryModule.getVersion()) < 0) {
+				if (ModuleUtil.compareVersion(loadedModule.getVersion(), repositoryModule.getVersion()) < 0
+				        && !ModuleFactory.hasPendingModuleActionForModuleId(loadedModule.getModuleId())) {
 					loadedModule.setDownloadURL(repositoryModule.getDownloadURL());
 					loadedModule.setUpdateVersion(repositoryModule.getVersion());
 					noOfModuleUpdates++;
@@ -289,5 +251,30 @@ public class ModuleRepository {
 		String url = moduleRepositoryUrl.replace("<VERSION>", String.valueOf(OpenmrsConstants.OPENMRS_VERSION_SHORT));
 		url = url.replace("<DATE>", formatDate(lastUpdatedDate));
 		return new URL(url);
+	}
+	
+	/**
+	 * This method can be used to find out whether the module repository cache is older than the
+	 * threshold.
+	 * 
+	 * @return true if cache is older than the threshold else false
+	 */
+	public static boolean isCacheExpired() {
+		AdministrationService as = Context.getAdministrationService();
+		String threshold = as.getGlobalProperty(MODULE_REPOSITORY_THRESHOLD);
+		int iThreshold = 7;
+		try {
+			if (threshold != null) {
+				iThreshold = Integer.parseInt(threshold);
+			}
+		}
+		catch (NumberFormatException e) {
+			log.error("Error while parsing " + MODULE_REPOSITORY_THRESHOLD + ", 7 will be used", e);
+		}
+		long today = new Date().getTime();
+		long updatedDate = lastUpdatedDate.getTime();
+		
+		long dayDiff = (today - updatedDate) / (86400000);
+		return dayDiff > iThreshold;
 	}
 }
