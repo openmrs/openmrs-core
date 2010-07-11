@@ -182,6 +182,7 @@
 			</manifest>
 			<fileset dir="${build.dir}">
 				<include name="**/*"/>
+                <exclude name="installer/**" />
 				<exclude name="**/web/**" />
 				<exclude name="junit*/" /> <!-- the junit built files -->
 				<exclude name="**/*Test*.class" />
@@ -607,5 +608,90 @@
 		</exec>
 
 	</target>
-	
+
+    <target name="create-installer" description="Create Openmrs windows installer (offline by default)"
+            depends="package-web">
+        <!-- Installer properties -->
+        <property name="dist.installer.dir" value="${dist.dir}/installer"/>
+        <property name="java-setup" value="${installer-dependencies.dir}/jdk-6u20-windows-i586.exe"/>
+        <property name="mysql-setup" value="${installer-dependencies.dir}/mysql-essential-5.1.46-win32.msi"/>
+        <property name="tomcat-setup" value="${installer-dependencies.dir}/apache-tomcat-6.0.26.exe"/>
+
+        <condition property="makensis.command" value="C:\Program Files\NSIS\makensis" else="makensis">
+            <os family="windows"></os>
+        </condition>
+        <if>
+            <equals arg1="${installer.mode}" arg2="online"/>
+            <then>
+                <condition property="option.separator" value="/D" else="-D">
+                    <os family="windows"></os>
+                </condition>
+                <property name="installer.args"
+                          value="${option.separator}TOMCAT_DOWNLOAD_URL=${tomcat.download.url} ${option.separator}MYSQL_DOWNLOAD_URL=${mysql.download.url} ${option.separator}JAVA_6_DOWNLOAD_URL=${jdk.download.url} ${option.separator}OPENMRS_WAR_DOWNLOAD_URL=${openmrs.download.url}"/>
+            </then>
+            <else>
+                <property name="installer.args" value=""/>
+
+                <macrodef name="download">
+                    <attribute name="file" default="NOT SET"/>
+                    <attribute name="message" default="Downloading.."/>
+                    <attribute name="url" default="Downloading.."/>
+                    <sequential>
+                        <mkdir dir="${installer-dependencies.dir}"/>
+                        <available file="@{file}" property="present"/>
+                        <if>
+                            <equals arg1="${present}" arg2="true"/>
+                            <else>
+                                <echo message="@{message}"/>
+                                <get src="@{url}"
+                                     dest="@{file}"/>
+                            </else>
+                        </if>
+                    </sequential>
+                </macrodef>
+
+                <property name="installer.mode" value="offline"/>
+
+                <download file="${java-setup}" message="Downloading Java" url="${jdk.download.url}"/>
+                <download file="${mysql-setup}" message="Downloading MySQL" url="${mysql.download.url}"/>
+                <download file="${tomcat-setup}" message="Downloading Tomcat" url="${tomcat.download.url}"/>
+
+                <copy todir="${dist.installer.dir}" overwrite="true">
+                    <fileset dir="${installer-dependencies.dir}">
+                        <include name="*"/>
+                    </fileset>
+                    <fileset file="${dist.dir}/${webapp.name}.war"/>
+                </copy>
+            </else>
+        </if>
+
+        <property name="nsis.script" value="${dist.installer.dir}/openmrs_${installer.mode}.nsi"/>
+
+        <mkdir dir="${dist.installer.dir}"/>
+
+        <copy todir="${dist.installer.dir}" overwrite="true">
+            <fileset dir="${metadata.dir}/images">
+                <include name="*"/>
+            </fileset>
+            <fileset dir="${installer.script.dir}">
+                <include name="*"/>
+            </fileset>
+        </copy>
+
+        <exec executable="${makensis.command}" logError="true" failonerror="true">
+            <arg line="${installer.args} ${nsis.script}"/>
+        </exec>
+
+        <delete>
+            <fileset dir="${dist.installer.dir}" excludes="openmrs-installer.exe"/>
+        </delete>
+        <echo message="${installer.mode} installer has been generated successfully at ${dist.installer.dir} directory!"/>
+    </target>
+
+    <target name="create-online-installer" description="Create online version of windows installer">
+        <antcall target="create-installer">
+            <param name="installer.mode" value="online"/>
+        </antcall>
+    </target>
+    
 </project>

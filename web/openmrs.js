@@ -373,24 +373,21 @@ function DatePicker(dateFormat, id, opts) {
  * AutoComplete class
  * @param id :String the id of the text box
  * @param callback a function with 2 params (query - the text in the box, and response - use when the data is returned and takes an array as a param)
- * @param opts :Map addtional options (included are: minChars, matchSubset, width, resultClass, formatItem)
+ * @param opts :Map addtional options (included are: minLength, delay, source)
  */
 function AutoComplete(id, callback, opts) {
  	var jq = $j('#' + id);
- 	
+
  	if(opts == null) {
  		opts = {};
  	}
- 	setOptions(opts, 'minChars', 2);
- 	setOptions(opts, 'matchSubset', 0);
- 	setOptions(opts, 'width', 260);
- 	setOptions(opts, 'resultsClass', "ac_results ui-widget-content ui-corner-all");
- 	setOptions(opts, 'formatItem', function(item, row, numItems) {
- 		//item = {value, name}
- 		return item.name;
+ 	setOptions(opts, 'minLength', 2);
+ 	setOptions(opts, 'delay', 0);
+ 	setOptions(opts, 'source', function(request, response) {
+ 		callback(request.term, response);
  	});
  	
- 	jq.autocomplete(callback, opts);
+ 	jq.autocomplete(opts);
 }
 
 /**

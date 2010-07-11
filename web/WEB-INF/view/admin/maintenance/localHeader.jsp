@@ -51,10 +51,10 @@
 			</a>
 		</li>
 	</openmrs:hasPrivilege>
-	<openmrs:hasPrivilege privilege="Manage System Defaults">
-		<li <c:if test='<%= request.getRequestURI().contains("systemDefaults") %>'>class="active"</c:if>>
-			<a href="${pageContext.request.contextPath}/admin/maintenance/systemDefaults.form">
-				<spring:message code="SystemDefaults.manage"/>
+	<openmrs:hasPrivilege privilege="Manage Global Properties">
+		<li <c:if test='<%= request.getRequestURI().contains("localesAndThemes") %>'>class="active"</c:if>>
+			<a href="${pageContext.request.contextPath}/admin/maintenance/localesAndThemes.form">
+				<spring:message code="LocalesAndThemes.manage"/>
 			</a>
 		</li>
 	</openmrs:hasPrivilege>

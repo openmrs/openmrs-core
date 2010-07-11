@@ -13,6 +13,9 @@
  */
 package org.openmrs.web.dwr;
 
+import java.util.List;
+import java.util.Vector;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Encounter;
@@ -22,15 +25,12 @@ import org.openmrs.api.EncounterService;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.context.Context;
 
-import java.util.List;
-import java.util.Vector;
-
 public class DWREncounterService {
 	
 	private static final Log log = LogFactory.getLog(DWREncounterService.class);
 	
 	public Vector findEncounters(String phrase, boolean includeVoided) throws APIException {
-		if (includeVoided) throw new APIException("Don't include voided encounters.");
+		
 		// List to return
 		// Object type gives ability to return error strings
 		Vector<Object> objectList = new Vector<Object>();

@@ -1003,9 +1003,14 @@
 	-->	
 	<alias name="messageSourceServiceTarget" alias="messageSource"/>
 	
+	<bean id="parentTheme" class="org.openmrs.web.StaticThemeSource">
+		<property name="themeName"><value>/themes/defaults</value></property>
+	</bean>
+	
 	<!-- Specify the default OpenMRS look and feel. -->
 	<bean id="themeSource"
 		class="org.springframework.ui.context.support.ResourceBundleThemeSource">
+		<property name="parentThemeSource"><ref bean="parentTheme"/></property>
 		<property name="basenamePrefix">
 			<value>/themes/</value>
 		</property>
