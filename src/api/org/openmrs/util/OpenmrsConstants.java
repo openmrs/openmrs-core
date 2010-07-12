@@ -1152,6 +1152,12 @@ public final class OpenmrsConstants {
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_DEFAULT_THEME, "",
 		        "Default theme for users.  OpenMRS ships with themes of 'green', 'orange', 'purple', and 'legacy'"));
 		
+		props.add(new GlobalProperty("modulerepository.url.allModules",
+		        "http://modules.openmrs.org/modules/getAllModules?openmrsVersion=<VERSION>&lastUpdatedDate=<DATE>",
+		        "Get All Module Repository URL"));
+		
+		props.add(new GlobalProperty("modulerepository.threshold", "7", "Threshold to update the Module Repository"));
+
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);
 		}

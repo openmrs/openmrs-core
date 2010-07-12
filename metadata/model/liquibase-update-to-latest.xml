@@ -3676,8 +3676,15 @@
 	</changeSet>
 	
 	<changeSet id="20100711-0814" author="shazin">
+		<preConditions onFail="MARK_RAN">				
+			<sqlCheck expectedResult="0">
+				<![CDATA[
+					SELECT count(*) FROM scheduler_task_config WHERE name = 'Module Repository Cache Update'
+				]]>
+			</sqlCheck>				
+		</preConditions>
 		<comment>
-			Inserts related to Module Repository Caching.
+			Insert to Module Repository Cache Update Schedule
 		</comment>		
 		<insert tableName="scheduler_task_config">
 			<column name="name" value="Module Repository Cache Update"/>
@@ -3686,26 +3693,13 @@
 			<column name="repeat_interval" valueNumeric="86400"/>
 			<column name="start_on_startup" valueBoolean="true"/>
 			<column name="started" valueBoolean="true"/>
-		</insert>
-		
-		<insert tableName="global_property">
-			<column name="property" value="modulerepository.url.allModules"/>
-			<column name="property_value">
-				<value>
-					<![CDATA[
-						http://modules.openmrs.org/modules/getAllModules?openmrsVersion=<VERSION>&lastUpdatedDate=<DATE>
-					]]>
-				</value>
-			</column>	
-			<column name="description" value="Get All Module Repository URL"/>
-			<column name="uuid" value="29a8ad5c-b468-4652-8c20-d003363fbc09"/>		
-		</insert>
-		
-		<insert tableName="global_property">
-			<column name="property" value="modulerepository.threshold"/>
-			<column name="property_value" value="7"/>		
-			<column name="description" value="Threshold to update the Module Repository"/>
-			<column name="uuid" value="42c5115c-2717-4b95-9d1a-3d66c70d7a84"/>
-		</insert>
+			<column name="changed_by" valueNumeric="NULL"/>
+			<column name="created_by" valueNumeric="NULL"/>				
+			<column name="uuid" valueNumeric="name-of-uuid-function"/>		
+		</insert>		
+		<modifySql dbms="mysql"><replace replace="name-of-uuid-function" with="UUID()"/></modifySql>
+		<modifySql dbms="oracle"><replace replace="name-of-uuid-function" with="SYS_GUID()"/></modifySql>
+		<modifySql dbms="mssql"><replace replace="name-of-uuid-function" with="NEWSEQUENTIALID()"/></modifySql>
 	</changeSet>
+	
 </databaseChangeLog>
