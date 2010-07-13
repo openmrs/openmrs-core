@@ -15,6 +15,9 @@ body {
 	position: relative;
 	min-height: 100%;
 }
+#logocell {
+	width: 61px;
+}
 .barsmall {
 	background-image:url(images/openmrs_green_bar_repeat.gif);
 	background-repeat:repeat-x;
@@ -22,6 +25,16 @@ body {
 	margin-left: 0px;
     font-family: Verdana,Arial,Helvetica,sans-serif;
     color: #ffffff;
+}
+#logosmall {
+	margin-left: 49px; 
+	margin-top:2px;
+}
+#bannerbar {
+	text-align:center;
+	line-height:40px;
+	margin-top:-18px;
+	width:100%;
 }
 img.logo-reduced61 {
 	width:61px;
@@ -175,6 +188,10 @@ a:hover {
 	background-color: #eeeeee;
 }
 
+#footer a, a:link, #footer a:active, #footer a:visited, #footer a:hover {
+	color: #003366;
+}
+
 #footer span {
 	margin-right: 5px;
 }
@@ -185,6 +202,18 @@ a:hover {
 
 #footerInner {
 	border-top: 1px solid #bbbbbb;
+}
+
+#footer #poweredBy {
+	float: right;
+}
+
+#footer #poweredBy img {
+	height: 1.4em;
+}
+
+#footer #poweredBy a, #poweredBy a:link, #poweredBy a:active, #poweredBy a:visited {
+	text-decoration: none;
 }
 
 #menu {
@@ -474,7 +503,7 @@ table.patientTreatmentPrograms td {
 	width: 7em;
 }
 .box, .boxHeader, .boxRed, .boxHeaderRed, .boxExited, .boxHeaderExited {
-	border: 1px solid #1aac9b; /*dark orange #f48a52;*/ /* blue #8c87c5; */
+	border: 1px solid #1aac9b;
 	width: 99%;
 	padding: 5px 2px 5px 2px;
 	text-align: left;
@@ -487,7 +516,7 @@ table.patientTreatmentPrograms td {
 }
 
 .boxHeader {
-	background-color: #1aac9b; /*light orange #f3af7;*/ /* blue #8c87c5; */
+	background-color: #1aac9b;
 	color: white;
 	display: block;
 	padding: 2px;
