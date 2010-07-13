@@ -17,7 +17,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -55,9 +54,9 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 	 */
 	private String[] basenames = new String[0];
 	
-	private int cacheMilliSeconds = -1;
+	private int cacheMilliseconds = -1;
 	
-	private long lastCached = new Date().getTime();
+	private long lastCached = System.currentTimeMillis();
 
 	/** Cached list of available locales. */
 	private Collection<Locale> locales;
@@ -66,8 +65,8 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 	 * @see org.openmrs.messagesource.MessageSourceService#getLocales()
 	 */
 	public Collection<Locale> getLocales() {
-		long now = new Date().getTime();
-		if (locales == null || cacheMilliSeconds <= 0 || now - cacheMilliSeconds > lastCached) {
+		long now = System.currentTimeMillis();
+		if (locales == null || cacheMilliseconds <= 0 || now - cacheMilliseconds > lastCached) {
 			locales = findLocales();
 			lastCached = now;
 		}
@@ -77,7 +76,7 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 	
 	@Override
     public void setCacheSeconds(int cacheSeconds) {
-		this.cacheMilliSeconds = cacheSeconds * 1000;
+		this.cacheMilliseconds = cacheSeconds * 1000;
 		super.setCacheSeconds(cacheSeconds);
 	}
 	
