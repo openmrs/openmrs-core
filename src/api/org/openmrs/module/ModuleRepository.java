@@ -61,9 +61,9 @@ public class ModuleRepository {
 	
 	private static final int MODULE_DESCRIPTION_INDEX = 5;
 	
-	private static final String MODULE_REPOSITORY_URL = "modulerepository.url.allModules";
+	public static final String MODULE_REPOSITORY_URL = "modulerepository.url.allModules";
 	
-	private static final String MODULE_REPOSITORY_THRESHOLD = "modulerepository.threshold";
+	public static final String MODULE_REPOSITORY_THRESHOLD = "modulerepository.threshold";
 	
 	private static String moduleRepositoryUrl = null;
 	
