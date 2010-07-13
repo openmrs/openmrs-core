@@ -62,10 +62,9 @@ public class ApproximateDate implements Comparable<ApproximateDate> {
 	 * @param date the date to be set
 	 */
 	public ApproximateDate(Date date) {
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(date);
-		setDate(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH), false,
-		    false, false);
+		//		Calendar calendar = Calendar.getInstance();
+		//		calendar.setTime(date);
+		setDate(date);
 	}
 	
 	/**
@@ -244,13 +243,22 @@ public class ApproximateDate implements Comparable<ApproximateDate> {
 	 * 
 	 * @param date
 	 */
+	public void setDate(Calendar calendar) {
+		setDate(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1, calendar.get(Calendar.DAY_OF_MONTH), false,
+		    false, false);
+		setApproximated(0);
+	}
+	
+	/**
+	 * Set partial date to a specific date
+	 * 
+	 * @param date
+	 */
 	public void setDate(Date date) {
 		//TODO
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(date);
-		setDate(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH), false,
-		    false, false);
-		setApproximated(0);
+		setDate(calendar);
 	}
 	
 	/**
@@ -292,8 +300,7 @@ public class ApproximateDate implements Comparable<ApproximateDate> {
 		if (ageOnDate != null)
 			calendar.setTime(ageOnDate);
 		calendar.add(Calendar.DAY_OF_MONTH, -days);
-		setDate(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH), false,
-		    false, false);
+		setDate(calendar);
 		setFlag(APPROXIMATE_AGE, true);
 	}
 	
@@ -337,7 +344,7 @@ public class ApproximateDate implements Comparable<ApproximateDate> {
 	
 	/**
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
-	 * @should compare two ApproximateDate's
+	 * @should compare two ApproximateDates
 	 */
 	@Override
 	public int compareTo(ApproximateDate o) {

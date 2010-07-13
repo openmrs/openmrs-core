@@ -1,6 +1,5 @@
 package org.openmrs;
 
-
 import java.util.Date;
 
 import org.junit.Assert;
@@ -11,7 +10,6 @@ public class ApproximateDateTest {
 
 	/**
 	 * @see {@link ApproximateDate#setDate(int,int,int,null,null,null)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should properly set the date", method = "setDate(int,int,int,null,null,null)")
@@ -22,12 +20,10 @@ public class ApproximateDateTest {
 
 	/**
 	 * @see {@link ApproximateDate#setDateFromAge(float)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should set the date depending on the age", method = "setDateFromAge(float)")
-	public void setDateFromAge_shouldSetTheDateDependingOnTheAge()
-			throws Exception {
+	public void setDateFromAge_shouldSetTheDateDependingOnTheAge() throws Exception {
 		//TODO auto-generated
 		ApproximateDate approximateDate = new ApproximateDate();
 		approximateDate.setDateFromAge(18f);
@@ -37,7 +33,6 @@ public class ApproximateDateTest {
 
 	/**
 	 * @see {@link ApproximateDate#getDate()}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should return properly estimated dates", method = "getDate()")
@@ -48,7 +43,6 @@ public class ApproximateDateTest {
 
 	/**
 	 * @see {@link ApproximateDate#setYear(Integer,null)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should set the year value", method = "setYear(Integer,null)")
@@ -60,7 +54,6 @@ public class ApproximateDateTest {
 
 	/**
 	 * @see {@link ApproximateDate#setYear(Integer,null)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should set the approximate value for year", method = "setYear(Integer,null)")
@@ -72,7 +65,6 @@ public class ApproximateDateTest {
 
 	/**
 	 * @see {@link ApproximateDate#setDay(Integer,null)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should set the day value", method = "setDay(Integer,null)")
@@ -84,7 +76,6 @@ public class ApproximateDateTest {
 
 	/**
 	 * @see {@link ApproximateDate#setDay(Integer,null)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should set the approximate value for day", method = "setDay(Integer,null)")
@@ -96,7 +87,6 @@ public class ApproximateDateTest {
 
 	/**
 	 * @see {@link ApproximateDate#setMonth(Integer,null)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should set the month value", method = "setMonth(Integer,null)")
@@ -108,14 +98,23 @@ public class ApproximateDateTest {
 
 	/**
 	 * @see {@link ApproximateDate#setMonth(Integer,null)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should set the approximate value for month", method = "setMonth(Integer,null)")
-	public void setMonth_shouldSetTheApproximateValueForMonth()
-			throws Exception {
+	public void setMonth_shouldSetTheApproximateValueForMonth() throws Exception {
 		ApproximateDate aDate = new ApproximateDate();
 		aDate.setMonth(12, false);
 		Assert.assertEquals(new Boolean(false), aDate.isMonthApproximated());
 	}
+
+	/**
+     * @see {@link ApproximateDate#compareTo(ApproximateDate)}
+     * 
+     */
+    @Test
+    @Verifies(value = "should compare two ApproximateDates", method = "compareTo(ApproximateDate)")
+    public void compareTo_shouldCompareTwoApproximateDates() throws Exception {
+	    //TODO auto-generated
+		Assert.fail("Not yet implemented");
+    }
 }
