@@ -79,6 +79,7 @@
 		<property name="interceptors">
 			<list>
 				<ref bean="localeChangeInterceptor" />
+				<ref bean="themeChangeInterceptor" />
 				<!-- <ref bean="openSessionInViewInterceptor"/> -->
 			</list>
 		</property>
@@ -110,6 +111,7 @@
 		<property name="interceptors">
 			<list>
 				<ref bean="localeChangeInterceptor" />
+				<ref bean="themeChangeInterceptor" />
 				<!-- <ref bean="openSessionInViewInterceptor"/> -->
 			</list>
 		</property>
@@ -1001,14 +1003,28 @@
 	-->	
 	<alias name="messageSourceServiceTarget" alias="messageSource"/>
 	
+	<bean id="parentTheme" class="org.openmrs.web.StaticThemeSource">
+		<property name="themeName"><value>/themes/defaults</value></property>
+	</bean>
+	
 	<!-- Specify the default OpenMRS look and feel. -->
 	<bean id="themeSource"
 		class="org.springframework.ui.context.support.ResourceBundleThemeSource">
+		<property name="parentThemeSource"><ref bean="parentTheme"/></property>
 		<property name="basenamePrefix">
-			<value>standard_</value>
+			<value>/themes/</value>
 		</property>
 	</bean>
-
+	
+	<bean id="themeResolver" class="org.openmrs.web.OpenmrsCookieThemeResolver">
+		<property name="defaultThemeName"><value>green</value></property>
+	</bean>
+	
+	<bean id="themeChangeInterceptor"
+		class="org.springframework.web.servlet.theme.ThemeChangeInterceptor">
+		<property name="paramName"><value>theme</value></property>
+	</bean>
+	
 	<bean id="localeResolver" class="org.openmrs.web.OpenmrsCookieLocaleResolver" />
 
 	<bean id="localeChangeInterceptor"

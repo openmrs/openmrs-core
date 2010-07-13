@@ -18,12 +18,14 @@
 	<head>
 		<openmrs:htmlInclude file="/openmrs.js" />
 		<openmrs:htmlInclude file="/openmrs.css" />
+		<link href="<openmrs:contextPath/>/<spring:theme code='stylesheet' />" type="text/css" rel="stylesheet" />
 		<openmrs:htmlInclude file="/style.css" />
 		<openmrs:htmlInclude file="/dwr/engine.js" />
 		<openmrs:htmlInclude file="/dwr/interface/DWRAlertService.js" />
 		<c:if test="${empty DO_NOT_INCLUDE_JQUERY}">
 			<openmrs:htmlInclude file="/scripts/jquery/jquery.min.js" />
 		</c:if>
+		<link rel="icon" type="image/ico" href="<openmrs:contextPath/>/<spring:theme code='favicon' />">
 
 		<c:choose>
 			<c:when test="${!empty pageTitle}">
@@ -83,9 +85,7 @@
 			</span>
 		</div>
 
-		<div id="banner">
-			<%@ include file="/WEB-INF/template/banner.jsp" %>
-		</div>
+		<%@ include file="/WEB-INF/template/banner.jsp" %>
 
 		<%-- This is where the My Patients popup used to be. I'm leaving this placeholder here
 			as a reminder of where to put back an extension point when I've figured out what it should
