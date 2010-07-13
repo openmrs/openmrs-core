@@ -53,7 +53,7 @@ public class ApproximateDate implements Comparable<ApproximateDate> {
 	}
 
 	public ApproximateDate() {
-		partialDate = new Partial();
+		partialDate = getPartial();
 	}
 	
 	/**
@@ -64,7 +64,7 @@ public class ApproximateDate implements Comparable<ApproximateDate> {
 	public ApproximateDate(Date date) {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(date);
-		setDate(calendar.get(Calendar.DAY_OF_MONTH), calendar.get(Calendar.MONTH), calendar.get(Calendar.YEAR), false,
+		setDate(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH), false,
 		    false, false);
 	}
 	
@@ -104,6 +104,13 @@ public class ApproximateDate implements Comparable<ApproximateDate> {
 		}
 	}
 	
+	private Partial getPartial() {
+		if (partialDate == null || partialDate.equals(null)) {
+			partialDate = new Partial();
+		}
+		return partialDate;
+	}
+
 	/**
 	 * Used internally to set the value for any field in the date
 	 * 
@@ -116,7 +123,7 @@ public class ApproximateDate implements Comparable<ApproximateDate> {
 	private void setAnyField(DateTimeFieldType dtFieldType, Integer value, boolean approximate, int approximateFlag,
 	                         int unknownFlag) {
 		if (value != null) {
-			partialDate = partialDate.with(dtFieldType, value);
+			partialDate = getPartial().with(dtFieldType, value);
 			setFlag(unknownFlag, false);
 			setFlag(approximateFlag, approximate);
 		} else {
@@ -167,7 +174,7 @@ public class ApproximateDate implements Comparable<ApproximateDate> {
 	 * @return year
 	 */
 	public Integer getYear() {
-		return partialDate.get(DateTimeFieldType.year());
+		return getPartial().get(DateTimeFieldType.year());
 	}
 	
 	/**
@@ -176,7 +183,7 @@ public class ApproximateDate implements Comparable<ApproximateDate> {
 	 * @return month
 	 */
 	public Integer getMonth() {
-		return partialDate.get(DateTimeFieldType.monthOfYear());
+		return getPartial().get(DateTimeFieldType.monthOfYear());
 	}
 	
 	/**
@@ -185,7 +192,7 @@ public class ApproximateDate implements Comparable<ApproximateDate> {
 	 * @return day
 	 */
 	public Integer getDay() {
-		return partialDate.get(DateTimeFieldType.dayOfMonth());
+		return getPartial().get(DateTimeFieldType.dayOfMonth());
 	}
 
 	/**
