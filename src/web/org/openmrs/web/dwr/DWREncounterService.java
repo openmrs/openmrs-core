@@ -56,7 +56,14 @@ public class DWREncounterService {
 			if (phrase == null || phrase.equals("")) {
 				//TODO get all concepts for testing purposes?
 			} else {
-				encs.addAll(es.getEncountersByPatient(phrase));
+				List<Encounter> encounters = es.getEncountersByPatient(phrase);
+				encs.addAll(encounters);
+				if (!encs.isEmpty() && !includeVoided) {
+					for (Encounter encounter : encounters) {
+						if (encounter.isVoided())
+							encs.remove(encounter);
+					}
+				}
 			}
 			
 			if (encs.size() == 0) {
