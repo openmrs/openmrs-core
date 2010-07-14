@@ -343,7 +343,7 @@
 			</list>
 		</property>
 		<property name="useCodeAsDefaultMessage"><value>true</value></property>
-		<property name="cacheSeconds" value="1" />
+		<property name="cacheSeconds" value="5" />
 		<property name="defaultEncoding"><value>UTF-8</value></property>
 	</bean>
 	
