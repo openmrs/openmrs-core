@@ -298,11 +298,11 @@ public class PersonTest {
 		
 		// Test boundary cases
 		p.setBirthdateFromAge(52, df.parse("2002-01-01"));
-		assertEquals(p.getBirthdate(), df.parse("1950-01-01"));
+		assertEquals(df.parse("1950-01-01"), p.getBirthdate().getDate());
 		p.setBirthdateFromAge(35, df.parse("2004-12-31"));
-		assertEquals(p.getBirthdate(), df.parse("1969-01-01"));
+		assertEquals(df.parse("1969-12-31"), p.getBirthdate().getDate());
 		p.setBirthdateFromAge(0, df.parse("2008-05-20"));
-		assertEquals(p.getBirthdate(), df.parse("2008-01-01"));
+		assertEquals(df.parse("2008-05-20"), p.getBirthdate().getDate());
 	}
 	
 	/**

@@ -22,7 +22,7 @@
 
 		<component name="birthdate" class="org.openmrs.ApproximateDate">
 			<property name="date" column="birthdate" length="10" />
-			<property name="metadata" column="birthdateEstimated" type="int" />
+			<property name="metadata" column="birthdate_estimated" type="int" />
 		</component>
 
 		<property name="dead" type="boolean" length="1" not-null="true" />

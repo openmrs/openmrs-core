@@ -80,6 +80,20 @@ public class ApproximateDate implements Comparable<ApproximateDate> {
 	}
 	
 	/**
+	 * @return the metadata
+	 */
+	public int getMetadata() {
+		return metadata;
+	}
+	
+	/**
+	 * @param metadata the metadata to set
+	 */
+	public void setMetadata(int metadata) {
+		this.metadata = metadata;
+	}
+
+	/**
 	 * Used internally to check flag status
 	 * 
 	 * @param flag the flag to be checked for
@@ -337,8 +351,8 @@ public class ApproximateDate implements Comparable<ApproximateDate> {
 		}
 
 		Calendar cal = Calendar.getInstance();
-		cal.set(year, month, date, 0, 0, 0);
-		
+		cal.setTimeInMillis(0L);
+		cal.set(year, month - 1, date, 0, 0, 0);
 		return cal.getTime();
 	}
 	
