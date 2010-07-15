@@ -32,7 +32,7 @@
   <patient_identifier patient_identifier_id="1" patient_id="2" identifier="1234" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="fc34a3bd-d3d8-4178-a08c-2ec46d5ab0b9"/>
   <patient_identifier patient_identifier_id="2" patient_id="3" identifier="12345" identifier_type="1" preferred="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="2316f152-8c07-4d2b-a0a0-5b778f9f6908"/>
   <patient_identifier_type patient_identifier_type_id="1" name="Test Identifier Type" description="Test description" check_digit="false" creator="1" date_created="2005-01-01 00:00:00.0" required="false" retired="false" uuid="6a8fa6c4-e74e-408f-aad3-7662569a5fdc"/>
-  <person person_id="2" gender="M" birthdate="2007-01-01" birthdate_estimated="false" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="13b8c89a-5435-4442-9cb0-1697522cdb18"/>
-  <person person_id="3" gender="M" birthdate="2000-01-01" birthdate_estimated="false" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="43361b4d-7bc1-4949-9ead-e87e6e9d457c"/>
+  <person person_id="2" gender="M" birthdate="2007-01-01" birthdate_estimated="0" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="13b8c89a-5435-4442-9cb0-1697522cdb18"/>
+  <person person_id="3" gender="M" birthdate="2000-01-01" birthdate_estimated="0" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="43361b4d-7bc1-4949-9ead-e87e6e9d457c"/>
   <person_name person_name_id="2" preferred="true" person_id="3" given_name="John" middle_name=" " family_name="Doe" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="ef05dcef-0fa3-471b-9ed0-7bfcff4cc122"/>
 </dataset>
