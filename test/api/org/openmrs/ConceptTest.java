@@ -314,6 +314,20 @@ public class ConceptTest {
 	}
 	
 	/**
+	 * @see {@link Concept#equals(Object)}
+	 * @see {@link ConceptComplex#equals(Object)}
+	 * @see {@link ConceptNumeric#equals(Object)}
+	 */
+	@Test
+	@Verifies(value = "should not be equal when comparing complex and numeric", method = "equals(Object)")
+	public void equals_shouldNotBeEqualWhenComparingComplexAndNumeric() throws Exception {
+		ConceptComplex complex = new ConceptComplex(123);
+		ConceptNumeric numeric = new ConceptNumeric(456);
+		
+		Assert.assertFalse(complex.equals(numeric));
+	}
+	
+	/**
 	 * @see {@link Concept#addAnswer(ConceptAnswer)}
 	 */
 	@Test
