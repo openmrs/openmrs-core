@@ -107,7 +107,7 @@ public class ModuleListController extends SimpleFormController {
 					log.warn("unable to complete restart");
 					error = e.getMessage();
 				}
-			} else if ("updateCache".equals(action)) {
+			} else if ("updateCache".equals(action)) { // Action Update Cache
 				try{
 					ModuleRepository.cacheModuleRepository();
 				}catch(IOException e){
@@ -305,6 +305,7 @@ public class ModuleListController extends SimpleFormController {
 			error = e.getMessage();
 		}
 		
+		// Check for availability of Module Updates in cached repository
 		ModuleRepository.checkForModuleUpdates();
 
 		view = getSuccessView();
@@ -355,10 +356,13 @@ public class ModuleListController extends SimpleFormController {
 			showUpgradeConfirm = (Boolean) session.getAttribute("showUpgradeConfirm");
 			showUpgradeConfirm = showUpgradeConfirm == null ? false : showUpgradeConfirm;
 		}
+		// Flag to show upgrade confirmation message
 		map.put("showUpgradeConfirm", showUpgradeConfirm);
-		
+
+		// Flag to show or hide restart message
 		map.put("hasPendingActions", ModuleFactory.hasPendingModuleActions());
 		
+		// Flag to show update module repository cache message
 		map.put("moduleRepositoryCacheExpired", ModuleRepository.isCacheExpired());
 
 		return map;

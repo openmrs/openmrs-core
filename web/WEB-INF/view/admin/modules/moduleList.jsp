@@ -143,9 +143,9 @@
 				<input type="hidden" name="action" value="updateCache"/>
 				<div style="clear:both">&nbsp;</div>
 			</div>
-		</form>
-		
+		</form>		
 	</div>
+	<div style="clear:both">&nbsp;</div>
 </c:if>
 
 <c:choose>
