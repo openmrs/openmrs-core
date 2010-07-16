@@ -59,6 +59,17 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	}
 	
 	/**
+	 * @see org.openmrs.api.EncounterService#getEncountersByPatient(java.lang.String, boolean)
+	 */
+	@Override
+	public List<Encounter> getEncountersByPatient(String query, boolean includeVoided) throws APIException {
+		if (query == null)
+			throw new IllegalArgumentException("The 'query' parameter is required and cannot be null");
+
+		return dao.getEncountersByPatient(query, includeVoided);
+	}
+	
+	/**
 	 * @see org.openmrs.api.EncounterService#saveEncounter(org.openmrs.Encounter)
 	 */
 	public Encounter saveEncounter(Encounter encounter) throws APIException {
@@ -144,9 +155,8 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 * @see org.openmrs.api.EncounterService#getEncountersByPatient(String)
 	 */
 	public List<Encounter> getEncountersByPatient(String query) throws APIException {
-		if (query == null)
-			throw new IllegalArgumentException("The 'query' parameter is required and cannot be null");
-		return dao.getEncountersByPatient(query);
+		
+		return getEncountersByPatient(query, false);
 	}
 	
 	/**
@@ -181,8 +191,8 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 */
 	@Deprecated
 	public List<Encounter> getEncounters(Patient who, Location loc, Date fromDate, Date toDate,
-		Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes,
-		boolean includeVoided) {
+	                                     Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes,
+	                                     boolean includeVoided) {
 		return getEncounters(who, loc, fromDate, toDate, enteredViaForms, encounterTypes, null, includeVoided);
 	}
 	
@@ -192,8 +202,8 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 *      java.util.Collection, java.util.Collection, boolean)
 	 */
 	public List<Encounter> getEncounters(Patient who, Location loc, Date fromDate, Date toDate,
-		Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes,
-		Collection<User> providers, boolean includeVoided) {
+	                                     Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes,
+	                                     Collection<User> providers, boolean includeVoided) {
 		return dao.getEncounters(who, loc, fromDate, toDate, enteredViaForms, encounterTypes, providers, includeVoided);
 	}
 	
@@ -271,7 +281,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 			justThisEncounter.add(encounter);
 			List<Obs> observations = new Vector<Obs>();
 			observations.addAll(obsService.getObservations(null, justThisEncounter, null, null, null, null, null, null,
-				null, null, null, true));
+			    null, null, null, true));
 			for (Obs o : observations) {
 				obsService.purgeObs(o);
 			}

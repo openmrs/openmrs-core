@@ -661,7 +661,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should get encounters by location", method = "getEncounters(Patient,Location,Date,Date,Collection<QForm;>,Collection<QEncounterType;>,Collection<QUser;>,null)")
 	public void getEncounters_shouldGetEncountersByLocation() throws Exception {
 		List<Encounter> encounters = Context.getEncounterService().getEncounters(null, new Location(1), null, null, null,
-			null, null, true);
+		    null, null, true);
 		assertEquals(5, encounters.size());
 	}
 	
@@ -679,18 +679,18 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		
 		// test for a min date long before all dates
 		List<Encounter> encounters = Context.getEncounterService().getEncounters(null, null, ymd.parse("2004-12-31"), null,
-			null, null, null, false);
+		    null, null, null, false);
 		assertEquals(4, encounters.size());
 		assertEquals(1, encounters.get(0).getEncounterId().intValue());
 		
 		// test for exact date search
 		encounters = Context.getEncounterService().getEncounters(null, null, ymd.parse("2005-01-01"), null, null, null,
-			null, false);
+		    null, false);
 		assertEquals(4, encounters.size());
 		
 		// test for one day later
 		encounters = Context.getEncounterService().getEncounters(null, null, ymd.parse("2005-01-02"), null, null, null,
-			null, false);
+		    null, false);
 		assertEquals(3, encounters.size());
 		assertEquals(3, encounters.get(0).getEncounterId().intValue());
 		assertEquals(4, encounters.get(1).getEncounterId().intValue());
@@ -705,7 +705,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	public void getEncounters_shouldGetEncountersOnOrUpToADate() throws Exception {
 		Date toDate = new SimpleDateFormat("yyyy-dd-MM").parse("2006-01-01");
 		List<Encounter> encounters = Context.getEncounterService().getEncounters(null, null, null, toDate, null, null, null,
-			true);
+		    true);
 		assertEquals(2, encounters.size());
 		assertEquals(15, encounters.get(0).getEncounterId().intValue());
 		assertEquals(1, encounters.get(1).getEncounterId().intValue());
@@ -720,7 +720,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		List<Form> forms = new Vector<Form>();
 		forms.add(new Form(1));
 		List<Encounter> encounters = Context.getEncounterService().getEncounters(null, null, null, null, forms, null, null,
-			true);
+		    true);
 		assertEquals(6, encounters.size());
 	}
 	
@@ -733,7 +733,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		List<User> providers = new ArrayList<User>();
 		providers.add(new User(1));
 		List<Encounter> encounters = Context.getEncounterService().getEncounters(null, null, null, null, null, null,
-			providers, true);
+		    providers, true);
 		assertEquals(3, encounters.size());
 	}
 	
@@ -746,7 +746,7 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		List<EncounterType> types = new Vector<EncounterType>();
 		types.add(new EncounterType(1));
 		List<Encounter> encounters = Context.getEncounterService().getEncounters(null, null, null, null, null, types, null,
-			true);
+		    true);
 		assertEquals(5, encounters.size());
 	}
 	
@@ -1261,36 +1261,50 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @see {@link EncounterService#getEncountersByPatient(String,boolean)}
 	 * @see {@link EncounterService#getEncountersByPatient(String)}
+	 */
+	@Test
+	@Verifies(value = "should get all unvoided encounters for the given patient identifier", method = "getEncountersByPatient(String,boolean)")
+	public void getEncountersByPatient_shouldGetAllUnvoidedEncountersForTheGivenPatientIdentifier() throws Exception {
+		EncounterService encounterService = Context.getEncounterService();
+		
+		List<Encounter> encounters = encounterService.getEncountersByPatient("12345", false);
+		assertEquals(2, encounters.size());
+	}
+	
+	/**
+	 * @see {@link EncounterService#getEncountersByPatient(String,boolean)}
+	 */
+	@Test
+	@Verifies(value = "should get all unvoided encounters for the given patient name", method = "getEncountersByPatient(String,boolean)")
+	public void getEncountersByPatient_shouldGetAllUnvoidedEncountersForTheGivenPatientName() throws Exception {
+		EncounterService encounterService = Context.getEncounterService();
+		
+		List<Encounter> encounters = encounterService.getEncountersByPatient("John", false);
+		assertEquals(2, encounters.size());
+	}
+	
+	/**
+	 * @see {@link EncounterService#getEncountersByPatient(String,boolean)}
+	 */
+	@Test
+	@Verifies(value = "should include voided encounters in the returned list if includedVoided is true", method = "getEncountersByPatient(String,boolean)")
+	public void getEncountersByPatient_shouldIncludeVoidedEncountersInTheReturnedListIfIncludedVoidedIsTrue()
+	                                                                                                         throws Exception {
+		EncounterService encounterService = Context.getEncounterService();
+		
+		List<Encounter> encounters = encounterService.getEncountersByPatient("12345", true);
+		assertEquals(3, encounters.size());
+	}
+	
+	/**
+	 * @see {@link EncounterService#getEncountersByPatient(String,boolean)}
 	 */
 	@Test(expected = IllegalArgumentException.class)
-	@Verifies(value = "should throw error if given null parameter", method = "getEncountersByPatient(String)")
-	public void getEncountersByPatientNameOrIdentifier_shouldThrowErrorIfGivenNullParameter() throws Exception {
-		Context.getEncounterService().getEncountersByPatient((String) null);
-	}
-	
-	/**
-	 * @see {@link EncounterService#getEncountersByPatient(String)}
-	 */
-	@Test
-	@Verifies(value = "should get all encounters for the given patient name", method = "getEncountersByPatient(String)")
-	public void getEncountersByPatientNameOrIdentifier_shouldGetAllEncountersForTheGivenPatientName() throws Exception {
-		EncounterService encounterService = Context.getEncounterService();
-		
-		List<Encounter> encounters = encounterService.getEncountersByPatient("John");
-		assertEquals(3, encounters.size());
-	}
-	
-	/**
-	 * @see {@link EncounterService#getEncountersByPatient(String)}
-	 */
-	@Test
-	@Verifies(value = "should get all encounters for the given patient identifier", method = "getEncountersByPatient(String)")
-	public void getEncountersByPatientNameOrIdentifier_shouldGetAllEncountersForTheGivenPatientIdentifier() throws Exception {
-		EncounterService encounterService = Context.getEncounterService();
-		
-		List<Encounter> encounters = encounterService.getEncountersByPatient("12345");
-		assertEquals(3, encounters.size());
+	@Verifies(value = "should throw error if given null parameter", method = "getEncountersByPatient(String,boolean)")
+	public void getEncountersByPatient_shouldThrowErrorIfGivenNullParameter() throws Exception {
+		Context.getEncounterService().getEncountersByPatient(null, false);
 	}
 	
 }

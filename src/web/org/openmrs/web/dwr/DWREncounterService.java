@@ -13,6 +13,9 @@
  */
 package org.openmrs.web.dwr;
 
+import java.util.List;
+import java.util.Vector;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Encounter;
@@ -21,26 +24,25 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.context.Context;
-
-import java.util.List;
-import java.util.Vector;
+import org.openmrs.messagesource.MessageSourceService;
 
 public class DWREncounterService {
 	
 	private static final Log log = LogFactory.getLog(DWREncounterService.class);
 	
 	public Vector findEncounters(String phrase, boolean includeVoided) throws APIException {
-		if (includeVoided) throw new APIException("Don't include voided encounters.");
+		
 		// List to return
 		// Object type gives ability to return error strings
 		Vector<Object> objectList = new Vector<Object>();
+		MessageSourceService mss = Context.getMessageSourceService();
 		
 		try {
 			EncounterService es = Context.getEncounterService();
 			List<Encounter> encs = new Vector<Encounter>();
 			
 			if (phrase == null) {
-				objectList.add("Search phrase cannot be null");
+				objectList.add(mss.getMessage("Encounter.searchPhraseCannotBeNull"));
 				return objectList;
 			}
 			
@@ -56,11 +58,11 @@ public class DWREncounterService {
 			if (phrase == null || phrase.equals("")) {
 				//TODO get all concepts for testing purposes?
 			} else {
-				encs.addAll(es.getEncountersByPatient(phrase));
+				encs.addAll(es.getEncountersByPatient(phrase, includeVoided));
 			}
 			
 			if (encs.size() == 0) {
-				objectList.add("No matches found for <b>" + phrase + "</b>");
+				objectList.add(mss.getMessage("Encounter.noMatchesFound", new Object[] { phrase }, Context.getLocale()));
 			} else {
 				objectList = new Vector<Object>(encs.size());
 				for (Encounter e : encs) {
@@ -70,7 +72,7 @@ public class DWREncounterService {
 		}
 		catch (Exception e) {
 			log.error("Error while searching for encounters", e);
-			objectList.add("Error while attempting to find encounter - " + e.getMessage());
+			objectList.add(mss.getMessage("Encounter.search.error") + " - " + e.getMessage());
 		}
 		return objectList;
 	}
@@ -86,6 +88,7 @@ public class DWREncounterService {
 	public Vector findLocations(String searchValue) {
 		
 		Vector locationList = new Vector();
+		MessageSourceService mss = Context.getMessageSourceService();
 		
 		try {
 			LocationService ls = Context.getLocationService();
@@ -99,11 +102,11 @@ public class DWREncounterService {
 		}
 		catch (Exception e) {
 			log.error(e);
-			locationList.add("Error while attempting to find locations - " + e.getMessage());
+			locationList.add(mss.getMessage("Location.search.error") + " - " + e.getMessage());
 		}
 		
 		if (locationList.size() == 0) {
-			locationList.add("No locations found. Please search again.");
+			locationList.add(mss.getMessage("Location.noLocationsFound"));
 		}
 		
 		return locationList;
@@ -127,7 +130,7 @@ public class DWREncounterService {
 		}
 		catch (Exception e) {
 			log.error("Error while attempting to get locations", e);
-			locationList.add("Error while attempting to get locations - " + e.getMessage());
+			locationList.add(Context.getMessageSourceService().getMessage("Location.get.error") + " - " + e.getMessage());
 		}
 		
 		return locationList;

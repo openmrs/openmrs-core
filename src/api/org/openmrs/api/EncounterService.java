@@ -135,8 +135,8 @@ public interface EncounterService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_ENCOUNTERS })
 	public List<Encounter> getEncounters(Patient who, Location loc, Date fromDate, Date toDate,
-		Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes,
-		boolean includeVoided);
+	                                     Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes,
+	                                     boolean includeVoided);
 	
 	/**
 	 * Get all encounters that match a variety of (nullable) criteria. Each extra value for a
@@ -164,8 +164,8 @@ public interface EncounterService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_ENCOUNTERS })
 	public List<Encounter> getEncounters(Patient who, Location loc, Date fromDate, Date toDate,
-		Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes,
-		Collection<User> providers, boolean includeVoided);
+	                                     Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes,
+	                                     Collection<User> providers, boolean includeVoided);
 	
 	/**
 	 * Voiding a encounter essentially removes it from circulation
@@ -559,12 +559,26 @@ public interface EncounterService extends OpenmrsService {
 	 * @param query patient name or identifier
 	 * @return list of encounters for the given patient
 	 * @throws APIException
-	 * @should get all encounters for the given patient name
-	 * @should get all encounters for the given patient identifier
-	 * @should throw error if given null parameter
+	 * @see {@link EncounterService}{@link #getEncountersByPatient(String, boolean)}
 	 * @since 1.7
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_ENCOUNTERS })
 	public List<Encounter> getEncountersByPatient(String query) throws APIException;
 	
+	/**
+	 * Search for encounters by patient name or patient identifier.
+	 * 
+	 * @param query patient name or identifier
+	 * @param includeVoided Specifies whether voided encounters should be included
+	 * @return list of encounters for the given patient
+	 * @throws APIException
+	 * @should get all unvoided encounters for the given patient name
+	 * @should get all unvoided encounters for the given patient identifier
+	 * @should throw error if given null parameter
+	 * @should include voided encounters in the returned list if includedVoided is true
+	 * @since 1.7
+	 */
+	@Authorized( { OpenmrsConstants.PRIV_VIEW_ENCOUNTERS })
+	public List<Encounter> getEncountersByPatient(String query, boolean includeVoided) throws APIException;
+
 }
