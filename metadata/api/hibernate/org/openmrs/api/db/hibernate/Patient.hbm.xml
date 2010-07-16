@@ -35,8 +35,9 @@
 		<!-- Associations -->
 
 		<!-- bi-directional one-to-many association to PatientIdentifier -->
+		<!-- list is unsorted due so that its put into a LinkedHashSet which uses .hashcode() instead of .compareTo() -->
 		<set name="identifiers" lazy="true" cascade="all-delete-orphan"
-			table="patient_identifier" inverse="true" sort="natural"
+			table="patient_identifier" inverse="true" sort="unsorted"
 			order-by="voided asc,preferred desc,identifier_type desc,date_created desc">
 			<key not-null="true" column="patient_id" />
 			<one-to-many class="PatientIdentifier" />

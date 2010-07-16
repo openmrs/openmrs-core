@@ -23,9 +23,9 @@ import static org.junit.Assert.fail;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.Vector;
 
 import junit.framework.Assert;
@@ -251,7 +251,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		patientIdentifier.setIdentifierType(patientIdTypes.get(0));
 		patientIdentifier.setLocation(new Location(1));
 		
-		Set<PatientIdentifier> patientIdentifiers = new TreeSet<PatientIdentifier>();
+		Set<PatientIdentifier> patientIdentifiers = new LinkedHashSet<PatientIdentifier>();
 		patientIdentifiers.add(patientIdentifier);
 		
 		patient.setIdentifiers(patientIdentifiers);
@@ -1644,8 +1644,13 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		nonvoidedPI.setPatient(preferred);
 		PatientIdentifier voidedPI = new PatientIdentifier("ABC123", new PatientIdentifierType(2), new Location(1));
 		voidedPI.setPatient(preferred);
-		
-		Assert.assertTrue(OpenmrsUtil.collectionContains(preferred.getIdentifiers(), nonvoidedPI));
+		//we can't use contains since it checks for equality basing on identifierId which is null in this test setup
+		boolean containsNonVoidedPI = false;
+		for (PatientIdentifier id : preferred.getIdentifiers()) {
+			if (id.equalsContent(nonvoidedPI))
+				containsNonVoidedPI = true;
+		}
+		Assert.assertTrue(containsNonVoidedPI);
 		Assert.assertFalse("The voided identifier: " + voidedPI + " should not have been moved over because it was voided",
 		    OpenmrsUtil.collectionContains(preferred.getIdentifiers(), voidedPI));
 	}
