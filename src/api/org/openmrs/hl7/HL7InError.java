@@ -25,7 +25,7 @@ import org.openmrs.BaseOpenmrsObject;
  */
 public class HL7InError extends BaseOpenmrsObject {
 	
-	private int hl7InErrorId;
+	private Integer hl7InErrorId;
 	
 	private HL7Source hl7Source;
 	
@@ -58,14 +58,14 @@ public class HL7InError extends BaseOpenmrsObject {
 	/**
 	 * @return Returns the hl7InErrorId.
 	 */
-	public int getHL7InErrorId() {
+	public Integer getHL7InErrorId() {
 		return hl7InErrorId;
 	}
 	
 	/**
 	 * @param hl7InErrorId The hl7InExceptionId to set.
 	 */
-	public void setHL7InErrorId(int hl7InErrorId) {
+	public void setHL7InErrorId(Integer hl7InErrorId) {
 		this.hl7InErrorId = hl7InErrorId;
 	}
 	
