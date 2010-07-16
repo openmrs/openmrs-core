@@ -23,6 +23,7 @@ import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.User;
+import org.openmrs.api.EncounterService;
 
 /**
  * Encounter-related database functions
@@ -66,8 +67,8 @@ public interface EncounterDAO {
 	 *      java.util.Collection, java.util.Collection, boolean)
 	 */
 	public List<Encounter> getEncounters(Patient patient, Location location, Date fromDate, Date toDate,
-		Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes,
-		Collection<User> providers, boolean includeVoided);
+	                                     Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes,
+	                                     Collection<User> providers, boolean includeVoided);
 	
 	/**
 	 * Save an Encounter Type
@@ -149,9 +150,11 @@ public interface EncounterDAO {
 	
 	/**
 	 * Get a list of {@link Encounter} by Patient name or identifier
-	 *
+	 * 
 	 * @param query patient name or identifier
+	 * @param includeVoided Specifies whether voided encounters should be included
 	 * @return list of {@link Encounter}
+	 * @see EncounterService#getEncountersByPatient(String, boolean)
 	 */
-	List<Encounter> getEncountersByPatient(String query);
+	List<Encounter> getEncountersByPatient(String query, boolean includeVoided);
 }
