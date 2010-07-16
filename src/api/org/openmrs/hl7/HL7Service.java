@@ -180,6 +180,60 @@ public interface HL7Service extends OpenmrsService {
 	public List<HL7InQueue> getAllHL7InQueues() throws APIException;
 	
 	/**
+	 * Return a list of all hl7 in queues based on batch settings and a query string
+	 * 
+	 * @param start beginning index
+	 * @param length size of the batch
+	 * @param messageState status of the HL7InQueue message
+	 * @param query search string
+	 * @return all matching hl7 queue items within batch window
+	 * @throws APIException
+	 * @since 1.7
+	 */
+	@Transactional(readOnly = true)
+	@Authorized(HL7Constants.PRIV_VIEW_HL7_IN_QUEUE)
+	public List<HL7InQueue> getHL7InQueueBatch(int start, int length, int messageState, String query) throws APIException;
+	
+	/**
+	 * the total count of all HL7InQueue objects in the database
+	 * 
+	 * @param messageState HL7InQueue status
+	 * @param query search string
+	 * @return the count of matching HL7InQueue items
+	 * @throws APIException
+	 * @since 1.7
+	 */
+	@Transactional(readOnly = true)
+	@Authorized(HL7Constants.PRIV_VIEW_HL7_IN_QUEUE)
+	public Integer countHL7InQueue(Integer messageState, String query) throws APIException;
+	
+	/**
+	 * Return a list of all hl7 in errors based on batch settings and a query string
+	 * 
+	 * @param start beginning index
+	 * @param length size of the batch
+	 * @param query search string
+	 * @return all matching hl7 queue items within batch window
+	 * @throws APIException
+	 * @since 1.7
+	 */
+	@Transactional(readOnly = true)
+	@Authorized(HL7Constants.PRIV_VIEW_HL7_IN_QUEUE)
+	public List<HL7InError> getHL7InErrorBatch(int start, int length, String query) throws APIException;
+	
+	/**
+	 * the total count of all HL7InError objects in the database
+	 * 
+	 * @param query search string
+	 * @return the count of matching HL7InError items
+	 * @throws APIException
+	 * @since 1.7
+	 */
+	@Transactional(readOnly = true)
+	@Authorized(HL7Constants.PRIV_VIEW_HL7_IN_QUEUE)
+	public Integer countHL7InError(String query) throws APIException;
+	
+	/**
 	 * @deprecated use {@link #getAllHL7InQueues()}
 	 */
 	@Deprecated
@@ -559,4 +613,5 @@ public interface HL7Service extends OpenmrsService {
 	 * @should fail if no birthdate specified
 	 */
 	public Person createPersonFromNK1(NK1 nk1) throws HL7Exception;
+
 }

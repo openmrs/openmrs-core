@@ -14,13 +14,11 @@
 
 package org.openmrs.hl7.web.controller;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Vector;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -29,16 +27,15 @@ import org.openmrs.api.context.Context;
 import org.openmrs.hl7.HL7InError;
 import org.openmrs.hl7.HL7InQueue;
 import org.openmrs.hl7.HL7Service;
+import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.web.WebConstants;
-import org.springframework.beans.propertyeditors.CustomNumberEditor;
-import org.springframework.context.support.MessageSourceAccessor;
-import org.springframework.validation.BindException;
-import org.springframework.web.bind.ServletRequestDataBinder;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.SimpleFormController;
-import org.springframework.web.servlet.view.RedirectView;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
-public class Hl7InErrorListController extends SimpleFormController {
+@Controller
+public class Hl7InErrorListController {
 	
 	/**
 	 * Logger for this class and subclasses
@@ -46,75 +43,110 @@ public class Hl7InErrorListController extends SimpleFormController {
 	protected static final Log log = LogFactory.getLog(Hl7InErrorListController.class);
 	
 	/**
-	 * Allows for Integers to be used as values in input tags. Normally, only strings and lists are
-	 * expected
+	 * Render the HL7 error queue messages page
+	 * 
+	 * @param modelMap
+	 * @return
 	 */
-	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
-		super.initBinder(request, binder);
-		binder.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, true));
+	@RequestMapping("/admin/hl7/hl7InError.htm")
+	public String listErrorHL7s() {
+		return "/admin/hl7/hl7InErrorList";
 	}
 	
 	/**
-	 * This is called prior to displaying a form
+	 * submits an HL7InError back to the HL7 queue
+	 * 
+	 * @param id HL7InErrorId for identifying the HL7 message
+	 * @return formatted success or failure message for display
+	 * @throws Exception
 	 */
-	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
-		List<HL7InError> hl7InError = new Vector<HL7InError>();
-		
-		// Get all errors posted to the database
-		if (Context.isAuthenticated()) {
-			hl7InError = Context.getHL7Service().getAllHL7InErrors();
-		}
-		return hl7InError;
-	}
-	
-	/**
-	 * This method pushes a message that had erred previously back into the queue to be processed
-	 */
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command,
-	                                BindException errors) throws Exception {
-		HttpSession httpSession = request.getSession();
-		String view = getFormView();
+	@RequestMapping("/admin/hl7/resubmitHL7InError.json")
+	public @ResponseBody
+	Map<String, Object> resubmitHL7InError(@RequestParam("hl7InErrorId") int id) throws Exception {
+		HL7Service hL7Service = Context.getHL7Service();
+		MessageSourceService mss = Context.getMessageSourceService();
 		StringBuffer success = new StringBuffer();
 		StringBuffer error = new StringBuffer();
-		MessageSourceAccessor msa = getMessageSourceAccessor();
 		
-		String[] queueForm = request.getParameterValues("errorId");
+		// Argument to pass to the success/error message
+		Object[] args = new Object[] { id };
 		
-		HL7Service hL7Service = Context.getHL7Service();
-		
-		if (queueForm != null) {
-			for (String queueId : queueForm) {
-				// Argument to pass to the success/error message
-				Object[] args = new Object[] { queueId };
-				
-				try {
-					//Restore Selected Message to the in queue table
-					HL7InError hl7InError = hL7Service.getHL7InError(Integer.valueOf(queueId));
-					HL7InQueue hl7InQueue = new HL7InQueue(hl7InError);
-					hL7Service.saveHL7InQueue(hl7InQueue);
-					
-					//Remove selected Message from the error table
-					hL7Service.purgeHL7InError(hl7InError);
-					
-					//Display a message for the operation
-					success.append(msa.getMessage("Hl7inError.errorList.restored", args) + "<br/>");
-				}
-				catch (APIException e) {
-					log.warn("Error Processing erred message", e);
-					error.append(msa.getMessage("Hl7inError.errorList.error", args) + "<br/>");
-				}
-			}
+		try {
+			//Restore Selected Message to the in queue table
+			HL7InError hl7InError = hL7Service.getHL7InError(Integer.valueOf(id));
+			HL7InQueue hl7InQueue = new HL7InQueue(hl7InError);
+			hL7Service.saveHL7InQueue(hl7InQueue);
+			
+			//Remove selected Message from the error table
+			hL7Service.purgeHL7InError(hl7InError);
+			
+			//Display a message for the operation
+			success.append(mss.getMessage("Hl7inError.errorList.restored", args, Context.getLocale()) + "<br/>");
+		}
+		catch (APIException e) {
+			log.warn("Error Processing erred message", e);
+			error.append(mss.getMessage("Hl7inError.errorList.error", args, Context.getLocale()) + "<br/>");
 		}
 		
-		view = getSuccessView();
+		Map<String, Object> results = new HashMap<String, Object>();
 		
 		if (!success.toString().equals("")) {
-			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success.toString());
+			results.put(WebConstants.OPENMRS_MSG_ATTR, success.toString());
 		}
 		if (!error.toString().equals("")) {
-			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error.toString());
+			results.put(WebConstants.OPENMRS_ERROR_ATTR, error.toString());
 		}
 		
-		return new ModelAndView(new RedirectView(view));
+		return results;
 	}
+	
+	/**
+	 * method for returning a batch of HL7s from the queue based on datatable parameters; sorting is
+	 * unavailable at this time
+	 * 
+	 * @param iDisplayStart start index for search
+	 * @param iDisplayLength amount of terms to return
+	 * @param sSearch search term(s)
+	 * @param sEcho check digit for datatables
+	 * @return batch of HL7InError objects to be converted to JSON
+	 * @throws IOException
+	 */
+	@RequestMapping("/admin/hl7/hl7InErrorList.json")
+	public @ResponseBody
+	Map<String, Object> getHL7InErrorBatchAsJson(@RequestParam("iDisplayStart") int iDisplayStart,
+	                                             @RequestParam("iDisplayLength") int iDisplayLength,
+	                                             @RequestParam("sSearch") String sSearch,
+	                                             @RequestParam("sEcho") int sEcho) throws IOException {
+		
+		// get the data
+		List<HL7InError> hl7s = Context.getHL7Service().getHL7InErrorBatch(iDisplayStart, iDisplayLength, sSearch);
+		
+		// form the results dataset
+		List<Object> results = new ArrayList<Object>();
+		for (HL7InError hl7 : hl7s)
+			results.add(splitHL7InError(hl7));
+		
+		// build the response
+		Map<String, Object> response = new HashMap<String, Object>();
+		response.put("iTotalRecords", Context.getHL7Service().countHL7InError(null));
+		response.put("iTotalDisplayRecords", Context.getHL7Service().countHL7InError(sSearch));
+		response.put("sEcho", sEcho);
+		response.put("aaData", results.toArray());
+		
+		// send it
+		return response;
+	}
+	
+	/**
+	 * create an object array for a given HL7InError
+	 * 
+	 * @param q HL7InError object
+	 * @return object array for use with datatables
+	 */
+	private Object[] splitHL7InError(HL7InError q) {
+		// try to stick to basic types; String, Integer, etc (not Date)
+		return new Object[] { q.getHL7InErrorId().toString(), q.getHL7Source().getName(),
+		        Context.getDateFormat().format(q.getDateCreated()), q.getHL7Data(), q.getError(), q.getErrorDetails() };
+	}
+	
 }
