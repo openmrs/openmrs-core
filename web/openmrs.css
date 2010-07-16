@@ -1084,7 +1084,7 @@ th.smallHeader {
 	font-size: 1.0em; 
 }
 
-.highlighted {
+.highlighted, .highlight {
 	background-color: yellow;
 }
 

@@ -231,6 +231,38 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 	}
 	
 	/**
+	 * @see org.openmrs.hl7.HL7Service#getHL7InQueueBatch(int, int, java.lang.String)
+	 */
+	@Override
+	public List<HL7InQueue> getHL7InQueueBatch(int start, int length, int messageState, String query) throws APIException {
+		return dao.getHL7InQueueBatch(start, length, messageState, query);
+	}
+	
+	/**
+	 * @see org.openmrs.hl7.HL7Service#getHL7InErrorBatch(int, int, java.lang.String)
+	 */
+	@Override
+	public List<HL7InError> getHL7InErrorBatch(int start, int length, String query) throws APIException {
+		return dao.getHL7InErrorBatch(start, length, query);
+	}
+	
+	/**
+	 * @see org.openmrs.hl7.HL7Service#countHL7InQueue(java.lang.Integer)
+	 */
+	@Override
+	public Integer countHL7InQueue(Integer messageState, String query) throws APIException {
+		return dao.countHL7InQueue(messageState, query);
+	}
+	
+	/**
+	 * @see org.openmrs.hl7.HL7Service#countHL7InError(java.lang.Integer)
+	 */
+	@Override
+	public Integer countHL7InError(String query) throws APIException {
+		return dao.countHL7InError(query);
+	}
+	
+	/**
 	 * @see org.openmrs.hl7.HL7Service#purgeHL7InQueue(org.openmrs.hl7.HL7InQueue)
 	 */
 	public void purgeHL7InQueue(HL7InQueue hl7InQueue) {
@@ -1059,5 +1091,6 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 		// returns null if not found
 		return uuid;
 	}
+
 	
 }

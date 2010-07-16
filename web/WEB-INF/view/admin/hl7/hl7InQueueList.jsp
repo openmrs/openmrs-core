@@ -1,55 +1,134 @@
-<%@ include file="/WEB-INF/template/include.jsp" %>
+<%@ include file="/WEB-INF/template/include.jsp"%>
 
-<openmrs:require privilege="View HL7 Inbound Queue" otherwise="/login.htm" redirect="/admin/hl7/hl7InQueue.list" />
+<openmrs:require privilege="View HL7 Inbound Queue"
+	otherwise="/login.htm" redirect="/admin/hl7/hl7InQueuePending.htm" />
+
+<%@ include file="/WEB-INF/template/header.jsp"%>
+<%@ include file="localHeader.jsp"%>
+
+<openmrs:htmlInclude
+	file="/scripts/jquery/highlight/jquery.highlight-3.js" />
+<openmrs:htmlInclude
+	file="/scripts/jquery/dataTables/js/jquery.dataTables.min.js" />
+<openmrs:htmlInclude
+	file="/scripts/jquery-ui/js/jquery-ui.custom.min.js" />
+<openmrs:htmlInclude
+	file="/scripts/jquery-ui/css/redmond/jquery-ui-1.7.2.custom.css" />
+<openmrs:htmlInclude
+	file="/scripts/jquery/dataTables/css/dataTables.css" />
+<openmrs:htmlInclude
+	file="/scripts/jquery/dataTables/css/dataTables_jui.css" />
+
+<script type="text/javascript">
+	var hl7table;
 	
-<%@ include file="/WEB-INF/template/header.jsp" %>
-<%@ include file="localHeader.jsp" %>
+	$j(document).ready(function() {
+	
+		hl7table = $j('#hl7Table').dataTable( { 
+			"aoColumns": [  { "sName": "action", "bSortable": false,
+					         "fnRender": function ( oObj ) {
+									var id = oObj.aData[0];
+									return '<button onClick="toggleMessage(' + id + ',' + oObj.iDataRow + 
+										')"><spring:message code="Hl7inQueue.queueList.hold" /></button>';
+								}
+							},
+							{ "sName": "source", "bSortable": false },
+							{ "sName": "dateCreated", "bSortable": false },
+							{ "sName": "data", "bSortable": false,
+					         "fnRender": function ( oObj ) {
+								return '<div id="hl7' + oObj.iDataRow + '" class="showmore"><pre>' + oObj.aData[3] + 
+									'</pre></div><a id="show'+ oObj.iDataRow + '" href=# onClick="showMore(' + oObj.iDataRow +
+									')"><spring:message code="Hl7inQueue.queueList.showMore" /></a>' +
+									'<a id="hide'+ oObj.iDataRow + '" style="display:none;" href=# onClick="hideMore(' + oObj.iDataRow + 
+									')"><spring:message code="Hl7inQueue.queueList.hideMore" /></a>';
+								}
+							}
+			  			 ],
+			"sDom": '<"fg-toolbar ui-widget-header ui-corner-tl ui-corner-tr ui-helper-clearfix"flip>' + 
+				'rt<"fg-toolbar ui-widget-header ui-corner-bl ui-corner-br ui-helper-clearfix"i>',
+			"sPaginationType": "full_numbers",
+			"bAutoWidth": false,
+			"bLengthChange": true,
+			"bProcessing": true,
+			"bServerSide": true,
+			"bStateSave": false,
+			"sAjaxSource": "hl7InQueueList.json?messageState=${messageState}",
+			"bJQueryUI": true,
+			"oLanguage": {
+				"sInfoFiltered": "(_MAX_ in queue)"
+			},
+			"fnDrawCallback": function() {
+				$j("#hl7Table td").highlight(hl7table.fnSettings().oPreviousSearch.sSearch);
+			}
+		});
+		
+	} );
+	
+	function showMore(id) {
+		$j('#hl7' + id).animate({height: "100%"}, "slow");
+		$j('#show' + id).hide();
+		$j('#hide' + id).show();
+	}
+	
+	function hideMore(id) {
+		$j('#hl7' + id).animate({height: "50px"}, "slow");
+		$j('#hide' + id).hide();
+		$j('#show' + id).show();
+	}
 
-<h2><spring:message code="Hl7inQueue.header" /></h2>	
+	function setMessage(data) {
+		$j("#message").fadeOut("fast", function() {
+			if ("openmrs_msg" in data)
+				$j("#message .content").html(data.openmrs_msg);
+			else if ("openmrs_error" in data)
+				$j("#message .content").html(data.openmrs_error);
+			$j("#message").fadeIn("slow");
+		});
+	}
+	
+	function toggleMessage(id, row) {
+		$j.ajax({
+			"url": "toggleHL7InQueue.json",
+			"data": { "hl7InQueueId": id },
+			"dataType": "json",
+			"error": function(XMLHttpRequest, textStatus, errorThrown) {
+				setMessage('<spring:message code="Hl7inQueue.queueList.error"/>');
+			},
+			"success": function(data, textStatus, XMLHttpRequest) {
+				setMessage(data);
+				hl7table.fnDeleteRow(row);
+			}
+		});
+	}
 
-<div class="hl7inQueueList" style="overflow:xscroll">
-	<b class="boxHeader"><spring:message code="Hl7inQueue.queueList.title" /></b>
-	<div class="box">
-		<form id="hl7inQueueListForm" method="post">
-			<div id="hl7QueueListing">
-				<c:if test="${fn:length(queueList) == 0}">
-					<i> &nbsp; There are no queued messages</i><br/>
-				</c:if>
-				<c:if test="${fn:length(queueList) > 0}">
-				<table cellpadding="5" cellspacing="0">
-					<tr>
-						<th></th>
-						<th><spring:message code="Hl7inQueue.queueList.source.header" /></th>
-						<th><spring:message code="Hl7inQueue.queueList.data.header" /></th>
-						<th><spring:message code="Hl7inQueue.queueList.state.header" /></th>
-						<th><spring:message code="Hl7inQueue.queueList.errorMessage.header" /></th>
-						<th><spring:message code="Hl7inQueue.queueList.dateCreated" /></th>
-					</tr>
-					<c:forEach var="queue" items="${queueList}">
-						<tr>
-							<td valign="top"><input type="checkbox" name="queueId" value="${queue.HL7InQueueId}"></td>	
-							<td valign="top">${queue.HL7Source.name}</td>
-							<td valign="top">
-								<div style="overflow:auto">
-									<pre>${queue.HL7Data}</pre>
-								</div>							
-							</td>
-							<td valign="top"><spring:message code="Hl7inQueue.status.${queue.messageState}" /></td>
-							<td valign="top">${queue.errorMessage}</td>
-							<td valign="top">${queue.dateCreated }</td>	
-						</tr>
-					</c:forEach>
-					<tr>
-						<td colspan="6">
-							<input type="submit" value="<spring:message code="Hl7inQueue.queueList.delete"/>" name="delete">
-						</td>
-					</tr>
-				</table>
-				</c:if>
-			</div>
-		</form>
-	</div>
+</script>
+
+<style>
+	.showmore { height: 50px; overflow: hidden; }
+	#hl7Table button { padding: 0.5em; }
+</style>
+
+<h2><spring:message code="Hl7inQueue.queueList.pending.title" /></h2>
+
+<div id="message" class="ui-widget"
+	style="display: none; margin-bottom: 1em;">
+<div class="ui-state-highlight ui-corner-all" style="padding: 0.5em;">
+<span class="ui-icon ui-icon-info"
+	style="float: left; margin-right: 0.3em;"></span> <span class="content"></span>
+</div>
 </div>
 
+<table cellpadding="5" cellspacing="0" id="hl7Table" width="100%">
+	<thead>
+		<tr>
+			<th></th>
+			<th><spring:message code="Hl7inQueue.queueList.source.header" /></th>
+			<th><spring:message code="Hl7inQueue.queueList.dateCreated" /></th>
+			<th width="80%"><spring:message
+				code="Hl7inQueue.queueList.data.header" /></th>
+		</tr>
+	</thead>
+	<tbody></tbody>
+</table>
 
-<%@ include file="/WEB-INF/template/footer.jsp" %>
+<%@ include file="/WEB-INF/template/footer.jsp"%>

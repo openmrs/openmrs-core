@@ -39,6 +39,9 @@ import org.hibernate.Criteria;
 import org.hibernate.Hibernate;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
@@ -142,6 +145,78 @@ public class HibernateHL7DAO implements HL7DAO {
 		return sessionFactory.getCurrentSession()
 		        .createQuery("from HL7InQueue where messageState = ? order by HL7InQueueId").setParameter(0,
 		            HL7Constants.HL7_STATUS_PENDING, Hibernate.INTEGER).list();
+	}
+	
+	/**
+	 * creates a Criteria object for use with counting and finding HL7InQueue objects
+	 * 
+	 * @param messageState status of HL7InQueue object
+	 * @param query string query to match against
+	 * @return a Criteria object
+	 */
+	private Criteria getHL7InQueueSearchCriteria(int messageState, String query) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(HL7InQueue.class);
+		crit.add(Restrictions.eq("messageState", messageState));
+		if (query != null && !query.isEmpty())
+			crit.add(Restrictions.like("HL7Data", query, MatchMode.ANYWHERE));
+		return crit;
+	}
+	
+	/**
+	 * @see org.openmrs.hl7.db.HL7DAO#getHL7InQueueBatch(int, int, int, java.lang.String)
+	 */
+	@SuppressWarnings("unchecked")
+	public List<HL7InQueue> getHL7InQueueBatch(int start, int length, int messageState, String query) {
+		Criteria crit = getHL7InQueueSearchCriteria(messageState, query);
+		crit.setFirstResult(start);
+		crit.setMaxResults(length);
+		crit.addOrder(Order.asc("dateCreated"));
+		return crit.list();
+	}
+	
+	/**
+	 * @see org.openmrs.hl7.db.HL7DAO#countHL7InQueue(java.lang.Integer, java.lang.String)
+	 */
+	public Integer countHL7InQueue(Integer messageState, String query) {
+		Criteria crit = getHL7InQueueSearchCriteria(messageState, query);
+		crit.setProjection(Projections.rowCount());
+		return (Integer) crit.uniqueResult();
+	}
+	
+	/**
+	 * creates a Criteria object for use with counting and finding HL7InError objects
+	 * 
+	 * @param query string query to match against
+	 * @return a Criteria object
+	 */
+	private Criteria getHL7InErrorSearchCriteria(String query) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(HL7InError.class);
+		if (query != null && !query.isEmpty())
+			crit.add(Restrictions
+			        .or(Restrictions.like("HL7Data", query, MatchMode.ANYWHERE), Restrictions.or(Restrictions.like(
+			            "errorDetails", query, MatchMode.ANYWHERE), Restrictions.like("error", query, MatchMode.ANYWHERE))));
+		return crit;
+	}
+	
+	/**
+	 * @see org.openmrs.hl7.db.HL7DAO#getHL7InErrorBatch(int, int, java.lang.String)
+	 */
+	@SuppressWarnings("unchecked")
+	public List<HL7InError> getHL7InErrorBatch(int start, int length, String query) {
+		Criteria crit = getHL7InErrorSearchCriteria(query);
+		crit.setFirstResult(start);
+		crit.setMaxResults(length);
+		crit.addOrder(Order.asc("dateCreated"));
+		return crit.list();
+	}
+	
+	/**
+	 * @see org.openmrs.hl7.db.HL7DAO#countHL7InError(java.lang.String)
+	 */
+	public Integer countHL7InError(String query) {
+		Criteria crit = getHL7InErrorSearchCriteria(query);
+		crit.setProjection(Projections.rowCount());
+		return (Integer) crit.uniqueResult();
 	}
 	
 	/**

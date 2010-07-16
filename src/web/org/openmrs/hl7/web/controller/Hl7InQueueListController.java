@@ -14,13 +14,11 @@
 
 package org.openmrs.hl7.web.controller;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Vector;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -29,16 +27,16 @@ import org.openmrs.api.context.Context;
 import org.openmrs.hl7.HL7Constants;
 import org.openmrs.hl7.HL7InQueue;
 import org.openmrs.hl7.HL7Service;
+import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.web.WebConstants;
-import org.springframework.beans.propertyeditors.CustomNumberEditor;
-import org.springframework.context.support.MessageSourceAccessor;
-import org.springframework.validation.BindException;
-import org.springframework.web.bind.ServletRequestDataBinder;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.SimpleFormController;
-import org.springframework.web.servlet.view.RedirectView;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
-public class Hl7InQueueListController extends SimpleFormController {
+@Controller
+public class Hl7InQueueListController {
 	
 	/**
 	 * Logger for this class and subclasses
@@ -46,69 +44,128 @@ public class Hl7InQueueListController extends SimpleFormController {
 	protected static final Log log = LogFactory.getLog(Hl7InQueueListController.class);
 	
 	/**
-	 * Allows for Integers to be used as values in input tags.
+	 * Render the pending HL7 queue messages page
+	 * 
+	 * @param modelMap
+	 * @return
 	 */
-	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
-		super.initBinder(request, binder);
-		binder.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, true));
+	@RequestMapping("/admin/hl7/hl7InQueuePending.htm")
+	public String listPendingHL7s(ModelMap modelMap) {
+		modelMap.addAttribute("messageState", HL7Constants.HL7_STATUS_PENDING);
+		return "/admin/hl7/hl7InQueueList";
 	}
 	
 	/**
-	 * This is called prior to displaying a form
+	 * Render the suspended HL7 queue messages page
+	 * 
+	 * @param modelMap
+	 * @return
 	 */
-	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
-		List<HL7InQueue> hl7InQueue = new Vector<HL7InQueue>();
-		
-		// Get all messages in the HL7 in Queue
-		if (Context.isAuthenticated()) {
-			hl7InQueue = Context.getHL7Service().getAllHL7InQueues();
-		}
-		return hl7InQueue;
-		
+	@RequestMapping("/admin/hl7/hl7InQueueHeld.htm")
+	public String listSuspendedHL7s(ModelMap modelMap) {
+		modelMap.addAttribute("messageState", HL7Constants.HL7_STATUS_DELETED);
+		return "/admin/hl7/hl7OnHoldList";
 	}
 	
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command,
-	                                BindException errors) throws Exception {
-		HttpSession httpSession = request.getSession();
-		String view = getFormView();
+	/**
+	 * suspends or restores a HL7InQueue based on current status
+	 * 
+	 * @param id HL7InQueueId for identifying the HL7 message
+	 * @return formatted success or failure message for display
+	 * @throws Exception
+	 */
+	@RequestMapping("/admin/hl7/toggleHL7InQueue.json")
+	public @ResponseBody
+	Map<String, Object> toggleHL7InQueue(@RequestParam("hl7InQueueId") int id) throws Exception {
+		HL7Service hL7Service = Context.getHL7Service();
+		MessageSourceService mss = Context.getMessageSourceService();
 		StringBuffer success = new StringBuffer();
 		StringBuffer error = new StringBuffer();
-		MessageSourceAccessor msa = getMessageSourceAccessor();
 		
-		String[] queueList = request.getParameterValues("queueId");
+		// Argument to pass to the success/error message
+		Object[] args = new Object[] { id };
 		
-		HL7Service hL7Service = Context.getHL7Service();
-		
-		if (queueList != null) {
-			for (String queueId : queueList) {
-				// Argument to pass to the success/error message
-				Object[] args = new Object[] { queueId };
-				
-				try {
-					//Update the hl7 message's status to deleted
-					HL7InQueue hl7InQueue = hL7Service.getHL7InQueue(Integer.valueOf(queueId));
-					hl7InQueue.setMessageState(HL7Constants.HL7_STATUS_DELETED);
-					hL7Service.saveHL7InQueue(hl7InQueue);
-					
-					//Display a message for the operation
-					success.append(msa.getMessage("Hl7inQueue.queueList.deleted", args) + "<br/>");
-				}
-				catch (APIException e) {
-					log.warn("Error deleting a queue entry", e);
-					error.append(msa.getMessage("Hl7inQueue.queueList..error", args) + "<br/>");
-				}
-			}
+		try {
+			//Update the hl7 message's status based on existing status
+			HL7InQueue hl7InQueue = hL7Service.getHL7InQueue(id);
+			if (hl7InQueue.getMessageState().equals(HL7Constants.HL7_STATUS_PENDING))
+				hl7InQueue.setMessageState(HL7Constants.HL7_STATUS_DELETED);
+			else
+				hl7InQueue.setMessageState(HL7Constants.HL7_STATUS_PENDING);
+			hL7Service.saveHL7InQueue(hl7InQueue);
+			
+			//Display a message for the operation
+			if (hl7InQueue.getMessageState().equals(HL7Constants.HL7_STATUS_PENDING))
+				success.append(mss.getMessage("Hl7inQueue.queueList.restored", args, Context.getLocale()) + "<br/>");
+			else
+				success.append(mss.getMessage("Hl7inQueue.queueList.held", args, Context.getLocale()) + "<br/>");
+		}
+		catch (APIException e) {
+			log.warn("Error updating a queue entry", e);
+			error.append(mss.getMessage("Hl7inQueue.queueList.error", args, Context.getLocale()) + "<br/>");
 		}
 		
-		view = getSuccessView();
-		
+		Map<String, Object> results = new HashMap<String, Object>();
+
 		if (!success.toString().equals("")) {
-			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success.toString());
+			results.put(WebConstants.OPENMRS_MSG_ATTR, success.toString());
 		}
 		if (!error.toString().equals("")) {
-			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error.toString());
+			results.put(WebConstants.OPENMRS_ERROR_ATTR, error.toString());
 		}
 		
-		return new ModelAndView(new RedirectView(view));
+		return results;
 	}
+	
+	/**
+	 * method for returning a batch of HL7s from the queue based on datatable parameters
+	 * 
+	 * @param iDisplayStart start index for search
+	 * @param iDisplayLength amount of terms to return
+	 * @param sSearch search term(s)
+	 * @param sEcho check digit for datatables
+	 * @param messageState HL7InQueue state to look up
+	 * @return batch of HL7InQueue objects to be converted to JSON
+	 * @throws IOException
+	 */
+	@RequestMapping("/admin/hl7/hl7InQueueList.json")
+	public @ResponseBody
+	Map<String, Object> getHL7InQueueBatchAsJson(@RequestParam("iDisplayStart") int iDisplayStart,
+	                                             @RequestParam("iDisplayLength") int iDisplayLength,
+	                                             @RequestParam("sSearch") String sSearch,
+	                                             @RequestParam("sEcho") int sEcho,
+	                                             @RequestParam("messageState") int messageState) throws IOException {
+
+		// get the data
+		List<HL7InQueue> hl7s = Context.getHL7Service().getHL7InQueueBatch(iDisplayStart, iDisplayLength, messageState,
+		    sSearch);
+		
+		// form the results dataset
+		List<Object> results = new ArrayList<Object>();
+		for (HL7InQueue hl7 : hl7s)
+			results.add(splitHL7InQueue(hl7));
+		
+		// build the response
+		Map<String, Object> response = new HashMap<String, Object>();
+		response.put("iTotalRecords", Context.getHL7Service().countHL7InQueue(messageState, null));
+		response.put("iTotalDisplayRecords", Context.getHL7Service().countHL7InQueue(messageState, sSearch));
+		response.put("sEcho", sEcho);
+		response.put("aaData", results.toArray());
+		
+		// send it
+		return response;
+	}
+	
+	/**
+	 * create an object array for a given HL7InQueue
+	 * 
+	 * @param q HL7InQueue object
+	 * @return object array for use with datatables
+	 */
+	private Object[] splitHL7InQueue(HL7InQueue q) {
+		// try to stick to basic types; String, Integer, etc (not Date)
+		return new Object[] { q.getHL7InQueueId().toString(), q.getHL7Source().getName(),
+		        Context.getDateFormat().format(q.getDateCreated()), q.getHL7Data() };
+	}
+	
 }
