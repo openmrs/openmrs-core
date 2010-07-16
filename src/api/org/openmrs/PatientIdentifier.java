@@ -73,15 +73,18 @@ public class PatientIdentifier extends BaseOpenmrsData implements java.io.Serial
 	 * 
 	 * @param obj
 	 * @return boolean true/false whether or not they are the same objects
-	 * @should compare when patient and identifier and type is null
+	 * @should not fail when patient and identifier and type are null
+	 * @should return true if patient identifier ids are same
+	 * @should return false if one patient identifier id is null
+	 * @should return true if comparing same object with null ids
 	 */
+	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof PatientIdentifier) {
 			PatientIdentifier p = (PatientIdentifier) obj;
-			boolean ret = (patient != null && patient.equals(p.getPatient())) &&
-							(identifier != null && identifier.equals(p.getIdentifier())) &&
-							(identifierType != null && identifierType.equals(p.getIdentifierType()));
-			return ret || p == this;
+			if (this.getPatientIdentifierId() != null && p.getPatientIdentifierId() != null)
+				return (this.getPatientIdentifierId().equals(p.getPatientIdentifierId()));
+			return obj == this;
 		}
 		return false;
 	}
@@ -89,16 +92,12 @@ public class PatientIdentifier extends BaseOpenmrsData implements java.io.Serial
 	/**
 	 * @see java.lang.Object#hashCode()
 	 */
+	@Override
 	public int hashCode() {
-		if (this.getPatient() == null && this.getIdentifier() == null && this.getIdentifierType() == null)
+		if (this.getPatientIdentifierId() == null)
 			return super.hashCode();
 		int hash = 5;
-		if (getPatient() != null)
-			hash += 31 * hash + this.getPatient().hashCode();
-		if (getIdentifier() != null)
-			hash += 31 * hash + this.getIdentifier().hashCode();
-		if (getIdentifierType() != null)
-			hash += 31 * hash + this.getIdentifierType().hashCode();
+		hash += 31 * hash + this.getPatientIdentifierId().hashCode();
 		return hash;
 	}
 	
@@ -204,6 +203,7 @@ public class PatientIdentifier extends BaseOpenmrsData implements java.io.Serial
 		this.patient = patient;
 	}
 	
+	@Override
 	public String toString() {
 		return this.identifier;
 	}
@@ -247,7 +247,7 @@ public class PatientIdentifier extends BaseOpenmrsData implements java.io.Serial
 				retValue = OpenmrsUtil.compareWithNullAsGreatest(getIdentifier(), other.getIdentifier());
 			
 			// if we've gotten this far, just check all identifier values.  If they are
-			// equal, leave the objects at 0.  If not, arbitrarily pick retValue=1 
+			// equal, leave the objects at 0.  If not, arbitrarily pick retValue=1
 			// and return that (they are not equal).
 			if (retValue == 0 && !equalsContent(other))
 				retValue = 1;
