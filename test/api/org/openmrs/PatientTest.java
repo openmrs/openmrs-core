@@ -85,7 +85,6 @@ public class PatientTest {
 		        + p.getIdentifiers().size(), p.getIdentifiers().size() == 2);
 		
 		pa3.setIdentifier(pa3.getIdentifier() + "some new string to make sure it gets added");
-		pa3.setVoided(true);
 		p.addIdentifier(pa3);
 		// make sure the identifier IS added
 		assertTrue("There should be 3 identifiers in the patient object but there is actually : "
@@ -203,4 +202,57 @@ public class PatientTest {
 		assertTrue("There shouldn't be any identifiers in the patient object now", p.getIdentifiers().size() == 0);
 	}
 	
+	@Test
+	@Verifies(value = "should verify identifiers order in the collection order", method = "removeIdentifier(PatientIdentifier)")
+	public void removeIdentifier_shouldTestIdentifierCollectionChanged() throws Exception {
+		Patient p = new Patient();
+		
+		PatientIdentifier pa1 = new PatientIdentifier();
+		PatientIdentifier pa2 = new PatientIdentifier();
+		PatientIdentifier pa3 = new PatientIdentifier();
+		PatientIdentifier pa4 = new PatientIdentifier();
+		
+		pa2.setIdentifier("2nd-date");
+		pa2.setIdentifierType(new PatientIdentifierType(1));
+		pa2.setDateCreated(new Date(1000));
+		pa2.setVoided(false);
+		p.addIdentifier(pa2);
+		
+		pa4.setIdentifier("last-date");
+		pa4.setIdentifierType(new PatientIdentifierType(1));
+		pa4.setDateCreated(new Date(pa2.getDateCreated().getTime() + 1000));
+		pa4.setVoided(false);
+		p.addIdentifier(pa4);
+		
+		pa1.setIdentifier("first-date");
+		pa1.setIdentifierType(new PatientIdentifierType(1));
+		pa1.setDateCreated(new Date(pa2.getDateCreated().getTime() - 1000));
+		pa1.setVoided(false);
+		p.addIdentifier(pa1);
+		
+		pa3.setIdentifier("3rd-date");
+		pa3.setIdentifierType(new PatientIdentifierType(1));
+		pa3.setDateCreated(new Date(pa2.getDateCreated().getTime() + 500));
+		pa3.setVoided(false);
+		p.addIdentifier(pa3);
+		
+		//now the order should be: first-date, 2nd-date, 3rd-date, last-date
+		PatientIdentifier[] pis = new PatientIdentifier[] {};
+		pis = p.getIdentifiers().toArray(pis); //NOTE: this is correct -- see the order in array in debug
+		assertTrue(p.getIdentifiers().contains(pa3)); //this works
+		
+		//now change voided on 3rd-date; that should move it to last position: voided IDs are the last in order
+		pa3.setVoided(true);
+		pis = p.getIdentifiers().toArray(pis); //THIS IS WRONG
+		assertTrue(p.getIdentifiers().contains(pa3)); //this fails
+		
+		//THIS IS RIGHT
+		pa3.setVoided(false); //set it back to false so we can remove it
+		p.removeIdentifier(pa3);
+		pis = p.getIdentifiers().toArray(pis); //pis now has 3 elements
+		pa3.setVoided(true);
+		p.addIdentifier(pa3);
+		pis = p.getIdentifiers().toArray(pis); //pis is sorted correctly
+		assertTrue(p.getIdentifiers().contains(pa3)); //this works too
+	}
 }
