@@ -35,6 +35,7 @@ import org.openmrs.api.PatientService;
 import org.openmrs.api.PersonService.ATTR_VIEW_TYPE;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.SkipBaseSetup;
+import org.openmrs.test.TestUtil;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
 import org.openmrs.web.controller.patient.NewPatientFormController;
 import org.openmrs.web.controller.patient.ShortPatientModel;
@@ -212,7 +213,6 @@ public class NewPatientFormControllerTest extends BaseWebContextSensitiveTest {
 	 * 
 	 * @throws Exception
 	 */
-	@SuppressWarnings( { "unchecked" })
 	@Test
 	public void shouldSubmitChangedIdentifierLocation() throws Exception {
 		executeDataSet(CONTROLLER_PATIENTS_DATA);
@@ -276,6 +276,8 @@ public class NewPatientFormControllerTest extends BaseWebContextSensitiveTest {
 		RedirectView redirectView = (RedirectView) modelAndView.getView();
 		assertTrue(redirectView.getUrl().startsWith("patientDashboard.form"));
 		
+		TestUtil.printOutTableContents(getConnection(), "patient_identifier");
+
 		// make sure John's identifier location was modified
 		Patient patient = ps.getPatient(2);
 		assertNotNull(patient);
@@ -330,7 +332,7 @@ public class NewPatientFormControllerTest extends BaseWebContextSensitiveTest {
 		request.addParameter("birthdateEstimated", "0");
 		request.addParameter("tribe", "");
 		
-		// the new relationship type 
+		// the new relationship type
 		request.addParameter("1a", "3");
 		
 		// the phone number attribute
@@ -407,4 +409,5 @@ public class NewPatientFormControllerTest extends BaseWebContextSensitiveTest {
 		Assert.assertNotNull(ps.getPatient(3));
 		Assert.assertNull(ps.getPatient(4));
 	}
+	
 }

@@ -543,8 +543,9 @@ public class ServiceContext implements ApplicationContextAware {
 	@SuppressWarnings("unchecked")
 	public void addAdvisor(Class cls, Advisor advisor) {
 		Advised advisedService = (Advised) services.get(cls);
-		advisedService.addAdvisor(advisor);
-		if (addedAdvice.get(cls) == null)
+		if (advisedService.indexOf(advisor) < 0)
+			advisedService.addAdvisor(advisor);
+		if (addedAdvisors.get(cls) == null)
 			addedAdvisors.put(cls, new HashSet<Advisor>());
 		getAddedAdvisors(cls).add(advisor);
 	}
@@ -556,7 +557,8 @@ public class ServiceContext implements ApplicationContextAware {
 	@SuppressWarnings("unchecked")
 	public void addAdvice(Class cls, Advice advice) {
 		Advised advisedService = (Advised) services.get(cls);
-		advisedService.addAdvice(advice);
+		if (advisedService.indexOf(advice) < 0)
+			advisedService.addAdvice(advice);
 		if (addedAdvice.get(cls) == null)
 			addedAdvice.put(cls, new HashSet<Advice>());
 		getAddedAdvice(cls).add(advice);

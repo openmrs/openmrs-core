@@ -27,6 +27,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
 import org.openmrs.Form;
@@ -93,8 +94,8 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	@SuppressWarnings("unchecked")
 	public List<Encounter> getEncountersByPatientId(Integer patientId) throws DAOException {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Encounter.class).createAlias("patient", "p").add(
-			Expression.eq("p.patientId", patientId)).add(Expression.eq("voided", false)).addOrder(
-				Order.desc("encounterDatetime"));
+		    Expression.eq("p.patientId", patientId)).add(Expression.eq("voided", false)).addOrder(
+		    Order.desc("encounterDatetime"));
 		
 		return crit.list();
 	}
@@ -106,8 +107,8 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Encounter> getEncounters(Patient patient, Location location, Date fromDate, Date toDate,
-		Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes,
-		Collection<User> providers, boolean includeVoided) {
+	                                     Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes,
+	                                     Collection<User> providers, boolean includeVoided) {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Encounter.class);
 		if (patient != null && patient.getPatientId() != null) {
 			crit.add(Expression.eq("patient", patient));
@@ -208,7 +209,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 */
 	public Date getSavedEncounterDatetime(Encounter encounter) {
 		SQLQuery sql = sessionFactory.getCurrentSession().createSQLQuery(
-		"select encounter_datetime from encounter where encounter_id = :encounterId");
+		    "select encounter_datetime from encounter where encounter_id = :encounterId");
 		sql.setInteger("encounterId", encounter.getEncounterId());
 		return (Date) sql.uniqueResult();
 	}
@@ -218,7 +219,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 */
 	public Encounter getEncounterByUuid(String uuid) {
 		return (Encounter) sessionFactory.getCurrentSession().createQuery("from Encounter e where e.uuid = :uuid")
-		.setString("uuid", uuid).uniqueResult();
+		        .setString("uuid", uuid).uniqueResult();
 	}
 	
 	/**
@@ -226,15 +227,18 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 */
 	public EncounterType getEncounterTypeByUuid(String uuid) {
 		return (EncounterType) sessionFactory.getCurrentSession().createQuery("from EncounterType et where et.uuid = :uuid")
-		.setString("uuid", uuid).uniqueResult();
+		        .setString("uuid", uuid).uniqueResult();
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.EncounterDAO#getEncountersByPatient(String)
+	 * @see org.openmrs.api.db.EncounterDAO#getEncountersByPatient(String, boolean)
 	 */
-	public List<Encounter> getEncountersByPatient(String query) {
-		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Encounter.class).createCriteria("patient",
-		"pat");
+	public List<Encounter> getEncountersByPatient(String query, boolean includedVoided) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Encounter.class);
+		if (!includedVoided)
+			criteria.add(Restrictions.eq("voided", false));
+
+		criteria = criteria.createCriteria("patient", "pat");
 		String name = null;
 		String identifier = null;
 		if (query.matches(".*\\d+.*")) {
@@ -244,7 +248,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 			name = query;
 		}
 		criteria = new PatientSearchCriteria(sessionFactory, criteria).prepareCriteria(name, identifier,
-			new ArrayList<PatientIdentifierType>(), false);
+		    new ArrayList<PatientIdentifierType>(), false);
 		return criteria.list();
 	}
 

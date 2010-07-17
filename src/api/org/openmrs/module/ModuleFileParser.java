@@ -480,7 +480,7 @@ public class ModuleFileParser {
 						ZipEntry entry = jarfile.getEntry(file);
 						if (entry == null)
 							throw new ModuleException(Context.getMessageSourceService().getMessage(
-							    "Module.error.NoMessagePropsFile", new Object[] { file, lang }, Context.getLocale()));
+							    "Module.error.noMessagePropsFile", new Object[] { file, lang }, Context.getLocale()));
 						inStream = jarfile.getInputStream(entry);
 						Properties props = new Properties();
 						OpenmrsUtil.loadProperties(props, inStream);

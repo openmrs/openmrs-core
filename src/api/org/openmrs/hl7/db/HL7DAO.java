@@ -202,4 +202,39 @@ public interface HL7DAO {
 	 * @return list of hl7 archives
 	 */
 	public List<HL7InArchive> getAllHL7InArchives(int maxResultsSetSize);
+	
+	/**
+	 * Returns hl7s in queue based on batch settings and filtered by a query
+	 * 
+	 * @param start
+	 * @param length
+	 * @param query
+	 * @return list of hl7s
+	 */
+	public List<HL7InQueue> getHL7InQueueBatch(int start, int length, int messageState, String query);
+	
+	/**
+	 * Returns the amount of HL7InQueue items in the database
+	 * 
+	 * @return count of HL7InQueue items
+	 */
+	public Integer countHL7InQueue(Integer messageState, String query);
+	
+	/**
+	 * Returns hl7s in error based on batch settings and filtered by a query
+	 * 
+	 * @param start
+	 * @param length
+	 * @param query
+	 * @return
+	 */
+	public List<HL7InError> getHL7InErrorBatch(int start, int length, String query);
+	
+	/**
+	 * Returns the amount of HL7InError items in the database
+	 * 
+	 * @return count of HL7InQueue items
+	 */
+	public Integer countHL7InError(String query);
+
 }
