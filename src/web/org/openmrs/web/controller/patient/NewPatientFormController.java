@@ -18,10 +18,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.Vector;
 
 import javax.servlet.ServletException;
@@ -91,7 +91,7 @@ public class NewPatientFormController extends SimpleFormController {
 	public void setShortPatientValidator(ShortPatientValidator shortPatientValidator) {
 		super.setValidator(shortPatientValidator);
 	}
-
+	
 	// identifiers submitted with the form.  Stored here so that they can
 	// be redisplayed for the user after an error
 	Set<PatientIdentifier> newIdentifiers = new HashSet<PatientIdentifier>();
@@ -146,13 +146,13 @@ public class NewPatientFormController extends SimpleFormController {
 						for (String s : identifiers)
 							log.debug(s);
 					}
-
+					
 					log.debug("types: " + types);
 					if (types != null) {
 						for (String s : types)
 							log.debug(s);
 					}
-
+					
 					log.debug("locations: " + locs);
 					if (locs != null) {
 						for (String s : locs)
@@ -190,10 +190,6 @@ public class NewPatientFormController extends SimpleFormController {
 							
 							PatientIdentifier pi = new PatientIdentifier(id, pit, loc);
 							pi.setPreferred(pref.equals(id + types[i]));
-							if (newIdentifiers.contains(pi))
-								newIdentifiers.remove(pi);
-							
-							//							pi.setUuid(null);
 							newIdentifiers.add(pi);
 							
 							if (log.isDebugEnabled()) {
@@ -324,7 +320,7 @@ public class NewPatientFormController extends SimpleFormController {
 			
 			// set or unset the preferred bit for the old identifiers if needed
 			if (patient.getIdentifiers() == null)
-				patient.setIdentifiers(new TreeSet<PatientIdentifier>());
+				patient.setIdentifiers(new LinkedHashSet<PatientIdentifier>());
 			
 			for (PatientIdentifier pi : patient.getIdentifiers()) {
 				pi.setPreferred(pref.equals(pi.getIdentifier() + pi.getIdentifierType().getPatientIdentifierTypeId()));
@@ -369,16 +365,12 @@ public class NewPatientFormController extends SimpleFormController {
 			// add the new identifiers.  First remove them so that things like
 			// changes to preferred status and location are persisted
 			for (PatientIdentifier identifier : newIdentifiers) {
-				// this loop is used instead of just using removeIdentifier because
-				// the identifier set on patient is a TreeSet which will use .compareTo
-				identifier.setPatient(patient);
-				for (PatientIdentifier currentIdentifier : patient.getActiveIdentifiers()) {
-					if (currentIdentifier.equals(identifier)) {
+					identifier.setPatient(patient);
+					for (PatientIdentifier currentIdentifier : patient.getActiveIdentifiers()) {
 						patient.removeIdentifier(currentIdentifier);
-						Context.evictFromSession(currentIdentifier);
 					}
-				}
 			}
+			
 			patient.addIdentifiers(newIdentifiers);
 			
 			// find which identifiers they removed and void them
@@ -676,15 +668,16 @@ public class NewPatientFormController extends SimpleFormController {
 				patient = ps.getPatient(Integer.valueOf(patientId));
 				
 				if (patient != null) {
+
 					// only show non-voided identifiers
 					identifiers.addAll(patient.getActiveIdentifiers());
-					
 					// get 'other' cause of death
 					String propCause = Context.getAdministrationService().getGlobalProperty("concept.causeOfDeath");
 					Concept conceptCause = Context.getConceptService().getConcept(propCause);
 					if (conceptCause != null && patient.getPatientId() != null) {
 						List<Obs> obssDeath = Context.getObsService().getObservationsByPersonAndConcept(patient,
 						    conceptCause);
+
 						if (obssDeath.size() == 1) {
 							Obs obsDeath = obssDeath.iterator().next();
 							causeOfDeathOther = obsDeath.getValueText();
@@ -717,8 +710,7 @@ public class NewPatientFormController extends SimpleFormController {
 			// that the .equals method works correctly in the next loop
 			identifier.setPatient(patient);
 		}
-		identifiers.addAll(newIdentifiers);
-		
+
 		if (pref.length() > 0)
 			for (PatientIdentifier pi : identifiers)
 				pi.setPreferred(pref.equals(pi.getIdentifier() + pi.getIdentifierType().getPatientIdentifierTypeId()));

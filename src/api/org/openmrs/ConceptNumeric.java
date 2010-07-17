@@ -13,6 +13,7 @@
  */
 package org.openmrs;
 
+import org.openmrs.util.OpenmrsUtil;
 import org.simpleframework.xml.Attribute;
 
 /**
@@ -105,8 +106,7 @@ public class ConceptNumeric extends Concept implements java.io.Serializable {
 			return (this.getConceptId().equals(c.getConceptId()));
 		} else if (obj instanceof Concept) {
 			// use the reverse .equals in case we have hibernate proxies - #1511
-			if (obj.equals(this))
-				return true;
+			return OpenmrsUtil.nullSafeEquals(((Concept) obj).getConceptId(), this.getConceptId());
 		}
 		return obj == this;
 	}
