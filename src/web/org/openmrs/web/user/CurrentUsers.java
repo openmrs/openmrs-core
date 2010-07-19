@@ -57,7 +57,7 @@ public class CurrentUsers {
 		Map<String, String> currentUsers = (Map<String, String>) httpSession.getServletContext().getAttribute(
 		    WebConstants.CURRENT_USERS);
 		if (currentUsers == null) {
-			init(httpSession.getServletContext());
+			currentUsers = init(httpSession.getServletContext());
 		}
 		return currentUsers;
 	}
