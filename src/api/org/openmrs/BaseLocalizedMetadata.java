@@ -18,6 +18,8 @@ import java.util.Date;
 /**
  * All {@link OpenmrsMetadata} classes(e.g., {@link EncounterType}, {@link Location}) that have
  * localized name or description will extend from this class.
+ * 
+ * @since 1.9
  */
 public abstract class BaseLocalizedMetadata extends BaseOpenmrsObject implements LocalizedMetadata {
 

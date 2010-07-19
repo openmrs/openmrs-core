@@ -16,6 +16,8 @@ package org.openmrs;
 /**
  * All {@link OpenmrsMetadata} classes(e.g., {@link EncounterType}, {@link Location}) that have
  * localized name or description will implement this interface.
+ * 
+ * @since 1.9
  */
 public interface LocalizedMetadata extends OpenmrsMetadata {
 	

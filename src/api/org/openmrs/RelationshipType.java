@@ -237,4 +237,20 @@ public class RelationshipType extends BaseOpenmrsMetadata implements java.io.Ser
 		setRelationshipTypeId(id);
 		
 	}
+	
+	/**
+	 * @see org.openmrs.BaseOpenmrsMetadata#getName()
+	 */
+	@Override
+	public String getName() {
+		return getaIsToB() + "-" + getbIsToA();
+	}
+	
+	/**
+	 * @see org.openmrs.BaseOpenmrsMetadata#setName(java.lang.String)
+	 */
+	@Override
+	public void setName(String name) {
+		throw new UnsupportedOperationException();
+	}
 }
