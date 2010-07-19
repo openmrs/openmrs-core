@@ -156,6 +156,10 @@
 		<listener-class>org.openmrs.web.Listener</listener-class>
 		<!--  extends ContextLoaderListener -->
 	</listener>
+
+	<listener>
+		<listener-class>org.openmrs.web.SessionListener</listener-class>
+	</listener>
 	
 	<servlet>
 		<servlet-name>dwr-invoker</servlet-name>
