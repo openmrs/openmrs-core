@@ -57,7 +57,8 @@ public class GlobalPropertyController extends SimpleFormController {
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
 	                                BindException errors) throws Exception {
 		
@@ -106,6 +107,7 @@ public class GlobalPropertyController extends SimpleFormController {
 				}
 				
 				try {
+
 					as.saveGlobalProperties(globalPropList);
 					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "GlobalProperty.saved");
 					
@@ -133,7 +135,8 @@ public class GlobalPropertyController extends SimpleFormController {
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
+	@Override
+    protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 		
 		if (Context.isAuthenticated()) {
 			// return a non-empty list if the user has authenticated properly

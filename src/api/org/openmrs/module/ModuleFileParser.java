@@ -264,6 +264,7 @@ public class ModuleFileParser {
 			module.setRequireOpenmrsVersion(getElement(rootNode, configVersion, "require_version"));
 			module.setUpdateURL(getElement(rootNode, configVersion, "updateURL"));
 			module.setRequiredModulesMap(getRequiredModules(rootNode, configVersion));
+			module.setConfigurationPage(getElement(rootNode, configVersion, "configurationPage"));
 			
 			module.setAdvicePoints(getAdvice(rootNode, configVersion, module));
 			module.setExtensionNames(getExtensions(rootNode, configVersion));
@@ -602,7 +603,7 @@ public class ModuleFileParser {
 		
 		return properties;
 	}
-	
+
 	/**
 	 * Load in the defined mapping file names
 	 * 

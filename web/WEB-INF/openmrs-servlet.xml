@@ -212,6 +212,7 @@
 				
 				<prop key="admin/modules/module.list">moduleListController</prop>
 				<prop key="admin/modules/moduleProperties.form">modulePropertiesFormController</prop>
+				<prop key="admin/modules/moduleConfiguration.form">moduleConfigurationFormController</prop>
 				
 				<prop key="forgotPassword.form">forgotPasswordForm</prop>
 
@@ -955,6 +956,12 @@
 		<property name="commandName"><value>moduleProperties</value></property>
 		<property name="formView"><value>/admin/modules/modulePropertiesForm</value></property>
 		<property name="successView"><value>moduleProperties.form</value></property>
+	</bean>
+	<bean id="moduleConfigurationFormController"
+		class="org.openmrs.module.web.controller.ModuleConfigurationFormController">
+		<property name="commandName"><value>moduleConfigurations</value></property>
+		<property name="formView"><value>/admin/modules/moduleConfigurationForm</value></property>
+		<property name="successView"><value>module.list</value></property>
 	</bean>
 	
 	<bean id="forgotPasswordForm"

@@ -99,6 +99,8 @@ public final class Module {
 	
 	private String startupErrorMessage = null;
 	
+	private String configurationPage;
+
 	/**
 	 * Simple constructor
 	 * 
@@ -702,6 +704,18 @@ public final class Module {
 		this.startupErrorMessage = null;
 	}
 	
+	public String getConfigurationPage() {
+		return configurationPage;
+	}
+	
+	public void setConfigurationPage(String configurationPage) {
+		this.configurationPage = configurationPage;
+	}
+	
+	public boolean hasConfiguration() {
+		return configurationPage != null || globalProperties.size() > 0;
+	}
+
 	@Override
     public String toString() {
 		if (moduleId == null)
