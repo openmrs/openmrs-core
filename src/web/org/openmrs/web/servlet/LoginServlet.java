@@ -36,6 +36,7 @@ import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.OpenmrsCookieLocaleResolver;
 import org.openmrs.web.WebConstants;
+import org.openmrs.web.user.CurrentUsers;
 import org.openmrs.web.user.UserProperties;
 
 /**
@@ -157,6 +158,8 @@ public class LoginServlet extends HttpServlet {
 					if (Context.getLocale() == null) {
 						Context.setLocale(LocaleUtility.getDefaultLocale());
 					}
+					
+					CurrentUsers.addUser(httpSession, user);
 					
 					if (log.isDebugEnabled()) {
 						log.debug("Redirecting after login to: " + redirect);
