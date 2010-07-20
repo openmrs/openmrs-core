@@ -16,9 +16,6 @@ package org.openmrs;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.joda.time.DateTimeFieldType;
-import org.joda.time.Partial;
-
 /**
  *
  */
@@ -26,7 +23,11 @@ public class ApproximateDate implements Comparable<ApproximateDate> {
 	
 	private Integer metadata = null;
 	
-	private Partial partialDate = null;
+	private Integer year = null;
+	
+	private Integer month = null;
+	
+	private Integer day = null;
 	
 	public final static int NOT_APPROXIMATED = 0;
 
@@ -48,12 +49,10 @@ public class ApproximateDate implements Comparable<ApproximateDate> {
 
 	private final static float DAYS_PER_YEAR = 365.25f;
 
-
 	/**
 	 * default no-arg constructor
 	 */
 	public ApproximateDate() {
-		partialDate = getPartial();
 	}
 	
 	/**
@@ -62,8 +61,6 @@ public class ApproximateDate implements Comparable<ApproximateDate> {
 	 * @param date the date to be set
 	 */
 	public ApproximateDate(Date date) {
-		//		Calendar calendar = Calendar.getInstance();
-		//		calendar.setTime(date);
 		setDate(date);
 	}
 	
@@ -73,7 +70,7 @@ public class ApproximateDate implements Comparable<ApproximateDate> {
 	 * @param date
 	 * @param metadata
 	 */
-	public ApproximateDate(Date date, int metadata) {
+	public ApproximateDate(Date date, Integer metadata) {
 		this(date);
 		this.metadata = metadata;
 
@@ -82,26 +79,66 @@ public class ApproximateDate implements Comparable<ApproximateDate> {
 	/**
 	 * @return the metadata
 	 */
-	public int getMetadata() {
+	public Integer getMetadata() {
 		return metadata;
 	}
 	
 	/**
 	 * @param metadata the metadata to set
 	 */
-	public void setMetadata(int metadata) {
+	public void setMetadata(Integer metadata) {
 		this.metadata = metadata;
-		if(partialDate != null){
-			if (isDayUnknown()) {
-				partialDate = partialDate.without(DateTimeFieldType.dayOfMonth());
-			}
-			if (isMonthUnknown()) {
-				partialDate = partialDate.without(DateTimeFieldType.monthOfYear());
-			}
-			if (isYearUnknown()) {
-				partialDate = partialDate.without(DateTimeFieldType.monthOfYear());
-			}
-		}
+		if (isDayUnknown())
+			setDay(null);
+		if (isMonthUnknown())
+			setMonth(null);
+		if (isYearUnknown())
+			setYear(null);
+	}
+	
+	/**
+	 * @return the year
+	 */
+	public Integer getYear() {
+		return year;
+	}
+	
+	/**
+	 * @return the month
+	 */
+	public Integer getMonth() {
+		return month;
+	}
+	
+	/**
+	 * @return the day
+	 */
+	public Integer getDay() {
+		return day;
+	}
+
+	/**
+	 * @param year the year to set
+	 */
+	public void setYear(Integer year) {
+		this.year = year;
+		setFlag(UNKNOWN_YEAR, year == null);
+	}
+	
+	/**
+	 * @param month the month to set
+	 */
+	public void setMonth(Integer month) {
+		this.month = month;
+		setFlag(UNKNOWN_MONTH, month == null);
+	}
+	
+	/**
+	 * @param day the day to set
+	 */
+	public void setDay(Integer day) {
+		this.day = day;
+		setFlag(UNKNOWN_DAY, day == null);
 	}
 
 	/**
@@ -111,6 +148,8 @@ public class ApproximateDate implements Comparable<ApproximateDate> {
 	 * @return
 	 */
 	protected boolean isFlag(int flag) {
+		if (metadata == null)
+			return false;
 		return (metadata & flag) == flag;
 	}
 	
@@ -121,6 +160,8 @@ public class ApproximateDate implements Comparable<ApproximateDate> {
 	 * @param value the value set to the flag
 	 */
 	protected void setFlag(int flag, boolean value) {
+		if (metadata == null)
+			metadata = 0;
 		if (value) {
 			metadata |= flag;
 		} else {
@@ -128,18 +169,6 @@ public class ApproximateDate implements Comparable<ApproximateDate> {
 		}
 	}
 	
-	/**
-	 * Used internally to retrieve the Partial instance
-	 * 
-	 * @return the partialDate
-	 */
-	private Partial getPartial() {
-		if (partialDate == null || partialDate.equals(null)) {
-			partialDate = new Partial();
-		}
-		return partialDate;
-	}
-
 	/**
 	 * Used internally to set the value for any field in the date
 	 * 
@@ -149,17 +178,17 @@ public class ApproximateDate implements Comparable<ApproximateDate> {
 	 * @param approximateFlag
 	 * @param unknownFlag
 	 **/
-	private void setAnyField(DateTimeFieldType dtFieldType, Integer value, boolean approximate, int approximateFlag,
-	                         int unknownFlag) {
-		if (value != null) {
-			partialDate = getPartial().with(dtFieldType, value);
-			setFlag(unknownFlag, false);
-			setFlag(approximateFlag, approximate);
-		} else {
-			setFlag(unknownFlag, true);
-			setFlag(approximateFlag, false);
-		}
-	}
+	//	private void setAnyField(DateTimeFieldType dtFieldType, Integer value, boolean approximate, int approximateFlag,
+	//	                         int unknownFlag) {
+	//		if (value != null) {
+	//			partialDate = getPartial().with(dtFieldType, value);
+	//			setFlag(unknownFlag, false);
+	//			setFlag(approximateFlag, approximate);
+	//		} else {
+	//			setFlag(unknownFlag, true);
+	//			setFlag(approximateFlag, false);
+	//		}
+	//	}
 	
 	/**
 	 * Sets the year value
@@ -170,7 +199,8 @@ public class ApproximateDate implements Comparable<ApproximateDate> {
 	 * @should set the approximate value for year
 	 */
 	public void setYear(Integer year, boolean approximate) {
-		setAnyField(DateTimeFieldType.year(), year, approximate, APPROXIMATE_YEAR, UNKNOWN_YEAR);
+		setYear(year);
+		setFlag(APPROXIMATE_YEAR, approximate);
 	}
 	
 	/**
@@ -182,7 +212,8 @@ public class ApproximateDate implements Comparable<ApproximateDate> {
 	 * @should set the approximate value for month
 	 */
 	public void setMonth(Integer month, boolean approximate) {
-		setAnyField(DateTimeFieldType.monthOfYear(), month, approximate, APPROXIMATE_MONTH, UNKNOWN_MONTH);
+		setMonth(month);
+		setFlag(APPROXIMATE_MONTH, approximate);
 	}
 	
 	/**
@@ -194,37 +225,8 @@ public class ApproximateDate implements Comparable<ApproximateDate> {
 	 * @should set the approximate value for day
 	 */
 	public void setDay(Integer day, boolean approximate) {
-		setAnyField(DateTimeFieldType.dayOfMonth(), day, approximate, APPROXIMATE_DAY, UNKNOWN_DAY);
-	}
-	
-	/**
-	 * Returns the year of the date
-	 * 
-	 * @return year
-	 * @should return the year
-	 */
-	public Integer getYear() {
-		return getPartial().get(DateTimeFieldType.year());
-	}
-	
-	/**
-	 * Returns the month of the date
-	 * 
-	 * @return month
-	 * @should return the month
-	 */
-	public Integer getMonth() {
-		return getPartial().get(DateTimeFieldType.monthOfYear());
-	}
-	
-	/**
-	 * Returns the day of the date
-	 * 
-	 * @return day
-	 * @should return the day
-	 */
-	public Integer getDay() {
-		return getPartial().get(DateTimeFieldType.dayOfMonth());
+		setDay(day);
+		setFlag(APPROXIMATE_DAY, approximate);
 	}
 	
 	/**
@@ -244,7 +246,9 @@ public class ApproximateDate implements Comparable<ApproximateDate> {
 	 * @should set the approximation level
 	 */
 	public boolean isApproximated() {
-		return metadata > 0;
+		if (metadata == null)
+			return false;
+		return getMetadata() > 0;
 	}
 	
 	/**
@@ -338,28 +342,25 @@ public class ApproximateDate implements Comparable<ApproximateDate> {
 	 * @param date
 	 */
 	public void setDate(Date date) {
-		//TODO
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(date);
-		if (!(metadata.equals(null))){
-			if (isDayUnknown()) {
-				setDay(null, false);
-			}else{
-				setDay(calendar.get(Calendar.DAY_OF_MONTH), isDayApproximated());
-			}
-			if (isMonthUnknown()) {
-				setMonth(null, false);
-			} else {
-				setDay(calendar.get(Calendar.MONTH), isDayApproximated());
-			}
-			if (isYearUnknown()) {
-				setYear(null, false);
-			} else {
-				setDay(calendar.get(Calendar.YEAR), isDayApproximated());
+		if (date == null) {
+			setYear(null);
+			setMonth(null);
+			setDay(null);
+		} else {
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTime(date);
+			setYear(calendar.get(Calendar.YEAR));
+			setMonth(calendar.get(Calendar.MONTH) + 1);
+			setDay(calendar.get(Calendar.DAY_OF_MONTH));
+			if (metadata != null) {
+				if (isYearUnknown())
+					setYear(null);
+				if (isMonthUnknown())
+					setMonth(null);
+				if (isDayUnknown())
+					setDay(null);
 			}
 		}
-		
-		//		setDate(calendar);
 	}
 	
 	/**
@@ -368,12 +369,8 @@ public class ApproximateDate implements Comparable<ApproximateDate> {
 	 * @param date the date to be set
 	 */
 	public void setExactDate(Date date) {
-		//TODO
 		setDate(date);
-		setApproximated(0);
-		setFlag(UNKNOWN_DAY, false);
-		setFlag(UNKNOWN_MONTH, false);
-		setFlag(UNKNOWN_YEAR, false);
+		setMetadata(0);
 	}
 
 	/**
@@ -408,28 +405,28 @@ public class ApproximateDate implements Comparable<ApproximateDate> {
 	 **/
 	public Date getDate() {
 		//TODO
-		int year;
-		if (isFlag(UNKNOWN_YEAR)) {
+		Integer year;
+		if (isFlag(UNKNOWN_YEAR) || getYear() == null) {
 			year = Calendar.getInstance().YEAR;
 		} else {
 			year = getYear();
 		}
 		
-		int month;
-		if (isFlag(UNKNOWN_MONTH)) {
+		Integer month;
+		if (isFlag(UNKNOWN_MONTH) || getMonth() == null) {
 			month = 7;
 		} else {
 			month = getMonth();
 		}
 		
-		int date;
-		if (isFlag(UNKNOWN_DAY)) {
+		Integer date;
+		if (isFlag(UNKNOWN_DAY) || getDay() == null) {
 			date = 15;
 		} else {
 			date = getDay();
 		}
 		
-		if (isFlag(UNKNOWN_MONTH) && isFlag(UNKNOWN_DAY)) {
+		if (isFlag(UNKNOWN_MONTH) && isFlag(UNKNOWN_DAY) || getMonth() == null && getDay() == null) {
 			month = 7;
 			date = 1;
 		}

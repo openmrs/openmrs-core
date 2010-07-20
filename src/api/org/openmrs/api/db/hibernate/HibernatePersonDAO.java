@@ -171,8 +171,8 @@ public class HibernatePersonDAO implements PersonDAO {
 		} else {
 			
 			// This is simply an alternative method of name matching which scales better
-			// for large names, although it is hard to imagine getting names with more than 
-			// six or so tokens.  This can be easily updated to attain more desirable 
+			// for large names, although it is hard to imagine getting names with more than
+			// six or so tokens.  This can be easily updated to attain more desirable
 			// results; it is just a working alternative to throwing an exception.
 			
 			q += "(";
@@ -216,8 +216,8 @@ public class HibernatePersonDAO implements PersonDAO {
 			q += ") >= " + (int) (names.length * .75); // if most of the names have at least a hit somewhere
 		}
 		
-		String birthdayMatch = " (year(p.birthdate) between " + (birthyear - 1) + " and " + (birthyear + 1)
-		        + " or p.birthdate is null) ";
+		String birthdayMatch = " (year(p.birthdate.date) between " + (birthyear - 1) + " and " + (birthyear + 1)
+		        + " or p.birthdate.date is null) ";
 		
 		String genderMatch = " (p.gender = :gender or p.gender = '') ";
 		
@@ -231,7 +231,7 @@ public class HibernatePersonDAO implements PersonDAO {
 		
 		q += " order by pname.givenName asc,";
 		q += " pname.middleName asc,";
-		q += " pname.familyName asc";
+		q += " pname.familyName asc,";
 		q += " pname.familyName2 asc";
 		
 		Query query = sessionFactory.getCurrentSession().createQuery(q);

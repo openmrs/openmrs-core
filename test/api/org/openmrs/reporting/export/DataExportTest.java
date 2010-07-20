@@ -61,12 +61,12 @@ public class DataExportTest extends BaseContextSensitiveTest {
 		
 		SimpleColumn birthdate = new SimpleColumn();
 		birthdate.setColumnName("BIRTHDATE");
-		birthdate.setReturnValue("$!{fn.formatDate('short', $fn.getPatientAttr('Person', 'birthdate'))}");
+		birthdate.setReturnValue("$!{fn.formatDate('short', $fn.getPatientAttr('Person', 'birthdate.date'))}");
 		export.getColumns().add(birthdate);
 		
 		SimpleColumn age = new SimpleColumn();
 		age.setColumnName("AGE");
-		age.setReturnValue("$!{fn.calculateAge($fn.getPatientAttr('Person', 'birthdate'))}");
+		age.setReturnValue("$!{fn.calculateAge($fn.getPatientAttr('Person', 'birthdate.date'))}");
 		export.getColumns().add(age);
 		
 		Cohort patients = new Cohort();

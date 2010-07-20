@@ -120,7 +120,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	 * @deprecated
 	 * @see org.openmrs.api.db.PatientSetDAO#exportXml(org.openmrs.Cohort)
 	 */
-	public String exportXml(Cohort ps) throws DAOException {
+	@Deprecated
+    public String exportXml(Cohort ps) throws DAOException {
 		// TODO: This is inefficient for large patient sets.
 		StringBuffer ret = new StringBuffer("<patientset>");
 		for (Integer patientId : ps.getMemberIds()) {
@@ -218,7 +219,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	 * Note that the formatting may depend on locale
 	 * @deprecated
 	 */
-	public String exportXml(Integer patientId) throws DAOException {
+	@Deprecated
+    public String exportXml(Integer patientId) throws DAOException {
 		Locale locale = Context.getLocale();
 		
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -282,10 +284,10 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			}
 			 */
 			if (p.getBirthdate() != null) {
-				patientNode.setAttribute("birthdate", df.format(p.getBirthdate()));
+				patientNode.setAttribute("birthdate", df.format(p.getBirthdate().getDate()));
 			}
 			if (p.getBirthdateEstimated() != null) {
-				patientNode.setAttribute("birthdate_estimated", p.getBirthdateEstimated().toString());
+				patientNode.setAttribute("birthdate_estimated", p.isBirthdateEstimated().toString());
 			}
 			/*
 			if (p.getBirthplace() != null) {
@@ -905,10 +907,10 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			clauses.add("patient.gender = :gender");
 		}
 		if (minBirthdate != null) {
-			clauses.add("patient.birthdate >= :minBirthdate");
+			clauses.add("patient.birthdate.date >= :minBirthdate");
 		}
 		if (maxBirthdate != null) {
-			clauses.add("patient.birthdate <= :maxBirthdate");
+			clauses.add("patient.birthdate.date <= :maxBirthdate");
 		}
 		if (aliveOnly != null && aliveOnly) {
 			clauses.add("patient.dead = false"); // TODO: Should this use effectiveDate?  What if deathDate is null?
@@ -923,7 +925,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			cal.setTime(effectiveDate);
 			cal.add(Calendar.YEAR, -minAge);
 			maxBirthFromAge = cal.getTime();
-			clauses.add("patient.birthdate <= :maxBirthFromAge");
+			clauses.add("patient.birthdate.date <= :maxBirthFromAge");
 		}
 		Date minBirthFromAge = null;
 		if (maxAge != null) {
@@ -931,10 +933,10 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			cal.setTime(effectiveDate);
 			cal.add(Calendar.YEAR, -(maxAge + 1));
 			minBirthFromAge = cal.getTime();
-			clauses.add("patient.birthdate > :minBirthFromAge");
+			clauses.add("patient.birthdate.date > :minBirthFromAge");
 		}
 		
-		clauses.add("(patient.birthdate is null or patient.birthdate <= :effectiveDate)");
+		clauses.add("(patient.birthdate.date is null or patient.birthdate.date <= :effectiveDate)");
 		
 		boolean first = true;
 		for (String clause : clauses) {
@@ -974,7 +976,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		Map<Integer, String> ret = new HashMap<Integer, String>();
 		
 		Query query = sessionFactory.getCurrentSession().createQuery(
-		    "select patient.personId, patient.gender, patient.birthdate from Patient patient where voided = false");
+		    "select patient.personId, patient.gender, patient.birthdate.date from Patient patient where voided = false");
 		query.setCacheMode(CacheMode.IGNORE);
 		
 		List<Object[]> temp = query.list();
@@ -1006,7 +1008,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		Map<Integer, Map<String, Object>> ret = new HashMap<Integer, Map<String, Object>>();
 		Collection<Integer> ids = patients.getMemberIds();
 		Query query = sessionFactory.getCurrentSession().createQuery(
-		    "select patient.personId, patient.gender, patient.birthdate from Patient patient where patient.voided = false");
+		            "select patient.personId, patient.gender, patient.birthdate.date from Patient patient where patient.voided = false");
 		query.setCacheMode(CacheMode.IGNORE);
 		
 		List<Object[]> temp = query.list();
@@ -1034,7 +1036,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	@SuppressWarnings("unchecked")
 	/**
 	 * fromDate and toDate are both inclusive
-	 * TODO: finish this. 
+	 * TODO: finish this.
 	 */
 	public Map<Integer, List<Obs>> getObservations(Cohort patients, Concept concept, Date fromDate, Date toDate)
 	                                                                                                            throws DAOException {
@@ -1422,8 +1424,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			
 			// do not include voided person rows
 			if (className.equals("org.openmrs.Person"))
-				// the voided column on the person table is mapped to the person object 
-				// through the getPersonVoided() to distinguish it from patient/user.voided 
+				// the voided column on the person table is mapped to the person object
+				// through the getPersonVoided() to distinguish it from patient/user.voided
 				criteria.add(Expression.eq("personVoided", false));
 			else
 				// this is here to support PersonName and PersonAddress
@@ -1869,7 +1871,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		return ret;
 	}
 	
-	/* 
+	/*
 	 * TODO: should we return voided patients?
 	 * This is a small hack to make the relationships work right in Neal's report code. It will be refactored
 	 * when I implement a relationship type filter for the cohort builder. -DJ
@@ -1909,7 +1911,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	}
 	
 	// TODO: Don't return voided patients
-	// TODO: Refactor this completely to make it useful now that relationships are bidirectional. (Or delete it.) 
+	// TODO: Refactor this completely to make it useful now that relationships are bidirectional. (Or delete it.)
 	@SuppressWarnings("unchecked")
 	public Map<Integer, List<Relationship>> getRelationships(Cohort patients, RelationshipType relType) {
 		Map<Integer, List<Relationship>> ret = new HashMap<Integer, List<Relationship>>();
