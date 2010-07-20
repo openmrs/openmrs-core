@@ -595,17 +595,23 @@
 			<report format="frames" todir="${junit-reports.dir}"/>
 		</junitreport>
 
-		<!-- TODO add other execs for different OS's. Switch to osfamily with Ant 1.7 -->
-		<exec os="Windows XP" executable="C:/Program Files/Mozilla Firefox/firefox.exe" failifexecutionfails="false">
-			<arg value="file:///${junit-reports.dir}/index.html"/>
-		</exec>
-		<exec os="Linux" executable="firefox" failifexecutionfails="false">
-			<arg value="file:///${junit-reports.dir}/index.html"/>
-		</exec>
-		<exec os="Mac OS X" executable="open" failifexecutionfails="false">
-			<arg line="-a Firefox"/>
-			<arg value="file:///${junit-reports.dir}/index.html"/>
-		</exec>
+		<if>
+			<!-- so that the continuous integration server doesn't complain about not having firefox installed -->
+			<not><equals arg1="${user.name}" arg2="bamboo" /></not>
+			<then>
+				<!-- TODO add other execs for different OS's. Switch to osfamily with Ant 1.7 -->
+				<exec os="Windows XP" executable="C:/Program Files/Mozilla Firefox/firefox.exe" failifexecutionfails="false">
+					<arg value="file:///${junit-reports.dir}/index.html"/>
+				</exec>
+				<exec os="Linux" executable="firefox" failifexecutionfails="false">
+					<arg value="file:///${junit-reports.dir}/index.html"/>
+				</exec>
+				<exec os="Mac OS X" executable="open" failifexecutionfails="false">
+					<arg line="-a Firefox"/>
+					<arg value="file:///${junit-reports.dir}/index.html"/>
+				</exec>
+			</then>
+		</if>
 
 	</target>
 
