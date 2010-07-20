@@ -93,7 +93,6 @@ public class ModuleConfigurationFormController extends SimpleFormController {
 					GlobalProperty gp = formBackingObjectMap.get(propName);
 					
 					if (gp != null) {
-						gp.setProperty(propName);
 						gp.setPropertyValue(propValue);
 						gp.setDescription(propDescription);
 					} else {
@@ -114,8 +113,6 @@ public class ModuleConfigurationFormController extends SimpleFormController {
 				}
 			}
 		}
-
-		//new ModelAndView()
 		
 		return new ModelAndView(new RedirectView(getSuccessView()));
 	}
@@ -126,17 +123,20 @@ public class ModuleConfigurationFormController extends SimpleFormController {
 
 		String moduleId = request.getParameter("moduleId");
 		
-		if (moduleId == null) {
-			log.error("Module Id required but not found");
+		Module module = null;
+		
+		String moduleName = "";
+		
+		try {
+			module = getModuleFromModuleId(moduleId);
+			
+			moduleName = module.getName();
+		}
+		catch (Exception e) {
+			log.error(e);
 		}
 		
-		Module module = ModuleFactory.getModuleById(moduleId);
-		
-		if (module == null) {
-			log.error("Invalid Module Id");
-		}
-		
-		map.put("moduleName", module.getName());
+		map.put("moduleName", moduleName);
 
 		return map;
 	}
@@ -150,26 +150,38 @@ public class ModuleConfigurationFormController extends SimpleFormController {
 			
 			String moduleId = request.getParameter("moduleId");
 			
-			if (moduleId == null) {
-				log.error("Module Id required but not found");
-			}
+			Module module = null;
 
-			Module module = ModuleFactory.getModuleById(moduleId);
-			
-			if (module == null) {
-				log.error("Invalid Module Id");
+			try {
+				module = getModuleFromModuleId(moduleId);
+				
+				List<GlobalProperty> globalProperties = module.getGlobalProperties();
+				
+				for (GlobalProperty gp : globalProperties) {
+					String property = gp.getProperty();
+					GlobalProperty dbgp = as.getGlobalPropertyObject(property);
+					gpList.add(dbgp);
+				}
 			}
-			
-			List<GlobalProperty> globalProperties = module.getGlobalProperties();
-			
-			for(GlobalProperty gp:globalProperties){
-				String property = gp.getProperty();
-				GlobalProperty dbgp = as.getGlobalPropertyObject(property);
-				gpList.add(dbgp);
+			catch (Exception e) {
+				log.error(e);
 			}
-
 		}
 		
 		return gpList;
+	}
+	
+	private Module getModuleFromModuleId(String moduleId) throws Exception {
+		if (moduleId != null) {
+			Module module = ModuleFactory.getModuleById(moduleId);
+			
+			if (module != null) {
+				return module;
+			} else {
+				throw new Exception("Invalid Module Id");
+			}
+		} else {
+			throw new Exception("Module Id required but not found");
+		}
 	}
 }

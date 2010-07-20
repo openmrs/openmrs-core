@@ -23,6 +23,8 @@
  }
 </style>
 
+<c:choose>
+<c:when test="${moduleName != ''}">
 <h2><spring:message code="Module.configuration.title" arguments="${moduleName}"/></h2>	
 
 <b class="boxHeader"><spring:message code="GlobalProperty.list.title"/></b>
@@ -167,5 +169,12 @@
 		<input type="submit" name="action" value='<spring:message code="general.cancel"/>' />
 	</span>
 </form>
+</c:when>
+<c:otherwise>
+	<spring:message code="Module.configuration.notFound"/> 
+	<div style="clear:both">&nbsp;</div>
+	<a href="module.list"><spring:message code="general.back"/></a>
+</c:otherwise>
+</c:choose>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>
