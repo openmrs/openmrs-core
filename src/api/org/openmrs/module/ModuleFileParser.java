@@ -204,18 +204,18 @@ public class ModuleFileParser {
 			
 			Element rootNode = configDoc.getDocumentElement();
 			
-			String configVersion = rootNode.getAttribute("configVersion");
+			String configVersion = rootNode.getAttribute("configVersion").trim();
 			
 			if (!validConfigVersions.contains(configVersion))
 				throw new ModuleException(Context.getMessageSourceService().getMessage("Module.error.invalidConfigVersion",
 				    new Object[] { configVersion }, Context.getLocale()), moduleFile.getName());
 			
-			String name = getElement(rootNode, configVersion, "name");
-			String moduleId = getElement(rootNode, configVersion, "id");
-			String packageName = getElement(rootNode, configVersion, "package");
-			String author = getElement(rootNode, configVersion, "author");
-			String desc = getElement(rootNode, configVersion, "description");
-			String version = getElement(rootNode, configVersion, "version");
+			String name = getElement(rootNode, configVersion, "name").trim();
+			String moduleId = getElement(rootNode, configVersion, "id").trim();
+			String packageName = getElement(rootNode, configVersion, "package").trim();
+			String author = getElement(rootNode, configVersion, "author").trim();
+			String desc = getElement(rootNode, configVersion, "description").trim();
+			String version = getElement(rootNode, configVersion, "version").trim();
 			
 			// do some validation
 			if (name == null || name.length() == 0)
@@ -258,11 +258,11 @@ public class ModuleFileParser {
 			module = new Module(name, moduleId, packageName, author, desc, version);
 			
 			// find and load the activator class
-			module.setActivatorName(getElement(rootNode, configVersion, "activator"));
+			module.setActivatorName(getElement(rootNode, configVersion, "activator").trim());
 			
-			module.setRequireDatabaseVersion(getElement(rootNode, configVersion, "require_database_version"));
-			module.setRequireOpenmrsVersion(getElement(rootNode, configVersion, "require_version"));
-			module.setUpdateURL(getElement(rootNode, configVersion, "updateURL"));
+			module.setRequireDatabaseVersion(getElement(rootNode, configVersion, "require_database_version").trim());
+			module.setRequireOpenmrsVersion(getElement(rootNode, configVersion, "require_version").trim());
+			module.setUpdateURL(getElement(rootNode, configVersion, "updateURL").trim());
 			module.setRequiredModulesMap(getRequiredModules(rootNode, configVersion));
 			
 			module.setAdvicePoints(getAdvice(rootNode, configVersion, module));
@@ -343,7 +343,7 @@ public class ModuleFileParser {
 					NamedNodeMap attributes = n.getAttributes();
 					Node versionNode = attributes.getNamedItem("version");
 					String reqVersion = versionNode == null ? null : versionNode.getNodeValue();
-					packageNamesToVersion.put(n.getTextContent(), reqVersion);
+					packageNamesToVersion.put(n.getTextContent().trim(), reqVersion);
 				}
 				i++;
 			}
@@ -374,9 +374,9 @@ public class ModuleFileParser {
 				while (x < nodes.getLength()) {
 					Node childNode = nodes.item(x);
 					if ("point".equals(childNode.getNodeName()))
-						point = childNode.getTextContent();
+						point = childNode.getTextContent().trim();
 					else if ("class".equals(childNode.getNodeName()))
-						adviceClass = childNode.getTextContent();
+						adviceClass = childNode.getTextContent().trim();
 					x++;
 				}
 				log.debug("point: " + point + " class: " + adviceClass);
@@ -417,9 +417,9 @@ public class ModuleFileParser {
 				while (x < nodes.getLength()) {
 					Node childNode = nodes.item(x);
 					if ("point".equals(childNode.getNodeName()))
-						point = childNode.getTextContent();
+						point = childNode.getTextContent().trim();
 					else if ("class".equals(childNode.getNodeName()))
-						extClass = childNode.getTextContent();
+						extClass = childNode.getTextContent().trim();
 					x++;
 				}
 				log.debug("point: " + point + " class: " + extClass);
@@ -466,9 +466,9 @@ public class ModuleFileParser {
 				while (x < nodes.getLength()) {
 					Node childNode = nodes.item(x);
 					if ("lang".equals(childNode.getNodeName()))
-						lang = childNode.getTextContent();
+						lang = childNode.getTextContent().trim();
 					else if ("file".equals(childNode.getNodeName()))
-						file = childNode.getTextContent();
+						file = childNode.getTextContent().trim();
 					x++;
 				}
 				log.debug("lang: " + lang + " file: " + file);
@@ -532,9 +532,9 @@ public class ModuleFileParser {
 				while (x < nodes.getLength()) {
 					Node childNode = nodes.item(x);
 					if ("name".equals(childNode.getNodeName()))
-						name = childNode.getTextContent();
+						name = childNode.getTextContent().trim();
 					else if ("description".equals(childNode.getNodeName()))
-						description = childNode.getTextContent();
+						description = childNode.getTextContent().trim();
 					x++;
 				}
 				log.debug("name: " + name + " description: " + description);
@@ -576,11 +576,11 @@ public class ModuleFileParser {
 				while (x < nodes.getLength()) {
 					Node childNode = nodes.item(x);
 					if ("property".equals(childNode.getNodeName()))
-						property = childNode.getTextContent();
+						property = childNode.getTextContent().trim();
 					else if ("defaultValue".equals(childNode.getNodeName()))
 						defaultValue = childNode.getTextContent();
 					else if ("description".equals(childNode.getNodeName()))
-						description = childNode.getTextContent();
+						description = childNode.getTextContent().trim();
 					
 					x++;
 				}
@@ -633,7 +633,7 @@ public class ModuleFileParser {
 	 */
 	private boolean getMandatory(Element rootNode, String configVersion, JarFile jarfile) {
 		if (Double.parseDouble(configVersion) >= 1.3) {
-			String mandatory = getElement(rootNode, configVersion, "mandatory");
+			String mandatory = getElement(rootNode, configVersion, "mandatory").trim();
 			return "true".equalsIgnoreCase(mandatory);
 		}
 		
