@@ -20,8 +20,10 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.GlobalProperty;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
@@ -266,8 +268,19 @@ public class HL7Util {
 	 * @return The destination directory for the hl7 in archive
 	 */
 	public static File getHl7ArchivesDirectory() throws APIException {
-		
-		return OpenmrsUtil.getDirectoryInApplicationDataDirectory(Context.getAdministrationService().getGlobalProperty(
-		    OpenmrsConstants.GLOBAL_PROPERTY_HL7_ARCHIVE_DIRECTORY));
+		String archiveDir = Context.getAdministrationService().getGlobalProperty(
+		    OpenmrsConstants.GLOBAL_PROPERTY_HL7_ARCHIVE_DIRECTORY);
+
+		if (StringUtils.isBlank(archiveDir)) {
+			log.warn("Invalid value for global property '" + OpenmrsConstants.GLOBAL_PROPERTY_HL7_ARCHIVE_DIRECTORY
+			        + "', trying to set a default one");
+			GlobalProperty gp = Context.getAdministrationService().getGlobalPropertyObject(
+			    OpenmrsConstants.GLOBAL_PROPERTY_HL7_ARCHIVE_DIRECTORY);
+			gp.setPropertyValue(HL7Constants.HL7_ARCHIVE_DIRECTORY_NAME);
+
+			gp = Context.getAdministrationService().saveGlobalProperty(gp);
+			archiveDir = gp.getPropertyValue();
+		}
+		return OpenmrsUtil.getDirectoryInApplicationDataDirectory(archiveDir);
 	}
 }
