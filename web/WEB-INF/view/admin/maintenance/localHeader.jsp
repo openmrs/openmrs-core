@@ -59,7 +59,7 @@
 		</li>
 	</openmrs:hasPrivilege>
 	<openmrs:hasPrivilege privilege="View Users">
-		<li <c:if test="<%= request.getRequestURI().contains("currentUsers") %>">class="active"</c:if>>
+		<li <c:if test='<%= request.getRequestURI().contains("currentUsers") %>'>class="active"</c:if>>
 			<a href="${pageContext.request.contextPath}/admin/maintenance/currentUsers.list">
 				<spring:message code="ViewCurrentUsers.list"/>
 			</a>
