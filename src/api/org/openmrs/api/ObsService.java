@@ -124,7 +124,6 @@ public interface ObsService extends OpenmrsService {
 	 * @throws APIException
 	 * @should get obs matching given obsId
 	 */
-	@Deprecated
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_OBS)
 	public Obs getObs(Integer obsId) throws APIException;
@@ -137,7 +136,6 @@ public interface ObsService extends OpenmrsService {
 	 * @should find object given valid uuid
 	 * @should return null if no object found with given uuid
 	 */
-	@Deprecated
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_OBS)
 	public Obs getObsByUuid(String uuid) throws APIException;
@@ -449,7 +447,6 @@ public interface ObsService extends OpenmrsService {
 	 * @should not include count of voided obs
 	 * @should include count of voided obs if includeVoidedObs is true
 	 */
-	@Deprecated
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_OBS)
 	public Integer getObservationCount(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
@@ -467,7 +464,6 @@ public interface ObsService extends OpenmrsService {
 	 * @should get obs matching encounterId in searchString
 	 * @should get obs matching obsId in searchString
 	 */
-	@Deprecated
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_OBS)
 	public List<Obs> getObservations(String searchString) throws APIException;
@@ -502,7 +498,6 @@ public interface ObsService extends OpenmrsService {
 	 * @should get observations matching person and question
 	 * @should not fail with null person parameter
 	 */
-	@Deprecated
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_OBS)
 	public List<Obs> getObservationsByPersonAndConcept(Person who, Concept question) throws APIException;
@@ -627,7 +622,6 @@ public interface ObsService extends OpenmrsService {
 	 * @should return normal obs for non complex obs
 	 * @should not fail with null view
 	 */
-	@Deprecated
 	@Transactional(readOnly = true)
 	@Authorized( { OpenmrsConstants.PRIV_VIEW_OBS })
 	public Obs getComplexObs(Integer obsId, String view) throws APIException;
@@ -641,7 +635,6 @@ public interface ObsService extends OpenmrsService {
 	 * @should get handler with matching key
 	 * @should have default image and text handlers registered by spring
 	 */
-	@Deprecated
 	@Transactional(readOnly = true)
 	public ComplexObsHandler getHandler(String key) throws APIException;
 	
@@ -667,7 +660,6 @@ public interface ObsService extends OpenmrsService {
 	 * @throws APIException
 	 * @should never return null
 	 */
-	@Deprecated
 	@Transactional(readOnly = true)
 	public Map<String, ComplexObsHandler> getHandlers() throws APIException;
 	
