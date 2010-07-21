@@ -188,7 +188,6 @@ public interface ObsService extends OpenmrsService {
 	 * @should set voided bit on given obs
 	 * @should fail if reason parameter is empty
 	 */
-	@Deprecated
 	@Authorized(OpenmrsConstants.PRIV_EDIT_OBS)
 	public Obs voidObs(Obs obs, String reason) throws APIException;
 	
@@ -241,7 +240,6 @@ public interface ObsService extends OpenmrsService {
 	 * @see #purgeObs(Obs, boolean)
 	 * @should throw APIException if given true cascade
 	 */
-	@Deprecated
 	@Authorized(OpenmrsConstants.PRIV_DELETE_OBS)
 	public void purgeObs(Obs obs, boolean cascade) throws APIException;
 	
@@ -349,7 +347,6 @@ public interface ObsService extends OpenmrsService {
 	 *      boolean)
 	 * @should get all observations assigned to given person
 	 */
-	@Deprecated
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_OBS)
 	public List<Obs> getObservationsByPerson(Person who);
@@ -399,7 +396,6 @@ public interface ObsService extends OpenmrsService {
 	 * @should not include voided obs
 	 * @should include voided obs if includeVoidedObs is true
 	 */
-	@Deprecated
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_OBS)
 	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
