@@ -107,18 +107,7 @@ public class ConfirmDialogWidgetTag extends TagSupport {
 		
 		sb.append("<input type=\"hidden\" id=\"default_button\" value=\""
 		        + (defaultButton == null ? DEFAULT_BUTTON : defaultButton)
-		        + "\" />");
-
-		sb.append("<div id=\"jConfirm_Suppress\">");
-
-		if (!"NA".equals(suppressKey)) { //Don't show suppress message if no suppress key is supplied
-			sb.append("<input type=\"checkbox\" name=\"suppress_message\" />"
-			        + (suppressMessage == null ? DEFAULT_SUPPRESS_MESSAGE : suppressMessage));
-		}else{
-			sb.append("<br>"); //Just to have a balanced confirmation dialog
-		}
-
-		sb.append("</div>");
+ + "\" />");
 
 		sb.append("<div id=\"jConfirm_Control\">");
 
@@ -132,7 +121,20 @@ public class ConfirmDialogWidgetTag extends TagSupport {
 			sb.append("<input type=\"button\" class=\"jConfirm_Button\" id=\"jConfirm_Button3\" value=\""
 			        + (button3Text == null ? DEFAULT_BUTTON3 : button3Text) + "\" />");
 		}
+		
+		sb.append("</div>");
+		
+		sb.append("<br>");
 
+		sb.append("<div id=\"jConfirm_Suppress\">");
+		
+		if (!"NA".equals(suppressKey)) { //Don't show suppress message if no suppress key is supplied
+			sb.append("<input type=\"checkbox\" name=\"suppress_message\" />" + "<i>"
+			        + (suppressMessage == null ? DEFAULT_SUPPRESS_MESSAGE : suppressMessage) + "</i>");
+		} else {
+			sb.append("<br>"); //Just to have a balanced confirmation dialog
+		}
+		
 		sb.append("</div>");
 
 		sb.append("</div>");

@@ -134,20 +134,6 @@
 	<div style="clear:both">&nbsp;</div>
 </c:if>
 
-<c:if test="${moduleRepositoryCacheExpired == 'true'}">
-	<div style="width: 100%;background-color: #FFAEB9">
-		<form name="updateModuleRepository" method="post">
-			<div style="margin: auto;width: 70%">
-				<div style="clear:both">&nbsp;</div>
-				<spring:message code="Module.cacheExpired" /> <input type="submit" value="Update" />
-				<input type="hidden" name="action" value="updateCache"/>
-				<div style="clear:both">&nbsp;</div>
-			</div>
-		</form>		
-	</div>
-	<div style="clear:both">&nbsp;</div>
-</c:if>
-
 <c:choose>
 	<c:when test="${allowAdmin == 'true'}">
 		<div id="buttonPanel">
@@ -164,9 +150,19 @@
 					</div>
 					<br/>
 								
-					<div id="findModule">
+					<div id="findModule">						
 						<b class="boxHeader"><spring:message code="Module.findAndDownload" /></b>
 						<div class="box">
+							<c:if test="${moduleRepositoryCacheExpired == 'true'}">
+								<div style="width: 100%;background-color: #FFAEB9">
+									<form name="updateModuleRepository" method="post">
+										<div style="margin: auto;width: 70%">											
+											<spring:message code="Module.cacheExpired" /> <input type="submit" value="Update" />
+											<input type="hidden" name="action" value="updateCache"/>											
+										</div>
+									</form>		
+								</div>								
+							</c:if>
 							<table id="findModuleTable" cellpadding="5" cellspacing="0">
 					    		<thead>
 					       			<tr>

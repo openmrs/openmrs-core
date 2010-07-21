@@ -39,9 +39,9 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
 
-
 /**
- *
+ * Controller that backs the /admin/modules/moduleConfiguration.form page. This controller makes a
+ * dynamic form based on the global properties available in a module
  */
 public class ModuleConfigurationFormController extends SimpleFormController {
 
@@ -103,7 +103,9 @@ public class ModuleConfigurationFormController extends SimpleFormController {
 				}
 				
 				try {
-					as.saveGlobalProperties(gpList);
+					for (GlobalProperty gp : gpList) {
+						as.saveGlobalProperty(gp);
+					}
 					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, msa.getMessage("Module.configured"));
 				}
 				catch (Exception e) {

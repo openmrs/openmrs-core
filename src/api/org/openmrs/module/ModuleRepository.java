@@ -178,7 +178,7 @@ public class ModuleRepository {
 		
 		noOfModules = repository.size();
 		
-		if ("".equals(search)) {
+		if (search == null || "".equals(search)) {
 			return modules;
 		}
 
@@ -215,11 +215,13 @@ public class ModuleRepository {
 				Module loadedModule = loadedModules.get(key);
 				Module repositoryModule = repository.get(key);
 			
-				if (ModuleUtil.compareVersion(loadedModule.getVersion(), repositoryModule.getVersion()) < 0
-				        && !ModuleFactory.hasPendingModuleActionForModuleId(loadedModule.getModuleId())) {
-					loadedModule.setDownloadURL(repositoryModule.getDownloadURL());
-					loadedModule.setUpdateVersion(repositoryModule.getVersion());
-					noOfModuleUpdates++;
+				if (repositoryModule != null) {
+					if (ModuleUtil.compareVersion(loadedModule.getVersion(), repositoryModule.getVersion()) < 0
+					        && !ModuleFactory.hasPendingModuleActionForModuleId(loadedModule.getModuleId())) {
+						loadedModule.setDownloadURL(repositoryModule.getDownloadURL());
+						loadedModule.setUpdateVersion(repositoryModule.getVersion());
+						noOfModuleUpdates++;
+					}
 				}
 			}
 		}
