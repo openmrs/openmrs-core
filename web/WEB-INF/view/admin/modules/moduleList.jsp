@@ -34,6 +34,10 @@
 			var disabled = fileName == '' ? 'disabled' : '';			
 			$j('#moduleAddForm input[name=uploadFile]').attr('disabled',disabled);
 		});
+		
+		$j('#moduleAddForm input[name=uploadFile]').click(function(){
+			$j('#moduleAddForm input[name=uploadFile]').attr('disabled','disabled');
+		});		
 
 		$j('.errorDetailsButton').click(function() {
 			var detailsNum = $j(this).attr('id').substring(18); // strip 'errorDetailsButton'
@@ -78,7 +82,7 @@
 		},
 		function(){			
 		},
-		null);
+		null);		
 		
 		return false;
 	}
@@ -94,7 +98,7 @@
 		},
 		function(){
 		},
-		null);
+		null);		
 		
 		return false;
 	}
@@ -103,6 +107,22 @@
 </script>
 
 <h2><spring:message code="Module.header" /></h2>
+
+<c:if test="${showUpgradeConfirm == 'true'}">
+	<div style="width: 100%;background-color: #87CEFA">
+		<form name="upgradeConfirmForm" method="post">
+			<div style="margin: auto;width: 70%">
+				<div style="clear:both">&nbsp;</div>
+				<spring:message code="Module.upgradeWarning" arguments="${moduleName}"/> <input type="submit" onclick="document.upgradeConfirmForm.action.value = 'moduleupgrade.yes';return true" value="<spring:message code="general.yes"/>"/> <input type="submit" onclick="document.upgradeConfirmForm.action.value = 'moduleupgrade.no';return true" value="<spring:message code="general.no"/>"/>
+				<br>
+				<p style="margin: auto;width: 70%"><input type="checkbox" name="dontShowMessage" value="true"> <spring:message code="general.dontShowMessage"/></p>			
+				<input type="hidden" name="action" value="confirmation"/>
+				<div style="clear:both">&nbsp;</div>
+			</div>
+		</form>
+	</div>
+	<div style="clear:both">&nbsp;</div>
+</c:if>
 
 <c:if test="${hasPendingActions == 'true'}">
 	<div style="width: 100%;background-color: #FFAEB9">
@@ -114,22 +134,6 @@
 				<div style="clear:both">&nbsp;</div>
 			</div> 
 		</form>		
-	</div>
-	<div style="clear:both">&nbsp;</div>
-</c:if>
-
-<c:if test="${showUpgradeConfirm == 'true'}">
-	<div style="width: 100%;background-color: #87CEFA">
-		<form name="upgradeConfirmForm" method="post">
-			<div style="margin: auto;width: 70%">
-				<div style="clear:both">&nbsp;</div>
-				<spring:message code="Module.upgradeWarning"/> <input type="submit" onclick="document.upgradeConfirmForm.action.value = 'moduleupgrade.yes';return true" value="<spring:message code="general.yes"/>"/> <input type="submit" onclick="document.upgradeConfirmForm.action.value = 'moduleupgrade.no';return true" value="<spring:message code="general.no"/>"/>
-				<br>
-				<p style="margin: auto;width: 70%"><input type="checkbox" name="dontShowMessage" value="true"> <spring:message code="general.dontShowMessage"/></p>			
-				<input type="hidden" name="action" value="confirmation"/>
-				<div style="clear:both">&nbsp;</div>
-			</div>
-		</form>
 	</div>
 	<div style="clear:both">&nbsp;</div>
 </c:if>

@@ -167,9 +167,10 @@ public class ModuleListController extends SimpleFormController {
 										// Show upgrade confirmation in the next page refresh
 										httpSession.setAttribute("showUpgradeConfirm", true);
 										
-										// Store module and modulename in the session so that after confirming with user can perform upgrade
+										// Store module, filename and modulename in the session so that after confirming with user can perform upgrade
 										httpSession.setAttribute("module", tmpModule);
-										httpSession.setAttribute("modulename", filename);
+										httpSession.setAttribute("filename", filename);
+										httpSession.setAttribute("modulename", existingModule.getName());
 									} else {
 										// Upgrade message is suppressed to show, so upgrade without showing message
 										ModuleFactory.upgradeModule(tmpModule, filename);
@@ -268,7 +269,7 @@ public class ModuleListController extends SimpleFormController {
 						Boolean dntShowUpgConf = ServletRequestUtils.getBooleanParameter(request, "dontShowMessage", false);
 						if ("moduleupgrade.yes".equals(action)) {
 							Module tmpModule = (Module) httpSession.getAttribute("module");
-							String filename = (String) httpSession.getAttribute("modulename");
+							String filename = (String) httpSession.getAttribute("filename");
 							ModuleFactory.upgradeModule(tmpModule, filename);
 						}
 						if (dntShowUpgConf) { //If user selected not to show upgrade confirm message
@@ -285,6 +286,7 @@ public class ModuleListController extends SimpleFormController {
 						httpSession.removeAttribute("showUpgradeConfirm");
 						httpSession.removeAttribute("module");
 						httpSession.removeAttribute("modulename");
+						httpSession.removeAttribute("filename");
 					}
 				} else { // Not a upgrade confirmation reply.
 					try {
@@ -358,6 +360,11 @@ public class ModuleListController extends SimpleFormController {
 		}
 		// Flag to show upgrade confirmation message
 		map.put("showUpgradeConfirm", showUpgradeConfirm);
+		
+		// Module Name when showing upgrade confirmation
+		if(showUpgradeConfirm){
+			map.put("moduleName", session.getAttribute("modulename"));
+		}
 
 		// Flag to show or hide restart message
 		map.put("hasPendingActions", ModuleFactory.hasPendingModuleActions());
