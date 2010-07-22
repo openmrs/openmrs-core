@@ -274,13 +274,20 @@ public class HL7Util {
 		if (StringUtils.isBlank(archiveDir)) {
 			log.warn("Invalid value for global property '" + OpenmrsConstants.GLOBAL_PROPERTY_HL7_ARCHIVE_DIRECTORY
 			        + "', trying to set a default one");
-			GlobalProperty gp = Context.getAdministrationService().getGlobalPropertyObject(
-			    OpenmrsConstants.GLOBAL_PROPERTY_HL7_ARCHIVE_DIRECTORY);
-			gp.setPropertyValue(HL7Constants.HL7_ARCHIVE_DIRECTORY_NAME);
-
-			gp = Context.getAdministrationService().saveGlobalProperty(gp);
-			archiveDir = gp.getPropertyValue();
+			if (Context.getAuthenticatedUser().isSuperUser()) {
+				GlobalProperty gp = Context.getAdministrationService().getGlobalPropertyObject(
+				    OpenmrsConstants.GLOBAL_PROPERTY_HL7_ARCHIVE_DIRECTORY);
+				gp.setPropertyValue(HL7Constants.HL7_ARCHIVE_DIRECTORY_NAME);
+				
+				gp = Context.getAdministrationService().saveGlobalProperty(gp);
+				archiveDir = gp.getPropertyValue();
+			} else
+				archiveDir = HL7Constants.HL7_ARCHIVE_DIRECTORY_NAME;
+			
+			log.debug("Using '" + archiveDir
+			        + "' in the application data directory as the root directory for hl7_in_archives");
 		}
+
 		return OpenmrsUtil.getDirectoryInApplicationDataDirectory(archiveDir);
 	}
 }
