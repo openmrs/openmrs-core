@@ -292,6 +292,11 @@
 								<a href="${module.downloadURL}"><spring:message code="Module.downloadUpdate"/></a>
 							</c:if>
 						</td>
+						<td>
+							<c:if test="${module.configurable == 'true'}">
+								<a href="moduleConfiguration.form?moduleId=${module.moduleId}"><spring:message code="Module.configure"/></a>
+							</c:if>
+						</td>
 					</tr>
 				</form>
 				

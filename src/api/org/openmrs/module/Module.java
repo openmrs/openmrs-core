@@ -712,8 +712,8 @@ public final class Module {
 		this.configurationPage = configurationPage;
 	}
 	
-	public boolean hasConfiguration() {
-		return configurationPage != null || globalProperties.size() > 0;
+	public boolean isConfigurable() {
+		return globalProperties.size() > 0;
 	}
 
 	@Override

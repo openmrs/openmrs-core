@@ -159,21 +159,26 @@ public class ModuleListController extends SimpleFormController {
 								Module tmpModule = new ModuleFileParser(multipartModuleFile.getInputStream()).parse();
 								Module existingModule = ModuleFactory.getModuleById(tmpModule.getModuleId());
 								if (existingModule != null) {
-									updateModule = true;
-									
-									String dntShowUpgConf = getConfirmationAllowedForCurrentUser("moduleadmin.moduleUpgrade");
-									
-									if (dntShowUpgConf == null || !Boolean.parseBoolean(dntShowUpgConf)) {
-										// Show upgrade confirmation in the next page refresh
-										httpSession.setAttribute("showUpgradeConfirm", true);
+									if (!ModuleFactory.hasPendingModuleActionForModuleId(existingModule.getModuleId())) {
+										updateModule = true;
 										
-										// Store module, filename and modulename in the session so that after confirming with user can perform upgrade
-										httpSession.setAttribute("module", tmpModule);
-										httpSession.setAttribute("filename", filename);
-										httpSession.setAttribute("modulename", existingModule.getName());
+										String dntShowUpgConf = getConfirmationAllowedForCurrentUser("moduleadmin.moduleUpgrade");
+										
+										if (dntShowUpgConf == null || !Boolean.parseBoolean(dntShowUpgConf)) {
+											// Show upgrade confirmation in the next page refresh
+											httpSession.setAttribute("showUpgradeConfirm", true);
+											
+											// Store module, filename and modulename in the session so that after confirming with user can perform upgrade
+											httpSession.setAttribute("module", tmpModule);
+											httpSession.setAttribute("filename", filename);
+											httpSession.setAttribute("modulename", existingModule.getName());
+										} else {
+											// Upgrade message is suppressed to show, so upgrade without showing message
+											ModuleFactory.upgradeModule(tmpModule, filename);
+										}
 									} else {
-										// Upgrade message is suppressed to show, so upgrade without showing message
-										ModuleFactory.upgradeModule(tmpModule, filename);
+										error = msa.getMessage("Module.actionQueued", new String[] { existingModule
+										        .getName() });
 									}
 								} else {
 									//Adding of module
