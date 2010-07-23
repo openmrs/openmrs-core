@@ -24,6 +24,7 @@ import java.util.Vector;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Privilege;
 import org.openmrs.api.ConceptService;
+import org.openmrs.hl7.HL7Constants;
 import org.openmrs.module.ModuleConstants;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.module.ModuleRepository;
@@ -1153,6 +1154,9 @@ public final class OpenmrsConstants {
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_DEFAULT_THEME, "",
 		        "Default theme for users.  OpenMRS ships with themes of 'green', 'orange', 'purple', and 'legacy'"));
 		
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_HL7_ARCHIVE_DIRECTORY, HL7Constants.HL7_ARCHIVE_DIRECTORY_NAME,
+		        "The default name or absolute path for the folder where to write the hl7_in_archives."));
+
 		props.add(new GlobalProperty(ModuleRepository.MODULE_REPOSITORY_URL,
 		        "http://modules.openmrs.org/modules/getAllModules?openmrsVersion=<VERSION>&lastUpdatedDate=<DATE>",
 		        "Get All Module Repository URL"));

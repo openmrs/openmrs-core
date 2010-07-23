@@ -587,7 +587,7 @@ public class DatabaseUpdater {
 	}
 	
 	/**
-	 * Methods is called by changesets while executing to register warning messages.
+	 * This method is called by an executing custom changeset to register warning messages.
 	 * 
 	 * @param warnings list of warnings to append to the end of the current list
 	 */
@@ -598,7 +598,10 @@ public class DatabaseUpdater {
 	}
 	
 	/**
-	 * Method writes the log messages and error warnings to the application data directory
+	 * This method writes the given text to the database updates log file located in the application
+	 * data directory.
+	 * 
+	 * @param the text to be written to the file
 	 */
 	public static void writeUpdateMessagesToFile(String text) {
 		PrintWriter writer = null;
@@ -606,7 +609,7 @@ public class DatabaseUpdater {
 		File destFile = new File(OpenmrsUtil.getApplicationDataDirectory(), DatabaseUpdater.DATABASE_UPDATES_LOG_FILE);
 		try {
 			String lineSeparator = System.getProperty("line.separator");
-			java.util.Date date = Calendar.getInstance().getTime();
+			Date date = Calendar.getInstance().getTime();
 			StringBuilder sb = new StringBuilder();
 			if (destFile.isFile()) {
 				scanner = new Scanner(destFile);
@@ -616,23 +619,24 @@ public class DatabaseUpdater {
 				sb.append(lineSeparator);
 				sb.append(lineSeparator);
 				if (scanner.ioException() != null)
-					log.warn("Some error(s) occured while writing the database updates to the file system", scanner
+					log.warn("Some error(s) occured while reading messages from the database update log file", scanner
 					        .ioException());
 			}
 			
 			writer = new PrintWriter(destFile);
-			sb.append("********** START OF DATABASE UPDATE LOGS AS AT " + Calendar.getInstance().getTime() + " **********");
+			sb.append("********** START OF DATABASE UPDATE LOGS AS AT " + date + " **********");
 			sb.append(lineSeparator);
 			sb.append(lineSeparator);
 			sb.append(text);
 			sb.append(lineSeparator);
 			sb.append(lineSeparator);
-			sb.append("*********** END OF DATABASE UPDATE LOGS AS AT " + Calendar.getInstance().getTime() + " ***********");
+			sb.append("*********** END OF DATABASE UPDATE LOGS AS AT " + date + " ***********");
 			
 			writer.write(sb.toString());
+
 			//check if there was an error while writing to the file
 			if (writer.checkError())
-				log.warn("An Error occured while writing the warnings from the database update process to a file'");
+				log.warn("An Error occured while writing warnings to the database update log file'");
 			
 		}
 		catch (FileNotFoundException e) {

@@ -16,9 +16,6 @@ package org.openmrs.module.web;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -28,7 +25,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.module.Module;
-import org.openmrs.module.ModuleFactory;
 import org.openmrs.module.ModuleUtil;
 import org.openmrs.util.OpenmrsUtil;
 
@@ -66,8 +62,16 @@ public class ModuleResourcesServlet extends HttpServlet {
 			return;
 		}
 		
-		InputStream is = new FileInputStream(f);
-		OpenmrsUtil.copyFile(is, response.getOutputStream());		
+		response.setDateHeader("Last-Modified", f.lastModified());
+		response.setContentLength(new Long(f.length()).intValue());
+		
+		FileInputStream is = new FileInputStream(f);
+		try {
+			OpenmrsUtil.copyFile(is, response.getOutputStream());
+		}
+		finally {
+			OpenmrsUtil.closeStream(is);
+		}
 		
 	}
 	
