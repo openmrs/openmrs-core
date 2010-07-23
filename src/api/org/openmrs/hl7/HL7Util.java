@@ -23,7 +23,6 @@ import java.util.Date;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.GlobalProperty;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
@@ -274,20 +273,13 @@ public class HL7Util {
 		if (StringUtils.isBlank(archiveDir)) {
 			log.warn("Invalid value for global property '" + OpenmrsConstants.GLOBAL_PROPERTY_HL7_ARCHIVE_DIRECTORY
 			        + "', trying to set a default one");
-			if (Context.getAuthenticatedUser().isSuperUser()) {
-				GlobalProperty gp = Context.getAdministrationService().getGlobalPropertyObject(
-				    OpenmrsConstants.GLOBAL_PROPERTY_HL7_ARCHIVE_DIRECTORY);
-				gp.setPropertyValue(HL7Constants.HL7_ARCHIVE_DIRECTORY_NAME);
-				
-				gp = Context.getAdministrationService().saveGlobalProperty(gp);
-				archiveDir = gp.getPropertyValue();
-			} else
-				archiveDir = HL7Constants.HL7_ARCHIVE_DIRECTORY_NAME;
+			archiveDir = HL7Constants.HL7_ARCHIVE_DIRECTORY_NAME;
 			
 			log.debug("Using '" + archiveDir
 			        + "' in the application data directory as the root directory for hl7_in_archives");
 		}
-
+		
+		//TODO Should take care of the case where the user is using removable media, this might explode
 		return OpenmrsUtil.getDirectoryInApplicationDataDirectory(archiveDir);
 	}
 }
