@@ -14,6 +14,8 @@
 <openmrs:htmlInclude file="/scripts/jconfirm/css/jconfirm.css" /> 
 <openmrs:confirmDialog id="Restart_Confirm" messageCode="Module.restartConfirmation" button1="general.yes" button2="general.no" suppress="moduleadmin.moduleRestart" suppressMessageCode="general.dontShowMessage" />
 <openmrs:confirmDialog id="Unload_Confirm" messageCode="Module.unloadWarning" button1="general.yes" button2="general.no" suppress="moduleadmin.moduleUnload" suppressMessageCode="general.dontShowMessage" />
+<openmrs:confirmDialog id="Start_Confirm" messageCode="Module.startWarning" button1="general.yes" button2="general.no" suppress="moduleadmin.moduleStart" suppressMessageCode="general.dontShowMessage" />
+<openmrs:confirmDialog id="Stop_Confirm" messageCode="Module.stopWarning" button1="general.yes" button2="general.no" suppress="moduleadmin.moduleStop" suppressMessageCode="general.dontShowMessage" />
 <script type="text/javascript">
 	var oTable;
 	
@@ -77,8 +79,9 @@
 	//Javascript Function to show Restart Confirmation 
 	function confirmRestart(id){
 		jConfirm.dialog(id, 
-		function(){
+		function(){			
 			$j('#openmrsModulesForm').submit();
+			$j('#openmrsModulesForm #restartMessage').html('<spring:message code="Module.openmrsRestaring"/>');
 		},
 		function(){			
 		},
@@ -87,13 +90,13 @@
 		return false;
 	}
 	
-	//Javascript Function to show Unload Confirmation 
-	function confirmUnload(id, unloadId){		
-		var index = unloadId.substring(6); // strip 'unload'		
+	//Javascript Function to show confirmation for module actions 
+	function confirmation(id, buttonId, action){		
+		var index = buttonId.substring(action.length); // strip action
 		var formId = '#controlform'+index;		
 		jConfirm.dialog(id,
 		function(){ 
-			$j(formId).append("<input type='hidden' name='action' value='unload' />");				
+			$j(formId).append("<input type='hidden' name='action' value='" + action + "' />");			
 			$j(formId).submit();
 		},
 		function(){
@@ -129,8 +132,10 @@
 		<form id="openmrsModulesForm" method="post">
 			<div style="margin: auto;width: 70%">
 				<div style="clear:both">&nbsp;</div>
-				<spring:message code="Module.restartWarning"/> <input <c:if test="${showUpgradeConfirm == 'true'}">disabled="true"</c:if> type="button" value="<spring:message code="Module.restartOpenmrs"/>" onclick="return confirmRestart('Restart_Confirm');"/>
-				<input type="hidden" name="action" value="restartModules"/>
+				<div id="restartMessage">
+					<spring:message code="Module.restartWarning"/> <input <c:if test="${showUpgradeConfirm == 'true'}">disabled="true"</c:if> type="button" value="<spring:message code="Module.restartOpenmrs"/>" onclick="return confirmRestart('Restart_Confirm');"/>
+					<input type="hidden" name="action" value="restartModules"/>					
+				</div>
 				<div style="clear:both">&nbsp;</div>
 			</div> 
 		</form>		
@@ -225,14 +230,14 @@
 								<td valign="top">
 									<c:choose>
 										<c:when test="${not module.started}">
-											<input type="image" src="${pageContext.request.contextPath}/images/play.gif" name="start" onclick="document.getElementById('hiddenAction').value = this.value" title="<spring:message code="Module.start.help"/>" alt="<spring:message code="Module.start"/>" />
+											<input type="image" src="${pageContext.request.contextPath}/images/play.gif" name="start" id="start${varStatus.index}" onclick="return confirmation('Start_Confirm',this.id,this.name);" title="<spring:message code="Module.start.help"/>" alt="<spring:message code="Module.start"/>" />
 										</c:when>
 										<c:otherwise>
-											<input type="image" src="${pageContext.request.contextPath}/images/stop.gif" name="stop" onclick="document.getElementById('hiddenAction').value = this.value" title="<spring:message code="Module.stop.help"/>" alt="<spring:message code="Module.stop"/>" />
+											<input type="image" src="${pageContext.request.contextPath}/images/stop.gif" name="stop" id="stop${varStatus.index}" onclick="return confirmation('Stop_Confirm',this.id,this.name);" title="<spring:message code="Module.stop.help"/>" alt="<spring:message code="Module.stop"/>" />
 										</c:otherwise>
 									</c:choose>
 								</td>
-								<td valign="top"><input type="image" src="${pageContext.request.contextPath}/images/trash.gif" name="unload" id="unload${varStatus.index}" onclick="return confirmUnload('Unload_Confirm',this.id);" title="<spring:message code="Module.unload.help"/>" title="<spring:message code="Module.unload"/>" alt="<spring:message code="Module.unload"/>" /></td>
+								<td valign="top"><input type="image" src="${pageContext.request.contextPath}/images/trash.gif" name="unload" id="unload${varStatus.index}" onclick="return confirmation('Unload_Confirm',this.id,this.name);" title="<spring:message code="Module.unload.help"/>" title="<spring:message code="Module.unload"/>" alt="<spring:message code="Module.unload"/>" /></td>
 							</c:when>
 							<c:otherwise>
 								<c:choose>
@@ -314,18 +319,5 @@
 </c:if>
 
 <br/>
-
-<b class="boxHeader"><spring:message code="Module.help" /></b>
-<div class="box">
-	<ul>
-		<li><i><spring:message code="Module.help.load"/></i></li>
-		<c:if test="${fn:length(moduleList) > 0}">
-			<li><i><spring:message code="Module.help.unload"/></i></li>
-			<li><i><spring:message code="Module.help.startStop"/></i></li>
-			<li><i><spring:message code="Module.help.update"/></i></li>
-		</c:if>
-		<li><i><spring:message code="Module.help.findMore"/></i></li>
-	</ul>
-</div>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>
