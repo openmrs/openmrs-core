@@ -72,6 +72,8 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 	
 	private List<Locale> allowedLocales = null;
 	
+	private int daemonUserId;
+
 	/**
 	 * @see CustomTaskChange#execute(Database)
 	 */
@@ -84,9 +86,11 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 		validateAndCleanUpConcepts(connection);
 		
 		//commit as a batch update
-		if (!updatedConceptNames.isEmpty())
+		if (!updatedConceptNames.isEmpty()) {
+			daemonUserId = getInt(connection,
+			    "SELECT u.user_id FROM users u WHERE u.uuid = 'A4F30A1B-5EB9-11DF-A648-37A07F9C90FB'");
 			runBatchUpdate(connection);
-		else
+		} else
 			log.debug("No concept names to update");
 		
 		if (!logMessages.isEmpty() || !updateWarnings.isEmpty())
@@ -595,7 +599,7 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 		try {
 			connection.setAutoCommit(false);
 			pStmt = connection
-			        .prepareStatement("UPDATE concept_name SET locale = ?, concept_name_type = ?, locale_preferred = ?, voided = ?, date_voided = ?, void_reason = ? WHERE concept_name_id = ?");
+			        .prepareStatement("UPDATE concept_name SET locale = ?, concept_name_type = ?, locale_preferred = ?, voided = ?, date_voided = ?, void_reason = ?, voided_by = ? WHERE concept_name_id = ?");
 			
 			for (ConceptName conceptName : updatedConceptNames) {
 				pStmt.setString(1, conceptName.getLocale().toString());
@@ -603,10 +607,13 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 				        : null);
 				pStmt.setBoolean(3, conceptName.isLocalePreferred());
 				pStmt.setBoolean(4, conceptName.isVoided());
-				if (conceptName.isVoided())
+				if (conceptName.isVoided()) {
 					pStmt.setDate(5, new Date(System.currentTimeMillis()));
-				pStmt.setString(6, conceptName.getVoidReason());
-				pStmt.setInt(7, conceptName.getConceptNameId());
+					pStmt.setString(6, conceptName.getVoidReason());
+					if (daemonUserId > 0)
+						pStmt.setInt(7, daemonUserId);
+				}
+				pStmt.setInt(8, conceptName.getConceptNameId());
 				
 				pStmt.addBatch();
 			}

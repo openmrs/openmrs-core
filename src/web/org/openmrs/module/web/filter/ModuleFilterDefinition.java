@@ -171,9 +171,9 @@ public class ModuleFilterDefinition implements Serializable {
 					for (int j = 0; j < configNodes.getLength(); j++) {
 						Node configNode = configNodes.item(j);
 						if ("filter-name".equals(configNode.getNodeName())) {
-							filter.setFilterName(configNode.getTextContent());
+							filter.setFilterName(configNode.getTextContent().trim());
 						} else if ("filter-class".equals(configNode.getNodeName())) {
-							filter.setFilterClass(configNode.getTextContent());
+							filter.setFilterClass(configNode.getTextContent().trim());
 						} else if ("init-param".equals(configNode.getNodeName())) {
 							NodeList paramNodes = configNode.getChildNodes();
 							String paramName = "";
@@ -181,9 +181,9 @@ public class ModuleFilterDefinition implements Serializable {
 							for (int k = 0; k < paramNodes.getLength(); k++) {
 								Node paramNode = paramNodes.item(k);
 								if ("param-name".equals(paramNode.getNodeName())) {
-									paramName = paramNode.getTextContent();
+									paramName = paramNode.getTextContent().trim();
 								} else if ("param-value".equals(paramNode.getNodeName())) {
-									paramValue = paramNode.getTextContent();
+									paramValue = paramNode.getTextContent().trim();
 								}
 							}
 							filter.addInitParameter(paramName, paramValue);

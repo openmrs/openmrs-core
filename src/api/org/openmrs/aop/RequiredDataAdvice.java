@@ -86,6 +86,7 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 	
 	static {
 		fieldAccess.add("Concept.answers");
+		fieldAccess.add("Concept.names");
 		fieldAccess.add("Encounter.obs");
 		fieldAccess.add("Program.allWorkflows");
 		

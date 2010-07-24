@@ -49,8 +49,12 @@ a, a:link, a:hover, a:visited, a:active {
 
 #userBar {
 	padding: 0px 3px 0px 3px;
-	z-index: 5;
+	z-index: 11;
 	background-color: #ffffff;
+	width: 80%;
+	right: 0px;
+	left: auto;
+	position: fixed
 }
 
 #userBar a:link, #userBar a:active, #userBar a:visited, #userBar a:hover,

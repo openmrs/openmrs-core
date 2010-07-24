@@ -71,7 +71,7 @@ public class WebConstants {
 	public static final String SETUP_PAGE_URL = "initialsetup";
 	
 	/**
-	 * The url of the module repository.  This is filled in at startup by the value in web.xml
+	 * The url of the module repository. This is filled in at startup by the value in web.xml
 	 */
 	public static String MODULE_REPOSITORY_URL = "";
 	
@@ -82,4 +82,10 @@ public class WebConstants {
 	 * @see org.openmrs.web.servlet.LoginServlet
 	 */
 	public static String GP_ALLOWED_LOGIN_ATTEMPTS_PER_IP = "security.loginAttemptsAllowedPerIP";
+	
+	/**
+	 * User names of the logged-in users are stored in this map (session id -> user name) in the
+	 * ServletContext under this key
+	 */
+	public static final String CURRENT_USERS = "CURRENT_USERS";
 }
