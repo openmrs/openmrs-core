@@ -20,6 +20,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIException;
@@ -266,8 +267,20 @@ public class HL7Util {
 	 * @return The destination directory for the hl7 in archive
 	 */
 	public static File getHl7ArchivesDirectory() throws APIException {
+
+		String archiveDir = Context.getAdministrationService().getGlobalProperty(
+		    OpenmrsConstants.GLOBAL_PROPERTY_HL7_ARCHIVE_DIRECTORY);
+
+		if (StringUtils.isBlank(archiveDir)) {
+			log.warn("Invalid value for global property '" + OpenmrsConstants.GLOBAL_PROPERTY_HL7_ARCHIVE_DIRECTORY
+			        + "', trying to set a default one");
+			archiveDir = HL7Constants.HL7_ARCHIVE_DIRECTORY_NAME;
+			
+			log.debug("Using '" + archiveDir
+			        + "' in the application data directory as the root directory for hl7_in_archives");
+		}
 		
-		return OpenmrsUtil.getDirectoryInApplicationDataDirectory(Context.getAdministrationService().getGlobalProperty(
-		    OpenmrsConstants.GLOBAL_PROPERTY_HL7_ARCHIVE_DIRECTORY));
+		//TODO Should take care of the case where the user is using removable media, this might explode
+		return OpenmrsUtil.getDirectoryInApplicationDataDirectory(archiveDir);
 	}
 }
