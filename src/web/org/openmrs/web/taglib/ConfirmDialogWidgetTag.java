@@ -80,7 +80,7 @@ public class ConfirmDialogWidgetTag extends TagSupport {
 		        : "NA");
 
 		String suppress = user.getUserProperty(suppressKey, "false");
-		
+
 		String message = messageSourceService.getMessage(this.messageCode);
 		
 		String button1Text = messageSourceService.getMessage(this.button1);
@@ -101,7 +101,8 @@ public class ConfirmDialogWidgetTag extends TagSupport {
 		
 		sb.append("<div id=\"jConfirm_Message\">"+( message == null ? DEFAULT_MESSAGE : message )+"</div>");
 
-		sb.append("<input type=\"hidden\" id=\"suppress\" value=\"" + suppress + "\" />");
+		sb.append("<input type=\"hidden\" id=\"suppress\" value=\"" + (!("".equals(suppress)) ? suppress : "false")
+		        + "\" />");
 
 		sb.append("<input type=\"hidden\" id=\"suppress_key\" value=\"" + suppressKey + "\" />");
 		
@@ -129,8 +130,11 @@ public class ConfirmDialogWidgetTag extends TagSupport {
 		sb.append("<div id=\"jConfirm_Suppress\">");
 		
 		if (!"NA".equals(suppressKey)) { //Don't show suppress message if no suppress key is supplied
-			sb.append("<input type=\"checkbox\" name=\"suppress_message\" />" + "<i>"
-			        + (suppressMessage == null ? DEFAULT_SUPPRESS_MESSAGE : suppressMessage) + "</i>");
+			sb
+.append("<label for=\"suppress_" + this.id + "\"><input type=\"checkbox\" name=\"suppress_" + this.id
+			        + "\" id=\"suppress_" + this.id + "\" />"
+			                + "<i>"
+			        + (suppressMessage == null ? DEFAULT_SUPPRESS_MESSAGE : suppressMessage) + "</i></label>");
 		} else {
 			sb.append("<br>"); //Just to have a balanced confirmation dialog
 		}

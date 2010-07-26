@@ -28,9 +28,9 @@ var jConfirm = new function(){
 		$j('.jConfirm_Window').hide();		
 		var suppressKey = $j(this.id+' #suppress_key').val();		
 		if(suppressKey != 'NA'){
-			var dontShow = $j(this.id+' input[name=suppress_message]').is(':checked');			
+			var dontShow = $j(this.id+' input[name=suppress_'+this.id.substring(1)+']').is(':checked');			
 			if(this.suppress != dontShow){ //If existing suppress value and dontShow value not same				
-				$j(this.id+' #suppress').val(dontShow);
+				$j(this.id+' #suppress').val(dontShow);				
 				try{
 					DWRUserService.saveUserPropertyForCurrentUser(suppressKey, dontShow, function(data){					
 						jConfirm.invokeCallback(callback);

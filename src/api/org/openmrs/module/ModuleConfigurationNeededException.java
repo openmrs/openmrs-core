@@ -16,8 +16,19 @@ package org.openmrs.module;
 import org.openmrs.api.APIException;
 
 /**
+ * This error is thrown when OpenMRS is started but a module needs some global properties configured
+ * before starting <br/>
  * 
+ * @see Context#startup()
  */
 public class ModuleConfigurationNeededException extends APIException {
-
+	
+	/**
+	 * This constructor is used when a module needs global properties configured to start
+	 * 
+	 * @param moduleId
+	 */
+	public ModuleConfigurationNeededException(String moduleId) {
+		super(moduleId);
+	}
 }
