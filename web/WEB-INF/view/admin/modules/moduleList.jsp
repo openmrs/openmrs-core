@@ -26,6 +26,12 @@
 			title: '<spring:message code="Module.addOrUpgrade" javaScriptEscape="true"/>',
 			width: '90%'
 		});
+		
+		$j('#loadingPopup').dialog({
+			autoOpen: false,
+			model: true,
+			height: 50
+		});
 				
 		$j('#addUpgradeButton').click(function() {
 			$j('#addUpgradePopup').dialog('open');
@@ -38,7 +44,9 @@
 		});
 		
 		$j('#moduleAddForm input[name=uploadFile]').click(function(){
+			$j('#loadingPopup').dialog('open');
 			$j('#moduleAddForm input[name=uploadFile]').attr('disabled','disabled');
+			$j('#moduleAddForm').submit(); 
 		});		
 
 		$j('.errorDetailsButton').click(function() {
@@ -47,21 +55,30 @@
 		});
 
 		oTable = $j('#findModuleTable').dataTable({
+			"aaData":[
+						<c:forEach var="module" items="${repoList}" varStatus="varStatus">
+							[ "${module.downloadURL}", "${module.name}", "${module.version}", "${module.author}", "${module.description}" ] <c:if test="${!varStatus.last}">,</c:if> 
+						</c:forEach>
+					 ],
 			"aoColumns": [ { "sName": "Action", "bSortable": false,
 					         "fnRender": function ( oObj ) {
 									var downloadURL = oObj.aData[0];
-									return '<form action="module.list" method="post"><input type="hidden" name="download" value="true" /><input type="hidden" name="action" value="upload" /><input type="hidden" name="downloadURL" value="' + downloadURL + '" /><input type="submit" value="<spring:message code="Module.install" />" /></form>';
+									if(downloadURL != 'Installed'){
+										return '<form action="module.list" method="post"><input type="hidden" name="download" value="true" /><input type="hidden" name="action" value="upload" /><input type="hidden" name="downloadURL" value="' + downloadURL + '" /><input type="submit" value="<spring:message code="Module.install" />" /></form>';
+									}else{
+										return '<form><input type="submit" disabled="true" value="<spring:message code="Module.installed" />" /></form>';
+									}
 								}
 							},
 							{ "sName": "Name" },
 							{ "sName": "Version" },
 							{ "sName": "Author" },
 							{ "sName": "Description" }
-			  			 ],
-			"bLengthChange": false,			  			 
+			  			 ]
+			/*"bLengthChange": false,			  			 
 			"aaSorting": [[1,'asc'], [2,'desc']],
 			"bAutoWidth": false,
-			"sPaginationType": "two_button",
+			"sPaginationType": "two_button",			
 			"bProcessing": true,
 			"bServerSide": true,
 			"fnServerData": function ( sSource, aoData, fnCallback ) {
@@ -72,7 +89,7 @@
 				                	"data": aoData,
 				                	"success": fnCallback
 				            	} );
-				        	}
+				        	}*/
 		});
 	});
 			
@@ -142,6 +159,12 @@
 	</div>
 	<div style="clear:both">&nbsp;</div>
 </c:if>
+
+<div id="loadingPopup">
+	<div style="clear:both">&nbsp;</div>
+	<spring:message code="Module.pleaseWait"/>
+	<div style="clear:both">&nbsp;</div>
+</div>
 
 <c:choose>
 	<c:when test="${allowAdmin == 'true'}">

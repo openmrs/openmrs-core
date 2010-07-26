@@ -108,7 +108,7 @@ public class ModuleRepository {
 					mod.setDownloadURL(moduleMetaData.get(MODULE_DOWNLOAD_URL_INDEX).trim()); // Download URL
 					mod.setVersion(moduleMetaData.get(MODULE_VERSION_INDEX).trim()); // Version
 					mod.setAuthor(moduleMetaData.get(MODULE_AUTHOR_INDEX).trim()); // Author
-					mod.setDescription(moduleMetaData.get(MODULE_DESCRIPTION_INDEX).trim()); // Description
+					mod.setDescription(escape(moduleMetaData.get(MODULE_DESCRIPTION_INDEX).trim())); // Description
 					//If older version available remove it
 					if (repository.containsKey(moduleId)) {
 						repository.remove(moduleId);
@@ -156,8 +156,11 @@ public class ModuleRepository {
 		Map<String, Module> loadedModules = ModuleFactory.getLoadedModulesMap();
 		
 		// Remove the already loaded modules
-		for(Module mod:loadedModules.values()){
-			modules.remove(mod.getModuleId());
+		for (Module mod : loadedModules.values()) {
+			Module module = modules.get(mod.getModuleId());
+			if (module != null) {
+				module.setDownloadURL("Installed");
+			}
 		}
 		
 		return new HashSet<Module>(modules.values());
@@ -278,5 +281,70 @@ public class ModuleRepository {
 		
 		long dayDiff = (today - updatedDate) / (86400000);
 		return dayDiff > iThreshold;
+	}
+	
+	/**
+	 * copied from http://json-simple.googlecode.com/svn/trunk/src/org/json/simple/JSONValue.java
+	 * Revision 184 Escape quotes, \, /, \r, \n, \b, \f, \t and other control characters (U+0000
+	 * through U+001F).
+	 * 
+	 * @param s
+	 * @return
+	 */
+	private static String escape(String s) {
+		if (s == null)
+			return null;
+		StringBuffer sb = new StringBuffer();
+		escape(s, sb);
+		return sb.toString();
+	}
+	
+	/**
+	 * @param s - Must not be null.
+	 * @param sb
+	 */
+	private static void escape(String s, StringBuffer sb) {
+		for (int i = 0; i < s.length(); i++) {
+			char ch = s.charAt(i);
+			switch (ch) {
+				case '"':
+					sb.append("\\\"");
+					break;
+				case '\\':
+					sb.append("\\\\");
+					break;
+				case '\b':
+					sb.append("\\b");
+					break;
+				case '\f':
+					sb.append("\\f");
+					break;
+				case '\n':
+					sb.append("\\n");
+					break;
+				case '\r':
+					sb.append("\\r");
+					break;
+				case '\t':
+					sb.append("\\t");
+					break;
+				case '/':
+					sb.append("\\/");
+					break;
+				default:
+					// Reference: http://www.unicode.org/versions/Unicode5.1.0/
+					if ((ch >= '\u0000' && ch <= '\u001F') || (ch >= '\u007F' && ch <= '\u009F')
+					        || (ch >= '\u2000' && ch <= '\u20FF')) {
+						String ss = Integer.toHexString(ch);
+						sb.append("\\u");
+						for (int k = 0; k < 4 - ss.length(); k++) {
+							sb.append('0');
+						}
+						sb.append(ss.toUpperCase());
+					} else {
+						sb.append(ch);
+					}
+			}
+		}// for
 	}
 }

@@ -376,6 +376,8 @@ public class ModuleListController extends SimpleFormController {
 		
 		// Flag to show update module repository cache message
 		map.put("moduleRepositoryCacheExpired", ModuleRepository.isCacheExpired());
+		
+		map.put("repoList", ModuleRepository.getAllModules());
 
 		return map;
 	}
