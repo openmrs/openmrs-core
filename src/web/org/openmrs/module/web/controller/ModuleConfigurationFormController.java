@@ -162,6 +162,10 @@ public class ModuleConfigurationFormController extends SimpleFormController {
 				for (GlobalProperty gp : globalProperties) {
 					String property = gp.getProperty();
 					GlobalProperty dbgp = as.getGlobalPropertyObject(property);
+					if (dbgp == null) {
+						// Not available in database then directly use
+						dbgp = gp;
+					}
 					gpList.add(dbgp);
 				}
 			}

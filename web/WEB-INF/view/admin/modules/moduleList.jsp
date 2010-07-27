@@ -25,13 +25,7 @@
 			modal: true,
 			title: '<spring:message code="Module.addOrUpgrade" javaScriptEscape="true"/>',
 			width: '90%'
-		});
-		
-		$j('#loadingPopup').dialog({
-			autoOpen: false,
-			model: true,
-			height: 50
-		});
+		});		
 				
 		$j('#addUpgradeButton').click(function() {
 			$j('#addUpgradePopup').dialog('open');
@@ -43,8 +37,7 @@
 			$j('#moduleAddForm input[name=uploadFile]').attr('disabled',disabled);
 		});
 		
-		$j('#moduleAddForm input[name=uploadFile]').click(function(){
-			$j('#loadingPopup').dialog('open');
+		$j('#moduleAddForm input[name=uploadFile]').click(function(){			
 			$j('#moduleAddForm input[name=uploadFile]').attr('disabled','disabled');
 			$j('#moduleAddForm').submit(); 
 		});		
@@ -74,22 +67,7 @@
 							{ "sName": "Version" },
 							{ "sName": "Author" },
 							{ "sName": "Description" }
-			  			 ]
-			/*"bLengthChange": false,			  			 
-			"aaSorting": [[1,'asc'], [2,'desc']],
-			"bAutoWidth": false,
-			"sPaginationType": "two_button",			
-			"bProcessing": true,
-			"bServerSide": true,
-			"fnServerData": function ( sSource, aoData, fnCallback ) {
-								$j.ajax( {
-					                "dataType": 'jsonp',
-				                	"type": "GET",
-				                	"url": "${moduleRepositoryURL}/findModules",
-				                	"data": aoData,
-				                	"success": fnCallback
-				            	} );
-				        	}*/
+			  			 ]			
 		});
 	});
 			
@@ -159,12 +137,6 @@
 	</div>
 	<div style="clear:both">&nbsp;</div>
 </c:if>
-
-<div id="loadingPopup">
-	<div style="clear:both">&nbsp;</div>
-	<spring:message code="Module.pleaseWait"/>
-	<div style="clear:both">&nbsp;</div>
-</div>
 
 <c:choose>
 	<c:when test="${allowAdmin == 'true'}">

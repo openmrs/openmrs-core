@@ -154,12 +154,19 @@ public class ModuleRepository {
 		Map<String, Module> modules = new HashMap<String, Module>(repository);
 
 		Map<String, Module> loadedModules = ModuleFactory.getLoadedModulesMap();
-		
-		// Remove the already loaded modules
+
+		// Marking already loaded modules "Installed"
 		for (Module mod : loadedModules.values()) {
 			Module module = modules.get(mod.getModuleId());
 			if (module != null) {
-				module.setDownloadURL("Installed");
+				Module newMod = new Module(module.getName());
+				newMod.setModuleId(module.getModuleId());
+				newMod.setAuthor(module.getAuthor());
+				newMod.setDescription(escape(module.getDescription()));
+				newMod.setVersion(module.getVersion());
+				newMod.setDownloadURL("Installed");
+				modules.remove(module.getModuleId());
+				modules.put(module.getModuleId(), newMod);
 			}
 		}
 		
