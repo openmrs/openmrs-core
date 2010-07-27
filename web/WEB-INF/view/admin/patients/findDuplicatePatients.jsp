@@ -87,8 +87,14 @@
 		};
 		
 		dojo.event.topic.subscribe("pSearch/objectsFound", 
-			function(msg) {	
-				$("patientListSize").innerHTML = msg.objs.length;
+			function(msg) {
+                if(msg.objs.length == 1){
+                    $("patientListSize").innerHTML = 0;
+                    dojo.style.hide("patientsSelect");
+                }else {
+                    $("patientListSize").innerHTML = msg.objs.length;
+                    dojo.style.show("patientsSelect");
+                }
 				$('patientsFound').style.display = "";
 			}
 		);
@@ -127,10 +133,11 @@
 <br /><br />
 
 <form action="mergePatients.form" id="patientsFound">
-	<span id="patientListSize"></span> <spring:message code="Patient.returned"/>.
-	<spring:message code="Patient.merge.select"/>
+    <span id="patientListSize"></span> <spring:message code="Patient.returned"/>.
+    <span id="patientsSelect"><spring:message code="Patient.merge.select"/>
 	<div dojoType="PatientSearch" widgetId="pSearch" inputId="searchNode" tableHeight="1000"></div>
 	<input type="submit" value='<spring:message code="general.continue"/>'/>
+    </span>
 </form>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>
