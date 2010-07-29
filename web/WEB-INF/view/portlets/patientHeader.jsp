@@ -156,7 +156,7 @@
 				<c:forEach items='${openmrs:sort(model.patientEncounters, "encounterDatetime", true)}' var="lastEncounter" varStatus="lastEncounterStatus" end="0">
 					${lastEncounter.encounterType.name} @ ${lastEncounter.location.name}, <openmrs:formatDate date="${lastEncounter.encounterDatetime}" type="medium" />
 				</c:forEach>
-				<c:if test="${fn:length(encounters) == 0}">
+				<c:if test="${fn:length(model.patientEncounters) == 0}">
 					<spring:message code="Encounter.no.previous"/>
 				</c:if>	
 			</th>
