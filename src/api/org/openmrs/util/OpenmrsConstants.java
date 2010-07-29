@@ -793,6 +793,10 @@ public final class OpenmrsConstants {
 	
 	public static final String GLOBAL_PROPERTY_LOCATION_WIDGET_TYPE = "location.field.style";
 	
+	public static final String GLOBAL_PROPERTY_LOCATION_WIDGET_TYP = "graph.color.critical";
+	
+	public static final String GLOBAL_PROPERTY_REPORT_BUG_URL = "openmrs.reportBug.url";
+
 	/**
 	 * Global property name that allows specification of whether user passwords must contain both
 	 * upper and lower case characters. Allowable values are "true", "false", and null
@@ -843,7 +847,7 @@ public final class OpenmrsConstants {
 	 * Global property name for critical color for patient graphs.
 	 */
 	public static final String GP_GRAPH_COLOR_CRITICAL = "graph.color.critical";
-	
+
 	/**
 	 * At OpenMRS startup these global properties/default values/descriptions are inserted into the
 	 * database if they do not exist yet.
@@ -1155,6 +1159,9 @@ public final class OpenmrsConstants {
 		
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_HL7_ARCHIVE_DIRECTORY, HL7Constants.HL7_ARCHIVE_DIRECTORY_NAME,
 		        "The default name or absolute path for the folder where to write the hl7_in_archives."));
+		
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_REPORT_BUG_URL, "http://reportbug.openmrs.org/",
+		        "The openmrs url where to submit bug reports"));
 
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);
@@ -1385,13 +1392,5 @@ public final class OpenmrsConstants {
 	public static final String RAW_VIEW = "RAW_VIEW";
 	
 	public static final String TEXT_VIEW = "TEXT_VIEW";
-	
-	public static final String JIRA_CREATE_PATCH_URL = "http://tickets.openmrs.org/secure/CreateIssueDetails!init.jspa";
-	
-	public static final String JIRA_SIGN_UP = "http://tickets.openmrs.org/secure/Signup!default.jspa";
-	
-	public static final String JIRA_OPENMRS_TRUNK_PID = "10000";
-	
-	public static final String JIRA_BUG = "1";
 	
 }
