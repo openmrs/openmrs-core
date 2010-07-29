@@ -10,7 +10,10 @@
 <%@ include file="/WEB-INF/template/headerMinimal.jsp" %>
 
 &nbsp;
-<%@page import="org.openmrs.util.OpenmrsUtil"%><br />
+<%@page import="org.openmrs.util.OpenmrsUtil"%>
+<%@page import="org.openmrs.api.context.Context"%>
+<%@page import="org.openmrs.module.ModuleFactory"%>
+<%@page import="org.openmrs.module.Module"%><br />
 
 <h2>An Internal Error has Occurred</h2>
 
@@ -102,7 +105,7 @@ try {
 			}
 
             // Collect stack trace for reporting bug description
-            StringBuilder description = new StringBuilder("EDIT_HERE\n\nStack trace:\n");
+            StringBuilder description = new StringBuilder("Stack trace:\n");
 			for (StackTraceElement element : elements) {
                 description.append(element + "\n");
 				if (element.getClassName().contains("openmrs"))
@@ -110,9 +113,26 @@ try {
 				else
 					out.println(element + "<br/>");
 			}
-            description.append("\nOpenMRS Version: " + OpenmrsConstants.OPENMRS_VERSION);
-            pageContext.setAttribute("jira_description", OpenmrsUtil.shortenedStackTrace(description.toString()));
-            pageContext.setAttribute("jira_summary", exception.toString() + " EDIT_HERE");
+			
+			pageContext.setAttribute("reportBugUrl", Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_REPORT_BUG_URL)); 
+            pageContext.setAttribute("description", OpenmrsUtil.shortenedStackTrace(description.toString()));
+            pageContext.setAttribute("summary", exception.toString());
+            pageContext.setAttribute("openmrs_version", OpenmrsConstants.OPENMRS_VERSION);
+            pageContext.setAttribute("server_info", session.getServletContext().getServerInfo());            
+            pageContext.setAttribute("username", Context.getAuthenticatedUser().getUsername());
+            String implementationId = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_IMPLEMENTATION_ID);
+            pageContext.setAttribute("implementationId", (implementationId != null) ? implementationId : "");
+            StringBuilder sb = new StringBuilder();
+            boolean isFirst = true;
+            for(Module module : ModuleFactory.getStartedModules()){
+            	if(isFirst){
+            		sb.append(module.getModuleId());
+            		isFirst = false;
+            	}
+            	else
+            		sb.append(", "+module.getModuleId());
+            }
+            pageContext.setAttribute("startedModules", sb.toString());            
 		}
 	} 
 	else  {
@@ -132,21 +152,20 @@ try {
 <openmrs:extensionPoint pointId="org.openmrs.uncaughtException" type="html" />
 
 <div>
-<%-- if jira_summary is defined then show report bug --%>
-<c:if test="${jira_summary != null}">
-    <form action="<%=OpenmrsConstants.JIRA_CREATE_PATCH_URL %>" target="_blank" method="get">
-    	<input type="hidden" name="pid" value="<%=OpenmrsConstants.JIRA_OPENMRS_TRUNK_PID%>" />
-        <input type="hidden" name="issuetype" value="<%=OpenmrsConstants.JIRA_BUG %>" />
-        <input type="hidden" name="summary" value="${jira_summary}" />
-        <input type="hidden" name="description" value="${jira_description}" />
-        <br/>
-        <br/>If you don't yet have an OpenMRS ID, click <a onclick="goToJira('<%=OpenmrsConstants.JIRA_SIGN_UP %>')" href="">here</a> to get one.
-        <br/>Then, click the button below to report this error.       
-        <br/>
-        <br/>
-        <input type="submit" value="Report Bug">
-    </form>
-</c:if>
+
+<form action="${reportBugUrl}" target="_blank" method="POST">
+	<input type="hidden" name="openmrs_version" value="${openmrs_version}" />
+	<input type="hidden" name="server_info" value="${server_info}" />
+	<input type="hidden" name="username" value="${username}" />
+	<input type="hidden" name="implementationId" value="${implementationId}" />
+	<input type="hidden" name="startedModules" value="${startedModules}" />
+	<input type="hidden" name="summary" value="${summary}" />
+	<input type="hidden" name="description" value="${description}" />
+	<br/>
+	<br/>
+	<input type="submit" value="Report Bug">
+</form>
+
 </div>
 	
 
