@@ -16,6 +16,9 @@ package org.openmrs;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.joda.time.DateTimeFieldType;
+import org.joda.time.Partial;
+
 /**
  *
  */
@@ -444,7 +447,23 @@ public class ApproximateDate implements Comparable<ApproximateDate> {
 	@Override
 	public int compareTo(ApproximateDate o) {
 		//TODO Advanced comparison incorporating Approximate values and Unknowns
-		return this.getDate().compareTo(o.getDate());
+		Partial thisDate = getAsPartial(this);
+		Partial otherDate = getAsPartial(o);
+		
+		return thisDate.compareTo(otherDate);
+	}
+	
+	private Partial getAsPartial(ApproximateDate aDate) {
+		Partial partial = new Partial();
+		if (aDate.getMetadata() != null) {
+			if (!aDate.isYearUnknown())
+				partial = partial.with(DateTimeFieldType.year(), getYear());
+			if (!aDate.isMonthUnknown())
+				partial = partial.with(DateTimeFieldType.monthOfYear(), getMonth());
+			if (!aDate.isDayUnknown())
+				partial = partial.with(DateTimeFieldType.monthOfYear(), getDay());
+		}
+		return partial;
 	}
 
 }
