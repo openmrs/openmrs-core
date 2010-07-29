@@ -793,8 +793,6 @@ public final class OpenmrsConstants {
 	
 	public static final String GLOBAL_PROPERTY_LOCATION_WIDGET_TYPE = "location.field.style";
 	
-	public static final String GLOBAL_PROPERTY_LOCATION_WIDGET_TYP = "graph.color.critical";
-	
 	public static final String GLOBAL_PROPERTY_REPORT_BUG_URL = "openmrs.reportBug.url";
 
 	/**
