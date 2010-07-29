@@ -164,7 +164,8 @@ public class ModuleListController extends SimpleFormController {
 										
 										String dntShowUpgConf = getConfirmationAllowedForCurrentUser("moduleadmin.moduleUpgrade");
 										
-										if (dntShowUpgConf == null || !Boolean.parseBoolean(dntShowUpgConf)) {
+										if (dntShowUpgConf == null || dntShowUpgConf.equals("")
+										        || !Boolean.parseBoolean(dntShowUpgConf)) {
 											// Show upgrade confirmation in the next page refresh
 											httpSession.setAttribute("showUpgradeConfirm", true);
 											

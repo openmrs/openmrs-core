@@ -85,6 +85,14 @@ public class ModuleConfigurationFormController extends SimpleFormController {
 
 				List<GlobalProperty> gpList = new ArrayList<GlobalProperty>();
 				
+				String moduleId = request.getParameter("moduleId");
+				
+				Module module = null;
+
+				if (moduleId != null) {
+					module = ModuleFactory.getModuleById(moduleId);
+				}
+
 				for (int i = 0; i < keys.length; i++) {
 					String propName = keys[i];
 					String propValue = values[i];
@@ -106,7 +114,8 @@ public class ModuleConfigurationFormController extends SimpleFormController {
 					for (GlobalProperty gp : gpList) {
 						as.saveGlobalProperty(gp);
 					}
-					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, msa.getMessage("Module.configured"));
+					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, msa.getMessage("Module.configured",
+					    new String[] { module != null ? module.getName() : "" }));
 				}
 				catch (Exception e) {
 					log.error("Error saving properties", e);

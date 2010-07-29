@@ -146,7 +146,7 @@ public class ModuleRepository {
 	}
 	
 	/**
-	 * This method returns all the cached modules excluding the loaded ones
+	 * This method returns all the cached modules
 	 * 
 	 * @return cached modules
 	 */
@@ -204,7 +204,7 @@ public class ModuleRepository {
 	}
 	
 	/**
-	 * This method returns the no of modules in the repository excluding the loaded modules
+	 * This method returns the no of modules in the repository
 	 * 
 	 * @return no of modules
 	 */
