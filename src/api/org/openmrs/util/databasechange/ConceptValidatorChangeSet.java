@@ -71,8 +71,6 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 	private Locale defaultLocale = new Locale("en");
 	
 	private List<Locale> allowedLocales = null;
-	
-	private int daemonUserId;
 
 	/**
 	 * @see CustomTaskChange#execute(Database)
@@ -86,11 +84,9 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 		validateAndCleanUpConcepts(connection);
 		
 		//commit as a batch update
-		if (!updatedConceptNames.isEmpty()) {
-			daemonUserId = getInt(connection,
-			    "SELECT u.user_id FROM users u WHERE u.uuid = 'A4F30A1B-5EB9-11DF-A648-37A07F9C90FB'");
+		if (!updatedConceptNames.isEmpty())
 			runBatchUpdate(connection);
-		} else
+		else
 			log.debug("No concept names to update");
 		
 		if (!logMessages.isEmpty() || !updateWarnings.isEmpty())
@@ -255,8 +251,8 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 							duplicate.setVoidReason("Duplicate name in locale");
 							voidedNames.add(duplicate);
 							reportUpdatedName(duplicate, "ConceptName with id: " + duplicate.getConceptNameId()
-							        + " has been voided because it is a duplicate name for concept" + conceptId
-							        + "' in locale '" + conceptNameLocale.getDisplayName() + "'");
+							        + " has been voided because it is a duplicate name for concept with id " + conceptId
+							        + " in locale '" + conceptNameLocale.getDisplayName() + "'");
 						}
 					}
 				}
@@ -601,18 +597,24 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 			pStmt = connection
 			        .prepareStatement("UPDATE concept_name SET locale = ?, concept_name_type = ?, locale_preferred = ?, voided = ?, date_voided = ?, void_reason = ?, voided_by = ? WHERE concept_name_id = ?");
 			
+			Integer userId = DatabaseUpdater.getAuthenticatedUserId();
+			//is we have no authenticated user(for API users), set as Daemon
+			if (userId == null || userId < 1) {
+				userId = getInt(connection,
+				    "SELECT u.user_id FROM users u WHERE u.uuid = 'A4F30A1B-5EB9-11DF-A648-37A07F9C90FB'");
+				if (userId == null || userId < 1)
+					userId = 1;
+			}
+
 			for (ConceptName conceptName : updatedConceptNames) {
 				pStmt.setString(1, conceptName.getLocale().toString());
 				pStmt.setString(2, (conceptName.getConceptNameType() != null) ? conceptName.getConceptNameType().toString()
 				        : null);
 				pStmt.setBoolean(3, conceptName.isLocalePreferred());
 				pStmt.setBoolean(4, conceptName.isVoided());
-				if (conceptName.isVoided()) {
-					pStmt.setDate(5, new Date(System.currentTimeMillis()));
-					pStmt.setString(6, conceptName.getVoidReason());
-					if (daemonUserId > 0)
-						pStmt.setInt(7, daemonUserId);
-				}
+				pStmt.setDate(5, conceptName.isVoided() ? new Date(System.currentTimeMillis()) : null);
+				pStmt.setString(6, conceptName.getVoidReason());
+				pStmt.setString(7, conceptName.isVoided() ? userId.toString() : null);
 				pStmt.setInt(8, conceptName.getConceptNameId());
 				
 				pStmt.addBatch();
