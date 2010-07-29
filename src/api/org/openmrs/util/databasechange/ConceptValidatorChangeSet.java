@@ -600,10 +600,10 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 			Integer userId = DatabaseUpdater.getAuthenticatedUserId();
 			//is we have no authenticated user(for API users), set as Daemon
 			if (userId == null || userId < 1) {
-				userId = getInt(connection,
-				    "SELECT u.user_id FROM users u WHERE u.uuid = 'A4F30A1B-5EB9-11DF-A648-37A07F9C90FB'");
-				if (userId == null || userId < 1)
-					userId = 1;
+				userId = getInt(connection, "SELECT min(user_id) FROM users");
+				//leave it as null rather than setting it to 0
+				if (userId < 1)
+					userId = null;
 			}
 
 			for (ConceptName conceptName : updatedConceptNames) {
@@ -614,7 +614,7 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 				pStmt.setBoolean(4, conceptName.isVoided());
 				pStmt.setDate(5, conceptName.isVoided() ? new Date(System.currentTimeMillis()) : null);
 				pStmt.setString(6, conceptName.getVoidReason());
-				pStmt.setString(7, conceptName.isVoided() ? userId.toString() : null);
+				pStmt.setString(7, (conceptName.isVoided() && userId != null) ? userId.toString() : null);
 				pStmt.setInt(8, conceptName.getConceptNameId());
 				
 				pStmt.addBatch();
