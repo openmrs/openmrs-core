@@ -793,7 +793,7 @@ public final class OpenmrsConstants {
 	
 	public static final String GLOBAL_PROPERTY_LOCATION_WIDGET_TYPE = "location.field.style";
 	
-	public static final String GLOBAL_PROPERTY_REPORT_BUG_URL = "openmrs.reportBug.url";
+	public static final String GLOBAL_PROPERTY_REPORT_BUG_URL = "reportProblem.url";
 
 	/**
 	 * Global property name that allows specification of whether user passwords must contain both
@@ -1158,7 +1158,7 @@ public final class OpenmrsConstants {
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_HL7_ARCHIVE_DIRECTORY, HL7Constants.HL7_ARCHIVE_DIRECTORY_NAME,
 		        "The default name or absolute path for the folder where to write the hl7_in_archives."));
 		
-		props.add(new GlobalProperty(GLOBAL_PROPERTY_REPORT_BUG_URL, "http://reportbug.openmrs.org/",
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_REPORT_BUG_URL, "http://errors.openmrs.org/scrap",
 		        "The openmrs url where to submit bug reports"));
 
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {

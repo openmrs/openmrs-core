@@ -30,10 +30,6 @@
 			trace.style.display = "none";
 		}
 	}
-
-	function goToJira(url){
-		window.open(url, '_blank', 'height=700, width=700');		
-	}
 </script>	
 
 <% 
@@ -115,8 +111,8 @@ try {
 			}
 			
 			pageContext.setAttribute("reportBugUrl", Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_REPORT_BUG_URL)); 
-            pageContext.setAttribute("description", OpenmrsUtil.shortenedStackTrace(description.toString()));
-            pageContext.setAttribute("summary", exception.toString());
+            pageContext.setAttribute("stackTrace", OpenmrsUtil.shortenedStackTrace(description.toString()));
+            pageContext.setAttribute("errorMessage", exception.toString());
             pageContext.setAttribute("openmrs_version", OpenmrsConstants.OPENMRS_VERSION);
             pageContext.setAttribute("server_info", session.getServletContext().getServerInfo());            
             pageContext.setAttribute("username", Context.getAuthenticatedUser().getUsername());
@@ -152,6 +148,18 @@ try {
 <openmrs:extensionPoint pointId="org.openmrs.uncaughtException" type="html" />
 
 <div>
+The following data will be submitted along to enable the team in resolving the problem and will be kept private.
+<ul>
+<li>OpenMrs Version</li>
+<li>The application server's information e.g type and version number</li>
+<li>The OpemMRS username of the currently logged in user reporting this problem</li>
+<li>The implementation Id of this OpenMRS installation</li>
+<li>The modules that have been installed and started</li>
+<li>The error message and stack trace</li>
+</ul>
+</div>
+
+<div>
 
 <form action="${reportBugUrl}" target="_blank" method="POST">
 	<input type="hidden" name="openmrs_version" value="${openmrs_version}" />
@@ -159,11 +167,10 @@ try {
 	<input type="hidden" name="username" value="${username}" />
 	<input type="hidden" name="implementationId" value="${implementationId}" />
 	<input type="hidden" name="startedModules" value="${startedModules}" />
-	<input type="hidden" name="summary" value="${summary}" />
-	<input type="hidden" name="description" value="${description}" />
+	<input type="hidden" name="errorMessage" value="${errorMessage}" />
+	<input type="hidden" name="stackTrace" value="${stackTrace}" />
 	<br/>
-	<br/>
-	<input type="submit" value="Report Bug">
+	<input type="submit" value="Report Problem">
 </form>
 
 </div>
