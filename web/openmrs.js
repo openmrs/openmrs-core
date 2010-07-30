@@ -367,6 +367,10 @@ function DatePicker(dateFormat, id, opts) {
  	this.getDateAsString = function() {
  		return parseDateFromJsToString(dateFormat, this.getDate());
  	};
+ 	
+ 	this.show = function() {
+ 		jq.datepicker("show");
+ 	}
 }
 
 /**
