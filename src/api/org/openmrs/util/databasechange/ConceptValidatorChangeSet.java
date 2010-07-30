@@ -71,7 +71,7 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 	private Locale defaultLocale = new Locale("en");
 	
 	private List<Locale> allowedLocales = null;
-	
+
 	/**
 	 * @see CustomTaskChange#execute(Database)
 	 */
@@ -251,8 +251,8 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 							duplicate.setVoidReason("Duplicate name in locale");
 							voidedNames.add(duplicate);
 							reportUpdatedName(duplicate, "ConceptName with id: " + duplicate.getConceptNameId()
-							        + " has been voided because it is a duplicate name for concept" + conceptId
-							        + "' in locale '" + conceptNameLocale.getDisplayName() + "'");
+							        + " has been voided because it is a duplicate name for concept with id " + conceptId
+							        + " in locale '" + conceptNameLocale.getDisplayName() + "'");
 						}
 					}
 				}
@@ -595,18 +595,27 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 		try {
 			connection.setAutoCommit(false);
 			pStmt = connection
-			        .prepareStatement("UPDATE concept_name SET locale = ?, concept_name_type = ?, locale_preferred = ?, voided = ?, date_voided = ?, void_reason = ? WHERE concept_name_id = ?");
+			        .prepareStatement("UPDATE concept_name SET locale = ?, concept_name_type = ?, locale_preferred = ?, voided = ?, date_voided = ?, void_reason = ?, voided_by = ? WHERE concept_name_id = ?");
 			
+			Integer userId = DatabaseUpdater.getAuthenticatedUserId();
+			//is we have no authenticated user(for API users), set as Daemon
+			if (userId == null || userId < 1) {
+				userId = getInt(connection, "SELECT min(user_id) FROM users");
+				//leave it as null rather than setting it to 0
+				if (userId < 1)
+					userId = null;
+			}
+
 			for (ConceptName conceptName : updatedConceptNames) {
 				pStmt.setString(1, conceptName.getLocale().toString());
 				pStmt.setString(2, (conceptName.getConceptNameType() != null) ? conceptName.getConceptNameType().toString()
 				        : null);
 				pStmt.setBoolean(3, conceptName.isLocalePreferred());
 				pStmt.setBoolean(4, conceptName.isVoided());
-				if (conceptName.isVoided())
-					pStmt.setDate(5, new Date(System.currentTimeMillis()));
+				pStmt.setDate(5, conceptName.isVoided() ? new Date(System.currentTimeMillis()) : null);
 				pStmt.setString(6, conceptName.getVoidReason());
-				pStmt.setInt(7, conceptName.getConceptNameId());
+				pStmt.setString(7, (conceptName.isVoided() && userId != null) ? userId.toString() : null);
+				pStmt.setInt(8, conceptName.getConceptNameId());
 				
 				pStmt.addBatch();
 			}
