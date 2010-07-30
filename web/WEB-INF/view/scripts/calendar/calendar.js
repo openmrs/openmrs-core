@@ -1,8 +1,8 @@
 
 function showCalendar(obj) {
-	makeCalendar(obj);
-	if(self.gfPop)
-		gfPop.fPopCalendar(obj);
+	var dp = new DatePicker(jsDateFormat, obj.id);
+	obj.onclick = null;
+	dp.show();
 	return false;
 }
 
