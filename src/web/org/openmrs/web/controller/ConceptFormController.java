@@ -409,7 +409,8 @@ public class ConceptFormController extends SimpleFormController {
 				for (ConceptName synonym : synonymsByLocale.get(locale)) {
 					if (synonym != null && StringUtils.hasText(synonym.getName())) {
 						synonym.setLocale(locale);
-						if (synonym.getName().equalsIgnoreCase(preferredNamesByLocale.get(locale))) {
+						//donot set voided names otherwise setPreferredname(() will throw an exception
+						if (synonym.getName().equalsIgnoreCase(preferredNamesByLocale.get(locale)) && !synonym.isVoided()) {
 							concept.setPreferredName(synonym);
 						} else if (!concept.getNames().contains(synonym) && !concept.hasName(synonym.getName(), locale)) {
 							//we leave systemTag field as null to indicate that it is a synonym
