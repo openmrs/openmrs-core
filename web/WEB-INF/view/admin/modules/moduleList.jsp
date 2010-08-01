@@ -167,7 +167,7 @@
 									</form>		
 								</div>								
 							</c:if>
-							<table id="findModuleTable" cellpadding="5" cellspacing="0">
+							<table id="findModuleTable" cellpadding="5" cellspacing="0" style="width: 100%">
 					    		<thead>
 					       			<tr>
 										<th><spring:message code="general.action"/></th>
