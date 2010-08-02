@@ -769,6 +769,11 @@
 	<name>datePattern</name>
 	<tag-class>org.openmrs.web.taglib.DatePatternTag</tag-class>
 	<body-content>empty</body-content>
+	<attribute>
+		<name>localize</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
 </tag>
 
 <tag>
