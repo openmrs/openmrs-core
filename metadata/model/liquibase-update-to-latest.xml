@@ -3664,4 +3664,18 @@
 								baseTableName="concept_name_tag_map" referencedColumnNames="concept_name_tag_id" 
 								constraintName="mapped_concept_name_tag"/>
     </changeSet>
+	
+	<changeSet id="201008021047" author="bwolfe" failOnError="false">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<indexExists indexName="family_name2"/>
+			</not>
+		</preConditions>
+		<comment>
+			Add an index to the person_name.family_name2 to speed up patient and person searches
+		</comment>
+		<createIndex tableName="person_name" indexName="family_name2">
+			<column name="family_name2" />
+		</createIndex>
+	</changeSet>
 </databaseChangeLog>
