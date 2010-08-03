@@ -140,4 +140,76 @@ public class ApproximateDateTest {
 	    //TODO auto-generated
 		Assert.fail("Not yet implemented");
     }
+
+	/**
+     * @see {@link ApproximateDate#setApproximated(int)}
+     * 
+     */
+    @Test
+    @Verifies(value = "should set the approximation level", method = "setApproximated(int)")
+    public void setApproximated_shouldSetTheApproximationLevel() throws Exception {
+	    //TODO auto-generated
+		Assert.fail("Not yet implemented");
+    }
+
+	/**
+     * @see {@link ApproximateDate#setDateFromAge(float,Date)}
+     * 
+     */
+    @Test
+    @Verifies(value = "should set the date depending on the age and a date", method = "setDateFromAge(float,Date)")
+    public void setDateFromAge_shouldSetTheDateDependingOnTheAgeAndADate() throws Exception {
+	    //TODO auto-generated
+		Assert.fail("Not yet implemented");
+    }
+
+	/**
+     * @see {@link ApproximateDate#setDay(Integer)}
+     * 
+     */
+    @Test
+    @Verifies(value = "should set the day", method = "setDay(Integer)")
+    public void setDay_shouldSetTheDay() throws Exception {
+	    //TODO auto-generated
+		ApproximateDate date = new ApproximateDate();
+		date.setDay(12);
+		Assert.assertTrue(date.getDay().equals(12));
+    }
+
+	/**
+     * @see {@link ApproximateDate#setMonth(Integer)}
+     * 
+     */
+    @Test
+    @Verifies(value = "should set the month", method = "setMonth(Integer)")
+    public void setMonth_shouldSetTheMonth() throws Exception {
+	    //TODO auto-generated
+		ApproximateDate date = new ApproximateDate();
+		date.setMonth(12);
+		Assert.assertTrue(date.getMonth().equals(12));
+    }
+
+	/**
+     * @see {@link ApproximateDate#setYear(Integer)}
+     * 
+     */
+    @Test
+    @Verifies(value = "should set the year", method = "setYear(Integer)")
+    public void setYear_shouldSetTheYear() throws Exception {
+	    //TODO auto-generated
+		ApproximateDate date = new ApproximateDate();
+		date.setYear(1999);
+		Assert.assertTrue(date.getDay().equals(1999));
+    }
+
+	/**
+     * @see {@link ApproximateDate#isApproximated()}
+     * 
+     */
+    @Test
+    @Verifies(value = "should check whether the date is approximated", method = "isApproximated()")
+    public void isApproximated_shouldCheckWhetherTheDateIsApproximated() throws Exception {
+	    //TODO auto-generated
+		Assert.fail("Not yet implemented");
+    }
 }

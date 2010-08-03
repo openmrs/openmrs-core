@@ -249,7 +249,7 @@ public class ApproximateDate implements Comparable<ApproximateDate> {
 	 * Checks if any part of the date is approximated
 	 * 
 	 * @return
-	 * @should set the approximation level
+	 * @should check whether the date is approximated
 	 */
 	public boolean isApproximated() {
 		if (metadata == null)
