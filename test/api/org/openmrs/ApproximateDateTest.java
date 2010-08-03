@@ -1,7 +1,11 @@
 package org.openmrs;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -32,9 +36,22 @@ public class ApproximateDateTest {
 	public void setDateFromAge_shouldSetTheDateDependingOnTheAge() throws Exception {
 		//TODO auto-generated
 		ApproximateDate approximateDate = new ApproximateDate();
-		approximateDate.setDateFromAge(18f);
-		Date set = approximateDate.getDate();
-		Assert.fail("Not yet implemented");
+		
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		
+		// Test standard case and ensure estimated field is set to true
+		approximateDate.setDateFromAge(10f, df.parse("2008-05-20"));
+		assertEquals(df.parse("1998-05-20"), approximateDate.getDate());
+		assertTrue(approximateDate.isApproximated());
+		
+		// Test boundary cases
+		approximateDate.setDateFromAge(52, df.parse("2002-01-01"));
+		assertEquals(df.parse("1950-01-01"), approximateDate.getDate());
+		approximateDate.setDateFromAge(35, df.parse("2004-12-31"));
+		assertEquals(df.parse("1969-12-31"), approximateDate.getDate());
+		approximateDate.setDateFromAge(0, df.parse("2008-05-20"));
+		assertEquals(df.parse("2008-05-20"), approximateDate.getDate());
+
 	}
 
 	/**

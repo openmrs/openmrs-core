@@ -119,9 +119,10 @@ public class ApproximateDate implements Comparable<ApproximateDate> {
 	public Integer getDay() {
 		return day;
 	}
-
+	
 	/**
 	 * @param year the year to set
+	 * @should set the year
 	 */
 	public void setYear(Integer year) {
 		this.year = year;
@@ -130,6 +131,7 @@ public class ApproximateDate implements Comparable<ApproximateDate> {
 	
 	/**
 	 * @param month the month to set
+	 * @should set the month
 	 */
 	public void setMonth(Integer month) {
 		this.month = month;
@@ -138,6 +140,7 @@ public class ApproximateDate implements Comparable<ApproximateDate> {
 	
 	/**
 	 * @param day the day to set
+	 * @should set the day
 	 */
 	public void setDay(Integer day) {
 		this.day = day;
