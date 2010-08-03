@@ -19,9 +19,9 @@ public class ApproximateDateTest {
 		ApproximateDate approximateDate = new ApproximateDate();
 		approximateDate.setDate(1988, 9, 15, false, false, false);
 		Calendar cal = Calendar.getInstance();
-		cal.set(1988, 9, 15);
-		//		cal.ge
-		Assert.fail("Not yet implemented");
+		cal.setTimeInMillis(0);
+		cal.set(1988, 8, 15, 0, 0, 0);
+		Assert.assertEquals(cal.getTime(), approximateDate.getDate());
 	}
 
 	/**
