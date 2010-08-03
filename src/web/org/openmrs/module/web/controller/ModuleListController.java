@@ -103,7 +103,7 @@ public class ModuleListController extends SimpleFormController {
 				try {
 					WebModuleUtil.restartModules(getServletContext());
 				}
-				catch (ModuleException e) {
+				catch (Exception e) {
 					log.warn("unable to complete restart");
 					error = e.getMessage();
 				}

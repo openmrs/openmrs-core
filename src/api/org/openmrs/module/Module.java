@@ -99,8 +99,6 @@ public final class Module {
 	
 	private String startupErrorMessage = null;
 	
-	private String configurationPage;
-
 	/**
 	 * Simple constructor
 	 * 
@@ -702,14 +700,6 @@ public final class Module {
 	
 	public void clearStartupError() {
 		this.startupErrorMessage = null;
-	}
-	
-	public String getConfigurationPage() {
-		return configurationPage;
-	}
-	
-	public void setConfigurationPage(String configurationPage) {
-		this.configurationPage = configurationPage;
 	}
 	
 	public boolean isConfigurable() {

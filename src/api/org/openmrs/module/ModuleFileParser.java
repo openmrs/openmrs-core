@@ -263,8 +263,7 @@ public class ModuleFileParser {
 			module.setRequireDatabaseVersion(getElement(rootNode, configVersion, "require_database_version").trim());
 			module.setRequireOpenmrsVersion(getElement(rootNode, configVersion, "require_version").trim());
 			module.setUpdateURL(getElement(rootNode, configVersion, "updateURL").trim());
-			module.setRequiredModulesMap(getRequiredModules(rootNode, configVersion));
-			module.setConfigurationPage(getElement(rootNode, configVersion, "configurationPage"));
+			module.setRequiredModulesMap(getRequiredModules(rootNode, configVersion));			
 			
 			module.setAdvicePoints(getAdvice(rootNode, configVersion, module));
 			module.setExtensionNames(getExtensions(rootNode, configVersion));

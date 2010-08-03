@@ -40,6 +40,7 @@
 		$j('#moduleAddForm input[name=uploadFile]').click(function(){			
 			$j('#moduleAddForm input[name=uploadFile]').attr('disabled','disabled');
 			$j('#moduleAddForm').submit(); 
+			$j('#moduleAddFormDiv').html('<spring:message code="Module.pleaseWait"/>');
 		});		
 
 		$j('.errorDetailsButton').click(function() {
@@ -127,7 +128,7 @@
 		<form id="openmrsModulesForm" method="post">
 			<div style="margin: auto;width: 70%">
 				<div style="clear:both">&nbsp;</div>
-				<div id="restartMessage">
+				<div id="restartMessage" style="text-align: center">
 					<spring:message code="Module.restartWarning"/> <input <c:if test="${showUpgradeConfirm == 'true'}">disabled="true"</c:if> type="button" value="<spring:message code="Module.restartOpenmrs"/>" onclick="return confirmRestart('Restart_Confirm');"/>
 					<input type="hidden" name="action" value="restartModules"/>					
 				</div>
@@ -145,7 +146,7 @@
 				<input type="button" id="addUpgradeButton" value="<spring:message code="Module.addOrUpgrade" javaScriptEscape="true"/>"/>
 				<div id="addUpgradePopup">
 					<b class="boxHeader"><spring:message code="Module.addOrUpgrade"/></b>
-					<div class="box">
+					<div class="box" id="moduleAddFormDiv">
 						<form id="moduleAddForm" action="module.list" method="post" enctype="multipart/form-data">
 							<input type="file" name="moduleFile" size="40" <c:if test="${allowAdmin!='true'}">disabled="disabled"</c:if> />
 							<input type="hidden" name="action" value="upload"/>
