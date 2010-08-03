@@ -1,43 +1,190 @@
 #parse($headerTemplate)
-	<script>
+<script type="text/javascript" src="initfilter/scripts/jquery-ui/js/jquery-ui.custom.min.js"></script>
+<link href="initfilter/scripts/jquery-ui/css/redmond/jquery-ui.custom.css" rel="stylesheet" type="text/css"/>
+	<script>		
+		var updateTimer = null;
 		function showProgress() {
 			jQuery.post("${setupPageUrl}", {page: "progress.vm.ajaxRequest"} , function(data) {
+				if(data){
+					if(data.initializationComplete) {
+						window.location="index.htm";
+						return;
+					}
 				
-				if(data.initializationComplete) {
-					window.location="index.htm";
-					return;
-				}
-				
-				if(data.hasErrors) {
-					window.location= "${setupPageUrl}";
-					return;
-				}
+					if(data.hasErrors) {
+						window.location= "${setupPageUrl}";
+						return;
+					}				
+					
+					//Progress status should reflect complete status for all executed tasks
+					//i.e if the progress was 98% and this time round, we have moved to the next task, 
+					//mark the task as complete
+					if(data.executedTasks){
+						for(var i = 0; i < data.executedTasks.length ; i++){
+							if(jQuery("#"+data.executedTasks[i]+"_task_loading").is(':visible'))
+								jQuery("#"+data.executedTasks[i]+"_task_loading").hide();
+							if(!jQuery("#"+data.executedTasks[i]+"_task_checkmark").is(':visible'))
+								jQuery("#"+data.executedTasks[i]+"_task_checkmark").show();
 								
-				jQuery("#lastActionMessage").html(data.message);
-				jQuery("#actionCounter").html(data.actionCounter);
+							if(jQuery("#"+data.executedTasks[i]+"_progressbar")){
+								//show and initialize the progress bar the first time it is updated, if the task takes a short
+								//time to execute it is possible that its progress bar was never shown at all since it was 
+								//never returned as the executing task.
+								if(jQuery("#"+data.executedTasks[i]+"_progressbar").progressbar("option", "disabled"))
+									jQuery("#"+data.executedTasks[i]+"_progressbar").progressbar({ disabled : false});
+									
+								if(jQuery("#"+data.executedTasks[i]+"_progressbar").progressbar("option","value") < 100){
+									//wait for the current progress bar to complete
+									setTimeout(updateSmoothly(data.executedTasks[i], 100), 500);
+								}
+							}													
+						}						
+					}
+								
+					if(data.executingTask){
+						jQuery("#"+data.executingTask+"_task_loading").show();
+						//set the progress bar value if task has progress bar
+						if(jQuery("#"+data.executingTask+"_progressbar")){				
+							//show and initialize the progress bar the first time it is updated
+							if(jQuery("#"+data.executingTask+"_progressbar").progressbar("option", "disabled"))
+								jQuery("#"+data.executingTask+"_progressbar").progressbar({ disabled : false});
+								
+							updateProgressBar(data.executingTask, data.completedPercentage);
+						}															
+					}									
+								
+					jQuery("#lastActionMessage").html(data.message);
+					jQuery("#actionCounter").html(data.actionCounter);
 				
-				var logLines = "";
-				for(var i = 0; i < data.logLines.length; i++) {
-					logLines += data.logLines[i] + "<br />";
+					var logLines = "";
+					if(data.logLines){
+						for(var i = 0; i < data.logLines.length; i++) {
+							logLines += data.logLines[i] + "<br />";
+						}
+					
+						jQuery("#logLines").html(logLines);				
+					}
+				
 				}
-				
-				jQuery("#logLines").html(logLines);
 				
 			}, "json");
 			
 			setTimeout("showProgress()", 1000);
 		}
+				
+		//Updates the current progress with the new percentage value from the server
+		function updateProgressBar(progressBarId, completedPercentage){
+			var newPercentage = Number(completedPercentage);
+			var currentValue = jQuery("#"+progressBarId+"_progressbar").progressbar("option","value");
+			
+			//guarantee that the bar never loads backwards in case we get bad responses from the server
+			if(newPercentage > currentValue){
+				//Delegate to the function below which makes the progress bar animation 
+				//feel smoother instead of skipping over by larger and drastic margins
+				updateSmoothly(progressBarId, newPercentage);
+			}
+		}
 		
-		jQuery(function() { showProgress(); });
+		//Updates the current progress bar with a smoother animation by breaking the changes
+		//into smaller units of 1 that take place in smaller time intervals.
+		function updateSmoothly(progressBarId, newPercentage){			
+			var currentPercentage = jQuery("#"+progressBarId+"_progressbar").progressbar("option","value");
+			
+			//dont go over new Percentage and 100 in case we get bad responses from the server
+			if(currentPercentage < newPercentage && currentPercentage < 100){
+				jQuery("#"+progressBarId+"_progressbar").progressbar("option", "value", ++currentPercentage);
+				jQuery("#"+progressBarId+"_progressPercentage").html(currentPercentage+"%");
+				updateTimer = setTimeout(
+					function(){
+						updateSmoothly(progressBarId, newPercentage);
+					}, 30);
+			}
+			else
+				clearTimeout(updateTimer);
+		}		
+			
+		//register elements for toggling(show/hide output logs)
+		jQuery(document).ready(
+			function(){
+				jQuery("#output").click(
+					function () {
+						jQuery(".logsDetailsToggle").toggle();
+					}
+   				);
+   			}
+   		);
+   		
+   		jQuery(function() { showProgress(); });
+		 		 
 	</script>
-
+	
+	<style>		
+		.tasksToExecuteHeader{
+			text-align:center; background-color: #CCCCCC;padding: 5px; 
+			-moz-border-radius: 5px; -webkit-border-radius: 5px;
+		}
+		.taskItem {
+			 background: #E9E4CC; border-top:2px solid #ECF3F7; padding: 3px;
+		}
+		.col_taskImage{
+			width:30px; text-align: center;
+		}
+		.col_taskDisplayText{
+			width:215px; text-align:left; border-right:2px solid #ECF3F7;
+		}
+		.col_progressBar{
+			width:340px; text-align:left; padding-left:7px;
+		}
+		.progressBarContainer{
+			height:6px; width:330px;
+		}
+		.ui-progressbar-value{
+			background:#8CF27E;
+		}
+		.ui-progressbar{
+			background:#EBE9E8;
+		}
+		.taskImage{
+			display:none; border: none;
+		}
+		.col_progressPercentage{
+			width:50px; font-size: small; text-align:left;
+		}				
+	</style>
+	
     <div class="content">
-     	<div id="lastActionMessage">0%</div>
-       	<br />
-       	Number of actions completed so far: <span id="actionCounter">0</span>
-       	<br /><br />
-		Server log file output:
-	    <div id="logLines"></div>
-	    
+       	<table cellpadding="0" cellspacing="0" align="center">
+       		<tr valign="middle">
+       			<th class="tasksToExecuteHeader" colspan="4">Tasks to execute</th>
+       		</tr>
+       		#foreach ($task in $tasksToExecute)
+			<tr valign="middle">
+       			<td class="taskItem col_taskImage" valign="middle">&nbsp;<img id="${task}_task_loading" class="taskImage" src="images/loading.gif"/>
+       			<img id="${task}_task_checkmark" class="taskImage" src="images/checkmark.png"/></td>
+       			<td class="taskItem col_taskDisplayText">$task.displayText()</td>       			
+       			<td class="taskItem col_progressBar">
+       				<div class="progressBarContainer" id="${task}_progressbar"></div>
+       			</td>
+       			<td class="taskItem col_progressPercentage">
+       				<span class="progressBarContainer" id="${task}_progressPercentage"></span>
+       			</td>
+       		</tr>
+			#end
+		</table>
+		<br /><br />
+		
+		<a id="output" href="#"><span class="logsDetailsToggle">Show output details</span>
+		<span class="logsDetailsToggle" style="display:none">Hide output details</span></a>
+		<br /><br />
+		
+		<div class="logsDetailsToggle" style="display:none">
+     		<div id="lastActionMessage">0%</div>
+       		<br />
+       		Number of actions completed so far: <span id="actionCounter">0</span>
+       		<br /><br />
+       		
+			Server log file output:
+	   		<div id="logLines"></div>
+	    </div>
     </div>
 #parse($footerTemplate)
