@@ -143,6 +143,8 @@ public class ConceptFormController extends SimpleFormController {
 	 * @should display numeric values from table
 	 * @should copy numeric values into numeric concepts
 	 * @should return a concept with a null id if no match is found
+	 * @should void a synonym marked as preferred when it is removed
+	 * @should set the local preferred name
 	 */
 	@Override
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
@@ -202,7 +204,7 @@ public class ConceptFormController extends SimpleFormController {
 					errors.reject("concept", "Concept.concepts.locked");
 				}
 				catch (DuplicateConceptNameException e) {
-					log.error("Tried to save concept with a duplicate name");
+					log.error("Tried to save concept with a duplicate name", e);
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Concept.cannot.save");
 					errors.rejectValue("concept", "Concept.name.duplicate");
 				}
@@ -409,7 +411,7 @@ public class ConceptFormController extends SimpleFormController {
 				for (ConceptName synonym : synonymsByLocale.get(locale)) {
 					if (synonym != null && StringUtils.hasText(synonym.getName())) {
 						synonym.setLocale(locale);
-						//donot set voided names otherwise setPreferredname(() will throw an exception
+						//donot set voided names otherwise setPreferredname() will throw an exception
 						if (synonym.getName().equalsIgnoreCase(preferredNamesByLocale.get(locale)) && !synonym.isVoided()) {
 							concept.setPreferredName(synonym);
 						} else if (!concept.getNames().contains(synonym) && !concept.hasName(synonym.getName(), locale)) {
