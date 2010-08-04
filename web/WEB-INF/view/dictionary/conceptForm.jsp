@@ -204,7 +204,7 @@
 		</c:forEach>
 	</tr>
 	<tr class="localeSpecific">
-		<th valign="top" title="<spring:message code="Concept.synonyms.help"/>">
+		<th valign="top">
 			<spring:message code="Concept.synonyms" /> <img class="help_icon_bottom" src="${pageContext.request.contextPath}/images/help.gif" border="0" title="<spring:message code="Concept.synonyms.help"/>"/>
 		</th>
 		<c:forEach items="${command.locales}" var="loc">
@@ -267,7 +267,7 @@
 		</c:forEach>
 	</tr>
 	<tr class="localeSpecific">
-		<th valign="top" title="<spring:message code="Concept.indexTerms.help"/>">
+		<th valign="top">
 			<spring:message code="Concept.indexTerms" /> <img class="help_icon_bottom" src="${pageContext.request.contextPath}/images/help.gif" border="0" title="<spring:message code="Concept.indexTerms.help"/>"/>
 		</th>
 		<c:forEach items="${command.locales}" var="loc">
@@ -575,8 +575,8 @@
         </td>
     </tr>
 	<tr id="conceptMapRow">
-		<th valign="top" title="<spring:message code="Concept.mappings.help"/>">
-			<spring:message code="Concept.mappings"/> <img class="help_icon" src="${pageContext.request.contextPath}/images/help.gif" border="0" title="<spring:message code="Concept.datatype.help"/>"/>
+		<th valign="top">
+			<spring:message code="Concept.mappings"/> <img class="help_icon" src="${pageContext.request.contextPath}/images/help.gif" border="0" title="<spring:message code="Concept.mappings.help"/>"/>
 		</th>
 		<td>
 			<c:forEach var="mapping" items="${command.mappings}" varStatus="mapStatus">

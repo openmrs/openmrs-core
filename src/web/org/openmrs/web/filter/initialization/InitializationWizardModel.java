@@ -169,4 +169,9 @@ public class InitializationWizardModel {
 	public String implementationIdDescription = "";
 	
 	public String setupPageUrl = WebConstants.SETUP_PAGE_URL;
+	
+	/**
+	 * The tasks to be executed that the user selected from the wizard's prompts
+	 */
+	public List<WizardTask> tasksToExecute;
 }

@@ -170,7 +170,7 @@ public class ConceptValidator implements Validator {
 							        || (concept.getPreferredName(conceptNameLocale) != null && concept.getPreferredName(
 							            conceptNameLocale).getName().equalsIgnoreCase(nameInLocale.getName()))) {
 								throw new DuplicateConceptNameException("'" + nameInLocale.getName()
-								        + "' is a duplicates name in locale '" + conceptNameLocale.toString() + "'");
+								        + "' is a duplicate name in locale '" + conceptNameLocale.toString() + "'");
 							}
 						}
 					}
@@ -188,7 +188,7 @@ public class ConceptValidator implements Validator {
 				//No duplicate names allowed for the same locale and concept, keep the case the same
 				if (!validNamesFoundInLocale.add(nameInLocale.getName().toLowerCase()))
 					throw new DuplicateConceptNameException("'" + nameInLocale.getName()
-					        + "' is a duplicate name in locale '" + conceptNameLocale.toString() + "'");
+					        + "' is a duplicate name in locale '" + conceptNameLocale.toString() + "' for the same concept");
 				if (log.isDebugEnabled())
 					log.debug("Valid name found: " + nameInLocale.getName());
 			}

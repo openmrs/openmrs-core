@@ -150,7 +150,7 @@ public class InitializationFilter extends StartupFilter {
 	 * @param httpResponse
 	 */
 	@Override
-    protected void doGet(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException,
+	protected void doGet(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException,
 	                                                                                      ServletException {
 		
 		Map<String, Object> referenceMap = new HashMap<String, Object>();
@@ -195,7 +195,7 @@ public class InitializationFilter extends StartupFilter {
 	 * @param httpResponse
 	 */
 	@Override
-    protected void doPost(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException,
+	protected void doPost(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException,
 	                                                                                       ServletException {
 		
 		String page = httpRequest.getParameter("page");
@@ -377,6 +377,22 @@ public class InitializationFilter extends StartupFilter {
 			// TODO send user to confirmation page with results of wizard, location of runtime props, before starting install?
 			
 			initJob = new InitializationCompletion();
+			//get the tasks the user selected and show them in the page while the initilization wizard runs
+			wizardModel.tasksToExecute = new ArrayList<WizardTask>();
+			if (!wizardModel.hasCurrentOpenmrsDatabase)
+				wizardModel.tasksToExecute.add(WizardTask.CREATE_SCHEMA);
+			if (wizardModel.createDatabaseUser)
+				wizardModel.tasksToExecute.add(WizardTask.CREATE_DB_USER);
+			if (wizardModel.createTables) {
+				wizardModel.tasksToExecute.add(WizardTask.CREATE_TABLES);
+				wizardModel.tasksToExecute.add(WizardTask.ADD_CORE_DATA);
+			}
+			if (wizardModel.addDemoData)
+				wizardModel.tasksToExecute.add(WizardTask.ADD_DEMO_DATA);
+			wizardModel.tasksToExecute.add(WizardTask.UPDATE_TO_LATEST);
+
+			referenceMap.put("tasksToExecute", wizardModel.tasksToExecute);
+
 			initJob.start();
 			renderTemplate(PROGRESS_VM, referenceMap, httpResponse);
 		} else if (PROGRESS_VM_AJAXREQUEST.equals(page)) {
@@ -393,6 +409,12 @@ public class InitializationFilter extends StartupFilter {
 				result.put("initializationComplete", isInitializationComplete());
 				result.put("message", initJob.getMessage());
 				result.put("actionCounter", initJob.getStepsComplete());
+				if (!isInitializationComplete()) {
+					result.put("executingTask", initJob.getExecutingTask());
+					result.put("executedTasks", initJob.getExecutedTasks());
+					result.put("completedPercentage", initJob.getCompletedPercentage());
+				}
+
 				Appender appender = Logger.getRootLogger().getAppender("MEMORY_APPENDER");
 				if (appender instanceof MemoryAppender) {
 					MemoryAppender memoryAppender = (MemoryAppender) appender;
@@ -454,7 +476,7 @@ public class InitializationFilter extends StartupFilter {
 	 * @see org.openmrs.web.filter.StartupFilter#getTemplatePrefix()
 	 */
 	@Override
-    protected String getTemplatePrefix() {
+	protected String getTemplatePrefix() {
 		return "org/openmrs/web/filter/initialization/";
 	}
 	
@@ -462,7 +484,7 @@ public class InitializationFilter extends StartupFilter {
 	 * @see org.openmrs.web.filter.StartupFilter#getModel()
 	 */
 	@Override
-    protected Object getModel() {
+	protected Object getModel() {
 		return wizardModel;
 	}
 	
@@ -470,7 +492,7 @@ public class InitializationFilter extends StartupFilter {
 	 * @see org.openmrs.web.filter.StartupFilter#skipFilter()
 	 */
 	@Override
-    public boolean skipFilter(HttpServletRequest httpRequest) {
+	public boolean skipFilter(HttpServletRequest httpRequest) {
 		// If progress.vm makes an ajax request even immediately after initialization has completed
 		// let the request pass in order to let progress.vm load the start page of OpenMRS
 		// (otherwise progress.vm is displayed "forever")
@@ -490,7 +512,7 @@ public class InitializationFilter extends StartupFilter {
 	 * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
 	 */
 	@Override
-    public void init(FilterConfig filterConfig) throws ServletException {
+	public void init(FilterConfig filterConfig) throws ServletException {
 		super.init(filterConfig);
 		wizardModel = new InitializationWizardModel();
 		//set whether need to do initialization work
@@ -619,6 +641,12 @@ public class InitializationFilter extends StartupFilter {
 		
 		private boolean erroneous = false;
 		
+		private int completedPercentage = 0;
+
+		private WizardTask executingTask;
+		
+		private List<WizardTask> executedTasks = new ArrayList<WizardTask>();
+		
 		synchronized public void reportError(String error, String errorPage) {
 			errors.add(error);
 			this.errorPage = errorPage;
@@ -674,6 +702,50 @@ public class InitializationFilter extends StartupFilter {
 		}
 		
 		/**
+		 * @return the executingTask
+		 */
+		synchronized protected WizardTask getExecutingTask() {
+			return executingTask;
+		}
+		
+		/**
+		 * @return the completedPercentage
+		 */
+		protected synchronized int getCompletedPercentage() {
+			return completedPercentage;
+		}
+		
+		/**
+		 * @param completedPercentage the completedPercentage to set
+		 */
+		protected synchronized void setCompletedPercentage(int completedPercentage) {
+			this.completedPercentage = completedPercentage;
+		}
+
+		/**
+		 * Adds a task that has been completed to the list of executed tasks
+		 * 
+		 * @param task
+		 */
+		synchronized protected void addExecutedTask(WizardTask task) {
+			this.executedTasks.add(task);
+		}
+		
+		/**
+		 * @param executingTask the executingTask to set
+		 */
+		synchronized protected void setExecutingTask(WizardTask executingTask) {
+			this.executingTask = executingTask;
+		}
+
+		/**
+		 * @return the executedTasks
+		 */
+		synchronized protected List<WizardTask> getExecutedTasks() {
+			return this.executedTasks;
+		}
+
+		/**
 		 * This class does all the work of creating the desired database, user, updates, etc
 		 */
 		public InitializationCompletion() {
@@ -691,6 +763,7 @@ public class InitializationFilter extends StartupFilter {
 						
 						if (!wizardModel.hasCurrentOpenmrsDatabase) {
 							setMessage("Create database");
+							setExecutingTask(WizardTask.CREATE_SCHEMA);
 							// connect via jdbc and create a database
 							String sql = "create database if not exists `?` default character set utf8";
 							int result = executeStatement(false, wizardModel.createDatabaseUsername,
@@ -702,10 +775,13 @@ public class InitializationFilter extends StartupFilter {
 							} else {
 								wizardModel.workLog.add("Created database " + wizardModel.databaseName);
 							}
+							
+							addExecutedTask(WizardTask.CREATE_SCHEMA);
 						}
 						
 						if (wizardModel.createDatabaseUser) {
 							setMessage("Create database user");
+							setExecutingTask(WizardTask.CREATE_DB_USER);
 							connectionUsername = wizardModel.databaseName + "_user";
 							if (connectionUsername.length() > 16)
 								connectionUsername = wizardModel.databaseName.substring(0, 11) + "_user"; // trim off enough to leave space for _user at the end
@@ -746,6 +822,7 @@ public class InitializationFilter extends StartupFilter {
 								        + " all privileges to database " + wizardModel.databaseName);
 							}
 							
+							addExecutedTask(WizardTask.CREATE_DB_USER);
 						} else {
 							connectionUsername = wizardModel.currentDatabaseUsername;
 							connectionPassword = wizardModel.currentDatabasePassword;
@@ -794,6 +871,7 @@ public class InitializationFilter extends StartupFilter {
 								setMessage(message + " (" + i++ + "/" + numChangeSetsToRun + "): Author: "
 								        + changeSet.getAuthor() + " Comments: " + changeSet.getComments() + " Description: "
 								        + changeSet.getDescription());
+								setCompletedPercentage(Math.round(i * 100 / numChangeSetsToRun));
 							}
 							
 						}
@@ -802,11 +880,19 @@ public class InitializationFilter extends StartupFilter {
 							// use liquibase to create core data + tables
 							try {
 								setMessage("Executing " + LIQUIBASE_SCHEMA_DATA);
+								setExecutingTask(WizardTask.CREATE_TABLES);
 								DatabaseUpdater.executeChangelog(LIQUIBASE_SCHEMA_DATA, null,
 								    new PrintingChangeSetExecutorCallback("OpenMRS schema file"));
+								addExecutedTask(WizardTask.CREATE_TABLES);
+								
+								//reset for this task
+								setCompletedPercentage(0);
+								setExecutingTask(WizardTask.ADD_CORE_DATA);
 								DatabaseUpdater.executeChangelog(LIQUIBASE_CORE_DATA, null,
 								    new PrintingChangeSetExecutorCallback("OpenMRS core data file"));
 								wizardModel.workLog.add("Created database tables and added core data");
+								addExecutedTask(WizardTask.ADD_CORE_DATA);
+
 							}
 							catch (Exception e) {
 								reportError(e.getMessage() + " See the error log for more details", null);
@@ -818,9 +904,13 @@ public class InitializationFilter extends StartupFilter {
 						if (wizardModel.createTables && wizardModel.addDemoData) {
 							try {
 								setMessage("Adding demo data");
+								setCompletedPercentage(0);
+								setExecutingTask(WizardTask.ADD_DEMO_DATA);
 								DatabaseUpdater.executeChangelog(LIQUIBASE_DEMO_DATA, null,
 								    new PrintingChangeSetExecutorCallback("OpenMRS demo patients, users, and forms"));
 								wizardModel.workLog.add("Added demo data");
+								
+								addExecutedTask(WizardTask.ADD_DEMO_DATA);
 							}
 							catch (Exception e) {
 								reportError(e.getMessage() + " See the error log for more details", null);
@@ -831,8 +921,11 @@ public class InitializationFilter extends StartupFilter {
 						// update the database to the latest version
 						try {
 							setMessage("Updating the database to the latest version");
+							setCompletedPercentage(0);
+							setExecutingTask(WizardTask.UPDATE_TO_LATEST);
 							DatabaseUpdater.executeChangelog(null, null, new PrintingChangeSetExecutorCallback(
 							        "Updating database tables to latest version "));
+							addExecutedTask(WizardTask.UPDATE_TO_LATEST);
 						}
 						catch (Exception e) {
 							reportError(e.getMessage() + " Error while trying to update to the latest database version",
@@ -841,6 +934,7 @@ public class InitializationFilter extends StartupFilter {
 							return;
 						}
 						
+						setExecutingTask(null);
 						setMessage("Starting OpenMRS");
 						
 						// start spring
@@ -884,9 +978,10 @@ public class InitializationFilter extends StartupFilter {
 							return;
 						}
 						catch (OpenmrsCoreModuleException coreModEx) {
-							log.warn(
-							    "A core module failed to start. Make sure that all core modules (with the required minimum versions) are installed and starting properly.",
-							    coreModEx);
+							log
+							        .warn(
+							            "A core module failed to start. Make sure that all core modules (with the required minimum versions) are installed and starting properly.",
+							            coreModEx);
 							reportError(coreModEx.getMessage(), DEFAULT_PAGE);
 							return;
 						}
@@ -983,8 +1078,8 @@ public class InitializationFilter extends StartupFilter {
 	}
 	
 	/**
-	 * Check whether openmrs database is empty.  Having just one non-liquibase table
-	 * in the given database qualifies this as a non-empty database.
+	 * Check whether openmrs database is empty. Having just one non-liquibase table in the given
+	 * database qualifies this as a non-empty database.
 	 * 
 	 * @param props the runtime properties
 	 * @return true/false whether openmrs database is empty or doesn't exist yet
@@ -1015,10 +1110,10 @@ public class InitializationFilter extends StartupFilter {
 				//get all tables
 				ResultSet tbls = dbMetaData.getTables(null, null, null, types);
 				
-				while(tbls.next()){
+				while (tbls.next()) {
 					String tableName = tbls.getString("TABLE_NAME");
 					//if any table exist besides "liquibasechangelog" or "liquibasechangeloglock", return false
-					if(!("liquibasechangelog".equals(tableName)) && !("liquibasechangeloglock".equals(tableName)))
+					if (!("liquibasechangelog".equals(tableName)) && !("liquibasechangeloglock".equals(tableName)))
 						return false;
 				}
 				return true;
@@ -1038,8 +1133,7 @@ public class InitializationFilter extends StartupFilter {
 			}
 			//if catch an exception while query database, then consider as database is empty.
 			return true;
-		}
-		else
+		} else
 			return true;
 	}
 }
