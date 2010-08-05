@@ -66,15 +66,9 @@
 		</td>
 		<td><i><spring:message code="PersonAttributeType.searchable.help"/></i></td>
 	</tr>
-	<tr>
-		<td valign="top"><spring:message code="general.description"/></td>
-		<td valign="top">
-			<spring:bind path="personAttributeType.description">
-				<textarea name="description" rows="3" cols="40">${status.value}</textarea>
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-			</spring:bind>
-		</td>
-	</tr>
+	<spring:nestedPath path="personAttributeType">
+		<openmrs:portlet url="localizedDescription" id="localizedDescriptionLayout" />
+	</spring:nestedPath>
 	<tr>
 		<td><spring:message code="PersonAttributeType.editPrivilege"/></td>
 		<td>

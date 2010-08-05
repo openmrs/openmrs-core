@@ -1,22 +1,8 @@
 <table>
 	<spring:nestedPath path="field">
 		<openmrs:portlet url="localizedName" id="localizedNameLayout" /> 
+		<openmrs:portlet url="localizedDescription" id="localizedDescriptionLayout" />
 	</spring:nestedPath>
-	<tr>
-		<td valign="top">
-			<spring:message code="general.description" />
-		</td>
-		<td>
-			<spring:bind path="field.description">
-				<textarea name="${status.expression}" id="${status.expression}" rows="2" cols="40" type="_moz">${status.value}</textarea>
-				<c:if test="${status.errorMessage != ''}">
-					<span class="error">
-						${status.errorMessage}
-					</span>
-				</c:if>
-			</spring:bind>
-		</td>
-	</tr>
 	<tr>
 		<td>
 			<spring:message code="Field.type" />

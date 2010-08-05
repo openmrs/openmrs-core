@@ -3724,4 +3724,62 @@
 			<column name="b_is_to_a" type="varchar(1024)"/>
 		</modifyColumn>
 	</changeSet>
+	
+	<changeSet id="201000720-2236" author="luzhuangwei">
+		<comment>Change the width of description column to text for all metadata</comment>
+		<modifyColumn tableName="encounter_type">
+			<column name="description" type="text"/>
+		</modifyColumn>
+		<modifyColumn tableName="order_type">
+			<column name="description" type="text"/>
+		</modifyColumn>
+		<modifyColumn tableName="concept_class">
+			<column name="description" type="text"/>
+		</modifyColumn>
+		<modifyColumn tableName="field_type">
+			<column name="description" type="text"/>
+		</modifyColumn>
+		<modifyColumn tableName="form">
+			<column name="description" type="text"/>
+		</modifyColumn>
+		<modifyColumn tableName="patient_identifier_type">
+			<column name="description" type="text"/>
+		</modifyColumn>
+		<modifyColumn tableName="person_attribute_type">
+			<column name="description" type="text"/>
+		</modifyColumn>
+		<modifyColumn tableName="scheduler_task_config">
+			<column name="description" type="text"/>
+		</modifyColumn>
+		<modifyColumn tableName="program">
+			<column name="description" type="text"/>
+		</modifyColumn>
+		<modifyColumn tableName="location">
+			<column name="description" type="text"/>
+		</modifyColumn>
+		<modifyColumn tableName="field">
+			<column name="description" type="text"/>
+		</modifyColumn>
+		<modifyColumn tableName="concept_source">
+			<column name="description" type="text"/>
+		</modifyColumn>
+		<modifyColumn tableName="location_tag">
+			<column name="description" type="text"/>
+		</modifyColumn>
+		<modifyColumn tableName="relationship_type">
+			<column name="description" type="text"/>
+		</modifyColumn>
+		<modifyColumn tableName="role">
+			<column name="description" type="text"/>
+		</modifyColumn>
+		<modifyColumn tableName="privilege">
+			<column name="description" type="text"/>
+		</modifyColumn>
+		<modifyColumn tableName="hl7_source">
+			<column name="description" type="text"/>
+		</modifyColumn>
+		<modifyColumn tableName="concept_datatype">
+			<column name="description" type="text"/>
+		</modifyColumn>
+	</changeSet>
 </databaseChangeLog>

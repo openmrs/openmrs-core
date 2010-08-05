@@ -37,12 +37,11 @@
 		not-null="true" 
 		length="1024"
 	/>
-    <property
-        name="description"
-        type="java.lang.String"
-        column="description"
-        length="2147483647"
-    />
+    <property 
+    	name="localizedDescription" 
+    	column="description"
+		type="org.openmrs.api.db.hibernate.LocalizedStringType" 
+		length="65536" />
     <property
         name="isSet"
         type="boolean"

@@ -30,7 +30,7 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	
 	private String name;
 	
-	private String description;
+	private LocalizedString localizedDescription;
 	
 	private User creator;
 	
@@ -73,17 +73,33 @@ public abstract class BaseOpenmrsMetadata extends BaseOpenmrsObject implements O
 	}
 	
 	/**
+	 * @see org.openmrs.LocalizedMetadata#getLocalizedDescription()
+	 */
+	public LocalizedString getLocalizedDescription() {
+		if (localizedDescription == null)
+			localizedDescription = new LocalizedString();
+		return localizedDescription;
+	}
+	
+	/**
+	 * @see org.openmrs.LocalizedMetadata#setLocalizedDescription(org.openmrs.LocalizedString)
+	 */
+	public void setLocalizedDescription(LocalizedString localizedDescription) {
+		this.localizedDescription = localizedDescription;
+	}
+	
+	/**
 	 * @return the description
 	 */
 	public String getDescription() {
-		return description;
+		return getLocalizedDescription().getValue();
 	}
 	
 	/**
 	 * @param description the description to set
 	 */
 	public void setDescription(String description) {
-		this.description = description;
+		getLocalizedDescription().setUnlocalizedValue(description);
 	}
 	
 	/**

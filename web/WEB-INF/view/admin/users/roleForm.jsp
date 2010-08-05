@@ -29,6 +29,18 @@
 		
 		return confirm('<spring:message code="Role.leaveForm" />');
 	}
+
+	/* 
+	* escape ":" or ";" occur in passed text
+	* Note: this method is used by localizedDescription portlet, @see localizedDescription.jsp
+	*/
+	function escapeDelimter(text) {
+		var reg = new RegExp(":", "g");
+		text = text.replace(reg, "\\:");
+		reg = new RegExp(";", "g");
+		text = text.replace(reg, "\\;");
+		return text;
+	}
 </script>
 
 <h2><spring:message code="Role.manage.title"/></h2>	
@@ -54,15 +66,9 @@
 			</spring:bind>
 		</td>
 	</tr>
-	<tr>
-		<th valign="top"><spring:message code="general.description"/></th>
-		<td valign="top">
-			<spring:bind path="role.description">
-				<textarea name="description" rows="3" cols="50" onKeyUp="formChanged = true;" type="_moz">${status.value}</textarea>
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-			</spring:bind>
-		</td>
-	</tr>
+	<spring:nestedPath path="role">
+		<openmrs:portlet url="localizedDescription" id="localizedDescriptionLayout" /> 
+	</spring:nestedPath>
 	<c:if test="${fn:length(inheritingRoles) > 0}">
 		<tr>
 			<th colspan="2"><spring:message code="Role.inheritingRoles.description"/></th>

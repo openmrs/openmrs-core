@@ -48,7 +48,7 @@ public class ConceptDatatypeValidator implements Validator {
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
 	 * @should fail validation if name is null or empty or whitespace
-	 * @should fail validation if description is null or empty or whitespace
+	 * @should fail validation if unlocalized description is null or empty or whitespace
 	 * @should pass validation if all required fields have proper values
 	 */
 	public void validate(Object obj, Errors errors) {
@@ -57,7 +57,8 @@ public class ConceptDatatypeValidator implements Validator {
 			errors.rejectValue("conceptDatatype", "error.general");
 		} else {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "error.name");
-			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "description", "error.description");
+			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "localizedDescription.unlocalizedValue",
+			    "LocalizedDescription.unlocalizedDescription.empty");
 		}
 	}
 	

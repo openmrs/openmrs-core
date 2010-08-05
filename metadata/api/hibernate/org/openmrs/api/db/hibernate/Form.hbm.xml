@@ -28,8 +28,8 @@
 		<property name="published" type="boolean" column="published"
 			length="1" not-null="false" />
 
-		<property name="description" type="java.lang.String" 
-			column="description" length="1024" />
+		<property name="localizedDescription" column="description" 
+			type="org.openmrs.api.db.hibernate.LocalizedStringType" length="65536" />
 
 		<many-to-one name="encounterType" class="EncounterType">
 			<column name="encounter_type" />

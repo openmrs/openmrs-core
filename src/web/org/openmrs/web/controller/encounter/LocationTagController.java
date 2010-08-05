@@ -73,19 +73,20 @@ public class LocationTagController {
 	 */
 	@RequestMapping("/admin/locations/locationTagAdd")
 	public String add(@RequestParam("localizedName") String localizedName,
-	                  @RequestParam("description") String description,
+	                  @RequestParam("localizedDescription") String localizedDescription,
 	                  WebRequest request) {
-		LocalizedString ls = LocalizedString.valueOf(localizedName);
-		if (ls == null || !StringUtils.hasText(ls.getUnlocalizedValue())) {
+		LocalizedString lsName = LocalizedString.valueOf(localizedName);
+		LocalizedString lsDescription = LocalizedString.valueOf(localizedDescription);
+		if (lsName == null || !StringUtils.hasText(lsName.getUnlocalizedValue())) {
 			request.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, Context.getMessageSourceService().getMessage(
 			    "LocalizedName.unlocalizedName.empty"), WebRequest.SCOPE_SESSION);
-		} else if (Context.getLocationService().getLocationTagByName(ls.getValue()) != null) {
+		} else if (Context.getLocationService().getLocationTagByName(lsName.getValue()) != null) {
 			request.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, Context.getMessageSourceService().getMessage(
 			    "LocationTag.error.name.duplicate"), WebRequest.SCOPE_SESSION);
 		} else {
 			LocationTag tag = new LocationTag();
-			tag.setLocalizedName(ls);
-			tag.setDescription(description);
+			tag.setLocalizedName(lsName);
+			tag.setLocalizedDescription(lsDescription);
 			Context.getLocationService().saveLocationTag(tag);
 			request.setAttribute(WebConstants.OPENMRS_MSG_ATTR, Context.getMessageSourceService().getMessage(
 			    "LocationTag.saved"), WebRequest.SCOPE_SESSION);

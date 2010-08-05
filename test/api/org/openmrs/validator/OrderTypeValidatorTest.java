@@ -43,8 +43,8 @@ public class OrderTypeValidatorTest {
 	 * 
 	 */
 	@Test
-	@Verifies(value = "should fail validation if description is null or empty or whitespace", method = "validate(Object,Errors)")
-	public void validate_shouldFailValidationIfDescriptionIsNullOrEmptyOrWhitespace()
+	@Verifies(value = "should fail validation if unlocalized description is null or empty or whitespace", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfUnlocalizedDescriptionIsNullOrEmptyOrWhitespace()
 			throws Exception {
 		OrderType type = new OrderType();
 		type.setName("restraining");
@@ -52,17 +52,17 @@ public class OrderTypeValidatorTest {
 		
 		Errors errors = new BindException(type, "type");
 		new OrderTypeValidator().validate(type, errors);
-		Assert.assertTrue(errors.hasFieldErrors("description"));
+		Assert.assertTrue(errors.hasFieldErrors("localizedDescription.unlocalizedValue"));
 		
 		type.setDescription("");
 		errors = new BindException(type, "type");
 		new OrderTypeValidator().validate(type, errors);
-		Assert.assertTrue(errors.hasFieldErrors("description"));
+		Assert.assertTrue(errors.hasFieldErrors("localizedDescription.unlocalizedValue"));
 		
 		type.setDescription(" ");
 		errors = new BindException(type, "type");
 		new OrderTypeValidator().validate(type, errors);
-		Assert.assertTrue(errors.hasFieldErrors("description"));
+		Assert.assertTrue(errors.hasFieldErrors("localizedDescription.unlocalizedValue"));
 	}
 
 	/**

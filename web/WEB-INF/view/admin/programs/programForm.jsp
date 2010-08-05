@@ -97,15 +97,9 @@
 	<spring:bind path="program.name">
 		<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 	</spring:bind>
-	<tr>
-		<th><spring:message code="general.description"/></th>
-		<td>
-			<spring:bind path="program.description">
-				<input type="text" name="${status.expression}" value="${status.value}" size="35" />
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-			</spring:bind>
-		</td>
-	</tr>
+	<spring:nestedPath path="program">
+		<openmrs:portlet url="localizedDescription" id="localizedDescriptionLayout" /> 
+	</spring:nestedPath>
 	<tr>
 		<th><spring:message code="Program.concept"/></th>
 		<td>

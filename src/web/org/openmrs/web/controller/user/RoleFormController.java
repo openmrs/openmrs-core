@@ -27,11 +27,13 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.LocalizedString;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.api.APIException;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
+import org.openmrs.propertyeditor.LocalizedStringEditor;
 import org.openmrs.propertyeditor.PrivilegeEditor;
 import org.openmrs.propertyeditor.RoleEditor;
 import org.openmrs.util.OpenmrsConstants;
@@ -56,12 +58,14 @@ public class RoleFormController extends SimpleFormController {
 	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest,
 	 *      org.springframework.web.bind.ServletRequestDataBinder)
 	 */
-	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
+	@Override
+    protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
 		//NumberFormat nf = NumberFormat.getInstance(new Locale("en_US"));
 		binder.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, true));
 		binder.registerCustomEditor(Privilege.class, new PrivilegeEditor());
 		binder.registerCustomEditor(Role.class, new RoleEditor());
+		binder.registerCustomEditor(LocalizedString.class, new LocalizedStringEditor());
 	}
 	
 	/**
@@ -69,7 +73,8 @@ public class RoleFormController extends SimpleFormController {
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
 	 */
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object obj,
 	                                             BindException errors) throws Exception {
 		
@@ -94,7 +99,8 @@ public class RoleFormController extends SimpleFormController {
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
 	 */
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
+	@Override
+    protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
 	                                BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
@@ -121,7 +127,8 @@ public class RoleFormController extends SimpleFormController {
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest,
 	 *      java.lang.Object, org.springframework.validation.Errors)
 	 */
-	protected Map<String, Object> referenceData(HttpServletRequest request, Object object, Errors errors) throws Exception {
+	@Override
+    protected Map<String, Object> referenceData(HttpServletRequest request, Object object, Errors errors) throws Exception {
 		
 		Map<String, Object> map = new HashMap<String, Object>();
 		
@@ -159,7 +166,8 @@ public class RoleFormController extends SimpleFormController {
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
+	@Override
+    protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 		
 		Role role = null;
 		

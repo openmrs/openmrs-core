@@ -17,8 +17,8 @@
 		<property name="uuid" type="java.lang.String"
 			column="uuid" length="38" unique="true" />
 
-		<property name="description" type="java.lang.String"
-			column="description" not-null="true" length="250" />
+		<property name="localizedDescription" column="description"
+			type="org.openmrs.api.db.hibernate.LocalizedStringType" not-null="true" length="65536" />
 
 	</class>
 </hibernate-mapping>

@@ -39,7 +39,7 @@ public class LocationValidatorTest extends BaseContextSensitiveTest {
 		new LocationValidator().validate(location, errors);
 		
 		Assert.assertTrue(errors.hasFieldErrors("localizedName.unlocalizedValue"));
-		Assert.assertFalse(errors.hasFieldErrors("description"));
+		Assert.assertFalse(errors.hasFieldErrors("localizedDescription.unlocalizedValue"));
 	}
 	
 	/**
@@ -55,7 +55,7 @@ public class LocationValidatorTest extends BaseContextSensitiveTest {
 		new LocationValidator().validate(location, errors);
 		
 		Assert.assertFalse(errors.hasFieldErrors("localizedName.unlocalizedValue"));
-		Assert.assertTrue(errors.hasFieldErrors("description"));
+		Assert.assertTrue(errors.hasFieldErrors("localizedDescription.unlocalizedValue"));
 	}
 	
 	/**

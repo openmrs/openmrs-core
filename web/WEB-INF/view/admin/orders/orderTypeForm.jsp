@@ -15,16 +15,8 @@
 <table>
 	<spring:nestedPath path="orderType">
 		<openmrs:portlet url="localizedName" id="localizedNameLayout" /> 
+		<openmrs:portlet url="localizedDescription" id="localizedDescriptionLayout" /> 
 	</spring:nestedPath>
-	<tr>
-		<td valign="top"><spring:message code="general.description"/></td>
-		<td valign="top">
-			<spring:bind path="orderType.description">
-				<textarea name="description" rows="3" cols="40">${status.value}</textarea>
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-			</spring:bind>
-		</td>
-	</tr>
 	<c:if test="${!(orderType.creator == null)}">
 		<tr>
 			<td><spring:message code="general.createdBy" /></td>

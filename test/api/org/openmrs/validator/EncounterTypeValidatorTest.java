@@ -41,25 +41,25 @@ public class EncounterTypeValidatorTest {
 	 * @see {@link EncounterTypeValidator#validate(Object,Errors)}
 	 */
 	@Test
-	@Verifies(value = "should fail validation if description is null or empty or whitespace", method = "validate(Object,Errors)")
-	public void validate_shouldFailValidationIfDescriptionIsNullOrEmptyOrWhitespace() throws Exception {
+	@Verifies(value = "should fail validation if unlocalized description is null or empty or whitespace", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfUnlocalizedDescriptionIsNullOrEmptyOrWhitespace() throws Exception {
 		EncounterType type = new EncounterType();
 		type.setName("CLOSE");
 		type.setDescription(null);
 		
 		Errors errors = new BindException(type, "type");
 		new EncounterTypeValidator().validate(type, errors);
-		Assert.assertTrue(errors.hasFieldErrors("description"));
+		Assert.assertTrue(errors.hasFieldErrors("localizedDescription.unlocalizedValue"));
 		
 		type.setDescription("");
 		errors = new BindException(type, "type");
 		new EncounterTypeValidator().validate(type, errors);
-		Assert.assertTrue(errors.hasFieldErrors("description"));
+		Assert.assertTrue(errors.hasFieldErrors("localizedDescription.unlocalizedValue"));
 		
 		type.setDescription(" ");
 		errors = new BindException(type, "type");
 		new EncounterTypeValidator().validate(type, errors);
-		Assert.assertTrue(errors.hasFieldErrors("description"));
+		Assert.assertTrue(errors.hasFieldErrors("localizedDescription.unlocalizedValue"));
 	}
 	
 	/**

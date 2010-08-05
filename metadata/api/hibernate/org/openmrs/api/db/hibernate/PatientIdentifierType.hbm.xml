@@ -28,12 +28,13 @@
 		not-null="true"
 		length="1024"	
 	 />
-    <property
-        name="description"
-        type="java.lang.String"
-        not-null="true"
-        length="65535"
-    />
+    <property 
+    	name="localizedDescription" 
+    	column="description"
+		type="org.openmrs.api.db.hibernate.LocalizedStringType" 
+		not-null="true" 
+		length="65536" 
+	/>
     <property
         name="format"
         type="java.lang.String"

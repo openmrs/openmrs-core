@@ -29,11 +29,6 @@ import org.openmrs.LocalizedString;
 public class LocalizedStringUtil {
 	
 	/**
-	 * The header marks whether there are variant values in LocalizedString object
-	 */
-	public static final String HEADER = "i18n:v1;";
-	
-	/**
 	 * The separator between locale and string value
 	 */
 	public static final String PARTITION = ":";
@@ -42,6 +37,11 @@ public class LocalizedStringUtil {
 	 * The separator between each pair which includes one locale and string value
 	 */
 	public static final String SPLITTER = ";";
+	
+	/**
+	 * The header marks whether there are variant values in LocalizedString object
+	 */
+	public static final String HEADER = "i18n" + PARTITION + "v1" + SPLITTER;
 	
 	/**
 	 * A static utility method to deserialize a String into a LocalizedString object. <br />

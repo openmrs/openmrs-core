@@ -38,16 +38,8 @@
 	<table>
 		<spring:nestedPath path="location">
 			<openmrs:portlet url="localizedName" id="localizedNameLayout" /> 
+			<openmrs:portlet url="localizedDescription" id="localizedDescriptionLayout" /> 
 		</spring:nestedPath>
-		<tr>
-			<td valign="top"><spring:message code="general.description"/></td>
-			<td valign="top" colspan="5">
-				<spring:bind path="location.description">
-					<textarea name="description" rows="3" cols="40">${status.value}</textarea>
-					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-				</spring:bind>
-			</td>
-		</tr>
 		<spring:nestedPath path="location">
 			<openmrs:portlet url="addressLayout" id="addressPortlet" size="full" parameters="layoutShowTable=false|layoutShowExtended=false|layoutShowErrors=false" />
 		</spring:nestedPath>

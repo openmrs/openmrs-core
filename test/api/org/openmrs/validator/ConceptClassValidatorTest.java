@@ -41,25 +41,25 @@ public class ConceptClassValidatorTest {
 	 * @see {@link ConceptClassValidator#validate(Object,Errors)}
 	 */
 	@Test
-	@Verifies(value = "should fail validation if description is null or empty or whitespace", method = "validate(Object,Errors)")
-	public void validate_shouldFailValidationIfDescriptionIsNullOrEmptyOrWhitespace() throws Exception {
+	@Verifies(value = "should fail validation if unlocalized description is null or empty or whitespace", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfUnlocalizedDescriptionIsNullOrEmptyOrWhitespace() throws Exception {
 		ConceptClass cc = new ConceptClass();
 		cc.setName("name");
 		cc.setDescription(null);
 		
 		Errors errors = new BindException(cc, "cc");
 		new ConceptClassValidator().validate(cc, errors);
-		Assert.assertTrue(errors.hasFieldErrors("description"));
+		Assert.assertTrue(errors.hasFieldErrors("localizedDescription.unlocalizedValue"));
 		
 		cc.setDescription("");
 		errors = new BindException(cc, "cc");
 		new ConceptClassValidator().validate(cc, errors);
-		Assert.assertTrue(errors.hasFieldErrors("description"));
+		Assert.assertTrue(errors.hasFieldErrors("localizedDescription.unlocalizedValue"));
 		
 		cc.setDescription(" ");
 		errors = new BindException(cc, "cc");
 		new ConceptClassValidator().validate(cc, errors);
-		Assert.assertTrue(errors.hasFieldErrors("description"));
+		Assert.assertTrue(errors.hasFieldErrors("localizedDescription.unlocalizedValue"));
 		
 	}
 	

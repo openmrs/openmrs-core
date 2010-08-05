@@ -5,6 +5,20 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
+<script type="text/javascript">
+	/* 
+	* escape ":" or ";" occur in passed text
+	* Note: this method is used by localizedDescription portlet, @see localizedDescription.jsp
+	*/
+	function escapeDelimter(text) {
+		var reg = new RegExp(":", "g");
+		text = text.replace(reg, "\\:");
+		reg = new RegExp(";", "g");
+		text = text.replace(reg, "\\;");
+		return text;
+	}
+</script>
+
 <h2><spring:message code="Privilege.manage.title"/></h2>	
 
 <spring:hasBindErrors name="privilege">
@@ -24,15 +38,9 @@
 			</spring:bind>
 		</td>
 	</tr>
-	<tr>
-		<td valign="top"><spring:message code="general.description"/></td>
-		<td valign="top">
-			<spring:bind path="privilege.description">
-				<textarea name="description" rows="3" cols="50">${status.value}</textarea>
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-			</spring:bind>
-		</td>
-	</tr>
+	<spring:nestedPath path="privilege">
+		<openmrs:portlet url="localizedDescription" id="localizedDescriptionLayout" /> 
+	</spring:nestedPath>
 </table>
 
 <input type="submit" value="<spring:message code="Privilege.save"/>">

@@ -199,26 +199,6 @@
 <form method="post">
 <fieldset>
 <table>
-	<!-- 
-	<tr>
-		<td><spring:message code="RelationshipType.aIsToB"/></td>
-		<td>
-			<spring:bind path="relationshipType.aIsToB">
-				<input type="text" name="${status.expression}" value="${status.value}" size="35" />
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-			</spring:bind>
-		</td>
-	</tr>
-	<tr>
-		<td><spring:message code="RelationshipType.bIsToA"/></td>
-		<td>
-			<spring:bind path="relationshipType.bIsToA">
-				<input type="text" name="${status.expression}" value="${status.value}" size="35" />
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-			</spring:bind>
-		</td>
-	</tr>
-	 -->
 	<!-- Html Code for localizedAIsToB(begin) -->
 	<spring:bind path="relationshipType.localizedAIsToB">
 		<input type="hidden" id="localizedAIsToBHidden" name="${status.expression}" value="${status.value}" />
@@ -339,15 +319,10 @@
 	</tr>
 	<!-- Html Code for localizedBIsToA (end) -->
 	
-	<tr>
-		<td valign="top"><spring:message code="general.description"/></td>
-		<td valign="top">
-			<spring:bind path="relationshipType.description">
-				<textarea name="description" rows="3" cols="40">${status.value}</textarea>
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-			</spring:bind>
-		</td>
-	</tr>
+	<spring:nestedPath path="relationshipType">
+		<openmrs:portlet url="localizedDescription" id="localizedDescriptionLayout" /> 
+	</spring:nestedPath>
+	
 	<c:if test="${relationshipType.creator != null}">
 		<tr>
 			<td><spring:message code="general.createdBy" /></td>

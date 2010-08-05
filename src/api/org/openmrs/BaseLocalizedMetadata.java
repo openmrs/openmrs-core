@@ -26,7 +26,7 @@ public abstract class BaseLocalizedMetadata extends BaseOpenmrsObject implements
 	//***** Properties *****
 	private LocalizedString localizedName;
 	
-	private String description;
+	private LocalizedString localizedDescription;
 	
 	private User creator;
 	
@@ -90,8 +90,9 @@ public abstract class BaseLocalizedMetadata extends BaseOpenmrsObject implements
 	 */
 	@Override
 	public LocalizedString getLocalizedDescription() {
-		// TODO support localization for description property
-		throw new UnsupportedOperationException();
+		if (localizedDescription == null)
+			localizedDescription = new LocalizedString();
+		return localizedDescription;
 	}
 	
 	/**
@@ -99,22 +100,21 @@ public abstract class BaseLocalizedMetadata extends BaseOpenmrsObject implements
 	 */
 	@Override
 	public void setLocalizedDescription(LocalizedString localizedDescription) {
-		// TODO support localization for description property
-		throw new UnsupportedOperationException();
+		this.localizedDescription = localizedDescription;
 	}
 	
 	/**
 	 * @return the description
 	 */
 	public String getDescription() {
-		return description;
+		return getLocalizedDescription().getValue();
 	}
 	
 	/**
 	 * @param description the description to set
 	 */
 	public void setDescription(String description) {
-		this.description = description;
+		getLocalizedDescription().setUnlocalizedValue(description);
 	}
 	
 	/**

@@ -18,8 +18,8 @@
 
 		<property name="localizedName" type="org.openmrs.api.db.hibernate.LocalizedStringType" 
 			column="name" not-null="true" length="1024" />
-		<property name="description" type="java.lang.String"
-			column="description" length="255" />
+		<property name="localizedDescription" column="description"
+			type="org.openmrs.api.db.hibernate.LocalizedStringType" length="65536" />
 		<property name="address1" type="java.lang.String"
 			column="address1" length="50" />
 		<property name="address2" type="java.lang.String"

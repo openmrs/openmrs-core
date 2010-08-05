@@ -58,7 +58,8 @@ public class OrderTypeValidator implements Validator {
 		} else {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "localizedName.unlocalizedValue",
 			    "LocalizedName.unlocalizedName.empty");
-			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "description", "error.description");
+			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "localizedDescription.unlocalizedValue",
+			    "LocalizedDescription.unlocalizedDescription.empty");
 		}
 		//log.debug("errors: " + errors.getAllErrors().toString());
 	}

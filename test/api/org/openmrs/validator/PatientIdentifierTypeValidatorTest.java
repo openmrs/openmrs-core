@@ -52,17 +52,17 @@ public class PatientIdentifierTypeValidatorTest {
 				
 		Errors errors = new BindException(type, "type");
 		new PatientIdentifierTypeValidator().validate(type, errors);
-		Assert.assertTrue(errors.hasFieldErrors("description"));
+		Assert.assertTrue(errors.hasFieldErrors("localizedDescription.unlocalizedValue"));
 		
 		type.setDescription("");
 		errors = new BindException(type, "type");
 		new PatientIdentifierTypeValidator().validate(type, errors);
-		Assert.assertTrue(errors.hasFieldErrors("description"));
+		Assert.assertTrue(errors.hasFieldErrors("localizedDescription.unlocalizedValue"));
 		
 		type.setDescription(" ");
 		errors = new BindException(type, "type");
 		new PatientIdentifierTypeValidator().validate(type, errors);
-		Assert.assertTrue(errors.hasFieldErrors("description"));
+		Assert.assertTrue(errors.hasFieldErrors("localizedDescription.unlocalizedValue"));
 	}
 
 	/**

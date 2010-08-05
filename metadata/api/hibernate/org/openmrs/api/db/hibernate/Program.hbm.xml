@@ -19,8 +19,8 @@
 		<property name="localizedName" type="org.openmrs.api.db.hibernate.LocalizedStringType" 
 			column="name" not-null="true" length="1024" />
 			
-		<property name="description" type="java.lang.String"
-			column="description" not-null="true" length="500" />
+		<property name="localizedDescription" column="description"
+			type="org.openmrs.api.db.hibernate.LocalizedStringType" not-null="true" length="65536" />
 
 		<property name="dateCreated" type="java.util.Date"
 			column="date_created" not-null="true" length="19" />

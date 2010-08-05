@@ -23,10 +23,10 @@
 				not-null="true"
 				length="1024" />
 		
-		<property name="description" 
-				type="java.lang.String" 
+		<property name="localizedDescription"
+				type="org.openmrs.api.db.hibernate.LocalizedStringType" 
 				column="description" 
-				length="1024" />
+				length="65536" />
 		
 		<property name="taskClass" 
 				type="java.lang.String" 

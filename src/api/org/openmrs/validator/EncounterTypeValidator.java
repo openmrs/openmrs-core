@@ -48,7 +48,7 @@ public class EncounterTypeValidator implements Validator {
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
 	 * @should fail validation if unlocalized name is null or empty or whitespace
-	 * @should fail validation if description is null or empty or whitespace
+	 * @should fail validation if unlocalized description is null or empty or whitespace
 	 * @should pass validation if all required fields have proper values
 	 */
 	public void validate(Object obj, Errors errors) {
@@ -58,7 +58,8 @@ public class EncounterTypeValidator implements Validator {
 		} else {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "localizedName.unlocalizedValue",
 			    "LocalizedName.unlocalizedName.empty");
-			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "description", "error.description");
+			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "localizedDescription.unlocalizedValue",
+			    "LocalizedDescription.unlocalizedDescription.empty");
 		}
 	}
 	

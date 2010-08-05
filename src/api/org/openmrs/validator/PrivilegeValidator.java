@@ -48,7 +48,7 @@ public class PrivilegeValidator implements Validator {
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
 	 * @should fail validation if privilege is null or empty or whitespace
-	 * @should fail validation if description is null or empty or whitespace
+	 * @should fail validation if unlocalized description is null or empty or whitespace
 	 * @should pass validation if all required fields have proper values
 	 */
 	public void validate(Object obj, Errors errors) {
@@ -57,7 +57,8 @@ public class PrivilegeValidator implements Validator {
 			errors.rejectValue("privilege", "error.general");
 		} else {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "privilege", "error.privilege");
-			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "description", "error.description");
+			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "localizedDescription.unlocalizedValue",
+			    "LocalizedDescription.unlocalizedDescription.empty");
 		}
 	}
 	

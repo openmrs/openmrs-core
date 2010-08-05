@@ -17,10 +17,9 @@
 			<input type="hidden" name="_isSet" value="" />
 			<td><input type="checkbox" name="isSet" value="true" <c:if test="${fieldType.isSet == true}">checked</c:if> /></td>
 		</tr>
-		<tr>
-			<td valign="top"><spring:message code="general.description" /></td>
-			<td><textarea name="description" rows="3" cols="40">${fieldType.description}</textarea></td>
-		</tr>
+		<spring:nestedPath path="fieldType">
+			<openmrs:portlet url="localizedDescription" id="localizedDescriptionLayout" /> 
+		</spring:nestedPath>
 		<c:if test="${!(orderType.creator == null)}">
 			<tr>
 				<td><spring:message code="general.createdBy" /></td>
