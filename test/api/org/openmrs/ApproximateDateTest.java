@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -61,7 +62,11 @@ public class ApproximateDateTest {
 	@Verifies(value = "should return properly estimated dates", method = "getDate()")
 	public void getDate_shouldReturnProperlyEstimatedDates() throws Exception {
 		//TODO auto-generated
-		Assert.fail("Not yet implemented");
+		ApproximateDate approximateDate = new ApproximateDate();
+		approximateDate.setYear(2009);
+		approximateDate.setApproximated(ApproximateDate.APPROXIMATE_YEAR);
+		Date d = approximateDate.getDate();
+		Date c = approximateDate.getDate();
 	}
 
 	/**
@@ -149,7 +154,10 @@ public class ApproximateDateTest {
     @Verifies(value = "should set the approximation level", method = "setApproximated(int)")
     public void setApproximated_shouldSetTheApproximationLevel() throws Exception {
 	    //TODO auto-generated
-		Assert.fail("Not yet implemented");
+		ApproximateDate date = new ApproximateDate();
+		date.setApproximated(ApproximateDate.APPROXIMATE_YEAR);
+		Assert.assertTrue(date.isYearApproximated());
+		//		Assert.fail("Not yet implemented");
     }
 
 	/**
@@ -199,7 +207,9 @@ public class ApproximateDateTest {
 	    //TODO auto-generated
 		ApproximateDate date = new ApproximateDate();
 		date.setYear(1999);
-		Assert.assertTrue(date.getDay().equals(1999));
+		int set = date.getYear();
+		int val = 1999;
+		Assert.assertTrue(set == val);
     }
 
 	/**
@@ -210,6 +220,9 @@ public class ApproximateDateTest {
     @Verifies(value = "should check whether the date is approximated", method = "isApproximated()")
     public void isApproximated_shouldCheckWhetherTheDateIsApproximated() throws Exception {
 	    //TODO auto-generated
-		Assert.fail("Not yet implemented");
+		ApproximateDate date = new ApproximateDate();
+		date.setApproximated(ApproximateDate.APPROXIMATE_YEAR);
+		Assert.assertTrue(date.isApproximated());
+		//		Assert.fail("Not yet implemented");
     }
 }

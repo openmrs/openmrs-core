@@ -413,7 +413,7 @@ public class ApproximateDate implements Comparable<ApproximateDate> {
 		//TODO
 		Integer year;
 		if (isFlag(UNKNOWN_YEAR) || getYear() == null) {
-			year = Calendar.getInstance().YEAR;
+			year = 0;
 		} else {
 			year = getYear();
 		}
