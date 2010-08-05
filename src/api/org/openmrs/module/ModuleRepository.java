@@ -242,7 +242,7 @@ public class ModuleRepository {
 	 * 
 	 * @return no of module updates
 	 */
-	public static int getNoOfModuleUpdates() {
+	public static int getNumberOfModuleUpdates() {
 		return noOfModuleUpdates;
 	}
 

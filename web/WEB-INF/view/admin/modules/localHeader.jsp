@@ -6,7 +6,7 @@
 		<li <c:if test='<%= request.getRequestURI().contains("modules/moduleList") %>'>class="active"</c:if>>
 			<a href="${pageContext.request.contextPath}/admin/modules/module.list">
 				<spring:message code="Module.manage"/> 
-			</a> <c:if test='<%= org.openmrs.module.ModuleRepository.getNoOfModuleUpdates() > 0%>'> (<%= org.openmrs.module.ModuleRepository.getNoOfModuleUpdates() %>)</c:if>
+			</a> <c:if test='<%= org.openmrs.module.ModuleRepository.getNumberOfModuleUpdates() > 0%>'> (<%= org.openmrs.module.ModuleRepository.getNumberOfModuleUpdates() %>)</c:if>
 		</li>
 	</openmrs:hasPrivilege>
 	<openmrs:hasPrivilege privilege="Manage Modules">

@@ -612,7 +612,7 @@ public class ModuleUtil {
 		// Cache Module Data from online repository and find updates
 		ModuleRepository.cacheModuleRepository();
 
-		return ModuleRepository.getNoOfModuleUpdates() > 0;
+		return ModuleRepository.getNumberOfModuleUpdates() > 0;
 	}
 	
 	/**
