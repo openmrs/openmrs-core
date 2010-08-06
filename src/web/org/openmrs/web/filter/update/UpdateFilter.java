@@ -257,6 +257,7 @@ public class UpdateFilter extends StartupFilter {
 				ResultSet results = statement.getResultSet();
 				if (results.next()) {
 					Integer userId = results.getInt(1);
+					DatabaseUpdater.setAuthenticatedUserId(userId);
 					String storedPassword = results.getString(2);
 					String salt = results.getString(3);
 					String passwordToHash = password + salt;
@@ -282,6 +283,7 @@ public class UpdateFilter extends StartupFilter {
 					ResultSet results = statement.getResultSet();
 					if (results.next()) {
 						Integer userId = results.getInt(1);
+						DatabaseUpdater.setAuthenticatedUserId(userId);
 						String storedPassword = results.getString(2);
 						String salt = results.getString(3);
 						String passwordToHash = password + salt;

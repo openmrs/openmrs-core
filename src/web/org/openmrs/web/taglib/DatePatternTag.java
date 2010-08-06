@@ -31,17 +31,29 @@ public class DatePatternTag extends TagSupport {
 	private final Log log = LogFactory.getLog(getClass());
 	
 	/**
+	 * This is to tell the user whether the string to be returned is the localized pattern or not,
+	 * in use as the jquery datepicker widget format
+	 */
+	private String localize = null;//TRUE by default
+	
+	/**
 	 * Does the actual working of printing the date pattern
 	 * 
 	 * @see javax.servlet.jsp.tagext.TagSupport#doStartTag()
 	 */
-	public int doStartTag() {
+	@Override
+    public int doStartTag() {
 		
 		SimpleDateFormat dateFormat = Context.getDateFormat();
 		
 		try {
-			pageContext.getOut().write(dateFormat.toLocalizedPattern().toLowerCase());
+			String pattern = dateFormat.toLocalizedPattern().toLowerCase();
 			
+			if ((localize != null) && "false".equals(localize)) {
+				pattern = dateFormat.toPattern().toLowerCase();
+			}
+			
+			pageContext.getOut().write(pattern);
 		}
 		catch (Exception e) {
 			log.error("error getting date pattern", e);
@@ -50,4 +62,11 @@ public class DatePatternTag extends TagSupport {
 		return SKIP_BODY;
 	}
 	
+	public String getLocalize() {
+		return localize;
+	}
+	
+	public void setLocalize(String localize) {
+		this.localize = localize;
+	}
 }

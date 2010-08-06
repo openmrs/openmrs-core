@@ -1277,6 +1277,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		for (ConceptSet set : cs) {
 			Concept c = set.getConcept();
 			if (c.isSet()) {
+				ret.add(c);
 				explodeConceptSetHelper(c, ret, alreadySeen);
 			} else {
 				ret.add(c);

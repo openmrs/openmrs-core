@@ -691,5 +691,59 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 		assertNotNull(formBackingObject.getConcept());
 		assertNull(formBackingObject.getConcept().getConceptId());
 	}
+
+	/**
+	 * @see {@link ConceptFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)}
+	 */
+	@Test
+	@Verifies(value = "should set the local preferred name", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")
+	public void onSubmit_shouldSetTheLocalPreferredName() throws Exception {
+		ConceptService cs = Context.getConceptService();
+		Concept concept = cs.getConcept(5497);
+		//sanity check
+		Assert.assertNull(concept.getPreferredName(Locale.ENGLISH));
+		
+		ConceptFormController conceptFormController = (ConceptFormController) applicationContext.getBean("conceptForm");
+		MockHttpServletRequest mockRequest = new MockHttpServletRequest();
+		mockRequest.setMethod("POST");
+		mockRequest.setParameter("action", "");
+		mockRequest.setParameter("conceptId", "5497");
+		mockRequest.setParameter("preferredNamesByLocale[en]", "CD3+CD4+ABS CNT");
+		
+		ModelAndView mav = conceptFormController.handleRequest(mockRequest, new MockHttpServletResponse());
+		assertNotNull(mav);
+		assertTrue(mav.getModel().isEmpty());
+		
+		Assert.assertEquals("CD3+CD4+ABS CNT", concept.getPreferredName(Locale.ENGLISH).getName());
+	}
+
+	/**
+	 * @see {@link ConceptFormController#onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)}
+	 */
+	@Test
+	@Verifies(value = "should void a synonym marked as preferred when it is removed", method = "onSubmit(HttpServletRequest,HttpServletResponse,Object,BindException)")
+	public void onSubmit_shouldVoidASynonymMarkedAsPreferredWhenItIsRemoved() throws Exception {
+		ConceptService cs = Context.getConceptService();
+		Concept concept = cs.getConcept(5497);
+		//mark one of the synonyms as preferred
+		ConceptName preferredName = new ConceptName("pref name", Locale.ENGLISH);
+		preferredName.setLocalePreferred(true);
+		concept.addName(preferredName);
+		cs.saveConcept(concept);
+		
+		ConceptFormController conceptFormController = (ConceptFormController) applicationContext.getBean("conceptForm");
+		MockHttpServletRequest mockRequest = new MockHttpServletRequest();
+		mockRequest.setMethod("POST");
+		mockRequest.setParameter("action", "");
+		mockRequest.setParameter("conceptId", "5497");
+		//remove the synonym that is marked as preferred
+		mockRequest.setParameter("synonymsByLocale[en][0].voided", "true");
+		
+		ModelAndView mav = conceptFormController.handleRequest(mockRequest, new MockHttpServletResponse());
+		assertNotNull(mav);
+		assertTrue(mav.getModel().isEmpty());
+		
+		Assert.assertEquals(true, preferredName.isVoided());
+	}
 	
 }
