@@ -282,6 +282,9 @@ public class OpenmrsClassLoader extends URLClassLoader {
 						}
 						if (Modifier.isStatic(mods)) {
 							try {
+								// do not clear the log field on this class yet
+								if (clazz.equals(OpenmrsClassLoader.class) && field.getName().equals("log"))
+									continue;
 								field.setAccessible(true);
 								if (Modifier.isFinal(mods)) {
 									if (!(field.getType().getName().startsWith("javax."))) {
@@ -310,6 +313,9 @@ public class OpenmrsClassLoader extends URLClassLoader {
 				}
 			}
 		}
+		
+		// now we can clear the log field on this class
+		OpenmrsClassLoader.log = null;
 		
 		getInstance().loadedClasses.clear();
 	}
