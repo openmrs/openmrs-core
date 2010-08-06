@@ -53,7 +53,7 @@ public class GlobalLocaleList implements GlobalPropertyListener {
 	 * @see org.openmrs.api.GlobalPropertyListener#globalPropertyDeleted(java.lang.String)
 	 */
 	public void globalPropertyDeleted(String propertyName) {
-		allowedLocales = new LinkedHashSet<Locale>();
+		allowedLocales = null;
 	}
 	
 	/**
