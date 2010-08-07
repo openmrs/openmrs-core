@@ -13,7 +13,6 @@
  */
 package org.openmrs.module;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -29,29 +28,6 @@ import org.springframework.util.Assert;
 public class ModuleRepositoryTest extends BaseContextSensitiveTest {
 	
 	private static final Log log = LogFactory.getLog(ModuleRepositoryTest.class);
-
-	public ModuleRepositoryTest() {
-		ModuleRepository.initialize();
-		try {
-			ModuleRepository.cacheModuleRepository();
-		}
-		catch (IOException e) {
-			log.error(e);
-		}
-		try {
-			Thread.sleep(5000);
-		}
-		catch (InterruptedException e) {
-			log.error(e);
-		}
-	}
-
-	@Test
-	@Verifies(value = "return an array list of modules for matching search", method = "searchModules(String)")
-	public void searchModules_returnAnArrayListOfModulesForMatchingSearch() {
-		List<Module> matchingModules = ModuleRepository.searchModules("a");
-		Assert.notEmpty(matchingModules);
-	}
 	
 	@Test
 	@Verifies(value = "return an empty array list of modules if search is empty", method = "searchModules(String)")

@@ -76,7 +76,7 @@ public class FindModulesServlet extends HttpServlet {
 		List<Module> modules;
 		try {
 			modules = ModuleRepository.searchModules(sSearch);
-			iTotalRecords = ModuleRepository.getNoOfModules();
+			iTotalRecords = ModuleRepository.getNumberOfModules();
 		}
 		catch (Throwable t) {
 			System.out.println("Error finding modules: " + t);

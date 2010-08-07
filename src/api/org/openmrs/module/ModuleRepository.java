@@ -208,7 +208,7 @@ public class ModuleRepository {
 	 * 
 	 * @return no of modules
 	 */
-	public static int getNoOfModules() {
+	public static int getNumberOfModules() {
 		return noOfModules;
 	}
 	
