@@ -349,6 +349,11 @@ function DatePicker(dateFormat, id, opts) {
  	setOptions(opts, 'dateFormat', dateFormat.replace("yyyy", "yy"));//have to do the replace here because the datepicker only required 'yy' for 4-number year
  	setOptions(opts, 'appendText', "(" + dateFormat + ")");
  	setOptions(opts, 'gotoCurrent', true);
+ 	setOptions(opts, 'changeMonth', true);
+ 	setOptions(opts, 'changeYear', true);
+ 	setOptions(opts, 'showOtherMonths', true);
+ 	setOptions(opts, 'selectOtherMonths', true);
+
  	jq.datepicker(opts);
  		
  	this.setDate = function(date) {
@@ -367,6 +372,10 @@ function DatePicker(dateFormat, id, opts) {
  	this.getDateAsString = function() {
  		return parseDateFromJsToString(dateFormat, this.getDate());
  	};
+ 	
+ 	this.show = function() {
+ 		jq.datepicker("show");
+ 	}
 }
 
 /**

@@ -24,6 +24,9 @@
 		<openmrs:htmlInclude file="/dwr/interface/DWRAlertService.js" />
 		<c:if test="${empty DO_NOT_INCLUDE_JQUERY}">
 			<openmrs:htmlInclude file="/scripts/jquery/jquery.min.js" />
+			<openmrs:htmlInclude file="/scripts/jquery-ui/js/jquery-ui.custom.min.js" />
+			<openmrs:htmlInclude file="/scripts/jquery-ui/js/jquery-ui-datepicker-i18n.js" />
+			<openmrs:htmlInclude file="/scripts/jquery-ui/css/redmond/jquery-ui.custom.css" />
 		</c:if>
 		<link rel="icon" type="image/ico" href="<openmrs:contextPath/>/<spring:theme code='favicon' />">
 
@@ -44,6 +47,8 @@
 			/* variable used in js to know the context path */
 			var openmrsContextPath = '${pageContext.request.contextPath}';
 			var dwrLoadingMessage = '<spring:message code="general.loading" />';
+			var jsDateFormat = '<openmrs:datePattern localize="false"/>';
+			var jsLocale = '<%= org.openmrs.api.context.Context.getLocale() %>';
 		</script>
 
 		<openmrs:extensionPoint pointId="org.openmrs.headerFullIncludeExt" type="html" requiredClass="org.openmrs.module.web.extension.HeaderIncludeExt">

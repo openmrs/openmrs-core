@@ -72,6 +72,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	
 	protected static final String INITIAL_CONCEPTS_XML = "org/openmrs/api/include/ConceptServiceTest-initialConcepts.xml";
 	
+	protected static final String GET_CONCEPTS_BY_SET_XML = "org/openmrs/api/include/ConceptServiceTest-getConceptsBySet.xml";
+
 	/**
 	 * Run this before each unit test in this class. The "@Before" method in
 	 * {@link BaseContextSensitiveTest} is run right before this method.
@@ -1219,5 +1221,28 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(true, concept.hasName("new name", new Locale("en")));
 		conceptService.saveConcept(concept);
 		Assert.assertEquals(true, conceptService.getConceptName(1847).isVoided().booleanValue());
+	}
+	
+	/**
+	 * Test getting a concept by name and by partial name.
+	 * 
+	 * @see {@link ConceptService#getConceptByName(String)}
+	 */
+	@Test
+	@Verifies(value = "should return all concepts in set and subsets", method = "getConceptsByConceptSet(Concept)")
+	public void getConceptsByConceptSet_shouldReturnAllConceptsInSet() throws Exception {
+		
+		executeDataSet(GET_CONCEPTS_BY_SET_XML);
+		
+		Concept concept = conceptService.getConcept(1);
+		
+		List<Concept> conceptSet = conceptService.getConceptsByConceptSet(concept);
+		
+		Assert.assertEquals(5, conceptSet.size());
+		Assert.assertEquals(true, conceptSet.contains(conceptService.getConcept(2)));
+		Assert.assertEquals(true, conceptSet.contains(conceptService.getConcept(3)));
+		Assert.assertEquals(true, conceptSet.contains(conceptService.getConcept(4)));
+		Assert.assertEquals(true, conceptSet.contains(conceptService.getConcept(5)));
+		Assert.assertEquals(true, conceptSet.contains(conceptService.getConcept(6)));
 	}
 }

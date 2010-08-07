@@ -622,7 +622,14 @@
         <property name="java-setup" value="${installer-dependencies.dir}/jdk-6u20-windows-i586.exe"/>
         <property name="mysql-setup" value="${installer-dependencies.dir}/mysql-essential-5.1.46-win32.msi"/>
         <property name="tomcat-setup" value="${installer-dependencies.dir}/apache-tomcat-6.0.26.exe"/>
-
+		
+    	<!-- remove the last underscore if there is no suffix defined -->
+    	<propertyregex property="openmrs.download.url"
+			input="${openmrs.download.url}"
+			override="true"
+			regexp="^(.*)_/openmrs.war$"
+			select="\1/openmrs.war" />
+    	
         <condition property="makensis.command" value="C:\Program Files\NSIS\makensis" else="makensis">
             <os family="windows"></os>
         </condition>
@@ -632,6 +639,7 @@
                 <condition property="option.separator" value="/D" else="-D">
                     <os family="windows"></os>
                 </condition>
+            	
                 <property name="installer.args"
                           value="${option.separator}TOMCAT_DOWNLOAD_URL=${tomcat.download.url} ${option.separator}MYSQL_DOWNLOAD_URL=${mysql.download.url} ${option.separator}JAVA_6_DOWNLOAD_URL=${jdk.download.url} ${option.separator}OPENMRS_WAR_DOWNLOAD_URL=${openmrs.download.url}"/>
             </then>
@@ -692,6 +700,7 @@
             <fileset dir="${dist.installer.dir}" excludes="openmrs-installer.exe"/>
         </delete>
         <echo message="${installer.mode} installer has been generated successfully at ${dist.installer.dir} directory!"/>
+    	
     </target>
 
     <target name="create-online-installer" description="Create online version of windows installer">
