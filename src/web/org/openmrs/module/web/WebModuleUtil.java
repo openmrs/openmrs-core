@@ -895,9 +895,30 @@ public class WebModuleUtil {
 			}
 		}
 
-		//Restart Spring Context only if any pending actions were performed only
-		if (performedActions) {
+		try {
+			//Restart Spring Context only if any pending actions were performed only
+			if (performedActions) {
+				refreshWAC(servletContext, false, null);
+			}
+		}
+		catch (Exception e) {
+			moduleIds = ModuleFactory.getModulesWithPendingAction();
+
+			log.error("Error Refreshing Spring Context");
+			// Stop All Modules that were loaded and started from the last refresh
+			while (moduleIds.hasNext()) {
+				Module mod = ModuleFactory.getModuleById(moduleIds.next());
+				if (mod != null) {
+					mod.clearStartupError();
+					ModuleFactory.stopModule(mod);
+					stopModule(mod, servletContext, true);
+				}
+			}
+			
 			refreshWAC(servletContext, false, null);
+			throw new ModuleException(e.toString());
+		}
+		finally {
 			ModuleFactory.clearAllPendingActions();
 		}
 	}

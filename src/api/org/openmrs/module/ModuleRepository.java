@@ -70,9 +70,12 @@ public class ModuleRepository {
 	private static int noOfModules = 0;
 	
 	private static int noOfModuleUpdates = 0;
-
+	
 	/**
-	 * Initializes the ModuleRepository and calls for the first module repository cache
+	 * Initializes the ModuleRepository and calls for the first module repository cache<br>
+	 * <br>
+	 * Ex:-<br>
+	 * <code>ModuleRepository.initialize();</code>
 	 */
 	public static void initialize() {
 		AdministrationService as = Context.getAdministrationService();
@@ -88,7 +91,16 @@ public class ModuleRepository {
 	}
 	
 	/**
-	 * Caches the Module Repository
+	 * Caches the Module Repository<br>
+	 * <br>
+	 * Ex:-<br>
+	 * <code>
+	 * 	try{
+            ModuleRepository.cacheModuleRepository();
+        }catch(IOException e){
+            // On Exception
+        }
+        </code>
 	 */
 	public static void cacheModuleRepository() throws IOException {
 		synchronized (repository) {
@@ -146,7 +158,10 @@ public class ModuleRepository {
 	}
 	
 	/**
-	 * This method returns all the cached modules
+	 * This method returns all the cached modules<br>
+	 * <br>
+	 * Ex:-<br>
+	 * <code>Set<Module> modules = ModuleRepository.getAllModules();</code>
 	 * 
 	 * @return cached modules
 	 */
@@ -204,7 +219,10 @@ public class ModuleRepository {
 	}
 	
 	/**
-	 * This method returns the no of modules in the repository
+	 * This method returns the no of modules in the repository<br>
+	 * <br>
+	 * Ex:-<br>
+	 * <code>int noOfModules = ModuleRepository.getNumberOfModules();</code>
 	 * 
 	 * @return no of modules
 	 */
@@ -214,7 +232,10 @@ public class ModuleRepository {
 	
 	/**
 	 * This method checks whether any latest versions of the loaded modules available in the cached
-	 * repository
+	 * repository<br>
+	 * <br>
+	 * Ex:-<br>
+	 * <code>ModuleRepository.checkForModuleUpdates();</code>
 	 */
 	public static void checkForModuleUpdates() {
 		synchronized (repository) {
@@ -238,7 +259,10 @@ public class ModuleRepository {
 	}
 	
 	/**
-	 * This method returns the no of module updates available
+	 * This method returns the no of module updates available<br>
+	 * <br>
+	 * Ex:-<br>
+	 * <code>int noOfModuleUpdates = ModuleRepository.getNumberOfModuleUpdates();</code>
 	 * 
 	 * @return no of module updates
 	 */
@@ -267,7 +291,10 @@ public class ModuleRepository {
 	
 	/**
 	 * This method can be used to find out whether the module repository cache is older than the
-	 * threshold.
+	 * threshold.<br>
+	 * <br>
+	 * Ex:-<br>
+	 * <code>boolean cachedExpired = ModuleRepository.isCacheExpired();</code>
 	 * 
 	 * @return true if cache is older than the threshold else false
 	 */
