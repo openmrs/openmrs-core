@@ -112,10 +112,12 @@
 		<form name="upgradeConfirmForm" method="post">
 			<div style="margin: auto;width: 70%">
 				<div style="clear:both">&nbsp;</div>
-				<spring:message code="Module.upgradeWarning" arguments="${moduleName}"/> <input type="submit" onclick="document.upgradeConfirmForm.action.value = 'moduleupgrade.yes';return true" value="<spring:message code="general.yes"/>"/> <input type="submit" onclick="document.upgradeConfirmForm.action.value = 'moduleupgrade.no';return true" value="<spring:message code="general.no"/>"/>
-				<br>
-				<p style="margin: auto;width: 70%"><input type="checkbox" name="dontShowMessage" value="true"> <spring:message code="general.dontShowMessage"/></p>			
-				<input type="hidden" name="action" value="confirmation"/>
+				<div style="text-align: center">
+					<spring:message code="Module.upgradeWarning" arguments="${moduleName}"/> <input type="submit" onclick="document.upgradeConfirmForm.action.value = 'moduleupgrade.yes';return true" value="<spring:message code="general.yes"/>"/> <input type="submit" onclick="document.upgradeConfirmForm.action.value = 'moduleupgrade.no';return true" value="<spring:message code="general.no"/>"/>
+					<br>
+					<p style="margin: auto;width: 70%"><input type="checkbox" name="dontShowMessage" value="true"> <spring:message code="general.dontShowMessage"/></p>			
+					<input type="hidden" name="action" value="confirmation"/>
+				</div>
 				<div style="clear:both">&nbsp;</div>
 			</div>
 		</form>
@@ -150,7 +152,7 @@
 						<form id="moduleAddForm" action="module.list" method="post" enctype="multipart/form-data">
 							<input type="file" name="moduleFile" size="40" <c:if test="${allowAdmin!='true'}">disabled="disabled"</c:if> />
 							<input type="hidden" name="action" value="upload"/>
-							<input type="submit" name="uploadFile" disabled="true" value='<spring:message code="Module.upload"/>'/>
+							<input type="button" name="uploadFile" disabled="true" value='<spring:message code="Module.upload"/>'/>
 						</form>
 					</div>
 					<br/>
@@ -283,7 +285,7 @@
 							</c:if>
 						</td>
 						<td>
-							<c:if test="${module.downloadURL != null && hasPendingActions == 'false'}">
+							<c:if test="${module.downloadURL != null && module.pendingAction.action == 'none'}">
 								${module.updateVersion}
 								<spring:message code="Module.updateAvailable" /> 
 								<c:if test="${allowAdmin=='true'}">
