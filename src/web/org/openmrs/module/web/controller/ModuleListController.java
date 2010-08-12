@@ -318,10 +318,10 @@ public class ModuleListController extends SimpleFormController {
 
 		view = getSuccessView();
 		
-		if (!success.equals(""))
+		if (success != null && !success.equals(""))
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, success);
 		
-		if (!error.equals(""))
+		if (error != null && !error.equals(""))
 			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, error);
 		
 		return new ModelAndView(new RedirectView(view));

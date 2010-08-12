@@ -857,46 +857,54 @@ public class WebModuleUtil {
 		while (moduleIds.hasNext()) {
 			String mid = moduleIds.next();
 			Module mod = ModuleFactory.getModuleById(mid);
-			switch (mod.getPendingAction()) {
-				case PENDING_START:
-					ModuleFactory.startModule(mod);
-					startModule(mod, servletContext, true);
-					break;
-				case PENDING_STOP:
-					mod.clearStartupError();
-					ModuleFactory.stopModule(mod);
-					stopModule(mod, servletContext, true);
-					break;
-				case PENDING_UNLOAD:
-					if (ModuleFactory.isModuleStarted(mod)) {
+			try {
+				switch (mod.getPendingAction()) {
+					case PENDING_START:
+						ModuleFactory.startModule(mod);
+						startModule(mod, servletContext, true);
+						break;
+					case PENDING_STOP:
+						mod.clearStartupError();
 						ModuleFactory.stopModule(mod);
 						stopModule(mod, servletContext, true);
-					}
-					ModuleFactory.unloadModule(mod);
-					break;
-				case PENDING_UPGRADE:
-					File newModuleFile = mod.getUpdateFile();
-					List<Module> dependentModules = ModuleFactory.stopModule(mod, false, true);
-					stopModule(mod, servletContext, true);
-					//Unload without deleting the file because file is already deleted
-					ModuleFactory.getLoadedModulesMap().remove(mid);
-					
-					Module newModule = ModuleFactory.loadModule(newModuleFile);
-					ModuleFactory.startModule(newModule);
-					startModule(newModule, servletContext, true);
-					
-					if (ModuleFactory.isModuleStarted(newModule)) {
-						for (Module dependent : dependentModules) {
-							ModuleFactory.startModule(dependent);
-							startModule(dependent, servletContext, true);
+						break;
+					case PENDING_UNLOAD:
+						if (ModuleFactory.isModuleStarted(mod)) {
+							ModuleFactory.stopModule(mod);
+							stopModule(mod, servletContext, true);
 						}
-					}
-					break;
+						ModuleFactory.unloadModule(mod);
+						break;
+					case PENDING_UPGRADE:
+						File newModuleFile = mod.getUpdateFile();
+						List<Module> dependentModules = ModuleFactory.stopModule(mod, false, true);
+						stopModule(mod, servletContext, true);
+						//Unload without deleting the file because file is already deleted
+						ModuleFactory.getLoadedModulesMap().remove(mid);
+						
+						Module newModule = ModuleFactory.loadModule(newModuleFile);
+						ModuleFactory.startModule(newModule);
+						startModule(newModule, servletContext, true);
+						
+						if (ModuleFactory.isModuleStarted(newModule)) {
+							for (Module dependent : dependentModules) {
+								ModuleFactory.startModule(dependent);
+								startModule(dependent, servletContext, true);
+							}
+						}
+						break;
+				}
+			}
+			catch (Exception e) {
+				// On an Exception in a particular Module clear that module's pending action
+				// And throw the exception
+				ModuleFactory.clearPendingActionOfModuleId(mod.getModuleId());
+				throw new ModuleException(e.getMessage());
 			}
 		}
 
 		try {
-			//Restart Spring Context only if any pending actions were performed only
+			//Restart Spring Context if any pending actions were performed only
 			if (performedActions) {
 				refreshWAC(servletContext, false, null);
 			}
@@ -916,7 +924,10 @@ public class WebModuleUtil {
 			}
 			
 			refreshWAC(servletContext, false, null);
-			throw new ModuleException(e.toString());
+			String errorMessage = e.getMessage();
+			errorMessage = errorMessage != null ? errorMessage : e.toString();
+			errorMessage = errorMessage != null ? errorMessage : "";
+			throw new ModuleException(errorMessage);
 		}
 		finally {
 			ModuleFactory.clearAllPendingActions();

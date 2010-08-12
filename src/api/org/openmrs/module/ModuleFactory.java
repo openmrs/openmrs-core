@@ -1342,14 +1342,21 @@ public class ModuleFactory {
 	public static void clearAllPendingActions() {
 		Set<String> moduleIds = new HashSet<String>(pendingModuleActions.keySet());
 		for (String moduleId : moduleIds) {
-			ModuleAction pendingAction = pendingModuleActions.remove(moduleId);
-			/* If the Module Action is PENDING_UNLOAD then the module will not be in loaded map.
-			 * So no need to set its pendingAction to PENDING_NONE
-			 */
-			if (pendingAction != ModuleAction.PENDING_UNLOAD) {
-				Module mod = getLoadedModulesMap().get(moduleId);
-				mod.setPendingAction(ModuleAction.PENDING_NONE);
-			}
+			clearPendingActionOfModuleId(moduleId);
+		}
+	}
+	
+	/**
+	 * A Method to clear pending action of a module
+	 */
+	public static void clearPendingActionOfModuleId(String moduleId) {
+		ModuleAction pendingAction = pendingModuleActions.remove(moduleId);
+		/* If the Module Action is PENDING_UNLOAD then the module will not be in loaded map.
+		 * So no need to set its pendingAction to PENDING_NONE
+		 */
+		if (pendingAction != ModuleAction.PENDING_UNLOAD) {
+			Module mod = getLoadedModulesMap().get(moduleId);
+			mod.setPendingAction(ModuleAction.PENDING_NONE);
 		}
 	}
 

@@ -71,8 +71,8 @@ var jConfirm = new function(){
 			var winW = $j(window).width();  
       
 			//Set the confirmation window to center  
-			$j(id).css('top',  winH/2-$j(id).height()/2);  
-			$j(id).css('left', winW/2-$j(id).width()/2);		
+			$j(id).css('top',  ((winH/2)-($j(id).height()/2)+($j(document).scrollTop())));  
+			$j(id).css('left', ((winW/2)-($j(id).width()/2)+($j(document).scrollLeft())));		
 			
 			//Transition of the jConfirm
 			$j(id).fadeIn(500);	
