@@ -143,7 +143,23 @@ public class ApproximateDateTest {
     @Verifies(value = "should compare two ApproximateDates", method = "compareTo(ApproximateDate)")
     public void compareTo_shouldCompareTwoApproximateDates() throws Exception {
 	    //TODO auto-generated
-		Assert.fail("Not yet implemented");
+		ApproximateDate theDate = new ApproximateDate();
+		theDate.setDate(1988, null, 12, true, true, true);
+		ApproximateDate otherDate = new ApproximateDate();
+		otherDate.setDate(null, 12, 12, true, true, true);
+		int f = theDate.compareTo(otherDate);
+		Assert.assertTrue(f > 0);
+		
+		ApproximateDate date1 = new ApproximateDate();
+		date1.setDate(1988, 2, null, true, true, true);
+		f = theDate.compareTo(date1);
+		Assert.assertTrue(f > 0);
+		
+		ApproximateDate date2 = new ApproximateDate();
+		date2.setDate(null, 2, 12, true, true, true);
+		f = date2.compareTo(theDate);
+		Assert.assertTrue(f < 0);
+		//		Assert.fail("Not yet implemented");
     }
 
 	/**
@@ -168,6 +184,11 @@ public class ApproximateDateTest {
     @Verifies(value = "should set the date depending on the age and a date", method = "setDateFromAge(float,Date)")
     public void setDateFromAge_shouldSetTheDateDependingOnTheAgeAndADate() throws Exception {
 	    //TODO auto-generated
+		ApproximateDate date = new ApproximateDate();
+		Calendar cal = Calendar.getInstance();
+		cal.set(2010, 5, 6);
+		date.setDateFromAge(10, cal.getTime());
+		System.out.print(date);
 		Assert.fail("Not yet implemented");
     }
 
