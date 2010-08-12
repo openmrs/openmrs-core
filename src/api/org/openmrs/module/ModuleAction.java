@@ -19,6 +19,9 @@ package org.openmrs.module;
 public enum ModuleAction {
 	PENDING_START("started"), PENDING_STOP("stopped"), PENDING_UPGRADE("upgraded"), PENDING_UNLOAD("unloaded"), PENDING_NONE("none");
 	
+	/*
+	 * action type attribute
+	 */
 	private String action;
 	
 	private ModuleAction(String action) {

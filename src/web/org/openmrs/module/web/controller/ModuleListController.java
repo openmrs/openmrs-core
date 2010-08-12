@@ -134,7 +134,7 @@ public class ModuleListController extends SimpleFormController {
 							if (downloadURL == null) {
 								throw new MalformedURLException("Couldn't download module because no url was provided");
 							}
-							//This code and update code are similar these will be moved to one place
+							// Download the module from download url and insert it to the repository
 							try {
 								String fileName = downloadURL.substring(downloadURL.lastIndexOf("/") + 1);
 								final URL url = new URL(downloadURL);
@@ -353,7 +353,7 @@ public class ModuleListController extends SimpleFormController {
 		    new String[] { ModuleConstants.RUNTIMEPROPERTY_ALLOW_ADMIN }));
 		
 		map.put("openmrsVersion", OpenmrsConstants.OPENMRS_VERSION_SHORT);
-		map.put("moduleRepositoryURL", request.getContextPath());//WebConstants.MODULE_REPOSITORY_URL);
+		map.put("moduleRepositoryURL", request.getContextPath());
 		
 		map.put("loadedModules", ModuleFactory.getLoadedModules());
 		
@@ -378,11 +378,15 @@ public class ModuleListController extends SimpleFormController {
 		// Flag to show update module repository cache message
 		map.put("moduleRepositoryCacheExpired", ModuleRepository.isCacheExpired());
 		
+		// Module Repository List to be shown
 		map.put("repoList", ModuleRepository.getAllModules());
 
 		return map;
 	}
 	
+	/*
+	 * The method used to check whether a confirmation allowed to a user
+	 */
 	private String getConfirmationAllowedForCurrentUser(String property) {
 		String result = null;
 		try{
@@ -402,6 +406,9 @@ public class ModuleListController extends SimpleFormController {
 		return result;
 	}
 	
+	/*
+	 * The method to save (suppress) a confirmation to a user
+	 */
 	private void saveConfirmationAllowedForCurrentUser(String property, String value) {
 		try {
 			User currentUser = Context.getAuthenticatedUser();

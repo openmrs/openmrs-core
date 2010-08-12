@@ -23,7 +23,6 @@ import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -544,7 +543,7 @@ public class ModuleUtil {
 	 * Downloads the contents of a URL and copies them to a string (Borrowed from oreilly)
 	 * 
 	 * @param url
-	 * @throws UnknownHostException
+	 * @throws IOException
 	 * @return InputStream of contents
 	 * @should return a valid input stream for old module urls
 	 */
@@ -568,7 +567,7 @@ public class ModuleUtil {
 	 * Downloads the contents of a URL and copies them to a string (Borrowed from oreilly)
 	 * 
 	 * @param url
-	 * @throws UnknownHostException
+	 * @throws IOException
 	 * @return String contents of the URL
 	 * @should return an update rdf page for old https dev urls
 	 * @should return an update rdf page for old https module urls

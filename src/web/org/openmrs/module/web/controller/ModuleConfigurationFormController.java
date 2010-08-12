@@ -186,6 +186,10 @@ public class ModuleConfigurationFormController extends SimpleFormController {
 		return gpList;
 	}
 	
+	/*
+	 * Method to get a module by moduleId and throw exceptions if moduleId
+	 * is invalid
+	 */
 	private Module getModuleFromModuleId(String moduleId) throws Exception {
 		if (moduleId != null) {
 			Module module = ModuleFactory.getModuleById(moduleId);

@@ -1160,7 +1160,7 @@ public class ModuleFactory {
 	 * module
 	 * 
 	 * @param mod
-	 * @throws ModuleException, UnknownHostException
+	 * @throws ModuleException, IOException
 	 */
 	public static Module updateModule(Module mod) throws ModuleException, IOException {
 		if (mod.getDownloadURL() == null) {
@@ -1348,6 +1348,8 @@ public class ModuleFactory {
 	
 	/**
 	 * A Method to clear pending action of a module
+	 * 
+	 * @param moduleId id of the module which needs an action to be queued
 	 */
 	public static void clearPendingActionOfModuleId(String moduleId) {
 		ModuleAction pendingAction = pendingModuleActions.remove(moduleId);

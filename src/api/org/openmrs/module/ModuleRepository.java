@@ -91,10 +91,12 @@ public class ModuleRepository {
 	}
 	
 	/**
-	 * Caches the Module Repository<br>
+	 * Caches the Module Repository
+	 * 
+	 * @throws IOException <br>
 	 * <br>
-	 * Ex:-<br>
-	 * <code>
+	 *             Ex:-<br>
+	 *             <code>
 	 * 	try{
             ModuleRepository.cacheModuleRepository();
         }catch(IOException e){
