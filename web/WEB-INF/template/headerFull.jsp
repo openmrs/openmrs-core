@@ -18,7 +18,7 @@
 	<head>
 		<openmrs:htmlInclude file="/openmrs.js" />
 		<openmrs:htmlInclude file="/openmrs.css" />
-		<link href="<openmrs:contextPath/>/<spring:theme code='stylesheet' />" type="text/css" rel="stylesheet" />
+		<link href="<openmrs:contextPath/><spring:theme code='stylesheet' />" type="text/css" rel="stylesheet" />
 		<openmrs:htmlInclude file="/style.css" />
 		<openmrs:htmlInclude file="/dwr/engine.js" />
 		<openmrs:htmlInclude file="/dwr/interface/DWRAlertService.js" />
@@ -28,7 +28,7 @@
 			<openmrs:htmlInclude file="/scripts/jquery-ui/js/jquery-ui-datepicker-i18n.js" />
 			<openmrs:htmlInclude file="/scripts/jquery-ui/css/redmond/jquery-ui.custom.css" />
 		</c:if>
-		<link rel="icon" type="image/ico" href="<openmrs:contextPath/>/<spring:theme code='favicon' />">
+		<link rel="icon" type="image/ico" href="<openmrs:contextPath/><spring:theme code='favicon' />">
 
 		<c:choose>
 			<c:when test="${!empty pageTitle}">
