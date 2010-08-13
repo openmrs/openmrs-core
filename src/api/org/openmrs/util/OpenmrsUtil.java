@@ -122,7 +122,9 @@ import org.openmrs.xml.OpenmrsCycleStrategy;
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.load.Persister;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
+import org.springframework.context.ApplicationContextException;
 import org.springframework.context.NoSuchMessageException;
+import org.springframework.core.JdkVersion;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentType;
 
@@ -967,6 +969,19 @@ public class OpenmrsUtil {
 			folder.mkdirs();
 		
 		return filepath;
+	}
+	
+	/**
+	 * Checks whether the current JVM version is at least Java 6.
+	 * 
+	 * @throws ApplicationContextException if the current JVM version is earlier than Java 6
+	 */
+	public static void validateJavaVersion() {
+		// check whether the current JVM version is at least Java 6
+		if (JdkVersion.getMajorJavaVersion() < JdkVersion.JAVA_16) {
+			throw new APIException("OpenMRS requires Java 6, but is running under "
+			        + JdkVersion.getJavaVersion());
+		}
 	}
 	
 	/**
