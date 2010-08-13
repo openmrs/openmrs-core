@@ -1236,7 +1236,7 @@
 	</description>
 	<name>confirmDialog</name>
 	<tag-class>org.openmrs.web.taglib.ConfirmDialogWidgetTag</tag-class>
-	<body-content>JSP</body-content>
+	<body-content></body-content>
 	<attribute>
 		<name>id</name>
 		<required>true</required>
@@ -1258,6 +1258,16 @@
 		<rtexprvalue>false</rtexprvalue>
 	</attribute>	
 	<attribute>
+		<name>button3</name>
+		<required>false</required>
+		<rtexprvalue>false</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>defaultButton</name>
+		<required>false</required>
+		<rtexprvalue>false</rtexprvalue>
+	</attribute>
+	<attribute>
 		<name>suppress</name>
 		<required>false</required>
 		<rtexprvalue>false</rtexprvalue>
@@ -1271,17 +1281,7 @@
 		<name>titleCode</name>
 		<required>false</required>
 		<rtexprvalue>false</rtexprvalue>
-	</attribute>
-	<attribute>
-		<name>button3</name>
-		<required>false</required>
-		<rtexprvalue>false</rtexprvalue>
-	</attribute>
-	<attribute>
-		<name>defaultButton</name>
-		<required>false</required>
-		<rtexprvalue>false</rtexprvalue>
-	</attribute>	
+	</attribute>		
 </tag>
 
 <function>

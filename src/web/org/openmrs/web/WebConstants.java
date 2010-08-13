@@ -88,4 +88,11 @@ public class WebConstants {
 	 * ServletContext under this key
 	 */
 	public static final String CURRENT_USERS = "CURRENT_USERS";
+	
+	/**
+	 * Constant to create User Properties to Suppress Confirmation Dialogs
+	 * 
+	 * @see org.openmrs.web.taglib.ConfirmDialogWidgetTag
+	 */
+	public static final String USER_PROPERTY_SUPPRESS_DIALOG = "suppressDialog";
 }

@@ -396,7 +396,7 @@ public class ModuleListController extends SimpleFormController {
 
 			User user = us.getUser(currentUser.getUserId());
 
-			String key = OpenmrsConstants.USER_PROPERTY_SUPPRESS_DIALOG + "." + property;
+			String key = WebConstants.USER_PROPERTY_SUPPRESS_DIALOG + "." + property;
 			
 			result = user.getUserProperty(key);
 		}
@@ -417,7 +417,7 @@ public class ModuleListController extends SimpleFormController {
 			
 			User user = us.getUser(currentUser.getUserId());
 
-			String key = OpenmrsConstants.USER_PROPERTY_SUPPRESS_DIALOG + "." + property;
+			String key = WebConstants.USER_PROPERTY_SUPPRESS_DIALOG + "." + property;
 			
 			us.setUserProperty(user, key, value);
 		}

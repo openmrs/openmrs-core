@@ -157,6 +157,8 @@ public class DWRUserService {
 	 * 
 	 * @param propertyName User property name
 	 * @param propertyValue User property value
+	 * @see UserService#setUserProperty(User currentUser, String propertyName, String propertyValue)
+	 * @since 1.8
 	 */
 	public String saveUserPropertyForCurrentUser(String propertyName, String propertyValue) {
 		try {

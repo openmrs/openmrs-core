@@ -1287,8 +1287,6 @@ public final class OpenmrsConstants {
 	public static final String USER_PROPERTY_NOTIFICATION_ADDRESS = "notificationAddress";
 	
 	public static final String USER_PROPERTY_NOTIFICATION_FORMAT = "notificationFormat"; // text/plain, text/html
-	
-	public static final String USER_PROPERTY_SUPPRESS_DIALOG = "suppressDialog";
 
 	/**
 	 * Name of the user_property that stores the number of unsuccessful login attempts this user has

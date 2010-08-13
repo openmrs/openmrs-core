@@ -24,8 +24,12 @@ import org.openmrs.User;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.messagesource.MessageSourceService;
-import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.web.WebConstants;
 
+/**
+ * This is a Class which is mapped to confirmDialog in openmrs.tld. This is used to generate html
+ * related to the jConfirm Confirmation Widget
+ */
 public class ConfirmDialogWidgetTag extends TagSupport {
 
 	private static final long serialVersionUID = 122321211L;
@@ -76,7 +80,7 @@ public class ConfirmDialogWidgetTag extends TagSupport {
 
 		User user = userService.getUser(currentUser.getUserId());
 		
-		String suppressKey = (this.suppress != null ? OpenmrsConstants.USER_PROPERTY_SUPPRESS_DIALOG + "." + this.suppress
+		String suppressKey = (this.suppress != null ? WebConstants.USER_PROPERTY_SUPPRESS_DIALOG + "." + this.suppress
 		        : "NA");
 
 		String suppress = user.getUserProperty(suppressKey, "false");
