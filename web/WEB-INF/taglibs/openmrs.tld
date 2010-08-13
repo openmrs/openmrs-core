@@ -1236,7 +1236,7 @@
 	</description>
 	<name>confirmDialog</name>
 	<tag-class>org.openmrs.web.taglib.ConfirmDialogWidgetTag</tag-class>
-	<body-content></body-content>
+	<body-content>empty</body-content>
 	<attribute>
 		<name>id</name>
 		<required>true</required>
