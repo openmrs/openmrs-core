@@ -115,6 +115,9 @@ public final class Listener extends ContextLoaderListener {
 		log.debug("Starting the OpenMRS webapp");
 		
 		try {
+			// validate the current JVM version
+			OpenmrsUtil.validateJavaVersion();
+
 			ServletContext servletContext = event.getServletContext();
 			
 			// pulled from web.xml.
