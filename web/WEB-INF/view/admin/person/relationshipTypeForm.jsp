@@ -54,7 +54,7 @@
 		var localizedValue = document.getElementById(hiddenInputId).value;
 		var pos = localizedValue.indexOf("i18n:v1;");
 		if (pos == -1)
-			document.getElementById(hiddenInputId).value = escapeDelimter(newUnlocalizedValue);
+			document.getElementById(hiddenInputId).value = escapeDelimiter(newUnlocalizedValue);
 		else
 			updateValue("unlocalized", newUnlocalizedValue);// A hack way to update unlocalized value by method "updateValue"
 	}	
@@ -111,7 +111,7 @@
 		var localizedValue = document.getElementById(hiddenInputId).value;
 		if (localizedValue.indexOf("i18n:v1;") == -1) 
 			document.getElementById(hiddenInputId).value = "i18n:v1;unlocalized:" + localizedValue + ";";
-		document.getElementById(hiddenInputId).value += (loc + ":" + escapeDelimter(value) + ";");
+		document.getElementById(hiddenInputId).value += (loc + ":" + escapeDelimiter(value) + ";");
 	}
 
 	/*
@@ -132,12 +132,12 @@
 			var reg = new RegExp(pattern);
 			if (temp.match(reg) == null) {/*cann't find the next sub string*/
 				//the passed loc is the locale of last variant value
-				document.getElementById(hiddenInputId).value = prefix + escapeDelimter(value) + ";";
+				document.getElementById(hiddenInputId).value = prefix + escapeDelimiter(value) + ";";
 			} else {
 				//cut out the sub string behind the second "pattern"
 				pos = temp.match(reg).index;
 				suffix = temp.substr(pos);
-				document.getElementById(hiddenInputId).value = prefix + escapeDelimter(value) + suffix;
+				document.getElementById(hiddenInputId).value = prefix + escapeDelimiter(value) + suffix;
 			}
 		}
 	}
@@ -147,8 +147,8 @@
 	*/
 	function removeVariantValue(loc, value, hiddenInputId){
 		var localizedValue = document.getElementById(hiddenInputId).value;
-		//pattern will be used in regular expression, so we should use escapeDelimter two times to escapse ";" to be "\\\\;" 
-		var pattern = ";" + loc + ":" + escapeDelimter(escapeDelimter(value)) + ";";
+		//pattern will be used in regular expression, so we should use escapeDelimiter two times to escapse ";" to be "\\\\;" 
+		var pattern = ";" + loc + ":" + escapeDelimiter(escapeDelimiter(value)) + ";";
 		var reg = new RegExp(pattern);
 		document.getElementById(hiddenInputId).value = localizedValue.replace(reg, ";");
 	}
@@ -176,7 +176,7 @@
 	/*
 	* escape ":" or ";" occur in passed text
 	*/
-	function escapeDelimter(text) {
+	function escapeDelimiter(text) {
 		var reg = new RegExp(":", "g");
 		text = text.replace(reg, "\\:");
 		reg = new RegExp(";", "g");

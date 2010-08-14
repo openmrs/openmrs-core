@@ -17,7 +17,14 @@ import java.util.Date;
 
 /**
  * All {@link OpenmrsMetadata} classes(e.g., {@link EncounterType}, {@link Location}) that have
- * localized name or description will extend from this class.
+ * localized name or description will extend from this class. Any class extends from
+ * {@link BaseLocalizedMetadata} will have localizable name and description properties.
+ * {@link BaseLocalizedMetadata} encapsulate the logic about localization support. <br />
+ * Besides, you need to config name property in hbm file like following(similar to description):
+ * 
+ * <pre>
+ * 		<property name="localizedName" column="name" type="org.openmrs.api.db.hibernate.LocalizedStringType" not-null="true" length="1024" />
+ * </pre>
  * 
  * @since 1.9
  */

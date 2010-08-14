@@ -34,7 +34,7 @@
 	* escape ":" or ";" occur in passed text
 	* Note: this method is used by localizedDescription portlet, @see localizedDescription.jsp
 	*/
-	function escapeDelimter(text) {
+	function escapeDelimiter(text) {
 		var reg = new RegExp(":", "g");
 		text = text.replace(reg, "\\:");
 		reg = new RegExp(";", "g");

@@ -41,7 +41,7 @@
 		var localizedNameValue = document.getElementById("localizedNameHidden").value;
 		var pos = localizedNameValue.indexOf("i18n:v1;");
 		if (pos == -1)
-			document.getElementById("localizedNameHidden").value = escapeDelimter(newUnlocalizedValue);
+			document.getElementById("localizedNameHidden").value = escapeDelimiter(newUnlocalizedValue);
 		else
 			updateName("unlocalized", newUnlocalizedValue);// A hack way to update unlocalized name by method "updateName"
 	}	
@@ -98,7 +98,7 @@
 		var localizedNameValue = document.getElementById("localizedNameHidden").value;
 		if (localizedNameValue.indexOf("i18n:v1;") == -1) /*e.g., Hello --> i18n:v1;unlocalized:Hello;en_UK:Hello;*/
 			document.getElementById("localizedNameHidden").value = "i18n:v1;unlocalized:" + localizedNameValue + ";";
-		document.getElementById("localizedNameHidden").value += (loc + ":" + escapeDelimter(value) + ";");
+		document.getElementById("localizedNameHidden").value += (loc + ":" + escapeDelimiter(value) + ";");
 	}
 
 	/*
@@ -119,12 +119,12 @@
 			var reg = new RegExp(pattern);
 			if (temp.match(reg) == null) {/*cann't find the next sub string*/
 				//the passed loc is the locale of last variant name
-				document.getElementById("localizedNameHidden").value = prefix + escapeDelimter(value) + ";";
+				document.getElementById("localizedNameHidden").value = prefix + escapeDelimiter(value) + ";";
 			} else {
 				//cut out the sub string behind the second "pattern"
 				pos = temp.match(reg).index;
 				suffix = temp.substr(pos);
-				document.getElementById("localizedNameHidden").value = prefix + escapeDelimter(value) + suffix;
+				document.getElementById("localizedNameHidden").value = prefix + escapeDelimiter(value) + suffix;
 			}
 		}
 	}
@@ -134,8 +134,8 @@
 	*/
 	function removeVariantName(loc, value){
 		var localizedNameValue = document.getElementById("localizedNameHidden").value;
-		//pattern will be used in regular expression, so we should use escapeDelimter two times to escapse ";" to be "\\\\;" 
-		var pattern = ";" + loc + ":" + escapeDelimter(escapeDelimter(value)) + ";";
+		//pattern will be used in regular expression, so we should use escapeDelimiter two times to escapse ";" to be "\\\\;" 
+		var pattern = ";" + loc + ":" + escapeDelimiter(escapeDelimiter(value)) + ";";
 		var reg = new RegExp(pattern);
 		document.getElementById("localizedNameHidden").value = localizedNameValue.replace(reg, ";");
 	}
@@ -163,7 +163,7 @@
 	/*
 	* escape ":" or ";" occur in passed text
 	*/
-	function escapeDelimter(text) {
+	function escapeDelimiter(text) {
 		var reg = new RegExp(":", "g");
 		text = text.replace(reg, "\\:");
 		reg = new RegExp(";", "g");
@@ -180,7 +180,7 @@
 		// update contents of those unvisiable tabs in advanced mode
 		// and also the value of hidden input 'localizedDescriptionHidden'
 		var textareaOfDefault = document.getElementById('textarea_default');
-		textareaOfDefault.value = escapeDelimter(obj.value);
+		textareaOfDefault.value = escapeDelimiter(obj.value);
 		updateDescriptionVariantInAdvancedMode(textareaOfDefault, 'default');
 	}
 
@@ -194,15 +194,15 @@
 		var currentValue = document.getElementById('localizedDescriptionHidden').value;
 		if (lang == 'default') {
 			if (currentValue.indexOf('i18n:v1;') == -1)
-				document.getElementById('localizedDescriptionHidden').value = escapeDelimter(obj.value);
+				document.getElementById('localizedDescriptionHidden').value = escapeDelimiter(obj.value);
 			else
 				updateDescription('unlocalized', obj.value);
 		} else {
 			var pattern = ";" + lang + ":";
 			if (currentValue.indexOf('i18n:v1;') == -1)
-				document.getElementById('localizedDescriptionHidden').value = "i18n:v1;unlocalized:" + currentValue + ";" + lang + ":" + escapeDelimter(obj.value) + ";";
+				document.getElementById('localizedDescriptionHidden').value = "i18n:v1;unlocalized:" + currentValue + ";" + lang + ":" + escapeDelimiter(obj.value) + ";";
 			else if (currentValue.indexOf(pattern) == -1)
-				document.getElementById('localizedDescriptionHidden').value = currentValue + lang + ":" + escapeDelimter(obj.value) + ";";
+				document.getElementById('localizedDescriptionHidden').value = currentValue + lang + ":" + escapeDelimiter(obj.value) + ";";
 		    else
 				updateDescription(lang, obj.value);
 		}
@@ -243,12 +243,12 @@
 			var reg = new RegExp(pattern);
 			if (temp.match(reg) == null) {/*cann't find the next sub string*/
 				//the passed loc is the locale of last variant description
-				document.getElementById("localizedDescriptionHidden").value = prefix + escapeDelimter(value) + ";";
+				document.getElementById("localizedDescriptionHidden").value = prefix + escapeDelimiter(value) + ";";
 			} else {
 				//cut out the sub string behind the second "pattern"
 				pos = temp.match(reg).index;
 				suffix = temp.substr(pos);
-				document.getElementById("localizedDescriptionHidden").value = prefix + escapeDelimter(value) + suffix;
+				document.getElementById("localizedDescriptionHidden").value = prefix + escapeDelimiter(value) + suffix;
 			}
 		}
 	}
@@ -258,8 +258,8 @@
 	*/
 	function removeVariantdescription(loc, value){
 		var localizedDescriptionValue = document.getElementById("localizedDescriptionHidden").value;
-		//pattern will be used in regular expression, so we should use escapeDelimter two times to escapse ";" to be "\\\\;" 
-		var pattern = ";" + loc + ":" + escapeDelimter(escapeDelimter(value)) + ";";
+		//pattern will be used in regular expression, so we should use escapeDelimiter two times to escapse ";" to be "\\\\;" 
+		var pattern = ";" + loc + ":" + escapeDelimiter(escapeDelimiter(value)) + ";";
 		var reg = new RegExp(pattern);
 		document.getElementById("localizedDescriptionHidden").value = localizedDescriptionValue.replace(reg, ";");
 	}
