@@ -51,9 +51,8 @@ public class Patient extends Person implements java.io.Serializable {
 	/**
 	 * This constructor creates a new Patient object from the given {@link Person} object. All
 	 * attributes are copied over to the new object. NOTE! All child collection objects are copied
-	 * as pointers, each individual element is not copied. <br/>
-	 * <br/>
-	 * TODO Should the patient specific attributes be copied? (like identifiers)
+	 * as pointers, each individual element is not copied. <br/> <br/> TODO Should the patient
+	 * specific attributes be copied? (like identifiers)
 	 * 
 	 * @param person the person object to copy onto a new Patient
 	 * @see Person#Person(Person)
@@ -62,6 +61,8 @@ public class Patient extends Person implements java.io.Serializable {
 		super(person);
 		if (person != null)
 			this.patientId = person.getPersonId();
+		if (person.getUuid() != null)
+			this.setUuid(person.getUuid());
 	}
 	
 	/**
@@ -316,8 +317,8 @@ public class Patient extends Person implements java.io.Serializable {
 	}
 	
 	/**
-	 * Returns only the non-voided identifiers for this patient. If you want <u>all</u> identifiers,
-	 * use {@link #getIdentifiers()}
+	 * Returns only the non-voided identifiers for this patient. If you want <u>all</u>
+	 * identifiers, use {@link #getIdentifiers()}
 	 * 
 	 * @return list of non-voided identifiers for this patient
 	 * @see #getIdentifiers()
@@ -334,8 +335,8 @@ public class Patient extends Person implements java.io.Serializable {
 	}
 	
 	/**
-	 * Returns only the non-voided identifiers for this patient. If you want <u>all</u> identifiers,
-	 * use {@link #getIdentifiers()}
+	 * Returns only the non-voided identifiers for this patient. If you want <u>all</u>
+	 * identifiers, use {@link #getIdentifiers()}
 	 * 
 	 * @return list of non-voided identifiers for this patient
 	 * @param pit PatientIdentifierType
