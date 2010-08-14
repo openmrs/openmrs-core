@@ -1166,7 +1166,7 @@ public final class OpenmrsConstants {
 		        "http://modules.openmrs.org/modules/getAllModules?openmrsVersion=<VERSION>&lastUpdatedDate=<DATE>",
 		        "Get All Module Repository URL"));
 		
-		props.add(new GlobalProperty(ModuleRepository.MODULE_REPOSITORY_THRESHOLD, "7",
+		props.add(new GlobalProperty(ModuleRepository.MODULE_REPOSITORY_CACHE_EXPIRATION, "7",
 		        "Threshold to update the Module Repository"));
 
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {

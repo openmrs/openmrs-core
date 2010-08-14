@@ -63,7 +63,7 @@ public class ModuleRepository {
 	
 	public static final String MODULE_REPOSITORY_URL = "modulerepository.url.allModules";
 	
-	public static final String MODULE_REPOSITORY_THRESHOLD = "modulerepository.threshold";
+	public static final String MODULE_REPOSITORY_CACHE_EXPIRATION = "modulerepository.cacheExpirationInDays";
 	
 	private static String moduleRepositoryUrl = null;
 	
@@ -271,8 +271,10 @@ public class ModuleRepository {
 	public static int getNumberOfModuleUpdates() {
 		return noOfModuleUpdates;
 	}
-
+	
 	/**
+	 * Method to format the date for the getAllModules webservice
+	 * 
 	 * @param date
 	 * @return formatted date
 	 */
@@ -282,6 +284,8 @@ public class ModuleRepository {
 	}
 	
 	/**
+	 * Method to create the correct url for getAllModules web service
+	 * 
 	 * @return URL for caching
 	 * @throws MalformedURLException
 	 */
@@ -302,7 +306,7 @@ public class ModuleRepository {
 	 */
 	public static boolean isCacheExpired() {
 		AdministrationService as = Context.getAdministrationService();
-		String threshold = as.getGlobalProperty(MODULE_REPOSITORY_THRESHOLD);
+		String threshold = as.getGlobalProperty(MODULE_REPOSITORY_CACHE_EXPIRATION);
 		int iThreshold = 7;
 		try {
 			if (threshold != null) {
@@ -310,7 +314,7 @@ public class ModuleRepository {
 			}
 		}
 		catch (NumberFormatException e) {
-			log.error("Error while parsing " + MODULE_REPOSITORY_THRESHOLD + ", 7 will be used", e);
+			log.error("Error while parsing " + MODULE_REPOSITORY_CACHE_EXPIRATION + ", 7 will be used", e);
 		}
 		long today = new Date().getTime();
 		long updatedDate = lastUpdatedDate.getTime();

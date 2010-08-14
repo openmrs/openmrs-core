@@ -29,6 +29,9 @@ public class ModuleRepositoryTest extends BaseContextSensitiveTest {
 	
 	private static final Log log = LogFactory.getLog(ModuleRepositoryTest.class);
 	
+	/**
+	 * Tests whether an empty list is returned if search is empty
+	 */
 	@Test
 	@Verifies(value = "return an empty array list of modules if search is empty", method = "searchModules(String)")
 	public void searchModules_returnAnEmptyArrayListOfModulesIfSearchIsEmpty() {

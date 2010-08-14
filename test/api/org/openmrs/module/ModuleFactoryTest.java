@@ -25,6 +25,9 @@ import org.openmrs.test.Verifies;
  */
 public class ModuleFactoryTest extends BaseContextSensitiveTest {
 	
+	/**
+	 * Constructor that initializes the ModuleFactor loaded modules
+	 */
 	public ModuleFactoryTest() {
 		String[] moduleIds = { "formimportexport", "restmodule", "gmapsviewer", "dssmodule" };
 		for (String moduleId : moduleIds) {
@@ -33,7 +36,10 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 			ModuleFactory.getLoadedModulesMap().put(moduleId, testModule);
 		}
 	}
-
+	
+	/**
+	 * Tests whether a loaded module is allowed to be queued for starting
+	 */
 	@Test
 	@Verifies(value = "should return true if tried to start a loaded module", method = "queueModuleAction(String, ModuleAction)")
 	public void queueModuleAction_shouldReturnTrueIfTriedToStartALoadedModule() {
@@ -41,7 +47,10 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 		boolean actual = ModuleFactory.queueModuleAction("formimportexport", ModuleAction.PENDING_START);
 		Assert.assertEquals(EXPECTED, actual);
 	}
-
+	
+	/**
+	 * Tests whether a loaded and started module is allowed to be queued for stop
+	 */
 	@Test
 	@Verifies(value = "should return true if tried to stop a loaded and started module", method = "queueModuleAction(String, ModuleAction)")
 	public void queueModuleAction_shouldReturnTrueIfTriedToStopALoadedAndStartedModule() {
@@ -51,7 +60,10 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 		boolean actual = ModuleFactory.queueModuleAction(MODULE_ID, ModuleAction.PENDING_STOP);
 		Assert.assertEquals(EXPECTED, actual);
 	}
-
+	
+	/**
+	 * Tests whether a loaded module is allowed to be queued for unloading
+	 */
 	@Test
 	@Verifies(value = "should return true if tried to unload a loaded module", method = "queueModuleAction(String, ModuleAction)")
 	public void queueModuleAction_shouldReturnTrueIfTriedToUnloadALoadedModule() {
@@ -60,6 +72,9 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(EXPECTED, actual);
 	}
 
+	/**
+	 * Tests whether a loaded module with a updateFile is allowed to be queued for upgrade
+	 */
 	@Test
 	@Verifies(value = "should return true if tried to upgrade a loaded module with a new update file", method="queueModuleAction(String, ModuleAction)")
 	public void queueModuleAction_shouldReturnTrueIfTriedToUpgradeALoadedModule() {
@@ -70,7 +85,12 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 		boolean actual = ModuleFactory.queueModuleAction(MODULE_ID, ModuleAction.PENDING_UPGRADE);
 		Assert.assertEquals(EXPECTED, actual);
 	}
-
+	
+	/**
+	 * Tests whether a ModuleException is thrown if tried to queue non loaded module
+	 * 
+	 * @throws Exception
+	 */
 	@Test(expected = ModuleException.class)
 	@Verifies(value = "should throw ModuleException if moduleId supplied is of a non existent module", method="queueModuleAction(String, ModuleAction)")
 	public void queueModuleAction_shouldThrowModuleExceptionIfModuleIdSuppliedIsOfANonExistentModule() throws Exception {
@@ -78,6 +98,9 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 		ModuleFactory.queueModuleAction(NON_EXISTING_MODULE_ID, ModuleAction.PENDING_START);
 	}
 	
+	/**
+	 * Tests whether a module already started not allowed to be queue for start again
+	 */
 	@Test
 	@Verifies(value = "should return false if tried to start a started module", method = "queueModuleAction(String, ModuleAction)")
 	public void queueModuleAction_shouldReturnFalseIfTriedToStartAStartedModule() {
@@ -89,6 +112,9 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(EXPECTED, actual);
 	}
 	
+	/**
+	 * Tests whether a module stopped not allowed to be queued for stop again
+	 */
 	@Test
 	@Verifies(value = "should return false if tried to stop a not started module", method = "queueModuleAction(String, ModuleAction)")
 	public void queueModuleAction_shouldReturnFalseIfTriedToStopANotStartedModule() {
@@ -97,7 +123,10 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 		boolean actual = ModuleFactory.queueModuleAction(MODULE_ID, ModuleAction.PENDING_STOP);
 		Assert.assertEquals(EXPECTED, actual);
 	}
-
+	
+	/**
+	 * Tests whether a module is not allowed to be queued for upgrade with a new update file
+	 */
 	@Test
 	@Verifies(value = "should return false if tried to upgrade a loaded module without a new update file", method = "queueModuleAction(String, ModuleAction)")
 	public void queueModuleAction_shouldReturnFalseIfTriedToUpgradeALoadedModuleWithoutANewUpdateFile() {
@@ -110,6 +139,9 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(EXPECTED, actual);
 	}
 	
+	/**
+	 * Tests whether modules with pending actions iterator available after queuing of a module
+	 */
 	@Test
 	@Verifies(value = "should return an iterator with atleast one element if a module action was queued", method = "getModulesWithPendingAction()")
 	public void getModulesWithPendingAction_shouldReturnAnIteratorWithAtleastOneElementIfAModuleActionWasQueued() {
@@ -118,6 +150,9 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(EXPECTED, actual);
 	}
 	
+	/**
+	 * Tests whether modules with pending actions are available after queuing of a module
+	 */
 	@Test
 	@Verifies(value = "should return true if there are modules with pending actions", method = "hasPendingModuleActions")
 	public void hasPendingModuleActions_shouldReturnTrueIfThereAreModulesWithPendingActions() {
@@ -126,6 +161,10 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(EXPECTED, actual);
 	}
 	
+	/**
+	 * Tests whether it is possible to check whether there is a pending action for a particular
+	 * module.
+	 */
 	@Test
 	@Verifies(value = "should return true if there is a pending action for the given moduleId", method = "hasPendingModuleActionForModuleId(String)")
 	public void hasPendingModuleActionForModuleId_shouldReturnTrueIfThereIsAPendingActionForTheGivenModuleId() {
@@ -134,7 +173,22 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 		boolean actual = ModuleFactory.hasPendingModuleActionForModuleId(moduleId);
 		Assert.assertEquals(EXPECTED, actual);
 	}
+	
+	/**
+	 * Tests whether a pending action of a particular module can be cleared
+	 */
+	@Test
+	@Verifies(value = "should clear the pending module action for a module", method = "clearPendingActionOfModuleId(String)")
+	public void clearPendingActionOfModuleId_shouldClearThePendingModuleActionForAModule() {
+		final boolean EXPECTED = false;
+		ModuleFactory.clearPendingActionOfModuleId("restmodule");
+		boolean actual = ModuleFactory.hasPendingModuleActionForModuleId("restmodule");
+		Assert.assertEquals(EXPECTED, actual);
+	}
 
+	/**
+	 * Tests whether the clearing of pending actions work
+	 */
 	@Test
 	@Verifies(value = "should clear all the pending module actions", method = "clearAllPendingActions()")
 	public void clearAllPendingActions_shouldClearAllThePendingModuleActions() {
@@ -143,9 +197,5 @@ public class ModuleFactoryTest extends BaseContextSensitiveTest {
 		boolean actual = ModuleFactory.hasPendingModuleActions();
 		Assert.assertEquals(EXPECTED, actual);
 	}
-
-
-		
-	
 
 }
