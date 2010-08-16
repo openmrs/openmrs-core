@@ -997,7 +997,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	public void getConceptDerived_shouldReturnAConceptDerivedObject() throws Exception {
 		executeDataSet(INITIAL_CONCEPTS_XML);
 		ConceptDerived conceptDerived = conceptService.getConceptDerived(3);
-		Assert.assertEquals("Example of not parse-able arden", conceptDerived.getRule());
+		Assert.assertEquals("Example of not parse-able arden", conceptDerived.getRuleContent());
 		Assert.assertEquals("Arden", conceptDerived.getLanguage());
 	}
 
