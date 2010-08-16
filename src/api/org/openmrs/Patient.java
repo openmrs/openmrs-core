@@ -62,6 +62,8 @@ public class Patient extends Person implements java.io.Serializable {
 		super(person);
 		if (person != null)
 			this.patientId = person.getPersonId();
+		if (person.getUuid() != null)
+			this.setUuid(person.getUuid());
 	}
 	
 	/**
