@@ -100,7 +100,7 @@ dojo.widget.defineWidget(
 		
 		getBirthday: function(p) { 
 				if (typeof p == 'string') return this.noCell();
-				str = this.getDateString(p.birthdate);
+				str = this.getDateString(p.birthdate.estimatedDate);
 				return str;
 		},
 		

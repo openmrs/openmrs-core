@@ -13,7 +13,6 @@
  */
 package org.openmrs.web.dwr;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -50,7 +49,7 @@ public class PersonListItem {
 	
 	private String gender;
 	
-	private Date birthdate;
+	private ApproximateDateItem birthdate;
 	
 	private Boolean birthdateEstimated = false;
 	
@@ -126,7 +125,7 @@ public class PersonListItem {
 			}
 			
 			gender = person.getGender();
-			birthdate = person.getBirthdate().getDate();
+			birthdate = new ApproximateDateItem(person.getBirthdate());
 			birthdateEstimated = person.isBirthdateEstimated();
 			age = person.getAge();
 			voided = person.isPersonVoided();
@@ -163,11 +162,11 @@ public class PersonListItem {
 		return personId.hashCode();
 	}
 	
-	public Date getBirthdate() {
+	public ApproximateDateItem getBirthdate() {
 		return birthdate;
 	}
 	
-	public void setBirthdate(Date birthdate) {
+	public void setBirthdate(ApproximateDateItem birthdate) {
 		this.birthdate = birthdate;
 	}
 	

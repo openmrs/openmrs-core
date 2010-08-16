@@ -17,7 +17,11 @@ import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.ApproximateDate;
 
+/**
+ * TODO comment!
+ */
 public class ApproximateDateItem {
 	
 	protected final Log log = LogFactory.getLog(getClass());
@@ -38,6 +42,20 @@ public class ApproximateDateItem {
 	
 	private boolean yearApproximated;
 	
+	public ApproximateDateItem() {
+	}
+	
+	public ApproximateDateItem(ApproximateDate d) {
+		this.setYear(d.getYear());
+		this.setMonth(d.getMonth());
+		this.setDay(d.getDay());
+		this.setEstimatedDate(d.getDate());
+		this.setDayApproximated(d.isApproximated(ApproximateDate.APPROXIMATE_DAY));
+		this.setWeekApproximated(d.isApproximated(ApproximateDate.APPROXIMATE_WEEK));
+		this.setMonthApproximated(d.isApproximated(ApproximateDate.APPROXIMATE_MONTH));
+		this.setYearApproximated(d.isApproximated(ApproximateDate.APPROXIMATE_YEAR));
+	}
+
 	/**
 	 * @param year the year to set
 	 */

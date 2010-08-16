@@ -36,6 +36,7 @@ import org.openmrs.PersonAttributeType;
 import org.openmrs.PersonName;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
+import org.openmrs.propertyeditor.ApproximateDateEditor;
 import org.openmrs.propertyeditor.ConceptEditor;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
@@ -70,6 +71,7 @@ public class PersonFormController extends SimpleFormController {
 		binder.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, true));
 		binder.registerCustomEditor(java.util.Date.class, new CustomDateEditor(Context.getDateFormat(), true));
 		binder.registerCustomEditor(org.openmrs.Concept.class, new ConceptEditor());
+		binder.registerCustomEditor(org.openmrs.ApproximateDate.class, new ApproximateDateEditor(Context.getDateFormat()));
 	}
 	
 	/**

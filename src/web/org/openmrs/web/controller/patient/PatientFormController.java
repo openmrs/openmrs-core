@@ -48,6 +48,7 @@ import org.openmrs.api.LocationService;
 import org.openmrs.api.PatientIdentifierException;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
+import org.openmrs.propertyeditor.ApproximateDateEditor;
 import org.openmrs.propertyeditor.ConceptEditor;
 import org.openmrs.propertyeditor.LocationEditor;
 import org.openmrs.propertyeditor.PatientIdentifierTypeEditor;
@@ -100,6 +101,7 @@ public class PatientFormController extends PersonFormController {
 		binder.registerCustomEditor(Location.class, new LocationEditor());
 		binder.registerCustomEditor(Concept.class, "civilStatus", new ConceptEditor());
 		binder.registerCustomEditor(Concept.class, "causeOfDeath", new ConceptEditor());
+		binder.registerCustomEditor(org.openmrs.ApproximateDate.class, new ApproximateDateEditor(Context.getDateFormat()));
 	}
 	
 	/**
