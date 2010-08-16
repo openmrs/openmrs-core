@@ -34,7 +34,7 @@
 		height:30px; 
 		line-height:30px; 
 		width:100%; 
-		background:url(../img/header.gif) repeat-x; 
+		background:url(../img/jconfirmheader.gif) repeat-x; 
 		color:#fff; 
 		font-weight:bold;
 	}
@@ -51,7 +51,7 @@
 		color:#666; 
 		font-weight:bold; 
 		text-align:center; 
-		background:url(../img/button.gif) repeat-x; 
+		background:url(../img/jconfirmbutton.gif) repeat-x; 
 		border:1px solid #bbb; 
 		cursor:pointer;
 	}
