@@ -34,21 +34,21 @@ public class ApproximateDate implements Comparable<ApproximateDate> {
 	
 	public final static int NOT_APPROXIMATED = 0;
 
-	public final static int APPROXIMATE_YEAR = 1;
+	public final static int APPROXIMATE_DAY = 1;
 	
-	public final static int APPROXIMATE_MONTH = 2;
+	public final static int APPROXIMATE_WEEK = 2;
 	
-	public final static int APPROXIMATE_DAY = 4;
+	public final static int APPROXIMATE_MONTH = 4;
 	
-	public final static int APPROXIMATE_WEEK = 8;
+	public final static int APPROXIMATE_YEAR = 8;
 	
 	public final static int APPROXIMATE_AGE = 16;
 	
-	protected final static int UNKNOWN_YEAR = 256;
+	protected final static int UNKNOWN_DAY = 256;
 	
 	protected final static int UNKNOWN_MONTH = 512;
 	
-	protected final static int UNKNOWN_DAY = 1024;
+	protected final static int UNKNOWN_YEAR = 1024;
 
 	private final static float DAYS_PER_YEAR = 365.25f;
 
@@ -312,7 +312,7 @@ public class ApproximateDate implements Comparable<ApproximateDate> {
 	}
 	
 	protected boolean isYearUnknown() {
-		return isFlag(UNKNOWN_MONTH);
+		return isFlag(UNKNOWN_YEAR);
 	}
 
 	/**
@@ -326,7 +326,7 @@ public class ApproximateDate implements Comparable<ApproximateDate> {
 	 * @param dayApprox
 	 * @should properly set the date
 	 */
-	public void setDate(int year, int month, int day, boolean yearApprox, boolean monthApprox, boolean dayApprox) {
+	public void setDate(Integer year, Integer month, Integer day, boolean yearApprox, boolean monthApprox, boolean dayApprox) {
 		setYear(year, yearApprox);
 		setMonth(month, monthApprox);
 		setDay(day, dayApprox);
@@ -378,9 +378,9 @@ public class ApproximateDate implements Comparable<ApproximateDate> {
 		setDate(date);
 		setMetadata(0);
 	}
-
+	
 	/**
-	 * Auto generated method comment
+	 * Sets the date depending on the age
 	 * 
 	 * @param age
 	 * @should set the date depending on the age
@@ -390,7 +390,7 @@ public class ApproximateDate implements Comparable<ApproximateDate> {
 	}
 	
 	/**
-	 * Auto generated method comment
+	 * Sets the date depending on the age and a date
 	 * 
 	 * @param age
 	 * @should set the date depending on the age and a date
@@ -450,12 +450,28 @@ public class ApproximateDate implements Comparable<ApproximateDate> {
 	@Override
 	public int compareTo(ApproximateDate o) {
 		//TODO Advanced comparison incorporating Approximate values and Unknowns
-		Partial thisDate = getAsPartial(this);
-		Partial otherDate = getAsPartial(o);
+		int i = this.getDate().compareTo(o.getDate());
 		
-		return thisDate.compareTo(otherDate);
+		if (i != 0) {
+			return i;
+		} else {
+			if (this.getMetadata() == null) {
+				this.setMetadata(0);
+			}
+			if (o.getMetadata() == null) {
+				o.setMetadata(0);
+			}
+			return this.getMetadata() - o.getMetadata();
+		}
+		
+		//		return thisDate.compareTo(otherDate);
 	}
 	
+	@Override
+	public String toString() {
+		return year + " " + month + " " + day;
+	}
+
 	private Partial getAsPartial(ApproximateDate aDate) {
 		Partial partial = new Partial();
 		if (aDate.getMetadata() != null) {
