@@ -332,7 +332,7 @@ public class ConceptFormController extends SimpleFormController {
 		
 		public String handlerKey;
 		
-		public String definition;
+		public String ruleContent;
 		
 		public String language;
 		
@@ -390,7 +390,7 @@ public class ConceptFormController extends SimpleFormController {
 				this.handlerKey = complex.getHandler();
 			} else if (concept.isRule()) {
 				ConceptDerived conceptDerived = (ConceptDerived) concept;
-				this.definition = conceptDerived.getRule();
+				this.ruleContent = conceptDerived.getRuleContent();
 				this.language = conceptDerived.getLanguage();
 				this.className = conceptDerived.getClassName();
 			}
@@ -524,7 +524,7 @@ public class ConceptFormController extends SimpleFormController {
 					conceptDerived = (ConceptDerived) concept;
 				else
 					conceptDerived = new ConceptDerived(concept);
-				conceptDerived.setRule(definition);
+				conceptDerived.setRuleContent(ruleContent);
 				conceptDerived.setLanguage(language);
 				conceptDerived.setClassName(className);
 				
@@ -775,15 +775,15 @@ public class ConceptFormController extends SimpleFormController {
 		/**
 		 * @return the ruleDefinition
 		 */
-		public String getDefinition() {
-			return definition;
+		public String getRuleContent() {
+			return ruleContent;
 		}
 		
 		/**
 		 * @param ruleDefinition the ruleDefinition to set
 		 */
-		public void setDefinition(String definition) {
-			this.definition = definition;
+		public void setRuleContent(String ruleContent) {
+			this.ruleContent = ruleContent;
 		}
 		
 		/**

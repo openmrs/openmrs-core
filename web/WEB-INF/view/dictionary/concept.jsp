@@ -303,8 +303,8 @@
                 <td valign="middle">${command.className}</td>
             </tr>
             <tr>
-                <th valign="top"><spring:message code="ConceptDerived.definition" arguments="Rule"/></th>
-                <td valign="middle"><div style="width:600px; height:200px; overflow:auto"><pre>${command.definition}</pre></div></td>
+                <th valign="top"><spring:message code="ConceptDerived.ruleContent" arguments="Rule"/></th>
+                <td valign="middle"><div style="width:600px; height:200px; overflow:auto"><pre>${command.ruleContent}</pre></div></td>
             </tr>
         </c:if>
 		<tr>

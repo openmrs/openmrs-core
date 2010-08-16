@@ -26,7 +26,7 @@ public class ConceptDerived extends Concept implements java.io.Serializable {
 	
 	private static final long serialVersionUID = 6892891255251824009L;
 	
-	private String rule;
+	private String ruleContent;
 	
 	private String language;
 	
@@ -72,17 +72,17 @@ public class ConceptDerived extends Concept implements java.io.Serializable {
 	 * 
 	 * @return rule for the derived concept
 	 */
-	public String getRule() {
-		return rule;
+	public String getRuleContent() {
+		return ruleContent;
 	}
 	
 	/**
 	 * Updates rule for derived concept
 	 * 
-	 * @param rule new rule for derived concept
+	 * @param ruleContent new rule for derived concept
 	 */
-	public void setRule(String rule) {
-		this.rule = rule;
+	public void setRuleContent(String ruleContent) {
+		this.ruleContent = ruleContent;
 	}
 	
 	/**
