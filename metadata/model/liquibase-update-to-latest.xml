@@ -2839,6 +2839,20 @@
 		<addColumn tableName="encounter">
 			<column name="date_changed" type="datetime" />
 		</addColumn>
+	</changeSet>
+	
+	<changeSet id="200912211118" author="nribeka">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="concept_derived" columnName="language" />
+			</not>
+		</preConditions>
+		<comment>Adding language column to concept_derived table</comment> 
+		<addColumn tableName="concept_derived">
+    		<column name="language" type="varchar(255)">
+    			<constraints nullable="false" />
+    		</column>
+		</addColumn>
 	</changeSet>	
 
 	<changeSet id="200912031842" author="djazayeri">

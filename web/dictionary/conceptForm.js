@@ -168,6 +168,7 @@ var customDatatypes = new Array();
 customDatatypes.push("numeric");
 customDatatypes.push("coded");
 customDatatypes.push("complex");
+customDatatypes.push("rule");
 
 function changeDatatype(obj) {
 	for (var i=0; i < customDatatypes.length; i++) {

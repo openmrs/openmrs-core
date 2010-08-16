@@ -15,6 +15,7 @@ package org.openmrs.api.impl;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -37,6 +38,7 @@ import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptComplex;
 import org.openmrs.ConceptDatatype;
+import org.openmrs.ConceptDerived;
 import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptMap;
 import org.openmrs.ConceptName;
@@ -1496,6 +1498,19 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		}
 	}
 	
+	/**
+	 * @see org.openmrs.api.ConceptService#getConceptDerived(java.lang.Integer)
+	 */
+	public ConceptDerived getConceptDerived(Integer conceptId) {
+		return dao.getConceptDerived(conceptId);
+	}
+	
+	/**
+	 * @see org.openmrs.api.ConceptService#getSupportedConceptDerivedLanguages()
+	 */
+	public List<String> getSupportedConceptDerivedLanguages() {
+		return Arrays.asList("Arden", "Java");
+	}
 	/**
 	 * @see org.openmrs.api.ConceptService#getConceptsByConceptSource(org.openmrs.ConceptSource)
 	 */

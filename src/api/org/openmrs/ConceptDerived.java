@@ -15,6 +15,8 @@ package org.openmrs;
 
 import java.util.Date;
 
+import org.openmrs.util.OpenmrsUtil;
+
 /**
  * Represent a concept derived from multiple observations or non-observational data
  * 
@@ -26,11 +28,44 @@ public class ConceptDerived extends Concept implements java.io.Serializable {
 	
 	private String rule;
 	
+	private String language;
+	
 	private Date compileDate;
 	
 	private String compileStatus;
 	
 	private String className;
+	
+	/**
+	 * Default Constructor
+	 */
+	public ConceptDerived() {
+	}
+	
+	/**
+	 * @param conceptId
+	 */
+	public ConceptDerived(Integer conceptId) {
+		super(conceptId);
+	}
+	
+	public ConceptDerived(Concept c) {
+		this.setAnswers(c.getAnswers(true));
+		this.setChangedBy(c.getChangedBy());
+		this.setConceptClass(c.getConceptClass());
+		this.setConceptId(c.getConceptId());
+		this.setConceptSets(c.getConceptSets());
+		this.setCreator(c.getCreator());
+		this.setDatatype(c.getDatatype());
+		this.setDateChanged(c.getDateChanged());
+		this.setDateCreated(c.getDateCreated());
+		this.setSet(c.isSet());
+		this.setNames(c.getNames());
+		this.setDescriptions(c.getDescriptions());
+		this.setConceptMappings(c.getConceptMappings());
+		this.setRetired(c.isRetired());
+		this.setVersion(c.getVersion());
+	}
 	
 	/**
 	 * Returns the rule for the derived concept
@@ -48,6 +83,20 @@ public class ConceptDerived extends Concept implements java.io.Serializable {
 	 */
 	public void setRule(String rule) {
 		this.rule = rule;
+	}
+	
+	/**
+	 * @return the language
+	 */
+	public String getLanguage() {
+		return language;
+	}
+	
+	/**
+	 * @param language the language to set
+	 */
+	public void setLanguage(String language) {
+		this.language = language;
 	}
 	
 	/**
@@ -104,4 +153,45 @@ public class ConceptDerived extends Concept implements java.io.Serializable {
 		this.className = className;
 	}
 	
+	/**
+	 * Overrides parent method and returns true if this Concept.getDatatype() equals "Complex"..
+	 * 
+	 * @see org.openmrs.Concept#isComplex()
+	 */
+	@Override
+    public boolean isRule() {
+		if (getDatatype() == null || getDatatype().getHl7Abbreviation() == null)
+			return false;
+		
+		return getDatatype().isRule();
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null)
+			return false;
+		
+		if (obj instanceof ConceptDerived) {
+			ConceptDerived c = (ConceptDerived) obj;
+			return (this.getConceptId().equals(c.getConceptId()));
+		} else if (obj instanceof Concept) {
+			// use the reverse .equals in case we have hibernate proxies - #1511
+			return OpenmrsUtil.nullSafeEquals(((Concept) obj).getConceptId(), this.getConceptId());
+		}
+		return obj == this;
+	}
+
+	/**
+	 * @see org.openmrs.Concept#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		if (getConceptId() == null)
+			return super.hashCode();
+		int hash = 6;
+		if (getConceptId() != null)
+			hash = hash + getConceptId().hashCode() * 31;
+		return hash;
+	}
+
 }

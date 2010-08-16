@@ -257,40 +257,25 @@ public class HibernateConceptDAO implements ConceptDAO {
 		}
 		// check the concept_derived table
 		else if (concept instanceof ConceptDerived) {
-			
+			// read comments on above operation to see the logic
 			try {
 				ps = connection
 				        .prepareStatement("SELECT * FROM concept WHERE concept_id = ? and not exists (select * from concept_derived WHERE concept_id = ?)");
 				ps.setInt(1, concept.getConceptId());
 				ps.setInt(2, concept.getConceptId());
 				ps.execute();
-				
-				// Converting to concept derived:  A single concept row exists, but concept derived has not been populated yet.
 				if (ps.getResultSet().next()) {
-					// we have to evict the current concept out of the session because
-					// the user probably had to change the class of this object to get it
-					// to now be ConceptDerived
-					// (must be done before the "insert into...")
 					sessionFactory.getCurrentSession().clear();
-					
-					// Add an empty row into the concept_derived table
 					ps2 = connection.prepareStatement("INSERT INTO concept_derived (concept_id) VALUES (?)");
 					ps2.setInt(1, concept.getConceptId());
 					ps2.executeUpdate();
 				}
-				// Converting from concept derived:  The concept and concept derived rows both exist, so we need to delete the concept_derived row.
-				// no stub insert is needed because either a concept row doesn't exist OR a concept_derived row does exist
 				else {
-					// concept is changed from complex to something else
-					// hence row should be deleted from the concept_derived
-					if (!concept.isComplex()) {
+					if (!concept.isRule()) {
 						ps2 = connection.prepareStatement("DELETE FROM concept_derived WHERE concept_id = ?");
 						ps2.setInt(1, concept.getConceptId());
 						ps2.executeUpdate();
-					} else {
-						// it is indeed derived now... don't delete
 					}
-					
 				}
 			}
 			catch (SQLException e) {
@@ -1360,6 +1345,27 @@ public class HibernateConceptDAO implements ConceptDAO {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ConceptSource.class, "source");
 		criteria.add(Expression.eq("source.name", conceptSourceName));
 		return (ConceptSource) criteria.uniqueResult();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.ConceptDAO#getConceptDerived(java.lang.Integer)
+	 */
+	public ConceptDerived getConceptDerived(Integer conceptId) {
+		ConceptDerived conceptDerived;
+		Object obj = sessionFactory.getCurrentSession().get(ConceptDerived.class, conceptId);
+		// If Concept has already been read & cached, we may get back a Concept instead of
+		// ConceptDerived.  If this happens, we need to clear the object from the cache
+		// and re-fetch it as a ConceptDerived
+		if (obj != null && !obj.getClass().equals(ConceptDerived.class)) {
+			sessionFactory.getCurrentSession().evict(obj); // remove from cache
+			// session.get() did not work here, we need to perform a query to get a ConceptDerived
+			Query query = sessionFactory.getCurrentSession().createQuery("from ConceptDerived where conceptId = :conceptId")
+			        .setParameter("conceptId", conceptId);
+			obj = query.uniqueResult();
+		}
+		conceptDerived = (ConceptDerived) obj;
+		
+		return conceptDerived;
 	}
 	
 	/**

@@ -13,6 +13,7 @@
  */
 package org.openmrs.arden;
 
+import org.openmrs.api.APIException;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
@@ -24,4 +25,17 @@ public interface ArdenService {
 	 */
 	public void compileFile(String file, String outFolder);
 	
+	/**
+	 * Parse arden rule definition from a string and then output java file in the designated output
+	 * directory. The output of the parsing will be a subclass of the <code>Rule</code> object that
+	 * can be used using the logic service
+	 * 
+	 * @param ardenRuleDefinition the rule definition to be parsed
+	 * @param outFolder the java output directory location. this is not the full path with the
+	 *            package structure
+	 * @throws Exception when the rule definition parser doesn't recognize the arden structure
+	 * @since 1.8
+	 */
+	public void compile(String ardenRuleDefinition, String outFolder) throws APIException;
+
 }
