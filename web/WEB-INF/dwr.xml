@@ -37,6 +37,7 @@
 		<convert converter="bean" match="org.openmrs.Cohort" >
 			<param name="exclude" value="patients"/>
 		</convert>
+		<convert converter="bean" match="org.openmrs.web.dwr.ApproximateDateItem"/>
 
 	
 		<create creator="new" javascript="DWRPatientService">
