@@ -34,6 +34,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptComplex;
+import org.openmrs.ConceptDerived;
 import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptMap;
 import org.openmrs.ConceptName;
@@ -93,14 +94,14 @@ public class ConceptFormController extends SimpleFormController {
 		NumberFormat nf = NumberFormat.getInstance(Context.getLocale());
 		binder.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, nf, true));
 		binder.registerCustomEditor(java.lang.Double.class, new CustomNumberEditor(java.lang.Double.class, nf, true));
-		binder.registerCustomEditor(java.util.Date.class, new CustomDateEditor(SimpleDateFormat.getDateInstance(
-		    SimpleDateFormat.SHORT, Context.getLocale()), true));
+		binder.registerCustomEditor(java.util.Date.class, new CustomDateEditor(SimpleDateFormat.getDateInstance(SimpleDateFormat.SHORT, Context
+		        .getLocale()), true));
 		binder.registerCustomEditor(org.openmrs.ConceptClass.class, new ConceptClassEditor());
 		binder.registerCustomEditor(org.openmrs.ConceptDatatype.class, new ConceptDatatypeEditor());
-		binder.registerCustomEditor(java.util.Collection.class, "concept.conceptSets", new ConceptSetsEditor(commandObject
-		        .getConcept().getConceptSets()));
-		binder.registerCustomEditor(java.util.Collection.class, "concept.answers", new ConceptAnswersEditor(commandObject
-		        .getConcept().getAnswers(true)));
+		binder.registerCustomEditor(java.util.Collection.class, "concept.conceptSets", new ConceptSetsEditor(commandObject.getConcept()
+		        .getConceptSets()));
+		binder.registerCustomEditor(java.util.Collection.class, "concept.answers", new ConceptAnswersEditor(commandObject.getConcept().getAnswers(
+		    true)));
 		binder.registerCustomEditor(org.openmrs.ConceptSource.class, new ConceptSourceEditor());
 	}
 	
@@ -110,8 +111,8 @@ public class ConceptFormController extends SimpleFormController {
 	 *      org.springframework.validation.BindException)
 	 */
 	@Override
-	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object object,
-	                                             BindException errors) throws Exception {
+	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object object, BindException errors)
+	                                                                                                                                           throws Exception {
 		
 		Concept concept = ((ConceptFormBackingObject) object).getConcept();
 		ConceptService cs = Context.getConceptService();
@@ -147,8 +148,7 @@ public class ConceptFormController extends SimpleFormController {
 	 * @should set the local preferred name
 	 */
 	@Override
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
-	                                BindException errors) throws Exception {
+	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
 		ConceptService cs = Context.getConceptService();
@@ -281,6 +281,9 @@ public class ConceptFormController extends SimpleFormController {
 		}
 		map.put("dataTypeReadOnly", dataTypeReadOnly);
 		
+		// language of the rule definition. only arden for now
+		map.put("ruleLanguages", cs.getSupportedConceptDerivedLanguages());
+
 		//get complex handlers
 		map.put("handlers", Context.getObsService().getHandlers());
 		
@@ -329,6 +332,12 @@ public class ConceptFormController extends SimpleFormController {
 		
 		public String handlerKey;
 		
+		public String definition;
+		
+		public String language;
+		
+		public String className;
+
 		public Map<Locale, String> preferredNamesByLocale = new HashMap<Locale, String>();
 		
 		/**
@@ -358,15 +367,13 @@ public class ConceptFormController extends SimpleFormController {
 				if (descriptionsByLocale.get(locale) == null)
 					descriptionsByLocale.put(locale, new ConceptDescription(null, locale));
 				
-				synonymsByLocale.put(locale, ListUtils.lazyList(synonymsByLocale.get(locale), FactoryUtils
-				        .instantiateFactory(ConceptName.class)));
-				indexTermsByLocale.put(locale, ListUtils.lazyList(indexTermsByLocale.get(locale), FactoryUtils
-				        .instantiateFactory(ConceptName.class)));
+				synonymsByLocale.put(locale, ListUtils.lazyList(synonymsByLocale.get(locale), FactoryUtils.instantiateFactory(ConceptName.class)));
+				indexTermsByLocale
+				        .put(locale, ListUtils.lazyList(indexTermsByLocale.get(locale), FactoryUtils.instantiateFactory(ConceptName.class)));
 			}
 			
 			// turn the list objects into lazy lists
-			mappings = ListUtils.lazyList(new Vector(concept.getConceptMappings()), FactoryUtils
-			        .instantiateFactory(ConceptMap.class));
+			mappings = ListUtils.lazyList(new Vector(concept.getConceptMappings()), FactoryUtils.instantiateFactory(ConceptMap.class));
 			
 			if (concept.isNumeric()) {
 				ConceptNumeric cn = (ConceptNumeric) concept;
@@ -381,6 +388,11 @@ public class ConceptFormController extends SimpleFormController {
 			} else if (concept.isComplex()) {
 				ConceptComplex complex = (ConceptComplex) concept;
 				this.handlerKey = complex.getHandler();
+			} else if (concept.isRule()) {
+				ConceptDerived conceptDerived = (ConceptDerived) concept;
+				this.definition = conceptDerived.getRule();
+				this.language = conceptDerived.getLanguage();
+				this.className = conceptDerived.getClassName();
 			}
 		}
 		
@@ -425,8 +437,7 @@ public class ConceptFormController extends SimpleFormController {
 						if (!synonym.isVoided())
 							synonym.setVoidReason(null);
 						else if (synonym.isVoided() && !StringUtils.hasText(synonym.getVoidReason()))
-							synonym.setVoidReason(Context.getMessageSourceService().getMessage(
-							    "Concept.name.default.voidReason"));
+							synonym.setVoidReason(Context.getMessageSourceService().getMessage("Concept.name.default.voidReason"));
 					}
 				}
 				
@@ -441,14 +452,12 @@ public class ConceptFormController extends SimpleFormController {
 						if (!indexTerm.isVoided())
 							indexTerm.setVoidReason(null);
 						else if (indexTerm.isVoided() && !StringUtils.hasText(indexTerm.getVoidReason()))
-							indexTerm.setVoidReason(Context.getMessageSourceService().getMessage(
-							    "Concept.name.default.voidReason"));
+							indexTerm.setVoidReason(Context.getMessageSourceService().getMessage("Concept.name.default.voidReason"));
 					}
 				}
 				
 				ConceptDescription descInLocale = descriptionsByLocale.get(locale);
-				if (StringUtils.hasLength(descInLocale.getDescription())
-				        && !concept.getDescriptions().contains(descInLocale)) {
+				if (StringUtils.hasLength(descInLocale.getDescription()) && !concept.getDescriptions().contains(descInLocale)) {
 					concept.addDescription(descInLocale);
 				}
 			}
@@ -509,6 +518,17 @@ public class ConceptFormController extends SimpleFormController {
 				}
 				complexConcept.setHandler(handlerKey);
 				concept = complexConcept;
+			} else if (concept.getDatatype().getName().equals("Rule")) {
+				ConceptDerived conceptDerived = null;
+				if (concept instanceof ConceptDerived)
+					conceptDerived = (ConceptDerived) concept;
+				else
+					conceptDerived = new ConceptDerived(concept);
+				conceptDerived.setRule(definition);
+				conceptDerived.setLanguage(language);
+				conceptDerived.setClassName(className);
+				
+				concept = conceptDerived;
 			}
 			
 			return concept;
@@ -753,6 +773,48 @@ public class ConceptFormController extends SimpleFormController {
 		}
 		
 		/**
+		 * @return the ruleDefinition
+		 */
+		public String getDefinition() {
+			return definition;
+		}
+		
+		/**
+		 * @param ruleDefinition the ruleDefinition to set
+		 */
+		public void setDefinition(String definition) {
+			this.definition = definition;
+		}
+		
+		/**
+		 * @return the ruleLanguage
+		 */
+		public String getLanguage() {
+			return language;
+		}
+		
+		/**
+		 * @param ruleLanguage the ruleLanguage to set
+		 */
+		public void setLanguage(String language) {
+			this.language = language;
+		}
+		
+		/**
+		 * @return the className
+		 */
+		public String getClassName() {
+			return className;
+		}
+		
+		/**
+		 * @param className the className to set
+		 */
+		public void setClassName(String className) {
+			this.className = className;
+		}
+		
+		/**
 		 * Get the forms that this concept is declared to be used in
 		 * 
 		 * @return
@@ -760,7 +822,7 @@ public class ConceptFormController extends SimpleFormController {
 		public List<Form> getFormsInUse() {
 			return Context.getFormService().getFormsContainingConcept(concept);
 		}
-		
+
 		/**
 		 * Get the other concept questions that this concept is declared as an answer for
 		 * 

@@ -414,6 +414,10 @@ public interface ConceptDAO {
 	public ConceptSource getConceptSourceByName(String conceptSourceName) throws DAOException;
 	
 	/**
+	 * @see org.openmrs.api.ConceptService#getConceptDerived(Integer)
+	 */
+	public ConceptDerived getConceptDerived(Integer conceptId);
+	/**
 	 * Gets the value of conceptDatatype currently saved in the database for the given concept,
 	 * bypassing any caches. This is used prior to saving an concept so that we can change the obs
 	 * if need be

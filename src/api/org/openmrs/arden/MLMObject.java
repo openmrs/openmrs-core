@@ -177,69 +177,69 @@ public class MLMObject {
 			w.append("\t}\n\n"); // End of this function
 			w.flush();
 			
-			w.append("private String substituteString(String variable,String outStr){\n");
-			w.append("//see if the variable is in the user map\n");
-			w.append("String value = userVarMap.get(variable);\n");
-			w.append("if (value != null)\n");
-			w.append("{\n");
-			w.append("}\n");
-			w.append("// It must be a result value or date\n");
-			w.append("else if (variable.contains(\"_value\"))\n");
-			w.append("{\n");
-			w.append("	variable = variable.replace(\"_value\",\"\").trim();\n");
-			w.append("if(resultLookup.get(variable) != null){");
-			w.append("value = resultLookup.get(variable).toString();\n");
-			w.append("}");
-			w.append("}\n");
-			w.append("// It must be a result date\n");
-			w.append("else if (variable.contains(\"_date\"))\n");
-			w.append("{\n");
-			w.append("String pattern = \"MM/dd/yy\";\n");
-			w.append("SimpleDateFormat dateForm = new SimpleDateFormat(pattern);\n");
-			w.append("variable = variable.replace(\"_date\",\"\").trim();\n");
-			w.append("if(resultLookup.get(variable) != null){");
-			w.append("value = dateForm.format(resultLookup.get(variable).getResultDate());\n");
-			w.append("}");
-			w.append("}\n");
-			w.append("else\n");
-			w.append("{\n");
-			w.append("if(resultLookup.get(variable) != null){");
-			w.append("value = resultLookup.get(variable).toString();\n");
-			w.append("}");
-			w.append("}\n");
+			w.append("\tprivate String substituteString(String variable,String outStr){\n");
+			w.append("\t\t//see if the variable is in the user map\n");
+			w.append("\t\tString value = userVarMap.get(variable);\n");
+			w.append("\t\tif (value != null)\n");
+			w.append("\t\t{\n");
+			w.append("\t\t}\n");
+			w.append("\t\t// It must be a result value or date\n");
+			w.append("\t\telse if (variable.contains(\"_value\"))\n");
+			w.append("\t\t{\n");
+			w.append("\t\t\tvariable = variable.replace(\"_value\",\"\").trim();\n");
+			w.append("\t\t\tif(resultLookup.get(variable) != null){\n");
+			w.append("\t\t\t\tvalue = resultLookup.get(variable).toString();\n");
+			w.append("\t\t\t}\n");
+			w.append("\t\t}\n");
+			w.append("\t\t// It must be a result date\n");
+			w.append("\t\telse if (variable.contains(\"_date\"))\n");
+			w.append("\t\t{\n");
+			w.append("\t\t\tString pattern = \"MM/dd/yy\";\n");
+			w.append("\t\t\tSimpleDateFormat dateForm = new SimpleDateFormat(pattern);\n");
+			w.append("\t\t\tvariable = variable.replace(\"_date\",\"\").trim();\n");
+			w.append("\t\t\tif(resultLookup.get(variable) != null){\n");
+			w.append("\t\t\t\tvalue = dateForm.format(resultLookup.get(variable).getResultDate());\n");
+			w.append("\t\t\t}\n");
+			w.append("\t\t}\n");
+			w.append("\t\telse\n");
+			w.append("\t\t{\n");
+			w.append("\t\t\tif(resultLookup.get(variable) != null){\n");
+			w.append("\t\t\t\tvalue = resultLookup.get(variable).toString();\n");
+			w.append("\t\t\t}\n");
+			w.append("\t\t}\n");
 			
-			w.append("if (value != null)\n");
-			w.append("{\n");
-			w.append("	outStr += value;\n");
-			w.append("}\n");
-			w.append("return outStr;\n");
-			w.append("}\n");
+			w.append("\t\tif (value != null)\n");
+			w.append("\t\t{\n");
+			w.append("\t\t\toutStr += value;\n");
+			w.append("\t\t}\n");
+			w.append("\t\treturn outStr;\n");
+			w.append("\t}\n");
 			
-			w.append("public String doAction(String inStr)\n");
-			w.append("{\n");
-			w.append("int startindex = -1;\n");
-			w.append("int endindex = -1;\n");
-			w.append("int index = -1;\n");
-			w.append("String outStr = \"\";\n");
+			w.append("\tpublic String doAction(String inStr)\n");
+			w.append("\t{\n");
+			w.append("\t\tint startindex = -1;\n");
+			w.append("\t\tint endindex = -1;\n");
+			w.append("\t\tint index = -1;\n");
+			w.append("\t\tString outStr = \"\";\n");
 			
-			w.append("while((index = inStr.indexOf(\"||\"))>-1)\n");
-			w.append("{\n");
-			w.append("if(startindex == -1){\n");
-			w.append("startindex = 0;\n");
-			w.append("outStr+=inStr.substring(0,index);\n");
-			w.append("}else if(endindex == -1){\n");
-			w.append("endindex = index-1;\n");
-			w.append("String variable = inStr.substring(startindex, endindex).trim();\n");
-			w.append("outStr = substituteString(variable,outStr);\n");
+			w.append("\t\twhile((index = inStr.indexOf(\"||\"))>-1)\n");
+			w.append("\t\t{\n");
+			w.append("\t\t\tif(startindex == -1){\n");
+			w.append("\t\t\t\tstartindex = 0;\n");
+			w.append("\t\t\t\toutStr+=inStr.substring(0,index);\n");
+			w.append("\t\t\t}else if(endindex == -1){\n");
+			w.append("\t\t\t\tendindex = index-1;\n");
+			w.append("\t\t\t\tString variable = inStr.substring(startindex, endindex).trim();\n");
+			w.append("\t\t\t\toutStr = substituteString(variable,outStr);\n");
 			
-			w.append("startindex = -1;\n");
-			w.append("endindex = -1;\n");
-			w.append("}\n");
-			w.append("inStr = inStr.substring(index+2);\n");
-			w.append("}\n");
-			w.append("outStr+=inStr;\n");
-			w.append("return outStr;\n");
-			w.append("}\n");
+			w.append("\t\t\t\tstartindex = -1;\n");
+			w.append("\t\t\t\tendindex = -1;\n");
+			w.append("\t\t\t}\n");
+			w.append("\t\t\tinStr = inStr.substring(index+2);\n");
+			w.append("\t\t}\n");
+			w.append("\t\toutStr+=inStr;\n");
+			w.append("\t\treturn outStr;\n");
+			w.append("\t}\n");
 			
 			w.flush();
 		}
@@ -286,6 +286,7 @@ public class MLMObject {
 			w.append("\t\t\t\tuserVarMap.put(\"gender\",\"her\");\n");
 			w.append("\t\t\t\tuserVarMap.put(\"hisher\",\"her\");\n");
 			w.append("\t\t\t}\n");
+			w.append("\t\t\tLogicService logicService = Context.getLogicService();\n");
 			
 			w.append("\t\t\tinitAction();\n");
 			/***************************************************************************************
@@ -388,7 +389,7 @@ public class MLMObject {
 				
 			}
 			if (!skipReturn) {
-				w.append("\treturn false;");
+				w.append("\t\treturn false;\n");
 			}
 			
 			w.append("\t}");

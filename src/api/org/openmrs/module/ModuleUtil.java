@@ -339,6 +339,7 @@ public class ModuleUtil {
 	 *         numerically less than the argument <code>value</code>; and a value greater than
 	 *         <code>0</code> if <code>version</code> is numerically greater than the argument
 	 *         <code>value</code>
+	 * @should correctly comparing two version number
 	 */
 	public static int compareVersion(String version, String value) {
 		try {
@@ -392,7 +393,7 @@ public class ModuleUtil {
 		// try to load the repository folder straight away.
 		File folder = new File(folderName);
 		
-		// if the property wasn't a full path already, assume it was intended to be a folder in the 
+		// if the property wasn't a full path already, assume it was intended to be a folder in the
 		// application directory
 		if (!folder.exists()) {
 			folder = new File(OpenmrsUtil.getApplicationDataDirectory(), folderName);
@@ -435,7 +436,7 @@ public class ModuleUtil {
 	}
 	
 	/**
-	 * Expand the given <code>fileToExpand</code> jar to the <code>tmpModuleFile<code> directory 
+	 * Expand the given <code>fileToExpand</code> jar to the <code>tmpModuleFile<code> directory
 	 * 
 	 * If <code>name</code> is null, the entire jar is expanded. If<code>name</code> is not null,
 	 * then only that path/file is expanded.
@@ -627,7 +628,7 @@ public class ModuleUtil {
 					if (content.equals(""))
 						continue;
 					
-					// process and parse the contents 
+					// process and parse the contents
 					UpdateFileParser parser = new UpdateFileParser(content);
 					parser.parse();
 					
@@ -860,7 +861,7 @@ public class ModuleUtil {
 	 * path format, i.e. /ui/springmvc, not ui.springmvc) followed by a resource. Something like
 	 * the following:
 	 *   /ui/springmvc/css/ui.css
-	 *   
+	 * 
 	 * The first running module out of the following would be returned:
 	 *   ui.springmvc.css
 	 *   ui.springmvc

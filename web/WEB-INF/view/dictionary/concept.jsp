@@ -292,6 +292,21 @@
                 <td valign="middle">${command.concept.handler}</td>
             </tr>
         </c:if>
+		
+        <c:if test="${command.concept.rule}">
+            <tr>
+                <th valign="top"><spring:message code="ConceptDerived.language" arguments="Rule"/></th>
+                <td valign="middle">${command.language}</td>
+            </tr>
+            <tr>
+                <th valign="top"><spring:message code="ConceptDerived.classname" arguments="Rule"/></th>
+                <td valign="middle">${command.className}</td>
+            </tr>
+            <tr>
+                <th valign="top"><spring:message code="ConceptDerived.definition" arguments="Rule"/></th>
+                <td valign="middle"><div style="width:600px; height:200px; overflow:auto"><pre>${command.definition}</pre></div></td>
+            </tr>
+        </c:if>
 		<tr>
 			<th title="<spring:message code="Concept.version.help"/>"><spring:message code="Concept.version" /></th>
 			<td>

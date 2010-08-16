@@ -398,4 +398,16 @@ public class ModuleUtilTest extends BaseContextSensitiveTest {
 		String requiredOpenmrsVersion = "1.5.0";
 		ModuleUtil.checkRequiredVersion(openmrsVersion, requiredOpenmrsVersion);
     }
+
+	/**
+     * @see {@link ModuleUtil#compareVersion(String,String)}
+     * 
+     */
+    @Test
+    @Verifies(value = "should correctly comparing two version number", method = "compareVersion(String,String)")
+    public void compareVersion_shouldCorrectlyComparingTwoVersionNumber() throws Exception {
+		String olderVersion = "2.1.1";
+		String newerVersion = "2.1.10";
+		ModuleUtil.compareVersion(olderVersion, newerVersion);
+    }
 }
