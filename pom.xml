@@ -544,8 +544,6 @@
 						<doUpdate>false</doUpdate>
 						<getRevisionOnlyOnce>true</getRevisionOnlyOnce>
 						<buildNumberPropertyName>revisionNumber</buildNumberPropertyName>
-						<timestampFormat>{0,date,MMM dd yyyy hh:mm aa}</timestampFormat>
-						<timestampPropertyName>TIMESTAMP</timestampPropertyName>
 						<providerImplementations>
 							<svn>javasvn</svn>
 						</providerImplementations>
@@ -647,6 +645,9 @@
 	</pluginRepositories>
 
    <properties>
+      <maven.build.timestamp.format>MMM dd yyyy hh:mm aa</maven.build.timestamp.format>
+      <TIMESTAMP>${maven.build.timestamp}</TIMESTAMP>
+      
       <openmrs.version.long>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion} ${parsedVersion.qualifier} Build ${revisionNumber}</openmrs.version.long>
       <openmrs.version.short>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}.${revisionNumber}-${parsedVersion.qualifier}</openmrs.version.short>
       <openmrs.version.shortnumericonly>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}.${revisionNumber}</openmrs.version.shortnumericonly>
