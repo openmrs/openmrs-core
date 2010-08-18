@@ -614,7 +614,7 @@
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<configuration>
 					<docfilessubdirs>true</docfilessubdirs>
-					<bottom>&lt;em&gt;&lt;small&gt;NOTE - these libraries are in active
+					<bottom>&lt;em&gt;&lt;small&gt; Generated ${TIMESTAMP} NOTE - these libraries are in active
 						development and subject to change&lt;/small&gt;&lt;/em&gt;</bottom>
 					<header>&lt;a href=&quot;http://www.openmrs.org&quot;
 						target=_top&gt;&lt;img
