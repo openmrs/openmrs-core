@@ -97,7 +97,7 @@
             <version>6.1.10</version>
             <configuration>
                <!--enable reloading static resources -->
-               <webDefaultXml>src/conf/webdefault.xml</webDefaultXml>
+               <webDefaultXml>src/main/resources/webdefault.xml</webDefaultXml>
                <webXml>${build.directory}/WEB-INF/web.xml</webXml>
                <webAppConfig>
                   <contextPath>/openmrs</contextPath>
