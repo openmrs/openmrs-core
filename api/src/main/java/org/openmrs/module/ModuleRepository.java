@@ -65,6 +65,8 @@ public class ModuleRepository {
 	
 	public static final String MODULE_REPOSITORY_CACHE_EXPIRATION = "modulerepository.cacheExpirationInDays";
 	
+	public static final String URL = "http://modules.openmrs.org/modules/getAllModules?openmrsVersion=<VERSION>&lastUpdatedDate=<DATE>";
+	
 	private static String moduleRepositoryUrl = null;
 	
 	private static int noOfModules = 0;
@@ -77,9 +79,9 @@ public class ModuleRepository {
 	 * Ex:-<br>
 	 * <code>ModuleRepository.initialize();</code>
 	 */
-	public static void initialize() {
-		AdministrationService as = Context.getAdministrationService();
+	public static void initialize() {		
 		try {
+			AdministrationService as = Context.getAdministrationService();
 			String url = as.getGlobalProperty(MODULE_REPOSITORY_URL);
 			moduleRepositoryUrl = url;
 			cacheModuleRepository();
@@ -290,7 +292,13 @@ public class ModuleRepository {
 	 * @throws MalformedURLException
 	 */
 	private static URL getURL() throws MalformedURLException {
-		String url = moduleRepositoryUrl.replace("<VERSION>", String.valueOf(OpenmrsConstants.OPENMRS_VERSION_SHORT));
+		String url = "";
+		if(moduleRepositoryUrl==null){
+			url = URL;
+		}else{
+			url = moduleRepositoryUrl;
+		}
+		url = url.replace("<VERSION>", String.valueOf(OpenmrsConstants.OPENMRS_VERSION_SHORT));
 		url = url.replace("<DATE>", formatDate(lastUpdatedDate));
 		return new URL(url);
 	}

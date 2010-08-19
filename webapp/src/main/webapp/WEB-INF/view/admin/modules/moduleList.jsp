@@ -238,17 +238,16 @@
 								<td valign="top"><input type="image" src="${pageContext.request.contextPath}/images/trash.gif" name="unload" id="unload${varStatus.index}" onclick="return confirmation('Unload_Confirm',this.id,this.name);" title="<spring:message code="Module.unload.help"/>" title="<spring:message code="Module.unload"/>" alt="<spring:message code="Module.unload"/>" /></td>
 							</c:when>
 							<c:otherwise>
-								<c:choose>
-									<td valign="top">
+								<td valign="top">
+								<c:choose>									
 										<c:when test="${ module.pendingAction.action != 'none' }">
 											<img src="${pageContext.request.contextPath}/images/pending.png" title="<spring:message code="Module.pending.help"/>" alt="<spring:message code="Module.pending"/>" />
 										</c:when>
 										<c:otherwise>
 											<img src="${pageContext.request.contextPath}/images/lock.gif" title="<spring:message code="Module.locked.help"/>" alt="<spring:message code="Module.locked"/>" />
-										</c:otherwise>										
-									</td>
-								<td></td>
+										</c:otherwise>		
 								</c:choose>
+								</td>
 							</c:otherwise>
 						</c:choose>
 						<td valign="top">${module.name} <c:if test="${not module.started}"><b id="moduleNotStarted" style="white-space: nowrap">[<spring:message code="Module.notStarted"/>]</b></c:if></td>
