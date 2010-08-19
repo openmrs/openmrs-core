@@ -25,10 +25,13 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Patient;
 import org.openmrs.PatientProgram;
 import org.openmrs.Program;
+import org.openmrs.ProgramWorkflow;
+import org.openmrs.ProgramWorkflowState;
 import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.context.Context;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
+import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 import org.springframework.web.servlet.view.RedirectView;
@@ -70,12 +73,28 @@ public class PatientProgramFormController implements Controller {
 		if (!pws.getPatientPrograms(patient, program, null, completionDate, enrollmentDate, null, false).isEmpty())
 			request.getSession().setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Program.error.already");
 		else {
-			PatientProgram pp = new PatientProgram();
-			pp.setPatient(patient);
-			pp.setProgram(program);
-			pp.setDateEnrolled(enrollmentDate);
-			pp.setDateCompleted(completionDate);
-			Context.getProgramWorkflowService().savePatientProgram(pp);
+			if (enrollmentDate == null) {
+				request.getSession().setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Program.error.enrollmentDateRequired");
+			}
+			else {
+				PatientProgram pp = new PatientProgram();
+				pp.setPatient(patient);
+				pp.setProgram(program);
+				pp.setDateEnrolled(enrollmentDate);
+				pp.setDateCompleted(completionDate);
+				
+				// Set any initial states if passed in
+				for (ProgramWorkflow workflow : program.getAllWorkflows()) {
+					String stateIdStr = request.getParameter("initialState." + workflow.getProgramWorkflowId());
+					if (StringUtils.hasText(stateIdStr)) {
+						Integer stateId = Integer.valueOf(stateIdStr);
+						ProgramWorkflowState state = workflow.getState(stateId);
+						log.debug("Transitioning to state: " + state);
+						pp.transitionToState(state, enrollmentDate);
+					}
+				}
+				Context.getProgramWorkflowService().savePatientProgram(pp);
+			}
 		}
 		return new ModelAndView(new RedirectView(returnPage));
 	}

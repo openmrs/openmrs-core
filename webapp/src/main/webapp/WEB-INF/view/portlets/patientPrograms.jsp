@@ -243,12 +243,9 @@
 	
 <c:choose>
 	<c:when test="${fn:length(model.patientPrograms) == 0}">
-		<spring:message code="Program.notEnrolledInAny"/>
+		<spring:message code="Program.notEnrolledInAny"/><br/><br/>
 	</c:when>
 	<c:otherwise>
-
-
-
 
 		<table width="100%" border="0">
 			<tr bgcolor="whitesmoke">
@@ -326,36 +323,100 @@
 			</c:forEach>
 	</c:otherwise>
 </c:choose>
-			
-<c:if test="${model.allowEdits == 'true' && fn:length(model.programs) > 0}">
-	<openmrs:hasPrivilege privilege="Edit Patient Programs">
-		<form method="post" action="${pageContext.request.contextPath}/admin/programs/patientProgram.form">
-			<input type="hidden" name="method" value="enroll"/>
-			<input type="hidden" name="patientId" value="${model.patientId}"/>
-			<input type="hidden" name="returnPage" value="${pageContext.request.contextPath}/patientDashboard.form?patientId=${model.patientId}"/>
-			<tr style="border-top: 1px solid black;">		
+
+</table>
+
+<script type="text/javascript">
+	$j(document).ready(function() {
+
+		$j('#addProgramLink').click(function(event){ 
+			$j('#enrollInProgramDialog').dialog('open');
+		});
+
+		$j('#programSelector').change(function(event){
+			$j(".workflowSection").hide();
+			$j("#initialStateSection").hide();
+			var pId = $j(this).val();
+			if (pId && pId != null && pId != '') {
+				$j("#initialStateSection").show();
+				$j("#workflowSection"+pId).show();
+			}
+		});
+		
+		$j('#enrollInProgramDialog').dialog({
+			position: 'top',
+			autoOpen: false,
+			modal: true,
+			title: '<spring:message code="Program.add" javaScriptEscape="true"/>',
+			width: '90%',
+			zIndex: 100,
+			buttons: { '<spring:message code="Program.enrollButton"/>': function() { handleEnrollInProgram(); },
+					   '<spring:message code="general.cancel"/>': function() { $j(this).dialog("close"); }
+			}
+		});
+	});
+
+	function handleEnrollInProgram() {
+		$j('#enrollForm').submit();
+	}
+</script>
+
+<div id="enrollInProgramDialog" style="display:none;">
+	<br/>
+	<div id="enrollError" class="error" style="display:none;"></div>
+	<form id="enrollForm" name="enrollForm" method="post" action="${pageContext.request.contextPath}/admin/programs/patientProgram.form">
+		<input type="hidden" name="method" value="enroll"/>
+		<input type="hidden" name="patientId" value="${model.patientId}"/>
+		<input type="hidden" name="returnPage" value="${pageContext.request.contextPath}/patientDashboard.form?patientId=${model.patientId}"/>
+		<table style="margin: 0px 0px 1em 2em;">
+			<tr>
+				<td nowrap><spring:message code="Program.program" javaScriptEscape="true"/>:</td>
 				<td>
-					<!--<spring:message code="Program.enrollIn"/>-->
-					<select name="programId" onChange="document.getElementById('enrollSubmitButton').disabled = (this.selectedIndex == 0)">
+					<select id="programSelector" name="programId">
 						<option value=""><spring:message code="Program.choose"/></option>
 						<c:forEach var="program" items="${model.programs}">
 							<c:if test="${!program.retired}">
-							  <option value="${program.programId}"><openmrs_tag:concept conceptId="${program.concept.conceptId}"/></option>
+							  <option id="programOption${program.programId}" value="${program.programId}"><openmrs_tag:concept conceptId="${program.concept.conceptId}"/></option>
 							</c:if>
 						</c:forEach>
 					</select>
 				</td>
-				<td align="center">				
-					<!--<spring:message code="general.onDate"/>-->
-					<input type="text" id="programDateEnrolled" name="dateEnrolled" size="10" onClick="showCalendar(this)" />
-				</td>
-				<td align="center">								
-					<input id="enrollSubmitButton" type="submit" value="<spring:message code="Program.enrollButton"/>" disabled="true"/>
+			</tr>
+			<tr>
+				<td nowrap><spring:message code="Program.dateEnrolled"/>:</td>
+				<td><openmrs_tag:dateField formFieldName="dateEnrolled" startValue="" /></td>
+			</tr>
+			<tr><td colspan="2">&nbsp;</td></tr>
+			<tr id="initialStateSection" style="display:none;">
+				<td valign="top"><spring:message code="Program.initialStates"/><br/>(<spring:message code="general.optional"/>)</td>
+				<td>
+					<c:forEach items="${model.programs}" var="p">
+						<table id="workflowSection${p.programId}" style="display:none;" class="workflowSection">
+							<c:forEach items="${p.allWorkflows}" var="wf">
+								<tr>
+									<th align="left"><openmrs_tag:concept conceptId="${wf.concept.conceptId}"/></th>
+									<td>
+										<select name="initialState.${wf.programWorkflowId}">
+											<option value=""></option>
+											<c:forEach items="${wf.sortedStates}" var="wfState">
+												<c:if test="${empty wfState.initial || wfState.initial}">
+													<option value="${wfState.programWorkflowStateId}"><openmrs_tag:concept conceptId="${wfState.concept.conceptId}"/></option>
+												</c:if>
+											</c:forEach>
+										</select>
+									</td>
+								</tr>
+							</c:forEach>
+						</table>
+					</c:forEach>
 				</td>
 			</tr>
-		</form>
-	</openmrs:hasPrivilege>
-</c:if>			
+		</table>
+	</form>
+</div>
 			
-		</table>			
-
+<c:if test="${model.allowEdits == 'true' && fn:length(model.programs) > 0}">
+	<openmrs:hasPrivilege privilege="Edit Patient Programs">
+		<a href="#" id="addProgramLink"><spring:message code="Program.add"/></a>
+	</openmrs:hasPrivilege>
+</c:if>
