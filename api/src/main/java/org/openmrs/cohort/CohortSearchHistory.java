@@ -278,17 +278,19 @@ public class CohortSearchHistory extends AbstractReportObject {
 	public Cohort getPatientSet(int i, boolean useCache, EvaluationContext context) {
 		checkArrayLengths();
 		Cohort ret = null;
-		if (useCache) {
-			ret = cachedResults.get(i);
-		}
-		if (ret == null) {
-			ensureCachedFilter(i);
-			PatientFilter pf = cachedFilters.get(i);
-			Cohort everyone = Context.getPatientSetService().getAllPatients();
-			ret = pf.filter(everyone, context);
-			cachedFilters.set(i, pf);
-			cachedResults.set(i, ret);
-			cachedResultDates.set(i, new Date());
+		synchronized(this) {
+			if (useCache) {
+				ret = cachedResults.get(i);
+			}
+			if (ret == null) {
+				ensureCachedFilter(i);
+				PatientFilter pf = cachedFilters.get(i);
+				Cohort everyone = Context.getPatientSetService().getAllPatients();
+				ret = pf.filter(everyone, context);
+				cachedFilters.set(i, pf);
+				cachedResults.set(i, ret);
+				cachedResultDates.set(i, new Date());
+			}
 		}
 		return ret;
 	}
