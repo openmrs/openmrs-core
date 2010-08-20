@@ -1169,6 +1169,16 @@
 		<rtexprvalue>true</rtexprvalue>
 	</attribute>
 	<attribute>
+		<name>programId</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>program</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
 		<description>Specifies whether JavaScript special characters (if any present) should be escaped in the output text</description>
 		<name>javaScriptEscape</name>
 		<required>false</required>
