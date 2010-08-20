@@ -3702,4 +3702,10 @@
 			<column name="family_name2" />
 		</createIndex>
 	</changeSet>
+	
+	<changeSet id="201008201345" author="mseaton">			
+		<comment>Validates Program Workflow States for possible configuration problems and reports warnings</comment>
+		<customChange class="org.openmrs.util.databasechange.ProgramValidatorChangeSet"/>				
+	</changeSet>
+	
 </databaseChangeLog>
