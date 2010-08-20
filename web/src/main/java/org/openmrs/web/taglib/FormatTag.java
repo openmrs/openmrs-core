@@ -28,6 +28,7 @@ import org.openmrs.LocationTag;
 import org.openmrs.Obs;
 import org.openmrs.OpenmrsMetadata;
 import org.openmrs.Person;
+import org.openmrs.Program;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.springframework.util.StringUtils;
@@ -78,6 +79,10 @@ public class FormatTag extends TagSupport {
 	
 	private LocationTag locationTag;
 	
+	private Integer programId;
+	
+	private Program program;
+	
 	private Boolean javaScriptEscape = Boolean.FALSE;
 	
 	@Override
@@ -86,8 +91,7 @@ public class FormatTag extends TagSupport {
 		if (conceptId != null)
 			concept = Context.getConceptService().getConcept(conceptId);
 		if (concept != null) {
-			if (concept.getName() != null)
-				sb.append(concept.getName().getName());
+			printConcept(sb, concept);
 		}
 		
 		if (obsValue != null)
@@ -133,6 +137,17 @@ public class FormatTag extends TagSupport {
 			printMetadata(sb, locationTag);
 		}
 		
+		if (programId != null)
+			program = Context.getProgramWorkflowService().getProgram(programId);
+		if (program != null) {
+			if (StringUtils.hasText(program.getName())) {
+				printMetadata(sb, program);
+			}
+			else if (program.getConcept() != null) {
+				printConcept(sb, program.getConcept());
+			}
+		}
+		
 		if (StringUtils.hasText(var)) {
 			if (javaScriptEscape)
 				pageContext.setAttribute(var, JavaScriptUtils.javaScriptEscape(sb.toString()));
@@ -150,6 +165,15 @@ public class FormatTag extends TagSupport {
 			}
 		}
 		return SKIP_BODY;
+	}
+	
+	/**
+	 * Formats a Concept and prints it to sb
+	 * @param sb
+	 * @param concept
+	 */
+	protected void printConcept(StringBuilder sb, Concept concept) {
+		sb.append(concept.getDisplayString());
 	}
 	
 	/**
@@ -331,6 +355,22 @@ public class FormatTag extends TagSupport {
 		this.locationTag = locationTag;
 	}
 	
+	public Integer getProgramId() {
+		return programId;
+	}
+
+	public void setProgramId(Integer programId) {
+		this.programId = programId;
+	}
+
+	public Program getProgram() {
+		return program;
+	}
+
+	public void setProgram(Program program) {
+		this.program = program;
+	}
+
 	public String getVar() {
 		return var;
 	}

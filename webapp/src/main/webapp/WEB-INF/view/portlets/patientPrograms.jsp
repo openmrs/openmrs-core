@@ -267,7 +267,7 @@
 								<small><i>[<spring:message code="Program.completed"/>]</i></small>
 							</c:if>
 							<a href="javascript:showEditPatientProgramPopup(${program.patientProgramId})">
-							<openmrs_tag:concept conceptId="${program.program.concept.conceptId}"/>
+							<openmrs:format program="${program.program}"/>
 							</a>
 						</td>
 						<td align="left" valign="top">
@@ -290,7 +290,7 @@
 									<tr>
 										<td style="" valign="top">
 										
-											<small><openmrs_tag:concept conceptId="${workflow.concept.conceptId}"/>:</small>
+											<small><openmrs:format concept="${workflow.concept}"/>:</small>
 											<br/>
 											
 											<c:set var="stateId" value="" />
@@ -303,7 +303,7 @@
 											</c:forEach>
 											<c:choose>
 												<c:when test="${not empty stateId}">
-													<b><openmrs_tag:concept conceptId="${stateId}"/></b>
+													<b><openmrs:format conceptId="${stateId}"/></b>
 													<i>(<spring:message code="general.since" /> 
 													<openmrs:formatDate date="${stateStart}" type="medium" />)</i>
 												</c:when>
@@ -376,7 +376,7 @@
 						<option value=""><spring:message code="Program.choose"/></option>
 						<c:forEach var="program" items="${model.programs}">
 							<c:if test="${!program.retired}">
-							  <option id="programOption${program.programId}" value="${program.programId}"><openmrs_tag:concept conceptId="${program.concept.conceptId}"/></option>
+							  <option id="programOption${program.programId}" value="${program.programId}"><openmrs:format program="${program}"/></option>
 							</c:if>
 						</c:forEach>
 					</select>
@@ -394,13 +394,13 @@
 						<table id="workflowSection${p.programId}" style="display:none;" class="workflowSection">
 							<c:forEach items="${p.allWorkflows}" var="wf">
 								<tr>
-									<th align="left"><openmrs_tag:concept conceptId="${wf.concept.conceptId}"/></th>
+									<th align="left"><openmrs:format concept="${wf.concept}"/></th>
 									<td>
 										<select name="initialState.${wf.programWorkflowId}">
 											<option value=""></option>
 											<c:forEach items="${wf.sortedStates}" var="wfState">
 												<c:if test="${wfState.initial}">
-													<option value="${wfState.programWorkflowStateId}"><openmrs_tag:concept conceptId="${wfState.concept.conceptId}"/></option>
+													<option value="${wfState.programWorkflowStateId}"><openmrs:format concept="${wfState.concept}"/></option>
 												</c:if>
 											</c:forEach>
 										</select>
