@@ -52,7 +52,7 @@
                <include>WEB-INF/web.xml</include>
             </includes>
             <filtering>true</filtering>
-            <targetPath>${build.directory}</targetPath>
+            <targetPath>../jetty</targetPath>
          </resource>
       </resources>
       <plugins>
@@ -96,7 +96,7 @@
             <artifactId>maven-jetty-plugin</artifactId>
             <version>6.1.10</version>
             <configuration>
-               <webXml>${build.directory}/WEB-INF/web.xml</webXml>
+               <webXml>${build.directory}/jetty/WEB-INF/web.xml</webXml>
                <webAppConfig>
                   <contextPath>/openmrs</contextPath>
                   <!--enable reloading static resources -->
@@ -125,7 +125,7 @@
                   <artifactId>maven-jetty-plugin</artifactId>
                   <version>6.1.10</version>
                   <configuration>
-                     <webXml>${build.directory}/WEB-INF/web.xml</webXml>
+                     <webXml>${build.directory}/jetty/WEB-INF/web.xml</webXml>
                      <webAppConfig>
                         <contextPath>/openmrs</contextPath>
                         <!--enable reloading static resources -->
