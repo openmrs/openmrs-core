@@ -13,10 +13,8 @@
  */
 package org.openmrs.api.db.hibernate;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Collection;
@@ -41,6 +39,7 @@ import org.openmrs.api.db.DAOException;
 import org.openmrs.reporting.AbstractReportObject;
 import org.openmrs.reporting.Report;
 import org.openmrs.reporting.ReportObjectWrapper;
+import org.openmrs.util.DatabaseUtil;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
@@ -306,68 +305,14 @@ public class HibernateAdministrationDAO implements AdministrationDAO {
 	 * @see org.openmrs.api.db.AdministrationDAO#executeSQL(java.lang.String, boolean)
 	 */
 	public List<List<Object>> executeSQL(String sql, boolean selectOnly) throws DAOException {
-		sql = sql.trim();
-		boolean dataManipulation = false;
-		
-		String sqlLower = sql.toLowerCase();
-		if (sqlLower.startsWith("insert") || sqlLower.startsWith("update") || sqlLower.startsWith("delete")
-		        || sqlLower.startsWith("alter") || sqlLower.startsWith("drop") || sqlLower.startsWith("create")
-		        || sqlLower.startsWith("rename")) {
-			dataManipulation = true;
-		}
-		
-		if (selectOnly && dataManipulation)
-			throw new DAOException("Illegal command(s) found in query string");
 		
 		// (solution for junit tests that usually use hsql
 		// hsql does not like the backtick.  Replace the backtick with the hsql
 		// escape character: the double quote (or nothing).
-		if (HibernateUtil.isHSQLDialect(sessionFactory))
+		if (HibernateUtil.isHSQLDialect(sessionFactory)) {
 			sql = sql.replace("`", "");
-		
-		Connection conn = sessionFactory.getCurrentSession().connection();
-		PreparedStatement ps = null;
-		List<List<Object>> results = new Vector<List<Object>>();
-		
-		try {
-			ps = conn.prepareStatement(sql);
-			
-			if (dataManipulation == true) {
-				Integer i = ps.executeUpdate();
-				List<Object> row = new Vector<Object>();
-				row.add(i);
-				results.add(row);
-			} else {
-				ResultSet resultSet = ps.executeQuery();
-				
-				ResultSetMetaData rmd = resultSet.getMetaData();
-				int columnCount = rmd.getColumnCount();
-				
-				while (resultSet.next()) {
-					List<Object> rowObjects = new Vector<Object>();
-					for (int x = 1; x <= columnCount; x++) {
-						rowObjects.add(resultSet.getObject(x));
-					}
-					results.add(rowObjects);
-				}
-			}
 		}
-		catch (Exception e) {
-			log.debug("Error while running sql: " + sql, e);
-			throw new DAOException("Error while running sql: " + sql + " . Message: " + e.getMessage(), e);
-		}
-		finally {
-			if (ps != null) {
-				try {
-					ps.close();
-				}
-				catch (SQLException e) {
-					log.error("Error generated while closing statement", e);
-				}
-			}
-		}
-		
-		return results;
+		return DatabaseUtil.executeSQL(sessionFactory.getCurrentSession().connection(), sql, selectOnly);
 	}
 	
 }
