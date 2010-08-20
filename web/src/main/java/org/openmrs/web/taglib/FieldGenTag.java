@@ -63,6 +63,8 @@ public class FieldGenTag extends TagSupport {
 	// should not be reset each time
 	private FieldGenHandlerFactory factory = null;
 	
+	private Map<String, FieldGenHandler> fieldGenHandlerCache = new HashMap<String, FieldGenHandler>();
+	
 	//private String fieldLength;
 	//private String forceInputType;
 	//private String isNullable;
@@ -421,6 +423,11 @@ public class FieldGenTag extends TagSupport {
 	}
 	
 	public FieldGenHandler getHandlerByClassName(String className) {
+		FieldGenHandler cacheHit = fieldGenHandlerCache.get(className);
+//		if (cacheHit != null) {
+//			return cacheHit;
+//		}
+		
 		String handlerClassName = null;
 		
 		try {
@@ -452,6 +459,7 @@ public class FieldGenTag extends TagSupport {
 					Class<?> cls = Context.loadClass(handlerClassName);
 					Constructor<?> ct = cls.getConstructor();
 					FieldGenHandler handler = (FieldGenHandler) ct.newInstance();
+					fieldGenHandlerCache.put(className, handler);
 					return handler;
 				}
 				catch (Exception e) {
