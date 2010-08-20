@@ -422,8 +422,6 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		List<ConceptWord> words = Context.getConceptService().getConceptWords("cd4",
 		    Collections.singletonList(Locale.ENGLISH), false, null, null, null, null, null, null, null);
 		Assert.assertEquals(1847, words.get(0).getConceptName().getConceptNameId().intValue());
-		
-		TestUtil.printOutTableContents(getConnection(), "concept_word");
 	}
 	
 	/**

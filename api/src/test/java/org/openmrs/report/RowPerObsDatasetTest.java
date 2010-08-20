@@ -88,7 +88,7 @@ public class RowPerObsDatasetTest extends BaseContextSensitiveTest {
 		XMLAssert.assertXpathEvaluatesTo("5089", "//reportSchema/dataSets/dataSetDefinition/questions/concept/@conceptId",
 		    xmlOutput);
 		
-		log.error("xmlOutput: " + xmlOutput);
+		//log.error("xmlOutput: " + xmlOutput);
 		
 		rs = serializer.read(ReportSchema.class, xmlOutput);
 		assertEquals("Testing row-per-obs", rs.getName());
