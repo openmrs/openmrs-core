@@ -13,73 +13,63 @@
  */
 package org.openmrs.web.controller.user;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Vector;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Role;
 import org.openmrs.User;
-import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
-import org.springframework.beans.propertyeditors.CustomNumberEditor;
-import org.springframework.validation.BindException;
-import org.springframework.web.bind.ServletRequestDataBinder;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.SimpleFormController;
-import org.springframework.web.servlet.view.RedirectView;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
-public class UserListController extends SimpleFormController {
+@Controller
+public class UserListController {
 	
 	/** Logger for this class and subclasses */
 	protected final Log log = LogFactory.getLog(getClass());
 	
 	/**
-	 * Allows for Integers to be used as values in input tags. Normally, only strings and lists are
-	 * expected
-	 * 
-	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest,
-	 *      org.springframework.web.bind.ServletRequestDataBinder)
+	 * @should get users just given action parameter
+	 * @should get all users if no name given
+	 * @should get users with a given role
+	 * @should include disabled users if requested
 	 */
-	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
-		super.initBinder(request, binder);
-		binder.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, true));
-	}
-	
-	/**
-	 * The onSubmit function receives the form/command object that was modified by the input form
-	 * and saves it to the db
-	 * 
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
-	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
-	 *      org.springframework.validation.BindException)
-	 */
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
-	                                BindException errors) throws Exception {
-		return new ModelAndView(new RedirectView(getSuccessView()));
-	}
-	
-	/**
-	 * This is called prior to displaying a form for the first time. It tells Spring the
-	 * form/command object to load into the request
-	 * 
-	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
-	 */
-	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
+	@RequestMapping(value = "/admin/users/users")
+	public void displayUsers(ModelMap model, 
+			@RequestParam(value="action", required=false) String action, 
+			@RequestParam(value="name", required=false) String name,
+			@RequestParam(value="role", required=false) Role role,
+			@RequestParam(value="includeDisabled", required=false) Boolean includeDisabled) throws Exception {
 		
-		//default empty Object
-		List<User> userList = new Vector<User>();
-		
-		//only fill the Object is the user has authenticated properly
 		if (Context.isAuthenticated()) {
-			//UserService us = Context.getUserService();
-			//userList = us.getAllUsers();
+			List<User> users = getUsers(action, name, role, includeDisabled);
+			model.put("users", users);
+		}
+	}
+	
+	protected List<User> getUsers(String action, String name, Role role, Boolean includeDisabled) {
+		// only do the search if there are search parameters or 
+		if (action !=null || StringUtils.hasText(name) || role != null) {
+			if (includeDisabled == null)
+				includeDisabled = false;
+			List<Role> roles = null;
+			if (role != null && StringUtils.hasText(role.getRole()))
+				roles = Collections.singletonList(role);
+			
+			if (!StringUtils.hasText(name))
+				name = null;
+			
+			return  Context.getUserService().getUsers(name, roles, includeDisabled);
 		}
 		
-		return userList;
+		return new ArrayList<User>();
+		
 	}
 	
 }

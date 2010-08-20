@@ -143,7 +143,6 @@
 				<prop key="admin/observations/obs.form">obsForm</prop>
 				<prop key="admin/observations/personObs.form">personObsForm</prop>
 
-				<prop key="admin/users/user.list">userList</prop>
 				<prop key="admin/users/role.list">roleList</prop>
 				<prop key="admin/users/role.form">roleForm</prop>
 				<prop key="admin/users/alert.list">alertList</prop>
@@ -484,14 +483,6 @@
 	<!-- ======  User Sector  ====== -->
 	<!-- =========================== -->
 
-	<!-- ** User ** -->
-	<bean id="userList" class="org.openmrs.web.controller.user.UserListController">
-		<property name="sessionForm"><value>true</value></property>
-		<property name="commandName"><value>userList</value></property>
-		<property name="formView"><value>/admin/users/userList</value></property>
-		<property name="successView"><value>user.list</value></property>
-	</bean>
-	<!-- ** /User ** -->
 	<!-- ** Role  ** -->
 	<bean id="roleList" class="org.openmrs.web.controller.user.RoleListController">
 		<property name="sessionForm"><value>true</value></property>
