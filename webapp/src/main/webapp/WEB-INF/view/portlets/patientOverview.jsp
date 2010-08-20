@@ -3,6 +3,7 @@
 <openmrs:htmlInclude file="/dwr/interface/DWRRelationshipService.js" />
 <openmrs:htmlInclude file="/dwr/interface/DWRPatientService.js" />
 <openmrs:htmlInclude file="/dwr/interface/DWRObsService.js" />
+<openmrs:htmlInclude file="/dwr/interface/DWRConceptService.js" />
 <openmrs:htmlInclude file="/dwr/engine.js" />
 <openmrs:htmlInclude file="/dwr/util.js" />
 
