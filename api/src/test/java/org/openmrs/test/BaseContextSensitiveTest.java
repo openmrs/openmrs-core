@@ -58,6 +58,11 @@ import org.dbunit.operation.DatabaseOperation;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Environment;
 import org.hibernate.dialect.H2Dialect;
+import org.hibernate.impl.SessionFactoryImpl;
+import org.hibernate.metadata.ClassMetadata;
+import org.hibernate.metadata.CollectionMetadata;
+import org.hibernate.persister.collection.CollectionPersister;
+import org.hibernate.persister.entity.EntityPersister;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -629,6 +634,29 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		if (Context.isSessionOpen())
 			Context.refreshAuthenticatedUser();
 		
+	}
+	
+	/**
+	 * Method to clear the hibernate cache
+	 */
+	@Before
+	public void clearHibernateCache() {
+		SessionFactory sf = (SessionFactory) applicationContext.getBean("sessionFactory");
+		Map<String, ClassMetadata> classMetadata = sf.getAllClassMetadata();
+		for (ClassMetadata cmd : classMetadata.values()) {
+			EntityPersister ep = ((SessionFactoryImpl) sf).getEntityPersister(cmd.getEntityName());
+			if (ep.hasCache()) {
+				sf.evictEntity(ep.getCache().getRegionName());
+			}
+		}
+		
+		Map<String, CollectionMetadata> collMetadata = sf.getAllCollectionMetadata();
+		for (CollectionMetadata cmd : collMetadata.values()) {
+			CollectionPersister acp = ((SessionFactoryImpl) sf).getCollectionPersister(cmd.getRole());
+			if (acp.hasCache()) {
+				sf.evictCollection(acp.getCache().getRegionName());
+			}
+		}
 	}
 	
 	/**

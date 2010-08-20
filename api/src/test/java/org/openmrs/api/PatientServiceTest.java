@@ -646,7 +646,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should create new patient from existing person plus user object", method = "savePatient(Patient)")
 	public void savePatient_shouldCreateNewPatientFromExistingPersonPlusUserObject() throws Exception {
 		// sanity check, make sure there isn't a 501 patient already
-		Assert.assertNull(patientService.getPatient(501));
+		Patient oldPatient = patientService.getPatient(501);
+		Assert.assertNull(oldPatient);
 		
 		Person existingPerson = Context.getPersonService().getPerson(501); // fetch Bruno from the database
 		Context.clearSession();
@@ -1144,6 +1145,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	public void getPatientByExample_shouldReturnNullWhenNoPatientMatchesGivenPatientToMatch() throws Exception {
 		Patient examplePatient = Context.getPatientService().getPatient(6);
 		examplePatient.setId(3);
+		
+		clearHibernateCache();
 		
 		Patient patient = Context.getPatientService().getPatientByExample(examplePatient);
 		Assert.assertNull(patient);

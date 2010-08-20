@@ -7,7 +7,7 @@
 
 	<class name="Role" table="role" lazy="false">
 
-		<!--  <cache usage="read-write"/> -->
+		<cache usage="read-write"/>
 
 		<id name="role" type="java.lang.String" column="role">
 			<generator class="assigned" />
@@ -26,6 +26,7 @@
 		<!-- bi-directional many-to-many association to Role to create parentRoles-->
 		<set name="inheritedRoles" cascade="none" lazy="false"
 			table="role_role">
+			<cache usage="read-write"/>
 			<key>
 				<column name="child_role" />
 			</key>
@@ -37,6 +38,7 @@
 		<!-- bi-directional many-to-many association to Privilege -->
 		<set name="privileges" cascade="" lazy="false"
 			table="role_privilege">
+			<cache usage="read-write"/>
 			<key>
 				<column name="role" />
 			</key>

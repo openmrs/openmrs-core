@@ -7,6 +7,8 @@
 
 	<class name="GlobalProperty" table="global_property">
 
+        <cache usage="read-write"/>
+
 		<id name="property" type="java.lang.String" column="property" length="255">
 			<generator class="assigned" />
 		</id>
