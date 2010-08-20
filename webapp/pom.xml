@@ -96,11 +96,11 @@
             <artifactId>maven-jetty-plugin</artifactId>
             <version>6.1.10</version>
             <configuration>
-               <!--enable reloading static resources -->
-               <webDefaultXml>src/main/resources/webdefault.xml</webDefaultXml>
                <webXml>${build.directory}/WEB-INF/web.xml</webXml>
                <webAppConfig>
                   <contextPath>/openmrs</contextPath>
+                  <!--enable reloading static resources -->
+                  <overrideDescriptor>src/test/resources/override-web.xml</overrideDescriptor>
                   <extraClasspath>target/classes;../api/target/classes;../web/target/classes</extraClasspath>
                </webAppConfig>
                <scanIntervalSeconds>10</scanIntervalSeconds>
@@ -125,11 +125,11 @@
                   <artifactId>maven-jetty-plugin</artifactId>
                   <version>6.1.10</version>
                   <configuration>
-                     <!--enable reloading static resources -->
-                     <webDefaultXml>src/conf/webdefault.xml</webDefaultXml>
                      <webXml>${build.directory}/WEB-INF/web.xml</webXml>
                      <webAppConfig>
                         <contextPath>/openmrs</contextPath>
+                        <!--enable reloading static resources -->
+                        <overrideDescriptor>src/test/resources/override-web.xml</overrideDescriptor>
                         <extraClasspath>target/classes;../api/target/classes;../web/target/classes</extraClasspath>
                      </webAppConfig>
                   </configuration>
