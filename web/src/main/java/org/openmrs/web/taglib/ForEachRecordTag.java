@@ -88,6 +88,9 @@ public class ForEachRecordTag extends BodyTagSupport {
 		} else if (name.equals("form")) {
 			List<Form> forms = Context.getFormService().getAllForms();
 			records = forms.iterator();
+		} else if (name.equals("role")) {
+			List<Role> roles = Context.getUserService().getAllRoles();
+			records = roles.iterator();
 		} else if (name.equals("civilStatus")) {
 			ConceptService cs = Context.getConceptService();
 			Concept civilStatus = cs.getConcept(OpenmrsConstants.CIVIL_STATUS_CONCEPT_ID);

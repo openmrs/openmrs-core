@@ -276,8 +276,6 @@ public class NewPatientFormControllerTest extends BaseWebContextSensitiveTest {
 		RedirectView redirectView = (RedirectView) modelAndView.getView();
 		assertTrue(redirectView.getUrl().startsWith("patientDashboard.form"));
 		
-		TestUtil.printOutTableContents(getConnection(), "patient_identifier");
-
 		// make sure John's identifier location was modified
 		Patient patient = ps.getPatient(2);
 		assertNotNull(patient);
