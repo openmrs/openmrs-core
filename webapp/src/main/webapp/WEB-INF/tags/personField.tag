@@ -22,7 +22,8 @@
 	dojo.require("dojo.widget.openmrs.PersonSearch");
 	dojo.require("dojo.widget.openmrs.OpenmrsPopup");
 	
-	dojo.addOnLoad( function() {
+	$j(document).ready( function() {
+		
 		dojo.event.topic.subscribe("${formFieldName}_search/select", 
 			function(msg) {
 				if (msg) {
