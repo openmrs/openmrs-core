@@ -424,9 +424,9 @@ public class FieldGenTag extends TagSupport {
 	
 	public FieldGenHandler getHandlerByClassName(String className) {
 		FieldGenHandler cacheHit = fieldGenHandlerCache.get(className);
-//		if (cacheHit != null) {
-//			return cacheHit;
-//		}
+		if (cacheHit != null) {
+			return cacheHit;
+		}
 		
 		String handlerClassName = null;
 		
