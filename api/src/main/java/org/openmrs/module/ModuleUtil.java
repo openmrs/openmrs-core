@@ -37,6 +37,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.GlobalProperty;
@@ -363,8 +364,8 @@ public class ModuleUtil {
 			for (int x = 0; x < versions.size(); x++) {
 				String verNum = versions.get(x).trim();
 				String valNum = values.get(x).trim();
-				Integer ver = new Integer("".equals(verNum) ? "0" : verNum);
-				Integer val = new Integer("".equals(valNum) ? "0" : valNum);
+				Integer ver = NumberUtils.toInt(verNum, 0);
+				Integer val = NumberUtils.toInt(valNum, 0);
 				
 				int ret = ver.compareTo(val);
 				if (ret != 0)
