@@ -34,8 +34,9 @@
 									jQuery("#"+data.executedTasks[i]+"_progressbar").progressbar({ disabled : false});
 									
 								if(jQuery("#"+data.executedTasks[i]+"_progressbar").progressbar("option","value") < 100){
-									//wait for the current progress bar to complete
-									setTimeout(updateSmoothly(data.executedTasks[i], 100), 500);
+									//set to complete status
+									jQuery("#"+data.executedTasks[i]+"_progressbar").progressbar("option", "value", 100);
+									jQuery("#"+data.executedTasks[i]+"_progressPercentage").html("100%");
 								}
 							}													
 						}						
