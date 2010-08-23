@@ -269,8 +269,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 					ps2 = connection.prepareStatement("INSERT INTO concept_derived (concept_id) VALUES (?)");
 					ps2.setInt(1, concept.getConceptId());
 					ps2.executeUpdate();
-				}
-				else {
+				} else {
 					if (!concept.isRule()) {
 						ps2 = connection.prepareStatement("DELETE FROM concept_derived WHERE concept_id = ?");
 						ps2.setInt(1, concept.getConceptId());
@@ -1193,22 +1192,28 @@ public class HibernateConceptDAO implements ConceptDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.ConceptDAO#getConceptByMapping(java.lang.String, java.lang.String)
+	 * @see org.openmrs.api.db.ConceptDAO#getConceptsByMapping(java.lang.String, java.lang.String)
 	 */
-	public Concept getConceptByMapping(String conceptCode, String mappingCode) {
+	@SuppressWarnings("unchecked")
+	public List<Concept> getConceptsByMapping(String conceptCode, String mappingCode) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ConceptMap.class);
 		
-		// select the concept as the return value
-		criteria.setProjection(Projections.property("concept"));
+		// make this criteria return a list of distinct concepts
+		criteria.setProjection(Projections.distinct(Projections.property("concept")));
 		
+		// match the source code to the passed code
 		criteria.add(Expression.eq("sourceCode", conceptCode));
 		
-		// join to conceptSource and match to the hl7Code or name
+		// join to conceptSource and match to the h17Code or source name
 		criteria.createAlias("source", "conceptSource");
 		criteria.add(Expression.or(Expression.eq("conceptSource.name", mappingCode), Expression.eq("conceptSource.hl7Code",
 		    mappingCode)));
 		
-		return (Concept) criteria.uniqueResult();
+		// ignore voided concepts
+		criteria.createAlias("concept", "concept");
+		criteria.add(Expression.eq("concept.retired", false));
+		
+		return (List<Concept>) criteria.list();
 	}
 	
 	/**

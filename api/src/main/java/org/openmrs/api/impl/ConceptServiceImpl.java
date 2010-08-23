@@ -1456,7 +1456,21 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 * @see org.openmrs.api.ConceptService#getConceptByMapping(java.lang.String, java.lang.String)
 	 */
 	public Concept getConceptByMapping(String conceptCode, String mappingCode) throws APIException {
-		return dao.getConceptByMapping(conceptCode, mappingCode);
+		List<Concept> concepts = getConceptsByMapping(conceptCode, mappingCode);
+		if (concepts.size() == 0) {
+			return null;
+		} else if (concepts.size() == 1) {
+			return concepts.get(0);
+		} else {
+			throw new APIException("Mulitple concepts found for mapping " + mappingCode + " from source " + conceptCode);
+		}
+	}
+	
+	/**
+	 * @see org.openmrs.api.ConceptService@getConceptsByMapping(java.lang.String, java.lang.String
+	 */
+	public List<Concept> getConceptsByMapping(String conceptCode, String mappingCode) throws APIException {
+		return dao.getConceptsByMapping(conceptCode, mappingCode);
 	}
 	
 	/**
@@ -1511,6 +1525,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	public List<String> getSupportedConceptDerivedLanguages() {
 		return Arrays.asList("Arden", "Java");
 	}
+	
 	/**
 	 * @see org.openmrs.api.ConceptService#getConceptsByConceptSource(org.openmrs.ConceptSource)
 	 */

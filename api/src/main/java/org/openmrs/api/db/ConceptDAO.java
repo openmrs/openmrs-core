@@ -326,9 +326,9 @@ public interface ConceptDAO {
 	public Iterator<Concept> conceptIterator();
 	
 	/**
-	 * @see org.openmrs.api.ConceptService#getConceptByMapping(java.lang.String, java.lang.String)
+	 * @see org.openmrs.api.ConceptService@getConceptsByMapping(java.lang.String, java.lang.String)
 	 */
-	public Concept getConceptByMapping(String conceptCode, String mappingCode);
+	public List<Concept> getConceptsByMapping(String conceptCode, String mappingCode);
 	
 	/**
 	 * Auto generated method comment
@@ -417,6 +417,7 @@ public interface ConceptDAO {
 	 * @see org.openmrs.api.ConceptService#getConceptDerived(Integer)
 	 */
 	public ConceptDerived getConceptDerived(Integer conceptId);
+	
 	/**
 	 * Gets the value of conceptDatatype currently saved in the database for the given concept,
 	 * bypassing any caches. This is used prior to saving an concept so that we can change the obs

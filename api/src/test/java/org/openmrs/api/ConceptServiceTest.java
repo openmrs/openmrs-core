@@ -74,7 +74,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	protected static final String INITIAL_CONCEPTS_XML = "org/openmrs/api/include/ConceptServiceTest-initialConcepts.xml";
 	
 	protected static final String GET_CONCEPTS_BY_SET_XML = "org/openmrs/api/include/ConceptServiceTest-getConceptsBySet.xml";
-
+	
 	/**
 	 * Run this before each unit test in this class. The "@Before" method in
 	 * {@link BaseContextSensitiveTest} is run right before this method.
@@ -485,8 +485,18 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link ConceptService#getConceptByMapping(String,String)}
 	 */
 	@Test
-	@Verifies(value = "should return null if code does not exist", method = "getConceptByMapping(String,String)")
-	public void getConceptByMapping_shouldReturnNullIfCodeDoesNotExist() throws Exception {
+	@Verifies(value = "should return null if source code does not exist", method = "getConceptByMapping(String,String)")
+	public void getConceptByMapping_shouldReturnNullIfSourceCodeDoesNotExist() throws Exception {
+		Concept concept = conceptService.getConceptByMapping("A random concept code", "A random source code");
+		Assert.assertNull(concept);
+	}
+	
+	/**
+	 * @see {@link ConceptService#getConceptsByMapping(String,String)}
+	 */
+	@Test
+	@Verifies(value = "should return null if no mapping exists", method = "getConceptByMapping(String,String)")
+	public void getConceptByMapping_shouldReturnNullIfNoMappingExists() throws Exception {
 		Concept concept = conceptService.getConceptByMapping("A random concept code", "SSTRM");
 		Assert.assertNull(concept);
 	}
@@ -494,11 +504,64 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @see {@link ConceptService#getConceptByMapping(String,String)}
 	 */
+	@Test(expected = APIException.class)
+	@Verifies(value = "should throw exception if there is more than one non-retired concept associated with the mappingCode", method = "getConceptByMapping(String,String)")
+	public void getConceptByMapping_shouldThrowExceptionIfThereIsMoreThanOneNonVoidedConcept() throws Exception {
+		conceptService.getConceptByMapping("127689", "Some Standardized Terminology");
+	}
+	
+	/**
+	 * @see {@link ConceptService#getConceptByMapping(String,String)}
+	 */
 	@Test
-	@Verifies(value = "should return null if mapping does not exist", method = "getConceptByMapping(String,String)")
-	public void getConceptByMapping_shouldReturnNullIfMappingDoesNotExist() throws Exception {
-		Concept concept = conceptService.getConceptByMapping("WGT234", "A random mapping code");
-		Assert.assertNull(concept);
+	@Verifies(value = "should return non-voided concept if there is a retired and non-retired concept associated with the mappingCode", method = "getConceptByMapping(String,String)")
+	public void getConceptByMapping_shouldReturnNonVoidedConceptIfThereIsARetiredAndNonRetiredConcept() throws Exception {
+		Concept concept = conceptService.getConceptByMapping("766554", "Some Standardized Terminology");
+		Assert.assertEquals(new Concept(16), concept);
+	}
+	
+	/**
+	 * @see {@link ConceptService#getConceptsByMapping(String,String)}
+	 */
+	@Test
+	@Verifies(value = "should get concepts with given code and and source hl7 code", method = "getConceptByMapping(String,String)")
+	public void getConceptsByMapping_shouldGetConceptsWithGivenCodeAndSourceH17Code() throws Exception {
+		List<Concept> concepts = conceptService.getConceptsByMapping("127689", "Some Standardized Terminology");
+		Assert.assertEquals(2, concepts.size());
+		Assert.assertTrue(concepts.contains(new Concept(16)));
+		Assert.assertTrue(concepts.contains(new Concept(6)));
+	}
+	
+	/**
+	 * @see {@link ConceptService#getConceptsByMapping(String,String)}
+	 */
+	@Test
+	@Verifies(value = "should get concepts with given code and source name", method = "getConceptByMapping(String,String)")
+	public void getConceptsByMapping_shouldGetConceptsWithGivenCodeAndSourceName() throws Exception {
+		List<Concept> concepts = conceptService.getConceptsByMapping("127689", "SSTRM");
+		Assert.assertEquals(2, concepts.size());
+		Assert.assertTrue(concepts.contains(new Concept(16)));
+		Assert.assertTrue(concepts.contains(new Concept(6)));
+	}
+	
+	/**
+	 * @see {@link ConceptService#getConceptsByMapping(String,String)}
+	 */
+	@Test
+	@Verifies(value = "should return empty list if code does not exist", method = "getConceptByMapping(String,String)")
+	public void getConceptsByMapping_shouldReturnEmptyListIfSourceCodeDoesNotExist() throws Exception {
+		List<Concept> concept = conceptService.getConceptsByMapping("A random concept code", "A random source code");
+		Assert.assertTrue(concept.isEmpty());
+	}
+	
+	/**
+	 * @see {@link ConceptService#getConceptsByMapping(String,String)}
+	 */
+	@Test
+	@Verifies(value = "should return empty list if no mappings exist", method = "getConceptByMapping(String,String)")
+	public void getConceptsByMapping_shouldReturnEmptyListIfNoMappingsExist() throws Exception {
+		List<Concept> concept = conceptService.getConceptsByMapping("A random concept code", "SSTRM");
+		Assert.assertTrue(concept.isEmpty());
 	}
 	
 	/**
@@ -998,7 +1061,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals("Example of not parse-able arden", conceptDerived.getRuleContent());
 		Assert.assertEquals("Arden", conceptDerived.getLanguage());
 	}
-
+	
 	/**
 	 * @throws Exception to be asserted on
 	 * @verifies {@link ConceptService#saveConcept(Concept)} test = should update a Concept if

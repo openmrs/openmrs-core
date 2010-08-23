@@ -46,16 +46,20 @@ import org.springframework.transaction.annotation.Transactional;
  * To get a list of concepts:
  * 
  * <pre>
+ * 
  * List&lt;Concept&gt; concepts = Context.getConceptService().getAllConcepts();
  * </pre>
+ * 
  * To get a single concept:
  * 
  * <pre>
- *   // if there is a concept row in the database with concept_id = 3845
- *   Concept concept = Context.getConceptService().getConcept(3845);
  * 
- *   String name = concept.getPreferredName(Context.getLocale()).getName();
+ * // if there is a concept row in the database with concept_id = 3845
+ * Concept concept = Context.getConceptService().getConcept(3845);
+ * 
+ * String name = concept.getPreferredName(Context.getLocale()).getName();
  * </pre>
+ * 
  * To save a concept to the database
  * 
  * <pre>
@@ -1287,7 +1291,9 @@ public interface ConceptService extends OpenmrsService {
 	 * Looks up a concept via {@link ConceptMap} This will return the {@link Concept} which contains
 	 * a {@link ConceptMap} entry whose <code>sourceCode</code> is equal to the passed
 	 * <code>conceptCode</code> and whose {@link ConceptSource} has either a <code>name</code> or
-	 * <code>hl7Code</code> that is equal to the passed <code>mappingCode</code>
+	 * <code>hl7Code</code> that is equal to the passed <code>mappingCode</code>. Operates under the
+	 * assumption that each mappingCode in a {@link ConceptSource} references one and only one
+	 * non-voided {@link Concept}.
 	 * 
 	 * @param conceptCode the code associated with a concept within a given {@link ConceptSource}
 	 * @param mappingCode the name or hl7Code of the {@link ConceptSource} to check
@@ -1295,12 +1301,35 @@ public interface ConceptService extends OpenmrsService {
 	 * @throws APIException
 	 * @should get concept with given code and and source hl7 code
 	 * @should get concept with given code and source name
-	 * @should return null if code does not exist
+	 * @should return null if source code does not exist
 	 * @should return null if mapping does not exist
+	 * @should throw exception if there is more than one non-voided concept associated with the
+	 *         mappingCode
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
 	public Concept getConceptByMapping(String conceptCode, String mappingCode) throws APIException;
+	
+	/**
+	 * Looks up a concept via {@link ConceptMap} This will return the list of non-voided
+	 * {@link Concept}s which contain a {@link ConceptMap} entry whose <code>sourceCode</code> is
+	 * equal to the passed <code>conceptCode</code> and whose {@link ConceptSource} has either a
+	 * <code>name</code> or <code>hl7Code</code> that is equal to the passed
+	 * <code>mappingCode</code>
+	 * 
+	 * @param conceptCode the code associated with a concept within a given {@link ConceptSource}
+	 * @param mappingCode the name or hl7Code of the {@link ConceptSource} to check
+	 * @return the list of non-voided {@link Concept}s that has the given mapping, or null if no
+	 *         {@link Concept} found
+	 * @throws APIException
+	 * @should get concepts with given code and and source hl7 code
+	 * @should get concepts with given code and source name
+	 * @should return empty list if source code does not exist
+	 * @should return empty list if mapping does not exist
+	 */
+	@Transactional(readOnly = true)
+	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	public List<Concept> getConceptsByMapping(String conceptCode, String mappingCode) throws APIException;
 	
 	/**
 	 * Get all the concept name tags defined in the database, included voided ones
