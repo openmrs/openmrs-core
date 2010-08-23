@@ -24,6 +24,7 @@
   <concept concept_id="792" retired="false" datatype_id="4" class_id="3" is_set="false" creator="1" date_created="2004-04-08 00:00:00.0" version="" changed_by="1" date_changed="2008-08-15 14:05:56.0" uuid="d144d24f-6913-4b63-9660-a9108c2bebef"/>
   <concept concept_id="5089" retired="false" datatype_id="1" class_id="1" is_set="false" creator="1" date_created="2004-08-12 00:00:00.0" version="" changed_by="1" date_changed="2005-02-25 11:43:43.0" uuid="c607c80f-1ea9-4da3-bb88-6276ce8868dd"/>
   <concept concept_id="5497" retired="false" datatype_id="1" class_id="1" is_set="false" creator="1" date_created="2004-08-12 00:00:00.0" version="0.1" changed_by="1" date_changed="2006-06-09 14:57:33.0" uuid="a09ab2c5-878e-4905-b25d-5784167d0216"/>
+  <concept concept_id="24" retired="true" datatype_id="1" class_id="1" is_set="false" creator="1" date_created="2004-08-12 00:00:00.0" version="" uuid="11716f9c-1434-4f8d-b9fc-9aa14c4d6129"/>
   <concept_answer concept_answer_id="1" concept_id="21" answer_concept="7" creator="1" date_created="2008-08-18 12:34:26.0" uuid="b1230431-2fe5-49fc-b535-ae42bc849747"/>
   <concept_answer concept_answer_id="2" concept_id="21" answer_concept="8" creator="1" date_created="2008-08-18 12:34:26.0" uuid="f67e537b-d9f9-45c4-846b-79ed1ba88778"/>
   <concept_answer concept_answer_id="3" concept_id="21" answer_concept="22" creator="1" date_created="2008-08-18 12:34:58.0" uuid="11e15f3b-3237-40e9-9c24-cb7916a4868b"/>
@@ -77,6 +78,10 @@
   <concept_map concept_map_id="2" source="1" source_code="CD41003" comment="A person's CD4" creator="1" date_created="2004-08-12 00:00:00.0" concept_id="5497"/>
   <concept_map concept_map_id="3" source="2" source_code="2332523" comment="A person's weight in kilograms" creator="1" date_created="2004-08-12 00:00:00.0" concept_id="5089"/>
   <concept_map concept_map_id="4" source="2" source_code="7345693" comment="A person's CD4" creator="1" date_created="2004-08-12 00:00:00.0" concept_id="5497"/>
+  <concept_map concept_map_id="5" source="1" source_code="127689" comment="died" creator="1" date_created="2004-08-12 00:00:00.0" concept_id="16"/>
+  <concept_map concept_map_id="6" source="1" source_code="127689" comment="married" creator="1" date_created="2004-08-12 00:00:00.0" concept_id="6"/>
+  <concept_map concept_map_id="7" source="1" source_code="766554" comment="" creator="1" date_created="2004-08-12 00:00:00.0" concept_id="16"/>
+  <concept_map concept_map_id="8" source="1" source_code="766554" comment="retired" creator="1" date_created="2004-08-12 00:00:00.0" concept_id="24"/>
   <concept_name concept_id="5089" name="WEIGHT (KG)" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="1439" concept_name_type="FULLY_SPECIFIED" locale_preferred="0" voided="false" uuid="9bc5693a-f558-40c9-8177-145a4b119ca7"/>
   <concept_name concept_id="5497" name="CD4 COUNT" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="1847" concept_name_type="FULLY_SPECIFIED" locale_preferred="0" voided="false" uuid="6e77e374-18a1-4ec6-8ed4-4152a5a7d6a1"/>
   <concept_name concept_id="7" name="YES" locale="en" creator="1" date_created="2008-08-15 13:52:53.0" concept_name_id="2449" concept_name_type="FULLY_SPECIFIED" locale_preferred="0" voided="false" uuid="ef7ac747-7980-443c-b11f-4617aa587703"/>
