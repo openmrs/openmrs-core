@@ -945,6 +945,8 @@ public class OpenmrsUtil {
 	}
 	
 	/**
+	 * If the "application_data_directory" runtime property has been set, it is returned. Otherwise, on UNIX-based
+	 * systems, this returns "{user.home}/.OpenMRS", and otherwise returns "{user.home}\Application Data\OpenMRS"
 	 * @return The path to the directory on the file system that will hold miscellaneous data about
 	 *         the application (runtime properties, modules, etc)
 	 */
@@ -2128,5 +2130,87 @@ public class OpenmrsUtil {
 		}
 		
 		return StringUtils.join(results, "\n");
+	}
+
+	/**
+	 * <pre>
+	 * Finds and loads the runtime properties file for a specific OpenMRS application.
+	 * Searches for an the file in this order:
+	 * 1) an environment variable called "{APPLICATIONNAME}_RUNTIME_PROPERTIES_FILE"
+	 * 2) {openmrs_app_dir}/{applicationName}_runtime.properties   // openmrs_app_dir is typically {user_home}/.OpenMRS
+	 * 3) {current directory}/{applicationname}_runtime.properties
+	 * </pre>
+	 * @see #getApplicationDataDirectory()
+	 * @param applicationName (defaults to "openmrs") the name of the running OpenMRS application, e.g. if you have
+	 * deployed OpenMRS as a web application you would give the deployed context path here
+	 * @return runtime properties, or null if none can be found 
+	 */
+	public static Properties getRuntimeProperties(String applicationName) {
+		if (applicationName == null)
+			applicationName = "openmrs";
+
+		String filepath = null;
+		FileInputStream propertyStream = null;
+
+		// first look for an environment variable
+		{
+			String envVarName = applicationName.toUpperCase() + "_RUNTIME_PROPERTIES_FILE";
+			filepath = System.getenv(envVarName);
+			if (filepath != null) {
+				log.debug("Atempting to load runtime properties from: " + filepath);
+				try {
+					propertyStream = new FileInputStream(filepath);
+				}
+				catch (IOException e) {
+					log.warn("Unable to load properties file with path: " + filepath
+					        + ". (derived from environment variable " + envVarName + ")", e);
+				}
+			} else {
+				log.info("Couldn't find an environment variable named " + envVarName);
+				if (log.isDebugEnabled())
+					log.debug("Available environment variables are named: " + System.getenv().keySet());
+			}
+		}
+		
+		String filename = applicationName + "-runtime.properties";
+		
+		// next look in the OpenMRS application data directory
+		if (propertyStream == null) {
+			filepath = OpenmrsUtil.getApplicationDataDirectory() + filename;
+			log.debug("Attempting to load property file from: " + filepath);
+			try {
+				propertyStream = new FileInputStream(filepath);
+			}
+			catch (FileNotFoundException e) {
+				log.warn("Unable to find properties file: " + filepath);
+			}
+		}
+		
+		// last chance, look in the current directory (that java was started from)
+		if (propertyStream == null) {
+			filepath = filename; 
+			log.debug("Attempting to load properties file in current directory: " + filepath);
+			try {
+				propertyStream = new FileInputStream(filepath);
+			}
+			catch (FileNotFoundException e) {
+				log.warn("Also unable to find a runtime properties file at " + new File(filepath).getAbsolutePath());
+			}
+		}
+		
+		try {
+			if (propertyStream == null)
+				throw new IOException("Could not find a runtime properties file named " + filename + " in the OpenMRS application data directory, or the current directory");
+			
+			Properties props = new Properties();
+			OpenmrsUtil.loadProperties(props, propertyStream);
+			propertyStream.close();
+			log.info("Using runtime properties file: " + filepath);
+			return props;
+		} catch (Exception ex) {
+			log.info("Got an error while attempting to load the runtime properties", ex);
+			log.warn("Unable to find a runtime properties file. Initial setup is needed. View the webapp to run the setup wizard.");
+			return null;
+		}
 	}
 }
