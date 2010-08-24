@@ -2143,7 +2143,8 @@ public class OpenmrsUtil {
 	 * @see #getApplicationDataDirectory()
 	 * @param applicationName (defaults to "openmrs") the name of the running OpenMRS application, e.g. if you have
 	 * deployed OpenMRS as a web application you would give the deployed context path here
-	 * @return runtime properties, or null if none can be found 
+	 * @return runtime properties, or null if none can be found
+	 * @since 1.8
 	 */
 	public static Properties getRuntimeProperties(String applicationName) {
 		if (applicationName == null)
