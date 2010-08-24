@@ -502,81 +502,12 @@ public final class Listener extends ContextLoaderListener {
 	}
 	
 	/**
-	 * Looks for and loads in the runtime properties. Searches for an the file in this order: 1)
-	 * environment variable called "OPENMRS_RUNTIME_PROPERTIES_FILE" 2)
-	 * {user_home}/WEBAPPNAME_runtime.properties 3) ./WEBAPPNAME_runtime.properties Returns null if
-	 * no runtime properties file was found
-	 * 
+	 * Finds and loads the runtime properties
 	 * @return Properties
+	 * @see OpenmrsUtil#getRuntimeProperties(String)
 	 */
 	public static Properties getRuntimeProperties() {
-		Log log = LogFactory.getLog(Listener.class);
-		
-		Properties props = new Properties();
-		
-		try {
-			FileInputStream propertyStream = null;
-			
-			// Look for environment variable {WEBAPP.NAME}_RUNTIME_PROPERTIES_FILE
-			String webapp = WebConstants.WEBAPP_NAME;
-			String env = webapp.toUpperCase() + "_RUNTIME_PROPERTIES_FILE";
-			
-			String filepath = System.getenv(env);
-			
-			if (filepath != null) {
-				log.debug("Atempting to load runtime properties from: " + filepath + " ");
-				try {
-					propertyStream = new FileInputStream(filepath);
-				}
-				catch (IOException e) {
-					log.warn("Unable to load properties file with path: " + filepath
-					        + ". (derived from environment variable " + env + ")", e);
-				}
-			} else {
-				log.info("Couldn't find an environment variable named " + env);
-				log.debug("Available environment variables are named: " + System.getenv().keySet());
-			}
-			
-			// env is the name of the file to look for in the directories
-			String filename = webapp + "-runtime.properties";
-			
-			if (propertyStream == null) {
-				filepath = OpenmrsUtil.getApplicationDataDirectory() + filename;
-				log.debug("Attempting to load property file from: " + filepath);
-				try {
-					propertyStream = new FileInputStream(filepath);
-				}
-				catch (FileNotFoundException e) {
-					log.warn("Unable to find properties file: " + filepath);
-				}
-			}
-			
-			// look in current directory last
-			if (propertyStream == null) {
-				filepath = filename;
-				log.debug("Attempting to load properties file in directory: " + filepath);
-				try {
-					propertyStream = new FileInputStream(filepath);
-				}
-				catch (FileNotFoundException e) {
-					log.warn("Also unable to find a runtime properties file named " + new File(filepath).getAbsolutePath());
-				}
-			}
-			
-			if (propertyStream == null)
-				throw new IOException("Could not open '" + filename + "' in user or local directory.");
-			OpenmrsUtil.loadProperties(props, propertyStream);
-			propertyStream.close();
-			log.info("Using runtime properties file: " + filepath);
-			
-		}
-		catch (Throwable t) {
-			log.debug("Got an error while attempting to load the runtime properties", t);
-			log
-			        .warn("Unable to find a runtime properties file. Initial setup is needed. View the webapp to run the setup wizard.");
-			return null;
-		}
-		return props;
+		return OpenmrsUtil.getRuntimeProperties(WebConstants.WEBAPP_NAME);
 	}
 	
 	/**
