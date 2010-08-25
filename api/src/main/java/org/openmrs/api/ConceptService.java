@@ -1295,8 +1295,8 @@ public interface ConceptService extends OpenmrsService {
 	 * assumption that each mappingCode in a {@link ConceptSource} references one and only one
 	 * non-voided {@link Concept}.
 	 * 
-	 * @param conceptCode the code associated with a concept within a given {@link ConceptSource}
-	 * @param mappingCode the name or hl7Code of the {@link ConceptSource} to check
+	 * @param code the code associated with a concept within a given {@link ConceptSource}
+	 * @param sourceName the name or hl7Code of the {@link ConceptSource} to check
 	 * @return the {@link Concept} that has the given mapping, or null if no {@link Concept} found
 	 * @throws APIException
 	 * @should get concept with given code and and source hl7 code
@@ -1308,7 +1308,7 @@ public interface ConceptService extends OpenmrsService {
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
-	public Concept getConceptByMapping(String conceptCode, String mappingCode) throws APIException;
+	public Concept getConceptByMapping(String code, String sourceName) throws APIException;
 	
 	/**
 	 * Looks up a concept via {@link ConceptMap} This will return the list of non-voided
@@ -1317,11 +1317,11 @@ public interface ConceptService extends OpenmrsService {
 	 * <code>name</code> or <code>hl7Code</code> that is equal to the passed
 	 * <code>mappingCode</code>
 	 * 
-	 * @param conceptCode the code associated with a concept within a given {@link ConceptSource}
-	 * @param mappingCode the name or hl7Code of the {@link ConceptSource} to check
+	 * @param code the code associated with a concept within a given {@link ConceptSource}
+	 * @param sourceName the name or hl7Code of the {@link ConceptSource} to check
 	 * @return the list of non-voided {@link Concept}s that has the given mapping, or null if no
 	 *         {@link Concept} found
-	 * @throws APIException
+	 * @throws APIException if the specified source+code maps to more than one concept
 	 * @should get concepts with given code and and source hl7 code
 	 * @should get concepts with given code and source name
 	 * @should return empty list if source code does not exist
@@ -1329,7 +1329,7 @@ public interface ConceptService extends OpenmrsService {
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
-	public List<Concept> getConceptsByMapping(String conceptCode, String mappingCode) throws APIException;
+	public List<Concept> getConceptsByMapping(String code, String sourceName) throws APIException;
 	
 	/**
 	 * Get all the concept name tags defined in the database, included voided ones
