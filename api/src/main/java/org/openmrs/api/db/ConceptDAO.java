@@ -328,7 +328,7 @@ public interface ConceptDAO {
 	/**
 	 * @see org.openmrs.api.ConceptService@getConceptsByMapping(java.lang.String, java.lang.String)
 	 */
-	public List<Concept> getConceptsByMapping(String conceptCode, String mappingCode);
+	public List<Concept> getConceptsByMapping(String code, String sourceName);
 	
 	/**
 	 * Auto generated method comment

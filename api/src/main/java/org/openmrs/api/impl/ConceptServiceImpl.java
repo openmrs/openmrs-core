@@ -1455,22 +1455,22 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	/**
 	 * @see org.openmrs.api.ConceptService#getConceptByMapping(java.lang.String, java.lang.String)
 	 */
-	public Concept getConceptByMapping(String conceptCode, String mappingCode) throws APIException {
-		List<Concept> concepts = getConceptsByMapping(conceptCode, mappingCode);
+	public Concept getConceptByMapping(String code, String sourceName) throws APIException {
+		List<Concept> concepts = getConceptsByMapping(code, sourceName);
 		if (concepts.size() == 0) {
 			return null;
 		} else if (concepts.size() == 1) {
 			return concepts.get(0);
 		} else {
-			throw new APIException("Mulitple concepts found for mapping " + mappingCode + " from source " + conceptCode);
+			throw new APIException("Multiple concepts found for mapping " + code + " from source " + sourceName);
 		}
 	}
 	
 	/**
 	 * @see org.openmrs.api.ConceptService@getConceptsByMapping(java.lang.String, java.lang.String
 	 */
-	public List<Concept> getConceptsByMapping(String conceptCode, String mappingCode) throws APIException {
-		return dao.getConceptsByMapping(conceptCode, mappingCode);
+	public List<Concept> getConceptsByMapping(String code, String sourceName) throws APIException {
+		return dao.getConceptsByMapping(code, sourceName);
 	}
 	
 	/**

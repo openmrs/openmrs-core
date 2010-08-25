@@ -1195,19 +1195,19 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 * @see org.openmrs.api.db.ConceptDAO#getConceptsByMapping(java.lang.String, java.lang.String)
 	 */
 	@SuppressWarnings("unchecked")
-	public List<Concept> getConceptsByMapping(String conceptCode, String mappingCode) {
+	public List<Concept> getConceptsByMapping(String code, String sourceName) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ConceptMap.class);
 		
 		// make this criteria return a list of distinct concepts
 		criteria.setProjection(Projections.distinct(Projections.property("concept")));
 		
 		// match the source code to the passed code
-		criteria.add(Expression.eq("sourceCode", conceptCode));
+		criteria.add(Expression.eq("sourceCode", code));
 		
 		// join to conceptSource and match to the h17Code or source name
 		criteria.createAlias("source", "conceptSource");
-		criteria.add(Expression.or(Expression.eq("conceptSource.name", mappingCode), Expression.eq("conceptSource.hl7Code",
-		    mappingCode)));
+		criteria.add(Expression.or(Expression.eq("conceptSource.name", sourceName), Expression.eq("conceptSource.hl7Code",
+		    sourceName)));
 		
 		// ignore voided concepts
 		criteria.createAlias("concept", "concept");
