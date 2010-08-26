@@ -34,7 +34,7 @@ import org.simpleframework.xml.Root;
 @Root
 public class ConceptName extends BaseOpenmrsObject implements Auditable, Voidable, java.io.Serializable {
 	
-	public static final long serialVersionUID = 33226787L;
+	public static final long serialVersionUID = 2L;
 	
 	// Fields
 	private Integer conceptNameId;
