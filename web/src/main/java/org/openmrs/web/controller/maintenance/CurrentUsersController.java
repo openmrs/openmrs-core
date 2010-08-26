@@ -19,7 +19,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.context.Context;
-import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.web.servlet.LoginServlet;
 import org.openmrs.web.user.CurrentUsers;
 import org.springframework.stereotype.Controller;
@@ -48,8 +48,8 @@ public class CurrentUsersController {
 	@RequestMapping(method = RequestMethod.GET, value = "/admin/maintenance/currentUsers.list")
 	public void listCurrentUsers(HttpServletRequest request, ModelMap modelMap) {
 		log.debug("List current users");
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_USERS))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_USERS);
+		if (!Context.hasPrivilege(PrivilegeConstants.VIEW_USERS))
+			throw new APIAuthenticationException("Privilege required: " + PrivilegeConstants.VIEW_USERS);
 		
 		modelMap.put("currentUsers", CurrentUsers.getCurrentUsernames(request.getSession()));
 	}

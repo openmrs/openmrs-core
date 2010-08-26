@@ -24,7 +24,7 @@ import org.openmrs.scheduler.SchedulerService;
 import org.openmrs.scheduler.SchedulerUtil;
 import org.openmrs.scheduler.Task;
 import org.openmrs.scheduler.TaskDefinition;
-import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.PrivilegeConstants;
 
 public class TimerSchedulerTask extends TimerTask {
 	
@@ -73,7 +73,7 @@ public class TimerSchedulerTask extends TimerTask {
     private void saveLastExecutionTime() {
     	TaskDefinition taskDefinition = null;
     	try {
-    		Context.addProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_SCHEDULER);
+    		Context.addProxyPrivilege(PrivilegeConstants.MANAGE_SCHEDULER);
 			
 			// We re-get the task definition in case the copy set during the
 			// task initialization has become stale.  NOTE: If a task does not
@@ -93,7 +93,7 @@ public class TimerSchedulerTask extends TimerTask {
     		log.warn("Unable to save the last execution time for task ", e);
     	}
     	finally {
-    		Context.removeProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_SCHEDULER);
+    		Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_SCHEDULER);
     	}
     }
 	

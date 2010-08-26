@@ -20,8 +20,8 @@ import org.openmrs.User;
 import org.openmrs.api.PasswordException;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
-import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.user.UserProperties;
 import org.springframework.stereotype.Controller;
@@ -121,9 +121,9 @@ public class ChangePasswordFormController {
 	 */
 	private void changeUserPasswordAndQuestion(User user, NewPassword password, NewQuestionAnswer questionAnswer) {
 		try {
-			Context.addProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
-			Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
-			Context.addProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USER_PASSWORDS);
+			Context.addProxyPrivilege(PrivilegeConstants.EDIT_USERS);
+			Context.addProxyPrivilege(PrivilegeConstants.VIEW_USERS);
+			Context.addProxyPrivilege(PrivilegeConstants.EDIT_USER_PASSWORDS);
 			
 			UserService userService = Context.getUserService();
 			User currentUser = userService.getUser(user.getId());
@@ -140,9 +140,9 @@ public class ChangePasswordFormController {
 			Context.refreshAuthenticatedUser();
 		}
 		finally {
-			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
-			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
-			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USER_PASSWORDS);
+			Context.removeProxyPrivilege(PrivilegeConstants.EDIT_USERS);
+			Context.removeProxyPrivilege(PrivilegeConstants.VIEW_USERS);
+			Context.removeProxyPrivilege(PrivilegeConstants.EDIT_USER_PASSWORDS);
 		}
 	}
 	

@@ -21,7 +21,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.notification.Alert;
 import org.openmrs.notification.AlertService;
-import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.PrivilegeConstants;
 
 public class DWRAlertService {
 	
@@ -73,7 +73,7 @@ public class DWRAlertService {
 				return;
 			
 			// allow this user to save changes to alerts temporarily
-			Context.addProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_ALERTS);
+			Context.addProxyPrivilege(PrivilegeConstants.MANAGE_ALERTS);
 			
 			// Mark the alert as read and save it
 			if (alert != null)
@@ -84,7 +84,7 @@ public class DWRAlertService {
 			log.error("Error while marking alert '" + alertId + "' as read", e);
 		}
 		finally {
-			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_ALERTS);
+			Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_ALERTS);
 		}
 	}
 }

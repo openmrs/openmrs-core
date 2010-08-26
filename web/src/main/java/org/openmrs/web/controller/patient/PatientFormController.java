@@ -51,8 +51,8 @@ import org.openmrs.api.context.Context;
 import org.openmrs.propertyeditor.ConceptEditor;
 import org.openmrs.propertyeditor.LocationEditor;
 import org.openmrs.propertyeditor.PatientIdentifierTypeEditor;
-import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.validator.PatientValidator;
+import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.controller.person.PersonFormController;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -649,7 +649,7 @@ public class PatientFormController extends PersonFormController {
 		
 		if (Context.isAuthenticated() && patient.getPatientId() != null) {
 			boolean onlyPublishedForms = true;
-			if (Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_UNPUBLISHED_FORMS))
+			if (Context.hasPrivilege(PrivilegeConstants.VIEW_UNPUBLISHED_FORMS))
 				onlyPublishedForms = false;
 			forms.addAll(Context.getFormService().getForms(null, onlyPublishedForms, null, false, null, null, null));
 			

@@ -46,8 +46,8 @@ import org.openmrs.util.DatabaseUpdateException;
 import org.openmrs.util.DatabaseUpdater;
 import org.openmrs.util.InputRequiredException;
 import org.openmrs.util.MemoryAppender;
-import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.util.RoleConstants;
 import org.openmrs.util.Security;
 import org.openmrs.util.DatabaseUpdater.ChangeSetExecutorCallback;
 import org.openmrs.web.Listener;
@@ -154,7 +154,7 @@ public class UpdateFilter extends StartupFilter {
 					log.error("Unable to sleep", e);
 					throw new ServletException("Got interrupted while trying to sleep thread", e);
 				}
-				errors.add("Unable to authenticate as a User with the " + OpenmrsConstants.SUPERUSER_ROLE
+				errors.add("Unable to authenticate as a User with the " + RoleConstants.SUPERUSER
 				        + " role. Invalid username or password");
 				renderTemplate(DEFAULT_PAGE, referenceMap, httpResponse);
 			}
@@ -325,7 +325,7 @@ public class UpdateFilter extends StartupFilter {
 		String select = "select 1 from user_role where user_id = ? and (role = ? or role = 'Administrator')";
 		PreparedStatement statement = connection.prepareStatement(select);
 		statement.setInt(1, userId);
-		statement.setString(2, OpenmrsConstants.SUPERUSER_ROLE);
+		statement.setString(2, RoleConstants.SUPERUSER);
 		if (statement.execute()) {
 			ResultSet results = statement.getResultSet();
 			if (results.next()) {

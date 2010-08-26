@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.Vector;
 
 import org.openmrs.GlobalProperty;
-import org.openmrs.Privilege;
 import org.openmrs.api.ConceptService;
 import org.openmrs.hl7.HL7Constants;
 import org.openmrs.module.ModuleConstants;
@@ -179,127 +178,184 @@ public final class OpenmrsConstants {
 	}
 	
 	// Baked in Privileges:
-	
-	public static final String PRIV_VIEW_CONCEPTS = "View Concepts";
-	
-	public static final String PRIV_MANAGE_CONCEPTS = "Manage Concepts";
-	
-	public static final String PRIV_PURGE_CONCEPTS = "Purge Concepts";
-	
-	public static final String PRIV_MANAGE_CONCEPT_NAME_TAGS = "Manage Concept Name tags";
-	
-	public static final String PRIV_VIEW_CONCEPT_PROPOSALS = "View Concept Proposals";
-	
-	public static final String PRIV_ADD_CONCEPT_PROPOSALS = "Add Concept Proposals";
-	
-	public static final String PRIV_EDIT_CONCEPT_PROPOSALS = "Edit Concept Proposals";
-	
-	public static final String PRIV_DELETE_CONCEPT_PROPOSALS = "Delete Concept Proposals";
-	
-	public static final String PRIV_PURGE_CONCEPT_PROPOSALS = "Purge Concept Proposals";
-	
-	public static final String PRIV_VIEW_USERS = "View Users";
-	
-	public static final String PRIV_ADD_USERS = "Add Users";
-	
-	public static final String PRIV_EDIT_USERS = "Edit Users";
-	
-	public static final String PRIV_DELETE_USERS = "Delete Users";
-	
-	public static final String PRIV_PURGE_USERS = "Purge Users";
-	
-	public static final String PRIV_EDIT_USER_PASSWORDS = "Edit User Passwords";
-	
-	public static final String PRIV_VIEW_ENCOUNTERS = "View Encounters";
-	
-	public static final String PRIV_ADD_ENCOUNTERS = "Add Encounters";
-	
-	public static final String PRIV_EDIT_ENCOUNTERS = "Edit Encounters";
-	
-	public static final String PRIV_DELETE_ENCOUNTERS = "Delete Encounters";
-	
-	public static final String PRIV_PURGE_ENCOUNTERS = "Purge Encounters";
-	
-	public static final String PRIV_VIEW_ENCOUNTER_TYPES = "View Encounter Types";
-	
-	public static final String PRIV_MANAGE_ENCOUNTER_TYPES = "Manage Encounter Types";
-	
-	public static final String PRIV_PURGE_ENCOUNTER_TYPES = "Purge Encounter Types";
-	
-	public static final String PRIV_VIEW_LOCATIONS = "View Locations";
-	
-	public static final String PRIV_MANAGE_LOCATIONS = "Manage Locations";
-	
-	public static final String PRIV_PURGE_LOCATIONS = "Purge Locations";
-	
-	public static final String PRIV_MANAGE_LOCATION_TAGS = "Manage Location Tags";
-	
-	public static final String PRIV_PURGE_LOCATION_TAGS = "Purge Location Tags";
-	
-	public static final String PRIV_VIEW_OBS = "View Observations";
-	
-	public static final String PRIV_ADD_OBS = "Add Observations";
-	
-	public static final String PRIV_EDIT_OBS = "Edit Observations";
-	
-	public static final String PRIV_DELETE_OBS = "Delete Observations";
-	
-	public static final String PRIV_PURGE_OBS = "Purge Observations";
-	
+	@Deprecated
+	public static final String PRIV_VIEW_CONCEPTS = PrivilegeConstants.VIEW_CONCEPTS;
+
+	@Deprecated
+	public static final String PRIV_MANAGE_CONCEPTS = PrivilegeConstants.MANAGE_CONCEPTS;
+
+    @Deprecated
+	public static final String PRIV_PURGE_CONCEPTS = PrivilegeConstants.PURGE_CONCEPTS;
+
+    @Deprecated
+	public static final String PRIV_MANAGE_CONCEPT_NAME_TAGS = PrivilegeConstants.MANAGE_CONCEPT_NAME_TAGS;
+
+    @Deprecated
+	public static final String PRIV_VIEW_CONCEPT_PROPOSALS = PrivilegeConstants.VIEW_CONCEPT_PROPOSALS;
+
+    @Deprecated
+	public static final String PRIV_ADD_CONCEPT_PROPOSALS = PrivilegeConstants.ADD_CONCEPT_PROPOSALS;
+
+    @Deprecated
+	public static final String PRIV_EDIT_CONCEPT_PROPOSALS = PrivilegeConstants.EDIT_CONCEPT_PROPOSALS;
+
+    @Deprecated
+	public static final String PRIV_DELETE_CONCEPT_PROPOSALS = PrivilegeConstants.DELETE_CONCEPT_PROPOSALS;
+
+    @Deprecated
+	public static final String PRIV_PURGE_CONCEPT_PROPOSALS = PrivilegeConstants.PURGE_CONCEPT_PROPOSALS;
+
+    @Deprecated
+	public static final String PRIV_VIEW_USERS = PrivilegeConstants.VIEW_USERS;
+
+    @Deprecated
+	public static final String PRIV_ADD_USERS = PrivilegeConstants.ADD_USERS;
+
+    @Deprecated
+	public static final String PRIV_EDIT_USERS = PrivilegeConstants.EDIT_USERS;
+
+    @Deprecated
+	public static final String PRIV_DELETE_USERS = PrivilegeConstants.DELETE_USERS;
+
+    @Deprecated
+	public static final String PRIV_PURGE_USERS = PrivilegeConstants.PURGE_USERS;
+
+    @Deprecated
+	public static final String PRIV_EDIT_USER_PASSWORDS = PrivilegeConstants.EDIT_USER_PASSWORDS;
+
+    @Deprecated
+	public static final String PRIV_VIEW_ENCOUNTERS = PrivilegeConstants.VIEW_ENCOUNTERS;
+
+    @Deprecated
+	public static final String PRIV_ADD_ENCOUNTERS = PrivilegeConstants.ADD_ENCOUNTERS;
+
+    @Deprecated
+	public static final String PRIV_EDIT_ENCOUNTERS = PrivilegeConstants.EDIT_ENCOUNTERS;
+
+    @Deprecated
+	public static final String PRIV_DELETE_ENCOUNTERS = PrivilegeConstants.DELETE_ENCOUNTERS;
+
+    @Deprecated
+	public static final String PRIV_PURGE_ENCOUNTERS = PrivilegeConstants.PURGE_ENCOUNTERS;
+
+    @Deprecated
+	public static final String PRIV_VIEW_ENCOUNTER_TYPES = PrivilegeConstants.VIEW_ENCOUNTER_TYPES;
+
+    @Deprecated
+	public static final String PRIV_MANAGE_ENCOUNTER_TYPES = PrivilegeConstants.MANAGE_ENCOUNTER_TYPES;
+
+    @Deprecated
+	public static final String PRIV_PURGE_ENCOUNTER_TYPES = PrivilegeConstants.PURGE_ENCOUNTER_TYPES;
+
+    @Deprecated
+	public static final String PRIV_VIEW_LOCATIONS = PrivilegeConstants.VIEW_LOCATIONS;
+
+    @Deprecated
+	public static final String PRIV_MANAGE_LOCATIONS = PrivilegeConstants.MANAGE_LOCATIONS;
+
+    @Deprecated
+	public static final String PRIV_PURGE_LOCATIONS = PrivilegeConstants.PURGE_LOCATIONS;
+
+    @Deprecated
+	public static final String PRIV_MANAGE_LOCATION_TAGS = PrivilegeConstants.MANAGE_LOCATION_TAGS;
+
+    @Deprecated
+	public static final String PRIV_PURGE_LOCATION_TAGS = PrivilegeConstants.PURGE_LOCATION_TAGS;
+
+    @Deprecated
+	public static final String PRIV_VIEW_OBS = PrivilegeConstants.VIEW_OBS;
+
+    @Deprecated
+	public static final String PRIV_ADD_OBS = PrivilegeConstants.ADD_OBS;
+
+    @Deprecated
+	public static final String PRIV_EDIT_OBS = PrivilegeConstants.EDIT_OBS;
+
+    @Deprecated
+	public static final String PRIV_DELETE_OBS = PrivilegeConstants.DELETE_OBS;
+
+    @Deprecated
+	public static final String PRIV_PURGE_OBS = PrivilegeConstants.PURGE_OBS;
+
 	@Deprecated
 	public static final String PRIV_VIEW_MIME_TYPES = "View Mime Types";
 	
 	@Deprecated
 	public static final String PRIV_PURGE_MIME_TYPES = "Purge Mime Types";
-	
-	public static final String PRIV_VIEW_PATIENTS = "View Patients";
-	
-	public static final String PRIV_ADD_PATIENTS = "Add Patients";
-	
-	public static final String PRIV_EDIT_PATIENTS = "Edit Patients";
-	
-	public static final String PRIV_DELETE_PATIENTS = "Delete Patients";
-	
-	public static final String PRIV_PURGE_PATIENTS = "Purge Patients";
-	
-	public static final String PRIV_VIEW_PATIENT_IDENTIFIERS = "View Patient Identifiers";
-	
-	public static final String PRIV_ADD_PATIENT_IDENTIFIERS = "Add Patient Identifiers";
-	
-	public static final String PRIV_EDIT_PATIENT_IDENTIFIERS = "Edit Patient Identifiers";
-	
-	public static final String PRIV_DELETE_PATIENT_IDENTIFIERS = "Delete Patient Identifiers";
-	
-	public static final String PRIV_PURGE_PATIENT_IDENTIFIERS = "Purge Patient Identifiers";
-	
-	public static final String PRIV_VIEW_PATIENT_COHORTS = "View Patient Cohorts";
-	
-	public static final String PRIV_ADD_COHORTS = "Add Cohorts";
-	
-	public static final String PRIV_EDIT_COHORTS = "Edit Cohorts";
-	
-	public static final String PRIV_DELETE_COHORTS = "Delete Cohorts";
-	
-	public static final String PRIV_PURGE_COHORTS = "Purge Cohorts";
-	
-	public static final String PRIV_VIEW_ORDERS = "View Orders";
-	
-	public static final String PRIV_ADD_ORDERS = "Add Orders";
-	
-	public static final String PRIV_EDIT_ORDERS = "Edit Orders";
-	
-	public static final String PRIV_DELETE_ORDERS = "Delete Orders";
-	
-	public static final String PRIV_PURGE_ORDERS = "Purge Orders";
-	
-	public static final String PRIV_VIEW_FORMS = "View Forms";
-	
-	public static final String PRIV_MANAGE_FORMS = "Manage Forms";
-	
-	public static final String PRIV_PURGE_FORMS = "Purge Forms";
-	
+
+    @Deprecated
+	public static final String PRIV_VIEW_PATIENTS = PrivilegeConstants.VIEW_PATIENTS;
+
+    @Deprecated
+	public static final String PRIV_ADD_PATIENTS = PrivilegeConstants.ADD_PATIENTS;
+
+    @Deprecated
+	public static final String PRIV_EDIT_PATIENTS = PrivilegeConstants.EDIT_PATIENTS;
+
+    @Deprecated
+	public static final String PRIV_DELETE_PATIENTS = PrivilegeConstants.DELETE_PATIENTS;
+
+    @Deprecated
+	public static final String PRIV_PURGE_PATIENTS = PrivilegeConstants.PURGE_PATIENTS;
+
+    @Deprecated
+	public static final String PRIV_VIEW_PATIENT_IDENTIFIERS = PrivilegeConstants.VIEW_PATIENT_IDENTIFIERS;
+
+    @Deprecated
+	public static final String PRIV_ADD_PATIENT_IDENTIFIERS = PrivilegeConstants.ADD_PATIENT_IDENTIFIERS;
+
+    @Deprecated
+	public static final String PRIV_EDIT_PATIENT_IDENTIFIERS = PrivilegeConstants.EDIT_PATIENT_IDENTIFIERS;
+
+    @Deprecated
+	public static final String PRIV_DELETE_PATIENT_IDENTIFIERS = PrivilegeConstants.DELETE_PATIENT_IDENTIFIERS;
+
+    @Deprecated
+	public static final String PRIV_PURGE_PATIENT_IDENTIFIERS = PrivilegeConstants.PURGE_PATIENT_IDENTIFIERS;
+
+    @Deprecated
+	public static final String PRIV_VIEW_PATIENT_COHORTS = PrivilegeConstants.VIEW_PATIENT_COHORTS;
+
+    @Deprecated
+	public static final String PRIV_ADD_COHORTS = PrivilegeConstants.ADD_COHORTS;
+
+    @Deprecated
+	public static final String PRIV_EDIT_COHORTS = PrivilegeConstants.EDIT_COHORTS;
+
+    @Deprecated
+	public static final String PRIV_DELETE_COHORTS = PrivilegeConstants.DELETE_COHORTS;
+
+    @Deprecated
+	public static final String PRIV_PURGE_COHORTS = PrivilegeConstants.PURGE_COHORTS;
+
+    @Deprecated
+	public static final String PRIV_VIEW_ORDERS = PrivilegeConstants.VIEW_ORDERS;
+
+    @Deprecated
+	public static final String PRIV_ADD_ORDERS = PrivilegeConstants.ADD_ORDERS;
+
+    @Deprecated
+	public static final String PRIV_EDIT_ORDERS = PrivilegeConstants.EDIT_ORDERS;
+
+    @Deprecated
+	public static final String PRIV_DELETE_ORDERS = PrivilegeConstants.DELETE_ORDERS;
+
+    @Deprecated
+	public static final String PRIV_PURGE_ORDERS = PrivilegeConstants.PURGE_ORDERS;
+
+    @Deprecated
+	public static final String PRIV_VIEW_FORMS = PrivilegeConstants.VIEW_FORMS;
+
+    @Deprecated
+	public static final String PRIV_MANAGE_FORMS = PrivilegeConstants.MANAGE_FORMS;
+
+    @Deprecated
+	public static final String PRIV_PURGE_FORMS = PrivilegeConstants.PURGE_FORMS;
+
 	// This name is historic, since that's what it was originally called in the infopath formentry module
-	public static final String PRIV_FORM_ENTRY = "Form Entry";
+
+    @Deprecated
+	public static final String PRIV_FORM_ENTRY = PrivilegeConstants.FORM_ENTRY;
 	
 	@Deprecated
 	public static final String PRIV_VIEW_REPORTS = "View Reports";
@@ -327,168 +383,238 @@ public final class OpenmrsConstants {
 	
 	@Deprecated
 	public static final String PRIV_DELETE_REPORT_OBJECTS = "Delete Report Objects";
-	
-	public static final String PRIV_MANAGE_IDENTIFIER_TYPES = "Manage Identifier Types";
-	
-	public static final String PRIV_VIEW_IDENTIFIER_TYPES = "View Identifier Types";
-	
-	public static final String PRIV_PURGE_IDENTIFIER_TYPES = "Purge Identifier Types";
-	
+
+    @Deprecated
+	public static final String PRIV_MANAGE_IDENTIFIER_TYPES = PrivilegeConstants.MANAGE_IDENTIFIER_TYPES;
+
+    @Deprecated
+	public static final String PRIV_VIEW_IDENTIFIER_TYPES = PrivilegeConstants.VIEW_IDENTIFIER_TYPES;
+
+    @Deprecated
+	public static final String PRIV_PURGE_IDENTIFIER_TYPES = PrivilegeConstants.PURGE_IDENTIFIER_TYPES;
+
 	@Deprecated
 	public static final String PRIV_MANAGE_MIME_TYPES = "Manage Mime Types";
-	
-	public static final String PRIV_VIEW_CONCEPT_CLASSES = "View Concept Classes";
-	
-	public static final String PRIV_MANAGE_CONCEPT_CLASSES = "Manage Concept Classes";
-	
-	public static final String PRIV_PURGE_CONCEPT_CLASSES = "Purge Concept Classes";
-	
-	public static final String PRIV_VIEW_CONCEPT_DATATYPES = "View Concept Datatypes";
-	
-	public static final String PRIV_MANAGE_CONCEPT_DATATYPES = "Manage Concept Datatypes";
-	
-	public static final String PRIV_PURGE_CONCEPT_DATATYPES = "Purge Concept Datatypes";
-	
-	public static final String PRIV_VIEW_PRIVILEGES = "View Privileges";
-	
-	public static final String PRIV_MANAGE_PRIVILEGES = "Manage Privileges";
-	
-	public static final String PRIV_PURGE_PRIVILEGES = "Purge Privileges";
-	
-	public static final String PRIV_VIEW_ROLES = "View Roles";
-	
-	public static final String PRIV_MANAGE_ROLES = "Manage Roles";
-	
-	public static final String PRIV_PURGE_ROLES = "Purge Roles";
-	
-	public static final String PRIV_VIEW_FIELD_TYPES = "View Field Types";
-	
-	public static final String PRIV_MANAGE_FIELD_TYPES = "Manage Field Types";
-	
-	public static final String PRIV_PURGE_FIELD_TYPES = "Purge Field Types";
-	
-	public static final String PRIV_VIEW_ORDER_TYPES = "View Order Types";
-	
-	public static final String PRIV_MANAGE_ORDER_TYPES = "Manage Order Types";
-	
-	public static final String PRIV_PURGE_ORDER_TYPES = "Purge Order Types";
-	
-	public static final String PRIV_VIEW_RELATIONSHIP_TYPES = "View Relationship Types";
-	
-	public static final String PRIV_MANAGE_RELATIONSHIP_TYPES = "Manage Relationship Types";
-	
-	public static final String PRIV_PURGE_RELATIONSHIP_TYPES = "Purge Relationship Types";
-	
-	public static final String PRIV_MANAGE_ALERTS = "Manage Alerts";
-	
-	public static final String PRIV_MANAGE_CONCEPT_SOURCES = "Manage Concept Sources";
-	
-	public static final String PRIV_VIEW_CONCEPT_SOURCES = "View Concept Sources";
-	
-	public static final String PRIV_PURGE_CONCEPT_SOURCES = "Purge Concept Sources";
-	
-	public static final String PRIV_VIEW_NAVIGATION_MENU = "View Navigation Menu";
-	
-	public static final String PRIV_VIEW_ADMIN_FUNCTIONS = "View Administration Functions";
-	
-	public static final String PRIV_VIEW_UNPUBLISHED_FORMS = "View Unpublished Forms";
-	
-	public static final String PRIV_VIEW_PROGRAMS = "View Programs";
-	
-	public static final String PRIV_MANAGE_PROGRAMS = "Manage Programs";
-	
-	public static final String PRIV_VIEW_PATIENT_PROGRAMS = "View Patient Programs";
-	
-	public static final String PRIV_ADD_PATIENT_PROGRAMS = "Add Patient Programs";
-	
-	public static final String PRIV_EDIT_PATIENT_PROGRAMS = "Edit Patient Programs";
-	
-	public static final String PRIV_DELETE_PATIENT_PROGRAMS = "Delete Patient Programs";
-	
-	public static final String PRIV_PURGE_PATIENT_PROGRAMS = "Add Patient Programs";
-	
-	public static final String PRIV_DASHBOARD_OVERVIEW = "Patient Dashboard - View Overview Section";
-	
-	public static final String PRIV_DASHBOARD_REGIMEN = "Patient Dashboard - View Regimen Section";
-	
-	public static final String PRIV_DASHBOARD_ENCOUNTERS = "Patient Dashboard - View Encounters Section";
-	
-	public static final String PRIV_DASHBOARD_DEMOGRAPHICS = "Patient Dashboard - View Demographics Section";
-	
-	public static final String PRIV_DASHBOARD_GRAPHS = "Patient Dashboard - View Graphs Section";
-	
-	public static final String PRIV_DASHBOARD_FORMS = "Patient Dashboard - View Forms Section";
-	
-	public static final String PRIV_DASHBOARD_SUMMARY = "Patient Dashboard - View Patient Summary";
-	
-	public static final String PRIV_VIEW_GLOBAL_PROPERTIES = "View Global Properties";
-	
-	public static final String PRIV_MANAGE_GLOBAL_PROPERTIES = "Manage Global Properties";
-	
-	public static final String PRIV_PURGE_GLOBAL_PROPERTIES = "Purge Global Properties";
-	
-	public static final String PRIV_MANAGE_MODULES = "Manage Modules";
-	
-	public static final String PRIV_MANAGE_SCHEDULER = "Manage Scheduler";
-	
-	public static final String PRIV_VIEW_PERSON_ATTRIBUTE_TYPES = "View Person Attribute Types";
-	
-	public static final String PRIV_MANAGE_PERSON_ATTRIBUTE_TYPES = "Manage Person Attribute Types";
-	
-	public static final String PRIV_PURGE_PERSON_ATTRIBUTE_TYPES = "Purge Person Attribute Types";
-	
-	public static final String PRIV_VIEW_PERSONS = "View People";
-	
-	public static final String PRIV_ADD_PERSONS = "Add People";
-	
-	public static final String PRIV_EDIT_PERSONS = "Edit People";
-	
-	public static final String PRIV_DELETE_PERSONS = "Delete People";
-	
-	public static final String PRIV_PURGE_PERSONS = "Purge People";
-	
+
+    @Deprecated
+	public static final String PRIV_VIEW_CONCEPT_CLASSES = PrivilegeConstants.VIEW_CONCEPT_CLASSES;
+
+    @Deprecated
+	public static final String PRIV_MANAGE_CONCEPT_CLASSES = PrivilegeConstants.MANAGE_CONCEPT_CLASSES;
+
+    @Deprecated
+	public static final String PRIV_PURGE_CONCEPT_CLASSES = PrivilegeConstants.PURGE_CONCEPT_CLASSES;
+
+    @Deprecated
+	public static final String PRIV_VIEW_CONCEPT_DATATYPES = PrivilegeConstants.VIEW_CONCEPT_DATATYPES;
+
+    @Deprecated
+	public static final String PRIV_MANAGE_CONCEPT_DATATYPES = PrivilegeConstants.MANAGE_CONCEPT_DATATYPES;
+
+    @Deprecated
+	public static final String PRIV_PURGE_CONCEPT_DATATYPES = PrivilegeConstants.PURGE_CONCEPT_DATATYPES;
+
+    @Deprecated
+	public static final String PRIV_VIEW_PRIVILEGES = PrivilegeConstants.VIEW_PRIVILEGES;
+
+    @Deprecated
+	public static final String PRIV_MANAGE_PRIVILEGES = PrivilegeConstants.MANAGE_PRIVILEGES;
+
+    @Deprecated
+	public static final String PRIV_PURGE_PRIVILEGES = PrivilegeConstants.PURGE_PRIVILEGES;
+
+    @Deprecated
+	public static final String PRIV_VIEW_ROLES = PrivilegeConstants.VIEW_ROLES;
+
+    @Deprecated
+	public static final String PRIV_MANAGE_ROLES = PrivilegeConstants.MANAGE_ROLES;
+
+    @Deprecated
+	public static final String PRIV_PURGE_ROLES = PrivilegeConstants.PURGE_ROLES;
+
+    @Deprecated
+	public static final String PRIV_VIEW_FIELD_TYPES = PrivilegeConstants.VIEW_FIELD_TYPES;
+
+    @Deprecated
+	public static final String PRIV_MANAGE_FIELD_TYPES = PrivilegeConstants.MANAGE_FIELD_TYPES;
+
+    @Deprecated
+	public static final String PRIV_PURGE_FIELD_TYPES = PrivilegeConstants.PURGE_FIELD_TYPES;
+
+    @Deprecated
+	public static final String PRIV_VIEW_ORDER_TYPES = PrivilegeConstants.VIEW_ORDER_TYPES;
+
+    @Deprecated
+	public static final String PRIV_MANAGE_ORDER_TYPES = PrivilegeConstants.MANAGE_ORDER_TYPES;
+
+    @Deprecated
+	public static final String PRIV_PURGE_ORDER_TYPES = PrivilegeConstants.PURGE_ORDER_TYPES;
+
+    @Deprecated
+	public static final String PRIV_VIEW_RELATIONSHIP_TYPES = PrivilegeConstants.VIEW_RELATIONSHIP_TYPES;
+
+    @Deprecated
+	public static final String PRIV_MANAGE_RELATIONSHIP_TYPES = PrivilegeConstants.MANAGE_RELATIONSHIP_TYPES;
+
+    @Deprecated
+	public static final String PRIV_PURGE_RELATIONSHIP_TYPES = PrivilegeConstants.PURGE_RELATIONSHIP_TYPES;
+
+    @Deprecated
+	public static final String PRIV_MANAGE_ALERTS = PrivilegeConstants.MANAGE_ALERTS;
+
+    @Deprecated
+	public static final String PRIV_MANAGE_CONCEPT_SOURCES = PrivilegeConstants.MANAGE_CONCEPT_SOURCES;
+
+    @Deprecated
+	public static final String PRIV_VIEW_CONCEPT_SOURCES = PrivilegeConstants.VIEW_CONCEPT_SOURCES;
+
+    @Deprecated
+	public static final String PRIV_PURGE_CONCEPT_SOURCES = PrivilegeConstants.PURGE_CONCEPT_SOURCES;
+
+    @Deprecated
+	public static final String PRIV_VIEW_NAVIGATION_MENU = PrivilegeConstants.VIEW_NAVIGATION_MENU;
+
+    @Deprecated
+	public static final String PRIV_VIEW_ADMIN_FUNCTIONS = PrivilegeConstants.VIEW_ADMIN_FUNCTIONS;
+
+    @Deprecated
+	public static final String PRIV_VIEW_UNPUBLISHED_FORMS = PrivilegeConstants.VIEW_UNPUBLISHED_FORMS;
+
+    @Deprecated
+	public static final String PRIV_VIEW_PROGRAMS = PrivilegeConstants.VIEW_PROGRAMS;
+
+    @Deprecated
+	public static final String PRIV_MANAGE_PROGRAMS = PrivilegeConstants.MANAGE_PROGRAMS;
+
+    @Deprecated
+	public static final String PRIV_VIEW_PATIENT_PROGRAMS = PrivilegeConstants.VIEW_PATIENT_PROGRAMS;
+
+    @Deprecated
+	public static final String PRIV_ADD_PATIENT_PROGRAMS = PrivilegeConstants.ADD_PATIENT_PROGRAMS;
+
+    @Deprecated
+	public static final String PRIV_EDIT_PATIENT_PROGRAMS = PrivilegeConstants.EDIT_PATIENT_PROGRAMS;
+
+    @Deprecated
+	public static final String PRIV_DELETE_PATIENT_PROGRAMS = PrivilegeConstants.DELETE_PATIENT_PROGRAMS;
+
+    @Deprecated
+	public static final String PRIV_PURGE_PATIENT_PROGRAMS = PrivilegeConstants.PURGE_PATIENT_PROGRAMS;
+
+    @Deprecated
+	public static final String PRIV_DASHBOARD_OVERVIEW = PrivilegeConstants.DASHBOARD_OVERVIEW;
+
+    @Deprecated
+	public static final String PRIV_DASHBOARD_REGIMEN = PrivilegeConstants.DASHBOARD_REGIMEN;
+
+    @Deprecated
+	public static final String PRIV_DASHBOARD_ENCOUNTERS = PrivilegeConstants.DASHBOARD_ENCOUNTERS;
+
+    @Deprecated
+	public static final String PRIV_DASHBOARD_DEMOGRAPHICS = PrivilegeConstants.DASHBOARD_DEMOGRAPHICS;
+
+    @Deprecated
+	public static final String PRIV_DASHBOARD_GRAPHS = PrivilegeConstants.DASHBOARD_GRAPHS;
+
+    @Deprecated
+	public static final String PRIV_DASHBOARD_FORMS = PrivilegeConstants.DASHBOARD_FORMS;
+
+    @Deprecated
+	public static final String PRIV_DASHBOARD_SUMMARY = PrivilegeConstants.DASHBOARD_SUMMARY;
+
+    @Deprecated
+	public static final String PRIV_VIEW_GLOBAL_PROPERTIES = PrivilegeConstants.VIEW_GLOBAL_PROPERTIES;
+
+    @Deprecated
+	public static final String PRIV_MANAGE_GLOBAL_PROPERTIES = PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES;
+
+    @Deprecated
+	public static final String PRIV_PURGE_GLOBAL_PROPERTIES = PrivilegeConstants.PURGE_GLOBAL_PROPERTIES;
+
+    @Deprecated
+	public static final String PRIV_MANAGE_MODULES = PrivilegeConstants.MANAGE_MODULES;
+
+    @Deprecated
+	public static final String PRIV_MANAGE_SCHEDULER = PrivilegeConstants.MANAGE_SCHEDULER;
+
+    @Deprecated
+	public static final String PRIV_VIEW_PERSON_ATTRIBUTE_TYPES = PrivilegeConstants.VIEW_PERSON_ATTRIBUTE_TYPES;
+
+    @Deprecated
+	public static final String PRIV_MANAGE_PERSON_ATTRIBUTE_TYPES = PrivilegeConstants.MANAGE_PERSON_ATTRIBUTE_TYPES;
+
+    @Deprecated
+	public static final String PRIV_PURGE_PERSON_ATTRIBUTE_TYPES = PrivilegeConstants.PURGE_PERSON_ATTRIBUTE_TYPES;
+
+    @Deprecated
+	public static final String PRIV_VIEW_PERSONS = PrivilegeConstants.VIEW_PERSONS;
+
+    @Deprecated
+	public static final String PRIV_ADD_PERSONS = PrivilegeConstants.ADD_PERSONS;
+
+    @Deprecated
+	public static final String PRIV_EDIT_PERSONS = PrivilegeConstants.EDIT_PERSONS;
+
+    @Deprecated
+	public static final String PRIV_DELETE_PERSONS = PrivilegeConstants.DELETE_PERSONS;
+
+    @Deprecated
+	public static final String PRIV_PURGE_PERSONS = PrivilegeConstants.PURGE_PERSONS;
+
 	/**
 	 * @deprecated replacing with ADD/EDIT/DELETE privileges
 	 */
+    @Deprecated
 	public static final String PRIV_MANAGE_RELATIONSHIPS = "Manage Relationships";
-	
-	public static final String PRIV_VIEW_RELATIONSHIPS = "View Relationships";
-	
-	public static final String PRIV_ADD_RELATIONSHIPS = "Add Relationships";
-	
-	public static final String PRIV_EDIT_RELATIONSHIPS = "Edit Relationships";
-	
-	public static final String PRIV_DELETE_RELATIONSHIPS = "Delete Relationships";
-	
-	public static final String PRIV_PURGE_RELATIONSHIPS = "Purge Relationships";
-	
-	public static final String PRIV_VIEW_DATABASE_CHANGES = "View Database Changes";
-	
-	public static final String PRIV_MANAGE_IMPLEMENTATION_ID = "Manage Implementation Id";
-	
-	public static final String PRIV_SQL_LEVEL_ACCESS = "SQL Level Access";
-	
-	public static final String PRIV_VIEW_PROBLEMS = "View Problems";
-	
-	public static final String PRIV_ADD_PROBLEMS = "Add Problems";
-	
-	public static final String PRIV_EDIT_PROBLEMS = "Edit Problems";
-	
-	public static final String PRIV_DELETE_PROBLEMS = "Remove Problems";
 
-	public static final String PRIV_VIEW_ALLERGIES = "View Allergies";
-	
-	public static final String PRIV_ADD_ALLERGIES = "Add Allergies";
-	
-	public static final String PRIV_EDIT_ALLERGIES = "Edit Allergies";
-	
-	public static final String PRIV_DELETE_ALLERGIES = "Remove Allergies";
+    @Deprecated
+	public static final String PRIV_VIEW_RELATIONSHIPS = PrivilegeConstants.VIEW_RELATIONSHIPS;
 
-	/**
-	 * Cached list of core privileges
-	 */
-	private static Map<String, String> CORE_PRIVILEGES = null;
-	
+    @Deprecated
+	public static final String PRIV_ADD_RELATIONSHIPS = PrivilegeConstants.ADD_RELATIONSHIPS;
+
+    @Deprecated
+	public static final String PRIV_EDIT_RELATIONSHIPS = PrivilegeConstants.EDIT_RELATIONSHIPS;
+
+    @Deprecated
+	public static final String PRIV_DELETE_RELATIONSHIPS = PrivilegeConstants.DELETE_RELATIONSHIPS;
+
+    @Deprecated
+	public static final String PRIV_PURGE_RELATIONSHIPS = PrivilegeConstants.PURGE_RELATIONSHIPS;
+
+    @Deprecated
+	public static final String PRIV_VIEW_DATABASE_CHANGES = PrivilegeConstants.VIEW_DATABASE_CHANGES;
+
+    @Deprecated
+	public static final String PRIV_MANAGE_IMPLEMENTATION_ID = PrivilegeConstants.MANAGE_IMPLEMENTATION_ID;
+
+    @Deprecated
+	public static final String PRIV_SQL_LEVEL_ACCESS = PrivilegeConstants.SQL_LEVEL_ACCESS;
+
+    @Deprecated
+	public static final String PRIV_VIEW_PROBLEMS = PrivilegeConstants.VIEW_PROBLEMS;
+
+    @Deprecated
+	public static final String PRIV_ADD_PROBLEMS = PrivilegeConstants.ADD_PROBLEMS;
+
+    @Deprecated
+	public static final String PRIV_EDIT_PROBLEMS = PrivilegeConstants.EDIT_PROBLEMS;
+
+    @Deprecated
+	public static final String PRIV_DELETE_PROBLEMS = PrivilegeConstants.DELETE_PROBLEMS;
+
+    @Deprecated
+	public static final String PRIV_VIEW_ALLERGIES = PrivilegeConstants.VIEW_ALLERGIES;
+
+    @Deprecated
+	public static final String PRIV_ADD_ALLERGIES = PrivilegeConstants.ADD_ALLERGIES;
+
+    @Deprecated
+	public static final String PRIV_EDIT_ALLERGIES = PrivilegeConstants.EDIT_ALLERGIES;
+
+    @Deprecated
+	public static final String PRIV_DELETE_ALLERGIES = PrivilegeConstants.DELETE_ALLERGIES;
+
 	/**
 	 * These are the privileges that are required by OpenMRS. Upon startup, if any of these
 	 * privileges do not exist in the database, they are inserted. These privileges are not allowed
@@ -496,181 +622,23 @@ public final class OpenmrsConstants {
 	 * 
 	 * @return privileges core to the system
 	 */
+    @Deprecated
 	public static final Map<String, String> CORE_PRIVILEGES() {
-		
-		// if we don't have a cache, create one
-		if (CORE_PRIVILEGES == null) {
-			CORE_PRIVILEGES = new HashMap<String, String>();
-			
-			CORE_PRIVILEGES.put(PRIV_VIEW_PROGRAMS, "Able to view patient programs");
-			CORE_PRIVILEGES.put(PRIV_MANAGE_PROGRAMS, "Able to add/view/delete patient programs");
-			
-			CORE_PRIVILEGES.put(PRIV_VIEW_PATIENT_PROGRAMS, "Able to see which programs that patients are in");
-			CORE_PRIVILEGES.put(PRIV_ADD_PATIENT_PROGRAMS, "Able to add patients to programs");
-			CORE_PRIVILEGES.put(PRIV_EDIT_PATIENT_PROGRAMS, "Able to edit patients in programs");
-			CORE_PRIVILEGES.put(PRIV_DELETE_PATIENT_PROGRAMS, "Able to delete patients from programs");
-			
-			CORE_PRIVILEGES.put(PRIV_VIEW_UNPUBLISHED_FORMS, "Able to view and fill out unpublished forms");
-			
-			CORE_PRIVILEGES.put(PRIV_VIEW_CONCEPTS, "Able to view concept entries");
-			CORE_PRIVILEGES.put(PRIV_MANAGE_CONCEPTS, "Able to add/edit/delete concept entries");
-			
-			CORE_PRIVILEGES.put(PRIV_MANAGE_CONCEPT_NAME_TAGS, "Able to add/edit/delete concept name tags");
-			
-			CORE_PRIVILEGES.put(PRIV_VIEW_CONCEPT_PROPOSALS, "Able to view concept proposals to the system");
-			CORE_PRIVILEGES.put(PRIV_ADD_CONCEPT_PROPOSALS, "Able to add concept proposals to the system");
-			CORE_PRIVILEGES.put(PRIV_EDIT_CONCEPT_PROPOSALS, "Able to edit concept proposals in the system");
-			CORE_PRIVILEGES.put(PRIV_DELETE_CONCEPT_PROPOSALS, "Able to delete concept proposals from the system");
-			
-			CORE_PRIVILEGES.put(PRIV_VIEW_USERS, "Able to view users in OpenMRS");
-			CORE_PRIVILEGES.put(PRIV_ADD_USERS, "Able to add users to OpenMRS");
-			CORE_PRIVILEGES.put(PRIV_EDIT_USERS, "Able to edit users in OpenMRS");
-			CORE_PRIVILEGES.put(PRIV_DELETE_USERS, "Able to delete users in OpenMRS");
-			CORE_PRIVILEGES.put(PRIV_EDIT_USER_PASSWORDS, "Able to change the passwords of users in OpenMRS");
-			
-			CORE_PRIVILEGES.put(PRIV_VIEW_ENCOUNTERS, "Able to view patient encounters");
-			CORE_PRIVILEGES.put(PRIV_ADD_ENCOUNTERS, "Able to add patient encounters");
-			CORE_PRIVILEGES.put(PRIV_EDIT_ENCOUNTERS, "Able to edit patient encounters");
-			CORE_PRIVILEGES.put(PRIV_DELETE_ENCOUNTERS, "Able to delete patient encounters");
-			
-			CORE_PRIVILEGES.put(PRIV_VIEW_OBS, "Able to view patient observations");
-			CORE_PRIVILEGES.put(PRIV_ADD_OBS, "Able to add patient observations");
-			CORE_PRIVILEGES.put(PRIV_EDIT_OBS, "Able to edit patient observations");
-			CORE_PRIVILEGES.put(PRIV_DELETE_OBS, "Able to delete patient observations");
-			
-			CORE_PRIVILEGES.put(PRIV_VIEW_PATIENTS, "Able to view patients");
-			CORE_PRIVILEGES.put(PRIV_ADD_PATIENTS, "Able to add patients");
-			CORE_PRIVILEGES.put(PRIV_EDIT_PATIENTS, "Able to edit patients");
-			CORE_PRIVILEGES.put(PRIV_DELETE_PATIENTS, "Able to delete patients");
-			
-			CORE_PRIVILEGES.put(PRIV_VIEW_PATIENT_IDENTIFIERS, "Able to view patient identifiers");
-			CORE_PRIVILEGES.put(PRIV_ADD_PATIENT_IDENTIFIERS, "Able to add patient identifiers");
-			CORE_PRIVILEGES.put(PRIV_EDIT_PATIENT_IDENTIFIERS, "Able to edit patient identifiers");
-			CORE_PRIVILEGES.put(PRIV_DELETE_PATIENT_IDENTIFIERS, "Able to delete patient identifiers");
-			
-			CORE_PRIVILEGES.put(PRIV_VIEW_PATIENT_COHORTS, "Able to view patient cohorts");
-			CORE_PRIVILEGES.put(PRIV_ADD_COHORTS, "Able to add a cohort to the system");
-			CORE_PRIVILEGES.put(PRIV_EDIT_COHORTS, "Able to add a cohort to the system");
-			CORE_PRIVILEGES.put(PRIV_DELETE_COHORTS, "Able to add a cohort to the system");
-			
-			CORE_PRIVILEGES.put(PRIV_VIEW_ORDERS, "Able to view orders");
-			CORE_PRIVILEGES.put(PRIV_ADD_ORDERS, "Able to add orders");
-			CORE_PRIVILEGES.put(PRIV_EDIT_ORDERS, "Able to edit orders");
-			CORE_PRIVILEGES.put(PRIV_DELETE_ORDERS, "Able to delete orders");
-			
-			CORE_PRIVILEGES.put(PRIV_VIEW_FORMS, "Able to view forms");
-			CORE_PRIVILEGES.put(PRIV_MANAGE_FORMS, "Able to add/edit/delete forms");
-			CORE_PRIVILEGES.put(PRIV_FORM_ENTRY, "Able to fill out forms");
-			
-			CORE_PRIVILEGES.put(PRIV_VIEW_REPORTS, "Able to view reports");
-			CORE_PRIVILEGES.put(PRIV_ADD_REPORTS, "Able to add reports");
-			CORE_PRIVILEGES.put(PRIV_EDIT_REPORTS, "Able to edit reports");
-			CORE_PRIVILEGES.put(PRIV_DELETE_REPORTS, "Able to delete reports");
-			CORE_PRIVILEGES.put(PRIV_RUN_REPORTS, "Able to run reports");
-			
-			CORE_PRIVILEGES.put(PRIV_VIEW_REPORT_OBJECTS, "Able to view report objects");
-			CORE_PRIVILEGES.put(PRIV_ADD_REPORT_OBJECTS, "Able to add report objects");
-			CORE_PRIVILEGES.put(PRIV_EDIT_REPORT_OBJECTS, "Able to edit report objects");
-			CORE_PRIVILEGES.put(PRIV_DELETE_REPORT_OBJECTS, "Able to delete report objects");
-			
-			CORE_PRIVILEGES.put(PRIV_VIEW_IDENTIFIER_TYPES, "Able to view patient identifier types");
-			CORE_PRIVILEGES.put(PRIV_MANAGE_RELATIONSHIPS, "Able to add/edit/delete relationships");
-			CORE_PRIVILEGES.put(PRIV_MANAGE_IDENTIFIER_TYPES, "Able to add/edit/retire patient identifier types");
-			
-			CORE_PRIVILEGES.put(PRIV_VIEW_LOCATIONS, "Able to view locations");
-			CORE_PRIVILEGES.put(PRIV_MANAGE_LOCATIONS, "Able to add/edit/delete locations");
-			CORE_PRIVILEGES.put(PRIV_MANAGE_LOCATION_TAGS, "Able to add/edit/delete location tags");
-			
-			CORE_PRIVILEGES.put(PRIV_VIEW_CONCEPT_CLASSES, "Able to view concept classes");
-			CORE_PRIVILEGES.put(PRIV_MANAGE_CONCEPT_CLASSES, "Able to add/edit/retire concept classes");
-			
-			CORE_PRIVILEGES.put(PRIV_VIEW_CONCEPT_DATATYPES, "Able to view concept datatypes");
-			CORE_PRIVILEGES.put(PRIV_MANAGE_CONCEPT_DATATYPES, "Able to add/edit/retire concept datatypes");
-			
-			CORE_PRIVILEGES.put(PRIV_VIEW_ENCOUNTER_TYPES, "Able to view encounter types");
-			CORE_PRIVILEGES.put(PRIV_MANAGE_ENCOUNTER_TYPES, "Able to add/edit/retire encounter types");
-			
-			CORE_PRIVILEGES.put(PRIV_VIEW_PRIVILEGES, "Able to view user privileges");
-			CORE_PRIVILEGES.put(PRIV_MANAGE_PRIVILEGES, "Able to add/edit/delete privileges");
-			
-			CORE_PRIVILEGES.put(PRIV_VIEW_FIELD_TYPES, "Able to view field types");
-			CORE_PRIVILEGES.put(PRIV_MANAGE_FIELD_TYPES, "Able to add/edit/retire field types");
-			CORE_PRIVILEGES.put(PRIV_PURGE_FIELD_TYPES, "Able to purge field types");
-			
-			CORE_PRIVILEGES.put(PRIV_MANAGE_ORDER_TYPES, "Able to add/edit/retire order types");
-			CORE_PRIVILEGES.put(PRIV_VIEW_ORDER_TYPES, "Able to view order types");
-			
-			CORE_PRIVILEGES.put(PRIV_VIEW_RELATIONSHIP_TYPES, "Able to view relationship types");
-			CORE_PRIVILEGES.put(PRIV_MANAGE_RELATIONSHIP_TYPES, "Able to add/edit/retire relationship types");
-			
-			CORE_PRIVILEGES.put(PRIV_MANAGE_ALERTS, "Able to add/edit/delete user alerts");
-			
-			CORE_PRIVILEGES.put(PRIV_MANAGE_CONCEPT_SOURCES, "Able to add/edit/delete concept sources");
-			CORE_PRIVILEGES.put(PRIV_VIEW_CONCEPT_SOURCES, "Able to view concept sources");
-			
-			CORE_PRIVILEGES.put(PRIV_VIEW_ROLES, "Able to view user roles");
-			CORE_PRIVILEGES.put(PRIV_MANAGE_ROLES, "Able to add/edit/delete user roles");
-			
-			CORE_PRIVILEGES.put(PRIV_VIEW_NAVIGATION_MENU,
-			    "Able to view the navigation menu (Home, View Patients, Dictionary, Administration, My Profile)");
-			CORE_PRIVILEGES.put(PRIV_VIEW_ADMIN_FUNCTIONS, "Able to view the 'Administration' link in the navigation bar");
-			
-			CORE_PRIVILEGES.put(PRIV_DASHBOARD_OVERVIEW, "Able to view the 'Overview' tab on the patient dashboard");
-			CORE_PRIVILEGES.put(PRIV_DASHBOARD_REGIMEN, "Able to view the 'Regimen' tab on the patient dashboard");
-			CORE_PRIVILEGES.put(PRIV_DASHBOARD_ENCOUNTERS, "Able to view the 'Encounters' tab on the patient dashboard");
-			CORE_PRIVILEGES.put(PRIV_DASHBOARD_DEMOGRAPHICS, "Able to view the 'Demographics' tab on the patient dashboard");
-			CORE_PRIVILEGES.put(PRIV_DASHBOARD_GRAPHS, "Able to view the 'Graphs' tab on the patient dashboard");
-			CORE_PRIVILEGES.put(PRIV_DASHBOARD_FORMS, "Able to view the 'Forms' tab on the patient dashboard");
-			CORE_PRIVILEGES.put(PRIV_DASHBOARD_SUMMARY, "Able to view the 'Summary' tab on the patient dashboard");
-			
-			CORE_PRIVILEGES.put(PRIV_VIEW_GLOBAL_PROPERTIES, "Able to view global properties on the administration screen");
-			CORE_PRIVILEGES.put(PRIV_MANAGE_GLOBAL_PROPERTIES, "Able to add/edit global properties");
-			CORE_PRIVILEGES.put(PRIV_MANAGE_MODULES, "Able to add/remove modules to the system");
-			
-			CORE_PRIVILEGES.put(PRIV_MANAGE_SCHEDULER, "Able to add/edit/remove scheduled tasks");
-			
-			CORE_PRIVILEGES.put(PRIV_VIEW_PERSON_ATTRIBUTE_TYPES, "Able to view person attribute types");
-			CORE_PRIVILEGES.put(PRIV_MANAGE_PERSON_ATTRIBUTE_TYPES, "Able to add/edit/retire person attribute types");
-			
-			CORE_PRIVILEGES.put(PRIV_VIEW_PERSONS, "Able to view person objects");
-			CORE_PRIVILEGES.put(PRIV_ADD_PERSONS, "Able to add person objects");
-			CORE_PRIVILEGES.put(PRIV_EDIT_PERSONS, "Able to edit person objects");
-			CORE_PRIVILEGES.put(PRIV_DELETE_PERSONS, "Able to delete objects");
-			
-			CORE_PRIVILEGES.put(PRIV_VIEW_RELATIONSHIPS, "Able to view relationships");
-			CORE_PRIVILEGES.put(PRIV_ADD_RELATIONSHIPS, "Able to add relationships");
-			CORE_PRIVILEGES.put(PRIV_EDIT_RELATIONSHIPS, "Able to edit relationships");
-			CORE_PRIVILEGES.put(PRIV_DELETE_RELATIONSHIPS, "Able to delete relationships");
-			
-			CORE_PRIVILEGES.put(PRIV_VIEW_DATABASE_CHANGES, "Able to view database changes from the admin screen");
-			CORE_PRIVILEGES.put(PRIV_MANAGE_IMPLEMENTATION_ID, "Able to view/add/edit the implementation id for the system");
-			
-			CORE_PRIVILEGES.put(PRIV_ADD_ALLERGIES, "Add allergies");
-			CORE_PRIVILEGES.put(PRIV_EDIT_ALLERGIES, "Able to edit allergies");
-			CORE_PRIVILEGES.put(PRIV_DELETE_ALLERGIES, "Remove allergies");
-			CORE_PRIVILEGES.put(PRIV_ADD_PROBLEMS, "Add problems");
-			CORE_PRIVILEGES.put(PRIV_EDIT_PROBLEMS, "Able to edit problems");
-			CORE_PRIVILEGES.put(PRIV_DELETE_PROBLEMS, "Remove problems");
-			CORE_PRIVILEGES.put(PRIV_VIEW_ALLERGIES, "Able to view allergies");
-			CORE_PRIVILEGES.put(PRIV_VIEW_PROBLEMS, "Able to view problems");
-		}
-		
-		// always add the module core privileges back on
-		for (Privilege privilege : ModuleFactory.getPrivileges()) {
-			CORE_PRIVILEGES.put(privilege.getPrivilege(), privilege.getDescription());
-		}
-		
-		return CORE_PRIVILEGES;
+		return OpenmrsUtil.getCorePrivileges();
 	}
 	
 	// Baked in Roles:
-	public static final String SUPERUSER_ROLE = "System Developer";
-	
-	public static final String ANONYMOUS_ROLE = "Anonymous";
-	
-	public static final String AUTHENTICATED_ROLE = "Authenticated";
-	
-	public static final String PROVIDER_ROLE = "Provider";
+    @Deprecated
+	public static final String SUPERUSER_ROLE = RoleConstants.SUPERUSER;
+
+    @Deprecated
+	public static final String ANONYMOUS_ROLE = RoleConstants.ANONYMOUS;
+
+    @Deprecated
+	public static final String AUTHENTICATED_ROLE = RoleConstants.AUTHENTICATED;
+
+    @Deprecated
+	public static final String PROVIDER_ROLE = RoleConstants.PROVIDER;
 	
 	/**
 	 * All roles returned by this method are inserted into the database if they do not exist
@@ -678,16 +646,9 @@ public final class OpenmrsConstants {
 	 * 
 	 * @return roles that are core to the system
 	 */
+    @Deprecated
 	public static final Map<String, String> CORE_ROLES() {
-		Map<String, String> roles = new HashMap<String, String>();
-		
-		roles.put(SUPERUSER_ROLE,
-		    "Assigned to Administrators of OpenMRS. Gives additional access to change core aspects of the system.");
-		roles.put(ANONYMOUS_ROLE, "Privileges for non-authenticated users.");
-		roles.put(AUTHENTICATED_ROLE, "Privileges gained once authentication has been established.");
-		roles.put(PROVIDER_ROLE, "All users with the 'Provider' role will appear as options in the default Infopath ");
-		
-		return roles;
+        return OpenmrsUtil.getCoreRoles();
 	}
 	
 	/**

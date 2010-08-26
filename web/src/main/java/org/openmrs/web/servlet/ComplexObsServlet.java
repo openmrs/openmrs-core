@@ -30,8 +30,8 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Obs;
 import org.openmrs.api.context.Context;
 import org.openmrs.obs.ComplexData;
-import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.web.WebConstants;
 
 public class ComplexObsServlet extends HttpServlet {
@@ -56,8 +56,8 @@ public class ComplexObsServlet extends HttpServlet {
 			session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "error.null");
 			return;
 		}
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_OBS)) {
-			session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Privilege required: " + OpenmrsConstants.PRIV_VIEW_OBS);
+		if (!Context.hasPrivilege(PrivilegeConstants.VIEW_OBS)) {
+			session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Privilege required: " + PrivilegeConstants.VIEW_OBS);
 			session.setAttribute(WebConstants.OPENMRS_LOGIN_REDIRECT_HTTPSESSION_ATTR, request.getRequestURI() + "?"
 			        + request.getQueryString());
 			response.sendRedirect(request.getContextPath() + "/login.htm");

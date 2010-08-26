@@ -29,7 +29,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.scheduler.tasks.AbstractTask;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsClassLoader;
-import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.PrivilegeConstants;
 
 /**
  * TODO test all methods in ScheduleService
@@ -322,12 +322,12 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
             try {
                 // Do something
                 Context.openSession();
-                Context.addProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_IMPLEMENTATION_ID);
+                Context.addProxyPrivilege(PrivilegeConstants.MANAGE_IMPLEMENTATION_ID);
                 Context.getAdministrationService().getImplementationId();
                 actualExecutionTime = System.currentTimeMillis();
 
             } finally {
-                Context.removeProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_IMPLEMENTATION_ID);
+                Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_IMPLEMENTATION_ID);
                 Context.closeSession();
             }
 

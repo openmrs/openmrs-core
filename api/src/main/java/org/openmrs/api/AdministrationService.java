@@ -38,6 +38,7 @@ import org.openmrs.api.db.AdministrationDAO;
 import org.openmrs.reporting.AbstractReportObject;
 import org.openmrs.reporting.Report;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.PrivilegeConstants;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -428,7 +429,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * @should return all registered system variables
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_ADMIN_FUNCTIONS)
+	@Authorized(PrivilegeConstants.VIEW_ADMIN_FUNCTIONS)
 	public SortedMap<String, String> getSystemVariables() throws APIException;
 	
 	/**
@@ -503,7 +504,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * @should return all global properties in the database
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_GLOBAL_PROPERTIES)
+	@Authorized(PrivilegeConstants.VIEW_GLOBAL_PROPERTIES)
 	public List<GlobalProperty> getAllGlobalProperties() throws APIException;
 	
 	/**
@@ -525,7 +526,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * @should assign uuid to all new properties
 	 * @should save properties with case difference only
 	 */
-	@Authorized(OpenmrsConstants.PRIV_MANAGE_GLOBAL_PROPERTIES)
+	@Authorized(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES)
 	public List<GlobalProperty> saveGlobalProperties(List<GlobalProperty> props) throws APIException;
 	
 	/**
@@ -540,7 +541,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * @throws APIException
 	 * @should delete global property from database
 	 */
-	@Authorized(OpenmrsConstants.PRIV_PURGE_GLOBAL_PROPERTIES)
+	@Authorized(PrivilegeConstants.PURGE_GLOBAL_PROPERTIES)
 	public void purgeGlobalProperty(GlobalProperty globalProperty) throws APIException;
 	
 	/**
@@ -575,7 +576,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * @should overwrite global property if exists
 	 * @should allow different properties to have the same string with different case
 	 */
-	@Authorized(OpenmrsConstants.PRIV_MANAGE_GLOBAL_PROPERTIES)
+	@Authorized(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES)
 	public GlobalProperty saveGlobalProperty(GlobalProperty gp) throws APIException;
 	
 	/**
@@ -619,7 +620,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * @throws APIException
 	 * @should execute sql containing group by
 	 */
-	@Authorized(OpenmrsConstants.PRIV_SQL_LEVEL_ACCESS)
+	@Authorized(PrivilegeConstants.SQL_LEVEL_ACCESS)
 	public List<List<Object>> executeSQL(String sql, boolean selectOnly) throws APIException;
 	
 	/**
@@ -630,7 +631,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * @should return null if no implementation id is defined yet
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_MANAGE_IMPLEMENTATION_ID)
+	@Authorized(PrivilegeConstants.MANAGE_IMPLEMENTATION_ID)
 	public ImplementationId getImplementationId() throws APIException;
 	
 	/**
@@ -646,7 +647,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * @should throw APIException if given a pipe in the implementationId code
 	 * @should set uuid on implementation id global property
 	 */
-	@Authorized(OpenmrsConstants.PRIV_MANAGE_IMPLEMENTATION_ID)
+	@Authorized(PrivilegeConstants.MANAGE_IMPLEMENTATION_ID)
 	public void setImplementationId(ImplementationId implementationId) throws APIException;
 	
 	/**

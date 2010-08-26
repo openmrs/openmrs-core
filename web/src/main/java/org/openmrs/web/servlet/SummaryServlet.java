@@ -38,8 +38,8 @@ import org.openmrs.api.context.Context;
 import org.openmrs.logic.LogicException;
 import org.openmrs.logic.LogicService;
 import org.openmrs.logic.result.Result;
-import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.web.WebConstants;
 import org.springframework.web.bind.ServletRequestUtils;
 
@@ -71,9 +71,9 @@ public class SummaryServlet extends HttpServlet {
 		
 		HttpSession session = request.getSession();
 		
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS)) {
+		if (!Context.hasPrivilege(PrivilegeConstants.VIEW_PATIENTS)) {
 			session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Privilege required: "
-			        + OpenmrsConstants.PRIV_VIEW_PATIENTS);
+			        + PrivilegeConstants.VIEW_PATIENTS);
 			response.sendRedirect(request.getContextPath() + "/login.htm");
 			return;
 		}

@@ -21,7 +21,7 @@ import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.annotation.Logging;
-import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.PrivilegeConstants;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -50,7 +50,7 @@ public interface UserService extends OpenmrsService {
 	 * @should grant new roles in roles list to user
 	 * @should fail to create the user with a weak password
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_ADD_USERS, OpenmrsConstants.PRIV_EDIT_USERS })
+	@Authorized( { PrivilegeConstants.ADD_USERS, PrivilegeConstants.EDIT_USERS })
 	@Logging(ignoredArgumentIndexes = { 1 })
 	public User saveUser(User user, String password) throws APIException;
 	
@@ -58,8 +58,8 @@ public interface UserService extends OpenmrsService {
 	 * @see #saveUser(User, String)
 	 * @deprecated replaced by {@link #saveUser(User, String)}
 	 */
-	@Deprecated
-    @Authorized( { OpenmrsConstants.PRIV_ADD_USERS })
+    @Deprecated
+	@Authorized( { PrivilegeConstants.ADD_USERS })
 	@Logging(ignoredArgumentIndexes = { 1 })
 	public User createUser(User user, String password) throws APIException;
 	
@@ -72,7 +72,7 @@ public interface UserService extends OpenmrsService {
 	 * @should fetch user with given userId
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_USERS })
+	@Authorized( { PrivilegeConstants.VIEW_USERS })
 	public User getUser(Integer userId) throws APIException;
 
 	/**
@@ -86,7 +86,7 @@ public interface UserService extends OpenmrsService {
 	 * @should return null if no object found with given uuid
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_USERS })
+	@Authorized( { PrivilegeConstants.VIEW_USERS })
 	public User getUserByUuid(String uuid) throws APIException;
 	
 	/**
@@ -98,7 +98,7 @@ public interface UserService extends OpenmrsService {
 	 * @should get user by username
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_USERS })
+	@Authorized( { PrivilegeConstants.VIEW_USERS })
 	public User getUserByUsername(String username) throws APIException;
 	
 	/**
@@ -110,7 +110,7 @@ public interface UserService extends OpenmrsService {
 	 * @should verify that username and system id is unique
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_USERS })
+	@Authorized( { PrivilegeConstants.VIEW_USERS })
 	public boolean hasDuplicateUsername(User user) throws APIException;
 	
 	/**
@@ -123,7 +123,7 @@ public interface UserService extends OpenmrsService {
 	 * @should not fetch user that does not belong to given role
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_USERS })
+	@Authorized( { PrivilegeConstants.VIEW_USERS })
 	public List<User> getUsersByRole(Role role) throws APIException;
 	
 	/**
@@ -134,8 +134,8 @@ public interface UserService extends OpenmrsService {
 	 * @see #saveUser(User, String)
 	 * @deprecated replaced by {@link #saveUser(User, String)}
 	 */
-	@Deprecated
-    @Authorized( { OpenmrsConstants.PRIV_EDIT_USERS })
+    @Deprecated
+	@Authorized( { PrivilegeConstants.EDIT_USERS })
 	public void updateUser(User user) throws APIException;
 	
 	/**
@@ -143,8 +143,8 @@ public interface UserService extends OpenmrsService {
 	 * 
 	 * @deprecated use {@link org.openmrs.User#addRole(Role)}
 	 */
-	@Deprecated
-    @Authorized( { OpenmrsConstants.PRIV_EDIT_USERS })
+    @Deprecated
+	@Authorized( { PrivilegeConstants.EDIT_USERS })
 	public void grantUserRole(User user, Role role) throws APIException;
 	
 	/**
@@ -152,8 +152,8 @@ public interface UserService extends OpenmrsService {
 	 * 
 	 * @deprecated use {@link org.openmrs.User#removeRole(Role)}
 	 */
-	@Deprecated
-    @Authorized( { OpenmrsConstants.PRIV_EDIT_USERS })
+    @Deprecated
+	@Authorized( { PrivilegeConstants.EDIT_USERS })
 	public void revokeUserRole(User user, Role role) throws APIException;
 	
 	/**
@@ -168,8 +168,8 @@ public interface UserService extends OpenmrsService {
 	 * @should void user and set attributes
 	 * @deprecated use {@link #retireUser(User, String)}
 	 */
-	@Deprecated
-    @Authorized( { OpenmrsConstants.PRIV_EDIT_USERS })
+    @Deprecated
+	@Authorized( { PrivilegeConstants.EDIT_USERS })
 	public User voidUser(User user, String reason) throws APIException;
 	
 	/**
@@ -181,8 +181,8 @@ public interface UserService extends OpenmrsService {
 	 * @should unvoid and unmark all attributes
 	 * @deprecated use {@link #unretireUser(User)}
 	 */
-	@Deprecated
-    @Authorized( { OpenmrsConstants.PRIV_EDIT_USERS })
+    @Deprecated
+	@Authorized( { PrivilegeConstants.EDIT_USERS })
 	public User unvoidUser(User user) throws APIException;
 	
 	/**
@@ -193,7 +193,7 @@ public interface UserService extends OpenmrsService {
      * @throws APIException
      * @should retire user and set attributes
      */
-	@Authorized( { OpenmrsConstants.PRIV_EDIT_USERS })
+	@Authorized( { PrivilegeConstants.EDIT_USERS })
     public User retireUser(User user, String reason) throws APIException;
     
     /**
@@ -204,7 +204,7 @@ public interface UserService extends OpenmrsService {
      * @throws APIException
      * @should unretire and unmark all attributes
      */
-	@Authorized( { OpenmrsConstants.PRIV_EDIT_USERS })
+	@Authorized( { PrivilegeConstants.EDIT_USERS })
     public User unretireUser(User user) throws APIException;
 	
 	/**
@@ -212,8 +212,8 @@ public interface UserService extends OpenmrsService {
 	 * @see #purgeUser(User)
 	 * @deprecated use {@link #purgeUser(User)}
 	 */
-	@Deprecated
-    @Authorized( { OpenmrsConstants.PRIV_DELETE_USERS })
+    @Deprecated
+	@Authorized( { PrivilegeConstants.DELETE_USERS })
 	public void deleteUser(User user) throws APIException;
 	
 	/**
@@ -223,7 +223,7 @@ public interface UserService extends OpenmrsService {
 	 * @param user the User to remove from the database.
 	 * @should delete given user
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_PURGE_USERS })
+	@Authorized( { PrivilegeConstants.PURGE_USERS })
 	public void purgeUser(User user) throws APIException;
 	
 	/**
@@ -241,7 +241,7 @@ public interface UserService extends OpenmrsService {
 	 * @should delete given user when cascade equals false
 	 * @should not delete user roles for given user when cascade equals false
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_PURGE_USERS })
+	@Authorized( { PrivilegeConstants.PURGE_USERS })
 	public void purgeUser(User user, boolean cascade) throws APIException;
 	
 	/**
@@ -294,7 +294,7 @@ public interface UserService extends OpenmrsService {
 	 * @should throw error if role inherits from itself
 	 * @should save given role to the database
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_MANAGE_ROLES })
+	@Authorized( { PrivilegeConstants.MANAGE_ROLES })
 	public Role saveRole(Role role) throws APIException;
 	
 	/**
@@ -306,7 +306,7 @@ public interface UserService extends OpenmrsService {
 	 * @should return if role is null
 	 * @should delete given role from database
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_PURGE_ROLES })
+	@Authorized( { PrivilegeConstants.PURGE_ROLES })
 	public void purgeRole(Role role) throws APIException;
 	
 	/**
@@ -317,7 +317,7 @@ public interface UserService extends OpenmrsService {
 	 * @throws APIException
 	 * @should save given privilege to the database
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_MANAGE_PRIVILEGES })
+	@Authorized( { PrivilegeConstants.MANAGE_PRIVILEGES })
 	public Privilege savePrivilege(Privilege privilege) throws APIException;
 	
 	/**
@@ -328,7 +328,7 @@ public interface UserService extends OpenmrsService {
 	 * @should delete given privilege from the database
 	 * @should throw error when privilege is core privilege
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_PURGE_PRIVILEGES })
+	@Authorized( { PrivilegeConstants.PURGE_PRIVILEGES })
 	public void purgePrivilege(Privilege privilege) throws APIException;
 	
 	/**
@@ -377,9 +377,9 @@ public interface UserService extends OpenmrsService {
 	/**
 	 * @deprecated use {@link #getAllUsers()}
 	 */
-	@Deprecated
-    @Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_USERS })
+    @Deprecated
+	@Transactional(readOnly = true)
+	@Authorized( { PrivilegeConstants.VIEW_USERS })
 	public List<User> getUsers() throws APIException;
 	
 	/**
@@ -391,7 +391,7 @@ public interface UserService extends OpenmrsService {
 	 * @should not contains any duplicate users
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_USERS })
+	@Authorized( { PrivilegeConstants.VIEW_USERS })
 	public List<User> getAllUsers() throws APIException;
 	
 	/**
@@ -403,7 +403,7 @@ public interface UserService extends OpenmrsService {
 	 * @throws APIException
 	 * @should change password for the given user and password
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_EDIT_USER_PASSWORDS })
+	@Authorized( { PrivilegeConstants.EDIT_USER_PASSWORDS })
 	@Logging(ignoredArgumentIndexes = { 1 })
 	public void changePassword(User u, String pw) throws APIException;
 	
@@ -433,7 +433,7 @@ public interface UserService extends OpenmrsService {
 	 * @since 1.5
 	 * @should change the hashed password for the given user
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_EDIT_USER_PASSWORDS })
+	@Authorized( { PrivilegeConstants.EDIT_USER_PASSWORDS })
 	public void changeHashedPassword(User user, String hashedPassword, String salt) throws APIException;
 	
 	/**
@@ -446,7 +446,7 @@ public interface UserService extends OpenmrsService {
 	 * @since 1.5
 	 * @should change the secret question and answer for given user
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_EDIT_USER_PASSWORDS })
+	@Authorized( { PrivilegeConstants.EDIT_USER_PASSWORDS })
 	@Logging(ignoredArgumentIndexes = { 1, 2 })
 	public void changeQuestionAnswer(User u, String question, String answer) throws APIException;
 	
@@ -495,23 +495,23 @@ public interface UserService extends OpenmrsService {
 	 * @should fetch all users if nameSearch is empty or null
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_USERS })
+	@Authorized( { PrivilegeConstants.VIEW_USERS })
 	public List<User> getUsers(String nameSearch, List<Role> roles, boolean includeVoided) throws APIException;
 	
 	/**
 	 * @deprecated use {@link #getUsers(String, List, boolean)}
 	 */
-	@Deprecated
-    @Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_USERS })
+    @Deprecated
+	@Transactional(readOnly = true)
+	@Authorized( { PrivilegeConstants.VIEW_USERS })
 	public List<User> findUsers(String name, List<String> roles, boolean includeVoided) throws APIException;
 	
 	/**
 	 * @deprecated use {@link #getUsersByName(String, String, boolean)}
 	 */
-	@Deprecated
-    @Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_USERS })
+    @Deprecated
+	@Transactional(readOnly = true)
+	@Authorized( { PrivilegeConstants.VIEW_USERS })
 	public List<User> findUsers(String givenName, String familyName, boolean includeVoided) throws APIException;
 	
 	/**
@@ -527,7 +527,7 @@ public interface UserService extends OpenmrsService {
 	 * @should not fetch any duplicate users
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_USERS })
+	@Authorized( { PrivilegeConstants.VIEW_USERS })
 	public List<User> getUsersByName(String givenName, String familyName, boolean includeVoided) throws APIException;
 	
 	/**
@@ -541,15 +541,15 @@ public interface UserService extends OpenmrsService {
 	 * @should not fetch retired accounts when include retired is false
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_USERS })
+	@Authorized( { PrivilegeConstants.VIEW_USERS })
 	public List<User> getUsersByPerson(Person person, boolean includeRetired) throws APIException;
 	
 	/**
 	 * @deprecated use {@link #getUsers(String, List, boolean)}
 	 */
-	@Deprecated
-    @Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_USERS })
+    @Deprecated
+	@Transactional(readOnly = true)
+	@Authorized( { PrivilegeConstants.VIEW_USERS })
 	public List<User> getAllUsers(List<Role> roles, boolean includeVoided) throws APIException;
 	
 	/**

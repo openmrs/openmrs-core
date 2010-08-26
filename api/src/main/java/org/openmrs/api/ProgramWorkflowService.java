@@ -30,7 +30,7 @@ import org.openmrs.ProgramWorkflowState;
 import org.openmrs.User;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.ProgramWorkflowDAO;
-import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.PrivilegeConstants;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -70,7 +70,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @should save workflows associated with program
 	 * @should save states associated with program
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_MANAGE_PROGRAMS })
+	@Authorized( { PrivilegeConstants.MANAGE_PROGRAMS })
 	public Program saveProgram(Program program) throws APIException;
 	
 	/**
@@ -83,7 +83,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @should return program matching the given programId
 	 * @should return null when programId does not exist
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_PROGRAMS })
+	@Authorized( { PrivilegeConstants.VIEW_PROGRAMS })
 	@Transactional(readOnly = true)
 	public Program getProgram(Integer programId) throws APIException;
 	
@@ -104,7 +104,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @should return null when program does not exist with given name
 	 * @should fail when two programs found with same name
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_PROGRAMS })
+	@Authorized( { PrivilegeConstants.VIEW_PROGRAMS })
 	@Transactional(readOnly = true)
 	public Program getProgramByName(String name) throws APIException;
 	
@@ -115,7 +115,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @return List<Program> of all existing programs, including retired programs
 	 * @throws APIException
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_PROGRAMS })
+	@Authorized( { PrivilegeConstants.VIEW_PROGRAMS })
 	@Transactional(readOnly = true)
 	public List<Program> getAllPrograms() throws APIException;
 	
@@ -128,7 +128,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @should return all programs including retired when includeRetired equals true
 	 * @should return all programs excluding retired when includeRetired equals false
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_PROGRAMS })
+	@Authorized( { PrivilegeConstants.VIEW_PROGRAMS })
 	@Transactional(readOnly = true)
 	public List<Program> getAllPrograms(boolean includeRetired) throws APIException;
 	
@@ -150,7 +150,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @should return programs ordered by name
 	 * @should return empty list when nameFragment does not match any 
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_PROGRAMS })
+	@Authorized( { PrivilegeConstants.VIEW_PROGRAMS })
 	@Transactional(readOnly = true)
 	public List<Program> getPrograms(String nameFragment) throws APIException;
 	
@@ -162,7 +162,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @throws APIException
 	 * @should delete program successfully
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_MANAGE_PROGRAMS })
+	@Authorized( { PrivilegeConstants.MANAGE_PROGRAMS })
 	public void purgeProgram(Program program) throws APIException;
 	
 	/**
@@ -174,7 +174,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @should not delete child associations when cascade equals false
 	 * @should throw APIException when given cascade equals true
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_MANAGE_PROGRAMS })
+	@Authorized( { PrivilegeConstants.MANAGE_PROGRAMS })
 	public void purgeProgram(Program program, boolean cascade) throws APIException;
 	
 	/**
@@ -187,7 +187,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @should retire workflows associated with given program
 	 * @should retire states associated with given program
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_MANAGE_PROGRAMS })
+	@Authorized( { PrivilegeConstants.MANAGE_PROGRAMS })
 	public Program retireProgram(Program program) throws APIException;
 	
 	/**
@@ -200,7 +200,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @should unretire workflows associated with given program 
 	 * @should unretire states associated with given program
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_MANAGE_PROGRAMS })
+	@Authorized( { PrivilegeConstants.MANAGE_PROGRAMS })
 	public Program unRetireProgram(Program program) throws APIException;
 	
 	// **************************
@@ -245,7 +245,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @should save patient program successfully
 	 * @should return patient program with assigned patient program id
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_ADD_PATIENT_PROGRAMS, OpenmrsConstants.PRIV_EDIT_PATIENT_PROGRAMS })
+	@Authorized( { PrivilegeConstants.ADD_PATIENT_PROGRAMS, PrivilegeConstants.EDIT_PATIENT_PROGRAMS })
 	public PatientProgram savePatientProgram(PatientProgram patientProgram) throws APIException;
 	
 	/**
@@ -260,7 +260,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @should get patient program with given identifier
 	 * @should return null if program does not exist
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_PATIENT_PROGRAMS })
+	@Authorized( { PrivilegeConstants.VIEW_PATIENT_PROGRAMS })
 	@Transactional(readOnly = true)
 	public PatientProgram getPatientProgram(Integer patientProgramId) throws APIException;
 	
@@ -295,7 +295,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @should return all patient programs when all parameters are null
 	 * @should return empty list when matches not found
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_PATIENT_PROGRAMS })
+	@Authorized( { PrivilegeConstants.VIEW_PATIENT_PROGRAMS })
 	@Transactional(readOnly = true)
 	public List<PatientProgram> getPatientPrograms(Patient patient, Program program, Date minEnrollmentDate,
 	                                               Date maxEnrollmentDate, Date minCompletionDate, Date maxCompletionDate,
@@ -309,7 +309,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @throws APIException
 	 * @should delete patient program from database without cascade
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_PURGE_PATIENT_PROGRAMS })
+	@Authorized( { PrivilegeConstants.PURGE_PATIENT_PROGRAMS })
 	public void purgePatientProgram(PatientProgram patientProgram) throws APIException;
 	
 	/**
@@ -322,7 +322,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @should cascade delete patient program states when cascade equals true
 	 * @should not cascade delete patient program states when cascade equals false
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_PURGE_PATIENT_PROGRAMS })
+	@Authorized( { PrivilegeConstants.PURGE_PATIENT_PROGRAMS })
 	public void purgePatientProgram(PatientProgram patientProgram, boolean cascade) throws APIException;
 	
 	/**
@@ -335,7 +335,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @should void patient program when reason is valid
 	 * @should fail when reason is empty
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_DELETE_PATIENT_PROGRAMS })
+	@Authorized( { PrivilegeConstants.DELETE_PATIENT_PROGRAMS })
 	public PatientProgram voidPatientProgram(PatientProgram patientProgram, String reason) throws APIException;
 	
 	/**
@@ -346,7 +346,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @throws APIException
 	 * @should void patient program when reason is valid
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_DELETE_PATIENT_PROGRAMS })
+	@Authorized( { PrivilegeConstants.DELETE_PATIENT_PROGRAMS })
 	public PatientProgram unvoidPatientProgram(PatientProgram patientProgram) throws APIException;
 	
 	// **************************
@@ -374,7 +374,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @should save state conversion 
 	 * 
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_ADD_PATIENT_PROGRAMS, OpenmrsConstants.PRIV_EDIT_PATIENT_PROGRAMS })
+	@Authorized( { PrivilegeConstants.ADD_PATIENT_PROGRAMS, PrivilegeConstants.EDIT_PATIENT_PROGRAMS })
 	public ConceptStateConversion saveConceptStateConversion(ConceptStateConversion conceptStateConversion)
 	                                                                                                       throws APIException;
 	
@@ -392,7 +392,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @should return concept state conversion for given identifier
 	 * 
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_PROGRAMS })
+	@Authorized( { PrivilegeConstants.VIEW_PROGRAMS })
 	@Transactional(readOnly = true)
 	public ConceptStateConversion getConceptStateConversion(Integer conceptStateConversionId) throws APIException;
 	
@@ -404,7 +404,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * 
 	 * @should return all concept state conversions
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_PROGRAMS })
+	@Authorized( { PrivilegeConstants.VIEW_PROGRAMS })
 	@Transactional(readOnly = true)
 	public List<ConceptStateConversion> getAllConceptStateConversions() throws APIException;
 	
@@ -415,7 +415,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @param conceptStateConversion the ConceptStateConversion to clean out of the database.
 	 * @throws APIException
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_MANAGE_PROGRAMS })
+	@Authorized( { PrivilegeConstants.MANAGE_PROGRAMS })
 	public void purgeConceptStateConversion(ConceptStateConversion conceptStateConversion) throws APIException;
 	
 	/**
@@ -428,7 +428,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @should cascade delete given concept state conversion when given cascade is true
 	 * @should not cascade delete given concept state conversion when given cascade is false
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_MANAGE_PROGRAMS })
+	@Authorized( { PrivilegeConstants.MANAGE_PROGRAMS })
 	public void purgeConceptStateConversion(ConceptStateConversion conceptStateConversion, boolean cascade)
 	                                                                                                       throws APIException;
 	
@@ -475,7 +475,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @throws APIException
 	 * @deprecated use {@link #saveProgram(Program)}
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_MANAGE_PROGRAMS })
+	@Authorized( { PrivilegeConstants.MANAGE_PROGRAMS })
 	public void createOrUpdateProgram(Program program) throws APIException;
 	
 	/**
@@ -485,7 +485,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @deprecated use {@link #getAllPrograms()}
 	 * @throws APIException
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_PROGRAMS })
+	@Authorized( { PrivilegeConstants.VIEW_PROGRAMS })
 	@Transactional(readOnly = true)
 	public List<Program> getPrograms() throws APIException;
 	
@@ -501,7 +501,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 *             #saveProgram(Program)}
 	 * @throws APIException
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_MANAGE_PROGRAMS })
+	@Authorized( { PrivilegeConstants.MANAGE_PROGRAMS })
 	public void createWorkflow(ProgramWorkflow programWorkflow) throws APIException;
 	
 	/**
@@ -512,7 +512,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 *             given Program}
 	 * @throws APIException
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_MANAGE_PROGRAMS })
+	@Authorized( { PrivilegeConstants.MANAGE_PROGRAMS })
 	public void updateWorkflow(ProgramWorkflow programWorkflow) throws APIException;
 	
 	/**
@@ -525,7 +525,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 *             programs they belong to: use {@link org.openmrs.Program#getWorkflows()}
 	 * @throws APIException
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_PROGRAMS })
+	@Authorized( { PrivilegeConstants.VIEW_PROGRAMS })
 	@Transactional(readOnly = true)
 	public ProgramWorkflow getWorkflow(Integer id) throws APIException;
 	
@@ -538,7 +538,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @deprecated use {@link Program#getWorkflowByName(String)}
 	 * @throws APIException
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_PROGRAMS })
+	@Authorized( { PrivilegeConstants.VIEW_PROGRAMS })
 	@Transactional(readOnly = true)
 	public ProgramWorkflow getWorkflow(Program program, String name) throws APIException;
 	
@@ -551,7 +551,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 *             #saveProgram(Program)}
 	 * @throws APIException
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_MANAGE_PROGRAMS })
+	@Authorized( { PrivilegeConstants.MANAGE_PROGRAMS })
 	public void voidWorkflow(ProgramWorkflow programWorkflow, String reason) throws APIException;
 	
 
@@ -578,7 +578,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @see ProgramWorkflow#getStates()
 	 * @throws APIException
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_PROGRAMS })
+	@Authorized( { PrivilegeConstants.VIEW_PROGRAMS })
 	@Transactional(readOnly = true)
 	public List<ProgramWorkflowState> getStates() throws APIException;
 	
@@ -593,7 +593,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @see ProgramWorkflow#getStates(boolean)
 	 * @throws APIException
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_PROGRAMS })
+	@Authorized( { PrivilegeConstants.VIEW_PROGRAMS })
 	@Transactional(readOnly = true)
 	public List<ProgramWorkflowState> getStates(boolean includeVoided) throws APIException;
 	
@@ -608,7 +608,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @see ProgramWorkflow#getState(Integer)
 	 * @throws APIException
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_PROGRAMS })
+	@Authorized( { PrivilegeConstants.VIEW_PROGRAMS })
 	@Transactional(readOnly = true)
 	public ProgramWorkflowState getState(Integer id) throws APIException;
 	
@@ -625,7 +625,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @see ProgramWorkflow#getStateByName(String)
 	 * @throws APIException
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_PROGRAMS })
+	@Authorized( { PrivilegeConstants.VIEW_PROGRAMS })
 	@Transactional(readOnly = true)
 	public ProgramWorkflowState getState(ProgramWorkflow programWorkflow, String name) throws APIException;
 	
@@ -640,7 +640,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @deprecated use {@link ProgramWorkflow#getPossibleNextStates(PatientProgram)}
 	 * @throws APIException
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_PROGRAMS })
+	@Authorized( { PrivilegeConstants.VIEW_PROGRAMS })
 	@Transactional(readOnly = true)
 	public List<ProgramWorkflowState> getPossibleNextStates(PatientProgram patientProgram, ProgramWorkflow workflow)
 	                                                                                                                throws APIException;
@@ -658,7 +658,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 *             {@link ProgramWorkflow#isLegalTransition(ProgramWorkflowState, ProgramWorkflowState)}
 	 * @throws APIException
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_PROGRAMS })
+	@Authorized( { PrivilegeConstants.VIEW_PROGRAMS })
 	@Transactional(readOnly = true)
 	public boolean isLegalTransition(ProgramWorkflowState fromState, ProgramWorkflowState toState) throws APIException;
 	
@@ -673,7 +673,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @deprecated use {@link #savePatientProgram(PatientProgram)}
 	 * @throws APIException
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_ADD_PATIENT_PROGRAMS })
+	@Authorized( { PrivilegeConstants.ADD_PATIENT_PROGRAMS })
 	public void createPatientProgram(PatientProgram patientProgram) throws APIException;
 	
 	/**
@@ -683,7 +683,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @deprecated use {@link #savePatientProgram(PatientProgram)}
 	 * @throws APIException
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_EDIT_PATIENT_PROGRAMS })
+	@Authorized( { PrivilegeConstants.EDIT_PATIENT_PROGRAMS })
 	public void updatePatientProgram(PatientProgram patientProgram) throws APIException;
 	
 	/**
@@ -700,7 +700,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 *             #savePatientProgram(PatientProgram)}
 	 * @throws APIException
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_ADD_PATIENT_PROGRAMS })
+	@Authorized( { PrivilegeConstants.ADD_PATIENT_PROGRAMS })
 	public void enrollPatientInProgram(Patient patient, Program program, Date enrollmentDate, Date completionDate,
 	                                   User creator) throws APIException;
 	
@@ -714,7 +714,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 *             {@link #getPatientPrograms(Patient, Program, Date, Date, Date, Date, boolean)}
 	 * @throws APIException
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_PATIENT_PROGRAMS })
+	@Authorized( { PrivilegeConstants.VIEW_PATIENT_PROGRAMS })
 	@Transactional(readOnly = true)
 	public Collection<PatientProgram> getPatientPrograms(Patient patient) throws APIException;
 	
@@ -734,7 +734,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 *             which can be Iterated across to return collection of patient ids
 	 * @throws APIException
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_PATIENT_PROGRAMS })
+	@Authorized( { PrivilegeConstants.VIEW_PATIENT_PROGRAMS })
 	@Transactional(readOnly = true)
 	public Collection<Integer> patientsInProgram(Program program, Date fromDate, Date toDate) throws APIException;
 	
@@ -749,7 +749,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 *             {@link #getPatientPrograms(Patient, Program, Date, Date, Date, Date, boolean)}
 	 * @throws APIException
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_PATIENT_PROGRAMS })
+	@Authorized( { PrivilegeConstants.VIEW_PATIENT_PROGRAMS })
 	@Transactional(readOnly = true)
 	public Collection<PatientProgram> getCurrentPrograms(Patient patient, Date onDate) throws APIException;
 	
@@ -768,7 +768,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 *             {@link #getPatientPrograms(Patient, Program, Date, Date, Date, Date, boolean)}
 	 * @throws APIException
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_PATIENT_PROGRAMS })
+	@Authorized( { PrivilegeConstants.VIEW_PATIENT_PROGRAMS })
 	@Transactional(readOnly = true)
 	public boolean isInProgram(Patient patient, Program program, Date fromDate, Date toDate) throws APIException;
 	
@@ -785,7 +785,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @deprecated use {@link PatientProgram#getPatientState(Integer)}
 	 * @throws APIException
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_PATIENT_PROGRAMS })
+	@Authorized( { PrivilegeConstants.VIEW_PATIENT_PROGRAMS })
 	@Transactional(readOnly = true)
 	public PatientState getPatientState(Integer patientStateId) throws APIException;
 	
@@ -800,7 +800,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @deprecated use {@link PatientProgram#getCurrentState(ProgramWorkflow)}
 	 * @throws APIException
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_PATIENT_PROGRAMS })
+	@Authorized( { PrivilegeConstants.VIEW_PATIENT_PROGRAMS })
 	@Transactional(readOnly = true)
 	public PatientState getLatestState(PatientProgram patientProgram, ProgramWorkflow programWorkflow) throws APIException;
 	
@@ -814,7 +814,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 *             PatientProgram, and PatientState
 	 * @throws APIException
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_PATIENT_PROGRAMS })
+	@Authorized( { PrivilegeConstants.VIEW_PATIENT_PROGRAMS })
 	@Transactional(readOnly = true)
 	public Set<ProgramWorkflow> getCurrentWorkflowsByPatient(Patient patient) throws APIException;
 	
@@ -828,7 +828,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 *             PatientProgram, and PatientState
 	 * @throws APIException
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_PATIENT_PROGRAMS })
+	@Authorized( { PrivilegeConstants.VIEW_PATIENT_PROGRAMS })
 	@Transactional(readOnly = true)
 	public Set<ProgramWorkflow> getCurrentWorkflowsByPatientProgram(PatientProgram program) throws APIException;
 	
@@ -844,7 +844,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @deprecated use {@link PatientProgram#transitionToState(ProgramWorkflowState, Date)}
 	 * @throws APIException
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_ADD_PATIENT_PROGRAMS, OpenmrsConstants.PRIV_EDIT_PATIENT_PROGRAMS })
+	@Authorized( { PrivilegeConstants.ADD_PATIENT_PROGRAMS, PrivilegeConstants.EDIT_PATIENT_PROGRAMS })
 	public void changeToState(PatientProgram patientProgram, ProgramWorkflow workflow, ProgramWorkflowState state,
 	                          Date onDate) throws APIException;
 	
@@ -882,7 +882,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * 
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_PATIENT_PROGRAMS })
+	@Authorized( { PrivilegeConstants.VIEW_PATIENT_PROGRAMS })
 	public List<PatientProgram> getPatientPrograms(Cohort cohort, Collection<Program> programs);
 	
 	/**
@@ -895,7 +895,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @deprecated use {@link PatientProgram#transitionToState(ProgramWorkflowState, Date)}
 	 * @throws APIException
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_ADD_PATIENT_PROGRAMS, OpenmrsConstants.PRIV_EDIT_PATIENT_PROGRAMS })
+	@Authorized( { PrivilegeConstants.ADD_PATIENT_PROGRAMS, PrivilegeConstants.EDIT_PATIENT_PROGRAMS })
 	public void terminatePatientProgram(PatientProgram patientProgram, ProgramWorkflowState finalState, Date terminatedOn);
 	
 	/**
@@ -908,7 +908,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @deprecated use {@link PatientProgram#voidLastState(ProgramWorkflow, User, Date, String)}
 	 * @throws APIException
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_EDIT_PATIENT_PROGRAMS })
+	@Authorized( { PrivilegeConstants.EDIT_PATIENT_PROGRAMS })
 	public void voidLastState(PatientProgram patientProgram, ProgramWorkflow wf, String voidReason) throws APIException;
 	
 	// **************************
@@ -922,7 +922,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @deprecated use {@link #saveConceptStateConversion(ConceptStateConversion)}
 	 * @throws APIException
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_ADD_PATIENT_PROGRAMS })
+	@Authorized( { PrivilegeConstants.ADD_PATIENT_PROGRAMS })
 	public void createConceptStateConversion(ConceptStateConversion conceptStateConversion) throws APIException;
 	
 	/**
@@ -932,7 +932,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @deprecated use {@link #saveConceptStateConversion(ConceptStateConversion)}
 	 * @throws APIException
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_EDIT_PATIENT_PROGRAMS })
+	@Authorized( { PrivilegeConstants.EDIT_PATIENT_PROGRAMS })
 	public void updateConceptStateConversion(ConceptStateConversion conceptStateConversion) throws APIException;
 	
 	/**
@@ -944,7 +944,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @deprecated use {@link #getAllConceptStateConversions()}
 	 * @throws APIException
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_PROGRAMS })
+	@Authorized( { PrivilegeConstants.VIEW_PROGRAMS })
 	@Transactional(readOnly = true)
 	public List<ConceptStateConversion> getAllConversions() throws APIException;
 	

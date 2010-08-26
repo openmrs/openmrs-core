@@ -13,21 +13,13 @@
  */
 package org.openmrs.web.controller.user;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Privilege;
 import org.openmrs.api.APIException;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
-import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.context.support.MessageSourceAccessor;
@@ -37,6 +29,13 @@ import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class PrivilegeListController extends SimpleFormController {
 	
@@ -141,7 +140,7 @@ public class PrivilegeListController extends SimpleFormController {
 		if (Context.isAuthenticated()) {
 			UserService us = Context.getUserService();
 			for (Privilege p : us.getAllPrivileges()) {
-				if (OpenmrsConstants.CORE_PRIVILEGES().keySet().contains(p.getPrivilege()))
+				if (OpenmrsUtil.getCorePrivileges().keySet().contains(p.getPrivilege()))
 					privilegeList.put(p, true);
 				else
 					privilegeList.put(p, false);

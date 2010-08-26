@@ -13,11 +13,6 @@
  */
 package org.openmrs.api.impl;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Vector;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Person;
@@ -26,14 +21,19 @@ import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
-import org.openmrs.api.PasswordException;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.UserDAO;
 import org.openmrs.patient.impl.LuhnIdentifierValidator;
-import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.util.PrivilegeConstants;
+import org.openmrs.util.RoleConstants;
+
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * Default implementation of the user service. This class should not be used on its own. The current
@@ -68,9 +68,9 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 */
 	public User saveUser(User user, String password) throws APIException {
 		if (user.getUserId() == null) {
-			Context.requirePrivilege(OpenmrsConstants.PRIV_ADD_USERS);
+			Context.requirePrivilege(PrivilegeConstants.ADD_USERS);
 		} else {
-			Context.requirePrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
+			Context.requirePrivilege(PrivilegeConstants.EDIT_USERS);
 		}
 		
 		checkPrivileges(user);
@@ -235,7 +235,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 * @see org.openmrs.api.UserService#purgePrivilege(org.openmrs.Privilege)
 	 */
 	public void purgePrivilege(Privilege privilege) throws APIException {
-		if (OpenmrsConstants.CORE_PRIVILEGES().keySet().contains(privilege.getPrivilege()))
+		if (OpenmrsUtil.getCorePrivileges().keySet().contains(privilege.getPrivilege()))
 			throw new APIException("Cannot delete a core privilege");
 		
 		dao.deletePrivilege(privilege);
@@ -289,7 +289,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		if (role == null || role.getRole() == null)
 			return;
 		
-		if (OpenmrsConstants.CORE_ROLES().keySet().contains(role.getRole()))
+		if (OpenmrsUtil.getCoreRoles().keySet().contains(role.getRole()))
 			throw new APIException("Cannot delete a core role");
 		
 		dao.deleteRole(role);
@@ -411,7 +411,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		
 		// if the authenticated role is in the list of searched roles, then all
 		// persons should be searched
-		Role auth_role = getRole(OpenmrsConstants.AUTHENTICATED_ROLE);
+		Role auth_role = getRole(RoleConstants.AUTHENTICATED);
 		if (roles.contains(auth_role))
 			return dao.getUsers(nameSearch, new Vector<Role>(), includeVoided);
 		else
@@ -430,8 +430,8 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		List<String> requiredPrivs = new Vector<String>();
 		
 		for (Role r : roles) {
-			if (r.getRole().equals(OpenmrsConstants.SUPERUSER_ROLE) && !authUser.hasRole(OpenmrsConstants.SUPERUSER_ROLE))
-				throw new APIException("You must have the role '" + OpenmrsConstants.SUPERUSER_ROLE
+			if (r.getRole().equals(RoleConstants.SUPERUSER) && !authUser.hasRole(RoleConstants.SUPERUSER))
+				throw new APIException("You must have the role '" + RoleConstants.SUPERUSER
 				        + "' in order to assign it.");
 			if (r.getPrivileges() != null) {
 				for (Privilege p : r.getPrivileges())
@@ -456,16 +456,16 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 */
 	public User setUserProperty(User user, String key, String value) {
 		if (user != null) {
-			if (!Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_USERS) && !user.equals(Context.getAuthenticatedUser()))
+			if (!Context.hasPrivilege(PrivilegeConstants.EDIT_USERS) && !user.equals(Context.getAuthenticatedUser()))
 				throw new APIException("You are not authorized to change " + user.getUserId() + "'s properties");
 			
 			user.setUserProperty(key, value);
 			try {
-				Context.addProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
+				Context.addProxyPrivilege(PrivilegeConstants.EDIT_USERS);
 				saveUser(user, null);
 			}
 			finally {
-				Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
+				Context.removeProxyPrivilege(PrivilegeConstants.EDIT_USERS);
 			}
 		}
 		
@@ -481,17 +481,17 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 			// if the current user isn't allowed to edit users and
 			// the user being edited is not the current user, throw an
 			// exception
-			if (!Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_USERS) && !user.equals(Context.getAuthenticatedUser()))
+			if (!Context.hasPrivilege(PrivilegeConstants.EDIT_USERS) && !user.equals(Context.getAuthenticatedUser()))
 				throw new APIException("You are not authorized to change " + user.getUserId() + "'s properties");
 			
 			user.removeUserProperty(key);
 			
 			try {
-				Context.addProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
+				Context.addProxyPrivilege(PrivilegeConstants.EDIT_USERS);
 				saveUser(user, null);
 			}
 			finally {
-				Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
+				Context.removeProxyPrivilege(PrivilegeConstants.EDIT_USERS);
 			}
 		}
 		

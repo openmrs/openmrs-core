@@ -33,8 +33,7 @@ import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.notification.Alert;
 import org.openmrs.notification.AlertRecipient;
-import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
@@ -82,10 +81,10 @@ public class AlertFormController extends SimpleFormController {
 		try {
 			// check that the user has the right privileges here because
 			// we are giving them a proxy privilege in the line following this
-			if (Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_ALERTS) == false)
+			if (Context.hasPrivilege(PrivilegeConstants.MANAGE_ALERTS) == false)
 				throw new APIAuthenticationException("Must be logged in as user with alerts privileges");
 			
-			Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
+			Context.addProxyPrivilege(PrivilegeConstants.VIEW_USERS);
 			
 			UserService us = Context.getUserService();
 			
@@ -148,7 +147,7 @@ public class AlertFormController extends SimpleFormController {
 			errors.reject(e.getMessage());
 		}
 		finally {
-			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
+			Context.removeProxyPrivilege(PrivilegeConstants.VIEW_USERS);
 		}
 		
 		return super.processFormSubmission(request, reponse, alert, errors);

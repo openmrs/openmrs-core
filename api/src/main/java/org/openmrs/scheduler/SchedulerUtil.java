@@ -23,7 +23,7 @@ import java.util.Properties;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
-import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.PrivilegeConstants;
 
 public class SchedulerUtil {
 	
@@ -51,11 +51,11 @@ public class SchedulerUtil {
 		
 		// TODO: do this for all services
 		try {
-			Context.addProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_SCHEDULER);
+			Context.addProxyPrivilege(PrivilegeConstants.MANAGE_SCHEDULER);
 			Context.getSchedulerService().onStartup();
 		}
 		finally {
-			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_SCHEDULER);
+			Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_SCHEDULER);
 		}
 	}
 	
@@ -75,14 +75,14 @@ public class SchedulerUtil {
 		
 		// TODO: Do this for all services
 		try {
-			Context.addProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_SCHEDULER);
+			Context.addProxyPrivilege(PrivilegeConstants.MANAGE_SCHEDULER);
 			// doesn't attempt shutdown if there was an error getting the scheduler service
 			if (service != null) {
 				service.onShutdown();
 			}
 		}
 		finally {
-			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_SCHEDULER);
+			Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_SCHEDULER);
 		}
 		
 	}

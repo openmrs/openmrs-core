@@ -41,6 +41,7 @@ import org.openmrs.module.ModuleFileParser;
 import org.openmrs.module.ModuleUtil;
 import org.openmrs.module.web.WebModuleUtil;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.WebUtil;
 import org.springframework.context.support.MessageSourceAccessor;
@@ -75,8 +76,8 @@ public class ModuleListController extends SimpleFormController {
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command,
 	                                BindException errors) throws Exception {
 		
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_MANAGE_MODULES))
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_MANAGE_MODULES);
+		if (!Context.hasPrivilege(PrivilegeConstants.MANAGE_MODULES))
+			throw new APIAuthenticationException("Privilege required: " + PrivilegeConstants.MANAGE_MODULES);
 		
 		HttpSession httpSession = request.getSession();
 		String moduleId = ServletRequestUtils.getStringParameter(request, "moduleId", "");

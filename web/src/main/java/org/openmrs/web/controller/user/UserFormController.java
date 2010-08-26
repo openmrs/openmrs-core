@@ -33,6 +33,7 @@ import org.openmrs.messagesource.MessageSourceService;
 import org.openmrs.propertyeditor.RoleEditor;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.validator.UserValidator;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.user.UserProperties;
@@ -106,7 +107,7 @@ public class UserFormController {
 		// the formBackingObject method above sets up user, depending on userId and personId parameters   
 		
 		model.addAttribute("isNewUser", isNewUser(user));
-		if (isNewUser(user) || Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_USER_PASSWORDS))
+		if (isNewUser(user) || Context.hasPrivilege(PrivilegeConstants.EDIT_USER_PASSWORDS))
 			model.addAttribute("modifyPasswords", true);
 		
 		if (createNewPerson != null)
@@ -249,8 +250,8 @@ public class UserFormController {
 				us.saveUser(user, password);
             } else {
 				us.saveUser(user, null);
-                
-				if (!password.equals("") && Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_USER_PASSWORDS)) {
+				
+				if (!password.equals("") && Context.hasPrivilege(PrivilegeConstants.EDIT_USER_PASSWORDS)) {
 					if (log.isDebugEnabled())
 						log.debug("calling changePassword for user " + user + " by user " + Context.getAuthenticatedUser());
 					us.changePassword(user, password);

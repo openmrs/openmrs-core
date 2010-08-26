@@ -31,6 +31,7 @@ import org.openmrs.api.db.ObsDAO;
 import org.openmrs.obs.ComplexObsHandler;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
+import org.openmrs.util.PrivilegeConstants;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -90,8 +91,8 @@ public interface ObsService extends OpenmrsService {
 	 * @throws APIException
 	 * @deprecated use {@link #saveObs(Obs, String)}
 	 */
-	@Deprecated
-	@Authorized(OpenmrsConstants.PRIV_ADD_OBS)
+    @Deprecated
+	@Authorized(PrivilegeConstants.ADD_OBS)
 	public void createObs(Obs obs) throws APIException;
 	
 	/**
@@ -112,8 +113,8 @@ public interface ObsService extends OpenmrsService {
 	 *             temporary until we created a true ObsGroup pojo. Replaced by
 	 *             {@link #saveObs(Obs, String)}
 	 */
-	@Deprecated
-	@Authorized(OpenmrsConstants.PRIV_ADD_OBS)
+    @Deprecated
+	@Authorized(PrivilegeConstants.ADD_OBS)
 	public void createObsGroup(Obs[] obs) throws APIException;
 	
 	/**
@@ -125,7 +126,7 @@ public interface ObsService extends OpenmrsService {
 	 * @should get obs matching given obsId
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_OBS)
+	@Authorized(PrivilegeConstants.VIEW_OBS)
 	public Obs getObs(Integer obsId) throws APIException;
 	
 	/**
@@ -137,7 +138,7 @@ public interface ObsService extends OpenmrsService {
 	 * @should return null if no object found with given uuid
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_OBS)
+	@Authorized(PrivilegeConstants.VIEW_OBS)
 	public Obs getObsByUuid(String uuid) throws APIException;
 	
 	/**
@@ -147,8 +148,8 @@ public interface ObsService extends OpenmrsService {
 	 * @throws APIException
 	 * @deprecated use {@link #saveObs(Obs, String)}
 	 */
-	@Deprecated
-	@Authorized(OpenmrsConstants.PRIV_EDIT_OBS)
+    @Deprecated
+	@Authorized(PrivilegeConstants.EDIT_OBS)
 	public void updateObs(Obs obs) throws APIException;
 	
 	/**
@@ -176,7 +177,7 @@ public interface ObsService extends OpenmrsService {
 	 * @should cascade save to child obs groups
 	 * @should cascade update to new child obs groups
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_ADD_OBS, OpenmrsConstants.PRIV_EDIT_OBS })
+	@Authorized( { PrivilegeConstants.ADD_OBS, PrivilegeConstants.EDIT_OBS })
 	public Obs saveObs(Obs obs, String changeMessage) throws APIException;
 	
 	/**
@@ -188,7 +189,7 @@ public interface ObsService extends OpenmrsService {
 	 * @should set voided bit on given obs
 	 * @should fail if reason parameter is empty
 	 */
-	@Authorized(OpenmrsConstants.PRIV_EDIT_OBS)
+	@Authorized(PrivilegeConstants.EDIT_OBS)
 	public Obs voidObs(Obs obs, String reason) throws APIException;
 	
 	/**
@@ -199,7 +200,7 @@ public interface ObsService extends OpenmrsService {
 	 * @should unset voided bit on given obs
 	 * @should cascade unvoid to child grouped obs
 	 */
-	@Authorized(OpenmrsConstants.PRIV_EDIT_OBS)
+	@Authorized(PrivilegeConstants.EDIT_OBS)
 	public Obs unvoidObs(Obs obs) throws APIException;
 	
 	/**
@@ -210,8 +211,8 @@ public interface ObsService extends OpenmrsService {
 	 * @throws APIException
 	 * @deprecated use #purgeObs(Obs)
 	 */
-	@Deprecated
-	@Authorized(OpenmrsConstants.PRIV_DELETE_OBS)
+    @Deprecated
+	@Authorized(PrivilegeConstants.DELETE_OBS)
 	public void deleteObs(Obs obs) throws APIException;
 	
 	/**
@@ -225,7 +226,7 @@ public interface ObsService extends OpenmrsService {
 	 * @see #purgeObs(Obs, boolean)
 	 * @should delete the given obs from the database
 	 */
-	@Authorized(OpenmrsConstants.PRIV_DELETE_OBS)
+	@Authorized(PrivilegeConstants.DELETE_OBS)
 	public void purgeObs(Obs obs) throws APIException;
 	
 	/**
@@ -240,7 +241,7 @@ public interface ObsService extends OpenmrsService {
 	 * @see #purgeObs(Obs, boolean)
 	 * @should throw APIException if given true cascade
 	 */
-	@Authorized(OpenmrsConstants.PRIV_DELETE_OBS)
+	@Authorized(PrivilegeConstants.DELETE_OBS)
 	public void purgeObs(Obs obs, boolean cascade) throws APIException;
 	
 	/**
@@ -335,7 +336,7 @@ public interface ObsService extends OpenmrsService {
 	 */
 	@Deprecated
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_OBS)
+	@Authorized(PrivilegeConstants.VIEW_OBS)
 	public Set<Obs> getObservations(Person who, boolean includeVoided);
 	
 	/**
@@ -348,7 +349,7 @@ public interface ObsService extends OpenmrsService {
 	 * @should get all observations assigned to given person
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_OBS)
+	@Authorized(PrivilegeConstants.VIEW_OBS)
 	public List<Obs> getObservationsByPerson(Person who);
 	
 	/**
@@ -397,7 +398,7 @@ public interface ObsService extends OpenmrsService {
 	 * @should include voided obs if includeVoidedObs is true
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_OBS)
+	@Authorized(PrivilegeConstants.VIEW_OBS)
 	public List<Obs> getObservations(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
 	                                 List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations,
 	                                 List<String> sort, Integer mostRecentN, Integer obsGroupId, Date fromDate, Date toDate,
@@ -444,7 +445,7 @@ public interface ObsService extends OpenmrsService {
 	 * @should include count of voided obs if includeVoidedObs is true
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_OBS)
+	@Authorized(PrivilegeConstants.VIEW_OBS)
 	public Integer getObservationCount(List<Person> whom, List<Encounter> encounters, List<Concept> questions,
 	                                   List<Concept> answers, List<PERSON_TYPE> personTypes, List<Location> locations,
 	                                   Integer obsGroupId, Date fromDate, Date toDate, boolean includeVoidedObs)
@@ -461,7 +462,7 @@ public interface ObsService extends OpenmrsService {
 	 * @should get obs matching obsId in searchString
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_OBS)
+	@Authorized(PrivilegeConstants.VIEW_OBS)
 	public List<Obs> getObservations(String searchString) throws APIException;
 	
 	/**
@@ -470,7 +471,7 @@ public interface ObsService extends OpenmrsService {
 	 */
 	@Deprecated
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_OBS)
+	@Authorized(PrivilegeConstants.VIEW_OBS)
 	public List<Obs> getObservations(Concept c, Location loc, String sort, Integer personType, boolean includeVoided);
 	
 	/**
@@ -478,7 +479,7 @@ public interface ObsService extends OpenmrsService {
 	 */
 	@Deprecated
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_OBS)
+	@Authorized(PrivilegeConstants.VIEW_OBS)
 	public Set<Obs> getObservations(Person who, Concept question, boolean includeVoided);
 	
 	/**
@@ -495,7 +496,7 @@ public interface ObsService extends OpenmrsService {
 	 * @should not fail with null person parameter
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_OBS)
+	@Authorized(PrivilegeConstants.VIEW_OBS)
 	public List<Obs> getObservationsByPersonAndConcept(Person who, Concept question) throws APIException;
 	
 	/**
@@ -504,7 +505,7 @@ public interface ObsService extends OpenmrsService {
 	 */
 	@Deprecated
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_OBS)
+	@Authorized(PrivilegeConstants.VIEW_OBS)
 	public List<Obs> getLastNObservations(Integer n, Person who, Concept question, boolean includeVoided);
 	
 	/**
@@ -513,7 +514,7 @@ public interface ObsService extends OpenmrsService {
 	 */
 	@Deprecated
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_OBS)
+	@Authorized(PrivilegeConstants.VIEW_OBS)
 	public List<Obs> getObservations(Concept question, String sort, Integer personType, boolean includeVoided);
 	
 	/**
@@ -522,7 +523,7 @@ public interface ObsService extends OpenmrsService {
 	 */
 	@Deprecated
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_OBS)
+	@Authorized(PrivilegeConstants.VIEW_OBS)
 	public List<Obs> getObservationsAnsweredByConcept(Concept answer, Integer personType, boolean includeVoided);
 	
 	/**
@@ -539,7 +540,7 @@ public interface ObsService extends OpenmrsService {
 	 **/
 	@Deprecated
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_OBS)
+	@Authorized(PrivilegeConstants.VIEW_OBS)
 	public List<Object[]> getNumericAnswersForConcept(Concept answer, Boolean sortByValue, Integer personType,
 	                                                  boolean includeVoided);
 	
@@ -548,7 +549,7 @@ public interface ObsService extends OpenmrsService {
 	 */
 	@Deprecated
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_OBS)
+	@Authorized(PrivilegeConstants.VIEW_OBS)
 	public Set<Obs> getObservations(Encounter whichEncounter);
 	
 	/**
@@ -557,7 +558,7 @@ public interface ObsService extends OpenmrsService {
 	 */
 	@Deprecated
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_OBS)
+	@Authorized(PrivilegeConstants.VIEW_OBS)
 	public List<Obs> getVoidedObservations();
 	
 	/**
@@ -565,7 +566,7 @@ public interface ObsService extends OpenmrsService {
 	 */
 	@Deprecated
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_OBS)
+	@Authorized(PrivilegeConstants.VIEW_OBS)
 	public List<Obs> findObservations(String search, boolean includeVoided, Integer personType);
 	
 	/**
@@ -574,7 +575,7 @@ public interface ObsService extends OpenmrsService {
 	 */
 	@Deprecated
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_OBS)
+	@Authorized(PrivilegeConstants.VIEW_OBS)
 	public List<Obs> findObsByGroupId(Integer obsGroupId);
 	
 	/**
@@ -583,7 +584,7 @@ public interface ObsService extends OpenmrsService {
 	 */
 	@Deprecated
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_OBS)
+	@Authorized(PrivilegeConstants.VIEW_OBS)
 	public List<Obs> getObservations(List<Concept> concepts, Date fromDate, Date toDate, boolean includeVoided);
 	
 	/**
@@ -592,7 +593,7 @@ public interface ObsService extends OpenmrsService {
 	 */
 	@Deprecated
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_OBS)
+	@Authorized(PrivilegeConstants.VIEW_OBS)
 	public List<Obs> getObservations(List<Concept> concepts, Date fromDate, Date toDate);
 	
 	/**
@@ -601,7 +602,7 @@ public interface ObsService extends OpenmrsService {
 	 */
 	@Deprecated
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_OBS)
+	@Authorized(PrivilegeConstants.VIEW_OBS)
 	public List<Obs> getObservations(Cohort patients, List<Concept> concepts, Date fromDate, Date toDate);
 	
 	/**
@@ -619,7 +620,7 @@ public interface ObsService extends OpenmrsService {
 	 * @should not fail with null view
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_OBS })
+	@Authorized( { PrivilegeConstants.VIEW_OBS })
 	public Obs getComplexObs(Integer obsId, String view) throws APIException;
 	
 	/**
@@ -705,6 +706,6 @@ public interface ObsService extends OpenmrsService {
 	 * @since Version 1.7
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_OBS)
+	@Authorized(PrivilegeConstants.VIEW_OBS)
 	public Integer getObservationCount(List<ConceptName> conceptNames, boolean includeVoided);
 }

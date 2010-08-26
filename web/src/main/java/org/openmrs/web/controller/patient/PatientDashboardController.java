@@ -34,7 +34,7 @@ import org.openmrs.PersonAddress;
 import org.openmrs.PersonName;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
-import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.PrivilegeConstants;
 import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.validation.Errors;
 import org.springframework.web.servlet.mvc.SimpleFormController;
@@ -102,7 +102,7 @@ public class PatientDashboardController extends SimpleFormController {
 		String causeOfDeathOther = "";
 		
 		if (Context.isAuthenticated()) {
-			if (Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_UNPUBLISHED_FORMS))
+			if (Context.hasPrivilege(PrivilegeConstants.VIEW_UNPUBLISHED_FORMS))
 				forms.addAll(Context.getFormService().getAllForms());
 			else
 				forms.addAll(Context.getFormService().getPublishedForms());

@@ -28,8 +28,8 @@ import org.openmrs.RelationshipType;
 import org.openmrs.User;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.PersonDAO;
-import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
+import org.openmrs.util.PrivilegeConstants;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -94,7 +94,7 @@ public interface PersonService {
 	 */
 	// TODO: make gender a (definable?) constant
 	@Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_PERSONS })
+	@Authorized( { PrivilegeConstants.VIEW_PERSONS })
 	public Set<Person> getSimilarPeople(String nameSearch, Integer birthyear, String gender) throws APIException;
 	
 	/**
@@ -130,31 +130,31 @@ public interface PersonService {
 	 * @should match search to familyName2
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_PERSONS })
+	@Authorized( { PrivilegeConstants.VIEW_PERSONS })
 	public List<Person> getPeople(String searchPhrase, Boolean dead) throws APIException;
 	
 	/**
 	 * @deprecated @see #getPeople(...)
 	 */
-	@Deprecated
-    @Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_PERSONS })
+    @Deprecated
+	@Transactional(readOnly = true)
+	@Authorized( { PrivilegeConstants.VIEW_PERSONS })
 	public Set<Person> findPeople(String searchPhrase, boolean includeVoided) throws APIException;
 	
 	/**
 	 * @deprecated @see #getPeople(...)
 	 */
-	@Deprecated
-    @Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_PERSONS })
+    @Deprecated
+	@Transactional(readOnly = true)
+	@Authorized( { PrivilegeConstants.VIEW_PERSONS })
 	public Set<Person> findPeople(String searchPhrase, boolean includeVoided, String roles) throws APIException;
 	
 	/**
 	 * @deprecated @see #getPeople(...)
 	 */
-	@Deprecated
-    @Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_PERSONS })
+    @Deprecated
+	@Transactional(readOnly = true)
+	@Authorized( { PrivilegeConstants.VIEW_PERSONS })
 	public Set<Person> findPeople(String searchPhrase, boolean includeVoided, List<String> roles) throws APIException;
 	
 	/**
@@ -173,7 +173,7 @@ public interface PersonService {
 	 * @should set the date changed and changed by on update
 	 * @should update any global property which reference this type
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_MANAGE_PERSON_ATTRIBUTE_TYPES })
+	@Authorized( { PrivilegeConstants.MANAGE_PERSON_ATTRIBUTE_TYPES })
 	public PersonAttributeType savePersonAttributeType(PersonAttributeType type) throws APIException;
 	
 	/**
@@ -181,7 +181,7 @@ public interface PersonService {
 	 * 
 	 * @param attrTypeId, retiredReason
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_MANAGE_PERSON_ATTRIBUTE_TYPES })
+	@Authorized( { PrivilegeConstants.MANAGE_PERSON_ATTRIBUTE_TYPES })
 	public PersonAttributeType retirePersonAttributeType(PersonAttributeType type, String retiredReason) throws APIException;
 	
 	/**
@@ -189,21 +189,21 @@ public interface PersonService {
 	 * 
 	 * @param relationshipType, retiredReason
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_MANAGE_RELATIONSHIP_TYPES })
+	@Authorized( { PrivilegeConstants.MANAGE_RELATIONSHIP_TYPES })
 	public RelationshipType retireRelationshipType(RelationshipType type, String retiredReason) throws APIException;
 	
 	/**
 	 * @deprecated {@link #savePersonAttributeType(PersonAttributeType)}
 	 */
-	@Deprecated
-    @Authorized( { OpenmrsConstants.PRIV_MANAGE_PERSON_ATTRIBUTE_TYPES })
+    @Deprecated
+	@Authorized( { PrivilegeConstants.MANAGE_PERSON_ATTRIBUTE_TYPES })
 	public void createPersonAttributeType(PersonAttributeType type) throws APIException;
 	
 	/**
 	 * @deprecated replaced by #purgePersonAttributeType(PersonAttributeType)
 	 */
-	@Deprecated
-    @Authorized( { OpenmrsConstants.PRIV_PURGE_PERSON_ATTRIBUTE_TYPES })
+    @Deprecated
+	@Authorized( { PrivilegeConstants.PURGE_PERSON_ATTRIBUTE_TYPES })
 	public void deletePersonAttributeType(PersonAttributeType type) throws APIException;
 	
 	/**
@@ -213,7 +213,7 @@ public interface PersonService {
 	 * @throws APIException
 	 * @should delete person attribute type from database
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_PURGE_PERSON_ATTRIBUTE_TYPES })
+	@Authorized( { PrivilegeConstants.PURGE_PERSON_ATTRIBUTE_TYPES })
 	public void purgePersonAttributeType(PersonAttributeType type) throws APIException;
 	
 	/**
@@ -225,7 +225,7 @@ public interface PersonService {
 	 * @return the person that was voided
 	 * @should return voided person with given reason
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_EDIT_PERSONS })
+	@Authorized( { PrivilegeConstants.EDIT_PERSONS })
 	public Person voidPerson(Person person, String reason) throws APIException;
 	
 	/**
@@ -235,7 +235,7 @@ public interface PersonService {
 	 * @return the person that was unvoided
 	 * @should unvoid the given person
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_EDIT_PERSONS })
+	@Authorized( { PrivilegeConstants.EDIT_PERSONS })
 	public Person unvoidPerson(Person person) throws APIException;
 	
 	/**
@@ -244,15 +244,15 @@ public interface PersonService {
 	 * @param attrTypeId
 	 * @deprecated use (@link #purgePersonAttributeType(PersonAttributeType))
 	 */
-	@Deprecated
-    @Authorized( { OpenmrsConstants.PRIV_MANAGE_PERSON_ATTRIBUTE_TYPES })
+    @Deprecated
+	@Authorized( { PrivilegeConstants.MANAGE_PERSON_ATTRIBUTE_TYPES })
 	public void deletePersonAttributeType(Integer attrTypeId) throws APIException;
 	
 	/**
 	 * @deprecated use {@link #savePersonAttributeType(PersonAttributeType)}
 	 */
-	@Deprecated
-    @Authorized( { OpenmrsConstants.PRIV_MANAGE_PERSON_ATTRIBUTE_TYPES })
+    @Deprecated
+	@Authorized( { PrivilegeConstants.MANAGE_PERSON_ATTRIBUTE_TYPES })
 	public void updatePersonAttributeType(PersonAttributeType type) throws APIException;
 	
 	/**
@@ -263,7 +263,7 @@ public interface PersonService {
 	 * @should return all person attribute types including retired
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_PERSON_ATTRIBUTE_TYPES })
+	@Authorized( { PrivilegeConstants.VIEW_PERSON_ATTRIBUTE_TYPES })
 	public List<PersonAttributeType> getAllPersonAttributeTypes() throws APIException;
 	
 	/**
@@ -276,15 +276,15 @@ public interface PersonService {
 	 * @should return all person attribute types excluding retired when include retired is false
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_PERSON_ATTRIBUTE_TYPES })
+	@Authorized( { PrivilegeConstants.VIEW_PERSON_ATTRIBUTE_TYPES })
 	public List<PersonAttributeType> getAllPersonAttributeTypes(boolean includeRetired) throws APIException;
 	
 	/**
 	 * @deprecated use {@link #getAllPersonAttributeTypes()}
 	 */
-	@Deprecated
-    @Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_PERSON_ATTRIBUTE_TYPES })
+    @Deprecated
+	@Transactional(readOnly = true)
+	@Authorized( { PrivilegeConstants.VIEW_PERSON_ATTRIBUTE_TYPES })
 	public List<PersonAttributeType> getPersonAttributeTypes() throws APIException;
 	
 	/**
@@ -301,7 +301,7 @@ public interface PersonService {
 	 * @should return empty list when no person attribute types match given parameters
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_PERSON_ATTRIBUTE_TYPES })
+	@Authorized( { PrivilegeConstants.VIEW_PERSON_ATTRIBUTE_TYPES })
 	public List<PersonAttributeType> getPersonAttributeTypes(String exactName, String format, Integer foreignKey,
 	                                                         Boolean searchable) throws APIException;
 	
@@ -313,7 +313,7 @@ public interface PersonService {
 	 * @should return null when no person attribute with the given id exist
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_PERSON_ATTRIBUTE_TYPES })
+	@Authorized( { PrivilegeConstants.VIEW_PERSON_ATTRIBUTE_TYPES })
 	public PersonAttributeType getPersonAttributeType(Integer typeId) throws APIException;
 	
 	/**
@@ -325,7 +325,7 @@ public interface PersonService {
 	 * @should return null if no object found with given uuid
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_PERSON_ATTRIBUTE_TYPES })
+	@Authorized( { PrivilegeConstants.VIEW_PERSON_ATTRIBUTE_TYPES })
 	public PersonAttributeType getPersonAttributeTypeByUuid(String uuid);
 	
 	/**
@@ -338,7 +338,7 @@ public interface PersonService {
 	 * @should return person attribute when PersonAttribute with given id does exist
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_PERSON_ATTRIBUTE_TYPES })
+	@Authorized( { PrivilegeConstants.VIEW_PERSON_ATTRIBUTE_TYPES })
 	public PersonAttribute getPersonAttribute(Integer id) throws APIException;
 	
 	/**
@@ -350,15 +350,15 @@ public interface PersonService {
 	 * @should return null when no person attribute type match given typeName
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_PERSON_ATTRIBUTE_TYPES })
+	@Authorized( { PrivilegeConstants.VIEW_PERSON_ATTRIBUTE_TYPES })
 	public PersonAttributeType getPersonAttributeTypeByName(String typeName) throws APIException;
 	
 	/**
 	 * @deprecated use {@link #getPersonAttributeTypeByName(String)}
 	 */
-	@Deprecated
-    @Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_PERSON_ATTRIBUTE_TYPES })
+    @Deprecated
+	@Transactional(readOnly = true)
+	@Authorized( { PrivilegeConstants.VIEW_PERSON_ATTRIBUTE_TYPES })
 	public PersonAttributeType getPersonAttributeType(String typeName) throws APIException;
 	
 	/**
@@ -371,7 +371,7 @@ public interface PersonService {
 	 * @should return null when relationship with given id does not exist
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_RELATIONSHIPS })
+	@Authorized( { PrivilegeConstants.VIEW_RELATIONSHIPS })
 	public Relationship getRelationship(Integer relationshipId) throws APIException;
 	
 	/**
@@ -383,7 +383,7 @@ public interface PersonService {
 	 * @should return null if no object found with given uuid
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_RELATIONSHIPS })
+	@Authorized( { PrivilegeConstants.VIEW_RELATIONSHIPS })
 	public Relationship getRelationshipByUuid(String uuid) throws APIException;
 	
 	/**
@@ -395,7 +395,7 @@ public interface PersonService {
 	 * @should return all unvoided relationships
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_RELATIONSHIPS })
+	@Authorized( { PrivilegeConstants.VIEW_RELATIONSHIPS })
 	public List<Relationship> getAllRelationships() throws APIException;
 	
 	/**
@@ -408,15 +408,15 @@ public interface PersonService {
 	 * @should return all relationship excluding voided when include voided equals false
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_RELATIONSHIPS })
+	@Authorized( { PrivilegeConstants.VIEW_RELATIONSHIPS })
 	public List<Relationship> getAllRelationships(boolean includeVoided) throws APIException;
 	
 	/**
 	 * @deprecated use {@link #getAllRelationships()}
 	 */
-	@Deprecated
-    @Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_RELATIONSHIPS })
+    @Deprecated
+	@Transactional(readOnly = true)
+	@Authorized( { PrivilegeConstants.VIEW_RELATIONSHIPS })
 	public List<Relationship> getRelationships() throws APIException;
 	
 	/**
@@ -431,31 +431,31 @@ public interface PersonService {
 	 * @should fetch unvoided relationships only
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_RELATIONSHIPS })
+	@Authorized( { PrivilegeConstants.VIEW_RELATIONSHIPS })
 	public List<Relationship> getRelationshipsByPerson(Person p) throws APIException;
 	
 	/**
 	 * @deprecated use {@link #getRelationshipsByPerson(Person)}
 	 */
-	@Deprecated
-    @Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_RELATIONSHIPS })
+    @Deprecated
+	@Transactional(readOnly = true)
+	@Authorized( { PrivilegeConstants.VIEW_RELATIONSHIPS })
 	public List<Relationship> getRelationships(Person p, boolean showVoided) throws APIException;
 	
 	/**
 	 * @deprecated use {@link #getRelationshipsByPerson(Person)}
 	 */
-	@Deprecated
-    @Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_RELATIONSHIPS })
+    @Deprecated
+	@Transactional(readOnly = true)
+	@Authorized( { PrivilegeConstants.VIEW_RELATIONSHIPS })
 	public List<Relationship> getRelationships(Person p) throws APIException;
 	
 	/**
 	 * @deprecated use {@link #getRelationships(...)}
 	 */
-	@Deprecated
-    @Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_RELATIONSHIPS })
+    @Deprecated
+	@Transactional(readOnly = true)
+	@Authorized( { PrivilegeConstants.VIEW_RELATIONSHIPS })
 	public List<Relationship> getRelationshipsTo(Person toPerson, RelationshipType relType) throws APIException;
 	
 	/**
@@ -472,7 +472,7 @@ public interface PersonService {
 	 * @should return empty list when no relationship matching given parameters exist
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_RELATIONSHIPS })
+	@Authorized( { PrivilegeConstants.VIEW_RELATIONSHIPS })
 	public List<Relationship> getRelationships(Person fromPerson, Person toPerson, RelationshipType relType)
 	                                                                                                        throws APIException;
 	
@@ -484,7 +484,7 @@ public interface PersonService {
 	 * @should return all relationship types
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_RELATIONSHIP_TYPES })
+	@Authorized( { PrivilegeConstants.VIEW_RELATIONSHIP_TYPES })
 	public List<RelationshipType> getAllRelationshipTypes() throws APIException;
 	
 	/**
@@ -495,7 +495,7 @@ public interface PersonService {
 	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_RELATIONSHIP_TYPES })
+	@Authorized( { PrivilegeConstants.VIEW_RELATIONSHIP_TYPES })
 	public List<RelationshipType> getAllRelationshipTypes(boolean includeRetired) throws APIException;
 	
 	/**
@@ -516,7 +516,7 @@ public interface PersonService {
 	 * @should return null when no relationship type matches given relationship type id
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_RELATIONSHIP_TYPES })
+	@Authorized( { PrivilegeConstants.VIEW_RELATIONSHIP_TYPES })
 	public RelationshipType getRelationshipType(Integer relationshipTypeId) throws APIException;
 	
 	/**
@@ -529,7 +529,7 @@ public interface PersonService {
 	 * @should return null if no object found with given uuid
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_RELATIONSHIP_TYPES })
+	@Authorized( { PrivilegeConstants.VIEW_RELATIONSHIP_TYPES })
 	public RelationshipType getRelationshipTypeByUuid(String uuid) throws APIException;
 	
 	/**
@@ -548,7 +548,7 @@ public interface PersonService {
 	 * @should return null when no relationship type match the given name
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_RELATIONSHIP_TYPES })
+	@Authorized( { PrivilegeConstants.VIEW_RELATIONSHIP_TYPES })
 	public RelationshipType getRelationshipTypeByName(String relationshipTypeName) throws APIException;
 	
 	/**
@@ -563,7 +563,7 @@ public interface PersonService {
 	 * @should return empty list when no preferred relationship type match the given name
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_RELATIONSHIP_TYPES })
+	@Authorized( { PrivilegeConstants.VIEW_RELATIONSHIP_TYPES })
 	public List<RelationshipType> getRelationshipTypes(String relationshipTypeName, Boolean preferred) throws APIException;
 	
 	/**
@@ -576,14 +576,14 @@ public interface PersonService {
 	 * @should return empty list when no relationship type match the search string
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_RELATIONSHIP_TYPES })
+	@Authorized( { PrivilegeConstants.VIEW_RELATIONSHIP_TYPES })
 	public List<RelationshipType> getRelationshipTypes(String searchString) throws APIException;
 	
 	/**
 	 * @deprecated replaced by #saveRelationship(Relationship)
 	 */
-	@Deprecated
-    @Authorized( { OpenmrsConstants.PRIV_ADD_RELATIONSHIPS })
+    @Deprecated
+	@Authorized( { PrivilegeConstants.ADD_RELATIONSHIPS })
 	public void createRelationship(Relationship relationship) throws APIException;
 	
 	/**
@@ -596,21 +596,21 @@ public interface PersonService {
 	 * @should create new object when relationship id is null
 	 * @should update existing object when relationship id is not null
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_ADD_RELATIONSHIPS, OpenmrsConstants.PRIV_EDIT_RELATIONSHIPS })
+	@Authorized( { PrivilegeConstants.ADD_RELATIONSHIPS, PrivilegeConstants.EDIT_RELATIONSHIPS })
 	public Relationship saveRelationship(Relationship relationship) throws APIException;
 	
 	/**
 	 * @deprecated replaced by #saveRelationship(Relationship)
 	 */
-	@Deprecated
-    @Authorized( { OpenmrsConstants.PRIV_EDIT_RELATIONSHIPS })
+    @Deprecated
+	@Authorized( { PrivilegeConstants.EDIT_RELATIONSHIPS })
 	public void updateRelationship(Relationship relationship) throws APIException;
 	
 	/**
 	 * @deprecated replaced by #purgeRelationship(Relationship)
 	 */
-	@Deprecated
-    @Authorized( { OpenmrsConstants.PRIV_PURGE_RELATIONSHIPS })
+    @Deprecated
+	@Authorized( { PrivilegeConstants.PURGE_RELATIONSHIPS })
 	public void deleteRelationship(Relationship relationship) throws APIException;
 	
 	/**
@@ -620,7 +620,7 @@ public interface PersonService {
 	 * @throws APIException
 	 * @should delete relationship from the database
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_PURGE_RELATIONSHIPS })
+	@Authorized( { PrivilegeConstants.PURGE_RELATIONSHIPS })
 	public void purgeRelationship(Relationship relationship) throws APIException;
 	
 	/**
@@ -632,7 +632,7 @@ public interface PersonService {
 	 * @throws APIException
 	 * @should void relationship with the given reason
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_DELETE_RELATIONSHIPS })
+	@Authorized( { PrivilegeConstants.DELETE_RELATIONSHIPS })
 	public Relationship voidRelationship(Relationship relationship, String voidReason) throws APIException;
 	
 	/**
@@ -643,14 +643,14 @@ public interface PersonService {
 	 * @throws APIException
 	 * @should unvoid voided relationship
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_EDIT_RELATIONSHIPS })
+	@Authorized( { PrivilegeConstants.EDIT_RELATIONSHIPS })
 	public Relationship unvoidRelationship(Relationship relationship) throws APIException;
 	
 	/**
 	 * @deprecated replaced by #savePerson(Person)
 	 */
-	@Deprecated
-    @Authorized( { OpenmrsConstants.PRIV_ADD_PERSONS })
+    @Deprecated
+	@Authorized( { PrivilegeConstants.ADD_PERSONS })
 	public Person createPerson(Person person) throws APIException;
 	
 	/**
@@ -662,21 +662,21 @@ public interface PersonService {
 	 * @should create new object when person id is null
 	 * @should update existing object when person id is not null
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_ADD_PERSONS, OpenmrsConstants.PRIV_EDIT_PERSONS })
+	@Authorized( { PrivilegeConstants.ADD_PERSONS, PrivilegeConstants.EDIT_PERSONS })
 	public Person savePerson(Person person) throws APIException;
 	
 	/**
 	 * @deprecated use {@link #savePerson(Person)}
 	 */
-	@Deprecated
-    @Authorized( { OpenmrsConstants.PRIV_EDIT_PERSONS })
+    @Deprecated
+	@Authorized( { PrivilegeConstants.EDIT_PERSONS })
 	public void updatePerson(Person person) throws APIException;
 	
 	/**
 	 * @deprecated replaced by #purgePerson(Person)
 	 */
-	@Deprecated
-    @Authorized( { OpenmrsConstants.PRIV_PURGE_PERSONS })
+    @Deprecated
+	@Authorized( { PrivilegeConstants.PURGE_PERSONS })
 	public void deletePerson(Person person) throws APIException;
 	
 	/**
@@ -686,7 +686,7 @@ public interface PersonService {
 	 * @throws APIException
 	 * @should delete person from the database
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_PURGE_PERSONS })
+	@Authorized( { PrivilegeConstants.PURGE_PERSONS })
 	public void purgePerson(Person person) throws APIException;
 	
 	/**
@@ -698,7 +698,7 @@ public interface PersonService {
 	 * @should return null if no object found with given uuid
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_PERSONS })
+	@Authorized( { PrivilegeConstants.VIEW_PERSONS })
 	public Person getPersonByUuid(String uuid) throws APIException;
 	
 	/**
@@ -710,7 +710,7 @@ public interface PersonService {
 	 * @should return null if no object found with given uuid
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_PERSONS })
+	@Authorized( { PrivilegeConstants.VIEW_PERSONS })
 	public PersonAddress getPersonAddressByUuid(String uuid) throws APIException;
 	
 	/**
@@ -722,7 +722,7 @@ public interface PersonService {
 	 * @should return null if no object found with given uuid
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_PERSONS })
+	@Authorized( { PrivilegeConstants.VIEW_PERSONS })
 	public PersonAttribute getPersonAttributeByUuid(String uuid) throws APIException;
 	
 	/**
@@ -734,7 +734,7 @@ public interface PersonService {
 	 * @should return null if no object found with given uuid
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_PERSONS })
+	@Authorized( { PrivilegeConstants.VIEW_PERSONS })
 	public PersonName getPersonNameByUuid(String uuid) throws APIException;
 	
 	/**
@@ -746,7 +746,7 @@ public interface PersonService {
 	 * @should return null when no person has the given id
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_PERSONS })
+	@Authorized( { PrivilegeConstants.VIEW_PERSONS })
 	public Person getPerson(Integer personId) throws APIException;
 	
 	/**
@@ -755,9 +755,9 @@ public interface PersonService {
 	 * 
 	 * @deprecated use {@link #getPerson(Integer)}
 	 */
-	@Deprecated
-    @Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_PERSONS })
+    @Deprecated
+	@Transactional(readOnly = true)
+	@Authorized( { PrivilegeConstants.VIEW_PERSONS })
 	public Person getPerson(Patient pat) throws APIException;
 	
 	/**
@@ -766,16 +766,16 @@ public interface PersonService {
 	 * 
 	 * @deprecated use {@link #getPerson(Integer)}
 	 */
-	@Deprecated
-    @Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_PERSONS })
+    @Deprecated
+	@Transactional(readOnly = true)
+	@Authorized( { PrivilegeConstants.VIEW_PERSONS })
 	public Person getPerson(User user) throws APIException;
 	
 	/**
 	 * @deprecated replaced with #saveRelationshipType(RelationshipType)
 	 */
-	@Deprecated
-    @Authorized( { OpenmrsConstants.PRIV_MANAGE_RELATIONSHIP_TYPES })
+    @Deprecated
+	@Authorized( { PrivilegeConstants.MANAGE_RELATIONSHIP_TYPES })
 	public void createRelationshipType(RelationshipType relationshipType) throws APIException;
 	
 	/**
@@ -787,21 +787,21 @@ public interface PersonService {
 	 * @should create new object when relationship type id is null
 	 * @should update existing object when relationship type id is not null
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_MANAGE_RELATIONSHIP_TYPES })
+	@Authorized( { PrivilegeConstants.MANAGE_RELATIONSHIP_TYPES })
 	public RelationshipType saveRelationshipType(RelationshipType relationshipType) throws APIException;
 	
 	/**
 	 * @deprecated replaced by #saveRelationshipType(RelationshipType)
 	 */
-	@Deprecated
-    @Authorized( { OpenmrsConstants.PRIV_MANAGE_RELATIONSHIP_TYPES })
+    @Deprecated
+	@Authorized( { PrivilegeConstants.MANAGE_RELATIONSHIP_TYPES })
 	public void updateRelationshipType(RelationshipType relationshipType) throws APIException;
 	
 	/**
 	 * @deprecated replaced by #purgeRelationshipType(RelationshipType)
 	 */
-	@Deprecated
-    @Authorized( { OpenmrsConstants.PRIV_PURGE_RELATIONSHIP_TYPES })
+    @Deprecated
+	@Authorized( { PrivilegeConstants.PURGE_RELATIONSHIP_TYPES })
 	public void deleteRelationshipType(RelationshipType relationshipType) throws APIException;
 	
 	/**
@@ -811,7 +811,7 @@ public interface PersonService {
 	 * @throws APIException
 	 * @should delete relationship type from the database
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_PURGE_RELATIONSHIP_TYPES })
+	@Authorized( { PrivilegeConstants.PURGE_RELATIONSHIP_TYPES })
 	public void purgeRelationshipType(RelationshipType relationshipType) throws APIException;
 	
 	/**
@@ -824,16 +824,16 @@ public interface PersonService {
 	 * @return list of PersonAttributeTypes that should be displayed
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_PERSON_ATTRIBUTE_TYPES })
+	@Authorized( { PrivilegeConstants.VIEW_PERSON_ATTRIBUTE_TYPES })
 	public List<PersonAttributeType> getPersonAttributeTypes(PERSON_TYPE personType, ATTR_VIEW_TYPE viewType)
 	                                                                                                         throws APIException;
 	
 	/**
 	 * @deprecated use {@link #getPersonAttributeTypes(String, String)}
 	 */
-	@Deprecated
-    @Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_PERSON_ATTRIBUTE_TYPES })
+    @Deprecated
+	@Transactional(readOnly = true)
+	@Authorized( { PrivilegeConstants.VIEW_PERSON_ATTRIBUTE_TYPES })
 	public List<PersonAttributeType> getPersonAttributeTypes(String personType, String viewType) throws APIException;
 	
 	/**
@@ -867,7 +867,7 @@ public interface PersonService {
 	 * @should return empty map when no relationship has the matching relationship type
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_RELATIONSHIPS })
+	@Authorized( { PrivilegeConstants.VIEW_RELATIONSHIPS })
 	public Map<Person, List<Person>> getRelationshipMap(RelationshipType relationshipType) throws APIException;
 	
 	/**

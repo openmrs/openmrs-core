@@ -18,8 +18,8 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.util.DatabaseUpdater;
-import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.DatabaseUpdater.OpenMRSChangeSet;
+import org.openmrs.util.RoleConstants;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.filter.StartupFilter;
 
@@ -38,7 +38,7 @@ public class UpdateFilterModel {
 	
 	public List<OpenMRSChangeSet> changes = null;
 	
-	public String superuserrole = OpenmrsConstants.SUPERUSER_ROLE;
+	public String superuserrole = RoleConstants.SUPERUSER;
 	
 	public String setupPageUrl = WebConstants.SETUP_PAGE_URL;
 
