@@ -103,7 +103,7 @@ public class ConceptNumeric extends Concept implements java.io.Serializable {
 		// now do the standard equals comparison
 		if (obj instanceof ConceptNumeric) {
 			ConceptNumeric c = (ConceptNumeric) obj;
-			return (this.getConceptId().equals(c.getConceptId()));
+			return OpenmrsUtil.nullSafeEquals(this.getConceptId(), c.getConceptId());
 		} else if (obj instanceof Concept) {
 			// use the reverse .equals in case we have hibernate proxies - #1511
 			return OpenmrsUtil.nullSafeEquals(((Concept) obj).getConceptId(), this.getConceptId());
