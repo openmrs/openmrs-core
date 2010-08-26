@@ -55,9 +55,9 @@ import org.openmrs.util.DatabaseUpdater;
 import org.openmrs.util.DatabaseUtil;
 import org.openmrs.util.InputRequiredException;
 import org.openmrs.util.MemoryAppender;
-import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.DatabaseUpdater.ChangeSetExecutorCallback;
+import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.web.Listener;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.filter.StartupFilter;
@@ -990,10 +990,10 @@ public class InitializationFilter extends StartupFilter {
 						
 						if (!wizardModel.implementationId.equals("")) {
 							try {
-								Context.addProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_GLOBAL_PROPERTIES);
-								Context.addProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_CONCEPT_SOURCES);
-								Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_CONCEPT_SOURCES);
-								Context.addProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_IMPLEMENTATION_ID);
+								Context.addProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
+								Context.addProxyPrivilege(PrivilegeConstants.MANAGE_CONCEPT_SOURCES);
+								Context.addProxyPrivilege(PrivilegeConstants.VIEW_CONCEPT_SOURCES);
+								Context.addProxyPrivilege(PrivilegeConstants.MANAGE_IMPLEMENTATION_ID);
 								
 								ImplementationId implId = new ImplementationId();
 								implId.setName(wizardModel.implementationIdName);
@@ -1012,10 +1012,10 @@ public class InitializationFilter extends StartupFilter {
 								return;
 							}
 							finally {
-								Context.removeProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_GLOBAL_PROPERTIES);
-								Context.removeProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_CONCEPT_SOURCES);
-								Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_CONCEPT_SOURCES);
-								Context.removeProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_IMPLEMENTATION_ID);
+								Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
+								Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_CONCEPT_SOURCES);
+								Context.removeProxyPrivilege(PrivilegeConstants.VIEW_CONCEPT_SOURCES);
+								Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_IMPLEMENTATION_ID);
 							}
 						}
 						

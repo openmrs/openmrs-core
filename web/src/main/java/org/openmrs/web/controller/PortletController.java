@@ -45,7 +45,7 @@ import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.order.RegimenSuggestion;
-import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.web.WebConstants;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.ModelAndView;
@@ -181,15 +181,15 @@ public class PortletController implements Controller {
 				Integer patientId = (Integer) o;
 				if (!model.containsKey("patient")) {
 					// we can't continue if the user can't view patients
-					if (Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS)) {
+					if (Context.hasPrivilege(PrivilegeConstants.VIEW_PATIENTS)) {
 						Patient p = Context.getPatientService().getPatient(patientId);
 						model.put("patient", p);
 						
 						// add encounters if this user can view them
-						if (Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_ENCOUNTERS))
+						if (Context.hasPrivilege(PrivilegeConstants.VIEW_ENCOUNTERS))
 							model.put("patientEncounters", Context.getEncounterService().getEncountersByPatient(p));
 						
-						if (Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_OBS)) {
+						if (Context.hasPrivilege(PrivilegeConstants.VIEW_OBS)) {
 							List<Obs> patientObs = Context.getObsService().getObservationsByPerson(p);
 							model.put("patientObs", patientObs);
 							Obs latestWeight = null;
@@ -284,7 +284,7 @@ public class PortletController implements Controller {
 						}
 						model.put("patientReasonForExit", reasonForExitObs);
 						
-						if (Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_ORDERS)) {
+						if (Context.hasPrivilege(PrivilegeConstants.VIEW_ORDERS)) {
 							List<DrugOrder> drugOrderList = Context.getOrderService().getDrugOrdersByPatient(p);
 							model.put("patientDrugOrders", drugOrderList);
 							List<DrugOrder> currentDrugOrders = new ArrayList<DrugOrder>();
@@ -305,8 +305,8 @@ public class PortletController implements Controller {
 								model.put("standardRegimens", standardRegimens);
 						}
 						
-						if (Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PROGRAMS)
-						        && Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENT_PROGRAMS)) {
+						if (Context.hasPrivilege(PrivilegeConstants.VIEW_PROGRAMS)
+						        && Context.hasPrivilege(PrivilegeConstants.VIEW_PATIENT_PROGRAMS)) {
 							model.put("patientPrograms", Context.getProgramWorkflowService().getPatientPrograms(p, null,
 							    null, null, null, null, false));
 							model.put("patientCurrentPrograms", Context.getProgramWorkflowService().getPatientPrograms(p,
@@ -339,7 +339,7 @@ public class PortletController implements Controller {
 						p = Context.getPersonService().getPerson(personId);
 					model.put("person", p);
 					
-					if (Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_RELATIONSHIPS)) {
+					if (Context.hasPrivilege(PrivilegeConstants.VIEW_RELATIONSHIPS)) {
 						List<Relationship> relationships = new ArrayList<Relationship>();
 						relationships.addAll(Context.getPersonService().getRelationshipsByPerson(p));
 						Map<RelationshipType, List<Relationship>> relationshipsByType = new HashMap<RelationshipType, List<Relationship>>();
@@ -362,10 +362,10 @@ public class PortletController implements Controller {
 			o = request.getAttribute("org.openmrs.portlet.encounterId");
 			if (o != null && !model.containsKey("encounterId")) {
 				if (!model.containsKey("encounter")) {
-					if (Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_ENCOUNTERS)) {
+					if (Context.hasPrivilege(PrivilegeConstants.VIEW_ENCOUNTERS)) {
 						Encounter e = Context.getEncounterService().getEncounter((Integer) o);
 						model.put("encounter", e);
-						if (Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_OBS))
+						if (Context.hasPrivilege(PrivilegeConstants.VIEW_OBS))
 							model.put("encounterObs", e.getObs());
 					}
 					model.put("encounterId", (Integer) o);
@@ -376,7 +376,7 @@ public class PortletController implements Controller {
 			o = request.getAttribute("org.openmrs.portlet.userId");
 			if (o != null) {
 				if (!model.containsKey("user")) {
-					if (Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_USERS)) {
+					if (Context.hasPrivilege(PrivilegeConstants.VIEW_USERS)) {
 						User u = Context.getUserService().getUser((Integer) o);
 						model.put("user", u);
 					}

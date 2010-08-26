@@ -42,6 +42,7 @@ import org.openmrs.propertyeditor.FormEditor;
 import org.openmrs.propertyeditor.LocationEditor;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
@@ -94,8 +95,8 @@ public class EncounterFormController extends SimpleFormController {
 		
 		try {
 			if (Context.isAuthenticated()) {
-				Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
-				Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
+				Context.addProxyPrivilege(PrivilegeConstants.VIEW_USERS);
+				Context.addProxyPrivilege(PrivilegeConstants.VIEW_PATIENTS);
 				
 				if (StringUtils.hasText(request.getParameter("patientId")))
 					encounter.setPatient(Context.getPatientService().getPatient(
@@ -113,8 +114,8 @@ public class EncounterFormController extends SimpleFormController {
 			}
 		}
 		finally {
-			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
-			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
+			Context.removeProxyPrivilege(PrivilegeConstants.VIEW_USERS);
+			Context.removeProxyPrivilege(PrivilegeConstants.VIEW_PATIENTS);
 		}
 		
 		return super.processFormSubmission(request, reponse, encounter, errors);
@@ -137,8 +138,8 @@ public class EncounterFormController extends SimpleFormController {
 		String view = getFormView();
 		
 		try {
-			Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
-			Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
+			Context.addProxyPrivilege(PrivilegeConstants.VIEW_USERS);
+			Context.addProxyPrivilege(PrivilegeConstants.VIEW_PATIENTS);
 			
 			if (Context.isAuthenticated()) {
 				Encounter encounter = (Encounter) obj;
@@ -167,8 +168,8 @@ public class EncounterFormController extends SimpleFormController {
 			}
 		}
 		finally {
-			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
-			Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS);
+			Context.removeProxyPrivilege(PrivilegeConstants.VIEW_USERS);
+			Context.removeProxyPrivilege(PrivilegeConstants.VIEW_PATIENTS);
 		}
 		
 		return new ModelAndView(new RedirectView(view));

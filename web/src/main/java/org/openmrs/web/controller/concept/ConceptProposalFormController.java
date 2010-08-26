@@ -37,6 +37,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.notification.Alert;
 import org.openmrs.notification.AlertService;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.dwr.ConceptListItem;
 import org.springframework.context.support.MessageSourceAccessor;
@@ -155,11 +156,11 @@ public class ConceptProposalFormController extends SimpleFormController {
 			
 			try {
 				// allow this user to save changes to alerts temporarily
-				Context.addProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_ALERTS);
+				Context.addProxyPrivilege(PrivilegeConstants.MANAGE_ALERTS);
 				alertService.saveAlert(new Alert(msg, uniqueProposers));
 			}
 			finally {
-				Context.removeProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_ALERTS);
+				Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_ALERTS);
 			}
 			
 			view = getSuccessView();

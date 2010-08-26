@@ -33,6 +33,7 @@ import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.web.OptionsForm;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.user.UserProperties;
@@ -112,11 +113,11 @@ public class OptionsFormController extends SimpleFormController {
 			UserService us = Context.getUserService();
 			User user = null;
 			try {
-				Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
+				Context.addProxyPrivilege(PrivilegeConstants.VIEW_USERS);
 				user = us.getUser(loginUser.getUserId());
 			}
 			finally {
-				Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
+				Context.removeProxyPrivilege(PrivilegeConstants.VIEW_USERS);
 			}
 			
 			OptionsForm opts = (OptionsForm) obj;
@@ -182,13 +183,13 @@ public class OptionsFormController extends SimpleFormController {
 			
 			if (opts.getUsername().length() > 0 && !errors.hasErrors()) {
 				try {
-					Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
+					Context.addProxyPrivilege(PrivilegeConstants.VIEW_USERS);
 					if (us.hasDuplicateUsername(user)) {
 						errors.rejectValue("username", "error.username.taken");
 					}
 				}
 				finally {
-					Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
+					Context.removeProxyPrivilege(PrivilegeConstants.VIEW_USERS);
 				}
 			}
 			
@@ -215,15 +216,15 @@ public class OptionsFormController extends SimpleFormController {
 				}
 				
 				try {
-					Context.addProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
-					Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
+					Context.addProxyPrivilege(PrivilegeConstants.EDIT_USERS);
+					Context.addProxyPrivilege(PrivilegeConstants.VIEW_USERS);
 					us.saveUser(user, null);
 					// update login user object so that the new name is visible in the webapp
 					Context.refreshAuthenticatedUser();
 				}
 				finally {
-					Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USERS);
-					Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
+					Context.removeProxyPrivilege(PrivilegeConstants.EDIT_USERS);
+					Context.removeProxyPrivilege(PrivilegeConstants.VIEW_USERS);
 				}
 				
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "options.saved");

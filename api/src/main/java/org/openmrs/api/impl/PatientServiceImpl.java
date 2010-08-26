@@ -64,6 +64,7 @@ import org.openmrs.order.OrderUtil;
 import org.openmrs.patient.IdentifierValidator;
 import org.openmrs.patient.impl.LuhnIdentifierValidator;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.validator.PatientIdentifierValidator;
 
 /**
@@ -119,9 +120,9 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 */
 	public Patient savePatient(Patient patient) throws APIException {
 		if (patient.getPatientId() == null)
-			Context.requirePrivilege(OpenmrsConstants.PRIV_ADD_PATIENTS);
+			Context.requirePrivilege(PrivilegeConstants.ADD_PATIENTS);
 		else
-			Context.requirePrivilege(OpenmrsConstants.PRIV_EDIT_PATIENTS);
+			Context.requirePrivilege(PrivilegeConstants.EDIT_PATIENTS);
 		
 		checkPatientIdentifiers(patient);
 		
@@ -1295,9 +1296,9 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		        || StringUtils.isBlank(patientIdentifier.getIdentifier()))
 			throw new APIException("PatientIdentifier argument or one of its required fields is null or invalid");
 		if (patientIdentifier.getPatientIdentifierId() == null) {
-			Context.requirePrivilege(OpenmrsConstants.PRIV_ADD_PATIENT_IDENTIFIERS);
+			Context.requirePrivilege(PrivilegeConstants.ADD_PATIENT_IDENTIFIERS);
 		} else
-			Context.requirePrivilege(OpenmrsConstants.PRIV_EDIT_PATIENT_IDENTIFIERS);
+			Context.requirePrivilege(PrivilegeConstants.EDIT_PATIENT_IDENTIFIERS);
 		
 		return dao.savePatientIdentifier(patientIdentifier);
 	}

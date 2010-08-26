@@ -47,6 +47,7 @@ import org.openmrs.util.InputRequiredException;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.util.PrivilegeConstants;
 import org.springframework.aop.Advisor;
 import org.springframework.util.StringUtils;
 
@@ -657,7 +658,7 @@ public class ModuleFactory {
 		// version is greater than the currently installed version. execute this update.
 		if (executeSQL) {
 			try {
-				Context.addProxyPrivilege(OpenmrsConstants.PRIV_SQL_LEVEL_ACCESS);
+				Context.addProxyPrivilege(PrivilegeConstants.SQL_LEVEL_ACCESS);
 				log.debug("Executing sql: " + sql);
 				String[] sqlStatements = sql.split(";");
 				for (String sqlStatement : sqlStatements) {
@@ -666,12 +667,12 @@ public class ModuleFactory {
 				}
 			}
 			finally {
-				Context.removeProxyPrivilege(OpenmrsConstants.PRIV_SQL_LEVEL_ACCESS);
+				Context.removeProxyPrivilege(PrivilegeConstants.SQL_LEVEL_ACCESS);
 			}
 			
 			// save the global property
 			try {
-				Context.addProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_GLOBAL_PROPERTIES);
+				Context.addProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
 				
 				String description = "DO NOT MODIFY.  Current database version number for the " + module.getModuleId()
 				        + " module.";
@@ -691,7 +692,7 @@ public class ModuleFactory {
 				
 			}
 			finally {
-				Context.removeProxyPrivilege(OpenmrsConstants.PRIV_MANAGE_GLOBAL_PROPERTIES);
+				Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES);
 			}
 			
 		}

@@ -33,7 +33,7 @@ import org.openmrs.cohort.CohortDefinitionProvider;
 import org.openmrs.report.EvaluationContext;
 import org.openmrs.reporting.PatientCharacteristicFilter;
 import org.openmrs.reporting.PatientSearch;
-import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.PrivilegeConstants;
 import org.springframework.util.StringUtils;
 
 /**
@@ -69,9 +69,9 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	 */
 	public Cohort saveCohort(Cohort cohort) throws APIException {
 		if (cohort.getCohortId() == null) {
-			Context.requirePrivilege(OpenmrsConstants.PRIV_ADD_COHORTS);
+			Context.requirePrivilege(PrivilegeConstants.ADD_COHORTS);
 		} else {
-			Context.requirePrivilege(OpenmrsConstants.PRIV_EDIT_COHORTS);
+			Context.requirePrivilege(PrivilegeConstants.EDIT_COHORTS);
 		}
 		if (cohort.getName() == null) {
 			throw new APIException("Cohort name is required");

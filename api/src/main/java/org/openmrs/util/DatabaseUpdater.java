@@ -518,7 +518,7 @@ public class DatabaseUpdater {
 	 * 
 	 * @return list of changesets that both have and haven't been run
 	 */
-	@Authorized(OpenmrsConstants.PRIV_VIEW_DATABASE_CHANGES)
+	@Authorized(PrivilegeConstants.VIEW_DATABASE_CHANGES)
 	public static List<OpenMRSChangeSet> getDatabaseChanges() throws Exception {
 		Database database = null;
 		
@@ -555,7 +555,7 @@ public class DatabaseUpdater {
 	 * 
 	 * @return list of changesets that haven't been run
 	 */
-	@Authorized(OpenmrsConstants.PRIV_VIEW_DATABASE_CHANGES)
+	@Authorized(PrivilegeConstants.VIEW_DATABASE_CHANGES)
 	public static List<OpenMRSChangeSet> getUnrunDatabaseChanges() throws Exception {
 		log.debug("Getting unrun changesets");
 		

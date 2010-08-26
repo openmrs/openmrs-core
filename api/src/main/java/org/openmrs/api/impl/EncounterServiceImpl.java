@@ -33,8 +33,8 @@ import org.openmrs.api.ObsService;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.EncounterDAO;
-import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.util.PrivilegeConstants;
 
 /**
  * Default implementation of the {@link EncounterService}
@@ -85,9 +85,9 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements
 		// check permissions
 		if (encounter.getEncounterId() == null) {
 			isNewEncounter = true;
-			Context.requirePrivilege(OpenmrsConstants.PRIV_ADD_ENCOUNTERS);
+			Context.requirePrivilege(PrivilegeConstants.ADD_ENCOUNTERS);
 		} else {
-			Context.requirePrivilege(OpenmrsConstants.PRIV_EDIT_ENCOUNTERS);
+			Context.requirePrivilege(PrivilegeConstants.EDIT_ENCOUNTERS);
 		}
 
 		// This must be done after setting dateCreated etc on the obs because

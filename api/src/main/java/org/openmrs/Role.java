@@ -18,7 +18,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.RoleConstants;
 
 /**
  * A Role is just an aggregater of {@link Privilege}s. {@link User}s contain a number of roles
@@ -149,7 +149,7 @@ public class Role extends BaseOpenmrsMetadata implements java.io.Serializable {
 	 */
 	public boolean hasPrivilege(String privilegeName) {
 		
-		if (OpenmrsConstants.SUPERUSER_ROLE.equals(this.role))
+		if (RoleConstants.SUPERUSER.equals(this.role))
 			return true;
 		
 		if (privileges != null) {

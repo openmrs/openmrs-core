@@ -17,7 +17,6 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -33,7 +32,7 @@ import org.openmrs.ConceptName;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
-import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.web.WebConstants;
 
 public class SampleFlowsheetServlet extends HttpServlet {
@@ -55,10 +54,10 @@ public class SampleFlowsheetServlet extends HttpServlet {
 			return;
 		}
 		
-		if (Context.isAuthenticated() == false || !Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENTS)
-		        || !Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_OBS)) {
+		if (Context.isAuthenticated() == false || !Context.hasPrivilege(PrivilegeConstants.VIEW_PATIENTS)
+		        || !Context.hasPrivilege(PrivilegeConstants.VIEW_OBS)) {
 			session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Privileges required: "
-			        + OpenmrsConstants.PRIV_VIEW_PATIENTS + " and " + OpenmrsConstants.PRIV_VIEW_OBS);
+			        + PrivilegeConstants.VIEW_PATIENTS + " and " + PrivilegeConstants.VIEW_OBS);
 			session.setAttribute(WebConstants.OPENMRS_LOGIN_REDIRECT_HTTPSESSION_ATTR, request.getRequestURI() + "?"
 			        + request.getQueryString());
 			response.sendRedirect(request.getContextPath() + "/login.htm");

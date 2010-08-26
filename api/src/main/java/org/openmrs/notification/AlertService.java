@@ -21,7 +21,7 @@ import org.openmrs.annotation.Authorized;
 import org.openmrs.api.APIException;
 import org.openmrs.api.OpenmrsService;
 import org.openmrs.notification.db.AlertDAO;
-import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.PrivilegeConstants;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -54,7 +54,7 @@ public interface AlertService extends OpenmrsService {
 	 * @should save alerts by role
 	 * @should assign uuid to alert
 	 */
-	@Authorized(OpenmrsConstants.PRIV_MANAGE_ALERTS)
+	@Authorized(PrivilegeConstants.MANAGE_ALERTS)
 	public Alert saveAlert(Alert alert) throws APIException;
 	
 	/**
@@ -97,7 +97,7 @@ public interface AlertService extends OpenmrsService {
 	 * @param alert the Alert to purge/delete
 	 * @throws APIException
 	 */
-	@Authorized(OpenmrsConstants.PRIV_MANAGE_ALERTS)
+	@Authorized(PrivilegeConstants.MANAGE_ALERTS)
 	public void purgeAlert(Alert alert) throws APIException;
 	
 	/**

@@ -13,22 +13,14 @@
  */
 package org.openmrs.web.controller.user;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Role;
 import org.openmrs.api.APIException;
 import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
-import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.util.RoleConstants;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.context.support.MessageSourceAccessor;
@@ -39,6 +31,14 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class RoleListController extends SimpleFormController {
 	
@@ -145,7 +145,7 @@ public class RoleListController extends SimpleFormController {
 		if (Context.isAuthenticated()) {
 			UserService us = Context.getUserService();
 			for (Role r : us.getAllRoles()) {
-				if (OpenmrsConstants.CORE_ROLES().keySet().contains(r.getRole()))
+				if (OpenmrsUtil.getCoreRoles().keySet().contains(r.getRole()))
 					roleList.put(r, true);
 				else
 					roleList.put(r, false);
@@ -163,7 +163,7 @@ public class RoleListController extends SimpleFormController {
 		Map<String, Object> map = new HashMap<String, Object>();
 		
 		if (Context.isAuthenticated()) {
-			map.put("superuser", OpenmrsConstants.SUPERUSER_ROLE);
+			map.put("superuser", RoleConstants.SUPERUSER);
 		}
 		
 		return map;

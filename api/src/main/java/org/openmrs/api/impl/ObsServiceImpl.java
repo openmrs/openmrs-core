@@ -42,6 +42,7 @@ import org.openmrs.obs.ComplexObsHandler;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
+import org.openmrs.util.PrivilegeConstants;
 
 /**
  * Default implementation of the Observation Service
@@ -103,10 +104,10 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 		}
 		
 		if (obs.getObsId() == null) {
-			Context.requirePrivilege(OpenmrsConstants.PRIV_ADD_OBS);
+			Context.requirePrivilege(PrivilegeConstants.ADD_OBS);
 			return dao.saveObs(obs);
 		} else {
-			Context.requirePrivilege(OpenmrsConstants.PRIV_EDIT_OBS);
+			Context.requirePrivilege(PrivilegeConstants.EDIT_OBS);
 			
 			if (changeMessage == null)
 				throw new APIException("ChangeMessage is required when updating an obs in the database");
@@ -134,7 +135,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 			// void out the original observation to keep it around for
 			// historical purposes
 			try {
-				Context.addProxyPrivilege(OpenmrsConstants.PRIV_DELETE_OBS);
+				Context.addProxyPrivilege(PrivilegeConstants.DELETE_OBS);
 				String reason = changeMessage + " (new obsId: " + newObs.getObsId() + ")";
 				
 				// fetch a clean copy of this obs from the database so that
@@ -148,7 +149,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 				
 			}
 			finally {
-				Context.removeProxyPrivilege(OpenmrsConstants.PRIV_DELETE_OBS);
+				Context.removeProxyPrivilege(PrivilegeConstants.DELETE_OBS);
 			}
 			
 			return newObs;

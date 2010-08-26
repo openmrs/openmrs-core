@@ -28,7 +28,7 @@ import org.openmrs.User;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.OrderDAO;
 import org.openmrs.order.RegimenSuggestion;
-import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.PrivilegeConstants;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -100,13 +100,13 @@ public interface OrderService extends OpenmrsService {
 	/**
 	 * @deprecated use #saveOrder(Order)
 	 */
-	@Authorized(OpenmrsConstants.PRIV_ADD_ORDERS)
+	@Authorized(PrivilegeConstants.ADD_ORDERS)
 	public void createOrder(Order order) throws APIException;
 	
 	/**
 	 * @deprecated use #saveOrder(Order)
 	 */
-	@Authorized(OpenmrsConstants.PRIV_EDIT_ORDERS)
+	@Authorized(PrivilegeConstants.EDIT_ORDERS)
 	public void updateOrder(Order order) throws APIException;
 	
 	/**
@@ -117,13 +117,13 @@ public interface OrderService extends OpenmrsService {
 	 * @throws APIException
 	 * @should not save order if order doesnt validate
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_EDIT_ORDERS, OpenmrsConstants.PRIV_ADD_ORDERS })
+	@Authorized( { PrivilegeConstants.EDIT_ORDERS, PrivilegeConstants.ADD_ORDERS })
 	public Order saveOrder(Order order) throws APIException;
 	
 	/**
 	 * @deprecated use #purgeOrder(Order)
 	 */
-	@Authorized(OpenmrsConstants.PRIV_DELETE_ORDERS)
+	@Authorized(PrivilegeConstants.DELETE_ORDERS)
 	public void deleteOrder(Order order) throws APIException;
 	
 	/**
@@ -133,7 +133,7 @@ public interface OrderService extends OpenmrsService {
 	 * @param order The Order to remove from the system
 	 * @throws APIException
 	 */
-	@Authorized(OpenmrsConstants.PRIV_PURGE_ORDERS)
+	@Authorized(PrivilegeConstants.PURGE_ORDERS)
 	public void purgeOrder(Order order) throws APIException;
 	
 	/**
@@ -145,7 +145,7 @@ public interface OrderService extends OpenmrsService {
 	 * @return the Order that was voided
 	 * @throws APIException
 	 */
-	@Authorized(OpenmrsConstants.PRIV_DELETE_ORDERS)
+	@Authorized(PrivilegeConstants.DELETE_ORDERS)
 	public Order voidOrder(Order order, String voidReason) throws APIException;
 	
 	/**
@@ -158,7 +158,7 @@ public interface OrderService extends OpenmrsService {
 	 * @return The Order that was discontinued
 	 * @throws APIException
 	 */
-	@Authorized(OpenmrsConstants.PRIV_EDIT_ORDERS)
+	@Authorized(PrivilegeConstants.EDIT_ORDERS)
 	public Order discontinueOrder(Order order, Concept discontinueReason, Date discontinueDate) throws APIException;
 	
 	/**
@@ -172,7 +172,7 @@ public interface OrderService extends OpenmrsService {
 	 *             Unknown or Unknown Location, or if there's no encounter type with name 'Regimen
 	 *             Change'
 	 */
-	@Authorized(value = { OpenmrsConstants.PRIV_ADD_ORDERS, OpenmrsConstants.PRIV_ADD_ENCOUNTERS }, requireAll = true)
+	@Authorized(value = { PrivilegeConstants.ADD_ORDERS, PrivilegeConstants.ADD_ENCOUNTERS }, requireAll = true)
 	public void createOrdersAndEncounter(Patient p, Collection<Order> orders) throws APIException;
 	
 	/**
@@ -184,7 +184,7 @@ public interface OrderService extends OpenmrsService {
 	 * @see #getOrder(Integer, Class)
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_ORDERS)
+	@Authorized(PrivilegeConstants.VIEW_ORDERS)
 	public Order getOrder(Integer orderId) throws APIException;
 	
 	/**
@@ -208,7 +208,7 @@ public interface OrderService extends OpenmrsService {
 	 * @return The Order in the system corresponding to given primary key id
 	 * @throws APIException
 	 */
-	@Authorized(OpenmrsConstants.PRIV_VIEW_ORDERS)
+	@Authorized(PrivilegeConstants.VIEW_ORDERS)
 	public <Ord extends Order> Ord getOrder(Integer orderId, Class<Ord> orderClassType) throws APIException;
 	
 	/**
@@ -216,7 +216,7 @@ public interface OrderService extends OpenmrsService {
 	 *             instead
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_ORDERS)
+	@Authorized(PrivilegeConstants.VIEW_ORDERS)
 	public DrugOrder getDrugOrder(Integer drugOrderId) throws APIException;
 	
 	/**
@@ -233,7 +233,7 @@ public interface OrderService extends OpenmrsService {
 	 * @param orderTypes The OrderTypes to match on
 	 * @return list of Orders matching the parameters
 	 */
-	@Authorized(OpenmrsConstants.PRIV_VIEW_ORDERS)
+	@Authorized(PrivilegeConstants.VIEW_ORDERS)
 	public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
 	                                               List<Concept> concepts, ORDER_STATUS status, List<User> orderers,
 	                                               List<Encounter> encounters, List<OrderType> orderTypes);
@@ -245,7 +245,7 @@ public interface OrderService extends OpenmrsService {
 	 *             with empty parameters
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_ORDERS)
+	@Authorized(PrivilegeConstants.VIEW_ORDERS)
 	public List<Order> getOrders() throws APIException;
 	
 	/**
@@ -255,7 +255,7 @@ public interface OrderService extends OpenmrsService {
 	 *             with empty parameters
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_ORDERS)
+	@Authorized(PrivilegeConstants.VIEW_ORDERS)
 	public List<DrugOrder> getDrugOrders() throws APIException;
 	
 	/**
@@ -265,7 +265,7 @@ public interface OrderService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_ORDERS)
+	@Authorized(PrivilegeConstants.VIEW_ORDERS)
 	public List<Order> getOrdersByUser(User user) throws APIException;
 	
 	/**
@@ -275,7 +275,7 @@ public interface OrderService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_ORDERS)
+	@Authorized(PrivilegeConstants.VIEW_ORDERS)
 	public List<Order> getOrdersByPatient(Patient patient) throws APIException;
 	
 	/**
@@ -283,7 +283,7 @@ public interface OrderService extends OpenmrsService {
 	 *             {@link #getDrugOrdersByPatient(Patient, org.openmrs.api.OrderService.ORDER_STATUS)}
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_ORDERS)
+	@Authorized(PrivilegeConstants.VIEW_ORDERS)
 	public List<DrugOrder> getDrugOrdersByPatient(Patient patient, int whatToShow);
 	
 	/**
@@ -295,7 +295,7 @@ public interface OrderService extends OpenmrsService {
 	 * @see #getDrugOrdersByPatient(Patient, org.openmrs.api.OrderService.ORDER_STATUS, boolean)
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_ORDERS)
+	@Authorized(PrivilegeConstants.VIEW_ORDERS)
 	public List<DrugOrder> getDrugOrdersByPatient(Patient patient, ORDER_STATUS orderStatus);
 	
 	/**
@@ -303,7 +303,7 @@ public interface OrderService extends OpenmrsService {
 	 *             {@link #getDrugOrdersByPatient(Patient, org.openmrs.api.OrderService.ORDER_STATUS, boolean)}
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_ORDERS)
+	@Authorized(PrivilegeConstants.VIEW_ORDERS)
 	public List<DrugOrder> getDrugOrdersByPatient(Patient patient, int whatToShow, boolean includeVoided);
 	
 	/**
@@ -315,7 +315,7 @@ public interface OrderService extends OpenmrsService {
 	 * @return List of drug orders for the given patient
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_ORDERS)
+	@Authorized(PrivilegeConstants.VIEW_ORDERS)
 	public List<DrugOrder> getDrugOrdersByPatient(Patient patient, ORDER_STATUS orderStatus, boolean includeVoided);
 	
 	/**
@@ -326,7 +326,7 @@ public interface OrderService extends OpenmrsService {
 	 * @see #discontinueOrder(Order, Concept, Date)
 	 * @return The Order that was undiscontinued
 	 */
-	@Authorized(OpenmrsConstants.PRIV_EDIT_ORDERS)
+	@Authorized(PrivilegeConstants.EDIT_ORDERS)
 	public Order undiscontinueOrder(Order order) throws APIException;
 	
 	/**
@@ -335,7 +335,7 @@ public interface OrderService extends OpenmrsService {
 	 * @param order order to be unvoided
 	 * @return the Order that was unvoided
 	 */
-	@Authorized(OpenmrsConstants.PRIV_DELETE_ORDERS)
+	@Authorized(PrivilegeConstants.DELETE_ORDERS)
 	public Order unvoidOrder(Order order) throws APIException;
 	
 	/**
@@ -345,7 +345,7 @@ public interface OrderService extends OpenmrsService {
 	 * @return the freshly saved OrderType
 	 * @throws APIException
 	 */
-	@Authorized(OpenmrsConstants.PRIV_MANAGE_ORDER_TYPES)
+	@Authorized(PrivilegeConstants.MANAGE_ORDER_TYPES)
 	public OrderType saveOrderType(OrderType orderType) throws APIException;
 	
 	/**
@@ -356,25 +356,25 @@ public interface OrderService extends OpenmrsService {
 	 * @param orderType
 	 * @throws APIException
 	 */
-	@Authorized(OpenmrsConstants.PRIV_PURGE_ORDER_TYPES)
+	@Authorized(PrivilegeConstants.PURGE_ORDER_TYPES)
 	public void purgeOrderType(OrderType orderType) throws APIException;
 	
 	/**
 	 * @deprecated use #saveOrderType(OrderType)
 	 */
-	@Authorized(OpenmrsConstants.PRIV_MANAGE_ORDER_TYPES)
+	@Authorized(PrivilegeConstants.MANAGE_ORDER_TYPES)
 	public void createOrderType(OrderType orderType) throws APIException;
 	
 	/**
 	 * @deprecated use #saveOrderType(OrderType)
 	 */
-	@Authorized(OpenmrsConstants.PRIV_MANAGE_ORDER_TYPES)
+	@Authorized(PrivilegeConstants.MANAGE_ORDER_TYPES)
 	public void updateOrderType(OrderType orderType) throws APIException;
 	
 	/**
 	 * @deprecated use #purgeOrderType(OrderType)
 	 */
-	@Authorized(OpenmrsConstants.PRIV_PURGE_ORDER_TYPES)
+	@Authorized(PrivilegeConstants.PURGE_ORDER_TYPES)
 	public void deleteOrderType(OrderType orderType) throws APIException;
 	
 	/**
@@ -387,7 +387,7 @@ public interface OrderService extends OpenmrsService {
 	 * @return the retired order type
 	 * @throws APIException
 	 */
-	@Authorized(OpenmrsConstants.PRIV_MANAGE_ORDER_TYPES)
+	@Authorized(PrivilegeConstants.MANAGE_ORDER_TYPES)
 	public OrderType retireOrderType(OrderType orderType, String reason) throws APIException;
 	
 	/**
@@ -397,7 +397,7 @@ public interface OrderService extends OpenmrsService {
 	 * @return the retired order type
 	 * @throws APIException
 	 */
-	@Authorized(OpenmrsConstants.PRIV_MANAGE_ORDER_TYPES)
+	@Authorized(PrivilegeConstants.MANAGE_ORDER_TYPES)
 	public OrderType unretireOrderType(OrderType orderType) throws APIException;
 	
 	/**
@@ -408,7 +408,7 @@ public interface OrderService extends OpenmrsService {
 	 * @deprecated use #getAllOrderTypes()
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_ORDER_TYPES)
+	@Authorized(PrivilegeConstants.VIEW_ORDER_TYPES)
 	public List<OrderType> getOrderTypes() throws APIException;
 	
 	/**
@@ -419,7 +419,7 @@ public interface OrderService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_ORDER_TYPES)
+	@Authorized(PrivilegeConstants.VIEW_ORDER_TYPES)
 	public List<OrderType> getAllOrderTypes() throws APIException;
 	
 	/**
@@ -430,7 +430,7 @@ public interface OrderService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_ORDER_TYPES)
+	@Authorized(PrivilegeConstants.VIEW_ORDER_TYPES)
 	public List<OrderType> getAllOrderTypes(boolean includeRetired) throws APIException;
 	
 	/**
@@ -441,7 +441,7 @@ public interface OrderService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_ORDER_TYPES)
+	@Authorized(PrivilegeConstants.VIEW_ORDER_TYPES)
 	public OrderType getOrderType(Integer orderTypeId) throws APIException;
 	
 	/**
@@ -462,14 +462,14 @@ public interface OrderService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_ORDERS)
+	@Authorized(PrivilegeConstants.VIEW_ORDERS)
 	public List<DrugOrder> getDrugOrdersByPatient(Patient patient) throws APIException;
 	
 	/**
 	 * @deprecated use {@link org.openmrs.order.OrderUtil#getDrugSetsByConcepts(List, List)}
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_ORDERS)
+	@Authorized(PrivilegeConstants.VIEW_ORDERS)
 	public Map<Concept, List<DrugOrder>> getDrugSetsByConcepts(List<DrugOrder> drugOrders, List<Concept> drugSets)
 	                                                                                                              throws APIException;
 	
@@ -482,7 +482,7 @@ public interface OrderService extends OpenmrsService {
 	 * @return list of RegimenSuggestion objects that have been predefined
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_ORDERS)
+	@Authorized(PrivilegeConstants.VIEW_ORDERS)
 	public List<RegimenSuggestion> getStandardRegimens();
 	
 	/**
@@ -490,7 +490,7 @@ public interface OrderService extends OpenmrsService {
 	 *             {@link org.openmrs.order.OrderUtil#getDrugSetsByDrugSetIdList(List, String, String)}
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_ORDERS)
+	@Authorized(PrivilegeConstants.VIEW_ORDERS)
 	public Map<String, List<DrugOrder>> getDrugSetsByDrugSetIdList(List<DrugOrder> orderList, String drugSetIdList,
 	                                                               String delimiter);
 	
@@ -498,28 +498,28 @@ public interface OrderService extends OpenmrsService {
 	 * @deprecated use {@link org.openmrs.order.OrderUtil#getDrugSetHeadersByDrugSetIdList(String)}
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_ORDERS)
+	@Authorized(PrivilegeConstants.VIEW_ORDERS)
 	public Map<String, String> getDrugSetHeadersByDrugSetIdList(String drugSetIds);
 	
 	/**
 	 * @deprecated use
 	 *             {@link org.openmrs.order.OrderUtil#discontinueDrugSet(Patient, String, Concept, Date)}
 	 */
-	@Authorized(OpenmrsConstants.PRIV_EDIT_ORDERS)
+	@Authorized(PrivilegeConstants.EDIT_ORDERS)
 	public void discontinueDrugSet(Patient patient, String drugSetId, Concept discontinueReason, Date discontinueDate);
 	
 	/**
 	 * @deprecated use
 	 *             {@link org.openmrs.order.OrderUtil#voidDrugSet(Patient, String, String, org.openmrs.api.OrderService.ORDER_STATUS)}
 	 */
-	@Authorized(OpenmrsConstants.PRIV_DELETE_ORDERS)
+	@Authorized(PrivilegeConstants.DELETE_ORDERS)
 	public void voidDrugSet(Patient patient, String drugSetId, String voidReason, int whatToVoid);
 	
 	/**
 	 * @deprecated use
 	 *             {@link org.openmrs.order.OrderUtil#discontinueAllOrders(Patient, Concept, Date)}
 	 */
-	@Authorized(OpenmrsConstants.PRIV_EDIT_ORDERS)
+	@Authorized(PrivilegeConstants.EDIT_ORDERS)
 	public void discontinueAllOrders(Patient patient, Concept discontinueReason, Date discontinueDate) throws APIException;
 	
 	/**

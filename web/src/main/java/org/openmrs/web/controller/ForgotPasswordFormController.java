@@ -26,7 +26,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
-import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.web.WebConstants;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
@@ -115,14 +115,14 @@ public class ForgotPasswordFormController extends SimpleFormController {
 				User user = null;
 				
 				try {
-					Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
+					Context.addProxyPrivilege(PrivilegeConstants.VIEW_USERS);
 					
 					// only search if they actually put in a username
 					if (username != null && username.length() > 0)
 						user = Context.getUserService().getUserByUsername(username);
 				}
 				finally {
-					Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
+					Context.removeProxyPrivilege(PrivilegeConstants.VIEW_USERS);
 				}
 				
 				if (user == null || user.getSecretQuestion() == null || user.getSecretQuestion().equals("")) {
@@ -142,11 +142,11 @@ public class ForgotPasswordFormController extends SimpleFormController {
 				User user = null;
 				
 				try {
-					Context.addProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
+					Context.addProxyPrivilege(PrivilegeConstants.VIEW_USERS);
 					user = Context.getUserService().getUserByUsername(username);
 				}
 				finally {
-					Context.removeProxyPrivilege(OpenmrsConstants.PRIV_VIEW_USERS);
+					Context.removeProxyPrivilege(PrivilegeConstants.VIEW_USERS);
 				}
 				
 				// check the secret question again in case the user got here "illegally"
@@ -160,11 +160,11 @@ public class ForgotPasswordFormController extends SimpleFormController {
 					}
 					
 					try {
-						Context.addProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USER_PASSWORDS);
+						Context.addProxyPrivilege(PrivilegeConstants.EDIT_USER_PASSWORDS);
 						Context.getUserService().changePassword(user, randomPassword);
 					}
 					finally {
-						Context.removeProxyPrivilege(OpenmrsConstants.PRIV_EDIT_USER_PASSWORDS);
+						Context.removeProxyPrivilege(PrivilegeConstants.EDIT_USER_PASSWORDS);
 					}
 					
 					httpSession.setAttribute("resetPassword", randomPassword);

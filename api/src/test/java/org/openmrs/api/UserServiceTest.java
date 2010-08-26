@@ -39,7 +39,8 @@ import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.SkipBaseSetup;
 import org.openmrs.test.Verifies;
-import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.PrivilegeConstants;
+import org.openmrs.util.RoleConstants;
 import org.openmrs.util.Security;
 
 /**
@@ -705,7 +706,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	@Test(expected = APIException.class)
 	@Verifies(value = "should throw error when privilege is core privilege", method = "purgePrivilege(Privilege)")
 	public void purgePrivilege_shouldThrowErrorWhenPrivilegeIsCorePrivilege() throws Exception {
-		Context.getUserService().purgePrivilege(new Privilege(OpenmrsConstants.PRIV_ADD_COHORTS));
+		Context.getUserService().purgePrivilege(new Privilege(PrivilegeConstants.ADD_COHORTS));
 	}
 	
 	/**
@@ -735,7 +736,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	@Test(expected = APIException.class)
 	@Verifies(value = "should throw error when role is a core role", method = "purgeRole(Role)")
 	public void purgeRole_shouldThrowErrorWhenRoleIsACoreRole() throws Exception {
-		Role role = new Role(OpenmrsConstants.ANONYMOUS_ROLE);
+		Role role = new Role(RoleConstants.ANONYMOUS);
 		Context.getUserService().purgeRole(role);
 	}
 	

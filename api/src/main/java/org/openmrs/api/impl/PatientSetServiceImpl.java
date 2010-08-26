@@ -53,8 +53,8 @@ import org.openmrs.api.PatientSetService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.PatientSetDAO;
-import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.util.PrivilegeConstants;
 
 public class PatientSetServiceImpl implements PatientSetService {
 	
@@ -66,8 +66,8 @@ public class PatientSetServiceImpl implements PatientSetService {
 	}
 	
 	private PatientSetDAO getPatientSetDAO() {
-		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_VIEW_PATIENT_COHORTS)) {
-			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_VIEW_PATIENT_COHORTS);
+		if (!Context.hasPrivilege(PrivilegeConstants.VIEW_PATIENT_COHORTS)) {
+			throw new APIAuthenticationException("Privilege required: " + PrivilegeConstants.VIEW_PATIENT_COHORTS);
 		}
 		return dao;
 	}

@@ -29,6 +29,7 @@ import org.openmrs.api.APIException;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.util.RoleConstants;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.load.Replace;
 import org.simpleframework.xml.load.Validate;
@@ -89,7 +90,7 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable {
 	public boolean isSuperUser() {
 		Set<Role> tmproles = getAllRoles();
 		
-		Role role = new Role(OpenmrsConstants.SUPERUSER_ROLE); // default administrator with
+		Role role = new Role(RoleConstants.SUPERUSER); // default administrator with
 		// complete control
 		
 		if (tmproles.contains(role))

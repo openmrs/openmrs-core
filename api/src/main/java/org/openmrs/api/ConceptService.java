@@ -36,7 +36,7 @@ import org.openmrs.ConceptWord;
 import org.openmrs.Drug;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.ConceptDAO;
-import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.PrivilegeConstants;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -87,22 +87,22 @@ public interface ConceptService extends OpenmrsService {
 	/**
 	 * @deprecated use #saveConcept(Concept)
 	 */
-	@Deprecated
-	@Authorized( { OpenmrsConstants.PRIV_MANAGE_CONCEPTS })
+    @Deprecated
+	@Authorized( { PrivilegeConstants.MANAGE_CONCEPTS })
 	public void createConcept(Concept concept) throws APIException;
 	
 	/**
 	 * @deprecated use #saveConcept(Concept)
 	 */
-	@Deprecated
-	@Authorized( { OpenmrsConstants.PRIV_MANAGE_CONCEPTS })
+    @Deprecated
+	@Authorized( { PrivilegeConstants.MANAGE_CONCEPTS })
 	public void createConcept(ConceptNumeric concept) throws APIException;
 	
 	/**
 	 * @deprecated use #saveConcept(Concept)
 	 */
-	@Deprecated
-	@Authorized( { OpenmrsConstants.PRIV_MANAGE_CONCEPTS })
+    @Deprecated
+	@Authorized( { PrivilegeConstants.MANAGE_CONCEPTS })
 	public void updateConcept(Concept concept) throws APIException;
 	
 	/**
@@ -114,42 +114,42 @@ public interface ConceptService extends OpenmrsService {
 	 * @should return null if no object found with given uuid
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public Concept getConceptByUuid(String uuid);
 	
 	/**
 	 * @deprecated use #saveConcept(Concept)
 	 */
-	@Deprecated
-	@Authorized( { OpenmrsConstants.PRIV_MANAGE_CONCEPTS })
+    @Deprecated
+	@Authorized( { PrivilegeConstants.MANAGE_CONCEPTS })
 	public void updateConcept(ConceptNumeric concept) throws APIException;
 	
 	/**
 	 * @deprecated use #saveDrug(Drug)
 	 */
-	@Deprecated
-	@Authorized( { OpenmrsConstants.PRIV_MANAGE_CONCEPTS })
+    @Deprecated
+	@Authorized( { PrivilegeConstants.MANAGE_CONCEPTS })
 	public void createDrug(Drug drug) throws APIException;
 	
 	/**
 	 * @deprecated use #saveDrug(Drug)
 	 */
-	@Deprecated
-	@Authorized( { OpenmrsConstants.PRIV_MANAGE_CONCEPTS })
+    @Deprecated
+	@Authorized( { PrivilegeConstants.MANAGE_CONCEPTS })
 	public void updateDrug(Drug drug) throws APIException;
 	
 	/**
 	 * @deprecated use #purgeConcept(Concept concept)
 	 */
-	@Deprecated
-	@Authorized( { OpenmrsConstants.PRIV_PURGE_CONCEPTS })
+    @Deprecated
+	@Authorized( { PrivilegeConstants.PURGE_CONCEPTS })
 	public void deleteConcept(Concept concept) throws APIException;
 	
 	/**
 	 * @deprecated use {@link #retireConcept(Concept, String)}
 	 */
-	@Deprecated
-	@Authorized( { OpenmrsConstants.PRIV_MANAGE_CONCEPTS })
+    @Deprecated
+	@Authorized( { PrivilegeConstants.MANAGE_CONCEPTS })
 	public void voidConcept(Concept concept, String reason) throws APIException;
 	
 	/**
@@ -174,7 +174,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @should void the conceptName if the text of the name has changed
 	 * @should create a new conceptName when the old name is changed
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_MANAGE_CONCEPTS })
+	@Authorized( { PrivilegeConstants.MANAGE_CONCEPTS })
 	public Concept saveConcept(Concept concept) throws APIException;
 	
 	/**
@@ -189,7 +189,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @should create new drug in database
 	 * @should update drug already existing in database
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_MANAGE_CONCEPTS })
+	@Authorized( { PrivilegeConstants.MANAGE_CONCEPTS })
 	public Drug saveDrug(Drug drug) throws APIException;
 	
 	/**
@@ -202,7 +202,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @throws APIException
 	 * @should fail if any of the conceptNames of the concept is being used by an obs
 	 */
-	@Authorized(OpenmrsConstants.PRIV_PURGE_CONCEPTS)
+	@Authorized(PrivilegeConstants.PURGE_CONCEPTS)
 	public void purgeConcept(Concept conceptOrConceptNumeric) throws APIException;
 	
 	/**
@@ -214,7 +214,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @return the retired <code>Concept</code> or <code>ConceptNumeric</code>
 	 * @throws APIException
 	 */
-	@Authorized(OpenmrsConstants.PRIV_MANAGE_CONCEPTS)
+	@Authorized(PrivilegeConstants.MANAGE_CONCEPTS)
 	public Concept retireConcept(Concept conceptOrConceptNumeric, String reason) throws APIException;
 	
 	/**
@@ -225,7 +225,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @throws APIException
 	 * @return the retired Drug
 	 */
-	@Authorized(OpenmrsConstants.PRIV_MANAGE_CONCEPTS)
+	@Authorized(PrivilegeConstants.MANAGE_CONCEPTS)
 	public Drug retireDrug(Drug drug, String reason) throws APIException;
 	
 	/**
@@ -237,7 +237,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @should mark drug as retired
 	 * @should not change attributes of drug that is already retired
 	 */
-	@Authorized(OpenmrsConstants.PRIV_MANAGE_CONCEPTS)
+	@Authorized(PrivilegeConstants.MANAGE_CONCEPTS)
 	public Drug unretireDrug(Drug drug) throws APIException;
 	
 	/**
@@ -247,7 +247,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @param drug The Drug to remove from the system
 	 * @throws APIException
 	 */
-	@Authorized(OpenmrsConstants.PRIV_PURGE_CONCEPTS)
+	@Authorized(PrivilegeConstants.PURGE_CONCEPTS)
 	public void purgeDrug(Drug drug) throws APIException;
 	
 	/**
@@ -258,7 +258,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public Concept getConcept(Integer conceptId) throws APIException;
 	
 	/**
@@ -269,7 +269,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public ConceptName getConceptName(Integer conceptNameId) throws APIException;
 	
 	/**
@@ -280,7 +280,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public ConceptAnswer getConceptAnswer(Integer conceptAnswerId) throws APIException;
 	
 	/**
@@ -291,7 +291,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public Drug getDrug(Integer drugId) throws APIException;
 	
 	/**
@@ -302,7 +302,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public ConceptNumeric getConceptNumeric(Integer conceptId) throws APIException;
 	
 	/**
@@ -313,7 +313,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @return the matching ConceptClass
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public ConceptClass getConceptClass(Integer conceptClassId) throws APIException;
 	
 	/**
@@ -323,7 +323,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public List<Concept> getAllConcepts() throws APIException;
 	
 	/**
@@ -336,7 +336,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public List<Concept> getAllConcepts(String sortBy, boolean asc, boolean includeRetired) throws APIException;
 	
 	/**
@@ -344,7 +344,7 @@ public interface ConceptService extends OpenmrsService {
 	 */
 	@Deprecated
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public List<Concept> getConcepts(String sortBy, String dir) throws APIException;
 	
 	/**
@@ -357,7 +357,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @should pass irrespective of the case of the passed parameter
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public List<Concept> getConceptsByName(String name) throws APIException;
 	
 	/**
@@ -374,7 +374,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @should find concepts with names in same specific locale
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public Concept getConceptByName(String name) throws APIException;
 	
 	/**
@@ -389,7 +389,7 @@ public interface ConceptService extends OpenmrsService {
 	 */
 	@Deprecated
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public Concept getConceptByIdOrName(String idOrName) throws APIException;
 	
 	/**
@@ -401,7 +401,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @should return null given null parameter
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public Concept getConcept(String conceptIdOrName) throws APIException;
 	
 	/**
@@ -423,7 +423,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @should return the best matched name
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public List<ConceptWord> getConceptWords(String phrase, List<Locale> locales, boolean includeRetired,
 	                                         List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses,
 	                                         List<ConceptDatatype> requireDatatypes, List<ConceptDatatype> excludeDatatypes,
@@ -439,7 +439,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public List<ConceptWord> getConceptWords(String phrase, Locale locale) throws APIException;
 	
 	/**
@@ -448,7 +448,7 @@ public interface ConceptService extends OpenmrsService {
 	 */
 	@Deprecated
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public List<ConceptWord> findConcepts(String phrase, Locale locale, boolean includeRetired) throws APIException;
 	
 	/**
@@ -457,7 +457,7 @@ public interface ConceptService extends OpenmrsService {
 	 */
 	@Deprecated
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public List<ConceptWord> findConcepts(String phrase, Locale locale, boolean includeRetired,
 	                                      List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses,
 	                                      List<ConceptDatatype> requireDatatypes, List<ConceptDatatype> excludeDatatypes)
@@ -472,7 +472,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @should return null if no object found with given uuid
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public Drug getDrugByUuid(String uuid);
 	
 	/**
@@ -481,7 +481,7 @@ public interface ConceptService extends OpenmrsService {
 	 */
 	@Deprecated
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public List<ConceptWord> findConcepts(String phrase, Locale locale, boolean includeRetired, int start, int size)
 	                                                                                                                throws APIException;
 	
@@ -493,7 +493,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public Drug getDrug(String drugNameOrId) throws APIException;
 	
 	/**
@@ -504,7 +504,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @return matching Drug object
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public Drug getDrugByNameOrId(String drugId) throws APIException;
 	
 	/**
@@ -512,7 +512,7 @@ public interface ConceptService extends OpenmrsService {
 	 */
 	@Deprecated
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public List<Drug> getDrugs() throws APIException;
 	
 	/**
@@ -522,7 +522,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @return a List<Drug> object containing all drugs
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public List<Drug> getAllDrugs() throws APIException;
 	
 	/**
@@ -530,7 +530,7 @@ public interface ConceptService extends OpenmrsService {
 	 */
 	@Deprecated
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public List<Drug> getDrugs(Concept concept) throws APIException;
 	
 	/**
@@ -541,7 +541,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @return a List<Drug> object containing all matching drugs
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public List<Drug> getDrugsByConcept(Concept concept) throws APIException;
 	
 	/**
@@ -552,7 +552,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @return A List<Drug> object containing all matching Drugs
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public List<Drug> getAllDrugs(boolean includeRetired);
 	
 	/**
@@ -560,7 +560,7 @@ public interface ConceptService extends OpenmrsService {
 	 */
 	@Deprecated
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public List<Drug> findDrugs(String phrase, boolean includeVoided) throws APIException;
 	
 	/**
@@ -571,7 +571,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @return A List<Drug> object containing all Drug matches
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public List<Drug> getDrugs(String phrase) throws APIException;
 	
 	/**
@@ -580,7 +580,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public List<Concept> getConceptsByClass(ConceptClass cc) throws APIException;
 	
 	/**
@@ -592,7 +592,7 @@ public interface ConceptService extends OpenmrsService {
 	 */
 	@Deprecated
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPT_CLASSES)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPT_CLASSES)
 	public List<ConceptClass> getConceptClasses() throws APIException;
 	
 	/**
@@ -603,7 +603,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPT_CLASSES)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPT_CLASSES)
 	public ConceptClass getConceptClassByName(String name) throws APIException;
 	
 	/**
@@ -613,7 +613,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @return List<ConceptClass> object with all ConceptClass objects
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPT_CLASSES)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPT_CLASSES)
 	public List<ConceptClass> getAllConceptClasses() throws APIException;
 	
 	/**
@@ -624,7 +624,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @return List<ConceptClass> object with all ConceptClass objects
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPT_CLASSES)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPT_CLASSES)
 	public List<ConceptClass> getAllConceptClasses(boolean includeRetired) throws APIException;
 	
 	/**
@@ -636,7 +636,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @should return null if no object found with given uuid
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPT_CLASSES)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPT_CLASSES)
 	public ConceptClass getConceptClassByUuid(String uuid);
 	
 	/**
@@ -648,7 +648,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @should return null if no object found with given uuid
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public ConceptAnswer getConceptAnswerByUuid(String uuid);
 	
 	/**
@@ -660,7 +660,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @should return null if no object found with given uuid
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public ConceptName getConceptNameByUuid(String uuid);
 	
 	/**
@@ -672,7 +672,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @should return null if no object found with given uuid
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public ConceptSet getConceptSetByUuid(String uuid);
 	
 	/**
@@ -684,7 +684,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @should return null if no object found with given uuid
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPT_SOURCES)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPT_SOURCES)
 	public ConceptSource getConceptSourceByUuid(String uuid);
 	
 	/**
@@ -693,7 +693,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @param cc ConceptClass to create or update
 	 * @throws APIException
 	 */
-	@Authorized(OpenmrsConstants.PRIV_MANAGE_CONCEPT_CLASSES)
+	@Authorized(PrivilegeConstants.MANAGE_CONCEPT_CLASSES)
 	public ConceptClass saveConceptClass(ConceptClass cc) throws APIException;
 	
 	/**
@@ -702,7 +702,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @param cc ConceptClass to delete
 	 * @throws APIException
 	 */
-	@Authorized(OpenmrsConstants.PRIV_PURGE_CONCEPT_CLASSES)
+	@Authorized(PrivilegeConstants.PURGE_CONCEPT_CLASSES)
 	public void purgeConceptClass(ConceptClass cc) throws APIException;
 	
 	/**
@@ -711,7 +711,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @param cd ConceptDatatype to create or update
 	 * @throws APIException
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_MANAGE_CONCEPT_DATATYPES })
+	@Authorized( { PrivilegeConstants.MANAGE_CONCEPT_DATATYPES })
 	public ConceptDatatype saveConceptDatatype(ConceptDatatype cd) throws APIException;
 	
 	/**
@@ -720,7 +720,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @param cd ConceptDatatype to purge
 	 * @throws APIException
 	 */
-	@Authorized(OpenmrsConstants.PRIV_PURGE_CONCEPT_DATATYPES)
+	@Authorized(PrivilegeConstants.PURGE_CONCEPT_DATATYPES)
 	public void purgeConceptDatatype(ConceptDatatype cd) throws APIException;
 	
 	/**
@@ -730,7 +730,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @return List of ConceptDatatypes
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPT_DATATYPES)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPT_DATATYPES)
 	public List<ConceptDatatype> getAllConceptDatatypes() throws APIException;
 	
 	/**
@@ -741,7 +741,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @return List of ConceptDatatypes
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPT_DATATYPES)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPT_DATATYPES)
 	public List<ConceptDatatype> getAllConceptDatatypes(boolean includeRetired) throws APIException;
 	
 	/**
@@ -754,8 +754,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPT_DATATYPES)
-	@Deprecated
+	@Authorized(PrivilegeConstants.VIEW_CONCEPT_DATATYPES)
+    @Deprecated
 	public List<ConceptDatatype> getConceptDatatypes(String name) throws APIException;
 	
 	/**
@@ -766,7 +766,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPT_DATATYPES)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPT_DATATYPES)
 	public ConceptDatatype getConceptDatatype(Integer i) throws APIException;
 	
 	/**
@@ -778,7 +778,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @should return null if no object found with given uuid
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPT_DATATYPES)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPT_DATATYPES)
 	public ConceptDatatype getConceptDatatypeByUuid(String uuid);
 	
 	/**
@@ -791,7 +791,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @should not return a fuzzy match on name
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPT_DATATYPES)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPT_DATATYPES)
 	public ConceptDatatype getConceptDatatypeByName(String name) throws APIException;
 	
 	/**
@@ -800,7 +800,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @param concept
 	 * @throws APIException
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_MANAGE_CONCEPTS })
+	@Authorized( { PrivilegeConstants.MANAGE_CONCEPTS })
 	public void updateConceptSetDerived(Concept concept) throws APIException;
 	
 	/**
@@ -808,7 +808,7 @@ public interface ConceptService extends OpenmrsService {
 	 * 
 	 * @throws APIException
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_MANAGE_CONCEPTS })
+	@Authorized( { PrivilegeConstants.MANAGE_CONCEPTS })
 	public void updateConceptSetDerived() throws APIException;
 	
 	/**
@@ -816,7 +816,7 @@ public interface ConceptService extends OpenmrsService {
 	 */
 	@Deprecated
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public List<ConceptSet> getConceptSets(Concept concept) throws APIException;
 	
 	/**
@@ -831,7 +831,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public List<ConceptSet> getConceptSetsByConcept(Concept concept) throws APIException;
 	
 	/**
@@ -839,7 +839,7 @@ public interface ConceptService extends OpenmrsService {
 	 */
 	@Deprecated
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public List<Concept> getConceptsInSet(Concept concept) throws APIException;
 	
 	/**
@@ -850,7 +850,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public List<Concept> getConceptsByConceptSet(Concept concept) throws APIException;
 	
 	/**
@@ -861,7 +861,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @return A List<ConceptSet> object with all parent concept sets
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public List<ConceptSet> getSetsContainingConcept(Concept concept) throws APIException;
 	
 	/**
@@ -869,7 +869,7 @@ public interface ConceptService extends OpenmrsService {
 	 */
 	@Deprecated
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPT_PROPOSALS)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPT_PROPOSALS)
 	public List<ConceptProposal> getConceptProposals(boolean includeCompleted) throws APIException;
 	
 	/**
@@ -880,7 +880,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPT_PROPOSALS)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPT_PROPOSALS)
 	public List<ConceptProposal> getAllConceptProposals(boolean includeCompleted) throws APIException;
 	
 	/**
@@ -892,7 +892,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @should return null if no object found with given uuid
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public ConceptNumeric getConceptNumericByUuid(String uuid);
 	
 	/**
@@ -903,7 +903,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPT_PROPOSALS)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPT_PROPOSALS)
 	public ConceptProposal getConceptProposal(Integer conceptProposalId) throws APIException;
 	
 	/**
@@ -914,7 +914,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPT_PROPOSALS)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPT_PROPOSALS)
 	public List<ConceptProposal> getConceptProposals(String text) throws APIException;
 	
 	/**
@@ -922,7 +922,7 @@ public interface ConceptService extends OpenmrsService {
 	 */
 	@Deprecated
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPT_PROPOSALS)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPT_PROPOSALS)
 	public List<Concept> findProposedConcepts(String text) throws APIException;
 	
 	/**
@@ -933,7 +933,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPT_PROPOSALS)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPT_PROPOSALS)
 	public List<Concept> getProposedConcepts(String text) throws APIException;
 	
 	/**
@@ -961,8 +961,8 @@ public interface ConceptService extends OpenmrsService {
 	/**
 	 * @deprecated use {@link #saveConceptProposal(ConceptProposal)}
 	 */
-	@Deprecated
-	@Authorized(OpenmrsConstants.PRIV_ADD_CONCEPT_PROPOSALS)
+    @Deprecated
+	@Authorized(PrivilegeConstants.ADD_CONCEPT_PROPOSALS)
 	public void proposeConcept(ConceptProposal conceptProposal) throws APIException;
 	
 	/**
@@ -972,7 +972,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @throws APIException
 	 * @return the saved/updated ConceptProposal object
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_ADD_CONCEPT_PROPOSALS, OpenmrsConstants.PRIV_EDIT_CONCEPT_PROPOSALS })
+	@Authorized( { PrivilegeConstants.ADD_CONCEPT_PROPOSALS, PrivilegeConstants.EDIT_CONCEPT_PROPOSALS })
 	public ConceptProposal saveConceptProposal(ConceptProposal conceptProposal) throws APIException;
 	
 	/**
@@ -981,7 +981,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @param cp
 	 * @throws APIException
 	 */
-	@Authorized(OpenmrsConstants.PRIV_PURGE_CONCEPT_PROPOSALS)
+	@Authorized(PrivilegeConstants.PURGE_CONCEPT_PROPOSALS)
 	public void purgeConceptProposal(ConceptProposal cp) throws APIException;
 	
 	/**
@@ -992,21 +992,21 @@ public interface ConceptService extends OpenmrsService {
 	 * @return the mappedConcept
 	 * @throws APIException
 	 */
-	@Authorized(OpenmrsConstants.PRIV_MANAGE_CONCEPTS)
+	@Authorized(PrivilegeConstants.MANAGE_CONCEPTS)
 	public Concept mapConceptProposalToConcept(ConceptProposal cp, Concept mappedConcept) throws APIException;
 	
 	/**
 	 * @deprecated use {@link ConceptProposal#rejectConceptProposal()}
 	 */
-	@Deprecated
-	@Authorized(OpenmrsConstants.PRIV_EDIT_CONCEPT_PROPOSALS)
+    @Deprecated
+	@Authorized(PrivilegeConstants.EDIT_CONCEPT_PROPOSALS)
 	public void rejectConceptProposal(ConceptProposal cp) throws APIException;
 	
 	/**
 	 * @deprecated use {@link ConceptService#getConceptProposals(String)}
 	 */
-	@Deprecated
-	@Authorized(OpenmrsConstants.PRIV_ADD_CONCEPT_PROPOSALS)
+    @Deprecated
+	@Authorized(PrivilegeConstants.ADD_CONCEPT_PROPOSALS)
 	public List<ConceptProposal> findMatchingConceptProposals(String text);
 	
 	/**
@@ -1014,7 +1014,7 @@ public interface ConceptService extends OpenmrsService {
 	 */
 	@Deprecated
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public List<ConceptWord> findConceptAnswers(String phrase, Locale locale, Concept concept, boolean includeRetired)
 	                                                                                                                  throws APIException;
 	
@@ -1028,7 +1028,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public List<ConceptWord> getConceptAnswers(String phrase, Locale locale, Concept concept) throws APIException;
 	
 	/**
@@ -1036,7 +1036,7 @@ public interface ConceptService extends OpenmrsService {
 	 */
 	@Deprecated
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public List<Concept> getQuestionsForAnswer(Concept concept) throws APIException;
 	
 	/**
@@ -1049,7 +1049,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public List<Concept> getConceptsByAnswer(Concept concept) throws APIException;
 	
 	/**
@@ -1060,7 +1060,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public Concept getPrevConcept(Concept concept) throws APIException;
 	
 	/**
@@ -1071,7 +1071,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public Concept getNextConcept(Concept concept) throws APIException;
 	
 	/**
@@ -1091,7 +1091,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @should return null if no object found with given uuid
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPT_PROPOSALS)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPT_PROPOSALS)
 	public ConceptProposal getConceptProposalByUuid(String uuid);
 	
 	/**
@@ -1101,7 +1101,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public List<Concept> getConceptsWithDrugsInFormulary() throws APIException;
 	
 	/**
@@ -1111,7 +1111,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @param concept
 	 * @throws APIException
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_MANAGE_CONCEPTS })
+	@Authorized( { PrivilegeConstants.MANAGE_CONCEPTS })
 	public void updateConceptWord(Concept concept) throws APIException;
 	
 	/**
@@ -1119,7 +1119,7 @@ public interface ConceptService extends OpenmrsService {
 	 * 
 	 * @throws APIException
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_MANAGE_CONCEPTS })
+	@Authorized( { PrivilegeConstants.MANAGE_CONCEPTS })
 	public void updateConceptWords() throws APIException;
 	
 	/**
@@ -1134,7 +1134,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @should return null if no object found with given uuid
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public ConceptNameTag getConceptNameTagByUuid(String uuid);
 	
 	/**
@@ -1145,7 +1145,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @param conceptIdEnd ends update with this concept_id
 	 * @throws APIException
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_MANAGE_CONCEPTS })
+	@Authorized( { PrivilegeConstants.MANAGE_CONCEPTS })
 	public void updateConceptWords(Integer conceptIdStart, Integer conceptIdEnd) throws APIException;
 	
 	/**
@@ -1157,7 +1157,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @should return a concept complex object
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public ConceptComplex getConceptComplex(Integer conceptId);
 	
 	/**
@@ -1169,7 +1169,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @should return a concept derived object
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public ConceptDerived getConceptDerived(Integer conceptId);
 	
 	/**
@@ -1191,7 +1191,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @see Concept#getShortestName(Locale, Boolean)
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_CONCEPTS })
+	@Authorized( { PrivilegeConstants.VIEW_CONCEPTS })
 	public ConceptNameTag getConceptNameTagByName(String tag);
 	
 	/**
@@ -1208,7 +1208,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @return List of Concept source objects
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPT_SOURCES)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPT_SOURCES)
 	public List<ConceptSource> getAllConceptSources() throws APIException;
 	
 	/**
@@ -1218,7 +1218,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @return ConceptSource
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPT_SOURCES)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPT_SOURCES)
 	public ConceptSource getConceptSource(Integer i) throws APIException;
 	
 	/**
@@ -1231,7 +1231,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @should save a ConceptSource with a null hl7Code
 	 * @should not save a ConceptSource if voided is null
 	 */
-	@Authorized(OpenmrsConstants.PRIV_MANAGE_CONCEPT_SOURCES)
+	@Authorized(PrivilegeConstants.MANAGE_CONCEPT_SOURCES)
 	public ConceptSource saveConceptSource(ConceptSource conceptSource) throws APIException;
 	
 	/**
@@ -1240,7 +1240,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @param cs ConceptSource object delete
 	 * @throws APIException
 	 */
-	@Authorized(OpenmrsConstants.PRIV_PURGE_CONCEPT_SOURCES)
+	@Authorized(PrivilegeConstants.PURGE_CONCEPT_SOURCES)
 	public ConceptSource purgeConceptSource(ConceptSource cs) throws APIException;
 	
 	/**
@@ -1253,7 +1253,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @throws APIException
 	 * @should retire concept source
 	 */
-	@Authorized(OpenmrsConstants.PRIV_PURGE_CONCEPT_SOURCES)
+	@Authorized(PrivilegeConstants.PURGE_CONCEPT_SOURCES)
 	public ConceptSource retireConceptSource(ConceptSource cs, String reason) throws APIException;
 	
 	/**
@@ -1265,7 +1265,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @should save a concept name tag if tag does not exist
 	 * @should not save a concept name tag if tag exists
 	 */
-	@Authorized(OpenmrsConstants.PRIV_MANAGE_CONCEPT_NAME_TAGS)
+	@Authorized(PrivilegeConstants.MANAGE_CONCEPT_NAME_TAGS)
 	public ConceptNameTag saveConceptNameTag(ConceptNameTag nameTag);
 	
 	/**
@@ -1284,7 +1284,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @should iterate over all concepts
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public Iterator<Concept> conceptIterator();
 	
 	/**
@@ -1307,7 +1307,7 @@ public interface ConceptService extends OpenmrsService {
 	 *         mappingCode
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public Concept getConceptByMapping(String code, String sourceName) throws APIException;
 	
 	/**
@@ -1326,9 +1326,10 @@ public interface ConceptService extends OpenmrsService {
 	 * @should get concepts with given code and source name
 	 * @should return empty list if source code does not exist
 	 * @should return empty list if mapping does not exist
+	 * @since 1.8
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public List<Concept> getConceptsByMapping(String code, String sourceName) throws APIException;
 	
 	/**
@@ -1348,7 +1349,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @since 1.5
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_CONCEPTS })
+	@Authorized( { PrivilegeConstants.VIEW_CONCEPTS })
 	public ConceptNameTag getConceptNameTag(Integer id);
 	
 	/**
@@ -1360,7 +1361,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @should return null if no object found with given uuid
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { OpenmrsConstants.PRIV_VIEW_CONCEPTS })
+	@Authorized( { PrivilegeConstants.VIEW_CONCEPTS })
 	public ConceptDescription getConceptDescriptionByUuid(String uuid);
 	
 	/**
@@ -1373,7 +1374,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @should return null if no ConceptSource with that name is found
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPT_SOURCES)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public ConceptSource getConceptSourceByName(String conceptSourceName) throws APIException;
 	
 	/**
@@ -1386,7 +1387,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @should return empty List of ConceptMaps if none found
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public List<ConceptMap> getConceptsByConceptSource(ConceptSource conceptSource) throws APIException;
 	
 	/**
@@ -1397,7 +1398,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public boolean hasAnyObservation(Concept concept);
 	
 	/**
@@ -1429,7 +1430,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @should explicitly add true concept as a value_Coded answer
 	 * @should explicitly add false concept as a value_Coded answer
 	 */
-	@Authorized( { OpenmrsConstants.PRIV_MANAGE_CONCEPTS })
+	@Authorized( { PrivilegeConstants.MANAGE_CONCEPTS })
 	public void convertBooleanConceptToCoded(Concept conceptToChange) throws APIException;
 	
 	/**
@@ -1441,6 +1442,6 @@ public interface ConceptService extends OpenmrsService {
 	 * @since Version 1.7
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(OpenmrsConstants.PRIV_VIEW_CONCEPTS)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public boolean hasAnyObservation(ConceptName conceptName) throws APIException;
 }
