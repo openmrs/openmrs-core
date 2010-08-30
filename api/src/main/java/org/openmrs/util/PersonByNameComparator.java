@@ -14,9 +14,16 @@ public class PersonByNameComparator implements Comparator<Person> {
 	/**
 	 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
 	 */
-	@Override
 	public int compare(Person person1, Person person2) {
 		
+		// test for null cases (sorting them to be last in a list)
+		if(person1 == null || person1.getPersonName() == null) {
+			return 1;
+		} else if (person2 == null || person2.getPersonName() == null) {
+			return -1;
+		}
+		
+		// if neither are null, do the actual comparison
 		PersonName name1 = person1.getPersonName();
 		PersonName name2 = person2.getPersonName();
 		
