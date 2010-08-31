@@ -47,6 +47,13 @@ import java.lang.annotation.Target;
 public @interface Logging {
 	
 	/**
+	 * If set to true, suppress any automatic OpenMRS logging of this method (E.g. you will no longer
+	 * see "In method XyzService.saveXyz...".) Defaults to false. 
+	 * @return boolean true/false to suppress OpenMRS's automatic logging of this method
+	 */
+	public boolean ignore() default false;
+	
+	/**
 	 * If set to true, the annotated method will not print out the contents of the arguments every
 	 * time this method is accessed and logged. Defaults to false
 	 * 

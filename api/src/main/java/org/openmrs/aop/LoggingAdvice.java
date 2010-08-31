@@ -56,15 +56,22 @@ public class LoggingAdvice implements MethodInterceptor {
 		boolean logSetter = !isGetterTypeOfMethod && log.isInfoEnabled();
 		
 		// used for the execution time calculations
-		long startTime = new Date().getTime();
+		long startTime = System.currentTimeMillis();
+		
+		// check if this method has the logging annotation on it
+		Logging loggingAnnotation = null;
+		if (logGetter || logSetter) {
+			loggingAnnotation = method.getAnnotation(Logging.class);
+			if (loggingAnnotation != null && loggingAnnotation.ignore()) {
+				logGetter = false;
+				logSetter = false;
+			}
+		}
 		
 		if (logGetter || logSetter) {
 			StringBuilder output = new StringBuilder();
 			output.append("In method ").append(method.getDeclaringClass().getSimpleName()).append(".").append(name);
-			
-			// check if this method has the logging annotation on it
-			Logging loggingAnnotation = method.getAnnotation(Logging.class);
-			
+						
 			// print the argument values unless we're ignoring all
 			if (loggingAnnotation == null || loggingAnnotation.ignoreAllArgumentValues() == false) {
 				
