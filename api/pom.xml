@@ -60,6 +60,22 @@
          <artifactId>spring-jdbc</artifactId>
       </dependency>
       <dependency>
+         <groupId>org.antlr</groupId>
+         <artifactId>antlr-runtime</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>asm</groupId>
+         <artifactId>asm-commons</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>asm</groupId>
+         <artifactId>asm-util</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>cglib</groupId>
+         <artifactId>cglib-nodep</artifactId>
+      </dependency>
+      <dependency>
          <groupId>ca.uhn.hapi</groupId>
          <artifactId>hapi</artifactId>
       </dependency>
