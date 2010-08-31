@@ -3707,5 +3707,14 @@
 		<comment>Validates Program Workflow States for possible configuration problems and reports warnings</comment>
 		<customChange class="org.openmrs.util.databasechange.ProgramValidatorChangeSet"/>				
 	</changeSet>
+
+	<changeSet id="201008242121" author="misha680">			
+		<comment>Make person_name.person_id not NULLable</comment>
+		<modifyColumn tableName="person_name">
+			<column name="person_id" type="int">
+				<constraints nullable="false" />
+			</column>
+		</modifyColumn>
+	</changeSet>
 	
 </databaseChangeLog>
