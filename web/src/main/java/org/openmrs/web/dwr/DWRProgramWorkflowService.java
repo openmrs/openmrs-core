@@ -60,8 +60,12 @@ public class DWRProgramWorkflowService {
 			for (ProgramWorkflow wf : workflows) {
 				ListItem li = new ListItem();
 				li.setId(wf.getProgramWorkflowId());
-				li.setName(wf.getConcept().getName().getName());
-				li.setDescription(wf.getConcept().getDescription().getDescription());
+				try {
+					li.setName(wf.getConcept().getName().getName());
+				} catch (NullPointerException ex) { }
+				try {
+					li.setDescription(wf.getConcept().getDescription().getDescription());
+				} catch (NullPointerException ex) { }
 				ret.add(li);
 			}
 		return ret;
