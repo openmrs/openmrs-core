@@ -17,7 +17,7 @@
 		<table cellpadding="3" cellspacing="10" border="0" style="width:auto">
 			<tr>
 				<td>
-					<img src="/openmrs/images/info.gif"/>
+					<img src="<openmrs:contextPath/>images/info.gif"/>
 					<b><spring:message code="Hl7InArchive.migrate.archives.dir"/>: </b>		
 				</td>
 			</tr>
@@ -49,7 +49,7 @@
 						<b><spring:message code="Hl7InArchive.migrate.status.label"/>:</b>
 					</td>
 					<td>
-						<img id="archive_migration_progress_img" src="/openmrs/images/loading.gif" style="display:none"/> 						
+						<img id="archive_migration_progress_img" src="<openmrs:contextPath/>images/loading.gif" style="display:none"/> 						
 						<span id="msg_running" style="display:none"><spring:message code="Hl7InArchive.migrate.running"/></span>
 						<span id="msg_complete_not_all" style="display:none"><spring:message code="Hl7InArchive.migrate.complete.not.all"/></span>
 						<span id="msg_complete_all" style="display:none"><spring:message code="Hl7InArchive.migrate.complete.all"/></span>
