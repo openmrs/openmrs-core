@@ -84,7 +84,9 @@ public class DWRProgramWorkflowService {
 				for (ProgramWorkflowState state : states) {
 					ListItem li = new ListItem();
 					li.setId(state.getProgramWorkflowStateId());
-					li.setName(state.getConcept().getName(Context.getLocale(), false).getName());
+					try {
+						li.setName(state.getConcept().getName(Context.getLocale(), false).getName());
+					} catch (NullPointerException ex) { }
 					ret.add(li);
 				}
 			} else {
