@@ -17,6 +17,7 @@ import java.net.URL;
 
 import junit.framework.Assert;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
@@ -43,6 +44,7 @@ public class ModuleUtilTest extends BaseContextSensitiveTest {
 	 * @see {@link ModuleUtil#getURL(URL)}
 	 */
 	@Test
+	@Ignore
 	@Verifies(value = "should return an update rdf page for old https dev urls", method = "getURL(URL)")
 	public void getURL_shouldReturnAnUpdateRdfPageForOldHttpsDevUrls() throws Exception {
 		String url = "https://dev.openmrs.org/modules/download/formentry/update.rdf";
@@ -56,6 +58,7 @@ public class ModuleUtilTest extends BaseContextSensitiveTest {
 	 * @see {@link ModuleUtil#getURL(URL)}
 	 */
 	@Test
+	@Ignore
 	@Verifies(value = "should return an update rdf page for old https module urls", method = "getURL(URL)")
 	public void getURL_shouldReturnAnUpdateRdfPageForOldHttpsModuleUrls() throws Exception {
 		String url = "https://modules.openmrs.org/modules/download/formentry/update.rdf";
@@ -69,6 +72,7 @@ public class ModuleUtilTest extends BaseContextSensitiveTest {
 	 * @see {@link ModuleUtil#getURL(URL)}
 	 */
 	@Test
+	@Ignore
 	@Verifies(value = "should return an update rdf page for module urls", method = "getURL(URL)")
 	public void getURL_shouldReturnAnUpdateRdfPageForModuleUrls() throws Exception {
 		String url = "http://modules.openmrs.org/modules/download/formentry/update.rdf";
