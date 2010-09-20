@@ -80,7 +80,7 @@
          <artifactId>hapi</artifactId>
       </dependency>
       <dependency>
-         <groupId>org.simpleframework</groupId>
+         <groupId>org.openmrs.simpleframework</groupId>
          <artifactId>simple-xml</artifactId>
       </dependency>
       <dependency>
@@ -92,7 +92,7 @@
          <artifactId>stax-api</artifactId>
       </dependency>
       <dependency>
-         <groupId>org.hibernate</groupId>
+         <groupId>org.openmrs.hibernate</groupId>
          <artifactId>hibernate</artifactId>
       </dependency>
       <dependency>
@@ -128,7 +128,7 @@
          <artifactId>mail</artifactId>
       </dependency>
       <dependency>
-         <groupId>org.liquibase</groupId>
+         <groupId>org.openmrs.liquibase</groupId>
          <artifactId>liquibase-core</artifactId>
       </dependency>
       <dependency>

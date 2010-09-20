@@ -78,7 +78,7 @@
 			</dependency>
 
 			<dependency>
-				<groupId>org.directwebremoting</groupId>
+				<groupId>org.openmrs.directwebremoting</groupId>
 				<artifactId>dwr</artifactId>
 				<version>2.0.5-mod</version>
 			</dependency>
@@ -238,7 +238,7 @@
 			</dependency>
 
 			<dependency>
-				<groupId>org.hibernate</groupId>
+				<groupId>org.openmrs.hibernate</groupId>
 				<artifactId>hibernate</artifactId>
 				<version>3.2.5.ga-mod</version>
 				<exclusions>
@@ -261,7 +261,7 @@
 				</exclusions>
 			</dependency>
 			<dependency>
-				<groupId>org.liquibase</groupId>
+				<groupId>org.openmrs.liquibase</groupId>
 				<artifactId>liquibase-core</artifactId>
 				<version>1.9.4-mod</version>
 			</dependency>
@@ -326,7 +326,7 @@
 				</exclusions>
 			</dependency>
 			<dependency>
-				<groupId>org.simpleframework</groupId>
+				<groupId>org.openmrs.simpleframework</groupId>
 				<artifactId>simple-xml</artifactId>
 				<version>1.6.1-mod</version>
 			</dependency>
