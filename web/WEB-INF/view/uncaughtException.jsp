@@ -148,14 +148,14 @@ try {
 <openmrs:extensionPoint pointId="org.openmrs.uncaughtException" type="html" />
 
 <div>
-The following data will be submitted along to enable the team in resolving the problem and will be kept private.
+The following data will be submitted with the report to enable the team to resolve the problem.
 <ul>
-<li>OpenMrs Version</li>
-<li>The application server's information e.g type and version number</li>
-<li>The OpemMRS username of the currently logged in user reporting this problem</li>
-<li>The implementation Id of this OpenMRS installation</li>
-<li>The modules that have been installed and started</li>
 <li>The error message and stack trace</li>
+<li>OpenMRS version</li>
+<li>Application server name and version</li>
+<li>Username of the user currently logged in</li>
+<li>The implementation id of this installation (if defined)</li>
+<li>Names and versions of all installed modules</li>
 </ul>
 </div>
 
