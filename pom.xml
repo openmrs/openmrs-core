@@ -669,6 +669,19 @@
 		</pluginRepository>
 	</pluginRepositories>
 
+	<distributionManagement>
+		<repository>
+			<id>openmrs-repo-releases</id>
+			<name>OpenMRS Nexus Releases</name>
+			<url>http://mavenrepo.openmrs.org/nexus/content/repositories/releases</url>
+		</repository>
+		<snapshotRepository>
+			<id>openmrs-repo-snapshots</id>
+			<name>OpenMRS Nexus Snapshots</name>
+			<url>http://mavenrepo.openmrs.org/nexus/content/repositories/snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
+
    <properties>
       <maven.build.timestamp.format>MMM dd yyyy hh:mm aa</maven.build.timestamp.format>
       <TIMESTAMP>${maven.build.timestamp}</TIMESTAMP>
