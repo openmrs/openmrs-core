@@ -39,7 +39,7 @@
          <artifactId>jstl</artifactId>
       </dependency>
       <dependency>
-         <groupId>org.directwebremoting</groupId>
+         <groupId>org.openmrs.directwebremoting</groupId>
          <artifactId>dwr</artifactId>
       </dependency>
       <dependency>
