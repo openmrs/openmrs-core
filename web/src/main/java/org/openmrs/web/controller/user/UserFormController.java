@@ -152,7 +152,7 @@ public class UserFormController {
 			try {
 				Context.getUserService().purgeUser(user);
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "User.delete.success");
-				return "redirect:/admin/users/user.list";			
+				return "redirect:users.list";			
 			} catch (Exception ex) {
 				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "User.delete.failure");
 				log.error("Failed to delete user", ex);
@@ -264,7 +264,7 @@ public class UserFormController {
             
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "User.saved");
 		}
-		return "redirect:user.list";
+		return "redirect:users.list";
 	}
 	/**
 	 * Superficially determines if this form is being filled out for a new user (basically just
