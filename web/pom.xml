@@ -18,6 +18,13 @@
          <version>${project.version}</version>
          <type>jar</type>
       </dependency>
+      <dependency>
+         <groupId>org.openmrs.test</groupId>
+         <artifactId>openmrs-test</artifactId>
+         <version>${project.version}</version>
+         <type>pom</type>
+         <scope>test</scope>
+      </dependency>
       <!-- Test-jar for sharing api test resources in web tests -->
       <dependency>
          <groupId>org.openmrs.api</groupId>
