@@ -615,7 +615,8 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		}
 		
 		// do the actual deleting/truncating
-		DatabaseOperation.DELETE_ALL.execute(dbUnitConn, dataset);
+		if (useInMemoryDatabase())
+			DatabaseOperation.DELETE_ALL.execute(dbUnitConn, dataset);
 		
 		// turn constraints back on for this connection
 		if (useInMemoryDatabase()) {
