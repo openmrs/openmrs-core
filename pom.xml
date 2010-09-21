@@ -34,6 +34,7 @@
 	</scm>
 
 	<modules>
+		<module>test</module>
 		<module>api</module>
 		<module>web</module>
 		<module>webapp</module>
@@ -454,7 +455,6 @@
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-test</artifactId>
 				<version>${springVersion}</version>
-				<scope>test</scope>
 				<exclusions>
 					<exclusion>
 						<groupId>commons-logging</groupId>
@@ -466,13 +466,11 @@
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
 				<version>4.8.1</version>
-				<scope>test</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.databene</groupId>
 				<artifactId>databene-benerator</artifactId>
 				<version>0.5.9</version>
-				<scope>test</scope>
 				<exclusions>
 					<exclusion>
 						<groupId>hsqldb</groupId>
@@ -484,19 +482,16 @@
 				<groupId>com.h2database</groupId>
 				<artifactId>h2</artifactId>
 				<version>1.2.135</version>
-				<scope>test</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.dbunit</groupId>
 				<artifactId>dbunit</artifactId>
 				<version>2.4.7</version>
-				<scope>test</scope>
 			</dependency>
 			<dependency>
 				<groupId>xmlunit</groupId>
 				<artifactId>xmlunit</artifactId>
 				<version>1.3</version>
-				<scope>test</scope>
 			</dependency>
 			<dependency>
 				<groupId>net.sf.ehcache</groupId>
@@ -505,33 +500,6 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
-
-	<dependencies>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-test</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.databene</groupId>
-			<artifactId>databene-benerator</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.h2database</groupId>
-			<artifactId>h2</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.dbunit</groupId>
-			<artifactId>dbunit</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>xmlunit</groupId>
-			<artifactId>xmlunit</artifactId>
-		</dependency>
-	</dependencies>
 
 	<build>
 		<pluginManagement>

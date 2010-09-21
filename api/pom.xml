@@ -12,6 +12,13 @@
    <description>The api that is re-used across web and modules</description>
    <dependencies>
       <dependency>
+         <groupId>org.openmrs.test</groupId>
+         <artifactId>openmrs-test</artifactId>
+         <version>${project.version}</version>
+         <type>pom</type>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
          <groupId>commons-collections</groupId>
          <artifactId>commons-collections</artifactId>
       </dependency>
