@@ -418,12 +418,15 @@ public class OpenmrsUtil {
 	}
 
 	/**
-	 * These are the privileges that are required by OpenMRS. Upon startup, if
-	 * any of these privileges do not exist in the database, they are inserted.
-	 * These privileges are not allowed to be deleted. They are marked as
-	 * 'locked' in the administration screens.
+	 * These are the privileges that are required by OpenMRS.  This looks for 
+	 * privileges marked as {@link AddOnStartup} to know which privs, upon 
+	 * startup or loading of a module, to insert into the database if they do
+	 * not exist already. These privileges are not allowed to be deleted. 
+	 * They are marked as 'locked' in the administration screens.
 	 * 
 	 * @return privileges core to the system
+	 * @see PrivilegeConstants
+	 * @see Context#checkCoreDataset()
 	 */
 	public static Map<String, String> getCorePrivileges() {
 		Map<String, String> corePrivileges = new HashMap<String, String>();
