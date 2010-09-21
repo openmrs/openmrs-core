@@ -19,7 +19,7 @@ if (jspContext.getAttribute("initialValue") != null) {
 }
 %>
 
-<openmrs:globalProperty var="locationFieldStyle" key="Location.field.style" defaultValue="default"/>
+<openmrs:globalProperty var="locationFieldStyle" key="location.field.style" defaultValue="default"/>
 
 <c:choose>
 	<c:when test="${locationFieldStyle == 'tree'}">
