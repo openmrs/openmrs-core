@@ -341,7 +341,9 @@ function parseDateFromJsToString(sFormat, jsDate) {
  * @param opts :Map additional options for the jquery datepicker widget (included are dateFormat, appendText, gotoCurrent)
  */
 function DatePicker(dateFormat, id, opts) {
- 	var jq = $j('#' + id);
+	// jQuery requires the following to be escaped if they appear in a selector: #;&,.+*~':"!^$[]()=>|/@
+	id = id.replace('#', '\\#').replace(';', '\\;').replace('&', '\\&').replace(',', '\\,').replace('.', '\\.').replace('+', '\\+').replace('*', '\\*').replace('~', '\\~').replace("'", "\\'").replace(':', '\\:').replace('"', '\\"').replace('!', '\\!').replace('^', '\\^').replace('$', '\\$').replace('[', '\\[').replace(']', '\\]').replace('(', '\\(').replace(')', '\\)').replace('=', '\\=').replace('>', '\\>').replace('|', '\\|').replace('/', '\\/').replace('@', '\\@');
+ 	var jq = jQuery('#' + id);
  	
  	if(opts == null) {
  		opts = {};
@@ -385,7 +387,7 @@ function DatePicker(dateFormat, id, opts) {
  * @param opts :Map addtional options (included are: minLength, delay, source)
  */
 function AutoComplete(id, callback, opts) {
- 	var jq = $j('#' + id);
+ 	var jq = jQuery('#' + id);
 
  	if(opts == null) {
  		opts = {};
@@ -411,12 +413,12 @@ function setOptions(opts, name, value) {
 }
 
 function colorVisibleTableRows(tableId, oddColorClass, evenColorClass, includeHeader) {
- 	var rows = $j('#' + tableId + ' tr');
+ 	var rows = jQuery('#' + tableId + ' tr');
  	var odd = true;
  	for(var i=(includeHeader ? 0 : 1); i < rows.length; i++) {
- 		if(!$j(rows[i]).is(':visible')) continue;
+ 		if(!jQuery(rows[i]).is(':visible')) continue;
  		
- 		$j(rows[i]).css("backgroundColor", (odd ? oddColorClass : evenColorClass));
+ 		jQuery(rows[i]).css("backgroundColor", (odd ? oddColorClass : evenColorClass));
  		odd = !odd;
  	}
 }

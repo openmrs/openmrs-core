@@ -11,7 +11,7 @@ function showCalendar(obj) {
 	}
 	
 	var dp = new DatePicker(jsDateFormat, id, { appendText: " " });
-	$j.datepicker.setDefaults($j.datepicker.regional[jsLocale]);
+	jQuery.datepicker.setDefaults(jQuery.datepicker.regional[jsLocale]);
 
 	obj.onclick = null;
 	dp.show();
