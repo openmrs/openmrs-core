@@ -13,6 +13,7 @@
  */
 package org.openmrs.obs.handler;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -49,6 +50,9 @@ public class BinaryDataHandler extends AbstractHandler implements ComplexObsHand
 	/**
 	 * Returns the same ComplexData for all views. The title is the original filename, and the data
 	 * is the raw byte[] of data
+	 *
+	 * (If the view is set to "download", all commas and whitespace are stripped out of the filename to
+	 * fix an issue where the browser wasn't handling a filename with whitespace properly)
 	 * 
 	 * @see ComplexObsHandler#getObs(Obs, String)
 	 */
@@ -62,7 +66,7 @@ public class BinaryDataHandler extends AbstractHandler implements ComplexObsHand
 			if ("download".equals(view)) {
 				originalFilename = originalFilename.replace(",", "").replace(" ", "");
 			}
-			obs.setComplexData(new ComplexData(originalFilename, new FileInputStream(file)));
+			obs.setComplexData(new ComplexData(originalFilename, new BufferedInputStream(new FileInputStream(file))));
 		}
 		catch (Exception e) {
 			throw new APIException("An error occurred while trying to get binary complex obs.", e);
