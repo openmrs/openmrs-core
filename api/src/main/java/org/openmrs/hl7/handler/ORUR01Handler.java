@@ -47,6 +47,7 @@ import org.openmrs.hl7.HL7InQueueProcessor;
 import org.openmrs.hl7.HL7Service;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
+import org.springframework.util.StringUtils;
 
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.app.Application;
@@ -61,6 +62,7 @@ import ca.uhn.hl7v2.model.v25.datatype.CX;
 import ca.uhn.hl7v2.model.v25.datatype.DLD;
 import ca.uhn.hl7v2.model.v25.datatype.DT;
 import ca.uhn.hl7v2.model.v25.datatype.DTM;
+import ca.uhn.hl7v2.model.v25.datatype.FT;
 import ca.uhn.hl7v2.model.v25.datatype.ID;
 import ca.uhn.hl7v2.model.v25.datatype.IS;
 import ca.uhn.hl7v2.model.v25.datatype.NM;
@@ -69,6 +71,7 @@ import ca.uhn.hl7v2.model.v25.datatype.ST;
 import ca.uhn.hl7v2.model.v25.datatype.TM;
 import ca.uhn.hl7v2.model.v25.datatype.TS;
 import ca.uhn.hl7v2.model.v25.datatype.XCN;
+import ca.uhn.hl7v2.model.v25.group.ORU_R01_OBSERVATION;
 import ca.uhn.hl7v2.model.v25.group.ORU_R01_ORDER_OBSERVATION;
 import ca.uhn.hl7v2.model.v25.group.ORU_R01_PATIENT_RESULT;
 import ca.uhn.hl7v2.model.v25.message.ORU_R01;
@@ -254,6 +257,20 @@ public class ORUR01Handler implements Application {
 				obsGrouper.setObsDatetime(datetime);
 				obsGrouper.setLocation(encounter.getLocation());
 				obsGrouper.setCreator(encounter.getCreator());
+				
+				// set comments if there are any
+				StringBuilder comments = new StringBuilder();
+				ORU_R01_ORDER_OBSERVATION parent = (ORU_R01_ORDER_OBSERVATION) obr.getParent();
+				int totalNTEs = parent.getNTEReps();
+				for (int iNTE = 0; iNTE < totalNTEs; iNTE++)
+					for (FT obxComment : parent.getNTE(iNTE).getComment()) {
+						if (comments.length() > 0)
+							comments.append(" ");
+						comments.append(obxComment.getValue());
+					}
+				// only set comments if there are any
+				if (StringUtils.hasText(comments.toString()))
+					obsGrouper.setComment(comments.toString());
 				
 				// add this obs as another row in the obs table
 				encounter.addObs(obsGrouper);
@@ -549,6 +566,9 @@ public class ORUR01Handler implements Application {
 	 * @return Obs pojo with all values filled in
 	 * @throws HL7Exception if there is a parsing exception
 	 * @throws ProposingConceptException if the answer to this obs is a proposed concept
+	 * @should add comments to an observation from NTE segments
+	 * @should add multiple comments for an observation as one comment
+	 * @should add comments to an observation group 
 	 */
 	private Obs parseObs(Encounter encounter, OBX obx, OBR obr, String uid) throws HL7Exception, ProposingConceptException {
 		if (log.isDebugEnabled())
@@ -583,6 +603,21 @@ public class ORUR01Handler implements Application {
 		obs.setLocation(encounter.getLocation());
 		obs.setCreator(encounter.getCreator());
 		obs.setDateCreated(encounter.getDateCreated());
+		
+		// set comments if there are any
+		StringBuilder comments = new StringBuilder();
+		ORU_R01_OBSERVATION parent = (ORU_R01_OBSERVATION) obx.getParent();
+		// iterate over all OBX NTEs
+		for (int i = 0; i < parent.getNTEReps(); i++)
+			for (FT obxComment : parent.getNTE(i).getComment()) {
+				if (comments.length() > 0)
+					comments.append(" ");
+				comments = comments.append(obxComment.getValue());
+			}
+		// only set comments if there are any
+		if (StringUtils.hasText(comments.toString()))
+			obs.setComment(comments.toString());
+		
 		Type obx5 = values[0].getData();
 		if ("NM".equals(hl7Datatype)) {
 			String value = ((NM) obx5).getValue();
