@@ -335,6 +335,15 @@ function parseDateFromJsToString(sFormat, jsDate) {
 }
 
 /**
+ * Takes something like "param[start]" and returns "param\\[start\\]"
+ * @param partialSelector the part of a jquery selector after the # or the .
+ * @return the input, with the following characters escaped: #;&,.+*~':"!^$[]()=>|/@
+ */
+function escapeJquerySelector(partialSelector) {
+	return partialSelector.replace('#', '\\#').replace(';', '\\;').replace('&', '\\&').replace(',', '\\,').replace('.', '\\.').replace('+', '\\+').replace('*', '\\*').replace('~', '\\~').replace("'", "\\'").replace(':', '\\:').replace('"', '\\"').replace('!', '\\!').replace('^', '\\^').replace('$', '\\$').replace('[', '\\[').replace(']', '\\]').replace('(', '\\(').replace(')', '\\)').replace('=', '\\=').replace('>', '\\>').replace('|', '\\|').replace('/', '\\/').replace('@', '\\@');
+}
+
+/**
  * DatePicker class
  * @param dateFormat :String date format to use (ex: dd-mm-yyyy)
  * @param id :Element the html element (when id is not present)
@@ -344,8 +353,7 @@ function parseDateFromJsToString(sFormat, jsDate) {
 function DatePicker(dateFormat, id, opts) {
 	var jq;
 	if(typeof id == 'string') {
-		// jQuery requires the following to be escaped if they appear in a selector: #;&,.+*~':"!^$[]()=>|/@
-		id = id.replace('#', '\\#').replace(';', '\\;').replace('&', '\\&').replace(',', '\\,').replace('.', '\\.').replace('+', '\\+').replace('*', '\\*').replace('~', '\\~').replace("'", "\\'").replace(':', '\\:').replace('"', '\\"').replace('!', '\\!').replace('^', '\\^').replace('$', '\\$').replace('[', '\\[').replace(']', '\\]').replace('(', '\\(').replace(')', '\\)').replace('=', '\\=').replace('>', '\\>').replace('|', '\\|').replace('/', '\\/').replace('@', '\\@');
+		id = escapeJquerySelector(id);
 		jq = jQuery('#' + id);
 	}
 	else {
@@ -397,8 +405,7 @@ function DatePicker(dateFormat, id, opts) {
 function AutoComplete(id, callback, opts) {
 	var jq;
 	if(typeof id == 'string') {
-		// jQuery requires the following to be escaped if they appear in a selector: #;&,.+*~':"!^$[]()=>|/@
-		id = id.replace('#', '\\#').replace(';', '\\;').replace('&', '\\&').replace(',', '\\,').replace('.', '\\.').replace('+', '\\+').replace('*', '\\*').replace('~', '\\~').replace("'", "\\'").replace(':', '\\:').replace('"', '\\"').replace('!', '\\!').replace('^', '\\^').replace('$', '\\$').replace('[', '\\[').replace(']', '\\]').replace('(', '\\(').replace(')', '\\)').replace('=', '\\=').replace('>', '\\>').replace('|', '\\|').replace('/', '\\/').replace('@', '\\@');
+		id = escapeJquerySelector(id);
 		jq = jQuery('#' + id);
 	}
 	else {
