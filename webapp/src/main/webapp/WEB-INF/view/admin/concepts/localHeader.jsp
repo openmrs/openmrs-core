@@ -25,7 +25,7 @@
 	</openmrs:hasPrivilege>
 	<openmrs:hasPrivilege privilege="Edit Concepts">
 		<li <c:if test='<%= request.getRequestURI().contains("Word") %>'>class="active"</c:if>>
-			<a href="${pageContext.request.contextPath}/admin/concepts/conceptWord.form">
+			<a href="${pageContext.request.contextPath}/admin/concepts/conceptIndex.form">
 				<spring:message code="ConceptWord.manage"/>
 			</a>
 		</li>

@@ -1485,9 +1485,9 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		List<Concept> concepts = new Vector<Concept>();
 		try {
 			
-			for (ConceptWord word : Context.getConceptService().getConceptWords(searchText,
-			    Collections.singletonList(Context.getLocale()), false, null, null, null, null, null, null, null)) {
-				concepts.add(word.getConcept());
+			for (ConceptSearchResult searchResult : Context.getConceptService().getConcepts(searchText,
+				    Collections.singletonList(Context.getLocale()), false, null, null, null, null, null, null, null)) {
+					concepts.add(searchResult.getConcept());
 			}
 		}
 		catch (Exception e) {

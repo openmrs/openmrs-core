@@ -27,7 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
-import org.openmrs.ConceptWord;
+import org.openmrs.ConceptSearchResult;
 import org.openmrs.Field;
 import org.openmrs.Form;
 import org.openmrs.FormField;
@@ -155,9 +155,9 @@ public class DWRFormService {
 			
 		}
 		
-		List<ConceptWord> conceptWords = Context.getConceptService().getConceptWords(txt, locale);
-		for (ConceptWord word : conceptWords) {
-			concept = word.getConcept();
+		List<ConceptSearchResult> searchResults = Context.getConceptService().getConcepts(txt, locale);
+		for (ConceptSearchResult searchResult: searchResults) {
+			concept = searchResult.getConcept();
 			for (Field field : Context.getFormService().getFieldsByConcept(concept)) {
 				FieldListItem fli = new FieldListItem(field, locale);
 				if (!objects.contains(fli))
@@ -165,7 +165,7 @@ public class DWRFormService {
 				fieldForConceptAdded.put(concept.getConceptId(), true);
 			}
 			if (!fieldForConceptAdded.containsKey((concept.getConceptId()))) {
-				objects.add(new ConceptListItem(word));
+				objects.add(new ConceptListItem(searchResult));
 				fieldForConceptAdded.put(concept.getConceptId(), true);
 			}
 		}

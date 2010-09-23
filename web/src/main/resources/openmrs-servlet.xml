@@ -173,7 +173,7 @@
 				<prop key="admin/concepts/conceptProposal.list">conceptProposalList</prop>
 				<prop key="admin/concepts/conceptProposal.form">conceptProposalForm</prop>
 				<prop key="admin/concepts/proposeConcept.form">proposeConceptForm</prop>
-				<prop key="admin/concepts/conceptWord.form">conceptWordForm</prop>
+				<prop key="admin/concepts/conceptIndex.form">conceptIndexForm</prop>
 				<prop key="admin/concepts/conceptSetDerived.form">conceptSetDerivedForm</prop>
 
 				<prop key="migration.list">migrationController</prop>
@@ -673,15 +673,15 @@
 		<property name="successView"><value>conceptDatatype.list</value></property>
 	</bean>
 	<!--  ** /Concept Datatype ** -->
-	<!--  ** ConceptWord ** -->
-	<bean id="conceptWordForm"
-		class="org.openmrs.web.controller.concept.ConceptWordFormController">
+	<!--  ** ConceptIndex ** -->
+	<bean id="conceptIndexForm"
+		class="org.openmrs.web.controller.concept.ConceptIndexFormController">
 		<property name="commandName"><value>conceptId</value></property>
 		<property name="commandClass"><value>java.lang.String</value></property>
-		<property name="formView"><value>/admin/concepts/conceptWordForm</value></property>
-		<property name="successView"><value>conceptWord.form</value></property>
+		<property name="formView"><value>/admin/concepts/conceptIndexForm</value></property>
+		<property name="successView"><value>conceptIndex.form</value></property>
 	</bean>
-	<!-- ** /Concept Word ** -->
+	<!-- ** /ConceptIndex ** -->
 	<!-- ** Concept Set Derived ** -->
 	<bean id="conceptSetDerivedForm"
 		class="org.openmrs.web.controller.concept.ConceptSetDerivedFormController">

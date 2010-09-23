@@ -30,7 +30,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.ConceptProposal;
-import org.openmrs.ConceptWord;
+import org.openmrs.ConceptSearchResult;
 import org.openmrs.User;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
@@ -225,10 +225,10 @@ public class ConceptProposalFormController extends SimpleFormController {
 			String phrase = cp.getOriginalText();
 			if (phrase.length() > 3)
 				phrase = phrase.substring(0, 3);
-			List<ConceptWord> possibleConcepts = cs.getConceptWords(phrase, locale);
+			List<ConceptSearchResult> possibleConcepts = cs.getConcepts(phrase, locale);
 			if (possibleConcepts != null)
-				for (ConceptWord word : possibleConcepts)
-					possibleConceptsListItems.add(new ConceptListItem(word));
+				for (ConceptSearchResult searchResult : possibleConcepts)
+					possibleConceptsListItems.add(new ConceptListItem(searchResult));
 			
 			// premtively get the mapped concept name
 			if (cp.getMappedConcept() != null)

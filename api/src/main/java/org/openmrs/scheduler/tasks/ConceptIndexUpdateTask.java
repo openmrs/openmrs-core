@@ -28,9 +28,9 @@ import org.openmrs.scheduler.TaskDefinition;
 /**
  * A utility class for updating concept words in a scheduled task.
  */
-public class ConceptWordUpdateTask extends AbstractTask {
+public class ConceptIndexUpdateTask extends AbstractTask {
 	
-	private Log log = LogFactory.getLog(ConceptWordUpdateTask.class);
+	private Log log = LogFactory.getLog(ConceptIndexUpdateTask.class);
 	
 	private boolean shouldExecute = true;
 
@@ -52,7 +52,7 @@ public class ConceptWordUpdateTask extends AbstractTask {
 					Concept currentConcept = conceptIterator.next();
 					if (log.isDebugEnabled())
 						log.debug("updateConceptWords() : current concept: " + currentConcept);
-					cs.updateConceptWord(currentConcept);
+					cs.updateConceptIndex(currentConcept);
 					
 					// do this to keep memory consumption low at the expense of speed
 					// we can't clear the whole session because the conceptIterator has
