@@ -34,6 +34,7 @@ import org.openmrs.PersonAddress;
 import org.openmrs.PersonName;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
 import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.validation.Errors;
@@ -43,6 +44,8 @@ public class PatientDashboardController extends SimpleFormController {
 	
 	/** Logger for this class and subclasses */
 	protected final Log log = LogFactory.getLog(getClass());
+	private Concept conceptCause = null;
+	private Concept reasonForExitConcept = null;
 	
 	/**
 	 * This is called prior to displaying a form for the first time. It tells Spring the
@@ -96,23 +99,14 @@ public class PatientDashboardController extends SimpleFormController {
 		
 		log.debug("patient: '" + patient + "'");
 		
-		List<Form> forms = new Vector<Form>();
 		Map<String, Object> map = new HashMap<String, Object>();
-		List<Encounter> encounters = new Vector<Encounter>();
 		String causeOfDeathOther = "";
 		
 		if (Context.isAuthenticated()) {
-			if (Context.hasPrivilege(PrivilegeConstants.VIEW_UNPUBLISHED_FORMS))
-				forms.addAll(Context.getFormService().getAllForms());
-			else
-				forms.addAll(Context.getFormService().getPublishedForms());
-			
-			List<Encounter> encs = Context.getEncounterService().getEncountersByPatient(patient);
-			if (encs != null && encs.size() > 0)
-				encounters.addAll(encs);
-			
-			String propCause = Context.getAdministrationService().getGlobalProperty("concept.causeOfDeath");
-			Concept conceptCause = Context.getConceptService().getConcept(propCause);
+			if (conceptCause == null) {
+				String propCause = Context.getAdministrationService().getGlobalProperty("concept.causeOfDeath");
+				Concept conceptCause = Context.getConceptService().getConcept(propCause);
+			}
 			
 			if (conceptCause != null) {
 				List<Obs> obssDeath = Context.getObsService().getObservationsByPersonAndConcept(patient, conceptCause);
@@ -135,8 +129,10 @@ public class PatientDashboardController extends SimpleFormController {
 		
 		String patientVariation = "";
 		
-		Concept reasonForExitConcept = Context.getConceptService().getConcept(
-		    Context.getAdministrationService().getGlobalProperty("concept.reasonExitedCare"));
+		if (reasonForExitConcept == null)
+			reasonForExitConcept = Context.getConceptService().getConcept(
+					Context.getAdministrationService().getGlobalProperty("concept.reasonExitedCare"));
+		
 		if (reasonForExitConcept != null) {
 			List<Obs> patientExitObs = Context.getObsService().getObservationsByPersonAndConcept(patient,
 			    reasonForExitConcept);
@@ -157,13 +153,10 @@ public class PatientDashboardController extends SimpleFormController {
 		
 		map.put("patientVariation", patientVariation);
 		
-		map.put("forms", forms);
-		
 		// empty objects used to create blank template in the view
 		map.put("emptyIdentifier", new PatientIdentifier());
 		map.put("emptyName", new PersonName());
 		map.put("emptyAddress", new PersonAddress());
-		map.put("encounters", encounters);
 		map.put("causeOfDeathOther", causeOfDeathOther);
 		
 		return map;
