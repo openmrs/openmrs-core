@@ -27,8 +27,8 @@ import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptNumeric;
+import org.openmrs.ConceptSearchResult;
 import org.openmrs.ConceptSet;
-import org.openmrs.ConceptWord;
 import org.openmrs.Drug;
 import org.openmrs.Field;
 import org.openmrs.User;
@@ -115,7 +115,7 @@ public class DWRConceptService {
 		
 		try {
 			ConceptService cs = Context.getConceptService();
-			List<ConceptWord> words = new Vector<ConceptWord>();
+			List<ConceptSearchResult> searchResults = new Vector<ConceptSearchResult>();
 			
 			if (phrase.matches("\\d+")) {
 				// user searched on a number. Insert concept with
@@ -123,8 +123,8 @@ public class DWRConceptService {
 				Concept c = cs.getConcept(Integer.valueOf(phrase));
 				if (c != null) {
 					ConceptName cn = c.getName(defaultLocale);
-					ConceptWord word = new ConceptWord(phrase, c, cn, defaultLocale, "Exact match on concept id: #" + phrase);
-					words.add(word);
+					ConceptSearchResult searchResult = new ConceptSearchResult(phrase, c, cn);
+					searchResults.add(searchResult);
 				}
 			}
 			
@@ -156,29 +156,29 @@ public class DWRConceptService {
 						excludeDatatypes.add(cs.getConceptDatatypeByName(name));
 				
 				// perform the search
-				words.addAll(cs.findConcepts(phrase, localesToSearchOn, includeRetired, includeClasses, excludeClasses,
-				    includeDatatypes, excludeDatatypes));
+				searchResults.addAll(cs.getConcepts(phrase, localesToSearchOn, includeRetired, includeClasses, excludeClasses,
+				    includeDatatypes, excludeDatatypes, null,null, null));
 			}
 			
-			if (words.size() == 0) {
+			if (searchResults.size() == 0) {
 				objectList.add("No matches found for <b>" + phrase + "</b> in locale: "
 				        + OpenmrsUtil.join(localesToSearchOn, ", "));
 			} else {
 				int maxCount = 500;
 				int curCount = 0;
 				
-				// turn words into concept list items
+				// turn searchResults into concept list items
 				// if user wants drug concepts included, append those
-				for (ConceptWord word : words) {
+				for (ConceptSearchResult searchResult : searchResults) {
 					if (++curCount > maxCount)
 						break;
-					objectList.add(new ConceptListItem(word));
+					objectList.add(new ConceptListItem(searchResult));
 					
 					// add drugs for concept if desired
 					if (includeDrugConcepts) {
-						Integer classId = word.getConcept().getConceptClass().getConceptClassId();
+						Integer classId = searchResult.getConcept().getConceptClass().getConceptClassId();
 						if (classId.equals(OpenmrsConstants.CONCEPT_CLASS_DRUG))
-							for (Drug d : cs.getDrugsByConcept(word.getConcept()))
+							for (Drug d : cs.getDrugsByConcept(searchResult.getConcept()))
 								objectList.add(new ConceptDrugListItem(d, defaultLocale)); // ABKTODO: using the default locale here may be improper
 					}
 				}
@@ -253,7 +253,7 @@ public class DWRConceptService {
 		if (concept == null)
 			throw new Exception("Unable to find a concept with id: " + conceptId);
 		
-		List<ConceptWord> words = cs.getConceptAnswers(text, locale, concept);
+		List<ConceptSearchResult> searchResults = cs.findConceptAnswers(text, locale, concept);
 		
 		List<Drug> drugAnswers = new Vector<Drug>();
 		for (ConceptAnswer conceptAnswer : concept.getAnswers()) {
@@ -262,13 +262,13 @@ public class DWRConceptService {
 		}
 		
 		List<Object> items = new Vector<Object>();
-		for (ConceptWord word : words) {
-			items.add(new ConceptListItem(word));
+		for (ConceptSearchResult searchResult : searchResults) {
+			items.add(new ConceptListItem(searchResult));
 			// add drugs for concept if desired
 			if (includeDrugConcepts) {
-				Integer classId = word.getConcept().getConceptClass().getConceptClassId();
+				Integer classId = searchResult.getConcept().getConceptClass().getConceptClassId();
 				if (classId.equals(OpenmrsConstants.CONCEPT_CLASS_DRUG))
-					for (Drug d : cs.getDrugsByConcept(word.getConcept())) {
+					for (Drug d : cs.getDrugsByConcept(searchResult.getConcept())) {
 						if (drugAnswers.contains(d))
 							items.add(new ConceptDrugListItem(d, locale));
 					}

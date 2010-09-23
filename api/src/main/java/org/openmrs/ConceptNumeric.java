@@ -119,8 +119,7 @@ public class ConceptNumeric extends Concept implements java.io.Serializable {
 		if (getConceptId() == null)
 			return super.hashCode();
 		int hash = 6;
-		if (getConceptId() != null)
-			hash = hash + getConceptId().hashCode() * 31;
+		hash = hash + getConceptId().hashCode() * 31;
 		return hash;
 	}
 	

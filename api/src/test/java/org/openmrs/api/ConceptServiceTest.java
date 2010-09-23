@@ -43,9 +43,9 @@ import org.openmrs.ConceptName;
 import org.openmrs.ConceptNameTag;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptProposal;
+import org.openmrs.ConceptSearchResult;
 import org.openmrs.ConceptSet;
 import org.openmrs.ConceptSource;
-import org.openmrs.ConceptWord;
 import org.openmrs.Drug;
 import org.openmrs.Encounter;
 import org.openmrs.GlobalProperty;
@@ -57,7 +57,6 @@ import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.SkipBaseSetup;
-import org.openmrs.test.TestUtil;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.OpenmrsConstants;
 
@@ -409,20 +408,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		
 		conceptNumeric.getDescriptions().size();
 		concept.getDescriptions().size();
-	}
-	
-	/**
-	 * @see ConceptService#getConceptWords(String, List, boolean, List, List, List, List, Concept,
-	 *      Integer, Integer)
-	 */
-	@Test
-	@Verifies(value = "should return the best matched name", method = "getConceptWords(String,List<QLocale;>,null,List<QConceptClass;>,List<QConceptClass;>,List<QConceptDatatype;>,List<QConceptDatatype;>,Concept,Integer,Integer)")
-	public void getConceptWords_shouldReturnTheBestMatchedName() throws Exception {
-		executeDataSet("org/openmrs/api/include/ConceptServiceTest-words.xml");
-		List<ConceptWord> words = Context.getConceptService().getConceptWords("cd4",
-		    Collections.singletonList(Locale.ENGLISH), false, null, null, null, null, null, null, null);
-		Assert.assertEquals(1847, words.get(0).getConceptName().getConceptNameId().intValue());
-	}
+	}	
 	
 	/**
 	 * This test had to be added to ConceptServiceTest because ConceptTest does not currently
@@ -1318,5 +1304,19 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(true, conceptSet.contains(conceptService.getConcept(4)));
 		Assert.assertEquals(true, conceptSet.contains(conceptService.getConcept(5)));
 		Assert.assertEquals(true, conceptSet.contains(conceptService.getConcept(6)));
+	}
+
+	/**
+	 * @see {@link ConceptService#getConcepts(String,List<Locale>,null,List<ConceptClass>,List<ConceptClass>,List<ConceptDatatype>,List<ConceptDatatype>,Concept,Integer,Integer)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should return the best matched name as the first item in the searchResultsList", method = "getConcepts(String,List<Locale>,null,List<ConceptClass>,List<ConceptClass>,List<ConceptDatatype>,List<ConceptDatatype>,Concept,Integer,Integer)")
+	public void getConcepts_shouldReturnTheBestMatchedNameAsTheFirstItemInTheSearchResultsList()
+			throws Exception {
+		executeDataSet("org/openmrs/api/include/ConceptServiceTest-words.xml");		
+		List<ConceptSearchResult> searchResults = Context.getConceptService().getConcepts("cd4",
+			    Collections.singletonList(Locale.ENGLISH), false, null, null, null, null, null, null, null);
+		Assert.assertEquals(1847, searchResults.get(0).getConceptName().getConceptNameId().intValue());
 	}
 }

@@ -21,7 +21,7 @@ import org.openmrs.Concept;
 import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptNumeric;
-import org.openmrs.ConceptWord;
+import org.openmrs.ConceptSearchResult;
 import org.openmrs.api.context.Context;
 import org.openmrs.web.WebUtil;
 
@@ -87,15 +87,15 @@ public class ConceptListItem {
 	 * 
 	 * @param word
 	 */
-	public ConceptListItem(ConceptWord word) {
-		if (word != null) {
+	public ConceptListItem(ConceptSearchResult searchResult) {
+		if (searchResult != null) {
 			
-			Concept concept = word.getConcept();
-			ConceptName conceptName = word.getConceptName();
+			Concept concept = searchResult.getConcept();
+			ConceptName conceptName = searchResult.getConceptName();
 			//associate an index term to a concrete name which is fully specified or a synonym if any is found
 			if (conceptName.isIndexTerm() && conceptName.getConcept().getName() != null)
 				conceptName = concept.getName();
-			Locale locale = word.getLocale();
+			Locale locale = conceptName.getLocale();
 			initialize(concept, conceptName, locale);
 		}
 	}
