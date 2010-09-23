@@ -337,13 +337,20 @@ function parseDateFromJsToString(sFormat, jsDate) {
 /**
  * DatePicker class
  * @param dateFormat :String date format to use (ex: dd-mm-yyyy)
- * @param id :String the id of the text box to use as the calendar
+ * @param id :Element the html element (when id is not present)
+ *           :String the id of the text box to use as the calendar
  * @param opts :Map additional options for the jquery datepicker widget (included are dateFormat, appendText, gotoCurrent)
  */
 function DatePicker(dateFormat, id, opts) {
-	// jQuery requires the following to be escaped if they appear in a selector: #;&,.+*~':"!^$[]()=>|/@
-	id = id.replace('#', '\\#').replace(';', '\\;').replace('&', '\\&').replace(',', '\\,').replace('.', '\\.').replace('+', '\\+').replace('*', '\\*').replace('~', '\\~').replace("'", "\\'").replace(':', '\\:').replace('"', '\\"').replace('!', '\\!').replace('^', '\\^').replace('$', '\\$').replace('[', '\\[').replace(']', '\\]').replace('(', '\\(').replace(')', '\\)').replace('=', '\\=').replace('>', '\\>').replace('|', '\\|').replace('/', '\\/').replace('@', '\\@');
- 	var jq = jQuery('#' + id);
+	var jq;
+	if(typeof id == 'string') {
+		// jQuery requires the following to be escaped if they appear in a selector: #;&,.+*~':"!^$[]()=>|/@
+		id = id.replace('#', '\\#').replace(';', '\\;').replace('&', '\\&').replace(',', '\\,').replace('.', '\\.').replace('+', '\\+').replace('*', '\\*').replace('~', '\\~').replace("'", "\\'").replace(':', '\\:').replace('"', '\\"').replace('!', '\\!').replace('^', '\\^').replace('$', '\\$').replace('[', '\\[').replace(']', '\\]').replace('(', '\\(').replace(')', '\\)').replace('=', '\\=').replace('>', '\\>').replace('|', '\\|').replace('/', '\\/').replace('@', '\\@');
+		jq = jQuery('#' + id);
+	}
+	else {
+		jq = jQuery(id);
+	}
  	
  	if(opts == null) {
  		opts = {};
@@ -382,12 +389,21 @@ function DatePicker(dateFormat, id, opts) {
 
 /**
  * AutoComplete class
- * @param id :String the id of the text box
+ * @param id :Element the html element (when id is not present)
+ * 			 :String the id of the text box
  * @param callback a function with 2 params (query - the text in the box, and response - use when the data is returned and takes an array as a param)
  * @param opts :Map addtional options (included are: minLength, delay, source)
  */
 function AutoComplete(id, callback, opts) {
- 	var jq = jQuery('#' + id);
+	var jq;
+	if(typeof id == 'string') {
+		// jQuery requires the following to be escaped if they appear in a selector: #;&,.+*~':"!^$[]()=>|/@
+		id = id.replace('#', '\\#').replace(';', '\\;').replace('&', '\\&').replace(',', '\\,').replace('.', '\\.').replace('+', '\\+').replace('*', '\\*').replace('~', '\\~').replace("'", "\\'").replace(':', '\\:').replace('"', '\\"').replace('!', '\\!').replace('^', '\\^').replace('$', '\\$').replace('[', '\\[').replace(']', '\\]').replace('(', '\\(').replace(')', '\\)').replace('=', '\\=').replace('>', '\\>').replace('|', '\\|').replace('/', '\\/').replace('@', '\\@');
+		jq = jQuery('#' + id);
+	}
+	else {
+		jq = jQuery(id);
+	}
 
  	if(opts == null) {
  		opts = {};
