@@ -537,15 +537,21 @@
 						</execution>
 					</executions>
 				</plugin>
+				<!-- 
+					Using modified version of plugin with patch applied from issue:
+					http://jira.codehaus.org/browse/MOJO-1539
+					Allows building without svn using revisionOnScmFailure
+				-->
 				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
+					<groupId>org.openmrs.codehaus.mojo</groupId>
 					<artifactId>buildnumber-maven-plugin</artifactId>
-					<version>1.0-beta-4</version>
+					<version>1.0-beta-4-mod</version>
 					<configuration>
 						<doCheck>false</doCheck>
 						<doUpdate>false</doUpdate>
 						<getRevisionOnlyOnce>true</getRevisionOnlyOnce>
 						<buildNumberPropertyName>revisionNumber</buildNumberPropertyName>
+						<revisionOnScmFailure>0</revisionOnScmFailure>
 						<providerImplementations>
 							<svn>javasvn</svn>
 						</providerImplementations>
@@ -571,7 +577,7 @@
 
 		<plugins>
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
+				<groupId>org.openmrs.codehaus.mojo</groupId>
 				<artifactId>buildnumber-maven-plugin</artifactId>
 				<executions>
 					<execution>
