@@ -594,6 +594,7 @@ public interface HL7Service extends OpenmrsService {
 	 * @should return null if no UUID found
 	 * @should find a UUID in any position of the array
 	 * @should not fail if multiple similar UUIDs exist in identifiers
+	 * @should not fail if no assigning authority is found
 	 * @should fail if multiple different UUIDs exist in identifiers
 	 */
 	public String getUuidFromIdentifiers(CX[] identifiers) throws HL7Exception;
