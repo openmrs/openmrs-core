@@ -14,6 +14,7 @@
 <%@ include file="/WEB-INF/template/header.jsp"%>
 
 <openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
+<openmrs:htmlInclude file="/dwr/util.js" />
 <openmrs:htmlInclude file="/dwr/interface/DWRConceptService.js" />
 
 <openmrs:htmlInclude file="/dictionary/conceptForm.js" />
