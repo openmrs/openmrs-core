@@ -124,10 +124,27 @@ public class OpenmrsClassLoader extends URLClassLoader {
 				//log.debug("Didn't find entry for: " + name);
 			}
 		}
-		
-		Class<?> c = getParent().loadClass(name);
-		loadedClasses.add(c);
-		return c;
+
+		/* See org.mortbay.jetty.webapp.WebAppClassLoader.loadClass, from
+  		 * http://dist.codehaus.org/jetty/jetty-6.1.10/jetty-6.1.10-src.zip */		
+		ClassNotFoundException ex= null;
+
+		try {
+			Class<?> c = getParent().loadClass(name);
+			loadedClasses.add(c);
+			return c;
+		} catch (ClassNotFoundException e) {
+			ex = e;			
+		}
+
+		try {
+			Class<?> c = this.findClass(name);
+			return c;
+		} catch (ClassNotFoundException e) {
+			ex = e;			
+		}
+
+		throw ex;
 	}
 	
 	/**
