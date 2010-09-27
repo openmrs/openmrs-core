@@ -1080,9 +1080,12 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 		String uuid = null;
 		for (CX identifier : identifiers) {
 			// check for UUID as the assigning authority
-			if (identifier.getAssigningAuthority().getNamespaceID().getValue().equals("UUID")) {
+			if (OpenmrsUtil.nullSafeEquals(identifier.getAssigningAuthority()
+					.getNamespaceID().getValue(), "UUID")) {
 				// check for duplicates
-				if (found && !identifier.getIDNumber().getValue().equals(uuid))
+				if (found
+						&& !OpenmrsUtil.nullSafeEquals(identifier.getIDNumber()
+								.getValue(), uuid))
 					throw new HL7Exception("multiple UUID values found");
 				uuid = identifier.getIDNumber().getValue();
 				found = true;
