@@ -179,7 +179,7 @@ public class NewPatientFormController extends SimpleFormController {
 							if (newIdentifiers.contains(pi))
 								newIdentifiers.remove(pi);
 							
-//							pi.setUuid(null);
+							//							pi.setUuid(null);
 							newIdentifiers.add(pi);
 							
 							if (log.isDebugEnabled()) {
@@ -543,7 +543,10 @@ public class NewPatientFormController extends SimpleFormController {
 										obsDeath.setValueText("");
 									}
 									
-									Context.getObsService().saveObs(obsDeath, null);
+									if (!StringUtils.hasText(obsDeath.getVoidReason()))
+										obsDeath.setVoidReason(Context.getMessageSourceService().getMessage(
+										    "general.default.changeReason"));
+									Context.getObsService().saveObs(obsDeath, obsDeath.getVoidReason());
 								} else {
 									log.debug("Current cause is still null - aborting mission");
 								}
