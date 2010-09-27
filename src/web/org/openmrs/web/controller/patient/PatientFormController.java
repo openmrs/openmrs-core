@@ -545,7 +545,8 @@ public class PatientFormController extends PersonFormController {
 									boolean shouldSaveObs = (null == obsDeath.getId()) || deathReasonChanged;
 									if (shouldSaveObs) {
 										if (null == obsDeath.getVoidReason())
-											obsDeath.setVoidReason("Changed in patient demographics editor");
+											obsDeath.setVoidReason(Context.getMessageSourceService().getMessage(
+											    "general.default.changeReason"));
 										Context.getObsService().saveObs(obsDeath, obsDeath.getVoidReason());
 									}
 								} else {
