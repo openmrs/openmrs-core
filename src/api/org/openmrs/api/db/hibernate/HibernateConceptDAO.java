@@ -1132,12 +1132,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	public ConceptNameTag saveConceptNameTag(ConceptNameTag nameTag) {
 		if (nameTag == null)
 			return null;
-		ConceptNameTag returnedTag = getConceptNameTagByName(nameTag.getTag());
-		if (returnedTag == null) {
-			returnedTag = nameTag;
-			sessionFactory.getCurrentSession().saveOrUpdate(nameTag);
-		}
-		return returnedTag;
+		sessionFactory.getCurrentSession().saveOrUpdate(nameTag);
+		return nameTag;
 	}
 	
 	/**
