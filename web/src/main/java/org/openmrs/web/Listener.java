@@ -15,7 +15,6 @@ package org.openmrs.web;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -267,40 +266,38 @@ public final class Listener extends ContextLoaderListener {
 		String realPath = servletContext.getRealPath("");
 		String absPath = realPath + "/WEB-INF/dwr-modules.xml";
 		File dwrFile = new File(absPath.replace("/", File.separator));
-		if (dwrFile.exists()) {
-			try {
-				DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-				DocumentBuilder db = dbf.newDocumentBuilder();
-				db.setEntityResolver(new EntityResolver() {
-					
-					public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
-						// When asked to resolve external entities (such as a DTD) we return an InputSource
-						// with no data at the end, causing the parser to ignore the DTD.
-						return new InputSource(new StringReader(""));
-					}
-				});
-				Document doc = db.parse(dwrFile);
-				Element elem = doc.getDocumentElement();
-				elem.setTextContent("");
-				OpenmrsUtil.saveDocument(doc, dwrFile);
-			}
-			catch (Throwable t) {
-				// got here because the dwr-modules.xml file is empty for some reason.  This might
-				// happen because the servlet container (i.e. tomcat) crashes when first loading this file
-				log.debug("Error clearing dwr-modules.xml", t);
-				dwrFile.delete();
-				try {
-					FileWriter writer = new FileWriter(dwrFile);
-					writer
-					        .write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE dwr PUBLIC \"-//GetAhead Limited//DTD Direct Web Remoting 2.0//EN\" \"http://directwebremoting.org/schema/dwr20.dtd\">\n<dwr></dwr>");
-					writer.close();
-				}
-				catch (IOException io) {
-					log.error("Unable to clear out the " + dwrFile.getAbsolutePath()
-					        + " file.  Please redeploy the openmrs war file", io);
-				}
+		try {
+			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+			DocumentBuilder db = dbf.newDocumentBuilder();
+			db.setEntityResolver(new EntityResolver() {
 				
+				public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
+					// When asked to resolve external entities (such as a DTD) we return an InputSource
+					// with no data at the end, causing the parser to ignore the DTD.
+					return new InputSource(new StringReader(""));
+				}
+			});
+			Document doc = db.parse(dwrFile);
+			Element elem = doc.getDocumentElement();
+			elem.setTextContent("");
+			OpenmrsUtil.saveDocument(doc, dwrFile);
+		}
+		catch (Throwable t) {
+			// got here because the dwr-modules.xml file is empty for some reason.  This might
+			// happen because the servlet container (i.e. tomcat) crashes when first loading this file
+			log.debug("Error clearing dwr-modules.xml", t);
+			dwrFile.delete();
+			try {
+				FileWriter writer = new FileWriter(dwrFile);
+				writer
+				        .write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE dwr PUBLIC \"-//GetAhead Limited//DTD Direct Web Remoting 2.0//EN\" \"http://directwebremoting.org/schema/dwr20.dtd\">\n<dwr></dwr>");
+				writer.close();
 			}
+			catch (IOException io) {
+				log.error("Unable to clear out the " + dwrFile.getAbsolutePath()
+				        + " file.  Please redeploy the openmrs war file", io);
+			}
+			
 		}
 	}
 	
