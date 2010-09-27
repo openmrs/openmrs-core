@@ -81,32 +81,42 @@
 	
 	<!-- import default properties -->
 	<import file="properties.xml" />
+	<available file="${openmrs.version.revision.filename}" property="openmrs.version.revision.file.exists" />
 	
 	<!-- *********************************************************** -->
 	<!-- **                     TARGETS                           ** -->
 	<!-- *********************************************************** -->
 	<target name="init" description="initialization done before most compile/packaging targets">
 		
-		<loadfile srcfile="${openmrs.version.revision.filename}" property="repositoryFileInput" />
 		<if>
-			<contains string="${repositoryFileInput}" substring="&lt;?xml" casesensitive="false" />
+			<equals arg1="${openmrs.version.revision.file.exists}" arg2="true" />
 			<then>
-				<!-- SVN pre-1.4 uses XML format -->
-				<propertyregex property="openmrs.version.revision"
-					input="${repositoryFileInput}"
-					regexp="${openmrs.version.revision.regexp}"
-					select="\1"
-					defaultValue="? (error with pre-1.4 revision regexp)" />
+				<loadfile srcfile="${openmrs.version.revision.filename}" property="repositoryFileInput" />
+				<if>
+					<contains string="${repositoryFileInput}" substring="&lt;?xml" casesensitive="false" />
+					<then>
+						<!-- SVN pre-1.4 uses XML format -->
+						<propertyregex property="openmrs.version.revision"
+							input="${repositoryFileInput}"
+							regexp="${openmrs.version.revision.regexp}"
+							select="\1"
+							defaultValue="? (error with pre-1.4 revision regexp)" />
+					</then>
+					<else>
+						<!-- SVN 1.4+ does not use XML format, just grab 11th line -->
+						<propertyregex property="openmrs.version.revision"
+							input="${repositoryFileInput}"
+							regexp="^(.*)\n(.*)\n(.*)\n(.*)\n(.*)\n(.*)\n(.*)\n(.*)\n(.*)\n(.*)\n(.*)\n"
+							select="\11"
+							defaultValue="? (error in post-1.4 revision regexp)" />				
+					</else>
+				</if>
 			</then>
 			<else>
-				<!-- SVN 1.4+ does not use XML format, just grab 11th line -->
-				<propertyregex property="openmrs.version.revision"
-					input="${repositoryFileInput}"
-					regexp="^(.*)\n(.*)\n(.*)\n(.*)\n(.*)\n(.*)\n(.*)\n(.*)\n(.*)\n(.*)\n(.*)\n"
-					select="\11"
-					defaultValue="? (error in post-1.4 revision regexp)" />				
+				<!-- Exported from SVN, use revision 0 -->
+				<property name="openmrs.version.revision" value="0" />
 			</else>
-		</if>
+		</if>		
 		<property 
 			name="openmrs.version.long" 
 			value="${openmrs.version.major}.${openmrs.version.minor}.${openmrs.version.maintenance} ${openmrs.version.suffix} Build ${openmrs.version.revision}"/>
