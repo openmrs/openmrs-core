@@ -51,7 +51,6 @@ import org.openmrs.propertyeditor.ConceptEditor;
 import org.openmrs.propertyeditor.LocationEditor;
 import org.openmrs.propertyeditor.PatientIdentifierTypeEditor;
 import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.controller.person.PersonFormController;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
@@ -482,7 +481,11 @@ public class PatientFormController extends PersonFormController {
 										obsDeath.setValueText("");
 									}
 									
-									Context.getObsService().saveObs(obsDeath, obsDeath.getVoidReason());
+									if (obsDeath.getVoidReason() == null)
+										obsDeath.setVoidReason(Context.getMessageSourceService().getMessage(
+										    "general.default.changeReason"));
+									
+									Context.getObsService().saveObs(obsDeath, obsDeath.getVoidReason());									
 								} else {
 									log.debug("Current cause is still null - aborting mission");
 								}
