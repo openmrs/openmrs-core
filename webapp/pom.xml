@@ -132,6 +132,7 @@
                         <overrideDescriptor>src/test/resources/override-web.xml</overrideDescriptor>
                         <extraClasspath>target/classes;../api/target/classes;../web/target/classes</extraClasspath>
                      </webAppConfig>
+                     <scanIntervalSeconds>0</scanIntervalSeconds>
                   </configuration>
                </plugin>
             </plugins>
