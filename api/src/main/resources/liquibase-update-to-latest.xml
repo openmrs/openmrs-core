@@ -3717,4 +3717,12 @@
 		</modifyColumn>
 	</changeSet>
 	
+	<changeSet id="201009281047" author="misha680">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="concept" columnName="default_charge"/>
+		</preConditions>
+		<comment>Remove the now unused default_charge column</comment>
+		<dropColumn tableName="concept" columnName="default_charge"/>
+	</changeSet>
+	
 </databaseChangeLog>
