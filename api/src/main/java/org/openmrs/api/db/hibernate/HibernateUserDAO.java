@@ -15,6 +15,7 @@ package org.openmrs.api.db.hibernate;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -22,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
@@ -40,6 +42,7 @@ import org.openmrs.api.db.LoginCredential;
 import org.openmrs.api.db.UserDAO;
 import org.openmrs.patient.impl.LuhnIdentifierValidator;
 import org.openmrs.util.Security;
+import org.openmrs.util.UserByNameComparator;
 
 /**
  * Hibernate specific database methods for the UserService
@@ -408,9 +411,9 @@ public class HibernateUserDAO implements UserDAO {
 		// Now apply the roles criteria
 		// TODO add this to the HQL query
 		// maybe: +inner join user.roles as role +where role.id in :roleIdList
-		
+		List<User> returnList;
 		if (roles != null && roles.size() > 0) {
-			List returnList = new Vector();
+			returnList = new Vector();
 			
 			log.debug("looping through to find matching roles");
 			for (Object o : query.list()) {
@@ -421,13 +424,15 @@ public class HibernateUserDAO implements UserDAO {
 						break;
 					}
 			}
-			
-			return returnList;
 		} else {
 			log.debug("not looping because there appears to be no roles");
-			return query.list();
+			returnList = query.list();
 		}
 		
+		if(!CollectionUtils.isEmpty(returnList))
+			Collections.sort(returnList, new UserByNameComparator());
+		
+		return returnList;
 	}
 	
 	/**
