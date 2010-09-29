@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientProgram;
 import org.openmrs.Program;
@@ -56,6 +57,7 @@ public class PatientProgramFormController implements Controller {
 		String patientIdStr = request.getParameter("patientId");
 		String programIdStr = request.getParameter("programId");
 		String enrollmentDateStr = request.getParameter("dateEnrolled");
+		String locationIdStr = request.getParameter("locationId");
 		String completionDateStr = request.getParameter("dateCompleted");
 		
 		log.debug("enroll " + patientIdStr + " in " + programIdStr + " on " + enrollmentDateStr);
@@ -69,6 +71,14 @@ public class PatientProgramFormController implements Controller {
 		cde.setAsText(completionDateStr);
 		Date completionDate = (Date) cde.getValue();
 		Patient patient = Context.getPatientService().getPatient(Integer.valueOf(patientIdStr));
+		
+		Location location;
+		try {
+			location = Context.getLocationService().getLocation(Integer.valueOf(locationIdStr));
+		} catch (Exception e) {
+			location = null;
+		}
+		
 		Program program = pws.getProgram(Integer.valueOf(programIdStr));
 		if (!pws.getPatientPrograms(patient, program, null, completionDate, enrollmentDate, null, false).isEmpty())
 			request.getSession().setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Program.error.already");
@@ -79,6 +89,7 @@ public class PatientProgramFormController implements Controller {
 			else {
 				PatientProgram pp = new PatientProgram();
 				pp.setPatient(patient);
+				pp.setLocation(location);
 				pp.setProgram(program);
 				pp.setDateEnrolled(enrollmentDate);
 				pp.setDateCompleted(completionDate);
