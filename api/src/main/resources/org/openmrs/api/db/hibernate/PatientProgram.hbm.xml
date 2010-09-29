@@ -46,6 +46,11 @@
     <many-to-one name="changedBy" class="org.openmrs.User">
         <column name="changed_by" />
     </many-to-one>
+    
+    <!-- bi-directional many-to-one association to Location -->
+    <many-to-one name="location" class="org.openmrs.Location">
+        <column name="location_id" />
+    </many-to-one>
 
 	<!-- bi-directional one-to-many association to PatientProgram -->
 	<set name="states" inverse="true" lazy="false" cascade="all-delete-orphan">

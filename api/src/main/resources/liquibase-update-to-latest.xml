@@ -3717,6 +3717,22 @@
 		</modifyColumn>
 	</changeSet>
 	
+	<changeSet id="20100924-1110" author="mseaton">
+		<preConditions>
+			<not><columnExists tableName="patient_program" columnName="location_id"/></not>
+		</preConditions>
+		<comment>
+			Add location_id column to patient_program table
+		</comment>
+		<addColumn tableName="patient_program">
+			<column name="location_id" type="int(11)" />
+		</addColumn>
+		<addForeignKeyConstraint constraintName="patient_program_location_id"
+			baseTableName="patient_program" baseColumnNames="location_id"
+			referencedTableName="location" referencedColumnNames="location_id"
+			/>
+	</changeSet>
+
 	<changeSet id="201009281047" author="misha680">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="concept" columnName="default_charge"/>

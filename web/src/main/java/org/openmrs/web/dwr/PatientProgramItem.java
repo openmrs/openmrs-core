@@ -35,6 +35,8 @@ public class PatientProgramItem {
 	
 	private Date dateCompleted;
 	
+	private LocationListItem location;
+	
 	private String creator;
 	
 	private Date dateCreated;
@@ -53,6 +55,7 @@ public class PatientProgramItem {
 		patientId = p.getPatient().getPatientId();
 		dateEnrolled = p.getDateEnrolled();
 		dateCompleted = p.getDateCompleted();
+		location = new LocationListItem(p.getLocation());
 		creator = p.getCreator().getPersonName().getFullName();
 		dateCreated = p.getDateCreated();
 		if (p.getChangedBy() != null) {
@@ -179,4 +182,18 @@ public class PatientProgramItem {
     public void setDateChanged(Date dateChanged) {
     	this.dateChanged = dateChanged;
     }
+
+	/**
+	 * @return the location
+	 */
+	public LocationListItem getLocation() {
+		return location;
+	}
+
+	/**
+	 * @param location the location to set
+	 */
+	public void setLocation(LocationListItem location) {
+		this.location = location;
+	}
 }

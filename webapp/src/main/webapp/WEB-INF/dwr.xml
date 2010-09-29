@@ -256,6 +256,7 @@
 			DWRPatientService.saveProblem(Integer activeListId, Integer problemId, String status, String startDate, String comments);
 			DWRPatientService.removeProblem(Integer activeListId, String reason, String endDate);
 			DWRPatientService.voidProblem(Integer activeListId, String reason);
+			DWRProgramWorkflowService.updatePatientProgram(Integer patientProgramId, String enrollmentDateYmd, String completionDateYmd, Integer locationId);
 		]]>
 	</signatures>
   	

@@ -68,8 +68,9 @@
 		var idToSave = currentProgramBeingEdited;
 		var startDate = parseDate($('enrollmentDateElement').value);
 		var endDate = parseDate($('completionDateElement').value);
+		var locationId = $('programLocationElement').value;
 		currentProgramBeingEdited = null;
-		DWRProgramWorkflowService.updatePatientProgram(idToSave, startDate, endDate, function() {
+		DWRProgramWorkflowService.updatePatientProgram(idToSave, startDate, endDate, locationId, function() {
 				hideLayer('editPatientProgramPopup');
 				refreshPage();
 			});
@@ -155,6 +156,17 @@
 			});
 	}
 	
+	function setEditPatientProgramPopupSelectedLocation(locationId) {
+		locationSelect = document.getElementById("programLocationElement");
+
+		for (i=0;i<=locationSelect.length-1;i++) {
+			if (locationSelect.options[i].value == locationId) {
+				locationSelect.selectedIndex = i;
+				break;
+			}	
+		}
+	}
+	
 	function showEditPatientProgramPopup(patientProgramId) {
 		hideLayer('editWorkflowPopup');
 		hideLayer('changedByTR');
@@ -167,6 +179,9 @@
 				$('programNameElement').innerHTML = program.name;
 				$('enrollmentDateElement').value = formatDate(program.dateEnrolledAsYmd);
 				$('completionDateElement').value = formatDate(program.dateCompletedAsYmd);
+				
+				setEditPatientProgramPopupSelectedLocation(program.location.locationId);
+				
 				$('createdByElement').innerHTML = program.creator;//program.creator is just a String object, not User class
 				$('dateCreatedElement').innerHTML = getDateString(program.dateCreated);
 				//show changedBy and date_changed only if changedBy is not empty
@@ -184,6 +199,19 @@
 		<tr>
 			<td><spring:message code="Program.program"/>:</td>
 			<td><b><span id="programNameElement"></span></b></td>
+		</tr>
+		<tr>
+			<td><spring:message code="Program.location"/>:</td>
+			<td>
+				<select name="locationId" id="programLocationElement">
+					<option value=""><spring:message code="Program.location.choose"/></option>
+					<c:forEach var="location" items="${model.locations}">
+						<c:if test="${!location.retired}">						
+							<option value="${location.locationId}">${location.displayString}</option>						
+						</c:if>
+					</c:forEach>
+				</select>
+			</td>
 		</tr>
 		<tr>
 			<td><spring:message code="Program.dateEnrolled"/>:</td>
@@ -251,6 +279,7 @@
 			<tr bgcolor="whitesmoke">
 				<td><spring:message code="Program.program"/></td>
 				<td><spring:message code="Program.dateEnrolled"/></td>
+				<td><spring:message code="Program.location"/></td>
 				<td><spring:message code="Program.dateCompleted"/></td>
 				<td><spring:message code="Program.state"/></td>
 			</tr>
@@ -272,6 +301,9 @@
 						</td>
 						<td align="left" valign="top">
 							<openmrs:formatDate date="${program.dateEnrolled}" type="medium" />
+						</td>
+						<td align="left" valign="top">
+							${program.location}
 						</td>
 						<td align="left" valign="top">
 							
@@ -385,6 +417,19 @@
 			<tr>
 				<td nowrap><spring:message code="Program.dateEnrolled"/>:</td>
 				<td><openmrs_tag:dateField formFieldName="dateEnrolled" startValue="" /></td>
+			</tr>
+			<tr>
+				<td nowrap><spring:message code="Program.location"/>:</td>
+				<td>
+					<select name="locationId">
+						<option value=""><spring:message code="Program.location.choose"/></option>
+						<c:forEach var="location" items="${model.locations}">
+							<c:if test="${!location.retired}">
+							  <option value="${location.locationId}">${location.displayString}</option>
+							</c:if>
+						</c:forEach>
+					</select>				
+				</td>
 			</tr>
 			<tr><td colspan="2">&nbsp;</td></tr>
 			<tr id="initialStateSection" style="display:none;">

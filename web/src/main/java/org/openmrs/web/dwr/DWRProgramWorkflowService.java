@@ -23,6 +23,7 @@ import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Location;
 import org.openmrs.PatientProgram;
 import org.openmrs.PatientState;
 import org.openmrs.Program;
@@ -112,18 +113,47 @@ public class DWRProgramWorkflowService {
 	 * object, then the PatientProgram will not be updated. Also, if the enrollment date comes after
 	 * the completion date, the PatientProgram will not be updated.
 	 * 
+	 * @deprecated use {@link #updatePatientProgram(Integer, String, String, Integer)}
+	 * 
 	 * @param patientProgramId
 	 * @param enrollmentDateYmd
 	 * @param completionDateYmd
 	 * @throws ParseException
 	 */
-	public void updatePatientProgram(Integer patientProgramId, String enrollmentDateYmd, String completionDateYmd)
-	                                                                                                              throws ParseException {
+	@Deprecated
+	public void updatePatientProgram(Integer patientProgramId, String enrollmentDateYmd, 
+									 String completionDateYmd) throws ParseException {
+		updatePatientProgram(patientProgramId, enrollmentDateYmd, completionDateYmd, null);
+	}
+	
+	/**
+	 * Updates enrollment date, completion date, and location for a PatientProgram. 
+	 * Compares @param enrollmentDateYmd with {@link PatientProgram#getDateEnrolled()} 
+	 * compares @param completionDateYmd with {@link PatientProgram#getDateCompleted()},
+	 * compares @param locationId with {@link PatientProgram#getLocation()}.
+	 * At least one of these comparisons must indicate a change in order to update the PatientProgram. 
+	 * In other words, if neither the @param enrollmentDateYmd, the @param completionDateYmd, or the 
+	 * @param locationId match with the persisted object, then the PatientProgram will not be updated. 
+	 * Also, if the enrollment date comes after the completion date, the PatientProgram will not be updated.
+	 * 
+	 * @param patientProgramId
+	 * @param enrollmentDateYmd
+	 * @param completionDateYmd
+	 * @param locationId
+	 * @throws ParseException
+	 */
+	public void updatePatientProgram(Integer patientProgramId, String enrollmentDateYmd, 
+									 String completionDateYmd, Integer locationId) throws ParseException {
 		PatientProgram pp = Context.getProgramWorkflowService().getPatientProgram(patientProgramId);
+		Location loc = null;
+		if (locationId != null) {
+			loc	= Context.getLocationService().getLocation(locationId);
+		}
 		Date dateEnrolled = null;
 		Date dateCompleted = null;
 		Date ppDateEnrolled = null;
 		Date ppDateCompleted = null;
+		Location ppLocation = pp.getLocation();
 		// If persisted date enrolled is not null then parse to ymdDf format.
 		if (null != pp.getDateEnrolled()) {
 			String enrolled = ymdDf.format(pp.getDateEnrolled());
@@ -145,6 +175,7 @@ public class DWRProgramWorkflowService {
 		// of enrollment and completion dates are equal, then anyChange is true.
 		boolean anyChange = OpenmrsUtil.nullSafeEquals(dateEnrolled, ppDateEnrolled);
 		anyChange |= OpenmrsUtil.nullSafeEquals(dateCompleted, ppDateCompleted);
+		anyChange |= OpenmrsUtil.nullSafeEquals(loc, ppLocation);
 		// Do not update if the enrollment date is after the completion date.
 		if (null != dateEnrolled && null != dateCompleted && dateCompleted.before(dateEnrolled)) {
 			anyChange = false;
@@ -152,6 +183,7 @@ public class DWRProgramWorkflowService {
 		if (anyChange) {
 			pp.setDateEnrolled(dateEnrolled);
 			pp.setDateCompleted(dateCompleted);
+			pp.setLocation(loc);
 			Context.getProgramWorkflowService().savePatientProgram(pp);
 		}
 	}

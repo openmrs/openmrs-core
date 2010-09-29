@@ -40,6 +40,8 @@ public class PatientProgram extends BaseOpenmrsData implements java.io.Serializa
 	
 	private Program program;
 	
+	private Location location;
+	
 	private Date dateEnrolled;
 	
 	private Date dateCompleted;
@@ -79,6 +81,7 @@ public class PatientProgram extends BaseOpenmrsData implements java.io.Serializa
 	protected PatientProgram copyHelper(PatientProgram target) {
 		target.setPatient(this.getPatient());
 		target.setProgram(this.getProgram());
+		target.setLocation(this.getLocation());
 		target.setDateEnrolled(this.getDateEnrolled());
 		target.setDateCompleted(target.getDateCompleted());
 		Set<PatientState> statesCopy = new HashSet<PatientState>();
@@ -382,5 +385,20 @@ public class PatientProgram extends BaseOpenmrsData implements java.io.Serializa
 	public void setId(Integer id) {
 		setPatientProgramId(id);
 	}
-	
+
+	/**
+	 * @since 1.8
+	 * @return the location
+	 */
+	public Location getLocation() {
+		return location;
+	}
+
+	/**
+	 * @since 1.8
+	 * @param location the location to set
+	 */
+	public void setLocation(Location location) {
+		this.location = location;
+	}
 }

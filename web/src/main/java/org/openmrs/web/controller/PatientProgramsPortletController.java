@@ -18,6 +18,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.openmrs.Location;
 import org.openmrs.Program;
 import org.openmrs.api.context.Context;
 
@@ -28,6 +29,10 @@ public class PatientProgramsPortletController extends PortletController {
 		if (!model.containsKey("programs")) {
 			List<Program> programs = Context.getProgramWorkflowService().getAllPrograms();
 			model.put("programs", programs);
+		}
+		if (!model.containsKey("locations")) {
+			List<Location> locations = Context.getLocationService().getAllLocations();
+			model.put("locations", locations);
 		}
 	}
 	
