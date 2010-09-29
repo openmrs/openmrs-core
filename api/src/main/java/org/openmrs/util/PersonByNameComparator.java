@@ -28,6 +28,9 @@ public class PersonByNameComparator implements Comparator<Person> {
 	
 	/**
 	 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+	 * @should return negative if personName for person1 comes before that of person2
+	 * @should return positive if personName for person1 comes after that of person2
+	 * @should return zero if the givenName middleName and familyName match	 
 	 */
 	public int compare(Person person1, Person person2) {
 		
