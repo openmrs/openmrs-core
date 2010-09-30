@@ -2,7 +2,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-
 <%@ page import="org.openmrs.web.WebConstants" %>
 <%
 	pageContext.setAttribute("msg", session.getAttribute(WebConstants.OPENMRS_MSG_ATTR));
@@ -17,19 +16,16 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
+		<openmrs:htmlInclude file="/openmrs.js" />
 		<openmrs:htmlInclude file="/openmrs.css" />
 		<openmrs:htmlInclude file="/style.css" />
-		<openmrs:htmlInclude file="/openmrs.js" />
+		<c:if test="${empty DO_NOT_INCLUDE_JQUERY}">
+			<openmrs:htmlInclude file="/scripts/jquery/jquery.min.js" />
+			<openmrs:htmlInclude file="/scripts/jquery-ui/js/jquery-ui.custom.min.js" />
+			<openmrs:htmlInclude file="/scripts/jquery-ui/js/jquery-ui-datepicker-i18n.js" />
+			<openmrs:htmlInclude file="/scripts/jquery-ui/css/redmond/jquery-ui.custom.css" />
+		</c:if>
 
-		<script type="text/javascript">
-			/* variable used in js to know the context path */
-			var openmrsContextPath = '${pageContext.request.contextPath}';
-			var dwrLoadingMessage = '<spring:message code="general.loading" />';
-		</script>
-
-		<!--  Page Title : '${pageTitle}'
-			OpenMRS Title: <spring:message code="openmrs.title"/>
-		-->
 		<c:choose>
 			<c:when test="${!empty pageTitle}">
 				<title>${pageTitle}</title>
@@ -38,6 +34,17 @@
 				<title><spring:message code="openmrs.title"/></title>
 			</c:otherwise>
 		</c:choose>
+
+		<script type="text/javascript">
+			<c:if test="${empty DO_NOT_INCLUDE_JQUERY}">
+			var $j = jQuery.noConflict();
+			</c:if>
+			/* variable used in js to know the context path */
+			var openmrsContextPath = '${pageContext.request.contextPath}';
+			var dwrLoadingMessage = '<spring:message code="general.loading" />';
+			var jsDateFormat = '<openmrs:datePattern localize="false"/>';
+			var jsLocale = '<%= org.openmrs.api.context.Context.getLocale() %>';
+		</script>
 
 		<openmrs:extensionPoint pointId="org.openmrs.headerMinimalIncludeExt" type="html" requiredClass="org.openmrs.module.web.extension.HeaderIncludeExt">
 			<c:forEach var="file" items="${extension.headerFiles}">
