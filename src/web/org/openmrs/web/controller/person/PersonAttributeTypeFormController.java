@@ -165,6 +165,9 @@ public class PersonAttributeTypeFormController extends SimpleFormController {
 		}
 		
 		Set<String> formats = FieldGenHandlerFactory.getSingletonInstance().getHandlers().keySet();
+
+		// java.util.Date doesn't work as a PersonAttributeType since it gets saved in a user-date-format-specific way
+		formats.remove("java.util.Date");
 		
 		map.put("privileges", privileges);
 		map.put("formats", formats);
