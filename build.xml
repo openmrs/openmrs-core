@@ -147,7 +147,26 @@
 		<delete dir="${dist.dir}" />
 		<delete dir="${doc.dir}" />
 	</target>
-
+	
+	<target name="assembly" depends="init" description="assemble project into source distribution">
+		<mkdir dir="${dist.dir}" />
+		<basename property="build.dirname" file="${build.dir}" />
+		<basename property="dist.dirname" file="${dist.dir}" />
+		<basename property="doc.dirname" file="${doc.dir}" />
+		<delete>
+			<fileset dir="${dist.dir}" includes="**/*.zip, **/*.tar, **/*.tar.gz, **/*.tar.gz2" />
+		</delete>
+		<zip destfile="${dist.dir}/openmrs-${openmrs.version.short}-src.zip"
+			 basedir="${basedir}"
+			 excludes="**/.svn/**, ${build.dirname}/**, ${dist.dirname}/**, ${doc.dirname}/**" />		
+		<tar destfile="${dist.dir}/openmrs-${openmrs.version.short}-src.tar"
+			 basedir="${basedir}"
+			 excludes="**/.svn/**, ${build.dirname}/**, ${dist.dirname}/**, ${doc.dirname}/**" />		
+		<gzip src="${dist.dir}/openmrs-${openmrs.version.short}-src.tar" destfile="${dist.dir}/openmrs-${openmrs.version.short}-src.tar.gz" />
+		<bzip2 src="${dist.dir}/openmrs-${openmrs.version.short}-src.tar" destfile="${dist.dir}/openmrs-${openmrs.version.short}-src.tar.bz2" />
+		<delete file="${dist.dir}/openmrs-${openmrs.version.short}-src.tar" />
+	</target>
+	
 	<target name="compile-api" depends="init" description="compile api">
 		<mkdir dir="${build.dir}" />
 		<!-- Copy hibernate metadata and logging settings to build directory -->
