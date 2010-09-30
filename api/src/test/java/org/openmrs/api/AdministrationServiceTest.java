@@ -155,6 +155,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 * @see AdministrationService#setImplementationId(ImplementationId)
 	 */
 	@Test
+	@Ignore
 	@Verifies(value = "should create implementation id in database", method = "setImplementationId(ImplementationId)")
 	public void setImplementationId_shouldCreateImplementationIdInDatabase() throws Exception {
 		// save a valid impl id
