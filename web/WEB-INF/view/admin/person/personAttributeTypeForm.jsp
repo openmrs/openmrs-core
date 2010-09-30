@@ -35,13 +35,22 @@
 		<td><spring:message code="PersonAttributeType.format"/></td>
 		<td>
 			<spring:bind path="personAttributeType.format">
+				<%-- This logic is here because java.util.Date should not be allowed, but existing entries may have that value, and it's impossible to fix that automatically. --%>
+				<c:set var="isJavaUtilDate" value='${status.value == "java.util.Date"}'/>
 				<select name="format">
 					<option value=""></option>
 					<c:forEach items="${formats}" var="format">
 						<option value="${format}" <c:if test="${format == status.value}">selected</c:if>>${format}</option>
 					</c:forEach>
+					<c:if test="${isJavaUtilDate}">
+						<option value="java.util.Date" selected="true">java.util.Date</option>
+					</c:if>
 				</select>
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+				<c:if test="${isJavaUtilDate != ''}">
+					<br/>
+					<span class="error"><spring:message code="PersonAttributeType.java.util.Date.warning"/></span>
+				</c:if>
 			</spring:bind>
 		</td>
 		<td><i><spring:message code="PersonAttributeType.format.help"/></i></td>
