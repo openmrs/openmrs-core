@@ -340,7 +340,8 @@ public interface ObsService extends OpenmrsService {
 	public Set<Obs> getObservations(Person who, boolean includeVoided);
 	
 	/**
-	 * Get all Observations for the given person. Does not return voided observations
+	 * Get all Observations for the given person, sorted by obsDatetime ascending. Does not return
+	 * voided observations.
 	 * 
 	 * @param who the user to match on
 	 * @return a List<Obs> object containing all non-voided observations for the specified person
