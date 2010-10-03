@@ -90,7 +90,7 @@ public interface EncounterService extends OpenmrsService {
 	public Encounter getEncounterByUuid(String uuid) throws APIException;
 	
 	/**
-	 * Get all encounters (not voided) for a patient.
+	 * Get all encounters (not voided) for a patient, sorted by encounterDatetime ascending.
 	 * 
 	 * @param patient
 	 * @return List<Encounter> encounters (not voided) for a patient.
