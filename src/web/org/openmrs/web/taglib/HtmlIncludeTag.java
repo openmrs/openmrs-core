@@ -72,9 +72,11 @@ public class HtmlIncludeTag extends TagSupport {
 		if (isJs || isCss) {
 			String initialRequestId = getInitialRequestUniqueId();
 			HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
-			log.debug("initialRequest id: [" + initialRequestId + "]");
-			log.debug("Object at pageContext." + HtmlIncludeTag.OPENMRS_HTML_INCLUDE_MAP_KEY + " is "
-			        + pageContext.getAttribute(HtmlIncludeTag.OPENMRS_HTML_INCLUDE_MAP_KEY, PageContext.SESSION_SCOPE) + "");
+			if (log.isDebugEnabled()) {
+				log.debug("initialRequest id: [" + initialRequestId + "]");
+				log.debug("Object at pageContext." + HtmlIncludeTag.OPENMRS_HTML_INCLUDE_MAP_KEY + " is "
+				        + pageContext.getAttribute(HtmlIncludeTag.OPENMRS_HTML_INCLUDE_MAP_KEY, PageContext.SESSION_SCOPE) + "");
+			}
 			
 			if (!isAlreadyUsed(file, initialRequestId)) {
 				String output = "";
@@ -95,7 +97,8 @@ public class HtmlIncludeTag extends TagSupport {
 					output = "<link href=\"" + prefix + file + "?v=" + OpenmrsConstants.OPENMRS_VERSION_SHORT + "\" type=\"text/css\" rel=\"stylesheet\" />";
 				}
 				
-				log.debug("isAlreadyUsed() is FALSE - printing " + this.file + " to output.");
+				if (log.isDebugEnabled())
+					log.debug("isAlreadyUsed() is FALSE - printing " + this.file + " to output.");
 				
 				try {
 					pageContext.getOut().print(output);
@@ -104,7 +107,8 @@ public class HtmlIncludeTag extends TagSupport {
 					log.debug("Could not produce output in HtmlIncludeTag.java");
 				}
 			} else {
-				log.debug("isAlreadyUsed() is TRUE - suppressing file print for " + this.file + "");
+				if (log.isDebugEnabled())
+					log.debug("isAlreadyUsed() is TRUE - suppressing file print for " + this.file + "");
 			}
 		}
 		
@@ -118,7 +122,8 @@ public class HtmlIncludeTag extends TagSupport {
 		Object attr = pageRequest.getAttribute(WebConstants.INIT_REQ_UNIQUE_ID);
 		if (attr != null) {
 			String uniqueId = (String) attr;
-			log.debug("Returning initial request: " + uniqueId);
+			if (log.isDebugEnabled())
+				log.debug("Returning initial request: " + uniqueId);
 			return uniqueId;
 		} else {
 			log.error("Could not find value for " + WebConstants.INIT_REQ_UNIQUE_ID + " in pageContext");
