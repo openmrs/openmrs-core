@@ -692,6 +692,7 @@ public class Context {
 	
 	/**
 	 * Forces any changes made so far in this unit of work to be written to the database
+	 * @since 1.6
 	 */
 	public static void flushSession() {
 		log.trace("flushing session");
