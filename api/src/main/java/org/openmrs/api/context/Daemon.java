@@ -19,8 +19,7 @@ import org.openmrs.module.ModuleException;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.scheduler.Task;
 import org.openmrs.scheduler.timer.TimerSchedulerTask;
-
-import sun.reflect.Reflection;
+import org.openmrs.util.OpenmrsSecurityManager;
 
 /**
  * This class allows certain tasks to run with elevated privileges. Primary use is scheduling and
@@ -92,12 +91,14 @@ public class Daemon {
 	 * 
 	 * @param task the task to run
 	 * @should not be called from other methods other than TimerSchedulerTask
+	 * @should not throw error if called from a TimerSchedulerTask class
 	 */
 	public static void executeScheduledTask(final Task task) throws Throwable {
 		
 		// quick check to make sure we're only being called by ourselves
-		Class<?> callerClass = Reflection.getCallerClass(0);
-		if (callerClass.isAssignableFrom(TimerSchedulerTask.class))
+		//Class<?> callerClass = Reflection.getCallerClass(0);
+		Class<?> callerClass = new OpenmrsSecurityManager().getCallerClass(0);
+		if (!TimerSchedulerTask.class.isAssignableFrom(callerClass))
 			throw new APIException("This method can only be called from the TimerSchedulerTask class, not "
 			        + callerClass.getName());
 		
