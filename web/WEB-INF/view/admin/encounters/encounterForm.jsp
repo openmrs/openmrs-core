@@ -224,6 +224,19 @@
 
 <c:if test="${encounter.encounterId != null}">
 	<br/>
+	<openmrs:extensionPoint pointId="org.openmrs.admin.encounters.encounterForm" type="html" parameters="encounterId=${encounter.encounterId}">
+		<openmrs:hasPrivilege privilege="${extension.requiredPrivilege}">
+			<div class="boxHeader" style="font-weight: bold;"><spring:message code="${extension.title}" /></div>
+			<div class="box" style="padding: 0px 0px 5px;"><spring:message code="${extension.content}" />
+  				<c:if test="${extension.portletUrl != null}">
+   					<openmrs:portlet url="${extension.portletUrl}" moduleId="${extension.moduleId}" id="${extension.portletUrl}" encounterId="${encounter.encounterId}" parameters="allowEdits=true"/>
+ 				</c:if>
+			</div>
+			<br />
+		</openmrs:hasPrivilege>
+	</openmrs:extensionPoint>
+	
+	<br/>
 	<div class="boxHeader">
 		<span style="float: right">
 			<a href="#" id="showDescription" onClick="return toggleVisibility(document, 'div', 'description')"><spring:message code="general.toggle.description"/></a> |
