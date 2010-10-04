@@ -561,6 +561,21 @@
 	</form>
 </c:if>
 
+<c:if test="${obs.obsId != null}">
+<br/>
+<openmrs:extensionPoint pointId="org.openmrs.admin.observations.obsForm" type="html" parameters="obsId=${obs.obsId}">
+	<openmrs:hasPrivilege privilege="${extension.requiredPrivilege}">
+		<div class="boxHeader" style="font-weight: bold;"><spring:message code="${extension.title}" /></div>
+		<div class="box" style="padding: 0px 0px 5px;"><spring:message code="${extension.content}" />
+  			<c:if test="${extension.portletUrl != null}">
+   				<openmrs:portlet url="${extension.portletUrl}" moduleId="${extension.moduleId}" id="${extension.portletUrl}" parameters="allowEdits=true|obsId=${obs.obsId}"/>
+ 			</c:if>
+		</div>
+		<br />
+	</openmrs:hasPrivilege>
+</openmrs:extensionPoint>
+</c:if>
+
 <script type="text/javascript">
 	$('obsTable').style.visibility = 'visible';
 </script>
