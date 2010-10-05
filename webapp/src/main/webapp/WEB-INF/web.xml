@@ -27,6 +27,13 @@
       <!-- <param-value>http://localhost:8080/modules</param-value> -->
       <param-value>http://modules.openmrs.org/modules</param-value>
     </context-param>
+    <!-- Optional init parameter to specify runtime properties directory -->
+    <!-- when environment variables cannot be modified and user's home -->
+    <!-- directory cannot be used. Note: A trailing slash MUST be used -->
+    <context-param>
+        <param-name>application.data.directory</param-name>
+        <param-value></param-value>
+    </context-param>
 	<!-- // End init parameters -->
 	
 	<servlet>

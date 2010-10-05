@@ -1081,9 +1081,10 @@ public class OpenmrsUtil {
 
 	/**
 	 * If the "application_data_directory" runtime property has been set, it is
-	 * returned. Otherwise, on UNIX-based systems, this returns
-	 * "{user.home}/.OpenMRS", and otherwise returns "{user.home}\Application
-	 * Data\OpenMRS"
+	 * returned. Otherwise, if the servlet init parameter application.data.directory 
+	 * has been set, it is returned. Otherwise, on UNIX-based systems, this returns
+	 * "{user.home}/.OpenMRS", and returns "{user.home}\Application Data\OpenMRS" 
+	 * for windows.
 	 * 
 	 * @return The path to the directory on the file system that will hold
 	 *         miscellaneous data about the application (runtime properties,
