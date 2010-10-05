@@ -120,7 +120,7 @@ public final class OpenmrsConstants {
 	 * OpenmrsUtil.getApplicationDataDirectory() should be used. This should be null here. This
 	 * constant will hold the value of the user's runtime property for the
 	 * application_data_directory and is set programmatically at startup. This value is set in the
-	 * openmrs startup method If this is null, the getApplicationDataDirectory() uses some OS
+	 * openmrs startup method. If this is null, the getApplicationDataDirectory() uses some OS
 	 * heuristics to determine where to put an app data dir.
 	 * 
 	 * @see #APPLICATION_DATA_DIRECTORY_RUNTIME_PROPERTY

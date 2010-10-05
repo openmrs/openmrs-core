@@ -48,10 +48,12 @@ import org.openmrs.scheduler.SchedulerUtil;
 import org.openmrs.util.DatabaseUpdateException;
 import org.openmrs.util.DatabaseUpdater;
 import org.openmrs.util.InputRequiredException;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.filter.initialization.InitializationFilter;
 import org.openmrs.web.filter.update.UpdateFilter;
+import org.springframework.util.StringUtils;
 import org.springframework.web.context.ContextLoaderListener;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -228,6 +230,12 @@ public final class Listener extends ContextLoaderListener {
 		WebConstants.BUILD_TIMESTAMP = servletContext.getInitParameter("build.timestamp");
 		WebConstants.WEBAPP_NAME = getContextPath(servletContext);
 		WebConstants.MODULE_REPOSITORY_URL = servletContext.getInitParameter("module.repository.url");
+		// note: the below value will be overridden after reading the runtime properties if the
+		// "application_data_directory" runtime property is set
+		String appDataDir = servletContext.getInitParameter("application.data.directory");
+		if (StringUtils.hasLength(appDataDir)) {
+			OpenmrsConstants.APPLICATION_DATA_DIRECTORY = appDataDir;
+		}
 	}
 	
 	/**
