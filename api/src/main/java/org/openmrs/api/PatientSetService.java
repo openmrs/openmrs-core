@@ -356,8 +356,11 @@ public interface PatientSetService {
 	public Map<Integer, Encounter> getEncountersByType(Cohort patients, List<EncounterType> encType);
 	
 	/**
-	 * TODO write something here
+	 * This method returns a map of patients matched against their most recent encounters given a
+	 * Cohort of patients, see {@link EncounterService#getAllEncounters(Cohort)} which gets a map of
+	 * patient matched against lists of all their encounters.
 	 * 
+	 * @see EncounterService#getAllEncounters(Cohort)
 	 * @param patients Cohort of patients to search
 	 * @return Map<Integer, Encounter> of all encounters for specified patients.
 	 */
