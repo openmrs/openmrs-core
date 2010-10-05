@@ -49,12 +49,14 @@ public class ProgramValidatorChangeSet implements CustomTaskChange {
 		
 		// Warn if any states are configured as both initial and terminal
 		StringBuilder message = new StringBuilder();
-		message.append("Following this update, the system will automatically complete a program enrollment ");
-		message.append("for a patient when they are transitioned into a state that is configured as terminal. ");
-		message.append("This update serves to check for any states that are potentially misconfigured, by checking ");
-		message.append("for states that are configured as both as initial and terminal and by checking for workflows ");
-		message.append("that have no initial states defined.  Any of these found should be reviewed to ensure that ");
-		message.append("program enrollments will not be closed incorrectly.<br/><br/>");
+		message.append("Starting now, when you transition a patient into a state that is configured as terminal, ");
+		message.append("then that whole program enrollment will be marked as completed.<br/>");
+		message.append("Please check that programs, workflows, and states are configured.<br/>");
+		message.append("This check will highlight two things: ");
+		message.append("<ul><li>states that are marked as both initial and terminal ");
+		message.append("(if you start someone in that state their program enrollment will be instantly closed)</li>");
+		message.append("<li>workflows that have no initial states (because you don't have a state to start people in)</li>");
+		message.append("</ul><br/>");
 		message.append("The following states are configured as both initial and terminal:<br/>");
 
 		StringBuilder query = new StringBuilder();
