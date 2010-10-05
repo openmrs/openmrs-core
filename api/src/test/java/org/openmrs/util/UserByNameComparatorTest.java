@@ -41,7 +41,7 @@ public class UserByNameComparatorTest {
 	public void compare_shouldSortUsersByPersonNames() throws Exception {
 		
 		Person person1 = new Person();
-		person1.addName(new PersonName("givenName", "midsdleName", "familyName"));
+		person1.addName(new PersonName("givenName", "middleName", "familyName"));
 		User user1 = new User(person1);
 		Person person2 = new Person();
 		person2.addName(new PersonName("givenName", "middleNamf", "familyName"));
