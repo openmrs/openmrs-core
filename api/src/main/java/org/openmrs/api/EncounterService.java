@@ -16,7 +16,9 @@ package org.openmrs.api;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
+import org.openmrs.Cohort;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
 import org.openmrs.Form;
@@ -62,7 +64,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @should not overwrite obs and orders creator or dateCreated
 	 * @should cascade creator and dateCreated to orders
 	 */
-	@Authorized( { PrivilegeConstants.ADD_ENCOUNTERS, PrivilegeConstants.EDIT_ENCOUNTERS })
+	@Authorized({ PrivilegeConstants.ADD_ENCOUNTERS, PrivilegeConstants.EDIT_ENCOUNTERS })
 	public Encounter saveEncounter(Encounter encounter) throws APIException;
 	
 	/**
@@ -74,7 +76,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @should throw error if given null parameter
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { PrivilegeConstants.VIEW_ENCOUNTERS })
+	@Authorized({ PrivilegeConstants.VIEW_ENCOUNTERS })
 	public Encounter getEncounter(Integer encounterId) throws APIException;
 	
 	/**
@@ -86,7 +88,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @should return null if no object found with given uuid
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { PrivilegeConstants.VIEW_ENCOUNTERS })
+	@Authorized({ PrivilegeConstants.VIEW_ENCOUNTERS })
 	public Encounter getEncounterByUuid(String uuid) throws APIException;
 	
 	/**
@@ -98,7 +100,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @should throw error when given null parameter
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { PrivilegeConstants.VIEW_ENCOUNTERS })
+	@Authorized({ PrivilegeConstants.VIEW_ENCOUNTERS })
 	public List<Encounter> getEncountersByPatient(Patient patient);
 	
 	/**
@@ -111,7 +113,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @should throw error if given a null parameter
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { PrivilegeConstants.VIEW_ENCOUNTERS })
+	@Authorized({ PrivilegeConstants.VIEW_ENCOUNTERS })
 	public List<Encounter> getEncountersByPatientId(Integer patientId) throws APIException;
 	
 	/**
@@ -124,7 +126,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @should throw error if given null parameter
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { PrivilegeConstants.VIEW_ENCOUNTERS })
+	@Authorized({ PrivilegeConstants.VIEW_ENCOUNTERS })
 	public List<Encounter> getEncountersByPatientIdentifier(String identifier) throws APIException;
 	
 	/**
@@ -133,7 +135,7 @@ public interface EncounterService extends OpenmrsService {
 	 */
 	@Deprecated
 	@Transactional(readOnly = true)
-	@Authorized( { PrivilegeConstants.VIEW_ENCOUNTERS })
+	@Authorized({ PrivilegeConstants.VIEW_ENCOUNTERS })
 	public List<Encounter> getEncounters(Patient who, Location loc, Date fromDate, Date toDate,
 	                                     Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes,
 	                                     boolean includeVoided);
@@ -162,7 +164,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @should include voided encounters
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { PrivilegeConstants.VIEW_ENCOUNTERS })
+	@Authorized({ PrivilegeConstants.VIEW_ENCOUNTERS })
 	public List<Encounter> getEncounters(Patient who, Location loc, Date fromDate, Date toDate,
 	                                     Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes,
 	                                     Collection<User> providers, boolean includeVoided);
@@ -177,7 +179,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @should cascade to orders
 	 * @should throw error with null reason parameter
 	 */
-	@Authorized( { PrivilegeConstants.EDIT_ENCOUNTERS })
+	@Authorized({ PrivilegeConstants.EDIT_ENCOUNTERS })
 	public Encounter voidEncounter(Encounter encounter, String reason);
 	
 	/**
@@ -188,7 +190,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @should cascade unvoid to orders
 	 * @should unvoid and unmark all attributes
 	 */
-	@Authorized( { PrivilegeConstants.EDIT_ENCOUNTERS })
+	@Authorized({ PrivilegeConstants.EDIT_ENCOUNTERS })
 	public Encounter unvoidEncounter(Encounter encounter) throws APIException;
 	
 	/**
@@ -198,7 +200,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @param encounter encounter object to be purged
 	 * @should purgeEncounter
 	 */
-	@Authorized( { PrivilegeConstants.PURGE_ENCOUNTERS })
+	@Authorized({ PrivilegeConstants.PURGE_ENCOUNTERS })
 	public void purgeEncounter(Encounter encounter) throws APIException;
 	
 	/**
@@ -209,7 +211,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @param cascade Purge any related observations as well?
 	 * @should cascade purge to obs and orders
 	 */
-	@Authorized( { PrivilegeConstants.PURGE_ENCOUNTERS })
+	@Authorized({ PrivilegeConstants.PURGE_ENCOUNTERS })
 	public void purgeEncounter(Encounter encounter, boolean cascade) throws APIException;
 	
 	/**
@@ -222,7 +224,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @should not overwrite date created
 	 * @should update an existing encounter type name
 	 */
-	@Authorized( { PrivilegeConstants.MANAGE_ENCOUNTER_TYPES })
+	@Authorized({ PrivilegeConstants.MANAGE_ENCOUNTER_TYPES })
 	public EncounterType saveEncounterType(EncounterType encounterType);
 	
 	/**
@@ -234,7 +236,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @should throw error if given null parameter
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { PrivilegeConstants.VIEW_ENCOUNTER_TYPES })
+	@Authorized({ PrivilegeConstants.VIEW_ENCOUNTER_TYPES })
 	public EncounterType getEncounterType(Integer encounterTypeId) throws APIException;
 	
 	/**
@@ -246,7 +248,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @should return null if no object found with given uuid
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { PrivilegeConstants.VIEW_ENCOUNTER_TYPES })
+	@Authorized({ PrivilegeConstants.VIEW_ENCOUNTER_TYPES })
 	public EncounterType getEncounterTypeByUuid(String uuid) throws APIException;
 	
 	/**
@@ -261,7 +263,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @should return null with null name parameter
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { PrivilegeConstants.VIEW_ENCOUNTER_TYPES })
+	@Authorized({ PrivilegeConstants.VIEW_ENCOUNTER_TYPES })
 	public EncounterType getEncounterType(String name) throws APIException;
 	
 	/**
@@ -272,7 +274,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @should not return retired types
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { PrivilegeConstants.VIEW_ENCOUNTER_TYPES })
+	@Authorized({ PrivilegeConstants.VIEW_ENCOUNTER_TYPES })
 	public List<EncounterType> getAllEncounterTypes() throws APIException;
 	
 	/**
@@ -285,7 +287,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @should include retired types with true includeRetired parameter
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { PrivilegeConstants.VIEW_ENCOUNTER_TYPES })
+	@Authorized({ PrivilegeConstants.VIEW_ENCOUNTER_TYPES })
 	public List<EncounterType> getAllEncounterTypes(boolean includeRetired) throws APIException;
 	
 	/**
@@ -302,7 +304,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @should return types ordered on name and nonretired first
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { PrivilegeConstants.VIEW_ENCOUNTER_TYPES })
+	@Authorized({ PrivilegeConstants.VIEW_ENCOUNTER_TYPES })
 	public List<EncounterType> findEncounterTypes(String name) throws APIException;
 	
 	/**
@@ -315,7 +317,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @should retire type and set attributes
 	 * @should throw error if given null reason parameter
 	 */
-	@Authorized( { PrivilegeConstants.MANAGE_ENCOUNTER_TYPES })
+	@Authorized({ PrivilegeConstants.MANAGE_ENCOUNTER_TYPES })
 	public EncounterType retireEncounterType(EncounterType encounterType, String reason) throws APIException;
 	
 	/**
@@ -326,7 +328,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @throws APIException
 	 * @should unretire type and unmark attributes
 	 */
-	@Authorized( { PrivilegeConstants.MANAGE_ENCOUNTER_TYPES })
+	@Authorized({ PrivilegeConstants.MANAGE_ENCOUNTER_TYPES })
 	public EncounterType unretireEncounterType(EncounterType encounterType) throws APIException;
 	
 	/**
@@ -336,7 +338,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @throws APIException
 	 * @should purge type
 	 */
-	@Authorized( { PrivilegeConstants.PURGE_ENCOUNTER_TYPES })
+	@Authorized({ PrivilegeConstants.PURGE_ENCOUNTER_TYPES })
 	public void purgeEncounterType(EncounterType encounterType) throws APIException;
 	
 	/**
@@ -346,8 +348,8 @@ public interface EncounterService extends OpenmrsService {
 	 * @throws APIException
 	 * @deprecated replaced by {@link #saveEncounter(Encounter)}
 	 */
-    @Deprecated
-	@Authorized( { PrivilegeConstants.ADD_ENCOUNTERS })
+	@Deprecated
+	@Authorized({ PrivilegeConstants.ADD_ENCOUNTERS })
 	public void createEncounter(Encounter encounter) throws APIException;
 	
 	/**
@@ -358,8 +360,8 @@ public interface EncounterService extends OpenmrsService {
 	 * @throws APIException
 	 * @deprecated replaced by {@link #saveEncounter(Encounter)}
 	 */
-    @Deprecated
-	@Authorized( { PrivilegeConstants.EDIT_ENCOUNTERS })
+	@Deprecated
+	@Authorized({ PrivilegeConstants.EDIT_ENCOUNTERS })
 	public void updateEncounter(Encounter encounter) throws APIException;
 	
 	/**
@@ -369,8 +371,8 @@ public interface EncounterService extends OpenmrsService {
 	 * @param encounter encounter object to be deleted
 	 * @deprecated replaced by {@link #purgeEncounter(Encounter)}
 	 */
-    @Deprecated
-	@Authorized( { PrivilegeConstants.DELETE_ENCOUNTERS })
+	@Deprecated
+	@Authorized({ PrivilegeConstants.DELETE_ENCOUNTERS })
 	public void deleteEncounter(Encounter encounter) throws APIException;
 	
 	/**
@@ -385,7 +387,7 @@ public interface EncounterService extends OpenmrsService {
 	 */
 	@Deprecated
 	@Transactional(readOnly = true)
-	@Authorized( { PrivilegeConstants.VIEW_ENCOUNTERS })
+	@Authorized({ PrivilegeConstants.VIEW_ENCOUNTERS })
 	public List<Encounter> getEncountersByPatientId(Integer patientId, boolean includeVoided) throws APIException;
 	
 	/**
@@ -400,7 +402,7 @@ public interface EncounterService extends OpenmrsService {
 	 */
 	@Deprecated
 	@Transactional(readOnly = true)
-	@Authorized( { PrivilegeConstants.VIEW_ENCOUNTERS })
+	@Authorized({ PrivilegeConstants.VIEW_ENCOUNTERS })
 	public List<Encounter> getEncountersByPatientIdentifier(String identifier, boolean includeVoided) throws APIException;
 	
 	/**
@@ -412,7 +414,7 @@ public interface EncounterService extends OpenmrsService {
 	 */
 	@Deprecated
 	@Transactional(readOnly = true)
-	@Authorized( { PrivilegeConstants.VIEW_ENCOUNTERS })
+	@Authorized({ PrivilegeConstants.VIEW_ENCOUNTERS })
 	public List<Encounter> getEncounters(Patient who);
 	
 	/**
@@ -426,7 +428,7 @@ public interface EncounterService extends OpenmrsService {
 	 */
 	@Deprecated
 	@Transactional(readOnly = true)
-	@Authorized( { PrivilegeConstants.VIEW_ENCOUNTERS })
+	@Authorized({ PrivilegeConstants.VIEW_ENCOUNTERS })
 	public List<Encounter> getEncounters(Patient who, boolean includeVoided);
 	
 	/**
@@ -440,7 +442,7 @@ public interface EncounterService extends OpenmrsService {
 	 */
 	@Deprecated
 	@Transactional(readOnly = true)
-	@Authorized( { PrivilegeConstants.VIEW_ENCOUNTERS })
+	@Authorized({ PrivilegeConstants.VIEW_ENCOUNTERS })
 	public List<Encounter> getEncounters(Patient who, Location where);
 	
 	/**
@@ -456,7 +458,7 @@ public interface EncounterService extends OpenmrsService {
 	 */
 	@Deprecated
 	@Transactional(readOnly = true)
-	@Authorized( { PrivilegeConstants.VIEW_ENCOUNTERS })
+	@Authorized({ PrivilegeConstants.VIEW_ENCOUNTERS })
 	public List<Encounter> getEncounters(Patient who, Date fromDate, Date toDate);
 	
 	/**
@@ -470,7 +472,7 @@ public interface EncounterService extends OpenmrsService {
 	 */
 	@Deprecated
 	@Transactional(readOnly = true)
-	@Authorized( { PrivilegeConstants.VIEW_ENCOUNTERS })
+	@Authorized({ PrivilegeConstants.VIEW_ENCOUNTERS })
 	public Collection<Encounter> getEncounters(Date fromDate, Date toDate);
 	
 	/**
@@ -486,7 +488,7 @@ public interface EncounterService extends OpenmrsService {
 	 */
 	@Deprecated
 	@Transactional(readOnly = true)
-	@Authorized( { PrivilegeConstants.VIEW_ENCOUNTERS })
+	@Authorized({ PrivilegeConstants.VIEW_ENCOUNTERS })
 	public Collection<Encounter> getEncounters(Location loc, Date fromDate, Date toDate);
 	
 	/**
@@ -498,7 +500,7 @@ public interface EncounterService extends OpenmrsService {
 	 */
 	@Deprecated
 	@Transactional(readOnly = true)
-	@Authorized( { PrivilegeConstants.VIEW_ENCOUNTER_TYPES })
+	@Authorized({ PrivilegeConstants.VIEW_ENCOUNTER_TYPES })
 	public List<EncounterType> getEncounterTypes() throws APIException;
 	
 	/**
@@ -510,7 +512,7 @@ public interface EncounterService extends OpenmrsService {
 	 */
 	@Deprecated
 	@Transactional(readOnly = true)
-	@Authorized( { PrivilegeConstants.VIEW_LOCATIONS })
+	@Authorized({ PrivilegeConstants.VIEW_LOCATIONS })
 	public List<Location> getLocations() throws APIException;
 	
 	/**
@@ -523,7 +525,7 @@ public interface EncounterService extends OpenmrsService {
 	 */
 	@Deprecated
 	@Transactional(readOnly = true)
-	@Authorized( { PrivilegeConstants.VIEW_LOCATIONS })
+	@Authorized({ PrivilegeConstants.VIEW_LOCATIONS })
 	public Location getLocation(Integer locationId) throws APIException;
 	
 	/**
@@ -536,7 +538,7 @@ public interface EncounterService extends OpenmrsService {
 	 */
 	@Deprecated
 	@Transactional(readOnly = true)
-	@Authorized( { PrivilegeConstants.VIEW_LOCATIONS })
+	@Authorized({ PrivilegeConstants.VIEW_LOCATIONS })
 	public Location getLocationByName(String name) throws APIException;
 	
 	/**
@@ -550,7 +552,7 @@ public interface EncounterService extends OpenmrsService {
 	 */
 	@Deprecated
 	@Transactional(readOnly = true)
-	@Authorized( { PrivilegeConstants.VIEW_LOCATIONS })
+	@Authorized({ PrivilegeConstants.VIEW_LOCATIONS })
 	public List<Location> findLocations(String name) throws APIException;
 	
 	/**
@@ -562,7 +564,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @see {@link EncounterService}{@link #getEncountersByPatient(String, boolean)}
 	 * @since 1.7
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_ENCOUNTERS })
+	@Authorized({ PrivilegeConstants.VIEW_ENCOUNTERS })
 	public List<Encounter> getEncountersByPatient(String query) throws APIException;
 	
 	/**
@@ -578,7 +580,18 @@ public interface EncounterService extends OpenmrsService {
 	 * @should include voided encounters in the returned list if includedVoided is true
 	 * @since 1.7
 	 */
-	@Authorized( { PrivilegeConstants.VIEW_ENCOUNTERS })
+	@Authorized({ PrivilegeConstants.VIEW_ENCOUNTERS })
 	public List<Encounter> getEncountersByPatient(String query, boolean includeVoided) throws APIException;
-
+	
+	/**
+	 * Get all encounters for a cohort of patients
+	 * 
+	 * @param patients Cohort of patients to search
+	 * @return Map of all encounters for specified patients.
+	 * @should get all encounters for a cohort of patients
+	 * @since 1.8
+	 */
+	@Transactional(readOnly = true)
+	public Map<Integer, List<Encounter>> getAllEncounters(Cohort patients);
+	
 }
