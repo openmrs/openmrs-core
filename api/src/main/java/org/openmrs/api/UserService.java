@@ -21,6 +21,7 @@ import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.annotation.Logging;
+import org.openmrs.util.PersonByNameComparator;
 import org.openmrs.util.PrivilegeConstants;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -477,7 +478,8 @@ public interface UserService extends OpenmrsService {
 	public boolean isSecretAnswer(User u, String answer) throws APIException;
 	
 	/**
-	 * Return a user if any part of the search matches first/last/system id and the user has one at
+	 * Return a list of users sorted by personName (see {@link PersonByNameComparator}) 
+	 * if any part of the search matches first/last/system id and the user has one at
 	 * least one of the given <code>roles</code> assigned to them
 	 * 
 	 * @param nameSearch string to compare to the beginning of user's given/middle/family/family2
