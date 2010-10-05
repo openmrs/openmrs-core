@@ -3741,4 +3741,20 @@
 		<dropColumn tableName="concept" columnName="default_charge"/>
 	</changeSet>
 	
+	<changeSet id="201010051745" author="wyclif">
+		<comment>Setting the global property 'patient.identifierRegex' to an empty string (see ticket TRUNK-1616)</comment>
+		<update tableName="global_property">
+			<column name="property_value" value=""/>
+			<where>property = 'patient.identifierRegex' AND property_value = '^0*@SEARCH@([A-Z]+-[0-9])?$' </where>
+		</update>
+	</changeSet>
+	
+	<changeSet id="201010051746" author="wyclif">
+		<comment>Setting the global property 'patient.identifierSuffix' to an empty string (see ticket TRUNK-1616)</comment>
+		<update tableName="global_property">
+			<column name="property_value" value=""/>
+			<where>property = 'patient.identifierSuffix' AND property_value = '%' </where>
+		</update>
+	</changeSet>
+	
 </databaseChangeLog>
