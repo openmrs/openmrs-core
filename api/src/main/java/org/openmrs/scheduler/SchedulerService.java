@@ -17,6 +17,7 @@ import java.util.Collection;
 import java.util.SortedMap;
 
 import org.openmrs.annotation.Authorized;
+import org.openmrs.annotation.Logging;
 import org.openmrs.api.OpenmrsService;
 import org.openmrs.util.OpenmrsMemento;
 import org.springframework.transaction.annotation.Transactional;
@@ -133,6 +134,7 @@ public interface SchedulerService extends OpenmrsService {
 	 * @should save task to the database
 	 */
 	@Authorized( { "Manage Scheduler" })
+	@Logging(ignore=true)
 	public void saveTask(TaskDefinition task);
 	
 	/**
