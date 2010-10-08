@@ -60,8 +60,14 @@ public class DWRProgramWorkflowService {
 			for (ProgramWorkflow wf : workflows) {
 				ListItem li = new ListItem();
 				li.setId(wf.getProgramWorkflowId());
-				li.setName(wf.getConcept().getName().getName());
-				li.setDescription(wf.getConcept().getDescription().getDescription());
+				try {
+					li.setName(wf.getConcept().getName().getName());
+				}
+				catch (NullPointerException ex) {}
+				try {
+					li.setDescription(wf.getConcept().getDescription().getDescription());
+				}
+				catch (NullPointerException ex) {}
 				ret.add(li);
 			}
 		return ret;
@@ -80,7 +86,9 @@ public class DWRProgramWorkflowService {
 				for (ProgramWorkflowState state : states) {
 					ListItem li = new ListItem();
 					li.setId(state.getProgramWorkflowStateId());
-					li.setName(state.getConcept().getName(Context.getLocale(), false).getName());
+					try {
+						li.setName(state.getConcept().getName(Context.getLocale(), false).getName());
+					} catch (NullPointerException ex) {}
 					ret.add(li);
 				}
 			} else {
@@ -135,7 +143,7 @@ public class DWRProgramWorkflowService {
 			dateEnrolled = ymdDf.parse(enrollmentDateYmd);
 		if (completionDateYmd != null && completionDateYmd.length() > 0)
 			dateCompleted = ymdDf.parse(completionDateYmd);
-		// If either either parameter and persisted instances 
+		// If either either parameter and persisted instances
 		// of enrollment and completion dates are equal, then anyChange is true.
 		boolean anyChange = OpenmrsUtil.nullSafeEquals(dateEnrolled, ppDateEnrolled);
 		anyChange |= OpenmrsUtil.nullSafeEquals(dateCompleted, ppDateCompleted);
