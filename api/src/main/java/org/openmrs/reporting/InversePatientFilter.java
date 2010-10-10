@@ -47,6 +47,20 @@ public class InversePatientFilter extends AbstractPatientFilter implements Patie
 		this.baseFilter = baseFilter;
 	}
 	
+	/**
+	 * (The following at-should unit tests should really be distributed across many other classes, but it's much faster to put them all here.)
+	 * @should not fail with drug order filter
+	 * @should not fail with drug order stop filter
+	 * @should not fail with encounter patient filter
+	 * @should not fail with location patient filter
+	 * @should not fail with obs patient filter
+	 * @should not fail with patient characteristic filter
+	 * @should not fail with person attribute filter
+	 * @should not fail with program state patient filter
+	 * @should not fail with compound patient filter
+	 * @should not fail with drug order patient filter
+	 * @should not fail with program patient filter
+	 */
 	public Cohort filter(Cohort input, EvaluationContext context) {
 		return baseFilter.filterInverse(input, context);
 	}

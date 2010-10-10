@@ -546,5 +546,14 @@ public interface PatientSetService {
 	public enum PatientLocationMethod {
 		EARLIEST_ENCOUNTER, LATEST_ENCOUNTER, ANY_ENCOUNTER, PATIENT_HEALTH_CENTER
 	}
+
+	/**
+	 * Equivalent to Cohort.subtract(PatientSetService.getAllPatients(), cohort) but may eventually
+	 * perform faster by delegating to the database.
+	 * (The current implementation has *not* been optimized.)
+	 * @param cached
+	 * @return
+	 */
+	public Cohort getInverseOfCohort(Cohort cohort);
 	
 }

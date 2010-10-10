@@ -102,6 +102,12 @@ public class PatientSetServiceImpl implements PatientSetService {
 		return getPatientSetDAO().getAllPatients();
 	}
 	
+	@Override
+    public Cohort getInverseOfCohort(Cohort cohort) {
+	    // TODO see if this can be sped up by delegating to the database
+		return Cohort.subtract(getAllPatients(), cohort);
+    }
+	
 	public Cohort getPatientsByCharacteristics(String gender, Date minBirthdate, Date maxBirthdate) throws DAOException {
 		return getPatientsByCharacteristics(gender, minBirthdate, maxBirthdate, null, null, null, null);
 	}

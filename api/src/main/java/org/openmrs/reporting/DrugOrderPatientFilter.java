@@ -120,24 +120,6 @@ public class DrugOrderPatientFilter extends AbstractPatientFilter implements Pat
 		return service.getPatientsHavingDrugOrder(input == null ? null : input.getMemberIds(), drugIds, onDate);
 	}
 	
-	public Cohort filterInverse(Cohort input, EvaluationContext context) {
-		Set<Integer> drugIds = new HashSet<Integer>();
-		if (groupMethod != null && groupMethod == GroupMethod.NONE) {
-			drugIds = null;
-		} else {
-			if (drugId != null)
-				drugIds.add(drugId);
-			if (drugConcept != null) {
-				List<Drug> drugs = Context.getConceptService().getDrugs();
-				for (Drug drug : drugs)
-					if (drug.getConcept().equals(drugConcept))
-						drugIds.add(drug.getDrugId());
-			}
-		}
-		PatientSetService service = Context.getPatientSetService();
-		Cohort temp = service.getPatientsHavingDrugOrder(input.getMemberIds(), drugIds, onDate);
-		return Cohort.subtract(input, temp);
-	}
 	
 	public String getDescription() {
 		// TODO: internationalize this

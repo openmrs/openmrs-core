@@ -517,6 +517,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		StringBuilder sql = new StringBuilder();
 		sql.append("select pp.patient_id ");
 		sql.append("from patient_program pp ");
+		sql.append("inner join patient p on pp.patient_id = p.patient_id and p.voided = false ");
 		if (stateIds != null)
 			sql.append("inner join patient_state ps on pp.patient_program_id = ps.patient_program_id ");
 		for (ListIterator<String> i = clauses.listIterator(); i.hasNext();) {
@@ -546,7 +547,9 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	 * any time before that date
 	 */
 	public Cohort getPatientsInProgram(Integer programId, Date fromDate, Date toDate) {
-		String sql = "select patient_id from patient_program pp where pp.voided = false and pp.program_id = :programId ";
+		String sql = "select pp.patient_id from patient_program pp ";
+		sql += " inner join patient p on pp.patient_id = p.patient_id and p.voided = false ";
+		sql += " where pp.voided = false and pp.program_id = :programId ";
 		if (fromDate != null)
 			sql += " and (date_completed is null or date_completed >= :fromDate) ";
 		if (toDate != null)
@@ -649,7 +652,9 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		if (timeModifier == TimeModifier.ANY || timeModifier == TimeModifier.NO) {
 			if (timeModifier == TimeModifier.NO)
 				doInvert = true;
-			sb.append("select o.person_id from obs o where o.voided = false ");
+			sb.append("select o.person_id from obs o " +
+				"inner join patient p on o.person_id = p.patient_id and p.voided = false " +
+				"where o.voided = false ");
 			if (conceptId != null)
 				sb.append("and concept_id = :concept_id ");
 			sb.append(dateSql);
@@ -661,12 +666,16 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			        + "    where voided = false and concept_id = :concept_id " + dateSqlForSubquery
 			        + "    group by person_id"
 			        + ") subq on o.person_id = subq.person_id and o.obs_datetime = subq.obs_datetime "
+			        + " inner join patient p on o.person_id = p.patient_id and p.voided = false "
 			        + "where o.voided = false and o.concept_id = :concept_id ");
 			
 		} else if (doSqlAggregation) {
 			String sqlAggregator = timeModifier.toString();
 			valueSql = sqlAggregator + "(" + valueSql + ")";
-			sb.append("select o.person_id " + "from obs o where o.voided = false and concept_id = :concept_id " + dateSql
+			sb.append("select o.person_id "
+					+ "from obs o "
+					+ "inner join patient p on o.person_id = p.patient_id and p.voided = false "
+					+ "where o.voided = false and concept_id = :concept_id " + dateSql
 			        + "group by o.person_id ");
 			
 		} else {
@@ -719,10 +728,16 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	}
 	
 	/**
-	 * TODO: don't return voided patients Returns the set of patients that have encounters, with
-	 * several optional parameters: * of type encounterType * at a given location * from filling out
-	 * a specific form * on or after fromDate * on or before toDate * patients with at least
-	 * minCount of the given encounters * patients with up to maxCount of the given encounters
+	 * <pre>
+	 * Returns the set of patients that have encounters, with several optional parameters:
+	 *   of type encounterType
+	 *   at a given location
+	 *   from filling out a specific form
+	 *   on or after fromDate
+	 *   on or before toDate
+	 *   patients with at least minCount of the given encounters
+	 *   patients with up to maxCount of the given encounters
+	 * </pre>
 	 */
 	public Cohort getPatientsHavingEncounters(List<EncounterType> encounterTypeList, Location location, Form form,
 	                                          Date fromDate, Date toDate, Integer minCount, Integer maxCount) {
@@ -753,6 +768,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			havingClauses.add("count(*) >= :maxCount");
 		StringBuilder sb = new StringBuilder();
 		sb.append(" select e.patient_id from encounter e ");
+		sb.append(" inner join patient p on e.patient_id = p.patient_id and p.voided = false ");
 		for (ListIterator<String> i = whereClauses.listIterator(); i.hasNext();) {
 			sb.append(i.nextIndex() == 0 ? " where " : " and ");
 			sb.append(i.next());
@@ -1599,21 +1615,19 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		return new Cohort(query.list());
 	}
 	
-	//TODO: the encounter variants may return voided patients
-	public Cohort getPatientsHavingLocation(Integer locationId, PatientSetService.PatientLocationMethod method)
-	                                                                                                           throws DAOException {
-		
-		// TODO this needs to be retired after the cohort builder is in place
-		
+	public Cohort getPatientsHavingLocation(Integer locationId, PatientSetService.PatientLocationMethod method) {
 		StringBuffer sb = new StringBuffer();
+		boolean argumentAsString = false;
 		if (method == PatientLocationMethod.ANY_ENCOUNTER) {
 			sb.append(" select e.patient_id from ");
 			sb.append(" encounter e ");
+			sb.append(" inner join patient p on e.patient_id = p.patient_id and p.voided = false ");
 			sb.append(" where e.location_id = :location_id ");
 			sb.append(" group by e.patient_id ");
 		} else if (method == PatientLocationMethod.EARLIEST_ENCOUNTER) {
 			sb.append(" select e.patient_id ");
 			sb.append(" from encounter e ");
+			sb.append("   inner join patient p on e.patient_id = p.patient_id and p.voided = false ");
 			sb.append("   inner join (");
 			sb.append("       select patient_id, min(encounter_datetime) as earliest ");
 			sb.append("       from encounter ");
@@ -1624,6 +1638,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		} else if (method == PatientLocationMethod.LATEST_ENCOUNTER) {
 			sb.append(" select e.patient_id ");
 			sb.append(" from encounter e ");
+			sb.append("   inner join patient p on e.patient_id = p.patient_id and p.voided = false ");
 			sb.append("   inner join (");
 			sb.append("       select patient_id, max(encounter_datetime) as earliest ");
 			sb.append("       from encounter ");
@@ -1639,12 +1654,17 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			sb.append(" and attr.person_id = p.patient_id ");
 			sb.append(" and attr.voided = false ");
 			sb.append(" and p.voided = false ");
+			argumentAsString = true;
 		}
 		log.debug("query: " + sb);
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sb.toString());
 		
-		query.setInteger("location_id", locationId);
+		if (argumentAsString) {
+			query.setString("location_id", locationId.toString());
+		} else {
+			query.setInteger("location_id", locationId);
+		}
 		
 		return new Cohort(query.list());
 	}
@@ -1681,7 +1701,9 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	
 	/**
 	 * Returns a Map from patientId to a Collection of drugIds for drugs active for the patients on
-	 * that date If patientIds is null then do this for all patients
+	 * that date
+	 * If patientIds is null then do this for all patients
+	 * Does not return anything for voided patients
 	 * 
 	 * @throws DAOException
 	 */
@@ -1702,8 +1724,10 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			whereClauses.add("(o.discontinued_date is null or o.discontinued_date > :fromDate)");
 		}
 		
-		String sql = "select o.patient_id, d.drug_inventory_id " + "from orders o "
-		        + "    inner join drug_order d on o.order_id = d.order_id ";
+		String sql = "select o.patient_id, d.drug_inventory_id "
+				   + "from orders o "
+				   + "    inner join patient p on o.patient_id = p.patient_id and p.voided = false "
+				   + "    inner join drug_order d on o.order_id = d.order_id ";
 		for (ListIterator<String> i = whereClauses.listIterator(); i.hasNext();) {
 			sql += (i.nextIndex() == 0 ? " where " : " and ");
 			sql += i.next();
@@ -1940,9 +1964,11 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	
 	public Cohort getPatientsHavingPersonAttribute(PersonAttributeType attribute, String value) {
 		StringBuilder sb = new StringBuilder();
-		sb
-		        .append(" select pat.patient_id from person p inner join patient pat on pat.patient_id = p.person_id inner join person_attribute a on p.person_id = a.person_id ");
-		sb.append(" where a.voided = false and p.voided = false and pat.voided = false ");
+		sb.append(" select pat.patient_id ");
+		sb.append(" from person p ");
+		sb.append(" inner join patient pat on pat.patient_id = p.person_id and pat.voided = false ");
+		sb.append(" inner join person_attribute a on p.person_id = a.person_id and a.voided = false ");
+		sb.append(" where p.voided = false ");
 		if (attribute != null)
 			sb.append(" and a.person_attribute_type_id = :typeId ");
 		if (value != null)
@@ -1959,7 +1985,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		return new Cohort(query.list());
 	}
 	
-	// TODO: don't return voided patients
+
 	public Cohort getPatientsHavingDrugOrder(List<Drug> drugList, List<Concept> drugConceptList, Date startDateFrom,
 	                                         Date startDateTo, Date stopDateFrom, Date stopDateTo, Boolean discontinued,
 	                                         List<Concept> discontinuedReason) {
@@ -1968,7 +1994,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		if (drugConceptList != null && drugConceptList.size() == 0)
 			drugConceptList = null;
 		StringBuilder sb = new StringBuilder();
-		sb.append(" select distinct patient.id from DrugOrder where voided = false ");
+		sb.append(" select distinct patient.id from DrugOrder where voided = false and patient.voided = false ");
 		if (drugList != null)
 			sb.append(" and drug.id in (:drugIdList) ");
 		if (drugConceptList != null)
@@ -2091,6 +2117,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	}
 	
 	/**
+	 * TODO get rid of the potentially-expensive call to getAllPatients()
 	 * @see org.openmrs.api.db.PatientSetDAO#getPatientsByRelationship(org.openmrs.RelationshipType,
 	 *      boolean, boolean, org.openmrs.Person)
 	 */

@@ -21,6 +21,7 @@ import org.openmrs.Cohort;
 import org.openmrs.Program;
 import org.openmrs.api.PatientSetService;
 import org.openmrs.api.context.Context;
+import org.openmrs.cohort.CohortUtil;
 import org.openmrs.report.EvaluationContext;
 
 /**
@@ -57,17 +58,6 @@ public class ProgramPatientFilter extends AbstractPatientFilter implements Patie
 		return input == null ? matches : Cohort.intersect(input, matches);
 	}
 	
-	public Cohort filterInverse(Cohort input, EvaluationContext context) {
-		if (!isReadyToRun())
-			return null;
-		PatientSetService service = Context.getPatientSetService();
-		Cohort matches = null;
-		if (onDate != null)
-			matches = service.getPatientsInProgram(program, onDate, onDate);
-		else
-			matches = service.getPatientsInProgram(program, fromDate, toDate);
-		return Cohort.subtract(input, matches);
-	}
 	
 	public String getDescription() {
 		if (!isReadyToRun())

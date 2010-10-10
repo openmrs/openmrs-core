@@ -15,17 +15,19 @@ package org.openmrs.reporting;
 
 import java.util.Date;
 
+import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
+import org.openmrs.report.EvaluationContext;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
  * @deprecated see reportingcompatibility module
  */
 @Deprecated
-public abstract class AbstractPatientFilter extends AbstractReportObject {
+public abstract class AbstractPatientFilter extends AbstractReportObject implements PatientFilter {
 	
 	public AbstractPatientFilter() {
 		// do nothing
@@ -37,6 +39,26 @@ public abstract class AbstractPatientFilter extends AbstractReportObject {
 	    String voidReason) {
 		super(reportObjectId, name, description, type, subType, creator, dateCreated, changedBy, dateChanged, voided,
 		        voidedBy, dateVoided, voidReason);
+	}
+	
+	/**
+	 * Basic implementation of filterInverse that delegates to PatientSetService.getAllPatients() and
+	 * this class's filter() method. Subclasses may override this method if they have a way of doing
+	 * so more efficiently (since getAllPatients can be very expensive).
+	 * 
+	 * @param input
+	 * @param context
+	 * @return
+	 */
+	public Cohort filterInverse(Cohort input, EvaluationContext context) {
+		Cohort filterResult = filter(input, context);	
+		if (input != null) {
+			return Cohort.subtract(input, filterResult);
+		} else if (context != null) {
+			return Cohort.subtract(context.getBaseCohort(), filterResult);
+		} else {
+			return Context.getPatientSetService().getInverseOfCohort(filterResult);
+		}
 	}
 	
 	/**
