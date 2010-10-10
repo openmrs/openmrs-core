@@ -285,8 +285,7 @@ public class CohortSearchHistory extends AbstractReportObject {
 			if (ret == null) {
 				ensureCachedFilter(i);
 				PatientFilter pf = cachedFilters.get(i);
-				Cohort everyone = Context.getPatientSetService().getAllPatients();
-				ret = pf.filter(everyone, context);
+				ret = pf.filter(null, context);
 				cachedFilters.set(i, pf);
 				cachedResults.set(i, ret);
 				cachedResultDates.set(i, new Date());

@@ -52,13 +52,6 @@ public class CohortFilter extends AbstractPatientFilter implements PatientFilter
 		return input == null ? temp : Cohort.intersect(input, temp);
 	}
 	
-	public Cohort filterInverse(Cohort input, EvaluationContext context) {
-		Cohort temp = new Cohort();
-		if (getCohort() != null)
-			temp = getCohort();
-		return Cohort.subtract(input, temp);
-	}
-	
 	public boolean isReadyToRun() {
 		return cohort != null;
 	}
