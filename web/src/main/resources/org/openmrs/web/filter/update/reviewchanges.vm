@@ -16,8 +16,9 @@
 				jQuery("#hiddenInputs").show();				
 				jQuery("#warnings").html(data.updateWarnings);
 				jQuery("#updateWarnings").show();
+				jQuery("#warningsAlert").show();
 				jQuery("#updateLogFile").html(data.updateLogFile);					
-				isDisplayingWarnings = true;		
+				isDisplayingWarnings = true;
 			}
 			
 			if(data == null || !data.updatesRequired)
@@ -62,14 +63,7 @@
 		}, "json");
 		
 	}
-	
-	function verifyAcceptance(){
-		if(jQuery("#acceptCheckBox:checked").val() != null)
-			window.location = "index.htm";		
-		else
-			jQuery("#warningsAlert").show();
-	}
-	
+		
 	#if( $updateJobStarted == true )
 		jQuery(function() { showProgress(); });
 	#end
@@ -81,7 +75,7 @@
 	}
 	#warningsAlert{
 		display:none; border: solid 1px #ff0000; background-color: #FAEBED; padding:3px;
-		text-align: center; width: 800px;
+		text-align: center; width: 400px;
 	}
 </style>
 	
@@ -152,20 +146,17 @@
 		<br />
 		
 		<div id="hiddenInputs" style="display:none">
-			<div>
-				<input id="acceptCheckBox" type="checkbox" value="" /> I accept that these errors exist and want to continue		
-			</div>
-		
+					
 			<br />
 			
 			<div id="warningsAlert">
-					You have to accept that you have read the warnings on this page by checking the checkBox above!
+				Record this issue and fix it if possible.
 			</div>
 			
 			<br />
 			
 			<div>
-				<input type="button" value="Continue" class="button" onclick="verifyAcceptance()" />
+				<input type="button" value="Continue" class="button" onclick="javascript:window.location='index.htm'" />
 			</div>
 		</div>
 		
