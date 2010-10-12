@@ -135,6 +135,56 @@
                      <scanIntervalSeconds>0</scanIntervalSeconds>
                   </configuration>
                </plugin>
+				<plugin>
+					<groupId>org.zeroturnaround</groupId>
+					<artifactId>javarebel-maven-plugin</artifactId>
+					<executions>
+						<execution>
+							<id>generate-rebel-xml</id>
+							<phase>process-resources</phase>
+							<goals>
+								<goal>generate</goal>
+							</goals>
+						</execution>
+					</executions>
+					<configuration>
+						<classpath>
+							<resources>
+								<!-- uncomment the following to use your module with JRebel - place #1
+								     replace /home/misha/workspace/basicmodule/build with the path to the Java class
+								     directory for your module
+								<resource>
+									<directory>/home/misha/workspace/basicmodule/build
+									</directory>
+								</resource> -->
+								<resource>
+									<!-- automatically generated classpath resources for webapp module will be placed here -->
+								</resource>
+							</resources>
+						</classpath>
+						<web>
+							<resources>
+								<!-- uncomment the following to use your module with JRebel - place #1
+								     replaced /module/basicmodule with /module/nameofyourmodule
+								     replace /home/misha/workspace/basicmodule/web/module with the path to the web
+								     directory for your module
+								<resource>
+									<target>/WEB-INF/view/module/basicmodule</target>
+									<directory>/home/misha/workspace/basicmodule/web/module
+									</directory>
+								</resource>
+								<resource>
+									<target>/module/basicmodule</target>
+									<directory>/home/misha/workspace/basicmodule/web/module
+									</directory>
+								</resource> -->
+								<resource>
+									<!-- automatically generated web resources for webapp module will be placed here -->
+								</resource>
+							</resources>
+						</web>
+					</configuration>
+				</plugin>
             </plugins>
          </build>
       </profile>
