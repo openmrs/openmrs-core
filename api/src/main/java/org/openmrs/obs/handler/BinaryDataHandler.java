@@ -66,7 +66,9 @@ public class BinaryDataHandler extends AbstractHandler implements ComplexObsHand
 			if ("download".equals(view)) {
 				originalFilename = originalFilename.replace(",", "").replace(" ", "");
 			}
-			obs.setComplexData(new ComplexData(originalFilename, new BufferedInputStream(new FileInputStream(file))));
+			FileInputStream fileInputStream = new FileInputStream(file);
+			obs.setComplexData(new ComplexData(originalFilename, new BufferedInputStream(fileInputStream)));
+			fileInputStream.close();
 		}
 		catch (Exception e) {
 			throw new APIException("An error occurred while trying to get binary complex obs.", e);
@@ -89,6 +91,9 @@ public class BinaryDataHandler extends AbstractHandler implements ComplexObsHand
 			// Store the filename in the Obs
 			obs.setComplexData(null);
 			obs.setValueComplex(fileName + "|" + outfile.getName());
+			
+			// close the stream
+			out.close();
 		}
 		catch (Exception e) {
 			throw new APIException("Error writing binary data complex obs to the file system. ", e);
