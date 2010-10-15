@@ -2,46 +2,82 @@
 <!-- *********************************************************** -->
 <!-- ** Ant build script for OpenMRS                          ** -->
 <!-- **                                                       ** -->
+<!-- ** This file is provided for those that cannot use       ** -->
+<!-- ** maven. Using "mvn" instead of "ant" is recommended    ** -->
+<!-- **                                                       ** -->
 <!-- *********************************************************** -->
-<project name="OpenMRS-trunk" default="dist">
+<project name="OpenMRS-trunk" default="dist" xmlns:artifact="urn:maven-artifact-ant">
 
-	<target name="dist" depends="package-web" description="create distributable war file" />
+	<property environment="env"/>
+	<property name="root.dir" value="."/>
+	<property name="lib.dir" value="${root.dir}${file.separator}lib"/>
+	<property name="maven.ant.tasks.jar" value="${lib.dir}${file.separator}maven-ant-tasks-2.1.1.jar"/>
+	<property name="maven.ant.tasks.bootstrap.location" value="http://repo2.maven.org/maven2/org/apache/maven/maven-ant-tasks/2.1.1/maven-ant-tasks-2.1.1.jar"/>
+	<available property="maven.ant.tasks.jar.exists" file="${maven.ant.tasks.jar}"/>
+	<available property="m2.home.exists" file="${env.M2_HOME}" type="dir"/>	
+
+	<!-- This will download the "latest version" of the maven-ant-tasks if needed -->
+	<target name="bootstrap-maven-tasks" unless="maven.ant.tasks.jar.exists">
+		<mkdir dir="${lib.dir}"/>
+		<get src="${maven.ant.tasks.bootstrap.location}" dest="${maven.ant.tasks.jar}"/>
+	</target>
+
+	<!-- This will initialize all the maven ant tasks -->
+	<target name="init-maven-tasks" depends="bootstrap-maven-tasks">
+		<path id="maven.ant.tasks.classpath" path="${maven.ant.tasks.jar}" />
+		<typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant" classpathref="maven.ant.tasks.classpath" /> 
+ 	</target>
+
+	<!-- Use existing maven install or built in maven? -->
+	<target name="use-existing-maven-install" depends="init-maven-tasks" if="m2.home.exists">
+		<macrodef name="maven">
+			<attribute name="pom" default="pom.xml"/>
+			<attribute name="dir" default="."/>
+			<attribute name="options" default=""/>
+			<sequential>
+				<artifact:mvn mavenHome="${env.M2_HOME}" pom="@{pom}" fork="true" dir="@{dir}">
+					<arg line="@{options}"/>
+				</artifact:mvn>
+			</sequential>
+		</macrodef>
+	</target>
+	<target name="use-built-in-maven" depends="init-maven-tasks" unless="m2.home.exists">
+		<macrodef name="maven">
+			<attribute name="pom" default="pom.xml"/>
+			<attribute name="dir" default="."/>
+			<attribute name="options" default=""/>
+			<sequential>
+				<artifact:mvn pom="@{pom}" fork="true" dir="@{dir}">
+					<arg line="@{options}"/>
+				</artifact:mvn>
+			</sequential>
+		</macrodef>
+	</target>
+	<target name="init-maven-macro" depends="use-existing-maven-install,use-built-in-maven"/>
+
+	<!-- Tasks forwarded to maven goals -->
+	<target name="clean" depends="init-maven-macro">
+		<maven options="clean"/>
+	</target>
+
+	<target name="package-all" depends="init-maven-macro" description="packages api, test, and web jars for use in modules">
+		<maven options="install -DskipTests"/>
+	</target>
+
+	<target name="junit" depends="init-maven-macro" description="Run all junit tests">
+		<maven options="org.apache.maven.plugins:maven-surefire-plugin:2.4.2:test"/>
+	</target>
+
+	<target name="jetty-run" depends="package-all" description="Start a Jetty webserver with openmrs installed">
+		<maven options="jetty:run" pom="webapp/pom.xml" dir="webapp"/>
+	</target>
+
+	<!-- Pure ant tasks -->
+	<target name="dist" depends="package-all" description="create distributable war file" />
 	
 	<target name="war" depends="dist" description="create distributable war file" />
 	
-	<target name="package-all" depends="package-api,package-api-tests,package-web-src"
-		description="packages api, test, and web jars for use in modules"/>
-
-	<!-- the api package will contain test classes unless an "ant clean" is done right before -->
-	<target name="package-api" description="create openmrs api jar">
-		
-	</target>
-
-	<target name="package-api-tests" description="create api-tests jar">
-
-	</target>
-
-	<target name="package-web-tests" description="package the java files in /test/web">
-
-	</target>
-
-	<target name="package-web" description="create webapp war file">
-		
-	</target>
-
-	<target name="package-web-src" description="Create jar file containing web java src">
-
-	</target>
-	
-	<target name="run-tests" depends="package-api-tests, package-web-tests" description="Run all junit tests">
-		
-	</target>
-	
-	<target name="jetty-run" depends="package-web" description="Start a Jetty webserver with openmrs installed">
-	
-	</target>
-	
-    <target name="create-installer" description="Create Openmrs windows installer (offline by default)" depends="package-web">
+    <target name="create-installer" description="Create Openmrs windows installer (offline by default)" depends="package-all">
     	
         <!-- Installer properties -->
         <property name="dist.installer.dir" value="${dist.dir}/installer"/>
