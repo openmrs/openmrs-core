@@ -563,7 +563,7 @@
 
 <c:if test="${obs.obsId != null}">
 <br/>
-<openmrs:extensionPoint pointId="org.openmrs.admin.observations.obsForm" type="html" parameters="obsId=${obs.obsId}">
+<openmrs:extensionPoint pointId="org.openmrs.admin.observations.obsFormBottom" type="html" parameters="obsId=${obs.obsId}">
 	<openmrs:hasPrivilege privilege="${extension.requiredPrivilege}">
 		<div class="boxHeader" style="font-weight: bold;"><spring:message code="${extension.title}" /></div>
 		<div class="box" style="padding: 0px 0px 5px;"><spring:message code="${extension.content}" />

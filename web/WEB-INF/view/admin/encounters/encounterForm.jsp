@@ -224,7 +224,7 @@
 
 <c:if test="${encounter.encounterId != null}">
 	<br/>
-	<openmrs:extensionPoint pointId="org.openmrs.admin.encounters.encounterForm" type="html" parameters="encounterId=${encounter.encounterId}">
+	<openmrs:extensionPoint pointId="org.openmrs.admin.encounters.encounterFormBeforeObs" type="html" parameters="encounterId=${encounter.encounterId}">
 		<openmrs:hasPrivilege privilege="${extension.requiredPrivilege}">
 			<div class="boxHeader" style="font-weight: bold;"><spring:message code="${extension.title}" /></div>
 			<div class="box" style="padding: 0px 0px 5px;"><spring:message code="${extension.content}" />
