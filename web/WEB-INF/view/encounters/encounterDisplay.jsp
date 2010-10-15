@@ -24,7 +24,7 @@
 </script>
 
 
-<openmrs:extensionPoint pointId="org.openmrs.encounters.encounterList" type="html" parameters="encounterId=${model.encounter.encounterId}">
+<openmrs:extensionPoint pointId="org.openmrs.encounters.encounterListTop" type="html" parameters="encounterId=${model.encounter.encounterId}">
 	<openmrs:hasPrivilege privilege="${extension.requiredPrivilege}">
 		<div class="boxHeader" style="font-weight: bold;"><spring:message code="${extension.title}" /></div>
 		<div class="box" style="padding: 0px 0px 5px;"><spring:message code="${extension.content}" />
