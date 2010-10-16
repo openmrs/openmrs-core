@@ -36,30 +36,38 @@ public class ModuleResourcesServlet extends HttpServlet {
 	
 	private Log log = LogFactory.getLog(this.getClass());
 	
+	
+	/**
+	 * Used for caching purposes 
+	 * 
+	 * @see javax.servlet.http.HttpServlet#getLastModified(javax.servlet.http.HttpServletRequest)
+	 */
+	@Override
+	protected long getLastModified(HttpServletRequest req) {
+		File f = getFile(req);
+		f.lastModified();
+		
+		if (f == null)
+			return super.getLastModified(req);
+		
+		return f.lastModified();
+	}
+
+
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		log.debug("In service method for module servlet: " + request.getPathInfo());
 		
-		String path = request.getPathInfo();
-		
-		Module module = ModuleUtil.getModuleForPath(path);
-		if (module == null) {
-			log.warn("No module handles the path: " + path);
+		File f = getFile(request);
+		if (f == null)
 			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-			return;
-		}
-
-		String relativePath = ModuleUtil.getPathForResource(module, path);
-		String realPath = getServletContext().getRealPath("") + MODULE_PATH + module.getModuleIdAsPath() + "/resources" + relativePath;
-		realPath = realPath.replace("/", File.separator);
 		
-		log.debug("Real path: " + realPath);
-		
-		File f = new File(realPath);
-		if (!f.exists()) {
-			log.warn("No object with path '" + realPath + "' exists for module '" + module.getModuleId() + "'");
-			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-			return;
+		// temporary test!
+		try {
+			Thread.sleep(10);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		
 		response.setDateHeader("Last-Modified", f.lastModified());
@@ -73,6 +81,36 @@ public class ModuleResourcesServlet extends HttpServlet {
 			OpenmrsUtil.closeStream(is);
 		}
 		
+	}
+	
+	/**
+	 * Turns the given request/path into a File object
+	 * @param request the current http request
+	 * @return the file being requested or null if not found
+	 */
+	protected File getFile(HttpServletRequest request) {
+
+		String path = request.getPathInfo();
+		
+		Module module = ModuleUtil.getModuleForPath(path);
+		if (module == null) {
+			log.warn("No module handles the path: " + path);
+			return null;
+		}
+
+		String relativePath = ModuleUtil.getPathForResource(module, path);
+		String realPath = getServletContext().getRealPath("") + MODULE_PATH + module.getModuleIdAsPath() + "/resources" + relativePath;
+		realPath = realPath.replace("/", File.separator);
+		
+		log.debug("Real path: " + realPath);
+		
+		File f = new File(realPath);
+		if (!f.exists()) {
+			log.warn("No object with path '" + realPath + "' exists for module '" + module.getModuleId() + "'");
+			return null;
+		}
+		
+		return f;
 	}
 	
 }
