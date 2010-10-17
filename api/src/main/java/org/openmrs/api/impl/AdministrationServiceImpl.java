@@ -96,8 +96,6 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	
 	public void setEventListeners(EventListeners eventListeners) {
 		this.eventListeners = eventListeners;
-		// add ourselves to the list
-		this.eventListeners.getGlobalPropertyListeners().add(this);
 	}
 	
 	/**

@@ -53,6 +53,7 @@
 		<property name="globalPropertyListeners">
 			<list value-type="org.openmrs.api.GlobalPropertyListener" merge="true">
 				<bean class="org.openmrs.util.LocaleUtility" />
+				<ref bean="adminServiceTarget" />
 			</list>
 		</property>
 	</bean>
