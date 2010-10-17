@@ -1598,6 +1598,15 @@
             </map>
         </property>
     </bean>
+
+	<!-- Add global property listeners -->
+	<bean id="webEventListeners" parent="openmrsEventListeners">
+	    <property name="globalPropertyListeners">
+	        <list value-type="org.openmrs.api.GlobalPropertyListener" merge="true">
+	            <bean class="org.openmrs.web.controller.PseudoStaticContentController" />
+	        </list>
+	    </property>
+	</bean>
 	
 	<!-- Find/replace strings after errant 'contrl-shift-f':
 		>\r\n			<value>(.*)</value>\r\n		</property>
