@@ -42,8 +42,6 @@
 		</property>
 	</bean>
 	
-	<bean id="localeResolver" class="org.openmrs.web.OpenmrsCookieLocaleResolver" />
-	
 	<bean id="staticContentController" class="org.openmrs.web.controller.PseudoStaticContentController">
 		<property name="interpretJstl"><value>false</value></property>
 		<property name="rewrites">
