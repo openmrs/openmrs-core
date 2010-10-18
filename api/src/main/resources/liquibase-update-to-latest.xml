@@ -357,7 +357,7 @@
 	</changeSet>
 	
 	<changeSet id="20090224-1256" author="Keelhaul+bwolfe">
-		<preConditions>
+		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="location" columnName="parent_location"/></not>
 		</preConditions>
 		<comment>
@@ -2403,6 +2403,7 @@
 	</changeSet>
 	
 	<changeSet id="200904271042" author="bwolfe">
+		<preConditions onFail="MARK_RAN"><columnExists tableName="concept_word" columnName="synonym"/></preConditions>
 		<comment>Remove the now unused synonym column</comment>
 		<dropColumn tableName="concept_word" columnName="synonym"/>
 	</changeSet>
@@ -2579,20 +2580,29 @@
 	</changeSet>
 	
 	<changeSet id="20090907-1" author="Knoll_Frank">
+		<preConditions onFail="MARK_RAN"><columnExists tableName="concept_source" columnName="date_voided"/></preConditions>
 		<comment>Rename the concept_source.date_voided column to date_retired</comment>
 		<renameColumn tableName="concept_source" oldColumnName="date_voided" newColumnName="date_retired" columnDataType="datetime" />
 	</changeSet>
-	<changeSet id="20090907-2" author="Knoll_Frank">
-		<comment>Rename the concept_source.voided_by column to retired_by</comment>	
+	
+	<changeSet id="20090907-2a" author="Knoll_Frank">
+		<preConditions onFail="MARK_RAN"><foreignKeyConstraintExists foreignKeyName="user_who_voided_concept_source"/></preConditions>
+		<comment>Remove the concept_source.voided_by foreign key constraint</comment>	
 		<dropForeignKeyConstraint baseTableName="concept_source" constraintName="user_who_voided_concept_source" />
+	</changeSet>
+	<changeSet id="20090907-2b" author="Knoll_Frank">
+		<preConditions onFail="MARK_RAN"><columnExists tableName="concept_source" columnName="voided_by"/></preConditions>
+		<comment>Rename the concept_source.voided_by column to retired_by</comment>	
 		<renameColumn tableName="concept_source" oldColumnName="voided_by" newColumnName="retired_by" columnDataType="int" />
 		<addForeignKeyConstraint baseColumnNames="retired_by" baseTableName="concept_source" constraintName="user_who_retired_concept_source" deferrable="false" initiallyDeferred="false" referencedColumnNames="user_id" referencedTableName="users" />
 	</changeSet>
 	<changeSet id="20090907-3" author="Knoll_Frank">
+		<preConditions onFail="MARK_RAN"><columnExists tableName="concept_source" columnName="voided"/></preConditions>
 		<comment>Rename the concept_source.voided column to retired</comment>
 		<renameColumn tableName="concept_source" oldColumnName="voided" newColumnName="retired" columnDataType="smallint" />
 	</changeSet>
 	<changeSet id="20090907-4" author="Knoll_Frank">
+		<preConditions onFail="MARK_RAN"><columnExists tableName="concept_source" columnName="void_reason"/></preConditions>
 		<comment>Rename the concept_source.void_reason column to retire_reason</comment>
 		<renameColumn tableName="concept_source" oldColumnName="void_reason" newColumnName="retire_reason" columnDataType="varchar(255)" />
 	</changeSet>
@@ -3142,12 +3152,19 @@
 		</sql>
 	</changeSet>
 	
-	<changeSet id="20100306-095513" author="thilini.hg">
+	<changeSet id="20100306-095513a" author="thilini.hg">
+		<preConditions onFail="MARK_RAN">
+			<foreignKeyConstraintExists foreignKeyName="alert_assigned_to_user"/>
+		</preConditions>
+		<comment>Dropping unused foreign key from notification alert table</comment>
+		<dropForeignKeyConstraint baseTableName="notification_alert" constraintName="alert_assigned_to_user"/>
+	</changeSet>
+	
+	<changeSet id="20100306-095513b" author="thilini.hg">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="notification_alert" columnName="user_id"/>
 		</preConditions>
 		<comment>Dropping unused user_id column from notification alert table</comment>
-		<dropForeignKeyConstraint baseTableName="notification_alert" constraintName="alert_assigned_to_user"/>
 		<dropColumn tableName="notification_alert" columnName="user_id"/>
 	</changeSet>
 	
