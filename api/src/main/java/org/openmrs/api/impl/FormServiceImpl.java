@@ -545,7 +545,8 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	
 	/**
 	 * @see org.openmrs.api.FormService#getForms(java.lang.String, java.lang.Boolean,
-	 *      java.util.Collection, java.lang.Boolean, java.util.Collection, java.util.Collection)
+	 *      java.util.Collection, java.lang.Boolean, java.util.Collection, java.util.Collection,
+	 *      java.util.Collection)
 	 */
 	public List<Form> getForms(String partialName, Boolean published, Collection<EncounterType> encounterTypes,
 		Boolean retired, Collection<FormField> containingAnyFormField,
@@ -567,6 +568,31 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 			containingAllFormFields, fields);
 	}
 	
+	/**
+	 * @see org.openmrs.api.FormService#getFormCount(java.lang.String, java.lang.Boolean,
+	 *      java.util.Collection, java.lang.Boolean, java.util.Collection, java.util.Collection,
+	 *      java.util.Collection)
+	 */
+	public Integer getFormCount(String partialName, Boolean published, Collection<EncounterType> encounterTypes,
+	                            Boolean retired, Collection<FormField> containingAnyFormField,
+	                            Collection<FormField> containingAllFormFields, Collection<Field> fields) {
+		
+		if (encounterTypes == null)
+			encounterTypes = Collections.emptyList();
+		
+		if (containingAllFormFields == null)
+			containingAllFormFields = Collections.emptyList();
+		
+		if (containingAnyFormField == null)
+			containingAnyFormField = Collections.emptyList();
+		
+		if (fields == null)
+			fields = Collections.emptyList();
+		
+		return dao.getFormCount(partialName, published, encounterTypes, retired, containingAnyFormField,
+		    containingAllFormFields, fields);
+	}
+
 	/**
 	 * @see org.openmrs.api.FormService#getPublishedForms()
 	 */

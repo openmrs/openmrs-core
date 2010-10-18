@@ -360,6 +360,48 @@ public class HibernateFormDAO implements FormDAO {
 	                           Boolean retired, Collection<FormField> containingAnyFormField,
 	                           Collection<FormField> containingAllFormFields, Collection<Field> fields) throws DAOException {
 		
+		Criteria crit = getFormCriteria(partialName, published, encounterTypes, retired, containingAnyFormField,
+		    containingAllFormFields, fields);
+		
+		return crit.list();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.FormDAO#getFormCount(java.lang.String, java.lang.Boolean,
+	 *      java.util.Collection, java.lang.Boolean, java.util.Collection, java.util.Collection,
+	 *      java.util.Collection)
+	 */
+	public Integer getFormCount(String partialName, Boolean published, Collection<EncounterType> encounterTypes,
+	                            Boolean retired, Collection<FormField> containingAnyFormField,
+	                            Collection<FormField> containingAllFormFields, Collection<Field> fields) throws DAOException {
+		
+		Criteria crit = getFormCriteria(partialName, published, encounterTypes, retired, containingAnyFormField,
+		    containingAllFormFields, fields);
+		
+		crit.setProjection(Projections.count("formId"));
+		
+		return (Integer) crit.uniqueResult();
+	}
+
+	/**
+	 * Convenience method to create the same hibernate criteria object for both getForms and
+	 * getFormCount
+	 * 
+	 * @param partialName
+	 * @param published
+	 * @param encounterTypes
+	 * @param retired
+	 * @param containingAnyFormField
+	 * @param containingAllFormFields
+	 * @param fields
+	 * @return
+	 * @throws DAOException
+	 */
+	private Criteria getFormCriteria(String partialName, Boolean published, Collection<EncounterType> encounterTypes,
+	                                 Boolean retired, Collection<FormField> containingAnyFormField,
+	                                 Collection<FormField> containingAllFormFields, Collection<Field> fields)
+	                                                                                                         throws DAOException {
+
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Form.class, "form");
 		
 		if (partialName != null && !"".equals(partialName)) {
@@ -380,7 +422,7 @@ public class HibernateFormDAO implements FormDAO {
 			crit.add(Expression.in("formField", containingAnyFormField));
 		
 		// TODO junit test
-		//select * from form where len(containingallformfields) = (select count(*) from form_field ff where ff.form_id = form_id and form_field_id in (containingallformfields); 
+		//select * from form where len(containingallformfields) = (select count(*) from form_field ff where ff.form_id = form_id and form_field_id in (containingallformfields);
 		if (!containingAllFormFields.isEmpty()) {
 			DetachedCriteria detachedCrit = DetachedCriteria.forClass(FormField.class, "ff");
 			detachedCrit.setProjection(Projections.count("formFieldId"));
@@ -396,7 +438,7 @@ public class HibernateFormDAO implements FormDAO {
 			crit2.add(Expression.in("ff.field", fields));
 		}
 		
-		return crit.list();
+		return crit;
 	}
 	
 	/**

@@ -3774,4 +3774,35 @@
 		</update>
 	</changeSet>
 	
+	<changeSet id="201010151054" author="bwolfe">
+		<preConditions onFail="MARK_RAN">
+			<not><indexExists indexName="form_published_index" /></not>
+		</preConditions>
+		<comment>Adding index to form.published column</comment>
+		<createIndex tableName="form" indexName="form_published_index">
+			<column name="published" />
+		</createIndex>	
+	</changeSet>
+	
+	<changeSet id="201010151055" author="bwolfe">
+		<preConditions onFail="MARK_RAN">
+			<not><indexExists indexName="form_retired_index" /></not>
+		</preConditions>
+		<comment>Adding index to form.retired column</comment>
+		<createIndex tableName="form" indexName="form_retired_index">
+			<column name="retired" />
+		</createIndex>	
+	</changeSet>
+	
+	<changeSet id="201010151056" author="bwolfe">
+		<preConditions onFail="MARK_RAN">
+			<not><indexExists indexName="form_published_and_retired_index" /></not>
+		</preConditions>
+		<comment>Adding multi column index on form.published and form.retired columns</comment>
+		<createIndex tableName="form" indexName="form_published_and_retired_index">
+			<column name="published" />
+			<column name="retired" />
+		</createIndex>	
+	</changeSet>
+	
 </databaseChangeLog>

@@ -182,6 +182,19 @@ public interface FormService extends OpenmrsService {
 		Collection<FormField> containingAllFormFields, Collection<Field> fields);
 	
 	/**
+	 * Same as
+	 * {@link #getForms(String, Boolean, Collection, Boolean, Collection, Collection, Collection)}
+	 * except that it returns an integer that is the size of the list that would be returned
+	 * 
+	 * @see #getForms(String, Boolean, Collection, Boolean, Collection, Collection, Collection)
+	 */
+	@Transactional(readOnly = true)
+	@Authorized(PrivilegeConstants.VIEW_FORMS)
+	public Integer getFormCount(String partialNameSearch, Boolean published, Collection<EncounterType> encounterTypes,
+	                            Boolean retired, Collection<FormField> containingAnyFormField,
+	                            Collection<FormField> containingAllFormFields, Collection<Field> fields);
+	
+	/**
 	 * Returns all published forms (not including retired ones)
 	 * 
 	 * @return all published non-retired forms

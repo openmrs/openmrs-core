@@ -291,7 +291,8 @@ public class DWRFormService {
 		
 		List<Field> fields = new Vector<Field>();
 		fields.add(field);
-		int size = Context.getFormService().getForms(null, null, null, null, null, null, fields).size();
+		
+		int size = Context.getFormService().getFormCount(null, null, null, null, null, null, fields);
 		
 		return "addNode(tree, {formFieldId: " + ff.getFormFieldId() + ", " + "parent: " + parent + ", " + "fieldId: "
 		        + field.getFieldId() + ", " + "fieldName: \"" + WebUtil.escapeQuotesAndNewlines(field.getName()) + "\", "
