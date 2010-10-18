@@ -28,14 +28,23 @@ public class PersonByNameComparator implements Comparator<Person> {
 	
 	/**
 	 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
-	 * @should return negative if personName for person1 comes before that of person2
-	 * @should return positive if personName for person1 comes after that of person2
-	 * @should return zero if the givenName middleName and familyName match	 
 	 */
 	public int compare(Person person1, Person person2) {
 		
+		return comparePersonsByName(person1, person2);
+	}
+	
+	/**
+	 * Compares two person objects by name
+	 * 
+	 * @should return negative if personName for person1 comes before that of person2
+	 * @should return positive if personName for person1 comes after that of person2
+	 * @should return zero if the givenName middleName and familyName match
+	 */
+	public static int comparePersonsByName(Person person1, Person person2) {
+		
 		// test for null cases (sorting them to be last in a list)
-		if(person1 == null || person1.getPersonName() == null) {
+		if (person1 == null || person1.getPersonName() == null) {
 			return 1;
 		} else if (person2 == null || person2.getPersonName() == null) {
 			return -1;
