@@ -25,11 +25,11 @@ import org.openmrs.test.Verifies;
 public class PersonByNameComparatorTest {
 	
 	/**
-	 * @see {@link PersonByNameComparator#compare(Person,Person)}
+	 * @see {@link PersonByNameComparator#comparePersonsByName(Person,Person)}
 	 */
 	@Test
-	@Verifies(value = "should return negative if personName for person1 comes before that of person2", method = "comparePersons(Person,Person)")
-	public void comparePersons_shouldReturnNegativeIfPersonNameForPerson1ComesBeforeThatOfPerson2() throws Exception {
+	@Verifies(value = "should return negative if personName for person1 comes before that of person2", method = "comparePersonsByName(Person,Person)")
+	public void comparePersonsByName_shouldReturnNegativeIfPersonNameForPerson1ComesBeforeThatOfPerson2() throws Exception {
 		Person person1 = new Person();
 		person1.addName(new PersonName("givenName", "middleName", "familyName"));
 		Person person2 = new Person();
@@ -39,11 +39,11 @@ public class PersonByNameComparatorTest {
 	}
 	
 	/**
-	 * @see {@link PersonByNameComparator#compare(Person,Person)}
+	 * @see {@link PersonByNameComparator#comparePersonsByName(Person,Person)}
 	 */
 	@Test
-	@Verifies(value = "should return positive if personName for person1 comes after that of person2", method = "comparePersons(Person,Person)")
-	public void comparePersons_shouldReturnPositiveIfPersonNameForPerson1ComesAfterThatOfPerson2() throws Exception {
+	@Verifies(value = "should return positive if personName for person1 comes after that of person2", method = "comparePersonsByName(Person,Person)")
+	public void comparePersonsByName_shouldReturnPositiveIfPersonNameForPerson1ComesAfterThatOfPerson2() throws Exception {
 		Person person1 = new Person();
 		person1.addName(new PersonName("givenName", "middleNamf", "familyName"));
 		Person person2 = new Person();
@@ -53,11 +53,11 @@ public class PersonByNameComparatorTest {
 	}
 	
 	/**
-	 * @see {@link PersonByNameComparator#compare(Person,Person)}
+	 * @see {@link PersonByNameComparator#comparePersonsByName(Person,Person)}
 	 */
 	@Test
-	@Verifies(value = "should return zero if the givenName middleName and familyName match", method = "comparePersons(Person,Person)")
-	public void comparePersons_shouldReturnZeroIfTheGivenNameMiddleNameAndFamilyNameMatch() throws Exception {
+	@Verifies(value = "should return zero if the givenName middleName and familyName match", method = "comparePersonsByName(Person,Person)")
+	public void comparePersonsByName_shouldReturnZeroIfTheGivenNameMiddleNameAndFamilyNameMatch() throws Exception {
 		Person person1 = new Person();
 		person1.addName(new PersonName("givenName", "middleName", "familyName"));
 		Person person2 = new Person();
