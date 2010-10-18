@@ -33,6 +33,8 @@ public class DatePatternTag extends TagSupport {
 	/**
 	 * This is to tell the user whether the string to be returned is the localized pattern or not,
 	 * in use as the jquery datepicker widget format
+	 * 
+	 * @since 1.7
 	 */
 	private String localize = null;//TRUE by default
 	
