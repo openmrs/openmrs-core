@@ -210,6 +210,11 @@
 							<option value="${location.locationId}">${location.displayString}</option>						
 						</c:if>
 					</c:forEach>
+					<c:forEach var="location" items="${model.locations}">
+						<c:if test="${location.retired}">						
+							<option value="${location.locationId}">${location.displayString} (<spring:message code="general.retired"/>)</option>						
+						</c:if>
+					</c:forEach>
 				</select>
 			</td>
 		</tr>
@@ -426,6 +431,11 @@
 						<c:forEach var="location" items="${model.locations}">
 							<c:if test="${!location.retired}">
 							  <option value="${location.locationId}">${location.displayString}</option>
+							</c:if>
+						</c:forEach>
+						<c:forEach var="location" items="${model.locations}">
+							<c:if test="${location.retired}">						
+								<option value="${location.locationId}">${location.displayString} (<spring:message code="general.retired"/>)</option>						
 							</c:if>
 						</c:forEach>
 					</select>				
