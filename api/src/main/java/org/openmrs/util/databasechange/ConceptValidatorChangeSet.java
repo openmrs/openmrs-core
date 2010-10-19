@@ -39,6 +39,7 @@ import liquibase.exception.SetupException;
 import liquibase.exception.UnsupportedChangeException;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections.set.ListOrderedSet;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -71,7 +72,7 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 	private Locale defaultLocale = new Locale("en");
 	
 	private List<Locale> allowedLocales = null;
-
+	
 	/**
 	 * @see CustomTaskChange#execute(Database)
 	 */
@@ -114,6 +115,8 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 		allowedLocales = getAllowedLocalesList(connection);
 		//default locale(if none, then 'en') is always the last in the list.
 		defaultLocale = allowedLocales.get(allowedLocales.size() - 1);
+		//a map to store all duplicates names found for each locale
+		Map<Locale, Set<String>> localeDuplicateNamesMap = null;
 		
 		for (Integer conceptId : conceptIds) {
 			
@@ -217,10 +220,15 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 						}
 					}
 					
-					if (!isNameUniqueInLocale(connection, nameInLocale)) {
-						updateWarnings.add("ConceptName with id " + nameInLocale.getConceptNameId() + " ("
-						        + nameInLocale.getName() + ") is a duplicate concept name in locale '"
-						        + conceptNameLocale.getDisplayName() + "'");
+					if (nameInLocale.isFullySpecifiedName() || nameInLocale.isPreferred()) {
+						if (!isNameUniqueInLocale(connection, nameInLocale, conceptId)) {
+							if (localeDuplicateNamesMap == null)
+								localeDuplicateNamesMap = new HashMap<Locale, Set<String>>();
+							if (!localeDuplicateNamesMap.containsKey(conceptNameLocale))
+								localeDuplicateNamesMap.put(conceptNameLocale, new HashSet<String>());
+							
+							localeDuplicateNamesMap.get(conceptNameLocale).add(nameInLocale.getName());
+						}
 					}
 					
 					String name = nameInLocale.getName().toLowerCase();
@@ -233,7 +241,7 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 				
 				//No duplicate names allowed for the same locale and concept
 				for (Map.Entry<String, List<ConceptName>> entry : nameDuplicateConceptNamesMap.entrySet()) {
-					//name had no duplicates were found for the current name
+					//no duplicates found for the current name
 					if (entry.getValue().size() < 2)
 						continue;
 					
@@ -297,6 +305,18 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 			
 		}
 		
+		if (!MapUtils.isEmpty(localeDuplicateNamesMap)) {
+			for (Map.Entry<Locale, Set<String>> entry : localeDuplicateNamesMap.entrySet()) {
+				//no duplicates found in the locale
+				if (CollectionUtils.isEmpty(entry.getValue()))
+					continue;
+				
+				for (String duplicateName : entry.getValue())
+					updateWarnings.add("Concept Name '" + duplicateName + "' was found multiple times in locale '"
+					        + entry.getKey() + "'");
+			}
+		}
+		
 		logMessages.add("Number of Updated ConceptNames: " + updatedConceptNames.size());
 	}
 	
@@ -329,12 +349,12 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 		
 		//Pick the first name in any locale by searching in order from the allowed locales
 		for (Locale allowedLoc : allowedLocales) {
-			List<ConceptName> possiblePrefNames = localeConceptNamesMap.get(allowedLoc);
-			if (possiblePrefNames == null)
+			List<ConceptName> possibleFullySpecNames = localeConceptNamesMap.get(allowedLoc);
+			if (CollectionUtils.isEmpty(possibleFullySpecNames))
 				continue;
 			
 			//try the synonyms
-			for (ConceptName cn : possiblePrefNames) {
+			for (ConceptName cn : possibleFullySpecNames) {
 				if (cn.isSynonym()) {
 					cn.setConceptNameType(ConceptNameType.FULLY_SPECIFIED);
 					reportUpdatedName(cn, "ConceptName with id " + cn.getConceptNameId() + " (" + cn.getName()
@@ -345,7 +365,7 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 			}
 			
 			//try the short names
-			for (ConceptName cn : possiblePrefNames) {
+			for (ConceptName cn : possibleFullySpecNames) {
 				if (cn.isShort()) {
 					cn.setConceptNameType(ConceptNameType.FULLY_SPECIFIED);
 					reportUpdatedName(cn, "ConceptName with id " + cn.getConceptNameId() + " (" + cn.getName()
@@ -428,23 +448,25 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 	
 	/**
 	 * Checks if the conceptName is unique among all unvoided preferred and fully specified names
-	 * across all un-retired concepts
+	 * across all other un-retired concepts except the concept it is associated to.
 	 * 
 	 * @param connection The datbase Connection
 	 * @param conceptName The conceptName to be validated
 	 * @return true if the conceptName is unique, otherwise false
 	 */
-	private boolean isNameUniqueInLocale(DatabaseConnection connection, ConceptName conceptName) {
+	private boolean isNameUniqueInLocale(DatabaseConnection connection, ConceptName conceptName, int conceptId) {
 		
-		int duplicates = getInt(connection,
+		int duplicates = getInt(
+		    connection,
 		    "SELECT count(*) FROM concept_name cn, concept c WHERE cn.concept_id = c.concept_id  AND (cn.concept_name_type = '"
 		            + ConceptNameType.FULLY_SPECIFIED
 		            + "' OR cn.locale_preferred = 1) AND cn.voided = 0 AND cn.name = '"
 		            + HibernateUtil.escapeSqlWildcards(conceptName.getName(), connection.getUnderlyingConnection())
 		            + "' AND cn.locale = '"
-		            + HibernateUtil.escapeSqlWildcards(conceptName.getLocale().toString(), connection
-		                    .getUnderlyingConnection()) + "' AND c.retired = 0");
-		return duplicates < 2;
+		            + HibernateUtil.escapeSqlWildcards(conceptName.getLocale().toString(),
+		                connection.getUnderlyingConnection()) + "' AND c.retired = 0 AND c.concept_id != " + conceptId);
+		
+		return duplicates == 0;
 	}
 	
 	/**
@@ -605,7 +627,7 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 				if (userId < 1)
 					userId = null;
 			}
-
+			
 			for (ConceptName conceptName : updatedConceptNames) {
 				pStmt.setString(1, conceptName.getLocale().toString());
 				pStmt.setString(2, (conceptName.getConceptNameType() != null) ? conceptName.getConceptNameType().toString()
