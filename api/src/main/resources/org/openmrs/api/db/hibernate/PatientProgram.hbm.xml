@@ -48,7 +48,7 @@
     </many-to-one>
     
     <!-- bi-directional many-to-one association to Location -->
-    <many-to-one name="location" class="org.openmrs.Location">
+    <many-to-one name="location" class="org.openmrs.Location" lazy="false">
         <column name="location_id" />
     </many-to-one>
 
