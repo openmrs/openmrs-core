@@ -45,7 +45,6 @@ public class ModuleResourcesServlet extends HttpServlet {
 	@Override
 	protected long getLastModified(HttpServletRequest req) {
 		File f = getFile(req);
-		f.lastModified();
 		
 		if (f == null)
 			return super.getLastModified(req);
