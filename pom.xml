@@ -253,7 +253,7 @@
 					</exclusion>
 					<exclusion>
 						<groupId>net.sf.ehcache</groupId>
-						<artifactId>ehcache-core</artifactId>
+						<artifactId>ehcache</artifactId>
 					</exclusion>
 					<exclusion>
 						<groupId>cglib</groupId>
@@ -386,22 +386,6 @@
 			<dependency>
 				<groupId>commons-beanutils</groupId>
 				<artifactId>commons-beanutils</artifactId>
-				<version>1.7.0</version>
-				<exclusions>
-					<exclusion>
-						<groupId>commons-logging</groupId>
-						<artifactId>commons-logging</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
-			<dependency>
-				<groupId>commons-beanutils</groupId>
-				<artifactId>commons-beanutils-bean-collections</artifactId>
-				<version>1.7.0</version>
-			</dependency>
-			<dependency>
-				<groupId>commons-beanutils</groupId>
-				<artifactId>commons-beanutils-core</artifactId>
 				<version>1.7.0</version>
 				<exclusions>
 					<exclusion>
