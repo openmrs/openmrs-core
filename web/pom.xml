@@ -54,14 +54,6 @@
          <artifactId>commons-beanutils</artifactId>
       </dependency>
       <dependency>
-         <groupId>commons-beanutils</groupId>
-         <artifactId>commons-beanutils-bean-collections</artifactId>
-      </dependency>
-      <dependency>
-         <groupId>commons-beanutils</groupId>
-         <artifactId>commons-beanutils-core</artifactId>
-      </dependency>
-      <dependency>
          <groupId>commons-io</groupId>
          <artifactId>commons-io</artifactId>
       </dependency>
