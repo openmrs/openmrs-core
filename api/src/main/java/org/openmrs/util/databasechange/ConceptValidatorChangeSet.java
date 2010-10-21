@@ -264,7 +264,29 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 						}
 					}
 				}
-			}
+				
+				//if this locale has no preferred name found, set one
+				if (!preferredNameForLocaleFound) {
+					//find the fully specified name and set it as the locale preferred
+					for (ConceptName cn : localeConceptNamesMap.get(conceptNameLocale)) {
+						if (cn.isFullySpecifiedName()) {
+							cn.setLocalePreferred(true);
+							preferredNameForLocaleFound = true;
+							break;
+						}
+					}
+					
+					//if there was no fully specified name found, mark one of the synonyms as locale preferred
+					if (!preferredNameForLocaleFound)
+						for (ConceptName cn : localeConceptNamesMap.get(conceptNameLocale)) {
+							if (cn.isSynonym()) {
+								cn.setLocalePreferred(true);
+								break;
+							}
+						}
+				}
+				
+			}//close for each locale
 			
 			//Make the first name found the fully specified name if none exists
 			if (!hasFullySpecifiedName)

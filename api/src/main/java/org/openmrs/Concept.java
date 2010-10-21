@@ -679,7 +679,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @param forLocale locale for which to return a preferred name
 	 * @return preferred name for the locale, or null if no preferred name is specified
 	 * @should return the concept name explicitly marked as locale preferred
-	 * @should return null if no name is explicitly marked as locale preferred
+	 * @should return the fully specified name if no name is explicitly marked as locale preferred
 	 */
 	public ConceptName getPreferredName(Locale forLocale) {
 		
@@ -700,7 +700,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 				return nameInLocale;
 		}
 		
-		return null;
+		return getFullySpecifiedName(forLocale);
 	}
 	
 	/**
