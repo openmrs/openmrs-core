@@ -62,6 +62,7 @@ import org.openmrs.scheduler.SchedulerException;
 import org.openmrs.scheduler.SchedulerService;
 import org.openmrs.scheduler.Task;
 import org.openmrs.scheduler.TaskDefinition;
+import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.validator.ConceptValidator;
 import org.springframework.util.StringUtils;
@@ -177,7 +178,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements
 
 		List<ConceptName> changedConceptNames = null;
 		Map<String, ConceptName> uuidClonedConceptNameMap = null;
-
+		
 		if (concept.getConceptId() != null) {
 			uuidClonedConceptNameMap = new HashMap<String, ConceptName>();
 			for (ConceptName conceptName : concept.getNames()) {
@@ -236,6 +237,18 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements
 						.getUuid());
 				clone.setUuid(UUID.randomUUID().toString());
 				concept.addName(clone);
+			}
+		}
+		
+		//Set a preferred name for each locale for those where it isn't yet specified
+		for (Locale locale : LocaleUtility.getLocalesInOrder()) {
+			ConceptName possiblePreferredName = concept.getPreferredName(locale);
+			if (possiblePreferredName == null || !possiblePreferredName.isLocalePreferred()) {
+				if (possiblePreferredName != null)
+					possiblePreferredName.setLocalePreferred(true);
+				//set the first synonym as the preferred name if it has any
+				else if (!CollectionUtils.isEmpty(concept.getSynonyms(locale)))
+					concept.getSynonyms(locale).iterator().next().setLocalePreferred(true);
 			}
 		}
 
