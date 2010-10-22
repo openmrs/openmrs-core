@@ -419,16 +419,16 @@ public class InitializationFilter extends StartupFilter {
 				if (appender instanceof MemoryAppender) {
 					MemoryAppender memoryAppender = (MemoryAppender) appender;
 					List<String> logLines = memoryAppender.getLogLines();
-					// truncate the list to the last 3 so we don't overwhelm jquery
-					if (logLines.size() > 3)
-						logLines = logLines.subList(logLines.size() - 3, logLines.size());
+					// truncate the list to the last 5 so we don't overwhelm jquery
+					if (logLines.size() > 5)
+						logLines = logLines.subList(logLines.size() - 5, logLines.size());
 					result.put("logLines", logLines);
 				} else {
 					result.put("logLines", new ArrayList<String>());
 				}
 			}
 			
-			httpResponse.getWriter().write(toJSONString(result));
+			httpResponse.getWriter().write(toJSONString(result, true));
 		}
 	}
 	
