@@ -46,6 +46,7 @@ import org.openmrs.web.WebConstants;
 import org.openmrs.web.WebUtil;
 import org.openmrs.web.filter.initialization.InitializationFilter;
 import org.openmrs.web.filter.update.UpdateFilter;
+import org.springframework.web.util.JavaScriptUtils;
 
 /**
  * Abstract class used when a small wizard is needed before Spring, jsp, etc has been started up.
@@ -277,9 +278,10 @@ public abstract class StartupFilter implements Filter {
 	 * Convert a map of strings to objects to json
 	 * 
 	 * @param map object to convert
+	 * @param escapeJavascript specifies if javascript special characters should be escaped
 	 * @param sb StringBuffer to append to
 	 */
-	private void toJSONString(Map<String, Object> map, StringBuffer sb) {
+	private void toJSONString(Map<String, Object> map, StringBuffer sb, boolean escapeJavascript) {
 		boolean first = true;
 		
 		sb.append('{');
@@ -292,11 +294,15 @@ public abstract class StartupFilter implements Filter {
 			sb.append('"');
 			if (entry.getKey() == null)
 				sb.append("null");
-			else
-				sb.append(WebUtil.escapeQuotesAndNewlines(entry.getKey()));
+			else{
+				if(escapeJavascript)
+					sb.append(JavaScriptUtils.javaScriptEscape(entry.getKey()));
+				else
+					sb.append(WebUtil.escapeQuotesAndNewlines(entry.getKey()));
+			}
 			sb.append('"').append(':');
 			
-			sb.append(toJSONString(entry.getValue()));
+			sb.append(toJSONString(entry.getValue(), escapeJavascript));
 			
 		}
 		sb.append('}');
@@ -306,9 +312,10 @@ public abstract class StartupFilter implements Filter {
 	 * Convert a list of objects to json
 	 * 
 	 * @param list object to convert
+	 * @param escapeJavascript specifies if javascript special characters should be escaped
 	 * @param sb StringBuffer to append to
 	 */
-	private void toJSONString(List<Object> list, StringBuffer sb) {
+	private void toJSONString(List<Object> list, StringBuffer sb, boolean escapeJavascript) {
 		boolean first = true;
 		
 		sb.append('[');
@@ -318,7 +325,7 @@ public abstract class StartupFilter implements Filter {
 			else
 				sb.append(',');
 			
-			sb.append(toJSONString(listItem));
+			sb.append(toJSONString(listItem, escapeJavascript));
 		}
 		sb.append(']');
 	}
@@ -328,12 +335,17 @@ public abstract class StartupFilter implements Filter {
 	 * 
 	 * @param object object to convert
 	 * @param sb StringBuffer to append to
+	 * @param escapeJavascript specifies if javascript special characters should be escaped
 	 */
-	private void toJSONString(Object object, StringBuffer sb) {
+	private void toJSONString(Object object, StringBuffer sb, boolean escapeJavascript) {
 		if (object == null)
 			sb.append("null");
-		else
-			sb.append('"').append(WebUtil.escapeQuotesAndNewlines(object.toString())).append('"');
+		else{
+			if(escapeJavascript)
+				sb.append('"').append(JavaScriptUtils.javaScriptEscape(object.toString())).append('"');
+			else
+				sb.append('"').append(WebUtil.escapeQuotesAndNewlines(object.toString())).append('"');
+		}
 	}
 	
 	/**
@@ -341,19 +353,20 @@ public abstract class StartupFilter implements Filter {
 	 * Strings, Boolean, Double
 	 * 
 	 * @param object object to convert to json
+	 * @param escapeJavascript specifies if javascript special characters should be escaped
 	 * @return JSON string to be eval'd in javascript
 	 */
-	protected String toJSONString(Object object) {
+	protected String toJSONString(Object object, boolean escapeJavascript) {
 		StringBuffer sb = new StringBuffer();
 		
 		if (object instanceof Map)
-			toJSONString((Map<String, Object>) object, sb);
+			toJSONString((Map<String, Object>) object, sb, escapeJavascript);
 		else if (object instanceof List)
-			toJSONString((List) object, sb);
+			toJSONString((List) object, sb, escapeJavascript);
 		else if (object instanceof Boolean)
 			sb.append(object.toString());
 		else
-			toJSONString(object, sb);
+			toJSONString(object, sb, escapeJavascript);
 		
 		return sb.toString();
 	}
