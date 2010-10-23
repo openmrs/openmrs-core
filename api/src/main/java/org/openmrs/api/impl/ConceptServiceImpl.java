@@ -182,7 +182,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements
 		if (concept.getConceptId() != null) {
 			uuidClonedConceptNameMap = new HashMap<String, ConceptName>();
 			for (ConceptName conceptName : concept.getNames()) {
-				// ingore newly added names
+				// ignore newly added names
 				if (conceptName.getConceptNameId() != null) {
 					ConceptName clone = cloneConceptName(conceptName);
 					clone.setConceptNameId(null);
