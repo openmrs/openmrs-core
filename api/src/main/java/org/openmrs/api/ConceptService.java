@@ -50,12 +50,18 @@ import org.springframework.transaction.annotation.Transactional;
  * 
  * 
  * 
+ * 
+ * 
+ * 
  * List&lt;Concept&gt; concepts = Context.getConceptService().getAllConcepts();
  * </pre>
  * 
  * To get a single concept:
  * 
  * <pre>
+ * 
+ * 
+ * 
  * 
  * 
  * 
@@ -1454,9 +1460,11 @@ public interface ConceptService extends OpenmrsService {
 	public List<ConceptSearchResult> findConceptAnswers(String phrase, Locale locale, Concept concept) throws APIException;
 	
 	/**
-	 * Iterates over the words in names and synonyms (for each locale) and updates the concept index
+	 * Iterates over the words in names and synonyms (for each locale) and updates the concept
+	 * index, note that this only updates the index of the specified concept. Use
+	 * {@link ConceptService#updateConceptIndexes()} if you wish to update the entire concept index.
 	 * 
-	 * @param concept
+	 * @param concept the concept whose index is to be updated
 	 * @throws APIException
 	 * @since 1.8
 	 */
