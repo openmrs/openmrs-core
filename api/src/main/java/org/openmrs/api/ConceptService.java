@@ -53,12 +53,16 @@ import org.springframework.transaction.annotation.Transactional;
  * 
  * 
  * 
+ * 
+ * 
  * List&lt;Concept&gt; concepts = Context.getConceptService().getAllConcepts();
  * </pre>
  * 
  * To get a single concept:
  * 
  * <pre>
+ * 
+ * 
  * 
  * 
  * 
@@ -185,9 +189,6 @@ public interface ConceptService extends OpenmrsService {
 	 * @should void the conceptName if the text of the name has changed
 	 * @should create a new conceptName when the old name is changed
 	 * @should set a preferred name for each locale if none is marked
-	 * @should always return a preferred name for every locale that has atleast one unvoided name
-	 * @should not accept a locale that is neither among the localeAllowedList nor a default locale
-	 * @should ensure that every concepName locale has exactly one preferred name
 	 */
 	@Authorized({ PrivilegeConstants.MANAGE_CONCEPTS })
 	public Concept saveConcept(Concept concept) throws APIException;

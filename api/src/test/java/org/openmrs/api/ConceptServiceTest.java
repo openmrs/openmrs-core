@@ -1324,10 +1324,9 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * This test fetches all concepts and ensures that every locale that has atleast one conceptName
-	 * has a name explicitly marked as preferred
-	 * 
-	 * @see {@link ConceptService#saveConcept(Concept)}
+	 * This test fetches all concepts in the xml test dataset and ensures that every locale for a
+	 * concept name is among those listed in the global property 'locale.allowed.list' and default
+	 * locale. NOTE that it doesn't test a particular API method directly.
 	 */
 	@Test
 	@Verifies(value = "should not accept a locale that is neither among the localeAllowedList nor a default locale", method = "saveConcept(Concept)")
@@ -1346,13 +1345,12 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * This test fetches all concepts and ensures that every locale that has atleast one conceptName
-	 * has exactly one name marked as preferred
-	 * 
-	 * @see {@link ConceptService#saveConcept(Concept)}
+	 * This test fetches all concepts in the xml test dataset and ensures that every locale that has
+	 * atleast one conceptName has a name marked as preferred. NOTE that it doesn't test a
+	 * particular API method directly.
 	 */
 	@Test
-	@Verifies(value = "should always return a preferred name for every locale that has atleast one unvoided name", method = "saveConcept(Concept)")
+	@Verifies(value = "should always return a preferred name for every locale that has atleast one unvoided name", method = "")
 	public void saveConcept_shouldAlwaysReturnAPreferredNameForEveryLocaleThatHasAtleastOneUnvoidedName() throws Exception {
 		List<Concept> concepts = Context.getConceptService().getAllConcepts();
 		Set<Locale> allowedLocales = LocaleUtility.getLocalesInOrder();
@@ -1368,10 +1366,12 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#saveConcept(Concept)}
+	 * This test is run against the xml test dataset for all concepts to ensure that in every locale
+	 * with one or more names, there isn't more than one name explicitly marked as locale preferred.
+	 * NOTE that it doesn't test a particular API method directly
 	 */
 	@Test
-	@Verifies(value = "should ensure that every concepName locale has exactly one preferred name", method = "saveConcept(Concept)")
+	@Verifies(value = "should ensure that every concepName locale has exactly one preferred name", method = "")
 	public void saveConcept_shouldEnsureThatEveryConcepNameLocaleHasExactlyOnePreferredName() throws Exception {
 		List<Concept> concepts = Context.getConceptService().getAllConcepts();
 		Set<Locale> allowedLocales = LocaleUtility.getLocalesInOrder();
