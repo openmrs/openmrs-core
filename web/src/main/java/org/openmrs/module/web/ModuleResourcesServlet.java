@@ -45,7 +45,7 @@ public class ModuleResourcesServlet extends HttpServlet {
 	@Override
 	protected long getLastModified(HttpServletRequest req) {
 		File f = getFile(req);
-		
+
 		if (f == null)
 			return super.getLastModified(req);
 		
@@ -69,17 +69,18 @@ public class ModuleResourcesServlet extends HttpServlet {
 			e.printStackTrace();
 		}
 		
-		response.setDateHeader("Last-Modified", f.lastModified());
-		response.setContentLength(new Long(f.length()).intValue());
-		
-		FileInputStream is = new FileInputStream(f);
-		try {
-			OpenmrsUtil.copyFile(is, response.getOutputStream());
+		if (f != null) {
+			response.setDateHeader("Last-Modified", f.lastModified());
+			response.setContentLength(new Long(f.length()).intValue());
+	
+			FileInputStream is = new FileInputStream(f);
+			try {
+				OpenmrsUtil.copyFile(is, response.getOutputStream());
+			}
+			finally {
+				OpenmrsUtil.closeStream(is);
+			}
 		}
-		finally {
-			OpenmrsUtil.closeStream(is);
-		}
-		
 	}
 	
 	/**
