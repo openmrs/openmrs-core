@@ -1245,4 +1245,30 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(true, conceptSet.contains(conceptService.getConcept(5)));
 		Assert.assertEquals(true, conceptSet.contains(conceptService.getConcept(6)));
 	}
+	
+	/**
+	 * @see {@link ConceptService#saveConcept(Concept)}
+	 */
+	@Test
+	@Verifies(value = "should set a preferred name for each locale if none is marked", method = "saveConcept(Concept)")
+	public void saveConcept_shouldSetAPreferredNameForEachLocaleIfNoneIsMarked() throws Exception {
+		//add some other locales to locale.allowed.list for testing purposes
+		GlobalProperty gp = Context.getAdministrationService().getGlobalPropertyObject(
+		    OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST);
+		gp.setPropertyValue(gp.getPropertyValue().concat(",fr,ja"));
+		Context.getAdministrationService().saveGlobalProperty(gp);
+		
+		Concept concept = new Concept();
+		concept.addName(new ConceptName("name1", Locale.ENGLISH));
+		concept.addName(new ConceptName("name2", Locale.ENGLISH));
+		concept.addName(new ConceptName("name3", Locale.FRENCH));
+		concept.addName(new ConceptName("name4", Locale.FRENCH));
+		concept.addName(new ConceptName("name5", Locale.JAPANESE));
+		concept.addName(new ConceptName("name6", Locale.JAPANESE));
+		
+		concept = Context.getConceptService().saveConcept(concept);
+		Assert.assertNotNull(concept.getPreferredName(Locale.ENGLISH));
+		Assert.assertNotNull(concept.getPreferredName(Locale.FRENCH));
+		Assert.assertNotNull(concept.getPreferredName(Locale.JAPANESE));
+	}
 }

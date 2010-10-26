@@ -168,6 +168,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @should save a new ConceptNumeric
 	 * @should void the conceptName if the text of the name has changed
 	 * @should create a new conceptName when the old name is changed
+	 * @should set a preferred name for each locale if none is marked
 	 */
 	@Authorized( { OpenmrsConstants.PRIV_MANAGE_CONCEPTS })
 	public Concept saveConcept(Concept concept) throws APIException;
