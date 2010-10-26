@@ -553,6 +553,7 @@ public interface PatientSetService {
 	 * (The current implementation has *not* been optimized.)
 	 * @param cached
 	 * @return
+	 * @since 1.8
 	 */
 	public Cohort getInverseOfCohort(Cohort cohort);
 	
