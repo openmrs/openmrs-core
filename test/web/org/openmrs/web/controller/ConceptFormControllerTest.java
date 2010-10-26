@@ -700,8 +700,8 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 	public void onSubmit_shouldSetTheLocalPreferredName() throws Exception {
 		ConceptService cs = Context.getConceptService();
 		Concept concept = cs.getConcept(5497);
-		//sanity check
-		Assert.assertNull(concept.getPreferredName(Locale.ENGLISH));
+		//sanity check, the current preferred Name should be different from what will get set in the form
+		Assert.assertNotSame("CD3+CD4+ABS CNT", concept.getPreferredName(Locale.ENGLISH).getName());
 		
 		ConceptFormController conceptFormController = (ConceptFormController) applicationContext.getBean("conceptForm");
 		MockHttpServletRequest mockRequest = new MockHttpServletRequest();
@@ -715,6 +715,8 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 		assertTrue(mav.getModel().isEmpty());
 		
 		Assert.assertEquals("CD3+CD4+ABS CNT", concept.getPreferredName(Locale.ENGLISH).getName());
+		//preferred name should be the new one that has been set from the form
+		Assert.assertEquals(true, concept.getPreferredName(Locale.ENGLISH).isLocalePreferred());
 	}
 
 	/**
