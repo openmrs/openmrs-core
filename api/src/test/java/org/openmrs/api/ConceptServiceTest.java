@@ -1329,8 +1329,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 * locale. NOTE that it doesn't test a particular API method directly.
 	 */
 	@Test
-	@Verifies(value = "should not accept a locale that is neither among the localeAllowedList nor a default locale", method = "saveConcept(Concept)")
-	public void saveConcept_shouldNotAcceptALocaleThatIsNeitherAmongTheLocaleAllowedListNorADefaultLocale() throws Exception {
+	@Verifies(value = "should not accept a locale that is neither among the localeAllowedList nor a default locale", method = "")
+	public void shouldNotAcceptALocaleThatIsNeitherAmongTheLocaleAllowedListNorADefaultLocale() throws Exception {
 		List<Concept> concepts = Context.getConceptService().getAllConcepts();
 		Set<Locale> allowedLocales = LocaleUtility.getLocalesInOrder();
 		for (Concept concept : concepts) {
@@ -1351,7 +1351,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	@Verifies(value = "should always return a preferred name for every locale that has atleast one unvoided name", method = "")
-	public void saveConcept_shouldAlwaysReturnAPreferredNameForEveryLocaleThatHasAtleastOneUnvoidedName() throws Exception {
+	public void shouldAlwaysReturnAPreferredNameForEveryLocaleThatHasAtleastOneUnvoidedName() throws Exception {
 		List<Concept> concepts = Context.getConceptService().getAllConcepts();
 		Set<Locale> allowedLocales = LocaleUtility.getLocalesInOrder();
 		for (Concept concept : concepts) {
@@ -1372,7 +1372,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	@Verifies(value = "should ensure that every concepName locale has exactly one preferred name", method = "")
-	public void saveConcept_shouldEnsureThatEveryConcepNameLocaleHasExactlyOnePreferredName() throws Exception {
+	public void shouldEnsureThatEveryConcepNameLocaleHasExactlyOnePreferredName() throws Exception {
 		List<Concept> concepts = Context.getConceptService().getAllConcepts();
 		Set<Locale> allowedLocales = LocaleUtility.getLocalesInOrder();
 		for (Concept concept : concepts) {
