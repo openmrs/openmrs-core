@@ -26,9 +26,11 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import junit.framework.Assert;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Concept;
@@ -58,6 +60,7 @@ import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.SkipBaseSetup;
 import org.openmrs.test.TestUtil;
 import org.openmrs.test.Verifies;
+import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
@@ -1270,5 +1273,74 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Assert.assertNotNull(concept.getPreferredName(Locale.ENGLISH));
 		Assert.assertNotNull(concept.getPreferredName(Locale.FRENCH));
 		Assert.assertNotNull(concept.getPreferredName(Locale.JAPANESE));
+	}
+	
+	/**
+	 * This test fetches all concepts in the xml test dataset and ensures that every locale for a
+	 * concept name is among those listed in the global property 'locale.allowed.list' and default
+	 * locale. NOTE that it doesn't test a particular API method directly.
+	 */
+	@Test
+	@Verifies(value = "should not accept a locale that is neither among the localeAllowedList nor a default locale", method = "")
+	public void shouldNotAcceptALocaleThatIsNeitherAmongTheLocaleAllowedListNorADefaultLocale() throws Exception {
+		List<Concept> concepts = Context.getConceptService().getAllConcepts();
+		Set<Locale> allowedLocales = LocaleUtility.getLocalesInOrder();
+		for (Concept concept : concepts) {
+			if (!CollectionUtils.isEmpty(concept.getNames())) {
+				for (ConceptName cn : concept.getNames()) {
+					Assert.assertTrue("The locale '" + cn.getLocale() + "' of conceptName with id: " + cn.getConceptNameId()
+					        + " is not among those listed in the global property 'locale.allowed.list'",
+					    allowedLocales.contains(cn.getLocale()));
+				}
+			}
+		}
+	}
+	
+	/**
+	 * This test fetches all concepts in the xml test dataset and ensures that every locale that has
+	 * atleast one conceptName has a name marked as preferred. NOTE that it doesn't test a
+	 * particular API method directly.
+	 */
+	@Test
+	@Verifies(value = "should always return a preferred name for every locale that has atleast one unvoided name", method = "")
+	public void shouldAlwaysReturnAPreferredNameForEveryLocaleThatHasAtleastOneUnvoidedName() throws Exception {
+		List<Concept> concepts = Context.getConceptService().getAllConcepts();
+		Set<Locale> allowedLocales = LocaleUtility.getLocalesInOrder();
+		for (Concept concept : concepts) {
+			for (Locale locale : allowedLocales) {
+				if (!CollectionUtils.isEmpty(concept.getNames(locale))) {
+					Assert.assertNotNull("Concept with Id: " + concept.getConceptId() + " has no preferred name in locale:"
+					        + locale, concept.getPreferredName(locale));
+					Assert.assertEquals(true, concept.getPreferredName(locale).isLocalePreferred().booleanValue());
+				}
+			}
+		}
+	}
+	
+	/**
+	 * This test is run against the xml test dataset for all concepts to ensure that in every locale
+	 * with one or more names, there isn't more than one name explicitly marked as locale preferred.
+	 * NOTE that it doesn't test a particular API method directly
+	 */
+	@Test
+	@Verifies(value = "should ensure that every concepName locale has exactly one preferred name", method = "")
+	public void shouldEnsureThatEveryConcepNameLocaleHasExactlyOnePreferredName() throws Exception {
+		List<Concept> concepts = Context.getConceptService().getAllConcepts();
+		Set<Locale> allowedLocales = LocaleUtility.getLocalesInOrder();
+		for (Concept concept : concepts) {
+			for (Locale locale : allowedLocales) {
+				Collection<ConceptName> namesInLocale = concept.getNames(locale);
+				if (!CollectionUtils.isEmpty(namesInLocale)) {
+					int preferredNamesFound = 0;
+					for (ConceptName conceptName : namesInLocale) {
+						if (conceptName.isLocalePreferred()) {
+							preferredNamesFound++;
+							Assert.assertTrue("Found multiple preferred names for conceptId: " + concept.getConceptId()
+							        + " in the locale '" + locale + "'", preferredNamesFound < 2);
+						}
+					}
+				}
+			}
+		}
 	}
 }
