@@ -44,12 +44,12 @@ import org.apache.log4j.Appender;
 import org.apache.log4j.Logger;
 import org.openmrs.util.DatabaseUpdateException;
 import org.openmrs.util.DatabaseUpdater;
+import org.openmrs.util.DatabaseUpdater.ChangeSetExecutorCallback;
 import org.openmrs.util.InputRequiredException;
 import org.openmrs.util.MemoryAppender;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.Security;
-import org.openmrs.util.DatabaseUpdater.ChangeSetExecutorCallback;
 import org.openmrs.web.Listener;
 import org.openmrs.web.filter.StartupFilter;
 import org.openmrs.web.filter.initialization.InitializationFilter;
@@ -224,7 +224,7 @@ public class UpdateFilter extends StartupFilter {
 				}
 			}
 			
-			String jsonText = toJSONString(result);
+			String jsonText = toJSONString(result, true);
 			httpResponse.getWriter().write(jsonText);
 		}
 	}
