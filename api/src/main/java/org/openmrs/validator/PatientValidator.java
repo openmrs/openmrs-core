@@ -48,7 +48,8 @@ public class PatientValidator implements Validator {
 	 */
 	@SuppressWarnings("unchecked")
 	public boolean supports(Class c) {
-		log.error(this.getClass().getName() + ".supports: " + c.getName());
+		if(log.isDebugEnabled())
+			log.debug(this.getClass().getName() + ".supports: " + c.getName());
 		return Patient.class.isAssignableFrom(c);
 	}
 	
@@ -67,8 +68,8 @@ public class PatientValidator implements Validator {
 	 * @should fail validation if causeOfDeath is blank when patient is dead
 	 */
 	public void validate(Object obj, Errors errors) {
-		
-		log.error(this.getClass().getName()+ ".validate..." );
+		if(log.isDebugEnabled())
+			log.debug(this.getClass().getName()+ ".validate..." );
 		
 		Patient patient = (Patient) obj;
 		

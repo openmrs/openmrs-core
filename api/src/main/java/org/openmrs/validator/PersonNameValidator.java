@@ -48,7 +48,8 @@ public class PersonNameValidator implements Validator {
 	 * 
 	 */
 	public void validate(Object object, Errors errors) {
-		log.error(this.getClass().getName() + ".validate...");
+		if(log.isDebugEnabled())
+			log.debug(this.getClass().getName() + ".validate...");
 		PersonName personName = (PersonName) object;
 		try {
 			// Validate that the person name object is not null
@@ -102,10 +103,14 @@ public class PersonNameValidator implements Validator {
 	 * @should pass validation if PersonName.degree is less than maximum field length
 	 */
 	public void validatePersonName(PersonName personName, Errors errors, boolean arrayInd, boolean testInd) {
-
+		
+		if (personName == null) 
+			errors.reject("error.name");
 		// Make sure they assign a name
-		if (StringUtils.isBlank(personName.getGivenName()) || StringUtils.isBlank(personName.getGivenName().replaceAll("\"", ""))) errors.rejectValue(getFieldKey("givenName", arrayInd, testInd),"Person.name.required");
-		if (StringUtils.isBlank(personName.getFamilyName()) || StringUtils.isBlank(personName.getFamilyName().replaceAll("\"", ""))) errors.rejectValue(getFieldKey("familyName", arrayInd, testInd),"Person.name.required");
+		if (StringUtils.isBlank(personName.getGivenName()) || StringUtils.isBlank(personName.getGivenName().replaceAll("\"", ""))) 
+			errors.rejectValue(getFieldKey("givenName", arrayInd, testInd),"Patient.names.required.given.family");
+		if (StringUtils.isBlank(personName.getFamilyName()) || StringUtils.isBlank(personName.getFamilyName().replaceAll("\"", ""))) 
+			errors.rejectValue(getFieldKey("familyName", arrayInd, testInd),"Patient.names.required.given.family");
 
 		// Make sure the length does not exceed database column size
 		if (StringUtils.length(personName.getPrefix()) > 50) rejectPersonName(errors, "prefix", arrayInd, testInd);

@@ -126,7 +126,6 @@
 				<prop key="/admin/orders/orderType.form">orderTypeForm</prop>
 
 				<prop key="admin/patients/patient.form">patientForm</prop>
-				<prop key="admin/patients/newPatient.form">newPatientForm</prop>
 				<prop key="admin/patients/mergePatients.form">mergePatientsForm</prop>
 				
 				<prop key="admin/patients/tribe.list">tribeList</prop>
@@ -381,17 +380,7 @@
 		<property name="validator"><ref bean="patientValidator" /></property>
 	</bean>
 	<!-- ** /Patient ** -->
-
-	<!-- ** New (mini) Patient ** -->
-	<bean id="shortPatientValidator" class="org.openmrs.web.controller.patient.ShortPatientValidator" />
-	<bean id="newPatientForm" class="org.openmrs.web.controller.patient.NewPatientFormController">
-		<property name="commandName"><value>patient</value></property>
-		<property name="commandClass"><value>org.openmrs.web.controller.patient.ShortPatientModel</value></property>
-		<property name="formView"><value>/admin/patients/newPatientForm</value></property>
-		<property name="successView"><value>../../patientDashboard.form</value></property>
-	</bean>
-	<!-- ** /New Patient ** -->
-	
+		
 	<bean id="tribeList" class="org.openmrs.web.controller.patient.TribeFormController">
 		<property name="commandName"><value>tribeForm</value></property>
 		<property name="formView"><value>/admin/patients/tribeList</value></property>

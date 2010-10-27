@@ -30,7 +30,6 @@ import org.openmrs.Person;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
 import org.openmrs.web.dwr.PersonListItem;
-import org.springframework.util.StringUtils;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
@@ -42,7 +41,7 @@ public class AddPersonController extends SimpleFormController {
 	/** Logger for this class and subclasses */
 	protected final Log log = LogFactory.getLog(getClass());
 	
-	private final String PATIENT_SHORT_EDIT_URL = "/admin/patients/newPatient.form";
+	private final String PATIENT_SHORT_EDIT_URL = "/admin/patients/shortPatientForm.form";
 	
 	private final String PATIENT_EDIT_URL = "/admin/patients/patient.form";
 	

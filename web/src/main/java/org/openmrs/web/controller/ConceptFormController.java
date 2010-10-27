@@ -437,7 +437,7 @@ public class ConceptFormController extends SimpleFormController {
 						if (!synonym.isVoided())
 							synonym.setVoidReason(null);
 						else if (synonym.isVoided() && !StringUtils.hasText(synonym.getVoidReason()))
-							synonym.setVoidReason(Context.getMessageSourceService().getMessage("Concept.name.default.voidReason"));
+							synonym.setVoidReason(Context.getMessageSourceService().getMessage("general.default.voidReason"));
 					}
 				}
 				

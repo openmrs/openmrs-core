@@ -13,228 +13,154 @@
  */
 package org.openmrs.web.controller.patient;
 
-import java.util.Date;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
-import org.openmrs.Concept;
+import org.apache.commons.collections.FactoryUtils;
+import org.apache.commons.collections.ListUtils;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
+import org.openmrs.PersonAttributeType;
 import org.openmrs.PersonName;
+import org.openmrs.Relationship;
+import org.openmrs.api.PersonService.ATTR_VIEW_TYPE;
+import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
+import org.springframework.util.CollectionUtils;
 
+/**
+ * The Model Object to be used for the short patient form.
+ */
 public class ShortPatientModel {
 	
-	private Integer patientId;
+	private Patient patient;
 	
-	private String identifier = "";
+	private List<PatientIdentifier> identifiers;
 	
-	private String otherIdentifiers = "";
+	private PersonName personName;
 	
-	private PersonName name = new PersonName();
+	private PersonAddress personAddress;
 	
-	private String otherNames = "";
+	private Map<String, Relationship> relationshipsMap;
 	
-	private String gender;
-	
-	private Date birthdate;
-	
-	private Boolean birthdateEstimated = false;
-	
-	private PersonAddress address;
-	
-	private Boolean voided = false;
-	
-	private Boolean dead = false;
-	
-	private Concept causeOfDeath = null;
-	
-	private Date deathDate = null;
-	
-	// convenience map:
-	// Map<attribute.getAttributeType().getName(), attribute>
-	Map<String, PersonAttribute> attributeMap = null;
-	
-	// private Location healthCenter = null;
-	// private String mothersName;
-	
-	/**
-	* Indicates whether or not patient is dead.
-	*
-	* @return true if patient is dead, otherwise false.
-	* @deprecated
-	*/
-	@Deprecated	
-	public Boolean getDead() {
-		return dead;
-	}
-	
-	/**
-	* Indicates whether or not patient is dead.
-	*
-	* @return true if patient is dead, otherwise false
-	*/
-	public Boolean isDead() {
-		return dead;
-	}
-	
-	public void setDead(Boolean dead) {
-		this.dead = dead;
-	}
+	private List<PersonAttribute> personAttributes;
 	
 	public ShortPatientModel() {
+		
 	}
 	
+	/**
+	 * Constructor that creates a shortPatientModel object from a given patient object
+	 * 
+	 * @param patient
+	 */
+	@SuppressWarnings("unchecked")
 	public ShortPatientModel(Patient patient) {
-		this();
 		if (patient != null) {
-			patientId = patient.getPatientId();
+			this.patient = patient;
+			this.personName = patient.getPersonName();
+			this.personAddress = patient.getPersonAddress();
+			identifiers = ListUtils.lazyList(new ArrayList<PatientIdentifier>(patient.getActiveIdentifiers()),
+			    FactoryUtils.instantiateFactory(PatientIdentifier.class));
 			
-			// get patient's identifiers
-			boolean first = true;
-			for (PatientIdentifier pi : patient.getIdentifiers()) {
-				if (first) {
-					identifier = pi.getIdentifier();
-					first = false;
-				} else {
-					if (!"".equals(otherIdentifiers))
-						otherIdentifiers += ",";
-					otherIdentifiers += " " + pi.getIdentifier();
+			List<PersonAttributeType> viewableAttributeTypes = Context.getPersonService().getPersonAttributeTypes(
+			    PERSON_TYPE.PATIENT, ATTR_VIEW_TYPE.VIEWING);
+			List<PersonAttribute> activePatientAttributes = patient.getActiveAttributes();
+			
+			personAttributes = new ArrayList<PersonAttribute>();
+			if (!CollectionUtils.isEmpty(viewableAttributeTypes)) {
+				for (PersonAttribute personAttribute : activePatientAttributes) {
+					if (viewableAttributeTypes.contains(personAttribute.getAttributeType()))
+						personAttributes.add(personAttribute);
 				}
-			}
-			
-			// get patient's names
-			first = true;
-			for (PersonName pn : patient.getNames()) {
-				if (first) {
-					setName(pn);
-					first = false;
-				} else {
-					if (!"".equals(otherNames))
-						otherNames += ",";
-					otherNames += " " + pn.getGivenName() + " " + pn.getMiddleName() + " " + pn.getFamilyName();
-				}
-			}
-			
-			gender = patient.getGender();
-			
-			birthdate = patient.getBirthdate();
-			birthdateEstimated = patient.isBirthdateEstimated();
-			//mothersName = patient.getMothersName();
-			//healthCenter = patient.getHealthCenter();
-			voided = patient.isVoided();
-			dead = patient.isDead();
-			causeOfDeath = patient.getCauseOfDeath();
-			deathDate = patient.getDeathDate();
-			
-			address = patient.getPersonAddress();
-			
-			attributeMap = new HashMap<String, PersonAttribute>();
-			for (PersonAttribute attribute : patient.getActiveAttributes()) {
-				attributeMap.put(attribute.getAttributeType().getName(), attribute);
 			}
 		}
 	}
 	
-	public PersonAddress getAddress() {
-		return address;
+	/**
+	 * @return the identifiers
+	 */
+	public List<PatientIdentifier> getIdentifiers() {
+		return identifiers;
 	}
 	
-	public void setAddress(PersonAddress address) {
-		this.address = address;
+	/**
+	 * @param identifiers the identifiers to set
+	 */
+	public void setIdentifiers(List<PatientIdentifier> identifiers) {
+		this.identifiers = identifiers;
 	}
 	
-	public Date getBirthdate() {
-		return birthdate;
+	/**
+	 * @return the personName
+	 */
+	public PersonName getPersonName() {
+		return personName;
 	}
 	
-	public void setBirthdate(Date birthdate) {
-		this.birthdate = birthdate;
+	/**
+	 * @param personName the personName to set
+	 */
+	public void setPersonName(PersonName personName) {
+		this.personName = personName;
 	}
 	
-	public Boolean getBirthdateEstimated() {
-		return birthdateEstimated;
+	/**
+	 * @return the personAddress
+	 */
+	public PersonAddress getPersonAddress() {
+		return personAddress;
 	}
 	
-	public void setBirthdateEstimated(Boolean birthdateEstimated) {
-		this.birthdateEstimated = birthdateEstimated;
+	/**
+	 * @param personAddress the personAddress to set
+	 */
+	public void setPersonAddress(PersonAddress personAddress) {
+		this.personAddress = personAddress;
 	}
 	
-	public String getGender() {
-		return gender;
+	/**
+	 * @return the relationshipsMap
+	 */
+	public Map<String, Relationship> getRelationshipsMap() {
+		return relationshipsMap;
 	}
 	
-	public void setGender(String gender) {
-		this.gender = gender;
+	/**
+	 * @param relationshipsMap the relationshipsMap to set
+	 */
+	public void setRelationshipsMap(Map<String, Relationship> relationshipsMap) {
+		this.relationshipsMap = relationshipsMap;
 	}
 	
-	public String getIdentifier() {
-		return identifier;
+	/**
+	 * @return the personAttributes
+	 */
+	public List<PersonAttribute> getPersonAttributes() {
+		return personAttributes;
 	}
 	
-	public void setIdentifier(String identifier) {
-		this.identifier = identifier;
+	/**
+	 * @param personAttributes the personAttributes to set
+	 */
+	public void setPersonAttributes(List<PersonAttribute> personAttributes) {
+		this.personAttributes = personAttributes;
 	}
 	
-	public String getOtherIdentifiers() {
-		return otherIdentifiers;
+	/**
+	 * @return the patient
+	 */
+	public Patient getPatient() {
+		return patient;
 	}
 	
-	public void setOtherIdentifiers(String otherIdentifiers) {
-		this.otherIdentifiers = otherIdentifiers;
+	/**
+	 * @param patient the patient to set
+	 */
+	public void setPatient(Patient patient) {
+		this.patient = patient;
 	}
-	
-	public String getOtherNames() {
-		return otherNames;
-	}
-	
-	public void setOtherNames(String otherNames) {
-		this.otherNames = otherNames;
-	}
-	
-	public Integer getPatientId() {
-		return patientId;
-	}
-	
-	public void setPatientId(Integer patientId) {
-		this.patientId = patientId;
-	}
-	
-	public Boolean getVoided() {
-		return voided;
-	}
-	
-	public void setVoided(Boolean voided) {
-		this.voided = voided;
-	}
-	
-	public Concept getCauseOfDeath() {
-		return causeOfDeath;
-	}
-	
-	public void setCauseOfDeath(Concept causeOfDeath) {
-		this.causeOfDeath = causeOfDeath;
-	}
-	
-	public Date getDeathDate() {
-		return deathDate;
-	}
-	
-	public void setDeathDate(Date deathDate) {
-		this.deathDate = deathDate;
-	}
-	
-	public Map<String, PersonAttribute> getAttributeMap() {
-		return attributeMap;
-	}
-	
-	public PersonName getName() {
-		return name;
-	}
-	
-	public void setName(PersonName name) {
-		this.name = name;
-	}
-	
 }
