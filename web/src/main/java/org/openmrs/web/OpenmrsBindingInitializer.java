@@ -13,14 +13,21 @@
  */
 package org.openmrs.web;
 
+import java.text.NumberFormat;
+
 import org.openmrs.Concept;
 import org.openmrs.Location;
 import org.openmrs.Patient;
+import org.openmrs.PatientIdentifierType;
 import org.openmrs.Person;
+import org.openmrs.api.context.Context;
 import org.openmrs.propertyeditor.ConceptEditor;
 import org.openmrs.propertyeditor.LocationEditor;
 import org.openmrs.propertyeditor.PatientEditor;
+import org.openmrs.propertyeditor.PatientIdentifierTypeEditor;
 import org.openmrs.propertyeditor.PersonEditor;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
+import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.support.WebBindingInitializer;
 import org.springframework.web.context.request.WebRequest;
@@ -40,7 +47,11 @@ public class OpenmrsBindingInitializer implements WebBindingInitializer {
 		wdb.registerCustomEditor(Concept.class, new ConceptEditor());
 		wdb.registerCustomEditor(Person.class, new PersonEditor());
 		wdb.registerCustomEditor(Patient.class, new PatientEditor());
-		wdb.registerCustomEditor(Location.class, new LocationEditor());
+		wdb.registerCustomEditor(Location.class, new LocationEditor());		
+		wdb.registerCustomEditor(java.lang.Integer.class,
+				new CustomNumberEditor(java.lang.Integer.class, NumberFormat.getInstance(Context.getLocale()), true));
+		wdb.registerCustomEditor(java.util.Date.class, new CustomDateEditor(Context.getDateFormat(), true, 10));
+		wdb.registerCustomEditor(PatientIdentifierType.class, new PatientIdentifierTypeEditor());
 		// TODO everything else
 	}
 	

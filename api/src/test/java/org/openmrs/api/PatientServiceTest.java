@@ -279,10 +279,10 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Patient patient2 = createBasicPatient();
 		
 		PatientIdentifierType pit = patientService.getPatientIdentifierType(1);
-		PatientIdentifier ident1 = new PatientIdentifier("123-1", pit, locationService.getLocation(0));
-		PatientIdentifier ident2 = new PatientIdentifier("123", pit, locationService.getLocation(0));
-		PatientIdentifier ident3 = new PatientIdentifier("123-0", pit, locationService.getLocation(0));
-		PatientIdentifier ident4 = new PatientIdentifier("123-A", pit, locationService.getLocation(0));
+		PatientIdentifier ident1 = new PatientIdentifier("123-1", pit, locationService.getLocation(1));
+		PatientIdentifier ident2 = new PatientIdentifier("123", pit, locationService.getLocation(1));
+		PatientIdentifier ident3 = new PatientIdentifier("123-0", pit, locationService.getLocation(1));
+		PatientIdentifier ident4 = new PatientIdentifier("123-A", pit, locationService.getLocation(1));
 		
 		try {
 			patient.addIdentifier(ident1);
@@ -865,6 +865,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Patient patient = new Patient();
 		PatientIdentifier patientIdentifier = new PatientIdentifier();
 		patientIdentifier.setIdentifierType(Context.getPatientService().getAllPatientIdentifierTypes(false).get(0));
+		patientIdentifier.setLocation(new Location(1));
 		patientIdentifier.setVoided(true);
 		patientIdentifier.setVoidedBy(Context.getAuthenticatedUser());
 		patientIdentifier.setVoidReason("Testing whether voided identifiers are ignored");
@@ -874,6 +875,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		patientIdentifier = new PatientIdentifier();
 		patientIdentifier.setIdentifier("a non empty string");
 		patientIdentifier.setIdentifierType(Context.getPatientService().getAllPatientIdentifierTypes(false).get(0));
+		patientIdentifier.setLocation(new Location(1));
 		patientIdentifier.setVoided(false);
 		patientIdentifier.setVoidedBy(Context.getAuthenticatedUser());
 		patientIdentifier.setVoidReason("Testing whether voided identifiers are ignored");
