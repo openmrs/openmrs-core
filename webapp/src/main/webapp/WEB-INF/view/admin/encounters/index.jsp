@@ -5,31 +5,26 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-<openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
+<openmrs:htmlInclude file="/dwr/interface/DWREncounterService.js"/>
+<openmrs:htmlInclude file="/scripts/jquery/dataTables/css/dataTables_jui.css"/>
+<openmrs:htmlInclude file="/scripts/jquery/dataTables/js/jquery.dataTables.min.js"/>
+<openmrs:htmlInclude file="/scripts/jquery-ui/js/encounterSearch.js" />
 
 <script type="text/javascript">
-	dojo.require("dojo.widget.openmrs.EncounterSearch");
-
-	var eSearch;
-	
-	dojo.addOnLoad( function() {
-		
-		eSearch = dojo.widget.manager.getWidgetById('eSearch');
-		
-		dojo.event.topic.subscribe("eSearch/select", 
-			function(msg) {
-				document.location = "encounter.form?encounterId=" + msg.objs[0].encounterId + "&phrase=" + eSearch.getPhraseSearched();
-			}
-		);
-		
-		<request:existsParameter name="phrase">
-			searchBox.value = '<request:parameter name="phrase" />';
-		</request:existsParameter>
-	
-		eSearch.inputNode.focus();
-		eSearch.inputNode.select();
+	var lastSearch;
+	$j(document).ready(function() {
+		new EncounterSearch("findEncounter", true, doSelectionHandler, {searchLabel: '<spring:message code="Encounter.search"/>'});
 	});
-		
+	
+	function doSelectionHandler(index, data) {
+		document.location = "encounter.form?encounterId=" + data.encounterId + "&phrase=" + lastSearch;
+	}
+	
+	//this method over rides the default searchHandler for the encounterSearch widget
+	function doEncounterSearch(text, resultHandler, opts) {
+		lastSearch = text;
+		DWREncounterService.findEncounters(text, opts.includeVoided, resultHandler);
+	}
 </script>
 
 <h2><spring:message code="Encounter.title"/></h2>
@@ -40,10 +35,10 @@
 
 <br/><br/>
 
-<div id="findEncounter">
+<div>
 	<b class="boxHeader"><spring:message code="Encounter.find"/></b>
 	<div class="box">
-		<div dojoType="EncounterSearch" widgetId="eSearch" showIncludeVoided="true" searchLabel='<spring:message code="Encounter.search"/>' <request:existsParameter name="autoJump">allowAutoJump='true'</request:existsParameter> encounterId='<request:parameter name="encounterId" />'></div>
+		<div id="findEncounter" <request:existsParameter name="autoJump">allowAutoJump='true'</request:existsParameter> ></div>
 	</div>
 </div>
 

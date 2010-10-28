@@ -115,7 +115,7 @@ public class PatientSearchCriteria {
 				AdministrationService adminService = Context.getAdministrationService();
 				String regex = adminService.getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_REGEX, "");
 				String patternSearch = adminService.getGlobalProperty(
-					OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SEARCH_PATTERN, "");
+				    OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SEARCH_PATTERN, "");
 				
 				// remove padding from identifier search string
 				if (Pattern.matches("^\\^.{1}\\*.*$", regex)) {
@@ -211,19 +211,20 @@ public class PatientSearchCriteria {
 		String[] names = name.split(" ");
 		
 		// TODO add junit test for searching on voided patient names
-		
-		String nameSoFar = names[0];
-		for (int i = 0; i < names.length; i++) {
-			String n = names[i];
-			if (n != null && n.length() > 0) {
-				LogicalExpression oneNameSearch = getNameSearch(n);
-				LogicalExpression searchExpression = oneNameSearch;
-				if (i > 0) {
-					nameSoFar += " " + n;
-					LogicalExpression fullNameSearch = getNameSearch(nameSoFar);
-					searchExpression = Expression.or(oneNameSearch, fullNameSearch);
+		if (names.length > 0) {
+			String nameSoFar = names[0];
+			for (int i = 0; i < names.length; i++) {
+				String n = names[i];
+				if (n != null && n.length() > 0) {
+					LogicalExpression oneNameSearch = getNameSearch(n);
+					LogicalExpression searchExpression = oneNameSearch;
+					if (i > 0) {
+						nameSoFar += " " + n;
+						LogicalExpression fullNameSearch = getNameSearch(nameSoFar);
+						searchExpression = Expression.or(oneNameSearch, fullNameSearch);
+					}
+					criteria.add(searchExpression);
 				}
-				criteria.add(searchExpression);
 			}
 		}
 	}
@@ -254,8 +255,8 @@ public class PatientSearchCriteria {
 		SimpleExpression familyName = Expression.like("name.familyName", name, mode);
 		SimpleExpression familyName2 = Expression.like("name.familyName2", name, mode);
 		
-		return Expression.and(Expression.eq("name.voided", false), Expression.or(familyName2, Expression.or(familyName,
-			Expression.or(middleName, givenName))));
+		return Expression.and(Expression.eq("name.voided", false),
+		    Expression.or(familyName2, Expression.or(familyName, Expression.or(middleName, givenName))));
 	}
 	
 	/**
@@ -269,10 +270,10 @@ public class PatientSearchCriteria {
 		String returnString = regex.replaceAll("@SEARCH@", identifierSearched);
 		if (identifierSearched.length() > 1) {
 			// for 2 or more character searches, we allow regex to use last character as check digit
-			returnString = returnString.replaceAll("@SEARCH-1@", identifierSearched.substring(0,
-				identifierSearched.length() - 1));
-			returnString = returnString.replaceAll("@CHECKDIGIT@", identifierSearched
-				.substring(identifierSearched.length() - 1));
+			returnString = returnString.replaceAll("@SEARCH-1@",
+			    identifierSearched.substring(0, identifierSearched.length() - 1));
+			returnString = returnString.replaceAll("@CHECKDIGIT@",
+			    identifierSearched.substring(identifierSearched.length() - 1));
 		} else {
 			returnString = returnString.replaceAll("@SEARCH-1@", "");
 			returnString = returnString.replaceAll("@CHECKDIGIT@", "");
