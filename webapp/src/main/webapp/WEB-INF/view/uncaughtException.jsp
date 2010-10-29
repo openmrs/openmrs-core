@@ -18,6 +18,7 @@
 <h2>An Internal Error has Occurred</h2>
 
 <script>
+	var MAXIMUM_LENGTH = 1434;
 	function showOrHide() {
 		var link = document.getElementById("toggleLink");
 		var trace = document.getElementById("stackTrace");
@@ -29,6 +30,20 @@
 			link.innerHTML = "Show stack trace";
 			trace.style.display = "none";
 		}
+	}
+	
+	/** 
+	 * This function is called upon clicking the 'reportBug' button and trims short the
+	 * stacktrace in case it is an old version of IE so that it doesn't exceed the 
+	 * maximum supported length
+	 */
+	function preProcess(){
+		var stackTrace = document.reportBugForm.stackTrace.value;		
+		if(stackTrace && $j.browser.msie && $j.browser.version < 8 && $j.trim(stackTrace).length > MAXIMUM_LENGTH){			
+			stackTrace = $j.trim(stackTrace).substr(0,MAXIMUM_LENGTH);
+			document.reportBugForm.stackTrace.value = stackTrace;
+		}
+		return true;
 	}
 </script>	
 
@@ -161,7 +176,7 @@ The following data will be submitted with the report to enable the team to resol
 
 <div>
 
-<form action="${reportBugUrl}" target="_blank" method="POST">
+<form name="reportBugForm" action="${reportBugUrl}" target="_blank" method="POST" onsubmit="return preProcess()">
 	<input type="hidden" name="openmrs_version" value="${openmrs_version}" />
 	<input type="hidden" name="server_info" value="${server_info}" />
 	<input type="hidden" name="username" value="${username}" />
