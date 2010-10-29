@@ -8,6 +8,7 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
 <%@ include file="/WEB-INF/template/headerMinimal.jsp" %>
+<openmrs:htmlInclude file="/scripts/jquery/jquery.client.js"/>
 
 &nbsp;
 <%@page import="org.openmrs.util.OpenmrsUtil"%>
@@ -39,9 +40,20 @@
 	 */
 	function preProcess(){
 		var stackTrace = document.reportBugForm.stackTrace.value;		
-		if(stackTrace && $j.browser.msie && $j.browser.version < 8 && $j.trim(stackTrace).length > MAXIMUM_LENGTH){			
-			stackTrace = $j.trim(stackTrace).substr(0,MAXIMUM_LENGTH);
-			document.reportBugForm.stackTrace.value = stackTrace;
+		if(stackTrace){
+			try{
+				if($j.client.os == 'Windows' && $j.trim(stackTrace).length > MAXIMUM_LENGTH){
+					//reduce the length the length y an extra 3 characters so that we add 3 dots
+					//to indicate that there was extra text that was trimmed off
+					stackTrace = $j.trim(stackTrace).substr(0, (MAXIMUM_LENGTH - 3));					
+					document.reportBugForm.stackTrace.value = stackTrace+"...";					
+				}
+			}catch(e){
+				//If there was an error, just trim the size to ensure that the submission is successful,
+				//this can be helpful in case users tweaked their browser identity data wrongly.
+				stackTrace = $j.trim(stackTrace).substr(0, (MAXIMUM_LENGTH - 3));
+				document.reportBugForm.stackTrace.value = stackTrace+"...";
+			}
 		}
 		return true;
 	}
