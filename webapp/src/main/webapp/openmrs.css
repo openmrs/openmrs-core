@@ -1261,3 +1261,6 @@ table td#summaryHeaderPatientGender {
 #openmrsSearchTable tbody tr.odd.row_highlight {
 	 background-color: #E6FF99;
 }
+#spinner{
+	vertical-align: middle;
+}
