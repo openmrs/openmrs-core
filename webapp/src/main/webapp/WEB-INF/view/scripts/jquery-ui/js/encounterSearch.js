@@ -87,7 +87,7 @@ function doEncounterSearch(text, resultHandler, opts) {
 	</pre>
  */
 (function($) {
-	var encounterSearch_div = '<span><span style="white-space: nowrap"><span id="searchLabelNode"></span><input type="text" value="" id="inputNode" autocomplete="off"/><input type="checkbox" style="display: none" id="includeRetired"/><input type="checkbox" style="display: none" id="includeVoided"/><input type="checkbox" style="display: none" id="verboseListing"/></span><span class="openmrsSearchDiv"><table id="openmrsSearchTable" cellpadding="2" cellspacing="0" style="width: 100%"><thead id="searchTableHeader"><tr><th></th><th></th><th></th><th></th><th></th><th></th></tr></thead><tbody></tbody></table></span></span>';
+	var encounterSearch_div = '<span><span style="white-space: nowrap"><span id="searchLabelNode"></span><input type="text" value="" id="inputNode" autocomplete="off"/><input type="checkbox" style="display: none" id="includeRetired"/><img id="spinner" src=""/><input type="checkbox" style="display: none" id="includeVoided"/><input type="checkbox" style="display: none" id="verboseListing"/></span><span class="openmrsSearchDiv"><table id="openmrsSearchTable" cellpadding="2" cellspacing="0" style="width: 100%"><thead id="searchTableHeader"><tr><th></th><th></th><th></th><th></th><th></th><th></th></tr></thead><tbody></tbody></table></span></span>';
 	
 	$.widget("ui.encounterSearch", {
 		plugins: {},
@@ -97,7 +97,8 @@ function doEncounterSearch(text, resultHandler, opts) {
 			includeVoidedLabel: "Include Voided",
 			showIncludeVoided: false
 		},
-		_curCount: 0,
+		_lastCallCount: 0,
+		_callCount: 1,
 		_results: null,
 		_div: null,
 		_table: null,
@@ -119,6 +120,9 @@ function doEncounterSearch(text, resultHandler, opts) {
 		        input = div.find("#inputNode"),
 		        table = div.find("#openmrsSearchTable");
 		    	checkBox = div.find("#includeVoided");
+		    	spinner = div.find("#spinner");
+		    	spinner.css("visibility", "hidden");
+		    	spinner.attr("src", openmrsContextPath+"/images/loading.gif");
 		    
 		    this._div = div;
 
@@ -218,30 +222,40 @@ function doEncounterSearch(text, resultHandler, opts) {
 		_doSearch: function(text) {
 			if(this.options.searchHandler) {
 				var tmpIncludeVoided = (this.options.showIncludeVoided && checkBox.attr('checked'));
-				this.options.searchHandler(text, this._handleResults(), {includeVoided: tmpIncludeVoided});
+				//associate the ajax call to be made to a call count number to track it , so on
+				//its return we can identify it and determine if there are some later calls made 
+				//so that we can make sure older ajax calls donot overwrite later ones
+				var storedCallCount = this._callCount++;				
+				spinner.css("visibility", "visible");
+				this.options.searchHandler(text, this._handleResults(storedCallCount), {includeVoided: tmpIncludeVoided});
 			}
 		},
 		
 		/** returns a closure for the returned results */
-		_handleResults: function() {
+		_handleResults: function(curCallCount) {
 			var self = this;
 			return function(results) {
-				self._doHandleResults(++self._curCount, results);
+				spinner.css("visibility", "hidden");
+				if(curCallCount && self._lastCallCount > curCallCount) {
+					//stop old ajax calls from over writing later ones
+					return;
+				}
+				
+				self._lastCallCount = curCallCount;
+				self._doHandleResults(results);
 			};
 		},
 			
-		_doHandleResults: function(counter, results) {
-			if(counter == this._curCount) {
-				this._results = results;
-				this.curRowSelection = null;
+		_doHandleResults: function(results) {
+			this._results = results;
+			this.curRowSelection = null;
 				
-				if(this.options.resultsHandler) {
-					this.options.resultsHandler(results);
-				}
-				else {
-					this._buildDataTable(results);
-				}
+			if(this.options.resultsHandler) {
+				this.options.resultsHandler(results);
 			}
+			else {
+				this._buildDataTable(results);
+			}	
 		},
 		
 		_buildDataTable: function(results) {
