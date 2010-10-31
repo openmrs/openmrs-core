@@ -198,7 +198,7 @@ function doEncounterSearch(text, resultHandler, opts) {
 		    	bSort: false,
 		    	sPaginationType: "full_numbers",
 		    	aoColumns: this._makeColumns(),
-		    	iDisplayLength: 4
+		    	iDisplayLength: 10
 		    });
 		    
 		    $('#openmrsSearchTable').hover(function() {
@@ -255,6 +255,8 @@ function doEncounterSearch(text, resultHandler, opts) {
 			}
 			else {
 				this._buildDataTable(results);
+				//reset to show first page always
+				this._table.fnPageChange('first');
 			}	
 		},
 		
