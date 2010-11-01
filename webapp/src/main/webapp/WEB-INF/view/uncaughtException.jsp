@@ -8,7 +8,6 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
 <%@ include file="/WEB-INF/template/headerMinimal.jsp" %>
-<openmrs:htmlInclude file="/scripts/jquery/jquery.client.js"/>
 
 &nbsp;
 <%@page import="org.openmrs.util.OpenmrsUtil"%>
@@ -19,7 +18,6 @@
 <h2>An Internal Error has Occurred</h2>
 
 <script>
-	var MAXIMUM_LENGTH = 1434;
 	function showOrHide() {
 		var link = document.getElementById("toggleLink");
 		var trace = document.getElementById("stackTrace");
@@ -31,31 +29,6 @@
 			link.innerHTML = "Show stack trace";
 			trace.style.display = "none";
 		}
-	}
-	
-	/** 
-	 * This function is called upon clicking the 'reportBug' button and trims short the
-	 * stacktrace in case it is an old version of IE so that it doesn't exceed the 
-	 * maximum supported length
-	 */
-	function preProcess(){
-		var stackTrace = document.reportBugForm.stackTrace.value;		
-		if(stackTrace){
-			try{
-				if($j.client.os == 'Windows' && $j.trim(stackTrace).length > MAXIMUM_LENGTH){
-					//reduce the length the length y an extra 3 characters so that we add 3 dots
-					//to indicate that there was extra text that was trimmed off
-					stackTrace = $j.trim(stackTrace).substr(0, (MAXIMUM_LENGTH - 3));					
-					document.reportBugForm.stackTrace.value = stackTrace+"...";					
-				}
-			}catch(e){
-				//If there was an error, just trim the size to ensure that the submission is successful,
-				//this can be helpful in case users tweaked their browser identity data wrongly.
-				stackTrace = $j.trim(stackTrace).substr(0, (MAXIMUM_LENGTH - 3));
-				document.reportBugForm.stackTrace.value = stackTrace+"...";
-			}
-		}
-		return true;
 	}
 </script>	
 
@@ -196,7 +169,7 @@ The following data will be submitted with the report to enable the team to resol
 
 <div>
 
-<form name="reportBugForm" action="${reportBugUrl}" target="_blank" method="POST" onsubmit="return preProcess()">
+<form action="${reportBugUrl}" target="_blank" method="POST">
 	<input type="hidden" name="openmrs_version" value="${openmrs_version}" />
 	<input type="hidden" name="server_info" value="${server_info}" />
 	<input type="hidden" name="username" value="${username}" />
