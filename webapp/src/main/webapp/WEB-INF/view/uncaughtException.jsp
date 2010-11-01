@@ -141,19 +141,27 @@ try {
             pageContext.setAttribute("stackTrace", OpenmrsUtil.shortenedStackTrace(description.toString()));
             pageContext.setAttribute("errorMessage", exception.toString());
             pageContext.setAttribute("openmrs_version", OpenmrsConstants.OPENMRS_VERSION);
-            pageContext.setAttribute("server_info", session.getServletContext().getServerInfo());            
-            pageContext.setAttribute("username", Context.getAuthenticatedUser().getUsername());
+            pageContext.setAttribute("server_info", session.getServletContext().getServerInfo());
+            String username = Context.getAuthenticatedUser().getUsername();
+            if (username == null || username.length() == 0)
+            	username = Context.getAuthenticatedUser().getSystemId();
+            pageContext.setAttribute("username", username);
             String implementationId = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_IMPLEMENTATION_ID);
             pageContext.setAttribute("implementationId", (implementationId != null) ? implementationId : "");
             StringBuilder sb = new StringBuilder();
             boolean isFirst = true;
             for(Module module : ModuleFactory.getStartedModules()){
             	if(isFirst){
-            		sb.append(module.getModuleId());
+            		sb.append(module.getModuleId())
+            		  .append(" v")
+            		  .append(module.getVersion());
             		isFirst = false;
             	}
             	else
-            		sb.append(", "+module.getModuleId());
+            		sb.append(", ")
+            		  .append(module.getModuleId())
+            		  .append(" v")
+            		  .append(module.getVersion());
             }
             pageContext.setAttribute("startedModules", sb.toString());            
 		}
