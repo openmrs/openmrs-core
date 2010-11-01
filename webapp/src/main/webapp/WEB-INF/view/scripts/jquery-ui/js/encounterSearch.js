@@ -120,9 +120,9 @@ function doEncounterSearch(text, resultHandler, opts) {
 		        input = div.find("#inputNode"),
 		        table = div.find("#openmrsSearchTable");
 		    	checkBox = div.find("#includeVoided");
-		    	spinner = div.find("#spinner");
-		    	spinner.css("visibility", "hidden");
-		    	spinner.attr("src", openmrsContextPath+"/images/loading.gif");
+		    	spinnerObj = div.find("#spinner");
+		    	spinnerObj.css("visibility", "hidden");
+		    	spinnerObj.attr("src", openmrsContextPath+"/images/loading.gif");
 		    
 		    this._div = div;
 
@@ -226,22 +226,28 @@ function doEncounterSearch(text, resultHandler, opts) {
 				//its return we can identify it and determine if there are some later calls made 
 				//so that we can make sure older ajax calls donot overwrite later ones
 				var storedCallCount = this._callCount++;				
-				spinner.css("visibility", "visible");
-				this.options.searchHandler(text, this._handleResults(storedCallCount), {includeVoided: tmpIncludeVoided});
+				spinnerObj.css("visibility", "visible");
+				this.options.searchHandler(text, this._handleResults(storedCallCount, this.options.minLength), {includeVoided: tmpIncludeVoided});
 			}
 		},
 		
 		/** returns a closure for the returned results */
-		_handleResults: function(curCallCount) {
+		_handleResults: function(curCallCount, minLength) {
 			var self = this;
 			return function(results) {
-				spinner.css("visibility", "hidden");
+				spinnerObj.css("visibility", "hidden");
 				if(curCallCount && self._lastCallCount > curCallCount) {
 					//stop old ajax calls from over writing later ones
 					return;
 				}
 				
 				self._lastCallCount = curCallCount;
+				//Don't display results from delayed ajax calls when the input box is blank or has less 
+				//than the minimun characters, this can arise when user presses backspace relatively fast
+				//yet there were some intermediate calls that might have returned results
+				var currInput = $j.trim($j("#inputNode").val());
+				if(currInput == '' || currInput.length < minLength)
+					return;
 				self._doHandleResults(results);
 			};
 		},
@@ -321,8 +327,9 @@ function doEncounterSearch(text, resultHandler, opts) {
 			if(prevRow != null) {
 				$(this._table.fnGetNodes()[prevRow]).removeClass("row_highlight");
 			}
-						
-			if(this.curRowSelection >= this._table.fnSettings()._iDisplayLength) {
+			
+			//If the selected row is the first one on the next page, flip over to its page
+			if(this.curRowSelection != 0 && (this.curRowSelection % this._table.fnSettings()._iDisplayLength) == 0) {
 				this._table.fnPageChange('next');
 			}
 			

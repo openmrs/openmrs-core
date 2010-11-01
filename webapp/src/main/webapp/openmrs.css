@@ -1250,16 +1250,16 @@ table td#summaryHeaderPatientGender {
 	font-size: 0.8em;
 }
 #openmrsSearchTable tbody tr.even:hover {
-	background-color: #ECFFB3;
+	background-color: #57A1EB; color: #FFFFFF;
 }
 #openmrsSearchTable tbody tr.odd:hover {
-	background-color: #E6FF99;
+	background-color: #57A1EB; color: #FFFFFF;
 	}
 #openmrsSearchTable tbody tr.even.row_highlight {
-	 background-color: #ECFFB3;
+	 background-color: #57A1EB; color: #FFFFFF;
 	}
 #openmrsSearchTable tbody tr.odd.row_highlight {
-	 background-color: #E6FF99;
+	 background-color: #57A1EB; color: #FFFFFF;
 }
 #spinner{
 	vertical-align: middle;
