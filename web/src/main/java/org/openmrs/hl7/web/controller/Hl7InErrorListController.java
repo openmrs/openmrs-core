@@ -40,7 +40,7 @@ public class Hl7InErrorListController {
 	/**
 	 * Logger for this class and subclasses
 	 */
-	protected static final Log log = LogFactory.getLog(Hl7InErrorListController.class);
+	private static final Log log = LogFactory.getLog(Hl7InErrorListController.class);
 	
 	/**
 	 * Render the HL7 error queue messages page

@@ -3805,4 +3805,19 @@
 		</createIndex>	
 	</changeSet>
 	
+	<changeSet id="201011011600" author="jkeiper">
+		<preConditions onFail="MARK_RAN">
+			<not><indexExists indexName="hl7_in_archive_message_state_idx" /></not>
+		</preConditions>
+		<comment>Adding index to message_state column in HL7 archive table</comment>
+		<createIndex tableName="hl7_in_archive" indexName="hl7_in_archive_message_state_idx">
+			<column name="message_state" />
+		</createIndex>
+	</changeSet>
+		
+	<changeSet id="201011011605" author="jkeiper">
+		<comment>Moving "deleted" HL7s from HL7 archive table to queue table</comment>
+		<customChange class="org.openmrs.util.databasechange.MoveDeletedHL7sChangeSet"/>				
+	</changeSet>
+
 </databaseChangeLog>

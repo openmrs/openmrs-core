@@ -229,22 +229,6 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link HL7Service#startHl7ArchiveMigration()}
-	 */
-	@Test
-	@Verifies(value = "should not start if another user is already running the migration", method = "startHl7ArchiveMigration()")
-	public void startHl7ArchiveMigration_shouldNotStartIfAnotherUserIsAlreadyRunningTheMigration() throws Exception {
-		//test that it is actually started
-		Assert.assertEquals(true, Context.getHL7Service().startHl7ArchiveMigration());
-		//try starting another thread while the fist one still runs
-		//if migration didnt get started
-		Assert.assertEquals(false, Context.getHL7Service().startHl7ArchiveMigration());
-		//wait for the migration thread to die, this is helpful for the next tests
-		//not to find the thread alive otherwise they fail
-		Thread.sleep(HL7Constants.THREAD_SLEEP_PERIOD + 100);
-	}
-	
-	/**
 	 * @see {@link HL7Service#processHL7InQueue(HL7InQueue)}
 	 */
 	@Test

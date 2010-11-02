@@ -26,22 +26,22 @@ import org.springframework.web.servlet.ModelAndView;
  * Processes requests for the page for managing the hl7InArchive migration
  */
 @Controller
-public class Hl7InArchiveController {
+public class Hl7InArchiveMigrationController {
 	
 	/**
 	 * Adds data to the modelAndView object to be rendered in hl7 archive migrate page
 	 * 
 	 * @return the modelAndView
 	 */
-	@RequestMapping(value = "/admin/hl7/hl7InArchive.htm")
+	@RequestMapping(value = "/admin/hl7/hl7InArchiveMigration.htm")
 	public ModelAndView renderMigratePage() {
 		
 		ModelAndView modelAndView = new ModelAndView();
-		modelAndView.setViewName("admin/hl7/hl7InArchive");
+		modelAndView.setViewName("admin/hl7/hl7InArchiveMigration");
 		modelAndView.addObject("time_out", HL7Constants.THREAD_SLEEP_PERIOD);
 		modelAndView.addObject("hl7_archives_dir", HL7Util.getHl7ArchivesDirectory().getAbsolutePath());
 		modelAndView.addObject("migration_status", Hl7InArchivesMigrateThread.getTransferStatus().toString());
-		modelAndView.addObject("isMigrationRequired", Context.getHL7Service().isArchiveMigrationRequired());
+		modelAndView.addObject("isMigrationRunning", Hl7InArchivesMigrateThread.isActive());
 		
 		return modelAndView;
 	}

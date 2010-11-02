@@ -2,78 +2,103 @@
 var timer;
 var is_timer_running = 0;
 var time_out;
+
 // number of times no data is received from server.
 var ajax_attempts = 0;
 
 $j(document).ready( function() {
-
-	var isMigrationRequired = $j("#archive_migration_form").is(':visible');
 	var isMigrationRunning = $j.trim($j("#migration_status").text());
 	if (isMigrationRunning != null && isMigrationRunning == "RUNNING") {
 		time_out = Number($j("#time_out").text()) + 100;
 		$j("#number_span").show();
 		$j("#status_span").show();
-		$j("#archive_migration_warning").hide();
 		$j("#archive_migration_progress_img").show();
-		setOnClickHandlers();
-		// to make sure that ajax calls to continue being sent
-		is_timer_running = 1;
-		getMigrationStatus();
-	} else if (!isMigrationRequired) {// if migration isn't required
-		$j("#archive_migration_archive_dir").show();
-	} else if (isMigrationRequired) { // migration is required
+		$j("#startButton").attr("disabled", true);
+		$j("#stopButton").show();
+	} else {
 		time_out = Number($j("#time_out").text()) + 100;
-		setOnClickHandlers();
+		$j("#archive_migration_form").hide();
 	}
+
+	// ensure status is being continually detected
+	is_timer_running = 1;
+	getMigrationStatus();
+
+	// set start and stop button click handlers
+	$j("#startButton").click( function() { startHl7InArchiveMigration(); });
+	$j("#stopButton").click( function() { stopHl7InArchiveMigration(); });
+
+	// set up days kept automation
+	$j("#daysKeptError").hide();
+	$j("#daysKept").keyup(function(){ validateDaysKept(); });
 });
 
-function setOnClickHandlers() {
-	// when user clicks start button
-	$j("#startButton").click( function() {
-		startHl7InArchiveMigration();
-	});
-
-	// when user clicks stop button
-	$j("#stopButton").click( function() {
-		stopHl7InArchiveMigration();
-	});
+// function to display the days kept error
+function showDaysKeptError() {
+	$j("#daysKeptHighlight").css("background", "pink");
+	$j("#daysKeptHighlight").css("border", "1px dashed red");
+	$j("#daysKeptError").fadeIn();
 }
 
-// calls the server via ajax to start the hl7 migration
-// the returned array from the dwr call, in the first index of the array is a
-// boolean value
-// indicating if the process started or not, in the second is a descriptive
-// message
-function startHl7InArchiveMigration() {
-	DWRHL7Service.startHl7ArchiveMigration( function(reply) {
-		// if the migration process started, keep retrieving log messages from the
-			// server about
-			// the progress
-			if (reply[0] == true) {
-				$j("#number_span").show();
-				$j("#status_span").show();
-				$j("#archive_migration_progress_img").show();
-				is_timer_running = 1;
-				$j("#startButton").attr("disabled", true);
-				$j("#archive_migration_warning").hide();
-				$j("#stopButton").show();
-				getMigrationStatus();
-			} else {
-				$j("#archive_migration_status")
-						.html(
-								"<img src=\""+openmrsContextPath+"/images/alert.gif\" /> "
-										+ reply[1]);
-				$j("#number_span").hide();
-				$j("#status_span").hide();
-				$j("#startButton").attr("disabled", true);
-			}
+//function to hide the days kept error
+function hideDaysKeptError() {
+	$j("#daysKeptError").hide();
+	$j("#daysKeptHighlight").css("background", "transparent");
+	$j("#daysKeptHighlight").css("border", "none");
+}
 
-			// if user clicked stop after page reload
-			// we need to hide it when user clicks start again
-			if ($j("#archive_migration_stop_status").is(':visible')) {
-				$j("#archive_migration_stop_status").hide();
-			}
-		});
+// ensure daysKept is a positive number
+function validateDaysKept() {
+	var daysToKeep = $j("#daysKept").val(); 
+	if (isNaN(daysToKeep) || parseInt(daysToKeep) < 0) {
+		if (!$j("#daysKeptError").is(":visible"))
+			showDaysKeptError();
+		return false;
+	}
+	if ($j("#daysKeptError").is(":visible"))
+		hideDaysKeptError();
+	return true;
+}
+
+// calls the server via ajax to start the hl7 migration the returned array from
+// the dwr call, in the first index of the array is a boolean value indicating
+// if the process started or not, in the second is a descriptive message
+function startHl7InArchiveMigration() {
+	// check to make sure the daysKept value is a positive integer
+	if (!validateDaysKept()) {
+		$j("#daysKept").focus();
+		return;
+	}
+
+	DWRHL7Service.startHl7ArchiveMigration(parseInt($j("#daysKept").val()), function(reply) {
+		// if the migration process started, keep retrieving log messages from
+		// the server about the progress
+
+		is_timer_running = 1;
+		if (reply[0] == true) {
+			$j("#number_span").show();
+			$j("#status_span").show();
+			$j("#archive_migration_progress_img").show();
+			getMigrationStatus();
+		} else {
+			$j("#number_span").hide();
+			$j("#status_span").hide();
+			$j("#archive_migration_status").html("<img src=\""+openmrsContextPath+"/images/alert.gif\" /> " + reply[1]);
+			$j("#archive_migration_status").show();
+			window.setTimeout("getMigrationStatus()", 2000);
+		}
+
+		$j("#startButton").attr("disabled", true);
+		$j("#stopButton").show();
+
+		$j("#archive_migration_form").fadeIn("slow");
+
+		// if user clicked stop after page reload
+		// we need to hide it when user clicks start again
+		if ($j("#archive_migration_stop_status").is(':visible')) {
+			$j("#archive_migration_stop_status").hide();
+		}
+	});
 
 }// end function startHl7InArchiveMigration()
 
@@ -89,17 +114,7 @@ function stopHl7InArchiveMigration() {
 			$j("#archive_migration_status").hide();
 			$j("#archive_migration_progress_img").hide();
 			$j("#stopButton").hide();
-			// wait for a few seconds to enable the start button to ensure
-			// that user doesn't click start before migration thread has
-			// finalized
-			// since it also waits for 2 sec to actually reset the static
-			// properties
-			window
-					.setTimeout(
-							"$j(\"#startButton\").attr(\"disabled\", false);",
-							time_out);
 		}
-
 	});
 }// end function stopHl7InArchiveMigration()
 
@@ -132,32 +147,40 @@ function getMigrationStatus() {
 					} else if (status_info.status == "STOPPED") {
 						$j("#archive_migration_progress_img").hide();
 						$j("#msg_stopped").show();
+						$j("#startButton").removeAttr("disabled");
 					}
 
 					$j("#numberMigrated").html(status_info.numberMigrated);
 					$j("#stopButton").hide();
 				}
 			} else {
+				// hide any other visible messages; for instance if there was a
+				// restart of the process, most probably the stop message is
+				// showing since the user clicked stop
+				if ($j("#archive_migration_status").is(":visible"))
+					$j("#archive_migration_status").hide();
+				if ($j("#msg_stopped").is(':visible'))
+					$j("#msg_stopped").hide();
+				if ($j("#msg_complete_all").is(':visible'))
+					$j("#msg_complete_all").hide();
+				if ($j("#msg_complete_not_all").is(':visible'))
+					$j("#msg_complete_not_all").hide();
+				if ($j("#msg_error").is(':visible'))
+					$j("#msg_error").hide();
+				
+				// show the running messages
 				$j("#msg_running").show();
+				$j("#archive_migration_progress_img").show();
+				$j("#number_span").show();
+				$j("#status_span").show();
 				$j("#numberMigrated").html(status_info.numberMigrated);
-				// hide any other visible messaged forinstance if there was a
-			// restart of the process,
-			// most probably the stop message is showing since the user clicked
-			// stop
-			if ($j("#msg_stopped").is(':visible'))
-				$j("#msg_stopped").hide();
-			if ($j("#msg_complete_all").is(':visible'))
-				$j("#msg_complete_all").hide();
-			if ($j("#msg_complete_not_all").is(':visible'))
-				$j("#msg_complete_not_all").hide();
-			if ($j("#msg_error").is(':visible'))
-				$j("#msg_error").hide();
+			}
+	
+		} else {
+			// either migration isn't running or no connection to server
+			ajax_attempts++;
 		}
-
-	} else {// either migration isnt running or no connection to server
-		ajax_attempts++;
-	}
-})	;
+	});
 
 	// if we aren't done yet, get status info about the migration process
 	if (is_timer_running == 1 && ajax_attempts < 3) {
