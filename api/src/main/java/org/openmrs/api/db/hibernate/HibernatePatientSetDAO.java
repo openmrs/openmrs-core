@@ -44,6 +44,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.CacheMode;
 import org.hibernate.Criteria;
+import org.hibernate.FetchMode;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
@@ -1802,6 +1803,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		Date now = new Date();
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(PatientProgram.class);
+		criteria.setFetchMode("patient", FetchMode.JOIN);
 		criteria.setCacheMode(CacheMode.IGNORE);
 		
 		// this "where clause" is only necessary if patients were passed in
