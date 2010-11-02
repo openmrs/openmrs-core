@@ -114,14 +114,32 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	@Override
     public Class<?> loadClass(String name, final boolean resolve) throws ClassNotFoundException {
 		for (ModuleClassLoader classLoader : ModuleFactory.getModuleClassLoaders()) {
-			try {
-				//if (classLoader.isLoadingFromParent() == false)
-				Class<?> c = classLoader.loadClass(name);
-				loadedClasses.add(c);
-				return c;
+			// this is to prevent unnecessary looping over providedPackages
+			boolean tryToLoad = name.startsWith(classLoader.getModule().getPackageName());
+			
+			// the given class name doesn't match the config.xml package in this module,
+			// check the "providedPackage" list to see if its in a lib
+			if (!tryToLoad) {
+			
+				for (String providedPackage : classLoader.getAdditionalPackages()) {
+					// break out early if we match a package
+					if (name.startsWith(providedPackage)) {
+						tryToLoad = true;
+						break;
+					}
+				}
 			}
-			catch (ClassNotFoundException e) {
-				//log.debug("Didn't find entry for: " + name);
+			
+			if (tryToLoad) {
+				try {
+					//if (classLoader.isLoadingFromParent() == false)
+					Class<?> c = classLoader.loadClass(name);
+					loadedClasses.add(c);
+					return c;
+				}
+				catch (ClassNotFoundException e) {
+					//log.debug("Didn't find entry for: " + name);
+				}
 			}
 		}
 

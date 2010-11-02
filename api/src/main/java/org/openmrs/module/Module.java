@@ -134,7 +134,7 @@ public final class Module {
 	
 	/**
 	 * @return the activator
-	 * @depreacated replaced by {@link Module#getModuleActivator()}
+	 * @deprecated replaced by {@link Module#getModuleActivator()}
 	 */
 	@Deprecated
 	public Activator getActivator() {
