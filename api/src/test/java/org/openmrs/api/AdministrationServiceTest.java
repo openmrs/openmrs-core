@@ -173,6 +173,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 * @see AdministrationService#setImplementationId(ImplementationId)
 	 */
 	@Test
+	@Ignore
 	@Verifies(value = "should overwrite implementation id in database if exists", method = "setImplementationId(ImplementationId)")
 	public void setImplementationId_shouldOverwriteImplementationIdInDatabaseIfExists() throws Exception {
 		executeDataSet("org/openmrs/api/include/AdministrationServiceTest-general.xml");
@@ -195,6 +196,7 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 * @see AdministrationService#setImplementationId(ImplementationId)
 	 */
 	@Test
+	@Ignore
 	@Verifies(value = "should set uuid on implementation id global property", method = "setImplementationId(ImplementationId)")
 	public void setImplementationId_shouldSetUuidOnImplementationIdGlobalProperty() throws Exception {
 		ImplementationId validId = new ImplementationId();

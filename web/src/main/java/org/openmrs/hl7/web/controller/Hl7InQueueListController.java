@@ -41,7 +41,7 @@ public class Hl7InQueueListController {
 	/**
 	 * Logger for this class and subclasses
 	 */
-	protected static final Log log = LogFactory.getLog(Hl7InQueueListController.class);
+	private static final Log log = LogFactory.getLog(Hl7InQueueListController.class);
 	
 	/**
 	 * Render the pending HL7 queue messages page

@@ -6,18 +6,13 @@
 <%@ include file="/WEB-INF/template/header.jsp"%>
 <%@ include file="localHeader.jsp"%>
 
-<openmrs:htmlInclude
-	file="/scripts/jquery/highlight/jquery.highlight-3.js" />
-<openmrs:htmlInclude
-	file="/scripts/jquery/dataTables/js/jquery.dataTables.min.js" />
-<openmrs:htmlInclude
-	file="/scripts/jquery-ui/js/jquery-ui.custom.min.js" />
-<openmrs:htmlInclude
-	file="/scripts/jquery-ui/css/redmond/jquery-ui-1.7.2.custom.css" />
-<openmrs:htmlInclude
-	file="/scripts/jquery/dataTables/css/dataTables.css" />
-<openmrs:htmlInclude
-	file="/scripts/jquery/dataTables/css/dataTables_jui.css" />
+<openmrs:htmlInclude file="/scripts/jquery/highlight/jquery.highlight-3.js" />
+<openmrs:htmlInclude file="/scripts/jquery/dataTables/js/jquery.dataTables.min.js" />
+<openmrs:htmlInclude file="/scripts/jquery/dataTables/js/jquery.dataTables.filteringDelay.js" />
+<openmrs:htmlInclude file="/scripts/jquery-ui/js/jquery-ui.custom.min.js" />
+<openmrs:htmlInclude file="/scripts/jquery-ui/css/redmond/jquery-ui-1.7.2.custom.css" />
+<openmrs:htmlInclude file="/scripts/jquery/dataTables/css/dataTables.css" />
+<openmrs:htmlInclude file="/scripts/jquery/dataTables/css/dataTables_jui.css" />
 
 <script type="text/javascript">
 	var hl7table;
@@ -60,6 +55,7 @@
 				$j("#hl7Table td").highlight(hl7table.fnSettings().oPreviousSearch.sSearch);
 			}
 		});
+		hl7table.fnSetFilteringDelay(1000);
 		
 	} );
 	

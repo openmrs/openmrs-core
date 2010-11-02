@@ -27,22 +27,28 @@ import org.openmrs.hl7.Hl7InArchivesMigrateThread.Status;
  * to be displayed to the user in the browser via ajax
  */
 public class DWRHL7Service {
+
+	private static Hl7InArchivesMigrateThread hl7MigrationThread = null;
 	
 	/**
 	 * Handles the ajax call for starting the migration of hl7 in archives to the file system
 	 * 
 	 * @return an object array with a boolean value at index 0 indicating if the migration was
-	 *         started or not, at the second index is a descriptive message.
+	 *         started or not, at the second index is an optional descriptive message.
 	 */
-	public Object[] startHl7ArchiveMigration() {
-		
-		if (Hl7InArchivesMigrateThread.getTransferStatus() != Status.NONE)
+	public Object[] startHl7ArchiveMigration(Integer daysToKeep) {
+		if (Hl7InArchivesMigrateThread.isActive())
 			return new Object[] { false,
 			        Context.getMessageSourceService().getMessage("Hl7InArchive.migrate.already.running") };
+		
 		try {
-			if (Context.getHL7Service().startHl7ArchiveMigration())
-				return new Object[] { true };
-			return new Object[] { false, Context.getMessageSourceService().getMessage("Hl7InArchive.migrate.start.fail") };
+			// create a new thread and get it started
+			Hl7InArchivesMigrateThread.setDaysKept(daysToKeep);
+			Hl7InArchivesMigrateThread.setActive(true);
+			hl7MigrationThread = new Hl7InArchivesMigrateThread();
+			hl7MigrationThread.setName("HL7 Archive Migration Thread");
+			hl7MigrationThread.start();
+			return new Object[] { true };
 		}
 		catch (APIAuthenticationException e) {
 			return new Object[] { false,
@@ -56,8 +62,8 @@ public class DWRHL7Service {
 	 * @return a descriptive message
 	 */
 	public String stopHl7ArchiveMigration() {
-		
-		Context.getHL7Service().stopHl7ArchiveMigration();
+		Hl7InArchivesMigrateThread.stopMigration();
+		hl7MigrationThread = null;
 		return Context.getMessageSourceService().getMessage("Hl7InArchive.migrate.stop.success");
 	}
 	
