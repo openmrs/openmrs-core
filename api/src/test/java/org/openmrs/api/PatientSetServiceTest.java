@@ -20,8 +20,10 @@ import static org.junit.Assert.assertTrue;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -32,9 +34,12 @@ import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.DrugOrder;
 import org.openmrs.EncounterType;
+import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.Obs;
+import org.openmrs.PatientProgram;
 import org.openmrs.Person;
+import org.openmrs.Program;
 import org.openmrs.ProgramWorkflowState;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
@@ -43,6 +48,7 @@ import org.openmrs.api.PatientSetService.Modifier;
 import org.openmrs.api.PatientSetService.TimeModifier;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
+import org.openmrs.test.TestUtil;
 import org.openmrs.test.Verifies;
 
 /**
@@ -338,4 +344,15 @@ public class PatientSetServiceTest extends BaseContextSensitiveTest {
 			}
 		}
 	}
+
+	/**
+     * @see {@link PatientSetService#getPatientPrograms(Cohort,Program)}
+     */
+    @Test
+    @Verifies(value = "should get program enrollments for the given cohort", method = "getPatientPrograms(Cohort,Program)")
+    public void getPatientPrograms_shouldGetProgramEnrollmentsForTheGivenCohort() throws Exception {
+	    Cohort cohort = new Cohort("2,3,4,5,6,7");
+	    Map<Integer, PatientProgram> map = Context.getPatientSetService().getPatientPrograms(cohort, new Program(2));
+	    TestUtil.assertCollectionContentsEquals(Arrays.asList(2, 7), map.keySet());
+    }
 }
