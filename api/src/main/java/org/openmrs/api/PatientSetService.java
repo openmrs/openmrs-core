@@ -482,6 +482,15 @@ public interface PatientSetService {
 	@Transactional(readOnly = true)
 	public Map<Integer, PatientProgram> getCurrentPatientPrograms(Cohort ps, Program program);
 	
+	/**
+	 * Gets program enrollment data for the given cohort in the given program.
+	 * The behavior is not specified if a patient is enrolled in the same program twice simultaneously.
+	 * @param ps the cohort to get data for
+	 * @param program the program to look for enrollments in
+	 * @return a Map from patientId to PatientProgram
+	 * 
+	 * @should get program enrollments for the given cohort
+	 */
 	@Transactional(readOnly = true)
 	public Map<Integer, PatientProgram> getPatientPrograms(Cohort ps, Program program);
 	
