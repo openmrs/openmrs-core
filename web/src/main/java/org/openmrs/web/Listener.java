@@ -251,6 +251,18 @@ public final class Listener extends ContextLoaderListener {
 		try {
          contextPath = servletContext.getContextPath();
 		}
+		catch (NoSuchMethodError ex) {
+			// ServletContext.getContextPath() was added in version 2.5 of the Servlet API. Tomcat 5.5
+			// has version 2.4 of the servlet spec, so we fall back to some hacky code that achieves the
+			// same result
+			try {
+				String path = servletContext.getResource("/").getPath();
+				contextPath = path.substring(0, path.lastIndexOf("/"));
+				contextPath = contextPath.substring(contextPath.lastIndexOf("/"));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 		catch (Exception e) {
 			e.printStackTrace();
 		}
