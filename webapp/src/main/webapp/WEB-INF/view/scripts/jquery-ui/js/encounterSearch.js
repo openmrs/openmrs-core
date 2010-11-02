@@ -198,7 +198,9 @@ function doEncounterSearch(text, resultHandler, opts) {
 		    	bSort: false,
 		    	sPaginationType: "full_numbers",
 		    	aoColumns: this._makeColumns(),
-		    	iDisplayLength: 10
+		    	iDisplayLength: 10,
+		    	numberOfPages: 0,
+		    	currPage: 0		    	
 		    });
 		    
 		    $('#openmrsSearchTable').hover(function() {
@@ -271,7 +273,7 @@ function doEncounterSearch(text, resultHandler, opts) {
 			
 			this._table.fnClearTable();
 			if((results != null) && (results.length > 0) && (typeof results[0] == 'string')) {
-				//error				
+				//error
 				return;
 			}
 			
@@ -281,6 +283,17 @@ function doEncounterSearch(text, resultHandler, opts) {
 			}			
 
 			this._table.fnAddData(d);
+			this._table.numberOfPages = Math.floor(results.length/this._table.fnSettings()._iDisplayLength)+1;
+			this._table.currPage = 1;
+			//register on mouseover/out events handlers to have row highlighting
+			$('tbody tr td').bind('mouseover', function () {
+				$(this).parent().children().each(function(){
+					$(this).addClass('td_row_highlight');}); 
+			});
+    	    $('tbody tr td').bind('mouseout', function () { 
+    	    	$(this).parent().children().each(function(){$(this).removeClass('td_row_highlight');
+    	    	}); 
+    	    });
 			this._div.find(".openmrsSearchDiv").show();
 			
 			this._fireEvent('afterDataTable');
@@ -374,6 +387,8 @@ function doEncounterSearch(text, resultHandler, opts) {
 			}
 
 			this._table.fnPageChange('next');
+			if(++this._table.currPage > this._table.numberOfPages)
+				this._table.currPage = this._table.numberOfPages;			
 		},
 		
 		_doKeyLeft: function() {
@@ -382,6 +397,8 @@ function doEncounterSearch(text, resultHandler, opts) {
 			}
 
 			this._table.fnPageChange('previous');
+			if(--this._table.currPage < 1)
+				this._table.currPage = 1;
 		},
 		
 		_doKeyEnter: function() {
