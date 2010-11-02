@@ -27,6 +27,10 @@
          <artifactId>commons-beanutils</artifactId>
       </dependency>
       <dependency>
+         <groupId>commons-io</groupId>
+         <artifactId>commons-io</artifactId>
+      </dependency>
+      <dependency>
          <groupId>org.azeckoski</groupId>
          <artifactId>reflectutils</artifactId>
       </dependency>
