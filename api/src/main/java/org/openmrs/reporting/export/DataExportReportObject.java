@@ -196,33 +196,28 @@ public class DataExportReportObject extends AbstractReportObject implements Seri
 	public Cohort generatePatientSet(EvaluationContext context) {
 		PatientSetService pss = Context.getPatientSetService();
 		
-		Set<Integer> patientIdSet = new HashSet<Integer>();
+		Cohort cohort = null;
 		
-		if (getPatientIds() == null || getPatientIds().size() == 0) {
-			patientIdSet.addAll(Context.getPatientSetService().getAllPatients().getMemberIds());
-			setAllPatients(true);
-		} else {
-			patientIdSet.addAll(patientIds);
+		if (getPatientIds() != null && getPatientIds().size() > 0) {
+			cohort = new Cohort(getPatientIds());
 		}
 		
-		if (location != null && !location.equals(""))
-			patientIdSet.retainAll(pss.getPatientsHavingLocation(getLocation()).getMemberIds());
-		
+		if (location != null && !location.equals("")) {
+			cohort = intersectFast(cohort, pss.getPatientsHavingLocation(getLocation()));
+		}
+
 		if (cohortId != null) {
 			// hack to hydrate this
-			Cohort cohort = Context.getCohortService().getCohort(cohortId);
-			if (cohort != null)
-				patientIdSet.retainAll(cohort.getMemberIds());
+			Cohort loadedCohort = Context.getCohortService().getCohort(cohortId);
+			if (loadedCohort != null)
+				cohort = intersectFast(cohort, loadedCohort);
 		}
 		
 		if (cohortDefinitionId != null) {
 			PatientFilter cohortDefinition = (PatientFilter) Context.getReportObjectService().getReportObject(
 			    cohortDefinitionId);
 			if (cohortDefinition != null) {
-				Cohort c = new Cohort("Cohort from Definition", "cohort from cohortdefinitionid: " + cohortDefinitionId,
-				        patientIdSet);
-				c = cohortDefinition.filter(c, context);
-				patientIdSet = c.getMemberIds();
+				cohort = cohortDefinition.filter(cohort, context);
 			}
 		}
 		
@@ -230,14 +225,36 @@ public class DataExportReportObject extends AbstractReportObject implements Seri
 			PatientSearchReportObject search = (PatientSearchReportObject) Context.getReportObjectService().getReportObject(
 			    patientSearchId);
 			PatientFilter cohortDefinition = OpenmrsUtil.toPatientFilter(search.getPatientSearch(), null);
-			org.openmrs.Cohort c = new Cohort("Cohort from patientSearch",
-			        "cohort from patientSearchId: " + patientSearchId, patientIdSet);
-			c = cohortDefinition.filter(c, context);
-			patientIdSet = c.getMemberIds();
+			cohort = cohortDefinition.filter(cohort, context);
+		}
+
+		if (cohort == null) {
+			cohort = Context.getPatientSetService().getAllPatients();
+			setAllPatients(true);
 		}
 		
-		return new Cohort("Cohort from selected groups", "", patientIdSet);
+		return cohort;
 	}
+	
+
+	/**
+	 * Quickly intersects two cohorts, possibly mutating the inputs.
+	 * Treats null as "all patients".
+	 * 
+	 * @param a The first Cohort
+	 * @param b The second Cohort
+	 * @return Cohort
+	 */
+	private Cohort intersectFast(Cohort a, Cohort b) {
+		if (a == null)
+			return b;
+		if (b == null)
+			return a;
+		a.getMemberIds().retainAll(b.getMemberIds());
+		a.setName(null);
+		return a;
+	}
+
 	
 	@Override
 	public String toString() {

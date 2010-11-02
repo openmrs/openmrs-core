@@ -248,7 +248,7 @@ public class Cohort extends BaseOpenmrsData implements Serializable {
 	}
 	
 	/**
-	 * Returns the intersection of two cohorts
+	 * Returns the intersection of two cohorts, treating null as an empty cohort
 	 * 
 	 * @param a The first Cohort
 	 * @param b The second Cohort

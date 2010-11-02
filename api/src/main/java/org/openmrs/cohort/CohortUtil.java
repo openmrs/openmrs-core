@@ -20,8 +20,11 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import org.openmrs.Cohort;
 import org.openmrs.api.context.Context;
+import org.openmrs.report.EvaluationContext;
 import org.openmrs.reporting.PatientSearch;
+import org.openmrs.reporting.ProgramPatientFilter;
 
 /**
  * @deprecated see reportingcompatibility module
