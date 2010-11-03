@@ -137,7 +137,7 @@ function doEncounterSearch(text, resultHandler, opts) {
 		    //when the user checks/unchecks the includeVoided checkbox, trigger a search
 		    checkBox.click(function() {   	
 		    	if($j.trim(input.val()) != '')
-		    		self._doSearch(input.val());		
+		    		self._doSearch(input.val());
 			});
 		    
 		    //this._trigger('initialized');
@@ -184,6 +184,9 @@ function doEncounterSearch(text, resultHandler, opts) {
 	    		}
 	    		else {
 	    			self._table.fnClearTable();
+	    			if($('#openmrsSearchTable_paginate').is(":visible")){
+		    	    	$('#openmrsSearchTable_paginate').hide();
+		    		}
 	    		}
 	    		return true;
 		    });
@@ -200,7 +203,7 @@ function doEncounterSearch(text, resultHandler, opts) {
 		    	aoColumns: this._makeColumns(),
 		    	iDisplayLength: 10,
 		    	numberOfPages: 0,
-		    	currPage: 0		    	
+		    	currPage: 0
 		    });
 		    
 		    $('#openmrsSearchTable').hover(function() {
@@ -248,8 +251,12 @@ function doEncounterSearch(text, resultHandler, opts) {
 				//than the minimun characters, this can arise when user presses backspace relatively fast
 				//yet there were some intermediate calls that might have returned results
 				var currInput = $j.trim($j("#inputNode").val());
-				if(currInput == '' || currInput.length < minLength)
+				if(currInput == '' || currInput.length < minLength){
+					if($('#openmrsSearchTable_paginate').is(":visible")){
+			    	    	$('#openmrsSearchTable_paginate').hide();
+					}
 					return;
+				}
 				self._doHandleResults(results);
 			};
 		},
@@ -265,6 +272,9 @@ function doEncounterSearch(text, resultHandler, opts) {
 				this._buildDataTable(results);
 				//reset to show first page always
 				this._table.fnPageChange('first');
+				
+				if((results != null) && (results.length > 0) && (typeof results[0] != 'string'))
+					this.updatePageInfo();
 			}	
 		},
 		
@@ -274,6 +284,10 @@ function doEncounterSearch(text, resultHandler, opts) {
 			this._table.fnClearTable();
 			if((results != null) && (results.length > 0) && (typeof results[0] == 'string')) {
 				//error
+				//hide pagination buttons
+	    	    if($('#openmrsSearchTable_paginate')){
+	    	    	$('#openmrsSearchTable_paginate').hide();
+				}
 				return;
 			}
 			
@@ -291,9 +305,18 @@ function doEncounterSearch(text, resultHandler, opts) {
 					$(this).addClass('td_row_highlight');}); 
 			});
     	    $('tbody tr td').bind('mouseout', function () { 
-    	    	$(this).parent().children().each(function(){$(this).removeClass('td_row_highlight');
+    	    	$(this).parent().children().each(function(){
+    	    		$(this).removeClass('td_row_highlight');
     	    	}); 
     	    });
+    	    
+    	    //hide pagination buttons
+    	    if(this._table.numberOfPages == 1 && $('#openmrsSearchTable_paginate').is(":visible")){
+    	    	$('#openmrsSearchTable_paginate').hide();    	    
+			}else if(!$('#openmrsSearchTable_paginate').is(":visible")){
+				//if this buttons were previously hidden, show it
+				$('#openmrsSearchTable_paginate').show(); 
+			}
 			this._div.find(".openmrsSearchDiv").show();
 			
 			this._fireEvent('afterDataTable');
@@ -388,7 +411,8 @@ function doEncounterSearch(text, resultHandler, opts) {
 
 			this._table.fnPageChange('next');
 			if(++this._table.currPage > this._table.numberOfPages)
-				this._table.currPage = this._table.numberOfPages;			
+				this._table.currPage = this._table.numberOfPages;
+			this.updatePageInfo();
 		},
 		
 		_doKeyLeft: function() {
@@ -399,6 +423,7 @@ function doEncounterSearch(text, resultHandler, opts) {
 			this._table.fnPageChange('previous');
 			if(--this._table.currPage < 1)
 				this._table.currPage = 1;
+			this.updatePageInfo();
 		},
 		
 		_doKeyEnter: function() {
@@ -447,7 +472,11 @@ function doEncounterSearch(text, resultHandler, opts) {
 	        }
 	        alert("LOG=[" + s + "]");
 	    },
-	    
+		
+	    updatePageInfo: function() {
+	    	$('#openmrsSearchTable_info').append(" ( "+this._table.numberOfPages+" Pages )");
+		},
+		
 		destroy: function() {
 			$j.Widget.prototype.destroy.apply(this, arguments); // default destroy
 			// now do other stuff particular to this widget

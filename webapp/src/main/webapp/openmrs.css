@@ -1262,4 +1262,5 @@ table td#summaryHeaderPatientGender {
 .td_row_highlight {
 	 background-color: #57A1EB; color: #FFFFFF;
 }
+#openmrsSearchTable{padding-bottom: 10px}
 /* END- css properties for the search widgets */
