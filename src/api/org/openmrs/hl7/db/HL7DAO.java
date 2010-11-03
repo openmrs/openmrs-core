@@ -14,13 +14,11 @@
 package org.openmrs.hl7.db;
 
 import java.util.List;
-import java.util.Map;
 
 import org.openmrs.api.db.DAOException;
 import org.openmrs.hl7.HL7InArchive;
 import org.openmrs.hl7.HL7InError;
 import org.openmrs.hl7.HL7InQueue;
-import org.openmrs.hl7.HL7Service;
 import org.openmrs.hl7.HL7Source;
 
 /**
@@ -84,6 +82,30 @@ public interface HL7DAO {
 	 * @see org.openmrs.hl7.HL7Service#deleteHL7InQueue(org.openmrs.hl7.HL7InQueue)
 	 */
 	public void deleteHL7InQueue(HL7InQueue hl7InQueue) throws DAOException;
+
+	/**
+	 * Returns hl7s based on batch settings and filtered by a query
+	 * @param <T>
+	 * 
+	 * @param clazz
+	 * @param start
+	 * @param length
+	 * @param query
+	 * @return list of hl7s
+	 */
+	@SuppressWarnings("rawtypes")
+	public <T> List<T> getHL7Batch(Class clazz, int start, int length, Integer messageState, String query);
+	
+	/**
+	 * Returns the amount of HL7 items in the database
+	 * 
+	 * @param clazz
+	 * @param messageState
+	 * @param query
+	 * @return count of HL7 items
+	 */
+	@SuppressWarnings("rawtypes")
+	public Integer countHL7s(Class clazz, Integer messageState, String query);
 	
 	/* HL7InArchive */
 
@@ -91,12 +113,6 @@ public interface HL7DAO {
 	 * @see org.openmrs.hl7.HL7Service#saveHL7InArchive(org.openmrs.hl7.HL7InArchive)
 	 */
 	public HL7InArchive saveHL7InArchive(HL7InArchive hl7InArchive) throws DAOException;
-	
-	/**
-	 * After archive migration has been done, this method is what gets called by the service layer
-	 * to write the archive to the file system
-	 */
-	public HL7InArchive saveHL7InArchiveToFileSystem(HL7InArchive hl7InArchive) throws DAOException;
 	
 	/**
 	 * @see org.openmrs.hl7.HL7Service#getHL7InArchive(Integer)
@@ -109,9 +125,9 @@ public interface HL7DAO {
 	public HL7InArchive getHL7InArchiveByUuid(String uuid) throws DAOException;
 	
 	/**
-	 * @see org.openmrs.hl7.HL7Service#getHL7InArchiveByState(Integer stateId)
+	 * @see org.openmrs.hl7.HL7Service#getHL7InArchiveByState(Integer state)
 	 */
-	public List<HL7InArchive> getHL7InArchiveByState(Integer stateId) throws DAOException;
+	public List<HL7InArchive> getHL7InArchiveByState(Integer state) throws DAOException;
 	
 	/**
 	 * @see org.openmrs.hl7.HL7Service#getHL7InQueueByState(Integer stateId)
@@ -124,11 +140,24 @@ public interface HL7DAO {
 	public List<HL7InArchive> getAllHL7InArchives() throws DAOException;
 	
 	/**
+	 * Returns hl7 in archives but with a limited resultset size to save memory
+	 * 
+	 * @param maxResults the maximum number of rows to be returned from the database
+	 * @return list of hl7 archives
+	 */
+	public List<HL7InArchive> getAllHL7InArchives(Integer maxResults);
+	
+	/**
 	 * @see org.openmrs.hl7.HL7Service#deleteHL7InArchive(org.openmrs.hl7.HL7InArchive)
 	 */
 	public void deleteHL7InArchive(HL7InArchive hl7InArchive) throws DAOException;
 	
-	/* HL7InException */
+	/**
+	 * provides a list of archives to be migrated
+	 */
+	public List<HL7InArchive> getHL7InArchivesToMigrate();
+	
+	/* HL7InError */
 
 	/**
 	 * @see org.openmrs.hl7.HL7Service#saveHL7InError(org.openmrs.hl7.HL7InError)
@@ -150,91 +179,11 @@ public interface HL7DAO {
 	 */
 	public void deleteHL7InError(HL7InError hl7InError) throws DAOException;
 	
+	// miscellaneous
+	
 	/**
 	 * @see org.openmrs.hl7.HL7Service#garbageCollect()
 	 */
 	public void garbageCollect();
-	
-	/**
-	 * @see HL7Service#migrateHl7InArchivesToFileSystem(Map)
-	 */
-	public void migrateHl7InArchivesToFileSystem(Map<String, Integer> progressStatusMap) throws DAOException;
-	
-	/**
-	 * Retrieves a single hl7 archive from the file system with the matching archive id
-	 * 
-	 * @param uuid uuid of the hl7 in archive to look up
-	 * @return the hl7 archive with the matching id otherwise returns null if none found
-	 */
-	public HL7InArchive getHL7InArchiveInFileSystem(String uuid) throws DAOException;
-	
-	/**
-	 * Deletes an HL7 archive from the file system
-	 * 
-	 * @param uuid uuid for the archive to delete
-	 * @return true only if the file was successfully deleted from the file system
-	 */
-	public boolean deleteHL7InArchiveInFileSystem(String uuid) throws DAOException;
-	
-	/**
-	 * Retrieves all hl7 in archives from the file system
-	 * 
-	 * @return a list of all hl7 in archives from the file system
-	 */
-	public List<HL7InArchive> getAllHL7InArchivesInFileSystem() throws DAOException;
-	
-	/**
-	 * @see HL7Service#isArchiveMigrationRequired()
-	 */
-	public boolean isArchiveMigrationRequired() throws DAOException;
-	
-	/**
-	 * Retrieves an hl7_in_archive with the matching the uuid
-	 * 
-	 * @return Hl7 in archive if it exists otherwise null
-	 */
-	public HL7InArchive getHL7InArchiveByUuidFromFileSystem(String uuid) throws DAOException;
-	
-	/**
-	 * Returns hl7 in archives but with a limited resultset size to save memory
-	 * 
-	 * @param maxResultsSetSize the maximum number of rows to be returned from the database
-	 * @return list of hl7 archives
-	 */
-	public List<HL7InArchive> getAllHL7InArchives(int maxResultsSetSize);
-	
-	/**
-	 * Returns hl7s in queue based on batch settings and filtered by a query
-	 * 
-	 * @param start
-	 * @param length
-	 * @param query
-	 * @return list of hl7s
-	 */
-	public List<HL7InQueue> getHL7InQueueBatch(int start, int length, int messageState, String query);
-	
-	/**
-	 * Returns the amount of HL7InQueue items in the database
-	 * 
-	 * @return count of HL7InQueue items
-	 */
-	public Integer countHL7InQueue(Integer messageState, String query);
-	
-	/**
-	 * Returns hl7s in error based on batch settings and filtered by a query
-	 * 
-	 * @param start
-	 * @param length
-	 * @param query
-	 * @return
-	 */
-	public List<HL7InError> getHL7InErrorBatch(int start, int length, String query);
-	
-	/**
-	 * Returns the amount of HL7InError items in the database
-	 * 
-	 * @return count of HL7InQueue items
-	 */
-	public Integer countHL7InError(String query);
 
 }

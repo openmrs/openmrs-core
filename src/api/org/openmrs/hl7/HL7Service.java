@@ -192,7 +192,8 @@ public interface HL7Service extends OpenmrsService {
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(HL7Constants.PRIV_VIEW_HL7_IN_QUEUE)
-	public List<HL7InQueue> getHL7InQueueBatch(int start, int length, int messageState, String query) throws APIException;
+	public List<HL7InQueue> getHL7InQueueBatch(int start, int length,
+			int messageState, String query) throws APIException;
 	
 	/**
 	 * the total count of all HL7InQueue objects in the database
@@ -205,7 +206,7 @@ public interface HL7Service extends OpenmrsService {
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(HL7Constants.PRIV_VIEW_HL7_IN_QUEUE)
-	public Integer countHL7InQueue(Integer messageState, String query) throws APIException;
+	public Integer countHL7InQueue(int messageState, String query) throws APIException;
 	
 	/**
 	 * Return a list of all hl7 in errors based on batch settings and a query string
@@ -219,7 +220,8 @@ public interface HL7Service extends OpenmrsService {
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(HL7Constants.PRIV_VIEW_HL7_IN_QUEUE)
-	public List<HL7InError> getHL7InErrorBatch(int start, int length, String query) throws APIException;
+	public List<HL7InError> getHL7InErrorBatch(int start, int length,
+			String query) throws APIException;
 	
 	/**
 	 * the total count of all HL7InError objects in the database
@@ -232,6 +234,35 @@ public interface HL7Service extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized(HL7Constants.PRIV_VIEW_HL7_IN_QUEUE)
 	public Integer countHL7InError(String query) throws APIException;
+	
+	/**
+	 * Return a list of all hl7 in archives based on batch settings and a query string
+	 * 
+	 * @param start beginning index
+	 * @param length size of the batch
+	 * @param messageState status of the HL7InArchive message
+	 * @param query search string
+	 * @return all matching hl7 archive items within batch window
+	 * @throws APIException
+	 * @since 1.7
+	 */
+	@Transactional(readOnly = true)
+	@Authorized(HL7Constants.PRIV_VIEW_HL7_IN_ARCHIVE)
+	public List<HL7InArchive> getHL7InArchiveBatch(int start, int length,
+			int messageState, String query) throws APIException;
+	
+	/**
+	 * the total count of all HL7InArchive objects in the database
+	 * 
+	 * @param messageState status of the HL7InArchive message
+	 * @param query search string
+	 * @return the count of matching HL7InArchive items
+	 * @throws APIException
+	 * @since 1.7
+	 */
+	@Transactional(readOnly = true)
+	@Authorized(HL7Constants.PRIV_VIEW_HL7_IN_ARCHIVE)
+	public Integer countHL7InArchive(int messageState, String query) throws APIException;
 	
 	/**
 	 * @deprecated use {@link #getAllHL7InQueues()}
@@ -543,47 +574,18 @@ public interface HL7Service extends OpenmrsService {
 	public Message processHL7Message(Message hl7Message) throws HL7Exception;
 	
 	/**
-	 * Starts the migration of hl7 in archives from the database to the file system.
-	 * 
-	 * @return true if started otherwise false
-	 * @throws APIException
-	 * @should not start if another user is already running the migration
-	 */
-	@Authorized(requireAll = true, value = { HL7Constants.PRIV_VIEW_HL7_IN_ARCHIVE, HL7Constants.PRIV_PURGE_HL7_IN_ARCHIVE,
-	        HL7Constants.PRIV_ADD_HL7_IN_QUEUE })
-	public boolean startHl7ArchiveMigration() throws APIException;
-	
-	/**
-	 * Stops migration of hl7 in archives if running.
-	 * 
-	 * @throws APIException
-	 */
-	@Authorized(HL7Constants.PRIV_VIEW_HL7_IN_ARCHIVE)
-	public void stopHl7ArchiveMigration() throws APIException;
-	
-	/**
 	 * Method is called by the archives migration thread to transfer hl7 in archives from the
-	 * hl7_in_archives database table to the file system, one is not expected to call this methods
-	 * directly, instead call {@link #startHl7ArchiveMigration()}
+	 * hl7_in_archives database table to the file system
 	 * 
 	 * @param progressStatusMap the map holding the number of archives transferred and failed
 	 *            transfers
 	 * @throws APIException
 	 */
-	@Authorized(requireAll = true, value = { HL7Constants.PRIV_VIEW_HL7_IN_ARCHIVE, HL7Constants.PRIV_PURGE_HL7_IN_ARCHIVE,
-	        HL7Constants.PRIV_ADD_HL7_IN_QUEUE })
+	@Authorized(requireAll = true, value = {
+			HL7Constants.PRIV_VIEW_HL7_IN_ARCHIVE,
+			HL7Constants.PRIV_PURGE_HL7_IN_ARCHIVE,
+			HL7Constants.PRIV_ADD_HL7_IN_QUEUE })
 	public void migrateHl7InArchivesToFileSystem(Map<String, Integer> progressStatusMap) throws APIException;
-	
-	/**
-	 * Checks if there are any rows in the hl7 in archives table returns true only if the hl7
-	 * archives table exists and has at least 1 row otherwise returns false
-	 * 
-	 * @throws APIException
-	 * @return false if the all archives were transferred otherwise returns true
-	 */
-	@Transactional(readOnly = true)
-	@Authorized(HL7Constants.PRIV_VIEW_HL7_IN_ARCHIVE)
-	public boolean isArchiveMigrationRequired() throws APIException;
 	
 	/**
 	 * finds a UUID from an array of identifiers
@@ -614,5 +616,23 @@ public interface HL7Service extends OpenmrsService {
 	 * @should fail if no birthdate specified
 	 */
 	public Person createPersonFromNK1(NK1 nk1) throws HL7Exception;
+
+	/**
+	 * Loads data for a list of HL7 archives from the filesystem
+	 *
+	 * @since 1.7
+	 * @throws APIException
+	 * @param archives
+	 */
+	public void loadHL7InArchiveData(List<HL7InArchive> archives) throws APIException;
+
+	/**
+	 * Loads HL7 data from the filesystem for an archived HL7InArchive
+	 * 
+	 * @since 1.7
+	 * @throws APIException
+	 * @param archive
+	 */
+	public void loadHL7InArchiveData(HL7InArchive archive) throws APIException;
 
 }

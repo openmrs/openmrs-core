@@ -107,24 +107,45 @@ public class HL7Constants {
 	 * @since 1.5
 	 */
 	public static final int HL7_STATUS_DELETED = 4;
+
+	/**
+	 * @since 1.7
+	 */
+	public static final Integer HL7_STATUS_MIGRATED = 5;
 	
-	//Default name for HL7_archives destination directory
-	public static final String HL7_ARCHIVE_DIRECTORY_NAME = "hl7_in_archive";
+	/**
+	 * default name for HL7_archives destination directory
+	 * @since 1.7
+	 */
+	public static final String HL7_ARCHIVE_DIRECTORY_NAME = "hl7_archives";
 	
-	//the key to be used for numberTransferred archives in the progressStatusMap
+	/**
+	 * the key to be used for numberTransferred archives in the progressStatusMap
+	 * @since 1.7
+	 */
 	public static final String NUMBER_TRANSFERRED_KEY = "transferred";
 	
-	//the key to be used for numberOfFailedTransfers in the progressStatusMap
+	/**
+	 * the key to be used for numberOfFailedTransfers in the progressStatusMap
+	 * @since 1.7
+	 */
 	public static final String NUMBER_OF_FAILED_TRANSFERS_KEY = "failures";
 	
-	//time taken before static/state properties of an instance of the hl7 in archive migration thread are reset
+	/**
+	 * time taken before static/state properties of an instance of the hl7 in archive migration thread are reset
+	 * @since 1.7
+	 */
 	public static final long THREAD_SLEEP_PERIOD = 2000;
 	
-	//the maximum number if archives to fetch per query to save on memory
+	/**
+	 * the maximum number if archives to fetch per query to save on memory
+	 * @since 1.7
+	 */
 	public static final int MIGRATION_MAX_BATCH_SIZE = 2000;
 	
 	// List of datatypes that do not require complex definitions
 	public static final Hashtable<String, String> simpleDatatypes = new Hashtable<String, String>();
+
 	static {
 		simpleDatatypes.put(HL7_TEXT, "xs:string");
 		simpleDatatypes.put(HL7_DATE, "xs:date");
