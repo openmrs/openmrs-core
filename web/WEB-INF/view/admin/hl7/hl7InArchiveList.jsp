@@ -1,7 +1,7 @@
 <%@ include file="/WEB-INF/template/include.jsp"%>
 
-<openmrs:require privilege="View HL7 Inbound Queue"
-	otherwise="/login.htm" redirect="/admin/hl7/hl7InQueuePending.htm" />
+<openmrs:require privilege="View HL7 Inbound Archive"
+	otherwise="/login.htm" redirect="/admin/hl7/hl7InArchives.htm" />
 
 <%@ include file="/WEB-INF/template/header.jsp"%>
 <%@ include file="localHeader.jsp"%>
@@ -20,13 +20,7 @@
 	$j(document).ready(function() {
 	
 		hl7table = $j('#hl7Table').dataTable( { 
-			"aoColumns": [  { "sName": "action", "bSortable": false,
-					         "fnRender": function ( oObj ) {
-									var id = oObj.aData[0];
-									return '<button onClick="toggleMessage(' + id + ',' + oObj.iDataRow + 
-										')"><spring:message code="Hl7inQueue.queueList.hold" /></button>';
-								}
-							},
+			"aoColumns": [  { "sName": "id", "bSortable": false, "bHidden": true},
 							{ "sName": "source", "bSortable": false },
 							{ "sName": "dateCreated", "bSortable": false },
 							{ "sName": "data", "bSortable": false,
@@ -47,7 +41,7 @@
 			"bProcessing": true,
 			"bServerSide": true,
 			"bStateSave": false,
-			"sAjaxSource": "hl7InQueueList.json?messageState=${messageState}",
+			"sAjaxSource": "hl7InArchiveList.json",
 			"bJQueryUI": true,
 			"oLanguage": {
 				"sInfoFiltered": "(_MAX_ in queue)"
@@ -82,21 +76,6 @@
 		});
 	}
 	
-	function toggleMessage(id, row) {
-		$j.ajax({
-			"url": "toggleHL7InQueue.json",
-			"data": { "hl7InQueueId": id },
-			"dataType": "json",
-			"error": function(XMLHttpRequest, textStatus, errorThrown) {
-				setMessage('<spring:message code="Hl7inQueue.queueList.error"/>');
-			},
-			"success": function(data, textStatus, XMLHttpRequest) {
-				setMessage(data);
-				hl7table.fnDeleteRow(row);
-			}
-		});
-	}
-
 </script>
 
 <style>
@@ -104,14 +83,14 @@
 	#hl7Table button { padding: 0.5em; }
 </style>
 
-<h2><spring:message code="Hl7inQueue.queueList.pending.title" /></h2>
+<h2><spring:message code="Hl7InArchive.title" /></h2>
 
 <div id="message" class="ui-widget"
 	style="display: none; margin-bottom: 1em;">
-<div class="ui-state-highlight ui-corner-all" style="padding: 0.5em;">
-<span class="ui-icon ui-icon-info"
-	style="float: left; margin-right: 0.3em;"></span> <span class="content"></span>
-</div>
+	<div class="ui-state-highlight ui-corner-all" style="padding: 0.5em;">
+		<span class="ui-icon ui-icon-info"
+			style="float: left; margin-right: 0.3em;"></span> <span class="content"></span>
+	</div>
 </div>
 
 <table cellpadding="5" cellspacing="0" id="hl7Table" width="100%">
