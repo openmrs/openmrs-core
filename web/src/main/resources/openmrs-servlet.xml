@@ -178,7 +178,6 @@
 				<prop key="migration.list">migrationController</prop>
 				<prop key="migration.form">migrationActionController</prop>
 				<prop key="options.form">optionsForm</prop>
-				<prop key="patientDashboard.form">patientDashboardForm</prop>
 				<prop key="personDashboard.form">personDashboardForm</prop>
 
 				<prop key="admin/forms/formSchemaDesign.form">formSchemaDesignForm</prop>
@@ -298,8 +297,7 @@
 	<!-- ========================== -->
 
 	<!-- ** Order Type ** -->
-	<!--this is the optional method of declaring values in the constructor
--->
+	<!--this is the optional method of declaring values in the constructor-->
 	<!--<bean id="orderTypeList" class="org.openmrs.web.controller.OrderTypeListController" />-->
 	<!--<bean id="orderTypeForm" class="org.openmrs.web.controller.OrderTypeFormController" />-->
 
@@ -889,13 +887,6 @@
 		<property name="commandClass"><value>org.openmrs.web.OptionsForm</value></property>
 		<property name="formView"><value>/optionsForm</value></property>
 		<property name="successView"><value>options.form</value></property>
-	</bean>
-	<bean id="patientDashboardForm"
-		class="org.openmrs.web.controller.patient.PatientDashboardController">
-		<property name="sessionForm"><value>true</value></property>
-		<property name="commandName"><value>patient</value></property>
-		<property name="formView"><value>/patientDashboardForm</value></property>
-		<property name="successView"><value>patientDashboard.form</value></property>
 	</bean>
 	<bean id="personDashboardForm"
 		class="org.openmrs.web.controller.person.PersonDashboardController">
