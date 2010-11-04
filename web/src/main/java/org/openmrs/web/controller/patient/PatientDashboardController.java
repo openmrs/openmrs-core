@@ -14,19 +14,13 @@
 package org.openmrs.web.controller.patient;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Vector;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
-import org.openmrs.Encounter;
-import org.openmrs.Form;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
@@ -34,79 +28,50 @@ import org.openmrs.PersonAddress;
 import org.openmrs.PersonName;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
-import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.util.PrivilegeConstants;
 import org.springframework.orm.ObjectRetrievalFailureException;
-import org.springframework.validation.Errors;
-import org.springframework.web.servlet.mvc.SimpleFormController;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
-public class PatientDashboardController extends SimpleFormController {
+@Controller
+public class PatientDashboardController {
 	
 	/** Logger for this class and subclasses */
 	protected final Log log = LogFactory.getLog(getClass());
-	private Concept conceptCause = null;
-	private Concept reasonForExitConcept = null;
 	
 	/**
-	 * This is called prior to displaying a form for the first time. It tells Spring the
-	 * form/command object to load into the request
-	 * 
-	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
+	 * render the patient dashboard model and direct to the view
 	 */
-	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
-		
-		log.debug("Entering formBackingObject");
-		
-		if (!Context.isAuthenticated())
-			return new Patient();
-		
-		String patientId = request.getParameter("patientId");
-		log.debug("patientId: " + patientId);
-		if (patientId == null)
-			throw new ServletException("Integer 'patientId' is a required parameter");
+	@RequestMapping("/patientDashboard.form")
+	protected String renderDashboard(
+			@RequestParam(required = true, value = "patientId") Integer patientId,
+			ModelMap map) throws Exception {
+
+		// get the patient
 		
 		PatientService ps = Context.getPatientService();
 		Patient patient = null;
-		Integer id = null;
-		
+
 		try {
-			id = Integer.valueOf(patientId);
-			patient = ps.getPatient(id);
-		}
-		catch (NumberFormatException numberError) {
-			log.warn("Invalid patientId supplied: '" + patientId + "'", numberError);
-		}
-		catch (ObjectRetrievalFailureException noPatientEx) {
+			patient = ps.getPatient(patientId);
+		} catch (ObjectRetrievalFailureException noPatientEx) {
 			log.warn("There is no patient with id: '" + patientId + "'", noPatientEx);
 		}
 		
 		if (patient == null)
 			throw new ServletException("There is no patient with id: '" + patientId + "'");
 		
-		return patient;
-	}
-	
-	/**
-	 * Called prior to form display. Allows for data to be put in the request to be used in the view
-	 * 
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest)
-	 */
-	protected Map<String, Object> referenceData(HttpServletRequest request, Object obj, Errors err) throws Exception {
-		
-		log.debug("Entering referenceData");
-		
-		Patient patient = (Patient) obj;
-		
 		log.debug("patient: '" + patient + "'");
+		map.put("patient", patient);
 		
-		Map<String, Object> map = new HashMap<String, Object>();
+		// determine cause of death
+		
 		String causeOfDeathOther = "";
 		
 		if (Context.isAuthenticated()) {
-			if (conceptCause == null) {
-				String propCause = Context.getAdministrationService().getGlobalProperty("concept.causeOfDeath");
-				Concept conceptCause = Context.getConceptService().getConcept(propCause);
-			}
+			String propCause = Context.getAdministrationService().getGlobalProperty("concept.causeOfDeath");
+			Concept conceptCause = Context.getConceptService().getConcept(propCause);
 			
 			if (conceptCause != null) {
 				List<Obs> obssDeath = Context.getObsService().getObservationsByPersonAndConcept(patient, conceptCause);
@@ -126,12 +91,14 @@ public class PatientDashboardController extends SimpleFormController {
 				log.debug("No concept cause found");
 			}
 		}
+
+		// determine patient variation
 		
 		String patientVariation = "";
 		
-		if (reasonForExitConcept == null)
-			reasonForExitConcept = Context.getConceptService().getConcept(
-					Context.getAdministrationService().getGlobalProperty("concept.reasonExitedCare"));
+		Concept reasonForExitConcept = Context.getConceptService().getConcept(
+				Context.getAdministrationService().getGlobalProperty(
+						"concept.reasonExitedCare"));
 		
 		if (reasonForExitConcept != null) {
 			List<Obs> patientExitObs = Context.getObsService().getObservationsByPersonAndConcept(patient,
@@ -154,12 +121,13 @@ public class PatientDashboardController extends SimpleFormController {
 		map.put("patientVariation", patientVariation);
 		
 		// empty objects used to create blank template in the view
+
 		map.put("emptyIdentifier", new PatientIdentifier());
 		map.put("emptyName", new PersonName());
 		map.put("emptyAddress", new PersonAddress());
 		map.put("causeOfDeathOther", causeOfDeathOther);
 		
-		return map;
+		return "patientDashboardForm";
 	}
 	
 }
