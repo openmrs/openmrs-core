@@ -13,7 +13,10 @@
 <%@page import="org.openmrs.util.OpenmrsUtil"%>
 <%@page import="org.openmrs.api.context.Context"%>
 <%@page import="org.openmrs.module.ModuleFactory"%>
-<%@page import="org.openmrs.module.Module"%><br />
+<%@page import="org.openmrs.module.Module"%>
+<%@page import="org.openmrs.ImplementationId" %>
+
+<br />
 
 <h2>An Internal Error has Occurred</h2>
 
@@ -119,7 +122,12 @@ try {
             if (username == null || username.length() == 0)
             	username = Context.getAuthenticatedUser().getSystemId();
             pageContext.setAttribute("username", username);
-            String implementationId = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_IMPLEMENTATION_ID);
+            ImplementationId id = Context.getAdministrationService().getImplementationId();
+            String implementationId = ""; 
+            if (id != null) {
+            	implementationId = id.getImplementationId();
+            	implementationId += " = " + id.getName();
+            }
             pageContext.setAttribute("implementationId", (implementationId != null) ? implementationId : "");
             StringBuilder sb = new StringBuilder();
             boolean isFirst = true;
