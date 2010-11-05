@@ -68,7 +68,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		if (query == null)
 			throw new IllegalArgumentException("The 'query' parameter is required and cannot be null");
 		
-		return dao.getEncountersByPatient(query, includeVoided);
+		return dao.getEncounters(query, null, null, includeVoided);
 	}
 	
 	/**
@@ -548,5 +548,23 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	@Override
 	public Map<Integer, List<Encounter>> getAllEncounters(Cohort patients) {
 		return dao.getAllEncounters(patients);
+	}
+	
+	/**
+	 * @see org.openmrs.api.EncounterService#getEncounters(java.lang.String, java.lang.Integer,
+	 *      java.lang.Integer, boolean)
+	 */
+	@Override
+	public List<Encounter> getEncounters(String query, Integer start, Integer length, boolean includeVoided)
+	                                                                                                        throws APIException {
+		return dao.getEncounters(query, start, length, includeVoided);
+	}
+	
+	/**
+	 * @see org.openmrs.api.EncounterService#getCountOfEncounters(java.lang.String, boolean)
+	 */
+	@Override
+	public Integer getCountOfEncounters(String query, boolean includeVoided) {
+		return dao.getCountOfEncounters(query, includeVoided);
 	}
 }

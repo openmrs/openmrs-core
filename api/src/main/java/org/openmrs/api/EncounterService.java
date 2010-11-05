@@ -584,6 +584,22 @@ public interface EncounterService extends OpenmrsService {
 	public List<Encounter> getEncountersByPatient(String query, boolean includeVoided) throws APIException;
 	
 	/**
+	 * Search for encounters by patient name or patient identifier and returns a specific number of
+	 * them from the specified starting position.
+	 * 
+	 * @param query patient name or identifier
+	 * @param start beginning index for the batch
+	 * @param length number of encounters to return in the batch
+	 * @param includeVoided Specifies whether voided encounters should be included
+	 * @return list of encounters for the given patient based on batch settings
+	 * @throws APIException
+	 * @since 1.8
+	 */
+	@Authorized({ PrivilegeConstants.VIEW_ENCOUNTERS })
+	public List<Encounter> getEncounters(String query, Integer start, Integer length, boolean includeVoided)
+	                                                                                                        throws APIException;
+	
+	/**
 	 * Get all encounters for a cohort of patients
 	 * 
 	 * @param patients Cohort of patients to search
@@ -593,5 +609,16 @@ public interface EncounterService extends OpenmrsService {
 	 */
 	@Transactional(readOnly = true)
 	public Map<Integer, List<Encounter>> getAllEncounters(Cohort patients);
+	
+	/**
+	 * Return the number of encounters matching a patient name or patient identifier
+	 * 
+	 * @param query patient name or identifier
+	 * @param includeVoided Specifies whether voided encounters should be included
+	 * @return the number of encounters matching the given search phrase
+	 * @throws APIException
+	 * @since 1.8
+	 */
+	public Integer getCountOfEncounters(String query, boolean includeVoided);
 	
 }

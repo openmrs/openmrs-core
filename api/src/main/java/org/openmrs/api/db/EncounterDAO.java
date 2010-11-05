@@ -25,6 +25,7 @@ import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.User;
+import org.openmrs.api.APIException;
 import org.openmrs.api.EncounterService;
 
 /**
@@ -151,14 +152,16 @@ public interface EncounterDAO {
 	public EncounterType getEncounterTypeByUuid(String uuid);
 	
 	/**
-	 * Get a list of {@link Encounter} by Patient name or identifier
+	 * Get a list of {@link Encounter} by Patient name or identifier based on batch settings
 	 * 
 	 * @param query patient name or identifier
+	 * @param start beginning index for the batch
+	 * @param length number of encounters to return in the batch
 	 * @param includeVoided Specifies whether voided encounters should be included
-	 * @return list of {@link Encounter}
-	 * @see EncounterService#getEncountersByPatient(String, boolean)
+	 * @return list of {@link Encounter} based on batch settings
+	 * @see EncounterService#getEncounters(String, Integer, Integer, boolean)
 	 */
-	List<Encounter> getEncountersByPatient(String query, boolean includeVoided);
+	List<Encounter> getEncounters(String query, Integer start, Integer length, boolean includeVoided);
 	
 	/**
 	 * Gets the location of the encounter
@@ -172,4 +175,15 @@ public interface EncounterDAO {
 	 * @see EncounterService#getAllEncounters(Cohort)
 	 */
 	public Map<Integer, List<Encounter>> getAllEncounters(Cohort patients);
+	
+	/**
+	 * Return the number of encounters matching a patient name or patient identifier
+	 * 
+	 * @param query patient name or identifier
+	 * @param includeVoided Specifies whether voided encounters should be included
+	 * @return the number of encounters matching the given search phrase
+	 * @throws APIException
+	 * @see {@link EncounterService#getCountOfEncounters(String, boolean)}
+	 */
+	public Integer getCountOfEncounters(String query, boolean includeVoided);
 }

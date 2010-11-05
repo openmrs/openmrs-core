@@ -23,7 +23,7 @@
 	//this method over rides the default searchHandler for the encounterSearch widget
 	function doEncounterSearch(text, resultHandler, opts) {
 		lastSearch = text;
-		DWREncounterService.findEncounters(text, opts.includeVoided, resultHandler);
+		DWREncounterService.findCountAndEncounters(text, opts.includeVoided, opts.start, opts.length, resultHandler);
 	}
 </script>
 
