@@ -24,6 +24,7 @@ import javax.servlet.jsp.tagext.TagSupport;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
 
@@ -53,6 +54,14 @@ public class HtmlIncludeTag extends TagSupport {
 	private String type;
 	
 	private String file;
+	
+	/**
+	 * If true, will append &locale=en_US to the url for browser caching purposes
+	 * Should be used on files that contain spring message calls and should not be
+	 * cached across locales
+	 * @since 1.8
+	 */
+	private boolean appendLocale;
 	
 	public void setRewrites(Map<String, String> rules) {
 		rewrites.putAll(rules);
@@ -97,7 +106,7 @@ public class HtmlIncludeTag extends TagSupport {
 			}
 			
 			if (!isAlreadyUsed(file, initialRequestId)) {
-				String output = "";
+				StringBuffer output = new StringBuffer();
 				String prefix = "";
 				try {
 					prefix = request.getContextPath();
@@ -110,16 +119,24 @@ public class HtmlIncludeTag extends TagSupport {
 				
 				// the openmrs version is inserted into the file src so that js and css files are cached across version releases
 				if (isJs) {
-					output = "<script src=\"" + prefix + file + "?v=" + OpenmrsConstants.OPENMRS_VERSION_SHORT + "\" type=\"text/javascript\" ></script>";
+					output.append("<script src=\"").append(prefix).append(file);
+					output.append("?v=").append(OpenmrsConstants.OPENMRS_VERSION_SHORT);
+					if (appendLocale)
+						output.append("&locale=").append(Context.getLocale());
+					output.append("\" type=\"text/javascript\" ></script>");
 				} else if (isCss) {
-					output = "<link href=\"" + prefix + file + "?v=" + OpenmrsConstants.OPENMRS_VERSION_SHORT + "\" type=\"text/css\" rel=\"stylesheet\" />";
+					output.append("<link href=\"").append(prefix).append(file);
+					output.append("?v=").append(OpenmrsConstants.OPENMRS_VERSION_SHORT);
+					if (appendLocale)
+						output.append("&locale=").append(Context.getLocale());
+					output.append("\" type=\"text/css\" rel=\"stylesheet\" />");
 				}
 				
 				if (log.isDebugEnabled())
 					log.debug("isAlreadyUsed() is FALSE - printing " + this.file + " to output.");
 				
 				try {
-					pageContext.getOut().print(output);
+					pageContext.getOut().print(output.toString());
 				}
 				catch (IOException e) {
 					log.debug("Could not produce output in HtmlIncludeTag.java");
@@ -224,4 +241,11 @@ public class HtmlIncludeTag extends TagSupport {
 			this.file = file.trim();
 	}
 	
+	public boolean getAppendLocale() {
+		return appendLocale;
+	}
+	
+	public void setAppendLocale(boolean appendLocale) {
+		this.appendLocale = appendLocale;
+	}
 }

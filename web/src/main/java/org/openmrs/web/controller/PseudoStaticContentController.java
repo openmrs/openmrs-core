@@ -77,6 +77,7 @@ public class PseudoStaticContentController implements Controller, LastModified,
 			path = rewrites.get(path);
 		if (interpretJstl)
 			path += ".withjstl";
+		
 		return new ModelAndView(path);
 	}
 
@@ -96,9 +97,6 @@ public class PseudoStaticContentController implements Controller, LastModified,
 		// the spring servletdispatcher will try to get the lastModified date
 		// from the actual file in this case
 		return -1;
-
-//		throw new RuntimeException(
-//				"get last modified of non-jstl files elsewhere");
 	}
 
 	@Override

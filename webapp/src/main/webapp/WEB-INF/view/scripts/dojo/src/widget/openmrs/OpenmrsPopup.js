@@ -1,5 +1,3 @@
-<%@ include file="/WEB-INF/template/include.jsp" %>
-
 /*
 	Copyright (c) 2006, The OpenMRS Cooperative
 	All Rights Reserved.
@@ -66,7 +64,7 @@ dojo.widget.defineWidget(
 				this.changeButton.style.display = "none";
 		},
 		
-		templateString: '<span id="$' + '{this.widgetId}"><span style="white-space: nowrap"><span dojoAttachPoint="displayNode"></span> <input type="hidden" value="" dojoAttachPoint="hiddenInputNode" /><input type="button" value="<spring:message code="general.select" />" dojoAttachPoint="changeButton" class="smallButton" /> </span><span dojoAttachPoint="otherNode"><input type="text" value="" dojoAttachPoint="otherInputNode" /></span><div class="description" dojoAttachPoint="descriptionDisplayNode"></div> </span>',
+		templateString: '<span id="$' + '{this.widgetId}"><span style="white-space: nowrap"><span dojoAttachPoint="displayNode"></span> <input type="hidden" value="" dojoAttachPoint="hiddenInputNode" /><input type="button" value="' + omsgs.select + '" dojoAttachPoint="changeButton" class="smallButton" /> </span><span dojoAttachPoint="otherNode"><input type="text" value="" dojoAttachPoint="otherInputNode" /></span><div class="description" dojoAttachPoint="descriptionDisplayNode"></div> </span>',
 		templateCssPath: "",
 		
 		postCreate: function(createdObject) {
@@ -205,9 +203,9 @@ dojo.widget.defineWidget(
 		
 		setChangeButtonValue: function(objs) {
 			if ( this.changeButtonValue == '' ) {
-				//if ( this.hiddenInputNode.value == "" ) this.changeButton.value = "<spring:message code="general.select" />";
-				//else this.changeButton.value="<spring:message code="general.change" />";
-				this.changeButton.value="<spring:message code="general.change" />";
+				//if ( this.hiddenInputNode.value == "" ) this.changeButton.value = omsgs.select;
+				//else this.changeButton.value=omsgs.change;
+				this.changeButton.value=omsgs.change;
 			}
 		},
 		

@@ -1,11 +1,7 @@
-<%@ include file="/WEB-INF/template/include.jsp" %>
-
 /*
 	Copyright (c) 2006, The OpenMRS Cooperative
 	All Rights Reserved.
 */
-
-<openmrs:globalProperty var="minSearchCharacters" key="minSearchCharacters" defaultValue="3"/>
 
 dojo.provide("dojo.widget.openmrs.OpenmrsSearch");
 
@@ -14,9 +10,8 @@ dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.style");
 dojo.require("dojo.event.*");
 
-var openmrsSearchBase = djConfig["baseScriptUri"].substring(0, djConfig["baseScriptUri"].indexOf("/", 1));
-importJavascriptFile(openmrsSearchBase + "/dwr/engine.js");
-importJavascriptFile(openmrsSearchBase + "/dwr/util.js");
+importJavascriptFile(openmrsContextPath + "/dwr/engine.js");
+importJavascriptFile(openmrsContextPath + "/dwr/util.js");
 
 // Add parse handler.  
 dojo.widget.tags.addParseTreeHandler("dojo:OpenmrsSearch");
@@ -47,7 +42,7 @@ dojo.widget.defineWidget(
 	event: null,
 	pagingBar: null,
 	infoBar: null,
-	minSearchCharacters: ${minSearchCharacters},
+	minSearchCharacters: omsgs.minSearchCharactersGP, /* gp retrieved from openmrsmessages.js */
 	tableHeight: 0,
 	headerRow: null,
 	showHeaderRow: false,
@@ -58,13 +53,13 @@ dojo.widget.defineWidget(
 	// check box options
 	showIncludeRetired: false,
 	includeRetired: null,
-	includeRetiredLabel: '<spring:message code="SearchResults.includeRetired" javaScriptEscape="true"/>',
+	includeRetiredLabel: omsgs.includeRetired, /* var retrieved from openmrsmessages.js */
 	showIncludeVoided: false,
 	includeVoided: null,
-	includeVoidedLabel: '<spring:message code="SearchResults.includeVoided" javaScriptEscape="true"/>',
+	includeVoidedLabel: omsgs.includeVoided, /* var retrieved from openmrsmessages.js */
 	showVerboseListing: false,
 	verboseListing: null,
-	verboseListingLabel: '<spring:message code="SearchResults.includeVerbose" javaScriptEscape="true"/>',
+	verboseListingLabel: omsgs.includeVerbose, /* var retrieved from openmrsmessages.js */
 	
 	eventNamesDefault: {
 		select : "select",
@@ -85,7 +80,7 @@ dojo.widget.defineWidget(
 	
 	
 	initialize: function() {
-
+	
 		dojo.debug("initializing openmrssearch");
 		
 		for(name in this.eventNamesDefault) {
@@ -389,7 +384,7 @@ dojo.widget.defineWidget(
 		}
 		else {
 			this.objectsFound = new Array();
-			this.objectsFound.push('<spring:message code="SearchResults.minCharactersPhrase1" javaScriptEscape="true"/> ' + this.minSearchCharacters + ' <spring:message code="SearchResults.minCharactersPhrase2" javaScriptEscape="true"/>');
+			this.objectsFound.push(omsgs.minCharactersPhrase1 + this.minSearchCharacters + omsgs.minCharactersPhrase2);
 			this.doObjectsFound(this.objectsFound);
 		}
 		
@@ -524,9 +519,9 @@ dojo.widget.defineWidget(
 			else
 				year = d.getYear();
 		
-			var datePattern = '<openmrs:datePattern />';
-			var sep = datePattern.substr(2,1);
-			var datePatternStart = datePattern.substr(0,1).toLowerCase();
+			/* omsgs.datePattern from openmrsmessages.js */
+			var sep = omsgs.datePattern.substr(2,1);
+			var datePatternStart = omsgs.datePattern.substr(0,1).toLowerCase();
 			
 			if (datePatternStart == 'm') /* M-D-Y */
 				str = month + sep + day + sep + year
@@ -772,10 +767,10 @@ dojo.widget.defineWidget(
 		
 		this.infoBar.innerHTML = '';
 		if (this.lastPhraseSearched != null)
-			this.infoBar.innerHTML = ' &nbsp; <spring:message code="SearchResults.resultsFor" javaScriptEscape="true"/> "' + this.lastPhraseSearched + '". &nbsp;';
+			this.infoBar.innerHTML = ' &nbsp; ' + omsgs.resultsFor + ' "' + this.lastPhraseSearched + '". &nbsp;';
 		
 		if (this.objectsFound.length > 0)
-			this.infoBar.innerHTML += "<spring:message code="SearchResults.viewing" javaScriptEscape="true"/> <b>" + this.firstItemDisplayed + "-" + lastItemDisplayed + "</b> <spring:message code="SearchResults.of" javaScriptEscape="true"/> <b>" + total + "</b> &nbsp; ";
+			this.infoBar.innerHTML += omsgs.searchResultsViewing + " <b>" + this.firstItemDisplayed + "-" + lastItemDisplayed + "</b> " + omsgs.searchResultsOf + " <b>" + total + "</b> &nbsp; ";
 		
 		this.pagingBar.innerHTML = "&nbsp;";
 	

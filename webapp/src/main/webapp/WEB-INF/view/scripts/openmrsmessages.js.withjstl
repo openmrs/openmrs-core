@@ -1,0 +1,76 @@
+/* Used for getting jstl code into the javascript files */
+<%@ include file="/WEB-INF/template/include.jsp" %>
+var omsgs = new Array();
+omsgs.minSearchCharactersGP="<openmrs:globalProperty key="minSearchCharacters" defaultValue="3"/>";
+omsgs.datePattern="<openmrs:datePattern />";
+
+omsgs.addNewPatient="<spring:message javaScriptEscape="true" code="Patient.addNew"/>";
+omsgs.addNewPersonMsg="<spring:message code='Person.addNew.msg' />";
+omsgs.addNewPerson="<spring:message code='Person.addNew'/>";
+omsgs.age="<spring:message code="Person.age" javaScriptEscape="true"/>";
+omsgs.birthdate="<spring:message code="Person.birthdate" javaScriptEscape="true"/>";
+omsgs.birthdateRequired="<spring:message code='Person.birthdate.required'/>";
+omsgs.cancel="<spring:message code='general.cancel'/>";
+omsgs.change="<spring:message code="general.change" />";
+omsgs.familyName="<spring:message code="PersonName.familyName" javaScriptEscape="true"/>";
+omsgs.format="<spring:message code='general.format'/>";
+omsgs.gender="<spring:message code="Person.gender" javaScriptEscape="true"/>";
+omsgs.genderRequired="<spring:message code='Person.gender.required'/>";
+omsgs.givenName="<spring:message code="PersonName.givenName" javaScriptEscape="true"/>";
+omsgs.identifier="<spring:message code="Patient.identifier" javaScriptEscape="true"/>";
+omsgs.includeDisabled="<spring:message code="SearchResults.includeDisabled" javaScriptEscape="true"/>";
+omsgs.includeRetired="<spring:message code="SearchResults.includeRetired" javaScriptEscape="true"/>";
+omsgs.includeVoided="<spring:message code="SearchResults.includeVoided" javaScriptEscape="true"/>";
+omsgs.includeVerbose="<spring:message code="SearchResults.includeVerbose" javaScriptEscape="true"/>";
+omsgs.minCharactersPhrase1="<spring:message code="SearchResults.minCharactersPhrase1" javaScriptEscape="true"/> ";
+omsgs.minCharactersPhrase2=" <spring:message code="SearchResults.minCharactersPhrase2" javaScriptEscape="true"/>";
+omsgs.middleName="<spring:message code="PersonName.middleName" javaScriptEscape="true"/>";
+omsgs.nameRequired="<spring:message code='Person.name.required'/>";
+omsgs.noObsFound="<spring:message code="ObsSearch.noneFound" />";
+omsgs.noPatientsFound="<spring:message javaScriptEscape="true" code="PatientSearch.noneFound"/>";
+omsgs.or="<spring:message code='Person.age.or'/>";
+omsgs.personCreate="<spring:message code='Person.create'/>";
+omsgs.resultsFor="<spring:message code="SearchResults.resultsFor" javaScriptEscape="true"/>";
+omsgs.searchResultsViewing="<spring:message code="SearchResults.viewing" javaScriptEscape="true"/>";
+omsgs.searchResultsOf="<spring:message code="SearchResults.of" javaScriptEscape="true"/>";
+omsgs.searchOnName="<spring:message javaScriptEscape="true" code="PatientSearch.searchOnName"/>";
+omsgs.select="<spring:message code="general.select" />";
+omsgs.systemId="<spring:message code="User.systemId" javaScriptEscape="true"/>";
+omsgs.userRoles="<spring:message code="User.roles" javaScriptEscape="true"/>";
+omsgs.username="<spring:message code="User.username" javaScriptEscape="true"/>";
+
+omsgs.genderArray=new Array();
+<openmrs:forEachRecord name='gender'>
+ var rec=new Array();
+ rec["key"]="${record.key}";
+ rec["value"]="${record.value}";
+ rec["msg"]="<spring:message code='Person.gender.${record.value}'/>";
+ omsgs.genderArray.push(rec);
+</openmrs:forEachRecord>
+
+omsgs.patientListingAttrs=new Array();
+<openmrs:forEachDisplayAttributeType personType="patient" displayType="listing" var="attrType">
+ omsgs.patientListingAttrs.push("${attrType.name}");
+</openmrs:forEachDisplayAttributeType>
+omsgs.patientListingHeaders=new Array();
+<openmrs:forEachDisplayAttributeType personType="patient" displayType="listing" var="attrType">
+ omsgs.patientListingHeaders.push('<spring:message code="PersonAttributeType.${fn:replace(attrType.name, ' ', '')}" javaScriptEscape="true" text="${attrType.name}"/>');
+</openmrs:forEachDisplayAttributeType>
+
+omsgs.personListingAttrs=new Array();
+<openmrs:forEachDisplayAttributeType personType="" displayType="listing" var="attrType">
+ omsgs.personListingAttrs.push("${attrType.name}");
+</openmrs:forEachDisplayAttributeType>
+omsgs.personListingHeaders=new Array();
+<openmrs:forEachDisplayAttributeType personType="" displayType="listing" var="attrType">
+ omsgs.personListingHeaders.push('<spring:message code="PersonAttributeType.${fn:replace(attrType.name, ' ', '')}" javaScriptEscape="true" text="${attrType.name}"/>');
+</openmrs:forEachDisplayAttributeType>
+
+omsgs.userListingAttrs=new Array();
+<openmrs:forEachDisplayAttributeType personType="user" displayType="listing" var="attrType">
+ omsgs.userListingAttrs.push("${attrType.name}");
+</openmrs:forEachDisplayAttributeType>
+omsgs.userListingHeaders=new Array();
+<openmrs:forEachDisplayAttributeType personType="user" displayType="listing" var="attrType">
+ omsgs.userListingHeaders.push('<spring:message code="PersonAttributeType.${fn:replace(attrType.name, ' ', '')}" javaScriptEscape="true" text="${attrType.name}"/>');
+</openmrs:forEachDisplayAttributeType>

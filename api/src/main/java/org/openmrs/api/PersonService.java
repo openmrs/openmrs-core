@@ -824,7 +824,7 @@ public interface PersonService {
 	 * @return list of PersonAttributeTypes that should be displayed
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { PrivilegeConstants.VIEW_PERSON_ATTRIBUTE_TYPES })
+	// this has anonymous access because its cached into generic js files
 	public List<PersonAttributeType> getPersonAttributeTypes(PERSON_TYPE personType, ATTR_VIEW_TYPE viewType)
 	                                                                                                         throws APIException;
 	
@@ -833,7 +833,7 @@ public interface PersonService {
 	 */
     @Deprecated
 	@Transactional(readOnly = true)
-	@Authorized( { PrivilegeConstants.VIEW_PERSON_ATTRIBUTE_TYPES })
+	// this has anonymous access because its cached into generic js files
 	public List<PersonAttributeType> getPersonAttributeTypes(String personType, String viewType) throws APIException;
 	
 	/**

@@ -17,6 +17,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
 		<openmrs:htmlInclude file="/openmrs.js" />
+		<openmrs:htmlInclude file="/openmrsmessages.js" appendLocale="true" />
 		<openmrs:htmlInclude file="/openmrs.css" />
 		<openmrs:htmlInclude file="/style.css" />
 		<c:if test="${empty DO_NOT_INCLUDE_JQUERY}">
