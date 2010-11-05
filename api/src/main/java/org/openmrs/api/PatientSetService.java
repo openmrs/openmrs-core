@@ -448,15 +448,24 @@ public interface PatientSetService {
 	public Map<Integer, Map<String, Object>> getCharacteristics(Cohort patients);
 	
 	/**
-	 * Gets a map of patient identifiers by identifier type, indexed by patient primary key.
+	 * The PatientIdentifer object in the returned map now ONLY contains the identifier string, no 
+	 * other data is available
+	 * 
+	 * @deprecated use method by same name that returns just the string instead of the whole object
+	 */
+	@Deprecated
+	@Transactional(readOnly = true)
+	public Map<Integer, PatientIdentifier> getPatientIdentifiersByType(Cohort patients, PatientIdentifierType type);
+	
+	/**
+	 * Gets a map of patient identifiers values by identifier type, indexed by patient primary key.
 	 * 
 	 * @param patients Cohort of patients to look up
 	 * @param type PatientIdentifierType to retrieve
-	 * @return Map of patient identifiers and PatientIdentifierTypes, for all patients in the
-	 *         specified cohort
+	 * @return Map of patient identifiers (strings) for all patients in the specified cohort
 	 */
 	@Transactional(readOnly = true)
-	public Map<Integer, PatientIdentifier> getPatientIdentifiersByType(Cohort patients, PatientIdentifierType type);
+	public Map<Integer, String> getPatientIdentifierStringsByType(Cohort patients, PatientIdentifierType type);
 	
 	/**
 	 * TODO write something here

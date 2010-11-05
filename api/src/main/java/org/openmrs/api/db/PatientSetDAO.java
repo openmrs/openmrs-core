@@ -104,7 +104,7 @@ public interface PatientSetDAO {
 	
 	public Map<Integer, Object> getPatientAttributes(Cohort patients, String className, String property, boolean returnAll);
 	
-	public Map<Integer, PatientIdentifier> getPatientIdentifierByType(Cohort patients, List<PatientIdentifierType> types);
+	public Map<Integer, String> getPatientIdentifierByType(Cohort patients, List<PatientIdentifierType> types);
 	
 	public Map<Integer, Map<String, Object>> getCharacteristics(Cohort patients) throws DAOException;
 	
@@ -153,6 +153,5 @@ public interface PatientSetDAO {
 	 * @return patients matching the specified relationship search
 	 */
 	public Cohort getPatientsByRelationship(RelationshipType relType, boolean includeAtoB, boolean includeBtoA, Person target);
-		
-	
+
 }
