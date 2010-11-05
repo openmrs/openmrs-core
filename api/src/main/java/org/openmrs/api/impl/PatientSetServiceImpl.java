@@ -374,6 +374,17 @@ public class PatientSetServiceImpl implements PatientSetService {
 	}
 	
 	public Map<Integer, PatientIdentifier> getPatientIdentifiersByType(Cohort patients, PatientIdentifierType type) {
+		Map<Integer, String> strings = getPatientIdentifierStringsByType(patients, type);
+		
+		Map<Integer, PatientIdentifier> objects = new HashMap<Integer, PatientIdentifier>();
+		for (Map.Entry<Integer, String> entry : strings.entrySet()) {
+			PatientIdentifier tmpValue = new PatientIdentifier(entry.getValue(), null, null);
+			objects.put(entry.getKey(), tmpValue);
+		}
+		return objects;
+	}
+	
+	public Map<Integer, String> getPatientIdentifierStringsByType(Cohort patients, PatientIdentifierType type) {
 		List<PatientIdentifierType> types = new Vector<PatientIdentifierType>();
 		if (type != null)
 			types.add(type);

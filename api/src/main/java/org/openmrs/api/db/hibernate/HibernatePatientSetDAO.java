@@ -1767,6 +1767,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		Date now = new Date();
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(PatientState.class);
+		criteria.setFetchMode("patient", FetchMode.JOIN);
 		criteria.setCacheMode(CacheMode.IGNORE);
 		//criteria.add(Restrictions.in("patientProgram.patient.personId", ids));
 		
@@ -1834,6 +1835,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		Date now = new Date();
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(DrugOrder.class);
+		criteria.setFetchMode("patient", FetchMode.JOIN);
 		criteria.setCacheMode(CacheMode.IGNORE);
 		
 		// this "where clause" is only necessary if patients were passed in
@@ -1871,6 +1873,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			return ret;
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(DrugOrder.class);
+		criteria.setFetchMode("patient", FetchMode.JOIN);
 		criteria.setCacheMode(CacheMode.IGNORE);
 		
 		// only include this where clause if patients were passed in
@@ -2083,11 +2086,18 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	 * @return Map of {@link PatientIdentifier}s
 	 */
 	@SuppressWarnings("unchecked")
-	public Map<Integer, PatientIdentifier> getPatientIdentifierByType(Cohort patients, List<PatientIdentifierType> types) {
-		Map<Integer, PatientIdentifier> patientIdentifiers = new HashMap<Integer, PatientIdentifier>();
+	public Map<Integer, String> getPatientIdentifierByType(Cohort patients, List<PatientIdentifierType> types) {
+		Map<Integer, String> patientIdentifiers = new HashMap<Integer, String>();
 		
 		// default query
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(PatientIdentifier.class);
+		
+		// only get the "identifier" and "patientId" columns
+		ProjectionList projections = Projections.projectionList();
+		projections.add(Projections.property("identifier"));
+		projections.add(Projections.property("patient.personId"));
+		criteria.setProjection(projections);
+		
 		criteria.setCacheMode(CacheMode.IGNORE);
 		
 		// Add patient restriction if necessary
@@ -2104,13 +2114,12 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		// Order by ID
 		criteria.addOrder(org.hibernate.criterion.Order.desc("patient.personId"));
 		
-		List<PatientIdentifier> identifiers = criteria.list();
-		if (log.isDebugEnabled())
-			log.debug("IDS: " + identifiers);
+		List<Object[]> rows = criteria.list();
 		
 		// set up the return map
-		for (PatientIdentifier identifier : identifiers) {
-			Integer patientId = identifier.getPatient().getPatientId();
+		for (Object[] row : rows) {
+			String identifier = (String)row[0];
+			Integer patientId = (Integer)row[1];
 			if (!patientIdentifiers.containsKey(patientId))
 				patientIdentifiers.put(patientId, identifier);
 		}
