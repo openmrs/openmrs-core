@@ -287,11 +287,14 @@ function doEncounterSearch(text, resultHandler, opts) {
 				
 				//FETCH THE REST OF THE RESULTS IF encounter COUNT is greater than the number of rows to display per page
 				if(matchCount > self._table.fnSettings()._iDisplayLength){
-					self.options.searchHandler(searchText, self._updateBlankRows(curCallCount), 
-						{includeVoided: self.options.showIncludeVoided && checkBox.attr('checked'),
-						start: self._table.fnSettings()._iDisplayLength, length: null});
-					
-				};
+					//This forces the browser to spawn a new thread to avoid "Unresponsive script errors"
+					//in case server responses delay
+					setTimeout(function(){
+						self.options.searchHandler(searchText, self._updateBlankRows(curCallCount),
+							{includeVoided: self.options.showIncludeVoided && checkBox.attr('checked'),
+							start: self._table.fnSettings()._iDisplayLength, length: null})
+					}, 50);
+				}
 			};
 		},
 			
