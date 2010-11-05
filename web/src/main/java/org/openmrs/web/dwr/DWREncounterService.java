@@ -13,7 +13,9 @@
  */
 package org.openmrs.web.dwr;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
@@ -30,7 +32,19 @@ public class DWREncounterService {
 	
 	private static final Log log = LogFactory.getLog(DWREncounterService.class);
 	
-	public Vector findEncounters(String phrase, boolean includeVoided) throws APIException {
+	/**
+	 * Returns a list of matching encounters (depending on values of start and length parameters) if
+	 * the length parameter is not specified, then all matches will be returned from the start index
+	 * if specified.
+	 * 
+	 * @param phrase patient name or identifier
+	 * @param includeVoided Specifies if voided encounters should be included or not
+	 * @param start the beginning index
+	 * @param length the number of matching encounters to return
+	 * @return list of the matching encounters
+	 * @throws APIException
+	 */
+	public Vector findEncounters(String phrase, boolean includeVoided, Integer start, Integer length) throws APIException {
 		
 		// List to return
 		// Object type gives ability to return error strings
@@ -58,7 +72,7 @@ public class DWREncounterService {
 			if (phrase == null || phrase.equals("")) {
 				//TODO get all concepts for testing purposes?
 			} else {
-				encs.addAll(es.getEncountersByPatient(phrase, includeVoided));
+				encs.addAll(es.getEncounters(phrase, start, length, includeVoided));
 			}
 			
 			if (encs.size() == 0) {
@@ -75,6 +89,36 @@ public class DWREncounterService {
 			objectList.add(mss.getMessage("Encounter.search.error") + " - " + e.getMessage());
 		}
 		return objectList;
+	}
+	
+	/**
+	 * Returns a map of results with the values as count of matches and a partial list of the
+	 * matching encounters (depending on values of start and length parameters) while the keys are
+	 * are 'count' and 'objectList' respectively, if the length parameter is not specified, then all
+	 * matches will be returned from the start index if specified.
+	 * 
+	 * @param phrase patient name or identifier
+	 * @param includeVoided Specifies if voided encounters should be included or not
+	 * @param start the beginning index
+	 * @param length the number of matching encounters to return
+	 * @return a map of results
+	 * @throws APIException
+	 * @since 1.8
+	 */
+	public Map<String, Object> findCountAndEncounters(String phrase, boolean includeVoided, Integer start, Integer length)
+	                                                                                                                      throws APIException {
+		//Map to return
+		Map<String, Object> resultsMap = new HashMap<String, Object>();
+		int encounterCount = Context.getEncounterService().getCountOfEncounters(phrase, includeVoided);
+		Vector<Object> objectList = new Vector<Object>();
+		
+		if (encounterCount > 0)
+			objectList = findEncounters(phrase, includeVoided, start, length);
+		
+		resultsMap.put("count", encounterCount);
+		resultsMap.put("objectList", objectList);
+		
+		return resultsMap;
 	}
 	
 	public EncounterListItem getEncounter(Integer encounterId) {

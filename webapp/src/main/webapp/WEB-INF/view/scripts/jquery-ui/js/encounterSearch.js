@@ -56,7 +56,7 @@ function EncounterSearch(div, showIncludeVoided, selectionHandler, opts) {
  * constructor of the widget.
  */
 function doEncounterSearch(text, resultHandler, opts) {
-	DWREncounterService.findEncounters(text, opts.includeVoided, resultHandler);
+	DWREncounterService.findCountAndEncounters(text, opts.includeVoided, opts.start, opts.length, resultHandler);
 }
 
 /**
@@ -138,6 +138,8 @@ function doEncounterSearch(text, resultHandler, opts) {
 		    checkBox.click(function() {   	
 		    	if($j.trim(input.val()) != '')
 		    		self._doSearch(input.val());
+		    	//to maintain keyDown and keyUp events since they are only fired when the input box has focus
+		    	input.focus();		    	
 			});
 		    
 		    //this._trigger('initialized');
@@ -178,7 +180,7 @@ function doEncounterSearch(text, resultHandler, opts) {
 		    		self.onCharTyped(self, event.keyCode);
 		    	}
 		    	
-	        	var text = input.val();
+	        	var text = $j.trim(input.val());
 	    		if(text.length >= o.minLength) {
 	    			self._doSearch(text);
 	    		}
@@ -203,19 +205,37 @@ function doEncounterSearch(text, resultHandler, opts) {
 		    	aoColumns: this._makeColumns(),
 		    	iDisplayLength: 10,
 		    	numberOfPages: 0,
-		    	currPage: 0
-		    });
-		    
-		    $('#openmrsSearchTable').hover(function() {
-		    	$(self._table.fnGetNodes()[self.curRowSelection]).removeClass("row_highlight");
-			}, function() {
-				$(self._table.fnGetNodes()[self.curRowSelection]).addClass("row_highlight");
-			});
-		    
-		    this._table.find("tbody tr").live('click', function() {
-				var index = table.fnGetPosition(this);
-				self._doSelected(index, self._results[index]);
-		    });
+		    	currPage: 0,
+		    	fnRowCallback: function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {					
+		    		//register mouseover/out events handlers to have row highlighting
+		    		$(nRow).bind('mouseover', function(){
+		    			//for only loaded rows
+		    			if(self._results[iDisplayIndexFull])
+		    				$(this).addClass('tr_row_highlight');						
+					});
+		    		$(nRow).bind('mouseout', function(){
+		    			if(self._results[iDisplayIndexFull])
+		    				$(this).removeClass('tr_row_highlight');	
+		    	    });
+		    				    		
+		    		//draw a strike through for all voided encounters that have been loaded
+		    		if(self._results[iDisplayIndexFull] && self._results[iDisplayIndexFull].voided){		    			
+		    			$(nRow).children().each(function(){		    				
+		    				$(this).addClass('voided');
+		    			}); 
+		    		}
+		    		
+		    		if(self.options.selectionHandler) {
+		    			$(nRow).bind('click', function() {
+		    				//Register onclick handlers to each row that is loaded
+		    				if(self._results[iDisplayIndexFull])
+		    					self._doSelected(iDisplayIndexFull, self._results[iDisplayIndexFull]);
+		    			});
+		    		}
+		    		
+		    		return nRow;
+		    	}				
+		    });		    
 		},
 		
 		_makeColumns: function() {
@@ -232,15 +252,21 @@ function doEncounterSearch(text, resultHandler, opts) {
 				//so that we can make sure older ajax calls donot overwrite later ones
 				var storedCallCount = this._callCount++;				
 				spinnerObj.css("visibility", "visible");
-				this.options.searchHandler(text, this._handleResults(storedCallCount, this.options.minLength), {includeVoided: tmpIncludeVoided});
+				
+				//First get data to appear on the first page			
+				this.options.searchHandler(text, this._handleResults(text, storedCallCount), 
+						{includeVoided: tmpIncludeVoided, start: 0, length: this._table.fnSettings()._iDisplayLength});
 			}
 		},
 		
 		/** returns a closure for the returned results */
-		_handleResults: function(curCallCount, minLength) {
+		_handleResults: function(searchText, curCallCount) {
 			var self = this;
 			return function(results) {
-				spinnerObj.css("visibility", "hidden");
+				var matchCount = results["count"];
+				self._results = results["objectList"];
+				if(matchCount <= self._table.fnSettings()._iDisplayLength)
+					spinnerObj.css("visibility", "hidden");
 				if(curCallCount && self._lastCallCount > curCallCount) {
 					//stop old ajax calls from over writing later ones
 					return;
@@ -251,38 +277,45 @@ function doEncounterSearch(text, resultHandler, opts) {
 				//than the minimun characters, this can arise when user presses backspace relatively fast
 				//yet there were some intermediate calls that might have returned results
 				var currInput = $j.trim($j("#inputNode").val());
-				if(currInput == '' || currInput.length < minLength){
+				if(currInput == '' || currInput.length < self.options.minLength){
 					if($('#openmrsSearchTable_paginate').is(":visible")){
 			    	    	$('#openmrsSearchTable_paginate').hide();
 					}
 					return;
 				}
-				self._doHandleResults(results);
+				self._doHandleResults(matchCount);
+				
+				//FETCH THE REST OF THE RESULTS IF encounter COUNT is greater than the number of rows to display per page
+				if(matchCount > self._table.fnSettings()._iDisplayLength){
+					self.options.searchHandler(searchText, self._updateBlankRows(curCallCount), 
+						{includeVoided: self.options.showIncludeVoided && checkBox.attr('checked'),
+						start: self._table.fnSettings()._iDisplayLength, length: null});
+					
+				};
 			};
 		},
 			
-		_doHandleResults: function(results) {
-			this._results = results;
+		_doHandleResults: function(matchCount) {
 			this.curRowSelection = null;
 				
 			if(this.options.resultsHandler) {
-				this.options.resultsHandler(results);
+				this.options.resultsHandler(this._results);
 			}
 			else {
-				this._buildDataTable(results);
+				this._buildDataTable(matchCount);
 				//reset to show first page always
 				this._table.fnPageChange('first');
 				
-				if((results != null) && (results.length > 0) && (typeof results[0] != 'string'))
+				if((this._results != null) && (this._results.length > 0) && (typeof this._results[0] != 'string'))
 					this.updatePageInfo();
 			}	
 		},
 		
-		_buildDataTable: function(results) {
+		_buildDataTable: function(matchCount) {
 			this._fireEvent('beforeDataTable');
 			
 			this._table.fnClearTable();
-			if((results != null) && (results.length > 0) && (typeof results[0] == 'string')) {
+			if((this._results != null) && (this._results.length > 0) && (typeof this._results[0] == 'string')) {
 				//error
 				//hide pagination buttons
 	    	    if($('#openmrsSearchTable_paginate')){
@@ -292,29 +325,30 @@ function doEncounterSearch(text, resultHandler, opts) {
 			}
 			
 			var d = new Array();
-			for(var r in results) {
-				d[r] = this._buildRow(results[r], results[r].voided);
-			}			
-
+			for(var r in this._results) {
+				d[r] = this._buildRow(this._results[r]);
+			}
+			//add some blank rows to the datatable for the remaining rows to be fetched
+			var blankRows = matchCount - this._table.fnSettings()._iDisplayLength;			
+			var pos = this._table.fnSettings()._iDisplayLength;			
+			var emptyData = {"personName":"Loading data....", "":"", "":"", "":"", "":"", "":""};
+			for(var x = 0; x < blankRows; x++){
+				d[pos] = this._buildRow(emptyData);				
+				pos++;
+			}
+			
 			this._table.fnAddData(d);
-			this._table.numberOfPages = Math.floor(results.length/this._table.fnSettings()._iDisplayLength)+1;
+			if(matchCount % this._table.fnSettings()._iDisplayLength == 0)
+				this._table.numberOfPages = matchCount/this._table.fnSettings()._iDisplayLength;
+			else
+				this._table.numberOfPages = Math.floor(matchCount/this._table.fnSettings()._iDisplayLength)+1;
+			
 			this._table.currPage = 1;
-			//register on mouseover/out events handlers to have row highlighting
-			$('tbody tr td').bind('mouseover', function () {
-				$(this).parent().children().each(function(){
-					$(this).addClass('td_row_highlight');}); 
-			});
-    	    $('tbody tr td').bind('mouseout', function () { 
-    	    	$(this).parent().children().each(function(){
-    	    		$(this).removeClass('td_row_highlight');
-    	    	}); 
-    	    });
-    	    
-    	    //hide pagination buttons
-    	    if(this._table.numberOfPages == 1 && $('#openmrsSearchTable_paginate').is(":visible")){
-    	    	$('#openmrsSearchTable_paginate').hide();    	    
+			
+    	    if(matchCount <= this._table.fnSettings()._iDisplayLength){
+    	    	$('#openmrsSearchTable_paginate').hide();
 			}else if(!$('#openmrsSearchTable_paginate').is(":visible")){
-				//if this buttons were previously hidden, show it
+				//if the buttons were previously hidden, show them
 				$('#openmrsSearchTable_paginate').show(); 
 			}
 			this._div.find(".openmrsSearchDiv").show();
@@ -322,16 +356,13 @@ function doEncounterSearch(text, resultHandler, opts) {
 			this._fireEvent('afterDataTable');
 		},
 		
-		_buildRow: function(rowData, isVoided) {
+		_buildRow: function(rowData) {
 			var cols = this._columns;
 			return $.map(cols, function(c) {
 				var data = rowData[c.id];
 				if(data == null) 
-					data = " ";				
-				else if(isVoided){
-					//draw a strike through line for the voided encounters
-					data = "<span class='voided'>"+data+"</span>";
-				}
+					data = " ";
+				
 				return data;
 			});
 		},
@@ -352,8 +383,12 @@ function doEncounterSearch(text, resultHandler, opts) {
 			else {
 				this.curRowSelection++;
 			}
-			
-			if(this.curRowSelection >= this._results.length) {
+			//if the row has yet been populated, don't highlight it
+			if(!this._results[this.curRowSelection]){
+				this.curRowSelection--;//reverse
+				return;
+			}
+			if(this.curRowSelection >= this._table.fnGetData().length) {
 				this.curRowSelection--;//redact it
 				//cant go any further so return
 				//TODO might want to recycle and go to the beginning again??
@@ -379,7 +414,12 @@ function doEncounterSearch(text, resultHandler, opts) {
 			
 			var prevRow = this.curRowSelection;
 			if(this.curRowSelection == null) {
-				this.curRowSelection = this._results.length-1;
+				this.curRowSelection = this._table.fnGetData().length-1;
+				//if the row has yet been populated, don't highlight it, stay on the first page
+				if(!this._results[this.curRowSelection]){
+					this.curRowSelection = null;
+					return;
+				}
 				this._table.fnPageChange('last');
 			}
 			else {
@@ -474,7 +514,42 @@ function doEncounterSearch(text, resultHandler, opts) {
 	    },
 		
 	    updatePageInfo: function() {
-	    	$('#openmrsSearchTable_info').append(" ( "+this._table.numberOfPages+" Pages )");
+	    	var pageString = (this._table.numberOfPages == 1) ? "Page" : "Pages";
+	    	$('#openmrsSearchTable_info').append(" ( "+this._table.numberOfPages+" "+pageString+" )");
+		},
+		
+		//This function replaces the blank rows in the datatable with actual data returned by the 
+		//second ajax call that retrieves the remaining rows
+		_updateBlankRows: function(curCallCount2){
+			var self = this;
+			return function(results) {
+				spinnerObj.css("visibility", "hidden");
+				//Don't display results from delayed ajax calls when the input box is blank or has less 
+				//than the minimun characters
+				var currInput = $j.trim($j("#inputNode").val());
+				if(currInput == '' || currInput.length < self.options.minLength){
+					return;
+				}
+				
+				var data = results["objectList"];								
+				
+				//Since this method is called on the second ajax call to return the remaining results,
+				//therefore (self._lastCallCount == curCallCount) so it will pass if no later ajax call were made				
+				if(curCallCount2 && self._lastCallCount > curCallCount2) {
+					//stop old ajax calls from over writing later ones
+					return;
+				}
+				
+				var pos = self._table.fnSettings()._iDisplayLength;
+				for(var x in data) {
+					currentData = data[x];
+					newRowData = self._buildRow(currentData);
+					//add the rest of this data to the results list
+					self._results[pos] = currentData;
+					self._table.fnUpdate(newRowData, pos);		
+					pos++;
+				}
+			};
 		},
 		
 		destroy: function() {
