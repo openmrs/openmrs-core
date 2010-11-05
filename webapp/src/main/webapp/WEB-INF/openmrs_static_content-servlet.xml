@@ -16,14 +16,8 @@
 	<bean id="urlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
 		<property name="mappings">
 			<props>
-				<prop key="**/OpenmrsSearch.js">jstlContentController</prop>
-				<prop key="**/PersonSearch.js">jstlContentController</prop>
-				<prop key="**/PatientSearch.js">jstlContentController</prop>
-				<prop key="**/UserSearch.js">jstlContentController</prop>
-				<prop key="**/ObsSearch.js">jstlContentController</prop>
+				<prop key="**/openmrsmessages.js">jstlContentController</prop>
 				<prop key="**/drugOrder.js">jstlContentController</prop>
-				<prop key="**/OpenmrsPopup.js">jstlContentController</prop>
-				<prop key="**/obs.js">jstlContentController</prop>
 				<prop key="**/*.js">staticContentController</prop>
 				<prop key="**/*">staticContentController</prop>
 			</props>

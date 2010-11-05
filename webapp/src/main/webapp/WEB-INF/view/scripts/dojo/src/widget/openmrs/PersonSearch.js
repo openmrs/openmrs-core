@@ -1,5 +1,3 @@
-<%@ include file="/WEB-INF/template/include.jsp" %>
-
 /*
 	Copyright (c) 2006, The OpenMRS Cooperative
 	All Rights Reserved.
@@ -8,8 +6,7 @@
 dojo.provide("dojo.widget.openmrs.PersonSearch");
 dojo.require("dojo.widget.openmrs.OpenmrsSearch");
 
-var openmrsSearchBase = djConfig["baseScriptUri"].substring(0, djConfig["baseScriptUri"].indexOf("/", 1));
-importJavascriptFile(openmrsSearchBase + "/dwr/interface/DWRPersonService.js");
+importJavascriptFile(openmrsContextPath + "/dwr/interface/DWRPersonService.js");
 
 dojo.widget.tags.addParseTreeHandler("dojo:PersonSearch");
 
@@ -78,7 +75,7 @@ dojo.widget.defineWidget(
 				
 				var td = document.createElement("td");
 				td.className = "personGender";
-				var src = "<openmrs:contextPath />/images/";
+				var src = openmrsContextPath + "/images/";
 				if (p.gender.toUpperCase() == "F")
 					src += "female.gif";
 				else if (p.gender.toUpperCase() == "M")
@@ -153,9 +150,10 @@ dojo.widget.defineWidget(
 			arr.push(this.simpleClosure(this, "getGender"));
 			arr.push(this.simpleClosure(this, "getBirthdayEstimated"));
 			arr.push(this.simpleClosure(this, "getBirthday"));
-			<openmrs:forEachDisplayAttributeType personType="" displayType="listing" var="attrType">
-				arr.push(this.simpleClosure(this, "getAttribute", "${attrType.name}"));
-			</openmrs:forEachDisplayAttributeType>
+			/* personListingAttrs var from openmrsmessages.js */
+			for (var i = 0; i < omsgs.personListingAttrs.length; i++) {
+				arr.push(this.simpleClosure(this, "getAttribute", omsgs.personListingAttrs[i]));
+			}
 			return arr;
 		},
 		
@@ -163,18 +161,18 @@ dojo.widget.defineWidget(
 		getHeaderCellContent: function() {
 			var arr = new Array();
 			arr.push('');
-			arr.push('<spring:message code="Patient.identifier" javaScriptEscape="true"/>');
-			arr.push('<spring:message code="PersonName.givenName" javaScriptEscape="true"/>');
-			arr.push('<spring:message code="PersonName.middleName" javaScriptEscape="true"/>');
-			arr.push('<spring:message code="PersonName.familyName" javaScriptEscape="true"/>');
-			arr.push('<spring:message code="Person.age" javaScriptEscape="true"/>');
-			arr.push('<spring:message code="Person.gender" javaScriptEscape="true"/>');
+			arr.push(omsgs.identifier);
+			arr.push(omsgs.givenName);
+			arr.push(omsgs.middleName);
+			arr.push(omsgs.familyName);
+			arr.push(omsgs.age);
+			arr.push(omsgs.gender);
 			arr.push('');
-			arr.push('<spring:message code="Person.birthdate" javaScriptEscape="true"/>');
-			<openmrs:forEachDisplayAttributeType personType="" displayType="listing" var="attrType">
-				arr.push('<spring:message code="PersonAttributeType.${fn:replace(attrType.name, ' ', '')}" javaScriptEscape="true" text="${attrType.name}"/>');
-			</openmrs:forEachDisplayAttributeType>
-			
+			arr.push(omsgs.birthdate);
+			/* personListingHeaders var from openmrsmessages.js */
+			for (var i = 0; i < omsgs.personListingHeaders.length; i++) {
+				arr.push(omsgs.personListingHeaders[i]);
+			}
 			return arr;
 		},
 		
@@ -286,8 +284,8 @@ dojo.widget.defineWidget(
                 if (birthdate == "")
                     return false;
                 var currentTime = new Date().getTime();
-                var datePattern = '<openmrs:datePattern />';
-                var datePatternStart = datePattern.substr(0,1).toLowerCase();
+                /* datePattern var from openmrsmessages.js */
+                var datePatternStart = omsgs.datePattern.substr(0,1).toLowerCase();
                 var enteredTime = new Date();
                 var year, month, day;
                 if (datePatternStart == 'm') { /* M-D-Y */
@@ -315,38 +313,43 @@ dojo.widget.defineWidget(
 
         createNewPersonButton: function( ) {
             var buttonForm = document.createElement("form");
-            var message = "<b id='newPersonButtonMsg'><spring:message code='Person.addNew.msg' /><br/></b>";
-            var button = "<input type='button' name='showhide' id='newPersonButton' value='<spring:message code='Person.addNew'/>'/>";
+            var message = "<b id='newPersonButtonMsg'>" + omsgs.addNewPersonMsg + "<br/></b>";
+            var button = "<input type='button' name='showhide' id='newPersonButton' value='" + omsgs.addNewPerson + "'/>";
             buttonForm.id = 'newPersonButtonForm';
             buttonForm.innerHTML = message + button;
             return buttonForm;
         },
 
         createNewPersonForm: function( ) {
-            var tbl_top = "<div style='border: 2px solid black; background-color: rgb(224, 224, 224);' ><table><tr><th></th><th><spring:message code='Person.addNew'/>:</th></tr>";
+            var tbl_top = "<div style='border: 2px solid black; background-color: rgb(224, 224, 224);' ><table><tr><th></th><th>" + omsgs.addNewPerson + ":</th></tr>";
 
-            var r1d1 = "<tr><td><spring:message code='PersonName.givenName'/></td>";
+            var r1d1 = "<tr><td>" + omsgs.givenName + "</td>";
             var r1d2 = "<td><input type='text' name='ipName' id='givenName' size='30' value=''/></td>";
-            var r1d3 = "</tr><tr><td></td><td><span id='errorGiven' name='error' class='error'><spring:message code='PersonName.givenName'/>: <spring:message code='Person.name.required'/></span></td></tr>";
+            var r1d3 = "</tr><tr><td></td><td><span id='errorGiven' name='error' class='error'>" + omsgs.givenName + ": " + omsgs.nameRequired + "</span></td></tr>";
             
-            var r2d1 = "<tr><td><spring:message code='PersonName.middleName'/></td>";
+            var r2d1 = "<tr><td>" + omsgs.middleName + "</td>";
             var r2d2 = "<td><input type='text' name='ipName' id='middleName' size='30' value='' /></td></tr>";
 
-            var r3d1 = "<tr><td><spring:message code='PersonName.familyName'/></td>"
+            var r3d1 = "<tr><td>" + omsgs.familyName + "</td>"
             var r3d2 = "<td><input type='text' name='ipName' id='familyName' size='30' value='' /></td>";
-            var r3d3 = "</tr><tr><td></td><td><span id='errorFamily' name='error' class='error'><spring:message code='PersonName.familyName'/>: <spring:message code='Person.name.required'/></span></td></tr>";
+            var r3d3 = "</tr><tr><td></td><td><span id='errorFamily' name='error' class='error'>" + omsgs.familyName + ": " + omsgs.nameRequired + "</span></td></tr>";
 
-            var r4d1 = "<tr><td><spring:message code='Person.birthdate'/><br/><input type='hidden' id='datepattern' value='<openmrs:datePattern />'/><i style='font-weight: normal; font-size: 0.8em;'>(<spring:message code='general.format'/>: <openmrs:datePattern />)</i></td>";
-            var r4d2 = "<td valign='top'><input type='text' name='ipDate' id='birthdate' size='11' value='' onclick='showCalendar(this)' /><spring:message code='Person.age.or'/><input type='text' name='ipDate' id='age' size='5' value='' /><td>";
-            var r4d3 = "</tr><tr><td></td><td><span id='errorAge' name='error' class='error'><spring:message code='Person.birthdate.required'/></span></td>";
+            var r4d1 = "<tr><td>" + omsgs.birthdate + "<br/><input type='hidden' id='datepattern' value='" + omsgs.datePattern + "'/><i style='font-weight: normal; font-size: 0.8em;'>(" + omsgs.format + ": " + omsgs.datePattern + ")</i></td>";
+            var r4d2 = "<td valign='top'><input type='text' name='ipDate' id='birthdate' size='11' value='' onclick='showCalendar(this)' />" + omsgs.or + "<input type='text' name='ipDate' id='age' size='5' value='' /><td>";
+            var r4d3 = "</tr><tr><td></td><td><span id='errorAge' name='error' class='error'>" + omsgs.birthdateRequired + "</span></td>";
 
-            var r5d1 = "<tr><td><spring:message code='Person.gender'/></td>";
-            var r5d2 = "<td><openmrs:forEachRecord name='gender'><input type='radio' name='ipGender' id='gender-${record.key}' value='${record.key}' /><label for='gender-${record.key}'> <spring:message code='Person.gender.${record.value}'/> </label></openmrs:forEachRecord></td>";
-            var r5d3 = "</tr><tr><td></td><td><span id='errorGender' name='error' class='error'><spring:message code='Person.gender.required'/></span></td>"; 
+            var r5d1 = "<tr><td>" + omsgs.gender + "</td>";
+            var r5d2 = "<td>";
+            for (var i=0; i<omsgs.genderArray.length; i++) {
+            	r5d2 += "<input type='radio' name='ipGender' id='gender-" + omsgs.genderArray[i].key + "' value='" + omsgs.genderArray[i].key + "' /><label for='gender-" + omsgs.genderArray[i].key + "'> " + omsgs.genderArray[i].msg + " </label>";
+            }
+            r5d2 += "</td>";
+            
+            var r5d3 = "</tr><tr><td></td><td><span id='errorGender' name='error' class='error'>" + omsgs.genderRequired + "</span></td>"; 
 
-            var r6d1 = "<tr><td></td><td><input type='submit' id='submitPerson' value='<spring:message code='Person.create'/>' /><input type='button' name='showhide' id='cancel' value='<spring:message code='general.cancel'/>'/></td></tr>";
+            var r6d1 = "<tr><td></td><td><input type='submit' id='submitPerson' value='" + omsgs.personCreate + "' /><input type='button' name='showhide' id='cancel' value='" + omsgs.cancel + "'/></td></tr>";
 
-            var tbl_bot = "<input type='hidden' name='personType' value='${model.personType}'/><input type='hidden' name='viewType' value='${model.viewType}'/></table></div>";
+            var tbl_bot = "<input type='hidden' name='personType' value=''/><input type='hidden' name='viewType' value='shortEdit'/></table></div>";
 
             var newPersonForm = document.createElement("form");
             newPersonForm.id = "newPersonForm";

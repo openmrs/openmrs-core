@@ -48,11 +48,14 @@
 		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
 	</bean>
 
+	<bean class="org.openmrs.api.impl.GlobalLocaleList" id="globalLocaleList"/>
+	
 	<!--  **************************  EVENT LISTENERS ***************************** -->
 	<bean id="openmrsEventListeners" class="org.openmrs.api.EventListeners">
 		<property name="globalPropertyListeners">
 			<list value-type="org.openmrs.api.GlobalPropertyListener" merge="true">
 				<bean class="org.openmrs.util.LocaleUtility" />
+				<ref bean="globalLocaleList" />
 				<ref bean="adminServiceTarget" />
 			</list>
 		</property>
@@ -228,6 +231,7 @@
 	<bean id="adminServiceTarget" class="org.openmrs.api.impl.AdministrationServiceImpl">
 		<property name="administrationDAO"><ref bean="adminDAO"/></property>	
 		<property name="eventListeners"><ref bean="openmrsEventListeners"/></property>
+		<property name="globalLocaleList"><ref bean="globalLocaleList"/></property>
 	</bean>
 	<bean id="programWorkflowServiceTarget" class="org.openmrs.api.impl.ProgramWorkflowServiceImpl">
 		<property name="programWorkflowDAO"><ref bean="programWorkflowDAO"/></property>	

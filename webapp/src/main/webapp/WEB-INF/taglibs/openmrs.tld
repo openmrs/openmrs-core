@@ -702,6 +702,12 @@
 		<required>false</required>
 		<rtexprvalue>true</rtexprvalue>
 	</attribute>
+	<attribute>
+		<description>true/false whether or not to also put the locale in the url</description>
+		<name>appendLocale</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
 </tag>	
 
 <tag>

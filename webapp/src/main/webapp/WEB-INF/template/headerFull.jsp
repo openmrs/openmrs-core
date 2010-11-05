@@ -17,6 +17,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
 		<openmrs:htmlInclude file="/openmrs.js" />
+		<openmrs:htmlInclude file="/scripts/openmrsmessages.js" appendLocale="true" />
 		<openmrs:htmlInclude file="/openmrs.css" />
 		<link href="<openmrs:contextPath/><spring:theme code='stylesheet' />" type="text/css" rel="stylesheet" />
 		<openmrs:htmlInclude file="/style.css" />

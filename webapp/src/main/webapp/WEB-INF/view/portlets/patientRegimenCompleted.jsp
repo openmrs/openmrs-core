@@ -5,7 +5,7 @@
 <openmrs:htmlInclude file="/dwr/interface/DWROrderService.js" />
 <openmrs:htmlInclude file="/dwr/engine.js" />
 <openmrs:htmlInclude file="/dwr/util.js" />
-<openmrs:htmlInclude file="/scripts/drugOrder.js" />
+<openmrs:htmlInclude file="/scripts/drugOrder.js" appendLocale="true" />
 
 		<div id="regimenPortletCompleted">
 			<table class="regimenCompletedTable">

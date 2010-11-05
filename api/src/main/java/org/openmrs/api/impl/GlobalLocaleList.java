@@ -69,10 +69,6 @@ public class GlobalLocaleList implements GlobalPropertyListener {
 	 * @return List<Locale> object with allowed Locales defined by the administrator
 	 */
 	public Set<Locale> getAllowedLocales() {
-		if (allowedLocales == null) {
-			allowedLocales = new LinkedHashSet<Locale>();
-			allowedLocales.add(Locale.ENGLISH);
-		}
 		return allowedLocales;
 	}
 	

@@ -1,5 +1,3 @@
-<%@ include file="/WEB-INF/template/include.jsp" %>
-
 /*
 	Copyright (c) 2006, The OpenMRS Cooperative
 	All Rights Reserved.
@@ -8,8 +6,7 @@
 dojo.provide("dojo.widget.openmrs.PatientSearch");
 dojo.require("dojo.widget.openmrs.PersonSearch");
 
-var openmrsSearchBase = djConfig["baseScriptUri"].substring(0, djConfig["baseScriptUri"].indexOf("/", 1));
-importJavascriptFile(openmrsSearchBase + "/dwr/interface/DWRPatientService.js");
+importJavascriptFile(openmrsContextPath + "/dwr/interface/DWRPatientService.js");
 
 dojo.widget.tags.addParseTreeHandler("dojo:PatientSearch");
 
@@ -73,9 +70,9 @@ dojo.widget.defineWidget(
 			}
 		},
 		
-		searchOnPatientNameText: "<spring:message javaScriptEscape="true" code="PatientSearch.searchOnName"/>",
-		noPatientsFoundText: "<spring:message javaScriptEscape="true" code="PatientSearch.noneFound"/> <br/> ",
-		addPatientLink: "<a href='<openmrs:contextPath />/admin/person/addPerson.htm?personType=patient&viewType=shortEdit'><spring:message javaScriptEscape="true" code="Patient.addNew"/></a>",
+		searchOnPatientNameText: omsgs.searchOnName,
+		noPatientsFoundText: omsgs.noPatientsFound + " <br/> ",
+		addPatientLink: "<a href='" + openmrsContextPath + "/admin/person/addPerson.htm?personType=patient&viewType=shortEdit'>" + omsgs.addNewPatient + "</a>",
 		
 		getId: function(p) {
 			var td = document.createElement("td");
@@ -112,9 +109,10 @@ dojo.widget.defineWidget(
 			arr.push(this.simpleClosure(this, "getGender"));
 			arr.push(this.simpleClosure(this, "getBirthdayEstimated"));
 			arr.push(this.simpleClosure(this, "getBirthday"));
-			<openmrs:forEachDisplayAttributeType personType="patient" displayType="listing" var="attrType">
-				arr.push(this.simpleClosure(this, "getAttribute", "${attrType.name}"));
-			</openmrs:forEachDisplayAttributeType>
+			/* patientListingAttrs var from openmrsmessages.js */
+			for (var i = 0; i < omsgs.patientListingAttrs.length; i++) {
+				arr.push(this.simpleClosure(this, "getAttribute", omsgs.patientListingAttrs[i]));
+			}
 			return arr;
 		},
 		
@@ -122,17 +120,18 @@ dojo.widget.defineWidget(
 		getHeaderCellContent: function() {
 			var arr = new Array();
 			arr.push('');
-			arr.push('<spring:message code="Patient.identifier" javaScriptEscape="true"/>');
-			arr.push('<spring:message code="PersonName.givenName" javaScriptEscape="true"/>');
-			arr.push('<spring:message code="PersonName.middleName" javaScriptEscape="true"/>');
-			arr.push('<spring:message code="PersonName.familyName" javaScriptEscape="true"/>');
-			arr.push('<spring:message code="Person.age" javaScriptEscape="true"/>');
-			arr.push('<spring:message code="Person.gender" javaScriptEscape="true"/>');
+			arr.push(omsgs.identifier);
+			arr.push(omsgs.givenName);
+			arr.push(omsgs.middleName);
+			arr.push(omsgs.familyName);
+			arr.push(omsgs.age);
+			arr.push(omsgs.gender);
 			arr.push('');
-			arr.push('<spring:message code="Person.birthdate" javaScriptEscape="true"/>');
-			<openmrs:forEachDisplayAttributeType personType="patient" displayType="listing" var="attrType">
-				arr.push('<spring:message code="PersonAttributeType.${fn:replace(attrType.name, ' ', '')}" javaScriptEscape="true" text="${attrType.name}"/>');
-			</openmrs:forEachDisplayAttributeType>
+			arr.push(omsgs.birthdate);
+			/* patientListingHeaders var from openmrsmessages.js */
+			for (var i = 0; i < omsgs.patientListingHeaders.length; i++) {
+				arr.push(omsgs.patientListingHeaders[i]);
+			}
 			
 			return arr;
 		},
@@ -179,7 +178,7 @@ dojo.widget.defineWidget(
 		    var returnString = "";
 		    // Search through string's characters one by one.
 		    // If character is not in bag, append to returnString.
-		    for (i = 0; i < s.length; i++){   
+		    for (i = 0; i < s.length; i++){
 		        var c = s.charAt(i);
 		        if (bag.indexOf(c) == -1) returnString += c;
 		    }

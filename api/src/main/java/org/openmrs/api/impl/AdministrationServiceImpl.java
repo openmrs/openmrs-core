@@ -56,6 +56,7 @@ import org.openmrs.api.db.AdministrationDAO;
 import org.openmrs.module.ModuleUtil;
 import org.openmrs.reporting.AbstractReportObject;
 import org.openmrs.reporting.Report;
+import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
@@ -971,13 +972,30 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		if (globalLocaleList == null) {
 			globalLocaleList = new GlobalLocaleList();
 			addGlobalPropertyListener(globalLocaleList);
-			String currentPropertyValue = getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, "");
+		}
+		
+		Set<Locale> allowedLocales = globalLocaleList.getAllowedLocales();
+		
+		// update the GlobalLocaleList.allowedLocales by faking a global property change
+		if (allowedLocales == null) {
+			// use a default language of "english" if they have cleared this GP for some reason
+			String currentPropertyValue = getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, LocaleUtility.getDefaultLocale().toString());
 			GlobalProperty allowedLocalesProperty = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST,
 			        currentPropertyValue);
 			globalLocaleList.globalPropertyChanged(allowedLocalesProperty);
+			allowedLocales = globalLocaleList.getAllowedLocales();
 		}
 		
-		return new ArrayList<Locale>(globalLocaleList.getAllowedLocales());
+		// allowedLocales is guaranteed to not be null at this point
+		return new ArrayList<Locale>(allowedLocales);
+	}
+	
+	/**
+	 * Used by spring to set the GlobalLocaleList on this implementation
+	 * @param gll the GlobalLocaleList object that is registered to the GlobalPropertyListeners as well
+	 */
+	public void setGlobalLocaleList(GlobalLocaleList gll) {
+		globalLocaleList = gll;
 	}
 	
 	/**

@@ -1,5 +1,3 @@
-<%@ include file="/WEB-INF/template/include.jsp" %>
-
 /*
 	Copyright (c) 2006, The OpenMRS Cooperative
 	All Rights Reserved.
@@ -8,8 +6,7 @@
 dojo.provide("dojo.widget.openmrs.UserSearch");
 dojo.require("dojo.widget.openmrs.PersonSearch");
 
-var openmrsSearchBase = djConfig["baseScriptUri"].substring(0, djConfig["baseScriptUri"].indexOf("/", 1));
-importJavascriptFile(openmrsSearchBase + "/dwr/interface/DWRUserService.js");
+importJavascriptFile(openmrsContextPath + "/dwr/interface/DWRUserService.js");
 
 dojo.widget.tags.addParseTreeHandler("dojo:UserSearch");
 
@@ -25,7 +22,7 @@ dojo.widget.defineWidget(
 		
 		showUsername: true,
 		
-		includeRetiredLabel: '<spring:message code="SearchResults.includeDisabled" javaScriptEscape="true"/>',
+		includeRetiredLabel: omsgs.includeDisabled,
 		
 		postCreate: function(){
 			dojo.debug("postCreate in UserSearch");
@@ -69,9 +66,11 @@ dojo.widget.defineWidget(
 			arr.push(this.simpleClosure(this, "getFamily"));
 			if (this.showRoles)
 				arr.push(getRoles);
-			<openmrs:forEachDisplayAttributeType personType="user" displayType="listing" var="attrType">
-				arr.push(this.simpleClosure(this, "getAttribute", "${attrType.name}"));
-			</openmrs:forEachDisplayAttributeType>
+			
+			/* userListingAttrs var from openmrsmessages.js */
+			for (var i = 0; i < omsgs.userListingAttrs.length; i++) {
+				arr.push(this.simpleClosure(this, "getAttribute", omsgs.userListingAttrs[i]));
+			}
 			
 			return arr;
 		},
@@ -80,18 +79,19 @@ dojo.widget.defineWidget(
 		getHeaderCellContent: function() {
 			var arr = new Array();
 			arr.push('');
-			arr.push('<spring:message code="User.systemId" javaScriptEscape="true"/>');
+			arr.push(omsgs.systemId);
 			if (this.showUsername)
-				arr.push('<spring:message code="User.username" javaScriptEscape="true"/>');
-			arr.push('<spring:message code="PersonName.givenName" javaScriptEscape="true"/>');
-			arr.push('<spring:message code="PersonName.middleName" javaScriptEscape="true"/>');
-			arr.push('<spring:message code="PersonName.familyName" javaScriptEscape="true"/>');
+				arr.push(omsgs.username);
+			arr.push(omsgs.givenName);
+			arr.push(omsgs.middleName);
+			arr.push(omsgs.familyName);
 			if (this.showRoles)
-				arr.push('<spring:message code="User.roles" javaScriptEscape="true"/>');
-			<openmrs:forEachDisplayAttributeType personType="user" displayType="listing" var="attrType">
-				arr.push('<spring:message code="PersonAttributeType.${fn:replace(attrType.name, ' ', '')}" javaScriptEscape="true" text="${attrType.name}"/>');
-			</openmrs:forEachDisplayAttributeType>
+				arr.push(omsgs.userRoles);
 			
+			/* userListingHeaders var from openmrsmessages.js */
+			for (var i = 0; i < omsgs.userListingHeaders.length; i++) {
+				arr.push(omsgs.userListingHeaders[i]);
+			}
 			return arr;
 		},
 		
