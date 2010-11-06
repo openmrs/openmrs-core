@@ -267,7 +267,7 @@ public interface EncounterService extends OpenmrsService {
 	public EncounterType getEncounterType(String name) throws APIException;
 	
 	/**
-	 * Get all encounter types (not retired)
+	 * Get all encounter types (including retired)
 	 * 
 	 * @return encounter types list
 	 * @throws APIException
