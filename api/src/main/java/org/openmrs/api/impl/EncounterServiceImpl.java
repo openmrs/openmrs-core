@@ -331,14 +331,14 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 * @see org.openmrs.api.EncounterService#getAllEncounterTypes()
 	 */
 	public List<EncounterType> getAllEncounterTypes() throws APIException {
-		return dao.getAllEncounterTypes(false);
+		return dao.getAllEncounterTypes(true);
 	}
 	
 	/**
 	 * @see org.openmrs.api.EncounterService#getAllEncounterTypes(boolean)
 	 */
-	public List<EncounterType> getAllEncounterTypes(boolean includeVoided) throws APIException {
-		return dao.getAllEncounterTypes(includeVoided);
+	public List<EncounterType> getAllEncounterTypes(boolean includeRetired) throws APIException {
+		return dao.getAllEncounterTypes(includeRetired);
 	}
 	
 	/**
