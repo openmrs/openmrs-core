@@ -37,7 +37,7 @@
 
 <div>
 	<b class="boxHeader"><spring:message code="Encounter.find"/></b>
-	<div class="box" style="overflow: auto;">
+	<div class="box">
 		<div id="findEncounter" <request:existsParameter name="autoJump">allowAutoJump='true'</request:existsParameter> ></div>
 	</div>
 </div>

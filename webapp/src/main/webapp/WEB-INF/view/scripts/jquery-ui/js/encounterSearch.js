@@ -87,7 +87,7 @@ function doEncounterSearch(text, resultHandler, opts) {
 	</pre>
  */
 (function($) {
-	var encounterSearch_div = '<span><span style="white-space: nowrap"><span id="searchLabelNode"></span><input type="text" value="" id="inputNode" autocomplete="off"/><input type="checkbox" style="display: none" id="includeRetired"/><img id="spinner" src=""/><input type="checkbox" style="display: none" id="includeVoided"/><input type="checkbox" style="display: none" id="verboseListing"/></span><span id="pageInfo"></span><span class="openmrsSearchDiv"><table id="openmrsSearchTable" cellpadding="2" cellspacing="0" style="width: 100%"><thead id="searchTableHeader"><tr><th></th><th></th><th></th><th></th><th></th><th></th></tr></thead><tbody></tbody></table></span></span>';
+	var encounterSearch_div = '<span><span style="white-space: nowrap"><span><span id="searchLabelNode"></span><input type="text" value="" id="inputNode" autocomplete="off"/><input type="checkbox" style="display: none" id="includeRetired"/><img id="spinner" src=""/><input type="checkbox" style="display: none" id="includeVoided"/><input type="checkbox" style="display: none" id="verboseListing"/><span id="pageInfo"></span></span></span><span class="openmrsSearchDiv"><table id="openmrsSearchTable" cellpadding="2" cellspacing="0" style="width: 100%"><thead id="searchTableHeader"><tr><th></th><th></th><th></th><th></th><th></th><th></th></tr></thead><tbody></tbody></table></span></span>';
 	
 	$.widget("ui.encounterSearch", {
 		plugins: {},
@@ -186,6 +186,9 @@ function doEncounterSearch(text, resultHandler, opts) {
 	    		}
 	    		else {
 	    			self._table.fnClearTable();
+	    			if(spinnerObj.css("visibility") == 'visible'){
+	    				spinnerObj.css("visibility", "hidden");
+	    			}
 	    			if($('#openmrsSearchTable_paginate').is(":visible")){
 		    	    	$('#openmrsSearchTable_paginate').hide();
 		    		}
@@ -206,6 +209,8 @@ function doEncounterSearch(text, resultHandler, opts) {
 		    	iDisplayLength: 10,
 		    	numberOfPages: 0,
 		    	currPage: 0,
+		    	bAutoWidth: false,
+		    	bJQueryUI: true,
 		    	fnRowCallback: function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {					
 		    		//register mouseover/out events handlers to have row highlighting
 		    		$(nRow).bind('mouseover', function(){
