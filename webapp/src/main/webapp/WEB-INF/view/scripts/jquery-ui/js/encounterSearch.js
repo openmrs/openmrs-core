@@ -87,7 +87,7 @@ function doEncounterSearch(text, resultHandler, opts) {
 	</pre>
  */
 (function($) {
-	var encounterSearch_div = '<span><span style="white-space: nowrap"><span id="searchLabelNode"></span><input type="text" value="" id="inputNode" autocomplete="off"/><input type="checkbox" style="display: none" id="includeRetired"/><img id="spinner" src=""/><input type="checkbox" style="display: none" id="includeVoided"/><input type="checkbox" style="display: none" id="verboseListing"/></span><span class="openmrsSearchDiv"><table id="openmrsSearchTable" cellpadding="2" cellspacing="0" style="width: 100%"><thead id="searchTableHeader"><tr><th></th><th></th><th></th><th></th><th></th><th></th></tr></thead><tbody></tbody></table></span></span>';
+	var encounterSearch_div = '<span><span style="white-space: nowrap"><span id="searchLabelNode"></span><input type="text" value="" id="inputNode" autocomplete="off"/><input type="checkbox" style="display: none" id="includeRetired"/><img id="spinner" src=""/><input type="checkbox" style="display: none" id="includeVoided"/><input type="checkbox" style="display: none" id="verboseListing"/></span><span id="pageInfo"></span><span class="openmrsSearchDiv"><table id="openmrsSearchTable" cellpadding="2" cellspacing="0" style="width: 100%"><thead id="searchTableHeader"><tr><th></th><th></th><th></th><th></th><th></th><th></th></tr></thead><tbody></tbody></table></span></span>';
 	
 	$.widget("ui.encounterSearch", {
 		plugins: {},
@@ -279,42 +279,35 @@ function doEncounterSearch(text, resultHandler, opts) {
 				var currInput = $j.trim($j("#inputNode").val());
 				if(currInput == '' || currInput.length < self.options.minLength){
 					if($('#openmrsSearchTable_paginate').is(":visible")){
-			    	    	$('#openmrsSearchTable_paginate').hide();
+			    		$('#openmrsSearchTable_paginate').hide();
 					}
 					return;
 				}
-				self._doHandleResults(matchCount);
+				self._doHandleResults(matchCount, searchText);
 				
 				//FETCH THE REST OF THE RESULTS IF encounter COUNT is greater than the number of rows to display per page
 				if(matchCount > self._table.fnSettings()._iDisplayLength){
-					//This forces the browser to spawn a new thread to avoid "Unresponsive script errors"
-					//in case server responses delay
-					setTimeout(function(){
-						self.options.searchHandler(searchText, self._updateBlankRows(curCallCount),
-							{includeVoided: self.options.showIncludeVoided && checkBox.attr('checked'),
-							start: self._table.fnSettings()._iDisplayLength, length: null})
-					}, 50);
+					self.options.searchHandler(searchText, self._addMoreRows(curCallCount, searchText, matchCount),
+						{includeVoided: self.options.showIncludeVoided && checkBox.attr('checked'),
+						start: self._table.fnSettings()._iDisplayLength, length: null});
 				}
 			};
 		},
 			
-		_doHandleResults: function(matchCount) {
+		_doHandleResults: function(matchCount, searchText) {
 			this.curRowSelection = null;
 				
 			if(this.options.resultsHandler) {
 				this.options.resultsHandler(this._results);
 			}
 			else {
-				this._buildDataTable(matchCount);
+				this._buildDataTable(matchCount, searchText);
 				//reset to show first page always
 				this._table.fnPageChange('first');
-				
-				if((this._results != null) && (this._results.length > 0) && (typeof this._results[0] != 'string'))
-					this.updatePageInfo();
 			}	
 		},
 		
-		_buildDataTable: function(matchCount) {
+		_buildDataTable: function(matchCount, searchText) {
 			this._fireEvent('beforeDataTable');
 			
 			this._table.fnClearTable();
@@ -331,29 +324,20 @@ function doEncounterSearch(text, resultHandler, opts) {
 			for(var r in this._results) {
 				d[r] = this._buildRow(this._results[r]);
 			}
-			//add some blank rows to the datatable for the remaining rows to be fetched
-			var blankRows = matchCount - this._table.fnSettings()._iDisplayLength;			
-			var pos = this._table.fnSettings()._iDisplayLength;			
-			var emptyData = {"personName":"Loading data....", "":"", "":"", "":"", "":"", "":""};
-			for(var x = 0; x < blankRows; x++){
-				d[pos] = this._buildRow(emptyData);				
-				pos++;
-			}
 			
 			this._table.fnAddData(d);
-			if(matchCount % this._table.fnSettings()._iDisplayLength == 0)
-				this._table.numberOfPages = matchCount/this._table.fnSettings()._iDisplayLength;
-			else
-				this._table.numberOfPages = Math.floor(matchCount/this._table.fnSettings()._iDisplayLength)+1;
-			
+			this._table.numberOfPages = 1;
 			this._table.currPage = 1;
 			
     	    if(matchCount <= this._table.fnSettings()._iDisplayLength){
     	    	$('#openmrsSearchTable_paginate').hide();
 			}else if(!$('#openmrsSearchTable_paginate').is(":visible")){
 				//if the buttons were previously hidden, show them
-				$('#openmrsSearchTable_paginate').show(); 
+				$('#openmrsSearchTable_paginate').show();
 			}
+    	    
+    	    this._updatePageInfo(searchText);
+    	    
 			this._div.find(".openmrsSearchDiv").show();
 			
 			this._fireEvent('afterDataTable');
@@ -455,7 +439,6 @@ function doEncounterSearch(text, resultHandler, opts) {
 			this._table.fnPageChange('next');
 			if(++this._table.currPage > this._table.numberOfPages)
 				this._table.currPage = this._table.numberOfPages;
-			this.updatePageInfo();
 		},
 		
 		_doKeyLeft: function() {
@@ -466,7 +449,6 @@ function doEncounterSearch(text, resultHandler, opts) {
 			this._table.fnPageChange('previous');
 			if(--this._table.currPage < 1)
 				this._table.currPage = 1;
-			this.updatePageInfo();
 		},
 		
 		_doKeyEnter: function() {
@@ -516,14 +498,14 @@ function doEncounterSearch(text, resultHandler, opts) {
 	        alert("LOG=[" + s + "]");
 	    },
 		
-	    updatePageInfo: function() {
+		_updatePageInfo: function(searchText) {
 	    	var pageString = (this._table.numberOfPages == 1) ? "Page" : "Pages";
-	    	$('#openmrsSearchTable_info').append(" ( "+this._table.numberOfPages+" "+pageString+" )");
+	    	$('#pageInfo').html("Viewing results for '"+searchText+"' ( "+this._table.numberOfPages+" "+pageString+" )");
+	    	$('#pageInfo').show();
 		},
 		
-		//This function replaces the blank rows in the datatable with actual data returned by the 
-		//second ajax call that retrieves the remaining rows
-		_updateBlankRows: function(curCallCount2){
+		//This function adds the data returned by the second ajax call that fetches the remaining rows
+		_addMoreRows: function(curCallCount2, searchText, matchCount){
 			var self = this;
 			return function(results) {
 				spinnerObj.css("visibility", "hidden");
@@ -543,15 +525,21 @@ function doEncounterSearch(text, resultHandler, opts) {
 					return;
 				}
 				
-				var pos = self._table.fnSettings()._iDisplayLength;
+				if(matchCount % self._table.fnSettings()._iDisplayLength == 0)
+					self._table.numberOfPages = matchCount/self._table.fnSettings()._iDisplayLength;
+				else
+					self._table.numberOfPages = Math.floor(matchCount/self._table.fnSettings()._iDisplayLength)+1;
+				
+				var newData = new Array();
 				for(var x in data) {
 					currentData = data[x];
-					newRowData = self._buildRow(currentData);
+					newData.push(self._buildRow(currentData));
 					//add the rest of this data to the results list
-					self._results[pos] = currentData;
-					self._table.fnUpdate(newRowData, pos);		
-					pos++;
+					self._results.push(currentData);
 				}
+				
+				self._updatePageInfo(searchText);
+				self._table.fnAddData(newData);
 			};
 		},
 		
