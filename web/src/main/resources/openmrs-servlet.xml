@@ -247,7 +247,7 @@
 	<bean id="nameLayoutPortletController" class="org.openmrs.web.controller.layout.NameLayoutPortletController" />
 	<bean id="activeListPortletController" class="org.openmrs.web.controller.ActiveListPortletController" />
 	<!--<bean id="calendarPortletController" class="org.openmrs.web.controller.CalendarPortletController"/>-->
-	<bean id="springController" class="org.openmrs.web.controller.SpringController" />
+	<bean id="springController" class="org.springframework.web.servlet.mvc.UrlFilenameViewController" />
 
 	<!-- =============================== -->
 	<!-- =====      Scheduler      ===== -->
