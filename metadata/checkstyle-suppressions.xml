@@ -702,7 +702,6 @@
 	<suppress checks="JavadocType" files="SchedulerUtil.java" />
 	<suppress checks="JavadocType" files="ShortPatientModel.java" />
 	<suppress checks="JavadocType" files="ShowGraphTag.java" />
-	<suppress checks="JavadocType" files="SpringController.java" />
 	<suppress checks="JavadocType" files="StateConversionFormController.java" />
 	<suppress checks="JavadocType" files="StateConversionListController.java" />
 	<suppress checks="JavadocType" files="StringHandler.java" />
