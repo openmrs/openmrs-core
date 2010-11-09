@@ -1268,4 +1268,5 @@ img#spinner{
 #openmrsSearchTable{
 	padding-bottom: 10px;
 }
+div.paging_full_numbers{width:500px !important;}
 /* END- css properties for the search widgets */

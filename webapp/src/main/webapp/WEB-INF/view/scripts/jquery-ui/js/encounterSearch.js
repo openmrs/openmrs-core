@@ -189,6 +189,9 @@ function doEncounterSearch(text, resultHandler, opts) {
 	    			if(spinnerObj.css("visibility") == 'visible'){
 	    				spinnerObj.css("visibility", "hidden");
 	    			}
+	    			if($('#pageInfo').is(":visible")){
+	    				$('#pageInfo').hide();
+		    		}
 	    			if($('#openmrsSearchTable_paginate').is(":visible")){
 		    	    	$('#openmrsSearchTable_paginate').hide();
 		    		}
@@ -286,12 +289,16 @@ function doEncounterSearch(text, resultHandler, opts) {
 					if($('#openmrsSearchTable_paginate').is(":visible")){
 			    		$('#openmrsSearchTable_paginate').hide();
 					}
+					if($('#pageInfo').is(":visible")){
+	    				$('#pageInfo').hide();
+		    		}
 					return;
 				}
 				self._doHandleResults(matchCount, searchText);
 				
 				//FETCH THE REST OF THE RESULTS IF encounter COUNT is greater than the number of rows to display per page
 				if(matchCount > self._table.fnSettings()._iDisplayLength){
+					spinnerObj.css("visibility", "visible");
 					self.options.searchHandler(searchText, self._addMoreRows(curCallCount, searchText, matchCount),
 						{includeVoided: self.options.showIncludeVoided && checkBox.attr('checked'),
 						start: self._table.fnSettings()._iDisplayLength, length: null});
@@ -322,6 +329,9 @@ function doEncounterSearch(text, resultHandler, opts) {
 	    	    if($('#openmrsSearchTable_paginate')){
 	    	    	$('#openmrsSearchTable_paginate').hide();
 				}
+	    	    if($('#pageInfo').is(":visible")){
+    				$('#pageInfo').hide();
+	    		}
 				return;
 			}
 			
@@ -504,9 +514,12 @@ function doEncounterSearch(text, resultHandler, opts) {
 	    },
 		
 		_updatePageInfo: function(searchText) {
-	    	var pageString = (this._table.numberOfPages == 1) ? "Page" : "Pages";
-	    	$('#pageInfo').html("Viewing results for '"+searchText+"' ( "+this._table.numberOfPages+" "+pageString+" )");
-	    	$('#pageInfo').show();
+			if(this._results.length > 0){
+				var pageString = (this._table.numberOfPages == 1) ? "Page" : "Pages";
+				$('#pageInfo').html("Viewing results for '"+searchText+"' ( "+this._table.numberOfPages+" "+pageString+" )");
+				$('#pageInfo').show();
+			}else if($('#pageInfo').is(":visible"))
+				$('#pageInfo').hide();
 		},
 		
 		//This function adds the data returned by the second ajax call that fetches the remaining rows
