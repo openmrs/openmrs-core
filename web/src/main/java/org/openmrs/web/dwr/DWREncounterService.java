@@ -109,7 +109,17 @@ public class DWREncounterService {
 	                                                                                                                      throws APIException {
 		//Map to return
 		Map<String, Object> resultsMap = new HashMap<String, Object>();
+		EncounterService es = Context.getEncounterService();
 		int encounterCount = Context.getEncounterService().getCountOfEncounters(phrase, includeVoided);
+		if (phrase.matches("\\d+")) {
+			// user searched on a number
+			Encounter e = es.getEncounter(Integer.valueOf(phrase));
+			if (e != null) {
+				if (!e.isVoided() || includeVoided == true)
+					encounterCount++;
+			}
+		}
+		
 		Vector<Object> objectList = new Vector<Object>();
 		
 		if (encounterCount > 0)
