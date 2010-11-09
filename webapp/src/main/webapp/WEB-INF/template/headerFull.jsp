@@ -50,6 +50,22 @@
 			var dwrLoadingMessage = '<spring:message code="general.loading" />';
 			var jsDateFormat = '<openmrs:datePattern localize="false"/>';
 			var jsLocale = '<%= org.openmrs.api.context.Context.getLocale() %>';
+			
+			/* prevents users getting false dwr errors msgs when leaving pages */
+			var pageIsExiting = false;
+			$j(window).bind('beforeunload', function () { pageIsExiting = true; } );
+			
+			var handler = function(msg, ex) {
+				if (!pageIsExiting) {
+					var div = document.getElementById("openmrs_dwr_error");
+					div.style.display = ""; // show the error div
+					var msgDiv = document.getElementById("openmrs_dwr_error_msg");
+					msgDiv.innerHTML = '<spring:message code="error.dwr"/>' + " <b>" + msg + "</b>";
+				}
+				
+			};
+			dwr.engine.setErrorHandler(handler);
+			dwr.engine.setWarningHandler(handler);
 		</script>
 
 		<openmrs:extensionPoint pointId="org.openmrs.headerFullIncludeExt" type="html" requiredClass="org.openmrs.module.web.extension.HeaderIncludeExt">
@@ -101,19 +117,6 @@
 		--%>
 
 		<div id="content">
-
-			<script type="text/javascript">
-				// prevents users getting popup alerts when viewing pages
-				var handler = function(msg, ex) {
-					var div = document.getElementById("openmrs_dwr_error");
-					div.style.display = ""; // show the error div
-					var msgDiv = document.getElementById("openmrs_dwr_error_msg");
-					msgDiv.innerHTML = '<spring:message code="error.dwr"/>' + " <b>" + msg + "</b>";
-					
-				};
-				dwr.engine.setErrorHandler(handler);
-				dwr.engine.setWarningHandler(handler);
-			</script>
 
 			<openmrs:forEachAlert>
 				<c:if test="${varStatus.first}"><div id="alertOuterBox"><div id="alertInnerBox"></c:if>
