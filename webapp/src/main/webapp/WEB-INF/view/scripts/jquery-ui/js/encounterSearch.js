@@ -87,7 +87,7 @@ function doEncounterSearch(text, resultHandler, opts) {
 	</pre>
  */
 (function($) {
-	var encounterSearch_div = '<span><span style="white-space: nowrap"><span><span id="searchLabelNode"></span><input type="text" value="" id="inputNode" autocomplete="off"/><input type="checkbox" style="display: none" id="includeRetired"/><img id="spinner" src=""/><input type="checkbox" style="display: none" id="includeVoided"/><input type="checkbox" style="display: none" id="verboseListing"/><span id="pageInfo"></span></span></span><span class="openmrsSearchDiv"><table id="openmrsSearchTable" cellpadding="2" cellspacing="0" style="width: 100%"><thead id="searchTableHeader"><tr><th></th><th></th><th></th><th></th><th></th><th></th></tr></thead><tbody></tbody></table></span></span>';
+	var encounterSearch_div = '<span><span style="white-space: nowrap"><span><span id="searchLabelNode"></span><span id="minCharError" class="error" style="display:none"></span><input type="text" value="" id="inputNode" autocomplete="off"/><input type="checkbox" style="display: none" id="includeRetired"/><img id="spinner" src=""/><input type="checkbox" style="display: none" id="includeVoided"/><input type="checkbox" style="display: none" id="verboseListing"/><span id="pageInfo"></span></span></span><span class="openmrsSearchDiv"><table id="openmrsSearchTable" cellpadding="2" cellspacing="0" style="width: 100%"><thead id="searchTableHeader"><tr><th></th><th></th><th></th><th></th><th></th><th></th></tr></thead><tbody></tbody></table></span></span>';
 	
 	$.widget("ui.encounterSearch", {
 		plugins: {},
@@ -102,6 +102,7 @@ function doEncounterSearch(text, resultHandler, opts) {
 		_results: null,
 		_div: null,
 		_table: null,
+		_textInputTimer: null,
 		_columns: [
 			{id:"personName", name:"Patient Name"},
 			{id:"encounterType", name:"Encounter Type"},
@@ -123,6 +124,8 @@ function doEncounterSearch(text, resultHandler, opts) {
 		    	spinnerObj = div.find("#spinner");
 		    	spinnerObj.css("visibility", "hidden");
 		    	spinnerObj.attr("src", openmrsContextPath+"/images/loading.gif");
+		    	minCharErrorObj = div.find("#minCharError");
+		    	minCharErrorObj.html("Enter at least 3 characters");
 		    
 		    this._div = div;
 
@@ -141,15 +144,13 @@ function doEncounterSearch(text, resultHandler, opts) {
 		    	else{
 		    		if(spinnerObj.css("visibility") == 'visible')
 	    				spinnerObj.css("visibility", "hidden");
-	    			if($('#openmrsSearchTable_info').is(":visible"))
-						$('#openmrsSearchTable_info').hide();
+		    		$j(".openmrsSearchDiv").hide();
+		    		$j("#minCharError").show();
 		    		if($('#pageInfo').is(":visible"))
 						$('#pageInfo').hide();
-		    		if($('#openmrsSearchTable_paginate').is(":visible"))
-		    	    	$('#openmrsSearchTable_paginate').hide();		    		
 		    	}
 		    	//to maintain keyDown and keyUp events since they are only fired when the input box has focus
-		    	input.focus();		    	
+		    	input.focus();
 			});
 		    
 		    //this._trigger('initialized');
@@ -192,6 +193,15 @@ function doEncounterSearch(text, resultHandler, opts) {
 		    	
 	        	var text = $j.trim(input.val());
 	    		if(text.length >= o.minLength) {
+	    			if(this._textInputTimer != null){
+	    				window.clearTimeout(this._textInputTimer);
+	    			}	
+	    			if($('#pageInfo').is(":visible"))
+						$('#pageInfo').hide();
+						
+	    			if($j("#minCharError").is(':visible'))
+	    				$j("#minCharError").hide();
+	    			
 	    			self._doSearch(text);
 	    		}
 	    		else {
@@ -199,17 +209,33 @@ function doEncounterSearch(text, resultHandler, opts) {
 	    			if(spinnerObj.css("visibility") == 'visible'){
 	    				spinnerObj.css("visibility", "hidden");
 	    			}
-	    			if($('#pageInfo').is(":visible")){
-	    				$('#pageInfo').hide();
-		    		}
-	    			if($('#openmrsSearchTable_paginate').is(":visible")){
-		    	    	$('#openmrsSearchTable_paginate').hide();
-		    		}
-	    			if($('#openmrsSearchTable_info').is(":visible"))
-						$('#openmrsSearchTable_info').hide();
+	    			if($('#pageInfo').is(":visible"))
+						$('#pageInfo').hide();
+						
+	    			$j(".openmrsSearchDiv").hide();
+	    			//wait for a 400ms, if the user isn't typing anymore chars, show the error msg
+	    			this._textInputTimer = window.setTimeout(function(){
+	    				if($j.trim(input.val()).length < o.minLength)
+	    					$j("#minCharError").show();
+	    			}, 500);
+	    			
 	    		}
 	    		return true;
 		    });
+		    
+		    //on widget load the focus should be on the search box if there are no 
+		    //other enabled and visible text boxes on the page
+		    var inputs = document.getElementsByTagName("input");
+		    var numberOfTextInputs = 0;
+		    for(var x in inputs){
+		    	var inputField = inputs[x];
+		    	if(inputField && inputField.type == 'text' && $(inputField).attr("disabled") == false && 
+		    			$(inputField).is(":visible") && $(inputField).css("visibility") != "hidden")
+		    		numberOfTextInputs++;
+		    }
+		   
+		    if(numberOfTextInputs == 1)
+		    	input.focus();
 		    
 			//setup 'openmrsSearchTable'
 			div.find(".openmrsSearchDiv").hide();
@@ -229,13 +255,15 @@ function doEncounterSearch(text, resultHandler, opts) {
 		    	fnRowCallback: function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {					
 		    		//register mouseover/out events handlers to have row highlighting
 		    		$(nRow).bind('mouseover', function(){
-		    			//for only loaded rows
-		    			if(self._results[iDisplayIndexFull])
-		    				$(this).addClass('tr_row_highlight');						
+		    			$(this).addClass('tr_row_highlight_hover');
+		    			$(this).css("cursor", "pointer");
+		    			if(self.curRowSelection != null)
+		    				$(self._table.fnGetNodes()[self.curRowSelection]).removeClass("row_highlight");
 					});
 		    		$(nRow).bind('mouseout', function(){
-		    			if(self._results[iDisplayIndexFull])
-		    				$(this).removeClass('tr_row_highlight');	
+		    			$(this).removeClass('tr_row_highlight_hover');
+		    			if(self.curRowSelection != null)
+		    				$(self._table.fnGetNodes()[self.curRowSelection]).addClass("row_highlight");
 		    	    });
 		    				    		
 		    		//draw a strike through for all voided encounters that have been loaded
@@ -247,9 +275,8 @@ function doEncounterSearch(text, resultHandler, opts) {
 		    		
 		    		if(self.options.selectionHandler) {
 		    			$(nRow).bind('click', function() {
-		    				//Register onclick handlers to each row that is loaded
-		    				if(self._results[iDisplayIndexFull])
-		    					self._doSelected(iDisplayIndexFull, self._results[iDisplayIndexFull]);
+		    				//Register onclick handlers to each row
+		    				self._doSelected(iDisplayIndexFull, self._results[iDisplayIndexFull]);
 		    			});
 		    		}
 		    		
@@ -294,18 +321,14 @@ function doEncounterSearch(text, resultHandler, opts) {
 				
 				self._lastCallCount = curCallCount;
 				//Don't display results from delayed ajax calls when the input box is blank or has less 
-				//than the minimun characters, this can arise when user presses backspace relatively fast
+				//than the minimum characters, this can arise when user presses backspace relatively fast
 				//yet there were some intermediate calls that might have returned results
 				var currInput = $j.trim($j("#inputNode").val());
 				if(currInput == '' || currInput.length < self.options.minLength){
-					if($('#openmrsSearchTable_paginate').is(":visible")){
-			    		$('#openmrsSearchTable_paginate').hide();
-					}
-					if($('#pageInfo').is(":visible")){
-	    				$('#pageInfo').hide();
-		    		}
-					if($('#openmrsSearchTable_info').is(":visible"))
-						$('#openmrsSearchTable_info').hide();
+					if($('#pageInfo').is(":visible"))
+						$('#pageInfo').hide();
+					$j(".openmrsSearchDiv").hide();
+					$j("#minCharError").show();
 					return;
 				}
 				self._doHandleResults(matchCount, searchText);
@@ -427,6 +450,8 @@ function doEncounterSearch(text, resultHandler, opts) {
 				this._table.fnPageChange('next');
 			}
 			
+			//hide the hover
+			$('.tr_row_highlight_hover').removeClass("tr_row_highlight_hover");
 			$(this._table.fnGetNodes()[this.curRowSelection]).addClass("row_highlight");
 		},
 		
@@ -438,11 +463,6 @@ function doEncounterSearch(text, resultHandler, opts) {
 			var prevRow = this.curRowSelection;
 			if(this.curRowSelection == null) {
 				this.curRowSelection = this._table.fnGetData().length-1;
-				//if the row has yet been populated, don't highlight it, stay on the first page
-				if(!this._results[this.curRowSelection]){
-					this.curRowSelection = null;
-					return;
-				}
 				this._table.currPage = this._table.numberOfPages;
 				this._table.fnPageChange('last');
 			}
@@ -465,6 +485,8 @@ function doEncounterSearch(text, resultHandler, opts) {
 				}
 			}
 			
+			//hide the hover
+			$('.tr_row_highlight_hover').removeClass("tr_row_highlight_hover");
 			$(this._table.fnGetNodes()[this.curRowSelection]).addClass("row_highlight");
 		},
 		
@@ -477,7 +499,7 @@ function doEncounterSearch(text, resultHandler, opts) {
 			if(++this._table.currPage > this._table.numberOfPages)
 				this._table.currPage = this._table.numberOfPages;
 			
-			//move the highlight to the first row on the next page so that we dont lose it and the highlight isn't on the page			
+			//move the highlight to the first row on the next page so that we dont lose it if the highlight isn't on the page			
 			if(this._table.currPage < this._table.numberOfPages || (this._table.currPage == this._table.numberOfPages && this.curRowSelection < 
 					((this._table.numberOfPages - 1)*this._table.fnSettings()._iDisplayLength)))
 				this._updateRowHighlight(((this._table.currPage - 1)*this._table.fnSettings()._iDisplayLength));
@@ -520,7 +542,7 @@ function doEncounterSearch(text, resultHandler, opts) {
 			}
 
 			this._table.fnPageChange('first');
-			//this._table.currPage = 1;
+			this._table.currPage = 1;
 			if(this.curRowSelection == null || this.curRowSelection < this._table.fnSettings()._iDisplayLength)
 				return;
 			this._updateRowHighlight(0);
@@ -588,14 +610,11 @@ function doEncounterSearch(text, resultHandler, opts) {
 				//than the minimum characters
 				var currInput = $j.trim($j("#inputNode").val());
 				if(currInput == '' || currInput.length < self.options.minLength){
-					if($('#openmrsSearchTable_info').is(":visible"))
-						$('#openmrsSearchTable_info').hide();
-		    		if($('#pageInfo').is(":visible"))
+					if($('#pageInfo').is(":visible"))
 						$('#pageInfo').hide();
-		    		if($('#openmrsSearchTable_paginate').is(":visible"))
-		    	    	$('#openmrsSearchTable_paginate').hide();
-		    		
-		    		spinnerObj.css("visibility", "hidden");
+					$j(".openmrsSearchDiv").hide();
+					$j("#minCharError").show();
+					spinnerObj.css("visibility", "hidden");
 					return;
 				}
 				
