@@ -136,8 +136,18 @@ function doEncounterSearch(text, resultHandler, opts) {
 		    
 		    //when the user checks/unchecks the includeVoided checkbox, trigger a search
 		    checkBox.click(function() {   	
-		    	if($j.trim(input.val()) != '')
+		    	if($j.trim(input.val()) != '' && $j.trim(input.val()).length >= o.minLength)
 		    		self._doSearch(input.val());
+		    	else{
+		    		if(spinnerObj.css("visibility") == 'visible')
+	    				spinnerObj.css("visibility", "hidden");
+	    			if($('#openmrsSearchTable_info').is(":visible"))
+						$('#openmrsSearchTable_info').hide();
+		    		if($('#pageInfo').is(":visible"))
+						$('#pageInfo').hide();
+		    		if($('#openmrsSearchTable_paginate').is(":visible"))
+		    	    	$('#openmrsSearchTable_paginate').hide();		    		
+		    	}
 		    	//to maintain keyDown and keyUp events since they are only fired when the input box has focus
 		    	input.focus();		    	
 			});
@@ -195,6 +205,8 @@ function doEncounterSearch(text, resultHandler, opts) {
 	    			if($('#openmrsSearchTable_paginate').is(":visible")){
 		    	    	$('#openmrsSearchTable_paginate').hide();
 		    		}
+	    			if($('#openmrsSearchTable_info').is(":visible"))
+						$('#openmrsSearchTable_info').hide();
 	    		}
 	    		return true;
 		    });
@@ -292,6 +304,8 @@ function doEncounterSearch(text, resultHandler, opts) {
 					if($('#pageInfo').is(":visible")){
 	    				$('#pageInfo').hide();
 		    		}
+					if($('#openmrsSearchTable_info').is(":visible"))
+						$('#openmrsSearchTable_info').hide();
 					return;
 				}
 				self._doHandleResults(matchCount, searchText);
@@ -332,6 +346,8 @@ function doEncounterSearch(text, resultHandler, opts) {
 	    	    if($('#pageInfo').is(":visible")){
     				$('#pageInfo').hide();
 	    		}
+	    	    if($('#openmrsSearchTable_info').is(":visible"))
+					$('#openmrsSearchTable_info').hide();
 				return;
 			}
 			
@@ -352,6 +368,11 @@ function doEncounterSearch(text, resultHandler, opts) {
 			}
     	    
     	    this._updatePageInfo(searchText);
+    	    if(matchCount == 0){
+    	    	if($('#openmrsSearchTable_info').is(":visible"))
+					$('#openmrsSearchTable_info').hide();
+    	    }else if(!$('#openmrsSearchTable_info').is(":visible"))
+				$('#openmrsSearchTable_info').show();
     	    
 			this._div.find(".openmrsSearchDiv").show();
 			
@@ -561,9 +582,15 @@ function doEncounterSearch(text, resultHandler, opts) {
 			return function(results) {
 				spinnerObj.css("visibility", "hidden");
 				//Don't display results from delayed ajax calls when the input box is blank or has less 
-				//than the minimun characters
+				//than the minimum characters
 				var currInput = $j.trim($j("#inputNode").val());
 				if(currInput == '' || currInput.length < self.options.minLength){
+					if($('#openmrsSearchTable_info').is(":visible"))
+						$('#openmrsSearchTable_info').hide();
+		    		if($('#pageInfo').is(":visible"))
+						$('#pageInfo').hide();
+		    		if($('#openmrsSearchTable_paginate').is(":visible"))
+		    	    	$('#openmrsSearchTable_paginate').hide();
 					return;
 				}
 				
