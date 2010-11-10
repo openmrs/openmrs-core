@@ -336,6 +336,7 @@ function doEncounterSearch(text, resultHandler, opts) {
 				//FETCH THE REST OF THE RESULTS IF encounter COUNT is greater than the number of rows to display per page
 				if(matchCount > self._table.fnSettings()._iDisplayLength){
 					spinnerObj.css("visibility", "visible");
+					$j('#openmrsSearchTable_info').html("Showing 1 to "+self._table.fnSettings()._iDisplayLength+" of "+ matchCount+" entries");
 					self.options.searchHandler(searchText, self._addMoreRows(curCallCount, searchText, matchCount),
 						{includeVoided: self.options.showIncludeVoided && checkBox.attr('checked'),
 						start: self._table.fnSettings()._iDisplayLength, length: null});
@@ -380,7 +381,12 @@ function doEncounterSearch(text, resultHandler, opts) {
 			}
 			
 			this._table.fnAddData(d);
-			this._table.numberOfPages = 1;
+			
+			if(matchCount % this._table.fnSettings()._iDisplayLength == 0)
+				this._table.numberOfPages = matchCount/this._table.fnSettings()._iDisplayLength;
+			else
+				this._table.numberOfPages = Math.floor(matchCount/this._table.fnSettings()._iDisplayLength)+1;
+			
 			this._table.currPage = 1;
 			
     	    if(matchCount <= this._table.fnSettings()._iDisplayLength){
@@ -422,6 +428,8 @@ function doEncounterSearch(text, resultHandler, opts) {
 				return;
 			}
 			
+			this._moveCursorToEnd();
+			
 			var prevRow = this.curRowSelection;
 			if(this.curRowSelection == null) {
 				this.curRowSelection = 0;
@@ -459,6 +467,8 @@ function doEncounterSearch(text, resultHandler, opts) {
 			if(!this._div.find(".openmrsSearchDiv").is(":visible")) {
 				return;
 			}
+			
+			this._moveCursorToEnd();
 			
 			var prevRow = this.curRowSelection;
 			if(this.curRowSelection == null) {
@@ -602,6 +612,21 @@ function doEncounterSearch(text, resultHandler, opts) {
 			this.curRowSelection = rowNumber;
 		},
 		
+		_moveCursorToEnd: function(){
+			var inputNode = document.getElementById('inputNode');
+			//If not IE			
+			if(inputNode.selectionStart != null){
+				inputNode.setSelectionRange($j.trim($j(inputNode).val()).length, $j.trim($j(inputNode).val()).length);
+			}
+			else if(inputNode.createTextRange) {
+		        // Create a TextRange, set the internal pointer to
+		        // the last position and show the cursor at the end
+		        var range = inputNode.createTextRange();
+		        range.move("character", $j.trim($j(inputNode).val()).length);
+		        range.select(inputNode);
+			}
+		},
+		
 		//This function adds the data returned by the second ajax call that fetches the remaining rows
 		_addMoreRows: function(curCallCount2, searchText, matchCount){
 			var self = this;
@@ -626,12 +651,7 @@ function doEncounterSearch(text, resultHandler, opts) {
 					//stop old ajax calls from over writing later ones
 					return;
 				}
-				
-				if(matchCount % self._table.fnSettings()._iDisplayLength == 0)
-					self._table.numberOfPages = matchCount/self._table.fnSettings()._iDisplayLength;
-				else
-					self._table.numberOfPages = Math.floor(matchCount/self._table.fnSettings()._iDisplayLength)+1;
-				
+									
 				var newData = new Array();
 				for(var x in data) {
 					currentData = data[x];
