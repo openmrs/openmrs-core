@@ -566,7 +566,7 @@ function doEncounterSearch(text, resultHandler, opts) {
 				$('#pageInfo').html("Viewing results for '"+searchText+"' ( "+this._table.numberOfPages+" "+pageString+" )");
 				$('#pageInfo').show();
 			}else if($('#pageInfo').is(":visible"))
-				$('#pageInfo').hide();
+				$('#pageInfo').html("Viewing results for '"+searchText+"'");
 		},
 		
 		_updateRowHighlight: function(rowNumber){
@@ -580,7 +580,6 @@ function doEncounterSearch(text, resultHandler, opts) {
 		_addMoreRows: function(curCallCount2, searchText, matchCount){
 			var self = this;
 			return function(results) {
-				spinnerObj.css("visibility", "hidden");
 				//Don't display results from delayed ajax calls when the input box is blank or has less 
 				//than the minimum characters
 				var currInput = $j.trim($j("#inputNode").val());
@@ -591,6 +590,8 @@ function doEncounterSearch(text, resultHandler, opts) {
 						$('#pageInfo').hide();
 		    		if($('#openmrsSearchTable_paginate').is(":visible"))
 		    	    	$('#openmrsSearchTable_paginate').hide();
+		    		
+		    		spinnerObj.css("visibility", "hidden");
 					return;
 				}
 				
@@ -618,6 +619,7 @@ function doEncounterSearch(text, resultHandler, opts) {
 				
 				self._updatePageInfo(searchText);
 				self._table.fnAddData(newData);
+				spinnerObj.css("visibility", "hidden");
 			};
 		},
 		
