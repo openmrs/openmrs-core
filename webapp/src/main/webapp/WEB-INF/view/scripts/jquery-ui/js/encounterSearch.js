@@ -500,7 +500,7 @@ function doEncounterSearch(text, resultHandler, opts) {
 		},
 		
 		_doPageUp: function() {
-			if(!this._div.find(".openmrsSearchDiv").is(":visible")) {
+			if(!this._div.find(".openmrsSearchDiv").is(":visible") || $j(spinnerObj).css("visibility") == "visible") {
 				return;
 			}
 
@@ -515,7 +515,7 @@ function doEncounterSearch(text, resultHandler, opts) {
 		},
 		
 		_doPageDown: function() {
-			if(!this._div.find(".openmrsSearchDiv").is(":visible")) {
+			if(!this._div.find(".openmrsSearchDiv").is(":visible") || $j(spinnerObj).css("visibility") == "visible") {
 				return;
 			}
 			
@@ -595,9 +595,9 @@ function doEncounterSearch(text, resultHandler, opts) {
 		_updatePageInfo: function(searchText) {
 			if(this._results.length > 0){
 				var pageString = (this._table.numberOfPages == 1) ? "Page" : "Pages";
-				$('#pageInfo').html("Viewing results for '"+searchText+"' ( "+this._table.numberOfPages+" "+pageString+" )");
+				$('#pageInfo').html("Viewing results for '<b>"+searchText+"</b>' ( "+this._table.numberOfPages+" "+pageString+" )");
 			}else {
-				$('#pageInfo').html("Viewing results for '"+searchText+"'");
+				$('#pageInfo').html("Viewing results for '<b>"+searchText+"</b>'");
 			}
 			
 			if($('#pageInfo').css("visibility") != 'visible')
