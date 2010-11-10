@@ -520,6 +520,7 @@ function doEncounterSearch(text, resultHandler, opts) {
 			}
 
 			this._table.fnPageChange('first');
+			//this._table.currPage = 1;
 			if(this.curRowSelection == null || this.curRowSelection < this._table.fnSettings()._iDisplayLength)
 				return;
 			this._updateRowHighlight(0);
@@ -531,7 +532,7 @@ function doEncounterSearch(text, resultHandler, opts) {
 			}
 
 			this._table.fnPageChange('last');
-			var isTrue = this.curRowSelection < (this._table.numberOfPages - 1)*this._table.fnSettings()._iDisplayLength;
+			this._table.currPage = this._table.numberOfPages;
 			//if the highlight is already on the last page, don't switch it
 			if( this.curRowSelection != null && this.curRowSelection > (this._table.numberOfPages - 1)*this._table.fnSettings()._iDisplayLength )
 				return;
@@ -564,9 +565,12 @@ function doEncounterSearch(text, resultHandler, opts) {
 			if(this._results.length > 0){
 				var pageString = (this._table.numberOfPages == 1) ? "Page" : "Pages";
 				$('#pageInfo').html("Viewing results for '"+searchText+"' ( "+this._table.numberOfPages+" "+pageString+" )");
-				$('#pageInfo').show();
-			}else if($('#pageInfo').is(":visible"))
+			}else {
 				$('#pageInfo').html("Viewing results for '"+searchText+"'");
+			}
+			
+			if(!$('#pageInfo').is(":visible"))
+				$('#pageInfo').show();
 		},
 		
 		_updateRowHighlight: function(rowNumber){
