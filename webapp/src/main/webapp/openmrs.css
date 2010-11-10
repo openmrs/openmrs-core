@@ -1251,16 +1251,16 @@ table td#summaryHeaderPatientGender {
 }
 /* BEGIN- css properties for the search widgets */
 #openmrsSearchTable tbody tr.even.row_highlight {
-	 background-color: #57A1EB; color: #FFFFFF;
+	 background-color: #797A7A; color: #FFFFFF;
 }
 #openmrsSearchTable tbody tr.odd.row_highlight {
-	 background-color: #57A1EB; color: #FFFFFF;
+	 background-color: #797A7A; color: #FFFFFF;
 }
 img#spinner{
 	vertical-align: middle;
 }
 #openmrsSearchTable .tr_row_highlight {
-	 background-color: #57A1EB; color: #FFFFFF;
+	 background-color: #797A7A; color: #FFFFFF;
 }
 #pageInfo{
 	float:right; margin-right: 20px; font-style: italic;

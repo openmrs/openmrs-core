@@ -145,24 +145,24 @@ function doEncounterSearch(text, resultHandler, opts) {
 		    //this._trigger('initialized');
 		    input.keyup(function(event) {
 		    	//catch control keys
-		    	//LEFT(37), UP(38), RIGHT(39), DOWN(40), ENTER(13), HOME(36), END(35)
+		    	//LEFT(37), UP(38), RIGHT(39), DOWN(40), ENTER(13), HOME(36), END(35), PAGE UP(33), PAGE DOWN(34)
 		    	var kc = event.keyCode;
-		    	if(((kc >= 35) && (kc <= 40)) || (kc == 13)) {
+		    	if(((kc >= 33) && (kc <= 40)) || (kc == 13)) {
 			    	switch(event.keyCode) {
+			    		case 33:
+			    			self._doPageUp();
+			    			break;
+			    		case 34:
+			    			self._doPageDown();
+			    			break;
 				    	case 35:
 				    		self._doKeyEnd();
 				    		break;
 				    	case 36:
 				    		self._doKeyHome();
 				    		break;
-				    	case 37:
-				    		self._doKeyLeft();
-				    		break;
 				    	case 38:
 				    		self._doKeyUp();
-				    		break;
-				    	case 39:
-				    		self._doKeyRight();
 				    		break;
 				    	case 40:
 				    		self._doKeyDown();
@@ -174,7 +174,7 @@ function doEncounterSearch(text, resultHandler, opts) {
 			    	//kill the event
 			    	event.stopPropagation();
 			    	return;
-		    	}		    	
+		    	}
 		    	
 		    	if(self.onCharTyped) {
 		    		self.onCharTyped(self, event.keyCode);
@@ -422,6 +422,7 @@ function doEncounterSearch(text, resultHandler, opts) {
 					this.curRowSelection = null;
 					return;
 				}
+				this._table.currPage = this._table.numberOfPages;
 				this._table.fnPageChange('last');
 			}
 			else {
@@ -446,7 +447,7 @@ function doEncounterSearch(text, resultHandler, opts) {
 			$(this._table.fnGetNodes()[this.curRowSelection]).addClass("row_highlight");
 		},
 		
-		_doKeyRight: function() {
+		_doPageUp: function() {
 			if(!this._div.find(".openmrsSearchDiv").is(":visible")) {
 				return;
 			}
@@ -454,16 +455,32 @@ function doEncounterSearch(text, resultHandler, opts) {
 			this._table.fnPageChange('next');
 			if(++this._table.currPage > this._table.numberOfPages)
 				this._table.currPage = this._table.numberOfPages;
+			
+			//move the highlight to the first row on the next page so that we dont lose it and the highlight isn't on the page			
+			if(this._table.currPage < this._table.numberOfPages || (this._table.currPage == this._table.numberOfPages && this.curRowSelection < 
+					((this._table.numberOfPages - 1)*this._table.fnSettings()._iDisplayLength)))
+				this._updateRowHighlight(((this._table.currPage - 1)*this._table.fnSettings()._iDisplayLength));
 		},
 		
-		_doKeyLeft: function() {
+		_doPageDown: function() {
 			if(!this._div.find(".openmrsSearchDiv").is(":visible")) {
 				return;
 			}
-
-			this._table.fnPageChange('previous');
-			if(--this._table.currPage < 1)
+			
+			var rowToHighlight = null;
+			if(--this._table.currPage < 1){
 				this._table.currPage = 1;
+				this._table.fnPageChange('first');
+				if(this.curRowSelection == null || this.curRowSelection < this._table.fnSettings()._iDisplayLength)
+					return;
+				rowToHighlight = 0;
+			}
+			else{
+				rowToHighlight = ((this._table.currPage - 1)*this._table.fnSettings()._iDisplayLength);
+				this._table.fnPageChange('previous');
+			}
+			
+			this._updateRowHighlight(rowToHighlight);
 		},
 		
 		_doKeyEnter: function() {
@@ -482,6 +499,9 @@ function doEncounterSearch(text, resultHandler, opts) {
 			}
 
 			this._table.fnPageChange('first');
+			if(this.curRowSelection == null || this.curRowSelection < this._table.fnSettings()._iDisplayLength)
+				return;
+			this._updateRowHighlight(0);
 		},
 		
 		_doKeyEnd: function() {
@@ -490,6 +510,12 @@ function doEncounterSearch(text, resultHandler, opts) {
 			}
 
 			this._table.fnPageChange('last');
+			var isTrue = this.curRowSelection < (this._table.numberOfPages - 1)*this._table.fnSettings()._iDisplayLength;
+			//if the highlight is already on the last page, don't switch it
+			if( this.curRowSelection != null && this.curRowSelection > (this._table.numberOfPages - 1)*this._table.fnSettings()._iDisplayLength )
+				return;
+				
+			this._updateRowHighlight(((this._table.numberOfPages - 1)*this._table.fnSettings()._iDisplayLength));
 		},
 		
 		_doSelected: function(position, rowData) {
@@ -520,6 +546,13 @@ function doEncounterSearch(text, resultHandler, opts) {
 				$('#pageInfo').show();
 			}else if($('#pageInfo').is(":visible"))
 				$('#pageInfo').hide();
+		},
+		
+		_updateRowHighlight: function(rowNumber){
+			//highlight the row if the highlight is visible
+			$(this._table.fnGetNodes()[this.curRowSelection]).removeClass("row_highlight");
+			$(this._table.fnGetNodes()[rowNumber]).addClass("row_highlight");
+			this.curRowSelection = rowNumber;
 		},
 		
 		//This function adds the data returned by the second ajax call that fetches the remaining rows
