@@ -146,8 +146,8 @@ function doEncounterSearch(text, resultHandler, opts) {
 	    				spinnerObj.css("visibility", "hidden");
 		    		$j(".openmrsSearchDiv").hide();
 		    		$j("#minCharError").show();
-		    		if($('#pageInfo').is(":visible"))
-						$('#pageInfo').hide();
+		    		if($('#pageInfo').css("visibility") == 'visible')
+						$('#pageInfo').css("visibility", "hidden");
 		    	}
 		    	//to maintain keyDown and keyUp events since they are only fired when the input box has focus
 		    	input.focus();
@@ -196,8 +196,8 @@ function doEncounterSearch(text, resultHandler, opts) {
 	    			if(this._textInputTimer != null){
 	    				window.clearTimeout(this._textInputTimer);
 	    			}	
-	    			if($('#pageInfo').is(":visible"))
-						$('#pageInfo').hide();
+	    			if($('#pageInfo').css("visibility") == 'visible')
+						$('#pageInfo').css("visibility", "hidden");
 						
 	    			if($j("#minCharError").is(':visible'))
 	    				$j("#minCharError").hide();
@@ -209,8 +209,8 @@ function doEncounterSearch(text, resultHandler, opts) {
 	    			if(spinnerObj.css("visibility") == 'visible'){
 	    				spinnerObj.css("visibility", "hidden");
 	    			}
-	    			if($('#pageInfo').is(":visible"))
-						$('#pageInfo').hide();
+	    			if($('#pageInfo').css("visibility") == 'visible')
+						$('#pageInfo').css("visibility", "hidden");
 						
 	    			$j(".openmrsSearchDiv").hide();
 	    			//wait for a 400ms, if the user isn't typing anymore chars, show the error msg
@@ -325,8 +325,8 @@ function doEncounterSearch(text, resultHandler, opts) {
 				//yet there were some intermediate calls that might have returned results
 				var currInput = $j.trim($j("#inputNode").val());
 				if(currInput == '' || currInput.length < self.options.minLength){
-					if($('#pageInfo').is(":visible"))
-						$('#pageInfo').hide();
+					if($('#pageInfo').css("visibility") == 'visible')
+						$('#pageInfo').css("visibility", "hidden");
 					$j(".openmrsSearchDiv").hide();
 					$j("#minCharError").show();
 					return;
@@ -367,9 +367,8 @@ function doEncounterSearch(text, resultHandler, opts) {
 	    	    if($('#openmrsSearchTable_paginate')){
 	    	    	$('#openmrsSearchTable_paginate').hide();
 				}
-	    	    if($('#pageInfo').is(":visible")){
-    				$('#pageInfo').hide();
-	    		}
+	    	    if($('#pageInfo').css("visibility") == 'visible')
+					$('#pageInfo').css("visibility", "hidden");
 	    	    if($('#openmrsSearchTable_info').is(":visible"))
 					$('#openmrsSearchTable_info').hide();
 				return;
@@ -601,8 +600,8 @@ function doEncounterSearch(text, resultHandler, opts) {
 				$('#pageInfo').html("Viewing results for '"+searchText+"'");
 			}
 			
-			if(!$('#pageInfo').is(":visible"))
-				$('#pageInfo').show();
+			if($('#pageInfo').css("visibility") != 'visible')
+				$('#pageInfo').css("visibility", "visible");
 		},
 		
 		_updateRowHighlight: function(rowNumber){
@@ -635,8 +634,8 @@ function doEncounterSearch(text, resultHandler, opts) {
 				//than the minimum characters
 				var currInput = $j.trim($j("#inputNode").val());
 				if(currInput == '' || currInput.length < self.options.minLength){
-					if($('#pageInfo').is(":visible"))
-						$('#pageInfo').hide();
+					if($('#pageInfo').css("visibility") == 'visible')
+						$('#pageInfo').css("visibility", "hidden");
 					$j(".openmrsSearchDiv").hide();
 					$j("#minCharError").show();
 					spinnerObj.css("visibility", "hidden");
