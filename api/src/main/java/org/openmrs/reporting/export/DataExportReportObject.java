@@ -14,9 +14,7 @@
 package org.openmrs.reporting.export;
 
 import java.io.Serializable;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
@@ -170,8 +168,12 @@ public class DataExportReportObject extends AbstractReportObject implements Seri
 		
 		// print out the data
 		
-		sb.append("$!{fn.setPatientSet($patientSet)}");
-		sb.append("#foreach($patientId in $patientSet.memberIds)\n");
+		sb.append("#set($numberOfBatches=$fn.patientSetBatchCount)");
+		sb.append("#if( !$numberOfBatches )$fn.setPatientSet($patientSet)#set($numberOfBatches=0)#end"); // for backwards compatibility
+		sb.append("#if( !$fn.patientSet )Please upgrade your reportingcompatibility module to at least v1.5.2 (its faster!)#end");
+		sb.append("#foreach($batchIndex in [0..$numberOfBatches])\n");
+		sb.append("$!{fn.setPatientSetFromBatch($batchIndex)}");
+		sb.append("#foreach($patientId in $fn.patientSet.memberIds)\n");
 		sb.append("$!{fn.setPatientId($patientId)}");
 		if (columns.size() >= 1) {
 			sb.append(columns.get(0).toTemplateString());
@@ -182,6 +184,10 @@ public class DataExportReportObject extends AbstractReportObject implements Seri
 		} else
 			log.warn("Report has column size less than 1");
 		
+		// closing inner loop
+		sb.append("\n#end");
+		
+		// closing foreach batch loop
 		// Removed a newline at the end of the string -- the second newline was causing a problem with BIRT 
 		sb.append("\n#end\n");
 		
@@ -229,7 +235,7 @@ public class DataExportReportObject extends AbstractReportObject implements Seri
 		}
 
 		if (cohort == null) {
-			cohort = Context.getPatientSetService().getAllPatients();
+			//cohort = Context.getPatientSetService().getAllPatients();
 			setAllPatients(true);
 		}
 		

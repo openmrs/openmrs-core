@@ -2208,5 +2208,27 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			}
 		}
 	}
+
+	@Override
+	public Integer getCountOfPatients() {
+		Query query = sessionFactory.getCurrentSession().createQuery("select count(*) from Patient where voided = 0");
+		return new Integer(query.uniqueResult().toString());
+	}
+
+	@Override
+	public Cohort getPatients(Integer start, Integer size) {
+		Query query = sessionFactory.getCurrentSession().createQuery("select distinct patientId from Patient p where p.voided = 0");
+		
+		if (start != null)
+			query.setFirstResult(start);
+		
+		if (size != null)
+			query.setMaxResults(size);
+		
+		Set<Integer> ids = new HashSet<Integer>();
+		ids.addAll(query.list());
+		
+		return new Cohort("Batch of " + size + " patients starting at " + start, "", ids);
+	}
 	
 }

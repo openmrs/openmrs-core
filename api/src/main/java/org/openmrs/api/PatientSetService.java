@@ -575,4 +575,17 @@ public interface PatientSetService {
 	 */
 	public Cohort getInverseOfCohort(Cohort cohort);
 	
+	/**
+	 * @return number of unvoided patients in the database 
+	 */
+	public Integer getCountOfPatients();
+	
+	/**
+	 * Get a batch of patients that are not voided in the database
+	 * @param start the starting index
+	 * @param size the number of patients to get in this batch
+	 * @return a Cohort with patient ids
+	 */
+	public Cohort getPatients(Integer start, Integer size);
+	
 }

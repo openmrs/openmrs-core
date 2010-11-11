@@ -476,4 +476,12 @@ public class PatientSetServiceImpl implements PatientSetService {
 		return getPatientSetDAO().getEncountersByForm(patients, forms);
 	}
 	
+	public Integer getCountOfPatients() {
+		return getPatientSetDAO().getCountOfPatients();
+	}
+
+	@Override
+	public Cohort getPatients(Integer start, Integer size) {
+		return getPatientSetDAO().getPatients(start, size);
+	}
 }
