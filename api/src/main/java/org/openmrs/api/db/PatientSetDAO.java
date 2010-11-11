@@ -154,4 +154,8 @@ public interface PatientSetDAO {
 	 */
 	public Cohort getPatientsByRelationship(RelationshipType relType, boolean includeAtoB, boolean includeBtoA, Person target);
 
+	public Integer getCountOfPatients();
+
+	public Cohort getPatients(Integer start, Integer size);
+
 }
