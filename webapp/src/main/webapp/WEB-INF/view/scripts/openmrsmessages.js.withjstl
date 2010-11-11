@@ -74,3 +74,25 @@ omsgs.userListingHeaders=new Array();
 <openmrs:forEachDisplayAttributeType personType="user" displayType="listing" var="attrType">
  omsgs.userListingHeaders.push('<spring:message code="PersonAttributeType.${fn:replace(attrType.name, ' ', '')}" javaScriptEscape="true" text="${attrType.name}"/>');
 </openmrs:forEachDisplayAttributeType>
+
+/* General Labels and text to be used on SEARCH WIDGET */
+omsgs.minCharRequired="<spring:message code="searchWidget.minCharRequired" javaScriptEscape="true" />";
+omsgs.searchEncounters="<spring:message code="searchWidget.searchEncounters" javaScriptEscape="true" />";
+omsgs.patientName="<spring:message code="Patient.name" javaScriptEscape="true" />";
+omsgs.encounterType="<spring:message code="Encounter.type" javaScriptEscape="true" />";
+omsgs.encounterForm="<spring:message code="Encounter.form" javaScriptEscape="true" />";
+omsgs.encounterProvider="<spring:message code="Encounter.provider" javaScriptEscape="true" />";
+omsgs.encounterLocation="<spring:message code="Encounter.location" javaScriptEscape="true" />";
+omsgs.encounterDate="<spring:message code="Encounter.datetime" javaScriptEscape="true" />";
+omsgs.to="<spring:message code="general.to" javaScriptEscape="true" />";
+omsgs.of="<spring:message code="general.of" javaScriptEscape="true" />";
+omsgs.showing="<spring:message code="searchWidget.showing" javaScriptEscape="true" />";
+omsgs.entries="<spring:message code="searchWidget.entries" javaScriptEscape="true" />";
+omsgs.first="<spring:message code="searchWidget.first" javaScriptEscape="true" />";
+omsgs.previous="<spring:message code="searchWidget.previous" javaScriptEscape="true" />";
+omsgs.next="<spring:message code="searchWidget.next" javaScriptEscape="true" />";
+omsgs.last="<spring:message code="searchWidget.last" javaScriptEscape="true" />";
+omsgs.noMatchesFound="<spring:message code="searchWidget.noMatchesFound" javaScriptEscape="true" />";
+omsgs.viewingResultsFor="<spring:message code="searchWidget.viewingResults" javaScriptEscape="true" />";
+omsgs.page="<spring:message code="searchWidget.page" javaScriptEscape="true" />";
+omsgs.pages="<spring:message code="searchWidget.pages" javaScriptEscape="true" />";

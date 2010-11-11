@@ -13,7 +13,7 @@
 <script type="text/javascript">
 	var lastSearch;
 	$j(document).ready(function() {
-		new EncounterSearch("findEncounter", true, doSelectionHandler, {searchLabel: '<spring:message code="Encounter.search"/>'});
+		new EncounterSearch("findEncounter", true, doSelectionHandler, {searchLabel: '<spring:message code="Encounter.search" javaScriptEscape="true"/>'});
 	});
 	
 	function doSelectionHandler(index, data) {

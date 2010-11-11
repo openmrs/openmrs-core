@@ -93,8 +93,8 @@ function doEncounterSearch(text, resultHandler, opts) {
 		plugins: {},
 		options: {
 			minLength: 3,
-			searchLabel: "Search Encounters",
-			includeVoidedLabel: "Include Voided",
+			searchLabel: omsgs.searchEncounters,
+			includeVoidedLabel: omsgs.includeVoided,
 			showIncludeVoided: false
 		},
 		_lastCallCount: 0,
@@ -104,12 +104,12 @@ function doEncounterSearch(text, resultHandler, opts) {
 		_table: null,
 		_textInputTimer: null,
 		_columns: [
-			{id:"personName", name:"Patient Name"},
-			{id:"encounterType", name:"Encounter Type"},
-			{id:"formName", name:"Form"},
-			{id:"providerName", name:"Provider"},
-			{id:"location", name:"Location"},
-			{id:"encounterDateString", name:"Encounter Date"}
+			{id:"personName", name:omsgs.patientName},
+			{id:"encounterType", name:omsgs.encounterType},
+			{id:"formName", name:omsgs.encounterForm},
+			{id:"providerName", name:omsgs.encounterProvider},
+			{id:"location", name:omsgs.encounterLocation},
+			{id:"encounterDateString", name:omsgs.encounterDate}
 		],
 		
 		_create: function() {
@@ -125,7 +125,7 @@ function doEncounterSearch(text, resultHandler, opts) {
 		    	spinnerObj.css("visibility", "hidden");
 		    	spinnerObj.attr("src", openmrsContextPath+"/images/loading.gif");
 		    	minCharErrorObj = div.find("#minCharError");
-		    	minCharErrorObj.html("Enter at least 3 characters");
+		    	minCharErrorObj.html(omsgs.minCharRequired);
 		    
 		    this._div = div;
 
@@ -252,6 +252,12 @@ function doEncounterSearch(text, resultHandler, opts) {
 		    	currPage: 0,
 		    	bAutoWidth: false,
 		    	bJQueryUI: true,
+		    	"oLanguage": {
+		    		"sInfo": omsgs.showing+" _START_ "+omsgs.to+" _END_ "+omsgs.of+" _TOTAL_ "+omsgs.entries,
+		    		"oPaginate": {"sFirst": omsgs.first, "sPrevious": omsgs.previous, "sNext": omsgs.next, "sLast": omsgs.last},
+		    		"sEmptyTable": omsgs.noMatchesFound,
+		    		"sInfoEmpty": " ",
+		    	},
 		    	fnRowCallback: function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {					
 		    		//register mouseover/out events handlers to have row highlighting
 		    		$(nRow).bind('mouseover', function(){
@@ -335,8 +341,8 @@ function doEncounterSearch(text, resultHandler, opts) {
 				
 				//FETCH THE REST OF THE RESULTS IF encounter COUNT is greater than the number of rows to display per page
 				if(matchCount > self._table.fnSettings()._iDisplayLength){
-					spinnerObj.css("visibility", "visible");
-					$j('#openmrsSearchTable_info').html("Showing 1 to "+self._table.fnSettings()._iDisplayLength+" of "+ matchCount+" entries");
+					spinnerObj.css("visibility", "visible");omsgs.showing+" _START_ "+omsgs.to+" _END_ "+omsgs.of+" _TOTAL_ "+omsgs.entries
+					$j('#openmrsSearchTable_info').html(omsgs.showing+" 1 "+omsgs.to+" "+self._table.fnSettings()._iDisplayLength+" "+omsgs.of+" "+ matchCount+" "+omsgs.entries);
 					self.options.searchHandler(searchText, self._addMoreRows(curCallCount, searchText, matchCount),
 						{includeVoided: self.options.showIncludeVoided && checkBox.attr('checked'),
 						start: self._table.fnSettings()._iDisplayLength, length: null});
@@ -594,10 +600,10 @@ function doEncounterSearch(text, resultHandler, opts) {
 		
 		_updatePageInfo: function(searchText) {
 			if(this._results.length > 0){
-				var pageString = (this._table.numberOfPages == 1) ? "Page" : "Pages";
-				$('#pageInfo').html("Viewing results for '<b>"+searchText+"</b>' ( "+this._table.numberOfPages+" "+pageString+" )");
+				var pageString = (this._table.numberOfPages == 1) ? omsgs.page : omsgs.pages;
+				$('#pageInfo').html(omsgs.viewingResultsFor+" '<b>"+searchText+"</b>' ( "+this._table.numberOfPages+" "+pageString+" )");
 			}else {
-				$('#pageInfo').html("Viewing results for '<b>"+searchText+"</b>'");
+				$('#pageInfo').html(omsgs.viewingResultsFor+" '<b>"+searchText+"</b>'");
 			}
 			
 			if($('#pageInfo').css("visibility") != 'visible')
