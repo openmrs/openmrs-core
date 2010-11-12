@@ -39,7 +39,7 @@
 			<column name="datatype_id" />
 		</many-to-one>
 
-		<set name="names" lazy="true" cascade="all-delete-orphan,evict" inverse="true" access="field" order-by="name asc">
+		<set name="names" lazy="true" cascade="all-delete-orphan,evict" inverse="true" access="field">
 			<key column="concept_id" not-null="true" />
 			<one-to-many class="ConceptName" />
 		</set>

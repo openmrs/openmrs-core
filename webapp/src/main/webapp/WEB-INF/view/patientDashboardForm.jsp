@@ -1,4 +1,18 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
+<openmrs:htmlInclude file="/scripts/easyAjax.js" />
+
+<openmrs:htmlInclude file="/scripts/jquery/dataTables/css/dataTables.css" />
+<openmrs:htmlInclude file="/scripts/jquery/dataTables/js/jquery.dataTables.min.js" />
+
+<openmrs:htmlInclude file="/scripts/jquery-ui/js/jquery-ui-1.7.2.custom.min.js" />
+<openmrs:htmlInclude file="/scripts/jquery-ui/css/redmond/jquery-ui-1.7.2.custom.css" />
+
+<openmrs:htmlInclude file="/scripts/flot/jquery.flot.js" />
+<openmrs:htmlInclude file="/scripts/flot/jquery.flot.multiple.threshold.js"/> 
+
+<openmrs:htmlInclude file="/scripts/dojoConfig.js"/>
+<openmrs:htmlInclude file="/scripts/dojo/dojo.js"/>
+
 <openmrs:require privilege="View Patients" otherwise="/login.htm" redirect="/patientDashboard.form" />
 
 <c:set var="OPENMRS_VIEWING_PATIENT_ID" scope="request" value="${patient.patientId}"/>
