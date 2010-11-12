@@ -307,7 +307,12 @@ public class PatientSetServiceImpl implements PatientSetService {
 		return getObservationsValues(patients, c, null);
 	}
 	
+	@Deprecated
 	public Map<Integer, List<List<Object>>> getObservationsValues(Cohort patients, Concept c, List<String> attributes) {
+		return getObservationsValues(patients, c, attributes, null, true);
+	}
+	
+	public Map<Integer, List<List<Object>>> getObservationsValues(Cohort patients, Concept c, List<String> attributes, Integer limit, boolean showMostRecentFirst) {
 		if (attributes == null)
 			attributes = new Vector<String>();
 		
@@ -315,7 +320,7 @@ public class PatientSetServiceImpl implements PatientSetService {
 		if (attributes.size() < 1 || attributes.get(0) != null)
 			attributes.add(0, null);
 		
-		return getPatientSetDAO().getObservationsValues(patients, c, attributes);
+		return getPatientSetDAO().getObservationsValues(patients, c, attributes, limit, showMostRecentFirst);
 	}
 	
 	public Map<Integer, Encounter> getEncountersByType(Cohort patients, EncounterType encType) {

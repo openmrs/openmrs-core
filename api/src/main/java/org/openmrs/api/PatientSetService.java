@@ -312,18 +312,27 @@ public interface PatientSetService {
 	public Map<Integer, List<List<Object>>> getObservationsValues(Cohort patients, Concept c);
 	
 	/**
+	 * @deprecated use {@link #getObservationsValues(Cohort, Concept, List, Integer, boolean)} instead
+	 */
+	@Deprecated
+	@Transactional(readOnly = true)
+	public Map<Integer, List<List<Object>>> getObservationsValues(Cohort patients, Concept c, List<String> attributes);
+	
+	/**
 	 * Returns a mapping from patient id to obs for concept <code>c</code>
 	 * <p>
 	 * The returned List< attribute value > is [obs value, attr value, attr value, attr value...]
 	 * The returned List<List< attribute value >> represents the obs rows
 	 * 
-	 * @param patients
-	 * @param c
+	 * @param patients the cohort to restrict to.  if null, then all patients are fetched
+	 * @param c the concept to look for in obs.concept_id
 	 * @param attributes list of attributes
+	 * @param limit the number of patients to limit the results to.  If null or less than zero, return all
+	 * @param showMostRecentFirst if true, obs with the highest obsDatetime will be first in the List<List<Object>>
 	 * @return <code>Map<patientId, List<List< attribute value >>></code>
 	 */
 	@Transactional(readOnly = true)
-	public Map<Integer, List<List<Object>>> getObservationsValues(Cohort patients, Concept c, List<String> attributes);
+	public Map<Integer, List<List<Object>>> getObservationsValues(Cohort patients, Concept c, List<String> attributes, Integer limit, boolean showMostRecentFirst);
 	
 	/**
 	 * TODO write something here

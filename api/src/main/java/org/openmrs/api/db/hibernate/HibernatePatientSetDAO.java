@@ -1104,7 +1104,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public Map<Integer, List<List<Object>>> getObservationsValues(Cohort patients, Concept c, List<String> attributes) {
+	public Map<Integer, List<List<Object>>> getObservationsValues(Cohort patients, Concept c, List<String> attributes, Integer limit, boolean showMostRecentFirst) {
 		Map<Integer, List<List<Object>>> ret = new HashMap<Integer, List<List<Object>>>();
 		
 		List<String> aliases = new Vector<String>();
@@ -1175,47 +1175,58 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		criteria.add(Expression.eq("obs.concept", c));
 		criteria.add(Expression.eq("obs.voided", false));
 		
-		criteria.addOrder(org.hibernate.criterion.Order.desc("obs.obsDatetime"));
-		criteria.addOrder(org.hibernate.criterion.Order.desc("obs.voided"));
+		if (showMostRecentFirst)
+			criteria.addOrder(org.hibernate.criterion.Order.desc("obs.obsDatetime"));
+		else
+			criteria.addOrder(org.hibernate.criterion.Order.asc("obs.obsDatetime"));
 		
-		log.debug("criteria: " + criteria);
-		
+		long start = System.currentTimeMillis();
 		List<Object[]> rows = criteria.list();
+		log.debug("Took: " + (System.currentTimeMillis() - start) + " ms to run the patient/obs query");
 		
 		// set up the return map
 		for (Object[] rowArray : rows) {
 			//log.debug("row[0]: " + row[0] + " row[1]: " + row[1] + (row.length > 2 ? " row[2]: " + row[2] : ""));
 			Integer ptId = (Integer) rowArray[0];
 			
-			Boolean tmpConditional = conditional.booleanValue();
+			List<List<Object>> oldArr = ret.get(ptId);
 			
-			// get all columns
-			int index = 1;
-			List<Object> row = new Vector<Object>();
-			while (index < rowArray.length) {
-				Object value = rowArray[index++];
-				if (tmpConditional) {
-					if (index == 2 && value != null) // skip null first value if we must
-						row.add(value);
-					else
-						row.add(rowArray[index]);
-					tmpConditional = false;
-					index++; // increment counter for next column.  (Skips over value_concept)
-				} else
-					row.add(value == null ? "" : value);
+			// if we have already fetched all of the results the user wants 
+			if (limit != null && limit > 0 && oldArr != null && oldArr.size() >= limit) {
+				// the user provided a limit value and this patient already has more than
+				// that number of values.
+				// do nothing with this row
 			}
-			
-			// if we haven't seen a different row for this patient already:
-			if (!ret.containsKey(ptId)) {
-				List<List<Object>> arr = new Vector<List<Object>>();
-				arr.add(row);
-				ret.put(ptId, arr);
-			}
-			// if we have seen a row for this patient already
 			else {
-				List<List<Object>> oldArr = ret.get(ptId);
-				oldArr.add(row);
-				ret.put(ptId, oldArr);
+				Boolean tmpConditional = conditional.booleanValue();
+				
+				// get all columns
+				int index = 1;
+				List<Object> row = new Vector<Object>();
+				while (index < rowArray.length) {
+					Object value = rowArray[index++];
+					if (tmpConditional) {
+						if (index == 2 && value != null) // skip null first value if we must
+							row.add(value);
+						else
+							row.add(rowArray[index]);
+						tmpConditional = false;
+						index++; // increment counter for next column.  (Skips over value_concept)
+					} else
+						row.add(value == null ? "" : value);
+				}
+				
+				// if we haven't seen a different row for this patient already:
+				if (oldArr == null) {
+					List<List<Object>> arr = new Vector<List<Object>>();
+					arr.add(row);
+					ret.put(ptId, arr);
+				}
+				// if we have seen a row for this patient already
+				else {
+					oldArr.add(row);
+					ret.put(ptId, oldArr);
+				}
 			}
 		}
 		
