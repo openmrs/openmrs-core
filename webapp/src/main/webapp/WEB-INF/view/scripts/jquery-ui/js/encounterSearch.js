@@ -87,7 +87,7 @@ function doEncounterSearch(text, resultHandler, opts) {
 	</pre>
  */
 (function($) {
-	var encounterSearch_div = '<span><span style="white-space: nowrap"><span><span id="searchLabelNode"></span><span id="minCharError" class="error" style="display:none"></span><input type="text" value="" id="inputNode" autocomplete="off"/><input type="checkbox" style="display: none" id="includeRetired"/><img id="spinner" src=""/><input type="checkbox" style="display: none" id="includeVoided"/><input type="checkbox" style="display: none" id="verboseListing"/><span id="pageInfo"></span></span></span><span class="openmrsSearchDiv"><table id="openmrsSearchTable" cellpadding="2" cellspacing="0" style="width: 100%"><thead id="searchTableHeader"><tr><th></th><th></th><th></th><th></th><th></th><th></th></tr></thead><tbody></tbody></table></span></span>';
+	var encounterSearch_div = '<span><span style="white-space: nowrap"><span><span id="searchLabelNode"></span><input type="text" value="" id="inputNode" autocomplete="off"/><input type="checkbox" style="display: none" id="includeRetired"/><img id="spinner" src=""/><input type="checkbox" style="display: none" id="includeVoided"/><input type="checkbox" style="display: none" id="verboseListing"/><span id="minCharError" class="error"></span><span id="pageInfo"></span></span></span><span class="openmrsSearchDiv"><table id="openmrsSearchTable" cellpadding="2" cellspacing="0" style="width: 100%"><thead id="searchTableHeader"><tr><th></th><th></th><th></th><th></th><th></th><th></th></tr></thead><tbody></tbody></table></span></span>';
 	
 	$.widget("ui.encounterSearch", {
 		plugins: {},
@@ -145,7 +145,7 @@ function doEncounterSearch(text, resultHandler, opts) {
 		    		if(spinnerObj.css("visibility") == 'visible')
 	    				spinnerObj.css("visibility", "hidden");
 		    		$j(".openmrsSearchDiv").hide();
-		    		$j("#minCharError").show();
+		    		$j("#minCharError").css("visibility", "visible");
 		    		if($('#pageInfo').css("visibility") == 'visible')
 						$('#pageInfo').css("visibility", "hidden");
 		    	}
@@ -184,6 +184,11 @@ function doEncounterSearch(text, resultHandler, opts) {
 			    	}
 			    	//kill the event
 			    	event.stopPropagation();
+			    	//TODO stop the cursor in tthe input box from moving
+			    	//when the keys PgDown/Up/home/end/up/down are pressed, 
+			    	//if(((kc >= 33) && (kc <= 40)) && kc != 13 && kc != 37 && kc != 39)
+			    	//	return false;
+			    	
 			    	return;
 		    	}
 		    	
@@ -192,15 +197,15 @@ function doEncounterSearch(text, resultHandler, opts) {
 		    	}
 		    	
 	        	var text = $j.trim(input.val());
+	        	if(this._textInputTimer != null){
+    				window.clearTimeout(this._textInputTimer);
+    			}
 	    		if(text.length >= o.minLength) {
-	    			if(this._textInputTimer != null){
-	    				window.clearTimeout(this._textInputTimer);
-	    			}	
 	    			if($('#pageInfo').css("visibility") == 'visible')
 						$('#pageInfo').css("visibility", "hidden");
 						
-	    			if($j("#minCharError").is(':visible'))
-	    				$j("#minCharError").hide();
+	    			if($j("#minCharError").css("visibility") == 'visible')
+	    				$j("#minCharError").css("visibility", "hidden");
 	    			
 	    			self._doSearch(text);
 	    		}
@@ -215,9 +220,11 @@ function doEncounterSearch(text, resultHandler, opts) {
 	    			$j(".openmrsSearchDiv").hide();
 	    			//wait for a 400ms, if the user isn't typing anymore chars, show the error msg
 	    			this._textInputTimer = window.setTimeout(function(){
-	    				if($j.trim(input.val()).length < o.minLength)
-	    					$j("#minCharError").show();
-	    			}, 500);
+	    				if($j.trim(input.val()).length > 0 && $j.trim(input.val()).length < o.minLength)
+	    					$j("#minCharError").css("visibility", "visible");
+	    				else if($j.trim(input.val()).length == 0 && $j("#minCharError").css("visibility") == 'visible')
+	    					$j("#minCharError").css("visibility", "hidden");
+	    			}, 600);
 	    			
 	    		}
 	    		return true;
@@ -287,8 +294,8 @@ function doEncounterSearch(text, resultHandler, opts) {
 		    		}
 		    		
 		    		return nRow;
-		    	}				
-		    });		    
+		    	}
+		    });
 		},
 		
 		_makeColumns: function() {
@@ -334,7 +341,8 @@ function doEncounterSearch(text, resultHandler, opts) {
 					if($('#pageInfo').css("visibility") == 'visible')
 						$('#pageInfo').css("visibility", "hidden");
 					$j(".openmrsSearchDiv").hide();
-					$j("#minCharError").show();
+					if(currInput.length > 0)
+						$j("#minCharError").css("visibility", "visible");
 					return;
 				}
 				self._doHandleResults(matchCount, searchText);
@@ -643,7 +651,8 @@ function doEncounterSearch(text, resultHandler, opts) {
 					if($('#pageInfo').css("visibility") == 'visible')
 						$('#pageInfo').css("visibility", "hidden");
 					$j(".openmrsSearchDiv").hide();
-					$j("#minCharError").show();
+					if(currInput.length > 0)
+						$j("#minCharError").css("visibility", "visible");
 					spinnerObj.css("visibility", "hidden");
 					return;
 				}
