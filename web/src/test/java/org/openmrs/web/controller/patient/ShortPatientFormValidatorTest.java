@@ -128,7 +128,7 @@ public class ShortPatientFormValidatorTest extends BaseWebContextSensitiveTest {
 		Patient p = ps.getPatient(2);
 		Calendar c = Calendar.getInstance();
 		// put the time into the future by a minute
-		c.roll(Calendar.MINUTE, true);
+		c.add(Calendar.MINUTE, 1);
 		p.setBirthdate(c.getTime());
 		ShortPatientModel model = new ShortPatientModel(p);
 		Errors errors = new BindException(model, "patientModel");
