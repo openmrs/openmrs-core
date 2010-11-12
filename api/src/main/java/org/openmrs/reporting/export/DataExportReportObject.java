@@ -169,8 +169,7 @@ public class DataExportReportObject extends AbstractReportObject implements Seri
 		// print out the data
 		
 		sb.append("#set($numberOfBatches=$fn.patientSetBatchCount)");
-		sb.append("#if( !$numberOfBatches )$fn.setPatientSet($patientSet)#set($numberOfBatches=0)#end"); // for backwards compatibility
-		sb.append("#if( !$fn.patientSet )Please upgrade your reportingcompatibility module to at least v1.5.2 (its faster!)#end");
+		sb.append("#if( !$numberOfBatches )$fn.setPatientSet($patientSet)#set($numberOfBatches=0)#if( !$fn.patientSet )Please upgrade your reportingcompatibility module to at least v1.5.2 (its faster!)#end#end"); // for backwards compatibility
 		sb.append("#foreach($batchIndex in [0..$numberOfBatches])\n");
 		sb.append("$!{fn.setPatientSetFromBatch($batchIndex)}");
 		sb.append("#foreach($patientId in $fn.patientSet.memberIds)\n");
