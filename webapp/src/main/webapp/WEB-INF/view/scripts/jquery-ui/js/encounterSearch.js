@@ -86,10 +86,10 @@ function doEncounterSearch(text, resultHandler, opts) {
 }
 	</pre>
  */
-(function($) {
+(function($j) {
 	var encounterSearch_div = '<span><span style="white-space: nowrap"><span><span id="searchLabelNode"></span><input type="text" value="" id="inputNode" autocomplete="off"/><input type="checkbox" style="display: none" id="includeRetired"/><img id="spinner" src=""/><input type="checkbox" style="display: none" id="includeVoided"/><input type="checkbox" style="display: none" id="verboseListing"/><span id="minCharError" class="error"></span><span id="pageInfo"></span></span></span><span class="openmrsSearchDiv"><table id="openmrsSearchTable" cellpadding="2" cellspacing="0" style="width: 100%"><thead id="searchTableHeader"><tr><th></th><th></th><th></th><th></th><th></th><th></th></tr></thead><tbody></tbody></table></span></span>';
 	
-	$.widget("ui.encounterSearch", {
+	$j.widget("ui.encounterSearch", {
 		plugins: {},
 		options: {
 			minLength: 3,
@@ -146,8 +146,8 @@ function doEncounterSearch(text, resultHandler, opts) {
 	    				spinnerObj.css("visibility", "hidden");
 		    		$j(".openmrsSearchDiv").hide();
 		    		$j("#minCharError").css("visibility", "visible");
-		    		if($('#pageInfo').css("visibility") == 'visible')
-						$('#pageInfo').css("visibility", "hidden");
+		    		if($j('#pageInfo').css("visibility") == 'visible')
+						$j('#pageInfo').css("visibility", "hidden");
 		    	}
 		    	//to maintain keyDown and keyUp events since they are only fired when the input box has focus
 		    	input.focus();
@@ -179,8 +179,8 @@ function doEncounterSearch(text, resultHandler, opts) {
     				window.clearTimeout(this._textInputTimer);
     			}
 	    		if(text.length >= o.minLength) {
-	    			if($('#pageInfo').css("visibility") == 'visible')
-						$('#pageInfo').css("visibility", "hidden");
+	    			if($j('#pageInfo').css("visibility") == 'visible')
+						$j('#pageInfo').css("visibility", "hidden");
 						
 	    			if($j("#minCharError").css("visibility") == 'visible')
 	    				$j("#minCharError").css("visibility", "hidden");
@@ -192,8 +192,8 @@ function doEncounterSearch(text, resultHandler, opts) {
 	    			if(spinnerObj.css("visibility") == 'visible'){
 	    				spinnerObj.css("visibility", "hidden");
 	    			}
-	    			if($('#pageInfo').css("visibility") == 'visible')
-						$('#pageInfo').css("visibility", "hidden");
+	    			if($j('#pageInfo').css("visibility") == 'visible')
+						$j('#pageInfo').css("visibility", "hidden");
 						
 	    			$j(".openmrsSearchDiv").hide();
 	    			//wait for a 400ms, if the user isn't typing anymore chars, show the error msg
@@ -255,8 +255,8 @@ function doEncounterSearch(text, resultHandler, opts) {
 		    var numberOfTextInputs = 0;
 		    for(var x in inputs){
 		    	var inputField = inputs[x];
-		    	if(inputField && inputField.type == 'text' && $(inputField).attr("disabled") == false && 
-		    			$(inputField).is(":visible") && $(inputField).css("visibility") != "hidden")
+		    	if(inputField && inputField.type == 'text' && $j(inputField).attr("disabled") == false && 
+		    			$j(inputField).is(":visible") && $j(inputField).css("visibility") != "hidden")
 		    		numberOfTextInputs++;
 		    }
 		   
@@ -286,27 +286,27 @@ function doEncounterSearch(text, resultHandler, opts) {
 		    	},
 		    	fnRowCallback: function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {					
 		    		//register mouseover/out events handlers to have row highlighting
-		    		$(nRow).bind('mouseover', function(){
-		    			$(this).addClass('tr_row_highlight_hover');
-		    			$(this).css("cursor", "pointer");
+		    		$j(nRow).bind('mouseover', function(){
+		    			$j(this).addClass('tr_row_highlight_hover');
+		    			$j(this).css("cursor", "pointer");
 		    			if(self.curRowSelection != null)
-		    				$(self._table.fnGetNodes()[self.curRowSelection]).removeClass("row_highlight");
+		    				$j(self._table.fnGetNodes()[self.curRowSelection]).removeClass("row_highlight");
 					});
-		    		$(nRow).bind('mouseout', function(){
-		    			$(this).removeClass('tr_row_highlight_hover');
+		    		$j(nRow).bind('mouseout', function(){
+		    			$j(this).removeClass('tr_row_highlight_hover');
 		    			if(self.curRowSelection != null)
-		    				$(self._table.fnGetNodes()[self.curRowSelection]).addClass("row_highlight");
+		    				$j(self._table.fnGetNodes()[self.curRowSelection]).addClass("row_highlight");
 		    	    });
 		    				    		
 		    		//draw a strike through for all voided encounters that have been loaded
 		    		if(self._results[iDisplayIndexFull] && self._results[iDisplayIndexFull].voided){		    			
-		    			$(nRow).children().each(function(){		    				
-		    				$(this).addClass('voided');
+		    			$j(nRow).children().each(function(){		    				
+		    				$j(this).addClass('voided');
 		    			}); 
 		    		}
 		    		
 		    		if(self.options.selectionHandler) {
-		    			$(nRow).bind('click', function() {
+		    			$j(nRow).bind('click', function() {
 		    				//Register onclick handlers to each row
 		    				self._doSelected(iDisplayIndexFull, self._results[iDisplayIndexFull]);
 		    			});
@@ -318,7 +318,7 @@ function doEncounterSearch(text, resultHandler, opts) {
 		},
 		
 		_makeColumns: function() {
-			return $.map(this._columns, function(c) {
+			return $j.map(this._columns, function(c) {
 				return { sTitle: c.name };
 			});
 		},
@@ -357,8 +357,8 @@ function doEncounterSearch(text, resultHandler, opts) {
 				//yet there were some intermediate calls that might have returned results
 				var currInput = $j.trim($j("#inputNode").val());
 				if(currInput == '' || currInput.length < self.options.minLength){
-					if($('#pageInfo').css("visibility") == 'visible')
-						$('#pageInfo').css("visibility", "hidden");
+					if($j('#pageInfo').css("visibility") == 'visible')
+						$j('#pageInfo').css("visibility", "hidden");
 					$j(".openmrsSearchDiv").hide();
 					if(currInput.length > 0)
 						$j("#minCharError").css("visibility", "visible");
@@ -397,13 +397,13 @@ function doEncounterSearch(text, resultHandler, opts) {
 			if((this._results != null) && (this._results.length > 0) && (typeof this._results[0] == 'string')) {
 				//error
 				//hide pagination buttons
-	    	    if($('#openmrsSearchTable_paginate')){
-	    	    	$('#openmrsSearchTable_paginate').hide();
+	    	    if($j('#openmrsSearchTable_paginate')){
+	    	    	$j('#openmrsSearchTable_paginate').hide();
 				}
-	    	    if($('#pageInfo').css("visibility") == 'visible')
-					$('#pageInfo').css("visibility", "hidden");
-	    	    if($('#openmrsSearchTable_info').is(":visible"))
-					$('#openmrsSearchTable_info').hide();
+	    	    if($j('#pageInfo').css("visibility") == 'visible')
+					$j('#pageInfo').css("visibility", "hidden");
+	    	    if($j('#openmrsSearchTable_info').is(":visible"))
+					$j('#openmrsSearchTable_info').hide();
 				return;
 			}
 			
@@ -422,18 +422,18 @@ function doEncounterSearch(text, resultHandler, opts) {
 			this._table.currPage = 1;
 			
     	    if(matchCount <= this._table.fnSettings()._iDisplayLength){
-    	    	$('#openmrsSearchTable_paginate').hide();
-			}else if(!$('#openmrsSearchTable_paginate').is(":visible")){
+    	    	$j('#openmrsSearchTable_paginate').hide();
+			}else if(!$j('#openmrsSearchTable_paginate').is(":visible")){
 				//if the buttons were previously hidden, show them
-				$('#openmrsSearchTable_paginate').show();
+				$j('#openmrsSearchTable_paginate').show();
 			}
     	    
     	    this._updatePageInfo(searchText);
     	    if(matchCount == 0){
-    	    	if($('#openmrsSearchTable_info').is(":visible"))
-					$('#openmrsSearchTable_info').hide();
-    	    }else if(!$('#openmrsSearchTable_info').is(":visible"))
-				$('#openmrsSearchTable_info').show();
+    	    	if($j('#openmrsSearchTable_info').is(":visible"))
+					$j('#openmrsSearchTable_info').hide();
+    	    }else if(!$j('#openmrsSearchTable_info').is(":visible"))
+				$j('#openmrsSearchTable_info').show();
     	    
 			this._div.find(".openmrsSearchDiv").show();
 			
@@ -442,7 +442,7 @@ function doEncounterSearch(text, resultHandler, opts) {
 		
 		_buildRow: function(rowData) {
 			var cols = this._columns;
-			return $.map(cols, function(c) {
+			return $j.map(cols, function(c) {
 				var data = rowData[c.id];
 				if(data == null) 
 					data = " ";
@@ -476,7 +476,7 @@ function doEncounterSearch(text, resultHandler, opts) {
 			}
 			
 			if(prevRow != null) {
-				$(this._table.fnGetNodes()[prevRow]).removeClass("row_highlight");
+				$j(this._table.fnGetNodes()[prevRow]).removeClass("row_highlight");
 			}
 			
 			//If the selected row is the first one on the next page, flip over to its page
@@ -485,8 +485,8 @@ function doEncounterSearch(text, resultHandler, opts) {
 			}
 			
 			//hide the hover
-			$('.tr_row_highlight_hover').removeClass("tr_row_highlight_hover");
-			$(this._table.fnGetNodes()[this.curRowSelection]).addClass("row_highlight");
+			$j('.tr_row_highlight_hover').removeClass("tr_row_highlight_hover");
+			$j(this._table.fnGetNodes()[this.curRowSelection]).addClass("row_highlight");
 		},
 		
 		_doKeyUp: function() {
@@ -508,7 +508,7 @@ function doEncounterSearch(text, resultHandler, opts) {
 			}
 			
 			if(prevRow != null) {
-				$(this._table.fnGetNodes()[prevRow]).removeClass("row_highlight");
+				$j(this._table.fnGetNodes()[prevRow]).removeClass("row_highlight");
 
 				if(prevRow % this._table.fnSettings()._iDisplayLength == 0) {
 					this._table.fnPageChange('previous');
@@ -516,8 +516,8 @@ function doEncounterSearch(text, resultHandler, opts) {
 			}
 			
 			//hide the hover
-			$('.tr_row_highlight_hover').removeClass("tr_row_highlight_hover");
-			$(this._table.fnGetNodes()[this.curRowSelection]).addClass("row_highlight");
+			$j('.tr_row_highlight_hover').removeClass("tr_row_highlight_hover");
+			$j(this._table.fnGetNodes()[this.curRowSelection]).addClass("row_highlight");
 		},
 		
 		_doPageUp: function() {
@@ -541,7 +541,7 @@ function doEncounterSearch(text, resultHandler, opts) {
 				rowToHighlight = 0;
 			}
 			else{
-				rowToHighlight = ((this._table.currPage - 1)*this._table.fnSettings()._iDisplayLength);
+				rowToHighlight = (this._table.currPage - 1)*this._table.fnSettings()._iDisplayLength;
 				this._table.fnPageChange('previous');
 			}
 			
@@ -596,19 +596,19 @@ function doEncounterSearch(text, resultHandler, opts) {
 		_updatePageInfo: function(searchText) {
 			if(this._results.length > 0){
 				var pageString = (this._table.numberOfPages == 1) ? omsgs.page : omsgs.pages;
-				$('#pageInfo').html(omsgs.viewingResultsFor+" '<b>"+searchText+"</b>' ( "+this._table.numberOfPages+" "+pageString+" )");
+				$j('#pageInfo').html(omsgs.viewingResultsFor+" '<b>"+searchText+"</b>' ( "+this._table.numberOfPages+" "+pageString+" )");
 			}else {
-				$('#pageInfo').html(omsgs.viewingResultsFor+" '<b>"+searchText+"</b>'");
+				$j('#pageInfo').html(omsgs.viewingResultsFor+" '<b>"+searchText+"</b>'");
 			}
 			
-			if($('#pageInfo').css("visibility") != 'visible')
-				$('#pageInfo').css("visibility", "visible");
+			if($j('#pageInfo').css("visibility") != 'visible')
+				$j('#pageInfo').css("visibility", "visible");
 		},
 		
 		_updateRowHighlight: function(rowNumber){
 			//highlight the row if the highlight is visible
-			$(this._table.fnGetNodes()[this.curRowSelection]).removeClass("row_highlight");
-			$(this._table.fnGetNodes()[rowNumber]).addClass("row_highlight");
+			$j(this._table.fnGetNodes()[this.curRowSelection]).removeClass("row_highlight");
+			$j(this._table.fnGetNodes()[rowNumber]).addClass("row_highlight");
 			this.curRowSelection = rowNumber;
 		},
 		
@@ -620,8 +620,8 @@ function doEncounterSearch(text, resultHandler, opts) {
 				//than the minimum characters
 				var currInput = $j.trim($j("#inputNode").val());
 				if(currInput == '' || currInput.length < self.options.minLength){
-					if($('#pageInfo').css("visibility") == 'visible')
-						$('#pageInfo').css("visibility", "hidden");
+					if($j('#pageInfo').css("visibility") == 'visible')
+						$j('#pageInfo').css("visibility", "hidden");
 					$j(".openmrsSearchDiv").hide();
 					if(currInput.length > 0)
 						$j("#minCharError").css("visibility", "visible");
@@ -649,6 +649,57 @@ function doEncounterSearch(text, resultHandler, opts) {
 				self._updatePageInfo(searchText);
 				self._table.fnAddData(newData);
 				spinnerObj.css("visibility", "hidden");
+				//This is hacky way to capture the visible buttons before the user clicks any of them,
+				//so that we can add/remove onclick events to/from each.
+				$j("#openmrsSearchTable_paginate").mouseenter(function(){
+					var buttonElement = document.getElementById('openmrsSearchTable_paginate');
+					if(buttonElement){
+					    var spans = buttonElement.getElementsByTagName("span");
+					    if(self._results && self._results.length > 0){
+					    	for(var i in spans){
+					    		var span = spans[i];
+					    		var elementClass = span.className;	
+					    		if(span.getElementsByTagName){
+					    			var children = span.getElementsByTagName("span");
+					    			//ignore disbaled buttons and the span tag that has nested spans for the numbering 1,2,3,4,5,........
+					    			if(children == null || children.length == 0){					    			
+					    				//ignore the greyed out buttons
+					    				if(span.className && span.className.indexOf("ui-state-disabled") < 0 ){
+					    					span.onclick = function(){
+					    						if(this.innerHTML){
+					    							var buttonText = this.innerHTML;
+					    							//if the clicked button bears a number
+					    							if(Number(buttonText)){
+					    								self._table.currPage = buttonText;
+					    								self._updateRowHighlight((self._table.currPage - 1)*self._table.fnSettings()._iDisplayLength);
+					    							}else{
+					    								//move the highlight to the first row on the displayed page
+					    								if(buttonText == omsgs.next){
+					    									self._table.currPage++;								
+					    									self._updateRowHighlight((self._table.currPage - 1)*self._table.fnSettings()._iDisplayLength);
+					    								}else if(buttonText == omsgs.previous){
+					    									self._table.currPage--;
+					    									self._updateRowHighlight((self._table.currPage - 1)*self._table.fnSettings()._iDisplayLength);
+					    								}else if(buttonText == omsgs.first){
+					    									self._table.currPage = 1;
+					    									self._updateRowHighlight(0);
+					    								}else if(buttonText == omsgs.last){
+					    									self._table.currPage = self._table.numberOfPages;
+					    									self._updateRowHighlight((self._table.numberOfPages - 1)*self._table.fnSettings()._iDisplayLength);
+					    								}
+					    							}
+					    						}
+					    					};
+					    				}else{
+					    					//drop the event handler if the button was previously active
+					    					span.onclick = "";
+					    				}
+					    			}
+					    		}
+					    	}
+					    }
+					}
+				});
 			};
 		},
 		
