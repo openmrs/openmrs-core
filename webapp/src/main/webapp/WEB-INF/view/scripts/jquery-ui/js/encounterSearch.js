@@ -492,6 +492,8 @@ function doEncounterSearch(text, resultHandler, opts) {
 		_doKeyUp: function() {
 			var prevRow = this.curRowSelection;
 			if(this.curRowSelection == null) {
+				if($j(spinnerObj).css("visibility") == "visible")
+					return;
 				this.curRowSelection = this._table.fnGetData().length-1;
 				this._table.currPage = this._table.numberOfPages;
 				this._table.fnPageChange('last');
@@ -667,7 +669,7 @@ function doEncounterSearch(text, resultHandler, opts) {
 					    				if(span.className && span.className.indexOf("ui-state-disabled") < 0 ){
 					    					span.onclick = function(){
 					    						if(this.innerHTML){
-					    							var buttonText = this.innerHTML;
+					    							var buttonText = $j.trim(this.innerHTML);
 					    							//if the clicked button bears a number
 					    							if(Number(buttonText)){
 					    								self._table.currPage = buttonText;
