@@ -159,37 +159,15 @@ function doEncounterSearch(text, resultHandler, opts) {
 		    	//LEFT(37), UP(38), RIGHT(39), DOWN(40), ENTER(13), HOME(36), END(35), PAGE UP(33), PAGE DOWN(34)
 		    	var kc = event.keyCode;
 		    	if(((kc >= 33) && (kc <= 40)) || (kc == 13)) {
-			    	switch(event.keyCode) {
-			    		case 33:
-			    			self._doPageUp();
-			    			break;
-			    		case 34:
-			    			self._doPageDown();
-			    			break;
-				    	case 35:
-				    		self._doKeyEnd();
-				    		break;
-				    	case 36:
-				    		self._doKeyHome();
-				    		break;
-				    	case 38:
-				    		self._doKeyUp();
-				    		break;
-				    	case 40:
-				    		self._doKeyDown();
-				    		break;
-				    	case 13:
-				    		self._doKeyEnter();
-				    		break;
-			    	}
+		    		if(!self._div.find(".openmrsSearchDiv").is(":visible")) {
+						return true;
+					}
+		    		if(kc == 13)
+		    			self._doKeyEnter();
 			    	//kill the event
 			    	event.stopPropagation();
-			    	//TODO stop the cursor in tthe input box from moving
-			    	//when the keys PgDown/Up/home/end/up/down are pressed, 
-			    	//if(((kc >= 33) && (kc <= 40)) && kc != 13 && kc != 37 && kc != 39)
-			    	//	return false;
-			    	
-			    	return;
+			    				    	
+			    	return false;
 		    	}
 		    	
 		    	if(self.onCharTyped) {
@@ -227,6 +205,47 @@ function doEncounterSearch(text, resultHandler, opts) {
 	    			}, 600);
 	    			
 	    		}
+	    		return true;
+		    });
+		    
+		    //catch control keys to stop the cursor in the input box from moving.
+		    input.keypress(function(event) {
+		    	//UP(38), DOWN(40), HOME(36), END(35), PAGE UP(33), PAGE DOWN(34)
+		    	var kc = event.keyCode;
+		    	if(((kc >= 33) && (kc <= 36)) || (kc == 38) || (kc == 40)) {
+		    		if(!self._div.find(".openmrsSearchDiv").is(":visible")) {
+						return true;
+					}
+		    		//if the pages are not yet all fully loaded, block usage of HOME(36), END(35), PAGE UP(33), PAGE DOWN(34)
+		    		if((kc >= 33 && kc <= 36) && $j(spinnerObj).css("visibility") == "visible"){
+		    			return false
+		    		}
+			    	switch(event.keyCode) {
+			    		case 33:
+			    			self._doPageUp();
+			    			break;
+			    		case 34:
+			    			self._doPageDown();
+			    			break;
+				    	case 35:
+				    		self._doKeyEnd();
+				    		break;
+				    	case 36:
+				    		self._doKeyHome();
+				    		break;
+				    	case 38:
+				    		self._doKeyUp();
+				    		break;
+				    	case 40:
+				    		self._doKeyDown();
+				    		break;
+			    	}
+			    	//kill the event
+			    	event.stopPropagation();    	
+			    	
+			    	return false;
+		    	}
+		    	
 	    		return true;
 		    });
 		    
@@ -437,12 +456,6 @@ function doEncounterSearch(text, resultHandler, opts) {
 		},
 		
 		_doKeyDown: function() {
-			if(!this._div.find(".openmrsSearchDiv").is(":visible")) {
-				return;
-			}
-			
-			this._moveCursorToEnd();
-			
 			var prevRow = this.curRowSelection;
 			if(this.curRowSelection == null) {
 				this.curRowSelection = 0;
@@ -477,12 +490,6 @@ function doEncounterSearch(text, resultHandler, opts) {
 		},
 		
 		_doKeyUp: function() {
-			if(!this._div.find(".openmrsSearchDiv").is(":visible")) {
-				return;
-			}
-			
-			this._moveCursorToEnd();
-			
 			var prevRow = this.curRowSelection;
 			if(this.curRowSelection == null) {
 				this.curRowSelection = this._table.fnGetData().length-1;
@@ -514,10 +521,6 @@ function doEncounterSearch(text, resultHandler, opts) {
 		},
 		
 		_doPageUp: function() {
-			if(!this._div.find(".openmrsSearchDiv").is(":visible") || $j(spinnerObj).css("visibility") == "visible") {
-				return;
-			}
-
 			this._table.fnPageChange('next');
 			if(++this._table.currPage > this._table.numberOfPages)
 				this._table.currPage = this._table.numberOfPages;
@@ -529,10 +532,6 @@ function doEncounterSearch(text, resultHandler, opts) {
 		},
 		
 		_doPageDown: function() {
-			if(!this._div.find(".openmrsSearchDiv").is(":visible") || $j(spinnerObj).css("visibility") == "visible") {
-				return;
-			}
-			
 			var rowToHighlight = null;
 			if(--this._table.currPage < 1){
 				this._table.currPage = 1;
@@ -550,20 +549,12 @@ function doEncounterSearch(text, resultHandler, opts) {
 		},
 		
 		_doKeyEnter: function() {
-			if(!this._div.find(".openmrsSearchDiv").is(":visible")) {
-				return;
-			}
-			
 			if(this.curRowSelection != null) {
 				this._doSelected(this.curRowSelection, this._results[this.curRowSelection]);
 			}
 		},
 		
 		_doKeyHome: function() {
-			if(!this._div.find(".openmrsSearchDiv").is(":visible")) {
-				return;
-			}
-
 			this._table.fnPageChange('first');
 			this._table.currPage = 1;
 			if(this.curRowSelection == null || this.curRowSelection < this._table.fnSettings()._iDisplayLength)
@@ -572,10 +563,6 @@ function doEncounterSearch(text, resultHandler, opts) {
 		},
 		
 		_doKeyEnd: function() {
-			if(!this._div.find(".openmrsSearchDiv").is(":visible")) {
-				return;
-			}
-
 			this._table.fnPageChange('last');
 			this._table.currPage = this._table.numberOfPages;
 			//if the highlight is already on the last page, don't switch it
@@ -623,21 +610,6 @@ function doEncounterSearch(text, resultHandler, opts) {
 			$(this._table.fnGetNodes()[this.curRowSelection]).removeClass("row_highlight");
 			$(this._table.fnGetNodes()[rowNumber]).addClass("row_highlight");
 			this.curRowSelection = rowNumber;
-		},
-		
-		_moveCursorToEnd: function(){
-			var inputNode = document.getElementById('inputNode');
-			//If not IE			
-			if(inputNode.selectionStart != null){
-				inputNode.setSelectionRange($j.trim($j(inputNode).val()).length, $j.trim($j(inputNode).val()).length);
-			}
-			else if(inputNode.createTextRange) {
-		        // Create a TextRange, set the internal pointer to
-		        // the last position and show the cursor at the end
-		        var range = inputNode.createTextRange();
-		        range.move("character", $j.trim($j(inputNode).val()).length);
-		        range.select(inputNode);
-			}
 		},
 		
 		//This function adds the data returned by the second ajax call that fetches the remaining rows
