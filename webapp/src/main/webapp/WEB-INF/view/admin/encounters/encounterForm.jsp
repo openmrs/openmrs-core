@@ -84,7 +84,9 @@
 	}
 </style>
 
+<c:if test="${encounter.patient.patientId != null}">
 <a href="../../patientDashboard.form?patientId=${encounter.patient.patientId}"><spring:message code="patientDashboard.viewDashboard"/></a>
+</c:if>
 
 <h2><spring:message code="Encounter.manage.title"/></h2>
 
