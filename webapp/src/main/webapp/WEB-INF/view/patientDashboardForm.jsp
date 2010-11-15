@@ -1,17 +1,4 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
-<openmrs:htmlInclude file="/scripts/easyAjax.js" />
-
-<openmrs:htmlInclude file="/scripts/jquery/dataTables/css/dataTables.css" />
-<openmrs:htmlInclude file="/scripts/jquery/dataTables/js/jquery.dataTables.min.js" />
-
-<openmrs:htmlInclude file="/scripts/jquery-ui/js/jquery-ui-1.7.2.custom.min.js" />
-<openmrs:htmlInclude file="/scripts/jquery-ui/css/redmond/jquery-ui-1.7.2.custom.css" />
-
-<openmrs:htmlInclude file="/scripts/flot/jquery.flot.js" />
-<openmrs:htmlInclude file="/scripts/flot/jquery.flot.multiple.threshold.js"/> 
-
-<openmrs:htmlInclude file="/scripts/dojoConfig.js"/>
-<openmrs:htmlInclude file="/scripts/dojo/dojo.js"/>
 
 <openmrs:require privilege="View Patients" otherwise="/login.htm" redirect="/patientDashboard.form" />
 
@@ -26,6 +13,23 @@
 	<spring:message var="pageTitle" code="patientDashboard.title" scope="page"/>
 </c:if>
 <%@ include file="/WEB-INF/template/header.jsp" %>
+
+<%-- Files from encounter and graph portlets being included near header to improve page loading speed
+     If those tabs/portlets are no longer using them, they should be removed from here --%>
+<openmrs:htmlInclude file="/scripts/easyAjax.js" />
+
+<openmrs:htmlInclude file="/scripts/jquery/dataTables/css/dataTables.css" />
+<openmrs:htmlInclude file="/scripts/jquery/dataTables/js/jquery.dataTables.min.js" />
+
+<openmrs:htmlInclude file="/scripts/jquery-ui/js/jquery-ui-1.7.2.custom.min.js" />
+<openmrs:htmlInclude file="/scripts/jquery-ui/css/redmond/jquery-ui-1.7.2.custom.css" />
+
+<openmrs:htmlInclude file="/scripts/flot/jquery.flot.js" />
+<openmrs:htmlInclude file="/scripts/flot/jquery.flot.multiple.threshold.js"/> 
+
+<openmrs:htmlInclude file="/scripts/dojoConfig.js"/>
+<openmrs:htmlInclude file="/scripts/dojo/dojo.js"/>
+<%-- /end file imports for portlets --%>
 
 <script type="text/javascript">
 	var timeOut = null;
