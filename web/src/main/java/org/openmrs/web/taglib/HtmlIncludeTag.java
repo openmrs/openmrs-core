@@ -215,6 +215,7 @@ public class HtmlIncludeTag extends TagSupport {
 		log.debug("resetting values");
 		this.type = null;
 		this.file = null;
+		this.appendLocale = false;
 	}
 	
 	public String getType() {
