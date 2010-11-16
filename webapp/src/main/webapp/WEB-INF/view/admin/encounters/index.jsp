@@ -13,14 +13,22 @@
 <script type="text/javascript">
 	var lastSearch;
 	$j(document).ready(function() {
-		new EncounterSearch("findEncounter", true, doSelectionHandler, {searchLabel: '<spring:message code="Encounter.search" javaScriptEscape="true"/>'});
+		new OpenmrsSearch("findEncounter", true, doEncounterSearch, doSelectionHandler, 
+				[	{fieldName:"personName", header:omsgs.patientName},
+					{fieldName:"encounterType", header:omsgs.encounterType},
+					{fieldName:"formName", header:omsgs.encounterForm},
+					{fieldName:"providerName", header:omsgs.encounterProvider},
+					{fieldName:"location", header:omsgs.encounterLocation},
+					{fieldName:"encounterDateString", header:omsgs.encounterDate}
+				],
+				{searchLabel: '<spring:message code="Encounter.search" javaScriptEscape="true"/>'});
 	});
 	
 	function doSelectionHandler(index, data) {
 		document.location = "encounter.form?encounterId=" + data.encounterId + "&phrase=" + lastSearch;
 	}
 	
-	//this method over rides the default searchHandler for the encounterSearch widget
+	//searchHandler for the Search widget
 	function doEncounterSearch(text, resultHandler, opts) {
 		lastSearch = text;
 		DWREncounterService.findCountAndEncounters(text, opts.includeVoided, opts.start, opts.length, resultHandler);

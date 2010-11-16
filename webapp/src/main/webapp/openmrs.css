@@ -1272,7 +1272,7 @@ img#spinner{
 	padding-bottom: 10px;
 }
 div.paging_full_numbers{
-	width:500px !important;
+	width:auto !important;
 }
 #minCharError{
 	visibility: hidden;

@@ -77,7 +77,7 @@ omsgs.userListingHeaders=new Array();
 
 /* General Labels and text to be used on SEARCH WIDGET */
 omsgs.minCharRequired="<spring:message code="searchWidget.minCharRequired" javaScriptEscape="true" />";
-omsgs.searchEncounters="<spring:message code="searchWidget.searchEncounters" javaScriptEscape="true" />";
+omsgs.searchLabel="<spring:message code="searchWidget.searchLabel" javaScriptEscape="true" />";
 omsgs.patientName="<spring:message code="Patient.name" javaScriptEscape="true" />";
 omsgs.encounterType="<spring:message code="Encounter.type" javaScriptEscape="true" />";
 omsgs.encounterForm="<spring:message code="Encounter.form" javaScriptEscape="true" />";
@@ -86,8 +86,7 @@ omsgs.encounterLocation="<spring:message code="Encounter.location" javaScriptEsc
 omsgs.encounterDate="<spring:message code="Encounter.datetime" javaScriptEscape="true" />";
 omsgs.to="<spring:message code="general.to" javaScriptEscape="true" />";
 omsgs.of="<spring:message code="general.of" javaScriptEscape="true" />";
-omsgs.showing="<spring:message code="searchWidget.showing" javaScriptEscape="true" />";
-omsgs.entries="<spring:message code="searchWidget.entries" javaScriptEscape="true" />";
+omsgs.sInfoLabel="<spring:message code="searchWidget.sInfoLabel" javaScriptEscape="true" />";
 omsgs.first="<spring:message code="searchWidget.first" javaScriptEscape="true" />";
 omsgs.previous="<spring:message code="searchWidget.previous" javaScriptEscape="true" />";
 omsgs.next="<spring:message code="searchWidget.next" javaScriptEscape="true" />";

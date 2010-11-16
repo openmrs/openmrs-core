@@ -1,14 +1,16 @@
 /**
  * Helper function to get started quickly
  * 
- * opts is a map that can be any option of the encounterSearch widget:
- *   minLength
- *   searchLabel
- *   includeVoidedLabel
- *   showIncludeVoided
- *   searchHandler
+ * opts is a map that can be any option of the openmrsSearch widget:
+ *   minLength - The minimum required number of characters a user has to enter for a search to be triggered
+ *   searchLabel - The text label to appear on the left of the input text box
+ *   includeVoidedLabel - The label for the includeVoided/includeRetired checkbo
+ *   showIncludeVoided - If the includeVoided/includeRetired checkbox should be displayed
+ *   searchHandler (Required)
  *   resultsHandler
  *   selectionHandler
+ *   fieldHeadersMap (Required) - Array of fieldName and column header mappings)
+ *   displayLength - The number of results to display per page
  *   
  * The parameters 'showIncludeVoided' and 'selectionHandler' are options to the widget but
  * given here as simple params.
@@ -16,21 +18,37 @@
  * These are the same:
  * <pre>
    $j(document).ready(function() {
-		$j("#findEncounter1").encounterSearch({
-			searchLabel:'<spring:message code="Encounter.search"/>',
+		$j("#elementId").openmrsSearch({
+			searchLabel:'<spring:message code="General.search"/>',
 			showIncludeVoided: true,
-			searchHandler: doEncounterSearch,
-			selectionHandler: doSelectionHandler
+			displayLength: 5,
+			minLength: 3,
+			searchHandler: doSearchHandler,
+			selectionHandler: doSelectionHandler,
+			fieldsAndHeaders: [
+				{fieldName:"field1", header:"Header1"},
+				{fieldName:"fiels2", header:"Header2"},
+				{fieldName:"field3", header:"Header3"},
+				{fieldName:"field4", header:"Header4"},
+				{fieldName:"fiels5", header:"Header5"},
+				{fieldName:"field6", header:"Header6"}
+			]
 		});
 
-		new EncounterSearch("findEncounter1", true, doSelectionHandler, {
-			searchLabel: '<spring:message code="Encounter.search"/>',
-			searchHandler: doEncounterSearch
-		});
+		new OpenmrsSearch("elementid", true, doSearchHandler, doSelectionHandler, 
+			[	{fieldName:"field1", header:"Header1"},
+				{fieldName:"fiels2", header:"Header2"},
+				{fieldName:"field3", header:"Header3"},
+				{fieldName:"field4", header:"Header4"},
+				{fieldName:"fiels5", header:"Header5"},
+				{fieldName:"field6", header:"Header6"}
+			],
+			{searchLabel: '<spring:message code="General.search"/>', displayLength: 5, minLength: 3}
+		);
 	});
 	</pre>
  */
-function EncounterSearch(div, showIncludeVoided, selectionHandler, opts) {
+function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, fieldsAndHeaders, opts) {
 	var el;
 	if(typeof div == 'string') {
 		el = jQuery("#" + div);
@@ -44,31 +62,26 @@ function EncounterSearch(div, showIncludeVoided, selectionHandler, opts) {
 		opts.showIncludeVoided = showIncludeVoided;
 	if(!opts.selectionHandler) 
 		opts.selectionHandler = selectionHandler;
-	if(!opts.searchHandler) 
-		opts.searchHandler = doEncounterSearch;
+	if(!opts.searchHandler)
+		opts.searchHandler = searchHandler;
+	if(!opts.fieldsAndHeaders)
+		opts.fieldsAndHeaders = fieldsAndHeaders;
 	
-	jQuery(el).encounterSearch(opts);
-}
-
-/**
- * This is the default searchHandler to be called by the widget, if you wish to over ride it and add some 
- * extra custom code, pass in your searchHandler as one of the options for the opts argument to the 
- * constructor of the widget.
- */
-function doEncounterSearch(text, resultHandler, opts) {
-	DWREncounterService.findCountAndEncounters(text, opts.includeVoided, opts.start, opts.length, resultHandler);
+	jQuery(el).openmrsSearch(opts);
 }
 
 /**
  * Expects to be put on a div.
  * Options:
  *   minLength:int (default: 3)
- *   searchLabel:string (default: "Search Encounters")
- *   includeVoidedLabel:string (default: "Include Voided")
+ *   searchLabel:string (default: "Search")
+ *   includeVoidedLabel:string (default: omsgs.includeVoided)
  *   showIncludeVoided:bool (default: false)
  *   searchHandler:function(text, resultHandler, options) (default:null)
  *   resultsHandler:function(results) (default:null)
  *   selectionHandler:function(index, rowData)
+ *   fieldsAndHeaders: Array of fieldNames and column header maps
+ *   displayLength: int (default: 10)
  *   
  * The styling on this table works like this:
  * <pre> 
@@ -87,15 +100,16 @@ function doEncounterSearch(text, resultHandler, opts) {
 	</pre>
  */
 (function($j) {
-	var encounterSearch_div = '<span><span style="white-space: nowrap"><span><span id="searchLabelNode"></span><input type="text" value="" id="inputNode" autocomplete="off"/><input type="checkbox" style="display: none" id="includeRetired"/><img id="spinner" src=""/><input type="checkbox" style="display: none" id="includeVoided"/><input type="checkbox" style="display: none" id="verboseListing"/><span id="minCharError" class="error"></span><span id="pageInfo"></span></span></span><span class="openmrsSearchDiv"><table id="openmrsSearchTable" cellpadding="2" cellspacing="0" style="width: 100%"><thead id="searchTableHeader"><tr><th></th><th></th><th></th><th></th><th></th><th></th></tr></thead><tbody></tbody></table></span></span>';
+	var openmrsSearch_div = '<span><span style="white-space: nowrap"><span><span id="searchLabelNode"></span><input type="text" value="" id="inputNode" autocomplete="off"/><input type="checkbox" style="display: none" id="includeRetired"/><img id="spinner" src=""/><input type="checkbox" style="display: none" id="includeVoided"/><input type="checkbox" style="display: none" id="verboseListing"/><span id="minCharError" class="error"></span><span id="pageInfo"></span></span></span><span class="openmrsSearchDiv"><table id="openmrsSearchTable" cellpadding="2" cellspacing="0" style="width: 100%"><thead id="searchTableHeader"><tr><th></th><th></th><th></th><th></th><th></th><th></th></tr></thead><tbody></tbody></table></span></span>';
 	
-	$j.widget("ui.encounterSearch", {
+	$j.widget("ui.openmrsSearch", {
 		plugins: {},
 		options: {
 			minLength: 3,
-			searchLabel: omsgs.searchEncounters,
+			searchLabel: omsgs.searchLabel,
 			includeVoidedLabel: omsgs.includeVoided,
-			showIncludeVoided: false
+			showIncludeVoided: false,
+			displayLength: 10
 		},
 		_lastCallCount: 0,
 		_callCount: 1,
@@ -103,20 +117,12 @@ function doEncounterSearch(text, resultHandler, opts) {
 		_div: null,
 		_table: null,
 		_textInputTimer: null,
-		_columns: [
-			{id:"personName", name:omsgs.patientName},
-			{id:"encounterType", name:omsgs.encounterType},
-			{id:"formName", name:omsgs.encounterForm},
-			{id:"providerName", name:omsgs.encounterProvider},
-			{id:"location", name:omsgs.encounterLocation},
-			{id:"encounterDateString", name:omsgs.encounterDate}
-		],
 		
 		_create: function() {
 		    var self = this,
 		        o = self.options,
 		        el = self.element,
-		        div = el.append(encounterSearch_div),
+		        div = el.append(openmrsSearch_div),
 		        lbl = div.find("#searchLabelNode"),
 		        input = div.find("#inputNode"),
 		        table = div.find("#openmrsSearchTable");
@@ -125,7 +131,7 @@ function doEncounterSearch(text, resultHandler, opts) {
 		    	spinnerObj.css("visibility", "hidden");
 		    	spinnerObj.attr("src", openmrsContextPath+"/images/loading.gif");
 		    	minCharErrorObj = div.find("#minCharError");
-		    	minCharErrorObj.html(omsgs.minCharRequired);
+		    	minCharErrorObj.html(omsgs.minCharRequired.replace("[REQUIRED_NUMBER]", o.minLength));
 		    
 		    this._div = div;
 
@@ -266,6 +272,8 @@ function doEncounterSearch(text, resultHandler, opts) {
 			//setup 'openmrsSearchTable'
 			div.find(".openmrsSearchDiv").hide();
 			
+			omsgs.sInfoLabel = omsgs.sInfoLabel.replace("[START]", "_START_").replace("[END]", "_END_").replace("[TOTAL]", "_TOTAL_");
+			
 			//TODO columns need to be built: id='searchTableHeader'
 		    this._table = table.dataTable({
 		    	bFilter: false,
@@ -273,13 +281,13 @@ function doEncounterSearch(text, resultHandler, opts) {
 		    	bSort: false,
 		    	sPaginationType: "full_numbers",
 		    	aoColumns: this._makeColumns(),
-		    	iDisplayLength: 10,
+		    	iDisplayLength: self.options.displayLength,
 		    	numberOfPages: 0,
 		    	currPage: 0,
 		    	bAutoWidth: false,
 		    	bJQueryUI: true,
 		    	"oLanguage": {
-		    		"sInfo": omsgs.showing+" _START_ "+omsgs.to+" _END_ "+omsgs.of+" _TOTAL_ "+omsgs.entries,
+		    		"sInfo": omsgs.sInfoLabel,
 		    		"oPaginate": {"sFirst": omsgs.first, "sPrevious": omsgs.previous, "sNext": omsgs.next, "sLast": omsgs.last},
 		    		"sEmptyTable": omsgs.noMatchesFound,
 		    		"sInfoEmpty": " ",
@@ -298,7 +306,7 @@ function doEncounterSearch(text, resultHandler, opts) {
 		    				$j(self._table.fnGetNodes()[self.curRowSelection]).addClass("row_highlight");
 		    	    });
 		    				    		
-		    		//draw a strike through for all voided encounters that have been loaded
+		    		//draw a strike through for all voided/retired objects that have been loaded
 		    		if(self._results[iDisplayIndexFull] && self._results[iDisplayIndexFull].voided){		    			
 		    			$j(nRow).children().each(function(){		    				
 		    				$j(this).addClass('voided');
@@ -318,8 +326,9 @@ function doEncounterSearch(text, resultHandler, opts) {
 		},
 		
 		_makeColumns: function() {
-			return $j.map(this._columns, function(c) {
-				return { sTitle: c.name };
+			var fieldsAndHeaders = this.options.fieldsAndHeaders;
+			return $j.map(fieldsAndHeaders, function(c) {
+				return { sTitle: c.header };
 			});
 		},
 		
@@ -365,11 +374,13 @@ function doEncounterSearch(text, resultHandler, opts) {
 					return;
 				}
 				self._doHandleResults(matchCount, searchText);
-				
-				//FETCH THE REST OF THE RESULTS IF encounter COUNT is greater than the number of rows to display per page
+							
+				//FETCH THE REST OF THE RESULTS IF result COUNT is greater than the number of rows to display per page
 				if(matchCount > self._table.fnSettings()._iDisplayLength){
-					spinnerObj.css("visibility", "visible");omsgs.showing+" _START_ "+omsgs.to+" _END_ "+omsgs.of+" _TOTAL_ "+omsgs.entries
-					$j('#openmrsSearchTable_info').html(omsgs.showing+" 1 "+omsgs.to+" "+self._table.fnSettings()._iDisplayLength+" "+omsgs.of+" "+ matchCount+" "+omsgs.entries);
+					spinnerObj.css("visibility", "visible");
+					$j('#openmrsSearchTable_info').html(omsgs.sInfoLabel.replace("_START_", 1).
+							replace("_END_", self._table.fnSettings()._iDisplayLength).replace("_TOTAL_", matchCount));
+					
 					self.options.searchHandler(searchText, self._addMoreRows(curCallCount, searchText, matchCount),
 						{includeVoided: self.options.showIncludeVoided && checkBox.attr('checked'),
 						start: self._table.fnSettings()._iDisplayLength, length: null});
@@ -441,9 +452,9 @@ function doEncounterSearch(text, resultHandler, opts) {
 		},
 		
 		_buildRow: function(rowData) {
-			var cols = this._columns;
+			var cols = this.options.fieldsAndHeaders;
 			return $j.map(cols, function(c) {
-				var data = rowData[c.id];
+				var data = rowData[c.fieldName];
 				if(data == null) 
 					data = " ";
 				
@@ -471,7 +482,6 @@ function doEncounterSearch(text, resultHandler, opts) {
 			if(this.curRowSelection >= this._table.fnGetData().length) {
 				this.curRowSelection--;//redact it
 				//cant go any further so return
-				//TODO might want to recycle and go to the beginning again??
 				return;
 			}
 			
@@ -492,7 +502,8 @@ function doEncounterSearch(text, resultHandler, opts) {
 		_doKeyUp: function() {
 			var prevRow = this.curRowSelection;
 			if(this.curRowSelection == null) {
-				if($j(spinnerObj).css("visibility") == "visible")
+				if($j(spinnerObj).css("visibility") == "visible" || 
+						this._table.fnGetData().length < this._table.fnSettings()._iDisplayLength)
 					return;
 				this.curRowSelection = this._table.fnGetData().length-1;
 				this._table.currPage = this._table.numberOfPages;
@@ -505,7 +516,6 @@ function doEncounterSearch(text, resultHandler, opts) {
 			if(this.curRowSelection < 0) {
 				this.curRowSelection++;//redact it
 				//cant go any further so return
-				//TODO might want to recycle and go to the beginning again??
 				return;
 			}
 			
@@ -598,9 +608,10 @@ function doEncounterSearch(text, resultHandler, opts) {
 		_updatePageInfo: function(searchText) {
 			if(this._results.length > 0){
 				var pageString = (this._table.numberOfPages == 1) ? omsgs.page : omsgs.pages;
-				$j('#pageInfo').html(omsgs.viewingResultsFor+" '<b>"+searchText+"</b>' ( "+this._table.numberOfPages+" "+pageString+" )");
+				$j('#pageInfo').html(omsgs.viewingResultsFor.replace("[SEARCH_TEXT]", "'<b>"+searchText+"</b>'").
+						concat(" ( "+this._table.numberOfPages+" "+pageString+" )"));
 			}else {
-				$j('#pageInfo').html(omsgs.viewingResultsFor+" '<b>"+searchText+"</b>'");
+				$j('#pageInfo').html(omsgs.viewingResultsFor.replace("[SEARCH_TEXT]", "'<b>"+searchText+"</b>'"));
 			}
 			
 			if($j('#pageInfo').css("visibility") != 'visible')
@@ -703,11 +714,6 @@ function doEncounterSearch(text, resultHandler, opts) {
 					}
 				});
 			};
-		},
-		
-		destroy: function() {
-			$j.Widget.prototype.destroy.apply(this, arguments); // default destroy
-			// now do other stuff particular to this widget
 		}
 	});
 })(jQuery);
