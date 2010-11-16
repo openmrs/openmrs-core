@@ -384,7 +384,7 @@ public class ConceptTest {
 		else
 			desiredLocale = locale;
 		ConceptName shortName = ConceptNameTest.createMockConceptName(1, desiredLocale, ConceptNameType.SHORT, false);
-		ConceptName fullySpecifiedName = ConceptNameTest.createMockConceptName(2, desiredLocale, null, false);
+		ConceptName fullySpecifiedName = ConceptNameTest.createMockConceptName(2, desiredLocale, ConceptNameType.FULLY_SPECIFIED, false);
 		mockConcept.addName(fullySpecifiedName);
 		mockConcept.addName(shortName);
 		
