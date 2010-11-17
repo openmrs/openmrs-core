@@ -1,9 +1,8 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
-<openmrs:htmlInclude file="/scripts/easyAjax.js" />
 <openmrs:htmlInclude file="/dwr/interface/DWRPatientService.js" />
 <openmrs:htmlInclude file="/dwr/interface/DWRConceptService.js" />
-<openmrs:htmlInclude file="/dwr/util.js" />
+<openmrs:htmlInclude file="/scripts/jquery/autocomplete/ConceptAutoComplete.js" />
 
 <style type="text/css">
 .ui-datepicker { z-index:10100; }
@@ -23,6 +22,7 @@
 			title: '<spring:message code="ActiveLists.allergy.add" javaScriptEscape="true"/>',
 			width: '30%',
 			zIndex: 100,
+			close: function() { $j("#allergy_concept").autocomplete("close"); $j("#allergy_reaction").autocomplete("close"); },
 			buttons: { '<spring:message code="general.save"/>': function() { handleAddAllergy(); },
 					   '<spring:message code="general.cancel"/>': function() { $j(this).dialog("close"); }
 			}
@@ -41,89 +41,31 @@
 
 		allergyStartDatePicker = new DatePicker("<openmrs:datePattern/>", "allergy_startDate", { defaultDate: parseDateFromStringToJs("<openmrs:datePattern/>", "${model.today}") });
 
-		var allergyCallback = new ConceptServiceCallback(showAllergyAddError);
+		var allergyCallback = new ConceptSearchCallback({onerror: showAllergyAddError, onsuccess: hideAllergyError});
 		var autoAllergyConcept = new AutoComplete("allergy_concept", allergyCallback.callback, {
 			select: function(event, ui) {
 				$j('#allergy_concept_id').val(ui.item.id);
 			}
 		});
 
-		var reactionCallback = new ConceptServiceCallback(showAllergyAddError, 'Symptom');
+		var reactionCallback = new ConceptSearchCallback(
+									{onerror:showAllergyAddError, 
+									 onsuccess: hideAllergyError,
+									 includedClasses: 'Symptom'
+									});
 		var autoReactionConcept = new AutoComplete("allergy_reaction", reactionCallback.callback, {
 			select: function(event, ui) {
 				$j('#allergy_reaction_id').val(ui.item.id);
 			}
 		});
-
-//THIS IS FOR JQUERY 1.8.1
-//		$j("#allergy_concept").autocomplete({
-//			minLength: 2,
-//			source: function(request, response) {
-//				alert("term=" + request.term);
-//				DWRConceptService.findConcepts(request.term, true, ["Symptom"], [], [], [], false, function(objs) {
-//					// convert objs from single obj into array (if needed)
-//					if(objs.length == null) {
-//						objs = [objs];
-//					}
-//
-//					//check if we have an error
-//					if(objs.length >= 1) {
-//						if(typeof objs[0] == 'string') {
-//							//then we have an error
-//							alert(objs[0]);
-//							return;
-//						}
-//					}
-//
-//					alert("objs=" + objs);
-//
-//					//we get returned ConceptListItem objects (or ConceptDrugListItem)
-//					response($j.map(objs, function(item) {
-//						return {
-//							label: item.name,
-//							value: item.name
-//						};
-//					}));
-//				})
-//			},
-//		});
 		
 	});
 
-	function ConceptServiceCallback(errorHandler, includedClass) {
-		this.callback = function(q, response) {
-			if(includedClass == null) {
-				includedClass = [];
-			}
-			else {
-				if(typeof includedClass == 'string') {
-					includedClass = [includedClass];
-				}
-			}
-			
-			DWRConceptService.findConcepts(q, false, includedClass, [], [], [], false, function(objs) {
-				//convert objs from single obj into array (if needed)
-				if(objs.length == null) {
-					objs = [objs];
-				}
-
-				//check if we have an error
-				if(objs.length >= 1) {
-					if(typeof objs[0] == 'string') {
-						//we have an error
-						if(errorHandler) errorHandler(objs[0]);
-						return;
-					}
-				}
-
-				response($j.map(objs, function(item) {
-					return { label: item.name, value: item.name, id: item.conceptId };
-				}));
-			});
-		}
-	}
-
 	function doAddAllergy() {
+		
+		// in case someone started editing/resolving an allergy already
+		currentlyEditingAllergyId = null;
+		
 		$j('#allergyError').hide();
 		$j('#allergy_concept').val("");
 		$j('#allergy_concept_id').val("");
@@ -137,6 +79,7 @@
 
 		$j('#addActiveListAllergy').dialog("option", "title", '<spring:message code="ActiveLists.allergy.add"/>');
 		$j('#addActiveListAllergy').dialog('open');
+		$j('#allergy_concept').focus();
 	}
 	
 	function handleAddAllergy() {
@@ -147,7 +90,7 @@
 		var reaction = $j('#allergy_reaction_id').val();
 
 		if((allergen == null) || (allergen == '')) {
-			alert("Allergen required");
+			showAllergyAddError("<spring:message code="ActiveLists.allergy.allergenRequired"/>");
 			return;
 		}
 
@@ -224,6 +167,10 @@
 		$j('#allergyError').show();
 	}
 
+	function hideAllergyError(results) {
+		$j('#allergyError').hide();
+	}
+
 	var allergies = new Array();
 	var currentlyEditingAllergyId = null;
 	var showingInactiveAllergies = false;
@@ -292,7 +239,7 @@
 	<c:when test="${fn:length(model.removedAllergies) > 0}">
 		<br/>
 		<div id="removedAllergyTable" style="display: none">
-			Removed Allergies<br/>
+			<spring:message code="ActiveLists.allergy.removedAllergies"/><br/>
 			<table style="margin: 0px 0px 1em 2em;" cellpadding="3" cellspacing="0" class="alTable">
 				<tr bgcolor="whitesmoke">
 					<td><spring:message code="ActiveLists.allergy.allergen"/></td>
@@ -330,7 +277,7 @@
 				</td>
 			</tr>
 			<tr>
-				<td><spring:message code="ActiveLists.startDate"/></td>
+				<td style="white-space: nowrap"><spring:message code="ActiveLists.startDate"/></td>
 				<td><input type="text" id="allergy_startDate" size="20"/></td>
 			</tr>
 			<tr>
