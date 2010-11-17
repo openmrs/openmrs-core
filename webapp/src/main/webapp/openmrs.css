@@ -1278,3 +1278,9 @@ div.paging_full_numbers{
 	visibility: hidden;
 }
 /* END- css properties for the search widgets */
+.autocompleteresult {
+	white-space: nowrap;
+}
+.autocompleteresult .preferredname {
+	color: gray;
+}
