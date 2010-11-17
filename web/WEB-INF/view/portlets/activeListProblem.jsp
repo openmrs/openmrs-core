@@ -1,9 +1,8 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
-<openmrs:htmlInclude file="/scripts/easyAjax.js" />
 <openmrs:htmlInclude file="/dwr/interface/DWRPatientService.js" />
 <openmrs:htmlInclude file="/dwr/interface/DWRConceptService.js" />
-<openmrs:htmlInclude file="/dwr/util.js" />
+<openmrs:htmlInclude file="/scripts/jquery/autocomplete/ConceptAutoComplete.js" />
 
 <style type="text/css">
 .ui-datepicker { z-index:10100; }
@@ -19,6 +18,7 @@
 			title: '<spring:message code="ActiveLists.problem.add" javaScriptEscape="true"/>',
 			width: '30%',
 			zIndex: 100,
+			close: function() { $j("#problem_concept").autocomplete("close"); },
 			buttons: { '<spring:message code="general.save"/>': function() { handleAddProblem(); },
 					   '<spring:message code="general.cancel"/>': function() { $j(this).dialog("close"); }
 			}
@@ -39,15 +39,18 @@
 
 		problemEndDatePicker = new DatePicker("<openmrs:datePattern/>", "problem_endDate", { defaultDate: parseDateFromStringToJs("<openmrs:datePattern/>", "${model.today}") });
 
-		var problemCallback = new ConceptServiceCallback(showProblemAddError);
+		var problemCallback = new ConceptSearchCallback({onerror: showProblemAddError, onsuccess: hideProblemError});
 		var autoProblemConcept = new AutoComplete("problem_concept", problemCallback.callback, {
 			select: function(event, ui) {
 				$j('#problem_concept_id').val(ui.item.id);
 			}
 		});
+
 	});
 
 	function doAddProblem() {
+		currentlyEditingProblemId = null;
+		
 		$j('#problemError').hide();
 		$j('#problem_concept').val("");
 		$j('#problem_concept_id').val("");
@@ -57,6 +60,7 @@
 
 		$j('#addActiveListProblem').dialog("option", "title", '<spring:message code="ActiveLists.problem.add"/>');
 		$j('#addActiveListProblem').dialog('open');
+		$j('#problem_concept').focus();
 	}
 	
 	function handleAddProblem() {
@@ -66,7 +70,7 @@
 		var comments = $j('#problem_comments').val();
 
 		if((problem == null) || (problem == '')) {
-			window.alert("Problem required");
+			showProblemAddError("<spring:message code="ActiveLists.problem.problemRequired"/>");
 			return;
 		}
 
@@ -146,6 +150,10 @@
 		$j('#problemError').show();
 	}
 
+	function hideProblemError(results) {
+		$j('#problemError').hide();
+	}
+
 	var problems = new Array();
 	var currentlyEditingProblemId = null;
 	var showingInactiveProblems = false;
@@ -206,7 +214,7 @@
 	<c:when test="${fn:length(model.removedProblems) > 0}">
 		<br/>
 		<div id="removedProblemTable" style="display: none">
-			Removed Problems<br/>
+			<spring:message code="ActiveLists.problem.removedProblem"/><br/>
 			<table style="margin: 0px 0px 1em 2em;" cellpadding="3" cellspacing="0" class="alTable">
 				<tr bgcolor="whitesmoke">
 					<td><spring:message code="ActiveLists.problem.problem"/></td>
