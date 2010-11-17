@@ -1249,3 +1249,9 @@ table td#summaryHeaderPatientGender {
 .user .personName {
 	font-size: 0.8em;
 }
+.autocompleteresult {
+	white-space: nowrap;
+}
+.autocompleteresult .preferredname {
+	color: gray;
+}
