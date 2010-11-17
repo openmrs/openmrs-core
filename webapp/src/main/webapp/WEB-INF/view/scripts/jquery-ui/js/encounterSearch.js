@@ -4,12 +4,12 @@
  * opts is a map that can be any option of the openmrsSearch widget:
  *   minLength - The minimum required number of characters a user has to enter for a search to be triggered
  *   searchLabel - The text label to appear on the left of the input text box
- *   includeVoidedLabel - The label for the includeVoided/includeRetired checkbo
+ *   includeVoidedLabel - The label for the includeVoided/includeRetired checkbox
  *   showIncludeVoided - If the includeVoided/includeRetired checkbox should be displayed
  *   searchHandler (Required)
  *   resultsHandler
  *   selectionHandler
- *   fieldHeadersMap (Required) - Array of fieldName and column header mappings)
+ *   fieldHeaders (Required) - Array of fieldName and column header maps)
  *   displayLength - The number of results to display per page
  *   
  * The parameters 'showIncludeVoided' and 'selectionHandler' are options to the widget but
@@ -74,7 +74,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
  * Expects to be put on a div.
  * Options:
  *   minLength:int (default: 3)
- *   searchLabel:string (default: "Search")
+ *   searchLabel:string (default: omsgs.searchLabel)
  *   includeVoidedLabel:string (default: omsgs.includeVoided)
  *   showIncludeVoided:bool (default: false)
  *   searchHandler:function(text, resultHandler, options) (default:null)
@@ -131,7 +131,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    	spinnerObj.css("visibility", "hidden");
 		    	spinnerObj.attr("src", openmrsContextPath+"/images/loading.gif");
 		    	minCharErrorObj = div.find("#minCharError");
-		    	minCharErrorObj.html(omsgs.minCharRequired.replace("[REQUIRED_NUMBER]", o.minLength));
+		    	minCharErrorObj.html(omsgs.minCharRequired.replace("_REQUIRED_NUMBER_", o.minLength));
 		    
 		    this._div = div;
 
@@ -271,9 +271,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    
 			//setup 'openmrsSearchTable'
 			div.find(".openmrsSearchDiv").hide();
-			
-			omsgs.sInfoLabel = omsgs.sInfoLabel.replace("[START]", "_START_").replace("[END]", "_END_").replace("[TOTAL]", "_TOTAL_");
-			
+
 			//TODO columns need to be built: id='searchTableHeader'
 		    this._table = table.dataTable({
 		    	bFilter: false,
@@ -289,8 +287,8 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    	"oLanguage": {
 		    		"sInfo": omsgs.sInfoLabel,
 		    		"oPaginate": {"sFirst": omsgs.first, "sPrevious": omsgs.previous, "sNext": omsgs.next, "sLast": omsgs.last},
-		    		"sEmptyTable": omsgs.noMatchesFound,
-		    		"sInfoEmpty": " ",
+		    		"sZeroRecords": omsgs.noMatchesFound,
+		    		"sInfoEmpty": " "
 		    	},
 		    	fnRowCallback: function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {					
 		    		//register mouseover/out events handlers to have row highlighting
@@ -305,9 +303,10 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    			if(self.curRowSelection != null)
 		    				$j(self._table.fnGetNodes()[self.curRowSelection]).addClass("row_highlight");
 		    	    });
-		    				    		
+		    		
+		    		var currItem = self._results[iDisplayIndexFull];
 		    		//draw a strike through for all voided/retired objects that have been loaded
-		    		if(self._results[iDisplayIndexFull] && self._results[iDisplayIndexFull].voided){		    			
+		    		if(currItem && (currItem.voided || currItem.retired)){		    			
 		    			$j(nRow).children().each(function(){		    				
 		    				$j(this).addClass('voided');
 		    			}); 
@@ -608,10 +607,10 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		_updatePageInfo: function(searchText) {
 			if(this._results.length > 0){
 				var pageString = (this._table.numberOfPages == 1) ? omsgs.page : omsgs.pages;
-				$j('#pageInfo').html(omsgs.viewingResultsFor.replace("[SEARCH_TEXT]", "'<b>"+searchText+"</b>'").
+				$j('#pageInfo').html(omsgs.viewingResultsFor.replace("_SEARCH_TEXT_", "'<b>"+searchText+"</b>'").
 						concat(" ( "+this._table.numberOfPages+" "+pageString+" )"));
 			}else {
-				$j('#pageInfo').html(omsgs.viewingResultsFor.replace("[SEARCH_TEXT]", "'<b>"+searchText+"</b>'"));
+				$j('#pageInfo').html(omsgs.viewingResultsFor.replace("_SEARCH_TEXT_", "'<b>"+searchText+"</b>'"));
 			}
 			
 			if($j('#pageInfo').css("visibility") != 'visible')
