@@ -135,7 +135,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    
 		    this._div = div;
 
-		    lbl.text(o.searchLabel);
+		    lbl.text(o.searchLabel+":");
 		    
 		    if(o.showIncludeVoided) {
 		    	var tmp = div.find("#includeVoided");
@@ -215,7 +215,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    });
 		    
 		    //catch control keys to stop the cursor in the input box from moving.
-		    input.keypress(function(event) {
+		    input.keydown(function(event) {
 		    	//UP(38), DOWN(40), HOME(36), END(35), PAGE UP(33), PAGE DOWN(34)
 		    	var kc = event.keyCode;
 		    	if(((kc >= 33) && (kc <= 36)) || (kc == 38) || (kc == 40)) {
