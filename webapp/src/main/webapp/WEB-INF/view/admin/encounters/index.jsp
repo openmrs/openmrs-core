@@ -29,21 +29,11 @@
 	}
 	
 	//searchHandler for the Search widget
-	function doEncounterSearch(text, resultHandler, opts) {
+	function doEncounterSearch(text, resultHandler, getMatchCount, opts) {
 		lastSearch = text;
-		DWREncounterService.findCountAndEncounters(text, opts.includeVoided, opts.start, opts.length, resultHandler);
+		DWREncounterService.findCountAndEncounters(text, opts.includeVoided, opts.start, opts.length, getMatchCount, resultHandler);
 	}
 </script>
-<style>
-.widgetSearchBox{
-	width: 99%;
-	padding: 5px 2px 5px 2px;
-	text-align: left;
-	margin-left: auto;
-	margin-right: auto;
-	font-size: .9em;
-}
-</style>
 
 <h2><spring:message code="Encounter.title"/></h2>
 
@@ -55,7 +45,7 @@
 
 <div>
 	<b class="boxHeader"><spring:message code="Encounter.find"/></b>
-	<div class="widgetSearchBox">
+	<div class="searchWidgetContainer">
 		<div id="findEncounter" <request:existsParameter name="autoJump">allowAutoJump='true'</request:existsParameter> ></div>
 	</div>
 </div>

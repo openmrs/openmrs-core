@@ -11,6 +11,9 @@
  *   selectionHandler
  *   fieldHeaders (Required) - Array of fieldName and column header maps)
  *   displayLength - The number of results to display per page
+ *   columnWidths: an array of column widths, the length of the array should be equal to the number of columns
+ *   columnRenderers: array of fnRender for each column
+ *   columnVisibility: array of bVisible values for each column
  *   
  * The parameters 'showIncludeVoided' and 'selectionHandler' are options to the widget but
  * given here as simple params.
@@ -23,6 +26,9 @@
 			showIncludeVoided: true,
 			displayLength: 5,
 			minLength: 3,
+			columnWidths: ["15%","15%","15%","15%","15%", "25%"],
+			columnRenderers: [null, null, null, null, null, null], 
+			columnVisibility: [true, true, true, true, true, true],
 			searchHandler: doSearchHandler,
 			selectionHandler: doSelectionHandler,
 			fieldsAndHeaders: [
@@ -43,7 +49,10 @@
 				{fieldName:"fiels5", header:"Header5"},
 				{fieldName:"field6", header:"Header6"}
 			],
-			{searchLabel: '<spring:message code="General.search"/>', displayLength: 5, minLength: 3}
+			{searchLabel: '<spring:message code="General.search"/>', displayLength: 5, 
+				minLength: 3, columnWidths: ["15%","15%","15%","15%","15%", "25%"],
+				columnRenderers: [null, null, null, null, null, null], 
+				columnVisibility: [true, true, true, true, true, true]}
 		);
 	});
 	</pre>
@@ -82,6 +91,9 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
  *   selectionHandler:function(index, rowData)
  *   fieldsAndHeaders: Array of fieldNames and column header maps
  *   displayLength: int (default: 10)
+ *   columnWidths: an array of column widths, the length of the array should be equal to the number of columns
+ *   columnRenderers: array of fnRender for each column
+ *   columnVisibility: array of bVisible values for each column
  *   
  * The styling on this table works like this:
  * <pre> 
@@ -100,7 +112,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 	</pre>
  */
 (function($j) {
-	var openmrsSearch_div = '<span><span style="white-space: nowrap"><span><span id="searchLabelNode"></span><input type="text" value="" id="inputNode" autocomplete="off"/><input type="checkbox" style="display: none" id="includeRetired"/><img id="spinner" src=""/><input type="checkbox" style="display: none" id="includeVoided"/><input type="checkbox" style="display: none" id="verboseListing"/><span id="minCharError" class="error"></span><span id="pageInfo"></span></span></span><span class="openmrsSearchDiv"><table id="openmrsSearchTable" cellpadding="2" cellspacing="0" style="width: 100%"><thead id="searchTableHeader"><tr><th></th><th></th><th></th><th></th><th></th><th></th></tr></thead><tbody></tbody></table></span></span>';
+	var openmrsSearch_div = '<span><span style="white-space: nowrap"><span><span id="searchLabelNode"></span><input type="text" value="" id="inputNode" autocomplete="off"/><input type="checkbox" style="display: none" id="includeRetired"/><img id="spinner" src=""/><input type="checkbox" style="display: none" id="includeVoided"/><input type="checkbox" style="display: none" id="verboseListing"/><span id="minCharError" class="error"></span><span id="pageInfo"></span></span></span><span class="openmrsSearchDiv"><table id="openmrsSearchTable" cellpadding="2" cellspacing="0" style="width: 100%"><thead id="searchTableHeader"><tr></tr></thead><tbody></tbody></table></span></span>';
 	
 	$j.widget("ui.openmrsSearch", {
 		plugins: {},
@@ -109,7 +121,10 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 			searchLabel: omsgs.searchLabel,
 			includeVoidedLabel: omsgs.includeVoided,
 			showIncludeVoided: false,
-			displayLength: 10
+			displayLength: 10,
+			columnWidths: null,
+			columnRenderers: null,
+			columnVisibility: null
 		},
 		_lastCallCount: 0,
 		_callCount: 1,
@@ -284,7 +299,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    	currPage: 0,
 		    	bAutoWidth: false,
 		    	bJQueryUI: true,
-		    	"oLanguage": {
+		    	oLanguage: {
 		    		"sInfo": omsgs.sInfoLabel,
 		    		"oPaginate": {"sFirst": omsgs.first, "sPrevious": omsgs.previous, "sNext": omsgs.next, "sLast": omsgs.last},
 		    		"sZeroRecords": omsgs.noMatchesFound,
@@ -325,9 +340,25 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		},
 		
 		_makeColumns: function() {
-			var fieldsAndHeaders = this.options.fieldsAndHeaders;
+			var self = this;
+			var fieldsAndHeaders = self.options.fieldsAndHeaders;
+			var columnIndex = 0
 			return $j.map(fieldsAndHeaders, function(c) {
-				return { sTitle: c.header };
+				var width = null;
+				var fnRenderer = null;
+				var visible = true;
+				
+				if(self.options.columnWidths && self.options.columnWidths[columnIndex])
+					width = self.options.columnWidths[columnIndex];
+				if(self.options.columnRenderers && self.options.columnRenderers[columnIndex])
+					fnRenderer = self.options.columnRenderers[columnIndex];
+				if(self.options.columnVisibility && self.options.columnVisibility[columnIndex] == false )
+					visible = false;
+				
+				var column = { sTitle: c.header, sWidth: width, fnRender: fnRenderer, bVisible: visible };
+				
+				columnIndex++;
+				return column;
 			});
 		},
 		
@@ -341,7 +372,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 				spinnerObj.css("visibility", "visible");
 				
 				//First get data to appear on the first page			
-				this.options.searchHandler(text, this._handleResults(text, storedCallCount), 
+				this.options.searchHandler(text, this._handleResults(text, storedCallCount), true, 
 						{includeVoided: tmpIncludeVoided, start: 0, length: this._table.fnSettings()._iDisplayLength});
 			}
 		},
@@ -381,7 +412,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 							replace("_END_", self._table.fnSettings()._iDisplayLength).replace("_TOTAL_", matchCount));
 					
 					self.options.searchHandler(searchText, self._addMoreRows(curCallCount, searchText, matchCount),
-						{includeVoided: self.options.showIncludeVoided && checkBox.attr('checked'),
+						false, {includeVoided: self.options.showIncludeVoided && checkBox.attr('checked'),
 						start: self._table.fnSettings()._iDisplayLength, length: null});
 				}
 			};

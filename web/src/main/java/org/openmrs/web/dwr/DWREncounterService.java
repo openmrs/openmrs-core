@@ -105,29 +105,39 @@ public class DWREncounterService {
 	 * @throws APIException
 	 * @since 1.8
 	 */
-	public Map<String, Object> findCountAndEncounters(String phrase, boolean includeVoided, Integer start, Integer length)
-	                                                                                                                      throws APIException {
+	public Map<String, Object> findCountAndEncounters(String phrase, boolean includeVoided, Integer start, Integer length,
+	                                                  boolean getMatchCount) throws APIException {
 		//Map to return
 		Map<String, Object> resultsMap = new HashMap<String, Object>();
-		EncounterService es = Context.getEncounterService();
-		int encounterCount = Context.getEncounterService().getCountOfEncounters(phrase, includeVoided);
-		if (phrase.matches("\\d+")) {
-			// user searched on a number
-			Encounter e = es.getEncounter(Integer.valueOf(phrase));
-			if (e != null) {
-				if (!e.isVoided() || includeVoided == true)
-					encounterCount++;
-			}
-		}
-		
 		Vector<Object> objectList = new Vector<Object>();
-		
-		if (encounterCount > 0)
-			objectList = findEncounters(phrase, includeVoided, start, length);
-		
-		resultsMap.put("count", encounterCount);
-		resultsMap.put("objectList", objectList);
-		
+		try {
+			EncounterService es = Context.getEncounterService();
+			int encounterCount = 0;
+			if (getMatchCount) {
+				encounterCount += es.getCountOfEncounters(phrase, includeVoided);
+				if (phrase.matches("\\d+")) {
+					// user searched on a number
+					Encounter e = es.getEncounter(Integer.valueOf(phrase));
+					if (e != null) {
+						if (!e.isVoided() || includeVoided == true)
+							encounterCount++;
+					}
+				}
+			}
+			
+			if (encounterCount > 0 || !getMatchCount)
+				objectList = findEncounters(phrase, includeVoided, start, length);
+			
+			resultsMap.put("count", encounterCount);
+			resultsMap.put("objectList", objectList);
+		}
+		catch (Exception e) {
+			log.error("Error while searching for encounters", e);
+			objectList.clear();
+			objectList.add(Context.getMessageSourceService().getMessage("Encounter.search.error") + " - " + e.getMessage());
+			resultsMap.put("count", 0);
+			resultsMap.put("objectList", objectList);
+		}
 		return resultsMap;
 	}
 	
