@@ -37,7 +37,7 @@ import org.openmrs.web.WebConstants;
  */
 public class HtmlIncludeTag extends TagSupport {
 	
-	public static final long serialVersionUID = 13472382822L;
+	public static final long serialVersionUID = 13472382823L;
 	
 	private final Log log = LogFactory.getLog(getClass());
 	
