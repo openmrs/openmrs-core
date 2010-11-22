@@ -23,6 +23,7 @@ import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonName;
+import org.openmrs.util.Format;
 
 /**
  * A mini/simplified Person object. Used as the return object from DWR methods to allow javascript
@@ -51,6 +52,8 @@ public class PersonListItem {
 	private String gender;
 	
 	private Date birthdate;
+	
+	private String birthdateStr;
 	
 	private Boolean birthdateEstimated = false;
 	
@@ -127,6 +130,7 @@ public class PersonListItem {
 			
 			gender = person.getGender();
 			birthdate = person.getBirthdate();
+			birthdateStr = Format.format(person.getBirthdate());
 			birthdateEstimated = person.isBirthdateEstimated();
 			age = person.getAge();
 			voided = person.isPersonVoided();
@@ -167,6 +171,14 @@ public class PersonListItem {
 	
 	public void setBirthdate(Date birthdate) {
 		this.birthdate = birthdate;
+	}
+	
+	public String getBirthdateStr() {
+		return birthdateStr;
+	}
+	
+	public void setBirthdateStr(String birthdateStr) {
+		this.birthdateStr = birthdateStr;
 	}
 	
 	public Boolean getBirthdateEstimated() {

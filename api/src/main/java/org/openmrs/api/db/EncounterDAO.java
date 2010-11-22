@@ -25,7 +25,6 @@ import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.User;
-import org.openmrs.api.APIException;
 import org.openmrs.api.EncounterService;
 
 /**
@@ -182,7 +181,6 @@ public interface EncounterDAO {
 	 * @param query patient name or identifier
 	 * @param includeVoided Specifies whether voided encounters should be included
 	 * @return the number of encounters matching the given search phrase
-	 * @throws APIException
 	 * @see {@link EncounterService#getCountOfEncounters(String, boolean)}
 	 */
 	public Integer getCountOfEncounters(String query, boolean includeVoided);

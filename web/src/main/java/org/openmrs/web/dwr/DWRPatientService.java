@@ -17,13 +17,17 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
+import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
@@ -35,8 +39,10 @@ import org.openmrs.activelist.AllergyType;
 import org.openmrs.activelist.Problem;
 import org.openmrs.activelist.ProblemModifier;
 import org.openmrs.api.APIAuthenticationException;
+import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.DuplicateIdentifierException;
+import org.openmrs.api.GlobalPropertyListener;
 import org.openmrs.api.IdentifierNotUniqueException;
 import org.openmrs.api.InsufficientIdentifiersException;
 import org.openmrs.api.InvalidCheckDigitException;
@@ -47,6 +53,7 @@ import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.patient.IdentifierValidator;
 import org.openmrs.patient.UnallowedIdentifierException;
+import org.openmrs.util.OpenmrsConstants;
 
 /**
  * DWR patient methods. The methods in here are used in the webapp to get data from the database via
@@ -54,9 +61,11 @@ import org.openmrs.patient.UnallowedIdentifierException;
  * 
  * @see PatientService
  */
-public class DWRPatientService {
+public class DWRPatientService implements GlobalPropertyListener {
 	
-	protected final Log log = LogFactory.getLog(getClass());
+	private static final Log log = LogFactory.getLog(DWRPatientService.class);
+	
+	private static Integer maximumResults;
 	
 	/**
 	 * Search on the <code>searchValue</code>. If a number is in the search string, do an identifier
@@ -75,7 +84,12 @@ public class DWRPatientService {
 	 * @should get results for patients that have edited themselves
 	 * @should logged in user should load their own patient object
 	 */
-	public Collection<Object> findPatients(String searchValue, boolean includeVoided) {
+	@SuppressWarnings("unchecked")
+	public Collection<Object> findPatients(String searchValue, boolean includeVoided, Integer start, Integer length) {
+		if (maximumResults == null)
+			maximumResults = getMaximumSearchResults();
+		if (length != null && length > maximumResults)
+			length = maximumResults;
 		
 		// the list to return
 		List<Object> patientList = new Vector<Object>();
@@ -84,21 +98,21 @@ public class DWRPatientService {
 		Collection<Patient> patients;
 		
 		try {
-			patients = ps.getPatients(searchValue);
+			patients = ps.getPatients(searchValue, start, length);
 		}
 		catch (APIAuthenticationException e) {
-			patientList.add("Error while attempting to find patients - " + e.getMessage());
+			patientList.add(Context.getMessageSourceService().getMessage("Patient.search.error") + " - " + e.getMessage());
 			return patientList;
 		}
 		
 		patientList = new Vector<Object>(patients.size());
 		for (Patient p : patients)
 			patientList.add(new PatientListItem(p));
-		
-		// if only 2 results found and a number was not in the
+		// if the length wasn't limited to less than 3 or this is the second ajax call
+		// and only 2 results found and a number was not in the
 		// search, then do a decapitated search: trim each word
 		// down to the first three characters and search again
-		if (patientList.size() < 3 && !searchValue.matches(".*\\d+.*")) {
+		if ((length == null || length > 2) && patients.size() < 3 && !searchValue.matches(".*\\d+.*")) {
 			String[] names = searchValue.split(" ");
 			String newSearch = "";
 			for (String name : names) {
@@ -106,21 +120,25 @@ public class DWRPatientService {
 					name = name.substring(0, 4);
 				newSearch += " " + name;
 			}
-			
 			newSearch = newSearch.trim();
-			Collection<Patient> newPatients = ps.getPatients(newSearch);
-			newPatients.removeAll(patients); // remove the potential first two patients from these hits
-			if (newPatients.size() > 0) {
-				patientList.add("Minimal patients returned. Results for <b>" + newSearch + "</b>");
-				for (Patient p : newPatients) {
-					PatientListItem pi = new PatientListItem(p);
-					patientList.add(pi);
+			
+			if (!newSearch.equals(searchValue)) {
+				Collection<Patient> newPatients = ps.getPatients(newSearch, start, length);
+				patients = CollectionUtils.union(newPatients, patients); // get unique hits
+				//reconstruct the results list
+				if (newPatients.size() > 0) {
+					patientList = new Vector<Object>(patients.size());
+					//patientList.add("Minimal patients returned. Results for <b>" + newSearch + "</b>");
+					for (Patient p : newPatients) {
+						PatientListItem pi = new PatientListItem(p);
+						patientList.add(pi);
+					}
 				}
 			}
 		}
 		//no results found and a number was in the search --
 		//should check whether the check digit is correct.
-		else if (patientList.size() == 0 && searchValue.matches(".*\\d+.*")) {
+		else if (patients.size() == 0 && searchValue.matches(".*\\d+.*")) {
 			
 			//Looks through all the patient identifier validators to see if this type of identifier
 			//is supported for any of them.  If it isn't, then no need to warn about a bad check
@@ -155,6 +173,134 @@ public class DWRPatientService {
 		}
 		
 		return patientList;
+	}
+	
+	/**
+	 * Returns a map of results with the values as count of matches and a partial list of the
+	 * matching patients (depending on values of start and length parameters) while the keys are are
+	 * 'count' and 'objectList' respectively, if the length parameter is not specified, then all
+	 * matches will be returned from the start index if specified.
+	 * 
+	 * @param searchValue patient name or identifier
+	 * @param start the beginning index
+	 * @param length the number of matching patients to return
+	 * @return a map of results
+	 * @throws APIException
+	 * @since 1.8
+	 */
+	@SuppressWarnings("unchecked")
+	public Map<String, Object> findCountAndPatients(String searchValue, Integer start, Integer length, boolean getMatchCount)
+	                                                                                                                         throws APIException {
+		
+		//Map to return
+		Map<String, Object> resultsMap = new HashMap<String, Object>();
+		Collection<Object> objectList = new Vector<Object>();
+		try {
+			PatientService ps = Context.getPatientService();
+			int patientCount = 0;
+			//if this is the first call
+			if (getMatchCount) {
+				patientCount += ps.getCountOfPatients(searchValue);
+				
+				// if only 2 results found and a number was not in the
+				// search, then do a decapitated search: trim each word
+				// down to the first three characters and search again				
+				if ((length == null || length > 2) && patientCount < 3 && !searchValue.matches(".*\\d+.*")) {
+					String[] names = searchValue.split(" ");
+					String newSearch = "";
+					for (String name : names) {
+						if (name.length() > 3)
+							name = name.substring(0, 4);
+						newSearch += " " + name;
+					}
+					
+					newSearch = newSearch.trim();
+					if (!newSearch.equals(searchValue)) {
+						//since we already know that the list is small, it doesn't hurt to load the hits
+						//so that we can remove them from the list of the new search results and get the 
+						//accurate count of matches
+						Collection<Patient> patients = ps.getPatients(searchValue);
+						newSearch = newSearch.trim();
+						Collection<Patient> newPatients = ps.getPatients(newSearch);
+						newPatients = CollectionUtils.union(newPatients, patients);
+						//Re-compute the count of all the unique patient hits
+						patientCount = newPatients.size();
+						if (newPatients.size() > 0) {
+							resultsMap.put(
+							    "notification",
+							    Context.getMessageSourceService().getMessage("Patient.warning.minimalSearchResults",
+							        new Object[] { newSearch }, Context.getLocale()));
+						}
+					}
+				}
+
+				//no results found and a number was in the search --
+				//should check whether the check digit is correct.
+				else if (patientCount == 0 && searchValue.matches(".*\\d+.*")) {
+					
+					//Looks through all the patient identifier validators to see if this type of identifier
+					//is supported for any of them.  If it isn't, then no need to warn about a bad check
+					//digit.  If it does match, then if any of the validators validates the check digit
+					//successfully, then the user is notified that the identifier has been entered correctly.
+					//Otherwise, the user is notified that the identifier was entered incorrectly.
+					
+					Collection<IdentifierValidator> pivs = ps.getAllIdentifierValidators();
+					boolean shouldWarnUser = true;
+					boolean validCheckDigit = false;
+					boolean identifierMatchesValidationScheme = false;
+					
+					for (IdentifierValidator piv : pivs) {
+						try {
+							if (piv.isValid(searchValue)) {
+								shouldWarnUser = false;
+								validCheckDigit = true;
+							}
+							identifierMatchesValidationScheme = true;
+						}
+						catch (UnallowedIdentifierException e) {}
+					}
+					
+					if (identifierMatchesValidationScheme) {
+						if (shouldWarnUser)
+							resultsMap.put("notification",
+							    "<b>" + Context.getMessageSourceService().getMessage("Patient.warning.inValidIdentifier")
+							            + "<b/>");
+						else if (validCheckDigit)
+							resultsMap.put("notification", "<b style=\"color:green;\">"
+							        + Context.getMessageSourceService().getMessage("Patient.message.validIdentifier")
+							        + "<b/>");
+					}
+				} else {
+					//ensure that count never exceeds this value because the API's service layer would never
+					//return more than it since it is limited in the DAO layer
+					if (maximumResults == null)
+						maximumResults = getMaximumSearchResults();
+					if (length != null && length > maximumResults)
+						length = maximumResults;
+					
+					if (patientCount > maximumResults) {
+						patientCount = maximumResults;
+						if (log.isDebugEnabled())
+							log.debug("Limitng the size of matching patients to " + maximumResults);
+					}
+				}
+				
+			}
+			
+			if (patientCount > 0 || !getMatchCount)
+				objectList = findPatients(searchValue, false, start, length);
+			
+			resultsMap.put("count", patientCount);
+			resultsMap.put("objectList", objectList);
+		}
+		catch (Exception e) {
+			log.error("Error while searching for patients", e);
+			objectList.clear();
+			objectList.add(Context.getMessageSourceService().getMessage("Patient.search.error") + " - " + e.getMessage());
+			resultsMap.put("count", 0);
+			resultsMap.put("objectList", objectList);
+		}
+		return resultsMap;
 	}
 	
 	/**
@@ -580,7 +726,7 @@ public class DWRPatientService {
 		}
 		Context.getPatientService().voidProblem(problem, reason);
 	}
-
+	
 	/**
 	 * Simple utility method to parse the date object into the correct, local format
 	 * 
@@ -596,5 +742,45 @@ public class DWRPatientService {
 			catch (ParseException e) {}
 		}
 		return null;
+	}
+	
+	@Override
+	public boolean supportsPropertyName(String propertyName) {
+		return propertyName.equals(OpenmrsConstants.GLOBAL_PROPERTY_PERSON_SEARCH_MAX_RESULTS);
+	}
+	
+	@Override
+	public void globalPropertyChanged(GlobalProperty newValue) {
+		try {
+			maximumResults = Integer.valueOf(newValue.getPropertyValue());
+		}
+		catch (NumberFormatException e) {
+			maximumResults = OpenmrsConstants.GLOBAL_PROPERTY_PERSON_SEARCH_MAX_RESULTS_DEFAULT_VALUE;
+		}
+	}
+	
+	@Override
+	public void globalPropertyDeleted(String propertyName) {
+		maximumResults = OpenmrsConstants.GLOBAL_PROPERTY_PERSON_SEARCH_MAX_RESULTS_DEFAULT_VALUE;
+	}
+	
+	/**
+	 * Fetch the max results value from the global properties table
+	 * 
+	 * @return Integer value for the person search max results global property
+	 */
+	private static Integer getMaximumSearchResults() {
+		try {
+			return Integer.valueOf(Context.getAdministrationService().getGlobalProperty(
+			    OpenmrsConstants.GLOBAL_PROPERTY_PERSON_SEARCH_MAX_RESULTS,
+			    String.valueOf(OpenmrsConstants.GLOBAL_PROPERTY_PERSON_SEARCH_MAX_RESULTS_DEFAULT_VALUE)));
+		}
+		catch (Exception e) {
+			log.warn("Unable to convert the global property " + OpenmrsConstants.GLOBAL_PROPERTY_PERSON_SEARCH_MAX_RESULTS
+			        + "to a valid integer. Returning the default "
+			        + OpenmrsConstants.GLOBAL_PROPERTY_PERSON_SEARCH_MAX_RESULTS_DEFAULT_VALUE);
+		}
+		
+		return OpenmrsConstants.GLOBAL_PROPERTY_PERSON_SEARCH_MAX_RESULTS_DEFAULT_VALUE;
 	}
 }

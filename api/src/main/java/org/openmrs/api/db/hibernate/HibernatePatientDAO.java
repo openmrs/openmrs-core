@@ -29,6 +29,7 @@ import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
@@ -143,7 +144,7 @@ public class HibernatePatientDAO implements PatientDAO {
 		if (stubInsertNeeded) {
 			try {
 				ps = connection
-				.prepareStatement("INSERT INTO patient (patient_id, creator, voided, date_created) VALUES (?, ?, 0, ?)");
+				        .prepareStatement("INSERT INTO patient (patient_id, creator, voided, date_created) VALUES (?, ?, 0, ?)");
 				
 				ps.setInt(1, patient.getPatientId());
 				ps.setInt(2, patient.getCreator().getUserId());
@@ -171,18 +172,23 @@ public class HibernatePatientDAO implements PatientDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.PatientDAO#getPatients(java.lang.String, java.lang.String,
-	 *      java.util.List, boolean)
+	 * @see org.openmrs.api.db.PatientDAO#getPatients(String, String, List, boolean, int, Integer)
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Patient> getPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,
-		boolean matchIdentifierExactly) throws DAOException {
+	                                 boolean matchIdentifierExactly, int start, Integer length) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Patient.class);
 		criteria = new PatientSearchCriteria(sessionFactory, criteria).prepareCriteria(name, identifier, identifierTypes,
-			matchIdentifierExactly);
+		    matchIdentifierExactly);
 		// restricting the search to the max search results value
-		criteria.setFirstResult(0);
-		criteria.setMaxResults(HibernatePersonDAO.getMaximumSearchResults());
+		criteria.setFirstResult(start);
+		int limit = HibernatePersonDAO.getMaximumSearchResults();
+		if (length == null || length > limit) {
+			if (log.isDebugEnabled())
+				log.debug("Limitng the size of the number of matching patients to " + limit);
+			length = limit;
+		}
+		criteria.setMaxResults(length);
 		
 		return criteria.list();
 	}
@@ -216,9 +222,9 @@ public class HibernatePatientDAO implements PatientDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<PatientIdentifier> getPatientIdentifiers(String identifier,
-		List<PatientIdentifierType> patientIdentifierTypes,
-		List<Location> locations, List<Patient> patients,
-		Boolean isPreferred) throws DAOException {
+	                                                     List<PatientIdentifierType> patientIdentifierTypes,
+	                                                     List<Location> locations, List<Patient> patients,
+	                                                     Boolean isPreferred) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(PatientIdentifier.class);
 		
 		// join with the patient table to prevent patient identifiers from patients
@@ -269,7 +275,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	 */
 	public PatientIdentifierType getPatientIdentifierType(Integer patientIdentifierTypeId) throws DAOException {
 		return (PatientIdentifierType) sessionFactory.getCurrentSession().get(PatientIdentifierType.class,
-			patientIdentifierTypeId);
+		    patientIdentifierTypeId);
 	}
 	
 	/**
@@ -295,7 +301,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<PatientIdentifierType> getPatientIdentifierTypes(String name, String format, Boolean required,
-		Boolean hasCheckDigit) throws DAOException {
+	                                                             Boolean hasCheckDigit) throws DAOException {
 		// TODO test this method
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(PatientIdentifierType.class);
@@ -439,7 +445,7 @@ public class HibernatePatientDAO implements PatientDAO {
 		 * 
 		 * patients = query.list(); }
 		 */
-		
+
 		return patients;
 	}
 	
@@ -449,23 +455,23 @@ public class HibernatePatientDAO implements PatientDAO {
 	public Patient getPatientByUuid(String uuid) {
 		Patient p = null;
 		
-		p = (Patient) sessionFactory.getCurrentSession().createQuery("from Patient p where p.uuid = :uuid").setString(
-			"uuid", uuid).uniqueResult();
+		p = (Patient) sessionFactory.getCurrentSession().createQuery("from Patient p where p.uuid = :uuid")
+		        .setString("uuid", uuid).uniqueResult();
 		
 		return p;
 	}
 	
 	public PatientIdentifier getPatientIdentifierByUuid(String uuid) {
-		return (PatientIdentifier) sessionFactory.getCurrentSession().createQuery(
-		"from PatientIdentifier p where p.uuid = :uuid").setString("uuid", uuid).uniqueResult();
+		return (PatientIdentifier) sessionFactory.getCurrentSession()
+		        .createQuery("from PatientIdentifier p where p.uuid = :uuid").setString("uuid", uuid).uniqueResult();
 	}
 	
 	/**
 	 * @see org.openmrs.api.db.PatientDAO#getPatientIdentifierTypeByUuid(java.lang.String)
 	 */
 	public PatientIdentifierType getPatientIdentifierTypeByUuid(String uuid) {
-		return (PatientIdentifierType) sessionFactory.getCurrentSession().createQuery(
-		"from PatientIdentifierType pit where pit.uuid = :uuid").setString("uuid", uuid).uniqueResult();
+		return (PatientIdentifierType) sessionFactory.getCurrentSession()
+		        .createQuery("from PatientIdentifierType pit where pit.uuid = :uuid").setString("uuid", uuid).uniqueResult();
 	}
 	
 	/**
@@ -476,11 +482,11 @@ public class HibernatePatientDAO implements PatientDAO {
 	 */
 	public boolean isIdentifierInUseByAnotherPatient(PatientIdentifier patientIdentifier) {
 		boolean checkPatient = patientIdentifier.getPatient() != null
-		&& patientIdentifier.getPatient().getPatientId() != null;
+		        && patientIdentifier.getPatient().getPatientId() != null;
 		
 		// switched this to an hql query so the hibernate cache can be considered as well as the database
 		String hql = "select count(*) from PatientIdentifier pi, Patient p where pi.patient.patientId = p.patient.patientId "
-			+ "and p.voided = false and pi.voided = false and pi.identifier = :identifier and pi.identifierType = :idType";
+		        + "and p.voided = false and pi.voided = false and pi.identifier = :identifier and pi.identifierType = :idType";
 		
 		if (checkPatient) {
 			hql += " and p.patientId != :ptId";
@@ -522,5 +528,18 @@ public class HibernatePatientDAO implements PatientDAO {
 		
 		sessionFactory.getCurrentSession().delete(patientIdentifier);
 		
+	}
+	
+	/**
+	 * @see PatientDAO#getCountOfPatients(String, String, List, boolean)
+	 */
+	public Integer getCountOfPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,
+	                                  boolean matchIdentifierExactly) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Patient.class);
+		criteria = new PatientSearchCriteria(sessionFactory, criteria).prepareCriteria(name, identifier, identifierTypes,
+		    matchIdentifierExactly);
+		criteria.setProjection(Projections.rowCount());
+		
+		return (Integer) criteria.uniqueResult();
 	}
 }

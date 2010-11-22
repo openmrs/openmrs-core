@@ -95,3 +95,11 @@ omsgs.noMatchesFound="<spring:message code="searchWidget.noMatchesFound" javaScr
 omsgs.viewingResultsFor="<spring:message code="searchWidget.viewingResults" javaScriptEscape="true" />";
 omsgs.page="<spring:message code="searchWidget.page" javaScriptEscape="true" />";
 omsgs.pages="<spring:message code="searchWidget.pages" javaScriptEscape="true" />";
+
+omsgs.identifier="<spring:message code="Patient.identifier" javaScriptEscape="true" />";
+omsgs.givenName="<spring:message code="PersonName.givenName" javaScriptEscape="true" />";
+omsgs.middleName="<spring:message code="PersonName.middleName" javaScriptEscape="true" />";
+omsgs.familyName="<spring:message code="PersonName.familyName" javaScriptEscape="true" />";
+omsgs.age="<spring:message code="Person.age" javaScriptEscape="true" />";
+omsgs.gender="<spring:message code="Person.gender" javaScriptEscape="true" />";
+omsgs.birthdate="<spring:message code="Person.birthdate" javaScriptEscape="true" />";

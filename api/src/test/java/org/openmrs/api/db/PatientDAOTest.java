@@ -61,11 +61,11 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		
 		List<PatientIdentifierType> identifierTypes = Collections.emptyList();
 		//we expect only one matching patient
-		int actualSize = dao.getPatients(null, "*567", identifierTypes, false).size();
+		int actualSize = dao.getPatients(null, "*567", identifierTypes, false, 0, null).size();
 		Assert.assertEquals(1, actualSize);
 		
 		//if actually the search returned the matching patient
-		Patient actualPatient = dao.getPatients(null, "*567", identifierTypes, false).get(0);
+		Patient actualPatient = dao.getPatients(null, "*567", identifierTypes, false, 0, null).get(0);
 		
 		Assert.assertEquals(patient2, actualPatient);
 	}
@@ -92,11 +92,11 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		
 		List<PatientIdentifierType> identifierTypes = Collections.emptyList();
 		//we expect only one matching patient
-		int actualSize = dao.getPatients(null, "%567", identifierTypes, false).size();
+		int actualSize = dao.getPatients(null, "%567", identifierTypes, false, 0, null).size();
 		Assert.assertEquals(1, actualSize);
 		
 		//if actually the search returned the matching patient
-		Patient actualPatient = dao.getPatients(null, "%567", identifierTypes, false).get(0);
+		Patient actualPatient = dao.getPatients(null, "%567", identifierTypes, false, 0, null).get(0);
 		
 		Assert.assertEquals(patient2, actualPatient);
 	}
@@ -123,11 +123,11 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		
 		List<PatientIdentifierType> identifierTypes = Collections.emptyList();
 		//we expect only one matching patient
-		int actualSize = dao.getPatients(null, "_567", identifierTypes, false).size();
+		int actualSize = dao.getPatients(null, "_567", identifierTypes, false, 0, null).size();
 		Assert.assertEquals(1, actualSize);
 		
 		//if actually the search returned the matching patient
-		Patient actualPatient = dao.getPatients(null, "_567", identifierTypes, false).get(0);
+		Patient actualPatient = dao.getPatients(null, "_567", identifierTypes, false, 0, null).get(0);
 		
 		Assert.assertEquals(patient2, actualPatient);
 	}
@@ -152,10 +152,10 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		
 		List<PatientIdentifierType> identifierTypes = Collections.emptyList();
 		//we expect only one matching patient
-		int actualSize = dao.getPatients("%ca", null, identifierTypes, false).size();
+		int actualSize = dao.getPatients("%ca", null, identifierTypes, false, 0, null).size();
 		Assert.assertEquals(1, actualSize);
 		
-		Patient actualPatient = dao.getPatients("%ca", null, identifierTypes, false).get(0);
+		Patient actualPatient = dao.getPatients("%ca", null, identifierTypes, false, 0, null).get(0);
 		//if actually the search returned the matching patient
 		Assert.assertEquals(patient2, actualPatient);
 	}
@@ -180,11 +180,11 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		
 		List<PatientIdentifierType> identifierTypes = Collections.emptyList();
 		//we expect only one matching patient
-		int actualSize = dao.getPatients("_ca", null, identifierTypes, false).size();
+		int actualSize = dao.getPatients("_ca", null, identifierTypes, false, 0, null).size();
 		Assert.assertEquals(1, actualSize);
 		
 		//if actually the search returned the matching patient
-		Patient actualPatient = dao.getPatients("_ca", null, identifierTypes, false).get(0);
+		Patient actualPatient = dao.getPatients("_ca", null, identifierTypes, false, 0, null).get(0);
 		Assert.assertEquals(patient2, actualPatient);
 		
 	}
@@ -209,11 +209,11 @@ public class PatientDAOTest extends BaseContextSensitiveTest {
 		
 		List<PatientIdentifierType> identifierTypes = Collections.emptyList();
 		//we expect only one matching patient
-		int actualSize = dao.getPatients("*ca", null, identifierTypes, false).size();
+		int actualSize = dao.getPatients("*ca", null, identifierTypes, false, 0, null).size();
 		Assert.assertEquals(1, actualSize);
 		
 		//if actually the search returned the matching patient
-		Patient actualPatient = dao.getPatients("*ca", null, identifierTypes, false).get(0);
+		Patient actualPatient = dao.getPatients("*ca", null, identifierTypes, false, 0, null).get(0);
 		Assert.assertEquals(patient2, actualPatient);
 	}
 	
