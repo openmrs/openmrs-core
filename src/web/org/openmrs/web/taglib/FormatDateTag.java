@@ -116,9 +116,9 @@ public class FormatDateTag extends TagSupport {
 		DateFormat dateFormat = null;
 		
 		if (format != null && format.length() > 0) {
-			dateFormat = new SimpleDateFormat(format);
+			dateFormat = new SimpleDateFormat(format, Context.getLocale());
 		} else if (type.equals("xml")) {
-			dateFormat = new SimpleDateFormat("dd-MMM-yyyy");
+			dateFormat = new SimpleDateFormat("dd-MMM-yyyy", Context.getLocale());
 		} else {
 			log.debug("context locale: " + Context.getLocale());
 			
