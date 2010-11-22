@@ -19,6 +19,7 @@ import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
+import org.openmrs.api.PatientService;
 
 /**
  * Database methods for the PatientService
@@ -54,8 +55,7 @@ public interface PatientDAO {
 	public List<Patient> getAllPatients(boolean includeVoided) throws DAOException;
 	
 	/**
-	 * @see org.openmrs.api.PatientService#getPatients(java.lang.String, java.lang.String,
-	 *      java.util.List, boolean)
+	 * @see org.openmrs.api.PatientService#getPatients(String, String, List, boolean, int, Integer)
 	 * @should escape percentage character in name phrase
 	 * @should escape underscore character in name phrase
 	 * @should escape an asterix character in name phrase
@@ -64,7 +64,7 @@ public interface PatientDAO {
 	 * @should escape an asterix character in identifier phrase
 	 */
 	public List<Patient> getPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,
-	                                 boolean matchIdentifierExactly) throws DAOException;
+	                                 boolean matchIdentifierExactly, int start, Integer length) throws DAOException;
 	
 	/**
 	 * @see org.openmrs.api.PatientService#getPatientIdentifiers(java.lang.String, java.util.List,
@@ -144,4 +144,10 @@ public interface PatientDAO {
 	 * @see org.openmrs.api.PatientService#purgePatientIdentifier(org.openmrs.PatientIdentifier)
 	 */
 	public void deletePatientIdentifier(PatientIdentifier patientIdentifier) throws DAOException;
+	
+	/**
+	 * @see PatientService#getCountOfPatients(String)
+	 */
+	public Integer getCountOfPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,
+	                                  boolean matchIdentifierExactly);
 }

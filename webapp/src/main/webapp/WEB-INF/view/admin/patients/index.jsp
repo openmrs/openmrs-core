@@ -5,38 +5,43 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
-<openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
+<openmrs:htmlInclude file="/dwr/interface/DWRPatientService.js"/>
+<openmrs:htmlInclude file="/scripts/jquery/dataTables/css/dataTables_jui.css"/>
+<openmrs:htmlInclude file="/scripts/jquery/dataTables/js/jquery.dataTables.min.js"/>
+<openmrs:htmlInclude file="/scripts/jquery-ui/js/openmrsSearch.js" />
 
 <script type="text/javascript">
-	dojo.require("dojo.widget.openmrs.PatientSearch");
-	
-	dojo.addOnLoad( function() {
-		
-		searchWidget = dojo.widget.manager.getWidgetById("pSearch");			
-		
-		dojo.event.topic.subscribe("pSearch/select", 
-			function(msg) {
-				document.location = "patient.form?patientId=" + msg.objs[0].patientId;
-			}
-		);
-		
-		searchWidget.inputNode.select();
-		changeClassProperty("description", "display", "none");
-		
-		searchWidget.addPatientLink =  "<a href='${pageContext.request.contextPath}/admin/person/addPerson.htm?postURL=patient.form'><spring:message javaScriptEscape="true" code="Patient.addNew"/></a>";
-		
+	$j(document).ready(function() {
+		new OpenmrsSearch("findPatient", false, doPatientSearch, doSelectionHandler, 
+				[	{fieldName:"identifier", header:omsgs.identifier},
+					{fieldName:"givenName", header:omsgs.givenName},
+					{fieldName:"middleName", header:omsgs.middleName},
+					{fieldName:"familyName", header:omsgs.familyName},
+					{fieldName:"age", header:omsgs.age},
+					{fieldName:"gender", header:omsgs.gender},
+					{fieldName:"birthdateStr", header:omsgs.birthdate},
+				],
+				{searchLabel: '<spring:message code="Patient.searchBox" javaScriptEscape="true"/>'});
 	});
 	
+	function doSelectionHandler(index, data) {
+		document.location = "patient.form?patientId=" + data.patientId;
+	}
+	
+	//searchHandler for the Search widget
+	function doPatientSearch(text, resultHandler, getMatchCount, opts) {
+		DWRPatientService.findCountAndPatients(text, opts.start, opts.length, getMatchCount, resultHandler);
+	}
 </script>
 
 <h2><spring:message code="Patient.title"/></h2>
 
 <a href="${pageContext.request.contextPath}/admin/person/addPerson.htm?personType=patient&viewType=edit"><spring:message code="Patient.create"/></a><br/><br/>
 
-<div id="findPatient">
+<div>
 	<b class="boxHeader"><spring:message code="Patient.find"/></b>
-	<div class="box">
-		<div dojoType="PatientSearch" widgetId="pSearch" inputName="patientName" searchLabel='<spring:message code="Patient.searchBox"/>' patientId='<request:parameter name="patientId" />' showIncludeVoided='true'></div>
+	<div class="searchWidgetContainer">
+		<div id="findPatient" <request:existsParameter name="autoJump">allowAutoJump='true'</request:existsParameter> ></div>
 	</div>
 </div>
 

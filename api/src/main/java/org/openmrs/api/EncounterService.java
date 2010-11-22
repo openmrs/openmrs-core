@@ -616,7 +616,6 @@ public interface EncounterService extends OpenmrsService {
 	 * @param query patient name or identifier
 	 * @param includeVoided Specifies whether voided encounters should be included
 	 * @return the number of encounters matching the given search phrase
-	 * @throws APIException
 	 * @since 1.8
 	 */
 	public Integer getCountOfEncounters(String query, boolean includeVoided);

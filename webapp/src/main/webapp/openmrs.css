@@ -1285,6 +1285,9 @@ div.paging_full_numbers{
 	margin-right: auto;
 	font-size: .9em;
 }
+#searchWidgetNotification{
+	color: #FF0000; font-style: italic;
+}
 /* END- css properties for the search widgets */
 .autocompleteresult {
 	white-space: nowrap;

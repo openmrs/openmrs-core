@@ -112,8 +112,8 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 	</pre>
  */
 (function($j) {
-	var openmrsSearch_div = '<span><span style="white-space: nowrap"><span><span id="searchLabelNode"></span><input type="text" value="" id="inputNode" autocomplete="off"/><input type="checkbox" style="display: none" id="includeRetired"/><img id="spinner" src=""/><input type="checkbox" style="display: none" id="includeVoided"/><input type="checkbox" style="display: none" id="verboseListing"/><span id="minCharError" class="error"></span><span id="pageInfo"></span></span></span><span class="openmrsSearchDiv"><table id="openmrsSearchTable" cellpadding="2" cellspacing="0" style="width: 100%"><thead id="searchTableHeader"><tr></tr></thead><tbody></tbody></table></span></span>';
-	
+	var openmrsSearch_div = '<span><span style="white-space: nowrap"><span><span id="searchLabelNode"></span><input type="text" value="" id="inputNode" autocomplete="off"/><input type="checkbox" style="display: none" id="includeRetired"/><img id="spinner" src=""/><input type="checkbox" style="display: none" id="includeVoided"/><input type="checkbox" style="display: none" id="verboseListing"/><span id="minCharError" class="error"></span><span id="pageInfo"></span><br /><span id="searchWidgetNotification"></span></span></span><span class="openmrsSearchDiv"><table id="openmrsSearchTable" cellpadding="2" cellspacing="0" style="width: 100%"><thead id="searchTableHeader"><tr></tr></thead><tbody></tbody></table></span></span>';
+	var MAXIMUM_RESULTS_COUNT = 500;
 	$j.widget("ui.openmrsSearch", {
 		plugins: {},
 		options: {
@@ -147,10 +147,15 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    	spinnerObj.attr("src", openmrsContextPath+"/images/loading.gif");
 		    	minCharErrorObj = div.find("#minCharError");
 		    	minCharErrorObj.html(omsgs.minCharRequired.replace("_REQUIRED_NUMBER_", o.minLength));
+		    	notification = div.find("#searchWidgetNotification");
 		    
 		    this._div = div;
 
-		    lbl.text(o.searchLabel+":");
+		    lbl.text(o.searchLabel);
+		    
+		    //3 should be the minimum number of results to display per page
+		    if(o.displayLength < 3)
+		    	o.displayLength = 3;
 		    
 		    if(o.showIncludeVoided) {
 		    	var tmp = div.find("#includeVoided");
@@ -190,7 +195,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 			    				    	
 			    	return false;
 		    	}
-		    	
+		    	$j(notification).html(" ");
 		    	if(self.onCharTyped) {
 		    		self.onCharTyped(self, event.keyCode);
 		    	}
@@ -243,10 +248,10 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    		}
 			    	switch(event.keyCode) {
 			    		case 33:
-			    			self._doPageUp();
+			    			self._doPageDown();
 			    			break;
 			    		case 34:
-			    			self._doPageDown();
+			    			self._doPageUp();
 			    			break;
 				    	case 35:
 				    		self._doKeyEnd();
@@ -381,7 +386,13 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		_handleResults: function(searchText, curCallCount) {
 			var self = this;
 			return function(results) {
+				if(results["notification"])					
+					$j(notification).html(results["notification"]);
+				
 				var matchCount = results["count"];
+				//Don't return more than the maximum allowed number of results
+				if(matchCount > MAXIMUM_RESULTS_COUNT)
+					matchCount = MAXIMUM_RESULTS_COUNT;
 				self._results = results["objectList"];
 				if(matchCount <= self._table.fnSettings()._iDisplayLength)
 					spinnerObj.css("visibility", "hidden");
@@ -403,6 +414,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 						$j("#minCharError").css("visibility", "visible");
 					return;
 				}
+				
 				self._doHandleResults(matchCount, searchText);
 							
 				//FETCH THE REST OF THE RESULTS IF result COUNT is greater than the number of rows to display per page
@@ -411,9 +423,9 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 					$j('#openmrsSearchTable_info').html(omsgs.sInfoLabel.replace("_START_", 1).
 							replace("_END_", self._table.fnSettings()._iDisplayLength).replace("_TOTAL_", matchCount));
 					
-					self.options.searchHandler(searchText, self._addMoreRows(curCallCount, searchText, matchCount),
+					self.options.searchHandler(searchText, self._addMoreRows(curCallCount, searchText),
 						false, {includeVoided: self.options.showIncludeVoided && checkBox.attr('checked'),
-						start: self._table.fnSettings()._iDisplayLength, length: null});
+						start: self._table.fnSettings()._iDisplayLength, length: matchCount});
 				}
 			};
 		},
@@ -656,13 +668,15 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		},
 		
 		//This function adds the data returned by the second ajax call that fetches the remaining rows
-		_addMoreRows: function(curCallCount2, searchText, matchCount){
+		_addMoreRows: function(curCallCount2, searchText){
 			var self = this;
 			return function(results) {
+				
 				//Don't display results from delayed ajax calls when the input box is blank or has less 
 				//than the minimum characters
 				var currInput = $j.trim($j("#inputNode").val());
 				if(currInput == '' || currInput.length < self.options.minLength){
+					$j(notification).html(" ");
 					if($j('#pageInfo').css("visibility") == 'visible')
 						$j('#pageInfo').css("visibility", "hidden");
 					$j(".openmrsSearchDiv").hide();
@@ -671,6 +685,9 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 					spinnerObj.css("visibility", "hidden");
 					return;
 				}
+				
+				if(results["notification"])					
+					$j(notification).html(results["notification"]);
 				
 				var data = results["objectList"];								
 				
@@ -689,8 +706,16 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 					self._results.push(currentData);
 				}
 				
-				self._updatePageInfo(searchText);
 				self._table.fnAddData(newData);
+				//update the page statistics to match the actual hit count, this is important for searches
+				//where the actual result count is less or more than the predicted matchCount
+				var actualResultCount = self._table.fnGetNodes().length;				
+				if(actualResultCount % self._table.fnSettings()._iDisplayLength == 0)
+					self._table.numberOfPages = actualResultCount/self._table.fnSettings()._iDisplayLength;
+				else
+					self._table.numberOfPages = Math.floor(actualResultCount/self._table.fnSettings()._iDisplayLength)+1;
+				
+				self._updatePageInfo(searchText);
 				spinnerObj.css("visibility", "hidden");
 				//This is hacky way to capture the visible buttons before the user clicks any of them,
 				//so that we can add/remove onclick events to/from each.

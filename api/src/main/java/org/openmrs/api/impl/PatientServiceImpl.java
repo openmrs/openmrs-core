@@ -181,7 +181,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		if (identifierTypes == null)
 			identifierTypes = Collections.emptyList();
 		
-		return dao.getPatients(name, identifier, identifierTypes, matchIdentifierExactly);
+		return getPatients(name, identifier, identifierTypes, matchIdentifierExactly, 0, null);
 	}
 	
 	/**
@@ -582,30 +582,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 * @see org.openmrs.api.PatientService#getPatients(java.lang.String)
 	 */
 	public List<Patient> getPatients(String query) throws APIException {
-		List<Patient> patients = new Vector<Patient>();
-		
-		String minSearchCharactersStr = Context.getAdministrationService().getGlobalProperty(
-		    OpenmrsConstants.GLOBAL_PROPERTY_MIN_SEARCH_CHARACTERS);
-		int minSearchCharacters;
-		try {
-			minSearchCharacters = Integer.valueOf(minSearchCharactersStr);
-		}
-		catch (NumberFormatException e) {
-			// TODO: Should be an application constant
-			minSearchCharacters = 3;
-		}
-		
-		if (query.length() < minSearchCharacters)
-			return patients;
-		
-		// if there is a number in the query string
-		if (query.matches(".*\\d+.*")) {
-			log.debug("[Identifier search] Query: " + query);
-			return getPatients(null, query, null);
-		} else {
-			// there is no number in the string, search on name
-			return getPatients(query, null, null, false);
-		}
+		return getPatients(query, 0, null);
 	}
 	
 	/**
@@ -723,7 +700,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 				boolean personBisPreferred = rel.getPersonB().equals(preferred);
 				boolean personBisNotPreferred = rel.getPersonB().equals(notPreferred);
 				String relHash = relationshipHash(rel, notPreferred);
-
+				
 				if ((personAisPreferred && personBisNotPreferred) || (personBisPreferred && personAisNotPreferred)) {
 					// void this relationship if it's between the preferred and notPreferred patients
 					personService.voidRelationship(rel, "person " + (personAisNotPreferred ? "A" : "B")
@@ -1392,5 +1369,75 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 */
 	public void voidAllergy(Allergy allergy, String reason) throws APIException {
 		Context.getActiveListService().voidActiveListItem(allergy, reason);
+	}
+	
+	/**
+	 * @see PatientService#getCountOfPatients(String)
+	 */
+	@Override
+	public Integer getCountOfPatients(String query) {
+		int count = 0;
+		if (StringUtils.isBlank(query) || query.length() < getMinSearchCharacters())
+			return count;
+		List<PatientIdentifierType> emptyList = new Vector<PatientIdentifierType>();
+		// if there is a number in the query string
+		if (query.matches(".*\\d+.*")) {
+			log.debug("[Identifier search] Query: " + query);
+			return dao.getCountOfPatients(null, query, emptyList, false);
+		} else {
+			// there is no number in the string, search on name
+			return dao.getCountOfPatients(query, null, emptyList, false);
+		}
+	}
+	
+	/**
+	 * Method returns the minimum number of search characters
+	 * 
+	 * @return the value of min search characters
+	 */
+	private int getMinSearchCharacters() {
+		int minSearchCharacters = OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_MIN_SEARCH_CHARACTERS;
+		String minSearchCharactersStr = Context.getAdministrationService().getGlobalProperty(
+		    OpenmrsConstants.GLOBAL_PROPERTY_MIN_SEARCH_CHARACTERS);
+		
+		try {
+			minSearchCharacters = Integer.valueOf(minSearchCharactersStr);
+		}
+		catch (NumberFormatException e) {
+			//do nothing
+		}
+		
+		return minSearchCharacters;
+	}
+	
+	/**
+	 * @see PatientService#getPatients(String, int, Integer)
+	 */
+	@Override
+	public List<Patient> getPatients(String query, int start, Integer length) throws APIException {
+		List<Patient> patients = new Vector<Patient>();
+		if (StringUtils.isBlank(query) || query.length() < getMinSearchCharacters())
+			return patients;
+		
+		// if there is a number in the query string
+		if (query.matches(".*\\d+.*")) {
+			log.debug("[Identifier search] Query: " + query);
+			return getPatients(null, query, null, false, start, length);
+		} else {
+			// there is no number in the string, search on name
+			return getPatients(query, null, null, false, start, length);
+		}
+	}
+	
+	/**
+	 * @see PatientService#getPatients(String, String, List, boolean, int, Integer)
+	 */
+	@Override
+	public List<Patient> getPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,
+	                                 boolean matchIdentifierExactly, int start, Integer length) throws APIException {
+		if (identifierTypes == null)
+			identifierTypes = Collections.emptyList();
+		
+		return dao.getPatients(name, identifier, identifierTypes, matchIdentifierExactly, start, length);
 	}
 }
