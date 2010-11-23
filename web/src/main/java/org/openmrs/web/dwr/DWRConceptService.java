@@ -14,10 +14,13 @@
 package org.openmrs.web.dwr;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Vector;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
@@ -57,12 +60,15 @@ public class DWRConceptService {
 	 * @param includeDatatypeNames
 	 * @param excludeDatatypeNames
 	 * @param includeDrugConcepts
+	 * @param start the beginning index
+	 * @param length the number of matching concepts to return
 	 * @return
 	 */
 	public List<Object> findConcepts(String phrase, boolean includeRetired, List<String> includeClassNames,
 	                                 List<String> excludeClassNames, List<String> includeDatatypeNames,
-	                                 List<String> excludeDatatypeNames, boolean includeDrugConcepts) {
-		
+	                                 List<String> excludeDatatypeNames, boolean includeDrugConcepts, Integer start,
+	                                 Integer length) {
+		//TODO factor out the reusable code in this and findCountAndConcepts methods to a single utility method
 		// List to return
 		// Object type gives ability to return error strings
 		Vector<Object> objectList = new Vector<Object>();
@@ -121,16 +127,14 @@ public class DWRConceptService {
 				// user searched on a number. Insert concept with
 				// corresponding conceptId
 				Concept c = cs.getConcept(Integer.valueOf(phrase));
-				if (c != null) {
+				if (c != null && (!c.isRetired() || includeRetired)) {
 					ConceptName cn = c.getName(defaultLocale);
 					ConceptSearchResult searchResult = new ConceptSearchResult(phrase, c, cn);
 					searchResults.add(searchResult);
 				}
 			}
 			
-			if (phrase == null || phrase.equals("")) {
-				// TODO get all concepts for testing purposes?
-			} else {
+			if (!StringUtils.isBlank(phrase)) {
 				// turn classnames into class objects
 				List<ConceptClass> includeClasses = new Vector<ConceptClass>();
 				for (String name : includeClassNames)
@@ -156,41 +160,37 @@ public class DWRConceptService {
 						excludeDatatypes.add(cs.getConceptDatatypeByName(name));
 				
 				// perform the search
-				searchResults.addAll(cs.getConcepts(phrase, localesToSearchOn, includeRetired, includeClasses, excludeClasses,
-				    includeDatatypes, excludeDatatypes, null,null, null));
+				searchResults.addAll(cs.getConcepts(phrase, localesToSearchOn, includeRetired, includeClasses,
+				    excludeClasses, includeDatatypes, excludeDatatypes, null, start, length));
+				
+				//TODO Should we still include drugs, if yes, smartly harmonize the paging between the two different DB tables
+				//look ups to match the values of start and length not to go over the value of count of matches returned to the search widget
+				//List<Drug> drugs = null;
+				//if (includeDrugConcepts)
+				//	drugs = cs.getDrugs(phrase, null, false, includeRetired, null, null);
+				
 			}
 			
-			if (searchResults.size() == 0) {
-				objectList.add("No matches found for <b>" + phrase + "</b> in locale: "
-				        + OpenmrsUtil.join(localesToSearchOn, ", "));
+			if (searchResults.size() < 1) {
+				objectList.add(Context.getMessageSourceService()
+				        .getMessage("general.noMatchesFoundInLocale",
+				            new Object[] { "<b>" + phrase + "</b>", OpenmrsUtil.join(localesToSearchOn, ", ") },
+				            Context.getLocale()));
 			} else {
-				int maxCount = 500;
-				int curCount = 0;
-				
 				// turn searchResults into concept list items
 				// if user wants drug concepts included, append those
-				for (ConceptSearchResult searchResult : searchResults) {
-					if (++curCount > maxCount)
-						break;
+				for (ConceptSearchResult searchResult : searchResults)
 					objectList.add(new ConceptListItem(searchResult));
-					
-					// add drugs for concept if desired
-					if (includeDrugConcepts) {
-						Integer classId = searchResult.getConcept().getConceptClass().getConceptClassId();
-						if (classId.equals(OpenmrsConstants.CONCEPT_CLASS_DRUG))
-							for (Drug d : cs.getDrugsByConcept(searchResult.getConcept()))
-								objectList.add(new ConceptDrugListItem(d, defaultLocale)); // ABKTODO: using the default locale here may be improper
-					}
-				}
 			}
 		}
 		catch (Exception e) {
 			log.error("Error while finding concepts + " + e.getMessage(), e);
-			objectList.add("Error while attempting to find concepts - " + e.getMessage());
+			objectList.add(Context.getMessageSourceService().getMessage("Concept.search.error") + " - " + e.getMessage());
 		}
 		
 		if (objectList.size() == 0)
-			objectList.add("No matches found for <b>" + phrase + "</b> in locale: " + defaultLocale);
+			objectList.add(Context.getMessageSourceService().getMessage("general.noMatchesFoundInLocale",
+			    new Object[] { "<b>" + phrase + "</b>", defaultLocale }, Context.getLocale()));
 		
 		return objectList;
 	}
@@ -434,4 +434,142 @@ public class DWRConceptService {
 		}
 	}
 	
+	/**
+	 * Returns a map of results with the values as count of matches and a partial list of the
+	 * matching concepts (depending on values of start and length parameters) while the keys are are
+	 * 'count' and 'objectList' respectively, if the length parameter is not specified, then all
+	 * matches will be returned from the start index if specified.
+	 * 
+	 * @param phrase concept name or conceptId
+	 * @param includeRetired Specifies if retired concepts should be included or not
+	 * @param includeClassNames
+	 * @param excludeClassNames
+	 * @param includeDatatypeNames
+	 * @param excludeDatatypeNames
+	 * @param includeDrugConcepts
+	 * @param start the beginning index
+	 * @param length the number of matching concepts to return
+	 * @return a map of results
+	 * @throws APIException
+	 * @since 1.8
+	 */
+	public Map<String, Object> findCountAndConcepts(String phrase, boolean includeRetired, List<String> includeClassNames,
+	                                                List<String> excludeClassNames, List<String> includeDatatypeNames,
+	                                                List<String> excludeDatatypeNames, boolean includeDrugs, Integer start,
+	                                                Integer length, boolean getMatchCount) throws APIException {
+		//Map to return
+		Map<String, Object> resultsMap = new HashMap<String, Object>();
+		Vector<Object> objectList = new Vector<Object>();
+		User currentUser = Context.getAuthenticatedUser();
+		Locale defaultLocale = Context.getLocale();
+		
+		// get the list of locales to search on from the user's
+		// defined proficient locales (if applicable)
+		List<Locale> localesToSearchOn = null;
+		if (currentUser != null)
+			localesToSearchOn = currentUser.getProficientLocales();
+		
+		if (localesToSearchOn == null)
+			// we're working with an anonymous user right now or
+			// with a user that has not defined any proficient locales
+			localesToSearchOn = new Vector<Locale>();
+		
+		// add the user's locale
+		if (localesToSearchOn.size() == 0) {
+			localesToSearchOn.add(defaultLocale);
+			
+			// if country is specified, also add the generic language locale
+			if (!"".equals(defaultLocale.getCountry())) {
+				localesToSearchOn.add(new Locale(defaultLocale.getLanguage()));
+			}
+			
+		}
+		
+		// debugging output
+		if (log.isDebugEnabled()) {
+			StringBuffer searchLocalesString = new StringBuffer();
+			for (Locale loc : localesToSearchOn) {
+				searchLocalesString.append(loc.toString() + " ");
+			}
+			log.debug("searching locales: " + searchLocalesString);
+		}
+		
+		if (includeClassNames == null)
+			includeClassNames = new Vector<String>();
+		if (excludeClassNames == null)
+			excludeClassNames = new Vector<String>();
+		if (includeDatatypeNames == null)
+			includeDatatypeNames = new Vector<String>();
+		if (excludeDatatypeNames == null)
+			excludeDatatypeNames = new Vector<String>();
+		
+		try {
+			ConceptService cs = Context.getConceptService();
+			
+			if (!StringUtils.isBlank(phrase)) {
+				// turn classnames into class objects
+				List<ConceptClass> includeClasses = new Vector<ConceptClass>();
+				for (String name : includeClassNames)
+					if (!"".equals(name))
+						includeClasses.add(cs.getConceptClassByName(name));
+				
+				// turn classnames into class objects
+				List<ConceptClass> excludeClasses = new Vector<ConceptClass>();
+				for (String name : excludeClassNames)
+					if (!"".equals(name))
+						excludeClasses.add(cs.getConceptClassByName(name));
+				
+				// turn classnames into class objects
+				List<ConceptDatatype> includeDatatypes = new Vector<ConceptDatatype>();
+				for (String name : includeDatatypeNames)
+					if (!"".equals(name))
+						includeDatatypes.add(cs.getConceptDatatypeByName(name));
+				
+				// turn classnames into class objects
+				List<ConceptDatatype> excludeDatatypes = new Vector<ConceptDatatype>();
+				for (String name : excludeDatatypeNames)
+					if (!"".equals(name))
+						excludeDatatypes.add(cs.getConceptDatatypeByName(name));
+				
+				int matchCount = 0;
+				if (getMatchCount) {
+					//get the count of matches
+					matchCount += cs.getCountOfConcepts(phrase, localesToSearchOn, includeRetired, includeClasses,
+					    excludeClasses, includeDatatypes, excludeDatatypes, null);
+					if (phrase.matches("\\d+")) {
+						// user searched on a number. Insert concept with
+						// corresponding conceptId
+						Concept c = cs.getConcept(Integer.valueOf(phrase));
+						if (c != null && (!c.isRetired() || includeRetired))
+							matchCount++;
+						
+					}
+					
+					//if (includeDrugs)
+					//	matchCount += cs.getCountOfDrugs(phrase, null, false, includeRetired);
+				}
+				
+				if (matchCount > 0 || !getMatchCount) {
+					objectList.addAll(findConcepts(phrase, includeRetired, includeClassNames, excludeClassNames,
+					    includeDatatypeNames, excludeDatatypeNames, includeDrugs, start, length));
+				}
+				
+				resultsMap.put("count", matchCount);
+				resultsMap.put("objectList", objectList);
+			} else {
+				resultsMap.put("count", 0);
+				objectList.add(Context.getMessageSourceService().getMessage("searchWidget.noMatchesFound"));
+			}
+			
+		}
+		catch (Exception e) {
+			log.error("Error while searching for concepts", e);
+			objectList.clear();
+			objectList.add(Context.getMessageSourceService().getMessage("Concept.search.error") + " - " + e.getMessage());
+			resultsMap.put("count", 0);
+			resultsMap.put("objectList", objectList);
+		}
+		
+		return resultsMap;
+	}
 }

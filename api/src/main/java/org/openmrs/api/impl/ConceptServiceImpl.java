@@ -1765,4 +1765,34 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		
 		return createSearchResultsList(conceptWords);
 	}
+	
+	/**
+	 * @see ConceptService#getCountOfConcepts(String, List, boolean, List, List, List, List,
+	 *      Concept)
+	 */
+	@Override
+	public Integer getCountOfConcepts(String phrase, List<Locale> locales, boolean includeRetired,
+	                                  List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses,
+	                                  List<ConceptDatatype> requireDatatypes, List<ConceptDatatype> excludeDatatypes,
+	                                  Concept answersToConcept) {
+		
+		return dao.getCountOfConceptWords(phrase, locales, includeRetired, requireClasses, excludeClasses, requireDatatypes,
+		    excludeDatatypes, answersToConcept, true);
+	}
+	
+	/**
+	 * @see ConceptService#getCountOfDrugs(String, Concept, boolean, boolean, boolean)
+	 */
+	public Integer getCountOfDrugs(String drugName, Concept concept, boolean searchOnPhrase, boolean searchDrugConceptNames,
+	                               boolean includeRetired) throws APIException {
+		return dao.getCountOfDrugs(drugName, concept, searchOnPhrase, searchDrugConceptNames, includeRetired);
+	}
+	
+	/**
+	 * @see ConceptService#getDrugs(String, Concept, boolean, boolean, boolean, Integer, Integer)
+	 */
+	public List<Drug> getDrugs(String drugName, Concept concept, boolean searchOnPhrase, boolean searchDrugConceptNames,
+	                           boolean includeRetired, Integer start, Integer length) throws APIException {
+		return dao.getDrugs(drugName, concept, searchOnPhrase, searchDrugConceptNames, includeRetired, start, length);
+	}
 }

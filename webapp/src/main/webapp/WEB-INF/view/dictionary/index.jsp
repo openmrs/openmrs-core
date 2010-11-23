@@ -7,30 +7,46 @@
 <openmrs:require privilege="View Concepts" otherwise="/login.htm"
 	redirect="/dictionary/index.htm" />
 
-<openmrs:htmlInclude file="/scripts/dojoConfig.js" />
-<openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
+<openmrs:htmlInclude file="/dwr/interface/DWRConceptService.js"/>
+<openmrs:htmlInclude file="/scripts/jquery/dataTables/css/dataTables_jui.css"/>
+<openmrs:htmlInclude file="/scripts/jquery/dataTables/js/jquery.dataTables.min.js"/>
+<openmrs:htmlInclude file="/scripts/jquery-ui/js/openmrsSearch.js" />
+
+<style>
+td span.otherHit{
+	color: gray;
+}
+</style>
 
 <script type="text/javascript">
-	dojo.require("dojo.widget.openmrs.ConceptSearch");
-	
-	var searchWidget;
-	
-	dojo.addOnLoad( function() {
-		
-		searchWidget = dojo.widget.manager.getWidgetById("cSearch");			
-		
-		dojo.event.topic.subscribe("cSearch/select", 
-			function(msg) {
-                if (msg.objs[0].conceptId != undefined) {  
-			        document.location = "concept.htm?conceptId=" + msg.objs[0].conceptId;
-                }
-			}
-		);
-		
-		searchWidget.inputNode.focus();
-		searchWidget.inputNode.select();
+	var lastSearch;var uni;
+	$j(document).ready(function() {
+		new OpenmrsSearch("findConcept", true, doConceptSearch, doSelectionHandler, 
+				[{fieldName:"name", header:" "}, {fieldName:"preferredName", header:" "}],
+				{searchLabel: '<spring:message code="Concept.search" javaScriptEscape="true"/>', 
+					includeVoidedLabel: '<spring:message code="SearchResults.includeRetired" javaScriptEscape="true"/>', 
+					columnRenderers: [nameColumnRenderer, null], 
+					columnVisibility: [true, false]
+				});
 	});
-
+	
+	function doSelectionHandler(index, data) {
+		document.location = "concept.htm?conceptId=" + data.conceptId;
+	}
+	
+	//searchHandler
+	function doConceptSearch(text, resultHandler, getMatchCount, opts) {
+		lastSearch = text;
+		DWRConceptService.findCountAndConcepts(text, opts.includeVoided, null, null, null, null, false, opts.start, opts.length, getMatchCount, resultHandler);
+	}
+	
+	//custom render, appends an arrow and preferredName it exists
+	function nameColumnRenderer(oObj){
+		if(oObj.aData[1] && $j.trim(oObj.aData[1]) != '')
+			return "<span>"+oObj.aData[0]+"<span/><span class='otherHit'> &rArr; "+oObj.aData[1]+"<span/>";
+		
+		return "<span>"+oObj.aData[0]+"<span/>";
+	}
 </script>
 
 <h2><spring:message code="dictionary.title" /></h2>
@@ -38,10 +54,10 @@
 <a href="<%= request.getContextPath() %>/downloadDictionary.csv"><spring:message code="dictionary.download.link"/></a> <spring:message code="dictionary.download.description"/><br />
 <br />
 
-<div id="findConcept">
+<div>
 	<b class="boxHeader"><spring:message code="Concept.find"/></b>
-	<div class="box">
-		<div dojoType="ConceptSearch" widgetId="cSearch" searchLabel='<spring:message code="dictionary.searchBox"/>' searchPhrase='<request:parameter name="phrase"/>' showVerboseListing="true" showIncludeRetired="true"></div>
+	<div class="searchWidgetContainer">
+		<div id="findConcept" <request:existsParameter name="autoJump">allowAutoJump='true'</request:existsParameter> ></div>
 	</div>
 </div>
 
