@@ -12,7 +12,7 @@
 
 <script type="text/javascript">
 	$j(document).ready(function() {
-		new OpenmrsSearch("findPatient", false, doPatientSearch, doSelectionHandler, 
+		new OpenmrsSearch("findPatients", false, doPatientSearch, doSelectionHandler, 
 				[	{fieldName:"identifier", header:omsgs.identifier},
 					{fieldName:"givenName", header:omsgs.givenName},
 					{fieldName:"middleName", header:omsgs.middleName},
@@ -41,7 +41,7 @@
 <div>
 	<b class="boxHeader"><spring:message code="Patient.find"/></b>
 	<div class="searchWidgetContainer">
-		<div id="findPatient" <request:existsParameter name="autoJump">allowAutoJump='true'</request:existsParameter> ></div>
+		<div id="findPatients" <request:existsParameter name="autoJump">allowAutoJump='true'</request:existsParameter> ></div>
 	</div>
 </div>
 

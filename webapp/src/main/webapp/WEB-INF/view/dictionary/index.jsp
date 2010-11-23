@@ -56,7 +56,7 @@ td span.otherHit{
 
 <c:choose>
 	<c:when test="${conceptsLocked != 'true'}"> 
-		<a href="concept.form"><spring:message code="Concept.add"/></a> <spring:message code="Concept.add.description" />
+		<a href="concept.form"><spring:message code="Concept.add"/></a>
 	</c:when>
 	<c:otherwise>
 		(<spring:message code="Concept.concepts.locked" />)
