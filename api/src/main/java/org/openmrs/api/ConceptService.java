@@ -56,12 +56,32 @@ import org.springframework.transaction.annotation.Transactional;
  * 
  * 
  * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
  * List&lt;Concept&gt; concepts = Context.getConceptService().getAllConcepts();
  * </pre>
  * 
  * To get a single concept:
  * 
  * <pre>
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
  * 
  * 
  * 
@@ -1507,4 +1527,61 @@ public interface ConceptService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public List<ConceptSearchResult> getConcepts(String phrase, Locale locale) throws APIException;
+	
+	/**
+	 * Return the number of concepts matching a search phrase and the specified arguments
+	 * 
+	 * @param phrase matched to the start of any word in any of the names of a concept
+	 * @param locales List<Locale> to restrict to
+	 * @param includeRetired Specifies whether to include retired concepts
+	 * @param requireClasses List<ConceptClass> to restrict to
+	 * @param excludeClasses List<ConceptClass> to leave out of results
+	 * @param requireDatatypes List<ConceptDatatype> to restrict to
+	 * @param excludeDatatypes List<ConceptDatatype> to leave out of results
+	 * @param answersToConcept all results will be a possible answer to this concept
+	 * @return the number of concepts matching the given search phrase
+	 * @throws APIException
+	 * @since 1.8
+	 */
+	public Integer getCountOfConcepts(String phrase, List<Locale> locales, boolean includeRetired,
+	                                  List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses,
+	                                  List<ConceptDatatype> requireDatatypes, List<ConceptDatatype> excludeDatatypes,
+	                                  Concept answersToConcept);
+	
+	/**
+	 * Return the number of drugs with matching names or concept drug names
+	 * 
+	 * @param drugName the name of the drug
+	 * @param concept the drug concept
+	 * @param searchOnPhrase Specifies if the search should match names starting with or contain the
+	 *            text
+	 * @param searchDrugConceptNames Specifies whether a search on concept names for the drug's
+	 *            concept should be done or not
+	 * @param includeRetired specifies whether to include retired drugs
+	 * @return the number of matching drugs
+	 * @throws APIException
+	 * @since 1.8
+	 */
+	public Integer getCountOfDrugs(String drugName, Concept concept, boolean searchOnPhrase, boolean searchDrugConceptNames,
+	                               boolean includeRetired) throws APIException;
+	
+	/**
+	 * Returns a list of drugs with matching names or concept drug names and returns a specific
+	 * number of them from the specified starting position.
+	 * 
+	 * @param drugName the name of the drug
+	 * @param concept the drug concept
+	 * @param searchOnPhrase Specifies if the search should match names starting with or contain the
+	 *            text
+	 * @param searchDrugConceptNames Specifies whether a search on concept names for the drug's
+	 *            concept should be done or not
+	 * @param includeRetired specifies whether to include retired drugs
+	 * @param start beginning index for the batch
+	 * @param length number of drugs to return in the batch
+	 * @return a list of matching drugs
+	 * @throws APIException
+	 * @since 1.8
+	 */
+	public List<Drug> getDrugs(String drugName, Concept concept, boolean searchOnPhrase, boolean searchDrugConceptNames,
+	                           boolean includeRetired, Integer start, Integer length) throws APIException;
 }

@@ -37,6 +37,7 @@ import org.openmrs.ConceptSource;
 import org.openmrs.ConceptWord;
 import org.openmrs.Drug;
 import org.openmrs.DrugIngredient;
+import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptService;
 
 /**
@@ -439,5 +440,36 @@ public interface ConceptDAO {
 	 *         conceptName
 	 */
 	public ConceptName getSavedConceptName(ConceptName conceptName);
+	
+	/**
+	 * Get the count of matching conceptWords
+	 * 
+	 * @param phrase text to search on
+	 * @param locales the locales to restrict to
+	 * @param includeRetired Specifies whether to include retired concepts
+	 * @param requireClasses List<ConceptClass> to restrict to
+	 * @param excludeClasses List<ConceptClass> to leave out of results
+	 * @param requireDatatypes List<ConceptDatatype> to restrict to
+	 * @param excludeDatatypes List<ConceptDatatype> to leave out of results
+	 * @param answersToConcept all results will be a possible answer to this concept
+	 * @param forUniqueConcepts Specifies if conceptWords that are associated to multiple
+	 *            conceptWords should be counted one or more times.
+	 */
+	public Integer getCountOfConceptWords(String phrase, List<Locale> locales, boolean includeRetired,
+	                                      List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses,
+	                                      List<ConceptDatatype> requireDatatypes, List<ConceptDatatype> excludeDatatypes,
+	                                      Concept answersToConcept, boolean forUniqueConcepts);
+	
+	/**
+	 * @see ConceptService#getCountOfDrugs(String, Concept, boolean, boolean, boolean)
+	 */
+	public Integer getCountOfDrugs(String drugName, Concept concept, boolean searchOnPhrase, boolean searchDrugConceptNames,
+	                               boolean includeRetired) throws APIException;
+	
+	/**
+	 * @see ConceptService#getDrugs(String, Concept, boolean, boolean, boolean, Integer, Integer)
+	 */
+	public List<Drug> getDrugs(String drugName, Concept concept, boolean searchOnPhrase, boolean searchDrugConceptNames,
+	                           boolean includeRetired, Integer start, Integer length) throws APIException;
 	
 }
