@@ -114,6 +114,8 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 (function($j) {
 	var openmrsSearch_div = '<span><span style="white-space: nowrap"><span><span id="searchLabelNode"></span><input type="text" value="" id="inputNode" autocomplete="off"/><input type="checkbox" style="display: none" id="includeRetired"/><img id="spinner" src=""/><input type="checkbox" style="display: none" id="includeVoided"/><input type="checkbox" style="display: none" id="verboseListing"/><span id="minCharError" class="error"></span><span id="pageInfo"></span><br /><span id="searchWidgetNotification"></span></span></span><span class="openmrsSearchDiv"><table id="openmrsSearchTable" cellpadding="2" cellspacing="0" style="width: 100%"><thead id="searchTableHeader"><tr></tr></thead><tbody></tbody></table></span></span>';
 	var MAXIMUM_RESULTS_COUNT = 500;
+	var BATCH_SIZE = 200;
+	var ajaxTimer = null;
 	$j.widget("ui.openmrsSearch", {
 		plugins: {},
 		options: {
@@ -185,7 +187,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    	//LEFT(37), UP(38), RIGHT(39), DOWN(40), ENTER(13), HOME(36), END(35), PAGE UP(33), PAGE DOWN(34)
 		    	var kc = event.keyCode;
 		    	if(((kc >= 33) && (kc <= 40)) || (kc == 13)) {
-		    		if(!self._div.find(".openmrsSearchDiv").is(":visible")) {
+		    		if(!(self._div.find(".openmrsSearchDiv").css("display") != 'none')) {
 						return true;
 					}
 		    		if(kc == 13)
@@ -195,6 +197,10 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 			    				    	
 			    	return false;
 		    	}
+		    	//ignore the following keys SHIFT(16), ESC(27), CAPSLOCK(20), CTRL(17), ALT(18)
+		    	else if((kc >= 16 && kc <= 18) || kc == 20 || kc == 27)
+		    		return false;
+		    	
 		    	$j(notification).html(" ");
 		    	if(self.onCharTyped) {
 		    		self.onCharTyped(self, event.keyCode);
@@ -210,6 +216,9 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 						
 	    			if($j("#minCharError").css("visibility") == 'visible')
 	    				$j("#minCharError").css("visibility", "hidden");
+	    			//This discontinues any further ajax SUB calls from the last triggered search
+	    			if(ajaxTimer != null)
+	    				window.clearInterval(ajaxTimer);
 	    			
 	    			self._doSearch(text);
 	    		}
@@ -239,7 +248,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    	//UP(38), DOWN(40), HOME(36), END(35), PAGE UP(33), PAGE DOWN(34)
 		    	var kc = event.keyCode;
 		    	if(((kc >= 33) && (kc <= 36)) || (kc == 38) || (kc == 40)) {
-		    		if(!self._div.find(".openmrsSearchDiv").is(":visible")) {
+		    		if(!(self._div.find(".openmrsSearchDiv").css("display") != 'none')) {
 						return true;
 					}
 		    		//if the pages are not yet all fully loaded, block usage of HOME(36), END(35), PAGE UP(33), PAGE DOWN(34)
@@ -422,10 +431,18 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 					spinnerObj.css("visibility", "visible");
 					$j('#openmrsSearchTable_info').html(omsgs.sInfoLabel.replace("_START_", 1).
 							replace("_END_", self._table.fnSettings()._iDisplayLength).replace("_TOTAL_", matchCount));
+					var currStart = self._table.fnSettings()._iDisplayLength;					
+					ajaxTimer = window.setInterval(function(){
+						if(currStart < matchCount){
+							self.options.searchHandler(searchText, self._addMoreRows(curCallCount, searchText),
+								false, {includeVoided: self.options.showIncludeVoided && checkBox.attr('checked'),
+								start: currStart, length: BATCH_SIZE});
+							currStart+=BATCH_SIZE;
+						}else
+							window.clearInterval(ajaxTimer);			
+						
+					}, 10);
 					
-					self.options.searchHandler(searchText, self._addMoreRows(curCallCount, searchText),
-						false, {includeVoided: self.options.showIncludeVoided && checkBox.attr('checked'),
-						start: self._table.fnSettings()._iDisplayLength, length: matchCount});
 				}
 			};
 		},
