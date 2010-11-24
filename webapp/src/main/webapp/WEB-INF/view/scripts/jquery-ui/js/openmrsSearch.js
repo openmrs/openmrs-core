@@ -113,7 +113,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
  */
 (function($j) {
 	var openmrsSearch_div = '<span><span style="white-space: nowrap"><span><span id="searchLabelNode"></span><input type="text" value="" id="inputNode" autocomplete="off"/><input type="checkbox" style="display: none" id="includeRetired"/><img id="spinner" src=""/><input type="checkbox" style="display: none" id="includeVoided"/><input type="checkbox" style="display: none" id="verboseListing"/><span id="minCharError" class="error"></span><span id="pageInfo"></span><br /><span id="searchWidgetNotification"></span></span></span><span class="openmrsSearchDiv"><table id="openmrsSearchTable" cellpadding="2" cellspacing="0" style="width: 100%"><thead id="searchTableHeader"><tr></tr></thead><tbody></tbody></table></span></span>';
-	var MAXIMUM_RESULTS_COUNT = 500;
+	//var MAXIMUM_RESULTS_COUNT = 500;//this is currently not being followed
 	var BATCH_SIZE = 200;
 	var ajaxTimer = null;
 	$j.widget("ui.openmrsSearch", {
@@ -400,8 +400,8 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 				
 				var matchCount = results["count"];
 				//Don't return more than the maximum allowed number of results
-				if(matchCount > MAXIMUM_RESULTS_COUNT)
-					matchCount = MAXIMUM_RESULTS_COUNT;
+				//if(matchCount > MAXIMUM_RESULTS_COUNT)
+				//	matchCount = MAXIMUM_RESULTS_COUNT;
 				self._results = results["objectList"];
 				if(matchCount <= self._table.fnSettings()._iDisplayLength)
 					spinnerObj.css("visibility", "hidden");
@@ -433,6 +433,9 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 							replace("_END_", self._table.fnSettings()._iDisplayLength).replace("_TOTAL_", matchCount));
 					var currStart = self._table.fnSettings()._iDisplayLength;					
 					ajaxTimer = window.setInterval(function(){
+						//TODO add a counter to these sub calls so that the data returned by them is added to the datatable
+						//in the order in which the requests were made and never in the order the responses were received,
+						//This can be helpful in cases where results come back sorted in a preferred order
 						if(currStart < matchCount){
 							self.options.searchHandler(searchText, self._addMoreRows(curCallCount, searchText),
 								false, {includeVoided: self.options.showIncludeVoided && checkBox.attr('checked'),
