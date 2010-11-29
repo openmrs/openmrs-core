@@ -996,7 +996,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 						obsExit.setValueCoded(cause);
 						obsExit.setValueCodedName(cause.getName()); // ABKTODO: presume current locale?
 						obsExit.setObsDatetime(exitDate);
-						Context.getObsService().saveObs(obsExit, null);
+						Context.getObsService().saveObs(obsExit, "updated by PatientService.saveReasonForExit");
 					}
 				}
 			}
