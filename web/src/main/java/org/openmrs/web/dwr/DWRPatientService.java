@@ -184,6 +184,7 @@ public class DWRPatientService implements GlobalPropertyListener {
 	 * @param searchValue patient name or identifier
 	 * @param start the beginning index
 	 * @param length the number of matching patients to return
+	 * @param getMatchCount Specifies if the count of matches should be included in the returned map
 	 * @return a map of results
 	 * @throws APIException
 	 * @since 1.8

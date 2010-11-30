@@ -62,7 +62,6 @@ import org.openmrs.ConceptSource;
 import org.openmrs.ConceptWord;
 import org.openmrs.Drug;
 import org.openmrs.DrugIngredient;
-import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ConceptDAO;
@@ -1480,7 +1479,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Drug> getDrugs(String drugName, Concept concept, boolean searchOnPhrase, boolean searchDrugConceptNames,
-	                           boolean includeRetired, Integer start, Integer length) throws APIException {
+	                           boolean includeRetired, Integer start, Integer length) throws DAOException {
 		Criteria searchCriteria = sessionFactory.getCurrentSession().createCriteria(Drug.class, "drug");
 		if (StringUtils.isBlank(drugName) && concept == null)
 			return Collections.emptyList();

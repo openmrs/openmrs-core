@@ -151,13 +151,29 @@ public class DWREncounterService {
 	@SuppressWarnings("unchecked")
 	public Vector findLocations(String searchValue) {
 		
+		return findBatchLocations(searchValue, null, null);
+	}
+	
+	/**
+	 * Returns a list of matching locations (depending on values of start and length parameters) if
+	 * the length parameter is not specified, then all matches will be returned from the start index
+	 * if specified.
+	 * 
+	 * @param searchValue is the string used to search for locations
+	 * @param start the beginning index
+	 * @param length the number of matching locations to return
+	 * @return list of the matching locations
+	 * @throws APIException
+	 */
+	@SuppressWarnings("unchecked")
+	public Vector findBatchLocations(String searchValue, Integer start, Integer length) throws APIException {
+		
 		Vector locationList = new Vector();
 		MessageSourceService mss = Context.getMessageSourceService();
 		
 		try {
 			LocationService ls = Context.getLocationService();
-			List<Location> locations = ls.getLocations(searchValue);
-			
+			List<Location> locations = ls.getLocations(searchValue, start, length);
 			locationList = new Vector(locations.size());
 			
 			for (Location loc : locations) {
@@ -204,5 +220,48 @@ public class DWREncounterService {
 		LocationService ls = Context.getLocationService();
 		Location l = ls.getLocation(locationId);
 		return l == null ? null : new LocationListItem(l);
+	}
+	
+	/**
+	 * Returns a map of results with the values as count of matches and a partial list of the
+	 * matching locations (depending on values of start and length parameters) while the keys are
+	 * are 'count' and 'objectList' respectively, if the length parameter is not specified, then all
+	 * matches will be returned from the start index if specified.
+	 * 
+	 * @param searchValue is the string used to search for locations
+	 * @param start the beginning index
+	 * @param length the number of matching encounters to return
+	 * @param getMatchCount Specifies if the count of matches should be included in the returned map
+	 * @return a map of results
+	 * @throws APIException
+	 * @since 1.8
+	 */
+	@SuppressWarnings("unchecked")
+	public Map<String, Object> findCountAndLocations(String phrase, Integer start, Integer length, boolean getMatchCount)
+	                                                                                                                     throws APIException {
+		
+		//Map to return
+		Map<String, Object> resultsMap = new HashMap<String, Object>();
+		Vector<Object> objectList = new Vector<Object>();
+		try {
+			LocationService es = Context.getLocationService();
+			int locationCount = 0;
+			if (getMatchCount)
+				locationCount += es.getCountOfLocations(phrase, true);
+			
+			if (locationCount > 0 || !getMatchCount)
+				objectList = findBatchLocations(phrase, start, length);
+			
+			resultsMap.put("count", locationCount);
+			resultsMap.put("objectList", objectList);
+		}
+		catch (Exception e) {
+			log.error("Error while searching for locations", e);
+			objectList.clear();
+			objectList.add(Context.getMessageSourceService().getMessage("Location.search.error") + " - " + e.getMessage());
+			resultsMap.put("count", 0);
+			resultsMap.put("objectList", objectList);
+		}
+		return resultsMap;
 	}
 }
