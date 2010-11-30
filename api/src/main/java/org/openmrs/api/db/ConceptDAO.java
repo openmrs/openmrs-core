@@ -37,7 +37,6 @@ import org.openmrs.ConceptSource;
 import org.openmrs.ConceptWord;
 import org.openmrs.Drug;
 import org.openmrs.DrugIngredient;
-import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptService;
 
 /**
@@ -464,12 +463,12 @@ public interface ConceptDAO {
 	 * @see ConceptService#getCountOfDrugs(String, Concept, boolean, boolean, boolean)
 	 */
 	public Integer getCountOfDrugs(String drugName, Concept concept, boolean searchOnPhrase, boolean searchDrugConceptNames,
-	                               boolean includeRetired) throws APIException;
+	                               boolean includeRetired) throws DAOException;
 	
 	/**
 	 * @see ConceptService#getDrugs(String, Concept, boolean, boolean, boolean, Integer, Integer)
 	 */
 	public List<Drug> getDrugs(String drugName, Concept concept, boolean searchOnPhrase, boolean searchDrugConceptNames,
-	                           boolean includeRetired, Integer start, Integer length) throws APIException;
+	                           boolean includeRetired, Integer start, Integer length) throws DAOException;
 	
 }

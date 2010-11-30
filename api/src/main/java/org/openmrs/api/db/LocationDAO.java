@@ -18,6 +18,7 @@ import java.util.List;
 import org.hibernate.SessionFactory;
 import org.openmrs.Location;
 import org.openmrs.LocationTag;
+import org.openmrs.api.LocationService;
 
 /**
  * Location-related database functions
@@ -65,12 +66,11 @@ public interface LocationDAO {
 	public List<Location> getAllLocations(boolean includeRetired);
 	
 	/**
-	 * Find all locations with matching names.
+	 * Returns a specified number of locations starting with a given string from the specified index
 	 * 
-	 * @param search String name to search for
-	 * @return <code>List<Location></code> object of matching locations
+	 * @see LocationService#getLocations(String, Integer, Integer)
 	 */
-	public List<Location> getLocations(String search);
+	public List<Location> getLocations(String nameFragment, Integer start, Integer length) throws DAOException;
 	
 	/**
 	 * Completely remove the location from the database.
@@ -132,11 +132,16 @@ public interface LocationDAO {
 	 * @return location matching uuid
 	 */
 	public Location getLocationByUuid(String uuid);
-
+	
 	/**
-     * @param uuid
-     * @return
-     */
-    public LocationTag getLocationTagByUuid(String uuid);
+	 * @param uuid
+	 * @return
+	 */
+	public LocationTag getLocationTagByUuid(String uuid);
+	
+	/**
+	 * @see org.openmrs.api.LocationService#getCountOfLocations(String, Boolean)
+	 */
+	public Integer getCountOfLocations(String nameFragment, Boolean includeRetired);
 	
 }

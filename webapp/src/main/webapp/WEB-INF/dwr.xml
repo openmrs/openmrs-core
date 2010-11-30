@@ -94,6 +94,7 @@
 			<include method="getLocations"/>
 			<include method="getLocation"/>
 			<include method="findCountAndEncounters"/>
+			<include method="findCountAndLocations"/>
 		</create>
 		
 		<create creator="new" javascript="DWRUserService">

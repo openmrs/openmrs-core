@@ -50,44 +50,12 @@ import org.springframework.transaction.annotation.Transactional;
  * 
  * 
  * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
  * List&lt;Concept&gt; concepts = Context.getConceptService().getAllConcepts();
  * </pre>
  * 
  * To get a single concept:
  * 
  * <pre>
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
  * 
  * 
  * 
@@ -1543,6 +1511,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @throws APIException
 	 * @since 1.8
 	 */
+	@Transactional(readOnly = true)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public Integer getCountOfConcepts(String phrase, List<Locale> locales, boolean includeRetired,
 	                                  List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses,
 	                                  List<ConceptDatatype> requireDatatypes, List<ConceptDatatype> excludeDatatypes,
@@ -1562,6 +1532,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @throws APIException
 	 * @since 1.8
 	 */
+	@Transactional(readOnly = true)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public Integer getCountOfDrugs(String drugName, Concept concept, boolean searchOnPhrase, boolean searchDrugConceptNames,
 	                               boolean includeRetired) throws APIException;
 	
@@ -1582,6 +1554,8 @@ public interface ConceptService extends OpenmrsService {
 	 * @throws APIException
 	 * @since 1.8
 	 */
+	@Transactional(readOnly = true)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public List<Drug> getDrugs(String drugName, Concept concept, boolean searchOnPhrase, boolean searchDrugConceptNames,
 	                           boolean includeRetired, Integer start, Integer length) throws APIException;
 }

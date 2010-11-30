@@ -449,6 +449,7 @@ public class DWRConceptService {
 	 * @param includeDrugConcepts
 	 * @param start the beginning index
 	 * @param length the number of matching concepts to return
+	 * @param getMatchCount Specifies if the count of matches should be included in the returned map
 	 * @return a map of results
 	 * @throws APIException
 	 * @since 1.8

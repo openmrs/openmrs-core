@@ -458,7 +458,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 							window.clearTimeout(ajaxTimer);
 						return;
 					}
-				}, 5);
+				}, 10);
 		},
 			
 		_doHandleResults: function(matchCount, searchText) {

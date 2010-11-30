@@ -595,6 +595,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @throws APIException
 	 * @since 1.8
 	 */
+	@Transactional(readOnly = true)
 	@Authorized({ PrivilegeConstants.VIEW_ENCOUNTERS })
 	public List<Encounter> getEncounters(String query, Integer start, Integer length, boolean includeVoided)
 	                                                                                                        throws APIException;
@@ -618,6 +619,8 @@ public interface EncounterService extends OpenmrsService {
 	 * @return the number of encounters matching the given search phrase
 	 * @since 1.8
 	 */
+	@Transactional(readOnly = true)
+	@Authorized({ PrivilegeConstants.VIEW_ENCOUNTERS })
 	public Integer getCountOfEncounters(String query, boolean includeVoided);
 	
 }

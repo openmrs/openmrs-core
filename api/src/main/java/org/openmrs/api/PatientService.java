@@ -39,13 +39,6 @@ import org.springframework.transaction.annotation.Transactional;
  * <pre>
  * 
  * 
- * 
- * 
- * 
- * 
- * 
- * 
- * 
  * List&lt;Patient&gt; patients = Context.getPatientService().getAllPatients();
  * </pre>
  * 
@@ -946,6 +939,8 @@ public interface PatientService extends OpenmrsService {
 	 * @return the number of patients matching the given search phrase
 	 * @since 1.8
 	 */
+	@Transactional(readOnly = true)
+	@Authorized({ PrivilegeConstants.VIEW_PATIENTS })
 	public Integer getCountOfPatients(String query);
 	
 	/**
