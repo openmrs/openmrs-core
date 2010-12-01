@@ -380,9 +380,9 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 				//associate the ajax call to be made to a call count number to track it , so on
 				//its return we can identify it and determine if there are some later calls made 
 				//so that we can make sure older ajax calls donot overwrite later ones
-				var storedCallCount = this._callCount++;				
+				var storedCallCount = this._callCount++;
 				spinnerObj.css("visibility", "visible");
-
+				this._lastCallCount = storedCallCount;
 				//First get data to appear on the first page
 				this.options.searchHandler(text, this._handleResults(text, storedCallCount), true, 
 						{includeVoided: tmpIncludeVoided, start: 0, length: this._table.fnSettings()._iDisplayLength});
@@ -408,7 +408,6 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 					return;
 				}
 				
-				self._lastCallCount = curCallCount;
 				//Don't display results from delayed ajax calls when the input box is blank or has less 
 				//than the minimum characters, this can arise when user presses backspace relatively fast
 				//yet there were some intermediate calls that might have returned results
@@ -443,6 +442,13 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		},
 		
 		_makeMultipleAjaxCalls: function(searchText, curCallCount, startIndex, matchCount){
+			//Since this method is called on the second ajax call to return the remaining results,
+			//therefore (self._lastCallCount == curCallCount) so it will pass if no later ajax call were made				
+			if(curCallCount && this._lastCallCount > curCallCount) {
+				//A new search has been triggered, dont make any further subcalls
+				return;
+			}
+			
 			var self = this;
 			this.options.searchHandler(searchText, self._addMoreRows(curCallCount, searchText, matchCount, startIndex),
 					false, {includeVoided: self.options.showIncludeVoided && checkBox.attr('checked'),
@@ -458,7 +464,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 							window.clearTimeout(ajaxTimer);
 						return;
 					}
-				}, 10);
+				}, 30);
 		},
 			
 		_doHandleResults: function(matchCount, searchText) {
@@ -722,40 +728,43 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 				nextRowindex = self._table.fnGetNodes().length;
 				//if this ajax sub call is the one we expected in to be next in line
 				if(nextRowindex == currStart){
-					var newData = new Array();
+					var newRows = new Array();
 					for(var x in data) {
 						currentData = data[x];
-						newData.push(self._buildRow(currentData));
-						//add the rest of this data to the results list
+						newRows.push(self._buildRow(currentData));
+						//add the data to the results list
 						self._results.push(currentData);
 					}
 					
-					self._table.fnAddData(newData);
+					self._table.fnAddData(newRows);
+					//move to the currently last row in the datatable to determine the next start position
+					//note that (newRows.length == BATCH_SIZE) except sometimes for the last subcall
+					//which should not matter since it will always be the last to be fetched from the buffer
+					nextRowindex += newRows.length;
 					
-					nextRowindex = self._table.fnGetNodes().length;
 					//fetch any buffered rows that were returned earlier
-					var startIndex = currStart + BATCH_SIZE;
-					
-					$j.each(buffer, function(key, value) {
+					$j.each(buffer, function(key, bufferedRows) {
 					    //Skip past the ones that come after those that are not yet returned by DWR calls e.g if we have ajax
 						//calls 3 and 5 in the buffer, when 2 returns, then add only 3 and ingore 5 since it has to wait on 4
-						if(key == nextRowindex && value){
-							var bufferedRows = new Array();
-							for(var x in value) {
-								bufferedData = value[x];
-								bufferedRows.push(self._buildRow(bufferedData));
-								//add the rest of this data to the results list
-								self._results.push(bufferedData);
-							}
-							buffer[key] = null;//drop the array
+						if(key == nextRowindex && bufferedRows){
 							self._table.fnAddData(bufferedRows);
-							nextRowindex = self._table.fnGetNodes().length;
+							buffer[key] = null;
+							nextRowindex += bufferedRows.length;
 						}
 					});
 				}
 				else if(currStart > nextRowindex){
 					//this ajax request returned before others that were made before it, add its results to the buffer
-					buffer[currStart] = data;
+					var bufferedRows = new Array();
+					for(var x in data) {
+						bufferedData = data[x];
+						bufferedRows.push(self._buildRow(bufferedData));
+						//add the data to the results list
+						self._results.push(bufferedData);
+					}
+					
+					buffer[currStart] = bufferedRows;
+					
 					return;
 				}
 				
