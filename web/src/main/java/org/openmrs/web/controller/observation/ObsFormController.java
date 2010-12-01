@@ -120,6 +120,7 @@ public class ObsFormController extends SimpleFormController {
 		
 		if (Context.isAuthenticated()) {
 			Obs obs = (Obs) obj;
+			Obs newlySavedObs = null; // to be populated when os.saveObs is called
 			ObsService os = Context.getObsService();
 			
 			try {
@@ -144,13 +145,13 @@ public class ObsFormController extends SimpleFormController {
 								obs.setComplexData(complexData);
 								
 								// the handler on the obs.concept is called with the given complex data
-								os.saveObs(obs, reason);
+								newlySavedObs = os.saveObs(obs, reason);
 								
 								complexDataInputStream.close();
 							}
 						}
 					} else {
-						os.saveObs(obs, reason);
+						newlySavedObs = os.saveObs(obs, reason);
 					}
 					
 					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Obs.saved");
@@ -186,6 +187,8 @@ public class ObsFormController extends SimpleFormController {
 				        + request.getParameter("phrase");
 				return new ModelAndView(new RedirectView(view));
 			}
+			else
+				return new ModelAndView(new RedirectView("obs.form?obsId=" + newlySavedObs.getObsId()));
 		}
 		
 		return showForm(request, response, errors);
