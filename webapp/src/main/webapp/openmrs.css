@@ -1306,6 +1306,9 @@ span#loadingMsg{
 .autocompleteresult .hit {
 	font-weight: bold;
 }
+span.otherHit{
+	color: red;
+}
 .male {
 	color: blue;
 	font-family: Arial Unicode;

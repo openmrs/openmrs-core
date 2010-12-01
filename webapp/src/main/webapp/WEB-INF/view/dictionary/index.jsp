@@ -12,18 +12,12 @@
 <openmrs:htmlInclude file="/scripts/jquery/dataTables/js/jquery.dataTables.min.js"/>
 <openmrs:htmlInclude file="/scripts/jquery-ui/js/openmrsSearch.js" />
 
-<style>
-td span.otherHit{
-	color: gray;
-}
-</style>
-
 <script type="text/javascript">
-	var lastSearch;var uni;
+	var lastSearch;
 	$j(document).ready(function() {
 		new OpenmrsSearch("findConcept", true, doConceptSearch, doSelectionHandler, 
 				[{fieldName:"name", header:" "}, {fieldName:"preferredName", header:" "}],
-				{searchLabel: '<spring:message code="Concept.search" javaScriptEscape="true"/>', 
+				{searchLabel: '<spring:message code="Concept.searchWithColon" javaScriptEscape="true"/>', 
 					includeVoidedLabel: '<spring:message code="SearchResults.includeRetired" javaScriptEscape="true"/>', 
 					columnRenderers: [nameColumnRenderer, null], 
 					columnVisibility: [true, false]
@@ -36,7 +30,6 @@ td span.otherHit{
 	
 	//searchHandler
 	function doConceptSearch(text, resultHandler, getMatchCount, opts) {
-		lastSearch = text;
 		DWRConceptService.findCountAndConcepts(text, opts.includeVoided, null, null, null, null, false, opts.start, opts.length, getMatchCount, resultHandler);
 	}
 	
