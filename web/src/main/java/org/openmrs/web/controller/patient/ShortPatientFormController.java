@@ -103,6 +103,33 @@ public class ShortPatientFormController {
 			model.addAttribute("relationshipsMap", getRelationshipsMap(patient, request));
 			model.addAttribute("identifierTypes", Context.getPatientService().getAllPatientIdentifierTypes());
 			model.addAttribute("locations", Context.getLocationService().getAllLocations());
+			
+			
+			String propCause = Context.getAdministrationService()
+					.getGlobalProperty("concept.causeOfDeath");
+			Concept conceptCause = Context.getConceptService().getConcept(
+					propCause);
+			String causeOfDeathOther = "";
+			if (conceptCause != null && patient.getPatientId() != null) {
+				List<Obs> obssDeath = Context.getObsService().getObservationsByPersonAndConcept(patient, conceptCause);
+
+				if (obssDeath.size() == 1) {
+					Obs obsDeath = obssDeath.iterator().next();
+					causeOfDeathOther = obsDeath.getValueText();
+					if (causeOfDeathOther == null) {
+						log.debug("cod is null, so setting to empty string");
+						causeOfDeathOther = "";
+					} else {
+						log.debug("cod is valid: " + causeOfDeathOther);
+					}
+				} else {
+					log.debug("obssDeath is wrong size: " + obssDeath.size());
+				}
+			} else {
+				log.debug("No concept cause found");
+			}
+			// end get 'other' cause of death
+			model.addAttribute("causeOfDeathOther", causeOfDeathOther);
 		}
 		
 		return SHORT_PATIENT_FORM_URL;
@@ -340,19 +367,9 @@ public class ShortPatientFormController {
 							obsDeath = new Obs();
 							obsDeath.setPerson(patientModel.getPatient());
 							obsDeath.setConcept(causeOfDeath);
-							
-							// Get default location
-							Location loc = Context.getLocationService().getDefaultLocation();
-							
-							// TODO person healthcenter if ( loc == null) loc = patient.getHealthCenter();
-							if (loc != null)
-								obsDeath.setLocation(loc);
-							else
-								log.error("Could not find a suitable location for which to create this new Obs");
 						}
 						
-						// put the right concept and (maybe) text in
-						// this obs
+						// put the right concept and (maybe) text in this obs
 						Concept currCause = patientModel.getPatient().getCauseOfDeath();
 						if (currCause == null) {
 							// set to NONE
@@ -381,7 +398,7 @@ public class ShortPatientFormController {
 									// seems like this is an other
 									// concept - let's try to get the
 									// "other" field info
-									String otherInfo = request.getParameter("causeOfDeath_other");
+									String otherInfo = request.getParameter("patient.causeOfDeath_other");
 									if (otherInfo == null)
 										otherInfo = "";
 									log.debug("Setting value_text as " + otherInfo);
