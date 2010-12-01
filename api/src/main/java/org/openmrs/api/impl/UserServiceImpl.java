@@ -402,20 +402,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 * @see org.openmrs.api.UserService#getUsers(java.lang.String, java.util.List, boolean)
 	 */
 	public List<User> getUsers(String nameSearch, List<Role> roles, boolean includeVoided) throws APIException {
-		
-		if (nameSearch != null)
-			nameSearch = nameSearch.replace(", ", " ");
-		
-		if (roles == null)
-			roles = new Vector<Role>();
-		
-		// if the authenticated role is in the list of searched roles, then all
-		// persons should be searched
-		Role auth_role = getRole(RoleConstants.AUTHENTICATED);
-		if (roles.contains(auth_role))
-			return dao.getUsers(nameSearch, new Vector<Role>(), includeVoided);
-		else
-			return dao.getUsers(nameSearch, roles, includeVoided);
+		return getUsers(nameSearch, roles, includeVoided, null, null);
 	}
 	
 	/**
@@ -582,6 +569,44 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 	 */
 	public User getUserByUuid(String uuid) throws APIException {
 		return dao.getUserByUuid(uuid);
+	}
+	
+	/**
+	 * @see UserService#getCountOfUsers(String, List, boolean)
+	 */
+	@Override
+	public Integer getCountOfUsers(String name, List<Role> roles, boolean includeRetired) {
+		if (name != null)
+			name = name.replace(", ", " ");
+		
+		// if the authenticated role is in the list of searched roles, then all
+		// persons should be searched
+		Role auth_role = getRole(RoleConstants.AUTHENTICATED);
+		if (roles.contains(auth_role))
+			return dao.getCountOfUsers(name, new Vector<Role>(), includeRetired);
+		
+		return dao.getCountOfUsers(name, roles, includeRetired);
+	}
+	
+	/**
+	 * @see UserService#getUsers(String, List, boolean, Integer, Integer)
+	 */
+	@Override
+	public List<User> getUsers(String name, List<Role> roles, boolean includeRetired, Integer start, Integer length)
+	                                                                                                                throws APIException {
+		if (name != null)
+			name = name.replace(", ", " ");
+		
+		if (roles == null)
+			roles = new Vector<Role>();
+		
+		// if the authenticated role is in the list of searched roles, then all
+		// persons should be searched
+		Role auth_role = getRole(RoleConstants.AUTHENTICATED);
+		if (roles.contains(auth_role))
+			return dao.getUsers(name, new Vector<Role>(), includeRetired, start, length);
+		
+		return dao.getUsers(name, roles, includeRetired, start, length);
 	}
 	
 }

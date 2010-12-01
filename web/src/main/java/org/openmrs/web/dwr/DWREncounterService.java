@@ -151,7 +151,7 @@ public class DWREncounterService {
 	@SuppressWarnings("unchecked")
 	public Vector findLocations(String searchValue) {
 		
-		return findBatchLocations(searchValue, null, null);
+		return findBatchOfLocations(searchValue, null, null);
 	}
 	
 	/**
@@ -166,7 +166,7 @@ public class DWREncounterService {
 	 * @throws APIException
 	 */
 	@SuppressWarnings("unchecked")
-	public Vector findBatchLocations(String searchValue, Integer start, Integer length) throws APIException {
+	public Vector findBatchOfLocations(String searchValue, Integer start, Integer length) throws APIException {
 		
 		Vector locationList = new Vector();
 		MessageSourceService mss = Context.getMessageSourceService();
@@ -250,7 +250,7 @@ public class DWREncounterService {
 				locationCount += es.getCountOfLocations(phrase, true);
 			
 			if (locationCount > 0 || !getMatchCount)
-				objectList = findBatchLocations(phrase, start, length);
+				objectList = findBatchOfLocations(phrase, start, length);
 			
 			resultsMap.put("count", locationCount);
 			resultsMap.put("objectList", objectList);

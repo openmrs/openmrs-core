@@ -30,7 +30,6 @@ import org.springframework.transaction.annotation.Transactional;
  * 
  * <pre>
  * 
- * 
  * List&lt;User&gt; users = Context.getUserService().getAllUsers();
  * </pre>
  * 
@@ -591,5 +590,40 @@ public interface UserService extends OpenmrsService {
 	 * @return new system id
 	 */
 	public String generateSystemId();
+	
+	/**
+	 * Return a batch of users of a specific size sorted by personName (see
+	 * {@link PersonByNameComparator}) if any part of the search matches first/last/system id and
+	 * the user has one at least one of the given <code>roles</code> assigned to them. If start and
+	 * length are not specified, then all matches are returned, If name is empty or null, then all
+	 * all users will be returned taking into consideration the values of start and length
+	 * arguments.
+	 * 
+	 * @param name string to compare to the beginning of user's given/middle/family/family2 names
+	 * @param roles all the Roles the user must contain
+	 * @param includeRetired true/false whether to include voided users
+	 * @param start beginning index for the batch
+	 * @param length number of users to return in the batch
+	 * @return list of matching users of a size based on the specified arguments
+	 * @since 1.8
+	 */
+	@Transactional(readOnly = true)
+	@Authorized({ PrivilegeConstants.VIEW_USERS })
+	public List<User> getUsers(String name, List<Role> roles, boolean includeRetired, Integer start, Integer length)
+	                                                                                                                throws APIException;
+	
+	/**
+	 * Return the number of users with a matching name or system id and have at least one of the
+	 * given roles assigned to them
+	 * 
+	 * @param name patient name
+	 * @param roles all the Roles the user must contain
+	 * @param includeRetired Specifies whether voided users should be included
+	 * @return the number of users matching the given attributes
+	 * @since 1.8
+	 */
+	@Transactional(readOnly = true)
+	@Authorized({ PrivilegeConstants.VIEW_USERS })
+	public Integer getCountOfUsers(String name, List<Role> roles, boolean includeRetired);
 	
 }

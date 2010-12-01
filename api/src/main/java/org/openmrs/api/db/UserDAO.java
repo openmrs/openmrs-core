@@ -104,12 +104,6 @@ public interface UserDAO {
 	public void deletePrivilege(Privilege privilege) throws DAOException;
 	
 	/**
-	 * @see org.openmrs.api.UserService#getUsers(java.lang.String, java.util.List, boolean)
-	 * @should escape sql wildcards in searchPhrase
-	 */
-	public List<User> getUsers(String nameSearch, List<Role> roles, boolean includeVoided) throws DAOException;
-	
-	/**
 	 * @see org.openmrs.api.UserService#getUsersByName(java.lang.String, java.lang.String, boolean)
 	 */
 	public List<User> getUsersByName(String givenName, String familyName, boolean includeVoided);
@@ -201,5 +195,16 @@ public interface UserDAO {
 	 * @see UserService#getUsersByPerson(Person, boolean)
 	 */
 	public List<User> getUsersByPerson(Person person, boolean includeRetired);
+	
+	/**
+	 * @see UserService#getUsers(String, List, boolean, Integer, Integer)
+	 */
+	public List<User> getUsers(String name, List<Role> roles, boolean includeRetired, Integer start, Integer length)
+	                                                                                                                throws DAOException;
+	
+	/**
+	 * @see UserService#getCountOfUsers(String, List, boolean)
+	 */
+	public Integer getCountOfUsers(String name, List<Role> roles, boolean includeRetired);
 	
 }

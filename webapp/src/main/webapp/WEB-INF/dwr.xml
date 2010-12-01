@@ -66,6 +66,8 @@
 			<include method="findPeopleByRoles"/>
 			<include method="createPerson"/>
 			<include method="getPerson"/>
+			<include method="findBatchOfPeopleByRoles"/>
+			<include method="findCountAndPeople"/>
 		</create>
 	
 		<create creator="new" javascript="DWRConceptService">
@@ -245,6 +247,8 @@
 			DWRConceptService.findDrugs(String phrase, boolean includeRetired);
 			DWREncounterService.findEncounters(String phrase, boolean includeVoided);
 			DWRPersonService.getSimilarPeople(String name, String birthdate, String age, String gender);
+			DWRPersonService.findBatchOfPeopleByRoles(String searchPhrase, boolean includeRetired, String roles, Integer start, Integer length);
+			DWRPersonService.findCountAndPeople(String phrase, boolean includeRetired, String roles, Integer start, Integer length, boolean getMatchCount)
 			DWRUserService.findUsers(String phrase, List<String> roles, boolean includeVoided);
 			DWRUserService.getAllUsers(List<String> roles, boolean includeVoided);
 			DWRObsService.getObservations(Integer encounterId);

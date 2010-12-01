@@ -49,14 +49,12 @@ import org.springframework.transaction.annotation.Transactional;
  * <pre>
  * 
  * 
- * 
  * List&lt;Concept&gt; concepts = Context.getConceptService().getAllConcepts();
  * </pre>
  * 
  * To get a single concept:
  * 
  * <pre>
- * 
  * 
  * 
  * // if there is a concept row in the database with concept_id = 3845
@@ -1539,7 +1537,8 @@ public interface ConceptService extends OpenmrsService {
 	
 	/**
 	 * Returns a list of drugs with matching names or concept drug names and returns a specific
-	 * number of them from the specified starting position.
+	 * number of them from the specified starting position. If start and length are not specified,
+	 * then all matches are returned
 	 * 
 	 * @param drugName the name of the drug
 	 * @param concept the drug concept
