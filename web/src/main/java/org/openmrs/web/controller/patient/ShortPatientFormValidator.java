@@ -118,13 +118,6 @@ public class ShortPatientFormValidator implements Validator {
 			
 		}
 		
-		PersonAddress personAddress = shortPatientModel.getPersonAddress();
-		if (personAddress != null) {
-			if (personAddress.isVoided()
-			        || (StringUtils.isBlank(personAddress.getAddress1()) && StringUtils.isBlank(personAddress.getAddress2())))
-				errors.reject("Person.addresses.length");
-		}
-		
 		// Make sure they chose a gender
 		if (StringUtils.isBlank(shortPatientModel.getPatient().getGender()))
 			errors.rejectValue("patient.gender", "Person.gender.required");
