@@ -618,7 +618,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		}
 		
 		if (log.isDebugEnabled())
-			log.debug("ConceptWords found: " + 0);
+			log.debug("No matching ConceptWords found");
 		
 		return conceptWords;
 	}
