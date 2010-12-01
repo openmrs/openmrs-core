@@ -1,59 +1,49 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
 <%@ attribute name="formFieldName" required="true" %>
+<%@ attribute name="formFieldId" required="false" %>
 <%@ attribute name="searchLabel" required="false" %>
 <%@ attribute name="searchLabelCode" required="false" %>
 <%@ attribute name="searchLabelArguments" required="false" %>
 <%@ attribute name="initialValue" required="false" %> <%-- This should be a patientId --%>
-<%@ attribute name="linkUrl" required="false" %>
+<%@ attribute name="linkUrl" required="false" %> <%-- deprecated --%>
 <%@ attribute name="callback" required="false" %>
-<%@ attribute name="allowSearch" required="false" %>
+<%@ attribute name="allowSearch" required="false" %> <%-- deprecated --%>
 
-<openmrs:htmlInclude file="/scripts/dojoConfig.js" />
-<openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
+<openmrs:htmlInclude file="/dwr/interface/DWRPatientService.js" />
+<openmrs:htmlInclude file="/scripts/jquery/autocomplete/PersonAutoComplete.js" />
+
+<c:if test="${empty formFieldId}">
+	<c:set var="formFieldId" value="${formFieldName}_id" />
+</c:if>
+<c:set var="displayNameInputId" value="${formFieldId}_selection" />
 
 <script type="text/javascript">
-	dojo.require("dojo.widget.openmrs.PatientSearch");
-	dojo.require("dojo.widget.openmrs.OpenmrsPopup");
 	
-	dojo.addOnLoad( function() {
-		dojo.event.topic.subscribe("${formFieldName}_search/select", 
-			function(msg) {
-				if (msg) {
-					var patientPopup = dojo.widget.manager.getWidgetById("${formFieldName}_selection");
-					
-					var patient = msg.objs[0];
+	$j(document).ready( function() {
 
-					var displayString = patient.personName;
-					<c:if test="${not empty linkUrl}">
-						displayString = '<a id="${formFieldName}_name" href="#View" onclick="return gotoPatient(\'${linkUrl}\', ' + patient.patientId + ')">' + displayString + '</a>';
-					</c:if>
-					patientPopup.displayNode.innerHTML = displayString;					
+		// set up the autocomplete
+		new AutoComplete("${displayNameInputId}", new PersonSearchCallback({roles:"${roles}"}).patientCallback, {
+			select: function(event, ui) {
+				$j('#${formFieldId}').val(ui.item.patientId);
 					
-					patientPopup.hiddenInputNode.value = patient.patientId;
-					<c:if test="${not empty callback}">
-						${callback}(patient.patientId);
-					</c:if>
+				<c:if test="${not empty callback}">
+				if (ui.item.patientId) {
+					// only call the callback if we got a true selection, not a click on an error field
+					${callback}("${formFieldName}", ui.item);
 				}
+				</c:if>
 			}
-		);
+		});
+
+		// get the name of the person that they passed in the id for
+		<c:if test="${not empty initialValue}">
+			$j("#${formFieldId}").val("${initialValue}");
+			DWRPersonService.getPerson("${initialValue}", function(person) { $j('#${displayNameInputId}').val(person.personName);});
+		</c:if>
 		
 	})
-	
-	function gotoPatient(url, pId) {
-		if (url === null || url === '') {
-			return false;
-		} else {
-			window.location = url + "?patientId=" + pId;
-		}
-		return false;
-	}
 </script>
 
-<div dojoType="PatientSearch" widgetId="${formFieldName}_search" patientId="${initialValue}"></div>
-<c:if test="${not empty searchLabelCode}">
-	<div dojoType="OpenmrsPopup" widgetId="${formFieldName}_selection" hiddenInputName="${formFieldName}" searchWidget="${formFieldName}_search" searchTitle="<spring:message code="${searchLabelCode}" arguments="${searchLabelArguments}" />" allowSearch="${allowSearch}"></div>
-</c:if> 
-<c:if test="${empty searchLabelCode}">
-	<div dojoType="OpenmrsPopup" widgetId="${formFieldName}_selection" hiddenInputName="${formFieldName}" searchWidget="${formFieldName}_search" searchTitle="${searchLabel}" allowSearch="${allowSearch}"></div>
-</c:if> 
+<input type="text" id="${displayNameInputId}" />
+<input type="hidden" name="${formFieldName}" id="${formFieldId}" />

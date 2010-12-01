@@ -480,7 +480,7 @@
 				<openmrs:globalProperty key="concept.causeOfDeath" var="conceptCauseOfDeath" />
 				<openmrs:globalProperty key="concept.otherNonCoded" var="conceptOther" />
 				<spring:bind path="patient.causeOfDeath">
-					<openmrs:fieldGen type="org.openmrs.Concept" formFieldName="patient.causeOfDeath" val="${status.value}" parameters="showAnswers=${conceptCauseOfDeath}|showOther=${conceptOther}|otherValue=${causeOfDeathOther}" />
+					<openmrs:fieldGen type="org.openmrs.Concept" formFieldName="${status.expression}" val="${status.value}" parameters="showAnswers=${conceptCauseOfDeath}|showOther=${conceptOther}|otherValue=${causeOfDeathOther}" />
 					<%--<input type="text" name="causeOfDeath" value="${status.value}" id="causeOfDeath"/>--%>
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>

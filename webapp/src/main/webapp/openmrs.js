@@ -344,6 +344,15 @@ function escapeJquerySelector(partialSelector) {
 }
 
 /**
+ * This will look up the given id using $j() except it first tries to escape the bad chars.
+ * @param idToEscape the id to look up
+ * @return a jquery object with the given id
+ */
+function jquerySelectEscaped(idToEscape) {
+	return $j("#" + escapeJquerySelector(idToEscape));
+}
+
+/**
  * DatePicker class
  * @param dateFormat :String date format to use (ex: dd-mm-yyyy)
  * @param id :Element the html element (when id is not present)

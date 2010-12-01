@@ -14,6 +14,13 @@
 
 <openmrs:portlet url="findObservation" size="full" />
 
+<script>
+
+// put focus on the first input element
+$j("input:text:visible:enabled:first").focus();
+
+</script>
+
 <%--
 <a href="${pageContext.request.contextPath}/admin/encounters/"><spring:message code="Obs.edit"/></a>
 -
