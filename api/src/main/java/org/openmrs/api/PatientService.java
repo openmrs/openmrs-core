@@ -39,6 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
  * <pre>
  * 
  * 
+ * 
  * List&lt;Patient&gt; patients = Context.getPatientService().getAllPatients();
  * </pre>
  * 
@@ -551,7 +552,8 @@ public interface PatientService extends OpenmrsService {
 	/**
 	 * Generic search on patients based on the given string and returns a specific number of them
 	 * from the specified starting position. Implementations can use this string to search on name,
-	 * identifier, etc Voided patients are not returned in search results
+	 * identifier, etc Voided patients are not returned in search results If start is 0 and length
+	 * is not specified, then all matches are returned
 	 * 
 	 * @param query the string to search on
 	 * @param start the starting index

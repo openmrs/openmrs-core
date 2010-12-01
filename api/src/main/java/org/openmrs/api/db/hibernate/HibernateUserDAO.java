@@ -355,79 +355,19 @@ public class HibernateUserDAO implements UserDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.UserService#getUsers(java.lang.String, java.util.List, boolean)
+	 * @see UserDAO#getUsers(String, List, boolean, Integer, Integer)
 	 */
 	@SuppressWarnings("unchecked")
-	public List<User> getUsers(String name, List<Role> roles, boolean includeRetired) {
+	public List<User> getUsers(String name, List<Role> roles, boolean includeRetired, Integer start, Integer length) {
 		
-		log.debug("name: " + name);
+		String hqlSelectStart = "select distinct user from User as user inner join user.person.names as name ";
+		Query query = createUserSearchQuery(name, roles, includeRetired, hqlSelectStart);
+		List<User> returnList = query.list();
 		
-		name = HibernateUtil.escapeSqlWildcards(name, sessionFactory);
-		
-		// Create an HQL query like this:
-		// select distinct user
-		// from User as user inner join user.person.names as name
-		// where (user.username like :name1 or ...and for systemId givenName familyName familyName2...)
-		//   and (user.username like :name2 or ...and for systemId givenName familyName familyName2...)
-		//   ...repeat for all name fragments...
-		//   and user.retired = false
-		// order by username asc
-		
-		List<String> criteria = new ArrayList<String>();
-		int counter = 0;
-		Map<String, String> namesMap = new HashMap<String, String>();
-		if (name != null) {
-			name = name.replace(", ", " ");
-			String[] names = name.split(" ");
-			for (String n : names) {
-				if (n != null && n.length() > 0) {
-					// compare each fragment of the query against username, systemId, given, middle, family, and family2
-					String key = "name" + ++counter;
-					String value = n + "%";
-					namesMap.put(key, value);
-					criteria.add("(user.username like :" + key + " or user.systemId like :" + key
-					        + " or name.givenName like :" + key + " or name.middleName like :" + key
-					        + " or name.familyName like :" + key + " or name.familyName2 like :" + key + ")");
-				}
-			}
-		}
-		if (includeRetired == false)
-			criteria.add("user.retired = false");
-		
-		// build the hql query
-		String hql = "select distinct user from User as user inner join user.person.names as name ";
-		if (criteria.size() > 0)
-			hql += "where ";
-		for (Iterator<String> i = criteria.iterator(); i.hasNext();) {
-			hql += i.next() + " ";
-			if (i.hasNext())
-				hql += "and ";
-		}
-		hql += " order by user.username asc";
-		Query query = sessionFactory.getCurrentSession().createQuery(hql);
-		for (Map.Entry<String, String> e : namesMap.entrySet())
-			query.setString(e.getKey(), e.getValue());
-		
-		// Now apply the roles criteria
-		// TODO add this to the HQL query
-		// maybe: +inner join user.roles as role +where role.id in :roleIdList
-		List<User> returnList;
-		if (roles != null && roles.size() > 0) {
-			returnList = new Vector();
-			
-			log.debug("looping through to find matching roles");
-			for (Object o : query.list()) {
-				User u = (User) o;
-				for (Role r : roles)
-					if (u.hasRole(r.getRole(), true)) {
-						returnList.add(u);
-						break;
-					}
-			}
-		} else {
-			log.debug("not looping because there appears to be no roles");
-			returnList = query.list();
-		}
+		if (start != null)
+			query.setFirstResult(start);
+		if (length != null && length > 0)
+			query.setFetchSize(length);
 		
 		if (!CollectionUtils.isEmpty(returnList))
 			Collections.sort(returnList, new UserByNameComparator());
@@ -546,6 +486,99 @@ public class HibernateUserDAO implements UserDAO {
 		if (!includeRetired)
 			crit.add(Restrictions.eq("retired", false));
 		return (List<User>) crit.list();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.UserDAO#getCountOfUsers(String, List, boolean)
+	 */
+	@Override
+	public Integer getCountOfUsers(String name, List<Role> roles, boolean includeRetired) {
+		String hqlSelectStart = "select count(distinct user) from User as user inner join user.person.names as name ";
+		Query query = createUserSearchQuery(name, roles, includeRetired, hqlSelectStart);
+		
+		return ((Long) query.uniqueResult()).intValue();
+	}
+	
+	/**
+	 * Utility methods that creates a hibernate query object from the specified arguments
+	 * 
+	 * @param name The name of the user to search against
+	 * @param roles the roles to match against
+	 * @param includeRetired Specifies if retired users should be included or not
+	 * @param hqlSelectStart The starting phrase of the select statement that includes the joined
+	 *            tables
+	 * @return the created hibernate query object
+	 */
+	private Query createUserSearchQuery(String name, List<Role> roles, boolean includeRetired, String hqlSelectStart) {
+		
+		log.debug("name: " + name);
+		
+		name = HibernateUtil.escapeSqlWildcards(name, sessionFactory);
+		
+		// Create an HQL query like this:
+		// select distinct user
+		// from User as user inner join user.person.names as name inner join user.roles as role
+		// where (user.username like :name1 or ...and for systemId givenName familyName familyName2...)
+		//   and (user.username like :name2 or ...and for systemId givenName familyName familyName2...)
+		//   ...repeat for all name fragments...
+		//	 and role in :roleList 
+		//   and user.retired = false
+		// order by username asc
+		List<String> criteria = new ArrayList<String>();
+		int counter = 0;
+		Map<String, String> namesMap = new HashMap<String, String>();
+		if (name != null) {
+			name = name.replace(", ", " ");
+			String[] names = name.split(" ");
+			for (String n : names) {
+				if (n != null && n.length() > 0) {
+					// compare each fragment of the query against username, systemId, given, middle, family, and family2
+					String key = "name" + ++counter;
+					String value = n + "%";
+					namesMap.put(key, value);
+					criteria.add("(user.username like :" + key + " or user.systemId like :" + key
+					        + " or name.givenName like :" + key + " or name.middleName like :" + key
+					        + " or name.familyName like :" + key + " or name.familyName2 like :" + key + ")");
+				}
+			}
+		}
+		
+		if (includeRetired == false)
+			criteria.add("user.retired = false");
+		
+		// build the hql query
+		String hql = hqlSelectStart;
+		boolean searchOnRoles = false;
+		
+		if (CollectionUtils.isNotEmpty(roles)) {
+			hql += "inner join user.roles as role ";
+			searchOnRoles = true;
+		}
+		
+		if (criteria.size() > 0)
+			hql += "where ";
+		for (Iterator<String> i = criteria.iterator(); i.hasNext();) {
+			hql += i.next() + " ";
+			if (i.hasNext())
+				hql += "and ";
+		}
+		
+		//Match against the specified roles
+		if (searchOnRoles)
+			hql += " and role in (:roleList)";
+		
+		hql += " order by user.username asc";
+		
+		Query query = sessionFactory.getCurrentSession().createQuery(hql);
+		
+		for (Map.Entry<String, String> e : namesMap.entrySet())
+			query.setString(e.getKey(), e.getValue());
+		
+		if (searchOnRoles) {
+			query.setParameterList("roleList", roles);
+		}
+		
+		return query;
 	}
 	
 }

@@ -585,7 +585,8 @@ public interface EncounterService extends OpenmrsService {
 	
 	/**
 	 * Search for encounters by patient name or patient identifier and returns a specific number of
-	 * them from the specified starting position.
+	 * them from the specified starting position. If start and length are not specified, then all
+	 * matches are returned
 	 * 
 	 * @param query patient name or identifier
 	 * @param start beginning index for the batch

@@ -158,7 +158,8 @@ public interface LocationService extends OpenmrsService {
 	 * Returns a specific number locations from the specified starting position that match the
 	 * beginning of the given string. A null list will never be returned. An empty list will be
 	 * returned if there are no locations. Search is case insensitive. matching this
-	 * <code>nameFragment</code>
+	 * <code>nameFragment</code>. If start and length are not specified, then all matches are
+	 * returned
 	 * 
 	 * @param nameFragment is the string used to search for locations
 	 * @param start the beginning index

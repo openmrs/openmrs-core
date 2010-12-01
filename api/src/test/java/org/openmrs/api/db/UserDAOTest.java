@@ -55,11 +55,11 @@ public class UserDAOTest extends BaseContextSensitiveTest {
 			Context.getUserService().saveUser(u, "Openmr5xy");
 			
 			//we expect only one matching name or or systemId  to be returned
-			int size = dao.getUsers(wildcard + "ca", null, false).size();
+			int size = dao.getUsers(wildcard + "ca", null, false, null, null).size();
 			Assert.assertEquals(1, size);
 			
 			//if actually the search returned the matching name or system id
-			String userName = (dao.getUsers(wildcard + "ca", null, false).get(0).getUsername());
+			String userName = (dao.getUsers(wildcard + "ca", null, false, null, null).get(0).getUsername());
 			Assert.assertEquals("Test failed since no user containing the character " + wildcard + " was found, ", wildcard
 			        + "test" + wildcard, userName);
 			

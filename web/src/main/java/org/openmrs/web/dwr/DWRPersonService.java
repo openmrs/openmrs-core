@@ -17,10 +17,13 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Patient;
@@ -28,6 +31,7 @@ import org.openmrs.Person;
 import org.openmrs.PersonName;
 import org.openmrs.Role;
 import org.openmrs.User;
+import org.openmrs.api.APIException;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.UserService;
@@ -40,13 +44,11 @@ public class DWRPersonService {
 	
 	protected final Log log = LogFactory.getLog(getClass());
 	
-	
 	/**
 	 * Searches for Person records that have a name similar to the given name, a birthdate that is
-	 * null or within a few years of the given birthdate, and a gender that matches.
-	 * 
-	 * Note: this method contains a non-backwards-compatible change between 1.5 and 1.6, since DWR has
-	 * trouble with method overloading. The String personType parameter was removed, since User no longer
+	 * null or within a few years of the given birthdate, and a gender that matches. Note: this
+	 * method contains a non-backwards-compatible change between 1.5 and 1.6, since DWR has trouble
+	 * with method overloading. The String personType parameter was removed, since User no longer
 	 * extends Person
 	 * 
 	 * @param name
@@ -90,7 +92,7 @@ public class DWRPersonService {
 		
 		if (gender.length() < 1)
 			gender = null;
-			
+		
 		Set<Person> persons = ps.getSimilarPeople(name, d, gender);
 		
 		personList = new Vector<Object>(persons.size());
@@ -267,4 +269,116 @@ public class DWRPersonService {
 		return cal.getTime();
 	}
 	
+	/**
+	 * Find Person objects based on the given searchPhrase
+	 * 
+	 * @param searchPhrase partial name or partial identifier
+	 * @param includeRetired true/false whether to include the voided objects
+	 * @param roles if not null, restricts search to only users and only users with these roles
+	 * @param start the beginning index (this is only used for user search i.e of roles are
+	 *            specified)
+	 * @param length the number of matching people to return (this is only used for user search i.e
+	 *            of roles are specified)
+	 * @return list of persons that match the given searchPhrase. The PersonListItems
+	 */
+	public Vector<Object> findBatchOfPeopleByRoles(String searchPhrase, boolean includeRetired, String roles, Integer start,
+	                                               Integer length) {
+		Vector<Object> personList = new Vector<Object>();
+		
+		// if roles were given, search for users with those roles
+		if (StringUtils.isNotBlank(roles)) {
+			UserService us = Context.getUserService();
+			
+			List<Role> roleList = new Vector<Role>();
+			roles = roles.trim();
+			
+			String[] splitRoles = roles.split(",");
+			for (String role : splitRoles) {
+				roleList.add(new Role(role));
+			}
+			
+			for (User u : us.getUsers(searchPhrase, roleList, includeRetired, start, length)) {
+				personList.add(new UserListItem(u));
+			}
+			
+		} else {
+			//TODO add batch person look up to the API and use it here and FIX the javadocs
+			// if no roles were given, search for normal people
+			PersonService ps = Context.getPersonService();
+			for (Person p : ps.getPeople(searchPhrase, null)) {
+				personList.add(PersonListItem.createBestMatch(p));
+			}
+			
+			// also search on patient identifier if the query contains a number
+			if (searchPhrase.matches(".*\\d+.*")) {
+				PatientService patientService = Context.getPatientService();
+				for (Patient p : patientService.getPatients(null, searchPhrase, null, false)) {
+					personList.add(PersonListItem.createBestMatch(p));
+				}
+			}
+			
+		}
+		
+		return personList;
+	}
+	
+	/**
+	 * Returns a map of results with the values as count of matches and a partial list of the
+	 * matching people (depending on values of start and length parameters) while the keys are are
+	 * 'count' and 'objectList' respectively, if the length parameter is not specified, then all
+	 * matches will be returned from the start index if specified.
+	 * 
+	 * @param phrase is the string used to search for people
+	 * @param includeRetired Specifies if retired people should be included or not
+	 * @param roles If not null, restricts search to only users and only users with these roles
+	 * @param start the beginning index
+	 * @param length the number of matching encounters to return
+	 * @param getMatchCount Specifies if the count of matches should be included in the returned map
+	 * @return a map of results
+	 * @throws APIException
+	 * @since 1.8
+	 */
+	public Map<String, Object> findCountAndPeople(String phrases, boolean includeRetired, String roles, Integer start,
+	                                              Integer length, boolean getMatchCount) throws APIException {
+		
+		//Map to return
+		Map<String, Object> resultsMap = new HashMap<String, Object>();
+		Vector<Object> objectList = new Vector<Object>();
+		String phrase = null;
+		try {
+			UserService us = Context.getUserService();
+			int personCount = 0;
+			if (getMatchCount) {
+				if (StringUtils.isNotBlank(roles)) {
+					roles = roles.trim();
+					List<Role> roleList = new Vector<Role>();
+					
+					String[] splitRoles = roles.split(",");
+					for (String role : splitRoles) {
+						roleList.add(new Role(role));
+					}
+					
+					personCount = us.getCountOfUsers(phrase, roleList, includeRetired);
+				} else {
+					//TODO get the person count after adding the get count method for persons to the API
+					
+				}
+				
+			}
+			
+			if (personCount > 0 || !getMatchCount)
+				objectList = findBatchOfPeopleByRoles(phrase, includeRetired, roles, start, length);
+			
+			resultsMap.put("count", personCount);
+			resultsMap.put("objectList", objectList);
+		}
+		catch (Exception e) {
+			log.error("Error while searching for persons", e);
+			objectList.clear();
+			objectList.add(Context.getMessageSourceService().getMessage("Person.search.error") + " - " + e.getMessage());
+			resultsMap.put("count", 0);
+			resultsMap.put("objectList", objectList);
+		}
+		return resultsMap;
+	}
 }
