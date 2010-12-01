@@ -40,7 +40,7 @@
 		problemEndDatePicker = new DatePicker("<openmrs:datePattern/>", "problem_endDate", { defaultDate: parseDateFromStringToJs("<openmrs:datePattern/>", "${model.today}") });
 
 		var problemCallback = new ConceptSearchCallback({onerror: showProblemAddError, onsuccess: hideProblemError});
-		var autoProblemConcept = new AutoComplete("problem_concept", problemCallback.callback, {
+		var autoProblemConcept = new AutoComplete("problem_concept", problemCallback.callback(), {
 			select: function(event, ui) {
 				$j('#problem_concept_id').val(ui.item.id);
 			}

@@ -31,6 +31,7 @@ omsgs.noPatientsFound="<spring:message javaScriptEscape="true" code="PatientSear
 omsgs.or="<spring:message code='Person.age.or'/>";
 omsgs.personCreate="<spring:message code='Person.create'/>";
 omsgs.resultsFor="<spring:message code="SearchResults.resultsFor" javaScriptEscape="true"/>";
+omsgs.resultsNotDisplayed="<spring:message code="SearchResults.resultsNotDisplayed" javaScriptEscape="true"/>";
 omsgs.searchResultsViewing="<spring:message code="SearchResults.viewing" javaScriptEscape="true"/>";
 omsgs.searchResultsOf="<spring:message code="SearchResults.of" javaScriptEscape="true"/>";
 omsgs.searchOnName="<spring:message javaScriptEscape="true" code="PatientSearch.searchOnName"/>";
@@ -38,6 +39,7 @@ omsgs.select="<spring:message code="general.select" />";
 omsgs.systemId="<spring:message code="User.systemId" javaScriptEscape="true"/>";
 omsgs.userRoles="<spring:message code="User.roles" javaScriptEscape="true"/>";
 omsgs.username="<spring:message code="User.username" javaScriptEscape="true"/>";
+omsgs.yearsOld="<spring:message code="general.yearsOldAbbrev" javaScriptEscape="true"/>";
 
 omsgs.genderArray=new Array();
 <openmrs:forEachRecord name='gender'>

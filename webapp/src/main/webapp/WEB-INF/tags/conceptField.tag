@@ -1,66 +1,95 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
 <%@ attribute name="formFieldName" required="true" %>
+<%@ attribute name="formFieldId" required="false" %>
 <%@ attribute name="searchLabel" required="false" %>
 <%@ attribute name="initialValue" required="false" %>
-<%@ attribute name="showAnswers" required="false" %>
+<%@ attribute name="showAnswers" required="false" %> <%-- a concept id to show answers for --%>
 <%@ attribute name="showOther" required="false" %>
 <%@ attribute name="otherValue" required="false" %>
-<%@ attribute name="onSelectFunction" required="false" %>
+<%@ attribute name="onSelectFunction" required="false" %> <%-- Gets the full ConceptListItem object --%>
+<%@ attribute name="includeClasses" required="false" %>
+<%@ attribute name="excludeClasses" required="false" %>
+<%@ attribute name="includeDatatypes" required="false" %>
+<%@ attribute name="excludeDatatypes" required="false" %>
 
-<openmrs:htmlInclude file="/scripts/dojoConfig.js"></openmrs:htmlInclude>
-<openmrs:htmlInclude file="/scripts/dojo/dojo.js"></openmrs:htmlInclude>
+
+<openmrs:htmlInclude file="/dwr/interface/DWRConceptService.js" />
+<openmrs:htmlInclude file="/scripts/jquery/autocomplete/ConceptAutoComplete.js" />
+
+<c:if test="${empty formFieldId}">
+	<c:set var="formFieldId" value="${formFieldName}_id" />
+</c:if>
+<c:set var="escaedFormFieldId" value="${fn:replace(formFieldName, '.', '')}" />
+<c:set var="displayNameInputId" value="${formFieldId}_selection" />
+<c:set var="otherInputId" value="${formFieldId}_other" />
 
 <script type="text/javascript">
-
-	dojo.require("dojo.widget.openmrs.ConceptSearch");
-	dojo.require("dojo.widget.openmrs.OpenmrsPopup");
 	
-	dojo.addOnLoad( function() {
-		dojo.event.topic.subscribe("${formFieldName}_search/select", 
-			function(msg) {
-				if (msg) {
-					var concept = msg.objs[0];
-					var conceptPopup = dojo.widget.manager.getWidgetById("${formFieldName}_selection");
-					conceptPopup.displayNode.innerHTML = concept.name;
-					conceptPopup.hiddenInputNode.value = concept.conceptId;
-					dojo.debug("Before adding if statement");
-					<c:if test="${not empty model.showOther}">
-						dojo.debug("Inside if statement, with cId is " + concept.conceptId + " and showOther is ${model.showOther}");
-						// if showOther is the concept that is selected, show a text field so user can enter that "other" data
-						conceptPopup.showOtherInputNode(concept.conceptId, ${model.showOther});
-					</c:if>
-					<c:if test="${not empty onSelectFunction}">
-					   ${onSelectFunction}(concept);
-					</c:if>
-				}
+	$j(document).ready( function() {
+
+		var includeC = "${includeClasses}".split(",");
+		var excludeC = "${excludeClasses}".split(",");
+		var includeD = "${includeDatatypes}".split(",");
+		var excludeD = "${excludeDatatypes}".split(",");
+
+		// the typical callback
+		var callback = new ConceptSearchCallback({includeClasses:includeC, excludeClasses:excludeC, includeDatatypes:includeD, excludeDatatypes:excludeD}).callback();
+		
+		<c:if test="${not empty showAnswers}">
+			//override the callback with one that actually goes to the answers
+			callback = new ConceptSearchCallback({showAnswersFor: "${showAnswers}"}).callbackForJustAnswers();
+		</c:if>
+		
+		// set up the autocomplete
+		new AutoComplete("${displayNameInputId}", callback, {
+			select: function(event, ui) {
+				${escaedFormFieldId}AutoCompleteOnSelect(ui.item.object, ui.item);
 			}
-		);
-	})	
+		});
+
+		<c:if test="${not empty initialValue}">
+			// fetch the concept object they passed the value in of and do the normal "select" stuff
+			DWRConceptService.getConcept("${initialValue}", function(concept) { ${escaedFormFieldId}AutoCompleteOnSelect(concept); });
+		</c:if>
+		
+		<c:if test="${not empty showAnswers}">
+			// show the autocomplete and all answers on focus
+			jquerySelectEscaped("${displayNameInputId}").autocomplete("option", "minLength", 0);
+			jquerySelectEscaped("${displayNameInputId}").autocomplete().focus(function(event, ui) {
+				if (event.target.value == "") {
+					jquerySelectEscaped("${displayNameInputId}").autocomplete("search", ""); //trigger('keydown.autocomplete');
+				}
+			}); // trigger the drop down on focus
+		</c:if>
+		
+	})
+	
+	function ${escaedFormFieldId}AutoCompleteOnSelect(concept, item) {
+		jquerySelectEscaped('${formFieldId}').val(concept.conceptId);
+
+		// if called with initialValue, show the name ourselves
+		if (!item)
+			jquerySelectEscaped('${displayNameInputId}').val(concept.name);
+
+		<c:if test="${not empty showOther}">
+			// if showOther is the concept that is selected, show a text field so user can enter that "other" data
+			if (concept && concept.conceptId == ${showOther}) {
+				jquerySelectEscaped("${otherInputId}").show();
+			}
+			else
+				jquerySelectEscaped("${otherInputId}").hide();
+		</c:if>
+		
+		<c:if test="${not empty onSelectFunction}">
+		if (concept) {
+			// only call the onSelect if we got back a true object
+			${onSelectFunction}(concept);
+		}
+		</c:if>
+	}
 </script>
 
-<c:set var="conceptFieldTag_anyAnswers" value="false"/>
-<c:if test="${not empty model.showAnswers}">
-	<openmrs:forEachRecord name="answer" concept="${model.showAnswers}">
-		<c:set var="conceptFieldTag_anyAnswers" value="true"/>
-	</openmrs:forEachRecord>
-	<c:if test="${!conceptFieldTag_anyAnswers}">
-		<% org.apache.commons.logging.LogFactory.getLog(getClass()).error("No answers found for concept id: " + showAnswers + " for field: " + formFieldName); %>
-	</c:if>
-</c:if>
-
-<c:choose>
-	<c:when test="${not empty model.showAnswers && not empty model.showOther}">
-		<div dojoType="ConceptSearch" widgetId="${formFieldName}_search" conceptId="${initialValue}" showVerboseListing="true" showAnswers="${showAnswers}" showOther="${showOther}" <c:if test="${conceptFieldTag_anyAnswers == 'true'}">performInitialSearch="true"</c:if>></div>
-	</c:when>
-	<c:when test="${not empty model.showAnswers}">
-		<div dojoType="ConceptSearch" widgetId="${formFieldName}_search" conceptId="${initialValue}" showVerboseListing="true" showAnswers="${showAnswers}" <c:if test="${conceptFieldTag_anyAnswers == 'true'}">performInitialSearch="true"</c:if>></div>
-	</c:when>
-	<c:when test="${not empty model.showOther}">
-		<div dojoType="ConceptSearch" widgetId="${formFieldName}_search" conceptId="${initialValue}" showVerboseListing="true" showOther="${showOther}"></div>
-	</c:when>
-	<c:otherwise>
-		<div dojoType="ConceptSearch" widgetId="${formFieldName}_search" conceptId="${initialValue}" showVerboseListing="true"></div>
-	</c:otherwise>
-</c:choose>
-<div dojoType="OpenmrsPopup" widgetId="${formFieldName}_selection" hiddenInputName="${formFieldName}" searchWidget="${formFieldName}_search" searchTitle="${searchLabel}" otherValue="${otherValue}"></div>
+<input type="text" id="${displayNameInputId}" />
+<input type="hidden" name="${formFieldName}" id="${formFieldId}" />
+<input type="text" name="${formFieldName}_other" id="${otherInputId}" style="display:none" value="${otherValue}"/>

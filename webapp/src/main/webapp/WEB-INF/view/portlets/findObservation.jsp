@@ -28,12 +28,11 @@
 								<tr class="searchObsByPatient">
 									<td><span><spring:message code="Obs.person" /></span>:</td>
 									<!-- <spring:message code="ObsSearch.patientLabel" var="patientLabel" /> -->
-									<td><openmrs_tag:personField formFieldName="personId" searchLabel="${personLabel}" initialValue="" linkUrl="" callback="" /></td>
+									<td><openmrs_tag:personField formFieldName="personId" /></td>
 								</tr>
 								<tr class="searchObsByConcept">
 									<td><span><spring:message code="Obs.concept" /></span> <span class="instructions">(<spring:message code="general.optional" />)</span>:</td>
-									<!-- <spring:message code="ObsSearch.conceptLabel" var="conceptLabel" /> -->
-									<td><openmrs_tag:conceptField formFieldName="conceptId" searchLabel="${conceptLabel}" initialValue="" /></td>
+									<td><openmrs_tag:conceptField formFieldName="conceptId" /></td>
 								</tr>
 								<tr>
 									<td colspan="2">

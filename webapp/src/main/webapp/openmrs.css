@@ -1292,9 +1292,25 @@ span#loadingMsg{
 	font-weight: bold; margin-left: 10px; font-style: italic;
 }
 /* END- css properties for the search widgets */
+.ui-autocomplete {
+	max-height: 60%;
+	overflow-y: auto;
+	overflow-x: hidden;
+}
 .autocompleteresult {
 	white-space: nowrap;
 }
 .autocompleteresult .preferredname {
 	color: gray;
+}
+.autocompleteresult .hit {
+	font-weight: bold;
+}
+.male {
+	color: blue;
+	font-family: Arial Unicode;
+}
+.female {
+	color: pink;
+	font-family: Arial Unicode;
 }
