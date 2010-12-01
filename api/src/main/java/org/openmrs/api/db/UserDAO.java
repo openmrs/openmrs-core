@@ -196,10 +196,10 @@ public interface UserDAO {
 	 * @see org.openmrs.api.UserService#generateSystemId()
 	 */
 	public Integer generateSystemId() throws DAOException;
-
+	
 	/**
-     * @see UserService#getUsersByPerson(Person, boolean)
-     */
-    public List<User> getUsersByPerson(Person person, boolean includeRetired);
+	 * @see UserService#getUsersByPerson(Person, boolean)
+	 */
+	public List<User> getUsersByPerson(Person person, boolean includeRetired);
 	
 }

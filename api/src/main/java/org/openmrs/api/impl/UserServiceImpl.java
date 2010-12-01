@@ -13,6 +13,11 @@
  */
 package org.openmrs.api.impl;
 
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Vector;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Person;
@@ -29,11 +34,6 @@ import org.openmrs.patient.impl.LuhnIdentifierValidator;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.util.RoleConstants;
-
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Vector;
 
 /**
  * Default implementation of the user service. This class should not be used on its own. The current
@@ -431,8 +431,7 @@ public class UserServiceImpl extends BaseOpenmrsService implements UserService {
 		
 		for (Role r : roles) {
 			if (r.getRole().equals(RoleConstants.SUPERUSER) && !authUser.hasRole(RoleConstants.SUPERUSER))
-				throw new APIException("You must have the role '" + RoleConstants.SUPERUSER
-				        + "' in order to assign it.");
+				throw new APIException("You must have the role '" + RoleConstants.SUPERUSER + "' in order to assign it.");
 			if (r.getPrivileges() != null) {
 				for (Privilege p : r.getPrivileges())
 					if (!authUser.hasPrivilege(p.getPrivilege()))
