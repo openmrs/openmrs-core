@@ -157,6 +157,6 @@ function PersonSearchCallback(options) {
 		// wrap each result in a span tag (needed?)
 		textShown = "<span class='autocompleteresult'>" + textShown + "</span>";
 		
-		return { label: textShown, value: person.personName, id: person.personId, patientId: person.patientId, userId: person.userId };
+		return { label: textShown, value: person.personName, id: person.personId, object: person };
 	}; }
 }

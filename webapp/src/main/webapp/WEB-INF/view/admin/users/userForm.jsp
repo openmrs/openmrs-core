@@ -16,7 +16,7 @@
 				if (person != null && person.personId != null) {
 					document.getElementById('useExistingButton').disabled = false;
 				} else {
-					hideDiv('useExistingButton').disabled = true;
+					document.getElementById('useExistingButton').disabled = true;
 				}
 			}
 		</script>
@@ -109,10 +109,6 @@
 				</table>
 			</c:when>
 			<c:otherwise>
-				<%-- The importJavascriptFile function in openmrs.js isn't working, so import these here --%>
-				<openmrs:htmlInclude file="/dwr/engine.js" />
-				<openmrs:htmlInclude file="/dwr/util.js" />
-				<openmrs:htmlInclude file="/dwr/interface/DWRPersonService.js" />
 				<table>
 					<tr valign="top">
 						<td><spring:message code="User.person"/>&nbsp;&nbsp;</td>

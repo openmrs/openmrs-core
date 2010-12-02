@@ -32,7 +32,7 @@
 				<c:if test="${not empty callback}">
 				if (ui.item.id) {
 					// only call the callback if we got a true selection, not a click on an error field
-					${callback}("${formFieldName}", ui.item);
+					${callback}("${formFieldName}", ui.item.object);
 				}
 				</c:if>
 			}
