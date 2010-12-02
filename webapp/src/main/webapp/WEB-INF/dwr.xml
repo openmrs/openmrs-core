@@ -57,6 +57,7 @@
 			<include method="removeProblem"/>
 			<include method="voidProblem"/>
 			<include method="findCountAndPatients"/>
+			<include method="findBatchOfPatients"/>
 		</create>
 		
 		<create creator="new" javascript="DWRPersonService">
@@ -86,6 +87,7 @@
 			<include method="getAnswersForQuestion" />
 			<include method="convertBooleanConceptToCoded" />
 			<include method="findCountAndConcepts" />
+			<include method="findBatchOfConcepts" />
 		</create>
 		
 		<create creator="new" javascript="DWREncounterService">
@@ -96,7 +98,9 @@
 			<include method="getLocations"/>
 			<include method="getLocation"/>
 			<include method="findCountAndEncounters"/>
+			<include method="findBatchOfEncounters"/>
 			<include method="findCountAndLocations"/>
+			<include method="findBatchOfLocations"/>
 		</create>
 		
 		<create creator="new" javascript="DWRUserService">
@@ -239,16 +243,21 @@
 			import org.openmrs.notification.web.dwr.DWRMessageService;
 			import java.util.Date;
 			import java.util.List;
-			DWRPatientService.findDuplicatePatients(String[] searchOn);
 			DWRConceptService.findConcepts(String phrase, boolean includeRetired, List<String> includeClassNames, List<String> excludeClassNames, List<String> includeDatatypes, List<String> excludeDatatypes, boolean includeDrugConcepts);
 			DWRConceptService.findConceptAnswers(String phrase, Integer conceptId, boolean includeRetired, boolean includeDrugConcepts);
+			DWRConceptService.findBatchOfConcepts(String phrase, boolean includeRetired, List<String> includeClassNames, List<String> excludeClassNames, List<String> includeDatatypeNames, List<String> excludeDatatypeNames, Integer start, Integer length);
+			DWRConceptService.findCountAndConcepts(String phrase, boolean includeRetired, List<String> includeClassNames, List<String> excludeClassNames, List<String> includeDatatypeNames, List<String> excludeDatatypeNames, Integer start, Integer length, boolean getMatchCount);
 			DWRConceptService.isValidNumericValue(Float value, Integer conceptId);
 			DWRConceptService.getDrugs(Integer conceptId, boolean showConcept);
 			DWRConceptService.findDrugs(String phrase, boolean includeRetired);
 			DWREncounterService.findEncounters(String phrase, boolean includeVoided);
+			DWREncounterService.findBatchOfEncounters(String phrase, boolean includeVoided, Integer start, Integer length);
+			DWREncounterService.findCountAndEncounters(String phrase, boolean includeVoided, Integer start, Integer length, boolean getMatchCount);
+			DWREncounterService.findCountAndLocations(String phrase, Integer start, Integer length, boolean getMatchCount)
+			DWREncounterService.findBatchOfLocations(String searchValue, Integer start, Integer length);
 			DWRPersonService.getSimilarPeople(String name, String birthdate, String age, String gender);
 			DWRPersonService.findBatchOfPeopleByRoles(String searchPhrase, boolean includeRetired, String roles, Integer start, Integer length);
-			DWRPersonService.findCountAndPeople(String phrase, boolean includeRetired, String roles, Integer start, Integer length, boolean getMatchCount)
+			DWRPersonService.findCountAndPeople(String phrase, boolean includeRetired, String roles, Integer start, Integer length, boolean getMatchCount);
 			DWRUserService.findUsers(String phrase, List<String> roles, boolean includeVoided);
 			DWRUserService.getAllUsers(List<String> roles, boolean includeVoided);
 			DWRObsService.getObservations(Integer encounterId);
@@ -256,6 +265,7 @@
 			DWRMessageService.sendFeedback(String sender, String subject, String content);
 			DWRMessageService.sendMessage( String recipients, String sender, String subject, String content );
 			DWRMessageService.sendMessage(String recipients, String sender, String subject, String content);
+			DWRPatientService.findDuplicatePatients(String[] searchOn);
 			DWRPatientService.createAllergy(Integer patientId, Integer allergenId, String type, String startDate, String severity, Integer reactionId);
 			DWRPatientService.saveAllergy(Integer activeListId, Integer allergenId, String type, String startDate, String severity, Integer reactionId);
 			DWRPatientService.removeAllergy(Integer activeListId, String reason);
@@ -264,6 +274,9 @@
 			DWRPatientService.saveProblem(Integer activeListId, Integer problemId, String status, String startDate, String comments);
 			DWRPatientService.removeProblem(Integer activeListId, String reason, String endDate);
 			DWRPatientService.voidProblem(Integer activeListId, String reason);
+			DWRPatientService.findBatchOfPatients(String searchValue, boolean includeVoided, Integer start, Integer length);
+			DWRPatientService.findPatients(String searchValue, boolean includeVoided);
+			DWRPatientService.findCountAndPatients(String searchValue, Integer start, Integer length, boolean getMatchCount);
 			DWRProgramWorkflowService.updatePatientProgram(Integer patientProgramId, String enrollmentDateYmd, String completionDateYmd, Integer locationId);
 		]]>
 	</signatures>

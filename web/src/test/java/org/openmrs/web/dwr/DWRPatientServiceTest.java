@@ -36,7 +36,7 @@ public class DWRPatientServiceTest extends BaseWebContextSensitiveTest {
 	public void findPatients_shouldGetResultsForPatientsThatHaveEditedThemselves() throws Exception {
 		executeDataSet("org/openmrs/web/dwr/include/DWRPatientService-patientisauser.xml");
 		DWRPatientService dwrService = new DWRPatientService();
-		Collection<Object> resultObjects = dwrService.findPatients("Other", false, null, null);
+		Collection<Object> resultObjects = dwrService.findPatients("Other", false);
 		Assert.assertEquals(1, resultObjects.size());
 	}
 	
@@ -50,7 +50,7 @@ public class DWRPatientServiceTest extends BaseWebContextSensitiveTest {
 	public void findPatients_shouldLoggedInUserShouldLoadTheirOwnPatientObject() throws Exception {
 		executeDataSet("org/openmrs/web/dwr/include/DWRPatientService-patientisauser.xml");
 		DWRPatientService dwrService = new DWRPatientService();
-		Collection<Object> resultObjects = dwrService.findPatients("Super", false, null, null);
+		Collection<Object> resultObjects = dwrService.findPatients("Super", false);
 		Assert.assertEquals(1, resultObjects.size());
 	}
 	

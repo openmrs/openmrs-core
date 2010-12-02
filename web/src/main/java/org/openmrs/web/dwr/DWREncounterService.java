@@ -33,6 +33,20 @@ public class DWREncounterService {
 	private static final Log log = LogFactory.getLog(DWREncounterService.class);
 	
 	/**
+	 * Returns a list of encounters for patients with a matching name, identifier or encounterId if
+	 * phrase is a number.
+	 * 
+	 * @param phrase patient name or identifier
+	 * @param includeVoided Specifies if voided encounters should be included or not
+	 * @return list of the matching encounters
+	 * @throws APIException
+	 */
+	public Vector findEncounters(String phrase, boolean includeVoided) throws APIException {
+		
+		return findBatchOfEncounters(phrase, includeVoided, null, null);
+	}
+	
+	/**
 	 * Returns a list of matching encounters (depending on values of start and length parameters) if
 	 * the length parameter is not specified, then all matches will be returned from the start index
 	 * if specified.
@@ -44,7 +58,8 @@ public class DWREncounterService {
 	 * @return list of the matching encounters
 	 * @throws APIException
 	 */
-	public Vector findEncounters(String phrase, boolean includeVoided, Integer start, Integer length) throws APIException {
+	public Vector findBatchOfEncounters(String phrase, boolean includeVoided, Integer start, Integer length)
+	                                                                                                        throws APIException {
 		
 		// List to return
 		// Object type gives ability to return error strings
@@ -105,6 +120,7 @@ public class DWREncounterService {
 	 * @throws APIException
 	 * @since 1.8
 	 */
+	@SuppressWarnings("unchecked")
 	public Map<String, Object> findCountAndEncounters(String phrase, boolean includeVoided, Integer start, Integer length,
 	                                                  boolean getMatchCount) throws APIException {
 		//Map to return
@@ -126,7 +142,7 @@ public class DWREncounterService {
 			}
 			
 			if (encounterCount > 0 || !getMatchCount)
-				objectList = findEncounters(phrase, includeVoided, start, length);
+				objectList = findBatchOfEncounters(phrase, includeVoided, start, length);
 			
 			resultsMap.put("count", encounterCount);
 			resultsMap.put("objectList", objectList);
@@ -137,6 +153,7 @@ public class DWREncounterService {
 			objectList.add(Context.getMessageSourceService().getMessage("Encounter.search.error") + " - " + e.getMessage());
 			resultsMap.put("count", 0);
 			resultsMap.put("objectList", objectList);
+			resultsMap.put("errorMsg", Context.getMessageSourceService().getMessage("Encounter.search.error"));
 		}
 		return resultsMap;
 	}
@@ -148,7 +165,6 @@ public class DWREncounterService {
 		return e == null ? null : new EncounterListItem(e);
 	}
 	
-	@SuppressWarnings("unchecked")
 	public Vector findLocations(String searchValue) {
 		
 		return findBatchOfLocations(searchValue, null, null);
@@ -165,16 +181,15 @@ public class DWREncounterService {
 	 * @return list of the matching locations
 	 * @throws APIException
 	 */
-	@SuppressWarnings("unchecked")
-	public Vector findBatchOfLocations(String searchValue, Integer start, Integer length) throws APIException {
+	public Vector<Object> findBatchOfLocations(String searchValue, Integer start, Integer length) throws APIException {
 		
-		Vector locationList = new Vector();
+		Vector<Object> locationList = new Vector<Object>();
 		MessageSourceService mss = Context.getMessageSourceService();
 		
 		try {
 			LocationService ls = Context.getLocationService();
 			List<Location> locations = ls.getLocations(searchValue, start, length);
-			locationList = new Vector(locations.size());
+			locationList = new Vector<Object>(locations.size());
 			
 			for (Location loc : locations) {
 				locationList.add(new LocationListItem(loc));
@@ -236,7 +251,6 @@ public class DWREncounterService {
 	 * @throws APIException
 	 * @since 1.8
 	 */
-	@SuppressWarnings("unchecked")
 	public Map<String, Object> findCountAndLocations(String phrase, Integer start, Integer length, boolean getMatchCount)
 	                                                                                                                     throws APIException {
 		
