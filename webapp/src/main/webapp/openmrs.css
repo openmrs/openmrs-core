@@ -1307,7 +1307,7 @@ span#loadingMsg{
 	font-weight: bold;
 }
 span.otherHit{
-	color: red;
+	color: gray;
 }
 .male {
 	color: blue;
