@@ -51,23 +51,40 @@ public class DWRConceptService {
 	protected static final Log log = LogFactory.getLog(DWRConceptService.class);
 	
 	/**
-	 * Auto generated method comment
+	 * Gets a list of conceptListItems matching the given arguments
 	 * 
-	 * @param phrase
-	 * @param includeRetired
-	 * @param includeClassNames
-	 * @param excludeClassNames
-	 * @param includeDatatypeNames
-	 * @param excludeDatatypeNames
-	 * @param includeDrugConcepts
-	 * @param start the beginning index
-	 * @param length the number of matching concepts to return
-	 * @return
+	 * @param phrase the concept name string to match against
+	 * @param includeRetired boolean if false, will exclude retired concepts
+	 * @param includeClassNames List of ConceptClasses to restrict to
+	 * @param excludeClassNames List of ConceptClasses to leave out of results
+	 * @param includeDatatypeNames List of ConceptDatatypes to restrict to
+	 * @param excludeDatatypeNames List of ConceptDatatypes to leave out of results
+	 * @param includeDrugConcepts Specifies if drugs with matching conceptNames should be included
+	 * @return a list of conceptListItems matching the given arguments
 	 */
 	public List<Object> findConcepts(String phrase, boolean includeRetired, List<String> includeClassNames,
 	                                 List<String> excludeClassNames, List<String> includeDatatypeNames,
-	                                 List<String> excludeDatatypeNames, boolean includeDrugConcepts, Integer start,
-	                                 Integer length) {
+	                                 List<String> excludeDatatypeNames, boolean includeDrugConcepts) {
+		return findBatchOfConcepts(phrase, includeRetired, includeClassNames, excludeClassNames, includeDatatypeNames,
+		    excludeDatatypeNames, null, null);
+	}
+	
+	/**
+	 * Gets a list of conceptListItems matching the given arguments
+	 * 
+	 * @param phrase the concept name string to match against
+	 * @param includeRetired boolean if false, will exclude retired concepts
+	 * @param includeClassNames List of ConceptClasses to restrict to
+	 * @param excludeClassNames List of ConceptClasses to leave out of results
+	 * @param includeDatatypeNames List of ConceptDatatypes to restrict to
+	 * @param excludeDatatypeNames List of ConceptDatatypes to leave out of results
+	 * @param start the beginning index
+	 * @param length the number of matching concepts to return
+	 * @return a list of conceptListItems matching the given arguments
+	 */
+	public List<Object> findBatchOfConcepts(String phrase, boolean includeRetired, List<String> includeClassNames,
+	                                        List<String> excludeClassNames, List<String> includeDatatypeNames,
+	                                        List<String> excludeDatatypeNames, Integer start, Integer length) {
 		//TODO factor out the reusable code in this and findCountAndConcepts methods to a single utility method
 		// List to return
 		// Object type gives ability to return error strings
@@ -441,12 +458,11 @@ public class DWRConceptService {
 	 * matches will be returned from the start index if specified.
 	 * 
 	 * @param phrase concept name or conceptId
-	 * @param includeRetired Specifies if retired concepts should be included or not
-	 * @param includeClassNames
-	 * @param excludeClassNames
-	 * @param includeDatatypeNames
-	 * @param excludeDatatypeNames
-	 * @param includeDrugConcepts
+	 * @param includeRetired boolean if false, will exclude retired concepts
+	 * @param includeClassNames List of ConceptClasses to restrict to
+	 * @param excludeClassNames List of ConceptClasses to leave out of results
+	 * @param includeDatatypeNames List of ConceptDatatypes to restrict to
+	 * @param excludeDatatypeNames List of ConceptDatatypes to leave out of results
 	 * @param start the beginning index
 	 * @param length the number of matching concepts to return
 	 * @param getMatchCount Specifies if the count of matches should be included in the returned map
@@ -456,8 +472,8 @@ public class DWRConceptService {
 	 */
 	public Map<String, Object> findCountAndConcepts(String phrase, boolean includeRetired, List<String> includeClassNames,
 	                                                List<String> excludeClassNames, List<String> includeDatatypeNames,
-	                                                List<String> excludeDatatypeNames, boolean includeDrugs, Integer start,
-	                                                Integer length, boolean getMatchCount) throws APIException {
+	                                                List<String> excludeDatatypeNames, Integer start, Integer length,
+	                                                boolean getMatchCount) throws APIException {
 		//Map to return
 		Map<String, Object> resultsMap = new HashMap<String, Object>();
 		Vector<Object> objectList = new Vector<Object>();
@@ -551,8 +567,8 @@ public class DWRConceptService {
 				}
 				
 				if (matchCount > 0 || !getMatchCount) {
-					objectList.addAll(findConcepts(phrase, includeRetired, includeClassNames, excludeClassNames,
-					    includeDatatypeNames, excludeDatatypeNames, includeDrugs, start, length));
+					objectList.addAll(findBatchOfConcepts(phrase, includeRetired, includeClassNames, excludeClassNames,
+					    includeDatatypeNames, excludeDatatypeNames, start, length));
 				}
 				
 				resultsMap.put("count", matchCount);

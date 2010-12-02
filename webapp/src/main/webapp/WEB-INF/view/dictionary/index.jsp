@@ -30,7 +30,7 @@
 	
 	//searchHandler
 	function doConceptSearch(text, resultHandler, getMatchCount, opts) {
-		DWRConceptService.findCountAndConcepts(text, opts.includeVoided, null, null, null, null, false, opts.start, opts.length, getMatchCount, resultHandler);
+		DWRConceptService.findCountAndConcepts(text, opts.includeVoided, null, null, null, null, opts.start, opts.length, getMatchCount, resultHandler);
 	}
 	
 	//custom render, appends an arrow and preferredName it exists

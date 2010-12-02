@@ -71,7 +71,6 @@ public class DWRPatientService implements GlobalPropertyListener {
 	 * Search on the <code>searchValue</code>. If a number is in the search string, do an identifier
 	 * search. Else, do a name search
 	 * 
-	 * @see PatientService#getPatients(String)
 	 * @param searchValue string to be looked for
 	 * @param includeVoided true/false whether or not to included voided patients
 	 * @return Collection<Object> of PatientListItem or String
@@ -84,8 +83,23 @@ public class DWRPatientService implements GlobalPropertyListener {
 	 * @should get results for patients that have edited themselves
 	 * @should logged in user should load their own patient object
 	 */
+	public Collection<Object> findPatients(String searchValue, boolean includeVoided) {
+		return findBatchOfPatients(searchValue, includeVoided, null, null);
+	}
+	
+	/**
+	 * Search on the <code>searchValue</code>. If a number is in the search string, do an identifier
+	 * search. Else, do a name search
+	 * 
+	 * @see PatientService#getPatients(String, String, List, boolean, int, Integer)
+	 * @param searchValue string to be looked for
+	 * @param includeVoided true/false whether or not to included voided patients
+	 * @param start The starting index for the results to return
+	 * @param length The number of results of return
+	 * @return Collection<Object> of PatientListItem or String
+	 */
 	@SuppressWarnings("unchecked")
-	public Collection<Object> findPatients(String searchValue, boolean includeVoided, Integer start, Integer length) {
+	public Collection<Object> findBatchOfPatients(String searchValue, boolean includeVoided, Integer start, Integer length) {
 		if (maximumResults == null)
 			maximumResults = getMaximumSearchResults();
 		if (length != null && length > maximumResults)
@@ -289,7 +303,7 @@ public class DWRPatientService implements GlobalPropertyListener {
 			}
 			
 			if (patientCount > 0 || !getMatchCount)
-				objectList = findPatients(searchValue, false, start, length);
+				objectList = findBatchOfPatients(searchValue, false, start, length);
 			
 			resultsMap.put("count", patientCount);
 			resultsMap.put("objectList", objectList);
