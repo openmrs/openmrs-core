@@ -485,7 +485,8 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 			
 			this._table.fnClearTable();
 			if((this._results != null) && (this._results.length > 0) && (typeof this._results[0] == 'string')) {
-				//error
+				//error on server
+				$j(notification).html(this._results[0]);
 				//hide pagination buttons
 	    	    if($j('#openmrsSearchTable_paginate')){
 	    	    	$j('#openmrsSearchTable_paginate').hide();
@@ -720,11 +721,21 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 					return;
 				}
 				
+				var data = results["objectList"];
+				if(data && data.length > 0 && typeof data[0] == 'string') {
+					//error occured on server
+					if(ajaxTimer)
+						window.clearTimeout(ajaxTimer);
+					
+					$j(notification).html(data[0]);
+					spinnerObj.css("visibility", "hidden");
+					loadingMsg.html("");
+					return;
+				}
+				
 				if(results["notification"])
 					$j(notification).html(results["notification"]);
-				
-				var data = results["objectList"];
-				
+								
 				nextRowindex = self._table.fnGetNodes().length;
 				//if this ajax sub call is the one we expected in to be next in line
 				if(nextRowindex == currStart){

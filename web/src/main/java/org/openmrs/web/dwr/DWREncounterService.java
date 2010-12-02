@@ -153,7 +153,6 @@ public class DWREncounterService {
 			objectList.add(Context.getMessageSourceService().getMessage("Encounter.search.error") + " - " + e.getMessage());
 			resultsMap.put("count", 0);
 			resultsMap.put("objectList", objectList);
-			resultsMap.put("errorMsg", Context.getMessageSourceService().getMessage("Encounter.search.error"));
 		}
 		return resultsMap;
 	}
