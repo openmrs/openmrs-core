@@ -42,7 +42,7 @@ function ConceptSearchCallback(options) {
 		var includeDatatypes = $j.makeArray(options.includeDatatypes);
 		var excludeDatatypes = $j.makeArray(options.excludeDatatypes);
 		/*$j("#log").html($j("#log").html() + "<br/>" + thisObject.test + "--" + thisObject.testing);*/
-		DWRConceptService.findConcepts(q, false, includeClasses, excludeClasses, includeDatatypes, excludeDatatypes, false, null, null, thisObject.makeRows(q, response, thisObject.searchCounter + 1));
+		DWRConceptService.findConcepts(q, false, includeClasses, excludeClasses, includeDatatypes, excludeDatatypes, false, thisObject.makeRows(q, response, thisObject.searchCounter + 1));
 	}}
 	
 	this.callbackForJustAnswers = function() { thisObject = this; return function(q, response) {
