@@ -67,7 +67,7 @@
 				$j('#valueBooleanRow').show();
 			}
 			else if (datatype == 'NM' || datatype == 'SN') {
-				$('#valueNumericRow').style.display = "";
+				$j('#valueNumericRow').show();
 				DWRConceptService.getConceptNumericUnits(tmpConcept.conceptId, fillNumericUnits);
 			}
 			else if (datatype == 'CWE') {
@@ -89,7 +89,7 @@
 				$j("#valueCoded_selection").focus();
 			}
 			else if (datatype == 'ST') {
-				$('#valueTextRow').show();
+				$j('#valueTextRow').show();
 			}
 			else if (datatype == 'DT' || datatype == 'TS' || datatype == 'TM') {
 				$j('#valueDatetimeRow').show();
