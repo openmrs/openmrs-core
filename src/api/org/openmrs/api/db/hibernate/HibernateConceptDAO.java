@@ -1219,6 +1219,10 @@ public class HibernateConceptDAO implements ConceptDAO {
 		criteria.add(Expression.or(Expression.eq("conceptSource.name", mappingCode), Expression.eq("conceptSource.hl7Code",
 		    mappingCode)));
 		
+		// ignore voided concepts
+		criteria.createAlias("concept", "concept");
+		criteria.add(Expression.eq("concept.retired", false));
+
 		return (Concept) criteria.uniqueResult();
 	}
 	
