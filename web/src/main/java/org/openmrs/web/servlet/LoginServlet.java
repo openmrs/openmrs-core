@@ -204,16 +204,22 @@ public class LoginServlet extends HttpServlet {
 		// first option for redirecting is the "redirect" parameter (set on login.jsp from the session attr)
 		String redirect = request.getParameter("redirect");
 		
+		/* Commenting this out because I don't see a use for the redirect.  All this 
+		   does is cause errors if linking into openmrs from an outside source.  If a 
+		   dev doesn't have the right redirecting in place, his loss, the user is sent to
+		   the home page.
+		 
 		// second option for redirecting is the referrer parameter set at login.jsp
 		if (redirect == null || redirect.equals("")) {
 			redirect = request.getParameter("refererURL");
-			if (redirect != null) {
+			if (redirect != null && !"/".equals(request.getContextPath())) {
 				// checking for a redirect like /openmrs/openmrs (for some reason)
 				int index = redirect.indexOf(request.getContextPath(), 2);
 				if (index != -1)
 					redirect = redirect.substring(index);
 			}
 		}
+		*/
 		
 		// third option for redirecting is the main page of the webapp
 		if (redirect == null || redirect.equals("")) {
