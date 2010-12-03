@@ -1,44 +1,50 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
 <%@ attribute name="formFieldName" required="true" %>
-<%@ attribute name="searchLabel" required="false" %>
-<%@ attribute name="searchLabelCode" required="false" %>
+<%@ attribute name="formFieldId" required="false" %>
+<%@ attribute name="displayFieldId" required="false" %>
+<%@ attribute name="searchLabel" required="false" %> <%-- deprecated --%>
+<%@ attribute name="searchLabelCode" required="false" %> <%-- deprecated --%>
 <%@ attribute name="initialValue" required="false" %> <%-- This should be a locationId --%>
-<%@ attribute name="linkUrl" required="false" %>
-<%@ attribute name="callback" required="false" %>
+<%@ attribute name="linkUrl" required="false" %> <%-- deprecated --%>
+<%@ attribute name="callback" required="false" %> <%-- gets the locationId sent back --%>
 
-<openmrs:htmlInclude file="/scripts/dojoConfig.js" />
-<openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
+<openmrs:htmlInclude file="/dwr/interface/DWRLocationService.js" />
+<openmrs:htmlInclude file="/scripts/jquery/autocomplete/OpenmrsAutoComplete.js" />
+
+<c:if test="${empty formFieldId}">
+	<c:set var="formFieldId" value="${formFieldName}_id" />
+</c:if>
+<c:if test="${empty displayFieldId}">
+	<c:set var="displayFieldId" value="${formFieldId}_selection" />
+</c:if>
 
 <script type="text/javascript">
-	dojo.require("dojo.widget.openmrs.LocationSearch");
-	dojo.require("dojo.widget.openmrs.OpenmrsPopup");
-</script>
+	
+	$j(document).ready( function() {
 
-<script type="text/javascript">	
-	dojo.addOnLoad( function() {
-		dojo.event.topic.subscribe("${formFieldName}_search/select", 
-			function(msg) {
-				if (msg) {
-					var loc = msg.objs[0];
-					locPopup = dojo.widget.manager.getWidgetById("${formFieldName}_selection");
-					locSearch = dojo.widget.manager.getWidgetById("${formFieldName}_search");
+		// set up the autocomplete
+		new AutoComplete("${displayFieldId}", new CreateCallback().locationCallback(), {
+			select: function(event, ui) {
+				jquerySelectEscaped("${formFieldId}").val(ui.item.object.locationId);
 					
-					locPopup.displayNode.innerHTML = '<a id="${formFieldName}_name" href="#View" <c:if test="${not empty linkUrl}">onclick="return gotoUrl(\'${linkUrl}\', ' + loc.locationId + ')"</c:if>>' + loc.name + '</a>';
-					locPopup.hiddenInputNode.value = loc.locationId;
-					<c:if test="${not empty callback}">
-						${callback}(loc.locationId);
-					</c:if>
+				<c:if test="${not empty callback}">
+				if (ui.item.object) {
+					// only call the callback if we got a true selection, not a click on an error field
+					${callback}(ui.item.object.locationId);
 				}
+				</c:if>
 			}
-		);
+		});
+
+		// get the name of the location that they passed in the id for
+		<c:if test="${not empty initialValue}">
+			jquerySelectEscaped("${formFieldId}").val("${initialValue}");
+			DWRLocationService.getLocation("${initialValue}", function(loc) { jquerySelectEscaped("${displayFieldId}").val(loc.name);});
+		</c:if>
+		
 	})
 </script>
 
-<span dojoType="LocationSearch" widgetId="${formFieldName}_search" locationId="${initialValue}"></span>
-<c:if test="${not empty searchLabelCode}">
-	<span dojoType="OpenmrsPopup" widgetId="${formFieldName}_selection" hiddenInputName="${formFieldName}" searchWidget="${formFieldName}_search" searchTitle="<spring:message code="${searchLabelCode}" />"></span>
-</c:if> 
-<c:if test="${empty searchLabelCode}">
-	<span dojoType="OpenmrsPopup" widgetId="${formFieldName}_selection" hiddenInputName="${formFieldName}" searchWidget="${formFieldName}_search" searchTitle="${searchLabel}"></span>
-</c:if> 
+<input type="text" id="${displayFieldId}" />
+<input type="hidden" name="${formFieldName}" id="${formFieldId}" />

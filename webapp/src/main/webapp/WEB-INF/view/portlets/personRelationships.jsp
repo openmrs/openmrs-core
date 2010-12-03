@@ -1,23 +1,8 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
-<openmrs:htmlInclude file="/scripts/easyAjax.js" />
 <openmrs:htmlInclude file="/dwr/interface/DWRRelationshipService.js" />
-<openmrs:htmlInclude file="/dwr/interface/DWRPersonService.js" />
-<openmrs:htmlInclude file="/dwr/util.js" />
-<openmrs:htmlInclude file="/scripts/dojoConfig.js" />
-<openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
 
 <script type="text/javascript">
-	dojo.require("dojo.widget.openmrs.PersonSearch");
-	dojo.require("dojo.widget.openmrs.OpenmrsPopup");
-	
-	function callbackAfterSelect(relType, person) {
-		var personPopup = dojo.widget.manager.getWidgetById("add_rel_target_selection");
-
-		var displayString = person.personName;
-		personPopup.displayNode.innerHTML = displayString;
-		personPopup.hiddenInputNode.value = person.personId;
-	}
 	
 	function refreshRelationships() {
 		DWRRelationshipService.getRelationships(${model.personId}, null, refreshRelationshipsCallback);
@@ -76,8 +61,8 @@
 	
 	function handleAddRelationship() {
 		var personIdB = ${model.personId};
-		var personPopup = dojo.widget.manager.getWidgetById("add_rel_target_selection");
-		var personIdA = personPopup.hiddenInputNode.value;
+		
+		var personIdA = $j("#add_rel_target_id").val();
 		var relType = dwr.util.getValue('add_relationship_type');
 		if (relType == null || relType == '' || personIdA == null || personIdA == '' || personIdB == null || personIdB == '') {
 			window.alert('<spring:message code="Relationship.error.everything" javaScriptEscape="true"/>');
@@ -85,6 +70,7 @@
 		}
 		if (personIdA == personIdB) {
 			window.alert('<spring:message code="Relationship.error.same" javaScriptEscape="true"/>');
+			return;
 		}
 		var reverseIndex = relType.indexOf('::reverse');
 		if (reverseIndex > 0) {
@@ -93,8 +79,9 @@
 			personIdA = personIdB;
 			personIdB = temp;
 		}
-		personPopup.hiddenInputNode.value = "";
-		dwr.util.setValue('add_relationship_type', null);
+		$j("#add_rel_target_id").val("");
+		$j("#add_rel_display_id").val("");
+		$j("#add_relationship_type").val("");
 		hideDiv('addRelationship');
 		showDiv('addRelationshipLink');
 		DWRRelationshipService.createRelationship(personIdA, personIdB, relType, refreshRelationships);
@@ -145,7 +132,7 @@
 			<i><span id="add_relationship_name"><spring:message code="Relationship.whatType"/></span></i>
 			<input type="hidden" id="add_relationship_type"/>
 			<spring:message code="Relationship.target"/>
-			<openmrs_tag:personField formFieldName="add_rel_target" searchLabel="Find a Person" useOnKeyDown="${model.useOnKeyDown}" callback="callbackAfterSelect" canAddNewPerson="true" />
+			<openmrs_tag:personField formFieldName="add_rel_target" formFieldId="add_rel_target_id" displayFieldId="add_rel_display_id" searchLabel="Find a Person" canAddNewPerson="true" />
 		</span>
 		
 		<br/>
