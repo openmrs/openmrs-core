@@ -2,7 +2,7 @@
 
 <openmrs:htmlInclude file="/dwr/interface/DWRPatientService.js" />
 <openmrs:htmlInclude file="/dwr/interface/DWRConceptService.js" />
-<openmrs:htmlInclude file="/scripts/jquery/autocomplete/ConceptAutoComplete.js" />
+<openmrs:htmlInclude file="/scripts/jquery/autocomplete/OpenmrsAutoComplete.js" />
 
 <style type="text/css">
 .ui-datepicker { z-index:10100; }
@@ -39,10 +39,10 @@
 
 		problemEndDatePicker = new DatePicker("<openmrs:datePattern/>", "problem_endDate", { defaultDate: parseDateFromStringToJs("<openmrs:datePattern/>", "${model.today}") });
 
-		var problemCallback = new ConceptSearchCallback({onerror: showProblemAddError, onsuccess: hideProblemError});
-		var autoProblemConcept = new AutoComplete("problem_concept", problemCallback.callback(), {
+		var problemCallback = new CreateCallback({onerror: showProblemAddError, onsuccess: hideProblemError});
+		var autoProblemConcept = new AutoComplete("problem_concept", problemCallback.conceptCallback(), {
 			select: function(event, ui) {
-				$j('#problem_concept_id').val(ui.item.id);
+				$j('#problem_concept_id').val(ui.item.conceptId);
 			}
 		});
 

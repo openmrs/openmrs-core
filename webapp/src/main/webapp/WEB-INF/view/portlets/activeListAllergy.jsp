@@ -2,7 +2,7 @@
 
 <openmrs:htmlInclude file="/dwr/interface/DWRPatientService.js" />
 <openmrs:htmlInclude file="/dwr/interface/DWRConceptService.js" />
-<openmrs:htmlInclude file="/scripts/jquery/autocomplete/ConceptAutoComplete.js" />
+<openmrs:htmlInclude file="/scripts/jquery/autocomplete/OpenmrsAutoComplete.js" />
 
 <style type="text/css">
 .ui-datepicker { z-index:10100; }
@@ -41,21 +41,21 @@
 
 		allergyStartDatePicker = new DatePicker("<openmrs:datePattern/>", "allergy_startDate", { defaultDate: parseDateFromStringToJs("<openmrs:datePattern/>", "${model.today}") });
 
-		var allergyCallback = new ConceptSearchCallback({onerror: showAllergyAddError, onsuccess: hideAllergyError});
-		var autoAllergyConcept = new AutoComplete("allergy_concept", allergyCallback.callback(), {
+		var allergyCallback = new CreateCallback({onerror: showAllergyAddError, onsuccess: hideAllergyError});
+		var autoAllergyConcept = new AutoComplete("allergy_concept", allergyCallback.conceptCallback(), {
 			select: function(event, ui) {
-				$j('#allergy_concept_id').val(ui.item.id);
+				$j('#allergy_concept_id').val(ui.item.object.conceptId);
 			}
 		});
 
-		var reactionCallback = new ConceptSearchCallback(
+		var reactionCallback = new CreateCallback(
 									{onerror:showAllergyAddError, 
 									 onsuccess: hideAllergyError,
 									 includedClasses: 'Symptom'
 									});
-		var autoReactionConcept = new AutoComplete("allergy_reaction", reactionCallback.callback(), {
+		var autoReactionConcept = new AutoComplete("allergy_reaction", reactionCallback.conceptCallback(), {
 			select: function(event, ui) {
-				$j('#allergy_reaction_id').val(ui.item.id);
+				$j('#allergy_reaction_id').val(ui.item.object.conceptId);
 			}
 		});
 		

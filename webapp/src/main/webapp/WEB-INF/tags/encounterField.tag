@@ -1,52 +1,50 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
 <%@ attribute name="formFieldName" required="true" %>
-<%@ attribute name="searchLabel" required="false" %>
-<%@ attribute name="searchLabelCode" required="false" %>
+<%@ attribute name="formFieldId" required="false" %>
+<%@ attribute name="displayFieldId" required="false" %>
+<%@ attribute name="searchLabel" required="false" %> <%-- deprecated --%>
+<%@ attribute name="searchLabelCode" required="false" %> <%-- deprecated --%>
 <%@ attribute name="initialValue" required="false" %> <%-- This should be an encounterId --%>
-<%@ attribute name="linkUrl" required="false" %>
-<%@ attribute name="callback" required="false" %>
+<%@ attribute name="linkUrl" required="false" %> <%-- deprecated --%>
+<%@ attribute name="callback" required="false" %> <%-- gets back an encounterId --%>
 
-<openmrs:htmlInclude file="/scripts/dojoConfig.js" />
-<openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
+<openmrs:htmlInclude file="/dwr/interface/DWREncounterService.js" />
+<openmrs:htmlInclude file="/scripts/jquery/autocomplete/OpenmrsAutoComplete.js" />
+
+<c:if test="${empty formFieldId}">
+	<c:set var="formFieldId" value="${formFieldName}_id" />
+</c:if>
+<c:if test="${empty displayFieldId}">
+	<c:set var="displayFieldId" value="${formFieldId}_selection" />
+</c:if>
 
 <script type="text/javascript">
-	dojo.require("dojo.widget.openmrs.EncounterSearch");
-	dojo.require("dojo.widget.openmrs.OpenmrsPopup");
 	
-	dojo.addOnLoad( function() {
-		encPopup = dojo.widget.manager.getWidgetById("${formFieldName}_selection");
-		encSearch = dojo.widget.manager.getWidgetById("${formFieldName}_search");
+	$j(document).ready( function() {
 
-		dojo.event.topic.subscribe("${formFieldName}_search/select", 
-			function(msg) {
-				if (msg) {
-					var enc = msg.objs[0];
-					encPopup.displayNode.innerHTML = '<a id="${formFieldName}_name" href="#View" <c:if test="${not empty linkUrl}">onclick="return gotoEncounter(\'${linkUrl}\', ' + enc.encounterId + ')"</c:if>>' + (enc.formName ? enc.formName : '') + ' (' + enc.encounterDateString + ')</a>';
-					encPopup.hiddenInputNode.value = enc.encounterId;
-					<c:if test="${not empty callback}">
-						${callback}(enc.encounterId);
-					</c:if>
+		// set up the autocomplete
+		new AutoComplete("${displayFieldId}", new CreateCallback({maxresults:100}).encounterCallback(), {
+			select: function(event, ui) {
+				jquerySelectEscaped("${formFieldId}").val(ui.item.object.encounterId);
+					
+				<c:if test="${not empty callback}">
+				if (ui.item.object) {
+					// only call the callback if we got a true selection, not a click on an error field
+					${callback}(ui.item.object.encounterId);
 				}
+				</c:if>
 			}
-		);
+		});
+
+		// get the name of the person that they passed in the id for
+		<c:if test="${not empty initialValue}">
+			jquerySelectEscaped("${formFieldId}").val("${initialValue}");
+			DWREncounterService.getEncounter("${initialValue}", function(enc) { jquerySelectEscaped("${displayFieldId}").val(enc.location + " - " + enc.encounterDateString);});
+		</c:if>
 		
 	})
-
-	function gotoEncounter(url, eId) {
-		if (url === null || url === '') {
-			return false;
-		} else {
-			window.location = url + "?encounterId=" + eId;
-		}
-		return false;
-	}
 </script>
 
-<div dojoType="EncounterSearch" widgetId="${formFieldName}_search" encounterId="${initialValue}"></div>
-<c:if test="${not empty searchLabelCode}">
-	<div dojoType="OpenmrsPopup" widgetId="${formFieldName}_selection" hiddenInputName="${formFieldName}" searchWidget="${formFieldName}_search" searchTitle="<spring:message code="${searchLabelCode}" />"></div>
-</c:if> 
-<c:if test="${empty searchLabelCode}">
-	<div dojoType="OpenmrsPopup" widgetId="${formFieldName}_selection" hiddenInputName="${formFieldName}" searchWidget="${formFieldName}_search" searchTitle="${searchLabel}"></div>
-</c:if> 
+<input type="text" id="${displayFieldId}" size="45"/>
+<input type="hidden" name="${formFieldName}" id="${formFieldId}" />

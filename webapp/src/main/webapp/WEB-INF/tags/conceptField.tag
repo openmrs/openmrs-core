@@ -15,12 +15,12 @@
 
 
 <openmrs:htmlInclude file="/dwr/interface/DWRConceptService.js" />
-<openmrs:htmlInclude file="/scripts/jquery/autocomplete/ConceptAutoComplete.js" />
+<openmrs:htmlInclude file="/scripts/jquery/autocomplete/OpenmrsAutoComplete.js" />
 
 <c:if test="${empty formFieldId}">
 	<c:set var="formFieldId" value="${formFieldName}_id" />
 </c:if>
-<c:set var="escaedFormFieldId" value="${fn:replace(formFieldName, '.', '')}" />
+<c:set var="escapedFormFieldId" value="${fn:replace(formFieldName, '.', '')}" />
 <c:set var="displayNameInputId" value="${formFieldId}_selection" />
 <c:set var="otherInputId" value="${formFieldId}_other" />
 
@@ -34,23 +34,23 @@
 		var excludeD = "${excludeDatatypes}".split(",");
 
 		// the typical callback
-		var callback = new ConceptSearchCallback({includeClasses:includeC, excludeClasses:excludeC, includeDatatypes:includeD, excludeDatatypes:excludeD}).callback();
+		var callback = new CreateCallback({includeClasses:includeC, excludeClasses:excludeC, includeDatatypes:includeD, excludeDatatypes:excludeD}).conceptCallback();
 		
 		<c:if test="${not empty showAnswers}">
 			//override the callback with one that actually goes to the answers
-			callback = new ConceptSearchCallback({showAnswersFor: "${showAnswers}"}).callbackForJustAnswers();
+			callback = new CreateCallback({showAnswersFor: "${showAnswers}"}).conceptAnswersCallback();
 		</c:if>
 		
 		// set up the autocomplete
 		new AutoComplete("${displayNameInputId}", callback, {
 			select: function(event, ui) {
-				${escaedFormFieldId}AutoCompleteOnSelect(ui.item.object, ui.item);
+				${escapedFormFieldId}AutoCompleteOnSelect(ui.item.object, ui.item);
 			}
 		});
 
 		<c:if test="${not empty initialValue}">
 			// fetch the concept object they passed the value in of and do the normal "select" stuff
-			DWRConceptService.getConcept("${initialValue}", function(concept) { ${escaedFormFieldId}AutoCompleteOnSelect(concept); });
+			DWRConceptService.getConcept("${initialValue}", function(concept) { ${escapedFormFieldId}AutoCompleteOnSelect(concept); });
 		</c:if>
 		
 		<c:if test="${not empty showAnswers}">
@@ -65,7 +65,7 @@
 		
 	})
 	
-	function ${escaedFormFieldId}AutoCompleteOnSelect(concept, item) {
+	function ${escapedFormFieldId}AutoCompleteOnSelect(concept, item) {
 		jquerySelectEscaped('${formFieldId}').val(concept.conceptId);
 
 		// if called with initialValue, show the name ourselves

@@ -44,9 +44,9 @@ var obsTableToRefresh = "";
 
 function obsSearch( patientField, conceptField, encounterField, obsTable, obsDiv ) {
 	showDiv(obsDiv);
-	var patientId = patientField.length == 0 ? "" : dwr.util.getValue(patientField);
-	var conceptId = conceptField.length == 0 ? "" : dwr.util.getValue(conceptField);
-	var encounterId = encounterField.length == 0 ? "" : dwr.util.getValue(encounterField);
+	var patientId = patientField.length == 0 ? "" : jquerySelectEscaped(patientField).val();
+	var conceptId = conceptField.length == 0 ? "" : jquerySelectEscaped(conceptField).val();
+	var encounterId = encounterField.length == 0 ? "" : jquerySelectEscaped(encounterField).val();
 	obsTableToRefresh = obsTable;
 	DWRObsService.getObsByPatientConceptEncounter(patientId, conceptId, encounterId, refreshObsTable);
 }
@@ -78,29 +78,17 @@ function refreshObsTable(obss) {
 	}
 }
 
-function obsSearchClear( patientField, conceptField, encounterField ) {
-	if ( patientField.length > 0 ) {
-		dwr.util.setValue(patientField, "");
-		var patPopup = dojo.widget.manager.getWidgetById("personId_selection");
-		if ( patPopup ) {
-			patPopup.displayNode.innerHTML = "";
-			patPopup.setChangeButtonValue();
-		}
+function obsSearchClear( personField, conceptField, encounterField ) {
+	if ( personField.length > 0 ) {
+		jquerySelectEscaped(personField).val("");
+		jquerySelectEscaped(personField + "_selection").val("");
 	}
 	if ( conceptField.length > 0 ) {
-		dwr.util.setValue(conceptField, "");
-		var conPopup = dojo.widget.manager.getWidgetById("conceptId_selection");
-		if ( conPopup ) {
-			conPopup.displayNode.innerHTML = "";
-			conPopup.setChangeButtonValue();
-		}
+		jquerySelectEscaped(conceptField).val("");
+		jquerySelectEscaped(conceptField + "_selection").val("");
 	}
 	if ( encounterField.length > 0 ) {
-		dwr.util.setValue(encounterField, "");
-		var encPopup = dojo.widget.manager.getWidgetById("encounterId_selection");
-		if ( encPopup ) {
-			encPopup.displayNode.innerHTML = "";
-			encPopup.setChangeButtonValue();
-		}
+		jquerySelectEscaped(encounterField).val("");
+		jquerySelectEscaped(encounterField + "_selection").val("");
 	}
 }

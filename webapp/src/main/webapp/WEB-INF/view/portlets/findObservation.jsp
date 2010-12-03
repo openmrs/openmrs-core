@@ -1,5 +1,7 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
+<openmrs:htmlInclude file="/dwr/util.js" />
+
 <c:if test="${model.authenticatedUser != null}">
 	<c:choose>
 		<c:when test="${model.size == 'compact'}">
@@ -28,11 +30,11 @@
 								<tr class="searchObsByPatient">
 									<td><span><spring:message code="Obs.person" /></span>:</td>
 									<!-- <spring:message code="ObsSearch.patientLabel" var="patientLabel" /> -->
-									<td><openmrs_tag:personField formFieldName="personId" /></td>
+									<td><openmrs_tag:personField formFieldName="personId" formFieldId="personId" /></td>
 								</tr>
 								<tr class="searchObsByConcept">
 									<td><span><spring:message code="Obs.concept" /></span> <span class="instructions">(<spring:message code="general.optional" />)</span>:</td>
-									<td><openmrs_tag:conceptField formFieldName="conceptId" /></td>
+									<td><openmrs_tag:conceptField formFieldName="conceptId" formFieldId="conceptId"/></td>
 								</tr>
 								<tr>
 									<td colspan="2">
@@ -48,7 +50,7 @@
 								<tr class="searchObsByEncounter">
 									<td><span><spring:message code="Obs.encounter" /></span>:</td>
 									<!-- <spring:message code="ObsSearch.encounterLabel" var="encounterLabel" /> -->
-									<td><openmrs_tag:encounterField formFieldName="encounterId" searchLabel="${encounterLabel}" initialValue="" linkUrl="" callback="" /></td>
+									<td><openmrs_tag:encounterField formFieldName="encounterId" formFieldId="encounterId" searchLabel="${encounterLabel}" initialValue="" linkUrl="" callback="" /></td>
 								</tr>
 								<tr>
 									<td colspan="2">

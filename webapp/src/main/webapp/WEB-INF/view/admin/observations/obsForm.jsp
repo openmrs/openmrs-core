@@ -6,15 +6,8 @@
 <%@ include file="localHeader.jsp" %>
 
 <openmrs:htmlInclude file="/scripts/calendar/calendar.js" />
-<openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
 
 <script type="text/javascript">
-	dojo.require("dojo.widget.openmrs.ConceptSearch");
-	dojo.require("dojo.widget.openmrs.EncounterSearch");
-	dojo.require("dojo.widget.openmrs.OpenmrsPopup");
-
-	var encounterSearch;
-	var encounterSelection;
 
 	// on concept select:
 	function onQuestionSelect(concept) {
@@ -29,26 +22,12 @@
 		$j("#codedDescription").html(concept.description);
 	}
 	
-	dojo.addOnLoad( function() {
-		encounterSelection = dojo.widget.manager.getWidgetById("encounterSelection");
-		encounterSearch = dojo.widget.manager.getWidgetById("eSearch");
-		
-		dojo.event.topic.subscribe("eSearch/select", 
-			function(msg) {
-				var encounterSearch = dojo.widget.manager.getWidgetById("eSearch");
-				encounterSelection.hiddenInputNode.value = msg.objs[0].encounterId;
-				encounterSelection.displayNode.innerHTML = msg.objs[0].location + " - " + encounterSearch.getDateString(msg.objs[0].encounterDateTime);
-			}
-		);
-		
-	});
-	
 	function showProposeConceptForm() {
 		var qs = "?";
-		var encounterId = "${obs.encounter.encounterId}" || $("encounterId").value;
+		var encounterId = "${obs.encounter.encounterId}" || $j("#encounterId").val();
 		if (encounterId != "")
 			qs += "&encounterId=" + encounterId;
-		var obsConceptId = "${obs.concept.conceptId}" || $("conceptId").value
+		var obsConceptId = "${obs.concept.conceptId}" || $j("#conceptId").val();
 		if (obsConceptId != "")
 			qs += "&obsConceptId=" + obsConceptId;
 		document.location = "${pageContext.request.contextPath}/admin/concepts/proposeConcept.form" + qs;
@@ -80,9 +59,9 @@
 				
 				// set up the autocomplete for the answers
 				var conceptId = $j("#conceptId").val();
-				new AutoComplete("valueCoded_selection", new ConceptSearchCallback({showAnswersFor: conceptId}).callbackForJustAnswers(), {'minLength':'0'});
+				new AutoComplete("valueCoded_selection", new CreateCallback({showAnswersFor: conceptId}).conceptAnswersCallback(), {'minLength':'0'});
 				$j("#valueCoded_selection").autocomplete().focus(function(event, ui) {
-					if (ui && ui.value == "")
+					if (event.target.value == "")
 						$j("#valueCoded_selection").trigger('keydown.autocomplete');
 				}); // trigger the drop down on focus
 
@@ -106,14 +85,14 @@
 	}
 	
 	function fillNumericUnits(units) {
-		$('numericUnits').innerHTML = units;
+		$j('#numericUnits').html(units);
 	}
 	
 	function validateNumericRange(value) {
 		if (!isNaN(value) && value != '') {
-			var conceptId = conceptSelection.hiddenInputNode.value;
+			var conceptId = $j("#conceptId").val();
 			var numericErrorMessage = function(validValue) {
-				var errorTag = $('numericRangeError');
+				var errorTag = document.getElementById('numericRangeError');
 				errorTag.className = "error";
 				if (validValue == false)
 					errorTag.innerHTML = '<spring:message code="ConceptNumeric.invalid.msg"/>';
@@ -137,7 +116,7 @@
 	
 	var fillValueInvalidPossible = function(invalidConcept) {
 		return function(questions) {
-			var div = $('valueInvalidPossibleConcepts');
+			var div = document.getElementById('valueInvalidPossibleConcepts');
 			div.innerHTML = "";
 			var txt = document.createTextNode('<spring:message code="Obs.valueInvalid.didYouMean"/> ');
 			for (var i=0; i<questions.length && i < 10; i++) {
@@ -198,9 +177,6 @@
 		background-color: red;
 		color: white;
 	}
-	#encounterSelection .popupSearchForm {
-		width: 700px;
-	}
 	.obsValue {
 		display: none;
 	}
@@ -253,7 +229,6 @@
 	<tr>
 		<th><spring:message code="Obs.person"/></th>
 		<td>
-			<script type="text/javascript">$('obsTable').style.visibility = 'hidden';</script>
 			<spring:bind path="person">
 				<openmrs_tag:personField formFieldName="person" searchLabelCode="Person.findBy" initialValue="${status.editor.value.personId}" linkUrl="" callback="" />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
@@ -266,8 +241,7 @@
 			<spring:bind path="encounter">
 				<c:choose>
 					<c:when test="${obs.encounter == null}">
-						<div dojoType="EncounterSearch" widgetId="eSearch"></div>
-						<div dojoType="OpenmrsPopup" widgetId="encounterSelection" hiddenInputName="encounter" hiddenInputId="encounterId" searchWidget="eSearch" searchTitle='<spring:message code="Encounter.find" />'></div>
+						<openmrs_tag:encounterField formFieldName="encounter" formFieldId="encounterId" />
 						<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 					</c:when>
 					<c:otherwise>
@@ -528,9 +502,5 @@
 	</openmrs:hasPrivilege>
 </openmrs:extensionPoint>
 </c:if>
-
-<script type="text/javascript">
-	$('obsTable').style.visibility = 'visible';
-</script>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>

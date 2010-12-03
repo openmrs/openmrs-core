@@ -29,7 +29,7 @@ public class EncounterListItem {
 	
 	private String encounterType;
 	
-	private String PersonName;
+	private String personName;
 	
 	private String location;
 	
@@ -54,13 +54,13 @@ public class EncounterListItem {
 			encounterDateString = Format.format(encounter.getEncounterDatetime());
 			PersonName pn = encounter.getPatient().getPersonName();
 			if (pn != null) {
-				PersonName = "";
+				personName = "";
 				if (pn.getGivenName() != null)
-					PersonName += pn.getGivenName();
+					personName += pn.getGivenName();
 				if (pn.getMiddleName() != null)
-					PersonName += " " + pn.getMiddleName();
+					personName += " " + pn.getMiddleName();
 				if (pn.getFamilyName() != null)
-					PersonName += " " + pn.getFamilyName();
+					personName += " " + pn.getFamilyName();
 			}
 			if (encounter.getProvider() != null)
 				providerName = encounter.getProvider().getPersonName().toString();
@@ -115,11 +115,11 @@ public class EncounterListItem {
 	}
 	
 	public String getPersonName() {
-		return PersonName;
+		return personName;
 	}
 	
 	public void setPersonName(String newPersonName) {
-		this.PersonName = newPersonName;
+		this.personName = newPersonName;
 	}
 	
 	public String getProviderName() {
