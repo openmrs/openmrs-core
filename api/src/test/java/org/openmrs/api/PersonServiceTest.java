@@ -1261,6 +1261,24 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		Assert.assertNull(Context.getPersonService().getRelationshipTypeByUuid("some invalid uuid"));
 	}
 
+	/**
+	 * @see PersonService#parsePersonName(String)
+	 * @verifies not fail when ending with whitespace
+	 */
+	@Test
+	public void parsePersonName_shouldNotFailWhenEndingWithWhitespace() throws Exception {
+		Context.getPersonService().parsePersonName("John ");
+	}
 
+	/**
+	 * @see PersonService#parsePersonName(String)
+	 * @verifies not fail when ending with a comma
+	 */
+	@Test
+	public void parsePersonName_shouldNotFailWhenEndingWithAComma() throws Exception {
+		PersonName pname = Context.getPersonService().parsePersonName("John,");
+		assertEquals("John", pname.getGivenName());
+		
+	}
 
 }
