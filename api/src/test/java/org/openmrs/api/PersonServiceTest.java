@@ -168,6 +168,11 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		PersonName pname = Context.getPersonService().parsePersonName("Doe, John");
 		assertEquals("Doe", pname.getFamilyName());
 		assertEquals("John", pname.getGivenName());
+		
+		// try without a space
+		pname = Context.getPersonService().parsePersonName("Doe,John");
+		assertEquals("Doe", pname.getFamilyName());
+		assertEquals("John", pname.getGivenName());
 	}
 	
 	/**

@@ -775,7 +775,12 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 * @see org.openmrs.api.PersonService#parsePersonName(java.lang.String)
 	 */
 	public PersonName parsePersonName(String name) throws APIException {
-		name = name.trim(); // strip beginning/ending whitespace
+		// strip beginning/ending whitespace
+		name = name.trim();
+		
+		// trim off all trailing commas
+		while (name.endsWith(","))
+			name = name.substring(0, name.length() - 1);
 		
 		String firstName = name;
 		String middleName = "";
@@ -783,27 +788,23 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		
 		if (name.contains(",")) {
 			
-			// trim off all trailing commas
-			while (name.endsWith(","))
-				name = name.substring(0, name.length() - 1);
+			String[] names = name.split(",");
 			
-			String[] names = name.split(", ");
-			if (names.length > 1) {
-				String[] firstNames = names[1].split(" ");
-				if (firstNames.length == 2) {
-					// user entered "Smith, John Adam"
-					lastName = names[0];
-					firstName = firstNames[0];
-					middleName = firstNames[1];
-				} else {
-					// user entered "Smith, John"
-					firstName = names[1];
-					lastName = names[0];
-				}
+			// trim whitespace on each part of the name
+			for (int x = 0; x < names.length; x++) {
+				names[x] = names[x].trim();
 			}
-			else {
-				// user entered something with a trailing comma
-				firstName = name;
+			
+			String[] firstNames = names[1].split(" ");
+			if (firstNames.length == 2) {
+				// user entered "Smith, John Adam"
+				lastName = names[0];
+				firstName = firstNames[0];
+				middleName = firstNames[1];
+			} else {
+				// user entered "Smith, John"
+				firstName = names[1];
+				lastName = names[0];
 			}
 		} else if (name.contains(" ")) {
 			String[] names = name.split(" ");
