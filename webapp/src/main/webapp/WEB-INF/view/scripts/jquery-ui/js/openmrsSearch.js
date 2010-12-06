@@ -113,7 +113,12 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
  */
 (function($j) {
 	var openmrsSearch_div = '<span><span style="white-space: nowrap"><span><span id="searchLabelNode"></span><input type="text" value="" id="inputNode" autocomplete="off"/><input type="checkbox" style="display: none" id="includeRetired"/><img id="spinner" src=""/><input type="checkbox" style="display: none" id="includeVoided"/><input type="checkbox" style="display: none" id="verboseListing"/><span id="loadingMsg"></span><span id="minCharError" class="error"></span><span id="pageInfo"></span><br /><span id="searchWidgetNotification"></span></span></span><span class="openmrsSearchDiv"><table id="openmrsSearchTable" cellpadding="2" cellspacing="0" style="width: 100%"><thead id="searchTableHeader"><tr></tr></thead><tbody></tbody></table></span></span>';
-	var BATCH_SIZE = 200;
+	var BATCH_SIZE = omsgs.maxSearchResults;
+	if(!Number(BATCH_SIZE))
+		BATCH_SIZE = 200;
+	var ajaxTimer = null;
+	var buffer = null;
+	var inSerialMode = Boolean(omsgs.searchRunInSerialMode);
 	$j.widget("ui.openmrsSearch", {
 		plugins: {},
 		options: {
@@ -215,6 +220,9 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 						
 	    			if($j("#minCharError").css("visibility") == 'visible')
 	    				$j("#minCharError").css("visibility", "hidden");
+	    			//This discontinues any further ajax SUB calls from the last triggered search
+	    			if(!inSerialMode && ajaxTimer)
+	    				window.clearInterval(ajaxTimer);
 	    			
 	    			self._doSearch(text);
 	    		}
@@ -422,6 +430,8 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 				if(matchCount > self._table.fnSettings()._iDisplayLength){
 					spinnerObj.css("visibility", "visible");
 					var startIndex = self._table.fnSettings()._iDisplayLength;
+					if(!inSerialMode)
+						buffer = new Array;//empty the buffer
 					
 					loadingMsg.html(omsgs.loadingWithArgument.replace("_NUMBER_OF_PAGES_", matchCount));
 					self._fetchMoreResults(searchText, curCallCount, startIndex, matchCount);										
@@ -431,9 +441,30 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		},
 		
 		_fetchMoreResults: function(searchText, curCallCount, startIndex, matchCount){
+			//if a new ajax call has been triggered off
+			if(curCallCount && this._lastCallCount > curCallCount) {
+				return;
+			}
+			
 			this.options.searchHandler(searchText, this._addMoreRows(curCallCount, searchText, matchCount, startIndex),
-					false, {includeVoided: this.options.showIncludeVoided && checkBox.attr('checked'),
-					start: startIndex, length: BATCH_SIZE});
+				false, {includeVoided: this.options.showIncludeVoided && checkBox.attr('checked'),
+				start: startIndex, length: BATCH_SIZE});
+					
+			if(inSerialMode)
+				return;
+				
+			var self = this;
+			ajaxTimer = window.setTimeout(function(){
+				nextStart = startIndex+BATCH_SIZE;
+				if(nextStart < matchCount){
+					self._fetchMoreResults(searchText, curCallCount, nextStart, matchCount);
+				}
+				else{
+					if(ajaxTimer)
+						window.clearTimeout(ajaxTimer);
+						return;
+					}
+			}, 10);
 		},
 			
 		_doHandleResults: function(matchCount, searchText) {
@@ -691,8 +722,11 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 				}
 				
 				var data = results["objectList"];
+				//if error occured on server
 				if(data && data.length > 0 && typeof data[0] == 'string') {
-					//error occured on server
+					if(!inSerialMode && ajaxTimer)
+						window.clearTimeout(ajaxTimer);
+					
 					$j(notification).html(data[0]);
 					spinnerObj.css("visibility", "hidden");
 					loadingMsg.html("");
@@ -702,15 +736,51 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 				if(results["notification"])
 					$j(notification).html(results["notification"]);
 								
-				var newRows = new Array();
-				for(var x in data) {
-					currentData = data[x];
-					newRows.push(self._buildRow(currentData));
-					//add the data to the results list
-					self._results.push(currentData);
+				nextRowIndex = self._table.fnGetNodes().length;
+				//if this ajax sub call is the one we expected in to be next in line
+				//or if we are in serial mode
+				if(inSerialMode || (nextRowIndex == startIndex)){
+					var newRows = new Array();
+					for(var x in data) {
+						currentData = data[x];
+						newRows.push(self._buildRow(currentData));
+						//add the data to the results list
+						self._results.push(currentData);
+					}
+					
+					self._table.fnAddData(newRows);
+					
+					if(!inSerialMode){
+						//move to the currently last row in the datatable to determine the next start position
+						//note that (newRows.length == BATCH_SIZE) except sometimes for the last subcall
+						//which should not matter since it will always be the last to be fetched from the buffer
+						nextRowIndex += newRows.length;
+						
+						//fetch any buffered rows that were returned earlier
+						$j.each(buffer, function(key, bufferedRows) {
+							//Skip past the ones that come after those that are not yet returned by DWR calls e.g if we have ajax
+							//calls 3 and 5 in the buffer, when 2 returns, then add only 3 and ingore 5 since it has to wait on 4
+							if(key == nextRowIndex && bufferedRows){
+								self._table.fnAddData(bufferedRows);
+								buffer[key] = null;
+								nextRowIndex += bufferedRows.length;
+							}
+						});
+					}
 				}
-				
-				self._table.fnAddData(newRows);
+				else if(!inSerialMode && startIndex > nextRowIndex){
+					//this ajax request returned before others that were made before it, add its results to the buffer
+					var bufferedRows = new Array();
+					for(var x in data) {
+						bufferedData = data[x];
+						bufferedRows.push(self._buildRow(bufferedData));
+						//add the data to the results list
+						self._results.push(bufferedData);
+					}
+					
+					buffer[startIndex] = bufferedRows;
+					return;
+				}
 				
 				//update the page statistics to match the actual hit count, this is important for searches
 				//where the actual result count is less or more than the predicted matchCount
@@ -722,9 +792,8 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 				
 				self._updatePageInfo(searchText);
 				
-				nextStartIndex = startIndex +  BATCH_SIZE;
 				//all the hits have been fetched
-				if(nextStartIndex >= matchCount){
+				if(actualResultCount >= matchCount){
 					spinnerObj.css("visibility", "hidden");
 					loadingMsg.html("");
 					$j('#pageInfo').html(omsgs.viewingResultsFor.replace("_SEARCH_TEXT_", "'<b>"+searchText+"</b>'"));
@@ -784,9 +853,10 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 					}
 				});
 				
-				//if there are still more hits to fetch, get them
-				if(nextStartIndex < matchCount)
-					self._fetchMoreResults(searchText, curCallCount2, nextStartIndex, matchCount);
+				//if there are still more hits to fetch and we are in serial mode, get them
+				if(inSerialMode && actualResultCount < matchCount){
+					self._fetchMoreResults(searchText, curCallCount2, (startIndex+BATCH_SIZE), matchCount);
+				}
 			};
 		}
 	});

@@ -99,6 +99,8 @@ omsgs.page="<spring:message code="searchWidget.page" javaScriptEscape="true" />"
 omsgs.pages="<spring:message code="searchWidget.pages" javaScriptEscape="true" />";
 omsgs.onePage="<spring:message code="searchWidget.OnePage" javaScriptEscape="true" />";
 omsgs.pagesWithPlaceHolder="<spring:message code="searchWidget.pagesWithPlaceHolder" javaScriptEscape="true" />";
+omsgs.maxSearchResults=<openmrs:globalProperty key="searchWidget.batchSize" defaultValue="200"/>;
+omsgs.searchRunInSerialMode=<openmrs:globalProperty key="searchWidget.runInSerialMode" defaultValue="false"/>;
 
 omsgs.identifier="<spring:message code="Patient.identifier" javaScriptEscape="true" />";
 omsgs.givenName="<spring:message code="PersonName.givenName" javaScriptEscape="true" />";

@@ -808,6 +808,17 @@ public final class OpenmrsConstants {
 	 * Global property name for critical color for patient graphs.
 	 */
 	public static final String GP_GRAPH_COLOR_CRITICAL = "graph.color.critical";
+	
+	/**
+	 * Global property name for the maximum number of search results that are returned by a single ajax call
+	 */
+	public static final String GP_SEARCH_WIDGET_BATCH_SIZE = "searchWidget.batchSize";
+	
+	/**
+	 * Global property name for the mode the search widgets should run in, this depends on the speed of the
+	 * network's connection
+	 */
+	public static final String GP_SEARCH_WIDGET_IN_SERIAL_MODE = "searchWidget.runInSerialMode";
 
 	/**
 	 * At OpenMRS startup these global properties/default values/descriptions are inserted into the
@@ -1123,6 +1134,14 @@ public final class OpenmrsConstants {
 		
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_REPORT_BUG_URL, "http://errors.openmrs.org/scrap",
 		        "The openmrs url where to submit bug reports"));
+		
+		props.add(new GlobalProperty(GP_SEARCH_WIDGET_BATCH_SIZE, "200",
+        		"The maximum number of search results that are returned by an ajax call"));
+		
+		props.add(new GlobalProperty(
+	        GP_SEARCH_WIDGET_IN_SERIAL_MODE,
+	        "false",
+	        "Specifes whether the search widgets should make ajax requests in serial or parallel order, a value of true is appropriate for implementations running on a slow network connection and vice versa"));
 
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);
