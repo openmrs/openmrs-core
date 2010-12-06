@@ -49,7 +49,7 @@
 		<div id="findEncounter" <request:existsParameter name="autoJump">allowAutoJump='true'</request:existsParameter> ></div>
 	</div>
 </div>
-
+<span id="debug""></span>
 <openmrs:extensionPoint pointId="org.openmrs.admin.encounters.index.footer" type="html" />
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>
