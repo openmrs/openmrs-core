@@ -1291,6 +1291,9 @@ span#searchWidgetNotification{
 span#loadingMsg{
 	font-weight: bold; margin-left: 10px; font-style: italic;
 }
+.dataTables_info{
+	font-weight: bold
+}
 /* END- css properties for the search widgets */
 .ui-autocomplete {
 	max-height: 60%;
