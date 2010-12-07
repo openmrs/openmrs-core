@@ -32,12 +32,16 @@
 				</td>
 				<td class="dashedAndHighlighted" id="newCustomObs_${conceptId}" style="display:none">
 				
+				<openmrs:format conceptId="${conceptId}"/>
 				<c:choose>
 					<c:when test="${thisConcept.datatype.hl7Abbreviation == 'DT'}">		
-				 		<openmrs:format conceptId="${conceptId}"/><input type="text" size="10" value="" onClick="showCalendar(this)" id="value_${conceptId}" />
+				 		<input type="text" size="10" value="" onClick="showCalendar(this)" id="value_${conceptId}" />
+					</c:when>
+					<c:when test="${thisConcept.datatype.hl7Abbreviation == 'CWE'}">
+						<openmrs:fieldGen type="org.openmrs.Concept" formFieldName="value_${conceptId}" val="" parameters="noBind=true|showAnswers=${conceptId}" />
 					</c:when>
 					<c:otherwise>
-						<openmrs:format conceptId="${conceptId}"/><input type="text" id="value_${conceptId}"/>	
+						<input type="text" id="value_${conceptId}"/>	
 					</c:otherwise>
 				</c:choose>	
 				

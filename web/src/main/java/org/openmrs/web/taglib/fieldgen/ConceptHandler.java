@@ -20,9 +20,6 @@ public class ConceptHandler extends AbstractFieldGenHandler implements FieldGenH
 	private String defaultUrl = "concept.field";
 	
 	public void run() {
-		htmlInclude("/scripts/dojoConfig.js");
-		htmlInclude("/scripts/dojo/dojo.js");
-		
 		setUrl(defaultUrl);
 		checkEmptyVal((Concept) null);
 		if (fieldGenTag != null) {
