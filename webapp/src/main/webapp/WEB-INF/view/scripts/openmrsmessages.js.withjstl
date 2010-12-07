@@ -102,4 +102,4 @@ omsgs.searchRunInSerialMode=<openmrs:globalProperty key="searchWidget.runInSeria
 omsgs.sInfoLabel="<spring:message code="searchWidget.sInfoLabel" javaScriptEscape="true" />";
 omsgs.to="<spring:message code="general.to" javaScriptEscape="true" />";
 omsgs.viewingResultsFor="<spring:message code="searchWidget.viewingResults" javaScriptEscape="true" />";
-omsgs.loadingWithArgument="<spring:message code="searchWidget.loadingWithPlaceHolder" javaScriptEscape="true" />"
+omsgs.loadingWithArgument="<spring:message code="searchWidget.loadingWithPlaceHolder" javaScriptEscape="true" />";

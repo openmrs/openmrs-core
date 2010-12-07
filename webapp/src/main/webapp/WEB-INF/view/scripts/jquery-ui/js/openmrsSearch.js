@@ -314,6 +314,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    	currPage: 0,
 		    	bAutoWidth: false,
 		    	bJQueryUI: true,
+		    	sDom: 'rt<"fg-button ui-helper-clearfix"flip>',
 		    	oLanguage: {
 		    		"sInfo": omsgs.sInfoLabel,
 		    		"oPaginate": {"sFirst": omsgs.first, "sPrevious": omsgs.previous, "sNext": omsgs.next, "sLast": omsgs.last},
