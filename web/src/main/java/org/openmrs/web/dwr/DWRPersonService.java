@@ -239,6 +239,7 @@ public class DWRPersonService {
 	 * @param length the number of matching people to return (this is only used for user search i.e
 	 *            of roles are specified)
 	 * @return list of persons that match the given searchPhrase. The PersonListItems
+	 * @since 1.8
 	 */
 	public Vector<Object> findBatchOfPeopleByRoles(String searchPhrase, boolean includeRetired, String roles, Integer start,
 	                                               Integer length) {
@@ -329,6 +330,8 @@ public class DWRPersonService {
 				
 			}
 			
+			//if we have any matches or this isn't the first ajax call when the caller
+			//requests for the count
 			if (personCount > 0 || !getMatchCount)
 				objectList = findBatchOfPeopleByRoles(phrase, includeRetired, roles, start, length);
 			

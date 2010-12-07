@@ -48,16 +48,12 @@ import org.springframework.transaction.annotation.Transactional;
  * 
  * <pre>
  * 
- * 
- * 
  * List&lt;Concept&gt; concepts = Context.getConceptService().getAllConcepts();
  * </pre>
  * 
  * To get a single concept:
  * 
  * <pre>
- * 
- * 
  * 
  * // if there is a concept row in the database with concept_id = 3845
  * Concept concept = Context.getConceptService().getConcept(3845);

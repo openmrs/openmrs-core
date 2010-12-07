@@ -38,8 +38,6 @@ import org.springframework.transaction.annotation.Transactional;
  * 
  * <pre>
  * 
- * 
- * 
  * List&lt;Patient&gt; patients = Context.getPatientService().getAllPatients();
  * </pre>
  * 

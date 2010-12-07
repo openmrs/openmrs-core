@@ -464,7 +464,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 						window.clearTimeout(ajaxTimer);
 						return;
 					}
-			}, 10);
+			}, 10);//fetch more results every 10ms till we have all
 		},
 			
 		_doHandleResults: function(matchCount, searchText) {

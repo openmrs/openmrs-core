@@ -60,7 +60,7 @@
 <div>
 	<b class="boxHeader"><spring:message code="Concept.find"/></b>
 	<div class="searchWidgetContainer">
-		<div id="findConcept" <request:existsParameter name="autoJump">allowAutoJump='true'</request:existsParameter> ></div>
+		<div id="findConcept"></div>
 	</div>
 </div>
 

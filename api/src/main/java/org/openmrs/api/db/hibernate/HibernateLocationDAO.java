@@ -206,7 +206,7 @@ public class HibernateLocationDAO implements LocationDAO {
 		if (StringUtils.isNotBlank(nameFragment))
 			criteria.add(Expression.ilike("name", nameFragment, MatchMode.START));
 		
-		criteria.addOrder(Order.asc("name")).list();
+		criteria.addOrder(Order.asc("name"));
 		if (start != null)
 			criteria.setFirstResult(start);
 		if (length != null && length > 0)

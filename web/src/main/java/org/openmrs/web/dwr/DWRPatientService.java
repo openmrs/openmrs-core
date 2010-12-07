@@ -97,6 +97,7 @@ public class DWRPatientService implements GlobalPropertyListener {
 	 * @param start The starting index for the results to return
 	 * @param length The number of results of return
 	 * @return Collection<Object> of PatientListItem or String
+	 * @since 1.8
 	 */
 	@SuppressWarnings("unchecked")
 	public Collection<Object> findBatchOfPatients(String searchValue, boolean includeVoided, Integer start, Integer length) {
@@ -302,6 +303,8 @@ public class DWRPatientService implements GlobalPropertyListener {
 				
 			}
 			
+			//if we have any matches or this isn't the first ajax call when the caller
+			//requests for the count
 			if (patientCount > 0 || !getMatchCount)
 				objectList = findBatchOfPatients(searchValue, false, start, length);
 			
