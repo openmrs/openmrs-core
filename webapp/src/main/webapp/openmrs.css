@@ -1294,6 +1294,9 @@ span#loadingMsg{
 .dataTables_info{
 	font-weight: bold
 }
+div#openmrsSearchTable_wrapper{
+	min-height:0px; height: auto !important;
+}
 /* END- css properties for the search widgets */
 .ui-autocomplete {
 	max-height: 60%;
