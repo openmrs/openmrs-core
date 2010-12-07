@@ -78,35 +78,28 @@ omsgs.userListingHeaders=new Array();
 </openmrs:forEachDisplayAttributeType>
 
 /* General Labels and text to be used on SEARCH WIDGET */
-omsgs.minCharRequired="<spring:message code="searchWidget.minCharRequired" javaScriptEscape="true" />";
-omsgs.searchLabel="<spring:message code="searchWidget.searchLabel" javaScriptEscape="true" />";
-omsgs.patientName="<spring:message code="Patient.name" javaScriptEscape="true" />";
+
 omsgs.encounterType="<spring:message code="Encounter.type" javaScriptEscape="true" />";
 omsgs.encounterForm="<spring:message code="Encounter.form" javaScriptEscape="true" />";
 omsgs.encounterProvider="<spring:message code="Encounter.provider" javaScriptEscape="true" />";
 omsgs.encounterLocation="<spring:message code="Encounter.location" javaScriptEscape="true" />";
 omsgs.encounterDate="<spring:message code="Encounter.datetime" javaScriptEscape="true" />";
-omsgs.to="<spring:message code="general.to" javaScriptEscape="true" />";
-omsgs.of="<spring:message code="general.of" javaScriptEscape="true" />";
-omsgs.sInfoLabel="<spring:message code="searchWidget.sInfoLabel" javaScriptEscape="true" />";
-omsgs.first="<spring:message code="searchWidget.first" javaScriptEscape="true" />";
-omsgs.previous="<spring:message code="searchWidget.previous" javaScriptEscape="true" />";
-omsgs.next="<spring:message code="searchWidget.next" javaScriptEscape="true" />";
 omsgs.last="<spring:message code="searchWidget.last" javaScriptEscape="true" />";
+omsgs.first="<spring:message code="searchWidget.first" javaScriptEscape="true" />";
+omsgs.minCharRequired="<spring:message code="searchWidget.minCharRequired" javaScriptEscape="true" />";
+omsgs.next="<spring:message code="searchWidget.next" javaScriptEscape="true" />";
 omsgs.noMatchesFound="<spring:message code="searchWidget.noMatchesFound" javaScriptEscape="true" />";
-omsgs.viewingResultsFor="<spring:message code="searchWidget.viewingResults" javaScriptEscape="true" />";
 omsgs.page="<spring:message code="searchWidget.page" javaScriptEscape="true" />";
 omsgs.pages="<spring:message code="searchWidget.pages" javaScriptEscape="true" />";
-omsgs.onePage="<spring:message code="searchWidget.OnePage" javaScriptEscape="true" />";
+omsgs.patientName="<spring:message code="Patient.name" javaScriptEscape="true" />";
+omsgs.previous="<spring:message code="searchWidget.previous" javaScriptEscape="true" />";
 omsgs.pagesWithPlaceHolder="<spring:message code="searchWidget.pagesWithPlaceHolder" javaScriptEscape="true" />";
+omsgs.of="<spring:message code="general.of" javaScriptEscape="true" />";
+omsgs.onePage="<spring:message code="searchWidget.OnePage" javaScriptEscape="true" />";
 omsgs.maxSearchResults=<openmrs:globalProperty key="searchWidget.batchSize" defaultValue="200"/>;
+omsgs.searchLabel="<spring:message code="searchWidget.searchLabel" javaScriptEscape="true" />";
 omsgs.searchRunInSerialMode=<openmrs:globalProperty key="searchWidget.runInSerialMode" defaultValue="false"/>;
-
-omsgs.identifier="<spring:message code="Patient.identifier" javaScriptEscape="true" />";
-omsgs.givenName="<spring:message code="PersonName.givenName" javaScriptEscape="true" />";
-omsgs.middleName="<spring:message code="PersonName.middleName" javaScriptEscape="true" />";
-omsgs.familyName="<spring:message code="PersonName.familyName" javaScriptEscape="true" />";
-omsgs.age="<spring:message code="Person.age" javaScriptEscape="true" />";
-omsgs.gender="<spring:message code="Person.gender" javaScriptEscape="true" />";
-omsgs.birthdate="<spring:message code="Person.birthdate" javaScriptEscape="true" />";
+omsgs.sInfoLabel="<spring:message code="searchWidget.sInfoLabel" javaScriptEscape="true" />";
+omsgs.to="<spring:message code="general.to" javaScriptEscape="true" />";
+omsgs.viewingResultsFor="<spring:message code="searchWidget.viewingResults" javaScriptEscape="true" />";
 omsgs.loadingWithArgument="<spring:message code="searchWidget.loadingWithPlaceHolder" javaScriptEscape="true" />"

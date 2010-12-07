@@ -1584,6 +1584,7 @@
 	    <property name="globalPropertyListeners">
 	        <list value-type="org.openmrs.api.GlobalPropertyListener" merge="true">
 	            <bean class="org.openmrs.web.controller.PseudoStaticContentController" />
+	            <bean class="org.openmrs.web.dwr.DWRPatientService" />
 	        </list>
 	    </property>
 	</bean>

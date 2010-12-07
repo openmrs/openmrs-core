@@ -362,12 +362,13 @@ public class HibernateUserDAO implements UserDAO {
 		
 		String hqlSelectStart = "select distinct user from User as user inner join user.person.names as name ";
 		Query query = createUserSearchQuery(name, roles, includeRetired, hqlSelectStart);
-		List<User> returnList = query.list();
 		
 		if (start != null)
 			query.setFirstResult(start);
 		if (length != null && length > 0)
-			query.setFetchSize(length);
+			query.setMaxResults(length);
+		
+		List<User> returnList = query.list();
 		
 		if (!CollectionUtils.isEmpty(returnList))
 			Collections.sort(returnList, new UserByNameComparator());
@@ -566,8 +567,6 @@ public class HibernateUserDAO implements UserDAO {
 		//Match against the specified roles
 		if (searchOnRoles)
 			hql += " and role in (:roleList)";
-		
-		hql += " order by user.username asc";
 		
 		Query query = sessionFactory.getCurrentSession().createQuery(hql);
 		

@@ -81,6 +81,7 @@ public class DWRConceptService {
 	 * @param start the beginning index
 	 * @param length the number of matching concepts to return
 	 * @return a list of conceptListItems matching the given arguments
+	 * @since 1.8
 	 */
 	public List<Object> findBatchOfConcepts(String phrase, boolean includeRetired, List<String> includeClassNames,
 	                                        List<String> excludeClassNames, List<String> includeDatatypeNames,
@@ -566,6 +567,8 @@ public class DWRConceptService {
 					//	matchCount += cs.getCountOfDrugs(phrase, null, false, includeRetired);
 				}
 				
+				//if we have any matches or this isn't the first ajax call when the caller
+				//requests for the count
 				if (matchCount > 0 || !getMatchCount) {
 					objectList.addAll(findBatchOfConcepts(phrase, includeRetired, includeClassNames, excludeClassNames,
 					    includeDatatypeNames, excludeDatatypeNames, start, length));

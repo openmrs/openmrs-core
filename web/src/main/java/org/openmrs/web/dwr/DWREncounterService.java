@@ -57,6 +57,7 @@ public class DWREncounterService {
 	 * @param length the number of matching encounters to return
 	 * @return list of the matching encounters
 	 * @throws APIException
+	 * @since 1.8
 	 */
 	public Vector findBatchOfEncounters(String phrase, boolean includeVoided, Integer start, Integer length)
 	                                                                                                        throws APIException {
@@ -141,6 +142,8 @@ public class DWREncounterService {
 				}
 			}
 			
+			//If we have any matches, load them or if this is not the first ajax call
+			//for displaying the results on the first page, the getMatchCount is expected to be zero
 			if (encounterCount > 0 || !getMatchCount)
 				objectList = findBatchOfEncounters(phrase, includeVoided, start, length);
 			
@@ -179,6 +182,7 @@ public class DWREncounterService {
 	 * @param length the number of matching locations to return
 	 * @return list of the matching locations
 	 * @throws APIException
+	 * @since 1.8
 	 */
 	public Vector<Object> findBatchOfLocations(String searchValue, Integer start, Integer length) throws APIException {
 		
@@ -261,7 +265,8 @@ public class DWREncounterService {
 			int locationCount = 0;
 			if (getMatchCount)
 				locationCount += es.getCountOfLocations(phrase, true);
-			
+			//if we have any matches or this isn't the first ajax call when the caller
+			//requests for the count
 			if (locationCount > 0 || !getMatchCount)
 				objectList = findBatchOfLocations(phrase, start, length);
 			

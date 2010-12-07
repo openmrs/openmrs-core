@@ -19,7 +19,7 @@
 					{fieldName:"familyName", header:omsgs.familyName},
 					{fieldName:"age", header:omsgs.age},
 					{fieldName:"gender", header:omsgs.gender},
-					{fieldName:"birthdateStr", header:omsgs.birthdate},
+					{fieldName:"birthdateString", header:omsgs.birthdate},
 				],
 				{searchLabel: '<spring:message code="Patient.searchBox" javaScriptEscape="true"/>'});
 	});
@@ -41,7 +41,7 @@
 <div>
 	<b class="boxHeader"><spring:message code="Patient.find"/></b>
 	<div class="searchWidgetContainer">
-		<div id="findPatients" <request:existsParameter name="autoJump">allowAutoJump='true'</request:existsParameter> ></div>
+		<div id="findPatients"></div>
 	</div>
 </div>
 

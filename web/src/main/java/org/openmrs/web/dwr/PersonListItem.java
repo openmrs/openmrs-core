@@ -53,7 +53,7 @@ public class PersonListItem {
 	
 	private Date birthdate;
 	
-	private String birthdateStr;
+	private String birthdateString;
 	
 	private Boolean birthdateEstimated = false;
 	
@@ -130,7 +130,7 @@ public class PersonListItem {
 			
 			gender = person.getGender();
 			birthdate = person.getBirthdate();
-			birthdateStr = Format.format(person.getBirthdate());
+			birthdateString = Format.format(person.getBirthdate());
 			birthdateEstimated = person.isBirthdateEstimated();
 			age = person.getAge();
 			voided = person.isPersonVoided();
@@ -173,12 +173,20 @@ public class PersonListItem {
 		this.birthdate = birthdate;
 	}
 	
-	public String getBirthdateStr() {
-		return birthdateStr;
+	/**
+	 * Returns a formatted birthdate value
+	 * 
+	 * @since 1.8
+	 */
+	public String getBirthdateString() {
+		return birthdateString;
 	}
 	
-	public void setBirthdateStr(String birthdateStr) {
-		this.birthdateStr = birthdateStr;
+	/**
+	 * @since 1.8
+	 */
+	public void setBirthdateString(String birthdateString) {
+		this.birthdateString = birthdateString;
 	}
 	
 	public Boolean getBirthdateEstimated() {
