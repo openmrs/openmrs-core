@@ -693,23 +693,27 @@ public interface PatientService extends OpenmrsService {
 	 * @param clazz identifierValidator which validator to get.
      * @should return patient identifier validator given class
 	 */
+	@Transactional(readOnly = true)
 	public IdentifierValidator getIdentifierValidator(Class<IdentifierValidator> clazz);
 	
 	/**
      * @should return patient identifier validator given class name
      */
+	@Transactional(readOnly = true)
 	public IdentifierValidator getIdentifierValidator(String pivClassName);
 	
 	/**
 	 * @return the default IdentifierValidator
 	 * @should return default patient identifier validator
 	 */
+	@Transactional(readOnly = true)
 	public IdentifierValidator getDefaultIdentifierValidator();
 	
 	/**
 	 * @return All registered PatientIdentifierValidators
 	 * @should return all registered patient identifier validators
 	 */
+	@Transactional(readOnly = true)
 	public Collection<IdentifierValidator> getAllIdentifierValidators();
 	
 	/**
