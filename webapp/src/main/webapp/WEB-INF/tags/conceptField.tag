@@ -43,13 +43,13 @@
 		// set up the autocomplete
 		new AutoComplete("${displayNameInputId}", callback, {
 			select: function(event, ui) {
-				${escapedFormFieldId}AutoCompleteOnSelect(ui.item.object, ui.item);
+				func${escapedFormFieldId}AutoCompleteOnSelect(ui.item.object, ui.item);
 			}
 		});
 
 		<c:if test="${not empty initialValue}">
 			// fetch the concept object they passed the value in of and do the normal "select" stuff
-			DWRConceptService.getConcept("${initialValue}", function(concept) { ${escapedFormFieldId}AutoCompleteOnSelect(concept); });
+			DWRConceptService.getConcept("${initialValue}", function(concept) { func${escapedFormFieldId}AutoCompleteOnSelect(concept); });
 		</c:if>
 		
 		<c:if test="${not empty showAnswers}">
@@ -64,7 +64,7 @@
 		
 	})
 	
-	function ${escapedFormFieldId}AutoCompleteOnSelect(concept, item) {
+	function func${escapedFormFieldId}AutoCompleteOnSelect(concept, item) {
 		jquerySelectEscaped('${formFieldId}').val(concept.conceptId);
 
 		// if called with initialValue, show the name ourselves
