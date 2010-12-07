@@ -153,7 +153,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    	minCharErrorObj = div.find("#minCharError");
 		    	minCharErrorObj.html(omsgs.minCharRequired.replace("_REQUIRED_NUMBER_", o.minLength));
 		    	notification = div.find("#searchWidgetNotification");
-		    	loadingMsg = div.find("#loadingMsg");
+		    	loadingMsgObj = div.find("#loadingMsg");
 		    
 		    this._div = div;
 
@@ -233,7 +233,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 	    			}
 	    			if($j('#pageInfo').css("visibility") == 'visible')
 						$j('#pageInfo').css("visibility", "hidden");
-	    			loadingMsg.html(" ");
+	    			loadingMsgObj.html(" ");
 	    			$j(".openmrsSearchDiv").hide();
 	    			//wait for a 400ms, if the user isn't typing anymore chars, show the error msg
 	    			this._textInputTimer = window.setTimeout(function(){
@@ -403,7 +403,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 				self._results = results["objectList"];
 				if(matchCount <= self._table.fnSettings()._iDisplayLength){
 					spinnerObj.css("visibility", "hidden");
-					loadingMsg.html("");
+					loadingMsgObj.html("");
 				}
 
 				if(curCallCount && self._lastCallCount > curCallCount) {
@@ -433,7 +433,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 					if(!inSerialMode)
 						buffer = new Array;//empty the buffer
 					
-					loadingMsg.html(omsgs.loadingWithArgument.replace("_NUMBER_OF_PAGES_", matchCount));
+					loadingMsgObj.html(omsgs.loadingWithArgument.replace("_NUMBER_OF_PAGES_", matchCount));
 					self._fetchMoreResults(searchText, curCallCount, startIndex, matchCount);										
 				}else if(matchCount > 0) 
 					$j('#pageInfo').append(" - "+omsgs.onePage);
@@ -729,7 +729,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 					
 					$j(notification).html(data[0]);
 					spinnerObj.css("visibility", "hidden");
-					loadingMsg.html("");
+					loadingMsgObj.html("");
 					return;
 				}
 				
@@ -795,7 +795,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 				//all the hits have been fetched
 				if(actualResultCount >= matchCount){
 					spinnerObj.css("visibility", "hidden");
-					loadingMsg.html("");
+					loadingMsgObj.html("");
 					$j('#pageInfo').html(omsgs.viewingResultsFor.replace("_SEARCH_TEXT_", "'<b>"+searchText+"</b>'"));
 					pageStr = omsgs.pagesWithPlaceHolder.replace("_NUMBER_OF_PAGES_", self._table.numberOfPages);
 					$j('#pageInfo').append(" - "+pageStr);
