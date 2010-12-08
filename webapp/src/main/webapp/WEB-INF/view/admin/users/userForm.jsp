@@ -82,43 +82,29 @@
 	</c:if>
 	<fieldset>
 		<legend><spring:message code="User.demographicInfo"/></legend>
-		<c:choose>
-			<c:when test="${not empty createNewPerson}">
-				<table>
-					<spring:bind path="user.person">
-						<c:if test="${status.errorMessage != ''}">
-							<tr>
-								<span class="error">${status.errorMessage}</span>
-							</tr>
-						</c:if>
-					</spring:bind>
-					<spring:nestedPath path="user.person.names[0]">
-						<openmrs:portlet url="nameLayout" id="namePortlet" size="full" parameters="layoutMode=edit|layoutShowTable=false|layoutShowExtended=false" />
-					</spring:nestedPath>
+		<table>
+			<spring:bind path="user.person">
+				<c:if test="${status.errorMessage != ''}">
 					<tr>
-						<td><spring:message code="Person.gender"/></td>
-						<td><spring:bind path="user.person.gender">
-								<openmrs:forEachRecord name="gender">
-									<input type="radio" name="${status.expression}" id="${record.key}" value="${record.key}" <c:if test="${record.key == status.value}">checked</c:if> />
-										<label for="${record.key}"> <spring:message code="Person.gender.${record.value}"/> </label>
-								</openmrs:forEachRecord>
-							<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-							</spring:bind>
-						</td>
+						<span class="error">${status.errorMessage}</span>
 					</tr>
-				</table>
-			</c:when>
-			<c:otherwise>
-				<table>
-					<tr valign="top">
-						<td><spring:message code="User.person"/>&nbsp;&nbsp;</td>
-						<td>
-							<openmrs_tag:personField searchLabelCode="" formFieldName="person_id" initialValue="${user.person.personId}"/>
-						</td>
-					</tr>
-				</table>
-			</c:otherwise>
-		</c:choose>
+				</c:if>
+			</spring:bind>
+			<spring:nestedPath path="user.person.names[0]">
+				<openmrs:portlet url="nameLayout" id="namePortlet" size="full" parameters="layoutMode=edit|layoutShowTable=false|layoutShowExtended=false" />
+			</spring:nestedPath>
+			<tr>
+				<td><spring:message code="Person.gender"/></td>
+				<td><spring:bind path="user.person.gender">
+						<openmrs:forEachRecord name="gender">
+							<input type="radio" name="${status.expression}" id="${record.key}" value="${record.key}" <c:if test="${record.key == status.value}">checked</c:if> />
+								<label for="${record.key}"> <spring:message code="Person.gender.${record.value}"/> </label>
+						</openmrs:forEachRecord>
+					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+					</spring:bind>
+				</td>
+			</tr>
+		</table>
 	</fieldset>	
 
 	<fieldset>
