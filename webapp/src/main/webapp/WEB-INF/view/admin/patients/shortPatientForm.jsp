@@ -342,7 +342,7 @@
 									name="${status.expression}" size="10" id="birthdate"
 									value="${status.value}"
 									onChange="updateAge(); updateEstimated(this);"
-									onClick="showCalendar(this)" />
+									onClick="showCalendar(this,60)" />
 							<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
 						</spring:bind>
 						
