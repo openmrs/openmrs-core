@@ -5,6 +5,11 @@
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
 
+<c:if test="${order.patient != null}">
+	<a href="../../patientDashboard.form?patientId=${order.patient.patientId}"><spring:message code="patientDashboard.viewDashboard"/></a>
+</c:if>
+
+
 <h2><spring:message code="Order.drug.title"/></h2>
 
 <spring:hasBindErrors name="order">
@@ -27,6 +32,7 @@
 	</form>
 </c:if>
 
+<b class="boxHeader"><spring:message code="Order.drug.title"/></b>
 <form method="post" class="box">
 	<table>
 		<tr>
@@ -195,12 +201,16 @@
 </form>
 
 <c:if test="${order.discontinued}">
+	<br/>
+	<b class="boxHeader"><spring:message code="Order.undiscontinueOrder"/></b>
 	<form method="post" class="box">
 		<input type="submit" value='<spring:message code="Order.undiscontinueOrder"/>' name="undiscontinueOrder"/>
 	</form>
 </c:if>
 
 <c:if test="${not order.discontinued and not empty order.orderId}">
+	<br/>
+	<b class="boxHeader"><spring:message code="Order.discontinueOrder"/></b>
 	<form method="post" class="box">
 		<table>
 			<tr id="dateDiscontinued">
@@ -227,6 +237,8 @@
 </c:if>
 
 <c:if test="${not order.voided and not empty order.orderId}">
+	<br/>
+	<b class="boxHeader"><spring:message code="Order.voidOrder"/></b>
 	<form method="post" class="box">
 		<spring:message code="general.voidReason"/>
 		<input type="text" value="" size="40" name="voidReason" />

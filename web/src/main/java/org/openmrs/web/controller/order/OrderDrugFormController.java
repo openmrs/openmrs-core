@@ -27,6 +27,7 @@ import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.propertyeditor.DrugEditor;
 import org.openmrs.util.OpenmrsConstants;
+import org.springframework.beans.propertyeditors.CustomBooleanEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -51,6 +52,7 @@ public class OrderDrugFormController extends OrderFormController {
 		
 		binder.registerCustomEditor(Drug.class, new DrugEditor());
 		binder.registerCustomEditor(Double.class, new CustomNumberEditor(Double.class, true));
+		binder.registerCustomEditor(Boolean.class, new CustomBooleanEditor(false));
 	}
 	
 	/**
