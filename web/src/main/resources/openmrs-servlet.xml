@@ -354,7 +354,7 @@
 			<ref bean="drugOrderValidator" />
 		</property>
 		<property name="formView"><value>/admin/orders/orderDrugForm</value></property>
-		<property name="successView"><value>orderDrug.list</value></property>
+		<property name="successView"><value>../../patientDashboard.form</value></property>
 	</bean>
 	<!-- ** /Order ** -->
 

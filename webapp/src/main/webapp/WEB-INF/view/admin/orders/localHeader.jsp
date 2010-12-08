@@ -10,7 +10,7 @@
 		</li>
 	</openmrs:hasPrivilege>
 	<openmrs:hasPrivilege privilege="Manage Orders,Add Orders,Edit Orders,Delete Orders,View Orders">
-		<li <c:if test='<%= request.getRequestURI().contains("orderListByPatient") || request.getRequestURI().contains("choosePatient") %>'>class="active"</c:if>>
+		<li <c:if test='<%= request.getRequestURI().contains("orderDrug") || request.getRequestURI().contains("orderListByPatient") %>'>class="active"</c:if>>
 			<a href="${pageContext.request.contextPath}/admin/orders/orderDrug.list">
 				<spring:message code="Order.drug.manage"/>
 			</a>

@@ -134,7 +134,6 @@ public class OrderListByPatientController extends SimpleFormController {
 		List<DrugOrder> orderList = new Vector<DrugOrder>();
 		Integer patientId = ServletRequestUtils.getIntParameter(request, "patientId");
 		boolean showAll = ServletRequestUtils.getBooleanParameter(request, "showAll", false);
-		System.err.println("pid is " + patientId);
 		
 		//only fill the Object is the user has authenticated properly
 		if (Context.isAuthenticated()) {
