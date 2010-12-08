@@ -1,7 +1,3 @@
-function showCalendar(obj) {
-	showCalendar(obj, null);
-}
-
 function showCalendar(obj, yearsPrevious) {
 	//set appendText to something so it doesnt automagically pop into the page
 	var id = obj.id;
@@ -14,7 +10,7 @@ function showCalendar(obj, yearsPrevious) {
 	}
 	
 	var opts = { appendText: " " };
-	if (yearsPrevious != null)
+	if (yearsPrevious)
 		opts["yearRange"] = "c-" + yearsPrevious + ":c10";
 	
 	var dp = new DatePicker(jsDateFormat, id, opts);
