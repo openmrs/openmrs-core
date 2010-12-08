@@ -586,6 +586,7 @@ public interface PatientSetService {
 	
 	/**
 	 * @return number of unvoided patients in the database 
+	 * @since 1.8
 	 */
 	public Integer getCountOfPatients();
 	
@@ -594,6 +595,7 @@ public interface PatientSetService {
 	 * @param start the starting index
 	 * @param size the number of patients to get in this batch
 	 * @return a Cohort with patient ids
+	 * @since 1.8
 	 */
 	public Cohort getPatients(Integer start, Integer size);
 	
