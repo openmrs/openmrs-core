@@ -137,6 +137,8 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		_div: null,
 		_table: null,
 		_textInputTimer: null,
+		_lastSubCallCount: 0,
+		_bufferedAjaxCallCounters: null,
 		
 		_create: function() {
 		    var self = this,
@@ -431,23 +433,26 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 				if(matchCount > self._table.fnSettings()._iDisplayLength){
 					spinnerObj.css("visibility", "visible");
 					var startIndex = self._table.fnSettings()._iDisplayLength;
-					if(!inSerialMode)
+					if(!inSerialMode){
 						buffer = new Array;//empty the buffer
+						self._bufferedAjaxCallCounters = new Array;
+					}
 					
 					loadingMsgObj.html(omsgs.loadingWithArgument.replace("_NUMBER_OF_PAGES_", matchCount));
-					self._fetchMoreResults(searchText, curCallCount, startIndex, matchCount);										
+					self._lastSubCallCount = 1;
+					self._fetchMoreResults(searchText, curCallCount, startIndex, matchCount, 1);										
 				}else if(matchCount > 0) 
 					$j('#pageInfo').append(" - "+omsgs.onePage);
 			};
 		},
 		
-		_fetchMoreResults: function(searchText, curCallCount, startIndex, matchCount){
+		_fetchMoreResults: function(searchText, curCallCount, startIndex, matchCount, curSubCallCount){
 			//if a new ajax call has been triggered off
 			if(curCallCount && this._lastCallCount > curCallCount) {
 				return;
 			}
 			
-			this.options.searchHandler(searchText, this._addMoreRows(curCallCount, searchText, matchCount, startIndex),
+			this.options.searchHandler(searchText, this._addMoreRows(curCallCount, searchText, matchCount, startIndex, curSubCallCount),
 				false, {includeVoided: this.options.showIncludeVoided && checkBox.attr('checked'),
 				start: startIndex, length: BATCH_SIZE});
 					
@@ -458,7 +463,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 			ajaxTimer = window.setTimeout(function(){
 				nextStart = startIndex+BATCH_SIZE;
 				if(nextStart < matchCount){
-					self._fetchMoreResults(searchText, curCallCount, nextStart, matchCount);
+					self._fetchMoreResults(searchText, curCallCount, nextStart, matchCount, ++curSubCallCount);
 				}
 				else{
 					if(ajaxTimer)
@@ -697,7 +702,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		},
 		
 		//This function adds the data returned by the second ajax call that fetches the remaining rows
-		_addMoreRows: function(curCallCount2, searchText, matchCount, startIndex){
+		_addMoreRows: function(curCallCount2, searchText, matchCount, startIndex, curSubCallCount){
 			var self = this;
 			return function(results) {
 				
@@ -736,11 +741,9 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 				
 				if(results["notification"])
 					$j(notification).html(results["notification"]);
-								
-				nextRowIndex = self._table.fnGetNodes().length;
-				//if this ajax sub call is the one we expected in to be next in line
+				
 				//or if we are in serial mode
-				if(inSerialMode || (nextRowIndex == startIndex)){
+				if(inSerialMode || (curSubCallCount == self._lastSubCallCount)){
 					var newRows = new Array();
 					for(var x in data) {
 						currentData = data[x];
@@ -750,26 +753,27 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 					}
 					
 					self._table.fnAddData(newRows);
+					nextSubCallCount = curSubCallCount + 1;
 					
-					if(!inSerialMode){
-						//move to the currently last row in the datatable to determine the next start position
-						//note that (newRows.length == BATCH_SIZE) except sometimes for the last subcall
-						//which should not matter since it will always be the last to be fetched from the buffer
-						nextRowIndex += newRows.length;
+					if(!inSerialMode && self._bufferedAjaxCallCounters.length > 0){
 						
-						//fetch any buffered rows that were returned earlier
-						$j.each(buffer, function(key, bufferedRows) {
+						for(var i = 0; i < self._bufferedAjaxCallCounters.length; i++){
+							subCallCounter = self._bufferedAjaxCallCounters[i];
 							//Skip past the ones that come after those that are not yet returned by DWR calls e.g if we have ajax
-							//calls 3 and 5 in the buffer, when 2 returns, then add only 3 and ingore 5 since it has to wait on 4
-							if(key == nextRowIndex && bufferedRows){
+							//calls 3 and 5 in the buffer, when 2 returns, then add only 3 and ingore 5 since it has to wait on 4							
+							bufferedRows = buffer[subCallCounter];							
+							if(subCallCounter && (subCallCounter == nextSubCallCount) && bufferedRows){
 								self._table.fnAddData(bufferedRows);
-								buffer[key] = null;
-								nextRowIndex += bufferedRows.length;
+								buffer[subCallCounter] = null;//drop rows from buffer	
+								self._bufferedAjaxCallCounters[i] = null;//drop counter from buffer								
+								nextSubCallCount++;
 							}
-						});
+						}
 					}
+					
+					self._lastSubCallCount = nextSubCallCount;
 				}
-				else if(!inSerialMode && startIndex > nextRowIndex){
+				else if(!inSerialMode && curSubCallCount > self._lastSubCallCount){
 					//this ajax request returned before others that were made before it, add its results to the buffer
 					var bufferedRows = new Array();
 					for(var x in data) {
@@ -778,8 +782,9 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 						//add the data to the results list
 						self._results.push(bufferedData);
 					}
-					
-					buffer[startIndex] = bufferedRows;
+					self._bufferedAjaxCallCounters.push(curSubCallCount);	
+					buffer[curSubCallCount] = bufferedRows;
+
 					return;
 				}
 				
