@@ -114,6 +114,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 (function($j) {
 	var openmrsSearch_div = '<span><span style="white-space: nowrap"><span><span id="searchLabelNode"></span><input type="text" value="" id="inputNode" autocomplete="off"/><input type="checkbox" style="display: none" id="includeRetired"/><img id="spinner" src=""/><input type="checkbox" style="display: none" id="includeVoided"/><input type="checkbox" style="display: none" id="verboseListing"/><span id="loadingMsg"></span><span id="minCharError" class="error"></span><span id="pageInfo"></span><br /><span id="searchWidgetNotification"></span></span></span><span class="openmrsSearchDiv"><table id="openmrsSearchTable" cellpadding="2" cellspacing="0" style="width: 100%"><thead id="searchTableHeader"><tr></tr></thead><tbody></tbody></table></span></span>';
 	var BATCH_SIZE = omsgs.maxSearchResults;
+	var SEARCH_DELAY = 600;//time interval between keyup and triggering the search off or showing the minimum character error
 	if(!Number(BATCH_SIZE))
 		BATCH_SIZE = 200;
 	var ajaxTimer = null;
@@ -139,6 +140,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		_textInputTimer: null,
 		_lastSubCallCount: 0,
 		_bufferedAjaxCallCounters: null,
+		_searchDelayTimer: null,
 		
 		_create: function() {
 		    var self = this,
@@ -213,10 +215,14 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    	}
 		    	
 	        	var text = $j.trim(input.val());
-	        	if(this._textInputTimer != null){
-    				window.clearTimeout(this._textInputTimer);
+	        	if(self._textInputTimer != null){
+    				window.clearTimeout(self._textInputTimer);
     			}
 	    		if(text.length >= o.minLength) {
+	    			if(self._searchDelayTimer != null){
+	    				window.clearTimeout(self._searchDelayTimer);
+	    			}
+	    			
 	    			if($j('#pageInfo').css("visibility") == 'visible')
 						$j('#pageInfo').css("visibility", "hidden");
 						
@@ -226,7 +232,12 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 	    			if(!inSerialMode && ajaxTimer)
 	    				window.clearInterval(ajaxTimer);
 	    			
-	    			self._doSearch(text);
+	    			//wait for a couple of milliseconds, if the user isn't typing anymore chars before triggering search
+	    			//this minimizes the number of un-necessary calls made to the server for first typists
+	    			self._searchDelayTimer = window.setTimeout(function(){
+	    				self._doSearch(text);
+	    			}, SEARCH_DELAY);	
+	    			
 	    		}
 	    		else {
 	    			self._table.fnClearTable();
@@ -237,13 +248,13 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 						$j('#pageInfo').css("visibility", "hidden");
 	    			loadingMsgObj.html(" ");
 	    			$j(".openmrsSearchDiv").hide();
-	    			//wait for a 400ms, if the user isn't typing anymore chars, show the error msg
+	    			//wait for a n milliseconds, if the user isn't typing anymore chars, show the error msg
 	    			this._textInputTimer = window.setTimeout(function(){
 	    				if($j.trim(input.val()).length > 0 && $j.trim(input.val()).length < o.minLength)
 	    					$j("#minCharError").css("visibility", "visible");
 	    				else if($j.trim(input.val()).length == 0 && $j("#minCharError").css("visibility") == 'visible')
 	    					$j("#minCharError").css("visibility", "hidden");
-	    			}, 600);
+	    			}, SEARCH_DELAY);
 	    			
 	    		}
 	    		return true;
