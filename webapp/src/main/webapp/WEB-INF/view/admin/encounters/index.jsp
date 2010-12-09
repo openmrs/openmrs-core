@@ -45,8 +45,8 @@
 
 <div>
 	<b class="boxHeader"><spring:message code="Encounter.find"/></b>
-	<div class="searchWidgetContainer">
-		<div id="findEncounter"></div>
+	<div class="box">
+		<div class="searchWidgetContainer" id="findEncounter"></div>
 	</div>
 </div>
 

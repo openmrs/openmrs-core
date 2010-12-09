@@ -59,8 +59,8 @@
 
 <div>
 	<b class="boxHeader"><spring:message code="Concept.find"/></b>
-	<div class="searchWidgetContainer">
-		<div id="findConcept"></div>
+	<div class="box">
+		<div class="searchWidgetContainer" id="findConcept"></div>
 	</div>
 </div>
 

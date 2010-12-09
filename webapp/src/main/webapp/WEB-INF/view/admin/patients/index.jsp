@@ -40,8 +40,8 @@
 
 <div>
 	<b class="boxHeader"><spring:message code="Patient.find"/></b>
-	<div class="searchWidgetContainer">
-		<div id="findPatients"></div>
+	<div class="box">
+		<div class="searchWidgetContainer" id="findPatients"></div>
 	</div>
 </div>
 

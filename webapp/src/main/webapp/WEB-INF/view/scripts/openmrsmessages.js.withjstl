@@ -97,7 +97,6 @@ omsgs.pagesWithPlaceHolder="<spring:message code="searchWidget.pagesWithPlaceHol
 omsgs.of="<spring:message code="general.of" javaScriptEscape="true" />";
 omsgs.onePage="<spring:message code="searchWidget.OnePage" javaScriptEscape="true" />";
 omsgs.maxSearchResults=<openmrs:globalProperty key="searchWidget.batchSize" defaultValue="200"/>;
-omsgs.searchLabel="<spring:message code="searchWidget.searchLabel" javaScriptEscape="true" />";
 omsgs.searchRunInSerialMode=<openmrs:globalProperty key="searchWidget.runInSerialMode" defaultValue="false"/>;
 omsgs.sInfoLabel="<spring:message code="searchWidget.sInfoLabel" javaScriptEscape="true" />";
 omsgs.to="<spring:message code="general.to" javaScriptEscape="true" />";

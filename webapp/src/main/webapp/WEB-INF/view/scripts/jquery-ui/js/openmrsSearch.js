@@ -123,7 +123,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		plugins: {},
 		options: {
 			minLength: 3,
-			searchLabel: omsgs.searchLabel,
+			searchLabel: ' ',
 			includeVoidedLabel: omsgs.includeVoided,
 			showIncludeVoided: false,
 			displayLength: 10,

@@ -1266,7 +1266,7 @@ img#spinner{
 	 background-color: #F0E68C;
 }
 #pageInfo{
-	float:right; margin-right: 20px; font-style: italic;
+	float:right; margin-right: 20px; font-style: italic; margin-bottom: 5px;
 }
 #openmrsSearchTable{
 	padding-bottom: 10px;
@@ -1277,13 +1277,8 @@ div.paging_full_numbers{
 #minCharError{
 	visibility: hidden;
 }
-.searchWidgetContainer{
-	width: 99%;
-	padding: 5px 2px 5px 2px;
-	text-align: left;
-	margin-left: auto;
-	margin-right: auto;
-	font-size: .9em;
+.searchWidgetContainer{	
+	padding: 5px 5px 5px 5px;
 }
 span#searchWidgetNotification{
 	color: #FF0000; font-style: italic;
