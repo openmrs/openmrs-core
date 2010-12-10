@@ -1,6 +1,7 @@
 /* Used for getting jstl code into the javascript files */
 <%@ include file="/WEB-INF/template/include.jsp" %>
 var omsgs = new Array();
+var gp = new Array();//array to hold only global properties
 omsgs.minSearchCharactersGP="<openmrs:globalProperty key="minSearchCharacters" defaultValue="3"/>";
 omsgs.datePattern="<openmrs:datePattern />";
 
@@ -77,8 +78,12 @@ omsgs.userListingHeaders=new Array();
  omsgs.userListingHeaders.push('<spring:message code="PersonAttributeType.${fn:replace(attrType.name, ' ', '')}" javaScriptEscape="true" text="${attrType.name}"/>');
 </openmrs:forEachDisplayAttributeType>
 
-/* General Labels and text to be used on SEARCH WIDGET */
+/* Global properties to be used in search widgets */
+gp.maxSearchResults=<openmrs:globalProperty key="searchWidget.batchSize" defaultValue="200"/>;
+gp.searchRunInSerialMode=<openmrs:globalProperty key="searchWidget.runInSerialMode" defaultValue="false"/>;
+gp.searchDelay=<openmrs:globalProperty key="searchWidget.searchDelayInterval" defaultValue="400"/>;
 
+/* General Labels and text to be used on SEARCH WIDGET */
 omsgs.encounterType="<spring:message code="Encounter.type" javaScriptEscape="true" />";
 omsgs.encounterForm="<spring:message code="Encounter.form" javaScriptEscape="true" />";
 omsgs.encounterProvider="<spring:message code="Encounter.provider" javaScriptEscape="true" />";
@@ -96,8 +101,6 @@ omsgs.previous="<spring:message code="searchWidget.previous" javaScriptEscape="t
 omsgs.pagesWithPlaceHolder="<spring:message code="searchWidget.pagesWithPlaceHolder" javaScriptEscape="true" />";
 omsgs.of="<spring:message code="general.of" javaScriptEscape="true" />";
 omsgs.onePage="<spring:message code="searchWidget.OnePage" javaScriptEscape="true" />";
-omsgs.maxSearchResults=<openmrs:globalProperty key="searchWidget.batchSize" defaultValue="200"/>;
-omsgs.searchRunInSerialMode=<openmrs:globalProperty key="searchWidget.runInSerialMode" defaultValue="false"/>;
 omsgs.sInfoLabel="<spring:message code="searchWidget.sInfoLabel" javaScriptEscape="true" />";
 omsgs.to="<spring:message code="general.to" javaScriptEscape="true" />";
 omsgs.viewingResultsFor="<spring:message code="searchWidget.viewingResults" javaScriptEscape="true" />";

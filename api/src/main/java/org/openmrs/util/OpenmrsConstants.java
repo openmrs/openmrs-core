@@ -180,181 +180,181 @@ public final class OpenmrsConstants {
 	// Baked in Privileges:
 	@Deprecated
 	public static final String PRIV_VIEW_CONCEPTS = PrivilegeConstants.VIEW_CONCEPTS;
-
+	
 	@Deprecated
 	public static final String PRIV_MANAGE_CONCEPTS = PrivilegeConstants.MANAGE_CONCEPTS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_PURGE_CONCEPTS = PrivilegeConstants.PURGE_CONCEPTS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_MANAGE_CONCEPT_NAME_TAGS = PrivilegeConstants.MANAGE_CONCEPT_NAME_TAGS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_VIEW_CONCEPT_PROPOSALS = PrivilegeConstants.VIEW_CONCEPT_PROPOSALS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_ADD_CONCEPT_PROPOSALS = PrivilegeConstants.ADD_CONCEPT_PROPOSALS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_EDIT_CONCEPT_PROPOSALS = PrivilegeConstants.EDIT_CONCEPT_PROPOSALS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_DELETE_CONCEPT_PROPOSALS = PrivilegeConstants.DELETE_CONCEPT_PROPOSALS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_PURGE_CONCEPT_PROPOSALS = PrivilegeConstants.PURGE_CONCEPT_PROPOSALS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_VIEW_USERS = PrivilegeConstants.VIEW_USERS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_ADD_USERS = PrivilegeConstants.ADD_USERS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_EDIT_USERS = PrivilegeConstants.EDIT_USERS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_DELETE_USERS = PrivilegeConstants.DELETE_USERS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_PURGE_USERS = PrivilegeConstants.PURGE_USERS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_EDIT_USER_PASSWORDS = PrivilegeConstants.EDIT_USER_PASSWORDS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_VIEW_ENCOUNTERS = PrivilegeConstants.VIEW_ENCOUNTERS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_ADD_ENCOUNTERS = PrivilegeConstants.ADD_ENCOUNTERS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_EDIT_ENCOUNTERS = PrivilegeConstants.EDIT_ENCOUNTERS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_DELETE_ENCOUNTERS = PrivilegeConstants.DELETE_ENCOUNTERS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_PURGE_ENCOUNTERS = PrivilegeConstants.PURGE_ENCOUNTERS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_VIEW_ENCOUNTER_TYPES = PrivilegeConstants.VIEW_ENCOUNTER_TYPES;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_MANAGE_ENCOUNTER_TYPES = PrivilegeConstants.MANAGE_ENCOUNTER_TYPES;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_PURGE_ENCOUNTER_TYPES = PrivilegeConstants.PURGE_ENCOUNTER_TYPES;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_VIEW_LOCATIONS = PrivilegeConstants.VIEW_LOCATIONS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_MANAGE_LOCATIONS = PrivilegeConstants.MANAGE_LOCATIONS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_PURGE_LOCATIONS = PrivilegeConstants.PURGE_LOCATIONS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_MANAGE_LOCATION_TAGS = PrivilegeConstants.MANAGE_LOCATION_TAGS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_PURGE_LOCATION_TAGS = PrivilegeConstants.PURGE_LOCATION_TAGS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_VIEW_OBS = PrivilegeConstants.VIEW_OBS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_ADD_OBS = PrivilegeConstants.ADD_OBS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_EDIT_OBS = PrivilegeConstants.EDIT_OBS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_DELETE_OBS = PrivilegeConstants.DELETE_OBS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_PURGE_OBS = PrivilegeConstants.PURGE_OBS;
-
+	
 	@Deprecated
 	public static final String PRIV_VIEW_MIME_TYPES = "View Mime Types";
 	
 	@Deprecated
 	public static final String PRIV_PURGE_MIME_TYPES = "Purge Mime Types";
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_VIEW_PATIENTS = PrivilegeConstants.VIEW_PATIENTS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_ADD_PATIENTS = PrivilegeConstants.ADD_PATIENTS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_EDIT_PATIENTS = PrivilegeConstants.EDIT_PATIENTS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_DELETE_PATIENTS = PrivilegeConstants.DELETE_PATIENTS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_PURGE_PATIENTS = PrivilegeConstants.PURGE_PATIENTS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_VIEW_PATIENT_IDENTIFIERS = PrivilegeConstants.VIEW_PATIENT_IDENTIFIERS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_ADD_PATIENT_IDENTIFIERS = PrivilegeConstants.ADD_PATIENT_IDENTIFIERS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_EDIT_PATIENT_IDENTIFIERS = PrivilegeConstants.EDIT_PATIENT_IDENTIFIERS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_DELETE_PATIENT_IDENTIFIERS = PrivilegeConstants.DELETE_PATIENT_IDENTIFIERS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_PURGE_PATIENT_IDENTIFIERS = PrivilegeConstants.PURGE_PATIENT_IDENTIFIERS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_VIEW_PATIENT_COHORTS = PrivilegeConstants.VIEW_PATIENT_COHORTS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_ADD_COHORTS = PrivilegeConstants.ADD_COHORTS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_EDIT_COHORTS = PrivilegeConstants.EDIT_COHORTS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_DELETE_COHORTS = PrivilegeConstants.DELETE_COHORTS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_PURGE_COHORTS = PrivilegeConstants.PURGE_COHORTS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_VIEW_ORDERS = PrivilegeConstants.VIEW_ORDERS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_ADD_ORDERS = PrivilegeConstants.ADD_ORDERS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_EDIT_ORDERS = PrivilegeConstants.EDIT_ORDERS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_DELETE_ORDERS = PrivilegeConstants.DELETE_ORDERS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_PURGE_ORDERS = PrivilegeConstants.PURGE_ORDERS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_VIEW_FORMS = PrivilegeConstants.VIEW_FORMS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_MANAGE_FORMS = PrivilegeConstants.MANAGE_FORMS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_PURGE_FORMS = PrivilegeConstants.PURGE_FORMS;
-
+	
 	// This name is historic, since that's what it was originally called in the infopath formentry module
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_FORM_ENTRY = PrivilegeConstants.FORM_ENTRY;
 	
 	@Deprecated
@@ -383,238 +383,238 @@ public final class OpenmrsConstants {
 	
 	@Deprecated
 	public static final String PRIV_DELETE_REPORT_OBJECTS = "Delete Report Objects";
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_MANAGE_IDENTIFIER_TYPES = PrivilegeConstants.MANAGE_IDENTIFIER_TYPES;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_VIEW_IDENTIFIER_TYPES = PrivilegeConstants.VIEW_IDENTIFIER_TYPES;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_PURGE_IDENTIFIER_TYPES = PrivilegeConstants.PURGE_IDENTIFIER_TYPES;
-
+	
 	@Deprecated
 	public static final String PRIV_MANAGE_MIME_TYPES = "Manage Mime Types";
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_VIEW_CONCEPT_CLASSES = PrivilegeConstants.VIEW_CONCEPT_CLASSES;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_MANAGE_CONCEPT_CLASSES = PrivilegeConstants.MANAGE_CONCEPT_CLASSES;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_PURGE_CONCEPT_CLASSES = PrivilegeConstants.PURGE_CONCEPT_CLASSES;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_VIEW_CONCEPT_DATATYPES = PrivilegeConstants.VIEW_CONCEPT_DATATYPES;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_MANAGE_CONCEPT_DATATYPES = PrivilegeConstants.MANAGE_CONCEPT_DATATYPES;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_PURGE_CONCEPT_DATATYPES = PrivilegeConstants.PURGE_CONCEPT_DATATYPES;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_VIEW_PRIVILEGES = PrivilegeConstants.VIEW_PRIVILEGES;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_MANAGE_PRIVILEGES = PrivilegeConstants.MANAGE_PRIVILEGES;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_PURGE_PRIVILEGES = PrivilegeConstants.PURGE_PRIVILEGES;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_VIEW_ROLES = PrivilegeConstants.VIEW_ROLES;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_MANAGE_ROLES = PrivilegeConstants.MANAGE_ROLES;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_PURGE_ROLES = PrivilegeConstants.PURGE_ROLES;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_VIEW_FIELD_TYPES = PrivilegeConstants.VIEW_FIELD_TYPES;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_MANAGE_FIELD_TYPES = PrivilegeConstants.MANAGE_FIELD_TYPES;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_PURGE_FIELD_TYPES = PrivilegeConstants.PURGE_FIELD_TYPES;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_VIEW_ORDER_TYPES = PrivilegeConstants.VIEW_ORDER_TYPES;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_MANAGE_ORDER_TYPES = PrivilegeConstants.MANAGE_ORDER_TYPES;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_PURGE_ORDER_TYPES = PrivilegeConstants.PURGE_ORDER_TYPES;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_VIEW_RELATIONSHIP_TYPES = PrivilegeConstants.VIEW_RELATIONSHIP_TYPES;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_MANAGE_RELATIONSHIP_TYPES = PrivilegeConstants.MANAGE_RELATIONSHIP_TYPES;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_PURGE_RELATIONSHIP_TYPES = PrivilegeConstants.PURGE_RELATIONSHIP_TYPES;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_MANAGE_ALERTS = PrivilegeConstants.MANAGE_ALERTS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_MANAGE_CONCEPT_SOURCES = PrivilegeConstants.MANAGE_CONCEPT_SOURCES;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_VIEW_CONCEPT_SOURCES = PrivilegeConstants.VIEW_CONCEPT_SOURCES;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_PURGE_CONCEPT_SOURCES = PrivilegeConstants.PURGE_CONCEPT_SOURCES;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_VIEW_NAVIGATION_MENU = PrivilegeConstants.VIEW_NAVIGATION_MENU;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_VIEW_ADMIN_FUNCTIONS = PrivilegeConstants.VIEW_ADMIN_FUNCTIONS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_VIEW_UNPUBLISHED_FORMS = PrivilegeConstants.VIEW_UNPUBLISHED_FORMS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_VIEW_PROGRAMS = PrivilegeConstants.VIEW_PROGRAMS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_MANAGE_PROGRAMS = PrivilegeConstants.MANAGE_PROGRAMS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_VIEW_PATIENT_PROGRAMS = PrivilegeConstants.VIEW_PATIENT_PROGRAMS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_ADD_PATIENT_PROGRAMS = PrivilegeConstants.ADD_PATIENT_PROGRAMS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_EDIT_PATIENT_PROGRAMS = PrivilegeConstants.EDIT_PATIENT_PROGRAMS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_DELETE_PATIENT_PROGRAMS = PrivilegeConstants.DELETE_PATIENT_PROGRAMS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_PURGE_PATIENT_PROGRAMS = PrivilegeConstants.PURGE_PATIENT_PROGRAMS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_DASHBOARD_OVERVIEW = PrivilegeConstants.DASHBOARD_OVERVIEW;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_DASHBOARD_REGIMEN = PrivilegeConstants.DASHBOARD_REGIMEN;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_DASHBOARD_ENCOUNTERS = PrivilegeConstants.DASHBOARD_ENCOUNTERS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_DASHBOARD_DEMOGRAPHICS = PrivilegeConstants.DASHBOARD_DEMOGRAPHICS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_DASHBOARD_GRAPHS = PrivilegeConstants.DASHBOARD_GRAPHS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_DASHBOARD_FORMS = PrivilegeConstants.DASHBOARD_FORMS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_DASHBOARD_SUMMARY = PrivilegeConstants.DASHBOARD_SUMMARY;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_VIEW_GLOBAL_PROPERTIES = PrivilegeConstants.VIEW_GLOBAL_PROPERTIES;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_MANAGE_GLOBAL_PROPERTIES = PrivilegeConstants.MANAGE_GLOBAL_PROPERTIES;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_PURGE_GLOBAL_PROPERTIES = PrivilegeConstants.PURGE_GLOBAL_PROPERTIES;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_MANAGE_MODULES = PrivilegeConstants.MANAGE_MODULES;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_MANAGE_SCHEDULER = PrivilegeConstants.MANAGE_SCHEDULER;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_VIEW_PERSON_ATTRIBUTE_TYPES = PrivilegeConstants.VIEW_PERSON_ATTRIBUTE_TYPES;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_MANAGE_PERSON_ATTRIBUTE_TYPES = PrivilegeConstants.MANAGE_PERSON_ATTRIBUTE_TYPES;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_PURGE_PERSON_ATTRIBUTE_TYPES = PrivilegeConstants.PURGE_PERSON_ATTRIBUTE_TYPES;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_VIEW_PERSONS = PrivilegeConstants.VIEW_PERSONS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_ADD_PERSONS = PrivilegeConstants.ADD_PERSONS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_EDIT_PERSONS = PrivilegeConstants.EDIT_PERSONS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_DELETE_PERSONS = PrivilegeConstants.DELETE_PERSONS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_PURGE_PERSONS = PrivilegeConstants.PURGE_PERSONS;
-
+	
 	/**
 	 * @deprecated replacing with ADD/EDIT/DELETE privileges
 	 */
-    @Deprecated
+	@Deprecated
 	public static final String PRIV_MANAGE_RELATIONSHIPS = "Manage Relationships";
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_VIEW_RELATIONSHIPS = PrivilegeConstants.VIEW_RELATIONSHIPS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_ADD_RELATIONSHIPS = PrivilegeConstants.ADD_RELATIONSHIPS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_EDIT_RELATIONSHIPS = PrivilegeConstants.EDIT_RELATIONSHIPS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_DELETE_RELATIONSHIPS = PrivilegeConstants.DELETE_RELATIONSHIPS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_PURGE_RELATIONSHIPS = PrivilegeConstants.PURGE_RELATIONSHIPS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_VIEW_DATABASE_CHANGES = PrivilegeConstants.VIEW_DATABASE_CHANGES;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_MANAGE_IMPLEMENTATION_ID = PrivilegeConstants.MANAGE_IMPLEMENTATION_ID;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_SQL_LEVEL_ACCESS = PrivilegeConstants.SQL_LEVEL_ACCESS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_VIEW_PROBLEMS = PrivilegeConstants.VIEW_PROBLEMS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_ADD_PROBLEMS = PrivilegeConstants.ADD_PROBLEMS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_EDIT_PROBLEMS = PrivilegeConstants.EDIT_PROBLEMS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_DELETE_PROBLEMS = PrivilegeConstants.DELETE_PROBLEMS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_VIEW_ALLERGIES = PrivilegeConstants.VIEW_ALLERGIES;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_ADD_ALLERGIES = PrivilegeConstants.ADD_ALLERGIES;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_EDIT_ALLERGIES = PrivilegeConstants.EDIT_ALLERGIES;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PRIV_DELETE_ALLERGIES = PrivilegeConstants.DELETE_ALLERGIES;
-
+	
 	/**
 	 * These are the privileges that are required by OpenMRS. Upon startup, if any of these
 	 * privileges do not exist in the database, they are inserted. These privileges are not allowed
@@ -622,22 +622,22 @@ public final class OpenmrsConstants {
 	 * 
 	 * @return privileges core to the system
 	 */
-    @Deprecated
+	@Deprecated
 	public static final Map<String, String> CORE_PRIVILEGES() {
 		return OpenmrsUtil.getCorePrivileges();
 	}
 	
 	// Baked in Roles:
-    @Deprecated
+	@Deprecated
 	public static final String SUPERUSER_ROLE = RoleConstants.SUPERUSER;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String ANONYMOUS_ROLE = RoleConstants.ANONYMOUS;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String AUTHENTICATED_ROLE = RoleConstants.AUTHENTICATED;
-
-    @Deprecated
+	
+	@Deprecated
 	public static final String PROVIDER_ROLE = RoleConstants.PROVIDER;
 	
 	/**
@@ -646,9 +646,9 @@ public final class OpenmrsConstants {
 	 * 
 	 * @return roles that are core to the system
 	 */
-    @Deprecated
+	@Deprecated
 	public static final Map<String, String> CORE_ROLES() {
-        return OpenmrsUtil.getCoreRoles();
+		return OpenmrsUtil.getCoreRoles();
 	}
 	
 	/**
@@ -684,7 +684,7 @@ public final class OpenmrsConstants {
 	public static final String GLOBAL_PROPERTY_HL7_ARCHIVE_DIRECTORY = "hl7_archive.dir";
 	
 	public static final String GLOBAL_PROPERTY_DEFAULT_THEME = "default_theme";
-
+	
 	/**
 	 * Array of all core global property names that represent comma-separated lists of
 	 * PersonAttributeTypes. (If you rename a PersonAttributeType then these global properties are
@@ -757,7 +757,7 @@ public final class OpenmrsConstants {
 	public static final String GLOBAL_PROPERTY_LOCATION_WIDGET_TYPE = "location.field.style";
 	
 	public static final String GLOBAL_PROPERTY_REPORT_BUG_URL = "reportProblem.url";
-
+	
 	/**
 	 * Global property name that allows specification of whether user passwords must contain both
 	 * upper and lower case characters. Allowable values are "true", "false", and null
@@ -810,16 +810,23 @@ public final class OpenmrsConstants {
 	public static final String GP_GRAPH_COLOR_CRITICAL = "graph.color.critical";
 	
 	/**
-	 * Global property name for the maximum number of search results that are returned by a single ajax call
+	 * Global property name for the maximum number of search results that are returned by a single
+	 * ajax call
 	 */
 	public static final String GP_SEARCH_WIDGET_BATCH_SIZE = "searchWidget.batchSize";
 	
 	/**
-	 * Global property name for the mode the search widgets should run in, this depends on the speed of the
-	 * network's connection
+	 * Global property name for the mode the search widgets should run in, this depends on the speed
+	 * of the network's connection
 	 */
 	public static final String GP_SEARCH_WIDGET_IN_SERIAL_MODE = "searchWidget.runInSerialMode";
-
+	
+	/**
+	 * Global property name for the time interval in milli seconds between key up and triggering the
+	 * search off
+	 */
+	public static final String GP_SEARCH_WIDGET_DELAY_INTERVAL = "searchWidget.searchDelayInterval";
+	
 	/**
 	 * At OpenMRS startup these global properties/default values/descriptions are inserted into the
 	 * database if they do not exist yet.
@@ -841,42 +848,37 @@ public final class OpenmrsConstants {
 		        "Comma delimited list of concepts ids to show on the patient dashboard overview tab"));
 		props.add(new GlobalProperty("dashboard.encounters.showEmptyFields", "true",
 		        "true/false whether or not to show empty fields on the 'View Encounter' window"));
-		props
-		        .add(new GlobalProperty(
-		                "dashboard.encounters.usePages",
-		                "smart",
-		                "true/false/smart on how to show the pages on the 'View Encounter' window.  'smart' means that if > 50% of the fields have page numbers defined, show data in pages"));
+		props.add(new GlobalProperty(
+		        "dashboard.encounters.usePages",
+		        "smart",
+		        "true/false/smart on how to show the pages on the 'View Encounter' window.  'smart' means that if > 50% of the fields have page numbers defined, show data in pages"));
 		props.add(new GlobalProperty("dashboard.encounters.showViewLink", "true",
 		        "true/false whether or not to show the 'View Encounter' link on the patient dashboard"));
 		props.add(new GlobalProperty("dashboard.encounters.showEditLink", "true",
 		        "true/false whether or not to show the 'Edit Encounter' link on the patient dashboard"));
-		props
-		        .add(new GlobalProperty(
-		                "dashboard.header.programs_to_show",
-		                "",
-		                "List of programs to show Enrollment details of in the patient header. (Should be an ordered comma-separated list of program_ids or names.)"));
-		props
-		        .add(new GlobalProperty(
-		                "dashboard.header.workflows_to_show",
-		                "",
-		                "List of programs to show Enrollment details of in the patient header. List of workflows to show current status of in the patient header. These will only be displayed if they belong to a program listed above. (Should be a comma-separated list of program_workflow_ids.)"));
+		props.add(new GlobalProperty(
+		        "dashboard.header.programs_to_show",
+		        "",
+		        "List of programs to show Enrollment details of in the patient header. (Should be an ordered comma-separated list of program_ids or names.)"));
+		props.add(new GlobalProperty(
+		        "dashboard.header.workflows_to_show",
+		        "",
+		        "List of programs to show Enrollment details of in the patient header. List of workflows to show current status of in the patient header. These will only be displayed if they belong to a program listed above. (Should be a comma-separated list of program_workflow_ids.)"));
 		props.add(new GlobalProperty("dashboard.relationships.show_types", "",
 		        "Types of relationships separated by commas.  Doctor/Patient,Parent/Child"));
 		props.add(new GlobalProperty("FormEntry.enableDashboardTab", "true",
 		        "true/false whether or not to show a Form Entry tab on the patient dashboard"));
 		props.add(new GlobalProperty("FormEntry.enableOnEncounterTab", "false",
 		        "true/false whether or not to show a Enter Form button on the encounters tab of the patient dashboard"));
-		props
-		        .add(new GlobalProperty(
-		                "dashboard.regimen.displayDrugSetIds",
-		                "ANTIRETROVIRAL DRUGS,TUBERCULOSIS TREATMENT DRUGS",
-		                "Drug sets that appear on the Patient Dashboard Regimen tab. Comma separated list of name of concepts that are defined as drug sets."));
+		props.add(new GlobalProperty(
+		        "dashboard.regimen.displayDrugSetIds",
+		        "ANTIRETROVIRAL DRUGS,TUBERCULOSIS TREATMENT DRUGS",
+		        "Drug sets that appear on the Patient Dashboard Regimen tab. Comma separated list of name of concepts that are defined as drug sets."));
 		
-		props
-		        .add(new GlobalProperty(
-		                GLOBAL_PROPERTY_DRUG_FREQUENCIES,
-		                "7 days/week,6 days/week,5 days/week,4 days/week,3 days/week,2 days/week,1 days/week",
-		                "Frequency of a drug order that appear on the Patient Dashboard. Comma separated list of name of concepts that are defined as drug frequencies."));
+		props.add(new GlobalProperty(
+		        GLOBAL_PROPERTY_DRUG_FREQUENCIES,
+		        "7 days/week,6 days/week,5 days/week,4 days/week,3 days/week,2 days/week,1 days/week",
+		        "Frequency of a drug order that appear on the Patient Dashboard. Comma separated list of name of concepts that are defined as drug frequencies."));
 		
 		props.add(new GlobalProperty(GP_GRAPH_COLOR_ABSOLUTE, "rgb(20,20,20)",
 		        "Color of the 'invalid' section of numeric graphs on the patient dashboard."));
@@ -941,9 +943,7 @@ public final class OpenmrsConstants {
 		
 		props.add(new GlobalProperty("concept.weight", "5089", "Concept id of the concept defining the WEIGHT concept"));
 		props.add(new GlobalProperty("concept.height", "5090", "Concept id of the concept defining the HEIGHT concept"));
-		props
-		        .add(new GlobalProperty("concept.cd4_count", "5497",
-		                "Concept id of the concept defining the CD4 count concept"));
+		props.add(new GlobalProperty("concept.cd4_count", "5497", "Concept id of the concept defining the CD4 count concept"));
 		props.add(new GlobalProperty("concept.causeOfDeath", "5002",
 		        "Concept id of the concept defining the CAUSE OF DEATH concept"));
 		props.add(new GlobalProperty("concept.none", "1107", "Concept id of the concept defining the NONE concept"));
@@ -972,9 +972,8 @@ public final class OpenmrsConstants {
 		props.add(new GlobalProperty(ModuleConstants.REPOSITORY_FOLDER_PROPERTY,
 		        ModuleConstants.REPOSITORY_FOLDER_PROPERTY_DEFAULT, "Name of the folder in which to store the modules"));
 		
-		props
-		        .add(new GlobalProperty("layout.address.format", "general",
-		                "Format in which to display the person addresses.  Valid values are general, kenya, rwanda, usa, and lesotho"));
+		props.add(new GlobalProperty("layout.address.format", "general",
+		        "Format in which to display the person addresses.  Valid values are general, kenya, rwanda, usa, and lesotho"));
 		props.add(new GlobalProperty("layout.name.format", "short",
 		        "Format in which to display the person names.  Valid values are short, long"));
 		
@@ -989,115 +988,98 @@ public final class OpenmrsConstants {
 		
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_PATIENT_LISTING_ATTRIBUTES, "",
 		        "A comma delimited list of PersonAttributeType names that should be displayed for patients in _lists_"));
-		props
-		        .add(new GlobalProperty(GLOBAL_PROPERTY_PATIENT_VIEWING_ATTRIBUTES, "",
-		                "A comma delimited list of PersonAttributeType names that should be displayed for patients when _viewing individually_"));
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_PATIENT_VIEWING_ATTRIBUTES, "",
+		        "A comma delimited list of PersonAttributeType names that should be displayed for patients when _viewing individually_"));
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_PATIENT_HEADER_ATTRIBUTES, "",
 		        "A comma delimited list of PersonAttributeType names that will be shown on the patient dashboard"));
 		
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_USER_LISTING_ATTRIBUTES, "",
 		        "A comma delimited list of PersonAttributeType names that should be displayed for users in _lists_"));
-		props
-		        .add(new GlobalProperty(GLOBAL_PROPERTY_USER_VIEWING_ATTRIBUTES, "",
-		                "A comma delimited list of PersonAttributeType names that should be displayed for users when _viewing individually_"));
-		props
-		        .add(new GlobalProperty(GLOBAL_PROPERTY_USER_HEADER_ATTRIBUTES, "",
-		                "A comma delimited list of PersonAttributeType names that will be shown on the user dashboard. (not used in v1.5)"));
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_USER_VIEWING_ATTRIBUTES, "",
+		        "A comma delimited list of PersonAttributeType names that should be displayed for users when _viewing individually_"));
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_USER_HEADER_ATTRIBUTES, "",
+		        "A comma delimited list of PersonAttributeType names that will be shown on the user dashboard. (not used in v1.5)"));
 		
-		props
-		        .add(new GlobalProperty(
-		                GLOBAL_PROPERTY_PATIENT_IDENTIFIER_REGEX,
-		                "",
-		                "WARNING: Using this search property can cause a drop in mysql performance with large patient sets.  A MySQL regular expression for the patient identifier search strings.  The @SEARCH@ string is replaced at runtime with the user's search string.  An empty regex will cause a simply 'like' sql search to be used. Example: ^0*@SEARCH@([A-Z]+-[0-9])?$"));
-		props
-		        .add(new GlobalProperty(
-		                GLOBAL_PROPERTY_PATIENT_IDENTIFIER_PREFIX,
-		                "",
-		                "This property is only used if "
-		                        + GLOBAL_PROPERTY_PATIENT_IDENTIFIER_REGEX
-		                        + " is empty.  The string here is prepended to the sql indentifier search string.  The sql becomes \"... where identifier like '<PREFIX><QUERY STRING><SUFFIX>';\".  Typically this value is either a percent sign (%) or empty."));
-		props
-		        .add(new GlobalProperty(
-		                GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SUFFIX,
-		                "",
-		                "This property is only used if "
-		                        + GLOBAL_PROPERTY_PATIENT_IDENTIFIER_REGEX
-		                        + " is empty.  The string here is prepended to the sql indentifier search string.  The sql becomes \"... where identifier like '<PREFIX><QUERY STRING><SUFFIX>';\".  Typically this value is either a percent sign (%) or empty."));
-		props
-		        .add(new GlobalProperty(
-		                GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SEARCH_PATTERN,
-		                "",
-		                "If this is empty, the regex or suffix/prefix search is used.  Comma separated list of identifiers to check.  Allows for faster searching of multiple options rather than the slow regex. e.g. @SEARCH@,0@SEARCH@,@SEARCH-1@-@CHECKDIGIT@,0@SEARCH-1@-@CHECKDIGIT@ would turn a request for \"4127\" into a search for \"in ('4127','04127','412-7','0412-7')\""));
+		props.add(new GlobalProperty(
+		        GLOBAL_PROPERTY_PATIENT_IDENTIFIER_REGEX,
+		        "",
+		        "WARNING: Using this search property can cause a drop in mysql performance with large patient sets.  A MySQL regular expression for the patient identifier search strings.  The @SEARCH@ string is replaced at runtime with the user's search string.  An empty regex will cause a simply 'like' sql search to be used. Example: ^0*@SEARCH@([A-Z]+-[0-9])?$"));
+		props.add(new GlobalProperty(
+		        GLOBAL_PROPERTY_PATIENT_IDENTIFIER_PREFIX,
+		        "",
+		        "This property is only used if "
+		                + GLOBAL_PROPERTY_PATIENT_IDENTIFIER_REGEX
+		                + " is empty.  The string here is prepended to the sql indentifier search string.  The sql becomes \"... where identifier like '<PREFIX><QUERY STRING><SUFFIX>';\".  Typically this value is either a percent sign (%) or empty."));
+		props.add(new GlobalProperty(
+		        GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SUFFIX,
+		        "",
+		        "This property is only used if "
+		                + GLOBAL_PROPERTY_PATIENT_IDENTIFIER_REGEX
+		                + " is empty.  The string here is prepended to the sql indentifier search string.  The sql becomes \"... where identifier like '<PREFIX><QUERY STRING><SUFFIX>';\".  Typically this value is either a percent sign (%) or empty."));
+		props.add(new GlobalProperty(
+		        GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SEARCH_PATTERN,
+		        "",
+		        "If this is empty, the regex or suffix/prefix search is used.  Comma separated list of identifiers to check.  Allows for faster searching of multiple options rather than the slow regex. e.g. @SEARCH@,0@SEARCH@,@SEARCH-1@-@CHECKDIGIT@,0@SEARCH-1@-@CHECKDIGIT@ would turn a request for \"4127\" into a search for \"in ('4127','04127','412-7','0412-7')\""));
 		
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_PERSON_SEARCH_MAX_RESULTS, String
 		        .valueOf(GLOBAL_PROPERTY_PERSON_SEARCH_MAX_RESULTS_DEFAULT_VALUE),
 		        "The maximum number of results returned by patient searches"));
 		
-		props
-		        .add(new GlobalProperty(
-		                GLOBAL_PROPERTY_GZIP_ENABLED,
-		                "false",
-		                "Set to 'true' to turn on OpenMRS's gzip filter, and have the webapp compress data before sending it to any client that supports it. Generally use this if you are running Tomcat standalone. If you are running Tomcat behind Apache, then you'd want to use Apache to do gzip compression."));
-		props
-		        .add(new GlobalProperty(GLOBAL_PROPERTY_REPORT_XML_MACROS, "",
-		                "Macros that will be applied to Report Schema XMLs when they are interpreted. This should be java.util.properties format."));
+		props.add(new GlobalProperty(
+		        GLOBAL_PROPERTY_GZIP_ENABLED,
+		        "false",
+		        "Set to 'true' to turn on OpenMRS's gzip filter, and have the webapp compress data before sending it to any client that supports it. Generally use this if you are running Tomcat standalone. If you are running Tomcat behind Apache, then you'd want to use Apache to do gzip compression."));
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_REPORT_XML_MACROS, "",
+		        "Macros that will be applied to Report Schema XMLs when they are interpreted. This should be java.util.properties format."));
 		
-		props
-		        .add(new GlobalProperty(
-		                GLOBAL_PROPERTY_MEDICAL_RECORD_OBSERVATIONS,
-		                "1238",
-		                "The concept id of the MEDICAL_RECORD_OBSERVATIONS concept.  This concept_id is presumed to be the generic grouping (obr) concept in hl7 messages.  An obs_group row is not created for this concept."));
+		props.add(new GlobalProperty(
+		        GLOBAL_PROPERTY_MEDICAL_RECORD_OBSERVATIONS,
+		        "1238",
+		        "The concept id of the MEDICAL_RECORD_OBSERVATIONS concept.  This concept_id is presumed to be the generic grouping (obr) concept in hl7 messages.  An obs_group row is not created for this concept."));
 		
-		props
-		        .add(new GlobalProperty(
-		                GLOBAL_PROPERTY_PROBLEM_LIST,
-		                "1284",
-		                "The concept id of the PROBLEM LIST concept.  This concept_id is presumed to be the generic grouping (obr) concept in hl7 messages.  An obs_group row is not created for this concept."));
+		props.add(new GlobalProperty(
+		        GLOBAL_PROPERTY_PROBLEM_LIST,
+		        "1284",
+		        "The concept id of the PROBLEM LIST concept.  This concept_id is presumed to be the generic grouping (obr) concept in hl7 messages.  An obs_group row is not created for this concept."));
 		
-		props
-		        .add(new GlobalProperty(
-		                GLOBAL_PROPERTY_LOG_LEVEL,
-		                LOG_LEVEL_INFO,
-		                "log level used by the logger 'org.openmrs'. This value will override the log4j.xml value. Valid values are trace, debug, info, warn, error or fatal"));
+		props.add(new GlobalProperty(
+		        GLOBAL_PROPERTY_LOG_LEVEL,
+		        LOG_LEVEL_INFO,
+		        "log level used by the logger 'org.openmrs'. This value will override the log4j.xml value. Valid values are trace, debug, info, warn, error or fatal"));
 		
-		props
-		        .add(new GlobalProperty(
-		                GLOBAL_PROPERTY_DEFAULT_PATIENT_IDENTIFIER_VALIDATOR,
-		                LUHN_IDENTIFIER_VALIDATOR,
-		                "This property sets the default patient identifier validator.  The default validator is only used in a handful of (mostly legacy) instances.  For example, it's used to generate the isValidCheckDigit calculated column and to append the string \"(default)\" to the name of the default validator on the editPatientIdentifierType form."));
+		props.add(new GlobalProperty(
+		        GLOBAL_PROPERTY_DEFAULT_PATIENT_IDENTIFIER_VALIDATOR,
+		        LUHN_IDENTIFIER_VALIDATOR,
+		        "This property sets the default patient identifier validator.  The default validator is only used in a handful of (mostly legacy) instances.  For example, it's used to generate the isValidCheckDigit calculated column and to append the string \"(default)\" to the name of the default validator on the editPatientIdentifierType form."));
 		
-		props
-		        .add(new GlobalProperty(
-		                GLOBAL_PROPERTY_PATIENT_IDENTIFIER_IMPORTANT_TYPES,
-		                "",
-		                "A comma delimited list of PatientIdentifier names : PatientIdentifier locations that will be displayed on the patient dashboard.  E.g.: TRACnet ID:Rwanda,ELDID:Kenya"));
+		props.add(new GlobalProperty(
+		        GLOBAL_PROPERTY_PATIENT_IDENTIFIER_IMPORTANT_TYPES,
+		        "",
+		        "A comma delimited list of PatientIdentifier names : PatientIdentifier locations that will be displayed on the patient dashboard.  E.g.: TRACnet ID:Rwanda,ELDID:Kenya"));
 		
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_COMPLEX_OBS_DIR, "complex_obs",
 		        "Default directory for storing complex obs."));
 		
-		props
-		        .add(new GlobalProperty(
-		                GLOBAL_PROPERTY_ENCOUNTER_FORM_OBS_SORT_ORDER,
-		                "number",
-		                "The sort order for the obs listed on the encounter edit form.  'number' sorts on the associated numbering from the form schema.  'weight' sorts on the order displayed in the form schema."));
+		props.add(new GlobalProperty(
+		        GLOBAL_PROPERTY_ENCOUNTER_FORM_OBS_SORT_ORDER,
+		        "number",
+		        "The sort order for the obs listed on the encounter edit form.  'number' sorts on the associated numbering from the form schema.  'weight' sorts on the order displayed in the form schema."));
 		
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, "en, es, fr, it, pt",
 		        "Comma delimited list of locales allowed for use on system"));
 		
-		props
-		        .add(new GlobalProperty(
-		                GLOBAL_PROPERTY_NEWPATIENTFORM_RELATIONSHIPS,
-		                "",
-		                "Comma separated list of the RelationshipTypes to show on the new/short patient form.  The list is defined like '3a, 4b, 7a'.  The number is the RelationshipTypeId and the 'a' vs 'b' part is which side of the relationship is filled in by the user."));
+		props.add(new GlobalProperty(
+		        GLOBAL_PROPERTY_NEWPATIENTFORM_RELATIONSHIPS,
+		        "",
+		        "Comma separated list of the RelationshipTypes to show on the new/short patient form.  The list is defined like '3a, 4b, 7a'.  The number is the RelationshipTypeId and the 'a' vs 'b' part is which side of the relationship is filled in by the user."));
 		
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_MIN_SEARCH_CHARACTERS, "3",
 		        "Number of characters user must input before searching is started."));
 		
-		props
-		        .add(new GlobalProperty(
-		                OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE,
-		                OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE_DEFAULT_VALUE,
-		                "Specifies the default locale. You can specify both the language code(ISO-639) and the country code(ISO-3166), e.g. 'en_GB' or just country: e.g. 'en'"));
+		props.add(new GlobalProperty(
+		        OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE,
+		        OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE_DEFAULT_VALUE,
+		        "Specifies the default locale. You can specify both the language code(ISO-639) and the country code(ISO-3166), e.g. 'en_GB' or just country: e.g. 'en'"));
 		
 		props.add(new GlobalProperty(GP_PASSWORD_CANNOT_MATCH_USERNAME_OR_SYSTEMID, "true",
 		        "Configure whether passwords must not match user's username or system id"));
@@ -1120,11 +1102,10 @@ public final class OpenmrsConstants {
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_IGNORE_MISSING_NONLOCAL_PATIENTS, "false",
 		        "If true, hl7 messages for patients that are not found and are non-local will silently be dropped/ignored"));
 		
-		props
-		        .add(new GlobalProperty(
-		                GLOBAL_PROPERTY_SHOW_PATIENT_NAME,
-		                "false",
-		                "Whether or not to display the patient name in the patient dashboard title. Note that enabling this could be security risk if multiple users operate on the same computer."));
+		props.add(new GlobalProperty(
+		        GLOBAL_PROPERTY_SHOW_PATIENT_NAME,
+		        "false",
+		        "Whether or not to display the patient name in the patient dashboard title. Note that enabling this could be security risk if multiple users operate on the same computer."));
 		
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_DEFAULT_THEME, "",
 		        "Default theme for users.  OpenMRS ships with themes of 'green', 'orange', 'purple', and 'legacy'"));
@@ -1136,13 +1117,18 @@ public final class OpenmrsConstants {
 		        "The openmrs url where to submit bug reports"));
 		
 		props.add(new GlobalProperty(GP_SEARCH_WIDGET_BATCH_SIZE, "200",
-        		"The maximum number of search results that are returned by an ajax call"));
+		        "The maximum number of search results that are returned by an ajax call"));
 		
 		props.add(new GlobalProperty(
-	        GP_SEARCH_WIDGET_IN_SERIAL_MODE,
-	        "false",
-	        "Specifes whether the search widgets should make ajax requests in serial or parallel order, a value of true is appropriate for implementations running on a slow network connection and vice versa"));
-
+		        GP_SEARCH_WIDGET_IN_SERIAL_MODE,
+		        "false",
+		        "Specifes whether the search widgets should make ajax requests in serial or parallel order, a value of true is appropriate for implementations running on a slow network connection and vice versa"));
+		
+		props.add(new GlobalProperty(
+		        GP_SEARCH_WIDGET_DELAY_INTERVAL,
+		        "400",
+		        "Specifies time interval in milliseconds when searching, between keyboard keyup event and triggering the search off, should be higher if most users are slow when typing so as to minimise the load on the server"));
+		
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);
 		}
