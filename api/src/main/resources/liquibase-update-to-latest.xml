@@ -3805,6 +3805,95 @@
 		</createIndex>	
 	</changeSet>
 	
+	<changeSet id="201010261143" author="crecabarren">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="person_address" columnName="neighborhood_cell"/>
+		</preConditions>
+		<comment>Rename neighborhood_cell column to address3 and increase the size to 255 characters</comment>
+		<renameColumn tableName="person_address"
+			oldColumnName="neighborhood_cell" newColumnName="address3" columnDataType="varchar(255)"/>
+	</changeSet>
+	
+	<changeSet id="201010261145" author="crecabarren">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="person_address" columnName="township_division"/>
+		</preConditions>
+		<comment>Rename township_division column to address4 and increase the size to 255 characters</comment>
+		<renameColumn tableName="person_address"
+			oldColumnName="township_division" newColumnName="address4" columnDataType="varchar(255)"/>
+	</changeSet>
+	
+	<changeSet id="201010261147" author="crecabarren">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="person_address" columnName="subregion"/>
+		</preConditions>
+		<comment>Rename subregion column to address5 and increase the size to 255 characters</comment>
+		<renameColumn tableName="person_address"
+			oldColumnName="subregion" newColumnName="address5" columnDataType="varchar(255)"/>
+	</changeSet>
+	
+	<changeSet id="201010261149" author="crecabarren">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="person_address" columnName="region"/>
+		</preConditions>
+		<comment>Rename region column to address6 and increase the size to 255 characters</comment>
+		<renameColumn tableName="person_address"
+			oldColumnName="region" newColumnName="address6" columnDataType="varchar(255)"/>
+	</changeSet>
+	
+	<changeSet id="201010261151" author="crecabarren">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="location" columnName="neighborhood_cell"/>
+		</preConditions>
+		<comment>Rename neighborhood_cell column to address3 and increase the size to 255 characters</comment>
+		<renameColumn tableName="location"
+			oldColumnName="neighborhood_cell" newColumnName="address3" columnDataType="varchar(255)"/>
+	</changeSet>
+	
+	<changeSet id="201010261153" author="crecabarren">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="location" columnName="township_division"/>
+		</preConditions>
+		<comment>Rename township_division column to address4 and increase the size to 255 characters</comment>
+		<renameColumn tableName="location"
+			oldColumnName="township_division" newColumnName="address4" columnDataType="varchar(255)"/>
+	</changeSet>
+	
+	<changeSet id="201010261156" author="crecabarren">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="location" columnName="subregion"/>
+		</preConditions>
+		<comment>Rename subregion column to address5 and increase the size to 255 characters</comment>
+		<renameColumn tableName="location"
+			oldColumnName="subregion" newColumnName="address5" columnDataType="varchar(255)"/>
+	</changeSet>
+	
+	<changeSet id="201010261159" author="crecabarren">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="location" columnName="region"/>
+		</preConditions>
+		<comment>Rename region column to address6 and increase the size to 255 characters</comment>
+		<renameColumn tableName="location"
+			oldColumnName="region" newColumnName="address6" columnDataType="varchar(255)"/>
+	</changeSet>
+	
+	<changeSet id="201012092009" author="djazayeri">
+		<preConditions onFail="MARK_RAN">
+			<not><changeSetExecuted id="201012092009" author="djazayeri" changeLogFile="liquibase-update-to-latest.xml"/></not>
+		</preConditions>
+		<comment>Increasing length of address fields in person_address and location to 255</comment>
+		<modifyColumn tableName="person_address"><column name="address1" type="varchar(255)"/></modifyColumn>
+		<modifyColumn tableName="person_address"><column name="address2" type="varchar(255)"/></modifyColumn>
+		<modifyColumn tableName="person_address"><column name="city_village" type="varchar(255)"/></modifyColumn>
+		<modifyColumn tableName="person_address"><column name="state_province" type="varchar(255)"/></modifyColumn>
+		<modifyColumn tableName="person_address"><column name="county_district" type="varchar(255)"/></modifyColumn>
+		<modifyColumn tableName="location"><column name="address1" type="varchar(255)"/></modifyColumn>
+		<modifyColumn tableName="location"><column name="address2" type="varchar(255)"/></modifyColumn>
+		<modifyColumn tableName="location"><column name="city_village" type="varchar(255)"/></modifyColumn>
+		<modifyColumn tableName="location"><column name="state_province" type="varchar(255)"/></modifyColumn>
+		<modifyColumn tableName="location"><column name="county_district" type="varchar(255)"/></modifyColumn>
+	</changeSet>
+	
 	<changeSet id="201011011600" author="jkeiper">
 		<preConditions onFail="MARK_RAN">
 			<not><indexExists indexName="hl7_in_archive_message_state_idx" /></not>

@@ -57,13 +57,13 @@ public class Location extends BaseOpenmrsMetadata implements java.io.Serializabl
 	
 	private String countyDistrict;
 	
-	private String neighborhoodCell;
+	private String address3;
 	
-	private String townshipDivision;
+	private String address4;
 	
-	private String region;
+	private String address6;
 	
-	private String subregion;
+	private String address5;
 	
 	private Location parentLocation;
 	
@@ -253,17 +253,21 @@ public class Location extends BaseOpenmrsMetadata implements java.io.Serializabl
 	}
 	
 	/**
+	 * @deprecated As of 1.8, replaced by {@link #getAddress3()}
 	 * @return Returns the neighborhoodCell.
 	 */
+	@Deprecated
 	public String getNeighborhoodCell() {
-		return neighborhoodCell;
+		return getAddress3();
 	}
 	
 	/**
-	 * @param neighborhoodCell The neighborhoodCell to set.
+	 * @deprecated As of 1.8, replaced by {@link #setAddress3(String)}
+	 * @param address3 The neighborhoodCell to set.
 	 */
-	public void setNeighborhoodCell(String neighborhoodCell) {
-		this.neighborhoodCell = neighborhoodCell;
+	@Deprecated
+	public void setNeighborhoodCell(String address3) {
+		this.setAddress3(address3);
 	}
 	
 	/**
@@ -320,45 +324,57 @@ public class Location extends BaseOpenmrsMetadata implements java.io.Serializabl
 	}
 	
 	/**
+	 * @deprecated As of 1.8, replaced by {@link #getAddress6()}
 	 * @return the region
 	 */
+	@Deprecated
 	public String getRegion() {
-		return region;
+		return getAddress6();
 	}
 	
 	/**
-	 * @param region the region to set
+	 * @deprecated As of 1.8, replaced by {@link #setAddress6(String)}
+	 * @param address6 the region to set
 	 */
-	public void setRegion(String region) {
-		this.region = region;
+	@Deprecated
+	public void setRegion(String address6) {
+		this.setAddress6(address6);
 	}
 	
 	/**
+	 * @deprecated As of 1.8, replaced by {@link #getAddress5()}
 	 * @return the subregion
 	 */
+	@Deprecated
 	public String getSubregion() {
-		return subregion;
+		return getAddress5();
 	}
 	
 	/**
-	 * @param subregion the subregion to set
+	 * @deprecated As of 1.8, replaced by {@link #setAddress5(String)}
+	 * @param address5 the subregion to set
 	 */
-	public void setSubregion(String subregion) {
-		this.subregion = subregion;
+	@Deprecated
+	public void setSubregion(String address5) {
+		this.setAddress5(address5);
 	}
 	
 	/**
+	 * @deprecated As of 1.8, replaced by {@link #getAddress4()}
 	 * @return the townshipDivision
 	 */
+	@Deprecated
 	public String getTownshipDivision() {
-		return townshipDivision;
+		return getAddress4();
 	}
 	
 	/**
-	 * @param townshipDivision the townshipDivision to set
+	 * @deprecated As of 1.8, replaced by {@link #setAddress4(String)}
+	 * @param address4 the townshipDivision to set
 	 */
-	public void setTownshipDivision(String townshipDivision) {
-		this.townshipDivision = townshipDivision;
+	@Deprecated
+	public void setTownshipDivision(String address4) {
+		this.setAddress4(address4);
 	}
 	
 	/**
@@ -543,6 +559,71 @@ public class Location extends BaseOpenmrsMetadata implements java.io.Serializabl
 		return false;
 	}
 	
+	
+	/**
+	 * @since 1.8
+	 * @return the address3
+	 */
+	public String getAddress3() {
+		return address3;
+	}
+
+	/**
+	 * @since 1.8
+	 * @param address3 the address3 to set
+	 */
+	public void setAddress3(String address3) {
+		this.address3 = address3;
+	}
+
+	/**
+	 * @since 1.8
+	 * @return the address4
+	 */
+	public String getAddress4() {
+		return address4;
+	}
+
+	/**
+	 * @since 1.8
+	 * @param address4 the address4 to set
+	 */
+	public void setAddress4(String address4) {
+		this.address4 = address4;
+	}
+
+	/**
+	 * @since 1.8
+	 * @return the address6
+	 */
+	public String getAddress6() {
+		return address6;
+	}
+
+	/**
+	 * @since 1.8
+	 * @param address6 the address6 to set
+	 */
+	public void setAddress6(String address6) {
+		this.address6 = address6;
+	}
+
+	/**
+	 * @since 1.8
+	 * @return the address5
+	 */
+	public String getAddress5() {
+		return address5;
+	}
+
+	/**
+	 * @since 1.8
+	 * @param address5 the address5 to set
+	 */
+	public void setAddress5(String address5) {
+		this.address5 = address5;
+	}
+
 	/**
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()

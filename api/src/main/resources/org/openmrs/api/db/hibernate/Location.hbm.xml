@@ -23,13 +23,13 @@
 		<property name="description" type="java.lang.String"
 			column="description" length="255" />
 		<property name="address1" type="java.lang.String"
-			column="address1" length="50" />
+			column="address1" length="255" />
 		<property name="address2" type="java.lang.String"
-			column="address2" length="50" />
+			column="address2" length="255" />
 		<property name="cityVillage" type="java.lang.String"
-			column="city_village" length="50" />
+			column="city_village" length="255" />
 		<property name="stateProvince" type="java.lang.String"
-			column="state_province" length="50" />
+			column="state_province" length="255" />
 		<property name="country" type="java.lang.String"
 			column="country" length="50" />
 		<property name="postalCode" type="java.lang.String"
@@ -39,15 +39,15 @@
 		<property name="longitude" type="java.lang.String"
 			column="longitude" length="50" />
 		<property name="countyDistrict" type="java.lang.String"
-			column="county_district" length="50" />
-		<property name="neighborhoodCell" type="java.lang.String"
-			column="neighborhood_cell" length="50" />
-		<property name="townshipDivision" type="java.lang.String"
-			column="township_division" length="50" />
-		<property name="region" type="java.lang.String"
-			length="50" />
-		<property name="subregion" type="java.lang.String"
-			length="50" />
+			column="county_district" length="255" />
+		<property name="address3" type="java.lang.String"
+			column="address3" length="255" />
+		<property name="address4" type="java.lang.String"
+			column="address4" length="255" />
+		<property name="address6" type="java.lang.String"
+			column="address6" length="255" />
+		<property name="address5" type="java.lang.String"
+			column="address5" length="255" />
 		
 		<property name="dateCreated" type="java.util.Date"
 			column="date_created" not-null="true" length="19" />
