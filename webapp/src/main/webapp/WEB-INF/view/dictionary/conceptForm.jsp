@@ -433,54 +433,6 @@
 			<c:if test="${dataTypeReadOnly == true && isBoolean == null}">(<spring:message code="Concept.datatype.readonly"/>)</c:if>
 		</td>
 	</tr>
-	<tr id="ruleDatatypeRow">
-		<th valign="top"><spring:message code="ConceptDerived.header" /></th>
-		<td>
-			<table>
-				<tr>
-					<th valign="top">
-						<spring:message code="ConceptDerived.language" arguments="Rule"/>
-						<img class="help_icon" src="${pageContext.request.contextPath}/images/help.gif" border="0" title="<spring:message code="ConceptDerived.language.help" />" />
-					</th>
-					<td>
-						<spring:bind path="command.language">
-						<select name="${status.expression}">
-							<c:forEach var="language" items="${ruleLanguages}">
-								<option value="${language}" <c:if test="${language == status.value}">selected="selected"</c:if>>
-							        ${language}
-							    </option>
-							</c:forEach>
-						</select>
-						</spring:bind>
-					</td>
-				</tr>
-				<tr>
-					<th valign="top">
-						<spring:message code="ConceptDerived.classname" arguments="Rule"/>
-						<img class="help_icon" src="${pageContext.request.contextPath}/images/help.gif" border="0" title="<spring:message code="ConceptDerived.classname.help" />" />
-					</th>
-					<td>
-						<spring:bind path="command.className">
-							<input type="text" name="${status.expression}" value="${status.value}" />
-							<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-						</spring:bind>
-					</td>
-				</tr>
-				<tr>
-					<th valign="top">
-						<spring:message code="ConceptDerived.ruleContent" arguments="Rule"/>
-						<img class="help_icon" src="${pageContext.request.contextPath}/images/help.gif" border="0" title="<spring:message code="ConceptDerived.ruleContent.help" />" />
-					</th>
-					<td>
-						<spring:bind path="command.ruleContent">
-							<textarea rows="10" cols="75" name="${status.expression}">${status.value}</textarea>
-							<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-						</spring:bind>
-					</td>
-				</tr>
-			</table>
-		</td>
-	</tr>
 	<tr id="codedDatatypeRow">
 		<th valign="top"><spring:message code="Concept.answers"/></th>
 		<td>

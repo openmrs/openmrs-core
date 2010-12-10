@@ -34,7 +34,6 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptComplex;
-import org.openmrs.ConceptDerived;
 import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptMap;
 import org.openmrs.ConceptName;
@@ -280,9 +279,6 @@ public class ConceptFormController extends SimpleFormController {
 			// nothing to do
 		}
 		map.put("dataTypeReadOnly", dataTypeReadOnly);
-		
-		// language of the rule definition. only arden for now
-		map.put("ruleLanguages", cs.getSupportedConceptDerivedLanguages());
 
 		//get complex handlers
 		map.put("handlers", Context.getObsService().getHandlers());
@@ -331,12 +327,6 @@ public class ConceptFormController extends SimpleFormController {
 		public String units;
 		
 		public String handlerKey;
-		
-		public String ruleContent;
-		
-		public String language;
-		
-		public String className;
 
 		public Map<Locale, String> preferredNamesByLocale = new HashMap<Locale, String>();
 		
@@ -388,11 +378,6 @@ public class ConceptFormController extends SimpleFormController {
 			} else if (concept.isComplex()) {
 				ConceptComplex complex = (ConceptComplex) concept;
 				this.handlerKey = complex.getHandler();
-			} else if (concept.isRule()) {
-				ConceptDerived conceptDerived = (ConceptDerived) concept;
-				this.ruleContent = conceptDerived.getRuleContent();
-				this.language = conceptDerived.getLanguage();
-				this.className = conceptDerived.getClassName();
 			}
 		}
 		
@@ -518,17 +503,6 @@ public class ConceptFormController extends SimpleFormController {
 				}
 				complexConcept.setHandler(handlerKey);
 				concept = complexConcept;
-			} else if (concept.getDatatype().getName().equals("Rule")) {
-				ConceptDerived conceptDerived = null;
-				if (concept instanceof ConceptDerived)
-					conceptDerived = (ConceptDerived) concept;
-				else
-					conceptDerived = new ConceptDerived(concept);
-				conceptDerived.setRuleContent(ruleContent);
-				conceptDerived.setLanguage(language);
-				conceptDerived.setClassName(className);
-				
-				concept = conceptDerived;
 			}
 			
 			return concept;
@@ -770,48 +744,6 @@ public class ConceptFormController extends SimpleFormController {
 		 */
 		public void setIndexTermsByLocale(Map<Locale, List<ConceptName>> indexTermsByLocale) {
 			this.indexTermsByLocale = indexTermsByLocale;
-		}
-		
-		/**
-		 * @return the ruleDefinition
-		 */
-		public String getRuleContent() {
-			return ruleContent;
-		}
-		
-		/**
-		 * @param ruleDefinition the ruleDefinition to set
-		 */
-		public void setRuleContent(String ruleContent) {
-			this.ruleContent = ruleContent;
-		}
-		
-		/**
-		 * @return the ruleLanguage
-		 */
-		public String getLanguage() {
-			return language;
-		}
-		
-		/**
-		 * @param ruleLanguage the ruleLanguage to set
-		 */
-		public void setLanguage(String language) {
-			this.language = language;
-		}
-		
-		/**
-		 * @return the className
-		 */
-		public String getClassName() {
-			return className;
-		}
-		
-		/**
-		 * @param className the className to set
-		 */
-		public void setClassName(String className) {
-			this.className = className;
 		}
 		
 		/**

@@ -50,7 +50,6 @@ import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptComplex;
 import org.openmrs.ConceptDatatype;
-import org.openmrs.ConceptDerived;
 import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptMap;
 import org.openmrs.ConceptName;
@@ -238,50 +237,6 @@ public class HibernateConceptDAO implements ConceptDAO {
 			}
 			catch (SQLException e) {
 				log.error("Error while trying to see if this ConceptComplex is in the concept_complex table already", e);
-			}
-			finally {
-				if (ps != null) {
-					try {
-						ps.close();
-					}
-					catch (SQLException e) {
-						log.error("Error generated while closing statement", e);
-					}
-				}
-				if (ps2 != null) {
-					try {
-						ps2.close();
-					}
-					catch (SQLException e) {
-						log.error("Error generated while closing statement", e);
-					}
-				}
-			}
-		}
-		// check the concept_derived table
-		else if (concept instanceof ConceptDerived) {
-			// read comments on above operation to see the logic
-			try {
-				ps = connection
-				        .prepareStatement("SELECT * FROM concept WHERE concept_id = ? and not exists (select * from concept_derived WHERE concept_id = ?)");
-				ps.setInt(1, concept.getConceptId());
-				ps.setInt(2, concept.getConceptId());
-				ps.execute();
-				if (ps.getResultSet().next()) {
-					sessionFactory.getCurrentSession().clear();
-					ps2 = connection.prepareStatement("INSERT INTO concept_derived (concept_id) VALUES (?)");
-					ps2.setInt(1, concept.getConceptId());
-					ps2.executeUpdate();
-				} else {
-					if (!concept.isRule()) {
-						ps2 = connection.prepareStatement("DELETE FROM concept_derived WHERE concept_id = ?");
-						ps2.setInt(1, concept.getConceptId());
-						ps2.executeUpdate();
-					}
-				}
-			}
-			catch (SQLException e) {
-				log.error("Error while trying to see if this ConceptDerived is in the concept_derived table already", e);
 			}
 			finally {
 				if (ps != null) {
@@ -1173,11 +1128,6 @@ public class HibernateConceptDAO implements ConceptDAO {
 		        .setString("uuid", uuid).uniqueResult();
 	}
 	
-	public ConceptDerived getConceptDerivedByUuid(String uuid) {
-		return (ConceptDerived) sessionFactory.getCurrentSession()
-		        .createQuery("from ConceptDerived cc where cc.uuid = :uuid").setString("uuid", uuid).uniqueResult();
-	}
-	
 	public ConceptName getConceptNameByUuid(String uuid) {
 		return (ConceptName) sessionFactory.getCurrentSession().createQuery("from ConceptName cc where cc.uuid = :uuid")
 		        .setString("uuid", uuid).uniqueResult();
@@ -1286,27 +1236,6 @@ public class HibernateConceptDAO implements ConceptDAO {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ConceptSource.class, "source");
 		criteria.add(Expression.eq("source.name", conceptSourceName));
 		return (ConceptSource) criteria.uniqueResult();
-	}
-	
-	/**
-	 * @see org.openmrs.api.db.ConceptDAO#getConceptDerived(java.lang.Integer)
-	 */
-	public ConceptDerived getConceptDerived(Integer conceptId) {
-		ConceptDerived conceptDerived;
-		Object obj = sessionFactory.getCurrentSession().get(ConceptDerived.class, conceptId);
-		// If Concept has already been read & cached, we may get back a Concept instead of
-		// ConceptDerived.  If this happens, we need to clear the object from the cache
-		// and re-fetch it as a ConceptDerived
-		if (obj != null && !obj.getClass().equals(ConceptDerived.class)) {
-			sessionFactory.getCurrentSession().evict(obj); // remove from cache
-			// session.get() did not work here, we need to perform a query to get a ConceptDerived
-			Query query = sessionFactory.getCurrentSession().createQuery("from ConceptDerived where conceptId = :conceptId")
-			        .setParameter("conceptId", conceptId);
-			obj = query.uniqueResult();
-		}
-		conceptDerived = (ConceptDerived) obj;
-		
-		return conceptDerived;
 	}
 	
 	/**

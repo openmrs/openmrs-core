@@ -23,7 +23,6 @@ import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptComplex;
 import org.openmrs.ConceptDatatype;
-import org.openmrs.ConceptDerived;
 import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptMap;
 import org.openmrs.ConceptName;
@@ -925,6 +924,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @deprecated use
 	 *             {@link #getConcepts(String, List, boolean, List, List, List, List, Concept, Integer, Integer)}
 	 */
+	@Deprecated
 	@Transactional(readOnly = true)
 	@Authorized({ "View Concepts" })
 	public List<ConceptWord> findConcepts(String phrase, List<Locale> searchLocales, boolean includeRetired,
@@ -1119,26 +1119,6 @@ public interface ConceptService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public ConceptComplex getConceptComplex(Integer conceptId);
-	
-	/**
-	 * Get a derived concept with the given conceptId
-	 * 
-	 * @param conceptId of the derived concept
-	 * @return a ConceptDerived object
-	 * @since 1.8
-	 * @should return a concept derived object
-	 */
-	@Transactional(readOnly = true)
-	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
-	public ConceptDerived getConceptDerived(Integer conceptId);
-	
-	/**
-	 * Get list of language can be used for concept derived rule definition
-	 * 
-	 * @return list of all known concept derived languages
-	 * @since 1.8
-	 */
-	public List<String> getSupportedConceptDerivedLanguages();
 	
 	/**
 	 * Search for a ConceptNameTag by name
