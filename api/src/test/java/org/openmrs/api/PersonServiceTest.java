@@ -1272,7 +1272,8 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void parsePersonName_shouldNotFailWhenEndingWithWhitespace() throws Exception {
-		Context.getPersonService().parsePersonName("John ");
+		PersonName pname = Context.getPersonService().parsePersonName("John ");
+		assertEquals("John", pname.getGivenName());
 	}
 
 	/**
@@ -1284,6 +1285,19 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		PersonName pname = Context.getPersonService().parsePersonName("John,");
 		assertEquals("John", pname.getGivenName());
 		
+	}
+
+	/**
+	 * @see PersonService#parsePersonName(String)
+	 * @verifies parse four person name
+	 */
+	@Test
+	public void parsePersonName_shouldParseFourPersonName() throws Exception {
+		PersonName pname = Context.getPersonService().parsePersonName("John David Alex Smith");
+		assertEquals("John", pname.getGivenName());
+		assertEquals("David", pname.getMiddleName());
+		assertEquals("Alex", pname.getFamilyName());
+		assertEquals("Smith", pname.getFamilyName2());
 	}
 
 }
