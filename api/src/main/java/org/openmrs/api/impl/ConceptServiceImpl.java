@@ -1433,7 +1433,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 * @see org.openmrs.api.ConceptService#getConceptByMapping(java.lang.String, java.lang.String)
 	 */
 	public Concept getConceptByMapping(String code, String sourceName) throws APIException {
-		List<Concept> concepts = getConceptsByMapping(code, sourceName);
+		List<Concept> concepts = getConceptsByMapping(code, sourceName, true);
 		if (concepts.size() == 0) {
 			return null;
 		} else if (concepts.size() == 1) {
@@ -1445,10 +1445,18 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	
 	/**
 	 * @see org.openmrs.api.ConceptService
-	 * @getConceptsByMapping(java.lang.String, java.lang.String
+	 * @getConceptsByMapping(java.lang.String, java.lang.String)
 	 */
 	public List<Concept> getConceptsByMapping(String code, String sourceName) throws APIException {
-		return dao.getConceptsByMapping(code, sourceName);
+		return getConceptsByMapping(code, sourceName, false);
+	}
+	
+	/**
+	 * @see org.openmrs.api.ConceptService
+	 * @getConceptsByMapping(java.lang.String, java.lang.String, boolean)
+	 */
+	public List<Concept> getConceptsByMapping(String code, String sourceName, boolean includeRetired) throws APIException {
+		return dao.getConceptsByMapping(code, sourceName, includeRetired);
 	}
 	
 	/**
