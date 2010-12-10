@@ -24,7 +24,6 @@ import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptComplex;
 import org.openmrs.ConceptDatatype;
-import org.openmrs.ConceptDerived;
 import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptMap;
 import org.openmrs.ConceptName;
@@ -348,8 +347,6 @@ public interface ConceptDAO {
 	
 	public ConceptAnswer getConceptAnswerByUuid(String uuid);
 	
-	public ConceptDerived getConceptDerivedByUuid(String uuid);
-	
 	public ConceptName getConceptNameByUuid(String uuid);
 	
 	public ConceptSet getConceptSetByUuid(String uuid);
@@ -412,11 +409,6 @@ public interface ConceptDAO {
 	 * @see org.openmrs.api.ConceptService#getConceptSourceByName(java.lang.String)
 	 */
 	public ConceptSource getConceptSourceByName(String conceptSourceName) throws DAOException;
-	
-	/**
-	 * @see org.openmrs.api.ConceptService#getConceptDerived(Integer)
-	 */
-	public ConceptDerived getConceptDerived(Integer conceptId);
 	
 	/**
 	 * Gets the value of conceptDatatype currently saved in the database for the given concept,

@@ -2,9 +2,7 @@
 <dataset>
   <concept concept_id="1" retired="false" datatype_id="2" class_id="7" is_set="false" creator="1" date_created="2005-01-01 00:00:00.0" uuid="957eba27-2b38-43e8-91a9-4dfe3956a32d"/>
   <concept concept_id="2" retired="false" datatype_id="1" class_id="7" is_set="false" creator="1" date_created="2005-01-01 00:00:00.0" uuid="92b910bd-298c-4ecf-a632-661ae2f446bf"/>
-  <concept concept_id="3" retired="false" datatype_id="2" class_id="0" is_set="false" creator="1" date_created="2005-01-01 00:00:00.0" uuid="92b910bd-298c-4ecf-a632-661ae2g446bf"/>
   <concept_datatype concept_datatype_id="1" name="Numeric" hl7_abbreviation="NM" description="Numeric value, including integer or float" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="598756b4-9676-4b54-8a35-6b368088c505"/>
-  <concept_datatype concept_datatype_id="2" name="Rule" hl7_abbreviation="ZZ" description="Rule Concept" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="589756b4-9676-4b54-8a35-6b368088c505"/>
   <concept_datatype concept_datatype_id="3" name="Text" hl7_abbreviation="ST" description="Structured text" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="1f9c5fae-6f88-4ad0-a74c-6e7705edd52e"/>
   <concept_description concept_description_id="1" concept_id="1" description="this is a description" locale="en" creator="1" date_created="2005-01-01 00:00:00.0" uuid="0a6f34ea-043a-4e69-b418-1d7bb66b99b6"/>
   <concept_description concept_description_id="2" concept_id="2" description="this is another description" locale="en" creator="1" date_created="2005-01-01 00:00:00.0" uuid="a72dac37-b593-46a1-a24b-e3da6dbcc521"/>
@@ -12,5 +10,4 @@
   <concept_name concept_id="2" name="Some numeric concept name" locale="en" creator="1" date_created="2005-01-01 00:00:00.0" concept_name_id="2" concept_name_type="FULLY_SPECIFIED" locale_preferred="0" voided="false" uuid="d8402dab-1e32-4f17-9654-a889a4eb9a89"/>
   <concept_name concept_id="2" name="Numeric name with en_GB locale" locale="en_GB" creator="1" date_created="2005-01-01 00:00:00.0" concept_name_id="3" concept_name_type="" locale_preferred="0" voided="false" uuid="bbbb2dab-1e32-4f17-a654-0000a4eb9a8e"/>
   <concept_numeric concept_id="2" hi_absolute="123.0" precise="false"/>
-  <concept_derived concept_id="3" rule="Example of not parse-able arden" language="Arden" class_name="org.openmrs.logic.rule.Pregnant"/>
 </dataset>

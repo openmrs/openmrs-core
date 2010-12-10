@@ -3961,4 +3961,23 @@
 		</update>
     </changeSet>
 
+	<changeSet id="201012081715" author="nribeka">
+		<preConditions onFail="MARK_RAN">
+			<tableExists tableName="concept_derived" />
+		</preConditions>
+		<comment>Removing concept that are concept derived and the datatype</comment>
+		<delete tableName="concept_derived" />
+		<delete tableName="concept_datatype">
+			<where>name='Rule'</where>
+		</delete>
+	</changeSet>
+
+	<changeSet id="201012081717" author="nribeka">
+		<preConditions onFail="MARK_RAN">
+			<tableExists tableName="concept_derived" />
+		</preConditions>
+		<comment>Removing concept derived tables</comment>
+		<dropTable tableName="concept_derived"/>
+	</changeSet>
+
 </databaseChangeLog>

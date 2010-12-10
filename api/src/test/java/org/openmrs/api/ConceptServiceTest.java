@@ -38,7 +38,6 @@ import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptComplex;
 import org.openmrs.ConceptDatatype;
-import org.openmrs.ConceptDerived;
 import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptMap;
 import org.openmrs.ConceptName;
@@ -1037,18 +1036,6 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		ConceptDatatype newDatatype = conceptService.getConceptDatatypeByName("Text");
 		concept.setDatatype(newDatatype);
 		conceptService.saveConcept(concept);
-	}
-	
-	/**
-	 * @see {@link ConceptService#getConceptDerived(Integer)}
-	 */
-	@Test
-	@Verifies(value = "should return a concept derived object", method = "getConceptDerived(Integer)")
-	public void getConceptDerived_shouldReturnAConceptDerivedObject() throws Exception {
-		executeDataSet(INITIAL_CONCEPTS_XML);
-		ConceptDerived conceptDerived = conceptService.getConceptDerived(3);
-		Assert.assertEquals("Example of not parse-able arden", conceptDerived.getRuleContent());
-		Assert.assertEquals("Arden", conceptDerived.getLanguage());
 	}
 	
 	/**

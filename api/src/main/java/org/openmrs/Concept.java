@@ -1445,17 +1445,6 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	}
 	
 	/**
-	 * Child Class ConceptDerived overrides this method and returns true. See
-	 * {@link org.openmrs.ConceptDerived#isRule()}. Otherwise this method returns false.
-	 * 
-	 * @return false
-	 * @since 1.8
-	 */
-	public boolean isRule() {
-		return false;
-	}
-	
-	/**
 	 * Remove the given ConceptMap from the list of mappings for this Concept
 	 * 
 	 * @param conceptMap
