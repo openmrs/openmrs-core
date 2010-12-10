@@ -1206,6 +1206,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getConceptByMapping(java.lang.String, java.lang.String)
 	 */
+	@SuppressWarnings("unchecked")
 	public Concept getConceptByMapping(String conceptCode, String mappingCode) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ConceptMap.class);
 		
@@ -1219,11 +1220,14 @@ public class HibernateConceptDAO implements ConceptDAO {
 		criteria.add(Expression.or(Expression.eq("conceptSource.name", mappingCode), Expression.eq("conceptSource.hl7Code",
 		    mappingCode)));
 		
-		// ignore voided concepts
+		// sort retired concepts to the end of the list
 		criteria.createAlias("concept", "concept");
-		criteria.add(Expression.eq("concept.retired", false));
-
-		return (Concept) criteria.uniqueResult();
+		criteria.addOrder(Order.asc("concept.retired"));
+		
+		List<Concept> results = criteria.list();
+		
+		// just return the first concept in the list
+		return (results.size() > 0 ? results.get(0) : null);
 	}
 	
 	/**
