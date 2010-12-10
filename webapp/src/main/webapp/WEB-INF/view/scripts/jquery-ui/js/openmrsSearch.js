@@ -114,7 +114,8 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 (function($j) {
 	var openmrsSearch_div = '<span><span style="white-space: nowrap"><span><span id="searchLabelNode"></span><input type="text" value="" id="inputNode" autocomplete="off"/><input type="checkbox" style="display: none" id="includeRetired"/><img id="spinner" src=""/><input type="checkbox" style="display: none" id="includeVoided"/><input type="checkbox" style="display: none" id="verboseListing"/><span id="loadingMsg"></span><span id="minCharError" class="error"></span><span id="pageInfo"></span><br /><span id="searchWidgetNotification"></span></span></span><span class="openmrsSearchDiv"><table id="openmrsSearchTable" cellpadding="2" cellspacing="0" style="width: 100%"><thead id="searchTableHeader"><tr></tr></thead><tbody></tbody></table></span></span>';
 	var BATCH_SIZE = omsgs.maxSearchResults;
-	var SEARCH_DELAY = 600;//time interval between keyup and triggering the search off or showing the minimum character error
+	var SEARCH_DELAY = 400;//time interval between keyup and triggering the search off
+	var SEARCH_INPUT_DELAY = 600;//time interval between keyup and  showing the minimum character error
 	if(!Number(BATCH_SIZE))
 		BATCH_SIZE = 200;
 	var ajaxTimer = null;
@@ -218,23 +219,22 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 	        	if(self._textInputTimer != null){
     				window.clearTimeout(self._textInputTimer);
     			}
-	    		if(text.length >= o.minLength) {
-	    			if(self._searchDelayTimer != null){
-	    				window.clearTimeout(self._searchDelayTimer);
-	    			}
-	    			
-	    			if($j('#pageInfo').css("visibility") == 'visible')
-						$j('#pageInfo').css("visibility", "hidden");
-						
-	    			if($j("#minCharError").css("visibility") == 'visible')
-	    				$j("#minCharError").css("visibility", "hidden");
-	    			//This discontinues any further ajax SUB calls from the last triggered search
-	    			if(!inSerialMode && ajaxTimer)
-	    				window.clearInterval(ajaxTimer);
-	    			
+	        	if(text.length >= o.minLength) {
 	    			//wait for a couple of milliseconds, if the user isn't typing anymore chars before triggering search
 	    			//this minimizes the number of un-necessary calls made to the server for first typists
 	    			self._searchDelayTimer = window.setTimeout(function(){
+	    				if(self._searchDelayTimer != null){
+		    				window.clearTimeout(self._searchDelayTimer);
+		    			}
+	    				if($j('#pageInfo').css("visibility") == 'visible')
+							$j('#pageInfo').css("visibility", "hidden");
+							
+		    			if($j("#minCharError").css("visibility") == 'visible')
+		    				$j("#minCharError").css("visibility", "hidden");
+		    			//This discontinues any further ajax SUB calls from the last triggered search
+		    			if(!inSerialMode && ajaxTimer)
+		    				window.clearInterval(ajaxTimer);
+		    			
 	    				self._doSearch(text);
 	    			}, SEARCH_DELAY);	
 	    			
@@ -254,7 +254,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 	    					$j("#minCharError").css("visibility", "visible");
 	    				else if($j.trim(input.val()).length == 0 && $j("#minCharError").css("visibility") == 'visible')
 	    					$j("#minCharError").css("visibility", "hidden");
-	    			}, SEARCH_DELAY);
+	    			}, SEARCH_INPUT_DELAY);
 	    			
 	    		}
 	    		return true;
@@ -767,7 +767,9 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 					nextSubCallCount = curSubCallCount + 1;
 					
 					if(!inSerialMode && self._bufferedAjaxCallCounters.length > 0){
-						
+						//ensures that stored subcalls are fetched in ascending order
+						//irrespective of the order they were returned
+						self._bufferedAjaxCallCounters.sort();
 						for(var i = 0; i < self._bufferedAjaxCallCounters.length; i++){
 							subCallCounter = self._bufferedAjaxCallCounters[i];
 							//Skip past the ones that come after those that are not yet returned by DWR calls e.g if we have ajax
