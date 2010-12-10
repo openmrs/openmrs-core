@@ -785,6 +785,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		String firstName = name;
 		String middleName = "";
 		String lastName = "";
+		String lastName2 = null;
 		
 		if (name.contains(",")) {
 			
@@ -808,7 +809,13 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 			}
 		} else if (name.contains(" ")) {
 			String[] names = name.split(" ");
-			if (names.length == 3) {
+			if (names.length == 4) {
+				// user entered "John Adam Smith"
+				firstName = names[0];
+				middleName = names[1];
+				lastName = names[2];
+				lastName2 = names[3];
+			} else if (names.length == 3) {
 				// user entered "John Adam Smith"
 				firstName = names[0];
 				middleName = names[1];
@@ -820,7 +827,10 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 			}
 		}
 		
-		return new PersonName(firstName, middleName, lastName);
+		PersonName pn = new PersonName(firstName, middleName, lastName);
+		pn.setFamilyName2(lastName2);
+		
+		return pn;
 	}
 	
 	/**
