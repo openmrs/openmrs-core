@@ -856,6 +856,7 @@ public interface PersonService {
 	 * @should parse two person name without comma
 	 * @should not fail when ending with whitespace
 	 * @should not fail when ending with a comma
+	 * @should parse four person name
 	 */
 	public PersonName parsePersonName(String name) throws APIException;
 	
