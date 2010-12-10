@@ -16,27 +16,28 @@ package org.openmrs.api;
 import org.openmrs.ConceptName;
 
 /**
- * The concept name type enumeration
+ * The concept name type enumeration <br>
+ * <br>
+ * <b>FULLY_SPECIFIED</b> - Indicates that the name is marked as the fully specified name, which is
+ * returned by default for a locale in case there is no preferred name set, a concept can have only
+ * one fully specified name per locale. It will also be set as the preferred name in its locale if
+ * no name is explicitly set as prefererred for the same locale and concept.<br>
+ * <br>
+ * <b>SHORT</b> - Indicates the name is marked as the short name for the concept, only one name can
+ * be marked short per locale for a concept <br>
+ * <br>
+ * <b>INDEX_TERM</b> - Indicates that the name is marked as a search term for the concept, it could
+ * be a common mis spelt version of any of the names for the concept, typically this name will be
+ * used for searching purposes. <br>
+ * <br>
+ * NOTE: Any name with a null Concept name type is deemed a synonym. ONLY a fully specified name or
+ * synonym can be marked as preferred
  * 
  * @see ConceptName
  * @since Version 1.7
  */
 public enum ConceptNameType {
 	
-	/*
-	 * FULLY_SPECIFIED - Indicates that the name is marked as the fully specified name
-	 * that is returned by default for a locale in case there is no preferred name set
-	 * for and a concept can have only one fully specified name per locale.
-	 * 
-	 * SHORT - Indicates the name is marked as the short name of the concept, only one
-	 * name can be marked short per locale for a concept
-	 * 
-	 * INDE_TERM Indicates that the name is marked as a search term for the concept,
-	 * it could be a common mis spelt version of any of the names for the concept
-	 * 
-	 * NOTE: Any name with a null Concept name type is deemed a synonym.
-	 * 
-	 */
 	FULLY_SPECIFIED, SHORT, INDEX_TERM;
 	
 }
