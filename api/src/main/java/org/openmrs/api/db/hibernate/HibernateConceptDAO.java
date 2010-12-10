@@ -16,6 +16,7 @@ package org.openmrs.api.db.hibernate;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -607,6 +608,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		
 		Criteria searchCriteria = createConceptWordSearchCriteria(phrase, locales, includeRetired, requireClasses,
 		    excludeClasses, requireDatatypes, excludeDatatypes, answersToConcept);
+		searchCriteria.addOrder(Order.desc("cw1.weight"));
 		List<ConceptWord> conceptWords = new Vector<ConceptWord>();
 		if (searchCriteria != null) {
 			if (start != null)
@@ -700,6 +702,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 			Collection<ConceptWord> words = ConceptWord.makeConceptWords(concept);
 			log.debug("words: " + words);
 			for (ConceptWord word : words) {
+				word.setWeight(computeConceptWordWeight(word));
 				try {
 					sessionFactory.getCurrentSession().save(word);
 				}
@@ -1505,5 +1508,106 @@ public class HibernateConceptDAO implements ConceptDAO {
 			searchCriteria.setMaxResults(length);
 		
 		return searchCriteria.list();
+	}
+	
+	/**
+	 * Utility methods that computes and sets the weight of a conceptWord. The
+	 * weights are computed independent of locale and any phrase
+	 * 
+	 * @param word the word for which to compute the weight
+	 * @return the weight of the word
+	 */
+	private Double computeConceptWordWeight(ConceptWord word) {
+		Double weight = 0.0;
+		String conceptName = word.getConceptName().getName();
+		String wordString = word.getWord();
+		//why is this the case, this seems like invalid data
+		if (conceptName.indexOf(wordString) < 0)
+			return weight;
+		
+		//by default every word must at least weigh 1+
+		weight = 1.0;
+		//TODO make the numbers 7.0, 5.0, 3.0, 1.0 etc constants
+		//Index terms rank highly since they were added for searching
+		if (word.getConceptName().isIndexTerm()
+		        || (word.getConceptName().isPreferred() && word.getConceptName().isFullySpecifiedName())) {
+			weight += 7.0;
+			//A big bonus
+			if (conceptName.equals(wordString))
+				weight += 7.0;
+			else if (conceptName.startsWith(wordString)) {
+				//the shorter the word, the higher the increment since it a closer match to the name
+				// e.g MY in 'MY DEPOT' should weigh more than HOME in 'HOME DEPOT'
+				//(conceptName.length() - wordString.length()) / new Double(conceptName.length())
+				weight += (7.0 * ((conceptName.length() - wordString.length()) / new Double(conceptName.length())));
+			} else {
+				//still a shorter word should weigh more depending on its index in the full concept name
+				//e.g MY in 'IN MY HOME' should weigh more than 'MY' in 'FOR MY HOME', we add 1 so that
+				// if 'conceptName.indexOf(wordString)' returns 1, we still divide 5 by something greater than 1
+				//e.g 'MARRIAGE' in 'PRE MARRIAGE' should weigh more than 'MARRIAGE' in 'NOT PRE MARRIAGE'
+				//and still weigh more then 'MARRIAGE' in 'PRE MARRIAGE RELATIONSHIP'
+				weight += ((7.0 / (conceptName.indexOf(wordString) + 1)) * ((conceptName.length() - wordString.length()) / new Double(
+				        conceptName.length())));
+			}
+			
+		} else if (word.getConceptName().isPreferred()) {
+			weight += 5.0;
+			//A medium bonus
+			if (conceptName.equals(wordString))
+				weight += 5.0;
+			else if (conceptName.startsWith(wordString))
+				weight += (5.0 * ((conceptName.length() - wordString.length()) / new Double(conceptName.length())));
+			else
+				weight += ((5.0 / (conceptName.indexOf(wordString) + 1)) * ((conceptName.length() - wordString.length()) / new Double(
+				        conceptName.length())));
+			
+		} else if (word.getConceptName().isFullySpecifiedName()) {
+			weight += 4.0;
+			//A small bonus
+			if (conceptName.equals(wordString))
+				weight += 4.0;
+			else if (conceptName.startsWith(wordString))
+				weight += (4.0 * ((conceptName.length() - wordString.length()) / new Double(conceptName.length())));
+			else
+				weight += ((4.0 / (conceptName.indexOf(wordString) + 1)) * ((conceptName.length() - wordString.length()) / new Double(
+				        conceptName.length())));
+			
+		} else if (word.getConceptName().isSynonym()) {
+			weight += 3.0;
+			//A small bonus
+			if (conceptName.equals(wordString))
+				weight += 3.0;
+			else if (conceptName.startsWith(wordString))
+				weight += (3.0 * ((conceptName.length() - wordString.length()) / new Double(conceptName.length())));
+			else
+				weight += ((3.0 / (conceptName.indexOf(wordString) + 1)) * ((conceptName.length() - wordString.length()) / new Double(
+				        conceptName.length())));
+			
+		} else if (word.getConceptName().isSynonym()) {
+			weight += 2.0;
+			//A small bonus
+			if (conceptName.equals(wordString))
+				weight += 2.0;
+			else if (conceptName.startsWith(wordString))
+				weight += (2.0 * ((conceptName.length() - wordString.length()) / new Double(conceptName.length())));
+			else
+				weight += ((2.0 / (conceptName.indexOf(wordString) + 1)) * ((conceptName.length() - wordString.length()) / new Double(
+				        conceptName.length())));
+			
+		} else if (word.getConceptName().isShort()) {
+			weight += 1.0;
+			//A small bonus
+			if (conceptName.equals(wordString))
+				weight += 1.0;
+			else if (conceptName.startsWith(wordString))
+				weight += (1.0 * ((conceptName.length() - wordString.length()) / new Double(conceptName.length())));
+			else
+				weight += ((1.0 / (conceptName.indexOf(wordString) + 1)) * ((conceptName.length() - wordString.length()) / new Double(
+				        conceptName.length())));
+			
+		}
+		
+		//round off to 2 decimal places
+		return Double.parseDouble(new DecimalFormat("0.00").format(weight));
 	}
 }

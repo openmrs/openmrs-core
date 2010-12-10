@@ -13,6 +13,7 @@
 		
 		<property name="word" type="java.lang.String" length="255" />
 		<property name="locale" type="java.util.Locale" length="255" />
+		<property name="weight" type="java.lang.Double" not-null="true" />
 
 		<many-to-one name="concept" column="concept_id" class="Concept" outer-join="true" />
 					 

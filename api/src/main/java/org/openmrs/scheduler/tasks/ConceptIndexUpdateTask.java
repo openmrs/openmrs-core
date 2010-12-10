@@ -33,12 +33,12 @@ public class ConceptIndexUpdateTask extends AbstractTask {
 	private Log log = LogFactory.getLog(ConceptIndexUpdateTask.class);
 	
 	private boolean shouldExecute = true;
-
+	
 	/**
 	 * @see org.openmrs.scheduler.tasks.AbstractTask#execute()
 	 */
 	@Override
-    public void execute() {
+	public void execute() {
 		if (!isExecuting) {
 			isExecuting = true;
 			shouldExecute = true;
@@ -70,6 +70,10 @@ public class ConceptIndexUpdateTask extends AbstractTask {
 				SchedulerService ss = Context.getSchedulerService();
 				TaskDefinition conceptWordUpdateTaskDef = ss.getTaskByName(ConceptServiceImpl.CONCEPT_WORD_UPDATE_TASK_NAME);
 				conceptWordUpdateTaskDef.setStarted(false);
+				//This was need when upgrading to version1.8
+				//Otherwise it will always return false
+				if (conceptWordUpdateTaskDef.getStartOnStartup())
+					conceptWordUpdateTaskDef.setStartOnStartup(false);
 				ss.saveTask(conceptWordUpdateTaskDef);
 				log.debug("Task set to stopped.");
 			}
@@ -80,7 +84,7 @@ public class ConceptIndexUpdateTask extends AbstractTask {
 	 * @see org.openmrs.scheduler.Task#initialize(org.openmrs.scheduler.TaskDefinition)
 	 */
 	@Override
-    public void initialize(TaskDefinition config) {
+	public void initialize(TaskDefinition config) {
 		// do nothing
 	}
 	
@@ -88,7 +92,7 @@ public class ConceptIndexUpdateTask extends AbstractTask {
 	 * @see org.openmrs.scheduler.Task#shutdown()
 	 */
 	@Override
-    public void shutdown() {
+	public void shutdown() {
 		shouldExecute = false;
 	}
 	

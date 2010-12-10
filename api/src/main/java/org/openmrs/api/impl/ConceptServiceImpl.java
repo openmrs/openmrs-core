@@ -1193,7 +1193,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 			concept = currentWord.getConcept();
 			conceptId = concept.getConceptId();
 			conceptName = currentWord.getConceptName();
-			
+			currentWord.setWeight(0.0);
 			// check each locale the user is searching in for name preference
 			for (Locale locale : locales) {
 				// We weight matches on preferred names higher

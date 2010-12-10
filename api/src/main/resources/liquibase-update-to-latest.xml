@@ -3908,5 +3908,57 @@
 		<comment>Moving "deleted" HL7s from HL7 archive table to queue table</comment>
 		<customChange class="org.openmrs.util.databasechange.MoveDeletedHL7sChangeSet"/>				
 	</changeSet>
+	
+	<changeSet id="20101209-1721" author="wyclif">
+		<preConditions>
+			<not><columnExists tableName="concept_word" columnName="weight"/></not>
+		</preConditions>
+		<comment>Add 'weight' column to concept_word table</comment>
+		<addColumn tableName="concept_word">
+			<column name="weight" type="double" defaultValueNumeric="1" />
+		</addColumn>
+	</changeSet>
+	
+	<changeSet id="20101209-1722" author="wyclif">
+		<preConditions>
+			<not><indexExists indexName="concept_word_weight_index" /></not>
+		</preConditions>
+		<comment>Adding index to concept_word.weight column</comment>
+		<createIndex tableName="concept_word" indexName="concept_word_weight_index">
+			<column name="weight" />
+		</createIndex>
+	</changeSet>
+		
+	<changeSet id="20101209-1723" author="wyclif">
+    	<preConditions onFail="MARK_RAN">
+			<sqlCheck expectedResult="0">
+				SELECT COUNT(*) FROM scheduler_task_config WHERE schedulable_class = 'org.openmrs.scheduler.tasks.ConceptIndexUpdateTask'
+			</sqlCheck>
+		</preConditions>
+		<comment>Insert a row into the schedule_task_config table for the ConceptIndexUpdateTask</comment>
+		<insert tableName="scheduler_task_config">
+			<column name="name" value="Update Concept Index" />
+			<column name="description" value="Iterates through the concept dictionary, re-creating the concept index (which are used for searcing). This task is started when using the 'Update Concept Index Storage' page and no range is given.  This task stops itself when one iteration has completed." />
+			<column name="schedulable_class" value="org.openmrs.scheduler.tasks.ConceptIndexUpdateTask" />
+			<column name="start_on_startup" valueNumeric="1" />
+			<column name="created_by" value="1" />
+			<column name="uuid" value="7c75911e-0310-11e0-8222-18a905e044dc" />
+		</insert>
+    </changeSet>
+    
+    <changeSet id="20101209-1724" author="wyclif">
+    	<preConditions onFail="MARK_RAN">
+    		<sqlCheck expectedResult="1">
+				SELECT COUNT(*) FROM scheduler_task_config 
+				WHERE schedulable_class = 'org.openmrs.scheduler.tasks.ConceptIndexUpdateTask' 
+				AND start_on_startup = 0;
+			</sqlCheck>
+		</preConditions>
+		<comment>Setting the value of 'repeat_interval, start_time and start_on_startup' to trigger off conceptIndexUpdateTask on startup</comment>
+		<update tableName="scheduler_task_config">
+			<column name="start_on_startup" value="1" />
+			<where>schedulable_class = 'org.openmrs.scheduler.tasks.ConceptIndexUpdateTask'</where>
+		</update>
+    </changeSet>
 
 </databaseChangeLog>
