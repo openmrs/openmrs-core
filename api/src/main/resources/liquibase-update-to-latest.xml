@@ -3946,7 +3946,7 @@
 		</insert>
     </changeSet>
     
-    <changeSet id="20101209-1724" author="wyclif">
+    <changeSet id="20101209-1726" author="wyclif">
     	<preConditions onFail="MARK_RAN">
     		<sqlCheck expectedResult="1">
 				SELECT COUNT(*) FROM scheduler_task_config 
@@ -3954,7 +3954,7 @@
 				AND start_on_startup = 0;
 			</sqlCheck>
 		</preConditions>
-		<comment>Setting the value of 'repeat_interval, start_time and start_on_startup' to trigger off conceptIndexUpdateTask on startup</comment>
+		<comment>Setting the value of 'start_on_startup' to trigger off conceptIndexUpdateTask on startup</comment>
 		<update tableName="scheduler_task_config">
 			<column name="start_on_startup" value="1" />
 			<where>schedulable_class = 'org.openmrs.scheduler.tasks.ConceptIndexUpdateTask'</where>

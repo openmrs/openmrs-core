@@ -62,6 +62,7 @@ import org.openmrs.ConceptSource;
 import org.openmrs.ConceptWord;
 import org.openmrs.Drug;
 import org.openmrs.DrugIngredient;
+import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ConceptDAO;
@@ -1440,13 +1441,14 @@ public class HibernateConceptDAO implements ConceptDAO {
 	}
 	
 	/**
-	 * Utility methods that computes and sets the weight of a conceptWord. The
-	 * weights are computed independent of locale and any phrase
+	 * Utility methods that computes and sets the weight of a conceptWord. The weights are computed
+	 * independent of locale and any phrase
 	 * 
 	 * @param word the word for which to compute the weight
 	 * @return the weight of the word
 	 */
-	private Double computeConceptWordWeight(ConceptWord word) {
+	public Double computeConceptWordWeight(ConceptWord word) {
+		//TODO Add unit tests
 		Double weight = 0.0;
 		String conceptName = word.getConceptName().getName();
 		String wordString = word.getWord();
@@ -1456,87 +1458,64 @@ public class HibernateConceptDAO implements ConceptDAO {
 		
 		//by default every word must at least weigh 1+
 		weight = 1.0;
-		//TODO make the numbers 7.0, 5.0, 3.0, 1.0 etc constants
+		//TODO make the numbers 5.0, 3.0, 1.0 etc constants
 		//Index terms rank highly since they were added for searching
-		if (word.getConceptName().isIndexTerm()
-		        || (word.getConceptName().isPreferred() && word.getConceptName().isFullySpecifiedName())) {
-			weight += 7.0;
-			//A big bonus
-			if (conceptName.equals(wordString))
-				weight += 7.0;
-			else if (conceptName.startsWith(wordString)) {
-				//the shorter the word, the higher the increment since it a closer match to the name
-				// e.g MY in 'MY DEPOT' should weigh more than HOME in 'HOME DEPOT'
-				//(conceptName.length() - wordString.length()) / new Double(conceptName.length())
-				weight += (7.0 * ((conceptName.length() - wordString.length()) / new Double(conceptName.length())));
-			} else {
-				//still a shorter word should weigh more depending on its index in the full concept name
-				//e.g MY in 'IN MY HOME' should weigh more than 'MY' in 'FOR MY HOME', we add 1 so that
-				// if 'conceptName.indexOf(wordString)' returns 1, we still divide 5 by something greater than 1
-				//e.g 'MARRIAGE' in 'PRE MARRIAGE' should weigh more than 'MARRIAGE' in 'NOT PRE MARRIAGE'
-				//and still weigh more then 'MARRIAGE' in 'PRE MARRIAGE RELATIONSHIP'
-				weight += ((7.0 / (conceptName.indexOf(wordString) + 1)) * ((conceptName.length() - wordString.length()) / new Double(
-				        conceptName.length())));
-			}
+		
+		//This is the actual match
+		if (conceptName.equals(wordString)) {
+			double weightCoefficient = 5.0;
+			weight += weightCoefficient;
 			
-		} else if (word.getConceptName().isPreferred()) {
-			weight += 5.0;
-			//A medium bonus
-			if (conceptName.equals(wordString))
-				weight += 5.0;
-			else if (conceptName.startsWith(wordString))
-				weight += (5.0 * ((conceptName.length() - wordString.length()) / new Double(conceptName.length())));
-			else
-				weight += ((5.0 / (conceptName.indexOf(wordString) + 1)) * ((conceptName.length() - wordString.length()) / new Double(
-				        conceptName.length())));
+			//compute bonus based on the concept name type
+			weight += computeBonusWeight(weightCoefficient, word);
+		} else if (conceptName.startsWith(wordString)) {
+			double weightCoefficient = 3.0;
 			
-		} else if (word.getConceptName().isFullySpecifiedName()) {
-			weight += 4.0;
-			//A small bonus
-			if (conceptName.equals(wordString))
-				weight += 4.0;
-			else if (conceptName.startsWith(wordString))
-				weight += (4.0 * ((conceptName.length() - wordString.length()) / new Double(conceptName.length())));
-			else
-				weight += ((4.0 / (conceptName.indexOf(wordString) + 1)) * ((conceptName.length() - wordString.length()) / new Double(
-				        conceptName.length())));
+			//the shorter the word, the higher the increment since it a closer match to the name
+			// e.g MY in 'MY DEPOT' should weigh more than HOME in 'HOME DEPOT'
+			weight += (weightCoefficient * (wordString.length() / new Double(conceptName.length())));
+			weight += computeBonusWeight(weightCoefficient, word);
+		} else {
+			double weightCoefficient = 1.0;
 			
-		} else if (word.getConceptName().isSynonym()) {
-			weight += 3.0;
-			//A small bonus
-			if (conceptName.equals(wordString))
-				weight += 3.0;
-			else if (conceptName.startsWith(wordString))
-				weight += (3.0 * ((conceptName.length() - wordString.length()) / new Double(conceptName.length())));
-			else
-				weight += ((3.0 / (conceptName.indexOf(wordString) + 1)) * ((conceptName.length() - wordString.length()) / new Double(
-				        conceptName.length())));
-			
-		} else if (word.getConceptName().isSynonym()) {
-			weight += 2.0;
-			//A small bonus
-			if (conceptName.equals(wordString))
-				weight += 2.0;
-			else if (conceptName.startsWith(wordString))
-				weight += (2.0 * ((conceptName.length() - wordString.length()) / new Double(conceptName.length())));
-			else
-				weight += ((2.0 / (conceptName.indexOf(wordString) + 1)) * ((conceptName.length() - wordString.length()) / new Double(
-				        conceptName.length())));
-			
-		} else if (word.getConceptName().isShort()) {
-			weight += 1.0;
-			//A small bonus
-			if (conceptName.equals(wordString))
-				weight += 1.0;
-			else if (conceptName.startsWith(wordString))
-				weight += (1.0 * ((conceptName.length() - wordString.length()) / new Double(conceptName.length())));
-			else
-				weight += ((1.0 / (conceptName.indexOf(wordString) + 1)) * ((conceptName.length() - wordString.length()) / new Double(
-				        conceptName.length())));
-			
+			//still a shorter word should weigh more depending on its index in the full concept name
+			//e.g MY in 'IN MY HOME' should weigh more than 'MY' in 'FOR MY HOME', we add 1 so that
+			// if 'conceptName.indexOf(wordString)' returns 1, we still divide 5 by something greater than 1
+			//e.g 'MARRIAGE' in 'PRE MARRIAGE' should weigh more than 'MARRIAGE' in 'NOT PRE MARRIAGE'
+			//and still weigh more then 'MARRIAGE' in 'PRE MARRIAGE RELATIONSHIP'
+			weight += ((weightCoefficient / (conceptName.indexOf(wordString) + 1)) * ((conceptName.length() - wordString
+			        .length()) / new Double(conceptName.length())));
+			weight += computeBonusWeight(weightCoefficient, word);
 		}
 		
 		//round off to 2 decimal places
 		return Double.parseDouble(new DecimalFormat("0.00").format(weight));
+	}
+	
+	/**
+	 * Utility method that computes the bonus weight for a concept word based on the
+	 * {@link ConceptNameType} and its position in the full concept name which is represented by
+	 * weightCoefficient
+	 * 
+	 * @param weightCoefficient
+	 * @param word
+	 * @return
+	 */
+	private double computeBonusWeight(Double weightCoefficient, ConceptWord word) {
+		double bonusWeight = 0.0;
+		ConceptName conceptName = word.getConceptName();
+		if (conceptName.isIndexTerm()
+		        || (word.getConceptName().isPreferred() && word.getConceptName().isFullySpecifiedName()))
+			bonusWeight += weightCoefficient * 0.9;
+		else if (conceptName.isPreferred())
+			bonusWeight += weightCoefficient * 0.7;
+		else if (conceptName.isFullySpecifiedName())
+			bonusWeight += weightCoefficient * 0.5;
+		else if (conceptName.isSynonym())
+			bonusWeight += weightCoefficient * 0.3;
+		else if (conceptName.isShort())
+			bonusWeight += weightCoefficient * 0.1;
+		
+		return bonusWeight;
 	}
 }
