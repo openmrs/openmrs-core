@@ -41,6 +41,9 @@
 			}
 		}
 		
+		if(!$j("#identifierHeaders").is(":visible"))
+			$j("#identifierHeaders").show();
+			
 		numberOfClonedElements++;
 	}
 	
@@ -212,7 +215,7 @@
 		<th class="headerCell"><spring:message code="PatientIdentifier.title.endUser"/></th>
 		<td class="inputCell">
 			<table id="identifiers" cellspacing="2">
-				<tr>
+				<tr id="identifierHeaders" <c:if test="${fn:length(patientModel.identifiers) == 0}">style="display: none"</c:if>>
 					<td><spring:message code="PatientIdentifier.identifier"/></td>
 					<openmrs:extensionPoint pointId="newPatientForm.identifierHeader" />
 					<td><spring:message code="PatientIdentifier.identifierType"/></td>
