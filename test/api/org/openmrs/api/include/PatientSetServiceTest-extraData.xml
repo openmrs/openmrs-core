@@ -1,4 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <dataset>
     <encounter encounter_id="1000" patient_id="2" encounter_type="6" provider_id="1" location_id="1" encounter_datetime="2009-08-03 00:00:00.0" creator="1" date_created="2008-08-01 15:16:00.0" voided="false" uuid="2ce2aa56-8062-11de-9ba9-001e378eb67e" />
+    <person_attribute_type person_attribute_type_id="9" name="Health Center" description="Assigned Health Center" format="org.openmrs.Location" searchable="true" creator="1" date_created="2008-08-15 15:53:36.0" retired="false" uuid="a0f5521c-dbbd-4c11-81c2-1b7ab18340df" sort_weight="4"/>
+	<person_attribute person_attribute_id="101" person_id="2" value="1" person_attribute_type_id="9" creator="1" date_created="2008-08-15 17:14:06.0" voided="false" uuid="15d69456-43d6-443a-971c-ec210e3ec5c5"/>
+	<person_attribute person_attribute_id="102" person_id="6" value="2" person_attribute_type_id="9" creator="1" date_created="2008-08-18 11:44:02.0" voided="false" uuid="1adbc78a-8930-44d2-80be-8d6f05a262c3"/>
+	<person_attribute person_attribute_id="103" person_id="7" value="2" person_attribute_type_id="9" creator="1" date_created="2008-08-18 11:56:42.0" voided="false" uuid="63a5a920-dd44-46ac-b8c0-c6bfb5a5f878"/>
+	<person_attribute person_attribute_id="104" person_id="8" value="2" person_attribute_type_id="9" creator="1" date_created="2008-08-18 12:25:57.0" voided="false" uuid="3d5c191c-accf-4ee6-83e4-1de437452f29"/>
 </dataset>
