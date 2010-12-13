@@ -28,9 +28,9 @@
 	</organization>
 
 	<scm>
-		<connection>scm:svn:http://svn.openmrs.org/openmrs/trunk/</connection>
-		<developerConnection>scm:svn:http://svn.openmrs.org/openmrs/trunk/</developerConnection>
-		<url>http://svn.openmrs.org/openmrs/trunk/</url>
+		<connection>scm:svn:http://svn.openmrs.org/openmrs/branches/1.8.x/</connection>
+		<developerConnection>scm:svn:http://svn.openmrs.org/openmrs/branches/1.8.x/</developerConnection>
+		<url>http://svn.openmrs.org/openmrs/branches/1.8.x/</url>
 	</scm>
 
 	<modules>
