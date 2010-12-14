@@ -13,6 +13,8 @@
  */
 package org.openmrs.web.servlet;
 
+import static org.openmrs.web.WebConstants.GP_ALLOWED_LOGIN_ATTEMPTS_PER_IP;
+
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
@@ -35,8 +37,6 @@ import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.OpenmrsCookieLocaleResolver;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.user.UserProperties;
-
-import static org.openmrs.web.WebConstants.GP_ALLOWED_LOGIN_ATTEMPTS_PER_IP;
 
 /**
  * This servlet accepts the username and password from the login form and authenticates the user to
@@ -79,12 +79,14 @@ public class LoginServlet extends HttpServlet {
 		
 		// look up the allowed # of attempts per IP
 		Integer allowedLockoutAttempts = 100;
-		String allowedLockoutAttemptsGP = Context.getAdministrationService().getGlobalProperty(GP_ALLOWED_LOGIN_ATTEMPTS_PER_IP, "100");
+		String allowedLockoutAttemptsGP = Context.getAdministrationService().getGlobalProperty(
+		    GP_ALLOWED_LOGIN_ATTEMPTS_PER_IP, "100");
 		try {
 			allowedLockoutAttempts = Integer.valueOf(allowedLockoutAttemptsGP.trim());
 		}
 		catch (NumberFormatException nfe) {
-			log.error("Unable to format '" + allowedLockoutAttemptsGP + "' from global property " + GP_ALLOWED_LOGIN_ATTEMPTS_PER_IP + " as an integer");
+			log.error("Unable to format '" + allowedLockoutAttemptsGP + "' from global property "
+			        + GP_ALLOWED_LOGIN_ATTEMPTS_PER_IP + " as an integer");
 		}
 		
 		// allowing for configurable login attempts here in case network setups are such that all users have the same IP address. 
@@ -207,10 +209,11 @@ public class LoginServlet extends HttpServlet {
 				domainAndPort.delete(requestURLLength - request.getRequestURI().length(), requestURLLength);
 				if (!redirect.startsWith(domainAndPort.toString()))
 					redirect = null; // send them to the homepage
-			
-				// now cut out everything but the path
-				// get the first slash after https:// or http://
-				redirect = redirect.substring(redirect.indexOf("/", 9));
+				else {
+					// now cut out everything but the path
+					// get the first slash after https:// or http://
+					redirect = redirect.substring(redirect.indexOf("/", 9));
+				}
 			}
 		}
 		
