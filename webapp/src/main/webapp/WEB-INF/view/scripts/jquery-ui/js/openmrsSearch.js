@@ -219,17 +219,19 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 	        	if(self._textInputTimer != null){
     				window.clearTimeout(self._textInputTimer);
     			}
+	        	
+	        	//This discontinues any further ajax SUB calls from the last triggered search
+    			if(!inSerialMode && ajaxTimer)
+    				window.clearInterval(ajaxTimer);
+    			
 	        	if(text.length >= o.minLength) {
-	        		//This discontinues any further ajax SUB calls from the last triggered search
-	    			if(!inSerialMode && ajaxTimer)
-	    				window.clearInterval(ajaxTimer);
-	    			
+	        		//if there is any delay in progress, cancel it
+	    			if(self._searchDelayTimer != null)
+	    				window.clearTimeout(self._searchDelayTimer);
+	    				    			
 	    			//wait for a couple of milliseconds, if the user isn't typing anymore chars before triggering search
 	    			//this minimizes the number of un-necessary calls made to the server for first typists
 	    			self._searchDelayTimer = window.setTimeout(function(){
-	    				if(self._searchDelayTimer != null){
-		    				window.clearTimeout(self._searchDelayTimer);
-		    			}
 	    				if($j('#pageInfo').css("visibility") == 'visible')
 							$j('#pageInfo').css("visibility", "hidden");
 							
