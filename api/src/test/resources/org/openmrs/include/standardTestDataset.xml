@@ -79,6 +79,7 @@
   <concept_map concept_map_id="3" source="2" source_code="2332523" comment="A person's weight in kilograms" creator="1" date_created="2004-08-12 00:00:00.0" concept_id="5089"/>
   <concept_map concept_map_id="4" source="2" source_code="7345693" comment="A person's CD4" creator="1" date_created="2004-08-12 00:00:00.0" concept_id="5497"/>
   <concept_map concept_map_id="5" source="1" source_code="127689" comment="died" creator="1" date_created="2004-08-12 00:00:00.0" concept_id="16"/>
+  <concept_map concept_map_id="9" source="1" source_code="127689" comment="died" creator="1" date_created="2004-08-12 00:00:00.0" concept_id="16"/>
   <concept_map concept_map_id="6" source="1" source_code="127689" comment="married" creator="1" date_created="2004-08-12 00:00:00.0" concept_id="6"/>
   <concept_map concept_map_id="7" source="1" source_code="766554" comment="" creator="1" date_created="2004-08-12 00:00:00.0" concept_id="16"/>
   <concept_map concept_map_id="8" source="1" source_code="766554" comment="retired" creator="1" date_created="2004-08-12 00:00:00.0" concept_id="24"/>

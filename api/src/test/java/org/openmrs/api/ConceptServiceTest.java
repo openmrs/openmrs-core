@@ -502,7 +502,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link ConceptService#getConceptsByMapping(String,String)}
 	 */
 	@Test
-	@Verifies(value = "should get concepts with given code and and source hl7 code", method = "getConceptByMapping(String,String)")
+	@Verifies(value = "should get distinct concepts with given code and and source hl7 code", method = "getConceptByMapping(String,String)")
 	public void getConceptsByMapping_shouldGetConceptsWithGivenCodeAndSourceH17Code() throws Exception {
 		List<Concept> concepts = conceptService.getConceptsByMapping("127689", "Some Standardized Terminology");
 		Assert.assertEquals(2, concepts.size());
@@ -514,7 +514,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link ConceptService#getConceptsByMapping(String,String)}
 	 */
 	@Test
-	@Verifies(value = "should get concepts with given code and source name", method = "getConceptByMapping(String,String)")
+	@Verifies(value = "should get distinct concepts with given code and source name", method = "getConceptByMapping(String,String)")
 	public void getConceptsByMapping_shouldGetConceptsWithGivenCodeAndSourceName() throws Exception {
 		List<Concept> concepts = conceptService.getConceptsByMapping("127689", "SSTRM");
 		Assert.assertEquals(2, concepts.size());
@@ -569,7 +569,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link ConceptService#getConceptsByMapping(String,String,Boolean)}
 	 */
 	@Test
-	@Verifies(value = "should return retired and non-retired concepts", method = "getConceptByMapping(String,String,Boolean)")
+	@Verifies(value = "should sort non-retired concepts first", method = "getConceptByMapping(String,String,Boolean)")
 	public void getConceptsByMapping_shouldSortNonRetiredConceptsFirst() throws Exception {
 		List<Concept> concepts = conceptService.getConceptsByMapping("766554", "SSTRM", true);
 		Assert.assertTrue(concepts.get(0).equals(new Concept(16)));
