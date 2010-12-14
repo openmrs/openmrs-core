@@ -15,18 +15,23 @@ package org.openmrs.reporting;
 
 import java.beans.ExceptionListener;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * @deprecated see reportingcompatibility module
  */
 @Deprecated
 public class ReportObjectWrapperExceptionListener implements ExceptionListener {
 	
+	private Log log = LogFactory.getLog(this.getClass());
+	
 	public ReportObjectWrapperExceptionListener() {
 		// do nothing
 	}
 	
 	public void exceptionThrown(Exception e) {
-		//throw new APIException("Exception thrown while converting ReportObject into XML");
+		log.debug("Error deserializing report object: ", e);
 	}
 	
 }
