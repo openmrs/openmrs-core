@@ -153,14 +153,16 @@ public class HibernateReportObjectDAO implements ReportObjectDAO {
 		query.setString("type", reportObjectType);
 		List<ReportObjectWrapper> wrappedObjects = query.list();
 		for (ReportObjectWrapper wrappedObject : wrappedObjects) {
-			AbstractReportObject reportObject = wrappedObject.getReportObject();
-			
-			// Added a null check - report object could be null if there's an error with XML serialization/deserialization 
-			if (reportObject != null) {
+			try {
+				AbstractReportObject reportObject = wrappedObject.getReportObject();
 				if (reportObject.getReportObjectId() == null) {
 					reportObject.setReportObjectId(wrappedObject.getReportObjectId());
 				}
 				reportObjects.add(reportObject);
+			}
+			catch (Exception e) {
+				// Catch exceptions if there are exceptions deserializing any individual report object, and warn
+				log.warn("Unable to deserialize report object: " + wrappedObject.getName() + " (" + wrappedObject.getId() + ")");
 			}
 		}
 		return reportObjects;
