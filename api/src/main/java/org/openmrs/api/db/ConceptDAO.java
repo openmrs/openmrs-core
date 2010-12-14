@@ -1,5 +1,4 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
  * Version 1.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
  * http://license.openmrs.org
@@ -327,7 +326,7 @@ public interface ConceptDAO {
 	/**
 	 * @see org.openmrs.api.ConceptService@getConceptsByMapping(java.lang.String, java.lang.String)
 	 */
-	public List<Concept> getConceptsByMapping(String code, String sourceName, boolean includeVoided);
+	public List<Concept> getConceptsByMapping(String code, String sourceName, boolean includeRetired);
 	
 	/**
 	 * Auto generated method comment

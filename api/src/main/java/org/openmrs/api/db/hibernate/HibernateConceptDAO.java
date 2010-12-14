@@ -45,6 +45,7 @@ import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.criterion.Subqueries;
+import org.hibernate.transform.DistinctRootEntityResultTransformer;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptClass;
@@ -1090,8 +1091,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	public List<Concept> getConceptsByMapping(String code, String sourceName, boolean includeRetired) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ConceptMap.class);
 	
-		// make this criteria return a list of distinct concepts
-		criteria.setProjection(Projections.alias(Projections.distinct(Projections.property("concept")),"conceptResults"));
+		// make this criteria return a list of concepts
+		criteria.setProjection(Projections.property("concept"));
 		
 		// match the source code to the passed code
 		criteria.add(Expression.eq("sourceCode", code));
@@ -1108,8 +1109,12 @@ public class HibernateConceptDAO implements ConceptDAO {
 		}
 		else {
 			// sort retired concepts to the end of the list
-			criteria.addOrder(Order.asc("conceptResults"));
+			criteria.createAlias("concept","concept");
+			criteria.addOrder(Order.asc("concept.retired"));
 		}
+		
+		// we only want distinct concepts
+		criteria.setResultTransformer(new DistinctRootEntityResultTransformer());
 		
 		return (List<Concept>) criteria.list();
 	}
