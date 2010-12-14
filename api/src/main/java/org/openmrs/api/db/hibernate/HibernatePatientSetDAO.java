@@ -1541,19 +1541,10 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		} else
 			queryString.append("attr.value from PersonAttribute attr, PersonAttributeType t where t = attr.attributeType ");
 		
-		// this where clause is only necessary if patients were passed in
-		if (patients != null)
-			queryString.append("and attr.person.personId in (:ids) ");
-		
 		queryString.append("and t.name = :typeName ");
 		queryString.append("order by attr.voided asc, attr.dateCreated desc");
 		
-		Query query = sessionFactory.getCurrentSession().createQuery(queryString.toString());
-		
-		// this where clause is only necessary if patients were passed in
-		if (patients != null)
-			query.setParameterList("ids", patients.getMemberIds());
-		
+		Query query = sessionFactory.getCurrentSession().createQuery(queryString.toString());	
 		query.setString("typeName", attributeTypeName);
 		
 		log.debug("query: " + queryString);
@@ -1561,30 +1552,29 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		List<Object[]> rows = query.list();
 		
 		// set up the return map
-		if (returnAll) {
-			for (Object[] row : rows) {
-				Integer ptId = (Integer) row[0];
-				Object columnValue = row[1];
-				if (!ret.containsKey(ptId)) {
-					Object[] arr = { columnValue };
-					ret.put(ptId, arr);
-				} else {
-					Object[] oldArr = (Object[]) ret.get(ptId);
-					Object[] newArr = new Object[oldArr.length + 1];
-					System.arraycopy(oldArr, 0, newArr, 0, oldArr.length);
-					newArr[oldArr.length] = columnValue;
-					ret.put(ptId, newArr);
+		for (Object[] row : rows) {
+			Integer ptId = (Integer) row[0];
+			if (patients == null || patients.contains(ptId)) {
+				if (returnAll) {
+					Object columnValue = row[1];
+					if (!ret.containsKey(ptId)) {
+						Object[] arr = { columnValue };
+						ret.put(ptId, arr);
+					} else {
+						Object[] oldArr = (Object[]) ret.get(ptId);
+						Object[] newArr = new Object[oldArr.length + 1];
+						System.arraycopy(oldArr, 0, newArr, 0, oldArr.length);
+						newArr[oldArr.length] = columnValue;
+						ret.put(ptId, newArr);
+					}
+				}
+				else {
+					Object columnValue = row[1];
+					if (!ret.containsKey(ptId))
+						ret.put(ptId, columnValue);
 				}
 			}
-		} else {
-			for (Object[] row : rows) {
-				Integer ptId = (Integer) row[0];
-				Object columnValue = row[1];
-				if (!ret.containsKey(ptId))
-					ret.put(ptId, columnValue);
-			}
 		}
-		
 		return ret;
 	}
 	
