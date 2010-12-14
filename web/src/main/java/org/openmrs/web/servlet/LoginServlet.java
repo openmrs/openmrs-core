@@ -214,10 +214,11 @@ public class LoginServlet extends HttpServlet {
 				domainAndPort.delete(requestURLLength - request.getRequestURI().length(), requestURLLength);
 				if (!redirect.startsWith(domainAndPort.toString()))
 					redirect = null; // send them to the homepage
-			
-				// now cut out everything but the path
-				// get the first slash after https:// or http://
-				redirect = redirect.substring(redirect.indexOf("/", 9));
+				else {
+					// now cut out everything but the path
+					// get the first slash after https:// or http://
+					redirect = redirect.substring(redirect.indexOf("/", 9));
+				}
 			}
 		}
 		
@@ -225,7 +226,7 @@ public class LoginServlet extends HttpServlet {
 		if (redirect == null || redirect.equals("")) {
 			redirect = request.getContextPath();
 		}
-		
+
 		// don't redirect back to the login page on success. (I assume the login page is {something}login.{something}
 		else if (redirect.contains("login.")) {
 			log.debug("Redirect contains 'login.', redirecting to main page");
@@ -246,8 +247,7 @@ public class LoginServlet extends HttpServlet {
 
 		else if (redirect.contains("/options.form") || redirect.contains("/changePassword.form")
 		        || redirect.contains("/forgotPassword.form")) {
-			log
-			        .debug("The user was on a page for setting/changing passwords. Send them to the homepage to reduce confusion");
+			log.debug("The user was on a page for setting/changing passwords. Send them to the homepage to reduce confusion");
 			redirect = request.getContextPath();
 		}
 		
