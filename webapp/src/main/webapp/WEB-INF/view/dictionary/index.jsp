@@ -36,9 +36,9 @@
 	//custom render, appends an arrow and preferredName it exists
 	function nameColumnRenderer(oObj){
 		if(oObj.aData[1] && $j.trim(oObj.aData[1]) != '')
-			return "<span>"+oObj.aData[0]+"<span/><span class='otherHit'> &rArr; "+oObj.aData[1]+"<span/>";
+			return "<span>"+oObj.aData[0]+"</span><span class='otherHit'> &rArr; "+oObj.aData[1]+"</span>";
 		
-		return "<span>"+oObj.aData[0]+"<span/>";
+		return "<span>"+oObj.aData[0]+"</span>";
 	}
 </script>
 
