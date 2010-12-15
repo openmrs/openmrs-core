@@ -23,7 +23,7 @@
 		// set up the autocomplete
 		new AutoComplete("${displayNameInputId}", new CreateCallback({roles:"${roles}"}).userCallback(), {
 			select: function(event, ui) {
-				jquerySelectEscaped("#${formFieldId}").val(ui.item.object.userId);
+				jquerySelectEscaped("${formFieldId}").val(ui.item.object.userId);
 					
 				<c:if test="${not empty callback}">
 				if (ui.item.object) {
@@ -37,7 +37,7 @@
 		// get the name of the person that they passed in the id for
 		<c:if test="${not empty initialValue}">
 			jquerySelectEscaped("${formFieldId}").val("${initialValue}");
-			DWRPersonService.getPerson("${initialValue}", function(person) { jquerySelectEscaped("${displayNameInputId}").val(person.personName);});
+			DWRUserService.getUser("${initialValue}", function(user) { jquerySelectEscaped("${displayNameInputId}").val(user.personName);});
 		</c:if>
 		
 	})
