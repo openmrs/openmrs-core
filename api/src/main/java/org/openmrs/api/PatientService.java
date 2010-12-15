@@ -562,7 +562,7 @@ public interface PatientService extends OpenmrsService {
 	 */
 	@Transactional(readOnly = true)
 	@Authorized({ PrivilegeConstants.VIEW_PATIENTS })
-	public List<Patient> getPatients(String query, int start, Integer length) throws APIException;
+	public List<Patient> getPatients(String query, Integer start, Integer length) throws APIException;
 	
 	/**
 	 * @see #getPatientByExample(Patient)
@@ -969,5 +969,5 @@ public interface PatientService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized({ PrivilegeConstants.VIEW_PATIENTS })
 	public List<Patient> getPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,
-	                                 boolean matchIdentifierExactly, int start, Integer length) throws APIException;
+	                                 boolean matchIdentifierExactly, Integer start, Integer length) throws APIException;
 }
