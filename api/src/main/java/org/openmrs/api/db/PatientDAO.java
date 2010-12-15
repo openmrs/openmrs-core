@@ -64,7 +64,7 @@ public interface PatientDAO {
 	 * @should escape an asterix character in identifier phrase
 	 */
 	public List<Patient> getPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,
-	                                 boolean matchIdentifierExactly, int start, Integer length) throws DAOException;
+	                                 boolean matchIdentifierExactly, Integer start, Integer length) throws DAOException;
 	
 	/**
 	 * @see org.openmrs.api.PatientService#getPatientIdentifiers(java.lang.String, java.util.List,

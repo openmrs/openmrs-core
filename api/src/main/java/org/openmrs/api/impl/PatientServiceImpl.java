@@ -312,7 +312,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 */
 	@Deprecated
 	public List<Patient> getPatientsByName(String name) throws APIException {
-		return getPatients(name, null, null);
+		return getPatients(name, (String)null, null);
 	}
 	
 	/**
@@ -324,7 +324,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		if (includeVoided == true)
 			throw new APIException("Searching on voided patients is no longer allowed");
 		
-		return getPatients(name, null, null);
+		return getPatients(name, (String)null, null);
 	}
 	
 	/**
@@ -1411,10 +1411,10 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	}
 	
 	/**
-	 * @see PatientService#getPatients(String, int, Integer)
+	 * @see PatientService#getPatients(String, Integer, Integer)
 	 */
 	@Override
-	public List<Patient> getPatients(String query, int start, Integer length) throws APIException {
+	public List<Patient> getPatients(String query, Integer start, Integer length) throws APIException {
 		List<Patient> patients = new Vector<Patient>();
 		if (StringUtils.isBlank(query) || query.length() < getMinSearchCharacters())
 			return patients;
@@ -1434,7 +1434,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 */
 	@Override
 	public List<Patient> getPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,
-	                                 boolean matchIdentifierExactly, int start, Integer length) throws APIException {
+	                                 boolean matchIdentifierExactly, Integer start, Integer length) throws APIException {
 		if (identifierTypes == null)
 			identifierTypes = Collections.emptyList();
 		

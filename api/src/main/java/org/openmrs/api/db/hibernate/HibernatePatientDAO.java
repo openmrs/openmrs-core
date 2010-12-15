@@ -176,19 +176,21 @@ public class HibernatePatientDAO implements PatientDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Patient> getPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,
-	                                 boolean matchIdentifierExactly, int start, Integer length) throws DAOException {
+	                                 boolean matchIdentifierExactly, Integer start, Integer length) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Patient.class);
 		criteria = new PatientSearchCriteria(sessionFactory, criteria).prepareCriteria(name, identifier, identifierTypes,
 		    matchIdentifierExactly);
 		// restricting the search to the max search results value
-		criteria.setFirstResult(start);
+		if (start != null)
+			criteria.setFirstResult(start);
 		int limit = HibernatePersonDAO.getMaximumSearchResults();
 		if (length == null || length > limit) {
 			if (log.isDebugEnabled())
 				log.debug("Limitng the size of the number of matching patients to " + limit);
 			length = limit;
 		}
-		criteria.setMaxResults(length);
+		if (length != null)
+			criteria.setMaxResults(length);
 		
 		return criteria.list();
 	}
