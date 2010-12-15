@@ -69,7 +69,7 @@ function CreateCallback(options) {
 		if (options.roles.length > 0)
 			rolesArray = options.roles.split(",");
 		
-		DWRUserService.findUsers(q, false, rolesArray, thisObject.makeRows(q, response, thisObject.searchCounter + 1, thisObject.displayPerson));
+		DWRUserService.findUsers(q, rolesArray, false, thisObject.makeRows(q, response, thisObject.searchCounter + 1, thisObject.displayPerson));
 	}}
 	
 	/**
