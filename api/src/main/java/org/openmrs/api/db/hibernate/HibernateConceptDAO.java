@@ -1090,7 +1090,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	@SuppressWarnings("unchecked")
 	public List<Concept> getConceptsByMapping(String code, String sourceName, boolean includeRetired) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ConceptMap.class);
-	
+		
 		// make this criteria return a list of concepts
 		criteria.setProjection(Projections.property("concept"));
 		
@@ -1106,10 +1106,9 @@ public class HibernateConceptDAO implements ConceptDAO {
 			// ignore retired concepts
 			criteria.createAlias("concept", "concept");
 			criteria.add(Expression.eq("concept.retired", false));
-		}
-		else {
+		} else {
 			// sort retired concepts to the end of the list
-			criteria.createAlias("concept","concept");
+			criteria.createAlias("concept", "concept");
 			criteria.addOrder(Order.asc("concept.retired"));
 		}
 		
@@ -1484,7 +1483,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 			
 			//the shorter the word, the higher the increment since it a closer match to the name
 			// e.g MY in 'MY DEPOT' should weigh more than HOME in 'HOME DEPOT'
-			weight += (weightCoefficient * (wordString.length() / new Double(conceptName.length())));
+			weight += (weightCoefficient / wordString.length());
 			weight += computeBonusWeight(weightCoefficient, word);
 		} else {
 			double weightCoefficient = 1.0;
@@ -1505,8 +1504,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	
 	/**
 	 * Utility method that computes the bonus weight for a concept word based on the
-	 * {@link ConceptNameType} and its position in the full concept name which is represented by
-	 * weightCoefficient
+	 * {@link ConceptNameType}, the length of the full concept name and the weightCoefficient
 	 * 
 	 * @param weightCoefficient
 	 * @param word
@@ -1526,6 +1524,10 @@ public class HibernateConceptDAO implements ConceptDAO {
 			bonusWeight += weightCoefficient * 0.3;
 		else if (conceptName.isShort())
 			bonusWeight += weightCoefficient * 0.1;
+		
+		//the shorter the full concept name, the higher the weigth, the word 'MEASELS' in 
+		//'MEASELS ON EARTH' should weigh more than another 'MEASELS' in 'MEASELS ON JUPITER'
+		bonusWeight += weightCoefficient / new Double(word.getConceptName().getName().length());
 		
 		return bonusWeight;
 	}
