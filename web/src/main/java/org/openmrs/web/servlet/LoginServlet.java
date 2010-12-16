@@ -204,22 +204,23 @@ public class LoginServlet extends HttpServlet {
 		// first option for redirecting is the "redirect" parameter (set on login.jsp from the session attr)
 		String redirect = request.getParameter("redirect");
 		
-		/* Commenting this out because I don't see a use for the redirect.  All this 
-		   does is cause errors if linking into openmrs from an outside source.  If a 
-		   dev doesn't have the right redirecting in place, his loss, the user is sent to
-		   the home page.
-		 
 		// second option for redirecting is the referrer parameter set at login.jsp
 		if (redirect == null || redirect.equals("")) {
 			redirect = request.getParameter("refererURL");
-			if (redirect != null && !"/".equals(request.getContextPath())) {
-				// checking for a redirect like /openmrs/openmrs (for some reason)
-				int index = redirect.indexOf(request.getContextPath(), 2);
-				if (index != -1)
-					redirect = redirect.substring(index);
+			if (redirect != null && !redirect.startsWith("/")) {
+				// if we have an absolute url, make sure its in our domain
+				Integer requestURLLength = request.getRequestURL().length();
+				StringBuffer domainAndPort = request.getRequestURL();
+				domainAndPort.delete(requestURLLength - request.getRequestURI().length(), requestURLLength);
+				if (!redirect.startsWith(domainAndPort.toString()))
+					redirect = null; // send them to the homepage
+				else {
+					// now cut out everything but the path
+					// get the first slash after https:// or http://
+					redirect = redirect.substring(redirect.indexOf("/", 9));
+				}
 			}
 		}
-		*/
 		
 		// third option for redirecting is the main page of the webapp
 		if (redirect == null || redirect.equals("")) {
@@ -246,8 +247,7 @@ public class LoginServlet extends HttpServlet {
 
 		else if (redirect.contains("/options.form") || redirect.contains("/changePassword.form")
 		        || redirect.contains("/forgotPassword.form")) {
-			log
-			        .debug("The user was on a page for setting/changing passwords. Send them to the homepage to reduce confusion");
+			log.debug("The user was on a page for setting/changing passwords. Send them to the homepage to reduce confusion");
 			redirect = request.getContextPath();
 		}
 		

@@ -45,6 +45,7 @@ import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.criterion.Subqueries;
+import org.hibernate.transform.DistinctRootEntityResultTransformer;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptClass;
@@ -1089,9 +1090,9 @@ public class HibernateConceptDAO implements ConceptDAO {
 	@SuppressWarnings("unchecked")
 	public List<Concept> getConceptsByMapping(String code, String sourceName, boolean includeRetired) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ConceptMap.class);
-	
-		// make this criteria return a list of distinct concepts
-		criteria.setProjection(Projections.alias(Projections.distinct(Projections.property("concept")),"conceptResults"));
+		
+		// make this criteria return a list of concepts
+		criteria.setProjection(Projections.property("concept"));
 		
 		// match the source code to the passed code
 		criteria.add(Expression.eq("sourceCode", code));
@@ -1105,11 +1106,14 @@ public class HibernateConceptDAO implements ConceptDAO {
 			// ignore retired concepts
 			criteria.createAlias("concept", "concept");
 			criteria.add(Expression.eq("concept.retired", false));
-		}
-		else {
+		} else {
 			// sort retired concepts to the end of the list
-			criteria.addOrder(Order.asc("conceptResults"));
+			criteria.createAlias("concept", "concept");
+			criteria.addOrder(Order.asc("concept.retired"));
 		}
+		
+		// we only want distinct concepts
+		criteria.setResultTransformer(new DistinctRootEntityResultTransformer());
 		
 		return (List<Concept>) criteria.list();
 	}
@@ -1479,7 +1483,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 			
 			//the shorter the word, the higher the increment since it a closer match to the name
 			// e.g MY in 'MY DEPOT' should weigh more than HOME in 'HOME DEPOT'
-			weight += (weightCoefficient * (wordString.length() / new Double(conceptName.length())));
+			weight += (weightCoefficient / wordString.length());
 			weight += computeBonusWeight(weightCoefficient, word);
 		} else {
 			double weightCoefficient = 1.0;
@@ -1500,8 +1504,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	
 	/**
 	 * Utility method that computes the bonus weight for a concept word based on the
-	 * {@link ConceptNameType} and its position in the full concept name which is represented by
-	 * weightCoefficient
+	 * {@link ConceptNameType}, the length of the full concept name and the weightCoefficient
 	 * 
 	 * @param weightCoefficient
 	 * @param word
@@ -1521,6 +1524,10 @@ public class HibernateConceptDAO implements ConceptDAO {
 			bonusWeight += weightCoefficient * 0.3;
 		else if (conceptName.isShort())
 			bonusWeight += weightCoefficient * 0.1;
+		
+		//the shorter the full concept name, the higher the weigth, the word 'MEASELS' in 
+		//'MEASELS ON EARTH' should weigh more than another 'MEASELS' in 'MEASELS ON JUPITER'
+		bonusWeight += weightCoefficient / new Double(word.getConceptName().getName().length());
 		
 		return bonusWeight;
 	}

@@ -355,4 +355,25 @@ public class PatientSetServiceTest extends BaseContextSensitiveTest {
 	    Map<Integer, PatientProgram> map = Context.getPatientSetService().getPatientPrograms(cohort, new Program(2));
 	    TestUtil.assertCollectionContentsEquals(Arrays.asList(2, 7), map.keySet());
     }
+    
+	/**
+	 * @see {@link PatientSetService#getPersonAttributes(Cohort, String, String, String, String, boolean)}
+	 */
+	@Test
+	@Verifies(value = "should return person attributes of type location", method = "getPersonAttributes(Cohort, String, String, String, String, boolean)")
+	public void getPersonAttributes_shouldReturnPersonAttributesOfTypeLocation() throws Exception {
+		executeDataSet(EXTRA_DATA_XML);
+		Cohort c = service.getAllPatients();
+		String attributeName = "Health Center";
+		String joinClass = "Location";
+		String joinProperty = "locationId";
+		String outputColumn = "name";
+		boolean returnAll = false;
+		Map<Integer, Object> ret = service.getPersonAttributes(c, attributeName, joinClass, joinProperty, outputColumn, returnAll);
+		Assert.assertEquals(4, ret.size());
+		Assert.assertEquals("Unknown Location", ret.get(2));
+		Assert.assertEquals("Xanadu", ret.get(6));
+		Assert.assertEquals("Xanadu", ret.get(7));
+		Assert.assertEquals("Xanadu", ret.get(8));
+	}
 }

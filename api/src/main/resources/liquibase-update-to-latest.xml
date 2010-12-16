@@ -3946,7 +3946,7 @@
 		</insert>
     </changeSet>
     
-    <changeSet id="20101209-1726" author="wyclif">
+    <changeSet id="20101209-1731" author="wyclif">
     	<preConditions onFail="MARK_RAN">
     		<sqlCheck expectedResult="1">
 				SELECT COUNT(*) FROM scheduler_task_config 
@@ -3961,15 +3961,12 @@
 		</update>
     </changeSet>
 
-	<changeSet id="201012081715" author="nribeka">
+	<changeSet id="201012081716" author="nribeka">
 		<preConditions onFail="MARK_RAN">
 			<tableExists tableName="concept_derived" />
 		</preConditions>
 		<comment>Removing concept that are concept derived and the datatype</comment>
 		<delete tableName="concept_derived" />
-		<delete tableName="concept_datatype">
-			<where>name='Rule'</where>
-		</delete>
 	</changeSet>
 
 	<changeSet id="201012081717" author="nribeka">

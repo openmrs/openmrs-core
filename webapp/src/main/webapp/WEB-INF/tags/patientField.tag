@@ -23,7 +23,7 @@
 	$j(document).ready( function() {
 
 		// set up the autocomplete
-		new AutoComplete("${displayNameInputId}", new CreateCallback().patientCallback, {
+		new AutoComplete("${displayNameInputId}", new CreateCallback().patientCallback(), {
 			select: function(event, ui) {
 				jquerySelectEscaped("${formFieldId}").val(ui.item.object.patientId);
 					

@@ -433,7 +433,7 @@ public interface PatientSetService {
 	public Map<Integer, Object> getPatientAttributes(Cohort patients, String classNameDotProperty, boolean returnAll);
 	
 	/**
-	 * TODO write something here
+	 * @should return person attributes of type Location
 	 * 
 	 * @param patients
 	 * @param attributeName
