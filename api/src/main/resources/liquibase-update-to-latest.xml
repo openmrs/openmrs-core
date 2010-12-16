@@ -3946,7 +3946,7 @@
 		</insert>
     </changeSet>
     
-    <changeSet id="20101209-1726" author="wyclif">
+    <changeSet id="20101209-1731" author="wyclif">
     	<preConditions onFail="MARK_RAN">
     		<sqlCheck expectedResult="1">
 				SELECT COUNT(*) FROM scheduler_task_config 
