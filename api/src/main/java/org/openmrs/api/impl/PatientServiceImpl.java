@@ -1430,7 +1430,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	}
 	
 	/**
-	 * @see PatientService#getPatients(String, String, List, boolean, int, Integer)
+	 * @see PatientService#getPatients(String, String, List, boolean, Integer, Integer)
 	 */
 	@Override
 	public List<Patient> getPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,

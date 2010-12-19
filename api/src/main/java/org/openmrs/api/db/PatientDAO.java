@@ -55,7 +55,7 @@ public interface PatientDAO {
 	public List<Patient> getAllPatients(boolean includeVoided) throws DAOException;
 	
 	/**
-	 * @see org.openmrs.api.PatientService#getPatients(String, String, List, boolean, int, Integer)
+	 * @see org.openmrs.api.PatientService#getPatients(String, String, List, boolean, Integer, Integer)
 	 * @should escape percentage character in name phrase
 	 * @should escape underscore character in name phrase
 	 * @should escape an asterix character in name phrase
