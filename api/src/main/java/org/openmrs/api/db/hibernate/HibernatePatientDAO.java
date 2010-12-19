@@ -172,7 +172,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.PatientDAO#getPatients(String, String, List, boolean, int, Integer)
+	 * @see org.openmrs.api.db.PatientDAO#getPatients(String, String, List, boolean, Integer, Integer)
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Patient> getPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,
