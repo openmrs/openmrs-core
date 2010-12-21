@@ -1141,7 +1141,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 							obsDeath.setValueText("");
 						}
 						
-						Context.getObsService().saveObs(obsDeath, null);
+						Context.getObsService().saveObs(obsDeath, "updated by PatientService.saveCauseOfDeathObs");
 					} else {
 						log.debug("Current cause is still null - aborting mission");
 					}
