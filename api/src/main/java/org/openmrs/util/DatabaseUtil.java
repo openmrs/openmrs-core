@@ -53,6 +53,8 @@ public class DatabaseUtil {
 			Class.forName("org.postgresql.Driver");
 		else if (connectionUrl.contains("oracle"))
 			Class.forName("oracle.jdbc.driver.OracleDriver");
+		else if (connectionUrl.contains("jtds"))
+			Class.forName("net.sourceforge.jtds.jdbc.Driver");
 		else if (connectionUrl.contains("sqlserver"))
 			Class.forName("com.microsoft.jdbc.sqlserver.SQLServerDriver");
 	}
