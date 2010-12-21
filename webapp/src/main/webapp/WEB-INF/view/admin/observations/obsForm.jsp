@@ -64,8 +64,11 @@
 					if (event.target.value == "")
 						$j("#valueCoded_selection").trigger('keydown.autocomplete');
 				}); // trigger the drop down on focus
-
-				$j("#valueCoded_selection").focus();
+				
+				// something in the autocomplete is setting the focus to the conceptId box after
+				// this method is done.  get around this and focus on our answer box by putting
+				// a very small delay on the call using setTimeout
+				setTimeout("$j('#valueCoded_selection').focus();", 0);
 			}
 			else if (datatype == 'ST') {
 				$j('#valueTextRow').show();
