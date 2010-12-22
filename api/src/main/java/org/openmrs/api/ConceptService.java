@@ -1488,13 +1488,14 @@ public interface ConceptService extends OpenmrsService {
 	 * 
 	 * @param phrase the string to search against
 	 * @param locale the locale in which to search for the concepts
+	 * @param includeRetired Specifies whether to include retired concepts
 	 * @return a list ConceptSearchResults
 	 * @throws APIException
 	 * @since 1.8
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
-	public List<ConceptSearchResult> getConcepts(String phrase, Locale locale) throws APIException;
+	public List<ConceptSearchResult> getConcepts(String phrase, Locale locale, boolean includeRetired) throws APIException;
 	
 	/**
 	 * Return the number of concepts matching a search phrase and the specified arguments
