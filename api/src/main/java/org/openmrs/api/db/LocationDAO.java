@@ -68,9 +68,10 @@ public interface LocationDAO {
 	/**
 	 * Returns a specified number of locations starting with a given string from the specified index
 	 * 
-	 * @see LocationService#getLocations(String, Integer, Integer)
+	 * @see LocationService#getLocations(String, boolean, Integer, Integer)
 	 */
-	public List<Location> getLocations(String nameFragment, Integer start, Integer length) throws DAOException;
+	public List<Location> getLocations(String nameFragment, boolean includeRetired, Integer start, Integer length)
+	                                                                                                              throws DAOException;
 	
 	/**
 	 * Completely remove the location from the database.
