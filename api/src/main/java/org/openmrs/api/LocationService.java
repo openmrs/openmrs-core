@@ -162,13 +162,15 @@ public interface LocationService extends OpenmrsService {
 	 * returned
 	 * 
 	 * @param nameFragment is the string used to search for locations
+	 * @param includeRetired Specifies if retired locations should be returned
 	 * @param start the beginning index
-	 * @param length the number of matching locations to return\
+	 * @param length the number of matching locations to return
 	 * @since 1.8
 	 */
 	@Transactional(readOnly = true)
 	@Authorized({ PrivilegeConstants.VIEW_LOCATIONS })
-	public List<Location> getLocations(String nameFragment, Integer start, Integer length) throws APIException;
+	public List<Location> getLocations(String nameFragment, boolean includeRetired, Integer start, Integer length)
+	                                                                                                              throws APIException;
 	
 	/**
 	 * Returns locations that contain the given tag.

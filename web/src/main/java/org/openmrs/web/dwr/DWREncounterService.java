@@ -191,7 +191,7 @@ public class DWREncounterService {
 		
 		try {
 			LocationService ls = Context.getLocationService();
-			List<Location> locations = ls.getLocations(searchValue, start, length);
+			List<Location> locations = ls.getLocations(searchValue, false, start, length);
 			locationList = new Vector<Object>(locations.size());
 			
 			for (Location loc : locations) {
@@ -247,6 +247,7 @@ public class DWREncounterService {
 	 * matches will be returned from the start index if specified.
 	 * 
 	 * @param searchValue is the string used to search for locations
+	 * @param includeRetired Specifies if retired locatio
 	 * @param start the beginning index
 	 * @param length the number of matching encounters to return
 	 * @param getMatchCount Specifies if the count of matches should be included in the returned map
@@ -254,8 +255,8 @@ public class DWREncounterService {
 	 * @throws APIException
 	 * @since 1.8
 	 */
-	public Map<String, Object> findCountAndLocations(String phrase, Integer start, Integer length, boolean getMatchCount)
-	                                                                                                                     throws APIException {
+	public Map<String, Object> findCountAndLocations(String phrase, boolean includeRetired, Integer start, Integer length,
+	                                                 boolean getMatchCount) throws APIException {
 		
 		//Map to return
 		Map<String, Object> resultsMap = new HashMap<String, Object>();
@@ -264,7 +265,7 @@ public class DWREncounterService {
 			LocationService es = Context.getLocationService();
 			int locationCount = 0;
 			if (getMatchCount)
-				locationCount += es.getCountOfLocations(phrase, true);
+				locationCount += es.getCountOfLocations(phrase, includeRetired);
 			//if we have any matches or this isn't the first ajax call when the caller
 			//requests for the count
 			if (locationCount > 0 || !getMatchCount)
