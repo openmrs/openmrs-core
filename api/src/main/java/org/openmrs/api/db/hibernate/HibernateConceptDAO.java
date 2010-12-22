@@ -37,10 +37,12 @@ import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Conjunction;
+import org.hibernate.criterion.CriteriaSpecification;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
@@ -57,6 +59,7 @@ import org.openmrs.ConceptName;
 import org.openmrs.ConceptNameTag;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptProposal;
+import org.openmrs.ConceptSearchResult;
 import org.openmrs.ConceptSet;
 import org.openmrs.ConceptSetDerived;
 import org.openmrs.ConceptSource;
@@ -659,7 +662,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 			Collection<ConceptWord> words = ConceptWord.makeConceptWords(concept);
 			log.debug("words: " + words);
 			for (ConceptWord word : words) {
-				word.setWeight(computeConceptWordWeight(word));
+				word.setWeight(weighConceptWord(word));
 				try {
 					sessionFactory.getCurrentSession().save(word);
 				}
@@ -1451,13 +1454,60 @@ public class HibernateConceptDAO implements ConceptDAO {
 	}
 	
 	/**
+	 * @see ConceptDAO#getConcepts(String, List, boolean, List, List, List, List, Concept, Integer,
+	 *      Integer)
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Override
+	public List<ConceptSearchResult> getConcepts(String phrase, List<Locale> locales, boolean includeRetired,
+	                                             List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses,
+	                                             List<ConceptDatatype> requireDatatypes,
+	                                             List<ConceptDatatype> excludeDatatypes, Concept answersToConcept,
+	                                             Integer start, Integer size) throws DAOException {
+		
+		Criteria searchCriteria = createConceptWordSearchCriteria(phrase, locales, includeRetired, requireClasses,
+		    excludeClasses, requireDatatypes, excludeDatatypes, answersToConcept);
+		
+		List<ConceptSearchResult> results = new Vector<ConceptSearchResult>();
+		
+		if (searchCriteria != null) {
+			ProjectionList pl = Projections.projectionList();
+			pl.add(Projections.distinct(Projections.property("concept")), "cw1.concept");
+			pl.add(Projections.property("word"), "cw1.word");
+			pl.add(Projections.property("weight"), "cw1.weight");
+			pl.add(Projections.property("locale"), "cw1.locale");
+			pl.add(Projections.property("conceptName"), "cw1.conceptName");
+			searchCriteria.setProjection(pl);
+			
+			searchCriteria.addOrder(Order.desc("cw1.weight"));
+			
+			if (start != null)
+				searchCriteria.setFirstResult(start);
+			if (size != null && size > 0)
+				searchCriteria.setMaxResults(size);
+			
+			searchCriteria.setResultTransformer(CriteriaSpecification.ALIAS_TO_ENTITY_MAP);
+			List<ConceptWord> resultObjects = searchCriteria.list();
+			
+			for (Object obj : resultObjects) {
+				Map aliasEntityMap = (Map) obj;
+				results.add(new ConceptSearchResult((String) aliasEntityMap.get("cw1.word"), (Concept) aliasEntityMap
+				        .get("cw1.concept"), (ConceptName) aliasEntityMap.get("cw1.conceptName"), (Double) aliasEntityMap
+				        .get("cw1.weight")));
+			}
+		}
+		
+		return results;
+	}
+	
+	/**
 	 * Utility methods that computes and sets the weight of a conceptWord. The weights are computed
 	 * independent of locale and any phrase
 	 * 
 	 * @param word the word for which to compute the weight
 	 * @return the weight of the word
 	 */
-	public Double computeConceptWordWeight(ConceptWord word) {
+	public Double weighConceptWord(ConceptWord word) {
 		//TODO Add unit tests
 		Double weight = 0.0;
 		String conceptName = word.getConceptName().getName();

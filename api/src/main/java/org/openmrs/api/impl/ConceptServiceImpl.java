@@ -1191,7 +1191,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 			concept = currentWord.getConcept();
 			conceptId = concept.getConceptId();
 			conceptName = currentWord.getConceptName();
-			//currentWord.setWeight(0.0);
+			currentWord.setWeight(0.0);
 			// check each locale the user is searching in for name preference
 			for (Locale locale : locales) {
 				// We weight matches on preferred names higher
@@ -1650,28 +1650,19 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	                                             List<ConceptDatatype> requireDatatypes,
 	                                             List<ConceptDatatype> excludeDatatypes, Concept answersToConcept,
 	                                             Integer start, Integer size) throws APIException {
-		//TODO fix DAO layer to filter well and return only concept words associated
-		//to only unique concept for hibernate paging to work and avoid returning sublist
-		List<ConceptWord> conceptWords = getConceptWords(phrase, locales, includeRetired, requireClasses, excludeClasses,
-		    requireDatatypes, excludeDatatypes, answersToConcept, null, null);
-		List<ConceptSearchResult> results = createSearchResultsList(conceptWords);
-		int count = results.size();
-		if (start == null && size == null)
-			return results;
 		
-		if (start == null || start < 0)
-			start = 0;
-		if (size == null || size < 0)
-			size = count;
+		if (requireClasses == null)
+			requireClasses = new Vector<ConceptClass>();
+		if (excludeClasses == null)
+			excludeClasses = new Vector<ConceptClass>();
+		if (requireDatatypes == null)
+			requireDatatypes = new Vector<ConceptDatatype>();
+		if (excludeDatatypes == null)
+			excludeDatatypes = new Vector<ConceptDatatype>();
 		
-		if (count == 0 || (start > (count - 1)) || size < 1)
-			return Collections.emptyList();
+		return dao.getConcepts(phrase, locales, includeRetired, requireClasses, excludeClasses, requireDatatypes,
+		    excludeDatatypes, answersToConcept, start, size);
 		
-		int lastIndex = start + size;
-		if (lastIndex < count)
-			return results.subList(start, lastIndex);
-		
-		return results.subList(start, count);
 	}
 	
 	/**
@@ -1766,16 +1757,6 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	}
 	
 	/**
-	 * @see ConceptService#getConcepts(String, Locale)
-	 */
-	@Override
-	public List<ConceptSearchResult> getConcepts(String phrase, Locale locale) throws APIException {
-		List<ConceptWord> conceptWords = getConceptWords(phrase, locale);
-		
-		return createSearchResultsList(conceptWords);
-	}
-	
-	/**
 	 * @see ConceptService#getCountOfConcepts(String, List, boolean, List, List, List, List,
 	 *      Concept)
 	 */
@@ -1803,5 +1784,17 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	public List<Drug> getDrugs(String drugName, Concept concept, boolean searchOnPhrase, boolean searchDrugConceptNames,
 	                           boolean includeRetired, Integer start, Integer length) throws APIException {
 		return dao.getDrugs(drugName, concept, searchOnPhrase, searchDrugConceptNames, includeRetired, start, length);
+	}
+	
+	/**
+	 * @see ConceptService#getConcepts(String, Locale, boolean)
+	 */
+	@Override
+	public List<ConceptSearchResult> getConcepts(String phrase, Locale locale, boolean includeRetired) throws APIException {
+		List<Locale> locales = new Vector<Locale>();
+		if (locale != null)
+			locales.add(locale);
+		
+		return getConcepts(phrase, locales, includeRetired, null, null, null, null, null, null, null);
 	}
 }
