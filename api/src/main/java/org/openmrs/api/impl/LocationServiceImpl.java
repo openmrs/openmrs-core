@@ -150,7 +150,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	 * @see org.openmrs.api.LocationService#getLocations(java.lang.String)
 	 */
 	public List<Location> getLocations(String nameFragment) throws APIException {
-		return getLocations(nameFragment, null, null);
+		return getLocations(nameFragment, false, null, null);
 	}
 	
 	/**
@@ -311,10 +311,11 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	}
 	
 	/**
-	 * @see LocationService#getLocations(String, Integer, Integer)
+	 * @see LocationService#getLocations(String, boolean, Integer, Integer)
 	 */
 	@Override
-	public List<Location> getLocations(String nameFragment, Integer start, Integer length) throws APIException {
-		return dao.getLocations(nameFragment, start, length);
+	public List<Location> getLocations(String nameFragment, boolean includeRetired, Integer start, Integer length)
+	                                                                                                              throws APIException {
+		return dao.getLocations(nameFragment, includeRetired, start, length);
 	}
 }
