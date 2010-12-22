@@ -1487,7 +1487,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 				searchCriteria.setMaxResults(size);
 			
 			searchCriteria.setResultTransformer(CriteriaSpecification.ALIAS_TO_ENTITY_MAP);
-			List<ConceptWord> resultObjects = searchCriteria.list();
+			List resultObjects = searchCriteria.list();
 			
 			for (Object obj : resultObjects) {
 				Map aliasEntityMap = (Map) obj;
