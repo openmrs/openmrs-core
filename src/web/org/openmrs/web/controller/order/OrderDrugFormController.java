@@ -27,6 +27,7 @@ import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.propertyeditor.DrugEditor;
 import org.openmrs.util.OpenmrsConstants;
+import org.springframework.beans.propertyeditors.CustomBooleanEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -46,11 +47,13 @@ public class OrderDrugFormController extends OrderFormController {
 	 * @see org.springframework.web.servlet.mvc.BaseCommandController#initBinder(javax.servlet.http.HttpServletRequest,
 	 *      org.springframework.web.bind.ServletRequestDataBinder)
 	 */
-	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
+	@Override
+    protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
 		
 		binder.registerCustomEditor(Drug.class, new DrugEditor());
 		binder.registerCustomEditor(Double.class, new CustomNumberEditor(Double.class, true));
+		binder.registerCustomEditor(Boolean.class, new CustomBooleanEditor(false));
 	}
 	
 	/**
@@ -61,7 +64,8 @@ public class OrderDrugFormController extends OrderFormController {
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
 	 */
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
+	@Override
+    protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
 	                                BindException errors) throws Exception {
 		String view;
 		DrugOrder order = (DrugOrder) obj;
@@ -88,7 +92,8 @@ public class OrderDrugFormController extends OrderFormController {
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
+	@Override
+    protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 		
 		OrderService os = Context.getOrderService();
 		
