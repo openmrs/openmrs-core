@@ -199,9 +199,12 @@ public class HibernateLocationDAO implements LocationDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Location> getLocations(String nameFragment, Integer start, Integer length) throws DAOException {
+	public List<Location> getLocations(String nameFragment, boolean includeRetired, Integer start, Integer length)
+	                                                                                                              throws DAOException {
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Location.class);
+		if (!includeRetired)
+			criteria.add(Expression.eq("retired", false));
 		
 		if (StringUtils.isNotBlank(nameFragment))
 			criteria.add(Expression.ilike("name", nameFragment, MatchMode.START));
