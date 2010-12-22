@@ -169,7 +169,7 @@ public class DWREncounterService {
 	
 	public Vector findLocations(String searchValue) {
 		
-		return findBatchOfLocations(searchValue, null, null);
+		return findBatchOfLocations(searchValue, false, null, null);
 	}
 	
 	/**
@@ -178,20 +178,22 @@ public class DWREncounterService {
 	 * if specified.
 	 * 
 	 * @param searchValue is the string used to search for locations
+	 * @param includeRetired Specifies if retired locations should be returned
 	 * @param start the beginning index
 	 * @param length the number of matching locations to return
 	 * @return list of the matching locations
 	 * @throws APIException
 	 * @since 1.8
 	 */
-	public Vector<Object> findBatchOfLocations(String searchValue, Integer start, Integer length) throws APIException {
+	public Vector<Object> findBatchOfLocations(String searchValue, boolean includeRetired, Integer start, Integer length)
+	                                                                                                                     throws APIException {
 		
 		Vector<Object> locationList = new Vector<Object>();
 		MessageSourceService mss = Context.getMessageSourceService();
 		
 		try {
 			LocationService ls = Context.getLocationService();
-			List<Location> locations = ls.getLocations(searchValue, false, start, length);
+			List<Location> locations = ls.getLocations(searchValue, includeRetired, start, length);
 			locationList = new Vector<Object>(locations.size());
 			
 			for (Location loc : locations) {
@@ -247,7 +249,7 @@ public class DWREncounterService {
 	 * matches will be returned from the start index if specified.
 	 * 
 	 * @param searchValue is the string used to search for locations
-	 * @param includeRetired Specifies if retired locatio
+	 * @param includeRetired Specifies if retired locations should be returned
 	 * @param start the beginning index
 	 * @param length the number of matching encounters to return
 	 * @param getMatchCount Specifies if the count of matches should be included in the returned map
@@ -269,7 +271,7 @@ public class DWREncounterService {
 			//if we have any matches or this isn't the first ajax call when the caller
 			//requests for the count
 			if (locationCount > 0 || !getMatchCount)
-				objectList = findBatchOfLocations(phrase, start, length);
+				objectList = findBatchOfLocations(phrase, includeRetired, start, length);
 			
 			resultsMap.put("count", locationCount);
 			resultsMap.put("objectList", objectList);
