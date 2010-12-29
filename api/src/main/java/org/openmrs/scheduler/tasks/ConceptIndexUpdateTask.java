@@ -13,8 +13,6 @@
  */
 package org.openmrs.scheduler.tasks;
 
-import java.util.Iterator;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
@@ -47,17 +45,20 @@ public class ConceptIndexUpdateTask extends AbstractTask {
 				log.debug("Updating concept words ... ");
 			try {
 				ConceptService cs = Context.getConceptService();
-				Iterator<Concept> conceptIterator = cs.conceptIterator();
-				while (conceptIterator.hasNext() && shouldExecute) {
-					Concept currentConcept = conceptIterator.next();
+				Concept currentConcept = cs.getNextConcept(new Concept(0)); // assumes that all conceptIds are positive
+				int counter = 0;
+				while (currentConcept != null && shouldExecute) {
 					if (log.isDebugEnabled())
 						log.debug("updateConceptWords() : current concept: " + currentConcept);
 					cs.updateConceptIndex(currentConcept);
+
+					// keep memory consumption low
+					if (counter++ > 200) {
+						Context.clearSession();
+						counter = 0;
+					}
 					
-					// do this to keep memory consumption low at the expense of speed
-					// we can't clear the whole session because the conceptIterator has
-					// already loaded and holds on to the next concept
-					Context.evictFromSession(currentConcept);
+					currentConcept = cs.getNextConcept(currentConcept);
 				}
 			}
 			catch (APIException e) {
