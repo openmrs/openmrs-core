@@ -1679,7 +1679,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	}
 	
 	/**
-	 * @see ConceptService#updateConceptNameIndex(Concept)
+	 * @see ConceptService#updateConceptIndex(Concept)
 	 */
 	@Override
 	public void updateConceptIndex(Concept concept) throws APIException {
