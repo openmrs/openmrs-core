@@ -117,7 +117,7 @@ public class UserValidator implements Validator {
 		try {
 			//Make the comparison case-insensitive.
 			Pattern pattern = Pattern.compile(expression, Pattern.CASE_INSENSITIVE);
-			Matcher matcher = pattern.matcher(username);			
+			Matcher matcher = pattern.matcher(username);
 			return matcher.matches();
 		}
 		catch (PatternSyntaxException pex) {

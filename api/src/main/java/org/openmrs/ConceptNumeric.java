@@ -99,7 +99,7 @@ public class ConceptNumeric extends Concept implements java.io.Serializable {
 	public boolean equals(Object obj) {
 		if (obj == null)
 			return false;
-
+		
 		// now do the standard equals comparison
 		if (obj instanceof ConceptNumeric) {
 			ConceptNumeric c = (ConceptNumeric) obj;

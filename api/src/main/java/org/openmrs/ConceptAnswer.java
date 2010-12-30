@@ -271,7 +271,7 @@ public class ConceptAnswer extends BaseOpenmrsObject implements Auditable, java.
 	 */
 	public void setDateChanged(Date dateChanged) {
 	}
-
+	
 	/**
 	 * @return Returns the sortWeight.
 	 */
@@ -279,7 +279,7 @@ public class ConceptAnswer extends BaseOpenmrsObject implements Auditable, java.
 	public Double getSortWeight() {
 		return sortWeight;
 	}
-
+	
 	/**
 	 * @param sortWeight The sortWeight to set.
 	 */
@@ -287,14 +287,17 @@ public class ConceptAnswer extends BaseOpenmrsObject implements Auditable, java.
 	public void setSortWeight(Double sortWeight) {
 		this.sortWeight = sortWeight;
 	}
-
+	
 	/**
-     * @see java.lang.Comparable#compareTo(java.lang.Object)
-     */
-    public int compareTo(ConceptAnswer ca) {
-    	if((getSortWeight() == null) && (ca.getSortWeight() != null)) return -1;
-    	if((getSortWeight() != null) && (ca.getSortWeight() == null)) return 1;
-    	if((getSortWeight() == null) && (ca.getSortWeight() == null)) return 0;
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
+	public int compareTo(ConceptAnswer ca) {
+		if ((getSortWeight() == null) && (ca.getSortWeight() != null))
+			return -1;
+		if ((getSortWeight() != null) && (ca.getSortWeight() == null))
+			return 1;
+		if ((getSortWeight() == null) && (ca.getSortWeight() == null))
+			return 0;
 		return (getSortWeight() < ca.getSortWeight()) ? -1 : (getSortWeight() > ca.getSortWeight()) ? 1 : 0;
-    }
+	}
 }

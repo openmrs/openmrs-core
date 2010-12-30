@@ -27,7 +27,7 @@ import org.openmrs.hl7.Hl7InArchivesMigrateThread.Status;
  * to be displayed to the user in the browser via ajax
  */
 public class DWRHL7Service {
-
+	
 	private static Hl7InArchivesMigrateThread hl7MigrationThread = null;
 	
 	/**

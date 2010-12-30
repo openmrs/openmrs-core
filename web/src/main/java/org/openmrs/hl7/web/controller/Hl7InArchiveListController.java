@@ -68,14 +68,13 @@ public class Hl7InArchiveListController {
 	@RequestMapping("/admin/hl7/hl7InArchiveList.json")
 	public @ResponseBody
 	Map<String, Object> getHL7InArchiveBatchAsJson(@RequestParam("iDisplayStart") int iDisplayStart,
-	                                             @RequestParam("iDisplayLength") int iDisplayLength,
-	                                             @RequestParam("sSearch") String sSearch,
-	                                             @RequestParam("sEcho") int sEcho) throws IOException {
-
+	                                               @RequestParam("iDisplayLength") int iDisplayLength,
+	                                               @RequestParam("sSearch") String sSearch, @RequestParam("sEcho") int sEcho)
+	                                                                                                                         throws IOException {
+		
 		// get the data
-		List<HL7InArchive> hl7s = Context.getHL7Service().getHL7InArchiveBatch(
-				iDisplayStart, iDisplayLength,
-				HL7Constants.HL7_STATUS_PROCESSED, sSearch);
+		List<HL7InArchive> hl7s = Context.getHL7Service().getHL7InArchiveBatch(iDisplayStart, iDisplayLength,
+		    HL7Constants.HL7_STATUS_PROCESSED, sSearch);
 		
 		// form the results dataset
 		List<Object> results = new ArrayList<Object>();
@@ -84,12 +83,9 @@ public class Hl7InArchiveListController {
 		
 		// build the response
 		Map<String, Object> response = new HashMap<String, Object>();
-		response.put(
-				"iTotalRecords",
-				Context.getHL7Service().countHL7InArchive(
-						HL7Constants.HL7_STATUS_PROCESSED, null));
-		response.put("iTotalDisplayRecords", Context.getHL7Service()
-				.countHL7InArchive(HL7Constants.HL7_STATUS_PROCESSED, sSearch));
+		response.put("iTotalRecords", Context.getHL7Service().countHL7InArchive(HL7Constants.HL7_STATUS_PROCESSED, null));
+		response.put("iTotalDisplayRecords", Context.getHL7Service().countHL7InArchive(HL7Constants.HL7_STATUS_PROCESSED,
+		    sSearch));
 		response.put("sEcho", sEcho);
 		response.put("aaData", results.toArray());
 		

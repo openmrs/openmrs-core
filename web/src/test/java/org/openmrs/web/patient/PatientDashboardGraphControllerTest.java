@@ -24,6 +24,7 @@ import org.springframework.ui.ModelMap;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+
 /**
  * Test for graphs on the patient dashboard
  */
@@ -39,15 +40,18 @@ public class PatientDashboardGraphControllerTest extends BaseWebContextSensitive
 	public void shouldReturnJSONWithPatientObservationDetails() throws Exception {
 		executeDataSet("org/openmrs/api/include/ObsServiceTest-initial.xml");
 		PatientDashboardGraphController controller = new PatientDashboardGraphController();
-
-        long firstObsDate = new GregorianCalendar(2006, Calendar.FEBRUARY, 9).getTimeInMillis();
-        long secondObsDate = new GregorianCalendar(2006, Calendar.FEBRUARY, 10).getTimeInMillis();
-
-        ModelMap map = new ModelMap();
-        controller.showGraphData(2, 1, map);
-        PatientGraphData graph = (PatientGraphData) map.get("graph");
-        String expectedData = String.format("{\"absolute\":{\"high\":50.0,\"low\":2.0},\"critical\":{\"high\":null,\"low\":null},\"normal\":{\"high\":null,\"low\":null},\"data\":[[%d,2.0],[%d,1.0]]}", secondObsDate, firstObsDate);
-        Assert.assertEquals(expectedData, graph.toString());
+		
+		long firstObsDate = new GregorianCalendar(2006, Calendar.FEBRUARY, 9).getTimeInMillis();
+		long secondObsDate = new GregorianCalendar(2006, Calendar.FEBRUARY, 10).getTimeInMillis();
+		
+		ModelMap map = new ModelMap();
+		controller.showGraphData(2, 1, map);
+		PatientGraphData graph = (PatientGraphData) map.get("graph");
+		String expectedData = String
+		        .format(
+		            "{\"absolute\":{\"high\":50.0,\"low\":2.0},\"critical\":{\"high\":null,\"low\":null},\"normal\":{\"high\":null,\"low\":null},\"data\":[[%d,2.0],[%d,1.0]]}",
+		            secondObsDate, firstObsDate);
+		Assert.assertEquals(expectedData, graph.toString());
 	}
 	
 	/**
@@ -59,7 +63,7 @@ public class PatientDashboardGraphControllerTest extends BaseWebContextSensitive
 	@Verifies(value = "return form for rendering the json data", method = "showGraphData(Integer, Integer, ModelMap)")
 	public void shouldDisplayPatientDashboardGraphForm() throws Exception {
 		executeDataSet("org/openmrs/api/include/ObsServiceTest-initial.xml");
-		Assert.assertEquals("patientGraphJsonForm", new PatientDashboardGraphController().showGraphData(2, 1,
-		    new ModelMap()));
+		Assert.assertEquals("patientGraphJsonForm", new PatientDashboardGraphController()
+		        .showGraphData(2, 1, new ModelMap()));
 	}
 }

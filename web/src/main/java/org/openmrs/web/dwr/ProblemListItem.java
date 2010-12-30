@@ -45,7 +45,7 @@ public class ProblemListItem {
 		this.setStatus((problem.getModifier() == null) ? null : problem.getModifier().name());
 		this.setComments((problem.getComments() == null) ? null : problem.getComments());
 	}
-
+	
 	public void setActiveListId(Integer activeListId) {
 		this.activeListId = activeListId;
 	}

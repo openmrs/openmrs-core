@@ -16,14 +16,17 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 public class OptionsFormControllerTest extends BaseWebContextSensitiveTest {
+	
 	private User user;
+	
 	private UserDAO userDao;
+	
 	private OptionsFormController controller;
-
+	
 	@Before
 	public void setUp() {
-		Context.authenticate("admin", "test");		
-		user = Context.getAuthenticatedUser();		
+		Context.authenticate("admin", "test");
+		user = Context.getAuthenticatedUser();
 		controller = (OptionsFormController) applicationContext.getBean("optionsForm");
 		userDao = (UserDAO) applicationContext.getBean("userDAO");
 	}
@@ -31,7 +34,7 @@ public class OptionsFormControllerTest extends BaseWebContextSensitiveTest {
 	@Test
 	public void shouldChangeSecretQuestionAndAnswer() throws Exception {
 		MockHttpServletRequest request = new MockHttpServletRequest("POST", "");
-		request.setParameter("secretQuestionPassword", "test");		
+		request.setParameter("secretQuestionPassword", "test");
 		request.setParameter("secretQuestionNew", "test_question");
 		
 		String answer = "test_answer";
@@ -48,7 +51,7 @@ public class OptionsFormControllerTest extends BaseWebContextSensitiveTest {
 	@Test
 	public void shouldRejectEmptySecretAnswer() throws Exception {
 		MockHttpServletRequest request = new MockHttpServletRequest("POST", "");
-		request.setParameter("secretQuestionPassword", "test");		
+		request.setParameter("secretQuestionPassword", "test");
 		request.setParameter("secretQuestionNew", "test_question");
 		
 		String emptyAnswer = "";
@@ -66,9 +69,9 @@ public class OptionsFormControllerTest extends BaseWebContextSensitiveTest {
 	public void shouldRejectEmptySecretQuestion() throws Exception {
 		LoginCredential loginCredential = userDao.getLoginCredential(user);
 		String originalQuestion = loginCredential.getSecretQuestion();
-
+		
 		MockHttpServletRequest request = new MockHttpServletRequest("POST", "");
-		request.setParameter("secretQuestionPassword", "test");		
+		request.setParameter("secretQuestionPassword", "test");
 		request.setParameter("secretQuestionNew", "");
 		
 		String emptyAnswer = "test_answer";

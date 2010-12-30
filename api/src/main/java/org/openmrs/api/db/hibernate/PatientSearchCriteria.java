@@ -255,8 +255,8 @@ public class PatientSearchCriteria {
 		SimpleExpression familyName = Expression.like("name.familyName", name, mode);
 		SimpleExpression familyName2 = Expression.like("name.familyName2", name, mode);
 		
-		return Expression.and(Expression.eq("name.voided", false),
-		    Expression.or(familyName2, Expression.or(familyName, Expression.or(middleName, givenName))));
+		return Expression.and(Expression.eq("name.voided", false), Expression.or(familyName2, Expression.or(familyName,
+		    Expression.or(middleName, givenName))));
 	}
 	
 	/**
@@ -270,10 +270,10 @@ public class PatientSearchCriteria {
 		String returnString = regex.replaceAll("@SEARCH@", identifierSearched);
 		if (identifierSearched.length() > 1) {
 			// for 2 or more character searches, we allow regex to use last character as check digit
-			returnString = returnString.replaceAll("@SEARCH-1@",
-			    identifierSearched.substring(0, identifierSearched.length() - 1));
-			returnString = returnString.replaceAll("@CHECKDIGIT@",
-			    identifierSearched.substring(identifierSearched.length() - 1));
+			returnString = returnString.replaceAll("@SEARCH-1@", identifierSearched.substring(0,
+			    identifierSearched.length() - 1));
+			returnString = returnString.replaceAll("@CHECKDIGIT@", identifierSearched
+			        .substring(identifierSearched.length() - 1));
 		} else {
 			returnString = returnString.replaceAll("@SEARCH-1@", "");
 			returnString = returnString.replaceAll("@CHECKDIGIT@", "");

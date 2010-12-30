@@ -89,7 +89,7 @@ public class PatientIdentifierTypeFormController extends SimpleFormController {
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "PatientIdentifierType.saved");
 				toReturn = new ModelAndView(new RedirectView(getSuccessView()));
 			}
-			
+
 			// if the user is retiring the identifierType
 			else if (request.getParameter("retire") != null) {
 				String retireReason = request.getParameter("retireReason");
@@ -103,13 +103,13 @@ public class PatientIdentifierTypeFormController extends SimpleFormController {
 				
 				toReturn = new ModelAndView(new RedirectView(getSuccessView()));
 			}
-			
+
 			// if the user is purging the identifierType
 			else if (request.getParameter("purge") != null) {
 				
 				try {
-	                ps.purgePatientIdentifierType(identifierType);
-	                httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "PatientIdentifierType.purgedSuccessfully");
+					ps.purgePatientIdentifierType(identifierType);
+					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "PatientIdentifierType.purgedSuccessfully");
 					toReturn = new ModelAndView(new RedirectView(getSuccessView()));
 				}
 				catch (DataIntegrityViolationException e) {

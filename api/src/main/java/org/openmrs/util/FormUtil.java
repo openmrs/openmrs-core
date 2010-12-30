@@ -217,7 +217,7 @@ public class FormUtil {
 	 */
 	public static String conceptToString(Concept concept, ConceptName localizedName) {
 		return concept.getConceptId() + "^" + localizedName.getName() + "^" + HL7Constants.HL7_LOCAL_CONCEPT; // + "^"
-		        // + localizedName.getConceptNameId() + "^" + localizedName.getName() + "^" + FormConstants.HL7_LOCAL_CONCEPT_NAME;
+		// + localizedName.getConceptNameId() + "^" + localizedName.getName() + "^" + FormConstants.HL7_LOCAL_CONCEPT_NAME;
 	}
 	
 	/**

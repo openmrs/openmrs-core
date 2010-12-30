@@ -44,7 +44,7 @@ import org.openmrs.api.PatientSetService.PatientLocationMethod;
 import org.openmrs.api.PatientSetService.TimeModifier;
 
 public interface PatientSetDAO {
-
+	
 	/**
 	 * @deprecated
 	 */
@@ -91,7 +91,8 @@ public interface PatientSetDAO {
 	public Map<Integer, List<Obs>> getObservations(Cohort patients, Concept concept, Date fromDate, Date toDate)
 	                                                                                                            throws DAOException;
 	
-	public Map<Integer, List<List<Object>>> getObservationsValues(Cohort patients, Concept c, List<String> attributes, Integer limit, boolean showMostRecentFirst);
+	public Map<Integer, List<List<Object>>> getObservationsValues(Cohort patients, Concept c, List<String> attributes,
+	                                                              Integer limit, boolean showMostRecentFirst);
 	
 	public Map<Integer, Encounter> getEncountersByType(Cohort patients, List<EncounterType> encType);
 	
@@ -153,9 +154,9 @@ public interface PatientSetDAO {
 	 * @return patients matching the specified relationship search
 	 */
 	public Cohort getPatientsByRelationship(RelationshipType relType, boolean includeAtoB, boolean includeBtoA, Person target);
-
+	
 	public Integer getCountOfPatients();
-
+	
 	public Cohort getPatients(Integer start, Integer size);
-
+	
 }

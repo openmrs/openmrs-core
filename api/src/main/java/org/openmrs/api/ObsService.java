@@ -91,7 +91,7 @@ public interface ObsService extends OpenmrsService {
 	 * @throws APIException
 	 * @deprecated use {@link #saveObs(Obs, String)}
 	 */
-    @Deprecated
+	@Deprecated
 	@Authorized(PrivilegeConstants.ADD_OBS)
 	public void createObs(Obs obs) throws APIException;
 	
@@ -113,7 +113,7 @@ public interface ObsService extends OpenmrsService {
 	 *             temporary until we created a true ObsGroup pojo. Replaced by
 	 *             {@link #saveObs(Obs, String)}
 	 */
-    @Deprecated
+	@Deprecated
 	@Authorized(PrivilegeConstants.ADD_OBS)
 	public void createObsGroup(Obs[] obs) throws APIException;
 	
@@ -148,7 +148,7 @@ public interface ObsService extends OpenmrsService {
 	 * @throws APIException
 	 * @deprecated use {@link #saveObs(Obs, String)}
 	 */
-    @Deprecated
+	@Deprecated
 	@Authorized(PrivilegeConstants.EDIT_OBS)
 	public void updateObs(Obs obs) throws APIException;
 	
@@ -211,7 +211,7 @@ public interface ObsService extends OpenmrsService {
 	 * @throws APIException
 	 * @deprecated use #purgeObs(Obs)
 	 */
-    @Deprecated
+	@Deprecated
 	@Authorized(PrivilegeConstants.DELETE_OBS)
 	public void deleteObs(Obs obs) throws APIException;
 	

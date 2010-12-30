@@ -47,9 +47,9 @@ public class OpenmrsBindingInitializer implements WebBindingInitializer {
 		wdb.registerCustomEditor(Concept.class, new ConceptEditor());
 		wdb.registerCustomEditor(Person.class, new PersonEditor());
 		wdb.registerCustomEditor(Patient.class, new PatientEditor());
-		wdb.registerCustomEditor(Location.class, new LocationEditor());		
-		wdb.registerCustomEditor(java.lang.Integer.class,
-				new CustomNumberEditor(java.lang.Integer.class, NumberFormat.getInstance(Context.getLocale()), true));
+		wdb.registerCustomEditor(Location.class, new LocationEditor());
+		wdb.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, NumberFormat
+		        .getInstance(Context.getLocale()), true));
 		wdb.registerCustomEditor(java.util.Date.class, new CustomDateEditor(Context.getDateFormat(), true, 10));
 		wdb.registerCustomEditor(PatientIdentifierType.class, new PatientIdentifierTypeEditor());
 		// TODO everything else

@@ -57,7 +57,7 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 	private int cacheMilliseconds = -1;
 	
 	private long lastCached = System.currentTimeMillis();
-
+	
 	/** Cached list of available locales. */
 	private Collection<Locale> locales;
 	
@@ -75,7 +75,7 @@ public class MutableResourceBundleMessageSource extends ReloadableResourceBundle
 	}
 	
 	@Override
-    public void setCacheSeconds(int cacheSeconds) {
+	public void setCacheSeconds(int cacheSeconds) {
 		this.cacheMilliseconds = cacheSeconds * 1000;
 		super.setCacheSeconds(cacheSeconds);
 	}

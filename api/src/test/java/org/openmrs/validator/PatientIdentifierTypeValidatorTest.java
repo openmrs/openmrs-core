@@ -11,14 +11,14 @@ import org.springframework.validation.Errors;
  * Tests methods on the {@link PatientIdentifierTypeValidator} class.
  */
 public class PatientIdentifierTypeValidatorTest {
+	
 	/**
 	 * @see {@link PatientIdentifierTypeValidator#validate(Object,Errors)}
 	 * 
 	 */
 	@Test
 	@Verifies(value = "should fail validation if name is null or empty or whitespace", method = "validate(Object,Errors)")
-	public void validate_shouldFailValidationIfNameIsNullOrEmptyOrWhitespace()
-			throws Exception {
+	public void validate_shouldFailValidationIfNameIsNullOrEmptyOrWhitespace() throws Exception {
 		PatientIdentifierType type = new PatientIdentifierType();
 		type.setName(null);
 		type.setDescription("some text");
@@ -37,19 +37,18 @@ public class PatientIdentifierTypeValidatorTest {
 		new PatientIdentifierTypeValidator().validate(type, errors);
 		Assert.assertTrue(errors.hasFieldErrors("name"));
 	}
-
+	
 	/**
 	 * @see {@link PatientIdentifierTypeValidator#validate(Object,Errors)}
 	 * 
 	 */
 	@Test
 	@Verifies(value = "should fail validation if description is null or empty or whitespace", method = "validate(Object,Errors)")
-	public void validate_shouldFailValidationIfDescriptionIsNullOrEmptyOrWhitespace()
-			throws Exception {
+	public void validate_shouldFailValidationIfDescriptionIsNullOrEmptyOrWhitespace() throws Exception {
 		PatientIdentifierType type = new PatientIdentifierType();
 		type.setName("name");
 		type.setDescription(null);
-				
+		
 		Errors errors = new BindException(type, "type");
 		new PatientIdentifierTypeValidator().validate(type, errors);
 		Assert.assertTrue(errors.hasFieldErrors("description"));
@@ -64,15 +63,14 @@ public class PatientIdentifierTypeValidatorTest {
 		new PatientIdentifierTypeValidator().validate(type, errors);
 		Assert.assertTrue(errors.hasFieldErrors("description"));
 	}
-
+	
 	/**
 	 * @see {@link PatientIdentifierTypeValidator#validate(Object,Errors)}
 	 * 
 	 */
 	@Test
 	@Verifies(value = "should pass validation if all required fields have proper values", method = "validate(Object,Errors)")
-	public void validate_shouldPassValidationIfAllRequiredFieldsHaveProperValues()
-			throws Exception {
+	public void validate_shouldPassValidationIfAllRequiredFieldsHaveProperValues() throws Exception {
 		PatientIdentifierType type = new PatientIdentifierType();
 		type.setName("restraining");
 		type.setDescription(":(");

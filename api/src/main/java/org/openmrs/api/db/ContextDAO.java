@@ -66,7 +66,7 @@ public interface ContextDAO {
 	 */
 	@Transactional(readOnly = true)
 	public User getUserByUuid(String uuid) throws ContextAuthenticationException;
-
+	
 	/**
 	 * Open session.
 	 */

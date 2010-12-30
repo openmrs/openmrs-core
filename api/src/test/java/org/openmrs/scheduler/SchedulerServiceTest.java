@@ -37,7 +37,7 @@ import org.openmrs.util.PrivilegeConstants;
 public class SchedulerServiceTest extends BaseContextSensitiveTest {
 	
 	private static Log log = LogFactory.getLog(SchedulerServiceTest.class);
-
+	
 	@Test
 	public void shouldResolveValidTaskClass() throws Exception {
 		String className = "org.openmrs.scheduler.tasks.TestTask";
@@ -265,31 +265,33 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 		def = service.getTaskByName(TASK_NAME);
 		Assert.assertEquals(Context.getAuthenticatedUser().getUserId(), def.getCreator().getUserId());
 	}
-    
+	
 	/**
 	 * Sample task that does not extend AbstractTask
 	 */
 	static class BareTask implements Task {
+		
 		public static ArrayList outputList = new ArrayList();
 		
 		public void execute() {
 			synchronized (outputList) {
-				outputList.add("TEST");	            
-            }
+				outputList.add("TEST");
+			}
 		}
-
-        public TaskDefinition getTaskDefinition() {
-	        return null;
-        }
-                                                            
-        public void initialize(TaskDefinition definition) {
-        }
-
-        public boolean isExecuting() {
-        	return false;
-        }
-
-        public void shutdown() {}
+		
+		public TaskDefinition getTaskDefinition() {
+			return null;
+		}
+		
+		public void initialize(TaskDefinition definition) {
+		}
+		
+		public boolean isExecuting() {
+			return false;
+		}
+		
+		public void shutdown() {
+		}
 	}
 	
 	/**
@@ -303,61 +305,64 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 		
 		TaskDefinition td = new TaskDefinition();
 		td.setId(10);
-        td.setName("Task");
+		td.setName("Task");
 		td.setStartOnStartup(false);
 		td.setTaskClass(BareTask.class.getName());
 		td.setStartTime(null);
-
+		
 		schedulerService.scheduleTask(td);
 		Thread.sleep(500);
 		
 		assertTrue(BareTask.outputList.contains("TEST"));
 	}
-
+	
 	/**
 	 * Task opens a session and stores the execution time.
 	 */
 	static class SessionTask extends AbstractTask {
+		
 		public void execute() {
-            try {
-                // Do something
-                Context.openSession();
-                Context.addProxyPrivilege(PrivilegeConstants.MANAGE_IMPLEMENTATION_ID);
-                Context.getAdministrationService().getImplementationId();
-                actualExecutionTime = System.currentTimeMillis();
-
-            } finally {
-                Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_IMPLEMENTATION_ID);
-                Context.closeSession();
-            }
-
+			try {
+				// Do something
+				Context.openSession();
+				Context.addProxyPrivilege(PrivilegeConstants.MANAGE_IMPLEMENTATION_ID);
+				Context.getAdministrationService().getImplementationId();
+				actualExecutionTime = System.currentTimeMillis();
+				
+			}
+			finally {
+				Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_IMPLEMENTATION_ID);
+				Context.closeSession();
+			}
+			
 		}
 	}
-
-    public static Long actualExecutionTime;
-
-    /**
-     * Check saved last execution time.
-     */
-    @Test
+	
+	public static Long actualExecutionTime;
+	
+	/**
+	 * Check saved last execution time.
+	 */
+	@Test
 	public void shouldSaveLastExecutionTime() throws Exception {
-        final String NAME = "Session Task";
+		final String NAME = "Session Task";
 		SchedulerService service = Context.getSchedulerService();
-
+		
 		TaskDefinition td = new TaskDefinition();
 		td.setName(NAME);
 		td.setStartOnStartup(false);
 		td.setTaskClass(SessionTask.class.getName());
-        td.setStartTime(null);
-    	service.saveTask(td);
-
+		td.setStartTime(null);
+		service.saveTask(td);
+		
 		service.scheduleTask(td);
 		// sleep a while until the task has executed, up to 5 times
-		for (int x=0; x<5 && actualExecutionTime == null; x++)
+		for (int x = 0; x < 5 && actualExecutionTime == null; x++)
 			Thread.sleep(200);
-
-        td = service.getTaskByName(NAME);
-        Assert.assertNotNull(actualExecutionTime);
-		assertEquals("Last execution time in seconds is wrong", actualExecutionTime.longValue() / 1000, td.getLastExecutionTime().getTime() / 1000, 1);
+		
+		td = service.getTaskByName(NAME);
+		Assert.assertNotNull(actualExecutionTime);
+		assertEquals("Last execution time in seconds is wrong", actualExecutionTime.longValue() / 1000, td
+		        .getLastExecutionTime().getTime() / 1000, 1);
 	}
 }

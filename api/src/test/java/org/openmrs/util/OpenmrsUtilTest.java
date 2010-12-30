@@ -519,7 +519,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 		Context.closeSession();
 		OpenmrsUtil.validatePassword("admin", "1234Password", "systemId");
 	}
-
+	
 	/**
 	 * @see {@link OpenmrsUtil#getDateFormat(Locale)}
 	 */
@@ -538,7 +538,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 		sdf.applyPattern("yyyymmdd");
 		Assert.assertTrue("initial dateFormatCache pattern is modifiable", !OpenmrsUtil.getDateFormat(locale).toPattern()
 		        .equals(sdf.toPattern()));
-
+		
 		// the dateformat cache now contains the format for this locale; checking
 		// a second time will guarantee we are looking at cached data and not the
 		// initially built dateformat
@@ -550,7 +550,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 		Assert.assertTrue("cached dateFormatCache pattern is modifiable", !OpenmrsUtil.getDateFormat(locale).toPattern()
 		        .equals(sdf.toPattern()));
 	}
-
+	
 	/**
 	 * @see {@link OpenmrsUtil#shortenedStackTrace(String)}
 	 */
@@ -681,7 +681,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 		        + "\tat org.openmrs.hl7.handler.ORUR01Handler.processMessage(ORUR01Handler.java:124) ... 103 more";
 		Assert.assertEquals("stack trace was not shortened properly", expected, OpenmrsUtil.shortenedStackTrace(test));
 	}
-
+	
 	/**
 	 * @see {@link OpenmrsUtil#shortenedStackTrace(String)}
 	 */

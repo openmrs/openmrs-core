@@ -138,8 +138,8 @@ public class ConceptStatsFormController extends SimpleFormController {
 				if (ConceptDatatype.NUMERIC.equals(concept.getDatatype().getHl7Abbreviation())) {
 					map.put("displayType", "numeric");
 					
-					List<Obs> numericAnswers = obsService.getObservations(null, null, Collections.singletonList(concept), null,
-					    Collections.singletonList(OpenmrsConstants.PERSON_TYPE.PERSON), null, Collections
+					List<Obs> numericAnswers = obsService.getObservations(null, null, Collections.singletonList(concept),
+					    null, Collections.singletonList(OpenmrsConstants.PERSON_TYPE.PERSON), null, Collections
 					            .singletonList("valueNumeric"), null, null, null, null, false);
 					
 					if (numericAnswers.size() > 0) {
@@ -215,7 +215,7 @@ public class ConceptStatsFormController extends SimpleFormController {
 							// removing lower quartile outliers
 							for (i = 0; i < size - xpercentile; i++) {
 								Obs possibleOutlier = numericAnswers.get(i);
-								if ( possibleOutlier.getValueNumeric() >= lowerQuartileLimit)
+								if (possibleOutlier.getValueNumeric() >= lowerQuartileLimit)
 									break; // quit if this value is greater than the lower limit
 								outliers.add(possibleOutlier);
 							}

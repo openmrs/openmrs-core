@@ -3976,5 +3976,15 @@
 		<comment>Removing concept derived tables</comment>
 		<dropTable tableName="concept_derived"/>
 	</changeSet>
+	
+	<changeSet id="201011051300" author="bwolfe">
+		<preConditions onFail="MARK_RAN">
+			<not><indexExists indexName="alert_date_to_expire_idx" /></not>
+		</preConditions>
+		<comment>Adding index on notification_alert.date_to_expire column</comment>
+		<createIndex tableName="notification_alert" indexName="alert_date_to_expire_idx">
+			<column name="date_to_expire" />
+		</createIndex>
+	</changeSet>
 
 </databaseChangeLog>

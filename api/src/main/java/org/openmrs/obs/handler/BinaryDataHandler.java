@@ -71,11 +71,10 @@ public class BinaryDataHandler extends AbstractHandler implements ComplexObsHand
 			}
 			
 			if (file.exists()) {
-				FileInputStream fileInputStream = new FileInputStream(file);	
+				FileInputStream fileInputStream = new FileInputStream(file);
 				obs.setComplexData(new ComplexData(originalFilename, new BufferedInputStream(fileInputStream)));
 				fileInputStream.close();
-			}
-			else {
+			} else {
 				log.error("Unable to find file associated with complex obs " + obs.getId());
 			}
 		}
@@ -110,5 +109,5 @@ public class BinaryDataHandler extends AbstractHandler implements ComplexObsHand
 		
 		return obs;
 	}
-
+	
 }

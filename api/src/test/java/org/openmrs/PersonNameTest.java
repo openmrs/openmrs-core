@@ -335,7 +335,7 @@ public class PersonNameTest {
 	public void getFamilyName_shouldReturnObscuredNameIfObscure_patientsIsSetToTrue() throws Exception {
 		OpenmrsConstants.OBSCURE_PATIENTS = true;
 		
-		OpenmrsConstants.OBSCURE_PATIENTS_FAMILY_NAME = "family name";		
+		OpenmrsConstants.OBSCURE_PATIENTS_FAMILY_NAME = "family name";
 		Assert.assertEquals("family name", new PersonName().getFamilyName());
 		
 		OpenmrsConstants.OBSCURE_PATIENTS = false; // cleanup 
@@ -394,7 +394,7 @@ public class PersonNameTest {
 	public void getGivenName_shouldReturnObscuredNameIfObscure_patientsIsSetToTrue() throws Exception {
 		OpenmrsConstants.OBSCURE_PATIENTS = true;
 		
-		OpenmrsConstants.OBSCURE_PATIENTS_GIVEN_NAME = "given name";		
+		OpenmrsConstants.OBSCURE_PATIENTS_GIVEN_NAME = "given name";
 		Assert.assertEquals("given name", new PersonName().getGivenName());
 		
 		OpenmrsConstants.OBSCURE_PATIENTS = false; // cleanup 
@@ -408,7 +408,7 @@ public class PersonNameTest {
 	public void getMiddleName_shouldReturnObscuredNameIfObscure_patientsIsSetToTrue() throws Exception {
 		OpenmrsConstants.OBSCURE_PATIENTS = true;
 		
-		OpenmrsConstants.OBSCURE_PATIENTS_MIDDLE_NAME = "middle name";		
+		OpenmrsConstants.OBSCURE_PATIENTS_MIDDLE_NAME = "middle name";
 		Assert.assertEquals("middle name", new PersonName().getMiddleName());
 		
 		OpenmrsConstants.OBSCURE_PATIENTS = false; // cleanup 

@@ -27,7 +27,7 @@ import org.springframework.ui.ModelMap;
  * Tests the controller behind the /admin/users/users.list page
  */
 public class UserListControllerTest extends BaseWebContextSensitiveTest {
-
+	
 	/**
 	 * @see UserListController#displayUsers(ModelMap,String,String,Role,Boolean)
 	 * @verifies get all users if no name given
@@ -38,19 +38,18 @@ public class UserListControllerTest extends BaseWebContextSensitiveTest {
 		List<User> users = controller.getUsers("Search", "", null, false);
 		Assert.assertEquals(2, users.size());
 	}
-
+	
 	/**
 	 * @see UserListController#displayUsers(ModelMap,String,String,Role,Boolean)
 	 * @verifies get users just given action parameter
 	 */
 	@Test
-	public void displayUsers_shouldGetUsersJustGivenActionParameter()
-			throws Exception {
+	public void displayUsers_shouldGetUsersJustGivenActionParameter() throws Exception {
 		UserListController controller = new UserListController();
 		List<User> users = controller.getUsers("Search", null, null, null);
 		Assert.assertEquals(2, users.size());
 	}
-
+	
 	/**
 	 * @see UserListController#displayUsers(ModelMap,String,String,Role,Boolean)
 	 * @verifies get users with a given role
@@ -61,14 +60,13 @@ public class UserListControllerTest extends BaseWebContextSensitiveTest {
 		List<User> users = controller.getUsers("Search", null, new Role("Provider"), null);
 		Assert.assertEquals(1, users.size());
 	}
-
+	
 	/**
 	 * @see UserListController#displayUsers(ModelMap,String,String,Role,Boolean)
 	 * @verifies include disabled users if requested
 	 */
 	@Test
-	public void displayUsers_shouldIncludeDisabledUsersIfRequested()
-			throws Exception {
+	public void displayUsers_shouldIncludeDisabledUsersIfRequested() throws Exception {
 		UserListController controller = new UserListController();
 		List<User> users = controller.getUsers("Search", "", new Role(""), true);
 		Assert.assertEquals(3, users.size());

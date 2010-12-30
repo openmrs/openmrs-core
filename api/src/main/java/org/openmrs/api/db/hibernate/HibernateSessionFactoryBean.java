@@ -40,26 +40,26 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
 	protected Set<String> tmpMappingResources = new HashSet<String>();
 	
 	//removed static here because autowiring cannot be done on static members
-	@Autowired(required=false)
+	@Autowired(required = false)
 	protected Interceptor globalSessionInterceptor = null;
 	
 	/**
-     * Sets the session interceptor for the hibernate sessions. <br/>
-     * This should be set within the spring application context of a module
-     * 
-     * @param globalSessionInterceptor
-     */
-    public void setGlobalSessionInterceptor(Interceptor globalSessionInterceptor) {
-    	log.debug("Spring setter for global Hibernate Session Interceptor for SessionFactory called with interceptor: "
-    	        + globalSessionInterceptor);
-    	
-    	if (this.globalSessionInterceptor != null) {
-    		log.warn("Overwriting current interceptor: " + this.globalSessionInterceptor + " with another interceptor: "
-    		        + globalSessionInterceptor);
-    	}
-    	
-    	this.globalSessionInterceptor = globalSessionInterceptor;
-    }
+	 * Sets the session interceptor for the hibernate sessions. <br/>
+	 * This should be set within the spring application context of a module
+	 * 
+	 * @param globalSessionInterceptor
+	 */
+	public void setGlobalSessionInterceptor(Interceptor globalSessionInterceptor) {
+		log.debug("Spring setter for global Hibernate Session Interceptor for SessionFactory called with interceptor: "
+		        + globalSessionInterceptor);
+		
+		if (this.globalSessionInterceptor != null) {
+			log.warn("Overwriting current interceptor: " + this.globalSessionInterceptor + " with another interceptor: "
+			        + globalSessionInterceptor);
+		}
+		
+		this.globalSessionInterceptor = globalSessionInterceptor;
+	}
 	
 	//public SessionFactory newSessionFactory(Configuration config) throws HibernateException {
 	public Configuration newConfiguration() throws HibernateException {

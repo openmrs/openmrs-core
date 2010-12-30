@@ -26,11 +26,11 @@ import org.openmrs.util.OpenmrsUtil;
 public class Problem extends ActiveListItem implements Comparable<Problem> {
 	
 	public static final ActiveListType ACTIVE_LIST_TYPE = new ActiveListType(2);
-
+	
 	private ProblemModifier modifier;
 	
 	private Double sortWeight; // so users can sort problem list to their liking (until someone else comes around and changes it)
-
+	
 	public Problem() {
 		this.activeListType = new ActiveListType(2);
 	}
@@ -47,7 +47,7 @@ public class Problem extends ActiveListItem implements Comparable<Problem> {
 		this.modifier = modifier;
 		this.sortWeight = sortWeight;
 	}
-
+	
 	/**
 	 * @return the status
 	 */
@@ -103,8 +103,7 @@ public class Problem extends ActiveListItem implements Comparable<Problem> {
 	
 	@Override
 	public boolean equals(Object obj) {
-		return (obj instanceof Problem)
-		        && OpenmrsUtil.nullSafeEquals(((Problem) obj).getActiveListId(), getActiveListId());
+		return (obj instanceof Problem) && OpenmrsUtil.nullSafeEquals(((Problem) obj).getActiveListId(), getActiveListId());
 	}
 	
 	@Override

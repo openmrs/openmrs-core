@@ -88,7 +88,7 @@ public class DataExportFunctions {
 	public Date currentDate = new Date();
 	
 	protected Calendar calendar = null;
-
+	
 	// Map<EncounterType, Map<patientId, Encounter>>
 	protected Map<String, Map<Integer, ?>> patientEncounterMap = new HashMap<String, Map<Integer, ?>>();
 	

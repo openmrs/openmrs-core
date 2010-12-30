@@ -57,7 +57,7 @@ public class BaseVoidHandler implements VoidHandler<Voidable> {
 	 * @should set voidedBy even if voided bit is set but voidedBy is null
 	 */
 	public void handle(Voidable voidableObject, User voidingUser, Date voidedDate, String voidReason) {
-
+		
 		// skip over all work if the object is already voided
 		if (!voidableObject.isVoided() || voidableObject.getVoidedBy() == null) {
 			

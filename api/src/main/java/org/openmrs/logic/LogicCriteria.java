@@ -83,7 +83,7 @@ public interface LogicCriteria {
 	 * @return new logic criteria containing the {@link TransformOperator}
 	 */
 	public LogicCriteria applyTransform(Operator operator);
-
+	
 	// --Logic Operators joining criteria
 	/**
 	 * Append a LogicCriteria with another LogicCriteria using an operator

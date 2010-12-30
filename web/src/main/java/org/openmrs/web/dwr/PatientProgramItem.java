@@ -126,70 +126,70 @@ public class PatientProgramItem {
 	public String getDateCompletedAsYmd() {
 		return dateCompleted == null ? null : ymdDf.format(dateCompleted);
 	}
-    
-    /**
-     * @return the creator
-     */
-    public String getCreator() {
-    	return creator;
-    }
 	
-    /**
-     * @param creator the creator to set
-     */
-    public void setCreator(String creator) {
-    	this.creator = creator;
-    }
-
 	/**
-     * @return the dateCreated
-     */
-    public Date getDateCreated() {
-    	return dateCreated;
-    }
+	 * @return the creator
+	 */
+	public String getCreator() {
+		return creator;
+	}
 	
-    /**
-     * @param dateCreated the dateCreated to set
-     */
-    public void setDateCreated(Date dateCreated) {
-    	this.dateCreated = dateCreated;
-    }
+	/**
+	 * @param creator the creator to set
+	 */
+	public void setCreator(String creator) {
+		this.creator = creator;
+	}
 	
-    /**
-     * @return the changedBy
-     */
-    public String getChangedBy() {
-    	return changedBy;
-    }
+	/**
+	 * @return the dateCreated
+	 */
+	public Date getDateCreated() {
+		return dateCreated;
+	}
 	
-    /**
-     * @param changedBy the changedBy to set
-     */
-    public void setChangedBy(String changedBy) {
-    	this.changedBy = changedBy;
-    }
-
-    /**
-     * @return the dateChanged
-     */
-    public Date getDateChanged() {
-    	return dateChanged;
-    }
+	/**
+	 * @param dateCreated the dateCreated to set
+	 */
+	public void setDateCreated(Date dateCreated) {
+		this.dateCreated = dateCreated;
+	}
 	
-    /**
-     * @param dateChanged the dateChanged to set
-     */
-    public void setDateChanged(Date dateChanged) {
-    	this.dateChanged = dateChanged;
-    }
-
+	/**
+	 * @return the changedBy
+	 */
+	public String getChangedBy() {
+		return changedBy;
+	}
+	
+	/**
+	 * @param changedBy the changedBy to set
+	 */
+	public void setChangedBy(String changedBy) {
+		this.changedBy = changedBy;
+	}
+	
+	/**
+	 * @return the dateChanged
+	 */
+	public Date getDateChanged() {
+		return dateChanged;
+	}
+	
+	/**
+	 * @param dateChanged the dateChanged to set
+	 */
+	public void setDateChanged(Date dateChanged) {
+		this.dateChanged = dateChanged;
+	}
+	
 	/**
 	 * @return the location
 	 */
 	public LocationListItem getLocation() {
 		return location;
 	}
-
+	
 	/**
 	 * @param location the location to set
 	 */

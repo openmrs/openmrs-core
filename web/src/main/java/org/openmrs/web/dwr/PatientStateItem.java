@@ -97,20 +97,20 @@ public class PatientStateItem {
 	public void setWorkflowName(String workflowName) {
 		this.workflowName = workflowName;
 	}
-
+	
 	public String getCreator() {
-    	return creator;
-    }
-
-    public void setCreator(String creator) {
-    	this.creator = creator;
-    }
-
-    public Date getDateCreated() {
-    	return dateCreated;
-    }
-
-    public void setDateCreated(Date dateCreated) {
-    	this.dateCreated = dateCreated;
-    }
+		return creator;
+	}
+	
+	public void setCreator(String creator) {
+		this.creator = creator;
+	}
+	
+	public Date getDateCreated() {
+		return dateCreated;
+	}
+	
+	public void setDateCreated(Date dateCreated) {
+		this.dateCreated = dateCreated;
+	}
 }

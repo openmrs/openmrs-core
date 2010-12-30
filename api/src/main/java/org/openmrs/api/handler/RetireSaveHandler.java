@@ -69,7 +69,7 @@ public class RetireSaveHandler implements SaveHandler<Retireable> {
 		
 		// only set the values if the user saved this object and set the retired bit
 		if (retireableObject.isRetired()) {
-		
+			
 			if (retireableObject.getRetiredBy() == null) {
 				retireableObject.setRetiredBy(currentUser);
 			}

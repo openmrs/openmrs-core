@@ -67,7 +67,7 @@ public interface CohortService extends OpenmrsService {
 	 * @see #saveCohort(Cohort)
 	 * @deprecated replaced by saveCohort(Cohort)
 	 */
-    @Deprecated
+	@Deprecated
 	@Authorized( { PrivilegeConstants.ADD_COHORTS })
 	public Cohort createCohort(Cohort cohort) throws APIException;
 	
@@ -75,7 +75,7 @@ public interface CohortService extends OpenmrsService {
 	 * @see #saveCohort(Cohort)
 	 * @deprecated replaced by saveCohort(Cohort)
 	 */
-    @Deprecated
+	@Deprecated
 	@Authorized( { PrivilegeConstants.EDIT_COHORTS })
 	public Cohort updateCohort(Cohort cohort) throws APIException;
 	
@@ -153,7 +153,7 @@ public interface CohortService extends OpenmrsService {
 	 * @see #getAllCohorts()
 	 * @deprecated replaced by getAllCohorts()
 	 */
-    @Deprecated
+	@Deprecated
 	@Authorized( { PrivilegeConstants.VIEW_PATIENT_COHORTS })
 	public List<Cohort> getCohorts() throws APIException;
 	

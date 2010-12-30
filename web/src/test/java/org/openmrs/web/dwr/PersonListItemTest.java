@@ -65,5 +65,5 @@ public class PersonListItemTest extends BaseWebContextSensitiveTest {
 		PersonListItem listItem = PersonListItem.createBestMatch(Context.getPersonService().getPerson(2));
 		Assert.assertTrue(listItem instanceof PersonListItem);
 	}
-
+	
 }

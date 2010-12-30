@@ -61,7 +61,7 @@ public interface ActiveListService extends OpenmrsService {
 	 */
 	@Transactional(readOnly = true)
 	public <T extends ActiveListItem> List<T> getActiveListItems(Class<T> clazz, Person p, ActiveListType type)
-	                                                                                                                    throws APIException;
+	                                                                                                           throws APIException;
 	
 	/**
 	 * Returns the ActiveListItem
@@ -72,9 +72,8 @@ public interface ActiveListService extends OpenmrsService {
 	 * @throws APIException
 	 */
 	@Transactional(readOnly = true)
-	public <T extends ActiveListItem> T getActiveListItem(Class<T> clazz, Integer activeListItemId)
-	                                                                                                         throws APIException;
-
+	public <T extends ActiveListItem> T getActiveListItem(Class<T> clazz, Integer activeListItemId) throws APIException;
+	
 	/**
 	 * Return the ActiveList by the UUID
 	 * 

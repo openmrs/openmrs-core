@@ -283,11 +283,13 @@ public class HibernatePersonDAO implements PersonDAO {
 	protected static Integer getMaximumSearchResults() {
 		try {
 			return Integer.valueOf(Context.getAdministrationService().getGlobalProperty(
-			    OpenmrsConstants.GLOBAL_PROPERTY_PERSON_SEARCH_MAX_RESULTS, String.valueOf(OpenmrsConstants.GLOBAL_PROPERTY_PERSON_SEARCH_MAX_RESULTS_DEFAULT_VALUE)));
+			    OpenmrsConstants.GLOBAL_PROPERTY_PERSON_SEARCH_MAX_RESULTS,
+			    String.valueOf(OpenmrsConstants.GLOBAL_PROPERTY_PERSON_SEARCH_MAX_RESULTS_DEFAULT_VALUE)));
 		}
 		catch (Exception e) {
 			log.warn("Unable to convert the global property " + OpenmrsConstants.GLOBAL_PROPERTY_PERSON_SEARCH_MAX_RESULTS
-			        + "to a valid integer. Returning the default " + OpenmrsConstants.GLOBAL_PROPERTY_PERSON_SEARCH_MAX_RESULTS_DEFAULT_VALUE);
+			        + "to a valid integer. Returning the default "
+			        + OpenmrsConstants.GLOBAL_PROPERTY_PERSON_SEARCH_MAX_RESULTS_DEFAULT_VALUE);
 		}
 		
 		return OpenmrsConstants.GLOBAL_PROPERTY_PERSON_SEARCH_MAX_RESULTS_DEFAULT_VALUE;
@@ -553,15 +555,15 @@ public class HibernatePersonDAO implements PersonDAO {
 	}
 	
 	/**
-     * @see org.openmrs.api.db.PersonDAO#getSavedPersonAttributeTypeName(org.openmrs.PersonAttributeType)
-     */
-    public String getSavedPersonAttributeTypeName(PersonAttributeType personAttributeType) {
+	 * @see org.openmrs.api.db.PersonDAO#getSavedPersonAttributeTypeName(org.openmrs.PersonAttributeType)
+	 */
+	public String getSavedPersonAttributeTypeName(PersonAttributeType personAttributeType) {
 		SQLQuery sql = sessionFactory.getCurrentSession().createSQLQuery(
 		    "select name from person_attribute_type where person_attribute_type_id = :personAttributeTypeId");
 		sql.setInteger("personAttributeTypeId", personAttributeType.getId());
 		return (String) sql.uniqueResult();
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.db.PersonDAO#getPersonByUuid(java.lang.String)
 	 */
@@ -600,12 +602,12 @@ public class HibernatePersonDAO implements PersonDAO {
 		return (RelationshipType) sessionFactory.getCurrentSession().createQuery(
 		    "from RelationshipType rt where rt.uuid = :uuid").setString("uuid", uuid).uniqueResult();
 	}
-
+	
 	/**
-     * @see org.openmrs.api.db.PersonDAO#getAllRelationshipTypes(boolean)
-     */
-    @SuppressWarnings("unchecked")
-    public List<RelationshipType> getAllRelationshipTypes(boolean includeRetired) {
+	 * @see org.openmrs.api.db.PersonDAO#getAllRelationshipTypes(boolean)
+	 */
+	@SuppressWarnings("unchecked")
+	public List<RelationshipType> getAllRelationshipTypes(boolean includeRetired) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(RelationshipType.class);
 		criteria.addOrder(Order.asc("weight"));
 		
@@ -614,6 +616,6 @@ public class HibernatePersonDAO implements PersonDAO {
 		}
 		
 		return criteria.list();
-    }
-
+	}
+	
 }

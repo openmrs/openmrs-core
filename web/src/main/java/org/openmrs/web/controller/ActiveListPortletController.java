@@ -33,7 +33,7 @@ import org.openmrs.api.context.Context;
  *
  */
 public class ActiveListPortletController extends PortletController {
-
+	
 	/**
 	 * @see org.openmrs.web.controller.PortletController#populateModel(javax.servlet.http.HttpServletRequest,
 	 *      java.util.Map)

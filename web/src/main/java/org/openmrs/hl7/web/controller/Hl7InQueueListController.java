@@ -106,7 +106,7 @@ public class Hl7InQueueListController {
 		}
 		
 		Map<String, Object> results = new HashMap<String, Object>();
-
+		
 		if (!success.toString().equals("")) {
 			results.put(WebConstants.OPENMRS_MSG_ATTR, success.toString());
 		}
@@ -132,10 +132,9 @@ public class Hl7InQueueListController {
 	public @ResponseBody
 	Map<String, Object> getHL7InQueueBatchAsJson(@RequestParam("iDisplayStart") int iDisplayStart,
 	                                             @RequestParam("iDisplayLength") int iDisplayLength,
-	                                             @RequestParam("sSearch") String sSearch,
-	                                             @RequestParam("sEcho") int sEcho,
+	                                             @RequestParam("sSearch") String sSearch, @RequestParam("sEcho") int sEcho,
 	                                             @RequestParam("messageState") int messageState) throws IOException {
-
+		
 		// get the data
 		List<HL7InQueue> hl7s = Context.getHL7Service().getHL7InQueueBatch(iDisplayStart, iDisplayLength, messageState,
 		    sSearch);

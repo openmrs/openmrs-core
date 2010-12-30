@@ -144,9 +144,9 @@ public class HibernateHL7DAO implements HL7DAO {
 		
 		if (query != null && !query.isEmpty())
 			if (clazz == HL7InError.class)
-				crit.add(Restrictions
-				        .or(Restrictions.like("HL7Data", query, MatchMode.ANYWHERE), Restrictions.or(Restrictions.like(
-				            "errorDetails", query, MatchMode.ANYWHERE), Restrictions.like("error", query, MatchMode.ANYWHERE))));
+				crit.add(Restrictions.or(Restrictions.like("HL7Data", query, MatchMode.ANYWHERE), Restrictions.or(
+				    Restrictions.like("errorDetails", query, MatchMode.ANYWHERE), Restrictions.like("error", query,
+				        MatchMode.ANYWHERE))));
 			else
 				crit.add(Restrictions.like("HL7Data", query, MatchMode.ANYWHERE));
 		
@@ -159,8 +159,9 @@ public class HibernateHL7DAO implements HL7DAO {
 	/**
 	 * @see org.openmrs.hl7.db.HL7DAO#getHL7InQueueBatch(java.lang.Class, int, int, java.lang.Integer, java.lang.String)
 	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public <T> List<T> getHL7Batch(Class clazz, int start, int length, Integer messageState, String query) throws DAOException {
+	@SuppressWarnings( { "rawtypes", "unchecked" })
+	public <T> List<T> getHL7Batch(Class clazz, int start, int length, Integer messageState, String query)
+	                                                                                                      throws DAOException {
 		Criteria crit = getHL7SearchCriteria(clazz, messageState, query);
 		crit.setFirstResult(start);
 		crit.setMaxResults(length);
@@ -209,26 +210,23 @@ public class HibernateHL7DAO implements HL7DAO {
 	 * @see org.openmrs.hl7.db.HL7DAO#getHL7InArchive(java.lang.Integer)
 	 */
 	public HL7InArchive getHL7InArchive(Integer hl7InArchiveId) throws DAOException {
-		return (HL7InArchive) sessionFactory.getCurrentSession().get(
-				HL7InArchive.class, hl7InArchiveId);
+		return (HL7InArchive) sessionFactory.getCurrentSession().get(HL7InArchive.class, hl7InArchiveId);
 	}
-
+	
 	/**
 	 * @see org.openmrs.hl7.db.HL7DAO#getHL7InArchiveByState(Integer state)
 	 */
 	public List<HL7InArchive> getHL7InArchiveByState(Integer state) throws DAOException {
 		return getHL7InArchiveByState(state, null);
 	}
-
+	
 	/**
 	 * limits results of getHL7InArchiveByState
 	 */
 	@SuppressWarnings("unchecked")
-	private List<HL7InArchive> getHL7InArchiveByState(Integer state,
-			Integer maxResults) throws DAOException {
-		Query q = sessionFactory.getCurrentSession()
-				.createQuery("from HL7InArchive where messageState = ?")
-				.setParameter(0, state, Hibernate.INTEGER);
+	private List<HL7InArchive> getHL7InArchiveByState(Integer state, Integer maxResults) throws DAOException {
+		Query q = sessionFactory.getCurrentSession().createQuery("from HL7InArchive where messageState = ?").setParameter(0,
+		    state, Hibernate.INTEGER);
 		if (maxResults != null)
 			q.setMaxResults(maxResults);
 		return q.list();
@@ -309,15 +307,14 @@ public class HibernateHL7DAO implements HL7DAO {
 	 * @see org.openmrs.hl7.db.HL7DAO#getHL7InArchiveByUuid(java.lang.String)
 	 */
 	public HL7InArchive getHL7InArchiveByUuid(String uuid) throws DAOException {
-		Query query = sessionFactory.getCurrentSession()
-				.createQuery("from HL7InArchive where uuid = ?")
-				.setParameter(0, uuid, Hibernate.STRING);
+		Query query = sessionFactory.getCurrentSession().createQuery("from HL7InArchive where uuid = ?").setParameter(0,
+		    uuid, Hibernate.STRING);
 		Object record = query.uniqueResult();
 		if (record == null)
 			return null;
 		return (HL7InArchive) record;
 	}
-
+	
 	/**
 	 * @see org.openmrs.hl7.db.HL7DAO#getHL7InArchivesToMigrate()
 	 */
@@ -334,5 +331,5 @@ public class HibernateHL7DAO implements HL7DAO {
 		}
 		return crit.list();
 	}
-			
+	
 }

@@ -246,7 +246,7 @@ public class HibernateAdministrationDAO implements AdministrationDAO {
 	public GlobalProperty getGlobalPropertyObject(String propertyName) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(GlobalProperty.class);
 		GlobalProperty gp = (GlobalProperty) criteria.add(Restrictions.eq("property", propertyName)).uniqueResult();
-
+		
 		// if no gp exists, hibernate returns a null value
 		
 		return gp;

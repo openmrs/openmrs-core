@@ -25,8 +25,7 @@ import org.springframework.test.context.ContextConfiguration;
  * application context files to the config locations and the test application context (so that the
  * module services are loaded from the system classloader)
  */
-@ContextConfiguration(locations = { "classpath:openmrs-servlet.xml", "classpath*:webModuleApplicationContext.xml" }, 
-					  inheritLocations = true)
+@ContextConfiguration(locations = { "classpath:openmrs-servlet.xml", "classpath*:webModuleApplicationContext.xml" }, inheritLocations = true)
 public abstract class BaseModuleWebContextSensitiveTest extends BaseModuleContextSensitiveTest {
 
 }

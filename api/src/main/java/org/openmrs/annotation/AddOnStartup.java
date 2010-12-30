@@ -46,6 +46,8 @@ import java.lang.annotation.Target;
 @Inherited
 @Documented
 public @interface AddOnStartup {
-    public String description() default "";
-    public boolean core() default true;
+	
+	public String description() default "";
+	
+	public boolean core() default true;
 }

@@ -73,7 +73,7 @@ public class ModuleListController extends SimpleFormController {
 	 *      org.springframework.validation.BindException)
 	 */
 	@Override
-    protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command,
+	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command,
 	                                BindException errors) throws Exception {
 		
 		if (!Context.hasPrivilege(PrivilegeConstants.MANAGE_MODULES))
@@ -117,9 +117,8 @@ public class ModuleListController extends SimpleFormController {
 						final URL url = new URL(downloadURL);
 						inputStream = ModuleUtil.getURLStream(url);
 						moduleFile = ModuleUtil.insertModuleFile(inputStream, fileName);
-					}
-					else if (request instanceof MultipartHttpServletRequest) {
-					
+					} else if (request instanceof MultipartHttpServletRequest) {
+						
 						MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
 						MultipartFile multipartModuleFile = multipartRequest.getFile("moduleFile");
 						if (multipartModuleFile != null && !multipartModuleFile.isEmpty()) {
@@ -137,8 +136,7 @@ public class ModuleListController extends SimpleFormController {
 								}
 								inputStream = new FileInputStream(tmpModule.getFile());
 								moduleFile = ModuleUtil.insertModuleFile(inputStream, filename); // copy the omod over to the repo folder
-							}
-							else {
+							} else {
 								// not an update, or a download, just copy the module file right to the repo folder
 								inputStream = multipartModuleFile.getInputStream();
 								moduleFile = ModuleUtil.insertModuleFile(inputStream, filename);
@@ -179,8 +177,7 @@ public class ModuleListController extends SimpleFormController {
 							}
 						}
 						
-					}
-					else
+					} else
 						success = msa.getMessage("Module.loaded", new String[] { module.getName() });
 				}
 			}
@@ -257,7 +254,7 @@ public class ModuleListController extends SimpleFormController {
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
 	@Override
-    protected Object formBackingObject(HttpServletRequest request) throws ServletException {
+	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 		
 		Collection<Module> modules = ModuleFactory.getLoadedModules();
 		

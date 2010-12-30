@@ -382,7 +382,7 @@ public class HibernateFormDAO implements FormDAO {
 		
 		return (Integer) crit.uniqueResult();
 	}
-
+	
 	/**
 	 * Convenience method to create the same hibernate criteria object for both getForms and
 	 * getFormCount
@@ -401,7 +401,7 @@ public class HibernateFormDAO implements FormDAO {
 	                                 Boolean retired, Collection<FormField> containingAnyFormField,
 	                                 Collection<FormField> containingAllFormFields, Collection<Field> fields)
 	                                                                                                         throws DAOException {
-
+		
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Form.class, "form");
 		
 		if (partialName != null && !"".equals(partialName)) {
@@ -506,13 +506,14 @@ public class HibernateFormDAO implements FormDAO {
 		sessionFactory.getCurrentSession().saveOrUpdate(fieldType);
 		return fieldType;
 	}
-
+	
 	/**
-     * @see org.openmrs.api.db.FormDAO#getFormFieldByField(org.openmrs.Field)
-     */
-    @Override
-    public List<FormField> getFormFieldsByField(Field field) {
-    	return sessionFactory.getCurrentSession().createQuery("from FormField f where f.field = :field").setEntity("field", field).list();
-    }
+	 * @see org.openmrs.api.db.FormDAO#getFormFieldByField(org.openmrs.Field)
+	 */
+	@Override
+	public List<FormField> getFormFieldsByField(Field field) {
+		return sessionFactory.getCurrentSession().createQuery("from FormField f where f.field = :field").setEntity("field",
+		    field).list();
+	}
 	
 }

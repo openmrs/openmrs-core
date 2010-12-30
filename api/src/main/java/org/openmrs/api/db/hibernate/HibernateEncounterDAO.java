@@ -95,9 +95,9 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Encounter> getEncountersByPatientId(Integer patientId) throws DAOException {
-		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Encounter.class).createAlias("patient", "p")
-		        .add(Expression.eq("p.patientId", patientId)).add(Expression.eq("voided", false))
-		        .addOrder(Order.desc("encounterDatetime"));
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Encounter.class).createAlias("patient", "p").add(
+		    Expression.eq("p.patientId", patientId)).add(Expression.eq("voided", false)).addOrder(
+		    Order.desc("encounterDatetime"));
 		
 		return crit.list();
 	}
@@ -196,9 +196,9 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	@SuppressWarnings("unchecked")
 	public List<EncounterType> findEncounterTypes(String name) throws DAOException {
 		return sessionFactory.getCurrentSession().createCriteria(EncounterType.class)
-		        // 'ilike' case insensitive search
-		        .add(Expression.ilike("name", name, MatchMode.START)).addOrder(Order.asc("name"))
-		        .addOrder(Order.asc("retired")).list();
+		// 'ilike' case insensitive search
+		        .add(Expression.ilike("name", name, MatchMode.START)).addOrder(Order.asc("name")).addOrder(
+		            Order.asc("retired")).list();
 	}
 	
 	/**

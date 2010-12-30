@@ -121,14 +121,14 @@ public class PersonFormController extends SimpleFormController {
 					person.addAttribute(attribute);
 				}
 			}
-
+			
 		}
 		
 		if (log.isDebugEnabled())
 			log.debug("Person Attributes: \n" + person.printAttributes());
 		
-		if (errors.hasErrors()) return showForm(request, response, errors);
-
+		if (errors.hasErrors())
+			return showForm(request, response, errors);
 		
 		return super.processFormSubmission(request, response, person, errors);
 	}

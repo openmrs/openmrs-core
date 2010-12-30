@@ -44,7 +44,7 @@ public class DatePatternTag extends TagSupport {
 	 * @see javax.servlet.jsp.tagext.TagSupport#doStartTag()
 	 */
 	@Override
-    public int doStartTag() {
+	public int doStartTag() {
 		
 		SimpleDateFormat dateFormat = Context.getDateFormat();
 		

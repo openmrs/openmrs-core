@@ -29,7 +29,7 @@ public class EmptyResultTest {
 	public void isEmpty_shouldReturnTrue() throws Exception {
 		Assert.assertTrue(new EmptyResult().isEmpty());
 	}
-
+	
 	/**
 	 * @verifies {@link EmptyResult#isNull()}
 	 * test = should return true

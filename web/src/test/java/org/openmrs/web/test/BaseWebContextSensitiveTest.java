@@ -25,5 +25,5 @@ import org.springframework.test.context.TestExecutionListeners;
  */
 @ContextConfiguration(locations = { "classpath:openmrs-servlet.xml" }, inheritLocations = true)
 public abstract class BaseWebContextSensitiveTest extends BaseContextSensitiveTest {
-	
+
 }

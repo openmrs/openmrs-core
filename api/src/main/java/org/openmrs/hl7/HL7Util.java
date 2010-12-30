@@ -269,7 +269,7 @@ public class HL7Util {
 	public static File getHl7ArchivesDirectory() throws APIException {
 		String archiveDir = Context.getAdministrationService().getGlobalProperty(
 		    OpenmrsConstants.GLOBAL_PROPERTY_HL7_ARCHIVE_DIRECTORY);
-
+		
 		if (StringUtils.isBlank(archiveDir)) {
 			log.warn("Invalid value for global property '" + OpenmrsConstants.GLOBAL_PROPERTY_HL7_ARCHIVE_DIRECTORY
 			        + "', trying to set a default one");

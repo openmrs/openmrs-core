@@ -128,10 +128,10 @@ public class TestUtil {
 	 * From an input of this this:
 	 * 
 	 * <pre>
-     * asdf
-     *  asdfasdf
-     * asdf"asdf"
-     * </pre>
+	 * asdf
+	 *  asdfasdf
+	 * asdf"asdf"
+	 * </pre>
 	 * 
 	 * To this:<br/>
 	 * <br/>

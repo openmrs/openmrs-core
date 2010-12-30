@@ -134,7 +134,7 @@ public interface SchedulerService extends OpenmrsService {
 	 * @should save task to the database
 	 */
 	@Authorized( { "Manage Scheduler" })
-	@Logging(ignore=true)
+	@Logging(ignore = true)
 	public void saveTask(TaskDefinition task);
 	
 	/**

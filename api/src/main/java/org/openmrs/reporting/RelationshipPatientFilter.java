@@ -22,13 +22,17 @@ import org.openmrs.report.EvaluationContext;
  *
  */
 public class RelationshipPatientFilter extends CachingPatientFilter {
-
+	
 	private Person person;
+	
 	private RelationshipType relationshipType;
+	
 	private boolean includeAtoB = true;
+	
 	private boolean includeBtoA = true;
 	
-	public RelationshipPatientFilter() { }
+	public RelationshipPatientFilter() {
+	}
 	
 	/**
 	 * @see org.openmrs.reporting.CachingPatientFilter#filterImpl(org.openmrs.report.EvaluationContext)
@@ -38,12 +42,12 @@ public class RelationshipPatientFilter extends CachingPatientFilter {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+	
 	/**
 	 * @see org.openmrs.reporting.AbstractReportObject#getDescription()
 	 */
 	@Override
-    public String getDescription() {
+	public String getDescription() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Patients ");
 		RelationshipType relType = getRelationshipType();
@@ -64,8 +68,8 @@ public class RelationshipPatientFilter extends CachingPatientFilter {
 		else
 			sb.append("anyone");
 		return sb.toString();
-    }
-
+	}
+	
 	/**
 	 * @see org.openmrs.reporting.CachingPatientFilter#getCacheKey()
 	 */
@@ -81,7 +85,7 @@ public class RelationshipPatientFilter extends CachingPatientFilter {
 			sb.append("p" + getPerson().getPersonId() + ".");
 		return sb.toString();
 	}
-
+	
 	/**
 	 * @see org.openmrs.reporting.CachingPatientFilter#isReadyToRun()
 	 */
@@ -90,37 +94,37 @@ public class RelationshipPatientFilter extends CachingPatientFilter {
 		// TODO Auto-generated method stub
 		return true;
 	}
-
+	
 	public Person getPerson() {
-    	return person;
-    }
-
+		return person;
+	}
+	
 	public void setPerson(Person person) {
-    	this.person = person;
-    }
-
+		this.person = person;
+	}
+	
 	public RelationshipType getRelationshipType() {
-    	return relationshipType;
-    }
-
+		return relationshipType;
+	}
+	
 	public void setRelationshipType(RelationshipType relationshipType) {
-    	this.relationshipType = relationshipType;
-    }
-
+		this.relationshipType = relationshipType;
+	}
+	
 	public boolean isIncludeAtoB() {
-    	return includeAtoB;
-    }
-
+		return includeAtoB;
+	}
+	
 	public void setIncludeAtoB(boolean includeAtoB) {
-    	this.includeAtoB = includeAtoB;
-    }
-
+		this.includeAtoB = includeAtoB;
+	}
+	
 	public boolean isIncludeBtoA() {
-    	return includeBtoA;
-    }
-
+		return includeBtoA;
+	}
+	
 	public void setIncludeBtoA(boolean includeBtoA) {
-    	this.includeBtoA = includeBtoA;
-    }
+		this.includeBtoA = includeBtoA;
+	}
 	
 }

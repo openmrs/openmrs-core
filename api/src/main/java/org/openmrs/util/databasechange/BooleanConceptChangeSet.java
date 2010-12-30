@@ -40,25 +40,26 @@ import org.openmrs.util.OpenmrsConstants;
 public class BooleanConceptChangeSet implements CustomTaskChange {
 	
 	private static Log log = LogFactory.getLog(BooleanConceptChangeSet.class);
-
+	
 	private Integer trueConceptId;
 	
 	private Integer falseConceptId;
 	
 	//string values for boolean concepts
 	private static Map<String, String[]> trueNames = new HashMap<String, String[]>();
+	
 	private static Map<String, String[]> falseNames = new HashMap<String, String[]>();
-
+	
 	// how to say True and Yes in OpenMRS core languages
 	static {
 		// names may not include spaces, or else the logic to create concept words will break
-
+		
 		trueNames.put("en", new String[] { "True", "Yes" });
 		trueNames.put("fr", new String[] { "Vrai", "Oui" });
 		trueNames.put("es", new String[] { "Verdadero", "Sí" });
 		trueNames.put("it", new String[] { "Vero", "Sì" });
 		trueNames.put("pt", new String[] { "Verdadeiro", "Sim" });
-
+		
 		falseNames.put("en", new String[] { "False", "No" });
 		falseNames.put("fr", new String[] { "Faux", "Non" });
 		falseNames.put("es", new String[] { "Falso", "No" });
@@ -107,14 +108,14 @@ public class BooleanConceptChangeSet implements CustomTaskChange {
 		for (Map.Entry<String, String[]> e : names.entrySet()) {
 			String locale = e.getKey();
 			for (String name : e.getValue()) {
-				Integer ret = getInt(connection,
-					"select concept_id from concept_name where name = '" + name + "' and locale like '" + locale + "%'");
+				Integer ret = getInt(connection, "select concept_id from concept_name where name = '" + name
+				        + "' and locale like '" + locale + "%'");
 				if (ret != null)
 					return ret;
 			}
 		}
 		return null;
-    }
+	}
 	
 	/**
 	 * creates a concept
@@ -155,7 +156,7 @@ public class BooleanConceptChangeSet implements CustomTaskChange {
 					// fix this before refactoring concept_name_tags.
 					if (!preferredDoneAlready && "en".equals(locale)) {
 						updateStatement = connection
-							.prepareStatement("INSERT INTO concept_name_tag_map (concept_name_id, concept_name_tag_id) VALUES (?, 4)");
+						        .prepareStatement("INSERT INTO concept_name_tag_map (concept_name_id, concept_name_tag_id) VALUES (?, 4)");
 						updateStatement.setInt(1, conceptNameId);
 						updateStatement.executeUpdate();
 						preferredDoneAlready = true;
@@ -168,7 +169,7 @@ public class BooleanConceptChangeSet implements CustomTaskChange {
 					updateStatement.setString(3, locale);
 					updateStatement.setInt(4, conceptNameId);
 					updateStatement.executeUpdate();
-
+					
 				}
 			}
 			
@@ -233,7 +234,8 @@ public class BooleanConceptChangeSet implements CustomTaskChange {
 	 * @param falseConceptId the concept id for false boolean concept
 	 * @throws CustomChangeException
 	 */
-	private void createGlobalProperties(DatabaseConnection connection, Integer trueConceptId, Integer falseConceptId) throws CustomChangeException {
+	private void createGlobalProperties(DatabaseConnection connection, Integer trueConceptId, Integer falseConceptId)
+	                                                                                                                 throws CustomChangeException {
 		if (trueConceptId == null || trueConceptId < 1 || falseConceptId == null || falseConceptId < 1)
 			throw new CustomChangeException("Can't create global properties for true/false concepts with invalid conceptIds");
 		PreparedStatement updateStatement = null;

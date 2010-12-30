@@ -70,7 +70,7 @@ public class AlertRecipient extends BaseOpenmrsObject implements Serializable {
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
-    public boolean equals(Object obj) {
+	public boolean equals(Object obj) {
 		if (obj instanceof AlertRecipient) {
 			AlertRecipient a = (AlertRecipient) obj;
 			if (alert != null && a.getAlert() != null && recipient != null && a.getRecipient() != null)
@@ -83,7 +83,7 @@ public class AlertRecipient extends BaseOpenmrsObject implements Serializable {
 	 * @see java.lang.Object#hashCode()
 	 */
 	@Override
-    public int hashCode() {
+	public int hashCode() {
 		if (this.getAlert() == null)
 			return super.hashCode();
 		int hash = 8;
@@ -122,7 +122,7 @@ public class AlertRecipient extends BaseOpenmrsObject implements Serializable {
 	
 	// @override
 	@Override
-    public String toString() {
+	public String toString() {
 		return "Alert: " + alert + ". Recipient: " + recipient;
 	}
 	

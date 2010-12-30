@@ -47,14 +47,15 @@ public class UserSaveHandler implements SaveHandler<User> {
 		// the framework only automatically recurses on properties that are Collection<OpenmrsObject>
 		// so we need to do this manually
 		if (user.getPerson() != null) {
-            loadLazyHibernateCollections(user);
-            RequiredDataAdvice.recursivelyHandle(SaveHandler.class, user.getPerson(), creator, dateCreated, other, new ArrayList<OpenmrsObject>());
+			loadLazyHibernateCollections(user);
+			RequiredDataAdvice.recursivelyHandle(SaveHandler.class, user.getPerson(), creator, dateCreated, other,
+			    new ArrayList<OpenmrsObject>());
 		}
 	}
-
-    private void loadLazyHibernateCollections(User user) {
-        if (user.getPerson() instanceof Patient)
-            ((Patient) user.getPerson()).getPatientIdentifier();
-    }
-
+	
+	private void loadLazyHibernateCollections(User user) {
+		if (user.getPerson() instanceof Patient)
+			((Patient) user.getPerson()).getPatientIdentifier();
+	}
+	
 }
