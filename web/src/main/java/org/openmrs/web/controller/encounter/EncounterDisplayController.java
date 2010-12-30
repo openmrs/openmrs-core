@@ -73,7 +73,7 @@ public class EncounterDisplayController implements Controller {
 			
 			List<FormField> formFields = new ArrayList<FormField>();
 			if (encounter.getForm() != null && encounter.getForm().getFormFields() != null)
-				formFields.addAll(encounter.getForm().getFormFields()); 
+				formFields.addAll(encounter.getForm().getFormFields());
 			
 			// mapping from concept to FieldHolder. there should be only one
 			// fieldholder (aka one row) per unique concept in the obs for an encounter 

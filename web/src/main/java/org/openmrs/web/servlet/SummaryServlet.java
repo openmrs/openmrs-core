@@ -72,8 +72,7 @@ public class SummaryServlet extends HttpServlet {
 		HttpSession session = request.getSession();
 		
 		if (!Context.hasPrivilege(PrivilegeConstants.VIEW_PATIENTS)) {
-			session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Privilege required: "
-			        + PrivilegeConstants.VIEW_PATIENTS);
+			session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Privilege required: " + PrivilegeConstants.VIEW_PATIENTS);
 			response.sendRedirect(request.getContextPath() + "/login.htm");
 			return;
 		}

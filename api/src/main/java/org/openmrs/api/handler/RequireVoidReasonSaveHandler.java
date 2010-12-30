@@ -33,7 +33,7 @@ import org.openmrs.api.APIException;
  * @see RequiredDataAdvice
  * @since 1.5
  */
-@Handler(supports = {Patient.class, Encounter.class})
+@Handler(supports = { Patient.class, Encounter.class })
 public class RequireVoidReasonSaveHandler implements SaveHandler<Voidable> {
 	
 	/**
@@ -47,9 +47,8 @@ public class RequireVoidReasonSaveHandler implements SaveHandler<Voidable> {
 	public void handle(Voidable voidableObject, User currentUser, Date currentDate, String notUsed) {
 		
 		if (voidableObject.isVoided() && StringUtils.isBlank(voidableObject.getVoidReason())) {
-			throw new APIException(
-				"The voided bit was set to true, so a void reason is required at save time for object: "
-                + voidableObject + " of class: " + voidableObject.getClass());
+			throw new APIException("The voided bit was set to true, so a void reason is required at save time for object: "
+			        + voidableObject + " of class: " + voidableObject.getClass());
 		}
 	}
 	

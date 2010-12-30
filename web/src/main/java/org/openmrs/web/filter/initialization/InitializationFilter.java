@@ -390,9 +390,9 @@ public class InitializationFilter extends StartupFilter {
 			if (wizardModel.addDemoData)
 				wizardModel.tasksToExecute.add(WizardTask.ADD_DEMO_DATA);
 			wizardModel.tasksToExecute.add(WizardTask.UPDATE_TO_LATEST);
-
+			
 			referenceMap.put("tasksToExecute", wizardModel.tasksToExecute);
-
+			
 			initJob.start();
 			renderTemplate(PROGRESS_VM, referenceMap, httpResponse);
 		} else if (PROGRESS_VM_AJAXREQUEST.equals(page)) {
@@ -414,7 +414,7 @@ public class InitializationFilter extends StartupFilter {
 					result.put("executedTasks", initJob.getExecutedTasks());
 					result.put("completedPercentage", initJob.getCompletedPercentage());
 				}
-
+				
 				Appender appender = Logger.getRootLogger().getAppender("MEMORY_APPENDER");
 				if (appender instanceof MemoryAppender) {
 					MemoryAppender memoryAppender = (MemoryAppender) appender;
@@ -642,7 +642,7 @@ public class InitializationFilter extends StartupFilter {
 		private boolean erroneous = false;
 		
 		private int completedPercentage = 0;
-
+		
 		private WizardTask executingTask;
 		
 		private List<WizardTask> executedTasks = new ArrayList<WizardTask>();
@@ -721,7 +721,7 @@ public class InitializationFilter extends StartupFilter {
 		protected synchronized void setCompletedPercentage(int completedPercentage) {
 			this.completedPercentage = completedPercentage;
 		}
-
+		
 		/**
 		 * Adds a task that has been completed to the list of executed tasks
 		 * 
@@ -737,14 +737,14 @@ public class InitializationFilter extends StartupFilter {
 		synchronized protected void setExecutingTask(WizardTask executingTask) {
 			this.executingTask = executingTask;
 		}
-
+		
 		/**
 		 * @return the executedTasks
 		 */
 		synchronized protected List<WizardTask> getExecutedTasks() {
 			return this.executedTasks;
 		}
-
+		
 		/**
 		 * This class does all the work of creating the desired database, user, updates, etc
 		 */
@@ -892,7 +892,7 @@ public class InitializationFilter extends StartupFilter {
 								    new PrintingChangeSetExecutorCallback("OpenMRS core data file"));
 								wizardModel.workLog.add("Created database tables and added core data");
 								addExecutedTask(WizardTask.ADD_CORE_DATA);
-
+								
 							}
 							catch (Exception e) {
 								reportError(e.getMessage() + " See the error log for more details", null);
@@ -946,7 +946,7 @@ public class InitializationFilter extends StartupFilter {
 						// start openmrs
 						try {
 							Context.openSession();
-
+							
 							// load core modules so that required modules are known at openmrs startup
 							Listener.loadBundledModules(filterConfig.getServletContext());
 							

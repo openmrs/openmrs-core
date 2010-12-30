@@ -40,17 +40,20 @@ import org.openmrs.serialization.SerializationException;
 public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 	
 	protected final Log log = LogFactory.getLog(getClass());
+	
 	private static HibernateSerializedObjectDAO instance;
 	
 	//********* PROPERTIES **********
 	
 	private SessionFactory sessionFactory;
+	
 	private List<Class<? extends OpenmrsObject>> supportedTypes;
 	
 	/**
 	 * Private Constructor to support a singleton instance
 	 */
-	private HibernateSerializedObjectDAO() { }
+	private HibernateSerializedObjectDAO() {
+	}
 	
 	/**
 	 * Singleton Factory method
@@ -109,16 +112,13 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 	 * @see SerializedObjectDAO#getAllObjectsByName(Class, String)
 	 */
 	@SuppressWarnings("unchecked")
-	public List<SerializedObject> getAllSerializedObjectsByName(Class<?> type, 
-																   String name, 
-																   boolean exactMatchOnly) 
-																   throws DAOException {
+	public List<SerializedObject> getAllSerializedObjectsByName(Class<?> type, String name, boolean exactMatchOnly)
+	                                                                                                               throws DAOException {
 		Criteria c = sessionFactory.getCurrentSession().createCriteria(SerializedObject.class);
 		c.add(Expression.or(Expression.eq("type", type.getName()), Expression.eq("subtype", type.getName())));
 		if (exactMatchOnly) {
 			c.add(Expression.eq("name", name));
-		}
-		else {
+		} else {
 			c.add(Expression.ilike("name", name, MatchMode.ANYWHERE));
 		}
 		return (List<SerializedObject>) c.list();
@@ -127,10 +127,8 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 	/**
 	 * @see SerializedObjectDAO#getAllObjectsByName(Class, String)
 	 */
-	public <T extends OpenmrsMetadata> List<T> getAllObjectsByName(Class<T> type, 
-																   String name, 
-																   boolean exactMatchOnly) 
-																   throws DAOException {
+	public <T extends OpenmrsMetadata> List<T> getAllObjectsByName(Class<T> type, String name, boolean exactMatchOnly)
+	                                                                                                                  throws DAOException {
 		List<T> ret = new ArrayList<T>();
 		List<SerializedObject> objects = getAllSerializedObjectsByName(type, name, exactMatchOnly);
 		for (SerializedObject serializedObject : objects) {
@@ -179,10 +177,10 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 	}
 	
 	/**
-     * @see SerializedObjectDAO#saveObject(OpenmrsObject, OpenmrsSerializer)
-     */
-    public <T extends OpenmrsObject> T saveObject(T object, OpenmrsSerializer serializer) throws DAOException {
-
+	 * @see SerializedObjectDAO#saveObject(OpenmrsObject, OpenmrsSerializer)
+	 */
+	public <T extends OpenmrsObject> T saveObject(T object, OpenmrsSerializer serializer) throws DAOException {
+		
 		Class<? extends OpenmrsObject> baseType = getRegisteredTypeForObject(object);
 		if (baseType == null) {
 			throw new DAOException("SerializedObjectDAO does not support saving objects of type <" + object.getClass() + ">");
@@ -247,7 +245,7 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 		object.setId(serializedObject.getId());
 		return object;
 	}
-
+	
 	/**
 	 * @see SerializedObjectDAO#purgeObject(Integer)
 	 */
@@ -288,7 +286,8 @@ public class HibernateSerializedObjectDAO implements SerializedObjectDAO {
 	 * @see SerializedObjectDAO#convertSerializedObject(Class, SerializedObject)
 	 */
 	@SuppressWarnings("unchecked")
-	public <T extends OpenmrsObject> T convertSerializedObject(Class<T> clazz, SerializedObject serializedObject) throws DAOException {
+	public <T extends OpenmrsObject> T convertSerializedObject(Class<T> clazz, SerializedObject serializedObject)
+	                                                                                                             throws DAOException {
 		if (serializedObject == null) {
 			return null;
 		}

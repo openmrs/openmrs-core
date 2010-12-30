@@ -40,7 +40,7 @@ public class StateConversionValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldFailValidationIfProgramWorkflowIsNullOrEmptyOrWhitespace() throws Exception {
 		ConceptStateConversion csc = new ConceptStateConversion();
 		csc.setProgramWorkflow(null);
-
+		
 		ProgramWorkflow workflow = Context.getProgramWorkflowService().getProgram(1).getAllWorkflows().iterator().next();
 		csc.setConcept(Context.getConceptService().getConcept(3));
 		csc.setProgramWorkflowState(workflow.getState(1));

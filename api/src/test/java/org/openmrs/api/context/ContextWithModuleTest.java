@@ -59,7 +59,7 @@ public class ContextWithModuleTest extends BaseContextSensitiveTest {
 		// the "/metadata/sqldiff.xml" file has been deleted in order to load the modules into hsql.
 		//    (the sql tables are built from hibernate mapping files automatically in unit tests)
 		props.setProperty(ModuleConstants.RUNTIMEPROPERTY_MODULE_LIST_TO_LOAD,
-			"org/openmrs/module/include/logic-0.2.omod org/openmrs/api/context/include/dssmodule-1.44.omod");
+		    "org/openmrs/module/include/logic-0.2.omod org/openmrs/api/context/include/dssmodule-1.44.omod");
 		
 		return props;
 	}

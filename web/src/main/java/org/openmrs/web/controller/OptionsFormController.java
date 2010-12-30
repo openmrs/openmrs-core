@@ -49,19 +49,19 @@ import org.springframework.web.servlet.view.RedirectView;
  * @see OptionsForm
  */
 public class OptionsFormController extends SimpleFormController {
-
+	
 	/** Logger for this class and subclasses */
 	protected final Log log = LogFactory.getLog(getClass());
-
+	
 	/**
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#processFormSubmission(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
 	 */
-	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response,
-			Object object, BindException errors) throws Exception {
+	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object object,
+	                                             BindException errors) throws Exception {
 		OptionsForm opts = (OptionsForm) object;
-
+		
 		if (opts.getUsername().length() > 0) {
 			if (opts.getUsername().length() < 3) {
 				errors.rejectValue("username", "error.username.weak");
@@ -69,10 +69,10 @@ public class OptionsFormController extends SimpleFormController {
 			if (opts.getUsername().charAt(0) < 'A' || opts.getUsername().charAt(0) > 'z') {
 				errors.rejectValue("username", "error.username.invalid");
 			}
-
+			
 		}
 		if (opts.getUsername().length() > 0)
-
+			
 			if (!opts.getOldPassword().equals("")) {
 				if (opts.getNewPassword().equals(""))
 					errors.rejectValue("newPassword", "error.password.weak");
@@ -81,23 +81,23 @@ public class OptionsFormController extends SimpleFormController {
 					errors.rejectValue("confirmPassword", "error.password.match");
 				}
 			}
-
+		
 		if (!opts.getSecretQuestionPassword().equals("")) {
 			if (!opts.getSecretAnswerConfirm().equals(opts.getSecretAnswerNew())) {
 				errors.rejectValue("secretAnswerNew", "error.options.secretAnswer.match");
 				errors.rejectValue("secretAnswerConfirm", "error.options.secretAnswer.match");
 			}
-			if(opts.getSecretAnswerNew().isEmpty()) {
+			if (opts.getSecretAnswerNew().isEmpty()) {
 				errors.rejectValue("secretAnswerNew", "error.options.secretAnswer.empty");
 			}
-			if(opts.getSecretQuestionNew().isEmpty()) {
+			if (opts.getSecretQuestionNew().isEmpty()) {
 				errors.rejectValue("secretQuestionNew", "error.options.secretQuestion.empty");
 			}
 		}
-
+		
 		return super.processFormSubmission(request, response, object, errors);
 	}
-
+	
 	/**
 	 * The onSubmit function receives the form/command object that was modified
 	 * by the input form and saves it to the db
@@ -107,12 +107,12 @@ public class OptionsFormController extends SimpleFormController {
 	 *      org.springframework.validation.BindException)
 	 */
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
-			BindException errors) throws Exception {
-
+	                                BindException errors) throws Exception {
+		
 		HttpSession httpSession = request.getSession();
-
+		
 		String view = getFormView();
-
+		
 		if (!errors.hasErrors()) {
 			User loginUser = Context.getAuthenticatedUser();
 			UserService us = Context.getUserService();
@@ -120,46 +120,48 @@ public class OptionsFormController extends SimpleFormController {
 			try {
 				Context.addProxyPrivilege(PrivilegeConstants.VIEW_USERS);
 				user = us.getUser(loginUser.getUserId());
-			} finally {
+			}
+			finally {
 				Context.removeProxyPrivilege(PrivilegeConstants.VIEW_USERS);
 			}
-
+			
 			OptionsForm opts = (OptionsForm) obj;
-
+			
 			Map<String, String> properties = user.getUserProperties();
-
+			
 			properties.put(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCATION, opts.getDefaultLocation());
 			properties.put(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCALE, opts.getDefaultLocale());
 			properties.put(OpenmrsConstants.USER_PROPERTY_PROFICIENT_LOCALES, opts.getProficientLocales());
 			properties.put(OpenmrsConstants.USER_PROPERTY_SHOW_RETIRED, opts.getShowRetiredMessage().toString());
 			properties.put(OpenmrsConstants.USER_PROPERTY_SHOW_VERBOSE, opts.getVerbose().toString());
 			properties.put(OpenmrsConstants.USER_PROPERTY_NOTIFICATION, opts.getNotification() == null ? "" : opts
-					.getNotification().toString());
-			properties.put(OpenmrsConstants.USER_PROPERTY_NOTIFICATION_ADDRESS,
-					opts.getNotificationAddress() == null ? "" : opts.getNotificationAddress().toString());
-
+			        .getNotification().toString());
+			properties.put(OpenmrsConstants.USER_PROPERTY_NOTIFICATION_ADDRESS, opts.getNotificationAddress() == null ? ""
+			        : opts.getNotificationAddress().toString());
+			
 			if (!opts.getOldPassword().equals("")) {
 				try {
 					String password = opts.getNewPassword();
-
+					
 					// check password strength
 					if (password.length() > 0) {
 						try {
-							OpenmrsUtil
-									.validatePassword(user.getUsername(), password, String.valueOf(user.getUserId()));
-						} catch (PasswordException e) {
+							OpenmrsUtil.validatePassword(user.getUsername(), password, String.valueOf(user.getUserId()));
+						}
+						catch (PasswordException e) {
 							errors.reject(e.getMessage());
 						}
 						if (password.equals(opts.getOldPassword()) && !errors.hasErrors())
 							errors.reject("error.password.different");
 					}
-
+					
 					if (!errors.hasErrors()) {
 						us.changePassword(opts.getOldPassword(), password);
 						opts.setSecretQuestionPassword(password);
 						new UserProperties(user.getUserProperties()).setSupposedToChangePassword(false);
 					}
-				} catch (APIException e) {
+				}
+				catch (APIException e) {
 					errors.rejectValue("oldPassword", "error.password.match");
 				}
 			} else {
@@ -169,14 +171,15 @@ public class OptionsFormController extends SimpleFormController {
 					errors.rejectValue("oldPassword", "error.password.incorrect");
 				}
 			}
-
+			
 			if (!opts.getSecretQuestionPassword().equals("")) {
 				if (!errors.hasErrors()) {
 					try {
 						user.setSecretQuestion(opts.getSecretQuestionNew());
-						us.changeQuestionAnswer(opts.getSecretQuestionPassword(), opts.getSecretQuestionNew(),
-								opts.getSecretAnswerNew());
-					} catch (APIException e) {
+						us.changeQuestionAnswer(opts.getSecretQuestionPassword(), opts.getSecretQuestionNew(), opts
+						        .getSecretAnswerNew());
+					}
+					catch (APIException e) {
 						errors.rejectValue("secretQuestionPassword", "error.password.match");
 					}
 				}
@@ -185,28 +188,29 @@ public class OptionsFormController extends SimpleFormController {
 				// password
 				errors.rejectValue("secretQuestionPassword", "error.password.incorrect");
 			}
-
+			
 			if (opts.getUsername().length() > 0 && !errors.hasErrors()) {
 				try {
 					Context.addProxyPrivilege(PrivilegeConstants.VIEW_USERS);
 					if (us.hasDuplicateUsername(user)) {
 						errors.rejectValue("username", "error.username.taken");
 					}
-				} finally {
+				}
+				finally {
 					Context.removeProxyPrivilege(PrivilegeConstants.VIEW_USERS);
 				}
 			}
-
+			
 			if (!errors.hasErrors()) {
 				user.setUsername(opts.getUsername());
 				user.setUserProperties(properties);
-
+				
 				// new name
 				PersonName newPersonName = opts.getPersonName();
-
+				
 				// existing name
 				PersonName existingPersonName = user.getPersonName();
-
+				
 				// if two are not equal then make the new one the preferred,
 				// make the old one voided
 				if (!existingPersonName.equalsContent(newPersonName)) {
@@ -215,11 +219,11 @@ public class OptionsFormController extends SimpleFormController {
 					existingPersonName.setVoidedBy(user);
 					existingPersonName.setDateVoided(new Date());
 					existingPersonName.setVoidReason("Changed name on own options form");
-
+					
 					newPersonName.setPreferred(true);
 					user.addName(newPersonName);
 				}
-
+				
 				try {
 					Context.addProxyPrivilege(PrivilegeConstants.EDIT_USERS);
 					Context.addProxyPrivilege(PrivilegeConstants.VIEW_USERS);
@@ -227,21 +231,22 @@ public class OptionsFormController extends SimpleFormController {
 					// update login user object so that the new name is visible
 					// in the webapp
 					Context.refreshAuthenticatedUser();
-				} finally {
+				}
+				finally {
 					Context.removeProxyPrivilege(PrivilegeConstants.EDIT_USERS);
 					Context.removeProxyPrivilege(PrivilegeConstants.VIEW_USERS);
 				}
-
+				
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "options.saved");
 			} else {
 				return super.processFormSubmission(request, response, opts, errors);
 			}
-
+			
 			view = getSuccessView();
 		}
 		return new ModelAndView(new RedirectView(view));
 	}
-
+	
 	/**
 	 * This is called prior to displaying a form for the first time. It tells
 	 * Spring the form/command object to load into the request
@@ -249,12 +254,12 @@ public class OptionsFormController extends SimpleFormController {
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
 	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
-
+		
 		OptionsForm opts = new OptionsForm();
-
+		
 		if (Context.isAuthenticated()) {
 			User user = Context.getAuthenticatedUser();
-
+			
 			Map<String, String> props = user.getUserProperties();
 			opts.setDefaultLocation(props.get(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCATION));
 			opts.setDefaultLocale(props.get(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCALE));
@@ -271,10 +276,10 @@ public class OptionsFormController extends SimpleFormController {
 			opts.setNotification(props.get(OpenmrsConstants.USER_PROPERTY_NOTIFICATION));
 			opts.setNotificationAddress(props.get(OpenmrsConstants.USER_PROPERTY_NOTIFICATION_ADDRESS));
 		}
-
+		
 		return opts;
 	}
-
+	
 	/**
 	 * Called prior to form display. Allows for data to be put in the request to
 	 * be used in the view
@@ -282,30 +287,30 @@ public class OptionsFormController extends SimpleFormController {
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest)
 	 */
 	protected Map<String, Object> referenceData(HttpServletRequest request) throws Exception {
-
+		
 		HttpSession httpSession = request.getSession();
-
+		
 		Map<String, Object> map = new HashMap<String, Object>();
-
+		
 		if (Context.isAuthenticated()) {
-
+			
 			LocationService ls = Context.getLocationService();
-
+			
 			// set location options
 			map.put("locations", ls.getAllLocations());
-
+			
 			// set language/locale options
 			map.put("languages", Context.getAdministrationService().getPresentationLocales());
-
+			
 			String resetPassword = (String) httpSession.getAttribute("resetPassword");
 			if (resetPassword == null)
 				resetPassword = "";
 			else
 				httpSession.removeAttribute("resetPassword");
 			map.put("resetPassword", resetPassword);
-
+			
 		}
-
+		
 		return map;
 	}
 }

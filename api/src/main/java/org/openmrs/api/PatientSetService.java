@@ -332,7 +332,8 @@ public interface PatientSetService {
 	 * @return <code>Map<patientId, List<List< attribute value >>></code>
 	 */
 	@Transactional(readOnly = true)
-	public Map<Integer, List<List<Object>>> getObservationsValues(Cohort patients, Concept c, List<String> attributes, Integer limit, boolean showMostRecentFirst);
+	public Map<Integer, List<List<Object>>> getObservationsValues(Cohort patients, Concept c, List<String> attributes,
+	                                                              Integer limit, boolean showMostRecentFirst);
 	
 	/**
 	 * TODO write something here
@@ -573,7 +574,7 @@ public interface PatientSetService {
 	public enum PatientLocationMethod {
 		EARLIEST_ENCOUNTER, LATEST_ENCOUNTER, ANY_ENCOUNTER, PATIENT_HEALTH_CENTER
 	}
-
+	
 	/**
 	 * Equivalent to Cohort.subtract(PatientSetService.getAllPatients(), cohort) but may eventually
 	 * perform faster by delegating to the database.

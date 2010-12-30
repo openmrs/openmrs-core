@@ -169,7 +169,8 @@ public class DataExportReportObject extends AbstractReportObject implements Seri
 		// print out the data
 		
 		sb.append("#set($numberOfBatches=$fn.patientSetBatchCount)");
-		sb.append("#if( !$numberOfBatches )$fn.setPatientSet($patientSet)#set($numberOfBatches=0)#if( !$fn.patientSet )Please upgrade your reportingcompatibility module to at least v1.5.2 (its faster!)#end#end"); // for backwards compatibility
+		sb
+		        .append("#if( !$numberOfBatches )$fn.setPatientSet($patientSet)#set($numberOfBatches=0)#if( !$fn.patientSet )Please upgrade your reportingcompatibility module to at least v1.5.2 (its faster!)#end#end"); // for backwards compatibility
 		sb.append("#foreach($batchIndex in [0..$numberOfBatches])\n");
 		sb.append("$!{fn.setPatientSetFromBatch($batchIndex)}");
 		sb.append("#foreach($patientId in $fn.patientSet.memberIds)\n");
@@ -210,7 +211,7 @@ public class DataExportReportObject extends AbstractReportObject implements Seri
 		if (location != null && !location.equals("")) {
 			cohort = intersectFast(cohort, pss.getPatientsHavingLocation(getLocation()));
 		}
-
+		
 		if (cohortId != null) {
 			// hack to hydrate this
 			Cohort loadedCohort = Context.getCohortService().getCohort(cohortId);
@@ -232,7 +233,7 @@ public class DataExportReportObject extends AbstractReportObject implements Seri
 			PatientFilter cohortDefinition = OpenmrsUtil.toPatientFilter(search.getPatientSearch(), null);
 			cohort = cohortDefinition.filter(cohort, context);
 		}
-
+		
 		if (cohort == null) {
 			//cohort = Context.getPatientSetService().getAllPatients();
 			setAllPatients(true);
@@ -241,7 +242,6 @@ public class DataExportReportObject extends AbstractReportObject implements Seri
 		return cohort;
 	}
 	
-
 	/**
 	 * Quickly intersects two cohorts, possibly mutating the inputs.
 	 * Treats null as "all patients".
@@ -259,7 +259,6 @@ public class DataExportReportObject extends AbstractReportObject implements Seri
 		a.setName(null);
 		return a;
 	}
-
 	
 	@Override
 	public String toString() {

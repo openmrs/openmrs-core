@@ -49,7 +49,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.request.WebRequest;
 
-
 /**
  * Used for creating/editing User
  */
@@ -62,16 +61,16 @@ public class UserFormController {
 	public void initBinder(WebDataBinder binder) {
 		binder.registerCustomEditor(Role.class, new RoleEditor());
 	}
-
+	
 	// the personId attribute is called person_id so that spring MVC doesn't try to bind it to the personId property of user
 	@ModelAttribute("user")
-	public User formBackingObject(WebRequest request,
-	                              @RequestParam(required=false, value="person_id") Integer personId) {
+	public User formBackingObject(WebRequest request, @RequestParam(required = false, value = "person_id") Integer personId) {
 		String userId = request.getParameter("userId");
 		User u = null;
 		try {
 			u = Context.getUserService().getUser(Integer.valueOf(userId));
-		} catch (Exception ex) { }
+		}
+		catch (Exception ex) {}
 		if (u == null) {
 			u = new User();
 		}
@@ -97,13 +96,12 @@ public class UserFormController {
 		}
 		return roles;
 	}
-
-	@RequestMapping(value="/admin/users/user.form", method=RequestMethod.GET)
-	public String showForm(@RequestParam(required=false, value="userId") Integer userId,
-	                       @RequestParam(required=false, value="createNewPerson") String createNewPerson,
-	                       @ModelAttribute("user") User user,
-	                       ModelMap model) {
-
+	
+	@RequestMapping(value = "/admin/users/user.form", method = RequestMethod.GET)
+	public String showForm(@RequestParam(required = false, value = "userId") Integer userId,
+	                       @RequestParam(required = false, value = "createNewPerson") String createNewPerson,
+	                       @ModelAttribute("user") User user, ModelMap model) {
+		
 		// the formBackingObject method above sets up user, depending on userId and personId parameters   
 		
 		model.addAttribute("isNewUser", isNewUser(user));
@@ -113,8 +111,8 @@ public class UserFormController {
 		if (createNewPerson != null)
 			model.addAttribute("createNewPerson", createNewPerson);
 		
-		if(!isNewUser(user))
-			model.addAttribute("changePassword",new UserProperties(user.getUserProperties()).isSupposedToChangePassword());
+		if (!isNewUser(user))
+			model.addAttribute("changePassword", new UserProperties(user.getUserProperties()).isSupposedToChangePassword());
 		
 		// not using the default view name because I'm converting from an existing form
 		return "admin/users/userForm";
@@ -123,18 +121,16 @@ public class UserFormController {
 	/**
 	 * @should work for an example
 	 */
-	@RequestMapping(value="/admin/users/user.form", method=RequestMethod.POST)
-	public String handleSubmission(WebRequest request,
-	                               HttpSession httpSession,
-	                               ModelMap model,
-	                               @RequestParam(required=false, value="action") String action,
-	                               @RequestParam(required=false, value="userFormPassword") String password,
-	                               @RequestParam(required=false, value="secretQuestion") String secretQuestion,
-	                               @RequestParam(required=false, value="secretAnswer") String secretAnswer,
-	                               @RequestParam(required=false, value="confirm") String confirm,
-	                               @RequestParam(required=false, value="forcePassword") Boolean forcePassword,
-	                               @RequestParam(required=false, value="roleStrings") String[] roles,
-	                               @RequestParam(required=false, value="createNewPerson") String createNewPerson,
+	@RequestMapping(value = "/admin/users/user.form", method = RequestMethod.POST)
+	public String handleSubmission(WebRequest request, HttpSession httpSession, ModelMap model,
+	                               @RequestParam(required = false, value = "action") String action,
+	                               @RequestParam(required = false, value = "userFormPassword") String password,
+	                               @RequestParam(required = false, value = "secretQuestion") String secretQuestion,
+	                               @RequestParam(required = false, value = "secretAnswer") String secretAnswer,
+	                               @RequestParam(required = false, value = "confirm") String confirm,
+	                               @RequestParam(required = false, value = "forcePassword") Boolean forcePassword,
+	                               @RequestParam(required = false, value = "roleStrings") String[] roles,
+	                               @RequestParam(required = false, value = "createNewPerson") String createNewPerson,
 	                               @ModelAttribute("user") User user, BindingResult errors) {
 		
 		UserService us = Context.getUserService();
@@ -147,19 +143,19 @@ public class UserFormController {
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "User.assumeIdentity.success");
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ARGS, user.getPersonName());
 			return "redirect:/index.htm";
-				
+			
 		} else if (mss.getMessage("User.delete").equals(action)) {
 			try {
 				Context.getUserService().purgeUser(user);
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "User.delete.success");
-				return "redirect:users.list";			
-			} catch (Exception ex) {
+				return "redirect:users.list";
+			}
+			catch (Exception ex) {
 				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "User.delete.failure");
 				log.error("Failed to delete user", ex);
-				return "redirect:/admin/users/user.form?userId="+request.getParameter("userId");
+				return "redirect:/admin/users/user.form?userId=" + request.getParameter("userId");
 			}
 			
-		
 		} else if (mss.getMessage("User.retire").equals(action)) {
 			String retireReason = request.getParameter("retireReason");
 			if (!(StringUtils.hasText(retireReason))) {
@@ -170,11 +166,11 @@ public class UserFormController {
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "User.retiredMessage");
 			}
 			
-		} else if(mss.getMessage("User.unRetire").equals(action)) {
+		} else if (mss.getMessage("User.unRetire").equals(action)) {
 			us.unretireUser(user);
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "User.unRetiredMessage");
-		}else {
-				
+		} else {
+			
 			// check if username is already in the database
 			if (us.hasDuplicateUsername(user))
 				errors.rejectValue("username", "error.username.taken");
@@ -225,7 +221,6 @@ public class UserFormController {
 			else
 				user.getRoles().retainAll(newRoles);
 			
-
 			String[] keys = request.getParameterValues("property");
 			String[] values = request.getParameterValues("value");
 			
@@ -236,7 +231,7 @@ public class UserFormController {
 					user.setUserProperty(key, val);
 				}
 			}
-							
+			
 			new UserProperties(user.getUserProperties()).setSupposedToChangePassword(forcePassword);
 			
 			UserValidator uv = new UserValidator();
@@ -246,9 +241,9 @@ public class UserFormController {
 				return showForm(user.getUserId(), createNewPerson, user, model);
 			}
 			
-			if (isNewUser(user)){
+			if (isNewUser(user)) {
 				us.saveUser(user, password);
-            } else {
+			} else {
 				us.saveUser(user, null);
 				
 				if (!password.equals("") && Context.hasPrivilege(PrivilegeConstants.EDIT_USER_PASSWORDS)) {
@@ -257,15 +252,16 @@ public class UserFormController {
 					us.changePassword(user, password);
 				}
 			}
-            
-            if (StringUtils.hasLength(secretQuestion) && StringUtils.hasLength(secretAnswer)) {
-            	us.changeQuestionAnswer(user, secretQuestion, secretAnswer);
-            }
-            
+			
+			if (StringUtils.hasLength(secretQuestion) && StringUtils.hasLength(secretAnswer)) {
+				us.changeQuestionAnswer(user, secretQuestion, secretAnswer);
+			}
+			
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "User.saved");
 		}
 		return "redirect:users.list";
 	}
+	
 	/**
 	 * Superficially determines if this form is being filled out for a new user (basically just
 	 * looks for a primary key (user_id)

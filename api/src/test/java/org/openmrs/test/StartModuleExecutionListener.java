@@ -78,8 +78,10 @@ public class StartModuleExecutionListener extends AbstractTestExecutionListener 
 					e.printStackTrace(System.out);
 					throw e;
 				}
-				Assert.assertTrue("Some of the modules did not start successfully for " + testContext.getTestClass().getSimpleName() + ". Only " + ModuleFactory.getStartedModules().size() + " modules started instead of " + startModuleAnnotation.value().length, startModuleAnnotation.value().length <=
-				    ModuleFactory.getStartedModules().size());
+				Assert.assertTrue("Some of the modules did not start successfully for "
+				        + testContext.getTestClass().getSimpleName() + ". Only " + ModuleFactory.getStartedModules().size()
+				        + " modules started instead of " + startModuleAnnotation.value().length, startModuleAnnotation
+				        .value().length <= ModuleFactory.getStartedModules().size());
 				
 				// refresh spring so the Services are recreated (aka serializer gets put into the SerializationService)
 				new ClassPathXmlApplicationContext(new String[] { "applicationContext-service.xml",

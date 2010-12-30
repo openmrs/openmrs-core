@@ -630,14 +630,13 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 		hl7service.getUuidFromIdentifiers(identifiers);
 		Assert.fail("should have failed");
 	}
-
+	
 	/**
 	 * @see {@link HL7Service#getUuidFromIdentifiers(null)}
 	 */
 	@Test
 	@Verifies(value = "should not fail if no assigning authority is found", method = "getUuidFromIdentifiers(null)")
-	public void getUuidFromIdentifiers_shouldNotFailIfNoAssigningAuthorityIsFound()
-			throws Exception {
+	public void getUuidFromIdentifiers_shouldNotFailIfNoAssigningAuthorityIsFound() throws Exception {
 		HL7Service hl7service = Context.getHL7Service();
 		Message message = hl7service
 		        .parseHL7String("MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\r"

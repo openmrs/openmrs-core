@@ -15,7 +15,6 @@ package org.openmrs.web.taglib.functions;
 
 import java.util.Collection;
 
-
 /**
  * Function for openmrs tag library to determine whether a collection contains an object
  */
@@ -34,5 +33,5 @@ public class CollectionContains {
 		else
 			return collection.contains(obj);
 	}
-
+	
 }

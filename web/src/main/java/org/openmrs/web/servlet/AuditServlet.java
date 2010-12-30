@@ -59,7 +59,7 @@ public class AuditServlet extends HttpServlet {
 			for (PatientIdentifierType pit : ps.getAllPatientIdentifierTypes()) {
 				//If the new identifier type is defined as having a check digit as well
 				if (pit.hasValidator() && !pit.equals(newType)) {
-					identifiers.addAll(ps.getPatientIdentifiers(null,Collections.singletonList(pit),null,null,null));
+					identifiers.addAll(ps.getPatientIdentifiers(null, Collections.singletonList(pit), null, null, null));
 				}
 			}
 			

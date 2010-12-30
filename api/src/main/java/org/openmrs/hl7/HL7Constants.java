@@ -102,12 +102,12 @@ public class HL7Constants {
 	public static final String HL7_LOCAL_DRUG = "99RX";
 	
 	public static final String HL7_LOCAL_RELATIONSHIP = "99REL";
-
+	
 	/**
 	 * @since 1.5
 	 */
 	public static final int HL7_STATUS_DELETED = 4;
-
+	
 	/**
 	 * @since 1.7
 	 */
@@ -145,7 +145,7 @@ public class HL7Constants {
 	
 	// List of datatypes that do not require complex definitions
 	public static final Hashtable<String, String> simpleDatatypes = new Hashtable<String, String>();
-
+	
 	static {
 		simpleDatatypes.put(HL7_TEXT, "xs:string");
 		simpleDatatypes.put(HL7_DATE, "xs:date");

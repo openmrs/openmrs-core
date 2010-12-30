@@ -346,7 +346,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		TimerTask later = new TimerTask() {
 			
 			@Override
-            public void run() {
+			public void run() {
 				if (frame != null) {
 					// bring the dialog's window to the front
 					frame.toFront();
@@ -361,7 +361,7 @@ public abstract class BaseContextSensitiveTest extends AbstractJUnit4SpringConte
 		TimerTask laterStill = new TimerTask() {
 			
 			@Override
-            public void run() {
+			public void run() {
 				if (frame != null) {
 					frame.toFront(); // bring the dialog's window to the
 					// front

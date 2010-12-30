@@ -366,7 +366,7 @@ public class PersonTest extends BaseContextSensitiveTest {
 		person.setBirthdate(birthdate.getTime());
 		assertEquals(person.getAge(onDate.getTime()), 2, 0);
 	}
-
+	
 	/**
 	 * @see {@link Person#getAge()}
 	 */
@@ -379,11 +379,11 @@ public class PersonTest extends BaseContextSensitiveTest {
 		deathDate.set(2000, Calendar.JUNE, 3);
 		Person person = new Person();
 		person.setBirthdate(birthdate.getTime());
-        person.setDead(true);
-        person.setDeathDate(deathDate.getTime());
-        assertEquals(10, person.getAge(), 0);
+		person.setDead(true);
+		person.setDeathDate(deathDate.getTime());
+		assertEquals(10, person.getAge(), 0);
 	}
-
+	
 	/**
 	 * @see {@link Person#getAge(Date)}
 	 */
@@ -394,15 +394,15 @@ public class PersonTest extends BaseContextSensitiveTest {
 		birthdate.set(1990, Calendar.JUNE, 2);
 		Calendar deathDate = Calendar.getInstance();
 		deathDate.set(2000, Calendar.JUNE, 3);
-        Calendar givenDate = Calendar.getInstance();
-        givenDate.set(2010, Calendar.JUNE, 3);
+		Calendar givenDate = Calendar.getInstance();
+		givenDate.set(2010, Calendar.JUNE, 3);
 		Person person = new Person();
 		person.setBirthdate(birthdate.getTime());
-        person.setDead(true);
-        person.setDeathDate(deathDate.getTime());
-        assertEquals(10, person.getAge(givenDate.getTime()), 0);
+		person.setDead(true);
+		person.setDeathDate(deathDate.getTime());
+		assertEquals(10, person.getAge(givenDate.getTime()), 0);
 	}
-
+	
 	/**
 	 * @see {@link Person#getAge(Date)}
 	 */
@@ -413,15 +413,15 @@ public class PersonTest extends BaseContextSensitiveTest {
 		birthdate.set(1990, Calendar.JUNE, 2);
 		Calendar deathDate = Calendar.getInstance();
 		deathDate.set(2000, Calendar.JUNE, 3);
-        Calendar givenDate = Calendar.getInstance();
-        givenDate.set(1995, Calendar.JUNE, 3);
+		Calendar givenDate = Calendar.getInstance();
+		givenDate.set(1995, Calendar.JUNE, 3);
 		Person person = new Person();
 		person.setBirthdate(birthdate.getTime());
-        person.setDead(true);
-        person.setDeathDate(deathDate.getTime());
-        assertEquals(5, person.getAge(givenDate.getTime()), 0);
+		person.setDead(true);
+		person.setDeathDate(deathDate.getTime());
+		assertEquals(5, person.getAge(givenDate.getTime()), 0);
 	}
-
+	
 	/**
 	 * @see {@link Person#getAge(Date)}
 	 */
@@ -432,104 +432,94 @@ public class PersonTest extends BaseContextSensitiveTest {
 		birthdate.set(1990, Calendar.JUNE, 2);
 		Calendar deathDate = Calendar.getInstance();
 		deathDate.set(2000, Calendar.JUNE, 3);
-        Calendar givenDate = Calendar.getInstance();
-        givenDate.set(1985, Calendar.JUNE, 3);
+		Calendar givenDate = Calendar.getInstance();
+		givenDate.set(1985, Calendar.JUNE, 3);
 		Person person = new Person();
 		person.setBirthdate(birthdate.getTime());
-        person.setDead(true);
-        person.setDeathDate(deathDate.getTime());
-        assertEquals(-5, person.getAge(givenDate.getTime()), 0);
+		person.setDead(true);
+		person.setDeathDate(deathDate.getTime());
+		assertEquals(-5, person.getAge(givenDate.getTime()), 0);
 	}
-
+	
 	/**
 	 * @see {@link Person#addAttribute(PersonAttribute)}
 	 * 
 	 */
 	@Test
 	@Verifies(value = "should not save an attribute with a blank string value", method = "addAttribute(PersonAttribute)")
-	public void addAttribute_shouldNotSaveAnAttributeWithABlankStringValue()
-			throws Exception {
+	public void addAttribute_shouldNotSaveAnAttributeWithABlankStringValue() throws Exception {
 		Person p = new Person();
-
+		
 		// make sure there are no initial attributes
-		Assert.assertEquals("There should not be any attributes", 0, p
-				.getAttributes().size());
-
+		Assert.assertEquals("There should not be any attributes", 0, p.getAttributes().size());
+		
 		PersonAttribute pa1 = new PersonAttribute();
 		pa1.setValue("");
 		pa1.setAttributeType(new PersonAttributeType(1));
 		pa1.setVoided(false);
 		p.addAttribute(pa1);
-
+		
 		// make sure the attribute was not added
-		Assert.assertEquals("There should not be any attributes", 0, p
-				.getAttributes().size());
+		Assert.assertEquals("There should not be any attributes", 0, p.getAttributes().size());
 	}
-
+	
 	/**
 	 * @see {@link Person#addAttribute(PersonAttribute)}
 	 * 
 	 */
 	@Test
 	@Verifies(value = "should not save an attribute with a null value", method = "addAttribute(PersonAttribute)")
-	public void addAttribute_shouldNotSaveAnAttributeWithANullValue()
-			throws Exception {
+	public void addAttribute_shouldNotSaveAnAttributeWithANullValue() throws Exception {
 		Person p = new Person();
-
+		
 		// make sure there are no initial attributes
-		Assert.assertEquals("There should not be any attributes", 0, p
-				.getAttributes().size());
-
+		Assert.assertEquals("There should not be any attributes", 0, p.getAttributes().size());
+		
 		PersonAttribute pa1 = new PersonAttribute();
 		pa1.setValue(null);
 		pa1.setAttributeType(new PersonAttributeType(1));
 		pa1.setVoided(false);
 		p.addAttribute(pa1);
-
+		
 		// make sure the attribute was not added
-		Assert.assertEquals("There should not be any attributes", 0, p
-				.getAttributes().size());
+		Assert.assertEquals("There should not be any attributes", 0, p.getAttributes().size());
 	}
-
+	
 	/**
 	 * @see {@link Person#addAttribute(PersonAttribute)}
 	 * 
 	 */
 	@Test
 	@Verifies(value = "should void old attribute when a null or blank string value is added", method = "addAttribute(PersonAttribute)")
-	public void addAttribute_shouldVoidOldAttributeWhenANullOrBlankStringValueIsAdded()
-			throws Exception {
+	public void addAttribute_shouldVoidOldAttributeWhenANullOrBlankStringValueIsAdded() throws Exception {
 		Person p = new Person();
-
+		
 		// make sure there are no initial attributes
-		Assert.assertEquals("There should not be any attributes", 0, p
-				.getAttributes().size());
-
+		Assert.assertEquals("There should not be any attributes", 0, p.getAttributes().size());
+		
 		PersonAttribute pa1 = new PersonAttribute();
 		pa1.setValue("ack");
 		pa1.setAttributeType(new PersonAttributeType(1));
 		pa1.setVoided(false);
 		pa1.setCreator(new User(1));
 		p.addAttribute(pa1);
-
+		
 		// make sure the attribute was added
-		Assert.assertEquals("The attribute was not added", 1, p.getAttributes()
-				.size());
-
+		Assert.assertEquals("The attribute was not added", 1, p.getAttributes().size());
+		
 		// add another one
 		PersonAttribute pa2 = new PersonAttribute();
 		pa2.setValue(null);
 		pa2.setAttributeType(new PersonAttributeType(1));
 		pa2.setVoided(false);
 		p.addAttribute(pa2);
-
+		
 		// make sure the new attribute was not added and the old was not removed
-		Assert.assertEquals("Something changed ...", 1, p.getAttributes()
-				.size());
-
+		Assert.assertEquals("Something changed ...", 1, p.getAttributes().size());
+		
 		// make sure the new attribute effectively voided the original
-		Assert.assertTrue("The original attribute is not voided",
-				((PersonAttribute) p.getAttributes().toArray()[0]).isVoided());
-
+		Assert.assertTrue("The original attribute is not voided", ((PersonAttribute) p.getAttributes().toArray()[0])
+		        .isVoided());
+		
 	}
 }

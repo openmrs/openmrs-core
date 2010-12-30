@@ -212,7 +212,7 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 				// if we were unable to get a class, just quit
 				if (clientTask != null) {
 					
-					schedulerTask = new TimerSchedulerTask(clientTask);					
+					schedulerTask = new TimerSchedulerTask(clientTask);
 					taskDefinition.setTaskInstance(clientTask);
 					
 					// Once this method is called, the timer is set to start at the given start time.
@@ -222,7 +222,7 @@ public class TimerSchedulerServiceImpl extends BaseOpenmrsService implements Sch
 					long repeatInterval = 0;
 					if (taskDefinition.getRepeatInterval() != null)
 						repeatInterval = taskDefinition.getRepeatInterval() * SchedulerConstants.SCHEDULER_MILLIS_PER_SECOND;
-
+					
 					if (taskDefinition.getStartTime() != null) {
 						// Need to calculate the "next execution time" because the scheduled time is most likely in the past
 						// and the JDK timer will run the task X number of times from the start time until now to catch up.

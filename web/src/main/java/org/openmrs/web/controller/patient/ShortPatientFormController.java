@@ -56,7 +56,7 @@ import org.springframework.web.context.request.WebRequest;
  */
 
 @Controller
-@SessionAttributes({ "patientModel", "relationshipsMap", "identifierTypes", "locations" })
+@SessionAttributes( { "patientModel", "relationshipsMap", "identifierTypes", "locations" })
 public class ShortPatientFormController {
 	
 	private static final Log log = LogFactory.getLog(ShortPatientFormController.class);
@@ -104,15 +104,12 @@ public class ShortPatientFormController {
 			model.addAttribute("identifierTypes", Context.getPatientService().getAllPatientIdentifierTypes());
 			model.addAttribute("locations", Context.getLocationService().getAllLocations());
 			
-			
-			String propCause = Context.getAdministrationService()
-					.getGlobalProperty("concept.causeOfDeath");
-			Concept conceptCause = Context.getConceptService().getConcept(
-					propCause);
+			String propCause = Context.getAdministrationService().getGlobalProperty("concept.causeOfDeath");
+			Concept conceptCause = Context.getConceptService().getConcept(propCause);
 			String causeOfDeathOther = "";
 			if (conceptCause != null && patient.getPatientId() != null) {
 				List<Obs> obssDeath = Context.getObsService().getObservationsByPersonAndConcept(patient, conceptCause);
-
+				
 				if (obssDeath.size() == 1) {
 					Obs obsDeath = obssDeath.iterator().next();
 					causeOfDeathOther = obsDeath.getValueText();

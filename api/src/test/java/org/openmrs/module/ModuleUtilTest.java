@@ -280,138 +280,141 @@ public class ModuleUtilTest extends BaseContextSensitiveTest {
 		String requiredOpenmrsVersion = "1.5.0";
 		Assert.assertFalse(ModuleUtil.matchRequiredVersions(openmrsVersion, requiredOpenmrsVersion));
 	}
-
+	
 	/**
-     * @see {@link ModuleUtil#matchRequiredVersions(String,String)}
-     * 
-     */
-    @Test
-    @Verifies(value = "should allow release type in the version", method = "matchRequiredVersions(String,String)")
-    public void matchRequiredVersions_shouldAllowReleaseTypeInTheVersion() throws Exception {
+	 * @see {@link ModuleUtil#matchRequiredVersions(String,String)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should allow release type in the version", method = "matchRequiredVersions(String,String)")
+	public void matchRequiredVersions_shouldAllowReleaseTypeInTheVersion() throws Exception {
 		String openmrsVersion = "1.4.3";
 		String requiredOpenmrsVersion = "1.4.1-dev - 1.5.*-alpha";
 		Assert.assertTrue(ModuleUtil.matchRequiredVersions(openmrsVersion, requiredOpenmrsVersion));
 		requiredOpenmrsVersion = "1.5.*-dev - 1.6.0-dev";
 		Assert.assertFalse(ModuleUtil.matchRequiredVersions(openmrsVersion, requiredOpenmrsVersion));
-    }
+	}
 	
 	/**
-     * @see {@link ModuleUtil#getPathForResource(Module,String)}
-     */
-    @Test
-    @Verifies(value = "should handle ui springmvc css ui dot css example", method = "getPathForResource(Module,String)")
-    public void getPathForResource_shouldHandleUiSpringmvcCssUiDotCssExample() throws Exception {
-    	Module module = new Module("Unit test");
-    	module.setModuleId("ui.springmvc");
-    	String path = "/ui/springmvc/css/ui.css";
-    	Assert.assertEquals("/css/ui.css", ModuleUtil.getPathForResource(module, path));
-    }
-
+	 * @see {@link ModuleUtil#getPathForResource(Module,String)}
+	 */
+	@Test
+	@Verifies(value = "should handle ui springmvc css ui dot css example", method = "getPathForResource(Module,String)")
+	public void getPathForResource_shouldHandleUiSpringmvcCssUiDotCssExample() throws Exception {
+		Module module = new Module("Unit test");
+		module.setModuleId("ui.springmvc");
+		String path = "/ui/springmvc/css/ui.css";
+		Assert.assertEquals("/css/ui.css", ModuleUtil.getPathForResource(module, path));
+	}
+	
 	/**
-     * @see {@link ModuleUtil#getModuleForPath(String)}
-     */
-    @Test
-    @Verifies(value = "should handle ui springmvc css ui dot css when ui dot springmvc module is running", method = "getModuleForPath(String)")
-    public void getModuleForPath_shouldHandleUiSpringmvcCssUiDotCssWhenUiDotSpringmvcModuleIsRunning() throws Exception {
-    	ModuleFactory.getStartedModulesMap().clear();
-	    Module module = new Module("For Unit Test");
-	    module.setModuleId("ui.springmvc");
-	    ModuleFactory.getStartedModulesMap().put(module.getModuleId(), module);
-	    
-	    String path = "/ui/springmvc/css/ui.css";
-	    Assert.assertEquals(module, ModuleUtil.getModuleForPath(path));
-    }
-
+	 * @see {@link ModuleUtil#getModuleForPath(String)}
+	 */
+	@Test
+	@Verifies(value = "should handle ui springmvc css ui dot css when ui dot springmvc module is running", method = "getModuleForPath(String)")
+	public void getModuleForPath_shouldHandleUiSpringmvcCssUiDotCssWhenUiDotSpringmvcModuleIsRunning() throws Exception {
+		ModuleFactory.getStartedModulesMap().clear();
+		Module module = new Module("For Unit Test");
+		module.setModuleId("ui.springmvc");
+		ModuleFactory.getStartedModulesMap().put(module.getModuleId(), module);
+		
+		String path = "/ui/springmvc/css/ui.css";
+		Assert.assertEquals(module, ModuleUtil.getModuleForPath(path));
+	}
+	
 	/**
-     * @see {@link ModuleUtil#getModuleForPath(String)}
-     */
-    @Test
-    @Verifies(value = "should handle ui springmvc css ui dot css when ui module is running", method = "getModuleForPath(String)")
-    public void getModuleForPath_shouldHandleUiSpringmvcCssUiDotCssWhenUiModuleIsRunning() throws Exception {
-    	ModuleFactory.getStartedModulesMap().clear();
-	    Module module = new Module("For Unit Test");
-	    module.setModuleId("ui");
-	    ModuleFactory.getStartedModulesMap().put(module.getModuleId(), module);
-	    
-	    String path = "/ui/springmvc/css/ui.css";
-	    Assert.assertEquals(module, ModuleUtil.getModuleForPath(path));
-    }
-
+	 * @see {@link ModuleUtil#getModuleForPath(String)}
+	 */
+	@Test
+	@Verifies(value = "should handle ui springmvc css ui dot css when ui module is running", method = "getModuleForPath(String)")
+	public void getModuleForPath_shouldHandleUiSpringmvcCssUiDotCssWhenUiModuleIsRunning() throws Exception {
+		ModuleFactory.getStartedModulesMap().clear();
+		Module module = new Module("For Unit Test");
+		module.setModuleId("ui");
+		ModuleFactory.getStartedModulesMap().put(module.getModuleId(), module);
+		
+		String path = "/ui/springmvc/css/ui.css";
+		Assert.assertEquals(module, ModuleUtil.getModuleForPath(path));
+	}
+	
 	/**
-     * @see {@link ModuleUtil#getModuleForPath(String)}
-     */
-    @Test
-    @Verifies(value = "should return null for ui springmvc css ui dot css when no relevant module is running", method = "getModuleForPath(String)")
-    public void getModuleForPath_shouldReturnNullForUiSpringmvcCssUiDotCssWhenNoRelevantModuleIsRunning() throws Exception {
-    	ModuleFactory.getStartedModulesMap().clear();
-	    String path = "/ui/springmvc/css/ui.css";
-	    Assert.assertNull(ModuleUtil.getModuleForPath(path));
-    }
-
-    /**
-     * @see {@link ModuleUtil#checkRequiredVersion(String, String)}
-     */
-    @Test(expected = ModuleException.class)
-    @Verifies(value = "should throw ModuleException if openmrs version beyond wild card range", method = "checkRequiredVersion(String, String)")
-    public void checkRequiredVersion_shouldThrowModuleExceptionIfOpenmrsVersionBeyondWildCardRange() throws Exception {
-    	String openmrsVersion = "1.4.3";
+	 * @see {@link ModuleUtil#getModuleForPath(String)}
+	 */
+	@Test
+	@Verifies(value = "should return null for ui springmvc css ui dot css when no relevant module is running", method = "getModuleForPath(String)")
+	public void getModuleForPath_shouldReturnNullForUiSpringmvcCssUiDotCssWhenNoRelevantModuleIsRunning() throws Exception {
+		ModuleFactory.getStartedModulesMap().clear();
+		String path = "/ui/springmvc/css/ui.css";
+		Assert.assertNull(ModuleUtil.getModuleForPath(path));
+	}
+	
+	/**
+	 * @see {@link ModuleUtil#checkRequiredVersion(String, String)}
+	 */
+	@Test(expected = ModuleException.class)
+	@Verifies(value = "should throw ModuleException if openmrs version beyond wild card range", method = "checkRequiredVersion(String, String)")
+	public void checkRequiredVersion_shouldThrowModuleExceptionIfOpenmrsVersionBeyondWildCardRange() throws Exception {
+		String openmrsVersion = "1.4.3";
 		String requiredOpenmrsVersion = "1.3.*";
 		ModuleUtil.checkRequiredVersion(openmrsVersion, requiredOpenmrsVersion);
-    }
-    
-    /**
-     * @see {@link ModuleUtil#checkRequiredVersion(String, String)}
-     */
-    @Test(expected = ModuleException.class)
-    @Verifies(value = "should throw ModuleException if required version beyond openmrs version", method = "checkRequiredVersion(String, String)")
-    public void checkRequiredVersion_shouldThrowModuleExceptionIfRequiredVersionBeyondOpenmrsVersion() throws Exception {
-    	String openmrsVersion = "1.4.3";
+	}
+	
+	/**
+	 * @see {@link ModuleUtil#checkRequiredVersion(String, String)}
+	 */
+	@Test(expected = ModuleException.class)
+	@Verifies(value = "should throw ModuleException if required version beyond openmrs version", method = "checkRequiredVersion(String, String)")
+	public void checkRequiredVersion_shouldThrowModuleExceptionIfRequiredVersionBeyondOpenmrsVersion() throws Exception {
+		String openmrsVersion = "1.4.3";
 		String requiredOpenmrsVersion = "1.5.*";
 		ModuleUtil.checkRequiredVersion(openmrsVersion, requiredOpenmrsVersion);
-    }
-    
-    /**
-     * @see {@link ModuleUtil#checkRequiredVersion(String, String)}
-     */
-    @Test(expected = ModuleException.class)
-    @Verifies(value = "should throw ModuleException if required version with wild card beyond openmrs version", method = "checkRequiredVersion(String, String)")
-    public void checkRequiredVersion_shouldThrowModuleExceptionIfRequiredVersionWithWildCardBeyondOpenmrsVersion() throws Exception {
-    	String openmrsVersion = "1.4.3";
+	}
+	
+	/**
+	 * @see {@link ModuleUtil#checkRequiredVersion(String, String)}
+	 */
+	@Test(expected = ModuleException.class)
+	@Verifies(value = "should throw ModuleException if required version with wild card beyond openmrs version", method = "checkRequiredVersion(String, String)")
+	public void checkRequiredVersion_shouldThrowModuleExceptionIfRequiredVersionWithWildCardBeyondOpenmrsVersion()
+	                                                                                                              throws Exception {
+		String openmrsVersion = "1.4.3";
 		String requiredOpenmrsVersion = "1.5.* - 1.6.*";
 		ModuleUtil.checkRequiredVersion(openmrsVersion, requiredOpenmrsVersion);
-    }
-    
-    /**
-     * @see {@link ModuleUtil#checkRequiredVersion(String, String)}
-     */
-    @Test(expected = ModuleException.class)
-    @Verifies(value = "should throw ModuleException if required version with wild card on one end beyond openmrs version", method = "checkRequiredVersion(String, String)")
-    public void checkRequiredVersion_shouldThrowModuleExceptionIfRequiredVersionWithWildCardOnOneEndBeyondOpenmrsVersion() throws Exception {
-    	String openmrsVersion = "1.4.3";
+	}
+	
+	/**
+	 * @see {@link ModuleUtil#checkRequiredVersion(String, String)}
+	 */
+	@Test(expected = ModuleException.class)
+	@Verifies(value = "should throw ModuleException if required version with wild card on one end beyond openmrs version", method = "checkRequiredVersion(String, String)")
+	public void checkRequiredVersion_shouldThrowModuleExceptionIfRequiredVersionWithWildCardOnOneEndBeyondOpenmrsVersion()
+	                                                                                                                      throws Exception {
+		String openmrsVersion = "1.4.3";
 		String requiredOpenmrsVersion = "1.4.5 - 1.5.*";
 		ModuleUtil.checkRequiredVersion(openmrsVersion, requiredOpenmrsVersion);
-    }
-    
-    /**
-     * @see {@link ModuleUtil#checkRequiredVersion(String, String)}
-     */
-    @Test(expected = ModuleException.class)
-    @Verifies(value = "should throw ModuleException if single entry required version beyond openmrs version", method = "checkRequiredVersion(String, String)")
-    public void checkRequiredVersion_shouldThrowModuleExceptionIfSingleEntryRequiredVersionBeyondOpenmrsVersion() throws Exception {
-    	String openmrsVersion = "1.4.3";
+	}
+	
+	/**
+	 * @see {@link ModuleUtil#checkRequiredVersion(String, String)}
+	 */
+	@Test(expected = ModuleException.class)
+	@Verifies(value = "should throw ModuleException if single entry required version beyond openmrs version", method = "checkRequiredVersion(String, String)")
+	public void checkRequiredVersion_shouldThrowModuleExceptionIfSingleEntryRequiredVersionBeyondOpenmrsVersion()
+	                                                                                                             throws Exception {
+		String openmrsVersion = "1.4.3";
 		String requiredOpenmrsVersion = "1.5.0";
 		ModuleUtil.checkRequiredVersion(openmrsVersion, requiredOpenmrsVersion);
-    }
-
+	}
+	
 	/**
-     * @see {@link ModuleUtil#compareVersion(String,String)}
-     * 
-     */
-    @Test
-    @Verifies(value = "should correctly comparing two version number", method = "compareVersion(String,String)")
-    public void compareVersion_shouldCorrectlyComparingTwoVersionNumber() throws Exception {
+	 * @see {@link ModuleUtil#compareVersion(String,String)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should correctly comparing two version number", method = "compareVersion(String,String)")
+	public void compareVersion_shouldCorrectlyComparingTwoVersionNumber() throws Exception {
 		String olderVersion = "2.1.1";
 		String newerVersion = "2.1.10";
 		ModuleUtil.compareVersion(olderVersion, newerVersion);
-    }
+	}
 }

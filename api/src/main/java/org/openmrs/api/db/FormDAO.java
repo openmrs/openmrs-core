@@ -245,7 +245,7 @@ public interface FormDAO {
 	public Integer getFormCount(String partialName, Boolean published, Collection<EncounterType> encounterTypes,
 	                            Boolean retired, Collection<FormField> containingAnyFormField,
 	                            Collection<FormField> containingAllFormFields, Collection<Field> fields) throws DAOException;
-
+	
 	/**
 	 * Delete the given field type from the database
 	 * 
@@ -294,13 +294,13 @@ public interface FormDAO {
 	 * @return the newly saved field type
 	 */
 	public FieldType saveFieldType(FieldType fieldType) throws DAOException;
-
+	
 	/**
-     * Return a list of FormFields given a Field
-     * 
-     * @param field
-     * @return List of FormFields
-     */
-    public List<FormField> getFormFieldsByField(Field field);
+	 * Return a list of FormFields given a Field
+	 * 
+	 * @param field
+	 * @return List of FormFields
+	 */
+	public List<FormField> getFormFieldsByField(Field field);
 	
 }

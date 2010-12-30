@@ -101,5 +101,5 @@ public class BinaryDataHandler extends AbstractHandler implements ComplexObsHand
 		
 		return obs;
 	}
-
+	
 }

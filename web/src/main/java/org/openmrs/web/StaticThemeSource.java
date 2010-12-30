@@ -27,7 +27,7 @@ import org.springframework.ui.context.support.SimpleTheme;
 public class StaticThemeSource implements ThemeSource {
 	
 	private String themeName;
-
+	
 	/**
 	 * @see org.springframework.ui.context.ThemeSource#getTheme(java.lang.String)
 	 */

@@ -478,15 +478,14 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 	 */
 	private boolean isNameUniqueInLocale(DatabaseConnection connection, ConceptName conceptName, int conceptId) {
 		
-		int duplicates = getInt(
-		    connection,
+		int duplicates = getInt(connection,
 		    "SELECT count(*) FROM concept_name cn, concept c WHERE cn.concept_id = c.concept_id  AND (cn.concept_name_type = '"
 		            + ConceptNameType.FULLY_SPECIFIED
 		            + "' OR cn.locale_preferred = 1) AND cn.voided = 0 AND cn.name = '"
 		            + HibernateUtil.escapeSqlWildcards(conceptName.getName(), connection.getUnderlyingConnection())
 		            + "' AND cn.locale = '"
-		            + HibernateUtil.escapeSqlWildcards(conceptName.getLocale().toString(),
-		                connection.getUnderlyingConnection()) + "' AND c.retired = 0 AND c.concept_id != " + conceptId);
+		            + HibernateUtil.escapeSqlWildcards(conceptName.getLocale().toString(), connection
+		                    .getUnderlyingConnection()) + "' AND c.retired = 0 AND c.concept_id != " + conceptId);
 		
 		return duplicates == 0;
 	}

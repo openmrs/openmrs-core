@@ -22,8 +22,9 @@ public class HelloWorldTask extends AbstractTask {
 	
 	// Thread
 	private Thread thread;
+	
 	private boolean started;
-
+	
 	/**
 	 * Public constructor.
 	 */
@@ -38,11 +39,11 @@ public class HelloWorldTask extends AbstractTask {
 	 * the connectivity (i.e. calls another service method)
 	 */
 	public void execute() {
-        synchronized (thread) {
-            if(!started) {
-		        thread.start();
-                started = true;
-            }
-        }
+		synchronized (thread) {
+			if (!started) {
+				thread.start();
+				started = true;
+			}
+		}
 	}
 }

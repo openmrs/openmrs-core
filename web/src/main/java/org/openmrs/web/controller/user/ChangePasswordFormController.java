@@ -80,7 +80,7 @@ public class ChangePasswordFormController {
 	 * @should set the user property forcePassword to false after successful password change
 	 * @should not set the user property forcePassword to false after unsuccessful password change
 	 * @should remain on the changePasswordForm page if there are errors
-     * @should set the secret question and answer of the user
+	 * @should set the secret question and answer of the user
 	 * @param password to be applied
 	 * @param confirmPassword confirmation for the password to be applied
 	 * @param question in case of a forgotten password
@@ -129,14 +129,13 @@ public class ChangePasswordFormController {
 			User currentUser = userService.getUser(user.getId());
 			
 			userService.changePassword(currentUser, password.getPassword());
-
 			
 			new UserProperties(currentUser.getUserProperties()).setSupposedToChangePassword(false);
 			userService.saveUser(currentUser, password.getPassword());
 			if (StringUtils.isNotBlank(questionAnswer.getQuestion()) || StringUtils.isNotBlank(questionAnswer.getAnswer())) {
 				userService.changeQuestionAnswer(currentUser, questionAnswer.getQuestion(), questionAnswer.getAnswer());
 			}
-            
+			
 			Context.refreshAuthenticatedUser();
 		}
 		finally {

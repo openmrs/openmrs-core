@@ -92,8 +92,7 @@ public class PatientSearchTest extends BaseContextSensitiveTest {
 			args.add(new SearchArgument("timeModifier", "ANY", PatientSetService.TimeModifier.class));
 			// using NEW CD4 COUNT in patientSearchTest.xml because CD4 COUNT exists in standardDataSet.xml
 			args.add(new SearchArgument("question", Context.getConceptService().getConceptByName("NEW CD4 COUNT")
-			        .getConceptId()
-			        .toString(), Concept.class));
+			        .getConceptId().toString(), Concept.class));
 			args.add(new SearchArgument("withinLastDays", "${howManyDays}", Integer.class));
 			search.setArguments(args);
 		}

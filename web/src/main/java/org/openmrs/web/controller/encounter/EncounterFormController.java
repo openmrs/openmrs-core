@@ -72,7 +72,7 @@ public class EncounterFormController extends SimpleFormController {
 	 *      org.springframework.web.bind.ServletRequestDataBinder)
 	 */
 	@Override
-    protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
+	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
 		
 		binder.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, true));
@@ -88,7 +88,7 @@ public class EncounterFormController extends SimpleFormController {
 	 *      org.springframework.validation.BindException)
 	 */
 	@Override
-    protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse reponse, Object obj,
+	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse reponse, Object obj,
 	                                             BindException errors) throws Exception {
 		
 		Encounter encounter = (Encounter) obj;
@@ -130,7 +130,7 @@ public class EncounterFormController extends SimpleFormController {
 	 *      org.springframework.validation.BindException)
 	 */
 	@Override
-    protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
+	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
 	                                BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
@@ -150,7 +150,8 @@ public class EncounterFormController extends SimpleFormController {
 					    Integer.valueOf(request.getParameter("patientId"))));
 				
 				// set the provider if they changed it
-				encounter.setProvider(Context.getPersonService().getPerson(Integer.valueOf(request.getParameter("providerId"))));
+				encounter.setProvider(Context.getPersonService().getPerson(
+				    Integer.valueOf(request.getParameter("providerId"))));
 				
 				if (encounter.isVoided() && encounter.getVoidedBy() == null)
 					// if this is a "new" voiding, call voidEncounter to set appropriate attributes
@@ -182,7 +183,7 @@ public class EncounterFormController extends SimpleFormController {
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
 	@Override
-    protected Object formBackingObject(HttpServletRequest request) throws ServletException {
+	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 		
 		Encounter encounter = null;
 		
@@ -205,7 +206,7 @@ public class EncounterFormController extends SimpleFormController {
 	 *      java.lang.Object, org.springframework.validation.Errors)
 	 */
 	@Override
-    protected Map<String, Object> referenceData(HttpServletRequest request, Object obj, Errors error) throws Exception {
+	protected Map<String, Object> referenceData(HttpServletRequest request, Object obj, Errors error) throws Exception {
 		
 		Encounter encounter = (Encounter) obj;
 		
@@ -247,7 +248,7 @@ public class EncounterFormController extends SimpleFormController {
 				
 				//get the obs that was not created with the original encounter
 				Encounter en = o.getEncounter();
-				if(o.getDateCreated().compareTo(en.getDateCreated())!=0){
+				if (o.getDateCreated().compareTo(en.getDateCreated()) != 0) {
 					obsAfterEncounter.add(o.getId());
 				}
 				
@@ -295,9 +296,9 @@ public class EncounterFormController extends SimpleFormController {
 		
 		map.put("locale", Context.getLocale());
 		map.put("editedObs", editedObs);
-	
+		
 		map.put("obsAfterEncounter", obsAfterEncounter);
-
+		
 		return map;
 	}
 	

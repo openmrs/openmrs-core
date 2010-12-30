@@ -102,7 +102,7 @@ public class ModuleServlet extends HttpServlet {
 		
 		// not implemented in a module's config.xml yet
 		@SuppressWarnings("unchecked")
-        public Enumeration getInitParameterNames() {
+		public Enumeration getInitParameterNames() {
 			return null;
 		}
 	}

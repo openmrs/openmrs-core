@@ -93,14 +93,14 @@ public class ConceptFormController extends SimpleFormController {
 		NumberFormat nf = NumberFormat.getInstance(Context.getLocale());
 		binder.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, nf, true));
 		binder.registerCustomEditor(java.lang.Double.class, new CustomNumberEditor(java.lang.Double.class, nf, true));
-		binder.registerCustomEditor(java.util.Date.class, new CustomDateEditor(SimpleDateFormat.getDateInstance(SimpleDateFormat.SHORT, Context
-		        .getLocale()), true));
+		binder.registerCustomEditor(java.util.Date.class, new CustomDateEditor(SimpleDateFormat.getDateInstance(
+		    SimpleDateFormat.SHORT, Context.getLocale()), true));
 		binder.registerCustomEditor(org.openmrs.ConceptClass.class, new ConceptClassEditor());
 		binder.registerCustomEditor(org.openmrs.ConceptDatatype.class, new ConceptDatatypeEditor());
-		binder.registerCustomEditor(java.util.Collection.class, "concept.conceptSets", new ConceptSetsEditor(commandObject.getConcept()
-		        .getConceptSets()));
-		binder.registerCustomEditor(java.util.Collection.class, "concept.answers", new ConceptAnswersEditor(commandObject.getConcept().getAnswers(
-		    true)));
+		binder.registerCustomEditor(java.util.Collection.class, "concept.conceptSets", new ConceptSetsEditor(commandObject
+		        .getConcept().getConceptSets()));
+		binder.registerCustomEditor(java.util.Collection.class, "concept.answers", new ConceptAnswersEditor(commandObject
+		        .getConcept().getAnswers(true)));
 		binder.registerCustomEditor(org.openmrs.ConceptSource.class, new ConceptSourceEditor());
 	}
 	
@@ -110,8 +110,8 @@ public class ConceptFormController extends SimpleFormController {
 	 *      org.springframework.validation.BindException)
 	 */
 	@Override
-	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object object, BindException errors)
-	                                                                                                                                           throws Exception {
+	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object object,
+	                                             BindException errors) throws Exception {
 		
 		Concept concept = ((ConceptFormBackingObject) object).getConcept();
 		ConceptService cs = Context.getConceptService();
@@ -147,7 +147,8 @@ public class ConceptFormController extends SimpleFormController {
 	 * @should set the local preferred name
 	 */
 	@Override
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj, BindException errors) throws Exception {
+	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
+	                                BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
 		ConceptService cs = Context.getConceptService();
@@ -279,7 +280,7 @@ public class ConceptFormController extends SimpleFormController {
 			// nothing to do
 		}
 		map.put("dataTypeReadOnly", dataTypeReadOnly);
-
+		
 		//get complex handlers
 		map.put("handlers", Context.getObsService().getHandlers());
 		
@@ -327,7 +328,7 @@ public class ConceptFormController extends SimpleFormController {
 		public String units;
 		
 		public String handlerKey;
-
+		
 		public Map<Locale, String> preferredNamesByLocale = new HashMap<Locale, String>();
 		
 		/**
@@ -357,13 +358,15 @@ public class ConceptFormController extends SimpleFormController {
 				if (descriptionsByLocale.get(locale) == null)
 					descriptionsByLocale.put(locale, new ConceptDescription(null, locale));
 				
-				synonymsByLocale.put(locale, ListUtils.lazyList(synonymsByLocale.get(locale), FactoryUtils.instantiateFactory(ConceptName.class)));
-				indexTermsByLocale
-				        .put(locale, ListUtils.lazyList(indexTermsByLocale.get(locale), FactoryUtils.instantiateFactory(ConceptName.class)));
+				synonymsByLocale.put(locale, ListUtils.lazyList(synonymsByLocale.get(locale), FactoryUtils
+				        .instantiateFactory(ConceptName.class)));
+				indexTermsByLocale.put(locale, ListUtils.lazyList(indexTermsByLocale.get(locale), FactoryUtils
+				        .instantiateFactory(ConceptName.class)));
 			}
 			
 			// turn the list objects into lazy lists
-			mappings = ListUtils.lazyList(new Vector(concept.getConceptMappings()), FactoryUtils.instantiateFactory(ConceptMap.class));
+			mappings = ListUtils.lazyList(new Vector(concept.getConceptMappings()), FactoryUtils
+			        .instantiateFactory(ConceptMap.class));
 			
 			if (concept.isNumeric()) {
 				ConceptNumeric cn = (ConceptNumeric) concept;
@@ -422,7 +425,9 @@ public class ConceptFormController extends SimpleFormController {
 						if (!synonym.isVoided())
 							synonym.setVoidReason(null);
 						else if (synonym.isVoided() && !StringUtils.hasText(synonym.getVoidReason()))
-							synonym.setVoidReason(Context.getMessageSourceService().getMessage("general.default.voidReason"));
+							synonym
+							        .setVoidReason(Context.getMessageSourceService()
+							                .getMessage("general.default.voidReason"));
 					}
 				}
 				
@@ -437,12 +442,14 @@ public class ConceptFormController extends SimpleFormController {
 						if (!indexTerm.isVoided())
 							indexTerm.setVoidReason(null);
 						else if (indexTerm.isVoided() && !StringUtils.hasText(indexTerm.getVoidReason()))
-							indexTerm.setVoidReason(Context.getMessageSourceService().getMessage("Concept.name.default.voidReason"));
+							indexTerm.setVoidReason(Context.getMessageSourceService().getMessage(
+							    "Concept.name.default.voidReason"));
 					}
 				}
 				
 				ConceptDescription descInLocale = descriptionsByLocale.get(locale);
-				if (StringUtils.hasLength(descInLocale.getDescription()) && !concept.getDescriptions().contains(descInLocale)) {
+				if (StringUtils.hasLength(descInLocale.getDescription())
+				        && !concept.getDescriptions().contains(descInLocale)) {
 					concept.addDescription(descInLocale);
 				}
 			}
@@ -754,7 +761,7 @@ public class ConceptFormController extends SimpleFormController {
 		public List<Form> getFormsInUse() {
 			return Context.getFormService().getFormsContainingConcept(concept);
 		}
-
+		
 		/**
 		 * Get the other concept questions that this concept is declared as an answer for
 		 * 

@@ -369,25 +369,23 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	@Verifies(value = "should find object given valid uuid", method = "getPrivilegeByUuid(String)")
-	public void getPrivilegeByUuid_shouldFindObjectGivenValidUuid()
-			throws Exception {
+	public void getPrivilegeByUuid_shouldFindObjectGivenValidUuid() throws Exception {
 		executeDataSet(XML_FILENAME);
 		String uuid = "d979d066-15e6-467c-9d4b-cb575ef97f0f";
 		Privilege privilege = Context.getUserService().getPrivilegeByUuid(uuid);
 		Assert.assertEquals("Some Privilege", privilege.getPrivilege());
 	}
-
+	
 	/**
 	 * @see {@link UserService#getPrivilegeByUuid(String)}
 	 * 
 	 */
 	@Test
 	@Verifies(value = "should return null if no object found with given uuid", method = "getPrivilegeByUuid(String)")
-	public void getPrivilegeByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid()
-			throws Exception {
+	public void getPrivilegeByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
 		Assert.assertNull(Context.getUserService().getPrivilegeByUuid("some invalid uuid"));
 	}
-
+	
 	/**
 	 * @see {@link UserService#getRoleByUuid(String)}
 	 * 
@@ -399,18 +397,17 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		Role role = Context.getUserService().getRoleByUuid(uuid);
 		Assert.assertEquals("Provider", role.getRole());
 	}
-
+	
 	/**
 	 * @see {@link UserService#getRoleByUuid(String)}
 	 * 
 	 */
 	@Test
 	@Verifies(value = "should return null if no object found with given uuid", method = "getRoleByUuid(String)")
-	public void getRoleByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid()
-			throws Exception {
+	public void getRoleByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
 		Assert.assertNull(Context.getUserService().getRoleByUuid("some invalid uuid"));
 	}
-
+	
 	/**
 	 * @see {@link UserService#getUserByUuid(String)}
 	 * 
@@ -420,17 +417,16 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	public void getUserByUuid_shouldFindObjectGivenValidUuid() throws Exception {
 		String uuid = "c1d8f5c2-e131-11de-babe-001e378eb67e";
 		User user = Context.getUserService().getUserByUuid(uuid);
-		Assert.assertEquals(501, (int)user.getUserId());
+		Assert.assertEquals(501, (int) user.getUserId());
 	}
-
+	
 	/**
 	 * @see {@link UserService#getUserByUuid(String)}
 	 * 
 	 */
 	@Test
 	@Verifies(value = "should return null if no object found with given uuid", method = "getUserByUuid(String)")
-	public void getUserByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid()
-			throws Exception {
+	public void getUserByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
 		Assert.assertNull(Context.getUserService().getUserByUuid("some invalid uuid"));
 	}
 	
@@ -467,7 +463,8 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link UserService#changeQuestionAnswer(User,String,String)}
 	 */
 	@Test
-	@Ignore // TODO fix: the question not sticking - null expected:<[the question]> but was:<[]>
+	@Ignore
+	// TODO fix: the question not sticking - null expected:<[the question]> but was:<[]>
 	@Verifies(value = "should change the secret question and answer for given user", method = "changeQuestionAnswer(User,String,String)")
 	public void changeQuestionAnswer_shouldChangeTheSecretQuestionAndAnswerForGivenUser() throws Exception {
 		UserService userService = Context.getUserService();
@@ -772,7 +769,6 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		Context.getUserService().purgeUser(user, true);
 	}
 	
-	
 	/**
 	 * @see {@link UserService#removeUserProperty(User,String)}
 	 */
@@ -782,7 +778,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(XML_FILENAME);
 		
 		UserService userService = Context.getUserService();
-		User user = userService.getUser(505);		
+		User user = userService.getUser(505);
 		Assert.assertNotSame("", user.getUserProperty("some key"));
 		
 		userService.removeUserProperty(user, "some key");
@@ -829,7 +825,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		Privilege p = new Privilege("new privilege name", "new privilege desc");
 		Context.getUserService().savePrivilege(p);
 		
-		Privilege savedPrivilege = Context.getUserService().getPrivilege("new privilege name");		
+		Privilege savedPrivilege = Context.getUserService().getPrivilege("new privilege name");
 		Assert.assertNotNull(savedPrivilege);
 		
 	}
@@ -926,40 +922,40 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		
 		// stack overflow error getting thrown in handlers 
 	}
-
+	
 	/**
-     * @see {@link UserService#getUsersByPerson(Person,null)}
-     * 
-     */
-    @Test
-    @Verifies(value = "should fetch all accounts for a person when include retired is true", method = "getUsersByPerson(Person,null)")
-    public void getUsersByPerson_shouldFetchAllAccountsForAPersonWhenIncludeRetiredIsTrue() throws Exception {
-    	executeDataSet(XML_FILENAME);
-    	Person person = new Person(508);
-	    List<User> users = Context.getUserService().getUsersByPerson(person, true);
-	    Assert.assertEquals(3, users.size());
-    }
-
+	 * @see {@link UserService#getUsersByPerson(Person,null)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should fetch all accounts for a person when include retired is true", method = "getUsersByPerson(Person,null)")
+	public void getUsersByPerson_shouldFetchAllAccountsForAPersonWhenIncludeRetiredIsTrue() throws Exception {
+		executeDataSet(XML_FILENAME);
+		Person person = new Person(508);
+		List<User> users = Context.getUserService().getUsersByPerson(person, true);
+		Assert.assertEquals(3, users.size());
+	}
+	
 	/**
-     * @see {@link UserService#getUsersByPerson(Person,null)}
-     * 
-     */
-    @Test
-    @Verifies(value = "should not fetch retired accounts when include retired is false", method = "getUsersByPerson(Person,null)")
-    public void getUsersByPerson_shouldNotFetchRetiredAccountsWhenIncludeRetiredIsFalse() throws Exception {
-    	executeDataSet(XML_FILENAME);
-    	Person person = new Person(508);
-	    List<User> users = Context.getUserService().getUsersByPerson(person, false);
-	    Assert.assertEquals(2, users.size());
-    }
-
+	 * @see {@link UserService#getUsersByPerson(Person,null)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should not fetch retired accounts when include retired is false", method = "getUsersByPerson(Person,null)")
+	public void getUsersByPerson_shouldNotFetchRetiredAccountsWhenIncludeRetiredIsFalse() throws Exception {
+		executeDataSet(XML_FILENAME);
+		Person person = new Person(508);
+		List<User> users = Context.getUserService().getUsersByPerson(person, false);
+		Assert.assertEquals(2, users.size());
+	}
+	
 	/**
-     * @see {@link UserService#retireUser(User,String)}
-     * 
-     */
-    @Test
-    @Verifies(value = "should retire user and set attributes", method = "retireUser(User,String)")
-    public void retireUser_shouldRetireUserAndSetAttributes() throws Exception {
+	 * @see {@link UserService#retireUser(User,String)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should retire user and set attributes", method = "retireUser(User,String)")
+	public void retireUser_shouldRetireUserAndSetAttributes() throws Exception {
 		UserService userService = Context.getUserService();
 		User user = userService.getUser(502);
 		userService.retireUser(user, "because");
@@ -983,7 +979,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		Assert.assertNull(user.getRetiredBy());
 		Assert.assertNull(user.getRetireReason());
 	}
-
+	
 	/**
 	 * Test that user is not created with a weak password
 	 * 

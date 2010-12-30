@@ -46,7 +46,7 @@ public class RequireVoidReasonVoidHandlerTest extends BaseContextSensitiveTest {
 	 */
 	@Test(expected = IllegalArgumentException.class)
 	@Verifies(value = "should throw IllegalArgumentException if Encounter voidReason is empty", method = "handle(Voidable,User,Date,String)")
-	public void handle_shouldThrowIllegalArgumentExceptionIfEncounterVoidReasonIsEmpty() throws Exception {	
+	public void handle_shouldThrowIllegalArgumentExceptionIfEncounterVoidReasonIsEmpty() throws Exception {
 		Encounter e = Context.getEncounterService().getEncounter(3);
 		Context.getEncounterService().voidEncounter(e, "");
 	}
@@ -69,8 +69,8 @@ public class RequireVoidReasonVoidHandlerTest extends BaseContextSensitiveTest {
 	public void handle_shouldNotThrowExceptionIfVoidReasonIsNotBlank() throws Exception {
 		Obs o = Context.getObsService().getObs(7);
 		Context.getObsService().voidObs(o, "Some Reason");
-	}	
-
+	}
+	
 	/**
 	 * @see {@link RequireVoidReasonVoidHandler#handle(Voidable,User,Date,String)}
 	 */

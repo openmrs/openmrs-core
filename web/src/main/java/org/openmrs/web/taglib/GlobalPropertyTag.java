@@ -52,7 +52,7 @@ public class GlobalPropertyTag extends TagSupport {
 		if (Context.isAuthenticated()) {
 			if (StringUtils.hasText(listSeparator)) {
 				String stringVal = (String) Context.getAdministrationService().getGlobalProperty(key, defaultValue);
-				if(stringVal.trim().length() == 0)
+				if (stringVal.trim().length() == 0)
 					value = Collections.emptyList();
 				else
 					value = Arrays.asList(stringVal.split(listSeparator));

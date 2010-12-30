@@ -196,7 +196,7 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable {
 	 * @return boolean true/false whether or not they are the same objects
 	 */
 	@Override
-    public boolean equals(Object obj) {
+	public boolean equals(Object obj) {
 		if (obj instanceof User) {
 			User user = (User) obj;
 			
@@ -215,7 +215,7 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable {
 	 * @see org.openmrs.Person#hashCode()
 	 */
 	@Override
-    public int hashCode() {
+	public int hashCode() {
 		if (getUserId() == null)
 			return super.hashCode();
 		return getUserId().hashCode();
@@ -339,7 +339,7 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable {
 	 * @deprecated see {@link #setPerson(Person)}
 	 */
 	@Deprecated
-    public void setPersonId(Integer personId) {
+	public void setPersonId(Integer personId) {
 		throw new APIException("You need to call setPerson(Person)");
 	}
 	
@@ -347,18 +347,18 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable {
 	 * @return the person
 	 * @since 1.6
 	 */
-    public Person getPerson() {
-    	return person;
-    }
+	public Person getPerson() {
+		return person;
+	}
 	
 	/**
 	 * @param person the person to set
 	 * @since 1.6
 	 */
-    public void setPerson(Person person) {
-    	this.person = person;
-    }
-
+	public void setPerson(Person person) {
+		this.person = person;
+	}
+	
 	/**
 	 * @return Returns the username.
 	 */
@@ -390,7 +390,7 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable {
 	}
 	
 	@Override
-    public String toString() {
+	public String toString() {
 		return username;
 	}
 	
@@ -486,18 +486,18 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable {
 	}
 	
 	/**
-     * @see org.openmrs.Person#getNames()
-     */
-    public Set<PersonName> getNames() {
-	    return person.getNames();
-    }
-
+	 * @see org.openmrs.Person#getNames()
+	 */
+	public Set<PersonName> getNames() {
+		return person.getNames();
+	}
+	
 	/**
 	 * @deprecated use <tt>getGivenName</tt> on <tt>Person</tt>
 	 * @return String user's first name
 	 */
 	@Deprecated
-    public String getFirstName() {
+	public String getFirstName() {
 		return getGivenName();
 	}
 	
@@ -506,7 +506,7 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable {
 	 * @return String user's last name
 	 */
 	@Deprecated
-    public String getLastName() {
+	public String getLastName() {
 		return getFamilyName();
 	}
 	

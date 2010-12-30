@@ -83,13 +83,13 @@ public class UserListItem extends PersonListItem {
 	public void setUsername(String username) {
 		this.username = username;
 	}
-
-    public Boolean getRetired() {
-    	return retired;
-    }
-
-    public void setRetired(Boolean retired) {
-    	this.retired = retired;
-    }
+	
+	public Boolean getRetired() {
+		return retired;
+	}
+	
+	public void setRetired(Boolean retired) {
+		this.retired = retired;
+	}
 	
 }

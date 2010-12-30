@@ -69,9 +69,7 @@ public class LocationTagController {
 	 * Add a new LocationTag (quickly, without a dedicated page)
 	 */
 	@RequestMapping("/admin/locations/locationTagAdd")
-	public String add(@RequestParam("name") String name,
-	                  @RequestParam("description") String description,
-	                  WebRequest request) {
+	public String add(@RequestParam("name") String name, @RequestParam("description") String description, WebRequest request) {
 		
 		if (!StringUtils.hasText(name)) {
 			request.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, Context.getMessageSourceService().getMessage(
@@ -93,8 +91,7 @@ public class LocationTagController {
 	 * Display the edit page for LocationTag
 	 */
 	@RequestMapping(method = RequestMethod.GET, value = "/admin/locations/locationTagEdit")
-	public void showEdit(@RequestParam("locationTagId") LocationTag locationTag,
-	                     ModelMap model) {
+	public void showEdit(@RequestParam("locationTagId") LocationTag locationTag, ModelMap model) {
 		model.addAttribute("locationTag", locationTag); // this will go in the session
 		List<Location> locations = Context.getLocationService().getLocationsByTag(locationTag);
 		if (locations != null && locations.size() > 0)
@@ -105,10 +102,8 @@ public class LocationTagController {
 	 * Handle submission for editing a LocationTag (for editing its name/description)
 	 */
 	@RequestMapping(method = RequestMethod.POST, value = "/admin/locations/locationTagEdit")
-	public String handleEditSubmission(WebRequest request,
-	                                   @ModelAttribute("locationTag") LocationTag locationTag,
-	                                   BindingResult result,
-	                                   SessionStatus status) {
+	public String handleEditSubmission(WebRequest request, @ModelAttribute("locationTag") LocationTag locationTag,
+	                                   BindingResult result, SessionStatus status) {
 		
 		new LocationTagValidator().validate(locationTag, result);
 		if (result.hasErrors()) {

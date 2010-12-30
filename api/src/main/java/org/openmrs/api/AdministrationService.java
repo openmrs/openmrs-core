@@ -675,7 +675,7 @@ public interface AdministrationService extends OpenmrsService {
 	 */
 	@Transactional(readOnly = true)
 	public Set<Locale> getPresentationLocales();
-
+	
 	/**
 	 * Returns a global property according to the type specified
 	 * 

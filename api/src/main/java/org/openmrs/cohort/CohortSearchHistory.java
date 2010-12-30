@@ -278,7 +278,7 @@ public class CohortSearchHistory extends AbstractReportObject {
 	public Cohort getPatientSet(int i, boolean useCache, EvaluationContext context) {
 		checkArrayLengths();
 		Cohort ret = null;
-		synchronized(this) {
+		synchronized (this) {
 			if (useCache) {
 				ret = cachedResults.get(i);
 			}

@@ -41,7 +41,7 @@ public class AuditFieldController extends SimpleFormController {
 		setCommandName("auditField");
 		setCommandClass(java.lang.String.class);
 	}
-
+	
 	/**
 	 * The onSubmit function receives the form/command object that was modified by the input form
 	 * and saves it to the db
@@ -60,7 +60,7 @@ public class AuditFieldController extends SimpleFormController {
 		
 		if (Context.isAuthenticated()) {
 			view = getSuccessView();
-
+			
 			try {
 				int i = Context.getFormService().mergeDuplicateFields();
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ARGS, i);
@@ -68,7 +68,7 @@ public class AuditFieldController extends SimpleFormController {
 			}
 			catch (APIException e) {
 				log.warn("Error in mergeDuplicateFields", e);
-
+				
 				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Form.auditError");
 			}
 		}

@@ -120,7 +120,6 @@ public class DrugOrderPatientFilter extends AbstractPatientFilter implements Pat
 		return service.getPatientsHavingDrugOrder(input == null ? null : input.getMemberIds(), drugIds, onDate);
 	}
 	
-	
 	public String getDescription() {
 		// TODO: internationalize this
 		StringBuilder sb = new StringBuilder();
