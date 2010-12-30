@@ -57,8 +57,8 @@ import org.openmrs.logic.op.Within;
 public interface LogicCriteria {
 	
 	/**
-	 * Create a new LogicExpression using the <code>operand</code> and <code>operator</code> and then append them
-	 * to the current LogicCriteria
+	 * Create a new LogicExpression using the <code>operand</code> and <code>operator</code> and
+	 * then append them to the current LogicCriteria
 	 * 
 	 * @param operator one of the Operator object to be appended to the current LogicCriteria
 	 * @param operand one of the Operand object
@@ -373,7 +373,7 @@ public interface LogicCriteria {
 	/**
 	 * Add a duration expression to the current LogicCriteria
 	 * 
-	 * @param duration the {@link Duration} object 
+	 * @param duration the {@link Duration} object
 	 * @return LogicCriteria containing duration expression
 	 * @see Within
 	 */
@@ -390,9 +390,7 @@ public interface LogicCriteria {
 	public void setLogicParameters(Map<String, Object> logicParameters);
 	
 	/**
-	 * Method to get the root token of the current LogicCriteria.
-	 * 
-	 * <code>
+	 * Method to get the root token of the current LogicCriteria. <code>
 	 * logicService.parseString("'CD4 COUNT'").getRootToken().equals("CD4 COUNT");
 	 * </code>
 	 * 

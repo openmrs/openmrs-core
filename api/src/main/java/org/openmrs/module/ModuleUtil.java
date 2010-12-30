@@ -693,8 +693,7 @@ public class ModuleUtil {
 	 * @return AbstractRefreshableApplicationContext The newly refreshed application context.
 	 */
 	public static AbstractRefreshableApplicationContext refreshApplicationContext(AbstractRefreshableApplicationContext ctx,
-	                                                                              boolean isOpenmrsStartup,
-	                                                                              Module startedModule) {
+	        boolean isOpenmrsStartup, Module startedModule) {
 		//notify all started modules that we are about to refresh the context
 		for (Module module : ModuleFactory.getStartedModules()) {
 			try {
@@ -915,8 +914,8 @@ public class ModuleUtil {
 	}
 	
 	/**
-	 * This loops over all FILES in this jar to get the package names.  If there is an
-	 * empty directory in this jar it is not returned as a providedPackage. 
+	 * This loops over all FILES in this jar to get the package names. If there is an empty
+	 * directory in this jar it is not returned as a providedPackage.
 	 * 
 	 * @param file jar file to look into
 	 * @return list of strings of package names in this jar

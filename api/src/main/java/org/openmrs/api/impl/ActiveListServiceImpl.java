@@ -61,7 +61,7 @@ public class ActiveListServiceImpl extends BaseOpenmrsService implements ActiveL
 	 */
 	@Override
 	public <T extends ActiveListItem> List<T> getActiveListItems(Class<T> clazz, Person p, ActiveListType type)
-	                                                                                                           throws APIException {
+	        throws APIException {
 		return dao.getActiveListItems(clazz, p, type);
 	}
 	

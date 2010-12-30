@@ -200,7 +200,7 @@ public interface UserDAO {
 	 * @see UserService#getUsers(String, List, boolean, Integer, Integer)
 	 */
 	public List<User> getUsers(String name, List<Role> roles, boolean includeRetired, Integer start, Integer length)
-	                                                                                                                throws DAOException;
+	        throws DAOException;
 	
 	/**
 	 * @see UserService#getCountOfUsers(String, List, boolean)

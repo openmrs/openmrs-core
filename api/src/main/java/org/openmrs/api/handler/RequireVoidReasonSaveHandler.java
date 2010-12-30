@@ -25,9 +25,10 @@ import org.openmrs.aop.RequiredDataAdvice;
 import org.openmrs.api.APIException;
 
 /**
- * This handler makes sure the when a voided object is saved, that the reason
- * field is entered for supported objects
- * Note: Obs is not included in the supported types because the ObsService handles this explicitly
+ * This handler makes sure the when a voided object is saved, that the reason field is entered for
+ * supported objects Note: Obs is not included in the supported types because the ObsService handles
+ * this explicitly
+ * 
  * @see RequiredDataAdvice
  * @see SaveHandler
  * @see RequiredDataAdvice
@@ -38,6 +39,7 @@ public class RequireVoidReasonSaveHandler implements SaveHandler<Voidable> {
 	
 	/**
 	 * Validates that the voidReason is non-null and non-empty for supported objects
+	 * 
 	 * @should throw APIException if Patient voidReason is null
 	 * @should throw APIException if Encounter voidReason is empty
 	 * @should throw APIException if Encounter voidReason is blank

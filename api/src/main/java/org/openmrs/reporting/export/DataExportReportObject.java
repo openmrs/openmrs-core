@@ -133,7 +133,7 @@ public class DataExportReportObject extends AbstractReportObject implements Seri
 	 * @param filterId only one of this or cohortId should be non-null
 	 */
 	public void addCohortColumn(String columnName, Integer cohortId, Integer filterId, Integer patientSearchId,
-	                            String valueIfTrue, String valueIfFalse) {
+	        String valueIfTrue, String valueIfFalse) {
 		columns.add(new CohortColumn(columnName, cohortId, filterId, patientSearchId, valueIfTrue, valueIfFalse));
 	}
 	
@@ -243,8 +243,7 @@ public class DataExportReportObject extends AbstractReportObject implements Seri
 	}
 	
 	/**
-	 * Quickly intersects two cohorts, possibly mutating the inputs.
-	 * Treats null as "all patients".
+	 * Quickly intersects two cohorts, possibly mutating the inputs. Treats null as "all patients".
 	 * 
 	 * @param a The first Cohort
 	 * @param b The second Cohort

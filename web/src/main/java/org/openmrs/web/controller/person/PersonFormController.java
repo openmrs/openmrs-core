@@ -81,7 +81,7 @@ public class PersonFormController extends SimpleFormController {
 	 *      org.springframework.validation.BindException)
 	 */
 	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object obj,
-	                                             BindException errors) throws Exception {
+	        BindException errors) throws Exception {
 		Person person = (Person) obj;
 		
 		if (!Context.isAuthenticated()) {

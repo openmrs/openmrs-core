@@ -43,7 +43,7 @@ public class DWROrderService {
 	 * to refresh view
 	 */
 	public boolean createDrugOrder(Integer patientId, String drugId, Double dose, String units, String frequency,
-	                               String startDate, String instructions) throws Exception {
+	        String startDate, String instructions) throws Exception {
 		log.debug("PatientId is " + patientId + " and drugId is " + drugId + " and dose is " + dose + " and units are "
 		        + units + " and frequency is " + frequency + " and startDate is " + startDate + " and instructions are "
 		        + instructions);
@@ -221,21 +221,21 @@ public class DWROrderService {
 	}
 	
 	public Vector<DrugOrderListItem> getCurrentOtherDrugOrdersByPatientIdDrugSetId(Integer patientId,
-	                                                                               String displayDrugSetIds) {
+	        String displayDrugSetIds) {
 		log.debug("in getCurrentOtherDrugOrdersBy...() method");
 		
 		return this.getOtherDrugOrdersByPatientIdDrugSetId(patientId, displayDrugSetIds, OrderService.SHOW_CURRENT);
 	}
 	
 	public Vector<DrugOrderListItem> getCompletedOtherDrugOrdersByPatientIdDrugSetId(Integer patientId,
-	                                                                                 String displayDrugSetIds) {
+	        String displayDrugSetIds) {
 		log.debug("in getCompletedOtherDrugOrdersBy...() method");
 		
 		return this.getOtherDrugOrdersByPatientIdDrugSetId(patientId, displayDrugSetIds, OrderService.SHOW_COMPLETE);
 	}
 	
 	public Vector<DrugOrderListItem> getOtherDrugOrdersByPatientIdDrugSetId(Integer patientId, String displayDrugSetIds,
-	                                                                        int whatToShow) {
+	        int whatToShow) {
 		log.debug("in getOtherDrugOrdersBy...() method");
 		
 		Vector<DrugOrderListItem> ret = null;
@@ -305,7 +305,7 @@ public class DWROrderService {
 	}
 	
 	public void discontinueDrugSet(Integer patientId, String drugSetId, String discontinueReason, String discontinueDate)
-	                                                                                                                     throws DWRException {
+	        throws DWRException {
 		log.debug("in discontinueDrugSet() method");
 		
 		Patient p = Context.getPatientService().getPatient(patientId);
@@ -354,7 +354,7 @@ public class DWROrderService {
 	 * This method would normally have a return type of void, but DWR requires a callback 
 	 */
 	public boolean discontinueCurrentDrugOrders(Integer patientId, String discontinueReason, String discontinueDate)
-	                                                                                                                throws DWRException {
+	        throws DWRException {
 		log.debug("beginning method");
 		
 		boolean ret = true;
@@ -388,7 +388,7 @@ public class DWROrderService {
 	}
 	
 	private Map<String, List<DrugOrder>> getOrdersByDrugSet(Integer patientId, String drugSetIds, String delimiter,
-	                                                        int whatToShow) {
+	        int whatToShow) {
 		Map<String, List<DrugOrder>> ret = null;
 		
 		if (patientId != null && drugSetIds != null) {

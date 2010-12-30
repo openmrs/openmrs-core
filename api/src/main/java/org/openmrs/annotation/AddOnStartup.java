@@ -22,21 +22,21 @@ import java.lang.annotation.Target;
 
 /**
  * Annotation used to describe constants in the PrivilegeConstants or RoleConstants class.
- * Constant`s description or/and it`s belonging to core constants can be
- * marked with this annotation.
- *
- * If you want constant to be put into a database at app startup, just mark it:
+ * Constant`s description or/and it`s belonging to core constants can be marked with this
+ * annotation. If you want constant to be put into a database at app startup, just mark it:
+ * 
  * <pre>
  *      &#64;AddOnStartup(description = "Constant description")
  *      public static final String MANAGE_SMTH = "Manage smth";
  * </pre>
- *
+ * 
  * Or if you want to add only a constant`s description, mark it as "not core":
+ * 
  * <pre>
  *      &#64;AddOnStartup(description = "Constant description", core = false)
  *      public static final String CONSTANT_SMTH = "Manage smth";
  * </pre>
- *
+ * 
  * @see org.openmrs.util.RoleConstants
  * @see org.openmrs.util.PrivilegeConstants
  * @see org.openmrs.util.OpenmrsConstants

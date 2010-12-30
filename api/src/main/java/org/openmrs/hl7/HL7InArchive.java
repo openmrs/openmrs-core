@@ -173,7 +173,7 @@ public class HL7InArchive extends BaseOpenmrsObject {
 	 * sets the flag for hl7 data having been loaded from the filesystem
 	 * 
 	 * @since 1.7
-	 * @param the status to set 
+	 * @param the status to set
 	 */
 	public void setLoaded(boolean loaded) {
 		this.loaded = loaded;

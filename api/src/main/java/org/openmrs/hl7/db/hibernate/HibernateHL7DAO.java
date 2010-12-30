@@ -157,11 +157,12 @@ public class HibernateHL7DAO implements HL7DAO {
 	}
 	
 	/**
-	 * @see org.openmrs.hl7.db.HL7DAO#getHL7InQueueBatch(java.lang.Class, int, int, java.lang.Integer, java.lang.String)
+	 * @see org.openmrs.hl7.db.HL7DAO#getHL7InQueueBatch(java.lang.Class, int, int,
+	 *      java.lang.Integer, java.lang.String)
 	 */
 	@SuppressWarnings( { "rawtypes", "unchecked" })
 	public <T> List<T> getHL7Batch(Class clazz, int start, int length, Integer messageState, String query)
-	                                                                                                      throws DAOException {
+	        throws DAOException {
 		Criteria crit = getHL7SearchCriteria(clazz, messageState, query);
 		crit.setFirstResult(start);
 		crit.setMaxResults(length);
@@ -170,7 +171,8 @@ public class HibernateHL7DAO implements HL7DAO {
 	}
 	
 	/**
-	 * @see org.openmrs.hl7.db.HL7DAO#countHL7s(java.lang.Class, java.lang.Integer, java.lang.String)
+	 * @see org.openmrs.hl7.db.HL7DAO#countHL7s(java.lang.Class, java.lang.Integer,
+	 *      java.lang.String)
 	 */
 	@SuppressWarnings("rawtypes")
 	public Integer countHL7s(Class clazz, Integer messageState, String query) {

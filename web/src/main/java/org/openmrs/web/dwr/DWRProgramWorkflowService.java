@@ -117,7 +117,6 @@ public class DWRProgramWorkflowService {
 	 * the completion date, the PatientProgram will not be updated.
 	 * 
 	 * @deprecated use {@link #updatePatientProgram(Integer, String, String, Integer)}
-	 * 
 	 * @param patientProgramId
 	 * @param enrollmentDateYmd
 	 * @param completionDateYmd
@@ -125,20 +124,21 @@ public class DWRProgramWorkflowService {
 	 */
 	@Deprecated
 	public void updatePatientProgram(Integer patientProgramId, String enrollmentDateYmd, String completionDateYmd)
-	                                                                                                              throws ParseException {
+	        throws ParseException {
 		updatePatientProgram(patientProgramId, enrollmentDateYmd, completionDateYmd, null);
 	}
 	
 	/**
-	 * Updates enrollment date, completion date, and location for a PatientProgram. 
-	 * Compares @param enrollmentDateYmd with {@link PatientProgram#getDateEnrolled()} 
-	 * compares @param completionDateYmd with {@link PatientProgram#getDateCompleted()},
-	 * compares @param locationId with {@link PatientProgram#getLocation()}.
-	 * At least one of these comparisons must indicate a change in order to update the PatientProgram. 
-	 * In other words, if neither the @param enrollmentDateYmd, the @param completionDateYmd, or the 
-	 * @param locationId match with the persisted object, then the PatientProgram will not be updated. 
-	 * Also, if the enrollment date comes after the completion date, the PatientProgram will not be updated.
+	 * Updates enrollment date, completion date, and location for a PatientProgram. Compares @param
+	 * enrollmentDateYmd with {@link PatientProgram#getDateEnrolled()} compares @param
+	 * completionDateYmd with {@link PatientProgram#getDateCompleted()}, compares @param locationId
+	 * with {@link PatientProgram#getLocation()}. At least one of these comparisons must indicate a
+	 * change in order to update the PatientProgram. In other words, if neither the @param
+	 * enrollmentDateYmd, the @param completionDateYmd, or the
 	 * 
+	 * @param locationId match with the persisted object, then the PatientProgram will not be
+	 *            updated. Also, if the enrollment date comes after the completion date, the
+	 *            PatientProgram will not be updated.
 	 * @param patientProgramId
 	 * @param enrollmentDateYmd
 	 * @param completionDateYmd
@@ -146,7 +146,7 @@ public class DWRProgramWorkflowService {
 	 * @throws ParseException
 	 */
 	public void updatePatientProgram(Integer patientProgramId, String enrollmentDateYmd, String completionDateYmd,
-	                                 Integer locationId) throws ParseException {
+	        Integer locationId) throws ParseException {
 		PatientProgram pp = Context.getProgramWorkflowService().getPatientProgram(patientProgramId);
 		Location loc = null;
 		if (locationId != null) {
@@ -211,7 +211,7 @@ public class DWRProgramWorkflowService {
 	}
 	
 	public void changeToState(Integer patientProgramId, Integer programWorkflowId, Integer programWorkflowStateId,
-	                          String onDateDMY) throws ParseException {
+	        String onDateDMY) throws ParseException {
 		ProgramWorkflowService s = Context.getProgramWorkflowService();
 		PatientProgram pp = s.getPatientProgram(patientProgramId);
 		ProgramWorkflowState st = pp.getProgram().getWorkflow(programWorkflowId).getState(programWorkflowStateId);

@@ -142,8 +142,8 @@ public class HibernateProgramWorkflowDAO implements ProgramWorkflowDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<PatientProgram> getPatientPrograms(Patient patient, Program program, Date minEnrollmentDate,
-	                                               Date maxEnrollmentDate, Date minCompletionDate, Date maxCompletionDate,
-	                                               boolean includeVoided) throws DAOException {
+	        Date maxEnrollmentDate, Date minCompletionDate, Date maxCompletionDate, boolean includeVoided)
+	        throws DAOException {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(PatientProgram.class);
 		if (patient != null) {
 			crit.add(Expression.eq("patient", patient));

@@ -35,9 +35,9 @@ import org.springframework.util.StringUtils;
 
 /**
  * A Person in the system. This can be either a small person stub, or indicative of an actual
- * Patient in the system. This class holds the generic person things that both the stubs
- * and patients share. Things like birthdate, names, addresses, and attributes are all generified
- * into the person table (and hence this super class)
+ * Patient in the system. This class holds the generic person things that both the stubs and
+ * patients share. Things like birthdate, names, addresses, and attributes are all generified into
+ * the person table (and hence this super class)
  * 
  * @see org.openmrs.Patient
  */
@@ -734,9 +734,9 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	/**
-	 * Convenience method to calculate this person's age based on the birthdate
-	 * For a person who lived 1990 to 2000, age would be -5 in 1985, 5 in 1995, 10 in 2000, and 10 2010.
-	 *
+	 * Convenience method to calculate this person's age based on the birthdate For a person who
+	 * lived 1990 to 2000, age would be -5 in 1985, 5 in 1995, 10 in 2000, and 10 2010.
+	 * 
 	 * @return Returns age as an Integer.
 	 * @should get correct age after death
 	 */
@@ -746,7 +746,7 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	
 	/**
 	 * Convenience method: calculates the person's age on a given date based on the birthdate
-	 *
+	 * 
 	 * @param onDate (null defaults to today)
 	 * @return int value of the person's age
 	 * @should get age before birthday

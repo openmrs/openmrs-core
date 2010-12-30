@@ -56,9 +56,9 @@ public class HtmlIncludeTag extends TagSupport {
 	private String file;
 	
 	/**
-	 * If true, will append &locale=en_US to the url for browser caching purposes
-	 * Should be used on files that contain spring message calls and should not be
-	 * cached across locales
+	 * If true, will append &locale=en_US to the url for browser caching purposes Should be used on
+	 * files that contain spring message calls and should not be cached across locales
+	 * 
 	 * @since 1.8
 	 */
 	private boolean appendLocale;

@@ -109,7 +109,7 @@ public class PatientFormController extends PersonFormController {
 	 */
 	@Override
 	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object object,
-	                                             BindException errors) throws Exception {
+	        BindException errors) throws Exception {
 		
 		Patient patient = (Patient) object;
 		
@@ -398,7 +398,7 @@ public class PatientFormController extends PersonFormController {
 	 */
 	@Override
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
-	                                BindException errors) throws Exception {
+	        BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
 		

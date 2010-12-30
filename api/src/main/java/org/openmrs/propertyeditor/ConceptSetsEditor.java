@@ -36,7 +36,7 @@ public class ConceptSetsEditor extends PropertyEditorSupport {
 	private Collection<ConceptSet> originalConceptSets = null;
 	
 	/**
-	 * Default constructor taking in the current sets on a concept 
+	 * Default constructor taking in the current sets on a concept
 	 * 
 	 * @param conceptSets the current object on the concept
 	 */

@@ -461,9 +461,8 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 */
 	@Deprecated
 	public List<ConceptWord> getConceptWords(String phrase, List<Locale> locales, boolean includeRetired,
-	                                         List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses,
-	                                         List<ConceptDatatype> requireDatatypes, List<ConceptDatatype> excludeDatatypes,
-	                                         Concept answerToConcept, Integer start, Integer size) {
+	        List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,
+	        List<ConceptDatatype> excludeDatatypes, Concept answerToConcept, Integer start, Integer size) {
 		
 		if (requireClasses == null)
 			requireClasses = new Vector<ConceptClass>();
@@ -525,8 +524,8 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 */
 	@Deprecated
 	public List<ConceptWord> findConcepts(String phrase, Locale locale, boolean includeRetired,
-	                                      List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses,
-	                                      List<ConceptDatatype> requireDatatypes, List<ConceptDatatype> excludeDatatypes) {
+	        List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,
+	        List<ConceptDatatype> excludeDatatypes) {
 		
 		List<Locale> locales = new Vector<Locale>();
 		locales.add(locale);
@@ -540,8 +539,8 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 */
 	@Deprecated
 	public List<ConceptWord> findConcepts(String phrase, List<Locale> locales, boolean includeRetired,
-	                                      List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses,
-	                                      List<ConceptDatatype> requireDatatypes, List<ConceptDatatype> excludeDatatypes) {
+	        List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,
+	        List<ConceptDatatype> excludeDatatypes) {
 		
 		return getConceptWords(phrase, locales, includeRetired, requireClasses, excludeClasses, requireDatatypes,
 		    excludeDatatypes, null, null, null);
@@ -556,7 +555,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 * @return
 	 */
 	private List<Concept> getConcepts(String name, Locale loc, boolean searchOnPhrase, List<ConceptClass> classes,
-	                                  List<ConceptDatatype> datatypes) {
+	        List<ConceptDatatype> datatypes) {
 		if (classes == null)
 			classes = new Vector<ConceptClass>();
 		if (datatypes == null)
@@ -1646,10 +1645,9 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 */
 	@Override
 	public List<ConceptSearchResult> getConcepts(String phrase, List<Locale> locales, boolean includeRetired,
-	                                             List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses,
-	                                             List<ConceptDatatype> requireDatatypes,
-	                                             List<ConceptDatatype> excludeDatatypes, Concept answersToConcept,
-	                                             Integer start, Integer size) throws APIException {
+	        List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,
+	        List<ConceptDatatype> excludeDatatypes, Concept answersToConcept, Integer start, Integer size)
+	        throws APIException {
 		
 		if (requireClasses == null)
 			requireClasses = new Vector<ConceptClass>();
@@ -1762,9 +1760,8 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 */
 	@Override
 	public Integer getCountOfConcepts(String phrase, List<Locale> locales, boolean includeRetired,
-	                                  List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses,
-	                                  List<ConceptDatatype> requireDatatypes, List<ConceptDatatype> excludeDatatypes,
-	                                  Concept answersToConcept) {
+	        List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,
+	        List<ConceptDatatype> excludeDatatypes, Concept answersToConcept) {
 		
 		return dao.getCountOfConceptWords(phrase, locales, includeRetired, requireClasses, excludeClasses, requireDatatypes,
 		    excludeDatatypes, answersToConcept, true);
@@ -1774,7 +1771,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 * @see ConceptService#getCountOfDrugs(String, Concept, boolean, boolean, boolean)
 	 */
 	public Integer getCountOfDrugs(String drugName, Concept concept, boolean searchOnPhrase, boolean searchDrugConceptNames,
-	                               boolean includeRetired) throws APIException {
+	        boolean includeRetired) throws APIException {
 		return dao.getCountOfDrugs(drugName, concept, searchOnPhrase, searchDrugConceptNames, includeRetired);
 	}
 	
@@ -1782,7 +1779,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 * @see ConceptService#getDrugs(String, Concept, boolean, boolean, boolean, Integer, Integer)
 	 */
 	public List<Drug> getDrugs(String drugName, Concept concept, boolean searchOnPhrase, boolean searchDrugConceptNames,
-	                           boolean includeRetired, Integer start, Integer length) throws APIException {
+	        boolean includeRetired, Integer start, Integer length) throws APIException {
 		return dao.getDrugs(drugName, concept, searchOnPhrase, searchDrugConceptNames, includeRetired, start, length);
 	}
 	

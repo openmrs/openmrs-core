@@ -53,11 +53,7 @@ public class HierarchyController {
 	}
 	
 	/**
-	 * Gets JSON formatted for jstree jquery plugin
-	 * [
-	 *   { data: ..., children: ...},
-	 *   ...
-	 * ]
+	 * Gets JSON formatted for jstree jquery plugin [ { data: ..., children: ...}, ... ]
 	 * 
 	 * @return
 	 * @throws IOException
@@ -80,8 +76,7 @@ public class HierarchyController {
 	}
 	
 	/**
-	 * { data: "Location's name (tags)",
-	 *   children: [ recursive calls to this method, ... ] }
+	 * { data: "Location's name (tags)", children: [ recursive calls to this method, ... ] }
 	 * 
 	 * @param loc
 	 * @return

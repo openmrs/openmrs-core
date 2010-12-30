@@ -18,9 +18,7 @@ import org.openmrs.logic.op.Operand;
 
 /**
  * Represents a duration of time &mdash; e.g., one year, two weeks, or 18 months. Used within
- * criteria.
- * 
- * Use the <code>Duration duration = Duration.days(5.0);</code> to get a duration object
+ * criteria. Use the <code>Duration duration = Duration.days(5.0);</code> to get a duration object
  * 
  * @see org.openmrs.logic.LogicCriteria
  */

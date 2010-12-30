@@ -81,6 +81,6 @@ public interface DataSetService {
 	 */
 	@SuppressWarnings("unchecked")
 	public DataSet evaluate(DataSetDefinition definition, Cohort inputCohort, EvaluationContext evalContext)
-	                                                                                                        throws APIException;
+	        throws APIException;
 	
 }

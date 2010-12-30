@@ -109,8 +109,8 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Encounter> getEncounters(Patient patient, Location location, Date fromDate, Date toDate,
-	                                     Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes,
-	                                     Collection<User> providers, boolean includeVoided) {
+	        Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes, Collection<User> providers,
+	        boolean includeVoided) {
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Encounter.class);
 		if (patient != null && patient.getPatientId() != null) {
 			crit.add(Expression.eq("patient", patient));

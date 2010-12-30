@@ -193,7 +193,7 @@ public interface PatientService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_PATIENTS })
 	public List<Patient> getPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,
-	                                 boolean matchIdentifierExactly) throws APIException;
+	        boolean matchIdentifierExactly) throws APIException;
 	
 	/**
 	 * @deprecated replaced by a call to {@link #getPatients(String, String, List, boolean)} with
@@ -203,7 +203,7 @@ public interface PatientService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_PATIENTS })
 	public List<Patient> getPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes)
-	                                                                                                             throws APIException;
+	        throws APIException;
 	
 	/**
 	 * @deprecated replaced by getPatients( ... )
@@ -307,9 +307,8 @@ public interface PatientService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_PATIENT_IDENTIFIERS })
 	public List<PatientIdentifier> getPatientIdentifiers(String identifier,
-	                                                     List<PatientIdentifierType> patientIdentifierTypes,
-	                                                     List<Location> locations, List<Patient> patients,
-	                                                     Boolean isPreferred) throws APIException;
+	        List<PatientIdentifierType> patientIdentifierTypes, List<Location> locations, List<Patient> patients,
+	        Boolean isPreferred) throws APIException;
 	
 	/**
 	 * @deprecated replaced by {@link #getPatientIdentifiers(String, List, List, List, Boolean)}
@@ -400,7 +399,7 @@ public interface PatientService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_IDENTIFIER_TYPES })
 	public List<PatientIdentifierType> getPatientIdentifierTypes(String name, String format, Boolean required,
-	                                                             Boolean hasCheckDigit) throws APIException;
+	        Boolean hasCheckDigit) throws APIException;
 	
 	/**
 	 * Get patientIdentifierType by internal identifier
@@ -462,7 +461,7 @@ public interface PatientService extends OpenmrsService {
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_IDENTIFIER_TYPES })
 	public PatientIdentifierType retirePatientIdentifierType(PatientIdentifierType patientIdentifierType, String reason)
-	                                                                                                                    throws APIException;
+	        throws APIException;
 	
 	/**
 	 * Unretire a type of patient identifier
@@ -475,7 +474,7 @@ public interface PatientService extends OpenmrsService {
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_IDENTIFIER_TYPES })
 	public PatientIdentifierType unretirePatientIdentifierType(PatientIdentifierType patientIdentifierType)
-	                                                                                                       throws APIException;
+	        throws APIException;
 	
 	/**
 	 * Purge PatientIdentifierType (cannot be undone)
@@ -717,7 +716,7 @@ public interface PatientService extends OpenmrsService {
 	 */
 	@Authorized(value = { PrivilegeConstants.VIEW_PATIENTS, PrivilegeConstants.EDIT_OBS }, requireAll = true)
 	public void saveCauseOfDeathObs(Patient patient, Date dateDied, Concept causeOfDeath, String otherReason)
-	                                                                                                         throws APIException;
+	        throws APIException;
 	
 	/**
 	 * Gets an identifier validator matching the given class.
@@ -969,5 +968,5 @@ public interface PatientService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_PATIENTS })
 	public List<Patient> getPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,
-	                                 boolean matchIdentifierExactly, Integer start, Integer length) throws APIException;
+	        boolean matchIdentifierExactly, Integer start, Integer length) throws APIException;
 }

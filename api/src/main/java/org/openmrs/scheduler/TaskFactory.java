@@ -23,7 +23,7 @@ import org.openmrs.util.OpenmrsClassLoader;
 public class TaskFactory {
 	
 	/** Singleton instance of the schedulable factory */
-	private final static TaskFactory factory = new TaskFactory();
+	private static final TaskFactory factory = new TaskFactory();
 	
 	/** Logger */
 	private static Log log = LogFactory.getLog(TaskFactory.class);

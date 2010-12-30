@@ -85,8 +85,8 @@ public interface HL7DAO {
 	
 	/**
 	 * Returns hl7s based on batch settings and filtered by a query
-	 * @param <T>
 	 * 
+	 * @param <T>
 	 * @param clazz
 	 * @param start
 	 * @param length

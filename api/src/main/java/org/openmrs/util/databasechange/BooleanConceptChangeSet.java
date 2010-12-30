@@ -104,7 +104,7 @@ public class BooleanConceptChangeSet implements CustomTaskChange {
 	 * @throws CustomChangeException
 	 */
 	private Integer findConceptByName(DatabaseConnection connection, Map<String, String[]> names)
-	                                                                                             throws CustomChangeException {
+	        throws CustomChangeException {
 		for (Map.Entry<String, String[]> e : names.entrySet()) {
 			String locale = e.getKey();
 			for (String name : e.getValue()) {
@@ -121,7 +121,8 @@ public class BooleanConceptChangeSet implements CustomTaskChange {
 	 * creates a concept
 	 * 
 	 * @param connection a DatabaseConnection
-	 * @param names a Map from locale to names in that locale, which will be added to the new concept
+	 * @param names a Map from locale to names in that locale, which will be added to the new
+	 *            concept
 	 * @throws CustomChangeException
 	 */
 	private Integer createConcept(DatabaseConnection connection, Map<String, String[]> names) throws CustomChangeException {
@@ -235,7 +236,7 @@ public class BooleanConceptChangeSet implements CustomTaskChange {
 	 * @throws CustomChangeException
 	 */
 	private void createGlobalProperties(DatabaseConnection connection, Integer trueConceptId, Integer falseConceptId)
-	                                                                                                                 throws CustomChangeException {
+	        throws CustomChangeException {
 		if (trueConceptId == null || trueConceptId < 1 || falseConceptId == null || falseConceptId < 1)
 			throw new CustomChangeException("Can't create global properties for true/false concepts with invalid conceptIds");
 		PreparedStatement updateStatement = null;

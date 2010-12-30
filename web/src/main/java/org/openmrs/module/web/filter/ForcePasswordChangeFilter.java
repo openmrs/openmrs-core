@@ -54,7 +54,7 @@ public class ForcePasswordChangeFilter implements Filter {
 	 *      javax.servlet.ServletResponse, javax.servlet.FilterChain)
 	 */
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
-	                                                                                         ServletException {
+	        ServletException {
 		String requestURI = ((HttpServletRequest) request).getRequestURI();
 		
 		if (Context.isAuthenticated()

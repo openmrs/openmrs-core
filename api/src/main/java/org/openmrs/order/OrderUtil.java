@@ -208,7 +208,7 @@ public class OrderUtil {
 	 * @should treat an asterisk as all other drugs
 	 */
 	public static Map<String, List<DrugOrder>> getDrugSetsByDrugSetIdList(List<DrugOrder> orderList, String drugSetIdList,
-	                                                                      String delimiter) {
+	        String delimiter) {
 		if (log.isDebugEnabled()) {
 			log.debug("in getdrugsetsbydrugsetidlist. orderlist: " + orderList + " drugsetidlist: " + drugSetIdList
 			        + " delimiter: " + delimiter);
@@ -292,7 +292,7 @@ public class OrderUtil {
 	 * @should get a map from concept to drugs orders in that drug set
 	 */
 	public static Map<Concept, List<DrugOrder>> getDrugSetsByConcepts(List<DrugOrder> drugOrders, List<Concept> drugSets)
-	                                                                                                                     throws APIException {
+	        throws APIException {
 		if (log.isDebugEnabled()) {
 			log.debug("in getdrugsetsbyconcepts. drugOrders: " + drugOrders + " drugSets: " + drugSets);
 		}

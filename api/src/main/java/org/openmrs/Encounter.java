@@ -410,7 +410,7 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 	
 	/**
 	 * @param provider The provider to set.
-	 * @deprecated use {@link #setProvider(Person)} 
+	 * @deprecated use {@link #setProvider(Person)}
 	 */
 	public void setProvider(User provider) {
 		setProvider(provider.getPerson());

@@ -29,7 +29,8 @@ public class Problem extends ActiveListItem implements Comparable<Problem> {
 	
 	private ProblemModifier modifier;
 	
-	private Double sortWeight; // so users can sort problem list to their liking (until someone else comes around and changes it)
+	// so users can sort problem list to their liking (until someone else comes around and changes it)
+	private Double sortWeight;
 	
 	public Problem() {
 		this.activeListType = new ActiveListType(2);

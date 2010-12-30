@@ -213,7 +213,7 @@ public class ReportObjectFactory {
 	 */
 	@SuppressWarnings("unchecked")
 	public static AbstractReportObject getInstance(String reportObjectName, Map<String, Object> initialValues,
-	                                               Context context) {
+	        Context context) {
 		ReportObjectFactory rof = ReportObjectFactory.singleton;
 		String className = rof.getReportObjectClassByName(reportObjectName);
 		AbstractReportObject reportObj = null;

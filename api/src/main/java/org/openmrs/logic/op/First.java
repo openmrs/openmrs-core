@@ -14,12 +14,12 @@
 package org.openmrs.logic.op;
 
 /**
- * The First operator will return a subset result of the entire result returned by the criteria<br /><br />
- * 
+ * The First operator will return a subset result of the entire result returned by the criteria<br />
+ * <br />
  * Example: <br />
  * - <code>logicService.parse("'CD4 COUNT'").first(2);</code><br />
- *   The above will give us a criteria to get the first two "CD4 COUNT" observations
- *
+ * The above will give us a criteria to get the first two "CD4 COUNT" observations
+ * 
  * @see Last
  */
 public class First implements TransformOperator {

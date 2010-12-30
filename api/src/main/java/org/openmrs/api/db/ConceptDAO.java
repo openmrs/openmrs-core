@@ -101,7 +101,7 @@ public interface ConceptDAO {
 	 * @throws DAOException
 	 */
 	public List<Concept> getConcepts(String name, Locale loc, boolean searchOnPhrase, List<ConceptClass> classes,
-	                                 List<ConceptDatatype> datatypes) throws DAOException;
+	        List<ConceptDatatype> datatypes) throws DAOException;
 	
 	/**
 	 * @see org.openmrs.api.ConceptService#getConceptWords(String, List, boolean, List, List, List,
@@ -109,9 +109,9 @@ public interface ConceptDAO {
 	 * @throws DAOException
 	 */
 	public List<ConceptWord> getConceptWords(String phrase, List<Locale> locales, boolean includeRetired,
-	                                         List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses,
-	                                         List<ConceptDatatype> requireDatatypes, List<ConceptDatatype> excludeDatatypes,
-	                                         Concept answersToConcept, Integer start, Integer size) throws DAOException;
+	        List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,
+	        List<ConceptDatatype> excludeDatatypes, Concept answersToConcept, Integer start, Integer size)
+	        throws DAOException;
 	
 	/**
 	 * @see ConceptService#getConcepts(String, List, boolean, List, List, List, List, Concept,
@@ -119,10 +119,9 @@ public interface ConceptDAO {
 	 * @throws DAOException
 	 */
 	public List<ConceptSearchResult> getConcepts(String phrase, List<Locale> locales, boolean includeRetired,
-	                                             List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses,
-	                                             List<ConceptDatatype> requireDatatypes,
-	                                             List<ConceptDatatype> excludeDatatypes, Concept answersToConcept,
-	                                             Integer start, Integer size) throws DAOException;
+	        List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,
+	        List<ConceptDatatype> excludeDatatypes, Concept answersToConcept, Integer start, Integer size)
+	        throws DAOException;
 	
 	/**
 	 * @see org.openmrs.api.ConceptService#getConceptAnswer(java.lang.Integer)
@@ -459,20 +458,19 @@ public interface ConceptDAO {
 	 *            conceptWords should be counted one or more times.
 	 */
 	public Integer getCountOfConceptWords(String phrase, List<Locale> locales, boolean includeRetired,
-	                                      List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses,
-	                                      List<ConceptDatatype> requireDatatypes, List<ConceptDatatype> excludeDatatypes,
-	                                      Concept answersToConcept, boolean forUniqueConcepts);
+	        List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,
+	        List<ConceptDatatype> excludeDatatypes, Concept answersToConcept, boolean forUniqueConcepts);
 	
 	/**
 	 * @see ConceptService#getCountOfDrugs(String, Concept, boolean, boolean, boolean)
 	 */
 	public Integer getCountOfDrugs(String drugName, Concept concept, boolean searchOnPhrase, boolean searchDrugConceptNames,
-	                               boolean includeRetired) throws DAOException;
+	        boolean includeRetired) throws DAOException;
 	
 	/**
 	 * @see ConceptService#getDrugs(String, Concept, boolean, boolean, boolean, Integer, Integer)
 	 */
 	public List<Drug> getDrugs(String drugName, Concept concept, boolean searchOnPhrase, boolean searchDrugConceptNames,
-	                           boolean includeRetired, Integer start, Integer length) throws DAOException;
+	        boolean includeRetired, Integer start, Integer length) throws DAOException;
 	
 }

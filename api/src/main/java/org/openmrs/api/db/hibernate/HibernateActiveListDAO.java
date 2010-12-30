@@ -66,7 +66,7 @@ public class HibernateActiveListDAO implements ActiveListDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public <T extends ActiveListItem> List<T> getActiveListItems(Class<T> clazz, Person p, ActiveListType type)
-	                                                                                                           throws DAOException {
+	        throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(clazz);
 		criteria.add(Expression.eq("activeListType", type));
 		criteria.add(Expression.eq("person", p));

@@ -43,9 +43,9 @@ import org.openmrs.util.OpenmrsUtil;
  * Expects parameter: "tableNames" : whitespace delimited list of table names to add <br/>
  * Expects parameter: "columnName" : name of the column to change. Default: "uuid" <br/>
  * Expects parameter: "idExceptions" : list of id columns that don't follow the standard naming
- * convention. Should be a pipe-separated list of key=value, where key is the name an id column would
- * have by convention, and value is the name it actually has. In this example the id of the field_answer
- * table is 'field_id' rather than 'field_answer_id', etc:
+ * convention. Should be a pipe-separated list of key=value, where key is the name an id column
+ * would have by convention, and value is the name it actually has. In this example the id of the
+ * field_answer table is 'field_id' rather than 'field_answer_id', etc:
  * "field_answer_id=field_id|role_id=role|privilege_id=privilege"
  */
 public class GenerateUuid implements CustomTaskChange {

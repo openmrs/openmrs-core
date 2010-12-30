@@ -60,7 +60,7 @@ public class ConceptStatsFormController extends SimpleFormController {
 	 *      org.springframework.validation.BindException)
 	 */
 	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object object,
-	                                             BindException errors) throws Exception {
+	        BindException errors) throws Exception {
 		
 		Concept concept = (Concept) object;
 		ConceptService cs = Context.getConceptService();

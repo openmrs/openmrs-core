@@ -410,7 +410,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	
 	/**
 	 * Update Report
-	 *
+	 * 
 	 * @param report Report to update
 	 * @deprecated see reportingcompatibility module
 	 * @throws APIException
@@ -425,7 +425,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	
 	/**
 	 * Delete Report
-	 *
+	 * 
 	 * @param report Report to delete
 	 * @deprecated see reportingcompatibility module
 	 * @throws APIException
@@ -440,7 +440,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	
 	/**
 	 * Create a new Report Object
-	 *
+	 * 
 	 * @param reportObject Report Object to create
 	 * @deprecated see reportingcompatibility module
 	 * @throws APIException
@@ -455,7 +455,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	
 	/**
 	 * Update Report Object
-	 *
+	 * 
 	 * @param reportObject Report Object to update
 	 * @deprecated see reportingcompatibility module
 	 * @throws APIException
@@ -470,7 +470,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	
 	/**
 	 * Delete Report Object
-	 *
+	 * 
 	 * @param reportObjectId Internal Integer identifier of Report Object to delete
 	 * @deprecated see reportingcompatibility module
 	 * @throws APIException
@@ -927,7 +927,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	 * @throws UnsupportedEncodingException
 	 */
 	private String checkImplementationIdValidity(String implementationId, String description, String passphrase)
-	                                                                                                            throws APIException {
+	        throws APIException {
 		
 		if (!StringUtils.hasLength(implementationId))
 			throw new APIException("The implementationid cannot be empty");
@@ -993,7 +993,9 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	
 	/**
 	 * Used by spring to set the GlobalLocaleList on this implementation
-	 * @param gll the GlobalLocaleList object that is registered to the GlobalPropertyListeners as well
+	 * 
+	 * @param gll the GlobalLocaleList object that is registered to the GlobalPropertyListeners as
+	 *            well
 	 */
 	public void setGlobalLocaleList(GlobalLocaleList gll) {
 		globalLocaleList = gll;

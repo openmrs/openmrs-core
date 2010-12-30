@@ -16,8 +16,8 @@ package org.openmrs.util;
 import org.openmrs.annotation.AddOnStartup;
 
 /**
- * Contains all privilege names and their descriptions. Some of privilege names
- * may be marked with AddOnStartup annotation.
+ * Contains all privilege names and their descriptions. Some of privilege names may be marked with
+ * AddOnStartup annotation.
  * 
  * @see org.openmrs.annotation.AddOnStartup
  */

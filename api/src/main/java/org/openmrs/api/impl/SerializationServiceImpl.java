@@ -98,8 +98,7 @@ public class SerializationServiceImpl extends BaseOpenmrsService implements Seri
 	 *      java.lang.Class)
 	 */
 	public <T extends Object> T deserialize(String serializedObject, Class<? extends T> objectClass,
-	                                        Class<? extends OpenmrsSerializer> serializerClass)
-	                                                                                           throws SerializationException {
+	        Class<? extends OpenmrsSerializer> serializerClass) throws SerializationException {
 		
 		// Get appropriate OpenmrsSerializer implementation
 		OpenmrsSerializer serializer = getSerializer(serializerClass);
@@ -131,7 +130,6 @@ public class SerializationServiceImpl extends BaseOpenmrsService implements Seri
 	
 	/**
 	 * @param serializers the serializers to set
-	 * 
 	 * @should not reset serializers list when called multiple times
 	 */
 	public void setSerializers(List<? extends OpenmrsSerializer> serializers) {

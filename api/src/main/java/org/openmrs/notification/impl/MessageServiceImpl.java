@@ -134,7 +134,7 @@ public class MessageServiceImpl implements MessageService {
 	 *      java.lang.String, java.lang.String)
 	 */
 	public Message createMessage(String recipients, String sender, String subject, String content, String attachment,
-	                             String attachmentContentType, String attachmentFileName) throws MessageException {
+	        String attachmentContentType, String attachmentFileName) throws MessageException {
 		Message message = new Message();
 		message.setRecipients(recipients);
 		message.setSender(sender);

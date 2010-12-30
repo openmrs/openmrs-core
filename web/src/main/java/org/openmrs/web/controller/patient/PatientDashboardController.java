@@ -45,7 +45,7 @@ public class PatientDashboardController {
 	 */
 	@RequestMapping("/patientDashboard.form")
 	protected String renderDashboard(@RequestParam(required = true, value = "patientId") Integer patientId, ModelMap map)
-	                                                                                                                     throws Exception {
+	        throws Exception {
 		
 		// get the patient
 		

@@ -70,7 +70,7 @@ public class HibernateEnumType implements UserType, ParameterizedType {
 	}
 	
 	public void nullSafeSet(PreparedStatement preparedStatement, Object value, int index) throws HibernateException,
-	                                                                                     SQLException {
+	        SQLException {
 		if (null == value) {
 			preparedStatement.setNull(index, Types.VARCHAR);
 		} else {

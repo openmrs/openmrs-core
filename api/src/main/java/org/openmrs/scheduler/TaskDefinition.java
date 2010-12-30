@@ -60,7 +60,7 @@ public class TaskDefinition extends BaseOpenmrsMetadata {
 	 * Default no-arg public constructor
 	 */
 	public TaskDefinition() {
-		this.started = new Boolean(false); // default
+		this.started = Boolean.FALSE; // default
 		this.startTime = new Date(); // makes it easier during task creation
 		// as we have a default date populated
 		this.properties = new HashMap<String, String>();

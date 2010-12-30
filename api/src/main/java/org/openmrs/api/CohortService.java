@@ -234,8 +234,7 @@ public interface CohortService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Deprecated
 	public void setCohortDefinitionProviders(
-	                                         Map<Class<? extends CohortDefinition>, CohortDefinitionProvider> providerClassMap)
-	                                                                                                                           throws APIException;
+	        Map<Class<? extends CohortDefinition>, CohortDefinitionProvider> providerClassMap) throws APIException;
 	
 	/**
 	 * Adds the given cohort definition provider to this service's list of providers
@@ -249,7 +248,7 @@ public interface CohortService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Deprecated
 	public void registerCohortDefinitionProvider(Class<? extends CohortDefinition> cohortDefClass,
-	                                             CohortDefinitionProvider cohortDef) throws APIException;
+	        CohortDefinitionProvider cohortDef) throws APIException;
 	
 	/**
 	 * Gets all the providers registered to this service. Will return an empty list instead of null.
@@ -263,7 +262,7 @@ public interface CohortService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Deprecated
 	public Map<Class<? extends CohortDefinition>, CohortDefinitionProvider> getCohortDefinitionProviders()
-	                                                                                                      throws APIException;
+	        throws APIException;
 	
 	/**
 	 * Removing any mapping from CohortDefinition to provider in this server where the given
@@ -298,7 +297,7 @@ public interface CohortService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Deprecated
 	public List<CohortDefinitionItemHolder> getCohortDefinitions(Class<? extends CohortDefinitionProvider> providerClass)
-	                                                                                                                     throws APIException;
+	        throws APIException;
 	
 	/**
 	 * @deprecated see reportingcompatibility module

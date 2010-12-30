@@ -216,7 +216,7 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	 */
 	@Deprecated
 	private CohortDefinitionProvider getCohortDefinitionProvider(Class<? extends CohortDefinition> definitionClass)
-	                                                                                                               throws APIException {
+	        throws APIException {
 		CohortDefinitionProvider ret = cohortDefinitionProviders.get(definitionClass);
 		if (ret == null)
 			throw new APIException("No CohortDefinitionProvider registered for " + definitionClass);
@@ -308,7 +308,7 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	 */
 	@Deprecated
 	public void setCohortDefinitionProviders(
-	                                         Map<Class<? extends CohortDefinition>, CohortDefinitionProvider> providerClassMap) {
+	        Map<Class<? extends CohortDefinition>, CohortDefinitionProvider> providerClassMap) {
 		for (Map.Entry<Class<? extends CohortDefinition>, CohortDefinitionProvider> entry : providerClassMap.entrySet()) {
 			registerCohortDefinitionProvider(entry.getKey(), entry.getValue());
 		}
@@ -333,7 +333,7 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	 */
 	@Deprecated
 	public void registerCohortDefinitionProvider(Class<? extends CohortDefinition> defClass,
-	                                             CohortDefinitionProvider cohortDefProvider) throws APIException {
+	        CohortDefinitionProvider cohortDefProvider) throws APIException {
 		getCohortDefinitionProviders().put(defClass, cohortDefProvider);
 	}
 	

@@ -359,7 +359,7 @@ public class HibernatePersonDAO implements PersonDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<PersonAttributeType> getPersonAttributeTypes(String exactName, String format, Integer foreignKey,
-	                                                         Boolean searchable) throws DAOException {
+	        Boolean searchable) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(PersonAttributeType.class, "r");
 		
 		if (exactName != null)

@@ -137,8 +137,7 @@ public interface EncounterService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_ENCOUNTERS })
 	public List<Encounter> getEncounters(Patient who, Location loc, Date fromDate, Date toDate,
-	                                     Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes,
-	                                     boolean includeVoided);
+	        Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes, boolean includeVoided);
 	
 	/**
 	 * Get all encounters that match a variety of (nullable) criteria. Each extra value for a
@@ -166,8 +165,8 @@ public interface EncounterService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_ENCOUNTERS })
 	public List<Encounter> getEncounters(Patient who, Location loc, Date fromDate, Date toDate,
-	                                     Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes,
-	                                     Collection<User> providers, boolean includeVoided);
+	        Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes, Collection<User> providers,
+	        boolean includeVoided);
 	
 	/**
 	 * Voiding a encounter essentially removes it from circulation
@@ -599,7 +598,7 @@ public interface EncounterService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_ENCOUNTERS })
 	public List<Encounter> getEncounters(String query, Integer start, Integer length, boolean includeVoided)
-	                                                                                                        throws APIException;
+	        throws APIException;
 	
 	/**
 	 * Get all encounters for a cohort of patients

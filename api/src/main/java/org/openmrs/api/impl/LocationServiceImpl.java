@@ -68,8 +68,8 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 						location.removeTag(tag);
 						location.addTag(existing);
 					} else
-						throw new APIException(
-						        "Cannot add transient tags!  Save all location tags to the database before saving this location");
+						throw new APIException("Cannot add transient tags! "
+						        + "Save all location tags to the database before saving this location");
 				}
 			}
 		}
@@ -315,7 +315,7 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	 */
 	@Override
 	public List<Location> getLocations(String nameFragment, boolean includeRetired, Integer start, Integer length)
-	                                                                                                              throws APIException {
+	        throws APIException {
 		return dao.getLocations(nameFragment, includeRetired, start, length);
 	}
 }

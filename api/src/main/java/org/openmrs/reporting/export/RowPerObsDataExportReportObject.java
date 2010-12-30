@@ -129,7 +129,7 @@ public class RowPerObsDataExportReportObject extends DataExportReportObject impl
 	 * @param filterId only one of this or cohortId should be non-null
 	 */
 	public void addCohortColumn(String columnName, Integer cohortId, Integer filterId, Integer patientSearchId,
-	                            String valueIfTrue, String valueIfFalse) {
+	        String valueIfTrue, String valueIfFalse) {
 		columns.add(new CohortColumn(columnName, cohortId, filterId, patientSearchId, valueIfTrue, valueIfFalse));
 	}
 	

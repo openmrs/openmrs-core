@@ -84,7 +84,7 @@ public class LocationFormController extends SimpleFormController {
 	 * @should not retire location if reason is empty
 	 */
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
-	                                BindException errors) throws Exception {
+	        BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
 		

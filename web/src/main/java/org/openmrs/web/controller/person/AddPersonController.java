@@ -75,7 +75,7 @@ public class AddPersonController extends SimpleFormController {
 	 */
 	@Override
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command,
-	                                BindException errors) throws Exception {
+	        BindException errors) throws Exception {
 		
 		getParametersFromRequest(request);
 		
@@ -182,7 +182,7 @@ public class AddPersonController extends SimpleFormController {
 	 * Prepares the form view
 	 */
 	public ModelAndView showForm(HttpServletRequest request, HttpServletResponse response, BindException errors)
-	                                                                                                            throws Exception {
+	        throws Exception {
 		
 		log.debug("In showForm method");
 		
@@ -230,8 +230,7 @@ public class AddPersonController extends SimpleFormController {
 	 * @throws UnsupportedEncodingException
 	 */
 	private String getPersonURL(String personId, String personType, String viewType, HttpServletRequest request)
-	                                                                                                            throws ServletException,
-	                                                                                                            UnsupportedEncodingException {
+	        throws ServletException, UnsupportedEncodingException {
 		if ("patient".equals(personType)) {
 			if ("edit".equals(viewType))
 				return request.getContextPath() + PATIENT_EDIT_URL + getParametersForURL(personId, personType);

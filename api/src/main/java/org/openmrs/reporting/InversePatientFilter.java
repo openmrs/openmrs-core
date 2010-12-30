@@ -48,7 +48,9 @@ public class InversePatientFilter extends AbstractPatientFilter implements Patie
 	}
 	
 	/**
-	 * (The following at-should unit tests should really be distributed across many other classes, but it's much faster to put them all here.)
+	 * (The following at-should unit tests should really be distributed across many other classes,
+	 * but it's much faster to put them all here.)
+	 * 
 	 * @should not fail with drug order filter
 	 * @should not fail with drug order stop filter
 	 * @should not fail with encounter patient filter

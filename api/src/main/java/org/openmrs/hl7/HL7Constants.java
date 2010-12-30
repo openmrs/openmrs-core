@@ -115,30 +115,36 @@ public class HL7Constants {
 	
 	/**
 	 * default name for HL7_archives destination directory
+	 * 
 	 * @since 1.7
 	 */
 	public static final String HL7_ARCHIVE_DIRECTORY_NAME = "hl7_archives";
 	
 	/**
 	 * the key to be used for numberTransferred archives in the progressStatusMap
+	 * 
 	 * @since 1.7
 	 */
 	public static final String NUMBER_TRANSFERRED_KEY = "transferred";
 	
 	/**
 	 * the key to be used for numberOfFailedTransfers in the progressStatusMap
+	 * 
 	 * @since 1.7
 	 */
 	public static final String NUMBER_OF_FAILED_TRANSFERS_KEY = "failures";
 	
 	/**
-	 * time taken before static/state properties of an instance of the hl7 in archive migration thread are reset
+	 * time taken before static/state properties of an instance of the hl7 in archive migration
+	 * thread are reset
+	 * 
 	 * @since 1.7
 	 */
 	public static final long THREAD_SLEEP_PERIOD = 2000;
 	
 	/**
 	 * the maximum number if archives to fetch per query to save on memory
+	 * 
 	 * @since 1.7
 	 */
 	public static final int MIGRATION_MAX_BATCH_SIZE = 2000;

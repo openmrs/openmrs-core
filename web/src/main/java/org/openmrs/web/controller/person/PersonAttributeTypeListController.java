@@ -50,6 +50,7 @@ public class PersonAttributeTypeListController {
 	
 	/**
 	 * Show the page to the user.
+	 * 
 	 * @should not fail if not authenticated
 	 * @should put all attribute types into map
 	 */
@@ -97,8 +98,8 @@ public class PersonAttributeTypeListController {
 	 */
 	@RequestMapping(method = RequestMethod.POST, params = "action=attrs")
 	protected String updateGlobalProperties(String patientListingAttributeTypes, String patientViewingAttributeTypes,
-	                                        String patientHeaderAttributeTypes, String userListingAttributeTypes,
-	                                        String userViewingAttributeTypes, HttpSession httpSession) {
+	        String patientHeaderAttributeTypes, String userListingAttributeTypes, String userViewingAttributeTypes,
+	        HttpSession httpSession) {
 		AdministrationService as = Context.getAdministrationService();
 		MessageSourceService mss = Context.getMessageSourceService();
 		

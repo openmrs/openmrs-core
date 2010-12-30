@@ -131,9 +131,8 @@ public class Hl7InQueueListController {
 	@RequestMapping("/admin/hl7/hl7InQueueList.json")
 	public @ResponseBody
 	Map<String, Object> getHL7InQueueBatchAsJson(@RequestParam("iDisplayStart") int iDisplayStart,
-	                                             @RequestParam("iDisplayLength") int iDisplayLength,
-	                                             @RequestParam("sSearch") String sSearch, @RequestParam("sEcho") int sEcho,
-	                                             @RequestParam("messageState") int messageState) throws IOException {
+	        @RequestParam("iDisplayLength") int iDisplayLength, @RequestParam("sSearch") String sSearch,
+	        @RequestParam("sEcho") int sEcho, @RequestParam("messageState") int messageState) throws IOException {
 		
 		// get the data
 		List<HL7InQueue> hl7s = Context.getHL7Service().getHL7InQueueBatch(iDisplayStart, iDisplayLength, messageState,

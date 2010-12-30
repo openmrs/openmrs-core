@@ -167,7 +167,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 */
 	@Deprecated
 	public List<Patient> getPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes)
-	                                                                                                             throws APIException {
+	        throws APIException {
 		return getPatients(name, identifier, identifierTypes, false);
 	}
 	
@@ -176,7 +176,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 *      java.util.List, boolean)
 	 */
 	public List<Patient> getPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,
-	                                 boolean matchIdentifierExactly) throws APIException {
+	        boolean matchIdentifierExactly) throws APIException {
 		
 		if (identifierTypes == null)
 			identifierTypes = Collections.emptyList();
@@ -379,9 +379,8 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 *      java.util.List, java.util.List, java.lang.Boolean)
 	 */
 	public List<PatientIdentifier> getPatientIdentifiers(String identifier,
-	                                                     List<PatientIdentifierType> patientIdentifierTypes,
-	                                                     List<Location> locations, List<Patient> patients,
-	                                                     Boolean isPreferred) throws APIException {
+	        List<PatientIdentifierType> patientIdentifierTypes, List<Location> locations, List<Patient> patients,
+	        Boolean isPreferred) throws APIException {
 		
 		if (patientIdentifierTypes == null)
 			patientIdentifierTypes = new Vector<PatientIdentifierType>();
@@ -424,7 +423,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 */
 	@Deprecated
 	public List<PatientIdentifier> getPatientIdentifiers(String identifier, PatientIdentifierType patientIdentifierType,
-	                                                     boolean includeVoided) throws APIException {
+	        boolean includeVoided) throws APIException {
 		
 		if (includeVoided == true)
 			throw new APIException("Searching on voided identifiers is no longer allowed");
@@ -497,7 +496,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 *      java.lang.String, java.lang.Boolean, java.lang.Boolean)
 	 */
 	public List<PatientIdentifierType> getPatientIdentifierTypes(String name, String format, Boolean required,
-	                                                             Boolean hasCheckDigit) throws APIException {
+	        Boolean hasCheckDigit) throws APIException {
 		return dao.getPatientIdentifierTypes(name, format, required, hasCheckDigit);
 	}
 	
@@ -534,7 +533,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 *      String)
 	 */
 	public PatientIdentifierType retirePatientIdentifierType(PatientIdentifierType patientIdentifierType, String reason)
-	                                                                                                                    throws APIException {
+	        throws APIException {
 		if (reason == null || reason.length() < 1)
 			throw new APIException("A reason is required when retiring an identifier type");
 		
@@ -549,7 +548,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 * @see org.openmrs.api.PatientService#unretirePatientIdentifierType(org.openmrs.PatientIdentifierType)
 	 */
 	public PatientIdentifierType unretirePatientIdentifierType(PatientIdentifierType patientIdentifierType)
-	                                                                                                       throws APIException {
+	        throws APIException {
 		patientIdentifierType.setRetired(false);
 		patientIdentifierType.setRetiredBy(null);
 		patientIdentifierType.setDateRetired(null);
@@ -1434,7 +1433,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 */
 	@Override
 	public List<Patient> getPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,
-	                                 boolean matchIdentifierExactly, Integer start, Integer length) throws APIException {
+	        boolean matchIdentifierExactly, Integer start, Integer length) throws APIException {
 		if (identifierTypes == null)
 			identifierTypes = Collections.emptyList();
 		

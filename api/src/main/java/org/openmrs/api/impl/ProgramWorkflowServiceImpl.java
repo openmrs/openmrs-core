@@ -253,8 +253,8 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 *      Date, Date, boolean)
 	 */
 	public List<PatientProgram> getPatientPrograms(Patient patient, Program program, Date minEnrollmentDate,
-	                                               Date maxEnrollmentDate, Date minCompletionDate, Date maxCompletionDate,
-	                                               boolean includeVoided) throws APIException {
+	        Date maxEnrollmentDate, Date minCompletionDate, Date maxCompletionDate, boolean includeVoided)
+	        throws APIException {
 		return dao.getPatientPrograms(patient, program, minEnrollmentDate, maxEnrollmentDate, minCompletionDate,
 		    maxCompletionDate, includeVoided);
 	}
@@ -356,7 +356,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 *      boolean)
 	 */
 	public void purgeConceptStateConversion(ConceptStateConversion conceptStateConversion, boolean cascade)
-	                                                                                                       throws APIException {
+	        throws APIException {
 		dao.deleteConceptStateConversion(conceptStateConversion);
 	}
 	
@@ -586,7 +586,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 * @deprecated
 	 */
 	public void enrollPatientInProgram(Patient patient, Program program, Date enrollmentDate, Date completionDate,
-	                                   User creator) {
+	        User creator) {
 		PatientProgram p = new PatientProgram();
 		p.setPatient(patient);
 		p.setProgram(program);
@@ -701,7 +701,7 @@ public class ProgramWorkflowServiceImpl extends BaseOpenmrsService implements Pr
 	 * @deprecated
 	 */
 	public void changeToState(PatientProgram patientProgram, ProgramWorkflow workflow, ProgramWorkflowState state,
-	                          Date onDate) {
+	        Date onDate) {
 		patientProgram.transitionToState(state, onDate);
 		Context.getProgramWorkflowService().savePatientProgram(patientProgram);
 	}

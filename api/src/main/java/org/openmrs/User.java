@@ -36,9 +36,10 @@ import org.simpleframework.xml.load.Validate;
 
 /**
  * Defines a User Account in the system. This account belongs to a {@link Person} in the system,
- * although that person may have other user accounts. Users have login credentials (username/password)
- * and can have special user properties. User properties are just simple key-value pairs for either quick
- * info or display specific info that needs to be persisted (like locale preferences, search options, etc)
+ * although that person may have other user accounts. Users have login credentials
+ * (username/password) and can have special user properties. User properties are just simple
+ * key-value pairs for either quick info or display specific info that needs to be persisted (like
+ * locale preferences, search options, etc)
  */
 public class User extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
@@ -471,6 +472,7 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	/**
 	 * Get givenName on the Person this user account belongs to
+	 * 
 	 * @see Person#getGivenName()
 	 */
 	public String getGivenName() {
@@ -479,6 +481,7 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	/**
 	 * Get familyName on the Person this user account belongs to
+	 * 
 	 * @see Person#getFamilyName()
 	 */
 	public String getFamilyName() {

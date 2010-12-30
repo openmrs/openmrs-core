@@ -81,7 +81,7 @@ public interface MessageService {
 	public Message createMessage(String recipients, String sender, String subject, String message) throws MessageException;
 	
 	public Message createMessage(String recipients, String sender, String subject, String message, String attachment,
-	                             String attachmentContentType, String attachmentFileName) throws MessageException;
+	        String attachmentContentType, String attachmentFileName) throws MessageException;
 	
 	@SuppressWarnings("unchecked")
 	public Message prepareMessage(String templateName, Map data) throws MessageException;

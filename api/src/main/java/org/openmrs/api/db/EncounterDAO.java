@@ -69,8 +69,8 @@ public interface EncounterDAO {
 	 *      java.util.Collection, java.util.Collection, boolean)
 	 */
 	public List<Encounter> getEncounters(Patient patient, Location location, Date fromDate, Date toDate,
-	                                     Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes,
-	                                     Collection<User> providers, boolean includeVoided);
+	        Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes, Collection<User> providers,
+	        boolean includeVoided);
 	
 	/**
 	 * Save an Encounter Type

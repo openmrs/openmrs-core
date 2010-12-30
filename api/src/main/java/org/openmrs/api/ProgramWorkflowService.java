@@ -298,8 +298,8 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	@Authorized( { PrivilegeConstants.VIEW_PATIENT_PROGRAMS })
 	@Transactional(readOnly = true)
 	public List<PatientProgram> getPatientPrograms(Patient patient, Program program, Date minEnrollmentDate,
-	                                               Date maxEnrollmentDate, Date minCompletionDate, Date maxCompletionDate,
-	                                               boolean includeVoided) throws APIException;
+	        Date maxEnrollmentDate, Date minCompletionDate, Date maxCompletionDate, boolean includeVoided)
+	        throws APIException;
 	
 	/**
 	 * Completely remove a patientProgram from the database (not reversible) This method delegates
@@ -374,7 +374,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 */
 	@Authorized( { PrivilegeConstants.ADD_PATIENT_PROGRAMS, PrivilegeConstants.EDIT_PATIENT_PROGRAMS })
 	public ConceptStateConversion saveConceptStateConversion(ConceptStateConversion conceptStateConversion)
-	                                                                                                       throws APIException;
+	        throws APIException;
 	
 	/**
 	 * Returns a conceptStateConversion given that conceptStateConversions primary key
@@ -424,7 +424,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_PROGRAMS })
 	public void purgeConceptStateConversion(ConceptStateConversion conceptStateConversion, boolean cascade)
-	                                                                                                       throws APIException;
+	        throws APIException;
 	
 	/**
 	 * Triggers any ConceptStateConversion that exists for the passed <code>reasonForExit</code>
@@ -633,7 +633,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	@Authorized( { PrivilegeConstants.VIEW_PROGRAMS })
 	@Transactional(readOnly = true)
 	public List<ProgramWorkflowState> getPossibleNextStates(PatientProgram patientProgram, ProgramWorkflow workflow)
-	                                                                                                                throws APIException;
+	        throws APIException;
 	
 	/**
 	 * Returns boolean indicating whether it is legal to transition from one ProgramWorkflowState to
@@ -692,7 +692,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 */
 	@Authorized( { PrivilegeConstants.ADD_PATIENT_PROGRAMS })
 	public void enrollPatientInProgram(Patient patient, Program program, Date enrollmentDate, Date completionDate,
-	                                   User creator) throws APIException;
+	        User creator) throws APIException;
 	
 	/**
 	 * Returns a Collection<PatientProgram> of all PatientPrograms for the passed
@@ -836,7 +836,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 */
 	@Authorized( { PrivilegeConstants.ADD_PATIENT_PROGRAMS, PrivilegeConstants.EDIT_PATIENT_PROGRAMS })
 	public void changeToState(PatientProgram patientProgram, ProgramWorkflow workflow, ProgramWorkflowState state,
-	                          Date onDate) throws APIException;
+	        Date onDate) throws APIException;
 	
 	/**
 	 * Get a patient program by its uuid. There should be only one of these in the database. If

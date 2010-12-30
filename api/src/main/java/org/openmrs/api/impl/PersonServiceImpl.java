@@ -76,11 +76,12 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	}
 	
 	/**
-	 * @see org.openmrs.api.PersonService#getSimilarPeople(java.lang.String, java.lang.Integer, java.lang.String, java.lang.String)
+	 * @see org.openmrs.api.PersonService#getSimilarPeople(java.lang.String, java.lang.Integer,
+	 *      java.lang.String, java.lang.String)
 	 * @deprecated @see {@link #getSimilarPeople(String, Integer, String)}
 	 */
 	public Set<Person> getSimilarPeople(String nameSearch, Integer birthyear, String gender, String personType)
-	                                                                                                           throws APIException {
+	        throws APIException {
 		return getSimilarPeople(nameSearch, birthyear, gender);
 	}
 	
@@ -252,7 +253,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 *      java.lang.String, java.lang.Integer, java.lang.Boolean)
 	 */
 	public List<PersonAttributeType> getPersonAttributeTypes(String exactName, String format, Integer foreignKey,
-	                                                         Boolean searchable) throws APIException {
+	        Boolean searchable) throws APIException {
 		return dao.getPersonAttributeTypes(exactName, format, foreignKey, searchable);
 	}
 	
@@ -514,7 +515,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 *      org.openmrs.RelationshipType)
 	 */
 	public List<Relationship> getRelationships(Person fromPerson, Person toPerson, RelationshipType relType)
-	                                                                                                        throws APIException {
+	        throws APIException {
 		return dao.getRelationships(fromPerson, toPerson, relType);
 	}
 	
@@ -663,7 +664,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 *      org.openmrs.api.PersonService.ATTR_VIEW_TYPE)
 	 */
 	public List<PersonAttributeType> getPersonAttributeTypes(PERSON_TYPE personType, ATTR_VIEW_TYPE viewType)
-	                                                                                                         throws APIException {
+	        throws APIException {
 		AdministrationService as = Context.getAdministrationService();
 		
 		String attrString = "";
@@ -743,7 +744,7 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	 *             {@link org.openmrs.api.PersonService#getPersonAttributeTypes(java.lang.String, java.lang.String)}
 	 */
 	public List<PersonAttributeType> getPersonAttributeTypes(String personTypeStr, String displayTypeStr)
-	                                                                                                     throws APIException {
+	        throws APIException {
 		
 		PERSON_TYPE personType = null;
 		if ("patient".equals(personTypeStr))
@@ -922,7 +923,8 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	}
 	
 	/**
-	 * @see org.openmrs.api.PersonService#retireRelationshipType(org.openmrs.RelationshipType, java.lang.String)
+	 * @see org.openmrs.api.PersonService#retireRelationshipType(org.openmrs.RelationshipType,
+	 *      java.lang.String)
 	 */
 	public RelationshipType retireRelationshipType(RelationshipType type, String retiredReason) throws APIException {
 		if (retiredReason == null || retiredReason.length() < 1) {

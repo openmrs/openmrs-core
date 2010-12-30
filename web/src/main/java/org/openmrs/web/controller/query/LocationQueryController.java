@@ -37,12 +37,10 @@ public class LocationQueryController {
 	
 	@RequestMapping("/q/locationHierarchy")
 	public @ResponseBody
-	List<Map<String, Object>> getHierarchyAsJson(
-	                                             @RequestParam("selectLeafOnly") boolean selectLeafOnly,
-	                                             @RequestParam(value = "selectableTags", required = false) List<String> selectableTags,
-	                                             @RequestParam(value = "startFromTag", required = false) String startFromTag,
-	                                             @RequestParam(value = "includeNullOption", required = false) Boolean includeNullOption)
-	                                                                                                                                    throws IOException {
+	List<Map<String, Object>> getHierarchyAsJson(@RequestParam("selectLeafOnly") boolean selectLeafOnly,
+	        @RequestParam(value = "selectableTags", required = false) List<String> selectableTags,
+	        @RequestParam(value = "startFromTag", required = false) String startFromTag,
+	        @RequestParam(value = "includeNullOption", required = false) Boolean includeNullOption) throws IOException {
 		HierarchyOptions options = new HierarchyOptions();
 		options.selectOnlyLeaves = selectLeafOnly;
 		options.selectableTags = selectableTags;

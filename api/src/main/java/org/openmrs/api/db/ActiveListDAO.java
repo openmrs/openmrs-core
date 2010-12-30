@@ -37,7 +37,7 @@ public interface ActiveListDAO {
 	 * @see org.openmrs.api.ActiveListService#getActiveListItems(Class, Person, ActiveListType)
 	 */
 	public <T extends ActiveListItem> List<T> getActiveListItems(Class<T> clazz, Person p, ActiveListType type)
-	                                                                                                           throws DAOException;
+	        throws DAOException;
 	
 	/**
 	 * @see org.openmrs.api.ActiveListService#getActiveListItem(Class, Integer)

@@ -186,7 +186,7 @@ public class HibernateFormDAO implements FormDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public FormField getFormField(Form form, Concept concept, Collection<FormField> ignoreFormFields, boolean force)
-	                                                                                                                throws DAOException {
+	        throws DAOException {
 		if (form == null) {
 			log.debug("form is null, no fields will be matched");
 			return null;
@@ -302,9 +302,9 @@ public class HibernateFormDAO implements FormDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Field> getFields(Collection<Form> forms, Collection<FieldType> fieldTypes, Collection<Concept> concepts,
-	                             Collection<String> tableNames, Collection<String> attributeNames, Boolean selectMultiple,
-	                             Collection<FieldAnswer> containsAllAnswers, Collection<FieldAnswer> containsAnyAnswer,
-	                             Boolean retired) throws DAOException {
+	        Collection<String> tableNames, Collection<String> attributeNames, Boolean selectMultiple,
+	        Collection<FieldAnswer> containsAllAnswers, Collection<FieldAnswer> containsAnyAnswer, Boolean retired)
+	        throws DAOException {
 		
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Field.class);
 		
@@ -357,8 +357,8 @@ public class HibernateFormDAO implements FormDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Form> getForms(String partialName, Boolean published, Collection<EncounterType> encounterTypes,
-	                           Boolean retired, Collection<FormField> containingAnyFormField,
-	                           Collection<FormField> containingAllFormFields, Collection<Field> fields) throws DAOException {
+	        Boolean retired, Collection<FormField> containingAnyFormField, Collection<FormField> containingAllFormFields,
+	        Collection<Field> fields) throws DAOException {
 		
 		Criteria crit = getFormCriteria(partialName, published, encounterTypes, retired, containingAnyFormField,
 		    containingAllFormFields, fields);
@@ -372,8 +372,8 @@ public class HibernateFormDAO implements FormDAO {
 	 *      java.util.Collection)
 	 */
 	public Integer getFormCount(String partialName, Boolean published, Collection<EncounterType> encounterTypes,
-	                            Boolean retired, Collection<FormField> containingAnyFormField,
-	                            Collection<FormField> containingAllFormFields, Collection<Field> fields) throws DAOException {
+	        Boolean retired, Collection<FormField> containingAnyFormField, Collection<FormField> containingAllFormFields,
+	        Collection<Field> fields) throws DAOException {
 		
 		Criteria crit = getFormCriteria(partialName, published, encounterTypes, retired, containingAnyFormField,
 		    containingAllFormFields, fields);
@@ -398,9 +398,8 @@ public class HibernateFormDAO implements FormDAO {
 	 * @throws DAOException
 	 */
 	private Criteria getFormCriteria(String partialName, Boolean published, Collection<EncounterType> encounterTypes,
-	                                 Boolean retired, Collection<FormField> containingAnyFormField,
-	                                 Collection<FormField> containingAllFormFields, Collection<Field> fields)
-	                                                                                                         throws DAOException {
+	        Boolean retired, Collection<FormField> containingAnyFormField, Collection<FormField> containingAllFormFields,
+	        Collection<Field> fields) throws DAOException {
 		
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Form.class, "form");
 		

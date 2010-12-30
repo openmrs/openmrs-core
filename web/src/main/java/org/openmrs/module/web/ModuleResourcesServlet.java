@@ -37,7 +37,7 @@ public class ModuleResourcesServlet extends HttpServlet {
 	private Log log = LogFactory.getLog(this.getClass());
 	
 	/**
-	 * Used for caching purposes 
+	 * Used for caching purposes
 	 * 
 	 * @see javax.servlet.http.HttpServlet#getLastModified(javax.servlet.http.HttpServletRequest)
 	 */
@@ -75,6 +75,7 @@ public class ModuleResourcesServlet extends HttpServlet {
 	
 	/**
 	 * Turns the given request/path into a File object
+	 * 
 	 * @param request the current http request
 	 * @return the file being requested or null if not found
 	 */

@@ -106,7 +106,7 @@ public class PortletController implements Controller {
 	 */
 	@SuppressWarnings("unchecked")
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException,
-	                                                                                           IOException {
+	        IOException {
 		
 		AdministrationService as = Context.getAdministrationService();
 		ConceptService cs = Context.getConceptService();

@@ -24,6 +24,7 @@ import org.springframework.util.StringUtils;
 
 /**
  * Property editor for {@link LocationTag}s
+ * 
  * @since 1.7
  */
 public class LocationTagEditor extends PropertyEditorSupport {

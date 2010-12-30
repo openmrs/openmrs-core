@@ -157,6 +157,7 @@ public class Program extends BaseOpenmrsMetadata implements java.io.Serializable
 	
 	/**
 	 * Get the workflow with the specified ID
+	 * 
 	 * @return the workflow matching the given id or null if none found
 	 * @since 1.6
 	 */

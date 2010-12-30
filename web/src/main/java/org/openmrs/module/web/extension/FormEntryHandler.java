@@ -46,8 +46,9 @@ public abstract class FormEntryHandler extends Extension {
 	}
 	
 	/**
-	 * If you want your module to require any privileges before the user can enter forms with this particular module (besides
-	 * "Form Entry" which is automatically required by the framework) then return it here.
+	 * If you want your module to require any privileges before the user can enter forms with this
+	 * particular module (besides "Form Entry" which is automatically required by the framework)
+	 * then return it here.
 	 * 
 	 * @return privilege to require
 	 */
@@ -56,9 +57,10 @@ public abstract class FormEntryHandler extends Extension {
 	}
 	
 	/**
-	 * If your module allows filling out forms, override this method. 
+	 * If your module allows filling out forms, override this method.
 	 * 
-	 * @param formEntryContext details about the state of the user interface where the user is choosing to enter a form from 
+	 * @param formEntryContext details about the state of the user interface where the user is
+	 *            choosing to enter a form from
 	 * @return the list of forms provided by this module.
 	 */
 	public List<Form> getFormsModuleCanEnter(FormEntryContext formEntryContext) {
@@ -68,7 +70,8 @@ public abstract class FormEntryHandler extends Extension {
 	/**
 	 * If your module allows filling out forms, override this method.
 	 * 
-	 * @return the url to go to enter a form. (The framework will take care of adding ?personId=xyz&patientId=xyz&formId=abc to it.)
+	 * @return the url to go to enter a form. (The framework will take care of adding
+	 *         ?personId=xyz&patientId=xyz&formId=abc to it.)
 	 */
 	public String getFormEntryUrl() {
 		return null;
@@ -77,7 +80,8 @@ public abstract class FormEntryHandler extends Extension {
 	/**
 	 * If your module wants to override the View link for encounters, override this method.
 	 * 
-	 * @return the url to go to to view a form. (The framework will take care of adding ?encounterId=xyz
+	 * @return the url to go to to view a form. (The framework will take care of adding
+	 *         ?encounterId=xyz
 	 */
 	public String getViewFormUrl() {
 		return null;
@@ -95,7 +99,8 @@ public abstract class FormEntryHandler extends Extension {
 	/**
 	 * If your module wants to override the Edit link for encounters, override this method.
 	 * 
-	 * @return the url to go to to edit a form. (The framework will take care of adding ?encounterId=xyz
+	 * @return the url to go to to edit a form. (The framework will take care of adding
+	 *         ?encounterId=xyz
 	 */
 	public String getEditFormUrl() {
 		return null;

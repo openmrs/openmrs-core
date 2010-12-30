@@ -47,8 +47,7 @@ import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
- * Standard implementation of module class loader.
- * <br/>
+ * Standard implementation of module class loader. <br/>
  * Code adapted from the Java Plug-in Framework (JPF) - LGPL - Copyright (C)<br/>
  * 2004-2006 Dmitry Olshansky
  */
@@ -426,7 +425,7 @@ public class ModuleClassLoader extends URLClassLoader {
 	 * @throws ClassNotFoundException if no class found
 	 */
 	protected Class<?> loadClass(final String name, final boolean resolve, final ModuleClassLoader requestor,
-	                             Set<String> seenModules) throws ClassNotFoundException {
+	        Set<String> seenModules) throws ClassNotFoundException {
 		
 		if (log.isTraceEnabled()) {
 			log.trace("loading " + name + " " + getModule() + " seenModules: " + seenModules + " requestor: " + requestor
@@ -820,7 +819,7 @@ public class ModuleClassLoader extends URLClassLoader {
 	 * @see #findResource(String, ModuleClassLoader, Set)
 	 */
 	protected void findResources(final List<URL> result, final String name, final ModuleClassLoader requestor,
-	                             Set<String> seenModules) throws IOException {
+	        Set<String> seenModules) throws IOException {
 		if ((seenModules != null) && seenModules.contains(getModule().getModuleId())) {
 			return;
 		}
@@ -913,10 +912,9 @@ public class ModuleClassLoader extends URLClassLoader {
 	}
 	
 	/**
-	 * Package names that this module should try to load. All classes/packages
-	 * within the omod and the lib folder are already checked, this
-	 * method/variable are used for extreme circumstances where an omod needs to
-	 * know about another after being loaded
+	 * Package names that this module should try to load. All classes/packages within the omod and
+	 * the lib folder are already checked, this method/variable are used for extreme circumstances
+	 * where an omod needs to know about another after being loaded
 	 * 
 	 * @return the additionalPackages
 	 */
@@ -925,17 +923,17 @@ public class ModuleClassLoader extends URLClassLoader {
 	}
 	
 	/**
-	 * @param additionalPackages
-	 *            the package names to set that this module contains that are
-	 *            outside the normal omod and omod/lib folders
+	 * @param additionalPackages the package names to set that this module contains that are outside
+	 *            the normal omod and omod/lib folders
 	 */
 	public void setAdditionalPackages(Set<String> additionalPackages) {
 		this.additionalPackages = additionalPackages;
 	}
 	
 	/**
-	 * Convenience method to add another package name to the list of packages provided
-	 * by this module
+	 * Convenience method to add another package name to the list of packages provided by this
+	 * module
+	 * 
 	 * @param additionalPackage string package name
 	 * @see #setProvidedPackages(Set)
 	 */
@@ -950,8 +948,9 @@ public class ModuleClassLoader extends URLClassLoader {
 	}
 	
 	/**
-	 * Convenience method to add a bunch of package names to the list of packages provided
-	 * by this module
+	 * Convenience method to add a bunch of package names to the list of packages provided by this
+	 * module
+	 * 
 	 * @param providedPackages list/set of strings that are package names
 	 * @see #setProvidedPackages(Set)
 	 */

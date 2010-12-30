@@ -42,10 +42,9 @@ public class UserListController {
 	 */
 	@RequestMapping(value = "/admin/users/users")
 	public void displayUsers(ModelMap model, @RequestParam(value = "action", required = false) String action,
-	                         @RequestParam(value = "name", required = false) String name,
-	                         @RequestParam(value = "role", required = false) Role role,
-	                         @RequestParam(value = "includeDisabled", required = false) Boolean includeDisabled)
-	                                                                                                            throws Exception {
+	        @RequestParam(value = "name", required = false) String name,
+	        @RequestParam(value = "role", required = false) Role role,
+	        @RequestParam(value = "includeDisabled", required = false) Boolean includeDisabled) throws Exception {
 		
 		if (Context.isAuthenticated()) {
 			List<User> users = getUsers(action, name, role, includeDisabled);

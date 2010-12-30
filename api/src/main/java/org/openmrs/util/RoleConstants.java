@@ -16,8 +16,8 @@ package org.openmrs.util;
 import org.openmrs.annotation.AddOnStartup;
 
 /**
- * Contains all role names and their descriptions. Some of role names may be
- * marked with AddOnStartup annotation.
+ * Contains all role names and their descriptions. Some of role names may be marked with
+ * AddOnStartup annotation.
  * 
  * @see org.openmrs.annotation.AddOnStartup
  */

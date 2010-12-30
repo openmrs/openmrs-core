@@ -782,7 +782,7 @@ public class WebModuleUtil {
 	 * @return The newly refreshed webApplicationContext
 	 */
 	public static XmlWebApplicationContext refreshWAC(ServletContext servletContext, boolean isOpenmrsStartup,
-	                                                  Module startedModule) {
+	        Module startedModule) {
 		XmlWebApplicationContext wac = (XmlWebApplicationContext) WebApplicationContextUtils
 		        .getWebApplicationContext(servletContext);
 		if (log.isDebugEnabled())

@@ -114,7 +114,7 @@ public class SummaryServlet extends HttpServlet {
 	 * @throws IOException
 	 */
 	private Cohort getPatientSet(HttpServletRequest request, HttpServletResponse response) throws ServletException,
-	                                                                                      IOException {
+	        IOException {
 		
 		Locale locale = Context.getLocale();
 		DateFormat dateFormat = Context.getDateFormat();

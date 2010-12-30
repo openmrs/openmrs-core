@@ -55,7 +55,8 @@ public interface PatientDAO {
 	public List<Patient> getAllPatients(boolean includeVoided) throws DAOException;
 	
 	/**
-	 * @see org.openmrs.api.PatientService#getPatients(String, String, List, boolean, Integer, Integer)
+	 * @see org.openmrs.api.PatientService#getPatients(String, String, List, boolean, Integer,
+	 *      Integer)
 	 * @should escape percentage character in name phrase
 	 * @should escape underscore character in name phrase
 	 * @should escape an asterix character in name phrase
@@ -64,16 +65,15 @@ public interface PatientDAO {
 	 * @should escape an asterix character in identifier phrase
 	 */
 	public List<Patient> getPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,
-	                                 boolean matchIdentifierExactly, Integer start, Integer length) throws DAOException;
+	        boolean matchIdentifierExactly, Integer start, Integer length) throws DAOException;
 	
 	/**
 	 * @see org.openmrs.api.PatientService#getPatientIdentifiers(java.lang.String, java.util.List,
 	 *      java.util.List, java.util.List, java.lang.Boolean)
 	 */
 	public List<PatientIdentifier> getPatientIdentifiers(String identifier,
-	                                                     List<PatientIdentifierType> patientIdentifierTypes,
-	                                                     List<Location> locations, List<Patient> patients,
-	                                                     Boolean isPreferred) throws DAOException;
+	        List<PatientIdentifierType> patientIdentifierTypes, List<Location> locations, List<Patient> patients,
+	        Boolean isPreferred) throws DAOException;
 	
 	/**
 	 * @see org.openmrs.api.PatientService#savePatientIdentifierType(org.openmrs.PatientIdentifierType)
@@ -90,7 +90,7 @@ public interface PatientDAO {
 	 *      java.lang.String, java.lang.Boolean, java.lang.Boolean)
 	 */
 	public List<PatientIdentifierType> getPatientIdentifierTypes(String name, String format, Boolean required,
-	                                                             Boolean hasCheckDigit) throws DAOException;
+	        Boolean hasCheckDigit) throws DAOException;
 	
 	/**
 	 * @see org.openmrs.api.PatientService#getPatientIdentifierType(java.lang.Integer)
@@ -149,5 +149,5 @@ public interface PatientDAO {
 	 * @see PatientService#getCountOfPatients(String)
 	 */
 	public Integer getCountOfPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,
-	                                  boolean matchIdentifierExactly);
+	        boolean matchIdentifierExactly);
 }

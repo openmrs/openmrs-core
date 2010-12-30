@@ -40,11 +40,11 @@ public class HL7Util {
 	private static Log log = LogFactory.getLog(HL7Util.class);
 	
 	// Date and time format parsers
-	private final static DateFormat TIMESTAMP_FORMAT = new SimpleDateFormat("yyyyMMddHHmmss.SSSZ");
+	private static final DateFormat TIMESTAMP_FORMAT = new SimpleDateFormat("yyyyMMddHHmmss.SSSZ");
 	
-	private final static DateFormat TIME_FORMAT = new SimpleDateFormat("HHmmss.SSSZ");
+	private static final DateFormat TIME_FORMAT = new SimpleDateFormat("HHmmss.SSSZ");
 	
-	public final static String LOCAL_TIMEZONE_OFFSET = new SimpleDateFormat("Z").format(new Date());
+	public static final String LOCAL_TIMEZONE_OFFSET = new SimpleDateFormat("Z").format(new Date());
 	
 	/**
 	 * Converts an HL7 timestamp into a java.util.Date object. HL7 timestamps can be created with

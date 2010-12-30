@@ -80,7 +80,7 @@ public class ShortPatientFormController {
 	 */
 	@RequestMapping(method = RequestMethod.GET, value = SHORT_PATIENT_FORM_URL)
 	public String showForm(@RequestParam(value = "patientId", required = false) Integer patientId, ModelMap model,
-	                       WebRequest request) {
+	        WebRequest request) {
 		
 		if (Context.isAuthenticated()) {
 			Patient patient = null;
@@ -144,7 +144,7 @@ public class ShortPatientFormController {
 	 */
 	@RequestMapping(method = RequestMethod.POST, value = SHORT_PATIENT_FORM_URL)
 	public String saveShortPatient(WebRequest request, @ModelAttribute("patientModel") ShortPatientModel patientModel,
-	                               BindingResult result, SessionStatus status) {
+	        BindingResult result, SessionStatus status) {
 		
 		if (Context.isAuthenticated()) {
 			// First do form validation so that we can easily bind errors to

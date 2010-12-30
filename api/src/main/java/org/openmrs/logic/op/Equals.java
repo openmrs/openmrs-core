@@ -14,11 +14,11 @@
 package org.openmrs.logic.op;
 
 /**
- * The Equals operator will test whether a result equals to an operand or not.<br /><br />
- * 
+ * The Equals operator will test whether a result equals to an operand or not.<br />
+ * <br />
  * Example: <br />
  * - <code>logicService.parse("EncounterDataSource.ENCOUNTER_KEY").equals("ADULTRETURN");</code><br />
- *   The above will give us a criteria to get only ADULTRETURN encounters
+ * The above will give us a criteria to get only ADULTRETURN encounters
  */
 public class Equals implements ComparisonOperator {
 	

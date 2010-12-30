@@ -204,9 +204,9 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 			newName.setDateVoided((Date) pn.getDateVoided().clone());
 		
 		if (pn.getPreferred() != null)
-			newName.setPreferred(new Boolean(pn.getPreferred().booleanValue()));
+			newName.setPreferred(pn.getPreferred().booleanValue());
 		if (pn.getVoided() != null)
-			newName.setVoided(new Boolean(pn.getVoided().booleanValue()));
+			newName.setVoided(pn.getVoided().booleanValue());
 		
 		newName.setPerson(pn.getPerson());
 		newName.setVoidedBy(pn.getVoidedBy());
@@ -254,7 +254,7 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	
 	/**
 	 * @return Returns the familyName.
-	 * @should return obscured name if obscure_patients is set to true 
+	 * @should return obscured name if obscure_patients is set to true
 	 */
 	@Element(data = true, required = false)
 	public String getFamilyName() {
@@ -403,7 +403,7 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	 */
 	public Boolean isPreferred() {
 		if (preferred == null)
-			return new Boolean(false);
+			return Boolean.FALSE;
 		return preferred;
 	}
 	
@@ -498,11 +498,9 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	}
 	
 	/**
-	 * Convenience method to get all the names of this
-	 * PersonName and concatonating them together with
-	 * spaces in between.  If any part of {@link #getPrefix()},
-	 * {@link #getGivenName()}, {@link #getMiddleName()}, etc
-	 * are null, they are not included in the returned name
+	 * Convenience method to get all the names of this PersonName and concatonating them together
+	 * with spaces in between. If any part of {@link #getPrefix()}, {@link #getGivenName()},
+	 * {@link #getMiddleName()}, etc are null, they are not included in the returned name
 	 * 
 	 * @return all of the parts of this {@link PersonName} joined with spaces
 	 */

@@ -71,7 +71,7 @@ public interface LocationDAO {
 	 * @see LocationService#getLocations(String, boolean, Integer, Integer)
 	 */
 	public List<Location> getLocations(String nameFragment, boolean includeRetired, Integer start, Integer length)
-	                                                                                                              throws DAOException;
+	        throws DAOException;
 	
 	/**
 	 * Completely remove the location from the database.

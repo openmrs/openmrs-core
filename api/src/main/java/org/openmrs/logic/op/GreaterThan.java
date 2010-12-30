@@ -14,11 +14,12 @@
 package org.openmrs.logic.op;
 
 /**
- * The GreaterThan operator will return result that have a greater value than the operand.<br /><br />
- * 
+ * The GreaterThan operator will return result that have a greater value than the operand.<br />
+ * <br />
  * Example: <br />
  * - <code>logicService.parse("'CD4 COUNT'").gt(200);</code><br />
- *   The above will give us a criteria to get the "CD4 COUNT" observations that has the value numeric more than 200
+ * The above will give us a criteria to get the "CD4 COUNT" observations that has the value numeric
+ * more than 200
  * 
  * @see {@link GreaterThanEquals}
  * @see {@link LessThan}

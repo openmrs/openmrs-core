@@ -21,12 +21,12 @@ import org.openmrs.logic.op.TransformOperator;
 import org.openmrs.logic.result.Result;
 
 /**
- * LogicTransform is internal representation of the transformation applied to the LogicCriteria <br /><br />
- * 
+ * LogicTransform is internal representation of the transformation applied to the LogicCriteria <br />
+ * <br />
  * Example: <br />
- * <code>count()</code> will apply the {@link Count} operator and return the total number of {@link Result} instead of the Result itself
- * <code>first(2)</code> will apply the {@link First} operator and return the first two {@link Result} out of the entire Result
- * 
+ * <code>count()</code> will apply the {@link Count} operator and return the total number of
+ * {@link Result} instead of the Result itself <code>first(2)</code> will apply the {@link First}
+ * operator and return the first two {@link Result} out of the entire Result
  */
 public class LogicTransform {
 	

@@ -610,7 +610,7 @@ public interface UserService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_USERS })
 	public List<User> getUsers(String name, List<Role> roles, boolean includeRetired, Integer start, Integer length)
-	                                                                                                                throws APIException;
+	        throws APIException;
 	
 	/**
 	 * Return the number of users with a matching name or system id and have at least one of the

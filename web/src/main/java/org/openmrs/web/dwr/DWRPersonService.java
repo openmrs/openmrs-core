@@ -143,7 +143,7 @@ public class DWRPersonService {
 	 * @return PersonListItem person stub created
 	 */
 	public Object createPerson(String given, String middle, String family, String birthdate, String dateformat, String age,
-	                           String gender) {
+	        String gender) {
 		log.error(given + " " + middle + " " + family + " " + birthdate + " " + dateformat + " " + age + " " + gender);
 		User user = Context.getAuthenticatedUser();
 		Person p = new Person();
@@ -242,7 +242,7 @@ public class DWRPersonService {
 	 * @since 1.8
 	 */
 	public Vector<Object> findBatchOfPeopleByRoles(String searchPhrase, boolean includeRetired, String roles, Integer start,
-	                                               Integer length) {
+	        Integer length) {
 		Vector<Object> personList = new Vector<Object>();
 		try {
 			// if roles were given, search for users with those roles
@@ -304,7 +304,7 @@ public class DWRPersonService {
 	 * @since 1.8
 	 */
 	public Map<String, Object> findCountAndPeople(String phrase, boolean includeRetired, String roles, Integer start,
-	                                              Integer length, boolean getMatchCount) throws APIException {
+	        Integer length, boolean getMatchCount) throws APIException {
 		
 		//Map to return
 		Map<String, Object> resultsMap = new HashMap<String, Object>();

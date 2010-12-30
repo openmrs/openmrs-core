@@ -69,8 +69,7 @@ public interface SerializationService extends OpenmrsService {
 	 * @return hydrated object of the appropriate type
 	 */
 	public <T extends Object> T deserialize(String serializedObject, Class<? extends T> objectClass,
-	                                        Class<? extends OpenmrsSerializer> serializerClass)
-	                                                                                           throws SerializationException;
+	        Class<? extends OpenmrsSerializer> serializerClass) throws SerializationException;
 	
 	/**
 	 * Gets the list of OpenmrsSerializers that have been registered with this service. <br/>

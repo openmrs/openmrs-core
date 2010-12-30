@@ -126,7 +126,7 @@ public interface FormDAO {
 	 *      java.util.Collection, boolean)
 	 */
 	public FormField getFormField(Form form, Concept concept, Collection<FormField> ignoreFormFields, boolean force)
-	                                                                                                                throws DAOException;
+	        throws DAOException;
 	
 	/**
 	 * @param search String phrase to search for
@@ -205,9 +205,9 @@ public interface FormDAO {
 	 * @return All Fields that match the criteria
 	 */
 	public List<Field> getFields(Collection<Form> forms, Collection<FieldType> fieldTypes, Collection<Concept> concepts,
-	                             Collection<String> tableNames, Collection<String> attributeNames, Boolean selectMultiple,
-	                             Collection<FieldAnswer> containsAllAnswers, Collection<FieldAnswer> containsAnyAnswer,
-	                             Boolean retired) throws DAOException;
+	        Collection<String> tableNames, Collection<String> attributeNames, Boolean selectMultiple,
+	        Collection<FieldAnswer> containsAllAnswers, Collection<FieldAnswer> containsAnyAnswer, Boolean retired)
+	        throws DAOException;
 	
 	/**
 	 * Get all forms that contain the given <code>Concept</code> as one of their fields. (Includes
@@ -236,15 +236,15 @@ public interface FormDAO {
 	 *      java.util.Collection)
 	 */
 	public List<Form> getForms(String partialName, Boolean published, Collection<EncounterType> encounterTypes,
-	                           Boolean retired, Collection<FormField> containingAnyFormField,
-	                           Collection<FormField> containingAllFormFields, Collection<Field> fields) throws DAOException;
+	        Boolean retired, Collection<FormField> containingAnyFormField, Collection<FormField> containingAllFormFields,
+	        Collection<Field> fields) throws DAOException;
 	
 	/**
 	 * @see #getForms(String, Boolean, Collection, Boolean, Collection, Collection, Collection)
 	 */
 	public Integer getFormCount(String partialName, Boolean published, Collection<EncounterType> encounterTypes,
-	                            Boolean retired, Collection<FormField> containingAnyFormField,
-	                            Collection<FormField> containingAllFormFields, Collection<Field> fields) throws DAOException;
+	        Boolean retired, Collection<FormField> containingAnyFormField, Collection<FormField> containingAllFormFields,
+	        Collection<Field> fields) throws DAOException;
 	
 	/**
 	 * Delete the given field type from the database

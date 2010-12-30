@@ -42,9 +42,9 @@ public abstract class AbstractPatientFilter extends AbstractReportObject impleme
 	}
 	
 	/**
-	 * Basic implementation of filterInverse that delegates to PatientSetService.getAllPatients() and
-	 * this class's filter() method. Subclasses may override this method if they have a way of doing
-	 * so more efficiently (since getAllPatients can be very expensive).
+	 * Basic implementation of filterInverse that delegates to PatientSetService.getAllPatients()
+	 * and this class's filter() method. Subclasses may override this method if they have a way of
+	 * doing so more efficiently (since getAllPatients can be very expensive).
 	 * 
 	 * @param input
 	 * @param context

@@ -49,7 +49,6 @@ import org.springframework.transaction.annotation.Transactional;
  * 
  * List&lt;Concept&gt; concepts = Context.getConceptService().getAllConcepts();
  * </pre>
- * 
  * To get a single concept:
  * 
  * <pre>
@@ -59,7 +58,6 @@ import org.springframework.transaction.annotation.Transactional;
  * 
  * String name = concept.getPreferredName(Context.getLocale()).getName();
  * </pre>
- * 
  * To save a concept to the database
  * 
  * <pre>
@@ -413,9 +411,9 @@ public interface ConceptService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public List<ConceptWord> getConceptWords(String phrase, List<Locale> locales, boolean includeRetired,
-	                                         List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses,
-	                                         List<ConceptDatatype> requireDatatypes, List<ConceptDatatype> excludeDatatypes,
-	                                         Concept answersToConcept, Integer start, Integer size) throws APIException;
+	        List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,
+	        List<ConceptDatatype> excludeDatatypes, Concept answersToConcept, Integer start, Integer size)
+	        throws APIException;
 	
 	/**
 	 * @deprecated use {@link #getConcepts(String, Locale)} that returns a list of
@@ -443,9 +441,8 @@ public interface ConceptService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public List<ConceptWord> findConcepts(String phrase, Locale locale, boolean includeRetired,
-	                                      List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses,
-	                                      List<ConceptDatatype> requireDatatypes, List<ConceptDatatype> excludeDatatypes)
-	                                                                                                                     throws APIException;
+	        List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,
+	        List<ConceptDatatype> excludeDatatypes) throws APIException;
 	
 	/**
 	 * Get Drug by its UUID
@@ -467,7 +464,7 @@ public interface ConceptService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public List<ConceptWord> findConcepts(String phrase, Locale locale, boolean includeRetired, int start, int size)
-	                                                                                                                throws APIException;
+	        throws APIException;
 	
 	/**
 	 * Return the drug object corresponding to the given name or drugId
@@ -928,8 +925,8 @@ public interface ConceptService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized( { "View Concepts" })
 	public List<ConceptWord> findConcepts(String phrase, List<Locale> searchLocales, boolean includeRetired,
-	                                      List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses,
-	                                      List<ConceptDatatype> requireDatatypes, List<ConceptDatatype> excludeDatatypes);
+	        List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,
+	        List<ConceptDatatype> excludeDatatypes);
 	
 	/**
 	 * @deprecated use {@link #saveConceptProposal(ConceptProposal)}
@@ -989,7 +986,7 @@ public interface ConceptService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public List<ConceptWord> findConceptAnswers(String phrase, Locale locale, Concept concept, boolean includeRetired)
-	                                                                                                                  throws APIException;
+	        throws APIException;
 	
 	/**
 	 * @deprecated use {@link #findConceptAnswers(String, Locale, Concept)}
@@ -1431,10 +1428,9 @@ public interface ConceptService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public List<ConceptSearchResult> getConcepts(String phrase, List<Locale> locales, boolean includeRetired,
-	                                             List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses,
-	                                             List<ConceptDatatype> requireDatatypes,
-	                                             List<ConceptDatatype> excludeDatatypes, Concept answersToConcept,
-	                                             Integer start, Integer size) throws APIException;
+	        List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,
+	        List<ConceptDatatype> excludeDatatypes, Concept answersToConcept, Integer start, Integer size)
+	        throws APIException;
 	
 	/**
 	 * Finds concepts that are possible value coded answers to concept parameter
@@ -1515,9 +1511,8 @@ public interface ConceptService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public Integer getCountOfConcepts(String phrase, List<Locale> locales, boolean includeRetired,
-	                                  List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses,
-	                                  List<ConceptDatatype> requireDatatypes, List<ConceptDatatype> excludeDatatypes,
-	                                  Concept answersToConcept);
+	        List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,
+	        List<ConceptDatatype> excludeDatatypes, Concept answersToConcept);
 	
 	/**
 	 * Return the number of drugs with matching names or concept drug names
@@ -1536,7 +1531,7 @@ public interface ConceptService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public Integer getCountOfDrugs(String drugName, Concept concept, boolean searchOnPhrase, boolean searchDrugConceptNames,
-	                               boolean includeRetired) throws APIException;
+	        boolean includeRetired) throws APIException;
 	
 	/**
 	 * Returns a list of drugs with matching names or concept drug names and returns a specific
@@ -1559,5 +1554,5 @@ public interface ConceptService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public List<Drug> getDrugs(String drugName, Concept concept, boolean searchOnPhrase, boolean searchDrugConceptNames,
-	                           boolean includeRetired, Integer start, Integer length) throws APIException;
+	        boolean includeRetired, Integer start, Integer length) throws APIException;
 }

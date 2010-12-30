@@ -150,8 +150,7 @@ public interface FormService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_FORMS)
 	public List<Form> getForms(String partialNameSearch, Boolean published, Collection<EncounterType> encounterTypes,
-	                           Boolean retired, Collection<FormField> containingAnyFormField,
-	                           Collection<FormField> containingAllFormFields);
+	        Boolean retired, Collection<FormField> containingAnyFormField, Collection<FormField> containingAllFormFields);
 	
 	/**
 	 * Gets all forms that match all the (nullable) criteria
@@ -178,8 +177,8 @@ public interface FormService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_FORMS)
 	public List<Form> getForms(String partialNameSearch, Boolean published, Collection<EncounterType> encounterTypes,
-	                           Boolean retired, Collection<FormField> containingAnyFormField,
-	                           Collection<FormField> containingAllFormFields, Collection<Field> fields);
+	        Boolean retired, Collection<FormField> containingAnyFormField, Collection<FormField> containingAllFormFields,
+	        Collection<Field> fields);
 	
 	/**
 	 * Same as
@@ -191,8 +190,8 @@ public interface FormService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_FORMS)
 	public Integer getFormCount(String partialNameSearch, Boolean published, Collection<EncounterType> encounterTypes,
-	                            Boolean retired, Collection<FormField> containingAnyFormField,
-	                            Collection<FormField> containingAllFormFields, Collection<Field> fields);
+	        Boolean retired, Collection<FormField> containingAnyFormField, Collection<FormField> containingAllFormFields,
+	        Collection<Field> fields);
 	
 	/**
 	 * Returns all published forms (not including retired ones)
@@ -527,9 +526,9 @@ public interface FormService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_FORMS)
 	public List<Field> getFields(Collection<Form> forms, Collection<FieldType> fieldTypes, Collection<Concept> concepts,
-	                             Collection<String> tableNames, Collection<String> attributeNames, Boolean selectMultiple,
-	                             Collection<FieldAnswer> containsAllAnswers, Collection<FieldAnswer> containsAnyAnswer,
-	                             Boolean retired) throws APIException;
+	        Collection<String> tableNames, Collection<String> attributeNames, Boolean selectMultiple,
+	        Collection<FieldAnswer> containsAllAnswers, Collection<FieldAnswer> containsAnyAnswer, Boolean retired)
+	        throws APIException;
 	
 	/**
 	 * @deprecated use {@link #getAllFields()}
@@ -691,7 +690,7 @@ public interface FormService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_FORMS)
 	public FormField getFormField(Form form, Concept concept, Collection<FormField> ignoreFormFields, boolean force)
-	                                                                                                                throws APIException;
+	        throws APIException;
 	
 	/**
 	 * Creates or updates the given FormField

@@ -21,6 +21,7 @@ import org.openmrs.OpenmrsMetadata;
 /**
  * A comparator that sorts first based on non-retired, and second based on name. (Locale is
  * currently not used, but will be when we add the ability to localize metadata.)
+ * 
  * @since 1.7
  */
 public class MetadataComparator implements Comparator<OpenmrsMetadata> {

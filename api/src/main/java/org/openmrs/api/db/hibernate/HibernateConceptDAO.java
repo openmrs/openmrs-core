@@ -518,7 +518,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Concept> getConcepts(String name, Locale loc, boolean searchOnPhrase, List<ConceptClass> classes,
-	                                 List<ConceptDatatype> datatypes) throws DAOException {
+	        List<ConceptDatatype> datatypes) throws DAOException {
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Concept.class);
 		
@@ -562,9 +562,9 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<ConceptWord> getConceptWords(String phrase, List<Locale> locales, boolean includeRetired,
-	                                         List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses,
-	                                         List<ConceptDatatype> requireDatatypes, List<ConceptDatatype> excludeDatatypes,
-	                                         Concept answersToConcept, Integer start, Integer size) throws DAOException {
+	        List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,
+	        List<ConceptDatatype> excludeDatatypes, Concept answersToConcept, Integer start, Integer size)
+	        throws DAOException {
 		
 		Criteria searchCriteria = createConceptWordSearchCriteria(phrase, locales, includeRetired, requireClasses,
 		    excludeClasses, requireDatatypes, excludeDatatypes, answersToConcept);
@@ -1279,9 +1279,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@Override
 	public Integer getCountOfConceptWords(String phrase, List<Locale> locales, boolean includeRetired,
-	                                      List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses,
-	                                      List<ConceptDatatype> requireDatatypes, List<ConceptDatatype> excludeDatatypes,
-	                                      Concept answersToConcept, boolean forUniqueConcepts) {
+	        List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,
+	        List<ConceptDatatype> excludeDatatypes, Concept answersToConcept, boolean forUniqueConcepts) {
 		Criteria searchCriteria = createConceptWordSearchCriteria(phrase, locales, includeRetired, requireClasses,
 		    excludeClasses, requireDatatypes, excludeDatatypes, answersToConcept);
 		if (searchCriteria != null) {
@@ -1314,10 +1313,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 * @return the generated criteria object
 	 */
 	private Criteria createConceptWordSearchCriteria(String phrase, List<Locale> locales, boolean includeRetired,
-	                                                 List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses,
-	                                                 List<ConceptDatatype> requireDatatypes,
-	                                                 List<ConceptDatatype> excludeDatatypes, Concept answersToConcept)
-	                                                                                                                  throws DAOException {
+	        List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,
+	        List<ConceptDatatype> excludeDatatypes, Concept answersToConcept) throws DAOException {
 		
 		//add the language-only portion of locale if its not in the list of locales already
 		List<Locale> localesToAdd = new Vector<Locale>();
@@ -1395,7 +1392,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 * @see ConceptService#getCountOfDrugs(String, Concept, boolean, boolean)
 	 */
 	public Integer getCountOfDrugs(String drugName, Concept concept, boolean searchOnPhrase, boolean searchDrugConceptNames,
-	                               boolean includeRetired) throws DAOException {
+	        boolean includeRetired) throws DAOException {
 		Criteria searchCriteria = sessionFactory.getCurrentSession().createCriteria(Drug.class, "drug");
 		if (StringUtils.isBlank(drugName) && concept == null)
 			return 0;
@@ -1423,7 +1420,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Drug> getDrugs(String drugName, Concept concept, boolean searchOnPhrase, boolean searchDrugConceptNames,
-	                           boolean includeRetired, Integer start, Integer length) throws DAOException {
+	        boolean includeRetired, Integer start, Integer length) throws DAOException {
 		Criteria searchCriteria = sessionFactory.getCurrentSession().createCriteria(Drug.class, "drug");
 		if (StringUtils.isBlank(drugName) && concept == null)
 			return Collections.emptyList();
@@ -1458,10 +1455,9 @@ public class HibernateConceptDAO implements ConceptDAO {
 	@SuppressWarnings( { "unchecked", "rawtypes" })
 	@Override
 	public List<ConceptSearchResult> getConcepts(String phrase, List<Locale> locales, boolean includeRetired,
-	                                             List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses,
-	                                             List<ConceptDatatype> requireDatatypes,
-	                                             List<ConceptDatatype> excludeDatatypes, Concept answersToConcept,
-	                                             Integer start, Integer size) throws DAOException {
+	        List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,
+	        List<ConceptDatatype> excludeDatatypes, Concept answersToConcept, Integer start, Integer size)
+	        throws DAOException {
 		
 		Criteria searchCriteria = createConceptWordSearchCriteria(phrase, locales, includeRetired, requireClasses,
 		    excludeClasses, requireDatatypes, excludeDatatypes, answersToConcept);

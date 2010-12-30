@@ -68,11 +68,11 @@ public class DatabaseUpdater {
 	
 	private static Log log = LogFactory.getLog(DatabaseUpdater.class);
 	
-	private final static String CHANGE_LOG_FILE = "liquibase-update-to-latest.xml";
+	private static final String CHANGE_LOG_FILE = "liquibase-update-to-latest.xml";
 	
-	private final static String CONTEXT = "core";
+	private static final String CONTEXT = "core";
 	
-	public final static String DATABASE_UPDATES_LOG_FILE = "liquibaseUpdateLogs.txt";
+	public static final String DATABASE_UPDATES_LOG_FILE = "liquibaseUpdateLogs.txt";
 	
 	private static Integer authenticatedUserId;
 	
@@ -104,7 +104,7 @@ public class DatabaseUpdater {
 	 * @throws InputRequiredException
 	 */
 	public static void executeChangelog(String changelog, Map<String, Object> userInput) throws DatabaseUpdateException,
-	                                                                                    InputRequiredException {
+	        InputRequiredException {
 		
 		log.debug("Executing changelog: " + changelog);
 		
@@ -138,8 +138,7 @@ public class DatabaseUpdater {
 	 *             error object will list of the user prompts and type of data for each prompt
 	 */
 	public static List<String> executeChangelog(String changelog, Map<String, Object> userInput,
-	                                            ChangeSetExecutorCallback callback) throws DatabaseUpdateException,
-	                                                                               InputRequiredException {
+	        ChangeSetExecutorCallback callback) throws DatabaseUpdateException, InputRequiredException {
 		log.debug("installing the tables into the database");
 		
 		if (changelog == null)
@@ -160,7 +159,7 @@ public class DatabaseUpdater {
 	 */
 	@Deprecated
 	public static List<String> executeChangelog(String changeLogFile, String contexts, Map<String, Object> userInput,
-	                                            ChangeSetExecutorCallback callback) throws Exception {
+	        ChangeSetExecutorCallback callback) throws Exception {
 		return executeChangelog(changeLogFile, contexts, userInput, callback, null);
 	}
 	
@@ -178,7 +177,7 @@ public class DatabaseUpdater {
 	 * @throws Exception
 	 */
 	public static List<String> executeChangelog(String changeLogFile, String contexts, Map<String, Object> userInput,
-	                                            ChangeSetExecutorCallback callback, ClassLoader cl) throws Exception {
+	        ChangeSetExecutorCallback callback, ClassLoader cl) throws Exception {
 		final class OpenmrsUpdateVisitor extends UpdateVisitor {
 			
 			private ChangeSetExecutorCallback callback;

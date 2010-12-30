@@ -206,7 +206,7 @@ public class DWRPatientService implements GlobalPropertyListener {
 	 */
 	@SuppressWarnings("unchecked")
 	public Map<String, Object> findCountAndPatients(String searchValue, Integer start, Integer length, boolean getMatchCount)
-	                                                                                                                         throws APIException {
+	        throws APIException {
 		
 		//Map to return
 		Map<String, Object> resultsMap = new HashMap<String, Object>();
@@ -457,7 +457,7 @@ public class DWRPatientService implements GlobalPropertyListener {
 	 * @return
 	 */
 	public String exitPatientFromCare(Integer patientId, Integer exitReasonId, String exitDateStr,
-	                                  Integer causeOfDeathConceptId, String otherReason) {
+	        Integer causeOfDeathConceptId, String otherReason) {
 		log.debug("Entering exitfromcare with [" + patientId + "] [" + exitReasonId + "] [" + exitDateStr + "]");
 		String ret = "";
 		
@@ -615,7 +615,7 @@ public class DWRPatientService implements GlobalPropertyListener {
 	 * @param reactionId
 	 */
 	public void createAllergy(Integer patientId, Integer allergenId, String type, String pStartDate, String severity,
-	                          Integer reactionId) {
+	        Integer reactionId) {
 		Date startDate = parseDate(pStartDate);
 		
 		Patient patient = Context.getPatientService().getPatient(patientId);
@@ -639,7 +639,7 @@ public class DWRPatientService implements GlobalPropertyListener {
 	 * @param reactionId
 	 */
 	public void saveAllergy(Integer activeListItemId, Integer allergenId, String type, String pStartDate, String severity,
-	                        Integer reactionId) {
+	        Integer reactionId) {
 		//get the allergy
 		Allergy allergy = Context.getPatientService().getAllergy(activeListItemId);
 		allergy.setAllergen(Context.getConceptService().getConcept(allergenId));

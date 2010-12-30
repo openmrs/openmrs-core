@@ -43,8 +43,7 @@ public class GZIPFilter extends OncePerRequestFilter {
 	 *      javax.servlet.http.HttpServletResponse, javax.servlet.FilterChain)
 	 */
 	public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
-	                                                                                                         throws IOException,
-	                                                                                                         ServletException {
+	        throws IOException, ServletException {
 		
 		if (isGZIPSupported(request) && isGZIPEnabled()) {
 			log.debug("GZIP supported and enabled, compressing response");

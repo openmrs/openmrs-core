@@ -78,7 +78,7 @@ public abstract class StartupFilter implements Filter {
 	 *      javax.servlet.ServletResponse, javax.servlet.FilterChain)
 	 */
 	public final void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
-	                                                                                               ServletException {
+	        ServletException {
 		if (skipFilter((HttpServletRequest) request)) {
 			chain.doFilter(request, response);
 		} else {
@@ -167,7 +167,7 @@ public abstract class StartupFilter implements Filter {
 	 * @param httpResponse
 	 */
 	protected abstract void doGet(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException,
-	                                                                                               ServletException;
+	        ServletException;
 	
 	/**
 	 * Called by {@link #doFilter(ServletRequest, ServletResponse, FilterChain)} on POST requests
@@ -177,7 +177,7 @@ public abstract class StartupFilter implements Filter {
 	 * @throws Exception
 	 */
 	protected abstract void doPost(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException,
-	                                                                                                ServletException;
+	        ServletException;
 	
 	/**
 	 * All private attributes on this class are returned to the template via the velocity context
@@ -189,7 +189,7 @@ public abstract class StartupFilter implements Filter {
 	 * @param writer
 	 */
 	protected void renderTemplate(String templateName, Map<String, Object> referenceMap, HttpServletResponse httpResponse)
-	                                                                                                                      throws IOException {
+	        throws IOException {
 		
 		VelocityContext velocityContext = new VelocityContext();
 		

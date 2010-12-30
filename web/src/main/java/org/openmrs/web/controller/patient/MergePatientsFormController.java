@@ -46,7 +46,7 @@ public class MergePatientsFormController extends SimpleFormController {
 	protected final Log log = LogFactory.getLog(getClass());
 	
 	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object object,
-	                                             BindException errors) throws Exception {
+	        BindException errors) throws Exception {
 		//ModelAndView view = super.processFormSubmission(request, response, object, errors);
 		
 		log.debug("Number of errors: " + errors.getErrorCount());
@@ -74,7 +74,7 @@ public class MergePatientsFormController extends SimpleFormController {
 	 *      org.springframework.validation.BindException)
 	 */
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
-	                                BindException errors) throws Exception {
+	        BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
 		

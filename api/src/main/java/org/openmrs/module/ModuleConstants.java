@@ -33,8 +33,8 @@ public class ModuleConstants {
 	}
 	
 	/**
-	 * Used to determine if the {@link #CORE_MODULES} list should be used or not. For unit
-	 * testing this is set to true to allow for faster runs with less dependencies.
+	 * Used to determine if the {@link #CORE_MODULES} list should be used or not. For unit testing
+	 * this is set to true to allow for faster runs with less dependencies.
 	 */
 	public static final String IGNORE_CORE_MODULES_PROPERTY = "module.ignore_core_status";
 	

@@ -60,7 +60,7 @@ public class MigrationController implements Controller {
 	protected final Log log = LogFactory.getLog(getClass());
 	
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException,
-	                                                                                           IOException {
+	        IOException {
 		
 		Map<String, Object> myModel = new HashMap<String, Object>();
 		if (Context.isAuthenticated()) {
@@ -83,9 +83,7 @@ public class MigrationController implements Controller {
 	}
 	
 	public ModelAndView uploadUsers(HttpServletRequest request, HttpServletResponse response) throws ServletException,
-	                                                                                         IOException,
-	                                                                                         ParserConfigurationException,
-	                                                                                         ParseException {
+	        IOException, ParserConfigurationException, ParseException {
 		String xml = request.getParameter("user_xml");
 		log.debug("xml to upload = " + xml);
 		int numAdded = MigrationHelper.importUsers(MigrationHelper.parseXml(xml));
@@ -94,8 +92,7 @@ public class MigrationController implements Controller {
 	}
 	
 	public ModelAndView uploadLocations(HttpServletRequest request, HttpServletResponse response) throws ServletException,
-	                                                                                             IOException,
-	                                                                                             ParserConfigurationException {
+	        IOException, ParserConfigurationException {
 		String xml = request.getParameter("location_xml");
 		log.debug("xml to upload = " + xml);
 		int numAdded = MigrationHelper.importLocations(MigrationHelper.parseXml(xml));
@@ -104,7 +101,7 @@ public class MigrationController implements Controller {
 	}
 	
 	public ModelAndView runHl7(HttpServletRequest request, HttpServletResponse response) throws ServletException,
-	                                                                                    IOException {
+	        IOException {
 		List<String> messages = new ArrayList<String>();
 		
 		String filename = request.getParameter("filename");
@@ -170,7 +167,7 @@ public class MigrationController implements Controller {
 	
 	// Hardcoded for PIH v1-v2 migration. Sorry about that.
 	public ModelAndView uploadRegimens(HttpServletRequest request, HttpServletResponse response) throws ServletException,
-	                                                                                            IOException, ParseException {
+	        IOException, ParseException {
 		String csv = request.getParameter("regimen_csv");
 		int numAdded = importRegimens(csv);
 		
@@ -182,9 +179,7 @@ public class MigrationController implements Controller {
 	 * TODO: DOCUMENT THIS
 	 */
 	public ModelAndView uploadMigrationFile(HttpServletRequest request, HttpServletResponse response)
-	                                                                                                 throws ServletException,
-	                                                                                                 IOException,
-	                                                                                                 ParseException {
+	        throws ServletException, IOException, ParseException {
 		String filename = request.getParameter("filename");
 		if (filename == null || filename.length() == 0)
 			throw new IllegalArgumentException("Must specify a 'filename' parameter");
