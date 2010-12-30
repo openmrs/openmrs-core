@@ -12,7 +12,9 @@
 	<!--
 		All reported file names will be relative to the specified directory.
 	-->
+	<!--
 	<property name="basedir" value="${src.dir}" />
+	-->
 
 	<!--
 		Limit checks by their severity (e.g., error or warning) 
@@ -27,10 +29,12 @@
 		audits that should be suppressed.
 		http://checkstyle.sourceforge.net/config.html
 	-->
+	<!--
 	<module name="SuppressionFilter">
 		<property name="file"
-			value="${metadata.dir}/${checkstyle.suppressions.file}" />
+			value="${checkstyle.suppressions.file}" />
 	</module>
+	-->
 
 	<!--                                                -->
 	<!--                FILE CHECKS                     -->
@@ -39,11 +43,13 @@
 	<!--
 		Verify that all java files have the OpenMRS license header.
 	-->
+	<!--
 	<module name="Header">
-		<property name="headerFile" value="${metadata.dir}/${checkstyle.header.file}" />
+		<property name="headerFile" value="${checkstyle.header.file}" />
 		<property name="fileExtensions" value="java" />
 		<property name="id" value="header" />
 	</module>
+	-->
 
 	<!--
 		Define a maximum number of lines in a java file.
@@ -380,7 +386,10 @@
 		<module name="JavadocType">
 			<property name="scope" value="public" />
 			<property name="allowMissingParamTags" value="true" />
+			<!-- allowUnknownTags is not available until CheckStyle 5.1 -->
+			<!--
 			<property name="allowUnknownTags" value="true" />
+			-->
 		</module>
 
 		<!--  Public methods should have Javadoc -->
