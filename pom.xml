@@ -651,6 +651,12 @@
 						border=0/&gt;&lt;/a&gt;</header>
 					<footer>&lt;a href=&quot;http://www.openmrs.org&quot;
 						target=_top&gt;${project.name}&lt;/a&gt;</footer>
+					<taglet>org.openmrs.tools.doclet.ShouldTaglet</taglet>
+					<tagletArtifact>
+						<groupId>org.openmrs.tools</groupId>
+						<artifactId>openmrs-tools</artifactId>
+						<version>${project.version}</version>
+					</tagletArtifact>
 				</configuration>
 			</plugin>
 			<plugin>
