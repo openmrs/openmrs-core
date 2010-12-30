@@ -577,6 +577,24 @@
 						</dependency>
 					</dependencies>
 				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-checkstyle-plugin</artifactId>
+					<version>2.6</version>
+					<configuration>
+						<configLocation>checkstyle/openmrs-checkstyle.xml</configLocation>
+						<propertiesLocation>checkstyle/openmrs-checkstyle.properties</propertiesLocation>
+						<headerLocation>checkstyle/license-header.txt</headerLocation>
+						<suppressionsLocation>checkstyle/checkstyle-suppressions.xml</suppressionsLocation>
+					</configuration>
+					<dependencies>
+						<dependency>
+							<groupId>org.openmrs.tools</groupId>
+							<artifactId>openmrs-tools</artifactId>
+							<version>${project.version}</version>
+						</dependency>
+					</dependencies>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 
@@ -634,6 +652,10 @@
 					<footer>&lt;a href=&quot;http://www.openmrs.org&quot;
 						target=_top&gt;${project.name}&lt;/a&gt;</footer>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>jxr-maven-plugin</artifactId>
 			</plugin>
 		</plugins>
 	</reporting>
