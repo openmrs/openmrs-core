@@ -32,9 +32,9 @@ import org.openmrs.util.DatabaseUtil;
 
 /**
  * This change set is executed in conjunction with a change made to Patient Programs which
- * automatically will complete a Patient Program if a Workflow within that Program transitions 
- * to a state marked as final.  It is intended to warn administrators when they upgrade that
- * they should carefully review any States marked as final, particularly those also marked as initial
+ * automatically will complete a Patient Program if a Workflow within that Program transitions to a
+ * state marked as final. It is intended to warn administrators when they upgrade that they should
+ * carefully review any States marked as final, particularly those also marked as initial
  */
 public class ProgramValidatorChangeSet implements CustomTaskChange {
 	

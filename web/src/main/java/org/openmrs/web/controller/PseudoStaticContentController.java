@@ -29,18 +29,13 @@ import org.springframework.web.servlet.mvc.Controller;
 import org.springframework.web.servlet.mvc.LastModified;
 
 /**
- * This controller basically passes requests straight through to their views.
- * When interpretJstl is enabled, ".withjstl" is appended to the view name.
- * (This allows us to use jstl (such as the spring:message tag) in some
- * javascript files.)
- * 
- * <br/>
+ * This controller basically passes requests straight through to their views. When interpretJstl is
+ * enabled, ".withjstl" is appended to the view name. (This allows us to use jstl (such as the
+ * spring:message tag) in some javascript files.) <br/>
  * If you specify any 'rewrites' then the specified paths are remapped, e.g:<br/>
- * /scripts/jquery/jquery-1.3.2.min.js -> /scripts/jquery/jquery.min.js
- * 
- * <br/>
- * All jstl files are cached in the browser until a server restart or a global
- * property is added/changed/deleted
+ * /scripts/jquery/jquery-1.3.2.min.js -> /scripts/jquery/jquery.min.js <br/>
+ * All jstl files are cached in the browser until a server restart or a global property is
+ * added/changed/deleted
  */
 public class PseudoStaticContentController implements Controller, LastModified, GlobalPropertyListener {
 	
@@ -69,7 +64,7 @@ public class PseudoStaticContentController implements Controller, LastModified, 
 	}
 	
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException,
-	                                                                                           IOException {
+	        IOException {
 		String path = request.getServletPath() + request.getPathInfo();
 		
 		if (rewrites != null && rewrites.containsKey(path))

@@ -99,7 +99,7 @@ public class QuickReportServlet extends HttpServlet {
 	}
 	
 	private void doReturnVisitDate(VelocityContext velocityContext, PrintWriter report, HttpServletRequest request)
-	                                                                                                               throws ServletException {
+	        throws ServletException {
 		ObsService os = Context.getObsService();
 		EncounterService es = Context.getEncounterService();
 		LocationService ls = Context.getLocationService();
@@ -175,7 +175,7 @@ public class QuickReportServlet extends HttpServlet {
 	}
 	
 	private void doAttendedClinic(VelocityContext velocityContext, PrintWriter report, HttpServletRequest request)
-	                                                                                                              throws ServletException {
+	        throws ServletException {
 		EncounterService es = Context.getEncounterService();
 		LocationService ls = Context.getLocationService();
 		
@@ -238,7 +238,7 @@ public class QuickReportServlet extends HttpServlet {
 	}
 	
 	private void doVoidedObs(VelocityContext velocityContext, PrintWriter report, HttpServletRequest request)
-	                                                                                                         throws ServletException {
+	        throws ServletException {
 		ObsService os = Context.getObsService();
 		
 		DateFormat dateFormat = Context.getDateFormat();

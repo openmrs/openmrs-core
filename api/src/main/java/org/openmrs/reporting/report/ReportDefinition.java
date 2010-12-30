@@ -58,10 +58,10 @@ public class ReportDefinition extends AbstractReportObject implements Serializab
 	private DatasetDefinition datasetDefinition = new DatasetDefinition();
 	
 	/* Type of report object */
-	public final static String TYPE_NAME = "Report Definition";
+	public static final String TYPE_NAME = "Report Definition";
 	
 	/* Subtype (classifier) */
-	public final static String SUB_TYPE_NAME = "Report Definition";
+	public static final String SUB_TYPE_NAME = "Report Definition";
 	
 	/**
 	 * Default public constructor

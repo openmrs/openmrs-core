@@ -45,7 +45,7 @@ public class PatientDashboardGraphController {
 	@SuppressWarnings("unchecked")
 	@RequestMapping(method = RequestMethod.GET)
 	public String showGraphData(@RequestParam(required = true, value = "patientId") Integer patientId,
-	                            @RequestParam(required = true, value = "conceptId") Integer conceptId, ModelMap map) {
+	        @RequestParam(required = true, value = "conceptId") Integer conceptId, ModelMap map) {
 		Patient patient = Context.getPatientService().getPatient(patientId);
 		ConceptNumeric concept = Context.getConceptService().getConceptNumeric(conceptId);
 		

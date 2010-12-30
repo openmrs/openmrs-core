@@ -109,7 +109,7 @@ public class UpdateFilter extends StartupFilter {
 	 */
 	@Override
 	protected void doGet(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException,
-	                                                                                      ServletException {
+	        ServletException {
 		
 		Map<String, Object> referenceMap = new HashMap<String, Object>();
 		
@@ -125,7 +125,7 @@ public class UpdateFilter extends StartupFilter {
 	 */
 	@Override
 	protected void doPost(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException,
-	                                                                                       ServletException {
+	        ServletException {
 		
 		String page = httpRequest.getParameter("page");
 		Map<String, Object> referenceMap = new HashMap<String, Object>();

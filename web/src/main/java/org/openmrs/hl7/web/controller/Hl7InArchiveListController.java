@@ -32,8 +32,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
- * controller for the HL7 archives list view; only displays HL7s that have 
- * not been migrated to the filesystem
+ * controller for the HL7 archives list view; only displays HL7s that have not been migrated to the
+ * filesystem
  */
 @Controller
 public class Hl7InArchiveListController {
@@ -68,9 +68,8 @@ public class Hl7InArchiveListController {
 	@RequestMapping("/admin/hl7/hl7InArchiveList.json")
 	public @ResponseBody
 	Map<String, Object> getHL7InArchiveBatchAsJson(@RequestParam("iDisplayStart") int iDisplayStart,
-	                                               @RequestParam("iDisplayLength") int iDisplayLength,
-	                                               @RequestParam("sSearch") String sSearch, @RequestParam("sEcho") int sEcho)
-	                                                                                                                         throws IOException {
+	        @RequestParam("iDisplayLength") int iDisplayLength, @RequestParam("sSearch") String sSearch,
+	        @RequestParam("sEcho") int sEcho) throws IOException {
 		
 		// get the data
 		List<HL7InArchive> hl7s = Context.getHL7Service().getHL7InArchiveBatch(iDisplayStart, iDisplayLength,

@@ -113,14 +113,13 @@ public class PatientSetServiceImpl implements PatientSetService {
 	}
 	
 	public Cohort getPatientsByCharacteristics(String gender, Date minBirthdate, Date maxBirthdate, Integer minAge,
-	                                           Integer maxAge, Boolean aliveOnly, Boolean deadOnly) throws DAOException {
+	        Integer maxAge, Boolean aliveOnly, Boolean deadOnly) throws DAOException {
 		return getPatientSetDAO().getPatientsByCharacteristics(gender, minBirthdate, maxBirthdate, minAge, maxAge,
 		    aliveOnly, deadOnly);
 	}
 	
 	public Cohort getPatientsByCharacteristics(String gender, Date minBirthdate, Date maxBirthdate, Integer minAge,
-	                                           Integer maxAge, Boolean aliveOnly, Boolean deadOnly, Date effectiveDate)
-	                                                                                                                   throws DAOException {
+	        Integer maxAge, Boolean aliveOnly, Boolean deadOnly, Date effectiveDate) throws DAOException {
 		return getPatientSetDAO().getPatientsByCharacteristics(gender, minBirthdate, maxBirthdate, minAge, maxAge,
 		    aliveOnly, deadOnly, effectiveDate);
 	}
@@ -130,30 +129,29 @@ public class PatientSetServiceImpl implements PatientSetService {
 	}
 	
 	public Cohort getPatientsHavingNumericObs(Integer conceptId, TimeModifier timeModifier,
-	                                          PatientSetServiceImpl.Modifier modifier, Number value, Date fromDate,
-	                                          Date toDate) {
+	        PatientSetServiceImpl.Modifier modifier, Number value, Date fromDate, Date toDate) {
 		return getPatientSetDAO().getPatientsHavingNumericObs(conceptId, timeModifier, modifier, value, fromDate, toDate);
 	}
 	
 	public Cohort getPatientsHavingObs(Integer conceptId, TimeModifier timeModifier,
-	                                   PatientSetServiceImpl.Modifier modifier, Object value, Date fromDate, Date toDate) {
+	        PatientSetServiceImpl.Modifier modifier, Object value, Date fromDate, Date toDate) {
 		return getPatientSetDAO().getPatientsHavingObs(conceptId, timeModifier, modifier, value, fromDate, toDate);
 	}
 	
 	public Cohort getPatientsHavingEncounters(EncounterType encounterType, Location location, Form form, Date fromDate,
-	                                          Date toDate, Integer minCount, Integer maxCount) {
+	        Date toDate, Integer minCount, Integer maxCount) {
 		List<EncounterType> list = encounterType == null ? null : Collections.singletonList(encounterType);
 		return getPatientSetDAO().getPatientsHavingEncounters(list, location, form, fromDate, toDate, minCount, maxCount);
 	}
 	
 	public Cohort getPatientsHavingEncounters(List<EncounterType> encounterTypeList, Location location, Form form,
-	                                          Date fromDate, Date toDate, Integer minCount, Integer maxCount) {
+	        Date fromDate, Date toDate, Integer minCount, Integer maxCount) {
 		return getPatientSetDAO().getPatientsHavingEncounters(encounterTypeList, location, form, fromDate, toDate, minCount,
 		    maxCount);
 	}
 	
 	public Cohort getPatientsByProgramAndState(Program program, List<ProgramWorkflowState> stateList, Date fromDate,
-	                                           Date toDate) {
+	        Date toDate) {
 		return getPatientSetDAO().getPatientsByProgramAndState(program, stateList, fromDate, toDate);
 	}
 	
@@ -222,7 +220,7 @@ public class PatientSetServiceImpl implements PatientSetService {
 	}
 	
 	public Cohort getPatientsHavingDrugOrder(Collection<Integer> patientIds, Collection<Integer> drugIds,
-	                                         GroupMethod groupMethod, Date fromDate, Date toDate) {
+	        GroupMethod groupMethod, Date fromDate, Date toDate) {
 		
 		Map<Integer, Collection<Integer>> activeDrugs = getPatientSetDAO().getActiveDrugIds(patientIds, fromDate, toDate);
 		Set<Integer> ret = new HashSet<Integer>();
@@ -274,8 +272,7 @@ public class PatientSetServiceImpl implements PatientSetService {
 	}
 	
 	public Cohort getPatientsHavingDrugOrder(List<Drug> drug, List<Concept> drugConcept, Date startDateFrom,
-	                                         Date startDateTo, Date stopDateFrom, Date stopDateTo, Boolean discontinued,
-	                                         List<Concept> discontinuedReason) {
+	        Date startDateTo, Date stopDateFrom, Date stopDateTo, Boolean discontinued, List<Concept> discontinuedReason) {
 		return getPatientSetDAO().getPatientsHavingDrugOrder(drug, drugConcept, startDateFrom, startDateTo, stopDateFrom,
 		    stopDateTo, discontinued, discontinuedReason);
 	}
@@ -313,7 +310,7 @@ public class PatientSetServiceImpl implements PatientSetService {
 	}
 	
 	public Map<Integer, List<List<Object>>> getObservationsValues(Cohort patients, Concept c, List<String> attributes,
-	                                                              Integer limit, boolean showMostRecentFirst) {
+	        Integer limit, boolean showMostRecentFirst) {
 		if (attributes == null)
 			attributes = new Vector<String>();
 		
@@ -402,7 +399,7 @@ public class PatientSetServiceImpl implements PatientSetService {
 	 *      java.lang.String, java.lang.String, java.lang.String, java.lang.String, boolean)
 	 */
 	public Map<Integer, Object> getPersonAttributes(Cohort patients, String attributeName, String joinClass,
-	                                                String joinProperty, String outputColumn, boolean returnAll) {
+	        String joinProperty, String outputColumn, boolean returnAll) {
 		return getPatientSetDAO().getPersonAttributes(patients, attributeName, joinClass, joinProperty, outputColumn,
 		    returnAll);
 	}

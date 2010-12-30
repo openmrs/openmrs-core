@@ -521,6 +521,7 @@ public final class Listener extends ContextLoaderListener {
 	
 	/**
 	 * Finds and loads the runtime properties
+	 * 
 	 * @return Properties
 	 * @see OpenmrsUtil#getRuntimeProperties(String)
 	 */

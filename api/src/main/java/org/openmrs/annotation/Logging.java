@@ -47,8 +47,9 @@ import java.lang.annotation.Target;
 public @interface Logging {
 	
 	/**
-	 * If set to true, suppress any automatic OpenMRS logging of this method (E.g. you will no longer
-	 * see "In method XyzService.saveXyz...".) Defaults to false. 
+	 * If set to true, suppress any automatic OpenMRS logging of this method (E.g. you will no
+	 * longer see "In method XyzService.saveXyz...".) Defaults to false.
+	 * 
 	 * @return boolean true/false to suppress OpenMRS's automatic logging of this method
 	 * @since 1.8
 	 */

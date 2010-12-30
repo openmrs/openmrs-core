@@ -177,7 +177,7 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 	 */
 	@SuppressWarnings("unchecked")
 	public static <H extends RequiredDataHandler> void recursivelyHandle(Class<H> handlerType, OpenmrsObject openmrsObject,
-	                                                                     String reason) {
+	        String reason) {
 		recursivelyHandle(handlerType, openmrsObject, Context.getAuthenticatedUser(), new Date(), reason, null);
 	}
 	
@@ -199,8 +199,7 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 	 */
 	@SuppressWarnings("unchecked")
 	public static <H extends RequiredDataHandler> void recursivelyHandle(Class<H> handlerType, OpenmrsObject openmrsObject,
-	                                                                     User currentUser, Date currentDate, String other,
-	                                                                     List<OpenmrsObject> alreadyHandled) {
+	        User currentUser, Date currentDate, String other, List<OpenmrsObject> alreadyHandled) {
 		if (openmrsObject == null)
 			return;
 		
@@ -308,14 +307,14 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 	protected static boolean isOpenmrsObjectCollection(Object arg) {
 		
 		// kind of a hacky way to test for a list of openmrs objects, but java strips out
-		// the generic info for 1.4 compat, so we don't have accesst to that info here
+		// the generic info for 1.4 compat, so we don't have access to that info here
 		try {
 			@SuppressWarnings("unused")
 			Collection<OpenmrsObject> openmrsObjects = (Collection<OpenmrsObject>) arg;
 			return true;
 		}
 		catch (ClassCastException ex) {
-			ex.printStackTrace();
+			// do nothing
 		}
 		return false;
 	}

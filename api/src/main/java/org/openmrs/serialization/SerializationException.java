@@ -14,8 +14,8 @@
 package org.openmrs.serialization;
 
 /**
- * Represents an Exception that has occurred during object 
- * Serialization or Deserialization within OpenMRS
+ * Represents an Exception that has occurred during object Serialization or Deserialization within
+ * OpenMRS
  */
 public class SerializationException extends Exception {
 	

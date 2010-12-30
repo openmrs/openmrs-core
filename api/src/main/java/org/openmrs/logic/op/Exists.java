@@ -14,11 +14,13 @@
 package org.openmrs.logic.op;
 
 /**
- * The Exists operator test whether a criteria will exist for person or not.<br /><br />
- * 
+ * The Exists operator test whether a criteria will exist for person or not.<br />
+ * <br />
  * Example: <br />
- * - <code>logicService.parse("EncounterDataSource.ENCOUNTER_KEY").equals("ADULTRETURN").exists();</code><br />
- *   The above will give us a criteria to test whether ADULTRETURN encounter exists or not
+ * -
+ * <code>logicService.parse("EncounterDataSource.ENCOUNTER_KEY").equals("ADULTRETURN").exists();</code>
+ * <br />
+ * The above will give us a criteria to test whether ADULTRETURN encounter exists or not
  */
 public class Exists implements TransformOperator {
 	

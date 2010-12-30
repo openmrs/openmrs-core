@@ -24,6 +24,7 @@ import org.springframework.validation.Validator;
 
 /**
  * This class validates a PersonName object.
+ * 
  * @since 1.7
  */
 @Handler(supports = { PersonName.class }, order = 50)
@@ -45,7 +46,6 @@ public class PersonNameValidator implements Validator {
 	 * @param personName
 	 * @param errors
 	 * @should fail validation if PersonName object is null
-	 * 
 	 */
 	public void validate(Object object, Errors errors) {
 		if (log.isDebugEnabled())
@@ -68,7 +68,7 @@ public class PersonNameValidator implements Validator {
 	 * 
 	 * @param personName the {@link PersonName} to validate
 	 * @param errors
-	 * @param arrayInd indicates whether or not a names[0] array needs to be prepended to field  
+	 * @param arrayInd indicates whether or not a names[0] array needs to be prepended to field
 	 * @should fail validation if PersonName object is null
 	 * @should fail validation if PersonName.givenName is null
 	 * @should fail validation if PersonName.givenName is empty
@@ -145,7 +145,7 @@ public class PersonNameValidator implements Validator {
 	/***********************************************************************************************************
 	 * @param field the field name
 	 * @param arrayInd indicates whether or not a names[0] array needs to be prepended to field
-	 * @return formated 
+	 * @return formated
 	 */
 	private String getFieldKey(String field, boolean arrayInd, boolean testInd) {
 		return testInd ? field : arrayInd ? "names[0]." + field : "name." + field;

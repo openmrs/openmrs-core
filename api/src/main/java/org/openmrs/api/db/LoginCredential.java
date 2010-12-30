@@ -24,7 +24,7 @@ import org.openmrs.util.Security;
  * This class holds the minimal amount of data necessary to change a user's password without using a
  * PreparedStatement or putting the password in the User class. This should never be used by
  * anything except for UserDAO and UserService methods that change passwords.
- *
+ * 
  * @since 1.5
  */
 public class LoginCredential extends BaseOpenmrsObject implements OpenmrsObject {

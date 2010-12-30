@@ -50,6 +50,7 @@ public class ConceptWord implements java.io.Serializable, Comparable<ConceptWord
 	
 	/**
 	 * Get the unique internal database identifier for this concept word
+	 * 
 	 * @since 1.5
 	 */
 	public Integer getConceptWordId() {
@@ -58,6 +59,7 @@ public class ConceptWord implements java.io.Serializable, Comparable<ConceptWord
 	
 	/**
 	 * Set the unique identifier for this concept word
+	 * 
 	 * @since 1.5
 	 */
 	public void setConceptWordId(Integer conceptWordId) {

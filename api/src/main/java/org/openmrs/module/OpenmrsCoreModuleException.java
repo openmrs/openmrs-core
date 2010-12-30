@@ -18,8 +18,8 @@ import java.util.Map;
 import org.openmrs.api.context.Context;
 
 /**
- * This error is thrown when OpenMRS is started but there is a module that is core to OpenMRS
- * and that module is not present or did not start <br/>
+ * This error is thrown when OpenMRS is started but there is a module that is core to OpenMRS and
+ * that module is not present or did not start <br/>
  * <br/>
  * This error is also thrown when trying to stop a module that is marked as core.
  * 

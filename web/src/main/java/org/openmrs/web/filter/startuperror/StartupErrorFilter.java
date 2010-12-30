@@ -62,7 +62,7 @@ public class StartupErrorFilter extends StartupFilter {
 	 * @param httpResponse
 	 */
 	protected void doGet(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException,
-	                                                                                      ServletException {
+	        ServletException {
 		
 		if (getModel().errorAtStartup instanceof OpenmrsCoreModuleException)
 			renderTemplate("coremoduleerror.vm", new HashMap<String, Object>(), httpResponse);
@@ -76,7 +76,7 @@ public class StartupErrorFilter extends StartupFilter {
 	 */
 	@Override
 	protected void doPost(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException,
-	                                                                                       ServletException {
+	        ServletException {
 		// if they are uploading modules
 		if (getModel().errorAtStartup instanceof OpenmrsCoreModuleException) {
 			RequestContext requestContext = new ServletRequestContext(httpRequest);

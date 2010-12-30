@@ -114,9 +114,8 @@ public class Hl7InErrorListController {
 	@RequestMapping("/admin/hl7/hl7InErrorList.json")
 	public @ResponseBody
 	Map<String, Object> getHL7InErrorBatchAsJson(@RequestParam("iDisplayStart") int iDisplayStart,
-	                                             @RequestParam("iDisplayLength") int iDisplayLength,
-	                                             @RequestParam("sSearch") String sSearch, @RequestParam("sEcho") int sEcho)
-	                                                                                                                       throws IOException {
+	        @RequestParam("iDisplayLength") int iDisplayLength, @RequestParam("sSearch") String sSearch,
+	        @RequestParam("sEcho") int sEcho) throws IOException {
 		
 		// get the data
 		List<HL7InError> hl7s = Context.getHL7Service().getHL7InErrorBatch(iDisplayStart, iDisplayLength, sSearch);

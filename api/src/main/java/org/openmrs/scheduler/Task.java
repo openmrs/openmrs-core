@@ -30,7 +30,7 @@ public interface Task {
 	/**
 	 * Returns the task definition associated with this task.
 	 * 
-	 * @return	a task definition
+	 * @return a task definition
 	 */
 	public TaskDefinition getTaskDefinition();
 	

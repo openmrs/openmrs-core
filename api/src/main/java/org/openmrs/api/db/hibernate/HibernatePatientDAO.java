@@ -172,11 +172,12 @@ public class HibernatePatientDAO implements PatientDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.PatientDAO#getPatients(String, String, List, boolean, Integer, Integer)
+	 * @see org.openmrs.api.db.PatientDAO#getPatients(String, String, List, boolean, Integer,
+	 *      Integer)
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Patient> getPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,
-	                                 boolean matchIdentifierExactly, Integer start, Integer length) throws DAOException {
+	        boolean matchIdentifierExactly, Integer start, Integer length) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Patient.class);
 		criteria = new PatientSearchCriteria(sessionFactory, criteria).prepareCriteria(name, identifier, identifierTypes,
 		    matchIdentifierExactly);
@@ -224,9 +225,8 @@ public class HibernatePatientDAO implements PatientDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<PatientIdentifier> getPatientIdentifiers(String identifier,
-	                                                     List<PatientIdentifierType> patientIdentifierTypes,
-	                                                     List<Location> locations, List<Patient> patients,
-	                                                     Boolean isPreferred) throws DAOException {
+	        List<PatientIdentifierType> patientIdentifierTypes, List<Location> locations, List<Patient> patients,
+	        Boolean isPreferred) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(PatientIdentifier.class);
 		
 		// join with the patient table to prevent patient identifiers from patients
@@ -303,7 +303,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<PatientIdentifierType> getPatientIdentifierTypes(String name, String format, Boolean required,
-	                                                             Boolean hasCheckDigit) throws DAOException {
+	        Boolean hasCheckDigit) throws DAOException {
 		// TODO test this method
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(PatientIdentifierType.class);
@@ -536,7 +536,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	 * @see PatientDAO#getCountOfPatients(String, String, List, boolean)
 	 */
 	public Integer getCountOfPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,
-	                                  boolean matchIdentifierExactly) {
+	        boolean matchIdentifierExactly) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Patient.class);
 		criteria = new PatientSearchCriteria(sessionFactory, criteria).prepareCriteria(name, identifier, identifierTypes,
 		    matchIdentifierExactly);

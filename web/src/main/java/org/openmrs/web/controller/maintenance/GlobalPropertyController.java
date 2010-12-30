@@ -59,7 +59,7 @@ public class GlobalPropertyController extends SimpleFormController {
 	 */
 	@SuppressWarnings("unchecked")
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
-	                                BindException errors) throws Exception {
+	        BindException errors) throws Exception {
 		
 		String action = request.getParameter("action");
 		if (action == null)

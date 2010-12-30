@@ -63,8 +63,8 @@ public class DWRConceptService {
 	 * @return a list of conceptListItems matching the given arguments
 	 */
 	public List<Object> findConcepts(String phrase, boolean includeRetired, List<String> includeClassNames,
-	                                 List<String> excludeClassNames, List<String> includeDatatypeNames,
-	                                 List<String> excludeDatatypeNames, boolean includeDrugConcepts) {
+	        List<String> excludeClassNames, List<String> includeDatatypeNames, List<String> excludeDatatypeNames,
+	        boolean includeDrugConcepts) {
 		return findBatchOfConcepts(phrase, includeRetired, includeClassNames, excludeClassNames, includeDatatypeNames,
 		    excludeDatatypeNames, null, null);
 	}
@@ -84,8 +84,8 @@ public class DWRConceptService {
 	 * @since 1.8
 	 */
 	public List<Object> findBatchOfConcepts(String phrase, boolean includeRetired, List<String> includeClassNames,
-	                                        List<String> excludeClassNames, List<String> includeDatatypeNames,
-	                                        List<String> excludeDatatypeNames, Integer start, Integer length) {
+	        List<String> excludeClassNames, List<String> includeDatatypeNames, List<String> excludeDatatypeNames,
+	        Integer start, Integer length) {
 		//TODO factor out the reusable code in this and findCountAndConcepts methods to a single utility method
 		// List to return
 		// Object type gives ability to return error strings
@@ -258,7 +258,7 @@ public class DWRConceptService {
 	 * @throws Exception if given conceptId is not found
 	 */
 	public List<Object> findConceptAnswers(String text, Integer conceptId, boolean includeVoided, boolean includeDrugConcepts)
-	                                                                                                                          throws Exception {
+	        throws Exception {
 		
 		if (includeVoided == true)
 			throw new APIException("You should not include voideds in the search.");
@@ -472,9 +472,8 @@ public class DWRConceptService {
 	 * @since 1.8
 	 */
 	public Map<String, Object> findCountAndConcepts(String phrase, boolean includeRetired, List<String> includeClassNames,
-	                                                List<String> excludeClassNames, List<String> includeDatatypeNames,
-	                                                List<String> excludeDatatypeNames, Integer start, Integer length,
-	                                                boolean getMatchCount) throws APIException {
+	        List<String> excludeClassNames, List<String> includeDatatypeNames, List<String> excludeDatatypeNames,
+	        Integer start, Integer length, boolean getMatchCount) throws APIException {
 		//Map to return
 		Map<String, Object> resultsMap = new HashMap<String, Object>();
 		Vector<Object> objectList = new Vector<Object>();

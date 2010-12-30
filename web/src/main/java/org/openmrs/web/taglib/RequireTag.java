@@ -213,7 +213,7 @@ public class RequireTag extends TagSupport {
 	 * @return true if privilege conditions are met
 	 */
 	private boolean hasPrivileges(UserContext userContext, String privilege, String[] allPrivilegesArray,
-	                              String[] anyPrivilegeArray) {
+	        String[] anyPrivilegeArray) {
 		if (privilege != null && !userContext.hasPrivilege(privilege.trim()))
 			return false;
 		if (allPrivilegesArray.length > 0 && !hasAllPrivileges(userContext, allPrivilegesArray))

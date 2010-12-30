@@ -99,8 +99,8 @@ public class UserFormController {
 	
 	@RequestMapping(value = "/admin/users/user.form", method = RequestMethod.GET)
 	public String showForm(@RequestParam(required = false, value = "userId") Integer userId,
-	                       @RequestParam(required = false, value = "createNewPerson") String createNewPerson,
-	                       @ModelAttribute("user") User user, ModelMap model) {
+	        @RequestParam(required = false, value = "createNewPerson") String createNewPerson,
+	        @ModelAttribute("user") User user, ModelMap model) {
 		
 		// the formBackingObject method above sets up user, depending on userId and personId parameters   
 		
@@ -123,15 +123,15 @@ public class UserFormController {
 	 */
 	@RequestMapping(value = "/admin/users/user.form", method = RequestMethod.POST)
 	public String handleSubmission(WebRequest request, HttpSession httpSession, ModelMap model,
-	                               @RequestParam(required = false, value = "action") String action,
-	                               @RequestParam(required = false, value = "userFormPassword") String password,
-	                               @RequestParam(required = false, value = "secretQuestion") String secretQuestion,
-	                               @RequestParam(required = false, value = "secretAnswer") String secretAnswer,
-	                               @RequestParam(required = false, value = "confirm") String confirm,
-	                               @RequestParam(required = false, value = "forcePassword") Boolean forcePassword,
-	                               @RequestParam(required = false, value = "roleStrings") String[] roles,
-	                               @RequestParam(required = false, value = "createNewPerson") String createNewPerson,
-	                               @ModelAttribute("user") User user, BindingResult errors) {
+	        @RequestParam(required = false, value = "action") String action,
+	        @RequestParam(required = false, value = "userFormPassword") String password,
+	        @RequestParam(required = false, value = "secretQuestion") String secretQuestion,
+	        @RequestParam(required = false, value = "secretAnswer") String secretAnswer,
+	        @RequestParam(required = false, value = "confirm") String confirm,
+	        @RequestParam(required = false, value = "forcePassword") Boolean forcePassword,
+	        @RequestParam(required = false, value = "roleStrings") String[] roles,
+	        @RequestParam(required = false, value = "createNewPerson") String createNewPerson,
+	        @ModelAttribute("user") User user, BindingResult errors) {
 		
 		UserService us = Context.getUserService();
 		MessageSourceService mss = Context.getMessageSourceService();

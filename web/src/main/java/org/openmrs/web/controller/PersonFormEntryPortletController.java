@@ -31,14 +31,14 @@ import org.openmrs.module.web.extension.FormEntryHandler;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
- * Controller for the PersonFormEntry portlet
- * 
- * Provides a map telling which url to hit to enter each form
+ * Controller for the PersonFormEntry portlet Provides a map telling which url to hit to enter each
+ * form
  */
 public class PersonFormEntryPortletController extends PortletController {
 	
 	/**
-	 * @see org.openmrs.web.controller.PortletController#populateModel(javax.servlet.http.HttpServletRequest, java.util.Map)
+	 * @see org.openmrs.web.controller.PortletController#populateModel(javax.servlet.http.HttpServletRequest,
+	 *      java.util.Map)
 	 */
 	@Override
 	protected void populateModel(HttpServletRequest request, Map<String, Object> model) {

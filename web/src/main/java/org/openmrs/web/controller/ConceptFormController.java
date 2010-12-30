@@ -111,7 +111,7 @@ public class ConceptFormController extends SimpleFormController {
 	 */
 	@Override
 	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object object,
-	                                             BindException errors) throws Exception {
+	        BindException errors) throws Exception {
 		
 		Concept concept = ((ConceptFormBackingObject) object).getConcept();
 		ConceptService cs = Context.getConceptService();
@@ -148,7 +148,7 @@ public class ConceptFormController extends SimpleFormController {
 	 */
 	@Override
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
-	                                BindException errors) throws Exception {
+	        BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
 		ConceptService cs = Context.getConceptService();

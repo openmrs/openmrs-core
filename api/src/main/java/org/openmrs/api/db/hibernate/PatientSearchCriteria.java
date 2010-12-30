@@ -61,7 +61,7 @@ public class PatientSearchCriteria {
 	 * @return {@link Criteria}
 	 */
 	public Criteria prepareCriteria(String name, String identifier, List<PatientIdentifierType> identifierTypes,
-	                                boolean matchIdentifierExactly) {
+	        boolean matchIdentifierExactly) {
 		name = HibernateUtil.escapeSqlWildcards(name, sessionFactory);
 		identifier = HibernateUtil.escapeSqlWildcards(identifier, sessionFactory);
 		
@@ -99,7 +99,7 @@ public class PatientSearchCriteria {
 	 * @param matchIdentifierExactly
 	 */
 	private void addIdentifierCriterias(Criteria criteria, String identifier, List<PatientIdentifierType> identifierTypes,
-	                                    boolean matchIdentifierExactly) {
+	        boolean matchIdentifierExactly) {
 		// TODO add junit test for searching on voided identifiers
 		
 		// add the join on the identifiers table

@@ -322,8 +322,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 *      java.util.List)
 	 */
 	public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
-	                                               List<Concept> concepts, ORDER_STATUS status, List<User> orderers,
-	                                               List<Encounter> encounters, List<OrderType> orderTypes) {
+	        List<Concept> concepts, ORDER_STATUS status, List<User> orderers, List<Encounter> encounters,
+	        List<OrderType> orderTypes) {
 		if (orderClassType == null)
 			throw new APIException(
 			        "orderClassType cannot be null.  An order type of Order.class or DrugOrder.class is required");
@@ -511,7 +511,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Deprecated
 	public Map<Concept, List<DrugOrder>> getDrugSetsByConcepts(List<DrugOrder> drugOrders, List<Concept> drugSets)
-	                                                                                                              throws APIException {
+	        throws APIException {
 		return OrderUtil.getDrugSetsByConcepts(drugOrders, drugSets);
 	}
 	
@@ -522,7 +522,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Deprecated
 	public Map<String, List<DrugOrder>> getDrugSetsByDrugSetIdList(List<DrugOrder> orderList, String drugSetIdList,
-	                                                               String delimiter) {
+	        String delimiter) {
 		return OrderUtil.getDrugSetsByDrugSetIdList(orderList, drugSetIdList, delimiter);
 	}
 	

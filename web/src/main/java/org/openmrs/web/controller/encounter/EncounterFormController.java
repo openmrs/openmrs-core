@@ -89,7 +89,7 @@ public class EncounterFormController extends SimpleFormController {
 	 */
 	@Override
 	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse reponse, Object obj,
-	                                             BindException errors) throws Exception {
+	        BindException errors) throws Exception {
 		
 		Encounter encounter = (Encounter) obj;
 		
@@ -131,7 +131,7 @@ public class EncounterFormController extends SimpleFormController {
 	 */
 	@Override
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
-	                                BindException errors) throws Exception {
+	        BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
 		

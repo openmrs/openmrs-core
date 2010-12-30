@@ -14,11 +14,12 @@
 package org.openmrs.logic.op;
 
 /**
- * The LessThan operator will return result that have a less value than the operand.<br /><br />
- * 
+ * The LessThan operator will return result that have a less value than the operand.<br />
+ * <br />
  * Example: <br />
  * - <code>logicService.parse("'CD4 COUNT'").gte(200);</code><br />
- *   The above will give us a criteria to get the "CD4 COUNT" observations that has the value numeric less than 200
+ * The above will give us a criteria to get the "CD4 COUNT" observations that has the value numeric
+ * less than 200
  * 
  * @see GreaterThan
  * @see GreaterThanEquals

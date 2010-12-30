@@ -276,7 +276,7 @@ public class HibernateUserDAO implements UserDAO {
 	 * @param userId2
 	 */
 	private void updateUserPassword(String newHashedPassword, String salt, Integer changedBy, Date dateChanged,
-	                                Integer userIdToChange) {
+	        Integer userIdToChange) {
 		User changeForUser = getUser(userIdToChange);
 		if (changeForUser == null)
 			throw new DAOException("Couldn't find user to set password for userId=" + userIdToChange);

@@ -30,7 +30,7 @@ public class RedirectController implements Controller {
 	private String redirectView = "";
 	
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException,
-	                                                                                           IOException {
+	        IOException {
 		
 		// default to the current path
 		if (redirectView == null)

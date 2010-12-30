@@ -49,13 +49,10 @@ public class BinaryDataHandler extends AbstractHandler implements ComplexObsHand
 	
 	/**
 	 * Returns the same ComplexData for all views. The title is the original filename, and the data
-	 * is the raw byte[] of data
-	 *
-	 * (If the view is set to "download", all commas and whitespace are stripped out of the filename to
-	 * fix an issue where the browser wasn't handling a filename with whitespace properly)
-	 * 
-	 * Note that if the method cannot find the file associated with the obs, it
-	 * returns the obs with the ComplexData = null
+	 * is the raw byte[] of data (If the view is set to "download", all commas and whitespace are
+	 * stripped out of the filename to fix an issue where the browser wasn't handling a filename
+	 * with whitespace properly) Note that if the method cannot find the file associated with the
+	 * obs, it returns the obs with the ComplexData = null
 	 * 
 	 * @see ComplexObsHandler#getObs(Obs, String)
 	 */

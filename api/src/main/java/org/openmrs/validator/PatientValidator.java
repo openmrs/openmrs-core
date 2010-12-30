@@ -28,7 +28,7 @@ import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 /**
- * This class validates a Patient object. 
+ * This class validates a Patient object.
  */
 public class PatientValidator implements Validator {
 	

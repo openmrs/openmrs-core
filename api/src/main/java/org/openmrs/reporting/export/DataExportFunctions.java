@@ -731,7 +731,7 @@ public class DataExportFunctions {
 	}
 	
 	public Object getPersonAttribute(String attributeName, String joinClass, String joinProperty, String outputColumn,
-	                                 boolean returnAll) {
+	        boolean returnAll) {
 		String key = attributeName + "." + joinClass + "." + joinProperty;
 		
 		if (returnAll)

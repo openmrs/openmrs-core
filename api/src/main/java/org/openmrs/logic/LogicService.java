@@ -248,7 +248,7 @@ public interface LogicService {
 	 * @throws LogicException
 	 */
 	public Map<Integer, Result> eval(Cohort who, LogicCriteria criteria, Map<String, Object> parameters)
-	                                                                                                    throws LogicException;
+	        throws LogicException;
 	
 	/**
 	 * Evaluates a collection of queries for a set of patients
@@ -395,8 +395,8 @@ public interface LogicService {
 	public void removeLogicDataSource(String name);
 	
 	/**
-	 * Parse a criteria String to create a new LogicCriteria. <br /><br />
-	 * 
+	 * Parse a criteria String to create a new LogicCriteria. <br />
+	 * <br />
 	 * Example: <br />
 	 * <code>logicService.parseString("LAST 'CD4 COUNT' < 200");</code>
 	 * 
@@ -408,8 +408,8 @@ public interface LogicService {
 	public LogicCriteria parseString(String inStr);
 	
 	/**
-	 * Parse a criteria String to create a new LogicCriteria. <br /><br />
-	 * 
+	 * Parse a criteria String to create a new LogicCriteria. <br />
+	 * <br />
 	 * Example: <br />
 	 * <code>logicService.parseString("LAST 'CD4 COUNT' < 200");</code>
 	 * 

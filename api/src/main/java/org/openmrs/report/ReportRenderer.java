@@ -72,7 +72,7 @@ public interface ReportRenderer {
 	 * @throws ReportRenderingException
 	 */
 	public void render(ReportData reportData, String argument, OutputStream out) throws IOException,
-	                                                                            ReportRenderingException;
+	        ReportRenderingException;
 	
 	/**
 	 * Render the report's data to a stream

@@ -35,7 +35,8 @@ public class Hl7InArchivesMigrateThread extends Thread {
 	private static final Log log = LogFactory.getLog(Hl7InArchivesMigrateThread.class);
 	
 	/**
-	 * Map holds data about the progress of the transfer process, that is numberTransferred and numberOfFailedTransfers
+	 * Map holds data about the progress of the transfer process, that is numberTransferred and
+	 * numberOfFailedTransfers
 	 */
 	private static Map<String, Integer> progressStatusMap;
 	

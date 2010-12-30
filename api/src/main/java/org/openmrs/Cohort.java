@@ -203,8 +203,9 @@ public class Cohort extends BaseOpenmrsData implements Serializable {
 	public int hashCode() {
 		if (this.getCohortId() == null)
 			return super.hashCode();
-		int hash = 8;
-		hash = 31 * this.getCohortId() + hash;
+		final int START = 8;
+		final int MULTIPLIER = 8;
+		int hash = MULTIPLIER * this.getCohortId() + START;
 		return hash;
 	}
 	

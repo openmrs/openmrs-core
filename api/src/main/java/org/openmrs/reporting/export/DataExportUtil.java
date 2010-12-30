@@ -105,7 +105,7 @@ public class DataExportUtil {
 	 * @throws Exception
 	 */
 	public static void generateExport(DataExportReportObject dataExport, Cohort patientSet, String separator,
-	                                  EvaluationContext context) throws Exception {
+	        EvaluationContext context) throws Exception {
 		// Set up functions used in the report ( $!{fn:...} )
 		DataExportFunctions functions = new DataExportFunctions();
 		functions.setSeparator(separator);
@@ -118,7 +118,7 @@ public class DataExportUtil {
 	 * @throws Exception
 	 */
 	public static void generateExport(DataExportReportObject dataExport, Cohort patientSet, EvaluationContext context)
-	                                                                                                                  throws Exception {
+	        throws Exception {
 		// Set up functions used in the report ( $!{fn:...} )
 		DataExportFunctions functions = new DataExportFunctions();
 		generateExport(dataExport, patientSet, functions, context);
@@ -134,7 +134,7 @@ public class DataExportUtil {
 	 * @throws Exception
 	 */
 	public static void generateExport(DataExportReportObject dataExport, Cohort patientSet, DataExportFunctions functions,
-	                                  EvaluationContext context) throws Exception {
+	        EvaluationContext context) throws Exception {
 		
 		// defining log file here to attempt to reduce memory consumption
 		Log log = LogFactory.getLog(DataExportUtil.class);

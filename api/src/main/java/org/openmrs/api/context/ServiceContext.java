@@ -872,8 +872,9 @@ public class ServiceContext implements ApplicationContextAware {
 	}
 	
 	/**
-	 * Private method which returns all components registered in a Spring applicationContext of a given type
-	 * This method recurses through each parent ApplicationContext
+	 * Private method which returns all components registered in a Spring applicationContext of a
+	 * given type This method recurses through each parent ApplicationContext
+	 * 
 	 * @param context - The applicationContext to check
 	 * @param type - The type of component to retrieve
 	 * @return all components registered in a Spring applicationContext of a given type

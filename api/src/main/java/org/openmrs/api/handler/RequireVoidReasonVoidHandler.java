@@ -36,6 +36,7 @@ public class RequireVoidReasonVoidHandler implements VoidHandler<Voidable> {
 	
 	/**
 	 * Validates that the voidReason is non-null and non-empty for supported objects
+	 * 
 	 * @should throw IllegalArgumentException if Patient voidReason is null
 	 * @should throw IllegalArgumentException if Encounter voidReason is empty
 	 * @should throw IllegalArgumentException if Obs voidReason is blank

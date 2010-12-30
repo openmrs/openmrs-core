@@ -132,8 +132,8 @@ public interface ProgramWorkflowDAO {
 	 * @throws DAOException
 	 */
 	public List<PatientProgram> getPatientPrograms(Patient patient, Program program, Date minEnrollmentDate,
-	                                               Date maxEnrollmentDate, Date minCompletionDate, Date maxCompletionDate,
-	                                               boolean includeVoided) throws DAOException;
+	        Date maxEnrollmentDate, Date minCompletionDate, Date maxCompletionDate, boolean includeVoided)
+	        throws DAOException;
 	
 	/**
 	 * Completely remove a patientProgram from the database (not reversible) This method delegates

@@ -14,11 +14,11 @@
 package org.openmrs.logic.op;
 
 /**
- * The Count operator will return the number of results returned by the logic service<br /><br />
- * 
+ * The Count operator will return the number of results returned by the logic service<br />
+ * <br />
  * Example: <br />
  * - <code>logicService.parse("EncounterDataSource.ENCOUNTER_KEY").count();</code><br />
- *   The above will give us a criteria to get the number of encounter type we have in the system
+ * The above will give us a criteria to get the number of encounter type we have in the system
  */
 public class Count implements TransformOperator {
 	

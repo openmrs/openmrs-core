@@ -89,7 +89,7 @@ public interface PatientSetService {
 	 */
 	@Transactional(readOnly = true)
 	public Cohort getPatientsByCharacteristics(String gender, Date minBirthdate, Date maxBirthdate, Integer minAge,
-	                                           Integer maxAge, Boolean aliveOnly, Boolean deadOnly) throws DAOException;
+	        Integer maxAge, Boolean aliveOnly, Boolean deadOnly) throws DAOException;
 	
 	/**
 	 * Get patients by specified gender, birthdate range, age range, and alive status (all optional)
@@ -115,12 +115,11 @@ public interface PatientSetService {
 	 */
 	@Transactional(readOnly = true)
 	public Cohort getPatientsByCharacteristics(String gender, Date minBirthdate, Date maxBirthdate, Integer minAge,
-	                                           Integer maxAge, Boolean aliveOnly, Boolean deadOnly, Date effectiveDate)
-	                                                                                                                   throws DAOException;
+	        Integer maxAge, Boolean aliveOnly, Boolean deadOnly, Date effectiveDate) throws DAOException;
 	
 	@Transactional(readOnly = true)
 	public Cohort getPatientsHavingNumericObs(Integer conceptId, TimeModifier timeModifier,
-	                                          PatientSetService.Modifier modifier, Number value, Date fromDate, Date toDate);
+	        PatientSetService.Modifier modifier, Number value, Date fromDate, Date toDate);
 	
 	/**
 	 * Searches for patients who have observations as described by the arguments to this method
@@ -137,7 +136,7 @@ public interface PatientSetService {
 	 */
 	@Transactional(readOnly = true)
 	public Cohort getPatientsHavingObs(Integer conceptId, TimeModifier timeModifier, Modifier modifier, Object value,
-	                                   Date fromDate, Date toDate);
+	        Date fromDate, Date toDate);
 	
 	/**
 	 * Searches for patients who have encounters as described by the arguments to this method
@@ -154,7 +153,7 @@ public interface PatientSetService {
 	 */
 	@Transactional(readOnly = true)
 	public Cohort getPatientsHavingEncounters(EncounterType encounterType, Location location, Form form, Date fromDate,
-	                                          Date toDate, Integer minCount, Integer maxCount);
+	        Date toDate, Integer minCount, Integer maxCount);
 	
 	/**
 	 * Gets patients who have encounters as described by the parameters specified (all optional)
@@ -181,7 +180,7 @@ public interface PatientSetService {
 	 */
 	@Transactional(readOnly = true)
 	public Cohort getPatientsHavingEncounters(List<EncounterType> encounterTypeList, Location location, Form form,
-	                                          Date fromDate, Date toDate, Integer minCount, Integer maxCount);
+	        Date fromDate, Date toDate, Integer minCount, Integer maxCount);
 	
 	/**
 	 * Gets patients who are enrolled in the given program or in the given state(s) at the specified
@@ -205,7 +204,7 @@ public interface PatientSetService {
 	 */
 	@Transactional(readOnly = true)
 	public Cohort getPatientsByProgramAndState(Program program, List<ProgramWorkflowState> stateList, Date fromDate,
-	                                           Date toDate);
+	        Date toDate);
 	
 	@Transactional(readOnly = true)
 	public Cohort getPatientsInProgram(Program program, Date fromDate, Date toDate);
@@ -266,7 +265,7 @@ public interface PatientSetService {
 	 */
 	@Transactional(readOnly = true)
 	public Cohort getPatientsHavingDrugOrder(Collection<Integer> patientIds, Collection<Integer> drugIds,
-	                                         GroupMethod groupMethod, Date fromDate, Date toDate);
+	        GroupMethod groupMethod, Date fromDate, Date toDate);
 	
 	/**
 	 * @return A Cohort of patients who had drug order for particular drugs or generics, with start
@@ -275,8 +274,7 @@ public interface PatientSetService {
 	 */
 	@Transactional(readOnly = true)
 	public Cohort getPatientsHavingDrugOrder(List<Drug> drug, List<Concept> drugConcept, Date startDateFrom,
-	                                         Date startDateTo, Date stopDateFrom, Date stopDateTo, Boolean discontinued,
-	                                         List<Concept> discontinuedReason);
+	        Date startDateTo, Date stopDateFrom, Date stopDateTo, Boolean discontinued, List<Concept> discontinuedReason);
 	
 	/**
 	 * At least one of attribute and value must be non-null
@@ -312,7 +310,8 @@ public interface PatientSetService {
 	public Map<Integer, List<List<Object>>> getObservationsValues(Cohort patients, Concept c);
 	
 	/**
-	 * @deprecated use {@link #getObservationsValues(Cohort, Concept, List, Integer, boolean)} instead
+	 * @deprecated use {@link #getObservationsValues(Cohort, Concept, List, Integer, boolean)}
+	 *             instead
 	 */
 	@Deprecated
 	@Transactional(readOnly = true)
@@ -324,16 +323,18 @@ public interface PatientSetService {
 	 * The returned List< attribute value > is [obs value, attr value, attr value, attr value...]
 	 * The returned List<List< attribute value >> represents the obs rows
 	 * 
-	 * @param patients the cohort to restrict to.  if null, then all patients are fetched
+	 * @param patients the cohort to restrict to. if null, then all patients are fetched
 	 * @param c the concept to look for in obs.concept_id
 	 * @param attributes list of attributes
-	 * @param limit the number of patients to limit the results to.  If null or less than zero, return all
-	 * @param showMostRecentFirst if true, obs with the highest obsDatetime will be first in the List<List<Object>>
+	 * @param limit the number of patients to limit the results to. If null or less than zero,
+	 *            return all
+	 * @param showMostRecentFirst if true, obs with the highest obsDatetime will be first in the
+	 *            List<List<Object>>
 	 * @return <code>Map<patientId, List<List< attribute value >>></code>
 	 */
 	@Transactional(readOnly = true)
 	public Map<Integer, List<List<Object>>> getObservationsValues(Cohort patients, Concept c, List<String> attributes,
-	                                                              Integer limit, boolean showMostRecentFirst);
+	        Integer limit, boolean showMostRecentFirst);
 	
 	/**
 	 * TODO write something here
@@ -435,7 +436,6 @@ public interface PatientSetService {
 	
 	/**
 	 * @should return person attributes of type Location
-	 * 
 	 * @param patients
 	 * @param attributeName
 	 * @param joinClass
@@ -446,7 +446,7 @@ public interface PatientSetService {
 	 */
 	@Transactional(readOnly = true)
 	public Map<Integer, Object> getPersonAttributes(Cohort patients, String attributeName, String joinClass,
-	                                                String joinProperty, String outputColumn, boolean returnAll);
+	        String joinProperty, String outputColumn, boolean returnAll);
 	
 	/**
 	 * TODO write something here
@@ -458,7 +458,7 @@ public interface PatientSetService {
 	public Map<Integer, Map<String, Object>> getCharacteristics(Cohort patients);
 	
 	/**
-	 * The PatientIdentifer object in the returned map now ONLY contains the identifier string, no 
+	 * The PatientIdentifer object in the returned map now ONLY contains the identifier string, no
 	 * other data is available
 	 * 
 	 * @deprecated use method by same name that returns just the string instead of the whole object
@@ -502,12 +502,12 @@ public interface PatientSetService {
 	public Map<Integer, PatientProgram> getCurrentPatientPrograms(Cohort ps, Program program);
 	
 	/**
-	 * Gets program enrollment data for the given cohort in the given program.
-	 * The behavior is not specified if a patient is enrolled in the same program twice simultaneously.
+	 * Gets program enrollment data for the given cohort in the given program. The behavior is not
+	 * specified if a patient is enrolled in the same program twice simultaneously.
+	 * 
 	 * @param ps the cohort to get data for
 	 * @param program the program to look for enrollments in
 	 * @return a Map from patientId to PatientProgram
-	 * 
 	 * @should get program enrollments for the given cohort
 	 */
 	@Transactional(readOnly = true)
@@ -577,8 +577,9 @@ public interface PatientSetService {
 	
 	/**
 	 * Equivalent to Cohort.subtract(PatientSetService.getAllPatients(), cohort) but may eventually
-	 * perform faster by delegating to the database.
-	 * (The current implementation has *not* been optimized.)
+	 * perform faster by delegating to the database. (The current implementation has *not* been
+	 * optimized.)
+	 * 
 	 * @param cached
 	 * @return
 	 * @since 1.8
@@ -586,13 +587,14 @@ public interface PatientSetService {
 	public Cohort getInverseOfCohort(Cohort cohort);
 	
 	/**
-	 * @return number of unvoided patients in the database 
+	 * @return number of unvoided patients in the database
 	 * @since 1.8
 	 */
 	public Integer getCountOfPatients();
 	
 	/**
 	 * Get a batch of patients that are not voided in the database
+	 * 
 	 * @param start the starting index
 	 * @param size the number of patients to get in this batch
 	 * @return a Cohort with patient ids

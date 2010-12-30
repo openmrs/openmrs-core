@@ -45,6 +45,7 @@ import org.springframework.transaction.annotation.Transactional;
  * Contains methods pertaining to doing some administrative tasks in OpenMRS
  * <p>
  * Use:<br/>
+ * 
  * <pre>
  * List&lt;GlobalProperty&gt; globalProperties = Context.getAdministrationService().getGlobalProperties();
  * </pre>
@@ -638,7 +639,8 @@ public interface AdministrationService extends OpenmrsService {
 	 * Set the given <code>implementationId</code> as this implementation's unique id
 	 * 
 	 * @param implementationId the ImplementationId to save
-	 * @throws APIException if implementationId is empty or is invalid according to central id server
+	 * @throws APIException if implementationId is empty or is invalid according to central id
+	 *             server
 	 * @should create implementation id in database
 	 * @should overwrite implementation id in database if exists
 	 * @should not fail if given implementationId is null
@@ -682,7 +684,7 @@ public interface AdministrationService extends OpenmrsService {
 	 * @param <T>
 	 * @param propertyName
 	 * @should get property value in the proper type specified
-	 * @should return default value if property name does not exist	 
+	 * @should return default value if property name does not exist
 	 * @return property value in the type of the default value
 	 * @since 1.7
 	 */

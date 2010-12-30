@@ -22,12 +22,10 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 
 /**
- * A Location is a physical place, such as a hospital, a room, a clinic, or a district.
- * 
- * Locations support a single hierarchy, such that each location may have one parent location.
- * 
- * A non-geographical grouping of locations, such as "All Community Health Centers" is not a location, and
- * should be modeled using {@link LocationTag}s. 
+ * A Location is a physical place, such as a hospital, a room, a clinic, or a district. Locations
+ * support a single hierarchy, such that each location may have one parent location. A
+ * non-geographical grouping of locations, such as "All Community Health Centers" is not a location,
+ * and should be modeled using {@link LocationTag}s.
  */
 public class Location extends BaseOpenmrsMetadata implements java.io.Serializable, Attributable<Location> {
 	

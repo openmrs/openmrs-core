@@ -147,8 +147,8 @@ public class HibernateOrderDAO implements OrderDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
-	                                               List<Concept> concepts, ORDER_STATUS status, List<User> orderers,
-	                                               List<Encounter> encounters, List<OrderType> orderTypes) {
+	        List<Concept> concepts, ORDER_STATUS status, List<User> orderers, List<Encounter> encounters,
+	        List<OrderType> orderTypes) {
 		
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(orderClassType);
 		

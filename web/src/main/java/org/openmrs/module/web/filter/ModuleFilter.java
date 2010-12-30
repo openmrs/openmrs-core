@@ -53,7 +53,7 @@ public class ModuleFilter implements Filter {
 	 *      javax.servlet.ServletResponse, javax.servlet.FilterChain)
 	 */
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
-	                                                                                         ServletException {
+	        ServletException {
 		ModuleFilterChain moduleChain = ModuleFilterChain.getInstance(WebModuleUtil.getFiltersForRequest(request), chain);
 		moduleChain.doFilter(request, response);
 	}

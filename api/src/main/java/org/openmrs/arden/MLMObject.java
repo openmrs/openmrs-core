@@ -307,7 +307,10 @@ public class MLMObject {
 			Set<String> uniqueKeys = this.conceptMap.keySet();
 			uniqueKeys.remove("Gender");
 			
-			/** ******************************************************************************************** */
+			/**
+			 * *************************************************************************************
+			 * *******
+			 */
 			
 			w.append("\n\n\t\t\tif(evaluate_logic(parameters)){\n");
 			w.append("\t\t\t\tResult ruleResult = new Result();\n");
@@ -346,7 +349,10 @@ public class MLMObject {
 					comparison.writeComparisonList(w); // write a list helper method only if the operator is IN
 				}
 			}
-			/** *************************************************************************************************************************** */
+			/**
+			 * *************************************************************************************
+			 * **************************************
+			 */
 			
 			w.append("\tprivate boolean evaluate_logic(Map<String, Object> parameters) throws LogicException {\n\n");
 			evalListBySection = evaluateList.get("logic");
@@ -404,7 +410,7 @@ public class MLMObject {
 	
 	private void WriteData(MLMEvaluateElement el, Writer w,
 	//		Comparison comparison
-	                       Iterator<Map.Entry<String, Comparison>> comparisonIterator) {
+	        Iterator<Map.Entry<String, Comparison>> comparisonIterator) {
 		
 		LinkedList<Integer> openParens = new LinkedList<Integer>();
 		LinkedList<Integer> openBrackets = new LinkedList<Integer>();
@@ -519,9 +525,9 @@ public class MLMObject {
 	}
 	
 	private boolean WriteLogic(MLMEvaluateElement el, Writer w, Iterator<LogicAssignment> logicIterator,
-	                           //Comparison comparison,
-	                           Iterator<Map.Entry<String, Comparison>> comparisonIterator,
-	                           Iterator<Conclude> concludeIterator, Iterator<Call> callIterator) {
+	        //Comparison comparison,
+	        Iterator<Map.Entry<String, Comparison>> comparisonIterator, Iterator<Conclude> concludeIterator,
+	        Iterator<Call> callIterator) {
 		
 		boolean skipReturn = false;
 		LinkedList<Integer> openParens = new LinkedList<Integer>();

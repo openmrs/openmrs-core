@@ -178,7 +178,7 @@ public class PatientIdentifierValidator implements Validator {
 	 * @should pass validation if validator is null
 	 */
 	public static void checkIdentifierAgainstValidator(String identifier, IdentifierValidator validator)
-	                                                                                                    throws PatientIdentifierException {
+	        throws PatientIdentifierException {
 		
 		log.debug("Checking identifier: " + identifier + " against validator: " + validator);
 		

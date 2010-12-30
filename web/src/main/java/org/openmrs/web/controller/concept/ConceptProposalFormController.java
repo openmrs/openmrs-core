@@ -60,7 +60,7 @@ public class ConceptProposalFormController extends SimpleFormController {
 	 */
 	@Override
 	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object obj,
-	                                             BindException errors) throws Exception {
+	        BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
 		ConceptProposal cp = (ConceptProposal) obj;
@@ -106,7 +106,7 @@ public class ConceptProposalFormController extends SimpleFormController {
 	 *      org.springframework.validation.BindException)
 	 */
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
-	                                BindException errors) throws Exception {
+	        BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
 		

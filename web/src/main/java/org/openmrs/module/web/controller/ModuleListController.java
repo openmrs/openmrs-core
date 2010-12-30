@@ -74,7 +74,7 @@ public class ModuleListController extends SimpleFormController {
 	 */
 	@Override
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command,
-	                                BindException errors) throws Exception {
+	        BindException errors) throws Exception {
 		
 		if (!Context.hasPrivilege(PrivilegeConstants.MANAGE_MODULES))
 			throw new APIAuthenticationException("Privilege required: " + PrivilegeConstants.MANAGE_MODULES);

@@ -193,7 +193,7 @@ public interface OrderService extends OpenmrsService {
 	 * @param uuid
 	 * @return
 	 * @should find object given valid uuid
-	 * @should return null if no object found with given uuid 
+	 * @should return null if no object found with given uuid
 	 */
 	@Transactional(readOnly = true)
 	public Order getOrderByUuid(String uuid) throws APIException;
@@ -235,8 +235,8 @@ public interface OrderService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.VIEW_ORDERS)
 	public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
-	                                               List<Concept> concepts, ORDER_STATUS status, List<User> orderers,
-	                                               List<Encounter> encounters, List<OrderType> orderTypes);
+	        List<Concept> concepts, ORDER_STATUS status, List<User> orderers, List<Encounter> encounters,
+	        List<OrderType> orderTypes);
 	
 	/**
 	 * @deprecated this method would return a very large list for most systems and doesn't make
@@ -450,7 +450,7 @@ public interface OrderService extends OpenmrsService {
 	 * @param uuid
 	 * @return
 	 * @should find object given valid uuid
-	 * @should return null if no object found with given uuid 
+	 * @should return null if no object found with given uuid
 	 */
 	@Transactional(readOnly = true)
 	public OrderType getOrderTypeByUuid(String uuid) throws APIException;
@@ -471,7 +471,7 @@ public interface OrderService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_ORDERS)
 	public Map<Concept, List<DrugOrder>> getDrugSetsByConcepts(List<DrugOrder> drugOrders, List<Concept> drugSets)
-	                                                                                                              throws APIException;
+	        throws APIException;
 	
 	/**
 	 * The standard regimens are currently stored in the application context file. See xml elements
@@ -492,7 +492,7 @@ public interface OrderService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_ORDERS)
 	public Map<String, List<DrugOrder>> getDrugSetsByDrugSetIdList(List<DrugOrder> orderList, String drugSetIdList,
-	                                                               String delimiter);
+	        String delimiter);
 	
 	/**
 	 * @deprecated use {@link org.openmrs.order.OrderUtil#getDrugSetHeadersByDrugSetIdList(String)}

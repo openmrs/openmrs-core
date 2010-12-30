@@ -247,7 +247,7 @@ public interface HL7Service extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized(HL7Constants.PRIV_VIEW_HL7_IN_ARCHIVE)
 	public List<HL7InArchive> getHL7InArchiveBatch(int start, int length, int messageState, String query)
-	                                                                                                     throws APIException;
+	        throws APIException;
 	
 	/**
 	 * the total count of all HL7InArchive objects in the database
@@ -598,8 +598,8 @@ public interface HL7Service extends OpenmrsService {
 	public String getUuidFromIdentifiers(CX[] identifiers) throws HL7Exception;
 	
 	/**
-	 * creates a Person from information held in an NK1 segment; if valid PatientIdentifiers
-	 * exist, a Patient will be created and returned
+	 * creates a Person from information held in an NK1 segment; if valid PatientIdentifiers exist,
+	 * a Patient will be created and returned
 	 * 
 	 * @param nk1 the NK1 segment with person information
 	 * @return the newly formed (but not saved) person
@@ -615,7 +615,7 @@ public interface HL7Service extends OpenmrsService {
 	
 	/**
 	 * Loads data for a list of HL7 archives from the filesystem
-	 *
+	 * 
 	 * @since 1.7
 	 * @throws APIException
 	 * @param archives

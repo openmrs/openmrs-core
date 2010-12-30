@@ -68,7 +68,7 @@ public interface PersonDAO {
 	 *      java.lang.String, java.lang.Integer, java.lang.Boolean)
 	 */
 	public List<PersonAttributeType> getPersonAttributeTypes(String exactName, String format, Integer foreignKey,
-	                                                         Boolean searchable) throws DAOException;
+	        Boolean searchable) throws DAOException;
 	
 	/**
 	 * @see org.openmrs.api.PersonService#getAllPersonAttributeTypes()
@@ -136,7 +136,7 @@ public interface PersonDAO {
 	 *      org.openmrs.RelationshipType)
 	 */
 	public List<Relationship> getRelationships(Person fromPerson, Person toPerson, RelationshipType relType)
-	                                                                                                        throws DAOException;
+	        throws DAOException;
 	
 	/**
 	 * @see org.openmrs.api.PersonService#saveRelationshipType(org.openmrs.RelationshipType)
@@ -191,8 +191,7 @@ public interface PersonDAO {
 	 * bypassing any caches. This is used prior to saving an personAttributeType, so that we can
 	 * change the vlaue of any global property which is in
 	 * {@link OpenmrsConstants#GLOBAL_PROPERTIES_OF_PERSON_ATTRIBUTES} and reference the given
-	 * personAttributeType.
-	 * <br/>
+	 * personAttributeType. <br/>
 	 * 
 	 * @param personAttributeType the personAttributeType get the the name of
 	 * @return the name currently in the database for this personAttributeType

@@ -51,7 +51,7 @@ public class ModulePropertiesFormController extends SimpleFormController {
 	 *      org.springframework.validation.BindException)
 	 */
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command,
-	                                BindException errors) throws Exception {
+	        BindException errors) throws Exception {
 		
 		if (!Context.hasPrivilege(PrivilegeConstants.MANAGE_MODULES))
 			throw new APIAuthenticationException("Privilege required: " + PrivilegeConstants.MANAGE_MODULES);

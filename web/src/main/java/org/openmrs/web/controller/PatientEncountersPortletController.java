@@ -29,14 +29,14 @@ import org.openmrs.module.web.FormEntryContext;
 import org.openmrs.module.web.extension.FormEntryHandler;
 
 /**
- * Controller for the patientEncounters portlet.
- * 
- * Provides a map telling which forms have their view and edit links overridden by form entry modules  
+ * Controller for the patientEncounters portlet. Provides a map telling which forms have their view
+ * and edit links overridden by form entry modules
  */
 public class PatientEncountersPortletController extends PortletController {
 	
 	/**
-	 * @see org.openmrs.web.controller.PortletController#populateModel(javax.servlet.http.HttpServletRequest, java.util.Map)
+	 * @see org.openmrs.web.controller.PortletController#populateModel(javax.servlet.http.HttpServletRequest,
+	 *      java.util.Map)
 	 */
 	@Override
 	protected void populateModel(HttpServletRequest request, Map<String, Object> model) {

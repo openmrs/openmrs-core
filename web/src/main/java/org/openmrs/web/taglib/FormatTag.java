@@ -168,6 +168,7 @@ public class FormatTag extends TagSupport {
 	
 	/**
 	 * Formats a Concept and prints it to sb
+	 * 
 	 * @param sb
 	 * @param concept
 	 */

@@ -60,7 +60,7 @@ public class DWREncounterService {
 	 * @since 1.8
 	 */
 	public Vector findBatchOfEncounters(String phrase, boolean includeVoided, Integer start, Integer length)
-	                                                                                                        throws APIException {
+	        throws APIException {
 		
 		// List to return
 		// Object type gives ability to return error strings
@@ -123,7 +123,7 @@ public class DWREncounterService {
 	 */
 	@SuppressWarnings("unchecked")
 	public Map<String, Object> findCountAndEncounters(String phrase, boolean includeVoided, Integer start, Integer length,
-	                                                  boolean getMatchCount) throws APIException {
+	        boolean getMatchCount) throws APIException {
 		//Map to return
 		Map<String, Object> resultsMap = new HashMap<String, Object>();
 		Vector<Object> objectList = new Vector<Object>();
@@ -186,7 +186,7 @@ public class DWREncounterService {
 	 * @since 1.8
 	 */
 	public Vector<Object> findBatchOfLocations(String searchValue, boolean includeRetired, Integer start, Integer length)
-	                                                                                                                     throws APIException {
+	        throws APIException {
 		
 		Vector<Object> locationList = new Vector<Object>();
 		MessageSourceService mss = Context.getMessageSourceService();
@@ -258,7 +258,7 @@ public class DWREncounterService {
 	 * @since 1.8
 	 */
 	public Map<String, Object> findCountAndLocations(String phrase, boolean includeRetired, Integer start, Integer length,
-	                                                 boolean getMatchCount) throws APIException {
+	        boolean getMatchCount) throws APIException {
 		
 		//Map to return
 		Map<String, Object> resultsMap = new HashMap<String, Object>();

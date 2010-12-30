@@ -60,8 +60,7 @@ public class OpenmrsFilter extends OncePerRequestFilter {
 	 */
 	@Override
 	protected void doFilterInternal(HttpServletRequest httpRequest, HttpServletResponse httpResponse, FilterChain chain)
-	                                                                                                                    throws ServletException,
-	                                                                                                                    IOException {
+	        throws ServletException, IOException {
 		
 		HttpSession httpSession = httpRequest.getSession();
 		

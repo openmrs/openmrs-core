@@ -103,7 +103,7 @@ public class LocationTagController {
 	 */
 	@RequestMapping(method = RequestMethod.POST, value = "/admin/locations/locationTagEdit")
 	public String handleEditSubmission(WebRequest request, @ModelAttribute("locationTag") LocationTag locationTag,
-	                                   BindingResult result, SessionStatus status) {
+	        BindingResult result, SessionStatus status) {
 		
 		new LocationTagValidator().validate(locationTag, result);
 		if (result.hasErrors()) {
@@ -133,7 +133,7 @@ public class LocationTagController {
 	 */
 	@RequestMapping(method = RequestMethod.POST, value = "/admin/locations/locationTagRetire")
 	public String retire(WebRequest request, @RequestParam("id") LocationTag locationTag,
-	                     @RequestParam("retireReason") String retireReason) {
+	        @RequestParam("retireReason") String retireReason) {
 		Context.getLocationService().retireLocationTag(locationTag, retireReason);
 		request.setAttribute(WebConstants.OPENMRS_MSG_ATTR, Context.getMessageSourceService().getMessage(
 		    "LocationTag.retired"), WebRequest.SCOPE_SESSION);

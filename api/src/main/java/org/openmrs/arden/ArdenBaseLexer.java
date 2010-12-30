@@ -439,7 +439,7 @@ public class ArdenBaseLexer extends antlr.CharScanner implements ArdenBaseParser
 	}
 	
 	public final void mARDEN_CURLY_BRACKETS(boolean _createToken) throws RecognitionException, CharStreamException,
-	                                                             TokenStreamException {
+	        TokenStreamException {
 		int _ttype;
 		Token _token = null;
 		int _begin = text.length();
@@ -499,7 +499,7 @@ public class ArdenBaseLexer extends antlr.CharScanner implements ArdenBaseParser
 	}
 	
 	public final void mNOT_COMMENT(boolean _createToken) throws RecognitionException, CharStreamException,
-	                                                    TokenStreamException {
+	        TokenStreamException {
 		int _ttype;
 		Token _token = null;
 		int _begin = text.length();
@@ -555,7 +555,7 @@ public class ArdenBaseLexer extends antlr.CharScanner implements ArdenBaseParser
 	}
 	
 	public final void mML_COMMENT(boolean _createToken) throws RecognitionException, CharStreamException,
-	                                                   TokenStreamException {
+	        TokenStreamException {
 		int _ttype;
 		Token _token = null;
 		int _begin = text.length();
@@ -731,7 +731,7 @@ public class ArdenBaseLexer extends antlr.CharScanner implements ArdenBaseParser
 	}
 	
 	public final void mSTRING_LITERAL(boolean _createToken) throws RecognitionException, CharStreamException,
-	                                                       TokenStreamException {
+	        TokenStreamException {
 		int _ttype;
 		Token _token = null;
 		int _begin = text.length();
@@ -774,7 +774,7 @@ public class ArdenBaseLexer extends antlr.CharScanner implements ArdenBaseParser
 	}
 	
 	public final void mTERM_LITERAL(boolean _createToken) throws RecognitionException, CharStreamException,
-	                                                     TokenStreamException {
+	        TokenStreamException {
 		int _ttype;
 		Token _token = null;
 		int _begin = text.length();
@@ -1099,7 +1099,7 @@ public class ArdenBaseLexer extends antlr.CharScanner implements ArdenBaseParser
 	}
 	
 	public final void mUNDERSCORE(boolean _createToken) throws RecognitionException, CharStreamException,
-	                                                   TokenStreamException {
+	        TokenStreamException {
 		int _ttype;
 		Token _token = null;
 		int _begin = text.length();
@@ -1235,7 +1235,7 @@ public class ArdenBaseLexer extends antlr.CharScanner implements ArdenBaseParser
 	}
 	
 	public final void mNOT_EQUALS(boolean _createToken) throws RecognitionException, CharStreamException,
-	                                                   TokenStreamException {
+	        TokenStreamException {
 		int _ttype;
 		Token _token = null;
 		int _begin = text.length();
@@ -1356,7 +1356,7 @@ public class ArdenBaseLexer extends antlr.CharScanner implements ArdenBaseParser
 	}
 	
 	public final void mAPOSTROPHE(boolean _createToken) throws RecognitionException, CharStreamException,
-	                                                   TokenStreamException {
+	        TokenStreamException {
 		int _ttype;
 		Token _token = null;
 		int _begin = text.length();
@@ -1372,7 +1372,7 @@ public class ArdenBaseLexer extends antlr.CharScanner implements ArdenBaseParser
 	}
 	
 	public final void mAMPERSAND(boolean _createToken) throws RecognitionException, CharStreamException,
-	                                                  TokenStreamException {
+	        TokenStreamException {
 		int _ttype;
 		Token _token = null;
 		int _begin = text.length();
@@ -1448,7 +1448,7 @@ public class ArdenBaseLexer extends antlr.CharScanner implements ArdenBaseParser
 	}
 	
 	public final void mACTION_OP(boolean _createToken) throws RecognitionException, CharStreamException,
-	                                                  TokenStreamException {
+	        TokenStreamException {
 		int _ttype;
 		Token _token = null;
 		int _begin = text.length();
@@ -1464,7 +1464,7 @@ public class ArdenBaseLexer extends antlr.CharScanner implements ArdenBaseParser
 	}
 	
 	public final void mSINGLE_QUOTE(boolean _createToken) throws RecognitionException, CharStreamException,
-	                                                     TokenStreamException {
+	        TokenStreamException {
 		int _ttype;
 		Token _token = null;
 		int _begin = text.length();

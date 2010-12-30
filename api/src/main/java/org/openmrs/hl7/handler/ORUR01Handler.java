@@ -568,7 +568,7 @@ public class ORUR01Handler implements Application {
 	 * @throws ProposingConceptException if the answer to this obs is a proposed concept
 	 * @should add comments to an observation from NTE segments
 	 * @should add multiple comments for an observation as one comment
-	 * @should add comments to an observation group 
+	 * @should add comments to an observation group
 	 */
 	private Obs parseObs(Encounter encounter, OBX obx, OBR obr, String uid) throws HL7Exception, ProposingConceptException {
 		if (log.isDebugEnabled())

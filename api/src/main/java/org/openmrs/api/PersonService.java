@@ -119,7 +119,7 @@ public interface PersonService {
 	 */
 	@Deprecated
 	public Set<Person> getSimilarPeople(String nameSearch, Integer birthyear, String gender, String personType)
-	                                                                                                           throws APIException;
+	        throws APIException;
 	
 	/**
 	 * Find a person matching the <tt>searchPhrase</tt> search string
@@ -159,13 +159,10 @@ public interface PersonService {
 	public Set<Person> findPeople(String searchPhrase, boolean includeVoided, List<String> roles) throws APIException;
 	
 	/**
-	 * Save the given person attribute type in the database.
-	 * <br/>
-	 * 
+	 * Save the given person attribute type in the database. <br/>
 	 * If the given type's Id is not empty, then also need to change any global property which is in
-	 * {@link OpenmrsConstants#GLOBAL_PROPERTIES_OF_PERSON_ATTRIBUTES} and reference this given type,
-	 * prior to saving this given type.
-	 * <br/>
+	 * {@link OpenmrsConstants#GLOBAL_PROPERTIES_OF_PERSON_ATTRIBUTES} and reference this given
+	 * type, prior to saving this given type. <br/>
 	 * 
 	 * @param type
 	 * @return the saved person attribute type
@@ -289,7 +286,8 @@ public interface PersonService {
 	public List<PersonAttributeType> getPersonAttributeTypes() throws APIException;
 	
 	/**
-	 * Find person attribute types matching the given parameters.  Retired types are included in the results
+	 * Find person attribute types matching the given parameters. Retired types are included in the
+	 * results
 	 * 
 	 * @param exactName (optional) The name of type
 	 * @param format (optional) The format for this type
@@ -304,7 +302,7 @@ public interface PersonService {
 	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_PERSON_ATTRIBUTE_TYPES })
 	public List<PersonAttributeType> getPersonAttributeTypes(String exactName, String format, Integer foreignKey,
-	                                                         Boolean searchable) throws APIException;
+	        Boolean searchable) throws APIException;
 	
 	/**
 	 * Get the PersonAttributeType given the type's PersonAttributeTypeId
@@ -320,7 +318,7 @@ public interface PersonService {
 	/**
 	 * Gets a person attribute type with the given uuid.
 	 * 
-	 * @param uuid	the universally unique identifier to lookup
+	 * @param uuid the universally unique identifier to lookup
 	 * @return a person attribute type with the given uuid
 	 * @should find object given valid uuid
 	 * @should return null if no object found with given uuid
@@ -475,7 +473,7 @@ public interface PersonService {
 	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_RELATIONSHIPS })
 	public List<Relationship> getRelationships(Person fromPerson, Person toPerson, RelationshipType relType)
-	                                                                                                        throws APIException;
+	        throws APIException;
 	
 	/**
 	 * Get all relationshipTypes Includes retired relationship types
@@ -512,7 +510,6 @@ public interface PersonService {
 	 * @param relationshipTypeId
 	 * @return relationshipType with given internal identifier or null if none found
 	 * @throws APIException
-	 * 
 	 * @should return relationship type with the given relationship type id
 	 * @should return null when no relationship type matches given relationship type id
 	 */
@@ -827,7 +824,7 @@ public interface PersonService {
 	@Transactional(readOnly = true)
 	// this has anonymous access because its cached into generic js files
 	public List<PersonAttributeType> getPersonAttributeTypes(PERSON_TYPE personType, ATTR_VIEW_TYPE viewType)
-	                                                                                                         throws APIException;
+	        throws APIException;
 	
 	/**
 	 * @deprecated use {@link #getPersonAttributeTypes(String, String)}

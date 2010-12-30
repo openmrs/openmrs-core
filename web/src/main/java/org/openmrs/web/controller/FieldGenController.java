@@ -32,7 +32,7 @@ public class FieldGenController implements Controller {
 	
 	@SuppressWarnings("unchecked")
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException,
-	                                                                                           IOException {
+	        IOException {
 		
 		// find the field that was identified in the openmrs:fieldGen taglib
 		Object uri = request.getAttribute("javax.servlet.include.servlet_path.fieldGen");
