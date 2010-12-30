@@ -1,0 +1,14 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+   <parent>
+      <groupId>org.openmrs</groupId>
+      <artifactId>openmrs</artifactId>
+      <version>1.9.0-SNAPSHOT</version>
+   </parent>
+   <modelVersion>4.0.0</modelVersion>
+   <groupId>org.openmrs.tools</groupId>
+   <artifactId>openmrs-tools</artifactId>
+   <packaging>jar</packaging>
+   <name>openmrs-tools</name>
+   <description>The resources for openmrs plugins and tools</description>
+</project>
