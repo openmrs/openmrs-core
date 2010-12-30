@@ -33,10 +33,10 @@ import org.springframework.validation.Validator;
 public class PatientValidator implements Validator {
 	
 	private static Log log = LogFactory.getLog(PersonNameValidator.class);
-
+	
 	@Autowired
 	PersonNameValidator personNameValidator;
-
+	
 	@Autowired
 	PatientIdentifierValidator patientIdentifierValidator;
 	
@@ -48,7 +48,7 @@ public class PatientValidator implements Validator {
 	 */
 	@SuppressWarnings("unchecked")
 	public boolean supports(Class c) {
-		if(log.isDebugEnabled())
+		if (log.isDebugEnabled())
 			log.debug(this.getClass().getName() + ".supports: " + c.getName());
 		return Patient.class.isAssignableFrom(c);
 	}
@@ -68,8 +68,8 @@ public class PatientValidator implements Validator {
 	 * @should fail validation if causeOfDeath is blank when patient is dead
 	 */
 	public void validate(Object obj, Errors errors) {
-		if(log.isDebugEnabled())
-			log.debug(this.getClass().getName()+ ".validate..." );
+		if (log.isDebugEnabled())
+			log.debug(this.getClass().getName() + ".validate...");
 		
 		Patient patient = (Patient) obj;
 		
@@ -78,10 +78,11 @@ public class PatientValidator implements Validator {
 				personNameValidator.validate(personName, errors);
 			}
 		}
-
+		
 		// Make sure they choose a gender
-		if (StringUtils.isBlank(patient.getGender())) errors.rejectValue("gender", "Person.gender.required");
-
+		if (StringUtils.isBlank(patient.getGender()))
+			errors.rejectValue("gender", "Person.gender.required");
+		
 		// check patients birthdate against future dates and really old dates
 		if (patient.getBirthdate() != null) {
 			if (patient.getBirthdate().after(new Date()))
@@ -101,7 +102,7 @@ public class PatientValidator implements Validator {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "voidReason", "error.null");
 		if (patient.isDead() && (patient.getCauseOfDeath() == null))
 			errors.rejectValue("causeOfDeath", "Patient.dead.causeOfDeathNull");
-
+		
 		if (!errors.hasErrors()) {
 			// Validate PatientIdentifers
 			if (patient != null && patient.getIdentifiers() != null) {

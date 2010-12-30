@@ -13,7 +13,6 @@
  */
 package org.openmrs;
 
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.test.Verifies;
@@ -29,8 +28,7 @@ public class PatientIdentifierTest {
 	 */
 	@Test
 	@Verifies(value = "should compare when patient and identifier and type is null", method = "equals(Object)")
-	public void equals_shouldCompareWhenPatientAndIdentifierAndTypeIsNull()
-			throws Exception {
+	public void equals_shouldCompareWhenPatientAndIdentifierAndTypeIsNull() throws Exception {
 		
 		Patient patient = new Patient();
 		
@@ -40,49 +38,46 @@ public class PatientIdentifierTest {
 		second.setIdentifierType(new PatientIdentifierType(1));
 		
 		PatientIdentifier first = new PatientIdentifier();
-
+		
 		Assert.assertNull(first.getPatient());
 		Assert.assertNull(first.getIdentifier());
 		Assert.assertNull(first.getIdentifierType());
 		
-		Assert.assertFalse(first + " and " + second + " should not equal." , second.equals(first));
+		Assert.assertFalse(first + " and " + second + " should not equal.", second.equals(first));
 	}
-
+	
 	/**
 	 * @see {@link PatientIdentifier#equals(Object)}
 	 * 
 	 */
 	@Test
 	@Verifies(value = "should return false if one patient identifier id is null", method = "equals(Object)")
-	public void equals_shouldReturnFalseIfOnePatientIdentifierIdIsNull()
-			throws Exception {
+	public void equals_shouldReturnFalseIfOnePatientIdentifierIdIsNull() throws Exception {
 		PatientIdentifier nonNullPII = new PatientIdentifier();
 		nonNullPII.setPatientIdentifierId(123);
 		PatientIdentifier nullPII = new PatientIdentifier();
 		Assert.assertNotSame(nonNullPII, nullPII);
 		Assert.assertNotSame(nullPII, nonNullPII);
 	}
-
+	
 	/**
 	 * @see {@link PatientIdentifier#equals(Object)}
 	 * 
 	 */
 	@Test
 	@Verifies(value = "should return true if comparing same object with null ids", method = "equals(Object)")
-	public void equals_shouldReturnTrueIfComparingSameObjectWithNullIds()
-			throws Exception {
+	public void equals_shouldReturnTrueIfComparingSameObjectWithNullIds() throws Exception {
 		PatientIdentifier nullPII = new PatientIdentifier();
 		Assert.assertEquals(nullPII, nullPII);
 	}
-
+	
 	/**
 	 * @see {@link PatientIdentifier#equals(Object)}
 	 * 
 	 */
 	@Test
 	@Verifies(value = "should return true if patient identifier ids are same", method = "equals(Object)")
-	public void equals_shouldReturnTrueIfPatientIdentifierIdsAreSame()
-			throws Exception {
+	public void equals_shouldReturnTrueIfPatientIdentifierIdsAreSame() throws Exception {
 		PatientIdentifier nonNullPII = new PatientIdentifier();
 		nonNullPII.setPatientIdentifierId(123);
 		PatientIdentifier withPatientPII = new PatientIdentifier();

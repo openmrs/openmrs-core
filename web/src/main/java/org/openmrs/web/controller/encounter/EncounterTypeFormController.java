@@ -76,7 +76,7 @@ public class EncounterTypeFormController extends SimpleFormController {
 				view = getSuccessView();
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "EncounterType.saved");
 			}
-			
+
 			// if the user is retiring out the EncounterType
 			else if (request.getParameter("retire") != null) {
 				String retireReason = request.getParameter("retireReason");
@@ -90,7 +90,7 @@ public class EncounterTypeFormController extends SimpleFormController {
 				
 				view = getSuccessView();
 			}
-			
+
 			// if the user is purging the encounterType
 			else if (request.getParameter("purge") != null) {
 				

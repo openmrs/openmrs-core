@@ -294,8 +294,8 @@ public abstract class StartupFilter implements Filter {
 			sb.append('"');
 			if (entry.getKey() == null)
 				sb.append("null");
-			else{
-				if(escapeJavascript)
+			else {
+				if (escapeJavascript)
 					sb.append(JavaScriptUtils.javaScriptEscape(entry.getKey()));
 				else
 					sb.append(WebUtil.escapeQuotesAndNewlines(entry.getKey()));
@@ -340,8 +340,8 @@ public abstract class StartupFilter implements Filter {
 	private void toJSONString(Object object, StringBuffer sb, boolean escapeJavascript) {
 		if (object == null)
 			sb.append("null");
-		else{
-			if(escapeJavascript)
+		else {
+			if (escapeJavascript)
 				sb.append('"').append(JavaScriptUtils.javaScriptEscape(object.toString())).append('"');
 			else
 				sb.append('"').append(WebUtil.escapeQuotesAndNewlines(object.toString())).append('"');

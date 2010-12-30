@@ -36,13 +36,13 @@ import org.openmrs.hl7.HL7Constants;
 public class MoveDeletedHL7sChangeSet implements CustomTaskChange {
 	
 	protected final static Log log = LogFactory.getLog(MoveDeletedHL7sChangeSet.class);
-
+	
 	/**
 	 * @see CustomTaskChange#execute(Database)
 	 */
 	public void execute(Database database) throws CustomChangeException, UnsupportedChangeException {
 		DatabaseConnection connection = database.getConnection();
-
+		
 		StringBuilder getDeletedHL7sSql = new StringBuilder();
 		getDeletedHL7sSql.append("SELECT hl7_source, hl7_source_key, hl7_data, date_created, uuid, hl7_in_archive_id");
 		getDeletedHL7sSql.append(" FROM hl7_in_archive WHERE message_state=");
@@ -60,8 +60,7 @@ public class MoveDeletedHL7sChangeSet implements CustomTaskChange {
 		
 		try {
 			insertStatement = connection.prepareStatement(insertHL7Sql.toString());
-			deleteStatement = connection.prepareStatement(
-					"DELETE FROM hl7_in_archive WHERE hl7_in_archive_id=?");
+			deleteStatement = connection.prepareStatement("DELETE FROM hl7_in_archive WHERE hl7_in_archive_id=?");
 			
 			// iterate over deleted HL7s
 			ResultSet archives = connection.createStatement().executeQuery(getDeletedHL7sSql.toString());
@@ -74,7 +73,7 @@ public class MoveDeletedHL7sChangeSet implements CustomTaskChange {
 				insertStatement.setDate(4, archives.getDate(4)); // set date_created
 				insertStatement.setString(5, archives.getString(5)); // set uuid
 				insertStatement.executeUpdate();
-
+				
 				// remove from the archives
 				deleteStatement.setInt(1, archives.getInt(6));
 				deleteStatement.executeUpdate();
@@ -86,11 +85,12 @@ public class MoveDeletedHL7sChangeSet implements CustomTaskChange {
 			if (deleteStatement != null)
 				deleteStatement.close();
 			
-		} catch (SQLException e) {
+		}
+		catch (SQLException e) {
 			throw new CustomChangeException("Unable to move deleted HL7s from archive table to queue table", e);
 		}
 	}
-
+	
 	/**
 	 * @see CustomChange#getConfirmationMessage()
 	 */
@@ -98,21 +98,21 @@ public class MoveDeletedHL7sChangeSet implements CustomTaskChange {
 	public String getConfirmationMessage() {
 		return "Finished moving deleted changesets";
 	}
-
+	
 	/**
 	 * @see CustomChange#setFileOpener(FileOpener)
 	 */
 	@Override
 	public void setFileOpener(FileOpener fo) {
 	}
-
+	
 	/**
 	 * @see CustomChange#setUp()
 	 */
 	@Override
 	public void setUp() throws SetupException {
 	}
-
+	
 	/**
 	 * @see CustomChange#validate(Database)
 	 */

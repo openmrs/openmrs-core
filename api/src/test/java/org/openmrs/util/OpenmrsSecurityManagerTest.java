@@ -21,7 +21,7 @@ import org.openmrs.api.APIException;
  * Tests methods on the {@link OpenmrsSecurityManager} class
  */
 public class OpenmrsSecurityManagerTest {
-
+	
 	/**
 	 * @see OpenmrsSecurityManager#getCallerClass(int)
 	 * @verifies get the most recently called method
@@ -33,14 +33,13 @@ public class OpenmrsSecurityManagerTest {
 		Assert.assertTrue("Oops, didn't get a junit type of class: " + callerClass, callerClass.getPackage().getName()
 		        .contains("junit"));
 	}
-
+	
 	/**
 	 * @see OpenmrsSecurityManager#getCallerClass(int)
 	 * @verifies throw an error if given a subzero call stack level
 	 */
 	@Test(expected = APIException.class)
-	public void getCallerClass_shouldThrowAnErrorIfGivenASubzeroCallStackLevel()
-			throws Exception {
+	public void getCallerClass_shouldThrowAnErrorIfGivenASubzeroCallStackLevel() throws Exception {
 		new OpenmrsSecurityManager().getCallerClass(-1);
 	}
 }

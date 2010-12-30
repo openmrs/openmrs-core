@@ -51,7 +51,7 @@ public class HibernateActiveListDAO implements ActiveListDAO {
 	public void setSessionFactory(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.db.ActiveListDAO#getActiveListItems(org.openmrs.Person,
 	 *      org.openmrs.activelist.ActiveListType)
@@ -59,7 +59,7 @@ public class HibernateActiveListDAO implements ActiveListDAO {
 	public List<ActiveListItem> getActiveListItems(Person p, ActiveListType type) throws DAOException {
 		return getActiveListItems(ActiveListItem.class, p, type);
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.db.ActiveListDAO#getActiveListItems(java.lang.Class, org.openmrs.Person,
 	 *      org.openmrs.activelist.ActiveListType)
@@ -79,8 +79,7 @@ public class HibernateActiveListDAO implements ActiveListDAO {
 	 * @see org.openmrs.api.db.ActiveListDAO#getActiveListItem(java.lang.Class, java.lang.Integer)
 	 */
 	@SuppressWarnings("unchecked")
-	public <T extends ActiveListItem> T getActiveListItem(Class<T> clazz, Integer activeListItemId)
-	                                                                                                         throws DAOException {
+	public <T extends ActiveListItem> T getActiveListItem(Class<T> clazz, Integer activeListItemId) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(clazz);
 		criteria.add(Expression.eq("activeListId", activeListItemId));
 		return (T) criteria.uniqueResult();

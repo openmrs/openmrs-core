@@ -53,7 +53,6 @@ public interface SerializationService extends OpenmrsService {
 	 * @param o - the object to serialize
 	 * @param clazz - the {@link OpenmrsSerializer} class to use for serialization
 	 * @return String representing this object
-	 * 
 	 * @should Serialize And Deserialize Correctly
 	 * @should Serialize And Deserialize Hibernate Objects Correctly
 	 */
@@ -70,12 +69,15 @@ public interface SerializationService extends OpenmrsService {
 	 * @return hydrated object of the appropriate type
 	 */
 	public <T extends Object> T deserialize(String serializedObject, Class<? extends T> objectClass,
-	                                        Class<? extends OpenmrsSerializer> serializerClass) throws SerializationException;
+	                                        Class<? extends OpenmrsSerializer> serializerClass)
+	                                                                                           throws SerializationException;
 	
 	/**
-	 * Gets the list of OpenmrsSerializers that have been registered with this service.
-	 * <br/><br/>
-	 * Modules are able to add more serializers by adding this in their moduleApplicationContext. e.g.:
+	 * Gets the list of OpenmrsSerializers that have been registered with this service. <br/>
+	 * <br/>
+	 * Modules are able to add more serializers by adding this in their moduleApplicationContext.
+	 * e.g.:
+	 * 
 	 * <pre>
 	 * 	&lt;bean parent="serializationServiceTarget">
 	 * 		&lt;property name="serializers">

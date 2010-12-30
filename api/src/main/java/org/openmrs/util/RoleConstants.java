@@ -22,16 +22,17 @@ import org.openmrs.annotation.AddOnStartup;
  * @see org.openmrs.annotation.AddOnStartup
  */
 public class RoleConstants {
+	
 	@AddOnStartup(description = "Assigned to Administrators of OpenMRS. Gives additional access to change core aspects of the system.")
 	public static final String SUPERUSER = "System Developer";
-
+	
 	@AddOnStartup(description = "Privileges for non-authenticated users.")
 	public static final String ANONYMOUS = "Anonymous";
-
+	
 	@AddOnStartup(description = "Privileges gained once authentication has been established.")
 	public static final String AUTHENTICATED = "Authenticated";
-
+	
 	@AddOnStartup(description = "All users with the 'Provider' role will appear as options in the default Infopath ")
 	public static final String PROVIDER = "Provider";
-
+	
 }

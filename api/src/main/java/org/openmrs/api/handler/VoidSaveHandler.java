@@ -69,7 +69,7 @@ public class VoidSaveHandler implements SaveHandler<Voidable> {
 		
 		// only set the values if the user saved this object and set the voided bit
 		if (voidableObject.isVoided()) {
-
+			
 			if (voidableObject.getVoidedBy() == null) {
 				voidableObject.setVoidedBy(currentUser);
 			}

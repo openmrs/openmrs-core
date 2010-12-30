@@ -97,8 +97,8 @@ public class Comparison implements ArdenBaseTreeParserTokenTypes {
 			
 			if (this.answer != null || (answerList != null && !answerList.isEmpty())) {
 				retStr += "!" + key + ".isNull()&&";
-				if(isAnswerVar){
-					retStr+="!" + this.answer + ".isNull()&&";
+				if (isAnswerVar) {
+					retStr += "!" + this.answer + ".isNull()&&";
 				}
 				
 				switch (operator) {
@@ -112,7 +112,7 @@ public class Comparison implements ArdenBaseTreeParserTokenTypes {
 					case EQUALS:
 
 						if (this.answer instanceof Integer || this.answer instanceof Double || this.answer instanceof Float) {
-							retStr += "("+key + ".toNumber()!= null&&"+ key + ".toNumber() ==  " + this.answer+")";
+							retStr += "(" + key + ".toNumber()!= null&&" + key + ".toNumber() ==  " + this.answer + ")";
 						} else {
 							retStr += key + ".toString().equalsIgnoreCase(\"" + this.answer + "\")";
 						}
@@ -123,7 +123,7 @@ public class Comparison implements ArdenBaseTreeParserTokenTypes {
 					case LTE:
 					case LT:
 						String comparator = null;
-						switch(operator){
+						switch (operator) {
 							case GTE:
 								comparator = ">=";
 								break;
@@ -141,9 +141,11 @@ public class Comparison implements ArdenBaseTreeParserTokenTypes {
 								break;
 						}
 						if (this.answer instanceof Integer || this.answer instanceof Double || this.answer instanceof Float) {
-							retStr += "("+key + ".toNumber()!= null&&"+key + ".toNumber() "+comparator+" " + this.answer+")";
+							retStr += "(" + key + ".toNumber()!= null&&" + key + ".toNumber() " + comparator + " "
+							        + this.answer + ")";
 						} else if (isAnswerVar) {
-							retStr += "("+key + ".toNumber()!= null&&"+this.answer + ".toNumber()!=null&&"+key + ".toNumber() "+comparator+"  " + this.answer + ".toNumber())";
+							retStr += "(" + key + ".toNumber()!= null&&" + this.answer + ".toNumber()!=null&&" + key
+							        + ".toNumber() " + comparator + "  " + this.answer + ".toNumber())";
 						}
 						break;
 					

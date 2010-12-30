@@ -24,11 +24,11 @@ public class ActiveListType extends BaseOpenmrsMetadata {
 	
 	public ActiveListType() {
 	}
-
+	
 	public ActiveListType(Integer id) {
 		this.activeListTypeId = id;
 	}
-
+	
 	/**
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */

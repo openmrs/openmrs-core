@@ -110,7 +110,7 @@ public final class Listener extends ContextLoaderListener {
 	 * @param event
 	 */
 	@Override
-    public void contextInitialized(ServletContextEvent event) {
+	public void contextInitialized(ServletContextEvent event) {
 		Log log = LogFactory.getLog(Listener.class);
 		
 		log.debug("Starting the OpenMRS webapp");
@@ -118,7 +118,7 @@ public final class Listener extends ContextLoaderListener {
 		try {
 			// validate the current JVM version
 			OpenmrsUtil.validateJavaVersion();
-
+			
 			ServletContext servletContext = event.getServletContext();
 			
 			// pulled from web.xml.
@@ -249,7 +249,7 @@ public final class Listener extends ContextLoaderListener {
 		// Get the context path without the request.
 		String contextPath = "";
 		try {
-         contextPath = servletContext.getContextPath();
+			contextPath = servletContext.getContextPath();
 		}
 		catch (NoSuchMethodError ex) {
 			// ServletContext.getContextPath() was added in version 2.5 of the Servlet API. Tomcat 5.5
@@ -259,7 +259,8 @@ public final class Listener extends ContextLoaderListener {
 				String path = servletContext.getResource("/").getPath();
 				contextPath = path.substring(0, path.lastIndexOf("/"));
 				contextPath = contextPath.substring(contextPath.lastIndexOf("/"));
-			} catch (Exception e) {
+			}
+			catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
@@ -466,7 +467,7 @@ public final class Listener extends ContextLoaderListener {
 	 * @see org.springframework.web.context.ContextLoaderListener#contextDestroyed(javax.servlet.ServletContextEvent)
 	 */
 	@Override
-    public void contextDestroyed(ServletContextEvent event) {
+	public void contextDestroyed(ServletContextEvent event) {
 		
 		try {
 			Context.openSession();

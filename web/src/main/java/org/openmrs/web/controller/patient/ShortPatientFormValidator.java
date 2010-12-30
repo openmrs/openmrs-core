@@ -155,8 +155,8 @@ public class ShortPatientFormValidator implements Validator {
 					errors.rejectValue("patient.deathDate", "error.date.future");
 				// death date has to be after birthdate if both are specified
 				if (shortPatientModel.getPatient().getBirthdate() != null
-				        && shortPatientModel.getPatient().getDeathDate()
-				                .before(shortPatientModel.getPatient().getBirthdate()))
+				        && shortPatientModel.getPatient().getDeathDate().before(
+				            shortPatientModel.getPatient().getBirthdate()))
 					errors.rejectValue("patient.deathDate", "error.deathdate.before.birthdate");
 			}
 		}

@@ -91,7 +91,7 @@ public class MailMessageSender implements MessageSender {
 			throw new MessageException("Message must contain at least one recipient");
 		
 		// set the content-type to the default if it isn't defined in Message
-		if(!StringUtils.hasText(message.getContentType()) ){
+		if (!StringUtils.hasText(message.getContentType())) {
 			String contentType = Context.getAdministrationService().getGlobalProperty("mail.default_content_type");
 			message.setContentType(StringUtils.hasText(contentType) ? contentType : "text/plain");
 		}

@@ -89,7 +89,7 @@ public class Location extends BaseOpenmrsMetadata implements java.io.Serializabl
 	 * @return boolean true/false whether or not they are the same objects
 	 */
 	@Override
-    public boolean equals(Object obj) {
+	public boolean equals(Object obj) {
 		if (obj instanceof Location) {
 			Location loc = (Location) obj;
 			if (this.getLocationId() != null && loc.getLocationId() != null)
@@ -99,7 +99,7 @@ public class Location extends BaseOpenmrsMetadata implements java.io.Serializabl
 	}
 	
 	@Override
-    public int hashCode() {
+	public int hashCode() {
 		if (this.getLocationId() == null)
 			return super.hashCode();
 		return this.getLocationId().hashCode();
@@ -234,7 +234,7 @@ public class Location extends BaseOpenmrsMetadata implements java.io.Serializabl
 	}
 	
 	@Override
-    public String toString() {
+	public String toString() {
 		return getName();
 	}
 	
@@ -559,7 +559,6 @@ public class Location extends BaseOpenmrsMetadata implements java.io.Serializabl
 		return false;
 	}
 	
-	
 	/**
 	 * @since 1.8
 	 * @return the address3
@@ -567,7 +566,7 @@ public class Location extends BaseOpenmrsMetadata implements java.io.Serializabl
 	public String getAddress3() {
 		return address3;
 	}
-
+	
 	/**
 	 * @since 1.8
 	 * @param address3 the address3 to set
@@ -575,7 +574,7 @@ public class Location extends BaseOpenmrsMetadata implements java.io.Serializabl
 	public void setAddress3(String address3) {
 		this.address3 = address3;
 	}
-
+	
 	/**
 	 * @since 1.8
 	 * @return the address4
@@ -583,7 +582,7 @@ public class Location extends BaseOpenmrsMetadata implements java.io.Serializabl
 	public String getAddress4() {
 		return address4;
 	}
-
+	
 	/**
 	 * @since 1.8
 	 * @param address4 the address4 to set
@@ -591,7 +590,7 @@ public class Location extends BaseOpenmrsMetadata implements java.io.Serializabl
 	public void setAddress4(String address4) {
 		this.address4 = address4;
 	}
-
+	
 	/**
 	 * @since 1.8
 	 * @return the address6
@@ -599,7 +598,7 @@ public class Location extends BaseOpenmrsMetadata implements java.io.Serializabl
 	public String getAddress6() {
 		return address6;
 	}
-
+	
 	/**
 	 * @since 1.8
 	 * @param address6 the address6 to set
@@ -607,7 +606,7 @@ public class Location extends BaseOpenmrsMetadata implements java.io.Serializabl
 	public void setAddress6(String address6) {
 		this.address6 = address6;
 	}
-
+	
 	/**
 	 * @since 1.8
 	 * @return the address5
@@ -615,7 +614,7 @@ public class Location extends BaseOpenmrsMetadata implements java.io.Serializabl
 	public String getAddress5() {
 		return address5;
 	}
-
+	
 	/**
 	 * @since 1.8
 	 * @param address5 the address5 to set
@@ -623,7 +622,7 @@ public class Location extends BaseOpenmrsMetadata implements java.io.Serializabl
 	public void setAddress5(String address5) {
 		this.address5 = address5;
 	}
-
+	
 	/**
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()

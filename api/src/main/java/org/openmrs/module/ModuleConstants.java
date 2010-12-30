@@ -27,7 +27,7 @@ public class ModuleConstants {
 	 * fully start.
 	 */
 	public static final Map<String, String> CORE_MODULES = new HashMap<String, String>();
-
+	
 	static {
 		CORE_MODULES.put("logic", "0.4");
 	}

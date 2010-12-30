@@ -74,5 +74,5 @@ public class LocalesAndThemesFormController {
 		
 		return "redirect:/admin/maintenance/localesAndThemes.form";
 	}
-
+	
 }

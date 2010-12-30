@@ -48,7 +48,7 @@ public class RequiredReasonVoidSaveHandlerTest extends BaseContextSensitiveTest 
 	 */
 	@Test(expected = APIException.class)
 	@Verifies(value = "should throw APIException if Encounter voidReason is empty", method = "handle(Voidable,User,Date,String)")
-	public void handle_shouldThrowAPIExceptionIfEncounterVoidReasonIsEmpty() throws Exception {	
+	public void handle_shouldThrowAPIExceptionIfEncounterVoidReasonIsEmpty() throws Exception {
 		Encounter e = Context.getEncounterService().getEncounter(3);
 		e.setVoided(true);
 		e.setVoidReason("");
@@ -77,8 +77,8 @@ public class RequiredReasonVoidSaveHandlerTest extends BaseContextSensitiveTest 
 		e.setVoided(true);
 		e.setVoidReason("Some Reason");
 		Context.getEncounterService().saveEncounter(e);
-	}	
-
+	}
+	
 	/**
 	 * @see {@link RequireVoidReasonSaveHandler#handle(Voidable,User,Date,String)}
 	 */

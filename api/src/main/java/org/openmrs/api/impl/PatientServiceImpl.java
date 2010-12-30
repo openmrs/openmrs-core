@@ -312,7 +312,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	 */
 	@Deprecated
 	public List<Patient> getPatientsByName(String name) throws APIException {
-		return getPatients(name, (String)null, null);
+		return getPatients(name, (String) null, null);
 	}
 	
 	/**
@@ -324,7 +324,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		if (includeVoided == true)
 			throw new APIException("Searching on voided patients is no longer allowed");
 		
-		return getPatients(name, (String)null, null);
+		return getPatients(name, (String) null, null);
 	}
 	
 	/**

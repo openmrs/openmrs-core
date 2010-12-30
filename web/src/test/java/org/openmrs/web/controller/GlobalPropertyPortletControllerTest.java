@@ -47,7 +47,7 @@ public class GlobalPropertyPortletControllerTest extends BaseWebContextSensitive
 		String excludePrefix = "file.started;file.mandatory";
 		model.put("excludePrefix", excludePrefix);
 		GlobalProperty[] globalProperties = { new GlobalProperty("file.started", ""),
-				new GlobalProperty("file.mandatory", ""), new GlobalProperty("file.other", "") };
+		        new GlobalProperty("file.mandatory", ""), new GlobalProperty("file.other", "") };
 		Context.getAdministrationService().saveGlobalProperties(Arrays.asList(globalProperties));
 		
 		//then
@@ -117,6 +117,6 @@ public class GlobalPropertyPortletControllerTest extends BaseWebContextSensitive
 		//then
 		portletController.setupModelForModule(model);
 		Assert.assertEquals(excludePrefix + ";" + forModule + ".started;" + forModule + ".mandatory", model
-			.get("excludePrefix"));
+		        .get("excludePrefix"));
 	}
 }

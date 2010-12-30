@@ -56,7 +56,8 @@ public class SerializationServiceImpl extends BaseOpenmrsService implements Seri
 	 * @see org.openmrs.api.SerializationService#getDefaultSerializer()
 	 */
 	public OpenmrsSerializer getDefaultSerializer() {
-		String prop = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_SERIALIZER);
+		String prop = Context.getAdministrationService().getGlobalProperty(
+		    OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_SERIALIZER);
 		try {
 			Class<?> clazz = Context.loadClass(prop);
 			if (clazz != null && OpenmrsSerializer.class.isAssignableFrom(clazz)) {
@@ -97,7 +98,8 @@ public class SerializationServiceImpl extends BaseOpenmrsService implements Seri
 	 *      java.lang.Class)
 	 */
 	public <T extends Object> T deserialize(String serializedObject, Class<? extends T> objectClass,
-	                                        Class<? extends OpenmrsSerializer> serializerClass) throws SerializationException {
+	                                        Class<? extends OpenmrsSerializer> serializerClass)
+	                                                                                           throws SerializationException {
 		
 		// Get appropriate OpenmrsSerializer implementation
 		OpenmrsSerializer serializer = getSerializer(serializerClass);

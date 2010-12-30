@@ -36,7 +36,7 @@ public class PersonEditor extends PropertyEditorSupport {
 	 * @see java.beans.PropertyEditorSupport#setAsText(java.lang.String)
 	 */
 	@Override
-    public void setAsText(String text) throws IllegalArgumentException {
+	public void setAsText(String text) throws IllegalArgumentException {
 		PersonService ps = Context.getPersonService();
 		if (StringUtils.hasText(text)) {
 			try {
@@ -55,7 +55,7 @@ public class PersonEditor extends PropertyEditorSupport {
 	 * @see java.beans.PropertyEditorSupport#getAsText()
 	 */
 	@Override
-    public String getAsText() {
+	public String getAsText() {
 		Person t = (Person) getValue();
 		if (t == null) {
 			return "";

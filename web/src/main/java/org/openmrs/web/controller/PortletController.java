@@ -59,46 +59,46 @@ public class PortletController implements Controller {
 	 * This method produces a model containing the following mappings:
 	 * 
 	 * <pre>
-     *     (always)
-     *          (java.util.Date) now
-     *          (String) size
-     *          (Locale) locale
-     *          (String) portletUUID // unique for each instance of any portlet
-     *          (other parameters)
-     *     (if there's currently an authenticated user)
-     *          (User) authenticatedUser
-     *     (if the request has a patientId attribute)
-     *          (Integer) patientId
-     *          (Patient) patient
-     *          (List<Obs>) patientObs
-     *          (List<Encounter>) patientEncounters
-     *          (List<DrugOrder>) patientDrugOrders
-     *          (List<DrugOrder>) currentDrugOrders
-     *          (List<DrugOrder>) completedDrugOrders
-     *          (Obs) patientWeight // most recent weight obs
-     *          (Obs) patientHeight // most recent height obs
-     *          (Double) patientBmi // BMI derived from most recent weight and most recent height
-     *          (String) patientBmiAsString // BMI rounded to one decimal place, or "?" if unknown
-     *          (Integer) personId
-     *          (if the patient has any obs for the concept in the global property 'concept.reasonExitedCare')
-     *              (Obs) patientReasonForExit
-     *     (if the request has a personId or patientId attribute)
-     *          (Person) person
-     *          (List<Relationship>) personRelationships
-     *          (Map<RelationshipType, List<Relationship>>) personRelationshipsByType
-     *     (if the request has an encounterId attribute)
-     *          (Integer) encounterId
-     *          (Encounter) encounter
-     *          (Set<Obs>) encounterObs
-     *     (if the request has a userId attribute)
-     *          (Integer) userId
-     *          (User) user
-     *     (if the request has a patientIds attribute, which should be a (String) comma-separated list of patientIds)
-     *          (PatientSet) patientSet
-     *          (String) patientIds
-     *     (if the request has a conceptIds attribute, which should be a (String) commas-separated list of conceptIds)
-     *          (Map<Integer, Concept>) conceptMap
-     *          (Map<String, Concept>) conceptMapByStringIds
+	 *     (always)
+	 *          (java.util.Date) now
+	 *          (String) size
+	 *          (Locale) locale
+	 *          (String) portletUUID // unique for each instance of any portlet
+	 *          (other parameters)
+	 *     (if there's currently an authenticated user)
+	 *          (User) authenticatedUser
+	 *     (if the request has a patientId attribute)
+	 *          (Integer) patientId
+	 *          (Patient) patient
+	 *          (List<Obs>) patientObs
+	 *          (List<Encounter>) patientEncounters
+	 *          (List<DrugOrder>) patientDrugOrders
+	 *          (List<DrugOrder>) currentDrugOrders
+	 *          (List<DrugOrder>) completedDrugOrders
+	 *          (Obs) patientWeight // most recent weight obs
+	 *          (Obs) patientHeight // most recent height obs
+	 *          (Double) patientBmi // BMI derived from most recent weight and most recent height
+	 *          (String) patientBmiAsString // BMI rounded to one decimal place, or "?" if unknown
+	 *          (Integer) personId
+	 *          (if the patient has any obs for the concept in the global property 'concept.reasonExitedCare')
+	 *              (Obs) patientReasonForExit
+	 *     (if the request has a personId or patientId attribute)
+	 *          (Person) person
+	 *          (List<Relationship>) personRelationships
+	 *          (Map<RelationshipType, List<Relationship>>) personRelationshipsByType
+	 *     (if the request has an encounterId attribute)
+	 *          (Integer) encounterId
+	 *          (Encounter) encounter
+	 *          (Set<Obs>) encounterObs
+	 *     (if the request has a userId attribute)
+	 *          (Integer) userId
+	 *          (User) user
+	 *     (if the request has a patientIds attribute, which should be a (String) comma-separated list of patientIds)
+	 *          (PatientSet) patientSet
+	 *          (String) patientIds
+	 *     (if the request has a conceptIds attribute, which should be a (String) commas-separated list of conceptIds)
+	 *          (Map<Integer, Concept>) conceptMap
+	 *          (Map<String, Concept>) conceptMapByStringIds
 	 * </pre>
 	 * 
 	 * @should calculate bmi into patientBmiAsString
@@ -123,7 +123,7 @@ public class PortletController implements Controller {
 				model = (Map<String, Object>) session.getAttribute(WebConstants.OPENMRS_PORTLET_CACHED_MODEL);
 				
 				// remove cached parameters 
-				List<String> parameterKeys = (List<String>)model.get("parameterKeys");
+				List<String> parameterKeys = (List<String>) model.get("parameterKeys");
 				for (String key : parameterKeys) {
 					model.remove(key);
 				}

@@ -834,7 +834,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(2, obss.intValue());
 		
 	}
-
+	
 	/**
 	 * @see ObsService#getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean)
 	 */
@@ -917,7 +917,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		
 		Assert.assertEquals(1, count.intValue());
 	}
-
+	
 	/**
 	 * @see ObsService#getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean)
 	 */
@@ -949,7 +949,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		
 		Assert.assertEquals(13, count.intValue());
 	}
-
+	
 	/**
 	 * @see ObsService#getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean)
 	 */
@@ -981,7 +981,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		
 		Assert.assertEquals(15, count.intValue());
 	}
-
+	
 	/**
 	 * @see ObsService#getObservations(List,List,List,List,List,List,List,Integer,Integer,Date,Date,boolean)
 	 */

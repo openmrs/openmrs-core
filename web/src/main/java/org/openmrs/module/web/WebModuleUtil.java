@@ -353,7 +353,7 @@ public class WebModuleUtil {
 				// might depend on files being available in spring
 				// if the caller wanted to delay the refresh then they are responsible for
 				// calling these two methods on the module
-
+				
 				// find and cache the module's servlets
 				//(only if the module started successfully previously)
 				if (ModuleFactory.isModuleStarted(mod)) {

@@ -21,7 +21,7 @@ import org.openmrs.test.Verifies;
  * Tests the {@link ConceptNumeric} object
  */
 public class ConceptNumericTest {
-
+	
 	/**
 	 * @see {@link ConceptNumeric#equals(Object)}
 	 */

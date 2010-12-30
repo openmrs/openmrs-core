@@ -307,7 +307,7 @@ public class MigrationController implements Controller {
 		}
 		for (Map.Entry<Integer, List<Order>> e : patientRegimens.entrySet()) {
 			List<PatientIdentifier> pil = Context.getPatientService().getPatientIdentifiers(e.getKey().toString(),
-			    Collections.singletonList(pihIdentifierType),null,null,null);
+			    Collections.singletonList(pihIdentifierType), null, null, null);
 			if (pil.size() != 1) {
 				throw new RuntimeException("Found " + pil.size() + " PatientIdentifiers for " + pihIdentifierType + " of "
 				        + e.getKey());

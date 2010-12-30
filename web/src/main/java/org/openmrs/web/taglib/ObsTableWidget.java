@@ -224,7 +224,7 @@ public class ObsTableWidget extends TagSupport {
 	public int doStartTag() {
 		Locale loc = Context.getLocale();
 		DateFormat df = Context.getDateFormat();
-			//DateFormat.getDateInstance(DateFormat.SHORT, loc);
+		//DateFormat.getDateInstance(DateFormat.SHORT, loc);
 		
 		// determine which concepts we care about
 		List<Concept> conceptList = new ArrayList<Concept>();
@@ -304,10 +304,9 @@ public class ObsTableWidget extends TagSupport {
 		if (limit > 0 && limit < dateOrder.size()) {
 			if (!sortDescending) {
 				dateOrder = dateOrder.subList(dateOrder.size() - limit, dateOrder.size());
-			} 
-			else { 
-			dateOrder = dateOrder.subList(0, limit);
-		}
+			} else {
+				dateOrder = dateOrder.subList(0, limit);
+			}
 		}
 		
 		StringBuilder ret = new StringBuilder();

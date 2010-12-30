@@ -116,8 +116,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		String partialNameToFetch = "So";
 		
 		List<Concept> firstConceptsByPartialNameList = conceptService.getConceptsByName(partialNameToFetch);
-		assertTrue("You should be able to get the concept by partial name",
-		    firstConceptsByPartialNameList.contains(new Concept(1)));
+		assertTrue("You should be able to get the concept by partial name", firstConceptsByPartialNameList
+		        .contains(new Concept(1)));
 	}
 	
 	/**
@@ -984,8 +984,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		source.setName(sourceName);
 		source.setHl7Code(aNullString);
 		conceptService.saveConceptSource(source);
-		assertEquals("Did not save a ConceptSource with a null hl7Code", source,
-		    conceptService.getConceptSourceByName(sourceName));
+		assertEquals("Did not save a ConceptSource with a null hl7Code", source, conceptService
+		        .getConceptSourceByName(sourceName));
 		
 	}
 	
@@ -1347,8 +1347,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 			if (!CollectionUtils.isEmpty(concept.getNames())) {
 				for (ConceptName cn : concept.getNames()) {
 					Assert.assertTrue("The locale '" + cn.getLocale() + "' of conceptName with id: " + cn.getConceptNameId()
-					        + " is not among those listed in the global property 'locale.allowed.list'",
-					    allowedLocales.contains(cn.getLocale()));
+					        + " is not among those listed in the global property 'locale.allowed.list'", allowedLocales
+					        .contains(cn.getLocale()));
 				}
 			}
 		}

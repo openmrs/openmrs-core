@@ -27,7 +27,7 @@ import org.openmrs.api.APIException;
 public class HL7InError extends BaseOpenmrsObject {
 	
 	private static final int MAX_ERROR_DETAILS_LENGTH = 16777215;
-
+	
 	private Integer hl7InErrorId;
 	
 	private HL7Source hl7Source;

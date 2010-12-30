@@ -131,8 +131,7 @@ public class PersonAttributeTypeListController {
 	public String moveUp(Integer[] personAttributeTypeId, HttpSession httpSession) {
 		if (personAttributeTypeId == null) {
 			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PersonAttributeType.select");
-		}
-		else {
+		} else {
 			PersonService ps = Context.getPersonService();
 			
 			List<PersonAttributeType> attributes = ps.getAllPersonAttributeTypes();
@@ -181,8 +180,7 @@ public class PersonAttributeTypeListController {
 	public String moveDown(Integer[] personAttributeTypeId, HttpSession httpSession) {
 		if (personAttributeTypeId == null) {
 			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "PersonAttributeType.select");
-		}
-		else {
+		} else {
 			PersonService ps = Context.getPersonService();
 			List<PersonAttributeType> attributes = ps.getAllPersonAttributeTypes();
 			

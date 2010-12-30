@@ -55,7 +55,7 @@ public class ReflectTest {
 		Assert.assertEquals("normalClassField", allFields.get(3).getName());
 		Assert.assertFalse(reflect.hasField(allFields.get(3)));
 	}
-
+	
 	/**
 	 * @see {@link Reflect#getAllFields(Class<*>)}
 	 */
@@ -68,7 +68,7 @@ public class ReflectTest {
 		Assert.assertEquals("subClassField", allFields.get(1).getName());
 		Assert.assertEquals("normalClassField", allFields.get(3).getName());
 	}
-
+	
 	/**
 	 * @see {@link Reflect#isCollection(Class<*>)}
 	 */
@@ -81,7 +81,7 @@ public class ReflectTest {
 		Assert.assertEquals("nonCollectionField", allFields.get(2).getName());
 		Assert.assertFalse(reflect.isCollectionField(allFields.get(2)));
 	}
-
+	
 	/**
 	 * @see {@link Reflect#isCollection(Class<*>)}
 	 */
@@ -90,7 +90,7 @@ public class ReflectTest {
 	public void isCollection_shouldReturnTrueIfGivenFieldClassIsCollectionClass() throws Exception {
 		Assert.assertTrue(Reflect.isCollection(ArrayList.class));
 	}
-
+	
 	/**
 	 * @see {@link Reflect#isCollection(Object)}
 	 */
@@ -99,7 +99,7 @@ public class ReflectTest {
 	public void isCollection_shouldReturnFalseIfGivenObjectIsNotACollection() throws Exception {
 		Assert.assertFalse(Reflect.isCollection(new NormalClass()));
 	}
-
+	
 	/**
 	 * @see {@link Reflect#isCollection(Object)}
 	 */
@@ -108,7 +108,7 @@ public class ReflectTest {
 	public void isCollection_shouldReturnTrueIfGivenObjectIsCollectionClass() throws Exception {
 		Assert.assertTrue(Reflect.isCollection(new ArrayList<Object>()));
 	}
-
+	
 	/**
 	 * @see {@link Reflect#Reflect(Class)}
 	 */
@@ -117,7 +117,7 @@ public class ReflectTest {
 	public void Reflect_shouldThrowExceptionWhenNullIsPassed() throws Exception {
 		new Reflect(null);
 	}
-
+	
 	/**
 	 * @see {@link Reflect#getInheritedFields(Class)}
 	 */
@@ -133,7 +133,7 @@ public class ReflectTest {
 		Assert.assertEquals("normalClassField", allFields.get(3).getName());
 		Assert.assertFalse(fields.contains(allFields.get(3)));
 	}
-
+	
 	/**
 	 * @see {@link Reflect#isCollectionField(Field)}
 	 */
@@ -147,7 +147,7 @@ public class ReflectTest {
 		Assert.assertEquals("subClassField", allFields.get(1).getName());
 		Assert.assertTrue(reflect.isCollectionField(allFields.get(1)));
 	}
-
+	
 	/**
 	 * @see {@link Reflect#isCollectionField(Field)}
 	 */
@@ -156,7 +156,7 @@ public class ReflectTest {
 	public void isCollectionField_shouldReturnFalseIfGivenFieldIsNotACollection() throws Exception {
 		Assert.assertFalse(Reflect.isCollection(NormalClass.class));
 	}
-
+	
 	/**
 	 * @see {@link Reflect#isCollectionField(Field)}
 	 */
@@ -169,7 +169,7 @@ public class ReflectTest {
 		Assert.assertEquals("genericCollectionField", allFields.get(0).getName());
 		Assert.assertFalse(reflect.isCollectionField(allFields.get(0)));
 	}
-
+	
 	/**
 	 * @see {@link Reflect#isSuperClass(Class)}
 	 */
@@ -180,7 +180,7 @@ public class ReflectTest {
 		
 		Assert.assertFalse(reflect.isSuperClass(new NormalClass()));
 	}
-
+	
 	/**
 	 * @see {@link Reflect#isSuperClass(Class)}
 	 */
@@ -191,7 +191,7 @@ public class ReflectTest {
 		
 		Assert.assertTrue(reflect.isSuperClass(OpenmrsObjectImp.class));
 	}
-
+	
 	/**
 	 * @see {@link Reflect#isSuperClass(Object)}
 	 */
@@ -202,7 +202,7 @@ public class ReflectTest {
 		
 		Assert.assertFalse(reflect.isSuperClass(NormalClass.class));
 	}
-
+	
 	/**
 	 * @see {@link Reflect#isSuperClass(Object)}
 	 */

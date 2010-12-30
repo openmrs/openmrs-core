@@ -87,7 +87,7 @@ public class PersonSaveHandler implements SaveHandler<Person> {
 		}
 		
 		//if the patient was marked as dead and reversed, drop the cause of death
-		if(!person.isDead() && person.getCauseOfDeath() != null)
+		if (!person.isDead() && person.getCauseOfDeath() != null)
 			person.setCauseOfDeath(null);
 		
 		// do the checks for voided attributes (also in PersonVoidHandler)
@@ -95,8 +95,7 @@ public class PersonSaveHandler implements SaveHandler<Person> {
 			
 			if (!StringUtils.hasLength(person.getVoidReason()))
 				throw new APIException(
-				        "The voided bit was set to true, so a void reason is required at save time for person: "
-				                + person);
+				        "The voided bit was set to true, so a void reason is required at save time for person: " + person);
 			
 			if (person.getPersonVoidedBy() == null) {
 				person.setPersonVoidedBy(creator);

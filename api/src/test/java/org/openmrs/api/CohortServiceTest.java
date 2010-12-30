@@ -93,29 +93,27 @@ public class CohortServiceTest extends BaseContextSensitiveTest {
 		assertEquals(2, exampleCohort.size());
 		assertFalse(exampleCohort.isVoided());
 	}
-
+	
 	/**
 	 * @see {@link CohortService#getCohortByUuid(String)}
 	 * 
 	 */
 	@Test
 	@Verifies(value = "should find object given valid uuid", method = "getCohortByUuid(String)")
-	public void getCohortByUuid_shouldFindObjectGivenValidUuid()
-			throws Exception {
+	public void getCohortByUuid_shouldFindObjectGivenValidUuid() throws Exception {
 		executeDataSet(COHORT_XML);
 		String uuid = "h9a9m0i6-15e6-467c-9d4b-mbi7teu9lf0f";
-		Cohort cohort = Context.getCohortService().getCohortByUuid(uuid);		
-		Assert.assertEquals(1, (int)cohort.getCohortId());
+		Cohort cohort = Context.getCohortService().getCohortByUuid(uuid);
+		Assert.assertEquals(1, (int) cohort.getCohortId());
 	}
-
+	
 	/**
 	 * @see {@link CohortService#getCohortByUuid(String)}
 	 * 
 	 */
 	@Test
 	@Verifies(value = "should return null if no object found with given uuid", method = "getCohortByUuid(String)")
-	public void getCohortByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid()
-			throws Exception {
+	public void getCohortByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
 		Assert.assertNull(Context.getCohortService().getCohortByUuid("some invalid uuid"));
 	}
 	

@@ -142,8 +142,7 @@ public class FormatTag extends TagSupport {
 		if (program != null) {
 			if (StringUtils.hasText(program.getName())) {
 				printMetadata(sb, program);
-			}
-			else if (program.getConcept() != null) {
+			} else if (program.getConcept() != null) {
 				printConcept(sb, program.getConcept());
 			}
 		}
@@ -358,19 +357,19 @@ public class FormatTag extends TagSupport {
 	public Integer getProgramId() {
 		return programId;
 	}
-
+	
 	public void setProgramId(Integer programId) {
 		this.programId = programId;
 	}
-
+	
 	public Program getProgram() {
 		return program;
 	}
-
+	
 	public void setProgram(Program program) {
 		this.program = program;
 	}
-
+	
 	public String getVar() {
 		return var;
 	}

@@ -112,7 +112,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	 * @see java.lang.ClassLoader#loadClass(java.lang.String, boolean)
 	 */
 	@Override
-    public Class<?> loadClass(String name, final boolean resolve) throws ClassNotFoundException {
+	public Class<?> loadClass(String name, final boolean resolve) throws ClassNotFoundException {
 		for (ModuleClassLoader classLoader : ModuleFactory.getModuleClassLoaders()) {
 			// this is to prevent unnecessary looping over providedPackages
 			boolean tryToLoad = name.startsWith(classLoader.getModule().getPackageName());
@@ -120,7 +120,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 			// the given class name doesn't match the config.xml package in this module,
 			// check the "providedPackage" list to see if its in a lib
 			if (!tryToLoad) {
-			
+				
 				for (String providedPackage : classLoader.getAdditionalPackages()) {
 					// break out early if we match a package
 					if (name.startsWith(providedPackage)) {
@@ -142,26 +142,28 @@ public class OpenmrsClassLoader extends URLClassLoader {
 				}
 			}
 		}
-
+		
 		/* See org.mortbay.jetty.webapp.WebAppClassLoader.loadClass, from
-  		 * http://dist.codehaus.org/jetty/jetty-6.1.10/jetty-6.1.10-src.zip */		
-		ClassNotFoundException ex= null;
-
+		 * http://dist.codehaus.org/jetty/jetty-6.1.10/jetty-6.1.10-src.zip */
+		ClassNotFoundException ex = null;
+		
 		try {
 			Class<?> c = getParent().loadClass(name);
 			loadedClasses.add(c);
 			return c;
-		} catch (ClassNotFoundException e) {
-			ex = e;			
 		}
-
+		catch (ClassNotFoundException e) {
+			ex = e;
+		}
+		
 		try {
 			Class<?> c = this.findClass(name);
 			return c;
-		} catch (ClassNotFoundException e) {
-			ex = e;			
 		}
-
+		catch (ClassNotFoundException e) {
+			ex = e;
+		}
+		
 		throw ex;
 	}
 	
@@ -169,7 +171,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	 * @see java.net.URLClassLoader#findResource(java.lang.String)
 	 */
 	@Override
-    public URL findResource(final String name) {
+	public URL findResource(final String name) {
 		if (log.isTraceEnabled())
 			log.trace("finding resource: " + name);
 		
@@ -195,7 +197,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	 * @see java.net.URLClassLoader#findResources(java.lang.String)
 	 */
 	@Override
-    public Enumeration<URL> findResources(final String name) throws IOException {
+	public Enumeration<URL> findResources(final String name) throws IOException {
 		Set<URL> results = new HashSet<URL>();
 		for (ModuleClassLoader classLoader : ModuleFactory.getModuleClassLoaders()) {
 			Enumeration<URL> urls = classLoader.findResources(name);
@@ -252,12 +254,12 @@ public class OpenmrsClassLoader extends URLClassLoader {
 		
 		return Collections.enumeration(results);
 	}
-
+	
 	/**
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
-    public String toString() {
+	public String toString() {
 		return "Openmrs" + super.toString();
 	}
 	
@@ -614,7 +616,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 		}
 		
 		@Override
-        public void connect() throws IOException {
+		public void connect() throws IOException {
 			
 		}
 		

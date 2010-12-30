@@ -82,7 +82,7 @@ public interface HL7DAO {
 	 * @see org.openmrs.hl7.HL7Service#deleteHL7InQueue(org.openmrs.hl7.HL7InQueue)
 	 */
 	public void deleteHL7InQueue(HL7InQueue hl7InQueue) throws DAOException;
-
+	
 	/**
 	 * Returns hl7s based on batch settings and filtered by a query
 	 * @param <T>
@@ -185,5 +185,5 @@ public interface HL7DAO {
 	 * @see org.openmrs.hl7.HL7Service#garbageCollect()
 	 */
 	public void garbageCollect();
-
+	
 }

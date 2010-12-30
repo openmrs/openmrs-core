@@ -601,7 +601,7 @@ public class DatabaseUpdater {
 	public static void setAuthenticatedUserId(Integer userId) {
 		authenticatedUserId = userId;
 	}
-
+	
 	/**
 	 * This method is called by an executing custom changeset to register warning messages.
 	 * 
@@ -649,7 +649,7 @@ public class DatabaseUpdater {
 			sb.append("*********** END OF DATABASE UPDATE LOGS AS AT " + date + " ***********");
 			
 			writer.write(sb.toString());
-
+			
 			//check if there was an error while writing to the file
 			if (writer.checkError())
 				log.warn("An Error occured while writing warnings to the database update log file'");

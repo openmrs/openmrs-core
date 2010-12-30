@@ -199,9 +199,9 @@ public interface PersonDAO {
 	 * @should get saved personAttributeType name from database
 	 */
 	public String getSavedPersonAttributeTypeName(PersonAttributeType personAttributeType);
-
+	
 	/**
-     * @see org.openmrs.api.PersonService#getAllRelationshipTypes(java.lang.Boolean)
-     */
-    public List<RelationshipType> getAllRelationshipTypes(boolean includeRetired);
+	 * @see org.openmrs.api.PersonService#getAllRelationshipTypes(java.lang.Boolean)
+	 */
+	public List<RelationshipType> getAllRelationshipTypes(boolean includeRetired);
 }

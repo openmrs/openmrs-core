@@ -99,7 +99,7 @@ public class TaskThreadedInitializationWrapper implements Task {
 	/**
 	 * @see org.openmrs.scheduler.Task#getTaskDefinition()
 	 */
-	public TaskDefinition getTaskDefinition() { 
+	public TaskDefinition getTaskDefinition() {
 		return task != null ? task.getTaskDefinition() : null;
 	}
 	

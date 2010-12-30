@@ -97,7 +97,7 @@ public class RelationshipTypeFormController extends SimpleFormController {
 				view = getSuccessView();
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "RelationshipType.saved");
 			}
-			
+
 			// if the user is retiring out the relationshipType
 			else if (request.getParameter("retire") != null) {
 				String retireReason = request.getParameter("retireReason");
@@ -111,10 +111,10 @@ public class RelationshipTypeFormController extends SimpleFormController {
 				
 				view = getSuccessView();
 			}
-			
+
 			// if the user is purging the relationshipType
 			else if (request.getParameter("purge") != null) {
-				try{
+				try {
 					ps.purgeRelationshipType(relationshipType);
 					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "RelationshipType.purgedSuccessfully");
 					view = getSuccessView();

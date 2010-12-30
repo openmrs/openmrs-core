@@ -211,7 +211,7 @@ public class ModuleClassLoader extends URLClassLoader {
 			
 			if (libdir != null && libdir.exists()) {
 				// recursively get files
-				Collection<File> files = (Collection<File>)FileUtils.listFiles(libdir, new String[] {"jar"}, true);
+				Collection<File> files = (Collection<File>) FileUtils.listFiles(libdir, new String[] { "jar" }, true);
 				for (File file : files) {
 					if (log.isDebugEnabled())
 						log.debug("Adding file to results: " + file.getAbsolutePath());
@@ -282,7 +282,8 @@ public class ModuleClassLoader extends URLClassLoader {
 			
 			if (module == null && !ModuleUtil.ignoreCoreModules()) {
 				log.error("Unable to find an openmrs core loaded module with id: " + moduleId);
-				throw new APIException("Should not be here.  All 'core' required modules by the api should be started and their classloaders should be available");
+				throw new APIException(
+				        "Should not be here.  All 'core' required modules by the api should be started and their classloaders should be available");
 			}
 			
 			// if this is already the classloader for one of the core modules, don't put it on the import list
@@ -922,7 +923,7 @@ public class ModuleClassLoader extends URLClassLoader {
 	public Set<String> getAdditionalPackages() {
 		return additionalPackages;
 	}
-
+	
 	/**
 	 * @param additionalPackages
 	 *            the package names to set that this module contains that are

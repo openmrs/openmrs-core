@@ -384,7 +384,8 @@ public class ConceptTest {
 		else
 			desiredLocale = locale;
 		ConceptName shortName = ConceptNameTest.createMockConceptName(1, desiredLocale, ConceptNameType.SHORT, false);
-		ConceptName fullySpecifiedName = ConceptNameTest.createMockConceptName(2, desiredLocale, ConceptNameType.FULLY_SPECIFIED, false);
+		ConceptName fullySpecifiedName = ConceptNameTest.createMockConceptName(2, desiredLocale,
+		    ConceptNameType.FULLY_SPECIFIED, false);
 		mockConcept.addName(fullySpecifiedName);
 		mockConcept.addName(shortName);
 		
@@ -674,14 +675,14 @@ public class ConceptTest {
 	}
 	
 	/**
-     * @see {@link Concept#getPreferredName(Locale)}
-     * 
-     */
-    @Test
-    @Verifies(value = "should return the fully specified name if no name is explicitly marked as locale preferred", method = "getPreferredName(Locale)")
-    public void getPreferredName_shouldReturnTheFullySpecifiedNameIfNoNameIsExplicitlyMarkedAsLocalePreferred()
-                                                                                                               throws Exception {
-	    Concept testConcept = createMockConcept(1, Locale.US);
+	 * @see {@link Concept#getPreferredName(Locale)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should return the fully specified name if no name is explicitly marked as locale preferred", method = "getPreferredName(Locale)")
+	public void getPreferredName_shouldReturnTheFullySpecifiedNameIfNoNameIsExplicitlyMarkedAsLocalePreferred()
+	                                                                                                           throws Exception {
+		Concept testConcept = createMockConcept(1, Locale.US);
 		//preferred name in en_US
 		ConceptName preferredNameEN_US = ConceptNameTest.createMockConceptName(3, Locale.US, null, false);
 		testConcept.addName(preferredNameEN_US);
@@ -690,7 +691,7 @@ public class ConceptTest {
 		ConceptName preferredNameEN = ConceptNameTest.createMockConceptName(4, new Locale("en"), null, false);
 		testConcept.addName(preferredNameEN);
 		Assert.assertEquals(fullySpecName, testConcept.getPreferredName(Locale.US).getName());
-    }
+	}
 	
 	/**
 	 * @see {@link Concept#getPreferredName(Locale)}
