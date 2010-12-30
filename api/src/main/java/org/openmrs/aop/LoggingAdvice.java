@@ -71,7 +71,7 @@ public class LoggingAdvice implements MethodInterceptor {
 		if (logGetter || logSetter) {
 			StringBuilder output = new StringBuilder();
 			output.append("In method ").append(method.getDeclaringClass().getSimpleName()).append(".").append(name);
-						
+			
 			// print the argument values unless we're ignoring all
 			if (loggingAnnotation == null || loggingAnnotation.ignoreAllArgumentValues() == false) {
 				

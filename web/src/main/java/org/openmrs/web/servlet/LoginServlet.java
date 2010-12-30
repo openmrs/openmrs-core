@@ -247,7 +247,8 @@ public class LoginServlet extends HttpServlet {
 
 		else if (redirect.contains("/options.form") || redirect.contains("/changePassword.form")
 		        || redirect.contains("/forgotPassword.form")) {
-			log.debug("The user was on a page for setting/changing passwords. Send them to the homepage to reduce confusion");
+			log
+			        .debug("The user was on a page for setting/changing passwords. Send them to the homepage to reduce confusion");
 			redirect = request.getContextPath();
 		}
 		

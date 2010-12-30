@@ -242,10 +242,8 @@ public class DWRPatientService implements GlobalPropertyListener {
 						//Re-compute the count of all the unique patient hits
 						patientCount = newPatients.size();
 						if (newPatients.size() > 0) {
-							resultsMap.put(
-							    "notification",
-							    Context.getMessageSourceService().getMessage("Patient.warning.minimalSearchResults",
-							        new Object[] { newSearch }, Context.getLocale()));
+							resultsMap.put("notification", Context.getMessageSourceService().getMessage(
+							    "Patient.warning.minimalSearchResults", new Object[] { newSearch }, Context.getLocale()));
 						}
 					}
 				}
@@ -278,9 +276,9 @@ public class DWRPatientService implements GlobalPropertyListener {
 					
 					if (identifierMatchesValidationScheme) {
 						if (shouldWarnUser)
-							resultsMap.put("notification",
-							    "<b>" + Context.getMessageSourceService().getMessage("Patient.warning.inValidIdentifier")
-							            + "<b/>");
+							resultsMap.put("notification", "<b>"
+							        + Context.getMessageSourceService().getMessage("Patient.warning.inValidIdentifier")
+							        + "<b/>");
 						else if (validCheckDigit)
 							resultsMap.put("notification", "<b style=\"color:green;\">"
 							        + Context.getMessageSourceService().getMessage("Patient.message.validIdentifier")

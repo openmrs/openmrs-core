@@ -39,43 +39,43 @@ import org.openmrs.util.RoleConstants;
  * @see org.openmrs.api.context.Context
  */
 public class UserContext {
-
+	
 	/**
 	 * Logger - shared by entire class
 	 */
 	private static final Log log = LogFactory.getLog(UserContext.class);
-
+	
 	/**
 	 * User object containing details about the authenticated user
 	 */
 	private User user = null;
-
+	
 	/**
 	 * User's permission proxies
 	 */
 	private List<String> proxies = new Vector<String>();
-
+	
 	/**
 	 * User's locale
 	 */
 	private Locale locale = null;
-
+	
 	/**
 	 * Cached Role given to all authenticated users
 	 */
 	private Role authenticatedRole = null;
-
+	
 	/**
 	 * Cache Role given to all users
 	 */
 	private Role anonymousRole = null;
-
+	
 	/**
 	 * Default public constructor
 	 */
 	public UserContext() {
 	}
-
+	
 	/**
 	 * Authenticate the user to this UserContext.
 	 * 
@@ -89,19 +89,18 @@ public class UserContext {
 	 * @return User that has been authenticated
 	 * @throws ContextAuthenticationException
 	 */
-	public User authenticate(String username, String password,
-			ContextDAO contextDAO) throws ContextAuthenticationException {
+	public User authenticate(String username, String password, ContextDAO contextDAO) throws ContextAuthenticationException {
 		if (log.isDebugEnabled())
 			log.debug("Authenticating with username: " + username);
-
+		
 		this.user = contextDAO.authenticate(username, password);
-
+		
 		if (log.isDebugEnabled())
 			log.debug("Authenticated as: " + this.user);
-
+		
 		return this.user;
 	}
-
+	
 	/**
 	 * Refresh the authenticated user object in this UserContext. This should be
 	 * used when updating information in the database about the current user and
@@ -113,11 +112,11 @@ public class UserContext {
 	public void refreshAuthenticatedUser() {
 		if (log.isDebugEnabled())
 			log.debug("Refreshing authenticated user");
-
+		
 		if (user != null)
 			user = Context.getUserService().getUser(user.getUserId());
 	}
-
+	
 	/**
 	 * Change current authentication to become another user. (You can only do
 	 * this if you're already authenticated as a superuser.)
@@ -127,24 +126,18 @@ public class UserContext {
 	 *         change was made)
 	 * @throws ContextAuthenticationException
 	 */
-	public User becomeUser(String systemId)
-			throws ContextAuthenticationException {
+	public User becomeUser(String systemId) throws ContextAuthenticationException {
 		if (!Context.getAuthenticatedUser().isSuperUser())
-			throw new APIAuthenticationException(
-					"You must be a superuser to assume another user's identity");
-
+			throw new APIAuthenticationException("You must be a superuser to assume another user's identity");
+		
 		if (log.isDebugEnabled())
-			log
-					.debug("Turning the authenticated user into user with systemId: "
-							+ systemId);
-
-		User userToBecome = Context.getUserService()
-				.getUserByUsername(systemId);
-
+			log.debug("Turning the authenticated user into user with systemId: " + systemId);
+		
+		User userToBecome = Context.getUserService().getUserByUsername(systemId);
+		
 		if (userToBecome == null)
-			throw new ContextAuthenticationException(
-					"User not found with systemId: " + systemId);
-
+			throw new ContextAuthenticationException("User not found with systemId: " + systemId);
+		
 		// hydrate the user object
 		if (userToBecome.getAllRoles() != null)
 			userToBecome.getAllRoles().size();
@@ -152,15 +145,15 @@ public class UserContext {
 			userToBecome.getUserProperties().size();
 		if (userToBecome.getPrivileges() != null)
 			userToBecome.getPrivileges().size();
-
+		
 		this.user = userToBecome;
-
+		
 		if (log.isDebugEnabled())
 			log.debug("Becoming user: " + user);
-
+		
 		return userToBecome;
 	}
-
+	
 	/**
 	 * @return "active" user who has been authenticated, otherwise
 	 *         <code>null</code>
@@ -168,14 +161,14 @@ public class UserContext {
 	public User getAuthenticatedUser() {
 		return user;
 	}
-
+	
 	/**
 	 * @return true if user has been authenticated in this UserContext
 	 */
 	public boolean isAuthenticated() {
 		return user != null;
 	}
-
+	
 	/**
 	 * logs out the "active" (authenticated) user within this UserContext
 	 * 
@@ -185,7 +178,7 @@ public class UserContext {
 		log.debug("setting user to null on logout");
 		user = null;
 	}
-
+	
 	/**
 	 * Gives the given privilege to all calls to hasPrivilege. This method was
 	 * visualized as being used as follows (try/finally is important):
@@ -206,10 +199,10 @@ public class UserContext {
 	public void addProxyPrivilege(String privilege) {
 		if (log.isDebugEnabled())
 			log.debug("Adding proxy privilege: " + privilege);
-
+		
 		proxies.add(privilege);
 	}
-
+	
 	/**
 	 * Will remove one instance of privilege from the privileges that are
 	 * currently proxied
@@ -220,11 +213,11 @@ public class UserContext {
 	public void removeProxyPrivilege(String privilege) {
 		if (log.isDebugEnabled())
 			log.debug("Removing proxy privilege: " + privilege);
-
+		
 		if (proxies.contains(privilege))
 			proxies.remove(privilege);
 	}
-
+	
 	/**
 	 * @param locale
 	 *            new locale for this context
@@ -232,17 +225,17 @@ public class UserContext {
 	public void setLocale(Locale locale) {
 		this.locale = locale;
 	}
-
+	
 	/**
 	 * @return current locale for this context
 	 */
 	public Locale getLocale() {
 		if (locale == null)
 			locale = LocaleUtility.getDefaultLocale();
-
+		
 		return locale;
 	}
-
+	
 	/**
 	 * Gets all the roles for the (un)authenticated user. Anonymous and
 	 * Authenticated roles are appended if necessary
@@ -253,7 +246,7 @@ public class UserContext {
 	public Set<Role> getAllRoles() throws Exception {
 		return getAllRoles(getAuthenticatedUser());
 	}
-
+	
 	/**
 	 * Gets all the roles for a user. Anonymous and Authenticated roles are
 	 * appended if necessary
@@ -267,20 +260,19 @@ public class UserContext {
 	 */
 	public Set<Role> getAllRoles(User user) throws Exception {
 		Set<Role> roles = new HashSet<Role>();
-
+		
 		// add the Anonymous Role
 		roles.add(getAnonymousRole());
-
+		
 		// add the Authenticated role
-		if (user != null && getAuthenticatedUser() != null
-				&& getAuthenticatedUser().equals(user)) {
+		if (user != null && getAuthenticatedUser() != null && getAuthenticatedUser().equals(user)) {
 			roles.addAll(user.getAllRoles());
 			roles.add(getAuthenticatedRole());
 		}
-
+		
 		return roles;
 	}
-
+	
 	/**
 	 * Tests whether or not currently authenticated user has a particular
 	 * privilege
@@ -299,34 +291,33 @@ public class UserContext {
 	 * @should not authorize if anonymous user does not have specified privilege
 	 */
 	public boolean hasPrivilege(String privilege) {
-
+		
 		// if a user has logged in, check their privileges
 		if (isAuthenticated()) {
-
+			
 			// check user's privileges
 			if (getAuthenticatedUser().hasPrivilege(privilege))
 				return true;
-
+			
 			if (getAuthenticatedRole().hasPrivilege(privilege))
 				return true;
 		}
-
+		
 		if (log.isDebugEnabled())
-			log.debug("Checking '" + privilege + "' against proxies: "
-					+ proxies);
-
+			log.debug("Checking '" + privilege + "' against proxies: " + proxies);
+		
 		// check proxied privileges
 		for (String s : proxies)
 			if (s.equals(privilege))
 				return true;
-
+		
 		if (getAnonymousRole().hasPrivilege(privilege))
 			return true;
-
+		
 		// default return value
 		return false;
 	}
-
+	
 	/**
 	 * Convenience method to get the Role in the system designed to be given to
 	 * all users
@@ -337,17 +328,15 @@ public class UserContext {
 	private Role getAnonymousRole() {
 		if (anonymousRole != null)
 			return anonymousRole;
-
-		anonymousRole = Context.getUserService().getRole(
-				RoleConstants.ANONYMOUS);
+		
+		anonymousRole = Context.getUserService().getRole(RoleConstants.ANONYMOUS);
 		if (anonymousRole == null) {
-			throw new RuntimeException("Database out of sync with code: "
-					+ RoleConstants.ANONYMOUS + " role does not exist");
+			throw new RuntimeException("Database out of sync with code: " + RoleConstants.ANONYMOUS + " role does not exist");
 		}
-
+		
 		return anonymousRole;
 	}
-
+	
 	/**
 	 * Convenience method to get the Role in the system designed to be given to
 	 * all users that have authenticated in some manner
@@ -358,15 +347,14 @@ public class UserContext {
 	private Role getAuthenticatedRole() {
 		if (authenticatedRole != null)
 			return authenticatedRole;
-
-		authenticatedRole = Context.getUserService().getRole(
-				RoleConstants.AUTHENTICATED);
+		
+		authenticatedRole = Context.getUserService().getRole(RoleConstants.AUTHENTICATED);
 		if (authenticatedRole == null) {
-			throw new RuntimeException("Database out of sync with code: "
-					+ RoleConstants.AUTHENTICATED + " role does not exist");
+			throw new RuntimeException("Database out of sync with code: " + RoleConstants.AUTHENTICATED
+			        + " role does not exist");
 		}
-
+		
 		return authenticatedRole;
 	}
-
+	
 }

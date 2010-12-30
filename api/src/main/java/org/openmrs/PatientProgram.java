@@ -385,7 +385,7 @@ public class PatientProgram extends BaseOpenmrsData implements java.io.Serializa
 	public void setId(Integer id) {
 		setPatientProgramId(id);
 	}
-
+	
 	/**
 	 * @since 1.8
 	 * @return the location
@@ -393,7 +393,7 @@ public class PatientProgram extends BaseOpenmrsData implements java.io.Serializa
 	public Location getLocation() {
 		return location;
 	}
-
+	
 	/**
 	 * @since 1.8
 	 * @param location the location to set

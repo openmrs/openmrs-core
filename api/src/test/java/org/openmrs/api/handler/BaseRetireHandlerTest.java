@@ -120,7 +120,7 @@ public class BaseRetireHandlerTest {
 		handler.handle(retireable, null, null, "THE REASON");
 		Assert.assertNull(retireable.getRetireReason());
 	}
-
+	
 	/**
 	 * @see {@link BaseRetireHandler#handle(Retireable,User,Date,String)}
 	 */

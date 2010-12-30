@@ -48,7 +48,8 @@ public class MandatoryModuleException extends ModuleMustStartException {
 	 * @param extraErrorMessage extra data to provide in the error's message
 	 */
 	public MandatoryModuleException(String moduleId, String extraErrorMessage) {
-		super("The " + moduleId + " module is marked as 'mandatory' and so cannot be stopped or unloaded. " + extraErrorMessage);
+		super("The " + moduleId + " module is marked as 'mandatory' and so cannot be stopped or unloaded. "
+		        + extraErrorMessage);
 		this.moduleId = moduleId;
 	}
 	

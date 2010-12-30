@@ -18,7 +18,7 @@ package org.openmrs.serialization;
  * Serialization or Deserialization within OpenMRS
  */
 public class SerializationException extends Exception {
-
+	
 	private static final long serialVersionUID = 1L;
 	
 	/**

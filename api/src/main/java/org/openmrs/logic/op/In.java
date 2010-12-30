@@ -29,5 +29,5 @@ public class In implements ComparisonOperator {
 	public String toString() {
 		return "IN";
 	}
-
+	
 }

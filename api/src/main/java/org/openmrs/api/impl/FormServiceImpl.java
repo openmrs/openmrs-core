@@ -343,7 +343,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 *      java.util.Collection, boolean)
 	 */
 	public FormField getFormField(Form form, Concept concept, Collection<FormField> ignoreFormFields, boolean force)
-	throws APIException {
+	                                                                                                                throws APIException {
 		// create an empty ignoreFormFields list if none was passed in
 		if (ignoreFormFields == null)
 			ignoreFormFields = Collections.emptyList();
@@ -463,9 +463,9 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 *      java.util.Collection, java.util.Collection, java.lang.Boolean)
 	 */
 	public List<Field> getFields(Collection<Form> forms, Collection<FieldType> fieldTypes, Collection<Concept> concepts,
-		Collection<String> tableNames, Collection<String> attributeNames, Boolean selectMultiple,
-		Collection<FieldAnswer> containsAllAnswers, Collection<FieldAnswer> containsAnyAnswer,
-		Boolean retired) throws APIException {
+	                             Collection<String> tableNames, Collection<String> attributeNames, Boolean selectMultiple,
+	                             Collection<FieldAnswer> containsAllAnswers, Collection<FieldAnswer> containsAnyAnswer,
+	                             Boolean retired) throws APIException {
 		
 		if (forms == null)
 			forms = Collections.emptyList();
@@ -489,7 +489,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 			containsAnyAnswer = Collections.emptyList();
 		
 		return dao.getFields(forms, fieldTypes, concepts, tableNames, attributeNames, selectMultiple, containsAllAnswers,
-			containsAnyAnswer, retired);
+		    containsAnyAnswer, retired);
 	}
 	
 	/**
@@ -536,11 +536,11 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 */
 	@Deprecated
 	public List<Form> getForms(String partialName, Boolean published, Collection<EncounterType> encounterTypes,
-		Boolean retired, Collection<FormField> containingAnyFormField,
-		Collection<FormField> containingAllFormFields) {
+	                           Boolean retired, Collection<FormField> containingAnyFormField,
+	                           Collection<FormField> containingAllFormFields) {
 		
 		return getForms(partialName, published, encounterTypes, retired, containingAnyFormField, containingAllFormFields,
-			null);
+		    null);
 	}
 	
 	/**
@@ -549,8 +549,8 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	 *      java.util.Collection)
 	 */
 	public List<Form> getForms(String partialName, Boolean published, Collection<EncounterType> encounterTypes,
-		Boolean retired, Collection<FormField> containingAnyFormField,
-		Collection<FormField> containingAllFormFields, Collection<Field> fields) {
+	                           Boolean retired, Collection<FormField> containingAnyFormField,
+	                           Collection<FormField> containingAllFormFields, Collection<Field> fields) {
 		
 		if (encounterTypes == null)
 			encounterTypes = Collections.emptyList();
@@ -565,7 +565,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 			fields = Collections.emptyList();
 		
 		return dao.getForms(partialName, published, encounterTypes, retired, containingAnyFormField,
-			containingAllFormFields, fields);
+		    containingAllFormFields, fields);
 	}
 	
 	/**
@@ -592,7 +592,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 		return dao.getFormCount(partialName, published, encounterTypes, retired, containingAnyFormField,
 		    containingAllFormFields, fields);
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.FormService#getPublishedForms()
 	 */
@@ -760,7 +760,7 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 		
 		List<Field> fields = dao.getAllFields(true);
 		Set<Field> fieldsToDelete = new HashSet<Field>();
-
+		
 		Map<String, Integer> fieldNameAsKeyAndFieldIdAsValueMap = new HashMap<String, Integer>();
 		
 		for (Field field : fields) {
@@ -799,12 +799,12 @@ public class FormServiceImpl extends BaseOpenmrsService implements FormService {
 	private boolean fieldsAreSimilar(Field field, Field fieldToBeReplaced) {
 		
 		return (OpenmrsUtil.nullSafeEquals(field.getName(), fieldToBeReplaced.getName())
-				&& OpenmrsUtil.nullSafeEquals(field.getSelectMultiple(), fieldToBeReplaced.getSelectMultiple())
-				&& OpenmrsUtil.nullSafeEquals(field.getFieldType(), fieldToBeReplaced.getFieldType())
-				&& OpenmrsUtil.nullSafeEquals(field.getConcept(), fieldToBeReplaced.getConcept())
-				&& OpenmrsUtil.nullSafeEquals(field.getTableName(), fieldToBeReplaced.getTableName())
-				&& OpenmrsUtil.nullSafeEquals(field.getDefaultValue(), fieldToBeReplaced.getDefaultValue())
-				&& field.getRetired() != null && !field.getRetired());
+		        && OpenmrsUtil.nullSafeEquals(field.getSelectMultiple(), fieldToBeReplaced.getSelectMultiple())
+		        && OpenmrsUtil.nullSafeEquals(field.getFieldType(), fieldToBeReplaced.getFieldType())
+		        && OpenmrsUtil.nullSafeEquals(field.getConcept(), fieldToBeReplaced.getConcept())
+		        && OpenmrsUtil.nullSafeEquals(field.getTableName(), fieldToBeReplaced.getTableName())
+		        && OpenmrsUtil.nullSafeEquals(field.getDefaultValue(), fieldToBeReplaced.getDefaultValue())
+		        && field.getRetired() != null && !field.getRetired());
 	}
 	
 }

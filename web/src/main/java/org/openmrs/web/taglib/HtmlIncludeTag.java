@@ -50,7 +50,7 @@ public class HtmlIncludeTag extends TagSupport {
 	public static final String OPENMRS_HTML_INCLUDE_MAP_KEY = "org.openmrs.htmlInclude.includeMap";
 	
 	public static final Map<String, String> rewrites = new HashMap<String, String>();
-
+	
 	private String type;
 	
 	private String file;
@@ -66,14 +66,14 @@ public class HtmlIncludeTag extends TagSupport {
 	public void setRewrites(Map<String, String> rules) {
 		rewrites.putAll(rules);
 	}
-
+	
 	@Override
-    public int doStartTag() throws JspException {
+	public int doStartTag() throws JspException {
 		log.debug("\n\n");
 		
 		if (rewrites.containsKey(file))
 			file = rewrites.get(file);
-
+		
 		// see if this is a JS or CSS file
 		boolean isJs = false;
 		boolean isCss = false;
@@ -102,7 +102,8 @@ public class HtmlIncludeTag extends TagSupport {
 			if (log.isDebugEnabled()) {
 				log.debug("initialRequest id: [" + initialRequestId + "]");
 				log.debug("Object at pageContext." + HtmlIncludeTag.OPENMRS_HTML_INCLUDE_MAP_KEY + " is "
-				        + pageContext.getAttribute(HtmlIncludeTag.OPENMRS_HTML_INCLUDE_MAP_KEY, PageContext.SESSION_SCOPE) + "");
+				        + pageContext.getAttribute(HtmlIncludeTag.OPENMRS_HTML_INCLUDE_MAP_KEY, PageContext.SESSION_SCOPE)
+				        + "");
 			}
 			
 			if (!isAlreadyUsed(file, initialRequestId)) {

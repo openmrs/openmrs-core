@@ -140,11 +140,10 @@ public class DataExportUtil {
 		Log log = LogFactory.getLog(DataExportUtil.class);
 		
 		VelocityEngine velocityEngine = new VelocityEngine();
-
-        velocityEngine.setProperty( RuntimeConstants.RUNTIME_LOG_LOGSYSTEM_CLASS,
-                    "org.apache.velocity.runtime.log.CommonsLogLogChute" );
-        velocityEngine.setProperty(CommonsLogLogChute.LOGCHUTE_COMMONS_LOG_NAME,
-                        "dataexport_velocity");
+		
+		velocityEngine.setProperty(RuntimeConstants.RUNTIME_LOG_LOGSYSTEM_CLASS,
+		    "org.apache.velocity.runtime.log.CommonsLogLogChute");
+		velocityEngine.setProperty(CommonsLogLogChute.LOGCHUTE_COMMONS_LOG_NAME, "dataexport_velocity");
 		
 		try {
 			velocityEngine.init();

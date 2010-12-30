@@ -156,7 +156,7 @@ public class DWRFormService {
 		}
 		
 		List<ConceptSearchResult> searchResults = Context.getConceptService().getConcepts(txt, locale);
-		for (ConceptSearchResult searchResult: searchResults) {
+		for (ConceptSearchResult searchResult : searchResults) {
 			concept = searchResult.getConcept();
 			for (Field field : Context.getFormService().getFieldsByConcept(concept)) {
 				FieldListItem fli = new FieldListItem(field, locale);

@@ -433,7 +433,8 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @see {@link LocationService#retireLocation(Location,String)}
 	 */
-	@Ignore // TODO Determine whether or not RetireHandler should throw IllegalArgumentException under these conditions 
+	@Ignore
+	// TODO Determine whether or not RetireHandler should throw IllegalArgumentException under these conditions 
 	@Test(expected = IllegalArgumentException.class)
 	@Verifies(value = "should throw IllegalArgumentException when no reason is given", method = "retireLocation(Location,String)")
 	public void retireLocation_shouldThrowIllegalArgumentExceptionWhenNoReasonIsGiven() throws Exception {
@@ -765,7 +766,8 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link LocationService#retireLocationTag(LocationTag,String)}
 	 */
 	@Test(expected = IllegalArgumentException.class)
-	@Ignore // TODO Determine whether or not RetireHandler should throw IllegalArgumentException under these conditions 
+	@Ignore
+	// TODO Determine whether or not RetireHandler should throw IllegalArgumentException under these conditions 
 	@Verifies(value = "should throw IllegalArgumentException when no reason is given", method = "retireLocationTag(LocationTag,String)")
 	public void retireLocationTag_shouldThrowIllegalArgumentExceptionWhenNoReasonIsGiven() throws Exception {
 		LocationService ls = Context.getLocationService();
@@ -874,49 +876,48 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		location.addTag(tagWithoutName);
 		Context.getLocationService().saveLocation(location);
 	}
-
+	
 	/**
 	 * @see {@link LocationService#getLocationByUuid(String)}
 	 * 
 	 */
 	@Test
 	@Verifies(value = "should find object given valid uuid", method = "getLocationByUuid(String)")
-	public void getLocationByUuid_shouldFindObjectGivenValidUuid()
-			throws Exception {
+	public void getLocationByUuid_shouldFindObjectGivenValidUuid() throws Exception {
 		String uuid = "f08ba64b-ea57-4a41-b33c-9dfc59b0c60a";
 		Location location = Context.getLocationService().getLocationByUuid(uuid);
-		Assert.assertEquals(1, (int)location.getLocationId());
+		Assert.assertEquals(1, (int) location.getLocationId());
 	}
-
+	
 	/**
 	 * @see {@link LocationService#getLocationByUuid(String)}
 	 * 
 	 */
 	@Test
 	@Verifies(value = "should return null if no object found with given uuid", method = "getLocationByUuid(String)")
-	public void getLocationByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid()
-			throws Exception {
+	public void getLocationByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
 		Assert.assertNull(Context.getLocationService().getLocationByUuid("some invalid uuid"));
 	}
-
+	
 	/**
-     * @see {@link LocationService#getLocationTagByUuid(String)}
-     * 
-     */
-    @Test
-    @Verifies(value = "should find object given valid uuid", method = "getLocationTagByUuid(String)")
-    public void getLocationTagByUuid_shouldFindObjectGivenValidUuid() throws Exception {
-    	Assert.assertEquals(Integer.valueOf(3), Context.getLocationService().getLocationTagByUuid("0d0eaea2-47ed-11df-bc8b-001e378eb67e").getLocationTagId());
-    }
-
+	 * @see {@link LocationService#getLocationTagByUuid(String)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should find object given valid uuid", method = "getLocationTagByUuid(String)")
+	public void getLocationTagByUuid_shouldFindObjectGivenValidUuid() throws Exception {
+		Assert.assertEquals(Integer.valueOf(3), Context.getLocationService().getLocationTagByUuid(
+		    "0d0eaea2-47ed-11df-bc8b-001e378eb67e").getLocationTagId());
+	}
+	
 	/**
-     * @see {@link LocationService#getLocationTagByUuid(String)}
-     * 
-     */
-    @Test
-    @Verifies(value = "should return null if no object found with given uuid", method = "getLocationTagByUuid(String)")
-    public void getLocationTagByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
-    	Assert.assertNull(Context.getLocationService().getLocationTagByUuid("ffffffff-47ed-11df-bc8b-001e378eb67e"));
-    }		
-		
+	 * @see {@link LocationService#getLocationTagByUuid(String)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should return null if no object found with given uuid", method = "getLocationTagByUuid(String)")
+	public void getLocationTagByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
+		Assert.assertNull(Context.getLocationService().getLocationTagByUuid("ffffffff-47ed-11df-bc8b-001e378eb67e"));
+	}
+	
 }

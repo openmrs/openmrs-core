@@ -235,8 +235,8 @@ public class ChangePasswordFormControllerTest extends BaseWebContextSensitiveTes
 		    Context.getAuthenticatedUser(), errors);
 		assertEquals("/admin/users/changePasswordForm", result);
 	}
-
-/**
+	
+	/**
 	 * @see {@link ChangePasswordFormController#handleSubmission(HttpSession, String, String, String, String, String, User, BindingResult)}
 	 */
 	@Test
@@ -244,19 +244,19 @@ public class ChangePasswordFormControllerTest extends BaseWebContextSensitiveTes
 	public void handleSubmission_shouldSetTheUserSecretQuestionAndAnswer() throws Exception {
 		User user = Context.getAuthenticatedUser();
 		new UserProperties(user.getUserProperties()).setSupposedToChangePassword(true);
-
+		
 		UserService us = Context.getUserService();
 		us.saveUser(user, "Openmr5xy");
-
+		
 		ChangePasswordFormController controller = new ChangePasswordFormController();
 		BindException errors = new BindException(controller.formBackingObject(), "user");
-
-		controller.handleSubmission(new MockHttpSession(), "Passw0rd", "Passw0rd", "test_question", "test_answer", "test_answer", Context
-		        .getAuthenticatedUser(), errors);
-
+		
+		controller.handleSubmission(new MockHttpSession(), "Passw0rd", "Passw0rd", "test_question", "test_answer",
+		    "test_answer", Context.getAuthenticatedUser(), errors);
+		
 		User modifiedUser = us.getUser(user.getId());
-
-        assertTrue(us.isSecretAnswer(modifiedUser, "test_answer"));
+		
+		assertTrue(us.isSecretAnswer(modifiedUser, "test_answer"));
 	}
-
+	
 }

@@ -259,16 +259,16 @@ public class ModuleFilterMapping implements Serializable {
 	 * ModuleFilterMapping objects for which there are configuration elements. Expected XML Format:
 	 * 
 	 * <pre>
-     * 	&lt;filter-mapping&gt;
-     * 		&lt;filter-name&gt;MyFilterName&lt;/filter-name&gt;
-     * 		&lt;url-pattern&gt;The pattern of URLs to match&lt;/filter-class&gt;
-     * 	&lt;/filter-mapping&gt;
-     * or
-     * 	&lt;filter-mapping&gt;
-     * 		&lt;filter-name&gt;MyFilterName&lt;/filter-name&gt;
-     * 		&lt;servlet-name&gt;The servlet name to match&lt;/servlet-name&gt;
-     * 	&lt;/filter-mapping&gt;
-     * </pre>
+	 * 	&lt;filter-mapping&gt;
+	 * 		&lt;filter-name&gt;MyFilterName&lt;/filter-name&gt;
+	 * 		&lt;url-pattern&gt;The pattern of URLs to match&lt;/filter-class&gt;
+	 * 	&lt;/filter-mapping&gt;
+	 * or
+	 * 	&lt;filter-mapping&gt;
+	 * 		&lt;filter-name&gt;MyFilterName&lt;/filter-name&gt;
+	 * 		&lt;servlet-name&gt;The servlet name to match&lt;/servlet-name&gt;
+	 * 	&lt;/filter-mapping&gt;
+	 * </pre>
 	 * 
 	 * @param module - The {@link Module} for which you want to retrieve the defined
 	 *            {@link ModuleFilterMapping}s

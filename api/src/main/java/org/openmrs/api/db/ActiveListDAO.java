@@ -26,7 +26,7 @@ import org.openmrs.activelist.ActiveListType;
  * @see org.openmrs.api.ActiveListService
  */
 public interface ActiveListDAO {
-
+	
 	/**
 	 * @see org.openmrs.api.ActiveListService#getActiveListItems(org.openmrs.Patient,
 	 *      org.openmrs.activelist.ActiveListType)
@@ -42,8 +42,7 @@ public interface ActiveListDAO {
 	/**
 	 * @see org.openmrs.api.ActiveListService#getActiveListItem(Class, Integer)
 	 */
-	public <T extends ActiveListItem> T getActiveListItem(Class<T> clazz, Integer activeListItemId)
-	                                                                                                         throws DAOException;
+	public <T extends ActiveListItem> T getActiveListItem(Class<T> clazz, Integer activeListItemId) throws DAOException;
 	
 	/**
 	 * @see org.openmrs.api.ActiveListService#getActiveListItemByUuid(String)

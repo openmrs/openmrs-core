@@ -26,13 +26,13 @@ import org.openmrs.util.OpenmrsUtil;
 public class Allergy extends ActiveListItem {
 	
 	public static final ActiveListType ACTIVE_LIST_TYPE = new ActiveListType(1);
-
+	
 	private AllergyType allergyType;
 	
 	private Concept reaction; // must be of class=Symptom
 	
 	private AllergySeverity severity;
-
+	
 	public Allergy() {
 		this.activeListType = new ActiveListType(1);
 	}
@@ -42,14 +42,14 @@ public class Allergy extends ActiveListItem {
 		this.activeListType = new ActiveListType(1);
 	}
 	
-	public Allergy(Patient person, Concept concept, Date startDate,
-	    AllergyType allergyType, Concept reaction, AllergySeverity severity) {
+	public Allergy(Patient person, Concept concept, Date startDate, AllergyType allergyType, Concept reaction,
+	    AllergySeverity severity) {
 		super(person, new ActiveListType(1), concept, startDate);
 		this.allergyType = allergyType;
 		this.reaction = reaction;
 		this.severity = severity;
 	}
-
+	
 	/**
 	 * @return the allergyType
 	 */
@@ -67,7 +67,7 @@ public class Allergy extends ActiveListItem {
 	public void setAllergyType(String type) {
 		this.allergyType = StringUtils.isBlank(type) ? null : AllergyType.valueOf(type);
 	}
-
+	
 	/**
 	 * @return the reaction
 	 */
@@ -101,7 +101,7 @@ public class Allergy extends ActiveListItem {
 	public void setSeverity(String severity) {
 		this.severity = StringUtils.isBlank(severity) ? null : AllergySeverity.valueOf(severity);
 	}
-
+	
 	/**
 	 * @return the allergen
 	 */
@@ -120,8 +120,7 @@ public class Allergy extends ActiveListItem {
 	
 	@Override
 	public boolean equals(Object obj) {
-		return (obj instanceof Allergy)
-		        && OpenmrsUtil.nullSafeEquals(((Allergy) obj).getActiveListId(), getActiveListId());
+		return (obj instanceof Allergy) && OpenmrsUtil.nullSafeEquals(((Allergy) obj).getActiveListId(), getActiveListId());
 	}
 	
 	@Override

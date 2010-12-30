@@ -49,7 +49,7 @@ public interface FormService extends OpenmrsService {
 	/**
 	 * @deprecated use {@link #saveForm(Form)}
 	 */
-    @Deprecated
+	@Deprecated
 	@Authorized(PrivilegeConstants.MANAGE_FORMS)
 	public Form createForm(Form form) throws APIException;
 	
@@ -150,8 +150,8 @@ public interface FormService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_FORMS)
 	public List<Form> getForms(String partialNameSearch, Boolean published, Collection<EncounterType> encounterTypes,
-		Boolean retired, Collection<FormField> containingAnyFormField,
-		Collection<FormField> containingAllFormFields);
+	                           Boolean retired, Collection<FormField> containingAnyFormField,
+	                           Collection<FormField> containingAllFormFields);
 	
 	/**
 	 * Gets all forms that match all the (nullable) criteria
@@ -178,8 +178,8 @@ public interface FormService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_FORMS)
 	public List<Form> getForms(String partialNameSearch, Boolean published, Collection<EncounterType> encounterTypes,
-		Boolean retired, Collection<FormField> containingAnyFormField,
-		Collection<FormField> containingAllFormFields, Collection<Field> fields);
+	                           Boolean retired, Collection<FormField> containingAnyFormField,
+	                           Collection<FormField> containingAllFormFields, Collection<Field> fields);
 	
 	/**
 	 * Same as
@@ -252,7 +252,7 @@ public interface FormService extends OpenmrsService {
 	 * @throws APIException
 	 * @deprecated use {@link #saveForm(Form)}
 	 */
-    @Deprecated
+	@Deprecated
 	@Authorized(PrivilegeConstants.MANAGE_FORMS)
 	public void updateForm(Form form) throws APIException;
 	
@@ -325,14 +325,14 @@ public interface FormService extends OpenmrsService {
 	 * @throws APIException
 	 * @deprecated use {@link #purgeForm(Form)}
 	 */
-    @Deprecated
+	@Deprecated
 	@Authorized(PrivilegeConstants.MANAGE_FORMS)
 	public void deleteForm(Form form) throws APIException;
 	
 	/**
 	 * @deprecated use {@link #getAllFieldTypes()}
 	 */
-    @Deprecated
+	@Deprecated
 	@Authorized(PrivilegeConstants.VIEW_FIELD_TYPES)
 	@Transactional(readOnly = true)
 	public List<FieldType> getFieldTypes() throws APIException;
@@ -527,9 +527,9 @@ public interface FormService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_FORMS)
 	public List<Field> getFields(Collection<Form> forms, Collection<FieldType> fieldTypes, Collection<Concept> concepts,
-		Collection<String> tableNames, Collection<String> attributeNames, Boolean selectMultiple,
-		Collection<FieldAnswer> containsAllAnswers, Collection<FieldAnswer> containsAnyAnswer,
-		Boolean retired) throws APIException;
+	                             Collection<String> tableNames, Collection<String> attributeNames, Boolean selectMultiple,
+	                             Collection<FieldAnswer> containsAllAnswers, Collection<FieldAnswer> containsAnyAnswer,
+	                             Boolean retired) throws APIException;
 	
 	/**
 	 * @deprecated use {@link #getAllFields()}
@@ -587,14 +587,14 @@ public interface FormService extends OpenmrsService {
 	/**
 	 * @deprecated use {@link #saveField(Field)}
 	 */
-    @Deprecated
+	@Deprecated
 	@Authorized(PrivilegeConstants.MANAGE_FORMS)
 	public void createField(Field field) throws APIException;
 	
 	/**
 	 * @deprecated use {@link #saveField(Field)}
 	 */
-    @Deprecated
+	@Deprecated
 	@Authorized(PrivilegeConstants.MANAGE_FORMS)
 	public void updateField(Field field) throws APIException;
 	
@@ -623,7 +623,7 @@ public interface FormService extends OpenmrsService {
 	/**
 	 * @deprecated use {@link #purgeField(Field)}
 	 */
-    @Deprecated
+	@Deprecated
 	@Authorized(PrivilegeConstants.MANAGE_FORMS)
 	public void deleteField(Field field) throws APIException;
 	
@@ -691,7 +691,7 @@ public interface FormService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_FORMS)
 	public FormField getFormField(Form form, Concept concept, Collection<FormField> ignoreFormFields, boolean force)
-	throws APIException;
+	                                                                                                                throws APIException;
 	
 	/**
 	 * Creates or updates the given FormField
@@ -708,14 +708,14 @@ public interface FormService extends OpenmrsService {
 	/**
 	 * @deprecated use {@link #saveFormField(FormField)}
 	 */
-    @Deprecated
+	@Deprecated
 	@Authorized(PrivilegeConstants.MANAGE_FORMS)
 	public void createFormField(FormField formField) throws APIException;
 	
 	/**
 	 * @deprecated use {@link #saveFormField(FormField)}
 	 */
-    @Deprecated
+	@Deprecated
 	@Authorized(PrivilegeConstants.MANAGE_FORMS)
 	public void updateFormField(FormField formField) throws APIException;
 	
@@ -732,7 +732,7 @@ public interface FormService extends OpenmrsService {
 	/**
 	 * @deprecated use {@link #purgeFormField(FormField)}
 	 */
-    @Deprecated
+	@Deprecated
 	@Authorized(PrivilegeConstants.MANAGE_FORMS)
 	public void deleteFormField(FormField formField) throws APIException;
 	

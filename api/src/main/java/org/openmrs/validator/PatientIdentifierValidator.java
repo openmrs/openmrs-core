@@ -40,7 +40,7 @@ public class PatientIdentifierValidator implements Validator {
 	
 	/**
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
-	 */	
+	 */
 	public boolean supports(Class c) {
 		return PatientIdentifier.class.isAssignableFrom(c);
 	}

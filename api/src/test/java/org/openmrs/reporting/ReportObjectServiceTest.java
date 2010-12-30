@@ -1,6 +1,5 @@
 package org.openmrs.reporting;
 
-
 import java.util.ArrayList;
 import java.util.List;
 

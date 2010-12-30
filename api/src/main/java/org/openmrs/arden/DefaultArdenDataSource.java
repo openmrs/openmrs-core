@@ -36,7 +36,8 @@ public class DefaultArdenDataSource implements ArdenDataSource {
 	}
 	
 	private List<Obs> getLastPatientObsForConcept(Patient patient, Concept concept, int howMany) {
-		return Context.getObsService().getObservations(Collections.singletonList((Person)patient), null, Collections.singletonList(concept), null, null, null, null, new Integer(howMany), null, null, null, false);
+		return Context.getObsService().getObservations(Collections.singletonList((Person) patient), null,
+		    Collections.singletonList(concept), null, null, null, null, new Integer(howMany), null, null, null, false);
 		
 	}
 	

@@ -51,7 +51,7 @@ public class ConceptIndexUpdateTask extends AbstractTask {
 					if (log.isDebugEnabled())
 						log.debug("updateConceptWords() : current concept: " + currentConcept);
 					cs.updateConceptIndex(currentConcept);
-
+					
 					// keep memory consumption low
 					if (counter++ > 200) {
 						Context.clearSession();

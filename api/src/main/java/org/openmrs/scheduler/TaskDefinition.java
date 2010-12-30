@@ -168,7 +168,7 @@ public class TaskDefinition extends BaseOpenmrsMetadata {
 	 */
 	public void setLastExecutionTime(Date lastExecutionTime) {
 		this.lastExecutionTime = lastExecutionTime;
-	}	
+	}
 	
 	/**
 	 * Gets the number of seconds until task is executed again.

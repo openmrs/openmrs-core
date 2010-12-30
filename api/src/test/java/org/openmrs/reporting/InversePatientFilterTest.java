@@ -1,6 +1,5 @@
 package org.openmrs.reporting;
 
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.SortedSet;
@@ -50,7 +49,7 @@ public class InversePatientFilterTest extends BaseContextSensitiveTest {
 		PatientFilter f = new DrugOrderFilter();
 		helper(f);
 	}
-
+	
 	/**
 	 * @see {@link InversePatientFilter#filter(Cohort,EvaluationContext)}
 	 * 
@@ -155,19 +154,19 @@ public class InversePatientFilterTest extends BaseContextSensitiveTest {
 	}
 	
 	private void helper(PatientFilter f) {
-	    InversePatientFilter inv = new InversePatientFilter(f);
-	    Cohort normal = f.filter(null, null);
-	    Cohort inverse = inv.filter(null, null);
-	    Cohort together = Cohort.union(normal, inverse);
-	    Cohort everyone = Context.getPatientSetService().getAllPatients();
-	    Assert.assertEquals(everyone.size(), normal.size() + inverse.size());
-	    assertEqual(everyone, together);
-    }
-
+		InversePatientFilter inv = new InversePatientFilter(f);
+		Cohort normal = f.filter(null, null);
+		Cohort inverse = inv.filter(null, null);
+		Cohort together = Cohort.union(normal, inverse);
+		Cohort everyone = Context.getPatientSetService().getAllPatients();
+		Assert.assertEquals(everyone.size(), normal.size() + inverse.size());
+		assertEqual(everyone, together);
+	}
+	
 	private void assertEqual(Cohort a, Cohort b) {
-	    Assert.assertEquals(a.size(), b.size());
-	    SortedSet<Integer> aMembers = new TreeSet<Integer>(a.getMemberIds());
-	    SortedSet<Integer> bMembers = new TreeSet<Integer>(b.getMemberIds());
-	    Assert.assertEquals(aMembers, bMembers);
-    }
+		Assert.assertEquals(a.size(), b.size());
+		SortedSet<Integer> aMembers = new TreeSet<Integer>(a.getMemberIds());
+		SortedSet<Integer> bMembers = new TreeSet<Integer>(b.getMemberIds());
+		Assert.assertEquals(aMembers, bMembers);
+	}
 }

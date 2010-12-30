@@ -31,7 +31,7 @@ import org.openmrs.aop.RequiredDataAdvice;
  * @see UnvoidHandler
  * @since 1.5
  */
-@Handler(supports = {Patient.class, Encounter.class, Obs.class})
+@Handler(supports = { Patient.class, Encounter.class, Obs.class })
 public class RequireVoidReasonVoidHandler implements VoidHandler<Voidable> {
 	
 	/**
@@ -48,5 +48,5 @@ public class RequireVoidReasonVoidHandler implements VoidHandler<Voidable> {
 			throw new IllegalArgumentException("The 'reason' argument is required");
 		}
 	}
-
+	
 }

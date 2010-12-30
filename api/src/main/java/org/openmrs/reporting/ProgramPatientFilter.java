@@ -58,7 +58,6 @@ public class ProgramPatientFilter extends AbstractPatientFilter implements Patie
 		return input == null ? matches : Cohort.intersect(input, matches);
 	}
 	
-	
 	public String getDescription() {
 		if (!isReadyToRun())
 			return "";

@@ -913,7 +913,7 @@ public class ModuleUtil {
 			path = path.substring(1);
 		return path.substring(module.getModuleIdAsPath().length());
 	}
-
+	
 	/**
 	 * This loops over all FILES in this jar to get the package names.  If there is an
 	 * empty directory in this jar it is not returned as a providedPackage. 
@@ -938,12 +938,12 @@ public class ModuleUtil {
 				JarEntry jarEntry = jarEntries.nextElement();
 				if (jarEntry.isDirectory()) {
 					// skip over directory entries, we only care about dirs with files in it
-					continue; 
+					continue;
 				}
 				String name = jarEntry.getName();
 				Integer indexOfLastSlash = name.lastIndexOf("/");
 				if (indexOfLastSlash <= 0)
-					continue; 
+					continue;
 				String packageName = name.substring(0, indexOfLastSlash);
 				
 				// skip over some folders in the jar/omod
@@ -956,14 +956,17 @@ public class ModuleUtil {
 				if (packagesProvided.add(packageName))
 					log.trace("Adding module's jarentry with package: " + packageName);
 			}
-		
-		} catch (IOException e) {
+			
+		}
+		catch (IOException e) {
 			log.error("Unable to open jar from file: " + file.getAbsolutePath(), e);
-		} finally {
+		}
+		finally {
 			if (jar != null)
 				try {
 					jar.close();
-				} catch (IOException e) {
+				}
+				catch (IOException e) {
 					// do nothing
 				}
 			
@@ -979,7 +982,7 @@ public class ModuleUtil {
 			// add the period so that we don't match to ourselves or to 
 			// similarly named packages. eg. org.pih and org.pihrwanda 
 			// should not match
-			packageNameOuter += ".";  
+			packageNameOuter += ".";
 			for (String packageNameInner : packagesProvidedCopy) {
 				if (packageNameInner.contains(packageNameOuter)) {
 					packagesProvided.remove(packageNameInner);

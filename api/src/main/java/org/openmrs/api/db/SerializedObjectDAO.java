@@ -111,7 +111,7 @@ public interface SerializedObjectDAO {
 	 * @should save the passed object if supported
 	 * @should throw an exception if object not supported
 	 */
-	public <T extends OpenmrsObject> T saveObject(T object, OpenmrsSerializer serializer) throws DAOException;	
+	public <T extends OpenmrsObject> T saveObject(T object, OpenmrsSerializer serializer) throws DAOException;
 	
 	/**
 	 * Retrieves all raw Serialized Object from the database that match the passed type and includeRetired flag
@@ -154,7 +154,8 @@ public interface SerializedObjectDAO {
 	 * @should return all saved objects with the given type and exact name
 	 * @should return all saved objects with the given type and partial name
 	 */
-	public List<SerializedObject> getAllSerializedObjectsByName(Class<?> type, String name, boolean exactMatchOnly) throws DAOException;
+	public List<SerializedObject> getAllSerializedObjectsByName(Class<?> type, String name, boolean exactMatchOnly)
+	                                                                                                               throws DAOException;
 	
 	/**
 	 * Retrieves all objects from the database that match the passed type and name that have been saved through serialization
@@ -166,10 +167,8 @@ public interface SerializedObjectDAO {
 	 * @should return all saved objects with the given type and exact name
 	 * @should return all saved objects with the given type and partial name
 	 */
-	public <T extends OpenmrsMetadata> List<T> getAllObjectsByName(Class<T> type, 
-																   String name, 
-																   boolean exactMatchOnly) 
-																   throws DAOException;
+	public <T extends OpenmrsMetadata> List<T> getAllObjectsByName(Class<T> type, String name, boolean exactMatchOnly)
+	                                                                                                                  throws DAOException;
 	
 	/**
 	 * Converts a raw SerializedObject to an OpenmrsObject, using the appropriate Serializer
@@ -178,7 +177,8 @@ public interface SerializedObjectDAO {
 	 * @return an OpenmrsObject of the passed clazz from the passed SerializedObject
 	 * @throws DAOException
 	 */
-	public <T extends OpenmrsObject> T convertSerializedObject(Class<T> clazz, SerializedObject serializedObject) throws DAOException;
+	public <T extends OpenmrsObject> T convertSerializedObject(Class<T> clazz, SerializedObject serializedObject)
+	                                                                                                             throws DAOException;
 	
 	/**
 	 * Deletes the item from the database with the given primary key id

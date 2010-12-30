@@ -36,7 +36,6 @@ public class ModuleResourcesServlet extends HttpServlet {
 	
 	private Log log = LogFactory.getLog(this.getClass());
 	
-	
 	/**
 	 * Used for caching purposes 
 	 * 
@@ -45,14 +44,13 @@ public class ModuleResourcesServlet extends HttpServlet {
 	@Override
 	protected long getLastModified(HttpServletRequest req) {
 		File f = getFile(req);
-
+		
 		if (f == null)
 			return super.getLastModified(req);
 		
 		return f.lastModified();
 	}
-
-
+	
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		log.debug("In service method for module servlet: " + request.getPathInfo());
@@ -65,7 +63,7 @@ public class ModuleResourcesServlet extends HttpServlet {
 		
 		response.setDateHeader("Last-Modified", f.lastModified());
 		response.setContentLength(new Long(f.length()).intValue());
-
+		
 		FileInputStream is = new FileInputStream(f);
 		try {
 			OpenmrsUtil.copyFile(is, response.getOutputStream());
@@ -81,7 +79,7 @@ public class ModuleResourcesServlet extends HttpServlet {
 	 * @return the file being requested or null if not found
 	 */
 	protected File getFile(HttpServletRequest request) {
-
+		
 		String path = request.getPathInfo();
 		
 		Module module = ModuleUtil.getModuleForPath(path);
@@ -89,9 +87,10 @@ public class ModuleResourcesServlet extends HttpServlet {
 			log.warn("No module handles the path: " + path);
 			return null;
 		}
-
+		
 		String relativePath = ModuleUtil.getPathForResource(module, path);
-		String realPath = getServletContext().getRealPath("") + MODULE_PATH + module.getModuleIdAsPath() + "/resources" + relativePath;
+		String realPath = getServletContext().getRealPath("") + MODULE_PATH + module.getModuleIdAsPath() + "/resources"
+		        + relativePath;
 		realPath = realPath.replace("/", File.separator);
 		
 		File f = new File(realPath);

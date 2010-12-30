@@ -86,7 +86,7 @@ public class ConceptDatatype extends BaseOpenmrsMetadata implements java.io.Seri
 	}
 	
 	@Override
-    public boolean equals(Object obj) {
+	public boolean equals(Object obj) {
 		if (obj instanceof ConceptDatatype) {
 			ConceptDatatype c = (ConceptDatatype) obj;
 			return (this.conceptDatatypeId.equals(c.getConceptDatatypeId()));
@@ -95,7 +95,7 @@ public class ConceptDatatype extends BaseOpenmrsMetadata implements java.io.Seri
 	}
 	
 	@Override
-    public int hashCode() {
+	public int hashCode() {
 		if (this.getConceptDatatypeId() == null)
 			return super.hashCode();
 		return this.getConceptDatatypeId().hashCode();

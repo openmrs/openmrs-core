@@ -75,7 +75,8 @@ public class PatientProgramFormController implements Controller {
 		Location location;
 		try {
 			location = Context.getLocationService().getLocation(Integer.valueOf(locationIdStr));
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			location = null;
 		}
 		
@@ -85,8 +86,7 @@ public class PatientProgramFormController implements Controller {
 		else {
 			if (enrollmentDate == null) {
 				request.getSession().setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Program.error.enrollmentDateRequired");
-			}
-			else {
+			} else {
 				PatientProgram pp = new PatientProgram();
 				pp.setPatient(patient);
 				pp.setLocation(location);

@@ -26,7 +26,7 @@ import org.openmrs.test.BaseContextSensitiveTest;
  * Tests the methods on the {@link Daemon} class
  */
 public class DaemonTest extends BaseContextSensitiveTest {
-
+	
 	/**
 	 * @see Daemon#executeScheduledTask(Task)
 	 * @verifies not be called from other methods other than TimerSchedulerTask
@@ -41,7 +41,7 @@ public class DaemonTest extends BaseContextSensitiveTest {
 			Assert.assertTrue(e.getMessage().startsWith("This method can only be called from the TimerSchedulerTask class"));
 		}
 	}
-
+	
 	/**
 	 * This uses a task that just marks itself as run when its "execute" method is called. This
 	 * verifies that the Daemon class is getting past the class check and on to the task running
@@ -95,5 +95,5 @@ public class DaemonTest extends BaseContextSensitiveTest {
 			this.wasRun = true;
 		}
 	}
-
+	
 }

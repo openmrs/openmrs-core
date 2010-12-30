@@ -18,7 +18,7 @@ public class RoleValidatorTest {
 	@Test
 	@Verifies(value = "should fail validation if role is null or empty or whitespace", method = "validate(Object,Errors)")
 	public void validate_shouldFailValidationIfRoleIsNullOrEmptyOrWhitespace() throws Exception {
-		Role role = new Role();		
+		Role role = new Role();
 		role.setRole(null);
 		role.setDescription("some text");
 		//TODO: change/fix this test when it is decided whether to change the validator behavior to avoid throwing an NPE

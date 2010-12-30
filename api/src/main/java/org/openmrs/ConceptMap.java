@@ -35,7 +35,7 @@ public class ConceptMap extends BaseOpenmrsObject implements Auditable, java.io.
 	private Concept concept;
 	
 	private ConceptSource source;
-		
+	
 	private String sourceCode;
 	
 	private String comment;
@@ -191,7 +191,6 @@ public class ConceptMap extends BaseOpenmrsObject implements Auditable, java.io.
 		this.sourceCode = sourceCode;
 	}
 	
-	
 	/**
 	 * @since 1.5
 	 * @see org.openmrs.OpenmrsObject#getId()
@@ -207,39 +206,39 @@ public class ConceptMap extends BaseOpenmrsObject implements Auditable, java.io.
 	public void setId(Integer id) {
 		setConceptMapId(id);
 	}
-
+	
 	/**
 	 * Not currently used. Always returns null.
 	 * 
-     * @see org.openmrs.Auditable#getChangedBy()
-     */
-    public User getChangedBy() {
-	    return null;
-    }
-
+	 * @see org.openmrs.Auditable#getChangedBy()
+	 */
+	public User getChangedBy() {
+		return null;
+	}
+	
 	/**
 	 * Not currently used. Always returns null.
 	 * 
-     * @see org.openmrs.Auditable#getDateChanged()
-     */
-    public Date getDateChanged() {
-	    return null;
-    }
-
+	 * @see org.openmrs.Auditable#getDateChanged()
+	 */
+	public Date getDateChanged() {
+		return null;
+	}
+	
 	/**
 	 * Not currently used.
 	 * 
-     * @see org.openmrs.Auditable#setChangedBy(org.openmrs.User)
-     */
-    public void setChangedBy(User changedBy) {
-    }
-
+	 * @see org.openmrs.Auditable#setChangedBy(org.openmrs.User)
+	 */
+	public void setChangedBy(User changedBy) {
+	}
+	
 	/**
 	 * Not currently used.
 	 * 
-     * @see org.openmrs.Auditable#setDateChanged(java.util.Date)
-     */
-    public void setDateChanged(Date dateChanged) {
-    }
+	 * @see org.openmrs.Auditable#setDateChanged(java.util.Date)
+	 */
+	public void setDateChanged(Date dateChanged) {
+	}
 	
 }

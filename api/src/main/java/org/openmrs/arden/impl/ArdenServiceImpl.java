@@ -125,7 +125,7 @@ public class ArdenServiceImpl implements ArdenService {
 			
 			if (log.isDebugEnabled())
 				log.debug(t.toStringTree()); // prints maintenance
-			
+				
 			ArdenBaseTreeParser treeParser = new ArdenBaseTreeParser();
 			
 			String maintenance = treeParser.maintenance(t, ardObj);
@@ -143,15 +143,15 @@ public class ArdenServiceImpl implements ArdenService {
 			Writer w = new OutputStreamWriter(os);
 			log.info("Writing to file - " + cfn + ".java");
 			
-			w.write("/********************************************************************" +
-				"\n Translated from - " + fn + " on " + Today.toString() + "\n\n");
+			w.write("/********************************************************************" + "\n Translated from - " + fn
+			        + " on " + Today.toString() + "\n\n");
 			w.write(maintenance);
 			
 			t = (BaseAST) t.getNextSibling(); // Move to library
 			
 			if (log.isDebugEnabled())
 				log.debug(t.toStringTree()); // prints library
-			
+				
 			String library = treeParser.library(t, ardObj);
 			w.write(library);
 			w.write("\n********************************************************************/\n");
@@ -180,7 +180,7 @@ public class ArdenServiceImpl implements ArdenService {
 			w.write("import java.text.SimpleDateFormat;\n");
 			
 			String classname = ardObj.getClassName();
-		     w.write("public class " + classname + " implements MlmRule{\n\n"); // Start of class
+			w.write("public class " + classname + " implements MlmRule{\n\n"); // Start of class
 			w.write("\tprivate Patient patient;\n\tprivate String firstname;\n");
 			w.write("\tprivate ArrayList<String> actions;\n");
 			w.write("\tprivate HashMap<String, String> userVarMap;\n\n");
@@ -221,10 +221,8 @@ public class ArdenServiceImpl implements ArdenService {
 			if (str != null) {
 				str = "\"" + str + "\"";
 			}
-			w.write("\t/*** @see org.openmrs.arden.MlmRule#getAuthor()*/\n" +
-				     "\tpublic String getAuthor(){\n" +
-				     	"\t\treturn "+str+";\n" +
-				     "\t}\n\n");
+			w.write("\t/*** @see org.openmrs.arden.MlmRule#getAuthor()*/\n" + "\tpublic String getAuthor(){\n"
+			        + "\t\treturn " + str + ";\n" + "\t}\n\n");
 			
 			str = ardObj.getCitations();
 			if (str != null && str.length() == 0) {
@@ -233,11 +231,8 @@ public class ArdenServiceImpl implements ArdenService {
 			if (str != null) {
 				str = "\"" + str + "\"";
 			}
-			w.write("\t/*** @see org.openmrs.arden.MlmRule#getCitations()*/\n" +
-				     "\tpublic String getCitations(){\n" +
-				     "\t\treturn " + str + ";\n" +
-				     "\t}\n\n");
-		     
+			w.write("\t/*** @see org.openmrs.arden.MlmRule#getCitations()*/\n" + "\tpublic String getCitations(){\n"
+			        + "\t\treturn " + str + ";\n" + "\t}\n\n");
 			
 			str = ardObj.getDate();
 			if (str != null && str.length() == 0) {
@@ -246,10 +241,8 @@ public class ArdenServiceImpl implements ArdenService {
 			if (str != null) {
 				str = "\"" + str + "\"";
 			}
-			w.write("\t/*** @see org.openmrs.arden.MlmRule#getDate()*/\n" +
-				     "\tpublic String getDate(){\n" +
-				     "\t\treturn " + str + ";\n" +
-				     "\t}\n\n");
+			w.write("\t/*** @see org.openmrs.arden.MlmRule#getDate()*/\n" + "\tpublic String getDate(){\n" + "\t\treturn "
+			        + str + ";\n" + "\t}\n\n");
 			str = ardObj.getExplanation();
 			if (str != null && str.length() == 0) {
 				str = null;
@@ -257,10 +250,8 @@ public class ArdenServiceImpl implements ArdenService {
 			if (str != null) {
 				str = "\"" + str + "\"";
 			}
-			w.write("\t/*** @see org.openmrs.arden.MlmRule#getExplanation()*/\n" +
-				     "\tpublic String getExplanation(){\n" +
-				     "\t\treturn " + str + ";\n" +
-		     		 "\t}\n\n");
+			w.write("\t/*** @see org.openmrs.arden.MlmRule#getExplanation()*/\n" + "\tpublic String getExplanation(){\n"
+			        + "\t\treturn " + str + ";\n" + "\t}\n\n");
 			
 			str = ardObj.getInstitution();
 			if (str != null && str.length() == 0) {
@@ -269,10 +260,8 @@ public class ArdenServiceImpl implements ArdenService {
 			if (str != null) {
 				str = "\"" + str + "\"";
 			}
-			w.write("\t/*** @see org.openmrs.arden.MlmRule#getInstitution()*/\n" +
-				     "\tpublic String getInstitution(){\n" +
-				     "\t\treturn " + str + ";\n" +
-     		 		 "\t}\n\n");
+			w.write("\t/*** @see org.openmrs.arden.MlmRule#getInstitution()*/\n" + "\tpublic String getInstitution(){\n"
+			        + "\t\treturn " + str + ";\n" + "\t}\n\n");
 			str = ardObj.getKeywords();
 			if (str != null && str.length() == 0) {
 				str = null;
@@ -280,10 +269,8 @@ public class ArdenServiceImpl implements ArdenService {
 			if (str != null) {
 				str = "\"" + str + "\"";
 			}
-			w.write("\t/*** @see org.openmrs.arden.MlmRule#getKeywords()*/\n" +
-				     "\tpublic String getKeywords(){\n" +
-				     "\t\treturn " + str + ";\n" +
-		 		 	 "\t}\n\n");
+			w.write("\t/*** @see org.openmrs.arden.MlmRule#getKeywords()*/\n" + "\tpublic String getKeywords(){\n"
+			        + "\t\treturn " + str + ";\n" + "\t}\n\n");
 			str = ardObj.getLinks();
 			if (str != null && str.length() == 0) {
 				str = null;
@@ -291,10 +278,8 @@ public class ArdenServiceImpl implements ArdenService {
 			if (str != null) {
 				str = "\"" + str + "\"";
 			}
-			w.write("\t/*** @see org.openmrs.arden.MlmRule#getLinks()*/\n" +
-				     "\tpublic String getLinks(){\n" +
-				     "\t\treturn " + str + ";\n" +
- 		 	 		 "\t}\n\n");
+			w.write("\t/*** @see org.openmrs.arden.MlmRule#getLinks()*/\n" + "\tpublic String getLinks(){\n" + "\t\treturn "
+			        + str + ";\n" + "\t}\n\n");
 			
 			str = ardObj.getPurpose();
 			if (str != null && str.length() == 0) {
@@ -303,10 +288,8 @@ public class ArdenServiceImpl implements ArdenService {
 			if (str != null) {
 				str = "\"" + str + "\"";
 			}
-			w.write("\t/*** @see org.openmrs.arden.MlmRule#getPurpose()*/\n" +
-				     "\tpublic String getPurpose(){\n" +
-				     "\t\treturn " + str + ";\n" +
-	 	 		 	 "\t}\n\n");
+			w.write("\t/*** @see org.openmrs.arden.MlmRule#getPurpose()*/\n" + "\tpublic String getPurpose(){\n"
+			        + "\t\treturn " + str + ";\n" + "\t}\n\n");
 			str = ardObj.getSpecialist();
 			if (str != null && str.length() == 0) {
 				str = null;
@@ -314,10 +297,8 @@ public class ArdenServiceImpl implements ArdenService {
 			if (str != null) {
 				str = "\"" + str + "\"";
 			}
-			w.write("\t/*** @see org.openmrs.arden.MlmRule#getSpecialist()*/\n" +
-				     "\tpublic String getSpecialist(){\n" +
-				     "\t\treturn " + str + ";\n" +
-	 		 	 	 "\t}\n\n");
+			w.write("\t/*** @see org.openmrs.arden.MlmRule#getSpecialist()*/\n" + "\tpublic String getSpecialist(){\n"
+			        + "\t\treturn " + str + ";\n" + "\t}\n\n");
 			
 			str = ardObj.getTitle();
 			if (str != null && str.length() == 0) {
@@ -326,15 +307,11 @@ public class ArdenServiceImpl implements ArdenService {
 			if (str != null) {
 				str = "\"" + str + "\"";
 			}
-			w.write("\t/*** @see org.openmrs.arden.MlmRule#getTitle()*/\n" +
-				     "\tpublic String getTitle(){\n" +
-				     "\t\treturn " + str + ";\n" +
-		 	 	 	 "\t}\n\n");
+			w.write("\t/*** @see org.openmrs.arden.MlmRule#getTitle()*/\n" + "\tpublic String getTitle(){\n" + "\t\treturn "
+			        + str + ";\n" + "\t}\n\n");
 			double d = ardObj.getVersion();
-			w.write("\t/*** @see org.openmrs.arden.MlmRule#getVersion()*/\n" +
-				     "\tpublic Double getVersion(){\n" +
-				     "\t\treturn " + d + ";\n" +
- 	 	 	 		 "\t}\n\n");
+			w.write("\t/*** @see org.openmrs.arden.MlmRule#getVersion()*/\n" + "\tpublic Double getVersion(){\n"
+			        + "\t\treturn " + d + ";\n" + "\t}\n\n");
 			str = ardObj.getType();
 			if (str != null && str.length() == 0) {
 				str = null;
@@ -342,10 +319,8 @@ public class ArdenServiceImpl implements ArdenService {
 			if (str != null) {
 				str = "\"" + str + "\"";
 			}
-			w.write("\t/*** @see org.openmrs.arden.MlmRule#getType()*/\n" +
-				     "\tpublic String getType(){\n"+
-				     "\t\treturn " + str + ";\n" +
-	 	 		 	 "\t}\n\n");
+			w.write("\t/*** @see org.openmrs.arden.MlmRule#getType()*/\n" + "\tpublic String getType(){\n" + "\t\treturn "
+			        + str + ";\n" + "\t}\n\n");
 			
 			/**************************************************************************************/
 			
@@ -356,10 +331,8 @@ public class ArdenServiceImpl implements ArdenService {
 			
 			/************************************************** Write Knowledge dependent section **********************************************/
 			Integer p = ardObj.getPriority();
-			w.write("\t/*** @see org.openmrs.arden.MlmRule#getPriority()*/\n" +
-				     "\tpublic Integer getPriority(){\n" +
-				     "\t\treturn " + p + ";\n" +
-	 		 	 	"\t}\n\n");
+			w.write("\t/*** @see org.openmrs.arden.MlmRule#getPriority()*/\n" + "\tpublic Integer getPriority(){\n"
+			        + "\t\treturn " + p + ";\n" + "\t}\n\n");
 			
 			str = ardObj.getData();
 			if (str != null && str.length() == 0) {
@@ -368,10 +341,8 @@ public class ArdenServiceImpl implements ArdenService {
 			if (str != null) {
 				str = "\"" + str + "\"";
 			}
-			w.write("\t/*** @see org.openmrs.arden.MlmRule#getData()*/\n" +
-				     "\tpublic String getData(){\n" +
-				     "\t\treturn " + str + ";\n" +
-		 	 		 "\t}\n\n");
+			w.write("\t/*** @see org.openmrs.arden.MlmRule#getData()*/\n" + "\tpublic String getData(){\n" + "\t\treturn "
+			        + str + ";\n" + "\t}\n\n");
 			
 			str = ardObj.getLogic();
 			if (str != null && str.length() == 0) {
@@ -380,10 +351,8 @@ public class ArdenServiceImpl implements ArdenService {
 			if (str != null) {
 				str = "\"" + str + "\"";
 			}
-			w.write("\t/*** @see org.openmrs.arden.MlmRule#getLogic()*/\n" +
-				     "\tpublic String getLogic(){\n" +
-				     "\t\treturn " + str + ";\n" +
- 	 		 		 "\t}\n\n");
+			w.write("\t/*** @see org.openmrs.arden.MlmRule#getLogic()*/\n" + "\tpublic String getLogic(){\n" + "\t\treturn "
+			        + str + ";\n" + "\t}\n\n");
 			
 			str = ardObj.getAction();
 			if (str != null && str.length() == 0) {
@@ -392,16 +361,12 @@ public class ArdenServiceImpl implements ArdenService {
 			if (str != null) {
 				str = "\"" + str + "\"";
 			}
-			w.write("\t/*** @see org.openmrs.arden.MlmRule#getAction()*/\n" +
-				     "\tpublic String getAction(){\n" +
-				     "\t\treturn " + str + ";\n" +
-		 		 	 "\t}\n\n");
+			w.write("\t/*** @see org.openmrs.arden.MlmRule#getAction()*/\n" + "\tpublic String getAction(){\n"
+			        + "\t\treturn " + str + ";\n" + "\t}\n\n");
 			
 			Integer ageMin = ardObj.getAgeMin();
-			w.write("\t/*** @see org.openmrs.arden.MlmRule#getAgeMin()*/\n" +
-				     "\tpublic Integer getAgeMin(){\n" +
-				     "\t\treturn " + ageMin + ";\n" +
- 		 	 		 "\t}\n\n");
+			w.write("\t/*** @see org.openmrs.arden.MlmRule#getAgeMin()*/\n" + "\tpublic Integer getAgeMin(){\n"
+			        + "\t\treturn " + ageMin + ";\n" + "\t}\n\n");
 			
 			str = ardObj.getAgeMinUnits();
 			if (str != null && str.length() == 0) {
@@ -410,16 +375,12 @@ public class ArdenServiceImpl implements ArdenService {
 			if (str != null) {
 				str = "\"" + str + "\"";
 			}
-			w.write("\t/*** @see org.openmrs.arden.MlmRule#getAgeMinUnits()*/\n" +
-				     "\tpublic String getAgeMinUnits(){\n" +
-				     "\t\treturn " + str + ";\n" +
-	 	 		 	 "\t}\n\n");
+			w.write("\t/*** @see org.openmrs.arden.MlmRule#getAgeMinUnits()*/\n" + "\tpublic String getAgeMinUnits(){\n"
+			        + "\t\treturn " + str + ";\n" + "\t}\n\n");
 			
 			Integer ageMax = ardObj.getAgeMax();
-			w.write("\t/*** @see org.openmrs.arden.MlmRule#getAgeMax()*/\n" +
-				     "\tpublic Integer getAgeMax(){\n" +
-				     "\t\treturn " + ageMax + ";\n" +
-		     		 "\t}\n\n");
+			w.write("\t/*** @see org.openmrs.arden.MlmRule#getAgeMax()*/\n" + "\tpublic Integer getAgeMax(){\n"
+			        + "\t\treturn " + ageMax + ";\n" + "\t}\n\n");
 			
 			str = ardObj.getAgeMaxUnits();
 			if (str != null && str.length() == 0) {
@@ -428,10 +389,8 @@ public class ArdenServiceImpl implements ArdenService {
 			if (str != null) {
 				str = "\"" + str + "\"";
 			}
-			w.write("\t/*** @see org.openmrs.arden.MlmRule#getAgeMaxUnits()*/\n" +
-				     "\tpublic String getAgeMaxUnits(){\n" +
-				     "\t\treturn " + str + ";\n" +
-     		 		 "\t}\n\n");
+			w.write("\t/*** @see org.openmrs.arden.MlmRule#getAgeMaxUnits()*/\n" + "\tpublic String getAgeMaxUnits(){\n"
+			        + "\t\treturn " + str + ";\n" + "\t}\n\n");
 			
 			w.write("\tprivate static boolean containsIgnoreCase(Result key,List<Result> lst){\n");
 			w.write("\t\tfor(Result element:lst){\n");

@@ -56,8 +56,8 @@ public class SampleFlowsheetServlet extends HttpServlet {
 		
 		if (Context.isAuthenticated() == false || !Context.hasPrivilege(PrivilegeConstants.VIEW_PATIENTS)
 		        || !Context.hasPrivilege(PrivilegeConstants.VIEW_OBS)) {
-			session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Privileges required: "
-			        + PrivilegeConstants.VIEW_PATIENTS + " and " + PrivilegeConstants.VIEW_OBS);
+			session.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Privileges required: " + PrivilegeConstants.VIEW_PATIENTS
+			        + " and " + PrivilegeConstants.VIEW_OBS);
 			session.setAttribute(WebConstants.OPENMRS_LOGIN_REDIRECT_HTTPSESSION_ATTR, request.getRequestURI() + "?"
 			        + request.getQueryString());
 			response.sendRedirect(request.getContextPath() + "/login.htm");

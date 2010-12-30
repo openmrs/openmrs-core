@@ -103,10 +103,10 @@ public class PatientSetServiceImpl implements PatientSetService {
 	}
 	
 	@Override
-    public Cohort getInverseOfCohort(Cohort cohort) {
-	    // TODO see if this can be sped up by delegating to the database
+	public Cohort getInverseOfCohort(Cohort cohort) {
+		// TODO see if this can be sped up by delegating to the database
 		return Cohort.subtract(getAllPatients(), cohort);
-    }
+	}
 	
 	public Cohort getPatientsByCharacteristics(String gender, Date minBirthdate, Date maxBirthdate) throws DAOException {
 		return getPatientsByCharacteristics(gender, minBirthdate, maxBirthdate, null, null, null, null);
@@ -312,7 +312,8 @@ public class PatientSetServiceImpl implements PatientSetService {
 		return getObservationsValues(patients, c, attributes, null, true);
 	}
 	
-	public Map<Integer, List<List<Object>>> getObservationsValues(Cohort patients, Concept c, List<String> attributes, Integer limit, boolean showMostRecentFirst) {
+	public Map<Integer, List<List<Object>>> getObservationsValues(Cohort patients, Concept c, List<String> attributes,
+	                                                              Integer limit, boolean showMostRecentFirst) {
 		if (attributes == null)
 			attributes = new Vector<String>();
 		
@@ -484,7 +485,7 @@ public class PatientSetServiceImpl implements PatientSetService {
 	public Integer getCountOfPatients() {
 		return getPatientSetDAO().getCountOfPatients();
 	}
-
+	
 	@Override
 	public Cohort getPatients(Integer start, Integer size) {
 		return getPatientSetDAO().getPatients(start, size);

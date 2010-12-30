@@ -53,12 +53,12 @@ public class Hl7InArchivesMigrateThread extends Thread {
 	 * User Context to be used for authentication and privilege checks
 	 */
 	private UserContext userContext;
-		
+	
 	/**
 	 * Flag to keep track of the status of the migration process
 	 */
 	private static Status transferStatus = Status.NONE;
-
+	
 	/**
 	 * The different states this thread can be in at a given point during migration
 	 */
@@ -82,21 +82,21 @@ public class Hl7InArchivesMigrateThread extends Thread {
 	public static Integer getDaysKept() {
 		return daysKept;
 	}
-
+	
 	/**
 	 * @param daysKept the daysKept to set
 	 */
 	public static void setDaysKept(Integer daysKept) {
 		Hl7InArchivesMigrateThread.daysKept = daysKept;
 	}
-
+	
 	/**
 	 * @return the active
 	 */
 	public static boolean isActive() {
 		return active;
 	}
-
+	
 	/**
 	 * @param active the active to set
 	 */
@@ -109,11 +109,11 @@ public class Hl7InArchivesMigrateThread extends Thread {
 	 */
 	@Override
 	public void run() {
-
+		
 		Context.openSession();
 		Context.setUserContext(userContext);
 		transferStatus = Status.RUNNING;
-
+		
 		while (isActive() && transferStatus == Status.RUNNING) {
 			try {
 				// migrate the archives
@@ -124,17 +124,20 @@ public class Hl7InArchivesMigrateThread extends Thread {
 				if (transferStatus != Status.STOPPED)
 					transferStatus = Status.COMPLETED;
 				
-			} catch (APIException api) {
+			}
+			catch (APIException api) {
 				// log this as a debug, because we want to swallow minor errors 
 				log.debug("Unable to migrate HL7 archive", api);
 				
 				try {
 					Thread.sleep(HL7Constants.THREAD_SLEEP_PERIOD);
-				} catch (InterruptedException e) {
+				}
+				catch (InterruptedException e) {
 					log.warn("Hl7 in archive migration thread has been abnormally interrupted", e);
 				}
 				
-			} catch (Exception e) {
+			}
+			catch (Exception e) {
 				transferStatus = Status.ERROR;
 				log.warn("Some error occurred while migrating hl7 archives", e);
 			}
@@ -143,7 +146,7 @@ public class Hl7InArchivesMigrateThread extends Thread {
 		Context.closeSession();
 		setActive(false);
 	}
-
+	
 	/**
 	 * convenience method to set transfer status and active flag to stop migration
 	 */

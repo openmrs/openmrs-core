@@ -41,7 +41,7 @@ public class UpdateFilterModel {
 	public String superuserrole = RoleConstants.SUPERUSER;
 	
 	public String setupPageUrl = WebConstants.SETUP_PAGE_URL;
-
+	
 	/**
 	 * Default constructor that sets up some of the properties
 	 */

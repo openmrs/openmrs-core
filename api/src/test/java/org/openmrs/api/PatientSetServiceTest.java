@@ -101,7 +101,7 @@ public class PatientSetServiceTest extends BaseContextSensitiveTest {
 		cohort = service.getPatientsByCharacteristics(null, null, null, null, null, null, null, df.parse("2008-01-01"));
 		Assert.assertEquals(4, cohort.size());
 	}
-		
+	
 	/**
 	 * @see {@link PatientSetService#getPatientsByCharacteristics(String,Date,Date,Integer,Integer,Boolean,Boolean)}
 	 */
@@ -288,44 +288,47 @@ public class PatientSetServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(1, cohort.size());
 		Assert.assertTrue(cohort.contains(7));
 	}
-
+	
 	/**
-     * @see {@link PatientSetService#getPatientsHavingEncounters(List<QEncounterType;>,Location,Form,Date,Date,Integer,Integer)}
-     */
-    @Test
-    @Verifies(value = "should get patients with encounters of multiple types", method = "getPatientsHavingEncounters(List<QEncounterType;>,Location,Form,Date,Date,Integer,Integer)")
-    public void getPatientsHavingEncounters_shouldGetPatientsWithEncountersOfMultipleTypes() throws Exception {
-    	executeDataSet(EXTRA_DATA_XML);
-    	List<EncounterType> list = new ArrayList<EncounterType>();
-    	list.add(new EncounterType(1));
-    	Cohort withOneType = service.getPatientsHavingEncounters(list, null, null, null, null, null, null);
-    	Assert.assertEquals(1, withOneType.size());
-    	list.add(new EncounterType(6));
-    	Cohort withTwoTypes = service.getPatientsHavingEncounters(list, null, null, null, null, null, null);
-    	Assert.assertEquals(2, withTwoTypes.size());
-    }
-
+	 * @see {@link PatientSetService#getPatientsHavingEncounters(List<QEncounterType;>,Location,Form,Date,Date,Integer,Integer)}
+	 */
+	@Test
+	@Verifies(value = "should get patients with encounters of multiple types", method = "getPatientsHavingEncounters(List<QEncounterType;>,Location,Form,Date,Date,Integer,Integer)")
+	public void getPatientsHavingEncounters_shouldGetPatientsWithEncountersOfMultipleTypes() throws Exception {
+		executeDataSet(EXTRA_DATA_XML);
+		List<EncounterType> list = new ArrayList<EncounterType>();
+		list.add(new EncounterType(1));
+		Cohort withOneType = service.getPatientsHavingEncounters(list, null, null, null, null, null, null);
+		Assert.assertEquals(1, withOneType.size());
+		list.add(new EncounterType(6));
+		Cohort withTwoTypes = service.getPatientsHavingEncounters(list, null, null, null, null, null, null);
+		Assert.assertEquals(2, withTwoTypes.size());
+	}
+	
 	/**
-     * @see {@link PatientSetService#getPatientsHavingEncounters(EncounterType,Location,Form,Date,Date,Integer,Integer)}
-     */
-    @Test
-    @Verifies(value = "should get all patients with encounters when no parameters specified", method = "getPatientsHavingEncounters(List<EncounterType>,Location,Form,Date,Date,Integer,Integer)")
-    public void getPatientsHavingEncounters_shouldGetAllPatientsWithEncountersWhenNoParametersSpecified() throws Exception {
-	    Cohort withEncs = Context.getPatientSetService().getPatientsHavingEncounters((EncounterType) null, null, null, null, null, null, null);
-	    Assert.assertEquals(1, withEncs.size());
-	    Assert.assertTrue(withEncs.contains(7));
-    }
-
+	 * @see {@link PatientSetService#getPatientsHavingEncounters(EncounterType,Location,Form,Date,Date,Integer,Integer)}
+	 */
+	@Test
+	@Verifies(value = "should get all patients with encounters when no parameters specified", method = "getPatientsHavingEncounters(List<EncounterType>,Location,Form,Date,Date,Integer,Integer)")
+	public void getPatientsHavingEncounters_shouldGetAllPatientsWithEncountersWhenNoParametersSpecified() throws Exception {
+		Cohort withEncs = Context.getPatientSetService().getPatientsHavingEncounters((EncounterType) null, null, null, null,
+		    null, null, null);
+		Assert.assertEquals(1, withEncs.size());
+		Assert.assertTrue(withEncs.contains(7));
+	}
+	
 	/**
-     * @see {@link PatientSetService#getPatientsHavingEncounters(List<EncounterType>,Location,Form,Date,Date,Integer,Integer)}
-     */
-    @Test
-    @Verifies(value = "should get all patients with encounters when passed an empty encounterTypeList", method = "getPatientsHavingEncounters(List<EncounterType>,Location,Form,Date,Date,Integer,Integer)")
-    public void getPatientsHavingEncounters_shouldGetAllPatientsWithEncountersWhenPassedAnEmptyEncounterTypeList() throws Exception {
-    	Cohort c = Context.getPatientSetService().getPatientsHavingEncounters(new ArrayList<EncounterType>(), null, null, null, null, null, null);
-    	Assert.assertEquals(1, c.size());
-    	Assert.assertTrue(c.contains(7));
-    }
+	 * @see {@link PatientSetService#getPatientsHavingEncounters(List<EncounterType>,Location,Form,Date,Date,Integer,Integer)}
+	 */
+	@Test
+	@Verifies(value = "should get all patients with encounters when passed an empty encounterTypeList", method = "getPatientsHavingEncounters(List<EncounterType>,Location,Form,Date,Date,Integer,Integer)")
+	public void getPatientsHavingEncounters_shouldGetAllPatientsWithEncountersWhenPassedAnEmptyEncounterTypeList()
+	                                                                                                              throws Exception {
+		Cohort c = Context.getPatientSetService().getPatientsHavingEncounters(new ArrayList<EncounterType>(), null, null,
+		    null, null, null, null);
+		Assert.assertEquals(1, c.size());
+		Assert.assertTrue(c.contains(7));
+	}
 	
 	/**
 	 * @see {@link PatientSetService#getRelationships(Cohort, RelationshipType)}
@@ -335,27 +338,29 @@ public class PatientSetServiceTest extends BaseContextSensitiveTest {
 	public void getRelationships_shouldReturnListWithRelations() throws Exception {
 		RelationshipType testRelationshipType = new RelationshipType(1);
 		
-		Map<Integer, List<Relationship>> results = Context.getPatientSetService().getRelationships(null, testRelationshipType);
+		Map<Integer, List<Relationship>> results = Context.getPatientSetService().getRelationships(null,
+		    testRelationshipType);
 		assertNotNull(results);
 		assertTrue("getRelationships should return a result greater than 0", results.size() > 0);
 		for (List<Relationship> relationships : results.values()) {
 			for (Relationship relationship : relationships) {
-				assertEquals(testRelationshipType.getRelationshipTypeId(), relationship.getRelationshipType().getRelationshipTypeId());
+				assertEquals(testRelationshipType.getRelationshipTypeId(), relationship.getRelationshipType()
+				        .getRelationshipTypeId());
 			}
 		}
 	}
-
+	
 	/**
-     * @see {@link PatientSetService#getPatientPrograms(Cohort,Program)}
-     */
-    @Test
-    @Verifies(value = "should get program enrollments for the given cohort", method = "getPatientPrograms(Cohort,Program)")
-    public void getPatientPrograms_shouldGetProgramEnrollmentsForTheGivenCohort() throws Exception {
-	    Cohort cohort = new Cohort("2,3,4,5,6,7");
-	    Map<Integer, PatientProgram> map = Context.getPatientSetService().getPatientPrograms(cohort, new Program(2));
-	    TestUtil.assertCollectionContentsEquals(Arrays.asList(2, 7), map.keySet());
-    }
-    
+	 * @see {@link PatientSetService#getPatientPrograms(Cohort,Program)}
+	 */
+	@Test
+	@Verifies(value = "should get program enrollments for the given cohort", method = "getPatientPrograms(Cohort,Program)")
+	public void getPatientPrograms_shouldGetProgramEnrollmentsForTheGivenCohort() throws Exception {
+		Cohort cohort = new Cohort("2,3,4,5,6,7");
+		Map<Integer, PatientProgram> map = Context.getPatientSetService().getPatientPrograms(cohort, new Program(2));
+		TestUtil.assertCollectionContentsEquals(Arrays.asList(2, 7), map.keySet());
+	}
+	
 	/**
 	 * @see {@link PatientSetService#getPersonAttributes(Cohort, String, String, String, String, boolean)}
 	 */
@@ -369,7 +374,8 @@ public class PatientSetServiceTest extends BaseContextSensitiveTest {
 		String joinProperty = "locationId";
 		String outputColumn = "name";
 		boolean returnAll = false;
-		Map<Integer, Object> ret = service.getPersonAttributes(c, attributeName, joinClass, joinProperty, outputColumn, returnAll);
+		Map<Integer, Object> ret = service.getPersonAttributes(c, attributeName, joinClass, joinProperty, outputColumn,
+		    returnAll);
 		Assert.assertEquals(4, ret.size());
 		Assert.assertEquals("Unknown Location", ret.get(2));
 		Assert.assertEquals("Xanadu", ret.get(6));

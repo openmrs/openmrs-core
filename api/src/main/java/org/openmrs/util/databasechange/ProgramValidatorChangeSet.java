@@ -39,7 +39,7 @@ import org.openmrs.util.DatabaseUtil;
 public class ProgramValidatorChangeSet implements CustomTaskChange {
 	
 	protected final static Log log = LogFactory.getLog(ProgramValidatorChangeSet.class);
-
+	
 	/**
 	 * @see CustomTaskChange#execute(Database)
 	 */
@@ -58,7 +58,7 @@ public class ProgramValidatorChangeSet implements CustomTaskChange {
 		message.append("<li>workflows that have no initial states (because you don't have a state to start people in)</li>");
 		message.append("</ul><br/>");
 		message.append("The following states are configured as both initial and terminal:<br/>");
-
+		
 		StringBuilder query = new StringBuilder();
 		query.append(" select 	s.concept_id, min(n.name) as name ");
 		query.append(" from 	program_workflow_state s, concept_name n ");
@@ -67,8 +67,7 @@ public class ProgramValidatorChangeSet implements CustomTaskChange {
 		List<List<Object>> results = DatabaseUtil.executeSQL(conn, query.toString(), true);
 		if (results.isEmpty()) {
 			message.append("None found.");
-		}
-		else {
+		} else {
 			for (List<Object> row : results) {
 				message.append(row.get(1).toString() + "<br/>");
 			}
@@ -97,8 +96,7 @@ public class ProgramValidatorChangeSet implements CustomTaskChange {
 		}
 		if (missingInitial.isEmpty()) {
 			message.append("None found.");
-		}
-		else {
+		} else {
 			for (Integer conceptId : missingInitial) {
 				String sql = "select min(name) from concept_name where concept_id = " + conceptId;
 				String name = DatabaseUtil.executeSQL(conn, sql, true).get(0).get(0).toString();
@@ -109,7 +107,7 @@ public class ProgramValidatorChangeSet implements CustomTaskChange {
 		
 		DatabaseUpdater.reportUpdateWarnings(messages);
 	}
-
+	
 	/**
 	 * @see CustomChange#getConfirmationMessage()
 	 */
@@ -117,21 +115,21 @@ public class ProgramValidatorChangeSet implements CustomTaskChange {
 	public String getConfirmationMessage() {
 		return "Finished validating programs";
 	}
-
+	
 	/**
 	 * @see CustomChange#setFileOpener(FileOpener)
 	 */
 	@Override
 	public void setFileOpener(FileOpener fo) {
 	}
-
+	
 	/**
 	 * @see CustomChange#setUp()
 	 */
 	@Override
 	public void setUp() throws SetupException {
 	}
-
+	
 	/**
 	 * @see CustomChange#validate(Database)
 	 */

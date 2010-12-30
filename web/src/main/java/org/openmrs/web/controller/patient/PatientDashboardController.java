@@ -44,18 +44,18 @@ public class PatientDashboardController {
 	 * render the patient dashboard model and direct to the view
 	 */
 	@RequestMapping("/patientDashboard.form")
-	protected String renderDashboard(
-			@RequestParam(required = true, value = "patientId") Integer patientId,
-			ModelMap map) throws Exception {
-
+	protected String renderDashboard(@RequestParam(required = true, value = "patientId") Integer patientId, ModelMap map)
+	                                                                                                                     throws Exception {
+		
 		// get the patient
 		
 		PatientService ps = Context.getPatientService();
 		Patient patient = null;
-
+		
 		try {
 			patient = ps.getPatient(patientId);
-		} catch (ObjectRetrievalFailureException noPatientEx) {
+		}
+		catch (ObjectRetrievalFailureException noPatientEx) {
 			log.warn("There is no patient with id: '" + patientId + "'", noPatientEx);
 		}
 		
@@ -91,14 +91,13 @@ public class PatientDashboardController {
 				log.debug("No concept cause found");
 			}
 		}
-
+		
 		// determine patient variation
 		
 		String patientVariation = "";
 		
 		Concept reasonForExitConcept = Context.getConceptService().getConcept(
-				Context.getAdministrationService().getGlobalProperty(
-						"concept.reasonExitedCare"));
+		    Context.getAdministrationService().getGlobalProperty("concept.reasonExitedCare"));
 		
 		if (reasonForExitConcept != null) {
 			List<Obs> patientExitObs = Context.getObsService().getObservationsByPersonAndConcept(patient,
@@ -121,7 +120,7 @@ public class PatientDashboardController {
 		map.put("patientVariation", patientVariation);
 		
 		// empty objects used to create blank template in the view
-
+		
 		map.put("emptyIdentifier", new PatientIdentifier());
 		map.put("emptyName", new PersonName());
 		map.put("emptyAddress", new PersonAddress());

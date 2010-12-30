@@ -26,7 +26,7 @@ public interface Task {
 	 * @param definition
 	 */
 	public void initialize(TaskDefinition definition);
-
+	
 	/**
 	 * Returns the task definition associated with this task.
 	 * 

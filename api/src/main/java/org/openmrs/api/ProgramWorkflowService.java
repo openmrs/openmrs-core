@@ -148,7 +148,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @should return programs when nameFragment matches middle of program name
 	 * @should return programs when nameFragment matches entire program name
 	 * @should return programs ordered by name
-	 * @should return empty list when nameFragment does not match any 
+	 * @should return empty list when nameFragment does not match any
 	 */
 	@Authorized( { PrivilegeConstants.VIEW_PROGRAMS })
 	@Transactional(readOnly = true)
@@ -197,7 +197,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @return the Program which has been unretired
 	 * @throws APIException
 	 * @should unretire program successfully
-	 * @should unretire workflows associated with given program 
+	 * @should unretire workflows associated with given program
 	 * @should unretire states associated with given program
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_PROGRAMS })
@@ -208,13 +208,13 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	// **************************
 	
 	/**
-	 * Get a program by its uuid. There should be only one of these in the database. 
-	 * If multiple are found, an error is thrown.
+	 * Get a program by its uuid. There should be only one of these in the database. If multiple are
+	 * found, an error is thrown.
 	 * 
-	 * @param uuid	the universally unique identifier
+	 * @param uuid the universally unique identifier
 	 * @return the program which matches the given uuid
 	 * @should find object given valid uuid
-	 * @should return null if no object found with given uuid 
+	 * @should return null if no object found with given uuid
 	 * @should return program with given uuid
 	 * @should throw error when multiple programs with same uuid are found
 	 */
@@ -222,13 +222,13 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	public Program getProgramByUuid(String uuid);
 	
 	/**
-	 * Get a program state by its uuid. There should be only one of these in the database. 
-	 * If multiple are found, an error is thrown.
+	 * Get a program state by its uuid. There should be only one of these in the database. If
+	 * multiple are found, an error is thrown.
 	 * 
-	 * @param uuid	the universally unique identifier
+	 * @param uuid the universally unique identifier
 	 * @return the program which matches the given uuid
 	 * @should find object given valid uuid
-	 * @should return null if no object found with given uuid 
+	 * @should return null if no object found with given uuid
 	 * @should return program state with the given uuid
 	 * @should throw error when multiple program states with same uuid are found
 	 */
@@ -272,10 +272,10 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * 
 	 * @param patient if supplied all PatientPrograms returned will be for this Patient
 	 * @param program if supplied all PatientPrograms returned will be for this Program
-	 * @param minEnrollmentDate if supplied will limit PatientPrograms to those with enrollments
-	 *            on or after this Date
-	 * @param maxEnrollmentDate if supplied will limit PatientPrograms to those with enrollments
-	 *            on or before this Date
+	 * @param minEnrollmentDate if supplied will limit PatientPrograms to those with enrollments on
+	 *            or after this Date
+	 * @param maxEnrollmentDate if supplied will limit PatientPrograms to those with enrollments on
+	 *            or before this Date
 	 * @param minCompletionDate if supplied will limit PatientPrograms to those completed on or
 	 *            after this Date OR not yet completed
 	 * @param maxCompletionDate if supplied will limit PatientPrograms to those completed on or
@@ -289,8 +289,8 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @should return patient programs with dateEnrolled on or after maxEnrollmentDate
 	 * @should return patient programs with dateCompleted on or before minCompletionDate
 	 * @should return patient programs with dateCompleted on or after maxCompletionDate
-	 * @should return patient programs with dateCompleted 
-	 * @should return patient programs not yet completed 
+	 * @should return patient programs with dateCompleted
+	 * @should return patient programs not yet completed
 	 * @should return voided patient programs
 	 * @should return all patient programs when all parameters are null
 	 * @should return empty list when matches not found
@@ -359,7 +359,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @param uuid
 	 * @return
 	 * @should find object given valid uuid
-	 * @should return null if no object found with given uuid 
+	 * @should return null if no object found with given uuid
 	 */
 	@Transactional(readOnly = true)
 	public ProgramWorkflow getWorkflowByUuid(String uuid);
@@ -370,9 +370,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @param conceptStateConversion - The ConceptStateConversion to save
 	 * @return ConceptStateConversion - The saved ConceptStateConversion
 	 * @throws APIException
-	 * 
-	 * @should save state conversion 
-	 * 
+	 * @should save state conversion
 	 */
 	@Authorized( { PrivilegeConstants.ADD_PATIENT_PROGRAMS, PrivilegeConstants.EDIT_PATIENT_PROGRAMS })
 	public ConceptStateConversion saveConceptStateConversion(ConceptStateConversion conceptStateConversion)
@@ -388,9 +386,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 *         conceptStateConversion.conceptStateConversionId =
 	 *         <code>conceptStateConversionId</code> passed in.
 	 * @throws APIException
-	 * 
 	 * @should return concept state conversion for given identifier
-	 * 
 	 */
 	@Authorized( { PrivilegeConstants.VIEW_PROGRAMS })
 	@Transactional(readOnly = true)
@@ -401,7 +397,6 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * 
 	 * @return List<ConceptStateConversion> of all ConceptStateConversions that exist
 	 * @throws APIException
-	 * 
 	 * @should return all concept state conversions
 	 */
 	@Authorized( { PrivilegeConstants.VIEW_PROGRAMS })
@@ -424,7 +419,6 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @param conceptStateConversion the ConceptStateConversion to clean out of the database.
 	 * @param cascade <code>true</code> to delete related content
 	 * @throws APIException
-	 * 
 	 * @should cascade delete given concept state conversion when given cascade is true
 	 * @should not cascade delete given concept state conversion when given cascade is false
 	 */
@@ -440,12 +434,10 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @param reasonForExit - the Concept to trigger the ConceptStateConversion
 	 * @param dateConverted - the Date of the ConceptStateConversion
 	 * @throws APIException
-	 * 
 	 * @should trigger state conversion successfully
 	 * @should fail if patient is invalid
 	 * @should fail if trigger is invalid
 	 * @should fail if date converted is invalid
-	 * 
 	 */
 	public void triggerStateConversion(Patient patient, Concept reasonForExit, Date dateConverted) throws APIException;
 	
@@ -458,7 +450,6 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @return ConceptStateConversion that matches the passed <code>ProgramWorkflow</code> and
 	 *         <code>Concept</code>
 	 * @throws APIException
-	 * 
 	 * @should return concept state conversion for given workflow and trigger
 	 */
 	@Transactional(readOnly = true)
@@ -554,18 +545,17 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	@Authorized( { PrivilegeConstants.MANAGE_PROGRAMS })
 	public void voidWorkflow(ProgramWorkflow programWorkflow, String reason) throws APIException;
 	
-
 	/**
-	 * Get a state by its uuid. There should be only one of these in the database. 
-	 * If multiple are found, an error is thrown.
+	 * Get a state by its uuid. There should be only one of these in the database. If multiple are
+	 * found, an error is thrown.
 	 * 
 	 * @param uuid the universally unique identifier
 	 * @return the program workflow state which matches the given uuid
 	 * @should find object given valid uuid
-	 * @should return null if no object found with given uuid 
+	 * @should return null if no object found with given uuid
 	 * @should return a state with the given uuid
 	 * @should throw an error when multiple states with same uuid are found
-	 */	
+	 */
 	@Transactional(readOnly = true)
 	public ProgramWorkflowState getStateByUuid(String uuid);
 	
@@ -848,18 +838,17 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	public void changeToState(PatientProgram patientProgram, ProgramWorkflow workflow, ProgramWorkflowState state,
 	                          Date onDate) throws APIException;
 	
-	
 	/**
-	 * Get a patient program by its uuid. There should be only one of these in the database. 
-	 * If multiple are found, an error is thrown.
+	 * Get a patient program by its uuid. There should be only one of these in the database. If
+	 * multiple are found, an error is thrown.
 	 * 
 	 * @param uuid the universally unique identifier
 	 * @return the patient program which matches the given uuid
 	 * @should find object given valid uuid
-	 * @should return null if no object found with given uuid 
+	 * @should return null if no object found with given uuid
 	 * @should return a patient program with the given uuid
 	 * @should throw an error when multiple patient programs with same uuid are found
-	 */	
+	 */
 	@Transactional(readOnly = true)
 	public PatientProgram getPatientProgramByUuid(String uuid);
 	
@@ -870,7 +859,6 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @param programs
 	 * @return List<PatientProgram> for all Patients in the given Cohort that are in the given
 	 *         programs
-	 *         
 	 * @should return patient programs with patients in given cohort and programs
 	 * @should return patient programs with patients in given cohort
 	 * @should return patient programs with programs in given programs
@@ -878,8 +866,7 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	 * @should not return null when there is no match for given cohort and program
 	 * @should not throw NullPointerException when given cohort and programs are null
 	 * @should not fail when given cohort is empty
-     * @should not fail when given program is empty
-	 * 
+	 * @should not fail when given program is empty
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_PATIENT_PROGRAMS })
@@ -958,16 +945,16 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	public void deleteConceptStateConversion(ConceptStateConversion csc) throws APIException;
 	
 	/**
-	 * Get a concept state conversion by its uuid. There should be only one of these in the database. 
-	 * If multiple are found, an error is thrown.
+	 * Get a concept state conversion by its uuid. There should be only one of these in the
+	 * database. If multiple are found, an error is thrown.
 	 * 
-	 * @param uuid	the universally unique identifier
+	 * @param uuid the universally unique identifier
 	 * @return the concept state conversion which matches the given uuid
 	 * @should find object given valid uuid
-	 * @should return null if no object found with given uuid 
+	 * @should return null if no object found with given uuid
 	 * @should return a program state with the given uuid
 	 * @should throw an error when multiple program states with same uuid are found
-	 */		
+	 */
 	@Transactional(readOnly = true)
 	public ConceptStateConversion getConceptStateConversionByUuid(String uuid);
 }

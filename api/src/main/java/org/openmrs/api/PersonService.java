@@ -118,7 +118,8 @@ public interface PersonService {
 	 * @deprecated @see {@link #getSimilarPeople(String, Integer, String)}
 	 */
 	@Deprecated
-    public Set<Person> getSimilarPeople(String nameSearch, Integer birthyear, String gender, String personType) throws APIException;
+	public Set<Person> getSimilarPeople(String nameSearch, Integer birthyear, String gender, String personType)
+	                                                                                                           throws APIException;
 	
 	/**
 	 * Find a person matching the <tt>searchPhrase</tt> search string
@@ -136,7 +137,7 @@ public interface PersonService {
 	/**
 	 * @deprecated @see #getPeople(...)
 	 */
-    @Deprecated
+	@Deprecated
 	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_PERSONS })
 	public Set<Person> findPeople(String searchPhrase, boolean includeVoided) throws APIException;
@@ -144,7 +145,7 @@ public interface PersonService {
 	/**
 	 * @deprecated @see #getPeople(...)
 	 */
-    @Deprecated
+	@Deprecated
 	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_PERSONS })
 	public Set<Person> findPeople(String searchPhrase, boolean includeVoided, String roles) throws APIException;
@@ -152,7 +153,7 @@ public interface PersonService {
 	/**
 	 * @deprecated @see #getPeople(...)
 	 */
-    @Deprecated
+	@Deprecated
 	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_PERSONS })
 	public Set<Person> findPeople(String searchPhrase, boolean includeVoided, List<String> roles) throws APIException;
@@ -195,14 +196,14 @@ public interface PersonService {
 	/**
 	 * @deprecated {@link #savePersonAttributeType(PersonAttributeType)}
 	 */
-    @Deprecated
+	@Deprecated
 	@Authorized( { PrivilegeConstants.MANAGE_PERSON_ATTRIBUTE_TYPES })
 	public void createPersonAttributeType(PersonAttributeType type) throws APIException;
 	
 	/**
 	 * @deprecated replaced by #purgePersonAttributeType(PersonAttributeType)
 	 */
-    @Deprecated
+	@Deprecated
 	@Authorized( { PrivilegeConstants.PURGE_PERSON_ATTRIBUTE_TYPES })
 	public void deletePersonAttributeType(PersonAttributeType type) throws APIException;
 	
@@ -244,14 +245,14 @@ public interface PersonService {
 	 * @param attrTypeId
 	 * @deprecated use (@link #purgePersonAttributeType(PersonAttributeType))
 	 */
-    @Deprecated
+	@Deprecated
 	@Authorized( { PrivilegeConstants.MANAGE_PERSON_ATTRIBUTE_TYPES })
 	public void deletePersonAttributeType(Integer attrTypeId) throws APIException;
 	
 	/**
 	 * @deprecated use {@link #savePersonAttributeType(PersonAttributeType)}
 	 */
-    @Deprecated
+	@Deprecated
 	@Authorized( { PrivilegeConstants.MANAGE_PERSON_ATTRIBUTE_TYPES })
 	public void updatePersonAttributeType(PersonAttributeType type) throws APIException;
 	
@@ -282,7 +283,7 @@ public interface PersonService {
 	/**
 	 * @deprecated use {@link #getAllPersonAttributeTypes()}
 	 */
-    @Deprecated
+	@Deprecated
 	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_PERSON_ATTRIBUTE_TYPES })
 	public List<PersonAttributeType> getPersonAttributeTypes() throws APIException;
@@ -356,7 +357,7 @@ public interface PersonService {
 	/**
 	 * @deprecated use {@link #getPersonAttributeTypeByName(String)}
 	 */
-    @Deprecated
+	@Deprecated
 	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_PERSON_ATTRIBUTE_TYPES })
 	public PersonAttributeType getPersonAttributeType(String typeName) throws APIException;
@@ -414,7 +415,7 @@ public interface PersonService {
 	/**
 	 * @deprecated use {@link #getAllRelationships()}
 	 */
-    @Deprecated
+	@Deprecated
 	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_RELATIONSHIPS })
 	public List<Relationship> getRelationships() throws APIException;
@@ -437,7 +438,7 @@ public interface PersonService {
 	/**
 	 * @deprecated use {@link #getRelationshipsByPerson(Person)}
 	 */
-    @Deprecated
+	@Deprecated
 	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_RELATIONSHIPS })
 	public List<Relationship> getRelationships(Person p, boolean showVoided) throws APIException;
@@ -445,7 +446,7 @@ public interface PersonService {
 	/**
 	 * @deprecated use {@link #getRelationshipsByPerson(Person)}
 	 */
-    @Deprecated
+	@Deprecated
 	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_RELATIONSHIPS })
 	public List<Relationship> getRelationships(Person p) throws APIException;
@@ -453,7 +454,7 @@ public interface PersonService {
 	/**
 	 * @deprecated use {@link #getRelationships(...)}
 	 */
-    @Deprecated
+	@Deprecated
 	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_RELATIONSHIPS })
 	public List<Relationship> getRelationshipsTo(Person toPerson, RelationshipType relType) throws APIException;
@@ -502,7 +503,7 @@ public interface PersonService {
 	 * @deprecated use {@link #getAllRelationshipTypes()}
 	 */
 	@Deprecated
-    @Transactional(readOnly = true)
+	@Transactional(readOnly = true)
 	public List<RelationshipType> getRelationshipTypes() throws APIException;
 	
 	/**
@@ -536,7 +537,7 @@ public interface PersonService {
 	 * @deprecated use {@link #getRelationshipTypeByName(String)}
 	 */
 	@Deprecated
-    @Transactional(readOnly = true)
+	@Transactional(readOnly = true)
 	public RelationshipType findRelationshipType(String relationshipTypeName) throws APIException;
 	
 	/**
@@ -582,7 +583,7 @@ public interface PersonService {
 	/**
 	 * @deprecated replaced by #saveRelationship(Relationship)
 	 */
-    @Deprecated
+	@Deprecated
 	@Authorized( { PrivilegeConstants.ADD_RELATIONSHIPS })
 	public void createRelationship(Relationship relationship) throws APIException;
 	
@@ -602,14 +603,14 @@ public interface PersonService {
 	/**
 	 * @deprecated replaced by #saveRelationship(Relationship)
 	 */
-    @Deprecated
+	@Deprecated
 	@Authorized( { PrivilegeConstants.EDIT_RELATIONSHIPS })
 	public void updateRelationship(Relationship relationship) throws APIException;
 	
 	/**
 	 * @deprecated replaced by #purgeRelationship(Relationship)
 	 */
-    @Deprecated
+	@Deprecated
 	@Authorized( { PrivilegeConstants.PURGE_RELATIONSHIPS })
 	public void deleteRelationship(Relationship relationship) throws APIException;
 	
@@ -649,7 +650,7 @@ public interface PersonService {
 	/**
 	 * @deprecated replaced by #savePerson(Person)
 	 */
-    @Deprecated
+	@Deprecated
 	@Authorized( { PrivilegeConstants.ADD_PERSONS })
 	public Person createPerson(Person person) throws APIException;
 	
@@ -668,14 +669,14 @@ public interface PersonService {
 	/**
 	 * @deprecated use {@link #savePerson(Person)}
 	 */
-    @Deprecated
+	@Deprecated
 	@Authorized( { PrivilegeConstants.EDIT_PERSONS })
 	public void updatePerson(Person person) throws APIException;
 	
 	/**
 	 * @deprecated replaced by #purgePerson(Person)
 	 */
-    @Deprecated
+	@Deprecated
 	@Authorized( { PrivilegeConstants.PURGE_PERSONS })
 	public void deletePerson(Person person) throws APIException;
 	
@@ -755,7 +756,7 @@ public interface PersonService {
 	 * 
 	 * @deprecated use {@link #getPerson(Integer)}
 	 */
-    @Deprecated
+	@Deprecated
 	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_PERSONS })
 	public Person getPerson(Patient pat) throws APIException;
@@ -766,7 +767,7 @@ public interface PersonService {
 	 * 
 	 * @deprecated use {@link #getPerson(Integer)}
 	 */
-    @Deprecated
+	@Deprecated
 	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_PERSONS })
 	public Person getPerson(User user) throws APIException;
@@ -774,7 +775,7 @@ public interface PersonService {
 	/**
 	 * @deprecated replaced with #saveRelationshipType(RelationshipType)
 	 */
-    @Deprecated
+	@Deprecated
 	@Authorized( { PrivilegeConstants.MANAGE_RELATIONSHIP_TYPES })
 	public void createRelationshipType(RelationshipType relationshipType) throws APIException;
 	
@@ -793,14 +794,14 @@ public interface PersonService {
 	/**
 	 * @deprecated replaced by #saveRelationshipType(RelationshipType)
 	 */
-    @Deprecated
+	@Deprecated
 	@Authorized( { PrivilegeConstants.MANAGE_RELATIONSHIP_TYPES })
 	public void updateRelationshipType(RelationshipType relationshipType) throws APIException;
 	
 	/**
 	 * @deprecated replaced by #purgeRelationshipType(RelationshipType)
 	 */
-    @Deprecated
+	@Deprecated
 	@Authorized( { PrivilegeConstants.PURGE_RELATIONSHIP_TYPES })
 	public void deleteRelationshipType(RelationshipType relationshipType) throws APIException;
 	
@@ -831,7 +832,7 @@ public interface PersonService {
 	/**
 	 * @deprecated use {@link #getPersonAttributeTypes(String, String)}
 	 */
-    @Deprecated
+	@Deprecated
 	@Transactional(readOnly = true)
 	// this has anonymous access because its cached into generic js files
 	public List<PersonAttributeType> getPersonAttributeTypes(String personType, String viewType) throws APIException;
@@ -845,7 +846,7 @@ public interface PersonService {
 	 * @deprecated replaced by parsePersonName(String)
 	 */
 	@Deprecated
-    public PersonName splitPersonName(String name);
+	public PersonName splitPersonName(String name);
 	
 	/**
 	 * Parses a name into a PersonName (separate Given, Middle, and Family names)
@@ -877,7 +878,7 @@ public interface PersonService {
 	 * @deprecated use {@link #getRelationshipMap(RelationshipType)}
 	 */
 	@Deprecated
-    @Transactional(readOnly = true)
+	@Transactional(readOnly = true)
 	public Map<Person, List<Person>> getRelationships(RelationshipType relationshipType) throws APIException;
 	
 }

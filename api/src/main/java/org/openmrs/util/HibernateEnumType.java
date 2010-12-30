@@ -34,16 +34,16 @@ import org.hibernate.usertype.UserType;
 public class HibernateEnumType implements UserType, ParameterizedType {
 	
 	private static final int[] SQL_TYPES = { Types.VARCHAR };
-
+	
 	private Class clazz = null;
 	
 	public void setParameterValues(Properties params) {
-    	String enumClassName = params.getProperty("enumClassName");
-    	if (enumClassName == null) {
-    		throw new MappingException("enumClassName parameter not specified");
+		String enumClassName = params.getProperty("enumClassName");
+		if (enumClassName == null) {
+			throw new MappingException("enumClassName parameter not specified");
 		}
-  
-	  	try {
+		
+		try {
 			this.clazz = Class.forName(enumClassName);
 		}
 		catch (ClassNotFoundException e) {

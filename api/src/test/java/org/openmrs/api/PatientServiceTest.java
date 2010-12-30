@@ -80,14 +80,14 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	protected static final String FIND_PATIENTS_XML = "org/openmrs/api/include/PatientServiceTest-findPatients.xml";
 	
 	private static final String ACTIVE_LIST_INITIAL_XML = "org/openmrs/api/include/ActiveListTest.xml";
-
+	
 	private static final String PATIENT_RELATIONSHIPS_XML = "org/openmrs/api/include/PersonServiceTest-createRelationship.xml";
-
+	
 	// Services
 	protected static PatientService patientService = null;
 	
 	protected static PersonService personService = null;
-
+	
 	protected static AdministrationService adminService = null;
 	
 	protected static LocationService locationService = null;
@@ -1988,7 +1988,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		
 		List<Problem> problems = patientService.getProblems(p);
 		assertEqualsInt(1, problems.size());
-
+		
 		Problem problem = new Problem();
 		problem.setPerson(p);
 		problem.setProblem(Context.getConceptService().getConcept(88));//Aspirin
@@ -2077,7 +2077,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	private void assertEqualsInt(int expected, Integer actual) throws Exception {
 		Assert.assertEquals(Integer.valueOf(expected), actual);
 	}
-
+	
 	/**
 	 * @see {@link PatientService#mergePatients(Patient,Patient)}
 	 */
@@ -2103,12 +2103,12 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		//  * 7->999 (type 4)
 		//  * 502->999 (type 1)
 		//  * 7->999 (type 1)
-
+		
 		// check for a relationship that should not be duplicated: 2->1 and 999->1
 		List<Relationship> rels = personService.getRelationships(preferred, new Person(1), new RelationshipType(2));
 		assertEquals("duplicate relationships were not removed", 1, rels.size());
 	}
-
+	
 	/**
 	 * @see {@link PatientService#mergePatients(Patient,Patient)}
 	 */
@@ -2125,7 +2125,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		List<Relationship> rels = personService.getRelationshipsByPerson(notPreferred);
 		assertTrue("there should not be any relationships for non preferred", rels.isEmpty());
 	}
-
+	
 	/**
 	 * @see {@link PatientService#mergePatients(Patient,Patient)}
 	 */
@@ -2159,5 +2159,5 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		rels = personService.getRelationships(new Person(7), preferred, new RelationshipType(1));
 		assertEquals("7->999 (type 1) was removed", 1, rels.size());
 	}
-
+	
 }

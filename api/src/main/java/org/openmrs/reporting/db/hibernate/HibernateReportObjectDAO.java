@@ -162,7 +162,8 @@ public class HibernateReportObjectDAO implements ReportObjectDAO {
 			}
 			catch (Exception e) {
 				// Catch exceptions if there are exceptions deserializing any individual report object, and warn
-				log.warn("Unable to deserialize report object: " + wrappedObject.getName() + " (" + wrappedObject.getId() + ")");
+				log.warn("Unable to deserialize report object: " + wrappedObject.getName() + " (" + wrappedObject.getId()
+				        + ")");
 			}
 		}
 		return reportObjects;

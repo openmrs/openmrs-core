@@ -27,7 +27,7 @@ import org.openmrs.util.OpenmrsUtil;
 public abstract class ActiveListItem extends BaseOpenmrsData {
 	
 	protected Integer activeListId;
-
+	
 	protected Person person;
 	
 	protected ActiveListType activeListType;
@@ -57,7 +57,7 @@ public abstract class ActiveListItem extends BaseOpenmrsData {
 		this.concept = concept;
 		this.startDate = startDate;
 	}
-
+	
 	/**
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */

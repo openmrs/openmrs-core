@@ -41,11 +41,11 @@ public class UserListController {
 	 * @should include disabled users if requested
 	 */
 	@RequestMapping(value = "/admin/users/users")
-	public void displayUsers(ModelMap model, 
-			@RequestParam(value="action", required=false) String action, 
-			@RequestParam(value="name", required=false) String name,
-			@RequestParam(value="role", required=false) Role role,
-			@RequestParam(value="includeDisabled", required=false) Boolean includeDisabled) throws Exception {
+	public void displayUsers(ModelMap model, @RequestParam(value = "action", required = false) String action,
+	                         @RequestParam(value = "name", required = false) String name,
+	                         @RequestParam(value = "role", required = false) Role role,
+	                         @RequestParam(value = "includeDisabled", required = false) Boolean includeDisabled)
+	                                                                                                            throws Exception {
 		
 		if (Context.isAuthenticated()) {
 			List<User> users = getUsers(action, name, role, includeDisabled);
@@ -55,7 +55,7 @@ public class UserListController {
 	
 	protected List<User> getUsers(String action, String name, Role role, Boolean includeDisabled) {
 		// only do the search if there are search parameters or 
-		if (action !=null || StringUtils.hasText(name) || role != null) {
+		if (action != null || StringUtils.hasText(name) || role != null) {
 			if (includeDisabled == null)
 				includeDisabled = false;
 			List<Role> roles = null;
@@ -65,7 +65,7 @@ public class UserListController {
 			if (!StringUtils.hasText(name))
 				name = null;
 			
-			return  Context.getUserService().getUsers(name, roles, includeDisabled);
+			return Context.getUserService().getUsers(name, roles, includeDisabled);
 		}
 		
 		return new ArrayList<User>();

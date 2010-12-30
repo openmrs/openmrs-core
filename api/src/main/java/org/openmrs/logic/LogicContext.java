@@ -59,8 +59,7 @@ public interface LogicContext {
 	 * @throws LogicException
 	 * @see org.openmrs.logic.LogicService#eval(Patient, LogicCriteria, Map)
 	 */
-	public Result eval(Patient patient, LogicCriteria criteria, Map<String, Object> parameters)
-	                                                                                                    throws LogicException;
+	public Result eval(Patient patient, LogicCriteria criteria, Map<String, Object> parameters) throws LogicException;
 	
 	/**
 	 * Fetches a logic data source by name

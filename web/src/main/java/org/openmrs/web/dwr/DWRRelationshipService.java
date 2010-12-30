@@ -49,8 +49,8 @@ public class DWRRelationshipService {
 		Context.clearSession();
 		
 		Vector<RelationshipListItem> ret = new Vector<RelationshipListItem>();
-		List<Relationship> rels = Context.getPersonService()
-		        .getRelationshipsByPerson(Context.getPersonService().getPerson(personId));
+		List<Relationship> rels = Context.getPersonService().getRelationshipsByPerson(
+		    Context.getPersonService().getPerson(personId));
 		for (Relationship rel : rels) {
 			if (!rel.isVoided()
 			        && (relationshipTypeId == null || rel.getRelationshipType().getRelationshipTypeId().equals(

@@ -404,10 +404,10 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	public void createReport(Report report) throws APIException {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_ADD_REPORTS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_ADD_REPORTS);
-
+		
 		dao.createReport(report);
 	}
-
+	
 	/**
 	 * Update Report
 	 *
@@ -419,10 +419,10 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	public void updateReport(Report report) throws APIException {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_REPORTS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_REPORTS);
-
+		
 		dao.updateReport(report);
 	}
-
+	
 	/**
 	 * Delete Report
 	 *
@@ -434,10 +434,10 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	public void deleteReport(Report report) throws APIException {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_DELETE_REPORTS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_DELETE_REPORTS);
-
+		
 		dao.deleteReport(report);
 	}
-
+	
 	/**
 	 * Create a new Report Object
 	 *
@@ -449,10 +449,10 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	public void createReportObject(AbstractReportObject reportObject) throws APIException {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_ADD_REPORT_OBJECTS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_ADD_REPORT_OBJECTS);
-
+		
 		dao.createReportObject(reportObject);
 	}
-
+	
 	/**
 	 * Update Report Object
 	 *
@@ -464,10 +464,10 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	public void updateReportObject(AbstractReportObject reportObject) throws APIException {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_EDIT_REPORT_OBJECTS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_EDIT_REPORT_OBJECTS);
-
+		
 		dao.updateReportObject(reportObject);
 	}
-
+	
 	/**
 	 * Delete Report Object
 	 *
@@ -479,10 +479,10 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	public void deleteReportObject(Integer reportObjectId) throws APIException {
 		if (!Context.hasPrivilege(OpenmrsConstants.PRIV_DELETE_REPORT_OBJECTS))
 			throw new APIAuthenticationException("Privilege required: " + OpenmrsConstants.PRIV_DELETE_REPORT_OBJECTS);
-
+		
 		dao.deleteReportObject(reportObjectId);
 	}
-
+	
 	/**
 	 * @deprecated moved to ConceptServiceImpl
 	 */
@@ -490,7 +490,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	public void updateConceptWord(Concept concept) throws APIException {
 		Context.getConceptService().updateConceptWord(concept);
 	}
-
+	
 	/**
 	 * @deprecated moved to ConceptServiceImpl
 	 */
@@ -498,7 +498,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	public void updateConceptWords() throws APIException {
 		Context.getConceptService().updateConceptWords();
 	}
-
+	
 	/**
 	 * @deprecated moved to ConceptService
 	 */
@@ -506,7 +506,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	public void updateConceptWords(Integer conceptIdStart, Integer conceptIdEnd) throws APIException {
 		Context.getConceptService().updateConceptWords(conceptIdStart, conceptIdEnd);
 	}
-
+	
 	/**
 	 * @deprecated moved to ConceptService
 	 */
@@ -514,7 +514,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	public void updateConceptSetDerived(Concept concept) throws APIException {
 		Context.getConceptService().updateConceptSetDerived(concept);
 	}
-
+	
 	/**
 	 * @deprecated moved to ConceptService
 	 */
@@ -522,7 +522,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	public void updateConceptSetDerived() throws APIException {
 		Context.getConceptService().updateConceptSetDerived();
 	}
-
+	
 	/**
 	 * @deprecated moved to ConceptService
 	 */
@@ -530,7 +530,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	public void createConceptProposal(ConceptProposal cp) throws APIException {
 		Context.getConceptService().saveConceptProposal(cp);
 	}
-
+	
 	/**
 	 * @deprecated moved to ConceptService
 	 */
@@ -538,7 +538,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	public void updateConceptProposal(ConceptProposal cp) throws APIException {
 		Context.getConceptService().saveConceptProposal(cp);
 	}
-
+	
 	/**
 	 * @deprecated moved to ConceptService
 	 */
@@ -546,7 +546,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	public void mapConceptProposalToConcept(ConceptProposal cp, Concept mappedConcept) throws APIException {
 		Context.getConceptService().mapConceptProposalToConcept(cp, mappedConcept);
 	}
-
+	
 	/**
 	 * @deprecated moved to ConceptService
 	 * @see org.openmrs.api.AdministrationService#rejectConceptProposal(org.openmrs.ConceptProposal)
@@ -555,7 +555,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	public void rejectConceptProposal(ConceptProposal cp) {
 		Context.getConceptService().rejectConceptProposal(cp);
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.AdministrationService#mrnGeneratorLog(java.lang.String,
 	 *      java.lang.Integer, java.lang.Integer)
@@ -565,10 +565,10 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	public void mrnGeneratorLog(String site, Integer start, Integer count) throws APIException {
 		if (!Context.hasPrivilege(PrivilegeConstants.EDIT_PATIENTS))
 			throw new APIAuthenticationException("Privilege required: " + PrivilegeConstants.EDIT_PATIENTS);
-
+		
 		dao.mrnGeneratorLog(site, start, count);
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.AdministrationService#getMRNGeneratorLog()
 	 * @deprecated
@@ -979,7 +979,8 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		// update the GlobalLocaleList.allowedLocales by faking a global property change
 		if (allowedLocales == null) {
 			// use a default language of "english" if they have cleared this GP for some reason
-			String currentPropertyValue = getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST, LocaleUtility.getDefaultLocale().toString());
+			String currentPropertyValue = getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST,
+			    LocaleUtility.getDefaultLocale().toString());
 			GlobalProperty allowedLocalesProperty = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST,
 			        currentPropertyValue);
 			globalLocaleList.globalPropertyChanged(allowedLocalesProperty);
@@ -1012,7 +1013,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 				} else {
 					// to be sure, check for language-only matches
 					for (Locale allowedLocale : allowedLocales) {
-						if (( "".equals(allowedLocale.getCountry()) || "".equals(possibleLocale.getCountry()))
+						if (("".equals(allowedLocale.getCountry()) || "".equals(possibleLocale.getCountry()))
 						        && (allowedLocale.getLanguage().equals(possibleLocale.getLanguage()))) {
 							presentationLocales.add(possibleLocale);
 							break;
@@ -1073,7 +1074,8 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 			return (T) defaultValue.getClass().getDeclaredConstructor(String.class).newInstance(propVal);
 		}
 		catch (InstantiationException e) {
-			throw new APIException(defaultValue.getClass().getName() + " is not able to be instantiated with value: " + propVal, e);
+			throw new APIException(defaultValue.getClass().getName() + " is not able to be instantiated with value: "
+			        + propVal, e);
 		}
 		catch (NoSuchMethodException e) {
 			throw new APIException(defaultValue.getClass().getName() + " does not have a string constructor", e);
@@ -1083,5 +1085,5 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 			return defaultValue;
 		}
 	}
-
+	
 }

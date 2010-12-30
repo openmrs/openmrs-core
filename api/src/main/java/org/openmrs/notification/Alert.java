@@ -341,21 +341,21 @@ public class Alert extends BaseOpenmrsObject implements Auditable, Serializable 
 	public String toString() {
 		return "Alert: #" + alertId;
 	}
-
+	
 	/**
 	 * @since 1.5
-     * @see org.openmrs.OpenmrsObject#getId()
-     */
-    public Integer getId() {
-	    return getAlertId();
-    }
-
+	 * @see org.openmrs.OpenmrsObject#getId()
+	 */
+	public Integer getId() {
+		return getAlertId();
+	}
+	
 	/**
 	 * @since 1.5
-     * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
-     */
-    public void setId(Integer id) {
-	    setAlertId(id);
-    }
+	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
+	 */
+	public void setId(Integer id) {
+		setAlertId(id);
+	}
 	
 }

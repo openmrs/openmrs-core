@@ -27,10 +27,11 @@ import org.springframework.util.StringUtils;
  * @since 1.7
  */
 public class LocationTagEditor extends PropertyEditorSupport {
-
+	
 	private static Log log = LogFactory.getLog(LocationTagEditor.class);
 	
-	public LocationTagEditor() { }
+	public LocationTagEditor() {
+	}
 	
 	/**
 	 * @see java.beans.PropertyEditorSupport#setAsText(java.lang.String)

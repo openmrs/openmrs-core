@@ -193,7 +193,7 @@ public class ModuleFactory {
 				for (Module mod : getLoadedModulesCoreFirst()) {
 					if (mod.isStarted())
 						continue; // skip over modules that are already started
-
+						
 					String key = mod.getModuleId() + ".started";
 					String startedProp = as.getGlobalProperty(key, null);
 					String mandatoryProp = as.getGlobalProperty(mod.getModuleId() + ".mandatory", null);
@@ -295,7 +295,7 @@ public class ModuleFactory {
 		List<Module> list = new ArrayList<Module>(getLoadedModules());
 		final Collection<String> coreModuleIds = ModuleConstants.CORE_MODULES.keySet();
 		Collections.sort(list, new Comparator<Module>() {
-
+			
 			public int compare(Module left, Module right) {
 				Integer leftVal = coreModuleIds.contains(left.getModuleId()) ? 0 : 1;
 				Integer rightVal = coreModuleIds.contains(right.getModuleId()) ? 0 : 1;
@@ -707,7 +707,7 @@ public class ModuleFactory {
 	private static void runLiquibase(Module module) {
 		JarFile jarFile = null;
 		boolean liquibaseFileExists = false;
-
+		
 		try {
 			try {
 				jarFile = new JarFile(module.getFile());

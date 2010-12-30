@@ -90,7 +90,7 @@ public class PatientFormController extends PersonFormController {
 	 *      org.springframework.web.bind.ServletRequestDataBinder)
 	 */
 	@Override
-    protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
+	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
 		
 		NumberFormat nf = NumberFormat.getInstance(Context.getLocale());
@@ -108,7 +108,7 @@ public class PatientFormController extends PersonFormController {
 	 *      org.springframework.validation.BindException)
 	 */
 	@Override
-    protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object object,
+	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object object,
 	                                             BindException errors) throws Exception {
 		
 		Patient patient = (Patient) object;
@@ -397,7 +397,7 @@ public class PatientFormController extends PersonFormController {
 	 *      org.springframework.validation.BindException)
 	 */
 	@Override
-    protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
+	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
 	                                BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
@@ -582,7 +582,7 @@ public class PatientFormController extends PersonFormController {
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
 	@Override
-    protected Object formBackingObject(HttpServletRequest request) throws ServletException {
+	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 		
 		Patient patient = null;
 		
@@ -640,7 +640,7 @@ public class PatientFormController extends PersonFormController {
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest)
 	 */
 	@Override
-    protected Map<String, Object> referenceData(HttpServletRequest request, Object obj, Errors err) throws Exception {
+	protected Map<String, Object> referenceData(HttpServletRequest request, Object obj, Errors err) throws Exception {
 		
 		Patient patient = (Patient) obj;
 		List<Form> forms = new Vector<Form>();

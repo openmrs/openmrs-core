@@ -85,7 +85,7 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	private String personVoidReason;
 	
 	private boolean isPatient;
-		
+	
 	/**
 	 * Convenience map from PersonAttributeType.name to PersonAttribute.<br/>
 	 * <br/>
@@ -736,9 +736,9 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	/**
 	 * Convenience method to calculate this person's age based on the birthdate
 	 * For a person who lived 1990 to 2000, age would be -5 in 1985, 5 in 1995, 10 in 2000, and 10 2010.
-     *
+	 *
 	 * @return Returns age as an Integer.
-     * @should get correct age after death
+	 * @should get correct age after death
 	 */
 	public Integer getAge() {
 		return getAge(null);
@@ -761,19 +761,19 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	public Integer getAge(Date onDate) {
 		if (birthdate == null)
 			return null;
-
-        // Use default end date as today.
-        Calendar today = Calendar.getInstance();
-        // But if given, use the given date.
-        if (onDate != null)
+		
+		// Use default end date as today.
+		Calendar today = Calendar.getInstance();
+		// But if given, use the given date.
+		if (onDate != null)
 			today.setTime(onDate);
-
-        // If date given is after date of death then use date of death as end date
-        if(getDeathDate() != null && today.getTime().after(getDeathDate())) {
-            today.setTime(getDeathDate());
-        }
-
-        Calendar bday = Calendar.getInstance();
+		
+		// If date given is after date of death then use date of death as end date
+		if (getDeathDate() != null && today.getTime().after(getDeathDate())) {
+			today.setTime(getDeathDate());
+		}
+		
+		Calendar bday = Calendar.getInstance();
 		bday.setTime(birthdate);
 		
 		int age = today.get(Calendar.YEAR) - bday.get(Calendar.YEAR);
@@ -905,7 +905,7 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	public boolean isUser() {
 		return false;
 	}
-		
+	
 	/**
 	 * @see java.lang.Object#toString()
 	 */

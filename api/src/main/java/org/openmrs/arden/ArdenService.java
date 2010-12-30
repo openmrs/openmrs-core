@@ -37,5 +37,5 @@ public interface ArdenService {
 	 * @since 1.8
 	 */
 	public void compile(String ardenRuleDefinition, String outFolder) throws APIException;
-
+	
 }

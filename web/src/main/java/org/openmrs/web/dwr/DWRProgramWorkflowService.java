@@ -63,10 +63,12 @@ public class DWRProgramWorkflowService {
 				li.setId(wf.getProgramWorkflowId());
 				try {
 					li.setName(wf.getConcept().getName().getName());
-				} catch (NullPointerException ex) { }
+				}
+				catch (NullPointerException ex) {}
 				try {
 					li.setDescription(wf.getConcept().getDescription().getDescription());
-				} catch (NullPointerException ex) { }
+				}
+				catch (NullPointerException ex) {}
 				ret.add(li);
 			}
 		return ret;
@@ -87,7 +89,8 @@ public class DWRProgramWorkflowService {
 					li.setId(state.getProgramWorkflowStateId());
 					try {
 						li.setName(state.getConcept().getName(Context.getLocale(), false).getName());
-					} catch (NullPointerException ex) { }
+					}
+					catch (NullPointerException ex) {}
 					ret.add(li);
 				}
 			} else {
@@ -121,8 +124,8 @@ public class DWRProgramWorkflowService {
 	 * @throws ParseException
 	 */
 	@Deprecated
-	public void updatePatientProgram(Integer patientProgramId, String enrollmentDateYmd, 
-									 String completionDateYmd) throws ParseException {
+	public void updatePatientProgram(Integer patientProgramId, String enrollmentDateYmd, String completionDateYmd)
+	                                                                                                              throws ParseException {
 		updatePatientProgram(patientProgramId, enrollmentDateYmd, completionDateYmd, null);
 	}
 	
@@ -142,12 +145,12 @@ public class DWRProgramWorkflowService {
 	 * @param locationId
 	 * @throws ParseException
 	 */
-	public void updatePatientProgram(Integer patientProgramId, String enrollmentDateYmd, 
-									 String completionDateYmd, Integer locationId) throws ParseException {
+	public void updatePatientProgram(Integer patientProgramId, String enrollmentDateYmd, String completionDateYmd,
+	                                 Integer locationId) throws ParseException {
 		PatientProgram pp = Context.getProgramWorkflowService().getPatientProgram(patientProgramId);
 		Location loc = null;
 		if (locationId != null) {
-			loc	= Context.getLocationService().getLocation(locationId);
+			loc = Context.getLocationService().getLocation(locationId);
 		}
 		Date dateEnrolled = null;
 		Date dateCompleted = null;

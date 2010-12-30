@@ -112,7 +112,7 @@ public class FormConstants {
 	
 	@Deprecated
 	public static final Integer CLASS_DRUG = HL7Constants.CLASS_DRUG;
-
+	
 	/**
 	 * Used in hl7 sextuplets: 123^Primary name^99DCT^345^Chosen name^99NAM
 	 */

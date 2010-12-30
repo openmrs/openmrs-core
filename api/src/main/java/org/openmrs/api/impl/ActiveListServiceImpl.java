@@ -34,7 +34,7 @@ import org.openmrs.api.db.ActiveListDAO;
  * @see org.openmrs.api.ActiveListService
  */
 public class ActiveListServiceImpl extends BaseOpenmrsService implements ActiveListService {
-
+	
 	private static final Log log = LogFactory.getLog(ActiveListServiceImpl.class);
 	
 	private ActiveListDAO dao;
@@ -45,7 +45,7 @@ public class ActiveListServiceImpl extends BaseOpenmrsService implements ActiveL
 	public void setActiveListDAO(ActiveListDAO dao) {
 		this.dao = dao;
 	}
-
+	
 	/**
 	 * @see org.openmrs.api.ActiveListService#getActiveListItems(org.openmrs.Person,
 	 *      org.openmrs.activelist.ActiveListType)
@@ -69,8 +69,7 @@ public class ActiveListServiceImpl extends BaseOpenmrsService implements ActiveL
 	 * @see org.openmrs.api.ActiveListService#getActiveListItem(java.lang.Class, java.lang.Integer)
 	 */
 	@Override
-	public <T extends ActiveListItem> T getActiveListItem(Class<T> clazz, Integer activeListItemId)
-	                                                                                                         throws APIException {
+	public <T extends ActiveListItem> T getActiveListItem(Class<T> clazz, Integer activeListItemId) throws APIException {
 		return dao.getActiveListItem(clazz, activeListItemId);
 	}
 	

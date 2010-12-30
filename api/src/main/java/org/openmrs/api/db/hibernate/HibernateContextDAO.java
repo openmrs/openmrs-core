@@ -183,7 +183,7 @@ public class HibernateContextDAO implements ContextDAO {
 		return (User) sessionFactory.getCurrentSession().createQuery("from User u where u.uuid = :uuid").setString("uuid",
 		    uuid).uniqueResult();
 	}
-
+	
 	/**
 	 * Call the UserService to save the given user while proxying the privileges needed to do so.
 	 * 
