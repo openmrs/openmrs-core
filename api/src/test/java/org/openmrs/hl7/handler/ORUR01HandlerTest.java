@@ -259,9 +259,8 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should create basic concept proposal", method = "processMessage(Message)")
 	public void processMessage_shouldCreateBasicConceptProposal() throws Exception {
 		
-		// sanity check to make sure we have no concept proposals already
-		List<ConceptProposal> proposals = Context.getConceptService().getAllConceptProposals(false);
-		Assert.assertEquals(0, proposals.size());
+		// remember initial occurrence of proposal's text in the model
+		int initialOccurrences = Context.getConceptService().getConceptProposals("PELVIC MASS").size();
 		
 		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080924022306||ORU^R01|Z185fTD0YozQ5kvQZD7i|P|2.5|1||||||||3^AMRS.ELD.FORMID\r"
 		        + "PID|||7^^^^||Joe^S^Mith||\r"
@@ -274,8 +273,9 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		Message hl7message = parser.parse(hl7string);
 		router.processMessage(hl7message);
 		
-		ConceptProposal proposal = Context.getConceptService().getAllConceptProposals(false).get(0);
-		assertEquals("PELVIC MASS", proposal.getOriginalText());
+		//make sure that the proposal was added
+		Assert.assertEquals("Processing of the HL7 message did not result in the new proposal being added to the model",
+		    initialOccurrences + 1, Context.getConceptService().getConceptProposals("PELVIC MASS").size());
 		
 	}
 	
@@ -288,9 +288,8 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should create concept proposal and with obs alongside", method = "processMessage(Message)")
 	public void processMessage_shouldCreateConceptProposalAndWithObsAlongside() throws Exception {
 		
-		// sanity check to make sure we have no concept proposals already
-		List<ConceptProposal> proposals = Context.getConceptService().getAllConceptProposals(false);
-		Assert.assertEquals(0, proposals.size());
+		// remember initial occurrence of proposal's text in the model
+		int initialOccurrences = Context.getConceptService().getConceptProposals("ASDFASDFASDF").size();
 		
 		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20081006115934||ORU^R01|a1NZBpKqu54QyrWBEUKf|P|2.5|1||||||||3^AMRS.ELD.FORMID\r"
 		        + "PID|||7^^^^~asdf^^^^||Joe^ ^Smith||\r"
@@ -305,9 +304,9 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 		Message hl7message = parser.parse(hl7string);
 		router.processMessage(hl7message);
 		
-		ConceptProposal proposal = Context.getConceptService().getAllConceptProposals(false).get(0);
-		Assert.assertNotNull(proposal);
-		assertEquals("ASDFASDFASDF", proposal.getOriginalText());
+		//make sure that the proposal was added
+		Assert.assertEquals("Processing of the HL7 message did not result in the new proposal being added to the model",
+		    initialOccurrences + 1, Context.getConceptService().getConceptProposals("ASDFASDFASDF").size());
 		
 	}
 	
@@ -770,7 +769,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should set value_Coded matching a boolean concept for obs if the answer is 0 or 1 and Question datatype is coded", method = "processMessage(Message)")
 	public void processMessage_shouldSetValue_CodedMatchingABooleanConceptForObsIfTheAnswerIs0Or1AndQuestionDatatypeIsCoded()
-	                                                                                                                         throws Exception {
+	        throws Exception {
 		ObsService os = Context.getObsService();
 		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\r"
 		        + "PID|||7^^^^||Collet^Test^Chebaskwony||\r"
@@ -829,7 +828,7 @@ public class ORUR01HandlerTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should set value_Numeric for obs if Question datatype is Numeric and the answer is either 0 or 1", method = "processMessage(Message)")
 	public void processMessage_shouldSetValue_NumericForObsIfQuestionDatatypeIsNumericAndTheAnswerIsEither0Or1()
-	                                                                                                            throws Exception {
+	        throws Exception {
 		ObsService os = Context.getObsService();
 		String hl7string = "MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\r"
 		        + "PID|||7^^^^||Collet^Test^Chebaskwony||\r"

@@ -940,6 +940,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 		if (cp.getState().equals(OpenmrsConstants.CONCEPT_PROPOSAL_REJECT)) {
 			cp.rejectConceptProposal();
 			saveConceptProposal(cp);
+			return null;
 		}
 		
 		if (mappedConcept == null)

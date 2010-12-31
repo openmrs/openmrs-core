@@ -1069,7 +1069,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void saveConcept_shouldUpdateConceptIfConceptIsAttachedToAnObservationAndItIsANonDatatypeChange()
-	                                                                                                        throws Exception {
+	        throws Exception {
 		executeDataSet(INITIAL_CONCEPTS_XML);
 		
 		Concept concept = conceptService.getConcept(1);
@@ -1427,4 +1427,62 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		Assert.assertNotNull(concept.getPreferredName(Locale.FRENCH));
 		Assert.assertNotNull(concept.getPreferredName(Locale.JAPANESE));
 	}
+	
+	/**
+	 * @see ConceptService#mapConceptProposalToConcept(ConceptProposal,Concept)
+	 * @verifies not require mapped concept on reject action
+	 */
+	@Test
+	public void mapConceptProposalToConcept_shouldNotRequireMappedConceptOnRejectAction() throws Exception {
+		String uuid = "af4ae460-0e2b-11e0-a94b-469c3c5a0c2f";
+		ConceptProposal proposal = Context.getConceptService().getConceptProposalByUuid(uuid);
+		Assert.assertNotNull("could not find proposal " + uuid, proposal);
+		proposal.setState(OpenmrsConstants.CONCEPT_PROPOSAL_REJECT);
+		try {
+			Context.getConceptService().mapConceptProposalToConcept(proposal, null);
+		}
+		catch (APIException ex) {
+			Assert.fail("cought APIException when rejecting a proposal with null mapped concept");
+		}
+	}
+	
+	/**
+	 * @see ConceptService#mapConceptProposalToConcept(ConceptProposal,Concept)
+	 * @verifies allow rejecting proposals
+	 */
+	@Test
+	public void mapConceptProposalToConcept_shouldAllowRejectingProposals() throws Exception {
+		String uuid = "af4ae460-0e2b-11e0-a94b-469c3c5a0c2f";
+		ConceptProposal proposal = Context.getConceptService().getConceptProposalByUuid(uuid);
+		Assert.assertNotNull("could not find proposal " + uuid, proposal);
+		//because there is a  different unit test for the case when mapped proposal is null, we use a non-null concept here for our testing
+		Concept concept = conceptService.getConcept(3);
+		Assert.assertNotNull("could not find target concept to use for the test", concept);
+		proposal.setState(OpenmrsConstants.CONCEPT_PROPOSAL_REJECT);
+		Context.getConceptService().mapConceptProposalToConcept(proposal, concept);
+		//retrieve the proposal from the model and check its new state
+		ConceptProposal persisted = Context.getConceptService().getConceptProposalByUuid(uuid);
+		Assert.assertEquals(OpenmrsConstants.CONCEPT_PROPOSAL_REJECT, persisted.getState());
+	}
+	
+	/**
+	 * @see ConceptService#mapConceptProposalToConcept(ConceptProposal,Concept)
+	 * @verifies throw APIException when mapping to null concept
+	 */
+	@Test
+	public void mapConceptProposalToConcept_shouldThrowAPIExceptionWhenMappingToNullConcept() throws Exception {
+		String uuid = "af4ae460-0e2b-11e0-a94b-469c3c5a0c2f";
+		ConceptProposal proposal = Context.getConceptService().getConceptProposalByUuid(uuid);
+		Assert.assertNotNull("could not find proposal " + uuid, proposal);
+		Assert.assertFalse("proposal used for testing should not have the Reject state", proposal.getState().equals(
+		    OpenmrsConstants.CONCEPT_PROPOSAL_REJECT));
+		try {
+			Context.getConceptService().mapConceptProposalToConcept(proposal, null);
+			Assert.fail("Attempt to map proposal to null concept did not throw an APIException");
+		}
+		catch (APIException ex) {
+			//this is the correct path
+		}
+	}
+	
 }
