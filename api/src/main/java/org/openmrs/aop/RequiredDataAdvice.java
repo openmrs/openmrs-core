@@ -16,6 +16,7 @@ package org.openmrs.aop;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -303,6 +304,7 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 	 * @return true if it is a Collection of some kind of OpenmrsObject
 	 * @should return true if class is openmrsObject list
 	 * @should return true if class is openmrsObject set
+	 * @should return false if collection is empty regardless of type held
 	 */
 	@SuppressWarnings("unchecked")
 	protected static boolean isOpenmrsObjectCollection(Object arg) {
@@ -310,8 +312,13 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 		// kind of a hacky way to test for a list of openmrs objects, but java strips out
 		// the generic info for 1.4 compat, so we don't have accesst to that info here
 		try {
-			@SuppressWarnings("unused")
-			Collection<OpenmrsObject> openmrsObjects = (Collection<OpenmrsObject>) arg;
+			Collection<Object> objects = (Collection<Object>) arg;
+			if (!objects.isEmpty()) {
+				@SuppressWarnings("unused")
+				OpenmrsObject openmrsObject = (OpenmrsObject) objects.iterator().next();
+			} else {
+				return false;
+			}
 			return true;
 		}
 		catch (ClassCastException ex) {

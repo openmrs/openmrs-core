@@ -18,6 +18,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -165,6 +166,10 @@ public class RequiredDataAdviceTest {
 	public void isOpenmrsObjectCollection_shouldReturnFalseIfFieldIsCollectionOfOtherObjects() throws Exception {
 		Assert.assertFalse(RequiredDataAdvice.isOpenmrsObjectCollection(ClassWithOtherFields.class
 		        .getDeclaredField("locales")));
+		List<String> list = new LinkedList<String>();
+		list.add("Test");
+		Assert.assertFalse(RequiredDataAdvice.isOpenmrsObjectCollection(list));
+		
 	}
 	
 	/**
@@ -193,6 +198,8 @@ public class RequiredDataAdviceTest {
 	@Verifies(value = "should return true if class is openmrsObject list", method = "isOpenmrsObjectCollection(Object)")
 	public void isOpenmrsObjectCollection_shouldReturnTrueIfClassIsOpenmrsObjectList() throws Exception {
 		List<Location> locations = new ArrayList<Location>();
+		Location location = new Location();
+		locations.add(location);
 		Assert.assertTrue(RequiredDataAdvice.isOpenmrsObjectCollection(locations));
 	}
 	
@@ -203,7 +210,19 @@ public class RequiredDataAdviceTest {
 	@Verifies(value = "should return true if class is openmrsObject set", method = "isOpenmrsObjectCollection(Object)")
 	public void isOpenmrsObjectCollection_shouldReturnTrueIfClassIsOpenmrsObjectSet() throws Exception {
 		Set<Location> locations = new HashSet<Location>();
+		Location location = new Location();
+		locations.add(location);
 		Assert.assertTrue(RequiredDataAdvice.isOpenmrsObjectCollection(locations));
+	}
+	
+	/**
+	 * @see RequiredDataAdvice#isOpenmrsObjectCollection(Class<*>,Object)
+	 */
+	@Test
+	@Verifies(value = "should return false if collection is empty regardless of type held", method = "isOpenmrsObjectCollection(Object)")
+	public void isOpenmrsObjectCollection_shouldReturnFalseIfCollectionIsEmptyRegardlessOfTypeHeld() throws Exception {
+		Set<Location> locations = new HashSet<Location>();
+		Assert.assertFalse(RequiredDataAdvice.isOpenmrsObjectCollection(locations));
 	}
 	
 	/**
