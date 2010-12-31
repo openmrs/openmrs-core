@@ -98,7 +98,7 @@
             <configuration>
                <webXml>${project.build.directory}/jetty/WEB-INF/web.xml</webXml>
                <webAppConfig>
-                  <contextPath>/openmrs</contextPath>
+                  <contextPath>/${webapp.name}</contextPath>
                   <!--enable reloading static resources -->
                   <overrideDescriptor>src/test/resources/override-web.xml</overrideDescriptor>
                   <extraClasspath>target/classes;../api/target/classes;../web/target/classes</extraClasspath>
@@ -127,7 +127,7 @@
                   <configuration>
                      <webXml>${project.build.directory}/jetty/WEB-INF/web.xml</webXml>
                      <webAppConfig>
-                        <contextPath>/openmrs</contextPath>
+                        <contextPath>/${webapp.name}</contextPath>
                         <!--enable reloading static resources -->
                         <overrideDescriptor>src/test/resources/override-web.xml</overrideDescriptor>
                         <extraClasspath>target/classes;../api/target/classes;../web/target/classes</extraClasspath>
@@ -193,6 +193,6 @@
    <properties>
       <WEBAPP.DISPLAY.NAME>OpenMRS</WEBAPP.DISPLAY.NAME>
       <WEBAPP.DESCRIPTION>An Open-Source EMR System</WEBAPP.DESCRIPTION>
-      <webapp.name>${project.parent.artifactId}</webapp.name>
+      <webapp.name>openmrs</webapp.name>
    </properties>
 </project>
