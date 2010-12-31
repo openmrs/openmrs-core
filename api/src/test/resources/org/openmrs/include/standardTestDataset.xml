@@ -134,6 +134,7 @@
   <concept_numeric concept_id="5497" hi_normal="1497.0" low_critical="99.0" low_normal="445.0" hi_critical="1800.0" hi_absolute="2500.0" low_absolute="0.0" units="cells/mmL" precise="false"/>
   <concept_numeric concept_id="5089" hi_normal="250.0" low_critical="0.0" units="kg" precise="true"/>
   <concept_proposal concept_proposal_id="1" original_text="I want this concept but I can't have it" state="REJECT" encounter_id="3" obs_concept_id="4" creator="1" date_created="2009-06-03 13:55:12.0" uuid="57a68666-5067-11de-80cb-001e378eb67e"/>
+  <concept_proposal concept_proposal_id="2" original_text="unmapped concept proposal" state="UNMAPPED" encounter_id="3" creator="1" date_created="2010-12-21 08:41:10.0" uuid="af4ae460-0e2b-11e0-a94b-469c3c5a0c2f"/>  
   <concept_source concept_source_id="1" name="Some Standardized Terminology" description="A made up source" hl7_code="SSTRM" creator="1" date_created="2005-02-24 00:00:00.0" uuid="00001827-639f-4cb4-961f-1e025bf80000" retired="false"/>
   <concept_source concept_source_id="2" name="SNOMED CT" description="'Systematized Nomenclature of Medicine--Clinical Terms' is a comprehensive clinical terminology" hl7_code="SNOMED-CT" creator="1" date_created="2005-02-24 00:00:00.0" uuid="j3nfjk33-639f-4cb4-961f-1e025b908433" retired="false"/>
   <concept_set concept_set_id="1" concept_id="18" concept_set="23" sort_weight="0.0" creator="1" date_created="2008-08-18 12:38:58.0" uuid="1a111827-639f-4cb4-961f-1e025bf88d90"/>
