@@ -209,7 +209,6 @@ public class EncounterFormController extends SimpleFormController {
 		
 		// obsIds of obs that were edited
 		List<Integer> editedObs = new Vector<Integer>();
-		List<Integer> obsAfterEncounter = new Vector<Integer>();
 		
 		// the map returned to the form
 		// This is a mapping between the formfield and a list of the Obs/ObsGroup in that field
@@ -239,12 +238,6 @@ public class EncounterFormController extends SimpleFormController {
 			// loop over the encounter's observations to find the edited obs
 			String reason = "";
 			for (Obs o : encounter.getObsAtTopLevel(true)) {
-				
-				//get the obs that was not created with the original encounter
-				Encounter en = o.getEncounter();
-				if(o.getDateCreated().compareTo(en.getDateCreated())!=0){
-					obsAfterEncounter.add(o.getId());
-				}
 				
 				// only the voided obs have been edited
 				if (o.isVoided()) {
@@ -291,8 +284,6 @@ public class EncounterFormController extends SimpleFormController {
 		map.put("locale", Context.getLocale());
 		map.put("editedObs", editedObs);
 	
-		map.put("obsAfterEncounter", obsAfterEncounter);
-
 		return map;
 	}
 	
