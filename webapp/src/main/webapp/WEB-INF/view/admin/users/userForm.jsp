@@ -106,7 +106,9 @@
 			</tr>
 		</table>
 	</fieldset>	
-
+	
+	<br/>
+	
 	<fieldset>
 		<legend><spring:message code="User.loginInfo"/></legend>
 		<table>
@@ -231,7 +233,45 @@
 	</fieldset>
 
 	<br />
-	
+	<c:if test="${isNewUser == false}" >
+		<fieldset><legend><spring:message code="User.creationInfo" /></legend>
+		<table>
+			<tr>
+				<td><spring:message code="general.createdBy" /></td>
+				<td><c:if test="${user.creator == null}">
+					<span class="error">${status.errorMessage}</span>
+				</c:if>
+				<openmrs:format user="${user.creator}" />
+				</td>
+			</tr>
+
+			<tr>
+				<td><spring:message code="general.dateCreated" /></td>	
+				<td><openmrs:formatDate date="${user.dateCreated}" type="long"/></td>
+			</tr>
+		</table>
+		</fieldset>
+	</c:if>
+	<c:if test="${user.retired == true}">
+		<br/>
+		<fieldset><legend><spring:message code="User.retiredInfo" /></legend>
+		<table>
+			<tr>
+				<td><spring:message code="User.retiredBy" /></td>
+			<td><c:if test="${user.retiredBy == null}">
+				<span class="error">${status.errorMessage}</span>
+			</c:if>
+			<openmrs:format user="${user.retiredBy}" />
+			</td>
+			</tr>
+			<tr>
+				<td><spring:message code="User.dateRetired" /></td>
+				<td><openmrs:formatDate date="${user.dateRetired}" type="long"/></td>
+			</tr>
+		</table>
+		</fieldset>
+ 	</c:if>
+
 	<br/>
 	
 	<input type="submit" id="saveButton" name="action" value="<spring:message code="User.save"/>" />
