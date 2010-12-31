@@ -194,18 +194,28 @@ function toggleRowVisibilityForClass(elementId, className, hasDescriptionRow) {
 		
 		for (var i=1; i<rows.length; i++) {
 			if (rows[i].style.display == "") {
-				var c = "";
-				if (rows[i].className.substr(0, className.length) == className)
-					c = className + " ";
-				if (oddRow)
-					c = c + "oddRow";
-				else
-					c = c + "evenRow";
-				oddRow = !oddRow;
-				
-				rows[i].className = c;
+				var thisIndex = i;
+				var nextIndex = i;
 				if (hasDescriptionRow)
-					rows[++i].className = c;
+					nextIndex = ++i;
+				
+				if (oddRow) {
+					removeClass(rows[thisIndex], "evenRow");
+					addClass(rows[thisIndex], "oddRow");
+					if (hasDescriptionRow) {
+						removeClass(rows[nextIndex], "evenRow");
+						addClass(rows[nextIndex], "oddRow");
+					}
+				}
+				else {
+					removeClass(rows[thisIndex], "oddRow");
+					addClass(rows[thisIndex], "evenRow");
+					if (hasDescriptionRow) {
+						removeClass(rows[nextIndex], "oddRow");
+						addClass(rows[nextIndex], "evenRow");
+					}
+				}
+				oddRow = !oddRow;
 			}
 		}
 	}

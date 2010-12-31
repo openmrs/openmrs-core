@@ -28,7 +28,7 @@
 				<td class="obsAlerts" valign="middle" align="right">
 					<c:choose>
 						<c:when test="${fn:contains(editedObs, obs.obsId)}"><span class="obsEdit"><img src="${pageContext.request.contextPath}/images/alert.gif" title='<spring:message code="Obs.edited"/>' /></span></c:when>
-						<c:otherwise><span class="obsEdit"><c:if test="${fn:contains(obsAfterEncounter, obs.obsId)}"><img src="${pageContext.request.contextPath}/images/alertPlus.gif" title='<spring:message code="Obs.afterEncounter.created"/>' /></c:if></span></c:otherwise>
+						<c:otherwise><span class="obsEdit"><c:if test="${obs.encounter != null && obs.dateCreated != obs.encounter.dateCreated}"><img src="${pageContext.request.contextPath}/images/alertPlus.gif" title='<spring:message code="Obs.afterEncounter.created"/>' /></c:if></span></c:otherwise>
 					</c:choose>
 					<span class="obsComment"><c:if test="${obs.comment != null && obs.comment != ''}"><img src="${pageContext.request.contextPath}/images/note.gif" title="${obs.comment}" /></c:if></span>
 				</td>
