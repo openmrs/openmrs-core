@@ -140,23 +140,36 @@
 			
 			<openmrs:extensionPoint pointId="org.openmrs.admin.list" type="html">
 				<openmrs:hasPrivilege privilege="${extension.requiredPrivilege}">
-					<div class="adminMenuList">
-						<h4><spring:message code="${extension.title}"/></h4>
-						<ul id="menu">
-							<c:forEach items="${extension.links}" var="link">
-								<c:choose>
-									<c:when test="${fn:startsWith(link.key, 'module/')}">
-										<%-- Added for backwards compatibility for most links --%>
-										<li><a href="${pageContext.request.contextPath}/${link.key}"><spring:message code="${link.value}"/></a></li>
-									</c:when>
-									<c:otherwise>
-										<%-- Allows for external absolute links  --%>
-										<li><a href='<c:url value="${link.key}"/>'><spring:message code='${link.value}'/></a></li>
-									</c:otherwise>
-								</c:choose>
-							</c:forEach>
-						</ul>
-					</div>
+					<c:catch var="ex">
+						<div class="adminMenuList">
+							<h4><spring:message code="${extension.title}"/></h4>
+							<ul id="menu">
+								<c:forEach items="${extension.links}" var="link">
+									<c:choose>
+										<c:when test="${fn:startsWith(link.key, 'module/')}">
+											<%-- Added for backwards compatibility for most links --%>
+											<li><a href="${pageContext.request.contextPath}/${link.key}"><spring:message code="${link.value}"/></a></li>
+										</c:when>
+										<c:otherwise>
+											<%-- Allows for external absolute links  --%>
+											<li><a href='<c:url value="${link.key}"/>'><spring:message code='${link.value}'/></a></li>
+										</c:otherwise>
+									</c:choose>
+								</c:forEach>
+							</ul>
+						</div>
+					</c:catch>
+					<c:if test="${not empty ex}">
+						<div class="error">
+							<spring:message code="fix.error.plain"/> <br/>
+							<b>${ex}</b>
+							<div style="height: 200px; width: 800px; overflow: scroll">
+								<c:forEach var="row" items="${ex.cause.stackTrace}">
+									${row}<br/>
+								</c:forEach>
+							</div>
+						</div>
+					</c:if>
 				</openmrs:hasPrivilege>
 			</openmrs:extensionPoint>
 			
