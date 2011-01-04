@@ -1154,6 +1154,23 @@ public class OpenmrsUtil {
 		return ret;
 	}
 	
+	/**
+	 * Tests if the given String starts with any of the specified prefixes
+	 * 
+	 * @param str the string to test
+	 * @param prefixes an array of prefixes to test against
+	 * @return true if the String starts with any of the specified prefixes, otherwise false.
+	 */
+	public static boolean stringStartsWith(String str, String[] prefixes) {
+		for (String prefix : prefixes) {
+			if (StringUtils.startsWith(str, prefix)) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+
 	public static boolean isConceptInList(Concept concept, List<Concept> list) {
 		boolean ret = false;
 		
