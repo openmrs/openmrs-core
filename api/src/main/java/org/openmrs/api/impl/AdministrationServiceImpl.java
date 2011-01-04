@@ -17,13 +17,17 @@ import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -53,6 +57,8 @@ import org.openmrs.api.EventListeners;
 import org.openmrs.api.GlobalPropertyListener;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.AdministrationDAO;
+import org.openmrs.module.Module;
+import org.openmrs.module.ModuleFactory;
 import org.openmrs.module.ModuleUtil;
 import org.openmrs.reporting.AbstractReportObject;
 import org.openmrs.reporting.Report;
@@ -1086,6 +1092,110 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 			log.error("Unable to turn value '" + propVal + "' into type " + defaultValue.getClass().getName(), e);
 			return defaultValue;
 		}
+	}
+	
+	/**
+	 * @see org.openmrs.api.AdministrationService#getSystemInformation()
+	 */
+	public Map<String, Map<String, String>> getSystemInformation() throws APIException {
+		Map<String, Map<String, String>> systemInfoMap = new LinkedHashMap<String, Map<String, String>>();
+		
+		systemInfoMap.put("SystemInfo.title.openmrsInformation", new LinkedHashMap<String, String>() {
+			
+			private static final long serialVersionUID = 1L;
+			
+			{
+				put("SystemInfo.OpenMRSInstallation.systemDate", new SimpleDateFormat("yyyy-MM-dd").format(Calendar.getInstance().getTime()));
+				put("SystemInfo.OpenMRSInstallation.systemTime", new SimpleDateFormat("HH:mm:ss").format(Calendar.getInstance().getTime()));
+				put("SystemInfo.OpenMRSInstallation.openmrsVersion", OpenmrsConstants.OPENMRS_VERSION);
+				try {
+					put("SystemInfo.hostname", InetAddress.getLocalHost().getCanonicalHostName());
+				}
+				catch (UnknownHostException e) {
+					put("SystemInfo.hostname", "Unknown host: " + e.getMessage());
+				}
+			}
+		});
+		
+		systemInfoMap.put("SystemInfo.title.javaRuntimeEnvironmentInformation", new LinkedHashMap<String, String>() {
+			
+			Properties properties = System.getProperties();
+			
+			private static final long serialVersionUID = 1L;
+			
+			{
+				put("SystemInfo.JavaRuntimeEnv.operatingSystem", properties.getProperty("os.name"));
+				put("SystemInfo.JavaRuntimeEnv.operatingSystemArch", properties.getProperty("os.arch"));
+				put("SystemInfo.JavaRuntimeEnv.operatingSystemVersion", properties.getProperty("os.version"));
+				put("SystemInfo.JavaRuntimeEnv.javaVersion", properties.getProperty("java.version"));
+				put("SystemInfo.JavaRuntimeEnv.javaVendor", properties.getProperty("java.vendor"));
+				put("SystemInfo.JavaRuntimeEnv.jvmVersion", properties.getProperty("java.vm.version"));
+				put("SystemInfo.JavaRuntimeEnv.jvmVendor", properties.getProperty("java.vm.vendor"));
+				put("SystemInfo.JavaRuntimeEnv.javaRuntimeName", properties.getProperty("java.runtime.name"));
+				put("SystemInfo.JavaRuntimeEnv.javaRuntimeVersion", properties.getProperty("java.runtime.version"));
+				put("SystemInfo.JavaRuntimeEnv.userName", properties.getProperty("user.name"));
+				put("SystemInfo.JavaRuntimeEnv.systemLanguage", properties.getProperty("user.language"));
+				put("SystemInfo.JavaRuntimeEnv.systemTimezone", properties.getProperty("user.timezone"));
+				put("SystemInfo.JavaRuntimeEnv.fileSystemEncoding", properties.getProperty("sun.jnu.encoding"));
+				put("SystemInfo.JavaRuntimeEnv.userDirectory", properties.getProperty("user.dir"));
+				put("SystemInfo.JavaRuntimeEnv.tempDirectory", properties.getProperty("java.io.tmpdir"));
+			}
+		});
+		
+		systemInfoMap.put("SystemInfo.title.memoryInformation", new LinkedHashMap<String, String>() {
+			
+			private static final long serialVersionUID = 1L;
+			
+			Runtime runtime = Runtime.getRuntime();
+			
+			{
+				put("SystemInfo.Memory.totalMemory", convertToMegaBytes(runtime.totalMemory()));
+				put("SystemInfo.Memory.freeMemory", convertToMegaBytes(runtime.freeMemory()));
+				put("SystemInfo.Memory.maximumHeapSize", convertToMegaBytes(runtime.maxMemory()));
+				
+			}
+		});
+		
+		systemInfoMap.put("SystemInfo.title.dataBaseInformation", new LinkedHashMap<String, String>() {
+			
+			Properties properties = Context.getRuntimeProperties();
+			
+			private static final long serialVersionUID = 1L;
+			
+			{
+				put("SystemInfo.Database.name", OpenmrsConstants.DATABASE_NAME);
+				put("SystemInfo.Database.connectionURL", properties.getProperty("connection.url"));
+				put("SystemInfo.Database.userName", properties.getProperty("connection.username"));
+				put("SystemInfo.Database.driver", properties.getProperty("hibernate.connection.driver_class"));
+				put("SystemInfo.Database.dialect", properties.getProperty("hibernate.dialect"));
+				
+			}
+		});
+		
+		systemInfoMap.put("SystemInfo.title.moduleInformation", new LinkedHashMap<String, String>() {
+			
+			private static final long serialVersionUID = 1L;
+			
+			{
+				put("SystemInfo.Module.repositoryPath", ModuleUtil.getModuleRepository().getAbsolutePath());
+				Collection<Module> loadedModules = ModuleFactory.getLoadedModules();
+				for (Module module : loadedModules) {
+					String moduleInfo = module.getVersion() + " " +  (module.isStarted() ? "" : Context.getMessageSourceService().getMessage("Module.notStarted")) ;
+					put(module.getName(), moduleInfo);
+				}
+			}
+		});
+		
+		return systemInfoMap;
+	}
+	
+	/**
+	 * @param bytes to be converted into mega bytes
+	 * @return memory in mega bytes
+	 */
+	private String convertToMegaBytes(long bytes) {
+		int ONE_KILO_BYTE = 1024;
+		return String.valueOf(bytes / ONE_KILO_BYTE / ONE_KILO_BYTE) + " MB";
 	}
 	
 }

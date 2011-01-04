@@ -1,48 +1,30 @@
-<%@ include file="/WEB-INF/template/include.jsp" %>
+<%@ include file="/WEB-INF/template/include.jsp"%>
 
-<openmrs:require privilege="Audit" otherwise="/login.htm" redirect="/admin/maintenance/systemInfo.htm"/>
+<openmrs:require privilege="View Administration Functions" otherwise="/login.htm"
+	redirect="/admin/maintenance/systemInfo.htm" />
 
-<%@ include file="/WEB-INF/template/header.jsp" %>
-<%@ include file="localHeader.jsp" %>
+<%@ include file="/WEB-INF/template/header.jsp"%>
+<%@ include file="localHeader.jsp"%>
 
-<%@ page import="org.openmrs.api.context.Context" %>
-<%
-	pageContext.setAttribute("vars", Context.getAdministrationService().getSystemVariables());
-	pageContext.setAttribute("schedVars", Context.getSchedulerService().getSystemVariables());
-%>
-	
-<br />
-<h2><spring:message code="SystemInfo.title"/></h2>
-<br />
-
-<table cellpadding="4" cellspacing="0">
-	<tr>
-		<th><spring:message code="SystemInfo.name"/></th>
-		<th><spring:message code="SystemInfo.value"/></th>
-	</tr>
-	<c:forEach items="${vars}" var="var" varStatus="status">
-		<tr class='${status.index % 2 == 0 ? "evenRow" : "oddRow"}'>
-			<td>${var.key}</td>
-			<td>${var.value}</td>
+<table cellpadding="4" cellspacing="0" border="0" width="50%">
+<c:forEach items="${systemInfo}" var="var" varStatus="status">
+		<tr>
+			<td colspan="2">
+				<br/>
+				<h3><spring:message code="${ var.key }" /></h3>
+			</td>
 		</tr>
-	</c:forEach>
+		<tr>
+			<th align="left"><spring:message code="SystemInfo.name" /></th>
+			<th align="left"><spring:message code="SystemInfo.value" /></th>
+		</tr>
+		<c:forEach items="${var.value}" var="info" varStatus="status">
+			<tr class='${status.index % 2 == 0 ? "evenRow" : "oddRow"}'>
+				<td nowrap><spring:message code="${ info.key }" /></td>
+				<td>${ info.value }</td>
+			</tr>
+		</c:forEach>
+</c:forEach>
 </table>
 
-<br/><br/>
-<h3><spring:message code="Scheduler.header"/></h3>
-<table cellpadding="4" cellspacing="0">
-	<tr>
-		<th><spring:message code="SystemInfo.name"/></th>
-		<th><spring:message code="SystemInfo.value"/></th>
-	</tr>
-	<c:forEach items="${schedVars}" var="var" varStatus="status">
-		<tr class='${status.index % 2 == 0 ? "evenRow" : "oddRow"}'>
-			<td>${var.key}</td>
-			<td>${var.value}</td>
-		</tr>
-	</c:forEach>
-</table>
-
-
-<br/><br/>
-<%@ include file="/WEB-INF/template/footer.jsp" %>
+<%@ include file="/WEB-INF/template/footer.jsp"%>

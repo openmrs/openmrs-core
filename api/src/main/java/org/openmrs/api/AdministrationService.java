@@ -16,6 +16,7 @@ package org.openmrs.api;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 
@@ -432,6 +433,16 @@ public interface AdministrationService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_ADMIN_FUNCTIONS)
 	public SortedMap<String, String> getSystemVariables() throws APIException;
+	
+	/**
+	 * Get a map of all the System Information. Java, user, time, runtime properties, etc
+	 * 
+	 * @return a map from variable name to a map of the information
+	 * @should return all system information
+	 */
+	@Transactional(readOnly = true)
+	@Authorized(PrivilegeConstants.VIEW_ADMIN_FUNCTIONS)
+	public Map<String, Map<String, String>> getSystemInformation() throws APIException;
 	
 	/**
 	 * Gets the global property that has the given <code>propertyName</code>.
