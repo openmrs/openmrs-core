@@ -54,6 +54,9 @@ public class BinaryDataHandler extends AbstractHandler implements ComplexObsHand
 	 * (If the view is set to "download", all commas and whitespace are stripped out of the filename to
 	 * fix an issue where the browser wasn't handling a filename with whitespace properly)
 	 * 
+	 * Note that if the method cannot find the file associated with the obs, it
+	 * returns the obs with the ComplexData = null
+	 * 
 	 * @see ComplexObsHandler#getObs(Obs, String)
 	 */
 	@Override
@@ -66,9 +69,15 @@ public class BinaryDataHandler extends AbstractHandler implements ComplexObsHand
 			if ("download".equals(view)) {
 				originalFilename = originalFilename.replace(",", "").replace(" ", "");
 			}
-			FileInputStream fileInputStream = new FileInputStream(file);
-			obs.setComplexData(new ComplexData(originalFilename, new BufferedInputStream(fileInputStream)));
-			fileInputStream.close();
+			
+			if (file.exists()) {
+				FileInputStream fileInputStream = new FileInputStream(file);	
+				obs.setComplexData(new ComplexData(originalFilename, new BufferedInputStream(fileInputStream)));
+				fileInputStream.close();
+			}
+			else {
+				log.error("Unable to find file associated with complex obs " + obs.getId());
+			}
 		}
 		catch (Exception e) {
 			throw new APIException("An error occurred while trying to get binary complex obs.", e);
