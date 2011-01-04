@@ -23,6 +23,8 @@ import org.aopalliance.intercept.MethodInvocation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.annotation.Logging;
+import org.openmrs.util.OpenmrsUtil;
+import org.springframework.util.StringUtils;
 
 /**
  * This class provides the log4j aop around advice for our service layer. This advice is placed on
@@ -38,6 +40,12 @@ public class LoggingAdvice implements MethodInterceptor {
 	protected static final Log log = LogFactory.getLog("org.openmrs.api");
 	
 	/**
+	 * List of all method name prefixes that result in INFO-level log messages
+	 */
+	private static final String[] SETTER_METHOD_PREFIXES = { "save", "create", "update", "void", "unvoid", "retire",
+	        "unretire", "delete", "purge" };
+
+	/**
 	 * This method prints out debug statements for getters and info statements for everything else
 	 * ("setters"). If debugging is turned on, execution time for each method is printed as well.
 	 * This method is called for every method in the Class/Service that it is wrapped around. This
@@ -51,9 +59,9 @@ public class LoggingAdvice implements MethodInterceptor {
 		String name = method.getName();
 		
 		// decide what type of logging we're doing with the current method and loglevel
-		boolean isGetterTypeOfMethod = name.startsWith("get") || name.startsWith("find");
-		boolean logGetter = isGetterTypeOfMethod && log.isDebugEnabled();
-		boolean logSetter = !isGetterTypeOfMethod && log.isInfoEnabled();
+		boolean isSetterTypeOfMethod = OpenmrsUtil.stringStartsWith(name, SETTER_METHOD_PREFIXES);
+		boolean logGetter = !isSetterTypeOfMethod && log.isDebugEnabled();
+		boolean logSetter = isSetterTypeOfMethod && log.isInfoEnabled();
 		
 		// used for the execution time calculations
 		long startTime = System.currentTimeMillis();
