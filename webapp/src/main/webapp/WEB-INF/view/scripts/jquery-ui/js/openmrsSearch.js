@@ -76,6 +76,22 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 	if(!opts.fieldsAndHeaders)
 		opts.fieldsAndHeaders = fieldsAndHeaders;
 	
+	//Create an array of arrays from the array of objects if we have any initial data
+	if(opts.initialData){
+		opts.initialRows = new Array();//array to hold the arrays of initial row data
+		var cols = opts.fieldsAndHeaders;
+		for(var i in opts.initialData){
+			var obj = opts.initialData[i];
+			//create an array to hold each initial row's column values
+			var iRowData = new Array();
+			$j.map(cols, function(c) {				
+				iRowData.push(obj[c.fieldName]);				 
+			});
+			
+			opts.initialRows.push(iRowData);
+		}
+	}
+	
 	jQuery(el).openmrsSearch(opts);
 }
 
@@ -115,7 +131,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 	var openmrsSearch_div = '<span><span style="white-space: nowrap"><span><span id="searchLabelNode"></span><input type="text" value="" id="inputNode" autocomplete="off"/><input type="checkbox" style="display: none" id="includeRetired"/><img id="spinner" src=""/><input type="checkbox" style="display: none" id="includeVoided"/><input type="checkbox" style="display: none" id="verboseListing"/><span id="loadingMsg"></span><span id="minCharError" class="error"></span><span id="pageInfo"></span><br /><span id="searchWidgetNotification"></span></span></span><span class="openmrsSearchDiv"><table id="openmrsSearchTable" cellpadding="2" cellspacing="0" style="width: 100%"><thead id="searchTableHeader"><tr></tr></thead><tbody></tbody></table></span></span>';
 	var BATCH_SIZE = gp.maxSearchResults;
 	var SEARCH_DELAY = gp.searchDelay;//time interval in ms between keyup and triggering the search off
-	var SEARCH_INPUT_DELAY = 600;//time interval in ms between keyup and  showing the minimum character error
+	var ERROR_MSG_DELAY = 600;//time interval in ms between keyup and  showing the minimum character error
 	if(!Number(BATCH_SIZE))
 		BATCH_SIZE = 200;
 	var ajaxTimer = null;
@@ -175,14 +191,17 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    }
 		    
 		    //when the user checks/unchecks the includeVoided checkbox, trigger a search
-		    checkBox.click(function() {   	
+		    checkBox.click(function() {
 		    	if($j.trim(input.val()) != '' && $j.trim(input.val()).length >= o.minLength)
 		    		self._doSearch(input.val());
 		    	else{
 		    		if(spinnerObj.css("visibility") == 'visible')
 	    				spinnerObj.css("visibility", "hidden");
-		    		$j(".openmrsSearchDiv").hide();
-		    		$j("#minCharError").css("visibility", "visible");
+		    		//if the user is viewing initial data, ignore
+		    		if($j.trim(input.val()) != ''){
+		    			$j("#minCharError").css("visibility", "visible");
+		    			$j(".openmrsSearchDiv").hide();
+		    		}
 		    		if($j('#pageInfo').css("visibility") == 'visible')
 						$j('#pageInfo').css("visibility", "hidden");
 		    	}
@@ -257,7 +276,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 	    					$j("#minCharError").css("visibility", "visible");
 	    				else if($j.trim(input.val()).length == 0 && $j("#minCharError").css("visibility") == 'visible')
 	    					$j("#minCharError").css("visibility", "hidden");
-	    			}, SEARCH_INPUT_DELAY);
+	    			}, ERROR_MSG_DELAY);
 	    			
 	    		}
 	    		return true;
@@ -315,8 +334,10 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    if(numberOfTextInputs == 1)
 		    	input.focus();
 		    
-			//setup 'openmrsSearchTable'
-			div.find(".openmrsSearchDiv").hide();
+			if(self.options.initialData)
+		    	self._results = self.options.initialData;
+		    else
+		    	div.find(".openmrsSearchDiv").hide();
 
 			//TODO columns need to be built: id='searchTableHeader'
 		    this._table = table.dataTable({
@@ -324,6 +345,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    	bLengthChange: false,
 		    	bSort: false,
 		    	sPaginationType: "full_numbers",
+		    	aaData: self.options.initialRows,
 		    	aoColumns: this._makeColumns(),
 		    	iDisplayLength: self.options.displayLength,
 		    	numberOfPages: 0,
@@ -369,6 +391,16 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    		return nRow;
 		    	}
 		    });
+		    
+		    //if we have initial data, set the current page and number of pages for the row highlight not to break
+		    if(self.options.initialData){
+		    	self._table.currPage = 1;
+		    	var initialRowCount = self.options.initialData.length;
+				if(initialRowCount % self._table.fnSettings()._iDisplayLength == 0)
+					self._table.numberOfPages = initialRowCount/self._table.fnSettings()._iDisplayLength;
+				else
+					self._table.numberOfPages = Math.floor(initialRowCount/self._table.fnSettings()._iDisplayLength)+1;
+		    }
 		},
 		
 		_makeColumns: function() {
