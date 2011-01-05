@@ -61,7 +61,7 @@
 			<one-to-many class="Location" />
  		</set>
 		
-		<set name="tags" table="location_tag_map" lazy="false" cascade="none">
+		<set name="tags" table="location_tag_map" lazy="true" cascade="none">
 			<key column="location_id" />
 			<many-to-many class="org.openmrs.LocationTag">
  				<column name="location_tag_id" />
