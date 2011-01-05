@@ -1105,13 +1105,13 @@ public class HibernateConceptDAO implements ConceptDAO {
 		criteria.add(Expression.or(Expression.eq("conceptSource.name", sourceName), Expression.eq("conceptSource.hl7Code",
 		    sourceName)));
 		
+		criteria.createAlias("concept", "concept");
+		
 		if (!includeRetired) {
 			// ignore retired concepts
-			criteria.createAlias("concept", "concept");
 			criteria.add(Expression.eq("concept.retired", false));
 		} else {
 			// sort retired concepts to the end of the list
-			criteria.createAlias("concept", "concept");
 			criteria.addOrder(Order.asc("concept.retired"));
 		}
 		
