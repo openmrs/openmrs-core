@@ -44,7 +44,7 @@ public class LoggingAdvice implements MethodInterceptor {
 	 */
 	private static final String[] SETTER_METHOD_PREFIXES = { "save", "create", "update", "void", "unvoid", "retire",
 	        "unretire", "delete", "purge" };
-
+	
 	/**
 	 * This method prints out debug statements for getters and info statements for everything else
 	 * ("setters"). If debugging is turned on, execution time for each method is printed as well.

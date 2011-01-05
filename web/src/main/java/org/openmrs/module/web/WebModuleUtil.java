@@ -47,6 +47,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.xml.DOMConfigurator;
+import org.openmrs.api.context.Context;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleException;
 import org.openmrs.module.ModuleFactory;
@@ -55,6 +56,7 @@ import org.openmrs.module.web.filter.ModuleFilterConfig;
 import org.openmrs.module.web.filter.ModuleFilterDefinition;
 import org.openmrs.module.web.filter.ModuleFilterMapping;
 import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.web.DispatcherServlet;
 import org.openmrs.web.dwr.OpenmrsDWRServlet;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -342,6 +344,8 @@ public class WebModuleUtil {
 							log.warn("Error while stopping a module that had an error on refreshWAC", e2);
 					}
 					
+					notifySuperUsersAboutModuleFailure(mod);
+					
 					// try starting the application context again
 					refreshWAC(servletContext, false, mod);
 				}
@@ -370,6 +374,28 @@ public class WebModuleUtil {
 		
 		// we aren't processing this module, so a context refresh is not necessary
 		return false;
+	}
+	
+	/**
+	 * Send an Alert to all super users that the given module did not start successfully.
+	 * 
+	 * @param mod The Module that failed
+	 */
+	private static void notifySuperUsersAboutModuleFailure(Module mod) {
+		try {
+			// Add the privileges necessary for notifySuperUsers
+			Context.addProxyPrivilege(PrivilegeConstants.MANAGE_ALERTS);
+			Context.addProxyPrivilege(PrivilegeConstants.VIEW_USERS);
+			
+			// Send an alert to all administrators
+			Context.getAlertService().notifySuperUsers(
+			    "Module.startupError.notification.message", null, mod.getName());
+		}
+		finally {
+			// Remove added privileges
+			Context.removeProxyPrivilege(PrivilegeConstants.VIEW_USERS);
+			Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_ALERTS);
+		}
 	}
 	
 	/**

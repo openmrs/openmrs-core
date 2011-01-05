@@ -1105,8 +1105,10 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 			private static final long serialVersionUID = 1L;
 			
 			{
-				put("SystemInfo.OpenMRSInstallation.systemDate", new SimpleDateFormat("yyyy-MM-dd").format(Calendar.getInstance().getTime()));
-				put("SystemInfo.OpenMRSInstallation.systemTime", new SimpleDateFormat("HH:mm:ss").format(Calendar.getInstance().getTime()));
+				put("SystemInfo.OpenMRSInstallation.systemDate", new SimpleDateFormat("yyyy-MM-dd").format(Calendar
+				        .getInstance().getTime()));
+				put("SystemInfo.OpenMRSInstallation.systemTime", new SimpleDateFormat("HH:mm:ss").format(Calendar
+				        .getInstance().getTime()));
 				put("SystemInfo.OpenMRSInstallation.openmrsVersion", OpenmrsConstants.OPENMRS_VERSION);
 				try {
 					put("SystemInfo.hostname", InetAddress.getLocalHost().getCanonicalHostName());
@@ -1180,7 +1182,8 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 				put("SystemInfo.Module.repositoryPath", ModuleUtil.getModuleRepository().getAbsolutePath());
 				Collection<Module> loadedModules = ModuleFactory.getLoadedModules();
 				for (Module module : loadedModules) {
-					String moduleInfo = module.getVersion() + " " +  (module.isStarted() ? "" : Context.getMessageSourceService().getMessage("Module.notStarted")) ;
+					String moduleInfo = module.getVersion() + " "
+					        + (module.isStarted() ? "" : Context.getMessageSourceService().getMessage("Module.notStarted"));
 					put(module.getName(), moduleInfo);
 				}
 			}

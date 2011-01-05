@@ -780,7 +780,7 @@ fieldset {
 }
 
 #alertOuterBox {
-	margin: -10px 0 10px 0;
+	margin: -7px 0 10px 0;
 	border: 1px solid lightgrey;
 	border-top-width: 0px;
 	max-height: 6em;

@@ -60,6 +60,7 @@ public interface AlertService extends OpenmrsService {
 	/**
 	 * @deprecated use {@link #saveAlert(Alert)}
 	 */
+	@Deprecated
 	public void createAlert(Alert alert) throws APIException;
 	
 	/**
@@ -67,6 +68,7 @@ public interface AlertService extends OpenmrsService {
 	 * 
 	 * @deprecated use {@link #saveAlert(Alert)}
 	 */
+	@Deprecated
 	public void createAlert(String text, User user) throws APIException;
 	
 	/**
@@ -74,6 +76,7 @@ public interface AlertService extends OpenmrsService {
 	 * 
 	 * @deprecated use {@link #saveAlert(Alert)}
 	 */
+	@Deprecated
 	public void createAlert(String text, Collection<User> users) throws APIException;
 	
 	/**
@@ -89,6 +92,7 @@ public interface AlertService extends OpenmrsService {
 	/**
 	 * @deprecated use {@link #saveAlert(Alert)}
 	 */
+	@Deprecated
 	public void updateAlert(Alert alert) throws APIException;
 	
 	/**
@@ -105,11 +109,13 @@ public interface AlertService extends OpenmrsService {
 	 * 
 	 * @deprecated use {@link #saveAlert(Alert)}
 	 */
+	@Deprecated
 	public void markAlertRead(Alert alert) throws APIException;
 	
 	/**
 	 * @deprecated use #getAlerts(User, boolean, boolean)
 	 */
+	@Deprecated
 	@Transactional(readOnly = true)
 	public List<Alert> getAllAlerts(User user) throws APIException;
 	
@@ -127,6 +133,7 @@ public interface AlertService extends OpenmrsService {
 	/**
 	 * @deprecated use {@link #getAlertsByUser(User)}
 	 */
+	@Deprecated
 	@Transactional(readOnly = true)
 	public List<Alert> getAlerts(User user) throws APIException;
 	
@@ -147,6 +154,7 @@ public interface AlertService extends OpenmrsService {
 	 * @deprecated use {@link #getAlertsByUser(User)} and pass "null" as the parameter for
 	 *             <code>user</code>
 	 */
+	@Deprecated
 	@Transactional(readOnly = true)
 	public List<Alert> getAlerts() throws APIException;
 	
@@ -181,4 +189,14 @@ public interface AlertService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	public List<Alert> getAllAlerts(boolean includeExpired) throws APIException;
 	
+	/**
+	 * Sends an alert to all superusers
+	 * 
+	 * @param messageCode The alert message code from messages.properties
+	 * @param cause The exception that was thrown, method will work if cause is null
+	 * @param messageArguments The arguments for the coded message
+	 * @should add an alert to the database
+	 */
+	@Authorized(PrivilegeConstants.MANAGE_ALERTS)
+	public void notifySuperUsers(String messageCode, Exception cause, Object... messageArguments);
 }
