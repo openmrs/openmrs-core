@@ -257,19 +257,30 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    			if($j("#minCharError").css("visibility") == 'visible')
 		    				$j("#minCharError").css("visibility", "hidden");
 
+						//Once the very first search is triggered, we need to clear the initial data 
+	    				//if any was added because it is no longer relevant until the page is reloaded
+	    				if(self.options.initialData)
+	    					self.options.initialData = null;
+	    					
 	    				self._doSearch(text);
 	    			}, SEARCH_DELAY);	
 	    			
 	    		}
 	    		else {
-	    			self._table.fnClearTable();
 	    			if(spinnerObj.css("visibility") == 'visible'){
 	    				spinnerObj.css("visibility", "hidden");
 	    			}
 	    			if($j('#pageInfo').css("visibility") == 'visible')
 						$j('#pageInfo').css("visibility", "hidden");
 	    			loadingMsgObj.html(" ");
-	    			$j(".openmrsSearchDiv").hide();
+	    			
+	    			//If we have initial data, keep showing the items.
+	    			//This is the case only until the first search is triggered after page loading
+	    			if(self.options.initialData == null){
+	    				self._table.fnClearTable();
+	    				$j(".openmrsSearchDiv").hide();
+	    			}
+	    			
 	    			//wait for a n milliseconds, if the user isn't typing anymore chars, show the error msg
 	    			this._textInputTimer = window.setTimeout(function(){
 	    				if($j.trim(input.val()).length > 0 && $j.trim(input.val()).length < o.minLength)
