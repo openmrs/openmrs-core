@@ -83,6 +83,7 @@
   <concept_map concept_map_id="6" source="1" source_code="127689" comment="married" creator="1" date_created="2004-08-12 00:00:00.0" concept_id="6"/>
   <concept_map concept_map_id="7" source="1" source_code="766554" comment="" creator="1" date_created="2004-08-12 00:00:00.0" concept_id="16"/>
   <concept_map concept_map_id="8" source="1" source_code="766554" comment="retired" creator="1" date_created="2004-08-12 00:00:00.0" concept_id="24"/>
+  <concept_map concept_map_id="10" source="1" source_code="454545" comment="retired" creator="1" date_created="2004-08-12 00:00:00.0" concept_id="24"/>
   <concept_name concept_id="5089" name="WEIGHT (KG)" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="1439" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" uuid="9bc5693a-f558-40c9-8177-145a4b119ca7"/>
   <concept_name concept_id="5497" name="CD4 COUNT" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="1847" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" uuid="6e77e374-18a1-4ec6-8ed4-4152a5a7d6a1"/>
   <concept_name concept_id="7" name="YES" locale="en" creator="1" date_created="2008-08-15 13:52:53.0" concept_name_id="2449" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" uuid="ef7ac747-7980-443c-b11f-4617aa587703"/>
