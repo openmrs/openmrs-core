@@ -1170,7 +1170,7 @@ public class OpenmrsUtil {
 		
 		return false;
 	}
-
+	
 	public static boolean isConceptInList(Concept concept, List<Concept> list) {
 		boolean ret = false;
 		

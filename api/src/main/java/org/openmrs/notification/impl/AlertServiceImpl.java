@@ -20,14 +20,17 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.context.Daemon;
 import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.notification.Alert;
 import org.openmrs.notification.AlertRecipient;
 import org.openmrs.notification.AlertService;
 import org.openmrs.notification.db.AlertDAO;
+import org.openmrs.util.OpenmrsConstants;
 
 /**
  * This class should not be instantiated by itself.
@@ -59,6 +62,7 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 	 * @see org.openmrs.notification.AlertService#createAlert(org.openmrs.notification.Alert)
 	 * @deprecated
 	 */
+	@Deprecated
 	public void createAlert(Alert alert) throws APIException {
 		Context.getAlertService().saveAlert(alert);
 	}
@@ -94,6 +98,7 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 	 * @see org.openmrs.notification.AlertService#createAlert(java.lang.String, org.openmrs.User)
 	 * @deprecated
 	 */
+	@Deprecated
 	public void createAlert(String text, User user) throws APIException {
 		Context.getAlertService().saveAlert(new Alert(text, user));
 	}
@@ -103,6 +108,7 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 	 *      java.util.Collection)
 	 * @deprecated
 	 */
+	@Deprecated
 	public void createAlert(String text, Collection<User> users) throws APIException {
 		Context.getAlertService().saveAlert(new Alert(text, users));
 	}
@@ -118,6 +124,7 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 	 * @see org.openmrs.notification.AlertService#updateAlert(org.openmrs.notification.Alert)
 	 * @deprecated
 	 */
+	@Deprecated
 	public void updateAlert(Alert alert) throws APIException {
 		Context.getAlertService().saveAlert(alert);
 	}
@@ -133,6 +140,7 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 	 * @see org.openmrs.notification.AlertService#markAlertRead(org.openmrs.notification.Alert)
 	 * @deprecated
 	 */
+	@Deprecated
 	public void markAlertRead(Alert alert) throws APIException {
 		Context.getAlertService().saveAlert(alert.markAlertRead());
 	}
@@ -141,6 +149,7 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 	 * @see org.openmrs.notification.AlertService#getAllAlerts(org.openmrs.User)
 	 * @deprecated
 	 */
+	@Deprecated
 	public List<Alert> getAllAlerts(User user) throws APIException {
 		log.debug("Getting all alerts for user " + user);
 		return getAlerts(user, true, true);
@@ -158,6 +167,7 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 	 * @see org.openmrs.notification.AlertService#getAlerts(org.openmrs.User)
 	 * @deprecated
 	 */
+	@Deprecated
 	public List<Alert> getAlerts(User user) throws APIException {
 		log.debug("Getting unread alerts for user " + user);
 		return getAlertsByUser(user);
@@ -183,6 +193,7 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 	 * @see org.openmrs.notification.AlertService#getAlerts()
 	 * @deprecated
 	 */
+	@Deprecated
 	public List<Alert> getAlerts() throws APIException {
 		return getAlertsByUser(null);
 	}
@@ -211,4 +222,43 @@ public class AlertServiceImpl extends BaseOpenmrsService implements Serializable
 		return dao.getAllAlerts(includeExpired);
 	}
 	
+	/**
+	 * @see org.openmrs.notification.AlertService#notifySuperUsers(java.lang.String,java.lang.Exception,java.lang.String[])
+	 */
+	public void notifySuperUsers(String messageCode, Exception cause, Object... messageArguments) {
+		
+		// Generate an internationalized error message with the beginning of the stack trace from cause added onto the end
+		String message = Context.getMessageSourceService().getMessage(messageCode, messageArguments, Context.getLocale());
+		
+		if (cause != null) {
+			StringBuffer stackTrace = new StringBuffer();
+			// get the first two lines of the stack trace ( no more can fit in the alert text )
+			
+			for (StackTraceElement traceElement : cause.getStackTrace()) {
+				stackTrace.append(traceElement);
+				stackTrace.append("\n");
+				if (stackTrace.length() >= 512) {
+					break;
+				}
+			}
+			
+			message = message + ": " + stackTrace.substring(0, Alert.TEXT_MAX_LENGTH - message.length() - 2);
+		}
+		
+		//Send an alert to all administrators
+		Alert alert = new Alert(message, Context.getUserService().getUsersByRole(new Role(OpenmrsConstants.SUPERUSER_ROLE)));
+		
+		// Set the alert so that if any administrator 'reads' it it will be marked as read for everyone who received it
+		alert.setSatisfiedByAny(true);
+		
+		//If there is not user creator for the alert ( because it is being created at start-up )create a user
+		//TODO switch this to use the daemon user when ticket TRUNK-120 is complete
+		if (alert.getCreator() == null) {
+			alert.setCreator(new User(1));
+		}
+		
+		// save the alert to send it to all administrators
+		Context.getAlertService().saveAlert(alert);
+		
+	}
 }

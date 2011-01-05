@@ -215,6 +215,7 @@ public class ModuleFactory {
 							catch (Exception e) {
 								log.error("Error while starting module: " + mod.getName(), e);
 								mod.setStartupErrorMessage("Error while starting module", e);
+								notifySuperUsersAboutModuleFailure(mod);
 							}
 						else {
 							// if not all the modules required by this mod are loaded, save it for later
@@ -279,9 +280,32 @@ public class ModuleFactory {
 					        + OpenmrsUtil.join(getMissingRequiredModules(leftoverModule), ", ");
 					log.error(message);
 					leftoverModule.setStartupErrorMessage(message);
+					notifySuperUsersAboutModuleFailure(leftoverModule);
 				}
 		}
 		
+	}
+	
+	/**
+	 * Send an Alert to all super users that the given module did not start successfully.
+	 * 
+	 * @param mod The Module that failed
+	 */
+	private static void notifySuperUsersAboutModuleFailure(Module mod) {
+		try {
+			// Add the privileges necessary for notifySuperUsers
+			Context.addProxyPrivilege(PrivilegeConstants.MANAGE_ALERTS);
+			Context.addProxyPrivilege(PrivilegeConstants.VIEW_USERS);
+			
+			// Send an alert to all administrators
+			Context.getAlertService().notifySuperUsers(
+			    "Module.startupError.notification.message", null, mod.getName());
+		}
+		finally {
+			// Remove added privileges
+			Context.removeProxyPrivilege(PrivilegeConstants.VIEW_USERS);
+			Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_ALERTS);
+		}
 	}
 	
 	/**
@@ -575,6 +599,7 @@ public class ModuleFactory {
 			catch (Exception e) {
 				log.warn("Error while trying to start module: " + moduleId, e);
 				module.setStartupErrorMessage("Error while trying to start module", e);
+				notifySuperUsersAboutModuleFailure(module);
 				
 				// undo all of the actions in startup
 				try {
