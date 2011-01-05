@@ -80,11 +80,12 @@ public class ConceptSearchResult implements java.io.Serializable {
 	 * @param conceptName the specific name that will be matched
 	 * @param transientWeight the weight for this conceptSearchResult
 	 */
-	public ConceptSearchResult(String word, Concept concept, ConceptName conceptName, double transientWeight) {
+	public ConceptSearchResult(String word, Concept concept, ConceptName conceptName, Double transientWeight) {
 		this.concept = concept;
 		this.conceptName = conceptName;
 		this.word = word;
-		this.transientWeight = transientWeight;
+		if (transientWeight != null)
+			this.transientWeight = transientWeight;
 	}
 	
 	/**
