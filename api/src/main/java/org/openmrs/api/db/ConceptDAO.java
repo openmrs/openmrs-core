@@ -29,6 +29,7 @@ import org.openmrs.ConceptName;
 import org.openmrs.ConceptNameTag;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptProposal;
+import org.openmrs.ConceptSearchResult;
 import org.openmrs.ConceptSet;
 import org.openmrs.ConceptSetDerived;
 import org.openmrs.ConceptSource;
@@ -105,11 +106,23 @@ public interface ConceptDAO {
 	/**
 	 * @see org.openmrs.api.ConceptService#getConceptWords(String, List, boolean, List, List, List,
 	 *      List, Concept, Integer, Integer)
+	 * @throws DAOException
 	 */
 	public List<ConceptWord> getConceptWords(String phrase, List<Locale> locales, boolean includeRetired,
 	                                         List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses,
 	                                         List<ConceptDatatype> requireDatatypes, List<ConceptDatatype> excludeDatatypes,
 	                                         Concept answersToConcept, Integer start, Integer size) throws DAOException;
+	
+	/**
+	 * @see ConceptService#getConcepts(String, List, boolean, List, List, List, List, Concept,
+	 *      Integer, Integer)
+	 * @throws DAOException
+	 */
+	public List<ConceptSearchResult> getConcepts(String phrase, List<Locale> locales, boolean includeRetired,
+	                                             List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses,
+	                                             List<ConceptDatatype> requireDatatypes,
+	                                             List<ConceptDatatype> excludeDatatypes, Concept answersToConcept,
+	                                             Integer start, Integer size) throws DAOException;
 	
 	/**
 	 * @see org.openmrs.api.ConceptService#getConceptAnswer(java.lang.Integer)

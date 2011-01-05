@@ -85,7 +85,7 @@ public class ConceptListItem {
 	/**
 	 * Most common constructor
 	 * 
-	 * @param word
+	 * @param searchResult the search to use to construct this conceptListItem
 	 */
 	public ConceptListItem(ConceptSearchResult searchResult) {
 		if (searchResult != null) {
