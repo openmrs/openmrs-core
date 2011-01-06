@@ -13,6 +13,7 @@
  */
 package org.openmrs.api.context;
 
+import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleException;
@@ -136,6 +137,41 @@ public class Daemon {
 		if (executeTaskThread.exceptionThrown != null)
 			throw executeTaskThread.exceptionThrown;
 		
+	}
+	
+	
+	/**
+	 * Call this method if you are inside a Daemon thread (for example in a Module activator or a
+	 * scheduled task) and you want to start up a new parallel Daemon thread.
+	 * You may only call this method from a Daemon thread.
+	 * 
+	 * @param runnable what to run in a new thread
+	 * @return the newly spawned {@link Thread}
+	 * @should throw error if called from a non daemon thread
+	 * @should not throw error if called from a daemon thread
+	 */
+	public static Thread runInNewDaemonThread(final Runnable runnable) {
+		// make sure we're already in a daemon thread
+		if (!isDaemonThread())
+			throw new APIAuthenticationException("Can only be called from a Daemon thread");
+
+		// we should consider making DaemonThread public, so the caller can access returnedObject and exceptionThrown
+		DaemonThread thread = new DaemonThread() {
+			@Override
+			public void run() {
+				isDaemonThread.set(true);
+				try {
+					Context.openSession();
+					runnable.run();
+				}
+				finally {
+					Context.closeSession();
+				}
+			}
+		};
+		
+		thread.start();
+		return thread;
 	}
 	
 	/**
