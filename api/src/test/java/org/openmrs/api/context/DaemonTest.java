@@ -15,6 +15,7 @@ package org.openmrs.api.context;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
 import org.openmrs.scheduler.Task;
 import org.openmrs.scheduler.tasks.AbstractTask;
@@ -57,6 +58,35 @@ public class DaemonTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @see Daemon#runInNewDaemonThread(Runnable)
+	 * @verifies throw error if called from a non daemon thread
+	 */
+	@Test
+	public void runInNewDaemonThread_shouldThrowErrorIfCalledFromANonDaemonThread() {
+		try {
+			Daemon.runInNewDaemonThread(new Runnable() {
+				@Override
+				public void run() {
+					// do nothing
+				}
+			});
+			Assert.assertTrue("Should not hit this line, since the previous needed to throw an exception", false);
+		} catch (APIAuthenticationException ex) {
+			Assert.assertEquals("Can only be called from a Daemon thread", ex.getMessage());
+		}
+	}
+	
+	/**
+	 * @see Daemon#runInNewDaemonThread(Runnable)
+	 * @verifies not throw error if called from a daemon thread
+	 */
+	@Test
+	public void runInNewDaemonThread_shouldNotThrowErrorIfCalledFromADaemonThread() throws Throwable {
+		Task taskThatStartsAnotherThread = new TaskThatStartsAnotherThread();
+		Assert.assertTrue(new PrivateSchedulerTask(taskThatStartsAnotherThread).runTheTest());
+	}
+	
+	/**
 	 * A TimerSchedulerTask that can call the daemon thread
 	 * 
 	 * @see DaemonTest#executeScheduledTask_shouldNotThrowErrorIfCalledFromATimerSchedulerTaskClass()
@@ -93,6 +123,26 @@ public class DaemonTest extends BaseContextSensitiveTest {
 		@Override
 		public void execute() {
 			this.wasRun = true;
+		}
+	}
+
+	
+	/**
+	 * A task that starts another Daemon thread that marks *this* thread when it gets run. 
+	 */
+	private class TaskThatStartsAnotherThread extends PrivateTask {
+		
+		@Override
+		public void execute() {
+		    Thread another = Daemon.runInNewDaemonThread(new Runnable() {
+				@Override
+				public void run() {
+					wasRun = true;
+				}
+			});
+		    try {
+		    	another.join();
+		    } catch (InterruptedException ex) { }
 		}
 	}
 	
