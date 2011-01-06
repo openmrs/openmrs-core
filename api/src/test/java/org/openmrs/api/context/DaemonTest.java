@@ -65,13 +65,15 @@ public class DaemonTest extends BaseContextSensitiveTest {
 	public void runInNewDaemonThread_shouldThrowErrorIfCalledFromANonDaemonThread() {
 		try {
 			Daemon.runInNewDaemonThread(new Runnable() {
+				
 				@Override
 				public void run() {
 					// do nothing
 				}
 			});
 			Assert.assertTrue("Should not hit this line, since the previous needed to throw an exception", false);
-		} catch (APIAuthenticationException ex) {
+		}
+		catch (APIAuthenticationException ex) {
 			Assert.assertEquals("Can only be called from a Daemon thread", ex.getMessage());
 		}
 	}
@@ -125,7 +127,6 @@ public class DaemonTest extends BaseContextSensitiveTest {
 			this.wasRun = true;
 		}
 	}
-
 	
 	/**
 	 * A task that starts another Daemon thread that marks *this* thread when it gets run. 
@@ -134,15 +135,17 @@ public class DaemonTest extends BaseContextSensitiveTest {
 		
 		@Override
 		public void execute() {
-		    Thread another = Daemon.runInNewDaemonThread(new Runnable() {
+			Thread another = Daemon.runInNewDaemonThread(new Runnable() {
+				
 				@Override
 				public void run() {
 					wasRun = true;
 				}
 			});
-		    try {
-		    	another.join();
-		    } catch (InterruptedException ex) { }
+			try {
+				another.join();
+			}
+			catch (InterruptedException ex) {}
 		}
 	}
 	

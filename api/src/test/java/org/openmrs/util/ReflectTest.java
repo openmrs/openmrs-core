@@ -140,7 +140,7 @@ public class ReflectTest {
 	@Test
 	@Verifies(value = "should return true if given field is Collection and its element type is given parameterized", method = "isCollectionField(Field)")
 	public void isCollectionField_shouldReturnTrueIfGivenFieldIsCollectionAndItsElementTypeIsGivenParameterized()
-	                                                                                                             throws Exception {
+	        throws Exception {
 		Reflect reflect = new Reflect(OpenmrsObject.class);
 		List<Field> allFields = Reflect.getAllFields(OpenmrsObjectImp.class);
 		

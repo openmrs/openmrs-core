@@ -38,7 +38,7 @@ public class SystemInformationControllerTest extends BaseWebContextSensitiveTest
 	/**
 	 * Creates the controller with necessary parameters
 	 */
-	private void createController(){
+	private void createController() {
 		model = new ModelMap();
 		SystemInformationController controller = new SystemInformationController();
 		controller.showPage(model);
@@ -48,46 +48,51 @@ public class SystemInformationControllerTest extends BaseWebContextSensitiveTest
 	/**
 	 * @see {@link SystemInformationController#showPage(ModelMap)}
 	 */
-    @Test
+	@Test
 	@Verifies(value = "should add openmrs information attribute to the model map", method = "showPage()")
-	public void showPage_shouldReturnOpenmrsInformation(){
-		Assert.assertTrue(((Map<String, Map<String, String>>) model.get("systemInfo")).containsKey("SystemInfo.title.openmrsInformation"));
+	public void showPage_shouldReturnOpenmrsInformation() {
+		Assert.assertTrue(((Map<String, Map<String, String>>) model.get("systemInfo"))
+		        .containsKey("SystemInfo.title.openmrsInformation"));
 	}
 	
 	/**
 	 * @see {@link SystemInformationController#showPage(ModelMap)}
 	 */
-    @Test
+	@Test
 	@Verifies(value = "should add java runtime information attribute to the model map", method = "showPage()")
-	public void showPage_shouldReturnUserInformation(){
-		Assert.assertTrue(((Map<String, Map<String, String>>) model.get("systemInfo")).containsKey("SystemInfo.title.javaRuntimeEnvironmentInformation"));
+	public void showPage_shouldReturnUserInformation() {
+		Assert.assertTrue(((Map<String, Map<String, String>>) model.get("systemInfo"))
+		        .containsKey("SystemInfo.title.javaRuntimeEnvironmentInformation"));
 	}
 	
 	/**
 	 * @see {@link SystemInformationController#showPage(ModelMap)}
 	 */
-    @Test
+	@Test
 	@Verifies(value = "should add module information attribute to the model map", method = "showPage()")
 	public void showPage_shouldReturnAllJavaRuntimeInformation() {
-		Assert.assertTrue(((Map<String, Map<String, String>>) model.get("systemInfo")).containsKey("SystemInfo.title.moduleInformation"));
+		Assert.assertTrue(((Map<String, Map<String, String>>) model.get("systemInfo"))
+		        .containsKey("SystemInfo.title.moduleInformation"));
 	}
 	
 	/**
 	 * @see {@link SystemInformationController#showPage(ModelMap)}
 	 */
-    @Test
+	@Test
 	@Verifies(value = "should add database information attribute to the model map", method = "showPage()")
 	public void showPage_shouldReturnAllDatabaseInformation() {
-		Assert.assertTrue(((Map<String, Map<String, String>>) model.get("systemInfo")).containsKey("SystemInfo.title.dataBaseInformation"));
+		Assert.assertTrue(((Map<String, Map<String, String>>) model.get("systemInfo"))
+		        .containsKey("SystemInfo.title.dataBaseInformation"));
 	}
 	
 	/**
 	 * @see {@link SystemInformationController#showPage(ModelMap)}
 	 */
-    @Test
+	@Test
 	@Verifies(value = "should add memory information attribute to the model map", method = "getMemoryInformation()")
 	public void getMemoryInformation_shouldReturnMemoryInformation() {
-		Assert.assertTrue(((Map<String, Map<String, String>>) model.get("systemInfo")).containsKey("SystemInfo.title.memoryInformation"));
+		Assert.assertTrue(((Map<String, Map<String, String>>) model.get("systemInfo"))
+		        .containsKey("SystemInfo.title.memoryInformation"));
 	}
 	
 }
