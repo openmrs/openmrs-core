@@ -473,4 +473,26 @@ public interface ConceptDAO {
 	public List<Drug> getDrugs(String drugName, Concept concept, boolean searchOnPhrase, boolean searchDrugConceptNames,
 	        boolean includeRetired, Integer start, Integer length) throws DAOException;
 	
+	/**
+	 * Computes and returns the weight of a conceptWord. The weight is computed independent of
+	 * locale and any phrase
+	 * 
+	 * @param word the word for which to compute the weight
+	 * @return the weight of the word
+	 * @should assign a higher weight to a shorter word if both words are equal to concept name
+	 * @should assign zero weight if the word is not among the concept name words
+	 * @should weigh a word for an index term higher than that of a preferred name
+	 * @should weigh a word for an index term higher than that of a fully specified name
+	 * @should weigh a word for a preferred fullySpecified higher than that of a plain fullySpecified name
+	 * @should weigh a word for a preferred fullySpecified higher than that of a plain preferred name
+	 * @should weigh a word for a preferred name higher than that of a fully specified name
+	 * @should weigh a word for a fully specified name higher than that of a synonym
+	 * @should weigh a word for a synonym higher than that of a short name
+	 * @should assign a higher weight to a shorter word if both words are at the start of the concept name
+	 * @should weigh a word for a shorter concept name higher than that of a longer concept name
+	 * @should weigh a word equal to a concept name higher than one that matches the start of the concept name
+	 * @should weigh words closer to the start higher than those closer to the end of the concept name
+	 */
+	public Double weighConceptWord(ConceptWord word);
+	
 }
