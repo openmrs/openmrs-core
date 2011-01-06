@@ -70,7 +70,7 @@ public class PatientIdentifierValidatorTest extends BaseContextSensitiveTest {
 	@Test(expected = IdentifierNotUniqueException.class)
 	@Verifies(value = "should fail validation if another patient has a matching identifier of the same type", method = "validateIdentifier(PatientIdentifier)")
 	public void validateIdentifier_shouldFailValidationIfAnotherPatientHasAMatchingIdentifierOfTheSameType()
-	                                                                                                        throws Exception {
+	        throws Exception {
 		PatientIdentifier pi = Context.getPatientService().getPatientIdentifiers("7TU-8", null, null, null, null).get(0);
 		pi.setIdentifier("101-6");
 		PatientIdentifierValidator.validateIdentifier(pi);

@@ -298,8 +298,7 @@ public class ModuleFactory {
 			Context.addProxyPrivilege(PrivilegeConstants.VIEW_USERS);
 			
 			// Send an alert to all administrators
-			Context.getAlertService().notifySuperUsers(
-			    "Module.startupError.notification.message", null, mod.getName());
+			Context.getAlertService().notifySuperUsers("Module.startupError.notification.message", null, mod.getName());
 		}
 		finally {
 			// Remove added privileges

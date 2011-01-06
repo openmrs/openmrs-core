@@ -46,7 +46,7 @@ public class ConceptNameTest {
 	 * @param isLocalePreferred if this name should be marked as preferred in its locale
 	 */
 	public static ConceptName createMockConceptName(int conceptNameId, Locale locale, ConceptNameType conceptNameType,
-	                                                Boolean isLocalePreferred) {
+	        Boolean isLocalePreferred) {
 		ConceptName mockConceptName = new ConceptName();
 		
 		mockConceptName.setConceptNameId(conceptNameId);

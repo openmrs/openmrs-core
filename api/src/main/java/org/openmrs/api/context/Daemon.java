@@ -139,7 +139,6 @@ public class Daemon {
 		
 	}
 	
-	
 	/**
 	 * Call this method if you are inside a Daemon thread (for example in a Module activator or a
 	 * scheduled task) and you want to start up a new parallel Daemon thread.
@@ -154,9 +153,10 @@ public class Daemon {
 		// make sure we're already in a daemon thread
 		if (!isDaemonThread())
 			throw new APIAuthenticationException("Can only be called from a Daemon thread");
-
+		
 		// we should consider making DaemonThread public, so the caller can access returnedObject and exceptionThrown
 		DaemonThread thread = new DaemonThread() {
+			
 			@Override
 			public void run() {
 				isDaemonThread.set(true);

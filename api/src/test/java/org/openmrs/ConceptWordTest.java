@@ -32,7 +32,7 @@ public class ConceptWordTest {
 	@Test
 	@Verifies(value = "should return separate ConceptWord objects for the same word in different ConceptNames", method = "makeConceptWords(Concept)")
 	public void makeConceptWords_shouldReturnSeparateConceptWordObjectsForTheSameWordInDifferentConceptNames()
-	                                                                                                          throws Exception {
+	        throws Exception {
 		Concept concept = new Concept(1);
 		concept.addName(new ConceptName("name number one", Locale.ENGLISH));
 		concept.addName(new ConceptName("name number two", Locale.ENGLISH));

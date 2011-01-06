@@ -660,7 +660,7 @@ public class ConceptTest {
 	@Test
 	@Verifies(value = "should return all locales for conceptNames for this concept without duplicates", method = "getAllConceptNameLocales()")
 	public void getAllConceptNameLocales_shouldReturnAllLocalesForConceptNamesForThisConceptWithoutDuplicates()
-	                                                                                                           throws Exception {
+	        throws Exception {
 		Concept concept = new Concept();
 		concept.addName(new ConceptName("name1", new Locale("en")));
 		concept.addName(new ConceptName("name2", new Locale("en", "US")));
@@ -681,7 +681,7 @@ public class ConceptTest {
 	@Test
 	@Verifies(value = "should return the fully specified name if no name is explicitly marked as locale preferred", method = "getPreferredName(Locale)")
 	public void getPreferredName_shouldReturnTheFullySpecifiedNameIfNoNameIsExplicitlyMarkedAsLocalePreferred()
-	                                                                                                           throws Exception {
+	        throws Exception {
 		Concept testConcept = createMockConcept(1, Locale.US);
 		//preferred name in en_US
 		ConceptName preferredNameEN_US = ConceptNameTest.createMockConceptName(3, Locale.US, null, false);

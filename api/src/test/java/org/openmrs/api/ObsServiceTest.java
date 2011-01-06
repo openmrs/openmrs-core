@@ -1459,7 +1459,7 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should return the count of all observations using the specified conceptNames as answers", method = "getObservationCount(List, boolean)")
 	public void getObservationCount_shouldReturnTheCountOfAllObservationsUsingTheSpecifiedConceptNamesAsAnswers()
-	                                                                                                             throws Exception {
+	        throws Exception {
 		ObsService os = Context.getObsService();
 		Obs o = new Obs();
 		o.setConcept(new Concept(3));

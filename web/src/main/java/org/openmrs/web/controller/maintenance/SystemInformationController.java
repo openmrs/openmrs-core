@@ -26,8 +26,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public class SystemInformationController {
 	
 	/**
-     * Default constructor used by spring MVC
-     */
+	 * Default constructor used by spring MVC
+	 */
 	public SystemInformationController() {
 	}
 	
