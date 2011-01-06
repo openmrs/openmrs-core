@@ -44,7 +44,12 @@
 		// get the name of the person that they passed in the id for
 		<c:if test="${not empty initialValue}">
 			jquerySelectEscaped("${formFieldId}").val("${initialValue}");
-			DWRPersonService.getPerson("${initialValue}", function(person) { jquerySelectEscaped("${displayFieldId}").val(person.personName);});
+			DWRPersonService.getPerson("${initialValue}", function(person) {
+				jquerySelectEscaped("${displayFieldId}").val(person.personName);
+				<c:if test="${not empty callback}">
+					${callback}("${formFieldName}", person);
+				</c:if>
+			});
 		</c:if>
 		
 	})
