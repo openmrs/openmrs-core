@@ -1499,12 +1499,9 @@ public class HibernateConceptDAO implements ConceptDAO {
 	}
 	
 	/**
-	 * Utility methods that computes and sets the weight of a conceptWord. The weights are computed
-	 * independent of locale and any phrase
-	 * 
-	 * @param word the word for which to compute the weight
-	 * @return the weight of the word
+	 * @see ConceptDAO#weighConceptWord(ConceptWord)
 	 */
+	@Override
 	public Double weighConceptWord(ConceptWord word) {
 		//TODO Add unit tests
 		Double weight = 0.0;
@@ -1523,7 +1520,10 @@ public class HibernateConceptDAO implements ConceptDAO {
 		if (conceptName.equals(wordString)) {
 			double weightCoefficient = 5.0;
 			weight += weightCoefficient;
-			
+			//the shorter the word, the higher the increment and the coefficient since it a closer
+			//match based on number of characters e.g 'OWN' should weigh more than 'HOME'
+			weightCoefficient += (weightCoefficient / wordString.length());
+			weight += (weightCoefficient / wordString.length());
 			//compute bonus based on the concept name type
 			weight += computeBonusWeight(weightCoefficient, word);
 		} else if (conceptName.startsWith(wordString)) {
@@ -1547,7 +1547,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 		}
 		
 		//round off to 2 decimal places
-		return Double.parseDouble(new DecimalFormat("0.00").format(weight));
+		return Double.parseDouble(new DecimalFormat("0.000").format(weight));
 	}
 	
 	/**
@@ -1563,17 +1563,17 @@ public class HibernateConceptDAO implements ConceptDAO {
 		ConceptName conceptName = word.getConceptName();
 		if (conceptName.isIndexTerm()
 		        || (word.getConceptName().isPreferred() && word.getConceptName().isFullySpecifiedName()))
-			bonusWeight += weightCoefficient * 0.9;
+			bonusWeight += weightCoefficient * 0.25;
 		else if (conceptName.isPreferred())
-			bonusWeight += weightCoefficient * 0.7;
+			bonusWeight += weightCoefficient * 0.24;
 		else if (conceptName.isFullySpecifiedName())
-			bonusWeight += weightCoefficient * 0.5;
+			bonusWeight += weightCoefficient * 0.23;
 		else if (conceptName.isSynonym())
-			bonusWeight += weightCoefficient * 0.3;
+			bonusWeight += weightCoefficient * 0.22;
 		else if (conceptName.isShort())
-			bonusWeight += weightCoefficient * 0.1;
+			bonusWeight += weightCoefficient * 0.21;
 		
-		//the shorter the full concept name, the higher the weigth, the word 'MEASELS' in 
+		//the shorter the full concept name, the higher the weight, the word 'MEASELS' in 
 		//'MEASELS ON EARTH' should weigh more than another 'MEASELS' in 'MEASELS ON JUPITER'
 		bonusWeight += weightCoefficient / new Double(word.getConceptName().getName().length());
 		
