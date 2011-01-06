@@ -69,9 +69,19 @@
 		}
 		}
 	}
-	
-	function enableSaveButton(relType, id) {
-		document.getElementById("saveEncounterButton").disabled = false;
+
+	var patientBoxFilledIn = false;
+	var providerBoxFilledIn = false;
+	function enableSaveButton(formFieldId, id) {
+		if (formFieldId == "patientId")
+			patientBoxFilledIn = true;
+
+		if (formFieldId == "providerId")
+			providerBoxFilledIn = true;
+
+		// only enable if both the patient and provider boxes have been entered
+		if (patientBoxFilledIn && providerBoxFilledIn)
+			document.getElementById("saveEncounterButton").disabled = false;
 	}
 
 </script>
