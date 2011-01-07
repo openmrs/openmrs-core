@@ -3,6 +3,13 @@
 	<li class="first">
 		<a href="${pageContext.request.contextPath}/admin"><spring:message code="admin.title.short"/></a>
 	</li>
+	<openmrs:hasPrivilege privilege="Add HL7 Source,View HL7 Source,Update HL7 Source,Purge HL7 Source">
+		<li <c:if test='<%= request.getRequestURI().contains("hl7Source") %>'>class="active"</c:if>>
+			<a href="${pageContext.request.contextPath}/admin/hl7/hl7Source.list" >
+				<spring:message code="Hl7Source.manage.title"/>
+			</a>
+		</li>
+	</openmrs:hasPrivilege>
 	<openmrs:hasPrivilege privilege="View HL7 Inbound Messages">
 		<li <c:if test='<%= request.getRequestURI().contains("hl7InQueueList") %>'>class="active"</c:if>>
 			<a href="${pageContext.request.contextPath}/admin/hl7/hl7InQueuePending.htm" class="retired">
