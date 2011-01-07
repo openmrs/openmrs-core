@@ -74,7 +74,7 @@ public class DaemonTest extends BaseContextSensitiveTest {
 			Assert.assertTrue("Should not hit this line, since the previous needed to throw an exception", false);
 		}
 		catch (APIAuthenticationException ex) {
-			Assert.assertEquals("Can only be called from a Daemon thread", ex.getMessage());
+			Assert.assertEquals("Only daemon threads can spawn new daemon threads", ex.getMessage());
 		}
 	}
 	
