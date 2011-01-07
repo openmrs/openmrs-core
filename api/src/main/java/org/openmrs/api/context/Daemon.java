@@ -152,7 +152,7 @@ public class Daemon {
 	public static Thread runInNewDaemonThread(final Runnable runnable) {
 		// make sure we're already in a daemon thread
 		if (!isDaemonThread())
-			throw new APIAuthenticationException("Can only be called from a Daemon thread");
+			throw new APIAuthenticationException("Only daemon threads can spawn new daemon threads");
 		
 		// we should consider making DaemonThread public, so the caller can access returnedObject and exceptionThrown
 		DaemonThread thread = new DaemonThread() {
