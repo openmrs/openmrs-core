@@ -592,6 +592,10 @@
 		</property>
 	</bean>
 	
+	<!-- will be autowired to the HibernateSessionFactoryBean by type -->
+	<!-- interceptors are used in order of name, this needs to be one of the first and should be since auditable happens to start with 'a' -->
+	<bean id="auditableInterceptor" class="org.openmrs.api.db.hibernate.AuditableInterceptor" />
+	
 	<bean id="sessionFactory" class="org.openmrs.api.db.hibernate.HibernateSessionFactoryBean">
 		<property name="configLocations">
 			<list>

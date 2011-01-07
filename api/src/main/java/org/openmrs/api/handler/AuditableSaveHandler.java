@@ -44,12 +44,6 @@ public class AuditableSaveHandler implements SaveHandler<Auditable> {
 	 * @should not set creator if non null
 	 * @should set dateCreated if null
 	 * @should not set dateCreated if non null
-	 * @should set changedBy if id exists
-	 * @should set dateChanged if id exists
-	 * @should not set changedBy if id doesnt exist
-	 * @should not set dateChanged if id doesnt exist
-	 * @should set changedBy if id is unsupported
-	 * @should set dateChanged if id is unsupported
 	 */
 	public void handle(Auditable auditable, User currentUser, Date currentDate, String reason) {
 		
@@ -62,18 +56,10 @@ public class AuditableSaveHandler implements SaveHandler<Auditable> {
 			auditable.setDateCreated(currentDate);
 		}
 		
-		// if there is an id already, we assume its been saved before
-		boolean hasId;
-		try {
-			hasId = auditable.getId() != null;
-		}
-		catch (UnsupportedOperationException e) {
-			hasId = true; // if no "id" to check, just go ahead and set them
-		}
-		if (hasId) {
-			auditable.setChangedBy(currentUser);
-			auditable.setDateChanged(currentDate);
-		}
+		// changedBy and dateChanged are no longer set here because the recursion logic 
+		// actually caused problems (updates) on objects that should not have been updated
+		// see TRUNK-1930 for more background info
+		// Go look at the AuditableInterceptor for where this is implemented now
 	}
 	
 }

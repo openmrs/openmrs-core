@@ -18,8 +18,6 @@ import java.util.Date;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.Auditable;
-import org.openmrs.BaseOpenmrsMetadata;
-import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptName;
 import org.openmrs.User;
 import org.openmrs.test.Verifies;
@@ -84,93 +82,4 @@ public class AuditableSaveHandlerTest {
 		Assert.assertEquals(d, auditable.getDateCreated());
 	}
 	
-	/**
-	 * @see {@link AuditableSaveHandler#handle(Auditable,User,Date,String)}
-	 */
-	@Test
-	@Verifies(value = "should set changedBy if id exists", method = "handle(Auditable,User,Date,String)")
-	public void handle_shouldSetChangedByIfIdExists() throws Exception {
-		Auditable auditable = new ConceptDatatype(5); // an auditable with a non-null id
-		new AuditableSaveHandler().handle(auditable, new User(2), null, null);
-		Assert.assertEquals(new User(2), auditable.getChangedBy());
-	}
-	
-	/**
-	 * @see {@link AuditableSaveHandler#handle(Auditable,User,Date,String)}
-	 */
-	@Test
-	@Verifies(value = "should set dateChanged if id exists", method = "handle(Auditable,User,Date,String)")
-	public void handle_shouldSetDateChangedIfIdExists() throws Exception {
-		Date d = new Date(new Date().getTime() - 1000); // a time that isn't "now"
-		
-		Auditable auditable = new ConceptDatatype(5); // an auditable with a non-null id
-		new AuditableSaveHandler().handle(auditable, null, d, null);
-		Assert.assertEquals(d, auditable.getDateChanged());
-	}
-	
-	/**
-	 * @see {@link AuditableSaveHandler#handle(Auditable,User,Date,String)}
-	 */
-	@Test
-	@Verifies(value = "should not set dateChanged if id doesnt exist", method = "handle(Auditable,User,Date,String)")
-	public void handle_shouldNotSetDateChangedIfIdDoesntExist() throws Exception {
-		Auditable auditable = new ConceptDatatype(); // an auditable with a null id
-		new AuditableSaveHandler().handle(auditable, null, new Date(), null);
-		Assert.assertNull(auditable.getDateChanged());
-	}
-	
-	/**
-	 * @see {@link AuditableSaveHandler#handle(Auditable,User,Date,String)}
-	 */
-	@Test
-	@Verifies(value = "should not set changedBy if id doesnt exist", method = "handle(Auditable,User,Date,String)")
-	public void handle_shouldNotSetChangedByIfIdDoesntExist() throws Exception {
-		Auditable auditable = new ConceptDatatype(); // an auditable with a null id
-		new AuditableSaveHandler().handle(auditable, new User(2), null, null);
-		Assert.assertNull(auditable.getChangedBy());
-	}
-	
-	/**
-	 * A class to help test that if {@link #getId()} throws an {@link UnsupportedOperationException}
-	 * , the changedBy and dateChanged get set anyway.
-	 * 
-	 * @see AuditableSaveHandlerTest#handle_shouldSetChangedByIfIdIsUnsupported()
-	 * @see AuditableSaveHandlerTest#handle_shouldSetDateChangedIfIdIsUnsupported()
-	 */
-	private class AuditableWithUnsupportedId extends BaseOpenmrsMetadata {
-		
-		public Integer getId() {
-			throw new UnsupportedOperationException();
-		}
-		
-		public void setId(Integer id) {
-		}
-		
-	}
-	
-	/**
-	 * @see {@link AuditableSaveHandler#handle(Auditable,User,Date,String)}
-	 */
-	@Test
-	@Verifies(value = "should set changedBy if id is unsupported", method = "handle(Auditable,User,Date,String)")
-	public void handle_shouldSetChangedByIfIdIsUnsupported() throws Exception {
-		AuditableWithUnsupportedId auditable = new AuditableWithUnsupportedId();
-		
-		new AuditableSaveHandler().handle(auditable, new User(2), null, null);
-		Assert.assertEquals(new User(2), auditable.getChangedBy());
-	}
-	
-	/**
-	 * @see {@link AuditableSaveHandler#handle(Auditable,User,Date,String)}
-	 */
-	@Test
-	@Verifies(value = "should set dateChanged if id is unsupported", method = "handle(Auditable,User,Date,String)")
-	public void handle_shouldSetDateChangedIfIdIsUnsupported() throws Exception {
-		AuditableWithUnsupportedId auditable = new AuditableWithUnsupportedId();
-		
-		Date d = new Date(new Date().getTime() - 1000); // a time that isn't "now"
-		
-		new AuditableSaveHandler().handle(auditable, null, d, null);
-		Assert.assertEquals(d, auditable.getDateChanged());
-	}
 }
