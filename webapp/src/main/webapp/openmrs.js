@@ -464,3 +464,14 @@ function colorVisibleTableRows(tableId, oddColorClass, evenColorClass, includeHe
  		odd = !odd;
  	}
 }
+/**
+ * Simple utility method to only allow the user to enter the given number of characters
+ *
+ * @param object a textarea
+ * @param maxLength max length of the string
+ */
+ function maxLength(object, maxLength) {
+      if( object.value.length >= maxLength) {
+         object.value = object.value.substring(0, maxLength); 
+      }
+   }

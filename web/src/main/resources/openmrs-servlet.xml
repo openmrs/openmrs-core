@@ -174,6 +174,8 @@
 				<prop key="admin/concepts/proposeConcept.form">proposeConceptForm</prop>
 				<prop key="admin/concepts/conceptIndex.form">conceptIndexForm</prop>
 				<prop key="admin/concepts/conceptSetDerived.form">conceptSetDerivedForm</prop>
+				<prop key="admin/hl7/hl7Source.list">hl7SourceList</prop>
+				<prop key="admin/hl7/hl7Source.form">hl7SourceForm</prop>
 
 				<prop key="migration.list">migrationController</prop>
 				<prop key="migration.form">migrationActionController</prop>
@@ -874,11 +876,33 @@
 		
 	-->
 
-	<!-- ======================================== -->
+	<!-- ================================ -->
+	<!-- ======  hl7Source Sector  ====== -->
+	<!-- ================================ -->
+
+	<bean id="hl7SourceList" class="org.openmrs.web.controller.hl7.Hl7SourceListController">
+		<property name="commandName"><value>hl7SourceList</value></property>
+		<property name="formView"><value>/admin/hl7/hl7SourceList</value></property>
+		<property name="successView"><value>hl7Source.list</value></property>
+		
+	</bean>
+
+	<bean id="hl7SourceForm"
+		class="org.openmrs.web.controller.hl7.HL7SourceFormController">
+		<property name="commandName"><value>hl7Source</value></property>
+		<property name="validator">
+			<ref bean="hl7SourceValidator" />
+		</property>
+		<property name="formView"><value>/admin/hl7/hl7SourceForm</value></property>
+		<property name="successView"><value>hl7Source.list</value></property>
+	</bean>
+   	<!-- ====== /hl7Source Section ====== -->
+
 
 	<!-- =========================== -->
 	<!-- =====      Other      ===== -->
 	<!-- =========================== -->
+        
 	<bean id="postHl7FormController" class="org.openmrs.web.controller.remotecommunication.PostHl7Controller">
 		<property name="formView"><value>/remotecommunication/postHl7Form</value></property>
 	</bean>
