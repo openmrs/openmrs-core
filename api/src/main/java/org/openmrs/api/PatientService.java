@@ -497,6 +497,7 @@ public interface PatientService extends OpenmrsService {
 	 * @deprecated use {@link PatientIdentifierValidator#validateIdentifier(PatientIdentifier)}
 	 */
 	@Deprecated
+	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_PATIENT_IDENTIFIERS })
 	public void checkPatientIdentifier(PatientIdentifier patientIdentifier) throws PatientIdentifierException;
 	
@@ -516,6 +517,7 @@ public interface PatientService extends OpenmrsService {
 	 * @should throw error when patient does not have one or more required identifiers
 	 * @should require one non voided patient identifier
 	 */
+	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_PATIENT_IDENTIFIERS })
 	public void checkPatientIdentifiers(Patient patient) throws PatientIdentifierException;
 	
