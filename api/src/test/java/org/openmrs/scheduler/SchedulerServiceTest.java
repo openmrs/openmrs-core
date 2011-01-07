@@ -356,11 +356,14 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 		service.saveTask(td);
 		
 		service.scheduleTask(td);
+		
+		// refetch the task
+		td = service.getTaskByName(NAME);
+		
 		// sleep a while until the task has executed, up to 5 times
-		for (int x = 0; x < 5 && actualExecutionTime == null; x++)
+		for (int x = 0; x < 5 && actualExecutionTime == null && td.getLastExecutionTime() == null; x++)
 			Thread.sleep(200);
 		
-		td = service.getTaskByName(NAME);
 		Assert.assertNotNull(actualExecutionTime);
 		assertEquals("Last execution time in seconds is wrong", actualExecutionTime.longValue() / 1000, td
 		        .getLastExecutionTime().getTime() / 1000, 1);
