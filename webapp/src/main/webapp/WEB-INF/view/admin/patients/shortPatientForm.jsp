@@ -39,6 +39,17 @@
 				input.name = 'identifiers[' + index + '].preferred';
 				input.id = 'identifiers[' + index + '].preferred';
 			}
+			else if (input && input.name == 'newIdentifier.voided' && input.type == 'checkbox') {
+				//set the attributes of the corresponding hidden checkbox for voiding/unvoiding new identifiers
+				input.name = 'identifiers[' + index + '].voided';
+				input.id = 'identifiers[' + index + '].isVoided';
+			}else if (input && input.name == 'closeButton' && input.type == 'button') {
+				//set the onclick event for this identifier's remove button,
+				//so that we check the corresponding hidden checkbox to mark a removed identifier
+				$j(input).click(function(){
+					removeRow(this, 'identifiers[' + index + '].isVoided');
+				});
+			}
 		}
 		
 		if(!$j("#identifierHeaders").is(":visible"))
@@ -261,7 +272,7 @@
 						<spring:bind path="voided">
 						<input type="hidden" name="_${status.expression}" value=""/>		
 						<input id="identifiers[${varStatus.index}].isVoided" type="checkbox" name="${status.expression}" value="false" style="display:none"/>						
-						<input type="button" name="closeButton" onClick="return removeRow(this, 'identifiers[${varStatus.index}].isVoided');" class="closeButton" value='<spring:message code="general.remove"/>'/>
+						<input type="button" name="closeButton" onClick="removeRow(this, 'identifiers[${varStatus.index}].isVoided');" class="closeButton" value='<spring:message code="general.remove"/>'/>
 						</spring:bind>
 					</td>
 					</tr>
@@ -298,7 +309,8 @@
 						<input type="radio" name="preferred" value="true" onclick="updatePreferred(this)" />
 					</td>					
 					<td valign="middle" align="center">
-						<input type="button" name="closeButton" onClick="return removeRow(this, null);" class="closeButton" value='<spring:message code="general.remove"/>'/>
+						<input type="checkbox" name="newIdentifier.voided" value="false" style="display: none"/>
+						<input type="button" name="closeButton" class="closeButton" value='<spring:message code="general.remove"/>'/>
 					</td>
 					</tr>
 				</tbody>
