@@ -173,7 +173,7 @@ public class Daemon {
 		thread.start();
 		return thread;
 	}
-
+	
 	/**
 	 * @return true if the current thread was started by this class and so is a daemon thread that
 	 *         has all privileges

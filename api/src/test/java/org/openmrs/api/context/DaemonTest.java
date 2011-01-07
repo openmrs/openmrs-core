@@ -77,7 +77,7 @@ public class DaemonTest extends BaseContextSensitiveTest {
 			Assert.assertEquals("Only daemon threads can spawn new daemon threads", ex.getMessage());
 		}
 	}
-
+	
 	/**
 	 * @see Daemon#runInNewDaemonThread(Runnable)
 	 * @verifies not throw error if called from a daemon thread
@@ -87,7 +87,7 @@ public class DaemonTest extends BaseContextSensitiveTest {
 		Task taskThatStartsAnotherThread = new TaskThatStartsAnotherThread();
 		Assert.assertTrue(new PrivateSchedulerTask(taskThatStartsAnotherThread).runTheTest());
 	}
-
+	
 	/**
 	 * A TimerSchedulerTask that can call the daemon thread
 	 * 
