@@ -20,6 +20,8 @@
 	<c:set var="formFieldId" value="${formFieldName}_id" />
 </c:if>
 <c:set var="escapedFormFieldId" value="${fn:replace(formFieldName, '.', '')}" />
+<c:set var="escapedFormFieldId" value="${fn:replace(escapedFormFieldId, '[', '')}" />
+<c:set var="escapedFormFieldId" value="${fn:replace(escapedFormFieldId, ']', '')}" />
 <c:set var="displayNameInputId" value="${formFieldId}_selection" />
 <c:set var="otherInputId" value="${formFieldId}_other" />
 
