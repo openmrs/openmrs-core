@@ -19,12 +19,13 @@ import java.util.Set;
 import junit.framework.Assert;
 
 import org.junit.Test;
+import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 
 /**
  * Tests methods on the ConceptWord object
  */
-public class ConceptWordTest {
+public class ConceptWordTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ConceptWord#makeConceptWords(Concept)

@@ -4007,4 +4007,82 @@
 			referencedTableName="users" referencedColumnNames="user_id" />
 	</changeSet>
 
+	<changeSet id="20101029-1016" author="gobi/prasann">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="concept_stop_word" />
+			</not>
+		</preConditions>
+
+		<comment>Create table to store concept stop words to avoid in search key indexing</comment>
+
+		<createTable tableName="concept_stop_word">
+			<column name="concept_stop_word_id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="word" type="varchar(50)">
+				<constraints nullable="false" />
+			</column>
+			<column name="locale" type="varchar(20)" defaultValue="en">
+				<constraints nullable="false" />
+			</column>
+			<column name="uuid" type="char(38)">
+				<constraints nullable="false" unique="true"/>
+			</column>
+		</createTable>
+
+		<addUniqueConstraint tableName="concept_stop_word"
+			columnNames="word,locale" constraintName="Unique_StopWord_Key" />
+
+	</changeSet>
+
+	<changeSet id="20101029-1026" author="gobi/prasann">
+		<preConditions onFail="MARK_RAN">
+			<tableExists tableName="concept_stop_word" />
+		</preConditions>
+		
+		<comment>Inserting the initial concept stop words</comment>
+
+		<insert tableName="concept_stop_word">
+			<column name="word" value="A" />
+			<column name="uuid" value="f5f45540-e2a7-11df-87ae-18a905e044dc" />
+		</insert>
+		<insert tableName="concept_stop_word">
+			<column name="word" value="AND" />
+			<column name="uuid" value="f5f469ae-e2a7-11df-87ae-18a905e044dc" />
+		</insert>
+		<insert tableName="concept_stop_word">
+			<column name="word" value="AT" />
+			<column name="uuid" value="f5f47070-e2a7-11df-87ae-18a905e044dc" />
+		</insert>
+		<insert tableName="concept_stop_word">
+			<column name="word" value="BUT" />
+			<column name="uuid" value="f5f476c4-e2a7-11df-87ae-18a905e044dc" />
+		</insert>
+		<insert tableName="concept_stop_word">
+			<column name="word" value="BY" />
+			<column name="uuid" value="f5f47d04-e2a7-11df-87ae-18a905e044dc" />
+		</insert>
+		<insert tableName="concept_stop_word">
+			<column name="word" value="FOR" />
+			<column name="uuid" value="f5f4834e-e2a7-11df-87ae-18a905e044dc" />
+		</insert>
+		<insert tableName="concept_stop_word">
+			<column name="word" value="HAS" />
+			<column name="uuid" value="f5f48a24-e2a7-11df-87ae-18a905e044dc" />
+		</insert>
+		<insert tableName="concept_stop_word">
+			<column name="word" value="OF" />
+			<column name="uuid" value="f5f49064-e2a7-11df-87ae-18a905e044dc" />
+		</insert>
+		<insert tableName="concept_stop_word">
+			<column name="word" value="THE" />
+			<column name="uuid" value="f5f496ae-e2a7-11df-87ae-18a905e044dc" />
+		</insert>
+		<insert tableName="concept_stop_word">
+			<column name="word" value="TO" />
+			<column name="uuid" value="f5f49cda-e2a7-11df-87ae-18a905e044dc" />
+		</insert>
+	</changeSet>
+
 </databaseChangeLog>

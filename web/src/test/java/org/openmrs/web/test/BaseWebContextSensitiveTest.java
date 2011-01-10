@@ -15,7 +15,6 @@ package org.openmrs.web.test;
 
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
 
 /**
  * Web tests for controllers, etc should use this class instead of the general

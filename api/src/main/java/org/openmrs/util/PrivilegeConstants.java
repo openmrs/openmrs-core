@@ -390,4 +390,7 @@ public class PrivilegeConstants {
 	@AddOnStartup(description = "Remove allergies")
 	public static final String DELETE_ALLERGIES = "Remove Allergies";
 	
+	@AddOnStartup(description = "Able to view/add/remove the concept stop words")
+	public static final String MANAGE_CONCEPT_STOP_WORDS = "Manage Concept Stop Words";
+	
 }

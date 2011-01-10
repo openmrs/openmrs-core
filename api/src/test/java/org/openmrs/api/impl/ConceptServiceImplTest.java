@@ -25,13 +25,14 @@ import org.openmrs.ConceptName;
 import org.openmrs.ConceptWord;
 import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.ConceptService;
+import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 
 /**
  * Unit tests for methods that are specific to the {@link ConceptServiceImpl}. General tests that
  * would span implementations should go on the {@link ConceptService}.
  */
-public class ConceptServiceImplTest {
+public class ConceptServiceImplTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see ConceptServiceImpl#weightWords(String, List, List)

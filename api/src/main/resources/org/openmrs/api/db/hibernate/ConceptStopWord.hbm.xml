@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.1//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="org.openmrs">
+
+    <class name="ConceptStopWord" table="concept_stop_word" batch-size="25">
+
+        <cache usage="read-write"/>
+
+        <id name="conceptStopWordId" type="int" column="concept_stop_word_id">
+            <generator class="native"/>
+        </id>
+
+        <property name="value" column="word" type="java.lang.String" length="50" not-null="true"/>
+        <property name="locale" type="java.util.Locale" length="20" not-null="true"/>
+        <property name="uuid" type="java.lang.String" column="uuid" length="38" unique="true"/>
+    </class>
+
+</hibernate-mapping>

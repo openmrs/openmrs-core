@@ -47,6 +47,7 @@ import org.openmrs.ConceptProposal;
 import org.openmrs.ConceptSearchResult;
 import org.openmrs.ConceptSet;
 import org.openmrs.ConceptSource;
+import org.openmrs.ConceptStopWord;
 import org.openmrs.Drug;
 import org.openmrs.Encounter;
 import org.openmrs.GlobalProperty;
@@ -61,6 +62,7 @@ import org.openmrs.test.SkipBaseSetup;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
+import org.springframework.test.annotation.ExpectedException;
 
 /**
  * This test class (should) contain tests for all of the ConcepService methods TODO clean up and
@@ -1124,7 +1126,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getFalse()}
+	 * @see {@link ConceptService#getFalseConcept()}
 	 */
 	@Test
 	@Verifies(value = "should return the false concept", method = "getFalseConcept()")
@@ -1135,7 +1137,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getTrue()}
+	 * @see {@link ConceptService#getTrueConcept()}
 	 */
 	@Test
 	@Verifies(value = "should return the true concept", method = "getTrueConcept()")
@@ -1146,7 +1148,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#changeConceptFromBooleanToCoded(Concept)}
+	 * @see {@link ConceptService#getConceptDatatypeByName(String)}
 	 */
 	@Test
 	@Verifies(value = "should convert the datatype of a boolean concept to coded", method = "changeConceptFromBooleanToCoded(Concept)")
@@ -1158,7 +1160,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#changeConceptFromBooleanToCoded(Concept)}
+	 * @see {@link ConceptService#getConcept(Integer)}
 	 */
 	@Test(expected = APIException.class)
 	@Verifies(value = "should fail if the datatype of the concept is not boolean", method = "changeConceptFromBooleanToCoded(Concept)")
@@ -1168,7 +1170,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#changeConceptFromBooleanToCoded(Concept)}
+	 * @see {@link ConceptService#convertBooleanConceptToCoded(Concept)}
 	 */
 	@Test
 	@Verifies(value = "should explicitly add false concept as a value_Coded answer", method = "changeConceptFromBooleanToCoded(Concept)")
@@ -1192,7 +1194,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#changeConceptFromBooleanToCoded(Concept)}
+	 * @see {@link ConceptService#convertBooleanConceptToCoded(Concept)}
 	 */
 	@Test
 	@Verifies(value = "should explicitly add true concept as a value_Coded answer", method = "changeConceptFromBooleanToCoded(Concept)")
@@ -1356,9 +1358,8 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link 
-	 *      ConceptService#getConcepts(String,List<Locale>,null,List<ConceptClass>,List<ConceptClass
-	 *      >,List<ConceptDatatype>,List<ConceptDatatype>,Concept,Integer,Integer)}
+	 * @see {@link ConceptService#getConcepts(String, java.util.List, boolean, java.util.List, java.util.List, java.util.List, java.util.List, org.openmrs.Concept, Integer, Integer)}
+	 * 
 	 */
 	@Test
 	@Verifies(value = "should return the best matched name as the first item in the searchResultsList", method = "getConcepts(String,List<Locale>,null,List<ConceptClass>,List<ConceptClass>,List<ConceptDatatype>,List<ConceptDatatype>,Concept,Integer,Integer)")
@@ -1370,13 +1371,155 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @see {@link ConceptService#saveConceptStopWord(org.openmrs.ConceptStopWord)}
+	 */
+	@Test
+	@Verifies(value = "should save concept stop word into database", method = "saveConceptStopWord(ConceptStopWord)")
+	public void saveConceptStopWord_shouldSaveConceptStopWordIntoDatabase() throws Exception {
+		ConceptStopWord conceptStopWord = new ConceptStopWord("AND", Locale.FRANCE);
+		conceptService.saveConceptStopWord(conceptStopWord);
+		
+		List<String> conceptStopWords = conceptService.getConceptStopWords(Locale.FRANCE);
+		assertEquals(1, conceptStopWords.size());
+		assertEquals("AND", conceptStopWords.get(0));
+	}
+	
+	/**
+	 * @see {@link ConceptService#saveConceptStopWord(ConceptStopWord)}
+	 */
+	@Test
+	@Verifies(value = "should assign default Locale ", method = "saveConceptStopWord(ConceptStopWord)")
+	public void saveConceptStopWord_shouldSaveConceptStopWordAssignDefaultLocaleIsItNull() throws Exception {
+		ConceptStopWord conceptStopWord = new ConceptStopWord("The");
+		conceptService.saveConceptStopWord(conceptStopWord);
+		
+		List<String> conceptStopWords = conceptService.getConceptStopWords(Locale.UK);
+		assertEquals(2, conceptStopWords.size());
+	}
+	
+	/**
+	 * @see {@link ConceptService#getConceptStopWords(Locale)}
+	 */
+	@Test
+	@Verifies(value = "should return default Locale ConceptStopWords if Locale is null", method = "getConceptStopWords(Locale)")
+	public void getConceptStopWords_shouldReturnDefaultLocaleConceptStopWordsIfLocaleIsNull() throws Exception {
+		List<String> conceptStopWords = conceptService.getConceptStopWords(null);
+		assertEquals(1, conceptStopWords.size());
+	}
+	
+	/**
+	 * @see {@link ConceptService#saveConceptStopWord(ConceptStopWord)}
+	 */
+	@Test
+	@Verifies(value = "should put generated concept stop word id onto returned concept stop word", method = "saveConceptStopWord(ConceptStopWord)")
+	public void saveConceptStopWord_shouldSaveReturnConceptStopWordWithId() throws Exception {
+		ConceptStopWord conceptStopWord = new ConceptStopWord("A");
+		ConceptStopWord savedConceptStopWord = conceptService.saveConceptStopWord(conceptStopWord);
+		
+		assertNotNull(savedConceptStopWord.getId());
+	}
+	
+	/**
+	 * @see {@link ConceptService#saveConceptStopWord(ConceptStopWord)}
+	 */
+	@Test
+	@Verifies(value = "should fail if a duplicate conceptStopWord in a locale is added", method = "saveConceptStopWord(ConceptStopWord)")
+	@ExpectedException(ConceptStopWordException.class)
+	public void saveConceptStopWord_shouldFailIfADuplicateConceptStopWordInALocaleIsAdded() throws Exception {
+		ConceptStopWord conceptStopWord = new ConceptStopWord("A");
+		try {
+			conceptService.saveConceptStopWord(conceptStopWord);
+			conceptService.saveConceptStopWord(conceptStopWord);
+		}
+		catch (ConceptStopWordException e) {
+			assertEquals("ConceptStopWord.duplicated", e.getMessage());
+			throw e;
+		}
+	}
+	
+	/**
+	 * @see {@link ConceptService#saveConceptStopWord(ConceptStopWord)}
+	 */
+	@Test
+	@Verifies(value = "should save concept stop word in uppercase", method = "saveConceptStopWord(ConceptStopWord)")
+	public void saveConceptStopWord_shouldSaveConceptStopWordInUppercase() throws Exception {
+		ConceptStopWord conceptStopWord = new ConceptStopWord("lowertoupper");
+		ConceptStopWord savedConceptStopWord = conceptService.saveConceptStopWord(conceptStopWord);
+		
+		assertEquals("LOWERTOUPPER", savedConceptStopWord.getValue());
+	}
+	
+	/**
+	 * @see {@link ConceptService#getConceptStopWords(Locale)}
+	 */
+	@Test
+	@Verifies(value = "should return list of concept stop word for given locale", method = "getConceptStopWords(Locale)")
+	public void getConceptStopWords_shouldReturnListOfConceptStopWordsForGivenLocale() throws Exception {
+		List<String> conceptStopWords = conceptService.getConceptStopWords(Locale.ENGLISH);
+		assertEquals(2, conceptStopWords.size());
+		assertEquals("A", conceptStopWords.get(0));
+		assertEquals("AN", conceptStopWords.get(1));
+	}
+	
+	/**
+	 * @see {@link ConceptService#getAllConceptStopWords()}
+	 */
+	@Test
+	@Verifies(value = "should return all the concept stop words", method = "getAllConceptStopWords()")
+	public void getAllConceptStopWords_shouldReturnAllConceptStopWords() throws Exception {
+		List<ConceptStopWord> conceptStopWords = conceptService.getAllConceptStopWords();
+		assertEquals(4, conceptStopWords.size());
+	}
+	
+	/**
+	 * @see {@link ConceptService#getAllConceptStopWords()}
+	 */
+	@Test
+	@Verifies(value = "should return empty list if nothing found", method = "getAllConceptStopWords()")
+	public void getAllConceptStopWords_shouldReturnEmptyListIfNoRecordFound() throws Exception {
+		conceptService.deleteConceptStopWord(1);
+		conceptService.deleteConceptStopWord(2);
+		conceptService.deleteConceptStopWord(3);
+		conceptService.deleteConceptStopWord(4);
+		
+		List<ConceptStopWord> conceptStopWords = conceptService.getAllConceptStopWords();
+		assertEquals(0, conceptStopWords.size());
+	}
+	
+	/**
+	 * @see {@link ConceptService#getConceptStopWords(Locale)}
+	 */
+	@Test
+	@Verifies(value = "should return empty list if no stop words are found for the given locale", method = "getConceptStopWords(Locale)")
+	public void getConceptStopWords_shouldReturnEmptyListIfNoConceptStopWordsForGivenLocale() throws Exception {
+		List<String> conceptStopWords = conceptService.getConceptStopWords(Locale.GERMANY);
+		assertEquals(0, conceptStopWords.size());
+	}
+	
+	/**
+	 * @see {@link ConceptService#deleteConceptStopWord(Integer)}
+	 */
+	@Test
+	@Verifies(value = "should delete the given concept stop word from the database", method = "deleteConceptStopWord(ConceptStopWordId)")
+	public void deleteConceptStopWord_shouldDeleteTheGivenConceptStopWord() throws Exception {
+		List<String> conceptStopWords = conceptService.getConceptStopWords(Locale.US);
+		
+		assertEquals(1, conceptStopWords.size());
+		
+		conceptService.deleteConceptStopWord(4);
+		
+		conceptStopWords = conceptService.getConceptStopWords(Locale.US);
+		assertEquals(0, conceptStopWords.size());
+	}
+	
+	/**
 	 * This test fetches all concepts in the xml test dataset and ensures that every locale for a
 	 * concept name is among those listed in the global property 'locale.allowed.list' and default
 	 * locale. NOTE that it doesn't test a particular API method directly.
 	 */
 	@Test
-	@Verifies(value = "should not accept a locale that is neither among the localeAllowedList nor a default locale", method = "")
-	public void shouldNotAcceptALocaleThatIsNeitherAmongTheLocaleAllowedListNorADefaultLocale() throws Exception {
+	@Verifies(value = "should not accept a locale that is neither among the localeAllowedList nor a default locale", method = "saveConcept(Concept)")
+	public void saveConcept_shouldNotAcceptALocaleThatIsNeitherAmongTheLocaleAllowedListNorADefaultLocale() throws Exception {
 		List<Concept> concepts = Context.getConceptService().getAllConcepts();
 		Set<Locale> allowedLocales = LocaleUtility.getLocalesInOrder();
 		for (Concept concept : concepts) {
@@ -1397,7 +1540,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	@Verifies(value = "should always return a preferred name for every locale that has atleast one unvoided name", method = "")
-	public void shouldAlwaysReturnAPreferredNameForEveryLocaleThatHasAtleastOneUnvoidedName() throws Exception {
+	public void saveConcept_shouldAlwaysReturnAPreferredNameForEveryLocaleThatHasAtleastOneUnvoidedName() throws Exception {
 		List<Concept> concepts = Context.getConceptService().getAllConcepts();
 		Set<Locale> allowedLocales = LocaleUtility.getLocalesInOrder();
 		for (Concept concept : concepts) {
@@ -1418,7 +1561,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	@Verifies(value = "should ensure that every concepName locale has exactly one preferred name", method = "")
-	public void shouldEnsureThatEveryConcepNameLocaleHasExactlyOnePreferredName() throws Exception {
+	public void saveConcept_shouldEnsureThatEveryConcepNameLocaleHasExactlyOnePreferredName() throws Exception {
 		List<Concept> concepts = Context.getConceptService().getAllConcepts();
 		Set<Locale> allowedLocales = LocaleUtility.getLocalesInOrder();
 		for (Concept concept : concepts) {

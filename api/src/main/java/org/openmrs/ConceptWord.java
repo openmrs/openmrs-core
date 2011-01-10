@@ -19,6 +19,8 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.Vector;
 
+import org.apache.commons.lang.StringUtils;
+import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
@@ -270,17 +272,33 @@ public class ConceptWord implements java.io.Serializable, Comparable<ConceptWord
 	 * @return Returns a list of the unique parts of the phrase, in all upper case.
 	 */
 	public static List<String> getUniqueWords(String phrase) {
+		return getUniqueWords(phrase, Context.getLocale());
+	}
+	
+	/**
+	 * Split the given phrase on words and remove unique and stop words for the given locale
+	 * 
+	 * @param phrase
+	 * @param locale
+	 * @return Returns a list of the unique parts of the phrase, in all upper case.
+	 * @since 1.8
+	 */
+	public static List<String> getUniqueWords(String phrase, Locale locale) {
 		
 		String[] parts = splitPhrase(phrase);
-		
 		List<String> uniqueParts = new Vector<String>();
 		
-		for (String part : parts) {
-			String p = part.trim();
-			String upper = p.toUpperCase();
-			if (!p.equals("") && !OpenmrsConstants.STOP_WORDS().contains(upper) && !uniqueParts.contains(upper))
-				uniqueParts.add(upper);
+		if (parts != null) {
+			List<String> conceptStopWords = Context.getConceptService().getConceptStopWords(locale);
+			for (String part : parts) {
+				if (!StringUtils.isBlank(part)) {
+					String upper = part.trim().toUpperCase();
+					if (!conceptStopWords.contains(upper) && !uniqueParts.contains(upper))
+						uniqueParts.add(upper);
+				}
+			}
 		}
+		
 		return uniqueParts;
 	}
 	
@@ -291,14 +309,16 @@ public class ConceptWord implements java.io.Serializable, Comparable<ConceptWord
 	 * @return String[] array of words
 	 */
 	public static String[] splitPhrase(String phrase) {
+		if (StringUtils.isBlank(phrase)) {
+			return null;
+		}
 		if (phrase.length() > 2) {
 			phrase = phrase.replaceAll(OpenmrsConstants.REGEX_LARGE, " ");
 		} else {
 			phrase = phrase.replaceAll(OpenmrsConstants.REGEX_SMALL, " ");
 		}
 		
-		String[] words = phrase.trim().replace('\n', ' ').split(" ");
-		return words;
+		return phrase.trim().replace('\n', ' ').split(" ");
 	}
 	
 	/**

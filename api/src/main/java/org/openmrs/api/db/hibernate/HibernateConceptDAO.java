@@ -17,6 +17,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -63,6 +64,7 @@ import org.openmrs.ConceptSearchResult;
 import org.openmrs.ConceptSet;
 import org.openmrs.ConceptSetDerived;
 import org.openmrs.ConceptSource;
+import org.openmrs.ConceptStopWord;
 import org.openmrs.ConceptWord;
 import org.openmrs.Drug;
 import org.openmrs.DrugIngredient;
@@ -1271,6 +1273,66 @@ public class HibernateConceptDAO implements ConceptDAO {
 	public ConceptName getSavedConceptName(ConceptName conceptName) {
 		sessionFactory.getCurrentSession().refresh(conceptName);
 		return conceptName;
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.ConceptDAO#getConceptStopWords(java.util.Locale)
+	 */
+	public List<String> getConceptStopWords(Locale locale) throws DAOException {
+		
+		locale = (locale == null ? Context.getLocale() : locale);
+		
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ConceptStopWord.class);
+		criteria.add(Restrictions.eq("locale", locale));
+		
+		List<ConceptStopWord> stopWordList = criteria.list();
+		List<String> stopWords = new ArrayList<String>();
+		
+		for (ConceptStopWord conceptStopWord : stopWordList) {
+			stopWords.add(conceptStopWord.getValue());
+		}
+		return stopWords;
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.ConceptDAO#saveConceptStopWord(org.openmrs.ConceptStopWord)
+	 */
+	public ConceptStopWord saveConceptStopWord(ConceptStopWord conceptStopWord) throws DAOException {
+		if (conceptStopWord != null) {
+			Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ConceptStopWord.class);
+			criteria.add(Restrictions.eq("value", conceptStopWord.getValue()));
+			criteria.add(Restrictions.eq("locale", conceptStopWord.getLocale()));
+			List<ConceptStopWord> stopWordList = criteria.list();
+			
+			if (!stopWordList.isEmpty()) {
+				throw new DAOException("Duplicate ConceptStopWord Entry");
+			}
+			sessionFactory.getCurrentSession().saveOrUpdate(conceptStopWord);
+		}
+		
+		return conceptStopWord;
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.ConceptDAO#deleteConceptStopWord(java.lang.Integer)
+	 */
+	public void deleteConceptStopWord(Integer conceptStopWordId) throws DAOException {
+		if (conceptStopWordId == null) {
+			throw new DAOException("conceptStopWordId is null");
+		}
+		Object csw = sessionFactory.getCurrentSession().createCriteria(ConceptStopWord.class).add(
+		    Restrictions.eq("conceptStopWordId", conceptStopWordId)).uniqueResult();
+		if (csw == null) {
+			throw new DAOException("Concept Stop Word not found or already deleted");
+		}
+		sessionFactory.getCurrentSession().delete(csw);
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.ConceptDAO#getAllConceptStopWords()
+	 */
+	public List<ConceptStopWord> getAllConceptStopWords() {
+		return sessionFactory.getCurrentSession().createCriteria(ConceptStopWord.class).list();
 	}
 	
 	/**

@@ -66,7 +66,7 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
 
 /**
- * This is the controlling class for hte conceptForm.jsp page. It initBinder and formBackingObject
+ * This is the controlling class for the conceptForm.jsp page. It initBinder and formBackingObject
  * are called before page load. After submission, formBackingObject (because we're not a session
  * form), processFormSubmission, and onSubmit methods are called
  * 
