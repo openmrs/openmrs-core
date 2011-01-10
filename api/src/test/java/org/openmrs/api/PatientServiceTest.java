@@ -2160,4 +2160,26 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		assertEquals("7->999 (type 1) was removed", 1, rels.size());
 	}
 	
+	/**
+	 * @verifies {@link PatientService#savePatient(Patient)} test = should update the date changed
+	 *           and changed by on update of the person address
+	 */
+	@Test
+	@Verifies(value = "should update the date changed and changed by on update of the person address", method = "savePatient(Patient)")
+	public void savePatient_shouldUpdateTheDateChangedAndChangedByOnUpdateOfThePersonAddress() throws Exception {
+		
+		Patient patient = patientService.getPatient(2);
+		PersonAddress address = patient.getAddresses().iterator().next();
+		address.setAddress1("Modified Address");
+		
+		patientService.savePatient(patient);
+		
+		Context.evictFromSession(patient);
+		patient = patientService.getPatient(2);
+		
+		PersonAddress personAddress = patient.getAddresses().iterator().next();
+		assertNotNull(personAddress.getDateChanged());
+		assertNotNull(personAddress.getChangedBy());
+	}
+	
 }

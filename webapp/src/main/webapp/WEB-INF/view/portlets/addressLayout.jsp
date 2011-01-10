@@ -196,6 +196,17 @@
 									</tr>
 								</c:if>
 							</spring:bind>
+							<spring:bind path="changedBy">
+								<c:if test="${!(status.value == null)}">
+									<tr>
+										<td><spring:message code="general.changedBy" /></td>
+										<td colspan="4">
+											${status.value.personName} -
+											<openmrs:formatDate path="dateChanged" type="long" />
+										</td>
+									</tr>
+								</c:if>
+							</spring:bind>
                             <c:if test="${model.layoutHideVoidOption != 'true'}">
 								<tr>
 									<td><spring:message code="general.voided"/></td>

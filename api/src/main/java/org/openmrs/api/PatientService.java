@@ -74,6 +74,7 @@ public interface PatientService extends OpenmrsService {
 	 *         regression 1375
 	 * @should fail when patient does not have any patient identifiers
 	 * @should fail when patient does not have required patient identifiers
+	 * @should update the date changed and changed by on update of the person address
 	 */
 	@Authorized( { PrivilegeConstants.ADD_PATIENTS, PrivilegeConstants.EDIT_PATIENTS })
 	public Patient savePatient(Patient patient) throws APIException;
