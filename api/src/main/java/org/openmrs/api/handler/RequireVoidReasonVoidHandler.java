@@ -16,6 +16,7 @@ package org.openmrs.api.handler;
 import java.util.Date;
 
 import org.apache.commons.lang.StringUtils;
+import org.openmrs.Cohort;
 import org.openmrs.Encounter;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
@@ -31,7 +32,7 @@ import org.openmrs.aop.RequiredDataAdvice;
  * @see UnvoidHandler
  * @since 1.5
  */
-@Handler(supports = { Patient.class, Encounter.class, Obs.class })
+@Handler(supports = { Patient.class, Encounter.class, Obs.class, Cohort.class }, order = 1 /* low order so this is run first */)
 public class RequireVoidReasonVoidHandler implements VoidHandler<Voidable> {
 	
 	/**

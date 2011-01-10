@@ -530,7 +530,7 @@ public interface UserService extends OpenmrsService {
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_USERS })
-	public List<User> getUsersByName(String givenName, String familyName, boolean includeVoided) throws APIException;
+	public List<User> getUsersByName(String givenName, String familyName, boolean includeRetired) throws APIException;
 	
 	/**
 	 * Get all user accounts that belong to a given person.

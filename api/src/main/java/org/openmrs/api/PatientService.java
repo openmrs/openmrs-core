@@ -73,6 +73,7 @@ public interface PatientService extends OpenmrsService {
 	 * @should not throw a NonUniqueObjectException when called with a hand constructed patient
 	 *         regression 1375
 	 * @should fail when patient does not have any patient identifiers
+	 * @should update an existing patient
 	 * @should fail when patient does not have required patient identifiers
 	 * @should update the date changed and changed by on update of the person address
 	 */
@@ -179,13 +180,12 @@ public interface PatientService extends OpenmrsService {
 	 *            using a regular expression
 	 * @return patients that matched the given criteria (and are not voided)
 	 * @throws APIException
-	 * @should fetch all patients that partially matches given name
-	 * @should fetch all patients that partially matches given identifier when match identifier
-	 *         exactly equals false
-	 * @should fetch all patients that exactly matches given identifier when match identifier
-	 *         exactly equals true
+	 * @should fetch all patients that partially match given name
+	 * @should fetch all patients that partially match given identifier when match identifier exactly equals false
+	 * @should fetch all patients that exactly match given identifier when match identifier exactly equals true
 	 * @should fetch all patients that match given identifier types
 	 * @should not return duplicates
+	 * @should not return voided patients
 	 * @should return empty list when no match is found
 	 * @should search familyName2 with name
 	 * @should support simple regex

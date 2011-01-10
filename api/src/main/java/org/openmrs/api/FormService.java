@@ -42,6 +42,7 @@ public interface FormService extends OpenmrsService {
 	 * @return the Form that was saved
 	 * @throws APIException
 	 * @should save given form successfully
+	 * @should update an existing form
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_FORMS)
 	public Form saveForm(Form form) throws APIException;
@@ -60,6 +61,7 @@ public interface FormService extends OpenmrsService {
 	 * @return requested form
 	 * @throws APIException
 	 * @should return null if no form exists with given formId
+	 * @should return the requested form
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_FORMS)
@@ -579,6 +581,7 @@ public interface FormService extends OpenmrsService {
 	 * @return the Field that was saved
 	 * @throws APIException
 	 * @should save given field successfully
+	 * @should update an existing field
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_FORMS)
 	public Field saveField(Field field) throws APIException;

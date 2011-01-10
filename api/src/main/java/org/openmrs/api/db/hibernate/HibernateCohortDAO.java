@@ -63,7 +63,7 @@ public class HibernateCohortDAO implements CohortDAO {
 	@SuppressWarnings("unchecked")
 	public List<Cohort> getCohortsContainingPatientId(Integer patientId) throws DAOException {
 		Query query = sessionFactory.getCurrentSession().createQuery(
-		    "from Cohort c where :patientId in elements(c.memberIds) order by name");
+		    "from Cohort c where :patientId in elements(c.memberIds) and c.voided = false order by name");
 		query.setInteger("patientId", patientId);
 		return (List<Cohort>) query.list();
 	}
