@@ -31,6 +31,7 @@ import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.Person;
 import org.openmrs.Privilege;
@@ -409,12 +410,15 @@ public class HibernateUserDAO implements UserDAO {
 	@SuppressWarnings("unchecked")
 	public List<User> getUsersByName(String givenName, String familyName, boolean includeRetired) {
 		List<User> users = new Vector<User>();
-		String query = "from User u where u.names.givenName = :givenName and u.names.familyName = :familyName";
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(User.class);
+		crit.createAlias("person", "person");
+		crit.createAlias("person.names", "names");
+		crit.add(Expression.eq("names.givenName", givenName));
+		crit.add(Expression.eq("names.familyName", familyName));
+		crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 		if (!includeRetired)
-			query += " and u.retired = false";
-		Query q = sessionFactory.getCurrentSession().createQuery(query).setString("givenName", givenName).setString(
-		    "familyName", familyName);
-		for (User u : (List<User>) q.list()) {
+			crit.add(Expression.eq("retired", false));
+		for (User u : (List<User>) crit.list()) {
 			users.add(u);
 		}
 		return users;

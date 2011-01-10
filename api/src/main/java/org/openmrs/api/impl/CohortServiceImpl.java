@@ -109,16 +109,8 @@ public class CohortServiceImpl extends BaseOpenmrsService implements CohortServi
 	 * @see org.openmrs.api.CohortService#voidCohort(org.openmrs.Cohort, java.lang.String)
 	 */
 	public Cohort voidCohort(Cohort cohort, String reason) {
-		if (cohort.isVoided()) {
-			return cohort;
-		} else {
-			if (!StringUtils.hasText(reason))
-				throw new APIException("Reason is required");
-			cohort.setVoided(true);
-			cohort.setVoidedBy(Context.getAuthenticatedUser());
-			cohort.setVoidReason(reason);
-			return saveCohort(cohort);
-		}
+		// other setters done by the save handlers
+		return saveCohort(cohort);
 	}
 	
 	/**

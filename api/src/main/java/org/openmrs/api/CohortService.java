@@ -86,7 +86,8 @@ public interface CohortService extends OpenmrsService {
 	 * @param reason the reason this cohort is being retired
 	 * @return The cohort that was passed in
 	 * @throws APIException
-	 * @should fail with if reason is null or empty
+	 * @should fail if reason is null
+	 * @should fail if reason is empty
 	 * @should void cohort
 	 * @should not change an already voided cohort
 	 */
@@ -132,7 +133,7 @@ public interface CohortService extends OpenmrsService {
 	 * 
 	 * @return All Cohorts in the database (not including voided ones)
 	 * @throws APIException
-	 * @should get all cohorts in database
+	 * @should get all nonvoided cohorts in database
 	 * @should not return any voided cohorts
 	 */
 	@Authorized( { PrivilegeConstants.VIEW_PATIENT_COHORTS })
