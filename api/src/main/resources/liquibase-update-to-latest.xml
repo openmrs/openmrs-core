@@ -3987,4 +3987,24 @@
 		</createIndex>
 	</changeSet>
 
+	<changeSet id="20100603-1625-1-person_address" author="sapna">
+		<preConditions onFail="MARK_RAN"><not><columnExists tableName="person_address" columnName="date_changed"/></not></preConditions>
+		<comment>Adding "date_changed" column to person_address table</comment>
+		<addColumn tableName="person_address">
+			<column name="date_changed" type="DATETIME" />
+		</addColumn>
+	</changeSet>
+	
+
+	<changeSet id="20100603-1625-2-person_address" author="sapna">
+		<preConditions onFail="MARK_RAN"><not><columnExists tableName="person_address" columnName="changed_by"/></not></preConditions>
+		<comment>Adding "changed_by" column to person_address table</comment>
+		<addColumn tableName="person_address">
+			<column name="changed_by" type="int" />
+		</addColumn>
+		<addForeignKeyConstraint constraintName="person_address_changed_by"
+			baseTableName="person_address" baseColumnNames="changed_by"
+			referencedTableName="users" referencedColumnNames="user_id" />
+	</changeSet>
+
 </databaseChangeLog>

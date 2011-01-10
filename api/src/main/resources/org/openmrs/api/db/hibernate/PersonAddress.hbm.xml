@@ -78,7 +78,11 @@
 
 		<property name="preferred" type="boolean" column="preferred"
 			length="1" not-null="true" />
+		
+		<many-to-one name="changedBy" class="User" column="changed_by" />
 
+		<property name="dateChanged" type="java.util.Date" column="date_changed" length="19" />
+		
 	</class>
 
 </hibernate-mapping>
