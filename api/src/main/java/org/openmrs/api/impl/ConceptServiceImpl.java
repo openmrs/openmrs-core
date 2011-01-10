@@ -13,6 +13,8 @@
  */
 package org.openmrs.api.impl;
 
+import static org.apache.commons.lang.StringUtils.contains;
+
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -46,6 +48,7 @@ import org.openmrs.ConceptProposal;
 import org.openmrs.ConceptSearchResult;
 import org.openmrs.ConceptSet;
 import org.openmrs.ConceptSource;
+import org.openmrs.ConceptStopWord;
 import org.openmrs.ConceptWord;
 import org.openmrs.Drug;
 import org.openmrs.Obs;
@@ -53,9 +56,11 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptInUseException;
 import org.openmrs.api.ConceptNameInUseException;
 import org.openmrs.api.ConceptService;
+import org.openmrs.api.ConceptStopWordException;
 import org.openmrs.api.ConceptsLockedException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.ConceptDAO;
+import org.openmrs.api.db.DAOException;
 import org.openmrs.scheduler.SchedulerException;
 import org.openmrs.scheduler.SchedulerService;
 import org.openmrs.scheduler.Task;
@@ -1437,7 +1442,8 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	}
 	
 	/**
-	 * @see org.openmrs.api.ConceptService#getConceptByMapping(java.lang.String, java.lang.String, java.lang.Boolean)
+	 * @see org.openmrs.api.ConceptService#getConceptByMapping(java.lang.String, java.lang.String,
+	 *      java.lang.Boolean)
 	 */
 	public Concept getConceptByMapping(String code, String sourceName, Boolean includeRetired) throws APIException {
 		List<Concept> concepts = getConceptsByMapping(code, sourceName, includeRetired);
@@ -1646,6 +1652,50 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	}
 	
 	/**
+	 * @see org.openmrs.api.ConceptService#getConceptStopWords(java.util.Locale)
+	 */
+	public List<String> getConceptStopWords(Locale locale) {
+		return dao.getConceptStopWords(locale);
+	}
+	
+	/**
+	 * @see org.openmrs.api.ConceptService#saveConceptStopWord(org.openmrs.ConceptStopWord)
+	 */
+	public ConceptStopWord saveConceptStopWord(ConceptStopWord conceptStopWord) throws APIException {
+		try {
+			return dao.saveConceptStopWord(conceptStopWord);
+		}
+		catch (DAOException e) {
+			if (e.getMessage().equalsIgnoreCase("Duplicate ConceptStopWord Entry")) {
+				throw new ConceptStopWordException("ConceptStopWord.duplicated", e);
+			}
+			throw new ConceptStopWordException("ConceptStopWord.notSaved", e);
+		}
+	}
+	
+	/**
+	 * @see org.openmrs.api.ConceptService#deleteConceptStopWord(Integer)
+	 */
+	public void deleteConceptStopWord(Integer conceptStopWordId) throws APIException {
+		try {
+			dao.deleteConceptStopWord(conceptStopWordId);
+		}
+		catch (DAOException e) {
+			if (contains(e.getMessage(), "Concept Stop Word not found or already deleted")) {
+				throw new ConceptStopWordException("ConceptStopWord.error.notfound", e);
+			}
+			throw new ConceptStopWordException("general.cannot.delete", e);
+		}
+	}
+	
+	/**
+	 * @see org.openmrs.api.ConceptService#getAllConceptStopWords()
+	 */
+	public List<ConceptStopWord> getAllConceptStopWords() {
+		return dao.getAllConceptStopWords();
+	}
+	
+	/**
 	 * @see ConceptService#getConcepts(String, List, boolean, List, List, List, List, Concept,
 	 *      Integer, Integer)
 	 */
@@ -1692,7 +1742,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	}
 	
 	/**
-	 * @see ConceptService#updateConceptNameIndexes()
+	 * @see ConceptService#updateConceptIndexes()
 	 */
 	@Override
 	public void updateConceptIndexes() throws APIException {

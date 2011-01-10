@@ -32,6 +32,7 @@ import org.openmrs.ConceptProposal;
 import org.openmrs.ConceptSearchResult;
 import org.openmrs.ConceptSet;
 import org.openmrs.ConceptSource;
+import org.openmrs.ConceptStopWord;
 import org.openmrs.ConceptWord;
 import org.openmrs.Drug;
 import org.openmrs.annotation.Authorized;
@@ -961,7 +962,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @param mappedConcept
 	 * @return the mappedConcept
 	 * @throws APIException
-	 * @should not require mapped concept on reject action 
+	 * @should not require mapped concept on reject action
 	 * @should allow rejecting proposals
 	 * @should throw APIException when mapping to null concept
 	 */
@@ -1232,9 +1233,9 @@ public interface ConceptService extends OpenmrsService {
 	 * a {@link ConceptMap} entry whose <code>sourceCode</code> is equal to the passed
 	 * <code>conceptCode</code> and whose {@link ConceptSource} has either a <code>name</code> or
 	 * <code>hl7Code</code> that is equal to the passed <code>mappingCode</code> . Operates under
-	 * the assumption that each mappingCode in a {@link ConceptSource} references one and only one {@link Concept}. 
-	 * If the underlying dao method returns more than one concept, this method simply returns the first
-	 * concept in the this list the dao returns.
+	 * the assumption that each mappingCode in a {@link ConceptSource} references one and only one
+	 * {@link Concept}. If the underlying dao method returns more than one concept, this method
+	 * simply returns the first concept in the this list the dao returns.
 	 * 
 	 * @param code the code associated with a concept within a given {@link ConceptSource}
 	 * @param sourceName the name or hl7Code of the {@link ConceptSource} to check
@@ -1254,9 +1255,9 @@ public interface ConceptService extends OpenmrsService {
 	 * a {@link ConceptMap} entry whose <code>sourceCode</code> is equal to the passed
 	 * <code>conceptCode</code> and whose {@link ConceptSource} has either a <code>name</code> or
 	 * <code>hl7Code</code> that is equal to the passed <code>mappingCode</code> . Operates under
-	 * the assumption that each mappingCode in a {@link ConceptSource} references one and only one {@link Concept}. 
-	 * If the underlying dao method returns more than one concept, this method simply returns the first
-	 * concept in the this list the dao returns.
+	 * the assumption that each mappingCode in a {@link ConceptSource} references one and only one
+	 * {@link Concept}. If the underlying dao method returns more than one concept, this method
+	 * simply returns the first concept in the this list the dao returns.
 	 * 
 	 * @param code the code associated with a concept within a given {@link ConceptSource}
 	 * @param sourceName the name or hl7Code of the {@link ConceptSource} to check
@@ -1296,11 +1297,10 @@ public interface ConceptService extends OpenmrsService {
 	public List<Concept> getConceptsByMapping(String code, String sourceName) throws APIException;
 	
 	/**
-	 * Looks up a concept via {@link ConceptMap} This will return the list of
-	 * {@link Concept}s which contain a {@link ConceptMap} entry whose <code>sourceCode</code> is
-	 * equal to the passed <code>conceptCode</code> and whose {@link ConceptSource} has either a
-	 * <code>name</code> or <code>hl7Code</code> that is equal to the passed
-	 * <code>mappingCode</code>
+	 * Looks up a concept via {@link ConceptMap} This will return the list of {@link Concept}s which
+	 * contain a {@link ConceptMap} entry whose <code>sourceCode</code> is equal to the passed
+	 * <code>conceptCode</code> and whose {@link ConceptSource} has either a <code>name</code> or
+	 * <code>hl7Code</code> that is equal to the passed <code>mappingCode</code>
 	 * 
 	 * @param code the code associated with a concept within a given {@link ConceptSource}
 	 * @param sourceName the name or hl7Code of the {@link ConceptSource} to check
@@ -1580,4 +1580,63 @@ public interface ConceptService extends OpenmrsService {
 	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public List<Drug> getDrugs(String drugName, Concept concept, boolean searchOnPhrase, boolean searchDrugConceptNames,
 	        boolean includeRetired, Integer start, Integer length) throws APIException;
+	
+	/**
+	 * Gets the list of <code>ConceptStopWord</code> for given locale
+	 * 
+	 * @param locale The locale in which to search for the <code>ConceptStopWord</code>
+	 * @return list of concept stop words for given locale
+	 * @should return list of concept stop words for given locale
+	 * @should return empty list if no stop words are found for the given locale
+	 * @should return default Locale <code>ConceptStopWord</code> if Locale is null
+	 * @since 1.8
+	 */
+	@Transactional(readOnly = true)
+	@Authorized(PrivilegeConstants.MANAGE_CONCEPT_STOP_WORDS)
+	public List<String> getConceptStopWords(Locale locale);
+	
+	/**
+	 * Save the given <code>ConceptStopWord</code> in the database
+	 * <p>
+	 * If this is a new concept stop word, the returned concept stop word will have a new
+	 * {@link org.openmrs.ConceptStopWord#getConceptStopWordId()} inserted into it that was
+	 * generated by the database
+	 * </p>
+	 * 
+	 * @param conceptStopWord The <code>ConceptStopWord</code> to save or update
+	 * @return the <code>ConceptStopWord</code> that was saved or updated
+	 * @throws APIException
+	 * @should generated concept stop word id onto returned concept stop word
+	 * @should save concept stop word into database
+	 * @should assign default Locale
+	 * @should save concept stop word in uppercase
+	 * @should fail if a duplicate conceptStopWord in a locale is added
+	 * @since 1.8
+	 */
+	@Authorized(PrivilegeConstants.MANAGE_CONCEPT_STOP_WORDS)
+	public ConceptStopWord saveConceptStopWord(ConceptStopWord conceptStopWord) throws APIException;
+	
+	/**
+	 * Delete the given <code>ConceptStopWord</code> in the database
+	 * 
+	 * @param conceptStopWordId The <code>ConceptStopWord</code> to delete
+	 * @throws APIException
+	 * @should delete the given concept stop word from the database
+	 * @since 1.8
+	 */
+	@Authorized(PrivilegeConstants.MANAGE_CONCEPT_STOP_WORDS)
+	public void deleteConceptStopWord(Integer conceptStopWordId) throws APIException;
+	
+	/**
+	 * Get all the concept stop words
+	 * 
+	 * @return List of <code>ConceptStopWord</code>
+	 * @should return all the concept stop words
+	 * @should return empty list if nothing found
+	 * @since 1.8
+	 */
+	@Transactional(readOnly = true)
+	@Authorized(PrivilegeConstants.MANAGE_CONCEPT_STOP_WORDS)
+	public List<ConceptStopWord> getAllConceptStopWords();
+	
 }
