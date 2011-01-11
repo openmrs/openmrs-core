@@ -93,6 +93,10 @@ public class Role extends BaseOpenmrsMetadata implements java.io.Serializable {
 		this.privileges = privileges;
 	}
 	
+	public String getName() {
+		return this.getRole();
+	}
+	
 	/**
 	 * Adds the given Privilege to the list of privileges
 	 * 

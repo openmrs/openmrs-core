@@ -19,6 +19,8 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.RoleConstants;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertEquals;
 
 /**
  * This class tests all methods that are not getter or setters in the Role java object TODO: finish
@@ -119,6 +121,8 @@ public class RoleTest {
 		
 		assertTrue("Super users are super special and should have all privileges", role
 		        .hasPrivilege("Some weird privilege name that shouldn't be there"));
+		assertNotNull(role.getName());
+		assertEquals(role.getName(), RoleConstants.SUPERUSER);
 	}
 	
 	/**

@@ -70,6 +70,10 @@ public class Privilege extends BaseOpenmrsMetadata implements java.io.Serializab
 		this.privilege = privilege;
 	}
 	
+	public String getName() {
+		return this.getPrivilege();
+	}
+	
 	/**
 	 * @see java.lang.Object#toString()
 	 */
