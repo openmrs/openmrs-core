@@ -457,10 +457,15 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	
 	/**
 	 * Convenience Method to return the first non-voided person attribute matching a person
-	 * attribute type
+	 * attribute type. <br/>
+	 * <br/>
+	 * Returns null if this person has no non-voided {@link PersonAttribute} with the given
+	 * {@link PersonAttributeType}, the given {@link PersonAttributeType} is null, or this person
+	 * has no attributes.
 	 * 
-	 * @param pat
-	 * @return PersonAttribute
+	 * @param pat the PersonAttributeType to look for (can be a stub, see
+	 *            {@link PersonAttributeType#equals(Object)} for how its compared)
+	 * @return PersonAttribute that matches the given type
 	 * @should not fail when attribute type is null
 	 * @should not return voided attribute
 	 * @should return null when given attribute type is not exist
@@ -477,9 +482,14 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	
 	/**
 	 * Convenience method to get this person's first attribute that has a PersonAttributeType.name
-	 * equal to <code>attributeName</code>.
+	 * equal to <code>attributeName</code>.<br/>
+	 * <br/>
+	 * Returns null if this person has no non-voided {@link PersonAttribute} with the given type
+	 * name, the given name is null, or this person has no attributes.
 	 * 
-	 * @param attributeName
+	 * @param attributeName the name string to match on
+	 * @return PersonAttribute whose {@link PersonAttributeType#getName()} matchs the given name
+	 *         string
 	 */
 	public PersonAttribute getAttribute(String attributeName) {
 		if (attributeName != null)
@@ -495,13 +505,19 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	
 	/**
 	 * Convenience method to get this person's first attribute that has a PersonAttributeTypeId
-	 * equal to <code>attributeTypeId</code>.
+	 * equal to <code>attributeTypeId</code>.<br/>
+	 * <br/>
+	 * Returns null if this person has no non-voided {@link PersonAttribute} with the given type id
+	 * or this person has no attributes.<br/>
+	 * <br/>
+	 * The given id cannot be null.
 	 * 
-	 * @param attributeTypeId
+	 * @param attributeTypeId the id of the {@link PersonAttributeType} to look for
+	 * @return PersonAttribute whose {@link PersonAttributeType#getId()} equals the given Integer id
 	 */
 	public PersonAttribute getAttribute(Integer attributeTypeId) {
 		for (PersonAttribute attribute : getActiveAttributes()) {
-			if (attributeTypeId.equals(attribute.getAttributeType().getPersonAttributeTypeId()) && !attribute.isVoided()) {
+			if (attributeTypeId.equals(attribute.getAttributeType().getPersonAttributeTypeId())) {
 				return attribute;
 			}
 		}
@@ -519,7 +535,7 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 		
 		for (PersonAttribute attribute : getActiveAttributes()) {
 			PersonAttributeType type = attribute.getAttributeType();
-			if (type != null && attributeName.equals(type.getName()) && !attribute.isVoided()) {
+			if (type != null && attributeName.equals(type.getName())) {
 				ret.add(attribute);
 			}
 		}
@@ -537,7 +553,7 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 		List<PersonAttribute> ret = new Vector<PersonAttribute>();
 		
 		for (PersonAttribute attribute : getActiveAttributes()) {
-			if (attributeTypeId.equals(attribute.getAttributeType().getPersonAttributeTypeId()) && !attribute.isVoided()) {
+			if (attributeTypeId.equals(attribute.getAttributeType().getPersonAttributeTypeId())) {
 				ret.add(attribute);
 			}
 		}
@@ -650,10 +666,18 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	/**
-	 * Convenience method to get the "preferred" name for the person. Returns a blank PersonName
-	 * object if no names are given.
+	 * Convenience method to get the {@link PersonName} object that is marked as "preferred". <br/>
+	 * <br/>
+	 * If two names are marked as preferred (or no names), the database ordering comes into effect
+	 * and the one that was created most recently will be returned. <br/>
+	 * <br/>
+	 * This method will never return a voided name, even if it is marked as preferred. <br/>
+	 * <br/>
+	 * Null is returned if this person has no names or all voided names.
 	 * 
-	 * @return Returns the "preferred" person name.
+	 * @return the "preferred" person name.
+	 * @see #getNames()
+	 * @see PersonName#isPreferred()
 	 */
 	public PersonName getPersonName() {
 		// normally the DAO layer returns these in the correct order, i.e. preferred and non-voided first, but it's possible that someone
@@ -712,9 +736,18 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	/**
-	 * Convenience Method to get the "preferred" address for person.
+	 * Convenience method to get the {@link PersonAddress} object that is marked as "preferred". <br/>
+	 * <br/>
+	 * If two addresses are marked as preferred (or no addresses), the database ordering comes into
+	 * effect and the one that was created most recently will be returned. <br/>
+	 * <br/>
+	 * This method will never return a voided address, even if it is marked as preferred. <br/>
+	 * <br/>
+	 * Null is returned if this person has no addresses or all voided addresses.
 	 * 
-	 * @return Returns the "preferred" person address.
+	 * @return the "preferred" person address.
+	 * @see #getAddresses()
+	 * @see PersonAddress#isPreferred()
 	 */
 	public PersonAddress getPersonAddress() {
 		// normally the DAO layer returns these in the correct order, i.e. preferred and non-voided first, but it's possible that someone
