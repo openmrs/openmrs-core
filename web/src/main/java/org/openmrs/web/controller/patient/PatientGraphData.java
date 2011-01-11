@@ -132,4 +132,17 @@ public class PatientGraphData {
 		normal.put("low", lowNormal);
 	}
 	
+	/**
+	 * Sets the units of the for which the graph is to be
+	 * plotted
+	 * 
+	 * @param units	the units associated with the concept
+	 */
+	public void setUnits(String units) {
+		graph.put("units", units);
+	}
+	
+	public void setConceptName(String conceptName) {
+		graph.put("name", conceptName);
+	}
 }
