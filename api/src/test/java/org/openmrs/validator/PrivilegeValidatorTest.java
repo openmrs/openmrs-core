@@ -76,5 +76,7 @@ public class PrivilegeValidatorTest {
 		new PrivilegeValidator().validate(priv, errors);
 		
 		Assert.assertFalse(errors.hasErrors());
+		Assert.assertNotNull(priv.getName());
+		Assert.assertEquals(priv.getPrivilege(), "Wallhacking");
 	}
 }
