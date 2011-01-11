@@ -58,6 +58,8 @@ public class PatientDashboardGraphController {
 		graph.setAbsoluteLow(concept.getLowAbsolute());
 		graph.setNormalHigh(concept.getHiNormal());
 		graph.setNormalLow(concept.getLowNormal());
+		graph.setUnits(concept.getUnits());
+		graph.setConceptName(concept.getName().getName());
 		
 		for (Obs obs : observations) {
 			graph.addValue(obs.getObsDatetime().getTime(), obs.getValueNumeric());
