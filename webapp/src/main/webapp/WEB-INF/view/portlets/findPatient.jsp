@@ -162,6 +162,13 @@
 							{fieldName:"birthdateString", header:omsgs.birthdate},
 						],
 						{searchLabel: '<spring:message code="Patient.searchBox" javaScriptEscape="true"/>'});
+					
+					//set the focus to the first input box on the page(in this case the text box for the search widget)
+					var inputs = document.getElementsByTagName("input");
+				    if(inputs[0])
+				    	inputs[0].focus();
+				    		
+				    
 				});
 			
 				function doSelectionHandler(index, data) {
