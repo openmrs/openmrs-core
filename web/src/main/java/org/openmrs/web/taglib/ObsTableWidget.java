@@ -322,7 +322,7 @@ public class ObsTableWidget extends TagSupport {
 				ret.append("<tr>");
 				ret.append("<th></th>");
 				for (Concept c : conceptList) {
-                    showConceptHeader(loc, ret, c);
+					showConceptHeader(loc, ret, c);
 				}
 				ret.append("</tr>");
 			}
@@ -331,7 +331,7 @@ public class ObsTableWidget extends TagSupport {
 				if (showDateHeader)
 					ret.append("<th>" + df.format(date) + "</th>");
 				for (Concept c : conceptList) {
-                    showConcept(loc, groupedObs, ret, date, c);
+					showConcept(loc, groupedObs, ret, date, c);
 				}
 				ret.append("</tr>");
 			}
@@ -347,10 +347,10 @@ public class ObsTableWidget extends TagSupport {
 			for (Concept c : conceptList) {
 				ret.append("<tr>");
 				if (showConceptHeader) {
-                    showConceptHeader(loc, ret, c);
+					showConceptHeader(loc, ret, c);
 				}
 				for (Date date : dateOrder) {
-                    showConcept(loc, groupedObs, ret, date, c);
+					showConcept(loc, groupedObs, ret, date, c);
 				}
 				ret.append("</tr>");
 			}
@@ -366,49 +366,49 @@ public class ObsTableWidget extends TagSupport {
 		}
 		return SKIP_BODY;
 	}
-
-    private void showConcept(Locale loc, Map<String, List<Obs>> groupedObs, StringBuilder ret, Date date, Concept c) {
-        ret.append("<td align=\"center\">");
-        String key = c.getConceptId() + "." + date;
-        List<Obs> list = groupedObs.get(key);
-        showObservationsIfExists(loc, ret, list);
-        ret.append("</td>");
-    }
-
-    private void showObservationsIfExists(Locale loc, StringBuilder ret, List<Obs> list) {
-        if (list != null) {
-            if (combineEqualResults) {
-                Collection<String> unique = new LinkedHashSet<String>();
-                for (Obs obs : list)
-                    unique.add(obs.getValueAsString(loc));
-                for (String s : unique)
-                    ret.append(s).append("<br/>");
-            } else {
-                for (Obs obs : list)
-                    ret.append(obs.getValueAsString(loc)).append("<br/>");
-            }
-        }
-    }
-
-    private void showConceptHeader(Locale loc, StringBuilder ret, Concept c) {
-        String name = getConceptName(loc, c);
-        ret.append("<th>");
-        if (conceptLink != null) {
-            ret.append("<a href=\"" + conceptLink + "conceptId=" + c.getConceptId() + "\">");
-        }
-        ret.append(name);
-        if (conceptLink != null) {
-            ret.append("</a>");
-        }
-        ret.append("</th>");
-    }
-
-    private String getConceptName(Locale loc, Concept c) {
-        ConceptName cn = c.getName();
-        return cn.getName();
-    }
-
-    public int doEndTag() {
+	
+	private void showConcept(Locale loc, Map<String, List<Obs>> groupedObs, StringBuilder ret, Date date, Concept c) {
+		ret.append("<td align=\"center\">");
+		String key = c.getConceptId() + "." + date;
+		List<Obs> list = groupedObs.get(key);
+		showObservationsIfExists(loc, ret, list);
+		ret.append("</td>");
+	}
+	
+	private void showObservationsIfExists(Locale loc, StringBuilder ret, List<Obs> list) {
+		if (list != null) {
+			if (combineEqualResults) {
+				Collection<String> unique = new LinkedHashSet<String>();
+				for (Obs obs : list)
+					unique.add(obs.getValueAsString(loc));
+				for (String s : unique)
+					ret.append(s).append("<br/>");
+			} else {
+				for (Obs obs : list)
+					ret.append(obs.getValueAsString(loc)).append("<br/>");
+			}
+		}
+	}
+	
+	private void showConceptHeader(Locale loc, StringBuilder ret, Concept c) {
+		String name = getConceptName(loc, c);
+		ret.append("<th>");
+		if (conceptLink != null) {
+			ret.append("<a href=\"" + conceptLink + "conceptId=" + c.getConceptId() + "\">");
+		}
+		ret.append(name);
+		if (conceptLink != null) {
+			ret.append("</a>");
+		}
+		ret.append("</th>");
+	}
+	
+	private String getConceptName(Locale loc, Concept c) {
+		ConceptName cn = c.getName();
+		return cn.getName();
+	}
+	
+	public int doEndTag() {
 		concepts = null;
 		observations = null;
 		sortDescending = true;
