@@ -15,7 +15,15 @@
 	<property name="maven.ant.tasks.bootstrap.location" value="http://repo2.maven.org/maven2/org/apache/maven/maven-ant-tasks/2.1.1/maven-ant-tasks-2.1.1.jar"/>
 	<available property="maven.ant.tasks.jar.exists" file="${maven.ant.tasks.jar}"/>
 	<available property="m2.home.exists" file="${env.M2_HOME}" type="dir"/>	
-
+	
+	<property file="build.properties"/>
+	<taskdef resource="net/sf/antcontrib/antcontrib.properties">
+		<classpath>
+			<fileset dir="${user.home}${file.separator}.m2${file.separator}repository">
+				<include name="**${file.separator}*ant-contrib*.jar"/>
+			</fileset>
+		</classpath>
+	</taskdef>
 	<!-- This will download the "latest version" of the maven-ant-tasks if needed -->
 	<target name="bootstrap-maven-tasks" unless="maven.ant.tasks.jar.exists">
 		<mkdir dir="${lib.dir}"/>
@@ -81,17 +89,10 @@
     	
         <!-- Installer properties -->
         <property name="dist.installer.dir" value="${dist.dir}/installer"/>
-        <property name="java-setup" value="${installer-dependencies.dir}/jdk-6u20-windows-i586.exe"/>
-        <property name="mysql-setup" value="${installer-dependencies.dir}/mysql-essential-5.1.46-win32.msi"/>
-        <property name="tomcat-setup" value="${installer-dependencies.dir}/apache-tomcat-6.0.26.exe"/>
-		
-    	<!-- remove the last underscore if there is no suffix defined -->
-    	<propertyregex property="openmrs.download.url"
-			input="${openmrs.download.url}"
-			override="true"
-			regexp="^(.*)_/openmrs.war$"
-			select="\1/openmrs.war" />
-    	
+        <property name="java-setup" value="${installer-dependencies.dir}/${jdk.filename}"/>
+        <property name="mysql-setup" value="${installer-dependencies.dir}/${mysql.filename}"/>
+        <property name="tomcat-setup" value="${installer-dependencies.dir}/${tomcat.filename}"/>
+		    	
         <condition property="makensis.command" value="C:\Program Files\NSIS\makensis" else="makensis">
             <os family="windows"></os>
         </condition>
@@ -132,11 +133,12 @@
                 <download file="${mysql-setup}" message="Downloading MySQL" url="${mysql.download.url}"/>
                 <download file="${tomcat-setup}" message="Downloading Tomcat" url="${tomcat.download.url}"/>
 
+				<mkdir dir="${dist.installer.dir}"/>
                 <copy todir="${dist.installer.dir}" overwrite="true">
                     <fileset dir="${installer-dependencies.dir}">
                         <include name="*"/>
                     </fileset>
-                    <fileset file="${dist.dir}/${webapp.name}.war"/>
+                    <fileset file="${webapp.target}/${webapp.name}*.war"/>
                 </copy>
             </else>
         </if>
@@ -146,9 +148,6 @@
         <mkdir dir="${dist.installer.dir}"/>
 
         <copy todir="${dist.installer.dir}" overwrite="true">
-            <fileset dir="${metadata.dir}/images">
-                <include name="*"/>
-            </fileset>
             <fileset dir="${installer.script.dir}">
                 <include name="*"/>
             </fileset>
