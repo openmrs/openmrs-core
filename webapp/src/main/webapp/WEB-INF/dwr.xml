@@ -250,6 +250,7 @@
 			DWRConceptService.isValidNumericValue(Float value, Integer conceptId);
 			DWRConceptService.getDrugs(Integer conceptId, boolean showConcept);
 			DWRConceptService.findDrugs(String phrase, boolean includeRetired);
+			DWRConceptService.convertBooleanConceptToCoded(Integer conceptId);
 			DWREncounterService.findEncounters(String phrase, boolean includeVoided);
 			DWREncounterService.findBatchOfEncounters(String phrase, boolean includeVoided, Integer start, Integer length);
 			DWREncounterService.findCountAndEncounters(String phrase, boolean includeVoided, Integer start, Integer length, boolean getMatchCount);

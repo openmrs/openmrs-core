@@ -38,7 +38,6 @@ import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Conjunction;
-import org.hibernate.criterion.CriteriaSpecification;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.MatchMode;
@@ -49,6 +48,7 @@ import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.criterion.Subqueries;
 import org.hibernate.transform.DistinctRootEntityResultTransformer;
+import org.hibernate.transform.Transformers;
 import org.openmrs.Concept;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptClass;
@@ -1516,7 +1516,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 * @see ConceptDAO#getConcepts(String, List, boolean, List, List, List, List, Concept, Integer,
 	 *      Integer)
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "rawtypes" })
 	@Override
 	public List<ConceptSearchResult> getConcepts(String phrase, List<Locale> locales, boolean includeRetired,
 	        List<ConceptClass> requireClasses, List<ConceptClass> excludeClasses, List<ConceptDatatype> requireDatatypes,
@@ -1530,13 +1530,13 @@ public class HibernateConceptDAO implements ConceptDAO {
 		
 		if (searchCriteria != null) {
 			ProjectionList pl = Projections.projectionList();
-			pl.add(Projections.distinct(Projections.property("concept")), "cw1.concept");
-			pl.add(Projections.property("word"), "cw1.word");
-			pl.add(Projections.property("weight"), "cw1.weight");
-			pl.add(Projections.property("locale"), "cw1.locale");
-			pl.add(Projections.property("conceptName"), "cw1.conceptName");
-			searchCriteria.setProjection(pl);
+			pl.add(Projections.distinct(Projections.groupProperty("cw1.concept")));
+			pl.add(Projections.property("cw1.word"));
+			//if we have multiple words for the same concept, get the one with a highest weight
+			pl.add(Projections.max("cw1.weight"));
+			pl.add(Projections.property("cw1.conceptName"));
 			
+			searchCriteria.setProjection(pl);
 			searchCriteria.addOrder(Order.desc("cw1.weight"));
 			
 			if (start != null)
@@ -1544,14 +1544,13 @@ public class HibernateConceptDAO implements ConceptDAO {
 			if (size != null && size > 0)
 				searchCriteria.setMaxResults(size);
 			
-			searchCriteria.setResultTransformer(CriteriaSpecification.ALIAS_TO_ENTITY_MAP);
+			searchCriteria.setResultTransformer(Transformers.TO_LIST);
 			List resultObjects = searchCriteria.list();
 			
 			for (Object obj : resultObjects) {
-				Map aliasEntityMap = (Map) obj;
-				results.add(new ConceptSearchResult((String) aliasEntityMap.get("cw1.word"), (Concept) aliasEntityMap
-				        .get("cw1.concept"), (ConceptName) aliasEntityMap.get("cw1.conceptName"), (Double) aliasEntityMap
-				        .get("cw1.weight")));
+				List list = (List) obj;
+				results.add(new ConceptSearchResult((String) list.get(1), (Concept) list.get(0), (ConceptName) list.get(3),
+				        (Double) list.get(2)));
 			}
 		}
 		
@@ -1563,9 +1562,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 	 */
 	@Override
 	public Double weighConceptWord(ConceptWord word) {
-		//TODO Add unit tests
 		Double weight = 0.0;
-		String conceptName = word.getConceptName().getName();
+		String conceptName = word.getConceptName().getName().toUpperCase();
 		String wordString = word.getWord();
 		//why is this the case, this seems like invalid data
 		if (conceptName.indexOf(wordString) < 0)
@@ -1606,7 +1604,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 			weight += computeBonusWeight(weightCoefficient, word);
 		}
 		
-		//round off to 2 decimal places
+		//round off to 3 decimal places
 		return Double.parseDouble(new DecimalFormat("0.000").format(weight));
 	}
 	

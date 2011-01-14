@@ -6,6 +6,8 @@
   <concept_word concept_word_id="4" concept_id="5497" word="CNT" locale="en" concept_name_id="2704" weight="1.0"/>
   <concept_word concept_word_id="5" concept_id="5497" word="COUNT" locale="en" concept_name_id="1847" weight="1.0"/>
   <concept_word concept_word_id="6" concept_id="5497" word="CD4" locale="en" concept_name_id="1847" weight="1.0"/>
+  <concept_word concept_word_id="7" concept_id="5497" word="CD4" locale="en" concept_name_id="2458" weight="1.0"/>
+  <concept_word concept_word_id="8" concept_id="5497" word="CD4" locale="en" concept_name_id="2707" weight="1.0"/>
   <concept concept_id="5497" retired="false" datatype_id="1" class_id="1" is_set="false" creator="1" date_created="2004-08-12 00:00:00.0" version="0.1" changed_by="1" date_changed="2006-06-09 14:57:33.0" uuid="75af8c00-3ab2-4c1d-8a8d-3c0e5c2972ea"/>
   <concept_name concept_id="5497" name="CD4 COUNT" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="1847" voided="false" uuid="75af8c00-3ab2-4c1d-8a8d-3c0e5c2972eb" concept_name_type="FULLY_SPECIFIED" locale_preferred="0"/>
   <concept_name concept_id="5497" name="CD4" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="2458" voided="false" uuid="75af8c00-3ab2-4c1d-8a8d-3c0e5c2972ec" concept_name_type="SHORT" locale_preferred="0"/>
