@@ -1592,7 +1592,6 @@ public interface ConceptService extends OpenmrsService {
 	 * @since 1.8
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(PrivilegeConstants.MANAGE_CONCEPT_STOP_WORDS)
 	public List<String> getConceptStopWords(Locale locale);
 	
 	/**
@@ -1636,7 +1635,6 @@ public interface ConceptService extends OpenmrsService {
 	 * @since 1.8
 	 */
 	@Transactional(readOnly = true)
-	@Authorized(PrivilegeConstants.MANAGE_CONCEPT_STOP_WORDS)
 	public List<ConceptStopWord> getAllConceptStopWords();
 	
 }
