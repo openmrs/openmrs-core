@@ -353,6 +353,15 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable {
 	}
 	
 	/**
+	 * @return the person, creating a new object if person is null
+	 */
+	private Person getPersonMaybeCreate() {
+		if (person == null)
+			person = new Person();
+		return person;
+	}
+	
+	/**
 	 * @param person the person to set
 	 * @since 1.6
 	 */
@@ -460,7 +469,7 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable {
 	 * @see Person#addName(PersonName)
 	 */
 	public void addName(PersonName name) {
-		getPerson().addName(name);
+		getPersonMaybeCreate().addName(name);
 	}
 	
 	/**
