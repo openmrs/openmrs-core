@@ -1368,7 +1368,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should return the best matched name as the first item in the searchResultsList", method = "getConcepts(String,List<Locale>,null,List<ConceptClass>,List<ConceptClass>,List<ConceptDatatype>,List<ConceptDatatype>,Concept,Integer,Integer)")
 	public void getConcepts_shouldReturnTheBestMatchedNameAsTheFirstItemInTheSearchResultsList() throws Exception {
 		executeDataSet("org/openmrs/api/include/ConceptServiceTest-words.xml");
-		//TODO H2 requires cannot execute the generated SQL in the DAO layer
+		//TODO H2 cannot execute the generated SQL because it requires all fetched columns to be included in the group by clause
 		List<ConceptSearchResult> searchResults = Context.getConceptService().getConcepts("cd4",
 		    Collections.singletonList(Locale.ENGLISH), false, null, null, null, null, null, null, null);
 		Assert.assertEquals(1847, searchResults.get(0).getConceptName().getConceptNameId().intValue());
@@ -1661,7 +1661,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		List<ConceptSearchResult> searchResults = conceptService.getConcepts("cd4", Collections
 		        .singletonList(Locale.ENGLISH), false, null, null, null, null, null, null, null);
 		Set<Concept> uniqueConcepts = new HashSet<Concept>();
-		//TODO H2 requires cannot execute the generated SQL in the DAO layer
+		//TODO H2 cannot execute the generated SQL because it requires all fetched columns to be included in the group by clause
 		for (ConceptSearchResult conceptSearchResult : searchResults) {
 			//if this fails, then a duplicate concept has been returned
 			Assert.assertEquals(true, uniqueConcepts.add(conceptSearchResult.getConcept()));
