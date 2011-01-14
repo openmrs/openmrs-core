@@ -428,8 +428,8 @@ public class DWRConceptService {
 	}
 	
 	/**
-	 * Converts a boolean concept that already has Obs using it to coded to allow a user to other
-	 * answers
+	 * Converts the datatype of a concept that already has Obs referencing it from boolean to coded
+	 * to support addition of more coded answers
 	 * 
 	 * @param conceptId the conceptId of the concept to be converted
 	 * @return String to act as a signal if successfully converted or an error message

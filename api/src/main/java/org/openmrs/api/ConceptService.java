@@ -1448,6 +1448,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @return a list of conceptSearchResults
 	 * @throws APIException
 	 * @should return the best matched name as the first item in the searchResultsList
+	 * @should return concept search results that match unique concepts
 	 * @since 1.8
 	 */
 	@Transactional(readOnly = true)
