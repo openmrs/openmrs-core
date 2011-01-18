@@ -29,7 +29,6 @@ import org.openmrs.api.context.Context;
 import org.openmrs.scheduler.tasks.AbstractTask;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.util.OpenmrsClassLoader;
-import org.openmrs.util.PrivilegeConstants;
 
 /**
  * TODO test all methods in ScheduleService
@@ -323,16 +322,12 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 		
 		public void execute() {
 			try {
-				// Do something
-				Context.openSession();
-				Context.addProxyPrivilege(PrivilegeConstants.MANAGE_IMPLEMENTATION_ID);
-				Context.getAdministrationService().getImplementationId();
+				// something would happen here...
+				
 				actualExecutionTime = System.currentTimeMillis();
 				
 			}
 			finally {
-				Context.removeProxyPrivilege(PrivilegeConstants.MANAGE_IMPLEMENTATION_ID);
-				Context.closeSession();
 			}
 			
 		}
@@ -361,7 +356,7 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 		td = service.getTaskByName(NAME);
 		
 		// sleep a while until the task has executed, up to 5 times
-		for (int x = 0; x < 8 && actualExecutionTime == null && td.getLastExecutionTime() == null; x++)
+		for (int x = 0; x < 30 && td.getLastExecutionTime() == null; x++)
 			Thread.sleep(200);
 		
 		Assert.assertNotNull(actualExecutionTime);
