@@ -20,10 +20,15 @@ import org.hibernate.type.Type;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.Auditable;
+import org.openmrs.ConceptNumeric;
 import org.openmrs.GlobalProperty;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.context.Daemon;
+import org.openmrs.scheduler.Task;
+import org.openmrs.scheduler.tasks.AbstractTask;
+import org.openmrs.scheduler.timer.TimerSchedulerTask;
 import org.openmrs.test.BaseContextSensitiveTest;
 
 public class AuditableInterceptorTest extends BaseContextSensitiveTest {
@@ -62,8 +67,9 @@ public class AuditableInterceptorTest extends BaseContextSensitiveTest {
 		
 		String[] propertyNames = new String[] { "changedBy", "dateChanged" };
 		Object[] currentState = new Object[] { "", null };
+		Object[] previousState = new Object[] { "", null };
 		
-		interceptor.onFlushDirty(u, null, currentState, null, propertyNames, null);
+		interceptor.onFlushDirty(u, null, currentState, previousState, propertyNames, null);
 		
 		Assert.assertNotNull(currentState[0]);
 	}
@@ -83,10 +89,30 @@ public class AuditableInterceptorTest extends BaseContextSensitiveTest {
 		
 		String[] propertyNames = new String[] { "changedBy", "dateChanged" };
 		Object[] currentState = new Object[] { "", null };
+		Object[] previousState = new Object[] { "", null };
 		
-		interceptor.onFlushDirty(u, null, currentState, null, propertyNames, null);
+		interceptor.onFlushDirty(u, null, currentState, previousState, propertyNames, null);
 		
 		Assert.assertNotNull(currentState[1]);
+	}
+	
+	/**
+	 * @see AuditableInterceptor#onFlushDirty(Object,Serializable,Object[],Object[],String[],Type[])
+	 * @verifies set the dateChanged field
+	 */
+	@Test
+	public void onFlushDirty_shouldNotFailWithNullPreviousState() throws Exception {
+		AuditableInterceptor interceptor = new AuditableInterceptor();
+		
+		User u = new User();
+		
+		// sanity check
+		Assert.assertTrue(u instanceof Auditable);
+		
+		String[] propertyNames = new String[] { "changedBy", "dateChanged" };
+		Object[] currentState = new Object[] { "", null };
+		
+		interceptor.onFlushDirty(u, null, currentState, null, propertyNames, null);
 	}
 	
 	/**
@@ -108,5 +134,39 @@ public class AuditableInterceptorTest extends BaseContextSensitiveTest {
 		Date afterDate = u.getDateChanged();
 		
 		Assert.assertNotSame(beforeDate, afterDate);
+	}
+	
+	/**
+	 * @see {@link AuditableInterceptor#onFlushDirty(Object,Serializable,null,null,null,null)}
+	 * @verifies should not fail when the daemon user modifies something
+	 */
+	@Test
+	public void onFlushDirty_shouldNotFailWhenTheDaemonUserModifiesSomething() throws Throwable {
+		new AsDaemonTask(new AbstractTask() {
+			
+			@Override
+			public void execute() {
+				ConceptNumeric weight = Context.getConceptService().getConceptNumeric(5089);
+				Date dateChangedBefore = weight.getDateChanged();
+				weight.setHiAbsolute(75d);
+				Context.getConceptService().saveConcept(weight);
+				Assert.assertNotSame(dateChangedBefore, weight.getDateChanged());
+			}
+		}).runTheTask();
+	}
+	
+	private class AsDaemonTask extends TimerSchedulerTask {
+		
+		private Task task;
+		
+		public AsDaemonTask(Task task) {
+			super(task);
+			this.task = task;
+		}
+		
+		public boolean runTheTask() throws Throwable {
+			Daemon.executeScheduledTask(this.task);
+			return true;
+		}
 	}
 }

@@ -22,6 +22,7 @@ import org.hibernate.CallbackException;
 import org.hibernate.EmptyInterceptor;
 import org.hibernate.type.Type;
 import org.openmrs.Auditable;
+import org.openmrs.User;
 import org.openmrs.api.context.Context;
 
 /**
@@ -60,16 +61,26 @@ public class AuditableInterceptor extends EmptyInterceptor {
 			if (log.isDebugEnabled())
 				log.debug("Setting changed by fields on " + entity);
 			
+			// the return value
+			boolean objectWasChanged = false;
+			
 			// loop over the properties and only change the changedBy and dateChanged fields
+			Date currentDate = new Date();
+			
+			User authenticatedUser = Context.getAuthenticatedUser();
 			for (int x = 0; x < propertyNames.length; x++) {
-				if (propertyNames[x].equals("changedBy"))
-					currentState[x] = Context.getAuthenticatedUser();
-				else if (propertyNames[x].equals("dateChanged"))
-					currentState[x] = new Date();
+				if (propertyNames[x].equals("changedBy") && previousState != null && previousState[x] != authenticatedUser) {
+					currentState[x] = authenticatedUser;
+					objectWasChanged = true;
+				} else if (propertyNames[x].equals("dateChanged") && previousState != null
+				        && previousState[x] != currentDate) {
+					currentState[x] = currentDate;
+					objectWasChanged = true;
+				}
 			}
 			
 			// tell hibernate that we've changed this object
-			return true;
+			return objectWasChanged;
 		}
 		
 		// if we get here it means we didn't change anything
