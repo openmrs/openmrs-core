@@ -327,8 +327,7 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 				actualExecutionTime = System.currentTimeMillis();
 				
 			}
-			finally {
-			}
+			finally {}
 			
 		}
 	}
@@ -355,11 +354,14 @@ public class SchedulerServiceTest extends BaseContextSensitiveTest {
 		// refetch the task
 		td = service.getTaskByName(NAME);
 		
-		// sleep a while until the task has executed, up to 5 times
+		// sleep a while until the task has executed, up to 30 times
 		for (int x = 0; x < 30 && (actualExecutionTime == null || td.getLastExecutionTime() == null); x++)
 			Thread.sleep(200);
 		
-		Assert.assertNotNull(actualExecutionTime);
+		Assert
+		        .assertNotNull(
+		            "The actualExecutionTime variable is null, so either the SessionTask.execute method hasn't finished or didn't get run",
+		            actualExecutionTime);
 		assertEquals("Last execution time in seconds is wrong", actualExecutionTime.longValue() / 1000, td
 		        .getLastExecutionTime().getTime() / 1000, 1);
 	}
