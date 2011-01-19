@@ -22,7 +22,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
-import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
@@ -103,6 +102,7 @@ public class ShortPatientFormController {
 			model.addAttribute("relationshipsMap", getRelationshipsMap(patient, request));
 			model.addAttribute("identifierTypes", Context.getPatientService().getAllPatientIdentifierTypes());
 			model.addAttribute("locations", Context.getLocationService().getAllLocations());
+			model.addAttribute("defaultLocation", Context.getLocationService().getDefaultLocation());
 			
 			String propCause = Context.getAdministrationService().getGlobalProperty("concept.causeOfDeath");
 			Concept conceptCause = Context.getConceptService().getConcept(propCause);

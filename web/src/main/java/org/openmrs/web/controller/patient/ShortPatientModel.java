@@ -63,7 +63,12 @@ public class ShortPatientModel {
 			this.patient = patient;
 			this.personName = patient.getPersonName();
 			this.personAddress = patient.getPersonAddress();
-			identifiers = ListUtils.lazyList(new ArrayList<PatientIdentifier>(patient.getActiveIdentifiers()), FactoryUtils
+			List<PatientIdentifier> activeIdentifiers = patient.getActiveIdentifiers();
+			if (activeIdentifiers.isEmpty()) {
+				activeIdentifiers = new ArrayList<PatientIdentifier>();
+				activeIdentifiers.add(new PatientIdentifier(null, null, Context.getLocationService().getDefaultLocation()));
+			}
+			identifiers = ListUtils.lazyList(new ArrayList<PatientIdentifier>(activeIdentifiers), FactoryUtils
 			        .instantiateFactory(PatientIdentifier.class));
 			
 			List<PersonAttributeType> viewableAttributeTypes = Context.getPersonService().getPersonAttributeTypes(
