@@ -51,9 +51,6 @@
 				});
 			}
 		}
-		
-		if(!$j("#identifierHeaders").is(":visible"))
-			$j("#identifierHeaders").show();
 			
 		numberOfClonedElements++;
 	}
@@ -226,7 +223,7 @@
 		<th class="headerCell"><spring:message code="PatientIdentifier.title.endUser"/></th>
 		<td class="inputCell">
 			<table id="identifiers" cellspacing="2">
-				<tr id="identifierHeaders" <c:if test="${fn:length(patientModel.identifiers) == 0}">style="display: none"</c:if>>
+				<tr>
 					<td><spring:message code="PatientIdentifier.identifier"/></td>
 					<openmrs:extensionPoint pointId="newPatientForm.identifierHeader" />
 					<td><spring:message code="PatientIdentifier.identifierType"/></td>
@@ -235,8 +232,9 @@
 					<td></td>
 				</tr>
 				<tbody id="identifiersTbody">
-					<c:if test="${fn:length(patientModel.identifiers) > 0}">
 					<c:forEach var="id" items="${patientModel.identifiers}" varStatus="varStatus">
+					<%-- Don't display new identifiers that have been removed from the UI in previous submits that had errors--%>
+					<c:if test="${!id.voided}">
 					<spring:nestedPath path="identifiers[${varStatus.index}]">
 					<tr id="existingIdentifiersRow[${varStatus.index}]">					
 					<td valign="top">						
@@ -277,8 +275,9 @@
 					</td>
 					</tr>
 					</spring:nestedPath>
-					</c:forEach>
 					</c:if>
+					</c:forEach>
+					
 					<%-- The row from which to clone new identifiers --%>
 					<tr id="newIdentifierRow" style="display: none">
 					<td valign="top">
@@ -299,7 +298,7 @@
 						<select name="location">
 							<option value=""></option>
 							<openmrs:forEachRecord name="location">
-								<option value="${record.locationId}">
+								<option value="${record.locationId}"<c:if test="${record == defaultLocation}"> selected="selected"</c:if>>
 									${record.name}
 								</option>
 							</openmrs:forEachRecord>
