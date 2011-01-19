@@ -57,7 +57,7 @@ public class AuditableInterceptor extends EmptyInterceptor {
 	public boolean onFlushDirty(Object entity, Serializable id, Object[] currentState, Object[] previousState,
 	        String[] propertyNames, Type[] types) throws CallbackException {
 		
-		if (entity instanceof Auditable) {
+		if (entity instanceof Auditable && propertyNames != null) {
 			if (log.isDebugEnabled())
 				log.debug("Setting changed by fields on " + entity);
 			
