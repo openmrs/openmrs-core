@@ -110,6 +110,8 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
  *   columnWidths: an array of column widths, the length of the array should be equal to the number of columns
  *   columnRenderers: array of fnRender for each column
  *   columnVisibility: array of bVisible values for each column
+ *   initialData:The initial data to be displayed e.g if it is an encounter search, it should be an encounter list
+ *   searchPhrase: The phrase to be set in the search box so that a search is triggered on page load to display initial items
  *   
  * The styling on this table works like this:
  * <pre> 
@@ -411,7 +413,9 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 					self._table.numberOfPages = initialRowCount/self._table.fnSettings()._iDisplayLength;
 				else
 					self._table.numberOfPages = Math.floor(initialRowCount/self._table.fnSettings()._iDisplayLength)+1;
-		    }
+				
+		    }else if(self.options.searchPhrase)
+		    	$j(input).val(self.options.searchPhrase).keyup();
 		},
 		
 		_makeColumns: function() {
