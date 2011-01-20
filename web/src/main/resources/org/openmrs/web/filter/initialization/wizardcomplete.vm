@@ -5,17 +5,78 @@
 		<!-- TODO list off all collected properties here -->
             <table cellpadding="9" align="center" cellspacing="5" >
                 <tr>
-                    <td colspan="2"><strong>Step 6 of 6</strong></td>
+                    <td colspan="2"><strong>Review</strong></td>
                 </tr>
                 <tr>
-                    <td colspan="2" class="question" >All required input has been collected and is ready to be processed.</td>
+                    <td colspan="2">All required input has been collected and is ready to be processed.
+                    <br />Click the "finish" button to create tables, data, etc.
+                    <br/>This could take up to several minutes.  When complete you will be taken to the OpenMRS main screen.
+                    </td>
+                </tr>
+
+                <tr>
+                    <td colspan="2" class="question">Database</td>
                 </tr>
                 <tr>
-                    <td>Click the "finish" button to create tables, data, etc.</td>
+                    <td>Database connection (@DBNAME@ will be replaced by the database name.)</td>
+                    <td>${databaseConnection}</td>
                 </tr>
                 <tr>
-                    <td>This could take up to several minutes.  When complete you will be taken to the OpenMRS main screen.</td>
+                    <td>Database name</td>
+                    <td>${databaseName}</td>
                 </tr>
+                <tr>
+                    <td>Create database</td>
+                    <td>#if( $hasCurrentOpenmrsDatabase == false ) Yes #else No #end</td>
+                </tr>
+                <tr>
+                    <td>Create database user account</td>
+                    <td>#if( $createDatabaseUser == true ) Yes #else No #end</td>
+                </tr>
+                <tr>
+                    <td>Create tables</td>
+                    <td>#if( $createTables == true ) Yes #else No #end</td>
+                </tr>
+                <tr>
+                    <td>Add demo data</td>
+                    <td>#if( $addDemoData == true ) Yes #else No #end</td>
+                </tr>
+
+                <tr>
+                    <td colspan="2" class="question">Implementation information</td>
+                </tr>
+                <tr>
+                    <td>Implementation name</td>
+                    <td>${implementationIdName}</td>
+                </tr>
+                <tr>
+                    <td>Implementation ID</td>
+                    <td>${implementationId}</td>
+                </tr>
+                <tr>
+                    <td>Implementation pass phrase</td>
+                    <td>${implementationIdPassPhrase}</td>
+                </tr>
+                <tr>
+                    <td>Implementation description</td>
+                    <td>${implementationIdDescription}</td>
+                </tr>
+
+                <tr>
+                    <td colspan="2" class="question">Runtime properties</td>
+                </tr>
+                <tr>
+                    <td>Enable uploading modules from the web interface</td>
+                    <td>#if( $moduleWebAdmin == true ) Yes #else No #end</td>
+                </tr>
+                <tr>
+                    <td>Update the database automatically on start up when a new release is deployed</td>
+                    <td>#if( $autoUpdateDatabase == true ) Yes #else No #end</td>
+                </tr>                <tr>
+                    <td>Runtime properties file path</td>
+                    <td>${runtimePropertiesPath}</td>
+                </tr>
+
                 <tr>
                     <td colspan= "2">
                         <input class="button" name="back" type="submit" value="Back"/>&nbsp; &nbsp;

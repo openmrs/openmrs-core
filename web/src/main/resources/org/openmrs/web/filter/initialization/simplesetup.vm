@@ -1,0 +1,35 @@
+#parse($headerTemplate)
+
+    <form method="post" autocomplete="off">
+        <input type="hidden" name="page" value="simplesetup.vm" />
+
+		<div class="content">
+            <table align="center" cellspacing="5" cellpadding="9">
+			  <tr>
+                    <td colspan="2"><strong>Simple Installation</strong></td>
+			  </tr>
+                <tr>
+                    <td class="question">Provide the password of the 'root' account of MySQL server running on the localhost.
+                        <br />(Empty MySQL passwords are not allowed here. If you don't have a MySQL password set for the root user, please set one.)</td>
+                </tr>
+                <tr>
+                    <td class="yes">Password &nbsp; <input type="password" name="database_root_password" value="${databaseRootPassword}" /></td>
+                </tr>
+                <tr>
+                    <td class="question">Default OpenMRS administrator username/password. Change this password after login in.<b>(Remember this password.)</b></td>
+                </tr>
+                <tr>
+                    <td class="yes">admin/${ADMIN_DEFAULT_PASSWORD}</td>
+                </tr>
+                <tr>
+                    <td>
+                        <input type="submit" style="display: none"/> <!-- the first submit button that will be used when the user pushed the "enter" key in the form -->
+                        <input class="button" name="back" type="submit" value="Back"/> &nbsp; &nbsp;
+                        <input class="button" type="submit" value="Continue"/>
+                    </td>
+                </tr>
+			</table>
+		</div>
+	</form>
+
+#parse($footerTemplate)

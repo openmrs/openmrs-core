@@ -56,8 +56,8 @@ import org.openmrs.util.DatabaseUtil;
 import org.openmrs.util.InputRequiredException;
 import org.openmrs.util.MemoryAppender;
 import org.openmrs.util.OpenmrsUtil;
-import org.openmrs.util.DatabaseUpdater.ChangeSetExecutorCallback;
 import org.openmrs.util.PrivilegeConstants;
+import org.openmrs.util.DatabaseUpdater.ChangeSetExecutorCallback;
 import org.openmrs.web.Listener;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.filter.StartupFilter;
@@ -79,14 +79,25 @@ public class InitializationFilter extends StartupFilter {
 	private static final String LIQUIBASE_DEMO_DATA = "liquibase-demo-data.xml";
 	
 	/**
-	 * The first page of the wizard that asks for a current or past database
+	 * The first page of the wizard that asks for simple or advanced installation.
+	 */
+	private final String INSTALL_METHOD = "installmethod.vm";
+	
+	/**
+	 * The simple installation setup page.
+	 */
+	private final String SIMPLE_SETUP = "simplesetup.vm";
+	
+	/**
+	 * The first page of the advanced installation of the wizard that asks for a current or past
+	 * database
 	 */
 	private final String DATABASE_SETUP = "databasesetup.vm";
 	
 	/**
 	 * The velocity macro page to redirect to if an error occurs or on initial startup
 	 */
-	private final String DEFAULT_PAGE = DATABASE_SETUP;
+	private final String DEFAULT_PAGE = INSTALL_METHOD;
 	
 	/**
 	 * This page asks whether database tables/demo data should be inserted and what the
@@ -153,39 +164,77 @@ public class InitializationFilter extends StartupFilter {
 	protected void doGet(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException,
 	        ServletException {
 		
+		String page = httpRequest.getParameter("page");
 		Map<String, Object> referenceMap = new HashMap<String, Object>();
 		
-		File runtimeProperties = getRuntimePropertiesFile();
-		
-		if (!runtimeProperties.exists()) {
-			try {
-				runtimeProperties.createNewFile();
-				// reset the error objects in case of refresh
-				wizardModel.canCreate = true;
-				wizardModel.cannotCreateErrorMessage = "";
+		if (page == null) {
+			// get props and render the first page
+			File runtimeProperties = getRuntimePropertiesFile();
+			
+			if (!runtimeProperties.exists()) {
+				try {
+					runtimeProperties.createNewFile();
+					// reset the error objects in case of refresh
+					wizardModel.canCreate = true;
+					wizardModel.cannotCreateErrorMessage = "";
+				}
+				catch (IOException io) {
+					wizardModel.canCreate = false;
+					wizardModel.cannotCreateErrorMessage = io.getMessage();
+				}
+				
+				// check this before deleting the file again
+				wizardModel.canWrite = runtimeProperties.canWrite();
+				
+				// delete the file again after testing the create/write
+				// so that if the user stops the webapp before finishing
+				// this wizard, they can still get back into it
+				runtimeProperties.delete();
+				
+			} else {
+				wizardModel.canWrite = runtimeProperties.canWrite();
 			}
-			catch (IOException io) {
-				wizardModel.canCreate = false;
-				wizardModel.cannotCreateErrorMessage = io.getMessage();
+			
+			wizardModel.runtimePropertiesPath = runtimeProperties.getAbsolutePath();
+			
+			// do step one of the wizard
+			httpResponse.setContentType("text/html");
+			renderTemplate(DEFAULT_PAGE, referenceMap, httpResponse);
+		} else if (PROGRESS_VM_AJAXREQUEST.equals(page)) {
+			httpResponse.setContentType("text/json");
+			httpResponse.setHeader("Cache-Control", "no-cache");
+			Map<String, Object> result = new HashMap<String, Object>();
+			if (initJob != null) {
+				result.put("hasErrors", initJob.hasErrors());
+				if (initJob.hasErrors()) {
+					result.put("errorPage", initJob.getErrorPage());
+					errors.addAll(initJob.getErrors());
+				}
+				
+				result.put("initializationComplete", isInitializationComplete());
+				result.put("message", initJob.getMessage());
+				result.put("actionCounter", initJob.getStepsComplete());
+				if (!isInitializationComplete()) {
+					result.put("executingTask", initJob.getExecutingTask());
+					result.put("executedTasks", initJob.getExecutedTasks());
+					result.put("completedPercentage", initJob.getCompletedPercentage());
+				}
+				
+				Appender appender = Logger.getRootLogger().getAppender("MEMORY_APPENDER");
+				if (appender instanceof MemoryAppender) {
+					MemoryAppender memoryAppender = (MemoryAppender) appender;
+					List<String> logLines = memoryAppender.getLogLines();
+					// truncate the list to the last 5 so we don't overwhelm jquery
+					if (logLines.size() > 5)
+						logLines = logLines.subList(logLines.size() - 5, logLines.size());
+					result.put("logLines", logLines);
+				} else {
+					result.put("logLines", new ArrayList<String>());
+				}
 			}
 			
-			// check this before deleting the file again
-			wizardModel.canWrite = runtimeProperties.canWrite();
-			
-			// delete the file again after testing the create/write
-			// so that if the user stops the webapp before finishing
-			// this wizard, they can still get back into it
-			runtimeProperties.delete();
-			
-		} else {
-			wizardModel.canWrite = runtimeProperties.canWrite();
+			httpResponse.getWriter().write(toJSONString(result, true));
 		}
-		
-		wizardModel.runtimePropertiesPath = runtimeProperties.getAbsolutePath();
-		
-		// do step one of the wizard
-		httpResponse.setContentType("text/html");
-		renderTemplate(DEFAULT_PAGE, referenceMap, httpResponse);
 	}
 	
 	/**
@@ -202,8 +251,57 @@ public class InitializationFilter extends StartupFilter {
 		Map<String, Object> referenceMap = new HashMap<String, Object>();
 		
 		// TODO make these page names variables.
-		// step one
-		if (DATABASE_SETUP.equals(page)) {
+		//                   /                SIMPLE_SETUP                    \
+		// 0.INSTALL_METHOD <                                                  > WIZARD_COMPLETE
+		//                   \ 1.DATABASE_SETUP ... 5.IMPLEMENTATION_ID_SETUP /
+		// step zero
+		if (INSTALL_METHOD.equals(page)) {
+			wizardModel.installMethod = httpRequest.getParameter("install_method");
+			if (InitializationWizardModel.INSTALL_METHOD_SIMPLE.equals(wizardModel.installMethod)) {
+				page = SIMPLE_SETUP;
+			} else {
+				page = DATABASE_SETUP;
+			}
+			renderTemplate(page, referenceMap, httpResponse);
+			
+		} // simple method
+		else if (SIMPLE_SETUP.equals(page)) {
+			if ("Back".equals(httpRequest.getParameter("back"))) {
+				renderTemplate(INSTALL_METHOD, referenceMap, httpResponse);
+				return;
+			}
+			
+			wizardModel.databaseRootPassword = httpRequest.getParameter("database_root_password");
+			checkForEmptyValue(wizardModel.databaseRootPassword, errors, "Database root password");
+			
+			wizardModel.hasCurrentOpenmrsDatabase = false;
+			wizardModel.createTables = true;
+			// default wizardModel.databaseName is openmrs
+			// default wizardModel.createDatabaseUsername is root
+			wizardModel.createDatabasePassword = wizardModel.databaseRootPassword;
+			wizardModel.addDemoData = false;
+			
+			wizardModel.hasCurrentDatabaseUser = false;
+			wizardModel.createDatabaseUser = true;
+			// default wizardModel.createUserUsername is root
+			wizardModel.createUserPassword = wizardModel.databaseRootPassword;
+			
+			wizardModel.moduleWebAdmin = true;
+			wizardModel.autoUpdateDatabase = false;
+			
+			wizardModel.adminUserPassword = InitializationWizardModel.ADMIN_DEFAULT_PASSWORD;
+			
+			if (errors.isEmpty()) {
+				page = WIZARD_COMPLETE;
+			}
+			renderTemplate(page, referenceMap, httpResponse);
+			
+		} // step one
+		else if (DATABASE_SETUP.equals(page)) {
+			if ("Back".equals(httpRequest.getParameter("back"))) {
+				renderTemplate(INSTALL_METHOD, referenceMap, httpResponse);
+				return;
+			}
 			
 			wizardModel.databaseConnection = httpRequest.getParameter("database_connection");
 			checkForEmptyValue(wizardModel.databaseConnection, errors, "Database connection string");
@@ -370,11 +468,14 @@ public class InitializationFilter extends StartupFilter {
 		} else if (WIZARD_COMPLETE.equals(page)) {
 			
 			if ("Back".equals(httpRequest.getParameter("back"))) {
-				renderTemplate(IMPLEMENTATION_ID_SETUP, referenceMap, httpResponse);
+				if (InitializationWizardModel.INSTALL_METHOD_SIMPLE.equals(wizardModel.installMethod)) {
+					page = SIMPLE_SETUP;
+				} else {
+					page = IMPLEMENTATION_ID_SETUP;
+				}
+				renderTemplate(page, referenceMap, httpResponse);
 				return;
 			}
-			
-			// TODO send user to confirmation page with results of wizard, location of runtime props, before starting install?
 			
 			initJob = new InitializationCompletion();
 			//get the tasks the user selected and show them in the page while the initilization wizard runs
@@ -395,40 +496,6 @@ public class InitializationFilter extends StartupFilter {
 			
 			initJob.start();
 			renderTemplate(PROGRESS_VM, referenceMap, httpResponse);
-		} else if (PROGRESS_VM_AJAXREQUEST.equals(page)) {
-			httpResponse.setContentType("text/json");
-			httpResponse.setHeader("Cache-Control", "no-cache");
-			Map<String, Object> result = new HashMap<String, Object>();
-			if (initJob != null) {
-				result.put("hasErrors", initJob.hasErrors());
-				if (initJob.hasErrors()) {
-					result.put("errorPage", initJob.getErrorPage());
-					errors.addAll(initJob.getErrors());
-				}
-				
-				result.put("initializationComplete", isInitializationComplete());
-				result.put("message", initJob.getMessage());
-				result.put("actionCounter", initJob.getStepsComplete());
-				if (!isInitializationComplete()) {
-					result.put("executingTask", initJob.getExecutingTask());
-					result.put("executedTasks", initJob.getExecutedTasks());
-					result.put("completedPercentage", initJob.getCompletedPercentage());
-				}
-				
-				Appender appender = Logger.getRootLogger().getAppender("MEMORY_APPENDER");
-				if (appender instanceof MemoryAppender) {
-					MemoryAppender memoryAppender = (MemoryAppender) appender;
-					List<String> logLines = memoryAppender.getLogLines();
-					// truncate the list to the last 5 so we don't overwhelm jquery
-					if (logLines.size() > 5)
-						logLines = logLines.subList(logLines.size() - 5, logLines.size());
-					result.put("logLines", logLines);
-				} else {
-					result.put("logLines", new ArrayList<String>());
-				}
-			}
-			
-			httpResponse.getWriter().write(toJSONString(result, true));
 		}
 	}
 	
@@ -770,7 +837,9 @@ public class InitializationFilter extends StartupFilter {
 							    wizardModel.createDatabasePassword, sql, wizardModel.databaseName);
 							// throw the user back to the main screen if this error occurs
 							if (result < 0) {
-								reportError("Unable to create the database", DEFAULT_PAGE);
+								reportError(
+								    "Unable to create the database. The password might be incorrect or the database is not started.",
+								    DEFAULT_PAGE);
 								return;
 							} else {
 								wizardModel.workLog.add("Created database " + wizardModel.databaseName);

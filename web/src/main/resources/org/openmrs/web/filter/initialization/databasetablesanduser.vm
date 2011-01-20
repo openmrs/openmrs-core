@@ -4,7 +4,7 @@
 		<div class="content">
 			<table cellpadding="9" align="center" cellspacing="5">
 		  		<tr>
-					<td colspan="2"><strong>Step 2 of 6</strong></td>
+					<td colspan="2"><strong>Step 2 of 5</strong></td>
 				</tr>
 			 	<tr>
 					<td colspan="2" class="question" >Do you need OpenMRS to automatically create the tables for your current database - ${databaseName}?</td>
