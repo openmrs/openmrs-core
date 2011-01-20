@@ -29,11 +29,13 @@ public interface Rule {
 	/**
 	 * Evaluate rule for a given patient and applying the given criteria.
 	 * 
-	 * @param patient a patient for whom rule is to be calculated
+	 * @param context the context this rule is being evaluated in
+	 * @param patientId id of the patient for whom rule is to be calculated
+	 * @param parameters parameters passed to this rule
 	 * @return result of the rule for the given patient with given criteria applied
 	 * @throws LogicException TODO
 	 */
-	public Result eval(LogicContext context, Patient patient, Map<String, Object> parameters) throws LogicException;
+	public Result eval(LogicContext context, Integer patientId, Map<String, Object> parameters) throws LogicException;
 	
 	/**
 	 * Returns the list of arguments.
