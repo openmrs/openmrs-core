@@ -20,7 +20,8 @@
 				{searchLabel: '<spring:message code="Concept.search" javaScriptEscape="true"/>:', 
 					includeVoidedLabel: '<spring:message code="SearchResults.includeRetired" javaScriptEscape="true"/>', 
 					columnRenderers: [nameColumnRenderer, null], 
-					columnVisibility: [true, false]
+					columnVisibility: [true, false],
+					searchPhrase:'<request:parameter name="phrase"/>'
 				});
 	});
 	
