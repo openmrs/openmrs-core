@@ -4,7 +4,7 @@
 		<div class="content">
             <table cellpadding="9" align="center" cellspacing="5" >
 		  <tr>
-                    <td colspan="2"><strong>Step 3 of 6</strong></td>
+                    <td colspan="2"><strong>Step 3 of 5</strong></td>
                 </tr>
                 <tr>
                     <td colspan="2" class="question" >Do you want to be able to upload modules from the web interface? <br/> <i style="font-size:12px;">Disclaimer: This could be a security risk if a user with upload permissions is ever compromised. <br/>

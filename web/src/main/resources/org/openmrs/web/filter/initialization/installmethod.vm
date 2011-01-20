@@ -1,0 +1,52 @@
+#parse($headerTemplate)
+
+	#if( $canCreate != true )
+		<br/>
+		<span style="color: red">
+			<b>Error!</b> <br/>
+			A runtime properties file is needed for OpenMRS to start up consistently. <br/>
+			OpenMRS is unable to create this file: ${runtimePropertiesPath}<br/>
+			Because of this error: ${cannotCreateErrorMessage}
+			<br/><br/>
+			You must correct this before continuing.
+		</span>
+		<br/><br/>
+		<a href="retry">Retry</a>
+	#{else}
+
+		#if( $canWrite != true )
+			<span style="color: red">
+				OpenMRS cannot edit the file: ${runtimePropertiesPath}
+				<br/><br/>
+				You must correct this before continuing.
+			</span>
+			<br/><br/>
+			<a href="retry">Retry</a>
+		#{else}
+            <form method="post" autocomplete="off">
+                <input type="hidden" name="page" value="installmethod.vm" />
+
+                <div class="content">
+                    <table align="center" cellspacing="5" cellpadding="9">
+                        <tr>
+                            <td colspan="2"><strong>Which type of installation do you want?</strong></td>
+                        </tr>
+                        <tr>
+                            <td valign="top" class="yes" style="white-space: nowrap"> <input type="radio" name="install_method" value="${INSTALL_METHOD_SIMPLE}" #if( $installMethod == $INSTALL_METHOD_SIMPLE )checked="checked"#end/> Simple</td>
+                            <td class="question">Install OpenMRS by creating a new database with the demo data. This is suitable to try out the system on your local machine.
+                                This option requires a MySQL server running on the local machine listening on the address <i>localhost</i>. You will need to provide the password of the MySQL <i>root</i> account.</td>
+                        </tr>
+                        <tr>
+                            <td valign="top" class="yes" style="white-space: nowrap"> <input type="radio" name="install_method" value="${INSTALL_METHOD_ADVANCED}" #if( $installMethod == $INSTALL_METHOD_ADVANCED )checked="checked"#end/> Advanced</td>
+                            <td class="question">This option allows you to select the database url, name etc. and customize all the installation settings.
+                                Choose this option when you are installing OpenMRS in a production environment.</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2"><input class="button" type="submit" value="Continue"/></td>
+                        </tr>                        
+                    </table>
+                </div>
+            </form>
+		#end
+	#end
+#parse($footerTemplate)

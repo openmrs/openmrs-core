@@ -31,6 +31,14 @@ public class InitializationWizardModel {
 	// automatically given to the .vm files and used there
 	public static final String footerTemplate = "org/openmrs/web/filter/initialization/footer.vm";
 	
+	// Values for installMethod field.
+	public static final String INSTALL_METHOD_SIMPLE = "simple";
+	
+	public static final String INSTALL_METHOD_ADVANCED = "advanced";
+	
+	// Default OpenMRS admin password set by the simple installation.
+	public static final String ADMIN_DEFAULT_PASSWORD = "Welcome123";
+	
 	/**
 	 * Records completed tasks and are displayed at the top of the page upon error
 	 */
@@ -62,6 +70,8 @@ public class InitializationWizardModel {
 	
 	public String runtimePropertiesPath = "";
 	
+	public String installMethod = INSTALL_METHOD_SIMPLE;
+	
 	/**
 	 * True/false marker for the question "Do you currently have an OpenMRS database installed"
 	 */
@@ -82,6 +92,11 @@ public class InitializationWizardModel {
 	 * Filled out by user on the databasesetup.vm page Looks like:
 	 */
 	public String databaseConnection = "jdbc:mysql://localhost:3306/@DBNAME@?autoReconnect=true&sessionVariables=storage_engine=InnoDB&useUnicode=true&characterEncoding=UTF-8";
+	
+	/**
+	 * MySQL root account password used for simple installation. Filled in simplesetup.vm.
+	 */
+	public String databaseRootPassword = "";
 	
 	/**
 	 * Filled in on databasesetup.vm
