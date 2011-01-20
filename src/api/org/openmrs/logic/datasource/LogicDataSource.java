@@ -87,6 +87,13 @@ import org.openmrs.logic.result.Result;
 public interface LogicDataSource {
 	
 	/**
+	 * The name by which this data source should be registered when it is loaded.
+	 * Implementations should override this like
+	 *     public static final String NAME = "person";
+	 */
+	public static String NAME = "org.openmrs.logic.LogicDataSource.name";
+	
+	/**
 	 * Extracts data from the data source. Actually, this function only checks for cached data and
 	 * forwards all non-cached requests to its subclass(es).
 	 * 
