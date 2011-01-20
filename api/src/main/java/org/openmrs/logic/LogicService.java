@@ -167,23 +167,101 @@ public interface LogicService {
 	/**
 	 * Evaluates a rule for a given patient, given the token for the rule.
 	 * 
-	 * @param who patient for whom the rule is to be calculated
-	 * @param token lookup key for rule to be calculated
+	 * @param patientId patient for whom the rule is to be calculated
+	 * @param expression expression to be parsed and evaluated
 	 * @return patient-specific result from given rule
 	 * @throws LogicException
+	 * @see {@link #parse(String)}
 	 */
-	public Result eval(Patient who, String token) throws LogicException;
+	public Result eval(Integer patientId, String expression) throws LogicException;
+	
+	/**
+	 * Evaluates a rule for a given patient, given a token and parameters for the rule.
+	 * 
+	 * @param patientId patient for whom the rule is to be calculated
+	 * @param expression expression to be parsed and evaluated
+	 * @param parameters parameters to be passed to the rule
+	 * @return patient-specific result from given rule
+	 * @throws LogicException
+	 * @see {@link #parse(String)}
+	 */
+	public Result eval(Integer patientId, String expression, Map<String, Object> parameters) throws LogicException;
+	
+	/**
+	 * Evaluates a query for a given patient
+	 * 
+	 * @param patientId patient for whom the query is to be run
+	 * @param criteria question to be answered (along with the token) for the given patient
+	 * @return result of query
+	 * @throws LogicException
+	 */
+	public Result eval(Integer patientId, LogicCriteria criteria) throws LogicException;
+	
+	/**
+	 * Evaluates a query for a given patient
+	 * 
+	 * @param patientId <code>Patient</code> for whom the query is to be run
+	 * @param criteria <code>Criteria</code> question to be answered (along with the token) for the
+	 *            given patient
+	 * @param parameters <code>Map</code> of arguments to be passed to the rule
+	 * @return <code>Result</code> of query
+	 * @throws LogicException
+	 */
+	public Result eval(Integer patientId, LogicCriteria criteria, Map<String, Object> parameters) throws LogicException;
+	
+	/**
+	 * Evaluates multiple logic expressions for a single patient.
+	 * (The expressions argument is an array and comes last because using a List would give this method
+	 * the same type erasure as the {@link LogicCriteria}... version.)  
+	 * 
+	 * @param patientId which patient to run the rules on 
+	 * @param parameters global parameters to be passed to all rule evaluations
+	 * @param expressions expressions to be parsed and run
+	 * @return results of the rule evaluations
+	 * @throws LogicException
+	 * @see {@link #parse(String)}
+	 */
+	public Map<String, Result> eval(Integer patientId, Map<String, Object> parameters, String... expressions) throws LogicException;
+	
+	/**
+	 * Evaluates multiple {@link LogicCriteria} for a single patient.
+	 * (The criteria argument is an array and comes last because using a List would give this method
+	 * the same type erasure as the {@link String}... version.)
+	 * 
+	 * @param patientId which patient to run the rules on 
+	 * @param parameters global parameters to be passed to all rule evaluations
+	 * @param criteria what criteria to run
+	 * @return results of the rule evaluations
+	 * @throws LogicException
+	 */
+	public Map<LogicCriteria, Result> eval(Integer patientId, Map<String, Object> parameters, LogicCriteria... criteria) throws LogicException;
+	
+	/**
+	 * Evaluates a rule for a given patient, given the token for the rule.
+	 * 
+	 * @param who patient for whom the rule is to be calculated
+	 * @param expression expression to be parsed and evaluated
+	 * @return patient-specific result from given rule
+	 * @throws LogicException
+	 * @deprecated use {@link #eval(Integer, String)}
+	 * @see {@link #parse(String)}
+	 */
+	@Deprecated
+	public Result eval(Patient who, String expression) throws LogicException;
 	
 	/**
 	 * Evaluates a rule for a given patient, given a token and parameters for the rule.
 	 * 
 	 * @param who patient for whom the rule is to be calculated
-	 * @param token lookup key for rule to be calculated
+	 * @param expression expression to be parsed and evaluated
 	 * @param parameters parameters to be passed to the rule
 	 * @return patient-specific result from given rule
 	 * @throws LogicException
+	 * @deprecated use {@link #eval(Integer, String, Map)}
+	 * @see {@link #parse(String)}
 	 */
-	public Result eval(Patient who, String token, Map<String, Object> parameters) throws LogicException;
+	@Deprecated
+	public Result eval(Patient who, String expression, Map<String, Object> parameters) throws LogicException;
 	
 	/**
 	 * Evaluates a query for a given patient
@@ -192,7 +270,9 @@ public interface LogicService {
 	 * @param criteria question to be answered (along with the token) for the given patient
 	 * @return result of query
 	 * @throws LogicException
+	 * @deprecated use {@link #eval(Integer, LogicCriteria)}
 	 */
+	@Deprecated
 	public Result eval(Patient who, LogicCriteria criteria) throws LogicException;
 	
 	/**
@@ -204,29 +284,33 @@ public interface LogicService {
 	 * @param parameters <code>Map</code> of arguments to be passed to the rule
 	 * @return <code>Result</code> of query
 	 * @throws LogicException
+	 * @deprecated use {@link #eval(Integer, LogicCriteria, Map)}
 	 */
+	@Deprecated
 	public Result eval(Patient who, LogicCriteria criteria, Map<String, Object> parameters) throws LogicException;
 	
 	/**
 	 * Evaluates a query over a list of patients
 	 * 
 	 * @param who patients for whom the query is to be run
-	 * @param token concept to be looked up for each patient
+	 * @param expression expression to be parsed and evaluated for each patient
 	 * @return result for each patient
 	 * @throws LogicException
+	 * @see {@link #parse(String)}
 	 */
-	public Map<Integer, Result> eval(Cohort who, String token) throws LogicException;
+	public Map<Integer, Result> eval(Cohort who, String expression) throws LogicException;
 	
 	/**
 	 * Evaluates a query over a list of patients
 	 * 
 	 * @param who patients for whom the query is to be run
-	 * @param token concept to be looked up for each patient
+	 * @param expression expression to be parsed and evaluated for each patient
 	 * @param parameters parameters to be passed to the rule
 	 * @return result for each patient
 	 * @throws LogicException
+	 * @see {@link #parse(String)}
 	 */
-	public Map<Integer, Result> eval(Cohort who, String token, Map<String, Object> parameters) throws LogicException;
+	public Map<Integer, Result> eval(Cohort who, String expression, Map<String, Object> parameters) throws LogicException;
 	
 	/**
 	 * Evaluates a query over a list of patients
@@ -254,7 +338,7 @@ public interface LogicService {
 	 * Evaluates a collection of queries for a set of patients
 	 * 
 	 * @param who patients for whom the queries are to be run
-	 * @param criterias parallel list of criteria to be applied for each token
+	 * @param criterias parallel list of criteria to be evaluated on each patient
 	 * @return results for each patient
 	 * @throws LogicException
 	 */
@@ -361,7 +445,9 @@ public interface LogicService {
 	 * @param name name for the data source
 	 * @param logicDataSource the data source
 	 * @throws LogicException
+	 * @deprecated data sources are now auto-registered via Spring (since Logic module version 0.5)
 	 */
+	@Deprecated
 	public void registerLogicDataSource(String name, LogicDataSource logicDataSource) throws LogicException;
 	
 	/**
@@ -375,7 +461,9 @@ public interface LogicService {
 	 * Adds the given logic data sources to the list of current data sources on this logic service
 	 * 
 	 * @param logicDataSources
+	 * @deprecated data sources are now auto-registered via Spring (since Logic module version 0.5)
 	 */
+	@Deprecated
 	public void setLogicDataSources(Map<String, LogicDataSource> logicDataSources) throws LogicException;
 	
 	/**
@@ -391,7 +479,9 @@ public interface LogicService {
 	 * Remove a logic data source by name
 	 * 
 	 * @param name name of the logic data source to be unregistered
+	 * @deprecated data sources are now auto-registered via Spring (since Logic module version 0.5)
 	 */
+	@Deprecated
 	public void removeLogicDataSource(String name);
 	
 	/**
