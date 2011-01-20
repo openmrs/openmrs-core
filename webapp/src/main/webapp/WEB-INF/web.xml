@@ -298,6 +298,10 @@
     </filter-mapping>
     <filter-mapping>
         <filter-name>compressionFilter</filter-name>
+        <url-pattern>*.json</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>compressionFilter</filter-name>
         <url-pattern>*.html</url-pattern>
     </filter-mapping>
     <filter-mapping>
