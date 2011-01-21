@@ -24,6 +24,7 @@ import org.openmrs.Person;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonName;
 import org.openmrs.util.Format;
+import org.springframework.util.StringUtils;
 
 /**
  * A mini/simplified Person object. Used as the return object from DWR methods to allow javascript
@@ -243,13 +244,13 @@ public class PersonListItem {
 	public String getPersonName() {
 		String name = "";
 		
-		if (givenName != null)
+		if (StringUtils.hasText(givenName))
 			name = givenName;
 		
-		if (middleName != null)
+		if (StringUtils.hasText(middleName))
 			name = name + (name.length() > 0 ? " " : "") + middleName;
 		
-		if (familyName != null)
+		if (StringUtils.hasText(familyName))
 			name = name + (name.length() > 0 ? " " : "") + familyName;
 		
 		return name;
