@@ -122,7 +122,9 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		else
 			Context.requirePrivilege(OpenmrsConstants.PRIV_EDIT_PATIENTS);
 		
-		checkPatientIdentifiers(patient);
+		if (!patient.isVoided()) {
+			checkPatientIdentifiers(patient);
+		}
 		
 		return dao.savePatient(patient);
 	}
