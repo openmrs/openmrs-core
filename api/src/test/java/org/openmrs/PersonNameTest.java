@@ -429,4 +429,17 @@ public class PersonNameTest {
 		OpenmrsConstants.OBSCURE_PATIENTS = false; // cleanup 
 	}
 	
+	/**
+	 * @see PersonName#getFullName()
+	 * @verifies not put spaces around an empty middle name
+	 */
+	@Test
+	public void getFullName_shouldNotPutSpacesAroundAnEmptyMiddleName() throws Exception {
+		PersonName pn = new PersonName();
+		pn.setGivenName("Bob");
+		pn.setMiddleName("");
+		pn.setFamilyName("Jones");
+		Assert.assertEquals("Bob Jones", pn.getFullName());
+	}
+	
 }
