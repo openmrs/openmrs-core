@@ -55,6 +55,7 @@ import org.openmrs.api.impl.PatientServiceImpl;
 import org.openmrs.patient.IdentifierValidator;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.SkipBaseSetup;
+import org.openmrs.test.StartModule;
 import org.openmrs.test.TestUtil;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.OpenmrsConstants;
@@ -64,6 +65,7 @@ import org.openmrs.util.OpenmrsUtil;
  * This class tests methods in the PatientService class TODO Add methods to test all methods in
  * PatientService class
  */
+@StartModule( { "org/openmrs/api/db/include/serialization.xstream-0.1.1.omod" })
 public class PatientServiceTest extends BaseContextSensitiveTest {
 	
 	// Logger

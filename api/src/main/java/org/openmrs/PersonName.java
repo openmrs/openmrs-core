@@ -503,24 +503,26 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	 * {@link #getMiddleName()}, etc are null, they are not included in the returned name
 	 * 
 	 * @return all of the parts of this {@link PersonName} joined with spaces
+	 * 
+	 * @should not put spaces around an empty middle name
 	 */
 	public String getFullName() {
 		List<String> temp = new ArrayList<String>();
-		if (getPrefix() != null)
+		if (StringUtils.hasText(getPrefix()))
 			temp.add(getPrefix());
-		if (getGivenName() != null)
+		if (StringUtils.hasText(getGivenName()))
 			temp.add(getGivenName());
-		if (getMiddleName() != null)
+		if (StringUtils.hasText(getMiddleName()))
 			temp.add(getMiddleName());
-		if (getFamilyNamePrefix() != null)
+		if (StringUtils.hasText(getFamilyNamePrefix()))
 			temp.add(getFamilyNamePrefix());
-		if (getFamilyName() != null)
+		if (StringUtils.hasText(getFamilyName()))
 			temp.add(getFamilyName());
-		if (getFamilyName2() != null)
+		if (StringUtils.hasText(getFamilyName2()))
 			temp.add(getFamilyName2());
-		if (getFamilyNameSuffix() != null)
+		if (StringUtils.hasText(getFamilyNameSuffix()))
 			temp.add(getFamilyNameSuffix());
-		if (getDegree() != null)
+		if (StringUtils.hasText(getDegree()))
 			temp.add(getDegree());
 		
 		String nameString = StringUtils.collectionToDelimitedString(temp, " ");
