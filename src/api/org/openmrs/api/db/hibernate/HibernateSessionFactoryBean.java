@@ -15,7 +15,12 @@ package org.openmrs.api.db.hibernate;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
@@ -29,6 +34,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.util.OpenmrsUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.orm.hibernate3.LocalSessionFactoryBean;
 
@@ -38,25 +44,13 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
 	
 	protected Set<String> tmpMappingResources = new HashSet<String>();
 	
-	protected static Interceptor globalSessionInterceptor = null;
+	// @since 1.9
+	protected ChainingInterceptor chainingInterceptor = new ChainingInterceptor();
 	
-	/**
-	 * Sets the session interceptor for the hibernate sessions. <br/>
-	 * This should be set within the spring application context of a module
-	 * 
-	 * @param globalSessionInterceptor
-	 */
-	public void setGlobalSessionInterceptor(Interceptor globalSessionInterceptor) {
-		log.debug("Spring setter for global Hibernate Session Interceptor for SessionFactory called with interceptor: "
-		        + globalSessionInterceptor);
-		
-		if (HibernateSessionFactoryBean.globalSessionInterceptor != null) {
-			log.warn("Overwriting current interceptor: " + HibernateSessionFactoryBean.globalSessionInterceptor
-			        + " with another interceptor: " + globalSessionInterceptor);
-		}
-		
-		HibernateSessionFactoryBean.globalSessionInterceptor = globalSessionInterceptor;
-	}
+	// @since 1.9
+	// This will be sorted on keys before being used
+	@Autowired(required = false)
+	public Map<String, Interceptor> interceptors = new HashMap<String, Interceptor>();
 	
 	//public SessionFactory newSessionFactory(Configuration config) throws HibernateException {
 	public Configuration newConfiguration() throws HibernateException {
@@ -90,15 +84,17 @@ public class HibernateSessionFactoryBean extends LocalSessionFactoryBean {
 			log.fatal("Unable to load default hibernate properties", e);
 		}
 		
-		// If there's an interceptor, set it for all sessions:
-		if (globalSessionInterceptor != null) {
-			log.debug("Setting global Hibernate Session Interceptor for SessionFactory, Interceptor: "
-			        + globalSessionInterceptor);
-			config.setInterceptor(globalSessionInterceptor);
-		} else {
-			log.debug("No global Hibernate Session Interceptor for SessionFactory set in builder");
-			log.debug("Is there a global pre-set interceptor already for SessionFactory?: " + config.getInterceptor());
+		log.debug("Setting global Hibernate Session Interceptor for SessionFactory, Interceptor: " + chainingInterceptor);
+		
+		// make sure all autowired interceptors are put onto our chaining interceptor
+		// sort on the keys so that the devs/modules have some sort of control over the order of the interceptors 
+		List<String> keys = new ArrayList<String>(interceptors.keySet());
+		Collections.sort(keys);
+		for (String key : keys) {
+			chainingInterceptor.addInterceptor(interceptors.get(key));
 		}
+		
+		config.setInterceptor(chainingInterceptor);
 		
 		return config;
 	}
