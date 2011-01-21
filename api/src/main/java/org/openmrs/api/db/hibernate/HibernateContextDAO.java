@@ -180,8 +180,18 @@ public class HibernateContextDAO implements ContextDAO {
 	 * @see org.openmrs.api.db.ContextDAO#getUserByUuid(java.lang.String)
 	 */
 	public User getUserByUuid(String uuid) {
-		return (User) sessionFactory.getCurrentSession().createQuery("from User u where u.uuid = :uuid").setString("uuid",
+		
+		// don't flush here in case we're in the AuditableInterceptor.  Will cause a StackOverflowEx otherwise
+		FlushMode flushMode = sessionFactory.getCurrentSession().getFlushMode();
+		sessionFactory.getCurrentSession().setFlushMode(FlushMode.MANUAL);
+		
+		User u = (User) sessionFactory.getCurrentSession().createQuery("from User u where u.uuid = :uuid").setString("uuid",
 		    uuid).uniqueResult();
+		
+		// reset the flush mode to whatever it was before
+		sessionFactory.getCurrentSession().setFlushMode(flushMode);
+		
+		return u;
 	}
 	
 	/**
