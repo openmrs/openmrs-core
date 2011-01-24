@@ -492,9 +492,6 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-resources-plugin</artifactId>
-					<configuration>
-						<encoding>UTF-8</encoding>
-					</configuration>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -706,6 +703,7 @@
 	</distributionManagement>
 
    <properties>
+      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
       <javaCompilerVersion>1.6</javaCompilerVersion>
       <maven.build.timestamp.format>MMM dd yyyy hh:mm aa</maven.build.timestamp.format>
       <TIMESTAMP>${maven.build.timestamp}</TIMESTAMP>
