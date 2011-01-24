@@ -91,6 +91,7 @@ public interface LocationService extends OpenmrsService {
 	 * 
 	 * @return The default location for this implementation.
 	 * @should return default location for the implementation
+	 * @should return Unknown Location if the global property is something else that doesnot exist
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_LOCATIONS })

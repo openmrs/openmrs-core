@@ -28,11 +28,13 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
 import org.openmrs.LocationTag;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
+import org.openmrs.util.OpenmrsConstants;
 
 /**
  * Tests all methods in the {@link LocationService}
@@ -205,7 +207,11 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should return default location for the implementation", method = "getDefaultLocation()")
 	public void getDefaultLocation_shouldReturnDefaultLocationForTheImplementation() throws Exception {
-		Assert.assertNotNull(Context.getLocationService().getDefaultLocation());
+		//set the global property for default location to something other than Unknown Location
+		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCATION_NAME,
+		        "Test Parent Location", "Testing default Location");
+		Context.getAdministrationService().saveGlobalProperty(gp);
+		Assert.assertEquals("Test Parent Location", Context.getLocationService().getDefaultLocation().getName());
 	}
 	
 	/**
@@ -234,7 +240,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	public void getAllLocations_shouldReturnAllLocationsIncludingRetired() throws Exception {
 		List<Location> locations = Context.getLocationService().getAllLocations();
 		
-		Assert.assertEquals(5, locations.size());
+		Assert.assertEquals(6, locations.size());
 	}
 	
 	/**
@@ -245,7 +251,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	public void getAllLocations_shouldReturnAllLocationsWhenIncludeRetiredIsTrue() throws Exception {
 		List<Location> locations = Context.getLocationService().getAllLocations(true);
 		
-		Assert.assertEquals(5, locations.size());
+		Assert.assertEquals(6, locations.size());
 	}
 	
 	/**
@@ -256,7 +262,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	public void getAllLocations_shouldReturnOnlyUnretiredLocationsWhenIncludeRetiresIsFalse() throws Exception {
 		List<Location> locations = Context.getLocationService().getAllLocations(false);
 		
-		Assert.assertEquals(4, locations.size());
+		Assert.assertEquals(5, locations.size());
 	}
 	
 	/**
@@ -344,7 +350,7 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "return all unretired locations given an empty tag list", method = "getLocationsHavingAllTags(List<QLocationTag;>)")
 	public void getLocationsHavingAllTags_shouldReturnAllUnretiredLocationsGivenAnEmptyTagList() throws Exception {
 		LocationService ls = Context.getLocationService();
-		Assert.assertEquals(4, ls.getLocationsHavingAllTags(new ArrayList<LocationTag>()).size());
+		Assert.assertEquals(5, ls.getLocationsHavingAllTags(new ArrayList<LocationTag>()).size());
 	}
 	
 	/**
@@ -879,7 +885,6 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link LocationService#getLocationByUuid(String)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should find object given valid uuid", method = "getLocationByUuid(String)")
@@ -891,7 +896,6 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link LocationService#getLocationByUuid(String)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should return null if no object found with given uuid", method = "getLocationByUuid(String)")
@@ -901,7 +905,6 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link LocationService#getLocationTagByUuid(String)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should find object given valid uuid", method = "getLocationTagByUuid(String)")
@@ -912,12 +915,25 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link LocationService#getLocationTagByUuid(String)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should return null if no object found with given uuid", method = "getLocationTagByUuid(String)")
 	public void getLocationTagByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
 		Assert.assertNull(Context.getLocationService().getLocationTagByUuid("ffffffff-47ed-11df-bc8b-001e378eb67e"));
+	}
+	
+	/**
+	 * @see {@link LocationService#getDefaultLocation()}
+	 */
+	@Test
+	@Verifies(value = "should return Unknown Location if the global property is something else that doesnot exist", method = "getDefaultLocation()")
+	public void getDefaultLocation_shouldReturnUnknownLocationIfTheGlobalPropertyIsSomethingElseThatDoesnotExist()
+	        throws Exception {
+		//set the global property to something that has no match in the location table
+		GlobalProperty gp = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCATION_NAME,
+		        "None existent Location", "Testing");
+		Context.getAdministrationService().saveGlobalProperty(gp);
+		Assert.assertEquals("Unknown Location", Context.getLocationService().getDefaultLocation().getName());
 	}
 	
 }

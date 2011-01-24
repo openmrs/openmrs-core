@@ -6,6 +6,7 @@
   <location location_id="3" name="Test Level A Child Location 2" parent_location="1" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="6f42abbc-caac-40ae-a94e-9277ea15c125"/>
   <location location_id="4" name="Test Level B Child Location 1" parent_location="3" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="400d343b-75ed-4243-af42-7b9b1b72f0a9"/>
   <location location_id="5" name="Test Retired Location" parent_location="[NULL]" description="retired" creator="1" date_created="2005-01-01 00:00:00.0" retired="true" retired_by="1" retire_reason="for testing purposes" uuid="f08ba64b-ea57-4a41-b33c-9dfc59b0c60b"/>
+  <location location_id="6" name="Unknown Location" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="f78adfde-27c9-11e0-ba2a-18a905e044dc"/>
   <location_tag location_tag_id="1" name="General Hospital" description="test desc" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="001e503a-47ed-11df-bc8b-001e378eb67e"/>
   <location_tag location_tag_id="2" name="Gastroenteritis infection scandal of 1993" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="0940c6d4-47ed-11df-bc8b-001e378eb67e"/>
   <location_tag location_tag_id="3" name="Department" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="0d0eaea2-47ed-11df-bc8b-001e378eb67e"/>

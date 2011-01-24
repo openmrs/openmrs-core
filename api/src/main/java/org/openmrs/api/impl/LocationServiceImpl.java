@@ -23,6 +23,7 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.LocationDAO;
+import org.openmrs.util.OpenmrsConstants;
 import org.springframework.util.StringUtils;
 
 /**
@@ -95,12 +96,19 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	 * @see org.openmrs.api.LocationService#getDefaultLocation()
 	 */
 	public Location getDefaultLocation() throws APIException {
+		Location location = null;
+		String locationGP = Context.getAdministrationService().getGlobalProperty(
+		    OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCATION_NAME);
 		
-		// TODO The name of the default location should be configured using global properties 
-		Location location = getLocation("Unknown Location");
+		if (StringUtils.hasText(locationGP))
+			location = getLocation(locationGP);
 		
-		// If Unknown Location does not exist, try Unknown
-		if (location == null) {
+		//Try to look up 'Unknown Location' in case the global property is something else
+		if (location == null && (!StringUtils.hasText(locationGP) || !locationGP.equalsIgnoreCase("Unknown Location")))
+			location = getLocation("Unknown Location");
+		
+		// If Unknown Location does not exist, try Unknown if the global property was different
+		if (location == null && (!StringUtils.hasText(locationGP) || !locationGP.equalsIgnoreCase("Unknown"))) {
 			location = getLocation("Unknown");
 		}
 		

@@ -55,6 +55,7 @@
 		<property name="globalPropertyListeners">
 			<list value-type="org.openmrs.api.GlobalPropertyListener" merge="true">
 				<bean class="org.openmrs.util.LocaleUtility" />
+				<bean class="org.openmrs.util.LocationUtility" />
 				<ref bean="globalLocaleList" />
 				<ref bean="adminServiceTarget" />
 			</list>

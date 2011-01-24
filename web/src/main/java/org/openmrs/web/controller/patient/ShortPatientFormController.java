@@ -102,7 +102,7 @@ public class ShortPatientFormController {
 			model.addAttribute("relationshipsMap", getRelationshipsMap(patient, request));
 			model.addAttribute("identifierTypes", Context.getPatientService().getAllPatientIdentifierTypes());
 			model.addAttribute("locations", Context.getLocationService().getAllLocations());
-			model.addAttribute("defaultLocation", Context.getLocationService().getDefaultLocation());
+			model.addAttribute("defaultLocation", Context.getLocation());
 			
 			String propCause = Context.getAdministrationService().getGlobalProperty("concept.causeOfDeath");
 			Concept conceptCause = Context.getConceptService().getConcept(propCause);
