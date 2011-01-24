@@ -39,7 +39,7 @@ function CreateCallback(options) {
 	 * roles: a comma separated list of role names to restrict to
 	 */
 	this.personCallback = function() { var thisObject = this; return function(q, response) {
-		if (q.trim().length == 0)
+		if ($j.trim(q).length == 0)
 			return response(false);
 		
 		DWRPersonService.findPeopleByRoles(q, false, options.roles, thisObject.makeRows(q, response, thisObject.searchCounter + 1, thisObject.displayPerson));
@@ -49,7 +49,7 @@ function CreateCallback(options) {
 	 * Use this method if searching for patients
 	 */
 	this.patientCallback = function() { var thisObject = this; return function(q, response) {
-		if (q.trim().length == 0)
+		if ($j.trim(q).length == 0)
 			return response(false);
 		
 		DWRPatientService.findPatients(q, false, thisObject.makeRows(q, response, thisObject.searchCounter + 1, thisObject.displayPerson));
@@ -62,7 +62,7 @@ function CreateCallback(options) {
 	 * roles: a comma separated list of role names to restrict to
 	 */
 	this.userCallback = function() { var thisObject = this; return function(q, response) {
-		if (q.trim().length == 0)
+		if ($j.trim(q).length == 0)
 			return response(false);
 		
 		var rolesArray = [];
@@ -80,7 +80,7 @@ function CreateCallback(options) {
 	 * excludeDatatypes: an array of datatype names to leave out of the results
 	 */
 	this.conceptCallback = function() { var thisObject = this; return function(q, response) {
-		if (q.trim().length == 0)
+		if ($j.trim(q).length == 0)
 			return response(false);
 		
 		// changes a single element into an array
@@ -106,7 +106,7 @@ function CreateCallback(options) {
 	 * showAnswersFor: a concept id. if non-null the search space is restricted to the answers to the given concept id
 	 */
 	this.encounterCallback = function() { var thisObject = this; return function(q, response) {
-		if (q.trim().length == 0)
+		if ($j.trim(q).length == 0)
 			return response(false);
 		
 		// do NOT return false if no text given, instead should return all answers
@@ -262,7 +262,7 @@ function CreateCallback(options) {
 	function highlightWords(textShown, origQuery) {
 		var words = origQuery.split(" ");
 		for (var x=0; x<words.length; x++) {
-			if (words[x].trim().length > 0) {
+			if ($j.trim(words[x].length > 0) {
 				var word = " " + words[x]; // only match the beginning of words
 				// replace each occurrence case insensitively while replacing with original case
 				textShown = textShown.replace(word, function(matchedTxt) { return "<span class='hit'>" + matchedTxt + "</span>"}, "gi");
