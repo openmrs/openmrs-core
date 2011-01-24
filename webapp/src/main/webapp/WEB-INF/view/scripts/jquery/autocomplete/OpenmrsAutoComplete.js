@@ -262,7 +262,7 @@ function CreateCallback(options) {
 	function highlightWords(textShown, origQuery) {
 		var words = origQuery.split(" ");
 		for (var x=0; x<words.length; x++) {
-			if ($j.trim(words[x].length > 0) {
+			if ($j.trim(words[x]).length > 0) {
 				var word = " " + words[x]; // only match the beginning of words
 				// replace each occurrence case insensitively while replacing with original case
 				textShown = textShown.replace(word, function(matchedTxt) { return "<span class='hit'>" + matchedTxt + "</span>"}, "gi");
