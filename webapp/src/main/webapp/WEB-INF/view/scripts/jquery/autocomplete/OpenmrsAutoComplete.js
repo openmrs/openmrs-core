@@ -42,7 +42,8 @@ function CreateCallback(options) {
 		if ($j.trim(q).length == 0)
 			return response(false);
 		
-		DWRPersonService.findPeopleByRoles(q, false, options.roles, thisObject.makeRows(q, response, thisObject.searchCounter + 1, thisObject.displayPerson));
+		thisObject.searchCounter += 1;
+		DWRPersonService.findPeopleByRoles(q, false, options.roles, thisObject.makeRows(q, response, thisObject.searchCounter, thisObject.displayPerson));
 	}}
 	
 	/**
@@ -52,7 +53,8 @@ function CreateCallback(options) {
 		if ($j.trim(q).length == 0)
 			return response(false);
 		
-		DWRPatientService.findPatients(q, false, thisObject.makeRows(q, response, thisObject.searchCounter + 1, thisObject.displayPerson));
+		thisObject.searchCounter += 1;
+		DWRPatientService.findPatients(q, false, thisObject.makeRows(q, response, thisObject.searchCounter, thisObject.displayPerson));
 	}}
 	
 	/**
@@ -69,7 +71,8 @@ function CreateCallback(options) {
 		if (options.roles.length > 0)
 			rolesArray = options.roles.split(",");
 		
-		DWRUserService.findUsers(q, rolesArray, false, thisObject.makeRows(q, response, thisObject.searchCounter + 1, thisObject.displayPerson));
+		thisObject.searchCounter += 1;
+		DWRUserService.findUsers(q, rolesArray, false, thisObject.makeRows(q, response, thisObject.searchCounter, thisObject.displayPerson));
 	}}
 	
 	/**
@@ -89,7 +92,9 @@ function CreateCallback(options) {
 		var includeDatatypes = $j.makeArray(options.includeDatatypes);
 		var excludeDatatypes = $j.makeArray(options.excludeDatatypes);
 		/*$j("#log").html($j("#log").html() + "<br/>" + thisObject.test + "--" + thisObject.testing);*/
-		DWRConceptService.findConcepts(q, false, includeClasses, excludeClasses, includeDatatypes, excludeDatatypes, false, thisObject.makeRows(q, response, thisObject.searchCounter + 1, thisObject.displayNamedObject));
+		
+		thisObject.searchCounter += 1;
+		DWRConceptService.findConcepts(q, false, includeClasses, excludeClasses, includeDatatypes, excludeDatatypes, false, thisObject.makeRows(q, response, thisObject.searchCounter, thisObject.displayNamedObject));
 	}}
 	
 	/**
@@ -98,7 +103,8 @@ function CreateCallback(options) {
 	 */
 	this.conceptAnswersCallback = function() { var thisObject = this; return function(q, response) {
 		// do NOT return false if no text given, instead should return all answers
-		DWRConceptService.findConceptAnswers(q, options.showAnswersFor, false, false, thisObject.makeRows(q, response, thisObject.searchCounter + 1, thisObject.displayNamedObject));
+		thisObject.searchCounter += 1;
+		DWRConceptService.findConceptAnswers(q, options.showAnswersFor, false, false, thisObject.makeRows(q, response, thisObject.searchCounter, thisObject.displayNamedObject));
 	}}
 	
 	/**
@@ -110,7 +116,8 @@ function CreateCallback(options) {
 			return response(false);
 		
 		// do NOT return false if no text given, instead should return all answers
-		DWREncounterService.findEncounters(q, false, thisObject.makeRows(q, response, thisObject.searchCounter + 1, thisObject.displayEncounter));
+		thisObject.searchCounter += 1;
+		DWREncounterService.findEncounters(q, false, thisObject.makeRows(q, response, thisObject.searchCounter, thisObject.displayEncounter));
 	}}
 	
 	/*
@@ -118,7 +125,7 @@ function CreateCallback(options) {
 	 * the method that dwr calls back with results 
 	 */ 
 	this.makeRows = function(q, response, searchId, displayFunction) { var thisObject = this; return function(objs) {
-		if (searchId <= thisObject.searchCounter) {
+		if (searchId < thisObject.searchCounter) {
 			//alert("got a slow query with: '" + q + "' main counter at: " + thisObject.searchCounter);
 			return;
 		}
@@ -265,9 +272,13 @@ function CreateCallback(options) {
 			if ($j.trim(words[x]).length > 0) {
 				var word = " " + words[x]; // only match the beginning of words
 				// replace each occurrence case insensitively while replacing with original case
-				textShown = textShown.replace(word, function(matchedTxt) { return "<span class='hit'>" + matchedTxt + "</span>"}, "gi");
+				textShown = textShown.replace(word, function(matchedTxt) { return "{{{{" + matchedTxt + "}}}}"}, "gi");
 			}
 		}
+		
+		textShown = textShown.replace(/{{{{/g, "<span class='hit'>");
+		textShown = textShown.replace(/}}}}/g, "</span>");
+		
 		return textShown;
 	}
 }
