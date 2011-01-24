@@ -19,13 +19,16 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.Vector;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Location;
 import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.db.ContextDAO;
 import org.openmrs.util.LocaleUtility;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.RoleConstants;
 
 /**
@@ -70,6 +73,11 @@ public class UserContext {
 	private Role anonymousRole = null;
 	
 	/**
+	 * User's defined location
+	 */
+	private Location location = null;
+	
+	/**
 	 * Default public constructor
 	 */
 	public UserContext() {
@@ -91,6 +99,7 @@ public class UserContext {
 		
 		this.user = contextDAO.authenticate(username, password);
 		
+		setUserLocation();
 		if (log.isDebugEnabled())
 			log.debug("Authenticated as: " + this.user);
 		
@@ -108,8 +117,11 @@ public class UserContext {
 		if (log.isDebugEnabled())
 			log.debug("Refreshing authenticated user");
 		
-		if (user != null)
+		if (user != null) {
 			user = Context.getUserService().getUser(user.getUserId());
+			//update the stored location in the user's session
+			setUserLocation();
+		}
 	}
 	
 	/**
@@ -141,6 +153,8 @@ public class UserContext {
 			userToBecome.getPrivileges().size();
 		
 		this.user = userToBecome;
+		//update the user's location
+		setUserLocation();
 		
 		if (log.isDebugEnabled())
 			log.debug("Becoming user: " + user);
@@ -341,4 +355,47 @@ public class UserContext {
 		return authenticatedRole;
 	}
 	
+	/**
+	 * @return current location for this user context if any is set
+	 * @since 1.9
+	 */
+	public Location getLocation() {
+		return this.location;
+	}
+	
+	/**
+	 * @param location the location to set to
+	 * @since 1.9
+	 */
+	public void setLocation(Location location) {
+		this.location = location;
+	}
+	
+	/**
+	 * Convenience method that sets the default location of the currently authenticated user using
+	 * the value of the user's default location property
+	 */
+	private void setUserLocation() {
+		if (this.user != null) {
+			String locationId = this.user.getUserProperty(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCATION);
+			if (StringUtils.isNotBlank(locationId)) {
+				//only go ahead if it has actually changed OR if wasn't set before
+				if (this.location == null || !this.location.getName().equalsIgnoreCase(locationId)) {
+					try {
+						this.location = Context.getLocationService().getLocation(Integer.valueOf(locationId));
+					}
+					catch (NumberFormatException e) {
+						//Drop the stored value since we have no match for the set id
+						if (this.location != null)
+							this.location = null;
+						log.warn("The value of the default Location property of the user with id:" + this.user.getUserId()
+						        + " should be an integer", e);
+					}
+				}
+			} else {
+				if (this.location != null)
+					this.location = null;
+			}
+		}
+	}
 }

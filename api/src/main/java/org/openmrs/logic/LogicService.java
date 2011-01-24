@@ -221,7 +221,8 @@ public interface LogicService {
 	 * @throws LogicException
 	 * @see {@link #parse(String)}
 	 */
-	public Map<String, Result> eval(Integer patientId, Map<String, Object> parameters, String... expressions) throws LogicException;
+	public Map<String, Result> eval(Integer patientId, Map<String, Object> parameters, String... expressions)
+	        throws LogicException;
 	
 	/**
 	 * Evaluates multiple {@link LogicCriteria} for a single patient.
@@ -234,7 +235,8 @@ public interface LogicService {
 	 * @return results of the rule evaluations
 	 * @throws LogicException
 	 */
-	public Map<LogicCriteria, Result> eval(Integer patientId, Map<String, Object> parameters, LogicCriteria... criteria) throws LogicException;
+	public Map<LogicCriteria, Result> eval(Integer patientId, Map<String, Object> parameters, LogicCriteria... criteria)
+	        throws LogicException;
 	
 	/**
 	 * Evaluates a rule for a given patient, given the token for the rule.

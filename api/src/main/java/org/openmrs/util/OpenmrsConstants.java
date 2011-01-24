@@ -740,6 +740,8 @@ public final class OpenmrsConstants {
 	
 	public static final String GLOBAL_PROPERTY_DEFAULT_LOCALE = "default_locale";
 	
+	public static final String GLOBAL_PROPERTY_DEFAULT_LOCATION_NAME = "default_location";
+	
 	public static final String GLOBAL_PROPERTY_DEFAULT_LOCALE_DEFAULT_VALUE = "en_GB";
 	
 	public static final String GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE = "patientSearch.matchMode";
@@ -1156,6 +1158,9 @@ public final class OpenmrsConstants {
 		                GP_SEARCH_WIDGET_DELAY_INTERVAL,
 		                "400",
 		                "Specifies time interval in milliseconds when searching, between keyboard keyup event and triggering the search off, should be higher if most users are slow when typing so as to minimise the load on the server"));
+		
+		props.add(new GlobalProperty(GLOBAL_PROPERTY_DEFAULT_LOCATION_NAME, "Unknown Location",
+		        "The name of the location to use as a system default"));
 		
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);

@@ -14,7 +14,9 @@
 package org.openmrs.api.context;
 
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Test;
@@ -25,6 +27,7 @@ import org.openmrs.api.PatientService;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.LocaleUtility;
+import org.openmrs.util.OpenmrsConstants;
 import org.springframework.validation.Validator;
 
 /**
@@ -185,5 +188,32 @@ public class ContextTest extends BaseContextSensitiveTest {
 		PatientService ps1 = Context.getService(PatientService.class);
 		PatientService ps2 = Context.getService(PatientService.class);
 		Assert.assertTrue(ps1 == ps2);
+	}
+	
+	/**
+	 * @see {@link Context#getLocation()}
+	 */
+	@Test
+	@Verifies(value = "should return the user specified location if any is set", method = "getLocation()")
+	public void getLocation_shouldReturnTheUserSpecifiedLocationIfAnyIsSet() throws Exception {
+		User user = Context.getAuthenticatedUser();
+		Map<String, String> properties = user.getUserProperties();
+		properties.put(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCATION, "2");
+		user.setUserProperties(properties);
+		Context.getUserService().saveUser(user, null);
+		Context.refreshAuthenticatedUser();
+		Assert.assertEquals("Xanadu", Context.getLocation().getName());
+	}
+	
+	/**
+	 * @see {@link Context#getLocation()}
+	 */
+	@Test
+	@Verifies(value = "should return the system default location if the user has not set one", method = "getLocation()")
+	public void getLocation_shouldReturnTheSystemDefaultLocationIfTheUserHasNotSetOne() throws Exception {
+		//Sanity check
+		Assert.assertTrue(StringUtils.isBlank(Context.getAuthenticatedUser().getUserProperty(
+		    OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCATION)));
+		Assert.assertEquals("Unknown Location", Context.getLocation().getName());
 	}
 }

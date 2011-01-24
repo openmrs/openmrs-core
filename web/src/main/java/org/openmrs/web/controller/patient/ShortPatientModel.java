@@ -64,10 +64,9 @@ public class ShortPatientModel {
 			this.personName = patient.getPersonName();
 			this.personAddress = patient.getPersonAddress();
 			List<PatientIdentifier> activeIdentifiers = patient.getActiveIdentifiers();
-			if (activeIdentifiers.isEmpty()) {
-				activeIdentifiers = new ArrayList<PatientIdentifier>();
-				activeIdentifiers.add(new PatientIdentifier(null, null, Context.getLocationService().getDefaultLocation()));
-			}
+			if (activeIdentifiers.isEmpty())
+				activeIdentifiers.add(new PatientIdentifier(null, null, Context.getLocation()));
+			
 			identifiers = ListUtils.lazyList(new ArrayList<PatientIdentifier>(activeIdentifiers), FactoryUtils
 			        .instantiateFactory(PatientIdentifier.class));
 			

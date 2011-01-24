@@ -31,6 +31,7 @@ import org.aopalliance.aop.Advice;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.GlobalProperty;
+import org.openmrs.Location;
 import org.openmrs.Privilege;
 import org.openmrs.Role;
 import org.openmrs.User;
@@ -73,6 +74,7 @@ import org.openmrs.util.DatabaseUpdateException;
 import org.openmrs.util.DatabaseUpdater;
 import org.openmrs.util.InputRequiredException;
 import org.openmrs.util.LocaleUtility;
+import org.openmrs.util.LocationUtility;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
@@ -1146,5 +1148,21 @@ public class Context {
 	 */
 	public static <T extends Object> List<T> getRegisteredComponents(Class<T> type) {
 		return getServiceContext().getRegisteredComponents(type);
+	}
+	
+	/**
+	 * Convenience method that returns the default location. If the user is authenticated, it should
+	 * return the user's specified location from the user properties if any is set otherwise the
+	 * system default location
+	 * 
+	 * @since 1.9
+	 * @should return the user specified location if any is set
+	 * @should return the system default location if the user has not set one
+	 */
+	public static Location getLocation() {
+		if (getUserContext().getLocation() != null)
+			return getUserContext().getLocation();
+		
+		return LocationUtility.getDefaultLocation();
 	}
 }
