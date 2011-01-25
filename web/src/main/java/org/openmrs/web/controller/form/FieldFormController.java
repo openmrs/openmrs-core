@@ -83,7 +83,8 @@ public class FieldFormController extends SimpleFormController {
 			if (action != null && action.equals(Context.getMessageSourceService().getMessage("general.delete"))) {
 				try {
 					Context.getFormService().purgeField(field);
-				} catch (DataIntegrityViolationException e) {
+				}
+				catch (DataIntegrityViolationException e) {
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "error.object.inuse.cannot.purge");
 					return new ModelAndView(new RedirectView("field.form?fieldId=" + field.getFieldId()));
 				}
@@ -93,7 +94,7 @@ public class FieldFormController extends SimpleFormController {
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Field.saved");
 			}
 		}
-			
+		
 		view = getSuccessView();
 		view = view + "?phrase=" + request.getParameter("phrase");
 		
@@ -107,7 +108,7 @@ public class FieldFormController extends SimpleFormController {
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
 	@Override
-    protected Object formBackingObject(HttpServletRequest request) throws ServletException {
+	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 		
 		Field field = null;
 		
@@ -125,7 +126,7 @@ public class FieldFormController extends SimpleFormController {
 	}
 	
 	@Override
-    protected Map<String, Object> referenceData(HttpServletRequest request, Object obj, Errors errors) throws Exception {
+	protected Map<String, Object> referenceData(HttpServletRequest request, Object obj, Errors errors) throws Exception {
 		
 		Field field = (Field) obj;
 		Locale locale = Context.getLocale();

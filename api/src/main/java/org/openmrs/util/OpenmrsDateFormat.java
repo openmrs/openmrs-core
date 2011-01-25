@@ -27,12 +27,11 @@ import java.util.regex.Pattern;
 public class OpenmrsDateFormat extends SimpleDateFormat {
 	
 	private static final long serialVersionUID = 1L;
-
+	
 	public OpenmrsDateFormat(SimpleDateFormat sdf, Locale locale) {
 		super(sdf.toPattern(), locale);
 		this.setLenient(false);
 	}
-	
 	
 	public Date parse(String text) throws ParseException {
 		
@@ -48,7 +47,8 @@ public class OpenmrsDateFormat extends SimpleDateFormat {
 		// otherwise, verify that the pattern and the string are the same length
 		else {
 			if (this.toPattern().length() != text.length()) {
-				throw new ParseException("Unparseable date \"" + text + "\" - length of date string doesn't match length of date pattern", 0);
+				throw new ParseException("Unparseable date \"" + text
+				        + "\" - length of date string doesn't match length of date pattern", 0);
 			}
 		}
 		

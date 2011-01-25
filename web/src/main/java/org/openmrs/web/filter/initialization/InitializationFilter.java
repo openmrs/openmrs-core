@@ -61,6 +61,7 @@ import org.openmrs.util.DatabaseUpdater.ChangeSetExecutorCallback;
 import org.openmrs.web.Listener;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.filter.StartupFilter;
+import org.springframework.util.StringUtils;
 import org.springframework.web.context.ContextLoader;
 
 /**
@@ -77,6 +78,8 @@ public class InitializationFilter extends StartupFilter {
 	private static final String LIQUIBASE_CORE_DATA = "liquibase-core-data.xml";
 	
 	private static final String LIQUIBASE_DEMO_DATA = "liquibase-demo-data.xml";
+	
+	private String driverString;
 	
 	/**
 	 * The first page of the wizard that asks for simple or advanced installation.
@@ -306,6 +309,22 @@ public class InitializationFilter extends StartupFilter {
 			wizardModel.databaseConnection = httpRequest.getParameter("database_connection");
 			checkForEmptyValue(wizardModel.databaseConnection, errors, "Database connection string");
 			
+			wizardModel.databaseDriver = httpRequest.getParameter("database_driver");
+			checkForEmptyValue(wizardModel.databaseConnection, errors, "Database connection string");
+			
+			String databaseDriver = httpRequest.getParameter("database_driver");
+			try {
+				driverString = DatabaseUtil.loadDatabaseDriver(wizardModel.databaseConnection, databaseDriver);
+				log.info("using database driver :" + driverString);
+			}
+			catch (ClassNotFoundException e) {
+				errors.add("The given Database driver class was not found.");
+				renderTemplate(page, referenceMap, httpResponse);
+				return;
+			}
+			wizardModel.databaseDriver = driverString;
+			log.info("Asigned " + driverString + " to wizard model");
+			
 			//TODO make each bit of page logic a (unit testable) method
 			
 			// asked the user for their desired database name
@@ -510,8 +529,8 @@ public class InitializationFilter extends StartupFilter {
 	private boolean verifyConnection(String connectionUsername, String connectionPassword, String databaseConnectionFinalUrl) {
 		try {
 			// verify connection
-			// TODO how to get the driver for the other dbs...
-			Class.forName("com.mysql.jdbc.Driver").newInstance();
+			//Set Database Driver using driver String
+			Class.forName(driverString).newInstance();
 			DriverManager.getConnection(databaseConnectionFinalUrl, connectionUsername, connectionPassword);
 			return true;
 			
@@ -914,6 +933,8 @@ public class InitializationFilter extends StartupFilter {
 						runtimeProperties.put("connection.url", finalDatabaseConnectionString);
 						runtimeProperties.put("connection.username", connectionUsername);
 						runtimeProperties.put("connection.password", connectionPassword);
+						if (StringUtils.hasText(driverString))
+							runtimeProperties.put("connection.driver_class", driverString);
 						runtimeProperties.put("module.allow_web_admin", wizardModel.moduleWebAdmin.toString());
 						runtimeProperties.put("auto_update_database", wizardModel.autoUpdateDatabase.toString());
 						
