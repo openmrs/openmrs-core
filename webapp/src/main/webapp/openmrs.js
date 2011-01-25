@@ -421,7 +421,7 @@ function DatePicker(dateFormat, id, opts) {
  * @param id :Element the html element (when id is not present)
  * 			 :String the id of the text box
  * @param callback a function with 2 params (query - the text in the box, and response - use when the data is returned and takes an array as a param)
- * @param opts :Map addtional options (included are: minLength, delay, source)
+ * @param opts :Map addtional options (included are: minLength, delay, source, placeholder)
  */
 function AutoComplete(id, callback, opts) {
 	var jq;
@@ -443,6 +443,13 @@ function AutoComplete(id, callback, opts) {
  	});
  	
  	jq.autocomplete(opts);
+
+    //Add the placeholder text to the Search field
+    if(opts.placeholder){
+        //The value should not contain line feeds or carriage returns.
+        var textShown=opts.placeholder.toString().replace(/(\r\n|\n|\r)/gm,"");
+        $j('#' + id).attr('placeholder', textShown);
+    }
 }
 
 /**

@@ -1293,6 +1293,9 @@ span#loadingMsg{
 div#openmrsSearchTable_wrapper{
 	min-height:0px; height: auto !important;
 }
+input#inputNode{
+    width: 210px;
+}
 /* END- css properties for the search widgets */
 .ui-autocomplete {
 	max-height: 60%;

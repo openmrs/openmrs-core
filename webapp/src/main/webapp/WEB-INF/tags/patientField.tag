@@ -33,7 +33,8 @@
 					${callback}("${formFieldName}", ui.item.object);
 				}
 				</c:if>
-			}
+			},
+            placeholder:'<spring:message code="Patient.searchBox.placeholder" javaScriptEscape="true"/>' 
 		});
 
 		// get the name of the person that they passed in the id for

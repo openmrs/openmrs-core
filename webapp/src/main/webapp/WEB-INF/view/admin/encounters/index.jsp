@@ -21,7 +21,10 @@
 					{fieldName:"location", header:omsgs.encounterLocation},
 					{fieldName:"encounterDateString", header:omsgs.encounterDate}
 				],
-				{searchLabel: '<spring:message code="Encounter.search" javaScriptEscape="true"/>'});
+                {
+                    searchLabel: '<spring:message code="Encounter.search" javaScriptEscape="true"/>',
+                    searchPlaceholder:'<spring:message code="Encounter.search.placeholder" javaScriptEscape="true"/>'
+                });
 	});
 	
 	function doSelectionHandler(index, data) {
