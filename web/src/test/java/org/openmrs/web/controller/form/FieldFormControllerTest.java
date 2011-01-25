@@ -82,8 +82,29 @@ public class FieldFormControllerTest extends BaseWebContextSensitiveTest {
 		request.setParameter("fieldTypeId", "1");
 		request.setParameter("name", "Some concept");
 		request.setParameter("conceptId", "3");
+		request.setParameter("action", "save");
 		
 		controller.handleRequest(request, response);
 	}
 	
+	public void onSubmit_shouldPurgeField() throws Exception {
+		final String FIELD_ID = "1";
+		
+		HttpServletResponse response = new MockHttpServletResponse();
+		FieldFormController controller = (FieldFormController) applicationContext.getBean("fieldForm");
+		
+		MockHttpServletRequest request = new MockHttpServletRequest("POST", "");
+		response = new MockHttpServletResponse();
+		request.setParameter("fieldId", FIELD_ID);
+		request.setParameter("name", "Some concept");
+		request.setParameter("description", "This is a test field");
+		request.setParameter("fieldTypeId", "1");
+		request.setParameter("name", "Some concept");
+		request.setParameter("conceptId", "3");
+		request.setParameter("action", "Delete");
+		
+		controller.handleRequest(request, response);
+		
+		Assert.assertNull(Context.getFormService().getField(new Integer(FIELD_ID)));
+	}
 }
