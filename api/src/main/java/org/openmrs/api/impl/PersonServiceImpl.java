@@ -271,6 +271,15 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		dao.deletePersonAttributeType(type);
 	}
 	
+	public void unretirePersonAttributeType(PersonAttributeType type) throws APIException {
+		type.setRetired(false);
+		type.setDateRetired(null);
+		type.setRetiredBy(null);
+		type.setRetireReason(null);
+		dao.savePersonAttributeType(type);
+		
+	}
+	
 	/**
 	 * @deprecated use {@link #getAllPersonAttributeTypes()}
 	 */

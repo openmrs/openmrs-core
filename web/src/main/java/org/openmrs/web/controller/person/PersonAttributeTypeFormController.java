@@ -122,6 +122,18 @@ public class PersonAttributeTypeFormController extends SimpleFormController {
 					view = "personAttributeType.form?personAttributeTypeId=" + attrType.getPersonAttributeTypeId();
 				}
 			}
+
+			else if (request.getParameter("unretire") != null) {
+				try {
+					ps.unretirePersonAttributeType(attrType);
+					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "PersonAttributeType.unretiredSuccessfully");
+					view = getSuccessView();
+				}
+				catch (APIException e) {
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "error.general: " + e.getLocalizedMessage());
+					view = "personAttributeType.form?personAttributeTypeId=" + attrType.getPersonAttributeTypeId();
+				}
+			}
 			
 		}
 		

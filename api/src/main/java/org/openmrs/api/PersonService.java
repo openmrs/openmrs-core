@@ -215,6 +215,17 @@ public interface PersonService {
 	public void purgePersonAttributeType(PersonAttributeType type) throws APIException;
 	
 	/**
+	 * Unretires a PersonAttribute type from the database (can be undone)
+	 * 
+	 * @param type type to be restored from the database
+	 * @throws APIException
+	 * @should restore person attribute type from database
+	 */
+	
+	@Authorized( { PrivilegeConstants.MANAGE_PERSON_ATTRIBUTE_TYPES })
+	public void unretirePersonAttributeType(PersonAttributeType type) throws APIException;
+	
+	/**
 	 * Effectively removes this person from the system. UserService.voidUser(person) and
 	 * PatientService.voidPatient(person) are also called
 	 * 
