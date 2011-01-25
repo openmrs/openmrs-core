@@ -15,6 +15,9 @@
                     <td colspan="2" >Database Connection: &nbsp;<input type="text" name="database_connection" size="45" value="${databaseConnection}" /> <span style="font-size:12px;">(Advanced use only. @DBNAME@ will automatically be replaced by this wizard with your chosen database name)</span></td>
 			     		</tr>
 			     		<tr>
+                    <td colspan="2" >Database Driver: &nbsp;<input type="text" name="database_driver" size="45" value="${databaseDriver}" /> <span style="font-size:12px;">( Optional* Specify your database driver name)</span></td>
+			     		</tr>
+			     		<tr>
                     <td colspan="2" class="question">Do you currently have an OpenMRS database installed that you would like to connect to?</td>
 			     		</tr>
                 <tr>

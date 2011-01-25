@@ -94,6 +94,11 @@ public class InitializationWizardModel {
 	public String databaseConnection = "jdbc:mysql://localhost:3306/@DBNAME@?autoReconnect=true&sessionVariables=storage_engine=InnoDB&useUnicode=true&characterEncoding=UTF-8";
 	
 	/**
+	 * Optional Database Driver string filled in on databasesetup.vm
+	 */
+	public String databaseDriver = "";
+	
+	/**
 	 * MySQL root account password used for simple installation. Filled in simplesetup.vm.
 	 */
 	public String databaseRootPassword = "";

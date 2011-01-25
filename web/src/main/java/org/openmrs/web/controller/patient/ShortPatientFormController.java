@@ -86,7 +86,8 @@ public class ShortPatientFormController {
 			if (patientId != null) {
 				try {
 					patient = Context.getPatientService().getPatient(patientId);
-				} catch (ClassCastException ex) {
+				}
+				catch (ClassCastException ex) {
 					// we're promoting an existing Person to a full Patient
 					// this will be handled in the next lines
 				}

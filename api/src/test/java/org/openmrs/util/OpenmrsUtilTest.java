@@ -555,10 +555,10 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "openmrsDateFormat should parse valid date", method = "getDateFormat(Locale)")
 	public void openmrsDateFormat_shouldParseValidDate() throws Exception {
-		SimpleDateFormat sdf = OpenmrsUtil.getDateFormat(new Locale("en","GB"));
+		SimpleDateFormat sdf = OpenmrsUtil.getDateFormat(new Locale("en", "GB"));
 		sdf.parse("20/12/2001");
 		
-		sdf = OpenmrsUtil.getDateFormat(new Locale("en","US"));
+		sdf = OpenmrsUtil.getDateFormat(new Locale("en", "US"));
 		sdf.parse("12/20/2001");
 	}
 	
@@ -567,36 +567,32 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	public void openmrsDateFormat_shouldNotAllowDatesWithInvalidDaysOrMonths() throws Exception {
 		
 		try {
-			SimpleDateFormat sdf = OpenmrsUtil.getDateFormat(new Locale("en","GB"));
+			SimpleDateFormat sdf = OpenmrsUtil.getDateFormat(new Locale("en", "GB"));
 			sdf.parse("1/13/2001");
 			Assert.fail("Date with invalid month should throw exception.");
 		}
-		catch (ParseException e) {
-		}
+		catch (ParseException e) {}
 		
 		try {
-			SimpleDateFormat sdf = OpenmrsUtil.getDateFormat(new Locale("en","GB"));
+			SimpleDateFormat sdf = OpenmrsUtil.getDateFormat(new Locale("en", "GB"));
 			sdf.parse("32/1/2001");
 			Assert.fail("Date with invalid day should throw exception.");
 		}
-		catch (ParseException e) {
-		}
+		catch (ParseException e) {}
 		
 		try {
-			SimpleDateFormat sdf = OpenmrsUtil.getDateFormat(new Locale("en","US"));
+			SimpleDateFormat sdf = OpenmrsUtil.getDateFormat(new Locale("en", "US"));
 			sdf.parse("13/1/2001");
 			Assert.fail("Date with invalid month should throw exception.");
 		}
-		catch (ParseException e) {	
-		}
+		catch (ParseException e) {}
 		
 		try {
-			SimpleDateFormat sdf = OpenmrsUtil.getDateFormat(new Locale("en","US"));
+			SimpleDateFormat sdf = OpenmrsUtil.getDateFormat(new Locale("en", "US"));
 			sdf.parse("1/32/2001");
 			Assert.fail("Date with invalid day should throw exception.");
 		}
-		catch (ParseException e) {
-		}
+		catch (ParseException e) {}
 	}
 	
 	@Test
@@ -617,8 +613,7 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 			sdf.parse("01/01/01");
 			Assert.fail("Date with two-digit year should throw exception.");
 		}
-		catch (ParseException e) {
-		}
+		catch (ParseException e) {}
 		
 	}
 	
