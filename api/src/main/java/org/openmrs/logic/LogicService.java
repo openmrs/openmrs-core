@@ -172,6 +172,7 @@ public interface LogicService {
 	 * @return patient-specific result from given rule
 	 * @throws LogicException
 	 * @see {@link #parse(String)}
+	 * @since 1.6.3, 1.7.2, and 1.8
 	 */
 	public Result eval(Integer patientId, String expression) throws LogicException;
 	
@@ -184,6 +185,7 @@ public interface LogicService {
 	 * @return patient-specific result from given rule
 	 * @throws LogicException
 	 * @see {@link #parse(String)}
+	 * @since 1.6.3, 1.7.2, and 1.8
 	 */
 	public Result eval(Integer patientId, String expression, Map<String, Object> parameters) throws LogicException;
 	
@@ -194,6 +196,7 @@ public interface LogicService {
 	 * @param criteria question to be answered (along with the token) for the given patient
 	 * @return result of query
 	 * @throws LogicException
+	 * @since 1.6.3, 1.7.2, and 1.8
 	 */
 	public Result eval(Integer patientId, LogicCriteria criteria) throws LogicException;
 	
@@ -206,6 +209,7 @@ public interface LogicService {
 	 * @param parameters <code>Map</code> of arguments to be passed to the rule
 	 * @return <code>Result</code> of query
 	 * @throws LogicException
+	 * @since 1.6.3, 1.7.2, and 1.8
 	 */
 	public Result eval(Integer patientId, LogicCriteria criteria, Map<String, Object> parameters) throws LogicException;
 	
@@ -220,6 +224,7 @@ public interface LogicService {
 	 * @return results of the rule evaluations
 	 * @throws LogicException
 	 * @see {@link #parse(String)}
+	 * @since 1.6.3, 1.7.2, and 1.8
 	 */
 	public Map<String, Result> eval(Integer patientId, Map<String, Object> parameters, String... expressions)
 	        throws LogicException;
@@ -234,6 +239,7 @@ public interface LogicService {
 	 * @param criteria what criteria to run
 	 * @return results of the rule evaluations
 	 * @throws LogicException
+	 * @since 1.6.3, 1.7.2, and 1.8
 	 */
 	public Map<LogicCriteria, Result> eval(Integer patientId, Map<String, Object> parameters, LogicCriteria... criteria)
 	        throws LogicException;
