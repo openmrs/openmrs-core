@@ -275,6 +275,8 @@ function gotoUser(select, userId) {
   * @return a javascript date object for the given string in the given pattern 
   */
  function parseSimpleDate(birthdate, datePattern) {
+	if (birthdate == null || birthdate.length != 10)
+		return null;
 	var datePatternStart = datePattern.substr(0,1).toLowerCase(); 
 	var year, month, day; 
 	
