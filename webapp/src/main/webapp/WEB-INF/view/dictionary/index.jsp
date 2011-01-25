@@ -17,7 +17,8 @@
 	$j(document).ready(function() {
 		new OpenmrsSearch("findConcept", true, doConceptSearch, doSelectionHandler, 
 				[{fieldName:"name", header:" "}, {fieldName:"preferredName", header:" "}],
-				{searchLabel: '<spring:message code="Concept.search" javaScriptEscape="true"/>:', 
+				{searchLabel: '<spring:message code="Concept.search" javaScriptEscape="true"/>:',
+                    searchPlaceholder:'<spring:message code="Concept.search.placeholder" javaScriptEscape="true"/>',
 					includeVoidedLabel: '<spring:message code="SearchResults.includeRetired" javaScriptEscape="true"/>', 
 					columnRenderers: [nameColumnRenderer, null], 
 					columnVisibility: [true, false],

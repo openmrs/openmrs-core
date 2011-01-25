@@ -34,7 +34,8 @@
 					${callback}(ui.item.object.encounterId);
 				}
 				</c:if>
-			}
+			},
+            placeholder:'<spring:message code="Encounter.search.placeholder" javaScriptEscape="true"/>'
 		});
 
 		// get the name of the person that they passed in the id for

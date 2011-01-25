@@ -10,13 +10,15 @@
  * new AutoComplete("person_name", new CreateCallback().personCallback(), {
  *			select: function(event, ui) {
  *				$j('#person_name_id').val(ui.item.object.personId);
- *			}
+ *			},
+ *          placeholder:'<spring:message code="Person.search.placeholder" javaScriptEscape="true"/>'
  *		});
  * 
  * General options:
  * onerror: a function to deal with errors</dd>
  * onsuccess: a function that gets called with the results if there are some and no error occurred
  * maxresults: limit the results to this. -1 means show all (defaults to 50)
+ * placeholder: The text to appear as placeholder of the input text box
  * 
  * See each *callback method below for more options that can be used
  * 

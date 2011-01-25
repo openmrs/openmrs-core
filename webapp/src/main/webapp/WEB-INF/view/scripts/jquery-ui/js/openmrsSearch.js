@@ -4,6 +4,7 @@
  * opts is a map that can be any option of the openmrsSearch widget:
  *   minLength - The minimum required number of characters a user has to enter for a search to be triggered
  *   searchLabel - The text label to appear on the left of the input text box
+ *   searchPlaceholder - The text to appear as placeholder of the input text box
  *   includeVoidedLabel - The label for the includeVoided/includeRetired checkbox
  *   showIncludeVoided - If the includeVoided/includeRetired checkbox should be displayed
  *   searchHandler (Required)
@@ -49,7 +50,9 @@
 				{fieldName:"fiels5", header:"Header5"},
 				{fieldName:"field6", header:"Header6"}
 			],
-			{searchLabel: '<spring:message code="General.search"/>', displayLength: 5, 
+			{searchLabel: '<spring:message code="General.search"/>',
+                searchPlaceholder:'<spring:message code="general.search" javaScriptEscape="true"/>',
+                displayLength: 5,
 				minLength: 3, columnWidths: ["15%","15%","15%","15%","15%", "25%"],
 				columnRenderers: [null, null, null, null, null, null], 
 				columnVisibility: [true, true, true, true, true, true]}
@@ -75,7 +78,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		opts.searchHandler = searchHandler;
 	if(!opts.fieldsAndHeaders)
 		opts.fieldsAndHeaders = fieldsAndHeaders;
-	
+
 	//Create an array of arrays from the array of objects if we have any initial data
 	if(opts.initialData){
 		opts.initialRows = new Array();//array to hold the arrays of initial row data
@@ -93,6 +96,13 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 	}
 	
 	jQuery(el).openmrsSearch(opts);
+
+     //Add the placeholder text to the Search field
+    if(opts.searchPlaceholder){
+        //The value should not contain line feeds or carriage returns.
+        var textShown=opts.searchPlaceholder.toString().replace(/(\r\n|\n|\r)/gm,"");
+        $j('#inputNode').attr('placeholder', textShown);
+    }
 }
 
 /**
@@ -130,7 +140,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 	</pre>
  */
 (function($j) {
-	var openmrsSearch_div = '<span><span style="white-space: nowrap"><span><span id="searchLabelNode"></span><input type="text" value="" id="inputNode" autocomplete="off"/><input type="checkbox" style="display: none" id="includeRetired"/><img id="spinner" src=""/><input type="checkbox" style="display: none" id="includeVoided"/><input type="checkbox" style="display: none" id="verboseListing"/><span id="loadingMsg"></span><span id="minCharError" class="error"></span><span id="pageInfo"></span><br /><span id="searchWidgetNotification"></span></span></span><span class="openmrsSearchDiv"><table id="openmrsSearchTable" cellpadding="2" cellspacing="0" style="width: 100%"><thead id="searchTableHeader"><tr></tr></thead><tbody></tbody></table></span></span>';
+	var openmrsSearch_div = '<span><span style="white-space: nowrap"><span><span id="searchLabelNode"></span><input type="text" value="" id="inputNode" autocomplete="off" placeholder=" "/><input type="checkbox" style="display:none" id="includeRetired"/><img id="spinner" src=""/><input type="checkbox" style="display: none" id="includeVoided"/><input type="checkbox" style="display: none" id="verboseListing"/><span id="loadingMsg"></span><span id="minCharError" class="error"></span><span id="pageInfo"></span><br /><span id="searchWidgetNotification"></span></span></span><span class="openmrsSearchDiv"><table id="openmrsSearchTable" cellpadding="2" cellspacing="0" style="width: 100%"><thead id="searchTableHeader"><tr></tr></thead><tbody></tbody></table></span></span>';
 	var BATCH_SIZE = gp.maxSearchResults;
 	var SEARCH_DELAY = gp.searchDelay;//time interval in ms between keyup and triggering the search off
 	var ERROR_MSG_DELAY = 600;//time interval in ms between keyup and  showing the minimum character error

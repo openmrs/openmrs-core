@@ -16,7 +16,7 @@
 			<openmrs:htmlInclude file="/dwr/interface/DWRPatientService.js" ></openmrs:htmlInclude>
 			<openmrs:htmlInclude file="/dwr/engine.js" ></openmrs:htmlInclude>
 			<openmrs:htmlInclude file="/dwr/util.js" ></openmrs:htmlInclude>
-			
+
 			<div id="findPatient">
 				<b class="boxHeader"><spring:message code="Patient.find"/></b>
 				<div class="box">
@@ -44,20 +44,20 @@
 			</div>
 
 			<script>
-			
+
 				var patient;
 				var autoJump = true;
 				<request:existsParameter name="autoJump">
 					autoJump = <request:parameter name="autoJump"/>;
 				</request:existsParameter>
-				
+
 				function showSearch() {
 					findPatient.style.display = "";
 					patientListing.style.display = "none";
 					savedText = "";
 					searchBox.focus();
 				}
-				
+
 				function onSelect(arr) {
 					if (arr[0].patientId != null) {
 						document.location = "${model.postURL}?patientId=" + arr[0].patientId + "&phrase=" + savedText;
@@ -66,7 +66,7 @@
 						document.location = arr[0].href;
 					}
 				}
-				
+
 				function findObjects(text) {
 					if (text.length > 2) {
 						savedText = text;
@@ -80,7 +80,7 @@
 					patientListing.style.display = "";
 					return false;
 				}
-				
+
 				function allowAutoJump() {
 					if (autoJump == false) {
 						autoJump = true;
@@ -89,25 +89,25 @@
 					//	only allow the first item to be automatically selected if:
 					//		the entered text is a string or the entered text is a valid identifier
 					//return (savedText.match(/\d/) == false || isValidCheckDigit(savedText));
-					
+
 					//don't autojump anymore.  keeping the above functionality
 					//would require adding a field to PatientListItem, and this inelegant solution
 					//doesn't seem worth the minimal functionality conferred above.
 					return false;
 				}
-				
+
 			</script>
-			
+
 			<script>
-				
+
 				var patientListing= document.getElementById("patientListing");
 				var findPatient   = document.getElementById("findPatient");
 				var searchBox		= document.getElementById("searchBox");
 				var findPatientForm = document.getElementById("findPatientForm");
-				
+
 				function init() {
 					dwr.util.useLoadingMessage();
-				
+
 					<request:existsParameter name="patientId">
 						<!-- User has 'patientId' in the request params -- selecting that patient -->
 						var pats = new Array();
@@ -115,27 +115,27 @@
 						pats[0].patientId = '<request:parameter name="patientId"/>';
 						onSelect(pats);
 					</request:existsParameter>
-					
+
 					<request:existsParameter name="phrase">
 						<!-- User has 'phrase' in the request params -- searching on that -->
 						searchBox.value = '<request:parameter name="phrase"/>';
 					</request:existsParameter>
-				
+
 					showSearch();
-			
+
 					// creates back button functionality
 					if (searchBox.value != "")
 						search(searchBox, null, false, 0);
-						
+
 					changeClassProperty("description", "display", "none");
 				}
-					
+
 				window.onload=init;
 			</script>
 
 		</c:when>
 		<c:when test="${model.size == 'full'}">
-			
+
 			<openmrs:require privilege="View Patients" otherwise="/login.htm" redirect="/index.htm" />
 			<style>
 				#openmrsSearchTable_wrapper{
@@ -148,11 +148,11 @@
 			<openmrs:htmlInclude file="/scripts/jquery/dataTables/css/dataTables_jui.css"/>
 			<openmrs:htmlInclude file="/scripts/jquery/dataTables/js/jquery.dataTables.min.js"/>
 			<openmrs:htmlInclude file="/scripts/jquery-ui/js/openmrsSearch.js" />
-			
+
 			<script type="text/javascript">
 				var lastSearch;
 				$j(document).ready(function() {
-					new OpenmrsSearch("findPatients", false, doPatientSearch, doSelectionHandler, 
+					new OpenmrsSearch("findPatients", false, doPatientSearch, doSelectionHandler,
 						[	{fieldName:"identifier", header:omsgs.identifier},
 							{fieldName:"givenName", header:omsgs.givenName},
 							{fieldName:"middleName", header:omsgs.middleName},
@@ -161,35 +161,38 @@
 							{fieldName:"gender", header:omsgs.gender},
 							{fieldName:"birthdateString", header:omsgs.birthdate},
 						],
-						{searchLabel: '<spring:message code="Patient.searchBox" javaScriptEscape="true"/>'});
-					
+						{
+                            searchLabel: '<spring:message code="Patient.searchBox" javaScriptEscape="true"/>',
+                            searchPlaceholder:'<spring:message code="Patient.searchBox.placeholder" javaScriptEscape="true"/>'
+                        });
+
 					//set the focus to the first input box on the page(in this case the text box for the search widget)
 					var inputs = document.getElementsByTagName("input");
 				    if(inputs[0])
 				    	inputs[0].focus();
-				    		
-				    
+
+
 				});
-			
+
 				function doSelectionHandler(index, data) {
 					document.location = "${model.postURL}?patientId=" + data.patientId + "&phrase=" + lastSearch;
 				}
-			
+
 				//searchHandler for the Search widget
 				function doPatientSearch(text, resultHandler, getMatchCount, opts) {
 					lastSearch = text;
 					DWRPatientService.findCountAndPatients(text, opts.start, opts.length, getMatchCount, resultHandler);
 				}
-				
+
 			</script>
-			
+
 			<div>
 				<b class="boxHeader"><spring:message code="Patient.find"/></b>
 				<div class="box">
 					<div class="searchWidgetContainer" id="findPatients"></div>
 				</div>
 			</div>
-			
+
 			<c:if test="${empty model.hideAddNewPatient}">
 				<openmrs:hasPrivilege privilege="Add Patients">
 					<br/> &nbsp; <spring:message code="general.or"/><br/><br/>

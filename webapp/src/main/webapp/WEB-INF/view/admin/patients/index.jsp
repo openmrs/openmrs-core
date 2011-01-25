@@ -21,7 +21,10 @@
 					{fieldName:"gender", header:omsgs.gender},
 					{fieldName:"birthdateString", header:omsgs.birthdate},
 				],
-				{searchLabel: '<spring:message code="Patient.searchBox" javaScriptEscape="true"/>'});
+				{
+                    searchLabel: '<spring:message code="Patient.searchBox" javaScriptEscape="true"/>',
+                    searchPlaceholder:'<spring:message code="Patient.searchBox.placeholder" javaScriptEscape="true"/>'
+                });
 	});
 	
 	function doSelectionHandler(index, data) {
