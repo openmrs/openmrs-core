@@ -1,3 +1,16 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs.util;
 
 import java.text.ParseException;
@@ -23,19 +36,19 @@ public class OpenmrsDateFormat extends SimpleDateFormat {
 	
 	public Date parse(String text) throws ParseException {
 		
-		// first test to see if the pattern ends in "/yyyy"
-		Matcher patternMatch = Pattern.compile("\\/yyyy$").matcher(this.toPattern());
+		// first test to see if the pattern ends in "{non-alphanumeric-character}yyyy"
+		Matcher patternMatch = Pattern.compile("\\Wyyyy$").matcher(this.toPattern());
 		if (patternMatch.find()) {
-			// if it does, make sure that the string to parse ends in "/{digit}{digit}{digit}{digit}"
-			Matcher dateMatch = Pattern.compile("\\/\\d{4}$").matcher(text);
+			// if it does, make sure that the string to parse ends in "{non-alphanumeric-character}{digit}{digit}{digit}{digit}"
+			Matcher dateMatch = Pattern.compile("\\W\\d{4}$").matcher(text);
 			if (!dateMatch.find()) {
-				throw new ParseException("Unparseable date \"" + text + "\"", 0);
+				throw new ParseException("Unparseable date \"" + text + "\" - year must have 4 digits", 0);
 			}
 		}
 		// otherwise, verify that the pattern and the string are the same length
 		else {
 			if (this.toPattern().length() != text.length()) {
-				throw new ParseException("Unparseable date \"" + text + "\"", 0);
+				throw new ParseException("Unparseable date \"" + text + "\" - length of date string doesn't match length of date pattern", 0);
 			}
 		}
 		
