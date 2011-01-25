@@ -58,7 +58,11 @@
 
 	<br />
 	<input type="hidden" name="phrase" value='<request:parameter name="phrase" />' />
-	<input type="submit" value='<spring:message code="general.save"/>'>
+	
+	<input type="submit" value='<spring:message code="general.save"/>' name="action">
+	<c:if test="${field.fieldId != null && empty param.duplicate}">
+		&nbsp; &nbsp; <input type="submit" onclick="return confirm('<spring:message code="Field.deleteWarning"/>')" value='<spring:message code="general.delete"/>' name="action">
+	</c:if>
 </form>
 
 <%@ include file="/WEB-INF/template/footer.jsp"%>

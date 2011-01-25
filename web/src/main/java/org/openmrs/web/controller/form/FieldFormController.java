@@ -30,6 +30,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -42,11 +43,13 @@ public class FieldFormController extends SimpleFormController {
 	/** Logger for this class and subclasses */
 	protected final Log log = LogFactory.getLog(getClass());
 	
+	@Override
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
 		binder.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, true));
 	}
 	
+	@Override
 	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse reponse, Object obj,
 	        BindException errors) throws Exception {
 		
@@ -71,15 +74,28 @@ public class FieldFormController extends SimpleFormController {
 		HttpSession httpSession = request.getSession();
 		
 		String view = getFormView();
+		String action = request.getParameter("action");
 		
 		if (Context.isAuthenticated()) {
 			Field field = (Field) obj;
 			field = setObjects(field, request);
-			Context.getFormService().saveField(field);
-			view = getSuccessView();
-			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Field.saved");
-			view = view + "?phrase=" + request.getParameter("phrase");
+			
+			if (action.equals(Context.getMessageSourceService().getMessage("general.delete"))) {
+				try {
+					Context.getFormService().purgeField(field);
+				} catch (DataIntegrityViolationException e) {
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "error.object.inuse.cannot.purge");
+					return new ModelAndView(new RedirectView("field.form?fieldId=" + field.getFieldId()));
+				}
+				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Field.Deleted");
+			} else {
+				Context.getFormService().saveField(field);
+				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Field.saved");
+			}
 		}
+			
+		view = getSuccessView();
+		view = view + "?phrase=" + request.getParameter("phrase");
 		
 		return new ModelAndView(new RedirectView(view));
 	}
@@ -90,7 +106,8 @@ public class FieldFormController extends SimpleFormController {
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
-	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
+	@Override
+    protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 		
 		Field field = null;
 		
@@ -107,7 +124,8 @@ public class FieldFormController extends SimpleFormController {
 		return field;
 	}
 	
-	protected Map<String, Object> referenceData(HttpServletRequest request, Object obj, Errors errors) throws Exception {
+	@Override
+    protected Map<String, Object> referenceData(HttpServletRequest request, Object obj, Errors errors) throws Exception {
 		
 		Field field = (Field) obj;
 		Locale locale = Context.getLocale();
