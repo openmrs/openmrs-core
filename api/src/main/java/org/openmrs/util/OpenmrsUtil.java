@@ -1282,7 +1282,8 @@ public class OpenmrsUtil {
 		if (dateFormatCache.containsKey(locale))
 			return (SimpleDateFormat) dateFormatCache.get(locale).clone();
 		
-		SimpleDateFormat sdf = (SimpleDateFormat) DateFormat.getDateInstance(DateFormat.SHORT, locale);
+		// note that we are using the custom OpenmrsDateFormat class here which prevents erroneous parsing of 2-digit years
+		SimpleDateFormat sdf = new OpenmrsDateFormat((SimpleDateFormat) DateFormat.getDateInstance(DateFormat.SHORT, locale), locale);
 		String pattern = sdf.toPattern();
 		
 		if (!pattern.contains("yyyy")) {
