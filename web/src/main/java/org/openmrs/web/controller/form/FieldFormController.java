@@ -80,7 +80,7 @@ public class FieldFormController extends SimpleFormController {
 			Field field = (Field) obj;
 			field = setObjects(field, request);
 			
-			if (action.equals(Context.getMessageSourceService().getMessage("general.delete"))) {
+			if (action != null && action.equals(Context.getMessageSourceService().getMessage("general.delete"))) {
 				try {
 					Context.getFormService().purgeField(field);
 				} catch (DataIntegrityViolationException e) {
