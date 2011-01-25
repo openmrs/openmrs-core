@@ -20,6 +20,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.net.URL;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -549,6 +550,76 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 		sdf.applyPattern("yyyymmdd");
 		Assert.assertTrue("cached dateFormatCache pattern is modifiable", !OpenmrsUtil.getDateFormat(locale).toPattern()
 		        .equals(sdf.toPattern()));
+	}
+	
+	@Test
+	@Verifies(value = "openmrsDateFormat should parse valid date", method = "getDateFormat(Locale)")
+	public void openmrsDateFormat_shouldParseValidDate() throws Exception {
+		SimpleDateFormat sdf = OpenmrsUtil.getDateFormat(new Locale("en","GB"));
+		sdf.parse("20/12/2001");
+		
+		sdf = OpenmrsUtil.getDateFormat(new Locale("en","US"));
+		sdf.parse("12/20/2001");
+	}
+	
+	@Test
+	@Verifies(value = "openmrsDateFormat should not allow dates with invalid days or months", method = "getDateFormat(Locale)")
+	public void openmrsDateFormat_shouldNotAllowDatesWithInvalidDaysOrMonths() throws Exception {
+		
+		try {
+			SimpleDateFormat sdf = OpenmrsUtil.getDateFormat(new Locale("en","GB"));
+			sdf.parse("1/13/2001");
+			Assert.fail("Date with invalid month should throw exception.");
+		}
+		catch (ParseException e) {
+		}
+		
+		try {
+			SimpleDateFormat sdf = OpenmrsUtil.getDateFormat(new Locale("en","GB"));
+			sdf.parse("32/1/2001");
+			Assert.fail("Date with invalid day should throw exception.");
+		}
+		catch (ParseException e) {
+		}
+		
+		try {
+			SimpleDateFormat sdf = OpenmrsUtil.getDateFormat(new Locale("en","US"));
+			sdf.parse("13/1/2001");
+			Assert.fail("Date with invalid month should throw exception.");
+		}
+		catch (ParseException e) {	
+		}
+		
+		try {
+			SimpleDateFormat sdf = OpenmrsUtil.getDateFormat(new Locale("en","US"));
+			sdf.parse("1/32/2001");
+			Assert.fail("Date with invalid day should throw exception.");
+		}
+		catch (ParseException e) {
+		}
+	}
+	
+	@Test
+	@Verifies(value = "openmrsDateFormat should allow single digit dates and months", method = "getDateFormat(Locale)")
+	public void openmrsDateFormat_shouldAllowSingleDigitDatesAndMonths() throws Exception {
+		
+		SimpleDateFormat sdf = OpenmrsUtil.getDateFormat(new Locale("en"));
+		sdf.parse("1/1/2001");
+		
+	}
+	
+	@Test
+	@Verifies(value = "openmrsDateFormat should not allow two-digit years", method = "getDateFormat(Locale)")
+	public void openmrsDateFormat_shouldNotAllowTwoDigitYears() throws Exception {
+		
+		try {
+			SimpleDateFormat sdf = OpenmrsUtil.getDateFormat(new Locale("en"));
+			sdf.parse("01/01/01");
+			Assert.fail("Date with two-digit year should throw exception.");
+		}
+		catch (ParseException e) {
+		}
+		
 	}
 	
 	/**
