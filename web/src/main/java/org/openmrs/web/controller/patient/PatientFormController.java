@@ -39,7 +39,6 @@ import org.openmrs.PatientIdentifierType;
 import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonName;
-import org.openmrs.api.APIException;
 import org.openmrs.api.DuplicateIdentifierException;
 import org.openmrs.api.IdentifierNotUniqueException;
 import org.openmrs.api.InsufficientIdentifiersException;
@@ -51,14 +50,15 @@ import org.openmrs.api.context.Context;
 import org.openmrs.propertyeditor.ConceptEditor;
 import org.openmrs.propertyeditor.LocationEditor;
 import org.openmrs.propertyeditor.PatientIdentifierTypeEditor;
-import org.openmrs.validator.PatientValidator;
 import org.openmrs.util.PrivilegeConstants;
+import org.openmrs.validator.PatientValidator;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.controller.person.PersonFormController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.context.support.MessageSourceAccessor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
@@ -416,8 +416,8 @@ public class PatientFormController extends PersonFormController {
 					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Patient.deleted");
 					return new ModelAndView(new RedirectView("index.htm"));
 				}
-				catch (APIException e) {
-					log.error(e);
+				catch (DataIntegrityViolationException e) {
+					log.error("Unable to delete patient because of database FK errors: " + patient, e);
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Patient.cannot.delete");
 					return new ModelAndView(new RedirectView(getSuccessView() + "?patientId="
 					        + patient.getPatientId().toString()));
