@@ -457,10 +457,16 @@ public class WebModuleUtil {
 			}
 			
 			// don't allow modules to overwrite servlets of other modules.
-			if (moduleServlets.containsKey(name)) {
+			HttpServlet otherServletUsingSameName = moduleServlets.get(name);
+			if (otherServletUsingSameName != null) {
 				//log.debug("A servlet mapping with name " + name + " already exists. " + mod.getModuleId() + "'s servlet is overwriting it");
-				throw new ModuleException("A servlet mapping with name " + name + " already exists. " + mod.getModuleId()
-				        + "'s servlet is trying to overwrite it");
+				String otherServletName = otherServletUsingSameName.getClass().getPackage() + "."
+				        + otherServletUsingSameName.getClass().getName();
+				throw new ModuleException("A servlet mapping with name " + name + " is already in use and pointing at: "
+				        + otherServletName + " from another installed module and this module is trying"
+				        + " to use that same name.  Either the module attempting to be installed (" + mod.getModuleId()
+				        + ") will not work or the other one will not.  Please consult the developers of these two"
+				        + " modules to sort this out.");
 			}
 			
 			log.debug("Caching the " + name + " servlet.");
