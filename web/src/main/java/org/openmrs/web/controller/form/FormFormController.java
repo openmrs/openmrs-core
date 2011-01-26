@@ -112,7 +112,7 @@ public class FormFormController extends SimpleFormController {
 						log.error("Error while deleting form " + form.getFormId(), e);
 						errors.reject(e.getMessage());
 						httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Form.cannot.delete");
-						throw e;
+						return showForm(request, response, errors);
 						//return new ModelAndView(new RedirectView(getSuccessView()));
 					}
 				} else if (action.equals(msa.getMessage("Form.updateSortOrder"))) {
