@@ -688,7 +688,6 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 			Patient p = patientService.getPatient(999);
 			Assert.assertNotNull(p);
 			Assert.assertTrue(p.isVoided());
-			System.out.println(p.getVoidReason());
 			boolean found = false;
 			for (PatientIdentifier id : p.getIdentifiers()) {
 				if (id.getIdentifier().equals("XYZ") && id.getIdentifierType().getId() == 2) {
