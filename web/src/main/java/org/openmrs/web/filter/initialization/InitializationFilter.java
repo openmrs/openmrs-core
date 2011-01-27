@@ -318,7 +318,9 @@ public class InitializationFilter extends StartupFilter {
 				log.info("using database driver :" + driverString);
 			}
 			catch (ClassNotFoundException e) {
-				errors.add("The given Database driver class was not found.");
+				errors.add("The given database driver class was not found. "
+				        + "Please ensure that the database driver jar file is on the class path "
+				        + "(like in the webapp's lib folder)");
 				renderTemplate(page, referenceMap, httpResponse);
 				return;
 			}
