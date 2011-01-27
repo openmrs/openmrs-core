@@ -48,7 +48,8 @@
 
 			/* prevents users getting false dwr errors msgs when leaving pages */
 			var pageIsExiting = false;
-			$j(window).bind('beforeunload', function () { pageIsExiting = true; } );
+			if (jQuery)
+			    jQuery(window).bind('beforeunload', function () { pageIsExiting = true; } );
 			
 			var handler = function(msg, ex) {
 				if (!pageIsExiting) {
