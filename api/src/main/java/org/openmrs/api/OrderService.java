@@ -116,6 +116,7 @@ public interface OrderService extends OpenmrsService {
 	 * @return the Order that was saved
 	 * @throws APIException
 	 * @should not save order if order doesnt validate
+	 * @should save discontinued reason non coded
 	 */
 	@Authorized( { PrivilegeConstants.EDIT_ORDERS, PrivilegeConstants.ADD_ORDERS })
 	public Order saveOrder(Order order) throws APIException;

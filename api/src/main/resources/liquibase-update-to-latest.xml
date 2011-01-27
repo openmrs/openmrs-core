@@ -4084,5 +4084,17 @@
 			<column name="uuid" value="f5f49cda-e2a7-11df-87ae-18a905e044dc" />
 		</insert>
 	</changeSet>
+	
+	<changeSet id="201118012301" author="lkellett">
+		<preConditions onFail="MARK_RAN">
+			<not><columnExists tableName="orders" columnName="discontinued_reason_non_coded"/></not>
+		</preConditions>
+		<comment>
+			Adding the discontinued_reason_non_coded column to orders.  
+		</comment>
+		<addColumn tableName="orders">
+			<column name="discontinued_reason_non_coded" type="varchar(255)" />
+		</addColumn>
+	</changeSet>
 
 </databaseChangeLog>
