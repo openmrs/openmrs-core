@@ -466,7 +466,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	public Cohort getAllPatients() {
 		
 		Query query = sessionFactory.getCurrentSession().createQuery(
-		    "select distinct patientId from Patient p where p.voided = 0");
+		    "select patientId from Patient p where p.voided = 0");
 		
 		Set<Integer> ids = new HashSet<Integer>();
 		ids.addAll(query.list());
