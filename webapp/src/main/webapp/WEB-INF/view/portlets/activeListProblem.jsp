@@ -42,7 +42,7 @@
 		var problemCallback = new CreateCallback({onerror: showProblemAddError, onsuccess: hideProblemError});
 		var autoProblemConcept = new AutoComplete("problem_concept", problemCallback.conceptCallback(), {
 			select: function(event, ui) {
-				$j('#problem_concept_id').val(ui.item.conceptId);
+				$j('#problem_concept_id').val(ui.item.object.conceptId);
 			}
 		});
 
