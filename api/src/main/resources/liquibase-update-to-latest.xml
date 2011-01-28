@@ -3910,7 +3910,7 @@
 	</changeSet>
 	
 	<changeSet id="20101209-1721" author="wyclif">
-		<preConditions>
+		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="concept_word" columnName="weight"/></not>
 		</preConditions>
 		<comment>Add 'weight' column to concept_word table</comment>
@@ -3920,7 +3920,7 @@
 	</changeSet>
 	
 	<changeSet id="20101209-1722" author="wyclif">
-		<preConditions>
+		<preConditions onFail="MARK_RAN">
 			<not><indexExists indexName="concept_word_weight_index" /></not>
 		</preConditions>
 		<comment>Adding index to concept_word.weight column</comment>
