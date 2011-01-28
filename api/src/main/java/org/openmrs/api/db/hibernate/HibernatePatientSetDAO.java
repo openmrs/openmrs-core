@@ -217,6 +217,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	
 	/**
 	 * Note that the formatting may depend on locale
+	 * 
 	 * @deprecated
 	 */
 	public String exportXml(Integer patientId) throws DAOException {
@@ -464,8 +465,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	@SuppressWarnings("unchecked")
 	public Cohort getAllPatients() {
 		
-		Query query = sessionFactory.getCurrentSession().createQuery(
-		    "select distinct patientId from Patient p where p.voided = 0");
+		Query query = sessionFactory.getCurrentSession().createQuery("select patientId from Patient p where p.voided = 0");
 		
 		Set<Integer> ids = new HashSet<Integer>();
 		ids.addAll(query.list());
@@ -1701,9 +1701,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	
 	/**
 	 * Returns a Map from patientId to a Collection of drugIds for drugs active for the patients on
-	 * that date
-	 * If patientIds is null then do this for all patients
-	 * Does not return anything for voided patients
+	 * that date If patientIds is null then do this for all patients Does not return anything for
+	 * voided patients
 	 * 
 	 * @throws DAOException
 	 */
@@ -2126,6 +2125,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	
 	/**
 	 * TODO get rid of the potentially-expensive call to getAllPatients()
+	 * 
 	 * @see org.openmrs.api.db.PatientSetDAO#getPatientsByRelationship(org.openmrs.RelationshipType,
 	 *      boolean, boolean, org.openmrs.Person)
 	 */
