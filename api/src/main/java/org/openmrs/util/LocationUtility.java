@@ -49,6 +49,16 @@ public class LocationUtility implements GlobalPropertyListener {
 	}
 	
 	/**
+	 * Convenience method that returns the default location of the authenticated user. It should
+	 * return the user's specified location from the user properties if any is set.
+	 * 
+	 * @should return the user specified location if any is set
+	 */
+	public static Location getUserDefaultLocation() {
+		return Context.getUserContext().getLocation();
+	}
+	
+	/**
 	 * @see org.openmrs.api.GlobalPropertyListener#globalPropertyChanged(org.openmrs.GlobalProperty)
 	 */
 	@Override

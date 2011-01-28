@@ -465,8 +465,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 	@SuppressWarnings("unchecked")
 	public Cohort getAllPatients() {
 		
-		Query query = sessionFactory.getCurrentSession().createQuery(
-		    "select patientId from Patient p where p.voided = 0");
+		Query query = sessionFactory.getCurrentSession().createQuery("select patientId from Patient p where p.voided = 0");
 		
 		Set<Integer> ids = new HashSet<Integer>();
 		ids.addAll(query.list());

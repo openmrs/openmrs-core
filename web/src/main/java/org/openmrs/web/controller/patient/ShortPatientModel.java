@@ -28,6 +28,7 @@ import org.openmrs.PersonName;
 import org.openmrs.Relationship;
 import org.openmrs.api.PersonService.ATTR_VIEW_TYPE;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.LocationUtility;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
 import org.springframework.util.CollectionUtils;
 
@@ -65,7 +66,9 @@ public class ShortPatientModel {
 			this.personAddress = patient.getPersonAddress();
 			List<PatientIdentifier> activeIdentifiers = patient.getActiveIdentifiers();
 			if (activeIdentifiers.isEmpty())
-				activeIdentifiers.add(new PatientIdentifier(null, null, Context.getLocation()));
+				activeIdentifiers.add(new PatientIdentifier(null, null,
+				        (LocationUtility.getUserDefaultLocation() != null) ? LocationUtility.getUserDefaultLocation()
+				                : LocationUtility.getDefaultLocation()));
 			
 			identifiers = ListUtils.lazyList(new ArrayList<PatientIdentifier>(activeIdentifiers), FactoryUtils
 			        .instantiateFactory(PatientIdentifier.class));

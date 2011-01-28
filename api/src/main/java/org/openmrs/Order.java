@@ -339,20 +339,19 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	/**
-     * @return the discontinuedReasonNonCoded
-     */
-    public String getDiscontinuedReasonNonCoded() {
-    	return discontinuedReasonNonCoded;
-    }
-
+	 * @return the discontinuedReasonNonCoded
+	 */
+	public String getDiscontinuedReasonNonCoded() {
+		return discontinuedReasonNonCoded;
+	}
 	
-    /**
-     * @param discontinuedReasonNonCoded the discontinuedReasonNonCoded to set
-     */
-    public void setDiscontinuedReasonNonCoded(String discontinuedReasonNonCoded) {
-    	this.discontinuedReasonNonCoded = discontinuedReasonNonCoded;
-    }
-    
+	/**
+	 * @param discontinuedReasonNonCoded the discontinuedReasonNonCoded to set
+	 */
+	public void setDiscontinuedReasonNonCoded(String discontinuedReasonNonCoded) {
+		this.discontinuedReasonNonCoded = discontinuedReasonNonCoded;
+	}
+	
 	/**
 	 * Convenience method to determine if order is current
 	 * 
