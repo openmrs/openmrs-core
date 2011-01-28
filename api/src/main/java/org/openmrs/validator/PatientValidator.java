@@ -98,7 +98,7 @@ public class PatientValidator implements Validator {
 		}
 		
 		//	 Patient Info 
-		if (patient.isPersonVoided())
+		if (patient.isVoided())
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "voidReason", "error.null");
 		if (patient.isDead() && (patient.getCauseOfDeath() == null))
 			errors.rejectValue("causeOfDeath", "Patient.dead.causeOfDeathNull");
