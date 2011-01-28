@@ -126,7 +126,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		
 		if (!patient.isVoided()) {
 			checkPatientIdentifiers(patient);
-		}	
+		}
 		
 		return dao.savePatient(patient);
 	}

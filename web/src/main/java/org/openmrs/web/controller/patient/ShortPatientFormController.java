@@ -31,6 +31,7 @@ import org.openmrs.PersonAttribute;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.LocationUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.validator.PatientValidator;
 import org.openmrs.web.WebConstants;
@@ -102,7 +103,8 @@ public class ShortPatientFormController {
 			model.addAttribute("relationshipsMap", getRelationshipsMap(patient, request));
 			model.addAttribute("identifierTypes", Context.getPatientService().getAllPatientIdentifierTypes());
 			model.addAttribute("locations", Context.getLocationService().getAllLocations());
-			model.addAttribute("defaultLocation", Context.getLocationService().getDefaultLocation());
+			model.addAttribute("defaultLocation", (LocationUtility.getUserDefaultLocation() != null) ? LocationUtility
+			        .getUserDefaultLocation() : LocationUtility.getDefaultLocation());
 			
 			String propCause = Context.getAdministrationService().getGlobalProperty("concept.causeOfDeath");
 			Concept conceptCause = Context.getConceptService().getConcept(propCause);

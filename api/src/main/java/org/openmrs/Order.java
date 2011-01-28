@@ -67,6 +67,8 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	
 	private String accessionNumber;
 	
+	private String discontinuedReasonNonCoded;
+	
 	// Constructors
 	
 	/** default constructor */
@@ -334,6 +336,20 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 */
 	public void setStartDate(Date startDate) {
 		this.startDate = startDate;
+	}
+	
+	/**
+	 * @return the discontinuedReasonNonCoded
+	 */
+	public String getDiscontinuedReasonNonCoded() {
+		return discontinuedReasonNonCoded;
+	}
+	
+	/**
+	 * @param discontinuedReasonNonCoded the discontinuedReasonNonCoded to set
+	 */
+	public void setDiscontinuedReasonNonCoded(String discontinuedReasonNonCoded) {
+		this.discontinuedReasonNonCoded = discontinuedReasonNonCoded;
 	}
 	
 	/**

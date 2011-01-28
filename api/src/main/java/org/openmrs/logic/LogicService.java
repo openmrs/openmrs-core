@@ -487,8 +487,8 @@ public interface LogicService {
 	public void removeLogicDataSource(String name);
 	
 	/**
-	 * Parse a criteria String to create a new LogicCriteria. <br /><br />
-	 * 
+	 * Parse a criteria String to create a new LogicCriteria. <br />
+	 * <br />
 	 * Example: <br />
 	 * <code>logicService.parseString("LAST 'CD4 COUNT' < 200");</code>
 	 * 
@@ -500,8 +500,8 @@ public interface LogicService {
 	public LogicCriteria parseString(String inStr);
 	
 	/**
-	 * Parse a criteria String to create a new LogicCriteria. <br /><br />
-	 * 
+	 * Parse a criteria String to create a new LogicCriteria. <br />
+	 * <br />
 	 * Example: <br />
 	 * <code>logicService.parseString("LAST 'CD4 COUNT' < 200");</code>
 	 * 
