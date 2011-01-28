@@ -503,22 +503,24 @@ public class ModuleClassLoader extends URLClassLoader {
 		
 		// look through this module's imports to see if the class
 		// can be loaded from them
-		for (Module publicImport : requiredModules) {
-			if (seenModules.contains(publicImport.getModuleId()))
-				continue;
-			
-			ModuleClassLoader mcl = ModuleFactory.getModuleClassLoader(publicImport);
-			
-			// the mcl will be null if a required module isn't started yet (like at openmrs startup)
-			if (mcl != null) {
-				result = mcl.loadClass(name, resolve, requestor, seenModules);
-			}
-			
-			if (result != null) {
-				/*if (resolve) {
-					resolveClass(result);
-				}*/
-				break; // found class in publicly imported module
+		if (requiredModules != null) {
+			for (Module publicImport : requiredModules) {
+				if (seenModules.contains(publicImport.getModuleId()))
+					continue;
+				
+				ModuleClassLoader mcl = ModuleFactory.getModuleClassLoader(publicImport);
+				
+				// the mcl will be null if a required module isn't started yet (like at openmrs startup)
+				if (mcl != null) {
+					result = mcl.loadClass(name, resolve, requestor, seenModules);
+				}
+				
+				if (result != null) {
+					/*if (resolve) {
+						resolveClass(result);
+					}*/
+					break; // found class in publicly imported module
+				}
 			}
 		}
 		
@@ -789,18 +791,23 @@ public class ModuleClassLoader extends URLClassLoader {
 		
 		seenModules.add(getModule().getModuleId());
 		
-		for (Module publicImport : requiredModules) {
-			if (seenModules.contains(publicImport.getModuleId()))
-				continue;
-			
-			ModuleClassLoader mcl = ModuleFactory.getModuleClassLoader(publicImport);
-			
-			if (mcl != null)
-				result = mcl.findResource(name, requestor, seenModules);
-			
-			if (result != null) {
-				break; // found resource in publicly imported module
+		if (requiredModules != null) {
+			for (Module publicImport : requiredModules) {
+				if (seenModules.contains(publicImport.getModuleId()))
+					continue;
+				
+				ModuleClassLoader mcl = ModuleFactory.getModuleClassLoader(publicImport);
+				
+				if (mcl != null)
+					result = mcl.findResource(name, requestor, seenModules);
+				
+				if (result != null) {
+					break; // found resource in publicly imported module
+				}
 			}
+		} else {
+			// do something here so I can put a breakpoint in
+			result = result;
 		}
 		
 		return result;
@@ -842,14 +849,16 @@ public class ModuleClassLoader extends URLClassLoader {
 			seenModules = new HashSet<String>();
 		}
 		seenModules.add(getModule().getModuleId());
-		for (Module publicImport : requiredModules) {
-			if (seenModules.contains(publicImport.getModuleId()))
-				continue;
-			
-			ModuleClassLoader mcl = ModuleFactory.getModuleClassLoader(publicImport);
-			
-			if (mcl != null)
-				mcl.findResources(result, name, requestor, seenModules);
+		if (requiredModules != null) {
+			for (Module publicImport : requiredModules) {
+				if (seenModules.contains(publicImport.getModuleId()))
+					continue;
+				
+				ModuleClassLoader mcl = ModuleFactory.getModuleClassLoader(publicImport);
+				
+				if (mcl != null)
+					mcl.findResources(result, name, requestor, seenModules);
+			}
 		}
 		
 	}
