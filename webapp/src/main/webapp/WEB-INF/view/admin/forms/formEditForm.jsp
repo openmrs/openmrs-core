@@ -149,7 +149,7 @@
 		</tr>
 	</c:if>
 	<openmrs:extensionPoint pointId="org.openmrs.admin.forms.formRow" type="html" parameters="formId=${form.formId}"
-	    	requiredClass="org.openmrs.module.web.extension.AdministrationSectionExt">
+	    	requiredClass="org.openmrs.module.web.extension.TableRowExt">
 		<c:forEach items="${extension.rows}" var="row">
 			<tr>
 				<td><spring:message code="${row.key}"/></td>
