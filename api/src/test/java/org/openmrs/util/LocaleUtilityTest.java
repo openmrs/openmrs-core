@@ -119,7 +119,7 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 		Context.getAdministrationService().saveGlobalProperty(
 		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE, "asdfasdf"));
 		
-		// not check for nonnullness
+		// check for nonnullness
 		Assert.assertNotNull(LocaleUtility.getDefaultLocale());
 	}
 	
@@ -132,7 +132,7 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 		Context.getAdministrationService().saveGlobalProperty(
 		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE, ""));
 		
-		// not check for nonnullness
+		// check for nonnullness
 		Assert.assertNotNull(LocaleUtility.getDefaultLocale());
 	}
 	
@@ -146,7 +146,7 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 		Assert.assertNull(Context.getAdministrationService().getGlobalProperty(
 		    OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE));
 		
-		// not check for nonnullness
+		// check for nonnullness
 		Assert.assertNotNull(LocaleUtility.getDefaultLocale());
 	}
 	
@@ -156,10 +156,15 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should return locale object for global property", method = "getDefaultLocale()")
 	public void getDefaultLocale_shouldReturnLocaleObjectForGlobalProperty() throws Exception {
-		Context.getAdministrationService().saveGlobalProperty(
+		GlobalProperty gp = Context.getAdministrationService().saveGlobalProperty(
 		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE, "ja"));
 		
 		Assert.assertEquals(Locale.JAPANESE, LocaleUtility.getDefaultLocale());
+		
+		// reset the locale
+		gp.setProperty("");
+		Context.getAdministrationService().saveGlobalProperty(gp);
+		
 	}
 	
 	/**
@@ -208,6 +213,9 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should have default locale as the first element if user has no preferred locale", method = "getLocalesInOrder()")
 	public void getLocalesInOrder_shouldHaveDefaultLocaleAsTheFirstElementIfUserHasNoPreferredLocale() throws Exception {
+		// make sure the user doesn't have a locale
+		Context.setLocale(null);
+		
 		Set<Locale> localesInOrder = LocaleUtility.getLocalesInOrder();
 		Assert.assertEquals(LocaleUtility.getDefaultLocale(), localesInOrder.iterator().next());
 	}
@@ -219,7 +227,7 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should have default locale as the second element if user has a preferred locale", method = "getLocalesInOrder()")
 	public void getLocalesInOrder_shouldHaveDefaultLocaleAsTheSecondElementIfUserHasAPreferredLocale() throws Exception {
 		Locale lu_UG = new Locale("lu", "UG");
-		Context.getUserContext().setLocale(lu_UG);
+		Context.setLocale(lu_UG);
 		Set<Locale> localesInOrder = LocaleUtility.getLocalesInOrder();
 		Iterator<Locale> it = localesInOrder.iterator();
 		Assert.assertEquals(lu_UG, it.next());
@@ -236,7 +244,7 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 		        "Test Allowed list of locales");
 		Context.getAdministrationService().saveGlobalProperty(gp);
 		Locale lu_UG = new Locale("lu", "UG");
-		Context.getUserContext().setLocale(lu_UG);
+		Context.setLocale(lu_UG);
 		Set<Locale> localesInOrder = LocaleUtility.getLocalesInOrder();
 		Iterator<Locale> it = localesInOrder.iterator();
 		Assert.assertEquals(new Locale("lu", "UG"), it.next());
@@ -260,9 +268,26 @@ public class LocaleUtilityTest extends BaseContextSensitiveTest {
 		        "Test Allowed list of locales");
 		Context.getAdministrationService().saveGlobalProperty(defaultLocale);
 		Locale lu_UG = new Locale("lu", "UG");
-		Context.getUserContext().setLocale(lu_UG);
+		Context.setLocale(lu_UG);
 		//note that unique list of locales should be lu_UG, lu, sw_KE, en_US, en
 		Assert.assertEquals(5, LocaleUtility.getLocalesInOrder().size());
 	}
 	
+	/**
+	 * This test doesn't really test anything, and it should ALWAYS be the last method in this
+	 * class. <br/>
+	 * <br/>
+	 * This method just resets the current user's locale so that when things are run in batches all
+	 * tests still work.
+	 */
+	@Test
+	public void should_resetTheLocale() {
+		// set user locale to nothing
+		Context.setLocale(null);
+		
+		// clear out the caches
+		GlobalProperty defaultLocale = new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE, "",
+		        "blanking out default locale");
+		Context.getAdministrationService().saveGlobalProperty(defaultLocale);
+	}
 }
