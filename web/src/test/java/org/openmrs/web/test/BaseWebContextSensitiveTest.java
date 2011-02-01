@@ -22,7 +22,8 @@ import org.springframework.test.context.ContextConfiguration;
  * openmrs-servlet.xml context file to the config locations so that controller tests can pick up the
  * right type of controller, etc.
  */
-@ContextConfiguration(locations = { "classpath:openmrs-servlet.xml" }, inheritLocations = true)
+// put refernce to openmrs-servlet in the parent class to make this class really do nothing
+//@ContextConfiguration(locations = { "classpath:openmrs-servlet.xml" }, inheritLocations = true)
 public abstract class BaseWebContextSensitiveTest extends BaseContextSensitiveTest {
 
 }
