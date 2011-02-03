@@ -27,16 +27,19 @@ import java.net.URLStreamHandlerFactory;
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIException;
@@ -61,6 +64,8 @@ public class ModuleClassLoader extends URLClassLoader {
 	
 	private boolean probeParentLoaderLast = true;
 	
+	private Set<String> additionalPackages = new LinkedHashSet<String>();
+	
 	/**
 	 * @param module Module
 	 * @param urls resources "managed" by this class loader
@@ -84,12 +89,16 @@ public class ModuleClassLoader extends URLClassLoader {
 	
 	/**
 	 * @param module the <code>Module</code> to load
-	 * @param urls <code>List<URL></code> of thee resources "managed" by this class loader
+	 * @param urls <code>List<URL></code> of the resources "managed" by this class loader
 	 * @param parent parent <code>ClassLoader</code>
 	 * @see URLClassLoader#URLClassLoader(java.net.URL[], java.lang.ClassLoader)
 	 */
 	protected ModuleClassLoader(final Module module, final List<URL> urls, final ClassLoader parent) {
 		this(module, urls, parent, null);
+		
+		for (URL url : urls) {
+			addAllAdditionalPackages(ModuleUtil.getPackagesFromFile(OpenmrsUtil.url2file(url)));
+		}
 	}
 	
 	/**
@@ -199,12 +208,16 @@ public class ModuleClassLoader extends URLClassLoader {
 			
 			ModuleUtil.expandJar(module.getFile(), tmpModuleDir, "lib", true);
 			File libdir = new File(tmpModuleDir, "lib");
-			if (libdir != null && libdir.exists())
-				for (File file : libdir.listFiles()) {
+			
+			if (libdir != null && libdir.exists()) {
+				// recursively get files
+				Collection<File> files = (Collection<File>)FileUtils.listFiles(libdir, new String[] {"jar"}, true);
+				for (File file : files) {
 					if (log.isDebugEnabled())
 						log.debug("Adding file to results: " + file.getAbsolutePath());
 					result.add(ModuleUtil.file2url(file));
 				}
+			}
 		}
 		catch (MalformedURLException e) {
 			log.warn("Error while adding module 'lib' folder to URL result list");
@@ -896,6 +909,59 @@ public class ModuleClassLoader extends URLClassLoader {
 		File tmpFolder = getLibCacheFolderForModule(module);
 		
 		return OpenmrsClassLoader.expandURL(result, tmpFolder);
+	}
+	
+	/**
+	 * Package names that this module should try to load. All classes/packages
+	 * within the omod and the lib folder are already checked, this
+	 * method/variable are used for extreme circumstances where an omod needs to
+	 * know about another after being loaded
+	 * 
+	 * @return the additionalPackages
+	 */
+	public Set<String> getAdditionalPackages() {
+		return additionalPackages;
+	}
+
+	/**
+	 * @param additionalPackages
+	 *            the package names to set that this module contains that are
+	 *            outside the normal omod and omod/lib folders
+	 */
+	public void setAdditionalPackages(Set<String> additionalPackages) {
+		this.additionalPackages = additionalPackages;
+	}
+	
+	/**
+	 * Convenience method to add another package name to the list of packages provided
+	 * by this module
+	 * @param additionalPackage string package name
+	 * @see #setProvidedPackages(Set)
+	 */
+	public void addAdditionalPackage(String additionalPackage) {
+		if (this.additionalPackages == null)
+			this.additionalPackages = new LinkedHashSet<String>();
+		
+		// its pointless to add a package that is below the module's package
+		// name because we are automatically looking at that in the classloader
+		if (!additionalPackage.startsWith(module.getPackageName()))
+			this.additionalPackages.add(additionalPackage);
+	}
+	
+	/**
+	 * Convenience method to add a bunch of package names to the list of packages provided
+	 * by this module
+	 * @param providedPackages list/set of strings that are package names
+	 * @see #setProvidedPackages(Set)
+	 */
+	public void addAllAdditionalPackages(Collection<String> providedPackages) {
+		if (this.additionalPackages == null)
+			this.additionalPackages = new LinkedHashSet<String>();
+		
+		for (String provPackage : providedPackages)
+			// its pointless to add a package that is below the module's package
+			// name because we are automatically looking at that in the classloader
+			addAdditionalPackage(provPackage);
 	}
 	
 	/**
