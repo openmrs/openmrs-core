@@ -50,6 +50,7 @@ import org.openmrs.api.impl.ObsServiceImpl;
 import org.openmrs.obs.ComplexData;
 import org.openmrs.obs.ComplexObsHandler;
 import org.openmrs.obs.handler.ImageHandler;
+import org.openmrs.obs.handler.BinaryDataHandler;
 import org.openmrs.obs.handler.TextHandler;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
@@ -639,7 +640,8 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		
 		Map<String, ComplexObsHandler> handlers = new HashMap<String, ComplexObsHandler>();
 		handlers.put("DummyHandler4", new ImageHandler());
-		handlers.put("DummyHandler5", new TextHandler());
+		handlers.put("DummyHandler5", new BinaryDataHandler());
+		handlers.put("DummyHandler6", new TextHandler());
 		
 		// set the handlers and make sure they're there
 		os.setHandlers(handlers);
@@ -649,6 +651,9 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		
 		ComplexObsHandler dummyHandler5 = os.getHandler("DummyHandler5");
 		Assert.assertNotNull(dummyHandler5);
+		
+		ComplexObsHandler dummyHandler6 = os.getHandler("DummyHandler6");
+		Assert.assertNotNull(dummyHandler6);
 	}
 	
 	/**
@@ -671,12 +676,12 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		// now override that key and make sure the new class is stored
 		
 		Map<String, ComplexObsHandler> handlersAgain = new HashMap<String, ComplexObsHandler>();
-		handlersAgain.put("DummyHandlerToOverride", new TextHandler());
+		handlersAgain.put("DummyHandlerToOverride", new BinaryDataHandler());
 		
 		os.setHandlers(handlersAgain);
 		
 		ComplexObsHandler dummyHandlerToOverrideAgain = os.getHandler("DummyHandlerToOverride");
-		Assert.assertTrue(dummyHandlerToOverrideAgain instanceof TextHandler);
+		Assert.assertTrue(dummyHandlerToOverrideAgain instanceof BinaryDataHandler);
 		
 	}
 	
