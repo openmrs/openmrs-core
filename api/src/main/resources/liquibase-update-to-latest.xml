@@ -3735,7 +3735,7 @@
 	</changeSet>
 	
 	<changeSet id="20100924-1110" author="mseaton">
-		<preConditions>
+		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="patient_program" columnName="location_id"/></not>
 		</preConditions>
 		<comment>
