@@ -59,6 +59,8 @@ public class ModuleClassLoader extends URLClassLoader {
 	
 	private Module[] requiredModules;
 	
+	private Module[] awareOfModules;
+	
 	private Map<URL, File> libraryCache;
 	
 	private boolean probeParentLoaderLast = true;
@@ -82,6 +84,7 @@ public class ModuleClassLoader extends URLClassLoader {
 		
 		this.module = module;
 		collectRequiredModuleImports();
+		collectAwareOfModuleImports();
 		collectFilters();
 		libraryCache = new WeakHashMap<URL, File>();
 	}
@@ -302,6 +305,24 @@ public class ModuleClassLoader extends URLClassLoader {
 	}
 	
 	/**
+	 * Get and cache the imports for this module. The imports should just be the modules that set as
+	 * "aware of" by this module
+	 */
+	protected void collectAwareOfModuleImports() {
+		// collect imported modules (exclude duplicates)
+		Map<String, Module> publicImportsMap = new WeakHashMap<String, Module>(); //<module ID, Module>
+		
+		for (String awareOfPackage : getModule().getAwareOfModules()) {
+			Module awareOfModule = ModuleFactory.getModuleByPackage(awareOfPackage);
+			if (ModuleFactory.isModuleStarted(awareOfModule)) {
+				publicImportsMap.put(awareOfModule.getModuleId(), awareOfModule);
+			}
+		}
+		awareOfModules = publicImportsMap.values().toArray(new Module[publicImportsMap.size()]);
+		
+	}
+	
+	/**
 	 * Get and cache the filters for this module (not currently implemented)
 	 */
 	protected void collectFilters() {
@@ -339,6 +360,7 @@ public class ModuleClassLoader extends URLClassLoader {
 			log.debug(buf.toString());
 		}
 		collectRequiredModuleImports();
+		collectAwareOfModuleImports();
 		// repopulate resource URLs
 		//resourceLoader = ModuleResourceLoader.get(getModule());
 		collectFilters();
@@ -363,6 +385,7 @@ public class ModuleClassLoader extends URLClassLoader {
 		libraryCache.clear();
 		//resourceFilters.clear();
 		requiredModules = null;
+		awareOfModules = null;
 		//resourceLoader = null;
 	}
 	
@@ -425,7 +448,7 @@ public class ModuleClassLoader extends URLClassLoader {
 	 * @throws ClassNotFoundException if no class found
 	 */
 	protected Class<?> loadClass(final String name, final boolean resolve, final ModuleClassLoader requestor,
-	        Set<String> seenModules) throws ClassNotFoundException {
+	                             Set<String> seenModules) throws ClassNotFoundException {
 		
 		if (log.isTraceEnabled()) {
 			log.trace("loading " + name + " " + getModule() + " seenModules: " + seenModules + " requestor: " + requestor
@@ -521,6 +544,27 @@ public class ModuleClassLoader extends URLClassLoader {
 					}*/
 					break; // found class in publicly imported module
 				}
+			}
+		}
+		
+		// look through this module's aware of imports to see if the class
+		// can be loaded from them.
+		for (Module publicImport : awareOfModules) {
+			if (seenModules.contains(publicImport.getModuleId()))
+				continue;
+			
+			ModuleClassLoader mcl = ModuleFactory.getModuleClassLoader(publicImport);
+			
+			// the mcl will be null if an aware of module isn't started yet (like at openmrs startup)
+			if (mcl != null) {
+				result = mcl.loadClass(name, resolve, requestor, seenModules);
+			}
+			
+			if (result != null) {
+				/*if (resolve) {
+					resolveClass(result);
+				}*/
+				break; // found class in publicly imported module
 			}
 		}
 		
@@ -629,9 +673,7 @@ public class ModuleClassLoader extends URLClassLoader {
 		//			}
 		//		}
 		if (log.isTraceEnabled()) {
-			log
-			        .trace("findLibrary(String): name=" + name + ", libname=" + libname + ", result=" + result + ", this="
-			                + this);
+			log.trace("findLibrary(String): name=" + name + ", libname=" + libname + ", result=" + result + ", this=" + this);
 		}
 		
 		return result;
@@ -810,6 +852,21 @@ public class ModuleClassLoader extends URLClassLoader {
 			result = result;
 		}
 		
+		//look through the aware of modules.
+		for (Module publicImport : awareOfModules) {
+			if (seenModules.contains(publicImport.getModuleId()))
+				continue;
+			
+			ModuleClassLoader mcl = ModuleFactory.getModuleClassLoader(publicImport);
+			
+			if (mcl != null)
+				result = mcl.findResource(name, requestor, seenModules);
+			
+			if (result != null) {
+				break; // found resource in publicly imported module
+			}
+		}
+		
 		return result;
 		
 	}
@@ -826,7 +883,7 @@ public class ModuleClassLoader extends URLClassLoader {
 	 * @see #findResource(String, ModuleClassLoader, Set)
 	 */
 	protected void findResources(final List<URL> result, final String name, final ModuleClassLoader requestor,
-	        Set<String> seenModules) throws IOException {
+	                             Set<String> seenModules) throws IOException {
 		if ((seenModules != null) && seenModules.contains(getModule().getModuleId())) {
 			return;
 		}
@@ -861,6 +918,16 @@ public class ModuleClassLoader extends URLClassLoader {
 			}
 		}
 		
+		//look through the aware of modules.
+		for (Module publicImport : awareOfModules) {
+			if (seenModules.contains(publicImport.getModuleId()))
+				continue;
+			
+			ModuleClassLoader mcl = ModuleFactory.getModuleClassLoader(publicImport);
+			
+			if (mcl != null)
+				mcl.findResources(result, name, requestor, seenModules);
+		}
 	}
 	
 	/**

@@ -812,7 +812,7 @@ public class ModuleFactory {
 	 */
 	@SuppressWarnings("unchecked")
 	public static List<Module> stopModule(Module mod, boolean skipOverStartedProperty, boolean isFailedStartup)
-	        throws ModuleMustStartException {
+	                                                                                                           throws ModuleMustStartException {
 		
 		List<Module> dependentModulesStopped = new Vector<Module>();
 		
@@ -1075,6 +1075,17 @@ public class ModuleFactory {
 	 */
 	public static boolean isModuleStarted(Module mod) {
 		return getStartedModulesMap().containsValue(mod);
+	}
+	
+	/**
+	 * Checks whether the given module, identified by its id, is started.
+	 * 
+	 * @param moduleId module id. e.g formentry, logic
+	 * @since 1.9
+	 * @return true if the module is started, false otherwise
+	 */
+	public static boolean isModuleStarted(String moduleId) {
+		return getStartedModulesMap().containsKey(moduleId);
 	}
 	
 	/**

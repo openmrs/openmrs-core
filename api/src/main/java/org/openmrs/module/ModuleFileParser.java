@@ -198,8 +198,8 @@ public class ModuleFileParser {
 				
 				log.error("config.xml content: " + output);
 				throw new ModuleException(
-				        Context.getMessageSourceService().getMessage("Module.error.cannotParseConfigFile"), moduleFile
-				                .getName(), e);
+				        Context.getMessageSourceService().getMessage("Module.error.cannotParseConfigFile"),
+				        moduleFile.getName(), e);
 			}
 			
 			Element rootNode = configDoc.getDocumentElement();
@@ -264,6 +264,7 @@ public class ModuleFileParser {
 			module.setRequireOpenmrsVersion(getElement(rootNode, configVersion, "require_version").trim());
 			module.setUpdateURL(getElement(rootNode, configVersion, "updateURL").trim());
 			module.setRequiredModulesMap(getRequiredModules(rootNode, configVersion));
+			module.setAwareOfModulesMap(getAwareOfModules(rootNode, configVersion));
 			
 			module.setAdvicePoints(getAdvice(rootNode, configVersion, module));
 			module.setExtensionNames(getExtensions(rootNode, configVersion));
@@ -352,6 +353,40 @@ public class ModuleFileParser {
 	}
 	
 	/**
+	 * load in list of modules we are aware of.
+	 * 
+	 * @param root element in the xml doc object
+	 * @param version of the config file
+	 * @return map from module package name to aware of version
+	 * @since 1.9
+	 */
+	private Map<String, String> getAwareOfModules(Element root, String version) {
+		NodeList awareOfModulesParents = root.getElementsByTagName("aware_of_modules");
+		
+		Map<String, String> packageNamesToVersion = new HashMap<String, String>();
+		
+		// TODO test aware_of_modules section
+		if (awareOfModulesParents.getLength() > 0) {
+			Node awareOfModulesParent = awareOfModulesParents.item(0);
+			
+			NodeList awareOfModules = awareOfModulesParent.getChildNodes();
+			
+			int i = 0;
+			while (i < awareOfModules.getLength()) {
+				Node n = awareOfModules.item(i);
+				if (n != null && "aware_of_module".equals(n.getNodeName())) {
+					NamedNodeMap attributes = n.getAttributes();
+					Node versionNode = attributes.getNamedItem("version");
+					String awareOfVersion = versionNode == null ? null : versionNode.getNodeValue();
+					packageNamesToVersion.put(n.getTextContent().trim(), awareOfVersion);
+				}
+				i++;
+			}
+		}
+		return packageNamesToVersion;
+	}
+	
+	/**
 	 * load in advicePoints
 	 * 
 	 * @param root
@@ -432,9 +467,7 @@ public class ModuleFileParser {
 						extensions.put(point, extClass);
 					}
 				} else
-					log
-					        .warn("'point' and 'class' are required for extensions. Given '" + point + "' and '" + extClass
-					                + "'");
+					log.warn("'point' and 'class' are required for extensions. Given '" + point + "' and '" + extClass + "'");
 				i++;
 			}
 		}
@@ -495,8 +528,9 @@ public class ModuleFileParser {
 								inStream.close();
 							}
 							catch (IOException io) {
-								log.error("Error while closing property input stream for module: "
-								        + moduleFile.getAbsolutePath(), io);
+								log.error(
+								    "Error while closing property input stream for module: " + moduleFile.getAbsolutePath(),
+								    io);
 							}
 						}
 					}
