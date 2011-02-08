@@ -41,7 +41,7 @@ function CreateCallback(options) {
 	 * roles: a comma separated list of role names to restrict to
 	 */
 	this.personCallback = function() { var thisObject = this; return function(q, response) {
-		if ($j.trim(q).length == 0)
+		if (jQuery.trim(q).length == 0)
 			return response(false);
 		
 		thisObject.searchCounter += 1;
@@ -52,7 +52,7 @@ function CreateCallback(options) {
 	 * Use this method if searching for patients
 	 */
 	this.patientCallback = function() { var thisObject = this; return function(q, response) {
-		if ($j.trim(q).length == 0)
+		if (jQuery.trim(q).length == 0)
 			return response(false);
 		
 		thisObject.searchCounter += 1;
@@ -66,7 +66,7 @@ function CreateCallback(options) {
 	 * roles: a comma separated list of role names to restrict to
 	 */
 	this.userCallback = function() { var thisObject = this; return function(q, response) {
-		if ($j.trim(q).length == 0)
+		if (jQuery.trim(q).length == 0)
 			return response(false);
 		
 		var rolesArray = [];
@@ -85,14 +85,14 @@ function CreateCallback(options) {
 	 * excludeDatatypes: an array of datatype names to leave out of the results
 	 */
 	this.conceptCallback = function() { var thisObject = this; return function(q, response) {
-		if ($j.trim(q).length == 0)
+		if (jQuery.trim(q).length == 0)
 			return response(false);
 		
 		// changes a single element into an array
-		var includeClasses = $j.makeArray(options.includeClasses);
-		var excludeClasses = $j.makeArray(options.excludeClasses);
-		var includeDatatypes = $j.makeArray(options.includeDatatypes);
-		var excludeDatatypes = $j.makeArray(options.excludeDatatypes);
+		var includeClasses = jQuery.makeArray(options.includeClasses);
+		var excludeClasses = jQuery.makeArray(options.excludeClasses);
+		var includeDatatypes = jQuery.makeArray(options.includeDatatypes);
+		var excludeDatatypes = jQuery.makeArray(options.excludeDatatypes);
 		/*$j("#log").html($j("#log").html() + "<br/>" + thisObject.test + "--" + thisObject.testing);*/
 		
 		thisObject.searchCounter += 1;
@@ -114,7 +114,7 @@ function CreateCallback(options) {
 	 * showAnswersFor: a concept id. if non-null the search space is restricted to the answers to the given concept id
 	 */
 	this.encounterCallback = function() { var thisObject = this; return function(q, response) {
-		if ($j.trim(q).length == 0)
+		if (jQuery.trim(q).length == 0)
 			return response(false);
 		
 		// do NOT return false if no text given, instead should return all answers
@@ -137,7 +137,7 @@ function CreateCallback(options) {
 		}
 		
 		//convert objs from single obj into array (if needed)
-		objs = $j.makeArray(objs);
+		objs = jQuery.makeArray(objs);
 		
 		//check if we have an error
 		if(options.onerror) {
@@ -163,7 +163,7 @@ function CreateCallback(options) {
 			objs.push("(" + objectsSliced + " " + omsgs.resultsNotDisplayed +")");
 		}
 		
-		response($j.map(objs, displayFunction(q)));
+		response(jQuery.map(objs, displayFunction(q)));
 	}; }
 	
 	// a 'private' method
@@ -271,7 +271,7 @@ function CreateCallback(options) {
 	function highlightWords(textShown, origQuery) {
 		var words = origQuery.split(" ");
 		for (var x=0; x<words.length; x++) {
-			if ($j.trim(words[x]).length > 0) {
+			if (jQuery.trim(words[x]).length > 0) {
 				var word = " " + words[x]; // only match the beginning of words
 				// replace each occurrence case insensitively while replacing with original case
 				textShown = textShown.replace(word, function(matchedTxt) { return "{{{{" + matchedTxt + "}}}}"}, "gi");
