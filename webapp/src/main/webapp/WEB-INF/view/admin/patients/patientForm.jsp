@@ -68,6 +68,26 @@
 			dataClone.id = type + numObjs[type] + "Data";
 			parent = newData.parentNode;
 			parent.insertBefore(dataClone, newData);
+			
+			//find the active checkbox and add an onclick listener to it
+			//and assign names and ids to the start and end input fields
+			var inputs = dataClone.getElementsByTagName("input");
+			for (var i in inputs) {
+				var input = inputs[i];
+				if (input && input.name == "activeCheckbox") {
+					var addressIndex = numObjs[type];
+					input.checked = true;
+					input.onclick = function(){
+						updateEndDate(this, 'addresses[' + addressIndex + '].endDate');
+					};
+				}
+				else if (input && input.name == "startDate")
+					input.id = 'addresses[' + numObjs[type] + '].startDate';
+				else if (input && input.name == "endDate"){
+					input.id = 'addresses[' + numObjs[type] + '].endDate';
+					input.disabled = 'disabled';
+				}
+			}
 
 			numObjs[type] = numObjs[type] + 1;
 		}

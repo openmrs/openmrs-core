@@ -83,6 +83,10 @@
 
 		<property name="dateChanged" type="java.util.Date" column="date_changed" length="19" />
 		
+		<property name="startDate" type="java.util.Date" column="start_date" length="19" />
+		
+		<property name="endDate" type="java.util.Date" column="end_date" length="19" />
+		
 	</class>
 
 </hibernate-mapping>

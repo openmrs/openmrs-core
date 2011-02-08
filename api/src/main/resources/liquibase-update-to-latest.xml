@@ -4096,5 +4096,25 @@
 			<column name="discontinued_reason_non_coded" type="varchar(255)" />
 		</addColumn>
 	</changeSet>
+	
+	<changeSet id="20110125-1435" author="wyclif">
+		<preConditions onFail="MARK_RAN">
+			<not><columnExists tableName="person_address" columnName="start_date"/></not>
+		</preConditions>
+		<comment>Adding 'start_date' column to person_address table</comment>
+		<addColumn tableName="person_address">
+			<column name="start_date" type="datetime" />
+		</addColumn>
+	</changeSet>
+	
+	<changeSet id="20110125-1436" author="wyclif">
+		<preConditions onFail="MARK_RAN">
+			<not><columnExists tableName="person_address" columnName="end_date"/></not>
+		</preConditions>
+		<comment>Adding 'end_date' column to person_address table</comment>
+		<addColumn tableName="person_address">
+			<column name="end_date" type="datetime" />
+		</addColumn>
+	</changeSet>
 
 </databaseChangeLog>

@@ -8,7 +8,15 @@
 
     // to know if we have overwritten the onsubmit method already
     var overwrittenOnSubmit = false;
-
+    
+    //don't create the array variable again if it is already on the page, this is important on the 
+    //long patient form where we might have multiple addresses and end up losing the mappings for earlier addresses
+    if(!endDateIdValueMap){
+    	//Array used to store mapping values of the endDate fields to their original values
+        //the keys are the endDate input Ids while the values are the corresponding dates
+    	var endDateIdValueMap = [];
+    }
+    
     /**
      * Validate the input format according to the regular expression.
      * If not valid, the background is highlighted and a formatting Hint is displayed.
@@ -50,7 +58,44 @@
         }
         
     }
-
+    
+    function updateEndDate(checkboxObj, endDateInputId){
+    	var endDateInputObj = document.getElementById(endDateInputId);
+    	if(endDateInputObj && checkboxObj && $j(checkboxObj).attr('checked')){
+    		//store the original current value so that if the user unchecks the 
+    		//active box the first time after page load, we can restore the value
+    		$j(endDateInputObj).val('');
+    		endDateInputObj.disabled = 'disabled';
+		}else{
+			$j(endDateInputObj).removeAttr("disabled");
+			if(endDateInputObj && endDateIdValueMap[endDateInputId]){
+				//restore the original value if there was one on page load
+				$j(endDateInputObj).val(endDateIdValueMap[endDateInputId]);
+			}else{
+				//this is the first time this address is being inactivated, set the endDate to current date
+				$j(endDateInputObj).val(parseDateFromJsToString(jsDateFormat, new Date()));
+			}
+		}
+    }
+    
+    function updateActiveCheckbox(endDateInputId, isActive){
+    	var endDateInputObj = document.getElementById(endDateInputId);
+        if(endDateInputObj){
+    		var inputTags = endDateInputObj.parentNode.parentNode.parentNode.getElementsByTagName("input");
+    		//find the active checkbox and uncheck it
+    		for(var i in inputTags){
+    			if(inputTags[i] && inputTags[i].name == 'activeCheckbox'){
+    				if(isActive == false){
+    					inputTags[i].checked = false;
+    					endDateIdValueMap[endDateInputId] = $j.trim($j(endDateInputObj).val());
+    				}
+    				inputTags[i].onclick = function(){
+						updateEndDate(this, endDateInputId);
+					};
+    			}
+    		}
+        }
+    }
 </script>
 
 <c:if test="${model.authenticatedUser != null}">
@@ -155,6 +200,12 @@
 								</td>
 							</tr>
 					</c:if>
+					<tr>
+						<td><spring:message code="PersonAddress.isActive" /></td>
+						<td>
+							<input name="activeCheckbox" type="checkbox" checked="checked"/>
+						</td>
+					</tr>
 					<c:forEach items="${model.layoutTemplate.lines}" var="line">
 						<tr>
 							<c:forEach items="${line}" var="token" varStatus="tokenStatus">
@@ -162,10 +213,16 @@
 									<td><spring:message code="${token.displayText}" /></td>
 									<td <c:if test="${tokenStatus.last && tokenStatus.index < model.layoutTemplate.maxTokens}">colspan="${model.layoutTemplate.maxTokens - tokenStatus.index}"</c:if>>
 										<spring:bind path="${token.codeName}">
-                                            <input type="text" name="${status.expression}"  value="<c:out value="${status.value}"/>" size="${token.displaySize}"
+											<c:if test="${token.codeName == 'endDate'}"><input type="hidden" name="_${status.expression}"></c:if>
+											<input id="${status.expression}" type="text" name="${status.expression}" value="<c:out value="${status.value}"/>" size="${token.displaySize}" 
+                                            	<c:if test="${token.codeName == 'startDate' || token.codeName == 'endDate'}">onclick='showCalendar(this,60)' </c:if> 
+                                            	<c:if test="${token.codeName == 'endDate' && status.value == ''}">disabled="disabled" </c:if>
                                                 onkeyup="<c:if test='${model.layoutTemplate.elementRegex[token.codeName] !="" }'>validateFormat(this, '${model.layoutTemplate.elementRegex[token.codeName]}','${token.codeName}' )</c:if>"
                                             />
-                                            <i name="formatMsg_${token.codeName}" style="font-weight: normal; font-size: xx-small; color: red; display: none">
+                                            <c:if test="${token.codeName == 'endDate'}">
+                                            <script type="text/javascript">updateActiveCheckbox('${status.expression}', ${status.value == ''});</script>
+                                            </c:if>
+                                           <i name="formatMsg_${token.codeName}" style="font-weight: normal; font-size: xx-small; color: red; display: none">
                                                  <c:choose>
                                                      <c:when test="${model.layoutTemplate.elementRegexFormats[token.codeName] != null }" >
                                                         (<spring:message code="general.format" />: ${model.layoutTemplate.elementRegexFormats[token.codeName]})
