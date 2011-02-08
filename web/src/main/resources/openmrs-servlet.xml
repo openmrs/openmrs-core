@@ -1077,17 +1077,17 @@
 			<list>
 				<value>address1</value>
 				<value>address2</value>
+                <value>address3</value>
+                <value>address4</value>
+                <value>address5</value>
+                <value>address6</value>
 				<value>cityVillage</value>
+                <value>countyDistrict</value>
 				<value>stateProvince</value>
-				<value>postalCode</value>
 				<value>country</value>
 				<value>latitude</value>
 				<value>longitude</value>
-				<value>countyDistrict</value>
-				<value>neighborhoodCell</value>
-				<value>townshipDivision</value>
-				<value>subregion</value>
-				<value>region</value>
+                <value>postalCode</value>
 			</list>
 		</property>
 	</bean>
@@ -1139,7 +1139,7 @@
 				<prop key="stateProvince">Location.province</prop>
 				<prop key="countyDistrict">Location.district</prop>
 				<prop key="cityVillage">Location.sector</prop>
-				<prop key="neighborhoodCell">Location.cell</prop>
+				<prop key="address3">Location.cell</prop>
 				<prop key="address1">Location.rwandanNeighborhood</prop>
 			</props>
 		</property>
@@ -1148,7 +1148,7 @@
 				<prop key="stateProvince">40</prop>
 				<prop key="countyDistrict">40</prop>
 				<prop key="cityVillage">40</prop>
-				<prop key="neighborhoodCell">40</prop>
+				<prop key="address3">40</prop>
 				<prop key="address1">40</prop>
 			</props>
 		</property>
@@ -1162,7 +1162,7 @@
 				<value>stateProvince</value>
 				<value>countyDistrict</value>
 				<value>cityVillage</value>
-				<value>neighborhoodCell</value>
+				<value>address3</value>
 				<value>address1</value>
 			</list>
 		</property>
@@ -1253,13 +1253,13 @@
 				
 				<prop key="address2">Location.sectionHomestead</prop>
 				
-				<prop key="neighborhoodCell">Location.estateNearestCentre</prop>
+				<prop key="address3">Location.estateNearestCentre</prop>
 				<prop key="cityVillage">Location.townVillage</prop>
 				
-				<prop key="subregion">Location.sublocation</prop>
-				<prop key="region">Location.location</prop>
+				<prop key="address5">Location.sublocation</prop>
+				<prop key="address6">Location.location</prop>
 				
-				<prop key="townshipDivision">Location.division</prop>
+				<prop key="address4">Location.division</prop>
 				<prop key="countyDistrict">Location.district</prop>
 				
 				<prop key="stateProvince">Location.province</prop>
@@ -1275,7 +1275,7 @@
 				
 				<prop key="address2">55</prop>
 				
-				<prop key="neighborhoodCell">24</prop>
+				<prop key="address3">24</prop>
 				<prop key="cityVillage">24</prop>
 				
 				<prop key="subregion">24</prop>
@@ -1313,12 +1313,12 @@
 			<list>
 				<value>address1</value>
 				<value>address2</value>
-				<value>neighborhoodCell cityVillage</value>
-				<value>subregion region</value>
-				<value>townshipDivision countyDistrict</value>
+				<value>address3 cityVillage</value>
+				<value>address5 address6</value>
+				<value>address4 countyDistrict</value>
 				<value>stateProvince postalCode</value>
 				<value>latitude longitude</value>
-                                <value>country</value>
+                <value>country</value>
 			</list>
 		</property>
 	</bean>
@@ -1361,7 +1361,7 @@
 				<prop key="stateProvince">Location.district</prop>
 				<prop key="countyDistrict">Location.traditionalAuthority</prop>
 				<prop key="cityVillage">Location.village</prop>
-				<prop key="neighborhoodCell">Location.neighborhood</prop>
+				<prop key="address3">Location.neighborhood</prop>
 				<prop key="address1">Location.address1</prop>
 			</props>
 		</property>
@@ -1370,7 +1370,7 @@
 				<prop key="stateProvince">20</prop>
 				<prop key="countyDistrict">20</prop>
 				<prop key="cityVillage">20</prop>
-				<prop key="neighborhoodCell">20</prop>
+				<prop key="address3">20</prop>
 				<prop key="address1">40</prop>
 			</props>
 		</property>
@@ -1382,7 +1382,7 @@
 		<property name="lineByLineFormat">
 			<list>
 				<value>address1</value>
-				<value>neighborhoodCell</value>
+				<value>address3</value>
 				<value>cityVillage</value>
 				<value>countyDistrict</value>
 				<value>stateProvince</value>
@@ -1397,32 +1397,32 @@
 		<property name="nameMappings">
 			<props>
 				<prop key="cityVillage">Location.villageStreet</prop>
-				<prop key="subregion">Location.ward</prop>
+				<prop key="address5">Location.ward</prop>
 				<prop key="countyDistrict">Location.district</prop>
-				<prop key="region">Location.region</prop>
+				<prop key="address6">Location.region</prop>
 			</props>
 		</property>
 		<property name="sizeMappings">
 			<props>
 				<prop key="cityVillage">50</prop>
-				<prop key="subregion">22</prop>
+				<prop key="address5">22</prop>
 				<prop key="countyDistrict">17</prop>
-				<prop key="region">14</prop>
+				<prop key="address6">14</prop>
 			</props>
 		</property>
 		<property name="lineByLineFormat">
 			<list>
 				<value>cityVillage</value>
-				<value>subregion</value>
+				<value>address5</value>
 				<value>countyDistrict</value>
-				<value>region</value>
+				<value>address6</value>
 			</list>
 		</property>
 	</bean>
 
 	<!-- NAME LAYOUT SUPPORT -->
 	
-	<!-- specialTokens ordered so that the subset string 'familyName' is last
+	<!-- specialTokens ordered so that the subset string 'familyName' is after 'familyName*'
 -->
 	<bean id="nameSupport" class="org.openmrs.layout.web.name.NameSupport">
 		<property name="defaultLayoutFormat"><value>short</value></property>
