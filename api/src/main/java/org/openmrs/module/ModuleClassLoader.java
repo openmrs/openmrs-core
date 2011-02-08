@@ -673,7 +673,9 @@ public class ModuleClassLoader extends URLClassLoader {
 		//			}
 		//		}
 		if (log.isTraceEnabled()) {
-			log.trace("findLibrary(String): name=" + name + ", libname=" + libname + ", result=" + result + ", this=" + this);
+			log
+			        .trace("findLibrary(String): name=" + name + ", libname=" + libname + ", result=" + result + ", this="
+			                + this);
 		}
 		
 		return result;
