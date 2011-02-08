@@ -93,7 +93,10 @@ public class ShortPatientFormController {
 					// this will be handled in the next lines
 				}
 				if (patient == null) {
-					patient = new Patient(Context.getPersonService().getPerson(patientId));
+					Person toPromote = Context.getPersonService().getPerson(patientId);
+					if (toPromote == null)
+						throw new IllegalArgumentException("No patient or person with the given id");
+					patient = new Patient(toPromote);
 				}
 			} else {
 				// we may have some details to add to a blank patient
