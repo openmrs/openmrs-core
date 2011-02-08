@@ -60,7 +60,7 @@ public class BinaryDataHandler extends AbstractHandler implements ComplexObsHand
 		String[] names = obs.getValueComplex().split("\\|");
 		String originalFilename = names[0];
 		if ("download".equals(view)) {
-			originalFilename = originalFilename.replaceAll(",", "").replaceAll(" ", "").replaceAll("file$","");	
+			originalFilename = originalFilename.replaceAll(",", "").replaceAll(" ", "").replaceAll("file$", "");
 		}
 		
 		try {

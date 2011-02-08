@@ -448,7 +448,7 @@ public class ModuleClassLoader extends URLClassLoader {
 	 * @throws ClassNotFoundException if no class found
 	 */
 	protected Class<?> loadClass(final String name, final boolean resolve, final ModuleClassLoader requestor,
-	                             Set<String> seenModules) throws ClassNotFoundException {
+	        Set<String> seenModules) throws ClassNotFoundException {
 		
 		if (log.isTraceEnabled()) {
 			log.trace("loading " + name + " " + getModule() + " seenModules: " + seenModules + " requestor: " + requestor
@@ -883,7 +883,7 @@ public class ModuleClassLoader extends URLClassLoader {
 	 * @see #findResource(String, ModuleClassLoader, Set)
 	 */
 	protected void findResources(final List<URL> result, final String name, final ModuleClassLoader requestor,
-	                             Set<String> seenModules) throws IOException {
+	        Set<String> seenModules) throws IOException {
 		if ((seenModules != null) && seenModules.contains(getModule().getModuleId())) {
 			return;
 		}
