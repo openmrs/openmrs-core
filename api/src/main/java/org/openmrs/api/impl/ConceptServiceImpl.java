@@ -1446,10 +1446,19 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 *      java.lang.Boolean)
 	 */
 	public Concept getConceptByMapping(String code, String sourceName, Boolean includeRetired) throws APIException {
-		List<Concept> concepts = getConceptsByMapping(code, sourceName, includeRetired);
+		List<Concept> concepts = getConceptsByMapping(code, sourceName, includeRetired);		
+		
 		if (concepts.size() == 0) {
 			return null;
-		} else {
+		} 
+		// we want to throw an exception if there is more than one non-retired concept; 
+		// since the getConceptByMapping DAO method returns a list with all non-retired concept
+		// sorted to the front of the list, we can test if there is more than one retired concept
+		// by testing if the second concept in the list is retired or not
+		else if (concepts.size() > 1 && !concepts.get(1).isRetired()) { 
+			 throw new APIException("Multiple non-retired concepts found for mapping " + code + " from source " + sourceName);
+		}
+		else {
 			return concepts.get(0);
 		}
 	}

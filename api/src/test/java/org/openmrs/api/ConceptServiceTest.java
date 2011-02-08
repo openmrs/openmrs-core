@@ -526,6 +526,12 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		
 	}
 	
+	@Test(expected = APIException.class)
+	@Verifies(value = "should throw exception if two non-retired concepts have the name mapping", method = "getConceptsByMapping(String,String,Boolean)")
+	public void getConceptByMapping_shouldThrowExceptionIfTwoConceptsHaveSameMapping() throws Exception {
+		conceptService.getConceptByMapping("127689", "Some Standardized Terminology");
+	}
+	
 	/**
 	 * @see {@link ConceptService#getConceptsByMapping(String,String)}
 	 */
