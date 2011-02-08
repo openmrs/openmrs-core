@@ -198,8 +198,8 @@ public class ModuleFileParser {
 				
 				log.error("config.xml content: " + output);
 				throw new ModuleException(
-				        Context.getMessageSourceService().getMessage("Module.error.cannotParseConfigFile"),
-				        moduleFile.getName(), e);
+				        Context.getMessageSourceService().getMessage("Module.error.cannotParseConfigFile"), moduleFile
+				                .getName(), e);
 			}
 			
 			Element rootNode = configDoc.getDocumentElement();
@@ -467,7 +467,9 @@ public class ModuleFileParser {
 						extensions.put(point, extClass);
 					}
 				} else
-					log.warn("'point' and 'class' are required for extensions. Given '" + point + "' and '" + extClass + "'");
+					log
+					        .warn("'point' and 'class' are required for extensions. Given '" + point + "' and '" + extClass
+					                + "'");
 				i++;
 			}
 		}
@@ -528,9 +530,8 @@ public class ModuleFileParser {
 								inStream.close();
 							}
 							catch (IOException io) {
-								log.error(
-								    "Error while closing property input stream for module: " + moduleFile.getAbsolutePath(),
-								    io);
+								log.error("Error while closing property input stream for module: "
+								        + moduleFile.getAbsolutePath(), io);
 							}
 						}
 					}
