@@ -812,7 +812,7 @@ public class ModuleFactory {
 	 */
 	@SuppressWarnings("unchecked")
 	public static List<Module> stopModule(Module mod, boolean skipOverStartedProperty, boolean isFailedStartup)
-	                                                                                                           throws ModuleMustStartException {
+	        throws ModuleMustStartException {
 		
 		List<Module> dependentModulesStopped = new Vector<Module>();
 		
