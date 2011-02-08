@@ -84,10 +84,22 @@ public class ShortPatientFormController {
 		
 		if (Context.isAuthenticated()) {
 			Patient patient = null;
-			if (patientId != null)
-				patient = Context.getPatientService().getPatient(patientId);
-			// if this is a redirect from the addPersonController
-			else {
+			if (patientId != null) {
+				try {
+					patient = Context.getPatientService().getPatient(patientId);
+				}
+				catch (ClassCastException ex) {
+					// we're promoting an existing Person to a full Patient
+					// this will be handled in the next lines
+				}
+				if (patient == null) {
+					Person toPromote = Context.getPersonService().getPerson(patientId);
+					if (toPromote == null)
+						throw new IllegalArgumentException("No patient or person with the given id");
+					patient = new Patient(toPromote);
+				}
+			} else {
+				// we may have some details to add to a blank patient
 				patient = new Patient();
 				String name = request.getParameter("addName");
 				if (!StringUtils.isBlank(name)) {
