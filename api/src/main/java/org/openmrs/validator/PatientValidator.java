@@ -21,6 +21,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
+import org.openmrs.PersonAddress;
 import org.openmrs.PersonName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
@@ -40,13 +41,15 @@ public class PatientValidator implements Validator {
 	@Autowired
 	PatientIdentifierValidator patientIdentifierValidator;
 	
+	@Autowired
+	PersonAddressValidator personAddressValidator;
+	
 	/**
 	 * Returns whether or not this validator supports validating a given class.
 	 * 
 	 * @param c The class to check for support.
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
-	@SuppressWarnings("unchecked")
 	public boolean supports(Class c) {
 		if (log.isDebugEnabled())
 			log.debug(this.getClass().getName() + ".supports: " + c.getName());
@@ -76,6 +79,19 @@ public class PatientValidator implements Validator {
 		if (patient != null) {
 			for (PersonName personName : patient.getNames()) {
 				personNameValidator.validate(personName, errors);
+			}
+			
+			//validate the personAddress
+			int index = 0;
+			for (PersonAddress address : patient.getAddresses()) {
+				try {
+					errors.pushNestedPath("addresses[" + index + "]");
+					ValidationUtils.invokeValidator(personAddressValidator, address, errors);
+				}
+				finally {
+					errors.popNestedPath();
+					index++;
+				}
 			}
 		}
 		

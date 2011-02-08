@@ -24,14 +24,15 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.PatientIdentifier;
-import org.openmrs.PersonAddress;
 import org.openmrs.PersonName;
 import org.openmrs.api.context.Context;
 import org.openmrs.validator.PatientIdentifierValidator;
+import org.openmrs.validator.PersonAddressValidator;
 import org.openmrs.validator.PersonNameValidator;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ObjectError;
+import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 /**
@@ -140,11 +141,16 @@ public class ShortPatientFormValidator implements Validator {
 			        .getMessage("Person.birthdate") }, "");
 		}
 		
-		// In short patient form, there is no option of voiding a Patient, so we
-		// donot expect to validate this
-		// if (shortPatientModel.getVoided())
-		// ValidationUtils.rejectIfEmptyOrWhitespace(errors, "voidReason",
-		// "error.null");
+		//validate the personAddress
+		if (shortPatientModel.getPersonAddress() != null) {
+			try {
+				errors.pushNestedPath("personAddress");
+				ValidationUtils.invokeValidator(new PersonAddressValidator(), shortPatientModel.getPersonAddress(), errors);
+			}
+			finally {
+				errors.popNestedPath();
+			}
+		}
 		
 		if (shortPatientModel.getPatient().getDead()) {
 			if (shortPatientModel.getPatient().getCauseOfDeath() == null)

@@ -1088,6 +1088,8 @@
 				<value>latitude</value>
 				<value>longitude</value>
                 <value>postalCode</value>
+				<value>startDate</value>
+				<value>endDate</value>
 			</list>
 		</property>
 	</bean>
@@ -1218,6 +1220,8 @@
 				<prop key="longitude">Location.longitude</prop>
 				<prop key="latitude">Location.latitude</prop>
 				<prop key="country">Location.country</prop>
+				<prop key="startDate">PersonAddress.startDate</prop>
+				<prop key="endDate">personAddress.endDate</prop>
 			</props>
 		</property>
 		<property name="sizeMappings">
@@ -1230,6 +1234,8 @@
 				<prop key="longitude">10</prop>
 				<prop key="latitude">10</prop>
 				<prop key="country">10</prop>
+				<prop key="startDate">10</prop>
+				<prop key="endDate">10</prop>
 			</props>
 		</property>
 		<property name="lineByLineFormat">
@@ -1238,6 +1244,7 @@
 				<value>address2</value>
 				<value>cityVillage stateProvince country postalCode</value>
 				<value>latitude longitude</value>
+				<value>startDate endDate</value>
 			</list>
 		</property>
 	</bean>

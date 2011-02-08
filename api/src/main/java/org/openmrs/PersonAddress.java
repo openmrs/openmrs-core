@@ -15,6 +15,8 @@ package org.openmrs;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Calendar;
+import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -67,6 +69,10 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	private String latitude;
 	
 	private String longitude;
+	
+	private Date startDate;
+	
+	private Date endDate;
 	
 	// Constructors
 	
@@ -571,5 +577,65 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	public void setId(Integer id) {
 		setPersonAddressId(id);
 		
+	}
+	
+	/**
+	 * @return the startDate
+	 * @since 1.9
+	 */
+	public Date getStartDate() {
+		return startDate;
+	}
+	
+	/**
+	 * @param startDate to set to
+	 * @since 1.9
+	 */
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
+	
+	/**
+	 * @return the endDate
+	 * @since 1.9
+	 */
+	public Date getEndDate() {
+		return this.endDate;
+	}
+	
+	/**
+	 * @param endDate to set to
+	 * @since 1.9
+	 */
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
+	}
+	
+	/**
+	 * Returns true if the address' endDate is null
+	 * 
+	 * @return true or false
+	 * @since 1.9
+	 */
+	public Boolean isActive() {
+		return (this.endDate == null);
+	}
+	
+	/**
+	 * Makes an address inactive by setting its endDate to the current time
+	 * 
+	 * @since 1.9
+	 */
+	public void inactivate() {
+		setEndDate(Calendar.getInstance().getTime());
+	}
+	
+	/**
+	 * Makes an address active by setting its endDate to null
+	 * 
+	 * @since 1.9
+	 */
+	public void activate() {
+		setEndDate(null);
 	}
 }

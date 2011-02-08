@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
@@ -180,9 +181,12 @@ public class PatientFormController extends PersonFormController {
 				String[] counties = ServletRequestUtils.getStringParameters(request, "countyDistrict");
 				String[] cells = ServletRequestUtils.getStringParameters(request, "neighborhoodCell");
 				String[] addPrefStatus = ServletRequestUtils.getStringParameters(request, "preferred");
+				String[] startDates = ServletRequestUtils.getStringParameters(request, "startDate");
+				String[] endDates = ServletRequestUtils.getStringParameters(request, "endDate");
 				
 				if (add1s != null || add2s != null || cities != null || states != null || countries != null || lats != null
-				        || longs != null || pCodes != null || counties != null || cells != null) {
+				        || longs != null || pCodes != null || counties != null || cells != null || startDates != null
+				        || endDates != null) {
 					int maxAddrs = 0;
 					
 					if (add1s != null)
@@ -215,6 +219,12 @@ public class PatientFormController extends PersonFormController {
 					if (cells != null)
 						if (cells.length > maxAddrs)
 							maxAddrs = cells.length;
+					if (startDates != null)
+						if (startDates.length > maxAddrs)
+							maxAddrs = startDates.length;
+					if (endDates != null)
+						if (endDates.length > maxAddrs)
+							maxAddrs = endDates.length;
 					
 					log.debug("There appears to be " + maxAddrs + " addresses that need to be saved");
 					
@@ -247,6 +257,11 @@ public class PatientFormController extends PersonFormController {
 							pa.setNeighborhoodCell(cells[i]);
 						if (addPrefStatus != null && addPrefStatus.length > i)
 							pa.setPreferred(new Boolean(addPrefStatus[i]));
+						if (startDates.length >= i + 1 && StringUtils.isNotBlank(startDates[i]))
+							pa.setStartDate(Context.getDateFormat().parse(startDates[i]));
+						if (endDates.length >= i + 1 && StringUtils.isNotBlank(endDates[i]))
+							pa.setEndDate(Context.getDateFormat().parse(endDates[i]));
+						
 						patient.addAddress(pa);
 						//}
 					}
