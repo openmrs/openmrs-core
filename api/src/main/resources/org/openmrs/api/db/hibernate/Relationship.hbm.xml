@@ -88,6 +88,7 @@
         column="voided_by"
         class="org.openmrs.User"
     />
-    
+    <many-to-one name="changedBy" class="org.openmrs.User" column="changed_by" />
+    <property name="dateChanged" type="java.util.Date" column="date_changed" length="19" />
 </class>
 </hibernate-mapping>
