@@ -1234,9 +1234,8 @@ public interface ConceptService extends OpenmrsService {
 	 * Looks up a concept via {@link ConceptMap} This will return the {@link Concept} which contains
 	 * a {@link ConceptMap} entry whose <code>sourceCode</code> is equal to the passed
 	 * <code>conceptCode</code> and whose {@link ConceptSource} has either a <code>name</code> or
-	 * <code>hl7Code</code> that is equal to the passed <code>mappingCode</code> . Operates under
-	 * the assumption that each mappingCode in a {@link ConceptSource} references one and only one
-	 * non-voided {@link Concept}.
+	 * <code>hl7Code</code> that is equal to the passed <code>mappingCode</code>. Delegates to
+	 * getConceptByMapping(code,sourceName,includeRetired) with includeRetired=true
 	 * 
 	 * @param code the code associated with a concept within a given {@link ConceptSource}
 	 * @param sourceName the name or hl7Code of the {@link ConceptSource} to check
@@ -1246,15 +1245,40 @@ public interface ConceptService extends OpenmrsService {
 	 * @should get concept with given code and source name
 	 * @should return null if source code does not exist
 	 * @should return null if mapping does not exist
-	 * @should throw exception if there is more than one non-voided concept associated with the
-	 *         mappingCode
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
 	public Concept getConceptByMapping(String code, String sourceName) throws APIException;
 	
 	/**
-	 * Looks up a concept via {@link ConceptMap} This will return the list of non-voided
+	 * Looks up a concept via {@link ConceptMap} This will return the {@link Concept} which contains
+	 * a {@link ConceptMap} entry whose <code>sourceCode</code> is equal to the passed
+	 * <code>conceptCode</code> and whose {@link ConceptSource} has either a <code>name</code> or
+	 * <code>hl7Code</code> that is equal to the passed <code>mappingCode</code> . Operates under
+	 * the assumption that each mappingCode in a {@link ConceptSource} references one and only one
+	 * non-retired {@link Concept): if the underlying dao method returns more than one non-retired concept, this
+	 * method will throw an exception; if the underlying dao method returns more than one concept, but
+	 * only one non-retired concept, this method will return the non-retired concept; if the dao only
+	 * returns retired concepts, this method will simply return the first concept in the list returns by
+	 * the dao method; retired concepts can be excluded by setting the includeRetired parameter to false,
+	 * but the above logic still applies
+	 * 
+	 * @param code the code associated with a concept within a given {@link ConceptSource}
+	 * @param sourceName the name or hl7Code of the {@link ConceptSource} to check
+	 * @param includeRetired whether or not to include retired concepts
+	 * @return the {@link Concept} that has the given mapping, or null if no {@link Concept} found
+	 * @throws APIException
+	 * @should get concept with given code and and source hl7 code
+	 * @should get concept with given code and source name
+	 * @should return null if source code does not exist
+	 * @should return null if mapping does not exist
+	 */
+	@Transactional(readOnly = true)
+	@Authorized(PrivilegeConstants.VIEW_CONCEPTS)
+	public Concept getConceptByMapping(String code, String sourceName, Boolean includeRetired) throws APIException;
+	
+	/**
+	 * Looks up a concept via {@link ConceptMap} This will return the list of concepts
 	 * {@link Concept}s which contain a {@link ConceptMap} entry whose <code>sourceCode</code> is
 	 * equal to the passed <code>conceptCode</code> and whose {@link ConceptSource} has either a
 	 * <code>name</code> or <code>hl7Code</code> that is equal to the passed
@@ -1269,7 +1293,7 @@ public interface ConceptService extends OpenmrsService {
 	 * @should get concepts with given code and source name
 	 * @should return empty list if source code does not exist
 	 * @should return empty list if mapping does not exist
-	 * @should ignore retired concepts
+	 * @should include retired concepts
 	 * @since 1.8
 	 */
 	@Transactional(readOnly = true)
@@ -1277,11 +1301,11 @@ public interface ConceptService extends OpenmrsService {
 	public List<Concept> getConceptsByMapping(String code, String sourceName) throws APIException;
 	
 	/**
-	 * Looks up a concept via {@link ConceptMap} This will return the list of non-voided
-	 * {@link Concept}s which contain a {@link ConceptMap} entry whose <code>sourceCode</code> is
-	 * equal to the passed <code>conceptCode</code> and whose {@link ConceptSource} has either a
-	 * <code>name</code> or <code>hl7Code</code> that is equal to the passed
-	 * <code>mappingCode</code>
+	 * Looks up a concept via {@link ConceptMap} This will return the list of {@link Concept}s which
+	 * contain a {@link ConceptMap} entry whose <code>sourceCode</code> is equal to the passed
+	 * <code>conceptCode</code> and whose {@link ConceptSource} has either a <code>name</code> or
+	 * <code>hl7Code</code> that is equal to the passed <code>mappingCode</code>. Delegates to
+	 * getConceptsByMapping(code,sourceName,includeRetired) with includeRetired=true
 	 * 
 	 * @param code the code associated with a concept within a given {@link ConceptSource}
 	 * @param sourceName the name or hl7Code of the {@link ConceptSource} to check
