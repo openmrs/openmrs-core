@@ -138,7 +138,7 @@
                     <fileset dir="${installer-dependencies.dir}">
                         <include name="*"/>
                     </fileset>
-                    <fileset file="${webapp.target}/${webapp.name}*.war"/>
+                    <fileset file="${webapp.target}/${webapp.name}.war"/>
                 </copy>
             </else>
         </if>
