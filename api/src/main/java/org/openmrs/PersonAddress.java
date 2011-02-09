@@ -125,9 +125,9 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 		boolean returnValue = true;
 		
 		// these are the methods to compare. All are expected to be Strings
-		String[] methods = { "getAddress1", "getAddress2", "getAddress3", "getAddress4", "getAddress5", "getCityVillage",
-		        "getNeighborhoodCell", "getCountyDistrict", "getStateProvince", "getCountry", "getPostalCode",
-		        "getLatitude", "getLongitude" };
+		String[] methods = { "getAddress1", "getAddress2", "getAddress3", "getAddress4", "getAddress5", "getAddress6",
+		        "getCityVillage", "getCountyDistrict", "getStateProvince", "getCountry", "getPostalCode", "getLatitude",
+		        "getLongitude" };
 		
 		Class addressClass = this.getClass();
 		
