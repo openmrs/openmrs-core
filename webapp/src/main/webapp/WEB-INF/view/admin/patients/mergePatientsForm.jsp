@@ -8,6 +8,7 @@
 <openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
 
 <script type="text/javascript">
+var dupSize=0;
 	dojo.require("dojo.widget.openmrs.PatientSearch");
 	
 	function changePrimary(dir) {
@@ -30,20 +31,320 @@
 		img.src = src;
 		cell.appendChild(img);
 	}
-	
+
 	dojo.addOnLoad( function() {
 	
 		dojo.event.topic.subscribe("pSearch/select", 
 			function(msg) {
 				var patient = msg.objs[0];
-				if (patient.patientId != "${patient1.patientId}") {
-					var query = "?patientId=${patient1.patientId}&patientId=" + patient.patientId;
+				if (patient.patientId != undefined && patient.patientId != "${patient1.patientId}") {
+					if("${patient1.patientId}" != ""){
+						var query = "?patientId=${patient1.patientId}&patientId=" + patient.patientId;
+					}else{
+						var query = "?patientId="+patient.patientId;
+					}
 					document.location = "mergePatients.form" + query;
 				}
 			}
 		);
 	});
 	
+
+dojo.addOnLoad(collectInfo);
+
+function collectInfo(){
+		var patientNames = document.getElementById("PatientNames");
+		var patientIdentifiers = document.getElementById("PatientIdentifiers");
+		var patientAddress = document.getElementById("PatientAddress");
+		var patientInfos = document.getElementById("PatientInfos");
+		var encounters = document.getElementById("Encounters");
+		var pref = true;
+		var defPreferred;
+		var count = 0;
+
+		<c:forEach items="${patientList}" var="patient" varStatus="status">
+			count++;
+			if("${patient.voided}"!="true" && pref){
+				defPreferred = document.getElementById("${status.index}");
+				defPreferred.checked = true;
+				pref = false;
+			}
+
+			<c:forEach items="${patient.names}" var="name">
+					patientNames.value = patientNames.value+"${name}|";
+			</c:forEach>
+			patientNames.value = patientNames.value+"#";
+			
+			<c:forEach items="${patient.identifiers}" var="identifier">
+					patientIdentifiers.value = patientIdentifiers.value+"${identifier.identifier} ${identifier.identifierType.name}|";
+			</c:forEach>
+			patientIdentifiers.value = patientIdentifiers.value+"#";
+
+			<c:forEach items="${patient.addresses}" var="address">
+					patientAddress.value = patientAddress.value+"${address.address1} ${address.address2} ${address.cityVillage}|";
+			</c:forEach>
+			patientAddress.value = patientAddress.value+"#";
+
+			patientInfos.value = patientInfos.value+"${patient.patientId},${patient.gender},<openmrs:formatDate date='${patient.birthdate}' type='short' />,<openmrs:formatDate date='${patient.deathDate}' type='short' />,${patient.creator.personName} - <openmrs:formatDate date='${patient.dateCreated}' type='long' />,${patient.changedBy.personName} - <openmrs:formatDate date='${patient.dateChanged}' type='long' />,${patient.voided}#";
+
+		</c:forEach>
+		<c:forEach items="${patientEncounters}" var="encounters" varStatus="status">
+			<c:forEach items="${encounters}" var="encounter">
+						encounters.value = encounters.value+"${encounter.encounterType.name} ${encounter.location.name} <openmrs:formatDate date='${encounter.encounterDatetime}' type='short' /> <a href=\"${pageContext.request.contextPath}/admin/encounters/encounter.form?encounterId=${encounter.encounterId}\"><spring:message code='general.view'/></a>|";
+			</c:forEach>
+			encounters.value = encounters.value+"#";
+		</c:forEach>
+		
+		if(count>2){
+			document.getElementById("selectionList").style.display = "";
+			document.getElementById("p1").style.display="none";
+			document.getElementById("p2").style.display="none";
+			display(defPreferred);
+		}
+		else{
+			document.getElementById("np1").style.display="none";
+			document.getElementById("np2").style.display="none";
+		}
+}
+
+
+function display(obj){
+	var prefId = obj.id;
+	var check = true;
+	var patientsNames = document.getElementById("PatientNames").value.split('#');
+	var patientsIdentifiers = document.getElementById("PatientIdentifiers").value.split('#');
+	var patientsAddress = document.getElementById("PatientAddress").value.split('#');
+	var patientsInfos = document.getElementById("PatientInfos").value.split('#');
+	var encounters = document.getElementById("Encounters").value.split('#');
+	dupSize = patientsNames.length-1;
+	
+	for(var i=0;i<patientsNames.length-1;i++){
+		
+		if(prefId==i){
+			document.getElementById(prefId+"tr").className = "searchHighlight";
+		}else{
+			var className = "oddRow";
+			if(i%2 == 0)
+				className = "evenRow";
+			document.getElementById(i+"tr").className = className;
+		}
+
+		var patientNames = patientsNames[i].split('|');
+		var names = "";
+		for(var j=0;j<patientNames.length-1;j++){//name print Started
+			names = names+"<li>"+patientNames[j];
+		}//name print Ended
+		
+		var patientIdentifiers = patientsIdentifiers[i].split('|');
+		var identifiers = "";
+		for(var j=0;j<patientIdentifiers.length-1;j++){//identifier print Started
+			identifiers = identifiers+"<li>"+patientIdentifiers[j];
+		}//identifier print Ended
+
+		var patientAddress = patientsAddress[i].split('|');
+		var address = "";
+		for(var j=0;j<patientAddress.length-1;j++){//address print Started
+			address = address+"<li>"+patientAddress[j];
+		}//address print Ended
+		
+		var patientInfos = patientsInfos[i].split(',');
+		var infos = "";
+		for(var j=0;j<patientInfos.length;j++){//info print Started
+			infos = patientInfos[j];
+			if(i==prefId){
+				if(j==1){
+					if(patientInfos[j].indexOf('f')>=0){
+						infos = "<img src=\"${pageContext.request.contextPath}/images/female.gif\" />";
+					}else{
+						infos = "<img src=\"${pageContext.request.contextPath}/images/male.gif\" />";
+					}
+				}else{ 
+					if(patientInfos[j]=="true"){
+						document.getElementById("voidCheck1").style.display = "";
+						infos = "Yes";
+					}else if(patientInfos[j]=="false"){
+						document.getElementById("voidCheck1").style.display = "none";
+						infos = "No";
+					}
+				}
+				document.getElementById("info1"+j).innerHTML = infos;
+			}else if(check){
+				if(j==1){
+					if(patientInfos[j].indexOf('f')>=0){
+						infos = "<img src=\"${pageContext.request.contextPath}/images/female.gif\" />";
+					}else{
+						infos = "<img src=\"${pageContext.request.contextPath}/images/male.gif\" />";
+					}
+				}else{ 
+					if(patientInfos[j]=="true"){
+						document.getElementById("voidCheck2").style.display = "";
+						infos = "Yes";
+					}else if(patientInfos[j]=="false"){
+						document.getElementById("voidCheck2").style.display = "none";
+						infos = "No";
+					}
+				}
+				document.getElementById("info2"+j).innerHTML = infos;
+			}
+		}//info print Ended
+
+		var encounter = encounters[i].split('|');
+		var enco = "";
+		for(var j=0;j<encounter.length-1;j++){
+			enco = enco+"<li>"+encounter[j];
+		}
+
+
+		if(i==prefId){
+			document.getElementById('name1').innerHTML = names;
+			document.getElementById('identifier1').innerHTML = identifiers;
+			document.getElementById('address1').innerHTML = address;
+			document.getElementById('encounter1').innerHTML = enco;
+			document.getElementById('edit1').href = "patient.form?patientId="+patientInfos[0];
+		}
+		else if(check){
+			check = false;
+			document.getElementById('name2').innerHTML = names;
+			document.getElementById('identifier2').innerHTML = identifiers;
+			document.getElementById('address2').innerHTML = address;
+			document.getElementById('encounter2').innerHTML = enco;
+			document.getElementById('edit2').href = "patient.form?patientId="+patientInfos[0];
+			prevNext(i);
+		}
+	}//end of main for
+}
+
+function unPrefPatient(i){
+	i = parseInt(i);
+	var patientsNames = document.getElementById("PatientNames").value.split('#');
+	var patientsIdentifiers = document.getElementById("PatientIdentifiers").value.split('#');
+	var patientsAddress = document.getElementById("PatientAddress").value.split('#');
+	var patientsInfos = document.getElementById("PatientInfos").value.split('#');
+	var encounters = document.getElementById("Encounters").value.split('#');
+
+	var patientNames = patientsNames[i].split('|');
+		var names = "";
+		for(var j=0;j<patientNames.length-1;j++){//name print Started
+			names = names+"<li>"+patientNames[j];
+		}//name print Ended
+		
+		var patientIdentifiers = patientsIdentifiers[i].split('|');
+		var identifiers = "";
+		for(var j=0;j<patientIdentifiers.length-1;j++){//identifier print Started
+			identifiers = identifiers+"<li>"+patientIdentifiers[j];
+		}//identifier print Ended
+
+		var patientAddress = patientsAddress[i].split('|');
+		var address = "";
+		for(var j=0;j<patientAddress.length-1;j++){//address print Started
+			address = address+"<li>"+patientAddress[j];
+		}//address print Ended
+		
+		var patientInfos = patientsInfos[i].split(',');
+		var infos = "";
+		for(var j=0;j<patientInfos.length;j++){//info print Started
+			infos = patientInfos[j];
+				if(j==1){
+					if(patientInfos[j].indexOf('f')>=0){
+						infos = "<img src=\"${pageContext.request.contextPath}/images/female.gif\" />";
+					}else{
+						infos = "<img src=\"${pageContext.request.contextPath}/images/male.gif\" />";
+					}
+				}else{ 
+					if(patientInfos[j]=="true"){
+						document.getElementById("voidCheck2").style.display = "";
+						infos = "Yes";
+					}else if(patientInfos[j]=="false"){
+						document.getElementById("voidCheck2").style.display = "none";
+						infos = "No";
+					}
+				}
+				document.getElementById("info2"+j).innerHTML = infos;
+		}//info print Ended
+
+		var encounter = encounters[i].split('|');
+		var enco = "";
+		for(var j=0;j<encounter.length-1;j++){
+			enco = enco+"<li>"+encounter[j];
+		}
+
+			document.getElementById('name2').innerHTML = names;
+			document.getElementById('identifier2').innerHTML = identifiers;
+			document.getElementById('address2').innerHTML = address;
+			document.getElementById('encounter2').innerHTML = enco;
+			document.getElementById('edit2').href = "patient.form?patientId="+patientInfos[0];
+			prevNext(i);
+}
+
+
+function prevNext(record){
+	record = parseInt(record);
+	var pre = record-1;
+	var nex = record+1;
+	document.getElementById("prev").style.display = "";
+	document.getElementById("next").style.display = "";
+	if(pre>=0){
+		document.getElementById("prev").disabled = false;
+		if(document.getElementById(pre).checked == true){
+			if((pre-1)>=0){
+				document.getElementById("prev").disabled = false;
+				pre = pre-1;
+			}else {
+				document.getElementById("prev").disabled = true;
+			}
+		}
+		document.getElementById("prev").onclick = function onclick(){unPrefPatient(pre);}
+	}else {
+			document.getElementById("prev").disabled = true;
+	}
+
+	if(nex<=(dupSize-1)){
+		document.getElementById("next").disabled = false;
+		if(document.getElementById(nex).checked == true){
+			if((nex+1)<=(dupSize-1)){
+				document.getElementById("next").disabled = false;
+				nex = nex+1;
+			}else {
+				document.getElementById("next").disabled = true;
+			}
+		}
+		document.getElementById("next").onclick = function onclick(){unPrefPatient(nex);}
+	}else {
+			document.getElementById("next").disabled = true;
+	}
+}
+
+function generateMergeList(){
+	var conf = confirm('Are you sure you want to merge these patients1?');
+	if(conf){
+		var preferred = document.getElementById('pref');
+		var nonPreferred = document.getElementById('nonPref');
+		if(dupSize>2){
+			nonPreferred.value = "";
+			var patients = document.getElementsByName('preferred2');
+			for(var i=0;i<patients.length;i++){
+				if(patients[i].checked == false){
+					nonPreferred.value = nonPreferred.value+patients[i].value+",";
+				}else preferred.value = patients[i].value;
+			}
+			return true;
+		}else{
+			var preferred = document.getElementById('pref');
+			var nonPreferred = document.getElementById('nonPref');
+			if(document.getElementById("${patient1.patientId}preferred").checked){
+				preferred.value = document.getElementById("${patient1.patientId}preferred").value;
+				nonPreferred.value = document.getElementById("${patient2.patientId}preferred").value;
+			}else if(document.getElementById("${patient2.patientId}preferred").checked){
+				preferred.value = document.getElementById("${patient2.patientId}preferred").value;
+				nonPreferred.value = document.getElementById("${patient1.patientId}preferred").value;
+			}else{
+				return false;
+			}
+		}
+
+	}else return false;
+}
+
 </script>
 
 <style>
@@ -73,13 +374,47 @@
 <spring:message code="Patient.merge.warning" />
 
 <br/><br/>
-
+<div id="selectionList" style="display:none">
+<b class="boxHeader"><spring:message code="Select a Preferred Patient" /></b>
+<div class="box" style="max-height:160px; overflow:auto">
+<table class="box" cellspacing="2" cellpadding="2">
+<tr><th></th><th><spring:message code="Patient.id"/></th><th><spring:message code="Patient.identifiers"/></th><th><spring:message code="PersonName.givenName"/></th><th><spring:message code="PersonName.middleName"/></th><th><spring:message code="PersonName.familyName"/></th><th><spring:message code="Person.age"/></th><th><spring:message code="Person.gender"/></th><th><spring:message code="Person.birthdate"/></th></tr>
+<c:forEach items="${patientList}" var="patient" varStatus="status">
+<tr id="${status.index}tr" class="<c:choose>
+				<c:when test="${status.index % 2 == 0}">evenRow</c:when>
+				<c:otherwise>oddRow</c:otherwise>
+			</c:choose>"><td><input type="radio" id="${status.index}" name="preferred2" value="${patient.patientId}" onclick="display(this)" <c:if test="${patient.voided==true}">disabled</c:if>/></td><td>${patient.patientId}</td><td><c:forEach items="${patient.identifiers}" var="identifier" varStatus="entries">
+							<c:if test="${entries.index==0}">${identifier}</c:if>
+						</c:forEach> </td><c:forEach items="${patient.names}" var="name" varStatus="entries">
+						<c:if test="${entries.index==0}">
+			<td>${name.givenName}</td><td>${name.middleName}</td><td>${name.familyName}</td></c:if></c:forEach>
+					<td>${patient.age}</td><td>
+			<c:choose>
+				<c:when test="${patient.gender == 'M'}">
+					<img src="${pageContext.request.contextPath}/images/male.gif" />
+				</c:when>
+				<c:when test="${patient.gender == 'F'}">
+					<img src="${pageContext.request.contextPath}/images/female.gif" />
+				</c:when>
+				<c:otherwise>${patient.gender}</c:otherwise>
+			</c:choose>
+		</td><td><openmrs:formatDate date="${patient.birthdate}" type="short" /></td></tr>
+</c:forEach>
+<input type="hidden" id="PatientNames"/>
+<input type="hidden" id="PatientIdentifiers"/>
+<input type="hidden" id="PatientAddress"/>
+<input type="hidden" id="PatientInfos"/>
+<input type="hidden" id="Encounters"/>
+</table>
+</div>
+</div>
+<br/><br/>
 <form method="post">
 	<table width="100%" id="patientTable" cellpadding="1" cellspacing="0">
 		<colgroup>
 			<col width="46%" id="left" class="preferred">
 			<col width="22">
-			<col id="right" <c:if test="${patient2.patientId != null}">class="notPreferred"</c:if>>
+			<col id="right"<c:if test="${patient2.patientId != null}">class="notPreferred"</c:if>>
 		</colgroup>
 		<tr>
 			<td width="46%"></td>
@@ -91,36 +426,48 @@
 		<c:if test="${patient2.patientId != null}">
 			<tr>
 				<td valign="top">
-					<h4>
-						<input type="radio" name="preferred" id="${patient1.patientId}preferred" value="${patient1.patientId}" onclick="if (this.checked) changePrimary('left')" checked />
+					<h4 id="p1">
+						<input type="radio" name="preferred1" id="${patient1.patientId}preferred" value="${patient1.patientId}" onclick="if (this.checked) changePrimary('left')" <c:if test="${!patient1.voided}">checked</c:if><c:if test="${patient1.voided}">disabled</c:if> />
 						<label for="${patient1.patientId}preferred"><spring:message code="Patient.merge.preferred" /></label>
-					</h4>
-					<c:if test="${patient1.voided}">
+						<c:if test="${patient1.voided}">
 						<div class="retiredMessage">
 							<div><spring:message code="Patient.voided"/></div>
 						</div>
 					</c:if>
+					</h4>
+					<h4 id="np1">
+						<center><b><spring:message code="Patient.merge.preferred"/></b></center>
+						<div class="retiredMessage" id="voidCheck1" style="display:none">
+							<div><spring:message code="Patient.voided"/></div>
+						</div>
+					</h4>
 				</td>
 				<td valign="top">
-					<h4>
-						<input type="radio" name="preferred" id="${patient2.patientId}preferred" value="${patient2.patientId}" onclick="if (this.checked) changePrimary('right')"/>
+					<h4 id="p2">
+						<input type="radio" name="preferred1" id="${patient2.patientId}preferred" value="${patient2.patientId}" onclick="if (this.checked) changePrimary('right')" <c:if test="${patient2.voided}">disabled</c:if>/>
 						<label for="${patient2.patientId}preferred"><spring:message code="Patient.merge.preferred" /></label>
-					</h4>
 						<c:if test="${patient2.voided}">
 							<div class="retiredMessage">
 								<div><spring:message code="Patient.voided"/></div>
 							</div>
 						</c:if>
+					</h4>
+					<h4 id="np2">
+						<center><b><spring:message code="Patient.merge.notPreferred"/></b></center>
+						<div class="retiredMessage" id="voidCheck2" style="display:none">
+							<div><spring:message code="Patient.voided"/></div>
+						</div>
+					</h4>
 				</td>
 			</tr>
 		</c:if>
 		<tr>
 			<td valign="top">
 				<h4><spring:message code="Patient.names"/></h4>
-				<ol>
+				<ol id="name1">
 					<c:forEach items="${patient1.names}" var="name">
-						<li>${name.givenName} ${name.middleName} ${name.familyName}
-					</c:forEach>
+							<li>${name.givenName} ${name.middleName} ${name.familyName}
+						</c:forEach>
 				</ol>
 			</td>
 			<c:if test="${patient2.patientId == null}">
@@ -132,18 +479,18 @@
 			<c:if test="${patient2.patientId != null}">
 				<td valign="top">
 					<h4><spring:message code="Patient.names"/></h4>
-					<ol>
+					<ol id="name2">
 						<c:forEach items="${patient2.names}" var="name">
 							<li>${name.givenName} ${name.middleName} ${name.familyName}
 						</c:forEach>
 					</ol>
-				</td>
+				</td><td valign="top"><input type="button" style="display:none" value="prev" id="prev" onclick=""/>&nbsp;<input type="button" value="next" id="next" style="display:none" onclick=""/></td>
 			</c:if>
 		</tr>
 		<tr>
 			<td valign="top">
 				<h4><spring:message code="Patient.identifiers"/></h4>
-				<ol>
+				<ol id="identifier1">
 					<c:forEach items="${patient1.identifiers}" var="identifier">
 						<li>${identifier.identifier} ${identifier.identifierType.name}
 					</c:forEach>
@@ -152,7 +499,7 @@
 			<c:if test="${patient2.patientId != null}">
 				<td valign="top">
 					<h4><spring:message code="Patient.identifiers"/></h4>
-					<ol>
+					<ol id="identifier2">
 						<c:forEach items="${patient2.identifiers}" var="identifier">
 							<li>${identifier.identifier} ${identifier.identifierType.name}
 						</c:forEach>
@@ -163,7 +510,7 @@
 		<tr>
 			<td valign="top">
 				<h4><spring:message code="Patient.addresses"/></h4>
-				<ol>
+				<ol id="address1">
 					<c:forEach items="${patient1.addresses}" var="address">
 						<li>${address.address1} ${address.address2} ${address.cityVillage}
 					</c:forEach>
@@ -172,7 +519,7 @@
 			<c:if test="${patient2.patientId != null}">
 				<td valign="top">
 					<h4><spring:message code="Patient.addresses"/></h4>
-					<ol>
+					<ol id="address2">
 						<c:forEach items="${patient2.addresses}" var="address">
 							<li>${address.address1} ${address.address2} ${address.cityVillage}
 						</c:forEach>
@@ -184,20 +531,135 @@
 			<td valign="top">
 				<h4><spring:message code="Patient.information"/></h4>
 				<c:set var="patient" value="${patient1}" />
-				<%@ include file="../person/include/showPersonInfo.jsp" %>
+
+
+	<table>
+		<tr>
+			<th align="left"><spring:message code="general.id"/></th>
+			<td id="info10">${patient.patientId}</td>
+		</tr>
+		<tr>
+			<th align="left"><spring:message code="Person.gender"/></th>
+			<td id="info11">
+				<c:choose>
+					<c:when test="${patient.gender == 'M'}">
+						<img src="${pageContext.request.contextPath}/images/male.gif" />
+					</c:when>
+					<c:when test="${patient.gender == 'F'}">
+						<img src="${pageContext.request.contextPath}/images/female.gif" />
+					</c:when>
+					<c:otherwise>${patient.gender}</c:otherwise>
+				</c:choose>
+			</td>
+		</tr>
+		<tr>
+			<th align="left"><spring:message code="Person.birthdate"/></th>
+			<td id="info12"><openmrs:formatDate date="${patient.birthdate}" type="short" /></td>
+		</tr>
+		
+		<tr>
+			<th align="left"><spring:message code="Person.deathDate"/></th>
+			<td id="info13"><openmrs:formatDate date="${patient.deathDate}" type="short" /></td>
+		</tr>
+		<tr>
+			<th align="left"><spring:message code="general.createdBy" /></th>
+			<td id="info14">
+				${patient.creator.personName} -
+				<openmrs:formatDate date="${patient.dateCreated}" type="long" />
+			</td>
+		</tr>
+		<tr>
+			<th align="left"><spring:message code="general.changedBy" /></th>
+			<td id="info15">
+				${patient.changedBy.personName} -
+				<openmrs:formatDate date="${patient.dateChanged}" type="long" />
+			</td>
+		</tr>
+		<tr>
+			<th align="left"><spring:message code="general.voided"/></th>
+			<td id="info16">
+				<c:choose>
+					<c:when test="${patient.voided}">
+						<spring:message code="general.yes"/>
+					</c:when>
+					<c:otherwise>
+						<spring:message code="general.no"/>
+					</c:otherwise>
+				</c:choose>
+			</td>
+		</tr>
+	</table>
+
 			</td>
 			<c:if test="${patient2.patientId != null}">
 				<td valign="top">
 					<h4><spring:message code="Patient.information"/></h4>
 					<c:set var="patient" value="${patient2}" />
-					<%@ include file="../person/include/showPersonInfo.jsp" %>
+
+	<table>
+		<tr>
+			<th align="left"><spring:message code="general.id"/></th>
+			<td id="info20">${patient.patientId}</td>
+		</tr>
+		<tr>
+			<th align="left"><spring:message code="Person.gender"/></th>
+			<td id="info21">
+				<c:choose>
+					<c:when test="${patient.gender == 'M'}">
+						<img src="${pageContext.request.contextPath}/images/male.gif" />
+					</c:when>
+					<c:when test="${patient.gender == 'F'}">
+						<img src="${pageContext.request.contextPath}/images/female.gif" />
+					</c:when>
+					<c:otherwise>${patient.gender}</c:otherwise>
+				</c:choose>
+			</td>
+		</tr>
+		<tr>
+			<th align="left"><spring:message code="Person.birthdate"/></th>
+			<td id="info22"><openmrs:formatDate date="${patient.birthdate}" type="short" /></td>
+		</tr>
+		
+		<tr>
+			<th align="left"><spring:message code="Person.deathDate"/></th>
+			<td id="info23"><openmrs:formatDate date="${patient.deathDate}" type="short" /></td>
+		</tr>
+		<tr>
+			<th align="left"><spring:message code="general.createdBy" /></th>
+			<td id="info24">
+				${patient.creator.personName} -
+				<openmrs:formatDate date="${patient.dateCreated}" type="long" />
+			</td>
+		</tr>
+		<tr>
+			<th align="left"><spring:message code="general.changedBy" /></th>
+			<td id="info25">
+				${patient.changedBy.personName} -
+				<openmrs:formatDate date="${patient.dateChanged}" type="long" />
+			</td>
+		</tr>
+		<tr>
+			<th align="left"><spring:message code="general.voided"/></th>
+			<td id="info26">
+				<c:choose>
+					<c:when test="${patient.voided}">
+						<spring:message code="general.yes"/>
+					</c:when>
+					<c:otherwise>
+						<spring:message code="general.no"/>
+					</c:otherwise>
+				</c:choose>
+			</td>
+		</tr>
+	</table>
+
 				</td>
 			</c:if>
 		</tr>
 		<tr>
 			<td valign="top">
 				<h4><spring:message code="Patient.encounters"/></h4>
-				<ol>
+				<ol id="encounter1">
 					<c:forEach items="${patient1Encounters}" var="encounter">
 						<li>
 							${encounter.encounterType.name}
@@ -212,7 +674,7 @@
 			<c:if test="${patient2.patientId != null}">
 				<td valign="top">
 					<h4><spring:message code="Patient.encounters"/></h4>
-					<ol>
+					<ol id="encounter2">
 						<c:forEach items="${patient2Encounters}" var="encounter">
 							<li>
 								${encounter.encounterType.name}
@@ -228,20 +690,22 @@
 		</tr>
 		<tr>
 			<td>
-				<a href="patient.form?patientId=${patient1.patientId}"><spring:message code="Patient.edit"/></a>
+				<a href="patient.form?patientId=${patient1.patientId}" id="edit1"><spring:message code="Patient.edit"/></a>
 			</td>
 			<c:if test="${patient2.patientId != null}">
 				<td>
-					<a href="patient.form?patientId=${patient2.patientId}"><spring:message code="Patient.edit"/></a>
+					<a href="patient.form?patientId=${patient2.patientId}" id="edit2"><spring:message code="Patient.edit"/></a>
 				</td>
 			</c:if>
+			</tr>
 	</table>
-
+	
 	<c:if test="${patient2.patientId != null}">
 		<br />
-		<input type="submit" name="action" value='<spring:message code="Patient.merge"/>' onclick="return confirm('Are you sure you want to merge these patients?')" >
-		<input type="hidden" name="patient1" value="${patient1.patientId}"/>
-		<input type="hidden" name="patient2" value="${patient2.patientId}"/>
+		<input type="submit" name="action" value='<spring:message code="Patient.merge"/>' onclick="return generateMergeList();" >
+		<input type="hidden" id="pref" name="preferred" value=""/>
+		<input type="hidden" id="nonPref" name="nonPreferred" value=""/>
+		<input type="hidden" name="redirectURL" value='<request:header name="referer" />' />
 	</c:if>
 </form>
 

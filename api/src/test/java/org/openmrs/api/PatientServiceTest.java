@@ -20,6 +20,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -55,7 +56,6 @@ import org.openmrs.api.impl.PatientServiceImpl;
 import org.openmrs.patient.IdentifierValidator;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.SkipBaseSetup;
-import org.openmrs.test.StartModule;
 import org.openmrs.test.TestUtil;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.OpenmrsConstants;
@@ -496,8 +496,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PatientService#getPatient(Integer)}
-	 * Does this test duplicate getPatient_shouldReturnNullObjectIfPatientIdDoesntExist()?
+	 * @see {@link PatientService#getPatient(Integer)} Does this test duplicate
+	 *      getPatient_shouldReturnNullObjectIfPatientIdDoesntExist()?
 	 */
 	@Test
 	@Verifies(value = "should return null object if patient id doesnt exist", method = "getPatient(Integer)")
@@ -1670,8 +1670,9 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies {@link PatientService#getPatients(String,String,List<QPatientIdentifierType;>,null)}
-	 * test = should return empty list when no match is found
+	 * @verifies {@link
+	 *           PatientService#getPatients(String,String,List<QPatientIdentifierType;>,null)} test
+	 *           = should return empty list when no match is found
 	 */
 	@Test
 	@Verifies(value = "should return empty list when no match is found", method = "getPatients(String,String,List<PatientIdentifierType>,boolean)")
@@ -1686,8 +1687,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies {@link PatientService#getPatient(Integer)}
-	 * test = should update an existing patient
+	 * @verifies {@link PatientService#getPatient(Integer)} test = should update an existing patient
 	 */
 	@Test
 	@Verifies(value = "should update an existing patient", method = "savePatient(Patient)")
@@ -1707,8 +1707,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies {@link PatientService#savePatient(Patient)}
-	 * test = should fail when patient does not have any patient identifiers
+	 * @verifies {@link PatientService#savePatient(Patient)} test = should fail when patient does
+	 *           not have any patient identifiers
 	 */
 	@Test
 	@Verifies(value = "should fail when patient does not have any patient identifiers", method = "savePatient(Patient)")
@@ -1724,8 +1724,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies {@link PatientService#getAllPatients()}
-	 * test = should fetch all non voided patients
+	 * @verifies {@link PatientService#getAllPatients()} test = should fetch all non voided patients
 	 */
 	@Test
 	@Verifies(value = "should fetch all non voided patients", method = "getAllPatients()")
@@ -1736,8 +1735,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies {@link PatientService#getAllPatients(null)}
-	 * test = should fetch non voided patients when given include voided is false
+	 * @verifies {@link PatientService#getAllPatients(null)} test = should fetch non voided patients
+	 *           when given include voided is false
 	 */
 	@Test
 	@Verifies(value = "should fetch non voided patients when given include voided is false", method = "getAllPatients(boolean)")
@@ -1748,8 +1747,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies {@link PatientService#getAllPatients(null)}
-	 * test = should fetch voided patients when given include voided is true
+	 * @verifies {@link PatientService#getAllPatients(null)} test = should fetch voided patients
+	 *           when given include voided is true
 	 */
 	@Test
 	@Verifies(value = "should fetch voided patients when given include voided is true", method = "getAllPatients(boolean)")
@@ -1760,8 +1759,9 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies {@link PatientService#getPatients(String,String,List<QPatientIdentifierType;>,null)}
-	 * test = should fetch all patients that partially match given name
+	 * @verifies {@link
+	 *           PatientService#getPatients(String,String,List<QPatientIdentifierType;>,null)} test
+	 *           = should fetch all patients that partially match given name
 	 */
 	@SkipBaseSetup
 	@Test
@@ -1800,8 +1800,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies {@link PatientService#purgePatient(Patient)}
-	 * test = should delete patient from database
+	 * @verifies {@link PatientService#purgePatient(Patient)} test = should delete patient from
+	 *           database
 	 */
 	@SkipBaseSetup
 	@Test
@@ -1822,8 +1822,9 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies {@link PatientService#getPatients(String,String,List<QPatientIdentifierType;>,null)}
-	 * test = should not return voided patients
+	 * @verifies {@link
+	 *           PatientService#getPatients(String,String,List<QPatientIdentifierType;>,null)} test
+	 *           = should not return voided patients
 	 */
 	@SkipBaseSetup
 	@Test
@@ -1841,8 +1842,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies {@link PatientService#exitFromCare(Patient,Date,Concept)}
-	 * test = should throw error when given date exited is null
+	 * @verifies {@link PatientService#exitFromCare(Patient,Date,Concept)} test = should throw error
+	 *           when given date exited is null
 	 */
 	@Test(expected = APIException.class)
 	@Verifies(value = "should throw error when given date exited is null", method = "exitFromCare(Patient,Date,Concept)")
@@ -1860,8 +1861,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies {@link PatientService#exitFromCare(Patient,Date,Concept)}
-	 * test = should throw error when given patient is null
+	 * @verifies {@link PatientService#exitFromCare(Patient,Date,Concept)} test = should throw error
+	 *           when given patient is null
 	 */
 	@Test(expected = APIException.class)
 	@Verifies(value = "should throw error when given patient is null", method = "exitFromCare(Patient,Date,Concept)")
@@ -1879,8 +1880,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies {@link PatientService#exitFromCare(Patient,Date,Concept)}
-	 * test = should throw error when given reason for exist is null
+	 * @verifies {@link PatientService#exitFromCare(Patient,Date,Concept)} test = should throw error
+	 *           when given reason for exist is null
 	 */
 	@Test(expected = APIException.class)
 	@Verifies(value = "should throw error when given reason for exist is null", method = "exitFromCare(Patient,Date,Concept)")
@@ -2055,6 +2056,22 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	public void voidPatientIdentifier_shouldThrowAnAPIExceptionIfTheReasonIsAWhiteSpaceCharacter() throws Exception {
 		PatientIdentifier patientIdentifierToVoid = patientService.getPatientIdentifier(3);
 		patientService.voidPatientIdentifier(patientIdentifierToVoid, " ");
+	}
+	
+	/**
+	 * @verifies {@link PatientService#mergePatients(Patient, List)}
+	 */
+	@Test
+	public void mergePatients_shouldMergeAllNonPreferredPatientsInTheTheNotPreferredListToPreferredPatient()
+	        throws Exception {
+		Patient preferred = patientService.getPatient(6);
+		List<Patient> notPreferred = new ArrayList<Patient>();
+		notPreferred.add(patientService.getPatient(7));
+		notPreferred.add(patientService.getPatient(8));
+		patientService.mergePatients(preferred, notPreferred);
+		Assert.assertFalse(patientService.getPatient(6).isVoided());
+		Assert.assertTrue(patientService.getPatient(7).isVoided());
+		Assert.assertTrue(patientService.getPatient(8).isVoided());
 	}
 	
 	/**

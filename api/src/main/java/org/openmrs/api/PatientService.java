@@ -181,8 +181,10 @@ public interface PatientService extends OpenmrsService {
 	 * @return patients that matched the given criteria (and are not voided)
 	 * @throws APIException
 	 * @should fetch all patients that partially match given name
-	 * @should fetch all patients that partially match given identifier when match identifier exactly equals false
-	 * @should fetch all patients that exactly match given identifier when match identifier exactly equals true
+	 * @should fetch all patients that partially match given identifier when match identifier
+	 *         exactly equals false
+	 * @should fetch all patients that exactly match given identifier when match identifier exactly
+	 *         equals true
 	 * @should fetch all patients that match given identifier types
 	 * @should not return duplicates
 	 * @should not return voided patients
@@ -657,6 +659,16 @@ public interface PatientService extends OpenmrsService {
 	 */
 	@Authorized( { PrivilegeConstants.EDIT_PATIENTS })
 	public void mergePatients(Patient preferred, Patient notPreferred) throws APIException;
+	
+	/**
+	 * Convenience method to join multiple patients' information into one record.
+	 * 
+	 * @param preferred
+	 * @param notPreferred
+	 * @throws APIException
+	 * @should merge all non Preferred patients in the the notPreferred list to preferred patient
+	 */
+	public void mergePatients(Patient preferred, List<Patient> notPreferred) throws APIException;
 	
 	/**
 	 * Convenience method to establish that a patient has left the care center. This API call is
