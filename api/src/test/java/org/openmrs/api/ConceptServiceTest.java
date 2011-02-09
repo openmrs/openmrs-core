@@ -492,11 +492,41 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link ConceptService#getConceptByMapping(String,String)}
+	 * @see {@link ConceptService#getConceptsByMapping(String,String)}
 	 */
+	@Test
+	@Verifies(value = "should return retired concept by default if that is the only match", method = "getConceptByMapping(String,String)")
+	public void getConceptByMapping_shouldReturnRetiredConceptByDefaultIfOnlyMatch() throws Exception {
+		Concept concept = conceptService.getConceptByMapping("454545", "SSTRM");
+		Assert.assertEquals(new Concept(24), concept);
+		
+	}
+	
+	/**
+	 * @see {@link ConceptService#getConceptsByMapping(String,String,Boolean)}
+	 */
+	@Test
+	@Verifies(value = "should return retired concept if that is the only match", method = "getConceptByMapping(String,String,Boolean)")
+	public void getConceptByMapping_shouldReturnRetiredConceptIfOnlyMatch() throws Exception {
+		Concept concept = conceptService.getConceptByMapping("454545", "SSTRM", true);
+		Assert.assertEquals(new Concept(24), concept);
+		
+	}
+	
+	/**
+	 * @see {@link ConceptService#getConceptsByMapping(String,String,Boolean)}
+	 */
+	@Test
+	@Verifies(value = "should not return retired concept", method = "getConceptByMapping(String,String,Boolean)")
+	public void getConceptByMapping_shouldNotReturnRetiredConcept() throws Exception {
+		Concept concept = conceptService.getConceptByMapping("454545", "SSTRM", false);
+		Assert.assertNull(concept);
+		
+	}
+	
 	@Test(expected = APIException.class)
-	@Verifies(value = "should throw exception if there is more than one concept associated with the mappingCode", method = "getConceptByMapping(String,String)")
-	public void getConceptByMapping_shouldThrowExceptionIfThereIsMoreThanOneConcept() throws Exception {
+	@Verifies(value = "should throw exception if two non-retired concepts have the name mapping", method = "getConceptsByMapping(String,String,Boolean)")
+	public void getConceptByMapping_shouldThrowExceptionIfTwoConceptsHaveSameMapping() throws Exception {
 		conceptService.getConceptByMapping("127689", "Some Standardized Terminology");
 	}
 	
@@ -504,7 +534,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link ConceptService#getConceptsByMapping(String,String)}
 	 */
 	@Test
-	@Verifies(value = "should get distinct concepts with given code and and source hl7 code", method = "getConceptByMapping(String,String)")
+	@Verifies(value = "should get distinct concepts with given code and and source hl7 code", method = "getConceptsByMapping(String,String)")
 	public void getConceptsByMapping_shouldGetConceptsWithGivenCodeAndSourceH17Code() throws Exception {
 		List<Concept> concepts = conceptService.getConceptsByMapping("127689", "Some Standardized Terminology");
 		Assert.assertEquals(2, concepts.size());
@@ -516,7 +546,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link ConceptService#getConceptsByMapping(String,String)}
 	 */
 	@Test
-	@Verifies(value = "should get distinct concepts with given code and source name", method = "getConceptByMapping(String,String)")
+	@Verifies(value = "should get distinct concepts with given code and source name", method = "getConceptsByMapping(String,String)")
 	public void getConceptsByMapping_shouldGetConceptsWithGivenCodeAndSourceName() throws Exception {
 		List<Concept> concepts = conceptService.getConceptsByMapping("127689", "SSTRM");
 		Assert.assertEquals(2, concepts.size());
@@ -538,7 +568,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link ConceptService#getConceptsByMapping(String,String)}
 	 */
 	@Test
-	@Verifies(value = "should return empty list if no mappings exist", method = "getConceptByMapping(String,String)")
+	@Verifies(value = "should return empty list if no mappings exist", method = "getConceptsByMapping(String,String)")
 	public void getConceptsByMapping_shouldReturnEmptyListIfNoMappingsExist() throws Exception {
 		List<Concept> concept = conceptService.getConceptsByMapping("A random concept code", "SSTRM");
 		Assert.assertTrue(concept.isEmpty());
@@ -548,7 +578,19 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link ConceptService#getConceptsByMapping(String,String,Boolean)}
 	 */
 	@Test
-	@Verifies(value = "should only return non-retired concepts", method = "getConceptByMapping(String,String,Boolean)")
+	@Verifies(value = "should return retired and non-retired concepts", method = "getConceptsByMapping(String,String)")
+	public void getConceptsByMapping_shouldReturnRetiredAndNonRetiredConceptsByDefault() throws Exception {
+		List<Concept> concepts = conceptService.getConceptsByMapping("766554", "SSTRM");
+		Assert.assertEquals(2, concepts.size());
+		Assert.assertTrue(concepts.contains(new Concept(16)));
+		Assert.assertTrue(concepts.contains(new Concept(24)));
+	}
+	
+	/**
+	 * @see {@link ConceptService#getConceptsByMapping(String,String,Boolean)}
+	 */
+	@Test
+	@Verifies(value = "should only return non-retired concepts", method = "getConceptsByMapping(String,String,Boolean)")
 	public void getConceptsByMapping_shouldOnlyReturnNonRetiredConcepts() throws Exception {
 		List<Concept> concepts = conceptService.getConceptsByMapping("766554", "SSTRM", false);
 		Assert.assertEquals(1, concepts.size());
@@ -559,7 +601,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link ConceptService#getConceptsByMapping(String,String,Boolean)}
 	 */
 	@Test
-	@Verifies(value = "should return retired and non-retired concepts", method = "getConceptByMapping(String,String,Boolean)")
+	@Verifies(value = "should return retired and non-retired concepts", method = "getConceptsByMapping(String,String,Boolean)")
 	public void getConceptsByMapping_shouldReturnRetiredAndNonRetiredConcepts() throws Exception {
 		List<Concept> concepts = conceptService.getConceptsByMapping("766554", "SSTRM", true);
 		Assert.assertEquals(2, concepts.size());
@@ -571,7 +613,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link ConceptService#getConceptsByMapping(String,String,Boolean)}
 	 */
 	@Test
-	@Verifies(value = "should sort non-retired concepts first", method = "getConceptByMapping(String,String,Boolean)")
+	@Verifies(value = "should sort non-retired concepts first", method = "getConceptsByMapping(String,String,Boolean)")
 	public void getConceptsByMapping_shouldSortNonRetiredConceptsFirst() throws Exception {
 		List<Concept> concepts = conceptService.getConceptsByMapping("766554", "SSTRM", true);
 		Assert.assertTrue(concepts.get(0).equals(new Concept(16)));
