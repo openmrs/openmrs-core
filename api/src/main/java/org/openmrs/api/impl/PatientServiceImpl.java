@@ -1265,6 +1265,17 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	}
 	
 	/**
+	 * @see org.openmrs.api.PatientService#mergePatients(org.openmrs.Patient, java.util.List)
+	 */
+	@Override
+	public void mergePatients(Patient preferred, List<Patient> notPreferred) throws APIException {
+		
+		for (Patient nonPreferred : notPreferred) {
+			mergePatients(preferred, nonPreferred);
+		}
+	}
+	
+	/**
 	 * @see org.openmrs.api.PatientService#savePatientIdentifier(org.openmrs.PatientIdentifier)
 	 */
 	public PatientIdentifier savePatientIdentifier(PatientIdentifier patientIdentifier) throws APIException {

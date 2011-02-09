@@ -1,3 +1,5 @@
+package org.openmrs.web.controller.patient;
+
 /**
  * The contents of this file are subject to the OpenMRS Public License
  * Version 1.0 (the "License"); you may not use this file except in
@@ -11,10 +13,11 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.web.controller.patient;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
@@ -35,7 +38,6 @@ import org.openmrs.web.WebConstants;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ObjectError;
-import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
@@ -60,7 +62,7 @@ public class MergePatientsFormController extends SimpleFormController {
 			log.debug("Error codes: " + e.getCodes());
 		}
 		
-		// call onSubmit manually so that we don't have to call 
+		// call onSubmit manually so that we don't have to call
 		// super.processFormSubmission()
 		return onSubmit(request, response, object, errors);
 	}
@@ -82,19 +84,17 @@ public class MergePatientsFormController extends SimpleFormController {
 			String view = getSuccessView();
 			PatientService ps = Context.getPatientService();
 			
-			String patient1Id = ServletRequestUtils.getRequiredStringParameter(request, "patient1");
-			String patient2Id = ServletRequestUtils.getRequiredStringParameter(request, "patient2");
-			String preferredId = ServletRequestUtils.getRequiredStringParameter(request, "preferred");
+			String pref = request.getParameter("preferred");
+			String[] nonPreferred = request.getParameter("nonPreferred").split(",");
+			String redirectURL = request.getParameter("redirectURL");
 			
-			Patient preferred = null;
-			Patient notPreferred = null;
+			Patient preferred = ps.getPatient(Integer.valueOf(pref));
+			List<Patient> notPreferred = new ArrayList<Patient>();
 			
-			if (patient1Id.equals(preferredId)) {
-				preferred = ps.getPatient(Integer.valueOf(patient1Id));
-				notPreferred = ps.getPatient(Integer.valueOf(patient2Id));
-			} else {
-				notPreferred = ps.getPatient(Integer.valueOf(patient1Id));
-				preferred = ps.getPatient(Integer.valueOf(patient2Id));
+			view = view + "?patientId=" + preferred.getPatientId();
+			for (int i = 0; i < nonPreferred.length; i++) {
+				notPreferred.add(ps.getPatient(Integer.valueOf(nonPreferred[i])));
+				view = view + "&patientId=" + nonPreferred[i];
 			}
 			
 			try {
@@ -103,14 +103,19 @@ public class MergePatientsFormController extends SimpleFormController {
 			catch (APIException e) {
 				log.error("Unable to merge patients", e);
 				httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Patient.merge.fail");
-				return new ModelAndView(new RedirectView(view + "?patientId=" + preferred.getPatientId() + "&patientId="
-				        + notPreferred.getPatientId()));
+				return showForm(request, response, errors);
 			}
+			int index = redirectURL.indexOf(request.getContextPath(), 2);
+			if (index != -1) {
+				redirectURL = redirectURL.substring(index);
+				if (redirectURL.contains(getSuccessView()))
+					redirectURL = "findDuplicatePatients.htm";
+			} else
+				redirectURL = view;
 			
 			httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Patient.merged");
 			
-			return new ModelAndView(new RedirectView(view + "?patientId=" + preferred.getPatientId() + "&patientId="
-			        + notPreferred.getPatientId()));
+			return new ModelAndView(new RedirectView(redirectURL));
 		}
 		
 		return new ModelAndView(new RedirectView(getFormView()));
@@ -122,6 +127,7 @@ public class MergePatientsFormController extends SimpleFormController {
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
+	@Override
 	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 		
 		Patient p1 = new Patient();
@@ -143,6 +149,7 @@ public class MergePatientsFormController extends SimpleFormController {
 	 * 
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest)
 	 */
+	@Override
 	protected Map<String, Object> referenceData(HttpServletRequest request, Object obj, Errors errors) throws Exception {
 		
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -151,23 +158,33 @@ public class MergePatientsFormController extends SimpleFormController {
 		Patient p2 = new Patient();
 		Collection<Encounter> patient1Encounters = new Vector<Encounter>();
 		Collection<Encounter> patient2Encounters = new Vector<Encounter>();
-		
+		List<Patient> patientList = new ArrayList<Patient>();
+		List<Collection<Encounter>> encounterList = new ArrayList<Collection<Encounter>>();
 		if (Context.isAuthenticated()) {
 			EncounterService es = Context.getEncounterService();
 			patient1Encounters = es.getEncountersByPatient(p1);
 			
 			String[] patientIds = request.getParameterValues("patientId");
+			if (patientIds != null)
+				for (String patient : patientIds) {
+					patientList.add(Context.getPatientService().getPatient(Integer.valueOf(patient)));
+					encounterList.add(es.getEncountersByPatient(Context.getPatientService().getPatient(
+					    Integer.valueOf(patient))));
+				}
 			if (patientIds != null && patientIds.length > 1 && !patientIds[0].equals(patientIds[1])) {
 				String patientId = patientIds[1];
 				Integer pId = Integer.valueOf(patientId);
 				p2 = Context.getPatientService().getPatient(pId);
 				patient2Encounters = es.getEncountersByPatient(p2);
 			}
+			
 		}
 		
 		map.put("patient1Encounters", patient1Encounters);
 		map.put("patient2Encounters", patient2Encounters);
+		map.put("patientEncounters", encounterList);
 		map.put("patient2", p2);
+		map.put("patientList", patientList);
 		
 		return map;
 	}
