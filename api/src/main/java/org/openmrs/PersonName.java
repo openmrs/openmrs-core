@@ -104,9 +104,9 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 				return (this.personNameId.equals(pname.getPersonNameId()));
 			else {
 				return (OpenmrsUtil.nullSafeEquals(getPerson(), pname.getPerson())
-				        && OpenmrsUtil.nullSafeEquals(getGivenName(), pname.getGivenName())
-				        && OpenmrsUtil.nullSafeEquals(getMiddleName(), pname.getMiddleName()) && OpenmrsUtil.nullSafeEquals(
-				    getFamilyName(), pname.getFamilyName()));
+				        && OpenmrsUtil.nullSafeEqualsIgnoreCase(getGivenName(), pname.getGivenName())
+				        && OpenmrsUtil.nullSafeEqualsIgnoreCase(getMiddleName(), pname.getMiddleName()) && OpenmrsUtil
+				        .nullSafeEqualsIgnoreCase(getFamilyName(), pname.getFamilyName()));
 			}
 			
 		}
@@ -505,7 +505,6 @@ public class PersonName extends BaseOpenmrsData implements java.io.Serializable,
 	 * are null, they are not included in the returned name
 	 * 
 	 * @return all of the parts of this {@link PersonName} joined with spaces
-	 * 
 	 * @should not put spaces around an empty middle name
 	 */
 	public String getFullName() {
