@@ -2344,4 +2344,23 @@ public class OpenmrsUtil {
 			return null;
 		}
 	}
+	
+	/**
+	 * Performs a case insensitive Comparison of two strings taking care of null values
+	 * 
+	 * @param s1 the string to compare
+	 * @param s2 the string to compare
+	 * @return
+	 * @should return false if only one of the strings is null
+	 * @should be case insensitive
+	 * @since 1.8
+	 */
+	public static boolean nullSafeEqualsIgnoreCase(String s1, String s2) {
+		if (s1 == null)
+			return s2 == null;
+		else if (s2 == null)
+			return false;
+		
+		return s1.equalsIgnoreCase(s2);
+	}
 }
