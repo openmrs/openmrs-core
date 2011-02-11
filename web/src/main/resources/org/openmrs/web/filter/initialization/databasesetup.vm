@@ -23,7 +23,7 @@
                 <tr>
                     <td rowspan="2"  valign="top" class="yes">Yes
                         <input type="radio" name="current_openmrs_database" value="yes" #if( $hasCurrentOpenmrsDatabase == true )checked="checked"#end/></td>
-                    <td class="yes">If yes, what is the name this database?</td>
+                    <td class="yes">If yes, what is the name of this database?</td>
 			  </tr>
                 <tr>
                     <td>Database Name: &nbsp;<input type="text" name="openmrs_current_database_name" value="${databaseName}" onfocus="clickRadio('current_openmrs_database', 'yes')"/></td>
