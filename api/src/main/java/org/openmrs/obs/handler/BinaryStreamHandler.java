@@ -106,4 +106,3 @@ public class BinaryStreamHandler extends AbstractHandler implements ComplexObsHa
 	}
 	
 }
-
