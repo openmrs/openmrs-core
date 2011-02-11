@@ -350,7 +350,7 @@ FunctionEnd
 ;Downloads and installs Java 6
 Function InstallJava
 	${If} $JavaExists == false
-        StrCpy $JavaSetup "$TEMP\jdk-6u20-ea-bin-b02-windows-i586-01_apr_2010.exe"
+        StrCpy $JavaSetup "$TEMP\jdk-6u25-ea-bin-b01-windows-i586-27_jan_2011.exe"
         !ifdef JAVA_6_DOWNLOAD_URL
             Call DownloadJava
             Call VerifyJavaDownloadStatus
@@ -394,7 +394,7 @@ FunctionEnd
 ;Downloads and installs Mysql 5.1
 Function InstallMySql
 	${If} $MysqlExists == false
-    	StrCpy $MysqlSetup "$TEMP\mysql-essential-5.1.53-win32.msi"
+    	StrCpy $MysqlSetup "$TEMP\mysql-essential-5.1.55-win32.msi"
 	    !ifdef MYSQL_DOWNLOAD_URL
 		    Call DownloadMysql
 		    Call VerifyMysqlDownloadStatus
