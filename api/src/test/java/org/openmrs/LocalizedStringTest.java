@@ -48,7 +48,7 @@ public class LocalizedStringTest {
 		LocalizedString left = new LocalizedString();
 		Map<Locale, String> variants = new HashMap<Locale, String>();
 		variants.put(new Locale("en", "UK"), "Favourite Colour");
-		variants.put(new Locale("fr"), "Couleur pr¨¦f¨¦r¨¦e");
+		variants.put(new Locale("fr"), "Couleur pr__e");
 		left.setUnlocalizedValue("Favorite Color");
 		left.setVariants(variants);
 		
@@ -92,7 +92,7 @@ public class LocalizedStringTest {
 		LocalizedString right = new LocalizedString();
 		Map<Locale, String> variants = new HashMap<Locale, String>();
 		variants.put(new Locale("en", "UK"), "Favourite Colour");
-		variants.put(new Locale("fr"), "Couleur pr¨¦f¨¦r¨¦e");
+		variants.put(new Locale("fr"), "Couleur pr__e");
 		right.setUnlocalizedValue("Favorite Color");
 		right.setVariants(variants);
 		
@@ -109,7 +109,7 @@ public class LocalizedStringTest {
 		ls.setUnlocalizedValue("Favorite Color");
 		Map<Locale, String> variants = new HashMap<Locale, String>();
 		variants.put(new Locale("en", "UK"), "Favourite Colour");
-		variants.put(new Locale("fr"), "Couleur pr¨¦f¨¦r¨¦e");
+		variants.put(new Locale("fr"), "Couleur pr__e");
 		ls.setVariants(variants);
 		
 		String expected = "Favourite Colour";
@@ -128,10 +128,10 @@ public class LocalizedStringTest {
 		ls.setUnlocalizedValue("Favorite Color");
 		Map<Locale, String> variants = new HashMap<Locale, String>();
 		variants.put(new Locale("en", "UK"), "Favourite Colour");
-		variants.put(new Locale("fr"), "Couleur pr¨¦f¨¦r¨¦e");
+		variants.put(new Locale("fr"), "Couleur pr__e");
 		ls.setVariants(variants);
 		
-		String expected = "Couleur pr¨¦f¨¦r¨¦e";
+		String expected = "Couleur pr__e";
 		String actual = ls.getValue(new Locale("fr", "FR"));
 		
 		assertEquals(expected, actual);
@@ -147,7 +147,7 @@ public class LocalizedStringTest {
 		ls.setUnlocalizedValue("Favorite Color");
 		Map<Locale, String> variants = new HashMap<Locale, String>();
 		variants.put(new Locale("en", "UK"), "Favourite Colour");
-		variants.put(new Locale("fr"), "Couleur pr¨¦f¨¦r¨¦e");
+		variants.put(new Locale("fr"), "Couleur pr__e");
 		ls.setVariants(variants);
 		
 		String expected = "Favorite Color";
@@ -166,7 +166,7 @@ public class LocalizedStringTest {
 		ls.setUnlocalizedValue("Favorite Color");
 		Map<Locale, String> variants = new HashMap<Locale, String>();
 		variants.put(new Locale("en", "UK"), "Favourite Colour");
-		variants.put(new Locale("fr"), "Couleur pr¨¦f¨¦r¨¦e");
+		variants.put(new Locale("fr"), "Couleur pr__e");
 		ls.setVariants(variants);
 		
 		String expected = "Favorite Color";

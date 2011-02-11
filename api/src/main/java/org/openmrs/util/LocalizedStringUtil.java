@@ -50,7 +50,7 @@ public class LocalizedStringUtil {
 	 * 		Deserialization mechanism:
 	 * 		Database Text ---> Object Value:
 	 * 		Favorite Color ---> {unlocalizedValue: "Favorite Color", variants: null}
-	 * 		i18n:v1;unlocalized:Favorite Color;en_UK:Favourite Colour;fr:Couleur pr¨¦f¨¦r¨¦e; ---> {unlocalizedValue: "Favorite Color", variants: [en_UK = "Favourite Colour", fr = "Couleur pr¨¦f¨¦r¨¦e"]}
+	 * 		i18n:v1;unlocalized:Favorite Color;en_UK:Favourite Colour;fr:Couleur pr__e; ---> {unlocalizedValue: "Favorite Color", variants: [en_UK = "Favourite Colour", fr = "Couleur pr__e"]}
 	 * </pre>
 	 * 
 	 * @param s - String to deserialize
@@ -107,7 +107,7 @@ public class LocalizedStringUtil {
 	 * Serialization mechanism:
 	 * Object Value ---> Database Text:
 	 * {unlocalizedValue: "Favorite Color", variants: null} ---> Favorite Color
-	 * {unlocalizedValue: "Favorite Color", variants: [en_UK = "Favourite Colour", fr = "Couleur pr¨¦f¨¦r¨¦e"]} ---> i18n:v1;unlocalized:Favorite Color;en_UK:Favourite Colour;fr:Couleur pr¨¦f¨¦r¨¦e;
+	 * {unlocalizedValue: "Favorite Color", variants: [en_UK = "Favourite Colour", fr = "Couleur pr__e"]} ---> i18n:v1;unlocalized:Favorite Color;en_UK:Favourite Colour;fr:Couleur pr__e;
 	 * </pre>
 	 * 
 	 * @param localizedString - the {@link LocalizedString} object to serialize
