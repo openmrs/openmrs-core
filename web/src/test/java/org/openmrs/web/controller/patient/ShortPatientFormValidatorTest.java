@@ -12,6 +12,7 @@ import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
+import org.openmrs.PersonAddress;
 import org.openmrs.PersonName;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
@@ -233,5 +234,64 @@ public class ShortPatientFormValidatorTest extends BaseWebContextSensitiveTest {
 		Errors errors = new BindException(model, "patientModel");
 		validator.validate(model, errors);
 		Assert.assertEquals(true, errors.hasFieldErrors());
+	}
+	
+	/**
+	 * @see {@link ShortPatientFormValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should reject a duplicate name", method = "validate(Object,Errors)")
+	public void validate_shouldRejectADuplicateName() throws Exception {
+		Patient patient = ps.getPatient(2);
+		PersonName oldName = patient.getPersonName();
+		Assert.assertEquals(1, patient.getNames().size());//sanity check
+		//add a name for testing purposes
+		PersonName name = new PersonName("my", "duplicate", "name");
+		patient.addName(name);
+		Context.getPatientService().savePatient(patient);
+		Assert.assertNotNull(name.getId());//should have been added
+		
+		ShortPatientModel model = new ShortPatientModel(patient);
+		//should still be the preferred name for the test to pass
+		Assert.assertEquals(oldName.getId(), model.getPersonName().getId());
+		//change to a duplicate name
+		model.getPersonName().setGivenName("My");//should be case insensitive
+		model.getPersonName().setMiddleName("duplicate");
+		model.getPersonName().setFamilyName("name");
+		
+		Errors errors = new BindException(model, "patientModel");
+		validator.validate(model, errors);
+		Assert.assertEquals(true, errors.hasErrors());
+	}
+	
+	/**
+	 * @see {@link ShortPatientFormValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should reject a duplicate address", method = "validate(Object,Errors)")
+	public void validate_shouldRejectADuplicateAddress() throws Exception {
+		Patient patient = ps.getPatient(2);
+		PersonAddress oldAddress = patient.getPersonAddress();
+		Assert.assertEquals(1, patient.getAddresses().size());//sanity check
+		//add a name for testing purposes
+		PersonAddress address = (PersonAddress) oldAddress.clone();
+		address.setPersonAddressId(null);
+		address.setUuid(null);
+		address.setAddress1("address1");
+		address.setAddress2("address2");
+		patient.addAddress(address);
+		Context.getPatientService().savePatient(patient);
+		Assert.assertNotNull(address.getId());//should have been added
+		
+		ShortPatientModel model = new ShortPatientModel(patient);
+		//should still be the preferred address for the test to pass
+		Assert.assertEquals(oldAddress.getId(), model.getPersonAddress().getId());
+		//change to a duplicate name
+		model.getPersonAddress().setAddress1("Address1");//should be case insensitive
+		model.getPersonAddress().setAddress2("address2");
+		
+		Errors errors = new BindException(model, "patientModel");
+		validator.validate(model, errors);
+		Assert.assertEquals(true, errors.hasErrors());
 	}
 }
