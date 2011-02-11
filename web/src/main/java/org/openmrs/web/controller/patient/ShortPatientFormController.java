@@ -13,6 +13,7 @@
  */
 package org.openmrs.web.controller.patient;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -28,8 +29,10 @@ import org.openmrs.PatientIdentifier;
 import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
+import org.openmrs.PersonName;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
+import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.LocationUtility;
 import org.openmrs.util.OpenmrsConstants;
@@ -39,7 +42,10 @@ import org.openmrs.web.controller.person.PersonFormController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -56,7 +62,8 @@ import org.springframework.web.context.request.WebRequest;
  */
 
 @Controller
-@SessionAttributes( { "patientModel", "relationshipsMap", "identifierTypes", "locations" })
+@SessionAttributes( { "patientModel", "relationshipsMap", "identifierTypes", "locations", "personNameCache",
+        "personAddressCache" })
 public class ShortPatientFormController {
 	
 	private static final Log log = LogFactory.getLog(ShortPatientFormController.class);
@@ -77,6 +84,7 @@ public class ShortPatientFormController {
 	 * @param model modelObject to be used
 	 * @param request
 	 * @return the view to forward to
+	 * @should redirect to the shortPatientForm
 	 */
 	@RequestMapping(method = RequestMethod.GET, value = SHORT_PATIENT_FORM_URL)
 	public String showForm(@RequestParam(value = "patientId", required = false) Integer patientId, ModelMap model,
@@ -118,6 +126,19 @@ public class ShortPatientFormController {
 			model.addAttribute("defaultLocation", (LocationUtility.getUserDefaultLocation() != null) ? LocationUtility
 			        .getUserDefaultLocation() : LocationUtility.getDefaultLocation());
 			
+			//if we have an existing personName, cache it in the session so that we can use it to 
+			//track changes in givenName, middleName, familyName, will also use it to restore the original values
+			if (patient.getPersonName() != null && patient.getPersonName().getId() != null)
+				model.addAttribute("personNameCache", PersonName.newInstance(patient.getPersonName()));
+			else
+				model.addAttribute("personNameCache", new PersonName());
+			
+			//store the person address copy in the session
+			if (patient.getPersonAddress() != null && patient.getPersonAddress().getId() != null)
+				model.addAttribute("personAddressCache", patient.getPersonAddress().clone());
+			else
+				model.addAttribute("personAddressCache", new PersonAddress());
+			
 			String propCause = Context.getAdministrationService().getGlobalProperty("concept.causeOfDeath");
 			Concept conceptCause = Context.getConceptService().getConcept(propCause);
 			String causeOfDeathOther = "";
@@ -155,10 +176,19 @@ public class ShortPatientFormController {
 	 * @param result
 	 * @param status
 	 * @return the view to forward to
+	 * @should pass if all the form data is valid
+	 * @should create a new patient
+	 * @should send the user back to the form in case of validation errors
+	 * @should void a name and replace it with a new one if it is changed to a unique value
+	 * @should void an address and replace it with a new one if it is changed to a unique value
+	 * @should add a new name if the person had no names
+	 * @should add a new address if the person had none
+	 * @should ignore a new address that was added and voided at same time
 	 */
 	@RequestMapping(method = RequestMethod.POST, value = SHORT_PATIENT_FORM_URL)
-	public String saveShortPatient(WebRequest request, @ModelAttribute("patientModel") ShortPatientModel patientModel,
-	        BindingResult result, SessionStatus status) {
+	public String saveShortPatient(WebRequest request, @ModelAttribute("personNameCache") PersonName personNameCache,
+	        @ModelAttribute("personAddressCache") PersonAddress personAddressCache,
+	        @ModelAttribute("patientModel") ShortPatientModel patientModel, BindingResult result, SessionStatus status) {
 		
 		if (Context.isAuthenticated()) {
 			// First do form validation so that we can easily bind errors to
@@ -169,33 +199,62 @@ public class ShortPatientFormController {
 			
 			Patient patient = null;
 			patient = getPatientFromFormData(patientModel);
-			patientValidator.validate(patient, result);
-			if (result.hasErrors())
+			
+			Errors patientErrors = new BindException(patient, "patient");
+			patientValidator.validate(patient, patientErrors);
+			if (patientErrors.hasErrors()) {
+				//bind the errors to the patientModel object by adding them to result since this is not a patient object
+				//so that spring doesn't try to look for getters/setters for Patient in ShortPatientModel
+				for (ObjectError error : patientErrors.getAllErrors())
+					result.reject(error.getCode(), error.getArguments(), "Validation errors found");
+				
 				return SHORT_PATIENT_FORM_URL;
+			}
 			
-			patient = Context.getPatientService().savePatient(patient);
+			//check if name/address were edited, void them and replace them
+			boolean foundChanges = hasPersonNameOrAddressChanged(patient, personNameCache, personAddressCache);
 			
-			request.setAttribute(WebConstants.OPENMRS_MSG_ATTR, Context.getMessageSourceService()
-			        .getMessage("Patient.saved"), WebRequest.SCOPE_SESSION);
-			
-			// TODO do we really still need this, besides ensuring that the
-			// cause of death is provided?
-			// process and save the death info
-			saveDeathInfo(patientModel, request);
-			
-			if (!patient.getVoided()) {
-				// save the relationships to the database
-				Map<String, Relationship> relationships = getRelationshipsMap(patient, request);
-				for (Relationship relationship : relationships.values()) {
-					// if the user added a person to this relationship, save it
-					if (relationship.getPersonA() != null && relationship.getPersonB() != null)
-						Context.getPersonService().saveRelationship(relationship);
+			try {
+				patient = Context.getPatientService().savePatient(patient);
+				request.setAttribute(WebConstants.OPENMRS_MSG_ATTR, Context.getMessageSourceService().getMessage(
+				    "Patient.saved"), WebRequest.SCOPE_SESSION);
+				
+				// TODO do we really still need this, besides ensuring that the
+				// cause of death is provided?
+				// process and save the death info
+				saveDeathInfo(patientModel, request);
+				
+				if (!patient.getVoided()) {
+					// save the relationships to the database
+					Map<String, Relationship> relationships = getRelationshipsMap(patient, request);
+					for (Relationship relationship : relationships.values()) {
+						// if the user added a person to this relationship, save it
+						if (relationship.getPersonA() != null && relationship.getPersonB() != null)
+							Context.getPersonService().saveRelationship(relationship);
+					}
 				}
 			}
+			catch (APIException e) {
+				log.error("Error occurred while attempting to save patient", e);
+				request.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, Context.getMessageSourceService().getMessage(
+				    "Patient.save.error"), WebRequest.SCOPE_SESSION);
+				if (foundChanges) {
+					//TODO revert the changes and send them back to the form
+					
+					//Clear the session attributes and don't send the user back to the form
+					//because the created person name/addresses will be recreated over again
+					//if the user attempts to resubmit
+					status.setComplete();
+					return "redirect:" + PATIENT_DASHBOARD_URL + "?patientId=" + patient.getPatientId();
+				}
+				
+				return SHORT_PATIENT_FORM_URL;
+			}
+			
 			// clear the session attributes
 			status.setComplete();
-			
 			return "redirect:" + PATIENT_DASHBOARD_URL + "?patientId=" + patient.getPatientId();
+			
 		}
 		
 		return FIND_PATIENT_PAGE;
@@ -210,7 +269,11 @@ public class ShortPatientFormController {
 	private Patient getPatientFromFormData(ShortPatientModel patientModel) {
 		
 		Patient patient = patientModel.getPatient();
-		patient.addName(patientModel.getPersonName());
+		PersonName personName = patientModel.getPersonName();
+		if (personName != null) {
+			personName.setPreferred(true);
+			patient.addName(personName);
+		}
 		
 		PersonAddress personAddress = patientModel.getPersonAddress();
 		
@@ -220,8 +283,10 @@ public class ShortPatientFormController {
 			}
 			// don't add an address that is being created and at the
 			// same time being removed
-			else if (!(personAddress.isVoided() && personAddress.getPersonAddressId() == null))
+			else if (!(personAddress.isVoided() && personAddress.getPersonAddressId() == null)) {
+				personAddress.setPreferred(true);
 				patient.addAddress(personAddress);
+			}
 		}
 		
 		// add all the existing identifiers and any new ones.
@@ -232,20 +297,6 @@ public class ShortPatientFormController {
 				continue;
 			
 			patient.addIdentifier(id);
-		}
-		
-		// ensure that there is only one identifier set as preferred in
-		// case the database
-		// records were already unclean
-		boolean foundPreferredIdentifier = false;
-		for (PatientIdentifier possiblePreferredId : patient.getActiveIdentifiers()) {
-			if (possiblePreferredId.isPreferred() && !foundPreferredIdentifier)
-				foundPreferredIdentifier = true;
-			else if (possiblePreferredId.isPreferred()) {
-				log.info("Found multiple preferred identifiers, " + possiblePreferredId.getIdentifier()
-				        + " is being unset as preferred");
-				possiblePreferredId.setPreferred(false);
-			}
 		}
 		
 		// add the person attributes
@@ -440,4 +491,113 @@ public class ShortPatientFormController {
 		
 	}
 	
+	/**
+	 * Convenience method that checks if the person name or person address have been changed, should
+	 * void the old person name/address and create a new one with the changes.
+	 * 
+	 * @param patient the patient
+	 * @param personNameCache the cached copy of the person name
+	 * @param personAddressCache the cached copy of the person address
+	 * @return true if the personName or personAddress was edited otherwise false
+	 */
+	private boolean hasPersonNameOrAddressChanged(Patient patient, PersonName personNameCache,
+	        PersonAddress personAddressCache) {
+		boolean foundChanges = false;
+		PersonName personName = patient.getPersonName();
+		if (personNameCache.getId() != null) {
+			//if the existing persoName has been edited
+			if (!getPersonNameString(personName).equalsIgnoreCase(getPersonNameString(personNameCache))) {
+				if (log.isDebugEnabled())
+					log.debug("Voiding person name with id: " + personName.getId() + " and replacing it with a new one: "
+					        + personName.toString());
+				foundChanges = true;
+				//create a new one and copy the changes to it
+				PersonName newName = PersonName.newInstance(personName);
+				newName.setPersonNameId(null);
+				newName.setUuid(null);
+				newName.setChangedBy(null);//just in case it had a value
+				newName.setDateChanged(null);
+				newName.setCreator(Context.getAuthenticatedUser());
+				newName.setDateCreated(new Date());
+				
+				//restore the given,middle and familyName, then void the old name
+				personName.setGivenName(personNameCache.getGivenName());
+				personName.setMiddleName(personNameCache.getMiddleName());
+				personName.setFamilyName(personNameCache.getFamilyName());
+				personName.setPreferred(false);
+				personName.setVoided(true);
+				personName.setVoidReason(Context.getMessageSourceService().getMessage("general.voidReasonWithArgument",
+				    new Object[] { newName.toString() }, "Voided because it was edited to: " + newName.toString(),
+				    Context.getLocale()));
+				
+				//add the created name
+				patient.addName(newName);
+			}
+		}
+		
+		PersonAddress personAddress = patient.getPersonAddress();
+		if (personAddress != null) {
+			if (personAddressCache.getId() != null) {
+				//if the existing personAddress has been edited
+				if (!personAddress.isBlank() && !personAddressCache.isBlank()
+				        && !personAddress.toString().equalsIgnoreCase(personAddressCache.toString())) {
+					if (log.isDebugEnabled())
+						log.debug("Voiding person address with id: " + personAddress.getId()
+						        + " and replacing it with a new one: " + personAddress.toString());
+					
+					foundChanges = true;
+					//create a new one and copy the changes to it
+					PersonAddress newAddress = (PersonAddress) personAddress.clone();
+					newAddress.setPersonAddressId(null);
+					newAddress.setUuid(null);
+					newAddress.setChangedBy(null);//just in case it had a value
+					newAddress.setDateChanged(null);
+					newAddress.setCreator(Context.getAuthenticatedUser());
+					newAddress.setDateCreated(new Date());
+					
+					//restore address fields that are checked for changes and void the address
+					personAddress.setAddress1(personAddressCache.getAddress1());
+					personAddress.setAddress2(personAddressCache.getAddress2());
+					personAddress.setAddress3(personAddressCache.getAddress3());
+					personAddress.setCityVillage(personAddressCache.getCityVillage());
+					personAddress.setCountry(personAddressCache.getCountry());
+					personAddress.setCountyDistrict(personAddressCache.getCountyDistrict());
+					personAddress.setStateProvince(personAddressCache.getStateProvince());
+					personAddress.setPostalCode(personAddressCache.getPostalCode());
+					personAddress.setLatitude(personAddressCache.getLatitude());
+					personAddress.setLongitude(personAddressCache.getLongitude());
+					personAddress.setPreferred(false);
+					
+					personAddress.setVoided(true);
+					personAddress.setVoidReason(Context.getMessageSourceService().getMessage(
+					    "general.voidReasonWithArgument", new Object[] { newAddress.toString() },
+					    "Voided because it was edited to: " + newAddress.toString(), Context.getLocale()));
+					
+					//Add the created one
+					patient.addAddress(newAddress);
+				}
+			}
+		}
+		
+		return foundChanges;
+	}
+	
+	/**
+	 * Convenience method that transforms a person name to a string while ignoring null and blank
+	 * values, the returned string only contains the givenName, middleName and familyName
+	 * 
+	 * @param name the person name to transform
+	 * @return the transformed string ignoring blanks and nulls
+	 */
+	public static String getPersonNameString(PersonName name) {
+		ArrayList<String> tempName = new ArrayList<String>();
+		if (StringUtils.isNotBlank(name.getGivenName()))
+			tempName.add(name.getGivenName().trim());
+		if (StringUtils.isNotBlank(name.getMiddleName()))
+			tempName.add(name.getMiddleName().trim());
+		if (StringUtils.isNotBlank(name.getFamilyName()))
+			tempName.add(name.getFamilyName().trim());
+		
+		return StringUtils.join(tempName, " ");
+	}
 }

@@ -756,4 +756,22 @@ public class OpenmrsUtilTest extends BaseContextSensitiveTest {
 	public void shortenedStackTrace_shouldReturnNullIfStackTraceIsNull() throws Exception {
 		Assert.assertNull("null value was not returned with null parameter", OpenmrsUtil.shortenedStackTrace(null));
 	}
+	
+	/**
+	 * @see {@link OpenmrsUtil#nullSafeEqualsIgnoreCase(String,String)}
+	 */
+	@Test
+	@Verifies(value = "should be case insensitive", method = "nullSafeEqualsIgnoreCase(String,String)")
+	public void nullSafeEqualsIgnoreCase_shouldBeCaseInsensitive() throws Exception {
+		Assert.assertTrue(OpenmrsUtil.nullSafeEqualsIgnoreCase("equal", "Equal"));
+	}
+	
+	/**
+	 * @see {@link OpenmrsUtil#nullSafeEqualsIgnoreCase(String,String)}
+	 */
+	@Test
+	@Verifies(value = "should return false if only one of the strings is null", method = "nullSafeEqualsIgnoreCase(String,String)")
+	public void nullSafeEqualsIgnoreCase_shouldReturnFalseIfOnlyOneOfTheStringsIsNull() throws Exception {
+		Assert.assertFalse(OpenmrsUtil.nullSafeEqualsIgnoreCase(null, ""));
+	}
 }

@@ -24,8 +24,10 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.PatientIdentifier;
+import org.openmrs.PersonAddress;
 import org.openmrs.PersonName;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.validator.PatientIdentifierValidator;
 import org.openmrs.validator.PersonAddressValidator;
 import org.openmrs.validator.PersonNameValidator;
@@ -71,6 +73,8 @@ public class ShortPatientFormValidator implements Validator {
 	 * @should fail if any name has more than 50 characters
 	 * @should fail validation if deathdate is a future date
 	 * @should fail if the deathdate is before the birthdate incase the patient is dead
+	 * @should reject a duplicate name
+	 * @should reject a duplicate address
 	 */
 	public void validate(Object obj, Errors errors) {
 		if (log.isDebugEnabled())
@@ -78,6 +82,23 @@ public class ShortPatientFormValidator implements Validator {
 		
 		ShortPatientModel shortPatientModel = (ShortPatientModel) obj;
 		PersonName personName = shortPatientModel.getPersonName();
+		
+		//TODO We should be able to let developers and implementations to specify which person name 
+		// fields should be used to determine uniqueness
+		
+		//check if this name has a unique givenName, middleName and familyName combination
+		for (PersonName possibleDuplicate : shortPatientModel.getPatient().getNames()) {
+			//don't compare the name to itself
+			if (OpenmrsUtil.nullSafeEquals(possibleDuplicate.getId(), personName.getId()))
+				continue;
+			
+			if (OpenmrsUtil.nullSafeEqualsIgnoreCase(possibleDuplicate.getGivenName(), personName.getGivenName())
+			        && OpenmrsUtil.nullSafeEqualsIgnoreCase(possibleDuplicate.getMiddleName(), personName.getMiddleName())
+			        && OpenmrsUtil.nullSafeEqualsIgnoreCase(possibleDuplicate.getFamilyName(), personName.getFamilyName())) {
+				errors.reject("Patient.duplicateName", new Object[] { personName.toString() }, personName.toString()
+				        + " is a duplicate name for the same patient");
+			}
+		}
 		
 		Errors nameErrors = new BindException(personName, "personName");
 		new PersonNameValidator().validatePersonName(personName, nameErrors, false, true);
@@ -88,9 +109,8 @@ public class ShortPatientFormValidator implements Validator {
 			Set<String> errorCodesWithNoArguments = new HashSet<String>();
 			while (it.hasNext()) {
 				ObjectError error = it.next();
-				// donot show similar error message multiple times in the view
-				// unless they
-				// take in arguments which will make them atleast different
+				// don't show similar error message multiple times in the view
+				// unless they take in arguments which will make them atleast different
 				if (error.getCode() != null
 				        && (!errorCodesWithNoArguments.contains(error.getCode()) || (error.getArguments() != null && error
 				                .getArguments().length > 0))) {
@@ -101,6 +121,24 @@ public class ShortPatientFormValidator implements Validator {
 			}
 			// drop the collection
 			errorCodesWithNoArguments = null;
+		}
+		
+		//TODO We should be able to let developers and implementations to specify which
+		// person address fields should be used to determine uniqueness
+		
+		//check if this address is unique
+		PersonAddress personAddress = shortPatientModel.getPersonAddress();
+		for (PersonAddress possibleDuplicate : shortPatientModel.getPatient().getAddresses()) {
+			//don't compare the address to itself
+			if (OpenmrsUtil.nullSafeEquals(possibleDuplicate.getId(), personAddress.getId()))
+				continue;
+			
+			if (!possibleDuplicate.isBlank() && !personAddress.isBlank()
+			        && possibleDuplicate.toString().equalsIgnoreCase(personAddress.toString())) {
+				errors.reject("Patient.duplicateAddress", new Object[] { personAddress.toString() }, personAddress
+				        .toString()
+				        + " is a duplicate address for the same patient");
+			}
 		}
 		
 		if (CollectionUtils.isEmpty(shortPatientModel.getIdentifiers()))

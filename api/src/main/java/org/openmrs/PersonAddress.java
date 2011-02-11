@@ -90,7 +90,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	 */
 	public String toString() {
 		return "a1:" + getAddress1() + ", a2:" + getAddress2() + ", cv:" + getCityVillage() + ", sp:" + getStateProvince()
-		        + ", c:" + getCountry() + ", cd:" + getCountyDistrict() + ", nc:" + getNeighborhoodCell() + ", pc:"
+		        + ", c:" + getCountry() + ", cd:" + getCountyDistrict() + ", nc:" + getAddress3() + ", pc:"
 		        + getPostalCode() + ", lat:" + getLatitude() + ", long:" + getLongitude();
 	}
 	
@@ -410,8 +410,8 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	 */
 	public boolean isBlank() {
 		return getAddress1() == null && getAddress2() == null && getCityVillage() == null && getStateProvince() == null
-		        && getCountry() == null && getCountyDistrict() == null && getNeighborhoodCell() == null
-		        && getPostalCode() == null && getLatitude() == null && getLongitude() == null;
+		        && getCountry() == null && getCountyDistrict() == null && getAddress3() == null && getPostalCode() == null
+		        && getLatitude() == null && getLongitude() == null;
 	}
 	
 	/**
