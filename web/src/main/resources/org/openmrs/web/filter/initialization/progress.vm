@@ -137,13 +137,13 @@
 			width:340px; text-align:left; padding-left:7px;
 		}
 		.progressBarContainer{
-			height:6px; width:330px;
+			height:8px; width:330px;
 		}
 		.ui-progressbar-value{
-			background:#8CF27E;
+			background:#2AD65A; border-color:#F7F7F0; border-right-width:0px;
 		}
 		.ui-progressbar{
-			background:#EBE9E8;
+			background:#BBBBBB; border-color:#F7F7F0;
 		}
 		.taskImage{
 			display:none; border: none;
