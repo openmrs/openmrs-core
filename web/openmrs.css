@@ -51,6 +51,7 @@ a:hover {
 	margin-bottom: 5px;
 	border: 1px dashed lightgrey;
 	padding: 2px 2px 2px 18px;
+	color: InfoText;
 	background-color: InfoBackground;
 }
 
