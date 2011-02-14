@@ -161,7 +161,12 @@
 							{fieldName:"gender", header:omsgs.gender},
 							{fieldName:"birthdateString", header:omsgs.birthdate},
 						],
-						{searchLabel: '<spring:message code="Patient.searchBox" javaScriptEscape="true"/>'});
+						{
+						  searchLabel: '<spring:message code="Patient.searchBox" javaScriptEscape="true"/>'
+						  <c:if test="${not empty param.phrase}">
+						      , searchPhrase: '<spring:message text="${ param.phrase }" javaScriptEscape="true"/>'
+						  </c:if>
+						});
 					
 					//set the focus to the first input box on the page(in this case the text box for the search widget)
 					var inputs = document.getElementsByTagName("input");
