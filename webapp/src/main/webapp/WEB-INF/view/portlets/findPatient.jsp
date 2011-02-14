@@ -164,6 +164,9 @@
 						{
                             searchLabel: '<spring:message code="Patient.searchBox" javaScriptEscape="true"/>',
                             searchPlaceholder:'<spring:message code="Patient.searchBox.placeholder" javaScriptEscape="true"/>'
+                            <c:if test="${not empty param.phrase}">
+                                , searchPhrase: '<spring:message text="${ param.phrase }" javaScriptEscape="true"/>'
+                            </c:if>
                         });
 
 					//set the focus to the first input box on the page(in this case the text box for the search widget)
