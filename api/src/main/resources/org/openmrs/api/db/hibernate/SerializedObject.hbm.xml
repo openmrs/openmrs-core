@@ -17,7 +17,7 @@
     <property name="type" type="string" column="type" not-null="true" length="255" />
     <property name="subtype" type="string" column="subtype" not-null="true" length="255" />
     <property name="serializationClass" type="class"  column="serialization_class" not-null="true" length="255" /> 
-	<property name="serializedData" type="text" column="serialized_data" /> 
+	<property name="serializedData" type="text" column="serialized_data" length="16777215"/> 
 	<property name="dateCreated" type="java.util.Date" column="date_created" not-null="true" length="19" />
     <property name="dateChanged" type="java.util.Date" column="date_changed" length="19" />
 	<property name="retired" type="boolean" column="retired" not-null="true" />

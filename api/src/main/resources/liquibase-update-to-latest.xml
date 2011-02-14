@@ -4036,7 +4036,7 @@
 
 	</changeSet>
 
-	<changeSet id="20101029-1026" author="gobi/prasann">
+    <changeSet id="20101029-1026" author="gobi/prasann">
 		<preConditions onFail="MARK_RAN">
 			<sqlCheck expectedResult="0">select count(*) from concept_stop_word where word = 'A'</sqlCheck>
 		</preConditions>
@@ -4153,6 +4153,15 @@
 		<addForeignKeyConstraint constraintName="relationship_changed_by"
 			baseTableName="relationship" baseColumnNames="changed_by"
 			referencedTableName="users" referencedColumnNames="user_id" />
+	</changeSet>
+	
+	<changeSet id="201101221453" author="suho">
+		<comment>Increasing the serialized_data column of serialized_object to hold mediumtext</comment>
+		<modifyColumn tableName="serialized_object">
+			<column name="serialized_data" type="mediumtext" >
+				<constraints nullable="false" />
+			</column>
+		</modifyColumn>
 	</changeSet>
 
 </databaseChangeLog>
