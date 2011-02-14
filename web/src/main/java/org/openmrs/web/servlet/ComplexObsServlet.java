@@ -78,7 +78,7 @@ public class ComplexObsServlet extends HttpServlet {
 			OpenmrsUtil.copyFile(stream, response.getOutputStream());
 		} else if (RenderedImage.class.isAssignableFrom(data.getClass())) {
 			RenderedImage img = (RenderedImage) data;
-			String[] parts = cd.getTitle().split(".");
+			String[] parts = cd.getTitle().split("\\.");
 			String extension = "jpg"; // default extension
 			if (parts.length > 0) {
 				extension = parts[parts.length - 1];
