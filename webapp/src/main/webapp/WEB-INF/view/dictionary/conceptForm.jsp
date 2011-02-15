@@ -137,7 +137,11 @@
 
 <br/><br/>
 <c:if test="${command.concept.retired}">
-	<div class="retiredMessage"><div><spring:message code="Concept.retiredMessage"/></div></div>
+	<div class="retiredMessage">
+	<div><spring:message code="Concept.retiredMessage"/></div>
+    <div>  <c:if test="${command.concept.retireReason!=''}"> <spring:message code="general.reason"/>: ${command.concept.retireReason} </c:if> <c:if test="${command.concept.retiredBy.personName != null}">  <spring:message code="general.byPerson"/> ${command.concept.retiredBy.personName} </c:if> <c:if test="${command.concept.dateRetired != null}"> <spring:message code="general.onDate"/>  <openmrs:formatDate date="${command.concept.dateRetired}" type="long" /> </c:if></div>
+	<div><form action="" method="post" ><input type="submit" name="action" value="<spring:message code="general.unretire"/>" /></form></div> 
+	</div>
 </c:if>
 
 <spring:hasBindErrors name="command">
@@ -630,18 +634,6 @@
 			</spring:bind>
 		</td>
 	</tr>
-	<tr>
-		<th>
-			<spring:message code="general.retired" /> <img class="help_icon" src="${pageContext.request.contextPath}/images/help.gif" border="0" title="<spring:message code="Concept.retired.help"/>"/>
-		</th>
-		<td>
-			<spring:bind path="command.concept.retired">
-				<input type="hidden" name="_${status.expression}" value="">
-				<input type="checkbox" name="${status.expression}" value="true" <c:if test="${status.value}">checked</c:if> />
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-			</spring:bind>
-		</td>
-	</tr>
 	<c:if test="${command.concept.creator != null}">
 		<tr>
 			<th><spring:message code="general.createdBy" /></th>
@@ -736,6 +728,25 @@
 </div>
 
 </form>
+
+<br/>
+<br/>
+
+<c:if test="${command.concept.conceptId!=null && command.concept.retired==false }">
+	<form action="" method="post">
+		<fieldset>
+			<h4><spring:message code="general.retire"/> <spring:message code="Concept"/></h4>
+					
+			
+			
+			<b><spring:message code="general.reason"/></b>
+			<input type="text" value="" size="40" name="<spring:message code="general.retiredReason"/>" />
+		
+			<br/>
+			<input type="submit" value='<spring:message code="general.retire"/>' name="action"/>
+		</fieldset>
+	</form>
+</c:if>
 
 <openmrs:extensionPoint pointId="org.openmrs.dictionary.conceptFormFooter" type="html" />
 

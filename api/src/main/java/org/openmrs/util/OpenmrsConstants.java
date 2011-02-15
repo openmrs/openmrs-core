@@ -1161,8 +1161,11 @@ public final class OpenmrsConstants {
 		
 		props.add(new GlobalProperty(GLOBAL_PROPERTY_DEFAULT_LOCATION_NAME, "Unknown Location",
 		        "The name of the location to use as a system default"));
-		props.add(new GlobalProperty(GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE, "START",
-		        "Specifies how patient names are matched while searching patient. Valid values are 'ANYWHERE' or 'START'. Defaults to start if missing or invalid value is present."));
+		props
+		        .add(new GlobalProperty(
+		                GLOBAL_PROPERTY_PATIENT_SEARCH_MATCH_MODE,
+		                "START",
+		                "Specifies how patient names are matched while searching patient. Valid values are 'ANYWHERE' or 'START'. Defaults to start if missing or invalid value is present."));
 		
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);

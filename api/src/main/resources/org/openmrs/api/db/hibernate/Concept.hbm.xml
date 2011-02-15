@@ -31,6 +31,19 @@
 		<property name="set" type="java.lang.Boolean" column="is_set"
 			length="1" not-null="true" />
 		
+		
+		<property name="retireReason" type="java.lang.String"
+			column="retire_reason" length="50" /> 
+		
+		<property name="dateRetired" type="java.util.Date"
+			column="date_retired" length="255" />
+		
+		<many-to-one name="retiredBy" class="User">
+			<column name="retired_by" />
+		</many-to-one>
+		
+		
+		
 		<!-- Associations -->
 
 		<!-- bi-directional many-to-one association to ConceptDatatype -->
