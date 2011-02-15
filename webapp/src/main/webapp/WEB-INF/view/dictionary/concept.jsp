@@ -107,7 +107,10 @@
 <c:if test="${command.concept.conceptId != null}">
 
 	<c:if test="${command.concept.retired}">
-		<div class="retiredMessage"><div><spring:message code="Concept.retiredMessage"/></div></div>
+	<div class="retiredMessage">
+	<div><spring:message code="Concept.retiredMessage"/> </div>
+	<div>  <c:if test="${command.concept.retireReason!=''}"> <spring:message code="general.reason"/>: ${command.concept.retireReason} </c:if> <c:if test="${command.concept.retiredBy.personName != null}">  <spring:message code="general.byPerson"/> ${command.concept.retiredBy.personName} </c:if> <c:if test="${command.concept.dateRetired != null}"> <spring:message code="general.onDate"/>  <openmrs:formatDate date="${command.concept.dateRetired}" type="long" /> </c:if></div>
+	</div>
 	</c:if>
 	
 	<openmrs:extensionPoint pointId="org.openmrs.dictionary.conceptHeader" type="html" />
@@ -300,14 +303,7 @@
 				</spring:bind>
 			</td>
 		</tr>
-		<tr>
-			<th title="<spring:message code="Concept.retired.help"/>"><spring:message code="general.retired" /></th>
-			<td>
-				<spring:bind path="command.concept.retired">
-					${status.value}
-				</spring:bind>
-			</td>
-		</tr>
+		
 		<c:if test="${!(command.concept.creator == null)}">
 			<tr>
 				<th><spring:message code="general.createdBy" /></th>

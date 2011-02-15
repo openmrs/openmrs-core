@@ -152,14 +152,46 @@ public class ConceptFormController extends SimpleFormController {
 		
 		HttpSession httpSession = request.getSession();
 		ConceptService cs = Context.getConceptService();
+		
 		if (Context.isAuthenticated()) {
 			
 			ConceptFormBackingObject conceptBackingObject = (ConceptFormBackingObject) obj;
-			
 			MessageSourceAccessor msa = getMessageSourceAccessor();
 			String action = request.getParameter("action");
 			
-			if (action.equals(msa.getMessage("Concept.delete", "Delete Concept"))) {
+			if (action.equals(msa.getMessage("general.retire"))) {
+				Concept concept = conceptBackingObject.getConcept();
+				try {
+					String reason = request.getParameter(msa.getMessage("general.retiredReason"));
+					if (!StringUtils.hasText(reason)) {
+						httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "general.retiredReason.empty");
+						return new ModelAndView(new RedirectView(getSuccessView() + "?conceptId=" + concept.getConceptId()));
+					}
+					cs.retireConcept(concept, reason);
+					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Concept.retiredMessage");
+					return new ModelAndView(new RedirectView(getSuccessView() + "?conceptId=" + concept.getConceptId()));
+				}
+				catch (Exception e) {
+					// TODO: handle exception
+					log.error("Unable to Retire concept because an error occurred: " + concept, e);
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Concept cannot retire");
+				}
+				
+			} else if (action.equals(msa.getMessage("general.unretire"))) {
+				Concept concept = conceptBackingObject.getConcept();
+				try {
+					concept.setRetired(false);
+					cs.saveConcept(concept);
+					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Concept UnRetired");
+					return new ModelAndView(new RedirectView(getSuccessView() + "?conceptId=" + concept.getConceptId()));
+				}
+				catch (Exception e) {
+					// TODO: handle exception
+					log.error("Unable to unretire concept because an error occurred: " + concept, e);
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Concept unable to Unretire");
+				}
+				
+			} else if (action.equals(msa.getMessage("Concept.delete", "Delete Concept"))) {
 				Concept concept = conceptBackingObject.getConcept();
 				try {
 					cs.purgeConcept(concept);
@@ -182,7 +214,6 @@ public class ConceptFormController extends SimpleFormController {
 				return new ModelAndView(new RedirectView(getSuccessView() + "?conceptId=" + concept.getConceptId()));
 			} else {
 				Concept concept = conceptBackingObject.getConceptFromFormData();
-				
 				//if the user is editing a concept, initialise the associated creator property
 				//this is aimed at avoiding a lazy initialisation exception when rendering
 				//the jsp after validation has failed
@@ -213,9 +244,9 @@ public class ConceptFormController extends SimpleFormController {
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Concept.cannot.save");
 					errors.reject("concept", "Concept.cannot.save");
 				}
-				// return to the edit form because an error was thrown
-				return showForm(request, response, errors);
 			}
+			// return to the edit form because an error was thrown
+			return showForm(request, response, errors);
 		}
 		
 		return new ModelAndView(new RedirectView(getFormView()));
