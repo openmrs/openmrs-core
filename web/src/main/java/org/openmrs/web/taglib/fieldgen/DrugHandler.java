@@ -15,8 +15,10 @@ package org.openmrs.web.taglib.fieldgen;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.*;
 
 import org.openmrs.Drug;
+import org.openmrs.util.DrugsByNameComparator;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 
@@ -45,6 +47,8 @@ public class DrugHandler extends AbstractFieldGenHandler implements FieldGenHand
 			
 			ConceptService cs = Context.getConceptService();
 			List<Drug> drugs = cs.getAllDrugs();
+			Collections.sort(drugs, new DrugsByNameComparator());
+			
 			if (drugs == null)
 				drugs = new ArrayList<Drug>();
 			
