@@ -79,8 +79,6 @@ public class InitializationFilter extends StartupFilter {
 	
 	private static final String LIQUIBASE_DEMO_DATA = "liquibase-demo-data.xml";
 	
-	private String driverString;
-	
 	/**
 	 * The first page of the wizard that asks for simple or advanced installation.
 	 */
@@ -147,6 +145,9 @@ public class InitializationFilter extends StartupFilter {
 	private InitializationWizardModel wizardModel = null;
 	
 	private InitializationCompletion initJob;
+	
+	// the actual driver loaded by the DatabaseUpdater class
+	private String loadedDriverString;
 	
 	/**
 	 * Variable set at the end of the wizard when spring is being restarted
@@ -312,10 +313,10 @@ public class InitializationFilter extends StartupFilter {
 			wizardModel.databaseDriver = httpRequest.getParameter("database_driver");
 			checkForEmptyValue(wizardModel.databaseConnection, errors, "Database connection string");
 			
-			String databaseDriver = httpRequest.getParameter("database_driver");
 			try {
-				driverString = DatabaseUtil.loadDatabaseDriver(wizardModel.databaseConnection, databaseDriver);
-				log.info("using database driver :" + driverString);
+				loadedDriverString = DatabaseUtil.loadDatabaseDriver(wizardModel.databaseConnection,
+				    wizardModel.databaseDriver);
+				log.info("using database driver :" + loadedDriverString);
 			}
 			catch (ClassNotFoundException e) {
 				errors.add("The given database driver class was not found. "
@@ -324,8 +325,6 @@ public class InitializationFilter extends StartupFilter {
 				renderTemplate(page, referenceMap, httpResponse);
 				return;
 			}
-			wizardModel.databaseDriver = driverString;
-			log.info("Asigned " + driverString + " to wizard model");
 			
 			//TODO make each bit of page logic a (unit testable) method
 			
@@ -532,7 +531,7 @@ public class InitializationFilter extends StartupFilter {
 		try {
 			// verify connection
 			//Set Database Driver using driver String
-			Class.forName(driverString).newInstance();
+			Class.forName(loadedDriverString).newInstance();
 			DriverManager.getConnection(databaseConnectionFinalUrl, connectionUsername, connectionPassword);
 			return true;
 			
@@ -935,8 +934,8 @@ public class InitializationFilter extends StartupFilter {
 						runtimeProperties.put("connection.url", finalDatabaseConnectionString);
 						runtimeProperties.put("connection.username", connectionUsername);
 						runtimeProperties.put("connection.password", connectionPassword);
-						if (StringUtils.hasText(driverString))
-							runtimeProperties.put("connection.driver_class", driverString);
+						if (StringUtils.hasText(wizardModel.databaseDriver))
+							runtimeProperties.put("connection.driver_class", wizardModel.databaseDriver);
 						runtimeProperties.put("module.allow_web_admin", wizardModel.moduleWebAdmin.toString());
 						runtimeProperties.put("auto_update_database", wizardModel.autoUpdateDatabase.toString());
 						
