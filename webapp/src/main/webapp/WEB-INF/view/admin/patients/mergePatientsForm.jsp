@@ -9,6 +9,8 @@
 
 <script type="text/javascript">
 var dupSize=0;
+var currSelectedTab = null;
+var tabCount = 0;
 	dojo.require("dojo.widget.openmrs.PatientSearch");
 	
 	function changePrimary(dir) {
@@ -61,15 +63,19 @@ function collectInfo(){
 		var pref = true;
 		var defPreferred;
 		var count = 0;
+		var notPreferredCount = 0;
 
 		<c:forEach items="${patientList}" var="patient" varStatus="status">
 			count++;
+			var isPreferred = false;
 			if("${patient.voided}"!="true" && pref){
 				defPreferred = document.getElementById("${status.index}");
 				defPreferred.checked = true;
 				pref = false;
-			}
-
+				isPreferred = true;
+			}else
+				notPreferredCount++;
+			
 			<c:forEach items="${patient.names}" var="name">
 					patientNames.value = patientNames.value+"${name}|";
 			</c:forEach>
@@ -86,7 +92,9 @@ function collectInfo(){
 			patientAddress.value = patientAddress.value+"#";
 
 			patientInfos.value = patientInfos.value+"${patient.patientId},${patient.gender},<openmrs:formatDate date='${patient.birthdate}' type='short' />,<openmrs:formatDate date='${patient.deathDate}' type='short' />,${patient.creator.personName} - <openmrs:formatDate date='${patient.dateCreated}' type='long' />,${patient.changedBy.personName} - <openmrs:formatDate date='${patient.dateChanged}' type='long' />,${patient.voided}#";
-
+			if(!isPreferred){
+				addPatientTab('${status.index}', notPreferredCount);
+			}
 		</c:forEach>
 		<c:forEach items="${patientEncounters}" var="encounters" varStatus="status">
 			<c:forEach items="${encounters}" var="encounter">
@@ -99,16 +107,17 @@ function collectInfo(){
 			document.getElementById("selectionList").style.display = "";
 			document.getElementById("p1").style.display="none";
 			document.getElementById("p2").style.display="none";
-			display(defPreferred);
+			display(defPreferred, false);
 		}
 		else{
 			document.getElementById("np1").style.display="none";
 			document.getElementById("np2").style.display="none";
+			document.getElementById("tabsRow").style.display="none";
 		}
 }
 
 
-function display(obj){
+function display(obj, updateTabs){
 	var prefId = obj.id;
 	var check = true;
 	var patientsNames = document.getElementById("PatientNames").value.split('#');
@@ -117,6 +126,7 @@ function display(obj){
 	var patientsInfos = document.getElementById("PatientInfos").value.split('#');
 	var encounters = document.getElementById("Encounters").value.split('#');
 	dupSize = patientsNames.length-1;
+	var nextTabIndex = 0;
 	
 	for(var i=0;i<patientsNames.length-1;i++){
 		
@@ -127,6 +137,10 @@ function display(obj){
 			if(i%2 == 0)
 				className = "evenRow";
 			document.getElementById(i+"tr").className = className;
+			if(updateTabs == true){
+				updatePatientTab(nextTabIndex, i);
+				nextTabIndex++;
+			}
 		}
 
 		var patientNames = patientsNames[i].split('|');
@@ -153,7 +167,7 @@ function display(obj){
 			infos = patientInfos[j];
 			if(i==prefId){
 				if(j==1){
-					if(patientInfos[j].indexOf('f')>=0){
+					if(patientInfos[j].indexOf('F')>=0){
 						infos = "<img src=\"${pageContext.request.contextPath}/images/female.gif\" />";
 					}else{
 						infos = "<img src=\"${pageContext.request.contextPath}/images/male.gif\" />";
@@ -170,7 +184,7 @@ function display(obj){
 				document.getElementById("info1"+j).innerHTML = infos;
 			}else if(check){
 				if(j==1){
-					if(patientInfos[j].indexOf('f')>=0){
+					if(patientInfos[j].indexOf('F')>=0){
 						infos = "<img src=\"${pageContext.request.contextPath}/images/female.gif\" />";
 					}else{
 						infos = "<img src=\"${pageContext.request.contextPath}/images/male.gif\" />";
@@ -209,9 +223,13 @@ function display(obj){
 			document.getElementById('address2').innerHTML = address;
 			document.getElementById('encounter2').innerHTML = enco;
 			document.getElementById('edit2').href = "patient.form?patientId="+patientInfos[0];
-			prevNext(i);
 		}
 	}//end of main for
+	
+	//if we have multiple patients to merge, set the first patient tab as selected
+	if(dupSize > 1){
+		updateTabState('tab0');
+	}
 }
 
 function unPrefPatient(i){
@@ -245,7 +263,7 @@ function unPrefPatient(i){
 		for(var j=0;j<patientInfos.length;j++){//info print Started
 			infos = patientInfos[j];
 				if(j==1){
-					if(patientInfos[j].indexOf('f')>=0){
+					if(patientInfos[j].indexOf('F')>=0){
 						infos = "<img src=\"${pageContext.request.contextPath}/images/female.gif\" />";
 					}else{
 						infos = "<img src=\"${pageContext.request.contextPath}/images/male.gif\" />";
@@ -268,54 +286,60 @@ function unPrefPatient(i){
 			enco = enco+"<li>"+encounter[j];
 		}
 
-			document.getElementById('name2').innerHTML = names;
-			document.getElementById('identifier2').innerHTML = identifiers;
-			document.getElementById('address2').innerHTML = address;
-			document.getElementById('encounter2').innerHTML = enco;
-			document.getElementById('edit2').href = "patient.form?patientId="+patientInfos[0];
-			prevNext(i);
+		document.getElementById('name2').innerHTML = names;
+		document.getElementById('identifier2').innerHTML = identifiers;
+		document.getElementById('address2').innerHTML = address;
+		document.getElementById('encounter2').innerHTML = enco;
+		document.getElementById('edit2').href = "patient.form?patientId="+patientInfos[0];
 }
 
-
-function prevNext(record){
-	record = parseInt(record);
-	var pre = record-1;
-	var nex = record+1;
-	document.getElementById("prev").style.display = "";
-	document.getElementById("next").style.display = "";
-	if(pre>=0){
-		document.getElementById("prev").disabled = false;
-		if(document.getElementById(pre).checked == true){
-			if((pre-1)>=0){
-				document.getElementById("prev").disabled = false;
-				pre = pre-1;
-			}else {
-				document.getElementById("prev").disabled = true;
-			}
-		}
-		document.getElementById("prev").onclick = function onclick(){unPrefPatient(pre);}
-	}else {
-			document.getElementById("prev").disabled = true;
+function addPatientTab(patientDataIndex, notPreferredCount){
+	var tabsRow = document.getElementById("tabsRowRight");
+	var lastTab = document.getElementById("lastTab");
+	var tabSeparator = document.createElement('TD');
+	tabSeparator.width = "2px";
+	tabSeparator.className = 'mergePatientsTabSpaces';
+	var newTab = document.createElement('TD');
+	newTab.className = 'mergePatientsTab';
+	newTab.id = 'tab'+tabCount;
+	newTab.innerHTML = "<div class='mergePatientsTabDiv'>"+omsgs.tabLabelPrefix+" "+notPreferredCount+"</div>";
+	if(tabsRow){
+		tabsRow.insertBefore(tabSeparator, lastTab);
+		tabsRow.insertBefore(newTab , lastTab);
+		tabCount++;
+		$j(newTab).click(function(){
+			updateTabState(newTab.id);
+			unPrefPatient(patientDataIndex);
+		});
 	}
+}
 
-	if(nex<=(dupSize-1)){
-		document.getElementById("next").disabled = false;
-		if(document.getElementById(nex).checked == true){
-			if((nex+1)<=(dupSize-1)){
-				document.getElementById("next").disabled = false;
-				nex = nex+1;
-			}else {
-				document.getElementById("next").disabled = true;
-			}
-		}
-		document.getElementById("next").onclick = function onclick(){unPrefPatient(nex);}
-	}else {
-			document.getElementById("next").disabled = true;
+//updates a single tab when the preferred patient is changed to match 
+//the new patient data for the tab at the specified index
+function updatePatientTab(tabIndex, patientDataIndex){
+	var tab = document.getElementById("tab"+tabIndex);
+	if(tab){
+		$j(tab).click(function(){
+			unPrefPatient(patientDataIndex);
+		})
+	}
+}
+
+//sets the selected tab and stores its value
+function updateTabState(selectedTabId){
+	//un select the current patient tab if we have any
+	if(currSelectedTab)
+		currSelectedTab.className = "mergePatientsTab";
+	
+	var selectedTab = document.getElementById(selectedTabId);
+	if(selectedTab){
+		selectedTab.className = "mergePatientsSelectedTab";
+		currSelectedTab = selectedTab;
 	}
 }
 
 function generateMergeList(){
-	var conf = confirm('Are you sure you want to merge these patients1?');
+	var conf = confirm('Are you sure you want to merge these patients?');
 	if(conf){
 		var preferred = document.getElementById('pref');
 		var nonPreferred = document.getElementById('nonPref');
@@ -383,7 +407,7 @@ function generateMergeList(){
 <tr id="${status.index}tr" class="<c:choose>
 				<c:when test="${status.index % 2 == 0}">evenRow</c:when>
 				<c:otherwise>oddRow</c:otherwise>
-			</c:choose>"><td><input type="radio" id="${status.index}" name="preferred2" value="${patient.patientId}" onclick="display(this)" <c:if test="${patient.voided==true}">disabled</c:if>/></td><td>${patient.patientId}</td><td><c:forEach items="${patient.identifiers}" var="identifier" varStatus="entries">
+			</c:choose>"><td><input type="radio" id="${status.index}" name="preferred2" value="${patient.patientId}" onclick="display(this, true)" <c:if test="${patient.voided==true}">disabled</c:if>/></td><td>${patient.patientId}</td><td><c:forEach items="${patient.identifiers}" var="identifier" varStatus="entries">
 							<c:if test="${entries.index==0}">${identifier}</c:if>
 						</c:forEach> </td><c:forEach items="${patient.names}" var="name" varStatus="entries">
 						<c:if test="${entries.index==0}">
@@ -400,12 +424,12 @@ function generateMergeList(){
 			</c:choose>
 		</td><td><openmrs:formatDate date="${patient.birthdate}" type="short" /></td></tr>
 </c:forEach>
+</table>
 <input type="hidden" id="PatientNames"/>
 <input type="hidden" id="PatientIdentifiers"/>
 <input type="hidden" id="PatientAddress"/>
 <input type="hidden" id="PatientInfos"/>
 <input type="hidden" id="Encounters"/>
-</table>
 </div>
 </div>
 <br/><br/>
@@ -418,7 +442,7 @@ function generateMergeList(){
 		</colgroup>
 		<tr>
 			<td width="46%"></td>
-			<td align="center" valign="middle" rowspan="8" id="patientDivider">
+			<td align="center" valign="middle" rowspan="9" id="patientDivider">
 				<img src="${pageContext.request.contextPath}/images/leftArrow.gif"/>
 			</td>
 			<td></td>
@@ -461,6 +485,14 @@ function generateMergeList(){
 				</td>
 			</tr>
 		</c:if>
+		<tr id="tabsRow">
+			<td></td>
+			<td class="mergePatientsTabsColumn">
+				<table cellpadding="0" cellspacing="0" width="100%">
+					<tr id="tabsRowRight"><td class="mergePatientsTabSpaces" width="10px">&nbsp;</td><td id="lastTab" class="mergePatientsTabSpaces"></td>
+				</tr></table>
+			</td>
+		</tr>
 		<tr>
 			<td valign="top">
 				<h4><spring:message code="Patient.names"/></h4>
@@ -484,7 +516,7 @@ function generateMergeList(){
 							<li>${name.givenName} ${name.middleName} ${name.familyName}
 						</c:forEach>
 					</ol>
-				</td><td valign="top"><input type="button" style="display:none" value="prev" id="prev" onclick=""/>&nbsp;<input type="button" value="next" id="next" style="display:none" onclick=""/></td>
+				</td>
 			</c:if>
 		</tr>
 		<tr>

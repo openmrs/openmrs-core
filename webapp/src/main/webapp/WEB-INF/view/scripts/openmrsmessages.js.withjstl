@@ -41,6 +41,7 @@ omsgs.systemId="<spring:message code="User.systemId" javaScriptEscape="true"/>";
 omsgs.userRoles="<spring:message code="User.roles" javaScriptEscape="true"/>";
 omsgs.username="<spring:message code="User.username" javaScriptEscape="true"/>";
 omsgs.yearsOld="<spring:message code="general.yearsOldAbbrev" javaScriptEscape="true"/>";
+omsgs.tabLabelPrefix="<spring:message code="Patient.merge.tabLabelPrefix" javaScriptEscape="true"/>";
 
 omsgs.genderArray=new Array();
 <openmrs:forEachRecord name='gender'>
