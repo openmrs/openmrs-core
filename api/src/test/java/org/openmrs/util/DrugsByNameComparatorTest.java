@@ -1,10 +1,22 @@
+/**
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
 package org.openmrs.util;
 
 import junit.framework.Assert;
 
 import org.junit.Test;
 import org.openmrs.Drug;
-import org.openmrs.test.Verifies;
 
 /**
  * The Class DrugsByNameComparatorTest. Contains tests for DrugsByNameCOmparator
@@ -12,11 +24,12 @@ import org.openmrs.test.Verifies;
 public class DrugsByNameComparatorTest {
 	
 	/**
-	 * Compare drug names ignoring numericals_simple test with no numericals.
+	 * @see DrugsByNameComparator#compareDrugNamesIgnoringNumericals(Drug,Drug)
+	 * @verifies return negative if name for drug1 comes before that of drug2
 	 */
 	@Test
-	@Verifies(value = "should return negative if Name for drug1 comes before that of drug2", method = "compare(Drug d1, Drug d2)")
-	public void compareDrugNamesIgnoringNumericals_simpleTestwithNoNumericals() {
+	public void compareDrugNamesIgnoringNumericals_shouldReturnNegativeIfNameForDrug1ComesBeforeThatOfDrug2()
+	        throws Exception {
 		Drug drug1 = new Drug();
 		drug1.setName("ABCD");
 		Drug drug2 = new Drug();
@@ -27,11 +40,11 @@ public class DrugsByNameComparatorTest {
 	}
 	
 	/**
-	 * Compare drug names ignoring numericals_simple test for upper case.
+	 * @see DrugsByNameComparator#compareDrugNamesIgnoringNumericals(Drug,Drug)
+	 * @verifies return zero if name for drug1 comes before that of drug2
 	 */
 	@Test
-	@Verifies(value = "should return zero if Name for drug1 comes before that of drug2", method = "compare(Drug d1, Drug d2)")
-	public void compareDrugNamesIgnoringNumericals_simpleTestforUpperCase() {
+	public void compareDrugNamesIgnoringNumericals_shouldReturnZeroIfNameForDrug1ComesBeforeThatOfDrug2() throws Exception {
 		Drug drug1 = new Drug();
 		drug1.setName("ABCD");
 		Drug drug2 = new Drug();
@@ -42,11 +55,12 @@ public class DrugsByNameComparatorTest {
 	}
 	
 	/**
-	 * Compare drug names ignoring numericals_test ignoring special characters.
+	 * @see DrugsByNameComparator#compareDrugNamesIgnoringNumericals(Drug,Drug)
+	 * @verifies return positive if name for drug1 comes before that of drug2 ignoring dashes
 	 */
 	@Test
-	@Verifies(value = "should return positive if Name for drug1 comes before that of drug2", method = "compare(Drug d1, Drug d2)")
-	public void compareDrugNamesIgnoringNumericals_testIgnoringSpecialCharacters() {
+	public void compareDrugNamesIgnoringNumericals_shouldReturnPositiveIfNameForDrug1ComesBeforeThatOfDrug2IgnoringDashes()
+	        throws Exception {
 		Drug drug1 = new Drug();
 		drug1.setName("AB-AB");
 		Drug drug2 = new Drug();
@@ -57,11 +71,12 @@ public class DrugsByNameComparatorTest {
 	}
 	
 	/**
-	 * Compare drug names ignoring numericals_test ignoring numericals.
+	 * @see DrugsByNameComparator#compareDrugNamesIgnoringNumericals(Drug,Drug)
+	 * @verifies return positive if name for drug1 comes before that of drug2 ignoring numerics
 	 */
 	@Test
-	@Verifies(value = "should return positive if Name for drug1 comes before that of drug2", method = "compare(Drug d1, Drug d2)")
-	public void compareDrugNamesIgnoringNumericals_testIgnoringNumericals() {
+	public void compareDrugNamesIgnoringNumericals_shouldReturnPositiveIfNameForDrug1ComesBeforeThatOfDrug2IgnoringNumerics()
+	        throws Exception {
 		Drug drug1 = new Drug();
 		drug1.setName("AB1AB");
 		Drug drug2 = new Drug();
