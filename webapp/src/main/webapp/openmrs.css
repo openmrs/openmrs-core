@@ -1322,3 +1322,19 @@ span.otherHit{
 	color: pink;
 	font-family: Arial Unicode;
 }
+.mergePatientsTab{
+	background-color: #E8E6E6; border: 1px solid black; padding: 5px 5px 0px 5px; cursor: pointer; width: 85px;
+		
+}
+.mergePatientsSelectedTab{
+	background-color: #FFFFFF; border: 1px solid black; padding: 5px 5px 0px 5px; cursor: pointer; border-bottom: none; width: 85px;; 
+}
+.mergePatientsTabsColumn{
+	text-align: center;
+}
+.mergePatientsTabSpaces{
+	border-bottom: 1px solid black; 
+}
+.mergePatientsTabDiv{
+	width:85px
+}
