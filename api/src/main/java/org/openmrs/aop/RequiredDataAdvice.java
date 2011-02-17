@@ -116,21 +116,26 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 			if (mainArgument == null)
 				return;
 			
-			// if a second argument exists, pass that to the save handler as well
-			// (with current code, it means we're either in an obs save or a user save)
-			String other = null;
-			if (args.length > 1) {
-				other = (String) args[1];
-			}
-			
 			// if the first argument is an OpenmrsObject, handle it now
 			Reflect reflect = new Reflect(OpenmrsObject.class);
 			
 			if (reflect.isSuperClass(mainArgument)) {
+				// if a second argument exists, pass that to the save handler as well
+				// (with current code, it means we're either in an obs save or a user save)				
+				String other = null;
+				if (args.length > 1)
+					other = (String) args[1];
+
 				recursivelyHandle(SaveHandler.class, (OpenmrsObject) mainArgument, other);
 			}
 			// if the first argument is a list of openmrs objects, handle them all now
 			else if (Reflect.isCollection(mainArgument) && isOpenmrsObjectCollection(mainArgument)) {
+				// if a second argument exists, pass that to the save handler as well
+				// (with current code, it means we're either in an obs save or a user save)				
+				String other = null;
+				if (args.length > 1)
+					other = (String) args[1];
+
 				Collection<OpenmrsObject> openmrsObjects = (Collection<OpenmrsObject>) mainArgument;
 				
 				for (OpenmrsObject object : openmrsObjects) {
