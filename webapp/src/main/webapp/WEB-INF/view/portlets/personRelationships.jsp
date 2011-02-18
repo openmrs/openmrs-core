@@ -2,8 +2,49 @@
 
 <openmrs:htmlInclude file="/dwr/interface/DWRRelationshipService.js" />
 
+<style type="text/css">
+.relTable td {
+	padding-right: 10px;
+	padding-left: 10px;
+}
+</style>
+
 <script type="text/javascript">
 	
+	$j(document).ready(function() {
+		$j('#addRelationship').dialog({
+			autoOpen: false,
+			modal: true,
+			title: '<spring:message code="Relationship.add" javaScriptEscape="true"/>',
+			width: '30%',
+			zIndex: 100,
+			buttons: { 
+				'<spring:message code="general.save"/>': function() { handleAddRelationship(); },
+				'<spring:message code="general.cancel"/>': function() { $j(this).dialog("close"); }
+			}
+		});
+
+		$j("#addRelationshipLink").click(function(){
+			clearAddRelationship();
+			$j("#addRelationship").dialog("open");
+			return false;
+		});
+	
+		$j('#voidRelationship').dialog({
+			autoOpen: false,
+			modal: true,
+			title: '<spring:message code="Relationship.remove" javaScriptEscape="true"/>',
+			width: '30%',
+			zIndex: 100,
+			buttons: { 
+				'<spring:message code="general.remove"/>': function() { handleVoidRelationship(); },
+				'<spring:message code="general.cancel"/>': function() { $j(this).dialog("close"); }
+			}
+		});
+
+		refreshRelationshipsInitial();
+	});
+
 	function refreshRelationships() {
 		DWRRelationshipService.getRelationships(${model.personId}, null, refreshRelationshipsCallback);
 	}
@@ -27,51 +68,69 @@
 		refreshRelationshipsCallback(rels);
 	}
 	
-	function refreshRelationshipsCallback(rels) {
-		dwr.util.removeAllOptions('new_relationships');
-		if (rels.length == 0) {
-			dwr.util.addOptions('new_relationships', [ '<spring:message code="general.none" javaScriptEscape="true" />' ]);
+	var relTableCellFuncs = [
+		function(data) { return data[1]; },
+		function(data) { return data[2]; },
+		function(data) {
+			return '<a href="javascript:voidRelationshipDialog(' + data[0] + ')" title="">' +
+				'<img src="images/delete.gif" border="0" title="<spring:message code="general.remove"/>"/>' +
+				'</a>';
 		}
-		for (var i = 0; i < rels.length; ++i) {
-			var rel = rels[i];
-			var relId = rel.relationshipId;
-			var str = '';
-			if (rel.personAId == ${model.personId}) {
-				str = rel.bIsToA + ': ';
-				if (rel.personBIsPatient)
-					str += '<a href="patientDashboard.form?patientId=' + rel.personBId + '">' + rel.personB + '</a>';
-				else
-					str += '<a href="personDashboard.form?personId=' + rel.personBId + '">' + rel.personB + '</a>';
-			} else if (rel.personBId == ${model.personId}) {
-				str = rel.aIsToB + ': ';
-				if (rel.personAIsPatient)
-					str += '<a href="patientDashboard.form?patientId=' + rel.personAId + '">' + rel.personA + '</a>';
-				else
-					str += '<a href="personDashboard.form?personId=' + rel.personAId + '">' + rel.personA + '</a>';
+	];
+	
+	var relationships = {};	
+
+	function refreshRelationshipsCallback(rels) {
+		relationships = {};
+		dwr.util.removeAllRows("relationshipTableContent");
+		if (rels.length == 0) {
+			$j("#no_relationships").html('<spring:message code="general.none" javaScriptEscape="true"/><br /><br />');
+			hideDiv("relationshipTable");
+			showDiv("no_relationships");
+		} else {
+			for (var i = 0; i < rels.length; ++i) {
+				var rel = rels[i];
+				var relation = rel.personAId == ${model.personId} ? rel.bIsToA : rel.aIsToB;
+				var relative = '';
+
+				if (rel.personAId == ${model.personId}) {
+					if (rel.personBIsPatient)
+						relative = '<a href="patientDashboard.form?patientId=' + rel.personBId + '">' + rel.personB + '</a>';
+					else
+						relative = '<a href="personDashboard.form?personId=' + rel.personBId + '">' + rel.personB + '</a>';
+				} else if (rel.personBId == ${model.personId}) {
+					if (rel.personAIsPatient)
+						relative = '<a href="patientDashboard.form?patientId=' + rel.personAId + '">' + rel.personA + '</a>';
+					else
+						relative = '<a href="personDashboard.form?personId=' + rel.personAId + '">' + rel.personA + '</a>';
+				}
+
+				relationships[rel.relationshipId] = relative + " (" + relation + ")";
+				dwr.util.addRows('relationshipTableContent', 
+						[ [rel.relationshipId, relative, relation] ], 
+						relTableCellFuncs, 
+						{escapeHtml: false});
 			}
-			str += '&nbsp;<a id="del_rel_' + relId + '" href="javascript:showDiv(\'voidRel' + relId + '\'); hideDiv(\'del_rel_' + relId + '\');"><spring:message code="general.deleteLink" javaScriptEscape="true" /></a>';
-			str += ' <span style="display: none; border: 1px black dashed; margin: 2px" id="voidRel' + relId + '">';
-			str += ' <spring:message code="general.voidReasonQuestion" javaScriptEscape="true"/>: <input type="text" id="void_reason_' + relId + '"/>';
-			str += ' <input type="button" value="<spring:message code="general.delete" javaScriptEscape="true"/>" onClick="handleDeleteRelationship(' + relId + ')"/>';
-			str += ' <input type="button" value="<spring:message code="general.cancel" javaScriptEscape="true"/>" onClick="showDiv(\'del_rel_' + relId + '\'); hideDiv(\'voidRel' + relId + '\')"/>';
-			str += '</span>';
-			dwr.util.addOptions('new_relationships', [ str ], {escapeHtml: false});
+			hideDiv("no_relationships");
+			showDiv("relationshipTable");
 		}
 	}
 	
 	function handleAddRelationship() {
 		var personIdB = ${model.personId};
-		
 		var personIdA = $j("#add_rel_target_id").val();
+		
+		if (personIdA == personIdB) {
+			window.alert('<spring:message code="Relationship.error.same" javaScriptEscape="true"/>');
+			return;
+		}
+		
 		var relType = dwr.util.getValue('add_relationship_type');
 		if (relType == null || relType == '' || personIdA == null || personIdA == '' || personIdB == null || personIdB == '') {
 			window.alert('<spring:message code="Relationship.error.everything" javaScriptEscape="true"/>');
 			return;
 		}
-		if (personIdA == personIdB) {
-			window.alert('<spring:message code="Relationship.error.same" javaScriptEscape="true"/>');
-			return;
-		}
+		
 		var reverseIndex = relType.indexOf('::reverse');
 		if (reverseIndex > 0) {
 			relType = relType.substring(0, reverseIndex);
@@ -79,71 +138,101 @@
 			personIdA = personIdB;
 			personIdB = temp;
 		}
+
+		$j("#addRelationship").dialog("close");
+		clearAddRelationship();	
+		DWRRelationshipService.createRelationship(personIdA, personIdB, relType, refreshRelationships);
+	}
+
+	function clearAddRelationship() {
 		$j("#add_rel_target_id").val("");
 		$j("#add_rel_display_id").val("");
 		$j("#add_relationship_type").val("");
-		hideDiv('addRelationship');
-		showDiv('addRelationshipLink');
-		DWRRelationshipService.createRelationship(personIdA, personIdB, relType, refreshRelationships);
+		hideDiv('add_rel_details');
 	}
 	
-	function handleDeleteRelationship(relationshipId) {
-		var reason = dwr.util.getValue('void_reason_' + relationshipId);
+	function voidRelationshipDialog(relId) {
+		$j("#voidRelationship #relationship_desc").html(relationships[relId]);
+		$j("#voidRelationship #relationship_id").val(relId);
+		$j("#voidRelationship #relationship_void_reason").val("");
+		$j("#voidRelationship").dialog("open");
+		$j("#voidRelationship #relationship_void_reason").focus();
+	}
+
+	function handleVoidRelationship() {
+		var relId = $j("#voidRelationship #relationship_id").val();
+		var reason = $j("#voidRelationship #relationship_void_reason").val();
+		$j("#voidRelationship").dialog("close");
 		if (reason != null && reason != '') {
-			DWRRelationshipService.voidRelationship(relationshipId, reason, refreshRelationships);
+			DWRRelationshipService.voidRelationship(relId, reason, refreshRelationships);
 		}
 	}
-	
+
 	function handlePickRelType(value, label) {
 		dwr.util.setValue('add_relationship_type', value);
 		document.getElementById('add_relationship_name').innerHTML = label;
 		showDiv('add_rel_details');
 	}
+
 </script>
 
 <div id="patientRelationshipPortlet">
-	<ul id="new_relationships">
-		<li><spring:message code="general.loading"/></li>
-	</ul>
+	<div id="no_relationships">
+		<spring:message code="general.loading"/><br />
+	</div>
+
+	<table style="margin: 0px 0px 1em 2em;" cellpadding="3" cellspacing="0" id="relationshipTable" class="relTable">
+		<thead>
+			<tr bgcolor="whitesmoke">
+				<td><spring:message code="Relationship.relative"/></td>
+				<td><spring:message code="Relationship.relationship"/></td>
+				<td></td>
+			</tr>
+		</thead>
+		<tbody id="relationshipTableContent"></tbody>
+	</table>
+
+	<a id="addRelationshipLink" href="#"><spring:message code="Relationship.add"/></a>
 	
-	<a id="addRelationshipLink" href="javascript:showDiv('addRelationship'); hideDiv('addRelationshipLink');"><spring:message code="Relationship.add"/></a>
-	<div id="addRelationship" style="border: 1px black dashed; display: none">
+	<div id="addRelationship">
 		<spring:message code="Relationship.whatType"/>
 		<table style="margin: 0px 0px 1em 2em;">
 			<c:forEach var="relType" items="${model.relationshipTypes}">
 				<tr>
 					<c:choose>
 						<c:when test="${relType.aIsToB == relType.bIsToA}">
-							<td style="text-align: center; white-space: nowrap" align="center" colspan="3"><a href="javascript:handlePickRelType('${relType.relationshipTypeId}', '${relType.aIsToB}')">${relType.aIsToB}</a></td>
+							<td style="text-align: center; white-space: nowrap" align="center" colspan="3">
+								<a href="javascript:handlePickRelType('${relType.relationshipTypeId}', '${relType.aIsToB}')">${relType.aIsToB}</a>
+							</td>
 						</c:when>
 						<c:otherwise>
-							<td style="text-align: right; white-space: nowrap; width: 49%"><a onclick="handlePickRelType('${relType.relationshipTypeId}', '${relType.aIsToB}')">${relType.aIsToB}</a></td>
+							<td style="text-align: right; white-space: nowrap; width: 49%">
+								<a onclick="handlePickRelType('${relType.relationshipTypeId}', '${relType.aIsToB}')">${relType.aIsToB}</a>
+							</td>
 							<td width="2%">:</td>
-							<td style="text-align: left; white-space: nowrap; width: 49%"><a onclick="handlePickRelType('${relType.relationshipTypeId}::reverse', '${relType.bIsToA}')">${relType.bIsToA}</a></td>
+							<td style="text-align: left; white-space: nowrap; width: 49%">
+								<a onclick="handlePickRelType('${relType.relationshipTypeId}::reverse', '${relType.bIsToA}')">${relType.bIsToA}</a>
+							</td>
 						</c:otherwise>
 					</c:choose>
 				</tr>
 			</c:forEach>
 		</table>
-
+		
 		<span id="add_rel_details" style="display: none">
-			${model.person.personName}
-			<spring:message code="Relationship.possessive"/>
+			${model.person.personName}<spring:message code="Relationship.possessive"/>
 			<i><span id="add_relationship_name"><spring:message code="Relationship.whatType"/></span></i>
 			<input type="hidden" id="add_relationship_type"/>
 			<spring:message code="Relationship.target"/>
 			<openmrs_tag:personField formFieldName="add_rel_target" formFieldId="add_rel_target_id" displayFieldId="add_rel_display_id" searchLabel="Find a Person" canAddNewPerson="true" />
 		</span>
-		
-		<br/>
-		&nbsp;&nbsp;
-		<input type="button" value="<spring:message code="general.save" javaScriptEscape="true"/>" onClick="handleAddRelationship()" />
-		&nbsp;&nbsp;
-		<input type="button" value="<spring:message code="general.cancel" javaScriptEscape="true"/>" onClick="showDiv('addRelationshipLink'); hideDiv('addRelationship'); hideDiv('add_rel_details');" />
 	</div>
 	
+	<div id="voidRelationship">
+		<div><spring:message code="Relationship.relative"/>: <span id="relationship_desc"></span></div>
+		<br />
+		<label for="relationship_void_reason"><spring:message code="general.reason"/>: </label>
+		<input type="hidden" id="relationship_id"/>
+		<input type="text" id="relationship_void_reason"/>
+	</div>
 </div>
-
-<script type="text/javascript">
-	refreshRelationshipsInitial();
-</script>
