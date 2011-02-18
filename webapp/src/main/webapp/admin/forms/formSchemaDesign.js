@@ -107,6 +107,12 @@ dojo.addOnLoad( function(){
 	dojo.event.topic.subscribe("fieldSearch/select", 
 		function(msg) {
 			for (o in msg.objs) {
+				/* Removing this to solve TRUNK-2025 
+				 * This effectively disables the ability to search, then type the number of the 
+				 * row that you want to insert. (This is a rarely used feature)
+				 * You can still either click or drag a concept/field over
+				 * to the main tree to add it to the schema
+				 
 				var obj = msg.objs[o];
 				var child = dojo.widget.byId(obj.widgetId);
 				
@@ -142,6 +148,7 @@ dojo.addOnLoad( function(){
 				
 				dojo.event.topic.publish(tree.eventNames.moveFrom, message);
 				dojo.event.topic.publish(tree.eventNames.moveTo, message);
+				*/
 			}
 			
 			fieldSearch.clearSearch();
