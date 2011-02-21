@@ -37,7 +37,7 @@ public class InitializationWizardModel {
 	public static final String INSTALL_METHOD_ADVANCED = "advanced";
 	
 	// Default OpenMRS admin password set by the simple installation.
-	public static final String ADMIN_DEFAULT_PASSWORD = "Welcome123";
+	public static final String ADMIN_DEFAULT_PASSWORD = "Admin123";
 	
 	/**
 	 * Records completed tasks and are displayed at the top of the page upon error
