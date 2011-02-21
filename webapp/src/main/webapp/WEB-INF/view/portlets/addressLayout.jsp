@@ -85,6 +85,7 @@
     		//find the active checkbox and uncheck it
     		for(var i in inputTags){
     			if(inputTags[i] && inputTags[i].name == 'activeCheckbox'){
+    				$j(inputTags[i].parentNode.parentNode).show();
     				if(isActive == false){
     					inputTags[i].checked = false;
     					endDateIdValueMap[endDateInputId] = $j.trim($j(endDateInputObj).val());
@@ -200,7 +201,7 @@
 								</td>
 							</tr>
 					</c:if>
-					<tr>
+					<tr style="display:none">
 						<td><spring:message code="PersonAddress.isActive" /></td>
 						<td>
 							<input name="activeCheckbox" type="checkbox" checked="checked"/>
