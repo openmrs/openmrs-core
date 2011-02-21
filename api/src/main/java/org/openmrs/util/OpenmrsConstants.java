@@ -824,10 +824,25 @@ public final class OpenmrsConstants {
 	public static final String GP_SEARCH_WIDGET_IN_SERIAL_MODE = "searchWidget.runInSerialMode";
 	
 	/**
-	 * Global property name for the time interval in milli seconds between key up and triggering the
+	 * Global property name for the time interval in milliseconds between key up and triggering the
 	 * search off
 	 */
 	public static final String GP_SEARCH_WIDGET_DELAY_INTERVAL = "searchWidget.searchDelayInterval";
+	
+	/**
+	 * Encryption properties; both vector and key are required to utilize a two-way encryption
+	 */
+	public static final String ENCRYPTION_CIPHER_CONFIGURATION = "AES/CBC/PKCS5Padding";
+	
+	public static final String ENCRYPTION_KEY_SPEC = "AES";
+	
+	public static final String ENCRYPTION_VECTOR_RUNTIME_PROPERTY = "encryption.vector";
+	
+	public static final String ENCRYPTION_VECTOR_DEFAULT = "9wyBUNglFCRVSUhMfsTa3Q==";
+	
+	public static final String ENCRYPTION_KEY_RUNTIME_PROPERTY = "encryption.key";
+	
+	public static final String ENCRYPTION_KEY_DEFAULT = "dTfyELRrAICGDwzjHDjuhw==";
 	
 	/**
 	 * At OpenMRS startup these global properties/default values/descriptions are inserted into the
