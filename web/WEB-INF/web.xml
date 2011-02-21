@@ -25,7 +25,7 @@
     <context-param>
       <param-name>module.repository.url</param-name>
       <!-- <param-value>http://localhost:8080/modules</param-value> -->
-      <param-value>http://modules.openmrs.org/modules</param-value>
+      <param-value>https://modules.openmrs.org/modules</param-value>
     </context-param>
     <!-- Optional init parameter to specify runtime properties directory -->
     <!-- when environment variables cannot be modified and user's home -->
