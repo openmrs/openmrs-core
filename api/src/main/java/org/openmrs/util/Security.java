@@ -13,20 +13,35 @@
  */
 package org.openmrs.util;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.Random;
+
+import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.xerces.impl.dv.util.Base64;
 import org.openmrs.api.APIException;
+import org.openmrs.api.context.Context;
+import org.springframework.util.StringUtils;
 
 /**
  * OpenMRS's security class deals with the hashing of passwords.
  */
 public class Security {
 	
-	public static Log log = LogFactory.getLog("org.openmrs.util.Security");
+	/**
+	 * encryption settings
+	 */
+	public static Log log = LogFactory.getLog(Security.class);
 	
 	/**
 	 * Compare the given hash and the given string-to-hash to see if they are equal. The
@@ -168,6 +183,165 @@ public class Security {
 	public static String getRandomToken() throws APIException {
 		Random rng = new Random();
 		return encodeString(Long.toString(System.currentTimeMillis()) + Long.toString(rng.nextLong()));
+	}
+	
+	/**
+	 * encrypt text to a string with specific initVector and secretKey; rarely used except in
+	 * testing and where specifically necessary
+	 * 
+	 * @see #encrypt(String)
+	 * 
+	 * @param text string to be encrypted
+	 * @param initVector custom init vector byte array
+	 * @param secretKey custom secret key byte array
+	 * @return encrypted text
+	 * @since 1.9
+	 */
+	public static String encrypt(String text, byte[] initVector, byte[] secretKey) {
+		IvParameterSpec initVectorSpec = new IvParameterSpec(initVector);
+		SecretKeySpec secret = new SecretKeySpec(secretKey, OpenmrsConstants.ENCRYPTION_KEY_SPEC);
+		byte[] encrypted;
+		
+		try {
+			Cipher cipher = Cipher.getInstance(OpenmrsConstants.ENCRYPTION_CIPHER_CONFIGURATION);
+			cipher.init(Cipher.ENCRYPT_MODE, secret, initVectorSpec);
+			encrypted = cipher.doFinal(text.getBytes());
+		}
+		catch (GeneralSecurityException e) {
+			throw new APIException("could not encrypt text", e);
+		}
+		
+		return Base64.encode(encrypted);
+	}
+	
+	/**
+	 * encrypt text using stored initVector and securityKey
+	 * 
+	 * @param text
+	 * @return encrypted text
+	 * @since 1.9
+	 * @should encrypt short and long text
+	 */
+	public static String encrypt(String text) {
+		return Security.encrypt(text, Security.getSavedInitVector(), Security.getSavedSecretKey());
+	}
+	
+	/**
+	 * decrypt text to a string with specific initVector and secretKey; rarely used except in
+	 * testing and where specifically necessary
+	 * 
+	 * @see #decrypt(String)
+	 * 
+	 * @param text text to be decrypted
+	 * @param initVector custom init vector byte array
+	 * @param secretKey custom secret key byte array
+	 * @return decrypted text
+	 * @since 1.9
+	 */
+	public static String decrypt(String text, byte[] initVector, byte[] secretKey) {
+		IvParameterSpec initVectorSpec = new IvParameterSpec(initVector);
+		SecretKeySpec secret = new SecretKeySpec(secretKey, OpenmrsConstants.ENCRYPTION_KEY_SPEC);
+		String decrypted = null;
+		
+		try {
+			Cipher cipher = Cipher.getInstance(OpenmrsConstants.ENCRYPTION_CIPHER_CONFIGURATION);
+			cipher.init(Cipher.DECRYPT_MODE, secret, initVectorSpec);
+			byte[] original = cipher.doFinal(Base64.decode(text));
+			decrypted = new String(original);
+		}
+		catch (GeneralSecurityException e) {
+			throw new APIException("could not decrypt text", e);
+		}
+		
+		return decrypted;
+	}
+	
+	/**
+	 * decrypt text using stored initVector and securityKey
+	 * 
+	 * @param text text to be decrypted
+	 * @return decrypted text
+	 * @since 1.9
+	 * @should decrypt short and long text
+	 */
+	public static String decrypt(String text) {
+		return Security.decrypt(text, Security.getSavedInitVector(), Security.getSavedSecretKey());
+	}
+	
+	/**
+	 * retrieve the stored init vector from runtime properties
+	 * 
+	 * @return stored init vector byte array
+	 * @since 1.9
+	 */
+	public static byte[] getSavedInitVector() {
+		String initVectorText = Context.getRuntimeProperties().getProperty(
+		    OpenmrsConstants.ENCRYPTION_VECTOR_RUNTIME_PROPERTY, OpenmrsConstants.ENCRYPTION_VECTOR_DEFAULT);
+		
+		if (StringUtils.hasText(initVectorText))
+			return Base64.decode(initVectorText);
+		
+		throw new APIException("no encryption initialization vector found");
+	}
+	
+	/**
+	 * generate a new cipher initialization vector; should only be called once in order to not
+	 * invalidate all encrypted data
+	 * 
+	 * @return a random array of 16 bytes
+	 * @since 1.9
+	 */
+	public static byte[] generateNewInitVector() {
+		// initialize the init vector with 16 random bytes
+		byte[] initVector = new byte[16];
+		new SecureRandom().nextBytes(initVector);
+		
+		// TODO get the following (better) method working
+		// Cipher cipher = Cipher.getInstance(CIPHER_CONFIGURATION);
+		// AlgorithmParameters params = cipher.getParameters();
+		// byte[] initVector = params.getParameterSpec(IvParameterSpec.class).getIV();
+		
+		return initVector;
+	}
+	
+	/**
+	 * retrieve the secret key from runtime properties
+	 * 
+	 * @return stored secret key byte array
+	 * @since 1.9
+	 */
+	public static byte[] getSavedSecretKey() {
+		String keyText = Context.getRuntimeProperties().getProperty(OpenmrsConstants.ENCRYPTION_VECTOR_RUNTIME_PROPERTY,
+		    OpenmrsConstants.ENCRYPTION_VECTOR_DEFAULT);
+		
+		if (StringUtils.hasText(keyText))
+			return Base64.decode(keyText);
+		
+		throw new APIException("no encryption secret key found");
+	}
+	
+	/**
+	 * generate a new secret key; should only be called once in order to not invalidate all
+	 * encrypted data
+	 * 
+	 * @return generated secret key byte array
+	 * @since 1.9
+	 */
+	public static byte[] generateNewSecretKey() {
+		// Get the KeyGenerator
+		KeyGenerator kgen = null;
+		try {
+			kgen = KeyGenerator.getInstance(OpenmrsConstants.ENCRYPTION_KEY_SPEC);
+		}
+		catch (NoSuchAlgorithmException e) {
+			throw new APIException("Could not generate cipher key", e);
+		}
+		kgen.init(128); // 192 and 256 bits may not be available
+		
+		// Generate the secret key specs.
+		SecretKey skey = kgen.generateKey();
+		
+		return skey.getEncoded();
 	}
 	
 }
