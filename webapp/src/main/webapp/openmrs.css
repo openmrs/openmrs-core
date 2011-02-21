@@ -1328,7 +1328,7 @@ span.otherHit{
 		
 }
 .mergePatientsSelectedTab{
-	background-color: #FFFFFF; border: 1px solid black; padding: 5px 5px 0px 5px; cursor: pointer; border-bottom: none; width: 85px;; 
+	background-color: #FFFFFF; border: 1px solid black; padding: 5px 5px 0px 5px; cursor: pointer; border-bottom: none; width: 85px;
 }
 .mergePatientsTabsColumn{
 	text-align: center;
@@ -1337,5 +1337,5 @@ span.otherHit{
 	border-bottom: 1px solid black; 
 }
 .mergePatientsTabDiv{
-	width:85px
+	width:85px;
 }
