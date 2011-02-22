@@ -23,9 +23,11 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Concept;
 import org.openmrs.Drug;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
+import org.openmrs.propertyeditor.ConceptEditor;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
@@ -54,6 +56,7 @@ public class ConceptDrugFormController extends SimpleFormController {
 		//NumberFormat nf = NumberFormat.getInstance(new Locale("en_US"));
 		binder.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, true));
 		binder.registerCustomEditor(java.lang.Double.class, new CustomNumberEditor(java.lang.Double.class, true));
+		binder.registerCustomEditor(Concept.class, new ConceptEditor());
 	}
 	
 	/**
@@ -89,7 +92,6 @@ public class ConceptDrugFormController extends SimpleFormController {
 				conceptService.unretireDrug(drug);
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "ConceptDrug.unretiredSuccessfully");
 			} else {
-				drug.setConcept(conceptService.getConcept(Integer.valueOf(request.getParameter("conceptId"))));
 				conceptService.saveDrug(drug);
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "ConceptDrug.saved");
 			}

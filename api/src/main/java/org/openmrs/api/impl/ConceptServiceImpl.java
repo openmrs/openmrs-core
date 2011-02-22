@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.Vector;
-
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
@@ -68,6 +67,7 @@ import org.openmrs.scheduler.TaskDefinition;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.validator.ConceptValidator;
+import org.openmrs.validator.ValidateUtil;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
@@ -268,6 +268,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	public Drug saveDrug(Drug drug) throws APIException {
 		checkIfLocked();
 		
+		ValidateUtil.validate(drug);
 		return dao.saveDrug(drug);
 	}
 	
