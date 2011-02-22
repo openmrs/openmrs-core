@@ -125,7 +125,7 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 				String other = null;
 				if (args.length > 1)
 					other = (String) args[1];
-
+				
 				recursivelyHandle(SaveHandler.class, (OpenmrsObject) mainArgument, other);
 			}
 			// if the first argument is a list of openmrs objects, handle them all now
@@ -135,7 +135,7 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 				String other = null;
 				if (args.length > 1)
 					other = (String) args[1];
-
+				
 				Collection<OpenmrsObject> openmrsObjects = (Collection<OpenmrsObject>) mainArgument;
 				
 				for (OpenmrsObject object : openmrsObjects) {

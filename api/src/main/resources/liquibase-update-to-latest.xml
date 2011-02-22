@@ -3968,7 +3968,7 @@
 		<comment>Removing concept that are concept derived and the datatype</comment>
 		<delete tableName="concept_derived" />
 	</changeSet>
-
+	
 	<changeSet id="201012081717" author="nribeka">
 		<preConditions onFail="MARK_RAN">
 			<tableExists tableName="concept_derived" />
@@ -4162,6 +4162,22 @@
 				<constraints nullable="false" />
 			</column>
 		</modifyColumn>
+	</changeSet>
+	
+	<changeSet id="201101121434" author="gbalaji,gobi">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="obs" columnName="date_started"/>
+		</preConditions>
+		<comment>Dropping unused date_started column from obs table</comment>
+		<dropColumn tableName="obs" columnName="date_started"/>
+	</changeSet>
+	
+	<changeSet id="201102081800" author="gbalaji,gobi">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="obs" columnName="date_stopped"/>			
+		</preConditions>
+		<comment>Dropping unused date_stopped column from obs table</comment>
+		<dropColumn tableName="obs" columnName="date_stopped"/>
 	</changeSet>
 
 </databaseChangeLog>

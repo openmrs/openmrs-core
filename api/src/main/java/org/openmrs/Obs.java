@@ -111,10 +111,6 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	
 	protected Encounter encounter;
 	
-	protected Date dateStarted;
-	
-	protected Date dateStopped;
-	
 	/** default constructor */
 	public Obs() {
 	}
@@ -165,8 +161,6 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 		newObs.setComment(obsToCopy.getComment());
 		newObs.setOrder(obsToCopy.getOrder());
 		newObs.setEncounter(obsToCopy.getEncounter());
-		newObs.setDateStarted(obsToCopy.getDateStarted());
-		newObs.setDateStopped(obsToCopy.getDateStopped());
 		newObs.setCreator(obsToCopy.getCreator());
 		newObs.setDateCreated(obsToCopy.getDateCreated());
 		newObs.setVoided(obsToCopy.getVoided());
@@ -841,34 +835,6 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 */
 	public void setAccessionNumber(String accessionNumber) {
 		this.accessionNumber = accessionNumber;
-	}
-	
-	/**
-	 * @return Returns the dateStarted.
-	 */
-	public Date getDateStarted() {
-		return dateStarted;
-	}
-	
-	/**
-	 * @param dateStarted The dateStarted to set.
-	 */
-	public void setDateStarted(Date dateStarted) {
-		this.dateStarted = dateStarted;
-	}
-	
-	/**
-	 * @return Returns the dateStopped.
-	 */
-	public Date getDateStopped() {
-		return dateStopped;
-	}
-	
-	/**
-	 * @param dateStopped The dateStopped to set.
-	 */
-	public void setDateStopped(Date dateStopped) {
-		this.dateStopped = dateStopped;
 	}
 	
 	/***************************************************************************

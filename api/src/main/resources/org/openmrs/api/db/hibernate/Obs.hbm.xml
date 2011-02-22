@@ -40,11 +40,7 @@
 		<property name="accessionNumber" type="java.lang.String"
 			column="accession_number" length="255" />
 			
-		<property name="dateStarted" type="java.util.Date"
-			column="date_started" length="19" />
-		<property name="dateStopped" type="java.util.Date"
-			column="date_stopped" length="19" />
-			
+				
 		<property name="dateCreated" type="java.util.Date"
 			column="date_created" not-null="true" length="19" />
 		<property name="voided" type="java.lang.Boolean" column="voided"
