@@ -618,13 +618,12 @@ public class InitializationFilter extends StartupFilter {
 		super.init(filterConfig);
 		wizardModel = new InitializationWizardModel();
 		//set whether need to do initialization work
-		if (Listener.runtimePropertiesFound()) {
-			boolean dbEmpty = isDatabaseEmpty(Listener.getRuntimeProperties());
-			//if database is not empty, then let UpdaterFilter to judge whether need database update
-			setInitializationComplete(!dbEmpty);
-		} else {
+		if (isDatabaseEmpty(OpenmrsUtil.getRuntimeProperties(WebConstants.WEBAPP_NAME))) {
 			//if runtime-properties file doesn't exist, have to do initialization work
 			setInitializationComplete(false);
+		} else {
+			//if database is not empty, then let UpdaterFilter to judge whether need database update
+			setInitializationComplete(true);
 		}
 	}
 	
