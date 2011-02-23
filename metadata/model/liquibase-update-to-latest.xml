@@ -3684,6 +3684,18 @@
 		<comment>Moving "deleted" HL7s from HL7 archive table to queue table</comment>
 		<customChange class="org.openmrs.util.databasechange.MoveDeletedHL7sChangeSet"/>				
 	</changeSet>
+	
+	<changeSet id="201118012301" author="lkellett">
+		<preConditions onFail="MARK_RAN">
+			<not><columnExists tableName="orders" columnName="discontinued_reason_non_coded"/></not>
+		</preConditions>
+		<comment>
+			Adding the discontinued_reason_non_coded column to orders.  
+		</comment>
+		<addColumn tableName="orders">
+			<column name="discontinued_reason_non_coded" type="varchar(255)" />
+		</addColumn>
+	</changeSet>
 
 	<changeSet id="20100607-1550i" author="wyclif">
 		<preConditions onFail="MARK_RAN">			
