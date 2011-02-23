@@ -4179,5 +4179,18 @@
 		<comment>Dropping unused date_stopped column from obs table</comment>
 		<dropColumn tableName="obs" columnName="date_stopped"/>
 	</changeSet>
+	
+	<changeSet id="20110124-1030" author="surangak">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<foreignKeyConstraintExists
+					foreignKeyName="answer_answer_drug_fk" />
+			</not>
+		</preConditions>
+		<comment>Adding correct foreign key for concept_answer.answer_drug</comment>
+		<addForeignKeyConstraint baseTableName="concept_answer"
+			baseColumnNames="answer_drug" constraintName="answer_answer_drug_fk"
+			referencedTableName="drug" referencedColumnNames="drug_id" />
+	</changeSet>
 
 </databaseChangeLog>
