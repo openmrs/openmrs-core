@@ -298,6 +298,18 @@ public class InitializationFilter extends StartupFilter {
 			
 			wizardModel.adminUserPassword = InitializationWizardModel.ADMIN_DEFAULT_PASSWORD;
 			
+			try {
+				loadedDriverString = DatabaseUtil.loadDatabaseDriver(wizardModel.databaseConnection,
+				    wizardModel.databaseDriver);
+			}
+			catch (ClassNotFoundException e) {
+				errors.add("The given database driver class was not found. "
+				        + "Please ensure that the database driver jar file is on the class path "
+				        + "(like in the webapp's lib folder)");
+				renderTemplate(page, referenceMap, httpResponse);
+				return;
+			}
+			
 			if (errors.isEmpty()) {
 				page = WIZARD_COMPLETE;
 			}
