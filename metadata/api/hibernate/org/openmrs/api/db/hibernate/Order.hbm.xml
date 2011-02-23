@@ -88,6 +88,12 @@
         column="void_reason"
         length="255"
     />
+    <property
+        name="discontinuedReasonNonCoded"
+        type="java.lang.String"
+        column="discontinued_reason_non_coded"
+        length="255"
+    />
 
     <!-- Associations -->
   
