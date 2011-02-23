@@ -52,12 +52,12 @@ import org.openmrs.module.web.WebModuleUtil;
 import org.openmrs.scheduler.SchedulerUtil;
 import org.openmrs.util.DatabaseUpdateException;
 import org.openmrs.util.DatabaseUpdater;
-import org.openmrs.util.DatabaseUpdater.ChangeSetExecutorCallback;
 import org.openmrs.util.DatabaseUtil;
 import org.openmrs.util.InputRequiredException;
 import org.openmrs.util.MemoryAppender;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.util.DatabaseUpdater.ChangeSetExecutorCallback;
 import org.openmrs.web.Listener;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.filter.StartupFilter;
@@ -494,13 +494,12 @@ public class InitializationFilter extends StartupFilter {
 		super.init(filterConfig);
 		wizardModel = new InitializationWizardModel();
 		//set whether need to do initialization work
-		if (Listener.runtimePropertiesFound()) {
-			boolean dbEmpty = isDatabaseEmpty(Listener.getRuntimeProperties());
-			//if database is not empty, then let UpdaterFilter to judge whether need database update
-			setInitializationComplete(!dbEmpty);
-		} else {
+		if (isDatabaseEmpty(Listener.getRuntimeProperties())) {
 			//if runtime-properties file doesn't exist, have to do initialization work
 			setInitializationComplete(false);
+		} else {
+			//if database is not empty, then let UpdaterFilter to judge whether need database update
+			setInitializationComplete(true);
 		}
 	}
 	
