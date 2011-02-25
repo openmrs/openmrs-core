@@ -19,10 +19,16 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
+import java.io.CharArrayReader;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.InputStream;
+import java.io.Reader;
+import java.io.Writer;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -542,8 +548,8 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 			createdFile.delete();
 		
 		// the complex data to put onto an obs that will be saved
-		InputStream inputStream = new ByteArrayInputStream("This is a string to save to a file".getBytes());
-		ComplexData complexData = new ComplexData("nameOfFile.txt", inputStream);
+		Reader input = new CharArrayReader("This is a string to save to a file".toCharArray());
+		ComplexData complexData = new ComplexData("nameOfFile.txt", input);
 		
 		// must fetch the concept instead of just new Concept(8473) because the attributes on concept are checked
 		// this is a concept mapped to the text handler
@@ -580,9 +586,17 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 		File complexObsDir = OpenmrsUtil.getDirectoryInApplicationDataDirectory(as
 		        .getGlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_COMPLEX_OBS_DIR));
 		File previouslyCreatedFile = new File(complexObsDir, "nameOfFile.txt");
-		InputStream inputStream = new ByteArrayInputStream("a string to save to a file".getBytes());
-		OpenmrsUtil.copyFile(inputStream, new FileOutputStream(previouslyCreatedFile));
-		inputStream.close();
+		Reader input = new CharArrayReader("a string to save to a file".toCharArray());
+		Reader buffReader = new BufferedReader(input);
+		Writer buffWriter = new BufferedWriter(new FileWriter(previouslyCreatedFile));
+		while (true) {
+			int character = buffReader.read();
+			if (character == -1) {
+				break;
+			}
+			buffWriter.write(character);
+		}
+		input.close();
 		
 		// the file we'll be creating...defining it here so we can delete it in a finally block
 		File newComplexFile = null;
@@ -594,9 +608,8 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 			// ...then make sure the original file is still there
 			
 			// the complex data to put onto an obs that will be saved
-			InputStream inputStream2 = new ByteArrayInputStream("diff string to save to a file with the same name"
-			        .getBytes());
-			ComplexData complexData = new ComplexData("nameOfFile.txt", inputStream2);
+			Reader input2 = new CharArrayReader("diff string to save to a file with the same name".toCharArray());
+			ComplexData complexData = new ComplexData("nameOfFile.txt", input2);
 			
 			// must fetch the concept instead of just new Concept(8473) because the attributes on concept are checked
 			// this is a concept mapped to the text handler
