@@ -33,10 +33,10 @@
 		
 		
 		<property name="retireReason" type="java.lang.String"
-			column="retire_reason" length="50" /> 
+			column="retire_reason" length="255" /> 
 		
 		<property name="dateRetired" type="java.util.Date"
-			column="date_retired" length="255" />
+			column="date_retired" length="19" />
 		
 		<many-to-one name="retiredBy" class="User">
 			<column name="retired_by" />

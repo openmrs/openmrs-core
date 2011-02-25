@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.Vector;
+
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
@@ -295,7 +296,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 */
 	public Concept retireConcept(Concept concept, String reason) throws APIException {
 		if (!StringUtils.hasText(reason))
-			throw new IllegalArgumentException("reason is required");
+			throw new IllegalArgumentException(Context.getMessageSourceService().getMessage("general.voidReason.empty"));
 		
 		// only do this if the concept isn't retired already
 		if (concept.isRetired() == false) {
@@ -303,9 +304,8 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 			
 			concept.setRetired(true);
 			concept.setRetireReason(reason);
-			concept.setRetiredBy(Context.getAuthenticatedUser());
-			concept.setDateRetired(new Date());
 			return dao.saveConcept(concept);
+			
 		}
 		
 		return concept;

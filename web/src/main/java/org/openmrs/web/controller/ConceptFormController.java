@@ -162,34 +162,43 @@ public class ConceptFormController extends SimpleFormController {
 			if (action.equals(msa.getMessage("general.retire"))) {
 				Concept concept = conceptBackingObject.getConcept();
 				try {
-					String reason = request.getParameter(msa.getMessage("general.retiredReason"));
+					String reason = request.getParameter("retiredReason");
 					if (!StringUtils.hasText(reason)) {
-						httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "general.retiredReason.empty");
-						return new ModelAndView(new RedirectView(getSuccessView() + "?conceptId=" + concept.getConceptId()));
+						reason = msa.getMessage("general.default.retireReason");
 					}
 					cs.retireConcept(concept, reason);
-					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Concept.retiredMessage");
+					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Concept.concept.retired.successFully");
 					return new ModelAndView(new RedirectView(getSuccessView() + "?conceptId=" + concept.getConceptId()));
 				}
-				catch (Exception e) {
-					// TODO: handle exception
+				catch (APIException e) {
 					log.error("Unable to Retire concept because an error occurred: " + concept, e);
-					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Concept cannot retire");
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "general.cannot.retire");
 				}
+				// return to the edit screen because an error was thrown
+				return new ModelAndView(new RedirectView(getSuccessView() + "?conceptId=" + concept.getConceptId()));
 				
 			} else if (action.equals(msa.getMessage("general.unretire"))) {
 				Concept concept = conceptBackingObject.getConcept();
 				try {
 					concept.setRetired(false);
 					cs.saveConcept(concept);
-					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Concept UnRetired");
+					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Concept.concept.unRetired.successFully");
 					return new ModelAndView(new RedirectView(getSuccessView() + "?conceptId=" + concept.getConceptId()));
 				}
-				catch (Exception e) {
-					// TODO: handle exception
-					log.error("Unable to unretire concept because an error occurred: " + concept, e);
-					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Concept unable to Unretire");
+				catch (ConceptsLockedException cle) {
+					log.error("Tried to unretire concept while concepts were locked", cle);
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Concept.concepts.locked.unRetire");
 				}
+				catch (DuplicateConceptNameException e) {
+					log.error("Tried to unretire concept with a duplicate name", e);
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "general.cannot.unretire");
+				}
+				catch (APIException e) {
+					log.error("Error while trying to unretire concept", e);
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "general.cannot.unretire");
+				}
+				// return to the edit screen because an error was thrown
+				return new ModelAndView(new RedirectView(getSuccessView() + "?conceptId=" + concept.getConceptId()));
 				
 			} else if (action.equals(msa.getMessage("Concept.delete", "Delete Concept"))) {
 				Concept concept = conceptBackingObject.getConcept();
