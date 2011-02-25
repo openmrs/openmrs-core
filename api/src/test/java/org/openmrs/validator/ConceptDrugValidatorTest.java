@@ -22,23 +22,23 @@ public class ConceptDrugValidatorTest {
 		new ConceptDrugValidator().validate(drug, errors);
 		Assert.assertTrue(errors.hasErrors());
 	}
-
+	
 	/**
-     * @see ConceptDrugValidator#supports(Class)
-     * @verifies reject classes not extending Drug
-     */
-    @Test
-    public void supports_shouldRejectClassesNotExtendingDrug() throws Exception {
-    	Assert.assertFalse(new ConceptDrugValidator().supports(String.class));
-    }
-
+	 * @see ConceptDrugValidator#supports(Class)
+	 * @verifies reject classes not extending Drug
+	 */
+	@Test
+	public void supports_shouldRejectClassesNotExtendingDrug() throws Exception {
+		Assert.assertFalse(new ConceptDrugValidator().supports(String.class));
+	}
+	
 	/**
-     * @see ConceptDrugValidator#supports(Class)
-     * @verifies support Drug class
-     */
-    @Test
-    public void supports_shouldSupportDrug() throws Exception {
-    	Assert.assertTrue(new ConceptDrugValidator().supports(Drug.class));
-    }
+	 * @see ConceptDrugValidator#supports(Class)
+	 * @verifies support Drug class
+	 */
+	@Test
+	public void supports_shouldSupportDrug() throws Exception {
+		Assert.assertTrue(new ConceptDrugValidator().supports(Drug.class));
+	}
 	
 }

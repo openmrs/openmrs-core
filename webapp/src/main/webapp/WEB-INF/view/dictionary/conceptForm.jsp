@@ -139,7 +139,7 @@
 <c:if test="${command.concept.retired}">
 	<div class="retiredMessage">
 	<div><spring:message code="Concept.retiredMessage"/></div>
-    <div>  <c:if test="${command.concept.retireReason!=''}"> <spring:message code="general.reason"/>: ${command.concept.retireReason} </c:if> <c:if test="${command.concept.retiredBy.personName != null}">  <spring:message code="general.byPerson"/> ${command.concept.retiredBy.personName} </c:if> <c:if test="${command.concept.dateRetired != null}"> <spring:message code="general.onDate"/>  <openmrs:formatDate date="${command.concept.dateRetired}" type="long" /> </c:if></div>
+    <div>  <c:if test="${command.concept.retiredBy.personName != null}">  <spring:message code="general.byPerson"/> ${command.concept.retiredBy.personName} </c:if> <c:if test="${command.concept.dateRetired != null}"> <spring:message code="general.onDate"/>  <openmrs:formatDate date="${command.concept.dateRetired}" type="long" /> </c:if> <c:if test="${command.concept.retireReason!=''}"> - ${command.concept.retireReason} </c:if> </div>
 	<div><form action="" method="post" ><input type="submit" name="action" value="<spring:message code="general.unretire"/>" /></form></div> 
 	</div>
 </c:if>
@@ -740,7 +740,7 @@
 			
 			
 			<b><spring:message code="general.reason"/></b>
-			<input type="text" value="" size="40" name="<spring:message code="general.retiredReason"/>" />
+			<input type="text" value="" size="40" name="retiredReason" />
 		
 			<br/>
 			<input type="submit" value='<spring:message code="general.retire"/>' name="action"/>

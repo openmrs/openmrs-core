@@ -612,7 +612,7 @@ public class ModuleUtil {
 		} while (redir);
 		return in;
 	}
-
+	
 	/**
 	 * Downloads the contents of a URL and copies them to a string (Borrowed from oreilly)
 	 * 

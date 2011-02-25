@@ -109,7 +109,7 @@
 	<c:if test="${command.concept.retired}">
 	<div class="retiredMessage">
 	<div><spring:message code="Concept.retiredMessage"/> </div>
-	<div>  <c:if test="${command.concept.retireReason!=''}"> <spring:message code="general.reason"/>: ${command.concept.retireReason} </c:if> <c:if test="${command.concept.retiredBy.personName != null}">  <spring:message code="general.byPerson"/> ${command.concept.retiredBy.personName} </c:if> <c:if test="${command.concept.dateRetired != null}"> <spring:message code="general.onDate"/>  <openmrs:formatDate date="${command.concept.dateRetired}" type="long" /> </c:if></div>
+	<div>  <c:if test="${command.concept.retiredBy.personName != null}">  <spring:message code="general.byPerson"/> ${command.concept.retiredBy.personName} </c:if> <c:if test="${command.concept.dateRetired != null}"> <spring:message code="general.onDate"/>  <openmrs:formatDate date="${command.concept.dateRetired}" type="long" /> </c:if> <c:if test="${command.concept.retireReason!=''}"> - ${command.concept.retireReason} </c:if> </div>
 	</div>
 	</c:if>
 	
