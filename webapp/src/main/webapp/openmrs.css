@@ -117,15 +117,11 @@ a:hover {
 }
 
 #userBar {
-	position: absolute;
-	top: 0px;
-	left: 0px;
 	text-align: right;
 	padding-top: 3px;
     padding-right:5px;
 	margin: 0px;
 	z-index: 10;
-	width: 100%;
 	color: #333333;
 	line-height: 26px;
 }
@@ -156,7 +152,6 @@ a:hover {
 	
 #content {
 	margin: 0px 0 0 0;
-	width: 100%;
 	padding: 80px 10px 10px 10px;	font-size: 1.2em;
 	background-color: #ffffff;
 	z-index: 8;
