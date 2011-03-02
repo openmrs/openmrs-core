@@ -152,7 +152,8 @@ a:hover {
 	
 #content {
 	margin: 0px 0 0 0;
-	padding: 80px 10px 10px 10px;	font-size: 1.2em;
+	padding: 50px 10px 10px 10px;
+	font-size: 1.2em;
 	background-color: #ffffff;
 	z-index: 8;
 }
