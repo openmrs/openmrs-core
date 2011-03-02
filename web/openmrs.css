@@ -56,14 +56,10 @@ a:hover {
 }
 
 #userBar {
-	position: absolute;
-	top: 0px;
-	left: 0px;
 	text-align: right;
 	padding: 0px 3px 0px 3px;
 	margin: 0px;
 	z-index: 5;
-	width: 100%;
 	color: #333333;
 	line-height: 26px;
 	background-color: #ffffff;
@@ -136,7 +132,6 @@ a:hover {
 	
 #content {
 	margin: 0px 0 0 0;
-	width: 100%;
 	padding: 60px 10px 10px 10px;
 	font-size: 1.2em;
 	background-color: #ffffff;
