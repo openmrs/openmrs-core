@@ -20,6 +20,8 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -48,7 +50,8 @@ public class ObsTest {
 		
 		// These methods should not fail even with null attributes on the obs
 		assertFalse(obsGroup.isObsGrouping());
-		assertFalse(obsGroup.hasGroupMembers());
+		assertFalse(obsGroup.hasGroupMembers(false));
+		assertFalse(obsGroup.hasGroupMembers(true)); //Check both flags for false
 		
 		// adding an obs when the obs group has no other obs
 		// should not throw an error
@@ -57,13 +60,13 @@ public class ObsTest {
 		
 		// check duplicate add. should only be one
 		obsGroup.addGroupMember(obs);
-		assertTrue(obsGroup.hasGroupMembers());
+		assertTrue(obsGroup.hasGroupMembers(false));
 		assertEquals("Duplicate add should not increase the grouped obs size", 1, obsGroup.getGroupMembers().size());
 		
 		Obs obs2 = new Obs(2);
 		
 		obsGroup.removeGroupMember(obs2);
-		assertTrue(obsGroup.hasGroupMembers());
+		assertTrue(obsGroup.hasGroupMembers(false));
 		assertEquals("Removing a non existent obs should not decrease the number of grouped obs", 1, obsGroup
 		        .getGroupMembers().size());
 		
@@ -260,5 +263,58 @@ public class ObsTest {
 		Obs obs = new Obs();
 		obs.setValueNumeric(1.0);
 		Assert.assertEquals(true, obs.getValueAsBoolean());
+	}
+	
+	/**
+	 * @see Obs#getGroupMembers(boolean)
+	 * @verifies Get all group members if passed true, and non-voided if passed false
+	 */
+	@Test
+	public void getGroupMembers_shouldGetAllGroupMembersIfPassedTrueAndNonvoidedIfPassedFalse() throws Exception {
+		Obs parent = new Obs(1);
+		Set<Obs> members = new HashSet<Obs>();
+		members.add(new Obs(101));
+		members.add(new Obs(103));
+		Obs voided = new Obs(99);
+		voided.setVoided(true);
+		members.add(voided);
+		parent.setGroupMembers(members);
+		members = parent.getGroupMembers(true);
+		assertEquals("set of all members should have length of 3", 3, members.size());
+		members = parent.getGroupMembers(false);
+		assertEquals("set of non-voided should have length of 2", 2, members.size());
+		members = parent.getGroupMembers(); //should be same as false
+		assertEquals("default should return non-voided with length of 2", 2, members.size());
+	}
+	
+	/**
+	 * @see Obs#hasGroupMembers(boolean)
+	 * @verifies return true if this obs has group members based on parameter
+	 */
+	@Test
+	public void hasGroupMembers_shouldReturnTrueIfThisObsHasGroupMembersBasedOnParameter() throws Exception {
+		Obs parent = new Obs(5);
+		Obs child = new Obs(33);
+		child.setVoided(true);
+		parent.addGroupMember(child); //Only contains 1 voided child
+		assertTrue("When checking for all members, should return true", parent.hasGroupMembers(true));
+		assertFalse("When checking for non-voided, should return false", parent.hasGroupMembers(false));
+		assertFalse("Default should check for non-voided", parent.hasGroupMembers());
+	}
+	
+	/**
+	 * @see Obs#isObsGrouping()
+	 * @verifies ignore voided Obs
+	 */
+	@Test
+	public void isObsGrouping_shouldIgnoreVoidedObs() throws Exception {
+		Obs parent = new Obs(5);
+		Obs child = new Obs(33);
+		child.setVoided(true);
+		parent.addGroupMember(child);
+		assertFalse("When checking for Obs grouping, should ignore voided Obs", parent.isObsGrouping());
+		child = new Obs(66); //new Child that is non-voided
+		parent.addGroupMember(child);
+		assertTrue("When there is at least 1 non-voided child, should return True", parent.isObsGrouping());
 	}
 }
