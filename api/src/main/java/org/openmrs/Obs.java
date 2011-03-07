@@ -20,11 +20,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-
-import net.sf.cglib.core.CollectionUtils;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -440,7 +439,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 			return groupMembers;
 		if (groupMembers == null) //Empty set so return null
 			return null;
-		Set<Obs> nonVoided = new HashSet<Obs>(groupMembers);
+		Set<Obs> nonVoided = new LinkedHashSet<Obs>(groupMembers);
 		Iterator<Obs> i = nonVoided.iterator();
 		while (i.hasNext()) {
 			Obs obs = i.next();
