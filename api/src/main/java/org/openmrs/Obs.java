@@ -19,9 +19,12 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+
+import net.sf.cglib.core.CollectionUtils;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -171,6 +174,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 		newObs.setValueComplex(obsToCopy.getValueComplex());
 		newObs.setComplexData(obsToCopy.getComplexData());
 		
+		//Copy list of all members, including voided, and put them in respective groups
 		if (obsToCopy.getGroupMembers() != null)
 			for (Obs member : obsToCopy.getGroupMembers()) {
 				// if the obs hasn't been saved yet, no need to duplicate it
@@ -365,7 +369,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	
 	/**
 	 * Convenience method that checks for nullity and length of the (@link #getGroupMembers())
-	 * method
+	 * method. Does not check voided-Obs.
 	 * <p>
 	 * NOTE: This method could also be called "isObsGroup" for a little less confusion on names.
 	 * However, jstl in a web layer (or any psuedo-getter) access isn't good with both an
@@ -374,24 +378,42 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * boolean of whether this obs is a parent and has members. ${obs.obsGroup} returns the parent
 	 * object to this obs if this obs is a group member of some other group.
 	 * 
-	 * @return true if this is the parent group of other obs
+	 * @return true if this is the parent group of other non-voided obs
+	 * @should ignore voided Obs
 	 */
 	public boolean isObsGrouping() {
-		return hasGroupMembers();
+		return hasGroupMembers(false);
 	}
 	
 	/**
-	 * Convenience method that checks for nullity and length of the (@link #getGroupMembers())
-	 * method
+	 * A convenience method to check for nullity and length to determine if this obs has group
+	 * members. By default, this ignores voided-objects. To include voided, use
+	 * {@link #hasGroupMembers(boolean)} with value true.
 	 * 
 	 * @return true if this is the parent group of other obs
 	 */
 	public boolean hasGroupMembers() {
-		return getGroupMembers() != null && getGroupMembers().size() > 0;
+		return hasGroupMembers(false);
 	}
 	
 	/**
-	 * Get the members of the obs group, if this obs is a group.
+	 * Convenience method that checks for nullity and length to determine if this obs has group
+	 * members. The parameter specifies if this method whether or not voided obs should be
+	 * considered.
+	 * 
+	 * @param includeVoided determines if Voided members should be considered as group members.
+	 * @return true if this is the parent group of other Obs
+	 * @should return true if this obs has group members based on parameter
+	 */
+	public boolean hasGroupMembers(boolean includeVoided) {
+		// ! symbol used because if it's not empty, we want true
+		return !org.springframework.util.CollectionUtils.isEmpty(getGroupMembers(includeVoided));
+	}
+	
+	/**
+	 * Get the non-voided members of the obs group, if this obs is a group. By default this method
+	 * only returns non-voided group members. To get all group members, use
+	 * {@link #getGroupMembers(boolean)} with value true.
 	 * <p>
 	 * If it's not a group (i.e. {@link #getConcept()}.{@link org.openmrs.Concept#isSet()} is not
 	 * true, then this returns null.
@@ -401,7 +423,31 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * @see #hasGroupMembers()
 	 */
 	public Set<Obs> getGroupMembers() {
-		return groupMembers;
+		return getGroupMembers(false); //same as just returning groupMembers
+	}
+	
+	/**
+	 * Get the group members of this obs group, if this obs is a group. This method will either
+	 * return all group members, or only non-voided group members, depending on if the argument is
+	 * set to be true or false respectively.
+	 * 
+	 * @param includeVoided
+	 * @return the set of group members in this obs group
+	 * @should Get all group members if passed true, and non-voided if passed false
+	 */
+	public Set<Obs> getGroupMembers(boolean includeVoided) {
+		if (includeVoided) //just return all group members
+			return groupMembers;
+		if (groupMembers == null) //Empty set so return null
+			return null;
+		Set<Obs> nonVoided = new HashSet<Obs>(groupMembers);
+		Iterator<Obs> i = nonVoided.iterator();
+		while (i.hasNext()) {
+			Obs obs = i.next();
+			if (obs.isVoided())
+				i.remove();
+		}
+		return nonVoided;
 	}
 	
 	/**
@@ -415,12 +461,13 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	 * @see #hasGroupMembers()
 	 */
 	public void setGroupMembers(Set<Obs> groupMembers) {
-		this.groupMembers = groupMembers;
+		this.groupMembers = groupMembers; //Copy over the entire list
+		
 	}
 	
 	/**
 	 * Convenience method to add the given <code>obs</code> to this grouping. Will implicitly make
-	 * this obs an ObsGroup
+	 * this obs an ObsGroup.
 	 * 
 	 * @param member Obs to add to this group
 	 * @see #setGroupMembers(Set)
