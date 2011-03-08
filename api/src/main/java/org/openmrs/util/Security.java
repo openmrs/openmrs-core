@@ -14,6 +14,7 @@
 package org.openmrs.util;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -37,6 +38,11 @@ import org.springframework.util.StringUtils;
  * OpenMRS's security class deals with the hashing of passwords.
  */
 public class Security {
+	
+	/**
+	 * Defined encoding to avoid using default platform charset 
+	 */
+	private static final String encoding = "UTF-8";
 	
 	/**
 	 * encryption settings
@@ -78,15 +84,19 @@ public class Security {
 	public static String encodeString(String strToEncode) throws APIException {
 		String algorithm = "SHA-512";
 		MessageDigest md;
+		byte[] input;
 		try {
 			md = MessageDigest.getInstance(algorithm);
+			input = strToEncode.getBytes(encoding);
 		}
 		catch (NoSuchAlgorithmException e) {
 			// Yikes! Can't encode password...what to do?
 			log.error("Can't encode password because the given algorithm: " + algorithm + "was not found! (fail)", e);
 			throw new APIException("System cannot find password encryption algorithm", e);
 		}
-		byte[] input = strToEncode.getBytes(); //TODO: pick a specific character encoding, don't rely on the platform default
+		catch (UnsupportedEncodingException e) {
+			throw new APIException("System cannot find " + encoding + " encoding", e);
+		}
 		return hexString(md.digest(input));
 	}
 	
@@ -99,15 +109,19 @@ public class Security {
 	private static String encodeStringSHA1(String strToEncode) throws APIException {
 		String algorithm = "SHA1";
 		MessageDigest md;
+		byte[] input;
 		try {
 			md = MessageDigest.getInstance(algorithm);
+			input = strToEncode.getBytes(encoding);
 		}
 		catch (NoSuchAlgorithmException e) {
 			// Yikes! Can't encode password...what to do?
 			log.error("Can't encode password because the given algorithm: " + algorithm + "was not found! (fail)", e);
 			throw new APIException("System cannot find SHA1 encryption algorithm", e);
 		}
-		byte[] input = strToEncode.getBytes(); //TODO: pick a specific character encoding, don't rely on the platform default
+		catch (UnsupportedEncodingException e) {
+			throw new APIException("System cannot find " + encoding + " encoding", e);
+		}
 		return hexString(md.digest(input));
 	}
 	
@@ -143,15 +157,19 @@ public class Security {
 	private static String incorrectlyEncodeString(String strToEncode) throws APIException {
 		String algorithm = "SHA1";
 		MessageDigest md;
+		byte[] input;
 		try {
 			md = MessageDigest.getInstance(algorithm);
+			input = strToEncode.getBytes(encoding);
 		}
 		catch (NoSuchAlgorithmException e) {
 			// Yikes! Can't encode password...what to do?
 			log.error("Can't encode password because the given algorithm: " + algorithm + "was not found! (fail)", e);
 			throw new APIException("System cannot find SHA1 encryption algorithm", e);
 		}
-		byte[] input = strToEncode.getBytes(); //TODO: pick a specific character encoding, don't rely on the platform default
+		catch (UnsupportedEncodingException e) {
+			throw new APIException("System cannot find " + encoding + " encoding", e);
+		}
 		return incorrectHexString(md.digest(input));
 	}
 	
@@ -205,10 +223,13 @@ public class Security {
 		try {
 			Cipher cipher = Cipher.getInstance(OpenmrsConstants.ENCRYPTION_CIPHER_CONFIGURATION);
 			cipher.init(Cipher.ENCRYPT_MODE, secret, initVectorSpec);
-			encrypted = cipher.doFinal(text.getBytes());
+			encrypted = cipher.doFinal(text.getBytes(encoding));
 		}
 		catch (GeneralSecurityException e) {
 			throw new APIException("could not encrypt text", e);
+		}
+		catch (UnsupportedEncodingException e) {
+			throw new APIException("System cannot find " + encoding + " encoding", e);
 		}
 		
 		return Base64.encode(encrypted);
@@ -247,10 +268,13 @@ public class Security {
 			Cipher cipher = Cipher.getInstance(OpenmrsConstants.ENCRYPTION_CIPHER_CONFIGURATION);
 			cipher.init(Cipher.DECRYPT_MODE, secret, initVectorSpec);
 			byte[] original = cipher.doFinal(Base64.decode(text));
-			decrypted = new String(original);
+			decrypted = new String(original, encoding);
 		}
 		catch (GeneralSecurityException e) {
 			throw new APIException("could not decrypt text", e);
+		}
+		catch (UnsupportedEncodingException e) {
+			throw new APIException("System cannot find " + encoding + " encoding", e);
 		}
 		
 		return decrypted;
