@@ -300,6 +300,9 @@ public class ModuleFactory {
 			// Send an alert to all administrators
 			Context.getAlertService().notifySuperUsers("Module.startupError.notification.message", null, mod.getName());
 		}
+		catch (Exception e) {
+			log.error("Unable to send an alert to the super users", e);
+		}
 		finally {
 			// Remove added privileges
 			Context.removeProxyPrivilege(PrivilegeConstants.VIEW_USERS);
