@@ -228,7 +228,7 @@ public class ShortPatientFormValidatorTest extends BaseWebContextSensitiveTest {
 	public void validate_shouldFailValidationIfBirthdateMakesPatient120YearsOldOrOlder() throws Exception {
 		Patient p = ps.getPatient(2);
 		Calendar c = Calendar.getInstance();
-		c.roll(Calendar.YEAR, -120);
+		c.roll(Calendar.YEAR, -121);
 		p.setBirthdate(c.getTime());
 		ShortPatientModel model = new ShortPatientModel(p);
 		Errors errors = new BindException(model, "patientModel");
