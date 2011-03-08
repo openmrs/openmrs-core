@@ -21,7 +21,6 @@ import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.SkipBaseSetup;
 import org.openmrs.test.StartModule;
 import org.openmrs.util.OpenmrsClassLoader;
-import org.springframework.test.annotation.DirtiesContext;
 
 /**
  * Tests how modules interact and call each other. Both when loaded by Spring during OpenMRS startup
@@ -62,18 +61,6 @@ public class ModuleInteroperabilityTest extends BaseContextSensitiveTest {
 		ModuleClassLoader dssServiceClassLoader = (ModuleClassLoader) dssServiceClass2.getClassLoader();
 		assertEquals("dssmodule", dssServiceClassLoader.getModule().getModuleId());
 		
-	}
-	
-	/**
-	 * Must be the last method in this class so that the next class gets a clean spring app context
-	 * 
-	 * @see StartModuleExecutionListener
-	 * @see StartModule
-	 */
-	@DirtiesContext
-	@Test
-	public void shouldMarkContextAsDirty() {
-		// this is a dummy test just so the @DirtiesContext annotation is the last method
 	}
 	
 }
