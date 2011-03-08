@@ -19,22 +19,19 @@ import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.SerializedObjectDAOTest;
-import org.openmrs.module.Module;
-import org.openmrs.module.ModuleClassLoader;
 import org.openmrs.module.ModuleConstants;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.module.ModuleInteroperabilityTest;
 import org.openmrs.module.ModuleUtil;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
+import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.support.AbstractTestExecutionListener;
 
 /**
- * To use this annotation:
- * <ol>
- * <li>Add the @StartModule( { "/path/to/your/module.omod" } ) annotation to the test class
- * <li>Add the @DirtiesContext method to the last test method in the class
- * </ol>
+ * To use this annotation, add the @StartModule( { "/path/to/your/module.omod" } ) annotation to the
+ * test class
  * 
  * @see SerializedObjectDAOTest
  * @see ModuleInteroperabilityTest
@@ -83,9 +80,16 @@ public class StartModuleExecutionListener extends AbstractTestExecutionListener 
 				        + " modules started instead of " + startModuleAnnotation.value().length, startModuleAnnotation
 				        .value().length <= ModuleFactory.getStartedModules().size());
 				
-				// refresh spring so the Services are recreated (aka serializer gets put into the SerializationService)
-				new ClassPathXmlApplicationContext(new String[] { "applicationContext-service.xml",
-				        "classpath*:moduleApplicationContext.xml" });
+				/*
+				 * Refresh spring so the Services are recreated (aka serializer gets put into the SerializationService)
+				 * To do this, wrap the applicationContext from the testContext into a GenericApplicationContext, allowing
+				 * loading beans from moduleApplicationContext into it and then calling ctx.refresh()
+				 * This approach ensures that the application context remains consistent
+				 */
+				GenericApplicationContext ctx = new GenericApplicationContext(testContext.getApplicationContext());
+				XmlBeanDefinitionReader xmlReader = new XmlBeanDefinitionReader(ctx);
+				xmlReader.loadBeanDefinitions(new ClassPathResource("moduleApplicationContext.xml"));
+				ctx.refresh();
 				
 				// session is closed by the test framework
 				//Context.closeSession();

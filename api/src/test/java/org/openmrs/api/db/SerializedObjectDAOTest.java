@@ -27,15 +27,12 @@ import org.openmrs.api.db.hibernate.HibernateSerializedObjectDAO;
 import org.openmrs.report.ReportSchema;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.StartModule;
-import org.openmrs.test.StartModuleExecutionListener;
 import org.openmrs.test.Verifies;
-import org.springframework.test.annotation.DirtiesContext;
 
 /**
  * This class tests the {@link SerializedObjectDAO} linked to from the Context. Currently that file
  * is the {@link HibernateSerializedObjectDAO}.
  */
-// The @StartModule also requires @DirtiesContext on last method in class
 @StartModule( { "org/openmrs/api/db/include/serialization.xstream-0.1.1.omod" })
 public class SerializedObjectDAOTest extends BaseContextSensitiveTest {
 	
@@ -141,15 +138,4 @@ public class SerializedObjectDAOTest extends BaseContextSensitiveTest {
 		assertEquals(1, l.size());
 	}
 	
-	/**
-	 * Must be the last method in this class so that the next class gets a clean spring app context
-	 * 
-	 * @see StartModuleExecutionListener
-	 * @see StartModule
-	 */
-	@DirtiesContext
-	@Test
-	public void shouldMarkContextAsDirty() {
-		// this is a dummy test just so the @DirtiesContext annotation is the last method
-	}
 }
