@@ -13,25 +13,24 @@
 	<property name="lib.dir" value="${root.dir}${file.separator}lib"/>
 	<property name="maven.ant.tasks.jar" value="${lib.dir}${file.separator}maven-ant-tasks-2.1.1.jar"/>
 	<property name="maven.ant.tasks.bootstrap.location" value="http://repo2.maven.org/maven2/org/apache/maven/maven-ant-tasks/2.1.1/maven-ant-tasks-2.1.1.jar"/>
-	<available property="maven.ant.tasks.jar.exists" file="${maven.ant.tasks.jar}"/>
+	<property name="maven.ant.contrib.jar" value="${lib.dir}${file.separator}ant-contrib-1.0b3.jar"/>
+	<property name="maven.ant.contrib.bootstrap.location" value="http://repo1.maven.org/maven2/ant-contrib/ant-contrib/1.0b3/ant-contrib-1.0b3.jar"/>
 	<available property="m2.home.exists" file="${env.M2_HOME}" type="dir"/>	
-	
+
+	<!-- This will download ant-contrib and maven-ant-tasks if needed. Requires Ant 1.8.0 for skipexisting -->
+	<mkdir dir="${lib.dir}"/>
+	<get src="${maven.ant.contrib.bootstrap.location}" dest="${maven.ant.contrib.jar}" skipexisting="true"/>
+	<get src="${maven.ant.tasks.bootstrap.location}" dest="${maven.ant.tasks.jar}" skipexisting="true"/>
+
 	<property file="build.properties"/>
 	<taskdef resource="net/sf/antcontrib/antcontrib.properties">
 		<classpath>
-			<fileset dir="${user.home}${file.separator}.m2${file.separator}repository">
-				<include name="**${file.separator}*ant-contrib*.jar"/>
-			</fileset>
+			<pathelement location="${maven.ant.contrib.jar}"/>
 		</classpath>
 	</taskdef>
-	<!-- This will download the "latest version" of the maven-ant-tasks if needed -->
-	<target name="bootstrap-maven-tasks" unless="maven.ant.tasks.jar.exists">
-		<mkdir dir="${lib.dir}"/>
-		<get src="${maven.ant.tasks.bootstrap.location}" dest="${maven.ant.tasks.jar}"/>
-	</target>
 
 	<!-- This will initialize all the maven ant tasks -->
-	<target name="init-maven-tasks" depends="bootstrap-maven-tasks">
+	<target name="init-maven-tasks">
 		<path id="maven.ant.tasks.classpath" path="${maven.ant.tasks.jar}" />
 		<typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant" classpathref="maven.ant.tasks.classpath" /> 
  	</target>
