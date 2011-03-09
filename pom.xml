@@ -651,13 +651,6 @@
 		</plugins>
 	</build>
 
-	<dependencies>
-		<dependency>
-			<groupId>ant-contrib</groupId>
-			<artifactId>ant-contrib</artifactId>
-			<version>20020829</version>
-		</dependency>
-	</dependencies>
 	<reporting>
 		<plugins>
 			<!-- docfilessubdirs config set to include image resource -->
