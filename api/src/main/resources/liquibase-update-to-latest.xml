@@ -3942,6 +3942,8 @@
 	</changeSet>
 		
 	<changeSet id="20101209-1723" author="wyclif">
+        <validCheckSum>db17937286d48f680b2be16bee24e62</validCheckSum> <!-- old checksum without specifying date_created -->
+        <validCheckSum>4d67c48557f5665a8c2be7e87e22913</validCheckSum> <!-- current checksum with date_created property added -->
     	<preConditions onFail="MARK_RAN">
 			<sqlCheck expectedResult="0">
 				SELECT COUNT(*) FROM scheduler_task_config WHERE schedulable_class = 'org.openmrs.scheduler.tasks.ConceptIndexUpdateTask'
@@ -3953,6 +3955,7 @@
 			<column name="description" value="Iterates through the concept dictionary, re-creating the concept index (which are used for searcing). This task is started when using the 'Update Concept Index Storage' page and no range is given.  This task stops itself when one iteration has completed." />
 			<column name="schedulable_class" value="org.openmrs.scheduler.tasks.ConceptIndexUpdateTask" />
 			<column name="start_on_startup" valueNumeric="1" />
+			<column name="date_created" valueDate="2005-01-01T00:00:00" />
 			<column name="created_by" value="1" />
 			<column name="uuid" value="7c75911e-0310-11e0-8222-18a905e044dc" />
 		</insert>
