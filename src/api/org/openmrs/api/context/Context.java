@@ -683,7 +683,9 @@ public class Context {
 	}
 	
 	/**
-	 * Clears cached changes made so far during this unit of work without writing them to the database
+	 * Clears cached changes made so far during this unit of work without writing them to the
+	 * database. If you call this method, and later call closeSession() or flushSession() your
+	 * changes are still lost.
 	 */
 	public static void clearSession() {
 		log.trace("clearing session");
@@ -851,6 +853,7 @@ public class Context {
 	 * 
 	 * @param cls The Class of the service to get
 	 * @return The requested Service
+	 * @should return the same object when called multiple times for the same class
 	 */
 	public static <T extends Object> T getService(Class<? extends T> cls) {
 		return getServiceContext().getService(cls);
