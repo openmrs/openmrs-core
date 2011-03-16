@@ -42,7 +42,7 @@
   <concept concept_id="1" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" is_set="false" uuid="f0bae10a-c964-482b-bfc1-a97671349951"/>
   <concept_name concept_name_id="1" concept_id="1" name="Some non numeric concept name" locale="en" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="2c996dd4-441d-4868-bce0-81d35d096843" concept_name_type="FULLY_SPECIFIED" locale_preferred="0"/>
   
-  <form form_id="1" name="Basic Form" version="0.1" build="0" published="0" description="Test form" xslt="" template="" creator="1" date_created="2005-08-07 00:00:00.0" changed_by="1" date_changed="2007-10-24 14:51:53.0" retired="false"  uuid="2a45c87e-e43d-42ff-83c7-e70a229fa99d"/>
+  <form form_id="1" name="Basic Form" version="0.1" build="0" published="0" description="Test form" creator="1" date_created="2005-08-07 00:00:00.0" changed_by="1" date_changed="2007-10-24 14:51:53.0" retired="false"  uuid="2a45c87e-e43d-42ff-83c7-e70a229fa99d"/>
   
   <!-- A voided encounter with the same patient id as encounter#1. must come before encounter#1 so that the extra columns are picked up by dbunit -->
   <encounter encounter_id="2" encounter_type="1" form_id="1" encounter_datetime="2008-01-01 00:00:00.0" patient_id="3" provider_id="1" location_id="1" creator="1" date_created="2008-02-01 00:00:00.0" voided="1" voided_by="1" date_voided="2008-02-01 00:00:00.0" void_reason="Because" uuid="33d70956-b359-452a-b3da-b69c8ab459ce"/>

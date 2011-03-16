@@ -15,6 +15,7 @@ package org.openmrs.api.db;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import org.openmrs.Concept;
 import org.openmrs.EncounterType;
@@ -302,5 +303,51 @@ public interface FormDAO {
 	 * @return List of FormFields
 	 */
 	public List<FormField> getFormFieldsByField(Field field);
+	
+	/**
+	 * retrieves a resource for a given form based on owner and name
+	 * 
+	 * @param form
+	 * @param owner
+	 * @param name
+	 * @return
+	 */
+	public byte[] getFormResource(Form form, String owner, String name);
+	
+	/**
+	 * saves a resource for a given form based on owner and name
+	 * 
+	 * @param form
+	 * @param owner
+	 * @param name
+	 * @param value
+	 */
+	public void saveFormResource(Form form, String owner, String name, byte[] value);
+	
+	/**
+	 * permanently removes a resource for a given form based on owner and name
+	 * 
+	 * @param form
+	 * @param owner
+	 * @param name
+	 */
+	public void purgeFormResource(Form form, String owner, String name);
+	
+	/**
+	 * retrieves all resources for a given form based on owner
+	 * 
+	 * @param form
+	 * @param owner
+	 * @return
+	 */
+	public Set<String> getFormResourceNamesByOwner(Form form, String owner);
+	
+	/**
+	 * retrieves all owners for resources for a given form
+	 * 
+	 * @param form
+	 * @return
+	 */
+	public Set<String> getFormResourceOwners(Form form);
 	
 }

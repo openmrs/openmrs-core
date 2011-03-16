@@ -35,6 +35,7 @@ import org.openmrs.FormField;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
 import org.openmrs.propertyeditor.EncounterTypeEditor;
+import org.openmrs.util.FormConstants;
 import org.openmrs.util.FormUtil;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
@@ -48,11 +49,13 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
 
+@SuppressWarnings("deprecation")
 public class FormFormController extends SimpleFormController {
 	
 	/** Logger for this class and subclasses */
 	protected final Log log = LogFactory.getLog(getClass());
 	
+	@Override
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
 		// NumberFormat nf = NumberFormat.getInstance(new Locale("en_US"));
@@ -68,6 +71,7 @@ public class FormFormController extends SimpleFormController {
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
 	 */
+	@Override
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
 	        BindException errors) throws Exception {
 		
@@ -83,18 +87,23 @@ public class FormFormController extends SimpleFormController {
 			} else {
 				if (action.equals(msa.getMessage("Form.save"))) {
 					try {
+						MultipartFile xsltFile = null;
+						
 						// retrieve xslt from request if it was uploaded
 						if (request instanceof MultipartHttpServletRequest) {
 							MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
-							MultipartFile xsltFile = multipartRequest.getFile("xslt_file");
-							if (xsltFile != null && !xsltFile.isEmpty()) {
-								String xslt = IOUtils.toString(xsltFile.getInputStream());
-								form.setXslt(xslt);
-							}
+							xsltFile = multipartRequest.getFile("xslt_file");
 						}
 						
 						// save form
-						Context.getFormService().saveForm(form);
+						form = Context.getFormService().saveForm(form);
+						
+						if (xsltFile != null && !xsltFile.isEmpty()) {
+							String xslt = IOUtils.toString(xsltFile.getInputStream());
+							Context.getFormService().saveFormResource(form, FormConstants.FORM_RESOURCE_FORMENTRY_OWNER,
+							    FormConstants.FORM_RESOURCE_FORMENTRY_XSLT, xslt);
+						}
+						
 						httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Form.saved");
 					}
 					catch (Exception e) {
@@ -155,6 +164,7 @@ public class FormFormController extends SimpleFormController {
 	 * 
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
+	@Override
 	protected Object formBackingObject(HttpServletRequest request) throws ServletException {
 		
 		Form form = null;
@@ -177,6 +187,7 @@ public class FormFormController extends SimpleFormController {
 		return form;
 	}
 	
+	@Override
 	protected Map<String, Object> referenceData(HttpServletRequest request, Object obj, Errors errors) throws Exception {
 		
 		Map<String, Object> map = new HashMap<String, Object>();

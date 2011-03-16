@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="org.openmrs.api.db">
+
+	<class name="org.openmrs.api.db.FormResource" table="form_resource">
+
+		<id name="formResourceId" type="int" column="form_resource_id" unsaved-value="0">
+			<generator class="native" />
+		</id>
+
+		<discriminator column="form_id" insert="false" />
+
+		<many-to-one name="form" class="org.openmrs.Form" 
+			column="form_id" />
+		
+		<property name="owner" type="java.lang.String" 
+			column="owner" length="100" />
+		
+		<property name="name" type="java.lang.String" 
+			column="name" length="100" />
+
+		<property name="valueBlob" type="java.sql.Blob" 
+			column="value" length="16777215" />
+
+		<property name="uuid" type="java.lang.String"
+			column="uuid" length="38" unique="true" />
+
+	</class>
+	
+</hibernate-mapping>
