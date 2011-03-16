@@ -13,6 +13,7 @@
  */
 package org.openmrs.api;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -265,6 +266,7 @@ public interface FormService extends OpenmrsService {
 	 * @throws APIException
 	 * @should clear changed details and update creation details
 	 * @should give a new uuid to the duplicated form
+	 * @should copy resources for old form to new form
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_FORMS)
 	public Form duplicateForm(Form form) throws APIException;
@@ -297,6 +299,7 @@ public interface FormService extends OpenmrsService {
 	 * @param form
 	 * @throws APIException
 	 * @should delete given form successfully
+	 * @should delete form resources for deleted form
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_FORMS)
 	public void purgeForm(Form form) throws APIException;
@@ -792,5 +795,94 @@ public interface FormService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.PURGE_FIELD_TYPES)
 	public void purgeFieldType(FieldType fieldType) throws APIException;
+	
+	/**
+	 * Retrieves a resource for a given form based on owner and name.
+	 * 
+	 * The return value of this method must be cast to the desired type, for
+	 * example:
+	 * 
+	 * String xslt = (String) getFormResource(form, "formentry", "xslt");
+	 * 
+	 * @see #saveFormResource(Form, String, String, Serializable) for details
+	 *      about owner and name.
+	 * 
+	 * @param form
+	 *            the Form associated with the desired resource
+	 * @param owner
+	 *            the owner of the resource (e.g. formentry)
+	 * @param name
+	 *            the name of the resource (e.g. xslt)
+	 * @return the raw data representation of the resource
+	 * @since 1.9
+	 * @should return a saved form resource
+	 * @should throw a DAOException if no form resource found
+	 */
+	public Serializable getFormResource(Form form, String owner, String name);
+	
+	/**
+	 * Saves a resource for a given form based on owner and name. The
+	 * <i>owner</i> must be unique and should refer to a particular service or
+	 * module claiming ownership of the resource. The <i>name</i> of a resource
+	 * specifies one of many resources that can be stored for a particular
+	 * owner, and can be the same name as a resource used by another owner. Only
+	 * one resource for each <i>owner:name</i> combination will ever be saved.
+	 * 
+	 * @param form the Form associated with the desired resource
+	 * @param owner the owner of the resource (e.g. formentry)
+	 * @param name the name of the resource (e.g. xslt)
+	 * @param value the raw data representation of the resource
+	 * @since 1.9
+	 * @should save a form resource
+	 * @should save any serializable value
+	 * @should overwrite an existing resource with same parameters
+	 */
+	public void saveFormResource(Form form, String owner, String name, Serializable value);
+	
+	/**
+	 * Permanently removes a resource for a given form based on owner and name.
+	 * 
+	 * @see #saveFormResource(Form, String, String, Serializable) for details
+	 *      about owner and name.
+	 * 
+	 * @param form
+	 *            the Form associated with the desired resource
+	 * @param owner
+	 *            the owner of the resource (e.g. formentry)
+	 * @param name
+	 *            the name of the resource (e.g. xslt)
+	 * @since 1.9
+	 * @should delete a form resource
+	 */
+	public void purgeFormResource(Form form, String owner, String name);
+	
+	/**
+	 * Retrieves all resource names for a given form based on owner.
+	 * 
+	 * @see #saveFormResource(Form, String, String, Serializable) for details
+	 *      about owner and name.
+	 * 
+	 * @param form the Form associated with the desired resource
+	 * @param owner the owner of the resource (e.g. formentry)
+	 * @return a list of names
+	 * @since 1.9
+	 * @should return a set of names of resources on a form for an owner
+	 * @should return an empty set if no resources exist for the owner
+	 */
+	public Set<String> getFormResourceNamesByOwner(Form form, String owner);
+	
+	/**
+	 * Retrieves all unique owners for resources for a given form.
+	 * 
+	 * @see #saveFormResource(Form, String, String, Serializable) for details
+	 *      about owner and name.
+	 * 
+	 * @param form the Form associated with the desired resource owners
+	 * @return a set of owners
+	 * @since 1.9
+	 * @should return a set of owners of resources on a form
+	 * @should return an empty set if no resources exist for the form
+	 */
+	public Set<String> getFormResourceOwners(Form form);
 	
 }

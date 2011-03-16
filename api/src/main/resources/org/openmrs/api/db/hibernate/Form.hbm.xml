@@ -35,12 +35,6 @@
 			<column name="encounter_type" />
 		</many-to-one>
 
-		<property name="template" type="java.lang.String" 
-			column="template" length="2147483647" />
-
-		<property name="xslt" type="java.lang.String"
-			column="xslt" length="2147483647" />
-
 		<many-to-one name="creator" class="User" not-null="true">
 			<column name="creator" />
 		</many-to-one>

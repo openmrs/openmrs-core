@@ -146,4 +146,12 @@ public class FormConstants {
 	
 	public static final int INDENT_SIZE = 2;
 	
+	// form resource constants for metadata moving to separate tables
+	
+	public static final String FORM_RESOURCE_FORMENTRY_OWNER = "formentry";
+	
+	public static final String FORM_RESOURCE_FORMENTRY_XSLT = "xslt";
+	
+	public static final String FORM_RESOURCE_FORMENTRY_TEMPLATE = "template";
+	
 }
