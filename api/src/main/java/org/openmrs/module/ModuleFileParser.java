@@ -69,6 +69,7 @@ public class ModuleFileParser {
 		validConfigVersions.add("1.1");
 		validConfigVersions.add("1.2");
 		validConfigVersions.add("1.3");
+		validConfigVersions.add("1.4");
 	}
 	
 	/**
