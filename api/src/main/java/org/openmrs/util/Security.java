@@ -335,8 +335,8 @@ public class Security {
 	 * @since 1.9
 	 */
 	public static byte[] getSavedSecretKey() {
-		String keyText = Context.getRuntimeProperties().getProperty(OpenmrsConstants.ENCRYPTION_VECTOR_RUNTIME_PROPERTY,
-		    OpenmrsConstants.ENCRYPTION_VECTOR_DEFAULT);
+		String keyText = Context.getRuntimeProperties().getProperty(OpenmrsConstants.ENCRYPTION_KEY_RUNTIME_PROPERTY,
+		    OpenmrsConstants.ENCRYPTION_KEY_DEFAULT);
 		
 		if (StringUtils.hasText(keyText))
 			return Base64.decode(keyText);
