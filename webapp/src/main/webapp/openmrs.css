@@ -27,13 +27,15 @@ body {
     color: #ffffff;
 }
 #logosmall {
+	float: left;
 	margin-left: 49px; 
 	margin-top:2px;
+	position: absolute;
 }
 #bannerbar {
 	text-align:center;
 	line-height:40px;
-	margin-top:-18px;
+	margin-top:12px;
 	width:100%;
 }
 img.logo-reduced61 {
@@ -117,13 +119,16 @@ a:hover {
 }
 
 #userBar {
-	text-align: right;
-	padding-top: 3px;
-    padding-right:5px;
-	margin: 0px;
-	z-index: 10;
 	color: #333333;
 	line-height: 26px;
+	margin: 0px;
+    padding-right: 5px;
+	padding-top: 3px;
+    position: absolute;
+    right: 5px;
+    text-align: right;
+	top: 0;
+	z-index: 10;
 }
 	#userBar a:link, #userBar a:active, #userBar a:visited, #userBar a:hover,
 	#content a.offColor, #content a.offColor:link, #content a.offColor:active, #content a.offColor:visited, #content a.offColor:hover {
@@ -152,7 +157,7 @@ a:hover {
 	
 #content {
 	margin: 0px 0 0 0;
-	padding: 50px 10px 10px 10px;
+	padding: 80px 10px 10px 10px;
 	font-size: 1.2em;
 	background-color: #ffffff;
 	z-index: 8;
