@@ -2873,14 +2873,26 @@
                                  referencedTableName="person" referencedColumnNames="person_id"/>
 	</changeSet>
 	
+	<changeSet id="201102280948" author="bwolfe">
+		<preConditions onFail="MARK_RAN">
+			<and>
+				<foreignKeyConstraintExists foreignKeyName="person_id_for_user"/>
+				<not><changeSetExecuted changeLogFile="liquibase-update-to-latest.xml" author="djazayeri" id="200912031846-3"/></not>
+			</and>
+		</preConditions>
+		<comment>Removing the foreign key from users.user_id to person.person_id if it still exists</comment>
+		<dropForeignKeyConstraint baseTableName="users" constraintName="person_id_for_user"/>
+	</changeSet>
+	
 	<changeSet id="200912031846-1" author="djazayeri">
+		<validCheckSum>3aff267520eec4d52e81ef7614b2da3</validCheckSum>
+		<validCheckSum>11f84b948fc7731d1ffb6869980e6cb</validCheckSum>
 		<preConditions onFail="MARK_RAN">
 			<not>
 				<columnExists tableName="users" columnName="person_id"/>
 			</not>
 		</preConditions>
-		<comment>Adding person_id column to users table</comment>
-		<dropForeignKeyConstraint baseTableName="users" constraintName="person_id_for_user"/>
+		<comment>Adding person_id column to users table (if needed)</comment>
 		<addColumn tableName="users">
 			<column name="person_id" type="int"/>
 		</addColumn>
