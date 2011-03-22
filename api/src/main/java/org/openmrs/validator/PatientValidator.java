@@ -67,6 +67,7 @@ public class PatientValidator implements Validator {
 	 * @should fail validation if gender is blank
 	 * @should fail validation if birthdate makes patient older that 120 years old
 	 * @should fail validation if birthdate is a future date
+	 * @should fail validation if a preferred patient identifier is not chosen
 	 * @should fail validation if voidReason is blank when patient is voided
 	 * @should fail validation if causeOfDeath is blank when patient is dead
 	 */
@@ -93,6 +94,17 @@ public class PatientValidator implements Validator {
 					index++;
 				}
 			}
+		}
+		
+		// Make sure they chose a preferred ID
+		Boolean preferredIdentifierChosen = false;
+		for (PatientIdentifier pi : patient.getActiveIdentifiers()) {
+			if (pi.isPreferred()) {
+				preferredIdentifierChosen = true;
+			}
+		}
+		if (!preferredIdentifierChosen) {
+			errors.reject("error.preferredIdentifier");
 		}
 		
 		// Make sure they choose a gender
