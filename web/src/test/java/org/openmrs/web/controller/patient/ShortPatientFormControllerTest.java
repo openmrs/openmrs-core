@@ -87,8 +87,10 @@ public class ShortPatientFormControllerTest extends BaseWebContextSensitiveTest 
 		ShortPatientModel patientModel = new ShortPatientModel(p);
 		patientModel.setPersonName(new PersonName("new", "", "patient"));
 		List<PatientIdentifier> identifiers = new ArrayList<PatientIdentifier>();
-		identifiers.add(new PatientIdentifier("myID", Context.getPatientService().getPatientIdentifierType(2),
-		        LocationUtility.getDefaultLocation()));
+		PatientIdentifier id = new PatientIdentifier("myID", Context.getPatientService().getPatientIdentifierType(2),
+		        LocationUtility.getDefaultLocation());
+		id.setPreferred(true);
+		identifiers.add(id);
 		patientModel.setIdentifiers(identifiers);
 		patientModel.getPatient().setBirthdate(new Date());
 		patientModel.getPatient().setGender("M");
