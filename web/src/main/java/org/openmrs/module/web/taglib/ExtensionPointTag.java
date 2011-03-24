@@ -14,6 +14,7 @@
 package org.openmrs.module.web.taglib;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -107,7 +108,7 @@ public class ExtensionPointTag extends TagSupport implements BodyTag {
 		status = new HashMap<String, Object>();
 		
 		List<Extension> extensionList = null;
-		List<Extension> validExtensions = null;
+		List<Extension> validExtensions = new ArrayList<Extension>();
 		
 		if (type != null && type.length() > 0) {
 			try {
