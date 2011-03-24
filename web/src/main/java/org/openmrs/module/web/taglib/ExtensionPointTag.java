@@ -107,6 +107,7 @@ public class ExtensionPointTag extends TagSupport implements BodyTag {
 		status = new HashMap<String, Object>();
 		
 		List<Extension> extensionList = null;
+		List<Extension> validExtensions = null;
 		
 		if (type != null && type.length() > 0) {
 			try {
@@ -129,8 +130,12 @@ public class ExtensionPointTag extends TagSupport implements BodyTag {
 					Class<?> clazz = Class.forName(requiredClass);
 					for (Extension ext : extensionList) {
 						if (!clazz.isAssignableFrom(ext.getClass())) {
-							throw new ClassCastException("Extensions at this point (" + pointId + ") are "
+							log.warn("Extensions at this point (" + pointId + ") are "
 							        + "required to be of " + clazz + " or a subclass. " + ext.getClass() + " is not.");
+						}
+						else
+						{
+							validExtensions.add(ext);
 						}
 					}
 				}
@@ -138,7 +143,7 @@ public class ExtensionPointTag extends TagSupport implements BodyTag {
 					throw new IllegalArgumentException(ex);
 				}
 			}
-			extensions = extensionList.iterator();
+			extensions = validExtensions.iterator();
 		}
 		
 		if (extensions == null || extensions.hasNext() == false) {
