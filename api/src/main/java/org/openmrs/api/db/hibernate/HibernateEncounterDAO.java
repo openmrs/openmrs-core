@@ -334,7 +334,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 			name = query;
 		}
 		criteria = new PatientSearchCriteria(sessionFactory, criteria).prepareCriteria(name, identifier,
-		    new ArrayList<PatientIdentifierType>(), false);
+		    new ArrayList<PatientIdentifierType>(), false, true);
 		return criteria;
 	}
 }

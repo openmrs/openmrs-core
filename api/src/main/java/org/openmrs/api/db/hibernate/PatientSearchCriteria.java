@@ -61,14 +61,16 @@ public class PatientSearchCriteria {
 	 * @return {@link Criteria}
 	 */
 	public Criteria prepareCriteria(String name, String identifier, List<PatientIdentifierType> identifierTypes,
-	        boolean matchIdentifierExactly) {
+	        boolean matchIdentifierExactly, boolean orderByNames) {
 		name = HibernateUtil.escapeSqlWildcards(name, sessionFactory);
 		identifier = HibernateUtil.escapeSqlWildcards(identifier, sessionFactory);
 		
 		criteria.createAlias("names", "name");
-		criteria.addOrder(Order.asc("name.givenName"));
-		criteria.addOrder(Order.asc("name.middleName"));
-		criteria.addOrder(Order.asc("name.familyName"));
+		if (orderByNames) {
+			criteria.addOrder(Order.asc("name.givenName"));
+			criteria.addOrder(Order.asc("name.middleName"));
+			criteria.addOrder(Order.asc("name.familyName"));
+		}
 		
 		// get only distinct patients
 		criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);

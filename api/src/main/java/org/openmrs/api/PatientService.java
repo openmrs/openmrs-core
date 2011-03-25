@@ -956,6 +956,7 @@ public interface PatientService extends OpenmrsService {
 	 * @param query the string to search on
 	 * @return the number of patients matching the given search phrase
 	 * @since 1.8
+	 * @should return the right count when a patient has multiple matching person names
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_PATIENTS })

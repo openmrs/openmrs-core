@@ -180,7 +180,7 @@ public class HibernatePatientDAO implements PatientDAO {
 	        boolean matchIdentifierExactly, Integer start, Integer length) throws DAOException {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Patient.class);
 		criteria = new PatientSearchCriteria(sessionFactory, criteria).prepareCriteria(name, identifier, identifierTypes,
-		    matchIdentifierExactly);
+		    matchIdentifierExactly, true);
 		// restricting the search to the max search results value
 		if (start != null)
 			criteria.setFirstResult(start);
@@ -538,10 +538,12 @@ public class HibernatePatientDAO implements PatientDAO {
 	public Integer getCountOfPatients(String name, String identifier, List<PatientIdentifierType> identifierTypes,
 	        boolean matchIdentifierExactly) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Patient.class);
+		//Skip the ordering of names because H2(and i think PostgreSQL) will require one of the ordered
+		//columns to be in the resultset which then contradicts with the combination of 
+		//(Projections.rowCount() and Criteria.uniqueResult()) that expect back only one row with one column
 		criteria = new PatientSearchCriteria(sessionFactory, criteria).prepareCriteria(name, identifier, identifierTypes,
-		    matchIdentifierExactly);
-		criteria.setProjection(Projections.rowCount());
-		
+		    matchIdentifierExactly, false);
+		criteria.setProjection(Projections.countDistinct("patientId"));
 		return (Integer) criteria.uniqueResult();
 	}
 }
