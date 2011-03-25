@@ -126,7 +126,9 @@ public class ExtensionPointTag extends TagSupport implements BodyTag {
 		
 		if (extensionList != null) {
 			log.debug("Found " + extensionList.size() + " extensions");
-			if (requiredClass != null) {
+			if (requiredClass == null) {
+				validExtensions = extensionList;
+			} else {
 				try {
 					Class<?> clazz = Class.forName(requiredClass);
 					for (Extension ext : extensionList) {
