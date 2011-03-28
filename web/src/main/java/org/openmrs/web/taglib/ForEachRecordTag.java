@@ -40,6 +40,7 @@ import org.openmrs.api.LocationService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
+import org.openmrs.reporting.AbstractReportObject;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 
@@ -88,6 +89,14 @@ public class ForEachRecordTag extends BodyTagSupport {
 		} else if (name.equals("form")) {
 			List<Form> forms = Context.getFormService().getAllForms();
 			records = forms.iterator();
+		} else if (name.equals("reportObject")) {
+			List<AbstractReportObject> ret = null;
+			if (reportObjectType != null) {
+				ret = Context.getReportObjectService().getReportObjectsByType(reportObjectType);
+			} else {
+				ret = Context.getReportObjectService().getAllReportObjects();
+			}
+			records = ret.iterator();
 		} else if (name.equals("role")) {
 			List<Role> roles = Context.getUserService().getAllRoles();
 			records = roles.iterator();
