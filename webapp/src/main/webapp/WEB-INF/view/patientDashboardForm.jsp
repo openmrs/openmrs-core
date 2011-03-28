@@ -26,18 +26,15 @@
 
 <openmrs:htmlInclude file="/scripts/flot/jquery.flot.js" />
 <openmrs:htmlInclude file="/scripts/flot/jquery.flot.multiple.threshold.js"/> 
-
-<openmrs:htmlInclude file="/scripts/dojoConfig.js"/>
-<openmrs:htmlInclude file="/scripts/dojo/dojo.js"/>
 <%-- /end file imports for portlets --%>
 
 <script type="text/javascript">
 	var timeOut = null;
-	addEvent(window, 'load', initTabs);
 
 	<openmrs:authentication>var userId = "${authenticatedUser.userId}";</openmrs:authentication>
 
-	function initTabs() {
+	//initTabs
+	$j(document).ready(function() {
 		var c = getTabCookie();
 		if (c == null) {
 			var tabs = document.getElementById("patientTabs").getElementsByTagName("a");
@@ -45,7 +42,7 @@
 				c = tabs[0].id;
 		}
 		changeTab(c);
-	}
+	});
 	
 	function setTabCookie(tabType) {
 		document.cookie = "dashboardTab-" + userId + "="+escape(tabType);
