@@ -2,25 +2,6 @@
 <openmrs:htmlInclude file="/scripts/flot/jquery.flot.js" />
 <openmrs:htmlInclude file="/scripts/flot/jquery.flot.multiple.threshold.js"/> 
 
-<openmrs:htmlInclude file="/scripts/dojoConfig.js"/>
-<openmrs:htmlInclude file="/scripts/dojo/dojo.js"/>
-
-<script type="text/javascript">	
-	dojo.require("dojo.widget.openmrs.ConceptSearch");
-	dojo.require("dojo.widget.openmrs.OpenmrsPopup");
-	
-	dojo.addOnLoad( function() {
-		
-		searchWidget = dojo.widget.manager.getWidgetById("cSearch");			
-		
-		dojo.event.topic.subscribe("cSearch/select", 
-			function(msg) {
-				document.location="?patientId=${patient.patientId}&patientGraphConcept=" + msg.objs[0].conceptId;
-			}
-		);
-	});
-</script>
-
 <style>
 table#labTestTable {
 	border: 2px solid black;
@@ -134,11 +115,14 @@ table#labTestTable th {
 			</c:forEach>
 			<tr>
 				<td>
-					<form>
-						<spring:message code="patientGraphs.addNewGraph" />
-						<span dojoType="ConceptSearch" widgetId="cSearch" includeDatatypes="Numeric"></span><br/>
-						<span dojoType="OpenmrsPopup" searchWidget="cSearch" searchTitle='<spring:message code="Concept.find"/>' changeButtonValue='<spring:message code="general.choose"/>'></span> 
-					</form>
+					<spring:message code="patientGraphs.addNewGraph" />:<br />
+					<spring:message code="Concept.find"/>
+					<openmrs_tag:conceptField formFieldName="concept" formFieldId="conceptId" excludeDatatypes="N/A" includeDatatypes="Numeric" onSelectFunction="onConceptSelect" />
+						<script type="text/javascript">
+						function onConceptSelect(concept) {
+							document.location="?patientId=${patient.patientId}&patientGraphConcept=" + concept.conceptId;
+						}
+						</script>
 				</td>
 			</tr>
 		</table>
