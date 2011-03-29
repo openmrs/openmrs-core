@@ -24,6 +24,7 @@ import org.openmrs.Obs;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
+import org.openmrs.validator.ObsValidator;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
@@ -70,6 +71,65 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		Assert.assertFalse(errors.hasFieldErrors("concept"));
 		Assert.assertTrue(errors.hasFieldErrors("obsDatetime"));
 		Assert.assertFalse(errors.hasFieldErrors("valueNumeric"));
+	}
+	
+	/**
+	 * @see {@link ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail if the parent obs has values", method = "validate(java.lang.Object, org.springframework.validation.Errors)")
+	public void validate_shouldFailIfParentObshasValues() throws Exception {
+		
+		Obs obs = new Obs();
+		obs.setPerson(Context.getPersonService().getPerson(2));
+		obs.setConcept(Context.getConceptService().getConcept(18));
+
+		obs.setValueBoolean(false);
+		obs.setValueCoded(Context.getConceptService().getConcept(18));
+		obs.setValueComplex("test");
+		obs.setValueDatetime(new Date());
+		obs.setValueDrug(Context.getConceptService().getDrug(3));
+		obs.setValueGroupId(getLoadCount());
+		obs.setValueModifier("test");
+		obs.setValueNumeric(1212.0);
+		obs.setValueText("test");
+		
+		Set<Obs> group = new HashSet<Obs>();
+		group.add(Context.getObsService().getObs(7));
+		group.add(Context.getObsService().getObs(9));
+		obs.setGroupMembers(group);
+	
+		Errors errors = new BindException(obs, "obs");
+		new ObsValidator().validate(obs, errors);
+		
+		Assert.assertFalse(errors.hasFieldErrors("person"));
+		Assert.assertFalse(errors.hasFieldErrors("concept"));
+		Assert.assertTrue(errors.hasFieldErrors("valueCoded"));
+		Assert.assertTrue(errors.hasFieldErrors("valueDrug"));
+		Assert.assertTrue(errors.hasFieldErrors("valueDatetime"));
+		Assert.assertTrue(errors.hasFieldErrors("valueNumeric"));
+		Assert.assertTrue(errors.hasFieldErrors("valueModifier"));
+		Assert.assertTrue(errors.hasFieldErrors("valueText"));
+		Assert.assertTrue(errors.hasFieldErrors("valueBoolean"));
+		Assert.assertTrue(errors.hasFieldErrors("valueComplex"));
+	}
+	
+	/**
+	 * @see {@link ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail if obs has no values and not parent", method = "validate(java.lang.Object, org.springframework.validation.Errors)")
+	public void validate_shouldFailIfObsHasNoValuesAndNotParent() throws Exception {
+		
+		Obs obs = new Obs();
+		obs.setPerson(Context.getPersonService().getPerson(2));
+		obs.setConcept(Context.getConceptService().getConcept(18));
+		obs.setObsDatetime(new Date());
+		
+		Errors errors = new BindException(obs, "obs");
+		new ObsValidator().validate(obs, errors);
+		
+		Assert.assertTrue(errors.getGlobalErrorCount() > 0);
 	}
 	
 	/**
@@ -197,9 +257,8 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldFailValidationIfObsAncestorsContainsObs() throws Exception {
 		Obs obs = new Obs();
 		obs.setPerson(Context.getPersonService().getPerson(2));
-		obs.setConcept(Context.getConceptService().getConcept(5089));
+		obs.setConcept(Context.getConceptService().getConcept(3));  // datatype = N/A
 		obs.setObsDatetime(new Date());
-		obs.setValueNumeric(1.0);
 		
 		Set<Obs> group = new HashSet<Obs>();
 		group.add(obs);
@@ -211,7 +270,6 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		Assert.assertFalse(errors.hasFieldErrors("person"));
 		Assert.assertFalse(errors.hasFieldErrors("concept"));
 		Assert.assertFalse(errors.hasFieldErrors("obsDatetime"));
-		Assert.assertFalse(errors.hasFieldErrors("valueNumeric"));
 		Assert.assertTrue(errors.hasFieldErrors("groupMembers"));
 	}
 	

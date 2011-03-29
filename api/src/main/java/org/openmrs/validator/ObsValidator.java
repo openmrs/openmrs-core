@@ -61,6 +61,7 @@ public class ObsValidator implements Validator {
 	 * @should fail validation if concept datatype is text and valueText is null
 	 * @should fail validation if obs ancestors contains obs
 	 * @should pass validation if all values present
+	 * @should fail validation if the parent obs has values
 	 */
 	public void validate(Object obj, Errors errors) {
 		Obs obs = (Obs) obj;
@@ -84,10 +85,48 @@ public class ObsValidator implements Validator {
 			errors.rejectValue("person", "error.null");
 		if (obs.getObsDatetime() == null)
 			errors.rejectValue("obsDatetime", "error.null");
+		
+		// if this is an obs group (i.e., parent) make sure that it has no values (other than valueGroupId) set
+		if (obs.hasGroupMembers()) {
+			if (obs.getValueCoded() != null)
+				errors.rejectValue("valueCoded", "error.not.null");
+			
+			if (obs.getValueDrug() != null)
+				errors.rejectValue("valueDrug", "error.not.null");
+			
+			if (obs.getValueDatetime() != null)
+				errors.rejectValue("valueDatetime", "error.not.null");
+			
+			if (obs.getValueNumeric() != null)
+				errors.rejectValue("valueNumeric", "error.not.null");
+			
+			if (obs.getValueModifier() != null)
+				errors.rejectValue("valueModifier", "error.not.null");
+			
+			if (obs.getValueText() != null)
+				errors.rejectValue("valueText", "error.not.null");
+			
+			if (obs.getValueBoolean() != null)
+				errors.rejectValue("valueBoolean", "error.not.null");
+			
+			if (obs.getValueComplex() != null)
+				errors.rejectValue("valueComplex", "error.not.null");
+			
+		}
+		// if this is NOT an obs group, make sure that it has at least one value set (not counting obsGroupId)
+		else if (obs.getValueBoolean() == null && obs.getValueCoded() == null && obs.getValueCodedName() == null
+		        && obs.getValueComplex() == null && obs.getValueDatetime() == null && obs.getValueDrug() == null
+		        && obs.getValueModifier() == null && obs.getValueNumeric() == null && obs.getValueText() == null) {
+			errors.reject("error.noValue");
+		}
+		
+		// make sure there is a concept associated with the obs
 		Concept c = obs.getConcept();
 		if (c == null) {
 			errors.rejectValue("concept", "error.null");
-		} else {
+		}
+		// if there is a concept, perform validation tests specific to the concept datatype
+		else {
 			ConceptDatatype dt = c.getDatatype();
 			if (dt.isBoolean() && obs.getValueBoolean() == null) {
 				if (atRootNode)
