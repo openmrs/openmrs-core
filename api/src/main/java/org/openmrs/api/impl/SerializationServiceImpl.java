@@ -25,6 +25,7 @@ import org.openmrs.api.SerializationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.serialization.OpenmrsSerializer;
 import org.openmrs.serialization.SerializationException;
+import org.openmrs.serialization.SimpleXStreamSerializer;
 import org.openmrs.util.OpenmrsConstants;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -67,10 +68,8 @@ public class SerializationServiceImpl extends BaseOpenmrsService implements Seri
 		catch (Exception e) {
 			log.warn("No default serializer specified - trying first serializer found.");
 		}
-		if (serializerMap != null && !serializerMap.isEmpty()) {
-			return serializerMap.values().iterator().next();
-		}
-		return null;
+		
+		return serializerMap.get(SimpleXStreamSerializer.class);
 	}
 	
 	/**
