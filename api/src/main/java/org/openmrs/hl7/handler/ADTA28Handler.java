@@ -254,7 +254,7 @@ public class ADTA28Handler implements Application {
 			}
 
 			else {
-				log.debug("PID contains identifier with no assigning authority");
+				log.error("PID contains identifier with no assigning authority");
 				continue;
 			}
 		}
