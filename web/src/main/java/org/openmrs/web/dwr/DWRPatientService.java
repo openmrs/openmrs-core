@@ -539,7 +539,8 @@ public class DWRPatientService implements GlobalPropertyListener {
 						}
 						catch (Exception e) {
 							log.warn("Caught error", e);
-							ret = "Internal error while trying to process patient death - unable to proceed. Cause: " + e.getMessage();
+							ret = "Internal error while trying to process patient death - unable to proceed. Cause: "
+							        + e.getMessage();
 						}
 					}
 					// cause of death concept does not exist
@@ -555,7 +556,8 @@ public class DWRPatientService implements GlobalPropertyListener {
 					}
 					catch (Exception e) {
 						log.warn("Caught error", e);
-						ret = "Internal error while trying to exit patient from care - unable to exit patient from care at this time. Cause: " + e.getMessage();
+						ret = "Internal error while trying to exit patient from care - unable to exit patient from care at this time. Cause: "
+						        + e.getMessage();
 					}
 				}
 			}
@@ -567,7 +569,8 @@ public class DWRPatientService implements GlobalPropertyListener {
 				}
 				catch (Exception e) {
 					log.warn("Caught error", e);
-					ret = "Internal error while trying to exit patient from care - unable to exit patient from care at this time. Cause: " + e.getMessage();
+					ret = "Internal error while trying to exit patient from care - unable to exit patient from care at this time. Cause: "
+					        + e.getMessage();
 				}
 			}
 			log.debug("Exited from care, it seems");
