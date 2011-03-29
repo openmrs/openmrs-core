@@ -29,7 +29,8 @@
 			<openmrs:htmlInclude file="/scripts/jquery-ui/js/jquery-ui-datepicker-i18n.js" />
 			<link href="<openmrs:contextPath/>/scripts/jquery-ui/css/<spring:theme code='jqueryui.theme.name' />/jquery-ui.custom.css" type="text/css" rel="stylesheet" />
 		</c:if>
-		<link rel="icon" type="image/ico" href="<openmrs:contextPath/><spring:theme code='favicon' />">
+		<link rel="shortcut icon" type="image/ico" href="<openmrs:contextPath/><spring:theme code='favicon' />">
+		<link rel="icon" type="image/png" href="<openmrs:contextPath/><spring:theme code='favicon.png' />">
 
 		<c:choose>
 			<c:when test="${!empty pageTitle}">
