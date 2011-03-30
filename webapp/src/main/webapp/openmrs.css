@@ -203,6 +203,7 @@ a:hover {
 
 #footerInner {
 	border-top: 1px solid #bbbbbb;
+	padding: 2px 0 0 4px;
 }
 
 #footer #poweredBy {
