@@ -4275,5 +4275,15 @@
 		</delete>
 	</changeSet>
 	
+	<changeSet id="20110329-2318" author="wyclif">
+		<preConditions onFail="MARK_RAN">
+			<tableExists tableName="role_privilege" />
+		</preConditions>
+		<comment>Removing 'View Observations' privilege from Anonymous user</comment>
+		<delete tableName="role_privilege">
+			<where>role='Anonymous' AND privilege='View Observations'</where>
+		</delete>
+	</changeSet>
+	
 </databaseChangeLog>
 
