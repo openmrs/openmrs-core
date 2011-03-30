@@ -3991,5 +3991,15 @@
 		<comment>Removing concept derived tables</comment>
 		<dropTable tableName="concept_derived"/>
 	</changeSet>
+	
+	<changeSet id="20110329-2317" author="wyclif">
+		<preConditions onFail="MARK_RAN">
+			<tableExists tableName="role_privilege" />
+		</preConditions>
+		<comment>Removing 'View Encounters' privilege from Anonymous user</comment>
+		<delete tableName="role_privilege">
+			<where>role='Anonymous' AND privilege='View Encounters'</where>
+		</delete>
+	</changeSet>
 
 </databaseChangeLog>
