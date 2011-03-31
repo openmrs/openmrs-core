@@ -83,7 +83,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		Obs obs = new Obs();
 		obs.setPerson(Context.getPersonService().getPerson(2));
 		obs.setConcept(Context.getConceptService().getConcept(18));
-
+		
 		obs.setValueBoolean(false);
 		obs.setValueCoded(Context.getConceptService().getConcept(18));
 		obs.setValueComplex("test");
@@ -98,7 +98,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 		group.add(Context.getObsService().getObs(7));
 		group.add(Context.getObsService().getObs(9));
 		obs.setGroupMembers(group);
-	
+		
 		Errors errors = new BindException(obs, "obs");
 		new ObsValidator().validate(obs, errors);
 		
@@ -257,7 +257,7 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldFailValidationIfObsAncestorsContainsObs() throws Exception {
 		Obs obs = new Obs();
 		obs.setPerson(Context.getPersonService().getPerson(2));
-		obs.setConcept(Context.getConceptService().getConcept(3));  // datatype = N/A
+		obs.setConcept(Context.getConceptService().getConcept(3)); // datatype = N/A
 		obs.setObsDatetime(new Date());
 		
 		Set<Obs> group = new HashSet<Obs>();
