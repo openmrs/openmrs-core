@@ -9,6 +9,11 @@
 <openmrs:htmlInclude file="/scripts/validation.js" />
 
 <script>
+	var si = ${fn:length(identifiers)};
+	var idTypeLocationRequired = {};
+	<c:forEach items="${identifierTypes}" var="idType">
+		idTypeLocationRequired[${idType.patientIdentifierTypeId}] = ${idType.locationBehavior == null || idType.locationBehavior == "REQUIRED"};
+	</c:forEach>
 	// Saves the last tab clicked on (aka "current" or "selected" tab)
 	var lastTab = new Array();
 	lastTab["identifier"] = null;
@@ -68,6 +73,13 @@
 			dataClone.id = type + numObjs[type] + "Data";
 			parent = newData.parentNode;
 			parent.insertBefore(dataClone, newData);
+			
+			if (type == 'identifier') {
+				si++;
+				$j(dataClone).find("#identifierTypeBox0").attr("id", "identifierTypeBox"+si);
+				$j(dataClone).find("#locationBox0").attr("id", "locationBox"+si);
+				$j(dataClone).find("#locationNABox0").attr("id", "locationNABox"+si);
+			}
 			
 			//find the active checkbox and add an onclick listener to it
 			//and assign names and ids to the start and end input fields
@@ -179,6 +191,22 @@
 		}
 	}
 	
+	function toggleLocationBox(identifierType,location) {
+		var boxId = 'location' + location.substring(14,18);
+		var naBoxId = 'locationNA' + location.substring(14,18);
+		if (identifierType == '') {
+			$j('#'+naBoxId).hide();
+			$j('#'+boxId).hide();
+		}
+		else if (idTypeLocationRequired[identifierType]) {
+			$j('#'+naBoxId).hide();
+			$j('#'+boxId).show();
+		} 
+		else {
+			$j('#'+boxId).hide();
+			$j('#'+naBoxId).show();
+		}
+	}
 </script>
 
 <style>

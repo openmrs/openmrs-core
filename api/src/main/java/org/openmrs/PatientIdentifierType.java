@@ -20,8 +20,21 @@ public class PatientIdentifierType extends BaseOpenmrsMetadata implements java.i
 	
 	public static final long serialVersionUID = 211231L;
 	
-	// Fields
+	/**
+	 * Enumerates the possible ways that location may be applicable for a particular Patient Identifer Type
+	 */
+	public enum LocationBehavior {
+		/**
+		 * Indicates that location is required for the current identifier type
+		 */
+		REQUIRED,
+		/**
+		 * Indicates that location is not used for the current identifier type
+		 */
+		NOT_USED;
+	}
 	
+	// Fields	
 	private Integer patientIdentifierTypeId;
 	
 	private String format;
@@ -33,6 +46,8 @@ public class PatientIdentifierType extends BaseOpenmrsMetadata implements java.i
 	private Boolean checkDigit = Boolean.FALSE;
 	
 	private String validator;
+	
+	private LocationBehavior locationBehavior;
 	
 	/** default constructor */
 	public PatientIdentifierType() {
@@ -92,6 +107,20 @@ public class PatientIdentifierType extends BaseOpenmrsMetadata implements java.i
 	 */
 	public void setRequired(Boolean required) {
 		this.required = required;
+	}
+	
+	/**
+	 * @return Returns the locationBehavior
+	 */
+	public LocationBehavior getLocationBehavior() {
+		return locationBehavior;
+	}
+	
+	/**
+	 * @param locationBehavior The locationBehavior to set
+	 */
+	public void setLocationBehavior(LocationBehavior locationBehavior) {
+		this.locationBehavior = locationBehavior;
 	}
 	
 	/**

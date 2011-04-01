@@ -1,4 +1,4 @@
-    <%@ include file="/WEB-INF/template/include.jsp" %>
+<%@ include file="/WEB-INF/template/include.jsp" %>
 
 <openmrs:require privilege="Add Patients" otherwise="/login.htm" redirect="/admin/patients/shortPatientForm.form" />
 
@@ -10,6 +10,11 @@
 	//variable to cache the id of the checkbox of the selected preferred patientIdentifier
 	var prefIdentifierElementId = null;
 	var numberOfClonedElements = 0;
+	var idTypeLocationRequired = {};
+	<c:forEach items="${identifierTypes}" var="idType">
+		idTypeLocationRequired[${idType.patientIdentifierTypeId}] = ${idType.locationBehavior == null || idType.locationBehavior == "REQUIRED"};
+	</c:forEach>
+	
 	function addIdentifier(initialIdentifierSize) {
 		var index = initialIdentifierSize+numberOfClonedElements;
 		var tbody = document.getElementById('identifiersTbody');
@@ -24,11 +29,16 @@
 			var select = selects[i];
 			if (select && selects[i].name == "identifierType") {					
 				select.name = 'identifiers[' + index + '].identifierType';
+				$j(select).change(function(){
+					toggleLocationBox(this.options[this.selectedIndex].value,'identifiers'+ index +'_location');
+				});
 			}
 			else if (select && selects[i].name == "location") {					
 				select.name = 'identifiers[' + index + '].location';
+				select.id = 'identifiers'+ index +'_location';
 			}
 		}
+		$j(newrow).find('.locationNotApplicableClass').attr('id', 'identifiers'+ index +'_location_NA')
 
 		for (var x = 0; x < inputs.length; x++) {
 			var input = inputs[x];
@@ -162,6 +172,21 @@
 	function preferredBoxClick(obj) {
 		//do nothing
 	}
+	
+	function toggleLocationBox(identifierType,location) {
+		if (identifierType == '') {
+			$j('#'+location + '_NA').hide();
+			$j('#'+location).hide();
+		}
+		else if (idTypeLocationRequired[identifierType]) {
+			$j('#'+location + '_NA').hide();
+			$j('#'+location).show();
+		} 
+		else {
+			$j('#'+location).hide();
+			$j('#'+location + '_NA').show();
+		}
+	}
 </script>
 
 <style>
@@ -227,7 +252,11 @@
 					<td><spring:message code="PatientIdentifier.identifier"/></td>
 					<openmrs:extensionPoint pointId="newPatientForm.identifierHeader" />
 					<td><spring:message code="PatientIdentifier.identifierType"/></td>
-					<td><spring:message code="PatientIdentifier.location.identifier"/></td>
+					<td>
+						<c:if test="${identifierLocationUsed}">
+							<spring:message code="PatientIdentifier.location.identifier"/>
+						</c:if>
+					</td>
 					<td><spring:message code="general.preferred"/></td>
 					<td></td>
 				</tr>
@@ -244,16 +273,24 @@
 					</td>
 					<openmrs:extensionPoint pointId="newPatientForm.identifierBody" />
 					<td valign="top">						
-						<form:select path="identifierType">
+						<form:select path="identifierType" onchange="toggleLocationBox(this.options[this.selectedIndex].value,'initialLocationBox${varStatus.index}');" >
 							<form:option value=""></form:option>
 							<form:options items="${identifierTypes}" itemValue="patientIdentifierTypeId" itemLabel="name" />
 						</form:select>						
 					</td>
 					<td valign="top">
-						<form:select path="location">
-							<form:option value=""></form:option>
-							<form:options items="${locations}" itemValue="locationId" itemLabel="name" />
-						</form:select>
+						<c:set var="behavior" value="${id.identifierType.locationBehavior}"/>
+						<div id="initialLocationBox${varStatus.index}" style="${behavior == 'REQUIRED' ? '' : 'display:none;'}">
+							<form:select path="location">
+								<form:option value=""></form:option>
+								<form:options items="${locations}" itemValue="locationId" itemLabel="name" />
+							</form:select>
+						</div>
+						<div id="initialLocationBox${varStatus.index}_NA" style="${behavior == 'NOT_USED' ? '' : 'display:none;'}">
+							<c:if test="${identifierLocationUsed}">
+								<spring:message code="PatientIdentifier.location.notApplicable"/>
+							</c:if>
+						</div>
 					</td>
 					<td valign="middle" align="center">
 						<spring:bind path="preferred">
@@ -295,14 +332,19 @@
 						</select>						
 					</td>
 					<td valign="top">
-						<select name="location">
+						<select name="location" style="display: none;">
 							<option value=""></option>
 							<openmrs:forEachRecord name="location">
-								<option value="${record.locationId}"<c:if test="${record == defaultLocation}"> selected="selected"</c:if>>
+								<option value="${record.locationId}"<c:if test="${identifierLocationUsed && record == defaultLocation}"> selected="selected"</c:if>>
 									${record.name}
 								</option>
 							</openmrs:forEachRecord>
 						</select>
+						<span class="locationNotApplicableClass" style="display:none;">
+							<c:if test="${identifierLocationUsed}">
+								<spring:message code="PatientIdentifier.location.notApplicable"/>
+							</c:if>
+						</span>
 					</td>
 					<td valign="middle" align="center">
 						<input type="radio" name="preferred" value="true" onclick="updatePreferred(this)" />

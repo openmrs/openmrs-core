@@ -4021,6 +4021,29 @@
 			baseTableName="person_address" baseColumnNames="changed_by"
 			referencedTableName="users" referencedColumnNames="user_id" />
 	</changeSet>
+	
+	<changeSet id="20110218-1206" author="rubailly">
+		<preConditions>
+			<not>
+				<columnExists tableName="patient_identifier_type"
+					columnName="location_behavior" />
+			</not>
+		</preConditions>
+		<comment>Add 'location_behavior' column to patient_identifier_type table</comment>
+		<addColumn tableName="patient_identifier_type">
+			<column name="location_behavior" type="varchar(50)">
+				<constraints nullable="true" />
+			</column>
+		</addColumn>
+	</changeSet>
+
+	<changeSet id="20110218-1210" author="rubailly">
+		<comment>
+			Drop Not-Null constraint from location_id column in patient_identifier table
+		</comment>
+		<dropNotNullConstraint tableName="patient_identifier"
+			columnName="location_id" columnDataType="int" />
+	</changeSet>
 
 	<changeSet id="20101029-1016" author="gobi/prasann">
 		<preConditions onFail="MARK_RAN">
