@@ -167,6 +167,8 @@ public class PatientIdentifierTypeFormController extends SimpleFormController {
 		
 		toReturn.put("defaultValidatorName", defaultValidatorName);
 		
+		toReturn.put("locationBehaviors", PatientIdentifierType.LocationBehavior.values());
+		
 		return toReturn;
 	}
 	

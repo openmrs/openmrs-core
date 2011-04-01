@@ -59,7 +59,13 @@
         not-null="true"
         length="19"
     />
-
+    
+	<property name="locationBehavior" column="location_behavior" length="50">
+		<type name="org.openmrs.util.HibernateEnumType">
+			<param name="enumClassName">org.openmrs.PatientIdentifierType$LocationBehavior</param>
+		</type>
+	</property>
+	
     <!-- Associations -->
   
     <many-to-one name="creator" class="User" not-null="true" />

@@ -70,6 +70,22 @@
 		</spring:bind></td>
 	</tr>
 	<tr>
+		<td><spring:message code="PatientIdentifierType.locationBehavior" /></td>
+		<td><spring:bind path="patientIdentifierType.locationBehavior">
+			<select name="${status.expression}">
+				<option value=""></option>
+				<c:forEach var="locationBehavior" items="${locationBehaviors}">
+					<option value="${locationBehavior}" <c:if test="${status.value == locationBehavior}">selected</c:if>>
+						<spring:message code="PatientIdentifierType.locationBehavior.${locationBehavior}" />
+					</option>
+				</c:forEach>
+			</select>
+			<c:if test="${status.errorMessage != ''}">
+				<span class="error">${status.errorMessage}</span>
+			</c:if>
+		</spring:bind></td>
+	</tr>
+	<tr>
 		<td><spring:message code="PatientIdentifierType.validator" /></td>
 		<td><spring:bind path="patientIdentifierType.validator">
 			<select name="${status.expression}">

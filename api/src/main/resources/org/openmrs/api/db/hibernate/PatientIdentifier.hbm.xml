@@ -22,7 +22,7 @@
 	<property name="identifier" type="java.lang.String" length="50"/>
 	<many-to-one name="identifierType" class="org.openmrs.PatientIdentifierType" column="identifier_type"/>
     
-    <many-to-one name="location" class="org.openmrs.Location" column="location_id" />
+    <many-to-one name="location" class="org.openmrs.Location" column="location_id" not-null="false"/>
 	<property name="dateCreated" type="java.util.Date" column="date_created" not-null="true" />
 	<property name="dateVoided" type="java.util.Date" column="date_voided"/>
 	<property name="preferred" type="boolean" not-null="true" />

@@ -37,6 +37,7 @@ import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
+import org.openmrs.PatientIdentifierType.LocationBehavior;
 import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonName;
@@ -144,7 +145,9 @@ public class PatientFormController extends PersonFormController {
 							PatientIdentifier pi = new PatientIdentifier();
 							pi.setIdentifier(id);
 							pi.setIdentifierType(ps.getPatientIdentifierType(Integer.valueOf(idTypes[i])));
-							pi.setLocation(ls.getLocation(Integer.valueOf(locs[i])));
+							if (StringUtils.isNotEmpty(locs[i])) {
+								pi.setLocation(ls.getLocation(Integer.valueOf(locs[i])));
+							}
 							if (idPrefStatus != null && idPrefStatus.length > i)
 								pi.setPreferred(new Boolean(idPrefStatus[i]));
 							patient.addIdentifier(pi);
@@ -695,7 +698,16 @@ public class PatientFormController extends PersonFormController {
 				}
 			}
 		}
-		
+		List<PatientIdentifierType> pits = Context.getPatientService().getAllPatientIdentifierTypes();
+		boolean identifierLocationUsed = false;
+		for (PatientIdentifierType pit : pits) {
+			if (pit.getLocationBehavior() == null || pit.getLocationBehavior() == LocationBehavior.REQUIRED) {
+				identifierLocationUsed = true;
+			}
+		}
+		map.put("identifierTypes", pits);
+		map.put("identifierLocationUsed", identifierLocationUsed);
+		map.put("identifiers", patient.getIdentifiers());
 		map.put("patientVariation", patientVariation);
 		
 		map.put("forms", forms);

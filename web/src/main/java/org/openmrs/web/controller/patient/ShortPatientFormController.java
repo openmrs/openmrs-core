@@ -26,12 +26,14 @@ import org.openmrs.Concept;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
+import org.openmrs.PatientIdentifierType;
 import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonName;
 import org.openmrs.Relationship;
 import org.openmrs.RelationshipType;
+import org.openmrs.PatientIdentifierType.LocationBehavior;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.LocationUtility;
@@ -121,7 +123,17 @@ public class ShortPatientFormController {
 			ShortPatientModel patientModel = new ShortPatientModel(patient);
 			model.addAttribute("patientModel", patientModel);
 			model.addAttribute("relationshipsMap", getRelationshipsMap(patient, request));
-			model.addAttribute("identifierTypes", Context.getPatientService().getAllPatientIdentifierTypes());
+			
+			List<PatientIdentifierType> pits = Context.getPatientService().getAllPatientIdentifierTypes();
+			boolean identifierLocationUsed = false;
+			for (PatientIdentifierType pit : pits) {
+				if (pit.getLocationBehavior() == null || pit.getLocationBehavior() == LocationBehavior.REQUIRED) {
+					identifierLocationUsed = true;
+				}
+			}
+			model.addAttribute("identifierTypes", pits);
+			model.addAttribute("identifierLocationUsed", identifierLocationUsed);
+			
 			model.addAttribute("locations", Context.getLocationService().getAllLocations());
 			model.addAttribute("defaultLocation", (LocationUtility.getUserDefaultLocation() != null) ? LocationUtility
 			        .getUserDefaultLocation() : LocationUtility.getDefaultLocation());
