@@ -438,7 +438,10 @@
 		</td>
 	</tr>
 	<tr id="codedDatatypeRow">
-		<th valign="top"><spring:message code="Concept.answers"/></th>
+		<th valign="top">
+			<spring:message code="Concept.answers"/> 
+			<img class="help_icon" id="tooltipCodedIcon" src="${pageContext.request.contextPath}/images/help.gif" border="0" title="<spring:message code="Concept.datatype.coded.help"/>"
+		</th>
 		<td>
 			<spring:bind path="command.concept.answers">
 				<input type="hidden" name="${status.expression}" id="answerIds" size="40" value='<c:forEach items="${command.conceptAnswers}" var="answer">${answer.key} </c:forEach>' />
@@ -464,7 +467,10 @@
 		</td>
 	</tr>
 	<tr id="numericDatatypeRow">
-		<th valign="top"><spring:message code="ConceptNumeric.name"/></th>
+		<th valign="top">
+			<spring:message code="ConceptNumeric.name"/>
+			<img class="help_icon" id="tooltipNumericIcon" src="${pageContext.request.contextPath}/images/help.gif" border="0" title="<spring:message code="Concept.datatype.numeric.help"/>"
+		</th>
 		<td>
 			<table border="0">
 				<tr>
@@ -549,7 +555,10 @@
 		</td>
 	</tr>
     <tr id="complexDatatypeRow">
-        <th valign="top"><spring:message code="ConceptComplex.handler"/></th>
+        <th valign="top">
+			<spring:message code="ConceptComplex.handler"/>
+			<img class="help_icon" id="tooltipComplexIcon" src="${pageContext.request.contextPath}/images/help.gif" border="0" title="<spring:message code="Concept.datatype.complex.help"/>"
+		</th>
         <td>
 			<spring:bind path="command.handlerKey">
 				<select name="${status.expression}"> 
