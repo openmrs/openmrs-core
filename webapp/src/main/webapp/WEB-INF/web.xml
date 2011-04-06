@@ -359,6 +359,11 @@
 		<exception-type>org.openmrs.api.APIAuthenticationException</exception-type>
 		<location>/login.htm</location>
 	</error-page>
+
+	<error-page>
+		<exception-type>org.springframework.web.HttpSessionRequiredException</exception-type>
+		<location>/login.htm</location>
+	</error-page>
 	
 	<error-page>
 		<error-code>404</error-code>
