@@ -272,21 +272,15 @@ function addAnswerToBooleanConcept(confirmationMessage, conceptId){
 /**
  * This method is called when the remove button of an existing synonymm is called, it sets the hidden checkbox to check
  * to mark the name as voided
+ * 
+ * @param buttonElement the button object that was clicked
  * @param checkBoxId the id of the checkbox to mark as checked
- * @param conceptNameRowId the div element for the removed synonym to hide
  * 
  */
-function voidName(checkBoxId, voidInfoElementId) {	
+function voidName(buttonElement, checkBoxId) {	
 	//set the value of the hidden input field to true to mark that it is voided
 	document.getElementById(checkBoxId).value = "true";	
-	toggleLayer(voidInfoElementId);	
-}
-
-function cancelNameRemoval(checkBoxId, voidInfoLayerId, voidReasonElementId) {	
-	document.getElementById(checkBoxId).value = 'false';	
-	//if the user canceled removal of a name after validation errors and had entered some void reason	
-	document.getElementById(voidReasonElementId).value = "";
-	hideLayer(voidInfoLayerId);
+	$j(buttonElement.parentNode).hide();
 }
 
 /**

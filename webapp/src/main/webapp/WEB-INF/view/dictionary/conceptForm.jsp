@@ -231,24 +231,8 @@
 							<input type="button" value='<spring:message code="general.remove"/>' class="smallButton" onClick="removeParentElement(this)"/>							
 							</c:if>	
 							<c:if test="${command.synonymsByLocale[loc][varStatus.index].conceptNameId != null}">
-							<input type="button" value='<spring:message code="general.remove"/>' class="smallButton" onClick="voidName('synonymsByLocale[${loc}][${varStatus.index}].isVoided', 'synonymsByLocale[${loc}][${varStatus.index}].voidedInfo')"/>
+							<input type="button" value='<spring:message code="general.remove"/>' class="smallButton" onClick="voidName(this, 'synonymsByLocale[${loc}][${varStatus.index}].isVoided')"/>
 							</c:if>
-								<span id="synonymsByLocale[${loc}][${varStatus.index}].voidedInfo" <c:if test="${!command.synonymsByLocale[loc][varStatus.index].voided}">style="display: none"</c:if> >
-									<spring:message code="general.reason"/>?
-									<spring:bind path="voidReason">
-									<input id="synonymsByLocale[${loc}][${varStatus.index}].voidReasonText" type="text" value="${status.value}" size="mediumWidth" name="${status.expression}" />
-									<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-									</spring:bind>										
-									<input type="button" value='<spring:message code="general.cancel"/>' class="smallButton" 
-											onClick="cancelNameRemoval('synonymsByLocale[${loc}][${varStatus.index}].isVoided', 'synonymsByLocale[${loc}][${varStatus.index}].voidedInfo', 'synonymsByLocale[${loc}][${varStatus.index}].voidReasonText')" />
-									<spring:bind path="voidedBy">
-									<c:if test="${status.value != null}">
-										<spring:message code="general.voidedBy" />:
-										${status.value.personName} -
-										<openmrs:formatDate date="${command.synonymsByLocale[loc][varStatus.index].dateVoided}" type="long" />
-										</c:if>
-									</spring:bind>
-								</span>
 							<spring:bind path="name">
 							<c:if test="${status.errorMessage != ''}">
 							<span class="error">${status.errorMessage}</span>
@@ -292,24 +276,8 @@
 							<input type="button" value='<spring:message code="general.remove"/>' class="smallButton" onClick="removeParentElement(this)"/>							
 							</c:if>
 							<c:if test="${command.indexTermsByLocale[loc][varStatus.index].conceptNameId != null}">
-							<input type="button" value='<spring:message code="general.remove"/>' class="smallButton" onClick="voidName('indexTermsByLocale[${loc}][${varStatus.index}].isVoided', 'indexTermsByLocale[${loc}][${varStatus.index}].voidedInfo')"/>							
+							<input type="button" value='<spring:message code="general.remove"/>' class="smallButton" onClick="voidName(this, 'indexTermsByLocale[${loc}][${varStatus.index}].isVoided')"/>							
 							</c:if>
-							<span id="indexTermsByLocale[${loc}][${varStatus.index}].voidedInfo" <c:if test="${!command.indexTermsByLocale[loc][varStatus.index].voided}">style="display: none"</c:if> >
-								<spring:message code="general.reason"/>?
-								<spring:bind path="voidReason">
-									<input  id="indexTermsByLocale[${loc}][${varStatus.index}].voidReasonText" type="text" value="${status.value}" size="mediumWidth" name="${status.expression}" />
-									<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-								</spring:bind>
-								<input type="button" value='<spring:message code="general.cancel"/>' class="smallButton" 
-										onClick="cancelNameRemoval('indexTermsByLocale[${loc}][${varStatus.index}].isVoided', 'indexTermsByLocale[${loc}][${varStatus.index}].voidedInfo', 'indexTermsByLocale[${loc}][${varStatus.index}].voidReasonText')" />
-								<spring:bind path="voidedBy">
-								<c:if test="${status.value != null}">
-									<spring:message code="general.voidedBy" />:
-									${status.value.personName} -
-									<openmrs:formatDate date="${command.indexTermsByLocale[loc][varStatus.index].dateVoided}" type="long" />
-								</c:if>
-								</spring:bind>
-							</span>
 							<spring:bind path="name">
 							<c:if test="${status.errorMessage != ''}">
 								<span class="error">${status.errorMessage}</span>
