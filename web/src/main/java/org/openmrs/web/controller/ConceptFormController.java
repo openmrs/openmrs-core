@@ -464,10 +464,12 @@ public class ConceptFormController extends SimpleFormController {
 						//clear the text
 						if (!synonym.isVoided())
 							synonym.setVoidReason(null);
-						else if (synonym.isVoided() && !StringUtils.hasText(synonym.getVoidReason()))
+						else {
+							// always set the default void/retire reason
 							synonym
 							        .setVoidReason(Context.getMessageSourceService()
 							                .getMessage("general.default.voidReason"));
+						}
 					}
 				}
 				
