@@ -405,7 +405,7 @@ public final class OpenmrsConstants {
 	
 	public static final String PRIV_DELETE_PATIENT_PROGRAMS = "Delete Patient Programs";
 	
-	public static final String PRIV_PURGE_PATIENT_PROGRAMS = "Add Patient Programs";
+	public static final String PRIV_PURGE_PATIENT_PROGRAMS = "Purge Patient Programs";
 	
 	public static final String PRIV_DASHBOARD_OVERVIEW = "Patient Dashboard - View Overview Section";
 	
