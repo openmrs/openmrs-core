@@ -495,6 +495,7 @@ public interface UserService extends OpenmrsService {
 	 * @should fetch users with at least one of the given role objects
 	 * @should not fetch duplicate users
 	 * @should fetch all users if nameSearch is empty or null
+	 * @should not fail if roles are searched but name is empty
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_USERS })
