@@ -70,8 +70,8 @@ public class HibernateLocationDAO implements LocationDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public Location getLocation(String name) {
-		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Location.class).add(
-		    Expression.eq("name", name));
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Location.class)
+		        .add(Expression.eq("name", name));
 		
 		List<Location> locations = criteria.list();
 		if (null == locations || locations.isEmpty()) {
@@ -88,6 +88,9 @@ public class HibernateLocationDAO implements LocationDAO {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Location.class);
 		if (!includeRetired) {
 			criteria.add(Expression.eq("retired", false));
+		} else {
+			//push retired locations to the end of the returned list
+			criteria.addOrder(Order.asc("retired"));
 		}
 		criteria.addOrder(Order.asc("name"));
 		return criteria.list();
@@ -120,8 +123,8 @@ public class HibernateLocationDAO implements LocationDAO {
 	 */
 	@SuppressWarnings("unchecked")
 	public LocationTag getLocationTagByName(String tag) {
-		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(LocationTag.class).add(
-		    Expression.eq("name", tag));
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(LocationTag.class)
+		        .add(Expression.eq("name", tag));
 		
 		List<LocationTag> tags = criteria.list();
 		if (null == tags || tags.isEmpty()) {
@@ -164,8 +167,8 @@ public class HibernateLocationDAO implements LocationDAO {
 	 * @see org.openmrs.api.db.LocationDAO#getLocationByUuid(java.lang.String)
 	 */
 	public Location getLocationByUuid(String uuid) {
-		return (Location) sessionFactory.getCurrentSession().createQuery("from Location l where l.uuid = :uuid").setString(
-		    "uuid", uuid).uniqueResult();
+		return (Location) sessionFactory.getCurrentSession().createQuery("from Location l where l.uuid = :uuid")
+		        .setString("uuid", uuid).uniqueResult();
 	}
 	
 	/**

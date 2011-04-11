@@ -429,8 +429,8 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		assertEquals(Context.getAuthenticatedUser(), retiredLoc.getRetiredBy());
 		assertEquals("Just Testing", retiredLoc.getRetireReason());
 		
-		// Both location lists that include retired should be equal.
-		assertEquals(locationsBeforeRetired, locationsAfterRetired);
+		// Both location lists that include retired should be equal in size and not order of elements.
+		assertEquals(locationsBeforeRetired.size(), locationsAfterRetired.size());
 		
 		// Both location lists that do not include retired should not be the same.
 		assertNotSame(locationsNotRetiredBefore, locationsNotRetiredAfter);
@@ -909,8 +909,8 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should find object given valid uuid", method = "getLocationTagByUuid(String)")
 	public void getLocationTagByUuid_shouldFindObjectGivenValidUuid() throws Exception {
-		Assert.assertEquals(Integer.valueOf(3), Context.getLocationService().getLocationTagByUuid(
-		    "0d0eaea2-47ed-11df-bc8b-001e378eb67e").getLocationTagId());
+		Assert.assertEquals(Integer.valueOf(3),
+		    Context.getLocationService().getLocationTagByUuid("0d0eaea2-47ed-11df-bc8b-001e378eb67e").getLocationTagId());
 	}
 	
 	/**
@@ -934,6 +934,24 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		        "None existent Location", "Testing");
 		Context.getAdministrationService().saveGlobalProperty(gp);
 		Assert.assertEquals("Unknown Location", Context.getLocationService().getDefaultLocation().getName());
+	}
+	
+	/**
+	 * @see {@link LocationService#getAllLocations(null)}
+	 */
+	@Test
+	@Verifies(value = "should push retired locations to the end of the list when includeRetired is true", method = "getAllLocations(null)")
+	public void getAllLocations_shouldPushRetiredLocationsToTheEndOfTheListWhenIncludeRetiredIsTrue() throws Exception {
+		LocationService ls = Context.getLocationService();
+		//retire the first location
+		ls.retireLocation(ls.getAllLocations().get(0), "Just Testing");
+		// Get all locations.
+		List<Location> locations = ls.getAllLocations();
+		//The 2 retired locations should be always be at the end
+		Assert.assertTrue("Retired locations should be at the end of the list", locations.get(locations.size() - 1)
+		        .isRetired());
+		Assert.assertTrue("Retired locations should be at the end of the list", locations.get(locations.size() - 2)
+		        .isRetired());
 	}
 	
 }
