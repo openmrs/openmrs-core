@@ -59,7 +59,7 @@ public interface LocationService extends OpenmrsService {
 	 * @should update location successfully
 	 * @should create location successfully
 	 */
-	@Authorized( { PrivilegeConstants.MANAGE_LOCATIONS })
+	@Authorized({ PrivilegeConstants.MANAGE_LOCATIONS })
 	public Location saveLocation(Location location) throws APIException;
 	
 	/**
@@ -71,7 +71,7 @@ public interface LocationService extends OpenmrsService {
 	 * @should return null when no location match given location id
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { PrivilegeConstants.VIEW_LOCATIONS })
+	@Authorized({ PrivilegeConstants.VIEW_LOCATIONS })
 	public Location getLocation(Integer locationId) throws APIException;
 	
 	/**
@@ -83,7 +83,7 @@ public interface LocationService extends OpenmrsService {
 	 * @should return null when no location match given location name
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { PrivilegeConstants.VIEW_LOCATIONS })
+	@Authorized({ PrivilegeConstants.VIEW_LOCATIONS })
 	public Location getLocation(String name) throws APIException;
 	
 	/**
@@ -94,7 +94,7 @@ public interface LocationService extends OpenmrsService {
 	 * @should return Unknown Location if the global property is something else that doesnot exist
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { PrivilegeConstants.VIEW_LOCATIONS })
+	@Authorized({ PrivilegeConstants.VIEW_LOCATIONS })
 	public Location getDefaultLocation() throws APIException;
 	
 	/**
@@ -106,7 +106,7 @@ public interface LocationService extends OpenmrsService {
 	 * @should return null if no object found with given uuid
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { PrivilegeConstants.VIEW_LOCATIONS })
+	@Authorized({ PrivilegeConstants.VIEW_LOCATIONS })
 	public Location getLocationByUuid(String uuid) throws APIException;
 	
 	/**
@@ -118,7 +118,7 @@ public interface LocationService extends OpenmrsService {
 	 * @should return null if no object found with given uuid
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { PrivilegeConstants.VIEW_LOCATIONS })
+	@Authorized({ PrivilegeConstants.VIEW_LOCATIONS })
 	public LocationTag getLocationTagByUuid(String uuid) throws APIException;
 	
 	/**
@@ -129,7 +129,7 @@ public interface LocationService extends OpenmrsService {
 	 * @should return all locations including retired
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { PrivilegeConstants.VIEW_LOCATIONS })
+	@Authorized({ PrivilegeConstants.VIEW_LOCATIONS })
 	public List<Location> getAllLocations() throws APIException;
 	
 	/**
@@ -138,9 +138,10 @@ public interface LocationService extends OpenmrsService {
 	 * @param includeRetired whether or not to include retired locations
 	 * @should return all locations when includeRetired is true
 	 * @should return only unretired locations when includeRetires is false
+	 * @should push retired locations to the end of the list when includeRetired is true
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { PrivilegeConstants.VIEW_LOCATIONS })
+	@Authorized({ PrivilegeConstants.VIEW_LOCATIONS })
 	public List<Location> getAllLocations(boolean includeRetired) throws APIException;
 	
 	/**
@@ -152,7 +153,7 @@ public interface LocationService extends OpenmrsService {
 	 * @should return empty list when no location match the name fragment
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { PrivilegeConstants.VIEW_LOCATIONS })
+	@Authorized({ PrivilegeConstants.VIEW_LOCATIONS })
 	public List<Location> getLocations(String nameFragment) throws APIException;
 	
 	/**
@@ -169,7 +170,7 @@ public interface LocationService extends OpenmrsService {
 	 * @since 1.8
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { PrivilegeConstants.VIEW_LOCATIONS })
+	@Authorized({ PrivilegeConstants.VIEW_LOCATIONS })
 	public List<Location> getLocations(String nameFragment, boolean includeRetired, Integer start, Integer length)
 	        throws APIException;
 	
@@ -182,7 +183,7 @@ public interface LocationService extends OpenmrsService {
 	 * @should return empty list when no locations has the given tag
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { PrivilegeConstants.VIEW_LOCATIONS })
+	@Authorized({ PrivilegeConstants.VIEW_LOCATIONS })
 	public List<Location> getLocationsByTag(LocationTag tag) throws APIException;
 	
 	/**
@@ -195,7 +196,7 @@ public interface LocationService extends OpenmrsService {
 	 * @should return all unretired locations given an empty tag list
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { PrivilegeConstants.VIEW_LOCATIONS })
+	@Authorized({ PrivilegeConstants.VIEW_LOCATIONS })
 	public List<Location> getLocationsHavingAllTags(List<LocationTag> tags) throws APIException;
 	
 	/**
@@ -208,7 +209,7 @@ public interface LocationService extends OpenmrsService {
 	 * @should return empty list when given an empty tag list
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { PrivilegeConstants.VIEW_LOCATIONS })
+	@Authorized({ PrivilegeConstants.VIEW_LOCATIONS })
 	public List<Location> getLocationsHavingAnyTag(List<LocationTag> tags) throws APIException;
 	
 	/**
@@ -219,7 +220,7 @@ public interface LocationService extends OpenmrsService {
 	 * @should retire location successfully
 	 * @should throw IllegalArgumentException when no reason is given
 	 */
-	@Authorized( { PrivilegeConstants.MANAGE_LOCATIONS })
+	@Authorized({ PrivilegeConstants.MANAGE_LOCATIONS })
 	public Location retireLocation(Location location, String reason) throws APIException;
 	
 	/**
@@ -231,7 +232,7 @@ public interface LocationService extends OpenmrsService {
 	 * @throws APIException
 	 * @should unretire retired location
 	 */
-	@Authorized( { PrivilegeConstants.MANAGE_LOCATIONS })
+	@Authorized({ PrivilegeConstants.MANAGE_LOCATIONS })
 	public Location unretireLocation(Location location) throws APIException;
 	
 	/**
@@ -241,7 +242,7 @@ public interface LocationService extends OpenmrsService {
 	 * @param location the Location to clean out of the database.
 	 * @should delete location successfully
 	 */
-	@Authorized( { PrivilegeConstants.PURGE_LOCATIONS })
+	@Authorized({ PrivilegeConstants.PURGE_LOCATIONS })
 	public void purgeLocation(Location location) throws APIException;
 	
 	/**
@@ -254,7 +255,7 @@ public interface LocationService extends OpenmrsService {
 	 * @should update location tag successfully
 	 * @should create location tag successfully
 	 */
-	@Authorized( { PrivilegeConstants.MANAGE_LOCATION_TAGS })
+	@Authorized({ PrivilegeConstants.MANAGE_LOCATION_TAGS })
 	public LocationTag saveLocationTag(LocationTag tag) throws APIException;
 	
 	/**
@@ -268,7 +269,7 @@ public interface LocationService extends OpenmrsService {
 	 * @should return null when no location tag match given id
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { PrivilegeConstants.VIEW_LOCATIONS })
+	@Authorized({ PrivilegeConstants.VIEW_LOCATIONS })
 	public LocationTag getLocationTag(Integer locationTagId) throws APIException;
 	
 	/**
@@ -282,7 +283,7 @@ public interface LocationService extends OpenmrsService {
 	 * @should return null when no location tag match given name
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { PrivilegeConstants.VIEW_LOCATIONS })
+	@Authorized({ PrivilegeConstants.VIEW_LOCATIONS })
 	public LocationTag getLocationTagByName(String tag) throws APIException;
 	
 	/**
@@ -294,7 +295,7 @@ public interface LocationService extends OpenmrsService {
 	 * @should return all location tags including retired
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { PrivilegeConstants.VIEW_LOCATIONS })
+	@Authorized({ PrivilegeConstants.VIEW_LOCATIONS })
 	public List<LocationTag> getAllLocationTags() throws APIException;
 	
 	/**
@@ -306,7 +307,7 @@ public interface LocationService extends OpenmrsService {
 	 * @should return only unretired location tags if includeRetired is false
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { PrivilegeConstants.VIEW_LOCATIONS })
+	@Authorized({ PrivilegeConstants.VIEW_LOCATIONS })
 	public List<LocationTag> getAllLocationTags(boolean includeRetired) throws APIException;
 	
 	/**
@@ -319,7 +320,7 @@ public interface LocationService extends OpenmrsService {
 	 * @should return empty list when no location tag match given search string
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { PrivilegeConstants.VIEW_LOCATIONS })
+	@Authorized({ PrivilegeConstants.VIEW_LOCATIONS })
 	public List<LocationTag> getLocationTags(String search) throws APIException;
 	
 	/**
@@ -332,7 +333,7 @@ public interface LocationService extends OpenmrsService {
 	 * @should retire location tag with given reason
 	 * @should throw IllegalArgumentException when no reason is given
 	 */
-	@Authorized( { PrivilegeConstants.MANAGE_LOCATION_TAGS })
+	@Authorized({ PrivilegeConstants.MANAGE_LOCATION_TAGS })
 	public LocationTag retireLocationTag(LocationTag tag, String reason) throws APIException;
 	
 	/**
@@ -345,7 +346,7 @@ public interface LocationService extends OpenmrsService {
 	 * @since 1.5
 	 * @should unretire retired location tag
 	 */
-	@Authorized( { PrivilegeConstants.MANAGE_LOCATION_TAGS })
+	@Authorized({ PrivilegeConstants.MANAGE_LOCATION_TAGS })
 	public LocationTag unretireLocationTag(LocationTag tag) throws APIException;
 	
 	/**
@@ -355,7 +356,7 @@ public interface LocationService extends OpenmrsService {
 	 * @since 1.5
 	 * @should delete location tag
 	 */
-	@Authorized( { PrivilegeConstants.PURGE_LOCATION_TAGS })
+	@Authorized({ PrivilegeConstants.PURGE_LOCATION_TAGS })
 	public void purgeLocationTag(LocationTag tag) throws APIException;
 	
 	/**
@@ -368,6 +369,6 @@ public interface LocationService extends OpenmrsService {
 	 * @since 1.8
 	 */
 	@Transactional(readOnly = true)
-	@Authorized( { PrivilegeConstants.VIEW_LOCATIONS })
+	@Authorized({ PrivilegeConstants.VIEW_LOCATIONS })
 	public Integer getCountOfLocations(String nameFragment, Boolean includeRetired);
 }
