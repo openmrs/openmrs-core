@@ -285,7 +285,7 @@ public class PrivilegeConstants {
 	@AddOnStartup(description = "Able to delete patients from programs")
 	public static final String DELETE_PATIENT_PROGRAMS = "Delete Patient Programs";
 	
-	public static final String PURGE_PATIENT_PROGRAMS = "Add Patient Programs";
+	public static final String PURGE_PATIENT_PROGRAMS = "Purge Patient Programs";
 	
 	@AddOnStartup(description = "Able to view the 'Overview' tab on the patient dashboard")
 	public static final String DASHBOARD_OVERVIEW = "Patient Dashboard - View Overview Section";
