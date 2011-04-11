@@ -19,6 +19,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -700,7 +701,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(3, Context.getUserService().getUsers("", null, true).size());
 		Assert.assertEquals(3, Context.getUserService().getUsers(null, null, true).size());
 	}
-	
+		
 	/**
 	 * @see {@link UserService#getUsers(String,List,boolean)}
 	 */
@@ -1094,5 +1095,21 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		u.getPerson().setGender("M");
 		
 		us.saveUser(u, "short");
+	}
+
+	/**
+	 * This is a regression test for TRUNK-2108
+	 * <br/>
+	 * @see UserService#getUsers(String,List,boolean)
+	 * @verifies not fail if roles are searched but name is empty
+	 */
+	@Test
+	public void getUsers_shouldNotFailIfRolesAreSearchedButNameIsEmpty()
+			throws Exception {
+		Role role = new Role("Provider");
+		List<Role> roles = new ArrayList<Role>();
+		roles.add(role);
+		
+		Assert.assertEquals(2, Context.getUserService().getUsers("", roles, true).size());
 	}
 }
