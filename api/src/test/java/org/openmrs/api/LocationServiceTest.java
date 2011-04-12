@@ -909,8 +909,8 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should find object given valid uuid", method = "getLocationTagByUuid(String)")
 	public void getLocationTagByUuid_shouldFindObjectGivenValidUuid() throws Exception {
-		Assert.assertEquals(Integer.valueOf(3),
-		    Context.getLocationService().getLocationTagByUuid("0d0eaea2-47ed-11df-bc8b-001e378eb67e").getLocationTagId());
+		Assert.assertEquals(Integer.valueOf(3), Context.getLocationService().getLocationTagByUuid(
+		    "0d0eaea2-47ed-11df-bc8b-001e378eb67e").getLocationTagId());
 	}
 	
 	/**

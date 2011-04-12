@@ -1184,7 +1184,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should explicitly add false concept as a value_Coded answer", method = "changeConceptFromBooleanToCoded(Concept)")
 	public void changeConceptFromBooleanToCoded_shouldExplicitlyAddFalseConceptAsAValue_CodedAnswer() throws Exception {
 		Concept concept = conceptService.getConcept(18);
-		Collection<ConceptAnswer> answers = concept.getAnswers();
+		Collection<ConceptAnswer> answers = concept.getAnswers(false);
 		boolean falseConceptFound = false;
 		//initially the concept shouldn't present
 		for (ConceptAnswer conceptAnswer : answers) {
@@ -1193,7 +1193,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		}
 		Assert.assertEquals(false, falseConceptFound);
 		conceptService.convertBooleanConceptToCoded(concept);
-		answers = concept.getAnswers();
+		answers = concept.getAnswers(false);
 		for (ConceptAnswer conceptAnswer : answers) {
 			if (conceptAnswer.getAnswerConcept().equals(conceptService.getFalseConcept()))
 				falseConceptFound = true;
@@ -1208,7 +1208,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should explicitly add true concept as a value_Coded answer", method = "changeConceptFromBooleanToCoded(Concept)")
 	public void changeConceptFromBooleanToCoded_shouldExplicitlyAddTrueConceptAsAValue_CodedAnswer() throws Exception {
 		Concept concept = conceptService.getConcept(18);
-		Collection<ConceptAnswer> answers = concept.getAnswers();
+		Collection<ConceptAnswer> answers = concept.getAnswers(false);
 		boolean trueConceptFound = false;
 		for (ConceptAnswer conceptAnswer : answers) {
 			if (conceptAnswer.getAnswerConcept().equals(conceptService.getTrueConcept()))
@@ -1216,7 +1216,7 @@ public class ConceptServiceTest extends BaseContextSensitiveTest {
 		}
 		Assert.assertEquals(false, trueConceptFound);
 		conceptService.convertBooleanConceptToCoded(concept);
-		answers = concept.getAnswers();
+		answers = concept.getAnswers(false);
 		for (ConceptAnswer conceptAnswer : answers) {
 			if (conceptAnswer.getAnswerConcept().equals(conceptService.getTrueConcept()))
 				trueConceptFound = true;

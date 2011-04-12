@@ -69,7 +69,7 @@ public class GenericReasonHandler extends AbstractFieldGenHandler implements Fie
 			List<Concept> possibleReasons = null;
 			
 			if (reasonConcept != null) {
-				Collection<ConceptAnswer> answers = reasonConcept.getAnswers();
+				Collection<ConceptAnswer> answers = reasonConcept.getAnswers(false);
 				for (ConceptAnswer answer : answers) {
 					if (possibleReasons == null)
 						possibleReasons = new ArrayList<Concept>();

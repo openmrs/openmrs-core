@@ -609,7 +609,7 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 		
 		Concept concept = cs.getConcept(21);
 		assertNotNull(concept);
-		assertEquals(2, concept.getAnswers().size());
+		assertEquals(2, concept.getAnswers(false).size());
 	}
 	
 	/**
@@ -639,7 +639,7 @@ public class ConceptFormControllerTest extends BaseWebContextSensitiveTest {
 		
 		Concept concept = cs.getConcept(4);
 		assertNotNull(concept);
-		assertEquals(0, concept.getAnswers().size());
+		assertEquals(0, concept.getAnswers(false).size());
 	}
 	
 	/**
