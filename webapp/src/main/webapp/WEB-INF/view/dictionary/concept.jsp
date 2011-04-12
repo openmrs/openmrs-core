@@ -347,16 +347,18 @@
 			</tr>
 		</c:if>
 		
-		<c:if test="${fn:length(command.formsInUse) > 0}">
-			<tr>
-				<th valign="top"><spring:message code="dictionary.forms" /></th>
-				<td>
-					<c:forEach items="${command.formsInUse}" var="form">
-						<a href="${pageContext.request.contextPath}/admin/forms/formSchemaDesign.form?formId=${form.formId}">${form.name}</a><br/>
-					</c:forEach>
-				</td>
-			</tr>
-		</c:if>
+		<openmrs:hasPrivilege privilege="View Forms">
+			<c:if test="${fn:length(command.formsInUse) > 0}">
+				<tr>
+					<th valign="top"><spring:message code="dictionary.forms" /></th>
+					<td>
+						<c:forEach items="${command.formsInUse}" var="form">
+							<a href="${pageContext.request.contextPath}/admin/forms/formSchemaDesign.form?formId=${form.formId}">${form.name}</a><br/>
+						</c:forEach>
+					</td>
+				</tr>
+			</c:if>
+		</openmrs:hasPrivilege>
 		
 		<tr><td colspan="2"><br/></td></tr>
 		

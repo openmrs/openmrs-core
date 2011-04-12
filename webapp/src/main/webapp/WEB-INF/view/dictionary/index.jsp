@@ -49,15 +49,17 @@
 <a href="<%= request.getContextPath() %>/downloadDictionary.csv"><spring:message code="dictionary.download.link"/></a> <spring:message code="dictionary.download.description"/><br />
 <br />
 
-<c:choose>
-	<c:when test="${conceptsLocked != 'true'}"> 
-		<a href="concept.form"><spring:message code="Concept.add"/></a>
-	</c:when>
-	<c:otherwise>
-		(<spring:message code="Concept.concepts.locked" />)
-	</c:otherwise>
-</c:choose>
-<br /><br />
+<openmrs:hasPrivilege privilege="Manage Concepts">
+	<c:choose>
+		<c:when test="${conceptsLocked != 'true'}"> 
+			<a href="concept.form"><spring:message code="Concept.add"/></a>
+		</c:when>
+		<c:otherwise>
+			(<spring:message code="Concept.concepts.locked" />)
+		</c:otherwise>
+	</c:choose>
+	<br /><br />
+</openmrs:hasPrivilege>
 
 <div>
 	<b class="boxHeader"><spring:message code="Concept.find"/></b>

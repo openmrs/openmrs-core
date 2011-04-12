@@ -52,6 +52,7 @@ import org.openmrs.propertyeditor.ConceptDatatypeEditor;
 import org.openmrs.propertyeditor.ConceptSetsEditor;
 import org.openmrs.propertyeditor.ConceptSourceEditor;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.validator.ConceptValidator;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
@@ -305,19 +306,25 @@ public class ConceptFormController extends SimpleFormController {
 		map.put("tags", cs.getAllConceptNameTags());
 		
 		//get complete class and datatype lists
-		map.put("classes", cs.getAllConceptClasses());
-		map.put("datatypes", cs.getAllConceptDatatypes());
+		if (Context.hasPrivilege(PrivilegeConstants.VIEW_CONCEPT_CLASSES)) {
+			map.put("classes", cs.getAllConceptClasses());
+		}
+		if (Context.hasPrivilege(PrivilegeConstants.VIEW_CONCEPT_DATATYPES)) {
+			map.put("datatypes", cs.getAllConceptDatatypes());
+		}
 		
 		String conceptId = request.getParameter("conceptId");
 		boolean dataTypeReadOnly = false;
-		try {
-			Concept concept = cs.getConcept(Integer.valueOf(conceptId));
-			dataTypeReadOnly = cs.hasAnyObservation(concept);
-			if (concept != null && concept.getDatatype().isBoolean())
-				map.put("isBoolean", true);
-		}
-		catch (NumberFormatException ex) {
-			// nothing to do
+		if (Context.hasPrivilege(PrivilegeConstants.VIEW_OBS)) {
+			try {
+				Concept concept = cs.getConcept(Integer.valueOf(conceptId));
+				dataTypeReadOnly = cs.hasAnyObservation(concept);
+				if (concept != null && concept.getDatatype().isBoolean())
+					map.put("isBoolean", true);
+			}
+			catch (NumberFormatException ex) {
+				// nothing to do
+			}
 		}
 		map.put("dataTypeReadOnly", dataTypeReadOnly);
 		
