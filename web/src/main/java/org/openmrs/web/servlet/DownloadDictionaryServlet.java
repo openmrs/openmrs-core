@@ -101,7 +101,7 @@ public class DownloadDictionaryServlet extends HttpServlet {
 					line += '"' + tmp.trim() + "\",";
 					
 					tmp = "";
-					for (ConceptAnswer answer : c.getAnswers()) {
+					for (ConceptAnswer answer : c.getAnswers(false)) {
 						if (answer.getAnswerConcept() != null)
 							tmp += answer.getAnswerConcept().getName() + "\n";
 						else if (answer.getAnswerDrug() != null)

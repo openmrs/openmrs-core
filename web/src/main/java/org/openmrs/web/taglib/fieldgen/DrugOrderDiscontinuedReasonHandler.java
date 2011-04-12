@@ -56,7 +56,7 @@ public class DrugOrderDiscontinuedReasonHandler extends AbstractFieldGenHandler 
 			List<Concept> possibleReasons = null;
 			
 			if (reasonStopped != null) {
-				Collection<ConceptAnswer> answers = reasonStopped.getAnswers();
+				Collection<ConceptAnswer> answers = reasonStopped.getAnswers(false);
 				for (ConceptAnswer answer : answers) {
 					if (possibleReasons == null)
 						possibleReasons = new ArrayList<Concept>();

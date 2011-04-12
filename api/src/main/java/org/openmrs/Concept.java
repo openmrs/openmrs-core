@@ -194,20 +194,14 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	}
 	
 	/**
-	 * @return Returns the non-retired answers.
-	 * @should not return retired answers
+	 * @return Returns all answers (including retired answers).
+	 * @should return retired and non-retired answers
 	 * @should not return null if no answers defined
 	 */
 	@ElementList
 	public Collection<ConceptAnswer> getAnswers() {
-		Collection<ConceptAnswer> newAnswers = new HashSet<ConceptAnswer>();
-		if (answers != null) {
-			for (ConceptAnswer ca : answers) {
-				if (!ca.getAnswerConcept().isRetired())
-					newAnswers.add(ca);
-			}
-		}
-		return newAnswers;
+		return (answers != null) ? answers : new HashSet<ConceptAnswer>();
+		
 	}
 	
 	/**
@@ -232,9 +226,17 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 	 * @should return actual answers object if given includeRetired is true
 	 */
 	public Collection<ConceptAnswer> getAnswers(boolean includeRetired) {
-		if (!includeRetired)
-			return getAnswers();
-		return answers;
+		if (!includeRetired) {
+			Collection<ConceptAnswer> newAnswers = new HashSet<ConceptAnswer>();
+			if (answers != null) {
+				for (ConceptAnswer ca : answers) {
+					if (!ca.getAnswerConcept().isRetired())
+						newAnswers.add(ca);
+				}
+			}
+			return newAnswers;
+		} else
+			return answers;
 	}
 	
 	/**

@@ -274,7 +274,7 @@ public class DWRConceptService {
 		List<ConceptSearchResult> searchResults = cs.findConceptAnswers(text, locale, concept);
 		
 		List<Drug> drugAnswers = new Vector<Drug>();
-		for (ConceptAnswer conceptAnswer : concept.getAnswers()) {
+		for (ConceptAnswer conceptAnswer : concept.getAnswers(false)) {
 			if (conceptAnswer.getAnswerDrug() != null)
 				drugAnswers.add(conceptAnswer.getAnswerDrug());
 		}
@@ -416,7 +416,7 @@ public class DWRConceptService {
 	public List<ConceptListItem> getAnswersForQuestion(Integer conceptId) {
 		Vector<ConceptListItem> ret = new Vector<ConceptListItem>();
 		Concept c = Context.getConceptService().getConcept(conceptId);
-		Collection<ConceptAnswer> answers = c.getAnswers();
+		Collection<ConceptAnswer> answers = c.getAnswers(false);
 		// TODO: deal with concept answers (e.g. drug) whose answer concept is null. (Not sure if this actually ever happens)
 		Locale locale = Context.getLocale();
 		for (ConceptAnswer ca : answers)

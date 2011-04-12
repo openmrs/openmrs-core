@@ -701,7 +701,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(3, Context.getUserService().getUsers("", null, true).size());
 		Assert.assertEquals(3, Context.getUserService().getUsers(null, null, true).size());
 	}
-		
+	
 	/**
 	 * @see {@link UserService#getUsers(String,List,boolean)}
 	 */
@@ -1096,7 +1096,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 		
 		us.saveUser(u, "short");
 	}
-
+	
 	/**
 	 * This is a regression test for TRUNK-2108
 	 * <br/>
@@ -1104,8 +1104,7 @@ public class UserServiceTest extends BaseContextSensitiveTest {
 	 * @verifies not fail if roles are searched but name is empty
 	 */
 	@Test
-	public void getUsers_shouldNotFailIfRolesAreSearchedButNameIsEmpty()
-			throws Exception {
+	public void getUsers_shouldNotFailIfRolesAreSearchedButNameIsEmpty() throws Exception {
 		Role role = new Role("Provider");
 		List<Role> roles = new ArrayList<Role>();
 		roles.add(role);

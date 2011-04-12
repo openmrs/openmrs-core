@@ -569,7 +569,7 @@ public class HibernateUserDAO implements UserDAO {
 		
 		//Match against the specified roles
 		if (searchOnRoles) {
-			if (criteria.size() > 0){
+			if (criteria.size() > 0) {
 				hql += " and ";
 			}
 			hql += " role in (:roleList)";

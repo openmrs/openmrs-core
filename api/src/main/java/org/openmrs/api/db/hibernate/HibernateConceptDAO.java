@@ -1394,8 +1394,8 @@ public class HibernateConceptDAO implements ConceptDAO {
 		// these are the answers to restrict on
 		List<Concept> answers = new Vector<Concept>();
 		
-		if (answersToConcept != null && answersToConcept.getAnswers() != null) {
-			for (ConceptAnswer conceptAnswer : answersToConcept.getAnswers()) {
+		if (answersToConcept != null && answersToConcept.getAnswers(false) != null) {
+			for (ConceptAnswer conceptAnswer : answersToConcept.getAnswers(false)) {
 				answers.add(conceptAnswer.getAnswerConcept());
 			}
 		}

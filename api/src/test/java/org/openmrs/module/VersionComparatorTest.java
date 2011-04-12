@@ -23,7 +23,7 @@ import org.junit.Test;
  * Tests the {@link VersionComparator} class
  */
 public class VersionComparatorTest {
-
+	
 	/**
 	 * Regression test for TRUNK-1668
 	 * <br/>
@@ -33,8 +33,8 @@ public class VersionComparatorTest {
 	 */
 	@Test
 	public void compare_shouldCompareViaNumericValueNotStringValue() throws Exception {
-		String [] correctStringSet = {"1.1", "1.2", "1.7", "1.10", "1.11", "1.20", "2.1.1", "2.1.9", "2.1.10", "2.1.20"};
-		String [] randomPurmutationSet = {"1.2", "2.1.10", "2.1.20", "1.1", "1.7", "2.1.1", "1.20", "1.10", "2.1.9", "1.11"};
+		String[] correctStringSet = { "1.1", "1.2", "1.7", "1.10", "1.11", "1.20", "2.1.1", "2.1.9", "2.1.10", "2.1.20" };
+		String[] randomPurmutationSet = { "1.2", "2.1.10", "2.1.20", "1.1", "1.7", "2.1.1", "1.20", "1.10", "2.1.9", "1.11" };
 		
 		Arrays.sort(randomPurmutationSet, new VersionComparator());
 		assertTrue("", Arrays.equals(correctStringSet, randomPurmutationSet));
