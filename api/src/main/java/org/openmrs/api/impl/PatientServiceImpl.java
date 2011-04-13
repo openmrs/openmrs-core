@@ -341,9 +341,9 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		if (patient == null)
 			return null;
 		
-		// patient and patientidentifier attributes taken care of by the BaseUnvoidHandler
-		
-		return savePatient(patient);
+		// patient and patientidentifier attributes taken care of by the BaseVoidHandler
+		//call the DAO layer directly to avoid any further AOP around save*
+		return dao.savePatient(patient);
 	}
 	
 	/**
@@ -355,7 +355,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		
 		// patient and patientidentifier attributes taken care of by the BaseUnvoidHandler
 		
-		return savePatient(patient);
+		return dao.savePatient(patient);
 	}
 	
 	/**

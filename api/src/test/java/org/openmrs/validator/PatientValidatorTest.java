@@ -19,12 +19,13 @@ import java.util.Date;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.Patient;
+import org.openmrs.PatientIdentifier;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Tests methods on the {@link PatientValidator} class.
@@ -113,5 +114,21 @@ public class PatientValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(pa, "patient");
 		validator.validate(pa, errors);
 		Assert.assertTrue(errors.hasFieldErrors("voidReason"));
+	}
+	
+	/**
+	 * @see {@link PatientValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail validation if a preferred patient identifier is not chosen", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfAPreferredPatientIdentifierIsNotChosen() throws Exception {
+		Patient pa = Context.getPatientService().getPatient(2);
+		Assert.assertNotNull(pa.getPatientIdentifier());
+		for (PatientIdentifier id : pa.getIdentifiers())
+			id.setPreferred(false);
+		
+		Errors errors = new BindException(pa, "patient");
+		validator.validate(pa, errors);
+		Assert.assertTrue(errors.hasErrors());
 	}
 }
