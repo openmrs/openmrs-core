@@ -77,6 +77,9 @@
 	<c:if test="${param.userId != null}">
 		<input type="hidden" name="userId" value="${param.userId}"/>
 	</c:if>
+	<c:if test="${user.person.personId != null}">
+		<input type="hidden" name="person_id" value="${user.person.personId}"/>
+	</c:if>
 	<c:if test="${createNewPerson}">
 		<input type="hidden" name="createNewPerson" value="true"/>
 	</c:if>
