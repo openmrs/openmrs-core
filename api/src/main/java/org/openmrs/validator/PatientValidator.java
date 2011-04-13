@@ -14,6 +14,7 @@
 package org.openmrs.validator;
 
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 
 import org.apache.commons.lang.StringUtils;
@@ -98,7 +99,11 @@ public class PatientValidator implements Validator {
 		
 		// Make sure they chose a preferred ID
 		Boolean preferredIdentifierChosen = false;
-		for (PatientIdentifier pi : patient.getActiveIdentifiers()) {
+		//Voided patients have only voided identifiers since they were voided with the patient, 
+		//so get all otherwise get the active ones
+		Collection<PatientIdentifier> identifiers = patient.isVoided() ? patient.getIdentifiers() : patient
+		        .getActiveIdentifiers();
+		for (PatientIdentifier pi : identifiers) {
 			if (pi.isPreferred()) {
 				preferredIdentifierChosen = true;
 			}

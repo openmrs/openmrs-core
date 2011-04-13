@@ -415,7 +415,21 @@
 </c:if>
 	
 </form>
-
+<br/>
+<openmrs:hasPrivilege privilege="Delete Patients">
+	<c:if test="${patient.patientId != null && patient.voided == false}">
+	<form action="" method="post">
+		<fieldset>
+			<legend><h4><spring:message code="Patient.void"/></h4></legend>
+			<b><spring:message code="general.reason"/></b>
+			<input type="text" value="" size="50" name="voidReason" />
+			<br/><br/>
+			<input type="submit" value='<spring:message code="Patient.void"/>' name="action"/>
+		</fieldset>
+	</form>	
+	</c:if>
+</openmrs:hasPrivilege>
+	
 <script>
 	
 	var array = new Array(3);
