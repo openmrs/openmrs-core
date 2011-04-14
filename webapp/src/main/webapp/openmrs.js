@@ -448,7 +448,7 @@ function AutoComplete(id, callback, opts) {
     if(opts.placeholder){
         //The value should not contain line feeds or carriage returns.
         var textShown=opts.placeholder.toString().replace(/(\r\n|\n|\r)/gm,"");
-        $j('#' + id).attr('placeholder', textShown);
+        jq.attr('placeholder', textShown);
     }
 }
 
