@@ -44,6 +44,7 @@ import org.openmrs.api.EncounterService;
 import org.openmrs.api.FormService;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.ObsService;
+import org.openmrs.api.OpenmrsService;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PatientSetService;
@@ -1146,5 +1147,14 @@ public class Context {
 	 */
 	public static <T extends Object> List<T> getRegisteredComponents(Class<T> type) {
 		return getServiceContext().getRegisteredComponents(type);
+	}
+	
+	/**
+	 * @see ServiceContext#getModuleOpenmrsServices(String)
+	 * 
+	 * @since 1.9
+	 */
+	public static List<OpenmrsService> getModuleOpenmrsServices(String modulePackage) {
+		return getServiceContext().getModuleOpenmrsServices(modulePackage);
 	}
 }

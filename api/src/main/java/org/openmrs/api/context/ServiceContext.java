@@ -34,6 +34,7 @@ import org.openmrs.api.EncounterService;
 import org.openmrs.api.FormService;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.ObsService;
+import org.openmrs.api.OpenmrsService;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.PatientSetService;
@@ -98,6 +99,14 @@ public class ServiceContext implements ApplicationContextAware {
 	// Advice added to services by this service
 	@SuppressWarnings("unchecked")
 	Map<Class, Set<Advice>> addedAdvice = new HashMap<Class, Set<Advice>>();
+	
+	/**
+	 * Services implementing the OpenmrsService interface for each module.
+	 * 
+	 * @since 1.9
+	 */
+	@SuppressWarnings("unchecked")
+	Map<String, List<OpenmrsService>> moduleOpenmrsServices = new HashMap<String, List<OpenmrsService>>();
 	
 	/**
 	 * The default constructor is private so as to keep only one instance per java vm.
@@ -803,6 +812,12 @@ public class ServiceContext implements ApplicationContextAware {
 		
 		// add this module service to the normal list of services
 		setService(cls, classInstance);
+		
+		//Run onStartup for all services implementing the OpenmrsService interface.
+		if (OpenmrsService.class.isAssignableFrom(classInstance.getClass())) {
+			addModuleOpenmrsService(classString, (OpenmrsService) classInstance);
+			runOpenmrsServiceOnStartup((OpenmrsService) classInstance, classString);
+		}
 	}
 	
 	/**
@@ -898,5 +913,83 @@ public class ServiceContext implements ApplicationContextAware {
 	 */
 	public void setApplicationContext(ApplicationContext applicationContext) {
 		this.applicationContext = applicationContext;
+	}
+	
+	/**
+	 * Adds a module's service implementing the {@link OpenmrsService} interface, to the list.
+	 * 
+	 * @param classString the full name including package for the service class.
+	 * @param openmrsService the service instance.
+	 * @since 1.9
+	 */
+	private void addModuleOpenmrsService(String classString, OpenmrsService openmrsService) {
+		
+		final String PACKAGE_PREFIX = "org.openmrs.module.";
+		
+		//Assuming a naming convention which starts with org.openmrs.module.MODULEID
+		//The logic service violates this in: "org.openmrs.logic.token.TokenService"
+		
+		//Look for the '.' character after the package prefix.
+		int pos = classString.indexOf('.', PACKAGE_PREFIX.length());
+		if (pos == -1 || !classString.contains(PACKAGE_PREFIX)) {
+			//TODO Should i just have special handling for the logic services? 
+			//May be not because we the logic service may not need to be shut down being a core module
+			//and yet this storing of module services is used only when a module is stopping.
+			log.warn(classString + " does not follow module naming convention.");
+			return;
+		}
+		
+		//The module package should end just before the '.' character which is after the module id.
+		String modulePackage = classString.substring(0, pos);
+		
+		List<OpenmrsService> serviceList = moduleOpenmrsServices.get(modulePackage);
+		if (serviceList == null) {
+			serviceList = new ArrayList<OpenmrsService>();
+			moduleOpenmrsServices.put(modulePackage, serviceList);
+		}
+		
+		serviceList.add(openmrsService);
+		
+	}
+	
+	/**
+	 * Calls the {@link OpenmrsService#onStartup()} method for an instance implementing the
+	 * {@link OpenmrsService} interface.
+	 * 
+	 * @param openmrsService instance implementing the {@link OpenmrsService} interface.
+	 * @param classString the full instance class name including the package name.
+	 * @since 1.9
+	 */
+	private void runOpenmrsServiceOnStartup(final OpenmrsService openmrsService, final String classString) {
+		new Thread() {
+			
+			@Override
+			public void run() {
+				try {
+					synchronized (refreshingContext) {
+						//Need to wait for application context to finish refreshing otherwise we get into trouble.
+						refreshingContext.wait();
+					}
+					
+					Daemon.runStartupForService(openmrsService);
+				}
+				catch (InterruptedException e) {
+					log.warn("Refresh lock was interrupted while waiting to run OpenmrsService.onStartup() for "
+					        + classString, e);
+				}
+			}
+		}.start();
+	}
+	
+	/**
+	 * Gets a list of services implementing the {@link OpenmrsService} interface, for a given
+	 * module.
+	 * 
+	 * @param modulePackage the module's package name.
+	 * @return the list of service instances.
+	 * @since 1.9
+	 */
+	public List<OpenmrsService> getModuleOpenmrsServices(String modulePackage) {
+		return moduleOpenmrsServices.get(modulePackage);
 	}
 }
