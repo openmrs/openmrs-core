@@ -37,8 +37,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Privilege;
-import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
+import org.openmrs.api.OpenmrsService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.Daemon;
 import org.openmrs.module.Extension.MEDIA_TYPE;
@@ -905,6 +905,14 @@ public class ModuleFactory {
 				}
 				catch (Throwable t) {
 					log.warn("Error while getting extensions from module: " + moduleId, t);
+				}
+			}
+			
+			//Run the onShutdown() method for openmrs services in this module.
+			List<OpenmrsService> services = Context.getModuleOpenmrsServices(modulePackage);
+			if (services != null) {
+				for (OpenmrsService service : services) {
+					service.onShutdown();
 				}
 			}
 			

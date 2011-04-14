@@ -15,6 +15,7 @@ package org.openmrs.api.context;
 
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.APIException;
+import org.openmrs.api.OpenmrsService;
 import org.openmrs.module.Module;
 import org.openmrs.module.ModuleException;
 import org.openmrs.module.ModuleFactory;
@@ -141,8 +142,8 @@ public class Daemon {
 	
 	/**
 	 * Call this method if you are inside a Daemon thread (for example in a Module activator or a
-	 * scheduled task) and you want to start up a new parallel Daemon thread.
-	 * You may only call this method from a Daemon thread.
+	 * scheduled task) and you want to start up a new parallel Daemon thread. You may only call this
+	 * method from a Daemon thread.
 	 * 
 	 * @param runnable what to run in a new thread
 	 * @return the newly spawned {@link Thread}
@@ -188,6 +189,52 @@ public class Daemon {
 	}
 	
 	/**
+	 * Calls the {@link OpenmrsService#onStartup()} method, as a daemon, for an instance
+	 * implementing the {@link OpenmrsService} interface.
+	 * 
+	 * @param openmrsService instance implementing the {@link OpenmrsService} interface.
+	 * @since 1.9
+	 */
+	public static void runStartupForService(final OpenmrsService service) throws ModuleException {
+		
+		DaemonThread onStartupThread = new DaemonThread() {
+			
+			@Override
+			public void run() {
+				isDaemonThread.set(true);
+				try {
+					Context.openSession();
+					service.onStartup();
+				}
+				catch (Throwable t) {
+					exceptionThrown = t;
+				}
+				finally {
+					Context.closeSession();
+				}
+			}
+		};
+		
+		onStartupThread.start();
+		
+		// wait for the "onStartup" thread to finish
+		try {
+			onStartupThread.join();
+		}
+		catch (InterruptedException e) {
+			// ignore
+			e.printStackTrace();
+		}
+		
+		if (onStartupThread.exceptionThrown != null) {
+			if (onStartupThread.exceptionThrown instanceof ModuleException)
+				throw (ModuleException) onStartupThread.exceptionThrown;
+			else
+				throw new ModuleException("Unable to run onStartup() method as Daemon", onStartupThread.exceptionThrown);
+		}
+	}
+	
+	/**
 	 * Thread class used by the {@link Daemon#startModule(Module)} and
 	 * {@link Daemon#executeScheduledTask(Task)} methods so that the returned object and the
 	 * exception thrown can be returned to calling class
@@ -204,5 +251,4 @@ public class Daemon {
 		 */
 		protected Throwable exceptionThrown = null;
 	}
-	
 }
