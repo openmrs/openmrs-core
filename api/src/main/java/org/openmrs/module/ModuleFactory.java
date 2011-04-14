@@ -37,6 +37,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Privilege;
+import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.Daemon;
@@ -916,6 +917,21 @@ public class ModuleFactory {
 			catch (Throwable t) {
 				log.warn("Unable to call module's Activator.shutdown() method", t);
 			}
+			
+			//Since extensions are loaded by the module class loader which is about to be disposed,
+			//we need to clear them, else we shall never be able to unload the class loader until
+			//when we unload the module, hence resulting into two problems:
+			// 1) Memory leakage for start/stop module.
+			// 2) Calls to Context.getService(Service.class) which are made within these extensions 
+			//	  will throw APIException("Service not found: ") because their calls to Service.class
+			//    will pass in a Class from the old module class loader (which loaded them) yet the
+			//    ServiceContext will have new services from a new module class loader.
+			//
+			//Same thing applies to activator, moduleActivator and AdvicePoint classInstance.
+			mod.getExtensions().clear();
+			mod.setActivator(null);
+			mod.setModuleActivator(null);
+			mod.disposeAdvicePointsClassInstance();
 			
 			ModuleClassLoader cl = removeClassLoader(mod);
 			if (cl != null) {

@@ -141,12 +141,14 @@ public final class Module {
 	@Deprecated
 	public Activator getActivator() {
 		try {
-			ModuleClassLoader classLoader = ModuleFactory.getModuleClassLoader(this);
-			if (classLoader == null)
-				throw new ModuleException("The classloader is null", getModuleId());
-			
-			Class<?> c = classLoader.loadClass(getActivatorName());
-			setActivator((Activator) c.newInstance());
+			if (activator == null) {
+				ModuleClassLoader classLoader = ModuleFactory.getModuleClassLoader(this);
+				if (classLoader == null)
+					throw new ModuleException("The classloader is null", getModuleId());
+				
+				Class<?> c = classLoader.loadClass(getActivatorName());
+				setActivator((Activator) c.newInstance());
+			}
 		}
 		catch (ClassNotFoundException e) {
 			throw new ModuleException("Unable to load/find activator: '" + getActivatorName() + "'", name, e);
@@ -173,14 +175,16 @@ public final class Module {
 	 */
 	public ModuleActivator getModuleActivator() {
 		try {
-			ModuleClassLoader classLoader = ModuleFactory.getModuleClassLoader(this);
-			if (classLoader == null)
-				throw new ModuleException("The classloader is null", getModuleId());
-			
-			Class<?> c = classLoader.loadClass(getActivatorName());
-			Object o = c.newInstance();
-			if (ModuleActivator.class.isAssignableFrom(o.getClass()))
-				setModuleActivator((ModuleActivator) o);
+			if (moduleActivator == null) {
+				ModuleClassLoader classLoader = ModuleFactory.getModuleClassLoader(this);
+				if (classLoader == null)
+					throw new ModuleException("The classloader is null", getModuleId());
+				
+				Class<?> c = classLoader.loadClass(getActivatorName());
+				Object o = c.newInstance();
+				if (ModuleActivator.class.isAssignableFrom(o.getClass()))
+					setModuleActivator((ModuleActivator) o);
+			}
 			
 		}
 		catch (ClassNotFoundException e) {
@@ -712,4 +716,12 @@ public final class Module {
 		return moduleId;
 	}
 	
+	public void disposeAdvicePointsClassInstance() {
+		if (advicePoints == null)
+			return;
+		
+		for (AdvicePoint advicePoint : advicePoints) {
+			advicePoint.disposeClassInstance();
+		}
+	}
 }
