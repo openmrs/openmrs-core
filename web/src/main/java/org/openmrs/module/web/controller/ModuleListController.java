@@ -131,6 +131,11 @@ public class ModuleListController extends SimpleFormController {
 								Module existingModule = ModuleFactory.getModuleById(tmpModule.getModuleId());
 								if (existingModule != null) {
 									dependentModulesStopped = ModuleFactory.stopModule(existingModule, false, true); // stop the module with these parameters so that mandatory modules can be upgraded
+									
+									for(Module depMod : dependentModulesStopped){
+										WebModuleUtil.stopModule(depMod, getServletContext());
+									}
+									
 									WebModuleUtil.stopModule(existingModule, getServletContext());
 									ModuleFactory.unloadModule(existingModule);
 								}
@@ -265,6 +270,8 @@ public class ModuleListController extends SimpleFormController {
 	
 	@Override
 	protected Map<String, Object> referenceData(HttpServletRequest request) throws Exception {
+		ClassLoader cl = Thread.currentThread().getContextClassLoader();
+		
 		Map<String, Object> map = new HashMap<String, Object>();
 		MessageSourceAccessor msa = getMessageSourceAccessor();
 		
