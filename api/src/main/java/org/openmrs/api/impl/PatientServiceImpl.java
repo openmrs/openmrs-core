@@ -123,6 +123,9 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 			Context.requirePrivilege(PrivilegeConstants.ADD_PATIENTS);
 		else
 			Context.requirePrivilege(PrivilegeConstants.EDIT_PATIENTS);
+		if (patient.isVoided()) {
+			Context.requirePrivilege(PrivilegeConstants.DELETE_PATIENTS);
+		}
 		
 		if (!patient.isVoided()) {
 			checkPatientIdentifiers(patient);
