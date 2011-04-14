@@ -205,6 +205,36 @@ function hotkeys(event) {
 var numberOfClonedElements = {};
 
 /**
+ * Clone the synonym text field element given by the id and put the newly cloned
+ * element right before said id. Also it checks whether do need to show 
+ * preferred label and radio button
+ * 
+ * 
+ * @param id 
+ *                      the string id of the element to clone
+ * @param initialSizeOfClonedSiblings 
+ *                      integer number of other objects
+ * @param inputNamePrefix 
+ *                      string to prepend to all input names in the cloned element
+ * @param preferredContainerId 
+ *                      the string with id of preferred elements group container
+ */
+function cloneSynonymElement(id, initialSizeOfClonedSiblings, inputNamePrefix, preferredContainerId) {
+	// simply cloning of synonym field element
+	cloneElement(id, initialSizeOfClonedSiblings, inputNamePrefix);
+	// try to make preferred radio button and label visible
+	// in case of adding new text field
+	if (preferredContainerId != null) {
+		// makes group of preferred elements visible in case if it was hidden
+		var preferredContainer = document.getElementById(preferredContainerId);
+		for (var i = 0; i < preferredContainer.children.length; i++) {
+			if (preferredContainer.children[i].style.visibility == "hidden")
+				preferredContainer.children[i].style.visibility = "visible";
+		}		
+	}	
+}
+
+/**
  * Clone the element given by the id and put the newly cloned
  * element right before said id.
  * 
@@ -213,9 +243,12 @@ var numberOfClonedElements = {};
  * 
  * The iteration will start at (int)initialSizeOfClonedSiblings.
  * 
- * @param id the string id of the element to clone
- * @param initialSizeOfClonedSiblings integer number of other objects
- * @param inputNamePrefix string to prepend to all input names in the cloned element
+ * @param id 
+ *                      the string id of the element to clone
+ * @param initialSizeOfClonedSiblings 
+ *                      integer number of other objects
+ * @param inputNamePrefix 
+ *                      string to prepend to all input names in the cloned element
  */
 function cloneElement(id, initialSizeOfClonedSiblings, inputNamePrefix) {
 	if (numberOfClonedElements[id] != null) {
@@ -238,13 +271,66 @@ function cloneElement(id, initialSizeOfClonedSiblings, inputNamePrefix) {
 	clone.id = "";
 	elementToClone.parentNode.insertBefore(clone, elementToClone);
 	clone.style.display = "";
-	
+
 }
 
+/**
+ * Handles synonym field deleting and update visibility of 
+ * preferred concept name radio button
+ *
+ * @param btn 
+ *           the source object of event, that use it handler
+ * @param key
+ *           the key object for receiving amount of existing synonyms
+ *           for specified concept name
+ * @param preferredContainerId 
+ *           the string with id of preferred label container element
+ * @param amount 
+ *           number of existing synonym's names in case of removing existing one
+ *           or null, if removing new synonym name
+ * @param checkBoxId 
+ *           the id of the checkbox to mark as checked
+*/
+function removeSynonymElement(btn, key, preferredContainerId, amount, checkBoxId) {
+	// we need to set number of existing elements if it's null
+	if (numberOfClonedElements[key] == null)
+		numberOfClonedElements[key] = amount - 1;
+
+	if (checkBoxId != null) {
+		// we need to process already existing 
+		// synonym name in special way
+		voidName(btn, checkBoxId);
+	} else {
+		// as we are removing new synonym
+		// we should remove synonym field element
+		removeParentElement(btn);
+	}
+		
+	// try to make preferred radio button unvisible
+	// in case of deleting all its synonyms
+	if (preferredContainerId != null) {
+		if (numberOfClonedElements[key] == 0) {
+			// makes group of preferred elements invisible in case if it was visible
+			var preferrContainer = document.getElementById(preferredContainerId);
+			for (var i = 0; i < preferrContainer.children.length; i++) {
+				if (preferrContainer.children[i].style.visibility == "visible")
+					preferrContainer.children[i].style.visibility = "hidden";
+			}
+		}
+		numberOfClonedElements[key]--;
+	}
+}
+
+/**
+ * Handles removing of child element from parent one. It can be used when deleting new synonym field or
+ * concept mapping field or concept index term field. 
+ *
+ * @param btn 
+ *           the source object of event, that use it handler
+*/
 function removeParentElement(btn) {
 	btn.parentNode.parentNode.removeChild(btn.parentNode);
 }
-
 
 /**
  * Calls the server via ajax to convert the concept datatype from boolean to coded

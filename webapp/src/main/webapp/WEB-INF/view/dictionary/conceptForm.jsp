@@ -96,9 +96,16 @@
 	.help_icon_top{
 		vertical-align: top;
 	}
-	#preferredLabel{
-		padding-left: 345px; padding-top:10px;
-	}	
+	
+	#containerTable{
+		margin-left: 0px;
+		margin-right: 0px;
+		margin-top: 0px;
+		margin-bottom: 0px;
+		valign: center;
+		height: 42px;
+	}
+	
 </style>
 
 <c:choose>
@@ -183,28 +190,42 @@
 		</td>
 	</tr>
 	<tr class="localeSpecific">
-		<td style="visibility: hidden">&nbsp;</td>
-		<td id="preferredLabel">
-			<spring:message code="Concept.name.localePreferred" /> 
-			<img class="help_icon" src="${pageContext.request.contextPath}/images/help.gif" border="0" title="<spring:message code="Concept.name.localePreferred.help"/>" />
-		</td>
-	</tr>
-	<tr class="localeSpecific">
 		<th valign="bottom">
 			<spring:message code="Concept.fullySpecifiedName" /> 
 			<img class="help_icon" src="${pageContext.request.contextPath}/images/help.gif" border="0" title="<spring:message code="Concept.fullySpecified.help"/>"/>
 		</th>
 		<c:forEach items="${command.locales}" var="loc">
-			<td class="${loc}">				
-				<spring:bind path="command.namesByLocale[${loc}].name">
-				<input type="text" name="${status.expression}" value="${status.value}" id="${status.expression}" class="largeWidth"  onchange="setRadioValue(this, 'fullySpecPreferred[${loc}]')" />
-				</spring:bind>
-				<spring:bind path="command.preferredNamesByLocale[${loc}]" ignoreNestedPath="true">			
-				<input id="fullySpecPreferred[${loc}]" type="radio" name="${status.expression}" value="${command.namesByLocale[loc].name}" <c:if test="${command.namesByLocale[loc].localePreferred}">checked=checked</c:if>  />
-				</spring:bind>
-				<spring:bind path="command.namesByLocale[${loc}].name">
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-				</spring:bind>					
+			<td class="${loc}" style = "padding: 0px 0px 0px 0px;" >	
+				<table id = "containerTable[${loc}]">
+					<tr>
+						<td valign="bottom" >
+								<spring:bind path="command.namesByLocale[${loc}].name">
+								<input type="text" name="${status.expression}" value="${status.value}" id="${status.expression}" class="largeWidth" onchange="setRadioValue(this, 'fullySpecPreferred[${loc}]')" />
+								</spring:bind>
+						</td>
+						<!-- belown code displays (radio button, help icon and label) as a completed preffered group -->
+						<td id="preferredContainer[${loc}]">
+							<span 
+								<c:if test="${fn:length(command.synonymsByLocale[loc]) > 0}">style = "visibility: visible"</c:if> 
+								<c:if test="${fn:length(command.synonymsByLocale[loc]) == 0}">style = "visibility: hidden"</c:if>>
+								<spring:message code="Concept.name.localePreferred" /> 
+							</span>
+							<img class="help_icon" src="${pageContext.request.contextPath}/images/help.gif" border="0" 
+								<c:if test="${fn:length(command.synonymsByLocale[loc]) > 0}">style = "visibility: visible"</c:if>
+								<c:if test="${fn:length(command.synonymsByLocale[loc]) == 0}">style = "visibility: hidden"</c:if> title="<spring:message code="Concept.name.localePreferred.help"/>" />
+							<br />
+							<spring:bind path="command.preferredNamesByLocale[${loc}]" ignoreNestedPath="true">			
+							<input id="fullySpecPreferred[${loc}]" type="radio" name="${status.expression}" value="${command.namesByLocale[loc].name}"  
+								<c:if test="${command.namesByLocale[loc].localePreferred}">checked=checked</c:if>
+								<c:if test="${fn:length(command.synonymsByLocale[loc]) > 0}">style = "visibility: visible"</c:if>
+								<c:if test="${fn:length(command.synonymsByLocale[loc]) == 0}">style = "visibility: hidden"</c:if>/>
+							</spring:bind>
+							<spring:bind path="command.namesByLocale[${loc}].name">
+							<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+							</spring:bind>
+						</td>
+					</tr>
+				</table>
 			</td>
 		</c:forEach>
 	</tr>
@@ -228,10 +249,10 @@
 							</spring:bind>
 							<!-- If this was a new synonym that failed validation, it can be removed without a void reason  -->
 							<c:if test="${command.synonymsByLocale[loc][varStatus.index].conceptNameId == null}">
-							<input type="button" value='<spring:message code="general.remove"/>' class="smallButton" onClick="removeParentElement(this)"/>							
+							<input type="button" value='<spring:message code="general.remove"/>' class="smallButton" onClick="removeSynonymElement(this, 'newConceptSynonym-${loc}', 'preferredContainer[${loc}]', '${fn:length(command.synonymsByLocale[loc])}', null)"/>							
 							</c:if>	
 							<c:if test="${command.synonymsByLocale[loc][varStatus.index].conceptNameId != null}">
-							<input type="button" value='<spring:message code="general.remove"/>' class="smallButton" onClick="voidName(this, 'synonymsByLocale[${loc}][${varStatus.index}].isVoided')"/>
+							<input type="button" value='<spring:message code="general.remove"/>' class="smallButton" onClick="removeSynonymElement(this, 'newConceptSynonym-${loc}', 'preferredContainer[${loc}]', '${fn:length(command.synonymsByLocale[loc])}', 'synonymsByLocale[${loc}][${varStatus.index}].isVoided')"/>
 							</c:if>
 							<spring:bind path="name">
 							<c:if test="${status.errorMessage != ''}">
@@ -248,10 +269,10 @@
 				<div id="newConceptSynonym-${loc}" style="display: none">
 					<input type="text" name="[x].name" value="" class="largeWidth" onchange="setCloneRadioValue(this)">
 					<input type="radio" name="preferredNamesByLocale[${loc}]" value="" />
-					<input type="button" value='<spring:message code="general.remove"/>' class="smallButton" onClick="removeParentElement(this)" />
+					<input type="button" value='<spring:message code="general.remove"/>' class="smallButton" onClick="removeSynonymElement(this, 'newConceptSynonym-${loc}', 'preferredContainer[${loc}]', null, null)" />
 				</div>
 				<input type="button" value='<spring:message code="Concept.synonym.add"/>' class="smallButton" 
-				       onClick="cloneElement('newConceptSynonym-${loc}', ${fn:length(command.synonymsByLocale[loc])}, 'synonymsByLocale[${loc}]')" />				
+				       onClick="cloneSynonymElement('newConceptSynonym-${loc}', ${fn:length(command.synonymsByLocale[loc])}, 'synonymsByLocale[${loc}]', 'preferredContainer[${loc}]')" />				
 			</td>			
 		</c:forEach>
 	</tr>
