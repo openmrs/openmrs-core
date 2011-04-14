@@ -19,8 +19,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
 import org.junit.Assert;
@@ -252,6 +256,38 @@ public class ObsTest {
 		Obs obs = new Obs();
 		obs.setValueNumeric(24.8);
 		Assert.assertNull(obs.getValueAsBoolean());
+	}
+	
+	@Test
+	@Verifies(value = "should return non precise values for NumericConcepts", method = "getValueAsString(Locale)")
+	public void getValueAsString_shouldReturnNonPreciseValuesForNumericConcepts() throws Exception {
+		Obs obs = new Obs();
+		obs.setValueNumeric(25.125);
+		ConceptNumeric cn = new ConceptNumeric();
+		ConceptDatatype cdt = new ConceptDatatype();
+		cdt.setHl7Abbreviation("NM");
+		cn.setDatatype(cdt);
+		cn.setPrecise(false);
+		obs.setConcept(cn);
+		String str = "25";
+		Assert.assertEquals(str, obs.getValueAsString(Locale.US));
+	}
+	
+	@Test
+	@Verifies(value = "should return proper DateFormat", method = "getValueAsString()")
+	public void getValueAsString_shouldReturnProperDateFormat() throws Exception {
+		Obs obs = new Obs();
+		obs.setValueDatetime(new Date());
+		Concept cn = new Concept();
+		ConceptDatatype cdt = new ConceptDatatype();
+		cdt.setHl7Abbreviation("DT");
+		cn.setDatatype(cdt);
+		obs.setConcept(cn);
+		
+		Date utilDate = new Date();
+		DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.SHORT, Locale.US);
+		String dateString = dateFormat.format(utilDate);
+		Assert.assertEquals(dateString, obs.getValueAsString(Locale.US));
 	}
 	
 	/**

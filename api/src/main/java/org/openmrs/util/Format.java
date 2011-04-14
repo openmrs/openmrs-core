@@ -17,9 +17,10 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.DateFormat;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-
+import java.text.DateFormat;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
@@ -73,10 +74,10 @@ public class Format {
 			dateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, locale);
 		else if (type == FORMAT_TYPE.TIME)
 			dateFormat = DateFormat.getTimeInstance(DateFormat.MEDIUM, locale);
-		else
+		else {
 			//if (type == FORMAT_TYPE.DATE) (default)
-			dateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM, locale);
-		
+			dateFormat = DateFormat.getDateInstance(DateFormat.SHORT, locale);
+		}
 		return date == null ? "" : dateFormat.format(date);
 	}
 	

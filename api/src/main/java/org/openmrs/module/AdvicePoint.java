@@ -84,7 +84,7 @@ public class AdvicePoint {
 		return module;
 	}
 	
-	public void disposeClassInstance(){
+	public void disposeClassInstance() {
 		classInstance = null;
 	}
 }
