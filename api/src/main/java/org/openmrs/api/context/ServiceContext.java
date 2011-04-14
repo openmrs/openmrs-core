@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.aopalliance.aop.Advice;
@@ -101,12 +102,13 @@ public class ServiceContext implements ApplicationContextAware {
 	Map<Class, Set<Advice>> addedAdvice = new HashMap<Class, Set<Advice>>();
 	
 	/**
-	 * Services implementing the OpenmrsService interface for each module.
+	 * Services implementing the OpenmrsService interface for each module. The map is keyed by the
+	 * full class name including package.
 	 * 
 	 * @since 1.9
 	 */
 	@SuppressWarnings("unchecked")
-	Map<String, List<OpenmrsService>> moduleOpenmrsServices = new HashMap<String, List<OpenmrsService>>();
+	Map<String, OpenmrsService> moduleOpenmrsServices = new HashMap<String, OpenmrsService>();
 	
 	/**
 	 * The default constructor is private so as to keep only one instance per java vm.
@@ -815,7 +817,7 @@ public class ServiceContext implements ApplicationContextAware {
 		
 		//Run onStartup for all services implementing the OpenmrsService interface.
 		if (OpenmrsService.class.isAssignableFrom(classInstance.getClass())) {
-			addModuleOpenmrsService(classString, (OpenmrsService) classInstance);
+			moduleOpenmrsServices.put(classString, (OpenmrsService) classInstance);
 			runOpenmrsServiceOnStartup((OpenmrsService) classInstance, classString);
 		}
 	}
@@ -916,43 +918,6 @@ public class ServiceContext implements ApplicationContextAware {
 	}
 	
 	/**
-	 * Adds a module's service implementing the {@link OpenmrsService} interface, to the list.
-	 * 
-	 * @param classString the full name including package for the service class.
-	 * @param openmrsService the service instance.
-	 * @since 1.9
-	 */
-	private void addModuleOpenmrsService(String classString, OpenmrsService openmrsService) {
-		
-		final String PACKAGE_PREFIX = "org.openmrs.module.";
-		
-		//Assuming a naming convention which starts with org.openmrs.module.MODULEID
-		//The logic service violates this in: "org.openmrs.logic.token.TokenService"
-		
-		//Look for the '.' character after the package prefix.
-		int pos = classString.indexOf('.', PACKAGE_PREFIX.length());
-		if (pos == -1 || !classString.contains(PACKAGE_PREFIX)) {
-			//TODO Should i just have special handling for the logic services? 
-			//May be not because we the logic service may not need to be shut down being a core module
-			//and yet this storing of module services is used only when a module is stopping.
-			log.warn(classString + " does not follow module naming convention.");
-			return;
-		}
-		
-		//The module package should end just before the '.' character which is after the module id.
-		String modulePackage = classString.substring(0, pos);
-		
-		List<OpenmrsService> serviceList = moduleOpenmrsServices.get(modulePackage);
-		if (serviceList == null) {
-			serviceList = new ArrayList<OpenmrsService>();
-			moduleOpenmrsServices.put(modulePackage, serviceList);
-		}
-		
-		serviceList.add(openmrsService);
-		
-	}
-	
-	/**
 	 * Calls the {@link OpenmrsService#onStartup()} method for an instance implementing the
 	 * {@link OpenmrsService} interface.
 	 * 
@@ -990,6 +955,14 @@ public class ServiceContext implements ApplicationContextAware {
 	 * @since 1.9
 	 */
 	public List<OpenmrsService> getModuleOpenmrsServices(String modulePackage) {
-		return moduleOpenmrsServices.get(modulePackage);
+		List<OpenmrsService> services = new ArrayList<OpenmrsService>();
+		
+		for (Entry<String, OpenmrsService> entry : moduleOpenmrsServices.entrySet()) {
+			if (entry.getKey().startsWith(modulePackage)) {
+				services.add(entry.getValue());
+			}
+		}
+		
+		return services;
 	}
 }
