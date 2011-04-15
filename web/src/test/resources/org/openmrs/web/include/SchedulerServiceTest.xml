@@ -1,0 +1,4 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>  
+  <scheduler_task_config task_config_id="1" name="Hello World Task" description="Hello World Test Task" schedulable_class="org.openmrs.scheduler.tasks.HelloWorldTask" repeat_interval="3600" started="0" start_on_startup="0" uuid="29754c38-6711-11e0-9d74-18a905e044dc" created_by="1" date_created="2006-07-18 11:03:31.0" />
+</dataset>
