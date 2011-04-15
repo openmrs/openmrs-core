@@ -132,7 +132,7 @@ public class ModuleListController extends SimpleFormController {
 								if (existingModule != null) {
 									dependentModulesStopped = ModuleFactory.stopModule(existingModule, false, true); // stop the module with these parameters so that mandatory modules can be upgraded
 									
-									for(Module depMod : dependentModulesStopped){
+									for (Module depMod : dependentModulesStopped) {
 										WebModuleUtil.stopModule(depMod, getServletContext());
 									}
 									

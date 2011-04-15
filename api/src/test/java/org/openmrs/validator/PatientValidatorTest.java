@@ -124,6 +124,24 @@ public class PatientValidatorTest extends BaseContextSensitiveTest {
 	public void validate_shouldFailValidationIfAPreferredPatientIdentifierIsNotChosen() throws Exception {
 		Patient pa = Context.getPatientService().getPatient(2);
 		Assert.assertNotNull(pa.getPatientIdentifier());
+		//set all identifiers to be non-preferred
+		for (PatientIdentifier id : pa.getIdentifiers())
+			id.setPreferred(false);
+		
+		Errors errors = new BindException(pa, "patient");
+		validator.validate(pa, errors);
+		Assert.assertTrue(errors.hasErrors());
+	}
+	
+	/**
+	 * @see {@link PatientValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail validation if a preferred patient identifier is not chosen for voided patients", method = "validate(Object,Errors)")
+	public void validate_shouldFailValidationIfAPreferredPatientIdentifierIsNotChosenForVoidedPatients() throws Exception {
+		Patient pa = Context.getPatientService().getPatient(999);
+		Assert.assertTrue(pa.isVoided());//sanity check
+		Assert.assertNotNull(pa.getPatientIdentifier());
 		for (PatientIdentifier id : pa.getIdentifiers())
 			id.setPreferred(false);
 		

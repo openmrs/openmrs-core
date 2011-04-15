@@ -443,10 +443,14 @@ public class PatientFormController extends PersonFormController {
 			} else if (action.equals(msa.getMessage("Patient.void"))) {
 				String voidReason = request.getParameter("voidReason");
 				if (StringUtils.isBlank(voidReason))
-					voidReason = msa.getMessage("PatientForm.default.voidReason", null, "Voided from patient form",
-					    Context.getLocale());
+					voidReason = msa.getMessage("PatientForm.default.voidReason", null, "Voided from patient form", Context
+					        .getLocale());
 				ps.voidPatient(patient, voidReason);
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Patient.voided");
+				return new ModelAndView(new RedirectView(getSuccessView() + "?patientId=" + patient.getPatientId()));
+			} else if (action.equals(msa.getMessage("Patient.unvoid"))) {
+				ps.unvoidPatient(patient);
+				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Patient.unvoided");
 				return new ModelAndView(new RedirectView(getSuccessView() + "?patientId=" + patient.getPatientId()));
 			} else {
 				//boolean isNew = (patient.getPatientId() == null);
@@ -580,7 +584,8 @@ public class PatientFormController extends PersonFormController {
 							}
 						}
 					} else {
-						log.debug("Cause of death is null - should not have gotten here without throwing an error on the form.");
+						log
+						        .debug("Cause of death is null - should not have gotten here without throwing an error on the form.");
 					}
 					
 				}

@@ -21,24 +21,36 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.Encounter;
 import org.openmrs.Obs;
+import org.openmrs.Order;
 import org.openmrs.Patient;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 
-public class PatientVoidHandlerTest extends BaseContextSensitiveTest {
+/**
+ * Contains the tests for the {@link PatientDataVoidHandler}
+ */
+public class PatientDataVoidHandlerTest extends BaseContextSensitiveTest {
 	
 	/**
-	 * @see {@link PatientVoidHandler#handle(Patient,User,Date,String)}
+	 * @see {@link PatientDataVoidHandler#handle(Patient,User,Date,String)}
 	 */
 	@Test
-	@Verifies(value = "should void the encounters and observations for the patient", method = "handle(Patient,User,Date,String)")
-	public void handle_shouldVoidTheEncountersAndObservationsForThePatient() throws Exception {
+	@Verifies(value = "should void the orders encounters and observations associated with the patient", method = "handle(Patient,User,Date,String)")
+	public void handle_shouldVoidTheOrdersEncountersAndObservationsAssociatedWithThePatient() throws Exception {
 		Patient patient = Context.getPatientService().getPatient(7);
 		Assert.assertFalse(patient.isVoided());
+		
 		List<Encounter> encounters = Context.getEncounterService().getEncountersByPatient(patient);
 		List<Obs> observations = Context.getObsService().getObservationsByPerson(patient);
+		List<Order> orders = Context.getOrderService().getOrdersByPatient(patient);
+		
+		//we should have some unvoided encounters, obs and orders for the test to be concrete
+		Assert.assertTrue(CollectionUtils.isNotEmpty(encounters));
+		Assert.assertTrue(CollectionUtils.isNotEmpty(observations));
+		Assert.assertTrue(CollectionUtils.isNotEmpty(orders));
+		
 		//check that fields to be set by the handler are initially null 
 		for (Encounter encounter : encounters) {
 			Assert.assertNull(encounter.getDateVoided());
@@ -50,13 +62,13 @@ public class PatientVoidHandlerTest extends BaseContextSensitiveTest {
 			Assert.assertNull(obs.getVoidedBy());
 			Assert.assertNull(obs.getVoidReason());
 		}
-		//we should have some unvoided encounters and obs for the test to be concrete
-		Assert.assertTrue(CollectionUtils.isNotEmpty(encounters));
-		Assert.assertTrue(CollectionUtils.isNotEmpty(observations));
-		Assert.assertFalse(patient.isVoided());
+		for (Order order : orders) {
+			Assert.assertNull(order.getDateVoided());
+			Assert.assertNull(order.getVoidedBy());
+			Assert.assertNull(order.getVoidReason());
+		}
 		
-		patient.setVoided(true);
-		new PatientVoidHandler().handle(patient, new User(1), new Date(), "voidReason");
+		new PatientDataVoidHandler().handle(patient, new User(1), new Date(), "voidReason");
 		
 		//all encounters void related fields should have been set
 		for (Encounter encounter : encounters) {
@@ -72,23 +84,21 @@ public class PatientVoidHandlerTest extends BaseContextSensitiveTest {
 			Assert.assertNotNull(obs.getVoidedBy());
 			Assert.assertNotNull(obs.getVoidReason());
 		}
+		//all order void related fields should have been set
+		for (Order order : orders) {
+			Assert.assertTrue(order.isVoided());
+			Assert.assertNotNull(order.getDateVoided());
+			Assert.assertNotNull(order.getVoidedBy());
+			Assert.assertNotNull(order.getVoidReason());
+		}
 		
-		//refresh the lists and check that all encounters and obs were voided
+		//refresh the lists and check that all encounters, obs and orders were voided
 		encounters = Context.getEncounterService().getEncountersByPatient(patient);
 		observations = Context.getObsService().getObservationsByPerson(patient);
+		orders = Context.getOrderService().getOrdersByPatient(patient);
+		
 		Assert.assertTrue(CollectionUtils.isEmpty(encounters));
 		Assert.assertTrue(CollectionUtils.isEmpty(observations));
-	}
-	
-	/**
-	 * @see {@link PatientVoidHandler#handle(Patient,User,Date,String)}
-	 */
-	@Test
-	@Verifies(value = "should ensure that the patient is voided too", method = "handle(Patient,User,Date,String)")
-	public void handle_shouldEnsureThatThePatientIsVoidedToo() throws Exception {
-		Patient patient = Context.getPatientService().getPatient(7);
-		Assert.assertFalse(patient.isVoided());
-		new PatientVoidHandler().handle(patient, new User(1), new Date(), "voidReason");
-		Assert.assertTrue(patient.isVoided());
+		Assert.assertTrue(CollectionUtils.isEmpty(orders));
 	}
 }
