@@ -163,7 +163,7 @@ public class SchedulerFormControllerTest extends BaseContextSensitiveTest {
 			mockRequest.setParameter("action", "");
 			mockRequest.setParameter("taskId", "1");
 			
-			//postpone the start time by 2 min and submit the form
+			//set the start time to be in the past
 			Calendar cal2 = Calendar.getInstance();
 			cal2.add(Calendar.SECOND, -1);
 			mockRequest.setParameter("startTime", new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").format(cal2.getTime()));
