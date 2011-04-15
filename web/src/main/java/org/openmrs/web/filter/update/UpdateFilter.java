@@ -113,16 +113,8 @@ public class UpdateFilter extends StartupFilter {
 		
 		Map<String, Object> referenceMap = new HashMap<String, Object>();
 		
-		// if update was already ran, we simply redirect new user
-		// update db progress page, to see how ajax's work
-		if (isDatabaseUpdateInProgress) {
-			referenceMap.put("updateJobStarted", true);
-			// Set variable to tell us whether updates are already in progress
-			referenceMap.put("isDatabaseUpdateInProgress", isDatabaseUpdateInProgress);
-			renderTemplate(REVIEW_CHANGES, referenceMap, httpResponse);
-		} else
-			// do step one of the wizard
-			renderTemplate(DEFAULT_PAGE, referenceMap, httpResponse);
+		// do step one of the wizard
+		renderTemplate(DEFAULT_PAGE, referenceMap, httpResponse);
 	}
 	
 	/**
@@ -149,10 +141,7 @@ public class UpdateFilter extends StartupFilter {
 				log.debug("Authentication successful.  Redirecting to 'reviewupdates' page.");
 				// set a variable so we know that the user started here
 				authenticatedSuccessfully = true;
-				// if another user is already running database update allow current user review progress
-				if (isDatabaseUpdateInProgress)
-					referenceMap.put("updateJobStarted", true);
-				// Set variable to tell us whether updates are already in progress
+				//Set variable to tell us whether updates are already in progress
 				referenceMap.put("isDatabaseUpdateInProgress", isDatabaseUpdateInProgress);
 				renderTemplate(REVIEW_CHANGES, referenceMap, httpResponse);
 			} else {
@@ -183,10 +172,12 @@ public class UpdateFilter extends StartupFilter {
 				isDatabaseUpdateInProgress = true;
 				updateJob = new UpdateFilterCompletion();
 				updateJob.start();
+				
+				referenceMap.put("updateJobStarted", true);
 			} else {
 				referenceMap.put("isDatabaseUpdateInProgress", true);
+				referenceMap.put("updateJobStarted", false);
 			}
-			referenceMap.put("updateJobStarted", true);
 			
 			renderTemplate(REVIEW_CHANGES, referenceMap, httpResponse);
 			
@@ -635,5 +626,4 @@ public class UpdateFilter extends StartupFilter {
 			thread = new Thread(r);
 		}
 	}
-	
 }
