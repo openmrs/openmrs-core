@@ -36,6 +36,7 @@ import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.OpenmrsCookieLocaleResolver;
 import org.openmrs.web.WebConstants;
+import org.openmrs.web.WebUtil;
 import org.openmrs.web.user.CurrentUsers;
 import org.openmrs.web.user.UserProperties;
 
@@ -134,18 +135,12 @@ public class LoginServlet extends HttpServlet {
 					if (user.getUserProperties() != null) {
 						if (user.getUserProperties().containsKey(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCALE)) {
 							String localeString = user.getUserProperty(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCALE);
-							Locale locale = null;
-							if (localeString.length() == 5) {
-								//user's locale is language_COUNTRY (i.e. en_US)
-								String lang = localeString.substring(0, 2);
-								String country = localeString.substring(3, 5);
-								locale = new Locale(lang, country);
-							} else {
-								// user's locale is only the language (language plus greater than 2 char country code
-								locale = new Locale(localeString);
+							Locale locale = WebUtil.normalizeLocale(localeString);
+							// if locale object is valid we should store it
+							if (locale != null) {
+								OpenmrsCookieLocaleResolver oclr = new OpenmrsCookieLocaleResolver();
+								oclr.setLocale(request, response, locale);
 							}
-							OpenmrsCookieLocaleResolver oclr = new OpenmrsCookieLocaleResolver();
-							oclr.setLocale(request, response, locale);
 						}
 					}
 					

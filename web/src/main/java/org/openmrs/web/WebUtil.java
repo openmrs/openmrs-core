@@ -13,8 +13,12 @@
  */
 package org.openmrs.web;
 
+import java.util.Arrays;
+import java.util.Locale;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.util.LocaleUtility;
 
 public class WebUtil {
 	
@@ -86,6 +90,82 @@ public class WebUtil {
 			log.debug("Returning stripped down filename: " + filename);
 		
 		return filename;
+	}
+	
+	/**
+	 * This method checks if input locale string contains control characters and tries to clean up
+	 * actually contained ones. Also it parses locale object from string representation and
+	 * validates it object.
+	 * 
+	 * @param localeString input string with locale parameter
+	 * @return locale object for input string if CTLs were cleaned up or weren't exist or null if
+	 *         could not to clean up CTLs from input string
+	 * @should ignore leading spaces
+	 * @should accept language only locales
+	 * @should not accept invalid locales
+	 * @should not fail with empty strings
+	 * @should not fail with whitespace only
+	 */
+	public static Locale normalizeLocale(String localeString) {
+		if (localeString == null)
+			return null;
+		localeString = localeString.trim();
+		if (localeString.isEmpty())
+			return null;
+		int len = localeString.length();
+		for (int i = 0; i < len; i++) {
+			char c = localeString.charAt(i);
+			// allow only ASCII letters and "_" character
+			if ((c <= 0x20 || c >= 0x7f) || ((c >= 0x20 || c <= 0x7f) && (!Character.isLetter(c) && c != 0x5f))) {
+				if (c == 0x09)
+					continue; // allow horizontal tabs
+				localeString = localeString.replaceFirst(((Character) c).toString(), "");
+				len--;
+				i--;
+			}
+		}
+		Locale locale = LocaleUtility.fromSpecification(localeString);
+		if (LocaleUtility.isValid(locale))
+			return locale;
+		else
+			return null;
+	}
+	
+	/**
+	 * Convenient method that parses the given string object, that contains locale parameters which
+	 * are separated by comma. Tries to clean up CTLs and other unsupported chars within input
+	 * string. If invalid locales are included, they are not returned in the resultant list
+	 * 
+	 * @param localesString input string with locale parameters separeted by comma (e.g.
+	 *            "en, fr_RW, gh")
+	 * @return cleaned up string (or same string) if success or null otherwise
+	 * @see #normalizeLocale(String)
+	 * @should skip over invalid locales
+	 * @should not fail with empty string
+	 */
+	public static String sanitizeLocales(String localesString) {
+		// quick npe check
+		if (localesString == null)
+			return null;
+		
+		StringBuffer outputString = new StringBuffer();
+		
+		boolean first = true;
+		
+		for (String locale : Arrays.asList(localesString.split(","))) {
+			Locale loc = normalizeLocale(locale);
+			if (loc != null) {
+				if (!first)
+					outputString.append(", ");
+				else
+					first = false; // so commas are inserted from now on
+				outputString.append(loc.toString());
+			}
+		}
+		if (outputString.length() > 0)
+			return outputString.toString();
+		else
+			return null;
 	}
 	
 }
