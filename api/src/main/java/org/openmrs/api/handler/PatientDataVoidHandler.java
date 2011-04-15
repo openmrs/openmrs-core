@@ -18,51 +18,62 @@ import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.openmrs.Encounter;
-import org.openmrs.Obs;
+import org.openmrs.Order;
 import org.openmrs.Patient;
 import org.openmrs.User;
-import org.openmrs.Voidable;
 import org.openmrs.annotation.Handler;
 import org.openmrs.aop.RequiredDataAdvice;
+import org.openmrs.api.EncounterService;
+import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
-import org.openmrs.util.HandlerUtil;
 
 /**
  * This class deals with {@link Patient} objects when they are voided via a void* method in an
  * Openmrs Service. This handler is automatically called by the {@link RequiredDataAdvice} AOP
  * class. <br/>
+ * The handler voids all the encounters(including their associated observations) and orders
+ * associated with the specified patient object
  * 
  * @see RequiredDataHandler
- * @see SaveHandler
+ * @see VoidHandler
  * @see Patient
  * @since 1.9
  */
 @Handler(supports = Patient.class)
-public class PatientVoidHandler implements VoidHandler<Patient> {
+public class PatientDataVoidHandler implements VoidHandler<Patient> {
 	
 	/**
 	 * @see org.openmrs.api.handler.VoidHandler#handle(org.openmrs.Voidable, org.openmrs.User,
 	 *      java.util.Date, java.lang.String)
-	 * @should void the encounters and observations for the patient
-	 * @should ensure that the patient is voided too
+	 * @should void the orders encounters and observations associated with the patient
 	 */
 	@Override
 	public void handle(Patient patient, User voidingUser, Date voidedDate, String voidReason) {
-		BaseVoidHandler voidHandler = HandlerUtil.getHandlersForType(BaseVoidHandler.class, Voidable.class).get(0);
-		List<Encounter> encounters = Context.getEncounterService().getEncountersByPatient(patient);
+		//void all the encounters associated with this patient
+		EncounterService es = Context.getEncounterService();
+		List<Encounter> encounters = es.getEncountersByPatient(patient);
 		if (CollectionUtils.isNotEmpty(encounters)) {
 			for (Encounter encounter : encounters) {
 				if (!encounter.isVoided()) {
-					for (Obs observation : encounter.getObs()) {
-						if (!observation.isVoided())
-							voidHandler.handle(observation, voidingUser, voidedDate, voidReason);
-					}
-					voidHandler.handle(encounter, voidingUser, voidedDate, voidReason);
+					// EncounterServiceImpl.voidEncounter and the requiredDataAdvice will set dateVoided to current date 
+					//if it is null, we need to set it now to match the patient's date voided so that the unvoid 
+					//handler's logic doesn't fail when comparing dates while unvoiding encounters that were voided 
+					//with the patient
+					encounter.setDateVoided(patient.getDateVoided());
+					es.voidEncounter(encounter, voidReason);
 				}
 			}
 		}
-		//ensure that the patient is voided too
-		if (!patient.isVoided())
-			voidHandler.handle(patient, voidingUser, voidedDate, voidReason);
+		//void all the orders associated with this patient
+		OrderService os = Context.getOrderService();
+		List<Order> orders = os.getOrdersByPatient(patient);
+		if (CollectionUtils.isNotEmpty(orders)) {
+			for (Order order : orders) {
+				if (!order.isVoided()) {
+					order.setDateVoided(patient.getDateVoided());
+					os.voidOrder(order, voidReason);
+				}
+			}
+		}
 	}
 }

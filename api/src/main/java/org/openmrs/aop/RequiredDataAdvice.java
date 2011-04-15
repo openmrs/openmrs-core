@@ -152,7 +152,8 @@ public class RequiredDataAdvice implements MethodBeforeAdvice {
 		} else if (methodName.startsWith("unvoid")) {
 			Voidable voidable = (Voidable) args[0];
 			Date originalDateVoided = voidable.getDateVoided();
-			recursivelyHandle(UnvoidHandler.class, voidable, Context.getAuthenticatedUser(), originalDateVoided, null, null);
+			User originalVoidingUser = voidable.getVoidedBy();
+			recursivelyHandle(UnvoidHandler.class, voidable, originalVoidingUser, originalDateVoided, null, null);
 			
 		} else if (methodName.startsWith("retire")) {
 			Retireable retirable = (Retireable) args[0];

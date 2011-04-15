@@ -245,7 +245,11 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		
 		encounter.setVoided(true);
 		encounter.setVoidedBy(Context.getAuthenticatedUser());
-		encounter.setDateVoided(new Date());
+		//we expect the dateVoided to be already set by AOP logic at this point unless this method was called within the API, 
+		//this ensures that original ParentVoidedDate and the dateVoided of associated objects will always match for the 
+		//unvoid handler to work
+		if (encounter.getDateVoided() == null)
+			encounter.setDateVoided(new Date());
 		encounter.setVoidReason(reason);
 		saveEncounter(encounter);
 		return encounter;

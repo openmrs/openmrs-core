@@ -51,6 +51,7 @@ public class PatientValidator implements Validator {
 	 * @param c The class to check for support.
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
+	@SuppressWarnings("rawtypes")
 	public boolean supports(Class c) {
 		if (log.isDebugEnabled())
 			log.debug(this.getClass().getName() + ".supports: " + c.getName());
@@ -71,6 +72,7 @@ public class PatientValidator implements Validator {
 	 * @should fail validation if a preferred patient identifier is not chosen
 	 * @should fail validation if voidReason is blank when patient is voided
 	 * @should fail validation if causeOfDeath is blank when patient is dead
+	 * @should fail validation if a preferred patient identifier is not chosen for voided patients
 	 */
 	public void validate(Object obj, Errors errors) {
 		if (log.isDebugEnabled())

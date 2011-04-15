@@ -138,7 +138,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		order.setVoided(Boolean.TRUE);
 		order.setVoidReason(voidReason);
 		order.setVoidedBy(Context.getAuthenticatedUser());
-		order.setDateVoided(new Date());
+		if (order.getDateVoided() == null)
+			order.setDateVoided(new Date());
 		
 		return saveOrder(order);
 	}

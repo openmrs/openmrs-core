@@ -270,6 +270,19 @@
 	<a href="${pageContext.request.contextPath}/admin/patients/mergePatients.form?patientId=${patient.patientId}"><spring:message code="Patient.mergeThis"/></a><br/><br/>
 </c:if>
 
+<c:if test="${patient.voided}">
+	<div id="patientFormVoided" class="retiredMessage">
+	<div><spring:message code="Patient.voidedMessage"/></div>
+    <div>
+    	<c:if test="${patient.voidedBy.personName != null}"><spring:message code="general.byPerson"/> ${patient.voidedBy.personName}</c:if> 
+    	<c:if test="${patient.dateVoided != null}"> <spring:message code="general.onDate"/> <openmrs:formatDate date="${patient.dateVoided}" type="long" /> </c:if> 
+   		<c:if test="${patient.voidReason != ''}"> - ${patient.voidReason} </c:if>
+    </div>
+	<div>
+		<form action="" method="post" ><input type="submit" name="action" value="<spring:message code="Patient.unvoid"/>" /></form></div> 
+	</div>
+</c:if>
+
 <spring:hasBindErrors name="patient">
 	<spring:message code="fix.error"/>
 	<div class="error">
