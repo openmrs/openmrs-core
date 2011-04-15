@@ -29,7 +29,7 @@
       <dependency>
          <groupId>org.openmrs.api</groupId>
          <artifactId>openmrs-api</artifactId>
-         <version>${project.version}</version>         
+         <version>${project.version}</version>
          <type>test-jar</type>
          <scope>test</scope>
       </dependency>
@@ -109,19 +109,26 @@
       <dependency>
          <groupId>org.codehaus.jackson</groupId>
          <artifactId>jackson-mapper-asl</artifactId>
-      </dependency>      
-   </dependencies>
+      </dependency>
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-mxj</artifactId>
+            <version>5.0.11</version>
+            <scope>provided</scope>
+        </dependency>
+
+    </dependencies>
 
    <build>
       <plugins>
-         <plugin> 
-            <groupId>org.apache.maven.plugins</groupId> 
-            <artifactId>maven-surefire-plugin</artifactId> 
-            <configuration> 
-               <excludes> 
-                  <exclude>**/test/*</exclude> 
-               </excludes> 
-            </configuration> 
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+               <excludes>
+                  <exclude>**/test/*</exclude>
+               </excludes>
+            </configuration>
          </plugin>
          <plugin>
             <groupId>com.googlecode.maven-java-formatter-plugin</groupId>

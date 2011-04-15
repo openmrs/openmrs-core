@@ -228,7 +228,7 @@ function CreateCallback(options) {
 		var value = item.name;
 		if (item.preferredName) {
 			textShown += "<span class='preferredname'> &rArr; " + item.preferredName + "</span>";
-			value = item.preferredName;
+			//value = item.preferredName;
 		}
 		
 		textShown = "<span class='autocompleteresult'>" + textShown + "</span>";

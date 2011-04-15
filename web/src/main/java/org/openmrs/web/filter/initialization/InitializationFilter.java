@@ -163,7 +163,7 @@ public class InitializationFilter extends StartupFilter {
 	
 	/**
 	 * Called by {@link #doFilter(ServletRequest, ServletResponse, FilterChain)} on GET requests
-	 * 
+	 *
 	 * @param httpRequest
 	 * @param httpResponse
 	 */
@@ -246,7 +246,7 @@ public class InitializationFilter extends StartupFilter {
 	
 	/**
 	 * Called by {@link #doFilter(ServletRequest, ServletResponse, FilterChain)} on POST requests
-	 * 
+	 *
 	 * @param httpRequest
 	 * @param httpResponse
 	 */
@@ -536,7 +536,7 @@ public class InitializationFilter extends StartupFilter {
 	
 	/**
 	 * Verify the database connection works.
-	 * 
+	 *
 	 * @param connectionUsername
 	 * @param connectionPassword
 	 * @param databaseConnectionFinalUrl
@@ -561,12 +561,13 @@ public class InitializationFilter extends StartupFilter {
 	
 	/**
 	 * Convenience method to load the runtime properties in the application data directory
-	 * 
+	 *
 	 * @return
 	 */
 	private File getRuntimePropertiesFile() {
 		String filename = WebConstants.WEBAPP_NAME + "-runtime.properties";
-		
+		if ("true".equalsIgnoreCase(System.getProperty("testConfiguration")))
+			filename = WebConstants.WEBAPP_NAME + "-test-runtime.properties";
 		File file = new File(OpenmrsUtil.getApplicationDataDirectory(), filename);
 		
 		log.debug("Using file: " + file.getAbsolutePath());
@@ -603,7 +604,7 @@ public class InitializationFilter extends StartupFilter {
 	
 	/**
 	 * Public method that returns true if database+runtime properties initialization is required
-	 * 
+	 *
 	 * @return true if this initialization wizard needs to run
 	 */
 	public static boolean initializationRequired() {
@@ -629,11 +630,11 @@ public class InitializationFilter extends StartupFilter {
 	
 	/**
 	 * @param silent if this statement fails do not display stack trace or record an error in the
-	 *            wizard object.
-	 * @param user username to connect with
-	 * @param pw password to connect with
-	 * @param sql String containing sql and question marks
-	 * @param args the strings to fill into the question marks in the given sql
+	 *               wizard object.
+	 * @param user   username to connect with
+	 * @param pw     password to connect with
+	 * @param sql    String containing sql and question marks
+	 * @param args   the strings to fill into the question marks in the given sql
 	 * @return result of executeUpdate or -1 for error
 	 */
 	private int executeStatement(boolean silent, String user, String pw, String sql, String... args) {
@@ -701,7 +702,7 @@ public class InitializationFilter extends StartupFilter {
 	/**
 	 * Convenience variable to know if this wizard has completed successfully and that this wizard
 	 * does not need to be executed again
-	 * 
+	 *
 	 * @return true if this has been run already
 	 */
 	synchronized private static boolean isInitializationComplete() {
@@ -710,9 +711,9 @@ public class InitializationFilter extends StartupFilter {
 	
 	/**
 	 * Check if the given value is null or a zero-length String
-	 * 
-	 * @param value the string to check
-	 * @param errors the list of errors to append the errorMessage to if value is empty
+	 *
+	 * @param value        the string to check
+	 * @param errors       the list of errors to append the errorMessage to if value is empty
 	 * @param errorMessage the string error message to append if value is empty
 	 * @return true if the value is non-empty
 	 */
@@ -825,7 +826,7 @@ public class InitializationFilter extends StartupFilter {
 		
 		/**
 		 * Adds a task that has been completed to the list of executed tasks
-		 * 
+		 *
 		 * @param task
 		 */
 		synchronized protected void addExecutedTask(WizardTask task) {
@@ -854,7 +855,7 @@ public class InitializationFilter extends StartupFilter {
 				
 				/**
 				 * TODO split this up into multiple testable methods
-				 * 
+				 *
 				 * @see java.lang.Runnable#run()
 				 */
 				public void run() {
@@ -1189,7 +1190,7 @@ public class InitializationFilter extends StartupFilter {
 	/**
 	 * Check whether openmrs database is empty. Having just one non-liquibase table in the given
 	 * database qualifies this as a non-empty database.
-	 * 
+	 *
 	 * @param props the runtime properties
 	 * @return true/false whether openmrs database is empty or doesn't exist yet
 	 */
