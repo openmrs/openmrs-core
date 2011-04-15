@@ -15,6 +15,7 @@ package org.openmrs.scheduler.web.controller;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,6 +28,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.scheduler.TaskDefinition;
+import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
@@ -113,6 +115,9 @@ public class SchedulerFormController extends SimpleFormController {
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
+	 * @should reschedule a currently scheduled task
+	 * @should not reschedule a task that is not currently scheduled
+	 * @should not reschedule a task if the start time has passed
 	 */
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command,
 	        BindException errors) throws Exception {
@@ -125,7 +130,15 @@ public class SchedulerFormController extends SimpleFormController {
 		task.setStartTimePattern(DEFAULT_DATE_PATTERN);
 		log.info("task started? " + task.getStarted());
 		
-		Context.getSchedulerService().saveTask(task);
+		//TODO Add unit test method to check that an executing task doesn't get rescheduled, it would require adding a test task 
+		//that runs for a period that spans beyond time it takes to execute all the necessary assertions in the test method
+		
+		//only reschedule a task if it is started, is not running and the time is not in the past
+		if (task.getStarted() && OpenmrsUtil.compareWithNullAsEarliest(task.getStartTime(), new Date()) > 0
+		        && (task.getTaskInstance() == null || !task.getTaskInstance().isExecuting()))
+			Context.getSchedulerService().rescheduleTask(task);
+		else
+			Context.getSchedulerService().saveTask(task);
 		
 		view = getSuccessView();
 		
