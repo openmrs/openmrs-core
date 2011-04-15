@@ -16,6 +16,7 @@ package org.openmrs.util;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.MissingResourceException;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
@@ -206,6 +207,22 @@ public class LocaleUtility implements GlobalPropertyListener {
 		return propertyName.equals(OpenmrsConstants.GLOBAL_PROPERTY_DEFAULT_LOCALE)
 		        || propertyName.equals(OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST);
 		
+	}
+	
+	/**
+	 * Checks if specified locale object is valid
+	 * 
+	 * @param locale
+	 *            object for validation
+	 * @return true if locale is available
+	 */
+	public static boolean isValid(Locale locale) {
+		try {
+			return locale.getISO3Language() != null && locale.getISO3Country() != null;
+		}
+		catch (MissingResourceException e) {
+			return false;
+		}
 	}
 	
 }

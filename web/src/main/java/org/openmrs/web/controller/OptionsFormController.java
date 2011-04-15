@@ -15,6 +15,7 @@ package org.openmrs.web.controller;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -36,6 +37,7 @@ import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.web.OptionsForm;
 import org.openmrs.web.WebConstants;
+import org.openmrs.web.WebUtil;
 import org.openmrs.web.user.UserProperties;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
@@ -130,8 +132,13 @@ public class OptionsFormController extends SimpleFormController {
 			Map<String, String> properties = user.getUserProperties();
 			
 			properties.put(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCATION, opts.getDefaultLocation());
-			properties.put(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCALE, opts.getDefaultLocale());
-			properties.put(OpenmrsConstants.USER_PROPERTY_PROFICIENT_LOCALES, opts.getProficientLocales());
+			
+			Locale locale = WebUtil.normalizeLocale(opts.getDefaultLocale());
+			if (locale != null)
+				properties.put(OpenmrsConstants.USER_PROPERTY_DEFAULT_LOCALE, locale.toString());
+			
+			properties.put(OpenmrsConstants.USER_PROPERTY_PROFICIENT_LOCALES, WebUtil.sanitizeLocales(opts
+			        .getProficientLocales()));
 			properties.put(OpenmrsConstants.USER_PROPERTY_SHOW_RETIRED, opts.getShowRetiredMessage().toString());
 			properties.put(OpenmrsConstants.USER_PROPERTY_SHOW_VERBOSE, opts.getVerbose().toString());
 			properties.put(OpenmrsConstants.USER_PROPERTY_NOTIFICATION, opts.getNotification() == null ? "" : opts
