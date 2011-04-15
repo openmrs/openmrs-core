@@ -270,6 +270,7 @@
 	<a href="${pageContext.request.contextPath}/admin/patients/mergePatients.form?patientId=${patient.patientId}"><spring:message code="Patient.mergeThis"/></a><br/><br/>
 </c:if>
 
+<openmrs:hasPrivilege privilege="Delete Patients">
 <c:if test="${patient.voided}">
 	<div id="patientFormVoided" class="retiredMessage">
 	<div><spring:message code="Patient.voidedMessage"/></div>
@@ -282,6 +283,7 @@
 		<form action="" method="post" ><input type="submit" name="action" value="<spring:message code="Patient.unvoid"/>" /></form></div> 
 	</div>
 </c:if>
+</openmrs:hasPrivilege>
 
 <spring:hasBindErrors name="patient">
 	<spring:message code="fix.error"/>
