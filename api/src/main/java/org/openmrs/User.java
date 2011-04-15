@@ -15,6 +15,7 @@ package org.openmrs;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -26,6 +27,7 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIException;
+import org.openmrs.api.context.Context;
 import org.openmrs.util.LocaleUtility;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
@@ -41,7 +43,7 @@ import org.simpleframework.xml.load.Validate;
  * key-value pairs for either quick info or display specific info that needs to be persisted (like
  * locale preferences, search options, etc)
  */
-public class User extends BaseOpenmrsMetadata implements java.io.Serializable {
+public class User extends BaseOpenmrsMetadata implements java.io.Serializable, Attributable<User> {
 	
 	public static final long serialVersionUID = 2L;
 	
@@ -302,6 +304,65 @@ public class User extends BaseOpenmrsMetadata implements java.io.Serializable {
 			roles.remove(role);
 		
 		return this;
+	}
+	
+	/**
+	 * @see org.openmrs.Attributable#findPossibleValues(java.lang.String)
+	 */
+	public List<User> findPossibleValues(String searchText) {
+		try {
+			return Context.getUserService().getUsersByName(searchText, "", false);
+		}
+		catch (Exception e) {
+			return Collections.emptyList();
+		}
+	}
+	
+	/**
+	 * @see org.openmrs.Attributable#getPossibleValues()
+	 */
+	public List<User> getPossibleValues() {
+		try {
+			return Context.getUserService().getAllUsers();
+		}
+		catch (Exception e) {
+			return Collections.emptyList();
+		}
+	}
+	
+	/**
+	 * @see org.openmrs.Attributable#hydrate(java.lang.String)
+	 */
+	public User hydrate(String userId) {
+		try {
+			return Context.getUserService().getUser(Integer.valueOf(userId));
+		}
+		catch (Exception e) {
+			return new User();
+		}
+	}
+	
+	/**
+	 * @see org.openmrs.Attributable#serialize()
+	 */
+	public String serialize() {
+		if (getUserId() != null)
+			return "" + getUserId();
+		else
+			return "";
+	}
+	
+	/**
+	 * @see org.openmrs.Attributable#getDisplayString()
+	 */
+	public String getDisplayString() {
+		String returnString = "";
+		if (getPersonName() != null)
+			returnString += getPersonName().getFullName() + " ";
+		
+		returnString += "(" + getUsername() + ")";
+		return returnString;
+		
 	}
 	
 	/**
