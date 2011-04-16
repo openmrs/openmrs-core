@@ -28,9 +28,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Vector;
-import java.util.Map.Entry;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -263,7 +263,8 @@ public class WebModuleUtil {
 					Node node = root.getElementsByTagName("dwr").item(0);
 					Node current = node.getFirstChild();
 					while (current != null) {
-						if ("allow".equals(current.getNodeName()) || "signatures".equals(current.getNodeName())) {
+						if ("allow".equals(current.getNodeName()) || "signatures".equals(current.getNodeName())
+						        || "init".equals(current.getNodeName())) {
 							((Element) current).setAttribute("moduleId", mod.getModuleId());
 							outputRoot.appendChild(dwrmodulexml.importNode(current, true));
 						}
