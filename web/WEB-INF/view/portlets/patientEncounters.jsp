@@ -155,7 +155,7 @@ Parameters
 													</c:url>
 												</c:if>
 												<a href="${editUrl}">
-													<img src="${pageContext.request.contextPath}/images/edit.gif" title="<spring:message code="general.edit"/>" border="0" align="top" />
+													<img src="${pageContext.request.contextPath}/images/edit.gif" title="<spring:message code="general.edit"/>" border="0" />
 												</a>
 											</openmrs:hasPrivilege>
 										</c:if>
@@ -170,7 +170,7 @@ Parameters
 												</c:url>
 											</c:if>
 											<a href="javascript:void(0)" onClick="loadUrlIntoEncounterPopup('<openmrs:format encounter="${enc}"/>', '${viewEncounterUrl}'); return false;">
-												<img src="${pageContext.request.contextPath}/images/file.gif" title="<spring:message code="general.view"/>" border="0" align="top" />
+												<img src="${pageContext.request.contextPath}/images/file.gif" title="<spring:message code="general.view"/>" border="0" />
 											</a>
 										</c:if>
 									</td>
