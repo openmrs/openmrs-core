@@ -39,6 +39,7 @@ import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
+import org.springframework.util.ObjectUtils;
 
 /**
  * A Concept object can represent either a question or an answer to a data point. That data point is
@@ -698,7 +699,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 		}
 		
 		for (ConceptName nameInLocale : getNames(forLocale)) {
-			if (nameInLocale.isLocalePreferred())
+			if (ObjectUtils.nullSafeEquals(nameInLocale.isLocalePreferred(), true))
 				return nameInLocale;
 		}
 		
@@ -725,7 +726,7 @@ public class Concept extends BaseOpenmrsObject implements Auditable, Retireable,
 			//get the first fully specified name, since every concept must have a fully specified name,
 			//then, this loop will have to return a name
 			for (ConceptName conceptName : getNames(locale)) {
-				if (conceptName.isFullySpecifiedName())
+				if (ObjectUtils.nullSafeEquals(conceptName.isFullySpecifiedName(), true))
 					return conceptName;
 			}
 		}
