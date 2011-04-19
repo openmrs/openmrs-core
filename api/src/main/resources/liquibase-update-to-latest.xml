@@ -4359,5 +4359,58 @@
 			/>
 	</changeSet>
 	
+	<changeSet id="20100419-1208" author="wyclif">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="visit" /> </not>
+		</preConditions>
+		<comment>
+			Create the visit table and add the foreign key for visit_type
+		</comment>
+		<createTable tableName="visit">
+			<column name="visit_id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="patient_id" type="int"><constraints nullable="false" /></column>
+			<column name="visit_type" type="int"><constraints nullable="false" /></column>
+			<column name="date_started" type="datetime"> <constraints nullable="false" /> </column>
+			<column name="date_stopped" type="datetime" />
+			<column name="indication_concept_id" type="int" />
+			<column name="location_id" type="int" />
+			<column name="creator" type="int"><constraints nullable="false"/></column>
+			<column name="date_created" type="datetime"><constraints nullable="false"/></column>
+			<column name="changed_by" type="int"/>
+			<column name="date_changed" type="datetime" />
+			<column name="voided" type="tinyint" defaultValueNumeric="0"><constraints nullable="false"/></column>
+			<column name="voided_by" type="int" />
+			<column name="date_voided" type="datetime" />
+			<column name="void_reason" type="varchar(255)" />
+			<column name="uuid" type="char(38)"><constraints nullable="false" unique="true" /></column>
+		</createTable>
+		<addForeignKeyConstraint constraintName="visit_type_fk"
+			baseTableName="visit" baseColumnNames="visit_type"
+			referencedTableName="visit_type" referencedColumnNames="visit_type_id" />
+		<addForeignKeyConstraint constraintName="visit_location_fk"
+			baseTableName="visit" baseColumnNames="location_id"
+			referencedTableName="location" referencedColumnNames="location_id" />
+		<addForeignKeyConstraint constraintName="visit_patient_fk"
+			baseTableName="visit" baseColumnNames="patient_id"
+			referencedTableName="patient" referencedColumnNames="patient_id" />
+		<addForeignKeyConstraint constraintName="visit_creator_fk"
+			baseTableName="visit" baseColumnNames="creator" referencedTableName="users"
+			referencedColumnNames="user_id" />
+		<addForeignKeyConstraint constraintName="visit_voided_by_fk"
+			baseTableName="visit" baseColumnNames="voided_by"
+			referencedTableName="users" referencedColumnNames="user_id" />
+		<addForeignKeyConstraint constraintName="visit_changed_by_fk"
+			baseTableName="visit" baseColumnNames="changed_by"
+			referencedTableName="users" referencedColumnNames="user_id" />
+		<addForeignKeyConstraint constraintName="visit_indication_concept_fk"
+			baseTableName="visit" baseColumnNames="indication_concept_id"
+			referencedTableName="concept" referencedColumnNames="concept_id" />
+		<createIndex tableName="visit" indexName="visit_patient_index">
+			<column name="patient_id" />
+		</createIndex>
+	</changeSet>
+	
 </databaseChangeLog>
 
