@@ -857,6 +857,40 @@ public interface PersonService {
 	public PersonName splitPersonName(String name);
 	
 	/**
+	 * Voids the given PersonName, effectively deleting the name, from the end-user's point of view.
+	 *
+	 * @param personName PersonName to void
+	 * @param voidReason String reason the personName is being voided.
+	 * @return the newly saved personName
+	 * @throws APIException
+	 * @should void personName with the given reason
+	 */
+	@Authorized( { PrivilegeConstants.EDIT_PERSONS })
+	public PersonName voidPersonName(PersonName personName, String voidReason);
+	
+	/**
+	 * Unvoid PersonName in the database, effectively marking this as a valid personName again
+	 *
+	 * @param personName PersonName to unvoid
+	 * @return the newly unvoided personName
+	 * @throws APIException
+	 * @should unvoid voided personName
+	 */
+	@Authorized( { PrivilegeConstants.EDIT_PERSONS })
+	public PersonName unvoidPersonName(PersonName personName) throws APIException;
+	
+	/**
+	 * Inserts or updates the given personName object in the database
+	 *
+	 * @param personName to be created or updated
+	 * @return personName that was created or updated
+	 * @throws APIException
+	 * @should fail if you try to void the last non voided name
+	 */
+	@Authorized( { PrivilegeConstants.EDIT_PERSONS })
+	public PersonName savePersonName(PersonName personName);
+	
+	/**
 	 * Parses a name into a PersonName (separate Given, Middle, and Family names)
 	 * 
 	 * @param name person name to be parsed

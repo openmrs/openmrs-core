@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+  <person person_id="2" gender="M" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="1716432a-4bf9-436c-baad-f03236e960e1"/>
+  <person person_id="3" gender="F" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="cea3d39a-99a5-4224-9936-8c8c134035d4"/>
+  <person person_id="4" gender="M" birthdate="1975-04-08 00:00:00.0" dead="false" creator="1" date_created="2005-09-22 00:00:00.0" voided="false" uuid="dagh524f-27ce-4bb2-86d6-6d1d05312bd5"/>
+  <person_name person_name_id="2" preferred="true" person_id="2" prefix="Dr." given_name="John" middle_name="Andrew" family_name="Smith" family_name2="Johnson" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="54fdf8e8-1a80-45cf-a3fd-4fabd1b8ffab"/>
+  <person_name person_name_id="5" preferred="true" person_id="3" prefix="Mrs." given_name="Jean" middle_name="Joan" family_name="Claude" family_name2="Johnson" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="5e6571cc-c7f2-41de-b289-f55f8fe79c6f"/>
+  <person_name person_name_id="6" preferred="false" person_id="3" prefix="Mrs." given_name="Jean" middle_name="Foobar" family_name="Claude" family_name2="Johnson" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="5e6571cc-c7f2-41de-b289-f55f8fe79ddd"/>
+  <person_name person_name_id="7" preferred="true" person_id="4" prefix="Mr." given_name="Horatio" middle_name="Test" family_name="Hornblower" family_name_suffix="Esq." creator="1" date_created="2005-09-22 00:00:00.0" voided="false" uuid="39ghgh7b-6482-487d-94ce-c07bb3ca3cc1"/>
+  <person_name person_name_id="8" preferred="false" person_id="4" prefix="Mr." given_name="Collet" middle_name="Test" family_name="Chebaskwony" creator="1" date_created="2006-01-18 00:00:00.0" voided="true" voided_by="1" date_voided="2009-05-17 10:00:00.0" void_reason="test" uuid="a6ghgh7e-1384-493a-a55b-d325924acd94"/>
+</dataset>
