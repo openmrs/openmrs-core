@@ -215,8 +215,8 @@ public class Visit extends BaseOpenmrsData implements Auditable {
 	@Override
 	public String toString() {
 		if (visitId == null)
-			return "";
-		return visitId.toString();
+			return "Visit id is null";
+		return "Visit #" + visitId.toString();
 	}
 	
 }
