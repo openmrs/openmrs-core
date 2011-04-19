@@ -90,6 +90,7 @@
         <property name="ardenService"><ref bean="ardenService"/></property>
         <property name="messageSourceService"><ref bean="messageSourceService"/></property>
         <property name="activeListService"><ref bean="activeListService"/></property>
+        <property name="visitService"><ref bean="visitService"/></property>
 	</bean>	
 	
 	<bean id="context" class="org.openmrs.api.context.Context">
@@ -172,6 +173,10 @@
 	<bean id="activeListDAO" class="org.openmrs.api.db.hibernate.HibernateActiveListDAO">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>	
 	</bean>
+	<bean id="visitDAO" class="org.openmrs.api.db.hibernate.HibernateVisitDAO">
+        <property name="sessionFactory"><ref bean="sessionFactory"/></property>
+    </bean>
+	
 
 	<!--  **************************  SCHEDULER SERVICE  *************************  -->
 	<!-- 
@@ -242,6 +247,9 @@
 	</bean>
 	<bean id="activeListServiceTarget" class="org.openmrs.api.impl.ActiveListServiceImpl">
 		<property name="activeListDAO"><ref bean="activeListDAO"/></property>	
+	</bean>
+	<bean id="visitServiceTarget" class="org.openmrs.api.impl.VisitServiceImpl">
+        <property name="visitDAO"><ref bean="visitDAO"/></property>
 	</bean>
 	
 	
@@ -549,6 +557,15 @@
 		</property>
 		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
 	</bean>
+	<bean id="visitService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+	    <property name="transactionManager"><ref local="transactionManager"/></property>
+	    <property name="target"><ref local="visitServiceTarget"/></property>
+	    <property name="preInterceptors">
+	        <ref local="serviceInterceptors"/>
+	    </property>
+	    <property name="transactionAttributeSource"><ref local="transactionAttributeSource"/></property>
+    </bean>
+	
 	
 	<!--
 		Scheduler service bean pool.
