@@ -4359,7 +4359,7 @@
 			/>
 	</changeSet>
 	
-	<changeSet id="20100419-1208" author="wyclif">
+	<changeSet id="20100419-1209" author="wyclif">
 		<preConditions onFail="MARK_RAN">
 			<not><tableExists tableName="visit" /> </not>
 		</preConditions>
@@ -4371,7 +4371,7 @@
 				<constraints primaryKey="true" nullable="false" />
 			</column>
 			<column name="patient_id" type="int"><constraints nullable="false" /></column>
-			<column name="visit_type" type="int"><constraints nullable="false" /></column>
+			<column name="visit_type_id" type="int"><constraints nullable="false" /></column>
 			<column name="date_started" type="datetime"> <constraints nullable="false" /> </column>
 			<column name="date_stopped" type="datetime" />
 			<column name="indication_concept_id" type="int" />
@@ -4380,14 +4380,14 @@
 			<column name="date_created" type="datetime"><constraints nullable="false"/></column>
 			<column name="changed_by" type="int"/>
 			<column name="date_changed" type="datetime" />
-			<column name="voided" type="tinyint" defaultValueNumeric="0"><constraints nullable="false"/></column>
+			<column name="voided" type="smallint" defaultValueNumeric="0"><constraints nullable="false"/></column>
 			<column name="voided_by" type="int" />
 			<column name="date_voided" type="datetime" />
 			<column name="void_reason" type="varchar(255)" />
 			<column name="uuid" type="char(38)"><constraints nullable="false" unique="true" /></column>
 		</createTable>
 		<addForeignKeyConstraint constraintName="visit_type_fk"
-			baseTableName="visit" baseColumnNames="visit_type"
+			baseTableName="visit" baseColumnNames="visit_type_id"
 			referencedTableName="visit_type" referencedColumnNames="visit_type_id" />
 		<addForeignKeyConstraint constraintName="visit_location_fk"
 			baseTableName="visit" baseColumnNames="location_id"
