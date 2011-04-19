@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="org.openmrs">
+
+	<class name="Visit" table="visit" batch-size="25">
+
+		<id name="visitId" type="int" column="visit_id" unsaved-value="0">
+			<generator class="native" />
+		</id>
+
+		<discriminator column="visit_id" insert="false" />
+		
+		<property name="startDatetime" type="java.util.Date" column="date_started" not-null="true" length="19" />
+		
+		<property name="stopDatetime" type="java.util.Date" column="date_stopped" length="19" />
+		
+		<property name="dateCreated" type="java.util.Date" column="date_created" not-null="true" length="19" />
+		
+		<property name="voided" type="java.lang.Boolean" column="voided" length="1" not-null="true" />
+		
+		<property name="dateVoided" type="java.util.Date" column="date_voided" length="19" />
+		
+		<property name="voidReason" type="java.lang.String" column="void_reason" length="255" />
+		
+		<property name="uuid" type="java.lang.String" column="uuid" length="38" unique="true" />
+		
+		<!-- Associations -->
+
+		<many-to-one name="visitType" class="VisitType"	not-null="true" column="visit_type" />
+		
+		<many-to-one name="patient" class="Patient" not-null="true" column="patient_id" />
+		
+		<many-to-one name="indication" class="Concept" column="indication_concept_id" />
+		
+		<many-to-one name="location" class="Location" column="location_id" />
+		
+		<many-to-one name="creator" class="User" not-null="true" column="creator" />
+		
+		<many-to-one name="voidedBy" class="User" column="voided_by" />
+
+	</class>
+
+</hibernate-mapping>
