@@ -84,6 +84,8 @@
 		
 		<!-- Scheduler -->
 		<mapping resource="org/openmrs/scheduler/db/hibernate/TaskDefinition.hbm.xml" />
+		
+		<mapping resource="org/openmrs/api/db/hibernate/VisitType.hbm.xml" />
 
   </session-factory>
 

@@ -4308,5 +4308,56 @@
 		</delete>
 	</changeSet>
 	
+	<changeSet id="20090224-1000-create-visit_type" author="dkayiwa">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="visit_type"/></not>
+		</preConditions>
+		<comment>
+			Create visit type table
+		</comment>
+		
+		<createTable tableName="visit_type">
+			<column name="visit_type_id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+			<column name="name" type="varchar(255)">
+				<constraints nullable="false"/>
+			</column>
+			<column name="description" type="varchar(1024)" >
+				<constraints nullable="false"/>
+			</column>
+			<column name="uuid" type="char(38)">
+				<constraints nullable="false" unique="true"/>
+			</column>
+			<column name="creator" type="int" >
+				<constraints nullable="false" />
+			</column>
+			<column name="date_created" type="datetime" >
+				<constraints nullable="false"/>
+			</column>
+			<column name="changed_by" type="int" />
+			<column name="date_changed" type="datetime" />
+			<column name="retired" type="tinyint" defaultValueNumeric="0">
+				<constraints nullable="false"/>
+			</column>
+			<column name="retired_by" type="int" />
+			<column name="date_retired" type="datetime" />
+			<column name="retired_reason" type="varchar(255)" defaultValue="null"/>
+		</createTable>
+		
+		<addForeignKeyConstraint constraintName="visit_type_creator"
+			baseTableName="visit_type" baseColumnNames="creator"
+			referencedTableName="users" referencedColumnNames="user_id"
+			/>
+		<addForeignKeyConstraint constraintName="visit_type_changed_by" 
+								 baseTableName="visit_type" baseColumnNames="changed_by"
+								 referencedTableName="users" referencedColumnNames="user_id"
+			/>
+		<addForeignKeyConstraint constraintName="visit_type_retired_by"
+			baseTableName="visit_type" baseColumnNames="retired_by"
+			referencedTableName="users" referencedColumnNames="user_id"
+			/>
+	</changeSet>
+	
 </databaseChangeLog>
 
