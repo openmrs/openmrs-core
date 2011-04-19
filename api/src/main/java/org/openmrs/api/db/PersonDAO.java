@@ -209,4 +209,9 @@ public interface PersonDAO {
 	 */
 	public PersonName savePersonName(PersonName personName);
 	
+	/**
+	 * @see org.openmrs.api.PersonService#savePersonAddress(org.openmrs.PersonAddress)
+	 */
+	public PersonAddress savePersonAddress(PersonAddress personAddress);
+	
 }

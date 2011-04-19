@@ -923,4 +923,36 @@ public interface PersonService {
 	@Transactional(readOnly = true)
 	public Map<Person, List<Person>> getRelationships(RelationshipType relationshipType) throws APIException;
 	
+	/**
+	 * Voids the given PersonAddress, effectively deleting the personAddress, from the end-user's point of view.
+	 *
+	 * @param personAddress PersonAddress to void
+	 * @param voidReason String reason the personAddress is being voided.
+	 * @return the newly saved personAddress
+	 * @throws APIException
+	 * @should void personAddress with the given reason
+	 */
+	@Authorized( { PrivilegeConstants.EDIT_PERSONS })
+	public PersonAddress voidPersonAddress(PersonAddress personAddress, String voidReason);
+	
+	/**
+	 * Unvoid PersonAddress in the database, effectively marking this as a valid PersonAddress again
+	 *
+	 * @param personAddress PersonAddress to unvoid
+	 * @return the newly unvoided personAddress
+	 * @throws APIException
+	 * @should unvoid voided personAddress
+	 */
+	@Authorized( { PrivilegeConstants.EDIT_PERSONS })
+	public PersonAddress unvoidPersonAddress(PersonAddress personAddress) throws APIException;
+	
+	/**
+	 * Inserts or updates the given personAddress object in the database
+	 *
+	 * @param personAddress PersonAddress to be created or updated
+	 * @return personAddress that was created or updated
+	 */
+	@Authorized( { PrivilegeConstants.EDIT_PERSONS })
+	public PersonAddress savePersonAddress(PersonAddress personAddress);
+	
 }

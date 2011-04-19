@@ -626,4 +626,14 @@ public class HibernatePersonDAO implements PersonDAO {
 		sessionFactory.getCurrentSession().saveOrUpdate(personName);
 		return personName;
 	}
+	
+	/**
+	 * @see org.openmrs.api.PersonService#savePersonAddress(org.openmrs.PersonAddress)
+	 * @see org.openmrs.api.db.PersonDAO#savePersonAddress(org.openmrs.PersonAddress)
+	 */
+	public PersonAddress savePersonAddress(PersonAddress personAddress) {
+		sessionFactory.getCurrentSession().saveOrUpdate(personAddress);
+		return personAddress;
+	}
+	
 }

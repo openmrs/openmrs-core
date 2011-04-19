@@ -1315,4 +1315,47 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		Assert.assertFalse(personName.isVoided());
 		Context.getPersonService().voidPersonName(personName, "Test Voiding PersonName");
 	}
+	
+	/**
+	 * @see {@link PersonService#voidPersonAddress(org.openmrs.PersonAddress, String)}
+	 */
+	@Test
+	@Verifies(value = "should void personAddress with the given reason", method = "voidPersonAddress(PersonAddress,String)")
+	public void voidPersonAddress_shouldVoidPersonAddressWithTheGivenReason() throws Exception {
+		executeDataSet("org/openmrs/api/include/PersionServiceTest-voidUnvoidPersonAddress.xml");
+		PersonAddress personAddress = Context.getPersonService().getPersonAddressByUuid(
+		    "33ghd0b5-821c-4e5e-ad1d-a9bce331e118");
+		
+		Assert.assertFalse(personAddress.isVoided());
+		
+		PersonAddress voidedPersonAddress = Context.getPersonService().voidPersonAddress(personAddress,
+		    "Test Voiding PersonAddress");
+		
+		Assert.assertTrue(voidedPersonAddress.isVoided());
+		Assert.assertNotNull(voidedPersonAddress.getVoidedBy());
+		Assert.assertNotNull(voidedPersonAddress.getDateVoided());
+		Assert.assertEquals(voidedPersonAddress.getVoidReason(), "Test Voiding PersonAddress");
+	}
+	
+	/**
+	 * @see {@link PersonService#unvoidPersonAddress(org.openmrs.PersonAddress)}
+	 */
+	@Test
+	@Verifies(value = "should unvoid voided personAddress", method = "unvoidPersonAddress(PersonAddress)")
+	public void unvoidPersonAddress_shouldUnvoidVoidedpersonAddress() throws Exception {
+		executeDataSet("org/openmrs/api/include/PersionServiceTest-voidUnvoidPersonAddress.xml");
+		PersonAddress voidedPersonAddress = Context.getPersonService().getPersonAddressByUuid(
+		    "33ghghb5-821c-4e5e-ad1d-a9bce331e777");
+		
+		Assert.assertTrue(voidedPersonAddress.isVoided());
+		
+		PersonAddress unvoidedPersonAddress = Context.getPersonService().unvoidPersonAddress(voidedPersonAddress);
+		
+		Assert.assertFalse(unvoidedPersonAddress.isVoided());
+		Assert.assertNull(unvoidedPersonAddress.getVoidedBy());
+		Assert.assertNull(unvoidedPersonAddress.getDateVoided());
+		Assert.assertNull(unvoidedPersonAddress.getVoidReason());
+		
+	}
+	
 }
