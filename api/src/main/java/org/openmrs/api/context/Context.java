@@ -53,6 +53,7 @@ import org.openmrs.api.ProgramWorkflowService;
 import org.openmrs.api.ReportService;
 import org.openmrs.api.SerializationService;
 import org.openmrs.api.UserService;
+import org.openmrs.api.VisitService;
 import org.openmrs.api.db.ContextDAO;
 import org.openmrs.arden.ArdenService;
 import org.openmrs.hl7.HL7Service;
@@ -1151,10 +1152,17 @@ public class Context {
 	
 	/**
 	 * @see ServiceContext#getModuleOpenmrsServices(String)
-	 * 
 	 * @since 1.9
 	 */
 	public static List<OpenmrsService> getModuleOpenmrsServices(String modulePackage) {
 		return getServiceContext().getModuleOpenmrsServices(modulePackage);
+	}
+	
+	/**
+	 * @since 1.9
+	 * @see ServiceContext#getVisitService()
+	 */
+	public static VisitService getVisitService() {
+		return getServiceContext().getVisitService();
 	}
 }
