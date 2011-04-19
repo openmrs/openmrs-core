@@ -985,4 +985,25 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		return saveRelationshipType(type);
 	}
 	
+	/**
+	 * @see org.openmrs.api.PersonService#voidPersonAddress(org.openmrs.PersonAddress, String)
+	 */
+	public PersonAddress voidPersonAddress(PersonAddress personAddress, String voidReason) {
+		return Context.getPersonService().savePersonAddress(personAddress);
+	}
+	
+	/**
+	 * @see org.openmrs.api.PersonService#unvoidPersonAddress(org.openmrs.PersonAddress)
+	 */
+	public PersonAddress unvoidPersonAddress(PersonAddress personAddress) throws APIException {
+		return Context.getPersonService().savePersonAddress(personAddress);
+	}
+	
+	/**
+	 * @see org.openmrs.api.PersonService#savePersonAddress(org.openmrs.PersonAddress)
+	 */
+	public PersonAddress savePersonAddress(PersonAddress personAddress) {
+		return dao.savePersonAddress(personAddress);
+	}
+	
 }
