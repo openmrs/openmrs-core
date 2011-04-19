@@ -9,12 +9,13 @@
 <%@ attribute name="showUnits" required="false" %>
 <%@ attribute name="showFormat" required="false" %>
 
+<openmrs:htmlInclude file="/dwr/engine.js" />
 <openmrs:htmlInclude file="/dwr/interface/DWRConceptService.js" />
 
 <script type="text/javascript">
 	
 	function validateNumericRange(conceptId, field) {
-		var errorTag = $('numericRangeError'+conceptId);
+		var errorTag = document.getElementById('numericRangeError'+conceptId);
 		if (field.value != '') {
 			if (isNaN(field.value)) {
 				errorTag.innerHTML = '<spring:message code="error.number" />';
