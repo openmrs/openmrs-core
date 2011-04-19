@@ -1264,4 +1264,55 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		assertEquals("Smith", pname.getFamilyName2());
 	}
 	
+	/**
+	 * @see {@link PersonService#voidPersonName(org.openmrs.PersonName, String)}
+	 */
+	@Test
+	@Verifies(value = "should void personName with the given reason", method = "voidPersonName(PersonName)")
+	public void voidPersonName_shouldVoidPersonNameWithTheGivenReason() throws Exception {
+		executeDataSet("org/openmrs/api/include/PersionServiceTest-voidUnvoidPersonName.xml");
+		PersonName personName = Context.getPersonService().getPersonNameByUuid("5e6571cc-c7f2-41de-b289-f55f8fe79c6f");
+		
+		Assert.assertFalse(personName.isVoided());
+		
+		PersonName voidedPersonName = Context.getPersonService().voidPersonName(personName, "Test Voiding PersonName");
+		
+		Assert.assertTrue(voidedPersonName.isVoided());
+		Assert.assertNotNull(voidedPersonName.getVoidedBy());
+		Assert.assertNotNull(voidedPersonName.getDateVoided());
+		Assert.assertEquals(voidedPersonName.getVoidReason(), "Test Voiding PersonName");
+	}
+	
+	/**
+	 * @see {@link PersonService#unvoidPersonName(org.openmrs.PersonName)}
+	 */
+	@Test
+	@Verifies(value = "should unvoid voided personName", method = "unvoidPersonName(PersonName)")
+	public void unvoidPersonName_shouldUnvoidVoidedPersonName() throws Exception {
+		executeDataSet("org/openmrs/api/include/PersionServiceTest-voidUnvoidPersonName.xml");
+		PersonName voidedPersonName = Context.getPersonService().getPersonNameByUuid("a6ghgh7e-1384-493a-a55b-d325924acd94");
+		
+		Assert.assertTrue(voidedPersonName.isVoided());
+		
+		PersonName unvoidedPersonName = Context.getPersonService().unvoidPersonName(voidedPersonName);
+		
+		Assert.assertFalse(unvoidedPersonName.isVoided());
+		Assert.assertNull(unvoidedPersonName.getVoidedBy());
+		Assert.assertNull(unvoidedPersonName.getDateVoided());
+		Assert.assertNull(unvoidedPersonName.getVoidReason());
+		
+	}
+	
+	/**
+	 * @throws APIException
+	 * @see {@link PersonService#savePersonName(org.openmrs.PersonName)}
+	 */
+	@Test(expected = APIException.class)
+	@Verifies(value = "should fail if you try to void the last non voided name", method = "savePersonName(PersonName)")
+	public void savePersonName_shouldFailIfYouTryToVoidTheLastNonVoidedName() throws Exception {
+		executeDataSet("org/openmrs/api/include/PersionServiceTest-voidUnvoidPersonName.xml");
+		PersonName personName = Context.getPersonService().getPersonNameByUuid("39ghgh7b-6482-487d-94ce-c07bb3ca3cc1");
+		Assert.assertFalse(personName.isVoided());
+		Context.getPersonService().voidPersonName(personName, "Test Voiding PersonName");
+	}
 }

@@ -850,6 +850,44 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	}
 	
 	/**
+	 * @see org.openmrs.api.PersonService#voidPersonName(org.openmrs.PersonName, String)
+	 */
+	public PersonName voidPersonName(PersonName personName, String voidReason) throws APIException {
+		
+		return Context.getPersonService().savePersonName(personName);
+	}
+	
+	/**
+	 * @see org.openmrs.api.PersonService#unvoidPersonName(org.openmrs.PersonName)
+	 */
+	public PersonName unvoidPersonName(PersonName personName) throws APIException {
+		
+		return Context.getPersonService().savePersonName(personName);
+		
+	}
+	
+	/**
+	 * @see org.openmrs.api.PersonService#savePersonName(org.openmrs.PersonName)
+	 */
+	public PersonName savePersonName(PersonName personName) throws APIException {
+		
+		boolean atLeastOneNonVoidPersonNameLeft = false;
+		for (PersonName pn : personName.getPerson().getNames()) {
+			if (!pn.equals(personName) && !pn.isVoided()) {
+				atLeastOneNonVoidPersonNameLeft = true;
+				break;
+			}
+		}
+		
+		if (atLeastOneNonVoidPersonNameLeft) {
+			return dao.savePersonName(personName);
+		} else {
+			throw new APIException("At least one non-voided PersonName should be left on Person");
+		}
+		
+	}
+	
+	/**
 	 * @see org.openmrs.api.PersonService#getRelationshipMap(org.openmrs.RelationshipType)
 	 */
 	public Map<Person, List<Person>> getRelationshipMap(RelationshipType relType) throws APIException {
