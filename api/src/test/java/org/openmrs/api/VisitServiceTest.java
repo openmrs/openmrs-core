@@ -159,7 +159,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		
 		Context.getVisitService().unretireVisitType(visitType);
 		
-		visitType = Context.getVisitService().getVisitType(1);
+		visitType = Context.getVisitService().getVisitType(3);
 		Assert.assertNotNull(visitType);
 		Assert.assertFalse(visitType.isRetired());
 		Assert.assertNull(visitType.getRetireReason());
