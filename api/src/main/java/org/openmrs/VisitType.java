@@ -14,8 +14,8 @@
 package org.openmrs;
 
 /**
- * Represents the assortment of visits available to an implementation. These could include items
- * like "Initial HIV Clinic Visit", "Return TB Clinic Visit", and "Hospitalization".
+ * Represents the assortment of visit types available to an implementation. These could include
+ * items like "Initial HIV Clinic Visit", "Return TB Clinic Visit", and "Hospitalization".
  * 
  * @since 1.9
  */
@@ -50,19 +50,31 @@ public class VisitType extends BaseOpenmrsMetadata implements java.io.Serializab
 		setDescription(description);
 	}
 	
+	/**
+	 * @return Returns the visitTypeId.
+	 */
 	public Integer getVisitTypeId() {
 		return visitTypeId;
 	}
 	
+	/**
+	 * @param visitTypeId the visitTypeId to set.
+	 */
 	public void setVisitTypeId(Integer visitTypeId) {
 		this.visitTypeId = visitTypeId;
 	}
 	
+	/**
+	 * @see org.openmrs.OpenmrsObject#getId()
+	 */
 	@Override
 	public Integer getId() {
 		return getVisitTypeId();
 	}
 	
+	/**
+	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
+	 */
 	@Override
 	public void setId(Integer id) {
 		setVisitTypeId(id);
