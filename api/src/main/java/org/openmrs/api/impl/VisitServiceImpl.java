@@ -81,8 +81,6 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	 * @see org.openmrs.api.VisitService#retireVisitType(org.openmrs.VisitType, java.lang.String)
 	 */
 	public VisitType retireVisitType(VisitType visitType, String reason) {
-		visitType.setRetired(true);
-		visitType.setRetireReason(reason);
 		return saveVisitType(visitType);
 	}
 	
@@ -90,7 +88,6 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	 * @see org.openmrs.api.VisitService#unretireVisitType(org.openmrs.VisitType)
 	 */
 	public VisitType unretireVisitType(VisitType visitType) {
-		visitType.setRetired(false);
 		return saveVisitType(visitType);
 	}
 	
