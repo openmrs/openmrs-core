@@ -16,6 +16,8 @@ package org.openmrs.api;
 import java.util.List;
 
 import org.openmrs.VisitType;
+import org.openmrs.annotation.Authorized;
+import org.openmrs.util.PrivilegeConstants;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -30,8 +32,10 @@ public interface VisitService extends OpenmrsService {
 	 * Gets all visit types.
 	 * 
 	 * @return a list of visit type objects.
+	 * @should get all visit types
 	 */
 	@Transactional(readOnly = true)
+	@Authorized({ PrivilegeConstants.VIEW_VISIT_TYPES })
 	List<VisitType> getAllVisitTypes();
 	
 	/**
@@ -39,8 +43,10 @@ public interface VisitService extends OpenmrsService {
 	 * 
 	 * @param visitTypeId the visit type id.
 	 * @return the visit type object found with the given id, else null.
+	 * @should get correct visit type
 	 */
 	@Transactional(readOnly = true)
+	@Authorized({ PrivilegeConstants.VIEW_VISIT_TYPES })
 	VisitType getVisitType(Integer visitTypeId);
 	
 	/**
@@ -48,8 +54,10 @@ public interface VisitService extends OpenmrsService {
 	 * 
 	 * @param uuid the visit type UUID.
 	 * @return the visit type object found with the given uuid, else null.
+	 * @should get correct visit type
 	 */
 	@Transactional(readOnly = true)
+	@Authorized({ PrivilegeConstants.VIEW_VISIT_TYPES })
 	VisitType getVisitTypeByUuid(String uuid);
 	
 	/**
@@ -57,8 +65,10 @@ public interface VisitService extends OpenmrsService {
 	 * 
 	 * @param fuzzySearchPhrase the search phrase to use.
 	 * @return a list of all visit types with names similar to or containing the given phrase
+	 * @should get correct visit types
 	 */
 	@Transactional(readOnly = true)
+	@Authorized({ PrivilegeConstants.VIEW_VISIT_TYPES })
 	List<VisitType> getVisitTypes(String fuzzySearchPhrase);
 	
 	/**
@@ -66,7 +76,10 @@ public interface VisitService extends OpenmrsService {
 	 * 
 	 * @param visitType the visit type to create or update.
 	 * @return the created or updated visit type.
+	 * @should save new visit type
+	 * @should save edited visit type
 	 */
+	@Authorized({ PrivilegeConstants.MANAGE_VISIT_TYPES })
 	VisitType saveVisitType(VisitType visitType);
 	
 	/**
@@ -75,7 +88,9 @@ public interface VisitService extends OpenmrsService {
 	 * @param visitType the visit type to retire.
 	 * @param reason the reason why the visit type is retired.
 	 * @return the visit type that has been retired.
+	 * @should retire given visit type
 	 */
+	@Authorized({ PrivilegeConstants.MANAGE_VISIT_TYPES })
 	VisitType retireVisitType(VisitType visitType, String reason);
 	
 	/**
@@ -83,13 +98,17 @@ public interface VisitService extends OpenmrsService {
 	 * 
 	 * @param visitType the visit type to unretire.
 	 * @return the unretired visit type
+	 * @should unretire given visit type
 	 */
+	@Authorized({ PrivilegeConstants.MANAGE_VISIT_TYPES })
 	VisitType unretireVisitType(VisitType visitType);
 	
 	/**
 	 * Completely removes a visit type from the database. This is not reversible.
 	 * 
 	 * @param visitType the visit type to delete from the database.
+	 * @should delete given visit type
 	 */
+	@Authorized({ PrivilegeConstants.MANAGE_VISIT_TYPES })
 	void purgeVisitType(VisitType visitType);
 }

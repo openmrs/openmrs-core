@@ -68,7 +68,7 @@ public class HibernateVisitDAO implements VisitDAO {
 	@SuppressWarnings("unchecked")
 	public List<VisitType> getVisitTypes(String fuzzySearchPhrase) {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(VisitType.class);
-		criteria.add(Restrictions.like("name", fuzzySearchPhrase, MatchMode.ANYWHERE));
+		criteria.add(Restrictions.ilike("name", fuzzySearchPhrase, MatchMode.ANYWHERE));
 		criteria.addOrder(Order.asc("name"));
 		return criteria.list();
 	}
