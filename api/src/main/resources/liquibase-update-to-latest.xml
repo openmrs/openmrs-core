@@ -4323,9 +4323,7 @@
 			<column name="name" type="varchar(255)">
 				<constraints nullable="false"/>
 			</column>
-			<column name="description" type="varchar(1024)" >
-				<constraints nullable="false"/>
-			</column>
+			<column name="description" type="varchar(1024)" />
 			<column name="uuid" type="char(38)">
 				<constraints nullable="false" unique="true"/>
 			</column>
