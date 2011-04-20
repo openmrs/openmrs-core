@@ -42,15 +42,15 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	public void getVisitType_shouldGetCorrentVisitType() throws Exception {
 		VisitType visitType = Context.getVisitService().getVisitType(1);
 		Assert.assertNotNull(visitType);
-		Assert.assertTrue("Initial HIV Clinic Visit".equals(visitType.getName()));
+		Assert.assertEquals("Initial HIV Clinic Visit", visitType.getName());
 		
 		visitType = Context.getVisitService().getVisitType(2);
 		Assert.assertNotNull(visitType);
-		Assert.assertTrue("Return TB Clinic Visit".equals(visitType.getName()));
+		Assert.assertEquals("Return TB Clinic Visit", visitType.getName());
 		
 		visitType = Context.getVisitService().getVisitType(3);
 		Assert.assertNotNull(visitType);
-		Assert.assertTrue("Hospitalization".equals(visitType.getName()));
+		Assert.assertEquals("Hospitalization", visitType.getName());
 		
 		visitType = Context.getVisitService().getVisitType(4);
 		Assert.assertNull(visitType);
@@ -61,15 +61,15 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	public void getVisitTypeByUuid_shouldGetCorrentVisitType() throws Exception {
 		VisitType visitType = Context.getVisitService().getVisitTypeByUuid("c0c579b0-8e59-401d-8a4a-976a0b183519");
 		Assert.assertNotNull(visitType);
-		Assert.assertTrue("Initial HIV Clinic Visit".equals(visitType.getName()));
+		Assert.assertEquals("Initial HIV Clinic Visit", visitType.getName());
 		
 		visitType = Context.getVisitService().getVisitTypeByUuid("759799ab-c9a5-435e-b671-77773ada74e4");
 		Assert.assertNotNull(visitType);
-		Assert.assertTrue("Return TB Clinic Visit".equals(visitType.getName()));
+		Assert.assertEquals("Return TB Clinic Visit", visitType.getName());
 		
 		visitType = Context.getVisitService().getVisitTypeByUuid("759799ab-c9a5-435e-b671-77773ada74e6");
 		Assert.assertNotNull(visitType);
-		Assert.assertTrue("Hospitalization".equals(visitType.getName()));
+		Assert.assertEquals("Hospitalization", visitType.getName());
 		
 		visitType = Context.getVisitService().getVisitTypeByUuid("759799ab-c9a5-435e-b671-77773ada74e1");
 		Assert.assertNull(visitType);
@@ -81,13 +81,13 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		List<VisitType> visitTypes = Context.getVisitService().getVisitTypes("HIV Clinic");
 		Assert.assertNotNull(visitTypes);
 		Assert.assertEquals(1, visitTypes.size());
-		Assert.assertTrue("Initial HIV Clinic Visit".equals(visitTypes.get(0).getName()));
+		Assert.assertEquals("Initial HIV Clinic Visit", visitTypes.get(0).getName());
 		
 		visitTypes = Context.getVisitService().getVisitTypes("Clinic Visit");
 		Assert.assertNotNull(visitTypes);
 		Assert.assertEquals(2, visitTypes.size());
-		Assert.assertTrue("Initial HIV Clinic Visit".equals(visitTypes.get(0).getName()));
-		Assert.assertTrue("Return TB Clinic Visit".equals(visitTypes.get(1).getName()));
+		Assert.assertEquals("Initial HIV Clinic Visit", visitTypes.get(0).getName());
+		Assert.assertEquals("Return TB Clinic Visit", visitTypes.get(1).getName());
 		
 		visitTypes = Context.getVisitService().getVisitTypes("ClinicVisit");
 		Assert.assertNotNull(visitTypes);
@@ -97,15 +97,14 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should save new visit type", method = "saveVisitType(VisitType)")
 	public void saveVisitType_shouldSaveNewVisitType() throws Exception {
-		VisitType visitType = Context.getVisitService().getVisitType(4);
-		Assert.assertNull(visitType);
+		List<VisitType> visitTypes = Context.getVisitService().getVisitTypes("Some Name");
+		Assert.assertEquals(0, visitTypes.size());
 		
-		visitType = new VisitType("Some Name", "Description");
+		VisitType visitType = new VisitType("Some Name", "Description");
 		Context.getVisitService().saveVisitType(visitType);
 		
-		visitType = Context.getVisitService().getVisitType(4);
-		Assert.assertNotNull(visitType);
-		Assert.assertTrue("Some Name".equals(visitType.getName()));
+		visitTypes = Context.getVisitService().getVisitTypes("Some Name");
+		Assert.assertEquals(1, visitTypes.size());
 		
 		//Should create a new visit type row.
 		Assert.assertEquals(4, Context.getVisitService().getAllVisitTypes().size());
@@ -116,7 +115,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	public void saveVisitType_shouldSaveEditedVisitType() throws Exception {
 		VisitType visitType = Context.getVisitService().getVisitType(1);
 		Assert.assertNotNull(visitType);
-		Assert.assertTrue("Initial HIV Clinic Visit".equals(visitType.getName()));
+		Assert.assertEquals("Initial HIV Clinic Visit", visitType.getName());
 		
 		visitType.setName("Edited Name");
 		visitType.setDescription("Edited Description");
@@ -124,8 +123,8 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		
 		visitType = Context.getVisitService().getVisitType(1);
 		Assert.assertNotNull(visitType);
-		Assert.assertTrue("Edited Name".equals(visitType.getName()));
-		Assert.assertTrue("Edited Description".equals(visitType.getDescription()));
+		Assert.assertEquals("Edited Name", visitType.getName());
+		Assert.assertEquals("Edited Description", visitType.getDescription());
 		
 		//Should not change the number of visit types.
 		Assert.assertEquals(3, Context.getVisitService().getAllVisitTypes().size());
@@ -144,7 +143,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		visitType = Context.getVisitService().getVisitType(1);
 		Assert.assertNotNull(visitType);
 		Assert.assertTrue(visitType.isRetired());
-		Assert.assertTrue("retire reason".equals(visitType.getRetireReason()));
+		Assert.assertEquals("retire reason", visitType.getRetireReason());
 		
 		//Should not change the number of visit types.
 		Assert.assertEquals(3, Context.getVisitService().getAllVisitTypes().size());
@@ -152,11 +151,11 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	
 	@Test
 	@Verifies(value = "should unretire given visit type", method = "unretireVisitType(VisitType)")
-	public void unretireVisitType_shouldRetireGivenVisitType() throws Exception {
+	public void unretireVisitType_shouldUnretireGivenVisitType() throws Exception {
 		VisitType visitType = Context.getVisitService().getVisitType(3);
 		Assert.assertNotNull(visitType);
 		Assert.assertTrue(visitType.isRetired());
-		Assert.assertTrue("Some Retire Reason".equals(visitType.getRetireReason()));
+		Assert.assertEquals("Some Retire Reason", visitType.getRetireReason());
 		
 		Context.getVisitService().unretireVisitType(visitType);
 		

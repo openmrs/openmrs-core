@@ -38,20 +38,20 @@ public interface VisitDAO {
 	/**
 	 * @see org.openmrs.api.VisitService#getVisitTypeByUuid(java.lang.String)
 	 */
-	public VisitType getVisitTypeByUuid(String uuid);
+	VisitType getVisitTypeByUuid(String uuid);
 	
 	/**
 	 * @see org.openmrs.api.VisitService#getVisitTypes(java.lang.String)
 	 */
-	public List<VisitType> getVisitTypes(String fuzzySearchPhrase);
+	List<VisitType> getVisitTypes(String fuzzySearchPhrase);
 	
 	/**
 	 * @see org.openmrs.api.VisitService#saveVisitType(org.openmrs.VisitType)
 	 */
-	public VisitType saveVisitType(VisitType visitType);
+	VisitType saveVisitType(VisitType visitType);
 	
 	/**
 	 * @see org.openmrs.api.VisitService#purgeVisitType(org.openmrs.VisitType)
 	 */
-	public void purgeVisitType(VisitType visitType);
+	void purgeVisitType(VisitType visitType);
 }

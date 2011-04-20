@@ -393,4 +393,9 @@ public class PrivilegeConstants {
 	@AddOnStartup(description = "Able to view/add/remove the concept stop words")
 	public static final String MANAGE_CONCEPT_STOP_WORDS = "Manage Concept Stop Words";
 	
+	@AddOnStartup(description = "Able to view visit types")
+	public static final String VIEW_VISIT_TYPES = "View Visit Types";
+	
+	@AddOnStartup(description = "Able to add/edit/delete visit types")
+	public static final String MANAGE_VISIT_TYPES = "Manage Visit Types";
 }
