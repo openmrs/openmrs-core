@@ -13,10 +13,17 @@
  */
 package org.openmrs.api.db;
 
+import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
+import org.openmrs.Concept;
+import org.openmrs.Location;
+import org.openmrs.Patient;
+import org.openmrs.Visit;
 import org.openmrs.VisitType;
 import org.openmrs.api.APIException;
+import org.openmrs.api.VisitService;
 
 /**
  * Database access functions for visits.
@@ -54,4 +61,61 @@ public interface VisitDAO {
 	 * @see org.openmrs.api.VisitService#purgeVisitType(org.openmrs.VisitType)
 	 */
 	void purgeVisitType(VisitType visitType);
+	
+	/**
+	 * Gets all visits in the database if includeVoided is set to true otherwise returns only
+	 * unvoided ones
+	 * 
+	 * @param includeVoided Specifies if voided visits should be returned or not
+	 * @return a list of visits
+	 * @throws DAOException
+	 */
+	public List<Visit> getVisits(boolean includeVoided) throws DAOException;
+	
+	/**
+	 * @see VisitService#getVisit(Integer)
+	 * @throws DAOException
+	 */
+	public Visit getVisit(Integer visitId) throws DAOException;
+	
+	/**
+	 * @see VisitService#getVisitByUuid(String)
+	 * @throws DAOException
+	 */
+	public Visit getVisitByUuid(String uuid) throws DAOException;
+	
+	/**
+	 * @see VisitService#saveVisit(Visit)
+	 * @throws DAOException
+	 */
+	public Visit saveVisit(Visit visit) throws DAOException;
+	
+	/**
+	 * @see VisitService#purgeVisit(Visit)
+	 * @throws DAOException
+	 */
+	public void purgeVisit(Visit visit) throws DAOException;
+	
+	/**
+	 * Gets the visits matching the specified arguments
+	 * 
+	 * @param visitTypes a list of visit types to match against
+	 * @param patients a list of patients to match against
+	 * @param locations a list of locations to match against
+	 * @param indications a list of indication concepts to match against
+	 * @param minStartDatetime the minimum visit start date to match against
+	 * @param maxStartDatetime the maximum visit start date to match against
+	 * @param minEndDatetime the minimum visit end date to match against
+	 * @param maxEndDatetime the maximum visit end date to match against
+	 * @param includeInactive specifies if visits that are no longer active should be returned or
+	 *            not, inactive visits are visits whose end date is not null.
+	 * @param includeVoided specifies if voided visits should also be returned
+	 * @return a list of visits
+	 * @throws DAOException
+	 * @should return all unvoided visits if includeInactive is set to true
+	 * @should return only active visits if includeInactive is set to false
+	 */
+	public List<Visit> getVisits(Collection<VisitType> visitTypes, Collection<Patient> patients,
+	        Collection<Location> locations, Collection<Concept> indications, Date minStartDatetime, Date maxStartDatetime,
+	        Date minEndDatetime, Date maxEndDatetime, boolean includeInactive, boolean includeVoided) throws DAOException;
 }

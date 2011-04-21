@@ -280,4 +280,10 @@
   <visit_type visit_type_id="1" name="Initial HIV Clinic Visit" description="Initial HIV Clinic Visit Description" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="c0c579b0-8e59-401d-8a4a-976a0b183519"/>
   <visit_type visit_type_id="2" name="Return TB Clinic Visit" description="Return TB Clinic Visit Description" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" uuid="759799ab-c9a5-435e-b671-77773ada74e4"/>
   <visit_type visit_type_id="3" name="Hospitalization" description="Hospitalization Description" creator="1" date_created="2005-01-01 00:00:00.0" retired="true" retire_reason="Some Retire Reason" uuid="759799ab-c9a5-435e-b671-77773ada74e6"/> 
+  <visit visit_id="1" patient_id="2" visit_type_id="1" date_started="2005-01-01 00:00:00.0" location_id="1" indication_concept_id="5497" creator="1" date_created="2005-01-01 00:00:00.0" voided="0" uuid="1e5d5d48-6b78-11e0-93c3-18a905e044dc" />
+  <visit visit_id="2" patient_id="2" visit_type_id="1" date_started="2005-01-01 00:00:00.0" creator="1" date_created="2005-01-01 00:00:00.0" voided="0" uuid="4e663d66-6b78-11e0-93c3-18a905e044dc" />
+  <visit visit_id="3" patient_id="2" visit_type_id="2" date_started="2005-01-01 00:00:00.0" creator="1" date_created="2005-01-01 00:00:00.0" voided="0" uuid="6f85b2a6-6b78-11e0-93c3-18a905e044dc" />
+  <visit visit_id="4" patient_id="6" visit_type_id="1" date_started="2005-01-01 00:00:00.0" creator="1" date_created="2005-01-01 00:00:00.0" voided="0" uuid="7d8c1980-6b78-11e0-93c3-18a905e044dc" />
+  <visit visit_id="5" patient_id="6" visit_type_id="1" date_started="2005-01-01 00:00:00.0" creator="1" date_created="2005-01-01 00:00:00.0" voided="0" uuid="8cfda6ae-6b78-11e0-93c3-18a905e044dc" />
+  <visit visit_id="6" patient_id="2" visit_type_id="1" date_started="2005-01-01 00:00:00.0" creator="1" date_created="2005-01-01 00:00:00.0" voided="1" voided_by="1" date_voided="2005-01-01 00:00:00.0" void_reason="no reason" uuid="e1428fea-6b78-11e0-93c3-18a905e044dc" />
 </dataset>

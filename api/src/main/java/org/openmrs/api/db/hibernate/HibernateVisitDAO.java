@@ -13,16 +13,24 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.openmrs.Concept;
+import org.openmrs.Location;
+import org.openmrs.Patient;
+import org.openmrs.Visit;
 import org.openmrs.VisitType;
 import org.openmrs.api.APIException;
+import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.VisitDAO;
 
 /**
@@ -37,6 +45,10 @@ public class HibernateVisitDAO implements VisitDAO {
 	
 	public void setSessionFactory(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
+	}
+	
+	private Session getCurrentSession() {
+		return sessionFactory.getCurrentSession();
 	}
 	
 	/**
@@ -88,7 +100,93 @@ public class HibernateVisitDAO implements VisitDAO {
 		sessionFactory.getCurrentSession().delete(visitType);
 	}
 	
-	private Session getCurrentSession() {
-		return sessionFactory.getCurrentSession();
+	/**
+	 * @see org.openmrs.api.db.VisitDAO#getVisits(boolean)
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Visit> getVisits(boolean includeVoided) throws DAOException {
+		Criteria criteria = getCurrentSession().createCriteria(Visit.class);
+		if (!includeVoided)
+			criteria.add(Restrictions.eq("voided", false));
+		
+		return criteria.list();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.VisitDAO#getVisit(java.lang.Integer)
+	 */
+	@Override
+	public Visit getVisit(Integer visitId) throws DAOException {
+		return (Visit) getCurrentSession().get(Visit.class, visitId);
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.VisitDAO#getVisitByUuid(java.lang.String)
+	 */
+	@Override
+	public Visit getVisitByUuid(String uuid) throws DAOException {
+		return (Visit) getCurrentSession().createQuery("from Visit v where v.uuid = :uuid").setString("uuid", uuid)
+		        .uniqueResult();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.VisitDAO#saveVisit(org.openmrs.Visit)
+	 */
+	@Override
+	public Visit saveVisit(Visit visit) throws DAOException {
+		getCurrentSession().saveOrUpdate(visit);
+		return visit;
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.VisitDAO#purgeVisit(org.openmrs.Visit)
+	 */
+	@Override
+	public void purgeVisit(Visit visit) throws DAOException {
+		getCurrentSession().delete(visit);
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.VisitDAO#getVisits(java.util.Collection, java.util.Collection,
+	 *      java.util.Collection, java.util.Collection, java.util.Date, java.util.Date,
+	 *      java.util.Date, java.util.Date, boolean)
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Visit> getVisits(Collection<VisitType> visitTypes, Collection<Patient> patients,
+	        Collection<Location> locations, Collection<Concept> indications, Date minStartDatetime, Date maxStartDatetime,
+	        Date minEndDatetime, Date maxEndDatetime, boolean includeInactive, boolean includeVoided) throws DAOException {
+		
+		Criteria criteria = getCurrentSession().createCriteria(Visit.class);
+		
+		if (CollectionUtils.isNotEmpty(visitTypes))
+			criteria.add(Restrictions.in("visitType", visitTypes));
+		if (CollectionUtils.isNotEmpty(patients))
+			criteria.add(Restrictions.in("patient", patients));
+		if (CollectionUtils.isNotEmpty(locations))
+			criteria.add(Restrictions.in("location", locations));
+		if (CollectionUtils.isNotEmpty(indications))
+			criteria.add(Restrictions.in("indication", indications));
+		
+		if (minStartDatetime != null)
+			criteria.add(Restrictions.ge("startDatetime", minStartDatetime));
+		if (maxStartDatetime != null)
+			criteria.add(Restrictions.le("startDatetime", maxStartDatetime));
+		
+		//active visits have null end date, so it doesn't make sense to search against it if include inactive it set to false
+		if (!includeInactive)
+			criteria.add(Restrictions.isNull("stopDatetime"));
+		else {
+			if (minEndDatetime != null)
+				criteria.add(Restrictions.ge("stopDatetime", minEndDatetime));
+			if (maxEndDatetime != null)
+				criteria.add(Restrictions.le("stopDatetime", maxEndDatetime));
+		}
+		
+		if (!includeVoided)
+			criteria.add(Restrictions.eq("voided", false));
+		
+		return criteria.list();
 	}
 }

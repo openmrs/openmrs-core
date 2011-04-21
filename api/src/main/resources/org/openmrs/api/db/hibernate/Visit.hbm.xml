@@ -29,7 +29,7 @@
 		
 		<!-- Associations -->
 
-		<many-to-one name="visitType" class="VisitType"	not-null="true" column="visit_type" />
+		<many-to-one name="visitType" class="VisitType"	not-null="true" column="visit_type_id" />
 		
 		<many-to-one name="patient" class="Patient" not-null="true" column="patient_id" />
 		
