@@ -715,6 +715,7 @@
 	<bean id="conceptDrugValidator" class="org.openmrs.validator.ConceptDrugValidator"/>
 	<bean id="hl7SourceValidator" class="org.openmrs.validator.HL7SourceValidator"/>
 	<bean id="personAddressValidator" class="org.openmrs.validator.PersonAddressValidator"/>
+	<bean id="visitTypeValidator" class="org.openmrs.validator.VisitTypeValidator" />
 
 
 	<!--  ************************ END VALIDATOR CONFIGURATION  ************************  -->

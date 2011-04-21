@@ -4308,7 +4308,7 @@
 		</delete>
 	</changeSet>
 	
-	<changeSet id="20090224-1001-create-visit_type" author="dkayiwa">
+	<changeSet id="20090224-1002-create-visit_type" author="dkayiwa">
 		<preConditions onFail="MARK_RAN">
 			<not><tableExists tableName="visit_type"/></not>
 		</preConditions>
@@ -4340,7 +4340,7 @@
 			</column>
 			<column name="retired_by" type="int" />
 			<column name="date_retired" type="datetime" />
-			<column name="retired_reason" type="varchar(255)" defaultValue="null"/>
+			<column name="retire_reason" type="varchar(255)" defaultValue="null"/>
 		</createTable>
 		
 		<addForeignKeyConstraint constraintName="visit_type_creator"
