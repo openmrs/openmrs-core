@@ -13,9 +13,18 @@
  */
 package org.openmrs.api.impl;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
+import org.openmrs.Concept;
+import org.openmrs.Location;
+import org.openmrs.Patient;
+import org.openmrs.Visit;
 import org.openmrs.VisitType;
+import org.openmrs.api.APIException;
 import org.openmrs.api.VisitService;
 import org.openmrs.api.db.VisitDAO;
 
@@ -96,5 +105,104 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	 */
 	public void purgeVisitType(VisitType visitType) {
 		getVisitDAO().purgeVisitType(visitType);
+	}
+	
+	/**
+	 * @see org.openmrs.api.VisitService#getAllVisits()
+	 */
+	@Override
+	public List<Visit> getAllVisits() throws APIException {
+		return dao.getVisits(false);
+	}
+	
+	/**
+	 * @see org.openmrs.api.VisitService#getVisit(java.lang.Integer)
+	 */
+	@Override
+	public Visit getVisit(Integer visitId) throws APIException {
+		return dao.getVisit(visitId);
+	}
+	
+	/**
+	 * @see org.openmrs.api.VisitService#getVisitByUuid(java.lang.String)
+	 */
+	@Override
+	public Visit getVisitByUuid(String uuid) throws APIException {
+		return dao.getVisitByUuid(uuid);
+	}
+	
+	/**
+	 * @see org.openmrs.api.VisitService#saveVisit(org.openmrs.Visit)
+	 */
+	@Override
+	public Visit saveVisit(Visit visit) throws APIException {
+		return dao.saveVisit(visit);
+	}
+	
+	/**
+	 * @see org.openmrs.api.VisitService#voidVisit(org.openmrs.Visit, java.lang.String)
+	 */
+	@Override
+	public Visit voidVisit(Visit visit, String reason) throws APIException {
+		return dao.saveVisit(visit);
+	}
+	
+	/**
+	 * @see org.openmrs.api.VisitService#unvoidVisit(org.openmrs.Visit)
+	 */
+	@Override
+	public Visit unvoidVisit(Visit visit) throws APIException {
+		return dao.saveVisit(visit);
+	}
+	
+	/**
+	 * @see org.openmrs.api.VisitService#purgeVisit(org.openmrs.Visit)
+	 */
+	@Override
+	public void purgeVisit(Visit visit) throws APIException {
+		dao.purgeVisit(visit);
+	}
+	
+	/**
+	 * @see org.openmrs.api.VisitService#getVisits(java.util.Collection, java.util.Collection,
+	 *      java.util.Collection, java.util.Collection, java.util.Date, java.util.Date,
+	 *      java.util.Date, java.util.Date, boolean)
+	 */
+	@Override
+	public List<Visit> getVisits(Collection<VisitType> visitTypes, Collection<Patient> patients,
+	        Collection<Location> locations, Collection<Concept> indications, Date minStartDatetime, Date maxStartDatetime,
+	        Date minEndDatetime, Date maxEndDatetime, boolean includeVoided) throws APIException {
+		
+		return dao.getVisits(visitTypes, patients, locations, indications, minStartDatetime, maxStartDatetime,
+		    minEndDatetime, maxEndDatetime, true, includeVoided);
+	}
+	
+	/**
+	 * @see org.openmrs.api.VisitService#getVisitsByPatient(org.openmrs.Patient)
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Visit> getVisitsByPatient(Patient patient) throws APIException {
+		List<Patient> patients = new ArrayList<Patient>();
+		//Don't bother to hit the database
+		if (patient == null || patient.getId() == null)
+			return Collections.EMPTY_LIST;
+		
+		patients.add(patient);
+		return getVisits(null, patients, null, null, null, null, null, null, false);
+	}
+	
+	/**
+	 * @see org.openmrs.api.VisitService#getActiveVisitsByPatient(org.openmrs.Patient)
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Visit> getActiveVisitsByPatient(Patient patient) throws APIException {
+		List<Patient> patients = new ArrayList<Patient>();
+		if (patient == null || patient.getId() == null)
+			return Collections.EMPTY_LIST;
+		
+		patients.add(patient);
+		return dao.getVisits(null, patients, null, null, null, null, null, null, false, false);
 	}
 }

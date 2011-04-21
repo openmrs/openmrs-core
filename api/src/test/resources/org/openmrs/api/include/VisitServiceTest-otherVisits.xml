@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+  <visit visit_id="7" patient_id="2" visit_type_id="1" date_started="2005-01-01 02:00:00.0" creator="1" date_created="2005-01-01 00:00:00.0" voided="0" uuid="a2c3868a-6b90-11e0-93c3-18a905e044dc" />
+  <visit visit_id="8" patient_id="2" visit_type_id="1" date_started="2005-01-01 04:00:00.0" date_stopped="2005-02-01 16:00:00.0" creator="1" date_created="2005-01-01 00:00:00.0" voided="0" uuid="a3a5913e-6b94-11e0-93c3-18a905e044dc" />
+  <visit visit_id="9" patient_id="2" visit_type_id="1" date_started="2005-01-02 00:00:00.0" date_stopped="2005-02-02 11:00:00.0" creator="1" date_created="2005-01-01 00:00:00.0" voided="0" uuid="ae401f88-6b94-11e0-93c3-18a905e044dc" />
+  <visit visit_id="10" patient_id="2" visit_type_id="1" date_started="2005-01-03 00:00:00.0" date_stopped="2005-02-03 14:00:00.0" creator="1" date_created="2005-01-01 00:00:00.0" voided="0" uuid="ba4781f4-6b94-11e0-93c3-18a905e044dc" />
+  <visit visit_id="12" patient_id="2" visit_type_id="1" date_started="2005-01-04 00:00:00.0" date_stopped="2005-02-04 11:00:00.0" creator="1" date_created="2005-01-01 00:00:00.0" voided="0" uuid="c7e19142-6b94-11e0-93c3-18a905e044dc" />
+  <visit visit_id="13" patient_id="6" visit_type_id="1" date_started="2005-01-05 00:00:00.0" date_stopped="2005-02-05 15:00:00.0" creator="1" date_created="2005-01-01 00:00:00.0" voided="0" uuid="0b2056be-6b95-11e0-93c3-18a905e044dc" />
+  <visit visit_id="14" patient_id="6" visit_type_id="1" date_started="2005-01-06 00:00:00.0" date_stopped="2005-02-06 16:00:00.0" creator="1" date_created="2005-01-01 00:00:00.0" voided="0" uuid="161b3002-6b95-11e0-93c3-18a905e044dc" />
+  <visit visit_id="15" patient_id="6" visit_type_id="1" date_started="2005-01-07 00:00:00.0" date_stopped="2005-02-07 12:00:00.0" creator="1" date_created="2005-01-01 00:00:00.0" voided="0" uuid="1f9e8336-6b95-11e0-93c3-18a905e044dc" />
+</dataset>

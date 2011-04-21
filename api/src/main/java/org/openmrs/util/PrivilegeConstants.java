@@ -398,4 +398,19 @@ public class PrivilegeConstants {
 	
 	@AddOnStartup(description = "Able to add/edit/delete visit types")
 	public static final String MANAGE_VISIT_TYPES = "Manage Visit Types";
+	
+	@AddOnStartup(description = "Able to view visits")
+	public static final String VIEW_VISITS = "View Visits";
+	
+	@AddOnStartup(description = "Able to add visits")
+	public static final String ADD_VISITS = "Add Visits";
+	
+	@AddOnStartup(description = "Able to edit visits")
+	public static final String EDIT_VISITS = "Edit Visits";
+	
+	@AddOnStartup(description = "Able to delete visits")
+	public static final String DELETE_VISITS = "Delete Visits";
+	
+	@AddOnStartup(description = "Able to purge visits")
+	public static final String PURGE_VISITS = "Purge Visits";
 }
