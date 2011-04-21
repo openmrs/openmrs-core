@@ -4308,7 +4308,7 @@
 		</delete>
 	</changeSet>
 	
-	<changeSet id="20090224-1000-create-visit_type" author="dkayiwa">
+	<changeSet id="20090224-1001-create-visit_type" author="dkayiwa">
 		<preConditions onFail="MARK_RAN">
 			<not><tableExists tableName="visit_type"/></not>
 		</preConditions>
