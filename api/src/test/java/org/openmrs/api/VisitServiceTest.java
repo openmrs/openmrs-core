@@ -396,4 +396,17 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(6, Context.getVisitService().getVisits(null, null, null, null, null, null, null, null, true)
 		        .size());
 	}
+	
+	@Test(expected = APIException.class)
+	@Verifies(value = "should throw error when name is null", method = "saveVisitType(VisitType)")
+	public void saveVisitType_shouldThrowErrorWhenNameIsNull() throws Exception {
+		Context.getVisitService().saveVisitType(new VisitType());
+	}
+	
+	@Test(expected = APIException.class)
+	@Verifies(value = "should throw error when name is empty string", method = "saveVisitType(VisitType)")
+	public void saveVisitType_shouldThrowErrorWhenNameIsEmptyString() throws Exception {
+		VisitType visitType = new VisitType("", null);
+		Context.getVisitService().saveVisitType(visitType);
+	}
 }
