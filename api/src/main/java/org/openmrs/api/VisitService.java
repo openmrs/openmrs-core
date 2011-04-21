@@ -84,9 +84,11 @@ public interface VisitService extends OpenmrsService {
 	 * @return the created or updated visit type.
 	 * @should save new visit type
 	 * @should save edited visit type
+	 * @should throw error when name is null
+	 * @should throw error when name is empty string
 	 */
 	@Authorized( { PrivilegeConstants.MANAGE_VISIT_TYPES })
-	VisitType saveVisitType(VisitType visitType);
+	VisitType saveVisitType(VisitType visitType) throws APIException;
 	
 	/**
 	 * Retires a given visit type.

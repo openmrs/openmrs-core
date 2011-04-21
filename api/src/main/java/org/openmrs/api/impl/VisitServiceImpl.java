@@ -27,6 +27,7 @@ import org.openmrs.VisitType;
 import org.openmrs.api.APIException;
 import org.openmrs.api.VisitService;
 import org.openmrs.api.db.VisitDAO;
+import org.openmrs.validator.ValidateUtil;
 
 /**
  * Default implementation of the {@link VisitService}. This class should not be used on its own. The
@@ -82,7 +83,8 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	/**
 	 * @see org.openmrs.api.VisitService#saveVisitType(org.openmrs.VisitType)
 	 */
-	public VisitType saveVisitType(VisitType visitType) {
+	public VisitType saveVisitType(VisitType visitType) throws APIException {
+		ValidateUtil.validate(visitType);
 		return getVisitDAO().saveVisitType(visitType);
 	}
 	
