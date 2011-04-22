@@ -96,7 +96,7 @@ public class PatientIdentifierValidator implements Validator {
 			if (Context.getPatientService().isIdentifierInUseByAnotherPatient(pi)) {
 				throw new IdentifierNotUniqueException(Context.getMessageSourceService().getMessage(
 				    "PatientIdentifier.error.notUniqueWithParameter", new Object[] { pi.getIdentifier() },
-				    Context.getLocale()));
+				    Context.getLocale()), pi);
 			}
 		}
 	}

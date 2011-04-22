@@ -53,6 +53,7 @@ import org.openmrs.propertyeditor.ConceptEditor;
 import org.openmrs.propertyeditor.LocationEditor;
 import org.openmrs.propertyeditor.PatientIdentifierTypeEditor;
 import org.openmrs.util.PrivilegeConstants;
+import org.openmrs.validator.PatientIdentifierValidator;
 import org.openmrs.validator.PatientValidator;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.controller.person.PersonFormController;
@@ -150,6 +151,10 @@ public class PatientFormController extends PersonFormController {
 							}
 							if (idPrefStatus != null && idPrefStatus.length > i)
 								pi.setPreferred(new Boolean(idPrefStatus[i]));
+							new PatientIdentifierValidator().validate(pi, errors);
+							if (errors.hasErrors()) {
+								return showForm(request, response, errors);
+							}
 							patient.addIdentifier(pi);
 						}
 					}
