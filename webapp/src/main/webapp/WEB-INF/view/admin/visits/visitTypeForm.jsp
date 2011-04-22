@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
 
-<openmrs:require privilege="Manage Visit Types" otherwise="/login.htm" redirect="/admin/visits/visitType.form" />
+<openmrs:require privilege="Manage Visit Types" otherwise="/login.htm" redirect="/admin/visits/visitType.list" />
 
 <%@ include file="/WEB-INF/template/header.jsp" %>
 <%@ include file="localHeader.jsp" %>
@@ -8,7 +8,7 @@
 <script type="text/javascript">
 
 	function confirmPurge() {
-		if (confirm("Are you sure you want to purge this object? It will be permanently removed from the system.")) {
+		if (confirm("<spring:message code='VisitType.purgeConfirmMessage' />")) {
 			return true;
 		} else {
 			return false;
@@ -41,7 +41,7 @@
 		<td>
 			<spring:bind path="visitType.name">
 				<input type="text" name="name" value="${status.value}" size="35" />
-				<c:if test="${status.errorMessage != ''}"><c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if></c:if>
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
 	</tr>
@@ -50,17 +50,14 @@
 		<td valign="top">
 			<spring:bind path="visitType.description">
 				<textarea name="description" rows="3" cols="40" onkeypress="return forceMaxLength(this, 1024);" >${status.value}</textarea>
-				<c:if test="${status.errorMessage != ''}"><c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if></c:if>
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
 	</tr>
 	<c:if test="${!(visitType.creator == null)}">
 		<tr>
 			<td><spring:message code="general.createdBy" /></td>
-			<td>
-				${visitType.creator.personName} -
-				<openmrs:formatDate date="${visitType.dateCreated}" type="long" />
-			</td>
+			<td><openmrs:format user="${ visitType.creator }"/></td>
 		</tr>
 	</c:if>
 </table>
