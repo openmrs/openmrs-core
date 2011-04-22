@@ -24,7 +24,7 @@ import org.springframework.validation.Validator;
 /**
  * Validates attributes on the {@link VisitType} object.
  * 
- * @since 1.5
+ * @since 1.9
  */
 @Handler(supports = { VisitType.class }, order = 50)
 public class VisitTypeValidator implements Validator {
