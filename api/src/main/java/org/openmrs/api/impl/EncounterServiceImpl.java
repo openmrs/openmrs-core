@@ -29,6 +29,8 @@ import org.openmrs.Obs;
 import org.openmrs.Order;
 import org.openmrs.Patient;
 import org.openmrs.User;
+import org.openmrs.Visit;
+import org.openmrs.VisitType;
 import org.openmrs.api.APIException;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.ObsService;
@@ -135,6 +137,9 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 					obs.setPerson(p);
 				}
 				
+				if (obs.getObsId() != null) {
+
+				}
 			}
 			
 			// same goes for Orders
@@ -215,11 +220,27 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 * @see org.openmrs.api.EncounterService#getEncounters(org.openmrs.Patient,
 	 *      org.openmrs.Location, java.util.Date, java.util.Date, java.util.Collection,
 	 *      java.util.Collection, java.util.Collection, boolean)
+	 * @deprecated replaced by
+	 *             {@link #getEncounters(Patient, Location, Date, Date, Collection, Collection, Collection, Collection, Collection, boolean)}
 	 */
+	@Deprecated
 	public List<Encounter> getEncounters(Patient who, Location loc, Date fromDate, Date toDate,
 	        Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes, Collection<User> providers,
 	        boolean includeVoided) {
-		return dao.getEncounters(who, loc, fromDate, toDate, enteredViaForms, encounterTypes, providers, includeVoided);
+		return dao.getEncounters(who, loc, fromDate, toDate, enteredViaForms, encounterTypes, providers, null, null,
+		    includeVoided);
+	}
+	
+	/**
+	 * @see org.openmrs.api.EncounterService#getEncounters(org.openmrs.Patient,
+	 *      org.openmrs.Location, java.util.Date, java.util.Date, java.util.Collection,
+	 *      java.util.Collection, java.util.Collection, boolean)
+	 */
+	public List<Encounter> getEncounters(Patient who, Location loc, Date fromDate, Date toDate,
+	        Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes, Collection<User> providers,
+	        Collection<VisitType> visitTypes, Collection<Visit> visits, boolean includeVoided) {
+		return dao.getEncounters(who, loc, fromDate, toDate, enteredViaForms, encounterTypes, providers, visitTypes, visits,
+		    includeVoided);
 	}
 	
 	/**
@@ -569,5 +590,13 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	@Override
 	public Integer getCountOfEncounters(String query, boolean includeVoided) {
 		return dao.getCountOfEncounters(query, includeVoided);
+	}
+	
+	/**
+	 * @see EncounterService#getEncountersByVisit(Visit)
+	 */
+	@Override
+	public List<Encounter> getEncountersByVisit(Visit visit) {
+		return dao.getEncountersByVisit(visit);
 	}
 }

@@ -4410,5 +4410,18 @@
 		</createIndex>
 	</changeSet>
 	
+	<changeSet id="20101209-10000-encounter-add-visit-id-column" author="dkayiwa">
+		<preConditions onFail="MARK_RAN">
+			<not><columnExists tableName="encounter" columnName="visit_id"/></not>
+		</preConditions>
+		<comment>Adding visit_id column to encounter table</comment>
+		<addColumn tableName="encounter">
+			<column name="visit_id" type="int" />
+		</addColumn>
+		<addForeignKeyConstraint constraintName="encounter_visit_id_fk"
+			baseTableName="encounter" baseColumnNames="visit_id"
+			referencedTableName="visit" referencedColumnNames="visit_id" />
+	</changeSet>
+	
 </databaseChangeLog>
 

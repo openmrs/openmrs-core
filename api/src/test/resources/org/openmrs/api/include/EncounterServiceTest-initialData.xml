@@ -59,6 +59,9 @@
   <orders order_id="1" order_type_id="1" patient_id="3" encounter_id="1" concept_id="1" orderer="1" creator="1" date_created="2006-03-11 15:57:35.0" voided="false" discontinued="false" uuid="0d86e8b4-2f33-495e-aa22-6954785e4e9e"/>
   
   <!-- an encounter with a mismatched order.patient_id -->
-  <encounter encounter_id="15" encounter_type="1" form_id="1" encounter_datetime="2001-01-01 00:00:00.0" patient_id="3" provider_id="1" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="0" uuid="7fffd6b9-0970-4967-88c7-0b7b50f12bc6"/>
-  <orders order_id="10" order_type_id="1" patient_id="2" encounter_id="15" concept_id="1" orderer="1" creator="1" date_created="2006-03-11 15:57:35.0" voided="false" discontinued="false" uuid="bf003896-2caf-42ef-8cfa-5ad29a11661f"/>
+  <encounter encounter_id="15" encounter_type="1" form_id="1" encounter_datetime="2001-01-01 00:00:00.0" patient_id="3" provider_id="1" location_id="1" visit_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="0" uuid="7fffd6b9-0970-4967-88c7-0b7b50f12bc6"/>
+  <orders order_id="10" order_type_id="1" patient_id="2" encounter_id="15" concept_id="1" orderer="1" creator="1" date_created="2006-03-11 15:57:35.0" voided="false" discontinued="false" uuid="bf003896-2caf-42ef-8cfa-5ad29a11661f"/> 
+
+  <visit visit_id="1" visit_type_id="2" date_started="2001-01-01 00:00:00.0" patient_id="3" location_id="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="0" uuid="7fffd6b9-0970-4967-88c7-0b7b50f12ab9"/>
+
 </dataset>

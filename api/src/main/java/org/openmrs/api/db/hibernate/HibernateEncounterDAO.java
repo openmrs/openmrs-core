@@ -38,6 +38,8 @@ import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.User;
+import org.openmrs.Visit;
+import org.openmrs.VisitType;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
@@ -110,8 +112,10 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	@SuppressWarnings("unchecked")
 	public List<Encounter> getEncounters(Patient patient, Location location, Date fromDate, Date toDate,
 	        Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes, Collection<User> providers,
-	        boolean includeVoided) {
+	        Collection<VisitType> visitTypes, Collection<Visit> visits, boolean includeVoided) {
+		
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Encounter.class);
+		
 		if (patient != null && patient.getPatientId() != null) {
 			crit.add(Expression.eq("patient", patient));
 		}
@@ -132,6 +136,13 @@ public class HibernateEncounterDAO implements EncounterDAO {
 		}
 		if (providers != null && providers.size() > 0) {
 			crit.add(Expression.in("provider", providers));
+		}
+		if (visitTypes != null && visitTypes.size() > 0) {
+			crit.createAlias("visit", "v");
+			crit.add(Expression.in("v.visitType", visitTypes));
+		}
+		if (visits != null && visits.size() > 0) {
+			crit.add(Expression.in("visit", visits));
 		}
 		if (!includeVoided) {
 			crit.add(Expression.eq("voided", false));
@@ -336,5 +347,18 @@ public class HibernateEncounterDAO implements EncounterDAO {
 		criteria = new PatientSearchCriteria(sessionFactory, criteria).prepareCriteria(name, identifier,
 		    new ArrayList<PatientIdentifierType>(), false, true);
 		return criteria;
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.EncounterDAO##getEncountersByVisit(Visit)
+	 */
+	@Override
+	@SuppressWarnings("unchecked")
+	public List<Encounter> getEncountersByVisit(Visit visit) {
+		Criteria crit = sessionFactory.getCurrentSession().createCriteria(Encounter.class).createAlias("visit", "v").add(
+		    Expression.eq("v.visitId", visit.getVisitId())).add(Expression.eq("voided", false)).addOrder(
+		    Order.desc("v.startDatetime"));
+		
+		return crit.list();
 	}
 }
