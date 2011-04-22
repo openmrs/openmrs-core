@@ -30,7 +30,7 @@ import java.util.Set;
  */
 public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 	
-	public static final long serialVersionUID = 2L;
+	public static final long serialVersionUID = 3L;
 	
 	// Fields
 	
@@ -53,6 +53,8 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 	private Set<Order> orders;
 	
 	private Set<Obs> obs;
+	
+	private Visit visit;
 	
 	// Constructors
 	
@@ -473,4 +475,23 @@ public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 		
 	}
 	
+	/**
+	 * Gets the visit.
+	 * 
+	 * @return the visit.
+	 * @since 1.9
+	 */
+	public Visit getVisit() {
+		return visit;
+	}
+	
+	/**
+	 * Sets the visit
+	 * 
+	 * @param visit the visit to set.
+	 * @since 1.9
+	 */
+	public void setVisit(Visit visit) {
+		this.visit = visit;
+	}
 }

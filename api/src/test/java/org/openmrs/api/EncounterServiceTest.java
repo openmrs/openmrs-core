@@ -42,6 +42,8 @@ import org.openmrs.Order;
 import org.openmrs.Patient;
 import org.openmrs.Person;
 import org.openmrs.User;
+import org.openmrs.Visit;
+import org.openmrs.VisitType;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
@@ -1417,4 +1419,39 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(3, allEncounters.get(7).size());
 	}
 	
+	/**
+	 * @see {@link EncounterService#getEncounters(Patient, Location, Date, Date, java.util.Collection, java.util.Collection, java.util.Collection, java.util.Collection, java.util.Collection, boolean)}
+	 */
+	@Test
+	@Verifies(value = "should get encounters by visit", method = "getEncounters(Patient,Location,Date,Date,Collection<QForm;>,Collection<QEncounterType;>,Collection<QVisitType;>,Collection<QVisit;>,Collection<QUser;>,null)")
+	public void getEncounters_shouldGetEncountersByVisit() throws Exception {
+		List<Visit> visits = new ArrayList<Visit>();
+		visits.add(new Visit(1));
+		List<Encounter> encounters = Context.getEncounterService().getEncounters(null, null, null, null, null, null, null,
+		    null, visits, true);
+		assertEquals(1, encounters.size());
+	}
+	
+	/**
+	 * @see {@link EncounterService#getEncounters(Patient, Location, Date, Date, java.util.Collection, java.util.Collection, java.util.Collection, java.util.Collection, java.util.Collection, boolean)}
+	 */
+	@Test
+	@Verifies(value = "should get encounters by visit type", method = "getEncounters(Patient,Location,Date,Date,Collection<QForm;>,Collection<QEncounterType;>,Collection<QVisitType;>,Collection<QVisit;>,Collection<QUser;>,null)")
+	public void getEncounters_shouldGetEncountersByVisitType() throws Exception {
+		List<VisitType> visitTypes = new Vector<VisitType>();
+		visitTypes.add(new VisitType(2));
+		List<Encounter> encounters = Context.getEncounterService().getEncounters(null, null, null, null, null, null, null,
+		    visitTypes, null, true);
+		assertEquals(1, encounters.size());
+	}
+	
+	/**
+	 * @see {@link EncounterService#getEncountersByVisit(Visit)}
+	 */
+	@Test
+	@Verifies(value = "should get encounters by visit", method = "getEncountersByVisit(Visit)")
+	public void getEncountersByVisit_shouldGetEncountersByVisit() throws Exception {
+		List<Encounter> encounters = Context.getEncounterService().getEncountersByVisit(new Visit(1));
+		assertEquals(1, encounters.size());
+	}
 }

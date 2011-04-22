@@ -25,6 +25,8 @@ import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.User;
+import org.openmrs.Visit;
+import org.openmrs.VisitType;
 import org.openmrs.api.EncounterService;
 
 /**
@@ -66,11 +68,12 @@ public interface EncounterDAO {
 	/**
 	 * @see org.openmrs.api.EncounterService#getEncounters(org.openmrs.Patient,
 	 *      org.openmrs.Location, java.util.Date, java.util.Date, java.util.Collection,
-	 *      java.util.Collection, java.util.Collection, boolean)
+	 *      java.util.Collection, java.util.Collection, java.util.Collection, java.util.Collection,
+	 *      boolean)
 	 */
 	public List<Encounter> getEncounters(Patient patient, Location location, Date fromDate, Date toDate,
 	        Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes, Collection<User> providers,
-	        boolean includeVoided);
+	        Collection<VisitType> visitTypes, Collection<Visit> visits, boolean includeVoided);
 	
 	/**
 	 * Save an Encounter Type
@@ -184,4 +187,9 @@ public interface EncounterDAO {
 	 * @see {@link EncounterService#getCountOfEncounters(String, boolean)}
 	 */
 	public Integer getCountOfEncounters(String query, boolean includeVoided);
+	
+	/**
+	 * @see EncounterService#getEncountersByVisit(Visit)
+	 */
+	public List<Encounter> getEncountersByVisit(Visit visit);
 }

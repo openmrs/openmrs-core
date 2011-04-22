@@ -25,6 +25,8 @@ import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.User;
+import org.openmrs.Visit;
+import org.openmrs.VisitType;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.EncounterDAO;
 import org.openmrs.util.PrivilegeConstants;
@@ -161,12 +163,48 @@ public interface EncounterService extends OpenmrsService {
 	 * @should get encounters by provider
 	 * @should exclude voided encounters
 	 * @should include voided encounters
+	 * @deprecated replaced by
+	 *             {@link #getEncounters(Patient, Location, Date, Date, Collection, Collection, Collection, Collection, Collection, boolean)}
 	 */
+	@Deprecated
 	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_ENCOUNTERS })
 	public List<Encounter> getEncounters(Patient who, Location loc, Date fromDate, Date toDate,
 	        Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes, Collection<User> providers,
 	        boolean includeVoided);
+	
+	/**
+	 * Get all encounters that match a variety of (nullable) criteria. Each extra value for a
+	 * parameter that is provided acts as an "and" and will reduce the number of results returned
+	 * 
+	 * @param who the patient the encounter is for
+	 * @param loc the location this encounter took place
+	 * @param fromDate the minimum date (inclusive) this encounter took place
+	 * @param toDate the maximum date (exclusive) this encounter took place
+	 * @param enteredViaForms the form that entered this encounter must be in this list
+	 * @param encounterTypes the type of encounter must be in this list
+	 * @param providers the provider of this encounter must be in this list
+	 * @param visitTypes the visit types of this encounter must be in this list
+	 * @param visits the visits of this encounter must be in this list
+	 * @param includeVoided true/false to include the voided encounters or not
+	 * @return a list of encounters ordered by increasing encounterDatetime
+	 * @since 1.9
+	 * @should get encounters by location
+	 * @should get encounters on or after date
+	 * @should get encounters on or up to a date
+	 * @should get encounters by form
+	 * @should get encounters by type
+	 * @should get encounters by provider
+	 * @should get encounters by visit type
+	 * @should get encounters by visit
+	 * @should exclude voided encounters
+	 * @should include voided encounters
+	 */
+	@Transactional(readOnly = true)
+	@Authorized( { PrivilegeConstants.VIEW_ENCOUNTERS })
+	public List<Encounter> getEncounters(Patient who, Location loc, Date fromDate, Date toDate,
+	        Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes, Collection<User> providers,
+	        Collection<VisitType> visitTypes, Collection<Visit> visits, boolean includeVoided);
 	
 	/**
 	 * Voiding a encounter essentially removes it from circulation
@@ -623,4 +661,15 @@ public interface EncounterService extends OpenmrsService {
 	@Authorized( { PrivilegeConstants.VIEW_ENCOUNTERS })
 	public Integer getCountOfEncounters(String query, boolean includeVoided);
 	
+	/**
+	 * Gets all encounters grouped within a given visit.
+	 * 
+	 * @param visit the visit.
+	 * @return list of encounters in the given visit.
+	 * @should get encounters by visit
+	 * @since 1.9
+	 */
+	@Transactional(readOnly = true)
+	@Authorized( { PrivilegeConstants.VIEW_ENCOUNTERS })
+	List<Encounter> getEncountersByVisit(Visit visit);
 }
