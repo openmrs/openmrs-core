@@ -28,6 +28,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ActiveListService;
 import org.openmrs.api.AdministrationService;
+import org.openmrs.api.AttributeService;
 import org.openmrs.api.CohortService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.DataSetService;
@@ -264,6 +265,14 @@ public class ServiceContext implements ApplicationContextAware {
 	}
 	
 	/**
+	 * @return attribute-related services
+	 * @since 1.9
+	 */
+	public AttributeService getAttributeService() {
+		return getService(AttributeService.class);
+	}
+	
+	/**
 	 * @return programWorkflowService
 	 */
 	public ProgramWorkflowService getProgramWorkflowService() {
@@ -371,6 +380,13 @@ public class ServiceContext implements ApplicationContextAware {
 	 */
 	public void setAdministrationService(AdministrationService administrationService) {
 		setService(AdministrationService.class, administrationService);
+	}
+	
+	/**
+	 * @param attributeService the attributeService to set
+	 */
+	public void setAttributeService(AttributeService attributeService) {
+		setService(AttributeService.class, attributeService);
 	}
 	
 	/**
