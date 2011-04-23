@@ -384,6 +384,7 @@ public class ServiceContext implements ApplicationContextAware {
 	
 	/**
 	 * @param attributeService the attributeService to set
+	 * @since 1.9
 	 */
 	public void setAttributeService(AttributeService attributeService) {
 		setService(AttributeService.class, attributeService);
