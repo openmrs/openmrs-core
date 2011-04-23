@@ -76,6 +76,7 @@
         <property name="orderService"><ref bean="orderService"/></property>
         <property name="formService"><ref bean="formService"/></property>
         <property name="administrationService"><ref bean="adminService"/></property>
+        <property name="attributeService"><ref bean="attributeService"/></property>
         <property name="programWorkflowService"><ref bean="programWorkflowService"/></property>
         <property name="patientSetService"><ref bean="patientSetService"/></property>
         <property name="cohortService"><ref bean="cohortService"/></property>
@@ -239,6 +240,7 @@
 		<property name="eventListeners"><ref bean="openmrsEventListeners"/></property>
 		<property name="globalLocaleList"><ref bean="globalLocaleList"/></property>
 	</bean>
+	<bean id="attributeServiceTarget" class="org.openmrs.api.impl.AttributeServiceImpl"/>
 	<bean id="programWorkflowServiceTarget" class="org.openmrs.api.impl.ProgramWorkflowServiceImpl">
 		<property name="programWorkflowDAO"><ref bean="programWorkflowDAO"/></property>	
 	</bean>
@@ -443,6 +445,15 @@
 		</property>
 		<property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
 	</bean>
+	<bean id="attributeService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+        <property name="transactionManager"><ref local="transactionManager"/></property>
+        <property name="target"><ref local="attributeServiceTarget"/></property>
+        <property name="preInterceptors">
+            <ref local="serviceInterceptors" />
+        </property>
+        <!-- This service is not transactional, at least not yet, so maybe we can remove this -->
+        <property name="transactionAttributeSource"><ref local="transactionAttributeSource" /></property>
+    </bean>
 	<bean id="programWorkflowService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 		<property name="transactionManager"><ref local="transactionManager"/></property>
 		<property name="target"><ref local="programWorkflowServiceTarget"/></property>

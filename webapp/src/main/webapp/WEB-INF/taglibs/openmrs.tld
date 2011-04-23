@@ -208,6 +208,11 @@
 		<required>false</required>
 		<rtexprvalue>true</rtexprvalue>
 	</attribute>
+    <attribute>
+        <name>parameterMap</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
 	<attribute>
 		<name>allowUserDefault</name>
 		<required>false</required>
