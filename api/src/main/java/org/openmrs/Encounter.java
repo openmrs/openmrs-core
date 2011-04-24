@@ -30,7 +30,7 @@ import java.util.Set;
  */
 public class Encounter extends BaseOpenmrsData implements java.io.Serializable {
 	
-	public static final long serialVersionUID = 3L;
+	public static final long serialVersionUID = 2L;
 	
 	// Fields
 	
