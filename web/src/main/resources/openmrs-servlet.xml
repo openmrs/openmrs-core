@@ -983,7 +983,7 @@
 		<property name="formView"><value>/admin/visits/visitTypeForm</value></property>
 		<property name="successView"><value>visitType.list</value></property>
 	</bean>
-	<!-- ** /Encounter Type ** -->
+	<!-- ** /Visit Type ** -->
 	
 	<!-- ======================================== -->
 
@@ -1098,7 +1098,6 @@
 				<ref bean="addressTemplateMalawi" />
 				<ref bean="addressTemplateGeneral" />
 				<ref bean="addressTemplateTanzania" />
-				<ref bean="addressTemplateUganda" />
 			</list>
 		</property>
 		<property name="specialTokens">
@@ -1455,47 +1454,6 @@
 		</property>
 	</bean>
 	
-	<bean id="addressTemplateUganda" class="org.openmrs.layout.web.address.AddressTemplate">
-		<property name="displayName"><value>Ugandan Address Format</value></property>
-		<property name="codeName"><value>ug</value></property>
-		<property name="country"><value>Uganda</value></property>
-		<property name="nameMappings">
-			<props>
-			    <prop key="neighborhoodCell">Location.cell</prop>
-				<prop key="cityVillage">Location.parish</prop>
-				<prop key="stateProvince">Location.subCounty</prop>
-				<prop key="address1">Location.county</prop>
-                <prop key="countyDistrict">Location.district</prop>
-				<prop key="country">Location.country</prop>
-			</props>
-		</property>
-		<property name="sizeMappings">
-			<props>
-				<prop key="neighborhoodCell">40</prop>
-				<prop key="cityVillage">40</prop>
-				<prop key="stateProvince">40</prop>
-				<prop key="address1">40</prop>
-				<prop key="countyDistrict">40</prop>
-				<prop key="country">40</prop>
-			</props>
-		</property>
-		<property name="elementDefaults">
-			<props>
-				<prop key="country">Uganda</prop>
-			</props>
-		</property>
-		<property name="lineByLineFormat">
-			<list>
-				<value>neighborhoodCell</value>
-				<value>cityVillage</value>
-				<value>stateProvince</value>
-				<value>address1</value>
-				<value>countyDistrict</value>
-				<value>country</value>
-			</list>
-		</property>
-	</bean>
-
 	<!-- NAME LAYOUT SUPPORT -->
 	
 	<!-- specialTokens ordered so that the subset string 'familyName' is after 'familyName*'
