@@ -15,6 +15,7 @@ package org.openmrs.api;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -262,8 +263,8 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		
 		visit = Context.getVisitService().voidVisit(visit, "test reason");
 		Assert.assertTrue(visit.isVoided());
-		Assert.assertNotNull(visit.getVoidReason());
-		Assert.assertNotNull(visit.getVoidedBy());
+		Assert.assertEquals("test reason", visit.getVoidReason());
+		Assert.assertEquals(Context.getAuthenticatedUser(), visit.getVoidedBy());
 		Assert.assertNotNull(visit.getDateVoided());
 	}
 	
@@ -293,10 +294,10 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should erase the visit from the database", method = "purgeVisit(Visit)")
 	public void purgeVisit_shouldEraseTheVisitFromTheDatabase() throws Exception {
 		VisitService vs = Context.getVisitService();
-		Integer originalSize = vs.getAllVisits().size();
+		Integer originalSize = vs.getVisits(null, null, null, null, null, null, null, null, true).size();
 		Visit visit = Context.getVisitService().getVisit(1);
 		vs.purgeVisit(visit);
-		Assert.assertEquals(originalSize - 1, vs.getAllVisits().size());
+		Assert.assertEquals(originalSize - 1, vs.getVisits(null, null, null, null, null, null, null, null, true).size());
 	}
 	
 	/**
@@ -325,10 +326,8 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should get visits by indications", method = "getVisits(Collection<VisitType>,Collection<Patient>,Collection<Location>,Collection<Concept>,Date,Date,Date,Date,boolean)")
 	public void getVisits_shouldGetVisitsByIndications() throws Exception {
-		List<Concept> indications = new ArrayList<Concept>();
-		indications.add(new Concept(5497));
-		Assert.assertEquals(1, Context.getVisitService().getVisits(null, null, null, indications, null, null, null, null,
-		    false).size());
+		Assert.assertEquals(1, Context.getVisitService().getVisits(null, null, null,
+		    Collections.singletonList(new Concept(5497)), null, null, null, null, false).size());
 	}
 	
 	/**

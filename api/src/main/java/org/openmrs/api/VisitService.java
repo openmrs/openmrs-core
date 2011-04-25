@@ -163,13 +163,13 @@ public interface VisitService extends OpenmrsService {
 	 * @should add a new visit to the database
 	 * @should update an existing visit in the database
 	 */
-	@Authorized(requireAll = true, value = { PrivilegeConstants.ADD_VISITS, PrivilegeConstants.EDIT_VISITS })
+	@Authorized( { PrivilegeConstants.ADD_VISITS, PrivilegeConstants.EDIT_VISITS })
 	public Visit saveVisit(Visit visit) throws APIException;
 	
 	/**
 	 * Voids the given visit.
 	 * 
-	 * @param visit the visit to retire.
+	 * @param visit the visit to void.
 	 * @param reason the reason why the visit is voided
 	 * @return the visit that has been voided
 	 * @throws APIException

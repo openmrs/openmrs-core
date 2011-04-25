@@ -13,7 +13,6 @@
  */
 package org.openmrs.api.impl;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -26,7 +25,9 @@ import org.openmrs.Visit;
 import org.openmrs.VisitType;
 import org.openmrs.api.APIException;
 import org.openmrs.api.VisitService;
+import org.openmrs.api.context.Context;
 import org.openmrs.api.db.VisitDAO;
+import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.validator.ValidateUtil;
 
 /**
@@ -114,7 +115,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	 */
 	@Override
 	public List<Visit> getAllVisits() throws APIException {
-		return dao.getVisits(false);
+		return dao.getVisits(null, null, null, null, null, null, null, null, true, false);
 	}
 	
 	/**
@@ -138,6 +139,11 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	 */
 	@Override
 	public Visit saveVisit(Visit visit) throws APIException {
+		if (visit.getVisitId() == null)
+			Context.requirePrivilege(PrivilegeConstants.ADD_VISITS);
+		else
+			Context.requirePrivilege(PrivilegeConstants.EDIT_VISITS);
+		
 		return dao.saveVisit(visit);
 	}
 	
@@ -162,7 +168,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	 */
 	@Override
 	public void purgeVisit(Visit visit) throws APIException {
-		dao.purgeVisit(visit);
+		dao.deleteVisit(visit);
 	}
 	
 	/**
@@ -185,13 +191,11 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Visit> getVisitsByPatient(Patient patient) throws APIException {
-		List<Patient> patients = new ArrayList<Patient>();
 		//Don't bother to hit the database
 		if (patient == null || patient.getId() == null)
 			return Collections.EMPTY_LIST;
 		
-		patients.add(patient);
-		return getVisits(null, patients, null, null, null, null, null, null, false);
+		return getVisits(null, Collections.singletonList(patient), null, null, null, null, null, null, false);
 	}
 	
 	/**
@@ -200,11 +204,9 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Visit> getActiveVisitsByPatient(Patient patient) throws APIException {
-		List<Patient> patients = new ArrayList<Patient>();
 		if (patient == null || patient.getId() == null)
 			return Collections.EMPTY_LIST;
 		
-		patients.add(patient);
-		return dao.getVisits(null, patients, null, null, null, null, null, null, false, false);
+		return dao.getVisits(null, Collections.singletonList(patient), null, null, null, null, null, null, false, false);
 	}
 }

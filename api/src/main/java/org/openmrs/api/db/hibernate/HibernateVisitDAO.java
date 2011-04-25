@@ -17,7 +17,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -101,19 +100,6 @@ public class HibernateVisitDAO implements VisitDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.VisitDAO#getVisits(boolean)
-	 */
-	@SuppressWarnings("unchecked")
-	@Override
-	public List<Visit> getVisits(boolean includeVoided) throws DAOException {
-		Criteria criteria = getCurrentSession().createCriteria(Visit.class);
-		if (!includeVoided)
-			criteria.add(Restrictions.eq("voided", false));
-		
-		return criteria.list();
-	}
-	
-	/**
 	 * @see org.openmrs.api.db.VisitDAO#getVisit(java.lang.Integer)
 	 */
 	@Override
@@ -140,10 +126,10 @@ public class HibernateVisitDAO implements VisitDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.VisitDAO#purgeVisit(org.openmrs.Visit)
+	 * @see org.openmrs.api.db.VisitDAO#deleteVisit(org.openmrs.Visit)
 	 */
 	@Override
-	public void purgeVisit(Visit visit) throws DAOException {
+	public void deleteVisit(Visit visit) throws DAOException {
 		getCurrentSession().delete(visit);
 	}
 	
@@ -160,13 +146,13 @@ public class HibernateVisitDAO implements VisitDAO {
 		
 		Criteria criteria = getCurrentSession().createCriteria(Visit.class);
 		
-		if (CollectionUtils.isNotEmpty(visitTypes))
+		if (visitTypes != null)
 			criteria.add(Restrictions.in("visitType", visitTypes));
-		if (CollectionUtils.isNotEmpty(patients))
+		if (patients != null)
 			criteria.add(Restrictions.in("patient", patients));
-		if (CollectionUtils.isNotEmpty(locations))
+		if (locations != null)
 			criteria.add(Restrictions.in("location", locations));
-		if (CollectionUtils.isNotEmpty(indications))
+		if (indications != null)
 			criteria.add(Restrictions.in("indication", indications));
 		
 		if (minStartDatetime != null)
