@@ -113,6 +113,10 @@ public class PatientFormController extends PersonFormController {
 	@Override
 	protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object object,
 	        BindException errors) throws Exception {
+				
+		if (errors.hasErrors()) {
+			return showForm(request, response, errors);
+		}
 		
 		Patient patient = (Patient) object;
 		
