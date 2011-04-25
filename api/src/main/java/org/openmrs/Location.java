@@ -473,16 +473,15 @@ public class Location extends BaseOpenmrsMetadata implements java.io.Serializabl
 	 * @should should find location in hierarchy
 	 */
 	public static Boolean isInHierarchy(Location location, Location root) {
-		if (location == null || root == null)
+		if (root == null)
 			return false;
-		if (root.equals(location))
-			return true;
-		if (root.getChildLocations() != null) {
-			for (Location l : root.getChildLocations())
-				return isInHierarchy(location, l);
+		while (true) {
+			if (location == null)
+				return false;
+			else if (root.equals(location))
+				return true;
+			location = location.getParentLocation();
 		}
-		
-		return false;
 	}
 	
 	/**
