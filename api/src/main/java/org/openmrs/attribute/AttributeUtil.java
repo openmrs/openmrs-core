@@ -51,6 +51,7 @@ public class AttributeUtil {
 	 * 
 	 * @param serializedConfig
 	 * @return
+	 * @should deserialize a configuration serialized by the corresponding serialize method
 	 */
 	@SuppressWarnings("unchecked")
 	public static Map<String, String> deserializeSimpleConfiguration(String serializedConfig) {

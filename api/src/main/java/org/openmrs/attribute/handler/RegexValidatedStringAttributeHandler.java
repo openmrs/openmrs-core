@@ -49,6 +49,8 @@ public class RegexValidatedStringAttributeHandler implements AttributeHandler<St
 	
 	/**
 	 * @see org.openmrs.attribute.handler.AttributeHandler#validate(java.lang.Object)
+	 * @should accept a string that matches the regex
+	 * @should fail if the string does not match the regex
 	 */
 	@Override
 	public void validate(String typedValue) throws InvalidAttributeValueException {
@@ -58,9 +60,11 @@ public class RegexValidatedStringAttributeHandler implements AttributeHandler<St
 	
 	/**
 	 * @see org.openmrs.attribute.handler.AttributeHandler#serialize(java.lang.Object)
+	 * @should fail if the string does not match the regex
 	 */
 	@Override
 	public String serialize(String typedValue) {
+		validate(typedValue);
 		return typedValue;
 	}
 	

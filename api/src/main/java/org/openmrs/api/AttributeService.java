@@ -41,6 +41,9 @@ public interface AttributeService extends OpenmrsService {
 	 * @param logicalType
 	 * @param handlerConfig
 	 * @return an instantiated and configured handler for the given logicalType
+	 * @should get a handler for the date logical type
+	 * @should get a handler for the string with regex logical type
+	 * @should get the default handler for an unknown logical type
 	 */
 	AttributeHandler<?> getHandler(String logicalType, String handlerConfig);
 	

@@ -67,6 +67,7 @@ public class DateAttributeHandler implements AttributeHandler<Date> {
 	
 	/**
 	 * @see org.openmrs.attribute.handler.AttributeHandler#serialize(java.lang.Object)
+	 * @should convert a date into a ymd string representation
 	 */
 	@Override
 	public String serialize(Date date) {
@@ -75,6 +76,7 @@ public class DateAttributeHandler implements AttributeHandler<Date> {
 	
 	/**
 	 * @see org.openmrs.attribute.handler.AttributeHandler#deserialize(java.lang.String)
+	 * @should reconstruct a date serialized by this handler
 	 */
 	@Override
 	public Date deserialize(String stringValue) throws InvalidAttributeValueException {
