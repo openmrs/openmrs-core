@@ -63,16 +63,6 @@ public interface VisitDAO {
 	void purgeVisitType(VisitType visitType);
 	
 	/**
-	 * Gets all visits in the database if includeVoided is set to true otherwise returns only
-	 * unvoided ones
-	 * 
-	 * @param includeVoided Specifies if voided visits should be returned or not
-	 * @return a list of visits
-	 * @throws DAOException
-	 */
-	public List<Visit> getVisits(boolean includeVoided) throws DAOException;
-	
-	/**
 	 * @see VisitService#getVisit(Integer)
 	 * @throws DAOException
 	 */
@@ -94,7 +84,7 @@ public interface VisitDAO {
 	 * @see VisitService#purgeVisit(Visit)
 	 * @throws DAOException
 	 */
-	public void purgeVisit(Visit visit) throws DAOException;
+	public void deleteVisit(Visit visit) throws DAOException;
 	
 	/**
 	 * Gets the visits matching the specified arguments
@@ -107,13 +97,13 @@ public interface VisitDAO {
 	 * @param maxStartDatetime the maximum visit start date to match against
 	 * @param minEndDatetime the minimum visit end date to match against
 	 * @param maxEndDatetime the maximum visit end date to match against
-	 * @param includeInactive specifies if visits that are no longer active should be returned or
-	 *            not, inactive visits are visits whose end date is not null.
+	 * @param includeEnded specifies if ended visits should be returned or not, ended visits are
+	 *            visits whose end date is not null.
 	 * @param includeVoided specifies if voided visits should also be returned
 	 * @return a list of visits
 	 * @throws DAOException
-	 * @should return all unvoided visits if includeInactive is set to true
-	 * @should return only active visits if includeInactive is set to false
+	 * @should return all unvoided visits if includeEnded is set to true
+	 * @should return only active visits if includeEnded is set to false
 	 */
 	public List<Visit> getVisits(Collection<VisitType> visitTypes, Collection<Patient> patients,
 	        Collection<Location> locations, Collection<Concept> indications, Date minStartDatetime, Date maxStartDatetime,
