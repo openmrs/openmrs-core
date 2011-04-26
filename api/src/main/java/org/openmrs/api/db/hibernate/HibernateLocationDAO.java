@@ -220,4 +220,22 @@ public class HibernateLocationDAO implements LocationDAO {
 		
 		return criteria.list();
 	}
+	
+	/**
+	 * @see LocationDAO#getRootLocations(boolean)
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Location> getRootLocations(boolean includeRetired) throws DAOException {
+		
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Location.class);
+		if (!includeRetired)
+			criteria.add(Expression.eq("retired", false));
+		
+		criteria.add(Expression.isNull("parentLocation"));
+		
+		criteria.addOrder(Order.asc("name"));
+		return criteria.list();
+	}
+	
 }

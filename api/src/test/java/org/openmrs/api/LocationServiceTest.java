@@ -244,6 +244,28 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @see {@link LocationService#getRootLocations(boolean)}
+	 */
+	@Test
+	@Verifies(value = "should return all root locations including retired", method = "getRootLocations(boolean)")
+	public void getRootLocations_shouldReturnRootLocationsIncludingRetired() throws Exception {
+		List<Location> locations = Context.getLocationService().getRootLocations(true);
+		
+		Assert.assertEquals(3, locations.size());
+	}
+	
+	/**
+	 * @see {@link LocationService#getRootLocations(boolean)}
+	 */
+	@Test
+	@Verifies(value = "should return only unretired root locations when includeRetires is false", method = "getRootLocations(boolean)")
+	public void getRootLocations_shouldReturnOnlyUnretiredRootLocations() throws Exception {
+		List<Location> locations = Context.getLocationService().getRootLocations(false);
+		
+		Assert.assertEquals(2, locations.size());
+	}
+	
+	/**
 	 * @see {@link LocationService#getAllLocations(null)}
 	 */
 	@Test

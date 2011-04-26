@@ -145,4 +145,9 @@ public interface LocationDAO {
 	 */
 	public Integer getCountOfLocations(String nameFragment, Boolean includeRetired);
 	
+	/**
+	 * @see LocationService#getRootLocations(boolean)
+	 */
+	public List<Location> getRootLocations(boolean includeRetired);
+	
 }
