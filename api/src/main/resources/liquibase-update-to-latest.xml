@@ -4437,7 +4437,7 @@
             <column name="logical_type" type="varchar(255)" />
             <column name="handler_config" type="text" />
             <column name="min_occurs" type="int"><constraints nullable="false" /></column>
-            <column name="max_occurs" type="int"><constraints nullable="false" /></column>
+            <column name="max_occurs" type="int"></column>
             <column name="creator" type="int"><constraints nullable="false"/></column>
             <column name="date_created" type="datetime"><constraints nullable="false"/></column>
             <column name="changed_by" type="int"/>

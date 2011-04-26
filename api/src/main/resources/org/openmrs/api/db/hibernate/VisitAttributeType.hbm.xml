@@ -22,7 +22,7 @@
         <!-- TODO CHECK LENGTH -->
         <property name="handlerConfig" type="text" column="handler_config" length="16777215" />
         
-        <property name="minOccurs" type="int" column="min_occurs" length="11" />
+        <property name="minOccurs" type="int" column="min_occurs" length="11" not-null="true" />
 
         <property name="maxOccurs" type="int" column="max_occurs" length="11" />
 
