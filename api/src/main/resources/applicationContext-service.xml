@@ -727,6 +727,7 @@
 	<bean id="hl7SourceValidator" class="org.openmrs.validator.HL7SourceValidator"/>
 	<bean id="personAddressValidator" class="org.openmrs.validator.PersonAddressValidator"/>
 	<bean id="visitTypeValidator" class="org.openmrs.validator.VisitTypeValidator" />
+	<bean id="visitAttributeTypeValidator" class="org.openmrs.validator.VisitAttributeTypeValidator" />
 
 
 	<!--  ************************ END VALIDATOR CONFIGURATION  ************************  -->

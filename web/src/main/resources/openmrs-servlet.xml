@@ -236,6 +236,8 @@
 				
 				<prop key="admin/visits/visitType.list">visitTypeList</prop>
 				<prop key="admin/visits/visitType.form">visitTypeForm</prop>
+				<prop key="admin/visits/visitAttributeType.list">visitAttributeTypeList</prop>
+				<prop key="admin/visits/visitAttributeType.form">visitAttributeTypeForm</prop>
 			</props>
 		</property>
 	</bean>
@@ -984,6 +986,28 @@
 		<property name="successView"><value>visitType.list</value></property>
 	</bean>
 	<!-- ** /Visit Type ** -->
+	
+	<!-- ======================================== -->
+	
+	<!-- ** Visit Attribute Type ** -->
+	<bean id="visitAttributeTypeList"
+		class="org.openmrs.web.controller.visit.VisitAttributeTypeListController">
+		<property name="commandName"><value>visitAttributeTypeList</value></property>
+		<property name="formView"><value>/admin/visits/visitAttributeTypeList</value></property>
+		<property name="successView"><value>visitAttributeType.list</value></property>
+	</bean>
+
+	<!--  Form Controller for the add/edit visit attribute types page -->
+	<bean id="visitAttributeTypeForm"
+		class="org.openmrs.web.controller.visit.VisitAttributeTypeFormController">
+		<property name="commandName"><value>visitAttributeType</value></property>
+		<property name="validator">
+			<ref bean="visitAttributeTypeValidator" />
+		</property>
+		<property name="formView"><value>/admin/visits/visitAttributeTypeForm</value></property>
+		<property name="successView"><value>visitAttributeType.list</value></property>
+	</bean>
+	<!-- ** /Visit Attribute Type ** -->
 	
 	<!-- ======================================== -->
 
