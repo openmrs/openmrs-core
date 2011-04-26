@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="org.openmrs">
+
+    <class name="VisitAttributeType" table="visit_attribute_type">
+
+        <id name="visitAttributeTypeId" type="int" column="visit_attribute_type_id">
+            <generator class="native" />
+        </id>
+
+        <discriminator column="visit_attribute_type_id" insert="false" />
+        
+        <property name="name" type="java.lang.String" column="name" not-null="true" length="255" />
+
+        <property name="description" type="java.lang.String" column="description" length="65535" />
+        
+        <property name="logicalType" type="java.lang.String" column="logical_type" length="255" />
+        
+        <!-- TODO CHECK LENGTH -->
+        <property name="handlerConfig" type="text" column="handler_config" length="16777215" />
+        
+        <property name="minOccurs" type="int" column="min_occurs" length="11" />
+
+        <property name="maxOccurs" type="int" column="max_occurs" length="11" />
+
+        <many-to-one name="creator" class="User" not-null="true" column="creator" />
+        
+        <property name="dateCreated" type="java.util.Date" column="date_created" not-null="true" length="19" />
+        
+        <many-to-one name="changedBy" class="User" column="changed_by" />
+        
+        <property name="dateChanged" type="java.util.Date" column="date_changed" length="19" />
+        
+        <property name="retired" type="java.lang.Boolean" column="retired" length="1" not-null="true" />
+        
+        <many-to-one name="retiredBy" class="User" column="retired_by" />
+        
+        <property name="dateRetired" type="java.util.Date" column="date_retired" length="19" />
+               
+        <property name="retireReason" type="java.lang.String" column="retire_reason" length="255" />
+        
+        <property name="uuid" type="java.lang.String" column="uuid" length="38" unique="true" />
+        
+    </class>
+
+</hibernate-mapping>

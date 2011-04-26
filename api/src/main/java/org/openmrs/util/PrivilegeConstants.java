@@ -413,4 +413,13 @@ public class PrivilegeConstants {
 	
 	@AddOnStartup(description = "Able to purge visits")
 	public static final String PURGE_VISITS = "Purge Visits";
+	
+	@AddOnStartup(description = "Able to view visit attribute types")
+	public static final String VIEW_VISIT_ATTRIBUTE_TYPES = "View Visit Attribute Types";
+	
+	@AddOnStartup(description = "Able to add/edit/retire visit attribute types")
+	public static final String MANAGE_VISIT_ATTRIBUTE_TYPES = "Manage Visit Attribute Types";
+	
+	@AddOnStartup(description = "Able to purge visit attribute types")
+	public static final String PURGE_VISIT_ATTRIBUTE_TYPES = "Purge Visit Attribute Types";
 }

@@ -4423,5 +4423,84 @@
 			referencedTableName="visit" referencedColumnNames="visit_id" />
 	</changeSet>
 	
+    <changeSet id="20110425-1600-create-visit-attribute-type-table" author="djazayeri">
+        <preConditions onFail="MARK_RAN">
+            <not><tableExists tableName="visit_attribute_type"/></not>
+        </preConditions>
+        <comment>Creating visit_attribute_type table</comment>
+        <createTable tableName="visit_attribute_type">
+            <column name="visit_attribute_type_id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column name="name" type="varchar(255)"><constraints nullable="false"/></column>
+            <column name="description" type="varchar(1024)"/>
+            <column name="logical_type" type="varchar(255)" />
+            <column name="handler_config" type="text" />
+            <column name="min_occurs" type="int"><constraints nullable="false" /></column>
+            <column name="max_occurs" type="int"><constraints nullable="false" /></column>
+            <column name="creator" type="int"><constraints nullable="false"/></column>
+            <column name="date_created" type="datetime"><constraints nullable="false"/></column>
+            <column name="changed_by" type="int"/>
+            <column name="date_changed" type="datetime" />
+            <column name="retired" type="smallint" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="retired_by" type="int(11)" />
+            <column name="date_retired" type="datetime" />
+            <column name="retire_reason" type="varchar(255)" defaultValue="null"/>
+            <column name="uuid" type="char(38)"><constraints nullable="false" unique="true" /></column>
+        </createTable>
+        <addForeignKeyConstraint constraintName="visit_attribute_type_creator_fk"
+            baseTableName="visit_attribute_type" baseColumnNames="creator" referencedTableName="users"
+            referencedColumnNames="user_id" />
+        <addForeignKeyConstraint constraintName="visit_attribute_type_changed_by_fk"
+            baseTableName="visit_attribute_type" baseColumnNames="changed_by" referencedTableName="users"
+            referencedColumnNames="user_id" />
+        <addForeignKeyConstraint constraintName="visit_attribute_type_retired_by_fk"
+            baseTableName="visit_attribute_type" baseColumnNames="retired_by" referencedTableName="users"
+            referencedColumnNames="user_id" />
+    </changeSet>
+    
+    <changeSet id="20110425-1700-create-visit-attribute-table" author="djazayeri">
+        <preConditions onFail="MARK_RAN">
+            <not><tableExists tableName="visit_attribute"/></not>
+        </preConditions>
+        <comment>Creating visit_attribute table</comment>
+        <createTable tableName="visit_attribute">
+            <column name="visit_attribute_id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column name="visit_id" type="int"><constraints nullable="false" /></column>
+            <column name="attribute_type_id" type="int"><constraints nullable="false" /></column>
+            <column name="serialized_value" type="text" />
+            <column name="uuid" type="char(38)"><constraints nullable="false" unique="true" /></column>
+            <column name="creator" type="int"><constraints nullable="false"/></column>
+            <column name="date_created" type="datetime"><constraints nullable="false"/></column>
+            <column name="changed_by" type="int"/>
+            <column name="date_changed" type="datetime" />
+            <column name="voided" type="smallint" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="voided_by" type="int(11)" />
+            <column name="date_voided" type="datetime" />
+            <column name="void_reason" type="varchar(255)" defaultValue="null"/>
+        </createTable>
+        <addForeignKeyConstraint constraintName="visit_attribute_visit_fk"
+            baseTableName="visit_attribute" baseColumnNames="visit_id" referencedTableName="visit"
+            referencedColumnNames="visit_id" />
+        <addForeignKeyConstraint constraintName="visit_attribute_attribute_type_id_fk"
+            baseTableName="visit_attribute" baseColumnNames="attribute_type_id" referencedTableName="visit_attribute_type"
+            referencedColumnNames="visit_attribute_type_id" />
+        <addForeignKeyConstraint constraintName="visit_attribute_creator_fk"
+            baseTableName="visit_attribute" baseColumnNames="creator" referencedTableName="users"
+            referencedColumnNames="user_id" />
+        <addForeignKeyConstraint constraintName="visit_attribute_changed_by_fk"
+            baseTableName="visit_attribute" baseColumnNames="changed_by" referencedTableName="users"
+            referencedColumnNames="user_id" />
+        <addForeignKeyConstraint constraintName="visit_attribute_voided_by_fk"
+            baseTableName="visit_attribute" baseColumnNames="voided_by" referencedTableName="users"
+            referencedColumnNames="user_id" />
+    </changeSet>
+	
 </databaseChangeLog>
 

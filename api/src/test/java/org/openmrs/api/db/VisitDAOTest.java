@@ -50,7 +50,7 @@ public class VisitDAOTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should return all unvoided visits if includeEnded is set to true", method = "getVisits(Collection<VisitType>,Collection<Patient>,Collection<Location>,Collection<Concept>,Date,Date,Date,Date,boolean,boolean)")
 	public void getVisits_shouldReturnAllUnvoidedVisitsIfIncludeEndedIsSetToTrue() throws Exception {
 		executeDataSet(VISITS_WITH_DATES_XML);
-		Assert.assertEquals(13, dao.getVisits(null, null, null, null, null, null, null, null, true, false).size());
+		Assert.assertEquals(13, dao.getVisits(null, null, null, null, null, null, null, null, null, true, false).size());
 	}
 	
 	/**
@@ -60,6 +60,6 @@ public class VisitDAOTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should return only active visits if includeEnded is set to false", method = "getVisits(Collection<VisitType>,Collection<Patient>,Collection<Location>,Collection<Concept>,Date,Date,Date,Date,boolean,boolean)")
 	public void getVisits_shouldReturnOnlyActiveVisitsIfIncludeEndedIsSetToFalse() throws Exception {
 		executeDataSet(VISITS_WITH_DATES_XML);
-		Assert.assertEquals(6, dao.getVisits(null, null, null, null, null, null, null, null, false, false).size());
+		Assert.assertEquals(6, dao.getVisits(null, null, null, null, null, null, null, null, null, false, false).size());
 	}
 }

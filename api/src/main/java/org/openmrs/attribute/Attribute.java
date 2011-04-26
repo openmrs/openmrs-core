@@ -13,6 +13,7 @@
  */
 package org.openmrs.attribute;
 
+import org.openmrs.OpenmrsData;
 import org.openmrs.attribute.handler.AttributeHandler;
 
 /**
@@ -29,7 +30,19 @@ import org.openmrs.attribute.handler.AttributeHandler;
  * @see AttributeHandler
  * @since 1.9
  */
-public interface Attribute<OwningType extends AttributeHolder<?>> {
+public interface Attribute<OwningType extends AttributeHolder<?>> extends OpenmrsData {
+	
+	/**
+	 * @return the owner that this attribute belongs to
+	 */
+	OwningType getOwner();
+	
+	/**
+	 * Sets the owner of this attribute
+	 * 
+	 * @param owner
+	 */
+	void setOwner(OwningType owner);
 	
 	/**
 	 * @return the AttributeType that controls this attribute's behavior

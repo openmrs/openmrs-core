@@ -63,9 +63,10 @@ public class RegexValidatedStringAttributeHandler implements AttributeHandler<St
 	 * @should fail if the string does not match the regex
 	 */
 	@Override
-	public String serialize(String typedValue) {
-		validate(typedValue);
-		return typedValue;
+	public String serialize(Object typedValue) {
+		String asString = (String) typedValue;
+		validate(asString);
+		return asString;
 	}
 	
 	/**

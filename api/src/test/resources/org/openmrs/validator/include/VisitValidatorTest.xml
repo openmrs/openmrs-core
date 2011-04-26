@@ -1,0 +1,4 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+  <visit_attribute_type visit_attribute_type_id="1" name="Two or Three" logical_type="string" uuid="9516cc50-6f9f-11e0-8414-001e378eb67e" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" min_occurs="2" max_occurs="3" />
+</dataset>

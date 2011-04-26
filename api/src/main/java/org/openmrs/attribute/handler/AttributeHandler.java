@@ -58,10 +58,10 @@ public interface AttributeHandler<T> {
 	void validate(T typedValue) throws InvalidAttributeValueException;
 	
 	/**
-	 * @param typedValue
+	 * @param typedValue run-time type should be T
 	 * @return the {@link String} representation of the typed value
 	 */
-	String serialize(T typedValue);
+	String serialize(Object typedValue);
 	
 	/**
 	 * @param stringValue

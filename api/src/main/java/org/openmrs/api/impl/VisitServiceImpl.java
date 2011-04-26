@@ -16,17 +16,23 @@ package org.openmrs.api.impl;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.openmrs.Concept;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.Visit;
+import org.openmrs.VisitAttribute;
+import org.openmrs.VisitAttributeType;
 import org.openmrs.VisitType;
 import org.openmrs.api.APIException;
+import org.openmrs.api.AttributeService;
 import org.openmrs.api.VisitService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.VisitDAO;
+import org.openmrs.attribute.handler.AttributeHandler;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.validator.ValidateUtil;
 
@@ -115,7 +121,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	 */
 	@Override
 	public List<Visit> getAllVisits() throws APIException {
-		return dao.getVisits(null, null, null, null, null, null, null, null, true, false);
+		return dao.getVisits(null, null, null, null, null, null, null, null, null, true, false);
 	}
 	
 	/**
@@ -179,10 +185,21 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	@Override
 	public List<Visit> getVisits(Collection<VisitType> visitTypes, Collection<Patient> patients,
 	        Collection<Location> locations, Collection<Concept> indications, Date minStartDatetime, Date maxStartDatetime,
-	        Date minEndDatetime, Date maxEndDatetime, boolean includeVoided) throws APIException {
+	        Date minEndDatetime, Date maxEndDatetime, Map<VisitAttributeType, Object> attributeValues, boolean includeVoided)
+	        throws APIException {
+		
+		Map<VisitAttributeType, String> serializedAttributeValues = null;
+		if (attributeValues != null) {
+			serializedAttributeValues = new HashMap<VisitAttributeType, String>();
+			AttributeService attrService = Context.getAttributeService();
+			for (Map.Entry<VisitAttributeType, Object> e : attributeValues.entrySet()) {
+				VisitAttributeType vat = e.getKey();
+				serializedAttributeValues.put(vat, attrService.getHandler(vat).serialize(e.getValue()));
+			}
+		}
 		
 		return dao.getVisits(visitTypes, patients, locations, indications, minStartDatetime, maxStartDatetime,
-		    minEndDatetime, maxEndDatetime, true, includeVoided);
+		    minEndDatetime, maxEndDatetime, serializedAttributeValues, true, includeVoided);
 	}
 	
 	/**
@@ -195,7 +212,7 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 		if (patient == null || patient.getId() == null)
 			return Collections.EMPTY_LIST;
 		
-		return getVisits(null, Collections.singletonList(patient), null, null, null, null, null, null, false);
+		return getVisits(null, Collections.singletonList(patient), null, null, null, null, null, null, null, false);
 	}
 	
 	/**
@@ -207,6 +224,72 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 		if (patient == null || patient.getId() == null)
 			return Collections.EMPTY_LIST;
 		
-		return dao.getVisits(null, Collections.singletonList(patient), null, null, null, null, null, null, false, false);
+		return dao.getVisits(null, Collections.singletonList(patient), null, null, null, null, null, null, null, false,
+		    false);
 	}
+	
+	/**
+	 * @see org.openmrs.api.VisitService#getAllVisitAttributeTypes()
+	 */
+	@Override
+	public List<VisitAttributeType> getAllVisitAttributeTypes() {
+		return dao.getAllVisitAttributeTypes();
+	}
+	
+	/**
+	 * @see org.openmrs.api.VisitService#getVisitAttributeType(java.lang.Integer)
+	 */
+	@Override
+	public VisitAttributeType getVisitAttributeType(Integer id) {
+		return dao.getVisitAttributeType(id);
+	}
+	
+	/**
+	 * @see org.openmrs.api.VisitService#getVisitAttributeTypeByUuid(java.lang.String)
+	 */
+	@Override
+	public VisitAttributeType getVisitAttributeTypeByUuid(String uuid) {
+		return dao.getVisitAttributeTypeByUuid(uuid);
+	}
+	
+	/**
+	 * @see org.openmrs.api.VisitService#saveVisitAttributeType(org.openmrs.VisitAttributeType)
+	 */
+	@Override
+	public VisitAttributeType saveVisitAttributeType(VisitAttributeType visitAttributeType) {
+		return dao.saveVisitAttributeType(visitAttributeType);
+	}
+	
+	/**
+	 * @see org.openmrs.api.VisitService#retireVisitAttributeType(org.openmrs.VisitAttributeType, java.lang.String)
+	 */
+	@Override
+	public VisitAttributeType retireVisitAttributeType(VisitAttributeType visitAttributeType, String reason) {
+		return dao.saveVisitAttributeType(visitAttributeType);
+	}
+	
+	/**
+	 * @see org.openmrs.api.VisitService#unretireVisitAttributeType(org.openmrs.VisitAttributeType)
+	 */
+	@Override
+	public VisitAttributeType unretireVisitAttributeType(VisitAttributeType visitAttributeType) {
+		return dao.saveVisitAttributeType(visitAttributeType);
+	}
+	
+	/**
+	 * @see org.openmrs.api.VisitService#purgeVisitAttributeType(org.openmrs.VisitAttributeType)
+	 */
+	@Override
+	public void purgeVisitAttributeType(VisitAttributeType visitAttributeType) {
+		dao.deleteVisitAttributeType(visitAttributeType);
+	}
+	
+	/**
+	 * @see org.openmrs.api.VisitService#getVisitAttributeByUuid(java.lang.String)
+	 */
+	@Override
+	public VisitAttribute getVisitAttributeByUuid(String uuid) {
+		return dao.getVisitAttributeByUuid(uuid);
+	}
+	
 }

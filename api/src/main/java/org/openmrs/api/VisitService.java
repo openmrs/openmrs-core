@@ -16,11 +16,14 @@ package org.openmrs.api;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.openmrs.Concept;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.Visit;
+import org.openmrs.VisitAttribute;
+import org.openmrs.VisitAttributeType;
 import org.openmrs.VisitType;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.util.PrivilegeConstants;
@@ -220,12 +223,15 @@ public interface VisitService extends OpenmrsService {
 	 * @should get visits started between the given start dates
 	 * @should get visits ended between the given end dates
 	 * @should return all visits if includeVoided is set to true
+	 * @should get all visits with given attribute values
+	 * @should not find any visits if none have given attribute values
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_VISITS)
 	public List<Visit> getVisits(Collection<VisitType> visitTypes, Collection<Patient> patients,
 	        Collection<Location> locations, Collection<Concept> indications, Date minStartDatetime, Date maxStartDatetime,
-	        Date minEndDatetime, Date maxEndDatetime, boolean includeVoided) throws APIException;
+	        Date minEndDatetime, Date maxEndDatetime, Map<VisitAttributeType, Object> attributeValues, boolean includeVoided)
+	        throws APIException;
 	
 	/**
 	 * Gets all unvoided visits for the specified patient
@@ -250,5 +256,83 @@ public interface VisitService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_VISITS)
 	public List<Visit> getActiveVisitsByPatient(Patient patient) throws APIException;
+	
+	/**
+	 * @return all {@link VisitAttributeType}s
+	 * @should return all visit attribute types including retired ones
+	 */
+	@Transactional(readOnly = true)
+	@Authorized(PrivilegeConstants.VIEW_VISIT_ATTRIBUTE_TYPES)
+	List<VisitAttributeType> getAllVisitAttributeTypes();
+	
+	/**
+	 * @param id
+	 * @return the {@link VisitAttributeType} with the given internal id
+	 * @should return the visit attribute type with the given id
+	 * @should return null if no visit attribute type exists with the given id
+	 */
+	@Transactional(readOnly = true)
+	@Authorized(PrivilegeConstants.VIEW_VISIT_ATTRIBUTE_TYPES)
+	VisitAttributeType getVisitAttributeType(Integer id);
+	
+	/**
+	 * @param uuid
+	 * @return the {@link VisitAttributeType} with the given uuid
+	 * @should return the visit attribute type with the given uuid
+	 * @should return null if no visit attribute type exists with the given uuid
+	 */
+	@Transactional(readOnly = true)
+	@Authorized(PrivilegeConstants.VIEW_VISIT_ATTRIBUTE_TYPES)
+	VisitAttributeType getVisitAttributeTypeByUuid(String uuid);
+	
+	/**
+	 * Creates or updates the given visit attribute type in the database
+	 * 
+	 * @param visitAttributeType
+	 * @return the visitAttribute created/saved
+	 * @should create a new visit attribute type
+	 * @should edit an existing visit attribute type
+	 */
+	@Authorized(PrivilegeConstants.MANAGE_VISIT_ATTRIBUTE_TYPES)
+	VisitAttributeType saveVisitAttributeType(VisitAttributeType visitAttributeType);
+	
+	/**
+	 * Retires the given visit attribute type in the database
+	 * 
+	 * @param visitAttributeType
+	 * @return the visitAttribute retired
+	 * @should retire a visit attribute type
+	 */
+	@Authorized(PrivilegeConstants.MANAGE_VISIT_ATTRIBUTE_TYPES)
+	VisitAttributeType retireVisitAttributeType(VisitAttributeType visitAttributeType, String reason);
+	
+	/**
+	 * Restores a visit attribute type that was previous retired in the database
+	 * 
+	 * @param visitAttributeType
+	 * @return the visitAttribute unretired
+	 * @should unretire a retired visit attribute type
+	 */
+	@Authorized(PrivilegeConstants.MANAGE_VISIT_ATTRIBUTE_TYPES)
+	VisitAttributeType unretireVisitAttributeType(VisitAttributeType visitAttributeType);
+	
+	/**
+	 * Completely removes a visit attribute type from the database
+	 * 
+	 * @param visitAttributeType
+	 * @should completely remove a visit attribute type
+	 */
+	@Authorized(PrivilegeConstants.PURGE_VISIT_ATTRIBUTE_TYPES)
+	void purgeVisitAttributeType(VisitAttributeType visitAttributeType);
+	
+	/**
+	 * @param uuid
+	 * @return the {@link VisitAttribute} with the given uuid
+	 * @should get the visit attribute with the given uuid
+	 * @should return null if no visit attribute has the given uuid
+	 */
+	@Transactional(readOnly = true)
+	@Authorized(PrivilegeConstants.VIEW_VISITS)
+	VisitAttribute getVisitAttributeByUuid(String uuid);
 	
 }

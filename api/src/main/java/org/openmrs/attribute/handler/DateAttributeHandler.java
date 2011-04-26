@@ -70,7 +70,7 @@ public class DateAttributeHandler implements AttributeHandler<Date> {
 	 * @should convert a date into a ymd string representation
 	 */
 	@Override
-	public String serialize(Date date) {
+	public String serialize(Object date) {
 		return new SimpleDateFormat(dateFormat).format(date);
 	}
 	
