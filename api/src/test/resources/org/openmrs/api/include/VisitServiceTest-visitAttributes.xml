@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <dataset>
-  <visit_attribute_type visit_attribute_type_id="1" name="Audit Date" logical_type="date" uuid="9516cc50-6f9f-11e0-8414-001e378eb67e" creator="1" date_created="2005-01-01 00:00:00.0" retired="false" />
-  <visit_attribute_type visit_attribute_type_id="2" name="A Date We Don't Care About" logical_type="date" uuid="9516cc50-6f9f-11e0-8414-001e378eb67f" creator="1" date_created="2005-01-01 00:00:00.0" retired="true" retired_by="1" date_retired="2005-01-01 02:00:00.0" retire_reason="for fun and profit" />
+  <visit_attribute_type visit_attribute_type_id="1" name="Audit Date" logical_type="date" uuid="9516cc50-6f9f-11e0-8414-001e378eb67e" creator="1" date_created="2005-01-01 00:00:00.0" min_occurs="0" retired="false" />
+  <visit_attribute_type visit_attribute_type_id="2" name="A Date We Don't Care About" logical_type="date" uuid="9516cc50-6f9f-11e0-8414-001e378eb67f" creator="1" date_created="2005-01-01 00:00:00.0" min_occurs="0" retired="true" retired_by="1" date_retired="2005-01-01 02:00:00.0" retire_reason="for fun and profit" />
   <visit_attribute visit_attribute_id="1" visit_id="1" attribute_type_id="1" serialized_value="2011-04-25" uuid="3a2bdb18-6faa-11e0-8414-001e378eb67e" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" />
 </dataset>
