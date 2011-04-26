@@ -1,5 +1,5 @@
 <%@ include file="/WEB-INF/template/include.jsp" %>
-<openmrs:require privilege="View Persons" otherwise="/login.htm" redirect="/personDashboard.form" />
+<openmrs:require privilege="View People" otherwise="/login.htm" redirect="/personDashboard.form" />
 
 <c:set var="OPENMRS_VIEWING_PERSON_ID" scope="request" value="${person.personId}"/>
 
