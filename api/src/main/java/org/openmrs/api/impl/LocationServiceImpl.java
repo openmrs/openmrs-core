@@ -326,4 +326,12 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	        throws APIException {
 		return dao.getLocations(nameFragment, includeRetired, start, length);
 	}
+	
+	/**
+	 * @see LocationService#getRootLocations(boolean)
+	 */
+	@Override
+	public List<Location> getRootLocations(boolean includeRetired) throws APIException {
+		return dao.getRootLocations(includeRetired);
+	}
 }
