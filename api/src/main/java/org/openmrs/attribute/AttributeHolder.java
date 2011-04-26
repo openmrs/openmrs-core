@@ -34,4 +34,26 @@ public interface AttributeHolder<AttrType> {
 	 */
 	List<AttrType> getActiveAttributes();
 	
+	/**
+	 * @param ofType
+	 * @return non-voided attributes of the given type
+	 */
+	List<AttrType> getActiveAttributes(AttributeType<?> ofType);
+	
+	/**
+	 * Adds an attribute. Will fail if this would cause the holder to have an invalid number of attributes
+	 * of the given type.
+	 * 
+	 * @param attribute
+	 */
+	void addAttribute(AttrType attribute);
+	
+	/**
+	 * Sets an attribute, voiding any existing attributes on the holder of the same attribute type. Will
+	 * fail if the relevant attribute type requires more than one value.
+	 * 
+	 * @param attribute
+	 */
+	void setAttribute(AttrType attribute);
+	
 }

@@ -10,6 +10,7 @@ import java.util.Set;
 import junit.framework.Assert;
 
 import org.junit.Test;
+import org.openmrs.BaseAttributableData;
 import org.openmrs.attribute.handler.AttributeHandler;
 import org.openmrs.test.BaseContextSensitiveTest;
 
@@ -47,27 +48,19 @@ public class AttributeIntegrationTest extends BaseContextSensitiveTest {
 	/**
 	 * A parent class
 	 */
-	class Visit implements AttributeHolder<VisitAttribute> {
+	class Visit extends BaseAttributableData<VisitAttribute> {
 		
-		private Set<VisitAttribute> attributes = new HashSet<AttributeIntegrationTest.VisitAttribute>();
-		
-		public void addAttribute(VisitAttribute attr) {
-			attributes.add(attr);
+		@Override
+		public Integer getId() {
+			// not needed for testing
+			return null;
 		}
 		
 		@Override
-		public Set<VisitAttribute> getAttributes() {
-			return attributes;
+		public void setId(Integer id) {
+			// not needed for testing
 		}
 		
-		@Override
-		public List<VisitAttribute> getActiveAttributes() {
-			List<VisitAttribute> ret = new ArrayList<AttributeIntegrationTest.VisitAttribute>();
-			for (VisitAttribute attr : getAttributes())
-				if (!attr.isVoided())
-					ret.add(attr);
-			return ret;
-		}
 	}
 	
 	/**

@@ -40,6 +40,12 @@
 		<many-to-one name="creator" class="User" not-null="true" column="creator" />
 		
 		<many-to-one name="voidedBy" class="User" column="voided_by" />
+		
+		<set name="attributes" lazy="true" inverse="true" batch-size="100"
+            cascade="all-delete-orphan" sort="natural" order-by="voided asc">
+            <key column="visit_id" />
+            <one-to-many class="VisitAttribute" />
+        </set>
 
 	</class>
 

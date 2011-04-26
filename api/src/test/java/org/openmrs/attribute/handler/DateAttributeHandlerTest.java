@@ -1,6 +1,5 @@
 package org.openmrs.attribute.handler;
 
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -26,7 +25,7 @@ public class DateAttributeHandlerTest {
 		Date date = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse("2011-04-25 01:02:03");
 		Assert.assertEquals("2011-04-25", handler.serialize(date));
 	}
-
+	
 	/**
 	 * @see DateAttributeHandler#deserialize(String)
 	 * @verifies reconstruct a date serialized by this handler
@@ -36,5 +35,5 @@ public class DateAttributeHandlerTest {
 		Date date = new SimpleDateFormat("yyyy-MM-dd").parse("2011-04-25");
 		Assert.assertEquals(date, handler.deserialize(handler.serialize(date)));
 	}
-
+	
 }

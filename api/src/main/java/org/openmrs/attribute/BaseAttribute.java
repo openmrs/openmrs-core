@@ -25,9 +25,26 @@ import org.openmrs.attribute.handler.AttributeHandler;
  */
 public abstract class BaseAttribute<OwningType extends AttributeHolder<?>> extends BaseOpenmrsData implements Attribute<OwningType> {
 	
+	private OwningType owner;
+	
 	private AttributeType<OwningType> attributeType;
 	
 	private String serializedValue;
+	
+	/**
+	 * @see org.openmrs.attribute.Attribute#getOwner()
+	 */
+	@Override
+	public OwningType getOwner() {
+		return owner;
+	}
+	
+	/**
+	 * @see org.openmrs.attribute.Attribute#setOwner(org.openmrs.attribute.AttributeHolder)
+	 */
+	public void setOwner(OwningType owner) {
+		this.owner = owner;
+	}
 	
 	/**
 	 * @param attributeType the attributeType to set

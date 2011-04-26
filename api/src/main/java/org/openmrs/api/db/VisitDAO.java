@@ -16,11 +16,14 @@ package org.openmrs.api.db;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.openmrs.Concept;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.Visit;
+import org.openmrs.VisitAttribute;
+import org.openmrs.VisitAttributeType;
 import org.openmrs.VisitType;
 import org.openmrs.api.APIException;
 import org.openmrs.api.VisitService;
@@ -107,5 +110,39 @@ public interface VisitDAO {
 	 */
 	public List<Visit> getVisits(Collection<VisitType> visitTypes, Collection<Patient> patients,
 	        Collection<Location> locations, Collection<Concept> indications, Date minStartDatetime, Date maxStartDatetime,
-	        Date minEndDatetime, Date maxEndDatetime, boolean includeInactive, boolean includeVoided) throws DAOException;
+	        Date minEndDatetime, Date maxEndDatetime, Map<VisitAttributeType, String> serializedAttributeVAlues,
+	        boolean includeInactive, boolean includeVoided) throws DAOException;
+	
+	/**
+	 * @see VisitService#getAllVisitAttributeTypes()
+	 */
+	List<VisitAttributeType> getAllVisitAttributeTypes();
+	
+	/**
+	 * @see VisitService#getVisitAttributeType(Integer)
+	 */
+	VisitAttributeType getVisitAttributeType(Integer id);
+	
+	/**
+	 * @see VisitService#getVisitAttributeTypeByUuid(String)
+	 */
+	VisitAttributeType getVisitAttributeTypeByUuid(String uuid);
+	
+	/**
+	 * @see VisitService#saveVisitAttributeType(VisitAttributeType)
+	 */
+	VisitAttributeType saveVisitAttributeType(VisitAttributeType visitAttributeType);
+	
+	/**
+	 * Completely removes a visit attribute type from the database
+	 * 
+	 * @param visitAttributeType
+	 */
+	void deleteVisitAttributeType(VisitAttributeType visitAttributeType);
+	
+	/**
+	 * @see VisitService#getVisitAttributeByUuid(String)
+	 */
+	VisitAttribute getVisitAttributeByUuid(String uuid);
+	
 }

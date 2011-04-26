@@ -1,6 +1,5 @@
 package org.openmrs.attribute;
 
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,7 +19,7 @@ public class AttributeUtilTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	public void deserializeSimpleConfiguration_shouldDeserializeAConfigurationSerializedByTheCorrespondingSerializeMethod()
-	                                                                                                                       throws Exception {
+	        throws Exception {
 		Map<String, String> config = new HashMap<String, String>();
 		config.put("one property", "one value");
 		config.put("another property", "another value < with > strange&nbsp;characters");

@@ -57,8 +57,8 @@ public class StringAttributeHandler implements AttributeHandler<String> {
 	 * @see org.openmrs.attribute.handler.AttributeHandler#serialize(java.lang.Object)
 	 */
 	@Override
-	public String serialize(String typedValue) {
-		return typedValue;
+	public String serialize(Object typedValue) {
+		return (String) typedValue;
 	}
 	
 	/**

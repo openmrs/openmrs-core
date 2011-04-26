@@ -13,9 +13,11 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.hibernate.Criteria;
 import org.hibernate.Session;
@@ -27,6 +29,8 @@ import org.openmrs.Concept;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.Visit;
+import org.openmrs.VisitAttribute;
+import org.openmrs.VisitAttributeType;
 import org.openmrs.VisitType;
 import org.openmrs.api.APIException;
 import org.openmrs.api.db.DAOException;
@@ -142,7 +146,8 @@ public class HibernateVisitDAO implements VisitDAO {
 	@Override
 	public List<Visit> getVisits(Collection<VisitType> visitTypes, Collection<Patient> patients,
 	        Collection<Location> locations, Collection<Concept> indications, Date minStartDatetime, Date maxStartDatetime,
-	        Date minEndDatetime, Date maxEndDatetime, boolean includeInactive, boolean includeVoided) throws DAOException {
+	        Date minEndDatetime, Date maxEndDatetime, Map<VisitAttributeType, String> serializedAttributeValues,
+	        boolean includeInactive, boolean includeVoided) throws DAOException {
 		
 		Criteria criteria = getCurrentSession().createCriteria(Visit.class);
 		
@@ -173,6 +178,81 @@ public class HibernateVisitDAO implements VisitDAO {
 		if (!includeVoided)
 			criteria.add(Restrictions.eq("voided", false));
 		
-		return criteria.list();
+		if (serializedAttributeValues == null)
+			return criteria.list();
+		
+		List<Visit> ret = new ArrayList<Visit>();
+		for (Visit visit : (List<Visit>) criteria.list()) {
+			boolean allMatch = true;
+			for (Map.Entry<VisitAttributeType, String> e : serializedAttributeValues.entrySet()) {
+				boolean match = false;
+				for (VisitAttribute attr : visit.getActiveAttributes(e.getKey())) {
+					if (attr.getSerializedValue().equals(e.getValue())) {
+						match = true;
+						break;
+					}
+				}
+				if (!match) {
+					allMatch = false;
+					break;
+				}
+			}
+			if (allMatch)
+				ret.add(visit);
+		}
+		return ret;
 	}
+	
+	/**
+	 * @see org.openmrs.api.db.VisitDAO#getAllVisitAttributeTypes()
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<VisitAttributeType> getAllVisitAttributeTypes() {
+		return getCurrentSession().createCriteria(VisitAttributeType.class).list();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.VisitDAO#getVisitAttributeType(java.lang.Integer)
+	 */
+	@Override
+	public VisitAttributeType getVisitAttributeType(Integer id) {
+		return (VisitAttributeType) getCurrentSession().get(VisitAttributeType.class, id);
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.VisitDAO#getVisitAttributeTypeByUuid(java.lang.String)
+	 */
+	@Override
+	public VisitAttributeType getVisitAttributeTypeByUuid(String uuid) {
+		return (VisitAttributeType) getCurrentSession().createCriteria(VisitAttributeType.class).add(
+		    Restrictions.eq("uuid", uuid)).uniqueResult();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.VisitDAO#saveVisitAttributeType(org.openmrs.VisitAttributeType)
+	 */
+	@Override
+	public VisitAttributeType saveVisitAttributeType(VisitAttributeType visitAttributeType) {
+		getCurrentSession().saveOrUpdate(visitAttributeType);
+		return visitAttributeType;
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.VisitDAO#deleteVisitAttributeType(org.openmrs.VisitAttributeType)
+	 */
+	@Override
+	public void deleteVisitAttributeType(VisitAttributeType visitAttributeType) {
+		getCurrentSession().delete(visitAttributeType);
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.VisitDAO#getVisitAttributeByUuid(java.lang.String)
+	 */
+	@Override
+	public VisitAttribute getVisitAttributeByUuid(String uuid) {
+		return (VisitAttribute) getCurrentSession().createCriteria(VisitAttribute.class).add(Restrictions.eq("uuid", uuid))
+		        .uniqueResult();
+	}
+	
 }
