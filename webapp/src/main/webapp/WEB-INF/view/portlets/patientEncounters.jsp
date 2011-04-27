@@ -44,7 +44,7 @@
 			"sPaginationType": "two_button",
 			"bAutoWidth": false,
 			"bFilter": false,
-			"aaSorting": [[3,'desc']], // perform first pass sort on initialisation on encounter.encounterDatetime column
+			"aaSorting": [[4,'asc']], // initial sorting uses the samer order given by ForEachEncounter (Encounter.datetime by default)
 			"iDisplayLength": 20,
 			"aoColumns": [
 				{ "bVisible": false, "sType": "numeric" },
@@ -126,7 +126,7 @@ Parameters
 								 	<spring:message code="general.view"/>
 								</c:if></th>
 								<th class="encounterDatetimeHeader"> <spring:message code="Encounter.datetime"/> </th>
-								<th class="hidden"> hidden Encounter.datetime </th>
+								<th class="hidden"> hidden Sorting Order (by Encounter.datetime) </th>
 								<th class="encounterTypeHeader"> <spring:message code="Encounter.type"/>     </th>
 								<th class="encounterVisitTypeHeader"><spring:message code="Encounter.visitType"/></th>
 								<th class="encounterProviderHeader"> <spring:message code="Encounter.provider"/> </th>
@@ -136,6 +136,7 @@ Parameters
 							</tr>
 						</thead>
 						<tbody>
+							<%-- WARNING: if sortBy="encounterDatetime" is changed, update the hidden Sorting Order column, in order to sort the encounterDatetime column too --%>
 							<openmrs:forEachEncounter encounters="${model.patientEncounters}" sortBy="encounterDatetime" descending="true" var="enc" num="${model.num}">
 								<tr class='${status.index % 2 == 0 ? "evenRow" : "oddRow"}'>
 									<td class="hidden">
@@ -175,8 +176,9 @@ Parameters
 										<openmrs:formatDate date="${enc.encounterDatetime}" type="small" />
 									</td>
 									<td class="hidden">
-									<%--  this column contains milliseconds and will be used for sorting in the dataTable's encounterDatetime column --%>
-										<openmrs:formatDate date="${enc.encounterDatetime}" type="milliseconds" />
+									<%--  this column contains the sorting order provided by ForEachEncounterTag (by encounterDatetime) --%>
+									<%--  and will be used for the initial sorting and sorting in the dataTable's encounterDatetime column --%>
+										${count}
 									</td>
 					 				<td class="encounterType"><openmrs:format encounterType="${enc.encounterType}"/></td>
 					 				<td class="encounterVisitType">
