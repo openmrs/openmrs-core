@@ -458,6 +458,11 @@
  		<url-pattern>*.field</url-pattern>
 	</servlet-mapping>
 	
+	<servlet-mapping>
+ 		<servlet-name>openmrs</servlet-name>
+ 		<url-pattern>/ws/*</url-pattern>
+	</servlet-mapping>
+	
 	<jsp-config>
 		<taglib>
 			<taglib-uri>/spring</taglib-uri>
