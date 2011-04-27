@@ -51,7 +51,7 @@ public class VisitAttributeTypeFormController extends SimpleFormController {
 	 *      org.springframework.validation.BindException)
 	 */
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
-	        BindException errors) throws Exception {
+	                                BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
 		
@@ -59,10 +59,10 @@ public class VisitAttributeTypeFormController extends SimpleFormController {
 		
 		if (Context.isAuthenticated()) {
 			VisitAttributeType visitAttributeType = (VisitAttributeType) obj;
-			VisitService es = Context.getVisitService();
+			VisitService visitService = Context.getVisitService();
 			
 			if (request.getParameter("save") != null) {
-				es.saveVisitAttributeType(visitAttributeType);
+				visitService.saveVisitAttributeType(visitAttributeType);
 				view = getSuccessView();
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "VisitAttributeType.saved");
 			}
@@ -75,7 +75,7 @@ public class VisitAttributeTypeFormController extends SimpleFormController {
 					return showForm(request, response, errors);
 				}
 				
-				es.retireVisitAttributeType(visitAttributeType, retireReason);
+				visitService.retireVisitAttributeType(visitAttributeType, retireReason);
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "VisitAttributeType.retiredSuccessfully");
 				
 				view = getSuccessView();
@@ -85,7 +85,7 @@ public class VisitAttributeTypeFormController extends SimpleFormController {
 			else if (request.getParameter("purge") != null) {
 				
 				try {
-					es.purgeVisitAttributeType(visitAttributeType);
+					visitService.purgeVisitAttributeType(visitAttributeType);
 					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "VisitAttributeType.purgedSuccessfully");
 					view = getSuccessView();
 				}
@@ -98,7 +98,18 @@ public class VisitAttributeTypeFormController extends SimpleFormController {
 					view = "visitAttributeType.form?visitAttributeTypeId=" + visitAttributeType.getVisitAttributeTypeId();
 				}
 			}
-			
+
+			else if (request.getParameter("unretire") != null) {
+				try {
+					visitService.unretireVisitAttributeType(visitAttributeType);
+					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "VisitAttributeType.unretiredSuccessfully");
+					view = getSuccessView();
+				}
+				catch (APIException e) {
+					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "error.general: " + e.getLocalizedMessage());
+					view = "visitAttributeType.form?visitAttributeTypeId=" + visitAttributeType.getVisitAttributeTypeId();
+				}
+			}
 		}
 		
 		return new ModelAndView(new RedirectView(view));
