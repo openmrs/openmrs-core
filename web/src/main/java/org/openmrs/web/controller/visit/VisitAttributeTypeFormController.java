@@ -13,6 +13,9 @@
  */
 package org.openmrs.web.controller.visit;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -28,6 +31,7 @@ import org.openmrs.web.WebConstants;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindException;
+import org.springframework.validation.Errors;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
@@ -136,5 +140,17 @@ public class VisitAttributeTypeFormController extends SimpleFormController {
 			visitAttributeType = new VisitAttributeType();
 		
 		return visitAttributeType;
+	}
+	
+	/**
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest,
+	 *      java.lang.Object, org.springframework.validation.Errors)
+	 */
+	protected Map<String, Object> referenceData(HttpServletRequest request, Object obj, Errors errors) throws Exception {
+		
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("logicalTypes", Context.getAttributeService().getLogicalTypes());
+		
+		return map;
 	}
 }
