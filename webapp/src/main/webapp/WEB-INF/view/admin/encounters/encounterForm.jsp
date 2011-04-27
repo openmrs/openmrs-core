@@ -8,6 +8,7 @@
 <openmrs:htmlInclude file="/scripts/calendar/calendar.js" />
 <openmrs:htmlInclude file="/scripts/dojoConfig.js" />
 <openmrs:htmlInclude file="/scripts/dojo/dojo.js" />
+<openmrs:htmlInclude file="/dwr/interface/DWRVisitService.js"/>
 
 <script type="text/javascript">
 	dojo.addOnLoad( function() {
@@ -83,6 +84,31 @@
 		if (patientBoxFilledIn && providerBoxFilledIn)
 			document.getElementById("saveEncounterButton").disabled = false;
 	}
+	
+	function updateSaveButtonAndVisits(formFieldId, patientObj, isPageLoad){
+		enableSaveButton(formFieldId, patientObj);
+		//if this is on page load, we already have the patient's visits 
+		//select populated with spring's referenced data in the http request
+		if(!isPageLoad)
+			updateVisits(patientObj);
+	}
+	
+	//Repopulates the select element for visit with a new list of visits for the specified patient
+	function updateVisits(patientObj){
+		DWRVisitService.findVisitsByPatient(patientObj.patientId, false, false, function(visits) {
+			var options = '<option value=""></option>';
+			if(visits.length > 0){
+		    	for (var i = 0; i < visits.length; i++) {
+		    		options += '<option value="' + visits[i].visitId + '">' + visits[i].startDatetimeString +
+		    		' ' + visits[i].visitType + ' ' +visits[i].personName + 
+		    		((visits[i].indicationConcept) ? ' '+visits[i].indicationConcept :'') + 
+		    		((visits[i].location) ? ' '+visits[i].location :'') + '</option>';
+		    	}
+			}
+
+			$j("select#visitSelect").html(options);
+		});
+	}
 
 </script>
 
@@ -113,7 +139,7 @@
 			<th><spring:message code="Encounter.patient"/></th>
 			<td>
 				<spring:bind path="encounter.patient">
-					<openmrs_tag:patientField formFieldName="patientId" searchLabelCode="Patient.find" initialValue="${status.value.patientId}" linkUrl="${pageContext.request.contextPath}/admin/patients/patient.form" callback="enableSaveButton" allowSearch="${encounter.encounterId == null}"/>
+					<openmrs_tag:patientField formFieldName="patientId" searchLabelCode="Patient.find" initialValue="${status.value.patientId}" linkUrl="${pageContext.request.contextPath}/admin/patients/patient.form" callback="updateSaveButtonAndVisits" allowSearch="${encounter.encounterId == null}"/>
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 				</spring:bind>
 			</td>
@@ -146,6 +172,25 @@
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
 				</spring:bind>
 			</td>
+		</tr>
+		<tr>
+		<th><spring:message code="Encounter.visit" /></th>
+		<td>
+			<spring:bind path="encounter.visit">
+				<select id="visitSelect" name="${status.expression}">
+					<option value=""></option>
+					<c:forEach items="${patientVisits}" var="visit">
+						<option value="${visit.visitId}" <c:if test="${visit.visitId == status.value}">selected="selected"</c:if>>
+							 <openmrs:formatDate date="${visit.startDatetime}" />
+							 ${visit.visitType.name} ${visit.patient.personName}
+							<c:if test="${visit.indication != null}"> ${visit.indication.name}</c:if>
+							<c:if test="${visit.location != null}"> ${visit.location}</c:if>
+						</option>
+					</c:forEach>
+				</select>
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+			</spring:bind>
+		</td>
 		</tr>
 		<tr>
 			<th><spring:message code="Encounter.type"/></th>

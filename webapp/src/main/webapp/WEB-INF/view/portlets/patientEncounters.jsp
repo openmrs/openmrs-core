@@ -56,6 +56,7 @@
             	null,
             	null,
             	null,
+            	null,
             	null
         	],
 			"oLanguage": {
@@ -127,6 +128,7 @@ Parameters
 								<th class="encounterDatetimeHeader"> <spring:message code="Encounter.datetime"/> </th>
 								<th class="hidden"> hidden Encounter.datetime </th>
 								<th class="encounterTypeHeader"> <spring:message code="Encounter.type"/>     </th>
+								<th class="encounterVisitTypeHeader"><spring:message code="Encounter.visitType"/></th>
 								<th class="encounterProviderHeader"> <spring:message code="Encounter.provider"/> </th>
 								<th class="encounterFormHeader"> <spring:message code="Encounter.form"/>     </th>
 								<th class="encounterLocationHeader"> <spring:message code="Encounter.location"/> </th>
@@ -177,6 +179,9 @@ Parameters
 										<openmrs:formatDate date="${enc.encounterDatetime}" type="milliseconds" />
 									</td>
 					 				<td class="encounterType"><openmrs:format encounterType="${enc.encounterType}"/></td>
+					 				<td class="encounterVisitType">
+					 					<c:if test="${enc.visit != null}"><openmrs:format visitType="${enc.visit.visitType}"/></c:if>
+					 				</td>
 					 				<td class="encounterProvider"><openmrs:format person="${enc.provider}"/></td>
 					 				<td class="encounterForm">${enc.form.name}</td>
 					 				<td class="encounterLocation"><openmrs:format location="${enc.location}"/></td>

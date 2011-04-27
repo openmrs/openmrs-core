@@ -34,12 +34,14 @@ import org.openmrs.Form;
 import org.openmrs.FormField;
 import org.openmrs.Location;
 import org.openmrs.Obs;
+import org.openmrs.Visit;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
 import org.openmrs.propertyeditor.EncounterTypeEditor;
 import org.openmrs.propertyeditor.FormEditor;
 import org.openmrs.propertyeditor.LocationEditor;
+import org.openmrs.propertyeditor.VisitEditor;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
@@ -80,6 +82,7 @@ public class EncounterFormController extends SimpleFormController {
 		binder.registerCustomEditor(EncounterType.class, new EncounterTypeEditor());
 		binder.registerCustomEditor(Location.class, new LocationEditor());
 		binder.registerCustomEditor(Form.class, new FormEditor());
+		binder.registerCustomEditor(Visit.class, new VisitEditor());
 	}
 	
 	/**
@@ -289,6 +292,8 @@ public class EncounterFormController extends SimpleFormController {
 		
 		map.put("locale", Context.getLocale());
 		map.put("editedObs", editedObs);
+		if (encounter.getPatient() != null)
+			map.put("patientVisits", Context.getVisitService().getActiveVisitsByPatient(encounter.getPatient()));
 		
 		return map;
 	}

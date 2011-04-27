@@ -37,6 +37,7 @@
 		<convert converter="bean" match="org.openmrs.Cohort" >
 			<param name="exclude" value="patients"/>
 		</convert>
+		<convert converter="bean" match="org.openmrs.web.dwr.VisitListItem"/>
 
 	
 		<create creator="new" javascript="DWRPatientService">
@@ -228,6 +229,12 @@
 			<include method="getMigrationStatus"/>
 			<include method="stopHl7ArchiveMigration"/>
 		</create>
+		
+		<create creator="new" javascript="DWRVisitService">
+			<param name="class" value="org.openmrs.web.dwr.DWRVisitService" />
+			<include method="findVisitsByPatient"/>
+			<include method="getVisit"/>
+		</create>
 				
 	</allow>
 	
@@ -279,6 +286,8 @@
 			DWRPatientService.findPatients(String searchValue, boolean includeVoided);
 			DWRPatientService.findCountAndPatients(String searchValue, Integer start, Integer length, boolean getMatchCount);
 			DWRProgramWorkflowService.updatePatientProgram(Integer patientProgramId, String enrollmentDateYmd, String completionDateYmd, Integer locationId);
+			DWRVisitService.findVisitsByPatient(Integer patientId, boolean includeEnded, boolean includeVoided);
+			DWRVisitService.getVisit(Integer visitId);
 		]]>
 	</signatures>
   	
