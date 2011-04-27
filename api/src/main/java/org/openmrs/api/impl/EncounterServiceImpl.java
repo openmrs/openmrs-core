@@ -136,10 +136,6 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 				if (!obs.getPerson().getPersonId().equals(p.getPatientId())) {
 					obs.setPerson(p);
 				}
-				
-				if (obs.getObsId() != null) {
-
-				}
 			}
 			
 			// same goes for Orders
@@ -212,7 +208,8 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 */
 	@Deprecated
 	public List<Encounter> getEncounters(Patient who, Location loc, Date fromDate, Date toDate,
-	        Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes, boolean includeVoided) {
+	                                     Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes,
+	                                     boolean includeVoided) {
 		return getEncounters(who, loc, fromDate, toDate, enteredViaForms, encounterTypes, null, includeVoided);
 	}
 	
@@ -225,8 +222,8 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 */
 	@Deprecated
 	public List<Encounter> getEncounters(Patient who, Location loc, Date fromDate, Date toDate,
-	        Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes, Collection<User> providers,
-	        boolean includeVoided) {
+	                                     Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes,
+	                                     Collection<User> providers, boolean includeVoided) {
 		return dao.getEncounters(who, loc, fromDate, toDate, enteredViaForms, encounterTypes, providers, null, null,
 		    includeVoided);
 	}
@@ -237,8 +234,9 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 *      java.util.Collection, java.util.Collection, boolean)
 	 */
 	public List<Encounter> getEncounters(Patient who, Location loc, Date fromDate, Date toDate,
-	        Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes, Collection<User> providers,
-	        Collection<VisitType> visitTypes, Collection<Visit> visits, boolean includeVoided) {
+	                                     Collection<Form> enteredViaForms, Collection<EncounterType> encounterTypes,
+	                                     Collection<User> providers, Collection<VisitType> visitTypes,
+	                                     Collection<Visit> visits, boolean includeVoided) {
 		return dao.getEncounters(who, loc, fromDate, toDate, enteredViaForms, encounterTypes, providers, visitTypes, visits,
 		    includeVoided);
 	}
@@ -580,7 +578,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 */
 	@Override
 	public List<Encounter> getEncounters(String query, Integer start, Integer length, boolean includeVoided)
-	        throws APIException {
+	                                                                                                        throws APIException {
 		return dao.getEncounters(query, start, length, includeVoided);
 	}
 	
