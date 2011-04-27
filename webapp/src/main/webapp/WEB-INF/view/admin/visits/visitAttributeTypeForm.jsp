@@ -15,6 +15,11 @@
 		}
 	}
 	
+	function confirmUnretire() {
+		var retVal = confirm('<spring:message code="VisitAttributeType.UnretireVisitAttributeTypeMessage"/>');
+		return retVal;
+	}
+	
 </script>
 
 <script type="text/javascript">
@@ -126,6 +131,21 @@
 
 <br/>
 
+<c:if
+	test="${visitAttributeType.retired == true && not empty visitAttributeType.visitAttributeTypeId}">
+	<openmrs:hasPrivilege privilege="Manage Visit Attribute Types">
+		<form id="unretire" method="post" onsubmit="return confirmUnretire()">
+		<fieldset>
+		<h4><spring:message
+			code="VisitAttributeType.UnretireVisitAttributeType" /></h4>
+		<input type="submit"
+			value='<spring:message code="VisitAttributeType.UnretireVisitAttributeType"/>'
+			name="unretire" /></fieldset>
+		</form>
+	</openmrs:hasPrivilege>
+</c:if>
+<br />
+
 <c:if test="${not empty visitAttributeType.visitAttributeTypeId}">
 	<openmrs:hasPrivilege privilege="Purge Visit Attribute Types">
 		<form id="purge" method="post" onsubmit="return confirmPurge()">
@@ -138,5 +158,9 @@
 </c:if>
 
 <openmrs:extensionPoint pointId="org.openmrs.admin.visits.visitAttributeTypeForm.footer" type="html" parameters="visitAttributeTypeId=${visitAttributeType.visitAttributeTypeId}" />
+
+<script type="text/javascript">
+ document.forms[0].elements[0].focus();
+</script>
 
 <%@ include file="/WEB-INF/template/footer.jsp" %>
