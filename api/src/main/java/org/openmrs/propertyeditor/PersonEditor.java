@@ -24,7 +24,9 @@ import org.springframework.util.StringUtils;
 
 /**
  * Allows for serializing/deserializing a Person object to a string so that Spring knows how to pass
- * a Person back and forth through an html form or other medium
+ * a Person back and forth through an html form or other medium. <br/>
+ * <br/>
+ * In version 1.9, added ability for this to also retrieve Person objects by uuid
  * 
  * @see Person
  */
@@ -40,11 +42,15 @@ public class PersonEditor extends PropertyEditorSupport {
 		PersonService ps = Context.getPersonService();
 		if (StringUtils.hasText(text)) {
 			try {
-				setValue(ps.getPerson(Integer.valueOf(text)));
+				Integer personId = Integer.valueOf(text);
+				setValue(ps.getPerson(personId));
 			}
-			catch (Exception ex) {
-				log.error("Error setting text: " + text, ex);
-				throw new IllegalArgumentException("Person not found: " + ex.getMessage());
+			catch (NumberFormatException e) {
+				// assume text entered is a uuid
+				Person person = ps.getPersonByUuid(text);
+				setValue(person);
+				if (person == null)
+					log.trace("Unable to get Person by primary key or uuid using input: " + text);
 			}
 		} else {
 			setValue(null);
