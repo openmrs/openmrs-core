@@ -15,11 +15,6 @@
 		}
 	}
 	
-	function confirmUnretire() {
-		var retVal = confirm('<spring:message code="VisitAttributeType.UnretireVisitAttributeTypeMessage"/>');
-		return retVal;
-	}
-	
 </script>
 
 <script type="text/javascript">
@@ -140,12 +135,12 @@
 <c:if
 	test="${visitAttributeType.retired == true && not empty visitAttributeType.visitAttributeTypeId}">
 	<openmrs:hasPrivilege privilege="Manage Visit Attribute Types">
-		<form id="unretire" method="post" onsubmit="return confirmUnretire()">
+		<form id="unretire" method="post">
 		<fieldset>
 		<h4><spring:message
-			code="VisitAttributeType.UnretireVisitAttributeType" /></h4>
+			code="VisitAttributeType.unretireVisitAttributeType" /></h4>
 		<input type="submit"
-			value='<spring:message code="VisitAttributeType.UnretireVisitAttributeType"/>'
+			value='<spring:message code="VisitAttributeType.unretireVisitAttributeType"/>'
 			name="unretire" /></fieldset>
 		</form>
 	</openmrs:hasPrivilege>
