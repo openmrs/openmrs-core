@@ -538,6 +538,9 @@
 	<!-- ** Encounter      ** -->
 	<bean id="encounterForm" class="org.openmrs.web.controller.encounter.EncounterFormController">
 		<property name="commandName"><value>encounter</value></property>
+		<property name="validator">
+			<ref bean="encounterValidator" />
+		</property>
 		<property name="formView"><value>/admin/encounters/encounterForm</value></property>
 		<property name="successView"><value>encounter.form</value></property>
 	</bean>

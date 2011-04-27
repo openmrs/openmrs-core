@@ -30,6 +30,7 @@ import org.openmrs.OpenmrsMetadata;
 import org.openmrs.Person;
 import org.openmrs.Program;
 import org.openmrs.User;
+import org.openmrs.VisitType;
 import org.openmrs.api.context.Context;
 import org.springframework.util.StringUtils;
 import org.springframework.web.util.JavaScriptUtils;
@@ -83,6 +84,10 @@ public class FormatTag extends TagSupport {
 	
 	private Program program;
 	
+	private Integer visitTypeId;
+	
+	private VisitType visitType;
+	
 	private Boolean javaScriptEscape = Boolean.FALSE;
 	
 	@Override
@@ -123,6 +128,12 @@ public class FormatTag extends TagSupport {
 			encounterType = Context.getEncounterService().getEncounterType(encounterTypeId);
 		if (encounterType != null) {
 			printMetadata(sb, encounterType);
+		}
+		
+		if (visitTypeId != null)
+			visitType = Context.getVisitService().getVisitType(visitTypeId);
+		if (visitType != null) {
+			printMetadata(sb, visitType);
 		}
 		
 		if (locationId != null)
@@ -249,6 +260,8 @@ public class FormatTag extends TagSupport {
 		location = null;
 		locationTagId = null;
 		locationTag = null;
+		visitType = null;
+		visitTypeId = null;
 	}
 	
 	public Integer getConceptId() {
@@ -393,6 +406,34 @@ public class FormatTag extends TagSupport {
 	
 	public void setPerson(Person person) {
 		this.person = person;
+	}
+	
+	/**
+	 * @return the visitTypeId
+	 */
+	public Integer getVisitTypeId() {
+		return visitTypeId;
+	}
+	
+	/**
+	 * @param visitTypeId the visitTypeId to set
+	 */
+	public void setVisitTypeId(Integer visitTypeId) {
+		this.visitTypeId = visitTypeId;
+	}
+	
+	/**
+	 * @return the visitType
+	 */
+	public VisitType getVisitType() {
+		return visitType;
+	}
+	
+	/**
+	 * @param visitType the visitType to set
+	 */
+	public void setVisitType(VisitType visitType) {
+		this.visitType = visitType;
 	}
 	
 	/**

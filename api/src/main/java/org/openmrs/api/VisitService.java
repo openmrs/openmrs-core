@@ -246,7 +246,7 @@ public interface VisitService extends OpenmrsService {
 	public List<Visit> getVisitsByPatient(Patient patient) throws APIException;
 	
 	/**
-	 * Gets all active visits for the specified patient i.e visits whose end date is null
+	 * Gets all active unvoided visits for the specified patient i.e visits whose end date is null
 	 * 
 	 * @param patient the patient whose visits to get
 	 * @return a list of visits

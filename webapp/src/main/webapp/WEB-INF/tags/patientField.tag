@@ -31,7 +31,7 @@
 				<c:if test="${not empty callback}">
 				if (ui.item.object) {
 					// only call the callback if we got a true selection, not a click on an error field
-					${callback}("${formFieldName}", ui.item.object);
+					${callback}("${formFieldName}", ui.item.object, false);
 				}
 				</c:if>
 			},
@@ -44,7 +44,7 @@
 			DWRPatientService.getPatient("${initialValue}", function(patient) {
 				jquerySelectEscaped("${displayNameInputId}").val(patient.personName);
 				<c:if test="${not empty callback}">
-					${callback}("${formFieldName}", patient);
+					${callback}("${formFieldName}", patient, true);
 				</c:if>
 			});
 		</c:if>
