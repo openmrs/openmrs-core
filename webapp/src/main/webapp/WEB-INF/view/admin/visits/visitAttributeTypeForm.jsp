@@ -81,7 +81,13 @@
 		<td><spring:message code="AttributeType.logicalType"/></td>
 		<td>
 			<spring:bind path="visitAttributeType.logicalType">
-				<textarea name="logicalType" rows="3" cols="40" onkeypress="return forceMaxLength(this, 255);" >${status.value}</textarea>
+				<select name="logicalType">
+					<option value=""></option>
+					<c:forEach items="${logicalTypes}" var="logicalType">
+						<option value="${logicalType}" <c:if test="${logicalType == status.value}">selected</c:if>>${logicalType}</option>
+					</c:forEach>
+				</select>
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
 	</tr>
