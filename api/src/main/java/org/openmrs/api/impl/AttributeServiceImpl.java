@@ -24,7 +24,6 @@ import org.openmrs.api.AttributeService;
 import org.openmrs.api.context.Context;
 import org.openmrs.attribute.AttributeType;
 import org.openmrs.attribute.handler.AttributeHandler;
-import org.openmrs.attribute.handler.RegexValidatedStringAttributeHandler;
 import org.openmrs.attribute.handler.StringAttributeHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
