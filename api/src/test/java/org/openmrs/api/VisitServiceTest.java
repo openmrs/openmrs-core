@@ -515,7 +515,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(2, service.getAllVisitAttributeTypes().size());
 		VisitAttributeType vat = new VisitAttributeType();
 		vat.setName("Another one");
-		vat.setLogicalType("string");
+		vat.setDatatype("string");
 		service.saveVisitAttributeType(vat);
 		Assert.assertEquals(3, service.getAllVisitAttributeTypes().size());
 	}

@@ -17,7 +17,7 @@
 
         <property name="description" type="java.lang.String" column="description" length="65535" />
         
-        <property name="logicalType" type="java.lang.String" column="logical_type" length="255" />
+        <property name="datatype" type="java.lang.String" column="datatype" length="255" />
         
         <!-- TODO CHECK LENGTH -->
         <property name="handlerConfig" type="text" column="handler_config" length="16777215" />

@@ -41,10 +41,10 @@ public class AttributeServiceImpl extends BaseOpenmrsService implements Attribut
 	private transient Map<String, Class<? extends AttributeHandler<?>>> prioritizedHandlerClasses;
 	
 	/**
-	 * @see org.openmrs.api.AttributeService#getLogicalTypes()
+	 * @see org.openmrs.api.AttributeService#getDatatypes()
 	 */
 	@Override
-	public Set<String> getLogicalTypes() {
+	public Set<String> getDatatypes() {
 		if (prioritizedHandlerClasses == null) {
 			prioritizeHandlers();
 		}
@@ -87,7 +87,7 @@ public class AttributeServiceImpl extends BaseOpenmrsService implements Attribut
 	 */
 	@Override
 	public AttributeHandler<?> getHandler(AttributeType<?> attributeType) {
-		return Context.getAttributeService().getHandler(attributeType.getLogicalType(), attributeType.getHandlerConfig());
+		return Context.getAttributeService().getHandler(attributeType.getDatatype(), attributeType.getHandlerConfig());
 	}
 	
 	/**
@@ -100,14 +100,14 @@ public class AttributeServiceImpl extends BaseOpenmrsService implements Attribut
 			prioritizedHandlerClasses = new HashMap<String, Class<? extends AttributeHandler<?>>>();
 			for (AttributeHandler<?> handler : allRegisteredHandlers) {
 				Class<? extends AttributeHandler> clazz = handler.getClass();
-				if (!prioritizedHandlerClasses.containsKey(handler.getLogicalTypeHandled())) {
-					prioritizedHandlerClasses.put(handler.getLogicalTypeHandled(),
-					    (Class<? extends AttributeHandler<?>>) clazz);
+				if (!prioritizedHandlerClasses.containsKey(handler.getDatatypeHandled())) {
+					prioritizedHandlerClasses
+					        .put(handler.getDatatypeHandled(), (Class<? extends AttributeHandler<?>>) clazz);
 				} else {
 					int candidateOrder = getOrder((Class<? extends AttributeHandler<?>>) clazz);
-					int existingOrder = getOrder(prioritizedHandlerClasses.get(handler.getLogicalTypeHandled()));
+					int existingOrder = getOrder(prioritizedHandlerClasses.get(handler.getDatatypeHandled()));
 					if (candidateOrder < existingOrder)
-						prioritizedHandlerClasses.put(handler.getLogicalTypeHandled(),
+						prioritizedHandlerClasses.put(handler.getDatatypeHandled(),
 						    (Class<? extends AttributeHandler<?>>) clazz);
 				}
 			}

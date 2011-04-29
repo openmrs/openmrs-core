@@ -10,7 +10,7 @@ import java.util.Set;
 import junit.framework.Assert;
 
 import org.junit.Test;
-import org.openmrs.BaseAttributableData;
+import org.openmrs.BaseCustomizableData;
 import org.openmrs.attribute.handler.AttributeHandler;
 import org.openmrs.test.BaseContextSensitiveTest;
 
@@ -24,7 +24,7 @@ public class AttributeIntegrationTest extends BaseContextSensitiveTest {
 	public void shouldTestAttributeHandler() throws Exception {
 		Visit visit = new Visit();
 		VisitAttributeType paymentDateAttrType = new VisitAttributeType();
-		paymentDateAttrType.setLogicalType("date");
+		paymentDateAttrType.setDatatype("date");
 		
 		try {
 			VisitAttribute legalDate = new VisitAttribute();
@@ -48,7 +48,7 @@ public class AttributeIntegrationTest extends BaseContextSensitiveTest {
 	/**
 	 * A parent class
 	 */
-	class Visit extends BaseAttributableData<VisitAttribute> {
+	class Visit extends BaseCustomizableData<VisitAttribute> {
 		
 		@Override
 		public Integer getId() {

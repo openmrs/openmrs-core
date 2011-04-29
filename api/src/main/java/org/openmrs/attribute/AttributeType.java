@@ -23,11 +23,11 @@ import org.openmrs.attribute.handler.AttributeHandler;
  * AttributeType<Visit>).
  * @param <OwningType> the type this attribute type can belong to
  * @see Attribute
- * @see AttributeHolder
+ * @see Customizable
  * @see AttributeHandler
  * @since 1.9
  */
-public interface AttributeType<OwningType extends AttributeHolder<?>> extends OpenmrsMetadata {
+public interface AttributeType<OwningType extends Customizable<?>> extends OpenmrsMetadata {
 	
 	/**
 	 * Implementations should never return null. Positive return values indicate a "required" attribute type.
@@ -42,16 +42,16 @@ public interface AttributeType<OwningType extends AttributeHolder<?>> extends Op
 	Integer getMaxOccurs();
 	
 	/**
-	 * The complete list of available logical datatypes are defined by subclasses of {@link AttributeHandler}.
-	 * @return the "logical data type" represented by this attribute type, for example "regex-validated-string"
+	 * The complete list of available datatypes are defined by subclasses of {@link AttributeHandler}.
+	 * @return the datatype represented by this attribute type, for example "regex-validated-string"
 	 * @see AttributeHandler
 	 */
-	String getLogicalType();
+	String getDatatype();
 	
 	/**
 	 * May be null.
-	 * @return the configuration to be passed to the handler for a logical type. For example if the
-	 * logical type is "regex-validated-string", the handlerConfig would be the regular expression.
+	 * @return the configuration to be passed to the handler for a datatype. For example if the
+	 * datatype is "regex-validated-string", the handlerConfig would be the regular expression.
 	 * @see AttributeHandler#setConfiguration(String)
 	 */
 	String getHandlerConfig();

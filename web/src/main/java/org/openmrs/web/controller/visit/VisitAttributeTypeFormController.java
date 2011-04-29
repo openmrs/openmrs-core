@@ -55,7 +55,7 @@ public class VisitAttributeTypeFormController extends SimpleFormController {
 	 *      org.springframework.validation.BindException)
 	 */
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
-	                                BindException errors) throws Exception {
+	        BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
 		
@@ -149,7 +149,7 @@ public class VisitAttributeTypeFormController extends SimpleFormController {
 	protected Map<String, Object> referenceData(HttpServletRequest request, Object obj, Errors errors) throws Exception {
 		
 		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("logicalTypes", Context.getAttributeService().getLogicalTypes());
+		map.put("datatypes", Context.getAttributeService().getDatatypes());
 		
 		return map;
 	}

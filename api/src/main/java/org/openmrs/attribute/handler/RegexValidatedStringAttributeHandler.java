@@ -21,7 +21,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 /**
- * Handler for the logical type "regex-validated-string". Should be configured with a String representation
+ * Handler for the "regex-validated-string" datatype. Should be configured with a String representation
  * of the regular expression.
  * @since 1.9
  */
@@ -32,10 +32,10 @@ public class RegexValidatedStringAttributeHandler implements AttributeHandler<St
 	private Pattern regex;
 	
 	/**
-	 * @see org.openmrs.attribute.handler.AttributeHandler#getLogicalTypeHandled()
+	 * @see org.openmrs.attribute.handler.AttributeHandler#getDatatypeHandled()
 	 */
 	@Override
-	public String getLogicalTypeHandled() {
+	public String getDatatypeHandled() {
 		return "regex-validated-string";
 	}
 	

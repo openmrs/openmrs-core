@@ -22,25 +22,25 @@ import org.springframework.core.annotation.Order;
  * An {@link AttributeType} (e.g. Visit Attribute Type) uses an {@link AttributeHandler} to deal with
  * converting typed attributes (which potentially have validation logic) to and from the String values that
  * are actually stored in the database.
- * Each implementation is for a particular "logical type" (see {@link #getLogicalTypeHandled()}) and its
+ * Each implementation is for a particular datatype (see {@link #getDatatypeHandled()}) and its
  * validation and serialization methods work on a concrete data type T.
  * You register an {@link AttributeHandler} by instantiating an implementation as a Spring bean. There may
- * be multiple handlers for any given logical type, so your implementation should also have an {@link Order}
+ * be multiple handlers for any given datatype, so your implementation should also have an {@link Order}
  * annotation defining its priority. As a general guideline, handlers provided by the core OpenMRS API have
  * priority {@link Ordered#LOWEST_PRECEDENCE}, and handlers provided by the core OpenMRS web layer have
- * priority 0. To override existing handlers, just declare a lower order (corresponding to a higher
- * precedence.)
+ * priority 0. To override existing handlers, just declare a lower order (Spring defines a lower order as
+ * have higher precedence.)
  * @param <T> the concrete java type that this handler validates and serializes
  * @since 1.9
  */
 public interface AttributeHandler<T> {
 	
 	/**
-	 * An {@link AttributeHandler} handles a particular "logical type". (E.g. "date", "date-and-time",
+	 * An {@link AttributeHandler} handles a particular datatype. (E.g. "date", "date-and-time",
 	 * "regex-validated-string".
 	 * @return String representing the type that this AttributeHandler handles
 	 */
-	String getLogicalTypeHandled();
+	String getDatatypeHandled();
 	
 	/**
 	 * An {@link AttributeType} will typically be configured with a handler and a configuration. The framework

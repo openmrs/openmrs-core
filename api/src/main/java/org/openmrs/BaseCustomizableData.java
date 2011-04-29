@@ -20,19 +20,19 @@ import java.util.List;
 import java.util.Set;
 
 import org.openmrs.attribute.Attribute;
-import org.openmrs.attribute.AttributeHolder;
+import org.openmrs.attribute.Customizable;
 import org.openmrs.attribute.AttributeType;
 
 /**
- * Extension of {@link BaseOpenmrsData} for classes that support user-defined attribute extensions.
+ * Extension of {@link BaseOpenmrsData} for classes that support customization via user-defined attributes.
  * @param <AttrType> the type of attribute held
  */
-public abstract class BaseAttributableData<AttrType extends Attribute> extends BaseOpenmrsData implements AttributeHolder<AttrType> {
+public abstract class BaseCustomizableData<AttrType extends Attribute> extends BaseOpenmrsData implements Customizable<AttrType> {
 	
 	private Set<AttrType> attributes;
 	
 	/**
-	 * @see org.openmrs.attribute.AttributeHolder#getAttributes()
+	 * @see org.openmrs.attribute.Customizable#getAttributes()
 	 */
 	@Override
 	public Set<AttrType> getAttributes() {
@@ -47,7 +47,7 @@ public abstract class BaseAttributableData<AttrType extends Attribute> extends B
 	}
 	
 	/**
-	 * @see org.openmrs.attribute.AttributeHolder#getActiveAttributes()
+	 * @see org.openmrs.attribute.Customizable#getActiveAttributes()
 	 */
 	@Override
 	public List<AttrType> getActiveAttributes() {
@@ -60,7 +60,7 @@ public abstract class BaseAttributableData<AttrType extends Attribute> extends B
 	}
 	
 	/**
-	 * @see org.openmrs.attribute.AttributeHolder#getActiveAttributes(org.openmrs.attribute.AttributeType)
+	 * @see org.openmrs.attribute.Customizable#getActiveAttributes(org.openmrs.attribute.AttributeType)
 	 */
 	@Override
 	public List<AttrType> getActiveAttributes(AttributeType<?> ofType) {
@@ -72,7 +72,7 @@ public abstract class BaseAttributableData<AttrType extends Attribute> extends B
 	}
 	
 	/**
-	 * @see org.openmrs.attribute.AttributeHolder#addAttribute(java.lang.Object)
+	 * @see org.openmrs.attribute.Customizable#addAttribute(java.lang.Object)
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
@@ -85,7 +85,7 @@ public abstract class BaseAttributableData<AttrType extends Attribute> extends B
 	}
 	
 	/**
-	 * @see org.openmrs.attribute.AttributeHolder#setAttribute(java.lang.Object)
+	 * @see org.openmrs.attribute.Customizable#setAttribute(java.lang.Object)
 	 */
 	@SuppressWarnings("unchecked")
 	@Override

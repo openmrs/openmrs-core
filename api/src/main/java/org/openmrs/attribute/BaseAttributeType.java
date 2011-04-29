@@ -16,17 +16,17 @@ package org.openmrs.attribute;
 import org.openmrs.BaseOpenmrsMetadata;
 
 /**
- * Abstract base implementation of {@link AttributeType}. Actual implementationg (e.g. VisitAttributeType,
+ * Abstract base implementation of {@link AttributeType}. Actual implementations (e.g. VisitAttributeType,
  * ProviderAttributeType) should be able to extend this and provide very little of their own code.
  * @since 1.9
  */
-public abstract class BaseAttributeType<OwningType extends AttributeHolder<?>> extends BaseOpenmrsMetadata implements AttributeType<OwningType> {
+public abstract class BaseAttributeType<OwningType extends Customizable<?>> extends BaseOpenmrsMetadata implements AttributeType<OwningType> {
 	
 	private Integer minOccurs = 0;
 	
 	private Integer maxOccurs = null;
 	
-	private String logicalType;
+	private String datatype;
 	
 	private String handlerConfig;
 	
@@ -73,17 +73,17 @@ public abstract class BaseAttributeType<OwningType extends AttributeHolder<?>> e
 	}
 	
 	/**
-	 * @see org.openmrs.attribute.AttributeType#getLogicalType()
+	 * @see org.openmrs.attribute.AttributeType#getDatatype()
 	 */
-	public String getLogicalType() {
-		return logicalType;
+	public String getDatatype() {
+		return datatype;
 	}
 	
 	/**
-	 * @param logicalType the logicalType to set
+	 * @param datatype the datatype to set
 	 */
-	public void setLogicalType(String logicalType) {
-		this.logicalType = logicalType;
+	public void setDatatype(String datatype) {
+		this.datatype = datatype;
 	}
 	
 }
