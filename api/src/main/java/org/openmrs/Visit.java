@@ -15,7 +15,7 @@ package org.openmrs;
 
 import java.util.Date;
 
-import org.openmrs.attribute.AttributeHolder;
+import org.openmrs.attribute.Customizable;
 
 /**
  * A 'visit' is a contiguous time period where encounters occur between patients and healthcare
@@ -24,7 +24,7 @@ import org.openmrs.attribute.AttributeHolder;
  * @since 1.9
  */
 
-public class Visit extends BaseAttributableData<VisitAttribute> implements Auditable, AttributeHolder<VisitAttribute> {
+public class Visit extends BaseCustomizableData<VisitAttribute> implements Auditable, Customizable<VisitAttribute> {
 	
 	private Integer visitId;
 	

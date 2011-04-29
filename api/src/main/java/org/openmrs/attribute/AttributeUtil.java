@@ -29,7 +29,8 @@ import org.openmrs.serialization.SerializationException;
 public class AttributeUtil {
 	
 	/**
-	 * Converts a simple String-based configuration to a serialized form
+	 * Converts a simple String-based configuration to a serialized form.
+	 * Utility method for {@link AttributeHandler}s that have property-style configuration.
 	 * 
 	 * @param simpleConfig
 	 * @return
@@ -48,6 +49,7 @@ public class AttributeUtil {
 	/**
 	 * Deserializes a simple String-based configuration from the serialized form used by
 	 * {@link #serializeSimpleConfiguration(Map)} 
+	 * Utility method for {@link AttributeHandler}s that have property-style configuration.
 	 * 
 	 * @param serializedConfig
 	 * @return

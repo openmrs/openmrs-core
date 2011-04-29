@@ -13,26 +13,27 @@
  */
 package org.openmrs.attribute;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
 /**
- * Marker interface for classes that hold attributes, e.g. Visit has VisitAttributes, so it implements
- * AttributeHolder<VisitAttribute>
+ * Marker interface for classes that may be customized by the user by adding custom attributes, e.g. Visit
+ * has VisitAttributes, so it implements {@link Customizable}<VisitAttribute>
  * @param <AttrType> the type of attribute held
  * @since 1.9
  */
-public interface AttributeHolder<AttrType> {
+public interface Customizable<AttrType extends Attribute> {
 	
 	/**
 	 * @return all attributes (including voided ones)
 	 */
-	Set<AttrType> getAttributes();
+	Collection<AttrType> getAttributes();
 	
 	/**
 	 * @return non-voided attributes
 	 */
-	List<AttrType> getActiveAttributes();
+	Collection<AttrType> getActiveAttributes();
 	
 	/**
 	 * @param ofType

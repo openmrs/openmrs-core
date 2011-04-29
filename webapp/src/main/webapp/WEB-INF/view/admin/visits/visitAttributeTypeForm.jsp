@@ -73,13 +73,13 @@
 		</td>
 	</tr>
 	<tr>
-		<td><spring:message code="AttributeType.logicalType"/></td>
+		<td><spring:message code="AttributeType.datatyp"/></td>
 		<td>
-			<spring:bind path="visitAttributeType.logicalType">
-				<select name="logicalType">
+			<spring:bind path="visitAttributeType.datatype">
+				<select name="datatype">
 					<option value=""></option>
-					<c:forEach items="${logicalTypes}" var="logicalType">
-						<option value="${logicalType}" <c:if test="${logicalType == status.value}">selected</c:if>>${logicalType}</option>
+					<c:forEach items="${datatypes}" var="datatype">
+						<option value="${datatype}" <c:if test="${datatype == status.value}">selected</c:if>>${datatype}</option>
 					</c:forEach>
 				</select>
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>

@@ -4434,7 +4434,7 @@
             </column>
             <column name="name" type="varchar(255)"><constraints nullable="false"/></column>
             <column name="description" type="varchar(1024)"/>
-            <column name="logical_type" type="varchar(255)" />
+            <column name="datatype" type="varchar(255)" />
             <column name="handler_config" type="text" />
             <column name="min_occurs" type="int"><constraints nullable="false" /></column>
             <column name="max_occurs" type="int"></column>

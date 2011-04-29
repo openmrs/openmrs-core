@@ -16,7 +16,7 @@ package org.openmrs.api;
 import java.util.Set;
 
 import org.openmrs.attribute.Attribute;
-import org.openmrs.attribute.AttributeHolder;
+import org.openmrs.attribute.Customizable;
 import org.openmrs.attribute.AttributeType;
 import org.openmrs.attribute.handler.AttributeHandler;
 
@@ -25,27 +25,27 @@ import org.openmrs.attribute.handler.AttributeHandler;
  * @see {@link Attribute}
  * @see {@link AttributeType}
  * @see {@link AttributeHandler}
- * @see AttributeHolder
+ * @see Customizable
  * @since 1.9
  */
 public interface AttributeService extends OpenmrsService {
 	
 	/**
-	 * @return a list of all logical types (e.g. "date", "regex-validated-string") that have handler registered
+	 * @return a list of all datatypes (e.g. "date", "regex-validated-string") that have a handler registered
 	 */
-	Set<String> getLogicalTypes();
+	Set<String> getDatatypes();
 	
 	/**
 	 * Instantiates and configures a handler.
 	 *  
-	 * @param logicalType
+	 * @param datatype
 	 * @param handlerConfig
-	 * @return an instantiated and configured handler for the given logicalType
-	 * @should get a handler for the date logical type
-	 * @should get a handler for the string with regex logical type
-	 * @should get the default handler for an unknown logical type
+	 * @return an instantiated and configured handler for the given datatype
+	 * @should get a handler for the date datatype
+	 * @should get a handler for the string with regex datatype
+	 * @should get the default handler for an unknown datatype
 	 */
-	AttributeHandler<?> getHandler(String logicalType, String handlerConfig);
+	AttributeHandler<?> getHandler(String datatype, String handlerConfig);
 	
 	/**
 	 * Convenience method for getting the handler for an attribute type

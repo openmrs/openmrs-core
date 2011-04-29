@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * Simple attribute handler that takes any String, with no validation or transformation. Also used as a
- * default handler when no matching handler is found for a logical type. 
+ * default handler when no matching handler is found for a datatype. 
  */
 @Component
 @Order(Ordered.LOWEST_PRECEDENCE)
@@ -30,10 +30,10 @@ public class StringAttributeHandler implements AttributeHandler<String> {
 	}
 	
 	/**
-	 * @see org.openmrs.attribute.handler.AttributeHandler#getLogicalTypeHandled()
+	 * @see org.openmrs.attribute.handler.AttributeHandler#getDatatypeHandled()
 	 */
 	@Override
-	public String getLogicalTypeHandled() {
+	public String getDatatypeHandled() {
 		return "string";
 	}
 	

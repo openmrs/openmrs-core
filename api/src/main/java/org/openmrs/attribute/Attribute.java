@@ -26,11 +26,11 @@ import org.openmrs.attribute.handler.AttributeHandler;
  * VisitAttributeTypes.
  * @param <OwningType> the type this attribute can belong to
  * @see AttributeType
- * @see AttributeHolder
+ * @see Customizable
  * @see AttributeHandler
  * @since 1.9
  */
-public interface Attribute<OwningType extends AttributeHolder<?>> extends OpenmrsData {
+public interface Attribute<OwningType extends Customizable<?>> extends OpenmrsData {
 	
 	/**
 	 * @return the owner that this attribute belongs to

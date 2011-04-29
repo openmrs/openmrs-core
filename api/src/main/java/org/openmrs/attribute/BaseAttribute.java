@@ -23,7 +23,7 @@ import org.openmrs.attribute.handler.AttributeHandler;
  * @param <OwningType>
  * @since 1.9
  */
-public abstract class BaseAttribute<OwningType extends AttributeHolder<?>> extends BaseOpenmrsData implements Attribute<OwningType> {
+public abstract class BaseAttribute<OwningType extends Customizable<?>> extends BaseOpenmrsData implements Attribute<OwningType> {
 	
 	private OwningType owner;
 	
@@ -40,7 +40,7 @@ public abstract class BaseAttribute<OwningType extends AttributeHolder<?>> exten
 	}
 	
 	/**
-	 * @see org.openmrs.attribute.Attribute#setOwner(org.openmrs.attribute.AttributeHolder)
+	 * @see org.openmrs.attribute.Attribute#setOwner(org.openmrs.attribute.Customizable)
 	 */
 	public void setOwner(OwningType owner) {
 		this.owner = owner;

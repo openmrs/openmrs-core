@@ -25,7 +25,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 /**
- * Handler for the logical type "date". Unless specifically configured, it does not allow future dates.
+ * Handler for the "date" datatype. Unless specifically configured, it does not allow future dates.
  * @since 1.9 
  */
 @Component
@@ -37,10 +37,10 @@ public class DateAttributeHandler implements AttributeHandler<Date> {
 	boolean allowFutureDates = false;
 	
 	/**
-	 * @see org.openmrs.attribute.handler.AttributeHandler#getLogicalTypeHandled()
+	 * @see org.openmrs.attribute.handler.AttributeHandler#getDatatypeHandled()
 	 */
 	@Override
-	public String getLogicalTypeHandled() {
+	public String getDatatypeHandled() {
 		return "date";
 	}
 	
