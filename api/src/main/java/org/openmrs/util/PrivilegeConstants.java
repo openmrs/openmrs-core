@@ -422,4 +422,7 @@ public class PrivilegeConstants {
 	
 	@AddOnStartup(description = "Able to purge visit attribute types")
 	public static final String PURGE_VISIT_ATTRIBUTE_TYPES = "Purge Visit Attribute Types";
+	
+	@AddOnStartup(description = "Able to view the 'Visits' tab on the patient dashboard")
+	public static final String DASHBOARD_VISISTS = "Patient Dashboard - View Visits Section";
 }

@@ -535,6 +535,60 @@
 
 <tag>
 	<description>
+		This tag iterates through a collection of visits passed into it and renders it's body content.
+		It will return all matching visits by default, or [num] visits if it is specified..
+		It will limit the results by visitTypeId only if a [type] parameter is passed in.
+		It will sort by the property passed in - this property should match a public property of Visit - i.e. "visitDatetime"
+		If no sort property is specified, it will sort by visitDatetime by default
+		It will sort ascending by default, descending if "descending=true" is specified.
+	</description>
+	<name>forEachVisit</name>
+	<tag-class>org.openmrs.web.taglib.ForEachVisitTag</tag-class>
+	<body-content>JSP</body-content>
+	<variable>
+		<name-from-attribute>var</name-from-attribute>
+		<variable-class>org.openmrs.Visit</variable-class>
+	</variable>
+	<attribute>
+		<name>visits</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.util.Collection</type>
+	</attribute>
+	<attribute>
+		<name>type</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.Integer</type>
+	</attribute>
+	<attribute>
+		<name>num</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.Integer</type>
+	</attribute>
+	<attribute>
+		<name>sortBy</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.String</type>
+	</attribute>
+	<attribute>
+		<name>descending</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.Boolean</type>
+	</attribute>
+	<attribute>
+		<name>var</name>
+		<required>true</required>
+		<rtexprvalue>true</rtexprvalue>
+		<type>java.lang.String</type>
+	</attribute>
+</tag>
+
+<tag>
+	<description>
 		This tag iterates through a collection of drug orders passed into it and renders it's body content.
 		It will return all matching orders by default, or [num] orders if it is specified.
 		It will sort by the property passed in - this property should match a public property of Order/DrugOrder
@@ -1204,6 +1258,26 @@
 		<name>javaScriptEscape</name>
 		<required>false</required>
 		<rtexprvalue>false</rtexprvalue>		
+	</attribute>
+	<attribute>
+		<name>visit</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>visitId</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>visitType</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+		<name>visitTypeId</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
 	</attribute>
 </tag>
 <tag>
