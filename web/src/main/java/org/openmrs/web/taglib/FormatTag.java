@@ -30,6 +30,7 @@ import org.openmrs.OpenmrsMetadata;
 import org.openmrs.Person;
 import org.openmrs.Program;
 import org.openmrs.User;
+import org.openmrs.Visit;
 import org.openmrs.VisitType;
 import org.openmrs.api.context.Context;
 import org.springframework.util.StringUtils;
@@ -88,6 +89,10 @@ public class FormatTag extends TagSupport {
 	
 	private VisitType visitType;
 	
+	private Integer visitId;
+	
+	private Visit visit;
+	
 	private Boolean javaScriptEscape = Boolean.FALSE;
 	
 	@Override
@@ -134,6 +139,16 @@ public class FormatTag extends TagSupport {
 			visitType = Context.getVisitService().getVisitType(visitTypeId);
 		if (visitType != null) {
 			printMetadata(sb, visitType);
+		}
+		
+		if (visitId != null)
+			visit = Context.getVisitService().getVisit(visitId);
+		if (visit != null) {
+			printMetadata(sb, visit.getVisitType());
+			sb.append(" @");
+			printMetadata(sb, visit.getLocation());
+			sb.append(" | ");
+			printDate(sb, visit.getStartDatetime());
 		}
 		
 		if (locationId != null)
@@ -262,6 +277,8 @@ public class FormatTag extends TagSupport {
 		locationTag = null;
 		visitType = null;
 		visitTypeId = null;
+		visitId = null;
+		visit = null;
 	}
 	
 	public Integer getConceptId() {
@@ -434,6 +451,38 @@ public class FormatTag extends TagSupport {
 	 */
 	public void setVisitType(VisitType visitType) {
 		this.visitType = visitType;
+	}
+	
+	/**
+	 * @return the visitId
+	 * @since 1.9
+	 */
+	public Integer getVisitId() {
+		return visitId;
+	}
+	
+	/**
+	 * @param visitId the visitId to set
+	 * @since 1.9
+	 */
+	public void setVisitId(Integer visitId) {
+		this.visitId = visitId;
+	}
+	
+	/**
+	 * @return the visit
+	 * @since 1.9
+	 */
+	public Visit getVisit() {
+		return visit;
+	}
+	
+	/**
+	 * @param visit the visit to set
+	 * @since 1.9
+	 */
+	public void setVisit(Visit visit) {
+		this.visit = visit;
 	}
 	
 	/**

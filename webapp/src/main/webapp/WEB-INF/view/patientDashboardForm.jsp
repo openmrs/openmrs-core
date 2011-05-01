@@ -121,6 +121,9 @@
 		<openmrs:hasPrivilege privilege="Patient Dashboard - View Regimen Section">
 			<li><a id="patientRegimenTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="patientDashboard.regimens"/></a></li>
 		</openmrs:hasPrivilege>
+		<openmrs:hasPrivilege privilege="Patient Dashboard - View Visits Section">
+			<li><a id="patientVisitsTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="patientDashboard.visits"/></a></li>
+		</openmrs:hasPrivilege>
 		<openmrs:hasPrivilege privilege="Patient Dashboard - View Encounters Section">
 			<li><a id="patientEncountersTab" href="#" onclick="return changeTab(this);" hidefocus="hidefocus"><spring:message code="patientDashboard.encounters"/></a></li>
 		</openmrs:hasPrivilege>
@@ -160,6 +163,14 @@
 			<openmrs:extensionPoint pointId="org.openmrs.patientDashboard.RegimenTabHeader" type="html" parameters="patientId=${patient.patientId}" />
 			<openmrs:globalProperty var="displayDrugSetIds" key="dashboard.regimen.displayDrugSetIds" defaultValue="ANTIRETROVIRAL DRUGS,TUBERCULOSIS TREATMENT DRUGS" />
 			<openmrs:portlet url="patientRegimen" id="patientDashboardRegimen" patientId="${patient.patientId}" parameters="displayDrugSetIds=${displayDrugSetIds}" />
+			
+		</div>
+	</openmrs:hasPrivilege>
+	<openmrs:hasPrivilege privilege="Patient Dashboard - View Visits Section">
+		<div id="patientVisits" style="display:none;">
+			
+			<openmrs:extensionPoint pointId="org.openmrs.patientDashboard.VisitsTabHeader" type="html" parameters="patientId=${patient.patientId}" />
+			<openmrs:portlet url="patientVisits" id="patientDashboardVisits" patientId="${patient.patientId}" parameters="num=100|showPagination=true|formEntryReturnUrl=${pageContext.request.contextPath}/patientDashboard.form"/>
 			
 		</div>
 	</openmrs:hasPrivilege>
