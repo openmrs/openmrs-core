@@ -1269,16 +1269,6 @@
 		<required>false</required>
 		<rtexprvalue>true</rtexprvalue>
 	</attribute>
-	<attribute>
-		<name>visitType</name>
-		<required>false</required>
-		<rtexprvalue>true</rtexprvalue>
-	</attribute>
-	<attribute>
-		<name>visitTypeId</name>
-		<required>false</required>
-		<rtexprvalue>true</rtexprvalue>
-	</attribute>
 </tag>
 <tag>
 	<description>
