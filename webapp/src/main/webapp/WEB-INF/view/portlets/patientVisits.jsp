@@ -28,11 +28,13 @@
 								<th class="visitView" align="center"><c:if test="${showViewLink == 'true'}">
 								 	<spring:message code="general.view"/>
 								</c:if></th>
-								<th class="startDatetimeHeader"> <spring:message code="Visit.datetime"/> </th>
 								<th class="hidden"> hidden Visit.datetime </th>
 								<th class="visitTypeHeader"> <spring:message code="Visit.type"/>     </th>
 								<th class="visitLocationHeader"> <spring:message code="Visit.location"/> </th>
 								<th class="visitEntererHeader"> <spring:message code="Visit.enterer"/>  </th>
+								<th class="startDatetimeHeader"> <spring:message code="Visit.startDatetime"/> </th>
+								<th class="stopDatetimeHeader"> <spring:message code="Visit.stopDatetime"/> </th>
+								<th class="indicationHeader"> <spring:message code="Visit.indication"/> </th>
 							</tr>
 						</thead>
 						<tbody>
@@ -71,9 +73,6 @@
 											</a>
 										</c:if>
 									</td>
-									<td class="startDatetime">
-										<openmrs:formatDate date="${visit.startDatetime}" type="small" />
-									</td>
 									<td class="hidden">
 									<%--  this column contains milliseconds and will be used for sorting in the dataTable's startDatetime column --%>
 										<openmrs:formatDate date="${visit.startDatetime}" type="milliseconds" />
@@ -81,6 +80,13 @@
 					 				<td class="visitType"><openmrs:format visitType="${visit.visitType}"/></td>
 					 				<td class="visitLocation"><openmrs:format location="${visit.location}"/></td>
 					 				<td class="visitEnterer">${visit.creator.personName}</td>
+					 				<td class="startDatetime">
+										<openmrs:formatDate date="${visit.startDatetime}" type="small" />
+									</td>
+									<td class="stopDatetime">
+										<openmrs:formatDate date="${visit.stopDatetime}" type="small" />
+									</td>
+									<td class="indication"><openmrs:format concept="${visit.indication}"/></td>
 								</tr>
 							</openmrs:forEachVisit>
 						</tbody>
