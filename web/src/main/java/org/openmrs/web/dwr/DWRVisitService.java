@@ -24,6 +24,11 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.messagesource.MessageSourceService;
 
+/**
+ * Contains methods for processing DWR requests for visits
+ * 
+ * @since 1.9
+ */
 public class DWRVisitService {
 	
 	private static final Log log = LogFactory.getLog(DWRVisitService.class);
@@ -51,7 +56,9 @@ public class DWRVisitService {
 				Patient p = Context.getPatientService().getPatient(patientId);
 				if (p != null)
 					visits = Context.getVisitService().getActiveVisitsByPatient(p);
-			}
+			} else
+				throw new APIException(mss.getMessage("errors.patientId.cannotBeNull", null, "Patient Id cannot be null",
+				    Context.getLocale()));
 			
 			if (visits.size() > 0) {
 				objectList = new Vector<Object>(visits.size());

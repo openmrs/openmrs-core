@@ -42,7 +42,6 @@ public class VisitTypeEditor extends PropertyEditorSupport {
 				setValue(vs.getVisitType(Integer.valueOf(text)));
 			}
 			catch (Exception ex) {
-				log.error("Error setting text" + text, ex);
 				throw new IllegalArgumentException("Visit Type not found: " + ex.getMessage());
 			}
 		} else {

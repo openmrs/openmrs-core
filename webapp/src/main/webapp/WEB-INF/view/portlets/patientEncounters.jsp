@@ -128,7 +128,7 @@ Parameters
 								<th class="encounterDatetimeHeader"> <spring:message code="Encounter.datetime"/> </th>
 								<th class="hidden"> hidden Sorting Order (by Encounter.datetime) </th>
 								<th class="encounterTypeHeader"> <spring:message code="Encounter.type"/>     </th>
-								<th class="encounterVisitTypeHeader"><spring:message code="Encounter.visitType"/></th>
+								<th class="encounterVisitHeader"><spring:message code="Encounter.visit"/></th>
 								<th class="encounterProviderHeader"> <spring:message code="Encounter.provider"/> </th>
 								<th class="encounterFormHeader"> <spring:message code="Encounter.form"/>     </th>
 								<th class="encounterLocationHeader"> <spring:message code="Encounter.location"/> </th>

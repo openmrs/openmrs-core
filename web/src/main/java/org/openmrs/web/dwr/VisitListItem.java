@@ -21,6 +21,11 @@ import org.openmrs.PersonName;
 import org.openmrs.Visit;
 import org.openmrs.util.Format;
 
+/**
+ * Represents a DWR List Item for a visit
+ * 
+ * @since 1.9
+ */
 public class VisitListItem {
 	
 	protected static final Log log = LogFactory.getLog(VisitListItem.class);
