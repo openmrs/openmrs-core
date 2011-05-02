@@ -181,7 +181,7 @@ Parameters
 										${count}
 									</td>
 					 				<td class="encounterType"><openmrs:format encounterType="${enc.encounterType}"/></td>
-					 				<td class="encounterVisitType">
+					 				<td class="encounterVisit">
 					 					<c:if test="${enc.visit != null}"><openmrs:format visitType="${enc.visit.visitType}"/></c:if>
 					 				</td>
 					 				<td class="encounterProvider"><openmrs:format person="${enc.provider}"/></td>
