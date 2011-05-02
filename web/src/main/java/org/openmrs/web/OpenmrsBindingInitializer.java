@@ -41,6 +41,8 @@ import org.openmrs.ProgramWorkflow;
 import org.openmrs.ProgramWorkflowState;
 import org.openmrs.Role;
 import org.openmrs.User;
+import org.openmrs.Visit;
+import org.openmrs.VisitType;
 import org.openmrs.api.context.Context;
 import org.openmrs.propertyeditor.CohortEditor;
 import org.openmrs.propertyeditor.ConceptAnswerEditor;
@@ -71,6 +73,8 @@ import org.openmrs.propertyeditor.ReportDefinitionEditor;
 import org.openmrs.propertyeditor.ReportSchemaXmlEditor;
 import org.openmrs.propertyeditor.RoleEditor;
 import org.openmrs.propertyeditor.UserEditor;
+import org.openmrs.propertyeditor.VisitEditor;
+import org.openmrs.propertyeditor.VisitTypeEditor;
 import org.openmrs.report.ReportSchemaXml;
 import org.openmrs.reporting.export.DataExportReportObject;
 import org.openmrs.reporting.report.ReportDefinition;
@@ -124,6 +128,8 @@ public class OpenmrsBindingInitializer implements WebBindingInitializer {
 		wdb.registerCustomEditor(java.lang.Integer.class, new CustomNumberEditor(java.lang.Integer.class, NumberFormat
 		        .getInstance(Context.getLocale()), true));
 		wdb.registerCustomEditor(java.util.Date.class, new CustomDateEditor(Context.getDateFormat(), true, 10));
+		wdb.registerCustomEditor(VisitType.class, new VisitTypeEditor());
+		wdb.registerCustomEditor(Visit.class, new VisitEditor());
 		
 		// can't really do this because PropertyEditors are not told what type of class they are changing :-(
 		//wdb.registerCustomEditor(OpenmrsObject.class, new OpenmrsObjectByUuidEditor());

@@ -285,4 +285,39 @@ public class DWREncounterService {
 		}
 		return resultsMap;
 	}
+	
+	/**
+	 * Adds an encounter to a visit if visit id is not null otherwise removes it from the visit
+	 * 
+	 * @param encounterId the encounter id of the encounter to add to the visit
+	 * @param visitId the visit id of the visit to which to add the encounter
+	 * @return an updated {@link EncounterListItem}
+	 * @throws APIException
+	 * @since 1.9
+	 */
+	public EncounterListItem addEncounterToVisit(Integer encounterId, Integer visitId) throws APIException {
+		EncounterService es = Context.getEncounterService();
+		Encounter e = es.getEncounter(encounterId);
+		if (e != null) {
+			if (visitId != null)
+				e.setVisit(Context.getVisitService().getVisit(visitId));
+			else
+				e.setVisit(null);
+			es.saveEncounter(e);
+		}
+		
+		return e == null ? null : new EncounterListItem(e);
+	}
+	
+	/**
+	 * Removes an encounter from a visit
+	 * 
+	 * @param encounterId the encounter id of the encounter to remove from a visit
+	 * @throws APIException
+	 * @return an updated {@link EncounterListItem}
+	 * @since 1.9
+	 */
+	public EncounterListItem removeEncounterFromVisit(Integer encounterId) throws APIException {
+		return addEncounterToVisit(encounterId, null);
+	}
 }

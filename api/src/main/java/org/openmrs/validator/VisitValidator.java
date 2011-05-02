@@ -18,7 +18,9 @@ import org.openmrs.VisitAttribute;
 import org.openmrs.VisitAttributeType;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
+import org.openmrs.util.OpenmrsUtil;
 import org.springframework.validation.Errors;
+import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 /**
@@ -36,14 +38,28 @@ public class VisitValidator implements Validator {
 	}
 	
 	/**
-	 * @see org.springframework.validation.Validator#validate(java.lang.Object, org.springframework.validation.Errors)
+	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
+	 *      org.springframework.validation.Errors)
 	 * @should accept a visit that has the right number of attribute occurrences
 	 * @should reject a visit if it has fewer than min occurs of an attribute
 	 * @should reject a visit if it has more than max occurs of an attribute
+	 * @should fail if patient is not set
+	 * @should fail if visit type is not set
+	 * @should fail if startDatetime is not set
+	 * @should fail if the endDatetime is before the startDatetime
 	 */
 	@Override
 	public void validate(Object target, Errors errors) {
 		Visit visit = (Visit) target;
+		ValidationUtils.rejectIfEmpty(errors, "patient", "Visit.error.patient.required", "Patient is required");
+		ValidationUtils.rejectIfEmpty(errors, "visitType", "Visit.error.visitType.required", "Visit Type is required");
+		ValidationUtils.rejectIfEmpty(errors, "startDatetime", "Visit.error.startDate.required", "Start Date is required");
+		if (visit.getStartDatetime() != null
+		        && OpenmrsUtil.compareWithNullAsLatest(visit.getStartDatetime(), visit.getStopDatetime()) > 0) {
+			errors.rejectValue("startDatetime", "Visit.error.endDateBeforeStartDate",
+			    "Start date should be earlier than end date");
+		}
+		
 		for (VisitAttributeType vat : Context.getVisitService().getAllVisitAttributeTypes()) {
 			if (vat.getMinOccurs() > 0 || vat.getMaxOccurs() != null) {
 				int numFound = 0;

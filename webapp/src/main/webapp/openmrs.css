@@ -626,7 +626,7 @@ table.patientTreatmentPrograms td {
 	cursor: pointer;
 }
 
-.retiredMessage {
+.retiredMessage, .voidedMessage {
 	border: 1px solid firebrick;
 	background-color: white;
 	font-weight: bold;
@@ -634,7 +634,7 @@ table.patientTreatmentPrograms td {
 	margin: 2px;
 	color: white;
 	}
-	.retiredMessage div {
+	.retiredMessage, .voidedMessage div {
 		background-color: firebrick;
 		padding: 2px;
 	}
@@ -1340,4 +1340,7 @@ span.otherHit{
 }
 .mergePatientsTabDiv{
 	width:85px;
+}
+.hidden{
+	display: none
 }

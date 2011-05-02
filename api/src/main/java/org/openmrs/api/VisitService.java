@@ -165,6 +165,8 @@ public interface VisitService extends OpenmrsService {
 	 * @throws APIException
 	 * @should add a new visit to the database
 	 * @should update an existing visit in the database
+	 * @should fail if validation errors are found
+	 * @should pass if no validation errors are found
 	 */
 	@Authorized( { PrivilegeConstants.ADD_VISITS, PrivilegeConstants.EDIT_VISITS })
 	public Visit saveVisit(Visit visit) throws APIException;
@@ -198,6 +200,7 @@ public interface VisitService extends OpenmrsService {
 	 * @param visit the visit to delete from the database.
 	 * @throws APIException
 	 * @should erase the visit from the database
+	 * @should fail if the visit has encounters associated to it
 	 */
 	@Authorized(PrivilegeConstants.PURGE_VISITS)
 	public void purgeVisit(Visit visit) throws APIException;
