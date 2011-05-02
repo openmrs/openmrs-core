@@ -32,9 +32,11 @@ import org.openmrs.api.AttributeService;
 import org.openmrs.api.VisitService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.db.VisitDAO;
-import org.openmrs.attribute.handler.AttributeHandler;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.validator.ValidateUtil;
+import org.openmrs.validator.VisitValidator;
+import org.springframework.validation.BindException;
+import org.springframework.validation.Errors;
 
 /**
  * Default implementation of the {@link VisitService}. This class should not be used on its own. The
@@ -150,6 +152,11 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 		else
 			Context.requirePrivilege(PrivilegeConstants.EDIT_VISITS);
 		
+		Errors errors = new BindException(visit, "visit");
+		new VisitValidator().validate(visit, errors);
+		if (errors.hasErrors())
+			throw new APIException("Validation errors found");
+		
 		return dao.saveVisit(visit);
 	}
 	
@@ -174,6 +181,12 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	 */
 	@Override
 	public void purgeVisit(Visit visit) throws APIException {
+		if (visit.getVisitId() == null)
+			return;
+		//TODO there is a ticket for adding includeVoided argument to getEncountersByVisit for this not to fail
+		if (Context.getEncounterService().getEncountersByVisit(visit).size() > 0)
+			throw new APIException(Context.getMessageSourceService().getMessage("Visit.purge.inUse", null,
+			    "Cannot purge a visit that has encounters associated to it", Context.getLocale()));
 		dao.deleteVisit(visit);
 	}
 	
@@ -261,7 +274,8 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	}
 	
 	/**
-	 * @see org.openmrs.api.VisitService#retireVisitAttributeType(org.openmrs.VisitAttributeType, java.lang.String)
+	 * @see org.openmrs.api.VisitService#retireVisitAttributeType(org.openmrs.VisitAttributeType,
+	 *      java.lang.String)
 	 */
 	@Override
 	public VisitAttributeType retireVisitAttributeType(VisitAttributeType visitAttributeType, String reason) {

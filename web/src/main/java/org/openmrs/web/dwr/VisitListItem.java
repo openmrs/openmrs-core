@@ -56,7 +56,7 @@ public class VisitListItem {
 			startDatetime = visit.getStartDatetime();
 			startDatetimeString = Format.format(visit.getStartDatetime());
 			if (visit.getStopDatetime() != null) {
-				startDatetime = visit.getStopDatetime();
+				stopDatetime = visit.getStopDatetime();
 				stopDatetimeString = Format.format(visit.getStopDatetime());
 			}
 			PersonName pn = visit.getPatient().getPersonName();
