@@ -42,4 +42,16 @@ public class EncounterValidatorTest {
 		new EncounterValidator().validate(encounter, errors);
 		Assert.assertTrue(errors.hasFieldErrors("visit"));
 	}
+	
+	/**
+	 * @see {@link EncounterValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should fail if patient is not set", method = "validate(Object,Errors)")
+	public void validate_shouldFailIfPatientIsNotSet() throws Exception {
+		Encounter encounter = new Encounter();
+		Errors errors = new BindException(encounter, "encounter");
+		new EncounterValidator().validate(encounter, errors);
+		Assert.assertTrue(errors.hasFieldErrors("patient"));
+	}
 }

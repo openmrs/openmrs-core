@@ -97,7 +97,7 @@
 	function updateVisits(patientObj){
 		DWRVisitService.findVisitsByPatient(patientObj.patientId, false, false, function(visits) {
 			var options = '<option value=""></option>';
-			if(visits.length > 0){
+			if(visits){
 		    	for (var i = 0; i < visits.length; i++) {
 		    		options += '<option value="' + visits[i].visitId + '">' + visits[i].startDatetimeString +
 		    		' ' + visits[i].visitType + ' ' +visits[i].personName + 

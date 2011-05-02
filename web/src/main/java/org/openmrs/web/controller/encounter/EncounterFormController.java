@@ -293,7 +293,7 @@ public class EncounterFormController extends SimpleFormController {
 		map.put("locale", Context.getLocale());
 		map.put("editedObs", editedObs);
 		if (encounter.getPatient() != null)
-			map.put("patientVisits", Context.getVisitService().getActiveVisitsByPatient(encounter.getPatient()));
+			map.put("patientVisits", Context.getVisitService().getVisitsByPatient(encounter.getPatient()));
 		
 		return map;
 	}

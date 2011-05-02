@@ -42,7 +42,6 @@ public class VisitEditor extends PropertyEditorSupport {
 				setValue(vs.getVisit(Integer.valueOf(text)));
 			}
 			catch (Exception ex) {
-				log.error("Error setting text" + text, ex);
 				throw new IllegalArgumentException("Visit not found: " + ex.getMessage());
 			}
 		} else {

@@ -19,6 +19,7 @@ import org.openmrs.Encounter;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.APIException;
 import org.springframework.validation.Errors;
+import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 /**
@@ -53,17 +54,19 @@ public class EncounterValidator implements Validator {
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
 	 * @should fail if the patients for the visit and the encounter dont match
+	 * @should fail if patient is not set
 	 */
 	public void validate(Object obj, Errors errors) throws APIException {
 		if (log.isDebugEnabled())
 			log.debug(this.getClass().getName() + ".validate...");
 		
 		if (obj == null || !(obj instanceof Encounter))
-			throw new IllegalArgumentException("The parameter obj should not be null and must be of type" + Encounter.class);
+			throw new IllegalArgumentException("The parameter obj should not be null and must be of type " + Encounter.class);
 		
 		Encounter encounter = (Encounter) obj;
 		
 		if (encounter != null) {
+			ValidationUtils.rejectIfEmpty(errors, "patient", "Encounter.error.patient.required", "Patient is required");
 			if (encounter.getVisit() != null && !encounter.getVisit().getPatient().equals(encounter.getPatient())) {
 				errors.rejectValue("visit", "Encounter.visit.patients.dontMatch",
 				    "The patient for the encounter and visit should be the same");
