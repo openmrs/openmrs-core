@@ -25,24 +25,25 @@ import org.openmrs.attribute.AttributeType;
 
 /**
  * Extension of {@link BaseOpenmrsData} for classes that support customization via user-defined attributes.
- * @param <AttrType> the type of attribute held
+ * @param <AttrClass> the type of attribute held
+ * @since 1.9
  */
-public abstract class BaseCustomizableData<AttrType extends Attribute> extends BaseOpenmrsData implements Customizable<AttrType> {
+public abstract class BaseCustomizableData<AttrClass extends Attribute> extends BaseOpenmrsData implements Customizable<AttrClass> {
 	
-	private Set<AttrType> attributes;
+	private Set<AttrClass> attributes;
 	
 	/**
 	 * @see org.openmrs.attribute.Customizable#getAttributes()
 	 */
 	@Override
-	public Set<AttrType> getAttributes() {
+	public Set<AttrClass> getAttributes() {
 		return attributes;
 	}
 	
 	/**
 	 * @param attributes the attributes to set
 	 */
-	public void setAttributes(Set<AttrType> attributes) {
+	public void setAttributes(Set<AttrClass> attributes) {
 		this.attributes = attributes;
 	}
 	
@@ -50,10 +51,10 @@ public abstract class BaseCustomizableData<AttrType extends Attribute> extends B
 	 * @see org.openmrs.attribute.Customizable#getActiveAttributes()
 	 */
 	@Override
-	public List<AttrType> getActiveAttributes() {
-		List<AttrType> ret = new ArrayList<AttrType>();
+	public List<AttrClass> getActiveAttributes() {
+		List<AttrClass> ret = new ArrayList<AttrClass>();
 		if (getAttributes() != null)
-			for (AttrType attr : getAttributes())
+			for (AttrClass attr : getAttributes())
 				if (!attr.isVoided())
 					ret.add(attr);
 		return ret;
@@ -63,9 +64,9 @@ public abstract class BaseCustomizableData<AttrType extends Attribute> extends B
 	 * @see org.openmrs.attribute.Customizable#getActiveAttributes(org.openmrs.attribute.AttributeType)
 	 */
 	@Override
-	public List<AttrType> getActiveAttributes(AttributeType<?> ofType) {
-		List<AttrType> ret = getActiveAttributes();
-		for (Iterator<AttrType> i = ret.iterator(); i.hasNext();)
+	public List<AttrClass> getActiveAttributes(AttributeType<?> ofType) {
+		List<AttrClass> ret = getActiveAttributes();
+		for (Iterator<AttrClass> i = ret.iterator(); i.hasNext();)
 			if (!(i.next().getAttributeType().equals(ofType)))
 				i.remove();
 		return ret;
@@ -76,9 +77,9 @@ public abstract class BaseCustomizableData<AttrType extends Attribute> extends B
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public void addAttribute(AttrType attribute) {
+	public void addAttribute(AttrClass attribute) {
 		if (getAttributes() == null)
-			setAttributes(new HashSet<AttrType>());
+			setAttributes(new HashSet<AttrClass>());
 		// TODO validate
 		getAttributes().add(attribute);
 		attribute.setOwner(this);
@@ -89,11 +90,11 @@ public abstract class BaseCustomizableData<AttrType extends Attribute> extends B
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public void setAttribute(AttrType attribute) {
+	public void setAttribute(AttrClass attribute) {
 		if (getAttributes() == null)
-			setAttributes(new HashSet<AttrType>());
+			setAttributes(new HashSet<AttrClass>());
 		// TODO validate
-		for (AttrType existing : getAttributes())
+		for (AttrClass existing : getAttributes())
 			if (existing.getAttributeType().equals(attribute.getAttributeType()))
 				existing.setVoided(true);
 		getAttributes().add(attribute);
