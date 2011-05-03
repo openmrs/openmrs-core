@@ -20,26 +20,26 @@ import java.util.Set;
 /**
  * Marker interface for classes that may be customized by the user by adding custom attributes, e.g. Visit
  * has VisitAttributes, so it implements {@link Customizable}<VisitAttribute>
- * @param <AttrType> the type of attribute held
+ * @param <AttrClass> the type of attribute held
  * @since 1.9
  */
-public interface Customizable<AttrType extends Attribute> {
+public interface Customizable<AttrClass extends Attribute> {
 	
 	/**
 	 * @return all attributes (including voided ones)
 	 */
-	Collection<AttrType> getAttributes();
+	Collection<AttrClass> getAttributes();
 	
 	/**
 	 * @return non-voided attributes
 	 */
-	Collection<AttrType> getActiveAttributes();
+	Collection<AttrClass> getActiveAttributes();
 	
 	/**
 	 * @param ofType
 	 * @return non-voided attributes of the given type
 	 */
-	List<AttrType> getActiveAttributes(AttributeType<?> ofType);
+	List<AttrClass> getActiveAttributes(AttributeType<?> ofType);
 	
 	/**
 	 * Adds an attribute. Will fail if this would cause the holder to have an invalid number of attributes
@@ -47,7 +47,7 @@ public interface Customizable<AttrType extends Attribute> {
 	 * 
 	 * @param attribute
 	 */
-	void addAttribute(AttrType attribute);
+	void addAttribute(AttrClass attribute);
 	
 	/**
 	 * Sets an attribute, voiding any existing attributes on the holder of the same attribute type. Will
@@ -55,6 +55,6 @@ public interface Customizable<AttrType extends Attribute> {
 	 * 
 	 * @param attribute
 	 */
-	void setAttribute(AttrType attribute);
+	void setAttribute(AttrClass attribute);
 	
 }
