@@ -13,9 +13,11 @@
  */
 package org.openmrs.web.dwr;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Person;
@@ -28,7 +30,8 @@ public class DWRRelationshipService {
 	
 	protected final Log log = LogFactory.getLog(getClass());
 	
-	public void createRelationship(Integer personAId, Integer personBId, Integer relationshipTypeId) {
+	public void createRelationship(Integer personAId, Integer personBId, Integer relationshipTypeId, String startDateStr)
+	        throws Exception {
 		PersonService ps = Context.getPersonService();
 		Person personA = ps.getPerson(personAId);
 		Person personB = ps.getPerson(personBId);
@@ -37,11 +40,29 @@ public class DWRRelationshipService {
 		rel.setPersonA(personA);
 		rel.setPersonB(personB);
 		rel.setRelationshipType(relType);
+		if (StringUtils.isNotBlank(startDateStr)) {
+			rel.setStartDate(Context.getDateFormat().parse(startDateStr));
+		}
 		ps.saveRelationship(rel);
 	}
 	
 	public void voidRelationship(Integer relationshipId, String voidReason) {
 		Context.getPersonService().voidRelationship(Context.getPersonService().getRelationship(relationshipId), voidReason);
+	}
+	
+	public void changeRelationshipDates(Integer relationshipId, String startDateStr, String endDateStr) throws Exception {
+		Relationship r = Context.getPersonService().getRelationship(relationshipId);
+		Date startDate = null;
+		if (StringUtils.isNotBlank(startDateStr)) {
+			startDate = Context.getDateFormat().parse(startDateStr);
+		}
+		Date endDate = null;
+		if (StringUtils.isNotBlank(endDateStr)) {
+			endDate = Context.getDateFormat().parse(endDateStr);
+		}
+		r.setStartDate(startDate);
+		r.setEndDate(endDate);
+		Context.getPersonService().saveRelationship(r);
 	}
 	
 	public Vector<RelationshipListItem> getRelationships(Integer personId, Integer relationshipTypeId) {

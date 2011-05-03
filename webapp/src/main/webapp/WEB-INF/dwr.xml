@@ -168,6 +168,7 @@
 			<include method="getRelationshipTypeId"/>
 			<include method="createRelationship"/>
 			<include method="voidRelationship"/>
+			<include method="changeRelationshipDates"/>
 			<include method="setRelationshipTo"/>
 			<include method="getRelationships"/>
 			<include method="getRelationshipsToPerson"/>

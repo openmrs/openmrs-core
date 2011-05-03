@@ -13,6 +13,8 @@
  */
 package org.openmrs;
 
+import java.util.Date;
+
 /**
  * Relationship
  */
@@ -29,6 +31,10 @@ public class Relationship extends BaseOpenmrsData implements java.io.Serializabl
 	private RelationshipType relationshipType;
 	
 	private Person personB;
+	
+	private Date startDate;
+	
+	private Date endDate;
 	
 	// Constructors
 	
@@ -152,6 +158,40 @@ public class Relationship extends BaseOpenmrsData implements java.io.Serializabl
 	 */
 	public void setPersonB(Person personB) {
 		this.personB = personB;
+	}
+	
+	/**
+	 * If not null, this indicates that the relationship started on a particular date
+	 * @since 1.9
+	 * @return the relationship's start date.
+	 */
+	public Date getStartDate() {
+		return this.startDate;
+	}
+	
+	/**
+	 * @since 1.9
+	 * @param Sets relationship's start date.
+	 */
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
+	
+	/**
+	 * If not null, this indicates that the relationship ended on a particular date
+	 * @since 1.9
+	 * @return Returns relationship's end date.
+	 */
+	public Date getEndDate() {
+		return this.endDate;
+	}
+	
+	/**
+	 * @since 1.9
+	 * @param Sets relationship's end date.
+	 */
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
 	}
 	
 	/**

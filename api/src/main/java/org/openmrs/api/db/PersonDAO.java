@@ -13,6 +13,7 @@
  */
 package org.openmrs.api.db;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -137,6 +138,13 @@ public interface PersonDAO {
 	 */
 	public List<Relationship> getRelationships(Person fromPerson, Person toPerson, RelationshipType relType)
 	        throws DAOException;
+	
+	/**
+	 * @see org.openmrs.api.PersonService#getRelationships(org.openmrs.Person, org.openmrs.Person,
+	 *      org.openmrs.RelationshipType, java.util.Date, java.util.Date)
+	 */
+	public List<Relationship> getRelationships(Person fromPerson, Person toPerson, RelationshipType relType,
+	        Date startEffectiveDate, Date endEffectiveDate) throws DAOException;
 	
 	/**
 	 * @see org.openmrs.api.PersonService#saveRelationshipType(org.openmrs.RelationshipType)

@@ -16,12 +16,17 @@ package org.openmrs.api;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.Vector;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -53,6 +58,8 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	protected static final String CREATE_PATIENT_XML = "org/openmrs/api/include/PatientServiceTest-createPatient.xml";
 	
 	protected static final String CREATE_RELATIONSHIP_XML = "org/openmrs/api/include/PersonServiceTest-createRelationship.xml";
+	
+	protected static final DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 	
 	protected PatientService ps = null;
 	
@@ -155,6 +162,264 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		// Neither Patient#2 or Patient#3 should have any relationships now.
 		assertEquals(0, updatedARels.size());
 		assertEquals(updatedARels, updatedBRels);
+	}
+	
+	/**
+	 * Tests a voided relationship between personA and Person B to see if it is still listed when
+	 * retrieving unvoided relationships for personA and if it is still listed when retrieving
+	 * unvoided relationships for personB.
+	 * 
+	 * @see {@link PersonService#getRelationshipsByPerson(Person,Date)}
+	 */
+	@Test
+	@Verifies(value = "should only get unvoided relationships", method = "getRelationshipsByPerson(Person,Date)")
+	public void getRelationshipsByPerson2_shouldOnlyGetUnvoidedRelationships() throws Exception {
+		executeDataSet(CREATE_PATIENT_XML);
+		executeDataSet(CREATE_RELATIONSHIP_XML);
+		
+		// TODO use xml imported in BaseContextSensitiveTest#baseSetupWithStandardDataAndAuthentication()
+		// Create Patient#3.
+		Patient patient = new Patient();
+		PersonName pName = new PersonName();
+		pName.setGivenName("Tom");
+		pName.setMiddleName("E.");
+		pName.setFamilyName("Patient");
+		patient.addName(pName);
+		PersonAddress pAddress = new PersonAddress();
+		pAddress.setAddress1("123 My street");
+		pAddress.setAddress2("Apt 402");
+		pAddress.setCityVillage("Anywhere city");
+		pAddress.setCountry("Some Country");
+		Set<PersonAddress> pAddressList = patient.getAddresses();
+		pAddressList.add(pAddress);
+		patient.setAddresses(pAddressList);
+		patient.addAddress(pAddress);
+		patient.setDeathDate(new Date());
+		patient.setBirthdate(new Date());
+		patient.setBirthdateEstimated(true);
+		patient.setGender("male");
+		List<PatientIdentifierType> patientIdTypes = ps.getAllPatientIdentifierTypes();
+		assertNotNull(patientIdTypes);
+		PatientIdentifier patientIdentifier = new PatientIdentifier();
+		patientIdentifier.setIdentifier("123-0");
+		patientIdentifier.setIdentifierType(patientIdTypes.get(0));
+		patientIdentifier.setLocation(new Location(1));
+		Set<PatientIdentifier> patientIdentifiers = new TreeSet<PatientIdentifier>();
+		patientIdentifiers.add(patientIdentifier);
+		patient.setIdentifiers(patientIdentifiers);
+		ps.savePatient(patient);
+		
+		// Create a sibling relationship between Patient#2 and Patient#3
+		Relationship sibling = new Relationship();
+		sibling.setPersonA(ps.getPatient(2));
+		sibling.setPersonB(patient);
+		sibling.setRelationshipType(personService.getRelationshipType(4));
+		// relationship.setCreator(Context.getUserService().getUser(1));
+		personService.saveRelationship(sibling);
+		
+		// Make Patient#3 the Doctor of Patient#2.
+		Relationship doctor = new Relationship();
+		doctor.setPersonB(ps.getPatient(2));
+		doctor.setPersonA(patient);
+		doctor.setRelationshipType(personService.getRelationshipType(3));
+		personService.saveRelationship(doctor);
+		
+		// Get unvoided relationships before voiding any.
+		Person p = personService.getPerson(2);
+		
+		//test loading relationship types real quick.
+		List<RelationshipType> rTmp = personService.getAllRelationshipTypes();
+		assertNotNull(rTmp);
+		RelationshipType rTypeTmp = personService.getRelationshipTypeByName("Doctor/Patient");
+		assertNotNull(rTypeTmp);
+		rTypeTmp = personService.getRelationshipTypeByName("booya");
+		assertNull(rTypeTmp);
+		
+		// Void all relationships.
+		List<Relationship> allRels = personService.getAllRelationships();
+		for (Relationship r : allRels) {
+			personService.voidRelationship(r, "Because of a JUnit test.");
+		}
+		
+		// TODO this is the actual test.  Cut this method down to just this
+		
+		// Get unvoided relationships after voiding all of them.
+		// (specified date should not matter as no relationships have date specified)
+		List<Relationship> updatedARels = personService.getRelationshipsByPerson(p, new Date());
+		List<Relationship> updatedBRels = personService.getRelationshipsByPerson(patient, new Date());
+		
+		// Neither Patient#2 or Patient#3 should have any relationships now.
+		assertEquals(0, updatedARels.size());
+		assertEquals(updatedARels, updatedBRels);
+	}
+	
+	/*
+	 * Helper to create patient that does not have any existing relationships. Returns created Patient.
+	 */
+	private Patient createTestPatient() {
+		Patient patient = new Patient();
+		PersonName pName = new PersonName();
+		pName.setGivenName("Tom");
+		pName.setMiddleName("E.");
+		pName.setFamilyName("Patient");
+		patient.addName(pName);
+		PersonAddress pAddress = new PersonAddress();
+		pAddress.setAddress1("123 My street");
+		pAddress.setAddress2("Apt 402");
+		pAddress.setCityVillage("Anywhere city");
+		pAddress.setCountry("Some Country");
+		Set<PersonAddress> pAddressList = patient.getAddresses();
+		pAddressList.add(pAddress);
+		patient.setAddresses(pAddressList);
+		patient.addAddress(pAddress);
+		patient.setDeathDate(new Date());
+		patient.setBirthdate(new Date());
+		patient.setBirthdateEstimated(true);
+		patient.setGender("male");
+		List<PatientIdentifierType> patientIdTypes = ps.getAllPatientIdentifierTypes();
+		assertNotNull(patientIdTypes);
+		PatientIdentifier patientIdentifier = new PatientIdentifier();
+		patientIdentifier.setIdentifier("123-0");
+		patientIdentifier.setIdentifierType(patientIdTypes.get(0));
+		patientIdentifier.setLocation(new Location(1));
+		Set<PatientIdentifier> patientIdentifiers = new TreeSet<PatientIdentifier>();
+		patientIdentifiers.add(patientIdentifier);
+		patient.setIdentifiers(patientIdentifiers);
+		ps.savePatient(patient);
+		return patient;
+	}
+	
+	/*
+	 * Helper to create relationships with start and/or endDate. Returns a List of the relationships created.
+	 */
+	private List<Relationship> createTestDatedRelationships(Person personA, Person personB, RelationshipType rt)
+	        throws Exception {
+		List<Relationship> rels = new Vector<Relationship>();
+		
+		// Start & end dates
+		Relationship r = new Relationship(); // 0
+		r.setPersonA(personA);
+		r.setPersonB(personB);
+		r.setRelationshipType(rt);
+		r.setStartDate(df.parse("1980-01-01"));
+		r.setEndDate(df.parse("2010-01-01"));
+		personService.saveRelationship(r);
+		rels.add(r);
+		
+		r = new Relationship(); // 1
+		r.setPersonA(personA);
+		r.setPersonB(personB);
+		r.setRelationshipType(rt);
+		r.setStartDate(df.parse("1990-01-01"));
+		r.setEndDate(df.parse("2010-01-01"));
+		personService.saveRelationship(r);
+		rels.add(r);
+		
+		r = new Relationship(); // 2
+		r.setPersonA(personA);
+		r.setPersonB(personB);
+		r.setRelationshipType(rt);
+		r.setStartDate(df.parse("1980-01-01"));
+		r.setEndDate(df.parse("1990-01-01"));
+		personService.saveRelationship(r);
+		rels.add(r);
+		
+		// Only start dates
+		r = new Relationship(); // 3
+		r.setPersonA(personA);
+		r.setPersonB(personB);
+		r.setRelationshipType(rt);
+		r.setStartDate(df.parse("1980-01-01"));
+		personService.saveRelationship(r);
+		rels.add(r);
+		
+		r = new Relationship(); // 4
+		r.setPersonA(personA);
+		r.setPersonB(personB);
+		r.setRelationshipType(rt);
+		r.setStartDate(df.parse("1990-01-01"));
+		personService.saveRelationship(r);
+		rels.add(r);
+		
+		r = new Relationship(); // 5
+		r.setPersonA(personA);
+		r.setPersonB(personB);
+		r.setRelationshipType(rt);
+		r.setStartDate(df.parse("2010-01-01"));
+		personService.saveRelationship(r);
+		rels.add(r);
+		
+		// Only end dates
+		r = new Relationship(); // 6
+		r.setPersonA(personA);
+		r.setPersonB(personB);
+		r.setRelationshipType(rt);
+		r.setEndDate(df.parse("1980-01-01"));
+		personService.saveRelationship(r);
+		rels.add(r);
+		
+		r = new Relationship(); // 7
+		r.setPersonA(personA);
+		r.setPersonB(personB);
+		r.setRelationshipType(rt);
+		r.setEndDate(df.parse("1990-01-01"));
+		personService.saveRelationship(r);
+		rels.add(r);
+		
+		r = new Relationship(); // 8
+		r.setPersonA(personA);
+		r.setPersonB(personB);
+		r.setRelationshipType(rt);
+		r.setEndDate(df.parse("2010-01-01"));
+		personService.saveRelationship(r);
+		rels.add(r);
+		
+		return rels;
+	}
+	
+	/**
+	 * Creates several relationships. Tests that a relationship is returned only when the effective date
+	 * is as follows:
+	 * - for relationships with both a start date and an end date, the effective date falls between the start and
+	 * end dates;
+	 * - for relationships with only a start date, the effective date falls after the start date;
+	 * - for relationships with only an end date, the effective date falls before the end date;
+	 * - relationship with neither a start nor end date are always returned.
+	 * 
+	 * @see {@link PersonService#getRelationshipsByPerson(Person,Date)}
+	 */
+	@Test
+	@Verifies(value = "fetch relationships that were active during effectiveDate", method = "getRelationshipsByPerson(Person,Date)")
+	public void getRelationshipsByPerson_shouldFetchRelationshipsThatWereActiveDuringEffectiveDate() throws Exception {
+		executeDataSet(CREATE_PATIENT_XML);
+		executeDataSet(CREATE_RELATIONSHIP_XML);
+		
+		// TODO use xml imported in BaseContextSensitiveTest#baseSetupWithStandardDataAndAuthentication()
+		Patient patient = createTestPatient();
+		List<Relationship> rels = createTestDatedRelationships(ps.getPatient(2), patient, personService
+		        .getRelationshipType(4));
+		
+		// Get relationships effective 1988-01-01
+		List<Relationship> res = personService.getRelationshipsByPerson(patient, df.parse("1988-01-01"));
+		
+		// Verify # of results and which results we have received
+		assertEquals(5, res.size());
+		for (Relationship rr : res) {
+			if (!rr.equals(rels.get(0)) && !rr.equals(rels.get(2)) && !rr.equals(rels.get(3)) && !rr.equals(rels.get(7))
+			        && !rr.equals(rels.get(8))) {
+				if (rr.equals(rels.get(1))) {
+					fail("unexpected relationship 1 in results from getRelationshipsByPerson with effeciveDate of 1988-01-01");
+				} else if (rr.equals(rels.get(4))) {
+					fail("unexpected relationship 4 in results from getRelationshipsByPerson with effeciveDate of 1988-01-01");
+				} else if (rr.equals(rels.get(5))) {
+					fail("unexpected relationship 5 in results from getRelationshipsByPerson with effeciveDate of 1988-01-01");
+				} else if (rr.equals(rels.get(6))) {
+					fail("unexpected relationship 6 in results from getRelationshipsByPerson with effeciveDate of 1988-01-01");
+				} else {
+					fail("unrecognized unexpected relationship in results from getRelationshipsByPerson with effeciveDate of 1988-01-01");
+				}
+			}
+		}
 	}
 	
 	/**
@@ -705,20 +970,207 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link PersonService#getRelationships(Person,Person,RelationshipType)}
+	 * @see {@link PersonService#getRelationships(Person,Person,RelationshipType,Date)}
 	 * 
 	 */
 	@Test
-	@Verifies(value = "should return empty list when no relationship matching given parameters exist", method = "getRelationships(Person,Person,RelationshipType)")
-	public void getRelationships_shouldReturnEmptyListWhenNoRelationshipMatchingGivenParametersExist() throws Exception {
+	@Verifies(value = "should fetch relationships matching the given from person", method = "getRelationships(Person,Person,RelationshipType,Date)")
+	public void getRelationships2_shouldFetchRelationshipsMatchingTheGivenFromPerson() throws Exception {
+		PersonService personService = Context.getPersonService();
+		
+		Person firstPerson = personService.getPerson(502);
+		List<Relationship> relationships = personService.getRelationships(firstPerson, null, null, new Date());
+		Assert.assertNotNull(relationships);
+		Assert.assertTrue("There should be relationship found given the from person", relationships.size() > 0);
+	}
+	
+	/**
+	 * @see {@link PersonService#getRelationships(Person,Person,RelationshipType,Date)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should fetch relationships matching the given to person", method = "getRelationships(Person,Person,RelationshipType,Date)")
+	public void getRelationships2_shouldFetchRelationshipsMatchingTheGivenToPerson() throws Exception {
+		PersonService personService = Context.getPersonService();
+		
+		Person secondPerson = personService.getPerson(7);
+		List<Relationship> relationships = personService.getRelationships(null, secondPerson, null, new Date());
+		Assert.assertNotNull(relationships);
+		Assert.assertTrue("There should be relationship found given the to person", relationships.size() > 0);
+	}
+	
+	/**
+	 * @see {@link PersonService#getRelationships(Person,Person,RelationshipType,Date)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should fetch relationships matching the given rel type", method = "getRelationships(Person,Person,RelationshipType,Date)")
+	public void getRelationships2_shouldFetchRelationshipsMatchingTheGivenRelType() throws Exception {
+		PersonService personService = Context.getPersonService();
+		
+		RelationshipType relationshipType = personService.getRelationshipType(1);
+		List<Relationship> relationships = personService.getRelationships(null, null, relationshipType, new Date());
+		Assert.assertNotNull(relationships);
+		Assert.assertTrue("There should be relationship found given the relationship type", relationships.size() > 0);
+	}
+	
+	/**
+	 * @see {@link PersonService#getRelationships(Person,Person,RelationshipType,Date)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should return empty list when no relationship matching given parameters exist", method = "getRelationships(Person,Person,RelationshipType,Date)")
+	public void getRelationships2_shouldReturnEmptyListWhenNoRelationshipMatchingGivenParametersExist() throws Exception {
 		PersonService personService = Context.getPersonService();
 		
 		Person firstPerson = personService.getPerson(501);
 		Person secondPerson = personService.getPerson(2);
 		RelationshipType relationshipType = personService.getRelationshipType(1);
-		List<Relationship> relationships = personService.getRelationships(firstPerson, secondPerson, relationshipType);
+		List<Relationship> relationships = personService.getRelationships(firstPerson, secondPerson, relationshipType,
+		    new Date());
 		Assert.assertNotNull(relationships);
 		Assert.assertTrue("There should be no relationship found given the from person", relationships.isEmpty());
+	}
+	
+	/**
+	 * @see {@link PersonService#getRelationships(Person,Person,RelationshipType,Date)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should fetch relationships that were active during effectiveDate", method = "getRelationships(Person,Person,RelationshipType,Date)")
+	public void getRelationships2_shouldFetchRelationshipsThatWereActiveDuringEffectiveDate() throws Exception {
+		executeDataSet(CREATE_PATIENT_XML);
+		executeDataSet(CREATE_RELATIONSHIP_XML);
+		
+		// TODO use xml imported in BaseContextSensitiveTest#baseSetupWithStandardDataAndAuthentication()
+		Patient patient = createTestPatient();
+		List<Relationship> rels = createTestDatedRelationships(ps.getPatient(2), patient, personService
+		        .getRelationshipType(4));
+		
+		// Get relationships effective 1988-01-01
+		List<Relationship> res = personService.getRelationships(ps.getPatient(2), patient, null, df.parse("1988-01-01"));
+		
+		// Verify # of results and which results we have received
+		assertEquals(5, res.size());
+		for (Relationship rr : res) {
+			if (!rr.equals(rels.get(0)) && !rr.equals(rels.get(2)) && !rr.equals(rels.get(3)) && !rr.equals(rels.get(7))
+			        && !rr.equals(rels.get(8))) {
+				if (rr.equals(rels.get(1))) {
+					fail("unexpected relationship 1 in results from getRelationshipsByPerson with effeciveDate of 1988-01-01");
+				} else if (rr.equals(rels.get(4))) {
+					fail("unexpected relationship 4 in results from getRelationshipsByPerson with effeciveDate of 1988-01-01");
+				} else if (rr.equals(rels.get(5))) {
+					fail("unexpected relationship 5 in results from getRelationshipsByPerson with effeciveDate of 1988-01-01");
+				} else if (rr.equals(rels.get(6))) {
+					fail("unexpected relationship 6 in results from getRelationshipsByPerson with effeciveDate of 1988-01-01");
+				} else {
+					fail("unrecognized unexpected relationship in results from getRelationshipsByPerson with effeciveDate of 1988-01-01");
+				}
+			}
+		}
+	}
+	
+	/**
+	 * @see {@link PersonService#getRelationships(Person,Person,RelationshipType,Date,Date)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should fetch relationships matching the given from person", method = "getRelationships(Person,Person,RelationshipType,Date,Date)")
+	public void getRelationships3_shouldFetchRelationshipsMatchingTheGivenFromPerson() throws Exception {
+		PersonService personService = Context.getPersonService();
+		
+		Person firstPerson = personService.getPerson(502);
+		List<Relationship> relationships = personService.getRelationships(firstPerson, null, null, new Date(), new Date());
+		Assert.assertNotNull(relationships);
+		Assert.assertTrue("There should be relationship found given the from person", relationships.size() > 0);
+	}
+	
+	/**
+	 * @see {@link PersonService#getRelationships(Person,Person,RelationshipType,Date,Date)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should fetch relationships matching the given to person", method = "getRelationships(Person,Person,RelationshipType,Date,Date)")
+	public void getRelationships3_shouldFetchRelationshipsMatchingTheGivenToPerson() throws Exception {
+		PersonService personService = Context.getPersonService();
+		
+		Person secondPerson = personService.getPerson(7);
+		List<Relationship> relationships = personService.getRelationships(null, secondPerson, null, new Date(), new Date());
+		Assert.assertNotNull(relationships);
+		Assert.assertTrue("There should be relationship found given the to person", relationships.size() > 0);
+	}
+	
+	/**
+	 * @see {@link PersonService#getRelationships(Person,Person,RelationshipType,Date,Date)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should fetch relationships matching the given rel type", method = "getRelationships(Person,Person,RelationshipType,Date,Date)")
+	public void getRelationships3_shouldFetchRelationshipsMatchingTheGivenRelType() throws Exception {
+		PersonService personService = Context.getPersonService();
+		
+		RelationshipType relationshipType = personService.getRelationshipType(1);
+		List<Relationship> relationships = personService.getRelationships(null, null, relationshipType, new Date(),
+		    new Date());
+		Assert.assertNotNull(relationships);
+		Assert.assertTrue("There should be relationship found given the relationship type", relationships.size() > 0);
+	}
+	
+	/**
+	 * @see {@link PersonService#getRelationships(Person,Person,RelationshipType,Date,Date)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should return empty list when no relationship matching given parameters exist", method = "getRelationships(Person,Person,RelationshipType,Date,Date)")
+	public void getRelationships3_shouldReturnEmptyListWhenNoRelationshipMatchingGivenParametersExist() throws Exception {
+		PersonService personService = Context.getPersonService();
+		
+		Person firstPerson = personService.getPerson(501);
+		Person secondPerson = personService.getPerson(2);
+		RelationshipType relationshipType = personService.getRelationshipType(1);
+		List<Relationship> relationships = personService.getRelationships(firstPerson, secondPerson, relationshipType,
+		    new Date(), new Date());
+		Assert.assertNotNull(relationships);
+		Assert.assertTrue("There should be no relationship found given the from person", relationships.isEmpty());
+	}
+	
+	/**
+	 * @see {@link PersonService#getRelationships(Person,Person,RelationshipType,Date,Date)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should fetch relationships that were active during the specified date range", method = "getRelationships(Person,Person,RelationshipType,Date,Date)")
+	public void getRelationships3_shouldFetchRelationshipsThatWereActiveDuringTheSpecifiedDateRange() throws Exception {
+		executeDataSet(CREATE_PATIENT_XML);
+		executeDataSet(CREATE_RELATIONSHIP_XML);
+		
+		// TODO use xml imported in BaseContextSensitiveTest#baseSetupWithStandardDataAndAuthentication()
+		Patient patient = createTestPatient();
+		List<Relationship> rels = createTestDatedRelationships(ps.getPatient(2), patient, personService
+		        .getRelationshipType(4));
+		
+		// Get relationships effective between 1987-01-01 and 1988-01-01
+		List<Relationship> res = personService.getRelationships(ps.getPatient(2), patient, null, df.parse("1987-01-01"), df
+		        .parse("1988-01-01"));
+		
+		// Verify # of results and which results we have received
+		assertEquals(5, res.size());
+		for (Relationship rr : res) {
+			if (!rr.equals(rels.get(0)) && !rr.equals(rels.get(2)) && !rr.equals(rels.get(3)) && !rr.equals(rels.get(7))
+			        && !rr.equals(rels.get(8))) {
+				if (rr.equals(rels.get(1))) {
+					fail("unexpected relationship 1 in results from getRelationshipsByPerson effective between 1987-01-01 and 1988-01-01");
+				} else if (rr.equals(rels.get(4))) {
+					fail("unexpected relationship 4 in results from getRelationshipsByPerson effective between 1987-01-01 and 1988-01-01");
+				} else if (rr.equals(rels.get(5))) {
+					fail("unexpected relationship 5 in results from getRelationshipsByPerson effective between 1987-01-01 and 1988-01-01");
+				} else if (rr.equals(rels.get(6))) {
+					fail("unexpected relationship 6 in results from getRelationshipsByPerson effective between 1987-01-01 and 1988-01-01");
+				} else {
+					fail("unrecognized unexpected relationship in results from getRelationshipsByPerson effective between 1987-01-01 and 1988-01-01");
+				}
+			}
+		}
 	}
 	
 	/**
@@ -749,6 +1201,39 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		
 		Person person = personService.getPerson(6);
 		List<Relationship> relationships = personService.getRelationshipsByPerson(person);
+		Assert.assertNotNull(relationships);
+		Assert.assertTrue("There should be no relationship found given the person", relationships.isEmpty());
+		
+	}
+	
+	/**
+	 * @see {@link PersonService#getRelationshipsByPerson(Person)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should fetch relationships associated with the given person", method = "getRelationshipsByPerson(Person, Date)")
+	public void getRelationshipsByPerson2_shouldFetchRelationshipsAssociatedWithTheGivenPerson() throws Exception {
+		PersonService personService = Context.getPersonService();
+		
+		Person person = personService.getPerson(2);
+		List<Relationship> relationships = personService.getRelationshipsByPerson(person, new Date());
+		Assert.assertNotNull(relationships);
+		Assert.assertTrue("There should be relationship found given the person", relationships.size() > 0);
+	}
+	
+	/**
+	 * @see {@link PersonService#getRelationshipsByPerson(Person)}
+	 * 
+	 */
+	@Test
+	@Verifies(value = "should fetch unvoided relationships only", method = "getRelationshipsByPerson(Person, Date)")
+	public void getRelationshipsByPerson2_shouldFetchUnvoidedRelationshipsOnly() throws Exception {
+		executeDataSet("org/openmrs/api/include/PersonServiceTest-createRetiredRelationship.xml");
+		
+		PersonService personService = Context.getPersonService();
+		
+		Person person = personService.getPerson(6);
+		List<Relationship> relationships = personService.getRelationshipsByPerson(person, new Date());
 		Assert.assertNotNull(relationships);
 		Assert.assertTrue("There should be no relationship found given the person", relationships.isEmpty());
 		

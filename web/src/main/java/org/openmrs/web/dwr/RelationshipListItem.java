@@ -13,10 +13,14 @@
  */
 package org.openmrs.web.dwr;
 
+import java.util.Date;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Person;
 import org.openmrs.Relationship;
+
+import org.openmrs.api.context.Context;
 
 public class RelationshipListItem {
 	
@@ -39,6 +43,10 @@ public class RelationshipListItem {
 	private String personAType;
 	
 	private String personBType;
+	
+	private String startDate = null;
+	
+	private String endDate = null;
 	
 	public RelationshipListItem() {
 	}
@@ -66,6 +74,15 @@ public class RelationshipListItem {
 		}
 		catch (Exception ex) {
 			personAType = "User";
+		}
+		
+		Date startDate = r.getStartDate();
+		if (startDate != null) {
+			this.startDate = Context.getDateFormat().format(startDate);
+		}
+		Date endDate = r.getEndDate();
+		if (endDate != null) {
+			this.endDate = Context.getDateFormat().format(endDate);
 		}
 	}
 	
@@ -146,4 +163,19 @@ public class RelationshipListItem {
 		this.personBType = personBType;
 	}
 	
+	public String getStartDate() {
+		return startDate;
+	}
+	
+	public void setStartDate(String startDate) {
+		this.startDate = startDate;
+	}
+	
+	public String getEndDate() {
+		return endDate;
+	}
+	
+	public void setEndDate(String endDate) {
+		this.endDate = endDate;
+	}
 }

@@ -4423,6 +4423,30 @@
 			referencedTableName="visit" referencedColumnNames="visit_id" />
 	</changeSet>
 	
+	<changeSet id="201101271456-add-startdate-to-relationship" author="misha680">
+		<preConditions onFail="MARK_RAN">
+			<not><columnExists tableName="relationship" columnName="start_date"/></not>
+		</preConditions>
+		<comment>
+			Adding the start_date column to relationship.  
+		</comment>
+		<addColumn tableName="relationship">
+			<column name="start_date" type="datetime" defaultValue="null" />
+		</addColumn>
+	</changeSet>
+	
+	<changeSet id="201101271456-add-enddate-to-relationship" author="misha680">
+		<preConditions onFail="MARK_RAN">
+			<not><columnExists tableName="relationship" columnName="end_date"/></not>
+		</preConditions>
+		<comment>
+			Adding the end_date column to relationship.  
+		</comment>
+		<addColumn tableName="relationship">
+			<column name="end_date" type="datetime" defaultValue="null" />
+		</addColumn>
+	</changeSet>
+	
     <changeSet id="20110425-1600-create-visit-attribute-type-table" author="djazayeri">
         <preConditions onFail="MARK_RAN">
             <not><tableExists tableName="visit_attribute_type"/></not>

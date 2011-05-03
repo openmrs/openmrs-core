@@ -7,6 +7,9 @@
 	padding-right: 10px;
 	padding-left: 10px;
 }
+#editRelationship th {
+	text-align:right;
+}
 </style>
 
 <script type="text/javascript">
@@ -16,7 +19,7 @@
 			autoOpen: false,
 			modal: true,
 			title: '<spring:message code="Relationship.add" javaScriptEscape="true"/>',
-			width: '30%',
+			width: '50%',
 			zIndex: 100,
 			buttons: { 
 				'<spring:message code="general.save"/>': function() { handleAddRelationship(); },
@@ -34,10 +37,22 @@
 			autoOpen: false,
 			modal: true,
 			title: '<spring:message code="Relationship.remove" javaScriptEscape="true"/>',
-			width: '30%',
+			width: '50%',
 			zIndex: 100,
 			buttons: { 
 				'<spring:message code="general.remove"/>': function() { handleVoidRelationship(); },
+				'<spring:message code="general.cancel"/>': function() { $j(this).dialog("close"); }
+			}
+		});
+		
+		$j('#editRelationship').dialog({
+			autoOpen: false,
+			modal: true,
+			title: '<spring:message code="Relationship.edit" javaScriptEscape="true"/>',
+			width: '50%',
+			zIndex: 100,
+			buttons: { 
+				'<spring:message code="general.save"/>': function() { handleEditRelationship(); },
 				'<spring:message code="general.cancel"/>': function() { $j(this).dialog("close"); }
 			}
 		});
@@ -63,6 +78,8 @@
 			rel.personBId = ${rel.personB.personId};
 			rel.personAIsPatient = ${rel.personA.patient};
 			rel.personBIsPatient = ${rel.personB.patient};
+			rel.startDate = '<openmrs:formatDate date="${rel.startDate}" type="textbox"/>';
+			rel.endDate = '<openmrs:formatDate date="${rel.endDate}" type="textbox"/>';
 			rels.push(rel);
 		</c:forEach>
 		refreshRelationshipsCallback(rels);
@@ -71,6 +88,13 @@
 	var relTableCellFuncs = [
 		function(data) { return data[1]; },
 		function(data) { return data[2]; },
+		function(data) { return data[3]; },
+		function(data) { return data[4]; },
+		function(data) {
+			return '<a href="javascript:editRelationshipDialog(' + data[0] + ')" title="">' +
+						'<img src="images/edit.gif" border="0" title="<spring:message code="general.edit"/>"/>' +
+				   '</a>';
+		},
 		function(data) {
 			return '<a href="javascript:voidRelationshipDialog(' + data[0] + ')" title="">' +
 				'<img src="images/delete.gif" border="0" title="<spring:message code="general.remove"/>"/>' +
@@ -105,9 +129,10 @@
 						relative = '<a href="personDashboard.form?personId=' + rel.personAId + '">' + rel.personA + '</a>';
 				}
 
-				relationships[rel.relationshipId] = relative + " (" + relation + ")";
+				rel.desc = relative + " (" + relation + ")";
+				relationships[rel.relationshipId] = rel;
 				dwr.util.addRows('relationshipTableContent', 
-						[ [rel.relationshipId, relative, relation] ], 
+						[ [rel.relationshipId, relative, relation, rel.startDate, rel.endDate] ], 
 						relTableCellFuncs, 
 						{escapeHtml: false});
 			}
@@ -138,21 +163,40 @@
 			personIdA = personIdB;
 			personIdB = temp;
 		}
+		
+		var startDateString = $j("#add_rel_start_date").val();
 
 		$j("#addRelationship").dialog("close");
 		clearAddRelationship();	
-		DWRRelationshipService.createRelationship(personIdA, personIdB, relType, refreshRelationships);
+		DWRRelationshipService.createRelationship(personIdA, personIdB, relType, startDateString, refreshRelationships);
 	}
 
 	function clearAddRelationship() {
 		$j("#add_rel_target_id").val("");
 		$j("#add_rel_display_id").val("");
 		$j("#add_relationship_type").val("");
+		$j("#add_rel_start_date").val("");
 		hideDiv('add_rel_details');
 	}
 	
+	function editRelationshipDialog(relId) {
+		$j("#editRelationship .relationship_desc").html(relationships[relId].desc);
+		$j("#editRelationship #edit_relationship_id").val(relId);
+		$j("#editRelationship #edit_rel_start_date").val(relationships[relId].startDate);
+		$j("#editRelationship #edit_rel_end_date").val(relationships[relId].endDate);
+		$j("#editRelationship").dialog("open");
+	}
+
+	function handleEditRelationship() {
+		var relId = $j("#editRelationship #edit_relationship_id").val();
+		var startDate = $j("#editRelationship #edit_rel_start_date").val();
+		var endDate = $j("#editRelationship #edit_rel_end_date").val();
+		$j("#editRelationship").dialog("close");
+		DWRRelationshipService.changeRelationshipDates(relId, startDate, endDate, refreshRelationships);
+	}
+	
 	function voidRelationshipDialog(relId) {
-		$j("#voidRelationship #relationship_desc").html(relationships[relId]);
+		$j("#voidRelationship .relationship_desc").html(relationships[relId].desc);
 		$j("#voidRelationship #relationship_id").val(relId);
 		$j("#voidRelationship #relationship_void_reason").val("");
 		$j("#voidRelationship").dialog("open");
@@ -186,6 +230,9 @@
 			<tr bgcolor="whitesmoke">
 				<td><spring:message code="Relationship.relative"/></td>
 				<td><spring:message code="Relationship.relationship"/></td>
+				<td><spring:message code="Relationship.startDate"/></td>
+				<td><spring:message code="Relationship.endDate"/></td>
+				<td></td>
 				<td></td>
 			</tr>
 		</thead>
@@ -225,11 +272,32 @@
 			<input type="hidden" id="add_relationship_type"/>
 			<spring:message code="Relationship.target"/>
 			<openmrs_tag:personField formFieldName="add_rel_target" formFieldId="add_rel_target_id" displayFieldId="add_rel_display_id" searchLabel="Find a Person" canAddNewPerson="true" />
+			<br/>
+			<spring:message code="Relationship.startDateQuestion"/>
+			<openmrs_tag:dateField formFieldName="add_rel_start_date" startValue="" />
 		</span>
 	</div>
 	
+	<div id="editRelationship">
+		<input type="hidden" id="edit_relationship_id"/>
+		<table>
+			<tr>
+				<th><spring:message code="Relationship.relative"/>:</th>
+				<td><span class="relationship_desc"></span></td>
+			</tr>
+			<tr>
+				<th><spring:message code="Relationship.startDateLong"/>:</th>
+				<td><openmrs_tag:dateField formFieldName="edit_rel_start_date" startValue="" /></td>
+			</tr>
+			<tr>
+				<th><spring:message code="Relationship.endDateLong"/>:</th>
+				<td><openmrs_tag:dateField formFieldName="edit_rel_end_date" startValue="" /></td>
+			</tr>
+		</table>
+	</div>
+		
 	<div id="voidRelationship">
-		<div><spring:message code="Relationship.relative"/>: <span id="relationship_desc"></span></div>
+		<div><spring:message code="Relationship.relative"/>: <span class="relationship_desc"></span></div>
 		<br />
 		<label for="relationship_void_reason"><spring:message code="general.reason"/>: </label>
 		<input type="hidden" id="relationship_id"/>
