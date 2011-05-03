@@ -151,7 +151,7 @@ public class VisitValidatorTest extends BaseContextSensitiveTest {
 		visit.setStopDatetime(c.getTime());
 		Errors errors = new BindException(visit, "visit");
 		new VisitValidator().validate(visit, errors);
-		Assert.assertEquals(true, errors.hasFieldErrors("startDatetime"));
+		Assert.assertEquals(true, errors.hasFieldErrors("stopDatetime"));
 	}
 	
 }

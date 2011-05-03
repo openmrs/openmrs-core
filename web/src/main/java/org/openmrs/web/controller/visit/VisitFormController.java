@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Encounter;
 import org.openmrs.Visit;
+import org.openmrs.VisitType;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.validator.VisitValidator;
@@ -42,12 +43,14 @@ import org.springframework.web.context.request.WebRequest;
  * Controller class for creating, editing, deleting, restoring and purging a visit
  */
 @Controller
-@SessionAttributes( { "visit", "visitTypes" })
+@SessionAttributes( { "visit" })
 public class VisitFormController {
 	
 	private static final Log log = LogFactory.getLog(VisitFormController.class);
 	
-	private static final String VISIT_FORM_URL = "/admin/visits/visitForm";
+	private static final String VISIT_FORM_URL = "/admin/visits/visit";
+	
+	private static final String VISIT_FORM = "/admin/visits/visitForm";
 	
 	/**
 	 * Processes requests to display the visit form
@@ -58,7 +61,7 @@ public class VisitFormController {
 	 * @param model the {@link ModelMap} object
 	 */
 	@RequestMapping(method = RequestMethod.GET, value = VISIT_FORM_URL)
-	public void showForm(WebRequest request, @RequestParam(value = "visitId", required = false) Integer visitId,
+	public String showForm(WebRequest request, @RequestParam(value = "visitId", required = false) Integer visitId,
 	        @RequestParam(value = "patientId", required = false) Integer patientId, ModelMap model) {
 		
 		Visit visit = null;
@@ -71,8 +74,9 @@ public class VisitFormController {
 		}
 		
 		model.addAttribute("visit", visit);
-		model.addAttribute("visitTypes", Context.getVisitService().getAllVisitTypes());
 		setEncounterDetails(visit, model);
+		
+		return VISIT_FORM;
 	}
 	
 	/**
@@ -111,7 +115,7 @@ public class VisitFormController {
 		//to this visit encounters because the user could have added or removed some in the form
 		//via ajax
 		setEncounterDetails(visit, model);
-		return VISIT_FORM_URL;
+		return VISIT_FORM;
 	}
 	
 	/**
@@ -147,7 +151,7 @@ public class VisitFormController {
 		}
 		
 		setEncounterDetails(visit, model);
-		return VISIT_FORM_URL;
+		return VISIT_FORM;
 	}
 	
 	/**
@@ -179,7 +183,7 @@ public class VisitFormController {
 		}
 		
 		setEncounterDetails(visit, model);
-		return VISIT_FORM_URL;
+		return VISIT_FORM;
 	}
 	
 	/**
@@ -210,7 +214,12 @@ public class VisitFormController {
 		}
 		
 		setEncounterDetails(visit, model);
-		return VISIT_FORM_URL;
+		return VISIT_FORM;
+	}
+	
+	@ModelAttribute("visitTypes")
+	public List<VisitType> getVisitTypes(WebRequest request) throws Exception {
+		return Context.getVisitService().getAllVisitTypes();
 	}
 	
 	/**

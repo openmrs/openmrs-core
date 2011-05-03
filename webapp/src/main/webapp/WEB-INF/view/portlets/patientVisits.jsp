@@ -18,7 +18,7 @@
 			<div class="boxHeader${model.patientVariation}"><c:choose><c:when test="${empty model.title}"><spring:message code="Visit.header"/></c:when><c:otherwise><spring:message code="${model.title}"/></c:otherwise></c:choose></div>
 			<div class="box${model.patientVariation}">
 				<openmrs:hasPrivilege privilege="Add Visits">
-				&nbsp;<a href="<openmrs:contextPath />/admin/visits/visitForm.form?patientId=${model.patient.patientId}"><spring:message code="Visit.add"/></a>
+				&nbsp;<a href="<openmrs:contextPath />/admin/visits/visit.form?patientId=${model.patient.patientId}"><spring:message code="Visit.add"/></a>
 				<br/><br/>
 				</openmrs:hasPrivilege>
 				<div>
@@ -51,7 +51,7 @@
 									<td class="visitEdit" align="center">
 										<c:if test="${showEditLink == 'true'}">
 											<openmrs:hasPrivilege privilege="Edit Visits">
-												<c:set var="editUrl" value="${pageContext.request.contextPath}/admin/visits/visitForm.form?visitId=${visit.visitId}"/>
+												<c:set var="editUrl" value="${pageContext.request.contextPath}/admin/visits/visit.form?visitId=${visit.visitId}"/>
 												<c:if test="${ model.formToEditUrlMap[visit.form] != null }">
 													<c:url var="editUrl" value="${model.formToEditUrlMap[visit.form]}">
 														<c:param name="visitId" value="${visit.visitId}"/>
