@@ -13,6 +13,7 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -420,6 +421,43 @@ public class HibernatePersonDAO implements PersonDAO {
 		if (relType != null)
 			criteria.add(Expression.eq("relationshipType", relType));
 		
+		criteria.add(Expression.eq("voided", false));
+		
+		return criteria.list();
+	}
+	
+	/**
+	 * @see org.openmrs.api.PersonService#getRelationships(org.openmrs.Person, org.openmrs.Person,
+	 *      org.openmrs.RelationshipType, java.util.Date, java.util.Date)
+	 * @see org.openmrs.api.db.PersonDAO#getRelationships(org.openmrs.Person, org.openmrs.Person,
+	 *      org.openmrs.RelationshipType, java.util.Date, java.util.Date)
+	 */
+	@SuppressWarnings("unchecked")
+	public List<Relationship> getRelationships(Person fromPerson, Person toPerson, RelationshipType relType,
+	        Date startEffectiveDate, Date endEffectiveDate) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Relationship.class, "r");
+		
+		if (fromPerson != null)
+			criteria.add(Expression.eq("personA", fromPerson));
+		if (toPerson != null)
+			criteria.add(Expression.eq("personB", toPerson));
+		if (relType != null)
+			criteria.add(Expression.eq("relationshipType", relType));
+		if (startEffectiveDate != null) {
+			criteria.add(Restrictions.disjunction().add(
+			    Restrictions.and(Expression.le("startDate", startEffectiveDate), Expression
+			            .ge("endDate", startEffectiveDate))).add(
+			    Restrictions.and(Expression.le("startDate", startEffectiveDate), Restrictions.isNull("endDate"))).add(
+			    Restrictions.and(Restrictions.isNull("startDate"), Expression.ge("endDate", startEffectiveDate))).add(
+			    Restrictions.and(Restrictions.isNull("startDate"), Restrictions.isNull("endDate"))));
+		}
+		if (endEffectiveDate != null) {
+			criteria.add(Restrictions.disjunction().add(
+			    Restrictions.and(Expression.le("startDate", endEffectiveDate), Expression.ge("endDate", endEffectiveDate)))
+			        .add(Restrictions.and(Expression.le("startDate", endEffectiveDate), Restrictions.isNull("endDate")))
+			        .add(Restrictions.and(Restrictions.isNull("startDate"), Expression.ge("endDate", endEffectiveDate)))
+			        .add(Restrictions.and(Restrictions.isNull("startDate"), Restrictions.isNull("endDate"))));
+		}
 		criteria.add(Expression.eq("voided", false));
 		
 		return criteria.list();

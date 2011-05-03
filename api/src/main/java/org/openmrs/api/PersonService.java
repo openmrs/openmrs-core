@@ -13,6 +13,7 @@
  */
 package org.openmrs.api;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -445,6 +446,22 @@ public interface PersonService {
 	public List<Relationship> getRelationshipsByPerson(Person p) throws APIException;
 	
 	/**
+	 * Get list of relationships that include Person in person_id or relative_id Does not include
+	 * voided relationships. Allows an effectiveDate parameter.
+	 * 
+	 * @param p person object listed on either side of the relationship
+	 * @param effectiveDate effective date of relationship
+	 * @return Relationship list
+	 * @throws APIException
+	 * @should only get unvoided relationships
+	 * @should fetch relationships associated with the given person
+	 * @should fetch relationships that were active during effectiveDate
+	 */
+	@Transactional(readOnly = true)
+	@Authorized( { PrivilegeConstants.VIEW_RELATIONSHIPS })
+	public List<Relationship> getRelationshipsByPerson(Person p, Date effectiveDate) throws APIException;
+	
+	/**
 	 * @deprecated use {@link #getRelationshipsByPerson(Person)}
 	 */
 	@Deprecated
@@ -485,6 +502,47 @@ public interface PersonService {
 	@Authorized( { PrivilegeConstants.VIEW_RELATIONSHIPS })
 	public List<Relationship> getRelationships(Person fromPerson, Person toPerson, RelationshipType relType)
 	        throws APIException;
+	
+	/**
+	 * Get relationships stored in the database that are active on the passed date
+	 * 
+	 * @param fromPerson (optional) Person to in the person_id column
+	 * @param toPerson (optional) Person in the relative_id column
+	 * @param relType (optional) The RelationshipType to match
+	 * @param effectiveDate (optional) The date during which the relationship was effective
+	 * @return relationships matching the given parameters
+	 * @throws APIException
+	 * @should fetch relationships matching the given from person
+	 * @should fetch relationships matching the given to person
+	 * @should fetch relationships matching the given rel type
+	 * @should return empty list when no relationship matching given parameters exist
+	 * @should fetch relationships that were active during effectiveDate
+	 */
+	@Transactional(readOnly = true)
+	@Authorized( { PrivilegeConstants.VIEW_RELATIONSHIPS })
+	public List<Relationship> getRelationships(Person fromPerson, Person toPerson, RelationshipType relType,
+	        Date effectiveDate) throws APIException;
+	
+	/**
+	 * Get relationships stored in the database that were active during the specified date range
+	 * 
+	 * @param fromPerson (optional) Person to in the person_id column
+	 * @param toPerson (optional) Person in the relative_id column
+	 * @param relType (optional) The RelationshipType to match
+	 * @param startEffectiveDate (optional) The date during which the relationship was effective (lower bound)
+	 * @param endEffectiveDate (optional) The date during which the relationship was effective (upper bound)
+	 * @return relationships matching the given parameters
+	 * @throws APIException
+	 * @should fetch relationships matching the given from person
+	 * @should fetch relationships matching the given to person
+	 * @should fetch relationships matching the given rel type
+	 * @should return empty list when no relationship matching given parameters exist
+	 * @should fetch relationships that were active during the specified date range
+	 */
+	@Transactional(readOnly = true)
+	@Authorized( { PrivilegeConstants.VIEW_RELATIONSHIPS })
+	public List<Relationship> getRelationships(Person fromPerson, Person toPerson, RelationshipType relType,
+	        Date startEffectiveDate, Date endEffectiveDate) throws APIException;
 	
 	/**
 	 * Get all relationshipTypes Includes retired relationship types

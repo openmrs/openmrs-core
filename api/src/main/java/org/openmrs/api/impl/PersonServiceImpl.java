@@ -529,6 +529,24 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 	}
 	
 	/**
+	 * @see org.openmrs.api.PersonService#getRelationships(org.openmrs.Person, org.openmrs.Person,
+	 *      org.openmrs.RelationshipType, java.util.Date)
+	 */
+	public List<Relationship> getRelationships(Person fromPerson, Person toPerson, RelationshipType relType,
+	        Date effectiveDate) throws APIException {
+		return dao.getRelationships(fromPerson, toPerson, relType, effectiveDate, null);
+	}
+	
+	/**
+	 * @see org.openmrs.api.PersonService#getRelationships(org.openmrs.Person, org.openmrs.Person,
+	 *      org.openmrs.RelationshipType, java.util.Date, java.util.Date)
+	 */
+	public List<Relationship> getRelationships(Person fromPerson, Person toPerson, RelationshipType relType,
+	        Date startEffectiveDate, Date endEffectiveDate) throws APIException {
+		return dao.getRelationships(fromPerson, toPerson, relType, startEffectiveDate, endEffectiveDate);
+	}
+	
+	/**
 	 * @see org.openmrs.api.PersonService#getRelationshipsByPerson(org.openmrs.Person)
 	 */
 	public List<Relationship> getRelationshipsByPerson(Person p) throws APIException {
@@ -537,6 +555,19 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		// for this person
 		List<Relationship> rels = getRelationships(p, null, null);
 		rels.addAll(getRelationships(null, p, null));
+		
+		return rels;
+	}
+	
+	/**
+	 * @see org.openmrs.api.PersonService#getRelationshipsByPerson(org.openmrs.Person, java.util.Date)
+	 */
+	public List<Relationship> getRelationshipsByPerson(Person p, Date effectiveDate) throws APIException {
+		
+		// search both the left side and the right side of the relationship
+		// for this person
+		List<Relationship> rels = getRelationships(p, null, null, effectiveDate);
+		rels.addAll(getRelationships(null, p, null, effectiveDate));
 		
 		return rels;
 	}
