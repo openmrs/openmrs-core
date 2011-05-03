@@ -611,6 +611,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	public void saveVisit_shouldFailIfValidationErrorsAreFound() throws Exception {
 		VisitService vs = Context.getVisitService();
 		Visit visit = new Visit();
+		//Not setting the patient so that we get validation errors
 		visit.setVisitType(vs.getVisitType(1));
 		visit.setStartDatetime(new Date());
 		Context.getVisitService().saveVisit(visit);
@@ -624,7 +625,6 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	public void saveVisit_shouldPassIfNoValidationErrorsAreFound() throws Exception {
 		VisitService vs = Context.getVisitService();
 		Visit visit = new Visit();
-		//Not setting the patient so that we get validation errors
 		visit.setPatient(Context.getPatientService().getPatient(2));
 		visit.setVisitType(vs.getVisitType(1));
 		visit.setStartDatetime(new Date());

@@ -2,10 +2,10 @@
 
 <c:choose>
 	<c:when test="${visit.visitId == null}">
-		<openmrs:require privilege="Add Visits" otherwise="/login.htm" redirect="/admin/visits/visitForm.form" />
+		<openmrs:require privilege="Add Visits" otherwise="/login.htm" redirect="/admin/visits/visit.form" />
 	</c:when>
 	<c:otherwise>
-		<openmrs:require privilege="Edit Visits" otherwise="/login.htm" redirect="/admin/visits/visitForm.form" />
+		<openmrs:require privilege="Edit Visits" otherwise="/login.htm" redirect="/admin/visits/visit.form" />
 	</c:otherwise>
 </c:choose>
 
@@ -217,7 +217,7 @@ $j(document).ready( function() {
 </c:if>
 </openmrs:hasPrivilege>
 	
-<form:form method="post" action="visitForm.form" modelAttribute="visit">
+<form:form method="post" action="visit.form" modelAttribute="visit">
 	<c:if test="${visit.patient.patientId != null}">
 	<a href="<openmrs:contextPath/>/patientDashboard.form?patientId=${visit.patient.patientId}">
 		<spring:message code="PatientDashboard.backToPatientDashboard"/>
@@ -347,7 +347,7 @@ $j(document).ready( function() {
 					<input type="button" value='<spring:message code="general.remove"/>' class="smallButton" />
 				</td>
 			</tr>
-			<tr id="noneRow" class="<c:if test="${fn:length(visitEncounters) > 0}">hidden </c:if>evenRow">
+			<tr id="noneRow" class="evenRow" <c:if test="${fn:length(visitEncounters) > 0}">style="display:none"</c:if>>
 				<td colspan="5" style="text-align: center;"><spring:message code="general.none"/></td>
 			</tr>
 		</table>
@@ -363,8 +363,7 @@ $j(document).ready( function() {
 					<select id="encounterSelect" class="addEncounterInputs">
 						<option></option>
 						<c:forEach items="${encountersToAdd}" var="enc2" varStatus="enc2Status">
-							<option id="encounterOption-${enc2.encounterId}" onclick="confirmAction(true, ${enc2.encounterId})" 
-								<c:if test="${enc2.visit != null && enc2.visit.visitId == visit.visitId}">class="hidden"</c:if>>
+							<option id="encounterOption-${enc2.encounterId}" onclick="confirmAction(true, ${enc2.encounterId})">
 								<openmrs:format encounter="${enc2}" />
 							</option>
 						</c:forEach>

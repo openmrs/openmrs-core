@@ -296,15 +296,20 @@ public class DWREncounterService {
 	 * @since 1.9
 	 */
 	public EncounterListItem addEncounterToVisit(Integer encounterId, Integer visitId) throws APIException {
+		if (encounterId == null)
+			throw new APIException(Context.getMessageSourceService().getMessage("Encounter.encounterIdCannotBeNull"));
+		
 		EncounterService es = Context.getEncounterService();
 		Encounter e = es.getEncounter(encounterId);
-		if (e != null) {
-			if (visitId != null)
-				e.setVisit(Context.getVisitService().getVisit(visitId));
-			else
-				e.setVisit(null);
-			es.saveEncounter(e);
-		}
+		if (e == null)
+			throw new APIException(Context.getMessageSourceService().getMessage("Encounter.noMatchesFound",
+			    new Object[] { encounterId }, Context.getLocale()));
+		
+		if (visitId != null)
+			e.setVisit(Context.getVisitService().getVisit(visitId));
+		else
+			e.setVisit(null);
+		es.saveEncounter(e);
 		
 		return e == null ? null : new EncounterListItem(e);
 	}

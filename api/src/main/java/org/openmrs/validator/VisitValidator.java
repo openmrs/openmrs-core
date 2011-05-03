@@ -52,13 +52,12 @@ public class VisitValidator implements Validator {
 	@Override
 	public void validate(Object target, Errors errors) {
 		Visit visit = (Visit) target;
-		ValidationUtils.rejectIfEmpty(errors, "patient", "Visit.error.patient.required", "Patient is required");
-		ValidationUtils.rejectIfEmpty(errors, "visitType", "Visit.error.visitType.required", "Visit Type is required");
-		ValidationUtils.rejectIfEmpty(errors, "startDatetime", "Visit.error.startDate.required", "Start Date is required");
+		ValidationUtils.rejectIfEmpty(errors, "patient", "Visit.error.patient.required");
+		ValidationUtils.rejectIfEmpty(errors, "visitType", "Visit.error.visitType.required");
+		ValidationUtils.rejectIfEmpty(errors, "startDatetime", "Visit.error.startDate.required");
 		if (visit.getStartDatetime() != null
 		        && OpenmrsUtil.compareWithNullAsLatest(visit.getStartDatetime(), visit.getStopDatetime()) > 0) {
-			errors.rejectValue("startDatetime", "Visit.error.endDateBeforeStartDate",
-			    "Start date should be earlier than end date");
+			errors.rejectValue("stopDatetime", "Visit.error.endDateBeforeStartDate");
 		}
 		
 		for (VisitAttributeType vat : Context.getVisitService().getAllVisitAttributeTypes()) {
