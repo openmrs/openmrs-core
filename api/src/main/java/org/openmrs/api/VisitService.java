@@ -167,6 +167,7 @@ public interface VisitService extends OpenmrsService {
 	 * @should update an existing visit in the database
 	 * @should fail if validation errors are found
 	 * @should pass if no validation errors are found
+	 * @should be able to add an attribute to a visit
 	 */
 	@Authorized( { PrivilegeConstants.ADD_VISITS, PrivilegeConstants.EDIT_VISITS })
 	public Visit saveVisit(Visit visit) throws APIException;

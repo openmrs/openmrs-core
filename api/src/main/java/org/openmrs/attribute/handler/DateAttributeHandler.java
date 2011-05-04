@@ -18,6 +18,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 
+import org.openmrs.api.context.Context;
 import org.openmrs.attribute.AttributeUtil;
 import org.openmrs.attribute.InvalidAttributeValueException;
 import org.springframework.core.Ordered;
@@ -84,7 +85,12 @@ public class DateAttributeHandler implements AttributeHandler<Date> {
 			return new SimpleDateFormat(dateFormat).parse(stringValue);
 		}
 		catch (ParseException ex) {
-			throw new InvalidAttributeValueException("Cannot convert: " + stringValue, ex);
+			try {
+				return Context.getDateFormat().parse(stringValue);
+			}
+			catch (ParseException ex2) {
+				throw new InvalidAttributeValueException("Cannot convert: " + stringValue, ex);
+			}
 		}
 	}
 	

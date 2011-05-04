@@ -310,6 +310,19 @@ $j(document).ready( function() {
 					</spring:bind>
 				</td>
 			</tr>
+            <c:if test="${ not empty visitAttributeTypes }">
+    			<tr valign="top">
+    			    <th class="visitLabel"><spring:message code="Visit.attributes" /></td>
+	               	<td>
+			            <table>
+			                <c:forEach var="attrType" items="${ visitAttributeTypes }">
+			                   <openmrs_tag:attributesForType attributeType="${ attrType }" customizable="${ visit }" formFieldNamePrefix="attribute.${ attrType.visitAttributeTypeId }"/>
+			                </c:forEach>
+			            </table>
+			        </fieldset>
+			    </c:if>
+			    </td>
+			</tr>
 			<tr>
 				<td colspan="2">
 					<table cellpadding="0" cellspacing="20" align="center">
