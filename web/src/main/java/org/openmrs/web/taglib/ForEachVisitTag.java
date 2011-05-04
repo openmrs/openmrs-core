@@ -39,7 +39,7 @@ public class ForEachVisitTag extends BodyTagSupport {
 	
 	int count = 0;
 	
-	List<Visit> matchingEncs = null;
+	List<Visit> matchingVisits = null;
 	
 	// Properties accessible through tag attributes
 	private Collection<Visit> visits;
@@ -62,14 +62,14 @@ public class ForEachVisitTag extends BodyTagSupport {
 		}
 		// First retrieve all visits matching the passed visit type id, if provided.
 		// If not provided, return all visits
-		matchingEncs = new ArrayList<Visit>();
+		matchingVisits = new ArrayList<Visit>();
 		for (Iterator<Visit> i = visits.iterator(); i.hasNext();) {
 			Visit e = i.next();
 			if (type == null || e.getVisitType().getVisitTypeId().intValue() == type.intValue()) {
-				matchingEncs.add(e);
+				matchingVisits.add(e);
 			}
 		}
-		log.debug("ForEachVisitTag found " + matchingEncs.size() + " visits matching type = " + type);
+		log.debug("ForEachVisitTag found " + matchingVisits.size() + " visits matching type = " + type);
 		
 		// Next, sort the visits
 		if (sortBy == null || sortBy.equals("")) {
@@ -77,13 +77,13 @@ public class ForEachVisitTag extends BodyTagSupport {
 		}
 		Comparator comp = new BeanComparator(sortBy, (descending ? new ReverseComparator(new ComparableComparator())
 		        : new ComparableComparator()));
-		Collections.sort(matchingEncs, comp);
+		Collections.sort(matchingVisits, comp);
 		
 		// Return appropriate number of results
-		if (matchingEncs.isEmpty()) {
+		if (matchingVisits.isEmpty()) {
 			return SKIP_BODY;
 		} else {
-			pageContext.setAttribute(var, matchingEncs.get(count++));
+			pageContext.setAttribute(var, matchingVisits.get(count++));
 			return EVAL_BODY_BUFFERED;
 		}
 	}
@@ -93,9 +93,9 @@ public class ForEachVisitTag extends BodyTagSupport {
 	 */
 	@Override
 	public int doAfterBody() throws JspException {
-		if (matchingEncs.size() > count && (num == null || count < num.intValue())) {
+		if (matchingVisits.size() > count && (num == null || count < num.intValue())) {
 			pageContext.setAttribute("count", count);
-			pageContext.setAttribute(var, matchingEncs.get(count++));
+			pageContext.setAttribute(var, matchingVisits.get(count++));
 			return EVAL_BODY_BUFFERED;
 		} else {
 			return SKIP_BODY;

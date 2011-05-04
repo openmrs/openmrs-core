@@ -170,7 +170,7 @@
 		<div id="patientVisits" style="display:none;">
 			
 			<openmrs:extensionPoint pointId="org.openmrs.patientDashboard.VisitsTabHeader" type="html" parameters="patientId=${patient.patientId}" />
-			<openmrs:portlet url="patientVisits" id="patientDashboardVisits" patientId="${patient.patientId}" parameters="num=100|showPagination=true|formEntryReturnUrl=${pageContext.request.contextPath}/patientDashboard.form"/>
+			<openmrs:portlet url="patientVisits" id="patientDashboardVisits" patientId="${patient.patientId}" />
 			
 		</div>
 	</openmrs:hasPrivilege>
