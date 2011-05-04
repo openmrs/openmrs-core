@@ -73,7 +73,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td><spring:message code="AttributeType.datatyp"/></td>
+		<td><spring:message code="AttributeType.datatype"/></td>
 		<td>
 			<spring:bind path="visitAttributeType.datatype">
 				<select name="datatype">
