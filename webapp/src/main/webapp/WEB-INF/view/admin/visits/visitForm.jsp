@@ -248,6 +248,7 @@ $j(document).ready( function() {
 				<td>
 				<spring:bind path="visitType">
 					<select name="${status.expression}">
+					   <option value=""></option>
 					<c:forEach items="${visitTypes}" var="visitType">
 						<option value="${visitType.visitTypeId}" <c:if test="${visitType.visitTypeId == status.value}">selected="selected"</c:if>>
 							${visitType.name}
