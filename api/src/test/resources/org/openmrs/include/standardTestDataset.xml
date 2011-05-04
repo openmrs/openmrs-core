@@ -286,4 +286,5 @@
   <visit visit_id="4" patient_id="6" visit_type_id="1" date_started="2005-01-01 00:00:00.0" creator="1" date_created="2005-01-01 00:00:00.0" voided="0" uuid="7d8c1980-6b78-11e0-93c3-18a905e044dc" />
   <visit visit_id="5" patient_id="6" visit_type_id="1" date_started="2005-01-01 00:00:00.0" creator="1" date_created="2005-01-01 00:00:00.0" voided="0" uuid="8cfda6ae-6b78-11e0-93c3-18a905e044dc" />
   <visit visit_id="6" patient_id="2" visit_type_id="1" date_started="2005-01-01 00:00:00.0" creator="1" date_created="2005-01-01 00:00:00.0" voided="1" voided_by="1" date_voided="2005-01-01 00:00:00.0" void_reason="no reason" uuid="e1428fea-6b78-11e0-93c3-18a905e044dc" />
+  <visit_attribute_type visit_attribute_type_id="1" name="Audit Date" datatype="date" min_occurs="0" max_occurs="1" creator="1" date_created="2005-01-01 00:00:00.0" retired="0" uuid="8770f6d6-7673-11e0-8f03-001e378eb67e" />
 </dataset>

@@ -14,6 +14,8 @@
 package org.openmrs.util;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -23,7 +25,10 @@ import junit.framework.Assert;
 import org.junit.Test;
 import org.openmrs.BaseOpenmrsObject;
 import org.openmrs.OpenmrsObject;
+import org.openmrs.Visit;
+import org.openmrs.VisitAttribute;
 import org.openmrs.test.Verifies;
+import org.springframework.util.ReflectionUtils;
 
 /**
  * Tests the {@link Reflect} class.
@@ -212,6 +217,32 @@ public class ReflectTest {
 		Reflect reflect = new Reflect(OpenmrsObject.class);
 		
 		Assert.assertTrue(reflect.isSuperClass(new OpenmrsObjectImp()));
+	}
+	
+	/**
+	 * @see Reflect#isSuperClass(Type)
+	 * @verifies return true for a generic whose bound is a subclass
+	 */
+	@Test
+	public void isSuperClass_shouldReturnTrueForAGenericWhoseBoundIsASubclass() throws Exception {
+		Reflect reflect = new Reflect(OpenmrsObject.class);
+		Field field = ReflectionUtils.findField(Visit.class, "attributes");
+		ParameterizedType setOfAttr = (ParameterizedType) field.getGenericType();
+		Type genericType = setOfAttr.getActualTypeArguments()[0];
+		Assert.assertTrue(reflect.isSuperClass(genericType));
+	}
+	
+	/**
+	 * @see Reflect#isSuperClass(Type)
+	 * @verifies return false for a generic whose bound is not a subclass
+	 */
+	@Test
+	public void isSuperClass_shouldReturnFalseForAGenericWhoseBoundIsNotASubclass() throws Exception {
+		Reflect reflect = new Reflect(Number.class);
+		Field field = ReflectionUtils.findField(Visit.class, "attributes");
+		ParameterizedType setOfAttr = (ParameterizedType) field.getGenericType();
+		Type genericType = setOfAttr.getActualTypeArguments()[0];
+		Assert.assertFalse(reflect.isSuperClass(genericType));
 	}
 	
 }

@@ -33,6 +33,7 @@ import org.openmrs.Encounter;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.Visit;
+import org.openmrs.VisitAttribute;
 import org.openmrs.VisitAttributeType;
 import org.openmrs.VisitType;
 import org.openmrs.api.context.Context;
@@ -644,5 +645,20 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		//sanity check
 		Assert.assertTrue(Context.getEncounterService().getEncountersByVisit(visit).size() > 0);
 		Context.getVisitService().purgeVisit(visit);
+	}
+	
+	/**
+	 * @see VisitService#saveVisit(Visit)
+	 * @verifies be able to add an attribute to a visit
+	 */
+	@Test
+	public void saveVisit_shouldBeAbleToAddAnAttributeToAVisit() throws Exception {
+		Visit visit = service.getVisit(1);
+		VisitAttributeType attrType = service.getVisitAttributeType(1);
+		VisitAttribute attr = new VisitAttribute();
+		attr.setAttributeType(attrType);
+		attr.setObjectValue(new Date());
+		visit.addAttribute(attr);
+		service.saveVisit(visit);
 	}
 }

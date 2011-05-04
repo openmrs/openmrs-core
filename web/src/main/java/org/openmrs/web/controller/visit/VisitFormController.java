@@ -14,6 +14,7 @@
 package org.openmrs.web.controller.visit;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -22,9 +23,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Encounter;
 import org.openmrs.Visit;
+import org.openmrs.VisitAttribute;
+import org.openmrs.VisitAttributeType;
 import org.openmrs.VisitType;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
+import org.openmrs.attribute.handler.AttributeHandler;
 import org.openmrs.validator.VisitValidator;
 import org.openmrs.web.WebConstants;
 import org.springframework.stereotype.Controller;
@@ -87,6 +91,32 @@ public class VisitFormController {
 	@RequestMapping(method = RequestMethod.POST, value = VISIT_FORM_URL)
 	public String saveVisit(WebRequest request, @ModelAttribute("visit") Visit visit, BindingResult result,
 	        SessionStatus status, ModelMap model) {
+		
+		// manually handle the attribute parameters
+		for (VisitAttributeType vat : (List<VisitAttributeType>) model.get("visitAttributeTypes")) {
+			if (vat.getMaxOccurs() == null || vat.getMaxOccurs() != 1)
+				throw new RuntimeException("For now only attributes with maxOccurs=1 are supported");
+			AttributeHandler<?> handler = Context.getAttributeService().getHandler(vat);
+			List<Object> attributeValues = new ArrayList<Object>();
+			// look for parameters starting with attribute.${ vat.id }
+			for (Iterator<String> iter = request.getParameterNames(); iter.hasNext();) {
+				String paramName = iter.next();
+				if (paramName.startsWith("attribute." + vat.getId())) {
+					String paramValue = request.getParameter(paramName);
+					if (StringUtils.hasText(paramValue)) {
+						Object realValue = handler.deserialize(paramValue);
+						//handler.validate(realValue);
+						VisitAttribute va = new VisitAttribute();
+						va.setAttributeType(vat);
+						va.setSerializedValue(paramValue);
+						visit.setAttribute(va);
+					} else {
+						for (VisitAttribute va : visit.getActiveAttributes(vat))
+							va.setVoided(true);
+					}
+				}
+			}
+		}
 		
 		new VisitValidator().validate(visit, result);
 		if (!result.hasErrors()) {
@@ -202,6 +232,11 @@ public class VisitFormController {
 	@ModelAttribute("visitTypes")
 	public List<VisitType> getVisitTypes() throws Exception {
 		return Context.getVisitService().getAllVisitTypes();
+	}
+	
+	@ModelAttribute("visitAttributeTypes")
+	public List<VisitAttributeType> getVisitAttributeTypes() throws Exception {
+		return Context.getVisitService().getAllVisitAttributeTypes();
 	}
 	
 	@ModelAttribute("visitEncounters")
