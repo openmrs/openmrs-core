@@ -297,7 +297,7 @@ public class DWREncounterService {
 	 */
 	public EncounterListItem addEncounterToVisit(Integer encounterId, Integer visitId) throws APIException {
 		if (encounterId == null)
-			throw new APIException(Context.getMessageSourceService().getMessage("Encounter.encounterIdCannotBeNull"));
+			throw new APIException(Context.getMessageSourceService().getMessage("Encounter.error.encounterIdCannotBeNull"));
 		
 		EncounterService es = Context.getEncounterService();
 		Encounter e = es.getEncounter(encounterId);
