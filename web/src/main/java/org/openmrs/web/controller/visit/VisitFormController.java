@@ -35,7 +35,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.context.request.WebRequest;
 
@@ -43,7 +42,6 @@ import org.springframework.web.context.request.WebRequest;
  * Controller class for creating, editing, deleting, restoring and purging a visit
  */
 @Controller
-@SessionAttributes( { "visit" })
 public class VisitFormController {
 	
 	private static final Log log = LogFactory.getLog(VisitFormController.class);
@@ -53,30 +51,27 @@ public class VisitFormController {
 	private static final String VISIT_FORM = "/admin/visits/visitForm";
 	
 	/**
-	 * Processes requests to display the visit form
-	 * 
-	 * @param request the {@link WebRequest} object
-	 * @param visitId the patient id of the concept map type to show on the form
-	 * @param patientId the patient id of the pateint associated to visit to show on the form
-	 * @param model the {@link ModelMap} object
+	 * Processes requests to display the form
 	 */
 	@RequestMapping(method = RequestMethod.GET, value = VISIT_FORM_URL)
-	public String showForm(WebRequest request, @RequestParam(value = "visitId", required = false) Integer visitId,
+	public String showForm() {
+		return VISIT_FORM;
+	}
+	
+	@ModelAttribute("visit")
+	public Visit getVisit(@RequestParam(value = "visitId", required = false) Integer visitId,
 	        @RequestParam(value = "patientId", required = false) Integer patientId, ModelMap model) {
-		
 		Visit visit = null;
 		if (visitId != null) {
 			visit = Context.getVisitService().getVisit(visitId);
+			model.addAttribute("visit", visit);
 		} else {
 			visit = new Visit();
 			if (patientId != null)
 				visit.setPatient(Context.getPatientService().getPatient(patientId));
 		}
 		
-		model.addAttribute("visit", visit);
-		setEncounterDetails(visit, model);
-		
-		return VISIT_FORM;
+		return visit;
 	}
 	
 	/**
@@ -99,10 +94,6 @@ public class VisitFormController {
 				Context.getVisitService().saveVisit(visit);
 				if (log.isDebugEnabled())
 					log.debug("Saved visit: " + visit.toString());
-				
-				request.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Visit.saved", WebRequest.SCOPE_SESSION);
-				status.setComplete();
-				
 				return "redirect:" + VISIT_FORM_URL + ".form?visitId=" + visit.getVisitId();
 			}
 			catch (APIException e) {
@@ -111,10 +102,6 @@ public class VisitFormController {
 			}
 		}
 		
-		//We have validation errors or had an exception, refresh the list of encounters to be added 
-		//to this visit encounters because the user could have added or removed some in the form
-		//via ajax
-		setEncounterDetails(visit, model);
 		return VISIT_FORM;
 	}
 	
@@ -141,7 +128,6 @@ public class VisitFormController {
 				log.debug("Voided visit with id: " + visit.getId());
 			request.setAttribute(WebConstants.OPENMRS_MSG_ATTR,
 			    Context.getMessageSourceService().getMessage("Visit.voided"), WebRequest.SCOPE_SESSION);
-			status.setComplete();
 			return "redirect:" + VISIT_FORM_URL + ".form?visitId=" + visit.getVisitId();
 		}
 		catch (APIException e) {
@@ -150,7 +136,6 @@ public class VisitFormController {
 			    "Visit.void.error"), WebRequest.SCOPE_SESSION);
 		}
 		
-		setEncounterDetails(visit, model);
 		return VISIT_FORM;
 	}
 	
@@ -173,7 +158,6 @@ public class VisitFormController {
 				log.debug("Unvoided visit with id: " + visit.getId());
 			request.setAttribute(WebConstants.OPENMRS_MSG_ATTR, Context.getMessageSourceService().getMessage(
 			    "Visit.unvoided"), WebRequest.SCOPE_SESSION);
-			status.setComplete();
 			return "redirect:" + VISIT_FORM_URL + ".form?visitId=" + visit.getVisitId();
 		}
 		catch (APIException e) {
@@ -182,7 +166,6 @@ public class VisitFormController {
 			    "Visit.unvoid.error"), WebRequest.SCOPE_SESSION);
 		}
 		
-		setEncounterDetails(visit, model);
 		return VISIT_FORM;
 	}
 	
@@ -199,13 +182,13 @@ public class VisitFormController {
 	public String purgeVisit(WebRequest request, @ModelAttribute(value = "visit") Visit visit, SessionStatus status,
 	        ModelMap model) {
 		try {
+			Integer patientId = visit.getPatient().getPatientId();
 			Context.getVisitService().purgeVisit(visit);
 			if (log.isDebugEnabled())
 				log.debug("Purged visit with id: " + visit.getId());
 			request.setAttribute(WebConstants.OPENMRS_MSG_ATTR,
 			    Context.getMessageSourceService().getMessage("Visit.purged"), WebRequest.SCOPE_SESSION);
-			status.setComplete();
-			return "redirect:/admin/";
+			return "redirect:/patientDashboard.form?patientId=" + patientId;
 		}
 		catch (APIException e) {
 			log.warn("Error occurred while attempting to purge visit", e);
@@ -213,34 +196,28 @@ public class VisitFormController {
 			    "Visit.purge.error"), WebRequest.SCOPE_SESSION);
 		}
 		
-		setEncounterDetails(visit, model);
 		return VISIT_FORM;
 	}
 	
 	@ModelAttribute("visitTypes")
-	public List<VisitType> getVisitTypes(WebRequest request) throws Exception {
+	public List<VisitType> getVisitTypes() throws Exception {
 		return Context.getVisitService().getAllVisitTypes();
 	}
 	
-	/**
-	 * Convenience method that adds the encounters of the patient for the specified visit to the
-	 * specified model, it also adds the visits associated to the specified visit
-	 * 
-	 * @param visit
-	 * @param model
-	 */
-	private void setEncounterDetails(Visit visit, ModelMap model) {
-		List<Encounter> patientEncounters = null;
-		List<Encounter> visitEncounters = null;
-		if (visit.getPatient() != null && visit.getPatient().getPatientId() != null)
-			patientEncounters = Context.getEncounterService().getEncountersByPatient(visit.getPatient());
+	@ModelAttribute("visitEncounters")
+	public List<Encounter> setEncounterDetails(@ModelAttribute("visit") Visit visit) {
+		List<Encounter> visitEncounters = new ArrayList<Encounter>();
 		if (visit.getVisitId() != null)
 			visitEncounters = Context.getEncounterService().getEncountersByVisit(visit);
 		
-		if (patientEncounters == null)
-			patientEncounters = new ArrayList<Encounter>();
-		if (visitEncounters == null)
-			visitEncounters = new ArrayList<Encounter>();
+		return visitEncounters;
+	}
+	
+	@ModelAttribute("encountersToAdd")
+	public List<Encounter> setEncounterDetailss(@ModelAttribute("visit") Visit visit) {
+		List<Encounter> patientEncounters = new ArrayList<Encounter>();
+		if (visit.getPatient() != null && visit.getPatient().getPatientId() != null)
+			patientEncounters = Context.getEncounterService().getEncountersByPatient(visit.getPatient());
 		
 		//remove all encounters that are already associated to visits
 		CollectionUtils.filter(patientEncounters, new Predicate() {
@@ -248,12 +225,10 @@ public class VisitFormController {
 			@Override
 			public boolean evaluate(Object object) {
 				Encounter e = (Encounter) object;
-				
 				return e.getVisit() == null;
 			}
 		});
 		
-		model.addAttribute("visitEncounters", visitEncounters);
-		model.addAttribute("encountersToAdd", patientEncounters);
+		return patientEncounters;
 	}
 }
