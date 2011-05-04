@@ -82,6 +82,25 @@
 		<div id="patientSubheaderExited" class="boxRed">
 	</c:if>
 	
+	<c:if test="${ not empty model.activeVisits }">
+	    <div class="box highlighted"> 
+		<c:forEach var="v" items="${ model.activeVisits }">
+	        <spring:message code="Visit.active.label"/>:
+	        <a href="admin/visits/visit.form?visitId=${ v.visitId }">
+	            <openmrs:format visitType="${ v.visitType }"/>
+	        </a>
+	        <c:if test="${ not empty v.location }">
+	            <spring:message code="general.atLocation"/>
+	            <openmrs:format location="${ v.location }"/>
+	        </c:if>
+	        <spring:message code="Visit.startedOnDatetime"/>
+	        <openmrs:formatDate date="${ v.startDatetime }"/>
+	        <br/>
+	    </c:forEach>
+	    </div>
+	</c:if>
+	
+	
 		<openmrs:globalProperty var="programIdsToShow" key="dashboard.header.programs_to_show" listSeparator=","/>
 		<%--
 			Clever(?) hack: because there's no JSTL function for array membership I'm going to add a comma before

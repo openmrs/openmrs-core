@@ -73,6 +73,7 @@ public class PortletController implements Controller {
 	 *          (List<Obs>) patientObs
 	 *          (List<Encounter>) patientEncounters
 	 *          (List<Visit>) patientVisits
+	 *          (List<Visit>) activeVisits
 	 *          (List<DrugOrder>) patientDrugOrders
 	 *          (List<DrugOrder>) currentDrugOrders
 	 *          (List<DrugOrder>) completedDrugOrders
@@ -191,8 +192,10 @@ public class PortletController implements Controller {
 							model.put("patientEncounters", Context.getEncounterService().getEncountersByPatient(p));
 						
 						// add visits if this user can view them
-						if (Context.hasPrivilege(PrivilegeConstants.VIEW_VISITS))
+						if (Context.hasPrivilege(PrivilegeConstants.VIEW_VISITS)) {
 							model.put("patientVisits", Context.getVisitService().getVisitsByPatient(p));
+							model.put("activeVisits", Context.getVisitService().getActiveVisitsByPatient(p));
+						}
 						
 						if (Context.hasPrivilege(PrivilegeConstants.VIEW_OBS)) {
 							List<Obs> patientObs = Context.getObsService().getObservationsByPerson(p);
