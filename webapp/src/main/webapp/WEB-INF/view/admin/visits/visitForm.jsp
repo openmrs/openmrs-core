@@ -312,17 +312,16 @@ $j(document).ready( function() {
 			</tr>
             <c:if test="${ not empty visitAttributeTypes }">
     			<tr valign="top">
-    			    <th class="visitLabel"><spring:message code="Visit.attributes" /></td>
+    			    <th class="visitLabel"><spring:message code="Visit.attributes" /></th>
 	               	<td>
 			            <table>
 			                <c:forEach var="attrType" items="${ visitAttributeTypes }">
 			                   <openmrs_tag:attributesForType attributeType="${ attrType }" customizable="${ visit }" formFieldNamePrefix="attribute.${ attrType.visitAttributeTypeId }"/>
 			                </c:forEach>
 			            </table>
-			        </fieldset>
-			    </c:if>
-			    </td>
-			</tr>
+			        </td>
+			    </tr>
+			</c:if>
 			<tr>
 				<td colspan="2">
 					<table cellpadding="0" cellspacing="20" align="center">
@@ -400,7 +399,7 @@ $j(document).ready( function() {
 				</td>
 				<td class="addEncounterInputs">
 					<input type="button" value='<spring:message code="general.done"/>' 
-						onclick='javscript:$j(".addEncounterInputs").css("visibility", "hidden")' />
+						onclick='javascript:$j(".addEncounterInputs").css("visibility", "hidden")' />
 				</td>
 			</tr>
 		</table>
