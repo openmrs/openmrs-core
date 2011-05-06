@@ -140,8 +140,8 @@ function confirmAction(isAddition, encounterId){
 							$j(this).dialog('close');
 						},
 				"<spring:message code="general.cancel"/>": function() {
-						//if(isAddition)
-							//document.getElementById("encounterSelect").selectedIndex = 0;
+						if(isAddition)
+							document.getElementById("encounterSelect").selectedIndex = 0;
 					
 						$j(this).dialog('close');
 					}
