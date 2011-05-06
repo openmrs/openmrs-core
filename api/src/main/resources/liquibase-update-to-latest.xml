@@ -4525,6 +4525,243 @@
             baseTableName="visit_attribute" baseColumnNames="voided_by" referencedTableName="users"
             referencedColumnNames="user_id" />
     </changeSet>
+
+    <changeSet id="20110301-1030a" author="wyclif">
+		<preConditions onFail="MARK_RAN">
+			<and>
+				<tableExists tableName="concept_source" />
+				<not><tableExists tableName="concept_reference_source" /></not>
+			</and>
+		</preConditions>
+		<comment>Renaming the concept_source table to concept_reference_source</comment>
+		<renameTable oldTableName="concept_source" newTableName="concept_reference_source"/>
+	</changeSet>
 	
+	<changeSet id="20110301-1030b" author="wyclif">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="concept_reference_source" columnName="concept_source_id" />			
+		</preConditions>
+		<dropForeignKeyConstraint constraintName="map_source" baseTableName="concept_map"/>
+		<comment>Renaming the concept_reference_source.concept_source_id column to concept_reference_source.concept_reference_source_id</comment>
+		<renameColumn tableName="concept_reference_source" oldColumnName="concept_source_id" newColumnName="concept_reference_source_id" columnDataType="int" />
+	</changeSet>
+	
+	<changeSet id="20110301-1030c" author="wyclif">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="concept_reference_term" /></not>
+		</preConditions>
+		<comment>Adding concept_reference_term table</comment>
+		<createTable tableName="concept_reference_term">
+			<column name="concept_reference_term_id" type="int" autoIncrement="true" >
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column name="concept_reference_source_id" type="int"><constraints nullable="false"/></column>			
+			<column name="name" type="varchar(255)"><constraints nullable="false"/></column>
+			<column name="code" type="varchar(255)"><constraints nullable="false"/></column>
+			<column name="version" type="varchar(255)" />
+			<column name="description" type="varchar(255)" />
+			<column name="creator" type="int"><constraints nullable="false"/></column>
+			<column name="date_created" type="DATETIME"><constraints nullable="false"/></column>
+			<column name="date_changed" type="DATETIME" />
+			<column name="changed_by" type="int"/>
+			<column name="retired" type="smallint" defaultValueNumeric="0"><constraints nullable="false"/></column>
+			<column name="retired_by" type="int" />
+			<column name="date_retired" type="DATETIME" />
+			<column name="retire_reason" type="varchar(255)" />
+			<column name="uuid" type="char(38)"><constraints nullable="false" unique="true" /></column>
+		</createTable>
+		<addForeignKeyConstraint constraintName="mapped_user_creator" 
+			referencedTableName="users" referencedColumnNames="user_id" 
+			baseTableName="concept_reference_term" baseColumnNames="creator" />
+		<addForeignKeyConstraint constraintName="mapped_user_changed" 
+			referencedTableName="users" referencedColumnNames="user_id" 
+			baseTableName="concept_reference_term" baseColumnNames="changed_by" />
+		<addForeignKeyConstraint constraintName="mapped_user_retired" 
+			referencedTableName="users" referencedColumnNames="user_id" 
+			baseTableName="concept_reference_term" baseColumnNames="retired_by" />
+		<addForeignKeyConstraint constraintName="mapped_concept_source" 
+			referencedTableName="concept_reference_source" referencedColumnNames="concept_reference_source_id" 
+			baseTableName="concept_reference_term" baseColumnNames="concept_reference_source_id" />
+	</changeSet>
+	
+	<changeSet id="20110301-1030d" author="wyclif">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="concept_reference_map" /></not>
+		</preConditions>
+		<comment>Adding concept_reference_map table</comment>
+		<createTable tableName="concept_reference_map">
+			<column name="concept_reference_map_id" type="int" autoIncrement="true" >
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column name="concept_id" type="int"><constraints nullable="false"/></column>
+			<column name="concept_reference_term_id" type="int"><constraints nullable="false"/></column>
+			<column name="concept_map_type_id" type="int" defaultValue="1"><constraints nullable="false"/></column>
+			<column name="creator" type="int"><constraints nullable="false"/></column>
+			<column name="date_created" type="DATETIME"><constraints nullable="false"/></column>
+			<column name="changed_by" type="int"/>
+			<column name="date_changed" type="DATETIME" />
+			<column name="uuid" type="char(38)"><constraints nullable="false" unique="true" /></column>
+		</createTable>
+		<addForeignKeyConstraint constraintName="mapped_concept_reference_term" 
+			referencedTableName="concept_reference_term" referencedColumnNames="concept_reference_term_id" 
+			baseTableName="concept_reference_map" baseColumnNames="concept_reference_term_id" />
+		<addForeignKeyConstraint constraintName="mapped_concept" 
+			referencedTableName="concept" referencedColumnNames="concept_id" 
+			baseTableName="concept_reference_map" baseColumnNames="concept_id" />
+		<addForeignKeyConstraint constraintName="mapped_concept_map_type" 
+			referencedTableName="concept_map_type" referencedColumnNames="concept_map_type_id" 
+			baseTableName="concept_reference_map" baseColumnNames="concept_map_type_id" />
+		<addForeignKeyConstraint constraintName="mapped_user_creator" 
+			referencedTableName="users" referencedColumnNames="user_id" 
+			baseTableName="concept_reference_map" baseColumnNames="creator" />
+		<addForeignKeyConstraint constraintName="mapped_user_changed" 
+			referencedTableName="users" referencedColumnNames="user_id" 
+			baseTableName="concept_reference_map" baseColumnNames="changed_by" />
+	</changeSet>
+	
+	<changeSet id="20110301-1030e" author="wyclif">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="concept_map_type" /></not>
+		</preConditions>
+		<comment>Adding concept_map_type table</comment>
+		<createTable tableName="concept_map_type">
+			<column name="concept_map_type_id" type="int" autoIncrement="true" >
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column name="name" type="varchar(255)">
+				<constraints nullable="false" unique="true"/>
+			</column>
+			<column name="description" type="varchar(255)" />
+			<column name="creator" type="int"><constraints nullable="false"/></column>
+			<column name="date_created" type="DATETIME"><constraints nullable="false"/></column>
+			<column name="changed_by" type="int"/>
+			<column name="date_changed" type="DATETIME" />
+			<column name="isHidden" type="smallint" defaultValueNumeric="0"><constraints nullable="false"/></column>
+			<column name="retired" type="smallint" defaultValueNumeric="0"><constraints nullable="false"/></column>
+			<column name="retired_by" type="int" />
+			<column name="date_retired" type="DATETIME" />
+			<column name="retire_reason" type="varchar(255)" />
+			<column name="uuid" type="char(38)"><constraints nullable="false" unique="true" /></column>
+		</createTable>
+		<addForeignKeyConstraint constraintName="mapped_user_creator" 
+			referencedTableName="users" referencedColumnNames="user_id" 
+			baseTableName="concept_map_type" baseColumnNames="creator" />
+		<addForeignKeyConstraint constraintName="mapped_user_changed" 
+			referencedTableName="users" referencedColumnNames="user_id" 
+			baseTableName="concept_map_type" baseColumnNames="changed_by" />
+		<addForeignKeyConstraint constraintName="mapped_user_retired" 
+			referencedTableName="users" referencedColumnNames="user_id" 
+			baseTableName="concept_map_type" baseColumnNames="retired_by" />
+	</changeSet>
+	
+	<changeSet id="20110301-1030f" author="wyclif">
+		<preConditions onFail="MARK_RAN">
+			<not><tableExists tableName="concept_reference_term_map" /></not>
+		</preConditions>
+		<comment>Adding concept_reference_term_map table</comment>
+		<createTable tableName="concept_reference_term_map">
+			<column name="concept_reference_term_map_id" type="int" autoIncrement="true" >
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column name="term_a_id" type="int"><constraints nullable="false" /></column>
+			<column name="term_b_id" type="int"><constraints nullable="false" /></column>
+			<column name="a_is_to_b_id" type="int"><constraints nullable="false" /></column>
+			<column name="creator" type="int"><constraints nullable="false"/></column>
+			<column name="date_created" type="DATETIME"><constraints nullable="false"/></column>
+			<column name="changed_by" type="int"/>
+			<column name="date_changed" type="DATETIME" />
+			<column name="uuid" type="char(38)"><constraints nullable="false" unique="true" /></column>
+		</createTable>
+		<addForeignKeyConstraint constraintName="mapped_term_a" 
+			referencedTableName="concept_reference_term" referencedColumnNames="concept_reference_term_id" 
+			baseTableName="concept_reference_term_map" baseColumnNames="term_a_id" />
+		<addForeignKeyConstraint constraintName="mapped_term_b" 
+			referencedTableName="concept_reference_term" referencedColumnNames="concept_reference_term_id" 
+			baseTableName="concept_reference_term_map" baseColumnNames="term_b_id" />
+		<addForeignKeyConstraint constraintName="mapped_concept_map_type" 
+			referencedTableName="concept_map_type" referencedColumnNames="concept_map_type_id" 
+			baseTableName="concept_reference_term_map" baseColumnNames="a_is_to_b_id" />
+		<addForeignKeyConstraint constraintName="mapped_user_creator" 
+			referencedTableName="users" referencedColumnNames="user_id" 
+			baseTableName="concept_reference_term_map" baseColumnNames="creator" />
+		<addForeignKeyConstraint constraintName="mapped_user_changed" 
+			referencedTableName="users" referencedColumnNames="user_id" 
+			baseTableName="concept_reference_term_map" baseColumnNames="changed_by" />
+	</changeSet>
+		
+	<changeSet id="20110301-1030g" author="wyclif">
+		<preConditions onFail="MARK_RAN">
+			<and>
+				<not><sqlCheck expectedResult="0">SELECT count(*) FROM concept_map</sqlCheck></not>
+				<dbms type="mysql" />
+			</and>
+		</preConditions>
+		<comment>Creating concept reference terms from existing rows in the concept_map table(For MySQL)</comment>
+		<sql>
+			INSERT INTO concept_reference_term (concept_reference_term_id, concept_reference_source_id, name, code, description, creator, date_created, uuid) 
+			SELECT cm.concept_map_id, cm.source, cm.source_code, cm.source_code, cm.comment, cm.creator, cm.date_created, CONCAT(crs.hl7_code, "-",cm.source_code) 
+			FROM concept_map cm, concept_reference_source crs
+			WHERE cm.source = crs.concept_reference_source_id
+		</sql>
+	</changeSet>
+
+	<changeSet id="20110301-1030h" author="wyclif">
+		<preConditions onFail="MARK_RAN">
+			<and>
+				<not><sqlCheck expectedResult="0">SELECT count(*) FROM concept_map</sqlCheck></not>
+				<dbms type="mysql" />
+			</and>
+		</preConditions>
+		<comment>Creating concept reference maps from existing rows in the concept_map table(For MySQL)</comment>
+		<sql>
+			INSERT INTO concept_reference_map (concept_reference_map_id, concept_id, concept_reference_term_id, creator, date_created, uuid)
+			SELECT concept_map_id, concept_id, concept_map_id, creator, date_created, uuid 
+			FROM concept_map
+		</sql>
+	</changeSet>
+	
+	<changeSet id="20110301-1030i" author="wyclif">
+		<preConditions onFail="MARK_RAN">
+			<and>
+				<not><sqlCheck expectedResult="0">SELECT count(*) FROM concept_map</sqlCheck></not>
+				<not><dbms type="mysql" /></not>				
+			</and>
+		</preConditions>
+		<comment>Creating concept reference terms and maps from existing rows in the concept_map table(For all databases except MySQL)</comment>
+		<customChange class="org.openmrs.util.databasechange.ConceptMappingsChangeSet"/>
+	</changeSet>
+	
+	<changeSet id="20110301-1030j" author="wyclif">
+		<preConditions onFail="MARK_RAN">
+			<tableExists tableName="concept_map" />
+		</preConditions>
+		<comment>Dropping concept_map table</comment>
+		<dropTable tableName="concept_map" />
+	</changeSet>
+	
+	<changeSet id="20110301-1030k" author="wyclif">
+		<preConditions onFail="MARK_RAN">
+			<tableExists tableName="concept_map_type" />
+		</preConditions>
+		<comment>Inserting core concept map types</comment>
+		<customChange class="org.openmrs.util.databasechange.AddConceptMapTypesChangeset">
+			<param name="visibleConceptMapTypes">
+				SAME-AS, NARROWER-THAN, BROADER-THAN, Associated finding, Associated morphology, Associated procedure, 
+				Associated with, Causative agent, Finding site, Has specimen, Laterality, Severity
+			</param>
+			<param name="hiddenConceptMapTypes">
+				Access, After, Clinical course, Component, Direct device, Direct morphology, Direct substance, Due to, 
+				Episodicity, Finding context, Finding informer, Finding method, Has active ingredient, 
+				Has definitional manifestation,	Has dose form, Has focus, Has intent, Has interpretation, Indirect device, 
+				Indirect morphology, Interprets, Measurement method, Method, Occurrence, Part of, Pathological process, 
+				Priority, Procedure context, Procedure device, Procedure morphology, Procedure site, Procedure site - Direct, 
+				Procedure site - Indirect, Property, Recipient category, Revision status, Route of administration, Scale type, 
+				Specimen procedure, Specimen source identity, Specimen source morphology, Specimen source topography, 
+				Specimen substance, Subject of information, Subject relationship context, Surgical approach, Temporal context, 
+				Time aspect, Using access device, Using device, Using energy, Using substance, IS A, MAY BE A, MOVED FROM,
+				MOVED TO, REPLACED BY, WAS A
+			</param>
+		</customChange>
+	</changeSet>
 </databaseChangeLog>
 
