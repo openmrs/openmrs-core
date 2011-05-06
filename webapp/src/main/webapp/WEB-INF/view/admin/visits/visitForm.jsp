@@ -116,6 +116,10 @@ function addEncounterOption(encounterObj){
 }
 
 function confirmAction(isAddition, encounterId){
+	//If the user selected the first empty value in the drop down, ignore
+	if(isAddition && document.getElementById("encounterSelect").selectedIndex == 0)
+		return;
+	
 	var dialogElement = document.getElementById(isAddition ? "add-enc-confirmation" : "remove-enc-confirmation");
 	$j(dialogElement).html("<br/>"+(isAddition ? addConfirmationMsg: removeConfirmationMsg));
 	$j(dialogElement).addClass("visit-dialog-content");
@@ -136,8 +140,8 @@ function confirmAction(isAddition, encounterId){
 							$j(this).dialog('close');
 						},
 				"<spring:message code="general.cancel"/>": function() {
-						if(isAddition)
-							document.getElementById("encounterSelect").selectedIndex = 0;
+						//if(isAddition)
+							//document.getElementById("encounterSelect").selectedIndex = 0;
 					
 						$j(this).dialog('close');
 					}
