@@ -193,12 +193,15 @@ public class PatientFormController extends PersonFormController {
 				String[] counties = ServletRequestUtils.getStringParameters(request, "countyDistrict");
 				String[] cells = ServletRequestUtils.getStringParameters(request, "neighborhoodCell");
 				String[] addPrefStatus = ServletRequestUtils.getStringParameters(request, "preferred");
+				String[] regions = ServletRequestUtils.getStringParameters(request, "region");
+				String[] subregions = ServletRequestUtils.getStringParameters(request, "subregion");
+				String[] townshipDivisions = ServletRequestUtils.getStringParameters(request, "townshipDivision");
 				String[] startDates = ServletRequestUtils.getStringParameters(request, "startDate");
 				String[] endDates = ServletRequestUtils.getStringParameters(request, "endDate");
 				
 				if (add1s != null || add2s != null || cities != null || states != null || countries != null || lats != null
-				        || longs != null || pCodes != null || counties != null || cells != null || startDates != null
-				        || endDates != null) {
+				        || longs != null || pCodes != null || counties != null || cells != null || regions != null
+				        || subregions != null || townshipDivisions != null || startDates != null || endDates != null) {
 					int maxAddrs = 0;
 					
 					if (add1s != null)
@@ -231,6 +234,15 @@ public class PatientFormController extends PersonFormController {
 					if (cells != null)
 						if (cells.length > maxAddrs)
 							maxAddrs = cells.length;
+					if (regions != null)
+						if (regions.length > maxAddrs)
+							maxAddrs = regions.length;
+					if (subregions != null)
+						if (subregions.length > maxAddrs)
+							maxAddrs = subregions.length;
+					if (townshipDivisions != null)
+						if (townshipDivisions.length > maxAddrs)
+							maxAddrs = townshipDivisions.length;
 					if (startDates != null)
 						if (startDates.length > maxAddrs)
 							maxAddrs = startDates.length;
@@ -241,11 +253,6 @@ public class PatientFormController extends PersonFormController {
 					log.debug("There appears to be " + maxAddrs + " addresses that need to be saved");
 					
 					for (int i = 0; i < maxAddrs; i++) {
-						/*
-													if ( add1s[i] != null || add2s[i] != null || cities[i] != null || states[i] != null
-															|| countries[i] != null || lats[i] != null || longs[i] != null
-															|| pCodes[i] != null || counties[i] != null || cells[i] != null ) {
-						*/
 						PersonAddress pa = new PersonAddress();
 						if (add1s.length >= i + 1)
 							pa.setAddress1(add1s[i]);
@@ -269,6 +276,12 @@ public class PatientFormController extends PersonFormController {
 							pa.setNeighborhoodCell(cells[i]);
 						if (addPrefStatus != null && addPrefStatus.length > i)
 							pa.setPreferred(new Boolean(addPrefStatus[i]));
+						if (regions.length >= i + 1)
+							pa.setRegion(cells[i]);
+						if (subregions.length >= i + 1)
+							pa.setSubregion(subregions[i]);
+						if (townshipDivisions.length >= i + 1)
+							pa.setTownshipDivision(townshipDivisions[i]);
 						if (startDates.length >= i + 1 && StringUtils.isNotBlank(startDates[i]))
 							pa.setStartDate(Context.getDateFormat().parse(startDates[i]));
 						if (endDates.length >= i + 1 && StringUtils.isNotBlank(endDates[i]))
