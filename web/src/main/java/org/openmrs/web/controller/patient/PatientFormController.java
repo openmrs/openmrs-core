@@ -277,7 +277,7 @@ public class PatientFormController extends PersonFormController {
 						if (addPrefStatus != null && addPrefStatus.length > i)
 							pa.setPreferred(new Boolean(addPrefStatus[i]));
 						if (regions.length >= i + 1)
-							pa.setRegion(cells[i]);
+							pa.setRegion(regions[i]);
 						if (subregions.length >= i + 1)
 							pa.setSubregion(subregions[i]);
 						if (townshipDivisions.length >= i + 1)
