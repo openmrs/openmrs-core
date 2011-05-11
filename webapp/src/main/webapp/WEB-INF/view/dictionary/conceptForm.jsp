@@ -147,7 +147,12 @@
 	<div class="retiredMessage">
 	<div><spring:message code="Concept.retiredMessage"/></div>
     <div>  <c:if test="${command.concept.retiredBy.personName != null}">  <spring:message code="general.byPerson"/> ${command.concept.retiredBy.personName} </c:if> <c:if test="${command.concept.dateRetired != null}"> <spring:message code="general.onDate"/>  <openmrs:formatDate date="${command.concept.dateRetired}" type="long" /> </c:if> <c:if test="${command.concept.retireReason!=''}"> - ${command.concept.retireReason} </c:if> </div>
-	<div><form action="" method="post" ><input type="submit" name="action" value="<spring:message code="general.unretire"/>" /></form></div> 
+	<openmrs:hasPrivilege privilege="Manage Concepts">
+		<div>
+			<form action="" method="post" ><input type="submit" name="action" value="<spring:message code="general.unretire"/>" />
+			</form>
+		</div> 
+	</openmrs:hasPrivilege>
 	</div>
 </c:if>
 
@@ -730,12 +735,11 @@
 <br/>
 <br/>
 
-<c:if test="${command.concept.conceptId!=null && command.concept.retired==false }">
+<openmrs:hasPrivilege privilege="Manage Concepts">
+	<c:if test="${command.concept.conceptId!=null && command.concept.retired==false }">
 	<form action="" method="post">
 		<fieldset>
 			<h4><spring:message code="general.retire"/> <spring:message code="Concept"/></h4>
-					
-			
 			
 			<b><spring:message code="general.reason"/></b>
 			<input type="text" value="" size="40" name="retiredReason" />
@@ -744,7 +748,9 @@
 			<input type="submit" value='<spring:message code="general.retire"/>' name="action"/>
 		</fieldset>
 	</form>
-</c:if>
+	</c:if>
+</openmrs:hasPrivilege>
+
 
 <openmrs:extensionPoint pointId="org.openmrs.dictionary.conceptFormFooter" type="html" />
 
