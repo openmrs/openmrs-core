@@ -35,7 +35,7 @@
 				<openmrs:format conceptId="${conceptId}"/>
 				<c:choose>
 					<c:when test="${thisConcept.datatype.hl7Abbreviation == 'DT'}">		
-				 		<input type="text" size="10" value="" onClick="showCalendar(this)" id="value_${conceptId}" />
+				 		<input type="text" size="10" value="" onfocus="showCalendar(this)" id="value_${conceptId}" />
 					</c:when>
 					<c:when test="${thisConcept.datatype.hl7Abbreviation == 'CWE'}">
 						<openmrs:fieldGen type="org.openmrs.Concept" formFieldName="value_${conceptId}" val="" parameters="noBind=true|showAnswers=${conceptId}" />

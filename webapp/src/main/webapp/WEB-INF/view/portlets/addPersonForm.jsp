@@ -33,7 +33,7 @@
 					<tr>
 						<td><spring:message code="Person.birthdate"/><br/><i style="font-weight: normal; font-size: 0.8em;">(<spring:message code="general.format"/>: <openmrs:datePattern />)</i></td>
 						<td valign="top">
-							<input type="text" name="addBirthdate" id="birthdate" size="11" value="" onClick="showCalendar(this,60)" onChange="clearError('birthdate')" />
+							<input type="text" name="addBirthdate" id="birthdate" size="11" value="" onfocus="showCalendar(this,60)" onChange="clearError('birthdate')" />
 							<spring:message code="Person.age.or"/>
 							<input type="text" name="addAge" id="age" size="5" value="" onKeyUp="clearError('birthdate')" />
 							<span class="error" id="birthdateError"><spring:message code="Person.birthdate.required"/></span>

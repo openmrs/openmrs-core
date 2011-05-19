@@ -161,8 +161,8 @@ public class VisitFormController {
 		}
 		catch (APIException e) {
 			log.warn("Error occurred while attempting to void visit", e);
-			request.setAttribute(WebConstants.OPENMRS_ERROR_ATTR,
-			    Context.getMessageSourceService().getMessage("Visit.void.error"), WebRequest.SCOPE_SESSION);
+			request.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, Context.getMessageSourceService().getMessage(
+			    "Visit.void.error"), WebRequest.SCOPE_SESSION);
 		}
 		
 		return VISIT_FORM;
@@ -185,14 +185,14 @@ public class VisitFormController {
 			Context.getVisitService().unvoidVisit(visit);
 			if (log.isDebugEnabled())
 				log.debug("Unvoided visit with id: " + visit.getId());
-			request.setAttribute(WebConstants.OPENMRS_MSG_ATTR,
-			    Context.getMessageSourceService().getMessage("Visit.unvoided"), WebRequest.SCOPE_SESSION);
+			request.setAttribute(WebConstants.OPENMRS_MSG_ATTR, Context.getMessageSourceService().getMessage(
+			    "Visit.unvoided"), WebRequest.SCOPE_SESSION);
 			return "redirect:" + VISIT_FORM_URL + ".form?visitId=" + visit.getVisitId();
 		}
 		catch (APIException e) {
 			log.warn("Error occurred while attempting to unvoid visit", e);
-			request.setAttribute(WebConstants.OPENMRS_ERROR_ATTR,
-			    Context.getMessageSourceService().getMessage("Visit.unvoid.error"), WebRequest.SCOPE_SESSION);
+			request.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, Context.getMessageSourceService().getMessage(
+			    "Visit.unvoid.error"), WebRequest.SCOPE_SESSION);
 		}
 		
 		return VISIT_FORM;
@@ -221,8 +221,8 @@ public class VisitFormController {
 		}
 		catch (APIException e) {
 			log.warn("Error occurred while attempting to purge visit", e);
-			request.setAttribute(WebConstants.OPENMRS_ERROR_ATTR,
-			    Context.getMessageSourceService().getMessage("Visit.purge.error"), WebRequest.SCOPE_SESSION);
+			request.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, Context.getMessageSourceService().getMessage(
+			    "Visit.purge.error"), WebRequest.SCOPE_SESSION);
 		}
 		
 		return VISIT_FORM;

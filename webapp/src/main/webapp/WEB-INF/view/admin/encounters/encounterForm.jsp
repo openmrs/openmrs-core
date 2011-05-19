@@ -167,7 +167,7 @@
 			<td>
 				<spring:bind path="encounter.encounterDatetime">			
 					<input type="text" name="${status.expression}" size="10" 
-						   value="${status.value}" onClick="showCalendar(this)" />
+						   value="${status.value}" onfocus="showCalendar(this)" />
 				   (<spring:message code="general.format"/>: <openmrs:datePattern />)
 					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
 				</spring:bind>
