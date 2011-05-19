@@ -58,11 +58,11 @@
 		</tr>
 		<tr id="startDate">
 			<td><spring:message code="QuickReport.startDate"/></td>
-			<td><input type="text" name="startDate" onClick="showCalendar(this)" /></td>
+			<td><input type="text" name="startDate" onFocus="showCalendar(this)" /></td>
 		</tr>
 		<tr id="endDate">
 			<td><spring:message code="QuickReport.endDate"/></td>
-			<td><input type="text" name="endDate" onClick="showCalendar(this)" /></td>
+			<td><input type="text" name="endDate" onFocus="showCalendar(this)" /></td>
 		</tr>
 		<tr id="location">
 			<td><spring:message code="QuickReport.location"/></td>

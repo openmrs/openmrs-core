@@ -278,7 +278,7 @@
 		<td>
 			<spring:bind path="obsDatetime">			
 				<input type="text" name="${status.expression}" size="10" 
-					   value="${status.value}" onClick="showCalendar(this)" id="${status.expression}" />
+					   value="${status.value}" onfocus="showCalendar(this)" id="${status.expression}" />
 				(<spring:message code="general.format"/>: <openmrs:datePattern />)
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
 			</spring:bind>
@@ -347,7 +347,7 @@
 		<td>
 			<spring:bind path="valueDatetime">			
 				<input type="text" name="${status.expression}" size="10" 
-					   value="${status.value}" onClick="showCalendar(this)" />
+					   value="${status.value}" onfocus="showCalendar(this)" />
 				  (<spring:message code="general.format"/>: <openmrs:datePattern />)
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
 			</spring:bind>

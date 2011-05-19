@@ -54,7 +54,7 @@
 					name="birthdate" size="10" id="birthdate"
 					value="${status.value}"
 					onChange="updateAge(); updateEstimated(this);"
-					onClick="showCalendar(this,60)" />
+					onfocus="showCalendar(this,60)" />
 			<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if> 
 		</spring:bind>
 		
@@ -150,7 +150,7 @@
 	<td style="white-space: nowrap">
 		<spring:bind path="deathDate">
 			<input type="text" name="deathDate" size="10" 
-				   value="${status.value}" onClick="showCalendar(this)" 
+				   value="${status.value}" onfocus="showCalendar(this)"
 				   id="deathDate" />
 			<i style="font-weight: normal; font-size: 0.8em;">(<spring:message code="general.format"/>: <openmrs:datePattern />)</i>
 			<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>

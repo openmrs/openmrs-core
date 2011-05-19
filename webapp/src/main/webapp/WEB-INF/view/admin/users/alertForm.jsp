@@ -226,7 +226,7 @@
 		<td valign="top">
 			<spring:bind path="alert.dateToExpire">
 				<input type="text" name="${status.expression}" size="10" 
-					   value="${status.value}" onClick="showCalendar(this)" />
+					   value="${status.value}" onfocus="showCalendar(this)"/>
 			</spring:bind>
 		</td>
 	</tr>

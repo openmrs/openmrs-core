@@ -220,11 +220,11 @@
 		</tr>
 		<tr>
 			<td><spring:message code="Program.dateEnrolled"/>:</td>
-			<td><input type="text" id="enrollmentDateElement" size="10" onClick="showCalendar(this)" /></td>
+			<td><input type="text" id="enrollmentDateElement" size="10" onfocus="showCalendar(this)" /></td>
 		</tr>
 		<tr>
 			<td><spring:message code="Program.dateCompleted"/>:</td>
-			<td><input type="text" id="completionDateElement" size="10" onClick="showCalendar(this)" /></td>
+			<td><input type="text" id="completionDateElement" size="10" onfocus="showCalendar(this)" /></td>
 		</tr>
 		<tr>
 			<td><spring:message code="general.createdBy" />:</td><td><span id="createdByElement"></span>&nbsp;<spring:message code="general.onDate" />&nbsp;<span id="dateCreatedElement"></span></td>
@@ -268,7 +268,7 @@
 						Change to 
 							<select id="changeToState"><option value=""><spring:message code="general.loading"/></option></select>
 						on 
-							<input type="text" id="changeStateOnDate" size="10" onClick="showCalendar(this)" />
+							<input type="text" id="changeStateOnDate" size="10" onfocus="showCalendar(this)" />
 			
 						<input type="button" value="<spring:message code="general.change"/>" onClick="handleChangeWorkflowState()" />
 						<input type="button" value="<spring:message code="general.close"/>" onClick="currentWorkflowBeingEdited = null; hideLayer('editWorkflowPopup')" />
