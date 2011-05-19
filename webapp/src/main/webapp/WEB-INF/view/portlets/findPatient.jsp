@@ -68,13 +68,13 @@
 				}
 
 				function findObjects(text) {
-					if (text.length > 2) {
+					if (text.length > 0) {
 						savedText = text;
 						DWRPatientService.findPatients(text, includeRetired, preFillTable);
 					}
 					else {
 						var msg = new Array();
-						msg.push("Invalid number of search characters");
+						msg.push(<spring:message code="error.patientSearchNoChars" />);
 						fillTable(msg, [getNumber, getString]);
 					}
 					patientListing.style.display = "";
