@@ -152,7 +152,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 	$j.widget("ui.openmrsSearch", {
 		plugins: {},
 		options: {
-			minLength: 3,
+			minLength: omsgs.minSearchCharactersGP,
 			searchLabel: ' ',
 			includeVoidedLabel: omsgs.includeVoided,
 			showIncludeVoided: false,
@@ -204,7 +204,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 		    
 		    //when the user checks/unchecks the includeVoided checkbox, trigger a search
 		    checkBox.click(function() {
-		    	if($j.trim(input.val()) != '' && $j.trim(input.val()).length >= o.minLength)
+		    	if($j.trim(input.val()) != '')
 		    		self._doSearch(input.val());
 		    	else{
 		    		if(spinnerObj.css("visibility") == 'visible')
@@ -255,53 +255,34 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
     			if(!inSerialMode && ajaxTimer)
     				window.clearInterval(ajaxTimer);
     			
-	        	if(text.length >= o.minLength) {
-	        		//if there is any delay in progress, cancel it
-	    			if(self._searchDelayTimer != null)
-	    				window.clearTimeout(self._searchDelayTimer);
-	    				    			
-	    			//wait for a couple of milliseconds, if the user isn't typing anymore chars before triggering search
-	    			//this minimizes the number of un-necessary calls made to the server for first typists
-	    			self._searchDelayTimer = window.setTimeout(function(){
-	    				if($j('#pageInfo').css("visibility") == 'visible')
-							$j('#pageInfo').css("visibility", "hidden");
-							
-		    			if($j("#minCharError").css("visibility") == 'visible')
-		    				$j("#minCharError").css("visibility", "hidden");
-
-						//Once the very first search is triggered, we need to clear the initial data 
-	    				//if any was added because it is no longer relevant until the page is reloaded
-	    				if(self.options.initialData)
-	    					self.options.initialData = null;
-	    					
-	    				self._doSearch(text);
-	    			}, SEARCH_DELAY);	
-	    			
-	    		}
-	    		else {
-	    			if(spinnerObj.css("visibility") == 'visible'){
-	    				spinnerObj.css("visibility", "hidden");
-	    			}
-	    			if($j('#pageInfo').css("visibility") == 'visible')
+    			
+    			var searchDelay = SEARCH_DELAY;
+    			if(text.length < o.minLength) {
+        			// force a longer delay since we are going to search on a shorter string
+    				searchDelay = 3000;
+    			}
+    			
+        		//if there is any delay in progress, cancel it
+    			if(self._searchDelayTimer != null)
+    				window.clearTimeout(self._searchDelayTimer);
+    				    			
+    			//wait for a couple of milliseconds, if the user isn't typing anymore chars before triggering search
+    			//this minimizes the number of un-necessary calls made to the server for first typists
+    			self._searchDelayTimer = window.setTimeout(function(){
+    				if($j('#pageInfo').css("visibility") == 'visible')
 						$j('#pageInfo').css("visibility", "hidden");
-	    			loadingMsgObj.html(" ");
+						
+	    			if($j("#minCharError").css("visibility") == 'visible')
+	    				$j("#minCharError").css("visibility", "hidden");
+
+					//Once the very first search is triggered, we need to clear the initial data 
+    				//if any was added because it is no longer relevant until the page is reloaded
+    				if(self.options.initialData)
+    					self.options.initialData = null;
+    					
+    				self._doSearch(text);
+    			}, searchDelay);
 	    			
-	    			//If we have initial data, keep showing the items.
-	    			//This is the case only until the first search is triggered after page loading
-	    			if(self.options.initialData == null){
-	    				self._table.fnClearTable();
-	    				$j(".openmrsSearchDiv").hide();
-	    			}
-	    			
-	    			//wait for a n milliseconds, if the user isn't typing anymore chars, show the error msg
-	    			this._textInputTimer = window.setTimeout(function(){
-	    				if($j.trim(input.val()).length > 0 && $j.trim(input.val()).length < o.minLength)
-	    					$j("#minCharError").css("visibility", "visible");
-	    				else if($j.trim(input.val()).length == 0 && $j("#minCharError").css("visibility") == 'visible')
-	    					$j("#minCharError").css("visibility", "hidden");
-	    			}, ERROR_MSG_DELAY);
-	    			
-	    		}
 	    		return true;
 		    });
 		    
@@ -489,7 +470,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 				//than the minimum characters, this can arise when user presses backspace relatively fast
 				//yet there were some intermediate calls that might have returned results
 				var currInput = $j.trim($j("#inputNode").val());
-				if(currInput == '' || currInput.length < self.options.minLength){
+				if(currInput == ''){
 					if($j('#pageInfo').css("visibility") == 'visible')
 						$j('#pageInfo').css("visibility", "hidden");
 					$j(".openmrsSearchDiv").hide();
@@ -781,7 +762,7 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 				//Don't display results from delayed ajax calls when the input box is blank or has less 
 				//than the minimum characters
 				var currInput = $j.trim($j("#inputNode").val());
-				if(currInput == '' || currInput.length < self.options.minLength){
+				if(currInput == ''){
 					$j(notification).html(" ");
 					if($j('#pageInfo').css("visibility") == 'visible')
 						$j('#pageInfo').css("visibility", "hidden");

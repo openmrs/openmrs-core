@@ -1392,7 +1392,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	@Override
 	public Integer getCountOfPatients(String query) {
 		int count = 0;
-		if (StringUtils.isBlank(query) || query.length() < getMinSearchCharacters())
+		if (StringUtils.isBlank(query))
 			return count;
 		List<PatientIdentifierType> emptyList = new Vector<PatientIdentifierType>();
 		// if there is a number in the query string
@@ -1431,7 +1431,7 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 	@Override
 	public List<Patient> getPatients(String query, Integer start, Integer length) throws APIException {
 		List<Patient> patients = new Vector<Patient>();
-		if (StringUtils.isBlank(query) || query.length() < getMinSearchCharacters())
+		if (StringUtils.isBlank(query))
 			return patients;
 		
 		// if there is a number in the query string

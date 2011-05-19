@@ -26,6 +26,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
 
@@ -156,10 +157,10 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		pAddressList.add(pAddress);
 		patient.setAddresses(pAddressList);
 		patient.addAddress(pAddress);
-		//patient.removeAddress(pAddress);
+		// patient.removeAddress(pAddress);
 		
 		patient.setDeathDate(new Date());
-		//patient.setCauseOfDeath("air");
+		// patient.setCauseOfDeath("air");
 		patient.setBirthdate(new Date());
 		patient.setBirthdateEstimated(true);
 		patient.setGender("male");
@@ -193,10 +194,10 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		pAddressList.add(pAddress);
 		patient.setAddresses(pAddressList);
 		patient.addAddress(pAddress);
-		//patient.removeAddress(pAddress);
+		// patient.removeAddress(pAddress);
 		
 		patient.setDeathDate(new Date());
-		//patient.setCauseOfDeath("air");
+		// patient.setCauseOfDeath("air");
 		patient.setBirthdate(new Date());
 		patient.setBirthdateEstimated(true);
 		patient.setGender("male");
@@ -290,7 +291,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		
 		Patient firstJohnPatient = johnPatients.iterator().next();
 		
-		// get a list of patients with this identifier, make sure the john patient is actually there
+		// get a list of patients with this identifier, make sure the john
+		// patient is actually there
 		String identifier = firstJohnPatient.getPatientIdentifier().getIdentifier();
 		assertNotNull("Uh oh, the patient doesn't have an identifier", identifier);
 		List<Patient> patients = patientService.getPatients(null, identifier, null, false);
@@ -299,23 +301,26 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		
 	}
 	
-	//	/**
-	//	 * This method should be uncommented when you want to examine the actual hibernate
-	//	 * sql calls being made.  The calls that should be limiting the number of returned
-	//	 * patients should show a "top" or "limit" in the sql -- this proves hibernate's
-	//	 * use of a native sql limit as opposed to a java-only limit.
-	//	 *
-	//	 * Note: if enabled, this test will be considerably slower
-	//     *
-	//     * @see org.openmrs.test.BaseContextSensitiveTest#getRuntimeProperties()
-	//     */
-	//    @Override
-	//    public Properties getRuntimeProperties() {
-	//	    Properties props = super.getRuntimeProperties();
-	//	    props.setProperty("hibernate.show_sql", "true");
-	//
-	//    	return props;
-	//    }
+	// /**
+	// * This method should be uncommented when you want to examine the actual
+	// hibernate
+	// * sql calls being made. The calls that should be limiting the number of
+	// returned
+	// * patients should show a "top" or "limit" in the sql -- this proves
+	// hibernate's
+	// * use of a native sql limit as opposed to a java-only limit.
+	// *
+	// * Note: if enabled, this test will be considerably slower
+	// *
+	// * @see org.openmrs.test.BaseContextSensitiveTest#getRuntimeProperties()
+	// */
+	//* @Override
+	//* public Properties getRuntimeProperties() {
+	//* 		Properties props = super.getRuntimeProperties();
+	//* 		props.setProperty("hibernate.show_sql", "true");
+	//* 		
+	//* 		return props;
+	//* }
 	
 	/**
 	 * Check that the patient list is kept under the max for getPatientsByName
@@ -331,29 +336,35 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		assertTrue("The patient list size should be restricted to under the max (1000). its " + patients.size(), patients
 		        .size() == 1000);
 		
-		/* Temporary code to create lots of johns file
+		/*
+		 * Temporary code to create lots of johns file
 		 * 
-		File file = new File("test/api/" + JOHN_PATIENTS_XML);
-		PrintWriter writer = new PrintWriter(file);
-
-		int x = 3;
-		while (x < 1010) {
-			String line = "<person person_id=\"2\" dead=\"false\" creator=\"1\" date_created=\"1999-01-01 00:00:00.0\" voided=\"false\" gender=\"M\" />";
-			writer.println(line.replaceAll("2", Integer.valueOf(x).toString()));
-
-			line = "<person_name person_id=\"2\" person_name_id=\"2\" preferred=\"1\" creator=\"1\" date_created=\"1999-01-01 00:00:00.0\" voided=\"false\" given_name=\"John2\" middle_name=\" \" family_name=\"Patient\" />";
-			writer.println(line.replaceAll("2", Integer.valueOf(x).toString()));
-			
-			line = "<patient patient_id=\"2\" creator=\"1\" date_created=\"1999-03-01 00:00:00.0\" voided=\"false\" />";
-			writer.println(line.replaceAll("2", Integer.valueOf(x).toString()));
-			
-			line = "<patient_identifier patient_id=\"2\" creator=\"1\" date_created=\"1999-03-01 00:00:00.0\" identifier=\"2\" identifier_type=\"1\" preferred=\"1\" voided=\"false\" location_id=\"1\" />";
-			writer.println(line.replaceAll("2", Integer.valueOf(x).toString()));
-
-			x = x + 1;
-		}
-
-		writer.close();
+		 * File file = new File("test/api/" + JOHN_PATIENTS_XML); PrintWriter
+		 * writer = new PrintWriter(file);
+		 * 
+		 * int x = 3; while (x < 1010) { String line =
+		 * "<person person_id=\"2\" dead=\"false\" creator=\"1\" date_created=\"1999-01-01 00:00:00.0\" voided=\"false\" gender=\"M\" />"
+		 * ; writer.println(line.replaceAll("2",
+		 * Integer.valueOf(x).toString()));
+		 * 
+		 * line =
+		 * "<person_name person_id=\"2\" person_name_id=\"2\" preferred=\"1\" creator=\"1\" date_created=\"1999-01-01 00:00:00.0\" voided=\"false\" given_name=\"John2\" middle_name=\" \" family_name=\"Patient\" />"
+		 * ; writer.println(line.replaceAll("2",
+		 * Integer.valueOf(x).toString()));
+		 * 
+		 * line =
+		 * "<patient patient_id=\"2\" creator=\"1\" date_created=\"1999-03-01 00:00:00.0\" voided=\"false\" />"
+		 * ; writer.println(line.replaceAll("2",
+		 * Integer.valueOf(x).toString()));
+		 * 
+		 * line =
+		 * "<patient_identifier patient_id=\"2\" creator=\"1\" date_created=\"1999-03-01 00:00:00.0\" identifier=\"2\" identifier_type=\"1\" preferred=\"1\" voided=\"false\" location_id=\"1\" />"
+		 * ; writer.println(line.replaceAll("2",
+		 * Integer.valueOf(x).toString()));
+		 * 
+		 * x = x + 1; }
+		 * 
+		 * writer.close();
 		 */
 	}
 	
@@ -447,7 +458,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(USERS_WHO_ARE_PATIENTS_XML);
 		
 		// we must fetch this person first, because this person is
-		// the creator of the next.  We need to make sure hibernate isn't
+		// the creator of the next. We need to make sure hibernate isn't
 		// caching and returning different person objects when it shouldn't be
 		Patient patient2 = patientService.getPatient(2);
 		assertTrue("When getting a patient, it should be of the class patient, not: " + patient2.getClass(), patient2
@@ -485,14 +496,29 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should allow search string to be one according to minsearchcharacters global property", method = "getPatients(String)")
 	public void getPatients_shouldAllowSearchStringToBeOneAccordingToMinsearchcharactersGlobalProperty() throws Exception {
+		initializeInMemoryDatabase();
+		executeDataSet(FIND_PATIENTS_XML);
+		
 		// make sure the default of "3" kicks in and blocks any results
-		assertEquals(0, Context.getPatientService().getPatients("Co").size());
+		assertEquals(0, Context.getPatientService().getPatients("Je").size());
 		
 		Context.clearSession();
 		Context.getAdministrationService().saveGlobalProperty(
 		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_MIN_SEARCH_CHARACTERS, "1"));
 		
-		assertEquals(1, Context.getPatientService().getPatients("Co").size());
+		// there is a patient will middle name "F", so this should generate a hit.
+		assertEquals(1, Context.getPatientService().getPatients("F").size());
+	}
+	
+	/**
+	 * @see {@link PatientService#getPatients(String)}
+	 */
+	@Test
+	@Verifies(value = "should allow search of two character name", method = "getPatients(String)")
+	public void getPatients_shouldAllowExactSearchOfForTwoCharacterName() throws Exception {
+		initializeInMemoryDatabase();
+		executeDataSet(FIND_PATIENTS_XML);
+		assertEquals(1, Context.getPatientService().getPatients("Ho").size());
 	}
 	
 	/**
@@ -521,7 +547,6 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should change user records of non preferred person to preferred person", method = "mergePatients(Patient,Patient)")
 	public void mergePatients_shouldChangeUserRecordsOfNonPreferredPersonToPreferredPerson() throws Exception {
 		executeDataSet(USERS_WHO_ARE_PATIENTS_XML);
-		//TestUtil.printOutTableContents(getConnection(), "users", "person", "patient");
 		Context.getPatientService().mergePatients(patientService.getPatient(6), patientService.getPatient(2));
 		User user = Context.getUserService().getUser(2);
 		Assert.assertEquals(new Person(6), user.getPerson());
@@ -547,7 +572,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Patient oldPatient = patientService.getPatient(501);
 		Assert.assertNull(oldPatient);
 		
-		Person existingPerson = Context.getPersonService().getPerson(501); // fetch Bruno from the database
+		// fetch Bruno from the database
+		Person existingPerson = Context.getPersonService().getPerson(501);
 		Context.clearSession();
 		Patient patient = new Patient(existingPerson);
 		patient.addIdentifier(new PatientIdentifier("some identifier", new PatientIdentifierType(2), new Location(1)));
@@ -555,12 +581,14 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		patientService.savePatient(patient);
 		
 		Assert.assertEquals(501, patient.getPatientId().intValue());
-		Assert.assertNotNull(patientService.getPatient(501)); // make sure a new row with a patient id WAS created
-		Assert.assertNull(patientService.getPatient(503)); // make sure a new row with a new person id WASN'T created
+		// make sure a new row with a patient id WAS created
+		Assert.assertNotNull(patientService.getPatient(501));
+		// make sure a new row with a new person id WASN'T created
+		Assert.assertNull(patientService.getPatient(503));
 	}
 	
 	/**
-	 * @see {@link PatientService#getPatients(String,String,List<QPatientIdentifierType;>,null)}
+	 * @see {@link PatientService#getPatients(String,String,List<QPatientIdentifierType ;>,null)}
 	 */
 	@Test
 	@Verifies(value = "should search familyName2 with name", method = "getPatients(String,String,List<QPatientIdentifierType;>,null)")
@@ -657,8 +685,9 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Patient patient = new Patient();
 		patient.setGender("M");
 		patient.setPatientId(2);
-		//patient.setCreator(new User(1));
-		//patient.setDateCreated date_created="2005-09-22 00:00:00.0" changed_by="1" date_changed="2008-08-18 12:29:59.0"
+		// patient.setCreator(new User(1));
+		// patient.setDateCreated date_created="2005-09-22 00:00:00.0"
+		// changed_by="1" date_changed="2008-08-18 12:29:59.0"
 		patient.addName(new PersonName("This", "Isa", "Test"));
 		patient.addIdentifier(new PatientIdentifier("101-6", new PatientIdentifierType(1), new Location(1)));
 		Context.getPatientService().savePatient(patient);
@@ -684,7 +713,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should ignore voided patients", method = "isIdentifierInUseByAnotherPatient(PatientIdentifier)")
 	public void isIdentifierInUseByAnotherPatient_shouldIgnoreVoidedPatients() throws Exception {
 		{
-			// patient 999 should be voided and have a non-voided identifier of XYZ
+			// patient 999 should be voided and have a non-voided identifier of
+			// XYZ
 			Patient p = patientService.getPatient(999);
 			Assert.assertNotNull(p);
 			Assert.assertTrue(p.isVoided());
@@ -768,7 +798,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		patientIdentifier.setVoidReason("Testing whether voided identifiers are ignored");
 		patient.addIdentifier(patientIdentifier);
 		
-		// add a non-voided identifier so that the initial "at least one nonvoided identifier" check passes
+		// add a non-voided identifier so that the initial
+		// "at least one nonvoided identifier" check passes
 		patientIdentifier = new PatientIdentifier();
 		patientIdentifier.setIdentifier("a non empty string");
 		patientIdentifier.setIdentifierType(Context.getPatientService().getAllPatientIdentifierTypes(false).get(0));
@@ -778,7 +809,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		patientIdentifier.setVoidReason("Testing whether voided identifiers are ignored");
 		patient.addIdentifier(patientIdentifier);
 		
-		// If the identifier is ignored, it won't throw a BlankIdentifierException as it should
+		// If the identifier is ignored, it won't throw a
+		// BlankIdentifierException as it should
 		Context.getPatientService().checkPatientIdentifiers(patient);
 		
 	}
@@ -1546,7 +1578,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		nonvoidedPI.setPatient(preferred);
 		PatientIdentifier voidedPI = new PatientIdentifier("ABC123", new PatientIdentifierType(2), new Location(1));
 		voidedPI.setPatient(preferred);
-		//we can't use contains since it checks for equality basing on identifierId which is null in this test setup
+		// we can't use contains since it checks for equality basing on
+		// identifierId which is null in this test setup
 		boolean containsNonVoidedPI = false;
 		for (PatientIdentifier id : preferred.getIdentifiers()) {
 			if (id.equalsContent(nonvoidedPI))
@@ -1670,9 +1703,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @verifies {@link
-	 *           PatientService#getPatients(String,String,List<QPatientIdentifierType;>,null)} test
-	 *           = should return empty list when no match is found
+	 * @verifies {@link PatientService#getPatients(String,String,List<QPatientIdentifierType
+	 *           ;>,null)} test = should return empty list when no match is found
 	 */
 	@Test
 	@Verifies(value = "should return empty list when no match is found", method = "getPatients(String,String,List<PatientIdentifierType>,boolean)")
@@ -1730,7 +1762,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should fetch all non voided patients", method = "getAllPatients()")
 	public void getAllPatients_shouldFetchAllNonVoidedPatients() throws Exception {
 		List<Patient> allPatients = patientService.getAllPatients();
-		// there are 1 voided and 4 nonvoided patients in standardTestDataset.xml
+		// there are 1 voided and 4 nonvoided patients in
+		// standardTestDataset.xml
 		assertEquals(4, allPatients.size());
 	}
 	
@@ -1742,7 +1775,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should fetch non voided patients when given include voided is false", method = "getAllPatients(boolean)")
 	public void getAllPatients_shouldFetchNonVoidedPatientsWhenGivenIncludeVoidedIsFalse() throws Exception {
 		List<Patient> allPatients = patientService.getAllPatients(false);
-		// there are 1 voided and 4 nonvoided patients in standardTestDataset.xml
+		// there are 1 voided and 4 nonvoided patients in
+		// standardTestDataset.xml
 		assertEquals(4, allPatients.size());
 	}
 	
@@ -1754,14 +1788,14 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should fetch voided patients when given include voided is true", method = "getAllPatients(boolean)")
 	public void getAllPatients_shouldFetchVoidedPatientsWhenGivenIncludeVoidedIsTrue() throws Exception {
 		List<Patient> allPatients = patientService.getAllPatients(true);
-		// there are 1 voided and 4 nonvoided patients in standardTestDataset.xml
+		// there are 1 voided and 4 nonvoided patients in
+		// standardTestDataset.xml
 		assertEquals(5, allPatients.size());
 	}
 	
 	/**
-	 * @verifies {@link
-	 *           PatientService#getPatients(String,String,List<QPatientIdentifierType;>,null)} test
-	 *           = should fetch all patients that partially match given name
+	 * @verifies {@link PatientService#getPatients(String,String,List<QPatientIdentifierType
+	 *           ;>,null)} test = should fetch all patients that partially match given name
 	 */
 	@SkipBaseSetup
 	@Test
@@ -1772,7 +1806,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		authenticate();
 		
 		List<Patient> patients = patientService.getPatients("Jea", null, null, false);
-		// patients with patientId of 4, 5, & 6 contain "Jea" at the start of a first name
+		// patients with patientId of 4, 5, & 6 contain "Jea" at the start of a
+		// first name
 		assertTrue("getPatients failed to find patient whose first name included partial match", patients
 		        .contains(patientService.getPatient(4)));
 		assertTrue("getPatients failed to find patient whose family name included partial match", patients
@@ -1785,14 +1820,17 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		assertFalse("getPatients failed to exclude patient whose first name did not include the partial string", patients
 		        .contains(patientService.getPatient(3)));
 		
-		// Try it with a string that is part of a last name and in the middle of a first name
+		// Try it with a string that is part of a last name and in the middle of
+		// a first name
 		patients = patientService.getPatients("Claud", null, null, false);
-		// patients with patientId of 4, 5, & 6 contain "Claud" in a first or second name
+		// patients with patientId of 4, 5, & 6 contain "Claud" in a first or
+		// second name
 		assertTrue("getPatients failed to find patient whose family name included partial match", patients
 		        .contains(patientService.getPatient(5)));
 		assertTrue("getPatients failed to find patient whose family name included partial match", patients
 		        .contains(patientService.getPatient(6)));
-		// patients with patientId of 2 and 3 do not contain "Claud" in their name
+		// patients with patientId of 2 and 3 do not contain "Claud" in their
+		// name
 		assertFalse("getPatients failed to exclude patient whose name did not include the partial string", patients
 		        .contains(patientService.getPatient(2)));
 		assertFalse("getPatients failed to exclude patient whose name did not include the partial string", patients
@@ -1817,14 +1855,14 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		
 		// purge the patient
 		patientService.purgePatient(patientToPurge);
-		// if the patient doesn't exist in the database, getPatient should return null now
+		// if the patient doesn't exist in the database, getPatient should
+		// return null now
 		assertNull(patientService.getPatient(2));
 	}
 	
 	/**
-	 * @verifies {@link
-	 *           PatientService#getPatients(String,String,List<QPatientIdentifierType;>,null)} test
-	 *           = should not return voided patients
+	 * @verifies {@link PatientService#getPatients(String,String,List<QPatientIdentifierType
+	 *           ;>,null)} test = should not return voided patients
 	 */
 	@SkipBaseSetup
 	@Test
@@ -1836,7 +1874,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		
 		// verify patient is voided
 		assertTrue(patientService.getPatient(3).isVoided());
-		// ask for list of patients with this name, expect none back because patient is voided
+		// ask for list of patients with this name, expect none back because
+		// patient is voided
 		List<Patient> patients = patientService.getPatients("I am voided", null, null, false);
 		assertEquals(patients.size(), 0);
 	}
@@ -1907,7 +1946,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Context.getAdministrationService().saveGlobalProperty(
 		    new GlobalProperty(OpenmrsConstants.GLOBAL_PROPERTY_PATIENT_IDENTIFIER_SEARCH_PATTERN,
 		            "@SEARCH@,0@SEARCH@,@SEARCH-1@-@CHECKDIGIT@,0@SEARCH-1@-@CHECKDIGIT@"));
-		//"^(0*@SEARCH-1@-@CHECKDIGIT@)$"));
+		// "^(0*@SEARCH-1@-@CHECKDIGIT@)$"));
 		PatientIdentifier identifier = new PatientIdentifier("1234-4", new PatientIdentifierType(1), new Location(1));
 		identifier.setCreator(new User(1));
 		identifier.setDateCreated(new Date());
@@ -1940,9 +1979,10 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		PatientIdentifier patientIdentifierToVoid = patientService.getPatientIdentifier(3);
 		
 		PatientIdentifier voidedIdentifier = patientService.voidPatientIdentifier(patientIdentifierToVoid, "Testing");
-		//was the void reason set
+		// was the void reason set
 		Assert.assertEquals("Testing", voidedIdentifier.getVoidReason());
-		//patient's active identifiers must have reduced by 1 if the identifier was successfully voided
+		// patient's active identifiers must have reduced by 1 if the identifier
+		// was successfully voided
 		Assert.assertEquals(oldActiveIdentifierSize - 1, patient.getActiveIdentifiers().size());
 	}
 	
@@ -2133,7 +2173,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		
 		Problem problem = new Problem();
 		problem.setPerson(p);
-		problem.setProblem(Context.getConceptService().getConcept(88));//Aspirin
+		problem.setProblem(Context.getConceptService().getConcept(88));// Aspirin
 		
 		patientService.saveProblem(problem);
 		
@@ -2178,7 +2218,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Patient p = patientService.getPatient(2);
 		Allergy allergen = new Allergy();
 		allergen.setPerson(p);
-		allergen.setAllergen(Context.getConceptService().getConcept(88));//Aspirin
+		allergen.setAllergen(Context.getConceptService().getConcept(88));// Aspirin
 		
 		patientService.saveAllergy(allergen);
 		
@@ -2232,21 +2272,22 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Patient notPreferred = patientService.getPatient(2);
 		
 		// expected relationships before merge:
-		//  * 2->1 (type 2)
-		//  * 999->2 (type 5)
-		//  * 999->1 (type 2)
-		//  * 7->999 (type 4)
-		//  * 502->2 (type 1)
-		//  * 7->2 (type 1)
+		// * 2->1 (type 2)
+		// * 999->2 (type 5)
+		// * 999->1 (type 2)
+		// * 7->999 (type 4)
+		// * 502->2 (type 1)
+		// * 7->2 (type 1)
 		patientService.mergePatients(preferred, notPreferred);
 		
 		// expected relationships after merge:
-		//  * 999->1 (type 2)
-		//  * 7->999 (type 4)
-		//  * 502->999 (type 1)
-		//  * 7->999 (type 1)
+		// * 999->1 (type 2)
+		// * 7->999 (type 4)
+		// * 502->999 (type 1)
+		// * 7->999 (type 1)
 		
-		// check for a relationship that should not be duplicated: 2->1 and 999->1
+		// check for a relationship that should not be duplicated: 2->1 and
+		// 999->1
 		List<Relationship> rels = personService.getRelationships(preferred, new Person(1), new RelationshipType(2));
 		assertEquals("duplicate relationships were not removed", 1, rels.size());
 	}
@@ -2280,21 +2321,22 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		Patient notPreferred = patientService.getPatient(2);
 		
 		// expected relationships before merge:
-		//  * 2->1 (type 2)
-		//  * 999->2 (type 5)
-		//  * 999->1 (type 2)
-		//  * 7->999 (type 4)
-		//  * 502->2 (type 1)
-		//  * 7->999 (type 1)
+		// * 2->1 (type 2)
+		// * 999->2 (type 5)
+		// * 999->1 (type 2)
+		// * 7->999 (type 4)
+		// * 502->2 (type 1)
+		// * 7->999 (type 1)
 		patientService.mergePatients(preferred, notPreferred);
 		
 		// expected relationships after merge:
-		//  * 999->1 (type 2)
-		//  * 7->999 (type 4)
-		//  * 502->999 (type 1)
-		//  * 7->999 (type 1)
+		// * 999->1 (type 2)
+		// * 7->999 (type 4)
+		// * 502->999 (type 1)
+		// * 7->999 (type 1)
 		
-		// check for relationships that should not be removed: 7->999 (type 4) and 7->999 (type 1)
+		// check for relationships that should not be removed: 7->999 (type 4)
+		// and 7->999 (type 1)
 		List<Relationship> rels = personService.getRelationships(new Person(7), preferred, new RelationshipType(4));
 		assertEquals("7->999 (type 4) was removed", 1, rels.size());
 		
@@ -2330,11 +2372,12 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should return the right count when a patient has multiple matching person names", method = "getCountOfPatients(String)")
 	public void getCountOfPatients_shouldReturnTheRightCountWhenAPatientHasMultipleMatchingPersonNames() throws Exception {
-		//TODO H2 cannot execute the generated SQL because it requires all fetched columns to be included in the group by clause
+		// TODO H2 cannot execute the generated SQL because it requires all
+		// fetched columns to be included in the group by clause
 		Patient patient = patientService.getPatient(2);
-		//sanity check
+		// sanity check
 		Assert.assertTrue(patient.getPersonName().getGivenName().startsWith("Horati"));
-		//add a name that will match the search phrase
+		// add a name that will match the search phrase
 		patient.addName(new PersonName("Horatio", "Test", "name"));
 		Context.getPatientService().savePatient(patient);
 		Assert.assertEquals(1, Context.getPatientService().getCountOfPatients("Hor").intValue());

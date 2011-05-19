@@ -20,11 +20,11 @@
   <person person_id="5" gender="M" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="30e2aa2a-4ed1-415d-84c5-ba29016c14b7"/>
   <person person_id="6" gender="M" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="8d703ff2-c3e2-4070-9737-73e713d5a50d"/>
   <person person_id="7" gender="M" dead="false" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="ca17fcc5-ec96-487f-b9ea-42973c8973e3"/>
-  <person_name person_name_id="2" preferred="true" person_id="2" given_name="John" middle_name=" " family_name="Doe" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="7e2acadc-5073-4a39-914a-debcbec8c1c9"/>
+  <person_name person_name_id="2" preferred="true" person_id="2" given_name="John" middle_name="F" family_name="Doe" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="7e2acadc-5073-4a39-914a-debcbec8c1c9"/>
   <person_name person_name_id="3" preferred="true" person_id="3" given_name="I" middle_name="am" family_name="voided" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="37e60810-0ba9-4f32-ba80-0af59f59e966"/>
   <person_name person_name_id="4" preferred="true" person_id="4" given_name="Jean Claude" middle_name=" " family_name="Doe" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="89232176-29cd-47e5-9ce2-ae375436fb15"/>
   <person_name person_name_id="5" preferred="true" person_id="5" given_name="Jean" middle_name=" " family_name="Claude" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="b33c207b-2096-4023-b0ba-ec3b670e5ba4"/>
   <person_name person_name_id="6" preferred="true" person_id="6" given_name="Jeannette" middle_name=" " family_name="Claudent" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="355d1361-a63d-4897-b853-0f2c389138d0"/>
-  <person_name person_name_id="7" preferred="true" person_id="7" given_name="John" middle_name=" " family_name="Claudio" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="f7ea8cea-43de-4cff-8a44-21db2aaaabb8"/>
+  <person_name person_name_id="7" preferred="true" person_id="7" given_name="John" middle_name="Ho" family_name="Claudio" creator="1" date_created="2005-01-01 00:00:00.0" voided="false" uuid="f7ea8cea-43de-4cff-8a44-21db2aaaabb8"/>
   <person_name person_name_id="33" preferred="false" person_id="2" given_name="Some other name" middle_name=" " family_name="Last Name of other name" creator="1" date_created="2004-01-01 00:00:00.0" voided="false" uuid="c9714a2d-a97e-4673-80f8-ac8dd5ced083"/>
 </dataset>
