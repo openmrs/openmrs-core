@@ -27,9 +27,9 @@ import org.openmrs.api.context.Context;
  * Locations support a single hierarchy, such that each location may have one parent location.
  * 
  * A non-geographical grouping of locations, such as "All Community Health Centers" is not a location, and
- * should be modeled using {@link LocationTag}s. 
+ * should be modeled using {@link LocationTag}s.
  */
-public class Location extends BaseOpenmrsMetadata implements java.io.Serializable, Attributable<Location> {
+public class Location extends BaseOpenmrsMetadata implements java.io.Serializable, Attributable<Location>, Address {
 	
 	public static final long serialVersionUID = 455634L;
 	
@@ -561,4 +561,60 @@ public class Location extends BaseOpenmrsMetadata implements java.io.Serializabl
 		
 	}
 	
+	/**
+	 * Added for compatibility reasons with 1.8+
+	 */
+	public String getAddress3() {
+		return neighborhoodCell;
+	}
+	
+	/**
+	 * Added for compatibility reasons with 1.8+
+	 */
+	public void setAddress3(String address3) {
+		this.neighborhoodCell = address3;
+	}
+	
+	/**
+	 * Added for compatibility reasons with 1.8+
+	 */
+	public String getAddress4() {
+		return townshipDivision;
+	}
+	
+	/**
+	 * Added for compatibility reasons with 1.8+
+	 */
+	public void setAddress4(String address4) {
+		this.townshipDivision = address4;
+	}
+	
+	/**
+	 * Added for compatibility reasons with 1.8+
+	 */
+	public String getAddress5() {
+		return subregion;
+	}
+	
+	/**
+	 * Added for compatibility reasons with 1.8+
+	 */
+	public void setAddress5(String address5) {
+		this.subregion = address5;
+	}
+	
+	/**
+	 * Added for compatibility reasons with 1.8+
+	 */
+	public void setAddress6(String address6) {
+		this.region = address6;
+	}
+	
+	/**
+	 * Added for compatibility reasons with 1.8+
+	 */
+	public String getAddress6() {
+		return region;
+	}
+
 }
