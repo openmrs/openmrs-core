@@ -15,6 +15,7 @@ package org.openmrs.api;
 
 import java.util.List;
 
+import org.openmrs.Address;
 import org.openmrs.Location;
 import org.openmrs.LocationTag;
 import org.openmrs.annotation.Authorized;
@@ -384,4 +385,19 @@ public interface LocationService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_LOCATIONS })
 	public List<Location> getRootLocations(boolean includeRetired);
+	
+	/**
+	 * Given an Address object, returns all the possible values for the specified AddressField. This
+	 * method is not implemented in core, but is meant to overridden by implementing modules such as
+	 * the Address Hierarchy module.
+	 * 
+	 * @param incomplete the incomplete address
+	 * @param field the address field we are looking for possible values for
+	 * @return a list of possible address values for the specified field
+	 * @since 1.7.2
+	 * @should return empty list if no possible address matches
+	 * @should return null if method not implemented
+	 * @should return null by default
+	 */
+	public List<String> getPossibleAddressValues(Address incomplete, String fieldName) throws APIException;
 }
