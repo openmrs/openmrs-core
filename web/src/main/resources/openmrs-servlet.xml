@@ -1391,12 +1391,14 @@
 		<property name="nameMappings">
 			<props>
 				<prop key="countyDistrict">Location.district</prop>
+				<prop key="neighborhoodCell">Location.communityCouncil</prop>
 				<prop key="cityVillage">Location.village</prop>
 			</props>
 		</property>
 		<property name="sizeMappings">
 			<props>
 				<prop key="countyDistrict">40</prop>
+				<prop key="neighborhoodCell">40</prop>
 				<prop key="cityVillage">40</prop>
 			</props>
 		</property>
@@ -1408,6 +1410,7 @@
 		<property name="lineByLineFormat">
 			<list>
 				<value>countyDistrict</value>
+				<value>neighborhoodCell</value>
 				<value>cityVillage</value>
 			</list>
 		</property>
