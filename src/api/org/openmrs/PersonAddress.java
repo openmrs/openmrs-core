@@ -28,7 +28,7 @@ import org.simpleframework.xml.Root;
  * class, so a Person/Patient/User can have zero to n addresses
  */
 @Root(strict = false)
-public class PersonAddress extends BaseOpenmrsData implements java.io.Serializable, Cloneable, Comparable<PersonAddress> {
+public class PersonAddress extends BaseOpenmrsData implements java.io.Serializable, Cloneable, Comparable<PersonAddress>, Address {
 	
 	private transient static Log log = LogFactory.getLog(PersonAddress.class);
 	
@@ -491,5 +491,61 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	public void setId(Integer id) {
 		setPersonAddressId(id);
 		
+	}
+	
+	/**
+	 * Added for compatibility reasons with 1.8+
+	 */
+	public String getAddress3() {
+		return neighborhoodCell;
+	}
+	
+	/**
+	 * Added for compatibility reasons with 1.8+
+	 */
+	public void setAddress3(String address3) {
+		this.neighborhoodCell = address3;
+	}
+	
+	/**
+	 * Added for compatibility reasons with 1.8+
+	 */
+	public String getAddress4() {
+		return townshipDivision;
+	}
+	
+	/**
+	 * Added for compatibility reasons with 1.8+
+	 */
+	public void setAddress4(String address4) {
+		this.townshipDivision = address4;
+	}
+	
+	/**
+	 * Added for compatibility reasons with 1.8+
+	 */
+	public String getAddress5() {
+		return subregion;
+	}
+	
+	/**
+	 * Added for compatibility reasons with 1.8+
+	 */
+	public void setAddress5(String address5) {
+		this.subregion = address5;
+	}
+	
+	/**
+	 * Added for compatibility reasons with 1.8+
+	 */
+	public void setAddress6(String address6) {
+		this.region = address6;
+	}
+	
+	/**
+	 * Added for compatibility reasons with 1.8+
+	 */
+	public String getAddress6() {
+		return region;
 	}
 }

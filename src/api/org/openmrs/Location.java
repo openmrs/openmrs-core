@@ -25,7 +25,7 @@ import org.openmrs.api.context.Context;
  * A Location object usually represents a physical place care has taken place. A hospital, a room, a
  * clinic, a district, etc are all examples of Locations.
  */
-public class Location extends BaseOpenmrsMetadata implements java.io.Serializable, Attributable<Location> {
+public class Location extends BaseOpenmrsMetadata implements java.io.Serializable, Attributable<Location>, Address {
 	
 	public static final long serialVersionUID = 455634L;
 	
@@ -564,6 +564,62 @@ public class Location extends BaseOpenmrsMetadata implements java.io.Serializabl
 	public void setId(Integer id) {
 		setLocationId(id);
 		
+	}
+	
+	/**
+	 * Added for compatibility reasons with 1.8+
+	 */
+	public String getAddress3() {
+		return neighborhoodCell;
+	}
+	
+	/**
+	 * Added for compatibility reasons with 1.8+
+	 */
+	public void setAddress3(String address3) {
+		this.neighborhoodCell = address3;
+	}
+	
+	/**
+	 * Added for compatibility reasons with 1.8+
+	 */
+	public String getAddress4() {
+		return townshipDivision;
+	}
+	
+	/**
+	 * Added for compatibility reasons with 1.8+
+	 */
+	public void setAddress4(String address4) {
+		this.townshipDivision = address4;
+	}
+	
+	/**
+	 * Added for compatibility reasons with 1.8+
+	 */
+	public String getAddress5() {
+		return subregion;
+	}
+	
+	/**
+	 * Added for compatibility reasons with 1.8+
+	 */
+	public void setAddress5(String address5) {
+		this.subregion = address5;
+	}
+	
+	/**
+	 * Added for compatibility reasons with 1.8+
+	 */
+	public void setAddress6(String address6) {
+		this.region = address6;
+	}
+	
+	/**
+	 * Added for compatibility reasons with 1.8+
+	 */
+	public String getAddress6() {
+		return region;
 	}
 	
 }
