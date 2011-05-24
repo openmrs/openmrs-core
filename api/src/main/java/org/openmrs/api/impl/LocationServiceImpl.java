@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.openmrs.Address;
 import org.openmrs.Location;
 import org.openmrs.LocationTag;
 import org.openmrs.api.APIException;
@@ -325,5 +326,13 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	public List<Location> getLocations(String nameFragment, boolean includeRetired, Integer start, Integer length)
 	                                                                                                              throws APIException {
 		return dao.getLocations(nameFragment, includeRetired, start, length);
+	}
+	
+	/**
+	 * @see org.openmrs.api.LocationService#getPossibleAddressValues(org.openmrs.Address, org.openmrs.AddressField)
+	 */
+	public List<String> getPossibleAddressValues(Address incomplete, String fieldName) throws APIException {
+		// not implemented by default
+		return null;
 	}
 }
