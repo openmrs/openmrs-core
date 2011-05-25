@@ -14,8 +14,6 @@
 
 package org.openmrs.obs.handler;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.api.APIException;
@@ -31,8 +29,6 @@ import org.openmrs.obs.ComplexObsHandler;
 
 public class PatientHandler extends DomainObjectHandler implements ComplexObsHandler {
 	
-	public static final Log log = LogFactory.getLog(AbstractHandler.class);
-	
 	/**
 	 * The default Constructor method
 	 */
@@ -45,10 +41,11 @@ public class PatientHandler extends DomainObjectHandler implements ComplexObsHan
 	 */
 	@Override
 	public Obs saveObs(Obs obs) throws APIException {
+		PatientService ps = Context.getPatientService();
 		Object data = obs.getComplexData().getData();
-		
+		Patient patient = ps.getPatient(Integer.parseInt(data.toString()));
 		// Set the Title for the valueComplex
-		obs.setValueComplex(" Patient |" + data.toString());
+		obs.setValueComplex(patient.getPersonName() + "(" + patient.getPatientIdentifier() + ")" + "|" + data.toString());
 		
 		// Remove the ComlexData from the Obs
 		obs.setComplexData(null);
@@ -61,9 +58,9 @@ public class PatientHandler extends DomainObjectHandler implements ComplexObsHan
 	 */
 	@Override
 	public Obs getObs(Obs obs, String view) {
-		PatientService os = Context.getPatientService();
+		PatientService ps = Context.getPatientService();
 		String[] values = obs.getValueComplex().split("\\|");
-		Patient patient = os.getPatient(Integer.parseInt(values[1]));
+		Patient patient = ps.getPatient(Integer.parseInt(values[1]));
 		ComplexData complexData = new ComplexData(values[0], patient);
 		
 		obs.setComplexData(complexData);
