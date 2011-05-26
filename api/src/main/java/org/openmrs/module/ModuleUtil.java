@@ -590,7 +590,7 @@ public class ModuleUtil {
 			if (c instanceof HttpURLConnection) {
 				HttpURLConnection http = (HttpURLConnection) c;
 				int stat = http.getResponseCode();
-				if (stat >= 300 && stat <= 307 && stat != 306 && stat != HttpURLConnection.HTTP_NOT_MODIFIED) {
+				if (stat == 300 || stat == 301 || stat == 302 || stat == 303 || stat == 305 || stat == 307) {
 					URL base = http.getURL();
 					String loc = http.getHeaderField("Location");
 					URL target = null;
