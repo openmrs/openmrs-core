@@ -15,12 +15,10 @@ package org.openmrs.api;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -89,77 +87,33 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(CREATE_PATIENT_XML);
 		executeDataSet(CREATE_RELATIONSHIP_XML);
 		
-		// TODO use xml imported in BaseContextSensitiveTest#baseSetupWithStandardDataAndAuthentication()
-		// Create Patient#3.
-		Patient patient = new Patient();
-		PersonName pName = new PersonName();
-		pName.setGivenName("Tom");
-		pName.setMiddleName("E.");
-		pName.setFamilyName("Patient");
-		patient.addName(pName);
-		PersonAddress pAddress = new PersonAddress();
-		pAddress.setAddress1("123 My street");
-		pAddress.setAddress2("Apt 402");
-		pAddress.setCityVillage("Anywhere city");
-		pAddress.setCountry("Some Country");
-		Set<PersonAddress> pAddressList = patient.getAddresses();
-		pAddressList.add(pAddress);
-		patient.setAddresses(pAddressList);
-		patient.addAddress(pAddress);
-		patient.setDeathDate(new Date());
-		patient.setBirthdate(new Date());
-		patient.setBirthdateEstimated(true);
-		patient.setGender("male");
-		List<PatientIdentifierType> patientIdTypes = ps.getAllPatientIdentifierTypes();
-		assertNotNull(patientIdTypes);
-		PatientIdentifier patientIdentifier = new PatientIdentifier();
-		patientIdentifier.setIdentifier("123-0");
-		patientIdentifier.setIdentifierType(patientIdTypes.get(0));
-		patientIdentifier.setLocation(new Location(1));
-		Set<PatientIdentifier> patientIdentifiers = new TreeSet<PatientIdentifier>();
-		patientIdentifiers.add(patientIdentifier);
-		patient.setIdentifiers(patientIdentifiers);
-		ps.savePatient(patient);
+		Patient p1 = ps.getPatient(6);
+		Patient p2 = ps.getPatient(8);
 		
-		// Create a sibling relationship between Patient#2 and Patient#3
+		// Create a sibling relationship between o1 and p2
 		Relationship sibling = new Relationship();
-		sibling.setPersonA(ps.getPatient(2));
-		sibling.setPersonB(patient);
+		sibling.setPersonA(p1);
+		sibling.setPersonB(p2);
 		sibling.setRelationshipType(personService.getRelationshipType(4));
-		// relationship.setCreator(Context.getUserService().getUser(1));
 		personService.saveRelationship(sibling);
 		
-		// Make Patient#3 the Doctor of Patient#2.
+		// Make p2 the Doctor of p1.
 		Relationship doctor = new Relationship();
-		doctor.setPersonB(ps.getPatient(2));
-		doctor.setPersonA(patient);
+		doctor.setPersonB(p1);
+		doctor.setPersonA(p2);
 		doctor.setRelationshipType(personService.getRelationshipType(3));
 		personService.saveRelationship(doctor);
-		
-		// Get unvoided relationships before voiding any.
-		Person p = personService.getPerson(2);
-		
-		//test loading relationship types real quick.
-		List<RelationshipType> rTmp = personService.getAllRelationshipTypes();
-		assertNotNull(rTmp);
-		RelationshipType rTypeTmp = personService.getRelationshipTypeByName("Doctor/Patient");
-		assertNotNull(rTypeTmp);
-		rTypeTmp = personService.getRelationshipTypeByName("booya");
-		assertNull(rTypeTmp);
 		
 		// Void all relationships.
 		List<Relationship> allRels = personService.getAllRelationships();
 		for (Relationship r : allRels) {
 			personService.voidRelationship(r, "Because of a JUnit test.");
 		}
+
+		List<Relationship> updatedARels = personService.getRelationshipsByPerson(p1);
+		List<Relationship> updatedBRels = personService.getRelationshipsByPerson(p2);
 		
-		// TODO this is the actual test.  Cut this method down to just this
-		
-		// Get unvoided relationships after voiding all of them.
-		List<Relationship> updatedARels = personService.getRelationshipsByPerson(p);
-		List<Relationship> updatedBRels = personService.getRelationshipsByPerson(patient);
-		
-		// Neither Patient#2 or Patient#3 should have any relationships now.
+		// Neither p1 or p2 should have any relationships now.
 		assertEquals(0, updatedARels.size());
 		assertEquals(updatedARels, updatedBRels);
 	}
@@ -172,68 +126,27 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link PersonService#getRelationshipsByPerson(Person,Date)}
 	 */
 	@Test
-	@Verifies(value = "should only get unvoided relationships", method = "getRelationshipsByPerson(Person,Date)")
-	public void getRelationshipsByPerson2_shouldOnlyGetUnvoidedRelationships() throws Exception {
+	@Verifies(value = "should only get unvoided relationships regardless of effective date", method = "getRelationshipsByPerson(Person,Date)")
+	public void getRelationshipsByPerson_shouldOnlyGetUnvoidedRelationshipsRegardlessOfEffectiveDate() throws Exception {
 		executeDataSet(CREATE_PATIENT_XML);
 		executeDataSet(CREATE_RELATIONSHIP_XML);
 		
-		// TODO use xml imported in BaseContextSensitiveTest#baseSetupWithStandardDataAndAuthentication()
-		// Create Patient#3.
-		Patient patient = new Patient();
-		PersonName pName = new PersonName();
-		pName.setGivenName("Tom");
-		pName.setMiddleName("E.");
-		pName.setFamilyName("Patient");
-		patient.addName(pName);
-		PersonAddress pAddress = new PersonAddress();
-		pAddress.setAddress1("123 My street");
-		pAddress.setAddress2("Apt 402");
-		pAddress.setCityVillage("Anywhere city");
-		pAddress.setCountry("Some Country");
-		Set<PersonAddress> pAddressList = patient.getAddresses();
-		pAddressList.add(pAddress);
-		patient.setAddresses(pAddressList);
-		patient.addAddress(pAddress);
-		patient.setDeathDate(new Date());
-		patient.setBirthdate(new Date());
-		patient.setBirthdateEstimated(true);
-		patient.setGender("male");
-		List<PatientIdentifierType> patientIdTypes = ps.getAllPatientIdentifierTypes();
-		assertNotNull(patientIdTypes);
-		PatientIdentifier patientIdentifier = new PatientIdentifier();
-		patientIdentifier.setIdentifier("123-0");
-		patientIdentifier.setIdentifierType(patientIdTypes.get(0));
-		patientIdentifier.setLocation(new Location(1));
-		Set<PatientIdentifier> patientIdentifiers = new TreeSet<PatientIdentifier>();
-		patientIdentifiers.add(patientIdentifier);
-		patient.setIdentifiers(patientIdentifiers);
-		ps.savePatient(patient);
+		Patient p1 = ps.getPatient(6);
+		Patient p2 = ps.getPatient(8);
 		
-		// Create a sibling relationship between Patient#2 and Patient#3
+		// Create a sibling relationship between o1 and p2
 		Relationship sibling = new Relationship();
-		sibling.setPersonA(ps.getPatient(2));
-		sibling.setPersonB(patient);
+		sibling.setPersonA(p1);
+		sibling.setPersonB(p2);
 		sibling.setRelationshipType(personService.getRelationshipType(4));
-		// relationship.setCreator(Context.getUserService().getUser(1));
 		personService.saveRelationship(sibling);
 		
-		// Make Patient#3 the Doctor of Patient#2.
+		// Make p2 the Doctor of p1.
 		Relationship doctor = new Relationship();
-		doctor.setPersonB(ps.getPatient(2));
-		doctor.setPersonA(patient);
+		doctor.setPersonB(p1);
+		doctor.setPersonA(p2);
 		doctor.setRelationshipType(personService.getRelationshipType(3));
 		personService.saveRelationship(doctor);
-		
-		// Get unvoided relationships before voiding any.
-		Person p = personService.getPerson(2);
-		
-		//test loading relationship types real quick.
-		List<RelationshipType> rTmp = personService.getAllRelationshipTypes();
-		assertNotNull(rTmp);
-		RelationshipType rTypeTmp = personService.getRelationshipTypeByName("Doctor/Patient");
-		assertNotNull(rTypeTmp);
-		rTypeTmp = personService.getRelationshipTypeByName("booya");
-		assertNull(rTypeTmp);
 		
 		// Void all relationships.
 		List<Relationship> allRels = personService.getAllRelationships();
@@ -241,14 +154,13 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 			personService.voidRelationship(r, "Because of a JUnit test.");
 		}
 		
-		// TODO this is the actual test.  Cut this method down to just this
-		
 		// Get unvoided relationships after voiding all of them.
 		// (specified date should not matter as no relationships have date specified)
-		List<Relationship> updatedARels = personService.getRelationshipsByPerson(p, new Date());
-		List<Relationship> updatedBRels = personService.getRelationshipsByPerson(patient, new Date());
 		
-		// Neither Patient#2 or Patient#3 should have any relationships now.
+		List<Relationship> updatedARels = personService.getRelationshipsByPerson(p1, new Date());
+		List<Relationship> updatedBRels = personService.getRelationshipsByPerson(p2, new Date());
+		
+		// Neither p1 or p2 should have any relationships now.
 		assertEquals(0, updatedARels.size());
 		assertEquals(updatedARels, updatedBRels);
 	}

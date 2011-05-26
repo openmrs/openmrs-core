@@ -446,14 +446,19 @@ public interface PersonService {
 	public List<Relationship> getRelationshipsByPerson(Person p) throws APIException;
 	
 	/**
-	 * Get list of relationships that include Person in person_id or relative_id Does not include
-	 * voided relationships. Allows an effectiveDate parameter.
+	 * Get list of relationships that include Person in person_id or relative_id.
+	 * Does not include voided relationships. 
+	 * Accepts an effectiveDate parameter which, if supplied, will limit the returned
+	 * relationships to those that were active on the given date.  Such active relationships
+	 * include those that have a startDate that is null or less than or equal to the effectiveDate, 
+	 * and that have an endDate that is null or greater than or equal to the effectiveDate.
 	 * 
 	 * @param p person object listed on either side of the relationship
 	 * @param effectiveDate effective date of relationship
 	 * @return Relationship list
 	 * @throws APIException
 	 * @should only get unvoided relationships
+	 * @should only get unvoided relationships regardless of effective date
 	 * @should fetch relationships associated with the given person
 	 * @should fetch relationships that were active during effectiveDate
 	 */
