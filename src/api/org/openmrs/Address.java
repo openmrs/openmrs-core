@@ -15,6 +15,7 @@ package org.openmrs;
 
 /**
  * Defines the standard fields for an Address in OpenMRS
+ * @since 1.6.3 
  */
 public interface Address {
 	
