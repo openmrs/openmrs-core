@@ -15,24 +15,24 @@
 package org.openmrs.obs.handler;
 
 import org.openmrs.Obs;
-import org.openmrs.Patient;
+import org.openmrs.Location;
 import org.openmrs.api.APIException;
-import org.openmrs.api.PatientService;
+import org.openmrs.api.LocationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.obs.ComplexData;
 import org.openmrs.obs.ComplexObsHandler;
 
 /**
- * Handler for storing Patient objects as answers for Complex Observations. The Patient Id number of
- * each Patient object is stored in the value_complex column of the Obs table in the database
+ * Handler for storing Location objects as answers for Complex Observations. The Location Id number
+ * of each Location object is stored in the value_complex column of the Obs table in the database
  */
 
-public class PatientHandler extends DomainObjectHandler implements ComplexObsHandler {
+public class LocationHandler extends DomainObjectHandler implements ComplexObsHandler {
 	
 	/**
 	 * The default Constructor method
 	 */
-	public PatientHandler() {
+	public LocationHandler() {
 		super();
 	}
 	
@@ -41,7 +41,7 @@ public class PatientHandler extends DomainObjectHandler implements ComplexObsHan
 	 */
 	@Override
 	public Obs saveObs(Obs obs) throws APIException {
-		PatientService ps = Context.getPatientService();
+		LocationService ls = Context.getLocationService();
 		Object data = obs.getComplexData().getData();
 		
 		if (data == null) {
@@ -49,14 +49,16 @@ public class PatientHandler extends DomainObjectHandler implements ComplexObsHan
 			        + " because its ComplexData.getData() is null.");
 		}
 		
-		Patient patient = ps.getPatient(Integer.parseInt(data.toString()));
+		Location location = ls.getLocation(Integer.parseInt(data.toString()));
 		
-		if (patient == null) {
+		if (location == null) {
 			throw new APIException("Cannot save complex obs where obsId=" + obs.getObsId()
-			        + " because the patient instance is null.");
+			        + " because the location instance is null.");
 		}
+		
 		// Set the Title for the valueComplex
-		obs.setValueComplex(patient.getPersonName() + "(" + patient.getPatientIdentifier() + ")" + "|" + data.toString());
+		obs.setValueComplex(location.getAddress1() + "-" + location.getAddress2() + "(" + location.getLocationId() + ")"
+		        + "|" + data.toString());
 		
 		// Remove the ComlexData from the Obs
 		obs.setComplexData(null);
@@ -69,16 +71,15 @@ public class PatientHandler extends DomainObjectHandler implements ComplexObsHan
 	 */
 	@Override
 	public Obs getObs(Obs obs, String view) {
-		PatientService ps = Context.getPatientService();
+		LocationService ls = Context.getLocationService();
 		String[] values = obs.getValueComplex().split("\\|");
-		Patient patient = ps.getPatient(Integer.parseInt(values[1]));
+		Location location = ls.getLocation(Integer.parseInt(values[1]));
 		
-		if (patient == null) {
+		if (location == null) {
 			throw new APIException("Cannot retrieve complex obs where obsId=" + obs.getObsId()
-			        + " because the patient instance is null.");
+			        + " because the location instance is null.");
 		}
-		
-		ComplexData complexData = new ComplexData(values[0], patient);
+		ComplexData complexData = new ComplexData(values[0], location);
 		
 		obs.setComplexData(complexData);
 		
