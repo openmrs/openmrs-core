@@ -626,7 +626,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	 * 
 	 * @since 1.9
 	 */
-	public void inactivate() {
+	public void deactivate() {
 		setEndDate(Calendar.getInstance().getTime());
 	}
 	
