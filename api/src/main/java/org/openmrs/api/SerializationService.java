@@ -15,6 +15,7 @@ package org.openmrs.api;
 
 import java.util.List;
 
+import org.openmrs.annotation.Logging;
 import org.openmrs.serialization.OpenmrsSerializer;
 import org.openmrs.serialization.SerializationException;
 import org.springframework.transaction.annotation.Transactional;
@@ -68,6 +69,7 @@ public interface SerializationService extends OpenmrsService {
 	 *            deserialization
 	 * @return hydrated object of the appropriate type
 	 */
+	@Logging(ignoredArgumentIndexes = { 0 })
 	public <T extends Object> T deserialize(String serializedObject, Class<? extends T> objectClass,
 	        Class<? extends OpenmrsSerializer> serializerClass) throws SerializationException;
 	
