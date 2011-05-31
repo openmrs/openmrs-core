@@ -25,7 +25,7 @@ public class EventListeners {
 	
 	private static Log log = LogFactory.getLog(EventListeners.class);
 	
-	private static List<GlobalPropertyListener> globalPropertyListeners;
+	private static List<GlobalPropertyListener> globalPropertyListeners = null;
 	
 	public EventListeners() {
 	}
@@ -34,6 +34,12 @@ public class EventListeners {
 		return globalPropertyListeners;
 	}
 	
+	/**
+	 * This setter acts more like an "appender".  If the list already has elements, calling this method
+	 * will <b>add to</b> the list of listeners instead of replacing it.
+	 * 
+	 * @param globalPropertyListeners
+	 */
 	public void setGlobalPropertyListeners(List<GlobalPropertyListener> globalPropertyListeners) {
 		if (log.isDebugEnabled()) {
 			StringBuffer sb = new StringBuffer();
@@ -45,7 +51,15 @@ public class EventListeners {
 			log.debug("GlobalPropertyListeners set to: " + sb.toString());
 			
 		}
-		EventListeners.globalPropertyListeners = globalPropertyListeners;
+		
+		if (EventListeners.globalPropertyListeners == null)
+			EventListeners.globalPropertyListeners = globalPropertyListeners;
+		else {
+			for (GlobalPropertyListener gpl : globalPropertyListeners) {
+				if (!EventListeners.globalPropertyListeners.contains(gpl))
+					EventListeners.globalPropertyListeners.add(gpl);
+			}
+		}
 	}
 	
 }
