@@ -109,7 +109,7 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		for (Relationship r : allRels) {
 			personService.voidRelationship(r, "Because of a JUnit test.");
 		}
-
+		
 		List<Relationship> updatedARels = personService.getRelationshipsByPerson(p1);
 		List<Relationship> updatedBRels = personService.getRelationshipsByPerson(p2);
 		
