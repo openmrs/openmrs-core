@@ -220,14 +220,6 @@
                     <key><value>TextHandler</value></key>
                     <bean class="org.openmrs.obs.handler.TextHandler"/>
                 </entry>
-                <entry>
-                    <key><value>PatientHandler</value></key>
-                    <bean class="org.openmrs.obs.handler.PatientHandler"/>
-                </entry>
-                <entry>
-                    <key><value>LocationHandler</value></key>
-                    <bean class="org.openmrs.obs.handler.LocationHandler"/>
-                </entry>
             </map>
         </property>
 	</bean>
