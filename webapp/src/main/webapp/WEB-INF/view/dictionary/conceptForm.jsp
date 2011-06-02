@@ -434,7 +434,7 @@
 	<tr id="codedDatatypeRow">
 		<th valign="top">
 			<spring:message code="Concept.answers"/> 
-			<img class="help_icon" id="tooltipCodedIcon" src="${pageContext.request.contextPath}/images/help.gif" border="0" title="<spring:message code="Concept.datatype.coded.help"/>"
+			<img class="help_icon" id="tooltipCodedIcon" src="${pageContext.request.contextPath}/images/help.gif" border="0" title="<spring:message code="Concept.datatype.coded.help"/>" />
 		</th>
 		<td>
 			<spring:bind path="command.concept.answers">
@@ -463,7 +463,7 @@
 	<tr id="numericDatatypeRow">
 		<th valign="top">
 			<spring:message code="ConceptNumeric.name"/>
-			<img class="help_icon" id="tooltipNumericIcon" src="${pageContext.request.contextPath}/images/help.gif" border="0" title="<spring:message code="Concept.datatype.numeric.help"/>"
+			<img class="help_icon" id="tooltipNumericIcon" src="${pageContext.request.contextPath}/images/help.gif" border="0" title="<spring:message code="Concept.datatype.numeric.help"/>" />
 		</th>
 		<td>
 			<table border="0">
@@ -551,7 +551,7 @@
     <tr id="complexDatatypeRow">
         <th valign="top">
 			<spring:message code="ConceptComplex.handler"/>
-			<img class="help_icon" id="tooltipComplexIcon" src="${pageContext.request.contextPath}/images/help.gif" border="0" title="<spring:message code="Concept.datatype.complex.help"/>"
+			<img class="help_icon" id="tooltipComplexIcon" src="${pageContext.request.contextPath}/images/help.gif" border="0" title="<spring:message code="Concept.datatype.complex.help"/>" />
 		</th>
         <td>
 			<spring:bind path="command.handlerKey">
