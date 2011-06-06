@@ -23,7 +23,12 @@ import org.openmrs.api.context.Context;
 import org.springframework.util.StringUtils;
 
 /**
- * Behaviors: Group vetted on 22/Aug/2008 at 2:22pm
+ * Allows for serializing/deserializing an object to a string so that Spring knows how to pass
+ * an object back and forth through an html form or other medium. <br/>
+ * <br/>
+ * In version 1.9, added ability for this to also retrieve objects by uuid
+ * 
+ * @see Drug
  */
 public class DrugEditor extends PropertyEditorSupport {
 	
@@ -39,6 +44,7 @@ public class DrugEditor extends PropertyEditorSupport {
 	 * @should set value to the drug with the specified identifier
 	 * @should set value to null if given empty string
 	 * @should set value to null if given null value
+	 * @should set using uuid
 	 * @should fail if drug does not exist with non-empty identifier
 	 */
 	public void setAsText(String text) throws IllegalArgumentException {
@@ -48,8 +54,12 @@ public class DrugEditor extends PropertyEditorSupport {
 				setValue(es.getDrug(Integer.valueOf(text)));
 			}
 			catch (Exception ex) {
-				log.error("Error setting text: " + text, ex);
-				throw new IllegalArgumentException("Drug not found: " + ex.getMessage());
+				Drug drug = es.getDrugByUuid(text);
+				setValue(drug);
+				if (drug == null) {
+					log.error("Error setting text: " + text, ex);
+					throw new IllegalArgumentException("Drug not found: " + ex.getMessage());
+				}
 			}
 		} else {
 			setValue(null);
