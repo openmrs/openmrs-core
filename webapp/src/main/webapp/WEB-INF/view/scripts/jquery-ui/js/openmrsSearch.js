@@ -483,6 +483,20 @@ function OpenmrsSearch(div, showIncludeVoided, searchHandler, selectionHandler, 
 				
 				//FETCH THE REST OF THE RESULTS IF result COUNT is greater than the number of rows to display per page
 				if(matchCount > self._table.fnSettings()._iDisplayLength){
+					//if the user wishes to fetch all results in one call without polling
+					//i.e their MyDWRService.findCountAndMyObjects() method always returns all hits
+					if(matchCount == self._results.length){
+						spinnerObj.css("visibility", "hidden");
+						loadingMsgObj.html("");
+						if(self._results.length % self._table.fnSettings()._iDisplayLength == 0)
+							self._table.numberOfPages = self._results.length/self._table.fnSettings()._iDisplayLength;
+						else
+							self._table.numberOfPages = Math.floor(self._results.length/self._table.fnSettings()._iDisplayLength)+1;
+
+						$j('#pageInfo').append(" - "+omsgs.pagesWithPlaceHolder.replace("_NUMBER_OF_PAGES_", self._table.numberOfPages));
+						return;
+					}
+					
 					spinnerObj.css("visibility", "visible");
 					var startIndex = self._table.fnSettings()._iDisplayLength;
 					if(!inSerialMode){

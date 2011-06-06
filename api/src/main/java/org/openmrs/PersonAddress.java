@@ -30,7 +30,7 @@ import org.simpleframework.xml.Root;
  * class, so a Person/Patient/User can have zero to n addresses
  */
 @Root(strict = false)
-public class PersonAddress extends BaseOpenmrsData implements java.io.Serializable, Cloneable, Comparable<PersonAddress> {
+public class PersonAddress extends BaseOpenmrsData implements java.io.Serializable, Cloneable, Comparable<PersonAddress>, Address {
 	
 	public static final long serialVersionUID = 343333L;
 	
@@ -626,7 +626,7 @@ public class PersonAddress extends BaseOpenmrsData implements java.io.Serializab
 	 * 
 	 * @since 1.9
 	 */
-	public void inactivate() {
+	public void deactivate() {
 		setEndDate(Calendar.getInstance().getTime());
 	}
 	

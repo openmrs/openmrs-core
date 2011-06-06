@@ -35,6 +35,9 @@ public class PersonEditor extends PropertyEditorSupport {
 	private Log log = LogFactory.getLog(this.getClass());
 	
 	/**
+	 * @should set using id
+	 * @should set using uuid
+	 * 
 	 * @see java.beans.PropertyEditorSupport#setAsText(java.lang.String)
 	 */
 	@Override

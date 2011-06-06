@@ -35,6 +35,10 @@ public class VisitTypeEditor extends PropertyEditorSupport {
 	public VisitTypeEditor() {
 	}
 	
+	/**
+	 * @should set using id
+	 * @should set using uuid
+	 */
 	public void setAsText(String text) throws IllegalArgumentException {
 		VisitService vs = Context.getVisitService();
 		if (StringUtils.hasText(text)) {
@@ -42,7 +46,11 @@ public class VisitTypeEditor extends PropertyEditorSupport {
 				setValue(vs.getVisitType(Integer.valueOf(text)));
 			}
 			catch (Exception ex) {
-				throw new IllegalArgumentException("Visit Type not found: " + ex.getMessage());
+				VisitType v = vs.getVisitTypeByUuid(text);
+				setValue(v);
+				if (v == null) {
+					throw new IllegalArgumentException("Visit Type not found: " + ex.getMessage());
+				}
 			}
 		} else {
 			setValue(null);
