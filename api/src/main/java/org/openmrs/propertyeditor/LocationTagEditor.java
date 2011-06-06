@@ -24,6 +24,7 @@ import org.springframework.util.StringUtils;
 
 /**
  * Property editor for {@link LocationTag}s
+ * In version 1.9, added ability for this to also retrieve objects by uuid
  * 
  * @since 1.7
  */
@@ -35,6 +36,9 @@ public class LocationTagEditor extends PropertyEditorSupport {
 	}
 	
 	/**
+	 * @should set using id
+	 * @should set using uuid
+	 * 
 	 * @see java.beans.PropertyEditorSupport#setAsText(java.lang.String)
 	 */
 	public void setAsText(String text) throws IllegalArgumentException {
@@ -44,8 +48,12 @@ public class LocationTagEditor extends PropertyEditorSupport {
 				setValue(ls.getLocationTag(Integer.valueOf(text)));
 			}
 			catch (Exception ex) {
-				log.error("Error setting text: " + text, ex);
-				throw new IllegalArgumentException("LocationTag not found: " + ex.getMessage());
+				LocationTag locationTag = ls.getLocationTagByUuid(text);
+				setValue(locationTag);
+				if (locationTag == null) {
+					log.error("Error setting text: " + text, ex);
+					throw new IllegalArgumentException("LocationTag not found: " + ex.getMessage());
+				}
 			}
 		} else {
 			setValue(null);

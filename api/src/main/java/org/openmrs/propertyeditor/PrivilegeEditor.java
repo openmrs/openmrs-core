@@ -22,6 +22,14 @@ import org.openmrs.api.UserService;
 import org.openmrs.api.context.Context;
 import org.springframework.util.StringUtils;
 
+/**
+ * Allows for serializing/deserializing an object to a string so that Spring knows how to pass
+ * an object back and forth through an html form or other medium. <br/>
+ * <br/>
+ * In version 1.9, added ability for this to also retrieve objects by uuid
+ * 
+ * @see Privilege
+ */
 public class PrivilegeEditor extends PropertyEditorSupport {
 	
 	private Log log = LogFactory.getLog(this.getClass());
@@ -29,15 +37,27 @@ public class PrivilegeEditor extends PropertyEditorSupport {
 	public PrivilegeEditor() {
 	}
 	
+	/**
+	 * @should set using name
+	 * @should set using uuid
+	 */
 	public void setAsText(String text) throws IllegalArgumentException {
 		UserService es = Context.getUserService();
 		if (StringUtils.hasText(text)) {
 			try {
-				setValue(es.getPrivilege(text));
+				Privilege p = es.getPrivilege(text);
+				setValue(p);
+				//when a privilege is not found, no exception is generated. throw one to execute the catch block
+				if (p == null)
+					throw new Exception();
 			}
 			catch (Exception ex) {
-				log.error("Error setting text: " + text, ex);
-				throw new IllegalArgumentException("Role not found: " + ex.getMessage());
+				Privilege p = es.getPrivilegeByUuid(text);
+				setValue(p);
+				if (p == null) {
+					log.error("Error setting text: " + text, ex);
+					throw new IllegalArgumentException("Privilege not found: " + ex.getMessage());
+				}
 			}
 		} else {
 			setValue(null);

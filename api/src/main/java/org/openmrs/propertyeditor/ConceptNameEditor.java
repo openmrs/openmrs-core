@@ -23,7 +23,12 @@ import org.openmrs.api.context.Context;
 import org.springframework.util.StringUtils;
 
 /**
- * Used to get/set the ConceptName attribute of objects.
+ * Allows for serializing/deserializing an object to a string so that Spring knows how to pass
+ * an object back and forth through an html form or other medium. <br/>
+ * <br/>
+ * In version 1.9, added ability for this to also retrieve objects by uuid
+ * 
+ * @see ConceptName
  */
 public class ConceptNameEditor extends PropertyEditorSupport {
 	
@@ -33,6 +38,9 @@ public class ConceptNameEditor extends PropertyEditorSupport {
 	}
 	
 	/**
+	 * @should set using id
+	 * @should set using uuid
+	 * 
 	 * @see java.beans.PropertyEditorSupport#setAsText(java.lang.String)
 	 */
 	public void setAsText(String text) throws IllegalArgumentException {
@@ -42,8 +50,12 @@ public class ConceptNameEditor extends PropertyEditorSupport {
 				setValue(cs.getConceptName(Integer.valueOf(text)));
 			}
 			catch (Exception ex) {
-				log.error("Error setting text" + text, ex);
-				throw new IllegalArgumentException("ConceptName not found: " + ex.getMessage());
+				ConceptName conceptName = cs.getConceptNameByUuid(text);
+				setValue(conceptName);
+				if (conceptName == null) {
+					log.error("Error setting text" + text, ex);
+					throw new IllegalArgumentException("ConceptName not found: " + ex.getMessage());
+				}
 			}
 		} else {
 			setValue(null);

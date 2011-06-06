@@ -22,6 +22,14 @@ import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.springframework.util.StringUtils;
 
+/**
+ * Allows for serializing/deserializing an object to a string so that Spring knows how to pass
+ * an object back and forth through an html form or other medium. <br/>
+ * <br/>
+ * In version 1.9, added ability for this to also retrieve objects by uuid
+ * 
+ * @see ConceptClass
+ */
 public class ConceptClassEditor extends PropertyEditorSupport {
 	
 	private Log log = LogFactory.getLog(this.getClass());
@@ -29,6 +37,10 @@ public class ConceptClassEditor extends PropertyEditorSupport {
 	public ConceptClassEditor() {
 	}
 	
+	/**
+	 * @should set using id
+	 * @should set using uuid
+	 */
 	public void setAsText(String text) throws IllegalArgumentException {
 		log.debug("Setting text: " + text);
 		ConceptService cs = Context.getConceptService();
@@ -37,7 +49,11 @@ public class ConceptClassEditor extends PropertyEditorSupport {
 				setValue(cs.getConceptClass(Integer.valueOf(text)));
 			}
 			catch (Exception ex) {
-				throw new IllegalArgumentException("ConceptClass not found: " + ex.getMessage());
+				ConceptClass conceptClass = cs.getConceptClassByUuid(text);
+				setValue(conceptClass);
+				if (conceptClass == null) {
+					throw new IllegalArgumentException("ConceptClass not found: " + ex.getMessage());
+				}
 			}
 		} else {
 			setValue(null);
