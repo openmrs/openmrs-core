@@ -14,6 +14,7 @@
 package org.openmrs.util;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
@@ -58,6 +59,9 @@ public class OpenmrsClassLoader extends URLClassLoader {
 	
 	// holds a list of all classes that this classloader loaded so that they can be cleaned up
 	private Set<Class<?>> loadedClasses = new HashSet<Class<?>>();
+	
+	// suffix of the OpenMRS required library cache folder
+	private static final String LIBCACHESUFFIX = ".openmrs-lib-cache";
 	
 	/**
 	 * Creates the instance for the OpenmrsClassLoader
@@ -500,8 +504,7 @@ public class OpenmrsClassLoader extends URLClassLoader {
 			return libCacheFolderInitialized ? libCacheFolder : null;
 		
 		synchronized (ModuleClassLoader.class) {
-			libCacheFolder = new File(System.getProperty("java.io.tmpdir"), System.currentTimeMillis()
-			        + ".openmrs-lib-cache");
+			libCacheFolder = new File(System.getProperty("java.io.tmpdir"), System.currentTimeMillis() + LIBCACHESUFFIX);
 			
 			if (log.isDebugEnabled())
 				log.debug("libraries cache folder is " + libCacheFolder);
@@ -522,6 +525,8 @@ public class OpenmrsClassLoader extends URLClassLoader {
 					log.warn("Unable to delete: " + libCacheFolder.getName());
 				}
 			} else {
+				// delete old lib cache folders
+				deleteOldLibCaches(libCacheFolder);
 				// otherwise just create the dir structure
 				libCacheFolder.mkdirs();
 			}
@@ -548,6 +553,43 @@ public class OpenmrsClassLoader extends URLClassLoader {
 		}
 		
 		return libCacheFolder;
+	}
+	
+	/**
+	 * Deletes the old lib cache folders that might not have been deleted when OpenMRS closed
+	 * @param libCacheFolder 
+	 */
+	public static void deleteOldLibCaches(File libCacheFolder) {
+		FilenameFilter cacheDirFilter = new FilenameFilter() {
+			
+			@Override
+			public boolean accept(File dir, String name) {
+				return name.endsWith(LIBCACHESUFFIX);
+			}
+		};
+		FilenameFilter lockFilter = new FilenameFilter() {
+			
+			@Override
+			public boolean accept(File dir, String name) {
+				return name.equals("lock");
+			}
+		};
+		File tempLocation = libCacheFolder.getParentFile();
+		File[] listFiles = tempLocation.listFiles(cacheDirFilter);
+		for (File cacheDir : listFiles) {
+			//check if it is a directory, but is not the current lib cache
+			if (cacheDir.isDirectory() && !cacheDir.equals(libCacheFolder)) {
+				// check if its not locked by another running openmrs instance
+				if (cacheDir.list(lockFilter).length == 0) {
+					try {
+						OpenmrsUtil.deleteDirectory(cacheDir);
+					}
+					catch (IOException io) {
+						log.warn("Unable to delete: " + cacheDir.getName());
+					}
+				}
+			}
+		}
 	}
 	
 	/**
