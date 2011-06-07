@@ -22,6 +22,7 @@ public class OpenmrsClassLoaderTest extends BaseContextSensitiveTest {
 			}
 		};
 		File oldCache = new File(System.getProperty("java.io.tmpdir"), "oldCache.openmrs-lib-cache");
+        OpenmrsClassLoader.deleteOldLibCaches(oldCache);
 		//create old cache folder
 		oldCache.mkdirs();
 		File currentCache = new File(System.getProperty("java.io.tmpdir"), "currentCache.openmrs-lib-cache");
@@ -29,10 +30,10 @@ public class OpenmrsClassLoaderTest extends BaseContextSensitiveTest {
 		currentCache.mkdirs();
 		File tempDir = currentCache.getParentFile();
 		// two caches should exist
-		Assert.assertEquals(tempDir.listFiles(cacheDirFilter).length, 2);
+		Assert.assertEquals(2, tempDir.listFiles(cacheDirFilter).length);
 		OpenmrsClassLoader.deleteOldLibCaches(currentCache);
 		//verify after deleting only one cache should exist
-		Assert.assertEquals(tempDir.listFiles(cacheDirFilter).length, 1);
+		Assert.assertEquals(1, tempDir.listFiles(cacheDirFilter).length);
 		//verify that it is current cache
 		Assert.assertEquals(tempDir.listFiles(cacheDirFilter)[0], currentCache);
 	}
