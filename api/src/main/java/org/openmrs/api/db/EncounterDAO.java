@@ -20,6 +20,7 @@ import java.util.Map;
 
 import org.openmrs.Cohort;
 import org.openmrs.Encounter;
+import org.openmrs.EncounterSearchResult;
 import org.openmrs.EncounterType;
 import org.openmrs.Form;
 import org.openmrs.Location;
@@ -154,16 +155,13 @@ public interface EncounterDAO {
 	public EncounterType getEncounterTypeByUuid(String uuid);
 	
 	/**
-	 * Get a list of {@link Encounter} by Patient name or identifier based on batch settings
+	 * Get a list of {@link Encounter} by Patient name or identifier
 	 * 
 	 * @param query patient name or identifier
-	 * @param start beginning index for the batch
-	 * @param length number of encounters to return in the batch
 	 * @param includeVoided Specifies whether voided encounters should be included
 	 * @return list of {@link Encounter} based on batch settings
-	 * @see EncounterService#getEncounters(String, Integer, Integer, boolean)
 	 */
-	List<Encounter> getEncounters(String query, Integer start, Integer length, boolean includeVoided);
+	public List<Encounter> getEncounters(String query, boolean includeVoided);
 	
 	/**
 	 * Gets the location of the encounter
@@ -192,4 +190,10 @@ public interface EncounterDAO {
 	 * @see EncounterService#getEncountersByVisit(Visit)
 	 */
 	public List<Encounter> getEncountersByVisit(Visit visit);
+	
+	/**
+	 * @see EncounterService#getEncounters(String, Integer, Integer, boolean, boolean)
+	 */
+	public List<EncounterSearchResult> getEncounters(String query, Integer start, Integer length, boolean includeVoided,
+	        boolean sortbyNames) throws DAOException;
 }

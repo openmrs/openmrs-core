@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+ 	<person person_id="10" gender="" birthdate="1948-01-01 00:00:00.0" birthdate_estimated="0" dead="0" creator="1" date_created="2005-01-01 00:00:00.0" voided="0" uuid="bed9239a-8dfd-11e0-9188-705ab6a580e0"/>
+	<person person_id="11" gender="" birthdate="1948-01-01 00:00:00.0" birthdate_estimated="0" dead="0" creator="1" date_created="2005-01-01 00:00:00.0" voided="0" uuid="cc9a0dc6-90de-11e0-9c16-705ab6a580e0"/>
+  	<!-- Note that the given names start with the same characters -->
+  	<person_name person_id="10" person_name_id="101" preferred="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="0" given_name="qwerty11" middle_name="O" family_name="One"  uuid="d8744a76-90de-11e0-9c16-705ab6a580e0"/>
+  	<person_name person_id="10" person_name_id="102" preferred="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="0" given_name="qwerty12" middle_name="O" family_name="One"  uuid="e53f624a-90de-11e0-9c16-705ab6a580e0"/>
+ 	<person_name person_id="11" person_name_id="103" preferred="1" creator="1" date_created="2005-01-01 00:00:00.0" voided="0" given_name="qwerty21" middle_name="T" family_name="Two"  uuid="f616e7fa-90de-11e0-9c16-705ab6a580e0"/>
+ 	
+  	<patient patient_id="10" creator="1" date_created="2005-09-22 00:00:00.0" voided="0" />
+  	<patient patient_id="11" creator="1" date_created="2005-09-22 00:00:00.0" voided="0" />
+  	
+  	<encounter encounter_id="16" encounter_type="1" encounter_datetime="2008-01-01 00:00:00.0" patient_id="10" provider_id="1" location_id="1" creator="1" date_created="2008-02-01 00:00:00.0" voided="0" uuid="03c4fe3c-90df-11e0-9c16-705ab6a580e0"/>
+	<encounter encounter_id="17" encounter_type="1" encounter_datetime="2008-01-01 00:00:00.0" patient_id="10" provider_id="1" location_id="1" creator="1" date_created="2008-02-01 00:00:00.0" voided="0" uuid="0e4ae574-90df-11e0-9c16-705ab6a580e0"/>
+	<encounter encounter_id="18" encounter_type="1" encounter_datetime="2008-01-01 00:00:00.0" patient_id="10" provider_id="1" location_id="1" creator="1" date_created="2008-02-01 00:00:00.0" voided="1" uuid="1cb903f2-90df-11e0-9c16-705ab6a580e0"/>
+	
+	<encounter encounter_id="23" encounter_type="1" encounter_datetime="2008-01-01 00:00:00.0" patient_id="11" provider_id="1" location_id="1" creator="1" date_created="2008-02-01 00:00:00.0" voided="0" uuid="5a4e92c2-90df-11e0-9c16-705ab6a580e0"/>
+</dataset>

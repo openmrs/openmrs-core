@@ -30,10 +30,12 @@ import java.util.Vector;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
+import org.openmrs.EncounterSearchResult;
 import org.openmrs.EncounterType;
 import org.openmrs.Form;
 import org.openmrs.Location;
@@ -54,6 +56,8 @@ import org.openmrs.test.Verifies;
 public class EncounterServiceTest extends BaseContextSensitiveTest {
 	
 	protected static final String ENC_INITIAL_DATA_XML = "org/openmrs/api/include/EncounterServiceTest-initialData.xml";
+	
+	protected static final String UNIQUE_ENC_WITH_PAGING_XML = "org/openmrs/api/include/EncounterServiceTest-pagingWithUniqueEncounters.xml";
 	
 	/**
 	 * This method is run before all of the tests in this class because it has the @Before
@@ -1453,5 +1457,53 @@ public class EncounterServiceTest extends BaseContextSensitiveTest {
 	public void getEncountersByVisit_shouldGetEncountersByVisit() throws Exception {
 		List<Encounter> encounters = Context.getEncounterService().getEncountersByVisit(new Visit(1));
 		assertEquals(1, encounters.size());
+	}
+	
+	/**
+	 * @see {@link EncounterService#getCountOfEncounters(String,null)}
+	 */
+	@Test
+	@Verifies(value = "should get the correct count of unique encounters", method = "getCountOfEncounters(String,null)")
+	public void getCountOfEncounters_shouldGetTheCorrectCountOfUniqueEncounters() throws Exception {
+		executeDataSet(UNIQUE_ENC_WITH_PAGING_XML);
+		Assert.assertEquals(4, Context.getEncounterService().getCountOfEncounters("qwerty", true).intValue());
+	}
+	
+	/**
+	 * @see {@link EncounterService#getEncounters(String,Integer,Integer,null,null)}
+	 */
+	@Test
+	@Verifies(value = "should get all the unique encounters that match the specified parameter values", method = "getEncounters(String,Integer,Integer,null,null)")
+	public void getEncounters_shouldGetAllTheUniqueEncountersThatMatchTheSpecifiedParameterValues() throws Exception {
+		executeDataSet(UNIQUE_ENC_WITH_PAGING_XML);
+		List<EncounterSearchResult> encs = Context.getEncounterService().getEncounters("qwerty", 0, 4, true, false);
+		Assert.assertEquals(4, encs.size());
+	}
+	
+	/**
+	 * @see {@link EncounterService#getEncounters(String,Integer,Integer,null,null)}
+	 */
+	@Test
+	@Ignore
+	@Verifies(value = "should sort the results by patient names if sortByNames is set to true", method = "getEncounters(String,Integer,Integer,null,null)")
+	public void getEncounters_shouldSortTheResultsByPatientNamesIfSortByNamesIsSetToTrue() throws Exception {
+		executeDataSet(UNIQUE_ENC_WITH_PAGING_XML);
+		//TODO H2 cannot execute the generated SQL because it requires all fetched columns to be included in the group by clause
+		//See https://tickets.openmrs.org/browse/TRUNK-1956
+		List<EncounterSearchResult> encs = Context.getEncounterService().getEncounters("qwerty", 0, 4, true, true);
+		//the last two encounter should be for patient who name comes last alphabetically
+		Assert.assertTrue(encs.get(2).getPatient().equals(new Patient(11)));
+		Assert.assertTrue(encs.get(3).getPatient().equals(new Patient(11)));
+	}
+	
+	/**
+	 * @see {@link EncounterService#getEncounters(String,Integer,Integer,null,null)}
+	 */
+	@Test
+	@Verifies(value = "should not return voided encounters if includeVoided is set to true", method = "getEncounters(String,Integer,Integer,null,null)")
+	public void getEncounters_shouldNotReturnVoidedEncountersIfIncludeVoidedIsSetToTrue() throws Exception {
+		executeDataSet(UNIQUE_ENC_WITH_PAGING_XML);
+		List<EncounterSearchResult> encs = Context.getEncounterService().getEncounters("qwerty", 0, 4, false, false);
+		Assert.assertEquals(3, encs.size());
 	}
 }
