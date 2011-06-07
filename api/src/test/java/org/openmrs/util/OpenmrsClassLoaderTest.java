@@ -21,19 +21,31 @@ public class OpenmrsClassLoaderTest extends BaseContextSensitiveTest {
 				return name.endsWith(".openmrs-lib-cache");
 			}
 		};
-		File oldCache = new File(System.getProperty("java.io.tmpdir"), "oldCache.openmrs-lib-cache");
-        OpenmrsClassLoader.deleteOldLibCaches(oldCache);
+		FilenameFilter lockFilter = new FilenameFilter() {
+			
+			@Override
+			public boolean accept(File dir, String name) {
+				return name.equals("lock");
+			}
+		};
+		File oldCache = new File(System.getProperty("java.io.tmpdir"), "001.openmrs-lib-cache");
 		//create old cache folder
 		oldCache.mkdirs();
-		File currentCache = new File(System.getProperty("java.io.tmpdir"), "currentCache.openmrs-lib-cache");
+		File currentCache = new File(System.getProperty("java.io.tmpdir"), "002.openmrs-lib-cache");
 		//create current cache folder
 		currentCache.mkdirs();
 		File tempDir = currentCache.getParentFile();
-		// two caches should exist
-		Assert.assertEquals(2, tempDir.listFiles(cacheDirFilter).length);
+		int folderCount = 0;
+		File tempFolder = new File(System.getProperty("java.io.tmpdir"));
+		File[] listFiles = tempFolder.listFiles(cacheDirFilter);
+		for (File cacheDir : listFiles) {
+			if (cacheDir.list(lockFilter).length != 0) {
+				folderCount++;
+			}
+		}
 		OpenmrsClassLoader.deleteOldLibCaches(currentCache);
 		//verify after deleting only one cache should exist
-		Assert.assertEquals(1, tempDir.listFiles(cacheDirFilter).length);
+		Assert.assertEquals(folderCount + 1, tempDir.listFiles(cacheDirFilter).length);
 		//verify that it is current cache
 		Assert.assertEquals(tempDir.listFiles(cacheDirFilter)[0], currentCache);
 	}
