@@ -23,7 +23,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class DomainObjectHandler {
 	
-	public static final Log log = LogFactory.getLog(AbstractHandler.class);
+	public static final Log log = LogFactory.getLog(DomainObjectHandler.class);
 	
 	/**
 	 * The default Constructor method
