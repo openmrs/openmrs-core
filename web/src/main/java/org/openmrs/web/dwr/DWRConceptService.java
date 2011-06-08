@@ -24,6 +24,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
+import org.openmrs.obs.ComplexObsHandler;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptDatatype;
@@ -32,6 +33,7 @@ import org.openmrs.ConceptName;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptSearchResult;
 import org.openmrs.ConceptSet;
+import org.openmrs.ConceptComplex;
 import org.openmrs.Drug;
 import org.openmrs.Field;
 import org.openmrs.User;
@@ -40,6 +42,7 @@ import org.openmrs.api.ConceptService;
 import org.openmrs.api.ConceptsLockedException;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
+import org.openmrs.obs.handler.DomainObjectHandler;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 
@@ -411,6 +414,16 @@ public class DWRConceptService {
 		ConceptNumeric conceptNumeric = Context.getConceptService().getConceptNumeric(conceptId);
 		
 		return conceptNumeric.getUnits();
+	}
+	
+	public Boolean isConceptComplexDomainObjectType(Integer conceptId) {
+		ConceptComplex conceptComplex = Context.getConceptService().getConceptComplex(conceptId);
+		log.info("Retrieving concept with handler :" + conceptComplex.getHandler());
+		
+		ComplexObsHandler handlerObs = Context.getObsService().getHandler(conceptComplex.getHandler());
+		if (handlerObs instanceof DomainObjectHandler)
+			return true;
+		return false;
 	}
 	
 	public List<ConceptListItem> getAnswersForQuestion(Integer conceptId) {
