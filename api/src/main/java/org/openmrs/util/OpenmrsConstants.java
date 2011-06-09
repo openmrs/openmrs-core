@@ -1019,7 +1019,7 @@ public final class OpenmrsConstants {
 		        "Concept id of the concept defining the OTHER NON-CODED concept"));
 		props.add(new GlobalProperty("concept.patientDied", "1742",
 		        "Concept id of the concept defining the PATIENT DIED concept"));
-		props.add(new GlobalProperty("concept.reasonExitedCare", "1811",
+		props.add(new GlobalProperty("concept.reasonExitedCare", "",
 		        "Concept id of the concept defining the REASON EXITED CARE concept"));
 		props.add(new GlobalProperty("concept.reasonOrderStopped", "1812",
 		        "Concept id of the concept defining the REASON ORDER STOPPED concept"));
