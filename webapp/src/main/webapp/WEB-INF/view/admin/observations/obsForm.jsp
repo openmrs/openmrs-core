@@ -34,7 +34,7 @@
 	}
 	
 	function updateObsValues(tmpConcept) {
-		var values = ['valueBooleanRow', 'valueCodedRow', 'valueDatetimeRow', 'valueModifierRow', 'valueTextRow', 'valueNumericRow', 'valueInvalidRow', 'valueComplex'];
+		var values = ['valueBooleanRow', 'valueCodedRow', 'valueDatetimeRow', 'valueModifierRow', 'valueTextRow', 'valueNumericRow', 'valueInvalidRow','valueComplexRow','valueDomainObjectRow'];
 		$j.each(values, function(x, val) { $j("#" + val).hide() });
 		
 		if (tmpConcept != null) {
@@ -78,7 +78,7 @@
 			}
 			// TODO move datatype 'TM' to own time box.  How to have them select?
 			else if (datatype == 'ED') {
-				$j('#valueComplex').show();
+				DWRConceptService.isConceptComplexDomainObjectType(tmpConcept.conceptId,displayObsValueField);
 			}
 			else {
 				$j('#valueInvalidRow').show();
@@ -86,6 +86,13 @@
 			}
 		}
 	}
+	
+	function displayObsValueField(isDomainObject){
+		if(isDomainObject == true)
+			$j('#valueDomainObjectRow').show();
+		else
+			$j('#valueComplexRow').show();
+		}
 	
 	function fillNumericUnits(units) {
 		$j('#numericUnits').html(units);
@@ -382,7 +389,7 @@
 			</td>
 		</spring:bind>
 	</tr>
-	<tr id="valueComplex" class="obsValue">
+	<tr id="valueComplexRow" class="obsValue">
 		<th><spring:message code="Obs.complexAnswer"/></th>
 		<spring:bind path="valueComplex">
 			<td>
@@ -394,6 +401,15 @@
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</td>
 		</spring:bind>
+	</tr>		
+	<tr id="valueDomainObjectRow" class="obsValue">
+		<th><spring:message code="Obs.complexAnswer"/></th>
+		<spring:bind path="valueComplex">
+		<td>	  
+			 <openmrs_tag:domainObsValue concept="${obs.concept}" formFieldName="valueComplex"/> 
+			 <c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+		</td>
+	</spring:bind>
 	</tr>
 	<tr id="valueInvalidRow" class="obsValue">
 		<th> &nbsp; </th>
