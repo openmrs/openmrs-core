@@ -13,6 +13,7 @@
  */
 package org.openmrs;
 
+import org.openmrs.attribute.BaseAttributeType;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
@@ -21,7 +22,7 @@ import org.simpleframework.xml.Root;
  * PersonAttributeType
  */
 @Root(strict = false)
-public class PersonAttributeType extends BaseOpenmrsMetadata implements java.io.Serializable {
+public class PersonAttributeType extends BaseAttributeType<Person> implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 2112313431211L;
 	
@@ -50,9 +51,9 @@ public class PersonAttributeType extends BaseOpenmrsMetadata implements java.io.
 	 * @see java.lang.Object#hashCode()
 	 */
 	public int hashCode() {
-		if (this.getPersonAttributeTypeId() == null)
+		if (this.getId() == null)
 			return super.hashCode();
-		return 7 * this.getPersonAttributeTypeId().hashCode();
+		return 7 * this.getId().hashCode();
 	}
 	
 	/**
@@ -65,7 +66,7 @@ public class PersonAttributeType extends BaseOpenmrsMetadata implements java.io.
 		if (obj instanceof PersonAttributeType) {
 			PersonAttributeType p = (PersonAttributeType) obj;
 			if (p != null)
-				return (personAttributeTypeId.equals(p.getPersonAttributeTypeId()));
+				return (personAttributeTypeId.equals(p.getId()));
 		}
 		return false;
 	}

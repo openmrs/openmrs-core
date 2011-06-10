@@ -145,7 +145,7 @@ public class PersonAttributeTypeListController {
 			
 			for (int i = 1; i < attributes.size(); i++) {
 				PersonAttributeType current = attributes.get(i);
-				if (selectedIds.contains(current.getPersonAttributeTypeId())) {
+				if (selectedIds.contains(current.getId())) {
 					PersonAttributeType above = attributes.get(i - 1);
 					
 					// swap current and the attribute above it
@@ -193,7 +193,7 @@ public class PersonAttributeTypeListController {
 			
 			for (int i = attributes.size() - 2; i >= 0; i--) {
 				PersonAttributeType current = attributes.get(i);
-				if (selectedIds.contains(current.getPersonAttributeTypeId())) {
+				if (selectedIds.contains(current.getId())) {
 					PersonAttributeType below = attributes.get(i + 1);
 					
 					// swap current and the attribute below it

@@ -95,7 +95,7 @@ public class PersonAttributeTypeFormController extends SimpleFormController {
 			// if the user is retiring out the personAttributeType
 			else if (request.getParameter("retire") != null) {
 				String retireReason = request.getParameter("retireReason");
-				if (attrType.getPersonAttributeTypeId() != null && !(StringUtils.hasText(retireReason))) {
+				if (attrType.getId() != null && !(StringUtils.hasText(retireReason))) {
 					errors.reject("retireReason", "general.retiredReason.empty");
 					return showForm(request, response, errors);
 				}
@@ -115,11 +115,11 @@ public class PersonAttributeTypeFormController extends SimpleFormController {
 				}
 				catch (DataIntegrityViolationException e) {
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "error.object.inuse.cannot.purge");
-					view = "personAttributeType.form?personAttributeTypeId=" + attrType.getPersonAttributeTypeId();
+					view = "personAttributeType.form?personAttributeTypeId=" + attrType.getId();
 				}
 				catch (APIException e) {
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "error.general: " + e.getLocalizedMessage());
-					view = "personAttributeType.form?personAttributeTypeId=" + attrType.getPersonAttributeTypeId();
+					view = "personAttributeType.form?personAttributeTypeId=" + attrType.getId();
 				}
 			}
 
@@ -131,7 +131,7 @@ public class PersonAttributeTypeFormController extends SimpleFormController {
 				}
 				catch (APIException e) {
 					httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "error.general: " + e.getLocalizedMessage());
-					view = "personAttributeType.form?personAttributeTypeId=" + attrType.getPersonAttributeTypeId();
+					view = "personAttributeType.form?personAttributeTypeId=" + attrType.getId();
 				}
 			}
 			

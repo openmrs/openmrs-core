@@ -90,7 +90,7 @@ public class PersonFormController extends SimpleFormController {
 			
 			// look for person attributes in the request and save to person
 			for (PersonAttributeType type : Context.getPersonService().getPersonAttributeTypes(PERSON_TYPE.PERSON, null)) {
-				String paramName = type.getPersonAttributeTypeId().toString();
+				String paramName = type.getId().toString();
 				String value = request.getParameter(paramName);
 				
 				// if there is an error displaying the attribute, the value will be null

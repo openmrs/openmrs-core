@@ -42,7 +42,7 @@ import org.springframework.util.StringUtils;
  * @see org.openmrs.Patient
  */
 @Root(strict = false)
-public class Person extends BaseOpenmrsData implements java.io.Serializable {
+public class Person extends BaseCustomizableData<PersonAttribute> implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 2L;
 	
@@ -53,8 +53,6 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	private Set<PersonAddress> addresses = null;
 	
 	private Set<PersonName> names = null;
-	
-	private Set<PersonAttribute> attributes = null;
 	
 	private String gender;
 	
@@ -86,13 +84,13 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	
 	private boolean isPatient;
 	
-	/**
-	 * Convenience map from PersonAttributeType.name to PersonAttribute.<br/>
-	 * <br/>
-	 * This is "cached" for each user upon first load. When an attribute is changed, the cache is
-	 * cleared and rebuilt on next access.
-	 */
-	Map<String, PersonAttribute> attributeMap = null;
+//	/**
+//	 * Convenience map from PersonAttributeType.name to PersonAttribute.<br/>
+//	 * <br/>
+//	 * This is "cached" for each user upon first load. When an attribute is changed, the cache is
+//	 * cleared and rebuilt on next access.
+//	 */
+//	Map<String, PersonAttribute> attributeMap = null;
 	
 	/**
 	 * default empty constructor
@@ -115,7 +113,7 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 		personId = person.getPersonId();
 		addresses = person.getAddresses();
 		names = person.getNames();
-		attributes = person.getAttributes();
+		setAttributes(person.getAttributes());
 		
 		gender = person.getGender();
 		birthdate = person.getBirthdate();
@@ -353,18 +351,18 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 		this.names = names;
 	}
 	
-	/**
-	 * @return all known attributes for person
-	 * @see org.openmrs.PersonAttribute
-	 * @should not get voided attributes
-	 * @should not fail with null attributes
-	 */
-	@ElementList
-	public Set<PersonAttribute> getAttributes() {
-		if (attributes == null)
-			attributes = new TreeSet<PersonAttribute>();
-		return this.attributes;
-	}
+//	/**
+//	 * @return all known attributes for person
+//	 * @see org.openmrs.PersonAttribute
+//	 * @should not get voided attributes
+//	 * @should not fail with null attributes
+//	 */
+//	@ElementList
+//	public Set<PersonAttribute> getAttributes() {
+//		if (attributes == null)
+//			attributes = new TreeSet<PersonAttribute>();
+//		return this.attributes;
+//	}
 	
 	/**
 	 * Returns only the non-voided attributes for this person
@@ -382,78 +380,66 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 		return attrs;
 	}
 	
-	/**
-	 * @param attributes update all known attributes for person
-	 * @see org.openmrs.PersonAttribute
-	 */
-	@ElementList
-	public void setAttributes(Set<PersonAttribute> attributes) {
-		this.attributes = attributes;
-		attributeMap = null;
-	}
+//	/**
+//	 * @param attributes update all known attributes for person
+//	 * @see org.openmrs.PersonAttribute
+//	 */
+//	@ElementList
+//	public void setAttributes(Set<PersonAttribute> attributes) {
+//		this.attributes = attributes;
+//		attributeMap = null;
+//	}
 	
 	// Convenience methods
 	
-	/**
-	 * Convenience method to add the <code>attribute</code> to this person's attribute list if the
-	 * attribute doesn't exist already.<br/>
-	 * <br/>
-	 * Voids any current attribute with type = <code>newAttribute.getAttributeType()</code><br/>
-	 * <br/>
-	 * NOTE: This effectively limits persons to only one attribute of any given type **
-	 * 
-	 * @param newAttribute PersonAttribute to add to the Person
-	 * @should fail when new attribute exist
-	 * @should fail when new atribute are the same type with same value
-	 * @should void old attribute when new attribute are the same type with different value
-	 * @should remove attribute when old attribute are temporary
-	 * @should not save an attribute with a null value
-	 * @should not save an attribute with a blank string value
-	 * @should void old attribute when a null or blank string value is added
-	 */
-	public void addAttribute(PersonAttribute newAttribute) {
-		newAttribute.setPerson(this);
-		boolean newIsNull = !StringUtils.hasText(newAttribute.getValue());
-		
-		for (PersonAttribute currentAttribute : getActiveAttributes()) {
-			if (currentAttribute.equals(newAttribute))
-				return; // if we have the same PersonAttributeId, don't add the new attribute
-			else if (currentAttribute.getAttributeType().equals(newAttribute.getAttributeType())) {
-				if (currentAttribute.getValue() != null && currentAttribute.getValue().equals(newAttribute.getValue()))
-					// this person already has this attribute
-					return;
-				
-				// if the to-be-added attribute isn't already voided itself
-				// and if we have the same type, different value
-				if (newAttribute.isVoided() == false || newIsNull) {
-					if (currentAttribute.getCreator() != null)
-						currentAttribute.voidAttribute("New value: " + newAttribute.getValue());
-					else
-						// remove the attribute if it was just temporary (didn't have a creator
-						// attached to it yet)
-						removeAttribute(currentAttribute);
-				}
-			}
-		}
-		attributeMap = null;
-		if (!OpenmrsUtil.collectionContains(attributes, newAttribute) && !newIsNull)
-			attributes.add(newAttribute);
-	}
+//	/**
+//	 * Convenience method to add the <code>attribute</code> to this person's attribute list if the
+//	 * attribute doesn't exist already.<br/>
+//	 * <br/>
+//	 * Voids any current attribute with type = <code>newAttribute.getAttributeType()</code><br/>
+//	 * <br/>
+//	 * NOTE: This effectively limits persons to only one attribute of any given type **
+//	 * 
+//	 * @param newAttribute PersonAttribute to add to the Person
+//	 * @should fail when new attribute exist
+//	 * @should fail when new atribute are the same type with same value
+//	 * @should void old attribute when new attribute are the same type with different value
+//	 * @should remove attribute when old attribute are temporary
+//	 * @should not save an attribute with a null value
+//	 * @should not save an attribute with a blank string value
+//	 * @should void old attribute when a null or blank string value is added
+//	 */
+//	public void addAttribute(PersonAttribute newAttribute) {
+//		newAttribute.setPerson(this);
+//		boolean newIsNull = !StringUtils.hasText(newAttribute.getValue());
+//		
+//		for (PersonAttribute currentAttribute : getActiveAttributes()) {
+//			if (currentAttribute.equals(newAttribute))
+//				return; // if we have the same PersonAttributeId, don't add the new attribute
+//			else if (currentAttribute.getAttributeType().equals(newAttribute.getAttributeType())) {
+//				if (currentAttribute.getValue() != null && currentAttribute.getValue().equals(newAttribute.getValue()))
+//					// this person already has this attribute
+//					return;
+//				
+//				// if the to-be-added attribute isn't already voided itself
+//				// and if we have the same type, different value
+//				if (newAttribute.isVoided() == false || newIsNull) {
+//					if (currentAttribute.getCreator() != null)
+//						currentAttribute.voidAttribute("New value: " + newAttribute.getValue());
+//					else
+//						// remove the attribute if it was just temporary (didn't have a creator
+//						// attached to it yet)
+//						removeAttribute(currentAttribute);
+//				}
+//			}
+//		}
+////		attributeMap = null;
+//		
+//		if (!OpenmrsUtil.collectionContains(attributes, newAttribute) && !newIsNull)
+//			attributes.add(newAttribute);
+//	}
 	
-	/**
-	 * Convenience method to get the <code>attribute</code> from this person's attribute list if the
-	 * attribute exists already.
-	 * 
-	 * @param attribute
-	 * @should not fail when person attribute is null
-	 * @should not fail when person attribute is not exist
-	 * @should remove attribute when exist
-	 */
-	public void removeAttribute(PersonAttribute attribute) {
-		if (attributes != null)
-			if (attributes.remove(attribute))
-				attributeMap = null;
-	}
+
 	
 	/**
 	 * Convenience Method to return the first non-voided person attribute matching a person
@@ -517,7 +503,7 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 	 */
 	public PersonAttribute getAttribute(Integer attributeTypeId) {
 		for (PersonAttribute attribute : getActiveAttributes()) {
-			if (attributeTypeId.equals(attribute.getAttributeType().getPersonAttributeTypeId())) {
+			if (attributeTypeId.equals(attribute.getAttributeType().getId())) {
 				return attribute;
 			}
 		}
@@ -553,7 +539,7 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 		List<PersonAttribute> ret = new Vector<PersonAttribute>();
 		
 		for (PersonAttribute attribute : getActiveAttributes()) {
-			if (attributeTypeId.equals(attribute.getAttributeType().getPersonAttributeTypeId())) {
+			if (attributeTypeId.equals(attribute.getAttributeType().getId())) {
 				ret.add(attribute);
 			}
 		}
@@ -577,24 +563,6 @@ public class Person extends BaseOpenmrsData implements java.io.Serializable {
 		return ret;
 	}
 	
-	/**
-	 * Convenience method to get all of this person's attributes in map form: <String,
-	 * PersonAttribute>.
-	 */
-	public Map<String, PersonAttribute> getAttributeMap() {
-		if (attributeMap != null)
-			return attributeMap;
-		
-		if (log.isDebugEnabled())
-			log.debug("Current Person Attributes: \n" + printAttributes());
-		
-		attributeMap = new HashMap<String, PersonAttribute>();
-		for (PersonAttribute attribute : getActiveAttributes()) {
-			attributeMap.put(attribute.getAttributeType().getName(), attribute);
-		}
-		
-		return attributeMap;
-	}
 	
 	/**
 	 * Convenience method for viewing all of the person's current attributes

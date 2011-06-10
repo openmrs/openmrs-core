@@ -20,6 +20,7 @@ import java.util.Date;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
+import org.openmrs.attribute.BaseAttribute;
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsUtil;
 import org.simpleframework.xml.Attribute;
@@ -38,7 +39,7 @@ import org.simpleframework.xml.Root;
  * @see org.openmrs.Attributable
  */
 @Root(strict = false)
-public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializable, Comparable<PersonAttribute> {
+public class PersonAttribute extends BaseAttribute<Person> implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 11231211232111L;
 	
@@ -48,11 +49,6 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 	
 	private Integer personAttributeId;
 	
-	private Person person;
-	
-	private PersonAttributeType attributeType;
-	
-	private String value;
 	
 	/** default constructor */
 	public PersonAttribute() {
@@ -69,8 +65,8 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 	 * @param value String
 	 */
 	public PersonAttribute(PersonAttributeType type, String value) {
-		this.attributeType = type;
-		this.value = value;
+		setAttributeType(type);
+		setValue(value);
 	}
 	
 	/**
@@ -187,7 +183,7 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 	 */
 	@Element(required = true)
 	public Person getPerson() {
-		return person;
+		return getOwner();
 	}
 	
 	/**
@@ -195,31 +191,31 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 	 */
 	@Element(required = true)
 	public void setPerson(Person person) {
-		this.person = person;
+		setOwner(person);
 	}
 	
-	/**
-	 * @return the attributeType
-	 */
-	@Element(required = true)
-	public PersonAttributeType getAttributeType() {
-		return attributeType;
-	}
-	
-	/**
-	 * @param attributeType the attributeType to set
-	 */
-	@Element(required = true)
-	public void setAttributeType(PersonAttributeType attributeType) {
-		this.attributeType = attributeType;
-	}
+//	/**
+//	 * @return the attributeType
+//	 */
+//	@Element(required = true)
+//	public PersonAttributeType getAttributeType() {
+//		return attributeType;
+//	}
+//	
+//	/**
+//	 * @param attributeType the attributeType to set
+//	 */
+//	@Element(required = true)
+//	public void setAttributeType(PersonAttributeType attributeType) {
+//		this.attributeType = attributeType;
+//	}
 	
 	/**
 	 * @return the value
 	 */
 	@Element(data = true, required = false)
 	public String getValue() {
-		return value;
+		return getSerializedValue();
 	}
 	
 	/**
@@ -227,7 +223,7 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 	 */
 	@Element(data = true, required = false)
 	public void setValue(String value) {
-		this.value = value;
+		setSerializedValue(value);
 	}
 	
 	/**
@@ -242,7 +238,7 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 		else if (o != null)
 			return o.toString();
 		
-		return this.value;
+		return getValue();
 	}
 	
 	/**
@@ -271,28 +267,29 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 	 */
 	@SuppressWarnings("unchecked")
 	public Object getHydratedObject() {
-		try {
-			Class c = OpenmrsClassLoader.getInstance().loadClass(getAttributeType().getFormat());
-			try {
-				Object o = c.newInstance();
-				if (o instanceof Attributable) {
-					Attributable attr = (Attributable) o;
-					return attr.hydrate(getValue());
-				}
-			}
-			catch (InstantiationException e) {
-				// try to hydrate the object with the String constructor
-				log.trace("Unable to call no-arg constructor for class: " + c.getName());
-				Object o = c.getConstructor(String.class).newInstance(getValue());
-				return o;
-			}
-		}
-		catch (Throwable t) {
-			log.warn("Unable to hydrate value: " + getValue() + " for type: " + getAttributeType(), t);
-		}
-		
-		log.debug("Returning value: '" + getValue() + "'");
-		return getValue();
+		return getObjectValue();
+//		try {
+//			Class c = OpenmrsClassLoader.getInstance().loadClass(getAttributeType().getFormat());
+//			try {
+//				Object o = c.newInstance();
+//				if (o instanceof Attributable) {
+//					Attributable attr = (Attributable) o;
+//					return attr.hydrate(getValue());
+//				}
+//			}
+//			catch (InstantiationException e) {
+//				// try to hydrate the object with the String constructor
+//				log.trace("Unable to call no-arg constructor for class: " + c.getName());
+//				Object o = c.getConstructor(String.class).newInstance(getValue());
+//				return o;
+//			}
+//		}
+//		catch (Throwable t) {
+//			log.warn("Unable to hydrate value: " + getValue() + " for type: " + getAttributeType(), t);
+//		}
+//		
+//		log.debug("Returning value: '" + getValue() + "'");
+//		return getValue();
 	}
 	
 	/**
@@ -322,8 +319,8 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 		if (retValue == 0)
 			retValue = OpenmrsUtil.compareWithNullAsLatest(getDateCreated(), other.getDateCreated());
 		if (retValue == 0)
-			retValue = getAttributeType().getPersonAttributeTypeId().compareTo(
-			    other.getAttributeType().getPersonAttributeTypeId());
+			retValue = getAttributeType().getId().compareTo(
+			    other.getAttributeType().getId());
 		if (retValue == 0)
 			retValue = OpenmrsUtil.compareWithNullAsGreatest(getValue(), other.getValue());
 		if (retValue == 0)
@@ -348,5 +345,9 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 	public void setId(Integer id) {
 		setPersonAttributeId(id);
 		
+	}
+	
+	public PersonAttributeType getAttributeType(){
+		return null;
 	}
 }

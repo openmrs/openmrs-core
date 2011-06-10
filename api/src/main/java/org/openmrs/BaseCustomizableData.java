@@ -112,4 +112,18 @@ public abstract class BaseCustomizableData<AttrClass extends Attribute> extends 
 		}
 	}
 	
+	/**
+	 * Convenience method to get the <code>attribute</code> from this person's attribute list if the
+	 * attribute exists already.
+	 * 
+	 * @param attribute
+	 * @should not fail when person attribute is null
+	 * @should not fail when person attribute is not exist
+	 * @should remove attribute when exist
+	 */
+	public void removeAttribute(PersonAttribute attribute) {
+		if (attributes != null)
+			attributes.remove(attribute);
+	}
+	
 }

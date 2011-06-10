@@ -343,7 +343,7 @@ public class ReportObjectXMLEncoder {
 		protected Expression instantiate(Object oldInstance, Encoder out) {
 			PersonAttributeTypeEditor editor = new PersonAttributeTypeEditor();
 			PersonAttributeType personAttributeType = (PersonAttributeType) oldInstance;
-			editor.setAsText(personAttributeType.getPersonAttributeTypeId().toString());
+			editor.setAsText(personAttributeType.getId().toString());
 			return new Expression(editor, "getValue", null);
 		}
 		

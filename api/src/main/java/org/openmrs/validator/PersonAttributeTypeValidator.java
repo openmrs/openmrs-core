@@ -50,7 +50,7 @@ public class PersonAttributeTypeValidator implements Validator {
 		
 		PersonService ps = Context.getPersonService();
 		PersonAttributeType pat = ps.getPersonAttributeTypeByName(patObj.getName());
-		if (pat != null && !pat.getPersonAttributeTypeId().equals(patObj.getPersonAttributeTypeId())) {
+		if (pat != null && !pat.getId().equals(patObj.getId())) {
 			errors.rejectValue("name", "PersonAttributeType.error.nameAlreadyInUse");
 		}
 	}

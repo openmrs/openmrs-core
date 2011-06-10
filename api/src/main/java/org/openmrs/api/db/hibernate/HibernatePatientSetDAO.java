@@ -1973,7 +1973,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(sb.toString());
 		if (attribute != null)
-			query.setInteger("typeId", attribute.getPersonAttributeTypeId());
+			query.setInteger("typeId", attribute.getId());
 		if (value != null)
 			query.setString("value", value);
 		

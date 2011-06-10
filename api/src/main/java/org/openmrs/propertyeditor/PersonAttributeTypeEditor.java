@@ -62,7 +62,7 @@ public class PersonAttributeTypeEditor extends PropertyEditorSupport {
 		if (t == null) {
 			return "";
 		} else {
-			return t.getPersonAttributeTypeId().toString();
+			return t.getId().toString();
 		}
 	}
 	
