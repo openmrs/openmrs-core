@@ -724,7 +724,7 @@
       <openmrs.version.short>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}.${revisionNumber}-${parsedVersion.qualifier}</openmrs.version.short>
       <openmrs.version.shortnumericonly>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}.${revisionNumber}</openmrs.version.shortnumericonly>
 
-      <springVersion>3.0.2.RELEASE</springVersion>
+      <springVersion>3.0.5.RELEASE</springVersion>
    </properties>
    
 </project>
