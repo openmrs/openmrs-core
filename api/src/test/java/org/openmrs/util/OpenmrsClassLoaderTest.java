@@ -10,12 +10,12 @@ import org.openmrs.test.BaseContextSensitiveTest;
 public class OpenmrsClassLoaderTest extends BaseContextSensitiveTest {
 	
 	/**
-     * TODO : Determine the correct current cache when other tests have created another lib-cache
+	 * TODO : Determine the correct current cache when other tests have created another lib-cache
 	 * @see OpenmrsClassLoader#deleteOldLibCaches(java.io.File)
 	 * @verifies return current cache folders
 	 */
 	@Test
-    @Ignore
+	@Ignore
 	public void deleteOldLibCaches_shouldReturnOnlyCurrentCacheFolders() throws Exception {
 		FilenameFilter cacheDirFilter = new FilenameFilter() {
 			
