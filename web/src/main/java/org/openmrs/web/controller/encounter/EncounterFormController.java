@@ -35,6 +35,7 @@ import org.openmrs.FormField;
 import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.Visit;
+import org.openmrs.api.APIException;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
@@ -170,6 +171,13 @@ public class EncounterFormController extends SimpleFormController {
 				
 				httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Encounter.saved");
 			}
+		}
+		catch (APIException e) {
+			log.error("Error while trying to save the encounter", e);
+			httpSession.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Encounter.cannot.save");
+			errors.reject("encounter", "Encounter.cannot.save");
+			// return to the form because an exception was thrown
+			return showForm(request, response, errors);
 		}
 		finally {
 			Context.removeProxyPrivilege(PrivilegeConstants.VIEW_USERS);
