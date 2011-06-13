@@ -18,7 +18,6 @@ import java.util.Date;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Encounter;
-import org.openmrs.EncounterSearchResult;
 import org.openmrs.PersonName;
 import org.openmrs.util.Format;
 
@@ -72,40 +71,6 @@ public class EncounterListItem {
 			if (encounter.getForm() != null)
 				formName = encounter.getForm().getName();
 			voided = encounter.isVoided();
-		}
-	}
-	
-	/**
-	 * Convenience constructor to create an encounter list item from an
-	 * {@link EncounterSearchResult}
-	 * 
-	 * @param encounter
-	 * @since 1.8
-	 */
-	public EncounterListItem(EncounterSearchResult encounter) {
-		if (encounter != null) {
-			encounterId = encounter.getEncounterId();
-			encounterDateTime = encounter.getEncounterDatetime();
-			encounterDateString = Format.format(encounter.getEncounterDatetime());
-			PersonName pn = encounter.getPatient().getPersonName();
-			if (pn != null) {
-				personName = "";
-				if (pn.getGivenName() != null)
-					personName += pn.getGivenName();
-				if (pn.getMiddleName() != null)
-					personName += " " + pn.getMiddleName();
-				if (pn.getFamilyName() != null)
-					personName += " " + pn.getFamilyName();
-			}
-			if (encounter.getProvider() != null)
-				providerName = encounter.getProvider().getPersonName().toString();
-			if (encounter.getLocation() != null)
-				location = encounter.getLocation().getName();
-			if (encounter.getEncounterType() != null)
-				encounterType = encounter.getEncounterType().getName();
-			if (encounter.getForm() != null)
-				formName = encounter.getForm().getName();
-			voided = encounter.getVoided();
 		}
 	}
 	

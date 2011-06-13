@@ -22,7 +22,6 @@ import java.util.Vector;
 
 import org.openmrs.Cohort;
 import org.openmrs.Encounter;
-import org.openmrs.EncounterSearchResult;
 import org.openmrs.EncounterType;
 import org.openmrs.Form;
 import org.openmrs.Location;
@@ -71,7 +70,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 		if (query == null)
 			throw new IllegalArgumentException("The 'query' parameter is required and cannot be null");
 		
-		return dao.getEncounters(query, includeVoided);
+		return dao.getEncounters(query, null, null, includeVoided);
 	}
 	
 	/**
@@ -572,13 +571,13 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	}
 	
 	/**
-	 * @see org.openmrs.api.EncounterService#getEncounters(String, Integer, Integer, boolean,
-	 *      boolean)
+	 * @see org.openmrs.api.EncounterService#getEncounters(java.lang.String, java.lang.Integer,
+	 *      java.lang.Integer, boolean)
 	 */
 	@Override
-	public List<EncounterSearchResult> getEncounters(String query, Integer start, Integer length, boolean includeVoided,
-	        boolean sortbyNames) throws APIException {
-		return dao.getEncounters(query, start, length, includeVoided, sortbyNames);
+	public List<Encounter> getEncounters(String query, Integer start, Integer length, boolean includeVoided)
+	        throws APIException {
+		return dao.getEncounters(query, start, length, includeVoided);
 	}
 	
 	/**

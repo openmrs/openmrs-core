@@ -21,7 +21,6 @@ import java.util.Vector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Encounter;
-import org.openmrs.EncounterSearchResult;
 import org.openmrs.Location;
 import org.openmrs.api.APIException;
 import org.openmrs.api.EncounterService;
@@ -70,7 +69,7 @@ public class DWREncounterService {
 		
 		try {
 			EncounterService es = Context.getEncounterService();
-			List<EncounterSearchResult> encs = new Vector<EncounterSearchResult>();
+			List<Encounter> encs = new Vector<Encounter>();
 			
 			if (phrase == null) {
 				objectList.add(mss.getMessage("Encounter.searchPhraseCannotBeNull"));
@@ -78,25 +77,25 @@ public class DWREncounterService {
 			}
 			
 			if (phrase.matches("\\d+")) {
-				// user searched on a number.  Insert encounter with corresponding encounterId
+				// user searched on a number.  Insert concept with corresponding encounterId
 				Encounter e = es.getEncounter(Integer.valueOf(phrase));
 				if (e != null) {
 					if (!e.isVoided() || includeVoided == true)
-						encs.add(new EncounterSearchResult(e));
+						encs.add(e);
 				}
 			}
 			
 			if (phrase == null || phrase.equals("")) {
-				//TODO get all encounters for testing purposes?
+				//TODO get all concepts for testing purposes?
 			} else {
-				encs.addAll(es.getEncounters(phrase, start, length, includeVoided, true));
+				encs.addAll(es.getEncounters(phrase, start, length, includeVoided));
 			}
 			
 			if (encs.size() == 0) {
 				objectList.add(mss.getMessage("Encounter.noMatchesFound", new Object[] { phrase }, Context.getLocale()));
 			} else {
 				objectList = new Vector<Object>(encs.size());
-				for (EncounterSearchResult e : encs) {
+				for (Encounter e : encs) {
 					objectList.add(new EncounterListItem(e));
 				}
 			}
