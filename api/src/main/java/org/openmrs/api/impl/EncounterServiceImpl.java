@@ -39,6 +39,9 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.db.EncounterDAO;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
+import org.openmrs.validator.EncounterValidator;
+import org.springframework.validation.BindException;
+import org.springframework.validation.Errors;
 
 /**
  * Default implementation of the {@link EncounterService}
@@ -77,6 +80,11 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	 * @see org.openmrs.api.EncounterService#saveEncounter(org.openmrs.Encounter)
 	 */
 	public Encounter saveEncounter(Encounter encounter) throws APIException {
+		Errors errors = new BindException(encounter, "encounter");
+		new EncounterValidator().validate(encounter, errors);
+		if (errors.hasErrors())
+			throw new APIException(Context.getMessageSourceService().getMessage("error.foundValidationErrors"));
+		
 		boolean isNewEncounter = false;
 		Date newDate = encounter.getEncounterDatetime();
 		Date originalDate = null;
@@ -100,7 +108,8 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 			// encounter
 			// to see if it has changed and change all obs after saving if so
 			originalDate = dao.getSavedEncounterDatetime(encounter);
-			originalLocation = dao.getSavedEncounterLocation(encounter);
+			if (encounter.getLocation() != null)
+				originalLocation = dao.getSavedEncounterLocation(encounter);
 			// Our data model duplicates the patient column to allow for
 			// observations to
 			// not have to look up the parent Encounter to find the patient
