@@ -20,7 +20,6 @@ import java.util.Map;
 
 import org.openmrs.Cohort;
 import org.openmrs.Encounter;
-import org.openmrs.EncounterSearchResult;
 import org.openmrs.EncounterType;
 import org.openmrs.Form;
 import org.openmrs.Location;
@@ -624,24 +623,22 @@ public interface EncounterService extends OpenmrsService {
 	/**
 	 * Search for encounters by patient name or patient identifier and returns a specific number of
 	 * them from the specified starting position. If start and length are not specified, then all
-	 * matches are returned.
+	 * matches are returned
 	 * 
 	 * @param query patient name or identifier
 	 * @param start beginning index for the batch
 	 * @param length number of encounters to return in the batch
 	 * @param includeVoided Specifies whether voided encounters should be included
-	 * @param sortbyNames specifies if the results should be sorted by patient names
-	 * @return a list of {@link EncounterSearchResult} matching the specified parameters
+	 * @return list of encounters for the given patient based on batch settings
 	 * @throws APIException
 	 * @since 1.8
 	 * @should get all the unique encounters that match the specified parameter values
-	 * @should sort the results by patient names if sortByNames is set to true
 	 * @should not return voided encounters if includeVoided is set to true
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_ENCOUNTERS })
-	public List<EncounterSearchResult> getEncounters(String query, Integer start, Integer length, boolean includeVoided,
-	        boolean sortbyNames) throws APIException;
+	public List<Encounter> getEncounters(String query, Integer start, Integer length, boolean includeVoided)
+	        throws APIException;
 	
 	/**
 	 * Get all encounters for a cohort of patients
