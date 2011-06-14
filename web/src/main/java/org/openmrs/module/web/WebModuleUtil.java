@@ -617,9 +617,10 @@ public class WebModuleUtil {
 			String requestPath = httpRequest.getRequestURI();
 			
 			if (requestPath != null) {
-				String requestPathWithoutContext = requestPath.substring(httpRequest.getContextPath().length());
+				if (requestPath.startsWith(httpRequest.getContextPath()))
+					requestPath = requestPath.substring(httpRequest.getContextPath().length());
 				for (ModuleFilterMapping filterMapping : WebModuleUtil.getFilterMappings()) {
-					if (ModuleFilterMapping.filterMappingPasses(filterMapping, requestPath, requestPathWithoutContext)) {
+					if (ModuleFilterMapping.filterMappingPasses(filterMapping, requestPath)) {
 						Filter passedFilter = moduleFiltersByName.get(filterMapping.getFilterName());
 						if (passedFilter != null) {
 							filters.add(passedFilter);

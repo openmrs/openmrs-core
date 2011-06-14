@@ -318,7 +318,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	public Integer getCountOfEncounters(String query, boolean includeVoided) {
 		Criteria criteria = createEncounterByQueryCriteria(query, includeVoided);
 		
-		criteria.setProjection(Projections.rowCount());
+		criteria.setProjection(Projections.countDistinct("enc.encounterId"));
 		return (Integer) criteria.uniqueResult();
 	}
 	
@@ -331,7 +331,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 * @return
 	 */
 	private Criteria createEncounterByQueryCriteria(String query, boolean includeVoided) {
-		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Encounter.class);
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Encounter.class, "enc");
 		if (!includeVoided)
 			criteria.add(Restrictions.eq("voided", false));
 		

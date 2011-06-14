@@ -64,8 +64,8 @@ public class ForEachEncounterTag extends BodyTagSupport {
 		// If not provided, return all encounters
 		matchingEncs = new ArrayList<Encounter>();
 		for (Iterator<Encounter> i = encounters.iterator(); i.hasNext();) {
-			if (getNum() != null && getNum() >= matchingEncs.size())
-				continue;
+			if (getNum() != null && getNum() <= matchingEncs.size())
+				break;
 			Encounter e = i.next();
 			if (type == null || e.getEncounterType().getEncounterTypeId().intValue() == type.intValue()) {
 				matchingEncs.add(e);

@@ -632,6 +632,8 @@ public interface EncounterService extends OpenmrsService {
 	 * @return list of encounters for the given patient based on batch settings
 	 * @throws APIException
 	 * @since 1.8
+	 * @should get all the unique encounters that match the specified parameter values
+	 * @should not return voided encounters if includeVoided is set to true
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_ENCOUNTERS })
@@ -656,6 +658,7 @@ public interface EncounterService extends OpenmrsService {
 	 * @param includeVoided Specifies whether voided encounters should be included
 	 * @return the number of encounters matching the given search phrase
 	 * @since 1.8
+	 * @should get the correct count of unique encounters
 	 */
 	@Transactional(readOnly = true)
 	@Authorized( { PrivilegeConstants.VIEW_ENCOUNTERS })
