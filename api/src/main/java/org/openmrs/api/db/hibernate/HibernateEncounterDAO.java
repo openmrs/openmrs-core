@@ -28,18 +28,15 @@ import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
-import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.Cohort;
 import org.openmrs.Encounter;
-import org.openmrs.EncounterSearchResult;
 import org.openmrs.EncounterType;
 import org.openmrs.Form;
 import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
-import org.openmrs.Person;
 import org.openmrs.User;
 import org.openmrs.Visit;
 import org.openmrs.VisitType;
@@ -242,11 +239,17 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.EncounterDAO#getEncounters(String, boolean)
+	 * @see org.openmrs.api.db.EncounterDAO#getEncounters(String, Integer, Integer, boolean)
 	 */
 	@SuppressWarnings("unchecked")
-	public List<Encounter> getEncounters(String query, boolean includeVoided) {
-		Criteria criteria = createEncounterByQueryCriteria(query, includeVoided, true);
+	public List<Encounter> getEncounters(String query, Integer start, Integer length, boolean includeVoided) {
+		Criteria criteria = createEncounterByQueryCriteria(query, includeVoided);
+		
+		if (start != null)
+			criteria.setFirstResult(start);
+		if (length != null && length > 0)
+			criteria.setMaxResults(length);
+		
 		return criteria.list();
 	}
 	
@@ -313,9 +316,9 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 */
 	@Override
 	public Integer getCountOfEncounters(String query, boolean includeVoided) {
-		Criteria criteria = createEncounterByQueryCriteria(query, includeVoided, false);
+		Criteria criteria = createEncounterByQueryCriteria(query, includeVoided);
 		
-		criteria.setProjection(Projections.countDistinct("enc.encounterId"));
+		criteria.setProjection(Projections.rowCount());
 		return (Integer) criteria.uniqueResult();
 	}
 	
@@ -327,8 +330,8 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 * @param includeVoided Specifies whether voided encounters should be included
 	 * @return
 	 */
-	private Criteria createEncounterByQueryCriteria(String query, boolean includeVoided, boolean sortByNames) {
-		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Encounter.class, "enc");
+	private Criteria createEncounterByQueryCriteria(String query, boolean includeVoided) {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Encounter.class);
 		if (!includeVoided)
 			criteria.add(Restrictions.eq("voided", false));
 		
@@ -342,12 +345,12 @@ public class HibernateEncounterDAO implements EncounterDAO {
 			name = query;
 		}
 		criteria = new PatientSearchCriteria(sessionFactory, criteria).prepareCriteria(name, identifier,
-		    new ArrayList<PatientIdentifierType>(), false, sortByNames);
+		    new ArrayList<PatientIdentifierType>(), false, true);
 		return criteria;
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.EncounterDAO#getEncountersByVisit(Visit)
+	 * @see org.openmrs.api.db.EncounterDAO##getEncountersByVisit(Visit)
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
@@ -357,51 +360,5 @@ public class HibernateEncounterDAO implements EncounterDAO {
 		            Order.asc("encounterDatetime"));
 		
 		return crit.list();
-	}
-	
-	/**
-	 * @see org.openmrs.api.db.EncounterDAO#getEncounters(String, Integer, Integer, boolean,
-	 *      boolean)
-	 */
-	@SuppressWarnings("rawtypes")
-	@Override
-	public List<EncounterSearchResult> getEncounters(String query, Integer start, Integer length, boolean includeVoided,
-	        boolean sortbyNames) throws DAOException {
-		Criteria criteria = createEncounterByQueryCriteria(query, includeVoided, sortbyNames);
-		ProjectionList pl = Projections.projectionList();
-		pl.add(Projections.distinct(Projections.groupProperty("enc.encounterId")));
-		pl.add(Projections.property("enc.encounterType"));
-		pl.add(Projections.property("enc.patient"));
-		pl.add(Projections.property("enc.location"));
-		pl.add(Projections.property("enc.provider"));
-		pl.add(Projections.property("enc.form"));
-		pl.add(Projections.property("enc.encounterDatetime"));
-		pl.add(Projections.property("enc.voided"));
-		pl.add(Projections.max("enc.encounterId"));
-		criteria.setProjection(pl);
-		
-		if (start != null)
-			criteria.setFirstResult(start);
-		if (length != null && length > 0)
-			criteria.setMaxResults(length);
-		
-		List list = criteria.list();
-		List<EncounterSearchResult> hits = new ArrayList<EncounterSearchResult>();
-		for (Object result : list) {
-			Object[] objArray = (Object[]) result;
-			EncounterSearchResult hit = new EncounterSearchResult();
-			hit.setEncounterId((Integer) objArray[0]);
-			hit.setEncounterType((EncounterType) objArray[1]);
-			hit.setPatient((Patient) objArray[2]);
-			hit.setLocation((Location) objArray[3]);
-			hit.setProvider((Person) objArray[4]);
-			hit.setForm((Form) objArray[5]);
-			hit.setEncounterDatetime((Date) objArray[6]);
-			hit.setVoided((Boolean) objArray[7]);
-			
-			hits.add(hit);
-		}
-		
-		return hits;
 	}
 }

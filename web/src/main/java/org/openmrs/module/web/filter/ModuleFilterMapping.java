@@ -135,6 +135,7 @@ public class ModuleFilterMapping implements Serializable {
 	 * @param filterMapping - The {@link ModuleFilterMapping} to check for matching servlets and url
 	 *            patterns
 	 * @param requestPath - The URI of the request to check against the {@link ModuleFilterMapping}
+	 * @param requestPathWithoutContext - The URI of this request with the context path (e.g. "/openmrs") removed
 	 * @return - true if the given {@link ModuleFilterMapping} matches the passed requestPath For
 	 *         example: Passing a ModuleFilterMapping containing a urlPattern of "*" would return
 	 *         true for any requestPath Passing a ModuleFilterMapping containing a urlPattern of
@@ -146,7 +147,8 @@ public class ModuleFilterMapping implements Serializable {
 	 *         requestPath
 	 * @should return false if no matches are found for this requestPath
 	 */
-	public static boolean filterMappingPasses(ModuleFilterMapping filterMapping, String requestPath) {
+	public static boolean filterMappingPasses(ModuleFilterMapping filterMapping, String requestPath,
+	        String requestPathWithoutContext) {
 		
 		// Return false if url is null
 		if (requestPath == null) {
@@ -154,7 +156,7 @@ public class ModuleFilterMapping implements Serializable {
 		}
 		
 		for (String patternToCheck : filterMapping.getUrlPatterns()) {
-			if (urlPatternMatches(patternToCheck, requestPath)) {
+			if (urlPatternMatches(patternToCheck, requestPathWithoutContext)) {
 				return true;
 			}
 		}

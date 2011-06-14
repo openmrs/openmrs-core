@@ -36,8 +36,7 @@
 	<table id="patientActions">
 		<openmrs:extensionPoint pointId="org.openmrs.patientDashboard.patientActionsContent" type="html" parameters="patientId=${model.patient.patientId}"/> 
 		<tr class="patientActionsRow">
-		<openmrs:globalProperty key="concept.reasonExitedCare" var="reasonExitedCare" />
-		<c:if test="${empty model.patientReasonForExit && !empty reasonExitedCare}">
+		<c:if test="${empty model.patientReasonForExit}">
 			<td id="patientActionsOutcome">
 				<div id="patientActionsOutcomeLink">					
 					<button id="cancelExitButton" onClick="return showExitForm();"><spring:message code="Patient.outcome.exitFromCare"/></button>
