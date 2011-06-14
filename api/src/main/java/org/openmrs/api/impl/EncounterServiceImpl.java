@@ -98,7 +98,8 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 			// encounter
 			// to see if it has changed and change all obs after saving if so
 			originalDate = dao.getSavedEncounterDatetime(encounter);
-			originalLocation = dao.getSavedEncounterLocation(encounter);
+			if (encounter.getLocation() != null)
+				originalLocation = dao.getSavedEncounterLocation(encounter);
 			// Our data model duplicates the patient column to allow for
 			// observations to
 			// not have to look up the parent Encounter to find the patient
