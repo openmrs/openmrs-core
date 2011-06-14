@@ -25,6 +25,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
+import org.openmrs.ConceptComplex;
 import org.openmrs.Drug;
 import org.openmrs.Encounter;
 import org.openmrs.Location;
@@ -32,10 +33,13 @@ import org.openmrs.Obs;
 import org.openmrs.Order;
 import org.openmrs.Person;
 import org.openmrs.api.APIException;
+import org.openmrs.api.ConceptService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.ObsService;
 import org.openmrs.api.context.Context;
 import org.openmrs.obs.ComplexData;
+import org.openmrs.obs.ComplexObsHandler;
+import org.openmrs.obs.handler.DomainObjectHandler;
 import org.openmrs.propertyeditor.ConceptEditor;
 import org.openmrs.propertyeditor.DrugEditor;
 import org.openmrs.propertyeditor.EncounterEditor;
@@ -133,21 +137,30 @@ public class ObsFormController extends SimpleFormController {
 					}
 					
 					if (obs.getConcept().isComplex()) {
-						if (request instanceof MultipartHttpServletRequest) {
-							MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
-							MultipartFile complexDataFile = multipartRequest.getFile("complexDataFile");
-							if (complexDataFile != null && !complexDataFile.isEmpty()) {
-								InputStream complexDataInputStream = complexDataFile.getInputStream();
-								
-								ComplexData complexData = new ComplexData(complexDataFile.getOriginalFilename(),
-								        complexDataInputStream);
-								
-								obs.setComplexData(complexData);
-								
-								// the handler on the obs.concept is called with the given complex data
-								newlySavedObs = os.saveObs(obs, reason);
-								
-								complexDataInputStream.close();
+						
+						ConceptService cs = Context.getConceptService();
+						ConceptComplex conceptComplex = cs.getConceptComplex(obs.getConcept().getConceptId());
+						ComplexObsHandler handlerObs = Context.getObsService().getHandler(conceptComplex.getHandler());
+						
+						if (handlerObs instanceof DomainObjectHandler) {
+							newlySavedObs = os.saveObs(obs, reason);
+						} else {
+							if (request instanceof MultipartHttpServletRequest) {
+								MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+								MultipartFile complexDataFile = multipartRequest.getFile("complexDataFile");
+								if (complexDataFile != null && !complexDataFile.isEmpty()) {
+									InputStream complexDataInputStream = complexDataFile.getInputStream();
+									
+									ComplexData complexData = new ComplexData(complexDataFile.getOriginalFilename(),
+									        complexDataInputStream);
+									
+									obs.setComplexData(complexData);
+									
+									// the handler on the obs.concept is called
+									// with the given complex data
+									newlySavedObs = os.saveObs(obs, reason);
+									complexDataInputStream.close();
+								}
 							}
 						}
 					} else {
@@ -166,12 +179,14 @@ public class ObsFormController extends SimpleFormController {
 					}
 					
 					os.voidObs(obs, voidReason);
+					newlySavedObs = obs;
 					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Obs.voidedSuccessfully");
 				}
 
 				// if this obs is already voided and needs to be unvoided
 				else if (request.getParameter("unvoidObs") != null) {
 					os.unvoidObs(obs);
+					newlySavedObs = obs;
 					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Obs.unvoidedSuccessfully");
 				}
 				
@@ -250,13 +265,33 @@ public class ObsFormController extends SimpleFormController {
 				ObsService os = Context.getObsService();
 				Integer obsId = obs.getObsId();
 				if (obsId != null && obs.getConcept().isComplex()) {
-					Obs complexObs = os.getComplexObs(Integer.valueOf(obsId), WebConstants.HTML_VIEW);
-					ComplexData complexData = complexObs.getComplexData();
-					map.put("htmlView", complexData.getData());
-					
-					Obs complexObs2 = os.getComplexObs(Integer.valueOf(obsId), WebConstants.HYPERLINK_VIEW);
-					ComplexData complexData2 = complexObs2.getComplexData();
-					map.put("hyperlinkView", complexData2.getData());
+					ConceptService cs = Context.getConceptService();
+					ConceptComplex conceptComplex = cs.getConceptComplex(obs.getConcept().getConceptId());
+					ComplexObsHandler handlerObs = Context.getObsService().getHandler(conceptComplex.getHandler());
+					if (!(handlerObs instanceof DomainObjectHandler)) {
+						Obs complexObs = os.getComplexObs(Integer.valueOf(obsId), WebConstants.HTML_VIEW);
+						ComplexData complexData = complexObs.getComplexData();
+						map.put("htmlView", complexData.getData());
+						
+						Obs complexObs2 = os.getComplexObs(Integer.valueOf(obsId), WebConstants.HYPERLINK_VIEW);
+						ComplexData complexData2 = complexObs2.getComplexData();
+						map.put("hyperlinkView", complexData2.getData());
+					} else {
+						Obs complexObs = os.getComplexObs(Integer.valueOf(obsId), WebConstants.HTML_VIEW);
+						ComplexData complexData = complexObs.getComplexData();
+						log.info("Retreived complex data " + complexData.getData().toString());
+						log.info("Retreived valueComplex " + obs.getValueComplex());
+						
+					}
+					/*
+					 * else{ Obs complexObs =
+					 * os.getComplexObs(Integer.valueOf(obsId),
+					 * WebConstants.HTML_VIEW); ComplexData complexData =
+					 * complexObs.getComplexData(); map.put("htmlView",
+					 * complexData.getData());
+					 * 
+					 * }
+					 */
 				}
 			}
 			

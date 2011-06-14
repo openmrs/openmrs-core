@@ -41,21 +41,16 @@ public class PatientHandler extends DomainObjectHandler implements ComplexObsHan
 	@Override
 	public Obs saveObs(Obs obs) throws APIException {
 		PatientService ps = Context.getPatientService();
-		Object data = obs.getComplexData().getData();
 		
-		if (data == null) {
-			throw new APIException("Cannot save complex obs where obsId=" + obs.getObsId()
-			        + " because its ComplexData.getData() is null.");
-		}
-		
-		Patient patient = ps.getPatient(Integer.parseInt(data.toString()));
+		Patient patient = ps.getPatient(Integer.parseInt(obs.getValueComplex()));
 		
 		if (patient == null) {
 			throw new APIException("Cannot save complex obs where obsId=" + obs.getObsId()
 			        + " because the patient instance is null.");
 		}
 		// Set the Title for the valueComplex
-		obs.setValueComplex(patient.getPersonName() + "(" + patient.getPatientIdentifier() + ")" + "|" + data.toString());
+		obs.setValueComplex(patient.getPersonName() + "(" + patient.getPatientIdentifier() + ")" + "|"
+		        + obs.getValueComplex());
 		
 		// Remove the ComlexData from the Obs
 		obs.setComplexData(null);

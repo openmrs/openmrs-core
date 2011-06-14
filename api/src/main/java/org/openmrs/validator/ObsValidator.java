@@ -16,6 +16,7 @@ package org.openmrs.validator;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.openmrs.Concept;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptNumeric;
@@ -176,6 +177,9 @@ public class ObsValidator implements Validator {
 					errors.rejectValue("valueText", "error.null");
 				else
 					errors.rejectValue("groupMembers", "Obs.error.inGroupMember");
+			} else if (dt.isComplex() && StringUtils.isBlank(obs.getValueComplex())) {
+				if (atRootNode)
+					errors.rejectValue("valueComplex", "error.null");
 			}
 			
 			//If valueText is longer than the maxlength, raise an error as well.

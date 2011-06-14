@@ -90,8 +90,7 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 * @see org.openmrs.api.ObsService#saveObs(org.openmrs.Obs, String)
 	 */
 	public Obs saveObs(Obs obs, String changeMessage) throws APIException {
-		if (null != obs && null != obs.getConcept() && obs.getConcept().isComplex()
-		        && null != obs.getComplexData().getData()) {
+		if (null != obs && null != obs.getConcept() && obs.getConcept().isComplex()) {
 			// save or update complexData object on this obs
 			// this is done before the database save so that the obs.valueComplex
 			// can be filled in by the handler.
