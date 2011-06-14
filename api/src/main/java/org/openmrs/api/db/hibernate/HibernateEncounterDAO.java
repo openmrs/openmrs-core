@@ -307,7 +307,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	public Integer getCountOfEncounters(String query, boolean includeVoided) {
 		Criteria criteria = createEncounterByQueryCriteria(query, includeVoided);
 		
-		criteria.setProjection(Projections.rowCount());
+		criteria.setProjection(Projections.countDistinct("enc.encounterId"));
 		return (Integer) criteria.uniqueResult();
 	}
 	
