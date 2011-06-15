@@ -189,7 +189,7 @@ public class PatientFormController extends PersonFormController {
 				
 				if (add1s != null || add2s != null || cities != null || states != null || countries != null || lats != null
 				        || longs != null || pCodes != null || counties != null || add3s != null || add6s != null
-				        || add5s != null || add4s != null ) {
+				        || add5s != null || add4s != null) {
 					int maxAddrs = 0;
 					
 					if (add1s != null)
