@@ -199,7 +199,7 @@ public class OpenmrsTestsTest {
 				className = className.replace(File.separator, ".");
 				
 				// strip out the beginning (/home/ben/workspace...) up to org.openmrs.
-				className = className.substring(className.indexOf("org.openmrs."));
+				className = className.substring(className.lastIndexOf("org.openmrs."));
 				
 				try {
 					Class<?> currentClass = classLoader.loadClass(className);
