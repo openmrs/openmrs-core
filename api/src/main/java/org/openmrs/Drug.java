@@ -64,7 +64,10 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable {
 			return false;
 		
 		Drug drug = (Drug) obj;
-		return (this.drugId.equals(drug.getDrugId()));
+		if (this.drugId != null && drug.drugId != null)
+			return this.drugId.equals(drug.getDrugId());
+		
+		return this == obj;
 	}
 	
 	public int hashCode() {
