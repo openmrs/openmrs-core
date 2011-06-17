@@ -21,7 +21,7 @@ howManyToShow = Math.max(howManyToShow, existing.size());
 %>
         <openmrs_tag:attribute
             attributeType="${ attributeType }"
-            formFieldName="<%= jspContext.getAttribute("formFieldNamePrefix") + "[" + i + "]" %>"
+            formFieldName="<%= jspContext.getAttribute(\"formFieldNamePrefix\") + \"[\" + i + \"]\" %>"
             value="<%= val %>"/>
         <br/>
 <% } %>
