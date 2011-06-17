@@ -407,6 +407,10 @@
 		<spring:bind path="valueComplex">
 		<td>	  
 			 <openmrs_tag:domainObsValue concept="${obs.concept}" formFieldName="valueComplex"/> 
+			 <br/>
+			 <c:if test="${not empty obs.valueComplex }">
+			 <a href="${pageContext.request.contextPath}${hyperlinkView}"><spring:message code="general.view.instance"/>/<spring:message code="general.edit.instance"/></a><br/>${htmlView}<br/>
+			</c:if>
 			 <c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 		</td>
 	</spring:bind>

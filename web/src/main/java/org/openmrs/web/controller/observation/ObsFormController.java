@@ -36,6 +36,7 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.ObsService;
+import org.openmrs.obs.handler.DomainObjectHandler;
 import org.openmrs.api.context.Context;
 import org.openmrs.obs.ComplexData;
 import org.openmrs.obs.ComplexObsHandler;
@@ -277,10 +278,14 @@ public class ObsFormController extends SimpleFormController {
 						ComplexData complexData2 = complexObs2.getComplexData();
 						map.put("hyperlinkView", complexData2.getData());
 					} else {
-						Obs complexObs = os.getComplexObs(Integer.valueOf(obsId), WebConstants.HTML_VIEW);
+						Obs complexObs = os.getComplexObs(Integer.valueOf(obsId), WebConstants.HYPERLINK_VIEW);
 						ComplexData complexData = complexObs.getComplexData();
-						log.info("Retreived complex data " + complexData.getData().toString());
-						log.info("Retreived valueComplex " + obs.getValueComplex());
+						DomainObjectHandler domainObj = (DomainObjectHandler) handlerObs;
+						String[] values = obs.getValueComplex().split("\\|");
+						if (values[1] != null)
+							map.put("hyperlinkView", domainObj.getDisplayLink() + values[1]);
+						//I dont't like this. Introduce a new method to handler to directly retrieve the object id ?
+						obs.setValueComplex(complexData.getData().toString());
 						
 					}
 					/*

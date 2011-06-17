@@ -13,6 +13,8 @@
  */
 package org.openmrs.obs.handler;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.api.APIException;
@@ -28,12 +30,19 @@ import org.openmrs.obs.ComplexObsHandler;
 
 public class PatientHandler extends DomainObjectHandler implements ComplexObsHandler {
 	
+	public static final Log log = LogFactory.getLog(PatientHandler.class);
+	
 	/**
 	 * The default Constructor method
 	 */
 	public PatientHandler() {
 		super();
 	}
+	
+	/**
+	 * The Link to the default dashboard / page where patient instances will be displayed
+	 */
+	private String displayLink = "/patientDashboard.form?patientId=";
 	
 	/**
 	 * @see org.openmrs.obs.ComplexObsHandler#getObs(org.openmrs.Obs, java.lang.String)
@@ -45,8 +54,8 @@ public class PatientHandler extends DomainObjectHandler implements ComplexObsHan
 		Patient patient = ps.getPatient(Integer.parseInt(obs.getValueComplex()));
 		
 		if (patient == null) {
-			throw new APIException("Cannot save complex obs where obsId=" + obs.getObsId()
-			        + " because the patient instance is null.");
+			throw new APIException("Cannot save complex obs where obsId=" + obs.getObsId() + " Desired Patient id :"
+			        + Integer.parseInt(obs.getValueComplex()) + " cannot be found");
 		}
 		// Set the Title for the valueComplex
 		obs.setValueComplex(patient.getPersonName() + "(" + patient.getPatientIdentifier() + ")" + "|"
@@ -68,8 +77,8 @@ public class PatientHandler extends DomainObjectHandler implements ComplexObsHan
 		Patient patient = ps.getPatient(Integer.parseInt(values[1]));
 		
 		if (patient == null) {
-			throw new APIException("Cannot retrieve complex obs where obsId=" + obs.getObsId()
-			        + " because the patient instance is null.");
+			throw new APIException("Cannot retrieve complex obs where obsId=" + obs.getObsId() + " because the patient id :"
+			        + Integer.parseInt(values[1]) + " cannot be found.");
 		}
 		
 		ComplexData complexData = new ComplexData(values[0], patient);
@@ -89,7 +98,18 @@ public class PatientHandler extends DomainObjectHandler implements ComplexObsHan
 		// interface
 		// Demands it. What (if necessary) is the best way to implement this
 		// method ?
-		return false;
+		// TO DO: see comments
+		// https://source.openmrs.org/cru/CR-TRUNK-369#CFR-8348
+		return true;
+	}
+	
+	/**
+	 * Gets the display link.
+	 * 
+	 * @return the display link
+	 */
+	public String getDisplayLink() {
+		return this.displayLink;
 	}
 	
 }

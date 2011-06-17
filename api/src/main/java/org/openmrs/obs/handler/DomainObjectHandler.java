@@ -32,4 +32,13 @@ public class DomainObjectHandler {
 		
 	}
 	
+	/**
+	 * Gets the display link.
+	 * 
+	 * @return the display link
+	 */
+	public String getDisplayLink() {
+		return null;
+	}
+	
 }
