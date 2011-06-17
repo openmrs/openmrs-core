@@ -320,7 +320,7 @@ public class HibernateEncounterDAO implements EncounterDAO {
 	 * @return
 	 */
 	private Criteria createEncounterByQueryCriteria(String query, boolean includeVoided) {
-		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Encounter.class);
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Encounter.class, "enc");
 		if (!includeVoided)
 			criteria.add(Restrictions.eq("voided", false));
 		
