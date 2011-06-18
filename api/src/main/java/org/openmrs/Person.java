@@ -84,13 +84,13 @@ public class Person extends BaseCustomizableData<PersonAttribute> implements jav
 	
 	private boolean isPatient;
 	
-//	/**
-//	 * Convenience map from PersonAttributeType.name to PersonAttribute.<br/>
-//	 * <br/>
-//	 * This is "cached" for each user upon first load. When an attribute is changed, the cache is
-//	 * cleared and rebuilt on next access.
-//	 */
-//	Map<String, PersonAttribute> attributeMap = null;
+	//	/**
+	//	 * Convenience map from PersonAttributeType.name to PersonAttribute.<br/>
+	//	 * <br/>
+	//	 * This is "cached" for each user upon first load. When an attribute is changed, the cache is
+	//	 * cleared and rebuilt on next access.
+	//	 */
+	//	Map<String, PersonAttribute> attributeMap = null;
 	
 	/**
 	 * default empty constructor
@@ -351,18 +351,18 @@ public class Person extends BaseCustomizableData<PersonAttribute> implements jav
 		this.names = names;
 	}
 	
-//	/**
-//	 * @return all known attributes for person
-//	 * @see org.openmrs.PersonAttribute
-//	 * @should not get voided attributes
-//	 * @should not fail with null attributes
-//	 */
-//	@ElementList
-//	public Set<PersonAttribute> getAttributes() {
-//		if (attributes == null)
-//			attributes = new TreeSet<PersonAttribute>();
-//		return this.attributes;
-//	}
+	//	/**
+	//	 * @return all known attributes for person
+	//	 * @see org.openmrs.PersonAttribute
+	//	 * @should not get voided attributes
+	//	 * @should not fail with null attributes
+	//	 */
+	//	@ElementList
+	//	public Set<PersonAttribute> getAttributes() {
+	//		if (attributes == null)
+	//			attributes = new TreeSet<PersonAttribute>();
+	//		return this.attributes;
+	//	}
 	
 	/**
 	 * Returns only the non-voided attributes for this person
@@ -380,66 +380,64 @@ public class Person extends BaseCustomizableData<PersonAttribute> implements jav
 		return attrs;
 	}
 	
-//	/**
-//	 * @param attributes update all known attributes for person
-//	 * @see org.openmrs.PersonAttribute
-//	 */
-//	@ElementList
-//	public void setAttributes(Set<PersonAttribute> attributes) {
-//		this.attributes = attributes;
-//		attributeMap = null;
-//	}
+	//	/**
+	//	 * @param attributes update all known attributes for person
+	//	 * @see org.openmrs.PersonAttribute
+	//	 */
+	//	@ElementList
+	//	public void setAttributes(Set<PersonAttribute> attributes) {
+	//		this.attributes = attributes;
+	//		attributeMap = null;
+	//	}
 	
 	// Convenience methods
 	
-//	/**
-//	 * Convenience method to add the <code>attribute</code> to this person's attribute list if the
-//	 * attribute doesn't exist already.<br/>
-//	 * <br/>
-//	 * Voids any current attribute with type = <code>newAttribute.getAttributeType()</code><br/>
-//	 * <br/>
-//	 * NOTE: This effectively limits persons to only one attribute of any given type **
-//	 * 
-//	 * @param newAttribute PersonAttribute to add to the Person
-//	 * @should fail when new attribute exist
-//	 * @should fail when new atribute are the same type with same value
-//	 * @should void old attribute when new attribute are the same type with different value
-//	 * @should remove attribute when old attribute are temporary
-//	 * @should not save an attribute with a null value
-//	 * @should not save an attribute with a blank string value
-//	 * @should void old attribute when a null or blank string value is added
-//	 */
-//	public void addAttribute(PersonAttribute newAttribute) {
-//		newAttribute.setPerson(this);
-//		boolean newIsNull = !StringUtils.hasText(newAttribute.getValue());
-//		
-//		for (PersonAttribute currentAttribute : getActiveAttributes()) {
-//			if (currentAttribute.equals(newAttribute))
-//				return; // if we have the same PersonAttributeId, don't add the new attribute
-//			else if (currentAttribute.getAttributeType().equals(newAttribute.getAttributeType())) {
-//				if (currentAttribute.getValue() != null && currentAttribute.getValue().equals(newAttribute.getValue()))
-//					// this person already has this attribute
-//					return;
-//				
-//				// if the to-be-added attribute isn't already voided itself
-//				// and if we have the same type, different value
-//				if (newAttribute.isVoided() == false || newIsNull) {
-//					if (currentAttribute.getCreator() != null)
-//						currentAttribute.voidAttribute("New value: " + newAttribute.getValue());
-//					else
-//						// remove the attribute if it was just temporary (didn't have a creator
-//						// attached to it yet)
-//						removeAttribute(currentAttribute);
-//				}
-//			}
-//		}
-////		attributeMap = null;
-//		
-//		if (!OpenmrsUtil.collectionContains(attributes, newAttribute) && !newIsNull)
-//			attributes.add(newAttribute);
-//	}
-	
-
+	//	/**
+	//	 * Convenience method to add the <code>attribute</code> to this person's attribute list if the
+	//	 * attribute doesn't exist already.<br/>
+	//	 * <br/>
+	//	 * Voids any current attribute with type = <code>newAttribute.getAttributeType()</code><br/>
+	//	 * <br/>
+	//	 * NOTE: This effectively limits persons to only one attribute of any given type **
+	//	 * 
+	//	 * @param newAttribute PersonAttribute to add to the Person
+	//	 * @should fail when new attribute exist
+	//	 * @should fail when new atribute are the same type with same value
+	//	 * @should void old attribute when new attribute are the same type with different value
+	//	 * @should remove attribute when old attribute are temporary
+	//	 * @should not save an attribute with a null value
+	//	 * @should not save an attribute with a blank string value
+	//	 * @should void old attribute when a null or blank string value is added
+	//	 */
+	//	public void addAttribute(PersonAttribute newAttribute) {
+	//		newAttribute.setPerson(this);
+	//		boolean newIsNull = !StringUtils.hasText(newAttribute.getValue());
+	//		
+	//		for (PersonAttribute currentAttribute : getActiveAttributes()) {
+	//			if (currentAttribute.equals(newAttribute))
+	//				return; // if we have the same PersonAttributeId, don't add the new attribute
+	//			else if (currentAttribute.getAttributeType().equals(newAttribute.getAttributeType())) {
+	//				if (currentAttribute.getValue() != null && currentAttribute.getValue().equals(newAttribute.getValue()))
+	//					// this person already has this attribute
+	//					return;
+	//				
+	//				// if the to-be-added attribute isn't already voided itself
+	//				// and if we have the same type, different value
+	//				if (newAttribute.isVoided() == false || newIsNull) {
+	//					if (currentAttribute.getCreator() != null)
+	//						currentAttribute.voidAttribute("New value: " + newAttribute.getValue());
+	//					else
+	//						// remove the attribute if it was just temporary (didn't have a creator
+	//						// attached to it yet)
+	//						removeAttribute(currentAttribute);
+	//				}
+	//			}
+	//		}
+	////		attributeMap = null;
+	//		
+	//		if (!OpenmrsUtil.collectionContains(attributes, newAttribute) && !newIsNull)
+	//			attributes.add(newAttribute);
+	//	}
 	
 	/**
 	 * Convenience Method to return the first non-voided person attribute matching a person
@@ -562,7 +560,6 @@ public class Person extends BaseCustomizableData<PersonAttribute> implements jav
 		}
 		return ret;
 	}
-	
 	
 	/**
 	 * Convenience method for viewing all of the person's current attributes

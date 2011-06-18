@@ -49,7 +49,6 @@ public class PersonAttribute extends BaseAttribute<Person> implements java.io.Se
 	
 	private Integer personAttributeId;
 	
-	
 	/** default constructor */
 	public PersonAttribute() {
 	}
@@ -65,6 +64,8 @@ public class PersonAttribute extends BaseAttribute<Person> implements java.io.Se
 	 * @param value String
 	 */
 	public PersonAttribute(PersonAttributeType type, String value) {
+		if(type==null)
+			throw new RuntimeException("Ovaj tip je null, a vrednost je "+value);
 		setAttributeType(type);
 		setValue(value);
 	}
@@ -194,21 +195,21 @@ public class PersonAttribute extends BaseAttribute<Person> implements java.io.Se
 		setOwner(person);
 	}
 	
-//	/**
-//	 * @return the attributeType
-//	 */
-//	@Element(required = true)
-//	public PersonAttributeType getAttributeType() {
-//		return attributeType;
-//	}
-//	
-//	/**
-//	 * @param attributeType the attributeType to set
-//	 */
-//	@Element(required = true)
-//	public void setAttributeType(PersonAttributeType attributeType) {
-//		this.attributeType = attributeType;
-//	}
+	//	/**
+	//	 * @return the attributeType
+	//	 */
+	//	@Element(required = true)
+	//	public PersonAttributeType getAttributeType() {
+	//		return attributeType;
+	//	}
+	//	
+	//	/**
+	//	 * @param attributeType the attributeType to set
+	//	 */
+	//	@Element(required = true)
+	//	public void setAttributeType(PersonAttributeType attributeType) {
+	//		this.attributeType = attributeType;
+	//	}
 	
 	/**
 	 * @return the value
@@ -268,28 +269,28 @@ public class PersonAttribute extends BaseAttribute<Person> implements java.io.Se
 	@SuppressWarnings("unchecked")
 	public Object getHydratedObject() {
 		return getObjectValue();
-//		try {
-//			Class c = OpenmrsClassLoader.getInstance().loadClass(getAttributeType().getFormat());
-//			try {
-//				Object o = c.newInstance();
-//				if (o instanceof Attributable) {
-//					Attributable attr = (Attributable) o;
-//					return attr.hydrate(getValue());
-//				}
-//			}
-//			catch (InstantiationException e) {
-//				// try to hydrate the object with the String constructor
-//				log.trace("Unable to call no-arg constructor for class: " + c.getName());
-//				Object o = c.getConstructor(String.class).newInstance(getValue());
-//				return o;
-//			}
-//		}
-//		catch (Throwable t) {
-//			log.warn("Unable to hydrate value: " + getValue() + " for type: " + getAttributeType(), t);
-//		}
-//		
-//		log.debug("Returning value: '" + getValue() + "'");
-//		return getValue();
+		//		try {
+		//			Class c = OpenmrsClassLoader.getInstance().loadClass(getAttributeType().getFormat());
+		//			try {
+		//				Object o = c.newInstance();
+		//				if (o instanceof Attributable) {
+		//					Attributable attr = (Attributable) o;
+		//					return attr.hydrate(getValue());
+		//				}
+		//			}
+		//			catch (InstantiationException e) {
+		//				// try to hydrate the object with the String constructor
+		//				log.trace("Unable to call no-arg constructor for class: " + c.getName());
+		//				Object o = c.getConstructor(String.class).newInstance(getValue());
+		//				return o;
+		//			}
+		//		}
+		//		catch (Throwable t) {
+		//			log.warn("Unable to hydrate value: " + getValue() + " for type: " + getAttributeType(), t);
+		//		}
+		//		
+		//		log.debug("Returning value: '" + getValue() + "'");
+		//		return getValue();
 	}
 	
 	/**
@@ -303,30 +304,6 @@ public class PersonAttribute extends BaseAttribute<Person> implements java.io.Se
 		setVoidedBy(Context.getAuthenticatedUser());
 		setVoidReason(reason);
 		setDateVoided(new Date());
-	}
-	
-	/**
-	 * @see java.lang.Comparable#compareTo(java.lang.Object)
-	 * @should return negative if other attribute is voided
-	 * @should return negative if other attribute has earlier date created
-	 * @should return negative if this attribute has lower attribute type than argument
-	 * @should return negative if other attribute has lower value
-	 * @should return negative if this attribute has lower attribute id than argument
-	 */
-	public int compareTo(PersonAttribute other) {
-		int retValue = 0;
-		retValue = isVoided().compareTo(other.isVoided());
-		if (retValue == 0)
-			retValue = OpenmrsUtil.compareWithNullAsLatest(getDateCreated(), other.getDateCreated());
-		if (retValue == 0)
-			retValue = getAttributeType().getId().compareTo(
-			    other.getAttributeType().getId());
-		if (retValue == 0)
-			retValue = OpenmrsUtil.compareWithNullAsGreatest(getValue(), other.getValue());
-		if (retValue == 0)
-			retValue = OpenmrsUtil.compareWithNullAsGreatest(getPersonAttributeId(), other.getPersonAttributeId());
-		
-		return retValue;
 	}
 	
 	/**
@@ -347,7 +324,7 @@ public class PersonAttribute extends BaseAttribute<Person> implements java.io.Se
 		
 	}
 	
-	public PersonAttributeType getAttributeType(){
+	public PersonAttributeType getAttributeType() {
 		return null;
 	}
 }

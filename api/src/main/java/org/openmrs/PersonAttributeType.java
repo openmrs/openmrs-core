@@ -28,8 +28,6 @@ public class PersonAttributeType extends BaseAttributeType<Person> implements ja
 	
 	private Integer personAttributeTypeId;
 	
-	private String format;
-	
 	private Integer foreignKey;
 	
 	private Double sortWeight;
@@ -73,21 +71,21 @@ public class PersonAttributeType extends BaseAttributeType<Person> implements ja
 	
 	// Property accessors
 	
-	/**
-	 * @return Returns the format.
-	 */
-	@Element(data = true, required = false)
-	public String getFormat() {
-		return format;
-	}
-	
-	/**
-	 * @param format The format to set.
-	 */
-	@Element(data = true, required = false)
-	public void setFormat(String format) {
-		this.format = format;
-	}
+//	/**
+//	 * @return Returns the format.
+//	 */
+//	@Element(data = true, required = false)
+//	public String getFormat() {
+//		return format;
+//	}
+//	
+//	/**
+//	 * @param format The format to set.
+//	 */
+//	@Element(data = true, required = false)
+//	public void setFormat(String format) {
+//		this.format = format;
+//	}
 	
 	/**
 	 * @return the foreignKey

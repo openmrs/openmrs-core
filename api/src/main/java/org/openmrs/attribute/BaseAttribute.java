@@ -106,6 +106,10 @@ public abstract class BaseAttribute<OwningType extends Customizable<?>> extends 
 	
 	/**
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 * @should return negative if other attribute is voided
+	 * @should return negative if this attribute has lower attribute type than argument
+	 * @should return negative if other attribute has lower value
+	 * @should return negative if this attribute has lower attribute id than argument
 	 */
 	@Override
 	public int compareTo(Attribute<?> other) {
