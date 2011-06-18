@@ -36,11 +36,10 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.ObsService;
-import org.openmrs.obs.handler.DomainObjectHandler;
+import org.openmrs.obs.handler.CustomDatatypeHandler;
 import org.openmrs.api.context.Context;
 import org.openmrs.obs.ComplexData;
 import org.openmrs.obs.ComplexObsHandler;
-import org.openmrs.obs.handler.DomainObjectHandler;
 import org.openmrs.propertyeditor.ConceptEditor;
 import org.openmrs.propertyeditor.DrugEditor;
 import org.openmrs.propertyeditor.EncounterEditor;
@@ -143,7 +142,7 @@ public class ObsFormController extends SimpleFormController {
 						ConceptComplex conceptComplex = cs.getConceptComplex(obs.getConcept().getConceptId());
 						ComplexObsHandler handlerObs = Context.getObsService().getHandler(conceptComplex.getHandler());
 						
-						if (handlerObs instanceof DomainObjectHandler) {
+						if (handlerObs instanceof CustomDatatypeHandler) {
 							newlySavedObs = os.saveObs(obs, reason);
 						} else {
 							if (request instanceof MultipartHttpServletRequest) {
@@ -269,7 +268,7 @@ public class ObsFormController extends SimpleFormController {
 					ConceptService cs = Context.getConceptService();
 					ConceptComplex conceptComplex = cs.getConceptComplex(obs.getConcept().getConceptId());
 					ComplexObsHandler handlerObs = Context.getObsService().getHandler(conceptComplex.getHandler());
-					if (!(handlerObs instanceof DomainObjectHandler)) {
+					if (!(handlerObs instanceof CustomDatatypeHandler)) {
 						Obs complexObs = os.getComplexObs(Integer.valueOf(obsId), WebConstants.HTML_VIEW);
 						ComplexData complexData = complexObs.getComplexData();
 						map.put("htmlView", complexData.getData());
@@ -280,7 +279,7 @@ public class ObsFormController extends SimpleFormController {
 					} else {
 						Obs complexObs = os.getComplexObs(Integer.valueOf(obsId), WebConstants.HYPERLINK_VIEW);
 						ComplexData complexData = complexObs.getComplexData();
-						DomainObjectHandler domainObj = (DomainObjectHandler) handlerObs;
+						CustomDatatypeHandler domainObj = (CustomDatatypeHandler) handlerObs;
 						String[] values = obs.getValueComplex().split("\\|");
 						if (values[1] != null)
 							map.put("hyperlinkView", domainObj.getDisplayLink() + values[1]);

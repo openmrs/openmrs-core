@@ -21,14 +21,14 @@ import org.apache.commons.logging.LogFactory;
  * Abstract handler class for convenience methods to be used when specifically storing Domain
  * Objects as answers for Complex Observations.
  */
-public class DomainObjectHandler {
+public class CustomDatatypeHandler {
 	
-	public static final Log log = LogFactory.getLog(DomainObjectHandler.class);
+	public static final Log log = LogFactory.getLog(CustomDatatypeHandler.class);
 	
 	/**
 	 * The default Constructor method
 	 */
-	public DomainObjectHandler() {
+	public CustomDatatypeHandler() {
 		
 	}
 	

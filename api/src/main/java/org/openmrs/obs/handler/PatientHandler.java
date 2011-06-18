@@ -28,7 +28,7 @@ import org.openmrs.obs.ComplexObsHandler;
  * each Patient object is stored in the value_complex column of the Obs table in the database
  */
 
-public class PatientHandler extends DomainObjectHandler implements ComplexObsHandler {
+public class PatientHandler extends CustomDatatypeHandler implements ComplexObsHandler {
 	
 	public static final Log log = LogFactory.getLog(PatientHandler.class);
 	

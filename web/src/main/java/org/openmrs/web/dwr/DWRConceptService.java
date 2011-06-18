@@ -42,7 +42,7 @@ import org.openmrs.api.ConceptService;
 import org.openmrs.api.ConceptsLockedException;
 import org.openmrs.api.FormService;
 import org.openmrs.api.context.Context;
-import org.openmrs.obs.handler.DomainObjectHandler;
+import org.openmrs.obs.handler.CustomDatatypeHandler;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 
@@ -421,7 +421,7 @@ public class DWRConceptService {
 		log.info("Retrieving concept with handler :" + conceptComplex.getHandler());
 		
 		ComplexObsHandler handlerObs = Context.getObsService().getHandler(conceptComplex.getHandler());
-		if (handlerObs instanceof DomainObjectHandler)
+		if (handlerObs instanceof CustomDatatypeHandler)
 			return true;
 		return false;
 	}
