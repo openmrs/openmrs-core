@@ -28,12 +28,13 @@ import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 
 /**
- * A PersonAttribute is meant as way for implementations to add arbitrary information about a
- * user/patient to their database. PersonAttributes are essentially just key-value pairs. However,
- * the PersonAttributeType can be defined in such a way that the value portion of this
- * PersonAttribute is a foreign key to another database table (like to the location table, or
- * concept table). This gives a PersonAttribute the ability to link to any other part of the
- * database A Person can have zero to n PersonAttribute(s).
+ * A PersonAttribute is meant as way for implementations to add arbitrary
+ * information about a user/patient to their database. PersonAttributes are
+ * essentially just key-value pairs. However, the PersonAttributeType can be
+ * defined in such a way that the value portion of this PersonAttribute is a
+ * foreign key to another database table (like to the location table, or concept
+ * table). This gives a PersonAttribute the ability to link to any other part of
+ * the database A Person can have zero to n PersonAttribute(s).
  * 
  * @see org.openmrs.PersonAttributeType
  * @see org.openmrs.Attributable
@@ -60,12 +61,14 @@ public class PersonAttribute extends BaseAttribute<Person> implements java.io.Se
 	/**
 	 * Constructor for creating a basic attribute
 	 * 
-	 * @param type PersonAttributeType
-	 * @param value String
+	 * @param type
+	 *            PersonAttributeType
+	 * @param value
+	 *            String
 	 */
 	public PersonAttribute(PersonAttributeType type, String value) {
-		if(type==null)
-			throw new RuntimeException("Ovaj tip je null, a vrednost je "+value);
+		if (type == null)
+			throw new RuntimeException("Ovaj tip je null, a vrednost je " + value);
 		setAttributeType(type);
 		setValue(value);
 	}
@@ -80,11 +83,15 @@ public class PersonAttribute extends BaseAttribute<Person> implements java.io.Se
 	}
 	
 	/**
-	 * The purpose of this method is to allow subclasses of PersonAttribute to delegate a portion of
-	 * their copy() method back to the superclass, in case the base class implementation changes.
+	 * The purpose of this method is to allow subclasses of PersonAttribute to
+	 * delegate a portion of their copy() method back to the superclass, in case
+	 * the base class implementation changes.
 	 * 
-	 * @param target a PersonAttribute that will have the state of <code>this</code> copied into it
-	 * @return Returns the PersonAttribute that was passed in, with state copied into it
+	 * @param target
+	 *            a PersonAttribute that will have the state of
+	 *            <code>this</code> copied into it
+	 * @return Returns the PersonAttribute that was passed in, with state copied
+	 *         into it
 	 */
 	protected PersonAttribute copyHelper(PersonAttribute target) {
 		target.setPerson(getPerson());
@@ -132,12 +139,14 @@ public class PersonAttribute extends BaseAttribute<Person> implements java.io.Se
 	}
 	
 	/**
-	 * Compares this PersonAttribute object to the given otherAttribute. This method differs from
-	 * {@link #equals(Object)} in that this method compares the inner fields of each attribute for
-	 * equality. Note: Null/empty fields on <code>otherAttribute</code> /will not/ cause a false
-	 * value to be returned
+	 * Compares this PersonAttribute object to the given otherAttribute. This
+	 * method differs from {@link #equals(Object)} in that this method compares
+	 * the inner fields of each attribute for equality. Note: Null/empty fields
+	 * on <code>otherAttribute</code> /will not/ cause a false value to be
+	 * returned
 	 * 
-	 * @param otherAttribute PersonAttribute with which to compare
+	 * @param otherAttribute
+	 *            PersonAttribute with which to compare
 	 * @return boolean true/false whether or not they are the same attributes
 	 * @should return true if attributeType value and void status are the same
 	 */
@@ -188,28 +197,29 @@ public class PersonAttribute extends BaseAttribute<Person> implements java.io.Se
 	}
 	
 	/**
-	 * @param person The person to set.
+	 * @param person
+	 *            The person to set.
 	 */
 	@Element(required = true)
 	public void setPerson(Person person) {
 		setOwner(person);
 	}
 	
-	//	/**
-	//	 * @return the attributeType
-	//	 */
-	//	@Element(required = true)
-	//	public PersonAttributeType getAttributeType() {
-	//		return attributeType;
-	//	}
-	//	
-	//	/**
-	//	 * @param attributeType the attributeType to set
-	//	 */
-	//	@Element(required = true)
-	//	public void setAttributeType(PersonAttributeType attributeType) {
-	//		this.attributeType = attributeType;
-	//	}
+	// /**
+	// * @return the attributeType
+	// */
+	// @Element(required = true)
+	// public PersonAttributeType getAttributeType() {
+	// return attributeType;
+	// }
+	//
+	// /**
+	// * @param attributeType the attributeType to set
+	// */
+	// @Element(required = true)
+	// public void setAttributeType(PersonAttributeType attributeType) {
+	// this.attributeType = attributeType;
+	// }
 	
 	/**
 	 * @return the value
@@ -220,7 +230,8 @@ public class PersonAttribute extends BaseAttribute<Person> implements java.io.Se
 	}
 	
 	/**
-	 * @param value the value to set
+	 * @param value
+	 *            the value to set
 	 */
 	@Element(data = true, required = false)
 	public void setValue(String value) {
@@ -251,7 +262,8 @@ public class PersonAttribute extends BaseAttribute<Person> implements java.io.Se
 	}
 	
 	/**
-	 * @param personAttributeId the personAttributeId to set
+	 * @param personAttributeId
+	 *            the personAttributeId to set
 	 */
 	@Attribute(required = true)
 	public void setPersonAttributeId(Integer personAttributeId) {
@@ -259,8 +271,9 @@ public class PersonAttribute extends BaseAttribute<Person> implements java.io.Se
 	}
 	
 	/**
-	 * Will try to create an object of class 'PersonAttributeType.format'. If that implements
-	 * <code>Attributable</code>, hydrate(value) is called. Defaults to just returning getValue()
+	 * Will try to create an object of class 'PersonAttributeType.format'. If
+	 * that implements <code>Attributable</code>, hydrate(value) is called.
+	 * Defaults to just returning getValue()
 	 * 
 	 * @return hydrated object or getValue()
 	 * @should load class in format property
@@ -269,28 +282,31 @@ public class PersonAttribute extends BaseAttribute<Person> implements java.io.Se
 	@SuppressWarnings("unchecked")
 	public Object getHydratedObject() {
 		return getObjectValue();
-		//		try {
-		//			Class c = OpenmrsClassLoader.getInstance().loadClass(getAttributeType().getFormat());
-		//			try {
-		//				Object o = c.newInstance();
-		//				if (o instanceof Attributable) {
-		//					Attributable attr = (Attributable) o;
-		//					return attr.hydrate(getValue());
-		//				}
-		//			}
-		//			catch (InstantiationException e) {
-		//				// try to hydrate the object with the String constructor
-		//				log.trace("Unable to call no-arg constructor for class: " + c.getName());
-		//				Object o = c.getConstructor(String.class).newInstance(getValue());
-		//				return o;
-		//			}
-		//		}
-		//		catch (Throwable t) {
-		//			log.warn("Unable to hydrate value: " + getValue() + " for type: " + getAttributeType(), t);
-		//		}
-		//		
-		//		log.debug("Returning value: '" + getValue() + "'");
-		//		return getValue();
+		// try {
+		// Class c =
+		// OpenmrsClassLoader.getInstance().loadClass(getAttributeType().getFormat());
+		// try {
+		// Object o = c.newInstance();
+		// if (o instanceof Attributable) {
+		// Attributable attr = (Attributable) o;
+		// return attr.hydrate(getValue());
+		// }
+		// }
+		// catch (InstantiationException e) {
+		// // try to hydrate the object with the String constructor
+		// log.trace("Unable to call no-arg constructor for class: " +
+		// c.getName());
+		// Object o = c.getConstructor(String.class).newInstance(getValue());
+		// return o;
+		// }
+		// }
+		// catch (Throwable t) {
+		// log.warn("Unable to hydrate value: " + getValue() + " for type: " +
+		// getAttributeType(), t);
+		// }
+		//
+		// log.debug("Returning value: '" + getValue() + "'");
+		// return getValue();
 	}
 	
 	/**
@@ -324,7 +340,14 @@ public class PersonAttribute extends BaseAttribute<Person> implements java.io.Se
 		
 	}
 	
+	@Override
 	public PersonAttributeType getAttributeType() {
-		return null;
+		try {
+			return (PersonAttributeType) super.getAttributeType();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 }

@@ -103,11 +103,11 @@ public class PersonFormController extends SimpleFormController {
 							attribute.setValue("");
 						} else if (hydratedObject instanceof Attributable) {
 							attribute.setValue(((Attributable) hydratedObject).serialize());
-						} 
-//						else if (!hydratedObject.getClass().getName().equals(type.getFormat()))
-//							// if the classes doesn't match the format, the hydration failed somehow
-//							// TODO change the PersonAttribute.getHydratedObject() to not swallow all errors?
-//							throw new APIException();
+						}
+						//						else if (!hydratedObject.getClass().getName().equals(type.getFormat()))
+						//							// if the classes doesn't match the format, the hydration failed somehow
+						//							// TODO change the PersonAttribute.getHydratedObject() to not swallow all errors?
+						//							throw new APIException();
 					}
 					catch (APIException e) {
 						errors.rejectValue("attributes", "Invalid value for " + type.getName() + ": '" + value + "'");

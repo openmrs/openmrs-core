@@ -25,6 +25,7 @@ import java.util.Vector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.UserService;
+import org.openmrs.attribute.AttributeType;
 import org.openmrs.util.OpenmrsUtil;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
@@ -478,7 +479,7 @@ public class Person extends BaseCustomizableData<PersonAttribute> implements jav
 	public PersonAttribute getAttribute(String attributeName) {
 		if (attributeName != null)
 			for (PersonAttribute attribute : getAttributes()) {
-				PersonAttributeType type = attribute.getAttributeType();
+				AttributeType<Person> type = attribute.getAttributeType();
 				if (type != null && attributeName.equals(type.getName()) && !attribute.isVoided()) {
 					return attribute;
 				}
@@ -518,7 +519,7 @@ public class Person extends BaseCustomizableData<PersonAttribute> implements jav
 		List<PersonAttribute> ret = new Vector<PersonAttribute>();
 		
 		for (PersonAttribute attribute : getActiveAttributes()) {
-			PersonAttributeType type = attribute.getAttributeType();
+			AttributeType<Person> type = attribute.getAttributeType();
 			if (type != null && attributeName.equals(type.getName())) {
 				ret.add(attribute);
 			}

@@ -71,21 +71,22 @@ public class PersonAttributeType extends BaseAttributeType<Person> implements ja
 	
 	// Property accessors
 	
-//	/**
-//	 * @return Returns the format.
-//	 */
-//	@Element(data = true, required = false)
-//	public String getFormat() {
-//		return format;
-//	}
-//	
-//	/**
-//	 * @param format The format to set.
-//	 */
-//	@Element(data = true, required = false)
-//	public void setFormat(String format) {
-//		this.format = format;
-//	}
+	/**
+	 * @return Returns the format.
+	 */
+	@Element(data = true, required = false)
+	public String getFormat() {
+		//return format;
+		return null;
+	}
+	
+	/**
+	 * @param format The format to set.
+	 */
+	@Element(data = true, required = false)
+	public void setFormat(String format) {
+		//this.format = format;
+	}
 	
 	/**
 	 * @return the foreignKey
@@ -200,5 +201,4 @@ public class PersonAttributeType extends BaseAttributeType<Person> implements ja
 		setPersonAttributeTypeId(id);
 		
 	}
-	
 }

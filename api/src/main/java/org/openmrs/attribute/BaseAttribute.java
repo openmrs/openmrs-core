@@ -116,8 +116,11 @@ public abstract class BaseAttribute<OwningType extends Customizable<?>> extends 
 		if (other == null)
 			return -1;
 		int retValue = isVoided().compareTo(other.isVoided());
-		if (retValue == 0)
-			retValue = OpenmrsUtil.compareWithNullAsGreatest(getAttributeType().getId(), other.getAttributeType().getId());
+		if (retValue == 0) {
+			AttributeType<OwningType> type = getAttributeType();
+			AttributeType<?> otherType = other.getAttributeType();
+			retValue = OpenmrsUtil.compareWithNullAsGreatest(type.getId(), otherType.getId());
+		}
 		if (retValue == 0)
 			retValue = OpenmrsUtil.compareWithNullAsGreatest(getSerializedValue(), other.getSerializedValue());
 		if (retValue == 0)
