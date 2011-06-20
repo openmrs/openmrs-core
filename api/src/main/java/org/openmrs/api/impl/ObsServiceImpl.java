@@ -14,13 +14,17 @@
 package org.openmrs.api.impl;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.Cohort;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
@@ -43,6 +47,9 @@ import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
 import org.openmrs.util.PrivilegeConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 
 /**
  * Default implementation of the Observation Service
@@ -50,6 +57,8 @@ import org.openmrs.util.PrivilegeConstants;
  * @see org.openmrs.api.ObsService
  */
 public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
+	
+	protected final Log log = LogFactory.getLog(getClass());
 	
 	/**
 	 * The data access object for the obs service
@@ -60,7 +69,10 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 * Report handlers that have been registered. This is filled via {@link #setHandlers(Map)} and
 	 * spring's applicationContext-service.xml object
 	 */
-	private static Map<String, ComplexObsHandler> handlers = null;
+	@Autowired
+	private List<ComplexObsHandler> handlers;
+	
+	private transient Map<String, Class<? extends ComplexObsHandler>> prioritizedHandlerClasses;
 	
 	/**
 	 * Default empty constructor for this obs service
@@ -757,11 +769,23 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 		return null;
 	}
 	
-	/**
+	/* (non-Javadoc)
 	 * @see org.openmrs.api.ObsService#getHandler(java.lang.String)
 	 */
 	public ComplexObsHandler getHandler(String key) {
-		return handlers.get(key);
+		if (prioritizedHandlerClasses == null) {
+			prioritizeHandlers();
+		}
+		Class<? extends ComplexObsHandler> handlerClass = (Class<? extends ComplexObsHandler>) prioritizedHandlerClasses
+		        .get(key);
+		ComplexObsHandler handler;
+		try {
+			handler = (ComplexObsHandler) handlerClass.newInstance();
+			return (ComplexObsHandler) handler;
+		}
+		catch (Exception ex) {
+			throw new APIException("Error instantiating handler", ex);
+		}
 	}
 	
 	/**
@@ -774,14 +798,70 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 		}
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.openmrs.api.ObsService#getDatatypes()
+	 */
+	@Override
+	public Map getDatatypes() {
+		if (prioritizedHandlerClasses == null) {
+			prioritizeHandlers();
+		}
+		return prioritizedHandlerClasses;
+	}
+	
 	/**
 	 * @see org.openmrs.api.ObsService#getHandlers()
 	 */
 	public Map<String, ComplexObsHandler> getHandlers() throws APIException {
+		Map handlerMap = null;
 		if (handlers == null)
-			handlers = new LinkedHashMap<String, ComplexObsHandler>();
-		
-		return handlers;
+			handlers = (List<ComplexObsHandler>) new LinkedHashMap<String, ComplexObsHandler>();
+		else {
+			handlerMap = new LinkedHashMap<String, ComplexObsHandler>();
+			Iterator itr = handlers.iterator();
+			while (itr.hasNext()) {
+				ComplexObsHandler obsHandler = (ComplexObsHandler) itr.next();
+				handlerMap.put(obsHandler.getHandlerType(), obsHandler);
+			}
+		}
+		return handlerMap;
+	}
+	
+	/**
+	 * Prioritize handlers.
+	 */
+	private synchronized void prioritizeHandlers() {
+		if (prioritizedHandlerClasses == null) {
+			prioritizedHandlerClasses = new HashMap<String, Class<? extends ComplexObsHandler>>();
+			for (ComplexObsHandler handler : handlers) {
+				Class<? extends ComplexObsHandler> clazz = handler.getClass();
+				if (!prioritizedHandlerClasses.containsKey(handler.getHandlerType())) {
+					prioritizedHandlerClasses.put(handler.getHandlerType(), (Class<? extends ComplexObsHandler>) clazz);
+					log.info("Loaded :" + handler.getHandlerType());
+				} else {
+					int candidateOrder = getOrder((Class<? extends ComplexObsHandler>) clazz);
+					int existingOrder = getOrder(prioritizedHandlerClasses.get(handler.getHandlerType()));
+					if (candidateOrder < existingOrder) {
+						prioritizedHandlerClasses.put(handler.getHandlerType(), (Class<? extends ComplexObsHandler>) clazz);
+						log.info("Selecting Handler Based On Priority :" + handler.getHandlerType());
+					}
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Gets the order.
+	 * 
+	 * @param clazz the clazz
+	 * @return the order
+	 */
+	private int getOrder(Class<?> clazz) {
+		int order = Ordered.LOWEST_PRECEDENCE;
+		Order orderAnnotation = clazz.getAnnotation(Order.class);
+		if (orderAnnotation != null)
+			order = orderAnnotation.value();
+		return order;
 	}
 	
 	/**

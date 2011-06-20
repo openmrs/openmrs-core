@@ -329,7 +329,7 @@ public class ConceptFormController extends SimpleFormController {
 		map.put("dataTypeReadOnly", dataTypeReadOnly);
 		
 		//get complex handlers
-		map.put("handlers", Context.getObsService().getHandlers());
+		map.put("handlers", Context.getObsService().getDatatypes());
 		
 		// make spring locale available to jsp
 		map.put("locale", Context.getLocale()); // should be same string format as conceptNamesByLocale map keys

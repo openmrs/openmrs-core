@@ -708,4 +708,11 @@ public interface ObsService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_OBS)
 	public Integer getObservationCount(List<ConceptName> conceptNames, boolean includeVoided);
+	
+	/**
+	 * Gets the datatypes.
+	 * 
+	 * @return the datatypes
+	 */
+	public Map getDatatypes();
 }
