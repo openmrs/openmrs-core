@@ -13,6 +13,7 @@
  */
 package org.openmrs.api.db;
 
+import java.util.Date;
 import java.util.List;
 
 import org.openmrs.Concept;
@@ -77,11 +78,11 @@ public interface OrderDAO {
 	/**
 	 * @see org.openmrs.api.OrderService#getOrders(java.lang.Class, java.util.List, java.util.List,
 	 *      org.openmrs.api.OrderService.ORDER_STATUS, java.util.List, java.util.List,
-	 *      java.util.List)
+	 *      java.util.List, java.util.Date)
 	 */
 	public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
 	        List<Concept> concepts, ORDER_STATUS status, List<User> orderers, List<Encounter> encounters,
-	        List<OrderType> orderTypes);
+	        List<OrderType> orderTypes, Date asOfDate);
 	
 	/**
 	 * Auto generated method comment

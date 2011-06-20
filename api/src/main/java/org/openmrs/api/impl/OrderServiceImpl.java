@@ -366,11 +366,19 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	/**
 	 * @see org.openmrs.api.OrderService#getOrders(java.lang.Class, java.util.List, java.util.List,
 	 *      org.openmrs.api.OrderService.ORDER_STATUS, java.util.List, java.util.List,
-	 *      java.util.List)
+	 *      java.util.List, java.util.Date)
 	 */
+	@Deprecated
 	public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
 	        List<Concept> concepts, ORDER_STATUS status, List<User> orderers, List<Encounter> encounters,
 	        List<OrderType> orderTypes) {
+		
+		return getOrders(orderClassType, patients, concepts, status, orderers, encounters, orderTypes, null);
+	}
+	
+	public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
+	        List<Concept> concepts, ORDER_STATUS status, List<User> orderers, List<Encounter> encounters,
+	        List<OrderType> orderTypes, Date asOfDate) {
 		if (orderClassType == null)
 			throw new APIException(
 			        "orderClassType cannot be null.  An order type of Order.class or DrugOrder.class is required");
@@ -393,7 +401,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		if (orderTypes == null)
 			orderTypes = new Vector<OrderType>();
 		
-		return dao.getOrders(orderClassType, patients, concepts, status, orderers, encounters, orderTypes);
+		return dao.getOrders(orderClassType, patients, concepts, status, orderers, encounters, orderTypes, asOfDate);
 	}
 	
 	/**
@@ -767,4 +775,35 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		ValidateUtil.validate(order);
 		return dao.saveOrder(order);
 	}
+
+	@Override
+	public List<Order> getActiveOrdersByPatient(Patient p, Date date) throws APIException {
+		
+		if (p == null)
+			throw new IllegalArgumentException("patient is required");
+		
+		if (date == null)
+			date = new Date();
+		
+		List<Patient> patients = new Vector<Patient>();
+		patients.add(p);
+		
+		return getOrders(Order.class, patients, null, ORDER_STATUS.ACTIVE, null, null, null, date);
+		
+	}
+
+	@Override
+	public List<DrugOrder> getActiveDrugOrdersByPatient(Patient p, Date date) {
+		if (p == null)
+			throw new IllegalArgumentException("patient is required");
+		
+		if (date == null)
+			date = new Date();
+		
+		List<Patient> patients = new Vector<Patient>();
+		patients.add(p);
+		
+		return getOrders(DrugOrder.class, patients, null, ORDER_STATUS.ACTIVE, null, null, null, date);
+	}
+	
 }

@@ -13,6 +13,7 @@
  */
 package org.openmrs.api.db.hibernate;
 
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -22,7 +23,6 @@ import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
 import org.openmrs.Concept;
-import org.openmrs.Drug;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
 import org.openmrs.OrderType;
@@ -142,15 +142,15 @@ public class HibernateOrderDAO implements OrderDAO {
 	/**
 	 * @see org.openmrs.api.db.OrderDAO#getOrders(java.lang.Class, java.util.List, java.util.List,
 	 *      org.openmrs.api.OrderService.ORDER_STATUS, java.util.List, java.util.List,
-	 *      java.util.List)
+	 *      java.util.List, java.util.Date)
 	 * @see org.openmrs.api.OrderService#getOrders(java.lang.Class, java.util.List, java.util.List,
 	 *      org.openmrs.api.OrderService.ORDER_STATUS, java.util.List, java.util.List,
-	 *      java.util.List)
+	 *      java.util.List, java.util.Date)
 	 */
 	@SuppressWarnings("unchecked")
 	public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
 	        List<Concept> concepts, ORDER_STATUS status, List<User> orderers, List<Encounter> encounters,
-	        List<OrderType> orderTypes) {
+	        List<OrderType> orderTypes, Date asOfDate) {
 		
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(orderClassType);
 		
@@ -162,10 +162,29 @@ public class HibernateOrderDAO implements OrderDAO {
 		
 		// only the "ANY" status cares about voided Orders.  All others 
 		// do not want voided orders included in the list
+		// so exclude them here first
 		if (status != ORDER_STATUS.ANY)
 			crit.add(Expression.eq("voided", false));
+		
+		if (status == ORDER_STATUS.ACTIVE && asOfDate != null) {
+			crit.add(Expression.le("startDate", asOfDate)); // startDate cannot be null?
+					
+			crit.add(Expression.or(
+					Expression.isNull("discontinuedDate"),
+					Expression.ge("discontinueDate", asOfDate)));
+			
+			crit.add(Expression.or(
+					Expression.isNull("autoExpireDate"),
+					Expression.ge("autoExpireDate", asOfDate)));
+			
+			crit.add(Expression.or(
+					Expression.isNull("dateActivated"),
+					Expression.le("dateActivated", asOfDate)));
+			
+		}
+		
 		// we are not checking the other status's here because they are 
-		// algorithm dependent  
+		// algorithm dependent
 		
 		if (orderers.size() > 0)
 			crit.add(Expression.in("orderer", orderers));

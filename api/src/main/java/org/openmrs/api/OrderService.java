@@ -70,8 +70,15 @@ public interface OrderService extends OpenmrsService {
 	public static enum ORDER_STATUS {
 		/**
 		 * The patient is considered to be currently on this order
+		 * @deprecated this is replaced by {@link ORDER_STATUS#ACTIVE}
 		 */
+		@Deprecated
 		CURRENT,
+		
+		/**
+		 * The patient is considered to be currently on this order
+		 */
+		ACTIVE,
 
 		/**
 		 * All orders match on this status
@@ -621,4 +628,41 @@ public interface OrderService extends OpenmrsService {
 	 * @return the saved, signed and activated order.
 	 */
 	public Order signAndActivateOrder(Order order, User user) throws APIException;
+	
+	/**
+	 * Gets all Orders that are currently active. An active order is one that:
+	 * <ol>
+	 *   <li>startDate <= <code>date</code>
+	 *   <li>discontinuedDate is null or >= <code>date</code>
+	 *   <li>autoExpireDate is null or >= <code>date</code>
+	 *   <li>dateActivated >= <code>date</code>
+	 * </ol>
+	 * 
+	 * @param p the patient to search on (required)
+	 * @param date the date at which the orders should have been active.  If null, is presumed to be right now.
+	 * @return list of active orders
+	 * @should get orders with dateActivated before the given date
+	 * @should not get orders with discontinuedDate before the given date
+	 * @should get orders with startDate before the given date
+	 */
+	public List<Order> getActiveOrdersByPatient(Patient p, Date date) throws APIException ;
+	
+	/**
+	 * Gets all DrugOrder objects that are currently active. An active DrugOrder is one that:
+	 * <ol>
+	 *   <li>startDate <= <code>date</code>
+	 *   <li>discontinuedDate is null or >= <code>date</code>
+	 *   <li>autoExpireDate is null or >= <code>date</code>
+	 *   <li>dateActivated >= <code>date</code>
+	 * </ol>
+	 * 
+	 * @param p the patient to search on (required)
+	 * @param date the date at which the orders should have been active.  If null, is presumed to be right now.
+	 * @return list of active orders
+	 * @should get orders with dateActivated before the given date
+	 * @should not get orders with discontinuedDate before the given date
+	 * @should get orders with startDate before the given date
+	 */
+	List<DrugOrder> getActiveDrugOrdersByPatient(Patient p, Date date) throws APIException ;
+	
 }

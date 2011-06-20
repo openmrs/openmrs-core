@@ -415,4 +415,5 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order = Context.getOrderService().getOrder(10);
 		Assert.assertFalse(order.isLatestVersion());
 	}
+	
 }
