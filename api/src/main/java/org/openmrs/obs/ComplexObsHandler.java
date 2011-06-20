@@ -68,4 +68,11 @@ public interface ComplexObsHandler {
 	 */
 	public boolean purgeComplexData(Obs obs);
 	
+	/**
+	 * Gets the handler type.
+	 * 
+	 * @return the handler type
+	 */
+	public String getHandlerType();
+	
 }

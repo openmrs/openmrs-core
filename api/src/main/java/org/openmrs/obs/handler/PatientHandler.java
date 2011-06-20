@@ -22,12 +22,17 @@ import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.obs.ComplexData;
 import org.openmrs.obs.ComplexObsHandler;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
 
 /**
  * Handler for storing Patient objects as answers for Complex Observations. The Patient Id number of
  * each Patient object is stored in the value_complex column of the Obs table in the database
  */
 
+@Component
+@Order(Ordered.LOWEST_PRECEDENCE)
 public class PatientHandler extends CustomDatatypeHandler implements ComplexObsHandler {
 	
 	public static final Log log = LogFactory.getLog(PatientHandler.class);
@@ -110,6 +115,15 @@ public class PatientHandler extends CustomDatatypeHandler implements ComplexObsH
 	 */
 	public String getDisplayLink() {
 		return this.displayLink;
+	}
+	
+	/**
+	 * Gets the handler type for each registered handler.
+	 * 
+	 * @return the handler type
+	 */
+	public String getHandlerType() {
+		return "PatientHandler";
 	}
 	
 }

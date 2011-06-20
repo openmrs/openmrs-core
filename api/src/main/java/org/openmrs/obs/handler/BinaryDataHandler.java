@@ -128,4 +128,14 @@ public class BinaryDataHandler extends AbstractHandler implements ComplexObsHand
 		return obs;
 	}
 	
+	/**
+	 * Gets the handler type for each registered handler.
+	 * 
+	 * @return the handler type
+	 */
+	@Override
+	public String getHandlerType() {
+		return "BinaryDataHandler";
+	}
+	
 }

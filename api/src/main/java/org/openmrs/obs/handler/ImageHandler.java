@@ -29,6 +29,9 @@ import org.openmrs.api.APIException;
 import org.openmrs.obs.ComplexData;
 import org.openmrs.obs.ComplexObsHandler;
 import org.openmrs.util.OpenmrsConstants;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
 
 /**
  * Handler for storing basic images for complex obs to the file system. The image mime type used is
@@ -39,6 +42,9 @@ import org.openmrs.util.OpenmrsConstants;
  * @see OpenmrsConstants#GLOBAL_PROPERTY_COMPLEX_OBS_DIR
  * @since 1.5
  */
+
+@Component
+@Order(Ordered.LOWEST_PRECEDENCE)
 public class ImageHandler extends AbstractHandler implements ComplexObsHandler {
 	
 	public static final Log log = LogFactory.getLog(ImageHandler.class);
@@ -128,6 +134,16 @@ public class ImageHandler extends AbstractHandler implements ComplexObsHandler {
 		}
 		
 		return obs;
+	}
+	
+	/**
+	 * Gets the handler type for each registered handler.
+	 * 
+	 * @return the handler type
+	 */
+	@Override
+	public String getHandlerType() {
+		return "ImageHandler";
 	}
 	
 }

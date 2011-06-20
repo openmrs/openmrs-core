@@ -105,4 +105,14 @@ public class BinaryStreamHandler extends AbstractHandler implements ComplexObsHa
 		return obs;
 	}
 	
+	/**
+	 * Gets the handler type for each registered handler.
+	 * 
+	 * @return the handler type
+	 */
+	@Override
+	public String getHandlerType() {
+		return "BinaryStreamHandler";
+	}
+	
 }

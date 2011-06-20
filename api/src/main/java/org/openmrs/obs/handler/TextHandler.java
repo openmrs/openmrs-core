@@ -27,13 +27,18 @@ import org.openmrs.api.APIException;
 import org.openmrs.obs.ComplexData;
 import org.openmrs.obs.ComplexObsHandler;
 import org.openmrs.util.OpenmrsUtil;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
 
 /**
  * Handler for storing files for complex obs to the file system. Files are stored in the location
- * specified by the global property: "obs.complex_obs_dir"
- * The in coming data are either char[] or java.io.Reader
- *
+ * specified by the global property: "obs.complex_obs_dir" The in coming data are either char[] or
+ * java.io.Reader
  */
+
+@Component
+@Order(Ordered.LOWEST_PRECEDENCE)
 public class TextHandler extends AbstractHandler implements ComplexObsHandler {
 	
 	public static final Log log = LogFactory.getLog(TextHandler.class);
@@ -47,8 +52,6 @@ public class TextHandler extends AbstractHandler implements ComplexObsHandler {
 	}
 	
 	/**
-	 * 
-	 * 
 	 * @see org.openmrs.obs.ComplexObsHandler#getObs(org.openmrs.Obs, java.lang.String)
 	 */
 	public Obs getObs(Obs obs, String view) {
@@ -77,8 +80,6 @@ public class TextHandler extends AbstractHandler implements ComplexObsHandler {
 	}
 	
 	/**
-	 * 
-	 * 
 	 * @see org.openmrs.obs.ComplexObsHandler#saveObs(org.openmrs.Obs)
 	 */
 	@Override
@@ -133,6 +134,16 @@ public class TextHandler extends AbstractHandler implements ComplexObsHandler {
 		}
 		
 		return obs;
+	}
+	
+	/**
+	 * Gets the handler type for each registered handler.
+	 * 
+	 * @return the handler type
+	 */
+	@Override
+	public String getHandlerType() {
+		return "TextHandler";
 	}
 	
 }
