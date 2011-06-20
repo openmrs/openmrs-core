@@ -22,9 +22,13 @@
 									<c:forEach var="standardRegimen" items="${model.standardRegimens}">
 										<tr id="row${standardRegimen.codeName}">
 											<form onSubmit="addStandard${standardRegimen.codeName}();">
-												<td class="patientStandardRegimenData"><a href="javascript:selectStandard('${standardRegimen.codeName}');">${standardRegimen.displayName}</a></td>
+												<td class="patientStandardRegimenData"><a href="javascript:selectStandard('${standardRegimen.codeName}')">${standardRegimen.displayName}</a></td>
 												<td class="patientStandardRegimenData"><div id="stDtLabel${standardRegimen.codeName}" style="display:none"><spring:message code="general.dateStart"/></div></td>
 												<td class="patientStandardRegimenData"><div id="stDt${standardRegimen.codeName}" style="display:none"><openmrs:fieldGen type="java.util.Date" formFieldName="startDate${standardRegimen.codeName}" val="" parameters="noBind=true" /></div></td>
+																								
+												<td class="patientStandardRegimenData"><div id="brandNameLabel${standardRegimen.codeName}" style="display:none"><spring:message code="DrugOrder.brandName"/></div></td>
+												<td class="patientStandardRegimenData"><div id="brdName${standardRegimen.codeName}" style="display:none"><openmrs:fieldGen type="java.lang.String" formFieldName="brandName${standardRegimen.codeName}" val="" parameters="noBind=true" /></div></td>
+																							
 												<td class="patientStandardRegimenData"><div id="action${standardRegimen.codeName}" style="display:none">
 													<select id="actionSelect${standardRegimen.codeName}" onChange="handleStandardActionChange('${standardRegimen.codeName}');">
 														<option value=""><spring:message code="DrugOrder.regimen.action.choose" /></option>
@@ -51,7 +55,7 @@
 						
 						<td valign="top" align="right" class="patientRegimeDataFlexible">
 							<div id="regimenPortletAddFlexible">
-								<form method="post" id="orderForm" onSubmit="handleAddDrugOrder(${model.patientId}, 'drug', 'dose', 'units', 'frequencyDay', 'frequencyWeek', 'startDate')">
+								<form method="post" id="orderForm" onSubmit="handleAddDrugOrder(${model.patientId}, 'drug', 'brandName', 'dose', 'units', 'frequencyDay', 'frequencyWeek', 'startDate')">
 								<table class="patientAddFlexibleTable">
 									<tr class="patientAddFlexibleRow">
 										<td colspan="2" class="patientAddFlexibleData"><strong><spring:message code="DrugOrder.regimens.addCustom"/></strong></td>
@@ -60,6 +64,12 @@
 										<td class="patientAddFlexibleData"><spring:message code="DrugOrder.drug"/></td>						
 										<td class="patientAddFlexibleData">
 											<openmrs:fieldGen type="org.openmrs.Drug" formFieldName="drug" val="" parameters="includeVoided=false|noBind=true|optionHeader=[blank]|onChange=updateAddFields('drug','units','frequency')" />
+										</td>
+									</tr>
+									<tr class="patientAddFlexibleRow">
+										<td class="patientAddFlexibleData"><spring:message code="DrugOrder.brandName"/></td>						
+										<td class="patientAddFlexibleData">
+											<openmrs:fieldGen type="java.lang.String" formFieldName="brandName" val="" parameters="noBind=true|isNullable=false" />
 										</td>
 									</tr>
 									<tr class="patientAddFlexibleRow">
@@ -126,7 +136,7 @@
 											<span id="replaceNew" style="display:none"><input type="button" value="<spring:message code="DrugOrder.regimen.addAndReplace" />" onClick="addNewDrugOrder();"></span>
 											<span id="addNew" style="display:none"><input type="button" value="<spring:message code="general.add" />" onClick="addNewDrugOrder();"></span>
 											<span id="cancelNew" style="display:none"><input type="button" value="<spring:message code="general.cancel" />" onClick="cancelNewOrder();"></span>
-											<%--<td><input type="button" value="<spring:message code="general.add"/>" onClick="handleAddDrugOrder(${model.patientId}, 'drug', 'dose', 'units', 'frequencyDay', 'frequencyWeek', 'startDate')"></td>--%>									
+											<%--<td><input type="button" value="<spring:message code="general.add"/>" onClick="handleAddDrugOrder(${model.patientId}, 'drug', 'brandName', 'dose', 'units', 'frequencyDay', 'frequencyWeek', 'startDate')"></td>--%>									
 										</td>
 									</tr>
 								</table>
@@ -183,7 +193,7 @@
 		}
 
 		function cancelNewOrder() {
-			blankAddNewOrder('drug', 'dose', 'units', 'frequencyDay', 'frequencyWeek', 'startDate');
+			blankAddNewOrder('drug', 'brandName', 'dose', 'units', 'frequencyDay', 'frequencyWeek', 'startDate');
 			hideDiv("addNew");
 			hideDiv("actionNew");
 			hideDiv("reasNew");
@@ -224,6 +234,10 @@
 				//alert("should have just showed/hid addNew");
 				showHideDiv('stDtLabel' + codeName);
 				showHideDiv('stDt' + codeName);
+				
+				showHideDiv('brandNameLabel' + codeName);
+				showHideDiv('brdName' + codeName);
+				
 				showHideDiv('submit' + codeName);
 				hideDiv('action' + codeName);
 				dwr.util.setValue('actionSelect' + codeName, '');
@@ -264,12 +278,14 @@
 				
 				function addComponents${standardRegimen.codeName}() {
 					var startDate = dwr.util.getValue('startDate${standardRegimen.codeName}');
+					var brandName = dwr.util.getValue('brandName${standardRegimen.codeName}');
 					dwr.util.setValue('startDate${standardRegimen.codeName}', '');
+					dwr.util.setValue('brandName${standardRegimen.codeName}', '');
 					<c:forEach var="drugComponent" items="${standardRegimen.drugComponents}">
 						addStack.push("DWROrderService.createDrugOrder(${drugComponent.drugId})");
 					</c:forEach>
 					<c:forEach var="drugComponent" items="${standardRegimen.drugComponents}">
-						addStandardDrug('${drugComponent.drugId}', '${drugComponent.dose}', '${drugComponent.units}', '${drugComponent.frequency}', '${drugComponent.instructions}', startDate);
+						addStandardDrug('${drugComponent.drugId}', brandName, '${drugComponent.dose}', '${drugComponent.units}', '${drugComponent.frequency}', '${drugComponent.instructions}', startDate);
 					</c:forEach>
 					//alert('and now here');
 					//waitToRefreshRegimenTables();
@@ -277,8 +293,8 @@
 				}
 			</c:forEach>
 
-			function addStandardDrug(drugId, dose, units, frequency, instructions, startDate) {
-				DWROrderService.createDrugOrder(${model.patientId}, drugId, dose, units, frequency, startDate, instructions, dwrOrderNotifyComplete);
+			function addStandardDrug(drugId, brandName, dose, units, frequency, instructions, startDate) {
+				DWROrderService.createDrugOrder(${model.patientId}, drugId, brandName, dose, units, frequency, startDate, instructions, dwrOrderNotifyComplete);
 			}
 
 			function doNothing() {
@@ -316,11 +332,12 @@
 			var reason = dwr.util.getValue('reasonNew');
 			var startDate = dwr.util.getValue('startDate');
 			var drugId = dwr.util.getValue('drug');
+			var brandName =  dwr.util.getValue('brandName');
 			var dose = dwr.util.getValue('dose');
 			var units = dwr.util.getValue('units');
 			var freqDay = dwr.util.getValue('frequencyDay');
 			var freqWeek = dwr.util.getValue('frequencyWeek');
-			if ( validateNewOrder(drugId, dose, units, freqDay, freqWeek, startDate) ) {
+			if ( validateNewOrder(drugId, brandName, dose, units, freqDay, freqWeek, startDate) ) {
 				dwr.util.setValue('actionSelectNew', '');
 				dwr.util.setValue('reasonNew', '');
 				if ( action == 'void' ) {
@@ -345,11 +362,12 @@
 				else if ( freqDay == '' ) alert("<spring:message code="DrugOrder.add.error.missingFrequency" />");
 				else if ( freqWeek == '' ) alert("<spring:message code="DrugOrder.add.error.missingFrequency" />");
 				else if ( startDate == '' ) alert("<spring:message code="DrugOrder.add.error.missingStartDate" />");
+				else if ( brandName == '' ) alert("<spring:message code="DrugOrder.add.error.missingBrandName" />");
 			}
 		}
 
-		function validateNewOrder(drug, dose, units, freqDay, freqWeek, startDate) {
-			if ( drug == '' || dose == '' || units == '' || freqDay == '' || freqWeek == '' || startDate == '' ) {
+		function validateNewOrder(drug, brandName, dose, units, freqDay, freqWeek, startDate) {
+			if ( drug == '' || brandName == '' || dose == '' || units == '' || freqDay == '' || freqWeek == '' || startDate == '' ) {
 				return false;
 			} else {
 				return true;
@@ -357,7 +375,7 @@
 		}
 		
 		function addNewComponent() {
-			handleAddDrugOrder(${model.patientId}, 'drug', 'dose', 'units', 'frequencyDay', 'frequencyWeek', 'startDate');
+			handleAddDrugOrder(${model.patientId}, 'drug', 'brandName', 'dose', 'units', 'frequencyDay', 'frequencyWeek', 'startDate');
 		}
 
 		// end -->

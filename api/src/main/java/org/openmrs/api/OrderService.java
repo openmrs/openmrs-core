@@ -531,4 +531,94 @@ public interface OrderService extends OpenmrsService {
 	 */
 	@Transactional(readOnly = true)
 	public List<Order> getOrdersByEncounter(Encounter encounter);
+	
+	/**
+	 * Gets the latest order with this orderNumber.
+	 * 
+	 * @param orderNumber the order number.
+	 * @return the order object.
+	 */
+	@Transactional(readOnly = true)
+	public Order getOrderByOrderNumber(String orderNumber);
+	
+	/**
+	 * Gets all orders, even ones discontinued, even old versions of the order.
+	 * 
+	 * @param orderNumber the order number.
+	 * @return the list of orders.
+	 */
+	@Transactional(readOnly = true)
+	public List<Order> getOrderHistoryByOrderNumber(String orderNumber);
+	
+	/**
+	 * Gets all Order objects that use this Concept
+	 * 
+	 * @param concept the concept.
+	 * @return the list of orders.
+	 */
+	@Transactional(readOnly = true)
+	public List<Order> getOrderHistoryByConcept(Concept concept);
+	
+	/**
+	 * Gets an order number that has not yet been used by any order.
+	 * 
+	 * @return the new order number.
+	 */
+	@Transactional(readOnly = true)
+	public String getNewOrderNumber();
+	
+	/**
+	 * Signs an order.
+	 * 
+	 * @param order the order to sign.
+	 * @param provider the user signing the order.
+	 * @return the signed order.
+	 */
+	public Order signOrder(Order order, User provider) throws APIException;
+	
+	/**
+	 * Activates an order.
+	 * 
+	 * @param order the order to activate.
+	 * @param user the user activating the order.
+	 * @return the activated order.
+	 */
+	public Order activateOrder(Order order, User user) throws APIException;
+	
+	/**
+	 * Fills an order.
+	 * 
+	 * @param order the order object.
+	 * @param filler the filling person.
+	 * @return the filled order.
+	 * @throws APIException thrown if the order is not signed yet.
+	 */
+	public Order fillOrder(Order order, User filler) throws APIException;
+	
+	/**
+	 * Fills an order.
+	 * 
+	 * @param order the order object.
+	 * @param filler the filling person.
+	 * @return the filled order.
+	 * @throws APIException thrown if the order is not signed yet.
+	 */
+	public Order fillOrder(Order order, String filler) throws APIException;
+	
+	/**
+	 * Finds all active orders with this drug/concept and discontinues them.
+	 * 
+	 * @param concept the drug/concept.
+	 */
+	public void discontinueOrderByConcept(Concept concept, Concept discontinueReason, Date discontinueDate)
+	        throws APIException;
+	
+	/**
+	 * Saves, Signs, and Activates an order.
+	 * 
+	 * @param order the order.
+	 * @param user the user in charge of the order.
+	 * @return the saved, signed and activated order.
+	 */
+	public Order signAndActivateOrder(Order order, User user) throws APIException;
 }

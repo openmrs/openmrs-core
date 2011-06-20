@@ -50,6 +50,7 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 	 * @should fail validation if prn is null
 	 * @should fail validation if complex is null
 	 * @should fail validation if drug is null
+	 * @should fail validation if brandName is null
 	 * @should pass validation if all fields are correct
 	 */
 	public void validate(Object obj, Errors errors) {
@@ -63,6 +64,7 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 			ValidationUtils.rejectIfEmpty(errors, "prn", "error.null");
 			ValidationUtils.rejectIfEmpty(errors, "complex", "error.null");
 			//ValidationUtils.rejectIfEmpty(errors, "drug", "error.null");
+			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "brandName", "error.null");
 		}
 	}
 }

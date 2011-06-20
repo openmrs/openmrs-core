@@ -27,8 +27,8 @@
 
     <discriminator column="order_id" insert="false" />
 
-		<property name="uuid" type="java.lang.String"
-			column="uuid" length="38" unique="true" />
+	<property name="uuid" type="java.lang.String"
+		column="uuid" length="38" unique="true" not-null="true"/>
 
     <property
         name="instructions"
@@ -169,11 +169,42 @@
     >
         <column name="order_type_id" />
     </many-to-one>
+    
+    <property name="orderNumber" type="java.lang.String" column="order_number" length="50" not-null="true"/>
+    <property name="orderVersion" type="int" column="order_version" length="11" not-null="true"/>
+    <property name="latestVersion" type="boolean" column="latest_version" length="1" not-null="true"/>
+    <property name="previousOrderNumber" type="java.lang.String" column="previous_order_number" length="50" />
+    <property name="orderGroup" type="int" column="order_group" length="11" />
+    <property name="orderAction" type="java.lang.String" column="order_action" length="50" />
+    <property name="nonCodedName" type="java.lang.String" column="noncoded_name" length="255" />
+    <property name="urgency" type="java.lang.String" column="urgency" length="50" />
+    <property name="conditionality" type="java.lang.String" column="conditionality" length="255" />
+    <property name="frequency" type="java.lang.String" column="frequency" length="50" />  
+	<property name="indication" type="int" column="indication" length="11" />
+	<property name="comment" type="java.lang.String" column="comment" length="65535" />
+	
+	<many-to-one name="signedBy" class="org.openmrs.User">
+        <column name="signed_by" />
+    </many-to-one>
+    
+    <property name="dateSigned" type="java.util.Date" column="date_signed" length="19" />
+    
+    <many-to-one name="activatedBy" class="org.openmrs.User">
+        <column name="activated_by" />
+    </many-to-one>
+    
+    <property name="dateActivated" type="java.util.Date" column="date_activated" length="19" />
+	<property name="filler" type="java.lang.String" column="filler" length="255" />
+	<property name="dateFilled" type="java.util.Date" column="date_filled" length="19" />
+
 
 	<joined-subclass name="org.openmrs.DrugOrder" table="drug_order">
 		
-		<key column="order_id" />
-		
+		<key column="order_id" not-null="true" />
+
+		<property name="drugOrderId" type="int" not-null="false"
+			column="drug_order_id" update="false" insert="false" />
+			
 	    <property
 	        name="dose"
 	        type="double"
@@ -226,7 +257,31 @@
 	    >
 	        <column name="drug_inventory_id" />
 	    </many-to-one>
+    	
+    	<property name="brandName" type="java.lang.String" column="brand_name" length="255" not-null="true"/>
+    	<property name="complexDosing" type="boolean" column="complex_dosing" length="1" />  	
+    	<property name="strength" type="double" column="strength" length="22" />
+    	<property name="strengthUnits" type="java.lang.String" column="strength_units" length="255" />
+    	<property name="dosageForm" type="java.lang.String" column="dosage_form" length="50" />
+    	<property name="route" type="java.lang.String" column="route" length="50" />    	
+     	<property name="asNeededCondition" type="java.lang.String" column="as_needed_condition" length="255" />	
+    	<property name="additionalInstructions" type="java.lang.String" column="additional_instructions" length="65535" />	
+    	<property name="numRefills" type="int" column="num_refills" length="11" />
 	
+	</joined-subclass>
+	
+	
+	<joined-subclass name="org.openmrs.TestOrder" table="test_order">
+		    	
+    	<key column="order_id" not-null="true" />
+
+		<property name="testOrderId" type="int" not-null="false"
+			column="test_order_id" update="false" insert="false" />
+    	
+    	<property name="specimenSource" type="int" column="specimen_source" length="11" />    	
+    	<property name="laterality" type="int" column="laterality" length="11" />    	
+    	<property name="clinicalHistory" type="java.lang.String" column="clinical_history" length="65535" />
+		
 	</joined-subclass>
 
 </class>

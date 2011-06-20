@@ -195,6 +195,15 @@
 				</spring:bind>
 			</td>
 		</tr>
+		<tr>
+			<td valign="top"><spring:message code="DrugOrder.brandName"/></td>
+			<td valign="top">
+				<spring:bind path="order.brandName">
+					<openmrs:fieldGen type="java.lang.String" formFieldName="${status.expression}" val="${status.value}" parameters="fieldLength=100|isNullable=false" />
+					<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+				</spring:bind>
+			</td>
+		</tr>
 	</table>
 	<br />
 	<input type="submit" name="saveOrder" value="<spring:message code="Order.save"/>">

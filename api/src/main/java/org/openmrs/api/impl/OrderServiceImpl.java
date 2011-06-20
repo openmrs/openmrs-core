@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
@@ -27,6 +28,7 @@ import org.openmrs.Concept;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
+import org.openmrs.ImplementationId;
 import org.openmrs.Location;
 import org.openmrs.Order;
 import org.openmrs.OrderType;
@@ -45,7 +47,7 @@ import org.openmrs.validator.ValidateUtil;
 import org.springframework.util.StringUtils;
 
 /**
- * Default implementation of the Order-related services class. This method should not be invoked by
+ * Default implementation of the Order-related services class. This class should not be invoked by
  * itself. Spring injection is used to inject this implementation into the ServiceContext. Which
  * implementation is injected is determined by the spring application context file:
  * /metadata/api/spring/applicationContext.xml
@@ -72,9 +74,32 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @see org.openmrs.api.OrderService#saveOrder(org.openmrs.Order)
 	 */
 	public Order saveOrder(Order order) throws APIException {
-		ValidateUtil.validate(order);
 		
-		return dao.saveOrder(order);
+		//if new order, fill the order number and version.
+		if (order.getOrderId() == null) {
+			order.setOrderNumber(getNewOrderNumber());
+			order.setOrderVersion(1);
+			order.setLatestVersion(true);
+			
+			return validateAndSaveOrder(order);
+			
+		} else {
+			
+			//TODO Do we discontinue this order?
+			dao.setOrderLatestVersion(order.getOrderId(), false);
+			Context.evictFromSession(order); //Any retrievals for this order should get the database state.
+			
+			Order newOrder = order.copy();
+			newOrder.setOrderVersion(order.getOrderVersion() + 1);
+			newOrder.setOrderNumber(order.getOrderNumber());
+			newOrder.setLatestVersion(true);
+			newOrder.setDateCreated(new Date());
+			newOrder.setDateChanged(null);
+			newOrder.setChangedBy(null);
+			newOrder.setUuid(UUID.randomUUID().toString());
+			
+			return validateAndSaveOrder(newOrder);
+		}
 	}
 	
 	/**
@@ -141,7 +166,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		if (order.getDateVoided() == null)
 			order.setDateVoided(new Date());
 		
-		return saveOrder(order);
+		return validateAndSaveOrder(order);
 	}
 	
 	/**
@@ -149,7 +174,11 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	public Order unvoidOrder(Order order) throws APIException {
 		order.setVoided(false);
-		return saveOrder(order);
+		order.setVoidedBy(null);
+		order.setVoidReason(null);
+		order.setDateVoided(null);
+		
+		return dao.saveOrder(order);
 	}
 	
 	/**
@@ -157,12 +186,27 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 *      java.util.Date)
 	 */
 	public Order discontinueOrder(Order order, Concept discontinueReason, Date discontinueDate) throws APIException {
+		//Copy before we set the discontinue properties.
+		Order newOrder = order.copy();
+		
 		order.setDiscontinued(Boolean.TRUE);
 		order.setDiscontinuedReason(discontinueReason);
 		order.setDiscontinuedDate(discontinueDate);
 		order.setDiscontinuedBy(Context.getAuthenticatedUser());
+		order.setLatestVersion(false);
 		
-		return saveOrder(order);
+		validateAndSaveOrder(order);
+		
+		newOrder.setOrderVersion(1);
+		newOrder.setPreviousOrderNumber(order.getOrderNumber());
+		newOrder.setOrderNumber(getNewOrderNumber());
+		newOrder.setLatestVersion(true);
+		newOrder.setDateCreated(new Date());
+		newOrder.setDateChanged(null);
+		newOrder.setChangedBy(null);
+		newOrder.setUuid(UUID.randomUUID().toString());
+		
+		return validateAndSaveOrder(newOrder);
 	}
 	
 	/**
@@ -174,7 +218,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		order.setDiscontinuedDate(null);
 		order.setDiscontinuedReason(null);
 		
-		return saveOrder(order);
+		return validateAndSaveOrder(order);
 	}
 	
 	/**
@@ -218,6 +262,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		
 		orderType.setRetired(true);
 		orderType.setRetireReason(reason);
+		
 		return saveOrderType(orderType);
 	}
 	
@@ -226,6 +271,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	public OrderType unretireOrderType(OrderType orderType) throws APIException {
 		orderType.setRetired(false);
+		
 		return saveOrderType(orderType);
 	}
 	
@@ -612,5 +658,113 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		encounters.add(encounter);
 		
 		return getOrders(Order.class, null, null, null, null, encounters, null);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#saveActivatedOrder(org.openmrs.Order, org.openmrs.User)
+	 */
+	public Order signAndActivateOrder(Order order, User user) throws APIException {
+		if (order.getOrderId() != null)
+			throw new APIException("saveActivatedOrder Can not be called for an existing order. Please use a new order.");
+		
+		order = saveOrder(order);
+		order = signOrder(order, user);
+		return activateOrder(order, user);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#signOrder(org.openmrs.Order, org.openmrs.User)
+	 */
+	public Order signOrder(Order order, User provider) throws APIException {
+		order.setSignedBy(provider);
+		order.setDateSigned(new Date());
+		return dao.saveOrder(order);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#activateOrder(org.openmrs.Order, org.openmrs.User)
+	 */
+	public Order activateOrder(Order order, User user) throws APIException {
+		order.setActivatedBy(user);
+		order.setDateActivated(new Date());
+		return dao.saveOrder(order);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#fillOrder(org.openmrs.Order, org.openmrs.User)
+	 */
+	public Order fillOrder(Order order, User filler) throws APIException {
+		if (!order.isSigned())
+			throw new APIException("Can not fill an order which has not been signed");
+		
+		return fillOrder(order, filler.getUserId() + filler.getSystemId());
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#fillOrder(org.openmrs.Order, java.lang.String)
+	 */
+	public Order fillOrder(Order order, String filler) throws APIException {
+		if (!order.isSigned())
+			throw new APIException("Can not fill an order which has not been signed");
+		
+		order.setDateFilled(new Date());
+		order.setFiller(filler);
+		return dao.saveOrder(order);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getOrderByOrderNumber(java.lang.String)
+	 */
+	public Order getOrderByOrderNumber(String orderNumber) {
+		return dao.getOrderByOrderNumber(orderNumber);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getOrderHistoryByOrderNumber(java.lang.String)
+	 */
+	public List<Order> getOrderHistoryByOrderNumber(String orderNumber) {
+		return dao.getOrderHistoryByOrderNumber(orderNumber); //TODO How do we have more than one row with the same order number?
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#discontinueOrder(org.openmrs.Concept)
+	 */
+	public List<Order> getOrderHistoryByConcept(Concept concept) {
+		List<Concept> concepts = new Vector<Concept>();
+		concepts.add(concept);
+		return getOrders(Order.class, null, concepts, ORDER_STATUS.NOTVOIDED, null, null, null);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#discontinueOrderByConcept(org.openmrs.Concept,
+	 *      org.openmrs.Concept, java.util.Date)
+	 */
+	public void discontinueOrderByConcept(Concept concept, Concept discontinueReason, Date discontinueDate)
+	        throws APIException {
+		List<Concept> concepts = new Vector<Concept>();
+		concepts.add(concept);
+		List<Order> orders = getOrders(Order.class, null, concepts, ORDER_STATUS.NOTVOIDED, null, null, null);
+		if (orders != null) {
+			for (Order order : orders) {
+				discontinueOrder(order, discontinueReason, discontinueDate);
+			}
+		}
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getNewOrderNumber()
+	 */
+	public String getNewOrderNumber() {
+		String orderNumber = "ORDER-" + String.valueOf(dao.getMaximumOrderId() + 1);
+		ImplementationId implementationId = Context.getAdministrationService().getImplementationId();
+		if (implementationId != null && implementationId.getName() != null)
+			orderNumber = implementationId.getName() + "-" + orderNumber;
+		
+		return orderNumber;
+	}
+	
+	private Order validateAndSaveOrder(Order order) {
+		ValidateUtil.validate(order);
+		return dao.saveOrder(order);
 	}
 }

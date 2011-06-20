@@ -15,9 +15,6 @@ package org.openmrs;
 
 import java.util.Date;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
  * Dates should be interpreted as follows: If startDate is null then the order has been going on
  * "since the beginning of time" Otherwise the order starts on startDate If discontinued is non-null
@@ -34,8 +31,6 @@ import org.apache.commons.logging.LogFactory;
 public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 4334343L;
-	
-	private static final Log log = LogFactory.getLog(Order.class);
 	
 	// Fields
 	
@@ -69,6 +64,61 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	
 	private String discontinuedReasonNonCoded;
 	
+	/**
+	 * This is an identifier generated for a given order and shared by all revisions (if any) of
+	 * that order. The order number is passed to ancillary systems in order for results & events
+	 * related to the order to be connected to the original order.
+	 */
+	private String orderNumber;
+	
+	private Integer orderVersion;
+	
+	private boolean latestVersion;
+	
+	private String previousOrderNumber;
+	
+	/**
+	 * Allows orders to be grouped. e.g., drug regimens. Orders may be placed within groups to
+	 * assist with subsequent management or reporting of the orders (e.g., a drug regimen of three
+	 * drugs may be placed within an order group).
+	 */
+	private Integer orderGroup;
+	
+	/** Represents the action being taken on an order. e.g., DISCONTINUE, CARRY-OVER, etc. */
+	private String orderAction;
+	
+	/**
+	 * Allows for orders to be created for items that are not yet in the dictionary. e.g., OTHER
+	 * DRUG ORDER #1 with non-coded name "CANE".
+	 */
+	private String nonCodedName;
+	
+	/**
+	 * Specifies when the order should first occur (e.g., stat/immediately, routine, on a specific
+	 * date, etc.)
+	 */
+	private String urgency;
+	
+	private String conditionality;
+	
+	private String frequency;
+	
+	private Integer indication;
+	
+	private String comment;
+	
+	private User signedBy;
+	
+	private Date dateSigned;
+	
+	private User activatedBy;
+	
+	private Date dateActivated;
+	
+	private String filler;
+	
+	private Date dateFilled;
+	
 	// Constructors
 	
 	/** default constructor */
@@ -78,6 +128,13 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	/** constructor with id */
 	public Order(Integer orderId) {
 		this.orderId = orderId;
+	}
+	
+	public Order(Integer orderId, Patient patient, OrderType orderType, Concept concept) {
+		this.setOrderId(orderId);
+		this.setPatient(patient);
+		this.setOrderType(orderType);
+		this.setConcept(concept);
 	}
 	
 	/**
@@ -116,6 +173,26 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 		target.setVoidedBy(getVoidedBy());
 		target.setDateVoided(getDateVoided());
 		target.setVoidReason(getVoidReason());
+		target.setDiscontinuedReasonNonCoded(getDiscontinuedReasonNonCoded());
+		target.setOrderNumber(getOrderNumber());
+		target.setOrderVersion(getOrderVersion());
+		target.setLatestVersion(isLatestVersion());
+		target.setPreviousOrderNumber(getPreviousOrderNumber());
+		target.setOrderGroup(getOrderGroup());
+		target.setOrderAction(getOrderAction());
+		target.setNonCodedName(getNonCodedName());
+		target.setUrgency(getUrgency());
+		target.setConditionality(getConditionality());
+		target.setFrequency(getFrequency());
+		target.setIndication(getIndication());
+		target.setComment(getComment());
+		target.setSignedBy(getSignedBy());
+		target.setDateSigned(getDateSigned());
+		target.setActivatedBy(getActivatedBy());
+		target.setDateActivated(getDateActivated());
+		target.setFiller(getFiller());
+		target.setDateFilled(getDateFilled());
+		
 		return target;
 	}
 	
@@ -448,6 +525,150 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 		this.patient = patient;
 	}
 	
+	public String getOrderNumber() {
+		return orderNumber;
+	}
+	
+	public void setOrderNumber(String orderNumber) {
+		this.orderNumber = orderNumber;
+	}
+	
+	public Integer getOrderVersion() {
+		return orderVersion;
+	}
+	
+	public void setOrderVersion(Integer orderVersion) {
+		this.orderVersion = orderVersion;
+	}
+	
+	public boolean isLatestVersion() {
+		return latestVersion;
+	}
+	
+	public void setLatestVersion(boolean latestVersion) {
+		this.latestVersion = latestVersion;
+	}
+	
+	public String getPreviousOrderNumber() {
+		return previousOrderNumber;
+	}
+	
+	public void setPreviousOrderNumber(String previousOrderNumber) {
+		this.previousOrderNumber = previousOrderNumber;
+	}
+	
+	public Integer getOrderGroup() {
+		return orderGroup;
+	}
+	
+	public void setOrderGroup(Integer orderGroup) {
+		this.orderGroup = orderGroup;
+	}
+	
+	public String getOrderAction() {
+		return orderAction;
+	}
+	
+	public void setOrderAction(String orderAction) {
+		this.orderAction = orderAction;
+	}
+	
+	public String getNonCodedName() {
+		return nonCodedName;
+	}
+	
+	public void setNonCodedName(String nonCodedName) {
+		this.nonCodedName = nonCodedName;
+	}
+	
+	public String getUrgency() {
+		return urgency;
+	}
+	
+	public void setUrgency(String urgency) {
+		this.urgency = urgency;
+	}
+	
+	public String getConditionality() {
+		return conditionality;
+	}
+	
+	public void setConditionality(String conditionality) {
+		this.conditionality = conditionality;
+	}
+	
+	public String getFrequency() {
+		return frequency;
+	}
+	
+	public void setFrequency(String frequency) {
+		this.frequency = frequency;
+	}
+	
+	public Integer getIndication() {
+		return indication;
+	}
+	
+	public void setIndication(Integer indication) {
+		this.indication = indication;
+	}
+	
+	public String getComment() {
+		return comment;
+	}
+	
+	public void setComment(String comment) {
+		this.comment = comment;
+	}
+	
+	public User getSignedBy() {
+		return signedBy;
+	}
+	
+	public void setSignedBy(User signedBy) {
+		this.signedBy = signedBy;
+	}
+	
+	public Date getDateSigned() {
+		return dateSigned;
+	}
+	
+	public void setDateSigned(Date dateSigned) {
+		this.dateSigned = dateSigned;
+	}
+	
+	public User getActivatedBy() {
+		return activatedBy;
+	}
+	
+	public void setActivatedBy(User activatedBy) {
+		this.activatedBy = activatedBy;
+	}
+	
+	public Date getDateActivated() {
+		return dateActivated;
+	}
+	
+	public void setDateActivated(Date dateActivated) {
+		this.dateActivated = dateActivated;
+	}
+	
+	public String getFiller() {
+		return filler;
+	}
+	
+	public void setFiller(String filler) {
+		this.filler = filler;
+	}
+	
+	public Date getDateFilled() {
+		return dateFilled;
+	}
+	
+	public void setDateFilled(Date dateFilled) {
+		this.dateFilled = dateFilled;
+	}
+	
 	public Integer getId() {
 		return getOrderId();
 	}
@@ -465,7 +686,14 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 */
 	public void setId(Integer id) {
 		setOrderId(id);
-		
 	}
 	
+	/**
+	 * Checks if an order is signed.
+	 * 
+	 * @return true if signed, else false.
+	 */
+	public boolean isSigned() {
+		return getSignedBy() != null && getDateSigned() != null;
+	}
 }

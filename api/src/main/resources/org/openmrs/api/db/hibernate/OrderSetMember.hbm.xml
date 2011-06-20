@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="org.openmrs">
+
+	<class name="OrderSetMember" table="order_set_member">
+
+		<id name="orderSetMemberId" type="int" column="order_set_member_d" unsaved-value="0">
+			<generator class="native" />
+		</id>
+		
+		<discriminator column="order_set_member_d" insert="false" />
+
+		<property name="uuid" type="java.lang.String" column="uuid" length="38" unique="true" not-null="true" />
+		
+		<many-to-one name="parentOrderSet" class="org.openmrs.OrderSet" not-null="true">
+        	<column name="parent_order_set_id" />
+   		</many-to-one>
+    
+		<property name="sortWeight" type="int" column="sort_weight" length="11" />
+		<property name="exclusionLogic" type="java.lang.String" column="exclusion_logic" length="1024" />	
+		<property name="contextualLogic" type="java.lang.String" column="contextual_logic" length="1024" />	
+		<property name="title" type="java.lang.String" column="title" length="255" />
+		<property name="comment" type="java.lang.String" column="comment" length="1024" />
+		<property name="evidence" type="java.lang.String" column="evidence" length="1024" />	
+		<property name="priority" type="double" column="priority" length="22" />
+		<property name="indication" type="int" column="indication" length="11" />	
+		<property name="selected" type="boolean" column="selected" length="1" />	
+		<property name="orderSetMemberType" type="java.lang.String" column="order_set_member_type" length="50" />
+			
+   		<many-to-one name="concept" class="org.openmrs.Concept">
+        	<column name="concept_id" />
+   		</many-to-one>
+   		
+		<property name="orderTemplate" type="java.lang.String" column="order_template" length="65535" />
+		
+		<many-to-one name="orderSet" class="org.openmrs.OrderSet">
+        	<column name="order_set_id" />
+   		</many-to-one>
+   		
+   		<many-to-one name="conceptClass" class="org.openmrs.ConceptClass">
+        	<column name="concept_class" />
+   		</many-to-one>
+   		
+   		<many-to-one name="conceptSet" class="org.openmrs.ConceptSet">
+        	<column name="concept_set" />
+   		</many-to-one>
+	
+	</class>
+	
+</hibernate-mapping>

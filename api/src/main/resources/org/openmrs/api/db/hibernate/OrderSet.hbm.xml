@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="org.openmrs">
+
+	<class name="OrderSet" table="order_set">
+
+		<id name="orderSetId" type="int" column="order_set_id" unsaved-value="0">
+			<generator class="native" />
+		</id>
+		
+		<discriminator column="order_set_id" insert="false" />
+
+		<property name="name" type="java.lang.String" column="name" length="255" />	
+		<property name="description" type="java.lang.String" column="description" length="65535" />
+		
+		<many-to-one name="concept" class="org.openmrs.Concept">
+        	<column name="concept_id" />
+   		</many-to-one>
+		
+		<property name="title" type="java.lang.String" column="title" length="255" />
+		<property name="comment" type="java.lang.String" column="comment" length="65535" />
+		<property name="operator" type="java.lang.String" column="operator" length="50" />
+		<property name="uuid" type="java.lang.String" column="uuid" length="38" unique="true" not-null="true"/>
+		
+		<many-to-one name="reviewedBy" class="org.openmrs.User">
+        	<column name="reviewed_by" />
+    	</many-to-one>
+    
+    	<property name="dateReviewed" type="java.util.Date" column="date_reviewed" length="19" />
+    	
+    	<set name="orderSetMembers" lazy="true" cascade="all,delete-orphan" inverse="true" access="field">
+			<key column="order_set_id" />
+			<one-to-many class="OrderSetMember" />
+		</set>
+		
+    	<many-to-one name="creator" class="org.openmrs.User" not-null="true" >
+        	<column name="creator" />
+    	</many-to-one>
+    
+     	<property name="dateCreated" type="java.util.Date" column="date_created" not-null="true" length="19" />
+     	
+     	<many-to-one name="changedBy" class="User" >
+			<column name="changed_by" />
+		</many-to-one>
+		
+     	<property name="dateChanged" type="java.util.Date" column="date_changed" length="19" />
+			
+		<property name="retired" type="boolean" column="retired" length="1" />
+		
+		<many-to-one name="retiredBy" class="org.openmrs.User">
+        	<column name="retired_by" />
+    	</many-to-one>
+    
+    	<property name="dateRetired" type="java.util.Date" column="date_retired" length="19" />
+    	
+    	<property name="retireReason" type="java.lang.String" column="retire_reason" length="255" />
+
+	</class>
+	
+</hibernate-mapping>

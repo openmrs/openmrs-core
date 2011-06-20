@@ -14,7 +14,7 @@
 package org.openmrs;
 
 /**
- * DrugOrder
+ * This is a type of order that adds drug specific attributes.
  * 
  * @version 1.0
  */
@@ -30,8 +30,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	private String units;
 	
-	private String frequency;
-	
+	/** as needed. */
 	private Boolean prn = false;
 	
 	private Boolean complex = false;
@@ -39,6 +38,26 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	private Integer quantity;
 	
 	private Drug drug;
+	
+	private Integer drugOrderId;
+	
+	private String brandName;
+	
+	private Boolean complexDosing;
+	
+	private Double strength;
+	
+	private String strengthUnits;
+	
+	private String dosageForm;
+	
+	private String route;
+	
+	private String asNeededCondition;
+	
+	private String additionalInstructions;
+	
+	private Integer numRefills;
 	
 	// Constructors
 	
@@ -49,6 +68,12 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	/** constructor with id */
 	public DrugOrder(Integer orderId) {
 		this.setOrderId(orderId);
+	}
+	
+	public DrugOrder(Integer drugOrderId, Integer orderId, String brandName) {
+		this.setDrugOrderId(drugOrderId);
+		this.setOrderId(orderId);
+		this.setBrandName(brandName);
 	}
 	
 	/**
@@ -66,11 +91,22 @@ public class DrugOrder extends Order implements java.io.Serializable {
 		target.dose = getDose();
 		target.equivalentDailyDose = getEquivalentDailyDose();
 		target.units = getUnits();
-		target.frequency = getFrequency();
 		target.prn = getPrn();
 		target.complex = getComplex();
 		target.quantity = getQuantity();
 		target.drug = getDrug();
+		
+		target.drugOrderId = getDrugOrderId();
+		target.brandName = getBrandName();
+		target.complexDosing = getComplexDosing();
+		target.strength = getStrength();
+		target.strengthUnits = getStrengthUnits();
+		target.dosageForm = getDosageForm();
+		target.route = getRoute();
+		target.asNeededCondition = getAsNeededCondition();
+		target.additionalInstructions = getAdditionalInstructions();
+		target.numRefills = getNumRefills();
+		
 		return target;
 	}
 	
@@ -118,24 +154,6 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	 */
 	public void setUnits(String units) {
 		this.units = units;
-	}
-	
-	/**
-	 * Gets the frequency
-	 * 
-	 * @return frequency
-	 */
-	public String getFrequency() {
-		return this.frequency;
-	}
-	
-	/**
-	 * Sets the frequency
-	 * 
-	 * @param frequency
-	 */
-	public void setFrequency(String frequency) {
-		this.frequency = frequency;
 	}
 	
 	/**
@@ -229,7 +247,101 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	public String toString() {
 		return "DrugOrder(" + getDose() + getUnits() + " of " + (getDrug() != null ? getDrug().getName() : "[no drug]")
 		        + " from " + getStartDate() + " to " + (getDiscontinued() ? getDiscontinuedDate() : getAutoExpireDate())
-		        + ")";
+		        + " orderNumber " + getOrderNumber() + " orderVersion " + getOrderVersion() + " latestVersion "
+		        + isLatestVersion() + " brandName " + getBrandName() + ")";
 	}
 	
+	public Integer getDrugOrderId() {
+		return drugOrderId;
+	}
+	
+	public void setDrugOrderId(Integer drugOrderId) {
+		this.drugOrderId = drugOrderId;
+	}
+	
+	public String getBrandName() {
+		return brandName;
+	}
+	
+	public void setBrandName(String brandName) {
+		this.brandName = brandName;
+	}
+	
+	public Boolean getComplexDosing() {
+		return complexDosing;
+	}
+	
+	public void setComplexDosing(Boolean complexDosing) {
+		this.complexDosing = complexDosing;
+	}
+	
+	public Double getStrength() {
+		return strength;
+	}
+	
+	public void setStrength(Double strength) {
+		this.strength = strength;
+	}
+	
+	public String getStrengthUnits() {
+		return strengthUnits;
+	}
+	
+	public void setStrengthUnits(String strengthUnits) {
+		this.strengthUnits = strengthUnits;
+	}
+	
+	public String getDosageForm() {
+		return dosageForm;
+	}
+	
+	public void setDosageForm(String dosageForm) {
+		this.dosageForm = dosageForm;
+	}
+	
+	public String getRoute() {
+		return route;
+	}
+	
+	public void setRoute(String route) {
+		this.route = route;
+	}
+	
+	public String getAsNeededCondition() {
+		return asNeededCondition;
+	}
+	
+	public void setAsNeededCondition(String asNeededCondition) {
+		this.asNeededCondition = asNeededCondition;
+	}
+	
+	public String getAdditionalInstructions() {
+		return additionalInstructions;
+	}
+	
+	public void setAdditionalInstructions(String additionalInstructions) {
+		this.additionalInstructions = additionalInstructions;
+	}
+	
+	public Integer getNumRefills() {
+		return numRefills;
+	}
+	
+	public void setNumRefills(Integer numRefills) {
+		this.numRefills = numRefills;
+	}
+	
+	/**
+	 * @see org.openmrs.Order#getId()
+	 */
+	public Integer getId() {
+		return getDrugOrderId();
+	}
+	
+	/**
+	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
+	 */
+	public void setId(Integer id) {
+		setDrugOrderId(id);
+	}
 }

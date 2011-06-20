@@ -92,6 +92,10 @@ public class CreateInitialDataSet extends BaseContextSensitiveTest {
 		initialDataSet.addTable("user_role", "SELECT * FROM user_role");
 		initialDataSet.addTable("users", "SELECT * FROM users");
 		
+		initialDataSet.addTable("test_order", "SELECT * FROM test_order");
+		initialDataSet.addTable("order_set_member", "SELECT * FROM order_set_member");
+		initialDataSet.addTable("order_set", "SELECT * FROM order_set");
+		
 		/*
 		initialDataSet.addTable("field", "SELECT * FROM field");
 		initialDataSet.addTable("field_answer", "SELECT * FROM field_answer");

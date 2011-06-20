@@ -18,9 +18,11 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
 import org.openmrs.Concept;
+import org.openmrs.Drug;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
 import org.openmrs.OrderType;
@@ -193,4 +195,44 @@ public class HibernateOrderDAO implements OrderDAO {
 		        .setString("uuid", uuid).uniqueResult();
 	}
 	
+	/**
+	 * @see org.openmrs.api.db.OrderDAO#getOrderByOrderNumber(java.lang.String)
+	 */
+	public Order getOrderByOrderNumber(String orderNumber) {
+		Criteria searchCriteria = sessionFactory.getCurrentSession().createCriteria(Order.class, "order");
+		searchCriteria.add(Expression.eq("order.orderNumber", orderNumber));
+		searchCriteria.add(Expression.eq("order.latestVersion", true));
+		return (Order) searchCriteria.uniqueResult();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.OrderDAO#getOrderHistoryByOrderNumber(java.lang.String)
+	 */
+	public List<Order> getOrderHistoryByOrderNumber(String orderNumber) {
+		return sessionFactory.getCurrentSession().createQuery("from Order o where o.orderNumber = :orderNumber").setString(
+		    "orderNumber", orderNumber).list();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.OrderDA#getMaximumOrderId()
+	 */
+	public Integer getMaximumOrderId() {
+		Query query = sessionFactory.getCurrentSession().createQuery("select max(orderId) from Order");
+		Object maxOrderId = query.uniqueResult();
+		if (maxOrderId == null)
+			return 0;
+		
+		return (Integer) maxOrderId;
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.OrderDA#setOrderLatestVersion(java.lang.Integer, java.lang.Boolean)
+	 */
+	public void setOrderLatestVersion(Integer orderId, boolean latestVersion) {
+		Query query = sessionFactory.getCurrentSession().createQuery(
+		    "update Order set latestVersion = :latestVersion where orderId = :orderId");
+		query.setInteger("orderId", orderId);
+		query.setBoolean("latestVersion", latestVersion);
+		query.executeUpdate();
+	}
 }
