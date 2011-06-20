@@ -113,7 +113,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should return the next unused order id", method = "getNewOrderNumber()")
 	public void getNewOrderNumber_shouldReturnTheNextUnusedOrderId() throws Exception {
-		Assert.assertEquals("11", Context.getOrderService().getNewOrderNumber());
+		Assert.assertEquals("ORDER-11", Context.getOrderService().getNewOrderNumber());
 	}
 	
 	/**
@@ -341,6 +341,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		User provider = Context.getUserService().getUser(501);
 		
 		Order order = new Order();
+		order.setDateCreated(new Date());
 		order.setOrderType(Context.getOrderService().getOrderType(2));
 		order.setConcept(Context.getConceptService().getConcept(23));
 		order.setPatient(Context.getPatientService().getPatient(6));
