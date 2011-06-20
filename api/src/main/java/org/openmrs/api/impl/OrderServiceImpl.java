@@ -28,10 +28,12 @@ import org.openmrs.Concept;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
+import org.openmrs.GenericDrug;
 import org.openmrs.ImplementationId;
 import org.openmrs.Location;
 import org.openmrs.Order;
 import org.openmrs.OrderType;
+import org.openmrs.Orderable;
 import org.openmrs.Patient;
 import org.openmrs.User;
 import org.openmrs.aop.RequiredDataAdvice;
@@ -806,4 +808,23 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		return getOrders(DrugOrder.class, patients, null, ORDER_STATUS.ACTIVE, null, null, null, date);
 	}
 	
+	/**
+	 * @see org.openmrs.api.OrderService#getOrderables(java.lang.String)
+	 */
+	@Override
+	public List<Orderable<?>> getOrderables(String query) throws APIException {
+		
+		if (query == null)
+			throw new IllegalArgumentException("Orderable concept name is required");
+		
+		List<Orderable<?>> result = new ArrayList<Orderable<?>>();
+		List<Concept> concepts = Context.getConceptService().getConceptsByName(query);
+		if (concepts != null) {
+			for (Concept concept : concepts) {
+				if (concept.getConceptClass().getName().equals("Drug"))
+					result.add(new GenericDrug(concept));
+			}
+		}
+		return result;
+	}
 }

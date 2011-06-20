@@ -66,4 +66,26 @@ public abstract class BaseOrderable<T extends Order> implements Orderable<T> {
 		else
 			return null;
 	}
+	
+	/**
+	 * @param concept the concept to set
+	 */
+	public void setConcept(Concept concept) {
+		this.concept = concept;
+	}
+	
+	/**
+	 * @param name the name to set
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
+	
+	/**
+	 * @param description the description to set
+	 */
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	
 }

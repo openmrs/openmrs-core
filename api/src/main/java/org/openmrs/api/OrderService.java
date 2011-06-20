@@ -23,6 +23,7 @@ import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
 import org.openmrs.OrderType;
+import org.openmrs.Orderable;
 import org.openmrs.Patient;
 import org.openmrs.User;
 import org.openmrs.annotation.Authorized;
@@ -664,5 +665,18 @@ public interface OrderService extends OpenmrsService {
 	 * @should get orders with startDate before the given date
 	 */
 	List<DrugOrder> getActiveDrugOrdersByPatient(Patient p, Date date) throws APIException;
+	
+	/**
+	 * Finds all {@link Orderable}s that match <code>query</code>, based on a fuzzy comparison. (The precise
+	 * comparison is implementation-dependent.) May include heterogenous types of orderables, e.g. some concepts,
+	 * some drugs, some lab tests.
+	 * 
+	 * @param query partial string to be searched for
+	 * @return Orderables that fuzzy-match <code>query</code>
+	 * @should get orderable concepts by name and drug class
+	 * @should fail if null passed in
+	 * @throws APIException when error occurred
+	 */
+	List<Orderable<?>> getOrderables(String query) throws APIException;
 	
 }

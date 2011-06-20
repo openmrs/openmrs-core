@@ -18,10 +18,12 @@ import java.util.Date;
 import java.util.List;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Concept;
 import org.openmrs.Order;
 import org.openmrs.OrderType;
+import org.openmrs.Orderable;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
@@ -31,6 +33,8 @@ import org.openmrs.test.Verifies;
  * TODO clean up and test all methods in OrderService
  */
 public class OrderServiceTest extends BaseContextSensitiveTest {
+	
+	private static final String simpleOrderEntryDatasetFilename = "org/openmrs/api/include/OrderServiceTest-simpleOrderEntryTestDataset.xml";
 	
 	/**
 	 * @see {@link OrderService#saveOrder(Order)}
@@ -46,7 +50,6 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link OrderService#getOrderByUuid(String)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should find object given valid uuid", method = "getOrderByUuid(String)")
@@ -58,7 +61,6 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link OrderService#getOrderByUuid(String)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should return null if no object found with given uuid", method = "getOrderByUuid(String)")
@@ -68,7 +70,6 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link OrderService#getOrderTypeByUuid(String)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should find object given valid uuid", method = "getOrderTypeByUuid(String)")
@@ -80,7 +81,6 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see {@link OrderService#getOrderTypeByUuid(String)}
-	 * 
 	 */
 	@Test
 	@Verifies(value = "should return null if no object found with given uuid", method = "getOrderTypeByUuid(String)")
@@ -417,4 +417,32 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Assert.assertFalse(order.isLatestVersion());
 	}
 	
+	/**
+	 * @see {@link OrderService#getOrderables(String)}
+	 */
+	@Test
+	@Verifies(value = "get orderable concepts by name and drug class", method = "getOrderables(String)")
+	public void getOrderables_shouldGetOrderableConceptsByNameAndDrugClass() throws Exception {
+		executeDataSet(simpleOrderEntryDatasetFilename);
+		
+		String query = "Ampi";
+		
+		List<Orderable<?>> result = Context.getOrderService().getOrderables(query);
+		
+		Assert.assertNotNull(result);
+		
+		Assert.assertEquals(2, result.size());
+	}
+	
+	/**
+	 * @see {@link OrderService#getOrderables(String)}
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	@Verifies(value = "fail if null passed in", method = "getOrderables(String)")
+	public void getOrderables_shouldFailIfNullPassedIn() throws Exception {
+		executeDataSet(simpleOrderEntryDatasetFilename);
+		
+		String query = null;
+		Context.getOrderService().getOrderables(query);
+	}
 }
