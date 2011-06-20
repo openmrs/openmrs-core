@@ -74,7 +74,7 @@ public interface OrderService extends OpenmrsService {
 		 */
 		@Deprecated
 		CURRENT,
-		
+
 		/**
 		 * The patient is considered to be currently on this order
 		 */
@@ -645,7 +645,7 @@ public interface OrderService extends OpenmrsService {
 	 * @should not get orders with discontinuedDate before the given date
 	 * @should get orders with startDate before the given date
 	 */
-	public List<Order> getActiveOrdersByPatient(Patient p, Date date) throws APIException ;
+	public List<Order> getActiveOrdersByPatient(Patient p, Date date) throws APIException;
 	
 	/**
 	 * Gets all DrugOrder objects that are currently active. An active DrugOrder is one that:
@@ -663,6 +663,6 @@ public interface OrderService extends OpenmrsService {
 	 * @should not get orders with discontinuedDate before the given date
 	 * @should get orders with startDate before the given date
 	 */
-	List<DrugOrder> getActiveDrugOrdersByPatient(Patient p, Date date) throws APIException ;
+	List<DrugOrder> getActiveDrugOrdersByPatient(Patient p, Date date) throws APIException;
 	
 }

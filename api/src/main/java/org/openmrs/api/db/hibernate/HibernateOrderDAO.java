@@ -168,18 +168,12 @@ public class HibernateOrderDAO implements OrderDAO {
 		
 		if (status == ORDER_STATUS.ACTIVE && asOfDate != null) {
 			crit.add(Expression.le("startDate", asOfDate)); // startDate cannot be null?
-					
-			crit.add(Expression.or(
-					Expression.isNull("discontinuedDate"),
-					Expression.ge("discontinueDate", asOfDate)));
 			
-			crit.add(Expression.or(
-					Expression.isNull("autoExpireDate"),
-					Expression.ge("autoExpireDate", asOfDate)));
+			crit.add(Expression.or(Expression.isNull("discontinuedDate"), Expression.ge("discontinueDate", asOfDate)));
 			
-			crit.add(Expression.or(
-					Expression.isNull("dateActivated"),
-					Expression.le("dateActivated", asOfDate)));
+			crit.add(Expression.or(Expression.isNull("autoExpireDate"), Expression.ge("autoExpireDate", asOfDate)));
+			
+			crit.add(Expression.or(Expression.isNull("dateActivated"), Expression.le("dateActivated", asOfDate)));
 			
 		}
 		

@@ -775,7 +775,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		ValidateUtil.validate(order);
 		return dao.saveOrder(order);
 	}
-
+	
 	@Override
 	public List<Order> getActiveOrdersByPatient(Patient p, Date date) throws APIException {
 		
@@ -791,7 +791,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		return getOrders(Order.class, patients, null, ORDER_STATUS.ACTIVE, null, null, null, date);
 		
 	}
-
+	
 	@Override
 	public List<DrugOrder> getActiveDrugOrdersByPatient(Patient p, Date date) {
 		if (p == null)
