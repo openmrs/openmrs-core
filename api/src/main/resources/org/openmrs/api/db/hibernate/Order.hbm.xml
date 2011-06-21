@@ -258,7 +258,7 @@
 	        <column name="drug_inventory_id" />
 	    </many-to-one>
     	
-    	<property name="brandName" type="java.lang.String" column="brand_name" length="255" not-null="true"/>
+    	<property name="brandName" type="java.lang.String" column="brand_name" length="255" />
     	<property name="complexDosing" type="boolean" column="complex_dosing" length="1" />  	
     	<property name="strength" type="double" column="strength" length="22" />
     	<property name="strengthUnits" type="java.lang.String" column="strength_units" length="255" />
