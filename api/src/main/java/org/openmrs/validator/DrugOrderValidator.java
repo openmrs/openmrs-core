@@ -65,6 +65,11 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 			ValidationUtils.rejectIfEmpty(errors, "complex", "error.null");
 			//ValidationUtils.rejectIfEmpty(errors, "drug", "error.null");
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "brandName", "error.null");
+			
+			if(order.isSigned()){
+				ValidationUtils.rejectIfEmpty(errors, "signedBy", "error.null");
+				ValidationUtils.rejectIfEmpty(errors, "dateSigned", "error.null");
+			}
 		}
 	}
 }
