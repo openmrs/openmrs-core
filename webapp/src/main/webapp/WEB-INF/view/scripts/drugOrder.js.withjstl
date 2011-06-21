@@ -197,7 +197,7 @@
 			var frequency = dwr.util.getValue($(frequencyDayField)) + " x " + dwr.util.getValue($(frequencyWeekField));
 			var startDate = dwr.util.getValue($(startDateField));
 			var instructions = "";
-			if ( drugId != '' && dose != '' && units != '' && frequency != '' && startDate != '' && brandName != '' ) {
+			if ( drugId != '' && dose != '' && units != '' && frequency != '' && startDate != '') {
 				blankAddNewOrder(drugField, brandNameField, doseField, unitsField, frequencyDayField, frequencyWeekField, startDateField);
 				DWROrderService.createDrugOrder(patientId, drugId, brandName, dose, units, frequency, startDate, instructions, waitToRefreshRegimenTables);
 			} else {
@@ -206,7 +206,6 @@
 				else if ( units == '' ) alert("<spring:message code="DrugOrder.add.error.missingUnits" />");
 				else if ( frequency == '' ) alert("<spring:message code="DrugOrder.add.error.missingFrequency" />");
 				else if ( startDate == '' ) alert("<spring:message code="DrugOrder.add.error.missingStartDate" />");
-				else if ( brandName == '' ) alert("<spring:message code="DrugOrder.add.error.missingBrandName" />");
 			}
 		}
 
