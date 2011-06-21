@@ -5020,15 +5020,5 @@
 		
 	</changeSet>
 
-	<changeSet id="20101209-1111-drug_order_brand_name_set_empty" author="dkayiwa">
-		<comment>
-			Set brand_name to an empty string for existing drug orders because this column cannot be null.
-		</comment>
-		<update tableName="drug_order">
-			<column name="brand_name" value=""/>
-			<where>brand_name is null</where>
-		</update>
-    </changeSet>
-
 </databaseChangeLog>
 
