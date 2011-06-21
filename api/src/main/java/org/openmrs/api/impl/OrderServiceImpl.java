@@ -95,7 +95,10 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			newOrder.setOrderVersion(order.getOrderVersion() + 1);
 			newOrder.setOrderNumber(order.getOrderNumber());
 			newOrder.setLatestVersion(true);
-			newOrder.setDateCreated(new Date());
+			
+			//Setting date created to null, so that our magical machinery can be sure to assign exactly the same Date to all objects created at the same instant even if the millisecond rolls over.
+			newOrder.setDateCreated(null);
+			
 			newOrder.setDateChanged(null);
 			newOrder.setChangedBy(null);
 			newOrder.setUuid(UUID.randomUUID().toString());
