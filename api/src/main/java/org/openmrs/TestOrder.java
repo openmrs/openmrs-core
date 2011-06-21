@@ -19,7 +19,7 @@ package org.openmrs;
  * 
  * @since 1.9
  */
-public class TestOrder extends Order implements java.io.Serializable {
+public class TestOrder extends Order {
 	
 	public static final long serialVersionUID = 1L;
 	
