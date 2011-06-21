@@ -116,6 +116,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	
 	private Date dateActivated;
 	
+	/** This is an optional URI to a person or process that fulfilled the order Ð possibly even a pointer to the object/resource that represents the result. */
 	private String filler;
 	
 	private Date dateFilled;
