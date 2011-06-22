@@ -71,10 +71,6 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 */
 	private String orderNumber;
 	
-	private Integer orderVersion;
-	
-	private boolean latestVersion;
-	
 	/** Allows orders to be linked to a previous order - e.g., an order discontinue ampicillin linked to the original ampicillin order (the D/C gets its own order number) */
 	private String previousOrderNumber;
 	
@@ -177,8 +173,6 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 		target.setVoidReason(getVoidReason());
 		target.setDiscontinuedReasonNonCoded(getDiscontinuedReasonNonCoded());
 		target.setOrderNumber(getOrderNumber());
-		target.setOrderVersion(getOrderVersion());
-		target.setLatestVersion(isLatestVersion());
 		target.setPreviousOrderNumber(getPreviousOrderNumber());
 		target.setOrderGroup(getOrderGroup());
 		target.setOrderAction(getOrderAction());
@@ -533,22 +527,6 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	
 	public void setOrderNumber(String orderNumber) {
 		this.orderNumber = orderNumber;
-	}
-	
-	public Integer getOrderVersion() {
-		return orderVersion;
-	}
-	
-	public void setOrderVersion(Integer orderVersion) {
-		this.orderVersion = orderVersion;
-	}
-	
-	public boolean isLatestVersion() {
-		return latestVersion;
-	}
-	
-	public void setLatestVersion(boolean latestVersion) {
-		this.latestVersion = latestVersion;
 	}
 	
 	public String getPreviousOrderNumber() {

@@ -550,15 +550,6 @@ public interface OrderService extends OpenmrsService {
 	public Order getOrderByOrderNumber(String orderNumber);
 	
 	/**
-	 * Gets all orders, even ones discontinued, even old versions of the order.
-	 * 
-	 * @param orderNumber the order number.
-	 * @return the list of orders.
-	 */
-	@Transactional(readOnly = true)
-	public List<Order> getOrderHistoryByOrderNumber(String orderNumber);
-	
-	/**
 	 * Gets all Order objects that use this Concept
 	 * 
 	 * @param concept the concept.

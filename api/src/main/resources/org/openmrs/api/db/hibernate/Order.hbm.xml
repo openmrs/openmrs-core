@@ -171,8 +171,6 @@
     </many-to-one>
     
     <property name="orderNumber" type="java.lang.String" column="order_number" length="50" not-null="true"/>
-    <property name="orderVersion" type="int" column="order_version" length="11" not-null="true"/>
-    <property name="latestVersion" type="boolean" column="latest_version" length="1" not-null="true"/>
     <property name="previousOrderNumber" type="java.lang.String" column="previous_order_number" length="50" />
     <property name="orderGroup" type="int" column="order_group" length="11" />
     <property name="orderAction" type="java.lang.String" column="order_action" length="50" />

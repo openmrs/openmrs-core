@@ -81,21 +81,16 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		//if new order, fill the order number and version.
 		if (order.getOrderId() == null) {
 			order.setOrderNumber(getNewOrderNumber());
-			order.setOrderVersion(1);
-			order.setLatestVersion(true);
 			
 			return validateAndSaveOrder(order);
 			
 		} else {
 			
 			//TODO Do we discontinue this order?
-			dao.setOrderLatestVersion(order.getOrderId(), false);
 			Context.evictFromSession(order); //Any retrievals for this order should get the database state.
 			
 			Order newOrder = order.copy();
-			newOrder.setOrderVersion(order.getOrderVersion() + 1);
 			newOrder.setOrderNumber(order.getOrderNumber());
-			newOrder.setLatestVersion(true);
 			
 			//Setting date created to null, so that our magical machinery can be sure to assign exactly the same Date to all objects created at the same instant even if the millisecond rolls over.
 			newOrder.setDateCreated(null);
@@ -199,14 +194,11 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		order.setDiscontinuedReason(discontinueReason);
 		order.setDiscontinuedDate(discontinueDate);
 		order.setDiscontinuedBy(Context.getAuthenticatedUser());
-		order.setLatestVersion(false);
 		
 		validateAndSaveOrder(order);
 		
-		newOrder.setOrderVersion(1);
 		newOrder.setPreviousOrderNumber(order.getOrderNumber());
 		newOrder.setOrderNumber(getNewOrderNumber());
-		newOrder.setLatestVersion(true);
 		newOrder.setDateCreated(new Date());
 		newOrder.setDateChanged(null);
 		newOrder.setChangedBy(null);
@@ -731,13 +723,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	public Order getOrderByOrderNumber(String orderNumber) {
 		return dao.getOrderByOrderNumber(orderNumber);
-	}
-	
-	/**
-	 * @see org.openmrs.api.OrderService#getOrderHistoryByOrderNumber(java.lang.String)
-	 */
-	public List<Order> getOrderHistoryByOrderNumber(String orderNumber) {
-		return dao.getOrderHistoryByOrderNumber(orderNumber); //TODO How do we have more than one row with the same order number?
 	}
 	
 	/**

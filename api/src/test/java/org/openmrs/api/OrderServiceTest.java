@@ -18,7 +18,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Concept;
 import org.openmrs.Drug;
@@ -182,49 +181,6 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderService#getOrderHistoryByOrderNumber(String)}
-	 */
-	@Test
-	@Verifies(value = "should get orders with given number", method = "getOrderHistoryByOrderNumber(String)")
-	public void getOrderHistoryByOrderNumber_shouldGetOrdersWithGivenNumber() throws Exception {
-		List<Order> orders = Context.getOrderService().getOrderHistoryByOrderNumber("8");
-		Assert.assertTrue(orders.size() == 3);
-		for (Order order : orders) {
-			Assert.assertTrue(order.getOrderId() == 8 || order.getOrderId() == 9 || order.getOrderId() == 10);
-		}
-	}
-	
-	/**
-	 * @see {@link OrderService#getOrderHistoryByOrderNumber(String)}
-	 */
-	@Test
-	@Verifies(value = "should get empty list for non existing order number", method = "getOrderHistoryByOrderNumber(String)")
-	public void getOrderHistoryByOrderNumber_shouldGetEmptyListForNonExistingOrderNumber() throws Exception {
-		List<Order> orders = Context.getOrderService().getOrderHistoryByOrderNumber("NON EXISTING");
-		Assert.assertTrue(orders.size() == 0);
-	}
-	
-	/**
-	 * @see {@link OrderService#getOrderByOrderNumber(String)}
-	 */
-	@Test
-	@Verifies(value = "should get latest order with given number", method = "getOrderByOrderNumber(String)")
-	public void getOrderByOrderNumber_shouldGetLatestOrderWithGivenNumber() throws Exception {
-		Order order = Context.getOrderService().getOrderByOrderNumber("8");
-		Assert.assertTrue(order.getOrderId() == 10);
-	}
-	
-	/**
-	 * @see {@link OrderService#getOrderByOrderNumber(String)}
-	 */
-	@Test
-	@Verifies(value = "should get null for non existing order number", method = "getOrderByOrderNumber(String)")
-	public void getOrderByOrderNumber_shouldGetNullForNonExistingOrderNumber() throws Exception {
-		Order order = Context.getOrderService().getOrderByOrderNumber("NON EXISTING");
-		Assert.assertNull(order);
-	}
-	
-	/**
 	 * @see {@link OrderService#signOrder(Order, User)}
 	 */
 	@Test
@@ -381,8 +337,6 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		
 		Assert.assertNotNull(order.getOrderId());
 		Assert.assertEquals(nextAvaliableOrderNumber, order.getOrderNumber());
-		Assert.assertTrue(order.isLatestVersion());
-		Assert.assertTrue(order.getOrderVersion() == 1);
 	}
 	
 	/**
@@ -399,24 +353,6 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		
 		Assert.assertNotNull(newOrder);
 		Assert.assertNull(newOrder.getPreviousOrderNumber());
-		Assert.assertTrue(newOrder.isLatestVersion());
-		Assert.assertTrue(newOrder.getOrderVersion() == order.getOrderVersion() + 1);
-	}
-	
-	/**
-	 * @see {@link OrderService#saveOrder(Order)}
-	 */
-	@Test
-	@Verifies(value = "should set latest version for existing order to false", method = "saveOrder(Order)")
-	public void saveOrder_shouldSetLatestVersionForExistingOrderToFalse() throws Exception {
-		
-		Order order = Context.getOrderService().getOrder(10);
-		Assert.assertTrue(order.isLatestVersion());
-		
-		Context.getOrderService().saveOrder(order);
-		
-		order = Context.getOrderService().getOrder(10);
-		Assert.assertFalse(order.isLatestVersion());
 	}
 	
 	/**

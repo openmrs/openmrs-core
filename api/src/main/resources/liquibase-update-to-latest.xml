@@ -4540,30 +4540,6 @@
 		</addColumn>
 	</changeSet>
 	
-	<changeSet id="20101209-1111-orders_order_version" author="dkayiwa">
-		<preConditions onFail="MARK_RAN">
-			<not><columnExists tableName="orders" columnName="order_version"/></not>
-		</preConditions>
-		<comment>Adding order_version column to orders table</comment>
-		<addColumn tableName="orders">
-			<column name="order_version" type="int" >
-				<constraints nullable="false"/>
-			</column>
-		</addColumn>
-	</changeSet>
-	
-	<changeSet id="20101209-1111-orders_latest_version" author="dkayiwa">
-		<preConditions onFail="MARK_RAN">
-			<not><columnExists tableName="orders" columnName="latest_version"/></not>
-		</preConditions>
-		<comment>Adding latest_version column to orders table</comment>
-		<addColumn tableName="orders">
-			<column name="latest_version" type="smallint" >
-				<constraints nullable="false"/>
-			</column>
-		</addColumn>
-	</changeSet>
-	
 	<changeSet id="20101209-1111-orders_previous_order_number" author="dkayiwa">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="orders" columnName="previous_order_number"/></not>

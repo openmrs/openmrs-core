@@ -214,16 +214,7 @@ public class HibernateOrderDAO implements OrderDAO {
 	public Order getOrderByOrderNumber(String orderNumber) {
 		Criteria searchCriteria = sessionFactory.getCurrentSession().createCriteria(Order.class, "order");
 		searchCriteria.add(Expression.eq("order.orderNumber", orderNumber));
-		searchCriteria.add(Expression.eq("order.latestVersion", true));
 		return (Order) searchCriteria.uniqueResult();
-	}
-	
-	/**
-	 * @see org.openmrs.api.db.OrderDAO#getOrderHistoryByOrderNumber(java.lang.String)
-	 */
-	public List<Order> getOrderHistoryByOrderNumber(String orderNumber) {
-		return sessionFactory.getCurrentSession().createQuery("from Order o where o.orderNumber = :orderNumber").setString(
-		    "orderNumber", orderNumber).list();
 	}
 	
 	/**
@@ -236,16 +227,5 @@ public class HibernateOrderDAO implements OrderDAO {
 			return 0;
 		
 		return (Integer) maxOrderId;
-	}
-	
-	/**
-	 * @see org.openmrs.api.db.OrderDA#setOrderLatestVersion(java.lang.Integer, java.lang.Boolean)
-	 */
-	public void setOrderLatestVersion(Integer orderId, boolean latestVersion) {
-		Query query = sessionFactory.getCurrentSession().createQuery(
-		    "update Order set latestVersion = :latestVersion where orderId = :orderId");
-		query.setInteger("orderId", orderId);
-		query.setBoolean("latestVersion", latestVersion);
-		query.executeUpdate();
 	}
 }

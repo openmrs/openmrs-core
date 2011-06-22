@@ -106,22 +106,10 @@ public interface OrderDAO {
 	public Order getOrderByOrderNumber(String orderNumber);
 	
 	/**
-	 * @see org.openmrs.api.OrderService#getOrderHistoryByOrderNumber(java.lang.String)
-	 */
-	public List<Order> getOrderHistoryByOrderNumber(String orderNumber);
-	
-	/**
 	 * Gets the biggest order id used so far.
 	 * 
 	 * @return the biggest order id used for far or 0 if not a single order exists.
 	 */
 	public Integer getMaximumOrderId();
 	
-	/**
-	 * Sets the latest version value of an order.
-	 * 
-	 * @param orderId the id of the order.
-	 * @param latestVersion the latest version value.
-	 */
-	public void setOrderLatestVersion(Integer orderId, boolean latestVersion);
 }
