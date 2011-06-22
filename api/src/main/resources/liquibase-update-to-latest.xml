@@ -4754,9 +4754,7 @@
 		</preConditions>
 		<comment>Adding brand_name column to drug_order table</comment>
 		<addColumn tableName="drug_order">
-			<column name="brand_name" type="varchar(255)" >
-				<constraints nullable="false"/>
-			</column>
+			<column name="brand_name" type="varchar(255)" />
 		</addColumn>
 	</changeSet>
 	
