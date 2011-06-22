@@ -3975,7 +3975,7 @@
 			<where>schedulable_class = 'org.openmrs.scheduler.tasks.ConceptIndexUpdateTask'</where>
 		</update>
     </changeSet>
-
+    	
 	<changeSet id="201012081716" author="nribeka">
 		<preConditions onFail="MARK_RAN">
 			<tableExists tableName="concept_derived" />
@@ -5018,6 +5018,19 @@
 								 baseTableName="order_set_member" baseColumnNames="concept_id"
 								 referencedTableName="concept" referencedColumnNames="concept_id"/>
 		
+	</changeSet>
+	
+	<changeSet id="201106211503-remove-complex" author="cta">
+    	<preConditions onFail="MARK_RAN">
+    		<columnExists tableName="drug_order" columnName="complex"/>
+    		<columnExists tableName="drug_order" columnName="complex_dosing"/>
+    	</preConditions>
+		<comment>Removed complex and complex_dosing columns and added unstructured_dosing column</comment>
+		<dropColumn tableName="drug_order" columnName="complex"/>
+		<dropColumn tableName="drug_order" columnName="complex_dosing"/>
+		<addColumn tableName="drug_order">
+			<column name="unstructured_dosing" type="varchar(255)" />
+		</addColumn>
 	</changeSet>
 
 </databaseChangeLog>

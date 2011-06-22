@@ -33,8 +33,6 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	/** as needed. */
 	private Boolean prn = false;
 	
-	private Boolean complex = false;
-	
 	private Integer quantity;
 	
 	private Drug drug;
@@ -42,8 +40,6 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	private Integer drugOrderId;
 	
 	private String brandName;
-	
-	private Boolean complexDosing;
 	
 	private Double strength;
 	
@@ -58,6 +54,8 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	private String additionalInstructions;
 	
 	private Integer numRefills;
+	
+	private String unstructuredDosing;
 	
 	// Constructors
 	
@@ -92,13 +90,12 @@ public class DrugOrder extends Order implements java.io.Serializable {
 		target.equivalentDailyDose = getEquivalentDailyDose();
 		target.units = getUnits();
 		target.prn = getPrn();
-		target.complex = getComplex();
 		target.quantity = getQuantity();
 		target.drug = getDrug();
 		
 		target.drugOrderId = getDrugOrderId();
 		target.brandName = getBrandName();
-		target.complexDosing = getComplexDosing();
+		target.unstructuredDosing = getUnstructuredDosing();
 		target.strength = getStrength();
 		target.strengthUnits = getStrengthUnits();
 		target.dosageForm = getDosageForm();
@@ -172,24 +169,6 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	 */
 	public void setPrn(Boolean prn) {
 		this.prn = prn;
-	}
-	
-	/**
-	 * Gets whether this drug is complex
-	 * 
-	 * @return Boolean
-	 */
-	public Boolean getComplex() {
-		return this.complex;
-	}
-	
-	/**
-	 * Sets whether this drug is complex
-	 * 
-	 * @param complex
-	 */
-	public void setComplex(Boolean complex) {
-		this.complex = complex;
 	}
 	
 	/**
@@ -267,14 +246,6 @@ public class DrugOrder extends Order implements java.io.Serializable {
 		this.brandName = brandName;
 	}
 	
-	public Boolean getComplexDosing() {
-		return complexDosing;
-	}
-	
-	public void setComplexDosing(Boolean complexDosing) {
-		this.complexDosing = complexDosing;
-	}
-	
 	public Double getStrength() {
 		return strength;
 	}
@@ -343,5 +314,23 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	 */
 	public void setId(Integer id) {
 		setDrugOrderId(id);
+	}
+	
+	/**
+	 * Sets unstructured dosing text attribute of drug order
+	 * 
+	 * @param unstructuredDosing the value to set
+	 */
+	public void setUnstructuredDosing(String unstructuredDosing) {
+		this.unstructuredDosing = unstructuredDosing;
+	}
+	
+	/**
+	 * Reads unstructured dosing text attribute of drug order
+	 * 
+	 * @return unstructured dosing
+	 */
+	public String getUnstructuredDosing() {
+		return unstructuredDosing;
 	}
 }

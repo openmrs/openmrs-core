@@ -288,7 +288,7 @@ public class MigrationController implements Controller {
 			reg.setUnits(doseUnit);
 			reg.setFrequency(dosesPerDay + "/day x " + daysPerWeek + " days/week");
 			reg.setPrn(prn);
-			reg.setComplex(false);
+			reg.setUnstructuredDosing(null);
 			reg.setOrderType(orderType);
 			reg.setCreator(userHelper(creator));
 			reg.setDateCreated(dateCreated);

@@ -62,11 +62,10 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 		} else {
 			// for the following elements Order.hbm.xml says: not-null="true"
 			ValidationUtils.rejectIfEmpty(errors, "prn", "error.null");
-			ValidationUtils.rejectIfEmpty(errors, "complex", "error.null");
 			//ValidationUtils.rejectIfEmpty(errors, "drug", "error.null");
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "brandName", "error.null");
 			
-			if(order.isSigned()){
+			if (order.isSigned()) {
 				ValidationUtils.rejectIfEmpty(errors, "signedBy", "error.null");
 				ValidationUtils.rejectIfEmpty(errors, "dateSigned", "error.null");
 			}

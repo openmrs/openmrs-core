@@ -15,6 +15,8 @@ package org.openmrs.web.dwr;
 
 import java.text.SimpleDateFormat;
 
+import net.sf.saxon.type.Untyped;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.DrugOrder;
@@ -62,7 +64,7 @@ public class DrugOrderListItem {
 	
 	private Boolean prn;
 	
-	private Boolean complex;
+	private String unstructuredDosing;
 	
 	private Integer quantity;
 	
@@ -120,7 +122,7 @@ public class DrugOrderListItem {
 		units = drugOrder.getUnits();
 		frequency = drugOrder.getFrequency();
 		prn = drugOrder.getPrn();
-		complex = drugOrder.getComplex();
+		unstructuredDosing = drugOrder.getUnstructuredDosing();
 		quantity = drugOrder.getQuantity();
 		voided = drugOrder.getVoided();
 		if (drugOrder.getVoidedBy() != null)
@@ -132,20 +134,6 @@ public class DrugOrderListItem {
 			creatorId = drugOrder.getCreator().getUserId();
 		if (drugOrder.getDateCreated() != null)
 			createdDate = sdf.format(drugOrder.getDateCreated());
-	}
-	
-	/**
-	 * @return Returns the complex.
-	 */
-	public Boolean getComplex() {
-		return complex;
-	}
-	
-	/**
-	 * @param complex The complex to set.
-	 */
-	public void setComplex(Boolean complex) {
-		this.complex = complex;
 	}
 	
 	/**
@@ -567,5 +555,19 @@ public class DrugOrderListItem {
 	
 	public void setConceptName(String conceptName) {
 		this.conceptName = conceptName;
+	}
+	
+	/**
+	 * @param unstructuredDosing the value to set
+	 */
+	public void setUnstructuredDosing(String unstructuredDosing) {
+		this.unstructuredDosing = unstructuredDosing;
+	}
+	
+	/**
+	 * @return the unstructured dosing
+	 */
+	public String getUnstructuredDosing() {
+		return unstructuredDosing;
 	}
 }

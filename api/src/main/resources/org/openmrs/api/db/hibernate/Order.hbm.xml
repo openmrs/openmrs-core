@@ -237,11 +237,10 @@
 	        not-null="true"
 	    />
 	    <property
-	        name="complex"
-	        type="boolean"
-	        column="complex"
-	        length="1"
-	        not-null="true"
+	        name="unstructuredDosing"
+	        type="java.lang.String"
+	        column="unstructured_dosing"
+	        length="255"
 	    />
 	    <property
 	        name="quantity"
@@ -259,7 +258,6 @@
 	    </many-to-one>
     	
     	<property name="brandName" type="java.lang.String" column="brand_name" length="255" />
-    	<property name="complexDosing" type="boolean" column="complex_dosing" length="1" />  	
     	<property name="strength" type="double" column="strength" length="22" />
     	<property name="strengthUnits" type="java.lang.String" column="strength_units" length="255" />
     	<property name="dosageForm" type="java.lang.String" column="dosage_form" length="50" />
