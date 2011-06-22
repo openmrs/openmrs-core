@@ -37,8 +37,6 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	private Drug drug;
 	
-	private Integer drugOrderId;
-	
 	private String brandName;
 	
 	private Double strength;
@@ -68,8 +66,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 		this.setOrderId(orderId);
 	}
 	
-	public DrugOrder(Integer drugOrderId, Integer orderId, String brandName) {
-		this.setDrugOrderId(drugOrderId);
+	public DrugOrder(Integer orderId, String brandName) {
 		this.setOrderId(orderId);
 		this.setBrandName(brandName);
 	}
@@ -93,7 +90,6 @@ public class DrugOrder extends Order implements java.io.Serializable {
 		target.quantity = getQuantity();
 		target.drug = getDrug();
 		
-		target.drugOrderId = getDrugOrderId();
 		target.brandName = getBrandName();
 		target.unstructuredDosing = getUnstructuredDosing();
 		target.strength = getStrength();
@@ -211,14 +207,29 @@ public class DrugOrder extends Order implements java.io.Serializable {
 		return equivalentDailyDose;
 	}
 	
+	/**
+	 * Sets the equivalent daily dose.
+	 * 
+	 * @param equivalentDailyDose the equivalent daily dose to set.
+	 */
 	public void setEquivalentDailyDose(Double equivalentDailyDose) {
 		this.equivalentDailyDose = equivalentDailyDose;
 	}
 	
+	/**
+	 * Sets the dose.
+	 * 
+	 * @param dose the dose to set.
+	 */
 	public void setDose(Double dose) {
 		this.dose = dose;
 	}
 	
+	/**
+	 * Gets the dose.
+	 * 
+	 * @return the dose.
+	 */
 	public Double getDose() {
 		return dose;
 	}
@@ -230,14 +241,6 @@ public class DrugOrder extends Order implements java.io.Serializable {
 		        + isLatestVersion() + " brandName " + getBrandName() + ")";
 	}
 	
-	public Integer getDrugOrderId() {
-		return drugOrderId;
-	}
-	
-	public void setDrugOrderId(Integer drugOrderId) {
-		this.drugOrderId = drugOrderId;
-	}
-	
 	public String getBrandName() {
 		return brandName;
 	}
@@ -246,58 +249,128 @@ public class DrugOrder extends Order implements java.io.Serializable {
 		this.brandName = brandName;
 	}
 	
+	/**
+	 * Gets the strength.
+	 * 
+	 * @return the strength.
+	 */
 	public Double getStrength() {
 		return strength;
 	}
 	
+	/**
+	 * Sets the strength.
+	 * 
+	 * @param strength the strength to set.
+	 */
 	public void setStrength(Double strength) {
 		this.strength = strength;
 	}
 	
+	/**
+	 * Gets the strength units.
+	 * 
+	 * @return the strength units.
+	 */
 	public String getStrengthUnits() {
 		return strengthUnits;
 	}
 	
+	/**
+	 * Sets the strength units.
+	 * 
+	 * @param strengthUnits the strength units to set.
+	 */
 	public void setStrengthUnits(String strengthUnits) {
 		this.strengthUnits = strengthUnits;
 	}
 	
+	/**
+	 * Gets the dosage form.
+	 * 
+	 * @return the dosage form.
+	 */
 	public String getDosageForm() {
 		return dosageForm;
 	}
 	
+	/**
+	 * Sets the dosage form.
+	 * 
+	 * @param dosageForm the dosage form to set.
+	 */
 	public void setDosageForm(String dosageForm) {
 		this.dosageForm = dosageForm;
 	}
 	
+	/**
+	 * Gets the route.
+	 * 
+	 * @return the route.
+	 */
 	public String getRoute() {
 		return route;
 	}
 	
+	/**
+	 * Sets the route.
+	 * 
+	 * @param route the route to set.
+	 */
 	public void setRoute(String route) {
 		this.route = route;
 	}
 	
+	/**
+	 * Gets the as needed condition.
+	 * 
+	 * @return the as needed condition.
+	 */
 	public String getAsNeededCondition() {
 		return asNeededCondition;
 	}
 	
+	/**
+	 * Sets the as needed condition.
+	 * 
+	 * @param asNeededCondition the as needed condition to set.
+	 */
 	public void setAsNeededCondition(String asNeededCondition) {
 		this.asNeededCondition = asNeededCondition;
 	}
 	
+	/**
+	 * Gets the additional instructions.
+	 * 
+	 * @return the additional instructions.
+	 */
 	public String getAdditionalInstructions() {
 		return additionalInstructions;
 	}
 	
+	/**
+	 * Sets the additional instructions.
+	 * 
+	 * @param additionalInstructions the additional instructions to set.
+	 */
 	public void setAdditionalInstructions(String additionalInstructions) {
 		this.additionalInstructions = additionalInstructions;
 	}
 	
+	/**
+	 * Gets the number of refills.
+	 * 
+	 * @return the number of refills.
+	 */
 	public Integer getNumRefills() {
 		return numRefills;
 	}
 	
+	/**
+	 * Sets the number of refills.
+	 * 
+	 * @param numRefills the number of refills to set.
+	 */
 	public void setNumRefills(Integer numRefills) {
 		this.numRefills = numRefills;
 	}
@@ -306,14 +379,14 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	 * @see org.openmrs.Order#getId()
 	 */
 	public Integer getId() {
-		return getDrugOrderId();
+		return getOrderId();
 	}
 	
 	/**
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
 	public void setId(Integer id) {
-		setDrugOrderId(id);
+		setOrderId(id);
 	}
 	
 	/**

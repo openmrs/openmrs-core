@@ -201,9 +201,6 @@
 	<joined-subclass name="org.openmrs.DrugOrder" table="drug_order">
 		
 		<key column="order_id" not-null="true" />
-
-		<property name="drugOrderId" type="int" not-null="false"
-			column="drug_order_id" update="false" insert="false" />
 			
 	    <property
 	        name="dose"
