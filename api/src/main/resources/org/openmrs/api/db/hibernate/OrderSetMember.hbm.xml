@@ -7,11 +7,11 @@
 
 	<class name="OrderSetMember" table="order_set_member">
 
-		<id name="orderSetMemberId" type="int" column="order_set_member_d" unsaved-value="0">
+		<id name="orderSetMemberId" type="int" column="order_set_member_id" unsaved-value="0">
 			<generator class="native" />
 		</id>
 		
-		<discriminator column="order_set_member_d" insert="false" />
+		<discriminator column="order_set_member_id" insert="false" />
 
 		<property name="uuid" type="java.lang.String" column="uuid" length="38" unique="true" not-null="true" />
 		
