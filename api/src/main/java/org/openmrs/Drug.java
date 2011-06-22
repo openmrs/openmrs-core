@@ -18,7 +18,7 @@ import java.util.Locale;
 /**
  * Drug
  */
-public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable {
+public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable, Orderable<DrugOrder> {
 	
 	public static final long serialVersionUID = 285L;
 	
@@ -232,7 +232,5 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable {
 	 */
 	public void setId(Integer id) {
 		setDrugId(id);
-		
 	}
-	
 }

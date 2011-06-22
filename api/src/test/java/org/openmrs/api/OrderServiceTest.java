@@ -21,6 +21,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Concept;
+import org.openmrs.Drug;
+import org.openmrs.GenericDrug;
 import org.openmrs.Order;
 import org.openmrs.OrderType;
 import org.openmrs.Orderable;
@@ -431,7 +433,14 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		
 		Assert.assertNotNull(result);
 		
-		Assert.assertEquals(2, result.size());
+		Assert.assertEquals(3, result.size());
+		
+		Boolean isExpected = result.get(0).getClass().equals(GenericDrug.class);
+		Assert.assertTrue(isExpected);
+		isExpected = result.get(1).getClass().equals(GenericDrug.class);
+		Assert.assertTrue(isExpected);
+		isExpected = result.get(2).getClass().equals(Drug.class);
+		Assert.assertTrue(isExpected);
 	}
 	
 	/**

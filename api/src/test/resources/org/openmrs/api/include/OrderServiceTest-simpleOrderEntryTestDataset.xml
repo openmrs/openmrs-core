@@ -12,4 +12,5 @@
   <concept_description concept_description_id="101" concept_id="101" description="Extended ampicilinum" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" uuid="2677cc71-0580-4d91-b18f-0a63a18415ed"/>
   <concept_description concept_description_id="102" concept_id="102" description="moderate-spectrum, bacteriolytic, ?-lactam antibiotic" locale="en" creator="1" date_created="2008-08-15 13:52:53.0" uuid="be3321b3-c1c7-4339-aaca-1b60db1216ed"/>
   <concept_description concept_description_id="103" concept_id="103" description="penicillin antibiotic" locale="en" creator="1" date_created="2008-08-15 13:52:53.0" uuid="be3321b3-c1c7-4339-aaca-1b60db1217ed"/>
+  <drug drug_id="100" concept_id="100" name="AMPICILLIN" combination="false" units="" creator="1" date_created="2008-08-15 15:34:03.0" retired="false" uuid="7e2323fa-0fa0-461f-9b59-6765997d22ab"/>
 </dataset>

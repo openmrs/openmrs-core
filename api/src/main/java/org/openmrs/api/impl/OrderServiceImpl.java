@@ -25,6 +25,7 @@ import java.util.Vector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
+import org.openmrs.Drug;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterType;
@@ -828,6 +829,16 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 					result.add(new GenericDrug(concept));
 			}
 		}
+		
+		// and next to try to find drugs by name
+		List<Drug> drugs = Context.getConceptService().getDrugs(query);
+		if (drugs != null) {
+			for (Drug drug : drugs) {
+				if (!drug.isRetired())
+					result.add(drug);
+			}
+		}
+		
 		return result;
 	}
 }
