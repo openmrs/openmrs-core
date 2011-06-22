@@ -4869,8 +4869,8 @@
 			</column>
 		</createTable>
 		
-		<addForeignKeyConstraint constraintName="test_order_order_id_fk"
-			baseTableName="test_order" baseColumnNames="order_id"
+		<addForeignKeyConstraint constraintName="test_order_test_order_id_fk"
+			baseTableName="test_order" baseColumnNames="test_order_id"
 			referencedTableName="orders" referencedColumnNames="order_id"
 			/>
 
