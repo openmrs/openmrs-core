@@ -41,32 +41,31 @@ import java.util.Date;
  * 
  * @since 1.9
  */
-public class OrderSet extends BaseOpenmrsMetadata implements
-		java.io.Serializable {
-
+public class OrderSet extends BaseOpenmrsMetadata implements java.io.Serializable {
+	
 	public static final long serialVersionUID = 1L;
-
+	
 	private Integer orderSetId;
-
+	
 	private Concept concept;
-
+	
 	private String title;
-
+	
 	private String comment;
-
+	
 	/**
 	 * This represents how members of the set can be selected: ANY, ONE, or ALL:
 	 * ANY allows for multiple selection, ONE forces single selection amongst
 	 * members, and ALL means that you must either order all members or none.
 	 */
 	private String operator;
-
+	
 	private User reviewedBy;
-
+	
 	private Date dateReviewed;
-
-	private Collection<OrderSetMember> orderSetMembers;
-
+	
+	private Collection<OrderSetMember> members;
+	
 	/**
 	 * Constructs an order set with a given order set id.
 	 * 
@@ -76,7 +75,7 @@ public class OrderSet extends BaseOpenmrsMetadata implements
 	public OrderSet(Integer orderSetId) {
 		setOrderSetId(orderSetId);
 	}
-
+	
 	/**
 	 * Gets the order id.
 	 * 
@@ -85,7 +84,7 @@ public class OrderSet extends BaseOpenmrsMetadata implements
 	public Integer getOrderSetId() {
 		return orderSetId;
 	}
-
+	
 	/**
 	 * Sets the order id.
 	 * 
@@ -95,7 +94,7 @@ public class OrderSet extends BaseOpenmrsMetadata implements
 	public void setOrderSetId(Integer orderSetId) {
 		this.orderSetId = orderSetId;
 	}
-
+	
 	/**
 	 * Gets the concept.
 	 * 
@@ -104,7 +103,7 @@ public class OrderSet extends BaseOpenmrsMetadata implements
 	public Concept getConcept() {
 		return concept;
 	}
-
+	
 	/**
 	 * Sets the concept.
 	 * 
@@ -114,7 +113,7 @@ public class OrderSet extends BaseOpenmrsMetadata implements
 	public void setConcept(Concept concept) {
 		this.concept = concept;
 	}
-
+	
 	/**
 	 * Gets the title.
 	 * 
@@ -123,7 +122,7 @@ public class OrderSet extends BaseOpenmrsMetadata implements
 	public String getTitle() {
 		return title;
 	}
-
+	
 	/**
 	 * Sets the title.
 	 * 
@@ -133,7 +132,7 @@ public class OrderSet extends BaseOpenmrsMetadata implements
 	public void setTitle(String title) {
 		this.title = title;
 	}
-
+	
 	/**
 	 * Gets the comment.
 	 * 
@@ -142,7 +141,7 @@ public class OrderSet extends BaseOpenmrsMetadata implements
 	public String getComment() {
 		return comment;
 	}
-
+	
 	/**
 	 * Sets the comment.
 	 * 
@@ -152,7 +151,7 @@ public class OrderSet extends BaseOpenmrsMetadata implements
 	public void setComment(String comment) {
 		this.comment = comment;
 	}
-
+	
 	/**
 	 * Gets the operator.
 	 * 
@@ -161,7 +160,7 @@ public class OrderSet extends BaseOpenmrsMetadata implements
 	public String getOperator() {
 		return operator;
 	}
-
+	
 	/**
 	 * Sets the operator.
 	 * 
@@ -171,7 +170,7 @@ public class OrderSet extends BaseOpenmrsMetadata implements
 	public void setOperator(String operator) {
 		this.operator = operator;
 	}
-
+	
 	/**
 	 * Gets the reviewer.
 	 * 
@@ -180,7 +179,7 @@ public class OrderSet extends BaseOpenmrsMetadata implements
 	public User getReviewedBy() {
 		return reviewedBy;
 	}
-
+	
 	/**
 	 * Sets the reviewer.
 	 * 
@@ -190,7 +189,7 @@ public class OrderSet extends BaseOpenmrsMetadata implements
 	public void setReviewedBy(User reviewedBy) {
 		this.reviewedBy = reviewedBy;
 	}
-
+	
 	/**
 	 * Gets the date reviewed.
 	 * 
@@ -199,7 +198,7 @@ public class OrderSet extends BaseOpenmrsMetadata implements
 	public Date getDateReviewed() {
 		return dateReviewed;
 	}
-
+	
 	/**
 	 * Sets the date reviewed.
 	 * 
@@ -209,33 +208,33 @@ public class OrderSet extends BaseOpenmrsMetadata implements
 	public void setDateReviewed(Date dateReviewed) {
 		this.dateReviewed = dateReviewed;
 	}
-
+	
 	/**
 	 * Gets the order set members.
 	 * 
 	 * @return the order set members.
 	 */
-	public Collection<OrderSetMember> getOrderSetMembers() {
-		return orderSetMembers;
+	public Collection<OrderSetMember> getMembers() {
+		return members;
 	}
-
+	
 	/**
 	 * Sets the order set members.
 	 * 
-	 * @param orderSetMembers
+	 * @param members
 	 *            the order set members.
 	 */
-	public void setOrderSetMembers(Collection<OrderSetMember> orderSetMembers) {
-		this.orderSetMembers = orderSetMembers;
+	public void setMembers(Collection<OrderSetMember> members) {
+		this.members = members;
 	}
-
+	
 	/**
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
 	public Integer getId() {
 		return getOrderSetId();
 	}
-
+	
 	/**
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */

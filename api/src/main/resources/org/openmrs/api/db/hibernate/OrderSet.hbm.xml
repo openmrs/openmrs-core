@@ -31,10 +31,10 @@
     
     	<property name="dateReviewed" type="java.util.Date" column="date_reviewed" length="19" />
     	
-    	<set name="orderSetMembers" lazy="true" cascade="all,delete-orphan" inverse="true" access="field">
+    	<bag name="members" lazy="true" cascade="all,delete-orphan" inverse="true" >
 			<key column="order_set_id" />
 			<one-to-many class="OrderSetMember" />
-		</set>
+		</bag>
 		
     	<many-to-one name="creator" class="org.openmrs.User" not-null="true" >
         	<column name="creator" />
