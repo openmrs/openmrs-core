@@ -42,6 +42,7 @@ import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.validator.EncounterValidator;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
+import org.springframework.validation.ObjectError;
 
 /**
  * Default implementation of the {@link EncounterService}
@@ -82,8 +83,19 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 	public Encounter saveEncounter(Encounter encounter) throws APIException {
 		Errors errors = new BindException(encounter, "encounter");
 		new EncounterValidator().validate(encounter, errors);
-		if (errors.hasErrors())
-			throw new APIException(Context.getMessageSourceService().getMessage("error.foundValidationErrors"));
+		if (errors.hasErrors()) {
+			StringBuilder sb = new StringBuilder(Context.getMessageSourceService().getMessage("error.foundValidationErrors")
+			        + ": [");
+			boolean isFirst = true;
+			for (ObjectError error : errors.getAllErrors()) {
+				if (isFirst) {
+					sb.append(Context.getMessageSourceService().getMessage(error.getCode()));
+					isFirst = false;
+				} else
+					sb.append(", ").append(Context.getMessageSourceService().getMessage(error.getCode()));
+			}
+			throw new APIException(sb.toString() + "]");
+		}
 		
 		boolean isNewEncounter = false;
 		Date newDate = encounter.getEncounterDatetime();
