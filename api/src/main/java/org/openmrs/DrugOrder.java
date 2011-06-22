@@ -203,6 +203,11 @@ public class DrugOrder extends Order implements java.io.Serializable {
 		this.drug = drug;
 	}
 	
+	/**
+	 * Gets the equivalent daily dose.
+	 * 
+	 * @return the equivalent daily dose.
+	 */
 	public Double getEquivalentDailyDose() {
 		return equivalentDailyDose;
 	}
@@ -241,10 +246,20 @@ public class DrugOrder extends Order implements java.io.Serializable {
 		        + isLatestVersion() + " brandName " + getBrandName() + ")";
 	}
 	
+	/**
+	 * Gets the brand name.
+	 * 
+	 * @return the brand name.
+	 */
 	public String getBrandName() {
 		return brandName;
 	}
 	
+	/**
+	 * Sets the brand name.
+	 * 
+	 * @param brandName the brand name to set.
+	 */
 	public void setBrandName(String brandName) {
 		this.brandName = brandName;
 	}
