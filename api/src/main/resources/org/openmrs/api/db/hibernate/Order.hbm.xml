@@ -272,9 +272,6 @@
 	<joined-subclass name="org.openmrs.TestOrder" table="test_order">
 		    	
     	<key column="order_id" not-null="true" />
-
-		<property name="testOrderId" type="int" not-null="false"
-			column="test_order_id" update="false" insert="false" />
     	
     	<property name="specimenSource" type="int" column="specimen_source" length="11" />    	
     	<property name="laterality" type="int" column="laterality" length="11" />    	
