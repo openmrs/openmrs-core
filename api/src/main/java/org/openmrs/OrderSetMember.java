@@ -18,76 +18,75 @@ package org.openmrs;
  * 
  * @since 1.9
  */
-public class OrderSetMember extends BaseOpenmrsObject implements
-		java.io.Serializable {
-
+public class OrderSetMember extends BaseOpenmrsObject implements java.io.Serializable {
+	
 	public static final long serialVersionUID = 1L;
-
+	
 	private Integer orderSetMemberId;
-
+	
 	private OrderSet parentOrderSet;
-
+	
 	private Integer sortWeight;
-
+	
 	private String exclusionLogic;
-
+	
 	private String contextualLogic;
-
+	
 	private String title;
-
+	
 	private String comment;
-
+	
 	private String evidence;
-
+	
 	private Double priority;
-
+	
 	private Integer indication;
-
+	
 	/**
-	 * selected == true means that the member is ordered by default Ð e.g., an
+	 * selected == true means that the member is ordered by default ï¿½ e.g., an
 	 * order set may contain a list of common post-surgical analgesics with the
 	 * preferred treatment already selected as the one to be.
 	 */
 	private Boolean selected;
-
+	
 	private String orderSetMemberType;
-
+	
 	/**
-	 * Refers to an orderable concept without any further detail Ð e.g., a
+	 * Refers to an orderable concept without any further detail ï¿½ e.g., a
 	 * reference to AMPICILLIN without any pre-defined instructions (you just go
 	 * through ordering ampicillin as if you searched for it & selected as a new
 	 * order, which could pull up an empty order form or could pull up an order
 	 * set linked to AMPICILLIN).
 	 */
 	private Concept concept;
-
+	
 	/**
 	 * A pre-defined order, optionally including choices/defaults for various
 	 * components of the order.
 	 */
 	private String orderTemplate;
-
+	
 	/**
-	 * A list of orders nested within the current order set Ð e.g., the first of
+	 * A list of orders nested within the current order set ï¿½ e.g., the first of
 	 * several alternative regimens. Anonymous nested order sets may also be
 	 * used to group orders to control selection (via the operator property) or
 	 * to simply add a title or comment to a subset of orders within an order
 	 * set.
 	 */
 	private OrderSet orderSet;
-
+	
 	/**
-	 * Directs the user to select any orderable within a given concept class Ð
+	 * Directs the user to select any orderable within a given concept class ï¿½
 	 * e.g., any radiology test.
 	 */
 	private ConceptClass conceptClass;
-
+	
 	/**
-	 * Directs the user to select from members of the order set Ð e.g., choose a
+	 * Directs the user to select from members of the order set ï¿½ e.g., choose a
 	 * drug from any of the BETA BLOCKERS.
 	 */
 	private ConceptSet conceptSet;
-
+	
 	/**
 	 * Constructs an order set member with a given order set member id and
 	 * parent order set.
@@ -101,7 +100,7 @@ public class OrderSetMember extends BaseOpenmrsObject implements
 		setOrderSetMemberId(orderSetMemberId);
 		setParentOrderSet(parentOrderSet);
 	}
-
+	
 	/**
 	 * Gets the order set member id.
 	 * 
@@ -110,7 +109,7 @@ public class OrderSetMember extends BaseOpenmrsObject implements
 	public Integer getOrderSetMemberId() {
 		return orderSetMemberId;
 	}
-
+	
 	/**
 	 * Sets the order set member id.
 	 * 
@@ -120,7 +119,7 @@ public class OrderSetMember extends BaseOpenmrsObject implements
 	public void setOrderSetMemberId(Integer orderSetMemberId) {
 		this.orderSetMemberId = orderSetMemberId;
 	}
-
+	
 	/**
 	 * Gets the parent order set.
 	 * 
@@ -129,7 +128,7 @@ public class OrderSetMember extends BaseOpenmrsObject implements
 	public OrderSet getParentOrderSet() {
 		return parentOrderSet;
 	}
-
+	
 	/**
 	 * Sets the parent order set.
 	 * 
@@ -139,7 +138,7 @@ public class OrderSetMember extends BaseOpenmrsObject implements
 	public void setParentOrderSet(OrderSet parentOrderSet) {
 		this.parentOrderSet = parentOrderSet;
 	}
-
+	
 	/**
 	 * Gets the sort weight.
 	 * 
@@ -148,7 +147,7 @@ public class OrderSetMember extends BaseOpenmrsObject implements
 	public Integer getSortWeight() {
 		return sortWeight;
 	}
-
+	
 	/**
 	 * Sets the sort weight.
 	 * 
@@ -158,7 +157,7 @@ public class OrderSetMember extends BaseOpenmrsObject implements
 	public void setSortWeight(Integer sortWeight) {
 		this.sortWeight = sortWeight;
 	}
-
+	
 	/**
 	 * Gets the exclusion logic.
 	 * 
@@ -167,7 +166,7 @@ public class OrderSetMember extends BaseOpenmrsObject implements
 	public String getExclusionLogic() {
 		return exclusionLogic;
 	}
-
+	
 	/**
 	 * Sets the exclusion logic.
 	 * 
@@ -177,7 +176,7 @@ public class OrderSetMember extends BaseOpenmrsObject implements
 	public void setExclusionLogic(String exclusionLogic) {
 		this.exclusionLogic = exclusionLogic;
 	}
-
+	
 	/**
 	 * Gets the contextual logic.
 	 * 
@@ -186,7 +185,7 @@ public class OrderSetMember extends BaseOpenmrsObject implements
 	public String getContextualLogic() {
 		return contextualLogic;
 	}
-
+	
 	/**
 	 * Sets the contextual logic.
 	 * 
@@ -196,7 +195,7 @@ public class OrderSetMember extends BaseOpenmrsObject implements
 	public void setContextualLogic(String contextualLogic) {
 		this.contextualLogic = contextualLogic;
 	}
-
+	
 	/**
 	 * Gets the title.
 	 * 
@@ -205,7 +204,7 @@ public class OrderSetMember extends BaseOpenmrsObject implements
 	public String getTitle() {
 		return title;
 	}
-
+	
 	/**
 	 * Sets the title.
 	 * 
@@ -215,7 +214,7 @@ public class OrderSetMember extends BaseOpenmrsObject implements
 	public void setTitle(String title) {
 		this.title = title;
 	}
-
+	
 	/**
 	 * Gets the comment.
 	 * 
@@ -224,7 +223,7 @@ public class OrderSetMember extends BaseOpenmrsObject implements
 	public String getComment() {
 		return comment;
 	}
-
+	
 	/**
 	 * Sets the comment.
 	 * 
@@ -234,7 +233,7 @@ public class OrderSetMember extends BaseOpenmrsObject implements
 	public void setComment(String comment) {
 		this.comment = comment;
 	}
-
+	
 	/**
 	 * Gets the evidence.
 	 * 
@@ -243,7 +242,7 @@ public class OrderSetMember extends BaseOpenmrsObject implements
 	public String getEvidence() {
 		return evidence;
 	}
-
+	
 	/**
 	 * Sets the evidence.
 	 * 
@@ -253,7 +252,7 @@ public class OrderSetMember extends BaseOpenmrsObject implements
 	public void setEvidence(String evidence) {
 		this.evidence = evidence;
 	}
-
+	
 	/**
 	 * Gets the priority.
 	 * 
@@ -262,7 +261,7 @@ public class OrderSetMember extends BaseOpenmrsObject implements
 	public Double getPriority() {
 		return priority;
 	}
-
+	
 	/**
 	 * Sets the priority.
 	 * 
@@ -272,7 +271,7 @@ public class OrderSetMember extends BaseOpenmrsObject implements
 	public void setPriority(Double priority) {
 		this.priority = priority;
 	}
-
+	
 	/**
 	 * Gets the indication.
 	 * 
@@ -281,7 +280,7 @@ public class OrderSetMember extends BaseOpenmrsObject implements
 	public Integer getIndication() {
 		return indication;
 	}
-
+	
 	/**
 	 * Sets the indication.
 	 * 
@@ -291,7 +290,7 @@ public class OrderSetMember extends BaseOpenmrsObject implements
 	public void setIndication(Integer indication) {
 		this.indication = indication;
 	}
-
+	
 	/**
 	 * Gets the selected property.
 	 * 
@@ -300,7 +299,7 @@ public class OrderSetMember extends BaseOpenmrsObject implements
 	public Boolean getSelected() {
 		return selected;
 	}
-
+	
 	/**
 	 * Sets the selected property.
 	 * 
@@ -310,7 +309,7 @@ public class OrderSetMember extends BaseOpenmrsObject implements
 	public void setSelected(Boolean selected) {
 		this.selected = selected;
 	}
-
+	
 	/**
 	 * Gets the order set member type.
 	 * 
@@ -319,7 +318,7 @@ public class OrderSetMember extends BaseOpenmrsObject implements
 	public String getOrderSetMemberType() {
 		return orderSetMemberType;
 	}
-
+	
 	/**
 	 * Sets the order set member type.
 	 * 
@@ -329,7 +328,7 @@ public class OrderSetMember extends BaseOpenmrsObject implements
 	public void setOrderSetMemberType(String orderSetMemberType) {
 		this.orderSetMemberType = orderSetMemberType;
 	}
-
+	
 	/**
 	 * Gets the concept.
 	 * 
@@ -338,7 +337,7 @@ public class OrderSetMember extends BaseOpenmrsObject implements
 	public Concept getConcept() {
 		return concept;
 	}
-
+	
 	/**
 	 * Sets the concept.
 	 * 
@@ -348,7 +347,7 @@ public class OrderSetMember extends BaseOpenmrsObject implements
 	public void setConcept(Concept concept) {
 		this.concept = concept;
 	}
-
+	
 	/**
 	 * Gets the order template.
 	 * 
@@ -357,7 +356,7 @@ public class OrderSetMember extends BaseOpenmrsObject implements
 	public String getOrderTemplate() {
 		return orderTemplate;
 	}
-
+	
 	/**
 	 * Sets the order template.
 	 * 
@@ -367,7 +366,7 @@ public class OrderSetMember extends BaseOpenmrsObject implements
 	public void setOrderTemplate(String orderTemplate) {
 		this.orderTemplate = orderTemplate;
 	}
-
+	
 	/**
 	 * Gets the order set.
 	 * 
@@ -376,7 +375,7 @@ public class OrderSetMember extends BaseOpenmrsObject implements
 	public OrderSet getOrderSet() {
 		return orderSet;
 	}
-
+	
 	/**
 	 * Sets the order set.
 	 * 
@@ -386,7 +385,7 @@ public class OrderSetMember extends BaseOpenmrsObject implements
 	public void setOrderSet(OrderSet orderSet) {
 		this.orderSet = orderSet;
 	}
-
+	
 	/**
 	 * Gets the concept class.
 	 * 
@@ -395,7 +394,7 @@ public class OrderSetMember extends BaseOpenmrsObject implements
 	public ConceptClass getConceptClass() {
 		return conceptClass;
 	}
-
+	
 	/**
 	 * Sets the concept class.
 	 * 
@@ -405,7 +404,7 @@ public class OrderSetMember extends BaseOpenmrsObject implements
 	public void setConceptClass(ConceptClass conceptClass) {
 		this.conceptClass = conceptClass;
 	}
-
+	
 	/**
 	 * Gets the concept set.
 	 * 
@@ -414,7 +413,7 @@ public class OrderSetMember extends BaseOpenmrsObject implements
 	public ConceptSet getConceptSet() {
 		return conceptSet;
 	}
-
+	
 	/**
 	 * Sets the concept set.
 	 * 
@@ -424,14 +423,14 @@ public class OrderSetMember extends BaseOpenmrsObject implements
 	public void setConceptSet(ConceptSet conceptSet) {
 		this.conceptSet = conceptSet;
 	}
-
+	
 	/**
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
 	public Integer getId() {
 		return getOrderSetMemberId();
 	}
-
+	
 	/**
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */

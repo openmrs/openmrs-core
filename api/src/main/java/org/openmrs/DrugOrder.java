@@ -32,10 +32,11 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	private String units;
 	
-	/** as needed. */
-	private Boolean prn = false;
+	private Boolean asNeeded = Boolean.FALSE;
 	
 	private Integer quantity;
+	
+	private String quantityUnits;
 	
 	private Drug drug;
 	
@@ -56,6 +57,10 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	private Integer numRefills;
 	
 	private String unstructuredDosing;
+	
+	private Integer duration;
+	
+	private Integer durationUnits;
 	
 	// Constructors
 	
@@ -88,8 +93,9 @@ public class DrugOrder extends Order implements java.io.Serializable {
 		target.dose = getDose();
 		target.equivalentDailyDose = getEquivalentDailyDose();
 		target.units = getUnits();
-		target.prn = getPrn();
+		target.asNeeded = getAsNeeded();
 		target.quantity = getQuantity();
+		target.quantityUnits = getQuantityUnits();
 		target.drug = getDrug();
 		
 		target.brandName = getBrandName();
@@ -101,6 +107,8 @@ public class DrugOrder extends Order implements java.io.Serializable {
 		target.asNeededCondition = getAsNeededCondition();
 		target.additionalInstructions = getAdditionalInstructions();
 		target.numRefills = getNumRefills();
+		target.duration = getDuration();
+		target.durationUnits = getDurationUnits();
 		
 		return target;
 	}
@@ -155,18 +163,36 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	 * Returns true/false whether the drug is a "pro re nata" (as needed) drug
 	 * 
 	 * @return Boolean
+	 * @see use {@link #getAsNeeded()}
 	 */
+	@Deprecated
 	public Boolean getPrn() {
-		return this.prn;
+		return getAsNeeded();
 	}
 	
 	/**
 	 * Sets the prn
 	 * 
 	 * @param prn
+	 * @see use {@link #setAsNeeded(Boolean)}
 	 */
+	@Deprecated
 	public void setPrn(Boolean prn) {
-		this.prn = prn;
+		setAsNeeded(prn);
+	}
+	
+	/**
+	 * @return the asNeeded
+	 */
+	public Boolean getAsNeeded() {
+		return asNeeded;
+	}
+	
+	/**
+	 * @param asNeeded the asNeeded to set
+	 */
+	public void setAsNeeded(Boolean asNeeded) {
+		this.asNeeded = asNeeded;
 	}
 	
 	/**
@@ -207,6 +233,22 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	 */
 	public void setQuantity(Integer quantity) {
 		this.quantity = quantity;
+	}
+	
+	/**
+	 * @return the quantityUnits
+	 * @since 1.9
+	 */
+	public String getQuantityUnits() {
+		return quantityUnits;
+	}
+	
+	/**
+	 * @param quantityUnits the quantityUnits to set
+	 * @since 1.9
+	 */
+	public void setQuantityUnits(String quantityUnits) {
+		this.quantityUnits = quantityUnits;
 	}
 	
 	/**
@@ -443,5 +485,37 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	 */
 	public String getUnstructuredDosing() {
 		return unstructuredDosing;
+	}
+	
+	/**
+	 * @return the duration
+	 * @since 1.9
+	 */
+	public Integer getDuration() {
+		return duration;
+	}
+	
+	/**
+	 * @param duration the duration to set
+	 * @since 1.9
+	 */
+	public void setDuration(Integer duration) {
+		this.duration = duration;
+	}
+	
+	/**
+	 * @return the durationUnits
+	 * @since 1.9
+	 */
+	public Integer getDurationUnits() {
+		return durationUnits;
+	}
+	
+	/**
+	 * @param durationUnits the durationUnits to set
+	 * @since 1.9
+	 */
+	public void setDurationUnits(Integer durationUnits) {
+		this.durationUnits = durationUnits;
 	}
 }

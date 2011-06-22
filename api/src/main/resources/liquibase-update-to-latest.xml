@@ -4566,7 +4566,9 @@
 		</preConditions>
 		<comment>Adding order_action column to orders table</comment>
 		<addColumn tableName="orders">
-			<column name="order_action" type="varchar(50)" />
+			<column name="order_action" type="varchar(50)">
+				<constraints nullable="false" />
+			</column>
 		</addColumn>
 	</changeSet>
 	
@@ -4788,10 +4790,8 @@
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="drug_order" columnName="as_needed"/></not>
 		</preConditions>
-		<comment>Adding as_needed column to drug_order table</comment>
-		<addColumn tableName="drug_order">
-			<column name="as_needed" type="smallint" />
-		</addColumn>
+		<comment>Renaming drug_order.prn column to drug_order.as_needed</comment>
+		<renameColumn tableName="drug_order" oldColumnName="prn" newColumnName="as_needed" columnDataType="smallint(1)" />
 	</changeSet>
 	
 	<changeSet id="20101209-1111-drug_order_as_needed_condition" author="dkayiwa">
@@ -5003,6 +5003,54 @@
 		<addColumn tableName="drug_order">
 			<column name="unstructured_dosing" type="varchar(255)" />
 		</addColumn>
+	</changeSet>
+	
+	<changeSet id="20100621-1350" author="wyclif">
+		<preConditions onFail="MARK_RAN">
+			<not><foreignKeyConstraintExists foreignKeyName="orders_indication_concept_fk" /></not>
+		</preConditions>
+		<comment>Adding foreign key constraint for orders.indication column</comment>
+		<addForeignKeyConstraint constraintName="orders_indication_concept_fk"
+			baseTableName="orders" baseColumnNames="indication"
+			referencedTableName="concept" referencedColumnNames="concept_id" />
+	</changeSet>
+	
+	<changeSet id="20100621-1350-drug_order_duration" author="wyclif">
+		<preConditions onFail="MARK_RAN">
+			<not><columnExists tableName="drug_order" columnName="duration"/></not>
+		</preConditions>
+		<comment>Adding duration column to drug_order table</comment>
+		<addColumn tableName="drug_order">
+			<column name="duration" type="int" />
+		</addColumn>
+	</changeSet>
+	
+	<changeSet id="20100621-1350-drug_order_duration_units" author="wyclif">
+		<preConditions onFail="MARK_RAN">
+			<not><columnExists tableName="drug_order" columnName="duration_units"/></not>
+		</preConditions>
+		<comment>Adding duration_units column to drug_order table</comment>
+		<addColumn tableName="drug_order">
+			<column name="duration_units" type="varchar(50)" />
+		</addColumn>
+	</changeSet>
+	
+	<changeSet id="20100621-1350-drug_order_quantity_units" author="wyclif">
+		<preConditions onFail="MARK_RAN">
+			<not><columnExists tableName="drug_order" columnName="quantity_units"/></not>
+		</preConditions>
+		<comment>Adding quantity_units column to drug_order table</comment>
+		<addColumn tableName="drug_order">
+			<column name="quantity_units" type="varchar(50)" />
+		</addColumn>
+	</changeSet>
+	
+	<changeSet id="20101209-1351" author="wyclif">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="drug_order" columnName="as_needed"/>
+		</preConditions>
+		<comment>Adding not-null constraint and default value to orders.as_needed</comment>
+		<addNotNullConstraint tableName="drug_order" columnName="as_needed" columnDataType="smallint(1)" />
 	</changeSet>
 
 </databaseChangeLog>

@@ -173,14 +173,13 @@
     <property name="orderNumber" type="java.lang.String" column="order_number" length="50" not-null="true"/>
     <property name="previousOrderNumber" type="java.lang.String" column="previous_order_number" length="50" />
     <property name="orderGroup" type="int" column="order_group" length="11" />
-    <property name="orderAction" type="java.lang.String" column="order_action" length="50" />
     <property name="nonCodedName" type="java.lang.String" column="noncoded_name" length="255" />
     <property name="urgency" type="java.lang.String" column="urgency" length="50" />
     <property name="conditionality" type="java.lang.String" column="conditionality" length="255" />
     <property name="frequency" type="java.lang.String" column="frequency" length="50" />  
-	<property name="indication" type="int" column="indication" length="11" />
 	<property name="comment" type="java.lang.String" column="comment" length="65535" />
 	
+	<many-to-one name="indication" column="indication" class="org.openmrs.Concept" />
 	<many-to-one name="signedBy" class="org.openmrs.User">
         <column name="signed_by" />
     </many-to-one>
@@ -194,7 +193,12 @@
     <property name="dateActivated" type="java.util.Date" column="date_activated" length="19" />
 	<property name="filler" type="java.lang.String" column="filler" length="255" />
 	<property name="dateFilled" type="java.util.Date" column="date_filled" length="19" />
-
+	
+	<property name="orderAction" column="order_action" length="50" not-null="true">
+		<type name="org.openmrs.util.HibernateEnumType">
+			<param name="enumClassName">org.openmrs.Order$OrderAction</param>
+		</type>
+	</property>
 
 	<joined-subclass name="org.openmrs.DrugOrder" table="drug_order">
 		
@@ -243,6 +247,7 @@
 	        column="quantity"
 	        length="11"
 	    />
+	    
 	    <!-- bi-directional many-to-one association to Drug -->
 	    <many-to-one
 	        name="drug"
@@ -260,6 +265,9 @@
      	<property name="asNeededCondition" type="java.lang.String" column="as_needed_condition" length="255" />	
     	<property name="additionalInstructions" type="java.lang.String" column="additional_instructions" length="65535" />	
     	<property name="numRefills" type="int" column="num_refills" length="11" />
+    	<property name="quantityUnits" type="java.lang.String" column="quantity_units" length="50" />
+    	<property name="duration" type="int" column="duration" length="11" />
+    	<property name="durationUnits" type="java.lang.String" column="duration_units" length="50" />
 	
 	</joined-subclass>
 	

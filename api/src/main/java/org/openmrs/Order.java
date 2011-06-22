@@ -71,7 +71,10 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 */
 	private String orderNumber;
 	
-	/** Allows orders to be linked to a previous order - e.g., an order discontinue ampicillin linked to the original ampicillin order (the D/C gets its own order number) */
+	/**
+	 * Allows orders to be linked to a previous order - e.g., an order discontinue ampicillin linked
+	 * to the original ampicillin order (the D/C gets its own order number)
+	 */
 	private String previousOrderNumber;
 	
 	/**
@@ -81,8 +84,12 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 */
 	private Integer orderGroup;
 	
-	/** Represents the action being taken on an order. e.g., DISCONTINUE, CARRY-OVER, etc. */
-	private String orderAction;
+	/**
+	 * Represents the action being taken on an order.
+	 * 
+	 * @see OrderAction
+	 */
+	private OrderAction orderAction;
 	
 	/**
 	 * Allows for orders to be created for items that are not yet in the dictionary. e.g., OTHER
@@ -100,7 +107,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	
 	private String frequency;
 	
-	private Integer indication;
+	private Concept indication;
 	
 	private String comment;
 	
@@ -112,10 +119,22 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	
 	private Date dateActivated;
 	
-	/** This is an optional URI to a person or process that fulfilled the order - possibly even a pointer to the object/resource that represents the result. */
+	/**
+	 * This is an optional URI to a person or process that fulfilled the order - possibly even a
+	 * pointer to the object/resource that represents the result.
+	 */
 	private String filler;
 	
 	private Date dateFilled;
+	
+	/**
+	 * Represents an enumeration of the actions that can be taken on an order
+	 * 
+	 * @since 1.9
+	 */
+	public enum OrderAction {
+		NEW, REVISE, DISCONTINUE, RENEW, CARRY_OVER
+	}
 	
 	// Constructors
 	
@@ -545,11 +564,19 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 		this.orderGroup = orderGroup;
 	}
 	
-	public String getOrderAction() {
+	/**
+	 * @return the orderAction
+	 * @since 1.9
+	 */
+	public OrderAction getOrderAction() {
 		return orderAction;
 	}
 	
-	public void setOrderAction(String orderAction) {
+	/**
+	 * @param orderAction the orderAction to set
+	 * @since 1.9
+	 */
+	public void setOrderAction(OrderAction orderAction) {
 		this.orderAction = orderAction;
 	}
 	
@@ -585,11 +612,19 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 		this.frequency = frequency;
 	}
 	
-	public Integer getIndication() {
+	/**
+	 * @return the indication
+	 * @since 1.9
+	 */
+	public Concept getIndication() {
 		return indication;
 	}
 	
-	public void setIndication(Integer indication) {
+	/**
+	 * @param indication the indication to set
+	 * @since 1.9
+	 */
+	public void setIndication(Concept indication) {
 		this.indication = indication;
 	}
 	
