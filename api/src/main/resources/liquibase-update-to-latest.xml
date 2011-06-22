@@ -4861,9 +4861,6 @@
 			<column name="test_order_id" type="int" autoIncrement="true">
 				<constraints primaryKey="true" nullable="false" />
 			</column>
-			<column name="order_id" type="int">
-				<constraints nullable="false" />
-			</column>
 			<column name="specimen_source" type="int" />
 			<column name="laterality" type="int" />
 			<column name="clinical_history" type="text" />
