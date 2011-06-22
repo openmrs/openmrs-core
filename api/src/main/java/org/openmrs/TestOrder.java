@@ -23,47 +23,71 @@ public class TestOrder extends Order {
 	
 	public static final long serialVersionUID = 1L;
 	
-	private Integer testOrderId;
-	
 	private Integer specimenSource;
 	
 	private Integer laterality;
 	
 	private String clinicalHistory;
 	
-	public TestOrder(Integer testOrderId, Integer orderId) {
-		setTestOrderId(testOrderId);
+	/**
+	 * Constructs a new test order with a given order id.
+	 * 
+	 * @param orderId the order id.
+	 */
+	public TestOrder(Integer orderId) {
 		setOrderId(orderId);
 	}
 	
-	public Integer getTestOrderId() {
-		return testOrderId;
-	}
-	
-	public void setTestOrderId(Integer testOrderId) {
-		this.testOrderId = testOrderId;
-	}
-	
+	/**
+	 * Gets the specimen source.
+	 * 
+	 * @return the specimen source.
+	 */
 	public Integer getSpecimenSource() {
 		return specimenSource;
 	}
 	
+	/**
+	 * Sets the specimen source.
+	 * 
+	 * @param specimenSource the specimen source to set.
+	 */
 	public void setSpecimenSource(Integer specimenSource) {
 		this.specimenSource = specimenSource;
 	}
 	
+	/**
+	 * Gets the laterality.
+	 * 
+	 * @return the laterality.
+	 */
 	public Integer getLaterality() {
 		return laterality;
 	}
 	
+	/**
+	 * Sets the laterality.
+	 * 
+	 * @param laterality the laterality to set.
+	 */
 	public void setLaterality(Integer laterality) {
 		this.laterality = laterality;
 	}
 	
+	/**
+	 * Gets the clinical history.
+	 * 
+	 * @return the clinical history.
+	 */
 	public String getClinicalHistory() {
 		return clinicalHistory;
 	}
 	
+	/**
+	 * Sets the clinical history.
+	 * 
+	 * @param clinicalHistory the clinical history to set.
+	 */
 	public void setClinicalHistory(String clinicalHistory) {
 		this.clinicalHistory = clinicalHistory;
 	}
@@ -72,13 +96,13 @@ public class TestOrder extends Order {
 	 * @see org.openmrs.Order#getId()
 	 */
 	public Integer getId() {
-		return getTestOrderId();
+		return getOrderId();
 	}
 	
 	/**
 	 * @see org.openmrs.OpenmrsObject#setId(java.lang.Integer)
 	 */
 	public void setId(Integer id) {
-		setTestOrderId(id);
+		setOrderId(id);
 	}
 }
