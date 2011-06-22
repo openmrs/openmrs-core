@@ -15,8 +15,6 @@ package org.openmrs.web.dwr;
 
 import java.text.SimpleDateFormat;
 
-import net.sf.saxon.type.Untyped;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.DrugOrder;

@@ -5015,6 +5015,7 @@
 		
 	</changeSet>
 	
+	<!-- TODO refactor this changeset before merging to trunk, to avoid creating and deleting columns unnecessarily -->
 	<changeSet id="201106211503-remove-complex" author="cta">
     	<preConditions onFail="MARK_RAN">
     		<columnExists tableName="drug_order" columnName="complex"/>

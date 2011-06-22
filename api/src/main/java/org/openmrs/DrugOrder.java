@@ -13,6 +13,8 @@
  */
 package org.openmrs;
 
+import org.openmrs.api.APIException;
+
 /**
  * This is a type of order that adds drug specific attributes.
  * 
@@ -165,6 +167,26 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	 */
 	public void setPrn(Boolean prn) {
 		this.prn = prn;
+	}
+	
+	/**
+	 * Gets whether this drug is complex
+	 * 
+	 * @return Boolean
+	 */
+	@Deprecated
+	public Boolean getComplex() {
+		return this.getUnstructuredDosing() != null;
+	}
+	
+	/**
+	 * Sets whether this drug is complex
+	 * 
+	 * @param complex
+	 */
+	@Deprecated
+	public void setComplex(Boolean complex) {
+		throw new APIException("This operation is not supported anymore");
 	}
 	
 	/**
