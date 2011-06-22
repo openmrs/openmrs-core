@@ -172,6 +172,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	/**
 	 * Gets whether this drug is complex
 	 * 
+	 * @deprecated instead use {@link #getUnstructuredDosing()}
 	 * @return Boolean
 	 */
 	@Deprecated
@@ -182,6 +183,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	/**
 	 * Sets whether this drug is complex
 	 * 
+	 * @deprecated instead use {@link #setUnstructuredDosing(String)}
 	 * @param complex
 	 */
 	@Deprecated
