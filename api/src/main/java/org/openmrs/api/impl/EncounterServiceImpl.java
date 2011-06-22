@@ -134,7 +134,7 @@ public class EncounterServiceImpl extends BaseOpenmrsService implements Encounte
 					
 				}
 				
-				if (!newLocation.equals(originalLocation)) {
+				if (!OpenmrsUtil.nullSafeEquals(newLocation, originalLocation)) {
 					if (obs.getLocation().equals(originalLocation)) {
 						obs.setLocation(newLocation);
 					}

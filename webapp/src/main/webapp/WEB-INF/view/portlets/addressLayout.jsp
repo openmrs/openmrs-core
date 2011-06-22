@@ -211,8 +211,9 @@
 						<tr>
 							<c:forEach items="${line}" var="token" varStatus="tokenStatus">
 								<c:if test="${token.isToken == model.layoutTemplate.layoutToken}">
-									<td><spring:message code="${token.displayText}" /></td>
+									<td id="${token.codeName}_label"><spring:message code="${token.displayText}" /></td>
 									<td <c:if test="${tokenStatus.last && tokenStatus.index < model.layoutTemplate.maxTokens}">colspan="${model.layoutTemplate.maxTokens - tokenStatus.index}"</c:if>>
+									<c:catch var="exp">
 										<spring:bind path="${token.codeName}">
 											<c:if test="${token.codeName == 'endDate'}"><input type="hidden" name="_${status.expression}"></c:if>
 											<input id="${status.expression}" type="text" name="${status.expression}" value="<c:out value="${status.value}"/>" size="${token.displaySize}" 
@@ -237,6 +238,14 @@
 												<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 											</c:if>
 										</spring:bind>
+									  </c:catch>
+									  <c:if test="${not empty exp}">
+									  	<%--hide the label for the token's field since we are not displaying the input for this missng property --%>
+									  	<script>$j("#${token.codeName}_label").hide()</script>
+									  	<c:if test="${model.layoutShowErrors == true}">
+											<span class="error">${exp.message}</span>
+									  	</c:if>
+									  </c:if>
 									</td>
 								</c:if>
 							</c:forEach>
