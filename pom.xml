@@ -501,6 +501,7 @@
 					<configuration>
 						<target>${javaCompilerVersion}</target>
 						<source>${javaCompilerVersion}</source>
+						<encoding>UTF-8</encoding>
 					</configuration>
 				</plugin>
 				<plugin>
