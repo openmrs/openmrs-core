@@ -75,7 +75,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	
 	private boolean latestVersion;
 	
-	/** Allows orders to be linked to a previous order Ð e.g., an order discontinue ampicillin linked to the original ampicillin order (the D/C gets its own order number) */
+	/** Allows orders to be linked to a previous order - e.g., an order discontinue ampicillin linked to the original ampicillin order (the D/C gets its own order number) */
 	private String previousOrderNumber;
 	
 	/**
@@ -116,7 +116,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	
 	private Date dateActivated;
 	
-	/** This is an optional URI to a person or process that fulfilled the order Ð possibly even a pointer to the object/resource that represents the result. */
+	/** This is an optional URI to a person or process that fulfilled the order - possibly even a pointer to the object/resource that represents the result. */
 	private String filler;
 	
 	private Date dateFilled;
