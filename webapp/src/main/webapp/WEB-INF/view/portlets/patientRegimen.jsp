@@ -362,12 +362,11 @@
 				else if ( freqDay == '' ) alert("<spring:message code="DrugOrder.add.error.missingFrequency" />");
 				else if ( freqWeek == '' ) alert("<spring:message code="DrugOrder.add.error.missingFrequency" />");
 				else if ( startDate == '' ) alert("<spring:message code="DrugOrder.add.error.missingStartDate" />");
-				else if ( brandName == '' ) alert("<spring:message code="DrugOrder.add.error.missingBrandName" />");
 			}
 		}
 
 		function validateNewOrder(drug, brandName, dose, units, freqDay, freqWeek, startDate) {
-			if ( drug == '' || brandName == '' || dose == '' || units == '' || freqDay == '' || freqWeek == '' || startDate == '' ) {
+			if ( drug == '' || dose == '' || units == '' || freqDay == '' || freqWeek == '' || startDate == '' ) {
 				return false;
 			} else {
 				return true;
