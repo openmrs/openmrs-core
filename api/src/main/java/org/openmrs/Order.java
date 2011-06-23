@@ -43,10 +43,16 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	
 	private Concept concept;
 	
+	/**
+	 * Free text instructions for the order 
+	 * (e.g., details about a referral, justification for a cardiac stress test, etc.)
+	 */
 	private String instructions;
 	
+	/** When the order should begin. */
 	private Date startDate;
 	
+	/** When the order should be discontinued if it hasn't already. */
 	private Date autoExpireDate;
 	
 	private Encounter encounter;
@@ -57,6 +63,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	
 	private User discontinuedBy;
 	
+	/** When the order was discontinued. */
 	private Date discontinuedDate;
 	
 	/** This is optional text that would go on the D/C order (this was a coded answer in previous versions of openmrs). */
@@ -105,28 +112,49 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 */
 	private String urgency;
 	
+	/**
+	 * For orders with a CONDITIONAL urgency, this property contains free text describing the 
+	 * condition(s) under which the order should be performed, e.g., "when the patient returns from surgery"
+	 */
 	private String conditionality;
 	
+	/**
+	 * Describes the frequency of repeats for an order 
+	 * (note: eventually, we may want to draw these from a table of possible values)
+	 */
 	private String frequency;
 	
+	/** The reason for the order. */
 	private Concept indication;
 	
+	/** Free text comments. */
 	private String comment;
 	
+	/** User responsible for the order. */
 	private User signedBy;
 	
+	/** When order was signed. */
 	private Date dateSigned;
 	
+	/** 
+	 * User who activates the order so that it could be carried out 
+	 * (may be different from signing user in some cases). 
+	 */
 	private User activatedBy;
 	
+	/** When order was activated. */
 	private Date dateActivated;
 	
 	/**
 	 * This is an optional URI to a person or process that fulfilled the order - possibly even a
 	 * pointer to the object/resource that represents the result.
+	 * Unique reference to the party responsible for filling or carrying out the order, 
+	 * e.g., the lab that reported the result or the pharmacy the filled the prescription 
+	 * (note: we will need a convention for formatting this)
 	 */
 	private String filler;
 	
+	/** When order was filled. */
 	private Date dateFilled;
 	
 	/**
@@ -524,7 +552,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 		return true;
 	}
 	
-	/*
+	/**
 	 * orderForm:jsp: <spring:bind path="order.discontinued" /> results in a call to
 	 * isDiscontinued() which doesn't give access to the discontinued property so renamed it to
 	 * isDiscontinuedRightNow which results in a call to getDiscontinued.
@@ -534,34 +562,74 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 		return isDiscontinued(new Date());
 	}
 	
+	/**
+	 * Gets the patient.
+	 * 
+	 * @return the patient.
+	 */
 	public Patient getPatient() {
 		return patient;
 	}
 	
+	/**
+	 * Sets the patient.
+	 * 
+	 * @param patient the patient to set.
+	 */
 	public void setPatient(Patient patient) {
 		this.patient = patient;
 	}
 	
+	/**
+	 * Gets the order number.
+	 * 
+	 * @return the order number.
+	 */
 	public String getOrderNumber() {
 		return orderNumber;
 	}
 	
+	/**
+	 * Sets the order number.
+	 * 
+	 * @param orderNumber the order number to set.
+	 */
 	public void setOrderNumber(String orderNumber) {
 		this.orderNumber = orderNumber;
 	}
 	
+	/**
+	 * Gets the previous order number.
+	 * 
+	 * @return the previous order number.
+	 */
 	public String getPreviousOrderNumber() {
 		return previousOrderNumber;
 	}
 	
+	/**
+	 * Sets the previous order number.
+	 * 
+	 * @param previousOrderNumber the previous order number to set.
+	 */
 	public void setPreviousOrderNumber(String previousOrderNumber) {
 		this.previousOrderNumber = previousOrderNumber;
 	}
 	
+	/**
+	 * Gets the order group.
+	 * 
+	 * @return the order group.
+	 */
 	public Integer getOrderGroup() {
 		return orderGroup;
 	}
 	
+	/**
+	 * Sets the order group.
+	 * 
+	 * @param orderGroup the order group to set.
+	 */
 	public void setOrderGroup(Integer orderGroup) {
 		this.orderGroup = orderGroup;
 	}
@@ -582,34 +650,74 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 		this.orderAction = orderAction;
 	}
 	
+	/**
+	 * Gets the non coded name.
+	 * 
+	 * @return the non coded name.
+	 */
 	public String getNonCodedName() {
 		return nonCodedName;
 	}
 	
+	/**
+	 * Sets the non coded name.
+	 * 
+	 * @param nonCodedName the non coded name to set.
+	 */
 	public void setNonCodedName(String nonCodedName) {
 		this.nonCodedName = nonCodedName;
 	}
 	
+	/**
+	 * Gets the urgency.
+	 * 
+	 * @return the urgency.
+	 */
 	public String getUrgency() {
 		return urgency;
 	}
 	
+	/**
+	 * Sets the urgency.
+	 * 
+	 * @param urgency the urgency to set.
+	 */
 	public void setUrgency(String urgency) {
 		this.urgency = urgency;
 	}
 	
+	/**
+	 * Gets the conditionality.
+	 * 
+	 * @return the conditionality.
+	 */
 	public String getConditionality() {
 		return conditionality;
 	}
 	
+	/**
+	 * Sets the conditionality.
+	 * 
+	 * @param conditionality the conditionality to set.
+	 */
 	public void setConditionality(String conditionality) {
 		this.conditionality = conditionality;
 	}
 	
+	/**
+	 * Gets the frequency.
+	 * 
+	 * @return the frequency.
+	 */
 	public String getFrequency() {
 		return frequency;
 	}
 	
+	/**
+	 * Sets the frequency.
+	 * 
+	 * @param frequency the frequency to set.
+	 */
 	public void setFrequency(String frequency) {
 		this.frequency = frequency;
 	}
@@ -630,62 +738,136 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 		this.indication = indication;
 	}
 	
+	/**
+	 * Gets the comment.
+	 * 
+	 * @return the comment.
+	 */
 	public String getComment() {
 		return comment;
 	}
 	
+	/**
+	 * Sets the comment.
+	 * 
+	 * @param comment the comment.
+	 */
 	public void setComment(String comment) {
 		this.comment = comment;
 	}
 	
+	/**
+	 * Gets the user who signed the order.
+	 * 
+	 * @return the user who signed the order.
+	 */
 	public User getSignedBy() {
 		return signedBy;
 	}
 	
+	/**
+	 * Sets the user who signed the order.
+	 * 
+	 * @param signedBy the user who signed the order.
+	 */
 	public void setSignedBy(User signedBy) {
 		this.signedBy = signedBy;
 	}
 	
+	/**
+	 * Gets the date when the order was signed.
+	 * 
+	 * @return the date when the order was signed.
+	 */
 	public Date getDateSigned() {
 		return dateSigned;
 	}
 	
+	/**
+	 * Sets the date when the order was signed.
+	 * 
+	 * @param dateSigned the date when the order was signed.
+	 */
 	public void setDateSigned(Date dateSigned) {
 		this.dateSigned = dateSigned;
 	}
 	
+	/**
+	 * Gets the user who activated the order.
+	 * 
+	 * @return the user who activated the order.
+	 */
 	public User getActivatedBy() {
 		return activatedBy;
 	}
 	
+	/**
+	 * Sets the user who activated the order.
+	 * 
+	 * @param activatedBy the user who activated the order.
+	 */
 	public void setActivatedBy(User activatedBy) {
 		this.activatedBy = activatedBy;
 	}
 	
+	/**
+	 * Gets the date when order was activated.
+	 * 
+	 * @return the date activated.
+	 */
 	public Date getDateActivated() {
 		return dateActivated;
 	}
 	
+	/**
+	 * Sets the date activated.
+	 * 
+	 * @param dateActivated the date activated to set.
+	 */
 	public void setDateActivated(Date dateActivated) {
 		this.dateActivated = dateActivated;
 	}
 	
+	/**
+	 * Gets the filler.
+	 * 
+	 * @return the filler.
+	 */
 	public String getFiller() {
 		return filler;
 	}
 	
+	/**
+	 * Sets the filler.
+	 * 
+	 * @param filler the filler to set.
+	 */
 	public void setFiller(String filler) {
 		this.filler = filler;
 	}
 	
+	/**
+	 * Gets the date filled.
+	 * 
+	 * @return the date filled.
+	 */
 	public Date getDateFilled() {
 		return dateFilled;
 	}
 	
+	/**
+	 * Sets the date filled.
+	 * 
+	 * @param dateFilled the date filled to set.
+	 */
 	public void setDateFilled(Date dateFilled) {
 		this.dateFilled = dateFilled;
 	}
 	
+	/**
+	 * @since 1.5
+	 * @see org.openmrs.OpenmrsObject#getId()
+	 */
 	public Integer getId() {
 		return getOrderId();
 	}
