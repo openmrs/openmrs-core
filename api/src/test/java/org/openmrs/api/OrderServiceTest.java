@@ -23,6 +23,7 @@ import org.openmrs.Concept;
 import org.openmrs.Drug;
 import org.openmrs.GenericDrug;
 import org.openmrs.Order;
+import org.openmrs.OrderGroup;
 import org.openmrs.OrderType;
 import org.openmrs.Orderable;
 import org.openmrs.Patient;
@@ -394,4 +395,38 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		String query = null;
 		Context.getOrderService().getOrderables(query);
 	}
+	
+	/**
+	 * @see {@link OrderService#signAndActivateOrderGroup(org.openmrs.OrderGroup, User, Date)}
+	 */
+	@Test
+	@Verifies(value = "sign and activate orders group", method = "signAndActivateOrderGroup(OrderGroup, User, Date)")
+	public void getOrderables_signAndActivateOrdersGroup() throws Exception {
+		
+		User provider = Context.getUserService().getUser(501);
+		Patient patient = Context.getPatientService().getPatient(6);
+		
+		OrderGroup group = new OrderGroup(null, patient, provider, new Date());
+		Order order = new Order();
+		order.setDateCreated(new Date());
+		order.setOrderType(Context.getOrderService().getOrderType(2));
+		order.setConcept(Context.getConceptService().getConcept(23));
+		order.setPatient(patient);
+		group.getOrders().add(order);
+		
+		group = Context.getOrderService().signAndActivateOrderGroup(group, provider, new Date());
+		order = (Order) group.getOrders().toArray()[0];
+		//Should be saved.
+		Assert.assertNotNull(group);
+		
+		//Should be signed.
+		Assert.assertTrue(order.isSigned());
+		Assert.assertTrue(order.getDateSigned() != null);
+		
+		//Should be activated.
+		Assert.assertTrue(order.getActivatedBy() != null);
+		Assert.assertTrue(order.getDateActivated() != null);
+		
+	}
+	
 }

@@ -43,7 +43,7 @@ public class OrderSetMember extends BaseOpenmrsObject implements java.io.Seriali
 	private Integer indication;
 	
 	/**
-	 * selected == true means that the member is ordered by default � e.g., an
+	 * selected == true means that the member is ordered by default e.g., an
 	 * order set may contain a list of common post-surgical analgesics with the
 	 * preferred treatment already selected as the one to be.
 	 */
@@ -52,7 +52,7 @@ public class OrderSetMember extends BaseOpenmrsObject implements java.io.Seriali
 	private String orderSetMemberType;
 	
 	/**
-	 * Refers to an orderable concept without any further detail � e.g., a
+	 * Refers to an orderable concept without any further detail e.g., a
 	 * reference to AMPICILLIN without any pre-defined instructions (you just go
 	 * through ordering ampicillin as if you searched for it & selected as a new
 	 * order, which could pull up an empty order form or could pull up an order
@@ -67,7 +67,7 @@ public class OrderSetMember extends BaseOpenmrsObject implements java.io.Seriali
 	private String orderTemplate;
 	
 	/**
-	 * A list of orders nested within the current order set � e.g., the first of
+	 * A list of orders nested within the current order set e.g., the first of
 	 * several alternative regimens. Anonymous nested order sets may also be
 	 * used to group orders to control selection (via the operator property) or
 	 * to simply add a title or comment to a subset of orders within an order
@@ -76,13 +76,13 @@ public class OrderSetMember extends BaseOpenmrsObject implements java.io.Seriali
 	private OrderSet orderSet;
 	
 	/**
-	 * Directs the user to select any orderable within a given concept class �
+	 * Directs the user to select any orderable within a given concept class
 	 * e.g., any radiology test.
 	 */
 	private ConceptClass conceptClass;
 	
 	/**
-	 * Directs the user to select from members of the order set � e.g., choose a
+	 * Directs the user to select from members of the order set e.g., choose a
 	 * drug from any of the BETA BLOCKERS.
 	 */
 	private ConceptSet conceptSet;

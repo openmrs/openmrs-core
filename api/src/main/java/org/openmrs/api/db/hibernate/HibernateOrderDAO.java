@@ -25,6 +25,7 @@ import org.hibernate.criterion.Expression;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
+import org.openmrs.OrderGroup;
 import org.openmrs.OrderType;
 import org.openmrs.Patient;
 import org.openmrs.User;
@@ -227,5 +228,15 @@ public class HibernateOrderDAO implements OrderDAO {
 			return 0;
 		
 		return (Integer) maxOrderId;
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.OrderDAO#saveOrderGroup(org.openmrs.OrderGroup)
+	 */
+	@Override
+	public OrderGroup saveOrderGroup(OrderGroup orderGroup) throws DAOException {
+		sessionFactory.getCurrentSession().saveOrUpdate(orderGroup);
+		
+		return orderGroup;
 	}
 }

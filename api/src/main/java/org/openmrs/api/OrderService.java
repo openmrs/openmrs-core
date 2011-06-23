@@ -22,6 +22,7 @@ import org.openmrs.Concept;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
+import org.openmrs.OrderGroup;
 import org.openmrs.OrderType;
 import org.openmrs.Orderable;
 import org.openmrs.Patient;
@@ -671,5 +672,17 @@ public interface OrderService extends OpenmrsService {
 	 * @throws APIException when error occurred
 	 */
 	List<Orderable<?>> getOrderables(String query) throws APIException;
+	
+	/**
+	 * Saves, Signs, and Activates an orders within group.
+	 * 
+	 * @param group the orders group.
+	 * @param user the user in charge of the orders group.
+	 * @param created the date of operation execution
+	 * @return the saved, signed and activated orders group.
+	 * @should sign and activate orders group
+	 * @throws APIException when error occurred
+	 */
+	public OrderGroup signAndActivateOrderGroup(OrderGroup group, User user, Date created) throws APIException;
 	
 }

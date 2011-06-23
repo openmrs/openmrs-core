@@ -172,7 +172,6 @@
     
     <property name="orderNumber" type="java.lang.String" column="order_number" length="50" not-null="true"/>
     <property name="previousOrderNumber" type="java.lang.String" column="previous_order_number" length="50" />
-    <property name="orderGroup" type="int" column="order_group" length="11" />
     <property name="nonCodedName" type="java.lang.String" column="noncoded_name" length="255" />
     <property name="urgency" type="java.lang.String" column="urgency" length="50" />
     <property name="conditionality" type="java.lang.String" column="conditionality" length="255" />
@@ -199,6 +198,10 @@
 			<param name="enumClassName">org.openmrs.Order$OrderAction</param>
 		</type>
 	</property>
+	
+	<many-to-one name="orderGroup" class="org.openmrs.OrderGroup" not-null="false">
+        	<column name="order_group" />
+   	</many-to-one>
 
 	<joined-subclass name="org.openmrs.DrugOrder" table="drug_order">
 		

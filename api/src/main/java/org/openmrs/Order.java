@@ -38,7 +38,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	
 	private Patient patient;
 	
-	/** This would be an enumeration of order types Ð e.g., DRUG, TEST, REFERRAL, DIET, etc. */
+	/** This would be an enumeration of order types e.g., DRUG, TEST, REFERRAL, DIET, etc. */
 	private OrderType orderType;
 	
 	private Concept concept;
@@ -91,7 +91,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 * assist with subsequent management or reporting of the orders (e.g., a drug regimen of three
 	 * drugs may be placed within an order group).
 	 */
-	private Integer orderGroup;
+	private OrderGroup orderGroup;
 	
 	/**
 	 * Represents the action being taken on an order.
@@ -621,7 +621,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 * 
 	 * @return the order group.
 	 */
-	public Integer getOrderGroup() {
+	public OrderGroup getOrderGroup() {
 		return orderGroup;
 	}
 	
@@ -630,7 +630,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 * 
 	 * @param orderGroup the order group to set.
 	 */
-	public void setOrderGroup(Integer orderGroup) {
+	public void setOrderGroup(OrderGroup orderGroup) {
 		this.orderGroup = orderGroup;
 	}
 	

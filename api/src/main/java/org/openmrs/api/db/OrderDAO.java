@@ -19,6 +19,7 @@ import java.util.List;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
+import org.openmrs.OrderGroup;
 import org.openmrs.OrderType;
 import org.openmrs.Patient;
 import org.openmrs.User;
@@ -111,5 +112,12 @@ public interface OrderDAO {
 	 * @return the biggest order id used for far or 0 if not a single order exists.
 	 */
 	public Integer getMaximumOrderId();
+	
+	/**
+	 * Saves/updates order group entity into data base
+	 * 
+	 * @return the saved or updated entity
+	 */
+	public OrderGroup saveOrderGroup(OrderGroup orderGroup) throws DAOException;
 	
 }

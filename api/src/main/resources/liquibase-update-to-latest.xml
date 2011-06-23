@@ -5052,6 +5052,73 @@
 		<comment>Adding not-null constraint to orders.as_needed</comment>
 		<addNotNullConstraint tableName="drug_order" columnName="as_needed" columnDataType="smallint" />
 	</changeSet>
+	
+	<changeSet id="20112306-1111-order_group" author="cta">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="order_group" />
+			</not>
+		</preConditions>
+
+		<comment>Create order_group table</comment>
+
+		<createTable tableName="order_group">
+			<column name="order_group_id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			
+			<column name="patient_id" type="int" >
+				<constraints nullable="false"/>
+			</column>
+			
+			<column name="order_set_id" type="int" />			
+			
+			<column name="creator" type="int" >
+				<constraints nullable="false"/>
+			</column>
+			
+			<column name="date_created" type="datetime">
+				<constraints nullable="false"/>
+			</column>
+			
+			<column name="voided" type="boolean"/>
+			<column name="voided_by" type="int"/>
+			<column name="date_voided" type="datetime"/>
+			<column name="void_reason" type="varchar(255)"/>
+					
+			<column name="uuid" type="char(38)">
+				<constraints nullable="false" unique="true"/>
+			</column>
+			
+		</createTable>
+		
+		<addForeignKeyConstraint constraintName="order_group_patient_id_fk" 
+								 baseTableName="order_group" baseColumnNames="patient_id"
+								 referencedTableName="patient" referencedColumnNames="patient_id"/>
+								 
+		<addForeignKeyConstraint constraintName="order_group_order_set_id_fk" 
+								 baseTableName="order_group" baseColumnNames="order_set_id"
+								 referencedTableName="order_set" referencedColumnNames="order_set_id"/>
+								 
+		<addForeignKeyConstraint constraintName="order_group_user_id_fk" 
+								 baseTableName="order_group" baseColumnNames="creator"
+								 referencedTableName="users" referencedColumnNames="user_id"/>
+								 
+		<addForeignKeyConstraint constraintName="order_group_users_fk" 
+								 baseTableName="order_group" baseColumnNames="voided_by"
+								 referencedTableName="users" referencedColumnNames="user_id"/>
+		
+	</changeSet>
+	
+	<changeSet id="201123062307-orders_order_group_fk" author="cta">
+		<preConditions onFail="MARK_RAN">
+			<not><foreignKeyConstraintExists foreignKeyName="orders_order_group_fk" /></not>
+		</preConditions>
+		<comment>Adding foreign key constraint for orders.order_group</comment>
+		<addForeignKeyConstraint constraintName="orders_order_group_fk"
+			baseTableName="orders" baseColumnNames="order_group"
+			referencedTableName="order_group" referencedColumnNames="order_group_id" />
+	</changeSet>
 
 </databaseChangeLog>
 

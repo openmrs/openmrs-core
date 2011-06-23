@@ -33,10 +33,12 @@ import org.openmrs.GenericDrug;
 import org.openmrs.ImplementationId;
 import org.openmrs.Location;
 import org.openmrs.Order;
+import org.openmrs.OrderGroup;
 import org.openmrs.OrderType;
 import org.openmrs.Orderable;
 import org.openmrs.Patient;
 import org.openmrs.User;
+import org.openmrs.Order.OrderAction;
 import org.openmrs.aop.RequiredDataAdvice;
 import org.openmrs.api.APIException;
 import org.openmrs.api.OrderService;
@@ -834,4 +836,28 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		
 		return result;
 	}
+	
+	@Override
+	public OrderGroup signAndActivateOrderGroup(OrderGroup group, User user, Date created) throws APIException {
+		if (group.getOrderGroupId() != null)
+			throw new APIException(
+			        "signAndActivateOrderGroup Can not be called for an existing orders group. Please use a new orders group.");
+		
+		if (group.getOrders().isEmpty())
+			throw new APIException("signAndActivateOrderGroup Can not be called for an orders group with no orders therein.");
+		
+		for (Order order : group.getOrders()) {
+			order.setOrderAction(OrderAction.NEW);
+			order.setSignedBy(user);
+			order.setDateSigned(new Date());
+			order.setActivatedBy(user);
+			order.setDateActivated(new Date());
+			saveOrder(order);
+		}
+		
+		group = dao.saveOrderGroup(group);
+		
+		return group;
+	}
+	
 }
