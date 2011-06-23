@@ -172,8 +172,8 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	/**
 	 * Returns true/false whether the drug is a "pro re nata" (as needed) drug
 	 * 
+	 * @deprecated use {@link #getAsNeeded()}
 	 * @return Boolean
-	 * @see use {@link #getAsNeeded()}
 	 */
 	@Deprecated
 	public Boolean getPrn() {
@@ -183,6 +183,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	/**
 	 * Sets the prn
 	 * 
+	 * @deprecated use {@link #setAsNeeded(Boolean)}
 	 * @param prn
 	 * @see use {@link #setAsNeeded(Boolean)}
 	 */

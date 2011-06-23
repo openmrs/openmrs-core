@@ -4791,7 +4791,7 @@
 			<not><columnExists tableName="drug_order" columnName="as_needed"/></not>
 		</preConditions>
 		<comment>Renaming drug_order.prn column to drug_order.as_needed</comment>
-		<renameColumn tableName="drug_order" oldColumnName="prn" newColumnName="as_needed" columnDataType="smallint(1)" />
+		<renameColumn tableName="drug_order" oldColumnName="prn" newColumnName="as_needed" columnDataType="smallint" />
 	</changeSet>
 	
 	<changeSet id="20101209-1111-drug_order_as_needed_condition" author="dkayiwa">
@@ -5045,12 +5045,12 @@
 		</addColumn>
 	</changeSet>
 	
-	<changeSet id="20101209-1351" author="wyclif">
+	<changeSet id="20101209-1353" author="wyclif">
 		<preConditions onFail="MARK_RAN">
 			<columnExists tableName="drug_order" columnName="as_needed"/>
 		</preConditions>
-		<comment>Adding not-null constraint and default value to orders.as_needed</comment>
-		<addNotNullConstraint tableName="drug_order" columnName="as_needed" columnDataType="smallint(1)" />
+		<comment>Adding not-null constraint to orders.as_needed</comment>
+		<addNotNullConstraint tableName="drug_order" columnName="as_needed" columnDataType="smallint" />
 	</changeSet>
 
 </databaseChangeLog>
