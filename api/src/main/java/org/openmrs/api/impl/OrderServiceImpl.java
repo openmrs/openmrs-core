@@ -673,9 +673,9 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		if (order.getOrderId() != null)
 			throw new APIException("saveActivatedOrder Can not be called for an existing order. Please use a new order.");
 		
-		order = saveOrder(order);
-		order = signOrder(order, user);
-		return activateOrder(order, user);
+		order = Context.getOrderService().saveOrder(order);
+		order = Context.getOrderService().signOrder(order, user);
+		return Context.getOrderService().activateOrder(order, user);
 	}
 	
 	/**
