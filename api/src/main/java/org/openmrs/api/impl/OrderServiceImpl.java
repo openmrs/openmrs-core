@@ -700,9 +700,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @see org.openmrs.api.OrderService#fillOrder(org.openmrs.Order, org.openmrs.User)
 	 */
 	public Order fillOrder(Order order, User filler) throws APIException {
-		if (!order.isSigned())
-			throw new APIException("Can not fill an order which has not been signed");
-		
 		return fillOrder(order, filler.getUserId() + filler.getSystemId());
 	}
 	
@@ -712,6 +709,9 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	public Order fillOrder(Order order, String filler) throws APIException {
 		if (!order.isSigned())
 			throw new APIException("Can not fill an order which has not been signed");
+		
+		if (!order.isActivated())
+			throw new APIException("Can not fill an order which has not been activated");
 		
 		order.setDateFilled(new Date());
 		order.setFiller(filler);

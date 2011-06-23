@@ -38,6 +38,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	
 	private Patient patient;
 	
+	/** This would be an enumeration of order types Ð e.g., DRUG, TEST, REFERRAL, DIET, etc. */
 	private OrderType orderType;
 	
 	private Concept concept;
@@ -58,6 +59,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	
 	private Date discontinuedDate;
 	
+	/** This is optional text that would go on the D/C order (this was a coded answer in previous versions of openmrs). */
 	private Concept discontinuedReason;
 	
 	private String accessionNumber;
@@ -710,5 +712,14 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 */
 	public boolean isSigned() {
 		return getSignedBy() != null && getDateSigned() != null;
+	}
+	
+	/**
+	 * Checks if an order is activated.
+	 * 
+	 * @return true if activated, else false.
+	 */
+	public boolean isActivated() {
+		return getActivatedBy() != null && getDateActivated() != null;
 	}
 }
