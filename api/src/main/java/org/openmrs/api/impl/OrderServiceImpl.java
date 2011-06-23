@@ -726,7 +726,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#discontinueOrder(org.openmrs.Concept)
+	 * @see org.openmrs.api.OrderService#getOrderHistoryByConcept(org.openmrs.Concept)
 	 */
 	public List<Order> getOrderHistoryByConcept(Concept concept) {
 		List<Concept> concepts = new Vector<Concept>();
