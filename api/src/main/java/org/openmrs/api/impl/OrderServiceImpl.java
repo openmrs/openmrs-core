@@ -726,12 +726,16 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#getOrderHistoryByConcept(org.openmrs.Concept)
+	 * @see org.openmrs.api.OrderService#getOrderHistoryByConcept(org.openmrs.Patient, org.openmrs.Concept)
 	 */
-	public List<Order> getOrderHistoryByConcept(Concept concept) {
+	public List<Order> getOrderHistoryByConcept(Patient patient, Concept concept) {
 		List<Concept> concepts = new Vector<Concept>();
 		concepts.add(concept);
-		return getOrders(Order.class, null, concepts, ORDER_STATUS.NOTVOIDED, null, null, null);
+		
+		List<Patient> patients = new Vector<Patient>();
+		patients.add(patient);
+		
+		return getOrders(Order.class, patients, concepts, ORDER_STATUS.NOTVOIDED, null, null, null);
 	}
 	
 	/**

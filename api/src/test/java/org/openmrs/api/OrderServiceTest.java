@@ -126,14 +126,15 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	public void getOrderHistoryByConcept_shouldReturnOrdersWithTheGivenConcept() throws Exception {
 		//We should have three orders with this concept.
 		Concept concept = Context.getConceptService().getConcept(88);
-		List<Order> orders = Context.getOrderService().getOrderHistoryByConcept(concept);
+		Patient patient = Context.getPatientService().getPatient(1);
+		List<Order> orders = Context.getOrderService().getOrderHistoryByConcept(patient, concept);
 		Assert.assertEquals(3, orders.size());
 		for (Order order : orders)
 			Assert.assertTrue(order.getOrderId() == 1 || order.getOrderId() == 4 || order.getOrderId() == 5);
 		
 		//We should two orders with this concept.
 		concept = Context.getConceptService().getConcept(792);
-		orders = Context.getOrderService().getOrderHistoryByConcept(concept);
+		orders = Context.getOrderService().getOrderHistoryByConcept(patient, concept);
 		Assert.assertEquals(2, orders.size());
 		for (Order order : orders)
 			Assert.assertTrue(order.getOrderId() == 2 || order.getOrderId() == 3);
@@ -146,7 +147,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should return empty list for concept without orders", method = "getOrderHistoryByConcept(Concept)")
 	public void getOrderHistoryByConcept_shouldReturnEmptyListForConceptWithoutOrders() throws Exception {
 		Concept concept = Context.getConceptService().getConcept(21);
-		List<Order> orders = Context.getOrderService().getOrderHistoryByConcept(concept);
+		Patient patient = Context.getPatientService().getPatient(1);
+		List<Order> orders = Context.getOrderService().getOrderHistoryByConcept(patient, concept);
 		Assert.assertEquals(0, orders.size());
 	}
 	
@@ -161,18 +163,18 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		
 		List<String> orderNumbers = new ArrayList<String>();
 		
+		Patient patient = Context.getPatientService().getPatient(1);
 		Concept concept = Context.getConceptService().getConcept(23);
-		List<Order> orders = Context.getOrderService().getOrderHistoryByConcept(concept);
+		List<Order> orders = Context.getOrderService().getOrderHistoryByConcept(patient, concept);
 		Assert.assertTrue(orders.size() == 2);
 		for (Order order : orders) {
 			orderNumbers.add(order.getOrderNumber());
 			Assert.assertFalse(order.isDiscontinued(discontinueDate));
 		}
 		
-		Patient patient = Context.getPatientService().getPatient(1);
 		Context.getOrderService().discontinueOrderByConcept(patient, concept, discontinueReason, discontinueDate);
 		
-		orders = Context.getOrderService().getOrderHistoryByConcept(concept);
+		orders = Context.getOrderService().getOrderHistoryByConcept(patient, concept);
 		//Each discontinue creates a new order.
 		Assert.assertTrue(orders.size() == 4);
 		for (Order order : orders) {

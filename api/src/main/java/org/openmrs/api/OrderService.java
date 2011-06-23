@@ -550,13 +550,14 @@ public interface OrderService extends OpenmrsService {
 	public Order getOrderByOrderNumber(String orderNumber);
 	
 	/**
-	 * Gets all Order objects that use this Concept
+	 * Gets all Order objects that use this Concept for a given patient.
 	 * 
+	 * @param patient the patient.
 	 * @param concept the concept.
 	 * @return the list of orders.
 	 */
 	@Transactional(readOnly = true)
-	public List<Order> getOrderHistoryByConcept(Concept concept);
+	public List<Order> getOrderHistoryByConcept(Patient patient, Concept concept);
 	
 	/**
 	 * Gets an order number that has not yet been used by any order.
