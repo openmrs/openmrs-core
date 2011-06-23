@@ -735,14 +735,18 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#discontinueOrderByConcept(org.openmrs.Concept,
+	 * @see org.openmrs.api.OrderService#discontinueOrderByConcept(org.openmrs.Patient, org.openmrs.Concept,
 	 *      org.openmrs.Concept, java.util.Date)
 	 */
-	public void discontinueOrderByConcept(Concept concept, Concept discontinueReason, Date discontinueDate)
+	public void discontinueOrderByConcept(Patient patient, Concept concept, Concept discontinueReason, Date discontinueDate)
 	        throws APIException {
 		List<Concept> concepts = new Vector<Concept>();
 		concepts.add(concept);
-		List<Order> orders = getOrders(Order.class, null, concepts, ORDER_STATUS.NOTVOIDED, null, null, null);
+		
+		List<Patient> patients = new Vector<Patient>();
+		patients.add(patient);
+		
+		List<Order> orders = getOrders(Order.class, patients, concepts, ORDER_STATUS.NOTVOIDED, null, null, null);
 		if (orders != null) {
 			for (Order order : orders) {
 				discontinueOrder(order, discontinueReason, discontinueDate);

@@ -25,6 +25,7 @@ import org.openmrs.GenericDrug;
 import org.openmrs.Order;
 import org.openmrs.OrderType;
 import org.openmrs.Orderable;
+import org.openmrs.Patient;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
@@ -168,7 +169,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 			Assert.assertFalse(order.isDiscontinued(discontinueDate));
 		}
 		
-		Context.getOrderService().discontinueOrderByConcept(concept, discontinueReason, discontinueDate);
+		Patient patient = Context.getPatientService().getPatient(1);
+		Context.getOrderService().discontinueOrderByConcept(patient, concept, discontinueReason, discontinueDate);
 		
 		orders = Context.getOrderService().getOrderHistoryByConcept(concept);
 		//Each discontinue creates a new order.

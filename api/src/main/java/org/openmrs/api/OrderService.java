@@ -605,11 +605,12 @@ public interface OrderService extends OpenmrsService {
 	public Order fillOrder(Order order, String filler) throws APIException;
 	
 	/**
-	 * Finds all active orders with this drug/concept and discontinues them.
+	 * Finds all active orders with this drug/concept for this patient and discontinues them.
 	 * 
+	 * @param patient the patient.
 	 * @param concept the drug/concept.
 	 */
-	public void discontinueOrderByConcept(Concept concept, Concept discontinueReason, Date discontinueDate)
+	public void discontinueOrderByConcept(Patient patient, Concept concept, Concept discontinueReason, Date discontinueDate)
 	        throws APIException;
 	
 	/**
