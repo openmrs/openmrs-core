@@ -79,6 +79,16 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	}
 	
 	/**
+	 * Constructor that takes an {@link Orderable} or any of its subclasses, it only copies the
+	 * concept from the {@link Orderable} and sets it on this {@link DrugOrder}
+	 * 
+	 * @param drugOrder
+	 */
+	public DrugOrder(Orderable<DrugOrder> drugOrder) {
+		this.setConcept(drugOrder.getConcept());
+	}
+	
+	/**
 	 * @see org.openmrs.Order#copy()
 	 */
 	public DrugOrder copy() {
