@@ -36,7 +36,9 @@ import org.openmrs.util.OpenmrsUtil;
 
 /**
  * Contains convenience methods for working with Orders.
+ * @deprecated get rid of this before we merge back to trunk
  */
+@Deprecated
 public class OrderUtil {
 	
 	private static final Log log = LogFactory.getLog(OrderUtil.class);
@@ -60,7 +62,7 @@ public class OrderUtil {
 		
 		OrderService orderService = Context.getOrderService();
 		
-		List<DrugOrder> drugOrders = orderService.getDrugOrdersByPatient(patient, ORDER_STATUS.CURRENT);
+		List<DrugOrder> drugOrders = orderService.getDrugOrdersByPatient(patient, ORDER_STATUS.ACTIVE);
 		
 		// loop over all of this patient's drug orders to discontinue each
 		if (drugOrders != null) {
@@ -151,7 +153,7 @@ public class OrderUtil {
 		
 		OrderService orderService = Context.getOrderService();
 		
-		List<DrugOrder> currentOrders = orderService.getDrugOrdersByPatient(patient, ORDER_STATUS.CURRENT);
+		List<DrugOrder> currentOrders = orderService.getDrugOrdersByPatient(patient, ORDER_STATUS.ACTIVE);
 		Map<String, List<DrugOrder>> ordersBySetId = getDrugSetsByDrugSetIdList(currentOrders, drugSetId, ",");
 		
 		// loop over all of the orders and discontinue each of them

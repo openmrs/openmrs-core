@@ -804,9 +804,6 @@
   <user_role user_id="8" role="System Developer"/>
   <user_role user_id="16461" role="System Developer"/>
   <user_role user_id="18804" role="System Developer"/> 
-  <orders order_id="13031" order_type_id="4" concept_id="9" orderer="8" encounter_id="86653" start_date="2009-02-14 00:00:00.0" discontinued="false" creator="8" date_created="2009-02-15 20:40:50.0" voided="false" patient_id="13731" accession_number="354"/>
-  <orders order_id="13032" order_type_id="4" concept_id="9" orderer="8" encounter_id="86654" start_date="2009-02-14 00:00:00.0" discontinued="false" creator="8" date_created="2009-02-15 20:41:30.0" voided="false" patient_id="13731" accession_number="423"/>
-  <orders order_id="13033" order_type_id="4" concept_id="1019" orderer="8" encounter_id="86655" start_date="2009-02-14 00:00:00.0" discontinued="false" creator="8" date_created="2009-02-15 20:45:50.0" voided="false" patient_id="13731" accession_number="566"/>
   <encounter encounter_id="20808" encounter_type="2" patient_id="7" provider_id="1130" location_id="26" form_id="28" encounter_datetime="2006-12-07 00:00:00.0" creator="1959" date_created="2006-12-07 16:09:18.0" voided="false" uuid="4a903934-26fe-102b-80cb-0017a47871b2"/>
   <encounter encounter_id="14943" encounter_type="2" patient_id="14493" provider_id="1" location_id="26" form_id="1" encounter_datetime="2006-05-30 00:00:00.0" creator="1138" date_created="2006-09-08 00:00:00.0" voided="false" uuid="49c5cc24-26fe-102b-80cb-0017a47871b2"/>
   <encounter encounter_id="20807" encounter_type="2" patient_id="20447" provider_id="1130" location_id="26" form_id="28" encounter_datetime="2006-12-07 00:00:00.0" creator="1959" date_created="2006-12-07 16:09:18.0" voided="false" uuid="4a903234-26fe-102b-80cb-0017a47871b2"/>

@@ -44,14 +44,13 @@ import org.openmrs.api.context.Context;
 @Handler(supports = Patient.class)
 public class PatientDataUnvoidHandler implements UnvoidHandler<Patient> {
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public void handle(Patient patient, User originalVoidingUser, Date origParentVoidedDate, String unused) {
 		//can't be unvoiding a patient that doesn't exist in the database
 		if (patient.getId() != null) {
 			//unvoid all the encounter that got voided as a result of the patient getting voided
 			EncounterService es = Context.getEncounterService();
-			List<Encounter> encounters = es.getEncounters(patient, null, null, null, null, null, null, true);
+			List<Encounter> encounters = es.getEncounters(patient, null, null, null, null, null, null, null, null, true);
 			if (CollectionUtils.isNotEmpty(encounters)) {
 				for (Encounter encounter : encounters) {
 					if (encounter.isVoided() && encounter.getDateVoided().equals(origParentVoidedDate)
@@ -65,7 +64,7 @@ public class PatientDataUnvoidHandler implements UnvoidHandler<Patient> {
 			OrderService os = Context.getOrderService();
 			List<Patient> patients = new ArrayList<Patient>();
 			patients.add(patient);
-			List<Order> orders = os.getOrders(Order.class, patients, null, ORDER_STATUS.ANY, null, null, null);
+			List<Order> orders = os.getOrders(Order.class, patients, null, ORDER_STATUS.ANY, null, null, null, null);
 			if (CollectionUtils.isNotEmpty(orders)) {
 				for (Order order : orders) {
 					if (order.isVoided() && order.getDateVoided().equals(origParentVoidedDate)

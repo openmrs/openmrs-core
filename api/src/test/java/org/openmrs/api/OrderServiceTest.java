@@ -154,38 +154,6 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderService#discontinueOrder(Concept, Concept, Date)}
-	 */
-	@Test
-	@Verifies(value = "should discontinue orders with the given concept", method = "discontinueOrder(Concept, Concept, Date)")
-	public void discontinueOrder_shouldDiscontinueOrdersWithTheGivenConcept() throws Exception {
-		Date discontinueDate = new Date();
-		Concept discontinueReason = Context.getConceptService().getConcept(10);
-		
-		List<String> orderNumbers = new ArrayList<String>();
-		
-		Patient patient = Context.getPatientService().getPatient(1);
-		Concept concept = Context.getConceptService().getConcept(23);
-		List<Order> orders = Context.getOrderService().getOrderHistoryByConcept(patient, concept);
-		Assert.assertTrue(orders.size() == 2);
-		for (Order order : orders) {
-			orderNumbers.add(order.getOrderNumber());
-			Assert.assertFalse(order.isDiscontinued(discontinueDate));
-		}
-		
-		Context.getOrderService().discontinueOrderByConcept(patient, concept, discontinueReason, discontinueDate);
-		
-		orders = Context.getOrderService().getOrderHistoryByConcept(patient, concept);
-		//Each discontinue creates a new order.
-		Assert.assertTrue(orders.size() == 4);
-		for (Order order : orders) {
-			if (orderNumbers.contains(order.getOrderNumber())) {
-				Assert.assertTrue(order.isDiscontinued(discontinueDate));
-			}
-		}
-	}
-	
-	/**
 	 * @see {@link OrderService#signOrder(Order, User)}
 	 */
 	@Test
@@ -401,7 +369,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	@Verifies(value = "sign and activate orders group", method = "signAndActivateOrderGroup(OrderGroup, User, Date)")
-	public void getOrderables_signAndActivateOrdersGroup() throws Exception {
+	public void getOrderables_shouldSignAndActivateOrdersGroup() throws Exception {
 		
 		User provider = Context.getUserService().getUser(501);
 		Patient patient = Context.getPatientService().getPatient(6);
