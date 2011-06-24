@@ -86,6 +86,8 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	 */
 	public DrugOrder(Orderable<DrugOrder> drugOrder) {
 		this.setConcept(drugOrder.getConcept());
+		if (drugOrder.getClass().isAssignableFrom(Drug.class))
+			this.setDrug((Drug) drugOrder);
 	}
 	
 	/**

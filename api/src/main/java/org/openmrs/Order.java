@@ -44,8 +44,8 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	private Concept concept;
 	
 	/**
-	 * Free text instructions for the order 
-	 * (e.g., details about a referral, justification for a cardiac stress test, etc.)
+	 * Free text instructions for the order (e.g., details about a referral, justification for a
+	 * cardiac stress test, etc.)
 	 */
 	private String instructions;
 	
@@ -66,7 +66,10 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	/** When the order was discontinued. */
 	private Date discontinuedDate;
 	
-	/** This is optional text that would go on the D/C order (this was a coded answer in previous versions of openmrs). */
+	/**
+	 * This is optional text that would go on the D/C order (this was a coded answer in previous
+	 * versions of openmrs).
+	 */
 	private Concept discontinuedReason;
 	
 	private String accessionNumber;
@@ -98,7 +101,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 * 
 	 * @see OrderAction
 	 */
-	private OrderAction orderAction;
+	private OrderAction orderAction = OrderAction.NEW;
 	
 	/**
 	 * Allows for orders to be created for items that are not yet in the dictionary. e.g., OTHER
@@ -113,14 +116,15 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	private String urgency;
 	
 	/**
-	 * For orders with a CONDITIONAL urgency, this property contains free text describing the 
-	 * condition(s) under which the order should be performed, e.g., "when the patient returns from surgery"
+	 * For orders with a CONDITIONAL urgency, this property contains free text describing the
+	 * condition(s) under which the order should be performed, e.g.,
+	 * "when the patient returns from surgery"
 	 */
 	private String conditionality;
 	
 	/**
-	 * Describes the frequency of repeats for an order 
-	 * (note: eventually, we may want to draw these from a table of possible values)
+	 * Describes the frequency of repeats for an order (note: eventually, we may want to draw these
+	 * from a table of possible values)
 	 */
 	private String frequency;
 	
@@ -136,9 +140,9 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	/** When order was signed. */
 	private Date dateSigned;
 	
-	/** 
-	 * User who activates the order so that it could be carried out 
-	 * (may be different from signing user in some cases). 
+	/**
+	 * User who activates the order so that it could be carried out (may be different from signing
+	 * user in some cases).
 	 */
 	private User activatedBy;
 	
@@ -147,10 +151,10 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	
 	/**
 	 * This is an optional URI to a person or process that fulfilled the order - possibly even a
-	 * pointer to the object/resource that represents the result.
-	 * Unique reference to the party responsible for filling or carrying out the order, 
-	 * e.g., the lab that reported the result or the pharmacy the filled the prescription 
-	 * (note: we will need a convention for formatting this)
+	 * pointer to the object/resource that represents the result. Unique reference to the party
+	 * responsible for filling or carrying out the order, e.g., the lab that reported the result or
+	 * the pharmacy the filled the prescription (note: we will need a convention for formatting
+	 * this)
 	 */
 	private String filler;
 	
@@ -163,7 +167,27 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 * @since 1.9
 	 */
 	public enum OrderAction {
-		NEW, REVISE, DISCONTINUE, RENEW, CARRY_OVER
+		/**
+		 * Creating a new order
+		 */
+		NEW,
+
+		/**
+		 * Modifying an existing order (e.g. changing dose of a medication, edits to instructions,
+		 * etc.)
+		 */
+		REVISE,
+
+		/**
+		 * Continue an existing order (e.g., providing another prescription for a chronic medication
+		 * when refills run out)
+		 */
+		CONTINUE,
+
+		/**
+		 * Stopping an order
+		 */
+		DISCONTINUE
 	}
 	
 	// Constructors
@@ -556,6 +580,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 * orderForm:jsp: <spring:bind path="order.discontinued" /> results in a call to
 	 * isDiscontinued() which doesn't give access to the discontinued property so renamed it to
 	 * isDiscontinuedRightNow which results in a call to getDiscontinued.
+	 * 
 	 * @since 1.5
 	 */
 	public boolean isDiscontinuedRightNow() {
