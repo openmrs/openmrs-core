@@ -82,7 +82,10 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		
 		//if new order, fill the order number and version.
 		if (order.getOrderId() == null) {
-			order.setOrderNumber(getNewOrderNumber());
+
+			if (order.getOrderNumber() == null) {
+				order.setOrderNumber(getNewOrderNumber());
+			}
 			
 			return validateAndSaveOrder(order);
 			
