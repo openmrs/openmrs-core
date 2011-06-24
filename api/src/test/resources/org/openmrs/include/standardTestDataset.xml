@@ -193,6 +193,8 @@
   <orders order_id="8" order_number="8" order_type_id="2" concept_id="19" orderer="1" instructions="" start_date="2008-08-19 00:00:00.0" discontinued="false" order_action="REVISE" creator="1" date_created="2008-08-19 12:24:10.0" voided="false" patient_id="2" uuid="0c96f25c-4949-4f72-9931-d808fbc226a1"/>
   <orders order_id="9" order_number="9" order_type_id="2" concept_id="19" orderer="1" instructions="" start_date="2008-08-19 00:00:00.0" discontinued="false" order_action="REVISE" creator="1" date_created="2008-08-19 12:24:10.0" voided="false" patient_id="2" uuid="0c96f25c-4949-4f72-9931-d808fbc226b2"/>
   <orders order_id="10" order_number="10" order_type_id="2" concept_id="19" orderer="1" instructions="" start_date="2008-08-19 00:00:00.0" discontinued="false" order_action="REVISE" creator="1" date_created="2008-08-19 12:24:10.0" voided="false" patient_id="2" uuid="0c96f25c-4949-4f72-9931-d808fbc226c3"/>
+  <order_group order_group_id = "1" patient_id="6" creator="1" date_created="2011-06-24 15:51:57.0" voided="false" uuid="ab7cc118-c97b-4d5a-a63e-d4bb4be010ed" />
+  <order_group order_group_id = "2" patient_id="6" creator="1" date_created="2011-06-24 15:51:57.0" voided="false" uuid="ab7cc118-c97b-4d5a-a63e-d4bb4be011de" />
   <patient patient_id="2" creator="1" date_created="2005-09-22 00:00:00.0" changed_by="1" date_changed="2008-08-18 12:29:59.0" voided="false" void_reason=""/>
   <patient patient_id="6" creator="1" date_created="2006-01-18 00:00:00.0" changed_by="1" date_changed="2008-08-18 12:25:31.0" voided="false" void_reason=",,,,"/>
   <patient patient_id="7" creator="1" date_created="2006-01-18 00:00:00.0" changed_by="1" date_changed="2008-08-18 12:25:57.0" voided="false" void_reason=""/>

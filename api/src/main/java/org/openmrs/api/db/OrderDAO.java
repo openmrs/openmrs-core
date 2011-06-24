@@ -114,10 +114,23 @@ public interface OrderDAO {
 	public Integer getMaximumOrderId();
 	
 	/**
-	 * Saves/updates order group entity into data base
-	 * 
-	 * @return the saved or updated entity
+	 * @see org.openmrs.api.OrderService#saveOrderGroup(OrderGroup)
 	 */
 	public OrderGroup saveOrderGroup(OrderGroup orderGroup) throws DAOException;
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getOrderGroup(Integer)
+	 */
+	public OrderGroup getOrderGroup(Integer orderGroupId) throws DAOException;
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getOrderGroupByUuid(String)
+	 */
+	public OrderGroup getOrderGroupByUuid(String uuid) throws DAOException;
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getOrderGroupsByPatient(Patient)
+	 */
+	public List<OrderGroup> getOrderGroupsByPatient(Patient patient) throws DAOException;
 	
 }

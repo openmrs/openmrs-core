@@ -14,16 +14,17 @@
 package org.openmrs;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.TreeSet;
 
 /**
- * This represents a group of orders.
+ * This represents a group of orders. Generally, orders may be placed within groups to assist with
+ * subsequent management or reporting of the orders (e.g., a drug regimen of three drugs may be
+ * placed within an order group).
  * 
  * @since 1.9
  */
-public class OrderGroup extends BaseOpenmrsObject implements Serializable {
+public class OrderGroup extends BaseOpenmrsData implements Serializable {
 	
 	public static final long serialVersionUID = 1L;
 	
@@ -33,38 +34,21 @@ public class OrderGroup extends BaseOpenmrsObject implements Serializable {
 	
 	private Patient patient;
 	
-	private User creator;
-	
-	private Date dateCreated;
-	
-	private Boolean voided;
-	
-	private User voidedBy;
-	
-	private Date dateVoided;
-	
-	private String voidReason;
-	
-	private Set<Order> orders;
+	private Set<Order> members;
 	
 	public OrderGroup() {
-		orders = new TreeSet<Order>();
 	}
 	
 	/**
-	 * Constructs order group with a given id, patient, creator and date of cretion
+	 * Constructs order group with a given id, patient
 	 * 
 	 * @param orderGroupId the identifier of order group
 	 * @param patient the target patient for this group
-	 * @param creator the user, who has created this group
-	 * @param dateCreated the date of group creation
 	 */
-	public OrderGroup(Integer orderGroupId, Patient patient, User creator, Date dateCreated) {
+	public OrderGroup(Integer orderGroupId, Patient patient) {
 		this();
-		this.orderGroupId = orderGroupId;
-		this.patient = patient;
-		this.creator = creator;
-		this.dateCreated = dateCreated;
+		setOrderGroupId(orderGroupId);
+		setPatient(patient);
 	}
 	
 	/**
@@ -96,62 +80,6 @@ public class OrderGroup extends BaseOpenmrsObject implements Serializable {
 	}
 	
 	/**
-	 * @param voided the voided to set
-	 */
-	public void setVoided(Boolean voided) {
-		this.voided = voided;
-	}
-	
-	/**
-	 * @return the voided
-	 */
-	public Boolean getVoided() {
-		return voided;
-	}
-	
-	/**
-	 * @param voidedBy the voidedBy to set
-	 */
-	public void setVoidedBy(User voidedBy) {
-		this.voidedBy = voidedBy;
-	}
-	
-	/**
-	 * @return the voidedBy
-	 */
-	public User getVoidedBy() {
-		return voidedBy;
-	}
-	
-	/**
-	 * @param dateVoided the dateVoided to set
-	 */
-	public void setDateVoided(Date dateVoided) {
-		this.dateVoided = dateVoided;
-	}
-	
-	/**
-	 * @return the dateVoided
-	 */
-	public Date getDateVoided() {
-		return dateVoided;
-	}
-	
-	/**
-	 * @param voidReason the voidReason to set
-	 */
-	public void setVoidReason(String voidReason) {
-		this.voidReason = voidReason;
-	}
-	
-	/**
-	 * @return the voidReason
-	 */
-	public String getVoidReason() {
-		return voidReason;
-	}
-	
-	/**
 	 * @see org.openmrs.OpenmrsObject#getId()
 	 */
 	@Override
@@ -166,20 +94,6 @@ public class OrderGroup extends BaseOpenmrsObject implements Serializable {
 	public void setId(Integer id) {
 		setOrderGroupId(id);
 		
-	}
-	
-	/**
-	 * @param dateCreated the dateCreated to set
-	 */
-	public void setDateCreated(Date dateCreated) {
-		this.dateCreated = dateCreated;
-	}
-	
-	/**
-	 * @return the dateCreated
-	 */
-	public Date getDateCreated() {
-		return dateCreated;
 	}
 	
 	/**
@@ -211,17 +125,28 @@ public class OrderGroup extends BaseOpenmrsObject implements Serializable {
 	}
 	
 	/**
-	 * @param orders the orders to set
+	 * @param members the orders to set
 	 */
-	public void setOrders(Set<Order> orders) {
-		this.orders = orders;
+	public void setMembers(Set<Order> members) {
+		this.members = members;
 	}
 	
 	/**
 	 * @return the orders
 	 */
-	public Set<Order> getOrders() {
-		return orders;
+	public Set<Order> getMembers() {
+		return members;
+	}
+	
+	/**
+	 * Adds new order to group. If group doesn't exist it will be created
+	 * 
+	 * @param order the order to be added to group
+	 */
+	public void addOrder(Order order) {
+		if (getMembers() == null)
+			setMembers(new LinkedHashSet<Order>());
+		getMembers().add(order);
 	}
 	
 }

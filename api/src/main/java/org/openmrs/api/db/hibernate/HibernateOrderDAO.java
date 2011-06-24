@@ -239,4 +239,32 @@ public class HibernateOrderDAO implements OrderDAO {
 		
 		return orderGroup;
 	}
+	
+	/**
+	 * @see org.openmrs.api.db.OrderDAO#getOrderGroup(java.lang.Integer)
+	 */
+	@Override
+	public OrderGroup getOrderGroup(Integer orderGroupId) throws DAOException {
+		return (OrderGroup) sessionFactory.getCurrentSession().get(OrderGroup.class, orderGroupId);
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.OrderDAO#getOrderGroupByUuid(java.lang.String)
+	 */
+	@Override
+	public OrderGroup getOrderGroupByUuid(String uuid) throws DAOException {
+		return (OrderGroup) sessionFactory.getCurrentSession().createQuery("from OrderGroup og where og.uuid = :uuid")
+		        .setString("uuid", uuid).uniqueResult();
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.OrderDAO#getOrderGroupsByPatient(org.openmrs.Patient)
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<OrderGroup> getOrderGroupsByPatient(Patient patient) throws DAOException {
+		Criteria searchCriteria = sessionFactory.getCurrentSession().createCriteria(OrderGroup.class, "orderGroup");
+		searchCriteria.add(Expression.eq("orderGroup.patient", patient));
+		return (List<OrderGroup>) searchCriteria.list();
+	}
 }

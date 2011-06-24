@@ -7,7 +7,7 @@
 
 	<class name="OrderGroup" table="order_group">
 
-		<id name="orderGroupId" type="int" column="order_group_id" unsaved-value="0">
+		<id name="orderGroupId" type="int" column="order_group_id">
 			<generator class="native" />
 		</id>
 		
@@ -35,7 +35,7 @@
 			
    		<property name="uuid" type="java.lang.String" column="uuid" length="38" unique="true" not-null="true" />
 		
-		<set name="orders" lazy="true" cascade="delete" table="order">
+		<set name="members" lazy="true" cascade="all" table="order" inverse="true" batch-size="1000">
 			<key column="order_group" not-null="false" />
 			<one-to-many class="Order" />
 		</set>

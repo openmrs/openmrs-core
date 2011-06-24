@@ -406,16 +406,19 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		User provider = Context.getUserService().getUser(501);
 		Patient patient = Context.getPatientService().getPatient(6);
 		
-		OrderGroup group = new OrderGroup(null, patient, provider, new Date());
+		OrderGroup group = new OrderGroup(null, patient);
+		group.setCreator(provider);
+		group.setDateCreated(new Date());
 		Order order = new Order();
+		order.setOrderNumber("1");
 		order.setDateCreated(new Date());
 		order.setOrderType(Context.getOrderService().getOrderType(2));
 		order.setConcept(Context.getConceptService().getConcept(23));
 		order.setPatient(patient);
-		group.getOrders().add(order);
+		group.addOrder(order);
 		
-		group = Context.getOrderService().signAndActivateOrderGroup(group, provider, new Date());
-		order = (Order) group.getOrders().toArray()[0];
+		group = Context.getOrderService().signAndActivateOrderGroup(group, provider, null);
+		order = (Order) group.getMembers().toArray()[0];
 		//Should be saved.
 		Assert.assertNotNull(group);
 		
@@ -427,6 +430,106 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(order.getActivatedBy() != null);
 		Assert.assertTrue(order.getDateActivated() != null);
 		
+	}
+	
+	/**
+	 * @see OrderService#getOrderGroup(Integer)
+	 * @verifies return order group entity by id
+	 */
+	@Test
+	public void getOrderGroup_shouldReturnOrderGroupEntityById() throws Exception {
+		OrderGroup group = Context.getOrderService().getOrderGroup(1);
+		Assert.assertNotNull(group);
+		Assert.assertEquals((Integer) 1, group.getOrderGroupId());
+	}
+	
+	/**
+	 * @see OrderService#getOrderGroup(Integer)
+	 * @verifies return null if order group doesn't exist
+	 */
+	@Test
+	public void getOrderGroup_shouldReturnNullIfOrderGroupDoesntExist() throws Exception {
+		OrderGroup group = Context.getOrderService().getOrderGroup(100);
+		Assert.assertNull(group);
+	}
+	
+	/**
+	 * @see OrderService#getOrderGroupByUuid(String)
+	 * @verifies get order group by uuid
+	 */
+	@Test
+	public void getOrderGroupByUuid_shouldGetOrderGroupByUuid() throws Exception {
+		String uuid = "ab7cc118-c97b-4d5a-a63e-d4bb4be010ed";
+		OrderGroup group = Context.getOrderService().getOrderGroupByUuid(uuid);
+		Assert.assertNotNull(group);
+		Assert.assertEquals(uuid, group.getUuid());
+	}
+	
+	/**
+	 * @see OrderService#getOrderGroupsByPatient(Patient)
+	 * @verifies return not empty list of order groups
+	 */
+	@Test
+	public void getOrderGroupsByPatient_shouldReturnNotEmptyListOfOrderGroups() throws Exception {
+		Patient patient = Context.getPatientService().getPatient(6);
+		List<OrderGroup> groups = Context.getOrderService().getOrderGroupsByPatient(patient);
+		Assert.assertNotNull(groups);
+		Assert.assertEquals(2, groups.size());
+	}
+	
+	/**
+	 * @see OrderService#saveOrderGroup(OrderGroup)
+	 * @verifies save new order group
+	 */
+	@Test
+	public void saveOrderGroup_shouldSaveNewOrderGroup() throws Exception {
+		User provider = Context.getUserService().getUser(501);
+		Patient patient = Context.getPatientService().getPatient(6);
+		
+		OrderGroup group = new OrderGroup(null, patient);
+		group.setCreator(provider);
+		group.setDateCreated(new Date());
+		Order order = new Order();
+		order.setOrderNumber("1");
+		order.setDateCreated(new Date());
+		order.setOrderType(Context.getOrderService().getOrderType(2));
+		order.setConcept(Context.getConceptService().getConcept(23));
+		order.setPatient(patient);
+		group.addOrder(order);
+		
+		group = Context.getOrderService().saveOrderGroup(group);
+		
+		Assert.assertNotNull(group);
+		
+	}
+	
+	/**
+	 * @see OrderService#saveOrderGroup(OrderGroup)
+	 * @verifies update existing order group
+	 */
+	@Test
+	public void saveOrderGroup_shouldUpdateExistingOrderGroup() throws Exception {
+		OrderGroup group = Context.getOrderService().getOrderGroup(2);
+		group.setDateChanged(new Date());
+		
+		group = Context.getOrderService().saveOrderGroup(group);
+		
+		Assert.assertNotNull(group);
+	}
+	
+	/**
+	 * @see OrderService#voidOrderGroup(OrderGroup)
+	 * @verifies void order group
+	 */
+	@Test
+	public void voidOrderGroup_shouldVoidOrderGroup() throws Exception {
+		OrderGroup group = Context.getOrderService().getOrderGroup(2);
+		String reason = "because";
+		
+		group = Context.getOrderService().voidOrderGroup(group, reason);
+		
+		Assert.assertNotNull(group);
+		Assert.assertTrue(group.isVoided());
 	}
 	
 }

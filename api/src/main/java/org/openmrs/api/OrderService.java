@@ -678,11 +678,76 @@ public interface OrderService extends OpenmrsService {
 	 * 
 	 * @param group the orders group.
 	 * @param user the user in charge of the orders group.
-	 * @param created the date of operation execution
+	 * @param activated the date of order activation
 	 * @return the saved, signed and activated orders group.
 	 * @should sign and activate orders group
 	 * @throws APIException when error occurred
 	 */
-	public OrderGroup signAndActivateOrderGroup(OrderGroup group, User user, Date created) throws APIException;
+	public OrderGroup signAndActivateOrderGroup(OrderGroup group, User user, Date activated) throws APIException;
+	
+	/**
+	 * Stores order group into database if it doesn't exist yet. If it 's present,
+	 * tries to update order entity
+	 * 
+	 * @param group the order group to save
+	 * @return saved order group entity
+	 * @should save new order group
+	 * @should update existing order group
+	 * @throws APIException when error occurred
+	 */
+	public OrderGroup saveOrderGroup(OrderGroup group) throws APIException;
+	
+	/**
+	 * Mark an order group as voided. This functionally removes the Order from the system while keeping a
+	 * semblance
+	 * 
+	 * @param group the order group to be voided
+	 * @param voidReason the cause why order is to be voided
+	 * @return voided order group entity
+	 * @should void order group
+	 * @throws APIException when error occurred
+	 */
+	public OrderGroup voidOrderGroup(OrderGroup group, String voidReason) throws APIException;
+	
+	/**
+	 * Mark an order group as unvoided.
+	 * 
+	 * @param group the order group to be unvoided
+	 * @return unvoid order group entity
+	 * @throws APIException when error occurred
+	 */
+	public OrderGroup unvoidOrderGroup(OrderGroup group) throws APIException;
+	
+	/**
+	 * Gets order group by its identifier
+	 * 
+	 * @param orderGroupId the id of order group
+	 * @return order group entity if success, null otherwise
+	 * @should return order group entity by id
+	 * @should return null if order group doesn't exist
+	 * @throws APIException when error occurred
+	 */
+	public OrderGroup getOrderGroup(Integer orderGroupId) throws APIException;
+	
+	/**
+	 * 
+	 * Auto generated method comment
+	 * 
+	 * @param uuid the unique identifier of order group
+	 * @return order group entity if success, null otherwise
+	 * @should get order group by uuid
+	 * @throws APIException when error occurred 
+	 */
+	public OrderGroup getOrderGroupByUuid(String uuid) throws APIException;
+	
+	/**
+	 * Reads list of order groups for specified patient
+	 * 
+	 * @param patient the patient, whose order groups will be retrieved
+	 * @return list of patients order groups in case of success or null otherwise
+	 * @should return not empty list of order groups
+	 * @throws APIException when error occurred
+	 */
+	public List<OrderGroup> getOrderGroupsByPatient(Patient patient) throws APIException;
 	
 }
