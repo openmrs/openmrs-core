@@ -33,12 +33,12 @@ import org.openmrs.GenericDrug;
 import org.openmrs.ImplementationId;
 import org.openmrs.Location;
 import org.openmrs.Order;
+import org.openmrs.Order.OrderAction;
 import org.openmrs.OrderGroup;
 import org.openmrs.OrderType;
 import org.openmrs.Orderable;
 import org.openmrs.Patient;
 import org.openmrs.User;
-import org.openmrs.Order.OrderAction;
 import org.openmrs.aop.RequiredDataAdvice;
 import org.openmrs.api.APIException;
 import org.openmrs.api.OrderService;
@@ -48,6 +48,7 @@ import org.openmrs.api.handler.SaveHandler;
 import org.openmrs.order.DrugOrderSupport;
 import org.openmrs.order.OrderUtil;
 import org.openmrs.order.RegimenSuggestion;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.validator.ValidateUtil;
 import org.springframework.util.StringUtils;
 
@@ -767,7 +768,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @see org.openmrs.api.OrderService#getNewOrderNumber()
 	 */
 	public String getNewOrderNumber() {
-		String orderNumber = "ORDER-" + String.valueOf(dao.getMaximumOrderId() + 1);
+		String orderNumber = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_ORDER_ENTRY_ORDER_NUMBER_PREFIX, "ORDER-") + String.valueOf(dao.getMaximumOrderId() + 1);
 		ImplementationId implementationId = Context.getAdministrationService().getImplementationId();
 		if (implementationId != null && implementationId.getName() != null)
 			orderNumber = implementationId.getName() + "-" + orderNumber;

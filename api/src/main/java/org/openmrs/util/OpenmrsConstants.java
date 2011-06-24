@@ -874,6 +874,11 @@ public final class OpenmrsConstants {
 	public static final String GP_SEARCH_WIDGET_DELAY_INTERVAL = "searchWidget.searchDelayInterval";
 	
 	/**
+	 * Global property name for the prefix used when creating order numbers.
+	 */
+	public static final String GP_ORDER_ENTRY_ORDER_NUMBER_PREFIX = "orderEntry.orderNumberPrefix";
+	
+	/**
 	 * Encryption properties; both vector and key are required to utilize a two-way encryption
 	 */
 	public static final String ENCRYPTION_CIPHER_CONFIGURATION = "AES/CBC/PKCS5Padding";
@@ -1226,6 +1231,12 @@ public final class OpenmrsConstants {
 		                "START",
 		                "Specifies how patient names are matched while searching patient. Valid values are 'ANYWHERE' or 'START'. Defaults to start if missing or invalid value is present."));
 		
+		props
+        		.add(new GlobalProperty(
+        				GP_ORDER_ENTRY_ORDER_NUMBER_PREFIX,
+		                "ORD",
+		                "Specifies the prefix used when creating order numbers"));
+
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);
 		}
