@@ -267,4 +267,18 @@ public class HibernateOrderDAO implements OrderDAO {
 		searchCriteria.add(Expression.eq("orderGroup.patient", patient));
 		return (List<OrderGroup>) searchCriteria.list();
 	}
+	
+	/**
+	 * @see org.openmrs.api.db.OrderDAO#isActivatedInDatabase(org.openmrs.Order)
+	 */
+	@Override
+	public boolean isActivatedInDatabase(Order order) {
+		if (order.getOrderId() == null)
+			return false;
+		Query query = sessionFactory.getCurrentSession().createSQLQuery(
+		    "select count(*) from orders where order_id = :orderId and date_activated is not null");
+		query.setInteger("orderId", order.getOrderId());
+		return query.uniqueResult().equals(1);
+	}
+	
 }

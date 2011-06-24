@@ -197,7 +197,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(!order.isSigned());
 		Assert.assertTrue(order.getDateSigned() == null);
 		
-		Context.getOrderService().signOrder(order, provider);
+		Context.getOrderService().signOrder(order, provider, null);
 		
 		order = Context.getOrderService().getOrder(10);
 		Assert.assertTrue(order.isSigned());
@@ -216,7 +216,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(order.getActivatedBy() == null);
 		Assert.assertTrue(order.getDateActivated() == null);
 		
-		Context.getOrderService().activateOrder(order, provider);
+		Context.getOrderService().activateOrder(order, provider, null);
 		
 		order = Context.getOrderService().getOrder(10);
 		Assert.assertTrue(order.getActivatedBy() != null);
@@ -231,7 +231,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	public void fillOrder_shouldNotFillOrderWithUserIfNotSigned() throws Exception {
 		Order order = Context.getOrderService().getOrder(10);
 		User provider = Context.getUserService().getUser(501);
-		Context.getOrderService().fillOrder(order, provider);
+		Context.getOrderService().fillOrder(order, provider, null);
 	}
 	
 	/**
@@ -241,7 +241,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should not fill order with non user if not signed", method = "fillOrder(Order, String)")
 	public void fillOrder_shouldNotFillOrderWithNonUserIfNotSigned() throws Exception {
 		Order order = Context.getOrderService().getOrder(10);
-		Context.getOrderService().fillOrder(order, "url");
+		Context.getOrderService().fillOrder(order, "url", null);
 	}
 	
 	/**
@@ -256,8 +256,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(order.getFiller() == null);
 		Assert.assertTrue(order.getDateFilled() == null);
 		
-		Context.getOrderService().signOrder(order, provider);
-		Context.getOrderService().fillOrder(order, provider);
+		Context.getOrderService().signOrder(order, provider, null);
+		Context.getOrderService().fillOrder(order, provider, null);
 		
 		order = Context.getOrderService().getOrder(10);
 		Assert.assertTrue(order.getFiller() != null);
@@ -276,8 +276,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(order.getFiller() == null);
 		Assert.assertTrue(order.getDateFilled() == null);
 		
-		Context.getOrderService().signOrder(order, provider);
-		Context.getOrderService().fillOrder(order, "url");
+		Context.getOrderService().signOrder(order, provider, null);
+		Context.getOrderService().fillOrder(order, "url", null);
 		
 		order = Context.getOrderService().getOrder(10);
 		Assert.assertTrue(order.getFiller() != null);
@@ -292,7 +292,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	public void saveActivatedOrder_shouldNotBeCalledForExistingOrder() throws Exception {
 		Order order = Context.getOrderService().getOrder(10);
 		User provider = Context.getUserService().getUser(501);
-		Context.getOrderService().signAndActivateOrder(order, provider);
+		Context.getOrderService().signAndActivateOrder(order, provider, null);
 	}
 	
 	/**
@@ -309,7 +309,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setConcept(Context.getConceptService().getConcept(23));
 		order.setPatient(Context.getPatientService().getPatient(6));
 		
-		Context.getOrderService().signAndActivateOrder(order, provider);
+		Context.getOrderService().signAndActivateOrder(order, provider, null);
 		
 		order = Context.getOrderService().getOrder(order.getOrderId());
 		

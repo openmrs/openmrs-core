@@ -19,7 +19,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
@@ -72,6 +71,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	/**
 	 * @see org.openmrs.api.OrderService#setOrderDAO(org.openmrs.api.db.OrderDAO)
 	 */
+	@Override
 	public void setOrderDAO(OrderDAO dao) {
 		this.dao = dao;
 	}
@@ -79,34 +79,16 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	/**
 	 * @see org.openmrs.api.OrderService#saveOrder(org.openmrs.Order)
 	 */
+	@Override
 	public Order saveOrder(Order order) throws APIException {
+		if (dao.isActivatedInDatabase(order))
+			throw new APIException("Cannot modify an activated order");
 		
-		//if new order, fill the order number and version.
-		if (order.getOrderId() == null) {
-
-			if (order.getOrderNumber() == null) {
-				order.setOrderNumber(getNewOrderNumber());
-			}
-			
-			return validateAndSaveOrder(order);
-			
-		} else {
-			
-			//TODO Do we discontinue this order?
-			Context.evictFromSession(order); //Any retrievals for this order should get the database state.
-			
-			Order newOrder = order.copy();
-			newOrder.setOrderNumber(order.getOrderNumber());
-			
-			//Setting date created to null, so that our magical machinery can be sure to assign exactly the same Date to all objects created at the same instant even if the millisecond rolls over.
-			newOrder.setDateCreated(null);
-			
-			newOrder.setDateChanged(null);
-			newOrder.setChangedBy(null);
-			newOrder.setUuid(UUID.randomUUID().toString());
-			
-			return validateAndSaveOrder(newOrder);
-		}
+		if (order.getOrderNumber() == null)
+			order.setOrderNumber(getNewOrderNumber());
+		
+		ValidateUtil.validate(order);
+		return dao.saveOrder(order);
 	}
 	
 	/**
@@ -114,6 +96,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @deprecated
 	 */
 	@Deprecated
+	@Override
 	public void createOrder(Order order) throws APIException {
 		Context.getOrderService().saveOrder(order);
 	}
@@ -123,6 +106,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @deprecated
 	 */
 	@Deprecated
+	@Override
 	public void updateOrder(Order order) throws APIException {
 		Context.getOrderService().saveOrder(order);
 	}
@@ -132,6 +116,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @deprecated
 	 */
 	@Deprecated
+	@Override
 	public void deleteOrder(Order order) throws APIException {
 		Context.getOrderService().purgeOrder(order);
 	}
@@ -139,6 +124,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	/**
 	 * @see org.openmrs.api.OrderService#purgeOrder(org.openmrs.Order)
 	 */
+	@Override
 	public void purgeOrder(Order order) throws APIException {
 		purgeOrder(order, false);
 	}
@@ -146,6 +132,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	/**
 	 * @see org.openmrs.api.OrderService#purgeOrder(Order)
 	 */
+	//@Override
 	public void purgeOrder(Order order, boolean cascade) throws APIException {
 		if (cascade) {
 			// TODO delete other order stuff before deleting this order
@@ -159,6 +146,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	/**
 	 * @see org.openmrs.api.OrderService#voidOrder(org.openmrs.Order, java.lang.String)
 	 */
+	@Override
 	public Order voidOrder(Order order, String voidReason) throws APIException {
 		// fail early if this order is already voided
 		if (order.getVoided())
@@ -167,24 +155,14 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		if (!StringUtils.hasLength(voidReason))
 			throw new IllegalArgumentException("voidReason cannot be empty or null");
 		
-		order.setVoided(Boolean.TRUE);
-		order.setVoidReason(voidReason);
-		order.setVoidedBy(Context.getAuthenticatedUser());
-		if (order.getDateVoided() == null)
-			order.setDateVoided(new Date());
-		
-		return validateAndSaveOrder(order);
+		return dao.saveOrder(order);
 	}
 	
 	/**
 	 * @see org.openmrs.api.OrderService#unvoidOrder(org.openmrs.Order)
 	 */
+	@Override
 	public Order unvoidOrder(Order order) throws APIException {
-		order.setVoided(false);
-		order.setVoidedBy(null);
-		order.setVoidReason(null);
-		order.setDateVoided(null);
-		
 		return dao.saveOrder(order);
 	}
 	
@@ -192,42 +170,45 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @see org.openmrs.api.OrderService#discontinueOrder(org.openmrs.Order, org.openmrs.Concept,
 	 *      java.util.Date)
 	 */
+	@Override
 	public Order discontinueOrder(Order order, Concept discontinueReason, Date discontinueDate) throws APIException {
-		//Copy before we set the discontinue properties.
-		Order newOrder = order.copy();
+		// TODO decide whether or discontinueDate can be in the future
+		if (discontinueDate == null)
+			discontinueDate = new Date();
+		if (order.isDiscontinued(discontinueDate))
+			throw new APIException("Order is already discontinued");
 		
-		order.setDiscontinued(Boolean.TRUE);
-		order.setDiscontinuedReason(discontinueReason);
+		// create a new Order that's a discontinuation order for the original one
+		Order dc = new Order();
+		dc.setOrderAction(OrderAction.DISCONTINUE);
+		dc.setConcept(order.getConcept());
+		Context.getOrderService().activateOrder(order, null, discontinueDate);
+		
+		// set the discontinuation properties on the original order
+		order.setDiscontinued(true);
 		order.setDiscontinuedDate(discontinueDate);
+		order.setDiscontinuedReason(discontinueReason);
 		order.setDiscontinuedBy(Context.getAuthenticatedUser());
-		
-		validateAndSaveOrder(order);
-		
-		newOrder.setPreviousOrderNumber(order.getOrderNumber());
-		newOrder.setOrderNumber(getNewOrderNumber());
-		newOrder.setDateCreated(new Date());
-		newOrder.setDateChanged(null);
-		newOrder.setChangedBy(null);
-		newOrder.setUuid(UUID.randomUUID().toString());
-		
-		return validateAndSaveOrder(newOrder);
+		return dao.saveOrder(order);
 	}
 	
 	/**
 	 * @see org.openmrs.api.OrderService#undiscontinueOrder(org.openmrs.Order)
 	 */
+	@Override
 	public Order undiscontinueOrder(Order order) throws APIException {
 		order.setDiscontinued(Boolean.FALSE);
 		order.setDiscontinuedBy(null);
 		order.setDiscontinuedDate(null);
 		order.setDiscontinuedReason(null);
-		
-		return validateAndSaveOrder(order);
+		//return Context.getOrderService().saveOrder(order);
+		throw new APIException("TODO If we're going to allow this we need to also void the D/C order");
 	}
 	
 	/**
 	 * @see org.openmrs.api.OrderService#saveOrderType(org.openmrs.OrderType)
 	 */
+	@Override
 	public OrderType saveOrderType(OrderType orderType) throws APIException {
 		return dao.saveOrderType(orderType);
 	}
@@ -237,6 +218,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @deprecated
 	 */
 	@Deprecated
+	@Override
 	public void createOrderType(OrderType orderType) throws APIException {
 		Context.getOrderService().saveOrderType(orderType);
 	}
@@ -246,6 +228,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @deprecated
 	 */
 	@Deprecated
+	@Override
 	public void updateOrderType(OrderType orderType) throws APIException {
 		Context.getOrderService().saveOrderType(orderType);
 	}
@@ -255,6 +238,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @deprecated
 	 */
 	@Deprecated
+	@Override
 	public void deleteOrderType(OrderType orderType) throws APIException {
 		Context.getOrderService().purgeOrderType(orderType);
 	}
@@ -262,6 +246,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	/**
 	 * @see org.openmrs.api.OrderService#retireOrderType(OrderType, String)
 	 */
+	@Override
 	public OrderType retireOrderType(OrderType orderType, String reason) throws APIException {
 		
 		orderType.setRetired(true);
@@ -273,6 +258,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	/**
 	 * @see org.openmrs.api.OrderService#unretireOrderType(org.openmrs.OrderType)
 	 */
+	@Override
 	public OrderType unretireOrderType(OrderType orderType) throws APIException {
 		orderType.setRetired(false);
 		
@@ -282,6 +268,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	/**
 	 * @see org.openmrs.api.OrderService#purgeOrderType(org.openmrs.OrderType)
 	 */
+	@Override
 	public void purgeOrderType(OrderType orderType) throws APIException {
 		dao.deleteOrderType(orderType);
 	}
@@ -292,6 +279,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @see org.openmrs.api.OrderService#createOrdersAndEncounter(org.openmrs.Patient,
 	 *      java.util.Collection)
 	 */
+	@Override
 	public void createOrdersAndEncounter(Patient p, Collection<Order> orders) throws APIException {
 		
 		// Get unknown user (or the authenticated user)
@@ -331,6 +319,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	/**
 	 * @see org.openmrs.api.OrderService#getOrder(java.lang.Integer)
 	 */
+	@Override
 	public Order getOrder(Integer orderId) throws APIException {
 		return getOrder(orderId, Order.class);
 	}
@@ -340,6 +329,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @deprecated
 	 */
 	@Deprecated
+	@Override
 	public DrugOrder getDrugOrder(Integer drugOrderId) throws APIException {
 		return getOrder(drugOrderId, DrugOrder.class);
 	}
@@ -347,6 +337,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	/**
 	 * @see org.openmrs.api.OrderService#getOrder(java.lang.Integer, java.lang.Class)
 	 */
+	@Override
 	public <o extends Order> o getOrder(Integer orderId, Class<o> orderClassType) throws APIException {
 		return dao.getOrder(orderId, orderClassType);
 	}
@@ -355,6 +346,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @deprecated This is a dumb method
 	 */
 	@Deprecated
+	@Override
 	public List<Order> getOrders() throws APIException {
 		return getOrders(Order.class, null, null, null, null, null, null);
 	}
@@ -363,6 +355,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @deprecated This is a dumb method
 	 */
 	@Deprecated
+	@Override
 	public List<DrugOrder> getDrugOrders() throws APIException {
 		return getOrders(DrugOrder.class, null, null, null, null, null, null);
 	}
@@ -373,6 +366,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 *      java.util.List, java.util.Date)
 	 */
 	@Deprecated
+	@Override
 	public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
 	        List<Concept> concepts, ORDER_STATUS status, List<User> orderers, List<Encounter> encounters,
 	        List<OrderType> orderTypes) {
@@ -411,6 +405,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	/**
 	 * @see org.openmrs.api.OrderService#getOrdersByUser(org.openmrs.User)
 	 */
+	@Override
 	public List<Order> getOrdersByUser(User user) throws APIException {
 		if (user == null)
 			throw new APIException("Unable to get orders if I am not given a user");
@@ -424,6 +419,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	/**
 	 * @see org.openmrs.api.OrderService#getOrdersByPatient(org.openmrs.Patient)
 	 */
+	@Override
 	public List<Order> getOrdersByPatient(Patient patient) throws APIException {
 		if (patient == null)
 			throw new APIException("Unable to get orders if I am not given a patient");
@@ -439,6 +435,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @deprecated
 	 */
 	@Deprecated
+	@Override
 	public List<DrugOrder> getDrugOrdersByPatient(Patient patient, int whatToShow) {
 		return getDrugOrdersByPatient(patient, whatToShow, false);
 	}
@@ -448,6 +445,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @deprecated
 	 */
 	@Deprecated
+	@Override
 	public List<DrugOrder> getDrugOrdersByPatient(Patient patient, int whatToShow, boolean includeVoided) {
 		return getDrugOrdersByPatient(patient, convertToOrderStatus(whatToShow), includeVoided);
 	}
@@ -457,6 +455,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 *      org.openmrs.api.OrderService.ORDER_STATUS, boolean)
 	 */
 	@SuppressWarnings("unchecked")
+	@Override
 	public List<DrugOrder> getDrugOrdersByPatient(Patient patient, ORDER_STATUS orderStatus, boolean includeVoided) {
 		if (patient == null)
 			throw new APIException("Unable to get drug orders if not given a patient");
@@ -497,6 +496,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @see org.openmrs.api.OrderService#getDrugOrdersByPatient(org.openmrs.Patient,
 	 *      org.openmrs.api.OrderService.ORDER_STATUS)
 	 */
+	@Override
 	public List<DrugOrder> getDrugOrdersByPatient(Patient patient, ORDER_STATUS orderStatus) {
 		return getDrugOrdersByPatient(patient, orderStatus, false);
 	}
@@ -506,6 +506,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @deprecated
 	 */
 	@Deprecated
+	@Override
 	public List<OrderType> getOrderTypes() throws APIException {
 		return getAllOrderTypes(true);
 	}
@@ -513,6 +514,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	/**
 	 * @see org.openmrs.api.OrderService#getAllOrderTypes()
 	 */
+	@Override
 	public List<OrderType> getAllOrderTypes() throws APIException {
 		return getAllOrderTypes(true);
 	}
@@ -520,6 +522,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	/**
 	 * @see org.openmrs.api.OrderService#getAllOrderTypes(boolean)
 	 */
+	@Override
 	public List<OrderType> getAllOrderTypes(boolean includeRetired) throws APIException {
 		return dao.getAllOrderTypes(includeRetired);
 	}
@@ -527,6 +530,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	/**
 	 * @see org.openmrs.api.OrderService#getOrderType(java.lang.Integer)
 	 */
+	@Override
 	public OrderType getOrderType(Integer orderTypeId) throws APIException {
 		return dao.getOrderType(orderTypeId);
 	}
@@ -534,6 +538,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	/**
 	 * @see org.openmrs.api.OrderService#getDrugOrdersByPatient(org.openmrs.Patient)
 	 */
+	@Override
 	public List<DrugOrder> getDrugOrdersByPatient(Patient patient) throws APIException {
 		List<Patient> patients = new Vector<Patient>();
 		patients.add(patient);
@@ -544,6 +549,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	/**
 	 * @see org.openmrs.api.OrderService#getStandardRegimens()
 	 */
+	@Override
 	public List<RegimenSuggestion> getStandardRegimens() {
 		DrugOrderSupport dos = null;
 		List<RegimenSuggestion> standardRegimens = null;
@@ -569,6 +575,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @deprecated use {@link OrderUtil#getDrugSetsByConcepts(List, List)}
 	 */
 	@Deprecated
+	@Override
 	public Map<Concept, List<DrugOrder>> getDrugSetsByConcepts(List<DrugOrder> drugOrders, List<Concept> drugSets)
 	        throws APIException {
 		return OrderUtil.getDrugSetsByConcepts(drugOrders, drugSets);
@@ -580,6 +587,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @deprecated use {@link OrderUtil#getDrugSetsByDrugSetIdList(List, String, String)}
 	 */
 	@Deprecated
+	@Override
 	public Map<String, List<DrugOrder>> getDrugSetsByDrugSetIdList(List<DrugOrder> orderList, String drugSetIdList,
 	        String delimiter) {
 		return OrderUtil.getDrugSetsByDrugSetIdList(orderList, drugSetIdList, delimiter);
@@ -590,6 +598,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @deprecated use {@link OrderUtil#getDrugSetHeadersByDrugSetIdList(String)}
 	 */
 	@Deprecated
+	@Override
 	public Map<String, String> getDrugSetHeadersByDrugSetIdList(String drugSetIds) {
 		return OrderUtil.getDrugSetHeadersByDrugSetIdList(drugSetIds);
 	}
@@ -600,6 +609,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @deprecated use {@link OrderUtil#discontinueDrugSet(Patient, String, Concept, Date)}
 	 */
 	@Deprecated
+	@Override
 	public void discontinueDrugSet(Patient patient, String drugSetId, Concept discontinueReason, Date discontinueDate) {
 		OrderUtil.discontinueDrugSet(patient, drugSetId, discontinueReason, discontinueDate);
 	}
@@ -610,6 +620,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 *             {@link OrderUtil#voidDrugSet(Patient, String, String, org.openmrs.api.OrderService.ORDER_STATUS)}
 	 */
 	@Deprecated
+	@Override
 	public void voidDrugSet(Patient patient, String drugSetId, String voidReason, int whatToVoid) {
 		OrderUtil.voidDrugSet(patient, drugSetId, voidReason, convertToOrderStatus(whatToVoid));
 	}
@@ -620,6 +631,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @deprecated use {@link OrderUtil#discontinueAllOrders(Patient, Concept, Date)}
 	 */
 	@Deprecated
+	@Override
 	public void discontinueAllOrders(Patient patient, Concept discontinueReason, Date discontinueDate) {
 		OrderUtil.discontinueAllOrders(patient, discontinueReason, discontinueDate);
 	}
@@ -651,6 +663,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	/**
 	 * @see org.openmrs.api.OrderService#getOrderByUuid(java.lang.String)
 	 */
+	@Override
 	public Order getOrderByUuid(String uuid) throws APIException {
 		return dao.getOrderByUuid(uuid);
 	}
@@ -658,6 +671,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	/**
 	 * @see org.openmrs.api.OrderService#getOrderTypeByUuid(java.lang.String)
 	 */
+	@Override
 	public OrderType getOrderTypeByUuid(String uuid) throws APIException {
 		return dao.getOrderTypeByUuid(uuid);
 	}
@@ -665,6 +679,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	/**
 	 * @see org.openmrs.api.OrderService#getOrdersByEncounter(org.openmrs.Encounter)
 	 */
+	@Override
 	public List<Order> getOrdersByEncounter(Encounter encounter) {
 		List<Encounter> encounters = new Vector<Encounter>();
 		encounters.add(encounter);
@@ -673,53 +688,75 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#saveActivatedOrder(org.openmrs.Order, org.openmrs.User)
+	 * @see org.openmrs.api.OrderService#saveActivatedOrder(org.openmrs.Order, org.openmrs.User, java.util.Date)
 	 */
-	public Order signAndActivateOrder(Order order, User user) throws APIException {
-		if (order.getOrderId() != null)
-			throw new APIException("saveActivatedOrder Can not be called for an existing order. Please use a new order.");
+	@Override
+	public Order signAndActivateOrder(Order order, User user, Date date) throws APIException {
+		if (user == null)
+			user = Context.getAuthenticatedUser();
+		if (date == null)
+			date = new Date();
 		
-		order = Context.getOrderService().saveOrder(order);
-		order = Context.getOrderService().signOrder(order, user);
-		return Context.getOrderService().activateOrder(order, user);
+		order = Context.getOrderService().signOrder(order, user, date);
+		return Context.getOrderService().activateOrder(order, user, date);
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#signOrder(org.openmrs.Order, org.openmrs.User)
+	 * @see org.openmrs.api.OrderService#signOrder(org.openmrs.Order, org.openmrs.User, java.util.Date)
 	 */
-	public Order signOrder(Order order, User provider) throws APIException {
+	@Override
+	public Order signOrder(Order order, User provider, Date date) throws APIException {
+		if (order.isSigned())
+			throw new APIException("Order is already signed");
+		
+		if (provider == null)
+			provider = Context.getAuthenticatedUser();
+		if (date == null)
+			date = new Date();
 		order.setSignedBy(provider);
-		order.setDateSigned(new Date());
-		return dao.saveOrder(order);
+		order.setDateSigned(date);
+		return Context.getOrderService().saveOrder(order); // TODO will probably fail if we try to sign an already-activated order
 	}
 	
 	/**
 	 * @see org.openmrs.api.OrderService#activateOrder(org.openmrs.Order, org.openmrs.User)
 	 */
-	public Order activateOrder(Order order, User user) throws APIException {
-		order.setActivatedBy(user);
-		order.setDateActivated(new Date());
-		return dao.saveOrder(order);
+	@Override
+	public Order activateOrder(Order order, User activatedBy, Date activationDate) throws APIException {
+		if (activatedBy == null)
+			activatedBy = Context.getAuthenticatedUser();
+		if (activationDate == null)
+			activationDate = new Date();
+		order.setActivatedBy(activatedBy);
+		order.setDateActivated(activationDate);
+		return Context.getOrderService().saveOrder(order);
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#fillOrder(org.openmrs.Order, org.openmrs.User)
+	 * @see org.openmrs.api.OrderService#fillOrder(org.openmrs.Order, org.openmrs.User, java.util.Date)
 	 */
-	public Order fillOrder(Order order, User filler) throws APIException {
-		return fillOrder(order, filler.getUserId() + filler.getSystemId());
+	@Override
+	public Order fillOrder(Order order, User filler, Date dateFilled) throws APIException {
+		return fillOrder(order, filler.getUserId() + filler.getSystemId(), dateFilled);
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#fillOrder(org.openmrs.Order, java.lang.String)
+	 * @see org.openmrs.api.OrderService#fillOrder(org.openmrs.Order, java.lang.String, java.util.Date)
 	 */
-	public Order fillOrder(Order order, String filler) throws APIException {
+	@Override
+	public Order fillOrder(Order order, String filler, Date dateFilled) throws APIException {
 		if (!order.isSigned())
 			throw new APIException("Can not fill an order which has not been signed");
 		
 		if (!order.isActivated())
 			throw new APIException("Can not fill an order which has not been activated");
 		
-		order.setDateFilled(new Date());
+		if (dateFilled == null)
+			dateFilled = new Date();
+		else
+			if (dateFilled.after(new Date()))
+				throw new APIException("Cannot fill an order in the future");
+		order.setDateFilled(dateFilled);
 		order.setFiller(filler);
 		return dao.saveOrder(order);
 	}
@@ -727,6 +764,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	/**
 	 * @see org.openmrs.api.OrderService#getOrderByOrderNumber(java.lang.String)
 	 */
+	@Override
 	public Order getOrderByOrderNumber(String orderNumber) {
 		return dao.getOrderByOrderNumber(orderNumber);
 	}
@@ -734,6 +772,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	/**
 	 * @see org.openmrs.api.OrderService#getOrderHistoryByConcept(org.openmrs.Patient, org.openmrs.Concept)
 	 */
+	@Override
 	public List<Order> getOrderHistoryByConcept(Patient patient, Concept concept) {
 		List<Concept> concepts = new Vector<Concept>();
 		concepts.add(concept);
@@ -748,6 +787,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @see org.openmrs.api.OrderService#discontinueOrderByConcept(org.openmrs.Patient, org.openmrs.Concept,
 	 *      org.openmrs.Concept, java.util.Date)
 	 */
+	@Override
 	public void discontinueOrderByConcept(Patient patient, Concept concept, Concept discontinueReason, Date discontinueDate)
 	        throws APIException {
 		List<Concept> concepts = new Vector<Concept>();
@@ -767,18 +807,16 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	/**
 	 * @see org.openmrs.api.OrderService#getNewOrderNumber()
 	 */
+	@Override
 	public String getNewOrderNumber() {
-		String orderNumber = Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_ORDER_ENTRY_ORDER_NUMBER_PREFIX, "ORDER-") + String.valueOf(dao.getMaximumOrderId() + 1);
+		String orderNumber = Context.getAdministrationService().getGlobalProperty(
+		    OpenmrsConstants.GP_ORDER_ENTRY_ORDER_NUMBER_PREFIX, "ORDER-")
+		        + String.valueOf(dao.getMaximumOrderId() + 1);
 		ImplementationId implementationId = Context.getAdministrationService().getImplementationId();
 		if (implementationId != null && implementationId.getName() != null)
 			orderNumber = implementationId.getName() + "-" + orderNumber;
 		
 		return orderNumber;
-	}
-	
-	private Order validateAndSaveOrder(Order order) {
-		ValidateUtil.validate(order);
-		return dao.saveOrder(order);
 	}
 	
 	@Override
@@ -851,7 +889,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			throw new APIException("signAndActivateOrderGroup Can not be called for an orders group with no orders therein.");
 		
 		for (Order order : group.getMembers())
-			signAndActivateOrder(order, user, activated);
+			Context.getOrderService().signAndActivateOrder(order, user, activated);
 		
 		group = Context.getOrderService().saveOrderGroup(group);
 		
@@ -865,14 +903,14 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @param user the user who activates order
 	 * @param activated the date of activation
 	 */
-	private void signAndActivateOrder(Order order, User user, Date activated) throws APIException {
+	private void signAndActivateOrder2(Order order, User user, Date activated) throws APIException {
 		
 		if (order.getOrderId() != null)
 			throw new APIException("saveActivatedOrder Can not be called for an existing order. Please use a new order.");
 		
 		order.setOrderAction(OrderAction.NEW);
-		order = Context.getOrderService().signOrder(order, user);
-		Context.getOrderService().activateOrder(order, user);
+		order = Context.getOrderService().signOrder(order, user, activated);
+		Context.getOrderService().activateOrder(order, user, activated);
 	}
 	
 	/**

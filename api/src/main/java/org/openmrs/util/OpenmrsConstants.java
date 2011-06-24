@@ -1231,12 +1231,9 @@ public final class OpenmrsConstants {
 		                "START",
 		                "Specifies how patient names are matched while searching patient. Valid values are 'ANYWHERE' or 'START'. Defaults to start if missing or invalid value is present."));
 		
-		props
-        		.add(new GlobalProperty(
-        				GP_ORDER_ENTRY_ORDER_NUMBER_PREFIX,
-		                "ORD",
-		                "Specifies the prefix used when creating order numbers"));
-
+		props.add(new GlobalProperty(GP_ORDER_ENTRY_ORDER_NUMBER_PREFIX, "ORD",
+		        "Specifies the prefix used when creating order numbers"));
+		
 		for (GlobalProperty gp : ModuleFactory.getGlobalProperties()) {
 			props.add(gp);
 		}

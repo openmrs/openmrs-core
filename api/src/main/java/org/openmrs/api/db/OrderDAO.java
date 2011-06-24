@@ -133,4 +133,12 @@ public interface OrderDAO {
 	 */
 	public List<OrderGroup> getOrderGroupsByPatient(Patient patient) throws DAOException;
 	
+	/**
+	 * Determines whether the given order is marked as 'activated' in the database (ignoring caches)
+	 * 
+	 * @param order
+	 * @return
+	 */
+	public boolean isActivatedInDatabase(Order order);
+	
 }

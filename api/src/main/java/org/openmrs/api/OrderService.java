@@ -573,38 +573,42 @@ public interface OrderService extends OpenmrsService {
 	 * 
 	 * @param order the order to sign.
 	 * @param provider the user signing the order.
+	 * @param date the date the order is signed
 	 * @return the signed order.
 	 */
-	public Order signOrder(Order order, User provider) throws APIException;
+	public Order signOrder(Order order, User provider, Date date) throws APIException;
 	
 	/**
 	 * Activates an order.
 	 * 
 	 * @param order the order to activate.
-	 * @param user the user activating the order.
+	 * @param activatedBy the user activating the order.
+	 * @param activationDate the date to activate the order on
 	 * @return the activated order.
 	 */
-	public Order activateOrder(Order order, User user) throws APIException;
+	public Order activateOrder(Order order, User activatedBy, Date activationDate) throws APIException;
 	
 	/**
 	 * Fills an order.
 	 * 
 	 * @param order the order object.
 	 * @param filler the filling person.
+	 * @param dateFilled the date the order was filled (defaults to now, cannot be in future)
 	 * @return the filled order.
 	 * @throws APIException thrown if the order is not signed yet.
 	 */
-	public Order fillOrder(Order order, User filler) throws APIException;
+	public Order fillOrder(Order order, User filler, Date dateFilled) throws APIException;
 	
 	/**
 	 * Fills an order.
 	 * 
 	 * @param order the order object.
 	 * @param filler the filling person.
+	 * @param dateFilled the date the order was filled (defaults to now, cannot be in future)
 	 * @return the filled order.
 	 * @throws APIException thrown if the order is not signed yet.
 	 */
-	public Order fillOrder(Order order, String filler) throws APIException;
+	public Order fillOrder(Order order, String filler, Date dateFilled) throws APIException;
 	
 	/**
 	 * Finds all active orders with this drug/concept for this patient and discontinues them.
@@ -619,10 +623,11 @@ public interface OrderService extends OpenmrsService {
 	 * Saves, Signs, and Activates an order.
 	 * 
 	 * @param order the order.
-	 * @param user the user in charge of the order.
+	 * @param user the user in charge of the order (defaults to authenticated user)
+	 * @param date the date to sign and activate the order (cannot be in the future, defaults to now)
 	 * @return the saved, signed and activated order.
 	 */
-	public Order signAndActivateOrder(Order order, User user) throws APIException;
+	public Order signAndActivateOrder(Order order, User user, Date date) throws APIException;
 	
 	/**
 	 * Gets all Orders that are currently active. An active order is one that:
