@@ -428,6 +428,7 @@ public interface OrderService extends OpenmrsService {
 	 * @param query partial string to be searched for
 	 * @return Orderables that fuzzy-match <code>query</code>
 	 * @should get orderable concepts by name and drug class
+	 * @should get order sets
 	 * @should fail if null passed in
 	 * @throws APIException when error occurred
 	 */

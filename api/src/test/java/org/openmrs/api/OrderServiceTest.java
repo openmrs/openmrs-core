@@ -27,6 +27,7 @@ import org.openmrs.OrderGroup;
 import org.openmrs.OrderSet;
 import org.openmrs.Orderable;
 import org.openmrs.Patient;
+import org.openmrs.PublishedOrderSet;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
@@ -544,5 +545,25 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Assert.assertNotNull(service.getPublishedOrderSet(Context.getConceptService().getConcept(18)));
 		Assert.assertNull(service.getPublishedOrderSet(Context.getConceptService().getConcept(100)));
 	}
+
+	/**
+     * @see OrderService#getOrderables(String)
+     * @verifies get order sets
+     */
+    @Test
+    public void getOrderables_shouldGetOrderSets() throws Exception {
+		executeDataSet(orderSetsDatasetFilename);
+		
+		List<Orderable<?>> result = Context.getOrderService().getOrderables("Aspir");
+		Assert.assertNotNull(result);
+		boolean foundOrderSet = false;
+		for (Orderable<?> o : result) {
+			if (o instanceof PublishedOrderSet) {
+				if (o.getName().equals("Aspirin and Triomune"))
+					foundOrderSet = true;
+			}
+		}
+		Assert.assertTrue(foundOrderSet);
+    }
 	
 }

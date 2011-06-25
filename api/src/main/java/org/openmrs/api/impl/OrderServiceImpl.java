@@ -551,6 +551,11 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			throw new IllegalArgumentException("Orderable concept name is required");
 		
 		List<Orderable<?>> result = new ArrayList<Orderable<?>>();
+		
+		// first look for order sets
+		result.addAll(Context.getOrderService().getPublishedOrderSets(query));
+		
+		// then look for concepts that are drugs
 		List<Concept> concepts = Context.getConceptService().getConceptsByName(query);
 		if (concepts != null) {
 			for (Concept concept : concepts) {
