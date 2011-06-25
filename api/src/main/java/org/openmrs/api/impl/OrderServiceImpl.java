@@ -576,14 +576,17 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		return result;
 	}
 	
+	/**
+	 * @see org.openmrs.api.OrderService#signAndActivateOrdersInGroup(org.openmrs.OrderGroup, org.openmrs.User, java.util.Date)
+	 */
 	@Override
-	public OrderGroup signAndActivateOrderGroup(OrderGroup group, User user, Date activated) throws APIException {
+	public OrderGroup signAndActivateOrdersInGroup(OrderGroup group, User user, Date activated) throws APIException {
+		
+		ValidateUtil.validate(group);
+		
 		if (group.getOrderGroupId() != null)
 			throw new APIException(
 			        "signAndActivateOrderGroup Can not be called for an existing orders group. Please use a new orders group.");
-		
-		if (group.getMembers().isEmpty())
-			throw new APIException("signAndActivateOrderGroup Can not be called for an orders group with no orders therein.");
 		
 		for (Order order : group.getMembers())
 			Context.getOrderService().signAndActivateOrder(order, user, activated);
@@ -594,27 +597,11 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
-	 * Convenient method that can be used to sign and activate orders within groups
-	 * 
-	 * @param order the order to be activated
-	 * @param user the user who activates order
-	 * @param activated the date of activation
-	 */
-	private void signAndActivateOrder2(Order order, User user, Date activated) throws APIException {
-		
-		if (order.getOrderId() != null)
-			throw new APIException("saveActivatedOrder Can not be called for an existing order. Please use a new order.");
-		
-		order.setOrderAction(OrderAction.NEW);
-		order = Context.getOrderService().signOrder(order, user, activated);
-		Context.getOrderService().activateOrder(order, user, activated);
-	}
-	
-	/**
 	 * @see org.openmrs.api.OrderService#saveOrderGroup(org.openmrs.OrderGroup)
 	 */
 	@Override
 	public OrderGroup saveOrderGroup(OrderGroup group) throws APIException {
+		ValidateUtil.validate(group);
 		return dao.saveOrderGroup(group);
 	}
 	
@@ -630,12 +617,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		if (!StringUtils.hasLength(voidReason))
 			throw new IllegalArgumentException("voidReason cannot be empty or null");
 		
-		group.setVoided(Boolean.TRUE);
-		group.setVoidReason(voidReason);
-		group.setVoidedBy(Context.getAuthenticatedUser());
-		if (group.getDateVoided() == null)
-			group.setDateVoided(new Date());
-		
 		return dao.saveOrderGroup(group);
 	}
 	
@@ -644,11 +625,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	public OrderGroup unvoidOrderGroup(OrderGroup group) throws APIException {
-		group.setVoided(false);
-		group.setVoidedBy(null);
-		group.setVoidReason(null);
-		group.setDateVoided(null);
-		
 		return dao.saveOrderGroup(group);
 	}
 	

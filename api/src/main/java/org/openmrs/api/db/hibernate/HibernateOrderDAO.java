@@ -199,8 +199,8 @@ public class HibernateOrderDAO implements OrderDAO {
 	 */
 	@Override
 	public OrderGroup getOrderGroupByUuid(String uuid) throws DAOException {
-		return (OrderGroup) sessionFactory.getCurrentSession().createQuery("from OrderGroup og where og.uuid = :uuid")
-		        .setString("uuid", uuid).uniqueResult();
+		return (OrderGroup) sessionFactory.getCurrentSession().createQuery("from OrderGroup where uuid = :uuid").setString(
+		    "uuid", uuid).uniqueResult();
 	}
 	
 	/**
@@ -209,8 +209,8 @@ public class HibernateOrderDAO implements OrderDAO {
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<OrderGroup> getOrderGroupsByPatient(Patient patient) throws DAOException {
-		Criteria searchCriteria = sessionFactory.getCurrentSession().createCriteria(OrderGroup.class, "orderGroup");
-		searchCriteria.add(Expression.eq("orderGroup.patient", patient));
+		Criteria searchCriteria = sessionFactory.getCurrentSession().createCriteria(OrderGroup.class);
+		searchCriteria.add(Expression.eq("patient", patient));
 		return (List<OrderGroup>) searchCriteria.list();
 	}
 	

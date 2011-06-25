@@ -435,20 +435,19 @@ public interface OrderService extends OpenmrsService {
 	List<Orderable<?>> getOrderables(String query) throws APIException;
 	
 	/**
-	 * Saves, Signs, and Activates an orders within group.
+	 * Saves, Signs, and Activates all orders within group.
 	 * 
 	 * @param group the orders group.
 	 * @param user the user in charge of the orders group.
 	 * @param activated the date of order activation
 	 * @return the saved, signed and activated orders group.
-	 * @should sign and activate orders group
+	 * @should sign and activate orders in group
 	 * @throws APIException when error occurred
 	 */
-	public OrderGroup signAndActivateOrderGroup(OrderGroup group, User user, Date activated) throws APIException;
+	public OrderGroup signAndActivateOrdersInGroup(OrderGroup group, User user, Date activated) throws APIException;
 	
 	/**
-	 * Stores order group into database if it doesn't exist yet. If it 's present, tries to update
-	 * order entity
+	 * Creates or updates an OrderGroup
 	 * 
 	 * @param group the order group to save
 	 * @return saved order group entity
@@ -459,8 +458,7 @@ public interface OrderService extends OpenmrsService {
 	public OrderGroup saveOrderGroup(OrderGroup group) throws APIException;
 	
 	/**
-	 * Mark an order group as voided. This functionally removes the Order from the system while
-	 * keeping a semblance
+	 * Marks an OrderGroup as deleted, also cascading this down to the orders within the group.
 	 * 
 	 * @param group the order group to be voided
 	 * @param voidReason the cause why order is to be voided
@@ -471,7 +469,7 @@ public interface OrderService extends OpenmrsService {
 	public OrderGroup voidOrderGroup(OrderGroup group, String voidReason) throws APIException;
 	
 	/**
-	 * Mark an order group as unvoided.
+	 * Restores an OrderGroup that had been marked as being deleted.
 	 * 
 	 * @param group the order group to be unvoided
 	 * @return unvoid order group entity
@@ -480,7 +478,7 @@ public interface OrderService extends OpenmrsService {
 	public OrderGroup unvoidOrderGroup(OrderGroup group) throws APIException;
 	
 	/**
-	 * Gets order group by its identifier
+	 * Gets order group by its primary key
 	 * 
 	 * @param orderGroupId the id of order group
 	 * @return order group entity if success, null otherwise
@@ -491,7 +489,7 @@ public interface OrderService extends OpenmrsService {
 	public OrderGroup getOrderGroup(Integer orderGroupId) throws APIException;
 	
 	/**
-	 * Auto generated method comment
+	 * Gets an OrderGroup by its uuid
 	 * 
 	 * @param uuid the unique identifier of order group
 	 * @return order group entity if success, null otherwise
@@ -501,7 +499,7 @@ public interface OrderService extends OpenmrsService {
 	public OrderGroup getOrderGroupByUuid(String uuid) throws APIException;
 	
 	/**
-	 * Reads list of order groups for specified patient
+	 * Gets all non-voided OrderGroups for the specified patient
 	 * 
 	 * @param patient the patient, whose order groups will be retrieved
 	 * @return list of patients order groups in case of success or null otherwise

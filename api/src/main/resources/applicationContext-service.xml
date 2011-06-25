@@ -728,6 +728,8 @@
 	<bean id="visitTypeValidator" class="org.openmrs.validator.VisitTypeValidator" />
 	<bean id="visitAttributeTypeValidator" class="org.openmrs.validator.VisitAttributeTypeValidator" />
 	<bean id="encounterValidator" class="org.openmrs.validator.EncounterValidator" />
+	<bean id="orderGroupValidator" class="org.openmrs.validator.OrderGroupValidator" />
+	
 
 	<!--  ************************ END VALIDATOR CONFIGURATION  ************************  -->
 	

@@ -139,13 +139,14 @@ public class OrderGroup extends BaseOpenmrsData implements Serializable {
 	}
 	
 	/**
-	 * Adds new order to group. If group doesn't exist it will be created
+	 * Adds new order to group. Will create the members collection if it's null.
 	 * 
 	 * @param order the order to be added to group
 	 */
 	public void addOrder(Order order) {
 		if (getMembers() == null)
 			setMembers(new LinkedHashSet<Order>());
+		order.setPatient(getPatient());
 		getMembers().add(order);
 	}
 	

@@ -353,7 +353,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderService#signAndActivateOrderGroup(org.openmrs.OrderGroup, User, Date)}
+	 * @see {@link OrderService#signAndActivateOrdersInGroup(org.openmrs.OrderGroup, User, Date)}
 	 */
 	@Test
 	@Verifies(value = "sign and activate orders group", method = "signAndActivateOrderGroup(OrderGroup, User, Date)")
@@ -364,26 +364,23 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		
 		OrderGroup group = new OrderGroup(null, patient);
 		group.setCreator(provider);
-		group.setDateCreated(new Date());
 		Order order = new Order();
-		order.setOrderNumber("1");
-		order.setDateCreated(new Date());
 		order.setConcept(Context.getConceptService().getConcept(23));
 		order.setPatient(patient);
 		group.addOrder(order);
 		
-		group = Context.getOrderService().signAndActivateOrderGroup(group, provider, null);
+		group = Context.getOrderService().signAndActivateOrdersInGroup(group, provider, null);
 		order = (Order) group.getMembers().toArray()[0];
 		//Should be saved.
 		Assert.assertNotNull(group);
 		
 		//Should be signed.
 		Assert.assertTrue(order.isSigned());
-		Assert.assertTrue(order.getDateSigned() != null);
+		Assert.assertNotNull(order.getDateSigned());
 		
 		//Should be activated.
-		Assert.assertTrue(order.getActivatedBy() != null);
-		Assert.assertTrue(order.getDateActivated() != null);
+		Assert.assertNotNull(order.getActivatedBy());
+		Assert.assertNotNull(order.getDateActivated());
 		
 	}
 	
@@ -443,12 +440,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		
 		OrderGroup group = new OrderGroup(null, patient);
 		group.setCreator(provider);
-		group.setDateCreated(new Date());
 		Order order = new Order();
-		order.setOrderNumber("1");
-		order.setDateCreated(new Date());
 		order.setConcept(Context.getConceptService().getConcept(23));
-		order.setPatient(patient);
 		group.addOrder(order);
 		
 		group = Context.getOrderService().saveOrderGroup(group);
@@ -473,17 +466,43 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see OrderService#voidOrderGroup(OrderGroup)
-	 * @verifies void order group
+	 * @verifies void orders in group
 	 */
 	@Test
-	public void voidOrderGroup_shouldVoidOrderGroup() throws Exception {
+	public void voidOrderGroup_shouldVoidOrdersInGroup() throws Exception {
 		OrderGroup group = Context.getOrderService().getOrderGroup(2);
 		String reason = "because";
 		
 		group = Context.getOrderService().voidOrderGroup(group, reason);
+		Order order = (Order) group.getMembers().toArray()[0];
 		
+		// check if group is voided
 		Assert.assertNotNull(group);
 		Assert.assertTrue(group.isVoided());
+		
+		// check if group members are voided
+		Assert.assertNotNull(order);
+		Assert.assertTrue(order.isVoided());
+	}
+	
+	/**
+	 * @see OrderService#unvoidOrderGroup(OrderGroup)
+	 * @verifies unvoid orders in group
+	 */
+	@Test
+	public void unvoidOrderGroup_shouldUnvoidOrdersInGroup() throws Exception {
+		OrderGroup group = Context.getOrderService().getOrderGroup(3);
+		
+		group = Context.getOrderService().unvoidOrderGroup(group);
+		Order order = (Order) group.getMembers().toArray()[0];
+		
+		// check if group is voided
+		Assert.assertNotNull(group);
+		Assert.assertTrue(!group.isVoided());
+		
+		// check if group members are voided
+		Assert.assertNotNull(order);
+		Assert.assertTrue(!order.isVoided());
 	}
 	
 	/**
@@ -545,13 +564,13 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Assert.assertNotNull(service.getPublishedOrderSet(Context.getConceptService().getConcept(18)));
 		Assert.assertNull(service.getPublishedOrderSet(Context.getConceptService().getConcept(100)));
 	}
-
+	
 	/**
-     * @see OrderService#getOrderables(String)
-     * @verifies get order sets
-     */
-    @Test
-    public void getOrderables_shouldGetOrderSets() throws Exception {
+	 * @see OrderService#getOrderables(String)
+	 * @verifies get order sets
+	 */
+	@Test
+	public void getOrderables_shouldGetOrderSets() throws Exception {
 		executeDataSet(orderSetsDatasetFilename);
 		
 		List<Orderable<?>> result = Context.getOrderService().getOrderables("Aspir");
@@ -564,6 +583,6 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 			}
 		}
 		Assert.assertTrue(foundOrderSet);
-    }
+	}
 	
 }
