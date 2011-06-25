@@ -4714,18 +4714,6 @@
         <addForeignKeyConstraint baseColumnNames="order_id" baseTableName="drug_order" constraintName="extends_order" referencedColumnNames="order_id" referencedTableName="orders"/>
     </changeSet>
 	
-	<changeSet id="20101209-1111-drug_order_drug_order_id" author="dkayiwa">
-		<preConditions onFail="MARK_RAN">
-			<not><columnExists tableName="drug_order" columnName="drug_order_id"/></not>
-		</preConditions>
-		<comment>Adding drug_order_id column to drug_order table and also setting it as the primary key</comment>
-		<addColumn tableName="drug_order">
-			<column name="drug_order_id" type="int" autoIncrement="true" >
-				<constraints nullable="false" primaryKey="true"/>
-			</column>
-		</addColumn>
-	</changeSet>
-	
 	<changeSet id="20101209-1111-drug_order_brand_name" author="dkayiwa">
 		<preConditions onFail="MARK_RAN">
 			<not><columnExists tableName="drug_order" columnName="brand_name"/></not>
@@ -4834,19 +4822,16 @@
 		<comment>Create test_order table</comment>
 
 		<createTable tableName="test_order">
-			<column name="test_order_id" type="int" autoIncrement="true">
+			<column name="order_id" type="int" autoIncrement="true">
 				<constraints primaryKey="true" nullable="false" />
 			</column>
 			<column name="specimen_source" type="int" />
 			<column name="laterality" type="int" />
 			<column name="clinical_history" type="text" />
-			<column name="uuid" type="char(38)">
-				<constraints nullable="false" unique="true"/>
-			</column>
 		</createTable>
 		
-		<addForeignKeyConstraint constraintName="test_order_test_order_id_fk"
-			baseTableName="test_order" baseColumnNames="test_order_id"
+		<addForeignKeyConstraint constraintName="test_order_order_id_fk"
+			baseTableName="test_order" baseColumnNames="order_id"
 			referencedTableName="orders" referencedColumnNames="order_id"
 			/>
 
@@ -5119,6 +5104,51 @@
 			baseTableName="orders" baseColumnNames="order_group"
 			referencedTableName="order_group" referencedColumnNames="order_group_id" />
 	</changeSet>
-
+	
+	<changeSet id="20110623-1605" author="wyclif">
+		<preConditions onFail="MARK_RAN">
+			<foreignKeyConstraintExists foreignKeyName="type_of_order"/>
+		</preConditions>
+		<comment>Dropping foreign key constraint on orders.order_type_id to order_type.order_type_id</comment>
+		<dropForeignKeyConstraint baseTableName="orders" constraintName="type_of_order"/>
+	</changeSet>
+	
+	<changeSet id="20110623-1606" author="wyclif">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="orders" columnName="order_type_id"/>
+		</preConditions>
+		<comment>Dropping orders.order_type_id column</comment>
+		<dropColumn tableName="orders" columnName="order_type_id"/>
+	</changeSet>
+		
+	<changeSet id="20110623-1607" author="wyclif">
+		<preConditions onFail="MARK_RAN">
+			<not><columnExists tableName="orders" columnName="order_type"/></not>
+		</preConditions>
+		<comment>Adding orders.order_type column</comment>
+		<addColumn tableName="orders">
+			<column name="order_type" type="varchar(50)"/>
+		</addColumn>
+	</changeSet>
+	
+	<changeSet id="20110623-1608" author="wyclif">
+		<preConditions onFail="MARK_RAN">
+			<tableExists tableName="orders"/>
+		</preConditions>
+		<comment>Dropping order_type table</comment>
+		<dropTable tableName="order_type" cascadeConstraints="true"/>
+	</changeSet>
+	
+	<changeSet id="20110623-1609" author="wyclif">
+		<preConditions onFail="MARK_RAN">
+			<not><sqlCheck expectedResult="0">SELECT count(*)</sqlCheck></not>
+		</preConditions>
+		<comment>Setting the order_type for orders with matches in the drug_orders table</comment>
+		<update tableName="orders">
+			<column name="order_type" value="DRUG"/>
+			<where>order_id IN (SELECT order_id FROM drug_order)</where>
+		</update>
+	</changeSet>
+	
 </databaseChangeLog>
 

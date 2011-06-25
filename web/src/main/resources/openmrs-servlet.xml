@@ -319,9 +319,6 @@
 	<bean id="orderTypeForm" class="org.openmrs.web.controller.order.OrderTypeFormController">
 		<property name="sessionForm"><value>true</value></property>
 		<property name="commandName"><value>orderType</value></property>
-		<property name="validator">
-			<ref bean="orderTypeValidator" />
-		</property>
 		<property name="formView"><value>/admin/orders/orderTypeForm</value></property>
 		<property name="successView"><value>orderType.list</value></property>
 	</bean>

@@ -13,10 +13,8 @@
  */
 package org.openmrs.api;
 
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import org.openmrs.Concept;
 import org.openmrs.DrugOrder;
@@ -48,6 +46,7 @@ public interface OrderService extends OpenmrsService {
 	
 	/**
 	 * The type of status to match on an order. Used in getOrder* methods
+	 * 
 	 * @deprecated remove this before we merge to trunk
 	 */
 	@Deprecated
@@ -165,21 +164,10 @@ public interface OrderService extends OpenmrsService {
 	public <Ord extends Order> Ord getOrder(Integer orderId, Class<Ord> orderClassType) throws APIException;
 	
 	/**
-	 * This searches for orders given the parameters. Most arguments are optional (nullable). If
-	 * multiple arguments are given, the returned orders will match on all arguments.
-	 * 
-	 * @param orderClassType The type of Order to get (currently only options are Order and
-	 *            DrugOrder)
-	 * @param patients The patients to get orders for
-	 * @param concepts The concepts in order.getConcept to get orders for
-	 * @param status The ORDER_STATUS of the orders for its patient
-	 * @param orderers The users/orderers of the
-	 * @param encounters The encounters that the orders are assigned to
-	 * @param orderTypes The OrderTypes to match on
-	 * @param asOfDate
-	 * @return list of Orders matching the parameters
+	 * @deprecated use {@link #getOrders(Class, List, List, List, List, Date)}
 	 */
 	@Authorized(PrivilegeConstants.VIEW_ORDERS)
+	@Deprecated
 	public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
 	        List<Concept> concepts, ORDER_STATUS status, List<User> orderers, List<Encounter> encounters,
 	        List<OrderType> orderTypes, Date asOfDate);
@@ -239,89 +227,53 @@ public interface OrderService extends OpenmrsService {
 	public Order unvoidOrder(Order order) throws APIException;
 	
 	/**
-	 * Save or update the given <code>orderType</code> in the database
-	 * 
-	 * @param orderType The OrderType to save in the database
-	 * @return the freshly saved OrderType
-	 * @throws APIException
+	 * @deprecated
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_ORDER_TYPES)
+	@Deprecated
 	public OrderType saveOrderType(OrderType orderType) throws APIException;
 	
 	/**
-	 * Completely delete the order type from the system. If data has been stored using this
-	 * orderType, an exception will be thrown. In that case, consider using the
-	 * #retiredOrderType(OrderType, String) method
-	 * 
-	 * @param orderType
-	 * @throws APIException
+	 * @deprecated
 	 */
 	@Authorized(PrivilegeConstants.PURGE_ORDER_TYPES)
 	public void purgeOrderType(OrderType orderType) throws APIException;
 	
 	/**
-	 * This method essentially takes the given <code>orderType</code> out of active use in OpenMRS.
-	 * All references to this order type will remain in place. Future use of this order type are
-	 * discouraged.
-	 * 
-	 * @param orderType the order type to retired
-	 * @param reason The reason this order type is being taken our of commission.
-	 * @return the retired order type
-	 * @throws APIException
+	 * @deprecated
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_ORDER_TYPES)
 	public OrderType retireOrderType(OrderType orderType, String reason) throws APIException;
 	
 	/**
-	 * This will bring back a previously decommissioned OrderType
-	 * 
-	 * @param orderType the order type to unretire
-	 * @return the retired order type
-	 * @throws APIException
+	 * @deprecated
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_ORDER_TYPES)
 	public OrderType unretireOrderType(OrderType orderType) throws APIException;
 	
 	/**
-	 * Get all order types, including retired ones
-	 * 
-	 * @return order types list
-	 * @see #getAllOrderTypes(boolean)
-	 * @throws APIException
+	 * @deprecated
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_ORDER_TYPES)
 	public List<OrderType> getAllOrderTypes() throws APIException;
 	
 	/**
-	 * Get all order types, only showing ones not marked as retired if includeRetired is true
-	 * 
-	 * @param includeRetired true/false whether to include retired orderTypes in this list
-	 * @return order types list
-	 * @throws APIException
+	 * @deprecated
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_ORDER_TYPES)
 	public List<OrderType> getAllOrderTypes(boolean includeRetired) throws APIException;
 	
 	/**
-	 * Get orderType by internal identifier
-	 * 
-	 * @param orderTypeId
-	 * @return orderType with given internal identifier
-	 * @throws APIException
+	 * @deprecated
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_ORDER_TYPES)
 	public OrderType getOrderType(Integer orderTypeId) throws APIException;
 	
 	/**
-	 * Get OrderType by its UUID
-	 * 
-	 * @param uuid
-	 * @return
-	 * @should find object given valid uuid
-	 * @should return null if no object found with given uuid
+	 * @deprecated
 	 */
 	@Transactional(readOnly = true)
 	public OrderType getOrderTypeByUuid(String uuid) throws APIException;
@@ -422,7 +374,8 @@ public interface OrderService extends OpenmrsService {
 	 * 
 	 * @param order the order.
 	 * @param user the user in charge of the order (defaults to authenticated user)
-	 * @param date the date to sign and activate the order (cannot be in the future, defaults to now)
+	 * @param date the date to sign and activate the order (cannot be in the future, defaults to
+	 *            now)
 	 * @return the saved, signed and activated order.
 	 */
 	public Order signAndActivateOrder(Order order, User user, Date date) throws APIException;
@@ -430,14 +383,15 @@ public interface OrderService extends OpenmrsService {
 	/**
 	 * Gets all Orders that are currently active. An active order is one that:
 	 * <ol>
-	 *   <li>startDate <= <code>date</code>
-	 *   <li>discontinuedDate is null or >= <code>date</code>
-	 *   <li>autoExpireDate is null or >= <code>date</code>
-	 *   <li>dateActivated >= <code>date</code>
+	 * <li>startDate <= <code>date</code>
+	 * <li>discontinuedDate is null or >= <code>date</code>
+	 * <li>autoExpireDate is null or >= <code>date</code>
+	 * <li>dateActivated >= <code>date</code>
 	 * </ol>
 	 * 
 	 * @param p the patient to search on (required)
-	 * @param date the date at which the orders should have been active.  If null, is presumed to be right now.
+	 * @param date the date at which the orders should have been active. If null, is presumed to be
+	 *            right now.
 	 * @return list of active orders
 	 * @should get orders with dateActivated before the given date
 	 * @should not get orders with discontinuedDate before the given date
@@ -448,14 +402,15 @@ public interface OrderService extends OpenmrsService {
 	/**
 	 * Gets all DrugOrder objects that are currently active. An active DrugOrder is one that:
 	 * <ol>
-	 *   <li>startDate <= <code>date</code>
-	 *   <li>discontinuedDate is null or >= <code>date</code>
-	 *   <li>autoExpireDate is null or >= <code>date</code>
-	 *   <li>dateActivated >= <code>date</code>
+	 * <li>startDate <= <code>date</code>
+	 * <li>discontinuedDate is null or >= <code>date</code>
+	 * <li>autoExpireDate is null or >= <code>date</code>
+	 * <li>dateActivated >= <code>date</code>
 	 * </ol>
 	 * 
 	 * @param p the patient to search on (required)
-	 * @param date the date at which the orders should have been active.  If null, is presumed to be right now.
+	 * @param date the date at which the orders should have been active. If null, is presumed to be
+	 *            right now.
 	 * @return list of active orders
 	 * @should get orders with dateActivated before the given date
 	 * @should not get orders with discontinuedDate before the given date
@@ -464,9 +419,9 @@ public interface OrderService extends OpenmrsService {
 	List<DrugOrder> getActiveDrugOrdersByPatient(Patient p, Date date) throws APIException;
 	
 	/**
-	 * Finds all {@link Orderable}s that match <code>query</code>, based on a fuzzy comparison. (The precise
-	 * comparison is implementation-dependent.) May include heterogenous types of orderables, e.g. some concepts,
-	 * some drugs, some lab tests.
+	 * Finds all {@link Orderable}s that match <code>query</code>, based on a fuzzy comparison. (The
+	 * precise comparison is implementation-dependent.) May include heterogenous types of
+	 * orderables, e.g. some concepts, some drugs, some lab tests.
 	 * 
 	 * @param query partial string to be searched for
 	 * @return Orderables that fuzzy-match <code>query</code>
@@ -489,8 +444,8 @@ public interface OrderService extends OpenmrsService {
 	public OrderGroup signAndActivateOrderGroup(OrderGroup group, User user, Date activated) throws APIException;
 	
 	/**
-	 * Stores order group into database if it doesn't exist yet. If it 's present,
-	 * tries to update order entity
+	 * Stores order group into database if it doesn't exist yet. If it 's present, tries to update
+	 * order entity
 	 * 
 	 * @param group the order group to save
 	 * @return saved order group entity
@@ -501,8 +456,8 @@ public interface OrderService extends OpenmrsService {
 	public OrderGroup saveOrderGroup(OrderGroup group) throws APIException;
 	
 	/**
-	 * Mark an order group as voided. This functionally removes the Order from the system while keeping a
-	 * semblance
+	 * Mark an order group as voided. This functionally removes the Order from the system while
+	 * keeping a semblance
 	 * 
 	 * @param group the order group to be voided
 	 * @param voidReason the cause why order is to be voided
@@ -533,13 +488,12 @@ public interface OrderService extends OpenmrsService {
 	public OrderGroup getOrderGroup(Integer orderGroupId) throws APIException;
 	
 	/**
-	 * 
 	 * Auto generated method comment
 	 * 
 	 * @param uuid the unique identifier of order group
 	 * @return order group entity if success, null otherwise
 	 * @should get order group by uuid
-	 * @throws APIException when error occurred 
+	 * @throws APIException when error occurred
 	 */
 	public OrderGroup getOrderGroupByUuid(String uuid) throws APIException;
 	
@@ -552,5 +506,23 @@ public interface OrderService extends OpenmrsService {
 	 * @throws APIException when error occurred
 	 */
 	public List<OrderGroup> getOrderGroupsByPatient(Patient patient) throws APIException;
+	
+	/**
+	 * This searches for orders given the parameters. Most arguments are optional (nullable). If
+	 * multiple arguments are given, the returned orders will match on all arguments.
+	 * 
+	 * @param orderClassType The type of Order to get (currently only options are Order and
+	 *            DrugOrder)
+	 * @param patients The patients to get orders for
+	 * @param concepts The concepts in order.getConcept to get orders for
+	 * @param status The ORDER_STATUS of the orders for its patient
+	 * @param orderers The users/orderers of the
+	 * @param encounters The encounters that the orders are assigned to
+	 * @param asOfDate
+	 * @return list of Orders matching the parameters
+	 */
+	@Authorized(PrivilegeConstants.VIEW_ORDERS)
+	public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
+	        List<Concept> concepts, List<User> orderers, List<Encounter> encounters, Date asOfDate);
 	
 }

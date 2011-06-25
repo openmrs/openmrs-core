@@ -172,7 +172,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	public OrderType saveOrderType(OrderType orderType) throws APIException {
-		return dao.saveOrderType(orderType);
+		return null;
 	}
 	
 	/**
@@ -180,11 +180,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	public OrderType retireOrderType(OrderType orderType, String reason) throws APIException {
-		
-		orderType.setRetired(true);
-		orderType.setRetireReason(reason);
-		
-		return saveOrderType(orderType);
+		return null;
 	}
 	
 	/**
@@ -192,9 +188,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	public OrderType unretireOrderType(OrderType orderType) throws APIException {
-		orderType.setRetired(false);
-		
-		return saveOrderType(orderType);
+		return null;
 	}
 	
 	/**
@@ -202,7 +196,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	public void purgeOrderType(OrderType orderType) throws APIException {
-		dao.deleteOrderType(orderType);
 	}
 	
 	/**
@@ -250,7 +243,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		if (orderTypes == null)
 			orderTypes = new Vector<OrderType>();
 		
-		return dao.getOrders(orderClassType, patients, concepts, status, orderers, encounters, orderTypes, asOfDate);
+		return dao.getOrders(orderClassType, patients, concepts, status, orderers, encounters, asOfDate);
 	}
 	
 	/**
@@ -323,7 +316,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	public List<OrderType> getAllOrderTypes() throws APIException {
-		return getAllOrderTypes(true);
+		return Collections.emptyList();
 	}
 	
 	/**
@@ -331,7 +324,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	public List<OrderType> getAllOrderTypes(boolean includeRetired) throws APIException {
-		return dao.getAllOrderTypes(includeRetired);
+		return Collections.emptyList();
 	}
 	
 	/**
@@ -339,7 +332,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	public OrderType getOrderType(Integer orderTypeId) throws APIException {
-		return dao.getOrderType(orderTypeId);
+		return null;
 	}
 	
 	/**
@@ -390,11 +383,12 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	public OrderType getOrderTypeByUuid(String uuid) throws APIException {
-		return dao.getOrderTypeByUuid(uuid);
+		return null;
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#saveActivatedOrder(org.openmrs.Order, org.openmrs.User, java.util.Date)
+	 * @see org.openmrs.api.OrderService#saveActivatedOrder(org.openmrs.Order, org.openmrs.User,
+	 *      java.util.Date)
 	 */
 	@Override
 	public Order signAndActivateOrder(Order order, User user, Date date) throws APIException {
@@ -408,7 +402,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#signOrder(org.openmrs.Order, org.openmrs.User, java.util.Date)
+	 * @see org.openmrs.api.OrderService#signOrder(org.openmrs.Order, org.openmrs.User,
+	 *      java.util.Date)
 	 */
 	@Override
 	public Order signOrder(Order order, User provider, Date date) throws APIException {
@@ -439,7 +434,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#fillOrder(org.openmrs.Order, org.openmrs.User, java.util.Date)
+	 * @see org.openmrs.api.OrderService#fillOrder(org.openmrs.Order, org.openmrs.User,
+	 *      java.util.Date)
 	 */
 	@Override
 	public Order fillOrder(Order order, User filler, Date dateFilled) throws APIException {
@@ -447,7 +443,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#fillOrder(org.openmrs.Order, java.lang.String, java.util.Date)
+	 * @see org.openmrs.api.OrderService#fillOrder(org.openmrs.Order, java.lang.String,
+	 *      java.util.Date)
 	 */
 	@Override
 	public Order fillOrder(Order order, String filler, Date dateFilled) throws APIException {
@@ -475,7 +472,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#getOrderHistoryByConcept(org.openmrs.Patient, org.openmrs.Concept)
+	 * @see org.openmrs.api.OrderService#getOrderHistoryByConcept(org.openmrs.Patient,
+	 *      org.openmrs.Concept)
 	 */
 	@Override
 	public List<Order> getOrderHistoryByConcept(Patient patient, Concept concept) {
@@ -504,7 +502,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#getActiveOrdersByPatient(org.openmrs.Patient, java.util.Date)
+	 * @see org.openmrs.api.OrderService#getActiveOrdersByPatient(org.openmrs.Patient,
+	 *      java.util.Date)
 	 */
 	@Override
 	public List<Order> getActiveOrdersByPatient(Patient p, Date date) throws APIException {
@@ -523,7 +522,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#getActiveDrugOrdersByPatient(org.openmrs.Patient, java.util.Date)
+	 * @see org.openmrs.api.OrderService#getActiveDrugOrdersByPatient(org.openmrs.Patient,
+	 *      java.util.Date)
 	 */
 	@Override
 	public List<DrugOrder> getActiveDrugOrdersByPatient(Patient p, Date date) {
@@ -669,6 +669,32 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		if (patient == null)
 			throw new IllegalArgumentException("patient is required");
 		return dao.getOrderGroupsByPatient(patient);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getOrders(java.lang.Class, java.util.List, java.util.List,
+	 *      java.util.List, java.util.List, java.util.Date)
+	 */
+	@Override
+	public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
+	        List<Concept> concepts, List<User> orderers, List<Encounter> encounters, Date asOfDate) {
+		if (orderClassType == null)
+			throw new APIException(
+			        "orderClassType cannot be null.  An order type of Order.class or DrugOrder.class is required");
+		
+		if (patients == null)
+			patients = new Vector<Patient>();
+		
+		if (concepts == null)
+			concepts = new Vector<Concept>();
+		
+		if (orderers == null)
+			orderers = new Vector<User>();
+		
+		if (encounters == null)
+			encounters = new Vector<Encounter>();
+		
+		return dao.getOrders(orderClassType, patients, concepts, null, orderers, encounters, asOfDate);
 	}
 	
 }

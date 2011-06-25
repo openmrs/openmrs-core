@@ -24,7 +24,6 @@ import org.openmrs.Drug;
 import org.openmrs.GenericDrug;
 import org.openmrs.Order;
 import org.openmrs.OrderGroup;
-import org.openmrs.OrderType;
 import org.openmrs.Orderable;
 import org.openmrs.Patient;
 import org.openmrs.User;
@@ -69,26 +68,6 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should return null if no object found with given uuid", method = "getOrderByUuid(String)")
 	public void getOrderByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
 		Assert.assertNull(Context.getOrderService().getOrderByUuid("some invalid uuid"));
-	}
-	
-	/**
-	 * @see {@link OrderService#getOrderTypeByUuid(String)}
-	 */
-	@Test
-	@Verifies(value = "should find object given valid uuid", method = "getOrderTypeByUuid(String)")
-	public void getOrderTypeByUuid_shouldFindObjectGivenValidUuid() throws Exception {
-		String uuid = "84ce45a8-5e7c-48f7-a581-ca1d17d63a62";
-		OrderType orderType = Context.getOrderService().getOrderTypeByUuid(uuid);
-		Assert.assertEquals(1, (int) orderType.getOrderTypeId());
-	}
-	
-	/**
-	 * @see {@link OrderService#getOrderTypeByUuid(String)}
-	 */
-	@Test
-	@Verifies(value = "should return null if no object found with given uuid", method = "getOrderTypeByUuid(String)")
-	public void getOrderTypeByUuid_shouldReturnNullIfNoObjectFoundWithGivenUuid() throws Exception {
-		Assert.assertNull(Context.getOrderService().getOrderTypeByUuid("some invalid uuid"));
 	}
 	
 	/**
@@ -273,7 +252,6 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		
 		Order order = new Order();
 		order.setDateCreated(new Date());
-		order.setOrderType(Context.getOrderService().getOrderType(2));
 		order.setConcept(Context.getConceptService().getConcept(23));
 		order.setPatient(Context.getPatientService().getPatient(6));
 		
@@ -300,7 +278,6 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should asign order number for new order", method = "saveOrder(Order)")
 	public void saveOrder_shouldAssignOrderNumberForNewOrder() throws Exception {
 		Order order = new Order();
-		order.setOrderType(Context.getOrderService().getOrderType(2));
 		order.setConcept(Context.getConceptService().getConcept(23));
 		order.setPatient(Context.getPatientService().getPatient(6));
 		
@@ -380,7 +357,6 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Order order = new Order();
 		order.setOrderNumber("1");
 		order.setDateCreated(new Date());
-		order.setOrderType(Context.getOrderService().getOrderType(2));
 		order.setConcept(Context.getConceptService().getConcept(23));
 		order.setPatient(patient);
 		group.addOrder(order);
@@ -460,7 +436,6 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Order order = new Order();
 		order.setOrderNumber("1");
 		order.setDateCreated(new Date());
-		order.setOrderType(Context.getOrderService().getOrderType(2));
 		order.setConcept(Context.getConceptService().getConcept(23));
 		order.setPatient(patient);
 		group.addOrder(order);
@@ -499,5 +474,12 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Assert.assertNotNull(group);
 		Assert.assertTrue(group.isVoided());
 	}
-	
+	@Test
+	public void testMe() {
+		OrderService os = Context.getOrderService();
+		System.out.println(os.getOrder(1).getClass());
+		System.out.println(os.getOrder(10).getClass());
+		System.out.println(os.getOrder(6).getClass());
+		System.out.println(os.getOrders().size());
+	}
 }

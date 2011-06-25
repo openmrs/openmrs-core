@@ -34,10 +34,8 @@ import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.propertyeditor.ConceptEditor;
 import org.openmrs.propertyeditor.EncounterEditor;
-import org.openmrs.propertyeditor.OrderTypeEditor;
 import org.openmrs.propertyeditor.PatientEditor;
 import org.openmrs.propertyeditor.UserEditor;
-import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.web.WebConstants;
 import org.springframework.beans.propertyeditors.CustomBooleanEditor;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
@@ -64,7 +62,6 @@ public class OrderFormController extends SimpleFormController {
 	 */
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
 		super.initBinder(request, binder);
-		binder.registerCustomEditor(OrderType.class, new OrderTypeEditor());
 		binder.registerCustomEditor(Boolean.class, new CustomBooleanEditor("t", "f", true));
 		binder.registerCustomEditor(Integer.class, new CustomNumberEditor(Integer.class, true));
 		binder.registerCustomEditor(Concept.class, new ConceptEditor());

@@ -30,10 +30,16 @@ public class TestOrder extends Order {
 	private String clinicalHistory;
 	
 	/**
-	 * Constructs a new test order with a given order id.
-	 * 
+	 * Default Constructor
+	 */
+	public TestOrder() {
+	}
+	
+	/**
+	 * @deprecated
 	 * @param orderId the order id.
 	 */
+	@Deprecated
 	public TestOrder(Integer orderId) {
 		setOrderId(orderId);
 	}

@@ -20,7 +20,6 @@ import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
 import org.openmrs.OrderGroup;
-import org.openmrs.OrderType;
 import org.openmrs.Patient;
 import org.openmrs.User;
 import org.openmrs.api.OrderService.ORDER_STATUS;
@@ -34,28 +33,6 @@ import org.openmrs.api.OrderService.ORDER_STATUS;
  * @see org.openmrs.api.OrderService
  */
 public interface OrderDAO {
-	
-	// methods for the OrderType java pojo object
-	
-	/**
-	 * @see org.openmrs.api.OrderService#saveOrderType(OrderType)
-	 */
-	public OrderType saveOrderType(OrderType orderType) throws DAOException;
-	
-	/**
-	 * @see org.openmrs.api.OrderService#purgeOrderType(OrderType)
-	 */
-	public void deleteOrderType(OrderType orderType) throws DAOException;
-	
-	/**
-	 * @see org.openmrs.api.OrderService#getAllOrderTypes(boolean)
-	 */
-	public List<OrderType> getAllOrderTypes(boolean includeRetired) throws DAOException;
-	
-	/**
-	 * @see org.openmrs.api.OrderService#getOrderType(Integer)
-	 */
-	public OrderType getOrderType(Integer orderTypeId) throws DAOException;
 	
 	// methods for the Order java pojo object
 	
@@ -77,13 +54,10 @@ public interface OrderDAO {
 	public <Ord extends Order> Ord getOrder(Integer orderId, Class<Ord> classType) throws DAOException;
 	
 	/**
-	 * @see org.openmrs.api.OrderService#getOrders(java.lang.Class, java.util.List, java.util.List,
-	 *      org.openmrs.api.OrderService.ORDER_STATUS, java.util.List, java.util.List,
-	 *      java.util.List, java.util.Date)
+	 * @see org.openmrs.api.OrderService#getOrders(Class, List, List, ORDER_STATUS, List, List)
 	 */
 	public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
-	        List<Concept> concepts, ORDER_STATUS status, List<User> orderers, List<Encounter> encounters,
-	        List<OrderType> orderTypes, Date asOfDate);
+	        List<Concept> concepts, ORDER_STATUS status, List<User> orderers, List<Encounter> encounters, Date asOfDate);
 	
 	/**
 	 * Auto generated method comment
@@ -92,14 +66,6 @@ public interface OrderDAO {
 	 * @return
 	 */
 	public Order getOrderByUuid(String uuid);
-	
-	/**
-	 * Auto generated method comment
-	 * 
-	 * @param uuid
-	 * @return
-	 */
-	public OrderType getOrderTypeByUuid(String uuid);
 	
 	/**
 	 * @see org.openmrs.api.OrderService#getOrderByOrderNumber(java.lang.String)

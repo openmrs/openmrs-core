@@ -38,9 +38,6 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	
 	private Patient patient;
 	
-	/** This would be an enumeration of order types e.g., DRUG, TEST, REFERRAL, DIET, etc. */
-	private OrderType orderType;
-	
 	private Concept concept;
 	
 	/**
@@ -201,11 +198,24 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 		this.orderId = orderId;
 	}
 	
-	public Order(Integer orderId, Patient patient, OrderType orderType, Concept concept) {
+	public Order(Integer orderId, Patient patient, Concept concept) {
 		this.setOrderId(orderId);
 		this.setPatient(patient);
-		this.setOrderType(orderType);
 		this.setConcept(concept);
+	}
+	
+	/**
+	 * @deprecated since {@link OrderType} is deprecated use {@link Order(Integer, Patient,
+	 *             Concept)}
+	 * @see OrderType
+	 * @param orderId
+	 * @param patient
+	 * @param orderType
+	 * @param concept
+	 */
+	@Deprecated
+	public Order(Integer orderId, Patient patient, OrderType orderType, Concept concept) {
+		this(orderId, patient, concept);
 	}
 	
 	/**
@@ -226,7 +236,6 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 */
 	protected Order copyHelper(Order target) {
 		target.setPatient(getPatient());
-		target.setOrderType(getOrderType());
 		target.setConcept(getConcept());
 		target.setInstructions(getInstructions());
 		target.setStartDate(getStartDate());
@@ -457,17 +466,22 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	/**
-	 * @return Returns the orderType.
+	 * @deprecated
+	 * @return null since {@link OrderType} is deprecated
 	 */
+	@Deprecated
 	public OrderType getOrderType() {
-		return orderType;
+		return null;
 	}
 	
 	/**
-	 * @param orderType The orderType to set.
+	 * This methods does nothing since {@link OrderType} is deprecated
+	 * 
+	 * @deprecated
+	 * @param orderType
 	 */
+	@Deprecated
 	public void setOrderType(OrderType orderType) {
-		this.orderType = orderType;
 	}
 	
 	/**
@@ -901,7 +915,7 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		return "Order. orderId: " + orderId + " patient: " + patient + " orderType: " + orderType + " concept: " + concept;
+		return "Order. orderId: " + orderId + " patient: " + patient + " orderType: " + getClass() + " concept: " + concept;
 	}
 	
 	/**

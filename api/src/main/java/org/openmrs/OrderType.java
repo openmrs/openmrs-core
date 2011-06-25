@@ -14,10 +14,10 @@
 package org.openmrs;
 
 /**
- * OrderType
- * 
+ * @deprecated
  * @see Order
  */
+@Deprecated
 public class OrderType extends BaseOpenmrsMetadata implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 23232L;

@@ -13,7 +13,7 @@
 
 <class 
     name="org.openmrs.Order" 
-    table="orders"
+    table="orders" discriminator-value="null"
 >
 
     <id
@@ -24,9 +24,9 @@
     >
         <generator class="native" />
     </id>
-
-    <discriminator column="order_id" insert="false" />
-
+	
+    <discriminator column="order_type" type="string" not-null="false" insert="false" />
+	
 	<property name="uuid" type="java.lang.String"
 		column="uuid" length="38" unique="true" not-null="true"/>
 
@@ -161,15 +161,7 @@
     >
         <column name="creator" />
     </many-to-one>
-    <!-- bi-directional many-to-one association to OrderType -->
-    <many-to-one
-        name="orderType"
-        class="org.openmrs.OrderType"
-        not-null="true"
-    >
-        <column name="order_type_id" />
-    </many-to-one>
-    
+	
     <property name="orderNumber" type="java.lang.String" column="order_number" length="50" not-null="true"/>
     <property name="previousOrderNumber" type="java.lang.String" column="previous_order_number" length="50" />
     <property name="nonCodedName" type="java.lang.String" column="noncoded_name" length="255" />
@@ -203,87 +195,46 @@
         	<column name="order_group" />
    	</many-to-one>
 
-	<joined-subclass name="org.openmrs.DrugOrder" table="drug_order">
+	<subclass name="org.openmrs.DrugOrder" discriminator-value="DRUG">
+		<join table="drug_order">
+			<key column="order_id" />
 		
-		<key column="order_id" not-null="true" />
-			
-	    <property
-	        name="dose"
-	        type="double"
-	        column="dose"
-	        length="22"
-	    />
-	    <property
-	        name="equivalentDailyDose"
-	        type="double"
-	        column="equivalent_daily_dose"
-	        length="22"
-	    />
-	    <property
-	        name="units"
-	        type="java.lang.String"
-	        column="units"
-	        length="255"
-	    />
-	    <property
-	        name="frequency"
-	        type="java.lang.String"
-	        column="frequency"
-	        length="255"
-	    />
-	    <property
-	        name="prn"
-	        type="boolean"
-	        column="prn"
-	        length="1"
-	        not-null="true"
-	    />
-	    <property
-	        name="unstructuredDosing"
-	        type="java.lang.String"
-	        column="unstructured_dosing"
-	        length="255"
-	    />
-	    <property
-	        name="quantity"
-	        type="int"
-	        column="quantity"
-	        length="11"
-	    />
+			<property name="dose" type="double" column="dose" length="22" />
+			<property name="equivalentDailyDose" type="double" column="equivalent_daily_dose" length="22" />
+	    	<property name="units" type="java.lang.String" column="units" length="255" />
+	    	<property name="frequency" type="java.lang.String" column="frequency" length="255" />
+	    	<property name="prn" type="boolean" column="prn" length="1" not-null="true" />
+	    	<property name="unstructuredDosing" type="java.lang.String" column="unstructured_dosing" length="255" />
+			<property name="quantity" type="int" column="quantity" length="11" />
 	    
-	    <!-- bi-directional many-to-one association to Drug -->
-	    <many-to-one
-	        name="drug"
-	        class="org.openmrs.Drug"
-	        not-null="true"
-	    >
-	        <column name="drug_inventory_id" />
-	    </many-to-one>
+			<!-- bi-directional many-to-one association to Drug -->
+			<many-to-one name="drug" class="org.openmrs.Drug" not-null="true">
+				<column name="drug_inventory_id" />
+			</many-to-one>
     	
-    	<property name="brandName" type="java.lang.String" column="brand_name" length="255" />
-    	<property name="strength" type="double" column="strength" length="22" />
-    	<property name="strengthUnits" type="java.lang.String" column="strength_units" length="255" />
-    	<property name="dosageForm" type="java.lang.String" column="dosage_form" length="50" />
-    	<property name="route" type="java.lang.String" column="route" length="50" />    	
-     	<property name="asNeededCondition" type="java.lang.String" column="as_needed_condition" length="255" />	
-    	<property name="additionalInstructions" type="java.lang.String" column="additional_instructions" length="65535" />	
-    	<property name="numRefills" type="int" column="num_refills" length="11" />
-    	<property name="quantityUnits" type="java.lang.String" column="quantity_units" length="50" />
-    	<property name="duration" type="int" column="duration" length="11" />
-    	<property name="durationUnits" type="java.lang.String" column="duration_units" length="50" />
+    		<property name="brandName" type="java.lang.String" column="brand_name" length="255" />
+    		<property name="strength" type="double" column="strength" length="22" />
+    		<property name="strengthUnits" type="java.lang.String" column="strength_units" length="255" />
+    		<property name="dosageForm" type="java.lang.String" column="dosage_form" length="50" />
+    		<property name="route" type="java.lang.String" column="route" length="50" />    	
+     		<property name="asNeededCondition" type="java.lang.String" column="as_needed_condition" length="255" />	
+    		<property name="additionalInstructions" type="java.lang.String" column="additional_instructions" length="65535" />	
+    		<property name="numRefills" type="int" column="num_refills" length="11" />
+    		<property name="quantityUnits" type="java.lang.String" column="quantity_units" length="50" />
+    		<property name="duration" type="int" column="duration" length="11" />
+    		<property name="durationUnits" type="java.lang.String" column="duration_units" length="50" />
+		</join> 
+	</subclass>
 	
-	</joined-subclass>
-	
-	
-	<joined-subclass name="org.openmrs.TestOrder" table="test_order">
-		    	
-    	<key column="order_id" not-null="true" />
+	<subclass name="org.openmrs.TestOrder" discriminator-value="TEST">
+		<join table="test_order">	
+    		<key column="order_id" />
     	
-    	<property name="specimenSource" type="int" column="specimen_source" length="11" />    	
-    	<property name="laterality" type="int" column="laterality" length="11" />    	
-    	<property name="clinicalHistory" type="java.lang.String" column="clinical_history" length="65535" />
-		
-	</joined-subclass>
+    		<property name="specimenSource" type="int" column="specimen_source" length="11" />    	
+    		<property name="laterality" type="int" column="laterality" length="11" />    	
+    		<property name="clinicalHistory" type="java.lang.String" column="clinical_history" length="65535" />
+		</join> 
+	</subclass>
 
 </class>
 </hibernate-mapping>

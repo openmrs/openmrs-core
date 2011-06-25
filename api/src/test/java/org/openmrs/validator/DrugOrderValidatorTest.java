@@ -37,7 +37,7 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should fail validation if prn is null", method = "validate(Object,Errors)")
 	public void validate_shouldFailValidationIfPrnIsNull() throws Exception {
 		DrugOrder order = new DrugOrder();
-		order.setPrn(null);
+		order.setAsNeeded(null);
 		order.setDrug(Context.getConceptService().getDrug(3));
 		
 		Errors errors = new BindException(order, "order");
@@ -69,7 +69,6 @@ public class DrugOrderValidatorTest extends BaseContextSensitiveTest {
 		DrugOrder order = new DrugOrder();
 		order.setConcept(Context.getConceptService().getConcept(88));
 		order.setPatient(Context.getPatientService().getPatient(2));
-		order.setOrderType(Context.getOrderService().getOrderType(1));
 		Calendar cal = Calendar.getInstance();
 		cal.set(Calendar.DAY_OF_MONTH, cal.get(Calendar.DAY_OF_MONTH) - 1);
 		order.setStartDate(cal.getTime());
