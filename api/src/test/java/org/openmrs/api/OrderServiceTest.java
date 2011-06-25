@@ -13,17 +13,18 @@
  */
 package org.openmrs.api;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Concept;
 import org.openmrs.Drug;
 import org.openmrs.GenericDrug;
 import org.openmrs.Order;
 import org.openmrs.OrderGroup;
+import org.openmrs.OrderSet;
 import org.openmrs.Orderable;
 import org.openmrs.Patient;
 import org.openmrs.User;
@@ -37,6 +38,15 @@ import org.openmrs.test.Verifies;
 public class OrderServiceTest extends BaseContextSensitiveTest {
 	
 	private static final String simpleOrderEntryDatasetFilename = "org/openmrs/api/include/OrderServiceTest-simpleOrderEntryTestDataset.xml";
+	
+	private static final String orderSetsDatasetFilename = "org/openmrs/api/include/OrderServiceTest-orderSetsTestDataset.xml";
+	
+	private OrderService service;
+	
+	@Before
+	public void before() {
+		this.service = Context.getOrderService();
+	}
 	
 	/**
 	 * @see {@link OrderService#saveOrder(Order)}
@@ -474,12 +484,65 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Assert.assertNotNull(group);
 		Assert.assertTrue(group.isVoided());
 	}
+	
+	/**
+	 * @see OrderService#getPublishedOrderSet(Concept)
+	 * @verifies get a published order set by concept
+	 */
 	@Test
-	public void testMe() {
-		OrderService os = Context.getOrderService();
-		System.out.println(os.getOrder(1).getClass());
-		System.out.println(os.getOrder(10).getClass());
-		System.out.println(os.getOrder(6).getClass());
-		System.out.println(os.getOrders().size());
+	public void getPublishedOrderSet_shouldGetAPublishedOrderSetByConcept() throws Exception {
+		executeDataSet(orderSetsDatasetFilename);
+		Concept publishedAs = Context.getConceptService().getConcept(100);
+		Assert.assertNotNull(publishedAs);
+		Assert.assertEquals("Aspirin and Triomune", service.getPublishedOrderSet(publishedAs).getName());
 	}
+	
+	/**
+	 * @see OrderService#getPublishedOrderSets(String)
+	 * @verifies get all published order sets by query
+	 */
+	@Test
+	public void getPublishedOrderSets_shouldGetAllPublishedOrderSetsByQuery() throws Exception {
+		executeDataSet(orderSetsDatasetFilename);
+		Assert.assertEquals(1, service.getPublishedOrderSets("Aspirin and Triomune").size());
+		Assert.assertEquals(1, service.getPublishedOrderSets("Aspirin").size());
+		Assert.assertEquals(0, service.getPublishedOrderSets("CureYouFast(TM)").size());
+	}
+	
+	/**
+	 * @see OrderService#publishOrderSet(Concept,OrderSet)
+	 * @verifies publish an order set as a concept
+	 */
+	@Test
+	public void publishOrderSet_shouldPublishAnOrderSetAsAConcept() throws Exception {
+		executeDataSet(orderSetsDatasetFilename);
+		int before = service.getPublishedOrderSets("Unusual").size();
+		
+		OrderSet os = new OrderSet();
+		os.setName("Unusual name unlikely to be found elsewhere");
+		service.saveOrderSet(os);
+		
+		service.publishOrderSet(Context.getConceptService().getConcept(18), os);
+		int after = service.getPublishedOrderSets("Unusual").size();
+		Assert.assertEquals(before + 1, after);
+	}
+	
+	/**
+	 * @see OrderService#publishOrderSet(Concept,OrderSet)
+	 * @verifies publish an order set as a concept overwriting the previous entity
+	 */
+	@Test
+	public void publishOrderSet_shouldPublishAnOrderSetAsAConceptOverwritingThePreviousEntity() throws Exception {
+		executeDataSet(orderSetsDatasetFilename);
+		Assert.assertNotNull(service.getPublishedOrderSet(Context.getConceptService().getConcept(100)));
+		Assert.assertNull(service.getPublishedOrderSet(Context.getConceptService().getConcept(18)));
+		
+		Concept foodConcept = Context.getConceptService().getConcept(18);
+		OrderSet os = service.getOrderSet(1);
+		service.publishOrderSet(foodConcept, os);
+		
+		Assert.assertNotNull(service.getPublishedOrderSet(Context.getConceptService().getConcept(18)));
+		Assert.assertNull(service.getPublishedOrderSet(Context.getConceptService().getConcept(100)));
+	}
+	
 }

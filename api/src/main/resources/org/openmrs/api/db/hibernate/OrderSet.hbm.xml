@@ -15,11 +15,7 @@
 
 		<property name="name" type="java.lang.String" column="name" length="255" />	
 		<property name="description" type="java.lang.String" column="description" length="65535" />
-		
-		<many-to-one name="concept" class="org.openmrs.Concept">
-        	<column name="concept_id" />
-   		</many-to-one>
-		
+				
 		<property name="title" type="java.lang.String" column="title" length="255" />
 		<property name="comment" type="java.lang.String" column="comment" length="65535" />
 		<property name="operator" type="java.lang.String" column="operator" length="50" />

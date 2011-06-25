@@ -21,9 +21,11 @@ import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
 import org.openmrs.OrderGroup;
+import org.openmrs.OrderSet;
 import org.openmrs.OrderType;
 import org.openmrs.Orderable;
 import org.openmrs.Patient;
+import org.openmrs.PublishedOrderSet;
 import org.openmrs.User;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.OrderDAO;
@@ -506,6 +508,58 @@ public interface OrderService extends OpenmrsService {
 	 * @throws APIException when error occurred
 	 */
 	public List<OrderGroup> getOrderGroupsByPatient(Patient patient) throws APIException;
+	
+	/**
+	 * Creates or updates an OrderSet 
+	 * 
+	 * @param orderSet
+	 * @return the saved OrderSet
+	 */
+	public OrderSet saveOrderSet(OrderSet orderSet);
+	
+	/**
+	 * @param orderSetId
+	 * @return the OrderSet with the given id
+	 */
+	@Transactional(readOnly = true)
+	public OrderSet getOrderSet(Integer orderSetId);
+	
+	/**
+	 * @param uuid
+	 * @return the OrderSet with the given uuid
+	 */
+	@Transactional(readOnly = true)
+	public OrderSet getOrderSetByUuid(String uuid);
+	
+	/**
+	 * Associates the given Concept with the given OrderSet in the database 
+	 * 
+	 * @param asConcept
+	 * @param content
+	 * @return the published entity
+	 * 
+	 * @should publish an order set as a concept
+	 * @should publish an order set as a concept overwriting the previous entity
+	 */
+	public PublishedOrderSet publishOrderSet(Concept asConcept, OrderSet content);
+	
+	/**
+	 * @param concept
+	 * @return the {@link PublishedOrderSet} associated with the given Concept, or null if none is associated
+	 * 
+	 * @should get a published order set by concept
+	 */
+	@Transactional(readOnly = true)
+	public PublishedOrderSet getPublishedOrderSet(Concept concept);
+	
+	/**
+	 * @param query
+	 * @return all {@link PublishedOrderSet}s that fuzzy-match the given query string
+	 * 
+	 * @should get all published order sets by query
+	 */
+	@Transactional(readOnly = true)
+	public List<PublishedOrderSet> getPublishedOrderSets(String query);
 	
 	/**
 	 * This searches for orders given the parameters. Most arguments are optional (nullable). If

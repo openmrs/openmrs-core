@@ -4858,7 +4858,6 @@
 			
 			<column name="name" type="varchar(255)" />
 			<column name="description" type="text" />
-			<column name="concept_id" type="int" />
 			<column name="title" type="varchar(255)" />
 			<column name="comment" type="text" />
 			<column name="operator" type="varchar(50)" />
@@ -5103,6 +5102,35 @@
 		<addForeignKeyConstraint constraintName="orders_order_group_fk"
 			baseTableName="orders" baseColumnNames="order_group"
 			referencedTableName="order_group" referencedColumnNames="order_group_id" />
+	</changeSet>
+	
+	<changeSet id="201106241614-published-order-set" author="djazayeri">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="published_order_set" />
+			</not>
+		</preConditions>
+
+		<comment>Create published_order_set table</comment>
+
+		<createTable tableName="published_order_set">
+			<column name="published_order_set_id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="concept_id" type="int" >
+				<constraints nullable="false" unique="true"/>
+			</column>
+			<column name="order_set_id" type="int" >
+				<constraints nullable="false" unique="true"/>
+			</column>					
+		</createTable>
+		
+		<addForeignKeyConstraint constraintName="published_order_set_concept_id_fk" 
+								 baseTableName="published_order_set" baseColumnNames="concept_id"
+								 referencedTableName="concept" referencedColumnNames="concept_id"/>
+		<addForeignKeyConstraint constraintName="published_order_set_order_set_id_fk" 
+								 baseTableName="published_order_set" baseColumnNames="order_set_id"
+								 referencedTableName="order_set" referencedColumnNames="order_set_id"/>
 	</changeSet>
 	
 	<changeSet id="20110623-1605" author="wyclif">

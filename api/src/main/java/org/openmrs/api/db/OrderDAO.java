@@ -20,8 +20,11 @@ import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
 import org.openmrs.OrderGroup;
+import org.openmrs.OrderSet;
 import org.openmrs.Patient;
+import org.openmrs.PublishedOrderSet;
 import org.openmrs.User;
+import org.openmrs.api.OrderService;
 import org.openmrs.api.OrderService.ORDER_STATUS;
 
 /**
@@ -106,5 +109,35 @@ public interface OrderDAO {
 	 * @return
 	 */
 	public boolean isActivatedInDatabase(Order order);
+	
+	/**
+	 * @see OrderService#getOrderSet(Integer)
+	 */
+	public OrderSet getOrderSet(Integer orderSetId);
+	
+	/**
+	 * @see OrderService#getOrderSetByUuid(String)
+	 */
+	public OrderSet getOrderSetByUuid(String uuid);
+	
+	/**
+	 * @see OrderService#saveOrderSet(OrderSet)
+	 */
+	public OrderSet saveOrderSet(OrderSet orderSet);
+	
+	/**
+	 * @see OrderService#publishOrderSet(Concept, OrderSet)
+	 */
+	public PublishedOrderSet publishOrderSet(Concept asConcept, OrderSet content);
+	
+	/**
+	 * @see OrderService#getPublishedOrderSet(Concept)
+	 */
+	public PublishedOrderSet getPublishedOrderSet(Concept concept);
+	
+	/**
+	 * @see OrderService#getPublishedOrderSets(String)
+	 */
+	public List<PublishedOrderSet> getPublishedOrderSets(String query);
 	
 }

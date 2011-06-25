@@ -56,6 +56,7 @@
 		<mapping resource="org/openmrs/api/db/hibernate/Order.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/OrderSet.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/OrderSetMember.hbm.xml" />
+		<mapping resource="org/openmrs/api/db/hibernate/PublishedOrderSet.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/OrderGroup.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/Location.hbm.xml" />
 		<mapping resource="org/openmrs/api/db/hibernate/LocationTag.hbm.xml" />

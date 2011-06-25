@@ -28,6 +28,8 @@ import org.openmrs.Encounter;
 import org.openmrs.GenericDrug;
 import org.openmrs.ImplementationId;
 import org.openmrs.Order;
+import org.openmrs.OrderSet;
+import org.openmrs.PublishedOrderSet;
 import org.openmrs.Order.OrderAction;
 import org.openmrs.OrderGroup;
 import org.openmrs.OrderType;
@@ -669,6 +671,54 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		if (patient == null)
 			throw new IllegalArgumentException("patient is required");
 		return dao.getOrderGroupsByPatient(patient);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getOrderSet(java.lang.Integer)
+	 */
+	@Override
+	public OrderSet getOrderSet(Integer orderSetId) {
+		return dao.getOrderSet(orderSetId);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getOrderSetByUuid(java.lang.String)
+	 */
+	@Override
+	public OrderSet getOrderSetByUuid(String uuid) {
+		return dao.getOrderSetByUuid(uuid);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getPublishedOrderSet(org.openmrs.Concept)
+	 */
+	@Override
+	public PublishedOrderSet getPublishedOrderSet(Concept concept) {
+		return dao.getPublishedOrderSet(concept);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getPublishedOrderSets(java.lang.String)
+	 */
+	@Override
+	public List<PublishedOrderSet> getPublishedOrderSets(String query) {
+		return dao.getPublishedOrderSets(query);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#publishOrderSet(org.openmrs.Concept, org.openmrs.OrderSet)
+	 */
+	@Override
+	public PublishedOrderSet publishOrderSet(Concept asConcept, OrderSet content) {
+		return dao.publishOrderSet(asConcept, content);
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#saveOrderSet(org.openmrs.OrderSet)
+	 */
+	@Override
+	public OrderSet saveOrderSet(OrderSet orderSet) {
+		return dao.saveOrderSet(orderSet);
 	}
 	
 	/**

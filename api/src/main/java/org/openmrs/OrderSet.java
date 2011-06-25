@@ -47,8 +47,6 @@ public class OrderSet extends BaseOpenmrsMetadata implements java.io.Serializabl
 	
 	private Integer orderSetId;
 	
-	private Concept concept;
-	
 	private String title;
 	
 	private String comment;
@@ -66,14 +64,7 @@ public class OrderSet extends BaseOpenmrsMetadata implements java.io.Serializabl
 	
 	private Collection<OrderSetMember> members;
 	
-	/**
-	 * Constructs an order set with a given order set id.
-	 * 
-	 * @param orderSetId
-	 *            the order set id.
-	 */
-	public OrderSet(Integer orderSetId) {
-		setOrderSetId(orderSetId);
+	public OrderSet() {
 	}
 	
 	/**
@@ -93,25 +84,6 @@ public class OrderSet extends BaseOpenmrsMetadata implements java.io.Serializabl
 	 */
 	public void setOrderSetId(Integer orderSetId) {
 		this.orderSetId = orderSetId;
-	}
-	
-	/**
-	 * Gets the concept.
-	 * 
-	 * @return the concept.
-	 */
-	public Concept getConcept() {
-		return concept;
-	}
-	
-	/**
-	 * Sets the concept.
-	 * 
-	 * @param concept
-	 *            the concept to set.
-	 */
-	public void setConcept(Concept concept) {
-		this.concept = concept;
 	}
 	
 	/**
