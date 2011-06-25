@@ -426,7 +426,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Patient patient = Context.getPatientService().getPatient(6);
 		List<OrderGroup> groups = Context.getOrderService().getOrderGroupsByPatient(patient);
 		Assert.assertNotNull(groups);
-		Assert.assertEquals(2, groups.size());
+		Assert.assertEquals(3, groups.size());
 	}
 	
 	/**
@@ -487,22 +487,17 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	
 	/**
 	 * @see OrderService#unvoidOrderGroup(OrderGroup)
-	 * @verifies unvoid orders in group
+	 * @verifies unvoid orders group
 	 */
 	@Test
-	public void unvoidOrderGroup_shouldUnvoidOrdersInGroup() throws Exception {
+	public void unvoidOrderGroup_shouldUnvoidOrdersGroup() throws Exception {
 		OrderGroup group = Context.getOrderService().getOrderGroup(3);
 		
 		group = Context.getOrderService().unvoidOrderGroup(group);
-		Order order = (Order) group.getMembers().toArray()[0];
 		
-		// check if group is voided
+		// check if group is unvoided
 		Assert.assertNotNull(group);
 		Assert.assertTrue(!group.isVoided());
-		
-		// check if group members are voided
-		Assert.assertNotNull(order);
-		Assert.assertTrue(!order.isVoided());
 	}
 	
 	/**

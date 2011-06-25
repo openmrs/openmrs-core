@@ -47,12 +47,17 @@ public class OrderGroupValidator implements Validator {
 	 * 
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object,
 	 *      org.springframework.validation.Errors)
+	 * @should fail if order group is null
+	 * @should fail if any required field is null
+	 * @should fail if group doesn't have any members
+	 * @should fail if any order has different from group's patient
+	 * @should fail if any member is invalid
 	 */
 	@Override
 	public void validate(Object arg0, Errors errors) {
 		OrderGroup group = (OrderGroup) arg0;
 		if (group == null) {
-			errors.rejectValue("order", "error.general");
+			errors.reject("group", "error.general");
 		} else {
 			
 			// for the following elements OrderGroup.hbm.xml says: not-null="true"
@@ -73,7 +78,7 @@ public class OrderGroupValidator implements Validator {
 						errors.popNestedPath();
 						index++;
 					}
-					if (!order.getPatient().equals(group.getPatient()))
+					if (order.getPatient() != null && !order.getPatient().equals(group.getPatient()))
 						errors.reject("OrderGroup.orderPatientMatching");
 				}
 			}
