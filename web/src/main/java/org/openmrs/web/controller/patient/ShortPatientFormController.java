@@ -315,21 +315,25 @@ public class ShortPatientFormController {
 		}
 		
 		// add all the existing identifiers and any new ones.
-		for (PatientIdentifier id : patientModel.getIdentifiers()) {
-			// skip past the new ones removed from the user interface(may be
-			// they were invalid
-			// and the user changed their mind about adding them and they
-			// removed them)
-			if (id.getPatientIdentifierId() == null && id.isVoided())
-				continue;
-			
-			patient.addIdentifier(id);
+		if (patientModel.getIdentifiers() != null) {
+			for (PatientIdentifier id : patientModel.getIdentifiers()) {
+				// skip past the new ones removed from the user interface(may be
+				// they were invalid
+				// and the user changed their mind about adding them and they
+				// removed them)
+				if (id.getPatientIdentifierId() == null && id.isVoided())
+					continue;
+				
+				patient.addIdentifier(id);
+			}
 		}
 		
 		// add the person attributes
-		for (PersonAttribute formAttribute : patientModel.getPersonAttributes())
-			patient.addAttribute(formAttribute);
-		
+		if (patientModel.getPersonAttributes() != null) {
+			for (PersonAttribute formAttribute : patientModel.getPersonAttributes())
+				patient.addAttribute(formAttribute);
+		}
+	
 		return patient;
 	}
 	
