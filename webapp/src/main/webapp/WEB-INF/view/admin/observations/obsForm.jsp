@@ -406,7 +406,7 @@
 		<th><spring:message code="Obs.complexAnswer"/></th>
 		<spring:bind path="valueComplex">
 		<td>	  
-			 <openmrs_tag:domainObsValue concept="${obs.concept}" formFieldName="valueComplex"/> 
+			 <openmrs_tag:domainObsValue concept="${obs.concept}" formFieldName="valueComplex" valueComplex="${obs.valueComplex}"/> 
 			 <br/>
 			 <c:if test="${not empty obs.valueComplex }">
 			 <a href="${pageContext.request.contextPath}${hyperlinkView}"><spring:message code="general.view.instance"/>/<spring:message code="general.edit.instance"/></a><br/>${htmlView}<br/>
