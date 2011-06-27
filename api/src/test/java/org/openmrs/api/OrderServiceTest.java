@@ -497,7 +497,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		
 		// check if group is unvoided
 		Assert.assertNotNull(group);
-		Assert.assertTrue(!group.isVoided());
+		Assert.assertFalse(group.isVoided());
 	}
 	
 	/**

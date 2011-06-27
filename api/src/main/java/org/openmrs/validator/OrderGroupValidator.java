@@ -50,12 +50,12 @@ public class OrderGroupValidator implements Validator {
 	 * @should fail if order group is null
 	 * @should fail if any required field is null
 	 * @should fail if group doesn't have any members
-	 * @should fail if any order has different from group's patient
+	 * @should fail if any order has different from group patient
 	 * @should fail if any member is invalid
 	 */
 	@Override
-	public void validate(Object arg0, Errors errors) {
-		OrderGroup group = (OrderGroup) arg0;
+	public void validate(Object target, Errors errors) {
+		OrderGroup group = (OrderGroup) target;
 		if (group == null) {
 			errors.reject("group", "error.general");
 		} else {
