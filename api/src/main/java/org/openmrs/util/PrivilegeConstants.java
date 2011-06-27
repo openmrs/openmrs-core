@@ -425,4 +425,11 @@ public class PrivilegeConstants {
 	
 	@AddOnStartup(description = "Able to view the 'Visits' tab on the patient dashboard")
 	public static final String DASHBOARD_VISITS = "Patient Dashboard - View Visits Section";
+	
+	@AddOnStartup(description = "Able to view order sets")
+	public static final String VIEW_ORDER_SETS = "View Order Sets";
+	
+	@AddOnStartup(description = "Able to add/edit/retire order sets")
+	public static final String MANAGE_ORDER_SETS = "Manage Order Sets";
+	
 }

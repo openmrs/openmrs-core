@@ -513,21 +513,27 @@ public interface OrderService extends OpenmrsService {
 	 * 
 	 * @param orderSet
 	 * @return the saved OrderSet
+	 * @since 1.9
 	 */
+	@Authorized(PrivilegeConstants.MANAGE_ORDER_SETS)
 	public OrderSet saveOrderSet(OrderSet orderSet);
 	
 	/**
 	 * @param orderSetId
 	 * @return the OrderSet with the given id
+	 * @since 1.9
 	 */
 	@Transactional(readOnly = true)
+	@Authorized(PrivilegeConstants.VIEW_ORDER_SETS)
 	public OrderSet getOrderSet(Integer orderSetId);
 	
 	/**
 	 * @param uuid
 	 * @return the OrderSet with the given uuid
+	 * @since 1.9
 	 */
 	@Transactional(readOnly = true)
+	@Authorized(PrivilegeConstants.VIEW_ORDER_SETS)
 	public OrderSet getOrderSetByUuid(String uuid);
 	
 	/**
@@ -536,28 +542,34 @@ public interface OrderService extends OpenmrsService {
 	 * @param asConcept
 	 * @param content
 	 * @return the published entity
+	 * @since 1.9
 	 * 
 	 * @should publish an order set as a concept
 	 * @should publish an order set as a concept overwriting the previous entity
 	 */
+	@Authorized(PrivilegeConstants.MANAGE_ORDER_SETS)
 	public PublishedOrderSet publishOrderSet(Concept asConcept, OrderSet content);
 	
 	/**
 	 * @param concept
 	 * @return the {@link PublishedOrderSet} associated with the given Concept, or null if none is associated
+	 * @since 1.9
 	 * 
 	 * @should get a published order set by concept
 	 */
 	@Transactional(readOnly = true)
+	@Authorized(PrivilegeConstants.VIEW_ORDER_SETS)
 	public PublishedOrderSet getPublishedOrderSet(Concept concept);
 	
 	/**
 	 * @param query
 	 * @return all {@link PublishedOrderSet}s that fuzzy-match the given query string
+	 * @since 1.9
 	 * 
 	 * @should get all published order sets by query
 	 */
 	@Transactional(readOnly = true)
+	@Authorized(PrivilegeConstants.VIEW_ORDER_SETS)
 	public List<PublishedOrderSet> getPublishedOrderSets(String query);
 	
 	/**
