@@ -20,7 +20,7 @@ import java.util.List;
  */
 public class EventListeners {
 	
-	private static List<GlobalPropertyListener> globalPropertyListeners;
+	private static List<GlobalPropertyListener> globalPropertyListeners = null;
 	
 	public EventListeners() {
 	}
@@ -30,7 +30,14 @@ public class EventListeners {
 	}
 	
 	public void setGlobalPropertyListeners(List<GlobalPropertyListener> globalPropertyListeners) {
-		EventListeners.globalPropertyListeners = globalPropertyListeners;
+		if (EventListeners.globalPropertyListeners == null)
+			EventListeners.globalPropertyListeners = globalPropertyListeners;
+		else {
+			for (GlobalPropertyListener gpl : globalPropertyListeners) {
+				if (!EventListeners.globalPropertyListeners.contains(gpl))
+					EventListeners.globalPropertyListeners.add(gpl);
+			}
+		}
 	}
 	
 }
