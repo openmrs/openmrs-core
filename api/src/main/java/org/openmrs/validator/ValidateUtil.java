@@ -83,7 +83,7 @@ public class ValidateUtil {
 	 * @should throw APIException if errors occur during validation
 	 */
 	@SuppressWarnings("unchecked")
-    public static void validate(Object obj) throws APIException {
+	public static void validate(Object obj) throws APIException {
 		BindException errors = new BindException(obj, "");
 		
 		for (Validator validator : getValidators(obj)) {

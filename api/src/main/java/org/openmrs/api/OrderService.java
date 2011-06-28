@@ -594,4 +594,39 @@ public interface OrderService extends OpenmrsService {
 	public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
 	        List<Concept> concepts, List<User> orderers, List<Encounter> encounters, Date asOfDate);
 	
+	/**
+	 * Mark the given order as discontinued. This should be used when patients are no longer on this
+	 * Order. If this is was invalid Order, the {@link #voidOrder(Order, String)} method should
+	 * probably be used.
+	 * 
+	 * @since 1.9
+	 * @param order the order to be discontinued
+	 * @param reason for discontinuing the order
+	 * @param user the user discontinuing the order, defaults to authenticated user
+	 * @param discontinueDate the date when to discontinue the order, defaults to current date
+	 * @return the order that was discontinued
+	 * @throws APIException
+	 * @should discontinue and return the old order
+	 * @should re discontinue an order whose discontinued date has not yet passed
+	 * @should fail if the passed in discontinue date is in the past for an actived order
+	 * @should use the passed in future discontinue date if the order is not yet activated
+	 * @should default to current date for an activated order and discontinue date is in the past
+	 */
+	@Authorized(PrivilegeConstants.EDIT_ORDERS)
+	public Order discontinueOrder(Order order, String reason, User user, Date discontinueDate) throws APIException;
+	
+	/**
+	 * Mark the given order as discontinued. This should be used when patients are no longer on this
+	 * Order. If this is was invalid Order, the {@link #voidOrder(Order, String)} method should
+	 * probably be used.
+	 * 
+	 * @since 1.9
+	 * @param order the order to be discontinued
+	 * @param reason for discontinuing the order
+	 * @return the order that was discontinued
+	 * @throws APIException
+	 */
+	@Authorized(PrivilegeConstants.EDIT_ORDERS)
+	public Order discontinueOrder(Order order, String reason) throws APIException;
+	
 }

@@ -232,11 +232,12 @@ public class HibernateOrderDAO implements OrderDAO {
 	 */
 	@Override
 	public String getOrderNumberInDatabase(Order order) {
-	    if (order.getOrderId() == null)
-	    	return null;
-	    Query query = sessionFactory.getCurrentSession().createSQLQuery("select order_number from orders where order_id = :orderId");
-	    query.setInteger("orderId", order.getOrderId());
-	    return (String) query.uniqueResult();
+		if (order.getOrderId() == null)
+			return null;
+		Query query = sessionFactory.getCurrentSession().createSQLQuery(
+		    "select order_number from orders where order_id = :orderId");
+		query.setInteger("orderId", order.getOrderId());
+		return (String) query.uniqueResult();
 	}
 	
 	/**

@@ -13,6 +13,7 @@
  */
 package org.openmrs.api;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -33,6 +34,7 @@ import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
+import org.openmrs.util.OpenmrsUtil;
 
 /**
  * TODO clean up and test all methods in OrderService
@@ -580,106 +582,210 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		}
 		Assert.assertTrue(foundOrderSet);
 	}
-
-	/**
-     * @see OrderService#saveOrder(Order)
-     * @verifies not allow you to change the order number of a saved order
-     */
-    @Test
-    public void saveOrder_shouldNotAllowYouToChangeTheOrderNumberOfASavedOrder() throws Exception {
-    	Order existing = service.getOrder(1);
-    	existing.setOrderNumber("New Number");
-    	try {
-    		service.saveOrder(existing);
-    		Assert.fail("the previous line should have thrown an exception");
-    	} catch (APIException ex) {
-    		// test this way rather than @Test(expected...) so we can verify it's the right APIException
-    		Assert.assertTrue(ex.getMessage().contains("orderNumber"));
-    	}
-    }
-
-	/**
-     * @see OrderService#saveOrder(Order)
-     * @verifies not allow you to edit an order after it has been activated
-     */
-    @Test
-    public void saveOrder_shouldNotAllowYouToEditAnOrderAfterItHasBeenActivated() throws Exception {
-    	DrugOrder existing = service.getOrder(1, DrugOrder.class);
-    	service.activateOrder(existing, null, null);
-    	Context.flushSession();
-    	existing = service.getOrder(1, DrugOrder.class);
-    	existing.setDose(999d);
-    	try {
-    		service.saveOrder(existing);
-    		Assert.fail("the previous line should have thrown an exception");
-    	} catch (APIException ex) {
-    		// test this way rather than @Test(expected...) so we can verify it's the right APIException
-    		Assert.assertTrue(ex.getMessage().contains("activated"));
-    	}
-    }
-
-	/**
-     * @see OrderService#saveOrder(Order)
-     * @verifies allow you to edit an order before it is activated
-     */
-    @Test
-    public void saveOrder_shouldAllowYouToEditAnOrderBeforeItIsActivated() throws Exception {
-    	DrugOrder existing = service.getOrder(5, DrugOrder.class);
-    	Assert.assertNotSame(999d, existing.getDose());
-    	existing.setDose(999d);
-    	service.saveOrder(existing);
-    	// if we got here, that means success
-
-    	// I originally tried doing these two lines before and after the save, but Order doesn't have a real dateChanged property.
-    	// TODO determine whether we want to add dateChanged, and either remove this comment, or add the property and uncomment it 
-    	// Assert.assertNull(existing.getDateChanged());
-    	// Assert.assertNotNull(existing.getDateChanged());
-    }
-
-	/**
-     * @see OrderService#saveOrder(Order)
-     * @verifies not allow you to save an order that is not activated and signed
-     */
-    @Test
-    public void saveOrder_shouldNotAllowYouToSaveAnOrderThatIsNotActivatedAndSigned() throws Exception {
-	    DrugOrder order = new DrugOrder();
-	    order.setPatient(Context.getPatientService().getPatient(2));
-	    order.setConcept(Context.getConceptService().getConcept(88));
-	    // not signed or activated
-	    try {
-	    	service.saveOrder(order);
-	    	Assert.fail("previous line should have failed");
-	    } catch (APIException ex) {
-	    	// exception is expected
-	    }
-	    
-	    order = new DrugOrder();
-	    order.setPatient(Context.getPatientService().getPatient(2));
-	    order.setConcept(Context.getConceptService().getConcept(88));
-	    // signed but not activated
-	    try {
-	    	service.signOrder(order, null, null);
-	    	Assert.fail("previous line should have failed");
-	    } catch (APIException ex) {
-	    	// exception is expected
-	    }
-	    
-	    order = new DrugOrder();
-	    order.setPatient(Context.getPatientService().getPatient(2));
-	    order.setConcept(Context.getConceptService().getConcept(88));
-	    // activated, but not signed
-	    try {
-	    	service.activateOrder(order, null, null);
-	    	Assert.fail("previous line should have failed");
-	    } catch (APIException ex) {
-	    	// exception is expected
-	    }
-	    
-	    order = new DrugOrder();
-	    order.setPatient(Context.getPatientService().getPatient(2));
-	    order.setConcept(Context.getConceptService().getConcept(88));
-	    // signed and activated
-	    service.signAndActivateOrder(order, null, null);
-    }
 	
+	/**
+	 * @see OrderService#saveOrder(Order)
+	 * @verifies not allow you to change the order number of a saved order
+	 */
+	@Test
+	public void saveOrder_shouldNotAllowYouToChangeTheOrderNumberOfASavedOrder() throws Exception {
+		Order existing = service.getOrder(1);
+		existing.setOrderNumber("New Number");
+		try {
+			service.saveOrder(existing);
+			Assert.fail("the previous line should have thrown an exception");
+		}
+		catch (APIException ex) {
+			// test this way rather than @Test(expected...) so we can verify it's the right APIException
+			Assert.assertTrue(ex.getMessage().contains("orderNumber"));
+		}
+	}
+	
+	/**
+	 * @see OrderService#saveOrder(Order)
+	 * @verifies not allow you to edit an order after it has been activated
+	 */
+	@Test
+	public void saveOrder_shouldNotAllowYouToEditAnOrderAfterItHasBeenActivated() throws Exception {
+		DrugOrder existing = service.getOrder(1, DrugOrder.class);
+		service.activateOrder(existing, null, null);
+		Context.flushSession();
+		existing = service.getOrder(1, DrugOrder.class);
+		existing.setDose(999d);
+		try {
+			service.saveOrder(existing);
+			Assert.fail("the previous line should have thrown an exception");
+		}
+		catch (APIException ex) {
+			// test this way rather than @Test(expected...) so we can verify it's the right APIException
+			Assert.assertTrue(ex.getMessage().contains("activated"));
+		}
+	}
+	
+	/**
+	 * @see OrderService#saveOrder(Order)
+	 * @verifies allow you to edit an order before it is activated
+	 */
+	@Test
+	public void saveOrder_shouldAllowYouToEditAnOrderBeforeItIsActivated() throws Exception {
+		DrugOrder existing = service.getOrder(5, DrugOrder.class);
+		Assert.assertNotSame(999d, existing.getDose());
+		existing.setDose(999d);
+		service.saveOrder(existing);
+		// if we got here, that means success
+		
+		// I originally tried doing these two lines before and after the save, but Order doesn't have a real dateChanged property.
+		// TODO determine whether we want to add dateChanged, and either remove this comment, or add the property and uncomment it 
+		// Assert.assertNull(existing.getDateChanged());
+		// Assert.assertNotNull(existing.getDateChanged());
+	}
+	
+	/**
+	 * @see OrderService#saveOrder(Order)
+	 * @verifies not allow you to save an order that is not activated and signed
+	 */
+	@Test
+	public void saveOrder_shouldNotAllowYouToSaveAnOrderThatIsNotActivatedAndSigned() throws Exception {
+		DrugOrder order = new DrugOrder();
+		order.setPatient(Context.getPatientService().getPatient(2));
+		order.setConcept(Context.getConceptService().getConcept(88));
+		// not signed or activated
+		try {
+			service.saveOrder(order);
+			Assert.fail("previous line should have failed");
+		}
+		catch (APIException ex) {
+			// exception is expected
+		}
+		
+		order = new DrugOrder();
+		order.setPatient(Context.getPatientService().getPatient(2));
+		order.setConcept(Context.getConceptService().getConcept(88));
+		// signed but not activated
+		try {
+			service.signOrder(order, null, null);
+			Assert.fail("previous line should have failed");
+		}
+		catch (APIException ex) {
+			// exception is expected
+		}
+		
+		order = new DrugOrder();
+		order.setPatient(Context.getPatientService().getPatient(2));
+		order.setConcept(Context.getConceptService().getConcept(88));
+		// activated, but not signed
+		try {
+			service.activateOrder(order, null, null);
+			Assert.fail("previous line should have failed");
+		}
+		catch (APIException ex) {
+			// exception is expected
+		}
+		
+		order = new DrugOrder();
+		order.setPatient(Context.getPatientService().getPatient(2));
+		order.setConcept(Context.getConceptService().getConcept(88));
+		// signed and activated
+		service.signAndActivateOrder(order, null, null);
+	}
+	
+	/**
+	 * @see {@link OrderService#discontinueOrder(Order,String,User,Date)}
+	 */
+	@Test
+	@Verifies(value = "should discontinue and return the old order", method = "discontinueOrder(Order,String,User,Date)")
+	public void discontinueOrder_shouldDiscontinueAndReturnTheOldOrder() throws Exception {
+		int originalCount = service.getOrders(Order.class, null, null, null, null, null).size();
+		Order order = service.getOrder(3);
+		Assert.assertFalse(order.getDiscontinued());
+		Assert.assertNull(order.getDiscontinuedDate());
+		Assert.assertNull(order.getDiscontinuedBy());
+		Assert.assertNull(order.getDiscontinuedReasonNonCoded());
+		Order returnedOrder = service.discontinueOrder(order, "Testing");
+		Assert.assertEquals(order, returnedOrder);
+		Assert.assertTrue(order.getDiscontinued());
+		Assert.assertEquals("Testing", returnedOrder.getDiscontinuedReasonNonCoded());
+		Assert.assertNotNull(returnedOrder.getDiscontinuedDate());
+		Assert.assertNotNull(returnedOrder.getDiscontinuedBy());
+		//should have created a discontinue order
+		Assert.assertEquals(originalCount + 1, service.getOrders(Order.class, null, null, null, null, null).size());
+	}
+	
+	/**
+	 * @see {@link OrderService#discontinueOrder(Order,String,User,Date)}
+	 */
+	@Test(expected = APIException.class)
+	@Verifies(value = "should fail if the passed in discontinue date is in the past for an actived order", method = "discontinueOrder(Order,String,User,Date)")
+	public void discontinueOrder_shouldFailIfThePassedInDiscontinueDateIsInThePastForAnActivedOrder() throws Exception {
+		Order order = service.getOrder(3);
+		Assert.assertNotNull(order.getDateActivated());
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.MINUTE, -1);
+		service.discontinueOrder(order, "Testing", null, cal.getTime());
+	}
+	
+	/**
+	 * @see {@link OrderService#discontinueOrder(Order,String,User,Date)}
+	 */
+	@Test
+	@Verifies(value = "should re discontinue an order whose discontinued date has not yet passed", method = "discontinueOrder(Order,String,User,Date)")
+	public void discontinueOrder_shouldReDiscontinueAnOrderWhoseDiscontinuedDateHasNotYetPassed() throws Exception {
+		//discontinue the same order twice with different dates
+		Order order = service.getOrder(5);
+		Assert.assertNull(order.getDateActivated());
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.HOUR_OF_DAY, 1);
+		service.discontinueOrder(order, "Testing1", null, cal.getTime());
+		Assert.assertTrue(order.getDiscontinued());
+		
+		//re discontinue to future time
+		Calendar cal1 = Calendar.getInstance();
+		cal1.add(Calendar.HOUR_OF_DAY, 2);
+		Date date2 = cal1.getTime();
+		service.discontinueOrder(order, "Testing2", null, date2);
+		Assert.assertEquals(date2, order.getDiscontinuedDate());
+		Assert.assertEquals("Testing2", order.getDiscontinuedReasonNonCoded());
+		
+		//re-discontinue back to an earlier time
+		Calendar cal2 = Calendar.getInstance();
+		cal2.add(Calendar.MINUTE, 2);
+		Date date3 = cal2.getTime();
+		service.discontinueOrder(order, "Testing3", null, date3);
+		Assert.assertEquals(date3, order.getDiscontinuedDate());
+		Assert.assertEquals("Testing3", order.getDiscontinuedReasonNonCoded());
+	}
+	
+	/**
+	 * @see {@link OrderService#discontinueOrder(Order,String,User,Date)}
+	 */
+	@Test
+	@Verifies(value = "should use the passed in future discontinue date if the order is not yet activated", method = "discontinueOrder(Order,String,User,Date)")
+	public void discontinueOrder_shouldUseThePassedInFutureDiscontinueDateIfTheOrderIsNotYetActivated() throws Exception {
+		Order order = service.getOrder(5);
+		Assert.assertNull(order.getDateActivated());
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.HOUR_OF_DAY, 1);
+		Date date = cal.getTime();
+		service.discontinueOrder(order, "Testing", null, date);
+		Assert.assertTrue(order.getDiscontinued());
+		Assert.assertEquals(date, order.getDiscontinuedDate());
+	}
+	
+	/**
+	 * @see {@link OrderService#discontinueOrder(Order,String,User,Date)}
+	 */
+	@Test
+	@Verifies(value = "should default to current date for an activated order and discontinue date is in the past", method = "discontinueOrder(Order,String,User,Date)")
+	public void discontinueOrder_shouldDefaultToCurrentDateForAnActivatedOrderAndDiscontinueDateIsInThePast()
+	        throws Exception {
+		Order order = service.getOrder(5);
+		Assert.assertNull(order.getDateActivated());
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.HOUR_OF_DAY, -1);
+		Date date = cal.getTime();
+		service.discontinueOrder(order, "Testing", null, date);
+		Assert.assertTrue(order.getDiscontinued());
+		Assert.assertNotNull(order.getDiscontinuedDate());
+		Assert.assertTrue(OpenmrsUtil.compareWithNullAsEarliest(order.getDiscontinuedDate(), date) > 0);
+	}
 }

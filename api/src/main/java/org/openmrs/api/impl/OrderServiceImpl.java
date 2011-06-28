@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
@@ -28,13 +29,13 @@ import org.openmrs.Encounter;
 import org.openmrs.GenericDrug;
 import org.openmrs.ImplementationId;
 import org.openmrs.Order;
-import org.openmrs.OrderSet;
-import org.openmrs.PublishedOrderSet;
 import org.openmrs.Order.OrderAction;
 import org.openmrs.OrderGroup;
+import org.openmrs.OrderSet;
 import org.openmrs.OrderType;
 import org.openmrs.Orderable;
 import org.openmrs.Patient;
+import org.openmrs.PublishedOrderSet;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.OrderService;
@@ -43,6 +44,7 @@ import org.openmrs.api.db.OrderDAO;
 import org.openmrs.order.DrugOrderSupport;
 import org.openmrs.order.RegimenSuggestion;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.validator.ValidateUtil;
 import org.springframework.util.StringUtils;
 
@@ -140,24 +142,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	public Order discontinueOrder(Order order, Concept discontinueReason, Date discontinueDate) throws APIException {
-		// TODO decide whether or discontinueDate can be in the future
-		if (discontinueDate == null)
-			discontinueDate = new Date();
-		if (order.isDiscontinued(discontinueDate))
-			throw new APIException("Order is already discontinued");
-		
-		// create a new Order that's a discontinuation order for the original one
-		Order dc = new Order();
-		dc.setOrderAction(OrderAction.DISCONTINUE);
-		dc.setConcept(order.getConcept());
-		Context.getOrderService().activateOrder(order, null, discontinueDate);
-		
-		// set the discontinuation properties on the original order
-		order.setDiscontinued(true);
-		order.setDiscontinuedDate(discontinueDate);
 		order.setDiscontinuedReason(discontinueReason);
-		order.setDiscontinuedBy(Context.getAuthenticatedUser());
-		return dao.saveOrder(order);
+		return doDiscontinueOrder(order, null, discontinueDate);
 	}
 	
 	/**
@@ -221,7 +207,9 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#getOrders(java.lang.Class, java.util.List, java.util.List, org.openmrs.api.OrderService.ORDER_STATUS, java.util.List, java.util.List, java.util.List, java.util.Date)
+	 * @see org.openmrs.api.OrderService#getOrders(java.lang.Class, java.util.List, java.util.List,
+	 *      org.openmrs.api.OrderService.ORDER_STATUS, java.util.List, java.util.List,
+	 *      java.util.List, java.util.Date)
 	 */
 	// TODO get rid of this method and anything that depends on it. Rewrite.
 	public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
@@ -599,7 +587,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#signAndActivateOrdersInGroup(org.openmrs.OrderGroup, org.openmrs.User, java.util.Date)
+	 * @see org.openmrs.api.OrderService#signAndActivateOrdersInGroup(org.openmrs.OrderGroup,
+	 *      org.openmrs.User, java.util.Date)
 	 */
 	@Override
 	public OrderGroup signAndActivateOrdersInGroup(OrderGroup group, User user, Date activated) throws APIException {
@@ -748,6 +737,73 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			encounters = new Vector<Encounter>();
 		
 		return dao.getOrders(orderClassType, patients, concepts, null, orderers, encounters, asOfDate);
+	}
+	
+	@Override
+	public Order discontinueOrder(Order order, String reason, User user, Date discontinueDate) throws APIException {
+		order.setDiscontinuedReasonNonCoded(reason);
+		return doDiscontinueOrder(order, user, discontinueDate);
+	}
+	
+	@Override
+	public Order discontinueOrder(Order order, String reason) throws APIException {
+		return discontinueOrder(order, reason, null, null);
+	}
+	
+	/**
+	 * Utility method that discontinues an order
+	 * 
+	 * @param oldOrder the order to discontinue
+	 * @param user the user discontinuing the order, default to authenticated user
+	 * @param discontinueDate the date when to discontinue the order, default to now. Note that this
+	 *            method only uses the passed in discontinue date if it is a future date and the
+	 *            order is not yet activated
+	 * @return the discontinued order
+	 * @throws APIException
+	 */
+	private Order doDiscontinueOrder(Order oldOrder, User user, Date discontinueDate) throws APIException {
+		if (oldOrder.getDateActivated() != null && OpenmrsUtil.compareWithNullAsGreatest(discontinueDate, new Date()) < 0) {
+			throw new APIException("Discontinue date should not be in the past for active orders");
+		}
+		//don't re-discontinue an order if its current discontinue date has passed 
+		//or the new discontinue date is null since it default to current and there no 
+		//point in re-discontinuing it now it is already discontinued
+		else if (oldOrder.getDiscontinued()
+		        && (OpenmrsUtil.compareWithNullAsGreatest(oldOrder.getDiscontinuedDate(), new Date()) < 0)) {
+			throw new APIException("Cannot discontinue an order that is already discontinued");
+		} else if (oldOrder.getAutoExpireDate() != null
+		        && OpenmrsUtil.nullSafeEquals(oldOrder.getAutoExpireDate(), discontinueDate))
+			throw new APIException(
+			        "The order is already scheduled to expire on the same date as the specified discontinue date");
+		
+		oldOrder.setDiscontinued(Boolean.TRUE);
+		if (user == null)
+			oldOrder.setDiscontinuedBy(Context.getAuthenticatedUser());
+		
+		//only orders that haven't yet been activated can have a future discontinue date since 
+		//we are not sure when they will get activated otherwise always set it to now
+		if (oldOrder.getDateActivated() == null && OpenmrsUtil.compareWithNullAsEarliest(discontinueDate, new Date()) > 0)
+			oldOrder.setDiscontinuedDate(discontinueDate);
+		else
+			oldOrder.setDiscontinuedDate(new Date());
+		
+		saveOrder(oldOrder);
+		
+		Order newOrder = new Order();
+		newOrder.setConcept(oldOrder.getConcept());
+		newOrder.setPatient(oldOrder.getPatient());
+		newOrder.setPreviousOrderNumber(oldOrder.getOrderNumber());
+		newOrder.setOrderNumber(getNewOrderNumber());
+		newOrder.setOrderAction(OrderAction.DISCONTINUE);
+		newOrder.setDateCreated(new Date());
+		newOrder.setCreator(Context.getAuthenticatedUser());
+		newOrder.setDateChanged(null);
+		newOrder.setChangedBy(null);
+		newOrder.setUuid(UUID.randomUUID().toString());
+		
+		saveOrder(newOrder);
+		
+		return oldOrder;
 	}
 	
 }
