@@ -57,7 +57,7 @@ public class OrderGroupValidator implements Validator {
 	public void validate(Object target, Errors errors) {
 		OrderGroup group = (OrderGroup) target;
 		if (group == null) {
-			errors.reject("group", "error.general");
+			errors.reject("error.general");
 		} else {
 			
 			// for the following elements OrderGroup.hbm.xml says: not-null="true"
@@ -66,20 +66,22 @@ public class OrderGroupValidator implements Validator {
 			ValidationUtils.rejectIfEmpty(errors, "dateCreated", "error.null");
 			
 			if (group.getMembers() == null || group.getMembers().isEmpty())
-				errors.reject("OrderGroup.noMembersPresent");
+				errors.rejectValue("members", "OrderGroup.noMembersPresent");
 			else {
 				int index = 0;
 				for (Order order : group.getMembers()) {
 					try {
 						errors.pushNestedPath("members[" + index + "]");
 						ValidationUtils.invokeValidator(orderValidator, order, errors);
+						
+						if (order.getPatient() != null && !order.getPatient().equals(group.getPatient()))
+							errors.rejectValue("patient", "OrderGroup.orderPatientMatching");
 					}
 					finally {
 						errors.popNestedPath();
 						index++;
 					}
-					if (order.getPatient() != null && !order.getPatient().equals(group.getPatient()))
-						errors.reject("OrderGroup.orderPatientMatching");
+					
 				}
 			}
 			

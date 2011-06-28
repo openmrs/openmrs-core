@@ -61,7 +61,7 @@ public class OrderGroupValidatorTest {
 		Errors errors = new BindException(group, "group");
 		getValidator().validate(group, errors);
 		
-		Assert.assertTrue(errors.hasErrors());
+		Assert.assertTrue(errors.hasFieldErrors("members[0].concept"));
 		Assert.assertFalse(errors.hasFieldErrors("creator"));
 		Assert.assertFalse(errors.hasFieldErrors("patient"));
 		Assert.assertFalse(errors.hasFieldErrors("dateCreated"));
@@ -89,7 +89,7 @@ public class OrderGroupValidatorTest {
 		Errors errors = new BindException(group, "group");
 		getValidator().validate(group, errors);
 		
-		Assert.assertTrue(errors.hasErrors());
+		Assert.assertTrue(errors.hasFieldErrors("members[0].patient"));
 		Assert.assertFalse(errors.hasFieldErrors("creator"));
 		Assert.assertFalse(errors.hasFieldErrors("patient"));
 		Assert.assertFalse(errors.hasFieldErrors("dateCreated"));
@@ -135,7 +135,7 @@ public class OrderGroupValidatorTest {
 		Errors errors = new BindException(group, "group");
 		getValidator().validate(group, errors);
 		
-		Assert.assertTrue(errors.hasErrors());
+		Assert.assertTrue(errors.hasFieldErrors("members"));
 		Assert.assertFalse(errors.hasFieldErrors("creator"));
 		Assert.assertFalse(errors.hasFieldErrors("patient"));
 		Assert.assertFalse(errors.hasFieldErrors("dateCreated"));
@@ -153,7 +153,7 @@ public class OrderGroupValidatorTest {
 		Errors errors = new BindException(group, "group");
 		getValidator().validate(null, errors);
 		
-		Assert.assertTrue(errors.hasErrors());
+		Assert.assertTrue(errors.hasGlobalErrors());
 	}
 	
 }
