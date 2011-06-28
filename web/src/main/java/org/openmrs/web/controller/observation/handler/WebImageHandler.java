@@ -17,13 +17,23 @@ import org.openmrs.Obs;
 import org.openmrs.obs.ComplexData;
 import org.openmrs.obs.handler.ImageHandler;
 import org.openmrs.web.WebConstants;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.openmrs.obs.ComplexObsHandler;
 
 /**
  * Extends functionality of {@link ImageHandler} for web specific views.
  * 
  * @since 1.5
  */
-public class WebImageHandler extends ImageHandler {
+
+@Component
+@Order(0)
+public class WebImageHandler extends ImageHandler implements ComplexObsHandler {
+	
+	private static final Log log = LogFactory.getLog(WebImageHandler.class);
 	
 	/**
 	 * Default Constructor
@@ -75,6 +85,16 @@ public class WebImageHandler extends ImageHandler {
 	 */
 	private String getHyperlink(Obs obs) {
 		return "/" + WebConstants.WEBAPP_NAME + "/complexObsServlet?obsId=" + obs.getObsId();
+	}
+	
+	/**
+	 * Gets the handler type for each registered handler.
+	 * 
+	 * @return the handler type
+	 */
+	@Override
+	public String getHandlerType() {
+		return "ImageHandler";
 	}
 	
 }

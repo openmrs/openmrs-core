@@ -1652,18 +1652,6 @@
 		</property>
 	</bean>
 
-    <!--  COMPLEX OBS HANDLER SECTION -->
-    <bean parent="obsServiceTarget" >
-        <property name="handlers">
-            <map>
-                <entry>
-                    <key><value>ImageHandler</value></key>
-                    <bean class="org.openmrs.web.controller.observation.handler.WebImageHandler"/>
-                </entry>
-            </map>
-        </property>
-    </bean>
-
 	<!-- Add global property listeners -->
 	<bean id="webEventListeners" parent="openmrsEventListeners">
 	    <property name="globalPropertyListeners">
@@ -1678,5 +1666,10 @@
 		>\r\n			<value>(.*)</value>\r\n		</property>
 		><value>$1</value></property>
 	-->
+	
+	<context:component-scan base-package="org.openmrs">
+		<context:include-filter type="annotation" expression="org.openmrs.annotation.Handler"/>
+		<context:exclude-filter type="custom" expression="org.openmrs.util.TestTypeFilter"/> <!-- Excludes classes with unit test super classes - Do we need this here ? -->
+	</context:component-scan>
 
 </beans>
