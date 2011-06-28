@@ -569,6 +569,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 * @verifies not allow you to change the order number of a saved order
 	 */
 	@Ignore
+	// re-enable test when we allow orders to be persisted when not activated and signed
 	@Test
 	public void saveOrder_shouldNotAllowYouToChangeTheOrderNumberOfASavedOrder() throws Exception {
 		Order existing = service.getOrder(1);
