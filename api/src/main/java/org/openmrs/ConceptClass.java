@@ -31,7 +31,7 @@ public class ConceptClass extends BaseOpenmrsMetadata implements java.io.Seriali
 	public static final String PROCEDURE_UUID = "8d490bf4-c2cc-11de-8d13-0010c6dffd0f";
 	
 	public static final String DRUG_UUID = "8d490dfc-c2cc-11de-8d13-0010c6dffd0f";
-	
+
 	public static final String DIAGNOSIS_UUID = "8d4918b0-c2cc-11de-8d13-0010c6dffd0f";
 	
 	public static final String FINDING_UUID = "8d491a9a-c2cc-11de-8d13-0010c6dffd0f";
@@ -55,6 +55,8 @@ public class ConceptClass extends BaseOpenmrsMetadata implements java.io.Seriali
 	public static final String SPECIMEN_UUID = "8d492d0a-c2cc-11de-8d13-0010c6dffd0f";
 	
 	public static final String MISC_ORDER_UUID = "8d492ee0-c2cc-11de-8d13-0010c6dffd0f";
+	
+	public static final String ORDER_SET_UUID = "baa7a1b8-a1ba-11e0-9616-705ab6a580e0";
 	
 	// Fields
 	

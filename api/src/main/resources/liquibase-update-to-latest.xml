@@ -5178,5 +5178,20 @@
 		</update>
 	</changeSet>
 	
+	<changeSet id="20110623-1611" author="wyclif">
+		<preConditions onFail="MARK_RAN">
+			<sqlCheck expectedResult="0">SELECT count(*) FROM concept_class WHERE name = 'Order Set'</sqlCheck>
+		</preConditions>
+		<comment>Adding 'Order Set' concept_class</comment>
+		<insert tableName="concept_class">
+			<column name="name" value="Order Set"/>
+            <column name="description" value="Term to describe order sets"/>
+            <column name="creator" valueNumeric="1"/>
+            <column name="date_created" valueDate="2011-06-27T14:25:00"/>
+            <column name="retired" valueNumeric="0"/>
+            <column name="uuid" valueNumeric="baa7a1b8-a1ba-11e0-9616-705ab6a580e0"/>
+        </insert>
+	</changeSet>
+	
 </databaseChangeLog>
 
