@@ -383,6 +383,8 @@ public interface OrderService extends OpenmrsService {
 	 * @param date the date to sign and activate the order (cannot be in the future, defaults to
 	 *            now)
 	 * @return the saved, signed and activated order.
+	 * @should save sign activate order with unstructured dosing
+	 * @should save sign activate order with structured dosing
 	 */
 	public Order signAndActivateOrder(Order order, User user, Date date) throws APIException;
 	

@@ -17,6 +17,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.poi.hssf.record.formula.functions.Frequency;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,6 +33,7 @@ import org.openmrs.Patient;
 import org.openmrs.PublishedOrderSet;
 import org.openmrs.User;
 import org.openmrs.api.context.Context;
+import org.openmrs.logic.Duration;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
 import org.openmrs.util.OpenmrsUtil;
@@ -444,6 +446,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		OrderGroup group = new OrderGroup(null, patient);
 		group.setCreator(provider);
 		Order order = new Order();
+		order.setActivatedBy(provider);
 		order.setConcept(Context.getConceptService().getConcept(23));
 		group.addOrder(order);
 		
@@ -787,5 +790,74 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(order.getDiscontinued());
 		Assert.assertNotNull(order.getDiscontinuedDate());
 		Assert.assertTrue(OpenmrsUtil.compareWithNullAsEarliest(order.getDiscontinuedDate(), date) > 0);
+	}
+	
+	/**
+	 * @see {@link OrderService#signAndActivateOrder(Order, User, Date))}
+	 */
+	@Test
+	@Verifies(value = "should save sign activate order with unstructured dosing", method = "signAndActivateOrder(Order, User, Date)")
+	public void saveActivatedOrder_shouldSaveSignActivateOrderWithUnstructuredDosing() throws Exception {
+		
+		User provider = Context.getUserService().getUser(501);
+		String unstructuredDosing = "500MG AS DIRECTED";
+		
+		DrugOrder order = new DrugOrder();
+		order.setPatient(Context.getPatientService().getPatient(2));
+		order.setConcept(Context.getConceptService().getConcept(23));
+		order.setUnstructuredDosing(unstructuredDosing);
+		order.setDateCreated(new Date());
+		
+		order = (DrugOrder) Context.getOrderService().signAndActivateOrder(order, provider, null);
+		
+		//Should be saved.
+		Assert.assertNotNull(order);
+		
+		//Dosing should be set
+		Assert.assertEquals(unstructuredDosing, order.getUnstructuredDosing());
+		
+		//Should be signed.
+		Assert.assertTrue(order.isSigned());
+		Assert.assertNotNull(order.getDateSigned());
+		
+		//Should be activated.
+		Assert.assertNotNull(order.getActivatedBy());
+		Assert.assertNotNull(order.getDateActivated());
+	}
+	
+	/**
+	 * @see {@link OrderService#signAndActivateOrder(Order, User, Date))}
+	 */
+	@Test
+	@Verifies(value = "should save sign activate order with structured dosing", method = "signAndActivateOrder(Order, User, Date)")
+	public void saveActivatedOrder_shouldSaveSignActivateOrderWithStructuredDosing() throws Exception {
+		
+		User provider = Context.getUserService().getUser(501);
+		
+		DrugOrder order = new DrugOrder();
+		order.setPatient(Context.getPatientService().getPatient(2));
+		order.setConcept(Context.getConceptService().getConcept(23));
+		
+		order.setDose(Double.parseDouble("500"));
+		order.setRoute("test");
+		order.setFrequency("daily");
+		order.setDuration(50);
+		order.setDateCreated(new Date());
+		
+		order = (DrugOrder) Context.getOrderService().signAndActivateOrder(order, provider, null);
+		
+		//Should be saved.
+		Assert.assertNotNull(order);
+		
+		//Dosing should be set
+		Assert.assertNotNull(order.getDose());
+		
+		//Should be signed.
+		Assert.assertTrue(order.isSigned());
+		Assert.assertNotNull(order.getDateSigned());
+		
+		//Should be activated.
+		Assert.assertNotNull(order.getActivatedBy());
+		Assert.assertNotNull(order.getDateActivated());
 	}
 }
