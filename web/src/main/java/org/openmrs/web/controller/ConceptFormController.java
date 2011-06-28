@@ -376,6 +376,8 @@ public class ConceptFormController extends SimpleFormController {
 		
 		public String handlerKey;
 		
+		public String handlerConfig;
+		
 		public Map<Locale, String> preferredNamesByLocale = new HashMap<Locale, String>();
 		
 		/**
@@ -428,6 +430,7 @@ public class ConceptFormController extends SimpleFormController {
 			} else if (concept.isComplex()) {
 				ConceptComplex complex = (ConceptComplex) concept;
 				this.handlerKey = complex.getHandler();
+				this.handlerConfig = complex.getHandlerConfig();
 			}
 		}
 		
@@ -558,6 +561,7 @@ public class ConceptFormController extends SimpleFormController {
 					complexConcept = new ConceptComplex(concept);
 				}
 				complexConcept.setHandler(handlerKey);
+				complexConcept.setHandlerConfig(handlerConfig);
 				concept = complexConcept;
 			}
 			
@@ -786,6 +790,24 @@ public class ConceptFormController extends SimpleFormController {
 		 */
 		public void setHandlerKey(String handlerKey) {
 			this.handlerKey = handlerKey;
+		}
+		
+		/**
+		 * Gets the handler config.
+		 *
+		 * @return the handler config
+		 */
+		public String getHandlerConfig() {
+			return handlerConfig;
+		}
+		
+		/**
+		 * Sets the handler config.
+		 *
+		 * @param handlerConfig the new handler config
+		 */
+		public void setHandlerConfig(String handlerConfig) {
+			this.handlerConfig = handlerConfig;
 		}
 		
 		/**

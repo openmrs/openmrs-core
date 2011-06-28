@@ -115,6 +115,7 @@
 	   <joined-subclass name="org.openmrs.ConceptComplex" table="concept_complex" extends="org.openmrs.Concept" lazy="false">
 	        <key column="concept_id" not-null="true" on-delete="cascade" />
 	        <property name="handler" type="java.lang.String" column="handler" length="255"/>
+	        <property name="handlerConfig" type="java.lang.String" column="handler_config" length="255"/>
 	    </joined-subclass>	
 		
 	</class>

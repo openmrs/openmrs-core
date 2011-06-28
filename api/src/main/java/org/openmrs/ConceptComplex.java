@@ -29,6 +29,8 @@ public class ConceptComplex extends Concept implements Serializable {
 	
 	private String handler;
 	
+	private String handlerConfig;
+	
 	/**
 	 * Default Constructor
 	 */
@@ -76,6 +78,7 @@ public class ConceptComplex extends Concept implements Serializable {
 		this.setVersion(c.getVersion());
 		
 		this.handler = "";
+		this.handlerConfig = "";
 	}
 	
 	/**
@@ -135,6 +138,24 @@ public class ConceptComplex extends Concept implements Serializable {
 	 */
 	public String getHandler() {
 		return this.handler;
+	}
+	
+	/**
+	 * Gets the handler config. This will be the validator Regex pattern
+	 *
+	 * @return the handler config
+	 */
+	public String getHandlerConfig() {
+		return handlerConfig;
+	}
+	
+	/**
+	 * Sets the handler config.
+	 *
+	 * @param handlerConfig the new handler config
+	 */
+	public void setHandlerConfig(String handlerConfig) {
+		this.handlerConfig = handlerConfig;
 	}
 	
 }
