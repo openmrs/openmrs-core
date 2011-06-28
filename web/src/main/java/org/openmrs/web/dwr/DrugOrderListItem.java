@@ -87,8 +87,6 @@ public class DrugOrderListItem {
 	
 	public DrugOrderListItem(DrugOrder drugOrder) {
 		orderId = drugOrder.getOrderId();
-		if (drugOrder.getOrderType() != null)
-			orderTypeId = drugOrder.getOrderType().getOrderTypeId();
 		if (drugOrder.getConcept() != null) {
 			conceptId = drugOrder.getConcept().getConceptId();
 			conceptName = drugOrder.getConcept().getName().getName();

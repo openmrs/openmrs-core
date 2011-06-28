@@ -22,7 +22,6 @@ import org.openmrs.Encounter;
 import org.openmrs.Order;
 import org.openmrs.OrderGroup;
 import org.openmrs.OrderSet;
-import org.openmrs.OrderType;
 import org.openmrs.Orderable;
 import org.openmrs.Patient;
 import org.openmrs.PublishedOrderSet;
@@ -170,15 +169,6 @@ public interface OrderService extends OpenmrsService {
 	public <Ord extends Order> Ord getOrder(Integer orderId, Class<Ord> orderClassType) throws APIException;
 	
 	/**
-	 * @deprecated use {@link #getOrders(Class, List, List, List, List, Date)}
-	 */
-	@Authorized(PrivilegeConstants.VIEW_ORDERS)
-	@Deprecated
-	public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
-	        List<Concept> concepts, ORDER_STATUS status, List<User> orderers, List<Encounter> encounters,
-	        List<OrderType> orderTypes, Date asOfDate);
-	
-	/**
 	 * Get all orders by Patient
 	 * 
 	 * @return orders list
@@ -231,58 +221,6 @@ public interface OrderService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.DELETE_ORDERS)
 	public Order unvoidOrder(Order order) throws APIException;
-	
-	/**
-	 * @deprecated
-	 */
-	@Authorized(PrivilegeConstants.MANAGE_ORDER_TYPES)
-	@Deprecated
-	public OrderType saveOrderType(OrderType orderType) throws APIException;
-	
-	/**
-	 * @deprecated
-	 */
-	@Authorized(PrivilegeConstants.PURGE_ORDER_TYPES)
-	public void purgeOrderType(OrderType orderType) throws APIException;
-	
-	/**
-	 * @deprecated
-	 */
-	@Authorized(PrivilegeConstants.MANAGE_ORDER_TYPES)
-	public OrderType retireOrderType(OrderType orderType, String reason) throws APIException;
-	
-	/**
-	 * @deprecated
-	 */
-	@Authorized(PrivilegeConstants.MANAGE_ORDER_TYPES)
-	public OrderType unretireOrderType(OrderType orderType) throws APIException;
-	
-	/**
-	 * @deprecated
-	 */
-	@Transactional(readOnly = true)
-	@Authorized(PrivilegeConstants.VIEW_ORDER_TYPES)
-	public List<OrderType> getAllOrderTypes() throws APIException;
-	
-	/**
-	 * @deprecated
-	 */
-	@Transactional(readOnly = true)
-	@Authorized(PrivilegeConstants.VIEW_ORDER_TYPES)
-	public List<OrderType> getAllOrderTypes(boolean includeRetired) throws APIException;
-	
-	/**
-	 * @deprecated
-	 */
-	@Transactional(readOnly = true)
-	@Authorized(PrivilegeConstants.VIEW_ORDER_TYPES)
-	public OrderType getOrderType(Integer orderTypeId) throws APIException;
-	
-	/**
-	 * @deprecated
-	 */
-	@Transactional(readOnly = true)
-	public OrderType getOrderTypeByUuid(String uuid) throws APIException;
 	
 	/**
 	 * Get all orders for the given <code>patient</code>

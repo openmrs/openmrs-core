@@ -120,7 +120,7 @@ public class OrderDrugListController extends SimpleFormController {
 		//only fill the Object is the user has authenticated properly
 		if (Context.isAuthenticated()) {
 			OrderService os = Context.getOrderService();
-			orderList = os.getOrders(DrugOrder.class, null, null, null, null, null, null);
+			orderList = os.getOrders(DrugOrder.class, null, null, null, null, null);
 		}
 		
 		return orderList;

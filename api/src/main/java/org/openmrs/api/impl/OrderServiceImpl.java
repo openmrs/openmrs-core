@@ -33,7 +33,6 @@ import org.openmrs.Order;
 import org.openmrs.Order.OrderAction;
 import org.openmrs.OrderGroup;
 import org.openmrs.OrderSet;
-import org.openmrs.OrderType;
 import org.openmrs.Orderable;
 import org.openmrs.Patient;
 import org.openmrs.PublishedOrderSet;
@@ -161,37 +160,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#saveOrderType(org.openmrs.OrderType)
-	 */
-	@Override
-	public OrderType saveOrderType(OrderType orderType) throws APIException {
-		return null;
-	}
-	
-	/**
-	 * @see org.openmrs.api.OrderService#retireOrderType(OrderType, String)
-	 */
-	@Override
-	public OrderType retireOrderType(OrderType orderType, String reason) throws APIException {
-		return null;
-	}
-	
-	/**
-	 * @see org.openmrs.api.OrderService#unretireOrderType(org.openmrs.OrderType)
-	 */
-	@Override
-	public OrderType unretireOrderType(OrderType orderType) throws APIException {
-		return null;
-	}
-	
-	/**
-	 * @see org.openmrs.api.OrderService#purgeOrderType(org.openmrs.OrderType)
-	 */
-	@Override
-	public void purgeOrderType(OrderType orderType) throws APIException {
-	}
-	
-	/**
 	 * @see org.openmrs.api.OrderService#getOrder(java.lang.Integer)
 	 */
 	@Override
@@ -214,8 +182,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	// TODO get rid of this method and anything that depends on it. Rewrite.
 	public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
-	        List<Concept> concepts, ORDER_STATUS status, List<User> orderers, List<Encounter> encounters,
-	        List<OrderType> orderTypes, Date asOfDate) {
+	        List<Concept> concepts, ORDER_STATUS status, List<User> orderers, List<Encounter> encounters, Date asOfDate) {
 		if (orderClassType == null)
 			throw new APIException(
 			        "orderClassType cannot be null.  An order type of Order.class or DrugOrder.class is required");
@@ -235,9 +202,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		if (encounters == null)
 			encounters = new Vector<Encounter>();
 		
-		if (orderTypes == null)
-			orderTypes = new Vector<OrderType>();
-		
 		return dao.getOrders(orderClassType, patients, concepts, status, orderers, encounters, asOfDate);
 	}
 	
@@ -252,7 +216,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		List<Patient> patients = new Vector<Patient>();
 		patients.add(patient);
 		
-		return getOrders(Order.class, patients, null, ORDER_STATUS.NOTVOIDED, null, null, null, null);
+		return getOrders(Order.class, patients, null, ORDER_STATUS.NOTVOIDED, null, null, null);
 	}
 	
 	/**
@@ -268,7 +232,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		List<Patient> patients = new Vector<Patient>();
 		patients.add(patient);
 		
-		List<DrugOrder> drugOrders = getOrders(DrugOrder.class, patients, null, ORDER_STATUS.ANY, null, null, null, null);
+		List<DrugOrder> drugOrders = getOrders(DrugOrder.class, patients, null, ORDER_STATUS.ANY, null, null, null);
 		
 		// loop over the drug orders and add them if they are within the current desired order
 		if (drugOrders != null) {
@@ -307,30 +271,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#getAllOrderTypes()
-	 */
-	@Override
-	public List<OrderType> getAllOrderTypes() throws APIException {
-		return Collections.emptyList();
-	}
-	
-	/**
-	 * @see org.openmrs.api.OrderService#getAllOrderTypes(boolean)
-	 */
-	@Override
-	public List<OrderType> getAllOrderTypes(boolean includeRetired) throws APIException {
-		return Collections.emptyList();
-	}
-	
-	/**
-	 * @see org.openmrs.api.OrderService#getOrderType(java.lang.Integer)
-	 */
-	@Override
-	public OrderType getOrderType(Integer orderTypeId) throws APIException {
-		return null;
-	}
-	
-	/**
 	 * @see org.openmrs.api.OrderService#getDrugOrdersByPatient(org.openmrs.Patient)
 	 */
 	@Override
@@ -338,7 +278,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		List<Patient> patients = new Vector<Patient>();
 		patients.add(patient);
 		
-		return getOrders(DrugOrder.class, patients, null, ORDER_STATUS.NOTVOIDED, null, null, null, null);
+		return getOrders(DrugOrder.class, patients, null, ORDER_STATUS.NOTVOIDED, null, null, null);
 	}
 	
 	/**
@@ -371,14 +311,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	@Override
 	public Order getOrderByUuid(String uuid) throws APIException {
 		return dao.getOrderByUuid(uuid);
-	}
-	
-	/**
-	 * @see org.openmrs.api.OrderService#getOrderTypeByUuid(java.lang.String)
-	 */
-	@Override
-	public OrderType getOrderTypeByUuid(String uuid) throws APIException {
-		return null;
 	}
 	
 	/**
@@ -496,7 +428,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		List<Patient> patients = new Vector<Patient>();
 		patients.add(patient);
 		
-		return getOrders(Order.class, patients, concepts, ORDER_STATUS.NOTVOIDED, null, null, null, null);
+		return getOrders(Order.class, patients, concepts, ORDER_STATUS.NOTVOIDED, null, null, null);
 	}
 	
 	/**
@@ -530,7 +462,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		List<Patient> patients = new Vector<Patient>();
 		patients.add(p);
 		
-		return getOrders(Order.class, patients, null, ORDER_STATUS.ACTIVE, null, null, null, date);
+		return getOrders(Order.class, patients, null, ORDER_STATUS.ACTIVE, null, null, date);
 		
 	}
 	
@@ -549,7 +481,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		List<Patient> patients = new Vector<Patient>();
 		patients.add(p);
 		
-		return getOrders(DrugOrder.class, patients, null, ORDER_STATUS.ACTIVE, null, null, null, date);
+		return getOrders(DrugOrder.class, patients, null, ORDER_STATUS.ACTIVE, null, null, date);
 	}
 	
 	/**

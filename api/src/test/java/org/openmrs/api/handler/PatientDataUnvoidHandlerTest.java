@@ -26,7 +26,6 @@ import org.openmrs.Patient;
 import org.openmrs.User;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.OrderService;
-import org.openmrs.api.OrderService.ORDER_STATUS;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
@@ -60,7 +59,7 @@ public class PatientDataUnvoidHandlerTest extends BaseContextSensitiveTest {
 		OrderService os = Context.getOrderService();
 		List<Patient> patients = new ArrayList<Patient>();
 		patients.add(patient);
-		List<Order> orders = os.getOrders(Order.class, patients, null, ORDER_STATUS.ANY, null, null, null, null);
+		List<Order> orders = os.getOrders(Order.class, patients, null, null, null, null);
 		Assert.assertTrue(CollectionUtils.isNotEmpty(orders));
 		//all order void related fields should be null
 		for (Order order : orders) {

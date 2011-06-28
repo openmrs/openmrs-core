@@ -26,7 +26,6 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
-import org.openmrs.OrderType;
 import org.openmrs.Patient;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
@@ -163,11 +162,6 @@ public class OrderFormController extends SimpleFormController {
 		// if this is a new order, let's see if the user has picked a type yet
 		if (order == null) {
 			order = new Order();
-			Integer orderTypeId = ServletRequestUtils.getIntParameter(request, "orderTypeId");
-			if (orderTypeId != null) {
-				OrderType ot = os.getOrderType(orderTypeId);
-				order.setOrderType(ot);
-			}
 		}
 		
 		return order;

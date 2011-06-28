@@ -370,7 +370,6 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 					for (Order order : orders) {
 						Element orderNode = doc.createElement("order");
 						orderNode.setAttribute("order_id", order.getOrderId().toString());
-						orderNode.setAttribute("order_type", order.getOrderType().getName());
 						
 						Concept concept = order.getConcept();
 						orderNode.setAttribute("concept_id", concept.getConceptId().toString());
@@ -395,8 +394,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 							orderNode.setAttribute("discontinued_date", df.format(order.getDiscontinuedDate()));
 						}
 						if (order.getDiscontinuedReason() != null) {
-							orderNode.setAttribute("discontinued_reason", order.getDiscontinuedReason().getName(locale,
-							    false).getName());
+							orderNode.setAttribute("discontinued_reason",
+							    order.getDiscontinuedReason().getName(locale, false).getName());
 						}
 						
 						ordersNode.appendChild(orderNode);
@@ -647,10 +646,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		if (timeModifier == TimeModifier.ANY || timeModifier == TimeModifier.NO) {
 			if (timeModifier == TimeModifier.NO)
 				doInvert = true;
-			sb
-			        .append("select o.person_id from obs o "
-			                + "inner join patient p on o.person_id = p.patient_id and p.voided = false "
-			                + "where o.voided = false ");
+			sb.append("select o.person_id from obs o "
+			        + "inner join patient p on o.person_id = p.patient_id and p.voided = false " + "where o.voided = false ");
 			if (conceptId != null)
 				sb.append("and concept_id = :concept_id ");
 			sb.append(dateSql);
@@ -1325,8 +1322,8 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 		if (encTypes != null && encTypes.size() > 0)
 			criteria.add(Restrictions.in("encounterType", encTypes));
 		
-		criteria.setProjection(Projections.projectionList().add(Projections.property("patient.personId")).add(
-		    Projections.property(attr)));
+		criteria.setProjection(Projections.projectionList().add(Projections.property("patient.personId"))
+		        .add(Projections.property(attr)));
 		
 		criteria.addOrder(org.hibernate.criterion.Order.desc("patient.personId"));
 		
@@ -1579,8 +1576,7 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			if (timeModifier.equals(TimeModifier.LAST)) {
 				log.debug("timeModifier is NOT NULL, and appears to be LAST, so we'll try to add a subquery");
 				sb.append("inner join (select person_id, max(obs_datetime) as obs_datetime from obs where ");
-				sb
-				        .append("concept_id = :concept_id group by person_id) sub on o.person_id = sub.person_id and o.obs_datetime = sub.obs_datetime ");
+				sb.append("concept_id = :concept_id group by person_id) sub on o.person_id = sub.person_id and o.obs_datetime = sub.obs_datetime ");
 			} else {
 				log.debug("timeModifier is NOT NULL, and appears to not be LAST, so we won't do anything");
 			}
@@ -1838,9 +1834,10 @@ public class HibernatePatientSetDAO implements PatientSetDAO {
 			criteria.add(Restrictions.in("concept", drugConcepts));
 		criteria.add(Restrictions.eq("voided", false));
 		criteria.add(Restrictions.le("startDate", now));
-		criteria.add(Restrictions.or(Restrictions.and(Restrictions.eq("discontinued", false), Restrictions.or(Restrictions
-		        .isNull("autoExpireDate"), Restrictions.gt("autoExpireDate", now))), Restrictions.and(Restrictions.eq(
-		    "discontinued", true), Restrictions.gt("discontinuedDate", now))));
+		criteria.add(Restrictions.or(
+		    Restrictions.and(Restrictions.eq("discontinued", false),
+		        Restrictions.or(Restrictions.isNull("autoExpireDate"), Restrictions.gt("autoExpireDate", now))),
+		    Restrictions.and(Restrictions.eq("discontinued", true), Restrictions.gt("discontinuedDate", now))));
 		criteria.addOrder(org.hibernate.criterion.Order.asc("startDate"));
 		log.debug("criteria: " + criteria);
 		List<DrugOrder> temp = criteria.list();

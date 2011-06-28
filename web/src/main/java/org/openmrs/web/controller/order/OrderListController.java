@@ -29,7 +29,6 @@ import org.openmrs.Concept;
 import org.openmrs.Order;
 import org.openmrs.api.APIException;
 import org.openmrs.api.OrderService;
-import org.openmrs.api.OrderService.ORDER_STATUS;
 import org.openmrs.api.context.Context;
 import org.openmrs.web.WebConstants;
 import org.springframework.context.support.MessageSourceAccessor;
@@ -116,7 +115,7 @@ public class OrderListController extends SimpleFormController {
 		if (Context.isAuthenticated()) {
 			OrderService os = Context.getOrderService();
 			//orderList = os.getOrders();
-			orderList = os.getOrders(Order.class, null, null, ORDER_STATUS.ANY, null, null, null);
+			orderList = os.getOrders(Order.class, null, null, null, null, null);
 		}
 		
 		return orderList;

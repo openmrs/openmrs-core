@@ -34,8 +34,8 @@ import org.openmrs.Patient;
 import org.openmrs.PersonName;
 import org.openmrs.api.APIException;
 import org.openmrs.api.OrderService;
-import org.openmrs.api.PatientService;
 import org.openmrs.api.OrderService.ORDER_STATUS;
+import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.web.WebConstants;
 import org.springframework.context.support.MessageSourceAccessor;
@@ -156,7 +156,7 @@ public class OrderListByPatientController extends SimpleFormController {
 					this.setFormView("/admin/orders/orderDrugList");
 					OrderService os = Context.getOrderService();
 					//orderList = os.getDrugOrders();
-					orderList = os.getOrders(DrugOrder.class, null, null, ORDER_STATUS.ANY, null, null, null);
+					orderList = os.getOrders(DrugOrder.class, null, null, null, null, null);
 				} else {
 					this.setFormView("/admin/orders/choosePatient");
 				}

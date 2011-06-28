@@ -181,20 +181,8 @@
 			<include method="voidOrder"/>
 			<include method="discontinueOrder"/>
 			<include method="getDrugOrdersByPatientId"/>
-			<include method="getCurrentDrugOrdersByPatientId"/>
 			<include method="getCompletedDrugOrdersByPatientId"/>
 			<include method="getUnitsByDrugId"/>
-			<include method="getCurrentDrugSet" />
-			<include method="getCurrentDrugOrdersByPatientIdDrugSetId" />
-			<include method="getCompletedDrugSet" />
-			<include method="getCompletedDrugOrdersByPatientIdDrugSetId" />
-			<include method="voidCurrentDrugSet" />
-			<include method="voidCompletedDrugSet" />
-			<include method="discontinueDrugSet" />
-			<include method="getCurrentOtherDrugSet" />
-			<include method="getCurrentOtherDrugOrdersByPatientIdDrugSetId" />
-			<include method="getCompletedOtherDrugSet" />
-			<include method="getCompletedOtherDrugOrdersByPatientIdDrugSetId" />
 			<include method="voidCurrentDrugOrders" />
 			<include method="discontinueCurrentDrugOrders" />
 		</create>

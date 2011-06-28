@@ -26,7 +26,6 @@ import org.openmrs.annotation.Handler;
 import org.openmrs.aop.RequiredDataAdvice;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.OrderService;
-import org.openmrs.api.OrderService.ORDER_STATUS;
 import org.openmrs.api.context.Context;
 
 /**
@@ -64,7 +63,7 @@ public class PatientDataUnvoidHandler implements UnvoidHandler<Patient> {
 			OrderService os = Context.getOrderService();
 			List<Patient> patients = new ArrayList<Patient>();
 			patients.add(patient);
-			List<Order> orders = os.getOrders(Order.class, patients, null, ORDER_STATUS.ANY, null, null, null, null);
+			List<Order> orders = os.getOrders(Order.class, patients, null, null, null, null);
 			if (CollectionUtils.isNotEmpty(orders)) {
 				for (Order order : orders) {
 					if (order.isVoided() && order.getDateVoided().equals(origParentVoidedDate)

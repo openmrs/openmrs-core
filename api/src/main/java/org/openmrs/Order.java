@@ -205,20 +205,6 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	/**
-	 * @deprecated since {@link OrderType} is deprecated use {@link Order(Integer, Patient,
-	 *             Concept)}
-	 * @see OrderType
-	 * @param orderId
-	 * @param patient
-	 * @param orderType
-	 * @param concept
-	 */
-	@Deprecated
-	public Order(Integer orderId, Patient patient, OrderType orderType, Concept concept) {
-		this(orderId, patient, concept);
-	}
-	
-	/**
 	 * Performs a shallow copy of this Order. Does NOT copy orderId.
 	 * 
 	 * @return a shallow copy of this Order
@@ -463,25 +449,6 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	 */
 	public void setOrderId(Integer orderId) {
 		this.orderId = orderId;
-	}
-	
-	/**
-	 * @deprecated
-	 * @return null since {@link OrderType} is deprecated
-	 */
-	@Deprecated
-	public OrderType getOrderType() {
-		return null;
-	}
-	
-	/**
-	 * This methods does nothing since {@link OrderType} is deprecated
-	 * 
-	 * @deprecated
-	 * @param orderType
-	 */
-	@Deprecated
-	public void setOrderType(OrderType orderType) {
 	}
 	
 	/**
