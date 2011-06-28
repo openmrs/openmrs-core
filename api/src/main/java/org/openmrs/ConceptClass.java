@@ -24,6 +24,38 @@ public class ConceptClass extends BaseOpenmrsMetadata implements java.io.Seriali
 	
 	public static final long serialVersionUID = 33473L;
 	
+	//UUIDs for core concept classes
+	
+	public static final String TEST_UUID = "8d4907b2-c2cc-11de-8d13-0010c6dffd0f";
+	
+	public static final String PROCEDURE_UUID = "8d490bf4-c2cc-11de-8d13-0010c6dffd0f";
+	
+	public static final String DRUG_UUID = "8d490dfc-c2cc-11de-8d13-0010c6dffd0f";
+	
+	public static final String DIAGNOSIS_UUID = "8d4918b0-c2cc-11de-8d13-0010c6dffd0f";
+	
+	public static final String FINDING_UUID = "8d491a9a-c2cc-11de-8d13-0010c6dffd0f";
+	
+	public static final String ANATOMY_UUID = "8d491c7a-c2cc-11de-8d13-0010c6dffd0f";
+	
+	public static final String QUESTION_UUID = "8d491e50-c2cc-11de-8d13-0010c6dffd0f";
+	
+	public static final String LABSET_UUID = "8d492026-c2cc-11de-8d13-0010c6dffd0f";
+	
+	public static final String MEDSET_UUID = "8d4923b4-c2cc-11de-8d13-0010c6dffd0f";
+	
+	public static final String CONVSET_UUID = "8d492594-c2cc-11de-8d13-0010c6dffd0f";
+	
+	public static final String MISC_UUID = "8d492774-c2cc-11de-8d13-0010c6dffd0f";
+	
+	public static final String SYMPTOM_UUID = "8d492954-c2cc-11de-8d13-0010c6dffd0f";
+	
+	public static final String SYMPTOM_FINDING_UUID = "8d492b2a-c2cc-11de-8d13-0010c6dffd0f";
+	
+	public static final String SPECIMEN_UUID = "8d492d0a-c2cc-11de-8d13-0010c6dffd0f";
+	
+	public static final String MISC_ORDER_UUID = "8d492ee0-c2cc-11de-8d13-0010c6dffd0f";
+	
 	// Fields
 	
 	private Integer conceptClassId;

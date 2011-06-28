@@ -23,6 +23,7 @@ import java.util.Vector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
+import org.openmrs.ConceptClass;
 import org.openmrs.Drug;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
@@ -569,7 +570,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		List<Concept> concepts = Context.getConceptService().getConceptsByName(query);
 		if (concepts != null) {
 			for (Concept concept : concepts) {
-				if (concept.getConceptClass().getName().equals("Drug"))
+				if (concept.getConceptClass().getUuid().equals(ConceptClass.DRUG_UUID))
 					result.add(new GenericDrug(concept));
 			}
 		}
