@@ -5167,11 +5167,11 @@
 		<dropTable tableName="order_type" cascadeConstraints="true"/>
 	</changeSet>
 	
-	<changeSet id="20110623-1609" author="wyclif">
+	<changeSet id="20110623-1610" author="wyclif">
 		<preConditions onFail="MARK_RAN">
-			<not><sqlCheck expectedResult="0">SELECT count(*)</sqlCheck></not>
+			<not><sqlCheck expectedResult="0">SELECT count(*) FROM drug_order</sqlCheck></not>
 		</preConditions>
-		<comment>Setting the order_type for orders with matches in the drug_orders table</comment>
+		<comment>Setting the order_type for orders with matches in the drug_order table</comment>
 		<update tableName="orders">
 			<column name="order_type" value="DRUG"/>
 			<where>order_id IN (SELECT order_id FROM drug_order)</where>
