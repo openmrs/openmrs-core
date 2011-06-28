@@ -21,6 +21,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Concept;
 import org.openmrs.Drug;
+import org.openmrs.DrugOrder;
 import org.openmrs.GenericDrug;
 import org.openmrs.Order;
 import org.openmrs.OrderGroup;
@@ -579,5 +580,60 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		}
 		Assert.assertTrue(foundOrderSet);
 	}
+
+	/**
+     * @see OrderService#saveOrder(Order)
+     * @verifies not allow you to change the order number of a saved order
+     */
+    @Test
+    public void saveOrder_shouldNotAllowYouToChangeTheOrderNumberOfASavedOrder() throws Exception {
+    	Order existing = service.getOrder(1);
+    	existing.setOrderNumber("New Number");
+    	try {
+    		service.saveOrder(existing);
+    		Assert.fail("the previous line should have thrown an exception");
+    	} catch (APIException ex) {
+    		// test this way rather than @Test(expected...) so we can verify it's the right APIException
+    		Assert.assertTrue(ex.getMessage().contains("orderNumber"));
+    	}
+    }
+
+	/**
+     * @see OrderService#saveOrder(Order)
+     * @verifies not allow you to edit an order after it has been activated
+     */
+    @Test
+    public void saveOrder_shouldNotAllowYouToEditAnOrderAfterItHasBeenActivated() throws Exception {
+    	DrugOrder existing = service.getOrder(1, DrugOrder.class);
+    	service.activateOrder(existing, null, null);
+    	Context.flushSession();
+    	existing = service.getOrder(1, DrugOrder.class);
+    	existing.setDose(999d);
+    	try {
+    		service.saveOrder(existing);
+    		Assert.fail("the previous line should have thrown an exception");
+    	} catch (APIException ex) {
+    		// test this way rather than @Test(expected...) so we can verify it's the right APIException
+    		Assert.assertTrue(ex.getMessage().contains("activated"));
+    	}
+    }
+
+	/**
+     * @see OrderService#saveOrder(Order)
+     * @verifies allow you to edit an order before it is activated
+     */
+    @Test
+    public void saveOrder_shouldAllowYouToEditAnOrderBeforeItIsActivated() throws Exception {
+    	DrugOrder existing = service.getOrder(5, DrugOrder.class);
+    	Assert.assertNotSame(999d, existing.getDose());
+    	existing.setDose(999d);
+    	service.saveOrder(existing);
+    	// if we got here, that means success
+
+    	// I originally tried doing these two lines before and after the save, but Order doesn't have a real dateChanged property.
+    	// TODO determine whether we want to add dateChanged, and either remove this comment, or add the property and uncomment it 
+    	// Assert.assertNull(existing.getDateChanged());
+    	// Assert.assertNotNull(existing.getDateChanged());
+    }
 	
 }

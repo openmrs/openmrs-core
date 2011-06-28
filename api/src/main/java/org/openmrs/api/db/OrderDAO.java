@@ -139,5 +139,13 @@ public interface OrderDAO {
 	 * @see OrderService#getPublishedOrderSets(String)
 	 */
 	public List<PublishedOrderSet> getPublishedOrderSets(String query);
+
+	/**
+	 * Determine the order number of this order as saved in the database (ignoring caches)
+
+     * @param order
+     * @return
+     */
+    public String getOrderNumberInDatabase(Order order);
 	
 }

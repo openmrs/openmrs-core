@@ -79,6 +79,10 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		if (dao.isActivatedInDatabase(order))
 			throw new APIException("Cannot modify an activated order");
 		
+		String orderNumberInDatabase = dao.getOrderNumberInDatabase(order);
+		if (orderNumberInDatabase != null && !orderNumberInDatabase.equals(order.getOrderNumber()))
+			throw new APIException("Cannot modify the orderNumber of a saved order");
+		
 		if (order.getOrderNumber() == null)
 			order.setOrderNumber(getNewOrderNumber());
 		

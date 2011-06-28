@@ -224,7 +224,19 @@ public class HibernateOrderDAO implements OrderDAO {
 		Query query = sessionFactory.getCurrentSession().createSQLQuery(
 		    "select count(*) from orders where order_id = :orderId and date_activated is not null");
 		query.setInteger("orderId", order.getOrderId());
-		return query.uniqueResult().equals(1);
+		return ((Number) query.uniqueResult()).intValue() == 1;
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.OrderDAO#getOrderNumberInDatabase(org.openmrs.Order)
+	 */
+	@Override
+	public String getOrderNumberInDatabase(Order order) {
+	    if (order.getOrderId() == null)
+	    	return null;
+	    Query query = sessionFactory.getCurrentSession().createSQLQuery("select order_number from orders where order_id = :orderId");
+	    query.setInteger("orderId", order.getOrderId());
+	    return (String) query.uniqueResult();
 	}
 	
 	/**
