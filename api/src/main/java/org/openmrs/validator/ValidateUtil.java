@@ -23,6 +23,7 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.HandlerUtil;
 import org.springframework.validation.BindException;
+import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.validation.Validator;
 
@@ -81,7 +82,8 @@ public class ValidateUtil {
 	 * @throws APIException thrown if a binding exception occurs
 	 * @should throw APIException if errors occur during validation
 	 */
-	public static void validate(Object obj) throws APIException {
+	@SuppressWarnings("unchecked")
+    public static void validate(Object obj) throws APIException {
 		BindException errors = new BindException(obj, "");
 		
 		for (Validator validator : getValidators(obj)) {
@@ -90,10 +92,13 @@ public class ValidateUtil {
 		
 		if (errors.hasErrors()) {
 			Set<String> uniqueErrorMessages = new LinkedHashSet<String>();
-			for (Object objerr : errors.getAllErrors()) {
-				ObjectError error = (ObjectError) objerr;
+			for (ObjectError error : (List<ObjectError>) errors.getGlobalErrors()) {
 				String message = Context.getMessageSourceService().getMessage(error.getCode());
 				uniqueErrorMessages.add(message);
+			}
+			for (FieldError error : (List<FieldError>) errors.getFieldErrors()) {
+				String message = Context.getMessageSourceService().getMessage(error.getCode());
+				uniqueErrorMessages.add(error.getField() + ": " + message);
 			}
 			
 			String exceptionMessage = "'" + obj + "' failed to validate with reason: ";

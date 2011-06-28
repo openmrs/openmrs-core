@@ -403,8 +403,23 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		if (date == null)
 			date = new Date();
 		
-		order = Context.getOrderService().signOrder(order, user, date);
-		return Context.getOrderService().activateOrder(order, user, date);
+		// sign
+		if (order.isSigned())
+			throw new APIException("Order is already signed");
+		order.setSignedBy(user);
+		order.setDateSigned(date);
+		
+		// activate
+		if (order.isActivated())
+			throw new APIException("Order is already activated");
+		order.setActivatedBy(user);
+		order.setDateActivated(date);
+		
+		return Context.getOrderService().saveOrder(order);
+		
+		// Once we allow orders to be signed, activated, and persisted all independently, we should delegate to these instead:
+		// order = Context.getOrderService().signOrder(order, user, date);
+		// return Context.getOrderService().activateOrder(order, user, date);
 	}
 	
 	/**
@@ -430,6 +445,9 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	public Order activateOrder(Order order, User activatedBy, Date activationDate) throws APIException {
+		if (order.isActivated())
+			throw new APIException("Order is already activated");
+		
 		if (activatedBy == null)
 			activatedBy = Context.getAuthenticatedUser();
 		if (activationDate == null)

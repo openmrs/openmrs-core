@@ -89,6 +89,12 @@ public class OrderValidator implements Validator {
 					errors.rejectValue("autoExpireDate", "Order.error.startDateAfterAutoExpireDate");
 				}
 			}
+			
+			// As a temporary restriction, until we properly implement Draft orders, all persisted orders must be both signed and activated
+			ValidationUtils.rejectIfEmpty(errors, "signedBy", "Order.error.mustBeSignedAndActivated");
+			ValidationUtils.rejectIfEmpty(errors, "dateSigned", "Order.error.mustBeSignedAndActivated");
+			ValidationUtils.rejectIfEmpty(errors, "activatedBy", "Order.error.mustBeSignedAndActivated");
+			ValidationUtils.rejectIfEmpty(errors, "dateActivated", "Order.error.mustBeSignedAndActivated");
 		}
 	}
 }

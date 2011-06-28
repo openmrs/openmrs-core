@@ -635,5 +635,51 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
     	// Assert.assertNull(existing.getDateChanged());
     	// Assert.assertNotNull(existing.getDateChanged());
     }
+
+	/**
+     * @see OrderService#saveOrder(Order)
+     * @verifies not allow you to save an order that is not activated and signed
+     */
+    @Test
+    public void saveOrder_shouldNotAllowYouToSaveAnOrderThatIsNotActivatedAndSigned() throws Exception {
+	    DrugOrder order = new DrugOrder();
+	    order.setPatient(Context.getPatientService().getPatient(2));
+	    order.setConcept(Context.getConceptService().getConcept(88));
+	    // not signed or activated
+	    try {
+	    	service.saveOrder(order);
+	    	Assert.fail("previous line should have failed");
+	    } catch (APIException ex) {
+	    	// exception is expected
+	    }
+	    
+	    order = new DrugOrder();
+	    order.setPatient(Context.getPatientService().getPatient(2));
+	    order.setConcept(Context.getConceptService().getConcept(88));
+	    // signed but not activated
+	    try {
+	    	service.signOrder(order, null, null);
+	    	Assert.fail("previous line should have failed");
+	    } catch (APIException ex) {
+	    	// exception is expected
+	    }
+	    
+	    order = new DrugOrder();
+	    order.setPatient(Context.getPatientService().getPatient(2));
+	    order.setConcept(Context.getConceptService().getConcept(88));
+	    // activated, but not signed
+	    try {
+	    	service.activateOrder(order, null, null);
+	    	Assert.fail("previous line should have failed");
+	    } catch (APIException ex) {
+	    	// exception is expected
+	    }
+	    
+	    order = new DrugOrder();
+	    order.setPatient(Context.getPatientService().getPatient(2));
+	    order.setConcept(Context.getConceptService().getConcept(88));
+	    // signed and activated
+	    service.signAndActivateOrder(order, null, null);
+    }
 	
 }
