@@ -821,21 +821,19 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	@Verifies(value = "should save sign activate order with unstructured dosing", method = "signAndActivateOrder(Order, User, Date)")
-	public void saveActivatedOrder_shouldSaveSignActivateOrderWithUnstructuredDosing() throws Exception {
+	public void signAndActivateOrder_shouldSaveSignActivateOrderWithUnstructuredDosing() throws Exception {
 		
-		User provider = Context.getUserService().getUser(501);
 		String unstructuredDosing = "500MG AS DIRECTED";
 		
 		DrugOrder order = new DrugOrder();
 		order.setPatient(Context.getPatientService().getPatient(2));
 		order.setConcept(Context.getConceptService().getConcept(23));
 		order.setUnstructuredDosing(unstructuredDosing);
-		order.setDateCreated(new Date());
 		
-		order = (DrugOrder) Context.getOrderService().signAndActivateOrder(order, provider, null);
+		order = (DrugOrder) Context.getOrderService().signAndActivateOrder(order);
 		
 		//Should be saved.
-		Assert.assertNotNull(order);
+		Assert.assertNotNull(order.getOrderId());
 		
 		//Dosing should be set
 		Assert.assertEquals(unstructuredDosing, order.getUnstructuredDosing());
@@ -854,10 +852,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	@Verifies(value = "should save sign activate order with structured dosing", method = "signAndActivateOrder(Order, User, Date)")
-	public void saveActivatedOrder_shouldSaveSignActivateOrderWithStructuredDosing() throws Exception {
-		
-		User provider = Context.getUserService().getUser(501);
-		
+	public void signAndActivateOrder_shouldSaveSignActivateOrderWithStructuredDosing() throws Exception {
+				
 		DrugOrder order = new DrugOrder();
 		order.setPatient(Context.getPatientService().getPatient(2));
 		order.setConcept(Context.getConceptService().getConcept(23));
@@ -866,12 +862,12 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order.setRoute("test");
 		order.setFrequency("daily");
 		order.setDuration(50);
-		order.setDateCreated(new Date());
+		order.setDurationUnits("days");
 		
-		order = (DrugOrder) Context.getOrderService().signAndActivateOrder(order, provider, null);
+		order = (DrugOrder) Context.getOrderService().signAndActivateOrder(order);
 		
 		//Should be saved.
-		Assert.assertNotNull(order);
+		Assert.assertNotNull(order.getOrderId());
 		
 		//Dosing should be set
 		Assert.assertNotNull(order.getDose());
@@ -909,71 +905,5 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order2 = service.signAndActivateOrder(order2, provider, new Date());
 		
 		Assert.assertTrue(order1.getDiscontinued());
-	}
-	
-	/**
-	 * @see {@link OrderService#signAndActivateOrder(Order))}
-	 */
-	@Test
-	@Verifies(value = "should save sign activate order with unstructured dosing", method = "signAndActivateOrder(Order)")
-	public void signAndActivateOrder_shouldSaveSignActivateOrderWithUnstructuredDosing() throws Exception {
-
-		String unstructuredDosing = "500MG AS DIRECTED";
-		
-		DrugOrder order = new DrugOrder();
-		order.setPatient(Context.getPatientService().getPatient(2));
-		order.setConcept(Context.getConceptService().getConcept(23));
-		order.setUnstructuredDosing(unstructuredDosing);
-		order.setDateCreated(new Date());
-		
-		order = (DrugOrder) Context.getOrderService().signAndActivateOrder(order);
-		
-		//Should be saved.
-		Assert.assertNotNull(order);
-		
-		//Dosing should be set
-		Assert.assertEquals(unstructuredDosing, order.getUnstructuredDosing());
-		
-		//Should be signed.
-		Assert.assertTrue(order.isSigned());
-		Assert.assertNotNull(order.getDateSigned());
-		
-		//Should be activated.
-		Assert.assertNotNull(order.getActivatedBy());
-		Assert.assertNotNull(order.getDateActivated());
-	}
-	
-	/**
-	 * @see {@link OrderService#signAndActivateOrder(Order))}
-	 */
-	@Test
-	@Verifies(value = "should save sign activate order with structured dosing", method = "signAndActivateOrder(Order)")
-	public void signAndActivateOrder_shouldSaveSignActivateOrderWithStructuredDosing() throws Exception {
-		
-		DrugOrder order = new DrugOrder();
-		order.setPatient(Context.getPatientService().getPatient(2));
-		order.setConcept(Context.getConceptService().getConcept(23));
-		
-		order.setDose(Double.parseDouble("500"));
-		order.setRoute("test");
-		order.setFrequency("daily");
-		order.setDuration(50);
-		order.setDateCreated(new Date());
-		
-		order = (DrugOrder) Context.getOrderService().signAndActivateOrder(order);
-		
-		//Should be saved.
-		Assert.assertNotNull(order);
-		
-		//Dosing should be set
-		Assert.assertNotNull(order.getDose());
-		
-		//Should be signed.
-		Assert.assertTrue(order.isSigned());
-		Assert.assertNotNull(order.getDateSigned());
-		
-		//Should be activated.
-		Assert.assertNotNull(order.getActivatedBy());
-		Assert.assertNotNull(order.getDateActivated());
 	}
 }

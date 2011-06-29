@@ -60,7 +60,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	
 	private Integer duration;
 	
-	private Integer durationUnits;
+	private String durationUnits;
 	
 	// Constructors
 	
@@ -520,7 +520,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	 * @return the durationUnits
 	 * @since 1.9
 	 */
-	public Integer getDurationUnits() {
+	public String getDurationUnits() {
 		return durationUnits;
 	}
 	
@@ -528,7 +528,7 @@ public class DrugOrder extends Order implements java.io.Serializable {
 	 * @param durationUnits the durationUnits to set
 	 * @since 1.9
 	 */
-	public void setDurationUnits(Integer durationUnits) {
+	public void setDurationUnits(String durationUnits) {
 		this.durationUnits = durationUnits;
 	}
 }

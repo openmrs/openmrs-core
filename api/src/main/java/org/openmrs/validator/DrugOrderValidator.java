@@ -67,6 +67,9 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 				ValidationUtils.rejectIfEmpty(errors, "signedBy", "error.null");
 				ValidationUtils.rejectIfEmpty(errors, "dateSigned", "error.null");
 			}
+			
+			if (order.getDuration() != null)
+				ValidationUtils.rejectIfEmpty(errors, "durationUnits", "DrugOrder.add.error.missingDurationUnits");
 		}
 	}
 }
