@@ -3,7 +3,7 @@
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.openmrs</groupId>
-	<artifactId>openmrs</artifactId>
+	<artifactId>openmrsorderentry</artifactId>
 	<version>1.9.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>OpenMRS</name>

@@ -2,25 +2,25 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
    <parent>
       <groupId>org.openmrs</groupId>
-      <artifactId>openmrs</artifactId>
+      <artifactId>openmrsorderentry</artifactId>
       <version>1.9.0-SNAPSHOT</version>
    </parent>
    <modelVersion>4.0.0</modelVersion>
    <groupId>org.openmrs.web</groupId>
-   <artifactId>openmrs-web</artifactId>
+   <artifactId>openmrsorderentry-web</artifactId>
    <packaging>jar</packaging>
    <name>openmrs-web</name>
    <description>The web layer of open mrs</description>
    <dependencies>
       <dependency>
          <groupId>org.openmrs.api</groupId>
-         <artifactId>openmrs-api</artifactId>
+         <artifactId>openmrsorderentry-api</artifactId>
          <version>${project.version}</version>
          <type>jar</type>
       </dependency>
       <dependency>
          <groupId>org.openmrs.test</groupId>
-         <artifactId>openmrs-test</artifactId>
+         <artifactId>openmrsorderentry-test</artifactId>
          <version>${project.version}</version>
          <type>pom</type>
          <scope>test</scope>
@@ -28,7 +28,7 @@
       <!-- Test-jar for sharing api test resources in web tests -->
       <dependency>
          <groupId>org.openmrs.api</groupId>
-         <artifactId>openmrs-api</artifactId>
+         <artifactId>openmrsorderentry-api</artifactId>
          <version>${project.version}</version>         
          <type>test-jar</type>
          <scope>test</scope>

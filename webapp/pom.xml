@@ -2,12 +2,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
    <parent>
       <groupId>org.openmrs</groupId>
-      <artifactId>openmrs</artifactId>
+      <artifactId>openmrsorderentry</artifactId>
       <version>1.9.0-SNAPSHOT</version>
    </parent>
    <modelVersion>4.0.0</modelVersion>
    <groupId>org.openmrs.web</groupId>
-   <artifactId>openmrs-webapp</artifactId>
+   <artifactId>openmrsorderentry-webapp</artifactId>
    <packaging>war</packaging>
    <name>openmrs-webapp</name>
    <description>The web application of openmrs</description>
@@ -15,13 +15,13 @@
    <dependencies>
       <dependency>
          <groupId>org.openmrs.api</groupId>
-         <artifactId>openmrs-api</artifactId>
+         <artifactId>openmrsorderentry-api</artifactId>
          <version>${project.version}</version>
          <type>jar</type>
       </dependency>
       <dependency>
          <groupId>org.openmrs.web</groupId>
-         <artifactId>openmrs-web</artifactId>
+         <artifactId>openmrsorderentry-web</artifactId>
          <version>${project.version}</version>
          <type>jar</type>
          <exclusions>
