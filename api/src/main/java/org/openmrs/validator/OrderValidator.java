@@ -19,6 +19,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Order;
 import org.openmrs.annotation.Handler;
+import org.openmrs.util.OpenmrsUtil;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
@@ -95,6 +96,22 @@ public class OrderValidator implements Validator {
 			ValidationUtils.rejectIfEmpty(errors, "dateSigned", "Order.error.mustBeSignedAndActivated");
 			ValidationUtils.rejectIfEmpty(errors, "activatedBy", "Order.error.mustBeSignedAndActivated");
 			ValidationUtils.rejectIfEmpty(errors, "dateActivated", "Order.error.mustBeSignedAndActivated");
+			
+			if (order.getDiscontinued()) {
+				ValidationUtils.rejectIfEmpty(errors, "discontinuedDate", "Order.error.discontinueNeedsDateAndPerson");
+				ValidationUtils.rejectIfEmpty(errors, "discontinuedBy", "Order.error.discontinueNeedsDateAndPerson");
+				if (order.getDiscontinuedDate() != null) {
+					// must be >= activatedDate, <= now(), and <= autoExpireDate
+					if (!order.isActivated())
+						errors.rejectValue("discontinuedDate", "Order.error.discontinuedDateButNotActivated");
+					else if (OpenmrsUtil.compare(order.getDiscontinuedDate(), order.getDateActivated()) < 0)
+						errors.rejectValue("discontinuedDate", "Order.error.discontinuedDateBeforeActivated");
+					if (OpenmrsUtil.compare(order.getDiscontinuedDate(), new Date()) > 0)
+						errors.rejectValue("discontinuedDate", "Order.error.discontinuedDateInFuture");
+					if (order.getAutoExpireDate() != null && OpenmrsUtil.compare(order.getDiscontinuedDate(), order.getAutoExpireDate()) > 0)
+						errors.rejectValue("discontinuedDate", "Order.error.discontinuedAfterAutoExpireDate");
+				}
+			}
 		}
 	}
 }

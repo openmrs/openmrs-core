@@ -704,31 +704,24 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @throws APIException
 	 */
 	private Order doDiscontinueOrder(Order oldOrder, User user, Date discontinueDate) throws APIException {
+		if (user == null)
+			user = Context.getAuthenticatedUser();
 		if (discontinueDate == null)
 			discontinueDate = new Date();
-		if (oldOrder.isActivated() && OpenmrsUtil.compareWithNullAsLatest(discontinueDate, oldOrder.getDateActivated()) < 0)
-			throw new APIException("Discontinue date cannot be before the date the order was activated.");
-		//don't re-discontinue an order if its current discontinue date has passed 
-		//or the new discontinue date is null since it default to current and there no 
-		//point in re-discontinuing it now it is already discontinued
-		else if (oldOrder.getDiscontinued()
-		        && (OpenmrsUtil.compareWithNullAsGreatest(oldOrder.getDiscontinuedDate(), new Date()) < 0)) {
+		else if (discontinueDate.after(new Date()))
+			throw new APIException("Cannot discontinue an order in the future");
+		if (!oldOrder.isActivated())
+			throw new APIException("Cannot discontinue an order that was never activated");
+		if (OpenmrsUtil.compare(discontinueDate, oldOrder.getDateActivated()) < 0)
+			throw new APIException("Cannot discontinue an order before it was activated");
+		if (oldOrder.getDiscontinued())
 			throw new APIException("Cannot discontinue an order that is already discontinued");
-		} else if (oldOrder.getAutoExpireDate() != null
-		        && OpenmrsUtil.nullSafeEquals(oldOrder.getAutoExpireDate(), discontinueDate))
-			throw new APIException(
-			        "The order is already scheduled to expire on the same date as the specified discontinue date");
+		if (oldOrder.getAutoExpireDate() != null && OpenmrsUtil.compare(discontinueDate, oldOrder.getAutoExpireDate()) > 0)
+			throw new APIException("Cannot discontinue an order after its autoexpire date");
 		
 		oldOrder.setDiscontinued(Boolean.TRUE);
-		if (user == null)
-			oldOrder.setDiscontinuedBy(Context.getAuthenticatedUser());
-		
-		//only orders that haven't yet been activated can have a future discontinue date since 
-		//we are not sure when they will get activated otherwise always set it to now
-		if (oldOrder.getDateActivated() == null && OpenmrsUtil.compareWithNullAsEarliest(discontinueDate, new Date()) > 0)
-			oldOrder.setDiscontinuedDate(discontinueDate);
-		else
-			oldOrder.setDiscontinuedDate(new Date());
+		oldOrder.setDiscontinuedBy(user);
+		oldOrder.setDiscontinuedDate(discontinueDate);
 		
 		saveOrder(oldOrder);
 		
