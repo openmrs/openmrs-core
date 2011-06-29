@@ -910,4 +910,16 @@ public class Order extends BaseOpenmrsData implements java.io.Serializable {
 	public boolean isActivated() {
 		return getActivatedBy() != null && getDateActivated() != null;
 	}
+	
+	/**
+	 * Makes a copy of this order.
+	 * 
+	 * @return a copy of this order.
+	 */
+	public Order copyForModification() {
+		Order copy = copyHelper(this);
+		copy.orderNumber = null;
+		copy.previousOrderNumber = this.orderNumber;
+		return copy;
+	}
 }
