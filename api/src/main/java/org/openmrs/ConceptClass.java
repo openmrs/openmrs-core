@@ -31,7 +31,7 @@ public class ConceptClass extends BaseOpenmrsMetadata implements java.io.Seriali
 	public static final String PROCEDURE_UUID = "8d490bf4-c2cc-11de-8d13-0010c6dffd0f";
 	
 	public static final String DRUG_UUID = "8d490dfc-c2cc-11de-8d13-0010c6dffd0f";
-
+	
 	public static final String DIAGNOSIS_UUID = "8d4918b0-c2cc-11de-8d13-0010c6dffd0f";
 	
 	public static final String FINDING_UUID = "8d491a9a-c2cc-11de-8d13-0010c6dffd0f";
