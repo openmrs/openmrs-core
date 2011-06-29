@@ -73,7 +73,7 @@ public class OrderSaveHandler implements SaveHandler<Order> {
 			}
 			
 			String nextOrderNumber = Context.getAdministrationService().getGlobalProperty(
-			    OpenmrsConstants.GP_ORDER_ENTRY_ORDER_NUMBER_PREFIX, OpenmrsConstants.ORDER_NUMBER_DEFAULT_PERFIX)
+			    OpenmrsConstants.GP_ORDER_ENTRY_ORDER_NUMBER_PREFIX, OpenmrsConstants.ORDER_NUMBER_DEFAULT_PREFIX)
 			        + orderNumber.toString();
 			order.setOrderNumber(nextOrderNumber);
 		}

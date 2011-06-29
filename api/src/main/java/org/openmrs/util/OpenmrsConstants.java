@@ -1464,6 +1464,6 @@ public final class OpenmrsConstants {
 	
 	public static final String TEXT_VIEW = "TEXT_VIEW";
 	
-	public static final String ORDER_NUMBER_DEFAULT_PERFIX = "OR:";
+	public static final String ORDER_NUMBER_DEFAULT_PREFIX = "OR:";
 	
 }

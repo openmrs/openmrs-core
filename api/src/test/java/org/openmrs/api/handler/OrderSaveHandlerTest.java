@@ -50,8 +50,8 @@ public class OrderSaveHandlerTest extends BaseContextSensitiveTest {
 		Order order1 = new Order();
 		new OrderSaveHandler().handle(order1, null, null, null);
 		String orderNumber1 = order1.getOrderNumber();
-		Integer nextNumber = Integer.valueOf(orderNumber1.substring(OpenmrsConstants.ORDER_NUMBER_DEFAULT_PERFIX.length())) + 1;
-		String expectedOrderNumber = OpenmrsConstants.ORDER_NUMBER_DEFAULT_PERFIX.concat(nextNumber.toString());
+		Integer nextNumber = Integer.valueOf(orderNumber1.substring(OpenmrsConstants.ORDER_NUMBER_DEFAULT_PREFIX.length())) + 1;
+		String expectedOrderNumber = OpenmrsConstants.ORDER_NUMBER_DEFAULT_PREFIX.concat(nextNumber.toString());
 		
 		Order order2 = new Order();
 		new OrderSaveHandler().handle(order2, null, null, null);
