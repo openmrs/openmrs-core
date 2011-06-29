@@ -565,7 +565,18 @@
 				</select>
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
-                 
+			</td>
+			<tr>
+			 <th valign="top">
+			<spring:message code="ConceptComplex.handlerConfig"/>
+			<img class="help_icon" id="tooltipComplexIcon" src="${pageContext.request.contextPath}/images/help.gif" border="0" title="<spring:message code="Concept.datatype.complex.handlerConfig.help"/>" />
+			</th>
+			<td>
+			<spring:bind path="command.handlerConfig">
+			<textarea name="${status.expression}" rows="4" cols="50">${status.value}</textarea>	
+            </spring:bind>
+            </td>
+                
             <!-- All handler key to class mappings
             <table>
              <c:forEach var="h" items="${handlers }">
@@ -580,7 +591,6 @@
              </c:forEach>
             </table>
             -->
-        </td>
     </tr>
 	<tr id="conceptMapRow">
 		<th valign="top">
