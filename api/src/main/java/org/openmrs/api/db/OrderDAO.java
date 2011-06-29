@@ -76,13 +76,6 @@ public interface OrderDAO {
 	public Order getOrderByOrderNumber(String orderNumber);
 	
 	/**
-	 * Gets the biggest order id used so far.
-	 * 
-	 * @return the biggest order id used for far or 0 if not a single order exists.
-	 */
-	public Integer getMaximumOrderId();
-	
-	/**
 	 * @see org.openmrs.api.OrderService#saveOrderGroup(OrderGroup)
 	 */
 	public OrderGroup saveOrderGroup(OrderGroup orderGroup) throws DAOException;
@@ -142,7 +135,7 @@ public interface OrderDAO {
 	
 	/**
 	 * Determine the order number of this order as saved in the database (ignoring caches)
-
+	 * 
 	 * @param order
 	 * @return
 	 */

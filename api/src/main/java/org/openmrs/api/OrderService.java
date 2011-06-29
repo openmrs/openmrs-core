@@ -253,14 +253,6 @@ public interface OrderService extends OpenmrsService {
 	public List<Order> getOrderHistoryByConcept(Patient patient, Concept concept);
 	
 	/**
-	 * Gets an order number that has not yet been used by any order.
-	 * 
-	 * @return the new order number.
-	 */
-	@Transactional(readOnly = true)
-	public String getNewOrderNumber();
-	
-	/**
 	 * Signs an order.
 	 * 
 	 * @param order the order to sign.
@@ -452,7 +444,7 @@ public interface OrderService extends OpenmrsService {
 	public List<OrderGroup> getOrderGroupsByPatient(Patient patient) throws APIException;
 	
 	/**
-	 * Creates or updates an OrderSet 
+	 * Creates or updates an OrderSet
 	 * 
 	 * @param orderSet
 	 * @return the saved OrderSet
@@ -482,13 +474,12 @@ public interface OrderService extends OpenmrsService {
 	public OrderSet getOrderSetByUuid(String uuid);
 	
 	/**
-	 * Associates the given Concept with the given OrderSet in the database 
+	 * Associates the given Concept with the given OrderSet in the database
 	 * 
 	 * @param asConcept
 	 * @param content
 	 * @return the published entity
 	 * @since 1.9
-	 * 
 	 * @should publish an order set as a concept
 	 * @should publish an order set as a concept overwriting the previous entity
 	 */
@@ -497,9 +488,9 @@ public interface OrderService extends OpenmrsService {
 	
 	/**
 	 * @param concept
-	 * @return the {@link PublishedOrderSet} associated with the given Concept, or null if none is associated
+	 * @return the {@link PublishedOrderSet} associated with the given Concept, or null if none is
+	 *         associated
 	 * @since 1.9
-	 * 
 	 * @should get a published order set by concept
 	 */
 	@Transactional(readOnly = true)
@@ -510,7 +501,6 @@ public interface OrderService extends OpenmrsService {
 	 * @param query
 	 * @return all {@link PublishedOrderSet}s that fuzzy-match the given query string
 	 * @since 1.9
-	 * 
 	 * @should get all published order sets by query
 	 */
 	@Transactional(readOnly = true)

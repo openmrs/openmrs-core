@@ -28,7 +28,6 @@ import org.openmrs.Drug;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.GenericDrug;
-import org.openmrs.ImplementationId;
 import org.openmrs.Order;
 import org.openmrs.Order.OrderAction;
 import org.openmrs.OrderGroup;
@@ -43,7 +42,6 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.db.OrderDAO;
 import org.openmrs.order.DrugOrderSupport;
 import org.openmrs.order.RegimenSuggestion;
-import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.validator.ValidateUtil;
 import org.springframework.util.StringUtils;
@@ -84,9 +82,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		String orderNumberInDatabase = dao.getOrderNumberInDatabase(order);
 		if (orderNumberInDatabase != null && !orderNumberInDatabase.equals(order.getOrderNumber()))
 			throw new APIException("Cannot modify the orderNumber of a saved order");
-		
-		if (order.getOrderNumber() == null)
-			order.setOrderNumber(getNewOrderNumber());
 		
 		ValidateUtil.validate(order);
 		return dao.saveOrder(order);
@@ -442,21 +437,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#getNewOrderNumber()
-	 */
-	@Override
-	public String getNewOrderNumber() {
-		String orderNumber = Context.getAdministrationService().getGlobalProperty(
-		    OpenmrsConstants.GP_ORDER_ENTRY_ORDER_NUMBER_PREFIX, "ORDER-")
-		        + String.valueOf(dao.getMaximumOrderId() + 1);
-		ImplementationId implementationId = Context.getAdministrationService().getImplementationId();
-		if (implementationId != null && implementationId.getName() != null)
-			orderNumber = implementationId.getName() + "-" + orderNumber;
-		
-		return orderNumber;
-	}
-	
-	/**
 	 * @see org.openmrs.api.OrderService#getActiveOrdersByPatient(org.openmrs.Patient,
 	 *      java.util.Date)
 	 */
@@ -729,7 +709,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		newOrder.setConcept(oldOrder.getConcept());
 		newOrder.setPatient(oldOrder.getPatient());
 		newOrder.setPreviousOrderNumber(oldOrder.getOrderNumber());
-		newOrder.setOrderNumber(getNewOrderNumber());
 		newOrder.setOrderAction(OrderAction.DISCONTINUE);
 		newOrder.setDateCreated(new Date());
 		newOrder.setCreator(Context.getAuthenticatedUser());

@@ -86,16 +86,6 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderService#getNewOrderNumber()}
-	 */
-	@Ignore
-	@Test
-	@Verifies(value = "should return the next unused order id", method = "getNewOrderNumber()")
-	public void getNewOrderNumber_shouldReturnTheNextUnusedOrderId() throws Exception {
-		Assert.assertEquals("ORDER-11", Context.getOrderService().getNewOrderNumber());
-	}
-	
-	/**
 	 * @see {@link OrderService#getOrderHistoryByConcept(Patient,Concept)}
 	 */
 	@Test

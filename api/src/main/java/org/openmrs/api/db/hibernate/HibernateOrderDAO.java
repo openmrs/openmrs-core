@@ -165,18 +165,6 @@ public class HibernateOrderDAO implements OrderDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.OrderDA#getMaximumOrderId()
-	 */
-	public Integer getMaximumOrderId() {
-		Query query = sessionFactory.getCurrentSession().createQuery("select max(orderId) from Order");
-		Object maxOrderId = query.uniqueResult();
-		if (maxOrderId == null)
-			return 0;
-		
-		return (Integer) maxOrderId;
-	}
-	
-	/**
 	 * @see org.openmrs.api.db.OrderDAO#saveOrderGroup(org.openmrs.OrderGroup)
 	 */
 	@Override
