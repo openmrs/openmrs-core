@@ -527,6 +527,45 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
+	 * @see OrderService#saveOrderSet(OrderSet)
+	 */
+	@Test
+	@Verifies(value = "should create new order set", method = "saveOrderSet(OrderSet)")
+	public void saveOrderSet_shouldCreateNewOrderSet() throws Exception {
+		OrderSet orderSet = new OrderSet();
+		orderSet.setName("Name");
+		orderSet = service.saveOrderSet(orderSet);
+		
+		Context.evictFromSession(orderSet);
+		
+		orderSet = service.getOrderSet(orderSet.getOrderSetId());
+		Assert.assertNotNull(orderSet);
+	}
+	
+	/**
+	 * @see OrderService#saveOrderSet(OrderSet)
+	 */
+	@Test
+	@Verifies(value = "should update existing order set", method = "saveOrderSet(OrderSet)")
+	public void saveOrderSet_shouldUpdateExistingOrderSet() throws Exception {		
+		OrderSet orderSet = new OrderSet();
+		orderSet.setName("Name");
+		orderSet = service.saveOrderSet(orderSet);
+		
+		orderSet = service.getOrderSet(orderSet.getOrderSetId());
+		
+		final String newName = "Changed Name";
+		orderSet.setName(newName);
+		service.saveOrderSet(orderSet);
+		
+		Context.flushSession();
+		Context.evictFromSession(orderSet);
+		
+		orderSet = service.getOrderSet(orderSet.getOrderSetId());
+		Assert.assertEquals(newName, orderSet.getName());
+	}
+	
+	/**
 	 * @see OrderService#publishOrderSet(Concept,OrderSet)
 	 * @verifies publish an order set as a concept overwriting the previous entity
 	 */

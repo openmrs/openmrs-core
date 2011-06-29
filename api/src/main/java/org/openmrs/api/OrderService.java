@@ -468,6 +468,8 @@ public interface OrderService extends OpenmrsService {
 	 * @param orderSet
 	 * @return the saved OrderSet
 	 * @since 1.9
+	 * @should create new order set
+	 * @should update existing order set
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_ORDER_SETS)
 	public OrderSet saveOrderSet(OrderSet orderSet);
