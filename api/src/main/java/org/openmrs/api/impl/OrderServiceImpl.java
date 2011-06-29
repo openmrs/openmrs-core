@@ -314,6 +314,14 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
+	 * @see org.openmrs.api.OrderService#signAndActivateOrder(org.openmrs.Order)
+	 */
+	@Override
+	public Order signAndActivateOrder(Order order) throws APIException {
+		return Context.getOrderService().signAndActivateOrder(order, null, null);
+	}
+	
+	/**
 	 * @see org.openmrs.api.OrderService#saveActivatedOrder(org.openmrs.Order, org.openmrs.User,
 	 *      java.util.Date)
 	 */

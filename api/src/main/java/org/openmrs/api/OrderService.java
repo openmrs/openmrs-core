@@ -317,6 +317,16 @@ public interface OrderService extends OpenmrsService {
 	 * Saves, Signs, and Activates an order.
 	 * 
 	 * @param order the order.
+	 * @return the saved, signed and activated order.
+	 * @should save sign activate order with unstructured dosing
+	 * @should save sign activate order with structured dosing
+	 */
+	public Order signAndActivateOrder(Order order) throws APIException;
+	
+	/**
+	 * Saves, Signs, and Activates an order.
+	 * 
+	 * @param order the order.
 	 * @param user the user in charge of the order (defaults to authenticated user)
 	 * @param date the date to sign and activate the order (cannot be in the future, defaults to
 	 *            now)
