@@ -70,7 +70,7 @@ public class OrderUtil {
 				if (log.isDebugEnabled())
 					log.debug("discontinuing order: " + drugOrder);
 				// do the stuff to the database
-				orderService.discontinueOrder(drugOrder, discontinueReason, discontinueDate);
+				orderService.discontinueOrder(drugOrder, discontinueReason.getName().getName(), null, discontinueDate);
 			}
 		}
 	}
@@ -161,7 +161,7 @@ public class OrderUtil {
 			List<DrugOrder> ordersToDiscontinue = ordersBySetId.get(drugSetId);
 			if (ordersToDiscontinue != null) {
 				for (DrugOrder order : ordersToDiscontinue) {
-					orderService.discontinueOrder(order, discontinueReason, discontinueDate);
+					orderService.discontinueOrder(order, discontinueReason.getName().getName(), null, discontinueDate);
 				}
 			} else {
 				log.debug("no orders to discontinue");

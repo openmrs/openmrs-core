@@ -45,6 +45,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public interface OrderService extends OpenmrsService {
 	
+	public String DC_REASON_REVISE = "REVISE";
+	
 	/**
 	 * The type of status to match on an order. Used in getOrder* methods
 	 * 
@@ -118,19 +120,6 @@ public interface OrderService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.DELETE_ORDERS)
 	public Order voidOrder(Order order, String voidReason) throws APIException;
-	
-	/**
-	 * Mark the given order as discontinued. This should be used when patients are no longer on this
-	 * Order. If this is was invalid Order, the {@link #voidOrder(Order, String)} method should
-	 * probably be used.
-	 * 
-	 * @param discontinueReason String reason for discontinuing this order
-	 * @param order Order to discontinue
-	 * @return The Order that was discontinued
-	 * @throws APIException
-	 */
-	@Authorized(PrivilegeConstants.EDIT_ORDERS)
-	public Order discontinueOrder(Order order, Concept discontinueReason, Date discontinueDate) throws APIException;
 	
 	/**
 	 * Get order by internal primary key identifier

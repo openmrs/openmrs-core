@@ -113,9 +113,7 @@ public class OrderGroupValidatorTest {
 		Errors errors = new BindException(group, "group");
 		getValidator().validate(group, errors);
 		
-		Assert.assertTrue(errors.hasFieldErrors("creator"));
 		Assert.assertTrue(errors.hasFieldErrors("patient"));
-		Assert.assertTrue(errors.hasFieldErrors("dateCreated"));
 	}
 	
 	/**

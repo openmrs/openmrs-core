@@ -137,16 +137,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#discontinueOrder(org.openmrs.Order, org.openmrs.Concept,
-	 *      java.util.Date)
-	 */
-	@Override
-	public Order discontinueOrder(Order order, Concept discontinueReason, Date discontinueDate) throws APIException {
-		order.setDiscontinuedReason(discontinueReason);
-		return doDiscontinueOrder(order, null, discontinueDate);
-	}
-	
-	/**
 	 * @see org.openmrs.api.OrderService#undiscontinueOrder(org.openmrs.Order)
 	 */
 	@Override
@@ -338,8 +328,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 			if (!previousOrder.isActivated())
 				throw new APIException("Previous order should already be actived");
 			
-			Context.getOrderService().discontinueOrder(previousOrder,
-			    null /*"Signing and Activating Order with a previous one"*/, date);
+			Context.getOrderService().discontinueOrder(previousOrder, OrderService.DC_REASON_REVISE, user, date);
 		}
 		
 		// sign
@@ -440,6 +429,9 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	public List<Order> getOrderHistoryByConcept(Patient patient, Concept concept) {
+		if (patient == null)
+			throw new IllegalArgumentException("patient is required");
+		
 		List<Concept> concepts = new Vector<Concept>();
 		concepts.add(concept);
 		
@@ -544,8 +536,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	@Override
 	public OrderGroup signAndActivateOrdersInGroup(OrderGroup group, User user, Date activated) throws APIException {
 		
-		ValidateUtil.validate(group);
-		
 		if (group.getOrderGroupId() != null)
 			throw new APIException(
 			        "signAndActivateOrderGroup Can not be called for an existing orders group. Please use a new orders group.");
@@ -553,6 +543,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		for (Order order : group.getMembers())
 			Context.getOrderService().signAndActivateOrder(order, user, activated);
 		
+		ValidateUtil.validate(group);
 		group = Context.getOrderService().saveOrderGroup(group);
 		
 		return group;
@@ -713,9 +704,10 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 * @throws APIException
 	 */
 	private Order doDiscontinueOrder(Order oldOrder, User user, Date discontinueDate) throws APIException {
-		if (oldOrder.getDateActivated() != null && OpenmrsUtil.compareWithNullAsGreatest(discontinueDate, new Date()) < 0) {
-			throw new APIException("Discontinue date should not be in the past for active orders");
-		}
+		if (discontinueDate == null)
+			discontinueDate = new Date();
+		if (oldOrder.isActivated() && OpenmrsUtil.compareWithNullAsLatest(discontinueDate, oldOrder.getDateActivated()) < 0)
+			throw new APIException("Discontinue date cannot be before the date the order was activated.");
 		//don't re-discontinue an order if its current discontinue date has passed 
 		//or the new discontinue date is null since it default to current and there no 
 		//point in re-discontinuing it now it is already discontinued

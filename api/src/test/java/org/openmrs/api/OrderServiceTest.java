@@ -96,21 +96,20 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderService#getOrderHistoryByConcept(Concept)}
+	 * @see {@link OrderService#getOrderHistoryByConcept(Patient,Concept)}
 	 */
-	@Ignore
 	@Test
-	@Verifies(value = "should return orders with the given concept", method = "getOrderHistoryByConcept(Concept)")
+	@Verifies(value = "should return orders with the given concept", method = "getOrderHistoryByConcept(Patient,Concept)")
 	public void getOrderHistoryByConcept_shouldReturnOrdersWithTheGivenConcept() throws Exception {
-		//We should have three orders with this concept.
+		//We should have two orders with this concept.
 		Concept concept = Context.getConceptService().getConcept(88);
-		Patient patient = Context.getPatientService().getPatient(1);
+		Patient patient = Context.getPatientService().getPatient(2);
 		List<Order> orders = Context.getOrderService().getOrderHistoryByConcept(patient, concept);
-		Assert.assertEquals(3, orders.size());
+		Assert.assertEquals(2, orders.size());
 		for (Order order : orders)
-			Assert.assertTrue(order.getOrderId() == 1 || order.getOrderId() == 4 || order.getOrderId() == 5);
+			Assert.assertTrue(order.getOrderId() == 4 || order.getOrderId() == 5);
 		
-		//We should two orders with this concept.
+		//We should two different orders with this concept
 		concept = Context.getConceptService().getConcept(792);
 		orders = Context.getOrderService().getOrderHistoryByConcept(patient, concept);
 		Assert.assertEquals(2, orders.size());
@@ -119,13 +118,13 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderService#getOrderHistoryByConcept(Concept)}
+	 * @see {@link OrderService#getOrderHistoryByConcept(PatientConcept)}
 	 */
 	@Test
-	@Verifies(value = "should return empty list for concept without orders", method = "getOrderHistoryByConcept(Concept)")
+	@Verifies(value = "should return empty list for concept without orders", method = "getOrderHistoryByConcept(Patient,Concept)")
 	public void getOrderHistoryByConcept_shouldReturnEmptyListForConceptWithoutOrders() throws Exception {
 		Concept concept = Context.getConceptService().getConcept(21);
-		Patient patient = Context.getPatientService().getPatient(1);
+		Patient patient = Context.getPatientService().getPatient(2);
 		List<Order> orders = Context.getOrderService().getOrderHistoryByConcept(patient, concept);
 		Assert.assertEquals(0, orders.size());
 	}
@@ -134,6 +133,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link OrderService#signOrder(Order, User)}
 	 */
 	@Ignore
+	// re-enable test when we allow orders to be persisted when not activated and signed
 	@Test
 	@Verifies(value = "should sign given order", method = "signOrder(Order, User)")
 	public void signOrder_shouldSignGivenOrder() throws Exception {
@@ -154,6 +154,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link OrderService#signOrder(Order, User)}
 	 */
 	@Ignore
+	// re-enable test when we allow orders to be persisted when not activated and signed
 	@Test
 	@Verifies(value = "should activate given order", method = "activateOrder(Order, User)")
 	public void activateOrder_shouldActivateGivenOrder() throws Exception {
@@ -174,6 +175,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link OrderService#fillOrder(Order, User)}
 	 */
 	@Ignore
+	// re-enable test when we allow orders to be persisted when not activated and signed
 	@Test(expected = APIException.class)
 	@Verifies(value = "should not fill order with user if not signed", method = "fillOrder(Order, User)")
 	public void fillOrder_shouldNotFillOrderWithUserIfNotSigned() throws Exception {
@@ -186,6 +188,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link OrderService#fillOrder(Order, String)}
 	 */
 	@Ignore
+	// re-enable test when we allow orders to be persisted when not activated and signed
 	@Test(expected = APIException.class)
 	@Verifies(value = "should not fill order with non user if not signed", method = "fillOrder(Order, String)")
 	public void fillOrder_shouldNotFillOrderWithNonUserIfNotSigned() throws Exception {
@@ -196,7 +199,6 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @see {@link OrderService#fillOrder(Order, User)}
 	 */
-	@Ignore
 	@Test
 	@Verifies(value = "should fill order with user", method = "fillOrder(Order, User)")
 	public void fillOrder_shouldFillOrderWithUser() throws Exception {
@@ -206,7 +208,6 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Assert.assertTrue(order.getFiller() == null);
 		Assert.assertTrue(order.getDateFilled() == null);
 		
-		Context.getOrderService().signOrder(order, provider, null);
 		Context.getOrderService().fillOrder(order, provider, null);
 		
 		order = Context.getOrderService().getOrder(10);
@@ -217,18 +218,14 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @see {@link OrderService#fillOrder(Order, User)}
 	 */
-	@Ignore
 	@Test
 	@Verifies(value = "should fill order with non user", method = "fillOrder(Order, User)")
 	public void fillOrder_shouldFillGivenOrderWithNonUser() throws Exception {
-		User provider = Context.getUserService().getUser(501);
-		
 		Order order = Context.getOrderService().getOrder(10);
 		Assert.assertTrue(order.getFiller() == null);
 		Assert.assertTrue(order.getDateFilled() == null);
 		
-		Context.getOrderService().signOrder(order, provider, null);
-		Context.getOrderService().fillOrder(order, "url", null);
+		Context.getOrderService().fillOrder(order, "the pharmacist", null);
 		
 		order = Context.getOrderService().getOrder(10);
 		Assert.assertTrue(order.getFiller() != null);
@@ -332,36 +329,35 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @see {@link OrderService#signAndActivateOrdersInGroup(org.openmrs.OrderGroup, User, Date)}
 	 */
-	@Ignore
 	@Test
-	@Verifies(value = "sign and activate orders group", method = "signAndActivateOrderGroup(OrderGroup, User, Date)")
-	public void getOrderables_shouldSignAndActivateOrdersGroup() throws Exception {
+	@Verifies(value = "sign and activate order group", method = "signAndActivateOrderGroup(OrderGroup, User, Date)")
+	public void signAndActivateOrderGroup_shouldSignAndActivateOrderGroup() throws Exception {
 		
-		User provider = Context.getUserService().getUser(501);
 		Patient patient = Context.getPatientService().getPatient(6);
+		User provider = Context.getUserService().getUser(501);
+		
+		Order order = new Order();
+		order.setConcept(Context.getConceptService().getConcept(23));
 		
 		OrderGroup group = new OrderGroup(null, patient);
-		group.setCreator(provider);
-		group.setDateCreated(new Date());
-		Order order = new Order();
-		
-		order.setConcept(Context.getConceptService().getConcept(23));
-		order.setPatient(patient);
 		group.addOrder(order);
 		
 		group = Context.getOrderService().signAndActivateOrdersInGroup(group, provider, null);
-		order = (Order) group.getMembers().toArray()[0];
-		//Should be saved.
-		Assert.assertNotNull(group);
 		
-		//Should be signed.
+		// group should be saved.
+		Assert.assertNotNull(group.getOrderGroupId());
+		
+		order = (Order) group.getMembers().toArray()[0];
+		
+		// order should be signed
 		Assert.assertTrue(order.isSigned());
 		Assert.assertNotNull(order.getDateSigned());
+		Assert.assertEquals(provider, order.getSignedBy());
 		
-		//Should be activated.
+		// order should be activated
 		Assert.assertNotNull(order.getActivatedBy());
 		Assert.assertNotNull(order.getDateActivated());
-		
+		Assert.assertEquals(provider, order.getActivatedBy());
 	}
 	
 	/**
@@ -547,7 +543,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 */
 	@Test
 	@Verifies(value = "should update existing order set", method = "saveOrderSet(OrderSet)")
-	public void saveOrderSet_shouldUpdateExistingOrderSet() throws Exception {		
+	public void saveOrderSet_shouldUpdateExistingOrderSet() throws Exception {
 		OrderSet orderSet = new OrderSet();
 		orderSet.setName("Name");
 		orderSet = service.saveOrderSet(orderSet);
@@ -649,6 +645,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	 * @verifies allow you to edit an order before it is activated
 	 */
 	@Ignore
+	// re-enable test when we allow orders to be persisted when not activated and signed
 	@Test
 	public void saveOrder_shouldAllowYouToEditAnOrderBeforeItIsActivated() throws Exception {
 		DrugOrder existing = service.getOrder(5, DrugOrder.class);
@@ -715,7 +712,6 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	/**
 	 * @see {@link OrderService#discontinueOrder(Order,String,User,Date)}
 	 */
-	@Ignore
 	@Test
 	@Verifies(value = "should discontinue and return the old order", method = "discontinueOrder(Order,String,User,Date)")
 	public void discontinueOrder_shouldDiscontinueAndReturnTheOldOrder() throws Exception {
@@ -746,74 +742,6 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.MINUTE, -1);
 		service.discontinueOrder(order, "Testing", null, cal.getTime());
-	}
-	
-	/**
-	 * @see {@link OrderService#discontinueOrder(Order,String,User,Date)}
-	 */
-	@Ignore
-	@Test
-	@Verifies(value = "should re discontinue an order whose discontinued date has not yet passed", method = "discontinueOrder(Order,String,User,Date)")
-	public void discontinueOrder_shouldReDiscontinueAnOrderWhoseDiscontinuedDateHasNotYetPassed() throws Exception {
-		//discontinue the same order twice with different dates
-		Order order = service.getOrder(5);
-		Assert.assertNull(order.getDateActivated());
-		Calendar cal = Calendar.getInstance();
-		cal.add(Calendar.HOUR_OF_DAY, 1);
-		service.discontinueOrder(order, "Testing1", null, cal.getTime());
-		Assert.assertTrue(order.getDiscontinued());
-		
-		//re discontinue to future time
-		Calendar cal1 = Calendar.getInstance();
-		cal1.add(Calendar.HOUR_OF_DAY, 2);
-		Date date2 = cal1.getTime();
-		service.discontinueOrder(order, "Testing2", null, date2);
-		Assert.assertEquals(date2, order.getDiscontinuedDate());
-		Assert.assertEquals("Testing2", order.getDiscontinuedReasonNonCoded());
-		
-		//re-discontinue back to an earlier time
-		Calendar cal2 = Calendar.getInstance();
-		cal2.add(Calendar.MINUTE, 2);
-		Date date3 = cal2.getTime();
-		service.discontinueOrder(order, "Testing3", null, date3);
-		Assert.assertEquals(date3, order.getDiscontinuedDate());
-		Assert.assertEquals("Testing3", order.getDiscontinuedReasonNonCoded());
-	}
-	
-	/**
-	 * @see {@link OrderService#discontinueOrder(Order,String,User,Date)}
-	 */
-	@Ignore
-	@Test
-	@Verifies(value = "should use the passed in future discontinue date if the order is not yet activated", method = "discontinueOrder(Order,String,User,Date)")
-	public void discontinueOrder_shouldUseThePassedInFutureDiscontinueDateIfTheOrderIsNotYetActivated() throws Exception {
-		Order order = service.getOrder(5);
-		Assert.assertNull(order.getDateActivated());
-		Calendar cal = Calendar.getInstance();
-		cal.add(Calendar.HOUR_OF_DAY, 1);
-		Date date = cal.getTime();
-		service.discontinueOrder(order, "Testing", null, date);
-		Assert.assertTrue(order.getDiscontinued());
-		Assert.assertEquals(date, order.getDiscontinuedDate());
-	}
-	
-	/**
-	 * @see {@link OrderService#discontinueOrder(Order,String,User,Date)}
-	 */
-	@Ignore
-	@Test
-	@Verifies(value = "should default to current date for an activated order and discontinue date is in the past", method = "discontinueOrder(Order,String,User,Date)")
-	public void discontinueOrder_shouldDefaultToCurrentDateForAnActivatedOrderAndDiscontinueDateIsInThePast()
-	        throws Exception {
-		Order order = service.getOrder(5);
-		Assert.assertNull(order.getDateActivated());
-		Calendar cal = Calendar.getInstance();
-		cal.add(Calendar.HOUR_OF_DAY, -1);
-		Date date = cal.getTime();
-		service.discontinueOrder(order, "Testing", null, date);
-		Assert.assertTrue(order.getDiscontinued());
-		Assert.assertNotNull(order.getDiscontinuedDate());
-		Assert.assertTrue(OpenmrsUtil.compareWithNullAsEarliest(order.getDiscontinuedDate(), date) > 0);
 	}
 	
 	/**
@@ -853,7 +781,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should save sign activate order with structured dosing", method = "signAndActivateOrder(Order, User, Date)")
 	public void signAndActivateOrder_shouldSaveSignActivateOrderWithStructuredDosing() throws Exception {
-				
+		
 		DrugOrder order = new DrugOrder();
 		order.setPatient(Context.getPatientService().getPatient(2));
 		order.setConcept(Context.getConceptService().getConcept(23));
@@ -887,7 +815,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "discontinue previous order", method = "signAndActivateOrder(Order, User, Date)")
 	public void signAndActivateOrder_shouldDiscontinuePreviousOrder() throws Exception {
-		User provider = Context.getUserService().getUser(501);	
+		User provider = Context.getUserService().getUser(501);
 		Concept concept = Context.getConceptService().getConcept(23);
 		Patient patient = Context.getPatientService().getPatient(6);
 		
@@ -896,7 +824,7 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order1.setPatient(patient);
 		
 		service.signAndActivateOrder(order1, provider, new Date());
-				
+		
 		Order order2 = new Order();
 		order2.setConcept(concept);
 		order2.setPatient(patient);

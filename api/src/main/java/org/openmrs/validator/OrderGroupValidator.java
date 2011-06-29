@@ -61,9 +61,7 @@ public class OrderGroupValidator implements Validator {
 		} else {
 			
 			// for the following elements OrderGroup.hbm.xml says: not-null="true"
-			ValidationUtils.rejectIfEmpty(errors, "creator", "error.null");
 			ValidationUtils.rejectIfEmpty(errors, "patient", "error.null");
-			ValidationUtils.rejectIfEmpty(errors, "dateCreated", "error.null");
 			
 			if (group.getMembers() == null || group.getMembers().isEmpty())
 				errors.rejectValue("members", "OrderGroup.noMembersPresent");
