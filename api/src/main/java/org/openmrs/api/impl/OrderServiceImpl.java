@@ -324,6 +324,16 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		if (date == null)
 			date = new Date();
 		
+		//If the order to sign and activate has a previous order, then discontinue the previous order.
+		if (order.getPreviousOrderNumber() != null) {
+			Order previousOrder = dao.getOrderByOrderNumber(order.getPreviousOrderNumber());
+			if (!previousOrder.isActivated())
+				throw new APIException("Previous order should already be actived");
+			
+			Context.getOrderService().discontinueOrder(previousOrder,
+			    null /*"Signing and Activating Order with a previous one"*/, date);
+		}
+		
 		// sign
 		if (order.isSigned())
 			throw new APIException("Order is already signed");

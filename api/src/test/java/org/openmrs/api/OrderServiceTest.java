@@ -845,4 +845,30 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Assert.assertNotNull(order.getActivatedBy());
 		Assert.assertNotNull(order.getDateActivated());
 	}
+	
+	/**
+	 * @see {@link OrderService#signAndActivateOrder(Order, User, Date))}
+	 */
+	@Test
+	@Verifies(value = "discontinue previous order", method = "signAndActivateOrder(Order, User, Date)")
+	public void signAndActivateOrder_shouldDiscontinuePreviousOrder() throws Exception {
+		User provider = Context.getUserService().getUser(501);	
+		Concept concept = Context.getConceptService().getConcept(23);
+		Patient patient = Context.getPatientService().getPatient(6);
+		
+		Order order1 = new Order();
+		order1.setConcept(concept);
+		order1.setPatient(patient);
+		
+		service.signAndActivateOrder(order1, provider, new Date());
+				
+		Order order2 = new Order();
+		order2.setConcept(concept);
+		order2.setPatient(patient);
+		order2.setPreviousOrderNumber(order1.getOrderNumber());
+		
+		order2 = service.signAndActivateOrder(order2, provider, new Date());
+		
+		Assert.assertTrue(order1.getDiscontinued());
+	}
 }
