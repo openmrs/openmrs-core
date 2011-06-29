@@ -28,8 +28,8 @@ public class PersonAttributeTest extends BaseContextSensitiveTest {
 	/**
 	 * @see {@link PersonAttribute#toString()}
 	 */
-//	@Test
-//	@Verifies(value = "should return toString of hydrated value", method = "toString()")
+	//	@Test
+	//	@Verifies(value = "should return toString of hydrated value", method = "toString()")
 	public void toString_shouldReturnToStringOfHydratedValue() throws Exception {
 		// type = CIVIL STATUS, concept = MARRIED
 		PersonAttributeType type = Context.getPersonService().getPersonAttributeType(8);
@@ -52,8 +52,8 @@ public class PersonAttributeTest extends BaseContextSensitiveTest {
 	/**
 	 * @see {@link PersonAttribute#compareTo(PersonAttribute)}
 	 */
-//	@Test
-//	@Verifies(value = "should return negative if other attribute has earlier date created", method = "compareTo(PersonAttribute)")
+	//	@Test
+	//	@Verifies(value = "should return negative if other attribute has earlier date created", method = "compareTo(PersonAttribute)")
 	public void compareTo_shouldReturnNegativeIfOtherAttributeHasEarlierDateCreated() throws Exception {
 		PersonAttribute pa = new PersonAttribute();
 		pa.setDateCreated(new Date());
@@ -162,26 +162,26 @@ public class PersonAttributeTest extends BaseContextSensitiveTest {
 	/**
 	 * @see {@link PersonAttribute#getHydratedObject()}
 	 */
-//	@Test
-//	@Verifies(value = "should load class in format property", method = "getHydratedObject()")
-//	public void getHydratedObject_shouldLoadClassInFormatProperty() throws Exception {
-//		PersonAttributeType type = new PersonAttributeType();
-//		type.setFormat("org.openmrs.Concept");
-//		
-//		PersonAttribute pa = new PersonAttribute(2);
-//		pa.setAttributeType(type);
-//		pa.setValue("5089");
-//		
-//		Concept concept = (Concept) pa.getHydratedObject();
-//		Assert.assertEquals(5089, concept.getConceptId().intValue());
-//	}
+	//	@Test
+	//	@Verifies(value = "should load class in format property", method = "getHydratedObject()")
+	//	public void getHydratedObject_shouldLoadClassInFormatProperty() throws Exception {
+	//		PersonAttributeType type = new PersonAttributeType();
+	//		type.setFormat("org.openmrs.Concept");
+	//		
+	//		PersonAttribute pa = new PersonAttribute(2);
+	//		pa.setAttributeType(type);
+	//		pa.setValue("5089");
+	//		
+	//		Concept concept = (Concept) pa.getHydratedObject();
+	//		Assert.assertEquals(5089, concept.getConceptId().intValue());
+	//	}
 	
 	/**
 	 * @see {@link PersonAttribute#getHydratedObject()}
 	 */
 	@Test
 	@Verifies(value = "should still load class in format property if not Attributable", method = "getHydratedObject()")
-	public void getHydratedObject_shouldStillLoadClassInFormatPropertyIfNotAttributable() throws Exception {
+	public void shouldStillLoadClassInFormatPropertyIfNotAttributable() throws Exception {
 		PersonAttributeType type = new PersonAttributeType();
 		type.setDatatype("string");
 		
@@ -190,7 +190,7 @@ public class PersonAttributeTest extends BaseContextSensitiveTest {
 		pa.setAttributeType(type);
 		pa.setValue("lalapalooza");
 		
-		String value = (String) pa.getHydratedObject();
+		String value = (String) pa.getObjectValue();
 		Assert.assertEquals("lalapalooza", value);
 	}
 	
