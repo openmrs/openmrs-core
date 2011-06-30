@@ -5178,9 +5178,12 @@
 		</update>
 	</changeSet>
 	
-	<changeSet id="20110623-1611" author="wyclif">
+	<changeSet id="20110623-1612" author="wyclif">
 		<preConditions onFail="MARK_RAN">
-			<sqlCheck expectedResult="0">SELECT count(*) FROM concept_class WHERE name = 'Order Set'</sqlCheck>
+			<sqlCheck expectedResult="0">
+				SELECT count(*) FROM concept_class 
+				WHERE name = 'Order Set' OR uuid = 'baa7a1b8-a1ba-11e0-9616-705ab6a580e0'
+			</sqlCheck>
 		</preConditions>
 		<comment>Adding 'Order Set' concept_class</comment>
 		<insert tableName="concept_class">
