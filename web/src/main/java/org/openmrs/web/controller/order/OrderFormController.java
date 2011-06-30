@@ -104,7 +104,7 @@ public class OrderFormController extends SimpleFormController {
 				orderService.unvoidOrder(order);
 				request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Order.unvoidedSuccessfully");
 			} else if (request.getParameter("discontinueOrder") != null) {
-				orderService.discontinueOrder(order, order.getDiscontinuedReason(), order.getDiscontinuedDate());
+				orderService.discontinueOrder(order, null);
 				request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Order.discontinuedSuccessfully");
 			} else if (request.getParameter("undiscontinueOrder") != null) {
 				orderService.undiscontinueOrder(order);

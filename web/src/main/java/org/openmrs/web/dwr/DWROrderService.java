@@ -105,8 +105,8 @@ public class DWROrderService {
 		
 		Order o = Context.getOrderService().getOrder(orderId);
 		try {
-			Context.getOrderService().discontinueOrder(o, Context.getConceptService().getConcept(discontinueReason),
-			    dDiscDate);
+			Context.getOrderService().discontinueOrder(o,
+			    Context.getConceptService().getConcept(discontinueReason).getName().getName(), null, dDiscDate);
 		}
 		catch (APIException e) {
 			throw new APIException(e.getMessage());
@@ -191,8 +191,8 @@ public class DWROrderService {
 		
 		for (DrugOrder o : currentOrders) {
 			try {
-				Context.getOrderService().discontinueOrder(o, Context.getConceptService().getConcept(discontinueReason),
-				    discDate);
+				Context.getOrderService().discontinueOrder(o,
+				    Context.getConceptService().getConcept(discontinueReason).getName().getName(), null, discDate);
 			}
 			catch (APIException e) {
 				throw new APIException(e.getMessage());
