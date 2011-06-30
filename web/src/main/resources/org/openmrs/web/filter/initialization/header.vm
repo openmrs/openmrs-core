@@ -1,9 +1,11 @@
 <html>
 <head>
 	<script type="text/javascript" src="initfilter/scripts/jquery/jquery.min.js"></script>
-    <script type="text/javascript" src="initfilter/scripts/initialsetup.js"></script>
-
-    <style type="text/css" media="all">
+	<script type="text/javascript" src="initfilter/scripts/initialsetup.js"></script>
+	<script type="text/javascript" src="initfilter/scripts/jquery-ui/js/jquery-ui.custom.min.js"></script>
+    <link type="text/css" rel="stylesheet" href="initfilter/scripts/jquery-ui/css/orange/jquery-ui.custom.css" />
+    
+	<style type="text/css" media="all">
         .question {
             text-align:left;
             background-color: #E9E4CC;
@@ -67,7 +69,7 @@
     </table>
 	
 	#if( ! $errors.isEmpty() )
-	<div style="color: red">
+	<div id="errorMsgs" style="color: red">
 		<ul>
 		#foreach ($error in $errors)
 			<li>${error}</li>
