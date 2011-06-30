@@ -4905,10 +4905,6 @@
 		<addForeignKeyConstraint constraintName="order_set_retired_by_fk" 
 								 baseTableName="order_set" baseColumnNames="retired_by"
 								 referencedTableName="users" referencedColumnNames="user_id"/>
-								 
-		<addForeignKeyConstraint constraintName="order_set_concept_id_fk" 
-								 baseTableName="order_set" baseColumnNames="concept_id"
-								 referencedTableName="concept" referencedColumnNames="concept_id"/>
 
 	</changeSet>
 	
@@ -5181,12 +5177,12 @@
 	<changeSet id="20110623-1611" author="wyclif">
 		<preConditions onFail="MARK_RAN">
 			<changeSetExecuted id="20110623-1610" author="wyclif" changeLogFile="liquibase-update-to-latest.xml"/>
-			<not><sqlCheck expectedResult="0">SELECT count(*) FROM orders WHERE order_type != 'DRUG'</sqlCheck></not>
+			<not><sqlCheck expectedResult="0">SELECT count(*) FROM orders WHERE order_type IS NULL</sqlCheck></not>
 		</preConditions>
 		<comment>Setting the order_type to TEST for orders that are not drug orders</comment>
 		<update tableName="orders">
 			<column name="order_type" value="TEST"/>
-			<where>order_type != 'DRUG'</where>
+			<where>order_type IS NULL</where>
 		</update>
 	</changeSet>
 	
@@ -5194,7 +5190,7 @@
 		<preConditions onFail="MARK_RAN">
 			<sqlCheck expectedResult="0">
 				SELECT count(*) FROM concept_class 
-				WHERE name = 'Order Set' OR uuid = 'baa7a1b8-a1ba-11e0-9616-705ab6a580e0'
+				WHERE name = 'Order Set' AND uuid = 'baa7a1b8-a1ba-11e0-9616-705ab6a580e0'
 			</sqlCheck>
 		</preConditions>
 		<comment>Adding 'Order Set' concept_class</comment>
