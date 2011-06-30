@@ -36,6 +36,8 @@ public class InitializationWizardModel {
 	
 	public static final String INSTALL_METHOD_ADVANCED = "advanced";
 	
+	public static final String INSTALL_METHOD_TESTING = "testing";
+	
 	// Default OpenMRS admin password set by the simple installation.
 	public static final String ADMIN_DEFAULT_PASSWORD = "Admin123";
 	
@@ -194,4 +196,50 @@ public class InitializationWizardModel {
 	 * The tasks to be executed that the user selected from the wizard's prompts
 	 */
 	public List<WizardTask> tasksToExecute;
+	
+	/**
+	 * Specified by the user when they select the testing install method
+	 */
+	public String currentDatabaseHost = "";
+	
+	/**
+	 * Specified by the user when they select the testing install method
+	 */
+	public String currentDatabasePort = "3306";
+	
+	/**
+	 * Specified by the user when they select the testing install method
+	 */
+	public String currentDatabaseName = "openmrs";
+	
+	/**
+	 * Specified by the user when they select the testing install method
+	 */
+	public String testDatabaseHost = "127.0.0.1";
+	
+	/**
+	 * Specified by the user when they select the testing install method
+	 */
+	public String testDatabasePort = "3306";
+	
+	/**
+	 * Specified by the user when they select the testing install method
+	 */
+	public String testDatabaseUsername = "root";
+	
+	/**
+	 * Specified by the user when they select the testing install method
+	 */
+	public String testDatabasePassword = "";
+	
+	/**
+	 * Specified by the user when they add modules to be installed for testing
+	 */
+	public Boolean addModules = Boolean.FALSE;
+	
+	/**
+	 * This is actually note meant to be specified by the user, it is only in the model so that we
+	 * can access from the review page
+	 */
+	public static final String TEST_DATABASE_NAME = "openmrs_test";
 }
