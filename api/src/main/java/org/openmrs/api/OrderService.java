@@ -515,7 +515,6 @@ public interface OrderService extends OpenmrsService {
 	 *            DrugOrder)
 	 * @param patients The patients to get orders for
 	 * @param concepts The concepts in order.getConcept to get orders for
-	 * @param status The ORDER_STATUS of the orders for its patient
 	 * @param orderers The users/orderers of the
 	 * @param encounters The encounters that the orders are assigned to
 	 * @param asOfDate

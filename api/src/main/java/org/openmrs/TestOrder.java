@@ -36,15 +36,6 @@ public class TestOrder extends Order {
 	}
 	
 	/**
-	 * @deprecated
-	 * @param orderId the order id.
-	 */
-	@Deprecated
-	public TestOrder(Integer orderId) {
-		setOrderId(orderId);
-	}
-	
-	/**
 	 * Gets the specimen source.
 	 * 
 	 * @return the specimen source.

@@ -5178,6 +5178,18 @@
 		</update>
 	</changeSet>
 	
+	<changeSet id="20110623-1611" author="wyclif">
+		<preConditions onFail="MARK_RAN">
+			<changeSetExecuted id="20110623-1610" author="wyclif" changeLogFile="liquibase-update-to-latest.xml"/>
+			<not><sqlCheck expectedResult="0">SELECT count(*) FROM orders WHERE order_type != 'DRUG'</sqlCheck></not>
+		</preConditions>
+		<comment>Setting the order_type to TEST for orders that are not drug orders</comment>
+		<update tableName="orders">
+			<column name="order_type" value="TEST"/>
+			<where>order_type != 'DRUG'</where>
+		</update>
+	</changeSet>
+	
 	<changeSet id="20110623-1612" author="wyclif">
 		<preConditions onFail="MARK_RAN">
 			<sqlCheck expectedResult="0">

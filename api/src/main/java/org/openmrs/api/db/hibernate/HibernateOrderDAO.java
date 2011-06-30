@@ -33,7 +33,6 @@ import org.openmrs.OrderSet;
 import org.openmrs.Patient;
 import org.openmrs.PublishedOrderSet;
 import org.openmrs.User;
-import org.openmrs.api.OrderService.ORDER_STATUS;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.OrderDAO;
 
@@ -100,31 +99,23 @@ public class HibernateOrderDAO implements OrderDAO {
 	
 	/**
 	 * @see org.openmrs.api.db.OrderDAO#getOrders(java.lang.Class, java.util.List, java.util.List,
-	 *      org.openmrs.api.OrderService.ORDER_STATUS, java.util.List, java.util.List,
-	 *      java.util.List, java.util.Date)
+	 *      java.util.List, java.util.List, java.util.List, java.util.Date)
 	 * @see org.openmrs.api.OrderService#getOrders(java.lang.Class, java.util.List, java.util.List,
-	 *      org.openmrs.api.OrderService.ORDER_STATUS, java.util.List, java.util.List,
-	 *      java.util.List, java.util.Date)
+	 *      java.util.List, java.util.List, java.util.List, java.util.Date)
 	 */
 	@SuppressWarnings("unchecked")
 	public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
-	        List<Concept> concepts, ORDER_STATUS status, List<User> orderers, List<Encounter> encounters, Date asOfDate) {
+	        List<Concept> concepts, List<User> orderers, List<Encounter> encounters, Date asOfDate) {
 		
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(orderClassType);
 		
-		if (patients.size() > 0)
+		if (patients != null)
 			crit.add(Expression.in("patient", patients));
 		
-		if (concepts.size() > 0)
+		if (concepts != null)
 			crit.add(Expression.in("concept", concepts));
 		
-		// only the "ANY" status cares about voided Orders.  All others 
-		// do not want voided orders included in the list
-		// so exclude them here first
-		if (status != ORDER_STATUS.ANY)
-			crit.add(Expression.eq("voided", false));
-		
-		if (status == ORDER_STATUS.ACTIVE && asOfDate != null) {
+		if (asOfDate != null) {
 			crit.add(Expression.le("startDate", asOfDate)); // startDate cannot be null?
 			
 			crit.add(Expression.or(Expression.isNull("discontinuedDate"), Expression.ge("discontinueDate", asOfDate)));
@@ -138,10 +129,10 @@ public class HibernateOrderDAO implements OrderDAO {
 		// we are not checking the other status's here because they are 
 		// algorithm dependent
 		
-		if (orderers.size() > 0)
+		if (orderers != null)
 			crit.add(Expression.in("orderer", orderers));
 		
-		if (encounters.size() > 0)
+		if (encounters != null)
 			crit.add(Expression.in("encounter", encounters));
 		
 		return crit.list();

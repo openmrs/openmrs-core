@@ -187,7 +187,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		if (encounters == null)
 			encounters = new Vector<Encounter>();
 		
-		return dao.getOrders(orderClassType, patients, concepts, status, orderers, encounters, asOfDate);
+		return dao.getOrders(orderClassType, patients, concepts, orderers, encounters, asOfDate);
 	}
 	
 	/**
@@ -644,21 +644,9 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	        List<Concept> concepts, List<User> orderers, List<Encounter> encounters, Date asOfDate) {
 		if (orderClassType == null)
 			throw new APIException(
-			        "orderClassType cannot be null.  An order type of Order.class or DrugOrder.class is required");
+			        "orderClassType cannot be null.  An order type of Order.class and its subclass is required");
 		
-		if (patients == null)
-			patients = new Vector<Patient>();
-		
-		if (concepts == null)
-			concepts = new Vector<Concept>();
-		
-		if (orderers == null)
-			orderers = new Vector<User>();
-		
-		if (encounters == null)
-			encounters = new Vector<Encounter>();
-		
-		return dao.getOrders(orderClassType, patients, concepts, null, orderers, encounters, asOfDate);
+		return dao.getOrders(orderClassType, patients, concepts, orderers, encounters, asOfDate);
 	}
 	
 	@Override

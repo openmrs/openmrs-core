@@ -60,7 +60,7 @@ public interface OrderDAO {
 	 * @see org.openmrs.api.OrderService#getOrders(Class, List, List, ORDER_STATUS, List, List)
 	 */
 	public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
-	        List<Concept> concepts, ORDER_STATUS status, List<User> orderers, List<Encounter> encounters, Date asOfDate);
+	        List<Concept> concepts, List<User> orderers, List<Encounter> encounters, Date asOfDate);
 	
 	/**
 	 * Auto generated method comment

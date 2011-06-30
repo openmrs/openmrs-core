@@ -108,7 +108,8 @@ public class OrderValidator implements Validator {
 						errors.rejectValue("discontinuedDate", "Order.error.discontinuedDateBeforeActivated");
 					if (OpenmrsUtil.compare(order.getDiscontinuedDate(), new Date()) > 0)
 						errors.rejectValue("discontinuedDate", "Order.error.discontinuedDateInFuture");
-					if (order.getAutoExpireDate() != null && OpenmrsUtil.compare(order.getDiscontinuedDate(), order.getAutoExpireDate()) > 0)
+					if (order.getAutoExpireDate() != null
+					        && OpenmrsUtil.compare(order.getDiscontinuedDate(), order.getAutoExpireDate()) > 0)
 						errors.rejectValue("discontinuedDate", "Order.error.discontinuedAfterAutoExpireDate");
 				}
 			}
