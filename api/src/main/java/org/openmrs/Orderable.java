@@ -22,6 +22,13 @@ package org.openmrs;
 public interface Orderable<T extends Order> {
 	
 	/**
+	 * The unique identifier for this Orderable.
+	 * 
+	 * @return the orderable's unique identifier.
+	 */
+	public String getUniqueIdentifier();
+	
+	/**
 	 * The concept of the order that will ultimately be created from this Orderable.
 	 * 
 	 * @return the order's concept

@@ -233,4 +233,12 @@ public class Drug extends BaseOpenmrsMetadata implements java.io.Serializable, O
 	public void setId(Integer id) {
 		setDrugId(id);
 	}
+	
+	/**
+	 * @see org.openmrs.Orderable#getUniqueIdentifier()
+	 */
+	@Override
+	public String getUniqueIdentifier() {
+		return "org.openmrs.Drug:" + drugId;
+	}
 }

@@ -24,4 +24,11 @@ public class GenericDrug extends BaseOrderable<DrugOrder> implements Orderable<D
 		this.concept = concept;
 	}
 	
+	/**
+	 * @see org.openmrs.Orderable#getUniqueIdentifier()
+	 */
+	@Override
+	public String getUniqueIdentifier() {
+		return "org.openmrs.GenericDrug:concept=" + concept.getConceptId();
+	}
 }

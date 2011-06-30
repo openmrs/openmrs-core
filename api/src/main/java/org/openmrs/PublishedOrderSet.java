@@ -79,4 +79,11 @@ public class PublishedOrderSet extends BaseOrderable<Order> {
 			return super.getDescription();
 	}
 	
+	/**
+	 * @see org.openmrs.Orderable#getUniqueIdentifier()
+	 */
+	@Override
+	public String getUniqueIdentifier() {
+		return "org.openmrs.PublishedOrderSet:" + publishedOrderSetId;
+	}
 }
