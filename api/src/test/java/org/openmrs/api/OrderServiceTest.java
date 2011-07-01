@@ -808,7 +808,8 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Assert.assertNotNull(returnedOrder.getDiscontinuedDate());
 		Assert.assertNotNull(returnedOrder.getDiscontinuedBy());
 		//should have created a discontinue order
-		Assert.assertEquals(originalCount + 1, service.getOrders(Order.class, null, null, null, null, null, null, null).size());
+		Assert.assertEquals(originalCount + 1, service.getOrders(Order.class, null, null, null, null, null, null, null)
+		        .size());
 	}
 	
 	/**

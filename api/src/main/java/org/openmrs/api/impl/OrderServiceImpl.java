@@ -168,13 +168,13 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	// TODO get rid of this method and anything that depends on it. Rewrite.
 	public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
-	        List<Concept> concepts, List<User> orderers, List<Encounter> encounters, Date asOfDate, 
+	        List<Concept> concepts, List<User> orderers, List<Encounter> encounters, Date asOfDate,
 	        List<OrderAction> actionsToInclude, List<OrderAction> actionsToExclude) {
 		if (orderClassType == null)
-			throw new APIException(
-			        "orderClassType cannot be null.  An order type of Order.class or a subclass is required");
+			throw new APIException("orderClassType cannot be null.  An order type of Order.class or a subclass is required");
 		
-		return dao.getOrders(orderClassType, patients, concepts, orderers, encounters, asOfDate, actionsToInclude, actionsToExclude);
+		return dao.getOrders(orderClassType, patients, concepts, orderers, encounters, asOfDate, actionsToInclude,
+		    actionsToExclude);
 	}
 	
 	/**
@@ -718,5 +718,13 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	public Orderable<?> getOrderable(String identifier) throws APIException {
 		return null;
+	}
+	
+	/**
+	 * @see org.openmrs.api.OrderService#getNewOrderNumber()
+	 */
+	@Override
+	public String getNewOrderNumber() {
+		return dao.getNewOrderNumber();
 	}
 }

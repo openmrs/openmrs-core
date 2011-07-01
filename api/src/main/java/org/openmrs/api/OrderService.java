@@ -528,7 +528,7 @@ public interface OrderService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.VIEW_ORDERS)
 	public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
-	        List<Concept> concepts, List<User> orderers, List<Encounter> encounters, Date asOfDate, 
+	        List<Concept> concepts, List<User> orderers, List<Encounter> encounters, Date asOfDate,
 	        List<OrderAction> actionsToInclude, List<OrderAction> actionsToExclude);
 	
 	/**
@@ -576,4 +576,13 @@ public interface OrderService extends OpenmrsService {
 	 */
 	@Transactional(readOnly = true)
 	public Orderable<?> getOrderable(String identifier) throws APIException;
+	
+	/**
+	 * Gets an order number that has not yet been used by any order. This method is only intended to
+	 * be used by OpenMRS internally. Client or module code should not use it
+	 * 
+	 * @return the new order number.
+	 */
+	@Transactional(readOnly = true)
+	public String getNewOrderNumber();
 }

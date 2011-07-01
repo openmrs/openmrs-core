@@ -34,8 +34,10 @@ import org.openmrs.OrderSet;
 import org.openmrs.Patient;
 import org.openmrs.PublishedOrderSet;
 import org.openmrs.User;
+import org.openmrs.api.context.Context;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.api.db.OrderDAO;
+import org.openmrs.util.OpenmrsConstants;
 
 /**
  * This class should not be used directly. This is just a common implementation of the OrderDAO that
@@ -56,6 +58,11 @@ public class HibernateOrderDAO implements OrderDAO {
 	 * Hibernate session factory
 	 */
 	private SessionFactory sessionFactory;
+	
+	/**
+	 * Used to store the last used order number
+	 */
+	private static Integer orderNumber;
 	
 	public HibernateOrderDAO() {
 	}
@@ -102,7 +109,8 @@ public class HibernateOrderDAO implements OrderDAO {
 	 * @see org.openmrs.api.db.OrderDAO#getOrders(java.lang.Class, java.util.List, java.util.List,
 	 *      java.util.List, java.util.List, java.util.List, java.util.Date)
 	 * @see org.openmrs.api.OrderService#getOrders(java.lang.Class, java.util.List, java.util.List,
-	 *      java.util.List, java.util.List, java.util.List, java.util.Date, java.util.List, java.util.List)
+	 *      java.util.List, java.util.List, java.util.List, java.util.Date, java.util.List,
+	 *      java.util.List)
 	 */
 	@SuppressWarnings("unchecked")
 	public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
@@ -305,4 +313,30 @@ public class HibernateOrderDAO implements OrderDAO {
 		return sessionFactory.getCurrentSession().createCriteria(PublishedOrderSet.class).createCriteria("orderSet").add(
 		    Restrictions.ilike("name", query, MatchMode.START)).list();
 	}
+	
+	/**
+	 * @see org.openmrs.api.db.OrderDAO#getNewOrderNumber()
+	 */
+	@Override
+	public String getNewOrderNumber() {
+		synchronized (HibernateOrderDAO.class) {
+			if (orderNumber == null) {
+				orderNumber = 0;
+				Query query = sessionFactory.getCurrentSession().createSQLQuery("SELECT max(order_id) FROM orders");
+				Object max = query.uniqueResult();
+				if (max != null) {
+					orderNumber = (Integer) max;
+				}
+			}
+			
+			orderNumber++;
+		}
+		
+		String nextOrderNumber = Context.getAdministrationService().getGlobalProperty(
+		    OpenmrsConstants.GP_ORDER_ENTRY_ORDER_NUMBER_PREFIX, OpenmrsConstants.ORDER_NUMBER_DEFAULT_PREFIX)
+		        + orderNumber.toString();
+		
+		return nextOrderNumber;
+	}
+	
 }

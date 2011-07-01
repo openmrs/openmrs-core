@@ -26,7 +26,6 @@ import org.openmrs.Patient;
 import org.openmrs.PublishedOrderSet;
 import org.openmrs.User;
 import org.openmrs.api.OrderService;
-import org.openmrs.api.OrderService.ORDER_STATUS;
 
 /**
  * Order-related database functions
@@ -58,7 +57,7 @@ public interface OrderDAO {
 	public <Ord extends Order> Ord getOrder(Integer orderId, Class<Ord> classType) throws DAOException;
 	
 	/**
-	 * @see org.openmrs.api.OrderService#getOrders(Class, List, List, ORDER_STATUS, List, List, List, List)
+	 * @see org.openmrs.api.OrderService#getOrders(Class, List, List, List, List)
 	 */
 	public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
 	        List<Concept> concepts, List<User> orderers, List<Encounter> encounters, Date asOfDate,
@@ -142,5 +141,13 @@ public interface OrderDAO {
 	 * @return
 	 */
 	public String getOrderNumberInDatabase(Order order);
+	
+	/**
+	 * @see OrderService#getNewOrderNumber()
+	 * @return
+	 * @should return the next available order number
+	 * @should always return unique orderNumbers when called multiple times without saving orders
+	 */
+	public String getNewOrderNumber();
 	
 }

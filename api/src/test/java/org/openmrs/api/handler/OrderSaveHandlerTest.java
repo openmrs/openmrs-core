@@ -22,7 +22,6 @@ import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
-import org.openmrs.util.OpenmrsConstants;
 
 /**
  * Contains the methods for testing the {@link OrderSaveHandler}
@@ -38,24 +37,6 @@ public class OrderSaveHandlerTest extends BaseContextSensitiveTest {
 		Order order = new Order();
 		new OrderSaveHandler().handle(order, null, null, null);
 		Assert.assertNotNull(order.getOrderNumber());
-	}
-	
-	/**
-	 * @see {@link OrderSaveHandler#handle(Order,User,Date,String)}
-	 */
-	@Test
-	@Verifies(value = "should return the next available order number", method = "handle(Order,User,Date,String)")
-	public void handle_shouldReturnTheNextAvailableOrderNumber() throws Exception {
-		//call the method twice and ensure that the sequence works as expected
-		Order order1 = new Order();
-		new OrderSaveHandler().handle(order1, null, null, null);
-		String orderNumber1 = order1.getOrderNumber();
-		Integer nextNumber = Integer.valueOf(orderNumber1.substring(OpenmrsConstants.ORDER_NUMBER_DEFAULT_PREFIX.length())) + 1;
-		String expectedOrderNumber = OpenmrsConstants.ORDER_NUMBER_DEFAULT_PREFIX.concat(nextNumber.toString());
-		
-		Order order2 = new Order();
-		new OrderSaveHandler().handle(order2, null, null, null);
-		Assert.assertEquals(expectedOrderNumber, order2.getOrderNumber());
 	}
 	
 	/**
