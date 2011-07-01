@@ -96,7 +96,7 @@ public class LoginServlet extends HttpServlet {
 			lockedOut = true;
 			
 			Date lockedOutTime = lockoutDateByIP.get(ipAddress);
-			if (lockedOutTime != null && new Date().getTime() - lockedOutTime.getTime() > 300000) {
+			if (lockedOutTime != null && System.currentTimeMillis() - lockedOutTime.getTime() > 300000) {
 				lockedOut = false;
 				loginAttempts = 0;
 				lockoutDateByIP.put(ipAddress, null);
