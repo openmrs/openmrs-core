@@ -20,6 +20,7 @@ import org.openmrs.Concept;
 import org.openmrs.DrugOrder;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
+import org.openmrs.Order.OrderAction;
 import org.openmrs.OrderGroup;
 import org.openmrs.OrderSet;
 import org.openmrs.Orderable;
@@ -324,6 +325,7 @@ public interface OrderService extends OpenmrsService {
 	 * <li>discontinuedDate is null or >= <code>date</code>
 	 * <li>autoExpireDate is null or >= <code>date</code>
 	 * <li>dateActivated >= <code>date</code>
+	 * <li>action != {@link OrderAction#DISCONTINUE}
 	 * </ol>
 	 * 
 	 * @param p the patient to search on (required)
@@ -343,6 +345,7 @@ public interface OrderService extends OpenmrsService {
 	 * <li>discontinuedDate is null or >= <code>date</code>
 	 * <li>autoExpireDate is null or >= <code>date</code>
 	 * <li>dateActivated >= <code>date</code>
+	 * <li>action != {@link OrderAction#DISCONTINUE}
 	 * </ol>
 	 * 
 	 * @param p the patient to search on (required)
@@ -518,12 +521,15 @@ public interface OrderService extends OpenmrsService {
 	 * @param orderers The users/orderers of the
 	 * @param encounters The encounters that the orders are assigned to
 	 * @param asOfDate
+	 * @param actionsToInclude a list of {@link OrderAction}s that the order must have one of.
+	 * @param actionsToExclude a list of {@link OrderAction}s that the order should not have
 	 * @return list of Orders matching the parameters
 	 * @should not include voided orders
 	 */
 	@Authorized(PrivilegeConstants.VIEW_ORDERS)
 	public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
-	        List<Concept> concepts, List<User> orderers, List<Encounter> encounters, Date asOfDate);
+	        List<Concept> concepts, List<User> orderers, List<Encounter> encounters, Date asOfDate, 
+	        List<OrderAction> actionsToInclude, List<OrderAction> actionsToExclude);
 	
 	/**
 	 * Mark the given order as discontinued. This should be used when patients are no longer on this

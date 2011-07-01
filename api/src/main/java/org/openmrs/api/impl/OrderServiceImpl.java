@@ -14,6 +14,7 @@
 package org.openmrs.api.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -163,31 +164,17 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	/**
 	 * @see org.openmrs.api.OrderService#getOrders(java.lang.Class, java.util.List, java.util.List,
 	 *      org.openmrs.api.OrderService.ORDER_STATUS, java.util.List, java.util.List,
-	 *      java.util.List, java.util.Date)
+	 *      java.util.List, java.util.Date, java.util.List, java.util.List)
 	 */
 	// TODO get rid of this method and anything that depends on it. Rewrite.
 	public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
-	        List<Concept> concepts, ORDER_STATUS status, List<User> orderers, List<Encounter> encounters, Date asOfDate) {
+	        List<Concept> concepts, List<User> orderers, List<Encounter> encounters, Date asOfDate, 
+	        List<OrderAction> actionsToInclude, List<OrderAction> actionsToExclude) {
 		if (orderClassType == null)
 			throw new APIException(
-			        "orderClassType cannot be null.  An order type of Order.class or DrugOrder.class is required");
+			        "orderClassType cannot be null.  An order type of Order.class or a subclass is required");
 		
-		if (patients == null)
-			patients = new Vector<Patient>();
-		
-		if (concepts == null)
-			concepts = new Vector<Concept>();
-		
-		if (status == null)
-			status = ORDER_STATUS.ACTIVE;
-		
-		if (orderers == null)
-			orderers = new Vector<User>();
-		
-		if (encounters == null)
-			encounters = new Vector<Encounter>();
-		
-		return dao.getOrders(orderClassType, patients, concepts, orderers, encounters, asOfDate);
+		return dao.getOrders(orderClassType, patients, concepts, orderers, encounters, asOfDate, actionsToInclude, actionsToExclude);
 	}
 	
 	/**
@@ -201,7 +188,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		List<Patient> patients = new Vector<Patient>();
 		patients.add(patient);
 		
-		return getOrders(Order.class, patients, null, ORDER_STATUS.NOTVOIDED, null, null, null);
+		return getOrders(Order.class, patients, null, null, null, null, null, null);
 	}
 	
 	/**
@@ -217,7 +204,9 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		List<Patient> patients = new Vector<Patient>();
 		patients.add(patient);
 		
-		List<DrugOrder> drugOrders = getOrders(DrugOrder.class, patients, null, ORDER_STATUS.ANY, null, null, null);
+		// TODO: could use this call to get only ACTIVE.  Getting complete is done with asOfDate.
+		// with those two calls you can get rid of all this extra logic
+		List<DrugOrder> drugOrders = getOrders(DrugOrder.class, patients, null, null, null, null, null, null);
 		
 		// loop over the drug orders and add them if they are within the current desired order
 		if (drugOrders != null) {
@@ -263,7 +252,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		List<Patient> patients = new Vector<Patient>();
 		patients.add(patient);
 		
-		return getOrders(DrugOrder.class, patients, null, ORDER_STATUS.NOTVOIDED, null, null, null);
+		return getOrders(DrugOrder.class, patients, null, null, null, null, null, null);
 	}
 	
 	/**
@@ -433,7 +422,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		List<Patient> patients = new Vector<Patient>();
 		patients.add(patient);
 		
-		return getOrders(Order.class, patients, concepts, null, null, null);
+		return getOrders(Order.class, patients, concepts, null, null, null, null, null);
 	}
 	
 	/**
@@ -452,7 +441,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		List<Patient> patients = new Vector<Patient>();
 		patients.add(p);
 		
-		return getOrders(Order.class, patients, null, ORDER_STATUS.ACTIVE, null, null, date);
+		return getOrders(Order.class, patients, null, null, null, date, null, Arrays.asList(OrderAction.DISCONTINUE));
 		
 	}
 	
@@ -471,7 +460,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		List<Patient> patients = new Vector<Patient>();
 		patients.add(p);
 		
-		return getOrders(DrugOrder.class, patients, null, ORDER_STATUS.ACTIVE, null, null, date);
+		// TODO: add "NOT discontinued" action to this call
+		return getOrders(DrugOrder.class, patients, null, null, null, date, null, Arrays.asList(OrderAction.DISCONTINUE));
 	}
 	
 	/**
@@ -633,20 +623,6 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	@Override
 	public OrderSet saveOrderSet(OrderSet orderSet) {
 		return dao.saveOrderSet(orderSet);
-	}
-	
-	/**
-	 * @see org.openmrs.api.OrderService#getOrders(java.lang.Class, java.util.List, java.util.List,
-	 *      java.util.List, java.util.List, java.util.Date)
-	 */
-	@Override
-	public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
-	        List<Concept> concepts, List<User> orderers, List<Encounter> encounters, Date asOfDate) {
-		if (orderClassType == null)
-			throw new APIException(
-			        "orderClassType cannot be null.  An order type of Order.class or its subclass is required");
-		
-		return dao.getOrders(orderClassType, patients, concepts, orderers, encounters, asOfDate);
 	}
 	
 	/**

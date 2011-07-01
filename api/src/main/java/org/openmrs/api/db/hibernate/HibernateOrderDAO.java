@@ -28,6 +28,7 @@ import org.hibernate.criterion.Restrictions;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
+import org.openmrs.Order.OrderAction;
 import org.openmrs.OrderGroup;
 import org.openmrs.OrderSet;
 import org.openmrs.Patient;
@@ -101,18 +102,19 @@ public class HibernateOrderDAO implements OrderDAO {
 	 * @see org.openmrs.api.db.OrderDAO#getOrders(java.lang.Class, java.util.List, java.util.List,
 	 *      java.util.List, java.util.List, java.util.List, java.util.Date)
 	 * @see org.openmrs.api.OrderService#getOrders(java.lang.Class, java.util.List, java.util.List,
-	 *      java.util.List, java.util.List, java.util.List, java.util.Date)
+	 *      java.util.List, java.util.List, java.util.List, java.util.Date, java.util.List, java.util.List)
 	 */
 	@SuppressWarnings("unchecked")
 	public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
-	        List<Concept> concepts, List<User> orderers, List<Encounter> encounters, Date asOfDate) {
+	        List<Concept> concepts, List<User> orderers, List<Encounter> encounters, Date asOfDate,
+	        List<OrderAction> actionsToInclude, List<OrderAction> actionsToExclude) {
 		
 		Criteria crit = sessionFactory.getCurrentSession().createCriteria(orderClassType);
 		
-		if (patients != null)
+		if (patients != null && patients.size() > 0)
 			crit.add(Expression.in("patient", patients));
 		
-		if (concepts != null)
+		if (concepts != null && concepts.size() > 0)
 			crit.add(Expression.in("concept", concepts));
 		
 		// if an asOfDate is passed in, then we need to restrict to just active type of orders
@@ -130,11 +132,17 @@ public class HibernateOrderDAO implements OrderDAO {
 		// we are not checking the other status's here because they are 
 		// algorithm dependent
 		
-		if (orderers != null)
+		if (orderers != null && orderers.size() > 0)
 			crit.add(Expression.in("orderer", orderers));
 		
-		if (encounters != null)
+		if (encounters != null && encounters.size() > 0)
 			crit.add(Expression.in("encounter", encounters));
+		
+		if (actionsToInclude != null && actionsToInclude.size() > 0)
+			crit.add(Expression.in("action", actionsToInclude));
+		
+		if (actionsToExclude != null && actionsToExclude.size() > 0)
+			crit.add(Expression.not(Expression.in("action", actionsToExclude)));
 		
 		crit.add(Expression.eq("voided", false));
 		

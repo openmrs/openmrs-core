@@ -63,7 +63,9 @@ public class PatientDataUnvoidHandler implements UnvoidHandler<Patient> {
 			OrderService os = Context.getOrderService();
 			List<Patient> patients = new ArrayList<Patient>();
 			patients.add(patient);
-			List<Order> orders = os.getOrders(Order.class, patients, null, null, null, null);
+			
+			// TODO: this method will not return voided orders!
+			List<Order> orders = os.getOrders(Order.class, patients, null, null, null, null, null, null);
 			if (CollectionUtils.isNotEmpty(orders)) {
 				for (Order order : orders) {
 					if (order.isVoided() && order.getDateVoided().equals(origParentVoidedDate)

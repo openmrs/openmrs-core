@@ -19,6 +19,7 @@ import java.util.List;
 import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Order;
+import org.openmrs.Order.OrderAction;
 import org.openmrs.OrderGroup;
 import org.openmrs.OrderSet;
 import org.openmrs.Patient;
@@ -57,10 +58,11 @@ public interface OrderDAO {
 	public <Ord extends Order> Ord getOrder(Integer orderId, Class<Ord> classType) throws DAOException;
 	
 	/**
-	 * @see org.openmrs.api.OrderService#getOrders(Class, List, List, ORDER_STATUS, List, List)
+	 * @see org.openmrs.api.OrderService#getOrders(Class, List, List, ORDER_STATUS, List, List, List, List)
 	 */
 	public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
-	        List<Concept> concepts, List<User> orderers, List<Encounter> encounters, Date asOfDate);
+	        List<Concept> concepts, List<User> orderers, List<Encounter> encounters, Date asOfDate,
+	        List<OrderAction> actionsToInclude, List<OrderAction> actionsToExclude);
 	
 	/**
 	 * Auto generated method comment
