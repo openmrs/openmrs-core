@@ -118,7 +118,7 @@ public class ObsValidator implements Validator {
 		else if (obs.getValueBoolean() == null && obs.getValueCoded() == null && obs.getValueCodedName() == null
 		        && obs.getValueComplex() == null && obs.getValueDatetime() == null && obs.getValueDrug() == null
 		        && obs.getValueModifier() == null && obs.getValueNumeric() == null && obs.getValueText() == null) {
-			errors.reject("error.noValue");
+			//errors.reject("error.noValue");
 		}
 		
 		// make sure there is a concept associated with the obs
@@ -177,9 +177,6 @@ public class ObsValidator implements Validator {
 					errors.rejectValue("valueText", "error.null");
 				else
 					errors.rejectValue("groupMembers", "Obs.error.inGroupMember");
-			} else if (dt.isComplex() && StringUtils.isBlank(obs.getValueComplex())) {
-				if (atRootNode)
-					errors.rejectValue("valueComplex", "error.null");
 			}
 			
 			//If valueText is longer than the maxlength, raise an error as well.
