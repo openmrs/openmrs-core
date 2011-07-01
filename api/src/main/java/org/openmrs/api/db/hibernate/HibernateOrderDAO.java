@@ -115,6 +115,7 @@ public class HibernateOrderDAO implements OrderDAO {
 		if (concepts != null)
 			crit.add(Expression.in("concept", concepts));
 		
+		// if an asOfDate is passed in, then we need to restrict to just active type of orders
 		if (asOfDate != null) {
 			crit.add(Expression.le("startDate", asOfDate)); // startDate cannot be null?
 			
@@ -134,6 +135,8 @@ public class HibernateOrderDAO implements OrderDAO {
 		
 		if (encounters != null)
 			crit.add(Expression.in("encounter", encounters));
+		
+		crit.add(Expression.eq("voided", false));
 		
 		return crit.list();
 	}

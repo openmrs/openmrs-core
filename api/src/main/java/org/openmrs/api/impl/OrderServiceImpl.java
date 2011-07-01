@@ -644,7 +644,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	        List<Concept> concepts, List<User> orderers, List<Encounter> encounters, Date asOfDate) {
 		if (orderClassType == null)
 			throw new APIException(
-			        "orderClassType cannot be null.  An order type of Order.class and its subclass is required");
+			        "orderClassType cannot be null.  An order type of Order.class or its subclass is required");
 		
 		return dao.getOrders(orderClassType, patients, concepts, orderers, encounters, asOfDate);
 	}

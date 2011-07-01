@@ -519,6 +519,7 @@ public interface OrderService extends OpenmrsService {
 	 * @param encounters The encounters that the orders are assigned to
 	 * @param asOfDate
 	 * @return list of Orders matching the parameters
+	 * @should not include voided orders
 	 */
 	@Authorized(PrivilegeConstants.VIEW_ORDERS)
 	public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
