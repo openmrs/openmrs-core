@@ -4711,6 +4711,10 @@
 	</changeSet>
 	
 	<changeSet id="20101209-1111-drug_order_restore_order_id_foreign_key" author="dkayiwa">
+		<preConditions onFail="MARK_RAN">
+			<not><foreignKeyConstraintExists foreignKeyName="extends_order"/></not>
+		</preConditions>
+		<comment>Restoring foreign key constraint on drug_order.order_id column to orders.order_id column</comment>
         <addForeignKeyConstraint baseColumnNames="order_id" baseTableName="drug_order" constraintName="extends_order" referencedColumnNames="order_id" referencedTableName="orders"/>
     </changeSet>
 	
