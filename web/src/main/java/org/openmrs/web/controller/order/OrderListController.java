@@ -115,7 +115,7 @@ public class OrderListController extends SimpleFormController {
 		if (Context.isAuthenticated()) {
 			OrderService os = Context.getOrderService();
 			//orderList = os.getOrders();
-			orderList = os.getOrders(Order.class, null, null, null, null, null);
+			orderList = os.getOrders(Order.class, null, null, null, null, null, null, null);
 		}
 		
 		return orderList;

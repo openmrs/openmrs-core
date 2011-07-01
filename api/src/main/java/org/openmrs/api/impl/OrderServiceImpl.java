@@ -163,10 +163,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	
 	/**
 	 * @see org.openmrs.api.OrderService#getOrders(java.lang.Class, java.util.List, java.util.List,
-	 *      org.openmrs.api.OrderService.ORDER_STATUS, java.util.List, java.util.List,
-	 *      java.util.List, java.util.Date, java.util.List, java.util.List)
+	 *      java.util.List, java.util.List, java.util.Date, java.util.List, java.util.List)
 	 */
-	// TODO get rid of this method and anything that depends on it. Rewrite.
 	public <Ord extends Order> List<Ord> getOrders(Class<Ord> orderClassType, List<Patient> patients,
 	        List<Concept> concepts, List<User> orderers, List<Encounter> encounters, Date asOfDate,
 	        List<OrderAction> actionsToInclude, List<OrderAction> actionsToExclude) {
@@ -192,12 +190,11 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	}
 	
 	/**
-	 * @see org.openmrs.api.OrderService#getDrugOrdersByPatient(org.openmrs.Patient,
-	 *      org.openmrs.api.OrderService.ORDER_STATUS, boolean)
+	 * @see org.openmrs.api.OrderService#getDrugOrdersByPatient(org.openmrs.Patient, boolean)
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<DrugOrder> getDrugOrdersByPatient(Patient patient, ORDER_STATUS orderStatus, boolean includeVoided) {
+	public List<DrugOrder> getDrugOrdersByPatient(Patient patient, boolean includeVoided) {
 		if (patient == null)
 			throw new APIException("Unable to get drug orders if not given a patient");
 		
@@ -210,38 +207,23 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		
 		// loop over the drug orders and add them if they are within the current desired order
 		if (drugOrders != null) {
-			if (orderStatus == ORDER_STATUS.ANY)
+			if (includeVoided)
 				return drugOrders;
-			else {
-				// the user wants to limit the type of drug order to get, so loop over
-				// them all and do the logic on each 
-				
-				List<DrugOrder> ret = new ArrayList<DrugOrder>();
-				
-				for (DrugOrder drugOrder : drugOrders) {
-					if (orderStatus == ORDER_STATUS.ACTIVE && drugOrder.isCurrent())
-						ret.add(drugOrder);
-					else if (orderStatus == ORDER_STATUS.NOTVOIDED && !drugOrder.getVoided())
-						ret.add(drugOrder);
-					else if (orderStatus == ORDER_STATUS.COMPLETE && drugOrder.isDiscontinuedRightNow())
-						ret.add(drugOrder);
-				}
-				
-				return ret;
+			
+			//TODO should be done with a query
+			//remove voided ones
+			List<DrugOrder> ret = new ArrayList<DrugOrder>();
+			
+			for (DrugOrder drugOrder : drugOrders) {
+				if (!drugOrder.getVoided())
+					ret.add(drugOrder);
 			}
+			
+			return ret;
 		}
 		
 		// default return if no drug orders were found in the database
 		return Collections.EMPTY_LIST;
-	}
-	
-	/**
-	 * @see org.openmrs.api.OrderService#getDrugOrdersByPatient(org.openmrs.Patient,
-	 *      org.openmrs.api.OrderService.ORDER_STATUS)
-	 */
-	@Override
-	public List<DrugOrder> getDrugOrdersByPatient(Patient patient, ORDER_STATUS orderStatus) {
-		return getDrugOrdersByPatient(patient, orderStatus, false);
 	}
 	
 	/**

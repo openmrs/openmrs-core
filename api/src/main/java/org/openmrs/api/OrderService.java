@@ -49,34 +49,6 @@ public interface OrderService extends OpenmrsService {
 	public String DC_REASON_REVISE = "REVISE";
 	
 	/**
-	 * The type of status to match on an order. Used in getOrder* methods
-	 * 
-	 * @deprecated remove this before we merge to trunk
-	 */
-	@Deprecated
-	public static enum ORDER_STATUS {
-		/**
-		 * The patient is considered to be currently on this order
-		 */
-		ACTIVE,
-
-		/**
-		 * All orders match on this status
-		 */
-		ANY,
-
-		/**
-		 * Only orders that the patient has completed
-		 */
-		COMPLETE,
-
-		/**
-		 * All orders that have not been voided/deleted
-		 */
-		NOTVOIDED
-	}
-	
-	/**
 	 * Setter for the Order data access object. The dao is used for saving and getting orders
 	 * to/from the database
 	 * 
@@ -169,28 +141,15 @@ public interface OrderService extends OpenmrsService {
 	public List<Order> getOrdersByPatient(Patient patient) throws APIException;
 	
 	/**
-	 * Get drug orders for a given patient, not including voided orders
-	 * 
-	 * @param patient
-	 * @param orderStatus
-	 * @return List of drug orders, for the given patient, not including voided orders
-	 * @see #getDrugOrdersByPatient(Patient, org.openmrs.api.OrderService.ORDER_STATUS, boolean)
-	 */
-	@Transactional(readOnly = true)
-	@Authorized(PrivilegeConstants.VIEW_ORDERS)
-	public List<DrugOrder> getDrugOrdersByPatient(Patient patient, ORDER_STATUS orderStatus);
-	
-	/**
 	 * Get drug orders for a given patient
 	 * 
 	 * @param patient the owning Patient of the returned orders
-	 * @param orderStatus the status of the orders returned
 	 * @param includeVoided true/false whether or not to include voided drug orders
 	 * @return List of drug orders for the given patient
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_ORDERS)
-	public List<DrugOrder> getDrugOrdersByPatient(Patient patient, ORDER_STATUS orderStatus, boolean includeVoided);
+	public List<DrugOrder> getDrugOrdersByPatient(Patient patient, boolean includeVoided);
 	
 	/**
 	 * Un-discontinue order record. Reverse a previous call to
