@@ -333,7 +333,7 @@ public class ShortPatientFormController {
 			for (PersonAttribute formAttribute : patientModel.getPersonAttributes())
 				patient.addAttribute(formAttribute);
 		}
-	
+		
 		return patient;
 	}
 	

@@ -538,7 +538,7 @@ public class InitializationFilter extends StartupFilter {
 			}
 			
 			initJob = new InitializationCompletion();
-			//get the tasks the user selected and show them in the page while the initilization wizard runs
+			//get the tasks the user selected and show them in the page while the initialization wizard runs
 			wizardModel.tasksToExecute = new ArrayList<WizardTask>();
 			if (InitializationWizardModel.INSTALL_METHOD_TESTING.equals(wizardModel.installMethod)) {
 				//TODO support other database to be used in test mode, ONLY MySql is being supported 
