@@ -537,18 +537,18 @@ public interface OrderService extends OpenmrsService {
 	 * @return the order that was discontinued
 	 * @throws APIException
 	 * @should discontinue and return the old order
-	 * @should re discontinue an order whose discontinued date has not yet passed
-	 * @should fail if the passed in discontinue date is in the past for an actived order
-	 * @should use the passed in future discontinue date if the order is not yet activated
-	 * @should default to current date for an activated order and discontinue date is in the past
+	 * @should fail if the passed in discontinue date is before the date activated
+	 * @should fail if the passed in discontinue date is in the future
+	 * @should fail if the order is already discontinued
+	 * @should fail if the discontinue date is after the auto expire date
 	 */
 	@Authorized(PrivilegeConstants.EDIT_ORDERS)
 	public Order discontinueOrder(Order order, String reason, User user, Date discontinueDate) throws APIException;
 	
 	/**
-	 * Mark the given order as discontinued. This should be used when patients are no longer on this
-	 * Order. If this is was invalid Order, the {@link #voidOrder(Order, String)} method should
-	 * probably be used.
+	 * Mark the given order as discontinued. This should be used when a continuing Order needs to be
+	 * stopped. If this is was invalid Order, the {@link #voidOrder(Order, String)} method should be
+	 * used instead. This method uses dateDiscontinued = now and discontinuedBy = current use
 	 * 
 	 * @since 1.9
 	 * @param order the order to be discontinued

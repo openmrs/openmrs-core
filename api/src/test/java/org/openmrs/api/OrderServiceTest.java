@@ -35,7 +35,6 @@ import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
-import org.openmrs.util.OpenmrsUtil;
 
 /**
  * TODO clean up and test all methods in OrderService
@@ -700,41 +699,6 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderService#discontinueOrder(Order,String,User,Date)}
-	 */
-	@Test
-	@Verifies(value = "should discontinue and return the old order", method = "discontinueOrder(Order,String,User,Date)")
-	public void discontinueOrder_shouldDiscontinueAndReturnTheOldOrder() throws Exception {
-		int originalCount = service.getOrders(Order.class, null, null, null, null, null).size();
-		Order order = service.getOrder(3);
-		Assert.assertFalse(order.getDiscontinued());
-		Assert.assertNull(order.getDiscontinuedDate());
-		Assert.assertNull(order.getDiscontinuedBy());
-		Assert.assertNull(order.getDiscontinuedReasonNonCoded());
-		Order returnedOrder = service.discontinueOrder(order, "Testing");
-		Assert.assertEquals(order, returnedOrder);
-		Assert.assertTrue(order.getDiscontinued());
-		Assert.assertEquals("Testing", returnedOrder.getDiscontinuedReasonNonCoded());
-		Assert.assertNotNull(returnedOrder.getDiscontinuedDate());
-		Assert.assertNotNull(returnedOrder.getDiscontinuedBy());
-		//should have created a discontinue order
-		Assert.assertEquals(originalCount + 1, service.getOrders(Order.class, null, null, null, null, null).size());
-	}
-	
-	/**
-	 * @see {@link OrderService#discontinueOrder(Order,String,User,Date)}
-	 */
-	@Test(expected = APIException.class)
-	@Verifies(value = "should fail if the passed in discontinue date is in the past for an actived order", method = "discontinueOrder(Order,String,User,Date)")
-	public void discontinueOrder_shouldFailIfThePassedInDiscontinueDateIsInThePastForAnActivedOrder() throws Exception {
-		Order order = service.getOrder(3);
-		Assert.assertNotNull(order.getDateActivated());
-		Calendar cal = Calendar.getInstance();
-		cal.add(Calendar.MINUTE, -1);
-		service.discontinueOrder(order, "Testing", null, cal.getTime());
-	}
-	
-	/**
 	 * @see {@link OrderService#signAndActivateOrder(Order, User, Date))}
 	 */
 	@Test
@@ -823,5 +787,84 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		order2 = service.signAndActivateOrder(order2, provider, new Date());
 		
 		Assert.assertTrue(order1.getDiscontinued());
+	}
+	
+	/**
+	 * @see {@link OrderService#discontinueOrder(Order,String,User,Date)}
+	 */
+	@Test
+	@Verifies(value = "should discontinue and return the old order", method = "discontinueOrder(Order,String,User,Date)")
+	public void discontinueOrder_shouldDiscontinueAndReturnTheOldOrder() throws Exception {
+		int originalCount = service.getOrders(Order.class, null, null, null, null, null).size();
+		Order order = service.getOrder(3);
+		Assert.assertFalse(order.getDiscontinued());
+		Assert.assertNull(order.getDiscontinuedDate());
+		Assert.assertNull(order.getDiscontinuedBy());
+		Assert.assertNull(order.getDiscontinuedReasonNonCoded());
+		Order returnedOrder = service.discontinueOrder(order, "Testing");
+		Assert.assertEquals(order, returnedOrder);
+		Assert.assertTrue(order.getDiscontinued());
+		Assert.assertEquals("Testing", returnedOrder.getDiscontinuedReasonNonCoded());
+		Assert.assertNotNull(returnedOrder.getDiscontinuedDate());
+		Assert.assertNotNull(returnedOrder.getDiscontinuedBy());
+		//should have created a discontinue order
+		Assert.assertEquals(originalCount + 1, service.getOrders(Order.class, null, null, null, null, null).size());
+	}
+	
+	/**
+	 * @see {@link OrderService#discontinueOrder(Order,String,User,Date)}
+	 */
+	@Test(expected = APIException.class)
+	@Verifies(value = "should fail if the discontinue date is after the auto expire date", method = "discontinueOrder(Order,String,User,Date)")
+	public void discontinueOrder_shouldFailIfTheDiscontinueDateIsAfterTheAutoExpireDate() throws Exception {
+		Order order = service.getOrder(12);
+		Assert.assertNotNull(order.getAutoExpireDate());
+		Calendar cal = Calendar.getInstance();
+		//set the time to after auto expire date
+		cal.setTime(order.getAutoExpireDate());
+		cal.add(Calendar.MINUTE, 1);
+		service.discontinueOrder(order, "Testing", null, cal.getTime());
+	}
+	
+	/**
+	 * @see {@link OrderService#discontinueOrder(Order,String,User,Date)}
+	 */
+	@Test(expected = APIException.class)
+	@Verifies(value = "should fail if the order is already discontinued", method = "discontinueOrder(Order,String,User,Date)")
+	public void discontinueOrder_shouldFailIfTheOrderIsAlreadyDiscontinued() throws Exception {
+		Order order = service.getOrder(3);
+		Assert.assertFalse(order.getDiscontinued());
+		service.discontinueOrder(order, "Testing");
+		Assert.assertTrue(order.getDiscontinued());
+		//re discontinue
+		service.discontinueOrder(order, "Testing2");
+	}
+	
+	/**
+	 * @see {@link OrderService#discontinueOrder(Order,String,User,Date)}
+	 */
+	@Test(expected = APIException.class)
+	@Verifies(value = "should fail if the passed in discontinue date is before the date activated", method = "discontinueOrder(Order,String,User,Date)")
+	public void discontinueOrder_shouldFailIfThePassedInDiscontinueDateIsBeforeTheDateActivated() throws Exception {
+		Order order = service.getOrder(3);
+		Assert.assertNotNull(order.getDateActivated());
+		Calendar cal = Calendar.getInstance();
+		//set the time to before date activated
+		cal.setTime(order.getDateActivated());
+		cal.add(Calendar.MINUTE, -1);
+		service.discontinueOrder(order, "Testing", null, cal.getTime());
+	}
+	
+	/**
+	 * @see {@link OrderService#discontinueOrder(Order,String,User,Date)}
+	 */
+	@Test(expected = APIException.class)
+	@Verifies(value = "should fail if the passed in discontinue date is in the future", method = "discontinueOrder(Order,String,User,Date)")
+	public void discontinueOrder_shouldFailIfThePassedInDiscontinueDateIsInTheFuture() throws Exception {
+		Order order = service.getOrder(3);
+		Assert.assertNotNull(order.getDateActivated());
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.MINUTE, 1);
+		service.discontinueOrder(order, "Testing", null, cal.getTime());
 	}
 }

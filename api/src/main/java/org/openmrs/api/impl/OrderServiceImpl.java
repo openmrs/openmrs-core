@@ -433,7 +433,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		List<Patient> patients = new Vector<Patient>();
 		patients.add(patient);
 		
-		return getOrders(Order.class, patients, concepts, ORDER_STATUS.NOTVOIDED, null, null, null);
+		return getOrders(Order.class, patients, concepts, null, null, null);
 	}
 	
 	/**
@@ -649,12 +649,19 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		return dao.getOrders(orderClassType, patients, concepts, orderers, encounters, asOfDate);
 	}
 	
+	/**
+	 * @see org.openmrs.api.OrderService#discontinueOrder(org.openmrs.Order, java.lang.String,
+	 *      org.openmrs.User, java.util.Date)
+	 */
 	@Override
 	public Order discontinueOrder(Order order, String reason, User user, Date discontinueDate) throws APIException {
 		order.setDiscontinuedReasonNonCoded(reason);
 		return doDiscontinueOrder(order, user, discontinueDate);
 	}
 	
+	/**
+	 * @see org.openmrs.api.OrderService#discontinueOrder(org.openmrs.Order, java.lang.String)
+	 */
 	@Override
 	public Order discontinueOrder(Order order, String reason) throws APIException {
 		return discontinueOrder(order, reason, null, null);
@@ -691,22 +698,43 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		oldOrder.setDiscontinuedBy(user);
 		oldOrder.setDiscontinuedDate(discontinueDate);
 		
-		saveOrder(oldOrder);
+		saveOrderWithLesserValidation(oldOrder);
 		
 		Order newOrder = new Order();
 		newOrder.setConcept(oldOrder.getConcept());
 		newOrder.setPatient(oldOrder.getPatient());
 		newOrder.setPreviousOrderNumber(oldOrder.getOrderNumber());
 		newOrder.setOrderAction(OrderAction.DISCONTINUE);
-		newOrder.setDateCreated(new Date());
-		newOrder.setCreator(Context.getAuthenticatedUser());
-		newOrder.setDateChanged(null);
-		newOrder.setChangedBy(null);
+		//should assign these from here manually instead of delagating to signAndActivateOrder which ends up
+		//calling this one again and always fails on 'if (oldOrder.getDiscontinued())' on a subsequent call
+		//in the attempt to discontinue olderOrder since it would be the previous one
+		newOrder.setSignedBy(user);
+		newOrder.setActivatedBy(user);
+		Date date = new Date();
+		newOrder.setDateSigned(date);
+		newOrder.setDateActivated(date);
 		newOrder.setUuid(UUID.randomUUID().toString());
 		
-		saveOrder(newOrder);
+		Context.getOrderService().saveOrder(newOrder);
 		
 		return oldOrder;
+	}
+	
+	/**
+	 * Convenience method to be called within the API to enable persisting changes in an existing
+	 * order while surpassing certain validation constraints e.g when discontinuing an order
+	 * 
+	 * @param order
+	 * @return
+	 * @throws APIException
+	 */
+	private Order saveOrderWithLesserValidation(Order order) throws APIException {
+		String orderNumberInDatabase = dao.getOrderNumberInDatabase(order);
+		if (orderNumberInDatabase != null && !orderNumberInDatabase.equals(order.getOrderNumber()))
+			throw new APIException("Cannot modify the orderNumber of a saved order");
+		
+		ValidateUtil.validate(order);
+		return dao.saveOrder(order);
 	}
 	
 }
