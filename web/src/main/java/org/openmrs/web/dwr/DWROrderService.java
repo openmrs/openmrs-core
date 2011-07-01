@@ -15,6 +15,7 @@ package org.openmrs.web.dwr;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Vector;
@@ -25,8 +26,10 @@ import org.openmrs.Concept;
 import org.openmrs.Drug;
 import org.openmrs.DrugOrder;
 import org.openmrs.Order;
+import org.openmrs.Orderable;
 import org.openmrs.Patient;
 import org.openmrs.api.APIException;
+import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
 
 public class DWROrderService {
@@ -200,5 +203,35 @@ public class DWROrderService {
 		}
 		
 		return ret;
+	}
+	
+	/**
+	 * Find orderables in the database that match the given search values.
+	 * 
+	 * @see OrderService#getOrderables(String)
+	 * @param searchValue a query string like 'ampicil'
+	 * @return list of {@link OrderableListItem}s (or String warning message if none found)
+	 */
+	@SuppressWarnings("unchecked")
+	public Collection<OrderableListItem> getOrderables(String searchValue) {
+		
+		Vector orderableList = new Vector();
+		
+		try {
+			for (Orderable<?> u : Context.getOrderService().getOrderables(searchValue)) {
+				orderableList.add(new OrderableListItem(u));
+			}
+		}
+		catch (Exception e) {
+			log.error("Error while searching for orderables", e);
+			orderableList.add("Error while attempting to find orderables - " + e.getMessage());
+		}
+		
+		if (orderableList.size() == 0) {
+			orderableList.add("No orderables found. Please search again.");
+		}
+		
+		return orderableList;
+		
 	}
 }

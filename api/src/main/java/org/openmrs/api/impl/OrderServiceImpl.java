@@ -737,4 +737,10 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		return dao.saveOrder(order);
 	}
 	
+	/**
+	 * @see org.openmrs.api.OrderService#getOrderable(java.lang.String)
+	 */
+	public Orderable<?> getOrderable(String identifier) throws APIException {
+		return null;
+	}
 }

@@ -29,6 +29,14 @@
 
 <form method="post" class="box">
 	<table>
+	
+		<tr>
+			<td valign="top"><spring:message code="Order.orderable"/></td>
+			<td valign="top">
+				<openmrs:fieldGen type="org.openmrs.Orderable" formFieldName="orderable" val="" />
+			</td>
+		</tr>
+		
 		<tr>
 			<td valign="top"><spring:message code="Order.patient"/></td>
 			<td valign="top">

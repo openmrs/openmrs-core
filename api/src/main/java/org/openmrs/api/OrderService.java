@@ -559,4 +559,14 @@ public interface OrderService extends OpenmrsService {
 	@Authorized(PrivilegeConstants.EDIT_ORDERS)
 	public Order discontinueOrder(Order order, String reason) throws APIException;
 	
+	/**
+	 * Get orderable by identifier.
+	 * 
+	 * @param identifier the identifier
+	 * @return requested orderable
+	 * @throws APIException
+	 * @should fetch an orderable with given identifier
+	 */
+	@Transactional(readOnly = true)
+	public Orderable<?> getOrderable(String identifier) throws APIException;
 }

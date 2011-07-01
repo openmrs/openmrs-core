@@ -1065,6 +1065,9 @@
 				<prop key="org.openmrs.Patient.exitReason">
 					org.openmrs.web.taglib.fieldgen.GenericReasonHandler
 				</prop>
+				<prop key="org.openmrs.Orderable">
+					org.openmrs.web.taglib.fieldgen.OrderableHandler
+				</prop>
 				<prop key="java.util.Date">org.openmrs.web.taglib.fieldgen.DateHandler</prop>
 				<prop key="org.openmrs.util.AttributableDate">org.openmrs.web.taglib.fieldgen.DateHandler</prop>
 			</props>
