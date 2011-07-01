@@ -541,6 +541,7 @@ public interface OrderService extends OpenmrsService {
 	 * be used by OpenMRS internally. Client or module code should not use it
 	 * 
 	 * @return the new order number.
+	 * @should always return unique orderNumbers when called multiple times without saving orders
 	 */
 	@Transactional(readOnly = true)
 	public String getNewOrderNumber();

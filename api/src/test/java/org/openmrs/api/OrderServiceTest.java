@@ -13,9 +13,12 @@
  */
 package org.openmrs.api;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -867,5 +870,42 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.MINUTE, 1);
 		service.discontinueOrder(order, "Testing", null, cal.getTime());
+	}
+	
+	/**
+	 * @see OrderService#getNewOrderNumber()
+	 * @verifies always return unique orderNumbers when called multiple times without saving orders
+	 */
+	@Test
+	public void getNewOrderNumber_shouldAlwaysReturnUniqueOrderNumbersWhenCalledMultipleTimesWithoutSavingOrders()
+	        throws Exception {
+		int N = 50;
+		final Set<String> uniqueOrderNumbers = new HashSet<String>(50);
+		List<Thread> threads = new ArrayList<Thread>();
+		for (int i = 0; i < N; i++) {
+			threads.add(new Thread(new Runnable() {
+				
+				@Override
+				public void run() {
+					try {
+						Context.openSession();
+						uniqueOrderNumbers.add(service.getNewOrderNumber());
+					}
+					finally {
+						Context.closeSession();
+					}
+				}
+			}));
+		}
+		for (int i = 0; i < N; ++i) {
+			threads.get(i).start();
+		}
+		for (int i = 0; i < N; ++i) {
+			threads.get(i).join();
+		}
+		//since we used a set we should have the size as N indicating that there were no duplicates
+		Assert.assertEquals(N, uniqueOrderNumbers.size());
+		
+		System.out.println(uniqueOrderNumbers);
 	}
 }

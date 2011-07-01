@@ -13,15 +13,10 @@
  */
 package org.openmrs.api.db;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.test.BaseContextSensitiveTest;
-import org.openmrs.test.Verifies;
-import org.openmrs.util.OpenmrsConstants;
 
 /**
  * Contains specific to the Order DAO layer
@@ -43,31 +38,14 @@ public class OrderDAOTest extends BaseContextSensitiveTest {
 	}
 	
 	/**
-	 * @see {@link OrderDAO#getNewOrderNumber()}
+	 * @see OrderDAO#getHighestOrderId()
+	 * @verifies return the highest order id
 	 */
 	@Test
-	@Verifies(value = "should return the next available order number", method = "getNewOrderNumber()")
-	public void getNewOrderNumber_shouldReturnTheNextAvailableOrderNumber() throws Exception {
+	public void getHighestOrderId_shouldReturnTheHighestOrderId() throws Exception {
 		//call the method twice and ensure that the sequence works as expected
-		String orderNumber1 = dao.getNewOrderNumber();
-		Integer nextNumber = Integer.valueOf(orderNumber1.substring(OpenmrsConstants.ORDER_NUMBER_DEFAULT_PREFIX.length())) + 1;
-		String expectedOrderNumber = OpenmrsConstants.ORDER_NUMBER_DEFAULT_PREFIX.concat(nextNumber.toString());
-		
-		Assert.assertEquals(expectedOrderNumber, dao.getNewOrderNumber());
+		Assert.assertEquals(12, dao.getHighestOrderId().intValue());
+		Assert.assertEquals(12, dao.getHighestOrderId().intValue());
 	}
 	
-	/**
-	 * @see {@link OrderDAO#getNewOrderNumber()}
-	 */
-	@Test
-	@Verifies(value = "should always return unique orderNumbers when called multiple times without saving orders", method = "getNewOrderNumber()")
-	public void getNewOrderNumber_shouldAlwaysReturnUniqueOrderNumbersWhenCalledMultipleTimesWithoutSavingOrders()
-	        throws Exception {
-		Set<String> uniqueOrderNumbers = new HashSet<String>(50);
-		for (int i = 0; i < 50; i++) {
-			uniqueOrderNumbers.add(dao.getNewOrderNumber());
-		}
-		//since we used a set we should have the size as 50 indicating that there were no duplicates
-		Assert.assertEquals(50, uniqueOrderNumbers.size());
-	}
 }

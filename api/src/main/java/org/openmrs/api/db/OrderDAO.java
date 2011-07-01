@@ -143,11 +143,9 @@ public interface OrderDAO {
 	public String getOrderNumberInDatabase(Order order);
 	
 	/**
-	 * @see OrderService#getNewOrderNumber()
-	 * @return
-	 * @should return the next available order number
-	 * @should always return unique orderNumbers when called multiple times without saving orders
+	 * @return the highest orderId that has been persisted to the database
+	 * @should return the highest order id
 	 */
-	public String getNewOrderNumber();
+	public Integer getHighestOrderId();
 	
 }

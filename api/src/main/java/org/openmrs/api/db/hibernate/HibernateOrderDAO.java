@@ -59,11 +59,6 @@ public class HibernateOrderDAO implements OrderDAO {
 	 */
 	private SessionFactory sessionFactory;
 	
-	/**
-	 * Used to store the last used order number
-	 */
-	private static Integer orderNumber;
-	
 	public HibernateOrderDAO() {
 	}
 	
@@ -315,28 +310,12 @@ public class HibernateOrderDAO implements OrderDAO {
 	}
 	
 	/**
-	 * @see org.openmrs.api.db.OrderDAO#getNewOrderNumber()
+	 * @see org.openmrs.api.db.OrderDAO#getHighestOrderId()
 	 */
 	@Override
-	public String getNewOrderNumber() {
-		synchronized (HibernateOrderDAO.class) {
-			if (orderNumber == null) {
-				orderNumber = 0;
-				Query query = sessionFactory.getCurrentSession().createSQLQuery("SELECT max(order_id) FROM orders");
-				Object max = query.uniqueResult();
-				if (max != null) {
-					orderNumber = (Integer) max;
-				}
-			}
-			
-			orderNumber++;
-		}
-		
-		String nextOrderNumber = Context.getAdministrationService().getGlobalProperty(
-		    OpenmrsConstants.GP_ORDER_ENTRY_ORDER_NUMBER_PREFIX, OpenmrsConstants.ORDER_NUMBER_DEFAULT_PREFIX)
-		        + orderNumber.toString();
-		
-		return nextOrderNumber;
+	public Integer getHighestOrderId() {
+		Query query = sessionFactory.getCurrentSession().createSQLQuery("SELECT max(order_id) FROM orders");
+		return (Integer) query.uniqueResult();
 	}
 	
 }

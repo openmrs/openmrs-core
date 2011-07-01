@@ -43,6 +43,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.db.OrderDAO;
 import org.openmrs.order.DrugOrderSupport;
 import org.openmrs.order.RegimenSuggestion;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.validator.ValidateUtil;
 import org.springframework.util.StringUtils;
@@ -60,6 +61,11 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	protected final Log log = LogFactory.getLog(getClass());
 	
 	protected OrderDAO dao;
+	
+	/**
+	 * Used to store the last used order number
+	 */
+	private static Integer orderNumberCounter = -1;
 	
 	public OrderServiceImpl() {
 	}
@@ -707,6 +713,19 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 	 */
 	@Override
 	public String getNewOrderNumber() {
-		return dao.getNewOrderNumber();
+		Integer next;
+		synchronized (orderNumberCounter) {
+			if (orderNumberCounter < 0) {
+				// we've just started up, so we need to fetch this from the DAO
+				Integer temp = dao.getHighestOrderId();
+				orderNumberCounter = temp == null ? 0 : temp;
+			}
+			orderNumberCounter += 1;
+			next = orderNumberCounter;
+		}
+		
+		return Context.getAdministrationService().getGlobalProperty(OpenmrsConstants.GP_ORDER_ENTRY_ORDER_NUMBER_PREFIX,
+		    OpenmrsConstants.ORDER_NUMBER_DEFAULT_PREFIX)
+		        + next;
 	}
 }
