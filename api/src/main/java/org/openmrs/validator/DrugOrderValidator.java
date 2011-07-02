@@ -50,7 +50,6 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 	 * @should fail validation if prn is null
 	 * @should fail validation if complex is null
 	 * @should fail validation if drug is null
-	 * @should fail validation if brandName is null
 	 * @should pass validation if all fields are correct
 	 */
 	public void validate(Object obj, Errors errors) {
@@ -67,6 +66,12 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 				ValidationUtils.rejectIfEmpty(errors, "signedBy", "error.null");
 				ValidationUtils.rejectIfEmpty(errors, "dateSigned", "error.null");
 			}
+			
+			if (order.isActivated()) {
+				ValidationUtils.rejectIfEmpty(errors, "activatedBy", "error.null");
+				ValidationUtils.rejectIfEmpty(errors, "dateActivated", "error.null");
+			}
+				
 			
 			if (order.getDuration() != null)
 				ValidationUtils.rejectIfEmpty(errors, "durationUnits", "DrugOrder.add.error.missingDurationUnits");
