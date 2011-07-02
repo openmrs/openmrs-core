@@ -233,6 +233,7 @@ public interface OrderService extends OpenmrsService {
 	public Order activateOrder(Order order, User activatedBy, Date activationDate) throws APIException;
 	
 	/**
+	 * TO DO document how this converts filler to a String
 	 * Fills an order.
 	 * 
 	 * @param order the order object.
@@ -244,6 +245,7 @@ public interface OrderService extends OpenmrsService {
 	public Order fillOrder(Order order, User filler, Date dateFilled) throws APIException;
 	
 	/**
+	 * TO DO javadoc needs to explain the difference between this and the User version of fillOrder.
 	 * Fills an order.
 	 * 
 	 * @param order the order object.

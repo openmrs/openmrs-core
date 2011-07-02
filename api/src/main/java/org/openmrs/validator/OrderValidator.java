@@ -97,7 +97,9 @@ public class OrderValidator implements Validator {
 			ValidationUtils.rejectIfEmpty(errors, "activatedBy", "Order.error.mustBeSignedAndActivated");
 			ValidationUtils.rejectIfEmpty(errors, "dateActivated", "Order.error.mustBeSignedAndActivated");
 			
-			if (order.getDiscontinued()) {
+			if (order.getDiscontinued() == null) {
+				errors.rejectValue("discontinued", "error.null");
+			} else if (order.getDiscontinued()) {
 				ValidationUtils.rejectIfEmpty(errors, "discontinuedDate", "Order.error.discontinueNeedsDateAndPerson");
 				ValidationUtils.rejectIfEmpty(errors, "discontinuedBy", "Order.error.discontinueNeedsDateAndPerson");
 				if (order.getDiscontinuedDate() != null) {
@@ -113,6 +115,15 @@ public class OrderValidator implements Validator {
 						errors.rejectValue("discontinuedDate", "Order.error.discontinuedAfterAutoExpireDate");
 				}
 			}
+			
+			if ((order.getActivatedBy() == null) != (order.getDateActivated() == null))
+				errors.rejectValue("activatedBy", "error.inconsistent");
+			
+			if ((order.getSignedBy() == null) != (order.getDateSigned() == null))
+				errors.rejectValue("signedBy", "error.inconsistent");
+			
+			if ((order.getFiller() == null) != (order.getDateFilled() == null))
+				errors.rejectValue("filler", "error.inconsistent");
 		}
 	}
 }
