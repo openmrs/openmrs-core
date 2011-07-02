@@ -138,4 +138,17 @@ public class BinaryDataHandler extends AbstractHandler implements ComplexObsHand
 		return "BinaryDataHandler";
 	}
 	
+	/**
+	 * Validate.
+	 *
+	 * @param handlerConfig the handler config
+	 * @param obs the obs
+	 * @return true, if successful
+	 */
+	@Override
+	public boolean validate(String handlerConfig, Obs obs) {
+		// TODO Auto-generated method stub
+		return true;
+	}
+	
 }

@@ -115,4 +115,13 @@ public class BinaryStreamHandler extends AbstractHandler implements ComplexObsHa
 		return "BinaryStreamHandler";
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.openmrs.obs.ComplexObsHandler#validate(java.lang.String, org.openmrs.Obs)
+	 */
+	@Override
+	public boolean validate(String handlerConfig, Obs obs) {
+		// TODO Auto-generated method stub
+		return true;
+	}
+	
 }

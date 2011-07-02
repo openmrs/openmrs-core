@@ -75,4 +75,13 @@ public interface ComplexObsHandler {
 	 */
 	public String getHandlerType();
 	
+	/**
+	 * Validate.
+	 *
+	 * @param handlerConfig the handler config
+	 * @param obs the obs
+	 * @return true, if successful
+	 */
+	public boolean validate(String handlerConfig, Obs obs);
+	
 }
