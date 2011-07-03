@@ -77,38 +77,19 @@ public class PatientHandler extends CustomDatatypeHandler implements ComplexObsH
 	 */
 	@Override
 	public Obs getObs(Obs obs, String view) {
-		String[] values = obs.getValueComplex().split("\\|");	
-		Patient patient = getPatient(obs);	
-		ComplexData complexData = new ComplexData(values[0], patient);	
-		obs.setComplexData(complexData);
-		
-		return obs;
-	}
-	
-	/**
-	 * Gets the patient.
-	 * 
-	 * @param obs the obs
-	 * @return the patient
-	 */
-	private Patient getPatient(Obs obs) {
-		
 		PatientService ps = Context.getPatientService();
 		String[] values = obs.getValueComplex().split("\\|");
-		Patient patient = null;
+		Patient patient = ps.getPatient(Integer.parseInt(values[1]));
 		
-		if (values.length == 1) {
-			patient = ps.getPatient(Integer.parseInt(values[0]));
-		} else {
-			patient = ps.getPatient(Integer.parseInt(values[1]));
-		}
 		if (patient == null) {
 			throw new APIException("Cannot retrieve complex obs where obsId=" + obs.getObsId() + " because the patient id :"
 			        + Integer.parseInt(values[1]) + " cannot be found.");
 		}
 		
-		return patient;
+		ComplexData complexData = new ComplexData(values[0], patient);
+		obs.setComplexData(complexData);
 		
+		return obs;
 	}
 	
 	/**
@@ -153,7 +134,15 @@ public class PatientHandler extends CustomDatatypeHandler implements ComplexObsH
 	 */
 	@Override
 	public boolean validate(String handlerConfig, Obs obs) {
-		Patient patient = getPatient(obs);
+		
+		PatientService ps = Context.getPatientService();
+		String[] values = obs.getValueComplex().split("\\|");
+		
+		Patient patient = ps.getPatient(Integer.parseInt(values[0]));
+		if (patient == null) {
+			throw new APIException("Cannot retrieve complex obs where obsId=" + obs.getObsId() + " because the patient id :"
+			        + Integer.parseInt(values[0]) + " cannot be found.");
+		}
 		if (patient.isDead())
 			return false;
 		return true;
