@@ -17,6 +17,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -1602,8 +1603,11 @@ public class HibernateConceptDAO implements ConceptDAO {
 			weight += computeBonusWeight(weightCoefficient, word);
 		}
 		
+		NumberFormat nf = NumberFormat.getNumberInstance();
+		nf.setMaximumFractionDigits(3);
+		
 		//round off to 3 decimal places
-		return Double.parseDouble(new DecimalFormat("0.000").format(weight));
+		return Double.parseDouble(nf.format(weight));
 	}
 	
 	/**
