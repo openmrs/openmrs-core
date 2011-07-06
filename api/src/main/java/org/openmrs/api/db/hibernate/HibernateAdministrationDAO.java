@@ -115,7 +115,7 @@ public class HibernateAdministrationDAO implements AdministrationDAO {
 			
 			ps = sessionFactory.getCurrentSession().connection().prepareStatement(sql);
 			
-			ps.setTimestamp(1, new Timestamp(System.currentTimeMillis()));
+			ps.setTimestamp(1, new Timestamp(new Date().getTime()));
 			ps.setInt(2, Context.getAuthenticatedUser().getUserId());
 			ps.setString(3, site);
 			ps.setInt(4, start);

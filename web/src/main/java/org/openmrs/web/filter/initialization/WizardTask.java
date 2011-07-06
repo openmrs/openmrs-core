@@ -23,9 +23,7 @@ public enum WizardTask {
 
 	CREATE_TABLES("Create OpenMRS tables"), ADD_CORE_DATA("Add OpenMRS core data"),
 
-	ADD_DEMO_DATA("Add OpenMRS demo data"), UPDATE_TO_LATEST("Update the database"),
-
-	CREATE_TEST_INSTALLATION("Create test installation");
+	ADD_DEMO_DATA("Add OpenMRS demo data"), UPDATE_TO_LATEST("Update the database");
 	
 	private final String displayText;
 	

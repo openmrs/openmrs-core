@@ -16,8 +16,6 @@ package org.openmrs.web.filter.initialization;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
@@ -41,14 +39,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import liquibase.ChangeSet;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileItemFactory;
-import org.apache.commons.fileupload.FileUploadException;
-import org.apache.commons.fileupload.RequestContext;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.apache.commons.fileupload.servlet.ServletRequestContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Appender;
@@ -84,7 +74,7 @@ import org.springframework.web.context.ContextLoader;
  */
 public class InitializationFilter extends StartupFilter {
 	
-	private static final Log log = LogFactory.getLog(InitializationFilter.class);
+	protected final Log log = LogFactory.getLog(getClass());
 	
 	private static final String LIQUIBASE_SCHEMA_DATA = "liquibase-schema-only.xml";
 	
@@ -107,11 +97,6 @@ public class InitializationFilter extends StartupFilter {
 	 * database
 	 */
 	private final String DATABASE_SETUP = "databasesetup.vm";
-	
-	/**
-	 * The Test installation setup page.
-	 */
-	private final String TESTING_SETUP = "testingsetup.vm";
 	
 	/**
 	 * The velocity macro page to redirect to if an error occurs or on initial startup
@@ -171,16 +156,6 @@ public class InitializationFilter extends StartupFilter {
 	 * Variable set at the end of the wizard when spring is being restarted
 	 */
 	private static boolean initializationComplete = false;
-	
-	/**
-	 * The connection url to the test database
-	 */
-	private String testDatabaseConnection = "jdbc:mysql://@HOST@:@PORT@/@DBNAME@?autoReconnect=true&sessionVariables=storage_engine=InnoDB&useUnicode=true&characterEncoding=UTF-8";
-	
-	/**
-	 * To be set when the user uploads a zip file containing module files to used for testing
-	 */
-	private File testModulesZipFile = null;
 	
 	synchronized protected void setInitializationComplete(boolean initializationComplete) {
 		InitializationFilter.initializationComplete = initializationComplete;
@@ -291,8 +266,6 @@ public class InitializationFilter extends StartupFilter {
 			wizardModel.installMethod = httpRequest.getParameter("install_method");
 			if (InitializationWizardModel.INSTALL_METHOD_SIMPLE.equals(wizardModel.installMethod)) {
 				page = SIMPLE_SETUP;
-			} else if (InitializationWizardModel.INSTALL_METHOD_TESTING.equals(wizardModel.installMethod)) {
-				page = TESTING_SETUP;
 			} else {
 				page = DATABASE_SETUP;
 			}
@@ -355,8 +328,12 @@ public class InitializationFilter extends StartupFilter {
 			wizardModel.databaseDriver = httpRequest.getParameter("database_driver");
 			checkForEmptyValue(wizardModel.databaseConnection, errors, "Database connection string");
 			
-			loadedDriverString = loadDriver(wizardModel.databaseConnection, wizardModel.databaseDriver);
-			if (!StringUtils.hasText(loadedDriverString)) {
+			try {
+				loadedDriverString = DatabaseUtil.loadDatabaseDriver(wizardModel.databaseConnection,
+				    wizardModel.databaseDriver);
+				log.info("using database driver :" + loadedDriverString);
+			}
+			catch (ClassNotFoundException e) {
 				errors.add("The given database driver class was not found. "
 				        + "Please ensure that the database driver jar file is on the class path "
 				        + "(like in the webapp's lib folder)");
@@ -528,8 +505,6 @@ public class InitializationFilter extends StartupFilter {
 			if ("Back".equals(httpRequest.getParameter("back"))) {
 				if (InitializationWizardModel.INSTALL_METHOD_SIMPLE.equals(wizardModel.installMethod)) {
 					page = SIMPLE_SETUP;
-				} else if (InitializationWizardModel.INSTALL_METHOD_TESTING.equals(wizardModel.installMethod)) {
-					page = TESTING_SETUP;
 				} else {
 					page = IMPLEMENTATION_ID_SETUP;
 				}
@@ -538,108 +513,24 @@ public class InitializationFilter extends StartupFilter {
 			}
 			
 			initJob = new InitializationCompletion();
-			//get the tasks the user selected and show them in the page while the initialization wizard runs
+			//get the tasks the user selected and show them in the page while the initilization wizard runs
 			wizardModel.tasksToExecute = new ArrayList<WizardTask>();
-			if (InitializationWizardModel.INSTALL_METHOD_TESTING.equals(wizardModel.installMethod)) {
-				//TODO support other database to be used in test mode, ONLY MySql is being supported 
-				//in the test mode hence passing in null for driver name
-				loadedDriverString = loadDriver(testDatabaseConnection, null);
-				if (!StringUtils.hasText(loadedDriverString)) {
-					page = TESTING_SETUP;
-					errors.add("The given database driver class was not found. "
-					        + "Please ensure that the database driver jar file is on the class path "
-					        + "(like in the webapp's lib folder)");
-					renderTemplate(page, referenceMap, httpResponse);
-					return;
-				}
-				wizardModel.tasksToExecute.add(WizardTask.CREATE_TEST_INSTALLATION);
-			} else {
-				if (!wizardModel.hasCurrentOpenmrsDatabase)
-					wizardModel.tasksToExecute.add(WizardTask.CREATE_SCHEMA);
-				if (wizardModel.createDatabaseUser)
-					wizardModel.tasksToExecute.add(WizardTask.CREATE_DB_USER);
-				if (wizardModel.createTables) {
-					wizardModel.tasksToExecute.add(WizardTask.CREATE_TABLES);
-					wizardModel.tasksToExecute.add(WizardTask.ADD_CORE_DATA);
-				}
-				if (wizardModel.addDemoData)
-					wizardModel.tasksToExecute.add(WizardTask.ADD_DEMO_DATA);
+			if (!wizardModel.hasCurrentOpenmrsDatabase)
+				wizardModel.tasksToExecute.add(WizardTask.CREATE_SCHEMA);
+			if (wizardModel.createDatabaseUser)
+				wizardModel.tasksToExecute.add(WizardTask.CREATE_DB_USER);
+			if (wizardModel.createTables) {
+				wizardModel.tasksToExecute.add(WizardTask.CREATE_TABLES);
+				wizardModel.tasksToExecute.add(WizardTask.ADD_CORE_DATA);
 			}
+			if (wizardModel.addDemoData)
+				wizardModel.tasksToExecute.add(WizardTask.ADD_DEMO_DATA);
 			wizardModel.tasksToExecute.add(WizardTask.UPDATE_TO_LATEST);
 			
 			referenceMap.put("tasksToExecute", wizardModel.tasksToExecute);
 			
 			initJob.start();
 			renderTemplate(PROGRESS_VM, referenceMap, httpResponse);
-		} else if (TESTING_SETUP.equals(page)) {
-			if ("Back".equals(httpRequest.getParameter("back"))) {
-				renderTemplate(INSTALL_METHOD, referenceMap, httpResponse);
-				return;
-			}
-			
-			//Get the connection credentials to the existing database
-			wizardModel.currentDatabaseHost = httpRequest.getParameter("currentDatabaseIpAddress");
-			checkForEmptyValue(wizardModel.currentDatabaseHost, errors, "Current database Host Name/IP Address");
-			
-			wizardModel.currentDatabasePort = httpRequest.getParameter("currentDatabasePort");
-			checkForEmptyValue(wizardModel.currentDatabasePort, errors, "Current database connection Port");
-			
-			wizardModel.currentDatabaseName = httpRequest.getParameter("currentDatabaseName");
-			checkForEmptyValue(wizardModel.currentDatabaseName, errors, "Current database name");
-			
-			wizardModel.currentDatabaseUsername = httpRequest.getParameter("currentDatabaseUsername");
-			checkForEmptyValue(wizardModel.currentDatabaseUsername, errors, "A database user with ALL privileges");
-			
-			wizardModel.currentDatabasePassword = httpRequest.getParameter("currentDatabasePassword");
-			checkForEmptyValue(wizardModel.currentDatabasePassword, errors, "Password for database user with ALL privileges");
-			
-			//Get the test connection credentials
-			wizardModel.testDatabaseHost = httpRequest.getParameter("test_database_host");
-			checkForEmptyValue(wizardModel.testDatabaseHost, errors, "Test Connection Host Name/IP Address");
-			
-			wizardModel.testDatabasePort = httpRequest.getParameter("test_database_port");
-			checkForEmptyValue(wizardModel.testDatabasePort, errors, "Test Connection Port");
-			
-			wizardModel.testDatabaseUsername = httpRequest.getParameter("test_database_username");
-			checkForEmptyValue(wizardModel.testDatabaseUsername, errors, "Test Database Username");
-			
-			wizardModel.testDatabasePassword = httpRequest.getParameter("test_database_password");
-			checkForEmptyValue(wizardModel.testDatabasePassword, errors, "Test Database Password");
-			
-			if (!errors.isEmpty()) {
-				renderTemplate(page, referenceMap, httpResponse);
-				return;
-			}
-			
-			String addModules = httpRequest.getParameter("addModules");
-			if (OpenmrsUtil.nullSafeEquals(addModules, "true"))
-				wizardModel.addModules = true;
-			else {
-				wizardModel.addModules = false;
-				testModulesZipFile = null;
-			}
-			
-			page = WIZARD_COMPLETE;
-			
-			renderTemplate(page, referenceMap, httpResponse);
-			return;
-		} else if (InitializationWizardModel.INSTALL_METHOD_TESTING.equals(wizardModel.installMethod)) {
-			httpResponse.setContentType("text/html");
-			httpResponse.setHeader("Cache-Control", "no-cache");
-			PrintWriter pw = httpResponse.getWriter();
-			String errorMsg = uploadFile(httpRequest);
-			wizardModel.addModules = true;
-			//Print a confirmation message to user in the iframe on the upload page and hide the spinner
-			pw.write("<html><body>");
-			pw
-			        .write("<script type=\"text/javascript\">window.parent.document.getElementById(\"spinner\").style.visibility=\"hidden\";</script>");
-			if (errorMsg != null)
-				pw.write("<div align=\"center\"><font color=\"#FF0000\">" + errorMsg + "</font></div>");
-			else
-				pw.write("<div align=\"center\"><font color=\"#0BA603\">File uploaded successfully!</font></div>");
-			pw.write("</body></html>");
-			
-			return;
 		}
 	}
 	
@@ -1043,23 +934,12 @@ public class InitializationFilter extends StartupFilter {
 						String finalDatabaseConnectionString = wizardModel.databaseConnection.replace("@DBNAME@",
 						    wizardModel.databaseName);
 						
-						//don't test the connections for test install, we will just let them fail
-						if (!InitializationWizardModel.INSTALL_METHOD_TESTING.equals(wizardModel.installMethod)) {
-							// verify that the database connection works
-							if (!verifyConnection(connectionUsername, connectionPassword, finalDatabaseConnectionString)) {
-								setMessage("Verify that the database connection works");
-								// redirect to setup page if we got an error
-								reportError("Unable to connect to database", DEFAULT_PAGE);
-								return;
-							}
-						} else {
-							//update the connection url, pw and username to point to the test server
-							//we are setting up
-							finalDatabaseConnectionString = testDatabaseConnection.replace("@HOST@",
-							    wizardModel.testDatabaseHost).replace("@PORT@", wizardModel.testDatabasePort).replace(
-							    "@DBNAME@", InitializationWizardModel.TEST_DATABASE_NAME);
-							connectionUsername = wizardModel.testDatabaseUsername;
-							connectionPassword = wizardModel.testDatabasePassword;
+						// verify that the database connection works
+						if (!verifyConnection(connectionUsername, connectionPassword, finalDatabaseConnectionString)) {
+							setMessage("Verify that the database connection works");
+							// redirect to setup page if we got an error
+							reportError("Unable to connect to database", DEFAULT_PAGE);
+							return;
 						}
 						
 						// save the properties for startup purposes
@@ -1145,21 +1025,6 @@ public class InitializationFilter extends StartupFilter {
 								reportError(e.getMessage() + " See the error log for more details", null);
 								log.warn("Error while trying to add demo data", e);
 							}
-						}
-						
-						if (InitializationWizardModel.INSTALL_METHOD_TESTING.equals(wizardModel.installMethod)) {
-							setMessage("Creating testing installation");
-							setCompletedPercentage(0);
-							setExecutingTask(WizardTask.CREATE_TEST_INSTALLATION);
-							createTestInstallation();
-							if (!errors.isEmpty()) {
-								reportError("Error while trying to Creating installation: "
-								        + StringUtils.collectionToCommaDelimitedString(errors), null);
-								log.warn(StringUtils.collectionToCommaDelimitedString(errors));
-								return;
-							}
-							wizardModel.workLog.add("Created test installation");
-							addExecutedTask(WizardTask.CREATE_TEST_INSTALLATION);
 						}
 						
 						// update the database to the latest version
@@ -1379,127 +1244,5 @@ public class InitializationFilter extends StartupFilter {
 			return true;
 		} else
 			return true;
-	}
-	
-	/**
-	 * Convenience method that gets the uploaded file from the specified http request and writes it
-	 * to a temporary directory
-	 * 
-	 * @param httpRequest
-	 * @return An error message in case an error was encountered otherwise null
-	 */
-	@SuppressWarnings("unchecked")
-	private String uploadFile(HttpServletRequest httpRequest) {
-		RequestContext requestContext = new ServletRequestContext(httpRequest);
-		if (!ServletFileUpload.isMultipartContent(requestContext))
-			return "The request is not a valid multipart/form-data upload request";
-		
-		FileItemFactory factory = new DiskFileItemFactory();
-		ServletFileUpload upload = new ServletFileUpload(factory);
-		InputStream uploadedStream = null;
-		
-		try {
-			List<FileItem> items = upload.parseRequest(requestContext);
-			if (CollectionUtils.isNotEmpty(items)) {
-				FileItem item = items.get(0);
-				String fileName = item.getName();
-				
-				if (StringUtils.hasText(fileName)) {
-					uploadedStream = item.getInputStream();
-					testModulesZipFile = new File(System.getProperty("java.io.tmpdir"), fileName);
-					OpenmrsUtil.copyFile(uploadedStream, new FileOutputStream(testModulesZipFile));
-				} else
-					return "Please attach a file to upload!";
-			}
-		}
-		catch (FileUploadException ex) {
-			log.error("Error while uploading file: ", ex);
-			return "An error occured while uploading the file";
-		}
-		catch (IOException e) {
-			log.error("Error while uploading file: ", e);
-			return "An error occured while uploading the file";
-		}
-		finally {
-			if (uploadedStream != null)
-				try {
-					uploadedStream.close();
-				}
-				catch (IOException e) {
-					log.error("Error: ", e);
-				}
-		}
-		
-		return null;
-	}
-	
-	/**
-	 * Convenience method that loads the database driver
-	 * 
-	 * @param connection the database connection string
-	 * @param databaseDriver the database driver class name to load
-	 * @return the loaded driver string
-	 */
-	public static String loadDriver(String connection, String databaseDriver) {
-		String loadedDriverString = null;
-		try {
-			loadedDriverString = DatabaseUtil.loadDatabaseDriver(connection, databaseDriver);
-			log.info("using database driver :" + loadedDriverString);
-		}
-		catch (ClassNotFoundException e) {
-			log.error("The given database driver class was not found. "
-			        + "Please ensure that the database driver jar file is on the class path "
-			        + "(like in the webapp's lib folder)");
-		}
-		
-		return loadedDriverString;
-	}
-	
-	/**
-	 * Utility methods that creates a test installation by mirroring the existing installation
-	 */
-	private void createTestInstallation() {
-		try {
-			if (TestInstallUtil.createSqlDump(wizardModel.currentDatabaseHost, wizardModel.currentDatabasePort,
-			    wizardModel.currentDatabaseName, wizardModel.currentDatabaseUsername, wizardModel.currentDatabasePassword)) {
-				initJob.setCompletedPercentage(26);
-				
-				String replacedDatabaseConnection = testDatabaseConnection.replace("@HOST@", wizardModel.testDatabaseHost)
-				        .replace("@PORT@", wizardModel.testDatabasePort);
-				
-				int value = TestInstallUtil.createTestDatabase(replacedDatabaseConnection.replace("@DBNAME@", ""),
-				    InitializationWizardModel.TEST_DATABASE_NAME, loadDriver(testDatabaseConnection, null),
-				    wizardModel.testDatabaseUsername, wizardModel.testDatabasePassword);
-				initJob.setCompletedPercentage(27);
-				
-				if (value > -1) {
-					if (TestInstallUtil.addTestData(wizardModel.testDatabaseHost, wizardModel.testDatabasePort,
-					    InitializationWizardModel.TEST_DATABASE_NAME, wizardModel.testDatabaseUsername,
-					    wizardModel.testDatabasePassword)) {
-						initJob.setCompletedPercentage(97);
-						wizardModel.databaseConnection = replacedDatabaseConnection;
-						wizardModel.databaseName = InitializationWizardModel.TEST_DATABASE_NAME;
-						
-						if (wizardModel.addModules && testModulesZipFile != null) {
-							log.info("Adding modules...");
-							wizardModel.addModules = true;
-							TestInstallUtil.addZippedTestModules(testModulesZipFile);
-						} else
-							log.info("Ignoring modules...");
-						
-						initJob.setCompletedPercentage(100);
-						
-					} else
-						errors.add("Failed to export data to the test server, see logs for details");
-				} else
-					errors.add("Failed to create the test database, see logs for details");
-			} else
-				errors.add("Failed to create a sql dump file, see logs for details");
-			
-		}
-		catch (Exception e) {
-			log.error("Errror while creating a testing environment", e);
-			errors.add("Failed to create a testing environment, please see logs for details");
-		}
 	}
 }

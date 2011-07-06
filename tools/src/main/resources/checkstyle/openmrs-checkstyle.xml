@@ -79,15 +79,6 @@
 	</module>
 
 	<!--
-		Check for use of 'new Date().getTime()'.
-	-->
-	<module name="RegexpSingleline">
-		<property name="id" value="InefficientCurrentTime" />
-		<property name="format" value="new Date\(\)\.getTime\(\)"/>
-		<property name="message" value="Use System.currentTimeMillis() instead of new Date().getTime()."/>
-	</module>
-
-	<!--
 		Check source files for tab (\t) characters. If "eachLine" is true,
 		then check will report on each offending line
 	-->

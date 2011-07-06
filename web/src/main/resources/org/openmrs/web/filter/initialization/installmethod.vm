@@ -42,20 +42,6 @@
                                 Choose this option when you are installing OpenMRS in a production environment.</td>
                         </tr>
                         <tr>
-                            <td valign="top" class="yes" style="white-space: nowrap"> <input type="radio" name="install_method" value="${INSTALL_METHOD_TESTING}" #if( $installMethod == $INSTALL_METHOD_TESTING )checked="checked"#end/> Testing</td>
-                            <td class="question">
-                            	This option allows you to copy data over from a production database and upgrade/test an OpenMRS version in a safe/separate environment.
-                            	<br><b>NOTE:</b>
-                            	<ul>
-                            		<li>MySQL is currently the only supported database for running OpenMRS in test mode.</li>
-                            		<li>Install to a Virtual Machine or different Machine from your production installation to avoid overriding any existing settings.</li>
-                            		<li>Ensure that the database executables for the test server are on the system path</li>
-                            		<li>Ensure that there is an established connection between the test server and the one to copy from data</li>
-                            		<li>This can take several hour or minutes if you have a fairly large database</li>
-                            	</ul>
-                            </td>
-                        </tr>
-                        <tr>
                             <td colspan="2"><input class="button" type="submit" value="Continue"/></td>
                         </tr>                        
                     </table>

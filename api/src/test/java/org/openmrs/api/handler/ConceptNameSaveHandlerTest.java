@@ -49,15 +49,9 @@ public class ConceptNameSaveHandlerTest extends BaseContextSensitiveTest {
 		ConceptNameSaveHandler handler = new ConceptNameSaveHandler();
 		ConceptName name = new ConceptName();
 		name.addTag(ConceptNameTag.PREFERRED); // this tag has a null id
-		name.addTag(ConceptNameTag.SHORT); // this tag has a null id
 		handler.handle(name, null, null, null);
-		for (ConceptNameTag tag : name.getTags()) {
-			if (tag.getTag().equals(ConceptNameTag.PREFERRED)) {
-				Assert.assertEquals(4, tag.getConceptNameTagId().intValue());
-			} else if (tag.getTag().equals(ConceptNameTag.SHORT)) {
-				Assert.assertEquals(2, tag.getConceptNameTagId().intValue());
-			}
-		}
+		ConceptNameTag newTag = name.getTags().iterator().next();
+		Assert.assertEquals(4, newTag.getConceptNameTagId().intValue());
 	}
 	
 	/**

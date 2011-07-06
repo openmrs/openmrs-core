@@ -60,7 +60,7 @@ public class DisplayChartTag extends BodyTagSupport {
 				HttpSession session = pageContext.getSession();
 				HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
 				
-				Long time = System.currentTimeMillis();
+				Long time = new Date().getTime();
 				Double random = Math.random() * 1000.0;
 				String key = "chart-" + time + "-" + session.getId() + "-" + random;
 				session.setAttribute(key, chart);

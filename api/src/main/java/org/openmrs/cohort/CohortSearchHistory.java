@@ -211,8 +211,7 @@ public class CohortSearchHistory extends AbstractReportObject {
 	public synchronized void addSearchItem(PatientSearch ps) {
 		checkArrayLengths();
 		searchHistory.add(ps);
-		cachedFilters.add(OpenmrsUtil.toPatientFilter(ps, this));
-		// the potentially-expensive query should be done lazily
+		cachedFilters.add(null);
 		cachedResults.add(null);
 		cachedResultDates.add(null);
 	}

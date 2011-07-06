@@ -3,15 +3,14 @@
 		<input type="hidden" name="page" value="wizardcomplete.vm" /> 
 		<div class="content">
 		<!-- TODO list off all collected properties here -->
-		 	<table cellpadding="9" align="center" cellspacing="5" >
-            	<tr>
+            <table cellpadding="9" align="center" cellspacing="5" >
+                <tr>
                     <td colspan="2"><strong>Review</strong></td>
                 </tr>
-                #if($installMethod != $INSTALL_METHOD_TESTING)
                 <tr>
                     <td colspan="2">All required input has been collected and is ready to be processed.
                     <br />Click the "finish" button to create tables, data, etc.
-                    <br/>This could take up to several minutes or hours.  When complete you will be taken to the OpenMRS main screen.
+                    <br/>This could take up to several minutes.  When complete you will be taken to the OpenMRS main screen.
                     </td>
                 </tr>
 
@@ -73,63 +72,7 @@
                 <tr>
                     <td>Update the database automatically on start up when a new release is deployed</td>
                     <td>#if( $autoUpdateDatabase == true ) Yes #else No #end</td>
-                </tr>
-                #else
-                <tr>
-                    <td colspan="2">All required input has been collected and is ready to be processed.
-                    <br />Click the "finish" button  to create a duplicate database, 
-                    <br/>add any modules you uploaded and upgrade to the latest database version.
-                    <br/>This could take up to several minutes.  When complete you will be taken to the OpenMRS main screen.
-                    </td>
-                </tr>
-                <tr>
-        			<td colspan="2" class="question">Currently installed database server settings:</td>
-              	</tr>
-			    <tr>
-                    <td>Current Connection Host Name/IP Address</td>
-                    <td>${currentDatabaseHost}</td>
-                </tr>
-                <tr>
-                    <td>Current Connection Port</td>
-                    <td>${currentDatabasePort}</td>
-                </tr>
-                <tr">
-                    <td>Current Database Name</td>
-                    <td>${currentDatabaseName}</td>
-                </tr>
-                <tr>
-                    <td>Current Database Username</td>
-                    <td>${currentDatabaseUsername}</td>
-                </tr>
-                <tr>
-                    <td colspan="2" class="question">
-                    	Test database server settings:
-                    </td>
-                </tr>
-                <tr>
-                    <td>Test Connection Host Name/IP Address</td>
-                    <td>${testDatabaseHost}</td>
-                </tr>
-                <tr>
-                    <td>Test Connection Port</td>
-                    <td>${testDatabasePort}</td>
-                </tr>
-                <tr>
-                    <td>Test Database Username</td>
-                    <td>${testDatabaseUsername}</td>
-                </tr>
-                <tr>
-                    <td colspan="2" class="question">Other Details:</td>
-                </tr>
-                <tr>
-                    <td>Test Database name</td>
-                    <td>${TEST_DATABASE_NAME}</td>
-                </tr>
-                <tr>
-                	<td>Add Modules? </td><td>#if($addModules == true) Yes #else No#end</td>
-              	</tr>
-                #end
-                <tr>
+                </tr>                <tr>
                     <td>Runtime properties file path</td>
                     <td>${runtimePropertiesPath}</td>
                 </tr>
@@ -137,7 +80,7 @@
                 <tr>
                     <td colspan= "2">
                         <input class="button" name="back" type="submit" value="Back"/>&nbsp; &nbsp;
-                        <input class="button" id="start" type="submit" value="Finish" #if($installMethod == $INSTALL_METHOD_TESTING)#end/>
+                        <input class="button" id="start" type="submit" value="Finish"/>
                     </td>
                 </tr>
             </table>
