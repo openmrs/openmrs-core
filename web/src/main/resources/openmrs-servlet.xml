@@ -177,8 +177,6 @@
 				<prop key="admin/hl7/hl7Source.list">hl7SourceList</prop>
 				<prop key="admin/hl7/hl7Source.form">hl7SourceForm</prop>
 
-				<prop key="migration.list">migrationController</prop>
-				<prop key="migration.form">migrationActionController</prop>
 				<prop key="options.form">optionsForm</prop>
 				<prop key="personDashboard.form">personDashboardForm</prop>
 
