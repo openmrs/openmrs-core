@@ -49,6 +49,8 @@ public class ImageHandler extends AbstractHandler implements ComplexObsHandler {
 	
 	public static final Log log = LogFactory.getLog(ImageHandler.class);
 	
+	public static final String HANDLER_TYPE = "ImageHandler";
+	
 	private Set<String> extensions;
 	
 	/**
@@ -143,7 +145,7 @@ public class ImageHandler extends AbstractHandler implements ComplexObsHandler {
 	 */
 	@Override
 	public String getHandlerType() {
-		return "ImageHandler";
+		return ImageHandler.HANDLER_TYPE;
 	}
 	
 	/**

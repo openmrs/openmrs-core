@@ -37,6 +37,9 @@ public class PatientHandler extends CustomDatatypeHandler implements ComplexObsH
 	
 	public static final Log log = LogFactory.getLog(PatientHandler.class);
 	
+	/** The Constant HANDLER_TYPE. */
+	public static final String HANDLER_TYPE = "PatientHandler";
+	
 	/**
 	 * The default Constructor method
 	 */
@@ -122,7 +125,7 @@ public class PatientHandler extends CustomDatatypeHandler implements ComplexObsH
 	 * @return the handler type
 	 */
 	public String getHandlerType() {
-		return "PatientHandler";
+		return PatientHandler.HANDLER_TYPE;
 	}
 	
 	/**

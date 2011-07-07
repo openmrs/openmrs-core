@@ -43,6 +43,8 @@ public class TextHandler extends AbstractHandler implements ComplexObsHandler {
 	
 	public static final Log log = LogFactory.getLog(TextHandler.class);
 	
+	public static final String HANDLER_TYPE = "TextHandler";
+	
 	/**
 	 * Constructor initializes formats for alternative file names to protect from unintentionally
 	 * overwriting existing files.
@@ -143,7 +145,7 @@ public class TextHandler extends AbstractHandler implements ComplexObsHandler {
 	 */
 	@Override
 	public String getHandlerType() {
-		return "TextHandler";
+		return TextHandler.HANDLER_TYPE;
 	}
 	
 	/**
