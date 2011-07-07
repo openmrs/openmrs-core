@@ -16,7 +16,7 @@ package org.openmrs.arden;
 import java.io.Writer;
 
 /*
- * @@ This class represents a statement in Data slot - read 
+ * @@ This class represents a statement in Data slot - read
  */
 
 public class MLMObjectElement {
@@ -119,9 +119,9 @@ public class MLMObjectElement {
 			 * 
 			 **************************************************************************************/
 			if (this.datasource.equalsIgnoreCase(PARAMETERS_DATASOURCE)) {
-				w.append("\n\t\t\tResult " + key + "=new Result((String) parameters.get(\"" + key + "\")");
+				w.append("\n\t\t\tResult " + key + "=new Result((String) parameters.get(\"" + cn + "\")");
 			} else {
-				w.append("\n\t\t\tResult " + key + "=context.read(\n\t\t\t\tpatient,context.getLogicDataSource(\""
+				w.append("\n\t\t\tResult " + key + "=context.read(\n\t\t\t\tpatient.getPatientId(),context.getLogicDataSource(\""
 				        + this.datasource + "\"),\n\t\t\t\tnew LogicCriteriaImpl(\"" + cn.trim() + "\")");
 			}
 			if (hasWhere) {

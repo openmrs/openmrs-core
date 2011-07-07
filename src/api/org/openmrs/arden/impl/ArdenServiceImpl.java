@@ -56,7 +56,7 @@ public class ArdenServiceImpl implements ArdenService {
 				log.debug("Parsing file" + file);
 				
 				// for each directory/file specified on the command line
-				doFile(new File(file), outFolder); // parse it  
+				doFile(new File(file), outFolder); // parse it
 				
 			}
 		}
@@ -101,8 +101,8 @@ public class ArdenServiceImpl implements ArdenService {
 	private boolean parseFile(FileInputStream s, String fn, String outFolder) throws Exception {
 		boolean retVal = true;
 		 try {
-			  Date Today = new Date(); 
-		      String cfn;  
+			  Date Today = new Date();
+		      String cfn;
 		      
 		      AdministrationService adminService = Context.getAdministrationService();
 			  String packagePrefix = adminService.getGlobalProperty("dss.rulePackagePrefix");
@@ -145,7 +145,7 @@ public class ArdenServiceImpl implements ArdenService {
 		    	 w.write("package org.openmrs.module.dss.rule;\n\n");
 		     }
 		     else
-		     {	 
+		     {
 		    	 w.write("package " + packagePrefix + ";\n\n");
 		     }
 		     w.write("import java.util.ArrayList;\n");
@@ -157,9 +157,10 @@ public class ArdenServiceImpl implements ArdenService {
 		     w.write("import org.apache.commons.logging.Log;\n");
 		     w.write("import org.apache.commons.logging.LogFactory;\n");
 		     w.write("import org.openmrs.Patient;\n");
+		     w.write("import org.openmrs.api.PatientService;\n");
              w.write("import org.openmrs.api.context.Context;\n");
              w.write("import org.openmrs.logic.LogicContext;\n");
-             w.write("import org.openmrs.logic.LogicCriteriaImpl;\n");
+             w.write("import org.openmrs.logic.impl.LogicCriteriaImpl;\n");
              w.write("import org.openmrs.logic.LogicException;\n");
              w.write("import org.openmrs.logic.LogicService;\n");
              w.write("import org.openmrs.logic.Rule;\n");
@@ -171,6 +172,8 @@ public class ArdenServiceImpl implements ArdenService {
              w.write("import java.util.StringTokenizer;\n\n");
              w.write("import org.openmrs.api.ConceptService;\n");
              w.write("import java.text.SimpleDateFormat;\n");
+			w.write("import org.openmrs.Concept;\n");
+			w.write("import org.openmrs.ConceptName;\n");
 		     
 		     String classname = ardObj.getClassName();
 		     w.write("public class " + classname + " implements Rule, DssRule{\n\n"); // Start of class
@@ -203,7 +206,7 @@ public class ArdenServiceImpl implements ArdenService {
 		     w.write("\t/*** @see org.openmrs.logic.rule.Rule#getDependencies()*/\n\t" +
 		     "public String[] getDependencies() {\n\t\treturn new String[] { };\n\t}\n\n");
 		     
-		     w.write("\t/*** @see org.openmrs.logic.rule.Rule#getTTL()*/\n\t" + 
+		     w.write("\t/*** @see org.openmrs.logic.rule.Rule#getTTL()*/\n\t" +
 		     "public int getTTL() {\n\t\treturn 0; //60 * 30; // 30 minutes\n\t}\n\n");
 
 		     w.write("\t/*** @see org.openmrs.logic.rule.Rule#getDatatype(String)*/\n\t" +
@@ -216,7 +219,7 @@ public class ArdenServiceImpl implements ArdenService {
 		     if(str != null){
 		    	 str = "\"" + str + "\"";
 		     }
-		     w.write("\t/*** @see org.openmrs.module.dss.DssRule#getAuthor()*/\n" + 
+		     w.write("\t/*** @see org.openmrs.module.dss.DssRule#getAuthor()*/\n" +
 				     "\tpublic String getAuthor(){\n" +
 				     	"\t\treturn "+str+";\n" +
 				     "\t}\n\n");
@@ -228,7 +231,7 @@ public class ArdenServiceImpl implements ArdenService {
 		     if(str != null){
 		    	 str = "\"" + str + "\"";
 		     }
-		     w.write("\t/*** @see org.openmrs.module.dss.DssRule#getCitations()*/\n" + 
+		     w.write("\t/*** @see org.openmrs.module.dss.DssRule#getCitations()*/\n" +
 				     "\tpublic String getCitations(){\n" +
 				     "\t\treturn " + str + ";\n" +
 				     "\t}\n\n");
@@ -241,7 +244,7 @@ public class ArdenServiceImpl implements ArdenService {
 		     if(str != null){
 		    	 str = "\"" + str + "\"";
 		     }
-		     w.write("\t/*** @see org.openmrs.module.dss.DssRule#getDate()*/\n" + 
+		     w.write("\t/*** @see org.openmrs.module.dss.DssRule#getDate()*/\n" +
 				     "\tpublic String getDate(){\n" +
 				     "\t\treturn " + str + ";\n" +
 				     "\t}\n\n");
@@ -252,7 +255,7 @@ public class ArdenServiceImpl implements ArdenService {
 		     if(str != null){
 		    	 str = "\"" + str + "\"";
 		     }
-		     w.write("\t/*** @see org.openmrs.module.dss.DssRule#getExplanation()*/\n" + 
+		     w.write("\t/*** @see org.openmrs.module.dss.DssRule#getExplanation()*/\n" +
 				     "\tpublic String getExplanation(){\n" +
 				     "\t\treturn " + str + ";\n" +
 		     		 "\t}\n\n");
@@ -264,18 +267,18 @@ public class ArdenServiceImpl implements ArdenService {
 		     if(str != null){
 		    	 str = "\"" + str + "\"";
 		     }
-		     w.write("\t/*** @see org.openmrs.module.dss.DssRule#getInstitution()*/\n" + 
+		     w.write("\t/*** @see org.openmrs.module.dss.DssRule#getInstitution()*/\n" +
 				     "\tpublic String getInstitution(){\n" +
 				     "\t\treturn " + str + ";\n" +
      		 		 "\t}\n\n");
-		     str = ardObj.getKeywords();	
+		     str = ardObj.getKeywords();
 		     if(str != null && str.length() == 0){
 		    	 str = null;
 		     }
 		     if(str != null){
 		    	 str = "\"" + str + "\"";
 		     }
-		     w.write("\t/*** @see org.openmrs.module.dss.DssRule#getKeywords()*/\n" + 
+		     w.write("\t/*** @see org.openmrs.module.dss.DssRule#getKeywords()*/\n" +
 				     "\tpublic String getKeywords(){\n" +
 				     "\t\treturn " + str + ";\n" +
 		 		 	 "\t}\n\n");
@@ -286,7 +289,7 @@ public class ArdenServiceImpl implements ArdenService {
 		     if(str != null){
 		    	 str = "\"" + str + "\"";
 		     }
-		     w.write("\t/*** @see org.openmrs.module.dss.DssRule#getLinks()*/\n" + 
+		     w.write("\t/*** @see org.openmrs.module.dss.DssRule#getLinks()*/\n" +
 				     "\tpublic String getLinks(){\n" +
 				     "\t\treturn " + str + ";\n" +
  		 	 		 "\t}\n\n");
@@ -298,7 +301,7 @@ public class ArdenServiceImpl implements ArdenService {
 		     if(str != null){
 		    	 str = "\"" + str + "\"";
 		     }
-		     w.write("\t/*** @see org.openmrs.module.dss.DssRule#getPurpose()*/\n" + 
+		     w.write("\t/*** @see org.openmrs.module.dss.DssRule#getPurpose()*/\n" +
 				     "\tpublic String getPurpose(){\n" +
 				     "\t\treturn " + str + ";\n" +
 	 	 		 	 "\t}\n\n");
@@ -309,7 +312,7 @@ public class ArdenServiceImpl implements ArdenService {
 		     if(str != null){
 		    	 str = "\"" + str + "\"";
 		     }
-		     w.write("\t/*** @see org.openmrs.module.dss.DssRule#getSpecialist()*/\n" + 
+		     w.write("\t/*** @see org.openmrs.module.dss.DssRule#getSpecialist()*/\n" +
 				     "\tpublic String getSpecialist(){\n" +
 				     "\t\treturn " + str + ";\n" +
 	 		 	 	 "\t}\n\n");
@@ -321,12 +324,12 @@ public class ArdenServiceImpl implements ArdenService {
 		     if(str != null){
 		    	 str = "\"" + str + "\"";
 		     }
-		     w.write("\t/*** @see org.openmrs.module.dss.DssRule#getTitle()*/\n" + 
+		     w.write("\t/*** @see org.openmrs.module.dss.DssRule#getTitle()*/\n" +
 				     "\tpublic String getTitle(){\n" +
 				     "\t\treturn " + str + ";\n" +
 		 	 	 	 "\t}\n\n");
 		     double d = ardObj.getVersion();
-		     w.write("\t/*** @see org.openmrs.module.dss.DssRule#getVersion()*/\n" + 
+		     w.write("\t/*** @see org.openmrs.module.dss.DssRule#getVersion()*/\n" +
 				     "\tpublic Double getVersion(){\n" +
 				     "\t\treturn " + d + ";\n" +
  	 	 	 		 "\t}\n\n");
@@ -337,12 +340,12 @@ public class ArdenServiceImpl implements ArdenService {
 		     if(str != null){
 		    	 str = "\"" + str + "\"";
 		     }
-		     w.write("\t/*** @see org.openmrs.module.dss.DssRule#getType()*/\n" + 
+		     w.write("\t/*** @see org.openmrs.module.dss.DssRule#getType()*/\n" +
 				     "\tpublic String getType(){\n"+
 				     "\t\treturn " + str + ";\n" +
 	 	 		 	 "\t}\n\n");
 		     		    		     
-		     /**************************************************************************************/	
+		     /**************************************************************************************/
 		     
 		     t = (BaseAST)t.getNextSibling();  // Move to Knowledge
 		     log.debug(t.toStringTree());   // prints knowledge
@@ -351,7 +354,7 @@ public class ArdenServiceImpl implements ArdenService {
 		     
 		     /**************************************************Write Knowledge dependent section**********************************************/
 		     Integer p = ardObj.getPriority();
-		     w.write("\t/*** @see org.openmrs.module.dss.DssRule#getPriority()*/\n" + 
+		     w.write("\t/*** @see org.openmrs.module.dss.DssRule#getPriority()*/\n" +
 				     "\tpublic Integer getPriority(){\n" +
 				     "\t\treturn " + p + ";\n" +
 	 		 	 	"\t}\n\n");
@@ -363,7 +366,7 @@ public class ArdenServiceImpl implements ArdenService {
 		     if(str != null){
 		    	 str = "\"" + str + "\"";
 		     }
-		     w.write("\t/*** @see org.openmrs.module.dss.DssRule#getData()*/\n" + 
+		     w.write("\t/*** @see org.openmrs.module.dss.DssRule#getData()*/\n" +
 				     "\tpublic String getData(){\n" +
 				     "\t\treturn " + str + ";\n" +
 		 	 		 "\t}\n\n");
@@ -375,7 +378,7 @@ public class ArdenServiceImpl implements ArdenService {
 		     if(str != null){
 		    	 str = "\"" + str + "\"";
 		     }
-		     w.write("\t/*** @see org.openmrs.module.dss.DssRule#getLogic()*/\n" + 
+		     w.write("\t/*** @see org.openmrs.module.dss.DssRule#getLogic()*/\n" +
 				     "\tpublic String getLogic(){\n" +
 				     "\t\treturn " + str + ";\n" +
  	 		 		 "\t}\n\n");
@@ -387,13 +390,13 @@ public class ArdenServiceImpl implements ArdenService {
 		     if(str != null){
 		    	 str = "\"" + str + "\"";
 		     }
-		     w.write("\t/*** @see org.openmrs.module.dss.DssRule#getAction()*/\n" + 
+		     w.write("\t/*** @see org.openmrs.module.dss.DssRule#getAction()*/\n" +
 				     "\tpublic String getAction(){\n" +
 				     "\t\treturn " + str + ";\n" +
 		 		 	 "\t}\n\n");
 		     
 		     Integer ageMin = ardObj.getAgeMin();
-		     w.write("\t/*** @see org.openmrs.module.dss.DssRule#getAgeMin()*/\n" + 
+		     w.write("\t/*** @see org.openmrs.module.dss.DssRule#getAgeMin()*/\n" +
 				     "\tpublic Integer getAgeMin(){\n" +
 				     "\t\treturn " + ageMin + ";\n" +
  		 	 		 "\t}\n\n");
@@ -405,13 +408,13 @@ public class ArdenServiceImpl implements ArdenService {
 		     if(str != null){
 		    	 str = "\"" + str + "\"";
 		     }
-		     w.write("\t/*** @see org.openmrs.module.dss.DssRule#getAgeMinUnits()*/\n" + 
+		     w.write("\t/*** @see org.openmrs.module.dss.DssRule#getAgeMinUnits()*/\n" +
 				     "\tpublic String getAgeMinUnits(){\n" +
 				     "\t\treturn " + str + ";\n" +
 	 	 		 	 "\t}\n\n");
 		     
 		     Integer ageMax = ardObj.getAgeMax();
-		     w.write("\t/*** @see org.openmrs.module.dss.DssRule#getAgeMax()*/\n" + 
+		     w.write("\t/*** @see org.openmrs.module.dss.DssRule#getAgeMax()*/\n" +
 				     "\tpublic Integer getAgeMax(){\n" +
 				     "\t\treturn " + ageMax + ";\n" +
 		     		 "\t}\n\n");
@@ -423,17 +426,26 @@ public class ArdenServiceImpl implements ArdenService {
 		     if(str != null){
 		    	 str = "\"" + str + "\"";
 		     }
-		     w.write("\t/*** @see org.openmrs.module.dss.DssRule#getAgeMaxUnits()*/\n" + 
+		     w.write("\t/*** @see org.openmrs.module.dss.DssRule#getAgeMaxUnits()*/\n" +
 				     "\tpublic String getAgeMaxUnits(){\n" +
 				     "\t\treturn " + str + ";\n" +
      		 		 "\t}\n\n");
 		    
-		    w.write("private static boolean containsIgnoreCase(Result key,List<Result> lst){\n");
-			w.write("for(Result element:lst){\n");
-			w.write("if(key != null&&key.toString().equalsIgnoreCase(element.toString())){\n");
-			w.write("	return true;\n");
+			w.write("private static boolean containsIgnoreCase(Result key,List<Result> lst){\n");
+			w.write("if(key == null){\n");
+			w.write("return false;\n");
 			w.write("}\n");
-			w.write("}	\n");
+			w.write("String keyString = key.toString();\n");
+			w.write("for(Result element:lst){\n");
+			w.write("Concept concept = element.toConcept();\n");
+			w.write("if(concept == null){\n");
+			w.write("continue;\n");
+			w.write("}\n");
+			w.write("String elementString = ((ConceptName) concept.getNames().toArray()[0]).getName();\n");
+			w.write("if(keyString.equalsIgnoreCase(elementString)){\n");
+			w.write("return true;\n");
+			w.write("}\n");
+			w.write("}\n");
 			w.write("return false;\n");
 			w.write("}\n");
 			

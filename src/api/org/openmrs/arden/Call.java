@@ -76,6 +76,13 @@ public class Call {
 				w.append("\t\t\t\t\t\tvalue = resultLookup.get(variable).getResultDate().toString();\n");
 				w.append("\t\t\t\t\t}\n");
 				w.append("\t\t\t\t}\n");
+				w.append("\t\t\t\telse if(" + "\"" + currParam + "\"" + ".endsWith(\"_object\"))\n");
+				w.append("\t\t\t\t{\n");
+				w.append("\t\t\t\t\tvariable = " + "\"" + currParam + "\"" + ".substring(0, varLen-7); // -5 for _object\n");
+				w.append("\t\t\t\t\tif (resultLookup.get(variable) != null){\n");
+				w.append("\t\t\t\t\t\tvalue = resultLookup.get(variable);\n");
+				w.append("\t\t\t\t\t}\n");
+				w.append("\t\t\t\t}\n");
 				w.append("\t\t\t\telse\n");
 				w.append("\t\t\t\t{\n");
 				w.append("\t\t\t\t\tif (resultLookup.get(" + "\"" + currParam + "\"" + ") != null){\n");
@@ -97,7 +104,7 @@ public class Call {
 			if (getCallVar() != null && getCallVar().length() > 0) {
 				w.append("Result " + getCallVar() + " = ");
 			}
-			w.append("logicService.eval(patient, \"" + getCallMethod() + "\",parameters);\n");
+			w.append("logicService.eval(patient.getPatientId(), \"" + getCallMethod() + "\",parameters);\n");
 			w.append("\t\t\t\t");
 			if (getCallVar() != null && getCallVar().length() > 0) {
 				w.append("resultLookup.put(\"" + getCallVar() + "\"," + getCallVar() + ");\n");
