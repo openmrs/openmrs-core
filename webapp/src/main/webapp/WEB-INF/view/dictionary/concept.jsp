@@ -158,7 +158,7 @@
 			<th valign="top" title="<spring:message code="Concept.indexTerms.help"/>"><spring:message code="Concept.indexTerms" /></th>
 			<c:forEach items="${command.locales}" var="loc">
 				<td class="${loc}">
-					<c:forEach var="indexTerm" items="${command.synonymsByLocale[loc]}" varStatus="varStatus">
+					<c:forEach var="indexTerm" items="${command.indexTermsByLocale[loc]}" varStatus="varStatus">
 						<spring:bind path="command.indexTermsByLocale[${loc}][${varStatus.index}]">
 							<c:if test="${!status.value.voided}">
 								<div>
