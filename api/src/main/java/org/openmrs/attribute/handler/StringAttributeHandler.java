@@ -20,7 +20,8 @@ import org.springframework.stereotype.Component;
 
 /**
  * Simple attribute handler that takes any String, with no validation or transformation. Also used as a
- * default handler when no matching handler is found for a datatype. 
+ * default handler when no matching handler is found for a datatype.
+ * @since 1.9
  */
 @Component
 @Order(Ordered.LOWEST_PRECEDENCE)
