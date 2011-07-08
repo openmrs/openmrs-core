@@ -647,6 +647,7 @@ public interface ObsService extends OpenmrsService {
 	 * @should override handlers with same key
 	 * @should add new handlers with new keys
 	 */
+	@Deprecated
 	public void setHandlers(Map<String, ComplexObsHandler> handlers) throws APIException;
 	
 	/**
@@ -670,6 +671,7 @@ public interface ObsService extends OpenmrsService {
 	 * @since 1.5
 	 * @should register handler with the given key
 	 */
+	@Deprecated
 	public void registerHandler(String key, ComplexObsHandler handler) throws APIException;
 	
 	/**
@@ -681,6 +683,7 @@ public interface ObsService extends OpenmrsService {
 	 * @since 1.5
 	 * @should load handler and register key
 	 */
+	@Deprecated
 	public void registerHandler(String key, String handlerClass) throws APIException;
 	
 	/**
@@ -691,6 +694,7 @@ public interface ObsService extends OpenmrsService {
 	 * @should remove handler with matching key
 	 * @should not fail with invalid key
 	 */
+	@Deprecated
 	public void removeHandler(String key) throws APIException;
 	
 	/**

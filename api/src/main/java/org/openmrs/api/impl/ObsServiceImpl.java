@@ -792,10 +792,9 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	 * @see org.openmrs.api.ObsService#setHandlers(Map)
 	 * @see #registerHandler(String, ComplexObsHandler)
 	 */
+	@Deprecated
 	public void setHandlers(Map<String, ComplexObsHandler> newHandlers) throws APIException {
-		for (Map.Entry<String, ComplexObsHandler> entry : newHandlers.entrySet()) {
-			registerHandler(entry.getKey(), entry.getValue());
-		}
+		//Depricated, moving on to annotated handlers
 	}
 	
 	/* (non-Javadoc)
@@ -867,23 +866,18 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	/**
 	 * @see org.openmrs.api.ObsService#registerHandler(String, ComplexObsHandler)
 	 */
+	@Deprecated
 	public void registerHandler(String key, ComplexObsHandler handler) throws APIException {
-		getHandlers().put(key, handler);
+		//Depricated, moving on to annotated handlers
 	}
 	
 	/**
 	 * @see org.openmrs.api.ObsService#registerHandler(String, String)
 	 */
+	@Deprecated
 	@SuppressWarnings("unchecked")
 	public void registerHandler(String key, String handlerClass) throws APIException {
-		try {
-			Class loadedClass = OpenmrsClassLoader.getInstance().loadClass(handlerClass);
-			registerHandler(key, (ComplexObsHandler) loadedClass.newInstance());
-			
-		}
-		catch (Exception e) {
-			throw new APIException("Unable to load and instantiate handler", e);
-		}
+		//Depricated, moving on to annotated handlers
 	}
 	
 	/**
@@ -897,8 +891,9 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	/**
 	 * @see org.openmrs.api.ObsService#removeHandler(java.lang.String)
 	 */
+	@Deprecated
 	public void removeHandler(String key) {
-		handlers.remove(key);
+		//Depricated, moving on to annotated handlers
 	}
 	
 }
