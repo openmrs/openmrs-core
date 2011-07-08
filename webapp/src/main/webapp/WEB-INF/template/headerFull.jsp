@@ -107,6 +107,16 @@
 			<span id="userHelp">
 				<a href='<%= request.getContextPath() %>/help.htm'><spring:message code="header.help"/></a>
 			</span>
+			<openmrs:extensionPoint pointId="org.openmrs.headerFull.userBar" type="html">
+				<openmrs:hasPrivilege privilege="${extension.requiredPrivilege}">
+					<span>
+						<a href="${extension.url}"><spring:message code="${extension.label}"/></a>
+					</span>
+					<c:if test="${extension.portletUrl != null}">
+						<openmrs:portlet url="${extension.portletUrl}" moduleId="${extension.moduleId}" id="${extension.portletUrl}" />
+					</c:if>
+				</openmrs:hasPrivilege>
+			</openmrs:extensionPoint>
 		</div>
 
 		<%@ include file="/WEB-INF/template/banner.jsp" %>
