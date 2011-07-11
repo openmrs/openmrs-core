@@ -1,3 +1,4 @@
+<%@page import="org.openmrs.PersonName"%>
 <%@page import="org.apache.velocity.Template" %>
 <%@page import="org.apache.velocity.VelocityContext" %>
 <%@page import="org.apache.velocity.app.VelocityEngine" %>
@@ -17,16 +18,17 @@
 	}
 	
 	Patient patient = new Patient();
-	patient.setFirstName("Justin");
-	patient.setLastName("Miranda");
-	patient.setWeight("185");
+	PersonName pn = new PersonName("Justin","","Miranda");
+	patient.addName(pn);
+	
+	//patient.setWeight("185");
 	
 	Map contextMap = new HashMap();
 	contextMap.put("patient", patient);
 	
-	MessagePreparator preparator = new VelocityMessagePreparator();
-	String text = preparator.prepare(templateText, contextMap);
-	
+	//MessagePreparator preparator = new VelocityMessagePreparator();
+	//String text = preparator.prepare(templateText, contextMap);
+	String text="velocity_test should be implemented";
 
 %>
 

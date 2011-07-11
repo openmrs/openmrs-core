@@ -13,6 +13,7 @@
  */
 package org.openmrs;
 
+import org.openmrs.attribute.AttributeType;
 import org.openmrs.attribute.BaseAttributeType;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
@@ -22,7 +23,7 @@ import org.simpleframework.xml.Root;
  * PersonAttributeType
  */
 @Root(strict = false)
-public class PersonAttributeType extends BaseAttributeType<Person> implements java.io.Serializable {
+public class PersonAttributeType extends BaseAttributeType<Person> implements java.io.Serializable, AttributeType<Person> {
 	
 	public static final long serialVersionUID = 2112313431211L;
 	

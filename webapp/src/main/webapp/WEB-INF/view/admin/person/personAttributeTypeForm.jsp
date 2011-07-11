@@ -20,10 +20,19 @@
 		return retVal;
 	}
 	
+	
+	   function forceMaxLength(object, maxLength) {
+	      if( object.value.length >= maxLength) {
+	         object.value = object.value.substring(0, maxLength); 
+	      }
+	   }
+
+	
 </script>
 
 <h2><spring:message code="PersonAttributeType.title"/></h2>
 
+<openmrs:extensionPoint pointId="org.openmrs.admin.persons.personForm.belowTitle" type="html" parameters="personAttributeTypeId=${personAttributeType.personAttributeTypeId}"/>
 <form method="post">
 <fieldset>
 <table>
@@ -31,104 +40,71 @@
 		<td><spring:message code="general.name"/></td>
 		<td>
 			<spring:bind path="personAttributeType.name">
-				<input type="text" name="name" value="${status.value}" size="35" />
+				<input type="text" name="name" value="${status.value}" size="50" />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
-	</tr>
-	<tr>
-		<td><spring:message code="PersonAttributeType.format"/></td>
-		<td>
-			<spring:bind path="personAttributeType.format">
-				<%-- This logic is here because java.util.Date should not be allowed, but existing entries may have that value, and it's impossible to fix that automatically. --%>
-				<c:set var="isJavaUtilDate" value='${status.value == "java.util.Date"}'/>
-				<select name="format">
-					<option value=""></option>
-					<c:forEach items="${formats}" var="format">
-						<option value="${format}" <c:if test="${format == status.value}">selected</c:if>>${format}</option>
-					</c:forEach>
-					<c:if test="${isJavaUtilDate}">
-						<option value="java.util.Date" selected="true">java.util.Date</option>
-					</c:if>
-				</select>
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-				<c:if test="${isJavaUtilDate != ''}">
-					<br/>
-					<span class="error"><spring:message code="PersonAttributeType.java.util.Date.warning"/></span>
-				</c:if>
-			</spring:bind>
-		</td>
-		<td><i><spring:message code="PersonAttributeType.format.help"/></i></td>
-	</tr>
-	<tr>
-		<td><spring:message code="PersonAttributeType.foreignKey"/></td>
-		<td>
-			<spring:bind path="personAttributeType.foreignKey">
-				<input type="text" name="foreignKey" value="${status.value}" size="35" />
-				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
-			</spring:bind>
-		</td>
-		<td><i><spring:message code="PersonAttributeType.foreignKey.help"/></i></td>
-	</tr>
-	<tr>
-		<td><spring:message code="PersonAttributeType.searchable"/></td>
-		<td>
-			<spring:bind path="personAttributeType.searchable">
-				<input type="hidden" name="_${status.expression}">
-				<input type="checkbox" name="${status.expression}" 
-					   id="${status.expression}" 
-					   <c:if test="${status.value == true}">checked</c:if> 
-				/>
-			</spring:bind>
-		</td>
-		<td><i><spring:message code="PersonAttributeType.searchable.help"/></i></td>
 	</tr>
 	<tr>
 		<td valign="top"><spring:message code="general.description"/></td>
 		<td valign="top">
 			<spring:bind path="personAttributeType.description">
-				<textarea name="description" rows="3" cols="40">${status.value}</textarea>
+				<textarea name="description" rows="3" cols="40" onkeypress="return forceMaxLength(this, 1024);" >${status.value}</textarea>
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
 	</tr>
 	<tr>
-		<td><spring:message code="PersonAttributeType.editPrivilege"/></td>
+		<td><spring:message code="FormField.minOccurs"/></td>
 		<td>
-			<spring:bind path="personAttributeType.editPrivilege">
-				<select name="editPrivilege">
+			<spring:bind path="personAttributeType.minOccurs">
+				<input type="text" name="minOccurs" value="${status.value}" size="10" />
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+			</spring:bind>
+		</td>
+	</tr>
+	<tr>
+		<td><spring:message code="FormField.maxOccurs"/></td>
+		<td>
+			<spring:bind path="personAttributeType.maxOccurs">
+				<input type="text" name="maxOccurs" value="${status.value}" size="10" />
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
+			</spring:bind>
+		</td>
+	</tr>
+	<tr>
+		<td><spring:message code="AttributeType.datatype"/></td>
+		<td>
+			<spring:bind path="personAttributeType.datatype">
+				<select name="datatype">
 					<option value=""></option>
-					<c:forEach items="${privileges}" var="privilege">
-						<option value="${privilege.privilege}" <c:if test="${privilege.privilege == status.value}">selected</c:if>>${privilege.privilege}</option>
+					<c:forEach items="${datatypes}" var="datatype">
+						<option value="${datatype}" <c:if test="${datatype == status.value}">selected</c:if>>${datatype}</option>
 					</c:forEach>
 				</select>
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
-		<td><i><spring:message code="PersonAttributeType.editPrivilege.help"/></i></td>
-	</tr>	
-	<c:if test="${personAttributeType.creator != null}">
+	</tr>
+	<tr>
+		<td><spring:message code="AttributeType.handlerConfig"/></td>
+		<td>
+			<spring:bind path="personAttributeType.handlerConfig">
+				<textarea name="handlerConfig" rows="3" cols="40" >${status.value}</textarea>
+			</spring:bind>
+		</td>
+	</tr>
+	<c:if test="${!(personAttributeType.creator == null)}">
 		<tr>
 			<td><spring:message code="general.createdBy" /></td>
-			<td>
-				${personAttributeType.creator.personName} -
-				<openmrs:formatDate date="${personAttributeType.dateCreated}" type="long" />
-			</td>
-		</tr>
-	</c:if>
-	<c:if test="${personAttributeType.changedBy != null}">
-		<tr>
-			<td><spring:message code="general.changedBy" /></td>
-			<td>
-				${personAttributeType.changedBy.personName} -
-				<openmrs:formatDate date="${personAttributeType.dateChanged}" type="long" />
-			</td>
+			<td><openmrs:format user="${ personAttributeType.creator }"/></td>
 		</tr>
 	</c:if>
 </table>
-<input type="hidden" name="personAttributeTypeId:int" value="${personAttributeType.personAttributeTypeId}">
 <br />
+
 <input type="submit" value="<spring:message code="PersonAttributeType.save"/>" name="save">
+
 </fieldset>
 </form>
 
@@ -153,22 +129,23 @@
 </c:if>
 
 <br/>
+
 <c:if
 	test="${personAttributeType.retired == true && not empty personAttributeType.personAttributeTypeId}">
 	<openmrs:hasPrivilege privilege="Manage Person Attribute Types">
-		<form id="unretire" method="post" onsubmit="return confirmUnretire()">
+		<form id="unretire" method="post">
 		<fieldset>
 		<h4><spring:message
-			code="PersonAttributeType.UnretirePersonAttributeType" /></h4>
+			code="PersonAttributeType.unretirePersonAttributeType" /></h4>
 		<input type="submit"
-			value='<spring:message code="PersonAttributeType.UnretirePersonAttributeType"/>'
+			value='<spring:message code="PersonAttributeType.unretirePersonAttributeType"/>'
 			name="unretire" /></fieldset>
 		</form>
 	</openmrs:hasPrivilege>
 </c:if>
 <br />
 
-<c:if test="${not empty personAttributeType.personAttributeTypeId}">
+<c:if test="${not empty visitAttributeType.visitAttributeTypeId}">
 	<openmrs:hasPrivilege privilege="Purge Person Attribute Types">
 		<form id="purge" method="post" onsubmit="return confirmPurge()">
 			<fieldset>
@@ -178,6 +155,8 @@
 		</form>
 	</openmrs:hasPrivilege>
 </c:if>
+
+<openmrs:extensionPoint pointId="org.openmrs.admin.person.personAttributeTypeForm.footer" type="html" parameters="personAttributeTypeId=${visitAttributeType.personAttributeTypeId}" />
 
 <script type="text/javascript">
  document.forms[0].elements[0].focus();

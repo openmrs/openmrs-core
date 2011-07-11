@@ -91,7 +91,7 @@ public class AttributeServiceImpl extends BaseOpenmrsService implements Attribut
 	}
 	
 	/**
-	 * private method that prioritizes all registered handlers so we can quickly determin which to use for
+	 * private method that prioritizes all registered handlers so we can quickly determine which to use for
 	 * each logical type
 	 */
 	@SuppressWarnings( { "rawtypes", "unchecked" })
