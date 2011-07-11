@@ -168,7 +168,7 @@ public class PersonAttributeTypeFormController extends SimpleFormController {
 	 *      java.lang.Object, org.springframework.validation.Errors)
 	 */
 	protected Map<String, Object> referenceData(HttpServletRequest request, Object obj, Errors errors) throws Exception {
-		
+		/*
 		Map<String, Object> map = new HashMap<String, Object>();
 		
 		List<Privilege> privileges = new ArrayList<Privilege>();
@@ -191,6 +191,12 @@ public class PersonAttributeTypeFormController extends SimpleFormController {
 		
 		map.put("privileges", privileges);
 		map.put("formats", formats);
+		
+		return map;
+		*/
+		
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("datatypes", Context.getAttributeService().getDatatypes());
 		
 		return map;
 	}
