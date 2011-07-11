@@ -40,17 +40,15 @@ public class PatientHandler extends CustomDatatypeHandler implements ComplexObsH
 	/** The Constant HANDLER_TYPE. */
 	public static final String HANDLER_TYPE = "PatientHandler";
 	
+	/** The Constant DISPLAY_LINK. */
+	public static final String DISPLAY_LINK = "/patientDashboard.form?patientId=";
+	
 	/**
 	 * The default Constructor method
 	 */
 	public PatientHandler() {
 		super();
-	}
-	
-	/**
-	 * The Link to the default dashboard / page where patient instances will be displayed
-	 */
-	private String displayLink = "/patientDashboard.form?patientId=";
+	}	
 	
 	/**
 	 * @see org.openmrs.obs.ComplexObsHandler#getObs(org.openmrs.Obs, java.lang.String)
@@ -116,7 +114,7 @@ public class PatientHandler extends CustomDatatypeHandler implements ComplexObsH
 	 * @return the display link
 	 */
 	public String getDisplayLink() {
-		return this.displayLink;
+		return PatientHandler.DISPLAY_LINK;
 	}
 	
 	/**
