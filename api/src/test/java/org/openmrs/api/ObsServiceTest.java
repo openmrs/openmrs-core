@@ -407,6 +407,53 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	 * @see ObsService#getComplexObs(Integer,String)
 	 */
 	@Test
+	@Verifies(value = "should fill in custom data object for complex obs", method = "getComplexObs(Integer,String)")
+	public void getComplexObs_shouldFillInCustomDataObjectForComplexObs() throws Exception {
+		executeDataSet(COMPLEX_OBS_XML);
+		
+		ObsService os = Context.getObsService();
+		
+		Obs domainObs = os.getComplexObs(46, OpenmrsConstants.RAW_VIEW);
+		
+		Assert.assertNotNull(domainObs);
+		Assert.assertTrue(domainObs.isComplex());
+		Assert.assertNotNull(domainObs.getValueComplex());
+		Assert.assertNotNull(domainObs.getComplexData());
+		
+		Patient patient = (Patient) domainObs.getComplexData().getData();
+		Assert.assertNotNull(patient);
+	}
+	
+	/**
+	 * @see ObsService#getComplexObs(Integer,String)
+	 */
+	@Test
+	@Verifies(value = "should ensure valueComplex of complex obs matches prescribed format", method = "getComplexObs(Integer,String)")
+	public void getComplexObs_shouldEnsureValueComplexOfComplexObsMatchesPrescribedFormat() throws Exception {
+		executeDataSet(COMPLEX_OBS_XML);
+		
+		ObsService os = Context.getObsService();
+		
+		Obs domainObs = os.getComplexObs(46, OpenmrsConstants.RAW_VIEW);
+		
+		Assert.assertNotNull(domainObs);
+		Assert.assertTrue(domainObs.isComplex());
+		Assert.assertNotNull(domainObs.getValueComplex());
+		
+		String[] values = domainObs.getValueComplex().split("\\|");
+		Assert.assertTrue(values.length == 2);
+		try {
+			Integer key = Integer.parseInt(values[1]);
+		}
+		catch (NumberFormatException nfe) {
+			Assert.assertFalse(nfe instanceof NumberFormatException);
+		}
+	}
+	
+	/**
+	 * @see ObsService#getComplexObs(Integer,String)
+	 */
+	@Test
 	@Verifies(value = "should not fail with null view", method = "getComplexObs(Integer,String)")
 	public void getComplexObs_shouldNotFailWithNullView() throws Exception {
 		executeDataSet(COMPLEX_OBS_XML);
@@ -435,14 +482,20 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	 * @see ObsService#getHandler(String)
 	 */
 	@Test
-	@Verifies(value = "should have default image and text handlers registered by spring", method = "getHandler(String)")
-	public void getHandler_shouldHaveDefaultImageAndTextHandlersRegisteredBySpring() throws Exception {
+	@Verifies(value = "should have default handlers registered by spring", method = "getHandler(String)")
+	public void getHandler_shouldHaveDefaultHandlersRegisteredBySpring() throws Exception {
 		ObsService os = Context.getObsService();
 		ComplexObsHandler imgHandler = os.getHandler("ImageHandler");
 		Assert.assertNotNull(imgHandler);
 		
 		ComplexObsHandler textHandler = os.getHandler("TextHandler");
 		Assert.assertNotNull(textHandler);
+		
+		ComplexObsHandler patientHandler = os.getHandler("PatientHandler");
+		Assert.assertNotNull(patientHandler);
+		
+		ComplexObsHandler locationHandler = os.getHandler("LocationHandler");
+		Assert.assertNotNull(locationHandler);
 	}
 	
 	/**
@@ -465,37 +518,6 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	public void getHandlers_shouldNeverReturnNull() throws Exception {
 		Assert.assertNotNull(Context.getObsService().getHandlers());
 		
-		// test our current implementation without it being initialized by spring
-		Assert.assertNotNull(new ObsServiceImpl().getHandlers());
-	}
-	
-	/**
-	 * @see ObsService#registerHandler(String,ComplexObsHandler)
-	 */
-	@Test
-	@Verifies(value = "should register handler with the given key", method = "registerHandler(String,ComplexObsHandler)")
-	public void registerHandler_shouldRegisterHandlerWithTheGivenKey() throws Exception {
-		ObsService os = Context.getObsService();
-		
-		os.registerHandler("DummyHandler", new ImageHandler());
-		
-		ComplexObsHandler dummyHandler = os.getHandler("DummyHandler");
-		Assert.assertNotNull(dummyHandler);
-	}
-	
-	/**
-	 * @see ObsService#registerHandler(String,String)
-	 */
-	@Test
-	@Verifies(value = "should load handler and register key", method = "registerHandler(String,String)")
-	public void registerHandler_shouldLoadHandlerAndRegisterKey() throws Exception {
-		ObsService os = Context.getObsService();
-		
-		// name it something other than what we used in the previous test
-		os.registerHandler("DummyHandler2", "org.openmrs.obs.handler.ImageHandler");
-		
-		ComplexObsHandler dummyHandler = os.getHandler("DummyHandler2");
-		Assert.assertNotNull(dummyHandler);
 	}
 	
 	/**
@@ -505,25 +527,6 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 	@Verifies(value = "should not fail with invalid key", method = "removeHandler(String)")
 	public void removeHandler_shouldNotFailWithInvalidKey() throws Exception {
 		Context.getObsService().removeHandler("SomeRandomHandler");
-	}
-	
-	/**
-	 * @see ObsService#removeHandler(String)
-	 */
-	@Test
-	@Verifies(value = "should remove handler with matching key", method = "removeHandler(String)")
-	public void removeHandler_shouldRemoveHandlerWithMatchingKey() throws Exception {
-		ObsService os = Context.getObsService();
-		
-		// add the handler and make sure its there
-		os.registerHandler("DummyHandler3", "org.openmrs.obs.handler.ImageHandler");
-		ComplexObsHandler dummyHandler = os.getHandler("DummyHandler3");
-		Assert.assertNotNull(dummyHandler);
-		
-		// now remove the handler and make sure its gone
-		os.removeHandler("DummyHandler3");
-		ComplexObsHandler dummyHandlerAgain = os.getHandler("DummyHandler3");
-		Assert.assertNull(dummyHandlerAgain);
 	}
 	
 	/**
@@ -637,61 +640,6 @@ public class ObsServiceTest extends BaseContextSensitiveTest {
 				// pass
 			}
 		}
-		
-	}
-	
-	/**
-	 * @see ObsService#setHandlers(Map<QString;QComplexObsHandler;>)}
-	 */
-	@Test
-	@Verifies(value = "should add new handlers with new keys", method = "setHandlers(Map<QString;QComplexObsHandler;>)")
-	public void setHandlers_shouldAddNewHandlersWithNewKeys() throws Exception {
-		ObsService os = Context.getObsService();
-		
-		Map<String, ComplexObsHandler> handlers = new HashMap<String, ComplexObsHandler>();
-		handlers.put("DummyHandler4", new ImageHandler());
-		handlers.put("DummyHandler5", new BinaryDataHandler());
-		handlers.put("DummyHandler6", new TextHandler());
-		
-		// set the handlers and make sure they're there
-		os.setHandlers(handlers);
-		
-		ComplexObsHandler dummyHandler4 = os.getHandler("DummyHandler4");
-		Assert.assertNotNull(dummyHandler4);
-		
-		ComplexObsHandler dummyHandler5 = os.getHandler("DummyHandler5");
-		Assert.assertNotNull(dummyHandler5);
-		
-		ComplexObsHandler dummyHandler6 = os.getHandler("DummyHandler6");
-		Assert.assertNotNull(dummyHandler6);
-	}
-	
-	/**
-	 * @see ObsService#setHandlers(Map<QString;QComplexObsHandler;>)}
-	 */
-	@Test
-	@Verifies(value = "should override handlers with same key", method = "setHandlers(Map<QString;QComplexObsHandler;>)")
-	public void setHandlers_shouldOverrideHandlersWithSameKey() throws Exception {
-		ObsService os = Context.getObsService();
-		
-		Map<String, ComplexObsHandler> handlers = new HashMap<String, ComplexObsHandler>();
-		handlers.put("DummyHandlerToOverride", new ImageHandler());
-		
-		// set the handlers and make sure they're there
-		os.setHandlers(handlers);
-		
-		ComplexObsHandler dummyHandlerToOverride = os.getHandler("DummyHandlerToOverride");
-		Assert.assertTrue(dummyHandlerToOverride instanceof ImageHandler);
-		
-		// now override that key and make sure the new class is stored
-		
-		Map<String, ComplexObsHandler> handlersAgain = new HashMap<String, ComplexObsHandler>();
-		handlersAgain.put("DummyHandlerToOverride", new BinaryDataHandler());
-		
-		os.setHandlers(handlersAgain);
-		
-		ComplexObsHandler dummyHandlerToOverrideAgain = os.getHandler("DummyHandlerToOverride");
-		Assert.assertTrue(dummyHandlerToOverrideAgain instanceof BinaryDataHandler);
 		
 	}
 	
