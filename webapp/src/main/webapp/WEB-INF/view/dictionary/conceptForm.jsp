@@ -173,7 +173,12 @@
 		<th title="<spring:message code="Concept.id.help"/>"><spring:message code="general.id"/></th>
 		<td colspan="${fn:length(locales)}">${command.concept.conceptId}</td>
 	</tr>
-
+	<c:if test="${command.concept.conceptId != null}">
+	<tr>
+		<th title="<spring:message code="Concept.uiid.help"/>"><spring:message code="general.uuid"/></th>
+		<td colspan="${fn:length(locales)}">${command.concept.uuid}</td>
+	</tr>
+	</c:if>
 	<tr>
 		<th title="<spring:message code="Concept.locale.help"/>"><spring:message code="general.locale"/></th>
 		<td style="padding-bottom: 0px; padding-left: 0px;">
