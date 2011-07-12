@@ -74,14 +74,18 @@ public class ShortPatientModel {
 			        .instantiateFactory(PatientIdentifier.class));
 			
 			List<PersonAttributeType> viewableAttributeTypes = Context.getPersonService().getPersonAttributeTypes(
-			    PERSON_TYPE.PATIENT, ATTR_VIEW_TYPE.VIEWING);
-			List<PersonAttribute> activePatientAttributes = patient.getActiveAttributes();
+			    PERSON_TYPE.PATIENT, null);
 			
 			personAttributes = new ArrayList<PersonAttribute>();
 			if (!CollectionUtils.isEmpty(viewableAttributeTypes)) {
-				for (PersonAttribute personAttribute : activePatientAttributes) {
-					if (viewableAttributeTypes.contains(personAttribute.getAttributeType()))
-						personAttributes.add(personAttribute);
+				for (PersonAttributeType personAttributeType : viewableAttributeTypes) {
+					PersonAttribute attribute = patient.getAttribute(personAttributeType);
+					//this attribute hasn't yet been entered or it was voided so we need to pass in it with 
+					//a null value so that the user can enter it or provided a new value in case it was voided
+					if (attribute == null)
+						attribute = new PersonAttribute(personAttributeType, null);
+					
+					personAttributes.add(attribute);
 				}
 			}
 		}
