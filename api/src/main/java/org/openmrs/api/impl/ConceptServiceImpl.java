@@ -288,6 +288,8 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 	 * @see org.openmrs.api.ConceptService#retireConcept(org.openmrs.Concept, java.lang.String)
 	 */
 	public Concept retireConcept(Concept concept, String reason) throws APIException {
+		if (!StringUtils.hasText(reason))
+			throw new IllegalArgumentException(Context.getMessageSourceService().getMessage("general.voidReason.empty"));
 		
 		// only do this if the concept isn't retired already
 		if (concept.isRetired() == false) {
@@ -296,6 +298,7 @@ public class ConceptServiceImpl extends BaseOpenmrsService implements ConceptSer
 			concept.setRetired(true);
 			concept.setRetireReason(reason);
 			return dao.saveConcept(concept);
+			
 		}
 		
 		return concept;
