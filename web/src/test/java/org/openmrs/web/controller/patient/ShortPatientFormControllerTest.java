@@ -23,6 +23,8 @@ import org.junit.Test;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PersonAddress;
+import org.openmrs.PersonAttribute;
+import org.openmrs.PersonAttributeType;
 import org.openmrs.PersonName;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.Verifies;
@@ -33,7 +35,6 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.support.SessionStatus;
-import org.springframework.web.bind.support.SimpleSessionStatus;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 
@@ -54,7 +55,6 @@ public class ShortPatientFormControllerTest extends BaseWebContextSensitiveTest 
 		ShortPatientModel patientModel = new ShortPatientModel(p);
 		
 		WebRequest mockWebRequest = new ServletWebRequest(new MockHttpServletRequest());
-		SimpleSessionStatus status = new SimpleSessionStatus();
 		BindException errors = new BindException(patientModel, "patientModel");
 		mockWebRequest.setAttribute("personNameCache", BeanUtils.cloneBean(p.getPersonName()), WebRequest.SCOPE_SESSION);
 		mockWebRequest.setAttribute("personAddressCache", p.getPersonAddress().clone(), WebRequest.SCOPE_SESSION);
@@ -302,5 +302,78 @@ public class ShortPatientFormControllerTest extends BaseWebContextSensitiveTest 
 		Assert.assertEquals("redirect:/patientDashboard.form?patientId=" + p.getPatientId(), redirectUrl);
 		Assert.assertNull(p.getPersonAddress());// address should have been
 		// ignored
+	}
+	
+	/**
+	 * @see {@link ShortPatientFormController#saveShortPatient(WebRequest,PersonName,PersonAddress,ShortPatientModel,BindingResult)}
+	 */
+	@Test
+	@Verifies(value = "should not add new person Attributes with empty values", method = "saveShortPatient(WebRequest,PersonName,PersonAddress,ShortPatientModel,BindingResult)")
+	public void saveShortPatient_shouldNotAddNewPersonAttributesWithEmptyValues() throws Exception {
+		Patient p = Context.getPatientService().getPatient(2);
+		int originalAttributeCount = p.getAttributes().size();
+		ShortPatientModel patientModel = new ShortPatientModel(p);
+		//add a new person Attribute with no value
+		patientModel.getPersonAttributes().add(new PersonAttribute(new PersonAttributeType(2), null));
+		
+		WebRequest mockWebRequest = new ServletWebRequest(new MockHttpServletRequest());
+		BindException errors = new BindException(patientModel, "patientModel");
+		mockWebRequest.setAttribute("personNameCache", BeanUtils.cloneBean(p.getPersonName()), WebRequest.SCOPE_SESSION);
+		mockWebRequest.setAttribute("personAddressCache", p.getPersonAddress().clone(), WebRequest.SCOPE_SESSION);
+		mockWebRequest.setAttribute("patientModel", patientModel, WebRequest.SCOPE_SESSION);
+		
+		ShortPatientFormController controller = (ShortPatientFormController) applicationContext
+		        .getBean("shortPatientFormController");
+		String redirectUrl = controller.saveShortPatient(mockWebRequest, (PersonName) mockWebRequest.getAttribute(
+		    "personNameCache", WebRequest.SCOPE_SESSION), (PersonAddress) mockWebRequest.getAttribute("personAddressCache",
+		    WebRequest.SCOPE_SESSION), (ShortPatientModel) mockWebRequest.getAttribute("patientModel",
+		    WebRequest.SCOPE_SESSION), errors);
+		
+		Assert.assertTrue("Should pass with no validation errors", !errors.hasErrors());
+		Assert.assertEquals("Patient.saved", mockWebRequest.getAttribute(WebConstants.OPENMRS_MSG_ATTR,
+		    WebRequest.SCOPE_SESSION));
+		Assert.assertEquals("redirect:/patientDashboard.form?patientId=" + p.getPatientId(), redirectUrl);
+		//The new blank person attribute should have been ignored
+		Assert.assertEquals(originalAttributeCount, p.getAttributes().size());
+	}
+	
+	/**
+	 * @see {@link ShortPatientFormController#saveShortPatient(WebRequest,PersonName,PersonAddress,ShortPatientModel,BindingResult)}
+	 */
+	@Test
+	@Verifies(value = "should add new person attributes with none empty values", method = "saveShortPatient(WebRequest,PersonName,PersonAddress,ShortPatientModel,BindingResult)")
+	public void saveShortPatient_shouldAddNewPersonAttributesWithNoneEmptyValues() throws Exception {
+		Patient p = Context.getPatientService().getPatient(2);
+		int originalAttributeCount = p.getAttributes().size();
+		ShortPatientModel patientModel = new ShortPatientModel(p);
+		int attributeTypeId = 2;
+		String birthPlace = "Kampala";
+		PersonAttribute newPersonAttribute = new PersonAttribute(new PersonAttributeType(attributeTypeId), birthPlace);
+		newPersonAttribute.setDateCreated(new Date());
+		newPersonAttribute.setCreator(Context.getAuthenticatedUser());
+		//add a new person Attribute with no value
+		patientModel.getPersonAttributes().add(newPersonAttribute);
+		
+		WebRequest mockWebRequest = new ServletWebRequest(new MockHttpServletRequest());
+		BindException errors = new BindException(patientModel, "patientModel");
+		mockWebRequest.setAttribute("personNameCache", BeanUtils.cloneBean(p.getPersonName()), WebRequest.SCOPE_SESSION);
+		mockWebRequest.setAttribute("personAddressCache", p.getPersonAddress().clone(), WebRequest.SCOPE_SESSION);
+		mockWebRequest.setAttribute("patientModel", patientModel, WebRequest.SCOPE_SESSION);
+		
+		ShortPatientFormController controller = (ShortPatientFormController) applicationContext
+		        .getBean("shortPatientFormController");
+		String redirectUrl = controller.saveShortPatient(mockWebRequest, (PersonName) mockWebRequest.getAttribute(
+		    "personNameCache", WebRequest.SCOPE_SESSION), (PersonAddress) mockWebRequest.getAttribute("personAddressCache",
+		    WebRequest.SCOPE_SESSION), (ShortPatientModel) mockWebRequest.getAttribute("patientModel",
+		    WebRequest.SCOPE_SESSION), errors);
+		Assert.assertTrue("Should pass with no validation errors", !errors.hasErrors());
+		
+		Assert.assertEquals("Patient.saved", mockWebRequest.getAttribute(WebConstants.OPENMRS_MSG_ATTR,
+		    WebRequest.SCOPE_SESSION));
+		Assert.assertEquals("redirect:/patientDashboard.form?patientId=" + p.getPatientId(), redirectUrl);
+		//The new person attribute should have been added and saved
+		Assert.assertNotNull(p.getAttribute(2).getPersonAttributeId());
+		Assert.assertEquals(birthPlace, p.getAttribute(2).getValue());
+		Assert.assertEquals(originalAttributeCount + 1, p.getAttributes().size());
 	}
 }
