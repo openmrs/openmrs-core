@@ -191,6 +191,8 @@ public class ShortPatientFormController {
 	 * @should set the cause of death as none a coded concept
 	 * @should set the cause of death as a none coded concept
 	 * @should void the cause of death obs that is none coded
+	 * @should add new person attributes with none empty values
+	 * @should not add new person Attributes with empty values
 	 */
 	@RequestMapping(method = RequestMethod.POST, value = SHORT_PATIENT_FORM_URL)
 	public String saveShortPatient(WebRequest request, @ModelAttribute("personNameCache") PersonName personNameCache,
@@ -309,8 +311,13 @@ public class ShortPatientFormController {
 		
 		// add the person attributes
 		if (patientModel.getPersonAttributes() != null) {
-			for (PersonAttribute formAttribute : patientModel.getPersonAttributes())
+			for (PersonAttribute formAttribute : patientModel.getPersonAttributes()) {
+				//skip past new attributes with no values
+				if (formAttribute.getPersonAttributeId() == null && StringUtils.isBlank(formAttribute.getValue()))
+					continue;
+				
 				patient.addAttribute(formAttribute);
+			}
 		}
 		
 		return patient;
