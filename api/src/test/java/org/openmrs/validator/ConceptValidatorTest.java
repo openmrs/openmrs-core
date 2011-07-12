@@ -7,6 +7,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
+import org.openmrs.api.ConceptNameType;
 import org.openmrs.api.DuplicateConceptNameException;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
@@ -206,5 +207,23 @@ public class ConceptValidatorTest extends BaseContextSensitiveTest {
 		Errors errors = new BindException(anotherConcept, "concept");
 		new ConceptValidator().validate(anotherConcept, errors);
 		Assert.assertEquals(false, errors.hasErrors());
+	}
+	
+	/**
+	 * @see {@link ConceptValidator#validate(Object,Errors)}
+	 */
+	@Test
+	@Verifies(value = "should pass if the concept has a synonym that is also a short name", method = "validate(Object,Errors)")
+	public void validate_shouldPassIfTheConceptHasASynonymThatIsAlsoAShortName() throws Exception {
+		Concept concept = new Concept();
+		concept.addName(new ConceptName("CD4", Context.getLocale()));
+		// Add the short name. Because the short name is not counted as a Synonym. 
+		// ConceptValidator will not record any errors.
+		ConceptName name = new ConceptName("CD4", Context.getLocale());
+		name.setConceptNameType(ConceptNameType.SHORT);
+		concept.addName(name);
+		Errors errors = new BindException(concept, "concept");
+		new ConceptValidator().validate(concept, errors);
+		Assert.assertFalse(errors.hasErrors());
 	}
 }
