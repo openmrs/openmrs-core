@@ -120,7 +120,10 @@
 			<th title="<spring:message code="Concept.id.help"/>"><spring:message code="general.id"/></th>
 			<td>${command.concept.conceptId}</td>
 		</tr>
-		
+		<tr>
+			<th title="<spring:message code="Concept.uiid.help"/>"><spring:message code="general.uuid"/></th>
+			<td>${command.concept.uuid}</td>
+		</tr>
 		<tr>
 			<th title="<spring:message code="Concept.locale.help"/>"><spring:message code="general.locale"/></th>
 			<td style="padding-bottom: 0px; padding-left: 0px;">
