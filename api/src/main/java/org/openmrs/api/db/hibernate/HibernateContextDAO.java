@@ -119,8 +119,8 @@ public class HibernateContextDAO implements ContextDAO {
 					candidateUser.removeUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP);
 					saveUserProperties(candidateUser);
 				} else {
-					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, String
-					        .valueOf(System.currentTimeMillis()));
+					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, String.valueOf(System
+					        .currentTimeMillis()));
 					throw new ContextAuthenticationException(
 					        "Invalid number of connection attempts. Please try again later.");
 				}
@@ -159,8 +159,8 @@ public class HibernateContextDAO implements ContextDAO {
 				
 				if (attempts >= 8) {
 					// set the user as locked out at this exact time
-					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, String
-					        .valueOf(System.currentTimeMillis()));
+					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOCKOUT_TIMESTAMP, String.valueOf(System
+					        .currentTimeMillis()));
 				} else {
 					candidateUser.setUserProperty(OpenmrsConstants.USER_PROPERTY_LOGIN_ATTEMPTS, String.valueOf(attempts));
 				}
