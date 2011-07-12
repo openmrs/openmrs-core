@@ -56,9 +56,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.request.WebRequest;
 
 /**
- * This controller is used for the "mini"/"new"/"short" patient form. Only
- * key/important attributes for the patient are displayed and allowed to be
- * edited
+ * This controller is used for the "mini"/"new"/"short" patient form. Only key/important attributes
+ * for the patient are displayed and allowed to be edited
  * 
  * @see org.openmrs.web.controller.patient.PatientFormController
  */
@@ -186,30 +185,27 @@ public class ShortPatientFormController {
 	}
 	
 	/**
-	 * Handles the form submission by validating the form fields and saving it
-	 * to the DB
+	 * Handles the form submission by validating the form fields and saving it to the DB
 	 * 
-	 * @param request
-	 *            the webRequest object
-	 * @param patientModel
-	 *            the modelObject containing the patient info collected from the
-	 *            form fields
+	 * @param request the webRequest object
+	 * @param patientModel the modelObject containing the patient info collected from the form
+	 *            fields
 	 * @param result
 	 * @param status
 	 * @return the view to forward to
 	 * @should pass if all the form data is valid
 	 * @should create a new patient
 	 * @should send the user back to the form in case of validation errors
-	 * @should void a name and replace it with a new one if it is changed to a
-	 *         unique value
-	 * @should void an address and replace it with a new one if it is changed to
-	 *         a unique value
+	 * @should void a name and replace it with a new one if it is changed to a unique value
+	 * @should void an address and replace it with a new one if it is changed to a unique value
 	 * @should add a new name if the person had no names
 	 * @should add a new address if the person had none
 	 * @should ignore a new address that was added and voided at same time
 	 * @should set the cause of death as none a coded concept
 	 * @should set the cause of death as a none coded concept
 	 * @should void the cause of death obs that is none coded
+	 * @should add new person attributes with none empty values
+	 * @should not add new person Attributes with empty values
 	 */
 	@RequestMapping(method = RequestMethod.POST, value = SHORT_PATIENT_FORM_URL)
 	public String saveShortPatient(WebRequest request, @ModelAttribute("personNameCache") PersonName personNameCache,
@@ -286,10 +282,8 @@ public class ShortPatientFormController {
 	/**
 	 * Convenience method that gets the data from the patientModel
 	 * 
-	 * @param patientModel
-	 *            the modelObject holding the form data
-	 * @return the patient object that has been populated with input from the
-	 *         form
+	 * @param patientModel the modelObject holding the form data
+	 * @return the patient object that has been populated with input from the form
 	 */
 	private Patient getPatientFromFormData(ShortPatientModel patientModel) {
 		
@@ -330,21 +324,23 @@ public class ShortPatientFormController {
 		
 		// add the person attributes
 		if (patientModel.getPersonAttributes() != null) {
-			for (PersonAttribute formAttribute : patientModel.getPersonAttributes())
+			for (PersonAttribute formAttribute : patientModel.getPersonAttributes()) {
+				//skip past new attributes with no values
+				if (formAttribute.getPersonAttributeId() == null && StringUtils.isBlank(formAttribute.getValue()))
+					continue;
+				
 				patient.addAttribute(formAttribute);
+			}
 		}
 		
 		return patient;
 	}
 	
 	/**
-	 * Creates a map of string of the form 3b, 3a and the actual person
-	 * Relationships
+	 * Creates a map of string of the form 3b, 3a and the actual person Relationships
 	 * 
-	 * @param person
-	 *            the patient/person whose relationships to return
-	 * @param request
-	 *            the webRequest Object
+	 * @param person the patient/person whose relationships to return
+	 * @param request the webRequest Object
 	 * @return map of strings matched against actual relationships
 	 */
 	@ModelAttribute("relationshipsMap")
@@ -426,14 +422,11 @@ public class ShortPatientFormController {
 	}
 	
 	/**
-	 * Processes the death information for a deceased patient and save it to the
-	 * database
+	 * Processes the death information for a deceased patient and save it to the database
 	 * 
-	 * @param patientModel
-	 *            the modelObject containing the patient info collected from the
-	 *            form fields
-	 * @param request
-	 *            webRequest object
+	 * @param patientModel the modelObject containing the patient info collected from the form
+	 *            fields
+	 * @param request webRequest object
 	 */
 	private void saveDeathInfo(ShortPatientModel patientModel, WebRequest request) {
 		// update the death reason
@@ -531,18 +524,13 @@ public class ShortPatientFormController {
 	}
 	
 	/**
-	 * Convenience method that checks if the person name or person address have
-	 * been changed, should void the old person name/address and create a new
-	 * one with the changes.
+	 * Convenience method that checks if the person name or person address have been changed, should
+	 * void the old person name/address and create a new one with the changes.
 	 * 
-	 * @param patient
-	 *            the patient
-	 * @param personNameCache
-	 *            the cached copy of the person name
-	 * @param personAddressCache
-	 *            the cached copy of the person address
-	 * @return true if the personName or personAddress was edited otherwise
-	 *         false
+	 * @param patient the patient
+	 * @param personNameCache the cached copy of the person name
+	 * @param personAddressCache the cached copy of the person address
+	 * @return true if the personName or personAddress was edited otherwise false
 	 */
 	private boolean hasPersonNameOrAddressChanged(Patient patient, PersonName personNameCache,
 	        PersonAddress personAddressCache) {
@@ -629,12 +617,10 @@ public class ShortPatientFormController {
 	}
 	
 	/**
-	 * Convenience method that transforms a person name to a string while
-	 * ignoring null and blank values, the returned string only contains the
-	 * givenName, middleName and familyName
+	 * Convenience method that transforms a person name to a string while ignoring null and blank
+	 * values, the returned string only contains the givenName, middleName and familyName
 	 * 
-	 * @param name
-	 *            the person name to transform
+	 * @param name the person name to transform
 	 * @return the transformed string ignoring blanks and nulls
 	 */
 	public static String getPersonNameString(PersonName name) {
