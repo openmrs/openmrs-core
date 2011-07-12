@@ -88,12 +88,6 @@ public class ConceptValidator implements Validator {
 		
 		boolean hasFullySpecifiedName = false;
 		for (Locale conceptNameLocale : conceptToValidate.getAllConceptNameLocales()) {
-			//The concept's locale should be among the allowed locales listed in global properties
-			if (!LocaleUtility.getLocalesInOrder().contains(conceptNameLocale)) {
-				log.warn("The locale '" + conceptNameLocale.toString() + "' is not listed among allowed locales");
-				errors.reject("Concept.error.invalid.locale");
-			}
-			
 			boolean fullySpecifiedNameForLocaleFound = false;
 			boolean preferredNameForLocaleFound = false;
 			boolean shortNameForLocaleFound = false;
