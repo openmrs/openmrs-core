@@ -556,7 +556,7 @@ public class HibernateUserDAO implements UserDAO {
 			searchOnRoles = true;
 		}
 		
-		if (criteria.size() > 0)
+		if (criteria.size() > 0 || searchOnRoles)
 			hql += "where ";
 		for (Iterator<String> i = criteria.iterator(); i.hasNext();) {
 			hql += i.next() + " ";
@@ -565,8 +565,12 @@ public class HibernateUserDAO implements UserDAO {
 		}
 		
 		//Match against the specified roles
-		if (searchOnRoles)
-			hql += " and role in (:roleList)";
+		if (searchOnRoles) {
+			if (criteria.size() > 0){
+				hql += " and ";
+			}
+			hql += " role in (:roleList)";
+		}
 		
 		Query query = sessionFactory.getCurrentSession().createQuery(hql);
 		
