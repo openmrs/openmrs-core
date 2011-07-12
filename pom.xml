@@ -663,6 +663,13 @@
 		</plugins>
 	</build>
 
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-oxm</artifactId>
+			<version>3.0.5.RELEASE</version>
+		</dependency>
+	</dependencies>
 	<reporting>
 		<plugins>
 			<!-- docfilessubdirs config set to include image resource -->
