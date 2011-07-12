@@ -16,7 +16,6 @@ package org.openmrs.api.db.hibernate;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -1544,19 +1543,7 @@ public class HibernateConceptDAO implements ConceptDAO {
 			weight += computeBonusWeight(weightCoefficient, word);
 		}
 		
-		DecimalFormat df = new DecimalFormat();
-		//round off to 3 decimal places
-		df.setMaximumFractionDigits(3);
-		//get the decimal separator for the locale in which the jvm is running
-		Character separator = df.getDecimalFormatSymbols().getDecimalSeparator();
-		String formattedWeight = df.format(weight);
-		
-		//if the default system locale in which the jvm is running uses a different decimal separator character, 
-		//transform the double value to use a '.'
-		if (!separator.equals('.'))
-			formattedWeight = formattedWeight.replace(separator, '.');
-		
-		return Double.parseDouble(formattedWeight);
+		return weight;
 	}
 	
 	/**
