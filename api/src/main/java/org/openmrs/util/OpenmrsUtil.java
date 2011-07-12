@@ -2288,7 +2288,7 @@ public class OpenmrsUtil {
 			propertyStream = new FileInputStream(filepath);
 		}
 		catch (FileNotFoundException e) {
-			log.warn("Also unable to find a runtime properties file at " + new File(filepath).getAbsolutePath());
+			log.warn("Unable to find a runtime properties file at " + new File(filepath).getAbsolutePath());
 		}
 		// next look in the OpenMRS application data directory
 		if (propertyStream == null) {
