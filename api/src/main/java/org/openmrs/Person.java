@@ -13,15 +13,6 @@
  */
 package org.openmrs;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.Vector;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.UserService;
@@ -32,7 +23,14 @@ import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 import org.simpleframework.xml.load.Replace;
-import org.springframework.util.StringUtils;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.Vector;
 
 /**
  * A Person in the system. This can be either a small person stub, or indicative of an actual
@@ -84,14 +82,6 @@ public class Person extends BaseCustomizableData<PersonAttribute> implements jav
 	private String personVoidReason;
 	
 	private boolean isPatient;
-	
-	//	/**
-	//	 * Convenience map from PersonAttributeType.name to PersonAttribute.<br/>
-	//	 * <br/>
-	//	 * This is "cached" for each user upon first load. When an attribute is changed, the cache is
-	//	 * cleared and rebuilt on next access.
-	//	 */
-	//	Map<String, PersonAttribute> attributeMap = null;
 	
 	/**
 	 * default empty constructor

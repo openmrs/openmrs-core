@@ -13,18 +13,6 @@
  */
 package org.openmrs.web.controller.person;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.PersonAttributeType;
@@ -34,7 +22,6 @@ import org.openmrs.api.PersonService;
 import org.openmrs.api.context.Context;
 import org.openmrs.propertyeditor.PrivilegeEditor;
 import org.openmrs.web.WebConstants;
-import org.openmrs.web.taglib.fieldgen.FieldGenHandlerFactory;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.util.StringUtils;
@@ -44,6 +31,13 @@ import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Controller for adding/editing a single PersonAttributeType
@@ -168,33 +162,6 @@ public class PersonAttributeTypeFormController extends SimpleFormController {
 	 *      java.lang.Object, org.springframework.validation.Errors)
 	 */
 	protected Map<String, Object> referenceData(HttpServletRequest request, Object obj, Errors errors) throws Exception {
-		/*
-		Map<String, Object> map = new HashMap<String, Object>();
-		
-		List<Privilege> privileges = new ArrayList<Privilege>();
-		
-		if (Context.isAuthenticated()) {
-			privileges = Context.getUserService().getAllPrivileges();
-		}
-		
-		Set<String> formats = new TreeSet<String>(FieldGenHandlerFactory.getSingletonInstance().getHandlers().keySet());
-		
-		// these formats are handled directly by the FieldGenTag.java class and so aren't in the 
-		// "handlers" list in openmrs-servlet.xml
-		formats.add("java.lang.Character");
-		formats.add("java.lang.Integer");
-		formats.add("java.lang.Float");
-		formats.add("java.lang.Boolean");
-		
-		// java.util.Date doesn't work as a PersonAttributeType since it gets saved in a user-date-format-specific way
-		formats.remove("java.util.Date");
-		
-		map.put("privileges", privileges);
-		map.put("formats", formats);
-		
-		return map;
-		*/
-		
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("datatypes", Context.getAttributeService().getDatatypes());
 		

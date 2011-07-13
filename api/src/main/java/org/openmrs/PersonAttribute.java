@@ -13,19 +13,17 @@
  */
 package org.openmrs;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Date;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
 import org.openmrs.attribute.BaseAttribute;
-import org.openmrs.util.OpenmrsClassLoader;
-import org.openmrs.util.OpenmrsUtil;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Date;
 
 /**
  * A PersonAttribute is meant as way for implementations to add arbitrary
@@ -205,22 +203,6 @@ public class PersonAttribute extends BaseAttribute<Person> implements java.io.Se
 		setOwner(person);
 	}
 	
-	// /**
-	// * @return the attributeType
-	// */
-	// @Element(required = true)
-	// public PersonAttributeType getAttributeType() {
-	// return attributeType;
-	// }
-	//
-	// /**
-	// * @param attributeType the attributeType to set
-	// */
-	// @Element(required = true)
-	// public void setAttributeType(PersonAttributeType attributeType) {
-	// this.attributeType = attributeType;
-	// }
-	
 	/**
 	 * @return the value
 	 */
@@ -282,31 +264,6 @@ public class PersonAttribute extends BaseAttribute<Person> implements java.io.Se
 	@SuppressWarnings("unchecked")
 	public Object getHydratedObject() {
 		return getObjectValue();
-		// try {
-		// Class c =
-		// OpenmrsClassLoader.getInstance().loadClass(getAttributeType().getFormat());
-		// try {
-		// Object o = c.newInstance();
-		// if (o instanceof Attributable) {
-		// Attributable attr = (Attributable) o;
-		// return attr.hydrate(getValue());
-		// }
-		// }
-		// catch (InstantiationException e) {
-		// // try to hydrate the object with the String constructor
-		// log.trace("Unable to call no-arg constructor for class: " +
-		// c.getName());
-		// Object o = c.getConstructor(String.class).newInstance(getValue());
-		// return o;
-		// }
-		// }
-		// catch (Throwable t) {
-		// log.warn("Unable to hydrate value: " + getValue() + " for type: " +
-		// getAttributeType(), t);
-		// }
-		//
-		// log.debug("Returning value: '" + getValue() + "'");
-		// return getValue();
 	}
 	
 	/**

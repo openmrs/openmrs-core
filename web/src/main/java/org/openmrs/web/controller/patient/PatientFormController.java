@@ -13,19 +13,6 @@
  */
 package org.openmrs.web.controller.patient;
 
-import java.text.NumberFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -37,10 +24,12 @@ import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
+import org.openmrs.PatientIdentifierType.LocationBehavior;
 import org.openmrs.Person;
 import org.openmrs.PersonAddress;
+import org.openmrs.PersonAttribute;
+import org.openmrs.PersonAttributeType;
 import org.openmrs.PersonName;
-import org.openmrs.PatientIdentifierType.LocationBehavior;
 import org.openmrs.api.DuplicateIdentifierException;
 import org.openmrs.api.IdentifierNotUniqueException;
 import org.openmrs.api.InsufficientIdentifiersException;
@@ -49,9 +38,11 @@ import org.openmrs.api.LocationService;
 import org.openmrs.api.PatientIdentifierException;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
+import org.openmrs.attribute.handler.AttributeHandler;
 import org.openmrs.propertyeditor.ConceptEditor;
 import org.openmrs.propertyeditor.LocationEditor;
 import org.openmrs.propertyeditor.PatientIdentifierTypeEditor;
+import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.PrivilegeConstants;
 import org.openmrs.validator.PatientIdentifierValidator;
 import org.openmrs.validator.PatientValidator;
@@ -69,6 +60,20 @@ import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 /**
  * Patient-specific form controller. Creates the model/view etc for editing patients.
@@ -477,6 +482,36 @@ public class PatientFormController extends PersonFormController {
 			} else {
 				//boolean isNew = (patient.getPatientId() == null);
 				boolean isError = false;
+				
+				// manually handle the attribute parameters
+				List<PersonAttributeType> personAttributeTypes = Context.getPersonService().getPersonAttributeTypes(
+				    OpenmrsConstants.PERSON_TYPE.PATIENT, null);
+				for (PersonAttributeType pat : personAttributeTypes) {
+					if (pat.getMaxOccurs() == null || pat.getMaxOccurs() != 1)
+						throw new RuntimeException("For now only attributes with maxOccurs=1 are supported");
+					AttributeHandler<?> handler = Context.getAttributeService().getHandler(pat);
+					List<Object> attributeValues = new ArrayList<Object>();
+					// look for parameters starting with attribute.${ vat.id }
+					Enumeration enumeration = request.getParameterNames();
+					while (enumeration.hasMoreElements()) {
+						String paramName = String.valueOf(enumeration.nextElement());
+						if (paramName.startsWith("attribute." + pat.getId())) {
+							String paramValue = request.getParameter(paramName);
+							if (org.springframework.util.StringUtils.hasText(paramValue)) {
+								Object realValue = handler.deserialize(paramValue);
+								//handler.validate(realValue);
+								PersonAttribute pa = new PersonAttribute();
+								pa.setAttributeType(pat);
+								pa.setSerializedValue(paramValue);
+								patient.setAttribute(pa);
+							} else {
+								for (PersonAttribute pa : patient.getActiveAttributes(pat))
+									pa.setVoided(true);
+							}
+						}
+						
+					}
+				}
 				
 				try {
 					Context.getPatientService().savePatient(patient);

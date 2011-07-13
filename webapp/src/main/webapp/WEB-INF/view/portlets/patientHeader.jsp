@@ -33,8 +33,8 @@
 				<%-- Display selected person attributes from the manage person attributes page --%>
 				<openmrs:forEachDisplayAttributeType personType="patient" displayType="header" var="attrType">
 					<td class="patientHeaderPersonAttribute">
-						<spring:message code="PersonAttributeType.${fn:replace(attrType.name, ' ', '')}" text="${attrType.name}"/>: 
-						<b>${model.patient.attributeMap[attrType.name]}</b>
+						<spring:message code="PersonAttributeType.${fn:replace(attrType.name, ' ', '')}" text="${attrType.name}"/>:
+						<openmrs_tag:attributeView attributeType="${ attrType }" customizable="${ model.patient }"/>
 					</td>
 				</openmrs:forEachDisplayAttributeType>
 
@@ -201,4 +201,3 @@
 			identifierElement.style.display = "none";
 		
 	</script>
-	

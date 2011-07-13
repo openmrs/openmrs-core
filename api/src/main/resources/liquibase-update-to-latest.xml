@@ -4526,5 +4526,19 @@
             referencedColumnNames="user_id" />
     </changeSet>
 	
+	<changeSet id="20110713-1115" author="ena">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="person_attribute_type" columnName="format" />
+		</preConditions>
+		<comment>Replacing person attribute format column with datatypes</comment>
+		<dropColumn tableName="person_attribute_type" columnName="format" />
+		<addColumn tableName="person_attribute_type">
+            <column name="datatype" type="varchar(255)" />
+            <column name="handler_config" type="text" />
+            <column name="min_occurs" type="int"><constraints nullable="false" /></column>
+            <column name="max_occurs" type="int" />
+		</addColumn>
+	</changeSet>
+	
 </databaseChangeLog>
 

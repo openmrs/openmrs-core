@@ -24,8 +24,14 @@
 		<property name="description" type="java.lang.String"
 			column="description" not-null="true" length="65535" />
 
-		<property name="format" type="java.lang.String" column="format"
-			length="50" />
+        <property name="datatype" type="java.lang.String" column="datatype" length="255" />
+
+        <!-- TODO CHECK LENGTH -->
+        <property name="handlerConfig" type="text" column="handler_config" length="16777215" />
+
+        <property name="minOccurs" type="int" column="min_occurs" length="11" not-null="true" />
+
+        <property name="maxOccurs" type="int" column="max_occurs" length="11" />
 		
 		<property name="foreignKey" type="java.lang.Integer" column="foreign_key" />
 			

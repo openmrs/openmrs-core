@@ -96,23 +96,14 @@
 	<c:when test="${attrType.retired == true}"></c:when>
 	<c:otherwise>
 	<tr>
-		<td><spring:message code="PersonAttributeType.${fn:replace(attrType.name, ' ', '')}" text="${attrType.name}"/></td>
-		<td>
-			<c:choose>
-				<c:when test="${authorized == true}">
-					<spring:bind path="attributeMap">
-						<openmrs:fieldGen 
-							type="${attrType.format}" 
-							formFieldName="${attrType.personAttributeTypeId}" 
-							val="${status.value[attrType.name].hydratedObject}" 
-							parameters="optionHeader=[blank]|showAnswers=${attrType.foreignKey}|isNullable=false" /> <%-- isNullable=false so booleans don't have 'unknown' radiobox --%>
-					</spring:bind>
-				</c:when>
-				<c:otherwise>
-					<spring:bind path="attributeMap">${status.value[attrType.name]}</spring:bind>
-				</c:otherwise>
-			</c:choose>
-		</td>
+		<c:choose>
+			<c:when test="${authorized == true}">
+				<openmrs_tag:attributesForType attributeType="${ attrType }" customizable="${ patient }" formFieldNamePrefix="attribute.${ attrType.personAttributeTypeId }"/>
+			</c:when>
+			<c:otherwise>
+				// TODO: value goes here
+			</c:otherwise>
+		</c:choose>
 	</tr>
 	</c:otherwise>
 	</c:choose>

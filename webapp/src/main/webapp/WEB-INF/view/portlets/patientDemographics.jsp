@@ -24,7 +24,7 @@
 					</c:forEach>
 				</td>
 				<openmrs:forEachDisplayAttributeType personType="patient" displayType="viewing" var="attrType">
-					<td valign="top" class="patientDemographicsAttrName">${model.patient.attributeMap[attrType.name]}</td>
+					<td valign="top" class="patientDemographicsAttrName"><openmrs_tag:attributeView attributeType="${ attrType }" customizable="${ model.patient }"/></td>
 				</openmrs:forEachDisplayAttributeType>
 			</tr>
 		</tbody>
