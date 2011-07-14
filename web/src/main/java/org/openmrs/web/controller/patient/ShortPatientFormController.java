@@ -38,6 +38,7 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.LocationUtility;
 import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.validator.PatientValidator;
 import org.openmrs.web.WebConstants;
 import org.openmrs.web.controller.person.PersonFormController;
@@ -191,8 +192,10 @@ public class ShortPatientFormController {
 	 * @should set the cause of death as none a coded concept
 	 * @should set the cause of death as a none coded concept
 	 * @should void the cause of death obs that is none coded
-	 * @should add new person attributes with none empty values
-	 * @should not add new person Attributes with empty values
+	 * @should add a new person attribute with a non empty value
+	 * @should not add a new person attribute with an empty value
+	 * @should void an existing person attribute with an empty value
+	 * @should should replace an existing attribute with a new one when edited
 	 */
 	@RequestMapping(method = RequestMethod.POST, value = SHORT_PATIENT_FORM_URL)
 	public String saveShortPatient(WebRequest request, @ModelAttribute("personNameCache") PersonName personNameCache,
@@ -312,9 +315,21 @@ public class ShortPatientFormController {
 		// add the person attributes
 		if (patientModel.getPersonAttributes() != null) {
 			for (PersonAttribute formAttribute : patientModel.getPersonAttributes()) {
-				//skip past new attributes with no values
+				//skip past new attributes with no values, because the user left them blank
 				if (formAttribute.getPersonAttributeId() == null && StringUtils.isBlank(formAttribute.getValue()))
 					continue;
+				
+				//if the value has been changed for an existing attribute, void it and create a new one
+				if (formAttribute.getPersonAttributeId() != null
+				        && !OpenmrsUtil.nullSafeEquals(formAttribute.getValue(), patient.getAttribute(
+				            formAttribute.getAttributeType()).getValue())) {
+					//As per the logic in Person.addAttribute, the old edited attribute will get voided 
+					//as this new one is getting added 
+					formAttribute = new PersonAttribute(formAttribute.getAttributeType(), formAttribute.getValue());
+					//AOP is failing to set these in unit tests, just set them here for the tests to pass
+					formAttribute.setDateCreated(new Date());
+					formAttribute.setCreator(Context.getAuthenticatedUser());
+				}
 				
 				patient.addAttribute(formAttribute);
 			}
