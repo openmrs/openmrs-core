@@ -30,6 +30,7 @@ import org.openmrs.api.PersonService.ATTR_VIEW_TYPE;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.LocationUtility;
 import org.openmrs.util.OpenmrsConstants.PERSON_TYPE;
+import org.springframework.beans.BeanUtils;
 import org.springframework.util.CollectionUtils;
 
 /**
@@ -74,18 +75,21 @@ public class ShortPatientModel {
 			        .instantiateFactory(PatientIdentifier.class));
 			
 			List<PersonAttributeType> viewableAttributeTypes = Context.getPersonService().getPersonAttributeTypes(
-			    PERSON_TYPE.PATIENT, null);
+			    PERSON_TYPE.PATIENT, ATTR_VIEW_TYPE.VIEWING);
 			
 			personAttributes = new ArrayList<PersonAttribute>();
 			if (!CollectionUtils.isEmpty(viewableAttributeTypes)) {
 				for (PersonAttributeType personAttributeType : viewableAttributeTypes) {
-					PersonAttribute attribute = patient.getAttribute(personAttributeType);
-					//this attribute hasn't yet been entered or it was voided so we need to pass in it with 
-					//a null value so that the user can enter it or provided a new value in case it was voided
-					if (attribute == null)
-						attribute = new PersonAttribute(personAttributeType, null);
+					PersonAttribute persistedAttribute = patient.getAttribute(personAttributeType);
+					//This ensures that empty attributes are added for those we want to display 
+					//in the view, but have no values
+					PersonAttribute formAttribute = new PersonAttribute(personAttributeType, null);
 					
-					personAttributes.add(attribute);
+					//send a clone to the form so that we can use the original to track changes in the values
+					if (persistedAttribute != null)
+						BeanUtils.copyProperties(persistedAttribute, formAttribute);
+					
+					personAttributes.add(formAttribute);
 				}
 			}
 		}
