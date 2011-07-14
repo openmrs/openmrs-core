@@ -323,7 +323,6 @@ public class ShortPatientFormControllerTest extends BaseWebContextSensitiveTest 
 		    attributeTypeId), birthPlace);
 		newPersonAttribute.setDateCreated(new Date());
 		newPersonAttribute.setCreator(Context.getAuthenticatedUser());
-		//add a new person Attribute with no value
 		patientModel.getPersonAttributes().add(newPersonAttribute);
 		
 		WebRequest mockWebRequest = new ServletWebRequest(new MockHttpServletRequest());
