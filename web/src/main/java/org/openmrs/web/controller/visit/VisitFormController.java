@@ -123,6 +123,7 @@ public class VisitFormController {
 				Context.getVisitService().saveVisit(visit);
 				if (log.isDebugEnabled())
 					log.debug("Saved visit: " + visit.toString());
+				request.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Visit.saved", WebRequest.SCOPE_SESSION);
 				return "redirect:" + VISIT_FORM_URL + ".form?visitId=" + visit.getVisitId();
 			}
 			catch (APIException e) {
@@ -248,7 +249,7 @@ public class VisitFormController {
 	}
 	
 	@ModelAttribute("encountersToAdd")
-	public List<Encounter> setEncounterDetailss(@ModelAttribute("visit") Visit visit) {
+	public List<Encounter> setEncounterToAdd(@ModelAttribute("visit") Visit visit) {
 		List<Encounter> patientEncounters = new ArrayList<Encounter>();
 		if (visit.getPatient() != null && visit.getPatient().getPatientId() != null)
 			patientEncounters = Context.getEncounterService().getEncountersByPatient(visit.getPatient());

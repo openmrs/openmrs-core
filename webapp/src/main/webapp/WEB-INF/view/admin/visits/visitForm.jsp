@@ -326,6 +326,24 @@ $j(document).ready( function() {
 			        </td>
 			    </tr>
 			</c:if>
+			<c:if test="${visit.visitId != null}">
+			<c:if test="${visit.creator != null}">
+			<tr>
+				<th class="visitLabel"><spring:message code="general.createdBy" /></th>
+				<td>
+					${visit.creator.personName} - <openmrs:formatDate date="${visit.dateCreated}" type="long" />
+				</td>
+			</tr>
+			</c:if>
+			<c:if test="${visit.changedBy != null}">
+			<tr>
+				<th class="visitLabel"><spring:message code="general.changedBy" /></th>
+				<td>
+					${visit.changedBy.personName} - <openmrs:formatDate date="${visit.dateChanged}" type="long" />
+				</td>
+			</tr>
+			</c:if>
+			</c:if>
 			<tr>
 				<td colspan="2">
 					<table cellpadding="0" cellspacing="20" align="center">
