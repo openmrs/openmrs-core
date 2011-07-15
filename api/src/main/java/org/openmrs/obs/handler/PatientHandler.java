@@ -57,16 +57,20 @@ public class PatientHandler extends CustomDatatypeHandler implements ComplexObsH
 	public Obs saveObs(Obs obs) throws APIException {
 		PatientService ps = Context.getPatientService();
 		
-		Patient patient = ps.getPatient(Integer.parseInt(obs.getValueComplex()));
+		Patient patient = ps.getPatient(Integer.parseInt(obs.getComplexValueKey()));
 		
 		if (patient == null) {
 			throw new APIException("Cannot save complex obs where obsId=" + obs.getObsId() + " Desired Patient id :"
-			        + Integer.parseInt(obs.getValueComplex()) + " cannot be found");
+			        + Integer.parseInt(obs.getComplexValueKey()) + " cannot be found");
 		}
-		// Set the Title for the valueComplex
-		obs.setValueComplex(patient.getPersonName() + "(" + patient.getPatientIdentifier() + ")" + "|"
-		        + obs.getValueComplex());
 		
+		obs.setComplexValueText(patient.getPersonName() + "(" + patient.getPatientIdentifier() + ")");
+		
+		// Retreive complexValueText and complexValueKey values
+		String complexValueText = obs.getComplexValueText();
+		String complexValueKey = obs.getComplexValueKey();
+		
+		obs.setValueComplex(complexValueText, complexValueKey);
 		// Remove the ComlexData from the Obs
 		obs.setComplexData(null);
 		
@@ -79,15 +83,14 @@ public class PatientHandler extends CustomDatatypeHandler implements ComplexObsH
 	@Override
 	public Obs getObs(Obs obs, String view) {
 		PatientService ps = Context.getPatientService();
-		String[] values = obs.getValueComplex().split("\\|");
-		Patient patient = ps.getPatient(Integer.parseInt(values[1]));
+		Patient patient = ps.getPatient(Integer.parseInt(obs.getComplexValueKey()));
 		
 		if (patient == null) {
 			throw new APIException("Cannot retrieve complex obs where obsId=" + obs.getObsId() + " because the patient id :"
-			        + Integer.parseInt(values[1]) + " cannot be found.");
+			        + Integer.parseInt(obs.getComplexValueKey()) + " cannot be found.");
 		}
 		
-		ComplexData complexData = new ComplexData(values[0], patient);
+		ComplexData complexData = new ComplexData(obs.getComplexValueText(), patient);
 		obs.setComplexData(complexData);
 		
 		return obs;

@@ -56,6 +56,8 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	
 	public static final long serialVersionUID = 112342333L;
 	
+	public static final String COMPLEX_VALUE_DELIMITER = "|";
+	
 	private static final Log log = LogFactory.getLog(Obs.class);
 	
 	protected Integer obsId;
@@ -840,6 +842,97 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 	}
 	
 	/**
+	 * Retrieve an user readable display text from the valueComplex String. However if such a 
+	 * display text is not available (if valueComplex starts with a String '|' delimiter, 
+	 * or where valueComplex does not contain a '|' delimiter) then it will retrieve 
+	 * the key value of valueComplex to be displayed.
+	 * 
+	 * @return user readable display text parsed from valueComplex string.
+	 */
+	public String getComplexValueText() {
+		if (valueComplex == null)
+			return null;
+		int delimPos = valueComplex.indexOf(COMPLEX_VALUE_DELIMITER);
+		// if delim missing or first char, return key as displayable value
+		if (delimPos < 1)
+			return valueComplex.substring(delimPos + 1);
+		return valueComplex.substring(0, delimPos);
+	}
+	
+	/**
+	 * Set the complex value text to the valueComplex String.
+	 * The displayable text of valueComplex will be replaced with the new complexValueText value
+	 * 
+	 * @param complexValueText the user readable display title for valueComplex
+	 * @should replace valueComplex title with new complexValueText if it already exists
+	 * @should not replace complexValueText if valueComplex title is empty / null 
+	 * 			and complexValueText is equal to valueComplex
+	 */
+	public void setComplexValueText(String complexValueText) {
+		if (valueComplex != null) {
+			int delimPos = valueComplex.indexOf(COMPLEX_VALUE_DELIMITER);
+			if (delimPos > -1) {
+				valueComplex = complexValueText + valueComplex.substring(delimPos);
+			}
+			//check if the delimeter is missing
+			if (delimPos < 0) {
+				//check if complexValueText is not equal to the key
+				if (complexValueText == valueComplex) {
+					valueComplex = COMPLEX_VALUE_DELIMITER + valueComplex;
+				} else {
+					valueComplex = complexValueText + COMPLEX_VALUE_DELIMITER + valueComplex;
+				}
+			}
+		}
+	}
+	
+	/** 
+	 * Retrieve complex value key parsed from valueComplex String
+	 *  
+	 * @return complex value key parsed from valueComplex
+	 */
+	public String getComplexValueKey() {
+		if (valueComplex == null)
+			return null;
+		int delimPos = valueComplex.indexOf(COMPLEX_VALUE_DELIMITER);
+		return valueComplex.substring(delimPos + 1);
+	}
+	
+	/**
+	 * Set the new complex value key to the valueComplex text
+	 * 
+	 * @param complexValueKey the new complex value key to be assigned
+	 * @should add '|' delimeter to head of valueComplex string if display text 
+	 * 			is null or empty, and the delimeter is missing
+	 * 
+	 */
+	public void setComplexValueKey(String complexValueKey) {
+		if (valueComplex != null) {
+			int delimPos = valueComplex.indexOf(COMPLEX_VALUE_DELIMITER);
+			if (delimPos > -1)
+				valueComplex = valueComplex.substring(0, delimPos) + COMPLEX_VALUE_DELIMITER + complexValueKey;
+			if (delimPos < 0) {
+				if (complexValueKey != valueComplex) {
+					valueComplex = COMPLEX_VALUE_DELIMITER + complexValueKey;
+				}
+			}
+		} else {
+			valueComplex = COMPLEX_VALUE_DELIMITER + complexValueKey;
+		}
+	}
+	
+	/**
+	 * set a detailed valueComplex string using complexValueText and complexValueKey Strings.
+	 * You are advised to use this method instead of the earlier setValueComplex(String) method
+	 * 
+	 * @param complexValueText
+	 * @param complexValueKey
+	 */
+	public void setValueComplex(String complexValueText, String complexValueKey) {
+		this.valueComplex = complexValueText + COMPLEX_VALUE_DELIMITER + complexValueKey;
+	}
+	
+	/**
 	 * Set the ComplexData for this Obs. The ComplexData is stored in the file system or elsewhere,
 	 * but is not persisted to the database. <br/>
 	 * <br/> {@link ComplexObsHandler}s that are registered to {@link ConceptComplex}s will persist the
@@ -948,12 +1041,7 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 			else if (abbrev.equals("ST"))
 				return getValueText();
 			else if (abbrev.equals("ED") && getValueComplex() != null) {
-				String[] valueComplex = getValueComplex().split("\\|");
-				for (int i = 0; i < valueComplex.length; i++) {
-					if (!"".equals(valueComplex[i])) {
-						return valueComplex[i].trim();
-					}
-				}
+				return getComplexValueText();
 			}
 		}
 		
@@ -989,15 +1077,9 @@ public class Obs extends BaseOpenmrsData implements java.io.Serializable {
 			return sb.toString();
 		}
 		
-		// returns the title portion of the valueComplex
-		// which is everything before the first bar '|' character.
+		// returns the complex value display text
 		if (getValueComplex() != null) {
-			String[] valueComplex = getValueComplex().split("\\|");
-			for (int i = 0; i < valueComplex.length; i++) {
-				if (!"".equals(valueComplex[i])) {
-					return valueComplex[i].trim();
-				}
-			}
+			return getComplexValueText();
 		}
 		
 		return "";
