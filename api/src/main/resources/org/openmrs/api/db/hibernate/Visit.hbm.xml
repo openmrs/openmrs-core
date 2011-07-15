@@ -41,7 +41,7 @@
 		
 		<many-to-one name="creator" class="User" not-null="true" column="creator" />
 		
-		<many-to-one name="changedBy" class="User" not-null="true" column="changed_by" />
+		<many-to-one name="changedBy" class="User" column="changed_by" />
 		
 		<many-to-one name="voidedBy" class="User" column="voided_by" />
 		
