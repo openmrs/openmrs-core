@@ -71,7 +71,6 @@ public class DrugOrderValidator extends OrderValidator implements Validator {
 				ValidationUtils.rejectIfEmpty(errors, "activatedBy", "error.null");
 				ValidationUtils.rejectIfEmpty(errors, "dateActivated", "error.null");
 			}
-				
 			
 			if (order.getDuration() != null)
 				ValidationUtils.rejectIfEmpty(errors, "durationUnits", "DrugOrder.add.error.missingDurationUnits");
