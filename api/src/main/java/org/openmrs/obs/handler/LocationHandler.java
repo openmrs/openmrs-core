@@ -62,15 +62,20 @@ public class LocationHandler extends CustomDatatypeHandler implements ComplexObs
 	public Obs saveObs(Obs obs) throws APIException {
 		LocationService ls = Context.getLocationService();
 		
-		Location location = ls.getLocation(Integer.parseInt(obs.getValueComplex()));
+		Location location = ls.getLocation(Integer.parseInt(obs.getComplexValueKey()));
 		
 		if (location == null) {
 			throw new APIException("Cannot save complex obs where obsId=" + obs.getObsId() + " Desired Location id :"
-			        + Integer.parseInt(obs.getValueComplex()) + " cannot be found");
+			        + Integer.parseInt(obs.getComplexValueKey()) + " cannot be found");
 		}
 		// Set the Title for the valueComplex
-		obs.setValueComplex(location.getName() + "|" + obs.getValueComplex());
+		obs.setComplexValueText(location.getName());
 		
+		// Retrieve complexValueText and complexValueKey values
+		String complexValueText = obs.getComplexValueText();
+		String complexValueKey = obs.getComplexValueKey();
+		
+		obs.setValueComplex(complexValueText, complexValueKey);
 		// Remove the ComlexData from the Obs
 		obs.setComplexData(null);
 		
@@ -88,15 +93,14 @@ public class LocationHandler extends CustomDatatypeHandler implements ComplexObs
 	@Override
 	public Obs getObs(Obs obs, String view) {
 		LocationService ls = Context.getLocationService();
-		String[] values = obs.getValueComplex().split("\\|");
-		Location location = ls.getLocation(Integer.parseInt(values[1]));
+		Location location = ls.getLocation(Integer.parseInt(obs.getComplexValueKey()));
 		
 		if (location == null) {
 			throw new APIException("Cannot retrieve complex obs where obsId=" + obs.getObsId()
-			        + " because the Location id :" + Integer.parseInt(values[1]) + " cannot be found.");
+			        + " because the Location id :" + Integer.parseInt(obs.getComplexValueKey()) + " cannot be found.");
 		}
 		
-		ComplexData complexData = new ComplexData(values[0], location);
+		ComplexData complexData = new ComplexData(obs.getComplexValueText(), location);
 		obs.setComplexData(complexData);
 		
 		return obs;
