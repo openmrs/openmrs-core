@@ -29,6 +29,7 @@ import org.openmrs.Drug;
 import org.openmrs.DrugOrder;
 import org.openmrs.GenericDrug;
 import org.openmrs.Order;
+import org.openmrs.Order.OrderAction;
 import org.openmrs.OrderGroup;
 import org.openmrs.OrderSet;
 import org.openmrs.Orderable;
@@ -38,6 +39,7 @@ import org.openmrs.User;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
+import org.openmrs.util.OpenmrsUtil;
 
 /**
  * TODO clean up and test all methods in OrderService
@@ -813,6 +815,15 @@ public class OrderServiceTest extends BaseContextSensitiveTest {
 		//should have created a discontinue order
 		Assert.assertEquals(originalCount + 1, service.getOrders(Order.class, null, null, null, null, null, null, null)
 		        .size());
+		//find the newly created order and make ensure that its action is DISCONTINUE
+		Order discontinueOrder = null;
+		for (Order o : service.getOrders(Order.class, null, null, null, null, null, null, null)) {
+			if (OpenmrsUtil.nullSafeEquals(o.getPreviousOrderNumber(), order.getOrderNumber()))
+				discontinueOrder = o;
+		}
+		
+		Assert.assertNotNull(discontinueOrder);
+		Assert.assertEquals(OrderAction.DISCONTINUE, discontinueOrder.getOrderAction());
 	}
 	
 	/**

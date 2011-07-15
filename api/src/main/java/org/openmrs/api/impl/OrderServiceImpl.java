@@ -86,12 +86,7 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		if (dao.isActivatedInDatabase(order))
 			throw new APIException("Cannot modify an activated order");
 		
-		String orderNumberInDatabase = dao.getOrderNumberInDatabase(order);
-		if (orderNumberInDatabase != null && !orderNumberInDatabase.equals(order.getOrderNumber()))
-			throw new APIException("Cannot modify the orderNumber of a saved order");
-		
-		ValidateUtil.validate(order);
-		return dao.saveOrder(order);
+		return saveOrderWithLesserValidation(order);
 	}
 	
 	/**
@@ -674,9 +669,8 @@ public class OrderServiceImpl extends BaseOpenmrsService implements OrderService
 		//in the attempt to discontinue olderOrder since it would be the previous one
 		newOrder.setSignedBy(user);
 		newOrder.setActivatedBy(user);
-		Date date = new Date();
-		newOrder.setDateSigned(date);
-		newOrder.setDateActivated(date);
+		newOrder.setDateSigned(discontinueDate);
+		newOrder.setDateActivated(discontinueDate);
 		newOrder.setUuid(UUID.randomUUID().toString());
 		
 		Context.getOrderService().saveOrder(newOrder);
