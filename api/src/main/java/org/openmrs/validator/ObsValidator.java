@@ -118,7 +118,7 @@ public class ObsValidator implements Validator {
 		else if (obs.getValueBoolean() == null && obs.getValueCoded() == null && obs.getValueCodedName() == null
 		        && obs.getValueComplex() == null && obs.getValueDatetime() == null && obs.getValueDrug() == null
 		        && obs.getValueModifier() == null && obs.getValueNumeric() == null && obs.getValueText() == null) {
-			//errors.reject("error.noValue");
+			errors.reject("error.noValue");
 		}
 		
 		// make sure there is a concept associated with the obs

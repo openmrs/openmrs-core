@@ -353,4 +353,113 @@ public class ObsTest {
 		parent.addGroupMember(child);
 		assertTrue("When there is at least 1 non-voided child, should return True", parent.isObsGrouping());
 	}
+	
+	/**
+	 * @see Obs#getComplexValueText()
+	 * @verifies that parsed complex value text is valid
+	 */
+	@Test
+	public void getComplexValueText_shouldParseValidComplexValueText() throws Exception {
+		String valueComplex = "John Doe|3";
+		Obs obs = new Obs(1);
+		obs.setValueComplex(valueComplex);
+		assertEquals(obs.getComplexValueText(), "John Doe");
+		//confirm that valueComplex has not changed
+		assertEquals(obs.getValueComplex(), valueComplex);
+		
+	}
+	
+	/**
+	 * @see Obs#getComplexValueKey()
+	 * @verifies that parsed complex value key is valid
+	 */
+	@Test
+	public void getComplexValueKey_shouldParseValidComplexValueKey() throws Exception {
+		String valueComplex = "John Doe|3";
+		Obs obs = new Obs(1);
+		obs.setValueComplex(valueComplex);
+		assertEquals(obs.getComplexValueKey(), "3");
+		//confirm that valueComplex has not changed
+		assertEquals(obs.getValueComplex(), valueComplex);
+	}
+	
+	/**
+	 * @see Obs#setComplexValueText()
+	 * @verifies that complex value text can be replaced
+	 */
+	@Test
+	public void setComplexValueText_shouldReplaceExistingComplexValueText() throws Exception {
+		String valueComplex = "John Doe|3";
+		Obs obs = new Obs(1);
+		obs.setValueComplex(valueComplex);
+		assertEquals(obs.getComplexValueText(), "John Doe");
+		
+		String newComplexText = "Hubert Hornblower";
+		obs.setComplexValueText(newComplexText);
+		assertEquals(obs.getComplexValueText(), newComplexText);
+		//confirm that valueComplex has been updated
+		assertEquals(obs.getValueComplex(), newComplexText + "|" + 3);
+	}
+	
+	/**
+	 * @see Obs#setComplexValueKey(String)
+	 * @verifies that complex value key can be replaced
+	 */
+	@Test
+	public void setComplexValueKey_shouldReplaceExistingComplexValueKey() throws Exception {
+		String valueComplex = "John Doe|3";
+		Obs obs = new Obs(1);
+		obs.setValueComplex(valueComplex);
+		assertEquals(obs.getComplexValueKey(), "3");
+		
+		String newComplexKey = "5";
+		obs.setComplexValueKey(newComplexKey);
+		assertEquals(obs.getComplexValueKey(), newComplexKey);
+		//confirm that valueComplex has been updated
+		assertEquals(obs.getValueComplex(), "John Doe|" + newComplexKey);
+	}
+	
+	/**
+	 * @see Obs#setComplexValueText(String)
+	 * @verifies that complex value text is not overridden if it is equal to key
+	 */
+	@Test
+	public void setComplexValueText_shouldNotReplaceValueTextIfEqualToKey() throws Exception {
+		String valueComplex = "John Doe";
+		Obs obs = new Obs(1);
+		obs.setValueComplex(valueComplex);
+		obs.setComplexValueText(valueComplex);
+		assertEquals(obs.getComplexValueText(), valueComplex);
+		assertEquals(obs.getComplexValueKey(), valueComplex);
+		//confirm that valueComplex doesn't look like "John Doe|John Doe"
+		assertEquals(obs.getValueComplex(), "|" + valueComplex);
+	}
+	
+	/**
+	 * @see Obs#getComplexValueText()
+	 * @verifies that a call to value text will return value key if text is missing
+	 */
+	@Test
+	public void getComplexValueText_shouldReturnKeyIfTextIsMissing() throws Exception {
+		String key = "KEY";
+		Obs obs = new Obs(1);
+		obs.setValueComplex(key);
+		assertEquals(obs.getComplexValueText(), key);
+		assertEquals(obs.getComplexValueKey(), key);
+	}
+	
+	/**
+	 * @see Obs#getComplexValueKey()
+	 * @verifies that delimiter is added if missing
+	 */
+	@Test
+	public void setComplexValueKey_shouldAppendDelimiterIfIsMissing() throws Exception {
+		String key = "KEY";
+		Obs obs = new Obs(1);
+		obs.setValueComplex(key);
+		obs.setComplexValueText(key);
+		//valueComplex should have a delimiter
+		assertEquals(obs.getValueComplex(), "|KEY");
+	}
+	
 }
