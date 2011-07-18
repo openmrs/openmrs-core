@@ -17,7 +17,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -1603,11 +1602,19 @@ public class HibernateConceptDAO implements ConceptDAO {
 			weight += computeBonusWeight(weightCoefficient, word);
 		}
 		
-		NumberFormat nf = NumberFormat.getNumberInstance();
-		nf.setMaximumFractionDigits(3);
-		
+		DecimalFormat df = new DecimalFormat();
 		//round off to 3 decimal places
-		return Double.parseDouble(nf.format(weight));
+		df.setMaximumFractionDigits(3);
+		//get the decimal separator for the locale in which the jvm is running
+		Character separator = df.getDecimalFormatSymbols().getDecimalSeparator();
+		String formattedWeight = df.format(weight);
+		
+		//if the default system locale in which the jvm is running uses a different decimal separator character, 
+		//transform the double value to use a '.'
+		if (!separator.equals('.'))
+			formattedWeight = formattedWeight.replace(separator, '.');
+		
+		return Double.parseDouble(formattedWeight);
 	}
 	
 	/**

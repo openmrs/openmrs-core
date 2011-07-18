@@ -518,6 +518,7 @@ public interface ConceptDAO {
 	 *         concept name
 	 * @should weigh words closer to the start higher than those closer to the end of the concept
 	 *         name
+	 * @should weigh words when jvm is run in a locale with a different decimal separator character
 	 */
 	public Double weighConceptWord(ConceptWord word);
 	

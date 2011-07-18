@@ -312,4 +312,21 @@ public class ConceptDAOTest extends BaseContextSensitiveTest {
 		        .weighConceptWord(word1) > dao.weighConceptWord(word2));
 	}
 	
+	/**
+	 * @see {@link ConceptDAO#weighConceptWord(ConceptWord)}
+	 */
+	@Test
+	@Verifies(value = "weigh words when jvm is run in a locale with a different decimal separator character", method = "weighConceptWord(ConceptWord)")
+	public void weighConceptWord_shouldWeighWordsWhenJvmIsRunInALocaleWithADifferentDecimalSeparatorCharacter()
+	        throws Exception {
+		//simulate an environment where the default locale uses a different decimal character
+		Locale locale = Locale.FRENCH;
+		Locale.setDefault(locale);
+		ConceptName cn = new ConceptName("bonjour monsieur", locale);
+		ConceptWord word = new ConceptWord("BONJOUR", new Concept(), cn, locale);
+		//Sanity check for the test to be concrete, i.e. the word should be part of the concept name
+		Assert.assertTrue(cn.getName().toUpperCase().indexOf(word.getWord()) > -1);
+		dao.weighConceptWord(word);
+	}
+	
 }
