@@ -45,13 +45,24 @@
 		<property name="mediaTypes">
 			<map>
 				<entry key="json" value="application/json" />
+				<entry key="xml" value="application/xml" />
 			</map>
 		</property>
 		<property name="defaultViews">
 			<list>
 				<bean class="org.springframework.web.servlet.view.json.MappingJacksonJsonView" />
+				<bean class="org.springframework.web.servlet.view.xml.MarshallingView">
+           			<property name="marshaller" ref="xStreamMarshaller"/>
+        		</bean>
 			</list>
 		</property>
+	</bean>
+	
+	<bean id="xStreamMarshaller" class="org.springframework.oxm.xstream.XStreamMarshaller" />
+
+	<bean id="marshallingHttpMessageConverter" class="org.springframework.http.converter.xml.MarshallingHttpMessageConverter">
+ 		<property name="marshaller" ref="xStreamMarshaller" />
+		<property name="unmarshaller" ref="xStreamMarshaller" />
 	</bean>
 	
 	<bean id="defaultMethodParamResolver" class="org.springframework.web.servlet.mvc.multiaction.ParameterMethodNameResolver">
@@ -98,6 +109,7 @@
 				<bean class="org.springframework.http.converter.FormHttpMessageConverter" />
 				<bean class="org.springframework.http.converter.xml.SourceHttpMessageConverter" />
 				<bean class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter" />
+				<ref bean="marshallingHttpMessageConverter" />
 			</list>
 		</property>
 	</bean>
