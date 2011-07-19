@@ -172,10 +172,16 @@ customDatatypes.push("complex");
 function changeDatatype(obj) {
 	for (var i=0; i < customDatatypes.length; i++) {
 		var row = document.getElementById(customDatatypes[i] + "DatatypeRow");
-		if (obj[obj.selectedIndex].text.toLowerCase() == customDatatypes[i])
+		var configRow = document.getElementById("handlerConfigRow");
+		if (obj[obj.selectedIndex].text.toLowerCase() == customDatatypes[i]){
 			row.style.display = "";
-		else
+			if(obj[obj.selectedIndex].text.toLowerCase() == "complex"){
+				configRow.style.display = "";
+			}
+		}else{
 			row.style.display = "none";
+			configRow.style.display = "none";
+		}
 	}
 }
 
