@@ -1200,7 +1200,7 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	@Override
 	public void purgeGlobalProperties(List<GlobalProperty> globalProperties) throws APIException {
 		for (GlobalProperty globalProperty : globalProperties) {
-			purgeGlobalProperty(globalProperty);
+			Context.getAdministrationService().purgeGlobalProperty(globalProperty);
 		}
 	}
 	
