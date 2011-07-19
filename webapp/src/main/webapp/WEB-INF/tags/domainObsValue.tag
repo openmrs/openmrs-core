@@ -20,7 +20,9 @@ You must specify concept and formFieldName. valueComplex is optional
 <%
 	ComplexObsHandler handlerObs = null;
 	ConceptService cs = Context.getConceptService();
-	ConceptComplex conceptComplex = cs.getConceptComplex(6100);
+	if(concept != null){
+	ConceptComplex conceptComplex = cs.getConceptComplex(concept.getConceptId());
+	}
 	String valueString = null;
 	
 	if(valueComplex != null){

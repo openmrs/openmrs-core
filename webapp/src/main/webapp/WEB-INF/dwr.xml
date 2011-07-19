@@ -84,6 +84,7 @@
 			<include method="getConceptNumericUnits" />
 			<include method="getDrug" />
 			<include method="isConceptComplexDomainObjectType"/>
+			<include method="validateConceptInUrlParam"/>
 			<include method="getDrugs" />
 			<include method="findDrugs" />
 			<include method="getAnswersForQuestion" />
@@ -263,6 +264,7 @@
 			DWRConceptService.findDrugs(String phrase, boolean includeRetired);
 			DWRConceptService.convertBooleanConceptToCoded(Integer conceptId);
 			DWRConceptService.isConceptComplexDomainObjectType(conceptId);
+			DWRConceptService.validateConceptInUrlParam(String conceptId);
 			DWREncounterService.findEncounters(String phrase, boolean includeVoided);
 			DWREncounterService.findBatchOfEncounters(String phrase, boolean includeVoided, Integer start, Integer length);
 			DWREncounterService.findCountAndEncounters(String phrase, boolean includeVoided, Integer start, Integer length, boolean getMatchCount);

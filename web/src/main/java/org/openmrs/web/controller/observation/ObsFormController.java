@@ -188,6 +188,8 @@ public class ObsFormController extends SimpleFormController {
 					os.unvoidObs(obs);
 					newlySavedObs = obs;
 					httpSession.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Obs.unvoidedSuccessfully");
+				} else if (request.getParameter("selectedConcept") != null) {
+					return showForm(request, response, errors);
 				}
 				
 			}
@@ -224,10 +226,17 @@ public class ObsFormController extends SimpleFormController {
 			
 			String obsId = request.getParameter("obsId");
 			String encounterId = request.getParameter("encounterId");
+			String selectedConcept = request.getParameter("selectedConcept");
 			
 			if (obsId != null)
 				obs = os.getObs(Integer.valueOf(obsId));
-			else if (StringUtils.hasText(encounterId)) {
+			else if (selectedConcept != null) {
+				log.info("into formBackingObject with " + selectedConcept);
+				obs = new Obs();
+				ConceptService cs = Context.getConceptService();
+				ConceptComplex conceptComplex = cs.getConceptComplex(Integer.parseInt(selectedConcept));
+				obs.setConcept(conceptComplex);
+			} else if (StringUtils.hasText(encounterId)) {
 				Encounter e = es.getEncounter(Integer.valueOf(encounterId));
 				obs = new Obs();
 				obs.setEncounter(e);
@@ -283,8 +292,6 @@ public class ObsFormController extends SimpleFormController {
 						String[] values = obs.getValueComplex().split("\\|");
 						if (values[1] != null)
 							map.put("hyperlinkView", domainObj.getDisplayLink() + values[1]);
-						//I dont't like this. Introduce a new method to handler to directly retrieve the object id ?
-						obs.setValueComplex(complexData.getData().toString());
 						
 					}
 					/*

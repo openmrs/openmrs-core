@@ -53,6 +53,8 @@ public class DWRConceptService {
 	
 	protected static final Log log = LogFactory.getLog(DWRConceptService.class);
 	
+	public static String priorConceptId = null;
+	
 	/**
 	 * Gets a list of conceptListItems matching the given arguments
 	 * 
@@ -424,6 +426,18 @@ public class DWRConceptService {
 		if (handlerObs instanceof CustomDatatypeHandler)
 			return true;
 		return false;
+	}
+	
+	public String validateConceptInUrlParam(String conceptId) {
+		log.info("user selected concept is: " + conceptId);
+		log.info("previously selected concept in memory is: " + priorConceptId);
+		if (conceptId.equals(priorConceptId)) {
+			return null;
+		} else {
+			priorConceptId = conceptId;
+			log.info("priorConcept modified to: " + priorConceptId);
+			return conceptId;
+		}
 	}
 	
 	public List<ConceptListItem> getAnswersForQuestion(Integer conceptId) {

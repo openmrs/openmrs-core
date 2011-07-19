@@ -8,7 +8,7 @@
 <openmrs:htmlInclude file="/scripts/calendar/calendar.js" />
 
 <script type="text/javascript">
-
+	var tmpConceptId;
 	// on concept select:
 	function onQuestionSelect(concept) {
 		$j("#conceptDescription").show();
@@ -78,6 +78,7 @@
 			}
 			// TODO move datatype 'TM' to own time box.  How to have them select?
 			else if (datatype == 'ED') {
+				tmpConceptId = tmpConcept.conceptId;
 				DWRConceptService.isConceptComplexDomainObjectType(tmpConcept.conceptId,displayObsValueField);
 			}
 			else {
@@ -88,11 +89,22 @@
 	}
 	
 	function displayObsValueField(isDomainObject){
-		if(isDomainObject == true)
+		if(isDomainObject == true){	
 			$j('#valueDomainObjectRow').show();
-		else
+			
+			if(window.location.href.indexOf("?obsId=") == -1 ){
+				DWRConceptService.validateConceptInUrlParam(tmpConceptId, reloadUrl);
+			}
+		}else{
 			$j('#valueComplexRow').show();
 		}
+	}
+	
+	function reloadUrl(conceptId){
+		if(conceptId != null){
+		window.location.href="${pageContext.request.contextPath}/admin/observations/obs.form?selectedConcept=" + conceptId;
+		}
+	}
 	
 	function fillNumericUnits(units) {
 		$j('#numericUnits').html(units);
