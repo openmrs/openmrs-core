@@ -16,6 +16,8 @@ package org.openmrs.api.db;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.openmrs.Order;
+import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 
 /**
@@ -47,5 +49,19 @@ public class OrderDAOTest extends BaseContextSensitiveTest {
 		Assert.assertEquals(12, dao.getHighestOrderId().intValue());
 		Assert.assertEquals(12, dao.getHighestOrderId().intValue());
 	}
+
+	/**
+     * @see OrderDAO#isActivatedInDatabase(Order)
+     * @verifies return value from database ignoring session
+     */
+    @Test
+    public void isActivatedInDatabase_shouldReturnValueFromDatabaseIgnoringSession() throws Exception {
+	    Order o = Context.getOrderService().getOrder(1);
+	    Assert.assertTrue(o.isActivated());
+	    o.setActivatedBy(null);
+	    o.setDateActivated(null);
+	    
+	    Assert.assertTrue(dao.isActivatedInDatabase(o));
+    }
 	
 }

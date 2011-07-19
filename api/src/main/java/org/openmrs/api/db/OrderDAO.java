@@ -101,6 +101,7 @@ public interface OrderDAO {
 	 * 
 	 * @param order
 	 * @return
+	 * @should return value from database ignoring session
 	 */
 	public boolean isActivatedInDatabase(Order order);
 	
