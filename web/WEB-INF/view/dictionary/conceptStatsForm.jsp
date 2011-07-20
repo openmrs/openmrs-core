@@ -121,7 +121,7 @@
 											<spring:message code="general.edit"/></a>
 										</td>
 										<td><b>${outlier.valueNumeric}</b></td>
-										<td>(${outlier.obsDatetime})</td>
+										<td>(<openmrs:formatDate date="${outlier.obsDatetime}" type="long" />)</td>
 									</tr>
 								</c:forEach>
 								</table>
