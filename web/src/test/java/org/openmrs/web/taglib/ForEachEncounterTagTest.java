@@ -13,12 +13,12 @@
  */
 package org.openmrs.web.taglib;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.jsp.tagext.BodyTag;
 import javax.servlet.jsp.tagext.Tag;
 
-import org.databene.commons.CollectionUtil;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.Encounter;
@@ -39,6 +39,7 @@ public class ForEachEncounterTagTest extends BaseWebContextSensitiveTest {
 	@Test
 	@Verifies(value = "should sort encounters by encounterDatetime in descending order", method = "doStartTag()")
 	public void doStartTag_shouldSortEncountersByEncounterDatetimeInDescendingOrder() throws Exception {
+		int num = 3;
 		executeDataSet("org/openmrs/web/taglib/include/ForEachEncounterTagTest.xml");
 		Patient patient = Context.getPatientService().getPatient(7);
 		List<Encounter> encounters = Context.getEncounterService().getEncountersByPatient(patient);
@@ -47,12 +48,15 @@ public class ForEachEncounterTagTest extends BaseWebContextSensitiveTest {
 		tag.setDescending(true);
 		tag.setEncounters(encounters);
 		tag.setVar("enc");
+		tag.setNum(num);
 		// the tag passes
 		Assert.assertEquals(BodyTag.EVAL_BODY_BUFFERED, tag.doStartTag());
+		//the match count should not exceed the limit
+		Assert.assertTrue(num >= tag.matchingEncs.size());
 		//check the sorting
-		Assert.assertEquals(7, encounters.get(0).getId().intValue());
-		Assert.assertEquals(8, encounters.get(1).getId().intValue());
-		Assert.assertEquals(6, encounters.get(2).getId().intValue());
+		Assert.assertEquals(11, tag.matchingEncs.get(0).getId().intValue());
+		Assert.assertEquals(16, tag.matchingEncs.get(1).getId().intValue());
+		Assert.assertEquals(7, tag.matchingEncs.get(2).getId().intValue());
 	}
 	
 	/**
@@ -61,12 +65,9 @@ public class ForEachEncounterTagTest extends BaseWebContextSensitiveTest {
 	@Test
 	@Verifies(value = "should pass for a patient with no encounters", method = "doStartTag()")
 	public void doStartTag_shouldPassForAPatientWithNoEncounters() throws Exception {
-		Patient patient = Context.getPatientService().getPatient(2);
-		List<Encounter> encounters = Context.getEncounterService().getEncountersByPatient(patient);
-		Assert.assertTrue(CollectionUtil.isEmpty(encounters));
 		ForEachEncounterTag tag = new ForEachEncounterTag();
 		tag.setPageContext(new MockPageContext());
-		tag.setEncounters(encounters);
+		tag.setEncounters(new ArrayList<Encounter>());
 		// the tag passes
 		Assert.assertEquals(Tag.SKIP_BODY, tag.doStartTag());
 	}
