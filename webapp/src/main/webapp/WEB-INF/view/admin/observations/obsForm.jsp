@@ -8,7 +8,7 @@
 <openmrs:htmlInclude file="/scripts/calendar/calendar.js" />
 
 <script type="text/javascript">
-	var tmpConceptId;
+	var selectedConceptId;
 	// on concept select:
 	function onQuestionSelect(concept) {
 		$j("#conceptDescription").show();
@@ -78,8 +78,8 @@
 			}
 			// TODO move datatype 'TM' to own time box.  How to have them select?
 			else if (datatype == 'ED') {
-				tmpConceptId = tmpConcept.conceptId;
-				DWRConceptService.isConceptComplexDomainObjectType(tmpConcept.conceptId,displayObsValueField);
+				selectedConceptId = tmpConcept.conceptId;
+				DWRConceptService.isConceptComplexDomainObjectType(selectedConceptId,displayObsValueField);
 			}
 			else {
 				$j('#valueInvalidRow').show();
@@ -91,20 +91,22 @@
 	function displayObsValueField(isDomainObject){
 		if(isDomainObject == true){	
 			$j('#valueDomainObjectRow').show();
-			
-			if(window.location.href.indexOf("?obsId=") == -1 ){
-				DWRConceptService.validateConceptInUrlParam(tmpConceptId, reloadUrl);
+			if(window.location.href.indexOf("?obsId=") == -1 && window.location.href.indexOf("?selectedConcept=") == -1 ){
+				window.location.href="${pageContext.request.contextPath}/admin/observations/obs.form?selectedConcept=" + selectedConceptId;
 			}
+			else if(window.location.href.indexOf("?selectedConcept=") != -1){
+				DWRConceptService.validateUrlAgainstNewlySelectedConcept(window.location.href, selectedConceptId, loadParsedUrl);
+			}  
 		}else{
 			$j('#valueComplexRow').show();
 		}
-	}
-	
-	function reloadUrl(conceptId){
-		if(conceptId != null){
-		window.location.href="${pageContext.request.contextPath}/admin/observations/obs.form?selectedConcept=" + conceptId;
 		}
-	}
+	
+	 function loadParsedUrl(url){
+		if(url != null ){
+		window.location.href= url + selectedConceptId;
+		}
+	} 
 	
 	function fillNumericUnits(units) {
 		$j('#numericUnits').html(units);

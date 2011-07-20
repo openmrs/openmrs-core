@@ -53,8 +53,6 @@ public class DWRConceptService {
 	
 	protected static final Log log = LogFactory.getLog(DWRConceptService.class);
 	
-	public static String priorConceptId = null;
-	
 	/**
 	 * Gets a list of conceptListItems matching the given arguments
 	 * 
@@ -428,16 +426,24 @@ public class DWRConceptService {
 		return false;
 	}
 	
-	public String validateConceptInUrlParam(String conceptId) {
-		log.info("user selected concept is: " + conceptId);
-		log.info("previously selected concept in memory is: " + priorConceptId);
-		if (conceptId.equals(priorConceptId)) {
+	/**
+	 * This method takes the newly selected concept and the url, and compares the url's conceptId 
+	 * with the newly selected conceptId.
+	 * If the two concepts are different, it returns the url with previous conceptId removed
+	 * obsForm.jsp can use this url to attach and load new concept
+	 * If the two concepts are the same, it retuns null, and the page will not be reloaded
+	 */
+	public String validateUrlAgainstNewlySelectedConcept(String url, String selectedConceptId) {
+		int delimPos = url.indexOf("=");
+		String strippedUrl = url.substring(0, ++delimPos);
+		String oldConceptId = url.substring(delimPos);
+		log.info("old conceptId retreived from the url is: " + oldConceptId);
+		if (oldConceptId.equals(selectedConceptId)) {
+			log.info("Newly selected concept and the previous one are equal: url will not be reloaded");
 			return null;
-		} else {
-			priorConceptId = conceptId;
-			log.info("priorConcept modified to: " + priorConceptId);
-			return conceptId;
 		}
+		log.info("DWRConceptService.validateUrlAgainstNewlySelectedConcept returning url: " + strippedUrl);
+		return strippedUrl;
 	}
 	
 	public List<ConceptListItem> getAnswersForQuestion(Integer conceptId) {
