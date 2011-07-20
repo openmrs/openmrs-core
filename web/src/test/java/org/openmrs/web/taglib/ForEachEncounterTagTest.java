@@ -35,6 +35,7 @@ public class ForEachEncounterTagTest extends BaseWebContextSensitiveTest {
 	
 	/**
 	 * @see {@link ForEachEncounterTag#doStartTag()}
+	 * @regression TRUNK-2465
 	 */
 	@Test
 	@Verifies(value = "should sort encounters by encounterDatetime in descending order", method = "doStartTag()")
