@@ -119,11 +119,11 @@
 								<table>
 								<c:forEach items="${outliers}" var="outlier">
 									<tr>
-										<td><a target="_edit_obs" href="${pageContext.request.contextPath}/admin/observations/obs.form?obsId=${outlier[0]}">
+										<td><a target="_edit_obs" href="${pageContext.request.contextPath}/admin/observations/obs.form?obsId=${outlier.obsId}">
 											<spring:message code="general.edit"/></a>
 										</td>
-										<td><b>${outlier[2]}</b></td>
-										<td>(${outlier[1]})</td>
+										<td><b>${outlier.valueNumeric}</b></td>
+										<td>(${outlier.obsDatetime})</td>
 									</tr>
 								</c:forEach>
 								</table>
