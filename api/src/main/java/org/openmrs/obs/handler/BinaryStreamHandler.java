@@ -124,4 +124,13 @@ public class BinaryStreamHandler extends AbstractHandler implements ComplexObsHa
 		return true;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.openmrs.obs.ComplexObsHandler#getValue(org.openmrs.Obs)
+	 */
+	@Override
+	public Object getValue(Obs obs) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
 }

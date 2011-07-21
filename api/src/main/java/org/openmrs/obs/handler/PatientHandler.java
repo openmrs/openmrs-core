@@ -48,7 +48,7 @@ public class PatientHandler extends CustomDatatypeHandler implements ComplexObsH
 	 */
 	public PatientHandler() {
 		super();
-	}	
+	}
 	
 	/**
 	 * @see org.openmrs.obs.ComplexObsHandler#getObs(org.openmrs.Obs, java.lang.String)
@@ -152,4 +152,18 @@ public class PatientHandler extends CustomDatatypeHandler implements ComplexObsH
 		return true;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.openmrs.obs.ComplexObsHandler#getValue(org.openmrs.Obs)
+	 */
+	@Override
+	public Object getValue(Obs obs) {
+		Patient patient = null;
+		if (obs.getValueComplex() != null) {
+			PatientService ps = Context.getPatientService();
+			patient = ps.getPatient(Integer.parseInt(obs.getComplexValueKey()));
+			
+			return patient;
+		} else
+			return null;
+	}
 }

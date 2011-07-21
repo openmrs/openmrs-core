@@ -84,4 +84,13 @@ public interface ComplexObsHandler {
 	 */
 	public boolean validate(String handlerConfig, Obs obs);
 	
+	/**
+	 * Gets the value.
+	 *	Returns the Obs value if present.
+	 *
+	 * @param obs the obs
+	 * @return the value
+	 */
+	public Object getValue(Obs obs);
+	
 }

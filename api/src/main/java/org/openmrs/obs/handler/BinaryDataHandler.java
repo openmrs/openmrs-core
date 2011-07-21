@@ -151,4 +151,13 @@ public class BinaryDataHandler extends AbstractHandler implements ComplexObsHand
 		return true;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.openmrs.obs.ComplexObsHandler#getValue(org.openmrs.Obs)
+	 */
+	@Override
+	public Object getValue(Obs obs) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
 }

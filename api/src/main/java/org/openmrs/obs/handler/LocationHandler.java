@@ -164,4 +164,13 @@ public class LocationHandler extends CustomDatatypeHandler implements ComplexObs
 		return true;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.openmrs.obs.ComplexObsHandler#getValue(org.openmrs.Obs)
+	 */
+	@Override
+	public Object getValue(Obs obs) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
 }

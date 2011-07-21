@@ -33,6 +33,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+// TODO: Auto-generated Javadoc
 /**
  * Handler for storing basic images for complex obs to the file system. The image mime type used is
  * taken from the image name. if the .* image name suffix matches
@@ -47,10 +48,13 @@ import org.springframework.stereotype.Component;
 @Order(Ordered.LOWEST_PRECEDENCE)
 public class ImageHandler extends AbstractHandler implements ComplexObsHandler {
 	
+	/** The Constant log. */
 	public static final Log log = LogFactory.getLog(ImageHandler.class);
 	
+	/** The Constant HANDLER_TYPE. */
 	public static final String HANDLER_TYPE = "ImageHandler";
 	
+	/** The extensions. */
 	private Set<String> extensions;
 	
 	/**
@@ -68,8 +72,11 @@ public class ImageHandler extends AbstractHandler implements ComplexObsHandler {
 	}
 	
 	/**
-	 * Currently supports all views and puts the Image file data into the ComplexData object
-	 * 
+	 * Currently supports all views and puts the Image file data into the ComplexData object.
+	 *
+	 * @param obs the obs
+	 * @param view the view
+	 * @return the obs
 	 * @see org.openmrs.obs.ComplexObsHandler#getObs(org.openmrs.Obs, java.lang.String)
 	 */
 	public Obs getObs(Obs obs, String view) {
@@ -90,6 +97,11 @@ public class ImageHandler extends AbstractHandler implements ComplexObsHandler {
 	}
 	
 	/**
+	 * Save obs.
+	 *
+	 * @param obs the obs
+	 * @return the obs
+	 * @throws APIException the aPI exception
 	 * @see org.openmrs.obs.ComplexObsHandler#saveObs(org.openmrs.Obs)
 	 */
 	public Obs saveObs(Obs obs) throws APIException {
@@ -159,6 +171,15 @@ public class ImageHandler extends AbstractHandler implements ComplexObsHandler {
 	public boolean validate(String handlerConfig, Obs obs) {
 		// TODO Auto-generated method stub
 		return true;
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.openmrs.obs.ComplexObsHandler#getValue(org.openmrs.Obs)
+	 */
+	@Override
+	public Object getValue(Obs obs) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }
