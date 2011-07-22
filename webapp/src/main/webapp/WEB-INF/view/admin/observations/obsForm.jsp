@@ -88,6 +88,24 @@
 		}
 	}
 	
+	 function getURLParam(paramName){
+		  var returnString = "";
+		  var hrefString = window.location.href;
+		  if ( hrefString.indexOf("?") > -1 ){
+		    var strQueryString = hrefString.substr(hrefString.indexOf("?")).toLowerCase();
+		    var aQueryString = strQueryString.split("&");
+		    for ( var param = 0; param < aQueryString.length; param++ ){
+		      if ( 
+		aQueryString[param].indexOf(paramName.toLowerCase() + "=") > -1 ){
+		        var aParam = aQueryString[param].split("=");
+		        returnString = aParam[1];
+		        break;
+		      }
+		    }
+		  }
+		  return unescape(returnString);
+		} 
+	
 	function displayObsValueField(isDomainObject){
 		if(isDomainObject == true){	
 			$j('#valueDomainObjectRow').show();
@@ -95,18 +113,26 @@
 				window.location.href="${pageContext.request.contextPath}/admin/observations/obs.form?selectedConcept=" + selectedConceptId;
 			}
 			else if(window.location.href.indexOf("?selectedConcept=") != -1){
-				DWRConceptService.validateUrlAgainstNewlySelectedConcept(window.location.href, selectedConceptId, loadParsedUrl);
-			}  
+				var conceptParam = getURLParam("selectedConcept");
+				 if(conceptParam != selectedConceptId){
+					window.location.href ="${pageContext.request.contextPath}/admin/observations/obs.form?selectedConcept=" + selectedConceptId;
+				} 
+			} else if(window.location.href.indexOf("?obsId=") != -1) {
+				var obsParam = getURLParam("obsId");
+				DWRConceptService.evaluateObs(obsParam, selectedConceptId, editObs);
+			} 
 		}else{
 			$j('#valueComplexRow').show();
 		}
+	}
+		 
+	 function editObs(concept){
+		if(concept != null ){
+			$j("#valueDomainObjectRow").val("");
+			updateObsValues(concept);
+			window.location.href= window.location.href;
 		}
-	
-	 function loadParsedUrl(url){
-		if(url != null ){
-		window.location.href= url + selectedConceptId;
-		}
-	} 
+	}
 	
 	function fillNumericUnits(units) {
 		$j('#numericUnits').html(units);
@@ -420,7 +446,7 @@
 		<th><spring:message code="Obs.complexAnswer"/></th>
 		<spring:bind path="valueComplex">
 		<td>	  
-			 <openmrs_tag:domainObsValue concept="${obs.concept}" formFieldName="valueComplex" valueComplex="${obs.valueComplex}"/> 
+			 <openmrs_tag:domainObsValue concept="${obs.concept}" obs="${obs}" valueComplex="${obs.valueComplex}"/> 
 			 <br/>
 			 <c:if test="${not empty obs.valueComplex }">
 			 <a href="${pageContext.request.contextPath}${hyperlinkView}"><spring:message code="general.view.instance"/>/<spring:message code="general.edit.instance"/></a><br/>${htmlView}<br/>

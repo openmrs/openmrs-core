@@ -24,6 +24,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
+import org.openmrs.Obs;
 import org.openmrs.obs.ComplexObsHandler;
 import org.openmrs.ConceptAnswer;
 import org.openmrs.ConceptClass;
@@ -45,6 +46,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.obs.handler.CustomDatatypeHandler;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.api.ObsService;
 
 /**
  * This class exposes some of the methods in org.openmrs.api.ConceptService via the dwr package
@@ -427,23 +429,32 @@ public class DWRConceptService {
 	}
 	
 	/**
-	 * This method takes the newly selected concept and the url, and compares the url's conceptId 
-	 * with the newly selected conceptId.
-	 * If the two concepts are different, it returns the url with previous conceptId removed
-	 * obsForm.jsp can use this url to attach and load new concept
-	 * If the two concepts are the same, it retuns null, and the page will not be reloaded
+	 * This method is used to help users to update Obs.
+	 * obsForm.jsp calls it whenever it gets a url with an obsId param
+	 * the method accepts the obsId param and selectedConceptId.
+	 * It retreives the Obs using the obsId.
+	 * from the Obs, it retrieves the Concept.
+	 * the method compares the two concepts. If they are equal, the page is not re loaded
+	 * if they are not, the newly selected concept is retrived and returned to the jsp
+	 * to be displayed.
 	 */
-	public String validateUrlAgainstNewlySelectedConcept(String url, String selectedConceptId) {
-		int delimPos = url.indexOf("=");
-		String strippedUrl = url.substring(0, ++delimPos);
-		String oldConceptId = url.substring(delimPos);
-		log.info("old conceptId retreived from the url is: " + oldConceptId);
-		if (oldConceptId.equals(selectedConceptId)) {
-			log.info("Newly selected concept and the previous one are equal: url will not be reloaded");
+	
+	public Concept evaluateObs(String obsId, String selectedConceptId) {
+		ConceptComplex conceptComplex = null;
+		
+		ObsService os = Context.getObsService();
+		ConceptService cs = Context.getConceptService();
+		Obs obs = os.getObs(Integer.valueOf(obsId));
+		
+		int id = obs.getConcept().getConceptId();
+		ConceptComplex con = cs.getConceptComplex(id);
+		
+		if (con.getConceptId() == Integer.parseInt(selectedConceptId)) {
 			return null;
+		} else {
+			conceptComplex = cs.getConceptComplex(Integer.parseInt(selectedConceptId));
 		}
-		log.info("DWRConceptService.validateUrlAgainstNewlySelectedConcept returning url: " + strippedUrl);
-		return strippedUrl;
+		return (Concept) conceptComplex;
 	}
 	
 	public List<ConceptListItem> getAnswersForQuestion(Integer conceptId) {
