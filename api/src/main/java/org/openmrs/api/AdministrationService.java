@@ -515,14 +515,12 @@ public interface AdministrationService extends OpenmrsService {
 	
 	/**
 	 * Save the given list of global properties to the database overwriting all values with the
-	 * given values. If a value exists in the database that does not exist in the given list, that
-	 * property is deleted from the database.
+	 * given values.
 	 * 
 	 * @param props list of GlobalProperty objects to save
 	 * @return the saved global properties
 	 * @should save all global properties to the database
 	 * @should not fail with empty list
-	 * @should delete property from database if not in list
 	 * @should assign uuid to all new properties
 	 * @should save properties with case difference only
 	 */
@@ -543,6 +541,16 @@ public interface AdministrationService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.PURGE_GLOBAL_PROPERTIES)
 	public void purgeGlobalProperty(GlobalProperty globalProperty) throws APIException;
+	
+	/**
+	 * Completely remove the given global properties from the database
+	 * 
+	 * @param globalProperties the global properties to delete/remove from the database
+	 * @throws APIException
+	 * @should delete global properties from database
+	 */
+	@Authorized(PrivilegeConstants.PURGE_GLOBAL_PROPERTIES)
+	public void purgeGlobalProperties(List<GlobalProperty> globalProperties) throws APIException;
 	
 	/**
 	 * Use

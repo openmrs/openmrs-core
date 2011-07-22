@@ -755,12 +755,6 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 	public List<GlobalProperty> saveGlobalProperties(List<GlobalProperty> props) throws APIException {
 		log.debug("saving a list of global properties");
 		
-		// delete all properties not in this new list
-		for (GlobalProperty gp : getAllGlobalProperties()) {
-			if (!props.contains(gp))
-				purgeGlobalProperty(gp);
-		}
-		
 		// add all of the new properties
 		for (GlobalProperty prop : props) {
 			if (prop.getProperty() != null && prop.getProperty().length() > 0) {
@@ -1083,6 +1077,16 @@ public class AdministrationServiceImpl extends BaseOpenmrsService implements Adm
 		catch (Exception e) {
 			log.error("Unable to turn value '" + propVal + "' into type " + defaultValue.getClass().getName(), e);
 			return defaultValue;
+		}
+	}
+	
+	/**
+	 * @see org.openmrs.api.AdministrationService#purgeGlobalProperties(java.util.List)
+	 */
+	@Override
+	public void purgeGlobalProperties(List<GlobalProperty> globalProperties) throws APIException {
+		for (GlobalProperty globalProperty : globalProperties) {
+			Context.getAdministrationService().purgeGlobalProperty(globalProperty);
 		}
 	}
 	
