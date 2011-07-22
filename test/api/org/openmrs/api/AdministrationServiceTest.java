@@ -306,18 +306,6 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	 * @see AdministrationService#saveGlobalProperties(List)
 	 */
 	@Test
-	@Verifies(value = "should delete property from database if not in list", method = "saveGlobalProperties(List<QGlobalProperty;>)")
-	public void saveGlobalProperties_shouldDeletePropertyFromDatabaseIfNotInList() throws Exception {
-		List<GlobalProperty> globalProperties = Context.getAdministrationService().getAllGlobalProperties();
-		GlobalProperty firstGlobalProperty = globalProperties.remove(0);
-		Context.getAdministrationService().saveGlobalProperties(globalProperties);
-		Assert.assertNull(Context.getAdministrationService().getGlobalProperty(firstGlobalProperty.getProperty()));
-	}
-	
-	/**
-	 * @see AdministrationService#saveGlobalProperties(List)
-	 */
-	@Test
 	@Verifies(value = "should not fail with empty list", method = "saveGlobalProperties(List<QGlobalProperty;>)")
 	public void saveGlobalProperties_shouldNotFailWithEmptyList() throws Exception {
 		Context.getAdministrationService().saveGlobalProperties(new ArrayList<GlobalProperty>());
@@ -568,6 +556,8 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 	@Test
 	@Verifies(value = "should save properties with case difference only", method = "saveGlobalProperties(List<QGlobalProperty;>)")
 	public void saveGlobalProperties_shouldSavePropertiesWithCaseDifferenceOnly() throws Exception {
+		int originalSize = adminService.getAllGlobalProperties().size();
+		
 		List<GlobalProperty> props = new ArrayList<GlobalProperty>();
 		props.add(new GlobalProperty("a.property.key", "something"));
 		props.add(new GlobalProperty("a.property.KEY", "somethingelse"));
@@ -575,6 +565,28 @@ public class AdministrationServiceTest extends BaseContextSensitiveTest {
 		
 		// make sure that we now have two properties
 		props = adminService.getAllGlobalProperties();
-		Assert.assertEquals(2, props.size());
+		Assert.assertEquals(originalSize + 2, props.size());
+	}
+	
+	/**
+	 * @see AdministrationService#purgeGlobalProperties(List)
+	 * @verifies delete global properties from database
+	 */
+	@Test
+	public void purgeGlobalProperties_shouldDeleteGlobalPropertiesFromDatabase() throws Exception {
+		int originalSize = adminService.getAllGlobalProperties().size();
+		
+		List<GlobalProperty> props = new ArrayList<GlobalProperty>();
+		props.add(new GlobalProperty("a.property.key", "something"));
+		props.add(new GlobalProperty("a.property.KEY", "somethingelse"));
+		adminService.saveGlobalProperties(props);
+		int afterSaveSize = adminService.getAllGlobalProperties().size();
+		
+		Assert.assertEquals(originalSize + 2, afterSaveSize);
+		
+		adminService.purgeGlobalProperties(props);
+		int afterPurgeSize = adminService.getAllGlobalProperties().size();
+		
+		Assert.assertEquals(originalSize, afterPurgeSize);
 	}
 }
