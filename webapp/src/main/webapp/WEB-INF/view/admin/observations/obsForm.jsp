@@ -11,7 +11,6 @@
 	var selectedConceptId;
 	// on concept select:
 	function onQuestionSelect(concept) {
-		$j("#conceptDescription").show();
 		$j("#conceptDescription").html(concept.description);
 		updateObsValues(concept);
 	}
@@ -446,7 +445,7 @@
 		<th><spring:message code="Obs.complexAnswer"/></th>
 		<spring:bind path="valueComplex">
 		<td>	  
-			 <openmrs_tag:domainObsValue concept="${obs.concept}" obs="${obs}" valueComplex="${obs.valueComplex}"/> 
+			 <openmrs_tag:complexObsValue concept="${obs.concept}" obs="${obs}" valueComplex="${obs.valueComplex}"/> 
 			 <br/>
 			 <c:if test="${not empty obs.valueComplex }">
 			 <a href="${pageContext.request.contextPath}${hyperlinkView}"><spring:message code="general.view.instance"/>/<spring:message code="general.edit.instance"/></a><br/>${htmlView}<br/>

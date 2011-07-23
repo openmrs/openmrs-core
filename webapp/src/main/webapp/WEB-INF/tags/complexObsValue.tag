@@ -1,4 +1,5 @@
-<%@tag import="org.openmrs.web.attribute.handler.FieldGenAttributeHandler"%>
+<%@tag
+	import="org.openmrs.web.attribute.handler.FieldGenAttributeHandler"%>
 <%@tag import="java.util.Map"%>
 <%@tag import="org.openmrs.api.context.Context"%>
 <%@tag import="org.openmrs.web.obs.handler.FieldGenObsHandler"%>
@@ -16,13 +17,14 @@ You must specify concept and formFieldName. valueComplex and Obs are optional
 
 <%@ attribute name="concept" required="true" type="org.openmrs.Concept"%>
 <%@ attribute name="obs" required="false" type="org.openmrs.Obs"%>
-<%@ attribute name="valueComplex" required="false" type="java.lang.String"%>
+<%@ attribute name="valueComplex" required="false"
+	type="java.lang.String"%>
 
 <%
 	ComplexObsHandler handlerObs = null;
 	ConceptService cs = Context.getConceptService();
 	
-	if(concept != null){
+	if (concept != null) {
 	ConceptComplex conceptComplex = cs.getConceptComplex(concept.getConceptId());
 	handlerObs = Context.getObsService().getHandler(conceptComplex.getHandler());	
 	}
@@ -30,10 +32,10 @@ You must specify concept and formFieldName. valueComplex and Obs are optional
 	String formFieldName = "valueComplex";
 	String valueString = null;
 	
-	if(valueComplex != null){
+	if (valueComplex != null) {
 		valueString = valueComplex;
 	}
-	if (handlerObs != null){
+	if (handlerObs != null) {
 %>
 
 <% if (handlerObs instanceof FieldGenObsHandler) {
