@@ -22,6 +22,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -549,25 +550,38 @@ public class DatabaseUpdater {
 	}
 	
 	/**
-	 * Looks at the current liquibase-update-to-latest.xml file returns all changesets in that file
-	 * that have not been run on the database yet.
+	 * Looks at the specified liquibase change log files and returns all changesets in the files
+	 * that have not been run on the database yet. If no argument is specified, then it looks at the
+	 * current liquibase-update-to-latest.xml file
 	 * 
-	 * @return list of changesets that haven't been run
+	 * @param changeLogFilenames the filenames of all files to search for unrun changesets
+	 * @return
+	 * @throws Exception
 	 */
+	@SuppressWarnings("unchecked")
 	@Authorized(PrivilegeConstants.VIEW_DATABASE_CHANGES)
-	public static List<OpenMRSChangeSet> getUnrunDatabaseChanges() throws Exception {
+	public static List<OpenMRSChangeSet> getUnrunDatabaseChanges(String... changeLogFilenames) throws Exception {
 		log.debug("Getting unrun changesets");
 		
 		Database database = null;
 		try {
-			Liquibase liquibase = getLiquibase(null, null);
-			database = liquibase.getDatabase();
-			List<ChangeSet> changeSets = liquibase.listUnrunChangeSets(CONTEXT);
+			if (changeLogFilenames == null)
+				return Collections.EMPTY_LIST;
+			
+			//if no argument, look ONLY in liquibase-update-to-latest.xml
+			if (changeLogFilenames.length == 0)
+				changeLogFilenames = new String[] { CHANGE_LOG_FILE };
 			
 			List<OpenMRSChangeSet> results = new ArrayList<OpenMRSChangeSet>();
-			for (ChangeSet changeSet : changeSets) {
-				OpenMRSChangeSet omrschangeset = new OpenMRSChangeSet(changeSet, database);
-				results.add(omrschangeset);
+			for (String changelogFile : changeLogFilenames) {
+				Liquibase liquibase = getLiquibase(changelogFile, null);
+				database = liquibase.getDatabase();
+				List<ChangeSet> changeSets = liquibase.listUnrunChangeSets(CONTEXT);
+				
+				for (ChangeSet changeSet : changeSets) {
+					OpenMRSChangeSet omrschangeset = new OpenMRSChangeSet(changeSet, database);
+					results.add(omrschangeset);
+				}
 			}
 			
 			return results;
