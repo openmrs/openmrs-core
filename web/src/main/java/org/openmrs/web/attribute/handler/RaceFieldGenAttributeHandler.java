@@ -1,37 +1,36 @@
 package org.openmrs.web.attribute.handler;
 
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.attribute.InvalidAttributeValueException;
-import org.openmrs.attribute.handler.Race;
 import org.openmrs.attribute.handler.RaceAttributeHandler;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
-public class RaceFieldGenAttributeHandler extends RaceAttributeHandler
-		implements FieldGenAttributeHandler<Race> {
-
+@Component
+@Order(0)
+public class RaceFieldGenAttributeHandler extends RaceAttributeHandler implements FieldGenAttributeHandler<RaceAttributeHandler.Race> {
+	
 	@Override
 	public String getWidgetName() {
-		return "org.openmrs.attribute.handler.Race";
+		return Race.class.getName();
 	}
-
+	
 	@Override
 	public Map<String, Object> getWidgetConfiguration() {
 		return null;
 	}
-
+	
 	@Override
-	public Race getValue(HttpServletRequest request, String formFieldName)
-			throws InvalidAttributeValueException {
+	public Race getValue(HttpServletRequest request, String formFieldName) throws InvalidAttributeValueException {
 		String value = request.getParameter(formFieldName);
-		if(StringUtils.isBlank(value)){
+		if (StringUtils.isBlank(value)) {
 			return null;
-		}else{
+		} else {
 			return Race.valueOf(value);
 		}
 	}
-
+	
 }
