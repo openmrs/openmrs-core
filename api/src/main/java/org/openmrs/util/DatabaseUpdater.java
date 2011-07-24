@@ -248,13 +248,14 @@ public class DatabaseUpdater {
 	/**
 	 * Ask Liquibase if it needs to do any updates
 	 * 
+	 * @param changeLogFilenames the filenames of all files to search for unrun changesets
 	 * @return true/false whether database updates are required
 	 * @should always have a valid update to latest file
 	 */
-	public static boolean updatesRequired() throws Exception {
+	public static boolean updatesRequired(String... changeLogFilenames) throws Exception {
 		log.debug("checking for updates");
 		
-		List<OpenMRSChangeSet> changesets = getUnrunDatabaseChanges();
+		List<OpenMRSChangeSet> changesets = getUnrunDatabaseChanges(changeLogFilenames);
 		return changesets.size() > 0;
 	}
 	
@@ -566,7 +567,7 @@ public class DatabaseUpdater {
 		Database database = null;
 		try {
 			if (changeLogFilenames == null)
-				return Collections.EMPTY_LIST;
+				throw new IllegalArgumentException("changeLogFilenames cannot be null");
 			
 			//if no argument, look ONLY in liquibase-update-to-latest.xml
 			if (changeLogFilenames.length == 0)
