@@ -22,7 +22,6 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -243,6 +242,19 @@ public class DatabaseUpdater {
 		}
 		
 		return updateWarnings;
+	}
+	
+	/**
+	 * Ask Liquibase if it needs to do any updates. Only looks at the {@link #CHANGE_LOG_FILE}
+	 * 
+	 * @return true/false whether database updates are required
+	 * @should always have a valid update to latest file
+	 */
+	public static boolean updatesRequired() throws Exception {
+		log.debug("checking for updates");
+		
+		List<OpenMRSChangeSet> changesets = getUnrunDatabaseChanges(CHANGE_LOG_FILE);
+		return changesets.size() > 0;
 	}
 	
 	/**
@@ -559,7 +571,6 @@ public class DatabaseUpdater {
 	 * @return
 	 * @throws Exception
 	 */
-	@SuppressWarnings("unchecked")
 	@Authorized(PrivilegeConstants.VIEW_DATABASE_CHANGES)
 	public static List<OpenMRSChangeSet> getUnrunDatabaseChanges(String... changeLogFilenames) throws Exception {
 		log.debug("Getting unrun changesets");
