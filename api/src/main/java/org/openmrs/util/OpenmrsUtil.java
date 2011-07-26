@@ -1909,7 +1909,7 @@ public class OpenmrsUtil {
 	 * characters. Currently the load method expects the inputStream to point to a latin1 encoded
 	 * file. <br/>
 	 * NOTE: In Java 6, you will be able to pass the load() and store() methods a UTF-8
-	 * Reader/Writer object as an argument, making this method unnecesary.
+	 * Reader/Writer object as an argument, making this method unnecessary.
 	 * 
 	 * @deprecated use {@link #loadProperties(Properties, File)}
 	 * @param props the properties object to write into
