@@ -439,7 +439,7 @@ public class DWRConceptService {
 	 * to be displayed.
 	 */
 	
-	public Concept evaluateObs(String obsId, String selectedConceptId) {
+	public ConceptComplex evaluateObs(String obsId, String selectedConceptId) {
 		ConceptComplex conceptComplex = null;
 		
 		ObsService os = Context.getObsService();
@@ -447,14 +447,16 @@ public class DWRConceptService {
 		Obs obs = os.getObs(Integer.valueOf(obsId));
 		
 		int id = obs.getConcept().getConceptId();
-		ConceptComplex con = cs.getConceptComplex(id);
+		Concept con = cs.getConceptComplex(id);
+		if (con == null)
+			con = cs.getConcept(id);
 		
 		if (con.getConceptId() == Integer.parseInt(selectedConceptId)) {
 			return null;
 		} else {
 			conceptComplex = cs.getConceptComplex(Integer.parseInt(selectedConceptId));
+			return conceptComplex;
 		}
-		return (Concept) conceptComplex;
 	}
 	
 	public List<ConceptListItem> getAnswersForQuestion(Integer conceptId) {

@@ -164,6 +164,7 @@ public class ObsFormController extends SimpleFormController {
 							}
 						}
 					} else {
+						obs.setValueComplex(null);
 						newlySavedObs = os.saveObs(obs, reason);
 					}
 					
@@ -227,10 +228,19 @@ public class ObsFormController extends SimpleFormController {
 			String obsId = request.getParameter("obsId");
 			String encounterId = request.getParameter("encounterId");
 			String selectedConcept = request.getParameter("selectedConcept");
+			String editConcept = request.getParameter("edit");
 			
-			if (obsId != null)
+			if (obsId != null) {
 				obs = os.getObs(Integer.valueOf(obsId));
-			else if (selectedConcept != null) {
+				
+				if (editConcept != null) {
+					ConceptService cs = Context.getConceptService();
+					ConceptComplex conceptComplex = cs.getConceptComplex(Integer.parseInt(editConcept));
+					obs.setConcept(conceptComplex);
+					obs.setValueComplex(null);
+					
+				}
+			} else if (selectedConcept != null) {
 				log.info("into formBackingObject with " + selectedConcept);
 				obs = new Obs();
 				ConceptService cs = Context.getConceptService();
@@ -289,9 +299,9 @@ public class ObsFormController extends SimpleFormController {
 						Obs complexObs = os.getComplexObs(Integer.valueOf(obsId), WebConstants.HYPERLINK_VIEW);
 						ComplexData complexData = complexObs.getComplexData();
 						CustomDatatypeHandler domainObj = (CustomDatatypeHandler) handlerObs;
-						String[] values = obs.getValueComplex().split("\\|");
-						if (values[1] != null)
-							map.put("hyperlinkView", domainObj.getDisplayLink() + values[1]);
+						String key = obs.getComplexValueKey();
+						if (key != null)
+							map.put("hyperlinkView", domainObj.getDisplayLink() + key);
 						
 					}
 					/*
