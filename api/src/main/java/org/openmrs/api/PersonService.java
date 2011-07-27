@@ -798,6 +798,18 @@ public interface PersonService {
 	public PersonAttribute getPersonAttributeByUuid(String uuid) throws APIException;
 	
 	/**
+	 * Get PersonName by its personNameId
+	 *
+	 * @param personNameId
+	 * @return
+	 * @should find PersonName given valid personNameId
+	 * @should return null if no object found with given personNameId
+	 */
+	@Transactional(readOnly = true)
+	@Authorized( { PrivilegeConstants.VIEW_PERSONS })
+	PersonName getPersonName(Integer personNameId);
+	
+	/**
 	 * Get PersonName by its UUID
 	 * 
 	 * @param uuid

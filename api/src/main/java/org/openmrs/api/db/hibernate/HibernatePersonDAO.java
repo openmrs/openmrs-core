@@ -620,6 +620,17 @@ public class HibernatePersonDAO implements PersonDAO {
 		    "from PersonAttribute p where p.uuid = :uuid").setString("uuid", uuid).uniqueResult();
 	}
 	
+	/**
+	 * @see org.openmrs.api.db.PersonDAO#getPersonName(Integer)
+	 */
+	@Override
+	public PersonName getPersonName(Integer personNameId) {
+		return (PersonName) sessionFactory.getCurrentSession().get(PersonName.class, personNameId);
+	}
+	
+	/**
+	 * @see org.openmrs.api.db.PersonDAO#getPersonNameByUuid(String)
+	 */
 	public PersonName getPersonNameByUuid(String uuid) {
 		return (PersonName) sessionFactory.getCurrentSession().createQuery("from PersonName p where p.uuid = :uuid")
 		        .setString("uuid", uuid).uniqueResult();

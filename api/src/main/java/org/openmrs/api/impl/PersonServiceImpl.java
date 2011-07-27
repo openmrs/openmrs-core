@@ -975,6 +975,17 @@ public class PersonServiceImpl extends BaseOpenmrsService implements PersonServi
 		return dao.getPersonAttributeByUuid(uuid);
 	}
 	
+	/**
+	 * @see org.openmrs.api.PersonService#getPersonName(java.lang.Integer)
+	 */
+	@Override
+	public PersonName getPersonName(Integer personNameId) {
+		return dao.getPersonName(personNameId);
+	}
+	
+	/**
+	 * @see org.openmrs.api.PersonService#getPersonNameByUuid(java.lang.String)
+	 */
 	public PersonName getPersonNameByUuid(String uuid) throws APIException {
 		return dao.getPersonNameByUuid(uuid);
 	}
