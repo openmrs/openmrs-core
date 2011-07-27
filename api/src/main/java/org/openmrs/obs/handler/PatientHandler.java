@@ -82,12 +82,20 @@ public class PatientHandler extends CustomDatatypeHandler implements ComplexObsH
 	 */
 	@Override
 	public Obs getObs(Obs obs, String view) {
+		Patient patient = null;
 		PatientService ps = Context.getPatientService();
-		Patient patient = ps.getPatient(Integer.parseInt(obs.getComplexValueKey()));
+		
+		String key = obs.getComplexValueKey();
+		
+		if (key != null)
+			patient = ps.getPatient(Integer.parseInt(key));
 		
 		if (patient == null) {
-			throw new APIException("Cannot retrieve complex obs where obsId=" + obs.getObsId() + " because the patient id :"
+			/*throw new APIException("Cannot retrieve complex obs where obsId=" + obs.getObsId() + " because the patient id :"
 			        + Integer.parseInt(obs.getComplexValueKey()) + " cannot be found.");
+			*/
+			log.info("Warning : specified patient cannot be found - returning blank object");
+			return obs;
 		}
 		
 		ComplexData complexData = new ComplexData(obs.getComplexValueText(), patient);
@@ -163,7 +171,8 @@ public class PatientHandler extends CustomDatatypeHandler implements ComplexObsH
 			patient = ps.getPatient(Integer.parseInt(obs.getComplexValueKey()));
 			
 			return patient;
-		} else
-			return null;
+		} else {
+			return "";
+		}
 	}
 }

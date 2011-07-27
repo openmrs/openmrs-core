@@ -92,12 +92,18 @@ public class LocationHandler extends CustomDatatypeHandler implements ComplexObs
 	 */
 	@Override
 	public Obs getObs(Obs obs, String view) {
+		Location location = null;
 		LocationService ls = Context.getLocationService();
-		Location location = ls.getLocation(Integer.parseInt(obs.getComplexValueKey()));
+		
+		String key = obs.getComplexValueKey();
+		if (key != null)
+			location = ls.getLocation(Integer.parseInt(key));
 		
 		if (location == null) {
-			throw new APIException("Cannot retrieve complex obs where obsId=" + obs.getObsId()
-			        + " because the Location id :" + Integer.parseInt(obs.getComplexValueKey()) + " cannot be found.");
+			/*	throw new APIException("Cannot retrieve complex obs where obsId=" + obs.getObsId()
+				        + " because the Location id :" + Integer.parseInt(obs.getComplexValueKey()) + " cannot be found.");*/
+			log.info("Warning : specified location cannot be found - returning blank object");
+			return obs;
 		}
 		
 		ComplexData complexData = new ComplexData(obs.getComplexValueText(), location);
@@ -169,8 +175,14 @@ public class LocationHandler extends CustomDatatypeHandler implements ComplexObs
 	 */
 	@Override
 	public Object getValue(Obs obs) {
-		// TODO Auto-generated method stub
-		return null;
+		Location location = null;
+		if (obs.getValueComplex() != null) {
+			LocationService ls = Context.getLocationService();
+			location = ls.getLocation(Integer.parseInt(obs.getComplexValueKey()));
+			
+			return location;
+		} else {
+			return "";
+		}
 	}
-	
 }
