@@ -15,10 +15,12 @@ package org.openmrs.api.db;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.PersonAttributeType;
+import org.openmrs.PersonName;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.Verifies;
@@ -62,4 +64,19 @@ public class PersonDAOTest extends BaseContextSensitiveTest {
 		String nameFromDatabase = dao.getSavedPersonAttributeTypeName(pat);
 		assertEquals(origName, nameFromDatabase);
 	}
+	
+	@Test
+	@Verifies(value = "should return personName from the DB given valid person name id", method = "getPersonName(Integer)")
+	public void getPersonName_shouldGetSavedPersonNameById() throws Exception {
+		PersonName personName = dao.getPersonName(2);
+		assertEquals(2, (int) personName.getId());
+	}
+	
+	@Test
+	@Verifies(value = "should return null from the DB given invalid person name id", method = "getPersonName(Integer)")
+	public void getPersonName_shouldNotGetPersonNameGivenInvalidId() throws Exception {
+		PersonName personName = dao.getPersonName(-1);
+		assertNull(personName);
+	}
+	
 }

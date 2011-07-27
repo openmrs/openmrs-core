@@ -1583,6 +1583,20 @@ public class PersonServiceTest extends BaseContextSensitiveTest {
 		Assert.assertNull(Context.getPersonService().getPersonNameByUuid("some invalid uuid"));
 	}
 	
+	@Test
+	@Verifies(value = "should find PersonName given a valid person id", method = "getPersonName(Integer)")
+	public void getPersonNameById_shouldFindObjectGivenValidId() throws Exception {
+		PersonName personName = Context.getPersonService().getPersonName(2);
+		Assert.assertEquals(2, (int) personName.getId());
+	}
+	
+	@Test
+	@Verifies(value = "should not find any PersonName given invalid person id", method = "getPersonName(Integer)")
+	public void getPersonNameById_shouldNotFindAnyObjectGivenInvalidId() throws Exception {
+		PersonName personName = Context.getPersonService().getPersonName(-1);
+		Assert.assertNull(personName);
+	}
+	
 	/**
 	 * @see {@link PersonService#getRelationshipByUuid(String)}
 	 * 
