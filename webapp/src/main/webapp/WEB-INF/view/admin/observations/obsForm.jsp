@@ -10,15 +10,8 @@
 <script type="text/javascript">
 	var selectedConceptId;
 	var obsParam;
-	//var v2;
-	//var v = $j("#conceptId").val();
-	
-	// on concept select:
-		//alert("at the start");
-	//alert("${obs.concept}");
+
 	function onQuestionSelect(concept) {
-		//v2 = $j("#conceptId").val();
-		//alert("on question select " + v2);
 		$j("#conceptDescription").html(concept.description);
 		updateObsValues(concept);
 	}
@@ -41,7 +34,7 @@
 	}
 	
 	function updateObsValues(tmpConcept) {
-		//alert("updating obs ?");
+		
 		var values = ['valueBooleanRow', 'valueCodedRow', 'valueDatetimeRow', 'valueModifierRow', 'valueTextRow', 'valueNumericRow', 'valueInvalidRow','valueComplexRow','valueDomainObjectRow'];
 		$j.each(values, function(x, val) { $j("#" + val).hide() });
 		
@@ -58,7 +51,6 @@
 				DWRConceptService.getConceptNumericUnits(tmpConcept.conceptId, fillNumericUnits);
 			}
 			else if (datatype == 'CWE') {
-				alert("comming here");
 				$j('#valueCodedRow').show();
 				
 				// clear any old values:
@@ -124,16 +116,12 @@
 			else if(window.location.href.indexOf("?selectedConcept=") != -1){
 				var conceptParam = getURLParam("selectedConcept");
 				 if(conceptParam != selectedConceptId){
-					 alert("displayObsValueField");
 					window.location.href ="${pageContext.request.contextPath}/admin/observations/obs.form?selectedConcept=" + selectedConceptId;
 				} 
 			} else if(window.location.href.indexOf("?obsId=") != -1) {
-				alert("goddamn");
 				obsParam = getURLParam("obsId");
 				var v = "${obs.concept.conceptId}";
 				var v1 = $j("#conceptId").val();
-				//alert("from memory "+ v);
-				//alert("from select "+ v1);
 				 if(v != v1){
 					 DWRConceptService.evaluateObs(obsParam, selectedConceptId, editObs);
 				} 
@@ -146,17 +134,7 @@
 	}
 		 
 	  function editObs(concept){
-		 // alert("Crap");
 		  window.location.href ="${pageContext.request.contextPath}/admin/observations/obs.form?obsId=" + obsParam + "&edit=" + selectedConceptId;
-		//if(concept != null ){
-			//alert("Fuck");
-			//$j("#valueDomainObjectRow").val("");
-			//window.location.href ="${pageContext.request.contextPath}/admin/observations/obs.form?obsId=" + 26 + "&edit=" + selectedConceptId;
-			//window.location.href = ${window.location.href} + "&edit=" +selectedConceptId;
-			//updateObsValues(concept);
-			//$j('#valueDomainObjectRow').show();
-			//window.location.href= window.location.href;
-		//}
 	} 
 	
 	function fillNumericUnits(units) {
