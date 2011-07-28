@@ -22,12 +22,12 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Order(Ordered.LOWEST_PRECEDENCE)
-public class PhoneAttributeHandler implements AttributeHandler<String> {
+public class EmailAttributeHandler implements AttributeHandler<String> {
 	
 	private Pattern regex;
 	
-	public PhoneAttributeHandler() {
-		regex = Pattern.compile("(\\+)?([-\\._\\(\\) ]?[\\d]{3,20}[-\\._\\(\\) ]?){2,10}");
+	public EmailAttributeHandler() {
+		regex = Pattern.compile("^[\\w-]+(\\.[\\w-]+)*@([a-z0-9-]+(\\.[a-z0-9-]+)*?\\.[a-z]{2,6}|(\\d{1,3}\\.){3}\\d{1,3})(:\\d{4})?$");
 	}
 	
 	/**
@@ -35,7 +35,7 @@ public class PhoneAttributeHandler implements AttributeHandler<String> {
 	 */
 	@Override
 	public String getDatatypeHandled() {
-		return "phone number";
+		return "email address";
 	}
 	
 	/**
@@ -48,7 +48,7 @@ public class PhoneAttributeHandler implements AttributeHandler<String> {
 	
 	/**
 	 * @see org.openmrs.attribute.handler.AttributeHandler#validate(java.lang.Object)
-	 * @should accept (603) 781-0236 and +123-34567-918 or a string that matches the regex
+	 * @should accept username@domain.com and  u-s_e.r1@s.domain-name.com:8080  or a string that matches the regex
 	 */
 	@Override
 	public void validate(String typedValue) throws InvalidAttributeValueException {
