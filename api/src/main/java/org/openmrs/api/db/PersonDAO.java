@@ -168,6 +168,8 @@ public interface PersonDAO {
 	
 	public PersonAttribute getPersonAttributeByUuid(String uuid);
 	
+	public PersonName getPersonName(Integer personNameId);
+	
 	public PersonName getPersonNameByUuid(String uuid);
 	
 	/**
