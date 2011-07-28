@@ -256,6 +256,10 @@
 				<version>3.2.5.ga-mod</version>
 				<exclusions>
 					<exclusion>
+						<groupId>asm</groupId>
+						<artifactId>asm</artifactId>
+					</exclusion>
+					<exclusion>
 						<groupId>commons-logging</groupId>
 						<artifactId>commons-logging</artifactId>
 					</exclusion>

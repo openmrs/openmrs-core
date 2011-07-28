@@ -56,7 +56,7 @@ public class DWRVisitService {
 				Patient p = Context.getPatientService().getPatient(patientId);
 				if (p != null)
 					visits = Context.getVisitService().getActiveVisitsByPatient(p);
-			} else{
+			} else {
 				throw new APIException(mss.getMessage("errors.patientId.cannotBeNull", null, "Patient Id cannot be null",
 				    Context.getLocale()));
 			}
