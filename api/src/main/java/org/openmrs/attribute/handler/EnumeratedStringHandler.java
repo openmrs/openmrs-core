@@ -14,64 +14,49 @@
 
 package org.openmrs.attribute.handler;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.attribute.InvalidAttributeValueException;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  */
 @Component
 @Order(Ordered.LOWEST_PRECEDENCE)
-public class RaceAttributeHandler implements AttributeHandler<RaceAttributeHandler.Race> {
+public class EnumeratedStringHandler implements AttributeHandler<String> {
+	
+	protected List<String> values;
 	
 	@Override
 	public String getDatatypeHandled() {
-		return "race";
+		return "enumerated-string";
 	}
 	
 	@Override
 	public void setConfiguration(String handlerConfig) {
-		
+		values = new ArrayList<String>();
+		for (String value : StringUtils.split(handlerConfig, ","))
+			values.add(StringUtils.trim(value));
 	}
 	
 	@Override
-	public void validate(Race typedValue) throws InvalidAttributeValueException {
-		
+	public void validate(String typedValue) throws InvalidAttributeValueException {
+		if (CollectionUtils.isNotEmpty(values))
+			values.contains(typedValue);
 	}
 	
 	@Override
 	public String serialize(Object typedValue) {
-		Race r = (Race) typedValue;
-		return r.getValue();
+		return String.valueOf(typedValue);
 	}
 	
 	@Override
-	public Race deserialize(String stringValue) throws InvalidAttributeValueException {
-		for (Race race : Race.values()) {
-			if (StringUtils.equalsIgnoreCase(stringValue, race.getValue()))
-				return race;
-		}
-		return null;
+	public String deserialize(String stringValue) throws InvalidAttributeValueException {
+		return stringValue;
 	}
-	
-	public enum Race implements StringEnum {
-		RACE_CAUASOID("Cauasoid"), RACE_NEGROID("Negroid"), RACE_MONGOLOID("Mongoloid"), RACE_AUSTRALOID("Australoid");
-		
-		private final String value;
-		
-		private Race(final String value) {
-			this.value = value;
-		}
-		
-		public String getValue() {
-			return value;
-		}
-		
-		public String toString() {
-			return getValue();
-		}
-	}
-	
 }

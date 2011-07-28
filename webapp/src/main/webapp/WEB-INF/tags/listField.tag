@@ -21,10 +21,8 @@
 			</c:if>
 		</c:if>
 		<c:forEach var="item" items="${list}">
-			<c:if test="${includeVoided == 'true' || !item.retired}">
-				<option value="${item.value}" 
-					<c:if test="${item.value == initialValue}">selected</c:if>>${item.label}</option>
-			</c:if>		
+			<option value="${item}"
+				<c:if test="${item == initialValue}">selected</c:if>>${item}</option>
 		</c:forEach>
 	</select>
 </c:if>

@@ -57,7 +57,7 @@ public class IntegerAttributeHandler implements AttributeHandler<Integer> {
 	 */
 	@Override
 	public String serialize(Object typedValue) {
-		return ""+typedValue;
+		return "" + typedValue;
 	}
 	
 	/**
