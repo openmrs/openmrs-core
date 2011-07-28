@@ -27,5 +27,6 @@ public class ListHandler extends AbstractFieldGenHandler implements FieldGenHand
 	public void run() {
 		setUrl(DEFAULT_URL);
 		setParameter("list", fieldGenTag.getParameterMap().get("list"));
+		setParameter("initialValue", fieldGenTag.getVal());
 	}
 }

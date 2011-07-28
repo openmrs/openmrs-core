@@ -46,13 +46,15 @@ public class EnumeratedStringHandler implements AttributeHandler<String> {
 	
 	@Override
 	public void validate(String typedValue) throws InvalidAttributeValueException {
-		if (CollectionUtils.isNotEmpty(values))
-			values.contains(typedValue);
+		if (CollectionUtils.isNotEmpty(values) && !values.contains(typedValue))
+			throw new InvalidAttributeValueException("Atribute is not in the available value list.");
 	}
 	
 	@Override
 	public String serialize(Object typedValue) {
-		return String.valueOf(typedValue);
+		String value = String.valueOf(typedValue);
+		validate(value);
+		return value;
 	}
 	
 	@Override
