@@ -22,12 +22,12 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Order(Ordered.LOWEST_PRECEDENCE)
-public class PhoneAttributeHandler implements AttributeHandler<String> {
+public class DigitsAttributeHandler implements AttributeHandler<String> {
 	
 	private Pattern regex;
 	
-	public PhoneAttributeHandler() {
-		regex = Pattern.compile("^(\\+)?([-\\._\\(\\) ]?[\\d]{3,20}[-\\._\\(\\) ]?){2,10}$");
+	public DigitsAttributeHandler() {
+		regex = Pattern.compile("^\\d*$");
 	}
 	
 	/**
@@ -35,7 +35,7 @@ public class PhoneAttributeHandler implements AttributeHandler<String> {
 	 */
 	@Override
 	public String getDatatypeHandled() {
-		return "phone number";
+		return "digits";
 	}
 	
 	/**
@@ -43,12 +43,13 @@ public class PhoneAttributeHandler implements AttributeHandler<String> {
 	 */
 	@Override
 	public void setConfiguration(String handlerConfig) {
-		regex = Pattern.compile(handlerConfig);
+		int numOfDigits = Integer.parseInt(handlerConfig);
+		regex = Pattern.compile("^\\d{"+numOfDigits+"}$");
 	}
 	
 	/**
 	 * @see org.openmrs.attribute.handler.AttributeHandler#validate(java.lang.Object)
-	 * @should accept (603) 781-0236 and +123-34567-918 or a string that matches the regex
+	 * @should accept all or specified number of digits
 	 */
 	@Override
 	public void validate(String typedValue) throws InvalidAttributeValueException {
@@ -58,7 +59,6 @@ public class PhoneAttributeHandler implements AttributeHandler<String> {
 	
 	/**
 	 * @see org.openmrs.attribute.handler.AttributeHandler#serialize(java.lang.Object)
-	 * @should fail if the string does not match the regex
 	 */
 	@Override
 	public String serialize(Object typedValue) {
