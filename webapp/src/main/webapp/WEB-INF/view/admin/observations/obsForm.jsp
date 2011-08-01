@@ -449,12 +449,7 @@
 		<th><spring:message code="Obs.complexAnswer"/></th>
 		<spring:bind path="valueComplex">
 		<td>	
-		 <c:if test="${not empty obs.valueComplex }">  
-			 <openmrs_tag:complexObsValue concept="${obs.concept}" obs="${obs}" valueComplex="${obs.valueComplex}"/> 
-		</c:if>
-			 <c:if test="${ empty obs.valueComplex }">  
 			 <openmrs_tag:complexObsValue concept="${obs.concept}" obs="${obs}" /> 
-		</c:if>
 			 <br/>
 			 <c:if test="${not empty obs.valueComplex }">
 			 <a href="${pageContext.request.contextPath}${hyperlinkView}"><spring:message code="general.view.instance"/>/<spring:message code="general.edit.instance"/></a><br/>${htmlView}<br/>
