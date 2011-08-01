@@ -99,15 +99,12 @@ public class LocationHandler extends CustomDatatypeHandler implements ComplexObs
 		if (key != null)
 			location = ls.getLocation(Integer.parseInt(key));
 		
-		if (location == null) {
-			/*	throw new APIException("Cannot retrieve complex obs where obsId=" + obs.getObsId()
-				        + " because the Location id :" + Integer.parseInt(obs.getComplexValueKey()) + " cannot be found.");*/
-			log.info("Warning : specified location cannot be found - returning blank object");
-			return obs;
-		}
-		
-		ComplexData complexData = new ComplexData(obs.getComplexValueText(), location);
-		obs.setComplexData(complexData);
+		if (location != null) {
+			ComplexData complexData = new ComplexData(obs.getComplexValueText(), location);
+			obs.setComplexData(complexData);
+		} else
+			log.info("Warning : specified location cannot be found - returning no ComplexData for " + obs.getObsId()
+			        + " Is this to be used for editing purposes ?");
 		
 		return obs;
 	}
@@ -182,7 +179,7 @@ public class LocationHandler extends CustomDatatypeHandler implements ComplexObs
 			
 			return location;
 		} else {
-			return "";
+			return null;
 		}
 	}
 }

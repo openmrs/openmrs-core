@@ -90,16 +90,12 @@ public class PatientHandler extends CustomDatatypeHandler implements ComplexObsH
 		if (key != null)
 			patient = ps.getPatient(Integer.parseInt(key));
 		
-		if (patient == null) {
-			/*throw new APIException("Cannot retrieve complex obs where obsId=" + obs.getObsId() + " because the patient id :"
-			        + Integer.parseInt(obs.getComplexValueKey()) + " cannot be found.");
-			*/
-			log.info("Warning : specified patient cannot be found - returning blank object");
-			return obs;
-		}
-		
-		ComplexData complexData = new ComplexData(obs.getComplexValueText(), patient);
-		obs.setComplexData(complexData);
+		if (patient != null) {
+			ComplexData complexData = new ComplexData(obs.getComplexValueText(), patient);
+			obs.setComplexData(complexData);
+		} else
+			log.info("Warning : specified patient cannot be found - returning no ComplexData for " + obs.getObsId()
+			        + " Is this to be used for editing purposes ?");
 		
 		return obs;
 	}
@@ -160,7 +156,9 @@ public class PatientHandler extends CustomDatatypeHandler implements ComplexObsH
 		return true;
 	}
 	
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.openmrs.obs.ComplexObsHandler#getValue(org.openmrs.Obs)
 	 */
 	@Override
@@ -172,7 +170,7 @@ public class PatientHandler extends CustomDatatypeHandler implements ComplexObsH
 			
 			return patient;
 		} else {
-			return "";
+			return null;
 		}
 	}
 }
