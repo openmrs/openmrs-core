@@ -468,30 +468,27 @@ public class ModuleClassLoader extends URLClassLoader {
 			return result;
 		}
 		
-		synchronized (this) {
-			// we didn't find a loaded class and this isn't a class
-			// from another module
-			try {
-				result = findClass(name);
-			}
-			catch (LinkageError le) {
-				throw le;
-			}
-			catch (ClassNotFoundException cnfe) {
-				// ignore
+		// we didn't find a loaded class and this isn't a class
+		// from another module
+		try {
+			result = findClass(name);
+		}
+		catch (LinkageError le) {
+			throw le;
+		}
+		catch (ClassNotFoundException cnfe) {
+			// ignore
+		}
+		
+		// we were able to "find" a class
+		if (result != null) {
+			checkClassVisibility(result, requestor);
+			
+			if (resolve) {
+				resolveClass(result);
 			}
 			
-			// we were able to "find" a class
-			if (result != null) {
-				checkClassVisibility(result, requestor);
-				
-				if (resolve) {
-					resolveClass(result);
-				}
-				
-				return result; // found class in this module
-			}
-			
+			return result; // found class in this module
 		}
 		
 		// initialize the array if need be
