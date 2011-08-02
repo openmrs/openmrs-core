@@ -428,37 +428,6 @@ public class DWRConceptService {
 		return false;
 	}
 	
-	/**
-	 * This method is used to help users to update Obs.
-	 * obsForm.jsp calls it whenever it gets a url with an obsId param
-	 * the method accepts the obsId param and selectedConceptId.
-	 * It retreives the Obs using the obsId.
-	 * from the Obs, it retrieves the Concept.
-	 * the method compares the two concepts. If they are equal, the page is not re loaded
-	 * if they are not, the newly selected concept is retrived and returned to the jsp
-	 * to be displayed.
-	 */
-	
-	public ConceptComplex evaluateObs(String obsId, String selectedConceptId) {
-		ConceptComplex conceptComplex = null;
-		
-		ObsService os = Context.getObsService();
-		ConceptService cs = Context.getConceptService();
-		Obs obs = os.getObs(Integer.valueOf(obsId));
-		
-		int id = obs.getConcept().getConceptId();
-		Concept con = cs.getConceptComplex(id);
-		if (con == null)
-			con = cs.getConcept(id);
-		
-		if (con.getConceptId() == Integer.parseInt(selectedConceptId)) {
-			return null;
-		} else {
-			conceptComplex = cs.getConceptComplex(Integer.parseInt(selectedConceptId));
-			return conceptComplex;
-		}
-	}
-	
 	public List<ConceptListItem> getAnswersForQuestion(Integer conceptId) {
 		Vector<ConceptListItem> ret = new Vector<ConceptListItem>();
 		Concept c = Context.getConceptService().getConcept(conceptId);

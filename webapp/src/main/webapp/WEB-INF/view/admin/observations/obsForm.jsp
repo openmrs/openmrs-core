@@ -120,22 +120,15 @@
 				} 
 			} else if(window.location.href.indexOf("?obsId=") != -1) {
 				obsParam = getURLParam("obsId");
-				var v = "${obs.concept.conceptId}";
-				var v1 = $j("#conceptId").val();
-				 if(v != v1){
-					 DWRConceptService.evaluateObs(obsParam, selectedConceptId, editObs);
-				} 
-				
-				
+				var initialConceptId = "${obs.concept.conceptId}";
+				 if(initialConceptId != selectedConceptId){
+					 window.location.href ="${pageContext.request.contextPath}/admin/observations/obs.form?obsId=" + obsParam + "&edit=" + selectedConceptId;
+				} 		
 			} 
 		}else{
 			$j('#valueComplexRow').show();
 		}
 	}
-		 
-	  function editObs(concept){
-		  window.location.href ="${pageContext.request.contextPath}/admin/observations/obs.form?obsId=" + obsParam + "&edit=" + selectedConceptId;
-	} 
 	
 	function fillNumericUnits(units) {
 		$j('#numericUnits').html(units);
