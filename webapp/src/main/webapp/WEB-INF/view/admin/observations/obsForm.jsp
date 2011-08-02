@@ -6,10 +6,12 @@
 <%@ include file="localHeader.jsp" %>
 
 <openmrs:htmlInclude file="/scripts/calendar/calendar.js" />
+<openmrs:htmlInclude file="/scripts/jquery/jqUrl/jquery.url.min.js" />
 
 <script type="text/javascript">
 	var selectedConceptId;
 	var obsParam;
+	var conceptParam;
 
 	function onQuestionSelect(concept) {
 		$j("#conceptDescription").html(concept.description);
@@ -89,24 +91,6 @@
 		}
 	}
 	
-	 function getURLParam(paramName){
-		  var returnString = "";
-		  var hrefString = window.location.href;
-		  if ( hrefString.indexOf("?") > -1 ){
-		    var strQueryString = hrefString.substr(hrefString.indexOf("?")).toLowerCase();
-		    var aQueryString = strQueryString.split("&");
-		    for ( var param = 0; param < aQueryString.length; param++ ){
-		      if ( 
-		aQueryString[param].indexOf(paramName.toLowerCase() + "=") > -1 ){
-		        var aParam = aQueryString[param].split("=");
-		        returnString = aParam[1];
-		        break;
-		      }
-		    }
-		  }
-		  return unescape(returnString);
-		} 
-	
 	function displayObsValueField(isDomainObject){
 		if(isDomainObject == true){	
 			$j('#valueDomainObjectRow').show();
@@ -114,12 +98,18 @@
 				window.location.href="${pageContext.request.contextPath}/admin/observations/obs.form?selectedConcept=" + selectedConceptId;
 			}
 			else if(window.location.href.indexOf("?selectedConcept=") != -1){
-				var conceptParam = getURLParam("selectedConcept");
+				(function ($) {
+					conceptParam = $.url.param("selectedConcept");
+				})(jQuery);
+			
 				 if(conceptParam != selectedConceptId){
 					window.location.href ="${pageContext.request.contextPath}/admin/observations/obs.form?selectedConcept=" + selectedConceptId;
 				} 
 			} else if(window.location.href.indexOf("?obsId=") != -1) {
-				obsParam = getURLParam("obsId");
+				(function ($) {
+					obsParam = $.url.param("obsId");
+				})(jQuery);
+						
 				var initialConceptId = "${obs.concept.conceptId}";
 				 if(initialConceptId != selectedConceptId){
 					 window.location.href ="${pageContext.request.contextPath}/admin/observations/obs.form?obsId=" + obsParam + "&edit=" + selectedConceptId;
