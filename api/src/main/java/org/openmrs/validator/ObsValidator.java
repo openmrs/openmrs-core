@@ -177,6 +177,13 @@ public class ObsValidator implements Validator {
 					errors.rejectValue("valueText", "error.null");
 				else
 					errors.rejectValue("groupMembers", "Obs.error.inGroupMember");
+			} else if (dt.isComplex()) {
+				if (obs.getValueComplex() == null || StringUtils.isEmpty(obs.getValueComplex())) {
+					if (atRootNode)
+						errors.rejectValue("valueComplex", "error.null");
+					else
+						errors.rejectValue("groupMembers", "Obs.error.inGroupMember");
+				}
 			}
 			
 			//If valueText is longer than the maxlength, raise an error as well.

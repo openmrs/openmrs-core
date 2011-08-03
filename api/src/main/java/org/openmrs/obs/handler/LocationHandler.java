@@ -15,6 +15,7 @@ package org.openmrs.obs.handler;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.lang.StringUtils;
 import org.openmrs.Obs;
 import org.openmrs.Location;
 import org.openmrs.api.APIException;
@@ -96,7 +97,7 @@ public class LocationHandler extends CustomDatatypeHandler implements ComplexObs
 		LocationService ls = Context.getLocationService();
 		
 		String key = obs.getComplexValueKey();
-		if (key != null)
+		if (key != null && !StringUtils.isEmpty(key))
 			location = ls.getLocation(Integer.parseInt(key));
 		
 		if (location != null) {
@@ -173,7 +174,7 @@ public class LocationHandler extends CustomDatatypeHandler implements ComplexObs
 	@Override
 	public Object getValue(Obs obs) {
 		Location location = null;
-		if (obs.getValueComplex() != null) {
+		if (obs.getValueComplex() != null && !StringUtils.isEmpty(obs.getValueComplex())) {
 			LocationService ls = Context.getLocationService();
 			location = ls.getLocation(Integer.parseInt(obs.getComplexValueKey()));
 			

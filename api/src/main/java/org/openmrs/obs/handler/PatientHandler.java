@@ -15,6 +15,7 @@ package org.openmrs.obs.handler;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.lang.StringUtils;
 import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.api.APIException;
@@ -87,7 +88,7 @@ public class PatientHandler extends CustomDatatypeHandler implements ComplexObsH
 		
 		String key = obs.getComplexValueKey();
 		
-		if (key != null)
+		if (key != null && !StringUtils.isEmpty(key))
 			patient = ps.getPatient(Integer.parseInt(key));
 		
 		if (patient != null) {
@@ -164,7 +165,7 @@ public class PatientHandler extends CustomDatatypeHandler implements ComplexObsH
 	@Override
 	public Object getValue(Obs obs) {
 		Patient patient = null;
-		if (obs.getValueComplex() != null) {
+		if (obs.getValueComplex() != null && !StringUtils.isEmpty(obs.getValueComplex())) {
 			PatientService ps = Context.getPatientService();
 			patient = ps.getPatient(Integer.parseInt(obs.getComplexValueKey()));
 			
