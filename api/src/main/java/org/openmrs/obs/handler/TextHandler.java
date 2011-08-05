@@ -35,6 +35,13 @@ import org.springframework.stereotype.Component;
  * Handler for storing files for complex obs to the file system. Files are stored in the location
  * specified by the global property: "obs.complex_obs_dir" The in coming data are either char[] or
  * java.io.Reader
+ * 
+ * There may be several classes which extend
+ * TextHandler. Out of these, only one will be loaded by Spring. The class to be loaded will be
+ * decided based on the @Order annotation value. 
+ * 
+ * As default, TextHandler will have the lowest possible
+ * priority.
  */
 
 @Component
@@ -150,23 +157,20 @@ public class TextHandler extends AbstractHandler implements ComplexObsHandler {
 	
 	/**
 	 * Validate.
-	 *
-	 * @param handlerConfig the handler config
-	 * @param obs the obs
-	 * @return true, if successful
 	 */
 	@Override
 	public boolean validate(String handlerConfig, Obs obs) {
-		// TODO Auto-generated method stub
 		return true;
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.openmrs.obs.ComplexObsHandler#getValue(org.openmrs.Obs)
+	/**
+	 * This method is used to return the persisted data only. The text is retreived
+	 * using data from the Obs passed in. This is returned to the user. If there is no
+	 * text, then the method returns null.
 	 */
 	@Override
 	public Object getValue(Obs obs) {
-		// TODO Auto-generated method stub
+		//Returns null, since this is unnessesary for now.
 		return null;
 	}
 	

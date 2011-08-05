@@ -28,8 +28,20 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 /**
- * Handler for storing Patient objects as answers for Complex Observations. The Patient Id number of
- * each Patient object is stored in the value_complex column of the Obs table in the database
+ * Handler for storing Patient objects as the value for Complex Observations. 
+ * The Patient Id of each Patient object is stored in the value_complex column of the Obs table. 
+ * This value may be preceded by an optional displayable value. 
+ * 
+ * This class is the most basic level of implementation
+ * for PatientHandlers. For a more improved version, see
+ * org.openmrs.obs.handler.PatientHandler.PatientFieldGenObsHandler or consider extending
+ * PatientHandler class to meet your requirements. 
+ * 
+ * There may be several classes which extend PatientHandler. 
+ * Out of these, only one will be loaded by Spring. The class to be loaded will be
+ * decided based on the @Order annotation value. As default, PatientHandler will have the lowest
+ * possible priority, and will be overridden by PatientFieldGenObsHandler, which lets us use
+ * fieldGen tags for data entry.
  */
 
 @Component
@@ -38,20 +50,21 @@ public class PatientHandler extends CustomDatatypeHandler implements ComplexObsH
 	
 	public static final Log log = LogFactory.getLog(PatientHandler.class);
 	
-	/** The Constant HANDLER_TYPE. */
+	/** The Constant HANDLER_TYPE. Used to differentiate between handler types */
 	public static final String HANDLER_TYPE = "PatientHandler";
 	
-	/** The Constant DISPLAY_LINK. */
+	/** The Constant DISPLAY_LINK. Used as a link to display the selected patient */
 	public static final String DISPLAY_LINK = "/patientDashboard.form?patientId=";
 	
-	/**
-	 * The default Constructor method
-	 */
 	public PatientHandler() {
 		super();
 	}
 	
 	/**
+	 * This method is used to save the Obs. Firstly, the selected Patient Instance is retrieived.
+	 * then, the valueComplex String to be persisted is created based upon this instance.
+	 * The valueComplex String is created via a call to a method in Obs.java
+	 * 
 	 * @see org.openmrs.obs.ComplexObsHandler#getObs(org.openmrs.Obs, java.lang.String)
 	 */
 	@Override
@@ -79,6 +92,10 @@ public class PatientHandler extends CustomDatatypeHandler implements ComplexObsH
 	}
 	
 	/**
+	 * This method retrieves the patient instance persisted in the database. The patient is retrieved
+	 * using the ComplexValueKey. It is passed into ComplexData object, and returned with the
+	 * Obs.
+	 * 
 	 * @see org.openmrs.obs.ComplexObsHandler#saveObs(org.openmrs.Obs)
 	 */
 	@Override
@@ -117,7 +134,7 @@ public class PatientHandler extends CustomDatatypeHandler implements ComplexObsH
 	}
 	
 	/**
-	 * Gets the display link.
+	 * Gets the link used to display a selected patient to an user.
 	 * 
 	 * @return the display link
 	 */
@@ -136,10 +153,6 @@ public class PatientHandler extends CustomDatatypeHandler implements ComplexObsH
 	
 	/**
 	 * Validate.
-	 * 
-	 * @param handlerConfig the handler config
-	 * @param obs the obs
-	 * @return true, if successful
 	 */
 	@Override
 	public boolean validate(String handlerConfig, Obs obs) {
@@ -157,10 +170,10 @@ public class PatientHandler extends CustomDatatypeHandler implements ComplexObsH
 		return true;
 	}
 	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.openmrs.obs.ComplexObsHandler#getValue(org.openmrs.Obs)
+	/**
+	 * This method is used to return the persisted data only. The Patient instance is retreived
+	 * using data from the Obs passed in. This instance is returned to the user. If there is no
+	 * matching patient, then the method returns null.
 	 */
 	@Override
 	public Object getValue(Obs obs) {
