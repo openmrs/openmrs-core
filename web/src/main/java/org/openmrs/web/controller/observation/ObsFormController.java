@@ -16,6 +16,7 @@ package org.openmrs.web.controller.observation;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Date;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -36,6 +37,7 @@ import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.ObsService;
+import org.openmrs.api.context.Context;
 import org.openmrs.obs.handler.CustomDatatypeHandler;
 import org.openmrs.api.context.Context;
 import org.openmrs.obs.ComplexData;
@@ -93,13 +95,37 @@ public class ObsFormController extends SimpleFormController {
 	}
 	
 	/**
+	 * Suppresses validation. Following improvements to complex Obs, not all form submits may
+	 * contain entries for all mandatory fields. This method will identify which requests are to be
+	 * validated, and which are to be skipped. This is done based on a hidden variable included in
+	 * the request.
+	 * 
+	 * @param request the request recevied
+	 * @param command the command
+	 * @return true, if Spring validation is to be ignored, and false if validation should be run.
+	 */
+	@Override
+	protected boolean suppressValidation(HttpServletRequest request, Object command) {
+		if (request.getParameter("isRefreshOnly") != null) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	/**
 	 * @see org.springframework.web.servlet.mvc.BaseCommandController#onBind(javax.servlet.http.HttpServletRequest,
 	 *      java.lang.Object)
 	 */
 	@Override
 	protected void onBind(HttpServletRequest request, Object command) throws Exception {
-		
-		Obs obs = (Obs) command;
+		Obs obs = null;
+		if (request.getParameter("isRefreshOnly") != null) {
+			obs = (Obs) command;
+			obs.setValueComplex("");
+		} else {
+			obs = (Obs) command;
+		}
 		
 		// set the answer concept if only the answer concept name is set
 		if (obs.getValueCoded() == null && obs.getValueCodedName() != null) {

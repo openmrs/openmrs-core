@@ -95,15 +95,25 @@
 		if(isDomainObject == true){	
 			$j('#valueDomainObjectRow').show();
 			if(window.location.href.indexOf("?obsId=") == -1 && window.location.href.indexOf("?selectedConcept=") == -1 ){
-				window.location.href="${pageContext.request.contextPath}/admin/observations/obs.form?selectedConcept=" + selectedConceptId;
+				var url = "${pageContext.request.contextPath}/admin/observations/obs.form?selectedConcept=" + selectedConceptId;
+				(function ($) {
+					$('#obsForm').append('<input type="hidden" name="isRefreshOnly" value="true" />');
+					$('#obsForm').attr("action", url);
+					$('#obsForm').submit();
+				})(jQuery);
 			}
 			else if(window.location.href.indexOf("?selectedConcept=") != -1){
 				(function ($) {
 					conceptParam = $.url.param("selectedConcept");
 				})(jQuery);
 			
-				 if(conceptParam != selectedConceptId){
-					window.location.href ="${pageContext.request.contextPath}/admin/observations/obs.form?selectedConcept=" + selectedConceptId;
+				 if(conceptParam != selectedConceptId){			 
+					 var url = "${pageContext.request.contextPath}/admin/observations/obs.form?selectedConcept=" + selectedConceptId;
+						(function ($) {
+							$('#obsForm').append('<input type="hidden" name="isRefreshOnly" value="true" />');
+							$('#obsForm').attr("action", url);
+							$('#obsForm').submit();
+						})(jQuery); 
 				} 
 			} else if(window.location.href.indexOf("?obsId=") != -1) {
 				(function ($) {
@@ -245,7 +255,7 @@
 	</form>
 </c:if>
 
-<form method="post" onSubmit="removeHiddenRows()" enctype="multipart/form-data">
+<form id ="obsForm" name="test" method="post" onSubmit="removeHiddenRows()" enctype="multipart/form-data">
 
 <fieldset>
 
@@ -266,7 +276,7 @@
 		<th><spring:message code="Obs.person"/></th>
 		<td>
 			<spring:bind path="person">
-				<openmrs_tag:personField formFieldName="person" searchLabelCode="Person.findBy" initialValue="${status.editor.value.personId}" linkUrl="" callback="" />
+				<openmrs_tag:personField formFieldName="person" formFieldId="personId" searchLabelCode="Person.findBy" initialValue="${status.editor.value.personId}" linkUrl="" callback="" />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
