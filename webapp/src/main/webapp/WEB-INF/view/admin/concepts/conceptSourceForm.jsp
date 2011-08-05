@@ -30,7 +30,7 @@
 		<td><spring:message code="ConceptSource.hl7Code"/></td>
 		<td>
 			<spring:bind path="conceptSource.hl7Code">
-				<input type="text" name="hl7Code" value="${status.value}" size="35" maxlength="5" />
+				<input type="text" name="hl7Code" value="${status.value}" size="35" maxlength="20" />
 				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
