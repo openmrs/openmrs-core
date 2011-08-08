@@ -26,7 +26,7 @@ You must specify concept and Obs.
 	if( obs.isComplex()){	
 	ConceptComplex conceptComplex = cs.getConceptComplex(concept.getConceptId());
 	handlerObs = Context.getObsService().getHandler(conceptComplex.getHandler());	
-	object = handlerObs.getValue(obs); 
+	object = handlerObs.getValue(obs);
 	}
 
 	if (handlerObs != null) {
@@ -42,9 +42,18 @@ You must specify concept and Obs.
 	type="<%= widgetName %>" val="<%= object %>" />
 <%}  %>
 
-<% } %>
-<% } else {%>
-<input type="text" name="<%=formFieldName %>" value="<%= object %>" />
-<% } %>
+<% } else {
+	String valueComplex = null;
+	if(obs != null){
+		valueComplex = obs.getValueComplex();
+	}
+	if(valueComplex == null){
+		valueComplex = "";
+	}
+%>
+<input type="text" name="<%=formFieldName %>"
+	value="<%= valueComplex %>" />
 
+<% } %>
+<% } %>
 
