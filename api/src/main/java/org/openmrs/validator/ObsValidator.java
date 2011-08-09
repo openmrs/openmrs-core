@@ -20,9 +20,12 @@ import org.apache.commons.lang.StringUtils;
 import org.openmrs.Concept;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptNumeric;
+import org.openmrs.ConceptComplex;
+import org.openmrs.obs.ComplexObsHandler;
 import org.openmrs.Obs;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.ConceptService;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
@@ -181,6 +184,16 @@ public class ObsValidator implements Validator {
 				if (obs.getValueComplex() == null || StringUtils.isEmpty(obs.getValueComplex())) {
 					if (atRootNode)
 						errors.rejectValue("valueComplex", "error.null");
+					else
+						errors.rejectValue("groupMembers", "Obs.error.inGroupMember");
+				}
+				ConceptService cs = Context.getConceptService();
+				ConceptComplex conceptComplex = cs.getConceptComplex(obs.getConcept().getConceptId());
+				ComplexObsHandler handlerObs = Context.getObsService().getHandler(conceptComplex.getHandler());
+				Object obj = handlerObs.getValue(obs);
+				if (obj == null) {
+					if (atRootNode)
+						errors.rejectValue("valueComplex", "error.invalid");
 					else
 						errors.rejectValue("groupMembers", "Obs.error.inGroupMember");
 				}
