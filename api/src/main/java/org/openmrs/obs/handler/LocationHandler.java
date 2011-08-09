@@ -28,20 +28,13 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 /**
- * Handler for storing Location objects as the value for Complex Observations. 
- * The Location Id of each Location is stored in the value_complex column 
- * of the Obs table in the database.
- * 
- * This class is the most basic level of implementation
- * for LocationHandlers. You may consider extending LocationHandler class to meet 
- * your requirements. 
- * 
- * There may be several classes which extend LocationHandler. 
- * Out of these, only one will be loaded by Spring. The class to be loaded will be
+ * Handler for storing Location objects as the value for Complex Observations. The Location Id of
+ * each Location is stored in the value_complex column of the Obs table in the database. This class
+ * is the most basic level of implementation for LocationHandlers. You may consider extending
+ * LocationHandler class to meet your requirements. There may be several classes which extend
+ * LocationHandler. Out of these, only one will be loaded by Spring. The class to be loaded will be
  * decided based on the @Order annotation value. As default, LocationHandler will have the lowest
- * possible priority, 
- * 
- * 
+ * possible priority,
  */
 
 @Component
@@ -50,10 +43,10 @@ public class LocationHandler extends CustomDatatypeHandler implements ComplexObs
 	
 	public static final Log log = LogFactory.getLog(LocationHandler.class);
 	
-	/** The Constant HANDLER_TYPE. Used to differentiate between handler types*/
+	/** The Constant HANDLER_TYPE. Used to differentiate between handler types */
 	public static final String HANDLER_TYPE = "LocationHandler";
 	
-	/** The Constant DISPLAY_LINK. Used as a link to display the selected patient*/
+	/** The Constant DISPLAY_LINK. Used as a link to display the selected patient */
 	public static final String DISPLAY_LINK = "/admin/locations/location.form?locationId=";
 	
 	public LocationHandler() {
@@ -92,9 +85,9 @@ public class LocationHandler extends CustomDatatypeHandler implements ComplexObs
 	}
 	
 	/**
-	 * This method retreives the Location instance persisted in the database. The patient is retrievd
-	 * using the ComplexValueKey. It is then passed into ComplexData object, and returned with the
-	 * Obs
+	 * This method retreives the Location instance persisted in the database. The patient is
+	 * retrievd using the ComplexValueKey. It is then passed into ComplexData object, and returned
+	 * with the Obs
 	 * 
 	 * @see org.openmrs.obs.ComplexObsHandler#saveObs(org.openmrs.Obs)
 	 */
@@ -177,7 +170,14 @@ public class LocationHandler extends CustomDatatypeHandler implements ComplexObs
 		Location location = null;
 		if (obs.getValueComplex() != null && !StringUtils.isEmpty(obs.getValueComplex())) {
 			LocationService ls = Context.getLocationService();
-			location = ls.getLocation(Integer.parseInt(obs.getComplexValueKey()));
+			String key = obs.getComplexValueKey();
+			
+			for (int i = 0; i < key.length(); i++) {
+				if (!Character.isDigit(key.charAt(i)))
+					return null;
+			}
+			
+			location = ls.getLocation(Integer.parseInt(key));
 			
 			return location;
 		} else {
