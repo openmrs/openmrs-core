@@ -291,6 +291,28 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 	 * @see {@link ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)}
 	 */
 	@Test
+	@Verifies(value = "should fail validation if complex value key of patient or location concept contains chars", method = "validate(java.lang.Object, org.springframework.validation.Errors)")
+	public void validate_shouldFailValidationIfComplexValueKeyOfPatientOrLocationConceptContainsChars() throws Exception {
+		
+		executeDataSet(COMPLEX_OBS_XML);
+		
+		//validate to ensure that valueComplexKey will not return any Chars
+		Obs obs = new Obs();
+		obs.setPerson(Context.getPersonService().getPerson(2));
+		obs.setConcept(Context.getConceptService().getConcept(8475));
+		obs.setObsDatetime(new Date());
+		obs.setValueComplex("test");
+		
+		Errors errors = new BindException(obs, "obs");
+		new ObsValidator().validate(obs, errors);
+		
+		Assert.assertTrue(errors.hasFieldErrors("valueComplex"));
+	}
+	
+	/**
+	 * @see {@link ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)}
+	 */
+	@Test
 	@Verifies(value = "should fail validation if obs ancestors contains obs", method = "validate(java.lang.Object, org.springframework.validation.Errors)")
 	public void validate_shouldFailValidationIfObsAncestorsContainsObs() throws Exception {
 		Obs obs = new Obs();
