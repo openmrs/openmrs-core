@@ -36,7 +36,7 @@
     <property
         name="format"
         type="java.lang.String"
-        length="50"
+        length="255"
     />
 
     <property
