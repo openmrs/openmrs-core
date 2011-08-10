@@ -4537,5 +4537,17 @@
 			<column name="format" type="varchar(255)" defaultValue="null"/>
 		</modifyColumn>
 	</changeSet>
+	
+	<changeSet id="20110708-2105" author="cta">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<indexExists indexName="concept_source_unique_hl7_codes" />
+			</not>
+		</preConditions>
+		<comment>
+			Add unique constraint to the concept_source table
+		</comment>
+		<addUniqueConstraint tableName="concept_source" columnNames="hl7_code" constraintName="concept_source_unique_hl7_codes"/>
+	</changeSet>
 </databaseChangeLog>
 
