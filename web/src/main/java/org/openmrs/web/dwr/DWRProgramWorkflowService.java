@@ -108,27 +108,6 @@ public class DWRProgramWorkflowService {
 	}
 	
 	/**
-	 * Updates enrollment date and completion date for a PatientProgram. Compares @param
-	 * enrollmentDateYmd with {@link PatientProgram#getDateEnrolled()} and compares @param
-	 * completionDateYmd with {@link PatientProgram#getDateCompleted()} . At least one of these
-	 * comparisons must return true in order to update the PatientProgram. In other words, if
-	 * neither the @param enrollmentDateYmd or the @param completionDateYmd match with the persisted
-	 * object, then the PatientProgram will not be updated. Also, if the enrollment date comes after
-	 * the completion date, the PatientProgram will not be updated.
-	 * 
-	 * @deprecated use {@link #updatePatientProgram(Integer, String, String, Integer)}
-	 * @param patientProgramId
-	 * @param enrollmentDateYmd
-	 * @param completionDateYmd
-	 * @throws ParseException
-	 */
-	@Deprecated
-	public void updatePatientProgram(Integer patientProgramId, String enrollmentDateYmd, String completionDateYmd)
-	        throws ParseException {
-		updatePatientProgram(patientProgramId, enrollmentDateYmd, completionDateYmd, null);
-	}
-	
-	/**
 	 * Updates enrollment date, completion date, and location for a PatientProgram. Compares @param
 	 * enrollmentDateYmd with {@link PatientProgram#getDateEnrolled()} compares @param
 	 * completionDateYmd with {@link PatientProgram#getDateCompleted()}, compares @param locationId
