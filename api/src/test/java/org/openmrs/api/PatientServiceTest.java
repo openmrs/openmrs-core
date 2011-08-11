@@ -26,7 +26,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
 
@@ -79,6 +78,8 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	protected static final String JOHN_PATIENTS_XML = "org/openmrs/api/include/PatientServiceTest-lotsOfJohns.xml";
 	
 	protected static final String USERS_WHO_ARE_PATIENTS_XML = "org/openmrs/api/include/PatientServiceTest-usersWhoArePatients.xml";
+	
+	protected static final String USER_WHO_IS_NOT_PATIENT_XML = "org/openmrs/api/include/PatientServiceTest-userNotAPatient.xml";
 	
 	protected static final String FIND_PATIENTS_XML = "org/openmrs/api/include/PatientServiceTest-findPatients.xml";
 	
@@ -318,7 +319,7 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 	//* public Properties getRuntimeProperties() {
 	//* 		Properties props = super.getRuntimeProperties();
 	//* 		props.setProperty("hibernate.show_sql", "true");
-	//* 		
+	//*
 	//* 		return props;
 	//* }
 	
@@ -2381,5 +2382,22 @@ public class PatientServiceTest extends BaseContextSensitiveTest {
 		patient.addName(new PersonName("Horatio", "Test", "name"));
 		Context.getPatientService().savePatient(patient);
 		Assert.assertEquals(1, Context.getPatientService().getCountOfPatients("Hor").intValue());
+	}
+	
+	@Test
+	@Verifies(value = "should create Patient from Person", method = "getPatient")
+	public void getPatient_shouldCreatePatientFromPerson() throws Exception {
+		executeDataSet(USER_WHO_IS_NOT_PATIENT_XML);
+		Patient patient = patientService.getPatientOrPromotePerson(202);
+		Assert.assertNotNull(patient);
+		Assert.assertEquals(202, patient.getId().intValue());
+	}
+	
+	@Test
+	@Verifies(value = "should return null when Person does not exist", method = "getPatient")
+	public void getPatient_shouldReturnNullWhenPersonDoesNotExist() throws Exception {
+		executeDataSet(USER_WHO_IS_NOT_PATIENT_XML);
+		Patient patient = patientService.getPatientOrPromotePerson(-1);
+		Assert.assertNull(patient);
 	}
 }

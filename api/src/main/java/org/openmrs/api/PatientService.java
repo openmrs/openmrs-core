@@ -95,6 +95,17 @@ public interface PatientService extends OpenmrsService {
 	public Patient getPatient(Integer patientId) throws APIException;
 	
 	/**
+	 * Get patient by internal identifier. If this id is for a person
+	 * then create a patient with that person.
+	 * @param patientOrPersonId
+	 * @return patient
+	 * @throws APIException
+	 */
+	@Authorized( { PrivilegeConstants.VIEW_PATIENTS })
+	@Transactional(readOnly = true)
+	Patient getPatientOrPromotePerson(Integer patientOrPersonId) throws APIException;
+	
+	/**
 	 * Get patient by universally unique identifier.
 	 * 
 	 * @param uuid universally unique identifier
