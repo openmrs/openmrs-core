@@ -141,6 +141,25 @@ public class PatientServiceImpl extends BaseOpenmrsService implements PatientSer
 		return dao.getPatient(patientId);
 	}
 	
+	@Override
+	public Patient getPatientOrPromotePerson(Integer patientOrPersonId) {
+		Patient patient = null;
+		try {
+			patient = getPatient(patientOrPersonId);
+		}
+		catch (ClassCastException ex) {
+			// If the id refers to Person not Patient, it sometimes will cause class cast exception
+			// We will attempt to retrieve the Person and promote to Patient
+		}
+		if (patient == null) {
+			Person toPromote = Context.getPersonService().getPerson(patientOrPersonId);
+			if (toPromote != null) {
+				patient = new Patient(toPromote);
+			}
+		}
+		return patient;
+	}
+	
 	/**
 	 * @see #savePatient(Patient)
 	 * @deprecated replaced by #savePatient(Patient)

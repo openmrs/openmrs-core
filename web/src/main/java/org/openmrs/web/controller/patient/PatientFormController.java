@@ -37,7 +37,6 @@ import org.openmrs.Obs;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
-import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonName;
 import org.openmrs.PatientIdentifierType.LocationBehavior;
@@ -62,7 +61,6 @@ import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -641,26 +639,18 @@ public class PatientFormController extends PersonFormController {
 		if (Context.isAuthenticated()) {
 			PatientService ps = Context.getPatientService();
 			String patientId = request.getParameter("patientId");
-			Integer id = null;
+			Integer id;
 			if (patientId != null) {
 				try {
 					id = Integer.valueOf(patientId);
-					patient = ps.getPatient(id);
-					if (patient == null)
-						throw new ObjectRetrievalFailureException(Patient.class, id);
+					patient = ps.getPatientOrPromotePerson(id);
+					if (patient == null) {
+						log.warn("There is no patient or person with id: '" + patientId + "'");
+						throw new ServletException("There is no patient or person with id: '" + patientId + "'");
+					}
 				}
 				catch (NumberFormatException numberError) {
 					log.warn("Invalid patientId supplied: '" + patientId + "'", numberError);
-				}
-				catch (ObjectRetrievalFailureException noPatientEx) {
-					try {
-						Person person = Context.getPersonService().getPerson(id);
-						patient = new Patient(person);
-					}
-					catch (ObjectRetrievalFailureException noPersonEx) {
-						log.warn("There is no patient or person with id: '" + patientId + "'", noPersonEx);
-						throw new ServletException("There is no patient or person with id: '" + patientId + "'");
-					}
 				}
 			}
 		}
