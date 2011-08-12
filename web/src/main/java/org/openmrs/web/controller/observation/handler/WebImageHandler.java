@@ -26,17 +26,11 @@ import org.openmrs.obs.ComplexObsHandler;
 /**
  * Extends functionality of {@link ImageHandler} for web specific views.
  * 
- * @since 1.5
- * 
- * This class extends org.openmrs.obs.handler.ImageHandler
- * You may also consider extending ImageHandler class to meet your requirements. 
- * 
- * There may be several classes which extend
- * ImageHandler. Out of these, only one will be loaded by Spring. The class to be loaded will be
- * decided based on the @Order annotation value. 
- * 
- * As default, ImageHandler will have the lowest possible
- * priority, and will be overridden by WebImageHandler
+ * @since 1.5 This class extends org.openmrs.obs.handler.ImageHandler You may also consider
+ *        extending ImageHandler class to meet your requirements. There may be several classes which
+ *        extend ImageHandler. Out of these, only one will be loaded by Spring. The class to be
+ *        loaded will be decided based on the @Order annotation value. As default, ImageHandler will
+ *        have the lowest possible priority, and will be overridden by WebImageHandler
  */
 
 @Component
@@ -95,16 +89,6 @@ public class WebImageHandler extends ImageHandler implements ComplexObsHandler {
 	 */
 	private String getHyperlink(Obs obs) {
 		return "/" + WebConstants.WEBAPP_NAME + "/complexObsServlet?obsId=" + obs.getObsId();
-	}
-	
-	/**
-	 * Gets the handler type for each registered handler.
-	 * 
-	 * @return the handler type
-	 */
-	@Override
-	public String getHandlerType() {
-		return "ImageHandler";
 	}
 	
 }

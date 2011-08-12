@@ -23,6 +23,7 @@ import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptComplex;
 import org.openmrs.obs.ComplexObsHandler;
 import org.openmrs.Obs;
+import org.openmrs.obs.handler.CustomDatatypeHandler;
 import org.openmrs.annotation.Handler;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.ConceptService;
@@ -190,12 +191,14 @@ public class ObsValidator implements Validator {
 				ConceptService cs = Context.getConceptService();
 				ConceptComplex conceptComplex = cs.getConceptComplex(obs.getConcept().getConceptId());
 				ComplexObsHandler handlerObs = Context.getObsService().getHandler(conceptComplex.getHandler());
-				Object obj = handlerObs.getValue(obs);
-				if (obj == null) {
-					if (atRootNode)
-						errors.rejectValue("valueComplex", "error.invalid");
-					else
-						errors.rejectValue("groupMembers", "Obs.error.inGroupMember");
+				if (handlerObs instanceof CustomDatatypeHandler) {
+					Object obj = handlerObs.getValue(obs);
+					if (obj == null) {
+						if (atRootNode)
+							errors.rejectValue("valueComplex", "error.invalid");
+						else
+							errors.rejectValue("groupMembers", "Obs.error.inGroupMember");
+					}
 				}
 			}
 			
