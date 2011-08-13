@@ -231,14 +231,23 @@ public class VisitServiceImpl extends BaseOpenmrsService implements VisitService
 	/**
 	 * @see org.openmrs.api.VisitService#getActiveVisitsByPatient(org.openmrs.Patient)
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	public List<Visit> getActiveVisitsByPatient(Patient patient) throws APIException {
+		return getVisitsByPatient(patient, false, false);
+	}
+	
+	/**
+	 * @see org.openmrs.api.VisitService#getVisitsByPatient(org.openmrs.Patient, boolean, boolean)
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Visit> getVisitsByPatient(Patient patient, boolean includeInactive, boolean includeVoided)
+	        throws APIException {
 		if (patient == null || patient.getId() == null)
 			return Collections.EMPTY_LIST;
 		
-		return dao.getVisits(null, Collections.singletonList(patient), null, null, null, null, null, null, null, false,
-		    false);
+		return dao.getVisits(null, Collections.singletonList(patient), null, null, null, null, null, null, null,
+		    includeInactive, includeVoided);
 	}
 	
 	/**
