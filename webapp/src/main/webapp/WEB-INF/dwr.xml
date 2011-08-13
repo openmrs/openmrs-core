@@ -210,6 +210,7 @@
 			<include method="voidLastState"/>
 			<include method="getWorkflowsByProgram"/>
 			<include method="getStatesByWorkflow"/>
+            <include method="getPossibleOutcomes" />
 		</create>
 
 		<create creator="new" javascript="DWRCohortService">
@@ -290,7 +291,7 @@
 			DWRPatientService.findBatchOfPatients(String searchValue, boolean includeVoided, Integer start, Integer length);
 			DWRPatientService.findPatients(String searchValue, boolean includeVoided);
 			DWRPatientService.findCountAndPatients(String searchValue, Integer start, Integer length, boolean getMatchCount);
-			DWRProgramWorkflowService.updatePatientProgram(Integer patientProgramId, String enrollmentDateYmd, String completionDateYmd, Integer locationId);
+			DWRProgramWorkflowService.updatePatientProgram(Integer patientProgramId, String enrollmentDateYmd, String completionDateYmd, Integer locationId, Integer outcomeId);
 			DWRVisitService.findVisitsByPatient(Integer patientId, boolean includeEnded, boolean includeVoided);
 			DWRVisitService.getVisit(Integer visitId);
 		]]>

@@ -15,6 +15,7 @@ package org.openmrs.api;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -46,6 +47,8 @@ import org.openmrs.test.Verifies;
 public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 	
 	protected static final String CREATE_PATIENT_PROGRAMS_XML = "org/openmrs/api/include/ProgramWorkflowServiceTest-createPatientProgram.xml";
+	
+	protected static final String PROGRAM_WITH_OUTCOMES_XML = "org/openmrs/api/include/ProgramWorkflowServiceTest-initialData.xml";
 	
 	protected ProgramWorkflowService pws = null;
 	
@@ -332,6 +335,42 @@ public class ProgramWorkflowServiceTest extends BaseContextSensitiveTest {
 				Assert.fail("Wha?!");
 			x++;
 		}
+	}
+	
+	@Test
+	@Verifies(value = "should get possible outcomes for a program", method = "getPossibleOutcomes()")
+	public void getPossibleOutcomes_shouldGetOutcomesForASet() throws Exception {
+		executeDataSet(PROGRAM_WITH_OUTCOMES_XML);
+		
+		List<Concept> possibleOutcomes = Context.getProgramWorkflowService().getPossibleOutcomes(4);
+		assertEquals(2, possibleOutcomes.size());
+	}
+	
+	@Test
+	@Verifies(value = "should get possible outcomes for a program with outcome questions", method = "getPossibleOutcomes()")
+	public void getPossibleOutcomes_shouldGetOutcomesForAQuestion() throws Exception {
+		executeDataSet(PROGRAM_WITH_OUTCOMES_XML);
+		
+		List<Concept> possibleOutcomes = Context.getProgramWorkflowService().getPossibleOutcomes(5);
+		assertEquals(2, possibleOutcomes.size());
+	}
+	
+	@Test
+	@Verifies(value = "should get no possible outcomes for a program that does not exist", method = "getPossibleOutcomes()")
+	public void getPossibleOutcomes_shouldReturnEmptyListWhenNoProgramExists() throws Exception {
+		executeDataSet(PROGRAM_WITH_OUTCOMES_XML);
+		
+		List<Concept> possibleOutcomes = Context.getProgramWorkflowService().getPossibleOutcomes(999);
+		assertTrue(possibleOutcomes.isEmpty());
+	}
+	
+	@Test
+	@Verifies(value = "should get no possible outcomes for a program with no outcome", method = "getPossibleOutcomes()")
+	public void getPossibleOutcomes_shouldReturnEmptyListWhenProgramHasNoOutcome() throws Exception {
+		executeDataSet(PROGRAM_WITH_OUTCOMES_XML);
+		
+		List<Concept> possibleOutcomes = Context.getProgramWorkflowService().getPossibleOutcomes(1);
+		assertTrue(possibleOutcomes.isEmpty());
 	}
 	
 	//	/**

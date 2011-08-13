@@ -349,6 +349,16 @@ public interface ProgramWorkflowService extends OpenmrsService {
 	@Authorized( { PrivilegeConstants.DELETE_PATIENT_PROGRAMS })
 	public PatientProgram unvoidPatientProgram(PatientProgram patientProgram) throws APIException;
 	
+	/**
+	 * Get all possible outcome concepts for a program
+	 *
+	 * @param programId
+	 * @return outcome concepts
+	 */
+	@Authorized( { PrivilegeConstants.VIEW_PATIENT_PROGRAMS })
+	@Transactional(readOnly = true)
+	public List<Concept> getPossibleOutcomes(Integer programId);
+	
 	// **************************
 	// CONCEPT STATE CONVERSION
 	// **************************
