@@ -36,6 +36,8 @@ public class Program extends BaseOpenmrsMetadata implements java.io.Serializable
 	
 	private Concept concept;
 	
+	private Concept outcomesConcept;
+	
 	private Set<ProgramWorkflow> allWorkflows = new HashSet<ProgramWorkflow>();
 	
 	// ******************
@@ -129,6 +131,14 @@ public class Program extends BaseOpenmrsMetadata implements java.io.Serializable
 	
 	public void setConcept(Concept concept) {
 		this.concept = concept;
+	}
+	
+	public Concept getOutcomesConcept() {
+		return outcomesConcept;
+	}
+	
+	public void setOutcomesConcept(Concept concept) {
+		this.outcomesConcept = concept;
 	}
 	
 	@Attribute(required = true)

@@ -4549,5 +4549,42 @@
 		</comment>
 		<addUniqueConstraint tableName="concept_source" columnNames="hl7_code" constraintName="concept_source_unique_hl7_codes"/>
 	</changeSet>
+
+	<changeSet id="2011-07-12-1947-add-outcomesConcept-to-program" author="grwarren">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="program" columnName="outcomes_concept_id"/>
+			</not>
+		</preConditions>
+		<comment>
+			Adding the outcomesConcept property to Program
+		</comment>
+		<addColumn tableName="program">
+			<column name="outcomes_concept_id" type="int"/>
+		</addColumn>
+		<addForeignKeyConstraint constraintName="program_outcomes_concept_id_fk"
+								 baseTableName="program" baseColumnNames="outcomes_concept_id"
+								 referencedTableName="concept"
+								 referencedColumnNames="concept_id"/>
+	</changeSet>
+
+	<changeSet id="2011-07-12-2005-add-outcome-to-patientprogram" author="grwarren">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<columnExists tableName="patient_program" columnName="outcome_concept_id"/>
+			</not>
+		</preConditions>
+		<comment>
+			Adding the outcome property to PatientProgram
+		</comment>
+		<addColumn tableName="patient_program">
+			<column name="outcome_concept_id" type="int"/>
+		</addColumn>
+		<addForeignKeyConstraint constraintName="patient_program_outcome_concept_id_fk"
+								 baseTableName="patient_program" baseColumnNames="outcome_concept_id"
+								 referencedTableName="concept"
+								 referencedColumnNames="concept_id"/>
+	</changeSet>
+
 </databaseChangeLog>
 
