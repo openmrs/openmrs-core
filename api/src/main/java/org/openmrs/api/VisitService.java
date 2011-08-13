@@ -251,15 +251,30 @@ public interface VisitService extends OpenmrsService {
 	
 	/**
 	 * Gets all active unvoided visits for the specified patient i.e visits whose end date is null
+	 *
+	 * @param patient the patient whose visits to get
+	 * @return a list of visits
+	 * @throws APIException
+	 * @should return all active unvoided visits for the specified patient
+	 */
+	@Transactional(readOnly = true)
+	@Authorized(PrivilegeConstants.VIEW_VISITS)
+	public List<Visit> getActiveVisitsByPatient(Patient patient) throws APIException;
+	
+	/**
+	 * Gets all visits for the specified patient
 	 * 
 	 * @param patient the patient whose visits to get
+	 * @param includeInactive
+	 * @param includeVoided
 	 * @return a list of visits
 	 * @throws APIException
 	 * @should return all unvoided active visits for the specified patient
 	 */
 	@Transactional(readOnly = true)
 	@Authorized(PrivilegeConstants.VIEW_VISITS)
-	public List<Visit> getActiveVisitsByPatient(Patient patient) throws APIException;
+	public List<Visit> getVisitsByPatient(Patient patient, boolean includeInactive, boolean includeVoided)
+	        throws APIException;
 	
 	/**
 	 * @return all {@link VisitAttributeType}s
