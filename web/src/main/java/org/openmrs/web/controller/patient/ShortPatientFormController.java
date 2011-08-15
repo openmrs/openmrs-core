@@ -87,20 +87,11 @@ public class ShortPatientFormController {
 	@ModelAttribute("patientModel")
 	public ShortPatientModel getPatientModel(@RequestParam(value = "patientId", required = false) Integer patientId,
 	        ModelMap model, WebRequest request) {
-		Patient patient = null;
+		Patient patient;
 		if (patientId != null) {
-			try {
-				patient = Context.getPatientService().getPatient(patientId);
-			}
-			catch (ClassCastException ex) {
-				// we're promoting an existing Person to a full Patient
-				// this will be handled in the next lines
-			}
+			patient = Context.getPatientService().getPatientOrPromotePerson(patientId);
 			if (patient == null) {
-				Person toPromote = Context.getPersonService().getPerson(patientId);
-				if (toPromote == null)
-					throw new IllegalArgumentException("No patient or person with the given id");
-				patient = new Patient(toPromote);
+				throw new IllegalArgumentException("No patient or person with the given id");
 			}
 		} else {
 			// we may have some details to add to a blank patient
