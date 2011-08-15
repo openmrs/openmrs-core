@@ -340,6 +340,14 @@ public class ObsFormController extends SimpleFormController {
 					 * }
 					 */
 				}
+				
+				if (obs.getConcept().isComplex()) {
+					ConceptService cs = Context.getConceptService();
+					ConceptComplex conceptComplex = cs.getConceptComplex(obs.getConcept().getConceptId());
+					ComplexObsHandler handlerObs = Context.getObsService().getHandler(conceptComplex.getHandler());
+					map.put("tooltipMessage", handlerObs.getClass().getName());
+				}
+				
 			}
 			
 			defaultVerbose = Context.getAuthenticatedUser().getUserProperty(OpenmrsConstants.USER_PROPERTY_SHOW_VERBOSE);

@@ -439,7 +439,11 @@
 		</spring:bind>
 	</tr>		
 	<tr id="valueDomainObjectRow" class="obsValue">
-		<th><spring:message code="Obs.complexAnswer"/></th>
+		<th><spring:message code="Obs.complexAnswer"/>
+		<c:if test="${not empty tooltipMessage }">
+		<img class="help_icon" id="tooltipNumericIcon" src="${pageContext.request.contextPath}/images/help.gif" border="0" title="<spring:message code="${tooltipMessage}.tooltipMessage"/>" />
+		</c:if>
+		</th>
 		<spring:bind path="valueComplex">
 		<td>	
 			 <openmrs_tag:complexObsValue concept="${obs.concept}" obs="${obs}" /> 
