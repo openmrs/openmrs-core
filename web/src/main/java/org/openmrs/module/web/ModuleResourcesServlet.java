@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
+import javax.activation.MimetypesFileTypeMap;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -63,6 +64,8 @@ public class ModuleResourcesServlet extends HttpServlet {
 		
 		response.setDateHeader("Last-Modified", f.lastModified());
 		response.setContentLength(new Long(f.length()).intValue());
+		String mimeType = getServletContext().getMimeType(f.getName());
+		response.setContentType(mimeType);
 		
 		FileInputStream is = new FileInputStream(f);
 		try {
