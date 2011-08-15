@@ -26,6 +26,8 @@ import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 
+import com.mysql.jdbc.StringUtils;
+
 /**
  * A PersonAttribute is meant as way for implementations to add arbitrary information about a
  * user/patient to their database. PersonAttributes are essentially just key-value pairs. However,
@@ -288,7 +290,9 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 			}
 		}
 		catch (Throwable t) {
-			log.warn("Unable to hydrate value: " + getValue() + " for type: " + getAttributeType(), t);
+			//Do not log warnings for legal but empty values.
+			if(!((t.getCause() instanceof NumberFormatException && StringUtils.isNullOrEmpty(getValue())) || t instanceof NoSuchMethodException))
+				log.warn("Unable to hydrate value: " + getValue() + " for type: " + getAttributeType(), t);
 		}
 		
 		log.debug("Returning value: '" + getValue() + "'");
