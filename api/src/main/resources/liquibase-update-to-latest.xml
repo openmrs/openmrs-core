@@ -4526,6 +4526,18 @@
             referencedColumnNames="user_id" />
     </changeSet>
     
+    <changeSet id="201107192313-change-length-of-regex-column" author="jtellez">
+		<preConditions onFail="HALT">
+			<columnExists tableName="patient_identifier_type" columnName="format" />
+		</preConditions>
+		<comment>
+			Increasing maximum length of patient identifier type regex format
+		</comment>
+		<modifyColumn tableName="patient_identifier_type">
+			<column name="format" type="varchar(255)" defaultValue="null"/>
+		</modifyColumn>
+	</changeSet>
+    
 	<changeSet id="20110628-1627-add-handler-config-to-concept-complex" author="surangak">
 		<preConditions onFail="MARK_RAN">
 			<tableExists tableName="concept_complex" />
