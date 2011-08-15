@@ -189,6 +189,10 @@ public class PersonAttributeTypeFormController extends SimpleFormController {
 		// java.util.Date doesn't work as a PersonAttributeType since it gets saved in a user-date-format-specific way
 		formats.remove("java.util.Date");
 		
+		//Removing these two as per ticket: TRUNK-2460
+		formats.remove("org.openmrs.Patient.exitReason");
+		formats.remove("org.openmrs.DrugOrder.discontinuedReason");
+		
 		map.put("privileges", privileges);
 		map.put("formats", formats);
 		
