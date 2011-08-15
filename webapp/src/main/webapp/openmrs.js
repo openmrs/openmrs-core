@@ -140,7 +140,7 @@ useLoadingMessage = function(message) {
 	else loadingMessage = dwrLoadingMessage; // to internationalize message
 
 	dwr.engine.setPreHook(function() {
-		var disabledZone = $('disabledZone');
+		var disabledZone = document.getElementById('disabledZone');
 		if (!disabledZone) {
 			disabledZone = document.createElement('div');
 			disabledZone.setAttribute('id', 'disabledZone');
@@ -152,13 +152,13 @@ useLoadingMessage = function(message) {
 			messageZone.appendChild(text);
 		}
 		else {
-			$('messageZone').innerHTML = loadingMessage;
+			document.getElementById('messageZone').innerHTML = loadingMessage;
 			disabledZone.style.display = '';
 		}
 	});
 
 	dwr.engine.setPostHook(function() {
-		$('disabledZone').style.display = 'none';
+		document.getElementById('disabledZone').style.display = 'none';
 	});
 }
 
@@ -225,7 +225,7 @@ function toggleRowVisibilityForClass(elementId, className, hasDescriptionRow) {
 
 function gotoUser(select, userId) {
 	if (userId == null)
-		userId = $(select).value;
+		userId = document.getElementById(select).value;
 	if (userId != "")
 		window.location = openmrsContextPath + "/admin/users/user.form?userId=" + userId;
 	return false;
