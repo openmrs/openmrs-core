@@ -56,7 +56,7 @@ import org.openmrs.api.db.PatientSetDAO;
 import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.PrivilegeConstants;
 
-public class PatientSetServiceImpl implements PatientSetService {
+public class PatientSetServiceImpl extends BaseOpenmrsService implements PatientSetService {
 	
 	public final Log log = LogFactory.getLog(this.getClass());
 	

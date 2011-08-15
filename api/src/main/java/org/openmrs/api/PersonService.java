@@ -44,7 +44,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @see org.openmrs.Patient
  */
 @Transactional
-public interface PersonService {
+public interface PersonService extends OpenmrsService {
 	
 	/**
 	 * These enumerations are used when determining which person attr types to display. If listing
