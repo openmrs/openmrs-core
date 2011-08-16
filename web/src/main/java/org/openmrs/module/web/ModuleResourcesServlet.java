@@ -1,5 +1,5 @@
 /**
- * The contents of this file are subject to the OpenMRS Public License
+  * The contents of this file are subject to the OpenMRS Public License
  * Version 1.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
  * http://license.openmrs.org
@@ -63,6 +63,8 @@ public class ModuleResourcesServlet extends HttpServlet {
 		
 		response.setDateHeader("Last-Modified", f.lastModified());
 		response.setContentLength(new Long(f.length()).intValue());
+		String mimeType = getServletContext().getMimeType(f.getName());
+		response.setContentType(mimeType);
 		
 		FileInputStream is = new FileInputStream(f);
 		try {
