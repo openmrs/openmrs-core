@@ -139,8 +139,13 @@
          <artifactId>mail</artifactId>
       </dependency>
       <dependency>
-         <groupId>org.openmrs.liquibase</groupId>
+         <groupId>org.liquibase</groupId>
          <artifactId>liquibase-core</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.openmrs.liquibase.ext</groupId>
+         <artifactId>modify-column</artifactId>
+         <version>2.0.1-SNAPSHOT</version>
       </dependency>
       <dependency>
          <groupId>xerces</groupId>
