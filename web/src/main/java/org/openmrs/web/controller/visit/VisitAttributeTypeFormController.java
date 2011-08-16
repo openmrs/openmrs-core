@@ -41,6 +41,7 @@ import org.springframework.web.servlet.view.RedirectView;
  * 
  * @since 1.9
  */
+@SuppressWarnings("deprecation")
 public class VisitAttributeTypeFormController extends SimpleFormController {
 	
 	/** Logger for this class and subclasses */
@@ -54,7 +55,7 @@ public class VisitAttributeTypeFormController extends SimpleFormController {
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
 	 *      org.springframework.validation.BindException)
 	 */
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
+    protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object obj,
 	        BindException errors) throws Exception {
 		
 		HttpSession httpSession = request.getSession();
