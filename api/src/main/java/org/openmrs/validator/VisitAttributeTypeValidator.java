@@ -13,10 +13,12 @@
  */
 package org.openmrs.validator;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.VisitAttributeType;
 import org.openmrs.annotation.Handler;
+import org.openmrs.api.context.Context;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
@@ -37,8 +39,7 @@ public class VisitAttributeTypeValidator implements Validator {
 	 * 
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
-	@SuppressWarnings("unchecked")
-	public boolean supports(Class c) {
+	public boolean supports(Class<?> c) {
 		return c.equals(VisitAttributeType.class);
 	}
 	
@@ -73,6 +74,16 @@ public class VisitAttributeTypeValidator implements Validator {
 					errors.rejectValue("maxOccurs", "AttributeType.maxOccursShouldNotBeLessThanZero");
 				} else if (maxOccurs < minOccurs) {
 					errors.rejectValue("maxOccurs", "AttributeType.maxOccursShouldNotBeLessThanMinOccurs");
+				}
+			}
+
+			if (StringUtils.isBlank(visitAttributeType.getDatatype())) {
+				errors.rejectValue("datatype", "error.null");
+			} else {
+				try {
+					Context.getAttributeService().getHandler(visitAttributeType);
+				} catch (Exception ex) {
+					errors.rejectValue("handlerConfig", "AttributeType.handlerConfig.invalid", new Object[] { ex.getMessage() }, "Invalid");
 				}
 			}
 		}

@@ -91,6 +91,7 @@
 		<td>
 			<spring:bind path="visitAttributeType.handlerConfig">
 				<textarea name="handlerConfig" rows="3" cols="40" >${status.value}</textarea>
+				<c:if test="${status.errorMessage != ''}"><span class="error">${status.errorMessage}</span></c:if>
 			</spring:bind>
 		</td>
 	</tr>
