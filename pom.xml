@@ -278,9 +278,9 @@
 				</exclusions>
 			</dependency>
 			<dependency>
-				<groupId>org.openmrs.liquibase</groupId>
+				<groupId>org.liquibase</groupId>
 				<artifactId>liquibase-core</artifactId>
-				<version>1.9.4-mod</version>
+				<version>2.0.1</version>
 			</dependency>
 
 			<dependency>

@@ -23,7 +23,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -32,24 +31,26 @@ import java.util.Properties;
 import java.util.Scanner;
 import java.util.Set;
 
-import liquibase.ChangeSet;
-import liquibase.CompositeFileOpener;
-import liquibase.DatabaseChangeLog;
-import liquibase.FileOpener;
-import liquibase.FileSystemFileOpener;
 import liquibase.Liquibase;
+import liquibase.changelog.ChangeLogIterator;
+import liquibase.changelog.ChangeLogParameters;
+import liquibase.changelog.ChangeSet;
+import liquibase.changelog.DatabaseChangeLog;
+import liquibase.changelog.filter.ContextChangeSetFilter;
+import liquibase.changelog.filter.DbmsChangeSetFilter;
+import liquibase.changelog.filter.ShouldRunChangeSetFilter;
+import liquibase.changelog.visitor.UpdateVisitor;
 import liquibase.database.Database;
 import liquibase.database.DatabaseFactory;
+import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.LiquibaseException;
 import liquibase.exception.LockException;
-import liquibase.lock.LockHandler;
-import liquibase.parser.ChangeLogIterator;
-import liquibase.parser.ChangeLogParser;
-import liquibase.parser.filter.ContextChangeSetFilter;
-import liquibase.parser.filter.DbmsChangeSetFilter;
-import liquibase.parser.filter.ShouldRunChangeSetFilter;
-import liquibase.parser.visitor.UpdateVisitor;
+import liquibase.lockservice.LockService;
 
+import liquibase.parser.core.xml.XMLChangeLogSAXParser;
+import liquibase.resource.CompositeResourceAccessor;
+import liquibase.resource.FileSystemResourceAccessor;
+import liquibase.resource.ResourceAccessor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.annotation.Authorized;
@@ -191,10 +192,11 @@ public class DatabaseUpdater {
 			}
 			
 			@Override
-			public void visit(ChangeSet changeSet, Database database) throws LiquibaseException {
+			public void visit(ChangeSet changeSet, DatabaseChangeLog databaseChangeLog, Database database)
+			        throws LiquibaseException {
 				if (callback != null)
 					callback.executing(changeSet, numChangeSetsToRun);
-				super.visit(changeSet, database);
+				super.visit(changeSet, databaseChangeLog, database);
 			}
 		}
 		
@@ -206,17 +208,17 @@ public class DatabaseUpdater {
 		int numChangeSetsToRun = liquibase.listUnrunChangeSets(contexts).size();
 		Database database = liquibase.getDatabase();
 		
-		LockHandler lockHandler = LockHandler.getInstance(database);
+		LockService lockHandler = LockService.getInstance(database);
 		lockHandler.waitForLock();
 		
 		try {
-			database.checkDatabaseChangeLogTable();
+			database.checkDatabaseChangeLogTable(true, null, new String[] { contexts });
 			
-			FileOpener openmrsFO = new ClassLoaderFileOpener(cl);
-			FileOpener fsFO = new FileSystemFileOpener();
+			ResourceAccessor openmrsFO = new ClassLoaderFileOpener(cl);
+			ResourceAccessor fsFO = new FileSystemResourceAccessor();
 			
-			DatabaseChangeLog changeLog = new ChangeLogParser(new HashMap<String, Object>()).parse(changeLogFile,
-			    new CompositeFileOpener(openmrsFO, fsFO));
+			DatabaseChangeLog changeLog = new XMLChangeLogSAXParser().parse(changeLogFile, new ChangeLogParameters(),
+			    new CompositeResourceAccessor(openmrsFO, fsFO));
 			changeLog.validate(database);
 			ChangeLogIterator logIterator = new ChangeLogIterator(changeLog, new ShouldRunChangeSetFilter(database),
 			        new ContextChangeSetFilter(contexts), new DbmsChangeSetFilter(database));
@@ -356,7 +358,8 @@ public class DatabaseUpdater {
 			cl = OpenmrsClassLoader.getInstance();
 		
 		try {
-			Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(connection);
+			Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(
+			    new JdbcConnection(connection));
 			database.setDatabaseChangeLogTableName("liquibasechangelog");
 			database.setDatabaseChangeLogLockTableName("liquibasechangeloglock");
 			
@@ -367,14 +370,13 @@ public class DatabaseUpdater {
 				database.setDatabaseChangeLogLockTableName(database.getDatabaseChangeLogLockTableName().toUpperCase());
 			}
 			
-			FileOpener openmrsFO = new ClassLoaderFileOpener(cl);
-			FileOpener fsFO = new FileSystemFileOpener();
+			ResourceAccessor openmrsFO = new ClassLoaderFileOpener(cl);
+			ResourceAccessor fsFO = new FileSystemResourceAccessor();
 			
 			if (changeLogFile == null)
 				changeLogFile = CHANGE_LOG_FILE;
 			
-			return new Liquibase(changeLogFile, new CompositeFileOpener(openmrsFO, fsFO), database);
-			
+			return new Liquibase(changeLogFile, new CompositeResourceAccessor(openmrsFO, fsFO), database);
 		}
 		catch (Exception e) {
 			// if an error occurs, close the connection
@@ -538,7 +540,7 @@ public class DatabaseUpdater {
 		try {
 			Liquibase liquibase = getLiquibase(CHANGE_LOG_FILE, null);
 			database = liquibase.getDatabase();
-			DatabaseChangeLog changeLog = new ChangeLogParser(new HashMap<String, Object>()).parse(CHANGE_LOG_FILE,
+			DatabaseChangeLog changeLog = new XMLChangeLogSAXParser().parse(CHANGE_LOG_FILE, new ChangeLogParameters(),
 			    liquibase.getFileOpener());
 			List<ChangeSet> changeSets = changeLog.getChangeSets();
 			
