@@ -20,15 +20,15 @@ import java.sql.Statement;
 import java.util.Map;
 import java.util.UUID;
 
+import liquibase.FileOpener;
 import liquibase.change.custom.CustomTaskChange;
 import liquibase.database.Database;
-import liquibase.database.jvm.JdbcConnection;
+import liquibase.database.DatabaseConnection;
 import liquibase.exception.CustomChangeException;
-import liquibase.exception.DatabaseException;
+import liquibase.exception.InvalidChangeDefinitionException;
 import liquibase.exception.SetupException;
+import liquibase.exception.UnsupportedChangeException;
 
-import liquibase.exception.ValidationErrors;
-import liquibase.resource.ResourceAccessor;
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsUtil;
@@ -95,8 +95,7 @@ public class GenerateUuid implements CustomTaskChange {
 	 * 
 	 * @see liquibase.change.custom.CustomTaskChange#execute(liquibase.database.Database)
 	 */
-	@Override
-	public void execute(Database database) throws CustomChangeException {
+	public void execute(Database database) throws CustomChangeException, UnsupportedChangeException {
 		
 		// if we're in a "generate sql file" mode, quit early
 		if (Context.getRuntimeProperties().size() == 0)
@@ -105,7 +104,7 @@ public class GenerateUuid implements CustomTaskChange {
 		if (tableNamesArray == null || tableNamesArray.length == 0)
 			throw new CustomChangeException("At least one table name in the 'tableNames' parameter is required", null);
 		
-		JdbcConnection connection = (JdbcConnection) database.getConnection();
+		DatabaseConnection connection = database.getConnection();
 		
 		// loop over all tables
 		for (String tableName : tableNamesArray) {
@@ -141,9 +140,6 @@ public class GenerateUuid implements CustomTaskChange {
 				}
 				
 			}
-			catch (DatabaseException e) {
-				throw new CustomChangeException("Unable to set uuid on table: " + tableName, e);
-			}
 			catch (SQLException e) {
 				throw new CustomChangeException("Unable to set uuid on table: " + tableName, e);
 			}
@@ -153,16 +149,14 @@ public class GenerateUuid implements CustomTaskChange {
 	/**
 	 * @see liquibase.change.custom.CustomChange#getConfirmationMessage()
 	 */
-	@Override
 	public String getConfirmationMessage() {
 		return "Finished adding uuids to all rows in all tables";
 	}
 	
 	/**
-	 * @see liquibase.change.custom.CustomChange#setFileOpener(liquibase.ResourceAccessor)
+	 * @see liquibase.change.custom.CustomChange#setFileOpener(liquibase.FileOpener)
 	 */
-	@Override
-	public void setFileOpener(ResourceAccessor fileOpener) {
+	public void setFileOpener(FileOpener fileOpener) {
 		
 	}
 	
@@ -171,7 +165,6 @@ public class GenerateUuid implements CustomTaskChange {
 	 * 
 	 * @see liquibase.change.custom.CustomChange#setUp()
 	 */
-	@Override
 	public void setUp() throws SetupException {
 		
 		tableNamesArray = StringUtils.split(tableNames);
@@ -188,9 +181,8 @@ public class GenerateUuid implements CustomTaskChange {
 	/**
 	 * @see liquibase.change.custom.CustomChange#validate(liquibase.database.Database)
 	 */
-	@Override
-	public ValidationErrors validate(Database database) {
-		return new ValidationErrors();
+	public void validate(Database database) throws InvalidChangeDefinitionException {
+		
 	}
 	
 	/**

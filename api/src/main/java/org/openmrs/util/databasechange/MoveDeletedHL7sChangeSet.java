@@ -17,16 +17,15 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import liquibase.change.custom.CustomChange;
+import liquibase.FileOpener;
 import liquibase.change.custom.CustomTaskChange;
 import liquibase.database.Database;
-import liquibase.database.jvm.JdbcConnection;
+import liquibase.database.DatabaseConnection;
 import liquibase.exception.CustomChangeException;
-import liquibase.exception.DatabaseException;
+import liquibase.exception.InvalidChangeDefinitionException;
 import liquibase.exception.SetupException;
+import liquibase.exception.UnsupportedChangeException;
 
-import liquibase.exception.ValidationErrors;
-import liquibase.resource.ResourceAccessor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.hl7.HL7Constants;
@@ -41,9 +40,8 @@ public class MoveDeletedHL7sChangeSet implements CustomTaskChange {
 	/**
 	 * @see CustomTaskChange#execute(Database)
 	 */
-	@Override
-	public void execute(Database database) throws CustomChangeException {
-		JdbcConnection connection = (JdbcConnection) database.getConnection();
+	public void execute(Database database) throws CustomChangeException, UnsupportedChangeException {
+		DatabaseConnection connection = database.getConnection();
 		
 		StringBuilder getDeletedHL7sSql = new StringBuilder();
 		getDeletedHL7sSql.append("SELECT hl7_source, hl7_source_key, hl7_data, date_created, uuid, hl7_in_archive_id");
@@ -91,9 +89,6 @@ public class MoveDeletedHL7sChangeSet implements CustomTaskChange {
 		catch (SQLException e) {
 			throw new CustomChangeException("Unable to move deleted HL7s from archive table to queue table", e);
 		}
-		catch (DatabaseException dbex) {
-			throw new CustomChangeException("Unable to move deleted HL7s from archive table to queue table", dbex);
-		}
 	}
 	
 	/**
@@ -108,7 +103,7 @@ public class MoveDeletedHL7sChangeSet implements CustomTaskChange {
 	 * @see CustomChange#setFileOpener(FileOpener)
 	 */
 	@Override
-	public void setFileOpener(ResourceAccessor fo) {
+	public void setFileOpener(FileOpener fo) {
 	}
 	
 	/**
@@ -122,7 +117,6 @@ public class MoveDeletedHL7sChangeSet implements CustomTaskChange {
 	 * @see CustomChange#validate(Database)
 	 */
 	@Override
-	public ValidationErrors validate(Database db) {
-		return new ValidationErrors();
+	public void validate(Database db) throws InvalidChangeDefinitionException {
 	}
 }

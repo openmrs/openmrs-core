@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
-     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
 	
@@ -2285,7 +2285,7 @@
 			<append value=" FIRST" />
 		</modifySql>
 	</changeSet>
-        
+	
 	<changeSet id="20090414-0807" author="bwolfe">
 		<comment>Adding index and foreign key to concept_set.concept_id column</comment>
 		<createIndex tableName="concept_set" indexName="idx_concept_set_concept">
@@ -4251,7 +4251,7 @@
 			<column name="name" type="varchar(100)">
 				<constraints nullable="false" />
 			</column>
-			<column name="value" type="blob" />
+			<column name="value" type="blob(16777215)" />
 			<column name="uuid" type="char(38)">
 				<constraints nullable="false"/>
 			</column>

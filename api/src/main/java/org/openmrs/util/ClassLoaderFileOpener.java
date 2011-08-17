@@ -18,14 +18,14 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.Enumeration;
 
-import liquibase.resource.ResourceAccessor;
+import liquibase.FileOpener;
 
 /**
  * Implementation of liquibase FileOpener interface so that the {@link OpenmrsClassLoader} will be
  * used to find files (or any other classloader that is passed into the contructor). This allows
  * liquibase xml files in modules to be found.
  */
-public class ClassLoaderFileOpener implements ResourceAccessor {
+public class ClassLoaderFileOpener implements FileOpener {
 	
 	/**
 	 * The classloader to read from

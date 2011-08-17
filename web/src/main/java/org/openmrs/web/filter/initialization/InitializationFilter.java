@@ -39,7 +39,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import liquibase.changelog.ChangeSet;
+import liquibase.ChangeSet;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.fileupload.FileItem;
@@ -1096,7 +1096,6 @@ public class InitializationFilter extends StartupFilter {
 							 * @see org.openmrs.util.DatabaseUpdater.ChangeSetExecutorCallback#executing(liquibase.ChangeSet,
 							 *      int)
 							 */
-							@Override
 							public void executing(ChangeSet changeSet, int numChangeSetsToRun) {
 								setMessage(message + " (" + i++ + "/" + numChangeSetsToRun + "): Author: "
 								        + changeSet.getAuthor() + " Comments: " + changeSet.getComments() + " Description: "

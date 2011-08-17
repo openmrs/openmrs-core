@@ -18,16 +18,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
 
-import liquibase.change.custom.CustomChange;
+import liquibase.FileOpener;
 import liquibase.change.custom.CustomTaskChange;
 import liquibase.database.Database;
-import liquibase.database.jvm.JdbcConnection;
+import liquibase.database.DatabaseConnection;
 import liquibase.exception.CustomChangeException;
-import liquibase.exception.DatabaseException;
+import liquibase.exception.InvalidChangeDefinitionException;
 import liquibase.exception.SetupException;
+import liquibase.exception.UnsupportedChangeException;
 
-import liquibase.exception.ValidationErrors;
-import liquibase.resource.ResourceAccessor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.util.FormConstants;
@@ -42,9 +41,8 @@ public class CopyFormMetadataChangeSet implements CustomTaskChange {
 	/**
 	 * @see CustomTaskChange#execute(Database)
 	 */
-	@Override
-	public void execute(Database database) throws CustomChangeException {
-		JdbcConnection connection = (JdbcConnection) database.getConnection();
+	public void execute(Database database) throws CustomChangeException, UnsupportedChangeException {
+		DatabaseConnection connection = database.getConnection();
 		
 		String getFormMetadataSql = "SELECT form_id, xslt, template FROM form";
 		
@@ -94,9 +92,6 @@ public class CopyFormMetadataChangeSet implements CustomTaskChange {
 				insertStatement.close();
 			
 		}
-		catch (DatabaseException e) {
-			throw new CustomChangeException("Unable to copy form metadata to form attributes table", e);
-		}
 		catch (SQLException e) {
 			throw new CustomChangeException("Unable to copy form metadata to form attributes table", e);
 		}
@@ -111,10 +106,10 @@ public class CopyFormMetadataChangeSet implements CustomTaskChange {
 	}
 	
 	/**
-	 * @see CustomChange#setFileOpener(ResourceAccessor)
+	 * @see CustomChange#setFileOpener(FileOpener)
 	 */
 	@Override
-	public void setFileOpener(ResourceAccessor fo) {
+	public void setFileOpener(FileOpener fo) {
 	}
 	
 	/**
@@ -128,7 +123,6 @@ public class CopyFormMetadataChangeSet implements CustomTaskChange {
 	 * @see CustomChange#validate(Database)
 	 */
 	@Override
-	public ValidationErrors validate(Database db) {
-		return new ValidationErrors();
+	public void validate(Database db) throws InvalidChangeDefinitionException {
 	}
 }

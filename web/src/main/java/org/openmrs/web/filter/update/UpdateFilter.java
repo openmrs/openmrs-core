@@ -34,7 +34,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import liquibase.changelog.ChangeSet;
+import liquibase.ChangeSet;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -50,7 +50,6 @@ import org.openmrs.util.OpenmrsUtil;
 import org.openmrs.util.RoleConstants;
 import org.openmrs.util.Security;
 import org.openmrs.util.DatabaseUpdater.ChangeSetExecutorCallback;
-import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.Listener;
 import org.openmrs.web.filter.StartupFilter;
 import org.openmrs.web.filter.initialization.InitializationFilter;
@@ -564,7 +563,6 @@ public class UpdateFilter extends StartupFilter {
 							 * @see org.openmrs.util.DatabaseUpdater.ChangeSetExecutorCallback#executing(liquibase.ChangeSet,
 							 *      int)
 							 */
-							@Override
 							public void executing(ChangeSet changeSet, int numChangeSetsToRun) {
 								addChangesetId(changeSet.getId());
 								setMessage(message);

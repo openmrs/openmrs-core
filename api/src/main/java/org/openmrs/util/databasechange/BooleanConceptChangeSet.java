@@ -21,15 +21,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import liquibase.FileOpener;
 import liquibase.change.custom.CustomTaskChange;
 import liquibase.database.Database;
-import liquibase.database.jvm.JdbcConnection;
+import liquibase.database.DatabaseConnection;
 import liquibase.exception.CustomChangeException;
-import liquibase.exception.DatabaseException;
+import liquibase.exception.InvalidChangeDefinitionException;
 import liquibase.exception.SetupException;
+import liquibase.exception.UnsupportedChangeException;
 
-import liquibase.exception.ValidationErrors;
-import liquibase.resource.ResourceAccessor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.util.OpenmrsConstants;
@@ -70,9 +70,8 @@ public class BooleanConceptChangeSet implements CustomTaskChange {
 	/**
 	 * @see liquibase.change.custom.CustomTaskChange#execute(liquibase.database.Database)
 	 */
-	@Override
-	public void execute(Database database) throws CustomChangeException {
-		JdbcConnection connection = (JdbcConnection) database.getConnection();
+	public void execute(Database database) throws CustomChangeException, UnsupportedChangeException {
+		DatabaseConnection connection = database.getConnection();
 		
 		// try to find existing concepts with the right names
 		trueConceptId = findConceptByName(connection, trueNames);
@@ -104,7 +103,8 @@ public class BooleanConceptChangeSet implements CustomTaskChange {
 	 * @return a concept id.
 	 * @throws CustomChangeException
 	 */
-	private Integer findConceptByName(JdbcConnection connection, Map<String, String[]> names) throws CustomChangeException {
+	private Integer findConceptByName(DatabaseConnection connection, Map<String, String[]> names)
+	        throws CustomChangeException {
 		for (Map.Entry<String, String[]> e : names.entrySet()) {
 			String locale = e.getKey();
 			for (String name : e.getValue()) {
@@ -125,7 +125,7 @@ public class BooleanConceptChangeSet implements CustomTaskChange {
 	 *            concept
 	 * @throws CustomChangeException
 	 */
-	private Integer createConcept(JdbcConnection connection, Map<String, String[]> names) throws CustomChangeException {
+	private Integer createConcept(DatabaseConnection connection, Map<String, String[]> names) throws CustomChangeException {
 		PreparedStatement updateStatement = null;
 		
 		try {
@@ -176,9 +176,6 @@ public class BooleanConceptChangeSet implements CustomTaskChange {
 			
 			return conceptId;
 		}
-		catch (DatabaseException e) {
-			throw new CustomChangeException("Unable to create concept with names " + names, e);
-		}
 		catch (SQLException e) {
 			throw new CustomChangeException("Unable to create concept with names " + names, e);
 		}
@@ -201,7 +198,7 @@ public class BooleanConceptChangeSet implements CustomTaskChange {
 	 * @param falseConceptName the concept name for boolean false values
 	 * @throws CustomChangeException
 	 */
-	private void changeObs(JdbcConnection connection) throws CustomChangeException {
+	private void changeObs(DatabaseConnection connection) throws CustomChangeException {
 		PreparedStatement updateStatement = null;
 		
 		try {
@@ -216,9 +213,6 @@ public class BooleanConceptChangeSet implements CustomTaskChange {
 			        .prepareStatement("UPDATE obs SET value_coded = ?, value_numeric = NULL WHERE value_numeric = 0 AND concept_id IN (SELECT concept_id FROM concept WHERE datatype_id = 10)");
 			updateStatement.setInt(1, falseConceptId);
 			updateStatement.executeUpdate();
-		}
-		catch (DatabaseException e) {
-			throw new CustomChangeException("Unable to change obs", e);
 		}
 		catch (SQLException e) {
 			throw new CustomChangeException("Unable to change obs", e);
@@ -241,7 +235,7 @@ public class BooleanConceptChangeSet implements CustomTaskChange {
 	 * @param falseConceptId the concept id for false boolean concept
 	 * @throws CustomChangeException
 	 */
-	private void createGlobalProperties(JdbcConnection connection, Integer trueConceptId, Integer falseConceptId)
+	private void createGlobalProperties(DatabaseConnection connection, Integer trueConceptId, Integer falseConceptId)
 	        throws CustomChangeException {
 		if (trueConceptId == null || trueConceptId < 1 || falseConceptId == null || falseConceptId < 1)
 			throw new CustomChangeException("Can't create global properties for true/false concepts with invalid conceptIds");
@@ -261,10 +255,6 @@ public class BooleanConceptChangeSet implements CustomTaskChange {
 			updateStatement.setString(3, "Concept id of the concept defining the FALSE boolean concept");
 			updateStatement.setString(4, UUID.randomUUID().toString());
 			updateStatement.executeUpdate();
-		}
-		catch (DatabaseException e) {
-			throw new CustomChangeException("Unable to create global properties for concept ids defining boolean concepts",
-			        e);
 		}
 		catch (SQLException e) {
 			throw new CustomChangeException("Unable to create global properties for concept ids defining boolean concepts",
@@ -288,7 +278,7 @@ public class BooleanConceptChangeSet implements CustomTaskChange {
 	 * @return integer resulting from the execution of the sql statement
 	 * @throws CustomChangeException
 	 */
-	private Integer getInt(JdbcConnection connection, String sql) throws CustomChangeException {
+	private Integer getInt(DatabaseConnection connection, String sql) throws CustomChangeException {
 		Statement stmt = null;
 		try {
 			stmt = connection.createStatement();
@@ -308,9 +298,6 @@ public class BooleanConceptChangeSet implements CustomTaskChange {
 			
 			return result;
 		}
-		catch (DatabaseException e) {
-			throw new CustomChangeException("Unable to get int", e);
-		}
 		catch (SQLException e) {
 			throw new CustomChangeException("Unable to get int", e);
 		}
@@ -327,30 +314,25 @@ public class BooleanConceptChangeSet implements CustomTaskChange {
 	/**
 	 * @see liquibase.change.custom.CustomChange#getConfirmationMessage()
 	 */
-	@Override
 	public String getConfirmationMessage() {
 		return "Finished creating boolean concepts";
 	}
 	
 	/**
-	 * @see liquibase.change.custom.CustomChange#setFileOpener(liquibase.ResourceAccessor)
+	 * @see liquibase.change.custom.CustomChange#setFileOpener(liquibase.FileOpener)
 	 */
-	@Override
-	public void setFileOpener(ResourceAccessor fileOpener) {
+	public void setFileOpener(FileOpener fileOpener) {
 	}
 	
 	/**
 	 * @see liquibase.change.custom.CustomChange#setUp()
 	 */
-	@Override
 	public void setUp() throws SetupException {
 	}
 	
 	/**
 	 * @see liquibase.change.custom.CustomChange#validate(liquibase.database.Database)
 	 */
-	@Override
-	public ValidationErrors validate(Database database) {
-		return new ValidationErrors();
+	public void validate(Database database) throws InvalidChangeDefinitionException {
 	}
 }
