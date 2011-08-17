@@ -70,11 +70,15 @@
 		var endDate = parseDate($('completionDateElement').value);
 		var locationId = $('programLocationElement').value;
 		var outcomeId = $('programOutcomeConceptElement').value;
-		currentProgramBeingEdited = null;
-		DWRProgramWorkflowService.updatePatientProgram(idToSave, startDate, endDate, locationId, outcomeId, function() {
+		if (endDate != '' && !$j('#editProgramOutcomeRow').is(':hidden') && outcomeId == '') {
+			alert("<spring:message code="PatientProgram.error.outcomeRequired" />");
+		} else {
+			currentProgramBeingEdited = null;
+			DWRProgramWorkflowService.updatePatientProgram(idToSave, startDate, endDate, locationId, outcomeId, function() {
 				hideLayer('editPatientProgramPopup');
 				refreshPage();
 			});
+		}
 	}
 	
 	function handleDeleteProgram() {
@@ -212,7 +216,8 @@
             if (!isEmpty($j('#completionDateElement').val())) {
                 $j('#programOutcomeConceptElement').attr('disabled', false);
             } else {
-                $j('#programOutcomeConceptElement').attr('disabled', true).val="";
+                $j('#programOutcomeConceptElement').attr('disabled', true);
+                $j('#programOutcomeConceptElement').val("");
             }
         })
     })
