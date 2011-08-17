@@ -22,6 +22,7 @@ import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.ConceptComplex;
 import org.openmrs.obs.ComplexObsHandler;
+import org.openmrs.obs.handler.CustomDatatypeHandler;
 import org.openmrs.Obs;
 import org.openmrs.obs.handler.CustomDatatypeHandler;
 import org.openmrs.annotation.Handler;
@@ -120,9 +121,23 @@ public class ObsValidator implements Validator {
 		}
 		// if this is NOT an obs group, make sure that it has at least one value set (not counting obsGroupId)
 		else if (obs.getValueBoolean() == null && obs.getValueCoded() == null && obs.getValueCodedName() == null
-		        && obs.getValueComplex() == null && obs.getValueDatetime() == null && obs.getValueDrug() == null
-		        && obs.getValueModifier() == null && obs.getValueNumeric() == null && obs.getValueText() == null) {
-			errors.reject("error.noValue");
+		        && obs.getValueDatetime() == null && obs.getValueDrug() == null && obs.getValueModifier() == null
+		        && obs.getValueNumeric() == null && obs.getValueText() == null) {
+			
+			Concept c = obs.getConcept();
+			if (c != null) {
+				ConceptDatatype dt = c.getDatatype();
+				if (dt != null) {
+					if (!dt.isComplex()) {
+						errors.reject("error.noValue");
+					}
+				} else {
+					errors.reject("error.noValue");
+				}
+			} else {
+				errors.reject("error.noValue");
+			}
+			
 		}
 		
 		// make sure there is a concept associated with the obs
@@ -182,12 +197,6 @@ public class ObsValidator implements Validator {
 				else
 					errors.rejectValue("groupMembers", "Obs.error.inGroupMember");
 			} else if (dt.isComplex()) {
-				if (obs.getValueComplex() == null || StringUtils.isEmpty(obs.getValueComplex())) {
-					if (atRootNode)
-						errors.rejectValue("valueComplex", "error.null");
-					else
-						errors.rejectValue("groupMembers", "Obs.error.inGroupMember");
-				}
 				ConceptService cs = Context.getConceptService();
 				ConceptComplex conceptComplex = cs.getConceptComplex(obs.getConcept().getConceptId());
 				ComplexObsHandler handlerObs = Context.getObsService().getHandler(conceptComplex.getHandler());

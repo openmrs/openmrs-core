@@ -174,18 +174,28 @@ public class ObsFormController extends SimpleFormController {
 							if (request instanceof MultipartHttpServletRequest) {
 								MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
 								MultipartFile complexDataFile = multipartRequest.getFile("complexDataFile");
-								if (complexDataFile != null && !complexDataFile.isEmpty()) {
-									InputStream complexDataInputStream = complexDataFile.getInputStream();
+								if ((complexDataFile != null && !complexDataFile.isEmpty())
+								        || (obs.getValueComplex() != null)) {
 									
-									ComplexData complexData = new ComplexData(complexDataFile.getOriginalFilename(),
-									        complexDataInputStream);
-									
-									obs.setComplexData(complexData);
+									InputStream complexDataInputStream = null;
+									if (complexDataFile != null && !complexDataFile.isEmpty()) {
+										obs.setValueComplex(null);
+										complexDataInputStream = complexDataFile.getInputStream();
+										
+										ComplexData complexData = new ComplexData(complexDataFile.getOriginalFilename(),
+										        complexDataInputStream);
+										
+										obs.setComplexData(complexData);
+									}
 									
 									// the handler on the obs.concept is called
 									// with the given complex data
 									newlySavedObs = os.saveObs(obs, reason);
-									complexDataInputStream.close();
+									if (complexDataInputStream != null)
+										complexDataInputStream.close();
+								} else {
+									errors.reject("valueComplex", "error.null");
+									return showForm(request, response, errors);
 								}
 							}
 						}

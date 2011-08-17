@@ -256,41 +256,6 @@ public class ObsValidatorTest extends BaseContextSensitiveTest {
 	 * @see {@link ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)}
 	 */
 	@Test
-	@Verifies(value = "should fail validation if concept datatype is complex and valueComplex is null or empty", method = "validate(java.lang.Object, org.springframework.validation.Errors)")
-	public void validate_shouldFailValidationIfConceptDatatypeIsComplexAndValueComplexIsNullOrEmpty() throws Exception {
-		
-		executeDataSet(COMPLEX_OBS_XML);
-		
-		//validate for null
-		Obs obs = new Obs();
-		obs.setPerson(Context.getPersonService().getPerson(2));
-		obs.setConcept(Context.getConceptService().getConcept(8475));
-		obs.setObsDatetime(new Date());
-		obs.setValueComplex(null);
-		
-		Errors errors = new BindException(obs, "obs");
-		new ObsValidator().validate(obs, errors);
-		
-		Assert.assertTrue(errors.hasFieldErrors("valueComplex"));
-		
-		//validate for empty strings (covers an unlikely event due to the use of fieldGen)
-		Obs newObs = new Obs();
-		newObs.setPerson(Context.getPersonService().getPerson(2));
-		newObs.setConcept(Context.getConceptService().getConcept(8475));
-		newObs.setObsDatetime(new Date());
-		newObs.setValueComplex("");
-		
-		Errors newErrors = new BindException(newObs, "obs");
-		new ObsValidator().validate(newObs, newErrors);
-		
-		Assert.assertTrue(errors.hasFieldErrors("valueComplex"));
-		
-	}
-	
-	/**
-	 * @see {@link ObsValidator#validate(java.lang.Object, org.springframework.validation.Errors)}
-	 */
-	@Test
 	@Verifies(value = "should fail validation if complex value key of patient or location concept contains chars", method = "validate(java.lang.Object, org.springframework.validation.Errors)")
 	public void validate_shouldFailValidationIfComplexValueKeyOfPatientOrLocationConceptContainsChars() throws Exception {
 		

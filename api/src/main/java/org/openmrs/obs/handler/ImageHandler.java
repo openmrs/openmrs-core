@@ -40,15 +40,9 @@ import org.springframework.stereotype.Component;
  * image. Images are stored in the location specified by the global property: "obs.complex_obs_dir"
  * 
  * @see OpenmrsConstants#GLOBAL_PROPERTY_COMPLEX_OBS_DIR
- * @since 1.5
- * 
- * There may be several classes which extend
- * ImageHandler. Out of these, only one will be loaded by Spring. The class to be loaded will be
- * decided based on the @Order annotation value. 
- * 
- * As default, ImageHandler will have the lowest possible
- * priority.
- * 
+ * @since 1.5 There may be several classes which extend ImageHandler. Out of these, only one will be
+ *        loaded by Spring. The class to be loaded will be decided based on the @Order annotation
+ *        value. As default, ImageHandler will have the lowest possible priority.
  */
 
 @Component
@@ -57,7 +51,7 @@ public class ImageHandler extends AbstractHandler implements ComplexObsHandler {
 	
 	public static final Log log = LogFactory.getLog(ImageHandler.class);
 	
-	/** The Constant HANDLER_TYPE. Used to differentiate between handler types*/
+	/** The Constant HANDLER_TYPE. Used to differentiate between handler types */
 	public static final String HANDLER_TYPE = "ImageHandler";
 	
 	private Set<String> extensions;
@@ -78,7 +72,7 @@ public class ImageHandler extends AbstractHandler implements ComplexObsHandler {
 	
 	/**
 	 * Currently supports all views and puts the Image file data into the ComplexData object.
-	 *
+	 * 
 	 * @see org.openmrs.obs.ComplexObsHandler#getObs(org.openmrs.Obs, java.lang.String)
 	 */
 	public Obs getObs(Obs obs, String view) {
@@ -102,55 +96,55 @@ public class ImageHandler extends AbstractHandler implements ComplexObsHandler {
 	 * @see org.openmrs.obs.ComplexObsHandler#saveObs(org.openmrs.Obs)
 	 */
 	public Obs saveObs(Obs obs) throws APIException {
-		// Get the buffered image from the ComplexData.
-		BufferedImage img = null;
-		
-		Object data = obs.getComplexData().getData();
-		if (BufferedImage.class.isAssignableFrom(data.getClass())) {
-			img = (BufferedImage) obs.getComplexData().getData();
-		} else if (InputStream.class.isAssignableFrom(data.getClass())) {
+		//Validation in the event that we are Editing a complex Obs.
+		if (obs.getValueComplex() == null) {
+			// Get the buffered image from the ComplexData.
+			BufferedImage img = null;
+			Object data = obs.getComplexData().getData();
+			if (BufferedImage.class.isAssignableFrom(data.getClass())) {
+				img = (BufferedImage) obs.getComplexData().getData();
+			} else if (InputStream.class.isAssignableFrom(data.getClass())) {
+				try {
+					img = ImageIO.read((InputStream) data);
+				}
+				catch (IOException e) {
+					throw new APIException(
+					        "Unable to convert complex data to a valid input stream and then read it into a buffered image");
+				}
+			}
+			
+			if (img == null) {
+				throw new APIException("Cannot save complex obs where obsId=" + obs.getObsId()
+				        + " because its ComplexData.getData() is null.");
+			}
+			
 			try {
-				img = ImageIO.read((InputStream) data);
+				File outfile = getOutputFileToWrite(obs);
+				
+				String extension = getExtension(obs.getComplexData().getTitle());
+				
+				// TODO: Check this extension against the registered extensions for validity
+				
+				// Write the file to the file system.
+				ImageIO.write(img, extension, outfile);
+				
+				// Set the Title and URI for the valueComplex
+				obs.setValueComplex(extension + " image |" + outfile.getName());
+				
+				// Remove the ComlexData from the Obs
+				obs.setComplexData(null);
+				
 			}
-			catch (IOException e) {
-				throw new APIException(
-				        "Unable to convert complex data to a valid input stream and then read it into a buffered image");
+			catch (IOException ioe) {
+				throw new APIException("Trying to write complex obs to the file system. ", ioe);
 			}
-		}
-		
-		if (img == null) {
-			throw new APIException("Cannot save complex obs where obsId=" + obs.getObsId()
-			        + " because its ComplexData.getData() is null.");
-		}
-		
-		try {
-			File outfile = getOutputFileToWrite(obs);
-			
-			String extension = getExtension(obs.getComplexData().getTitle());
-			
-			// TODO: Check this extension against the registered extensions for validity
-			
-			// Write the file to the file system.
-			ImageIO.write(img, extension, outfile);
-			
-			// Set the Title and URI for the valueComplex
-			obs.setValueComplex(extension + " image |" + outfile.getName());
-			
-			// Remove the ComlexData from the Obs
-			obs.setComplexData(null);
-			
-		}
-		catch (IOException ioe) {
-			throw new APIException("Trying to write complex obs to the file system. ", ioe);
 		}
 		
 		return obs;
 	}
 	
 	/**
-	 * Gets the handler type for each registered handler.
-	 * 
-	 * @return the handler type
+	 * Returns the HANDLER_TYPE constant
 	 */
 	@Override
 	public String getHandlerType() {
@@ -158,7 +152,8 @@ public class ImageHandler extends AbstractHandler implements ComplexObsHandler {
 	}
 	
 	/**
-	 * Validate.
+	 * Validate the Obs against the handlerConfig String. handlerConfig is still unsupported, hence
+	 * the method returns true by default
 	 */
 	@Override
 	public boolean validate(String handlerConfig, Obs obs) {
@@ -166,9 +161,9 @@ public class ImageHandler extends AbstractHandler implements ComplexObsHandler {
 	}
 	
 	/**
-	 * This method is used to return the persisted data only. The image is retrieved
-	 * using data from the Obs passed in. This is returned to the user. If there is no
-	 * image, then the method returns null.
+	 * This method is used to return the persisted data only. The image is retrieved using data from
+	 * the Obs passed in. This is returned to the user. If there is no image, then the method
+	 * returns null.
 	 */
 	@Override
 	public Object getValue(Obs obs) {
