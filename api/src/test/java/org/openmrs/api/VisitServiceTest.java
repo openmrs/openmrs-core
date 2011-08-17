@@ -335,7 +335,20 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	public void getActiveVisitsByPatient_shouldReturnAllUnvoidedActiveVisitsForTheSpecifiedPatient() throws Exception {
 		executeDataSet(VISITS_WITH_DATES_XML);
 		Assert.assertEquals(4, Context.getVisitService().getActiveVisitsByPatient(new Patient(2)).size());
-		
+	}
+	
+	@Test
+	@Verifies(value = "should return both voided and unvoided active visits for the specified patient", method = "getActiveVisitsByPatient(Patient)")
+	public void getActiveVisitsByPatient_shouldReturnAllActiveVisitsForTheSpecifiedPatient() throws Exception {
+		executeDataSet(VISITS_WITH_DATES_XML);
+		Assert.assertEquals(5, Context.getVisitService().getVisitsByPatient(new Patient(2), false, true).size());
+	}
+	
+	@Test
+	@Verifies(value = "should return all unvoided active and inactive visits for the specified patient", method = "getActiveVisitsByPatient(Patient)")
+	public void getActiveVisitsByPatient_shouldReturnAllUnvoidedVisitsForTheSpecifiedPatient() throws Exception {
+		executeDataSet(VISITS_WITH_DATES_XML);
+		Assert.assertEquals(8, Context.getVisitService().getVisitsByPatient(new Patient(2), true, false).size());
 	}
 	
 	/**
@@ -380,9 +393,9 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	public void getVisits_shouldGetVisitsEndedBetweenTheGivenEndDates() throws Exception {
 		executeDataSet(VISITS_WITH_DATES_XML);
 		Calendar cal = Calendar.getInstance();
-		cal.set(2005, 01, 01, 00, 00, 00);
+		cal.set(2005, 1, 1, 0, 0, 0);
 		Date minEndDate = cal.getTime();
-		cal.set(2005, 01, 02, 23, 59, 00);
+		cal.set(2005, 1, 2, 23, 59, 0);
 		Date maxEndDate = cal.getTime();
 		Assert.assertEquals(2, Context.getVisitService().getVisits(null, null, null, null, null, null, minEndDate,
 		    maxEndDate, null, false).size());
@@ -396,9 +409,9 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	public void getVisits_shouldGetVisitsStartedBetweenTheGivenStartDates() throws Exception {
 		executeDataSet(VISITS_WITH_DATES_XML);
 		Calendar cal = Calendar.getInstance();
-		cal.set(2005, 00, 01, 01, 00, 00);
+		cal.set(2005, 0, 1, 1, 0, 0);
 		Date minStartDate = cal.getTime();
-		cal.set(2005, 00, 01, 04, 00, 00);
+		cal.set(2005, 0, 1, 4, 0, 0);
 		Date maxStartDate = cal.getTime();
 		Assert.assertEquals(2, Context.getVisitService().getVisits(null, null, null, null, minStartDate, maxStartDate, null,
 		    null, null, false).size());

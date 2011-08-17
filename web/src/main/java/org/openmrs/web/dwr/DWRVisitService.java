@@ -37,13 +37,13 @@ public class DWRVisitService {
 	 * Gets all visits for the patient matching the given patientId
 	 * 
 	 * @param patientId the patient id for the patient whose visits to find
-	 * @param includeEnded specifies if ended visits should be returned or not
+	 * @param includeInactive specifies if ended visits should be returned or not
 	 * @param includeVoided specifies if voided visits should be returned or not
 	 * @return a list of visit list items
 	 * @see VisitListItem
 	 * @throws APIException
 	 */
-	public Vector<Object> findVisitsByPatient(Integer patientId, boolean includeEnded, boolean includeVoided)
+	public Vector<Object> findVisitsByPatient(Integer patientId, boolean includeInactive, boolean includeVoided)
 	        throws APIException {
 		// List to return
 		Vector<Object> objectList = new Vector<Object>();
@@ -55,7 +55,7 @@ public class DWRVisitService {
 			if (patientId != null) {
 				Patient p = Context.getPatientService().getPatient(patientId);
 				if (p != null)
-					visits = Context.getVisitService().getActiveVisitsByPatient(p);
+					visits = Context.getVisitService().getVisitsByPatient(p, includeInactive, includeVoided);
 			} else {
 				throw new APIException(mss.getMessage("errors.patientId.cannotBeNull", null, "Patient Id cannot be null",
 				    Context.getLocale()));
