@@ -33,7 +33,7 @@ public interface Customizable<AttrClass extends Attribute> {
 	/**
 	 * @return non-voided attributes
 	 */
-	Collection<AttrClass> getActiveAttributes();
+	List<AttrClass> getActiveAttributes();
 	
 	/**
 	 * @param ofType
