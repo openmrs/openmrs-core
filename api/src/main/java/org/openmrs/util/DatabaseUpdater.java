@@ -212,8 +212,6 @@ public class DatabaseUpdater {
 		lockHandler.waitForLock();
 		
 		try {
-			database.checkDatabaseChangeLogTable(true, null, new String[] { contexts });
-			
 			ResourceAccessor openmrsFO = new ClassLoaderFileOpener(cl);
 			ResourceAccessor fsFO = new FileSystemResourceAccessor();
 			
@@ -222,7 +220,7 @@ public class DatabaseUpdater {
 			changeLog.validate(database);
 			ChangeLogIterator logIterator = new ChangeLogIterator(changeLog, new ShouldRunChangeSetFilter(database),
 			        new ContextChangeSetFilter(contexts), new DbmsChangeSetFilter(database));
-			
+			database.checkDatabaseChangeLogTable(true, changeLog, new String[] { contexts });
 			logIterator.run(new OpenmrsUpdateVisitor(database, callback, numChangeSetsToRun), database);
 		}
 		catch (LiquibaseException e) {
@@ -375,6 +373,8 @@ public class DatabaseUpdater {
 			
 			if (changeLogFile == null)
 				changeLogFile = CHANGE_LOG_FILE;
+			
+			database.checkDatabaseChangeLogTable(false, null, null);
 			
 			return new Liquibase(changeLogFile, new CompositeResourceAccessor(openmrsFO, fsFO), database);
 		}
