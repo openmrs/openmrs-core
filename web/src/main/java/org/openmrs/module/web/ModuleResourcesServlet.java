@@ -63,6 +63,8 @@ public class ModuleResourcesServlet extends HttpServlet {
 		
 		response.setDateHeader("Last-Modified", f.lastModified());
 		response.setContentLength(new Long(f.length()).intValue());
+		String mimeType = getServletContext().getMimeType(f.getName());
+		response.setContentType(mimeType);
 		
 		FileInputStream is = new FileInputStream(f);
 		try {
