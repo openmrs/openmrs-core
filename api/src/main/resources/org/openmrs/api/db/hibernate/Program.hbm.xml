@@ -37,7 +37,12 @@
 			<column name="concept_id" />
 		</many-to-one>
 
-		<!-- bi-directional many-to-one associations to User -->
+        <!-- property describing possible outcomes -->
+        <many-to-one name="outcomesConcept" class="Concept" not-null="false" lazy="no-proxy">
+            <column name="outcomes_concept_id" />
+        </many-to-one>
+
+        <!-- bi-directional many-to-one associations to User -->
 		<many-to-one name="creator" class="User" not-null="true">
 			<column name="creator" />
 		</many-to-one>

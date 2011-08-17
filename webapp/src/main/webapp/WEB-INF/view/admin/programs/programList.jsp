@@ -15,7 +15,7 @@
 <div class="box">
 	<c:if test="${fn:length(programList) == 0}">
 		<tr>
-			<td colspan="5"><spring:message code="general.none"/></td>
+			<td colspan="6"><spring:message code="general.none"/></td>
 		</tr>
 	</c:if>
 	<c:if test="${fn:length(programList) != 0}">
@@ -26,11 +26,12 @@
 				<th> <spring:message code="general.description"/> </th>
 				<th> <spring:message code="Concept.name"/> </th>
 				<th> <spring:message code="Program.workflows"/> </th>
+				<th> <spring:message code="Program.outcomes"/> </th>
 			</tr>
 			<c:forEach var="program" items="${programList}">
 				<tr>
 					<c:if test="${program.retired}">
-						<td colspan="5">
+						<td colspan="6">
 							<i><spring:message code="general.retired"/><strike>
 								<a href="program.form?programId=${program.programId}">${program.name}</a>
 							</strike></i>
@@ -59,6 +60,9 @@
 								</a>
 								<br/>
 							</c:forEach>
+						</td>
+                        <td valign="top">
+							${program.outcomesConcept.name}
 						</td>
 					</c:if>
 				</tr>

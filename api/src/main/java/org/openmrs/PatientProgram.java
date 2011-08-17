@@ -46,6 +46,8 @@ public class PatientProgram extends BaseOpenmrsData implements java.io.Serializa
 	
 	private Date dateCompleted;
 	
+	private Concept outcome;
+	
 	private Set<PatientState> states = new HashSet<PatientState>();
 	
 	// ******************
@@ -321,6 +323,14 @@ public class PatientProgram extends BaseOpenmrsData implements java.io.Serializa
 	// ******************
 	// Property Access
 	// ******************
+	
+	public Concept getOutcome() {
+		return outcome;
+	}
+	
+	public void setOutcome(Concept concept) {
+		this.outcome = concept;
+	}
 	
 	public Date getDateCompleted() {
 		return dateCompleted;

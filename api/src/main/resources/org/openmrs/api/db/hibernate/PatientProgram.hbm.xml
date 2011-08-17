@@ -26,7 +26,12 @@
 	<property name="dateChanged" type="java.util.Date" column="date_changed" length="19" />
 
     <!-- Associations -->
-  
+
+    <!-- property describing outcome -->
+    <many-to-one name="outcome" class="Concept" not-null="false" lazy="no-proxy">
+        <column name="outcome_concept_id" />
+    </many-to-one>
+
     <!-- bi-directional many-to-one association to Program -->
     <many-to-one name="program" class="org.openmrs.Program" not-null="true">
         <column name="program_id" />

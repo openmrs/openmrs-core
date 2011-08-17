@@ -13,8 +13,17 @@
 	dojo.require("dojo.widget.openmrs.ConceptSearch");
 	dojo.require("dojo.widget.openmrs.OpenmrsPopup");
 
+    dojo.addOnLoad( function() {
+		dojo.event.topic.subscribe("oSearch/select",
+			function(msg) {
+				var popup = dojo.widget.manager.getWidgetById("outcomeConceptSelection");
+				popup.hiddenInputNode.value = msg.objs[0].conceptId;
+				popup.displayNode.innerHTML = msg.objs[0].name;
+			}
+		);
+	});
 	dojo.addOnLoad( function() {
-		dojo.event.topic.subscribe("cSearch/select", 
+		dojo.event.topic.subscribe("cSearch/select",
 			function(msg) {
 				var popup = dojo.widget.manager.getWidgetById("conceptSelection");
 				popup.hiddenInputNode.value = msg.objs[0].conceptId;
@@ -160,6 +169,21 @@
 			<div dojoType="ConceptSearch" widgetId="wfSearch" showVerboseListing="false" conceptClasses="Workflow"></div>
 			<div dojoType="OpenmrsPopup" widgetId="conceptSelection2" hiddenInputName="notUsed" searchWidget="wfSearch" searchTitle='<spring:message code="Concept.find" />' changeButtonValue='<spring:message code="general.add"/>'></div>
 			
+		</td>
+	</tr>
+    <tr>
+		<th><spring:message code="Program.outcomes"/></th>
+		<td>
+			<spring:bind path="program.outcomesConcept">
+				<div dojoType="ConceptSearch" widgetId="oSearch" conceptId="${status.value}" showVerboseListing="false" conceptClasses="Program"></div>
+				<div dojoType="OpenmrsPopup" widgetId="outcomeConceptSelection" hiddenInputName="${status.expression}" searchWidget="oSearch" searchTitle='<spring:message code="Concept.find" />'></div>
+
+				<c:if test="${status.errorMessage != ''}">
+					<span class="error">
+						${status.errorMessage}
+					</span>
+				</c:if>
+			</spring:bind>
 		</td>
 	</tr>
 </table>

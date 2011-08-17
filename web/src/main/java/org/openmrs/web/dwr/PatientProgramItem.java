@@ -29,6 +29,10 @@ public class PatientProgramItem {
 	
 	private Integer patientId;
 	
+	private Integer programId;
+	
+	private Integer outcomeId;
+	
 	private String name;
 	
 	private Date dateEnrolled;
@@ -53,6 +57,10 @@ public class PatientProgramItem {
 	public PatientProgramItem(PatientProgram p) {
 		patientProgramId = p.getPatientProgramId();
 		patientId = p.getPatient().getPatientId();
+		programId = p.getProgram().getProgramId();
+		if (p.getOutcome() != null) {
+			outcomeId = p.getOutcome().getId();
+		}
 		dateEnrolled = p.getDateEnrolled();
 		dateCompleted = p.getDateCompleted();
 		location = new LocationListItem(p.getLocation());
@@ -111,6 +119,14 @@ public class PatientProgramItem {
 	
 	public Integer getPatientProgramId() {
 		return patientProgramId;
+	}
+	
+	public Integer getProgramId() {
+		return programId;
+	}
+	
+	public Integer getOutcomeId() {
+		return outcomeId;
 	}
 	
 	public void setPatientProgramId(Integer patientProgramId) {
