@@ -4636,5 +4636,46 @@
 			referencedTableName="users" referencedColumnNames="user_id" />
 	</changeSet>
 
+    <changeSet id="20110817-1601-create-location-attribute-table" author="djazayeri">
+        <preConditions onFail="MARK_RAN">
+            <not><tableExists tableName="location_attribute"/></not>
+        </preConditions>
+        <comment>Creating location_attribute table</comment>
+        <createTable tableName="location_attribute">
+            <column name="location_attribute_id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column name="location_id" type="int"><constraints nullable="false" /></column>
+            <column name="attribute_type_id" type="int"><constraints nullable="false" /></column>
+            <column name="serialized_value" type="text" />
+            <column name="uuid" type="char(38)"><constraints nullable="false" unique="true" /></column>
+            <column name="creator" type="int"><constraints nullable="false"/></column>
+            <column name="date_created" type="datetime"><constraints nullable="false"/></column>
+            <column name="changed_by" type="int"/>
+            <column name="date_changed" type="datetime" />
+            <column name="voided" type="smallint" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="voided_by" type="int(11)" />
+            <column name="date_voided" type="datetime" />
+            <column name="void_reason" type="varchar(255)" defaultValue="null"/>
+        </createTable>
+        <addForeignKeyConstraint constraintName="location_attribute_location_fk"
+            baseTableName="location_attribute" baseColumnNames="location_id" referencedTableName="location"
+            referencedColumnNames="location_id" />
+        <addForeignKeyConstraint constraintName="location_attribute_attribute_type_id_fk"
+            baseTableName="location_attribute" baseColumnNames="attribute_type_id" referencedTableName="location_attribute_type"
+            referencedColumnNames="location_attribute_type_id" />
+        <addForeignKeyConstraint constraintName="location_attribute_creator_fk"
+            baseTableName="location_attribute" baseColumnNames="creator" referencedTableName="users"
+            referencedColumnNames="user_id" />
+        <addForeignKeyConstraint constraintName="location_attribute_changed_by_fk"
+            baseTableName="location_attribute" baseColumnNames="changed_by" referencedTableName="users"
+            referencedColumnNames="user_id" />
+        <addForeignKeyConstraint constraintName="location_attribute_voided_by_fk"
+            baseTableName="location_attribute" baseColumnNames="voided_by" referencedTableName="users"
+            referencedColumnNames="user_id" />
+    </changeSet>
+    
 </databaseChangeLog>
 
