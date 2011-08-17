@@ -96,7 +96,7 @@ public interface PatientService extends OpenmrsService {
 	
 	/**
 	 * Get patient by internal identifier. If this id is for an existing person
-	 * then create a patient with that person, copying over all the fields.
+	 * then instantiates a new patient from that person, copying over all the fields.
 	 * @param patientOrPersonId
 	 * @return a new unsaved patient or null if person or patient is not found
 	 * @throws APIException
