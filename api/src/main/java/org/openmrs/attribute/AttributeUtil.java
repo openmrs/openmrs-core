@@ -67,4 +67,20 @@ public class AttributeUtil {
 		}
 	}
 	
+	/**
+	 * Checks whether a serialized String value is legal for the given handler
+	 * 
+	 * @param handler
+	 * @param serialized
+	 * @return
+	 */
+	public static <T> boolean isValidValue(AttributeHandler<T> handler, String serialized) {
+		try {
+			handler.validate(handler.deserialize(serialized));
+			return true;
+		}
+		catch (Exception ex) {
+			return false;
+		}
+	}
 }

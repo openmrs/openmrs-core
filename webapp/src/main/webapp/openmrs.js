@@ -352,7 +352,7 @@ function parseDateFromJsToString(sFormat, jsDate) {
  * @return the input, with the following characters escaped: #;&,.+*~':"!^$[]()=>|/@
  */
 function escapeJquerySelector(partialSelector) {
-	return partialSelector.replace('#', '\\#').replace(';', '\\;').replace('&', '\\&').replace(',', '\\,').replace('.', '\\.').replace('+', '\\+').replace('*', '\\*').replace('~', '\\~').replace("'", "\\'").replace(':', '\\:').replace('"', '\\"').replace('!', '\\!').replace('^', '\\^').replace('$', '\\$').replace('[', '\\[').replace(']', '\\]').replace('(', '\\(').replace(')', '\\)').replace('=', '\\=').replace('>', '\\>').replace('|', '\\|').replace('/', '\\/').replace('@', '\\@');
+	return partialSelector.replace(/#/g, '\\#').replace(/;/g, '\\;').replace(/&/g, '\\&').replace(/,/g, '\\,').replace(/\./g, '\\.').replace(/\+/g, '\\+').replace(/\*/g, '\\*').replace(/~/g, '\\~').replace(/'/g, "\\'").replace(/:/g, '\\:').replace(/"/g, '\\"').replace(/!/g, '\\!').replace(/\^/g, '\\^').replace(/\$/g, '\\$').replace(/\[/g, '\\[').replace(/\]/g, '\\]').replace(/\(/g, '\\(').replace(/\)/g, '\\)').replace(/=/g, '\\=').replace(/>/g, '\\>').replace('/\|/g', '\\|').replace(/\//, '\\/').replace(/@/g, '\\@');
 }
 
 /**

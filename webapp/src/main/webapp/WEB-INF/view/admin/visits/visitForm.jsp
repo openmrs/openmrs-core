@@ -318,6 +318,15 @@ $j(document).ready( function() {
     			<tr valign="top">
     			    <th class="visitLabel"><spring:message code="Visit.attributes" /></th>
 	               	<td>
+	               		<spring:bind path="activeAttributes">
+							<c:if test="${status.error}">
+								<span class="error">
+									<c:forEach var="err" items="${status.errorMessages}">
+										${ err }<br/>
+									</c:forEach>
+								</span>
+							</c:if>
+						</spring:bind>
 			            <table>
 			                <c:forEach var="attrType" items="${ visitAttributeTypes }">
 			                   <openmrs_tag:attributesForType attributeType="${ attrType }" customizable="${ visit }" formFieldNamePrefix="attribute.${ attrType.visitAttributeTypeId }"/>
@@ -362,7 +371,7 @@ $j(document).ready( function() {
 			</tr>
         </table>
     </fieldset>
-    <br/>
+    <br/>    
     <c:if test="${visit.visitId != null}">
     <fieldset>
 		<legend><spring:message code="Visit.encounters" /></legend>
