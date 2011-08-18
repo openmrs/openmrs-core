@@ -44,8 +44,10 @@ import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.app.Application;
 import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.model.v25.datatype.CX;
+import ca.uhn.hl7v2.model.v25.datatype.PL;
 import ca.uhn.hl7v2.model.v25.message.ORU_R01;
 import ca.uhn.hl7v2.model.v25.segment.NK1;
+import ca.uhn.hl7v2.model.v25.segment.PV1;
 
 /**
  * Tests methods in the {@link HL7Service}
@@ -651,6 +653,81 @@ public class HL7ServiceTest extends BaseContextSensitiveTest {
 		List<NK1> nk1List = new ORUR01Handler().getNK1List(oru);
 		CX[] identifiers = nk1List.get(0).getNextOfKinAssociatedPartySIdentifiers();
 		hl7service.getUuidFromIdentifiers(identifiers);
+	}
+	
+	/**
+	 * @see {@link HL7Service#resolveLocationId(ca.uhn.hl7v2.model.v25.datatype.PL)}
+	 */
+	@Test
+	@Verifies(value = "should return internal identifier of location if only location name is specified", method = "resolveLocationId(ca.uhn.hl7v2.model.v25.datatype.PL)")
+	public void resolveLocationId_shouldReturnInternalIdentifierOfLocationIfOnlyLocationNameIsSpecified() throws Exception {
+		executeDataSet("org/openmrs/hl7/include/ORUTest-initialData.xml");
+		HL7Service hl7service = Context.getHL7Service();
+		Message message = hl7service
+		        .parseHL7String("MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\r"
+		                + "PID|||3^^^^||John3^Doe^||\r"
+		                + "NK1|1|Hornblower^Horatio^L|2B^Sibling^99REL||||||||||||M|19410501|||||||||||||||||1000^^^L^PN||||\r"
+		                + "PV1||O|99999^0^0^0&Test Location&0||||1^Super User (1-8)|||||||||||||||||||||||||||||||||||||20080212|||||||V\r"
+		                + "ORC|RE||||||||20080226102537|1^Super User\r"
+		                + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r"
+		                + "OBX|1|NM|5497^CD4, BY FACS^99DCT||450|||||||||20080206\r"
+		                + "OBX|2|DT|5096^RETURN VISIT DATE^99DCT||20080229|||||||||20080212");
+		ORU_R01 oru = (ORU_R01) message;
+		PV1 pv1 = oru.getPATIENT_RESULT().getPATIENT().getVISIT().getPV1();
+		Assert.assertNotNull("PV1 parsed as null", pv1);
+		PL hl7Location = pv1.getAssignedPatientLocation();
+		Integer locationId = hl7service.resolveLocationId(hl7Location);
+		Assert.assertEquals("Resolved and given locationId shoud be equals", Integer.valueOf(1), locationId);
+	}
+	
+	/**
+	 * @see {@link HL7Service#resolveLocationId(ca.uhn.hl7v2.model.v25.datatype.PL)}
+	 */
+	@Test
+	@Verifies(value = "should return internal identifier of location if only location id is specified", method = "resolveLocationId(null)")
+	public void resolveLocationId_shouldReturnInternalIdentifierOfLocationIfOnlyLocationIdIsSpecified() throws Exception {
+		executeDataSet("org/openmrs/hl7/include/ORUTest-initialData.xml");
+		HL7Service hl7service = Context.getHL7Service();
+		Message message = hl7service
+		        .parseHL7String("MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\r"
+		                + "PID|||3^^^^||John3^Doe^||\r"
+		                + "NK1|1|Hornblower^Horatio^L|2B^Sibling^99REL||||||||||||M|19410501|||||||||||||||||1000^^^L^PN||||\r"
+		                + "PV1||O|1^0^0^0&Test Location&0||||1^Super User (1-8)|||||||||||||||||||||||||||||||||||||20080212|||||||V\r"
+		                + "ORC|RE||||||||20080226102537|1^Super User\r"
+		                + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r"
+		                + "OBX|1|NM|5497^CD4, BY FACS^99DCT||450|||||||||20080206\r"
+		                + "OBX|2|DT|5096^RETURN VISIT DATE^99DCT||20080229|||||||||20080212");
+		ORU_R01 oru = (ORU_R01) message;
+		PV1 pv1 = oru.getPATIENT_RESULT().getPATIENT().getVISIT().getPV1();
+		Assert.assertNotNull("PV1 parsed as null", pv1);
+		PL hl7Location = pv1.getAssignedPatientLocation();
+		Integer locationId = hl7service.resolveLocationId(hl7Location);
+		Assert.assertEquals("Resolved and given locationId shoud be equals", Integer.valueOf(1), locationId);
+	}
+	
+	/**
+	 * @see {@link HL7Service#resolveLocationId(ca.uhn.hl7v2.model.v25.datatype.PL)}
+	 */
+	@Test
+	@Verifies(value = "should return null if location id and name are incorrect", method = "resolveLocationId(null)")
+	public void resolveLocationId_shouldReturnNullIfLocationIdAndNameAreIncorrect() throws Exception {
+		executeDataSet("org/openmrs/hl7/include/ORUTest-initialData.xml");
+		HL7Service hl7service = Context.getHL7Service();
+		Message message = hl7service
+		        .parseHL7String("MSH|^~\\&|FORMENTRY|AMRS.ELD|HL7LISTENER|AMRS.ELD|20080226102656||ORU^R01|JqnfhKKtouEz8kzTk6Zo|P|2.5|1||||||||16^AMRS.ELD.FORMID\r"
+		                + "PID|||3^^^^||John3^Doe^||\r"
+		                + "NK1|1|Hornblower^Horatio^L|2B^Sibling^99REL||||||||||||M|19410501|||||||||||||||||1000^^^L^PN||||\r"
+		                + "PV1||O|99999^0^0^0&Unknown&0||||1^Super User (1-8)|||||||||||||||||||||||||||||||||||||20080212|||||||V\r"
+		                + "ORC|RE||||||||20080226102537|1^Super User\r"
+		                + "OBR|1|||1238^MEDICAL RECORD OBSERVATIONS^99DCT\r"
+		                + "OBX|1|NM|5497^CD4, BY FACS^99DCT||450|||||||||20080206\r"
+		                + "OBX|2|DT|5096^RETURN VISIT DATE^99DCT||20080229|||||||||20080212");
+		ORU_R01 oru = (ORU_R01) message;
+		PV1 pv1 = oru.getPATIENT_RESULT().getPATIENT().getVISIT().getPV1();
+		Assert.assertNotNull("PV1 parsed as null", pv1);
+		PL hl7Location = pv1.getAssignedPatientLocation();
+		Integer locationId = hl7service.resolveLocationId(hl7Location);
+		Assert.assertNull(locationId);
 	}
 	
 }
