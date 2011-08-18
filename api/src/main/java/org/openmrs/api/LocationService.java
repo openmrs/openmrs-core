@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.openmrs.Address;
 import org.openmrs.Location;
+import org.openmrs.LocationAttribute;
 import org.openmrs.LocationAttributeType;
 import org.openmrs.LocationTag;
 import org.openmrs.annotation.Authorized;
@@ -476,4 +477,16 @@ public interface LocationService extends OpenmrsService {
 	 */
 	@Authorized(PrivilegeConstants.PURGE_LOCATION_ATTRIBUTE_TYPES)
 	void purgeLocationAttributeType(LocationAttributeType locationAttributeType);
+	
+	/**
+	 * @param uuid
+	 * @return the {@link LocationAttribute} with the given uuid
+	 * @since 1.9
+	 * @should get the location attribute with the given uuid
+	 * @should return null if no location attribute has the given uuid
+	 */
+	@Transactional(readOnly = true)
+	@Authorized(PrivilegeConstants.VIEW_LOCATIONS)
+	LocationAttribute getLocationAttributeByUuid(String uuid);
+	
 }

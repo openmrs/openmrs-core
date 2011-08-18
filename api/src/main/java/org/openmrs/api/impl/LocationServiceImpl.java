@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.openmrs.Address;
 import org.openmrs.Location;
+import org.openmrs.LocationAttribute;
 import org.openmrs.LocationAttributeType;
 import org.openmrs.LocationTag;
 import org.openmrs.api.APIException;
@@ -399,5 +400,13 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	@Override
 	public void purgeLocationAttributeType(LocationAttributeType locationAttributeType) {
 		dao.deleteLocationAttributeType(locationAttributeType);
+	}
+	
+	/**
+	 * @see org.openmrs.api.LocationService#getLocationAttributeByUuid(java.lang.String)
+	 */
+	@Override
+	public LocationAttribute getLocationAttributeByUuid(String uuid) {
+		return dao.getLocationAttributeByUuid(uuid);
 	}
 }

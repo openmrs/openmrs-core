@@ -24,6 +24,7 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.openmrs.Location;
+import org.openmrs.LocationAttribute;
 import org.openmrs.LocationAttributeType;
 import org.openmrs.LocationTag;
 import org.openmrs.api.db.DAOException;
@@ -283,4 +284,12 @@ public class HibernateLocationDAO implements LocationDAO {
 		sessionFactory.getCurrentSession().delete(locationAttributeType);
 	}
 	
+	/**
+	 * @see org.openmrs.api.db.LocationDAO#getLocationAttributeByUuid(java.lang.String)
+	 */
+	@Override
+	public LocationAttribute getLocationAttributeByUuid(String uuid) {
+		return (LocationAttribute) sessionFactory.getCurrentSession().createCriteria(LocationAttribute.class).add(
+		    Restrictions.eq("uuid", uuid)).uniqueResult();
+	}
 }
