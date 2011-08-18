@@ -21,21 +21,20 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
-import liquibase.FileOpener;
 import liquibase.change.custom.CustomTaskChange;
 import liquibase.database.Database;
 import liquibase.database.DatabaseConnection;
 import liquibase.exception.CustomChangeException;
-import liquibase.exception.InvalidChangeDefinitionException;
+import liquibase.exception.DatabaseException;
 import liquibase.exception.SetupException;
-import liquibase.exception.UnsupportedChangeException;
 
+import liquibase.exception.ValidationErrors;
+import liquibase.resource.ResourceAccessor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
@@ -56,14 +55,15 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 	 */
 	private String sqlFile = null;
 	
-	private FileOpener fileOpener = null;
+	private ResourceAccessor fileOpener = null;
 	
 	/**
 	 * Does the work of executing the file on mysql
 	 * 
 	 * @see liquibase.change.custom.CustomTaskChange#execute(liquibase.database.Database)
 	 */
-	public void execute(Database database) throws CustomChangeException, UnsupportedChangeException {
+	@Override
+	public void execute(Database database) throws CustomChangeException {
 		
 		Properties runtimeProperties = Context.getRuntimeProperties();
 		
@@ -104,7 +104,7 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 			databaseName = connection.getCatalog();
 			commands.add(databaseName);
 		}
-		catch (SQLException e) {
+		catch (DatabaseException e) {
 			throw new CustomChangeException("Unable to generate command string for file: " + sqlFile, e);
 		}
 		
@@ -120,13 +120,13 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 		}
 		catch (IOException io) {
 			if (io.getMessage().endsWith("not found")) {
-				throw new UnsupportedChangeException("Unable to run command: " + commands.get(0)
+				throw new CustomChangeException("Unable to run command: " + commands.get(0)
 				        + ".  Make sure that it is on the PATH and then restart your server and try again. " + " Or run "
 				        + errorCommand + " at the command line with the appropriate full mysql path", io);
 			}
 		}
 		catch (Exception e) {
-			throw new UnsupportedChangeException("Error while executing command: '" + commands.get(0) + "'", e);
+			throw new CustomChangeException("Error while executing command: '" + commands.get(0) + "'", e);
 		}
 		
 		log.debug("Exec called: " + Arrays.asList(commands));
@@ -134,7 +134,7 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 		if (exitValue != 0) {
 			log.error("There was an error while running the " + commands.get(0) + " command.  Command output: "
 			        + output.toString());
-			throw new UnsupportedChangeException(
+			throw new CustomChangeException(
 			        "There was an error while running the "
 			                + commands.get(0)
 			                + " command. See your server's error log for the full error output. As an alternative, you"
@@ -155,8 +155,7 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 	 * @return
 	 */
 	private String fixWindowsPathHack(String path) {
-		StringBuffer returnedPath = new StringBuffer();
-		
+		StringBuilder returnedPath = new StringBuilder();
 		path = path.replace("\\", "/"); // so java doesn't freak out with windows backslashes
 		for (String pathPart : path.split("/")) {
 			if (pathPart.contains(" ")) {
@@ -168,7 +167,6 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 			returnedPath.append(pathPart).append("/");
 		}
 		returnedPath.deleteCharAt(returnedPath.length() - 1);
-		
 		return returnedPath.toString();
 	}
 	
@@ -224,6 +222,7 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 	/**
 	 * @see liquibase.change.custom.CustomChange#getConfirmationMessage()
 	 */
+	@Override
 	public String getConfirmationMessage() {
 		return "Finished executing " + sqlFile + " on database";
 	}
@@ -231,7 +230,8 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 	/**
 	 * @see liquibase.change.custom.CustomChange#setFileOpener(liquibase.FileOpener)
 	 */
-	public void setFileOpener(FileOpener fileOpener) {
+	@Override
+	public void setFileOpener(ResourceAccessor fileOpener) {
 		this.fileOpener = fileOpener;
 	}
 	
@@ -240,6 +240,7 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 	 * 
 	 * @see liquibase.change.custom.CustomChange#setUp()
 	 */
+	@Override
 	public void setUp() throws SetupException {
 		
 	}
@@ -247,8 +248,9 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 	/**
 	 * @see liquibase.change.custom.CustomChange#validate(liquibase.database.Database)
 	 */
-	public void validate(Database database) throws InvalidChangeDefinitionException {
-		
+	@Override
+	public ValidationErrors validate(Database database) {
+		return new ValidationErrors();
 	}
 	
 	/**

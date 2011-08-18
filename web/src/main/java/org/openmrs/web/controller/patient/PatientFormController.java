@@ -645,7 +645,6 @@ public class PatientFormController extends PersonFormController {
 					id = Integer.valueOf(patientId);
 					patient = ps.getPatientOrPromotePerson(id);
 					if (patient == null) {
-						log.warn("There is no patient or person with id: '" + patientId + "'");
 						throw new ServletException("There is no patient or person with id: '" + patientId + "'");
 					}
 				}

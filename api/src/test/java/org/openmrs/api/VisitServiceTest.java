@@ -331,21 +331,21 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 	 * @see {@link VisitService#getActiveVisitsByPatient(Patient)}
 	 */
 	@Test
-	@Verifies(value = "should return all unvoided active visits for the specified patient", method = "getActiveVisitsByPatient(Patient)")
+	@Verifies(value = "return all active unvoided visits for the specified patient", method = "getActiveVisitsByPatient(Patient)")
 	public void getActiveVisitsByPatient_shouldReturnAllUnvoidedActiveVisitsForTheSpecifiedPatient() throws Exception {
 		executeDataSet(VISITS_WITH_DATES_XML);
 		Assert.assertEquals(4, Context.getVisitService().getActiveVisitsByPatient(new Patient(2)).size());
 	}
 	
 	@Test
-	@Verifies(value = "should return both voided and unvoided active visits for the specified patient", method = "getActiveVisitsByPatient(Patient)")
+	@Verifies(value = "return all active visits for the specified patient", method = "getVisitsByPatient(Patient, boolean, boolean)")
 	public void getActiveVisitsByPatient_shouldReturnAllActiveVisitsForTheSpecifiedPatient() throws Exception {
 		executeDataSet(VISITS_WITH_DATES_XML);
 		Assert.assertEquals(5, Context.getVisitService().getVisitsByPatient(new Patient(2), false, true).size());
 	}
 	
 	@Test
-	@Verifies(value = "should return all unvoided active and inactive visits for the specified patient", method = "getActiveVisitsByPatient(Patient)")
+	@Verifies(value = "return all unvoided visits for the specified patient", method = "getVisitsByPatient(Patient, boolean, boolean)")
 	public void getActiveVisitsByPatient_shouldReturnAllUnvoidedVisitsForTheSpecifiedPatient() throws Exception {
 		executeDataSet(VISITS_WITH_DATES_XML);
 		Assert.assertEquals(8, Context.getVisitService().getVisitsByPatient(new Patient(2), true, false).size());

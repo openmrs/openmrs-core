@@ -29,15 +29,16 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import liquibase.FileOpener;
 import liquibase.change.custom.CustomTaskChange;
 import liquibase.database.Database;
-import liquibase.database.DatabaseConnection;
+import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.CustomChangeException;
-import liquibase.exception.InvalidChangeDefinitionException;
+import liquibase.exception.DatabaseException;
 import liquibase.exception.SetupException;
-import liquibase.exception.UnsupportedChangeException;
 
+import liquibase.exception.ValidationErrors;
+
+import liquibase.resource.ResourceAccessor;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections.set.ListOrderedSet;
@@ -76,8 +77,9 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 	/**
 	 * @see CustomTaskChange#execute(Database)
 	 */
-	public void execute(Database database) throws CustomChangeException, UnsupportedChangeException {
-		DatabaseConnection connection = database.getConnection();
+	@Override
+	public void execute(Database database) throws CustomChangeException {
+		JdbcConnection connection = (JdbcConnection) database.getConnection();
 		//In the liquibase changelog file, there is a precondition that checks if this is a fresh installation
 		//with no rows in the concept table or if it has some active concepts, we don't need to check again.
 		
@@ -110,7 +112,7 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 	 * 
 	 * @param connection The database connection
 	 */
-	private void validateAndCleanUpConcepts(DatabaseConnection connection) {
+	private void validateAndCleanUpConcepts(JdbcConnection connection) {
 		List<Integer> conceptIds = getAllUnretiredConceptIds(connection);
 		allowedLocales = getAllowedLocalesList(connection);
 		//default locale(if none, then 'en') is always the last in the list.
@@ -435,7 +437,7 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 	 * @param connection The database connection
 	 * @return A list of all fetched conceptIds
 	 */
-	private List<Integer> getAllUnretiredConceptIds(DatabaseConnection connection) {
+	private List<Integer> getAllUnretiredConceptIds(JdbcConnection connection) {
 		
 		LinkedList<Integer> conceptIds = null;
 		Statement stmt = null;
@@ -450,6 +452,9 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 				
 				conceptIds.add(rs.getInt("concept_id"));
 			}
+		}
+		catch (DatabaseException e) {
+			log.warn("Error generated", e);
 		}
 		catch (SQLException e) {
 			log.warn("Error generated", e);
@@ -476,7 +481,7 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 	 * @param conceptName The conceptName to be validated
 	 * @return true if the conceptName is unique, otherwise false
 	 */
-	private boolean isNameUniqueInLocale(DatabaseConnection connection, ConceptName conceptName, int conceptId) {
+	private boolean isNameUniqueInLocale(JdbcConnection connection, ConceptName conceptName, int conceptId) {
 		
 		int duplicates = getInt(connection,
 		    "SELECT count(*) FROM concept_name cn, concept c WHERE cn.concept_id = c.concept_id  AND (cn.concept_name_type = '"
@@ -498,7 +503,7 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 	 * @return A list of allowed locales
 	 */
 	@SuppressWarnings("unchecked")
-	private List<Locale> getAllowedLocalesList(DatabaseConnection connection) {
+	private List<Locale> getAllowedLocalesList(JdbcConnection connection) {
 		Statement stmt = null;
 		ListOrderedSet allowedLocales = new ListOrderedSet();
 		
@@ -540,6 +545,9 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 			} else
 				log.warn("The global property '" + OpenmrsConstants.GLOBAL_PROPERTY_LOCALE_ALLOWED_LIST + "' isn't set");
 		}
+		catch (DatabaseException e) {
+			log.warn("Error generated", e);
+		}
 		catch (SQLException e) {
 			log.warn("Error generated", e);
 		}
@@ -570,7 +578,7 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 	 * @return a map of Locale with ConceptNames in them associated to the concept identified by the
 	 *         given conceptId
 	 */
-	private Map<Locale, List<ConceptName>> getLocaleConceptNamesMap(DatabaseConnection connection, int conceptId) {
+	private Map<Locale, List<ConceptName>> getLocaleConceptNamesMap(JdbcConnection connection, int conceptId) {
 		PreparedStatement pStmt = null;
 		Map<Locale, List<ConceptName>> localeConceptNamesMap = null;
 		
@@ -610,6 +618,9 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 				localeConceptNamesMap.get(conceptName.getLocale()).add(conceptName);
 			}
 		}
+		catch (DatabaseException e) {
+			log.warn("Error generated", e);
+		}
 		catch (SQLException e) {
 			log.warn("Error generated", e);
 		}
@@ -632,7 +643,7 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 	 * 
 	 * @param connection The database connection
 	 */
-	private void runBatchUpdate(DatabaseConnection connection) {
+	private void runBatchUpdate(JdbcConnection connection) {
 		PreparedStatement pStmt = null;
 		
 		try {
@@ -701,8 +712,10 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 				}
 			}
 		}
-		
 		catch (SQLException e) {
+			log.warn("Error generated", e);
+		}
+		catch (DatabaseException e) {
 			log.warn("Error generated", e);
 		}
 		finally {
@@ -710,7 +723,7 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 			try {
 				connection.setAutoCommit(true);
 			}
-			catch (SQLException e) {
+			catch (DatabaseException e) {
 				log.warn("Failed to reset auto commit back to true", e);
 			}
 			
@@ -732,7 +745,7 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 	 * @param sql the sql statement to execute
 	 * @return integer resulting from the execution of the sql statement
 	 */
-	private int getInt(DatabaseConnection connection, String sql) {
+	private int getInt(JdbcConnection connection, String sql) {
 		Statement stmt = null;
 		int result = 0;
 		try {
@@ -749,6 +762,9 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 			}
 			
 			return result;
+		}
+		catch (DatabaseException e) {
+			log.warn("Error generated", e);
 		}
 		catch (SQLException e) {
 			log.warn("Error generated", e);
@@ -770,25 +786,30 @@ public class ConceptValidatorChangeSet implements CustomTaskChange {
 	/**
 	 * @see liquibase.change.custom.CustomChange#getConfirmationMessage()
 	 */
+	@Override
 	public String getConfirmationMessage() {
 		return "Finished validating concepts";
 	}
 	
 	/**
-	 * @see liquibase.change.custom.CustomChange#setFileOpener(liquibase.FileOpener)
+	 * @see liquibase.change.custom.CustomChange#setFileOpener(liquibase.ResourceAccessor)
 	 */
-	public void setFileOpener(FileOpener fileOpener) {
+	@Override
+	public void setFileOpener(ResourceAccessor fileOpener) {
 	}
 	
 	/**
 	 * @see liquibase.change.custom.CustomChange#setUp()
 	 */
+	@Override
 	public void setUp() throws SetupException {
 	}
 	
 	/**
 	 * @see liquibase.change.custom.CustomChange#validate(liquibase.database.Database)
 	 */
-	public void validate(Database database) throws InvalidChangeDefinitionException {
+	@Override
+	public ValidationErrors validate(Database database) {
+		return new ValidationErrors();
 	}
 }

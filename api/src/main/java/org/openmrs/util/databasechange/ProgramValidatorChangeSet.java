@@ -17,14 +17,14 @@ import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 
-import liquibase.FileOpener;
 import liquibase.change.custom.CustomTaskChange;
 import liquibase.database.Database;
+import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.CustomChangeException;
-import liquibase.exception.InvalidChangeDefinitionException;
 import liquibase.exception.SetupException;
-import liquibase.exception.UnsupportedChangeException;
 
+import liquibase.exception.ValidationErrors;
+import liquibase.resource.ResourceAccessor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.util.DatabaseUpdater;
@@ -43,8 +43,9 @@ public class ProgramValidatorChangeSet implements CustomTaskChange {
 	/**
 	 * @see CustomTaskChange#execute(Database)
 	 */
-	public void execute(Database database) throws CustomChangeException, UnsupportedChangeException {
-		Connection conn = database.getConnection().getUnderlyingConnection();
+	@Override
+	public void execute(Database database) throws CustomChangeException {
+		Connection conn = ((JdbcConnection) database.getConnection()).getUnderlyingConnection();
 		List<String> messages = new ArrayList<String>();
 		
 		// Warn if any states are configured as both initial and terminal
@@ -69,7 +70,7 @@ public class ProgramValidatorChangeSet implements CustomTaskChange {
 			message.append("None found.");
 		} else {
 			for (List<Object> row : results) {
-				message.append(row.get(1).toString() + "<br/>");
+				message.append(row.get(1).toString()).append("<br/>");
 			}
 		}
 		
@@ -100,7 +101,7 @@ public class ProgramValidatorChangeSet implements CustomTaskChange {
 			for (Integer conceptId : missingInitial) {
 				String sql = "select min(name) from concept_name where concept_id = " + conceptId;
 				String name = DatabaseUtil.executeSQL(conn, sql, true).get(0).get(0).toString();
-				message.append(name + "<br/>");
+				message.append(name).append("<br/>");
 			}
 		}
 		messages.add(message.toString());
@@ -117,10 +118,10 @@ public class ProgramValidatorChangeSet implements CustomTaskChange {
 	}
 	
 	/**
-	 * @see CustomChange#setFileOpener(FileOpener)
+	 * @see CustomChange#setFileOpener(ResourceAccessor)
 	 */
 	@Override
-	public void setFileOpener(FileOpener fo) {
+	public void setFileOpener(ResourceAccessor fo) {
 	}
 	
 	/**
@@ -134,6 +135,7 @@ public class ProgramValidatorChangeSet implements CustomTaskChange {
 	 * @see CustomChange#validate(Database)
 	 */
 	@Override
-	public void validate(Database db) throws InvalidChangeDefinitionException {
+	public ValidationErrors validate(Database db) {
+		return new ValidationErrors();
 	}
 }
