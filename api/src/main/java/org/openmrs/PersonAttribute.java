@@ -17,6 +17,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Date;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
@@ -271,6 +272,10 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 	 */
 	@SuppressWarnings("unchecked")
 	public Object getHydratedObject() {
+		
+		if (getValue() == null)
+			return null;
+		
 		try {
 			Class c = OpenmrsClassLoader.getInstance().loadClass(getAttributeType().getFormat());
 			try {
@@ -289,7 +294,7 @@ public class PersonAttribute extends BaseOpenmrsData implements java.io.Serializ
 		}
 		catch (Throwable t) {
 			//Do not log warnings for legal but empty values.
-			if (!((t.getCause() instanceof NumberFormatException && (getValue() == null || getValue().isEmpty())) || t instanceof NoSuchMethodException)) {
+			if (!((t.getCause() instanceof NumberFormatException && StringUtils.isBlank(getValue())) || t instanceof NoSuchMethodException)) {
 				log.warn("Unable to hydrate value: " + getValue() + " for type: " + getAttributeType(), t);
 			}
 		}
