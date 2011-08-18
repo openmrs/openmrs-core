@@ -484,9 +484,16 @@ public interface HL7Service extends OpenmrsService {
 	public Integer resolvePersonId(XCN xcn) throws HL7Exception;
 	
 	/**
+	 * Resolves location from person location object, and if location id is specified then returns
+	 * correspond internal identifier of the specified location. If only location_name is specified,
+	 * it tries to return location internal identifier by given name
+	 * 
 	 * @param pl HL7 component of data type PL (person location) (see Ch 2.A.53)
 	 * @return internal identifier of the specified location, or null if it is not found or
 	 *         ambiguous
+	 * @should return internal identifier of location if only location name is specified
+	 * @should return internal identifier of location if only location id is specified
+	 * @should return null if location id and name are incorrect
 	 */
 	public Integer resolveLocationId(PL pl) throws HL7Exception;
 	
