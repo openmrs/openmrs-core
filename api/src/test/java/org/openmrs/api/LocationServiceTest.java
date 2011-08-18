@@ -1112,4 +1112,27 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		Assert.assertNull(lat.getRetireReason());
 	}
 	
+	/**
+	 * @see LocationService#getLocationAttributeByUuid(String)
+	 * @verifies get the location attribute with the given uuid
+	 */
+	@Test
+	public void getLocationAttributeByUuid_shouldGetTheLocationAttributeWithTheGivenUuid() throws Exception {
+		executeDataSet(LOC_ATTRIBUTE_DATA_XML);
+		LocationService service = Context.getLocationService();
+		Assert.assertEquals("2011-04-25", service.getLocationAttributeByUuid("3a2bdb18-6faa-11e0-8414-001e378eb67e")
+		        .getSerializedValue());
+	}
+	
+	/**
+	 * @see LocationService#getLocationAttributeByUuid(String)
+	 * @verifies return null if no location attribute has the given uuid
+	 */
+	@Test
+	public void getLocationAttributeByUuid_shouldReturnNullIfNoLocationAttributeHasTheGivenUuid() throws Exception {
+		executeDataSet(LOC_ATTRIBUTE_DATA_XML);
+		LocationService service = Context.getLocationService();
+		Assert.assertNull(service.getLocationAttributeByUuid("not-a-uuid"));
+	}
+	
 }
