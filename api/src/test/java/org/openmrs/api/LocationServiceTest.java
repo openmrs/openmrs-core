@@ -1052,6 +1052,9 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		executeDataSet(LOC_ATTRIBUTE_DATA_XML);
 		LocationAttributeType vat = Context.getLocationService().getLocationAttributeType(1);
 		Assert.assertFalse(vat.isRetired());
+		Assert.assertNull(vat.getRetiredBy());
+		Assert.assertNull(vat.getDateRetired());
+		Assert.assertNull(vat.getRetireReason());
 		Context.getLocationService().retireLocationAttributeType(vat, "for testing");
 		vat = Context.getLocationService().getLocationAttributeType(1);
 		Assert.assertTrue(vat.isRetired());
