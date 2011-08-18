@@ -14,8 +14,11 @@
 package org.openmrs.web.controller.visit;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
@@ -28,6 +31,9 @@ import org.openmrs.VisitAttributeType;
 import org.openmrs.VisitType;
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
+import org.openmrs.attribute.Attribute;
+import org.openmrs.attribute.AttributeUtil;
+import org.openmrs.attribute.Customizable;
 import org.openmrs.attribute.handler.AttributeHandler;
 import org.openmrs.validator.VisitValidator;
 import org.openmrs.web.WebConstants;
@@ -92,26 +98,54 @@ public class VisitFormController {
 	        SessionStatus status, ModelMap model) {
 		
 		// manually handle the attribute parameters
+		// TODO move this to a utility class
+		List<Attribute> toVoid = new ArrayList<Attribute>(); // a bit of a hack to avoid voiding things if the save doesn't go through
 		for (VisitAttributeType vat : (List<VisitAttributeType>) model.get("visitAttributeTypes")) {
-			if (vat.getMaxOccurs() == null || vat.getMaxOccurs() != 1)
-				throw new RuntimeException("For now only attributes with maxOccurs=1 are supported");
 			AttributeHandler<?> handler = Context.getAttributeService().getHandler(vat);
-			List<Object> attributeValues = new ArrayList<Object>();
-			// look for parameters starting with attribute.${ vat.id }
+			// Look for parameters starting with "attribute.${ vat.id }". They may be either of: 
+			// * attribute.${ vat.id }.new[${ meaningless int }]
+			// * attribute.${ vat.id }.existing[${ existingAttribute.id }]
 			for (Iterator<String> iter = request.getParameterNames(); iter.hasNext();) {
 				String paramName = iter.next();
 				if (paramName.startsWith("attribute." + vat.getId())) {
+					String afterPrefix = paramName.substring(("attribute." + vat.getId()).length());
 					String paramValue = request.getParameter(paramName);
-					if (StringUtils.hasText(paramValue)) {
-						Object realValue = handler.deserialize(paramValue);
-						//handler.validate(realValue);
-						VisitAttribute va = new VisitAttribute();
-						va.setAttributeType(vat);
-						va.setSerializedValue(paramValue);
-						visit.setAttribute(va);
-					} else {
-						for (VisitAttribute va : visit.getActiveAttributes(vat))
-							va.setVoided(true);
+					if (afterPrefix.startsWith(".new[")) {
+						// if not empty, we create a new one
+						if (StringUtils.hasText(paramValue)) {
+							if (AttributeUtil.isValidValue(handler, paramValue)) {
+								VisitAttribute va = new VisitAttribute();
+								va.setAttributeType(vat);
+								va.setSerializedValue(paramValue);
+								visit.addAttribute(va);
+							} else {
+								result.rejectValue("activeAttributes", "attribute.error.invalid", new Object[] { vat
+								        .getName() }, "Illegal value for " + vat.getName());
+							}
+						}
+						
+					} else if (afterPrefix.startsWith(".existing[")) {
+						// if it has changed, we edit the existing one
+						Integer existingAttributeId = getFromSquareBrackets(afterPrefix);
+						VisitAttribute existing = findAttributeById(visit, existingAttributeId);
+						if (existing == null)
+							throw new RuntimeException("Visit was modified between page load and submit. Try again.");
+						if (!StringUtils.hasText(paramValue)) {
+							// they changed an existing value to "", so we void that attribute
+							toVoid.add(existing);
+						} else if (!existing.getSerializedValue().equals(paramValue)) {
+							// they changed an existing value to a new value
+							if (AttributeUtil.isValidValue(handler, paramValue)) {
+								toVoid.add(existing);
+								VisitAttribute newVal = new VisitAttribute();
+								newVal.setAttributeType(vat);
+								newVal.setSerializedValue(paramValue);
+								visit.addAttribute(newVal);
+							} else {
+								result.rejectValue("activeAttributes", "attribute.error.invalid", new Object[] { vat
+								        .getName() }, "Illegal value for " + vat.getName());
+							}
+						}
 					}
 				}
 			}
@@ -119,6 +153,8 @@ public class VisitFormController {
 		
 		new VisitValidator().validate(visit, result);
 		if (!result.hasErrors()) {
+			for (Attribute<?> attr : toVoid)
+				voidAttribute(attr);
 			try {
 				Context.getVisitService().saveVisit(visit);
 				if (log.isDebugEnabled())
@@ -133,6 +169,45 @@ public class VisitFormController {
 		}
 		
 		return VISIT_FORM;
+	}
+	
+	/**
+	 * Finds an existing attribute in a Customizable parent with the given id
+	 * 
+	 * @param visit
+	 * @param existingAttributeId
+	 * @return
+	 */
+	private <T extends Attribute<?>> T findAttributeById(Customizable<T> owner, Integer existingAttributeId) {
+		for (T candidate : owner.getActiveAttributes())
+			if (candidate.getId().equals(existingAttributeId))
+				return candidate;
+		return null;
+	}
+	
+	/**
+	 * Helper method to void an attribute
+	 * 
+	 * @param existing
+	 */
+	private void voidAttribute(Attribute<?> existing) {
+		existing.setVoided(true);
+		existing.setVoidedBy(Context.getAuthenticatedUser());
+		existing.setDateVoided(new Date());
+	}
+	
+	/**
+	 * something[3] -> 3
+	 * 
+	 * @param input
+	 * @return
+	 */
+	private Integer getFromSquareBrackets(String input) {
+		// when we pull this to a util method, reuse this:
+		Pattern betweenSquareBrackets = Pattern.compile("\\[(\\d*)\\]");
+		Matcher matcher = betweenSquareBrackets.matcher(input);
+		matcher.find();
+		return Integer.valueOf(matcher.group(1));
 	}
 	
 	/**

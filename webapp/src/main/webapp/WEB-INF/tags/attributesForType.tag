@@ -16,12 +16,17 @@ howManyToShow = Math.max(howManyToShow, existing.size());
     <td>
 <% for (int i = 0; i < howManyToShow; ++i) {
 	Attribute val = null;
+	String formFieldName = (String) jspContext.getAttribute("formFieldNamePrefix");
 	if (existing.size() > i)
 		val = existing.get(i);
+	if (val != null && val.getId() != null)
+		formFieldName += ".existing[" + val.getId() + "]";
+	else
+		formFieldName += ".new[" + i + "]";
 %>
         <openmrs_tag:attribute
             attributeType="${ attributeType }"
-            formFieldName="<%= jspContext.getAttribute(\"formFieldNamePrefix\") + \"[\" + i + \"]\" %>"
+            formFieldName="<%= formFieldName %>"
             value="<%= val %>"/>
         <br/>
 <% } %>
