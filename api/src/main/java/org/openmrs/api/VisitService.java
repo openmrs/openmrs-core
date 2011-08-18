@@ -309,7 +309,7 @@ public interface VisitService extends OpenmrsService {
 	 * Creates or updates the given visit attribute type in the database
 	 * 
 	 * @param visitAttributeType
-	 * @return the visitAttribute created/saved
+	 * @return the VisitAttributeType created/saved
 	 * @should create a new visit attribute type
 	 * @should edit an existing visit attribute type
 	 */
@@ -330,7 +330,7 @@ public interface VisitService extends OpenmrsService {
 	 * Restores a visit attribute type that was previous retired in the database
 	 * 
 	 * @param visitAttributeType
-	 * @return the visitAttribute unretired
+	 * @return the VisitAttributeType unretired
 	 * @should unretire a retired visit attribute type
 	 */
 	@Authorized(PrivilegeConstants.MANAGE_VISIT_ATTRIBUTE_TYPES)

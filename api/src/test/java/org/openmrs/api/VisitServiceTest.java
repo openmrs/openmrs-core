@@ -532,6 +532,7 @@ public class VisitServiceTest extends BaseContextSensitiveTest {
 		vat.setName("Another one");
 		vat.setDatatype("string");
 		service.saveVisitAttributeType(vat);
+		Assert.assertNotNull(vat.getId());
 		Assert.assertEquals(3, service.getAllVisitAttributeTypes().size());
 	}
 	
