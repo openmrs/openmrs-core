@@ -425,4 +425,13 @@ public class PrivilegeConstants {
 	
 	@AddOnStartup(description = "Able to view the 'Visits' tab on the patient dashboard")
 	public static final String DASHBOARD_VISITS = "Patient Dashboard - View Visits Section";
+	
+	@AddOnStartup(description = "Able to view location attribute types")
+	public static final String VIEW_LOCATION_ATTRIBUTE_TYPES = "View Location Attribute Types";
+	
+	@AddOnStartup(description = "Able to add/edit/retire location attribute types")
+	public static final String MANAGE_LOCATION_ATTRIBUTE_TYPES = "Manage Location Attribute Types";
+	
+	@AddOnStartup(description = "Able to purge location attribute types")
+	public static final String PURGE_LOCATION_ATTRIBUTE_TYPES = "Purge Location Attribute Types";
 }
