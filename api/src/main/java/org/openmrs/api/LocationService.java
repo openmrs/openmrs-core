@@ -17,6 +17,8 @@ import java.util.List;
 
 import org.openmrs.Address;
 import org.openmrs.Location;
+import org.openmrs.LocationAttribute;
+import org.openmrs.LocationAttributeType;
 import org.openmrs.LocationTag;
 import org.openmrs.annotation.Authorized;
 import org.openmrs.api.db.LocationDAO;
@@ -400,4 +402,91 @@ public interface LocationService extends OpenmrsService {
 	 * @should return null by default
 	 */
 	public List<String> getPossibleAddressValues(Address incomplete, String fieldName) throws APIException;
+	
+	/**
+	 * @return all {@link LocationAttributeType}s
+	 * @since 1.9
+	 * @should return all location attribute types including retired ones
+	 */
+	@Transactional(readOnly = true)
+	@Authorized(PrivilegeConstants.VIEW_LOCATION_ATTRIBUTE_TYPES)
+	List<LocationAttributeType> getAllLocationAttributeTypes();
+	
+	/**
+	 * @param id
+	 * @return the {@link LocationAttributeType} with the given internal id
+	 * @since 1.9
+	 * @should return the location attribute type with the given id
+	 * @should return null if no location attribute type exists with the given id
+	 */
+	@Transactional(readOnly = true)
+	@Authorized(PrivilegeConstants.VIEW_LOCATION_ATTRIBUTE_TYPES)
+	LocationAttributeType getLocationAttributeType(Integer id);
+	
+	/**
+	 * @param uuid
+	 * @return the {@link LocationAttributeType} with the given uuid
+	 * @since 1.9
+	 * @should return the location attribute type with the given uuid
+	 * @should return null if no location attribute type exists with the given uuid
+	 */
+	@Transactional(readOnly = true)
+	@Authorized(PrivilegeConstants.VIEW_LOCATION_ATTRIBUTE_TYPES)
+	LocationAttributeType getLocationAttributeTypeByUuid(String uuid);
+	
+	/**
+	 * Creates or updates the given location attribute type in the database
+	 * 
+	 * @param locationAttributeType
+	 * @return the LocationAttributeType created/saved
+	 * @since 1.9
+	 * @should create a new location attribute type
+	 * @should edit an existing location attribute type
+	 */
+	@Authorized(PrivilegeConstants.MANAGE_LOCATION_ATTRIBUTE_TYPES)
+	LocationAttributeType saveLocationAttributeType(LocationAttributeType locationAttributeType);
+	
+	/**
+	 * Retires the given location attribute type in the database
+	 * 
+	 * @param locationAttributeType
+	 * @return the locationAttribute retired
+	 * @since 1.9
+	 * @should retire a location attribute type
+	 */
+	@Authorized(PrivilegeConstants.MANAGE_LOCATION_ATTRIBUTE_TYPES)
+	LocationAttributeType retireLocationAttributeType(LocationAttributeType locationAttributeType, String reason);
+	
+	/**
+	 * Restores a location attribute type that was previous retired in the database
+	 * 
+	 * @param locationAttributeType
+	 * @return the LocationAttributeType unretired
+	 * @since 1.9
+	 * @should unretire a retired location attribute type
+	 */
+	@Authorized(PrivilegeConstants.MANAGE_LOCATION_ATTRIBUTE_TYPES)
+	LocationAttributeType unretireLocationAttributeType(LocationAttributeType locationAttributeType);
+	
+	/**
+	 * Completely removes a location attribute type from the database
+	 * 
+	 * @param locationAttributeType
+	 * @since 1.9
+	 * @should completely remove a location attribute type
+	 */
+	@Authorized(PrivilegeConstants.PURGE_LOCATION_ATTRIBUTE_TYPES)
+	void purgeLocationAttributeType(LocationAttributeType locationAttributeType);
+	
+	/**
+	 * @param uuid
+	 * @return the {@link LocationAttribute} with the given uuid
+	 * @since 1.9
+	 * @should get the location attribute with the given uuid
+	 * @should return null if no location attribute has the given uuid
+	 */
+	@Transactional(readOnly = true)
+	@Authorized(PrivilegeConstants.VIEW_LOCATIONS)
+	LocationAttribute getLocationAttributeByUuid(String uuid);
+	
 }

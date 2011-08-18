@@ -30,6 +30,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Location;
+import org.openmrs.LocationAttributeType;
 import org.openmrs.LocationTag;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
@@ -42,6 +43,8 @@ import org.openmrs.util.OpenmrsConstants;
 public class LocationServiceTest extends BaseContextSensitiveTest {
 	
 	protected static final String LOC_INITIAL_DATA_XML = "org/openmrs/api/include/LocationServiceTest-initialData.xml";
+	
+	protected static final String LOC_ATTRIBUTE_DATA_XML = "org/openmrs/api/include/LocationServiceTest-attributes.xml";
 	
 	/**
 	 * Run this before each unit test in this class. This adds a bit more data to the base data that
@@ -974,6 +977,162 @@ public class LocationServiceTest extends BaseContextSensitiveTest {
 		        .isRetired());
 		Assert.assertTrue("Retired locations should be at the end of the list", locations.get(locations.size() - 2)
 		        .isRetired());
+	}
+	
+	/**
+	 * @see LocationService#getAllLocationAttributeTypes()
+	 * @verifies return all location attribute types including retired ones
+	 */
+	@Test
+	public void getAllLocationAttributeTypes_shouldReturnAllLocationAttributeTypesIncludingRetiredOnes() throws Exception {
+		executeDataSet(LOC_ATTRIBUTE_DATA_XML);
+		Assert.assertEquals(2, Context.getLocationService().getAllLocationAttributeTypes().size());
+	}
+	
+	/**
+	 * @see LocationService#getLocationAttributeType(Integer)
+	 * @verifies return the location attribute type with the given id
+	 */
+	@Test
+	public void getLocationAttributeType_shouldReturnTheLocationAttributeTypeWithTheGivenId() throws Exception {
+		executeDataSet(LOC_ATTRIBUTE_DATA_XML);
+		Assert.assertEquals("Audit Date", Context.getLocationService().getLocationAttributeType(1).getName());
+	}
+	
+	/**
+	 * @see LocationService#getLocationAttributeType(Integer)
+	 * @verifies return null if no location attribute type exists with the given id
+	 */
+	@Test
+	public void getLocationAttributeType_shouldReturnNullIfNoLocationAttributeTypeExistsWithTheGivenId() throws Exception {
+		executeDataSet(LOC_ATTRIBUTE_DATA_XML);
+		Assert.assertNull(Context.getLocationService().getLocationAttributeType(999));
+	}
+	
+	/**
+	 * @see LocationService#getLocationAttributeTypeByUuid(String)
+	 * @verifies return the location attribute type with the given uuid
+	 */
+	@Test
+	public void getLocationAttributeTypeByUuid_shouldReturnTheLocationAttributeTypeWithTheGivenUuid() throws Exception {
+		executeDataSet(LOC_ATTRIBUTE_DATA_XML);
+		Assert.assertEquals("Audit Date", Context.getLocationService().getLocationAttributeTypeByUuid(
+		    "9516cc50-6f9f-11e0-8414-001e378eb67e").getName());
+	}
+	
+	/**
+	 * @see LocationService#getLocationAttributeTypeByUuid(String)
+	 * @verifies return null if no location attribute type exists with the given uuid
+	 */
+	@Test
+	public void getLocationAttributeTypeByUuid_shouldReturnNullIfNoLocationAttributeTypeExistsWithTheGivenUuid()
+	        throws Exception {
+		executeDataSet(LOC_ATTRIBUTE_DATA_XML);
+		Assert.assertNull(Context.getLocationService().getLocationAttributeTypeByUuid("not-a-uuid"));
+	}
+	
+	/**
+	 * @see LocationService#purgeLocationAttributeType(LocationAttributeType)
+	 * @verifies completely remove a location attribute type
+	 */
+	@Test
+	public void purgeLocationAttributeType_shouldCompletelyRemoveALocationAttributeType() throws Exception {
+		executeDataSet(LOC_ATTRIBUTE_DATA_XML);
+		Assert.assertEquals(2, Context.getLocationService().getAllLocationAttributeTypes().size());
+		Context.getLocationService().purgeLocationAttributeType(Context.getLocationService().getLocationAttributeType(2));
+		Assert.assertEquals(1, Context.getLocationService().getAllLocationAttributeTypes().size());
+	}
+	
+	/**
+	 * @see LocationService#retireLocationAttributeType(LocationAttributeType,String)
+	 * @verifies retire a location attribute type
+	 */
+	@Test
+	public void retireLocationAttributeType_shouldRetireALocationAttributeType() throws Exception {
+		executeDataSet(LOC_ATTRIBUTE_DATA_XML);
+		LocationAttributeType vat = Context.getLocationService().getLocationAttributeType(1);
+		Assert.assertFalse(vat.isRetired());
+		Context.getLocationService().retireLocationAttributeType(vat, "for testing");
+		vat = Context.getLocationService().getLocationAttributeType(1);
+		Assert.assertTrue(vat.isRetired());
+		Assert.assertNotNull(vat.getRetiredBy());
+		Assert.assertNotNull(vat.getDateRetired());
+		Assert.assertEquals("for testing", vat.getRetireReason());
+	}
+	
+	/**
+	 * @see LocationService#saveLocationAttributeType(LocationAttributeType)
+	 * @verifies create a new location attribute type
+	 */
+	@Test
+	public void saveLocationAttributeType_shouldCreateANewLocationAttributeType() throws Exception {
+		executeDataSet(LOC_ATTRIBUTE_DATA_XML);
+		Assert.assertEquals(2, Context.getLocationService().getAllLocationAttributeTypes().size());
+		LocationAttributeType lat = new LocationAttributeType();
+		lat.setName("Another one");
+		lat.setDatatype("string");
+		Context.getLocationService().saveLocationAttributeType(lat);
+		Assert.assertNotNull(lat.getId());
+		Assert.assertEquals(3, Context.getLocationService().getAllLocationAttributeTypes().size());
+	}
+	
+	/**
+	 * @see LocationService#saveLocationAttributeType(LocationAttributeType)
+	 * @verifies edit an existing location attribute type
+	 */
+	@Test
+	public void saveLocationAttributeType_shouldEditAnExistingLocationAttributeType() throws Exception {
+		executeDataSet(LOC_ATTRIBUTE_DATA_XML);
+		LocationService service = Context.getLocationService();
+		Assert.assertEquals(2, service.getAllLocationAttributeTypes().size());
+		LocationAttributeType lat = service.getLocationAttributeType(1);
+		lat.setName("A new name");
+		service.saveLocationAttributeType(lat);
+		Assert.assertEquals(2, service.getAllLocationAttributeTypes().size());
+		Assert.assertEquals("A new name", service.getLocationAttributeType(1).getName());
+	}
+	
+	/**
+	 * @see LocationService#unretireLocationAttributeType(LocationAttributeType)
+	 * @verifies unretire a retired location attribute type
+	 */
+	@Test
+	public void unretireLocationAttributeType_shouldUnretireARetiredLocationAttributeType() throws Exception {
+		executeDataSet(LOC_ATTRIBUTE_DATA_XML);
+		LocationService service = Context.getLocationService();
+		LocationAttributeType lat = service.getLocationAttributeType(2);
+		Assert.assertTrue(lat.isRetired());
+		Assert.assertNotNull(lat.getDateRetired());
+		Assert.assertNotNull(lat.getRetiredBy());
+		Assert.assertNotNull(lat.getRetireReason());
+		service.unretireLocationAttributeType(lat);
+		Assert.assertFalse(lat.isRetired());
+		Assert.assertNull(lat.getDateRetired());
+		Assert.assertNull(lat.getRetiredBy());
+		Assert.assertNull(lat.getRetireReason());
+	}
+	
+	/**
+	 * @see LocationService#getLocationAttributeByUuid(String)
+	 * @verifies get the location attribute with the given uuid
+	 */
+	@Test
+	public void getLocationAttributeByUuid_shouldGetTheLocationAttributeWithTheGivenUuid() throws Exception {
+		executeDataSet(LOC_ATTRIBUTE_DATA_XML);
+		LocationService service = Context.getLocationService();
+		Assert.assertEquals("2011-04-25", service.getLocationAttributeByUuid("3a2bdb18-6faa-11e0-8414-001e378eb67e")
+		        .getSerializedValue());
+	}
+	
+	/**
+	 * @see LocationService#getLocationAttributeByUuid(String)
+	 * @verifies return null if no location attribute has the given uuid
+	 */
+	@Test
+	public void getLocationAttributeByUuid_shouldReturnNullIfNoLocationAttributeHasTheGivenUuid() throws Exception {
+		executeDataSet(LOC_ATTRIBUTE_DATA_XML);
+		LocationService service = Context.getLocationService();
+		Assert.assertNull(service.getLocationAttributeByUuid("not-a-uuid"));
 	}
 	
 }

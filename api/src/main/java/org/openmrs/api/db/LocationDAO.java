@@ -17,6 +17,8 @@ import java.util.List;
 
 import org.hibernate.SessionFactory;
 import org.openmrs.Location;
+import org.openmrs.LocationAttribute;
+import org.openmrs.LocationAttributeType;
 import org.openmrs.LocationTag;
 import org.openmrs.api.LocationService;
 
@@ -149,5 +151,35 @@ public interface LocationDAO {
 	 * @see LocationService#getRootLocations(boolean)
 	 */
 	public List<Location> getRootLocations(boolean includeRetired);
+	
+	/**
+	 * @see LocationService#getAllLocationAttributeTypes()
+	 */
+	public List<LocationAttributeType> getAllLocationAttributeTypes();
+	
+	/**
+	 * @see LocationService#getLocationAttributeType(Integer)
+	 */
+	public LocationAttributeType getLocationAttributeType(Integer id);
+	
+	/**
+	 * @see LocationService#getLocationAttributeTypeByUuid(String)
+	 */
+	public LocationAttributeType getLocationAttributeTypeByUuid(String uuid);
+	
+	/**
+	 * @see LocationService#saveLocationAttributeType(LocationAttributeType)
+	 */
+	public LocationAttributeType saveLocationAttributeType(LocationAttributeType locationAttributeType);
+	
+	/**
+	 * @see LocationService#purgeLocationAttributeType(LocationAttributeType)
+	 */
+	public void deleteLocationAttributeType(LocationAttributeType locationAttributeType);
+	
+	/**
+	 * @see LocationService#getLocationAttributeByUuid(String)
+	 */
+	public LocationAttribute getLocationAttributeByUuid(String uuid);
 	
 }

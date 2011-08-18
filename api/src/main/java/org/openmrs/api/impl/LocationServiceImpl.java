@@ -19,6 +19,8 @@ import java.util.List;
 
 import org.openmrs.Address;
 import org.openmrs.Location;
+import org.openmrs.LocationAttribute;
+import org.openmrs.LocationAttributeType;
 import org.openmrs.LocationTag;
 import org.openmrs.api.APIException;
 import org.openmrs.api.LocationService;
@@ -342,5 +344,69 @@ public class LocationServiceImpl extends BaseOpenmrsService implements LocationS
 	public List<String> getPossibleAddressValues(Address incomplete, String fieldName) throws APIException {
 		// not implemented by default
 		return null;
+	}
+	
+	/**
+	 * @see org.openmrs.api.LocationService#getAllLocationAttributeTypes()
+	 */
+	@Override
+	public List<LocationAttributeType> getAllLocationAttributeTypes() {
+		return dao.getAllLocationAttributeTypes();
+	}
+	
+	/**
+	 * @see org.openmrs.api.LocationService#getLocationAttributeType(java.lang.Integer)
+	 */
+	@Override
+	public LocationAttributeType getLocationAttributeType(Integer id) {
+		return dao.getLocationAttributeType(id);
+	}
+	
+	/**
+	 * @see org.openmrs.api.LocationService#getLocationAttributeTypeByUuid(java.lang.String)
+	 */
+	@Override
+	public LocationAttributeType getLocationAttributeTypeByUuid(String uuid) {
+		return dao.getLocationAttributeTypeByUuid(uuid);
+	}
+	
+	/**
+	 * @see org.openmrs.api.LocationService#saveLocationAttributeType(org.openmrs.LocationAttributeType)
+	 */
+	@Override
+	public LocationAttributeType saveLocationAttributeType(LocationAttributeType locationAttributeType) {
+		return dao.saveLocationAttributeType(locationAttributeType);
+	}
+	
+	/**
+	 * @see org.openmrs.api.LocationService#retireLocationAttributeType(org.openmrs.LocationAttributeType, java.lang.String)
+	 */
+	@Override
+	public LocationAttributeType retireLocationAttributeType(LocationAttributeType locationAttributeType, String reason) {
+		return dao.saveLocationAttributeType(locationAttributeType);
+	}
+	
+	/**
+	 * @see org.openmrs.api.LocationService#unretireLocationAttributeType(org.openmrs.LocationAttributeType)
+	 */
+	@Override
+	public LocationAttributeType unretireLocationAttributeType(LocationAttributeType locationAttributeType) {
+		return dao.saveLocationAttributeType(locationAttributeType);
+	}
+	
+	/**
+	 * @see org.openmrs.api.LocationService#purgeLocationAttributeType(org.openmrs.LocationAttributeType)
+	 */
+	@Override
+	public void purgeLocationAttributeType(LocationAttributeType locationAttributeType) {
+		dao.deleteLocationAttributeType(locationAttributeType);
+	}
+	
+	/**
+	 * @see org.openmrs.api.LocationService#getLocationAttributeByUuid(java.lang.String)
+	 */
+	@Override
+	public LocationAttribute getLocationAttributeByUuid(String uuid) {
+		return dao.getLocationAttributeByUuid(uuid);
 	}
 }
