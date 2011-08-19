@@ -564,6 +564,7 @@
 					<option value=""><spring:message code="general.select"/>...</option>
 					<c:forEach var="handler" items="${handlers}">
 						<option value="${handler.key}" <c:if test="${handler.key == status.value}">selected="selected"</c:if>>
+						<!-- using JSTL to display more meaningful handler type name on conceptForm page -->
 					        ${fn:replace(handler.key, "Handler", "")}
 					    </option>
 					</c:forEach>

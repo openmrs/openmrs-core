@@ -797,8 +797,9 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 		//Depricated, moving on to annotated handlers
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.openmrs.api.ObsService#getDatatypes()
+	/**
+	 * This method will return a Map of Handler classes available for Concept creation.
+	 * If the Map is null, it will call the method prioritizeHandlers to create and populate the map
 	 */
 	@Override
 	public Map getDatatypes() {
@@ -827,7 +828,9 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	}
 	
 	/**
-	 * Prioritize handlers.
+	 * PrioritizeHandlers method goes through the list of annotated handler classes, and loads them
+	 * based on the assigned priority. The priority of the handler is decided by the value of the @Order
+	 * annotation assigned to each. this is read via a call to the getOrder method.
 	 */
 	private synchronized void prioritizeHandlers() {
 		if (prioritizedHandlerClasses == null) {
@@ -850,10 +853,8 @@ public class ObsServiceImpl extends BaseOpenmrsService implements ObsService {
 	}
 	
 	/**
-	 * Gets the order.
-	 * 
-	 * @param clazz the clazz
-	 * @return the order
+	 * This method will look at the class, and retreive its priority. the method is called via the
+	 * prioritizeHandlers method.
 	 */
 	private int getOrder(Class<?> clazz) {
 		int order = Ordered.LOWEST_PRECEDENCE;

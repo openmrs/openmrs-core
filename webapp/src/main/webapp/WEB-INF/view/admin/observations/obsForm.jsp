@@ -82,6 +82,7 @@
 			// TODO move datatype 'TM' to own time box.  How to have them select?
 			else if (datatype == 'ED') {
 				selectedConceptId = tmpConcept.conceptId;
+				//If datatype 'ED', then do a DWR call to check if its a CustomDatatypeHandler
 				DWRConceptService.isConceptComplexDomainObjectType(selectedConceptId,displayObsValueField);
 			}
 			else {

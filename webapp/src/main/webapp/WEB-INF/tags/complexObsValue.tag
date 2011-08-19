@@ -11,7 +11,7 @@
 <%@ include file="/WEB-INF/template/include.jsp"%>
 
 <%--
-You must specify concept and Obs.
+You must specify a concept and an Obs.
 --%>
 
 <%@ attribute name="concept" required="true" type="org.openmrs.Concept"%>
@@ -23,7 +23,7 @@ You must specify concept and Obs.
 	ConceptService cs = Context.getConceptService();
 	Object object = null;
 	
-	if( obs.isComplex()){	
+	if (obs.isComplex()) {	
 	ConceptComplex conceptComplex = cs.getConceptComplex(concept.getConceptId());
 	handlerObs = Context.getObsService().getHandler(conceptComplex.getHandler());	
 	object = handlerObs.getValue(obs);
@@ -44,10 +44,10 @@ You must specify concept and Obs.
 
 <% } else {
 	String valueComplex = null;
-	if(obs != null){
+	if (obs != null) {
 		valueComplex = obs.getValueComplex();
 	}
-	if(valueComplex == null){
+	if (valueComplex == null) {
 		valueComplex = "";
 	}
 %>
