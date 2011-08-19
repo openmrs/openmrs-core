@@ -33,7 +33,7 @@ import org.springframework.stereotype.Component;
 @Order(Ordered.LOWEST_PRECEDENCE)
 public class DateAttributeHandler implements AttributeHandler<Date> {
 	
-	final static String dateFormat = "yyyy-MM-dd";
+	final static String dateFormat = "yyyy-MM-dd hh:mm:ss.zzzz";
 	
 	boolean allowFutureDates = false;
 	
