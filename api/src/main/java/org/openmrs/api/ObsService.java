@@ -714,9 +714,9 @@ public interface ObsService extends OpenmrsService {
 	public Integer getObservationCount(List<ConceptName> conceptNames, boolean includeVoided);
 	
 	/**
-	 * Gets the datatypes.
-	 * 
-	 * @return the datatypes
+	 * Returns a list of handler types that can be used to create concepts and Observations. Thease
+	 * handlers are loaded via Spring component notation. They represent the different complex data
+	 * types which can be stored in the system
 	 */
 	public Map getDatatypes();
 }
