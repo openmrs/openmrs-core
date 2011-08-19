@@ -13,24 +13,23 @@
  */
 package org.openmrs.validator;
 
-import org.openmrs.VisitAttributeType;
+import org.openmrs.LocationAttributeType;
 import org.openmrs.annotation.Handler;
 
 /**
- * Validates attributes on the {@link VisitAttributeType} object.
+ * Validates attributes on the {@link LocationAttributeType} object.
  * 
  * @since 1.9
  */
-@Handler(supports = { VisitAttributeType.class }, order = 50)
-public class VisitAttributeTypeValidator extends BaseAttributeTypeValidator<VisitAttributeType> {
+@Handler(supports = { LocationAttributeType.class }, order = 50)
+public class LocationAttributeTypeValidator extends BaseAttributeTypeValidator<LocationAttributeType> {
 	
 	/**
-	 * Determines if the command object being submitted is a valid type
-	 * 
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
 	 */
-	public boolean supports(Class<?> c) {
-		return c.equals(VisitAttributeType.class);
+	@Override
+	public boolean supports(Class<?> clazz) {
+		return LocationAttributeType.class.isAssignableFrom(clazz);
 	}
 	
 }
