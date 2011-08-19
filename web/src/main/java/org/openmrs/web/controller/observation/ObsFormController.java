@@ -96,11 +96,11 @@ public class ObsFormController extends SimpleFormController {
 	
 	/**
 	 * Suppresses validation. Following improvements to complex Obs, not all form submits may
-	 * contain entries for all mandatory fields. This method will identify which requests are to be
+	 * contain entries for all mandatory fields. This method will identify which requests must be
 	 * validated, and which are to be skipped. This is done based on a hidden variable included in
 	 * the request.
 	 * 
-	 * @param request the request recevied
+	 * @param request the request received
 	 * @param command the command
 	 * @return true, if Spring validation is to be ignored, and false if validation should be run.
 	 */
@@ -168,38 +168,43 @@ public class ObsFormController extends SimpleFormController {
 						ConceptComplex conceptComplex = cs.getConceptComplex(obs.getConcept().getConceptId());
 						ComplexObsHandler handlerObs = Context.getObsService().getHandler(conceptComplex.getHandler());
 						
+						//If the complex Obs doesn't deal with an external data file, it is saved here
 						if (handlerObs instanceof CustomDatatypeHandler) {
 							newlySavedObs = os.saveObs(obs, reason);
 						} else {
+							//If the complex Obs deals with a external data file, it is saved here 
 							if (request instanceof MultipartHttpServletRequest) {
 								MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
 								MultipartFile complexDataFile = multipartRequest.getFile("complexDataFile");
-								if ((complexDataFile != null && !complexDataFile.isEmpty())
-								        || (obs.getValueComplex() != null)) {
-									
+								
+								//If file is not empty, then save the Obs
+								if (complexDataFile != null && !complexDataFile.isEmpty()) {
 									InputStream complexDataInputStream = null;
-									if (complexDataFile != null && !complexDataFile.isEmpty()) {
-										obs.setValueComplex(null);
-										complexDataInputStream = complexDataFile.getInputStream();
-										
-										ComplexData complexData = new ComplexData(complexDataFile.getOriginalFilename(),
-										        complexDataInputStream);
-										
-										obs.setComplexData(complexData);
-									}
+									complexDataInputStream = complexDataFile.getInputStream();
+									ComplexData complexData = new ComplexData(complexDataFile.getOriginalFilename(),
+									        complexDataInputStream);
+									obs.setComplexData(complexData);
 									
-									// the handler on the obs.concept is called
-									// with the given complex data
+									if (obs.getObsId() != null)
+										obs.setValueComplex(null);
+									
 									newlySavedObs = os.saveObs(obs, reason);
-									if (complexDataInputStream != null)
-										complexDataInputStream.close();
+									complexDataInputStream.close();
 								} else {
-									errors.reject("valueComplex", "error.null");
-									return showForm(request, response, errors);
+									//if file is empty, you can still save it if we are merely editing a complex Obs
+									// This is ok since it means that the user has not changed the previous file
+									if (obs.getObsId() != null) {
+										newlySavedObs = os.saveObs(obs, reason);
+									} else {
+										//if were are saving an Obs, and the file is empty, then reject the attempt
+										errors.reject("valueComplex", "error.null");
+										return showForm(request, response, errors);
+									}
 								}
 							}
 						}
 					} else {
+						// If this is not a complex Obs, then we can save it
 						obs.setValueComplex(null);
 						newlySavedObs = os.saveObs(obs, reason);
 					}
