@@ -27,7 +27,8 @@ public class EmailAttributeHandler implements AttributeHandler<String> {
 	private Pattern regex;
 	
 	public EmailAttributeHandler() {
-		regex = Pattern.compile("^[\\w-]+(\\.[\\w-]+)*@([a-z0-9-]+(\\.[a-z0-9-]+)*?\\.[a-z]{2,6}|(\\d{1,3}\\.){3}\\d{1,3})(:\\d{4})?$");
+		regex = Pattern
+		        .compile("^[\\w-]+(\\.[\\w-]+)*@([a-z0-9-]+(\\.[a-z0-9-]+)*?\\.[a-z]{2,6}|(\\d{1,3}\\.){3}\\d{1,3})(:\\d{4})?$");
 	}
 	
 	/**

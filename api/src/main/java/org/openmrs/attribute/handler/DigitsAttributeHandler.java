@@ -44,7 +44,7 @@ public class DigitsAttributeHandler implements AttributeHandler<String> {
 	@Override
 	public void setConfiguration(String handlerConfig) {
 		int numOfDigits = Integer.parseInt(handlerConfig);
-		regex = Pattern.compile("^\\d{"+numOfDigits+"}$");
+		regex = Pattern.compile("^\\d{" + numOfDigits + "}$");
 	}
 	
 	/**
