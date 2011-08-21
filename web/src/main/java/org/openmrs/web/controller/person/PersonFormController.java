@@ -19,6 +19,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -153,8 +154,10 @@ public class PersonFormController extends SimpleFormController {
 		// initialize the user/person sets
 		// hibernate seems to have an issue with empty lists/sets if they aren't initialized
 		
-		person.getAttributes().size();
-		
+		Set<PersonAttribute> atts = person.getAttributes();
+		if(atts!=null){
+			atts.size();
+		}
 		return person;
 	}
 	

@@ -14,6 +14,7 @@
 package org.openmrs;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -28,6 +29,23 @@ import org.openmrs.api.context.Context;
  * and should be modeled using {@link LocationTag}s.
  */
 public class Location extends BaseOpenmrsMetadata implements java.io.Serializable, Attributable<Location>, Address {
+	
+	public void setStartDate(Date d){
+		
+	}
+	
+	public Date getStartDate(){
+		return null;
+	}
+	
+	public void setEndDate(Date d){
+		
+	}
+	
+	public Date getEndDate(){
+		return null;
+	}
+	
 	
 	public static final long serialVersionUID = 455634L;
 	
