@@ -13,7 +13,6 @@
  */
 package org.openmrs.web.taglib.fieldgen;
 
-import org.openmrs.Location;
 import org.openmrs.api.context.Context;
 import org.openmrs.attribute.handler.EnumeratedOpenmrsMetadata;
 import org.openmrs.util.OpenmrsConstants;

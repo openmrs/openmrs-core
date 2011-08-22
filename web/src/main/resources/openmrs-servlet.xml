@@ -1107,6 +1107,7 @@
 				<prop key="java.util.Date">org.openmrs.web.taglib.fieldgen.DateHandler</prop>
 				<!-- <prop key="org.openmrs.util.AttributableDate">org.openmrs.web.taglib.fieldgen.DateHandler</prop>  -->
 				<prop key="java.util.List">org.openmrs.web.taglib.fieldgen.ListHandler</prop>
+				<prop key="enumeratedOpenmrsMetadata">org.openmrs.web.taglib.fieldgen.EnumeratedOpenmrsMetadataHandler</prop>
 			</props>
 		</property>
 	</bean>

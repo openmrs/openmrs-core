@@ -5,7 +5,7 @@ import org.openmrs.BaseOpenmrsMetadata;
 public class EnumeratedOpenmrsMetadata extends BaseOpenmrsMetadata {
 	
 	private Integer enumeratedObjectId;
-	private String enumeratedObjectMetadataHierarchy;
+	protected String enumeratedObjectMetadataHierarchy;
 	
 	@Override
 	public Integer getId() {

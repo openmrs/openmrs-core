@@ -7,10 +7,11 @@ import org.openmrs.attribute.InvalidAttributeValueException;
 
 public class EnumeratedOpenmrsMetadataAttributeHandler implements AttributeHandler<EnumeratedOpenmrsMetadata> {
 	
-	private ArrayList<EnumeratedOpenmrsMetadata> values;
+	//private ArrayList<EnumeratedOpenmrsMetadata> values;
+	protected String hierarchy;
 	
 	public EnumeratedOpenmrsMetadataAttributeHandler() {
-		values = new ArrayList<EnumeratedOpenmrsMetadata>();
+		//values = new ArrayList<EnumeratedOpenmrsMetadata>();
 	}
 	
 	@Override
@@ -20,13 +21,13 @@ public class EnumeratedOpenmrsMetadataAttributeHandler implements AttributeHandl
 	
 	@Override
 	public void setConfiguration(String handlerConfig) {
-		
+		hierarchy=handlerConfig;
 	}
 	
 	@Override
 	public void validate(EnumeratedOpenmrsMetadata typedValue) throws InvalidAttributeValueException {
-		if (CollectionUtils.isNotEmpty(values) && !values.contains(typedValue))
-			throw new InvalidAttributeValueException("Atribute is not in the available value list.");
+		//if (CollectionUtils.isNotEmpty(values) && !values.contains(typedValue))
+		//	throw new InvalidAttributeValueException("Atribute is not in the available value list.");
 	}
 	
 	@Override
