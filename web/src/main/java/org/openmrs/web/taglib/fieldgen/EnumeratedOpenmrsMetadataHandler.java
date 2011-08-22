@@ -29,7 +29,8 @@ public class EnumeratedOpenmrsMetadataHandler extends AbstractFieldGenHandler im
 	 */
 	public void run() {
 		setUrl(defaultUrl);
-		
+		setParameter("hierarchy", fieldGenTag.getParameterMap().get("hierarchy"));
+		//setParameter("initialValue", fieldGenTag.getVal());
 		if (fieldGenTag != null) {
 			String initialValue = "";
 			checkEmptyVal((EnumeratedOpenmrsMetadata)null);
