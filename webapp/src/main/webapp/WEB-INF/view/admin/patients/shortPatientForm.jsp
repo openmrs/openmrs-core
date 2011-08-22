@@ -483,7 +483,7 @@
 						</spring:bind>
 						<spring:bind path="value">
 						<openmrs:fieldGen 
-							type="${personAttribute.attributeType.format}" 
+							type="${personAttribute.attributeType.form}" 
 							formFieldName="${status.expression}"
 							val="${personAttribute.hydratedObject}" 
 							parameters="optionHeader=[blank]|showAnswers=${personAttribute.attributeType.foreignKey}|isNullable=false" /> <%-- isNullable=false so booleans don't have 'unknown' radiobox --%>

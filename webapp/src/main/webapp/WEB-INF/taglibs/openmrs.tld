@@ -111,6 +111,12 @@
 		<required>false</required>
 		<rtexprvalue>false</rtexprvalue>
 	</attribute>
+	<attribute>
+		<description>pat enumerated brisi</description>
+		<name>allowed</name>
+		<required>false</required>
+		<rtexprvalue>true</rtexprvalue>
+	</attribute>
 </tag>
 
 <tag>

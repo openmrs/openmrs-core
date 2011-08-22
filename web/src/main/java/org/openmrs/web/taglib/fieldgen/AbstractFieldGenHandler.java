@@ -20,6 +20,7 @@ import javax.servlet.jsp.JspException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.attribute.handler.EnumeratedOpenmrsMetadata;
 import org.openmrs.web.taglib.FieldGenTag;
 import org.openmrs.web.taglib.HtmlIncludeTag;
 
@@ -30,13 +31,17 @@ public abstract class AbstractFieldGenHandler implements FieldGenHandler {
 	protected FieldGenTag fieldGenTag;
 	
 	public void setFieldGenTag(FieldGenTag fieldGenTag) {
-		System.err.println("eeee "+fieldGenTag.getVal());
+		System.err.println("eesaee "+fieldGenTag.getVal());
+		if(fieldGenTag.getVal() instanceof EnumeratedOpenmrsMetadata){
+			EnumeratedOpenmrsMetadata o=(EnumeratedOpenmrsMetadata) fieldGenTag.getVal();
+			System.err.println(" egegxs  "+o.getDisplayName()+" "+o.getUuid());
+		}
 		this.fieldGenTag = fieldGenTag;
 	}
 	
 	protected void setParameter(String s, Object o) {
 		if (this.fieldGenTag != null) {
-			System.out.println(s+" v  "+o);
+			System.out.println(">>> "+ s+" v  "+o);
 			//HashMap<String,Object> hmParams = (HashMap<String,Object>)getRequest().getAttribute("org.openmrs.fieldGen.parameterMap");
 			HashMap<String, Object> hmParams = (HashMap<String, Object>) this.fieldGenTag.getParameterMap();
 			if (hmParams == null){

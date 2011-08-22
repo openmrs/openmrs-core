@@ -13,6 +13,8 @@
  */
 package org.openmrs.web.taglib.fieldgen;
 
+import java.util.ArrayList;
+
 import org.openmrs.Location;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsConstants;
@@ -33,9 +35,10 @@ public class LocationHandler extends AbstractFieldGenHandler implements FieldGen
 		if (fieldGenTag != null) {
 			String initialValue = "";
 			checkEmptyVal((Location) null);
+			String allowed = "";
 			Location l = (Location) this.fieldGenTag.getVal(); // get the initial value
 			if (l != null) {
-				System.err.println("mmmm "+l.getName());
+				
 				if (l.getLocationId() != null)
 					initialValue = l.getLocationId().toString();
 			} else if (fieldGenTag.getAllowUserDefault()) {
@@ -53,11 +56,13 @@ public class LocationHandler extends AbstractFieldGenHandler implements FieldGen
 			String optionHeader = "";
 			if (this.fieldGenTag.getParameterMap() != null) {
 				optionHeader = (String) this.fieldGenTag.getParameterMap().get("optionHeader");
+				allowed = (String)this.fieldGenTag.getParameterMap().get("allowed");
 			}
 			if (optionHeader == null)
 				optionHeader = "";
 			
 			setParameter("initialValue", initialValue);
+			setParameter("allowed", allowed);
 			System.out.println("initv "+initialValue);
 			setParameter("optionHeader", optionHeader);
 			System.out.println("optiHe "+ optionHeader);

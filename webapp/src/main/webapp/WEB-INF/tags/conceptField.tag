@@ -12,6 +12,7 @@
 <%@ attribute name="excludeClasses" required="false" %>
 <%@ attribute name="includeDatatypes" required="false" %>
 <%@ attribute name="excludeDatatypes" required="false" %>
+<%@ attribute name="allowed" required="false" %>
 
 <openmrs:htmlInclude file="/dwr/interface/DWRConceptService.js" />
 <openmrs:htmlInclude file="/scripts/jquery/autocomplete/OpenmrsAutoComplete.js" />

@@ -487,6 +487,7 @@ public class PatientFormController extends PersonFormController {
 				List<PersonAttributeType> personAttributeTypes = Context.getPersonService().getPersonAttributeTypes(
 				    OpenmrsConstants.PERSON_TYPE.PATIENT, null);
 				for (PersonAttributeType pat : personAttributeTypes) {
+					System.err.println("paaat "+pat);
 					if (pat.getMaxOccurs() == null || pat.getMaxOccurs() != 1)
 						throw new RuntimeException("For now only attributes with maxOccurs=1 are supported");
 					AttributeHandler<?> handler = Context.getAttributeService().getHandler(pat);

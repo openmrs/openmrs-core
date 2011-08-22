@@ -5,6 +5,7 @@
 <%@ attribute name="optionHeader" required="false" %>
 <%@ attribute name="onChange" required="false" %>
 <%@ attribute name="selectableTags" required="false" type="java.lang.String"%>
+<%@ attribute name="allowed" required="false" type="java.lang.String"%>
 
 <%@ tag import="org.openmrs.api.context.Context" %>
 
@@ -35,7 +36,7 @@ if (jspContext.getAttribute("initialValue") != null) {
 					<option value="">${optionHeader}</option>
 				</c:if>
 			</c:if>
-			<openmrs:forEachRecord name="locationHierarchy">
+			<openmrs:forEachRecord name="locationHierarchy" allowed="${allowed}">
 				<option value="${record.location.locationId}" <c:if test="${record.location == initialValue}">selected</c:if>>
                           <c:forEach begin="1" end="${record.depth}" >&nbsp;</c:forEach>${record.location.name}
                   </option>

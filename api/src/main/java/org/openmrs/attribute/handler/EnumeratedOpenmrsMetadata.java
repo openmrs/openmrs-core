@@ -1,20 +1,11 @@
 package org.openmrs.attribute.handler;
 
-import org.openmrs.BaseOpenmrsMetadata;
+import org.openmrs.OpenmrsObject;
 
-public class EnumeratedOpenmrsMetadata extends BaseOpenmrsMetadata {
-	
-	private Integer enumeratedObjectId;
-	protected String enumeratedObjectMetadataHierarchy;
-	
-	@Override
-	public Integer getId() {
-		return enumeratedObjectId;
-	}
-	
-	@Override
-	public void setId(Integer id) {
-		enumeratedObjectId = id;
-	}
+
+public interface EnumeratedOpenmrsMetadata extends OpenmrsObject {
+	Integer getId();
+	void setId(Integer id);
+	String getDisplayName();
 	
 }

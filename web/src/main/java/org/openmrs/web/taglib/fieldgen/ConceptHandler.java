@@ -25,7 +25,8 @@ public class ConceptHandler extends AbstractFieldGenHandler implements FieldGenH
 		if (fieldGenTag != null) {
 			Object initialValue = this.fieldGenTag.getVal();
 			setParameter("initialValue", initialValue == null ? "" : initialValue.toString());
-			
+			String allowed = (String) this.fieldGenTag.getParameterMap().get("allowed");
+			setParameter("allowed", allowed);
 		}
 	}
 }

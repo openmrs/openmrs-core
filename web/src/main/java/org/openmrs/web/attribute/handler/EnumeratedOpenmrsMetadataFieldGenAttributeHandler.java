@@ -1,5 +1,6 @@
 package org.openmrs.web.attribute.handler;
 
+import org.openmrs.api.context.Context;
 import org.openmrs.attribute.InvalidAttributeValueException;
 import org.openmrs.attribute.handler.EnumeratedOpenmrsMetadata;
 import org.openmrs.attribute.handler.EnumeratedOpenmrsMetadataAttributeHandler;
@@ -16,19 +17,25 @@ public class EnumeratedOpenmrsMetadataFieldGenAttributeHandler extends Enumerate
 	
 	@Override
 	public String getWidgetName() {
-		return "enumeratedOpenmrsMetadata";
+		return "org.openmrs."+hierarchy;
 	}
 	
 	@Override
 	public Map<String, Object> getWidgetConfiguration() {
 		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("hierarchy", hierarchy);
+		map.put("allowed", allowedValues);
 		return map;
 	}
 	
 	@Override
 	public EnumeratedOpenmrsMetadata getValue(HttpServletRequest request, String formFieldName) throws InvalidAttributeValueException {
-		return null;// request.getParameter(formFieldName);
+		String stringValue=request.getParameter(formFieldName);
+		if("Location".equals(hierarchy)){
+			return Context.getLocationService().getLocation(Integer.valueOf(stringValue));
+		}else if("Concept".equals(hierarchy)){
+			return Context.getConceptService().getConcept(Integer.valueOf(stringValue));
+		}
+		throw new RuntimeException(hierarchy);	
 	}
 	
 }

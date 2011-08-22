@@ -356,6 +356,15 @@ public class FieldGenTag extends TagSupport {
 	 * @param parameterMap The parameterMap to set.
 	 */
 	public void setParameterMap(Map<String, Object> parameterMap) {
+		if(parameterMap!=null){
+			System.out.print("parametarska mapa:");
+			for(String itr:parameterMap.keySet()){
+				System.out.print(itr+" "+parameterMap.get(itr));
+			}
+			System.out.println();
+		}else{
+			System.out.println("parametarska mapa je prazna");
+		}
 		this.parameterMap = parameterMap;
 	}
 	

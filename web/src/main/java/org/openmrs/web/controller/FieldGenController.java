@@ -73,6 +73,7 @@ public class FieldGenController implements Controller {
 			request.removeAttribute("org.openmrs.fieldGen.parameterMap");
 		}
 		
+		
 		return new ModelAndView(fieldGenPath, "model", model);
 		
 	}

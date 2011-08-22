@@ -25,6 +25,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.spi.LocationInfo;
 import org.openmrs.Location;
 import org.openmrs.LocationTag;
 import org.openmrs.api.APIException;
@@ -138,6 +139,7 @@ public class LocationFormController extends SimpleFormController {
 			String locationId = request.getParameter("locationId");
 			if (locationId != null)
 				location = ls.getLocation(Integer.valueOf(locationId));
+			System.err.println("U LFC je usao "+locationId+ "a izaci ce "+location);
 		}
 		
 		if (location == null)

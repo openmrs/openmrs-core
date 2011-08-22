@@ -62,6 +62,8 @@ public class ForEachRecordTag extends BodyTagSupport {
 	
 	private String conceptSet;
 	
+	private String allowed;
+	
 	private Iterator<?> records;
 	
 	public int doStartTag() {
@@ -86,7 +88,19 @@ public class ForEachRecordTag extends BodyTagSupport {
 			List<LocationAndDepth> locationAndDepths = new ArrayList<LocationAndDepth>();
 			List<Location> locations = Context.getLocationService().getRootLocations(true);
 			populateLocationAndDepthList(locationAndDepths, locations, 0);
-			records = locationAndDepths.iterator();
+			List<LocationAndDepth> rezultat = new ArrayList<LocationAndDepth>();
+			if(allowed!=null){
+			for(LocationAndDepth itr:locationAndDepths){
+				if(allowed.contains(","+itr.getLocation().getId()+",")){
+					rezultat.add(itr);
+				}else{
+					System.out.println(allowed+ " NNNIje dozvoljen "+itr.getLocation().getId());					
+				}
+			}
+			}else{
+				rezultat=locationAndDepths;
+			}
+			records = rezultat.iterator();
 		} else if (name.equals("cohort")) {
 			List<Cohort> cohorts = Context.getCohortService().getAllCohorts();
 			records = cohorts.iterator();
@@ -174,6 +188,14 @@ public class ForEachRecordTag extends BodyTagSupport {
 		} else
 			return EVAL_BODY_BUFFERED;
 		
+	}
+	
+	public void setAllowed(String allowed) {
+		this.allowed = allowed;
+	}
+	
+	public String getAllowed() {
+		return allowed;
 	}
 	
 	/**

@@ -1,18 +1,19 @@
 package org.openmrs.attribute.handler;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.openmrs.Location;
+import org.openmrs.api.context.Context;
 import org.openmrs.attribute.InvalidAttributeValueException;
 
 public class EnumeratedOpenmrsMetadataAttributeHandler implements AttributeHandler<EnumeratedOpenmrsMetadata> {
 	
-	//private ArrayList<EnumeratedOpenmrsMetadata> values;
 	protected String hierarchy;
-	
-	public EnumeratedOpenmrsMetadataAttributeHandler() {
-		//values = new ArrayList<EnumeratedOpenmrsMetadata>();
-	}
+	protected String allowedValues;
+
 	
 	@Override
 	public String getDatatypeHandled() {
@@ -21,7 +22,21 @@ public class EnumeratedOpenmrsMetadataAttributeHandler implements AttributeHandl
 	
 	@Override
 	public void setConfiguration(String handlerConfig) {
-		hierarchy=handlerConfig;
+		if(handlerConfig==null){
+			throw new InvalidAttributeValueException("Configuration string is mandatory");
+		}
+		String[] args = handlerConfig.split(":");
+		String[] ids=args[1].split(",");
+		StringBuilder sb=new StringBuilder();
+		for(String itr: ids){
+			sb.append(","+itr+",");
+		}
+		allowedValues=sb.toString();
+		if(handlerConfig.startsWith("LocationId:")){
+			hierarchy="Location";
+		}else if(handlerConfig.startsWith("ConceptId:")){
+			hierarchy="Concept";
+		}
 	}
 	
 	@Override
@@ -37,11 +52,17 @@ public class EnumeratedOpenmrsMetadataAttributeHandler implements AttributeHandl
 		return asEnumeratedMetadata.getUuid();
 	}
 	
+	
+	
+	
 	@Override
 	public EnumeratedOpenmrsMetadata deserialize(String stringValue) throws InvalidAttributeValueException {
-		EnumeratedOpenmrsMetadata enumMetadata = new EnumeratedOpenmrsMetadata();
-		enumMetadata.setUuid(stringValue);
-		return enumMetadata;
+		if("Location".equals(hierarchy)){
+			return Context.getLocationService().getLocation(Integer.valueOf(stringValue));
+		}else if("Concept".equals(hierarchy)){
+			return Context.getConceptService().getConcept(Integer.valueOf(stringValue));
+		}
+		throw new RuntimeException(hierarchy);		
 	}
 	
 }

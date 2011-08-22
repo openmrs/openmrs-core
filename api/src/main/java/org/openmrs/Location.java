@@ -21,6 +21,7 @@ import java.util.Set;
 
 import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
+import org.openmrs.attribute.handler.EnumeratedOpenmrsMetadata;
 
 /**
  * A Location is a physical place, such as a hospital, a room, a clinic, or a district. Locations
@@ -28,7 +29,13 @@ import org.openmrs.api.context.Context;
  * non-geographical grouping of locations, such as "All Community Health Centers" is not a location,
  * and should be modeled using {@link LocationTag}s.
  */
-public class Location extends BaseOpenmrsMetadata implements java.io.Serializable, Attributable<Location>, Address {
+public class Location extends BaseOpenmrsMetadata implements java.io.Serializable, Attributable<Location>, Address, EnumeratedOpenmrsMetadata {
+	
+	
+	@Override
+	public String getDisplayName() {
+		return getName();
+	}
 	
 	public void setStartDate(Date d) {
 		
