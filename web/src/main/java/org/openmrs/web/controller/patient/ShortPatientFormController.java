@@ -327,8 +327,10 @@ public class ShortPatientFormController {
 		}
 		
 		// add the person attributes
+		if(patientModel.getPersonAttributes()!=null){
 		for (PersonAttribute formAttribute : patientModel.getPersonAttributes())
 			patient.addAttribute(formAttribute);
+		}
 		
 		return patient;
 	}

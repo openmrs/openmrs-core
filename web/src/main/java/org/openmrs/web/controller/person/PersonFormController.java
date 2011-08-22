@@ -155,7 +155,7 @@ public class PersonFormController extends SimpleFormController {
 		// hibernate seems to have an issue with empty lists/sets if they aren't initialized
 		
 		Set<PersonAttribute> atts = person.getAttributes();
-		if(atts!=null){
+		if (atts != null) {
 			atts.size();
 		}
 		return person;

@@ -364,12 +364,12 @@ public class Person extends BaseCustomizableData<PersonAttribute> implements jav
 	 */
 	public List<PersonAttribute> getActiveAttributes() {
 		List<PersonAttribute> attrs = new Vector<PersonAttribute>();
-		if(getAttributes()!=null){
+		if (getAttributes() != null) {
 			
-		for (PersonAttribute attr : getAttributes()) {
-			if (!attr.isVoided())
-				attrs.add(attr);
-		}
+			for (PersonAttribute attr : getAttributes()) {
+				if (!attr.isVoided())
+					attrs.add(attr);
+			}
 		}
 		return attrs;
 	}

@@ -30,22 +30,21 @@ import org.openmrs.api.context.Context;
  */
 public class Location extends BaseOpenmrsMetadata implements java.io.Serializable, Attributable<Location>, Address {
 	
-	public void setStartDate(Date d){
+	public void setStartDate(Date d) {
 		
 	}
 	
-	public Date getStartDate(){
+	public Date getStartDate() {
 		return null;
 	}
 	
-	public void setEndDate(Date d){
+	public void setEndDate(Date d) {
 		
 	}
 	
-	public Date getEndDate(){
+	public Date getEndDate() {
 		return null;
 	}
-	
 	
 	public static final long serialVersionUID = 455634L;
 	
@@ -108,8 +107,9 @@ public class Location extends BaseOpenmrsMetadata implements java.io.Serializabl
 	public boolean equals(Object obj) {
 		if (obj instanceof Location) {
 			Location loc = (Location) obj;
-			if (this.getLocationId() != null && loc.getLocationId() != null)
+			if (this.getLocationId() != null && loc.getLocationId() != null){
 				return (this.getLocationId().equals(loc.getLocationId()));
+			}
 		}
 		return obj == this;
 	}

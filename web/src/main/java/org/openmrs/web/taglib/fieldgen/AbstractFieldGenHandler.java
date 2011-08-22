@@ -30,15 +30,18 @@ public abstract class AbstractFieldGenHandler implements FieldGenHandler {
 	protected FieldGenTag fieldGenTag;
 	
 	public void setFieldGenTag(FieldGenTag fieldGenTag) {
+		System.err.println("eeee "+fieldGenTag.getVal());
 		this.fieldGenTag = fieldGenTag;
 	}
 	
 	protected void setParameter(String s, Object o) {
 		if (this.fieldGenTag != null) {
+			System.out.println(s+" v  "+o);
 			//HashMap<String,Object> hmParams = (HashMap<String,Object>)getRequest().getAttribute("org.openmrs.fieldGen.parameterMap");
 			HashMap<String, Object> hmParams = (HashMap<String, Object>) this.fieldGenTag.getParameterMap();
-			if (hmParams == null)
+			if (hmParams == null){
 				hmParams = new HashMap<String, Object>();
+			}
 			hmParams.put(s, o);
 			this.fieldGenTag.setParameterMap(hmParams);
 		}
@@ -52,6 +55,7 @@ public abstract class AbstractFieldGenHandler implements FieldGenHandler {
 	
 	protected void setVal(Object o) {
 		if (this.fieldGenTag != null) {
+			System.out.println("xx "+o);
 			this.fieldGenTag.setVal(o);
 		}
 	}

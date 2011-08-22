@@ -15,14 +15,15 @@ package org.openmrs.web.taglib.fieldgen;
 
 import org.openmrs.Location;
 import org.openmrs.api.context.Context;
+import org.openmrs.attribute.handler.EnumeratedOpenmrsMetadata;
 import org.openmrs.util.OpenmrsConstants;
 
 /**
- * This is the controller for the /web/web-inf/tags/locationField.tag.
+ * This is the controller for the /web/web-inf/tags/enumeratedOpenmrsMetadaField.tag.
  */
-public class LocationHandler extends AbstractFieldGenHandler implements FieldGenHandler {
+public class EnumeratedOpenmrsMetadataHandler extends AbstractFieldGenHandler implements FieldGenHandler {
 	
-	private String defaultUrl = "location.field";
+	private String defaultUrl = "enumeratedOpenmrsMetadata.field";
 	
 	/**
 	 * @see org.openmrs.web.taglib.fieldgen.FieldGenHandler#run()
@@ -32,12 +33,10 @@ public class LocationHandler extends AbstractFieldGenHandler implements FieldGen
 		
 		if (fieldGenTag != null) {
 			String initialValue = "";
-			checkEmptyVal((Location) null);
-			Location l = (Location) this.fieldGenTag.getVal(); // get the initial value
+			checkEmptyVal((EnumeratedOpenmrsMetadata)null);
+			EnumeratedOpenmrsMetadata l = (EnumeratedOpenmrsMetadata) this.fieldGenTag.getVal(); // get the initial value
 			if (l != null) {
-				System.err.println("mmmm "+l.getName());
-				if (l.getLocationId() != null)
-					initialValue = l.getLocationId().toString();
+				initialValue = l.getName();
 			} else if (fieldGenTag.getAllowUserDefault()) {
 				// if there is no default value and the tag at this point wants
 				// to allow the user's chosen default value, set it here.
