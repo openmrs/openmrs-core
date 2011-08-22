@@ -15,10 +15,13 @@ package org.openmrs.web.controller.visit;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
@@ -37,6 +40,7 @@ import org.openmrs.attribute.Customizable;
 import org.openmrs.attribute.handler.AttributeHandler;
 import org.openmrs.validator.VisitValidator;
 import org.openmrs.web.WebConstants;
+import org.openmrs.web.attribute.WebAttributeUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.StringUtils;
@@ -94,7 +98,7 @@ public class VisitFormController {
 	 * @return the url to forward/redirect to
 	 */
 	@RequestMapping(method = RequestMethod.POST, value = VISIT_FORM_URL)
-	public String saveVisit(WebRequest request, @ModelAttribute("visit") Visit visit, BindingResult result,
+	public String saveVisit(HttpServletRequest request, @ModelAttribute("visit") Visit visit, BindingResult result,
 	        SessionStatus status, ModelMap model) {
 		
 		// manually handle the attribute parameters
@@ -105,23 +109,28 @@ public class VisitFormController {
 			// Look for parameters starting with "attribute.${ vat.id }". They may be either of: 
 			// * attribute.${ vat.id }.new[${ meaningless int }]
 			// * attribute.${ vat.id }.existing[${ existingAttribute.id }]
-			for (Iterator<String> iter = request.getParameterNames(); iter.hasNext();) {
-				String paramName = iter.next();
+			for (@SuppressWarnings("unchecked")
+			Enumeration<String> iter = request.getParameterNames(); iter.hasMoreElements();) {
+				String paramName = iter.nextElement();
 				if (paramName.startsWith("attribute." + vat.getId())) {
 					String afterPrefix = paramName.substring(("attribute." + vat.getId()).length());
-					String paramValue = request.getParameter(paramName);
+					//String paramValue = request.getParameter(paramName);
+					Object valueAsObject;
+					try {
+						valueAsObject = WebAttributeUtil.getValue(request, handler, paramName);
+					}
+					catch (Exception ex) {
+						result.rejectValue("activeAttributes", "attribute.error.invalid", new Object[] { vat.getName() },
+						    "Illegal value for " + vat.getName());
+						continue;
+					}
 					if (afterPrefix.startsWith(".new[")) {
 						// if not empty, we create a new one
-						if (StringUtils.hasText(paramValue)) {
-							if (AttributeUtil.isValidValue(handler, paramValue)) {
-								VisitAttribute va = new VisitAttribute();
-								va.setAttributeType(vat);
-								va.setSerializedValue(paramValue);
-								visit.addAttribute(va);
-							} else {
-								result.rejectValue("activeAttributes", "attribute.error.invalid", new Object[] { vat
-								        .getName() }, "Illegal value for " + vat.getName());
-							}
+						if (valueAsObject != null && !"".equals(valueAsObject)) {
+							VisitAttribute va = new VisitAttribute();
+							va.setAttributeType(vat);
+							va.setObjectValue(valueAsObject);
+							visit.addAttribute(va);
 						}
 						
 					} else if (afterPrefix.startsWith(".existing[")) {
@@ -130,41 +139,37 @@ public class VisitFormController {
 						VisitAttribute existing = findAttributeById(visit, existingAttributeId);
 						if (existing == null)
 							throw new RuntimeException("Visit was modified between page load and submit. Try again.");
-						if (!StringUtils.hasText(paramValue)) {
+						if (valueAsObject == null) {
 							// they changed an existing value to "", so we void that attribute
 							toVoid.add(existing);
-						} else if (!existing.getSerializedValue().equals(paramValue)) {
+						} else if (!existing.getObjectValue().equals(valueAsObject)) {
 							// they changed an existing value to a new value
-							if (AttributeUtil.isValidValue(handler, paramValue)) {
-								toVoid.add(existing);
-								VisitAttribute newVal = new VisitAttribute();
-								newVal.setAttributeType(vat);
-								newVal.setSerializedValue(paramValue);
-								visit.addAttribute(newVal);
-							} else {
-								result.rejectValue("activeAttributes", "attribute.error.invalid", new Object[] { vat
-								        .getName() }, "Illegal value for " + vat.getName());
-							}
+							toVoid.add(existing);
+							VisitAttribute newVal = new VisitAttribute();
+							newVal.setAttributeType(vat);
+							newVal.setObjectValue(valueAsObject);
+							visit.addAttribute(newVal);
 						}
 					}
 				}
 			}
 		}
 		
+		for (Attribute<?> attr : toVoid)
+			voidAttribute(attr);
+		
 		new VisitValidator().validate(visit, result);
 		if (!result.hasErrors()) {
-			for (Attribute<?> attr : toVoid)
-				voidAttribute(attr);
 			try {
 				Context.getVisitService().saveVisit(visit);
 				if (log.isDebugEnabled())
 					log.debug("Saved visit: " + visit.toString());
-				request.setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Visit.saved", WebRequest.SCOPE_SESSION);
+				request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, "Visit.saved");
 				return "redirect:" + VISIT_FORM_URL + ".form?visitId=" + visit.getVisitId();
 			}
 			catch (APIException e) {
 				log.warn("Error while saving visit(s)", e);
-				request.setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Visit.save.error", WebRequest.SCOPE_SESSION);
+				request.getSession().setAttribute(WebConstants.OPENMRS_ERROR_ATTR, "Visit.save.error");
 			}
 		}
 		
