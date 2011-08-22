@@ -600,13 +600,13 @@ public class HL7ServiceImpl extends BaseOpenmrsService implements HL7Service {
 		// location.location_id
 		String pointOfCare = pl.getPointOfCare().getValue();
 		String facility = pl.getFacility().getUniversalID().getValue();
-		
 		// HACK: try to treat the first component (which should be "Point of
 		// Care" as an internal openmrs location_id
 		try {
 			Integer locationId = new Integer(pointOfCare);
 			Location l = Context.getLocationService().getLocation(locationId);
-			return l == null ? null : l.getLocationId();
+			if (l != null)
+				return l.getLocationId();
 		}
 		catch (Exception ex) {
 			if (facility == null) { // we have no tricks left up our sleeve, so
