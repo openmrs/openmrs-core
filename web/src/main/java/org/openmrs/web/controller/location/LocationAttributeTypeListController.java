@@ -11,26 +11,27 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.validator;
+package org.openmrs.web.controller.location;
 
-import org.openmrs.VisitAttributeType;
-import org.openmrs.annotation.Handler;
+import org.openmrs.api.context.Context;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
- * Validates attributes on the {@link VisitAttributeType} object.
+ * Controller for listing all location attribute types.
  * 
  * @since 1.9
  */
-@Handler(supports = { VisitAttributeType.class }, order = 50)
-public class VisitAttributeTypeValidator extends BaseAttributeTypeValidator<VisitAttributeType> {
+@Controller
+public class LocationAttributeTypeListController {
 	
 	/**
-	 * Determines if the command object being submitted is a valid type
-	 * 
-	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
+	 * Show existing
 	 */
-	public boolean supports(Class<?> c) {
-		return c.equals(VisitAttributeType.class);
+	@RequestMapping("/admin/locations/locationAttributeTypes")
+	public void list(Model model) {
+		model.addAttribute("attributeTypes", Context.getLocationService().getAllLocationAttributeTypes());
 	}
 	
 }
